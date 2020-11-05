@@ -40,7 +40,12 @@ DECLARE_SEGMENT(engine)
 DECLARE_SEGMENT(behavior)
 DECLARE_SEGMENT(scripts)
 DECLARE_SEGMENT(goddard)
+DECLARE_SEGMENT(framebuffers)
 extern u8 _goddardSegmentStart[];
+extern u8 _engineSegmentStart[];
+extern u8 _engineSegmentNoloadEnd[];
+extern u8 _engineSegmentEnd[];
+extern u8 _framebuffersSegmentNoloadEnd[];
 
 DECLARE_LEVEL_SEGMENT(menu)
 DECLARE_LEVEL_SEGMENT(intro)
