@@ -732,7 +732,7 @@ SECTIONS
       BUILD_DIR/src/game/object_helpers.o(.bss*);
 #endif
       BUILD_DIR/src/engine*.o(.bss*);
-      . = ALIGN(0x100);
+      . = ALIGN(0x40);
    }
    END_NOLOAD(engine)
 
@@ -742,7 +742,6 @@ SECTIONS
    BEGIN_NOLOAD(framebuffers)
    {
       BUILD_DIR/src/buffers/framebuffers.o(.bss*);
-      . = ALIGN(0x100);
    }
    END_NOLOAD(framebuffers)
 
