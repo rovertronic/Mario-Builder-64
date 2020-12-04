@@ -1,6 +1,6 @@
 # UltraSM64
 
-- This repo contains a full decompilation of Super Mario 64 (J), (U), and (E).
+- This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
 - Naming and documentation of the source code and data structures are in progress.
 - Efforts to decompile the Shindou ROM steadily advance.
 - It will be edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
