@@ -1,6 +1,9 @@
 #ifndef SEGMENTS_H
 #define SEGMENTS_H
 
+#ifndef LINKER
+#include "segment_symbols.h"
+#endif
 /*
  * Memory addresses for segments. Ideally, this header file would not be
  * needed, and the addresses would be defined in sm64.ld and linker-inserted
@@ -11,46 +14,20 @@
  * linker script syntax.
 */
 
-#ifndef USE_EXT_RAM /* Default: Runs out of memory quickly when importing custom assets. */
-
-#define SEG_POOL_START   0x8005C000
-#define SEG_POOL_END     SEG_BUFFERS
-
-#define SEG_GODDARD      0x8016F000
-
-#define SEG_BUFFERS      0x801C1000
-
-#ifdef VERSION_EU
-#define SEG_MAIN         0x80241800 // TODO: Investigate why it's different?
-#elif defined(VERSION_SH)
-#define SEG_MAIN         0x80249000
+#ifndef USE_EXT_RAM
+#define RAM_END          0x80400000
 #else
-#define SEG_MAIN         0x80246000
+#define RAM_END          0x80800000
 #endif
-
-#ifdef VERSION_EU
-#define SEG_ENGINE       0x8036FF00
-#else
-#define SEG_ENGINE       0x80378800
-#endif
-
-#define SEG_FRAMEBUFFERS 0x8038F800
-
-#else /* Use Expansion Pak space for pool. */
 
 /*
  * Workaround for running out of pool space due to
  * importing large custom content.
  */
 
-#define SEG_BUFFERS      0x8005C000 // 0x0085000 in size
-#define SEG_MAIN         0x800E1000 // 0x0132800 in size
-#define SEG_ENGINE       0x80213800 // 0x0017000 in size
-#define SEG_FRAMEBUFFERS 0x8022A800 // 0x0070800 in size
-#define SEG_POOL_START   0x8029B000 // 0x0165000 in size
-#define SEG_POOL_END     0x80800000
-#define SEG_POOL_END_4MB 0x80400000 // For the error message screen enhancement.
+#define SEG_POOL_START   _framebuffersSegmentNoloadEnd // 0x0165000 in size
 #define SEG_GODDARD      SEG_POOL_START + 0x113000
-#endif
+
+#define POOL_SIZE        RAM_END - SEG_POOL_START
 
 #endif // SEGMENTS_H
