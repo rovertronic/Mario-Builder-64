@@ -67,7 +67,7 @@ TARGET := sm64.$(VERSION)
 #   f3dex2  -
 #   f3dzex  - newer, experimental microcode used in Animal Crossing
 #   super3d - extremely experimental version of Fast3D lacking many features for speed
-$(eval $(call validate-option,GRUCODE,f3d_old f3dex f3dex2 f3d_new f3dzex))
+$(eval $(call validate-option,GRUCODE,f3d_old f3dex f3dex2 f3d_new f3dzex super3d))
 
 ifeq      ($(GRUCODE),f3d_old)
   DEFINES += F3D_OLD=1

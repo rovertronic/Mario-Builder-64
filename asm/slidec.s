@@ -56,4 +56,3 @@ pressloop3:	lbu	$11,($25)
 			add	$25,1
 			add	$11,18
 			b	pressloop2
-	.end

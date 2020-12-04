@@ -118,16 +118,16 @@ extern u64	gspLine3D_fifoTextStart[], gspLine3D_fifoTextEnd[];
 extern u64	gspLine3D_fifoDataStart[], gspLine3D_fifoDataEnd[];
 
 /* super 3D ucode: */
-extern long long int	gspSuper3DTextStart[], gspSuper3DTextEnd[];
-extern long long int	gspSuper3DDataStart[], gspSuper3DDataEnd[];
+extern u64	gspSuper3DTextStart[], gspSuper3DTextEnd[];
+extern u64	gspSuper3DDataStart[], gspSuper3DDataEnd[];
 
 /* 3D ucode with output to DRAM: */
-extern long long int	gspSuper3D_dramTextStart[], gspSuper3D_dramTextEnd[];
-extern long long int	gspSuper3D_dramDataStart[], gspSuper3D_dramDataEnd[];
+extern u64	gspSuper3D_dramTextStart[], gspSuper3D_dramTextEnd[];
+extern u64	gspSuper3D_dramDataStart[], gspSuper3D_dramDataEnd[];
 
 /* 3D ucode with output through DRAM FIFO to RDP: */
-extern long long int	gspSuper3D_fifoTextStart[], gspSuper3D_fifoTextEnd[];
-extern long long int	gspSuper3D_fifoDataStart[], gspSuper3D_fifoDataEnd[];
+extern u64	gspSuper3D_fifoTextStart[], gspSuper3D_fifoTextEnd[];
+extern u64	gspSuper3D_fifoDataStart[], gspSuper3D_fifoDataEnd[];
 
 
 /* 2D sprite ucode: */
