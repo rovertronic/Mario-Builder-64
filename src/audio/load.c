@@ -1255,9 +1255,6 @@ s32 func_sh_802f3dd0(OSIoMesg *m, s32 pri, s32 direction, uintptr_t devAddr, voi
         case 2:
             handle = osCartRomInit();
             break;
-        case 3:
-            handle = osDriveRomInit();
-            break;
         default:
             return 0;
     }

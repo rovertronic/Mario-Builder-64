@@ -4,35 +4,47 @@
 .section .text
 
 .balign 16
-glabel rspF3DBootStart
+glabel rspbootTextStart
     .incbin "rsp/rspboot.bin"
 .balign 16
-glabel rspF3DBootEnd
+glabel rspbootTextEnd
 
 .balign 16
 .ifndef F3DEX_GBI_SHARED
-glabel rspF3DStart /* Use regular Fast3D bins (default) */
+.if SUPER3D_GBI == 1
+glabel gspSuper3D_fifoTextStart
+        .incbin "lib/PR/super3d/Super3D.bin"
+glabel gspSuper3D_fifoTextEnd
+.else
+glabel gspFast3D_fifoTextStart /* Use regular Fast3D bins (default) */
     .incbin "rsp/fast3d.bin"
-glabel rspF3DEnd
+glabel gspFast3D_fifoTextEnd
+.endif
 
 .else /* Use one of the Fast3DEX series grucodes. */
-glabel rspF3DStart
-    .if F3DZEX_GBI_2 == 1
-        .incbin "lib/PR/f3dex2/F3DZEX_NoN.bin"
-    .elseif F3DEX_GBI == 1
-        .incbin "lib/PR/f3dex/F3DEX.bin"
-    .elseif F3DEX_GBI_2 == 1
+    .ifndef F3DZEX_GBI_2
+    .if F3DEX_GBI_2 == 1
+    glabel gspF3DEX2_fifoTextStart
         .incbin "lib/PR/f3dex2/F3DEX2.bin"
+    glabel gspF3DEX2_fifoTextEnd
+    .elseif F3DEX_GBI == 1
+    glabel gspF3DEX_fifoTextStart
+        .incbin "lib/PR/f3dex/F3DEX.bin"
+    glabel gspF3DEX_fifoTextEnd
     .endif
-glabel rspF3DEnd
+    .else /* Fast3DZEX */
+    glabel gspF3DZEX2_PosLight_fifoTextStart
+        .incbin "lib/PR/f3dzex/F3DZEX.bin"
+    glabel gspF3DZEX2_PosLight_fifoTextEnd
+    .endif
 .endif
 
 /* Audio Bins */
 
 .balign 16
-glabel rspAspMainStart
-    .incbin "rsp/audio.bin"
-glabel rspAspMainEnd
+glabel aspMainTextStart
+    .incbin "lib/PR/audio/aspMain.bin"
+glabel aspMainTextEnd
 
 /*
  * LESS COMMON MICROCODES
@@ -41,49 +53,49 @@ glabel rspAspMainEnd
 
 /* Fast3DEX NoN Text */
 .ifdef F3DEX_NON_GBI
-glabel rspF3DEXNoNStart
+glabel gspF3DEX_NoN_fifoTextStart
     .balign 16
     .incbin "lib/PR/f3dex/F3DEX_NoN.bin"
-glabel rspF3DEXNoNEnd
+glabel gspF3DEX_NoN_fifoTextEnd
 .endif
 
 /* Fast3DLX Text */
 .ifdef F3DLX_GBI
-glabel rspF3DLXStart
+glabel gspF3DLX_fifoTextStart
     .incbin "lib/PR/f3dex/F3DLX.bin"
-glabel rspF3DLXEnd
+glabel gspF3DLX_fifoTextEnd
 .endif
 
 /* Fast3DLX NoN Text */
 .ifdef F3DLX_NON_GBI
-glabel rspF3DLXNoNStart
+glabel gspF3DLX_NoN_fifoTextStart
     .balign 16
     .incbin "lib/PR/f3dex/F3DLX_NoN.bin"
-glabel rspF3DLXNoNEnd
+glabel gspF3DLX_NoN_fifoTextEnd
 .endif
 
 /* Fast3DLX Rej Text */
 .ifdef F3DLX_REJ_GBI
-glabel rspF3DLXRejStart
+glabel gspF3DLX_Rej_fifoTextStart
     .balign 16
     .incbin "lib/PR/f3dex/F3DLX_Rej.bin"
-glabel rspF3DLXRejEnd
+glabel gspF3DLX_Rej_fifoTextEnd
 .endif
 
 /* Line3DEX Text */
 .ifdef L3DEX_GBI
-glabel rspL3DEXStart
+glabel gspL3DEX_fifoTextStart
     .balign 16
     .incbin "lib/PR/f3dex/L3DEX.bin"
-glabel rspL3DEXEnd
+glabel gspL3DEX_fifoTextEnd
 .endif
 
 /* S2DEX Text */
 .ifdef S2DEX_GBI
-glabel rspS2DEXStart
+glabel gspS2DEX_fifoTextStart
     .balign 16
     .incbin "lib/PR/s2dex/S2DEX.bin"
-glabel rspS2DEXEnd
+glabel gspS2DEX_fifoTextEnd
 .endif
 
 /* Fast3DEX2 series */
@@ -91,33 +103,49 @@ glabel rspS2DEXEnd
 /* Fast3DEX2 NoN Text */
 .ifdef F3DEX2_NON_GBI
 .balign 16
-glabel rspF3DEX2NoNStart
+glabel gspF3DEX2_NoN_fifoTextStart
     .incbin "lib/PR/f3dex2/F3DEX2_NoN.bin"
-glabel rspF3DEX2NoNEnd
+glabel gspF3DEX2_NoN_fifoTextEnd
+.endif
+
+/* Fast3DZEX NoN Text */
+.ifdef F3DZEX_NON_GBI_2
+.balign 16
+glabel gspF3DZEX2_NoN_PosLight_fifoTextStart
+    .incbin "lib/PR/f3dzex/F3DZEX_NoN.bin"
+glabel gspF3DZEX2_NoN_PosLight_fifoTextEnd
 .endif
 
 /* Fast3DEX2 Rej Text */
 .ifdef F3DEX2_REJ_GBI
 .balign 16
-glabel rspF3DEX2RejStart
+glabel gspF3DEX2_Rej_fifoTextStart
     .incbin "lib/PR/f3dex2/F3DEX2_Rej.bin"
-glabel rspF3DEX2RejEnd
+glabel gspF3DEX2_Rej_fifoTextEnd
 .endif
 
 /* Line3DEX2 Text */
 .ifdef L3DEX2_GBI
 .balign 16
-glabel rspL3DEX2Start
+glabel gspL3DEX2_fifoTextStart
     .incbin "lib/PR/f3dex2/L3DEX2.bin"
-glabel rspL3DEX2End
+glabel gspL3DEX2_fifoTextEnd
+.endif
+
+/* Line3DZEX Text */
+.ifdef L3DZEX_GBI
+.balign 16
+glabel gspL3DZEX2_PosLight_fifoTextStart
+    .incbin "lib/PR/f3dzex/L3DZEX.bin"
+glabel gspL3DZEX2_PosLight_fifoTextEnd
 .endif
 
 /* S2DEX2 Text */
 .ifdef S2DEX_GBI_2
 .balign 16
-glabel rspS2DEXStart
-    .incbin "lib/PR/s2dex/S2DEX2.bin"
-glabel rspS2DEXEnd
+glabel gspS2DEX2_fifoTextStart
+    .incbin "lib/PR/s2dex2/S2DEX2.bin"
+glabel gspS2DEX2_fifoTextEnd
 .endif
 
 /* DATA SECTION START */
@@ -126,28 +154,40 @@ glabel rspS2DEXEnd
 
 .balign 16
 .ifndef F3DEX_GBI_SHARED /* Use regular Fast3D data (default) */
-glabel rspF3DDataStart
+    .if SUPER3D_GBI == 1
+glabel gspSuper3D_fifoDataStart
+    .incbin "lib/PR/super3d/Super3D_data.bin"
+glabel gspSuper3D_fifoDataEnd
+.else
+glabel gspFast3D_fifoDataStart
     .incbin "rsp/fast3d_data.bin"
-glabel rspF3DDataEnd
+glabel gspFast3D_fifoDataEnd
+.endif
 
 .else /* Using one of the Fast3DEX series grucodes */
-glabel rspF3DDataStart
-    .if F3DZEX_GBI_2 == 1
-        .incbin "lib/PR/f3dex2/F3DZEX_NoN_data.bin"
-    .elseif F3DEX_GBI == 1
-        .incbin "lib/PR/f3dex/F3DEX_data.bin"
-    .elseif F3DEX_GBI_2 == 1
+    .ifndef F3DZEX_GBI_2
+    .if F3DEX_GBI_2 == 1
+    glabel gspF3DEX2_fifoDataStart
         .incbin "lib/PR/f3dex2/F3DEX2_data.bin"
+    glabel gspF3DEX2_fifoDataEnd
+    .elseif F3DEX_GBI == 1
+    glabel gspF3DEX_fifoDataStart
+        .incbin "lib/PR/f3dex/F3DEX_data.bin"
+    glabel gspF3DEX_fifoDataEnd
     .endif
-glabel rspF3DDataEnd
+    .else /* Fast3DZEX */
+    glabel gspF3DZEX2_PosLight_fifoDataStart
+        .incbin "lib/PR/f3dzex/F3DZEX_data.bin"
+    glabel gspF3DZEX2_PosLight_fifoDataEnd
+    .endif
 .endif
 
 /* Audio Data */
 
 .balign 16
-glabel rspAspMainDataStart
-    .incbin "rsp/audio_data.bin"
-glabel rspAspMainDataEnd
+glabel aspMainDataStart
+    .incbin "lib/PR/audio/aspMain_data.bin"
+glabel aspMainDataEnd
 
 /* LESS COMMON MICROCODES */
 
@@ -156,49 +196,49 @@ glabel rspAspMainDataEnd
 /* Fast3DEX NoN Data */
 .ifdef F3DEX_NON_GBI
 .balign 16
-glabel rspF3DEXNoNDataStart
+glabel gspF3DEX_NoN_fifoDataStart
     .incbin "lib/PR/f3dex/F3DEX_NoN_data.bin"
-glabel rspF3DEXNoNDataEnd
+glabel gspF3DEX_NoN_fifoDataEnd
 .endif
 
 /* Fast3DLX Data */
 .ifdef F3DLX_GBI
 .balign 16
-glabel rspF3DLXDataStart
+glabel gspF3DLX_fifoDataStart
     .incbin "lib/PR/f3dex/F3DLX_data.bin"
-glabel rspF3DLXDataEnd
+glabel gspF3DLX_fifoDataEnd
 .endif
 
 /* Fast3DLX NoN Data */
 .ifdef F3DLX_NON_GBI
 .balign 16
-glabel rspF3DLXNoNDataStart
+glabel gspF3DLX_NoN_fifoDataStart
     .incbin "lib/PR/f3dex/F3DLX_NoN_data.bin"
-glabel rspF3DLXNoNDataEnd
+glabel gspF3DLX_NoN_fifoDataEnd
 .endif
 
 /* Fast3DLX Rej Data */
 .ifdef F3DLX_REJ_GBI
 .balign 16
-glabel rspF3DLXRejDataStart
+glabel gspF3DLX_Rej_fifoDataStart
     .incbin "lib/PR/f3dex/F3DLX_Rej_data.bin"
-glabel rspF3DLXRejDataEnd
+glabel gspF3DLX_Rej_fifoDataEnd
 .endif
 
 /* Line3DEX Data */
 .ifdef L3DEX_GBI
 .balign 16
-glabel rspL3DEXDataStart
+glabel gspL3DEX_fifoDataStart
     .incbin "lib/PR/f3dex/L3DEX_data.bin"
-glabel rspL3DEXDataEnd
+glabel gspL3DEX_fifoDataEnd
 .endif
 
 /* S2DEX Data */
 .ifdef S2DEX_GBI
 .balign 16
-glabel rspS2DEXDataStart
+glabel gspS2DEX_fifoDataStart
     .incbin "lib/PR/s2dex/S2DEX_data.bin"
-glabel rspS2DEXDataEnd
+glabel gspS2DEX_fifoDataEnd
 .endif
 
 /* Fast3DEX2 Series */
@@ -206,31 +246,47 @@ glabel rspS2DEXDataEnd
 /* Fast3DEX2 NoN Data */
 .ifdef F3DEX2_NON_GBI
 .balign 16
-glabel rspF3DEX2NoNStart
+glabel gspF3DEX2_NoN_fifoDataStart
     .incbin "lib/PR/f3dex2/F3DEX2_NoN_data.bin"
-glabel rspF3DEX2NoNEnd
+glabel gspF3DEX2_NoN_fifoDataEnd
+.endif
+
+/* Fast3DZEX NoN Data */
+.ifdef F3DZEX_NON_GBI_2
+.balign 16
+glabel gspF3DZEX2_NoN_PosLight_fifoDataStart
+    .incbin "lib/PR/f3dzex/F3DZEX_NoN_data.bin"
+glabel gspF3DZEX2_NoN_PosLight_fifoDataEnd
 .endif
 
 /* Fast3DEX2 Rej Data */
 .ifdef F3DEX2_REJ_GBI
 .balign 16
-glabel rspF3DEX2RejStart
+glabel gspF3DEX2_Rej_fifoDataStart
     .incbin "lib/PR/f3dex2/F3DEX2_Rej_data.bin"
-glabel rspF3DEX2RejEnd
+glabel gspF3DEX2_Rej_fifoDataEnd
 .endif
 
 /* Line3DEX2 Data */
 .ifdef L3DEX2_GBI
 .balign 16
-glabel rspL3DEX2Start
+glabel gspL3DEX2_fifoDataStart
     .incbin "lib/PR/f3dex2/L3DEX2_data.bin"
-glabel rspL3DEX2End
+glabel gspL3DEX2_fifoDataEnd
+.endif
+
+/* Line3DZEX Text */
+.ifdef L3DZEX_GBI
+.balign 16
+glabel gspL3DZEX2_PosLight_fifoDataStart
+    .incbin "lib/PR/f3dzex/L3DZEX_data.bin"
+glabel gspL3DZEX2_PosLight_fifoDataEnd
 .endif
 
 /* S2DEX2 Data */
 .ifdef S2DEX_GBI_2
 .balign 16
-glabel rspS2DEXStart
-    .incbin "lib/PR/s2dex/S2DEX2_data.bin"
-glabel rspS2DEXEnd
+glabel gspS2DEX2_fifoDataStart
+    .incbin "lib/PR/s2dex2/S2DEX2_data.bin"
+glabel gspS2DEX2_fifoDataEnd
 .endif

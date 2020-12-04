@@ -1,4 +1,5 @@
 #include <ultra64.h>
+#include <PR/os_internal_error.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -6,7 +7,7 @@
 
 #if defined(TARGET_N64) && (defined(VERSION_EU) || defined(VERSION_SH))
 
-#include "lib/src/printf.h"
+#include "printf.h"
 
 u8 gCrashScreenCharToGlyph[128] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,

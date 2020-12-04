@@ -27,7 +27,7 @@ extern OSThread gSoundThread;
 #ifdef VERSION_SH
 extern OSThread gRumblePakThread;
 
-extern s32 gRumblePakPfs; // Actually an OSPfs but we don't have that header yet
+extern OSPfs gRumblePakPfs;
 #endif
 
 extern OSMesgQueue gPIMesgQueue;

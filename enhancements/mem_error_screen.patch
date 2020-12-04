@@ -110,7 +110,7 @@ index a130cc04..926c0d09 100644
 +const LevelScript level_intro_entry_error_screen[] = {
 +    INIT_LEVEL(),
 +    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
-+    LOAD_MIO0(/*seg*/ 0x07, _intro_segment_7SegmentRomStart, _intro_segment_7SegmentRomEnd),
++    LOAD_YAY0(/*seg*/ 0x07, _intro_segment_7SegmentRomStart, _intro_segment_7SegmentRomEnd),
 +    ALLOC_LEVEL_POOL(),
 +
 +    AREA(/*index*/ 1, intro_geo_error_screen),

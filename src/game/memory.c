@@ -5,7 +5,7 @@
 #define INCLUDED_FROM_MEMORY_C
 
 #include "buffers/buffers.h"
-#include "decompress.h"
+#include "slidec.h"
 #include "game_init.h"
 #include "main.h"
 #include "memory.h"
@@ -332,7 +332,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
         dma_read(compressed, srcStart, srcEnd);
         dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
         if (dest != NULL) {
-            decompress(compressed, dest);
+            slidstart(compressed, dest);
             set_segment_base_addr(segment, dest);
             main_pool_free(compressed);
         } else {
@@ -350,7 +350,7 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
 
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
-        decompress(compressed, gDecompressionHeap);
+        slidstart(compressed, gDecompressionHeap);
         set_segment_base_addr(segment, gDecompressionHeap);
         main_pool_free(compressed);
     } else {

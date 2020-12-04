@@ -9,7 +9,7 @@
 
 OSThread gRumblePakThread;
 
-s32 gRumblePakPfs; // Actually an OSPfs but we don't have that header yet
+OSPfs gRumblePakPfs;
 
 s8 D_SH_8031D8F8[0x60];
 
@@ -25,11 +25,6 @@ s32 sRumblePakThreadActive = 0;
 s32 sRumblePakActive = 0;
 s32 sRumblePakErrorCount = 0;
 s32 gRumblePakTimer = 0;
-
-// These void* are OSPfs* but we don't have that header
-extern s32 osMotorStop(void *);
-extern s32 osMotorStart(void *);
-extern u32 osMotorInit(OSMesgQueue *, void *, s32);
 
 void init_rumble_pak_scheduler_queue(void) {
     osCreateMesgQueue(&gRumblePakSchedulerMesgQueue, gRumblePakSchedulerMesgBuf, 1);

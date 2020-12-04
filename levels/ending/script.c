@@ -18,7 +18,7 @@
 
 const LevelScript level_ending_entry[] = {
     /*0*/ INIT_LEVEL(),
-    /*1*/ LOAD_MIO0(/*seg*/ 0x07, _ending_segment_7SegmentRomStart, _ending_segment_7SegmentRomEnd),
+    /*1*/ LOAD_YAY0(/*seg*/ 0x07, _ending_segment_7SegmentRomStart, _ending_segment_7SegmentRomEnd),
     /*4*/ ALLOC_LEVEL_POOL(),
 
     /*5*/ AREA(/*index*/ 1, ending_geo_000050),

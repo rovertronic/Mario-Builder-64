@@ -44,12 +44,12 @@ SEG_FILES := \
     $(ACTOR_GROUPS:%=$(BUILD_DIR)/actors/%.elf) \
     $(LEVEL_FILES:%=$(BUILD_DIR)/levels/%.elf)
 
-MIO0_FILES := \
-    $(SEGMENTS:%=$(BUILD_DIR)/bin/%.mio0) \
-    $(ACTOR_GROUPS:%=$(BUILD_DIR)/actors/%.mio0) \
-    $(LEVEL_FILES:%=$(BUILD_DIR)/levels/%.mio0)
+YAY0_FILES := \
+    $(SEGMENTS:%=$(BUILD_DIR)/bin/%.szp) \
+    $(ACTOR_GROUPS:%=$(BUILD_DIR)/actors/%.szp) \
+    $(LEVEL_FILES:%=$(BUILD_DIR)/levels/%.szp)
 
-MIO0_OBJ_FILES := $(MIO0_FILES:.mio0=.mio0.o)
+YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 
 
 # --------------------------------------

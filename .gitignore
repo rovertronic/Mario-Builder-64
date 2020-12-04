@@ -70,3 +70,9 @@ build/*
 !/sound/**/*custom*/**/*.aiff
 !/assets/**/*custom*.bin
 !/assets/**/*custom*/**/*.bin
+# libultra
+
+!/lib/*.a
+
+!/lib/PR/hvqm/*.o
+

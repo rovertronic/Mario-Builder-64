@@ -38,22 +38,22 @@ $(eval $(call validate-option,VERSION,jp us eu sh))
 ifeq      ($(VERSION),jp)
   DEFINES   += VERSION_JP=1
   OPT_FLAGS := -g
-  GRUCODE   ?= f3d_old
+  GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),us)
   DEFINES   += VERSION_US=1
   OPT_FLAGS := -g
-  GRUCODE   ?= f3d_old
+  GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),eu)
   DEFINES   += VERSION_EU=1
   OPT_FLAGS := -O2
-  GRUCODE   ?= f3d_new
+  GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= false
 else ifeq ($(VERSION),sh)
   DEFINES   += VERSION_SH=1
   OPT_FLAGS := -O2
-  GRUCODE   ?= f3d_new
+  GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= false
 endif
 
@@ -66,6 +66,7 @@ TARGET := sm64.$(VERSION)
 #   f3dex   -
 #   f3dex2  -
 #   f3dzex  - newer, experimental microcode used in Animal Crossing
+#   super3d - extremely experimental version of Fast3D lacking many features for speed
 $(eval $(call validate-option,GRUCODE,f3d_old f3dex f3dex2 f3d_new f3dzex))
 
 ifeq      ($(GRUCODE),f3d_old)
@@ -74,11 +75,13 @@ else ifeq ($(GRUCODE),f3d_new) # Fast3D 2.0H
   DEFINES += F3D_NEW=1
 else ifeq ($(GRUCODE),f3dex) # Fast3DEX
   DEFINES += F3DEX_GBI=1 F3DEX_GBI_SHARED=1
-else ifeq ($(GRUCODE), f3dex2) # Fast3DEX2
+else ifeq ($(GRUCODE),f3dex2) # Fast3DEX2
   DEFINES += F3DEX_GBI_2=1 F3DEX_GBI_SHARED=1
-else ifeq ($(GRUCODE),f3dzex) # Fast3DZEX (2.0J / Animal Forest - Dōbutsu no Mori)
-  $(warning Fast3DZEX is experimental. Try at your own risk.)
+else ifeq ($(GRUCODE),f3dzex) # Fast3DZEX (2.08J / Animal Forest - Dōbutsu no Mori)
   DEFINES += F3DZEX_GBI_2=1 F3DEX_GBI_2=1 F3DEX_GBI_SHARED=1
+else ifeq ($(GRUCODE),super3d) # Super3D
+  $(warning Super3D is experimental. Try at your own risk.)
+  DEFINES += SUPER3D_GBI=1 F3D_NEW=1
 endif
 
 
@@ -108,7 +111,7 @@ endif
 # NON_MATCHING - whether to build a matching, identical copy of the ROM
 #   1 - enable some alternate, more portable code that does not produce a matching ROM
 #   0 - build a matching ROM
-NON_MATCHING ?= 0
+NON_MATCHING ?= 1
 $(eval $(call validate-option,NON_MATCHING,0 1))
 
 ifeq ($(TARGET_N64),0)
@@ -168,6 +171,9 @@ endif
 
 TOOLS_DIR := tools
 
+# Location of official N64 libraries
+N64_LIBS_DIR ?= lib
+
 # (This is a bit hacky, but a lot of rules implicitly depend
 # on tools and assets, and we use directory globs further down
 # in the makefile that we want should cover assets.)
@@ -205,9 +211,8 @@ BUILD_DIR_BASE := build
 BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)
 ROM            := $(BUILD_DIR)/$(TARGET).z64
 ELF            := $(BUILD_DIR)/$(TARGET).elf
-LIBULTRA       := $(BUILD_DIR)/libultra.a
 LD_SCRIPT      := sm64.ld
-MIO0_DIR       := $(BUILD_DIR)/bin
+YAY0_DIR       := $(BUILD_DIR)/bin
 SOUND_BIN_DIR  := $(BUILD_DIR)/sound
 TEXTURE_DIR    := textures
 ACTOR_DIR      := actors
@@ -216,9 +221,6 @@ LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 # Directories containing source files
 SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
 BIN_DIRS := bin bin/$(VERSION)
-
-ULTRA_SRC_DIRS := lib/src lib/src/math lib/asm lib/data
-ULTRA_BIN_DIRS := lib/bin
 
 GODDARD_SRC_DIRS := src/goddard src/goddard/dynlists
 
@@ -288,6 +290,8 @@ else
   $(error Unable to detect a suitable MIPS toolchain installed)
 endif
 
+export LD_LIBRARY_PATH=./tools
+
 AS        := $(CROSS)as
 ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
@@ -310,7 +314,7 @@ ifneq (,$(call find-command,cpp-10))
 else
   CPP     := cpp
 endif
-LD        := $(CROSS)ld
+LD        := tools/mips64-elf-ld
 AR        := $(CROSS)ar
 OBJDUMP   := $(CROSS)objdump
 OBJCOPY   := $(CROSS)objcopy
@@ -362,7 +366,7 @@ export LANG := C
 #==============================================================================#
 
 # N64 tools
-MIO0TOOL              := $(TOOLS_DIR)/mio0
+YAY0TOOL              := $(TOOLS_DIR)/slienc
 N64CKSUM              := $(TOOLS_DIR)/n64cksum
 N64GRAPHICS           := $(TOOLS_DIR)/n64graphics
 N64GRAPHICS_CI        := $(TOOLS_DIR)/n64graphics_ci
@@ -469,7 +473,7 @@ else
   endif
 endif
 
-ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(ULTRA_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(MIO0_DIR) $(addprefix $(MIO0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(ULTRA_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
@@ -529,13 +533,13 @@ $(BUILD_DIR)/levels/%/leveldata.bin: $(BUILD_DIR)/levels/%/leveldata.elf
 	$(V)$(EXTRACT_DATA_FOR_MIO) $< $@
 
 # Compress binary file
-$(BUILD_DIR)/%.mio0: $(BUILD_DIR)/%.bin
+$(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.bin
 	$(call print,Compressing:,$<,$@)
-	$(V)$(MIO0TOOL) $< $@
+	$(V)$(YAY0TOOL) $< $@
 
-# convert binary mio0 to object file
-$(BUILD_DIR)/%.mio0.o: $(BUILD_DIR)/%.mio0
-	$(call print,Converting MIO0 to ELF:,$<,$@)
+# convert binary szp to object file
+$(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
+	$(call print,Converting YAY0 to ELF:,$<,$@)
 	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
 
 
@@ -744,9 +748,9 @@ $(BUILD_DIR)/libgoddard.a: $(GODDARD_O_FILES)
 	$(V)$(AR) rcs -o $@ $(GODDARD_O_FILES)
 
 # Link SM64 ELF file
-$(ELF): $(O_FILES) $(MIO0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a $(BUILD_DIR)/libgoddard.a
+$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -lultra -lgoddard
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L $(N64_LIBS_DIR) -lultra_rom -lgoddard
 
 # Build ROM
 $(ROM): $(ELF)
@@ -759,7 +763,7 @@ $(BUILD_DIR)/$(TARGET).objdump: $(ELF)
 
 
 
-.PHONY: all clean distclean default diff test load libultra
+.PHONY: all clean distclean default diff test load
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:
 

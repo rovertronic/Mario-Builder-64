@@ -115,12 +115,12 @@ struct SPTask *func_sh_802f5a80(void) {
     task = &gAudioTask->task.t;
     task->type = M_AUDTASK;
     task->flags = flags;
-    task->ucode_boot = rspF3DBootStart;
-    task->ucode_boot_size = (u8 *) rspF3DStart - (u8 *) rspF3DBootStart;
-    task->ucode = rspAspMainStart;
-    task->ucode_data = rspAspMainDataStart;
+    task->ucode_boot = rspbootTextStart;
+    task->ucode_boot_size = (u8 *) rspbootTextEnd - (u8 *) rspbootTextStart;
+    task->ucode = aspMainTextStart;
+    task->ucode_data = aspMainDataStart;
     task->ucode_size = 0x1000;
-    task->ucode_data_size = (rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64);
+    task->ucode_data_size = (aspMainDataEnd - aspMainDataStart) * sizeof(u64);
     task->dram_stack = NULL;
     task->dram_stack_size = 0;
     task->output_buff = NULL;

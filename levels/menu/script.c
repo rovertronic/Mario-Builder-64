@@ -21,7 +21,7 @@
 const LevelScript level_main_menu_entry_1[] = {
     INIT_LEVEL(),
     FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
-    LOAD_MIO0(/*seg*/ 0x07, _menu_segment_7SegmentRomStart, _menu_segment_7SegmentRomEnd),
+    LOAD_YAY0(/*seg*/ 0x07, _menu_segment_7SegmentRomStart, _menu_segment_7SegmentRomEnd),
     LOAD_RAW(/*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd),
     ALLOC_LEVEL_POOL(),
     LOAD_MODEL_FROM_GEO(MODEL_MAIN_MENU_MARIO_SAVE_BUTTON,      geo_menu_mario_save_button),
@@ -62,7 +62,7 @@ const LevelScript level_main_menu_entry_2[] = {
     /*2*/ JUMP_IF(/*op*/ OP_EQ, /*arg*/ 0, level_main_menu_entry_2 + 42),
     /*5*/ INIT_LEVEL(),
     /*6*/ FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
-    /*10*/ LOAD_MIO0(/*seg*/ 0x07, _menu_segment_7SegmentRomStart, _menu_segment_7SegmentRomEnd),
+    /*10*/ LOAD_YAY0(/*seg*/ 0x07, _menu_segment_7SegmentRomStart, _menu_segment_7SegmentRomEnd),
     /*13*/ ALLOC_LEVEL_POOL(),
 
     /*14*/ AREA(/*index*/ 2, geo_menu_act_selector_strings),

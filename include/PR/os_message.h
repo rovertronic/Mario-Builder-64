@@ -35,7 +35,6 @@ extern "C" {
 #endif
 
 #include <PR/ultratypes.h>
-#include <PR/os_thread.h>
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 

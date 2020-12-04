@@ -1,5 +1,4 @@
-#include <PR/ultratypes.h>
-#include <PR/gbi.h>
+#include <ultra64.h>
 
 #include "config.h"
 #include "game_init.h"

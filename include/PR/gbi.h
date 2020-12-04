@@ -2477,11 +2477,11 @@ typedef union {
         gsSPLoadUcodeEx((uc_start), (uc_dstart), SP_UCODE_DATA_SIZE)
 
 #define	gSPLoadUcodeL(pkt, ucode)					\
-        gSPLoadUcode((pkt), OS_K0_TO_PHYSICAL(&##ucode##TextStart),	\
-		            OS_K0_TO_PHYSICAL(&##ucode##DataStart))
+        gSPLoadUcode((pkt), OS_K0_TO_PHYSICAL(&ucode##TextStart),	\
+		            OS_K0_TO_PHYSICAL(&ucode##DataStart))
 #define	gsSPLoadUcodeL(ucode)						\
-        gsSPLoadUcode(OS_K0_TO_PHYSICAL(&##ucode##TextStart),		\
-		      OS_K0_TO_PHYSICAL(&##ucode##DataStart))
+        gsSPLoadUcode(OS_K0_TO_PHYSICAL(&ucode##TextStart),		\
+		      OS_K0_TO_PHYSICAL(&ucode##DataStart))
 #endif
 
 #ifdef	F3DEX_GBI_2
@@ -4794,6 +4794,10 @@ typedef union {
 #define	gsDPNoOp()		gsDPNoParam(G_NOOP)
 #define	gDPNoOpTag(pkt, tag)	gDPParam(pkt, G_NOOP, tag)
 #define	gsDPNoOpTag(tag)	gsDPParam(G_NOOP, tag)
+
+#if defined(F3DZEX_GBI_2) || defined(F3DZEX_NON_GBI_2) || defined(L3DZEX_GBI)
+#include "gbi-poslight.h"
+#endif
 
 #endif /* _LANGUAGE_C */
 
