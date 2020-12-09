@@ -70,6 +70,7 @@ build/*
 !/sound/**/*custom*/**/*.aiff
 !/assets/**/*custom*.bin
 !/assets/**/*custom*/**/*.bin
+!/textures/crash_custom/*.png
 # libultra
 
 !/lib/*.a
