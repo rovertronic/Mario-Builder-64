@@ -554,7 +554,7 @@ static s32 act_breaststroke(struct MarioState *m) {
         reset_float_globals(m);
     }
 
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
     if (m->actionTimer < 6) {
         func_sh_8024CA04();
     }
