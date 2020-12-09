@@ -116,6 +116,9 @@ SECTIONS
       BUILD_DIR/asm/entry.o(.text);
 
       BUILD_DIR/src/game*.o(.text);
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.text);
+#endif
       BUILD_DIR/src/audio*.o(.text);
       BUILD_DIR/asm/llmuldiv_gcc.o(.text);
       BUILD_DIR/asm/slidec.o(.text);
@@ -129,6 +132,10 @@ SECTIONS
       /* data */
       BUILD_DIR/src/game*.o(.data*);
       BUILD_DIR/src/game*.o(.sdata*);
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.data*);
+      BUILD_DIR/src/usb*.o(.sdata*);
+#endif
       BUILD_DIR/src/audio*.o(.data*);
       BUILD_DIR/src/audio*.o(.sdata*);
 
@@ -141,6 +148,9 @@ SECTIONS
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.rodata*);
+#endif
       BUILD_DIR/src/audio*.o(.rodata*);
 
       */libultra_rom.a:*.o(.rodata*);
@@ -154,6 +164,8 @@ SECTIONS
    {
       BUILD_DIR/src/game*.o(.bss*);
       BUILD_DIR/src/game*.o(.sbss*);
+      BUILD_DIR/src/usb*.o(.bss*);
+      BUILD_DIR/src/usb*.o(.sbss*);
       BUILD_DIR/src/audio*.o(.bss*);
       BUILD_DIR/src/audio*.o(.sbss*);
       
@@ -355,11 +367,13 @@ SECTIONS
       BUILD_DIR/data/capcom.o(.data);
    }
 	END_SEG(capcom)
+#if 0
    BEGIN_SEG(sein, __romPos) SUBALIGN(2)
    {
       BUILD_DIR/data/sein.o(.data);
    }
 	END_SEG(sein)
+#endif
    /* Discard everything not specifically mentioned above. */
    /DISCARD/ :
    {

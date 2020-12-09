@@ -19,6 +19,9 @@
 #include "segment2.h"
 #include "segment_symbols.h"
 #include "rumble_init.h"
+#include "hvqm.h"
+#include "usb/usb.h"
+#include "usb/debug.h"
 #include <prevent_bss_reordering.h>
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
@@ -601,6 +604,9 @@ void thread5_game_loop(UNUSED void *arg) {
     setup_game_memory();
 #if ENABLE_RUMBLE
     init_rumble_pak_scheduler_queue();
+#endif
+#ifdef UNF
+    debug_initialize();
 #endif
     init_controllers();
 #if ENABLE_RUMBLE

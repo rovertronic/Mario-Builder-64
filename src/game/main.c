@@ -12,6 +12,8 @@
 #include "segments.h"
 #include "main.h"
 #include "rumble_init.h"
+#include "usb/usb.h"
+#include "usb/debug.h"
 
 // Message IDs
 #define MESG_SP_COMPLETE 100
