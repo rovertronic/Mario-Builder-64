@@ -23,6 +23,9 @@
 /// Fixes bug where it shows a star when you grab a key in bowser battle stages
 #define BUGFIX_STAR_BOWSER_KEY (0 || VERSION_US || VERSION_EU || VERSION_SH)
 
+// Support Rumble Pak
+#define ENABLE_RUMBLE (1 || VERSION_SH)
+
 // Screen Size Defines
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240

@@ -6,6 +6,7 @@
 
 #include <ultra64.h>
 #include "macros.h"
+#include "config.h"
 
 
 // Certain functions are marked as having return values, but do not
@@ -30,7 +31,7 @@ struct Controller
   /*0x12*/ u16 buttonPressed;
   /*0x14*/ OSContStatus *statusData;
   /*0x18*/ OSContPad *controllerData;
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
   /*0x1C*/ int port;
 #endif
 };

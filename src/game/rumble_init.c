@@ -4,8 +4,9 @@
 #include "buffers/buffers.h"
 #include "main.h"
 #include "rumble_init.h"
+#include "config.h"
 
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
 
 OSThread gRumblePakThread;
 

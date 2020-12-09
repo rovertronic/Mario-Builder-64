@@ -254,7 +254,7 @@ void handle_vblank(void) {
             start_sptask(M_GFXTASK);
         }
     }
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
     rumble_thread_update_vi();
 #endif
 

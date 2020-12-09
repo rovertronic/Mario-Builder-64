@@ -2,11 +2,10 @@
 
 - This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
 - Naming and documentation of the source code and data structures are in progress.
-- Efforts to decompile the Shindou ROM steadily advance.
-- It will be edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
-- Support for Shindou Rumble Pak code may be included in the future.
-- It will be patched with someone2639's shiftable segments patch
-- It will have extremely WIP HVQM full motion video support
+- It has been edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
+- Shindou Rumble Pak code is on for all regions.
+- It has been patched with someone2639's shiftable segments patch
+- It will have HVQM full motion video support
 - Getting UNFLoader (flashcart USB library) to work with the game is in progress.
 
 ## FAQ
@@ -19,9 +18,9 @@ This puts me at a crossroads of either touching leaked code and requiring GCC, o
 
 I went with the latter.
 
-Thanks to "someone2639 on soundcloud xd" for this hacky-ass idea
+Thanks to "someone2639" for this hacky-ass idea
 
-Q: Will this allow me to use Rumble/FlashRAM/Transfer Pak/microcode swapping/Other Cool N64 Features?
+Q: Will this allow me to use FlashRAM/Transfer Pak/microcode swapping/Other Cool N64 Features?
 
 A: Theoretically, all yes.
 

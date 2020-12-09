@@ -22,7 +22,7 @@ void bhv_star_door_loop(void) {
         case 1:
             if (o->oTimer == 0 && (s16)(o->oMoveAngleYaw) >= 0) {
                 cur_obj_play_sound_2(SOUND_GENERAL_STAR_DOOR_OPEN);
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
                 queue_rumble_data(35, 30);
 #endif
             }
@@ -39,7 +39,7 @@ void bhv_star_door_loop(void) {
         case 3:
             if (o->oTimer == 0 && (s16)(o->oMoveAngleYaw) >= 0) {
                 cur_obj_play_sound_2(SOUND_GENERAL_STAR_DOOR_CLOSE);
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
                 queue_rumble_data(35, 30);
 #endif
             }

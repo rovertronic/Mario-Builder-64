@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <config.h>
+
 struct RumbleData {
     u8 unk00;
     u8 unk01;
@@ -24,7 +26,7 @@ extern OSThread gIdleThread;
 extern OSThread gMainThread;
 extern OSThread gGameLoopThread;
 extern OSThread gSoundThread;
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
 extern OSThread gRumblePakThread;
 
 extern OSPfs gRumblePakPfs;
@@ -33,7 +35,7 @@ extern OSPfs gRumblePakPfs;
 extern OSMesgQueue gPIMesgQueue;
 extern OSMesgQueue gIntrMesgQueue;
 extern OSMesgQueue gSPTaskMesgQueue;
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
 extern OSMesgQueue gRumblePakSchedulerMesgQueue;
 extern OSMesgQueue gRumbleThreadVIMesgQueue;
 #endif
@@ -46,7 +48,7 @@ extern OSIoMesg gDmaIoMesg;
 extern OSMesg D_80339BEC;
 extern OSMesgQueue gDmaMesgQueue;
 extern OSMesgQueue gSIEventMesgQueue;
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
 extern OSMesg gRumblePakSchedulerMesgBuf[1];
 extern OSMesg gRumbleThreadVIMesgBuf[1];
 
