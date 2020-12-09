@@ -23,7 +23,7 @@ TARGET_N64 ?= 1
 #   ido - uses the SGI IRIS Development Option compiler, which is used to build
 #         an original matching N64 ROM
 #   gcc - uses the GNU C Compiler
-COMPILER ?= ido
+COMPILER ?= gcc
 $(eval $(call validate-option,COMPILER,ido gcc))
 
 
@@ -660,30 +660,6 @@ ifeq ($(COMPILER),ido)
   $(BUILD_DIR)/levels/%/leveldata.o: OPT_FLAGS := -g
   $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -g
   $(BUILD_DIR)/bin/%.o:              OPT_FLAGS := -g
-  $(BUILD_DIR)/src/goddard/%.o:      OPT_FLAGS := -g
-  $(BUILD_DIR)/src/goddard/%.o:      MIPSISET := -mips1
-  $(BUILD_DIR)/lib/src/%.o:          OPT_FLAGS :=
-  $(BUILD_DIR)/lib/src/math/%.o:     OPT_FLAGS := -O2
-  $(BUILD_DIR)/lib/src/math/ll%.o:   OPT_FLAGS :=
-  $(BUILD_DIR)/lib/src/math/ll%.o:   MIPSISET := -mips3 -32
-  $(BUILD_DIR)/lib/src/ldiv.o:       OPT_FLAGS := -O2
-  $(BUILD_DIR)/lib/src/string.o:     OPT_FLAGS := -O2
-  $(BUILD_DIR)/lib/src/gu%.o:        OPT_FLAGS := -O3
-  $(BUILD_DIR)/lib/src/al%.o:        OPT_FLAGS := -O3
-  # For the asm-processor, since it doesn't support -O3. Probably not actually compiled with these flags.
-  ifeq ($(VERSION),sh)
-    $(BUILD_DIR)/lib/src/unk_shindou_file.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/func_sh_80304D20.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/_Printf.o: OPT_FLAGS := -O3
-    $(BUILD_DIR)/lib/src/contramread.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/osPfsIsPlug.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/osAiSetFrequency.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/contramwrite.o: OPT_FLAGS := -O1
-    $(BUILD_DIR)/lib/src/sprintf.o: OPT_FLAGS := -O3
-    $(BUILD_DIR)/lib/src/_Litob.o: OPT_FLAGS := -O3
-    $(BUILD_DIR)/lib/src/_Ldtob.o: OPT_FLAGS := -O3
-    $(BUILD_DIR)/lib/src/osDriveRomInit.o: OPT_FLAGS := -g
-  endif
   ifeq ($(VERSION),eu)
     $(BUILD_DIR)/lib/src/_Litob.o:   OPT_FLAGS := -O3
     $(BUILD_DIR)/lib/src/_Ldtob.o:   OPT_FLAGS := -O3

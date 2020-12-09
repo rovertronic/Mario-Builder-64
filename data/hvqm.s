@@ -3,5 +3,5 @@
 .section .data
 
 glabel _hvqmSampleRomStart
-.incbin "data/joe.hvqm"
+.incbin "data/terry.hvqm"
 glabel _hvqmSampleRomEnd
