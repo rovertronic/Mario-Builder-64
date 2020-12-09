@@ -125,7 +125,6 @@ SECTIONS
 
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
-      lib/PR/hvqm/hvqm2sp2.o(.text);
 
       /* data */
       BUILD_DIR/src/game*.o(.data*);
@@ -139,7 +138,6 @@ SECTIONS
 
       BUILD_DIR/lib/rsp.o(.data*);
       lib/PR/hvqm/hvqm2sp1.o(.data*);
-      lib/PR/hvqm/hvqm2sp2.o(.data*);
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
@@ -150,7 +148,6 @@ SECTIONS
 
       BUILD_DIR/lib/rsp.o(.rodata*);
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
-      lib/PR/hvqm/hvqm2sp2.o(.rodata*);
    }
    END_SEG(main)
    BEGIN_NOLOAD(main)
@@ -353,11 +350,16 @@ SECTIONS
    }
    END_SEG(assets)
   
-   BEGIN_SEG(hvqm, __romPos)
+   BEGIN_SEG(capcom, __romPos) SUBALIGN(2)
    {
-      BUILD_DIR/data/hvqm.o(.data);
+      BUILD_DIR/data/capcom.o(.data);
    }
-	END_SEG(hvqm)
+	END_SEG(capcom)
+   BEGIN_SEG(sein, __romPos) SUBALIGN(2)
+   {
+      BUILD_DIR/data/sein.o(.data);
+   }
+	END_SEG(sein)
    /* Discard everything not specifically mentioned above. */
    /DISCARD/ :
    {

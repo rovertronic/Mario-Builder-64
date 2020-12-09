@@ -17,6 +17,9 @@
  */
 #define AUDIO_RECORD_SIZE_MAX  5000
 
+#define MAXWIDTH  320
+#define MAXHEIGHT 240
+
 /*
  * Size of data area for HVQM2 microcode
  */

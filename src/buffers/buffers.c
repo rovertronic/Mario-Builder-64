@@ -1,6 +1,8 @@
 #include <ultra64.h>
+#include <hvqm2dec.h>
 
 #include "buffers.h"
+#include <game/hvqm.h>
 #include "config.h"
 
 ALIGNED8 u8 gDecompressionHeap[0xD000];
@@ -41,7 +43,13 @@ ALIGNED8 u8 gAudioSPTaskYieldBuffer[OS_YIELD_AUDIO_SIZE];
 ALIGNED8 u8 gUnusedThread2Stack[0x1400];
 #endif
 
+ALIGNED16 u8 hvqbuf[HVQ_DATASIZE_MAX];
 
+ALIGNED16 u64 hvq_yieldbuf[HVQM2_YIELD_DATA_SIZE/8];
+ALIGNED16 u8 adpcmbuf[AUDIO_RECORD_SIZE_MAX];
+ALIGNED16 u16 hvqwork[(MAXWIDTH/8)*(MAXHEIGHT/4)*4];
 
+// Data area for the HVQ microcode
+ALIGNED16 HVQM2Info hvq_spfifo[HVQ_SPFIFO_SIZE];
 
 

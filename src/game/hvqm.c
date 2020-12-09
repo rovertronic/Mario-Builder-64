@@ -1,11 +1,10 @@
 #include <ultra64.h>
 #include <sm64.h>
 #include <buffers/framebuffers.h>
+#include <buffers/buffers.h>
 #include <hvqm2dec.h>
 #include <adpcmdec.h>
 #include "hvqm.h"
-
-u8 hvqbuf[HVQ_DATASIZE_MAX];
 
 static OSIoMesg     audioDmaMesgBlock;
 static OSMesgQueue  audioDmaMessageQ;
@@ -49,22 +48,14 @@ static u32 video_remain;	/* Counter for remaining number of video records to rea
 static u64 disptime;		/* Counter for scheduled display time of next video frame */
 static ADPCMstate adpcm_state;	/* Buffer for state information passed to the ADPCM decoder */
 
-u64 hvq_yieldbuf[HVQM2_YIELD_DATA_SIZE/8];
-u8 adpcmbuf[AUDIO_RECORD_SIZE_MAX];
-
 /*
  * Macro for loading multi-byte data from buffer holding data from stream 
  */
 #define load32(from) (*(u32*)&(from))
 #define load16(from) (*(u16*)&(from))
 
-extern u8 _hvqmSegmentRomStart[];
-
-u16 hvqwork[(SCREEN_WD/8)*(SCREEN_HT/4)*4];
-// Data area for the HVQ microcode
-HVQM2Info hvq_spfifo[HVQ_SPFIFO_SIZE];
-// Buffer for RSP task yield
-u64 hvq_yieldbuf[HVQM2_YIELD_DATA_SIZE/8];
+extern u8 _capcomSegmentRomStart[];
+extern u8 _seinSegmentRomStart[];
 
 u32 cfb_status[NUM_CFBs];
 
@@ -138,7 +129,7 @@ u8 *get_record(HVQM2Record *headerbuf, void *bodybuf, u16 type, u8 *stream, OSIo
 }
 
 static u32 next_audio_record( void *pcmbuf ) {
-  u8 header_buffer[sizeof(HVQM2Record)+16];
+  ALIGNED16 u8 header_buffer[sizeof(HVQM2Record)+16];
   HVQM2Record *record_header;
   HVQM2Audio *audio_headerP;
   u32 samples;
@@ -157,7 +148,7 @@ static u32 next_audio_record( void *pcmbuf ) {
 }
 
 static tkAudioProc rewind( void ) {
-  video_streamP = audio_streamP = (u32)_hvqmSegmentRomStart + sizeof(HVQM2Header);
+  video_streamP = audio_streamP = (u32)_capcomSegmentRomStart + sizeof(HVQM2Header);
   audio_remain = total_audio_records;
   video_remain = total_frames;
   disptime = 0;
@@ -204,7 +195,7 @@ void hvqm_main_proc() {
     init_cfb();
     osViSwapBuffer( gFrameBuffers[NUM_CFBs-1] );
 
-    romcpy(hvqm_header, (void *)_hvqmSegmentRomStart, sizeof(HVQM2Header), OS_MESG_PRI_NORMAL, &videoDmaMesgBlock, &videoDmaMessageQ);
+    romcpy(hvqm_header, (void *)_capcomSegmentRomStart, sizeof(HVQM2Header), OS_MESG_PRI_NORMAL, &videoDmaMesgBlock, &videoDmaMessageQ);
 
     total_frames = load32(hvqm_header->total_frames);
     usec_per_frame = load32(hvqm_header->usec_per_frame);
