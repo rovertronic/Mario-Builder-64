@@ -48,7 +48,7 @@ UNUSED u8 filler80339D30[0x90];
 s32 unused8032C690 = 0;
 u32 gGlobalTimer = 0;
 
-static u16 sCurrFBNum = 0;
+u16 sCurrFBNum = 0;
 u16 frameBufferIndex = 0;
 void (*gGoddardVblankCallback)(void) = NULL;
 struct Controller *gPlayer1Controller = &gControllers[0];
@@ -647,5 +647,11 @@ void thread5_game_loop(UNUSED void *arg) {
             // amount of free space remaining.
             print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
         }
+        #if 0
+        if (gPlayer1Controller->buttonPressed & L_TRIG) {
+            osStartThread(&hvqmThread);
+            osRecvMesg(&gDmaMesgQueue, NULL, OS_MESG_BLOCK);
+        }
+        #endif
     }
 }

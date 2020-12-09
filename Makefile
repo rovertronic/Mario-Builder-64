@@ -222,8 +222,6 @@ LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
 BIN_DIRS := bin bin/$(VERSION)
 
-GODDARD_SRC_DIRS := src/goddard src/goddard/dynlists
-
 # File dependencies and variables for specific files
 include Makefile.split
 
@@ -231,9 +229,6 @@ include Makefile.split
 LEVEL_C_FILES     := $(wildcard levels/*/leveldata.c) $(wildcard levels/*/script.c) $(wildcard levels/*/geo.c)
 C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c)) $(LEVEL_C_FILES)
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
-ULTRA_C_FILES     := $(foreach dir,$(ULTRA_SRC_DIRS),$(wildcard $(dir)/*.c))
-GODDARD_C_FILES   := $(foreach dir,$(GODDARD_SRC_DIRS),$(wildcard $(dir)/*.c))
-ULTRA_S_FILES     := $(foreach dir,$(ULTRA_SRC_DIRS),$(wildcard $(dir)/*.s))
 GENERATED_C_FILES := $(BUILD_DIR)/assets/mario_anim_data.c $(BUILD_DIR)/assets/demo_data.c
 
 # Sound files
@@ -253,15 +248,11 @@ SOUND_SEQUENCE_FILES := \
 # Object files
 O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
            $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
-           $(foreach file,$(GENERATED_C_FILES),$(file:.c=.o))
-
-ULTRA_O_FILES := $(foreach file,$(ULTRA_S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
-                 $(foreach file,$(ULTRA_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
-
-GODDARD_O_FILES := $(foreach file,$(GODDARD_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
+           $(foreach file,$(GENERATED_C_FILES),$(file:.c=.o)) \
+           lib/PR/hvqm/hvqm2sp1.o lib/PR/hvqm/hvqm2sp2.o
 
 # Automatic dependency files
-DEP_FILES := $(O_FILES:.o=.d) $(ULTRA_O_FILES:.o=.d) $(GODDARD_O_FILES:.o=.d) $(BUILD_DIR)/$(LD_SCRIPT).d
+DEP_FILES := $(O_FILES:.o=.d) $(BUILD_DIR)/$(LD_SCRIPT).d
 
 # Files with GLOBAL_ASM blocks
 ifeq ($(NON_MATCHING),0)
@@ -324,7 +315,7 @@ ifeq ($(TARGET_N64),1)
   CC_CFLAGS := -fno-builtin
 endif
 
-INCLUDE_DIRS := include $(BUILD_DIR) $(BUILD_DIR)/include src .
+INCLUDE_DIRS := include $(BUILD_DIR) $(BUILD_DIR)/include src . include/hvqm
 ifeq ($(TARGET_N64),1)
   INCLUDE_DIRS += include/libc
 endif
@@ -750,15 +741,10 @@ $(BUILD_DIR)/libultra.a: $(ULTRA_O_FILES)
 	$(V)$(AR) rcs -o $@ $(ULTRA_O_FILES)
 	$(V)$(TOOLS_DIR)/patch_libultra_math $@
 
-# Link libgoddard
-$(BUILD_DIR)/libgoddard.a: $(GODDARD_O_FILES)
-	@$(PRINT) "$(GREEN)Linking libgoddard:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(AR) rcs -o $@ $(GODDARD_O_FILES)
-
 # Link SM64 ELF file
-$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a $(BUILD_DIR)/libgoddard.a
+$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L $(N64_LIBS_DIR) -lultra_rom -lgoddard
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L $(N64_LIBS_DIR) -lultra_rom -lhvqm2
 
 # Build ROM
 $(ROM): $(ELF)
