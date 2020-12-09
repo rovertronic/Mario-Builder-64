@@ -1,4 +1,5 @@
 #include <ultra64.h>
+#include "hvqm.h"
 #include "audio/data.h"
 #include "buffers/framebuffers.h"
 
@@ -146,10 +147,6 @@ static int  clock_alive;
  * Audio sampling rate
  ***********************************************************************/
 static u32  samples_per_sec;
-
-#define CFB_FREE     0		/* Available */
-#define CFB_PRECIOUS (1<<0)	/* Constrained for decoding of next frame */
-#define CFB_SHOWING  (1<<1)	/* Waiting to display or displaying */
 
 /***********************************************************************
  * Number of PCM samples that have finished playing

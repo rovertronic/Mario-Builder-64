@@ -1,32 +1,9 @@
 #include <ultra64.h>
+#include <sm64.h>
+#include <buffers/framebuffers.h>
 #include <hvqm2dec.h>
 #include <adpcmdec.h>
-/*
- * Size of the data area for the HVQ microcode
- */
-#define HVQ_SPFIFO_SIZE   30000
-
-/*
- * Size of buffer for video records 
- */
-#define HVQ_DATASIZE_MAX  40000
-
-/*
- * Size of buffer for audio records
- */
-#define AUDIO_RECORD_SIZE_MAX  5000
-
-/*
- * Size of data area for HVQM2 microcode
- */
-#define HVQ_SPFIFO_SIZE   30000
-
-#define	SCREEN_WD	320	/* Screen width [pixel] */
-#define	SCREEN_HT	240	/* Screen height [pixel] */
-
-#define	APP_GFX_UCODE_HVQ	6		/* HVQ2 microcode */
-
-#define  AUDIO_DMA_MSG_SIZE  1
+#include "hvqm.h"
 
 u8 hvqbuf[HVQ_DATASIZE_MAX];
 
@@ -192,7 +169,7 @@ HVQM2Header *hvqm_header;
 static OSMesgQueue   hvqmMesgQ;
 static OSMesg        hvqmMesgBuf;
 
-static OSThread hvqmThread;
+OSThread hvqmThread;
 static u64 hvqmStack[STACKSIZE/sizeof(u64)];
 
 void hvqm_main_proc() {

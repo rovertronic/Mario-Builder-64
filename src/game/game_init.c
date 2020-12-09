@@ -59,10 +59,6 @@ struct DemoInput *gCurrDemoInput = NULL; // demo input sequence
 u16 gDemoInputListID = 0;
 struct DemoInput gRecordedDemoInput = { 0 }; // possibly removed in EU. TODO: Check
 
-
-#include "include/timekeeper.inc.c"
-#include "include/hvqm.inc.c"
-
 /**
  * Initializes the Reality Display Processor (RDP).
  * This function initializes settings such as texture filtering mode,
