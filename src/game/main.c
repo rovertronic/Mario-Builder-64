@@ -89,30 +89,6 @@ void handle_debug_key_sequences(void) {
     }
 }
 
-void unknown_main_func(void) {
-    // uninitialized
-    OSTime time;
-    u32 b;
-
-    osSetTime(time);
-    osMapTLB(0, b, NULL, 0, 0, 0);
-    osUnmapTLBAll();
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnonnull"
-    sprintf(NULL, NULL);
-#pragma GCC diagnostic pop
-}
-
-void stub_main_1(void) {
-}
-
-void stub_main_2(void) {
-}
-
-void stub_main_3(void) {
-}
-
 void setup_mesg_queues(void) {
     osCreateMesgQueue(&gDmaMesgQueue, gDmaMesgBuf, ARRAY_COUNT(gDmaMesgBuf));
     osCreateMesgQueue(&gSIEventMesgQueue, gSIEventMesgBuf, ARRAY_COUNT(gSIEventMesgBuf));
@@ -218,9 +194,7 @@ void pretend_audio_sptask_done(void) {
 }
 
 void handle_vblank(void) {
-    UNUSED s32 pad; // needed to pad the stack
 
-    stub_main_3();
     gNumVblanks++;
 #ifdef VERSION_SH
     if (gResetTimer > 0 && gResetTimer < 100) {
@@ -366,7 +340,6 @@ void thread3_main(UNUSED void *arg) {
                 handle_nmi_request();
                 break;
         }
-        stub_main_2();
     }
 }
 
