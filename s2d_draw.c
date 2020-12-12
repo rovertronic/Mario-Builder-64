@@ -86,7 +86,8 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
 
 void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
 	setup_font(c);
-	mtx_pipeline(mt, x, y);
+	// mtx_pipeline(mt, x, y);
+    mtx_pipeline2(mt, x, y);
 	// gSPObjMatrix(gDisplayListHead++, &s2d_mat);
 	gSPObjSprite(gDisplayListHead++, &s2d_font);
 }
