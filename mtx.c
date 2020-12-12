@@ -2,6 +2,7 @@
 #include <PR/gs2dex.h>
 #include "stack.h"
 
+// TODO: implement fixed point math instead of... this...
 void mat2_dst_mul(uObjMtx *dst, uObjMtx *m1, uObjMtx *m2) {
 	int m1A = m1->m.A >> 16;
 	int m1B = m1->m.B >> 16;

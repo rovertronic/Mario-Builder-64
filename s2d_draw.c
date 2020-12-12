@@ -20,6 +20,7 @@ static Gfx s2d_init_dl[] = {
 
 void setup_font(int idx) {
 	gDPPipeSync(gDisplayListHead++);
+	gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
 	gSPDisplayList(gDisplayListHead++, s2d_init_dl);
 	gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 	gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
@@ -37,9 +38,9 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 	gSPObjMatrix(gDisplayListHead++, m);
 }
 
-void print_s2d(char c) {
+void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
 	setup_font(c);
-	mtx_pipeline(&final_mtx, 50, 50);
+	mtx_pipeline(mt, x, y);
 	// gSPObjMatrix(gDisplayListHead++, &s2d_mat);
 	gSPObjSprite(gDisplayListHead++, &s2d_font);
 }

@@ -2,39 +2,31 @@
 #include <PR/gs2dex.h>
 
 #include "s2d_draw.h"
+#include "s2d_print.h"
 
-#define SCALE     '\x80'
-#define ROT       '\x81'
-#define TRANSLATE '\x82'
-
-#define CH_GET_NEXT(x) (*(++x))
-
-
-
-
-
-
-void s2d_parse(const char *str) {
+void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	char *p = str;
-	while (*(p++) != '\0') {
+	do {
 		char r = *p;
-		char s, t, x, y;
+		char s, rd, tx, ty;
+		if (*p == '\0') break;
 		switch (r) {
-			case SCALE:
+			case CH_SCALE:
 				s = CH_GET_NEXT(p);
 				myScale = s;
 				break;
-			case ROT:
-				t = CH_GET_NEXT(p);
-				degrees = t;
+			case CH_ROT:
+				rd = CH_GET_NEXT(p);
+				degrees = rd;
 				break;
-			case TRANSLATE:
-				x = CH_GET_NEXT(p);
-				y = CH_GET_NEXT(p);
+			case CH_TRANSLATE:
+				tx = CH_GET_NEXT(p);
+				ty = CH_GET_NEXT(p);
 
 			default:
-				x = 0;
-				// print(r);
+				draw_s2d_glyph(r, x += (29 * myScale), y, (buf++));
 		}
-	}
+	} while (*(p++) != '\0');
+	myScale = 1;
 }
+

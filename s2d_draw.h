@@ -10,6 +10,6 @@ extern void setup_font(int idx);
 
 extern void mtx_pipeline(uObjMtx *m, int x, int y);
 
-extern void print_s2d(char c);
+extern void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt);
 
 #endif
