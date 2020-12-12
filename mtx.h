@@ -17,3 +17,5 @@ extern void mat2_scale(uObjMtx *dst, int scale);
 extern void get_final_mat(uObjMtx *dst);
 
 extern void mat2_translate(uObjMtx *m, int x, int y);
+
+extern void mat2_rotate(uObjMtx *dst, f32 degrees);

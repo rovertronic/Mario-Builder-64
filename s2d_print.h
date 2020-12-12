@@ -1,9 +1,9 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
 
-#define SCALE     "\x80"
-#define ROT       "\x81"
-#define TRANSLATE "\x82"
+#define SCALE     "\x80" // SCALE (some scale)
+#define ROTATE    "\x81" // ROTATE (degrees) // TODO: maybe add axis?
+#define TRANSLATE "\x82" // TRANSLATE (x) (y)
 
 #define CH_SCALE     '\x80'
 #define CH_ROT       '\x81'

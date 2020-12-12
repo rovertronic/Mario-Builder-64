@@ -1673,8 +1673,8 @@ uObjMtx impact_mtx = {
 	1<<10,    1<<10           /* BaseScaleX, BaseScaleY */
 };
 uObjSprite impact_obj = {
-	0<<2, 1<<10, 16<<5, 0,          /* objX, scaleX, imageW, unused */
-	0<<2, 1<<10, 16<<5, 0,          /* objY, scaleY, imageH, unused */
+	-8<<2, 1<<10, 16<<5, 0,          /* objX, scaleX, imageW, unused */
+	-8<<2, 1<<10, 16<<5, 0,          /* objY, scaleY, imageH, unused */
 	GS_PIX2TMEM(16, G_IM_SIZ_8b), /* imageStride */
 	GS_PIX2TMEM(0, G_IM_SIZ_8b), /* imageAdrs */
 	G_IM_FMT_IA, /* imageFmt */

@@ -3,7 +3,7 @@
 #include <ultra64.h>
 
 extern int myScale;
-extern int degrees;
+extern int myDegrees;
 extern uObjMtx final_mtx, rot_mtx;
 
 extern void setup_font(int idx);
