@@ -28,7 +28,7 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 				break;
 
 			default:
-				draw_s2d_glyph(r, x += (29 * myScale), y, (buf++));
+				draw_s2d_glyph(r, x += (8 * myScale), y, (buf++));
 		}
 		myDegrees += saved_degrees;
 	} while (*(p++) != '\0');
