@@ -1,5 +1,6 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
+#include <PR/gu.h>
 
 #include "s2d_draw.h"
 #include "s2d_print.h"
@@ -28,10 +29,13 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 				break;
 
 			default:
-				draw_s2d_glyph(r, x += (8 * myScale), y, (buf++));
+				if (myDegrees == 0)
+					draw_s2d_glyph(r, x += (8 * myScale), y, (buf++));
+				else
+					draw_s2d_glyph(r, x += ((8 * myScale)), y, (buf++));
 		}
-		myDegrees += saved_degrees;
-	} while (*(p++) != '\0');
+		// myDegrees += saved_degrees;
+	} while (*(++p) != '\0');
 	myScale = 1;
 	myDegrees = 0;
 	saved_degrees = 0;

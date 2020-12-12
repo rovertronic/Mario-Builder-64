@@ -33,6 +33,8 @@ void setup_font(int idx) {
 
 extern void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag);
 
+// Original Mtx Pipeline
+// Doesnt work with rotation, but is faster
 void mtx_pipeline(uObjMtx *m, int x, int y) {
 	// init
 	mat2_ident(m, 1);
@@ -42,22 +44,11 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 	mat2_rotate(&rot_mtx, (myDegrees) * (M_PI / 180.0f));
 
 
-	// mat2_translate_with_rotation(m, &rot_mtx, x, y);
 	// scale m
 	mat2_scale(m, myScale);
-	// m = rot_mtx * m
-	// bypass the above by just copying the rot matrix
 	// mat2_copy(m, &rot_mtx);
 	mat2_dst_mul(m,m,  &rot_mtx);
 	mat2_translate(m, x, y);
-	// mat2_translate_vec(m, (-myDegrees) * (M_PI / 180.0f), 1.0f);
-
-
-	// testing a stackoverflow answer
-	// mat2_translate(m, -TEX_X * myScale, -TEX_Y * myScale);
-	// mat2_dst_mul(m, m, &rot_mtx);
-	// mat2_translate(m, TEX_X * myScale, TEX_Y * myScale);
-	
 
 	// yeah
 	gSPObjMatrix(gDisplayListHead++, m);
@@ -66,6 +57,9 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 #include <PR/gu.h>
 typedef float Mat4[4][4];
 
+// New matrix pipeline
+// Works with both rotation and scale,
+// but is slow due to more float operations being performed
 void mtx_pipeline2(uObjMtx *m, int x, int y) {
 	// init
 	Mat4 tmp, rot, scal, translate;
@@ -80,15 +74,20 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
 
 	gu_to_gs2dex(m, tmp);
 
+    if (myDegrees != 0) {
+        mat2_translate_vec(m, -(myDegrees) * M_DTOR, myScale);
+    }
+
 	// yeah
 	gSPObjMatrix(gDisplayListHead++, m);
 }
 
 void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
 	setup_font(c);
+
 	// mtx_pipeline(mt, x, y);
     mtx_pipeline2(mt, x, y);
-	// gSPObjMatrix(gDisplayListHead++, &s2d_mat);
+
 	gSPObjSprite(gDisplayListHead++, &s2d_font);
 }
 
