@@ -17,14 +17,24 @@ static Gfx s2d_init_dl[] = {
 	gsDPSetTextureConvert(G_TC_FILT),
 	gsDPSetAlphaCompare(G_AC_THRESHOLD),
 	gsDPSetBlendColor(0, 0, 0, 0x01),
-	gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+
+    // IA8
+	gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT,
+                       0, 0, 0, TEXEL0,
+                       0, 0, 0, ENVIRONMENT,
+                       0, 0, 0, TEXEL0),
+
+
 	gsSPEndDisplayList(),
 };
+
+int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 
 void setup_font(int idx) {
 	gDPPipeSync(gDisplayListHead++);
 	gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
 	gSPDisplayList(gDisplayListHead++, s2d_init_dl);
+    gDPSetEnvColor(gDisplayListHead++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
 	gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 	gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
 	gSPObjRenderMode(gDisplayListHead++, G_OBJRM_XLU | G_OBJRM_BILERP);
