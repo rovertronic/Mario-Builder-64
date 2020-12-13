@@ -48,10 +48,10 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 				break;
 			case CH_TRANSLATE:
 				CH_GET_NEXT(p);
-				tx = s2d_atoi(p, &p);
+				x = s2d_atoi(p, &p);
 				CH_GET_NEXT(p);
 				CH_GET_NEXT(p);
-				ty = s2d_atoi(p, &p);
+				y = s2d_atoi(p, &p);
 				break;
 			case CH_COLOR:
 				CH_GET_NEXT(p);

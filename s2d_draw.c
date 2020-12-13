@@ -31,14 +31,14 @@ static Gfx s2d_init_dl[] = {
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 
 void setup_font(int idx) {
-	gDPPipeSync(gDisplayListHead++);
-	gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
-	gSPDisplayList(gDisplayListHead++, s2d_init_dl);
-    gDPSetEnvColor(gDisplayListHead++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
-	gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
-	gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
-	gSPObjRenderMode(gDisplayListHead++, G_OBJRM_XLU | G_OBJRM_BILERP);
-	gSPObjLoadTxtr(gDisplayListHead++, &s2d_tex[idx]);
+	gDPPipeSync(gdl_head++);
+	gDPSetTextureFilter(gdl_head++, G_TF_POINT);
+	gSPDisplayList(gdl_head++, s2d_init_dl);
+    gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
+	gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
+	gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
+	gSPObjRenderMode(gdl_head++, G_OBJRM_XLU | G_OBJRM_BILERP);
+	gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 
 extern void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag);
@@ -61,7 +61,7 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 	mat2_translate(m, x, y);
 
 	// yeah
-	gSPObjMatrix(gDisplayListHead++, m);
+	gSPObjMatrix(gdl_head++, m);
 }
 
 #include <PR/gu.h>
@@ -89,7 +89,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     }
 
 	// yeah
-	gSPObjMatrix(gDisplayListHead++, m);
+	gSPObjMatrix(gdl_head++, m);
 }
 
 void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
@@ -98,7 +98,7 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
 	// mtx_pipeline(mt, x, y);
     mtx_pipeline(mt, x, y);
 
-	gSPObjSprite(gDisplayListHead++, &s2d_font);
+	gSPObjSprite(gdl_head++, &s2d_font);
 }
 
 
