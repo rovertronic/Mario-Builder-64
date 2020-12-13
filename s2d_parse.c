@@ -56,14 +56,14 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 			case CH_COLOR:
 				CH_GET_NEXT(p);
 				s2d_red = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);
-				CH_GET_NEXT(p);
+				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+
 				s2d_green = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);
-				CH_GET_NEXT(p);
+				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+
 				s2d_blue = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);
-				CH_GET_NEXT(p);
+				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+				
 				s2d_alpha = s2d_atoi(p, &p);
 				break;
 				

@@ -1682,4 +1682,16 @@ uObjSprite impact_obj = {
 	0, /* imagePal */
 	0, /* imageFlags */
 };
+
+uObjSprite impact_bg = {
+	0<<2, 1<<10, 1<<5, 0,          /* objX, scaleX, imageW, unused */
+	0<<2, 1<<10, 1<<5, 0,          /* objY, scaleY, imageH, unused */
+	GS_PIX2TMEM(1, G_IM_SIZ_8b), /* imageStride */
+	GS_PIX2TMEM(0, G_IM_SIZ_8b), /* imageAdrs */
+	G_IM_FMT_IA, /* imageFmt */
+	G_IM_SIZ_8b, /* imageSiz */
+	0, /* imagePal */
+	0, /* imageFlags */
+};
+
 // 16 16

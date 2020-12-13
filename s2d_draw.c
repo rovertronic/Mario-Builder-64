@@ -5,9 +5,7 @@
 int myScale = 1;
 int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
-
-#define TEX_X -8
-#define TEX_Y -8
+int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 
 static Gfx s2d_init_dl[] = {
 	gsDPPipeSync(),
@@ -24,11 +22,8 @@ static Gfx s2d_init_dl[] = {
                        0, 0, 0, ENVIRONMENT,
                        0, 0, 0, TEXEL0),
 
-
 	gsSPEndDisplayList(),
 };
-
-int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 
 void setup_font(int idx) {
 	gDPPipeSync(gdl_head++);
@@ -41,10 +36,18 @@ void setup_font(int idx) {
 	gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 
-extern void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag);
+void draw_rect(int ulx, int uly, int drx, int dry, u32 color) {
+    gDPPipeSync(gdl_head++);
+    gDPSetRenderMode(gdl_head++, G_RM_NOOP, G_RM_NOOP2);
+    gDPSetCycleType(gdl_head++,G_CYC_FILL);
+    gDPSetFillColor(gdl_head++, color);
+    gDPFillRectangle(gdl_head++, ulx, uly, drx, dry);
+    gDPPipeSync(gdl_head++);
+    gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
+}
 
 // Original Mtx Pipeline
-// Doesnt work with rotation, but is faster
+// Distorts when rotating, but is faster
 void mtx_pipeline(uObjMtx *m, int x, int y) {
 	// init
 	mat2_ident(m, 1);
@@ -52,20 +55,13 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 
 	// create rot matrix
 	mat2_rotate(&rot_mtx, (myDegrees) * (M_PI / 180.0f));
-
-
 	// scale m
 	mat2_scale(m, myScale);
-	// mat2_copy(m, &rot_mtx);
 	mat2_dst_mul(m,m,  &rot_mtx);
 	mat2_translate(m, x, y);
 
-	// yeah
 	gSPObjMatrix(gdl_head++, m);
 }
-
-#include <PR/gu.h>
-typedef float Mat4[4][4];
 
 // New matrix pipeline
 // Works with both rotation and scale,
@@ -88,7 +84,6 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
         mat2_translate_vec(m, -(myDegrees) * M_DTOR, myScale);
     }
 
-	// yeah
 	gSPObjMatrix(gdl_head++, m);
 }
 
@@ -96,7 +91,7 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
 	setup_font(c);
 
 	// mtx_pipeline(mt, x, y);
-    mtx_pipeline(mt, x, y);
+    mtx_pipeline2(mt, x, y);
 
 	gSPObjSprite(gdl_head++, &s2d_font);
 }
