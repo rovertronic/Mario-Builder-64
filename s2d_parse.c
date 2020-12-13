@@ -26,6 +26,8 @@ int s2d_atoi(char *s, char **s2) {
 	return ret;
 }
 
+extern u32 gGlobalTimer;
+
 void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	char *p = str;
 	int tx = 0, ty = 0;
@@ -36,33 +38,33 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 		int s, rd;
 		switch (r) {
 			case CH_SCALE:
-				CH_GET_NEXT(p);
+				CH_SKIP(p);
 				s = s2d_atoi(p, &p);
 				myScale = s;
 				break;
 			case CH_ROT:
-				CH_GET_NEXT(p);
+				CH_SKIP(p);
 				rd = s2d_atoi(p, &p);
 				saved_degrees = rd;
 				myDegrees = rd;
 				break;
 			case CH_TRANSLATE:
-				CH_GET_NEXT(p);
+				CH_SKIP(p);
 				x = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);
-				CH_GET_NEXT(p);
+				CH_SKIP(p);
+				CH_SKIP(p);
 				y = s2d_atoi(p, &p);
 				break;
 			case CH_COLOR:
-				CH_GET_NEXT(p);
+				CH_SKIP(p);
 				s2d_red = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+				CH_SKIP(p);	CH_SKIP(p);
 
 				s2d_green = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+				CH_SKIP(p);	CH_SKIP(p);
 
 				s2d_blue = s2d_atoi(p, &p);
-				CH_GET_NEXT(p);	CH_GET_NEXT(p);
+				CH_SKIP(p);	CH_SKIP(p);
 				
 				s2d_alpha = s2d_atoi(p, &p);
 				break;
@@ -75,7 +77,7 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 					draw_s2d_glyph(r, (x += ((8 * myScale))) + tx, y + ty, (buf++));
 		}
 		// myDegrees += saved_degrees;
-	} while (*(++p) != '\0');
+	} while (*p != '\0');
 	myScale = 1;
 	myDegrees = 0;
 	saved_degrees = 0;

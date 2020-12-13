@@ -11,6 +11,10 @@
 #define CH_TRANSLATE '\x82'
 #define CH_COLOR     '\x83'
 
+// ASCII standard escape codes
+#define CH_NEWLINE   '\n'
+
 #define CH_GET_NEXT(x) (*(++x))
+#define CH_SKIP(x) ((++x))
 
 extern void s2d_print(int x, int y, const char *str, uObjMtx *buf);
