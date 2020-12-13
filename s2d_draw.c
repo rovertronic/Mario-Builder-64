@@ -36,16 +36,6 @@ void setup_font(int idx) {
 	gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 
-void draw_rect(int ulx, int uly, int drx, int dry, u32 color) {
-    gDPPipeSync(gdl_head++);
-    gDPSetRenderMode(gdl_head++, G_RM_NOOP, G_RM_NOOP2);
-    gDPSetCycleType(gdl_head++,G_CYC_FILL);
-    gDPSetFillColor(gdl_head++, color);
-    gDPFillRectangle(gdl_head++, ulx, uly, drx, dry);
-    gDPPipeSync(gdl_head++);
-    gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
-}
-
 // Original Mtx Pipeline
 // Distorts when rotating, but is faster
 void mtx_pipeline(uObjMtx *m, int x, int y) {
