@@ -1,7 +1,5 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
-#include "stack.h"
-// #include "fixedpoint.h"
 #include <PR/gu.h>
 
 #define ftoq FTOFIX32
@@ -75,14 +73,14 @@ void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag) {
 	m->m.Y += FTOFIX16(mag * sinf(degrees));
 }
 
-void get_final_mat(uObjMtx *dst) {
-	u32 s_temp_top = stack_top;
-	if (s_isempty()) return;
+// void get_final_mat(uObjMtx *dst) {
+// 	u32 s_temp_top = stack_top;
+// 	if (s_isempty()) return;
 
-	while (s_temp_top != 0) {
-		mat2_mul(dst, &stack[s_temp_top]);
-	}
-}
+// 	while (s_temp_top != 0) {
+// 		mat2_mul(dst, &stack[s_temp_top]);
+// 	}
+// }
 
 typedef float Mat4[4][4];
 void gu_to_gs2dex(uObjMtx *m1, Mat4 m2) {

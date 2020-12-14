@@ -77,11 +77,19 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 					draw_s2d_glyph(r, (x += ((8 * myScale))) + tx, y + ty, (buf++));
 		}
 		// myDegrees += saved_degrees;
+		p++;
 	} while (*p != '\0');
 	myScale = 1;
 	myDegrees = 0;
 	saved_degrees = 0;
 	tx = 0;
 	ty = 0;
+}
+
+void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int pos) {
+	char t = str[pos];
+	str[pos] = '\0';
+	s2d_print(x, y, str, buf);
+	str[pos] = t;
 }
 

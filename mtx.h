@@ -1,7 +1,7 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
 #include <PR/gu.h>
-#include "stack.h"
+// #include "stack.h"
 typedef float Mat4[4][4];
 
 extern void mat2_dst_mul(uObjMtx *dst, uObjMtx *m1, uObjMtx *m2);

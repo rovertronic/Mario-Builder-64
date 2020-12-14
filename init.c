@@ -1,3 +1,5 @@
+#include <ultra64.h>
+#include <PR/gs2dex.h>
 #include "init.h"
 
 void s2d_init(void) {
