@@ -86,10 +86,17 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	ty = 0;
 }
 
-void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int pos) {
-	char t = str[pos];
-	str[pos] = '\0';
-	s2d_print(x, y, str, buf);
-	str[pos] = t;
+void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
+	char *temp_str = str;
+	char t = temp_str[*pos];
+	switch(t) {
+		case CH_TRANSLATE:
+			CH_SKIP(temp_str);
+			s2d_atoi(temp_str, &temp_str);
+	}
+	temp_str[*pos] = '\0';
+	s2d_print(x, y, temp_str, buf);
+	temp_str[*pos] = t;
+	(*pos)++;
 }
 
