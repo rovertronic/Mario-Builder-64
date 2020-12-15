@@ -110,17 +110,62 @@ void s2d_print(int x, int y, char *str) {
 	ty = 0;
 }
 
-void s2d_type_print(int x, int y, char *str, int pos) {
-	char t = str[pos];
-	str[pos] = '\0';
-	s2d_print(x, y, str);
-	str[pos] = t;
+int s2d_ilen(char *s) {
+	int ret = 0;
+	char *p = s;
+	while (*p >= '0' && *p <= '9') {
+		ret++;
+		p++;
+	}
+	return ret;
+}
+void s2d_type_print(int x, int y, char *str, int *pos) {
+	char *temp_str = str;
+	char tmp = temp_str[*pos];
+	int len = strlen(str);
+	char current_transformation;
+	int cur_transform_index;
+	switch(tmp) {
+		case CH_SCALE:
+			current_transformation = CH_SCALE;
+			cur_transform_index = *pos;
+			// temp_str[*pos] = ' ';
+			printf("SCALE %c %d\n", str[*pos + 1], s2d_ilen(str + *pos + 1));
+			(*pos) += s2d_ilen(str + *pos+2) + 1;
+			break;
+		case CH_ROT:
+			(*pos) += 2;
+	}
+	// temp_str[*pos] = '\0';
+	// s2d_print(x, y, temp_str);
+	// // temp_str[cur_transform_index] = current_transformation;
+	// temp_str[*pos] = tmp;
+
+	// if (gGlobalTimer % 5 == 0) {
+		if (*pos < len)
+			(*pos)++;
+	// }
 }
 
 
+char sss[] = SCALE "2";
+                // SCALE "4"
+                // "big chungus";
+
+char myS[] = "small test"
+                SCALE "2"
+                "big test"
+                SCALE "0001"
+                "small chungus";
+
+int pos;
 int main(void) {
 	// printf("%d\n", s2d_atoi(s, &s));
 	// printf("%s\n", s);
-	s2d_print(0,0, t);
-	// printf("%d\n", s2d_atoi("3582932j"));
+	// s2d_print(0,0, t);
+	while (pos != strlen(myS)) {
+		s2d_type_print(0, 0, myS, &pos);
+		printf("%d %c\n", pos, myS[pos]);
+	}
+	// printf("%d\n", s2d_ilen(sss + 1));
 }

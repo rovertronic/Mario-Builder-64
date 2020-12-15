@@ -18,4 +18,7 @@ extern Gfx *gdl_head;
 // Other games: change this to the appropriate alloc function
 #define alloc alloc_display_list
 
+// The frame timer that is used to time s2d_type_print
+#define s2d_timer gGlobalTimer
+
 #endif
