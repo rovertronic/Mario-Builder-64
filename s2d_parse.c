@@ -80,15 +80,15 @@ void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
 			(*pos) += s2d_ilen(str + *pos + 2);
 			break;
 		case CH_ROT:
-			(*pos) += 2;
+			(*pos) += s2d_ilen(str + *pos + 2);
+			break;
 	}
 	temp_str[*pos] = '\0';
 	s2d_print(x, y, temp_str, buf);
 	temp_str[*pos] = tmp;
 
 	if (s2d_timer % 2 == 0) {
-		if (*pos < len)
-			(*pos)++;
+		if (*pos < len) (*pos)++;
 	}
 }
 
