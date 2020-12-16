@@ -7,7 +7,7 @@ int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 
-static Gfx s2d_init_dl[] = {
+Gfx s2d_text_init_dl[] = {
 	gsDPPipeSync(),
 	gsDPSetTexturePersp(G_TP_NONE),
 	gsDPSetTextureLOD(G_TL_TILE),
@@ -28,7 +28,7 @@ static Gfx s2d_init_dl[] = {
 void setup_font(int idx) {
 	gDPPipeSync(gdl_head++);
 	gDPSetTextureFilter(gdl_head++, G_TF_POINT);
-	gSPDisplayList(gdl_head++, s2d_init_dl);
+	gSPDisplayList(gdl_head++, s2d_text_init_dl);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
 	gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
 	gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
@@ -55,7 +55,7 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 
 // New matrix pipeline
 // Works with both rotation and scale,
-// but is slow due to more float operations being performed
+// but is (probably not noticeably) slower
 void mtx_pipeline2(uObjMtx *m, int x, int y) {
 	// init
 	Mat4 tmp, rot, scal, translate;

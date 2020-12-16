@@ -9,12 +9,6 @@
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
 
-int saved_degrees = 0;
-int s2d_colorFrames = 0;
-
-
-extern u32 gGlobalTimer;
-
 void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tx = 0, ty = 0;
@@ -22,25 +16,22 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	int orig_x = x;
 	int orig_y = y;
 
+	if (*p == '\0') return;
+
+	// resets colors
 	s2d_red = s2d_green = s2d_blue = 255;
 	s2d_alpha = 255;
-	if (*p == '\0') return;
 	do {
-		char r = *p;
-		int s, rd;
+		char current_char = *p;
 
-
-		switch (r) {
+		switch (current_char) {
 			case CH_SCALE:
 				CH_SKIP(p);
-				s = s2d_atoi(p, &p);
-				myScale = s;
+				myScale = s2d_atoi(p, &p);
 				break;
 			case CH_ROT:
 				CH_SKIP(p);
-				rd = s2d_atoi(p, &p);
-				saved_degrees = rd;
-				myDegrees = rd;
+				myDegrees = s2d_atoi(p, &p);
 				break;
 			case CH_TRANSLATE:
 				CH_SKIP(p);
@@ -50,7 +41,6 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				y = s2d_atoi(p, &p);
 				break;
 			case CH_COLOR:
-				s2d_colorFrames++;
 				CH_SKIP(p);
 				s2d_red = s2d_atoi(p, &p);
 				CH_SKIP(p);	CH_SKIP(p);
@@ -75,11 +65,11 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				y += TEX_HEIGHT;
 				break;
 			default:
-				if (r != '\0') {
+				if (current_char != '\0') {
 					if (myDegrees == 0)
-						draw_s2d_glyph(r, (x += (8 * myScale)) + tx, y + ty, (buf++));
+						draw_s2d_glyph(current_char, (x += (8 * myScale)) + tx, y + ty, (buf++));
 					else
-						draw_s2d_glyph(r, (x += ((8 * myScale))) + tx, y + ty, (buf++));
+						draw_s2d_glyph(current_char, (x += ((8 * myScale))) + tx, y + ty, (buf++));
 				}
 		}
 		if (*p == '\0') break;

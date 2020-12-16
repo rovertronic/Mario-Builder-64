@@ -25,6 +25,7 @@ extern Gfx *gdl_head;
 
 // The frame timer that is used to time s2d_type_print
 #define s2d_timer gGlobalTimer
+extern u32 s2d_timer;
 
 // The equivalent vsprintf in your game (defaults to libultra _Printf)
 #define vsprintf(dst, str, fmt, args) _Printf(proutSprintf, dst, fmt, args)
