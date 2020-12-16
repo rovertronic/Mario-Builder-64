@@ -102,7 +102,7 @@ void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
 void s2d_vsprint(int x, int y, uObjMtx *buf, char *str, ...) {
 	va_list args;
 	va_start(args, str);
-	sprintf()
+	vsprintf(str, )
 }
 
 
