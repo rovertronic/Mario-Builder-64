@@ -71,16 +71,23 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	ty = 0;
 }
 
+int ilen = 0;
 void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
 	char *temp_str = str;
 	char tmp = temp_str[*pos];
 	int len = s2d_strlen(str);
 	switch(tmp) {
 		case CH_SCALE:
-			(*pos) += s2d_ilen(str + *pos + 2);
+			ilen = s2d_ilen(str + *pos + 2);
+			if (ilen <= 1) {
+				(*pos) += ilen;
+			} else {
+				(*pos) += ilen + 1;
+			}
 			break;
 		case CH_ROT:
-			(*pos) += s2d_ilen(str + *pos + 2);
+			(*pos) += s2d_ilen(str + *pos);
+			
 			break;
 	}
 	temp_str[*pos] = '\0';
