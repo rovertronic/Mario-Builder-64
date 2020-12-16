@@ -75,11 +75,6 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				y += TEX_HEIGHT;
 				break;
 			default:
-				// if (s2d_colorFrames > 2) {
-				// 	s2d_colorFrames = 0;
-				// 	s2d_red = s2d_green = s2d_blue = 255;
-				// 	s2d_alpha = 255;
-				// }
 				if (r != '\0') {
 					if (myDegrees == 0)
 						draw_s2d_glyph(r, (x += (8 * myScale)) + tx, y + ty, (buf++));
@@ -87,14 +82,12 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 						draw_s2d_glyph(r, (x += ((8 * myScale))) + tx, y + ty, (buf++));
 				}
 		}
-		// myDegrees += saved_degrees;
 		if (*p == '\0') break;
 		p++;
 		tmp_len++;
 	} while (tmp_len < len);
 	myScale = 1;
 	myDegrees = 0;
-	// saved_degrees = 0;
 	tx = 0;
 	ty = 0;
 }
