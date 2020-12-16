@@ -15,7 +15,7 @@ int s2d_colorFrames = 0;
 
 extern u32 gGlobalTimer;
 
-void s2d_snprint(int x, int y, char *str, uObjMtx *buf, int len) {
+void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tx = 0, ty = 0;
 	int tmp_len = 0;
@@ -94,7 +94,7 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	s2d_snprint(x, y, str, buf, s2d_strlen(str));
 }
 
-void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
+void s2d_type_print(int x, int y, const char *str, uObjMtx *buf, int *pos) {
 	int len = s2d_strlen(str);
 
 	s2d_snprint(x, y, str, buf, *pos);
@@ -105,7 +105,7 @@ void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
 	}
 }
 
-void s2d_vsprint(int x, int y, uObjMtx *buf, char *str, ...) {
+void s2d_vsprint(int x, int y, uObjMtx *buf, const char *str, ...) {
 	va_list args;
 	va_start(args, str);
 	// vsprintf(str, )

@@ -17,7 +17,7 @@
 #define CH_GET_NEXT(x) (*(++x))
 #define CH_SKIP(x) {x++;}
 
-extern void s2d_snprint(int x, int y, char *str, uObjMtx *buf, int len);
+extern void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len);
 extern void s2d_print(int x, int y, const char *str, uObjMtx *buf);
-extern void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos);
-extern void s2d_vsprint(int x, int y, uObjMtx *buf, char *str, ...);
+extern void s2d_type_print(int x, int y, const char *str, uObjMtx *buf, int *pos);
+extern void s2d_vsprint(int x, int y, uObjMtx *buf, const char *str, ...);

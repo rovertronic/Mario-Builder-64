@@ -1,6 +1,8 @@
 #ifndef S2D_CONFIG_H
 #define S2D_CONFIG_H
 
+#define const
+
 // include your font header here
 #include "fonts/impact.h"
 
