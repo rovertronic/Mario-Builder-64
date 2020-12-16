@@ -107,16 +107,16 @@ void s2d_type_print(int x, int y, const char *str, uObjMtx *buf, int *pos) {
 	}
 }
 
-void s2d_vsprint(int x, int y, uObjMtx *buf, const char *str, ...) {
-	int last_chr;
-	va_list args;
-	char *dst = alloc(s2d_strlen(str) * 2);
-	va_start(args, str);
-	last_chr = vsprintf(dst, str, str, args);
-	if (last_chr >= 0) {
-		dst[last_chr] = '\0';
-	}
-	s2d_print(x, y, dst, buf);
-}
+// void s2d_vsprint(int x, int y, uObjMtx *buf, const char *str, ...) {
+// 	int last_chr;
+// 	va_list args;
+// 	char *dst = alloc(s2d_strlen(str) * 2);
+// 	va_start(args, str);
+// 	last_chr = vsprintf(dst, str, str, args);
+// 	if (last_chr >= 0) {
+// 		dst[last_chr] = '\0';
+// 	}
+// 	s2d_print(x, y, dst, buf);
+// }
 
 
