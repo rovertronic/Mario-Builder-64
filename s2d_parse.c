@@ -19,6 +19,8 @@ void s2d_snprint(int x, int y, char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tx = 0, ty = 0;
 	int tmp_len = 0;
+	int orig_x = x;
+	int orig_y = y;
 	// int r = 0, g = 0, b = 0, a = 0;
 	if (*p == '\0') return;
 	do {
@@ -58,6 +60,10 @@ void s2d_snprint(int x, int y, char *str, uObjMtx *buf, int len) {
 				CH_SKIP(p);	CH_SKIP(p);
 				
 				s2d_alpha = s2d_atoi(p, &p);
+				break;
+			case '\n':
+				x = orig_x;
+				y += TEX_HEIGHT;
 				break;
 			default:
 				// if (s2d_colorFrames > 2) {
@@ -102,7 +108,7 @@ void s2d_type_print(int x, int y, char *str, uObjMtx *buf, int *pos) {
 void s2d_vsprint(int x, int y, uObjMtx *buf, char *str, ...) {
 	va_list args;
 	va_start(args, str);
-	vsprintf(str, )
+	// vsprintf(str, )
 }
 
 

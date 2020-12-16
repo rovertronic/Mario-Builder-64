@@ -15,7 +15,10 @@
 #define gdl_head gDisplayListHead
 extern Gfx *gdl_head;
 
-// Other games: change this to the appropriate alloc function
+
+// Other games/Homebrew users: change these values
+
+// an allocator function of the format void *alloc(size_t bytes)
 #define alloc alloc_display_list
 
 // The frame timer that is used to time s2d_type_print
@@ -23,5 +26,11 @@ extern Gfx *gdl_head;
 
 // The equivalent vsprintf in your game (defaults to libultra _Printf)
 #define vsprintf _Printf
+
+
+// texture glyph width and height
+#define TEX_WIDTH 16
+#define TEX_HEIGHT 16
+
 
 #endif
