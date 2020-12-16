@@ -13,6 +13,9 @@
 // 	if (isNegative) ret *= -1;
 // 	return ret;
 // }
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define SCALE     "\x80" // SCALE (some scale)
 #define ROTATE    "\x81" // ROTATE (degrees) // TODO: maybe add axis?
 #define TRANSLATE "\x82" // TRANSLATE (x) (y)
@@ -119,6 +122,25 @@ int s2d_ilen(char *s) {
 	}
 	return ret;
 }
+
+int s2d_atoi2(char *s) {
+	int ret = 0;
+	int isNegative = (*s == '-');
+	if (isNegative) {
+		s++;
+	}
+	for (; *s != '\0' && *s != ' ' && *s >= '0' && *s <= '9'; s++) {
+		ret *= 10;
+		if (*s >= '0' && *s <= '9')
+			ret += *s - '0';
+		else break;
+		if (!(*(s+1) != '\0' && *(s+1) != ' ' && *(s+1) >= '0' && *(s+1) <= '9')) break;
+	}
+	// (*s2)--;
+	if (isNegative) ret *= -1;
+	return ret;
+}
+
 void s2d_type_print(int x, int y, char *str, int *pos) {
 	char *temp_str = str;
 	char tmp = temp_str[*pos];
@@ -134,7 +156,9 @@ void s2d_type_print(int x, int y, char *str, int *pos) {
 			(*pos) += s2d_ilen(str + *pos+2) + 1;
 			break;
 		case CH_ROT:
-			(*pos) += 2;
+			printf("ROTATE %s %d\n", str + *pos + 1, s2d_ilen(str + *pos + 1));
+			(*pos) += s2d_ilen(str + *pos + 2);
+			break;
 	}
 	// temp_str[*pos] = '\0';
 	// s2d_print(x, y, temp_str);
@@ -145,6 +169,7 @@ void s2d_type_print(int x, int y, char *str, int *pos) {
 		if (*pos < len)
 			(*pos)++;
 	// }
+	printf("%d %c\n", *pos, str[*pos]);
 }
 
 
@@ -153,10 +178,10 @@ char sss[] = SCALE "2";
                 // "big chungus";
 
 char myS[] = "small test"
-                SCALE "2"
+                ROTATE "2"
                 "big test"
-                SCALE "0001"
-                "small chungus";
+                ROTATE "26"
+                "italic chungus";
 
 int pos;
 int main(void) {
@@ -165,7 +190,6 @@ int main(void) {
 	// s2d_print(0,0, t);
 	while (pos != strlen(myS)) {
 		s2d_type_print(0, 0, myS, &pos);
-		printf("%d %c\n", pos, myS[pos]);
 	}
 	// printf("%d\n", s2d_ilen(sss + 1));
 }

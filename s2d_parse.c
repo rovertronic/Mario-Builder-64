@@ -66,7 +66,7 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	} while (*p != '\0');
 	myScale = 1;
 	myDegrees = 0;
-	saved_degrees = 0;
+	// saved_degrees = 0;
 	tx = 0;
 	ty = 0;
 }
