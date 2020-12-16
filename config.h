@@ -27,7 +27,8 @@ extern Gfx *gdl_head;
 #define s2d_timer gGlobalTimer
 
 // The equivalent vsprintf in your game (defaults to libultra _Printf)
-#define vsprintf _Printf
+#define vsprintf(dst, str, fmt, args) _Printf(proutSprintf, dst, fmt, args)
+extern char *proutSprintf(char *dst, const char *src, size_t count);
 
 
 // texture glyph width and height
