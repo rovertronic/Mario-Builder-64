@@ -183,13 +183,22 @@ char myS[] = "small test"
                 ROTATE "26"
                 "italic chungus";
 
-int pos;
+char my2[] = "small test"
+                ROTATE "2"
+                "big test"
+                ROTATE "0000046"
+                "big italic chungus"
+                ROTATE "124335";
+
+int pos = 0;
 int main(void) {
 	// printf("%d\n", s2d_atoi(s, &s));
 	// printf("%s\n", s);
 	// s2d_print(0,0, t);
-	while (pos != strlen(myS)) {
-		s2d_type_print(0, 0, myS, &pos);
+	while (pos != strlen(my2)) {
+		// s2d_type_print(0, 0, myS, &pos);
+		printf("%d %s\n",s2d_ilen(my2 + pos), my2 + pos);
+		pos++;
 	}
 	// printf("%d\n", s2d_ilen(sss + 1));
 }
