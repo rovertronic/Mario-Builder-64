@@ -33,6 +33,7 @@ extern Gfx *gdl_head;
 // texture glyph width and height
 #define TEX_WIDTH 16
 #define TEX_HEIGHT 16
-
+#define TAB_WIDTH_H TEX_WIDTH * 2
+#define TAB_WIDTH_V TEX_WIDTH / 2
 
 #endif

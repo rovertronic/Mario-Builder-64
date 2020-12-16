@@ -21,7 +21,9 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	int tmp_len = 0;
 	int orig_x = x;
 	int orig_y = y;
-	// int r = 0, g = 0, b = 0, a = 0;
+
+	s2d_red = s2d_green = s2d_blue = 255;
+	s2d_alpha = 255;
 	if (*p == '\0') return;
 	do {
 		char r = *p;
@@ -63,6 +65,13 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				break;
 			case '\n':
 				x = orig_x;
+				y += TEX_HEIGHT;
+				break;
+			case '\t':
+				x += TAB_WIDTH_H;
+				break;
+			case '\v':
+				x += TAB_WIDTH_V;
 				y += TEX_HEIGHT;
 				break;
 			default:
