@@ -3,6 +3,7 @@
 extern uObjTxtr impact_tex[];
 extern uObjMtx impact_mtx;
 extern uObjSprite impact_obj;
+extern uObjSprite impact_obj_dropshadow;
 extern void call_impact_sprite_dl(int idx, int x, int y, uObjMtx *buffer, int buf_idx);
 extern u8 impact_tex_0[];
 extern u8 impact_tex_1[];

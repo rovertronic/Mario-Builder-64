@@ -18,9 +18,10 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 
 	if (*p == '\0') return;
 
-	// resets colors
+	// resets parameters
 	s2d_red = s2d_green = s2d_blue = 255;
 	s2d_alpha = 255;
+	drop_shadow = FALSE;
 	do {
 		char current_char = *p;
 
@@ -52,6 +53,10 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				CH_SKIP(p);	CH_SKIP(p);
 				
 				s2d_alpha = s2d_atoi(p, &p);
+				break;
+			case CH_DROPSHADOW:
+				drop_shadow ^= 1;
+				// CH_SKIP(p);
 				break;
 			case '\n':
 				x = orig_x;

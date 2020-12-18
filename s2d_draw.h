@@ -4,6 +4,7 @@
 
 extern int myScale;
 extern int myDegrees;
+extern int drop_shadow;
 extern uObjMtx final_mtx, rot_mtx;
 
 extern int s2d_red, s2d_green, s2d_blue, s2d_alpha;
