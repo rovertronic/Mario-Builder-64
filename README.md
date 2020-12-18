@@ -12,7 +12,7 @@
 #include "s2d_engine/s2d_draw.h"
 #include "s2d_engine/s2d_print.h"
 
-char myString = "This is a " SCALE "2" "test string!\n"
+char myString[] = "This is a " SCALE "2" "test string!\n"
                 "Supports a bunch of standard " ROTATE "-36" "escape characters!\n"
                 "\tIncluding " COLOR "255 0 0 0" "Colorful text!";
 
