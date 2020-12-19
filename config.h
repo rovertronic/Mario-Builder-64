@@ -32,10 +32,15 @@ extern u32 s2d_timer;
 extern char *proutSprintf(char *dst, const char *src, size_t count);
 
 
-// texture glyph width and height
-#define TEX_WIDTH 16
-#define TEX_HEIGHT 16
+// tab glyph width and height
 #define TAB_WIDTH_H TEX_WIDTH * 2
 #define TAB_WIDTH_V TEX_WIDTH / 2
+
+// Set these to optimize s2d texture "cache"
+#define TEX_WIDTH 16
+#define TEX_HEIGHT 16
+#define TEX_BITDEPTH 8
+
+#define _NUM_CACHE (4096 / (TEX_WIDTH * TEX_HEIGHT * (TEX_BITDEPTH / 8)))
 
 #endif
