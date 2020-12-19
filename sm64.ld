@@ -85,6 +85,9 @@ SECTIONS
    BEGIN_NOLOAD(buffers)
    {
       BUILD_DIR/src/buffers/buffers.o(.bss*);
+      BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
+      BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
+      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
       BUILD_DIR/src/audio/globals_start.o(.bss*);
       BUILD_DIR/src/audio/synthesis.o(.bss*);
       BUILD_DIR/src/audio/heap.o(.bss*);
@@ -116,6 +119,7 @@ SECTIONS
       BUILD_DIR/asm/entry.o(.text);
 
       BUILD_DIR/src/game*.o(.text);
+      BUILD_DIR/src/hvqm*.o(.text);
 #ifdef UNF
       BUILD_DIR/src/usb*.o(.text);
 #endif
@@ -164,6 +168,7 @@ SECTIONS
    {
       BUILD_DIR/src/game*.o(.bss*);
       BUILD_DIR/src/game*.o(.sbss*);
+      BUILD_DIR/src/hvqm*.o(.bss*);
       BUILD_DIR/src/usb*.o(.bss*);
       BUILD_DIR/src/usb*.o(.sbss*);
       BUILD_DIR/src/audio*.o(.bss*);

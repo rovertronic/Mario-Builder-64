@@ -927,7 +927,7 @@ f32 D_EU_802298D0;
 s32 gRefreshRate;
 #endif
 
-s16 *gAiBuffers[NUMAIBUFFERS];
+ALIGNED8 s16 *gAiBuffers[NUMAIBUFFERS];
 s16 gAiBufferLengths[NUMAIBUFFERS];
 
 #if defined(VERSION_JP) || defined(VERSION_US)

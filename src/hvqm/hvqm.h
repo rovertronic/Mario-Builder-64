@@ -30,24 +30,9 @@
 
 #define	APP_GFX_UCODE_HVQ	6		/* HVQ2 microcode */
 
-#define  AUDIO_DMA_MSG_SIZE  1
-
-
 #define CFB_FREE     0		/* Available */
 #define CFB_PRECIOUS (1<<0)	/* Constrained for decoding of next frame */
 #define CFB_SHOWING  (1<<1)	/* Waiting to display or displaying */
-
-
-typedef u32 (*tkAudioProc)(void *pcmbuf);
-typedef tkAudioProc (*tkRewindProc)(void);
-
-void createTimekeeper();
-void tkStart(tkRewindProc rewind, u32 samples_per_sec);
-void tkPushVideoframe(void *vaddr, u32 *statP, u64 disptime);
-u64 tkGetTime(void);
-void tkStop(void);
-void createHvqmThread(void);
-
 
 
 #define NUM_CFBs	3
@@ -73,6 +58,12 @@ void createHvqmThread(void);
 #define  PCMBUF_SIZE     0xA00
 
 /*
+ * Macro for loading multi-byte data from buffer holding data from stream 
+ */
+#define load32(from) (*(u32*)&(from))
+#define load16(from) (*(u16*)&(from))
+
+/*
  * Thread ID and priority
  */
 #define IDLE_THREAD_ID         1
@@ -88,6 +79,37 @@ void createHvqmThread(void);
 #define DA_COUNTER_PRIORITY   13
 
 #define PI_COMMAND_QUEUE_SIZE	4
+
+typedef u32 (*tkAudioProc)(void *pcmbuf);
+typedef tkAudioProc (*tkRewindProc)(void);
+
+void createTimekeeper();
+void tkStart(tkRewindProc rewind, u32 samples_per_sec);
+void tkPushVideoframe(void *vaddr, u32 *statP, u64 disptime);
+u64 tkGetTime(void);
+void tkStop(void);
+void createHvqmThread(void);
+
+/*
+ * in system.c
+ */
+void romcpy(void *dest, void *src, u32 len, s32 pri, OSIoMesg *mb, OSMesgQueue *mq);
+
+/*
+ * in getrecord.c
+ */
+u8 *get_record(HVQM2Record *headerbuf, void *bodybuf, u16 type, u8 *stream, OSIoMesg *mb, OSMesgQueue *mq);
+
+/*
+ * in cfbkeep.c
+ */
+extern u32 cfb_status[NUM_CFBs];
+
+void init_cfb(void);
+void keep_cfb(int cfbno);
+void release_cfb(int cfbno);
+void release_all_cfb(void);
+int get_cfb();
 
 typedef u32 (*tkAudioProc)(void *pcmbuf);
 typedef tkAudioProc (*tkRewindProc)(void);

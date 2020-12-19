@@ -6,6 +6,7 @@
 #include <adpcmdec.h>
 #include "hvqm.h"
 
+#define AUDIO_DMA_MSG_SIZE 1
 static OSIoMesg     audioDmaMesgBlock;
 static OSMesgQueue  audioDmaMessageQ;
 static OSMesg       audioDmaMessages[AUDIO_DMA_MSG_SIZE];
@@ -56,77 +57,6 @@ static ADPCMstate adpcm_state;	/* Buffer for state information passed to the ADP
 
 extern u8 _capcomSegmentRomStart[];
 extern u8 _seinSegmentRomStart[];
-
-u32 cfb_status[NUM_CFBs];
-
-// Clears all frame buffers and initializes state of frame buffer
-void init_cfb(void) {
-  int i, j;
-
-  for ( i = 0; i < NUM_CFBs; i++ ) {
-    for ( j = 0; j < SCREEN_WD*SCREEN_HT; j++ ) gFrameBuffers[i][j] = 0;
-    cfb_status[i] = CFB_FREE;
-  }
-}
-
-// Frame buffer indicated by the index cfbno is protected by being made unavailable.
-void keep_cfb( int cfbno ) {
-  cfb_status[cfbno] |= CFB_PRECIOUS;
-}
-
-//Frame buffer indicated by the index cfbno is released from protection.
-void release_cfb( int bufno ) {
-  if ( bufno >= 0 ) cfb_status[bufno] &= ~CFB_PRECIOUS;
-}
-
-// All frame buffers are released from protection.
-void release_all_cfb(void) {
-  int i;
-  for ( i = 0; i < NUM_CFBs; i++ ) cfb_status[i] &= ~CFB_PRECIOUS;
-}
-
-// Search for available frame buffer and return that index.
-// Thread yields until an available frame buffer is found.
-int get_cfb() {
-  int cfbno;
-
-  for ( ; ; ) {
-    for ( cfbno = 0; cfbno < NUM_CFBs; cfbno++ )
-      if ( cfb_status[cfbno] == CFB_FREE )
-        return cfbno;
-    osYieldThread();
-  }
-}
-
-void romcpy(void *dest, void *src, u32 len, s32 pri, OSIoMesg *mb, OSMesgQueue *mq) {
-  osInvalDCache(dest, (s32)len);
-  while (osPiStartDma(mb, pri, OS_READ, (u32)src, dest, len, mq) == -1) {}
-  osRecvMesg(mq, (OSMesg *)NULL, OS_MESG_BLOCK);
-}
-
-u8 *get_record(HVQM2Record *headerbuf, void *bodybuf, u16 type, u8 *stream, OSIoMesg *mb, OSMesgQueue *mq) {
-    u16 record_type;
-    u32 record_size;
-    s32 pri, i;
-
-    pri = (type == HVQM2_AUDIO) ? OS_MESG_PRI_HIGH : OS_MESG_PRI_NORMAL;
-
-    while (1) {
-        romcpy(headerbuf, stream, sizeof(HVQM2Record), pri, mb, mq);
-        stream += sizeof(HVQM2Record);
-        record_type = load16(headerbuf->type);
-        record_size = load32(headerbuf->size);
-        if (record_type == type) break;
-        stream += record_size;
-    } 
-
-    if (record_size > 0) {
-        romcpy(bodybuf, stream, record_size, pri, mb, mq);
-        stream += record_size;
-    }
-    
-    return stream;
-}
 
 static u32 next_audio_record( void *pcmbuf ) {
   ALIGNED16 u8 header_buffer[sizeof(HVQM2Record)+16];

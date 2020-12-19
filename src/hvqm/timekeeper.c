@@ -1,41 +1,8 @@
 #include <ultra64.h>
+#include <HVQM2File.h>
 #include "hvqm.h"
 #include "audio/data.h"
 #include "buffers/framebuffers.h"
-
-#define NUM_CFBs	3
-#define STACKSIZE  0x2000
-#define  PCM_CHANNELS        2	/* Number of channels */
-#define  PCM_CHANNELS_SHIFT  1	/* log2(PCM_CHANNELS) */
-#define  PCM_ALIGN           2	/* Alignment of number of samples to send */
-#define  PCM_BYTES_PER_SAMPLE  (2 * PCM_CHANNELS) /* Number of bytes in one sample */
-#define  PCM_BYTES_PER_SAMPLE_SHIFT  2	/* log2(PCM_BYTES_PER_SAMPLE) */
-
-/*
- * Audio record definitions
- */
-#define  AUDIO_SAMPLE_BITS	4
-#define  AUDIO_SAMPLES_MAX	(((AUDIO_RECORD_SIZE_MAX-sizeof(HVQM2Audio))*8/AUDIO_SAMPLE_BITS)+1) /* Maximum number of records per sample */
-
-/*
- * Thread ID and priority
- */
-#define IDLE_THREAD_ID         1
-#define MAIN_THREAD_ID         3
-#define HVQM_THREAD_ID         7
-#define TIMEKEEPER_THREAD_ID   8
-#define DA_COUNTER_THREAD_ID   9
-
-#define IDLE_PRIORITY         10
-#define MAIN_PRIORITY         10
-#define HVQM_PRIORITY         11
-#define TIMEKEEPER_PRIORITY   12
-#define DA_COUNTER_PRIORITY   13
-
-#define PI_COMMAND_QUEUE_SIZE	4
-
-typedef u32 (*tkAudioProc)(void *pcmbuf);
-typedef tkAudioProc (*tkRewindProc)(void);
 
 /***********************************************************************
  * Timekeeper thread
@@ -158,14 +125,22 @@ static u64  samples_played;
  ***********************************************************************/
 static OSTime  last_time;
 
-#define    OS_CLOCK_RATE        62500000LL
-#define    OS_CPU_COUNTER        (OS_CLOCK_RATE*3/4)
-#define OS_NSEC_TO_CYCLES(n)    (((u64)(n)*(OS_CPU_COUNTER/15625000LL))/(1000000000LL/15625000LL))
-#define OS_USEC_TO_CYCLES(n)    (((u64)(n)*(OS_CPU_COUNTER/15625LL))/(1000000LL/15625LL))
-#define OS_CYCLES_TO_NSEC(c)    (((u64)(c)*(1000000000LL/15625000LL))/(OS_CPU_COUNTER/15625000LL))
-#define OS_CYCLES_TO_USEC(c)    (((u64)(c)*(1000000LL/15625LL))/(OS_CPU_COUNTER/15625LL))
-
-u64 tkGetTime(void) {
+/***********************************************************************
+ *
+ * u64 tkGetTime(void)
+ *
+ * Explanation
+ *     The time that has passed since the start of HVQM2 movie playback
+ *   is calculated back from the number of samples that have finished
+ *   playing (samples_played) and the sampling rate (samples_per_sec).
+ *     The time after samples_played was first updated is supplemented 
+ *   with osGetTime().
+ *
+ * Returned value
+ *     The time that has passed since playback of the HVQM2 movie started
+ *
+ ***********************************************************************/
+u64 tkGetTime(void){
     u64 retval;
 
     if (!clock_alive) return 0;
@@ -175,28 +150,62 @@ u64 tkGetTime(void) {
     return retval;
 }
 
-static void tkClockDisable(void) {
-    clock_alive = 0;
+/***********************************************************************
+ *
+ * void tkClockDisable(void)
+ *
+ * Explanation
+ *     Disable measurement of time from start of HVQM2 movie playback
+ *
+ ***********************************************************************/
+static void tkClockDisable(void)
+{
+  clock_alive = 0;
 }
 
-static void tkClockStart(void) {
-    samples_played = 0;
+/***********************************************************************
+ *
+ * void tkClockStart(void)
+ *
+ * Explanation
+ *     Start measurement of time from start of HVQM2 movie playback
+ *
+ ***********************************************************************/
+static void tkClockStart(void)
+{
+  samples_played = 0;
+  last_time = osGetTime();
+  clock_alive = 1;
+}
+
+/***********************************************************************
+ *
+ * daCounterProc - Audio DA counter thread procedure
+ *
+ *    Counts the number of audio samples that have finished playing.
+ *
+ ***********************************************************************/
+static void   daCounterProc(void UNUSED*argument)
+{
+  for ( ; ; ) {
+    osRecvMesg( &aiMessageQ, NULL, OS_MESG_BLOCK );
     last_time = osGetTime();
-    clock_alive = 1;
+    if ( aiDAsamples > 0 ) --pcmBufferCount;
+    samples_played += aiDAsamples;
+    aiDAsamples = aiFIFOsamples;
+    aiFIFOsamples = 0;
+  }
 }
 
-static void daCounterProc(void *argument) {
-    while (1) {
-        osRecvMesg( &aiMessageQ, NULL, OS_MESG_BLOCK );
-        last_time = osGetTime();
-        if (aiDAsamples > 0) --pcmBufferCount;
-        samples_played += aiDAsamples;
-        aiDAsamples = aiFIFOsamples;
-        aiFIFOsamples = 0;
-    }
-}
-
-static void timekeeperProc(void *argument) {
+/***********************************************************************
+ *
+ * timekeeperProc - Timekeeper thread procedure
+ *
+ *     Plays the HVQM2 movie's audio records and takes charge of
+ *   completed frame buffers, displaying them at the scheduled times.
+ *
+ ***********************************************************************/
+static void timekeeperProc(void UNUSED*argument) {
     TKCMD *cmd;
     void *showing_cfb = NULL;	/* Frame buffer being displayed */
     u32 *showing_cfb_statP = NULL; /* Pointer to state flag of the frame buffer being displayed */
@@ -211,6 +220,7 @@ static void timekeeperProc(void *argument) {
     tkAudioProc audioproc;
     OSTime present_vtime;
     
+    /* Acquire retrace event */
     osCreateMesgQueue( &viMessageQ, viMessages, VI_MSG_SIZE );
     osViSetEvent( &viMessageQ, 0, 1 );
 
@@ -228,9 +238,12 @@ static void timekeeperProc(void *argument) {
     
     osRecvMesg(&tkCmdMesgQ, (OSMesg *)&cmd, OS_MESG_BLOCK);
 
-    while (cmd == NULL) {
-        osSendMesg(&tkResMesgQ, NULL, OS_MESG_BLOCK);
-        osRecvMesg(&tkCmdMesgQ, (OSMesg *)&cmd, OS_MESG_BLOCK);
+    /*
+     * Wait for movie playback command
+     */
+    while ( cmd == NULL ) {
+      osSendMesg( &tkResMesgQ, NULL, OS_MESG_BLOCK );
+      osRecvMesg( &tkCmdMesgQ, (OSMesg *)&cmd, OS_MESG_BLOCK );
     }
     
     tkClockDisable();
@@ -259,7 +272,7 @@ static void timekeeperProc(void *argument) {
     next_pcmbufno = 0;
     pcm_mod_samples = 0;
 
-    osSendMesg(&tkResMesgQ, NULL, OS_MESG_BLOCK);
+    osSendMesg( &tkResMesgQ, NULL, OS_MESG_BLOCK ); /* Notification that playback preparations are finished */
 
     present_vtime = osGetTime();
     
@@ -267,7 +280,9 @@ static void timekeeperProc(void *argument) {
 	    !audio_done || audioRingCount > 0 || aiFIFOsamples > 0) {
         u64 present_time;
         OSTime last_vtime;
-
+        /*
+        * Block until retrace comes
+        */
         osRecvMesg(&viMessageQ, NULL, OS_MESG_BLOCK);
 
         last_vtime = present_vtime;
@@ -297,89 +312,118 @@ static void timekeeperProc(void *argument) {
             pushed_cfb_statP = NULL;
         }
         
-        if ( video_started || audioRingCount > 0 || audio_done ) {
-          while ( videoRingCount ) {
-            void *next_cfb;
-            if ( videoRing[videoRingRead].disptime > present_time ) break;
-            if ( pushed_cfb_statP != NULL ) *pushed_cfb_statP &= ~CFB_SHOWING;
-            pushed_cfb = videoRing[videoRingRead].vaddr;
-            pushed_cfb_statP = videoRing[videoRingRead].statP;
-            *pushed_cfb_statP |= CFB_SHOWING;
-            osViSwapBuffer( pushed_cfb );
-            if ( ++videoRingRead == VIDEO_RING_SIZE ) videoRingRead = 0;
-            --videoRingCount;
-          }
+	/*
+	 * Push the next frame buffer to the VI
+	 *
+	 *     Before the start of video display (video_started == 0), 
+	 *   wait until audio data is prepared for playback
+         *   (audioRingCount > 0).
+	 */
+	if ( video_started || audioRingCount > 0 || audio_done ) {
+	  while ( videoRingCount ) {
+	    if ( videoRing[videoRingRead].disptime > present_time ) break;
+	    if ( pushed_cfb_statP != NULL ) *pushed_cfb_statP &= ~CFB_SHOWING;
+	    pushed_cfb = videoRing[videoRingRead].vaddr;
+	    pushed_cfb_statP = videoRing[videoRingRead].statP;
+	    *pushed_cfb_statP |= CFB_SHOWING;
+	    osViSwapBuffer( pushed_cfb );
+	    if ( ++videoRingRead == VIDEO_RING_SIZE ) videoRingRead = 0;
+	    --videoRingCount;
+	  }
+	}
+        
+	/*
+	 * Push the next PCM data to the AI
+	 *
+	 *      Before the start of video display (video_started == 0) 
+	 *    wait until the display of the first image frame 
+         *    has begun (video_started == 1).
+	 */
+	if ( video_started ) {
+	  osSetThreadPri( NULL, (OSPri)(DA_COUNTER_PRIORITY + 1) );
+	  while ( audioRingCount > 0 && aiFIFOsamples == 0 ) {
+	    void *buffer = audioRing[audioRingRead].buf;
+	    u32   length = audioRing[audioRingRead].len;
+	    if ( osAiGetStatus() & AI_STATUS_FIFO_FULL ) break;
+	    if ( osAiSetNextBuffer( buffer, length ) == -1 ) break;
+	    aiFIFOsamples = length >> PCM_BYTES_PER_SAMPLE_SHIFT;
+	    if ( ! audio_started ) {
+	      /*
+	       * Audio playback has begun.
+	       * Here the time count starts to synchronize audio and video
+	       */
+	      audio_started = 1;
+	      tkClockStart();
 	    }
-        
-        if ( video_started ) {
-          osSetThreadPri( NULL, (OSPri)(DA_COUNTER_PRIORITY + 1) );
-          while ( audioRingCount > 0 && aiFIFOsamples == 0 ) {
-            void *buffer = audioRing[audioRingRead].buf;
-            u32   length = audioRing[audioRingRead].len;
-            //!if ( osAiGetStatus() & AI_STATUS_AI_FULL ) break;
-            if ( osAiSetNextBuffer( buffer, length ) == -1 ) break;
-            aiFIFOsamples = length >> PCM_BYTES_PER_SAMPLE_SHIFT;
-            if ( ! audio_started ) {
-              /*
-               * Audio playback has begun.
-               * Here the time count starts to synchronize audio and video
-               */
-              audio_started = 1;
-              tkClockStart();
-            }
-            if ( ++audioRingRead == AUDIO_RING_BUFFER_SIZE ) audioRingRead = 0;
-            --audioRingCount;
-          }
-          osSetThreadPri( NULL, (OSPri)TIMEKEEPER_PRIORITY );
-        }
-        
-        if ( ! audio_done && audioRingCount < AUDIO_RING_BUFFER_SIZE && pcmBufferCount < NUM_PCMBUFs ) {
-          u32 samples;
-          u32 length;
-          void *buffer;
-          s16 *sp, *dp;
-          int i;
+	    if ( ++audioRingRead == AUDIO_RING_BUFFER_SIZE ) audioRingRead = 0;
+	    --audioRingCount;
+	  }
+	  osSetThreadPri( NULL, (OSPri)TIMEKEEPER_PRIORITY );
+	}
+	/*
+	 * Prepare the next PCM data
+	 */
+	if ( ! audio_done && audioRingCount < AUDIO_RING_BUFFER_SIZE && pcmBufferCount < NUM_PCMBUFs ) {
+	  u32 samples;
+	  u32 length;
+	  void *buffer;
+	  s16 *sp, *dp;
+	  int i;
 
-          samples = audioproc( &gAiBuffers[next_pcmbufno][pcm_mod_samples<<PCM_CHANNELS_SHIFT] );
+	  samples = audioproc( &gAiBuffers[next_pcmbufno][pcm_mod_samples<<PCM_CHANNELS_SHIFT] );
 
-          if ( samples > 0 ) {
-            ++pcmBufferCount;
+	  if ( samples > 0 ) {
+	    ++pcmBufferCount;
 
-            sp = pcmModBuf;
-            dp = (s16 *)((u8 *)gAiBuffers[next_pcmbufno]);
-            i = pcm_mod_samples << PCM_CHANNELS_SHIFT;
-            while ( i-- ) *dp++ = *sp++;
-            samples += pcm_mod_samples;
-            samples -= (pcm_mod_samples = samples & (PCM_ALIGN-1));
-            length = samples << PCM_BYTES_PER_SAMPLE_SHIFT;
-            buffer = gAiBuffers[next_pcmbufno];
-            osWritebackDCache( buffer, length );
-            audioRing[audioRingWrite].buf = buffer;
-            audioRing[audioRingWrite].len = length;
-            if ( ++audioRingWrite == AUDIO_RING_BUFFER_SIZE ) audioRingWrite = 0;
-            ++audioRingCount;
+	    sp = pcmModBuf;
+	    dp = (s16 *)((u8 *)gAiBuffers[next_pcmbufno]);
+	    i = pcm_mod_samples << PCM_CHANNELS_SHIFT;
+	    while ( i-- ) *dp++ = *sp++;
+	    samples += pcm_mod_samples;
+	    samples -= (pcm_mod_samples = samples & (PCM_ALIGN-1));
+	    length = samples << PCM_BYTES_PER_SAMPLE_SHIFT;
+	    buffer = gAiBuffers[next_pcmbufno];
+	    osWritebackDCache( buffer, length );
+	    audioRing[audioRingWrite].buf = buffer;
+	    audioRing[audioRingWrite].len = length;
+	    if ( ++audioRingWrite == AUDIO_RING_BUFFER_SIZE ) audioRingWrite = 0;
+	    ++audioRingCount;
 
-            sp = (s16 *)((u8 *)(gAiBuffers[next_pcmbufno]) + length);
-            dp = pcmModBuf;
-            i = pcm_mod_samples << PCM_CHANNELS_SHIFT;
-            while ( i-- ) *dp++ = *sp++;
+	    sp = (s16 *)((u8 *)(gAiBuffers[next_pcmbufno]) + length);
+	    dp = pcmModBuf;
+	    i = pcm_mod_samples << PCM_CHANNELS_SHIFT;
+	    while ( i-- ) *dp++ = *sp++;
 
-            if ( ++next_pcmbufno >= NUM_PCMBUFs ) next_pcmbufno = 0;
-          }
-          else audio_done = 1;
-        }
+	    if ( ++next_pcmbufno >= NUM_PCMBUFs ) next_pcmbufno = 0;
+	  }
+	  else audio_done = 1;
+	}
         
-        //! Push audio
-        
-        //! Prepare audio
-        
-        if (osRecvMesg(&tkCmdMesgQ, (OSMesg *)&cmd, OS_MESG_NOBLOCK) == 0) {
-            video_done = 1;
-	    }
+	if ( osRecvMesg( &tkCmdMesgQ, (OSMesg *)&cmd, OS_MESG_NOBLOCK ) == 0 )
+	  {
+	    /*
+	     * tkStop() or tkStart() has been executed
+	     * 
+	     *     Set 1 in video_done and end this playback loop
+             *   after playback of the current movie's video and 
+	     *   and audio has completely finished.
+	     */
+	    video_done = 1;
+	  }
     }
 }
 
-void createTimekeeper(void) {
+/***********************************************************************
+ *
+ * void createTimekeeper(void)
+ *
+ * Explanation
+ *     Creates and starts the timekeeper thread
+ *
+ ***********************************************************************/
+void
+createTimekeeper(void)
+{
   osCreateMesgQueue( &tkCmdMesgQ, &tkCmdMesgBuf, 1 );
   osCreateMesgQueue( &tkResMesgQ, &tkResMesgBuf, 1 );
   osCreateThread( &tkThread, TIMEKEEPER_THREAD_ID, timekeeperProc, 
@@ -388,7 +432,27 @@ void createTimekeeper(void) {
   osStartThread( &tkThread );
 }
 
-void tkStart( tkRewindProc rewind, u32 samples_per_sec ) {
+/***********************************************************************
+ *
+ * void tkStart(tkRewindProc rewind, u32 samples_per_sec)
+ *
+ * Argument
+ *     rewind    Pointer to movie rewind callback function
+ *
+ * Explanation
+ *    Directs the timekeeper to play a new movie.  Playback of the
+ *  movie starts after callback of "rewind" by the timekeeper.  After
+ *  this, the HVQM2 video records are read and decoded and the
+ *  completed frame buffers are handed over to the timekeeper by 
+ *  tkPushVideoframe() in succession to play the video part of the movie.
+ *  As for the audio, the timekeeper itself calls the callback 
+ *  function (the value returned by rewind) that gets the PCM data as
+ *  needed to playback the audio.
+ *
+ ***********************************************************************/
+void
+tkStart( tkRewindProc rewind, u32 samples_per_sec )
+{
   TKCMD tkcmd;
   tkcmd.samples_per_sec = samples_per_sec;
   tkcmd.rewind = rewind;
@@ -396,12 +460,53 @@ void tkStart( tkRewindProc rewind, u32 samples_per_sec ) {
   osRecvMesg( &tkResMesgQ, (OSMesg *)NULL, OS_MESG_BLOCK );
 }
 
-void tkStop( void ) {
+/***********************************************************************
+ *
+ * void tkStop(void)
+ *
+ * Explanation
+ *    Stops the timekeeper.  However, the timekeeper continues to
+ *  run until playback of the audio of the playing movie is complete.
+ *  To stop the stream in mid-stream, make 0 the value returned by
+ *  the callback function that reads audio and is called from the
+ *  timekeeper, and then execute tkStop().
+ *
+ *    To immediately start the playback of a new movie, it is OK to
+ *  to execute tkStart() without executing tkStop().
+ *
+ ***********************************************************************/
+void
+tkStop( void )
+{
   osSendMesg( &tkCmdMesgQ, (OSMesg *)NULL, OS_MESG_BLOCK );
   osRecvMesg( &tkResMesgQ, (OSMesg *)NULL, OS_MESG_BLOCK );
 }
 
-void tkPushVideoframe( void *vaddr, u32 *statP, u64 disptime ) {
+/***********************************************************************
+ *
+ * void tkPushVideoframe(void *vaddr, u32 *statP, u64 disptime)
+ * 
+ * Argument
+ *     vaddr     Frame buffer address
+ *     statP     Pointer to state flag data regarding vaddr
+ *     disptime  Display time
+ *
+ * Explanation
+ *    Entrusts the completed frame buffer vaddr to the timekeeper.
+ *  The timekeeper displays the frame buffer after waiting for the
+ *  "disptime" amount of time to pass from the start of the movie.
+ *
+ *    To wait for the display of the vaddr frame buffer or to 
+ *  indicate that something is being displayed, the CFB_SHOWING 
+ *  flag is set in the u32 type data pointed to by the statP pointer.
+ *  At the time when display of vaddr is finished, (once its display
+ *  is over and display has switched to another frame buffer) this
+ *  flag is cleared by the timekeeper.
+ *
+ ***********************************************************************/
+void
+tkPushVideoframe( void *vaddr, u32 *statP, u64 disptime )
+{
   *statP |= CFB_SHOWING;
   while ( videoRingCount >= VIDEO_RING_SIZE ) osYieldThread();
   videoRing[videoRingWrite].disptime = disptime;
