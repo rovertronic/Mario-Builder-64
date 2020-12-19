@@ -26,14 +26,17 @@ Gfx s2d_text_init_dl[] = {
     gsSPEndDisplayList(),
 };
 
-void setup_font(int idx) {
+void s2d_rdp_init(void) {
     gDPPipeSync(gdl_head++);
     gDPSetTextureFilter(gdl_head++, G_TF_POINT);
     gSPDisplayList(gdl_head++, s2d_text_init_dl);
-    gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
     gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
     gSPObjRenderMode(gdl_head++, G_OBJRM_XLU | G_OBJRM_BILERP);
+}
+
+void setup_font(int idx) {
+    gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 

@@ -18,6 +18,8 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 
 	if (*p == '\0') return;
 
+	s2d_rdp_init();
+
 	// resets parameters
 	s2d_red = s2d_green = s2d_blue = 255;
 	s2d_alpha = 255;
