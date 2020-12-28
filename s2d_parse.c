@@ -11,7 +11,6 @@
 
 void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
-	int tx = 0, ty = 0;
 	int tmp_len = 0;
 	int orig_x = x;
 	int orig_y = y;
@@ -73,10 +72,7 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				break;
 			default:
 				if (current_char != '\0') {
-					if (myDegrees == 0)
-						draw_s2d_glyph(current_char, (x += (8 * myScale)) + tx, y + ty, (buf++));
-					else
-						draw_s2d_glyph(current_char, (x += ((8 * myScale))) + tx, y + ty, (buf++));
+					draw_s2d_glyph(current_char, (x += (s2d_kerning_table[current_char] * myScale)), y, (buf++));
 				}
 		}
 		if (*p == '\0') break;
@@ -85,8 +81,6 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 	} while (tmp_len < len);
 	myScale = 1;
 	myDegrees = 0;
-	tx = 0;
-	ty = 0;
 }
 
 void s2d_print(int x, int y, const char *str, uObjMtx *buf) {

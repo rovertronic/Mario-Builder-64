@@ -7,8 +7,10 @@
 #include "fonts/impact.h"
 
 // get your font symbols defined here
-#define s2d_font impact_obj
-#define s2d_tex  impact_tex
+#define s2d_font          impact_obj
+#define s2d_tex           impact_tex
+#define s2d_kerning_table impact_kerning_table
+extern char s2d_kerning_table[];
 
 // Debug: bypass custom matrix setup
 #define s2d_mat impact_mtx

@@ -11,7 +11,7 @@ extern int s2d_red, s2d_green, s2d_blue, s2d_alpha;
 
 extern void s2d_rdp_init(void);
 
-extern void setup_font(int idx);
+extern void setup_font_texture(int idx);
 
 extern void mtx_pipeline(uObjMtx *m, int x, int y);
 

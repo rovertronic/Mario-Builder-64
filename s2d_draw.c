@@ -18,6 +18,7 @@ Gfx s2d_text_init_dl[] = {
     gsDPSetBlendColor(0, 0, 0, 0x01),
 
     // IA8
+    // TODO: add more formats
     gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT,
                        0, 0, 0, TEXEL0,
                        0, 0, 0, ENVIRONMENT,
@@ -35,7 +36,8 @@ void s2d_rdp_init(void) {
     gSPObjRenderMode(gdl_head++, G_OBJRM_XLU | G_OBJRM_BILERP);
 }
 
-void setup_font(int idx) {
+void setup_font_texture(int idx) {
+    gDPPipeSync(gdl_head++);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
@@ -84,12 +86,13 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
 #define CLAMP_0(x) ((x < 0) ? 0 : x)
 
 void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
-    setup_font(c);
+    setup_font_texture(c);
 
     // mtx_pipeline(mt, x, y);
     mtx_pipeline2(mt, x, y);
 
     if (drop_shadow) {
+        gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++,
                    CLAMP_0(s2d_red - 100),
                    CLAMP_0(s2d_green - 100),

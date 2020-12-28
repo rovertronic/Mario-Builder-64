@@ -6,12 +6,14 @@
 #define TRANSLATE  "\x82" // TRANSLATE (x) (y)
 #define COLOR      "\x83" // COLOR (r) (g) (b) (a)
 #define DROPSHADOW "\x84" // DROPSHADOW (no params)
+#define BACKGROUND "\x85" // BACKGROUND (w) (h) (alpha)
 
 #define CH_SCALE      '\x80'
 #define CH_ROT        '\x81'
 #define CH_TRANSLATE  '\x82'
 #define CH_COLOR      '\x83'
 #define CH_DROPSHADOW '\x84'
+#define CH_BACKGROUND '\x85'
 
 // ASCII standard escape codes
 #define CH_NEWLINE   '\n'
