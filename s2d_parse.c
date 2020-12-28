@@ -72,7 +72,8 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				break;
 			default:
 				if (current_char != '\0') {
-					draw_s2d_glyph(current_char, (x += (s2d_kerning_table[current_char] * myScale)), y, (buf++));
+					draw_s2d_glyph(current_char, x, y, (buf++));
+					(x += (s2d_kerning_table[current_char] * myScale));
 				}
 		}
 		if (*p == '\0') break;
