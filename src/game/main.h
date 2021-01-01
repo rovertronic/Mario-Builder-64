@@ -64,7 +64,6 @@ extern u32 gNumVblanks;
 extern s8 gResetTimer;
 extern s8 D_8032C648;
 extern s8 gDebugLevelSelect;
-extern s8 D_8032C650;
 extern s8 gShowProfiler;
 extern s8 gShowDebugText;
 

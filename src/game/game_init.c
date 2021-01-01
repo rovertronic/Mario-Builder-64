@@ -602,26 +602,53 @@ void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
 
     setup_game_memory();
+#ifdef UNF
+    debug_printf("init_rumble_pak_scheduler_queue\n");
+#endif
 #if ENABLE_RUMBLE
     init_rumble_pak_scheduler_queue();
 #endif
 #ifdef UNF
-    debug_initialize();
+    debug_printf("init_controllers\n");
 #endif
     init_controllers();
 #if ENABLE_RUMBLE
+#ifdef UNF
+    debug_printf("create_thread_6\n");
+#endif
     create_thread_6();
 #endif
+#ifdef UNF
+    debug_printf("createHvqmThread\n");
+#endif
     createHvqmThread();
+#ifdef UNF
+    debug_printf("save_file_load_all\n");
+#endif
     save_file_load_all();
 
+#ifdef UNF
+    debug_printf("set_vblank_handler\n");
+#endif
     set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 
+#ifdef UNF
+    debug_printf("point addr to the entry point into the level script data.\n");
+#endif
     // point addr to the entry point into the level script data.
     addr = segmented_to_virtual(level_script_entry);
 
+#ifdef UNF
+    debug_printf("play_music\n");
+#endif
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
+#ifdef UNF
+    debug_printf("set_sound_mode\n");
+#endif
     set_sound_mode(save_file_get_sound_mode());
+#ifdef UNF
+    debug_printf("rendering_init\n");
+#endif
     rendering_init();
 
     while (TRUE) {
@@ -654,9 +681,11 @@ void thread5_game_loop(UNUSED void *arg) {
             // amount of free space remaining.
             print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
         }
+#if 0
         if (gPlayer1Controller->buttonPressed & L_TRIG) {
             osStartThread(&hvqmThread);
             osRecvMesg(&gDmaMesgQueue, NULL, OS_MESG_BLOCK);
         }
+#endif
     }
 }

@@ -94,12 +94,7 @@ SECTIONS
       BUILD_DIR/src/audio/load.o(.bss*);
       BUILD_DIR/src/audio/data.o(.bss*);
       BUILD_DIR/src/audio*.o(.bss*);
-
-#ifdef VERSION_EU
       . = ALIGN(0x200);
-#else
-      . = ALIGN(0x1000);
-#endif
       BUILD_DIR/src/buffers/gfx_output_buffer.o(.bss*);
    }
    END_NOLOAD(buffers)

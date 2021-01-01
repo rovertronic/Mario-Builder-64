@@ -282,12 +282,12 @@ endif
 #==============================================================================#
 
 # detect prefix for MIPS toolchain
-ifneq      ($(call find-command,mips-linux-gnu-ld),)
+ifneq ($(call find-command,mips64-elf-ld),)
+  CROSS := mips64-elf-
+else ifneq ($(call find-command,mips-linux-gnu-ld),)
   CROSS := mips-linux-gnu-
 else ifneq ($(call find-command,mips64-linux-gnu-ld),)
   CROSS := mips64-linux-gnu-
-else ifneq ($(call find-command,mips64-elf-ld),)
-  CROSS := mips64-elf-
 else
   $(error Unable to detect a suitable MIPS toolchain installed)
 endif
@@ -438,6 +438,7 @@ libultra: $(BUILD_DIR)/libultra.a
 # Extra object file dependencies
 $(BUILD_DIR)/asm/boot.o:              $(IPL3_RAW_FILES)
 $(BUILD_DIR)/src/game/crash_screen.o: $(CRASH_TEXTURE_C_FILES)
+$(BUILD_DIR)/src/game/version.o:      $(BUILD_DIR)/src/game/version_data.h
 $(BUILD_DIR)/lib/rsp.o:               $(BUILD_DIR)/rsp/rspboot.bin $(BUILD_DIR)/rsp/fast3d.bin $(BUILD_DIR)/rsp/audio.bin
 $(SOUND_BIN_DIR)/sound_data.o:        $(SOUND_BIN_DIR)/sound_data.ctl.inc.c $(SOUND_BIN_DIR)/sound_data.tbl.inc.c $(SOUND_BIN_DIR)/sequences.bin.inc.c $(SOUND_BIN_DIR)/bank_sets.inc.c
 $(BUILD_DIR)/levels/scripts.o:        $(BUILD_DIR)/include/level_headers.h
@@ -648,6 +649,9 @@ $(GLOBAL_ASM_DEP).$(NON_MATCHING):
 	@$(RM) $(GLOBAL_ASM_DEP).*
 	$(V)touch $@
 
+# Generate version_data.h
+$(BUILD_DIR)/src/game/version_data.h: tools/make_version.sh
+	tools/make_version.sh $(CROSS) > $@
 
 #==============================================================================#
 # Compilation Recipes                                                          #

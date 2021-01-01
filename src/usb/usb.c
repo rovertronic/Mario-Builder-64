@@ -258,7 +258,7 @@ char usb_initialize()
 
 static void usb_findcart()
 {
-    u32 buff;
+    u32 buff __attribute__((aligned(8)));
     
     // Read the cartridge and check if we have a 64Drive.
     #if USE_OSRAW
@@ -493,7 +493,7 @@ void usb_purge()
 
 static s8 usb_64drive_wait()
 {
-    u32 ret;
+    u32 ret __attribute__((aligned(8)));
     u32 timeout = 0; // I wanted to use osGetTime() but that requires the VI manager
     
     // Wait until the cartridge interface is ready
@@ -541,7 +541,7 @@ static void usb_64drive_setwritable(u8 enable)
 
 static void usb_64drive_waitidle()
 {
-    u32 status;
+    u32 status __attribute__((aligned(8)));
     do 
     {
         #if USE_OSRAW
@@ -563,7 +563,7 @@ static void usb_64drive_waitidle()
 
 static u32 usb_64drive_armstatus()
 {
-    u32 status;
+    u32 status __attribute__((aligned(8)));
     #if USE_OSRAW
         osPiRawReadIo(D64_CIBASE_ADDRESS + D64_REGISTER_USBCOMSTAT, &status);
     #else
@@ -580,7 +580,7 @@ static u32 usb_64drive_armstatus()
 
 static void usb_64drive_waitdisarmed()
 {
-    u32 status;
+    u32 status __attribute__((aligned(8)));
     do
     {
         #if USE_OSRAW
@@ -680,7 +680,8 @@ static void usb_64drive_write(int datatype, const void* data, int size)
 
 static void usb_64drive_arm(u32 offset, u32 size)
 {
-    u32 ret = usb_64drive_armstatus();
+    u32 ret __attribute__((aligned(8)));
+    ret = usb_64drive_armstatus();
     
     if (ret != D64_USB_ARMING && ret != D64_USB_ARMED)
     {
@@ -726,7 +727,7 @@ static void usb_64drive_disarm()
 
 static u32 usb_64drive_poll()
 {
-    u32 ret;
+    u32 ret __attribute__((aligned(8)));
     
     // Arm the USB buffer
     usb_64drive_waitidle();
@@ -852,7 +853,7 @@ static void usb_64drive_read()
 
 static void usb_everdrive_wait_pidma() 
 {
-    u32 status;
+    u32 status __attribute__((aligned(8)));
     do
     {
         status = *(volatile unsigned long *)(N64_PI_ADDRESS + N64_PI_STATUS);
@@ -967,7 +968,7 @@ static void usb_everdrive_writereg(u64 reg, u32 value)
 
 static void usb_everdrive_usbbusy() 
 {
-    u32 val;
+    u32 val __attribute__((aligned(8)));
     do 
     {
         usb_everdrive_readreg(ED_REG_USBCFG, &val);
@@ -984,7 +985,8 @@ static void usb_everdrive_usbbusy()
 
 static u8 usb_everdrive_canread() 
 {
-    u32 val, status = ED_USBSTAT_POWER;
+    u32 val __attribute__((aligned(8)));
+    u32 status = ED_USBSTAT_POWER;
     
     // Read the USB register and check its status
     usb_everdrive_readreg(ED_REG_USBCFG, &val);
@@ -1105,7 +1107,7 @@ static void usb_everdrive_write(int datatype, const void* data, int size)
 
 static u32 usb_everdrive_poll()
 {
-    char buff[16];
+    char buff[16] __attribute__((aligned(8)));
     int len;
     int offset = 0;
     
@@ -1200,7 +1202,7 @@ static void usb_everdrive_read()
 
 static u32 usb_sc64_read_usb_scr(void)
 {
-    u32 usb_scr;
+    u32 usb_scr __attribute__((aligned(8)));
 
     #if USE_OSRAW
         osPiRawReadIo(SC64_REG_USB_SCR, &usb_scr);
@@ -1220,7 +1222,7 @@ static u32 usb_sc64_read_usb_scr(void)
 
 static u32 usb_sc64_read_usb_fifo(void)
 {
-    u32 data;
+    u32 data __attribute__((aligned(8)));
 
     #if USE_OSRAW
         osPiRawReadIo(SC64_MEM_USB_FIFO_BASE, &data);
@@ -1240,7 +1242,7 @@ static u32 usb_sc64_read_usb_fifo(void)
 
 static s8 usb_sc64_waitidle(void)
 {
-    u32 usb_scr;
+    u32 usb_scr __attribute__((aligned(8)));
 
     do
     {
@@ -1265,7 +1267,7 @@ static s8 usb_sc64_waitidle(void)
 
 static s32 usb_sc64_waitdata(u32 length)
 {
-    u32 usb_scr;
+    u32 usb_scr __attribute__((aligned(8)));
     u32 wait_length = ALIGN(MIN(length, SC64_MEM_USB_FIFO_LEN), 4);
     u32 bytes = 0;
 
@@ -1292,7 +1294,7 @@ static s32 usb_sc64_waitdata(u32 length)
 
 static void usb_sc64_setwritable(u8 enable)
 {
-    u32 scr;
+    u32 scr __attribute__((aligned(8)));
 
     #if USE_OSRAW
         osPiRawReadIo(SC64_REG_SCR, &scr);
@@ -1437,7 +1439,8 @@ static void usb_sc64_write(int datatype, const void* data, int size)
 
 static u32 usb_sc64_poll(void)
 {
-    u32 buff, sdram_address;
+    u32 buff __attribute__((aligned(8)));
+    u32 sdram_address;
     int left;
     
     // Load how many 32 bit words are in FIFO
