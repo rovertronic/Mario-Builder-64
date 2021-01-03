@@ -18,6 +18,21 @@ DEFINES :=
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
 
+# Location of official N64 libraries
+# CONSOLE - selects the console to target
+#   jp - builds the 1996 Japanese version
+#   us - builds the 1996 North American version
+CONSOLE ?= n64
+$(eval $(call validate-option,CONSOLE,n64 ique))
+
+ifeq      ($(CONSOLE),n64)
+  INCLUDE_DIRS   += include/n64
+  LIBS_DIR       := lib/n64
+else ifeq ($(CONSOLE),ique)
+  INCLUDE_DIRS   += include/ique
+  LIBS_DIR       := lib/ique
+  DEFINES        += BBPLAYER=1
+endif
 
 # COMPILER - selects the C compiler to use
 #   ido - uses the SGI IRIS Development Option compiler, which is used to build
@@ -130,7 +145,7 @@ endif
 COMPARE ?= 0
 $(eval $(call validate-option,COMPARE,0 1))
 
-TARGET_STRING := sm64.$(VERSION).$(GRUCODE)
+TARGET_STRING := sm64.$(VERSION).$(CONSOLE).$(GRUCODE)
 # If non-default settings were chosen, disable COMPARE
 ifeq ($(filter $(TARGET_STRING), sm64.jp.f3d_old sm64.us.f3d_old sm64.eu.f3d_new sm64.sh.f3d_new),)
   COMPARE := 0
@@ -172,6 +187,7 @@ ifeq ($(filter clean distclean,$(MAKECMDGOALS)),)
   $(info ==== Build Options ====)
   $(info Version:        $(VERSION))
   $(info Microcode:      $(GRUCODE))
+  $(info Console:        $(CONSOLE))
   $(info Target:         $(TARGET))
   ifeq ($(COMPARE),1)
     $(info Compare ROM:    yes)
@@ -193,8 +209,6 @@ endif
 
 TOOLS_DIR := tools
 
-# Location of official N64 libraries
-N64_LIBS_DIR ?= lib
 
 # (This is a bit hacky, but a lot of rules implicitly depend
 # on tools and assets, and we use directory globs further down
@@ -337,7 +351,7 @@ ifeq ($(TARGET_N64),1)
   CC_CFLAGS := -fno-builtin
 endif
 
-INCLUDE_DIRS := include $(BUILD_DIR) $(BUILD_DIR)/include src . include/hvqm
+INCLUDE_DIRS += include $(BUILD_DIR) $(BUILD_DIR)/include src . include/hvqm
 ifeq ($(TARGET_N64),1)
   INCLUDE_DIRS += include/libc
 endif
@@ -752,7 +766,7 @@ $(BUILD_DIR)/libultra.a: $(ULTRA_O_FILES)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L $(N64_LIBS_DIR) -lultra_rom -lhvqm2
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lhvqm2 -lgcc
 
 # Build ROM
 $(ROM): $(ELF)

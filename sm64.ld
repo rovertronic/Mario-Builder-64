@@ -123,11 +123,25 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.text);
 #endif
       BUILD_DIR/src/audio*.o(.text);
-      BUILD_DIR/asm/llmuldiv_gcc.o(.text);
       BUILD_DIR/asm/slidec.o(.text);
 
       */libultra_rom.a:*.o(.text);
+      */libgcc.a:_umoddi3.o(.text);
+      */libgcc.a:_udivdi3.o(.text);
+      */libgcc.a:_divdi3.o(.text);
+      */libgcc.a:_moddi3.o(.text);
+      */libgcc.a:_fixdfdi.o(.text);
+      */libgcc.a:_fixsfdi.o(.text);
+      */libgcc.a:_fixunsfdi.o(.text);
+      */libgcc.a:_fixunssfdi.o(.text);
+      */libgcc.a:_fixunsdfdi.o(.text);
+      */libgcc.a:_floatdidf.o(.text);
+      */libgcc.a:_floatdisf.o(.text);
+      */libgcc.a:_fixunsdfdi.o(.text);
+      */libgcc.a:_cmpdi2.o(.text);
+#ifdef HVQM
       */libhvqm2.a:*.o(.text);
+#endif
 
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
@@ -161,6 +175,10 @@ SECTIONS
       BUILD_DIR/src/audio*.o(.rodata*);
 
       */libultra_rom.a:*.o(.rodata*);
+      */libgcc.a:_umoddi3.o(.rodata*);
+      */libgcc.a:_udivdi3.o(.rodata*);
+      */libgcc.a:_divdi3.o(.rodata*);
+      */libgcc.a:_moddi3.o(.rodata*);
 #ifdef HVQM
       */libhvqm2.a:*.o(.rodata*);
 #endif
@@ -181,9 +199,13 @@ SECTIONS
       BUILD_DIR/src/audio*.o(.bss*);
       BUILD_DIR/src/audio*.o(.sbss*);
       
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
       */libultra_rom.a:*.o(.bss*);
       */libultra_rom.a:*.o(.sbss*);
+#ifdef HVQM
       */libhvqm2.a:*.o(.bss*);
+#endif
 
       . = ALIGN(0x8);
    }

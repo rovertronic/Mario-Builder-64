@@ -74,6 +74,8 @@ build/*
 # libultra
 
 !/lib/*.a
+!/lib/n64/*.a
+!/lib/ique/*.a
 
 !/lib/PR/hvqm/*.o
 

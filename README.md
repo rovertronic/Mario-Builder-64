@@ -4,8 +4,9 @@
 - Naming and documentation of the source code and data structures are in progress.
 - It has been edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
 - Shindou Rumble Pak code is on for all regions.
+- Targeting the iQue Player is supported.
 - It has been patched with someone2639's shiftable segments patch
-- It will have HVQM full motion video support
+- Getting HVQM FMV support to work with the game is in progress.
 - Getting UNFLoader (flashcart USB library) to work with the game is in progress.
 
 ## FAQ
