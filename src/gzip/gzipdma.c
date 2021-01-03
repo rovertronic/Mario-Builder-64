@@ -757,11 +757,11 @@ void flush_window(void)
 }
 
 
-void slidma(unsigned long dmasrc, char *dst, unsigned long dmasiz)
+void slidma(u8 *src_addr, u8 *dst_addr, u32 size)
 {
-	ifd.next_addr = dmasrc;
-	ifd.rest_size = dmasiz;
-        op = dst;
+	ifd.next_addr = src_addr;
+	ifd.rest_size = size;
+        op = dst_addr;
 
 	clear_bufs();
 	unzip();

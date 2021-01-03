@@ -340,7 +340,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
         dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
         if (dest != NULL) {
 #ifdef GZIP
-            slidma(dest, compressed, compSize);
+            slidma(compressed, dest, compSize);
 #else
             slidstart(compressed, dest);
 #endif

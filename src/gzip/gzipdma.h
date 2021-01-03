@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-void slidma(unsigned long dmasrc, char *dst, unsigned long dmasiz);
+void slidma(u8 *src_addr, u8 *dst_addr, u32 size);
 
 #ifdef _LANGUAGE_C_PLUS_PLUS
 }
