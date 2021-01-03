@@ -20,15 +20,15 @@ TARGET_N64 ?= 1
 
 # Location of official N64 libraries
 # CONSOLE - selects the console to target
-#   jp - builds the 1996 Japanese version
-#   us - builds the 1996 North American version
+#   bb - Targets the iQue Player (codenamed BB)
+#   n64 - Targets the N64
 CONSOLE ?= n64
-$(eval $(call validate-option,CONSOLE,n64 ique))
+$(eval $(call validate-option,CONSOLE,n64 bb))
 
 ifeq      ($(CONSOLE),n64)
   INCLUDE_DIRS   += include/n64
   LIBS_DIR       := lib/n64
-else ifeq ($(CONSOLE),ique)
+else ifeq ($(CONSOLE),bb)
   INCLUDE_DIRS   += include/ique
   LIBS_DIR       := lib/ique
   DEFINES        += BBPLAYER=1
