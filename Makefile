@@ -18,7 +18,6 @@ DEFINES :=
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
 
-# Location of official N64 libraries
 # CONSOLE - selects the console to target
 #   bb - Targets the iQue Player (codenamed BB)
 #   n64 - Targets the N64
