@@ -1,6 +1,7 @@
 /aifc_decode
 /aiff_extract_codebook
 /armips
+/bfsize
 /extract_data_for_mio
 /mio0
 /n64cksum
