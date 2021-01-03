@@ -85,9 +85,11 @@ SECTIONS
    BEGIN_NOLOAD(buffers)
    {
       BUILD_DIR/src/buffers/buffers.o(.bss*);
+#ifdef HVQM
       BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
       BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
       BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
+#endif
       BUILD_DIR/src/audio/globals_start.o(.bss*);
       BUILD_DIR/src/audio/synthesis.o(.bss*);
       BUILD_DIR/src/audio/heap.o(.bss*);
@@ -114,7 +116,9 @@ SECTIONS
       BUILD_DIR/asm/entry.o(.text);
 
       BUILD_DIR/src/game*.o(.text);
+#ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.text);
+#endif
 #ifdef UNF
       BUILD_DIR/src/usb*.o(.text);
 #endif
@@ -140,10 +144,14 @@ SECTIONS
 
       */libultra_rom.a:*.o(.data*);
       */libultra_rom.a:*.o(.sdata*);
+#ifdef HVQM
       */libhvqm2.a:*.o(.data*);
+#endif
 
       BUILD_DIR/lib/rsp.o(.data*);
+#ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.data*);
+#endif
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
@@ -153,10 +161,14 @@ SECTIONS
       BUILD_DIR/src/audio*.o(.rodata*);
 
       */libultra_rom.a:*.o(.rodata*);
+#ifdef HVQM
       */libhvqm2.a:*.o(.rodata*);
+#endif
 
       BUILD_DIR/lib/rsp.o(.rodata*);
+#ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
+#endif
    }
    END_SEG(main)
    BEGIN_NOLOAD(main)
@@ -361,12 +373,13 @@ SECTIONS
       BUILD_DIR/sound/sound_data.o(.data);
    }
    END_SEG(assets)
-  
+#ifdef HVQM 
    BEGIN_SEG(capcom, __romPos) SUBALIGN(2)
    {
       BUILD_DIR/data/capcom.o(.data);
    }
 	END_SEG(capcom)
+#endif
 #if 0
    BEGIN_SEG(sein, __romPos) SUBALIGN(2)
    {

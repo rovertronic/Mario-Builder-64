@@ -11,7 +11,10 @@
 #include "memory.h"
 #include "segment_symbols.h"
 #include "segments.h"
+#ifdef UNF
 #include "usb/debug.h"
+#endif
+
 
 // round up to the next multiple
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)

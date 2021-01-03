@@ -10,7 +10,9 @@
 #include "game/level_update.h"
 #include "game/object_list_processor.h"
 #include "game/camera.h"
+#ifdef UNF
 #include "usb/debug.h"
+#endif
 #include "seq_ids.h"
 #include "dialog_ids.h"
 

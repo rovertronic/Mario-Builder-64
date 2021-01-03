@@ -13,8 +13,10 @@
 #include "main.h"
 #include "rumble_init.h"
 #include "version.h"
+#ifdef UNF
 #include "usb/usb.h"
 #include "usb/debug.h"
+#endif
 
 // Message IDs
 #define MESG_SP_COMPLETE 100

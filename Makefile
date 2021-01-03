@@ -145,6 +145,17 @@ $(eval $(call validate-option,UNF,0 1))
 
 ifeq ($(UNF),1)
   DEFINES += UNF=1
+  SRC_DIRS += src/usb
+endif
+
+# HVQM - whether to use HVQM fmv library
+#   1 - includes code in ROM
+#   0 - does not 
+HVQM ?= 0
+$(eval $(call validate-option,HVQM,0 1))
+ifeq ($(HVQM),1)
+  DEFINES += HVQM=1
+  SRC_DIRS += src/hvqm
 endif
 
 # Whether to hide commands or not
@@ -230,7 +241,7 @@ ACTOR_DIR      := actors
 LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 
 # Directories containing source files
-SRC_DIRS := src src/usb src/engine src/game src/hvqm src/audio src/menu src/buffers actors levels bin data assets asm lib sound
+SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
 BIN_DIRS := bin bin/$(VERSION)
 
 # File dependencies and variables for specific files
@@ -651,7 +662,8 @@ $(GLOBAL_ASM_DEP).$(NON_MATCHING):
 
 # Generate version_data.h
 $(BUILD_DIR)/src/game/version_data.h: tools/make_version.sh
-	tools/make_version.sh $(CROSS) > $@
+	@$(PRINT) "$(GREEN)Generating:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)tools/make_version.sh $(CROSS) > $@
 
 #==============================================================================#
 # Compilation Recipes                                                          #

@@ -2,7 +2,9 @@
 #include <hvqm2dec.h>
 
 #include "buffers.h"
+#ifdef HVQM
 #include <hvqm/hvqm.h>
+#endif
 #include "config.h"
 
 ALIGNED8 u8 gDecompressionHeap[0xD000];
