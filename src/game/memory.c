@@ -330,7 +330,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     void *dest = NULL;
 
 #ifdef GZIP
-    u32 compSize = (srcEnd - 8 - srcStart);
+    u32 compSize = ALIGN16(srcEnd - 8 - srcStart);
 #else
     u32 compSize = ALIGN16(srcEnd - srcStart);
 #endif
