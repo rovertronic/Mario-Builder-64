@@ -8,6 +8,8 @@ default: all
 # Preprocessor definitions
 DEFINES :=
 
+SRC_DIRS :=
+
 #==============================================================================#
 # Build Options                                                                #
 #==============================================================================#
@@ -40,6 +42,15 @@ endif
 COMPILER ?= gcc
 $(eval $(call validate-option,COMPILER,ido gcc))
 
+
+COMPRESS ?= yay0
+$(eval $(call validate-option,COMPRESS,yay0 gzip))
+ifeq ($(COMPRESS),gzip)
+  DEFINES += GZIP=1
+  SRC_DIRS += src/gzip
+else ifeq ($(COMPRESS),yay0)
+  DEFINES += YAY0=1
+endif
 
 # VERSION - selects the version of the game to build
 #   jp - builds the 1996 Japanese version
@@ -254,7 +265,7 @@ ACTOR_DIR      := actors
 LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 
 # Directories containing source files
-SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
+SRC_DIRS += src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
 BIN_DIRS := bin bin/$(VERSION)
 
 # File dependencies and variables for specific files
@@ -393,6 +404,7 @@ export LANG := C
 
 # N64 tools
 YAY0TOOL              := $(TOOLS_DIR)/slienc
+ROMALIGN              := $(TOOLS_DIR)/romalign
 N64CKSUM              := $(TOOLS_DIR)/n64cksum
 N64GRAPHICS           := $(TOOLS_DIR)/n64graphics
 N64GRAPHICS_CI        := $(TOOLS_DIR)/n64graphics_ci
@@ -564,6 +576,23 @@ $(BUILD_DIR)/levels/%/leveldata.bin: $(BUILD_DIR)/levels/%/leveldata.elf
 	$(call print,Extracting compressionable data from:,$<,$@)
 	$(V)$(EXTRACT_DATA_FOR_MIO) $< $@
 
+ifeq ($(COMPRESS),gzip)
+# Compress binary file to gzip
+$(BUILD_DIR)/%.gz: $(BUILD_DIR)/%.bin
+	$(call print,Compressing:,$<,$@)
+	$(V)gzip -c -9 -n $< > $@
+
+# Strip gzip header
+$(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.gz
+	$(call print,Converting:,$<,$@)
+	$(V)dd bs=10 skip=1 if=$< of=$@
+	$(V)$(ROMALIGN) $@ 16
+
+# convert binary szp to object file
+$(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
+	$(call print,Converting GZIP to ELF:,$<,$@)
+	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
+else
 # Compress binary file
 $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.bin
 	$(call print,Compressing:,$<,$@)
@@ -573,7 +602,7 @@ $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.bin
 $(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
 	$(call print,Converting YAY0 to ELF:,$<,$@)
 	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
-
+endif
 
 #==============================================================================#
 # Sound File Generation                                                        #
@@ -756,14 +785,8 @@ $(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
 	$(call print,Preprocessing linker script:,$<,$@)
 	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
-# Link libultra
-$(BUILD_DIR)/libultra.a: $(ULTRA_O_FILES)
-	@$(PRINT) "$(GREEN)Linking libultra:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(AR) rcs -o $@ $(ULTRA_O_FILES)
-	$(V)$(TOOLS_DIR)/patch_libultra_math $@
-
 # Link SM64 ELF file
-$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libultra.a
+$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lhvqm2 -lgcc
 

@@ -11,6 +11,9 @@
 #include "memory.h"
 #include "segment_symbols.h"
 #include "segments.h"
+#ifdef GZIP
+#include "gzip/gzipdma.h"
+#endif
 #ifdef UNF
 #include "usb/debug.h"
 #endif
@@ -247,7 +250,7 @@ u32 main_pool_pop_state(void) {
  * Perform a DMA read from ROM. The transfer is split into 4KB blocks, and this
  * function blocks until completion.
  */
-static void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
+void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
     u32 size = ALIGN16(srcEnd - srcStart);
 
     osInvalDCache(dest, size);
@@ -336,7 +339,11 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
         dma_read(compressed, srcStart, srcEnd);
         dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
         if (dest != NULL) {
+#ifdef GZIP
+            slidma(dest, compressed, compSize);
+#else
             slidstart(compressed, dest);
+#endif
             set_segment_base_addr(segment, dest);
             main_pool_free(compressed);
         } else {
@@ -354,7 +361,11 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
 
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
+#ifdef GZIP
+        slidma(gDecompressionHeap, compressed, compSize);
+#else
         slidstart(compressed, gDecompressionHeap);
+#endif
         set_segment_base_addr(segment, gDecompressionHeap);
         main_pool_free(compressed);
     } else {

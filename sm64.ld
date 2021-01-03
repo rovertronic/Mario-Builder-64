@@ -76,7 +76,8 @@ SECTIONS
    END_SEG(boot)
 
    . = 0x80000400;
-   BEGIN_NOLOAD(zbuffer) {
+   BEGIN_NOLOAD(zbuffer)
+   {
       BUILD_DIR/src/buffers/zbuffer.o(.bss*);
    }
    END_NOLOAD(zbuffer)
@@ -123,7 +124,12 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.text);
 #endif
       BUILD_DIR/src/audio*.o(.text);
+#ifdef GZIP
+      BUILD_DIR/src/gzip*.o(.text);
+#endif
+#ifdef YAY0
       BUILD_DIR/asm/slidec.o(.text);
+#endif
 
       */libultra_rom.a:*.o(.text);
       */libgcc.a:_umoddi3.o(.text);
@@ -155,6 +161,9 @@ SECTIONS
 #endif
       BUILD_DIR/src/audio*.o(.data*);
       BUILD_DIR/src/audio*.o(.sdata*);
+#ifdef GZIP
+      BUILD_DIR/src/gzip*.o(.data*);
+#endif
 
       */libultra_rom.a:*.o(.data*);
       */libultra_rom.a:*.o(.sdata*);
@@ -173,6 +182,9 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.rodata*);
 #endif
       BUILD_DIR/src/audio*.o(.rodata*);
+#ifdef GZIP
+      BUILD_DIR/src/gzip*.o(.rodata*);
+#endif
 
       */libultra_rom.a:*.o(.rodata*);
       */libgcc.a:_umoddi3.o(.rodata*);
@@ -193,11 +205,18 @@ SECTIONS
    {
       BUILD_DIR/src/game*.o(.bss*);
       BUILD_DIR/src/game*.o(.sbss*);
+#ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.bss*);
+#endif
+#ifdef UNF
       BUILD_DIR/src/usb*.o(.bss*);
       BUILD_DIR/src/usb*.o(.sbss*);
+#endif
       BUILD_DIR/src/audio*.o(.bss*);
       BUILD_DIR/src/audio*.o(.sbss*);
+#ifdef GZIP
+      BUILD_DIR/src/gzip*.o(.bss*);
+#endif
       
       */libultra_rom.a:*.o(COMMON);
       */libultra_rom.a:*.o(.scommon);
