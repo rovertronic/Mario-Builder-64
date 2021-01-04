@@ -406,6 +406,7 @@ export LANG := C
 YAY0TOOL              := $(TOOLS_DIR)/slienc
 ROMALIGN              := $(TOOLS_DIR)/romalign
 BFSIZE                := $(TOOLS_DIR)/bfsize
+FILESIZER             := $(TOOLS_DIR)/filesizer
 N64CKSUM              := $(TOOLS_DIR)/n64cksum
 N64GRAPHICS           := $(TOOLS_DIR)/n64graphics
 N64GRAPHICS_CI        := $(TOOLS_DIR)/n64graphics_ci
@@ -582,13 +583,15 @@ ifeq ($(COMPRESS),gzip)
 $(BUILD_DIR)/%.gz: $(BUILD_DIR)/%.bin
 	$(call print,Compressing:,$<,$@)
 	$(V)gzip -c -9 -n $< > $@
-	$(V)dd if=/dev/zero bs=1 count=4 >> $@
-	perl -e 'printf ("%x", -s "$<")' $< >> $@
+#	$(V)dd if=/dev/zero bs=1 count=4 >> $@
+#	$(ROMALIGN) $@ 16
+#	$(V)$(FILESIZER) $< $@
 
 # Strip gzip header
 $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.gz
 	$(call print,Converting:,$<,$@)
 	$(V)dd bs=10 skip=1 if=$< of=$@
+	$(V)$(FILESIZER) $(<:.gz=.bin) $@
 
 # convert binary szp to object file
 $(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp

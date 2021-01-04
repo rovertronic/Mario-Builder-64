@@ -7,7 +7,7 @@ CC           := gcc
 CXX          := g++
 CFLAGS       := -I . -Wall -Wextra -Wno-unused-parameter -pedantic -O2 -s
 LDFLAGS      := -lm
-ALL_PROGRAMS := armips bfsize n64graphics n64graphics_ci mio0 slienc n64cksum textconv patch_libultra_math aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
+ALL_PROGRAMS := armips bfsize filesizer n64graphics n64graphics_ci mio0 slienc n64cksum textconv patch_libultra_math aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
 LIBAUDIOFILE := audiofile/libaudiofile.a
 
 # Only build armips from tools if it is not found on the system
@@ -20,6 +20,8 @@ endif
 default: all
 
 bfsize_SOURCES		:= bfsize.c
+
+filesizer_SOURCES	:= filesizer.c
 
 n64graphics_SOURCES := n64graphics.c utils.c
 n64graphics_CFLAGS  := -DN64GRAPHICS_STANDALONE

@@ -12,7 +12,7 @@
 #include "segment_symbols.h"
 #include "segments.h"
 #ifdef GZIP
-#include "gzip/gzipdma.h"
+#include "gzip/gzip.h"
 #endif
 #ifdef UNF
 #include "usb/debug.h"
@@ -321,6 +321,17 @@ void *load_to_fixed_pool_addr(u8 *destAddr, u8 *srcStart, u8 *srcEnd) {
     return dest;
 }
 
+#ifdef GZIP
+u32 ExpandGZip(void *src, void *dest, u32 size)
+{
+	u32 len;
+
+	len = expand_gzip((char *)src, (char *)dest, size);
+
+	return ((u32)dest + len + 7) & ~7;
+}
+#endif
+
 /**
  * Decompress the block of ROM data from srcStart to srcEnd and return a
  * pointer to an allocated buffer holding the decompressed data. Set the
@@ -330,7 +341,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     void *dest = NULL;
 
 #ifdef GZIP
-    u32 compSize = ALIGN16(srcEnd - 8 - srcStart);
+    u32 compSize = (srcEnd - 4 - srcStart);
 #else
     u32 compSize = ALIGN16(srcEnd - srcStart);
 #endif
@@ -339,23 +350,19 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
 
 #ifdef GZIP
     // Decompressed size from end of gzip
-    u32 *size = (u32 *) (compressed + compSize - 4);
+    u32 *size = (u32 *) (compressed + compSize);
 #else
     // Decompressed size from mio0 header
     u32 *size = (u32 *) (compressed + 4);
 #endif
 
+    if (compressed != NULL) {
+        dma_read(compressed, srcStart, srcEnd);
+        dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
+        if (dest != NULL) {
 #ifdef GZIP
-    if (compressed != NULL) {
-        dma_read(compressed, srcStart, srcEnd);
-        dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
-        if (dest != NULL) {
-            slidma(compressed, dest, compSize);
+            ExpandGZip(compressed, dest, compSize);
 #else
-    if (compressed != NULL) {
-        dma_read(compressed, srcStart, srcEnd);
-        dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
-        if (dest != NULL) {
             slidstart(compressed, dest);
 #endif
             set_segment_base_addr(segment, dest);
@@ -371,17 +378,16 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
     UNUSED void *dest = NULL;
 
 #ifdef GZIP
-    u32 compSize = (srcEnd - 8 - srcStart);
+    u32 compSize = (srcEnd - 4 - srcStart);
 #else
     u32 compSize = ALIGN16(srcEnd - srcStart);
 #endif
     u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-    UNUSED u32 *pUncSize = (u32 *) (compressed + 4);
 
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
 #ifdef GZIP
-        slidma(gDecompressionHeap, compressed, compSize);
+        ExpandGZip(gDecompressionHeap, compressed, compSize);
 #else
         slidstart(compressed, gDecompressionHeap);
 #endif

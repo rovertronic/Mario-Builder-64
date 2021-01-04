@@ -1,9 +1,4 @@
-typedef unsigned long u32;
-typedef unsigned short u16;
-typedef unsigned char u8;
-
-extern void _bcopy(u8*, u8*, u32);
-
+#include <ultra64.h>
 #include "gzip.h"
 
 
@@ -26,8 +21,10 @@ int inflate_dynamic(void);
 int inflate_block(int *);
 int inflate(void);
 
+
 #define wp outcnt
 #define flush_output(w) (wp=(w),flush_window())
+
 
 // Order of the bit length code lengths
 static unsigned int border[] = {
@@ -74,7 +71,7 @@ int dbits = 6;			/* bits in base distance lookup table */
 unsigned int hufts;		 /* track memory usage */
 
 // Buffer
-#define	GZIP_MEM_BUFFSIZ	8192
+#define	GZIP_MEM_BUFFSIZ	16384
 static	char	gzip_mem_buff[GZIP_MEM_BUFFSIZ];
 static	char	*gzip_malloc_addr = gzip_mem_buff;
 static	long	gzip_malloc_tmp = 0;
@@ -108,9 +105,11 @@ char *gzip_malloc(long size)
 //
 void	gzip_free(char *ptr)
 {
-    ptr = NULL;
-    gzip_malloc_tmp = 0;
-    gzip_malloc_addr = gzip_mem_buff;
+	// Debug
+	//if ( gzip_malloc_tmp != 0 ) printf("%ld byte free\n", gzip_malloc_tmp);
+
+	gzip_malloc_tmp = 0;
+	gzip_malloc_addr = gzip_mem_buff;
 }
 
 
@@ -118,7 +117,14 @@ void	gzip_free(char *ptr)
 //===========================================================================
 //
 //
-int huft_build(unsigned int *b, unsigned int n, unsigned int s, u16 *d, u16 *e, struct huft **t, int *m)
+int huft_build(b, n, s, d, e, t, m)
+unsigned int *b;	/* code lengths in bits (all assumed <= BMAX) */
+unsigned int n;		/* number of codes (assumed <= N_MAX) */
+unsigned int s;		/* number of simple-valued codes (0..s-1) */
+u16 *d;				/* list of base values for non-simple codes */
+u16 *e;				/* list of extra bits for non-simple codes */
+struct huft **t;	/* result: starting table */
+int *m;				/* maximum lookup bits, returns actual */
 {
 	unsigned int a;				/* counter for codes of length k */
 	unsigned int c[BMAX+1];		/* bit length count table */
@@ -133,7 +139,7 @@ int huft_build(unsigned int *b, unsigned int n, unsigned int s, u16 *d, u16 *e, 
 	register struct huft *q;	/* points to current table */
 	struct huft r;				/* table entry for structure assignment */
 	struct huft *u[BMAX];		/* table stack */
-	static unsigned int v[N_MAX];		/* values in order of bit length */
+	unsigned int v[N_MAX];		/* values in order of bit length */
 	register int w;				/* bits before this table == (l * h) */
 	unsigned int x[BMAX+1];		/* bit offsets, then code stack */
 	unsigned int *xp;			/* pointer into x */
@@ -276,7 +282,8 @@ int huft_build(unsigned int *b, unsigned int n, unsigned int s, u16 *d, u16 *e, 
 
 
 
-int huft_free(struct huft *t)
+int huft_free(t)
+struct huft *t;		 /* table to free */
 {
 	register struct huft *p, *q;
 
@@ -291,7 +298,11 @@ int huft_free(struct huft *t)
 }
 
 
-int inflate_codes(struct huft *tl, struct huft *td, int bl, int bd)
+int inflate_codes(tl, td, bl, bd)
+struct huft *tl, *td;	 /* literal/length and distance decoder tables */
+int bl, bd;			 /* number of bits decoded by tl[] and td[] */
+/* inflate (decompress) the codes in a deflated (compressed) block.
+	 Return an error code or zero if it all goes ok. */
 {
 	register unsigned int e;	/* table entry flag/number of extra bits */
 	unsigned int n, d;		/* length and index for copy */
@@ -300,6 +311,8 @@ int inflate_codes(struct huft *tl, struct huft *td, int bl, int bd)
 	unsigned int ml, md;		/* masks for bl and bd bits */
 	register u32 b;		 /* bit buffer */
 	register unsigned int k;	/* number of bits in bit buffer */
+	unsigned int	i;
+	u8	*src, *dst;
 
 	/* make local copies of globals */
 	b = bb;						 /* initialize bit buffer */
@@ -321,10 +334,10 @@ int inflate_codes(struct huft *tl, struct huft *td, int bl, int bd)
 		}
 		DUMPBITS(t->b)
 		if (e == 16) {				/* then it's a literal */
-                        *op++ = (u8)t->v.n;
-			if (++w == WSIZE) {
-                            flush_output(w);
-                            w = 0;
+			window[w++] = (u8)t->v.n;
+			if (w == WSIZE) {
+				flush_output(w);
+				w = 0;
 			}
 		} else {					/* it's an EOB or a length */
 			/* exit if end of block */
@@ -349,37 +362,32 @@ int inflate_codes(struct huft *tl, struct huft *td, int bl, int bd)
 			d = w - t->v.n - ((unsigned int)b & mask_bits[e]);
 			DUMPBITS(e)
 
-#if 1
-                        {
-                            u8 *ip = op + d - w;
-                            do {
-                                *op++ = *ip++;
-                                ++w;
-                                if (w == WSIZE) {
-                                        flush_output(w);
-                                        w = 0;
-                                }
-                                ++d;
-                            } while (--n);
-                        }
-#else
-
 			/* do the copy */
 			do {
-                                char *p;
 				n -= (e = (e = WSIZE - ((d &= WSIZE-1) > w ? d : w)) > n ? n : e);
-                                p = op - w + d;
+/*
+//#if !defined(NOMEMCPY) && !defined(DEBUG)
+				if (w - d >= e) {			// (this test assumes unsigned comparison)
+					dst = (u8 *)( (u32)window + (u32)w );
+					src = (u8 *)( (u32)window + (u32)d );
+					for ( i = 0; i < e; i++ ) {
+						*dst = *src;
+						dst++;
+						src++;
+					}
+					w += e;
+					d += e;
+				} else						// do it slow to avoid memcpy() overlap
+//#endif  !NOMEMCPY
+*/
 				do {
-					w++;
-                                        d++;
-                                        *op++ = *p++;
+					window[w++] = window[d++];
 				} while (--e);
 				if (w == WSIZE) {
-                                    flush_output(w);
-                                    w = 0;
+					flush_output(w);
+					w = 0;
 				}
 			} while (n);
-#endif
 		}
 	}
 
@@ -423,10 +431,9 @@ int inflate_stored(void)
 	/* read and output the compressed data */
 	while (n--) {
 		NEEDBITS(8)
-		w++;
-                *op++ = (u8)b;
+		window[w++] = (u8)b;
 		if (w == WSIZE) {
-                        flush_output(w);
+			flush_output(w);
 			w = 0;
 		}
 		DUMPBITS(8)
@@ -451,7 +458,7 @@ int inflate_fixed(void)
 	struct huft *td;		/* distance code table */
 	int bl;				 /* lookup bits for tl */
 	int bd;				 /* lookup bits for td */
-static	unsigned int l[288];		/* length list for huft_build */
+	unsigned int l[288];		/* length list for huft_build */
 
 	/* set up literal table */
 	for (i = 0; i < 144; i++)
@@ -499,7 +506,7 @@ int inflate_dynamic(void)
 	unsigned int nb;			/* number of bit length codes */
 	unsigned int nl;			/* number of literal/length codes */
 	unsigned int nd;			/* number of distance codes */
-static	unsigned int ll[288+32];	/* literal/length and distance code lengths */
+	unsigned int ll[288+32];	/* literal/length and distance code lengths */
 	register u32 b;		 /* bit buffer */
 	register unsigned int k;	/* number of bits in bit buffer */
 
@@ -601,7 +608,8 @@ static	unsigned int ll[288+32];	/* literal/length and distance code lengths */
 
 
 /* decompress an inflated block */
-int inflate_block(int *e)
+int inflate_block(e)
+int *e;						/* last block flag */
 {
 	unsigned int t;				/* block type */
 	register u32 b;				/* bit buffer */
@@ -633,6 +641,8 @@ int inflate_block(int *e)
 	/* bad block type */
 	return 2;
 }
+
+
 
 //===========================================================================
 // decompress an inflated entry
@@ -672,97 +682,4 @@ int inflate(void)
 
 	// return success
 	return 0;
-}
-
-// expansion buffer
-unsigned char	inbuf[INBUFSIZ];
-unsigned char *op;
-
-FILE_HND  ifd;				/* input file descriptor */
-unsigned int inptr;			/* index of next byte to be processed in inbuf */
-unsigned int insize;		/* valid bytes in inbuf */
-unsigned int outcnt;		/* bytes in output buffer */
-
-void clear_bufs(void);
-
-u32 data_read(FILE_HND *infile, u8 *dst_addr, u32 size)
-{
-	u32	i;
-
-	if ( infile->rest_size < size ) size = infile->rest_size;
-
-	i = ( size + 7 ) & 0xfffffff8;
-
-	if ( i != 0 ) {
-			dma_read(dst_addr, infile->next_addr,infile->next_addr+i); 
-	}
-
-	infile->rest_size -= i;
-	infile->next_addr += i;
-	if ( infile->rest_size & 0x80000000 ) infile->rest_size = 0;
-
-	return(size);
-}
-
-//===========================================================================
-// unzip
-//
-int unzip(void)
-{
-    int	res;
-    //
-    // Decompress
-    res = inflate();
-    if ( res == 3 ) {
-        return(-1);
-    } else if ( res != 0 ) {
-        return(-1);
-    }
-
-    return(0);
-}
-
-//===========================================================================
-// Clear input and output buffers
-void clear_bufs(void)
-{
-    insize = inptr = 0;
-}
-
-//===========================================================================
-// Fill the input buffer. This is called only when the buffer is empty.
-int fill_inbuf(int eof_ok)
-{
-    int len;
-
-    insize = 0;
-    do {
-        len = data_read(&ifd, (char*)inbuf+insize, INBUFSIZ-insize);
-        if ( len == 0 || len == -1 ) break;
-        insize += len;
-    } while (insize < INBUFSIZ);
-
-    if ( insize == 0 ) {
-        if (eof_ok) return -1;
-    }
-
-    inptr = 1;
-
-    return inbuf[0];
-}
-
-void flush_window(void)
-{
-    outcnt = 0;
-}
-
-
-void slidma(u8 *src_addr, u8 *dst_addr, u32 size)
-{
-	ifd.next_addr = src_addr;
-	ifd.rest_size = size;
-        op = dst_addr;
-
-	clear_bufs();
-	unzip();
 }
