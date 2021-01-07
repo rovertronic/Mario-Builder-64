@@ -18,10 +18,15 @@ char myString[] = "This is a " SCALE "2" "test string!\n"
 
 // ...
 void some_func(void) {
+	// initialized S2DEX; only needed once before all prints
+	s2d_init();
 	uObjMtx *buffer;
 	// substitute with a different alloc function as neccesary
 	buffer = alloc_display_list(0x200 * sizeof(uObjMtx));
 	s2d_print(50, 50, myString, buffer);
+
+	// reloads the original microcode; only needed once after all prints
+	s2d_stop();
 }
 ```
 

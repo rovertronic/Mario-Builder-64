@@ -44,20 +44,20 @@ void setup_font_texture(int idx) {
 
 // Original Mtx Pipeline
 // Distorts when rotating, but is faster
-void mtx_pipeline(uObjMtx *m, int x, int y) {
-    // init
-    mat2_ident(m, 1);
-    mat2_ident(&rot_mtx, 1);
+// void mtx_pipeline(uObjMtx *m, int x, int y) {
+//     // init
+//     mat2_ident(m, 1);
+//     mat2_ident(&rot_mtx, 1);
 
-    // create rot matrix
-    mat2_rotate(&rot_mtx, (myDegrees) * (M_PI / 180.0f));
-    // scale m
-    mat2_scale(m, myScale);
-    mat2_dst_mul(m,m,  &rot_mtx);
-    mat2_translate(m, x, y);
+//     // create rot matrix
+//     mat2_rotate(&rot_mtx, (myDegrees) * (M_PI / 180.0f));
+//     // scale m
+//     mat2_scale(m, myScale);
+//     mat2_dst_mul(m,m,  &rot_mtx);
+//     mat2_translate(m, x, y);
 
-    gSPObjMatrix(gdl_head++, m);
-}
+//     gSPObjMatrix(gdl_head++, m);
+// }
 
 // New matrix pipeline
 // Works with both rotation and scale,

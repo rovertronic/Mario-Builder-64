@@ -28,11 +28,11 @@ void mat2_copy(uObjMtx *dst, uObjMtx *src) {
 	dst->m.Y = src->m.Y;
 }
 
-void mat2_ident(uObjMtx *dst, int scale) {
-	dst->m.A = scale << 16;
+void mat2_ident(uObjMtx *dst, float scale) {
+	dst->m.A = (1 << 16);
 	dst->m.B = 0;
 	dst->m.C = 0;
-	dst->m.D = scale << 16;
+	dst->m.D = (1 << 16);
 
 	dst->m.X = 0;
 	dst->m.Y = 0;

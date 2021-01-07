@@ -88,6 +88,11 @@ void s2d_print(int x, int y, const char *str, uObjMtx *buf) {
 	s2d_snprint(x, y, str, buf, s2d_strlen(str));
 }
 
+void s2d_print_alloc(int x, int y, const char *str) {
+	uObjMtx *b = alloc(sizeof(uObjMtx) * s2d_strlen(str));
+	s2d_snprint(x, y, str, b, s2d_strlen(str));
+}
+
 void s2d_type_print(int x, int y, const char *str, uObjMtx *buf, int *pos) {
 	int len = s2d_strlen(str);
 

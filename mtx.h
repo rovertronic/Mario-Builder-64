@@ -8,7 +8,7 @@ extern void mat2_dst_mul(uObjMtx *dst, uObjMtx *m1, uObjMtx *m2);
 
 extern void mat2_dst_add(uObjMtx *dst, uObjMtx *m1, uObjMtx *m2);
 
-extern void mat2_ident(uObjMtx *dst, int scale);
+extern void mat2_ident(uObjMtx *dst, float scale);
 
 extern void mat2_mul(uObjMtx *m1, uObjMtx *m2);
 
