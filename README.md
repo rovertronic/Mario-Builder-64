@@ -37,3 +37,4 @@ void some_func(void) {
 - `ROTATE "N"` - Rotates each glyph by N degrees (Can be negative, useful for italics)
 - `TRANSLATE "X Y"` - Moves the rest of the string to the specified X and Y position
 - `COLOR "R G B A"` - Sets the text color to the specified value
+- `DROPSHADOW` - Toggles a drop shadow that shares the color of the current text
