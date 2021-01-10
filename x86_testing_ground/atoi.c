@@ -195,10 +195,33 @@ int main(void) {
 	// printf("%d\n", s2d_atoi(s, &s));
 	// printf("%s\n", s);
 	// s2d_print(0,0, t);
-	while (pos != strlen(my2)) {
+	char laStrBuf[0x100];
+	char ff[0x100];
+	sprintf(ff, 
+            "%s %d:"
+            TRANSLATE "134 93" "%s:"
+        , "Floor", 213, "Seed");
+	sprintf(
+        laStrBuf, 
+            "%s"
+            TRANSLATE "138 93" "%s"
+            TRANSLATE "138 110" "%s"
+            TRANSLATE "138 130" "%s"
+        , "The Basement", "LLRRABAB", "Continue", "End Run");
+
+	while (pos != strlen(laStrBuf)) {
 		// s2d_type_print(0, 0, myS, &pos);
-		printf("%d %s\n",s2d_ilen(my2 + pos), my2 + pos);
+		printf("%d %s\n",s2d_ilen(laStrBuf + pos), laStrBuf + pos);
 		pos++;
 	}
+	pos = 0;
+	while (pos != strlen(ff)) {
+		// s2d_type_print(0, 0, myS, &pos);
+		printf("%d %s\n",s2d_ilen(ff + pos), ff + pos);
+		pos++;
+	}
+	// laStrBuf[strlen(laStrBuf)] = "\x1";
+	// laStrBuf[strlen(laStrBuf)+1] = "\x1";
+	// printf("%s\n", laStrBuf);
 	// printf("%d\n", s2d_ilen(sss + 1));
 }

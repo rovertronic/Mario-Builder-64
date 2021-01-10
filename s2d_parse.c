@@ -70,8 +70,11 @@ void s2d_snprint(int x, int y, const char *str, uObjMtx *buf, int len) {
 				x += TAB_WIDTH_V;
 				y += TEX_HEIGHT;
 				break;
+			// case CH_SEPARATOR:
+			// 	CH_SKIP(p);
+			// 	break;
 			default:
-				if (current_char != '\0') {
+				if (current_char != '\0' && current_char != CH_SEPARATOR) {
 					draw_s2d_glyph(current_char, x, y, (buf++));
 					(x += (s2d_kerning_table[current_char] * myScale));
 				}
