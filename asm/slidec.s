@@ -7,13 +7,16 @@
 	first argument is top address of compress data.(align 4)
 	next argument is top address of decompress.
 */
+# assembler directives
+.set noat      # allow manual use of $at
+.set gp=64
+.include "macros.inc"
+	
+.align	4
 
-	.align	4
+.text
+glabel slidstart
 
-	.text
-	.globl	slidstart
-	.ent	slidstart
-	.set	reorder
 /* ===== START! ===== */
 slidstart:	lw	$24,4($4)	## R24=Output size
 			lw	$7,8($4)
