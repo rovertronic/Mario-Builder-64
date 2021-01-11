@@ -26,6 +26,9 @@
 #include "usb/usb.h"
 #include "usb/debug.h"
 #endif
+#ifdef SRAM
+#include "sram.h"
+#endif
 #include <prevent_bss_reordering.h>
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
@@ -38,7 +41,12 @@ struct GfxPool *gGfxPool;
 OSContStatus gControllerStatuses[4];
 OSContPad gControllerPads[4];
 u8 gControllerBits;
+#ifdef EEP
 s8 gEepromProbe;
+#endif
+#ifdef SRAM
+s8 gSramProbe;
+#endif
 OSMesgQueue gGameVblankQueue;
 OSMesgQueue D_80339CB8;
 OSMesg D_80339CD0;
@@ -555,9 +563,14 @@ void init_controllers(void) {
     gControllers[0].controllerData = &gControllerPads[0];
     osContInit(&gSIEventMesgQueue, &gControllerBits, &gControllerStatuses[0]);
 
+#ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.
     // save pak detection?
     gEepromProbe = osEepromProbe(&gSIEventMesgQueue);
+#endif
+#ifdef SRAM
+    gSramProbe = nuPiInitSram();
+#endif
 
     // loop over the 4 ports and link the controller structs to the appropriate
     // status and pad. Interestingly, although there are pointers to 3 controllers,

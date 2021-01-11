@@ -41,7 +41,12 @@ extern Gfx *gDisplayListHead;
 extern u8 *gGfxPoolEnd;
 extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
+#ifdef EEP
 extern s8 gEepromProbe;
+#endif
+#ifdef SRAM
+extern s8 gSramProbe;
+#endif
 
 extern void (*gGoddardVblankCallback)(void);
 extern struct Controller *gPlayer1Controller;

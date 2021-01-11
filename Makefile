@@ -43,6 +43,20 @@ COMPILER ?= gcc
 $(eval $(call validate-option,COMPILER,ido gcc))
 
 
+# SAVETYPE - selects the save type
+#   eep4k - uses EEPROM 4kbit
+#   eep16k - uses EEPROM 16kbit (There aren't any differences in syntax, but this is provided just in case)
+#   sram - uses SRAM 256Kbit
+SAVETYPE ?= eep4k
+$(eval $(call validate-option,SAVETYPE,eep4k eep16k sram))
+ifeq ($(SAVETYPE),eep4k)
+  DEFINES += EEP=1 EEP4K=1
+else ifeq ($(SAVETYPE),eep16k)
+  DEFINES += EEP=1 EEP16K=1
+else ifeq ($(SAVETYPE),sram)
+  DEFINES += SRAM=1
+endif
+
 COMPRESS ?= yay0
 $(eval $(call validate-option,COMPRESS,yay0 gzip))
 ifeq ($(COMPRESS),gzip)
@@ -803,8 +817,6 @@ $(ROM): $(ELF)
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)
 	$(OBJDUMP) -D $< > $@
-
-
 
 .PHONY: all clean distclean default diff test load
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed

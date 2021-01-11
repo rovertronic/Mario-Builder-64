@@ -11,6 +11,9 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#ifdef SRAM
+#include "sram.h"
+#endif
 
 #define MENU_DATA_MAGIC 0x4849
 #define SAVE_FILE_MAGIC 0x4441
@@ -43,13 +46,7 @@ s8 gLevelToCourseNumTable[] = {
 
 STATIC_ASSERT(ARRAY_COUNT(gLevelToCourseNumTable) == LEVEL_COUNT - 1,
               "change this array if you are adding levels");
-
-// This was probably used to set progress to 100% for debugging, but
-// it was removed from the release ROM.
-static void stub_save_file_1(void) {
-    UNUSED s32 pad;
-}
-
+#ifdef EEP
 /**
  * Read from EEPROM to a given address.
  * The EEPROM address is computed using the offset of the destination address from gSaveBuffer.
@@ -105,6 +102,65 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
 
     return status;
 }
+#endif
+#ifdef SRAM
+/**
+ * Read from SRAM to a given address.
+ * The SRAM address is computed using the offset of the destination address from gSaveBuffer.
+ * Try at most 4 times, and return 0 on success. On failure, return the status returned from
+ * nuPiReadSram. It also returns 0 if SRAM isn't loaded correctly in the system.
+ */
+static s32 read_eeprom_data(void *buffer, s32 size) {
+    s32 status = 0;
+
+    if (gSramProbe != 0) {
+        s32 triesLeft = 4;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) / 8;
+
+        do {
+#if ENABLE_RUMBLE
+            block_until_rumble_pak_free();
+#endif
+            triesLeft--;
+            status = nuPiReadSram(offset, buffer, size);
+#if ENABLE_RUMBLE
+            release_rumble_pak_control();
+#endif
+        } while (triesLeft > 0 && status != 0);
+    }
+
+    return status;
+}
+
+/**
+ * Write data to SRAM.
+ * The SRAM address is computed using the offset of the source address from gSaveBuffer.
+ * Try at most 4 times, and return 0 on success. On failure, return the status returned from
+ * nuPiWriteSram. Unlike read_eeprom_data, return 1 if SRAM isn't loaded.
+ */
+static s32 write_eeprom_data(void *buffer, s32 size) {
+    s32 status = 1;
+
+    if (gSramProbe != 0) {
+        s32 triesLeft = 4;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) >> 3;
+
+        do {
+#if ENABLE_RUMBLE
+            block_until_rumble_pak_free();
+#endif
+            triesLeft--;
+            status = nuPiWriteSram(offset, buffer, size);
+#if ENABLE_RUMBLE
+            release_rumble_pak_control();
+#endif
+        } while (triesLeft > 0 && status != 0);
+    }
+
+    return status;
+}
+#endif
+
 
 /**
  * Sum the bytes in data to data + size - 2. The last two bytes are ignored
@@ -329,8 +385,6 @@ void save_file_load_all(void) {
                 break;
         }
     }
-
-    stub_save_file_1();
 }
 
 /**

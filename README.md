@@ -5,6 +5,7 @@
 - It has been edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
 - Shindou Rumble Pak code is on for all regions.
 - Targeting the iQue Player is supported.
+- Saving to 32kbyte/256kbit SRAM is supported.
 - It has been patched with someone2639's shiftable segments patch
 - Getting HVQM FMV support to work with the game is in progress.
 - Getting UNFLoader (flashcart USB library) to work with the game is in progress.
