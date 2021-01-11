@@ -15,6 +15,8 @@
 #include "sram.h"
 #endif
 
+#define ALIGN4(val) (((val) + 0x3) & ~0x3)
+
 #define MENU_DATA_MAGIC 0x4849
 #define SAVE_FILE_MAGIC 0x4441
 
@@ -122,7 +124,7 @@ static s32 read_eeprom_data(void *buffer, s32 size) {
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
-            status = nuPiReadSram(offset, buffer, size);
+            status = nuPiReadSram(offset, buffer, ALIGN4(size));
 #if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
@@ -150,7 +152,7 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
-            status = nuPiWriteSram(offset, buffer, size);
+            status = nuPiWriteSram(offset, buffer, ALIGN4(size));
 #if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
