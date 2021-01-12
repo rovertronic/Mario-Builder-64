@@ -117,7 +117,7 @@ static s32 read_eeprom_data(void *buffer, s32 size) {
 
     if (gSramProbe != 0) {
         s32 triesLeft = 4;
-        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) / 8;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer);
 
         do {
 #if ENABLE_RUMBLE
@@ -145,7 +145,7 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
 
     if (gSramProbe != 0) {
         s32 triesLeft = 4;
-        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) >> 3;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer);
 
         do {
 #if ENABLE_RUMBLE
