@@ -48,7 +48,7 @@ int s2d_ilen(char *s) {
 }
 
 int s2d_strlen(char *s) {
-	int result;
+	int result = 0;
 	char *p = s;
 	do {result++;} while (*(++p) != '\0');
 	return result;
