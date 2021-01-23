@@ -333,6 +333,8 @@ endif
 # detect prefix for MIPS toolchain
 ifneq ($(call find-command,mips64-elf-ld),)
   CROSS := mips64-elf-
+else ifneq ($(call find-command,mips-n64-ld),)
+  CROSS := mips-n64-
 else ifneq ($(call find-command,mips-linux-gnu-ld),)
   CROSS := mips-linux-gnu-
 else ifneq ($(call find-command,mips64-linux-gnu-ld),)
@@ -365,7 +367,11 @@ ifneq (,$(call find-command,cpp-10))
 else
   CPP     := cpp
 endif
+ifneq ($(call find-command,mips-n64-ld),)
+LD        := mips-n64-ld
+else
 LD        := tools/mips64-elf-ld
+endif
 AR        := $(CROSS)ar
 OBJDUMP   := $(CROSS)objdump
 OBJCOPY   := $(CROSS)objcopy
