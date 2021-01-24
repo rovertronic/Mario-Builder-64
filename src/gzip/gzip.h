@@ -27,7 +27,7 @@
 #define WSIZE		0x8000
 
 typedef struct {
-	u32	next_addr;
+	u8 *	next_addr;
 	u32	rest_size;
 } FILE_HND;
 
@@ -47,13 +47,13 @@ extern	u8	window[];		// Sliding window and suffix table
 
 extern int	inflate(void);
 extern int	fill_inbuf(int eof_ok);
-extern void	flush_window(void);
+extern int	flush_window(void);
 
 
 //===========================================================================
 //
 //
-extern u32	expand_gzip(char *src_addr, char *dst_addr, u32 size);
+u32   expand_gzip(u8 *src_addr, u8 *dst_addr, u32 size, u32 outbytes_limit);
 
 
 #endif

@@ -66,6 +66,9 @@ else ifeq ($(COMPRESS),yay0)
   DEFINES += YAY0=1
 endif
 
+GZIPVER ?= std
+$(eval $(call validate-option,GZIPVER,std libdef))
+
 # VERSION - selects the version of the game to build
 #   jp - builds the 1996 Japanese version
 #   us - builds the 1996 North American version
@@ -435,6 +438,11 @@ AIFF_EXTRACT_CODEBOOK := $(TOOLS_DIR)/aiff_extract_codebook
 VADPCM_ENC            := $(TOOLS_DIR)/vadpcm_enc
 EXTRACT_DATA_FOR_MIO  := $(TOOLS_DIR)/extract_data_for_mio
 SKYCONV               := $(TOOLS_DIR)/skyconv
+ifeq ($(GZIPVER),std)
+GZIP                  := gzip
+else
+GZIP                  := libdeflate-gzip
+endif
 # Use the system installed armips if available. Otherwise use the one provided with this repository.
 ifneq (,$(call find-command,armips))
   RSPASM              := armips
@@ -602,10 +610,11 @@ ifeq ($(COMPRESS),gzip)
 # Compress binary file to gzip
 $(BUILD_DIR)/%.gz: $(BUILD_DIR)/%.bin
 	$(call print,Compressing:,$<,$@)
-	$(V)gzip -c -9 -n $< > $@
-#	$(V)dd if=/dev/zero bs=1 count=4 >> $@
-#	$(ROMALIGN) $@ 16
-#	$(V)$(FILESIZER) $< $@
+ifeq ($(GZIPVER),std)
+	$(V)$(GZIP) -c -9 -n $< > $@
+else
+	$(V)$(GZIP) -c -12 -n $< > $@
+endif
 
 # Strip gzip header
 $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.gz
@@ -813,12 +822,12 @@ $(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lhvqm2 -lgcc
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lhvqm2 -lgcc -lz
 
 # Build ROM
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
-	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $(@:.z64=.bin) -O binary
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $(@:.z64=.bin) -O binary
 	$(V)$(N64CKSUM) $(@:.z64=.bin) $@
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)

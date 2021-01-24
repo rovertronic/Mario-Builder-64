@@ -321,17 +321,6 @@ void *load_to_fixed_pool_addr(u8 *destAddr, u8 *srcStart, u8 *srcEnd) {
     return dest;
 }
 
-#ifdef GZIP
-u32 ExpandGZip(void *src, void *dest, u32 size)
-{
-	u32 len;
-
-	len = expand_gzip((char *)src, (char *)dest, size);
-
-	return ((u32)dest + len + 7) & ~7;
-}
-#endif
-
 /**
  * Decompress the block of ROM data from srcStart to srcEnd and return a
  * pointer to an allocated buffer holding the decompressed data. Set the
@@ -345,9 +334,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
 #else
     u32 compSize = ALIGN16(srcEnd - srcStart);
 #endif
-
     u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-
 #ifdef GZIP
     // Decompressed size from end of gzip
     u32 *size = (u32 *) (compressed + compSize);
@@ -355,13 +342,12 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     // Decompressed size from mio0 header
     u32 *size = (u32 *) (compressed + 4);
 #endif
-
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
         dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
         if (dest != NULL) {
 #ifdef GZIP
-            ExpandGZip(compressed, dest, compSize);
+            expand_gzip(compressed, dest, compSize, (u32)size);
 #else
             slidstart(compressed, dest);
 #endif
@@ -383,11 +369,14 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
     u32 compSize = ALIGN16(srcEnd - srcStart);
 #endif
     u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-
+#ifdef GZIP
+    // Decompressed size from end of gzip
+    u32 *size = (u32 *) (compressed + compSize);
+#endif
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
 #ifdef GZIP
-        ExpandGZip(gDecompressionHeap, compressed, compSize);
+        expand_gzip(compressed, gDecompressionHeap, compSize, (u32)size);
 #else
         slidstart(compressed, gDecompressionHeap);
 #endif

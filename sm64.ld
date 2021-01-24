@@ -145,6 +145,9 @@ SECTIONS
       */libgcc.a:_floatdisf.o(.text);
       */libgcc.a:_fixunsdfdi.o(.text);
       */libgcc.a:_cmpdi2.o(.text);
+#ifdef GZIP
+      */libz.a:*.o(.text);
+#endif
 #ifdef HVQM
       */libhvqm2.a:*.o(.text);
 #endif
@@ -170,7 +173,9 @@ SECTIONS
 #ifdef HVQM
       */libhvqm2.a:*.o(.data*);
 #endif
-
+#ifdef GZIP
+      */libz.a:*.o(.data*);
+#endif
       BUILD_DIR/lib/rsp.o(.data*);
 #ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.data*);
@@ -194,7 +199,9 @@ SECTIONS
 #ifdef HVQM
       */libhvqm2.a:*.o(.rodata*);
 #endif
-
+#ifdef GZIP
+      */libz.a:*.o(.rodata*);
+#endif
       BUILD_DIR/lib/rsp.o(.rodata*);
 #ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
@@ -217,13 +224,15 @@ SECTIONS
 #ifdef GZIP
       BUILD_DIR/src/gzip*.o(.bss*);
 #endif
-      
       */libultra_rom.a:*.o(COMMON);
       */libultra_rom.a:*.o(.scommon);
       */libultra_rom.a:*.o(.bss*);
       */libultra_rom.a:*.o(.sbss*);
 #ifdef HVQM
       */libhvqm2.a:*.o(.bss*);
+#endif
+#ifdef GZIP
+      */libz.a:*.o(.bss*);
 #endif
 
       . = ALIGN(0x8);
