@@ -827,7 +827,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 # Build ROM
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
-	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $(@:.z64=.bin) -O binary
+	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $(@:.z64=.bin) -O binary
 	$(V)$(N64CKSUM) $(@:.z64=.bin) $@
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)
