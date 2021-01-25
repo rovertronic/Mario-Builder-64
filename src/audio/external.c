@@ -10,9 +10,6 @@
 #include "game/level_update.h"
 #include "game/object_list_processor.h"
 #include "game/camera.h"
-#ifdef UNF
-#include "usb/debug.h"
-#endif
 #include "seq_ids.h"
 #include "dialog_ids.h"
 
@@ -2361,9 +2358,6 @@ void play_music(u8 player, u16 seqArgs, u16 fadeTimer) {
     u8 i;
     u8 foundIndex = 0;
 
-#ifdef UNF
-    debug_printf("Just play them immediately, stopping any old sequence.\n");
-#endif
     // Except for the background music player, we don't support queued
     // sequences. Just play them immediately, stopping any old sequence.
     if (player != SEQ_PLAYER_LEVEL) {
@@ -2371,9 +2365,6 @@ void play_music(u8 player, u16 seqArgs, u16 fadeTimer) {
         return;
     }
 
-#ifdef UNF
-    debug_printf("Abort if the queue is already full.\n");
-#endif
     // Abort if the queue is already full.
     if (sBackgroundMusicQueueSize == MAX_BACKGROUND_MUSIC_QUEUE_SIZE) {
         return;
@@ -2385,23 +2376,14 @@ void play_music(u8 player, u16 seqArgs, u16 fadeTimer) {
     for (i = 0; i < sBackgroundMusicQueueSize; i++) {
         if (sBackgroundMusicQueue[i].seqId == seqId) {
             if (i == 0) {
-#ifdef UNF
-    debug_printf("seq_player_play_sequence\n");
-#endif
                 seq_player_play_sequence(SEQ_PLAYER_LEVEL, seqId, fadeTimer);
             } else if (!gSequencePlayers[SEQ_PLAYER_LEVEL].enabled) {
-#ifdef UNF
-    debug_printf("stop_background_music\n");
-#endif
                 stop_background_music(sBackgroundMusicQueue[0].seqId);
             }
             return;
         }
     }
 
-#ifdef UNF
-    debug_printf("Find the next sequence slot by priority.\n");
-#endif
     // Find the next sequence slot by priority.
     for (i = 0; i < sBackgroundMusicQueueSize; i++) {
         if (sBackgroundMusicQueue[i].priority <= priority) {
@@ -2413,9 +2395,6 @@ void play_music(u8 player, u16 seqArgs, u16 fadeTimer) {
     // If the sequence ends up first in the queue, start it, and make space for
     // one more entry in the queue.
     if (foundIndex == 0) {
-#ifdef UNF
-    debug_printf("seq_player_play_sequence\n");
-#endif
         seq_player_play_sequence(SEQ_PLAYER_LEVEL, seqId, fadeTimer);
         sBackgroundMusicQueueSize++;
     }

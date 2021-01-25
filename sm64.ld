@@ -105,13 +105,6 @@ SECTIONS
    /*ASSERT((. <= SEG_MAIN), "Error: buffers segment extended into main")*/
 
    . = _buffersSegmentNoloadEnd;
-   /* lib/src/__osDevMgrMain.c and lib/src/osCreateViManager.c contain infinite
-    * loops compiled without -g, which cause the return statements and the .o
-    * files themselves to be aligned to 32-byte boundaries. But the linker
-    * Nintendo used did not respect .o file alignment, and aligned the files
-    * only to 16 bytes, in some cases misaligning them. We force the same to
-    * happen using the SUBALIGN directive. This is harmless; the alignment is
-    * just an optimization. */
    BEGIN_SEG(main, .) SUBALIGN(16)
    {
       BUILD_DIR/asm/entry.o(.text);
@@ -130,8 +123,8 @@ SECTIONS
 #ifdef YAY0
       BUILD_DIR/asm/slidec.o(.text);
 #endif
-
       */libultra_rom.a:*.o(.text);
+      */libnustd.a:*.o(.text);
       */libgcc.a:_umoddi3.o(.text);
       */libgcc.a:_udivdi3.o(.text);
       */libgcc.a:_divdi3.o(.text);
@@ -142,8 +135,8 @@ SECTIONS
       */libgcc.a:_fixunssfdi.o(.text);
       */libgcc.a:_fixunsdfdi.o(.text);
       */libgcc.a:_floatdidf.o(.text);
+      */libgcc.a:_floatundidf.o(.text);
       */libgcc.a:_floatdisf.o(.text);
-      */libgcc.a:_fixunsdfdi.o(.text);
       */libgcc.a:_cmpdi2.o(.text);
 #ifdef GZIP
       */libz.a:*.o(.text);
@@ -195,6 +188,9 @@ SECTIONS
       */libgcc.a:_umoddi3.o(.rodata*);
       */libgcc.a:_udivdi3.o(.rodata*);
       */libgcc.a:_divdi3.o(.rodata*);
+      */libgcc.a:_clz.o(.rodata*);
+      */libgcc.a:_fixunsdfdi.o(.rodata*);
+      */libgcc.a:_floatundidf.o(.rodata*);
       */libgcc.a:_moddi3.o(.rodata*);
 #ifdef HVQM
       */libhvqm2.a:*.o(.rodata*);

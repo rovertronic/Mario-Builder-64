@@ -14,9 +14,6 @@
 #ifdef GZIP
 #include "gzip/gzip.h"
 #endif
-#ifdef UNF
-#include "usb/debug.h"
-#endif
 
 
 // round up to the next multiple
@@ -393,16 +390,10 @@ void load_engine_code_segment(void) {
     UNUSED u32 alignedSize = ALIGN16(_engineSegmentRomEnd - _engineSegmentRomStart);
 
     bzero(startAddr, totalSize);
-#ifdef UNF
-    debug_printf("DMA-ing engine segment...");
-#endif
     osWritebackDCacheAll();
     dma_read(startAddr, _engineSegmentRomStart, _engineSegmentRomEnd);
     osInvalICache(startAddr, totalSize);
     osInvalDCache(startAddr, totalSize);
-#ifdef UNF
-    debug_printf("\rDMA-ing engine segment...Done!\n");
-#endif
 }
 #endif
 

@@ -7,7 +7,7 @@
 
     // Settings
     #define DEBUG_MODE        1   // Enable/Disable debug mode
-    #define DEBUG_INIT_MSG    1   // Print a message when debug mode has initialized
+    #define DEBUG_INIT_MSG    0   // Print a message when debug mode has initialized
     #define USE_FAULTTHREAD   0   // Create a fault detection thread 
     #define OVERWRITE_OSPRINT 0   // Replaces osSyncPrintf calls with debug_printf
     #define MAX_COMMANDS      25  // The max amount of user defined commands possible
