@@ -57,10 +57,12 @@ else ifeq ($(SAVETYPE),sram)
   DEFINES += SRAM=1
 endif
 
+DEFINES += NO_ERRNO_H=1 NO_GZIP=1
+
 COMPRESS ?= yay0
 $(eval $(call validate-option,COMPRESS,yay0 gzip rnc1 rnc2))
 ifeq ($(COMPRESS),gzip)
-  DEFINES += GZIP=1 NO_ERRNO_H=1 NO_GZIP=1
+  DEFINES += GZIP=1
 else ifeq ($(COMPRESS),rnc1)
   DEFINES += RNC1=1
 else ifeq ($(COMPRESS),rnc2)
