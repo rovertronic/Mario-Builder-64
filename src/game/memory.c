@@ -12,7 +12,7 @@
 #include "segment_symbols.h"
 #include "segments.h"
 #ifdef GZIP
-#include "gzip/gzip.h"
+#include <gzip.h>
 #endif
 #if defined(RNC1) || defined(RNC2)
 #include <rnc.h>
