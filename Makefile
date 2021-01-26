@@ -58,10 +58,14 @@ else ifeq ($(SAVETYPE),sram)
 endif
 
 COMPRESS ?= yay0
-$(eval $(call validate-option,COMPRESS,yay0 gzip))
+$(eval $(call validate-option,COMPRESS,yay0 gzip rnc1 rnc2))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
   SRC_DIRS += src/gzip
+else ifeq ($(COMPRESS),rnc1)
+  DEFINES += RNC1=1
+else ifeq ($(COMPRESS),rnc2)
+  DEFINES += RNC2=1
 else ifeq ($(COMPRESS),yay0)
   DEFINES += YAY0=1
 endif
@@ -427,6 +431,7 @@ export LANG := C
 
 # N64 tools
 YAY0TOOL              := $(TOOLS_DIR)/slienc
+RNCPACK               := $(TOOLS_DIR)/rncpack
 ROMALIGN              := $(TOOLS_DIR)/romalign
 BFSIZE                := $(TOOLS_DIR)/bfsize
 FILESIZER             := $(TOOLS_DIR)/filesizer
@@ -607,35 +612,13 @@ $(BUILD_DIR)/levels/%/leveldata.bin: $(BUILD_DIR)/levels/%/leveldata.elf
 	$(V)$(EXTRACT_DATA_FOR_MIO) $< $@
 
 ifeq ($(COMPRESS),gzip)
-# Compress binary file to gzip
-$(BUILD_DIR)/%.gz: $(BUILD_DIR)/%.bin
-	$(call print,Compressing:,$<,$@)
-ifeq ($(GZIPVER),std)
-	$(V)$(GZIP) -c -9 -n $< > $@
+include gziprules.mk
+else ifeq ($(COMPRESS),rnc1)
+include rnc1rules.mk
+else ifeq ($(COMPRESS),rnc2)
+include rnc2rules.mk
 else
-	$(V)$(GZIP) -c -12 -n $< > $@
-endif
-
-# Strip gzip header
-$(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.gz
-	$(call print,Converting:,$<,$@)
-	$(V)dd bs=10 skip=1 if=$< of=$@
-	$(V)$(FILESIZER) $(<:.gz=.bin) $@
-
-# convert binary szp to object file
-$(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
-	$(call print,Converting GZIP to ELF:,$<,$@)
-	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
-else
-# Compress binary file
-$(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.bin
-	$(call print,Compressing:,$<,$@)
-	$(V)$(YAY0TOOL) $< $@
-
-# convert binary szp to object file
-$(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
-	$(call print,Converting YAY0 to ELF:,$<,$@)
-	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
+include yay0rules.mk
 endif
 
 #==============================================================================#
@@ -807,7 +790,7 @@ endif
 # Assemble assembly code
 $(BUILD_DIR)/%.o: %.s
 	$(call print,Assembling:,$<,$@)
-	$(V)$(AS) $(ASFLAGS) -MD $(BUILD_DIR)/$*.d -o $@ $<
+	$(V)$(CPP) $(CPPFLAGS) $< | $(AS) $(ASFLAGS) -MD $(BUILD_DIR)/$*.d -o $@
 
 # Assemble RSP assembly code
 $(BUILD_DIR)/rsp/%.bin $(BUILD_DIR)/rsp/%_data.bin: rsp/%.s

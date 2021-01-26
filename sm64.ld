@@ -123,6 +123,12 @@ SECTIONS
 #ifdef YAY0
       BUILD_DIR/asm/slidec.o(.text);
 #endif
+#ifdef RNC1
+      BUILD_DIR/asm/rnc1.o(.text);
+#endif
+#ifdef RNC2
+      BUILD_DIR/asm/rnc2.o(.text);
+#endif
       */libultra_rom.a:*.o(.text);
       */libnustd.a:*.o(.text);
       */libgcc.a:_umoddi3.o(.text);
@@ -159,6 +165,9 @@ SECTIONS
       BUILD_DIR/src/audio*.o(.sdata*);
 #ifdef GZIP
       BUILD_DIR/src/gzip*.o(.data*);
+#endif
+#ifdef RNC2
+      BUILD_DIR/asm/rnc2.o(.data*);
 #endif
 
       */libultra_rom.a:*.o(.data*);

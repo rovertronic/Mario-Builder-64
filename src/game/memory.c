@@ -14,6 +14,9 @@
 #ifdef GZIP
 #include "gzip/gzip.h"
 #endif
+#if defined(RNC1) || defined(RNC2)
+#include <rnc.h>
+#endif
 
 
 // round up to the next multiple
@@ -345,6 +348,10 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
         if (dest != NULL) {
 #ifdef GZIP
             expand_gzip(compressed, dest, compSize, (u32)size);
+#elif RNC1
+            Propack_UnpackM1(compressed, dest);
+#elif RNC2
+            Propack_UnpackM2(compressed, dest);
 #else
             slidstart(compressed, dest);
 #endif
@@ -374,6 +381,10 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
         dma_read(compressed, srcStart, srcEnd);
 #ifdef GZIP
         expand_gzip(compressed, gDecompressionHeap, compSize, (u32)size);
+#elif RNC1
+        Propack_UnpackM1(compressed, gDecompressionHeap);
+#elif RNC2
+        Propack_UnpackM2(compressed, gDecompressionHeap);
 #else
         slidstart(compressed, gDecompressionHeap);
 #endif

@@ -23,7 +23,7 @@ I may attempt FlashRAM in the future.
 
 The repository supports targeting the iQue Player in addition to the N64. The iQue libultra is ***NOT*** compatible with N64 in many ways, so it is currently NOT possible to have one build for both consoles.
 
-To target iQue, run make with the ``CONSOLE=BB`` argument.
+To target iQue, run make with the ``CONSOLE=bb`` argument.
 
 ## Compression
 
@@ -33,13 +33,19 @@ On average I'd estimate that the bottleneck on decompression is about 1-2 second
 
 To switch to gzip, run make with the ``COMPRESS=gzip`` argument.
 
-Additionally, the repo also supports compressing with ``libdeflate-gzip``. This compresses at a slightly better ratio than standard ``gzip``, with no real downside from a decompression standpoint.
+The repo also supports gziping with ``libdeflate-gzip``. This compresses at a slightly better ratio than standard ``gzip``, with no real downside from a decompression standpoint.
 
 To use ``libdeflate-gzip``, first clone the [repo](https://github.com/ebiggers/libdeflate), then make and make install it.
 
 Then run make for sm64 with ``GZIPVER=libdef`` in addition to ``COMPRESS=gzip``
 
-This argument makes the makefile use ``libdeflate`` with it's highest compression setting, ``-12``.
+The repo also supports RNC (Rob Northen Compression). RNC has two methods. 
+
+Method 1 is designed to compress as small as possible, while method 2 is designed so that decompression is as fast as possible.
+
+Both methods are fast. Method 1 has better compression than 2, so I suggest using method 1 if using RNC.
+
+To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
 
 
 ## FAQ
