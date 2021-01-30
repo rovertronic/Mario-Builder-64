@@ -796,7 +796,11 @@ endif
 # Assemble assembly code
 $(BUILD_DIR)/%.o: %.s
 	$(call print,Assembling:,$<,$@)
+ifeq ($(COMPILER),ido)
 	$(V)$(CPP) $(CPPFLAGS) $< | $(AS) $(ASFLAGS) -MD $(BUILD_DIR)/$*.d -o $@
+else
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+endif
 
 # Assemble RSP assembly code
 $(BUILD_DIR)/rsp/%.bin $(BUILD_DIR)/rsp/%_data.bin: rsp/%.s
@@ -821,7 +825,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 # Build ROM
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
-	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
 	$(V)$(N64CKSUM) $@
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)
