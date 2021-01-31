@@ -1,3 +1,6 @@
+// This is taken from rnc_propack_source by lab313ru
+// Original repo: https://github.com/lab313ru/rnc_propack_source
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
