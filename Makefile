@@ -802,6 +802,10 @@ else
 	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
 endif
 
+$(BUILD_DIR)/sound/sequences/00_sound_player.o: sound/sequences/00_sound_player.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(AS) $(ASFLAGS) -MD $(BUILD_DIR)/sound/sequences/00_sound_player.d -o $@ $<
+
 # Assemble RSP assembly code
 $(BUILD_DIR)/rsp/%.bin $(BUILD_DIR)/rsp/%_data.bin: rsp/%.s
 	$(call print,Assembling:,$<,$@)
