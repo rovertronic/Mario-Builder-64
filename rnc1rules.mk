@@ -5,5 +5,5 @@ $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.bin
 
 # convert binary szp to object file
 $(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
-	$(call print,Converting RNC to ELF:,$<,$@)
+	$(call print,Converting RNC1 to ELF:,$<,$@)
 	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
