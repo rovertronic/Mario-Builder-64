@@ -352,7 +352,7 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
             Propack_UnpackM1(compressed, dest);
 #elif RNC2
             Propack_UnpackM2(compressed, dest);
-#else
+#elif YAY0
             slidstart(compressed, dest);
 #endif
             set_segment_base_addr(segment, dest);
@@ -385,7 +385,7 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
         Propack_UnpackM1(compressed, gDecompressionHeap);
 #elif RNC2
         Propack_UnpackM2(compressed, gDecompressionHeap);
-#else
+#elif YAY0
         slidstart(compressed, gDecompressionHeap);
 #endif
         set_segment_base_addr(segment, gDecompressionHeap);

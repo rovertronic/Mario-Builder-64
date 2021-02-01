@@ -564,7 +564,7 @@ else ifeq ($(COMPRESS),rnc1)
 include rnc1rules.mk
 else ifeq ($(COMPRESS),rnc2)
 include rnc2rules.mk
-else
+else ifeq ($(COMPRESS),yay0)
 include yay0rules.mk
 endif
 
