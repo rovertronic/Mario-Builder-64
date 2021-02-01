@@ -7,7 +7,7 @@ CC           := gcc
 CXX          := g++
 CFLAGS       := -I . -Wall -Wextra -Wno-unused-parameter -pedantic -O2 -s
 LDFLAGS      := -lm
-ALL_PROGRAMS := armips bfsize filesizer rncpack n64graphics n64graphics_ci mio0 slienc n64cksum textconv patch_libultra_math aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
+ALL_PROGRAMS := armips filesizer rncpack n64graphics n64graphics_ci mio0 slienc n64cksum textconv patch_libultra_math aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
 LIBAUDIOFILE := audiofile/libaudiofile.a
 
 # Only build armips from tools if it is not found on the system
@@ -18,8 +18,6 @@ else
 endif
 
 default: all
-
-bfsize_SOURCES		:= bfsize.c
 
 filesizer_SOURCES	:= filesizer.c
 
@@ -69,24 +67,20 @@ endif
 
 all-except-recomp: $(LIBAUDIOFILE) $(BUILD_PROGRAMS)
 
-all: all-except-recomp ido5.3_recomp
+all: all-except-recomp
 
 clean:
 	$(RM) $(ALL_PROGRAMS)
 	$(MAKE) -C audiofile clean
-	$(MAKE) -C ido5.3_recomp clean
 
 define COMPILE
 $(1): $($1_SOURCES)
 	$$(CC) $(CFLAGS) $($1_CFLAGS) $$^ -o $$@ $($1_LDFLAGS) $(LDFLAGS)
 endef
 
-ido5.3_recomp:
-	$(MAKE) -C ido5.3_recomp
-
 $(foreach p,$(BUILD_PROGRAMS),$(eval $(call COMPILE,$(p))))
 
 $(LIBAUDIOFILE):
 	@$(MAKE) -C audiofile
 
-.PHONY: all all-except-recomp clean default ido5.3_recomp
+.PHONY: all all-except-recomp clean default
