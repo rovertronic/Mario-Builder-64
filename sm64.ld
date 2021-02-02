@@ -86,11 +86,6 @@ SECTIONS
    BEGIN_NOLOAD(buffers)
    {
       BUILD_DIR/src/buffers/buffers.o(.bss*);
-#ifdef HVQM
-      BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
-      BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
-      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
-#endif
       BUILD_DIR/src/audio/globals_start.o(.bss*);
       BUILD_DIR/src/audio/synthesis.o(.bss*);
       BUILD_DIR/src/audio/heap.o(.bss*);
@@ -102,9 +97,28 @@ SECTIONS
    }
    END_NOLOAD(buffers)
 
-   /*ASSERT((. <= SEG_MAIN), "Error: buffers segment extended into main")*/
-
    . = _buffersSegmentNoloadEnd;
+
+#ifdef HVQM
+   BEGIN_NOLOAD(hvqmwork)
+   {
+      BUILD_DIR/src/hvqm/hvqmwork.o(.bss*);
+   }
+   END_NOLOAD(hvqmwork)
+   BEGIN_NOLOAD(adpcmbuf)
+   {
+      BUILD_DIR/src/hvqm/adpcmbuf.o(.bss*);
+   }
+   END_NOLOAD(adpcmbuf)
+   BEGIN_NOLOAD(hvqbuf)
+   {
+      BUILD_DIR/src/hvqm/hvqbuf.o(.bss*);
+   }
+   END_NOLOAD(hvqbuf)
+
+   . = _hvqbufSegmentNoloadEnd;
+#endif
+
    BEGIN_SEG(main, .) SUBALIGN(16)
    {
       BUILD_DIR/asm/entry.o(.text);
@@ -434,13 +448,6 @@ SECTIONS
       BUILD_DIR/data/capcom.o(.data);
    }
 	END_SEG(capcom)
-#endif
-#if 0
-   BEGIN_SEG(sein, __romPos) SUBALIGN(2)
-   {
-      BUILD_DIR/data/sein.o(.data);
-   }
-	END_SEG(sein)
 #endif
    /* Discard everything not specifically mentioned above. */
    /DISCARD/ :
