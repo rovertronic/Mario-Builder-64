@@ -1,5 +1,6 @@
 #include <ultra64.h>
 #include <PR/os_system.h>
+#include <PR/os_vi.h>
 #include <stdio.h>
 
 #include "sm64.h"
@@ -45,6 +46,8 @@ OSMesg gPIMesgBuf[32];
 OSMesg gSIEventMesgBuf[1];
 OSMesg gIntrMesgBuf[16];
 OSMesg gUnknownMesgBuf[16];
+
+OSViMode VI;
 
 struct VblankHandler *gVblankHandler1 = NULL;
 struct VblankHandler *gVblankHandler2 = NULL;
@@ -407,6 +410,28 @@ void turn_off_audio(void) {
     }
 }
 
+void change_vi(OSViMode *mode, int width, int height){
+
+    mode->comRegs.width = width;
+    mode->comRegs.xScale = (width*512)/320;
+    if(height > 240)
+    {
+        mode->comRegs.ctrl |= 0x40;
+        mode->fldRegs[0].origin = width*2;
+        mode->fldRegs[1].origin = width*4;
+        mode->fldRegs[0].yScale = 0x2000000|((height*1024)/240);
+        mode->fldRegs[1].yScale = 0x2000000|((height*1024)/240);
+        mode->fldRegs[0].vStart = mode->fldRegs[1].vStart-0x20002;
+    }
+    else
+    {
+        mode->fldRegs[0].origin = width*2;
+        mode->fldRegs[1].origin = width*4;
+        mode->fldRegs[0].yScale = ((height*1024)/240);
+        mode->fldRegs[1].yScale = ((height*1024)/240);
+    }
+}
+
 /**
  * Initialize hardware, start main thread, then idle.
  */
@@ -416,17 +441,22 @@ void thread1_idle(UNUSED void *arg) {
 	switch ( osTvType ) {
 	case OS_TV_NTSC:
 		// NTSC
-        osViSetMode(&osViModeTable[OS_VI_NTSC_LAN1]);
+        //osViSetMode(&osViModeTable[OS_VI_NTSC_LAN1]);
+        VI = osViModeTable[OS_VI_NTSC_LAN1];
 		break;
 	case OS_TV_MPAL:
 		// MPAL
-        osViSetMode(&osViModeTable[OS_VI_MPAL_LAN1]);
+        //osViSetMode(&osViModeTable[OS_VI_MPAL_LAN1]);
+        VI = osViModeTable[OS_VI_MPAL_LAN1];
 		break;
 	case OS_TV_PAL:
 		// PAL
-		osViSetMode(&osViModeTable[OS_VI_PAL_LAN1]);
+		//osViSetMode(&osViModeTable[OS_VI_PAL_LAN1]);
+        VI = osViModeTable[OS_VI_PAL_LAN1];
 		break;
 	}
+    change_vi(&VI, SCREEN_WIDTH, SCREEN_HEIGHT);
+    osViSetMode(&VI);
     osViBlack(TRUE);
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_GAMMA_OFF);
