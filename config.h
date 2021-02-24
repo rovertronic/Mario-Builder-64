@@ -25,6 +25,10 @@ extern Gfx *gdl_head;
 // an allocator function of the format void *alloc(size_t bytes)
 #define alloc alloc_display_list
 
+// your init functions for the RDP/RSP
+#define my_rdp_init my_rdp_init
+#define my_rsp_init my_rsp_init
+
 // The frame timer that is used to time s2d_type_print
 #define s2d_timer gGlobalTimer
 extern u32 s2d_timer;
