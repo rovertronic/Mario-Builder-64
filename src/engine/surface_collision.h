@@ -40,6 +40,7 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil);
 f32 find_floor_height_and_data(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometry **floorGeo);
 f32 find_floor_height(f32 x, f32 y, f32 z);
 f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor);
+f32 find_water_level_and_floor(f32 x, f32 z, struct Surface **pfloor);
 f32 find_water_level(f32 x, f32 z);
 f32 find_poison_gas_level(f32 x, f32 z);
 void debug_surface_list_info(f32 xPos, f32 zPos);

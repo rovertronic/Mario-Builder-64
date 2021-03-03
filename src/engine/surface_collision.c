@@ -110,12 +110,12 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
 
         // Determine if checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
         } else {
             // Ignore camera only surfaces.
-            if (surf->type == SURFACE_CAMERA_BOUNDARY) {
+            if (surf->type == SURFACE_CAMERA_BOUNDARY || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
 
@@ -257,12 +257,12 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
 
         // Determine if checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera != 0) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
         }
         // Ignore camera only surfaces.
-        else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
+        else if (surf->type == SURFACE_CAMERA_BOUNDARY || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
             continue;
         }
 
@@ -432,7 +432,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
 
         // Determine if we are checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera != 0) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
         }
@@ -465,6 +465,77 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
 
     //! (Surface Cucking) Since only the first floor is returned and not the highest,
     //  higher floors can be "cucked" by lower floors.
+    return floor;
+}
+
+static s16 check_within_triangle_bounds(s32 x, s32 z, struct Surface *surf) {
+    register s32 x1, z1, x2, z2, x3, z3;
+    x1 = surf->vertex1[0];
+    z1 = surf->vertex1[2];
+    x2 = surf->vertex2[0];
+    z2 = surf->vertex2[2];
+
+    if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) < 0) return FALSE;
+
+    x3 = surf->vertex3[0];
+    z3 = surf->vertex3[2];
+
+    if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) < 0) return FALSE;
+    if ((z3 - z) * (x1 - x3) - (x3 - x) * (z1 - z3) < 0) return FALSE;
+
+    return TRUE;
+}
+
+// Find the height of the floor at a given location
+static f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
+    return -(x * surf->normal.x + surf->normal.z * z + surf->originOffset) / surf->normal.y;
+}
+
+/**
+ * Iterate through the list of water floors and find the first water floor under a given point.
+ */
+struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z,
+                                            f32 *pheight) {
+    register struct Surface *surf;
+    struct Surface *floor = NULL;
+    struct SurfaceNode *topSurfaceNode = surfaceNode;
+    struct SurfaceNode *bottomSurfaceNode = surfaceNode;
+    f32 height = FLOOR_LOWER_LIMIT;
+    f32 bottomHeight = FLOOR_LOWER_LIMIT;
+
+    // Iterate through the list of water floors until there are no more water floors.
+    while (bottomSurfaceNode != NULL) {
+        f32 curBottomHeight = FLOOR_LOWER_LIMIT;
+        surf = bottomSurfaceNode->surface;
+        bottomSurfaceNode = bottomSurfaceNode->next;
+
+        if (surf->type != SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
+
+        curBottomHeight = get_floor_height_at_location(x, z, surf);
+
+        if (curBottomHeight < y - 78.0f) continue;
+        if (curBottomHeight >= y - 78.0f) bottomHeight = curBottomHeight;
+    }
+
+    // Iterate through the list of water tops until there are no more water tops.
+    while (topSurfaceNode != NULL) {
+        f32 curHeight = FLOOR_LOWER_LIMIT;
+        surf = topSurfaceNode->surface;
+        topSurfaceNode = topSurfaceNode->next;
+
+        if (surf->type == SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
+
+        curHeight = get_floor_height_at_location(x, z, surf);
+
+        if (bottomHeight != FLOOR_LOWER_LIMIT && curHeight > bottomHeight) continue;
+
+        if (curHeight > height) {
+            height = curHeight;
+            *pheight = curHeight;
+            floor = surf;
+        }
+    }
+
     return floor;
 }
 
@@ -579,9 +650,92 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     return height;
 }
 
+/**
+ * Find the highest water floor under a given position and return the height.
+ */
+f32 find_water_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+    s16 cellZ, cellX;
+
+    struct Surface *floor = NULL;
+    struct SurfaceNode *surfaceList;
+
+    f32 height = FLOOR_LOWER_LIMIT;
+
+    s16 x = (s16) xPos;
+    s16 y = (s16) yPos;
+    s16 z = (s16) zPos;
+
+    if (x <= -LEVEL_BOUNDARY_MAX || x >= LEVEL_BOUNDARY_MAX) {
+        return height;
+    }
+    if (z <= -LEVEL_BOUNDARY_MAX || z >= LEVEL_BOUNDARY_MAX) {
+        return height;
+    }
+
+    // Each level is split into cells to limit load, find the appropriate cell.
+    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+
+    // Check for surfaces that are a part of level geometry.
+    surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next;
+    floor = find_water_floor_from_list(surfaceList, x, y, z, &height);
+
+    if (floor == NULL) {
+        height = FLOOR_LOWER_LIMIT;
+    } else {
+        *pfloor = floor;
+    }
+
+    return height;
+}
+
 /**************************************************
  *               ENVIRONMENTAL BOXES              *
  **************************************************/
+
+/**
+ * Finds the height of water at a given location.
+ */
+f32 find_water_level_and_floor(f32 x, f32 z, struct Surface **pfloor) {
+    s32 i;
+    s32 numRegions;
+    s16 val;
+    f32 loX, hiX, loZ, hiZ;
+    f32 waterLevel = FLOOR_LOWER_LIMIT;
+    s16 *p = gEnvironmentRegions;
+    struct Surface *floor = NULL;
+
+    if (gCheckingSurfaceCollisionsForCamera) {
+        waterLevel = find_water_floor(x, gLakituState.pos[1], z, &floor);
+    } else {
+        waterLevel = find_water_floor(x, gMarioState->pos[1], z, &floor);
+    }
+
+    if (p != NULL && waterLevel == FLOOR_LOWER_LIMIT) {
+        numRegions = *p++;
+
+        for (i = 0; i < numRegions; i++) {
+            val = *p++;
+            loX = *p++;
+            loZ = *p++;
+            hiX = *p++;
+            hiZ = *p++;
+
+            // If the location is within a water box and it is a water box.
+            // Water is less than 50 val only, while above is gas and such.
+            if (loX < x && x < hiX && loZ < z && z < hiZ && val < 50) {
+                // Set the water height. Since this breaks, only return the first height.
+                waterLevel = *p;
+                break;
+            }
+            p++;
+        }
+    } else {
+        *pfloor = floor;
+    }
+
+    return waterLevel;
+}
 
 /**
  * Finds the height of water at a given location.
@@ -593,8 +747,15 @@ f32 find_water_level(f32 x, f32 z) {
     f32 loX, hiX, loZ, hiZ;
     f32 waterLevel = FLOOR_LOWER_LIMIT;
     s16 *p = gEnvironmentRegions;
+    struct Surface *floor;
 
-    if (p != NULL) {
+    if (gCheckingSurfaceCollisionsForCamera) {
+        waterLevel = find_water_floor(x, gLakituState.pos[1], z, &floor);
+    } else {
+        waterLevel = find_water_floor(x, gMarioState->pos[1], z, &floor);
+    }
+
+    if (p != NULL && waterLevel == FLOOR_LOWER_LIMIT) {
         numRegions = *p++;
 
         for (i = 0; i < numRegions; i++) {

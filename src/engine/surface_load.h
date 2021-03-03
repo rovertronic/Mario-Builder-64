@@ -21,10 +21,11 @@ enum
 {
     SPATIAL_PARTITION_FLOORS,
     SPATIAL_PARTITION_CEILS,
-    SPATIAL_PARTITION_WALLS
+    SPATIAL_PARTITION_WALLS,
+    SPATIAL_PARTITION_WATER
 };
 
-typedef struct SurfaceNode SpatialPartitionCell[3];
+typedef struct SurfaceNode SpatialPartitionCell[4];
 
 // Needed for bs bss reordering memes.
 extern s32 unused8038BE90;

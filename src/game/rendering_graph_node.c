@@ -696,7 +696,7 @@ static void geo_process_shadow(struct GraphNodeShadow *node) {
             gMatStackFixed[gMatStackIndex] = mtx;
             if (gShadowAboveWaterOrLava == TRUE) {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
-            } else if (gMarioOnIceOrCarpet == 1) {
+            } else if (gMarioOnIceOrCarpet == 1 || gShadowAboveCustomWater == 1) {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
             } else {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);

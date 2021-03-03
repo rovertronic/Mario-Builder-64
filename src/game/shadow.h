@@ -38,6 +38,7 @@ extern s16 sSurfaceTypeBelowShadow;
  * Flag for if the current shadow is above water or lava.
  */
 extern s8 gShadowAboveWaterOrLava;
+extern s8 gShadowAboveCustomWater;
 
 /**
  * Flag for if Mario is on ice or a flying carpet.
