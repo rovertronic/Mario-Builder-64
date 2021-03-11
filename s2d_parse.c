@@ -8,8 +8,11 @@
 #include "s2d_draw.h"
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
+#include "s2d_error.h"
 
-void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
+static int s2d_width(const char *str, int line, int len);
+
+static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tmp_len = 0;
 	int orig_x = x;
@@ -115,7 +118,7 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 			default:
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
 					draw_s2d_glyph(current_char, x, y, (buf++));
-					(x += (s2d_kerning_table[current_char] * myScale));
+					(x += (s2d_kerning_table[(int) current_char] * myScale));
 				}
 		}
 		if (*p == '\0') break;
@@ -127,16 +130,31 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 }
 
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
 	s2d_snprint(x, y, align, str, buf, s2d_strlen(str));
 }
 
 void s2d_print_alloc(int x, int y, int align, const char *str) {
-	uObjMtx *b = alloc(sizeof(uObjMtx) * s2d_strlen(str));
-	s2d_snprint(x, y, align, str, b, s2d_strlen(str));
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
+	len = s2d_strlen(str);
+
+	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+	s2d_snprint(x, y, align, str, b, len);
 }
 
 void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos) {
-	int len = s2d_strlen(str);
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+	
+	len = s2d_strlen(str);
 
 	s2d_snprint(x, y, align, str, buf, *pos);
 	if (s2d_timer % 2 == 0) {
@@ -146,7 +164,7 @@ void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int 
 	}
 }
 
-int s2d_width(const char *str, int line, int len) {
+static int s2d_width(const char *str, int line, int len) {
 	char *p = str;
 	int tmp_len = 0;
 	int curLine = 0;
@@ -200,7 +218,7 @@ int s2d_width(const char *str, int line, int len) {
 				break;
 			default:
 				if (current_char != '\0' && curLine == line)
-					width += s2d_kerning_table[current_char] * scale;
+					width += s2d_kerning_table[(int) current_char] * scale;
 		}
 		if (*p == '\0') break;
 		p++;
@@ -218,7 +236,7 @@ int s2d_width(const char *str, int line, int len) {
 // 	if (last_chr >= 0) {
 // 		dst[last_chr] = '\0';
 // 	}
-// 	s2d_print(x, y, dst, buf);
+// 	s2d_print(x, y, align, dst, buf);
 // }
 
 

@@ -1,8 +1,11 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
+#include "config.h"
 #include "init.h"
+#include "s2d_error.h"
 
 void s2d_init(void) {
+	s2d_error_y = TEX_HEIGHT;
 	gSPLoadUcode(gdl_head++, s2d_text, s2d_data);
 }
 

@@ -13,8 +13,9 @@
 //     Convert the number to floating point as if it were an integer, in other words remove the binary point
 //     Multiply by 2^−n
 
-f32 qtof(int q) {
-	return ((float)q) * 0.00001525878f;
+f32 qtof(int q, int decimal_n) {
+	f32 mul = (1.0f / (float) (1 << decimal_n));
+	return ((float)q) * mul;
 }
 
 // Float to Q
@@ -23,8 +24,8 @@ f32 qtof(int q) {
 
 //     Multiply the floating point number by 2^n
 //     Round to the nearest integer
-int ftoq(f32 f) {
-	f *= (65536.0f);
+int ftoq(f32 f, int decimal_n) {
+	f *= (float) (1 << decimal_n);
 	return (int)f;
 }
 

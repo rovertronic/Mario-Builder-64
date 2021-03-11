@@ -1,3 +1,5 @@
+#include <ultra64.h>
+
 #ifndef S2D_CONFIG_H
 #define S2D_CONFIG_H
 
@@ -24,10 +26,13 @@ extern Gfx *gdl_head;
 
 // an allocator function of the format void *alloc(size_t bytes)
 #define alloc alloc_display_list
+extern void *alloc(size_t);
 
 // your init functions for the RDP/RSP
 #define my_rdp_init my_rdp_init
 #define my_rsp_init my_rsp_init
+extern void my_rsp_init(void);
+extern void my_rdp_init(void);
 
 // The frame timer that is used to time s2d_type_print
 #define s2d_timer gGlobalTimer
