@@ -19,10 +19,12 @@ Gfx s2d_text_init_dl[] = {
 
     // IA8
     // TODO: add more formats
-    gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT,
-                       0, 0, 0, TEXEL0,
-                       0, 0, 0, ENVIRONMENT,
-                       0, 0, 0, TEXEL0),
+    gsDPSetCombineLERP(
+        0, 0, 0, ENVIRONMENT,
+        0, 0, 0, TEXEL0,
+        0, 0, 0, ENVIRONMENT,
+        0, 0, 0, TEXEL0
+    ),
 
     gsSPEndDisplayList(),
 };

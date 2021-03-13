@@ -13,5 +13,6 @@ void s2d_stop(void) {
 	gSPLoadUcode(gdl_head++, zex_text, zex_data);
 	my_rdp_init();
 	my_rsp_init();
+	s2d_reset_defer_index();
 }
 
