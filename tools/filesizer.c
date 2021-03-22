@@ -1,62 +1,81 @@
-#include <stdio.h>
+#include <byteswap.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <errno.h>
+#include <stdio.h>
 
-FILE *fptr;
-FILE *fptr2;
-int insize;
-int cmpsize;
-unsigned char *bz;
+FILE *fin, *fout;
+size_t insize, outsize;
+void* data;
 
-void writeint4(int val)
+FILE* try_open(char* file, char* mode)
 {
-	fputc((val & 0x00ff000000) >> 24, fptr2);
-	fputc((val & 0x0000ff0000) >> 16, fptr2);
-	fputc((val & 0x000000ff00) >>  8, fptr2);
-	fputc((val & 0x00000000ff) >>  0, fptr2);
+	FILE* f = fopen(file, mode);
+	
+	if (!f)
+		perror("fopen() failed");
+
+	// remember, if it failed it's returning null anyway
+	return f;
 }
 
-int main(int argc, const char **argv)
+size_t get_file_size(FILE* f)
 {
-    char src[999];
-	char dest[999];
+	size_t cur_pos, file_size;
 
-    if( argc < 3 ) {
-        printf("Two arguments expected.\n");
-        printf("Filesizer\n");
-        printf("Usage: [infile] [outfile]\n");
-		return 1;
-    }
+	cur_pos = ftell(f);
+	fseek(f, 0, SEEK_END);
+	file_size = ftell(f);
+	fseek(f, cur_pos, SEEK_SET);
+	return file_size;
+}
 
-	strcpy(src, argv[1]);
-    strcpy(dest, argv[2]);
-	
-	if ((fptr = fopen(src, "rb")) == NULL)
+int main(int argc, char *argv[argc + 1])
+{
+	uint8_t bytes_to_align;
+	uint32_t* size_stored;
+
+	if(argc < 4)
 	{
-		fprintf(stderr, "FILE OPEN ERROR![%s]\n", src);
+		fputs(
+			"Filesizer\n"
+			"Usage: [infile] [outfile] [uncompressed size]\n",
+			stderr);
 		return 1;
 	}
-    
-	if ((fptr2 = fopen(argv[2], "r+")) == NULL)
-	{
-		fprintf(stderr, "FILE APPEND ERROR![%s]\n", dest);
-		exit(1);
-	}
-	
-	fseek(fptr, 0, SEEK_END);
-	fseek(fptr2, 0, SEEK_END);
-	insize = ftell(fptr);
-    writeint4(0);
-    cmpsize = ftell(fptr2);
-    int numZeros = 0x10 - (cmpsize % 0x10);
-    for(int i = 0; i < numZeros; i++)
-    {
-        fputc(0, fptr2);
-    }
-    fseek(fptr2, -0x4, SEEK_END);
-	writeint4(insize);
-	fclose(fptr);
-	fclose(fptr2);
 
-	return 0;
+	fin = try_open(argv[1], "rb");
+	if (!fin)
+		return EXIT_FAILURE;
+
+	fout = try_open(argv[2], "wb");
+	if (!fout)
+		return EXIT_FAILURE;
+	
+	insize = get_file_size(fin);
+
+	// align to 16 bytes
+	bytes_to_align = 0x10 - (insize % 0x10);
+	outsize = insize + bytes_to_align + 0x10;
+
+	data = calloc(1, outsize);
+	if (!data)
+	{
+		fputs("Failed to allocate data buffer\n", stderr);
+		return EXIT_FAILURE;
+	}
+
+	fread(data, insize, 1, fin);
+
+	size_stored = data + outsize - 4;
+	*size_stored = __bswap_32(atoi(argv[3]));
+	
+	fwrite(data, outsize, 1, fout);
+
+	free(data);
+	fclose(fin);
+	fclose(fout);
+
+	return EXIT_SUCCESS;
 }
