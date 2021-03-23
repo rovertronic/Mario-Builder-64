@@ -132,6 +132,9 @@
 #define POP_POOL() \
     CMD_BBH(0x15, 0x04, 0x0000)
 
+#undef LOAD_MIO0
+#define LOAD_MIO0(a,b,c) LOAD_YAY0(a,b,c)
+
 #ifdef NO_SEGMENTED_MEMORY
 #define FIXED_LOAD(loadAddr, romStart, romEnd) \
     CMD_BBH(0x16, 0x10, 0x0000), \
