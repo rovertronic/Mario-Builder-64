@@ -58,7 +58,7 @@ endif
 DEFINES += NO_ERRNO_H=1 NO_GZIP=1
 
 COMPRESS ?= yay0
-$(eval $(call validate-option,COMPRESS,yay0 gzip rnc1 rnc2))
+$(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
 else ifeq ($(COMPRESS),rnc1)
@@ -67,6 +67,8 @@ else ifeq ($(COMPRESS),rnc2)
   DEFINES += RNC2=1
 else ifeq ($(COMPRESS),yay0)
   DEFINES += YAY0=1
+else ifeq ($(COMPRESS),mio0)
+  DEFINES += MIO0=1
 endif
 
 GZIPVER ?= std
@@ -379,6 +381,7 @@ CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
 # N64 tools
 YAY0TOOL              := $(TOOLS_DIR)/slienc
+MIO0TOOL              := $(TOOLS_DIR)/mio0
 RNCPACK               := $(TOOLS_DIR)/rncpack
 ROMALIGN              := $(TOOLS_DIR)/romalign
 FILESIZER             := $(TOOLS_DIR)/filesizer
@@ -566,6 +569,8 @@ else ifeq ($(COMPRESS),rnc2)
 include rnc2rules.mk
 else ifeq ($(COMPRESS),yay0)
 include yay0rules.mk
+else ifeq ($(COMPRESS),mio0)
+include mio0rules.mk
 endif
 
 #==============================================================================#

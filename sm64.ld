@@ -137,6 +137,9 @@ SECTIONS
 #ifdef YAY0
       BUILD_DIR/asm/slidec.o(.text);
 #endif
+#ifdef MIO0
+      BUILD_DIR/asm/decompress.o(.text);
+#endif
 #ifdef RNC1
       BUILD_DIR/asm/rnc1.o(.text);
 #endif
