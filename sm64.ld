@@ -102,17 +102,17 @@ SECTIONS
 #ifdef HVQM
    BEGIN_NOLOAD(hvqmwork)
    {
-      BUILD_DIR/src/hvqm/hvqmwork.o(.bss*);
+      BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
    }
    END_NOLOAD(hvqmwork)
    BEGIN_NOLOAD(adpcmbuf)
    {
-      BUILD_DIR/src/hvqm/adpcmbuf.o(.bss*);
+      BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
    }
    END_NOLOAD(adpcmbuf)
    BEGIN_NOLOAD(hvqbuf)
    {
-      BUILD_DIR/src/hvqm/hvqbuf.o(.bss*);
+      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
    }
    END_NOLOAD(hvqbuf)
 
@@ -123,107 +123,28 @@ SECTIONS
    {
       BUILD_DIR/asm/entry.o(.text);
 
-      BUILD_DIR/src/game*.o(.text);
-#ifdef HVQM
-      BUILD_DIR/src/hvqm*.o(.text);
-#endif
-#ifdef UNF
-      BUILD_DIR/src/usb*.o(.text);
-#endif
+      BUILD_DIR/mainseg.o(.text);
       BUILD_DIR/src/audio*.o(.text);
-#ifdef GZIP
-      BUILD_DIR/src/gzip*.o(.text);
-#endif
-#ifdef YAY0
-      BUILD_DIR/asm/slidec.o(.text);
-#endif
-#ifdef MIO0
-      BUILD_DIR/asm/decompress.o(.text);
-#endif
-#ifdef RNC1
-      BUILD_DIR/asm/rnc1.o(.text);
-#endif
-#ifdef RNC2
-      BUILD_DIR/asm/rnc2.o(.text);
-#endif
       */libultra_rom.a:*.o(.text);
-      */libnustd.a:*.o(.text);
-      */libgcc.a:_umoddi3.o(.text);
-      */libgcc.a:_udivdi3.o(.text);
-      */libgcc.a:_divdi3.o(.text);
-      */libgcc.a:_moddi3.o(.text);
-      */libgcc.a:_fixdfdi.o(.text);
-      */libgcc.a:_fixsfdi.o(.text);
-      */libgcc.a:_fixunsfdi.o(.text);
-      */libgcc.a:_fixunssfdi.o(.text);
-      */libgcc.a:_fixunsdfdi.o(.text);
-      */libgcc.a:_floatdidf.o(.text);
-      */libgcc.a:_floatundidf.o(.text);
-      */libgcc.a:_floatdisf.o(.text);
-      */libgcc.a:_cmpdi2.o(.text);
-#ifdef GZIP
-      */libz.a:*.o(.text);
-#endif
-#ifdef HVQM
-      */libhvqm2.a:*.o(.text);
-#endif
 
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
 
       /* data */
-      BUILD_DIR/src/game*.o(.data*);
-      BUILD_DIR/src/game*.o(.sdata*);
-#ifdef UNF
-      BUILD_DIR/src/usb*.o(.data*);
-      BUILD_DIR/src/usb*.o(.sdata*);
-#endif
-      BUILD_DIR/src/audio*.o(.data*);
-      BUILD_DIR/src/audio*.o(.sdata*);
-#ifdef GZIP
-      BUILD_DIR/src/gzip*.o(.data*);
-#endif
-#ifdef RNC2
-      BUILD_DIR/asm/rnc2.o(.data*);
-#endif
+      BUILD_DIR/mainseg.o(.*data*);
+      BUILD_DIR/src/audio*.o(.*data*);
+      */libultra_rom.a:*.o(.*data*);
 
-      */libultra_rom.a:*.o(.data*);
-      */libultra_rom.a:*.o(.sdata*);
-#ifdef HVQM
-      */libhvqm2.a:*.o(.data*);
-#endif
-#ifdef GZIP
-      */libz.a:*.o(.data*);
-#endif
       BUILD_DIR/lib/rsp.o(.data*);
 #ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.data*);
 #endif
 
       /* rodata */
-      BUILD_DIR/src/game*.o(.rodata*);
-#ifdef UNF
-      BUILD_DIR/src/usb*.o(.rodata*);
-#endif
+      BUILD_DIR/mainseg.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
-#ifdef GZIP
-      BUILD_DIR/src/gzip*.o(.rodata*);
-#endif
-
       */libultra_rom.a:*.o(.rodata*);
-      */libgcc.a:_umoddi3.o(.rodata*);
-      */libgcc.a:_udivdi3.o(.rodata*);
-      */libgcc.a:_divdi3.o(.rodata*);
-      */libgcc.a:_clz.o(.rodata*);
-      */libgcc.a:_fixunsdfdi.o(.rodata*);
-      */libgcc.a:_floatundidf.o(.rodata*);
-      */libgcc.a:_moddi3.o(.rodata*);
-#ifdef HVQM
-      */libhvqm2.a:*.o(.rodata*);
-#endif
-#ifdef GZIP
-      */libz.a:*.o(.rodata*);
-#endif
+
       BUILD_DIR/lib/rsp.o(.rodata*);
 #ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
@@ -232,31 +153,11 @@ SECTIONS
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
-      BUILD_DIR/src/game*.o(.bss*);
-      BUILD_DIR/src/game*.o(.sbss*);
-#ifdef HVQM
-      BUILD_DIR/src/hvqm*.o(.bss*);
-#endif
-#ifdef UNF
-      BUILD_DIR/src/usb*.o(.bss*);
-      BUILD_DIR/src/usb*.o(.sbss*);
-#endif
-      BUILD_DIR/src/audio*.o(.bss*);
-      BUILD_DIR/src/audio*.o(.sbss*);
-#ifdef GZIP
-      BUILD_DIR/src/gzip*.o(.bss*);
-#endif
+      BUILD_DIR/mainseg.o(.*bss*);
+      BUILD_DIR/src/audio*.o(.*bss*);
       */libultra_rom.a:*.o(COMMON);
       */libultra_rom.a:*.o(.scommon);
-      */libultra_rom.a:*.o(.bss*);
-      */libultra_rom.a:*.o(.sbss*);
-#ifdef HVQM
-      */libhvqm2.a:*.o(.bss*);
-#endif
-#ifdef GZIP
-      */libz.a:*.o(.bss*);
-#endif
-
+      */libultra_rom.a:*.o(.*bss*);
       . = ALIGN(0x8);
    }
    END_NOLOAD(main)
@@ -269,17 +170,17 @@ SECTIONS
 
    BEGIN_SEG(engine, .)
    {
-      BUILD_DIR/src/engine*.o(.text);
+      BUILD_DIR/engineseg.o(.text);
       /* data */
-      BUILD_DIR/src/engine*.o(.data*);
-      BUILD_DIR/src/engine*.o(.sdata*);
+      BUILD_DIR/engineseg.o(.data*);
+      BUILD_DIR/engineseg.o(.sdata*);
       /* rodata */
-      BUILD_DIR/src/engine*.o(.rodata*);
+      BUILD_DIR/engineseg.o(.rodata*);
    }
    END_SEG(engine)
    BEGIN_NOLOAD(engine)
    {
-      BUILD_DIR/src/engine*.o(.bss*);
+      BUILD_DIR/engineseg.o(.bss*);
       . = ALIGN(0x100);
    }
    END_NOLOAD(engine)
