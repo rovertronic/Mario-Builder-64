@@ -15,11 +15,12 @@ OUTPUT_ARCH (mips)
     __romPos += SIZEOF(.name);
 
 #define BEGIN_NOLOAD(name) \
-    _##name##SegmentNoloadStart = ADDR(.name.noload); \
+    _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
 #define END_NOLOAD(name) \
-    _##name##SegmentNoloadEnd = ADDR(.name.noload) + SIZEOF(.name.noload);
+    _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
+    _##name##SegmentBssSize = SIZEOF(.name.noload);
 
 #define YAY0_SEG(name, segAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
@@ -82,7 +83,7 @@ SECTIONS
    }
    END_NOLOAD(zbuffer)
 
-   . = _zbufferSegmentNoloadEnd;
+   . = _zbufferSegmentBssEnd;
    BEGIN_NOLOAD(buffers)
    {
       BUILD_DIR/src/buffers/buffers.o(.bss*);
@@ -97,7 +98,7 @@ SECTIONS
    }
    END_NOLOAD(buffers)
 
-   . = _buffersSegmentNoloadEnd;
+   . = _buffersSegmentBssEnd;
 
 #ifdef HVQM
    BEGIN_NOLOAD(hvqmwork)
@@ -116,24 +117,47 @@ SECTIONS
    }
    END_NOLOAD(hvqbuf)
 
-   . = _hvqbufSegmentNoloadEnd;
+   . = _hvqbufSegmentBssEnd;
 #endif
 
    BEGIN_SEG(main, .) SUBALIGN(16)
    {
       BUILD_DIR/asm/entry.o(.text);
 
-      BUILD_DIR/mainseg.o(.text);
+      BUILD_DIR/src/game*.o(.text);
+#ifdef HVQM
+      BUILD_DIR/src/hvqm*.o(.text);
+#endif
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.text);
+#endif
       BUILD_DIR/src/audio*.o(.text);
       */libultra_rom.a:*.o(.text);
+      */libnustd.a:*.o(.text);
+      */libgcc.a:*.o(.text);
+#ifdef GZIP
+      */libz.a:*.o(.text);
+#endif
+#ifdef HVQM
+      */libhvqm2.a:*.o(.text);
+#endif
 
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
 
       /* data */
-      BUILD_DIR/mainseg.o(.*data*);
+      BUILD_DIR/src/game*.o(.*data*);
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.*data*);
+#endif
       BUILD_DIR/src/audio*.o(.*data*);
+#ifdef GZIP
+      */libz.a:*.o(.*data*);
+#endif
       */libultra_rom.a:*.o(.*data*);
+#ifdef HVQM
+      */libhvqm2.a:*.o(.*data*);
+#endif
 
       BUILD_DIR/lib/rsp.o(.data*);
 #ifdef HVQM
@@ -141,9 +165,16 @@ SECTIONS
 #endif
 
       /* rodata */
-      BUILD_DIR/mainseg.o(.rodata*);
+      BUILD_DIR/src/game*.o(.rodata*);
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.rodata*);
+#endif
       BUILD_DIR/src/audio*.o(.rodata*);
       */libultra_rom.a:*.o(.rodata*);
+      */libgcc.a:*.o(.rodata*);
+#ifdef GZIP
+      */libz.a:*.o(.rodata*);
+#endif
 
       BUILD_DIR/lib/rsp.o(.rodata*);
 #ifdef HVQM
@@ -153,41 +184,55 @@ SECTIONS
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
-      BUILD_DIR/mainseg.o(.*bss*);
+      BUILD_DIR/src/game*.o(.*bss*);
+#ifdef HVQM
+      BUILD_DIR/src/hvqm*.o(.*bss*);
+#endif
+#ifdef UNF
+      BUILD_DIR/src/usb*.o(.*bss*);
+#endif
+      BUILD_DIR/src/audio*.o(.*bss*);
+#ifdef GZIP
+      BUILD_DIR/src/gzip*.o(.bss*);
+#endif
       BUILD_DIR/src/audio*.o(.*bss*);
       */libultra_rom.a:*.o(COMMON);
       */libultra_rom.a:*.o(.scommon);
       */libultra_rom.a:*.o(.*bss*);
+#ifdef HVQM
+      */libhvqm2.a:*.o(.bss*);
+#endif
+#ifdef GZIP
+      */libz.a:*.o(.bss*);
+#endif
       . = ALIGN(0x8);
    }
    END_NOLOAD(main)
-   _mainSegmentNoloadSizeLo = SIZEOF (.main.noload) & 0xffff;
-   _mainSegmentNoloadSizeHi = SIZEOF (.main.noload) >> 16;
 
    /*ASSERT((. <= SEG_ENGINE), "Error: main segment extended into engine.")*/
 
-   . = _mainSegmentNoloadEnd;
+   . = _mainSegmentBssEnd;
 
    BEGIN_SEG(engine, .)
    {
-      BUILD_DIR/engineseg.o(.text);
+      BUILD_DIR/src/engine*.o(.text);
       /* data */
-      BUILD_DIR/engineseg.o(.data*);
-      BUILD_DIR/engineseg.o(.sdata*);
+      BUILD_DIR/src/engine*.o(.data*);
+      BUILD_DIR/src/engine*.o(.sdata*);
       /* rodata */
-      BUILD_DIR/engineseg.o(.rodata*);
+      BUILD_DIR/src/engine*.o(.rodata*);
    }
    END_SEG(engine)
    BEGIN_NOLOAD(engine)
    {
-      BUILD_DIR/engineseg.o(.bss*);
+      BUILD_DIR/src/engine*.o(.bss*);
       . = ALIGN(0x100);
    }
    END_NOLOAD(engine)
 
    /*ASSERT((. <= SEG_FRAMEBUFFERS), "Error: engine segment extended into framebuffers.")*/
 
-   . = _engineSegmentNoloadEnd;
+   . = _engineSegmentBssEnd;
    BEGIN_NOLOAD(framebuffers)
    {
       BUILD_DIR/src/buffers/framebuffers.o(.bss*);
@@ -254,11 +299,42 @@ SECTIONS
       BUILD_DIR/src/menu*.o(.text);
       BUILD_DIR/src/menu*.o(.data*);
       BUILD_DIR/src/menu*.o(.rodata*);
+#ifdef GODDARD
+      BUILD_DIR/libgoddard.a:*.o(.text);
+      /* goddard subsystem data */
+      BUILD_DIR/libgoddard.a:gd_main.o(.data*);
+      BUILD_DIR/libgoddard.a:draw_objects.o(.data*);
+      BUILD_DIR/libgoddard.a:objects.o(.data*);
+      BUILD_DIR/libgoddard.a:particles.o(.data*);
+      BUILD_DIR/libgoddard.a:dynlist_proc.o(.data*);
+      BUILD_DIR/libgoddard.a:debug_utils.o(.data*);
+      BUILD_DIR/libgoddard.a:joints.o(.data*);
+      BUILD_DIR/libgoddard.a:shape_helper.o(.data*);
+      BUILD_DIR/libgoddard.a:renderer.o(.data*);
+      /* goddard subsystem rodata */
+      BUILD_DIR/libgoddard.a:gd_main.o(.rodata*);
+      BUILD_DIR/libgoddard.a:gd_memory.o(.rodata*);
+      BUILD_DIR/libgoddard.a:draw_objects.o(.rodata*);
+      BUILD_DIR/libgoddard.a:objects.o(.rodata*);
+      BUILD_DIR/libgoddard.a:skin_movement.o(.rodata*);
+      BUILD_DIR/libgoddard.a:particles.o(.rodata*);
+      BUILD_DIR/libgoddard.a:dynlist_proc.o(.rodata*);
+      BUILD_DIR/libgoddard.a:old_menu.o(.rodata*);
+      BUILD_DIR/libgoddard.a:debug_utils.o(.rodata*);
+      BUILD_DIR/libgoddard.a:joints.o(.rodata*);
+      BUILD_DIR/libgoddard.a:skin.o(.rodata*);
+      BUILD_DIR/libgoddard.a:gd_math.o(.rodata*);
+      BUILD_DIR/libgoddard.a:shape_helper.o(.rodata*);
+      BUILD_DIR/libgoddard.a:renderer.o(.rodata*);
+#endif
    }
    END_SEG(goddard)
    BEGIN_NOLOAD(goddard)
    {
       BUILD_DIR/src/menu*.o(.bss*);
+#ifdef GODDARD
+      BUILD_DIR/libgoddard.a:*.o(.bss*);
+#endif
    }
    END_NOLOAD(goddard)
 
@@ -281,6 +357,30 @@ SECTIONS
 
    YAY0_SEG(debug_level_select, 0x07000000)
    YAY0_SEG(title_screen_bg, 0x0A000000)
+
+#ifdef GODDARD
+   BEGIN_SEG(gd_dynlists, 0x04000000)
+   {
+      BUILD_DIR/libgoddard.a:dynlist_test_cube.o(.data);
+      BUILD_DIR/libgoddard.a:dynlist_unused.o(.data);
+      BUILD_DIR/libgoddard.a:dynlist_mario_face.o(.data);
+      BUILD_DIR/libgoddard.a:dynlists_mario_eyes.o(.data);
+      BUILD_DIR/libgoddard.a:dynlists_mario_eyebrows_mustache.o(.data);
+      BUILD_DIR/libgoddard.a:dynlist_mario_master.o(.data);
+      BUILD_DIR/libgoddard.a:anim_mario_mustache_right.o(.data);
+      BUILD_DIR/libgoddard.a:anim_mario_mustache_left.o(.data);
+      BUILD_DIR/libgoddard.a:anim_mario_lips_1.o(.data);
+      BUILD_DIR/libgoddard.a:anim_mario_lips_2.o(.data);
+      BUILD_DIR/libgoddard.a:anim_mario_eyebrows_1.o(.data);
+      BUILD_DIR/libgoddard.a:anim_group_1.o(.data);
+      BUILD_DIR/libgoddard.a:anim_group_2.o(.data);
+      BUILD_DIR/libgoddard.a:dynlist_test_cube.o(.rodata*);
+      BUILD_DIR/libgoddard.a:dynlist_unused.o(.rodata*);
+      BUILD_DIR/libgoddard.a:*.o(.data);
+      BUILD_DIR/libgoddard.a:*.o(.rodata);
+   }
+   END_SEG(gd_dynlists)
+#endif
 
    gMainLevels = __romPos;
 

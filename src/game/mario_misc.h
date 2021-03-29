@@ -9,6 +9,9 @@
 extern struct GraphNodeObject gMirrorMario;
 extern struct MarioBodyState gBodyStates[2];
 
+#ifdef GODDARD
+Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, Mat4 *c);
+#endif
 void bhv_toad_message_loop(void);
 void bhv_toad_message_init(void);
 void bhv_unlock_door_star_init(void);

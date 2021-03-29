@@ -9,7 +9,6 @@ default: all
 DEFINES :=
 
 SRC_DIRS :=
-MAINSEG_SRC_DIRS :=
 
 #==============================================================================#
 # Build Options                                                                #
@@ -173,10 +172,9 @@ endif
 #   0 - does not 
 UNF ?= 0
 $(eval $(call validate-option,UNF,0 1))
-
 ifeq ($(UNF),1)
   DEFINES += UNF=1
-  MAINSEG_SRC_DIRS += src/usb
+  SRC_DIRS += src/usb
 endif
 
 # HVQM - whether to use HVQM fmv library
@@ -186,7 +184,16 @@ HVQM ?= 0
 $(eval $(call validate-option,HVQM,0 1))
 ifeq ($(HVQM),1)
   DEFINES += HVQM=1
-  MAINSEG_SRC_DIRS += src/hvqm
+  SRC_DIRS += src/hvqm
+endif
+
+# GODDARD - whether to use libgoddard (Mario Head)
+#   1 - includes code in ROM
+#   0 - does not 
+GODDARD ?= 0
+$(eval $(call validate-option,GODDARD,0 1))
+ifeq ($(GODDARD),1)
+  DEFINES += GODDARD=1
 endif
 
 # Whether to hide commands or not
@@ -272,10 +279,9 @@ ACTOR_DIR      := actors
 LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 
 # Directories containing source files
-SRC_DIRS += src src/audio src/menu src/buffers actors levels bin data assets asm lib sound
-MAINSEG_SRC_DIRS += src/game 
-ENGINE_SRC_DIRS := src/engine
+SRC_DIRS += src src/game src/engine src/audio src/menu src/buffers actors levels bin data assets asm lib sound
 LIBZ_SRC_DIRS := src/libz
+GODDARD_SRC_DIRS := src/goddard src/goddard/dynlists
 BIN_DIRS := bin bin/$(VERSION)
 
 # File dependencies and variables for specific files
@@ -284,10 +290,8 @@ include Makefile.split
 # Source code files
 LEVEL_C_FILES     := $(wildcard levels/*/leveldata.c) $(wildcard levels/*/script.c) $(wildcard levels/*/geo.c)
 C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c)) $(LEVEL_C_FILES)
-MAINSEG_C_FILES     := $(foreach dir,$(MAINSEG_SRC_DIRS),$(wildcard $(dir)/*.c))
-MAINSEG_S_FILES     := $(foreach dir,$(MAINSEG_SRC_DIRS),$(wildcard $(dir)/*.s))
-ENGINE_C_FILES     := $(foreach dir,$(ENGINE_SRC_DIRS),$(wildcard $(dir)/*.c))
 LIBZ_C_FILES     := $(foreach dir,$(LIBZ_SRC_DIRS),$(wildcard $(dir)/*.c))
+GODDARD_C_FILES   := $(foreach dir,$(GODDARD_SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 GENERATED_C_FILES := $(BUILD_DIR)/assets/mario_anim_data.c $(BUILD_DIR)/assets/demo_data.c
 
@@ -311,12 +315,11 @@ O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
            $(foreach file,$(GENERATED_C_FILES),$(file:.c=.o)) \
            lib/PR/hvqm/hvqm2sp1.o lib/PR/hvqm/hvqm2sp2.o
 
-MAINSEG_O_FILES := $(foreach file,$(MAINSEG_C_FILES),$(BUILD_DIR)/$(file:.c=.o)) $(foreach file,$(MAINSEG_S_FILES),$(BUILD_DIR)/$(file:.s=.o))
-ENGINE_O_FILES := $(foreach file,$(ENGINE_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 LIBZ_O_FILES := $(foreach file,$(LIBZ_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
+GODDARD_O_FILES := $(foreach file,$(GODDARD_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 
 # Automatic dependency files
-DEP_FILES := $(O_FILES:.o=.d) $(MAINSEG_O_FILES:.o=.d) $(ENGINE_O_FILES:.o=.d) $(LIBZ_O_FILES:.o=.d) $(BUILD_DIR)/$(LD_SCRIPT).d
+DEP_FILES := $(O_FILES:.o=.d) $(LIBZ_O_FILES:.o=.d) $(GODDARD_O_FILES:.o=.d) $(BUILD_DIR)/$(LD_SCRIPT).d
 
 #==============================================================================#
 # Compiler Options                                                             #
@@ -510,7 +513,7 @@ $(BUILD_DIR)/src/usb/usb.o: CFLAGS += -Wno-unused-variable -Wno-sign-compare -Wn
 $(BUILD_DIR)/src/usb/debug.o: OPT_FLAGS := -O0
 $(BUILD_DIR)/src/usb/debug.o: CFLAGS += -Wno-unused-parameter -Wno-maybe-uninitialized
 
-ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(MAINSEG_SRC_DIRS) $(GODDARD_SRC_DIRS) $(ENGINE_SRC_DIRS) $(LIBZ_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(LIBZ_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
@@ -704,15 +707,10 @@ $(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
 	$(call print,Preprocessing linker script:,$<,$@)
 	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
-# Link mainseg
-$(BUILD_DIR)/mainseg.o: $(MAINSEG_O_FILES) $(BUILD_DIR)/libz.a
-	@$(PRINT) "$(GREEN)Linking main segment:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -o $@ -r $(MAINSEG_O_FILES) -L $(BUILD_DIR) -L$(LIBS_DIR) -Llib -lgcc -lnustd -lhvqm2 -lz
-
-# Link engine
-$(BUILD_DIR)/engineseg.o: $(ENGINE_O_FILES)
-	@$(PRINT) "$(GREEN)Linking engine segment:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -o $@ -r $(ENGINE_O_FILES)
+# Link libgoddard
+$(BUILD_DIR)/libgoddard.a: $(GODDARD_O_FILES)
+	@$(PRINT) "$(GREEN)Linking libgoddard:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(AR) rcs -o $@ $(GODDARD_O_FILES)
 
 # Link libz
 $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
@@ -720,9 +718,9 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 	$(V)$(AR) rcs -o $@ $(LIBZ_O_FILES)
 
 # Link SM64 ELF file
-$(ELF): $(BUILD_DIR)/mainseg.o $(BUILD_DIR)/engineseg.o $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt
+$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(BUILD_DIR)/src/audio -L$(LIBS_DIR) -lultra_rom
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
 
 # Build ROM
 $(ROM): $(ELF)

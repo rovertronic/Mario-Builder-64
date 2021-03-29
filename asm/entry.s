@@ -9,24 +9,20 @@
 .section .text, "ax"
 
 glabel entry_point
-    lui   $t0, %hi(_mainSegmentNoloadStart) # $t0, 0x8034
-    lui   $t1, %lo(_mainSegmentNoloadSizeHi) # lui $t1, 2
-    addiu $t0, %lo(_mainSegmentNoloadStart) # addiu $t0, $t0, -0x6df0
-    ori   $t1, %lo(_mainSegmentNoloadSizeLo) # ori $t1, $t1, 0xcee0
-.L80246010:
-    addi  $t1, $t1, -8
-    sw    $zero, ($t0)
-    sw    $zero, 4($t0)
-    bnez  $t1, .L80246010
-     addi  $t0, $t0, 8
-    lui   $t2, %hi(main_func) # $t2, 0x8024
-    lui   $sp, %hi(gIdleThreadStack) # $sp, 0x8020
-    addiu $t2, %lo(main_func) # addiu $t2, $t2, 0x6dc4
-    jr    $t2
-     addiu $sp, %lo(gIdleThreadStack) # addiu $sp, $sp, 0xa00
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
+
+entry_point:
+    lui   $t0, %hi(_mainSegmentBssStart)
+    lui   $t1, %hi(_mainSegmentBssSize)
+    addiu $t0, %lo(_mainSegmentBssStart)
+    addiu $t1, %lo(_mainSegmentBssSize)
+.clear_bytes:
+    addi  $t1, $t1, -8 # Subtract 8 bytes from the amount remaining
+    sw    $zero, ($t0)  # Clear 4 bytes
+    sw    $zero, 4($t0) # Clear the next 4 bytes
+    bnez  $t1, .clear_bytes # Continue clearing until clear_bytes is 0
+     addi  $t0, $t0, 8 # Increment the address of bytes to clear
+    lui   $t2, %hi(main_func) # Get the high half of the init function address
+    lui   $sp, %hi(gIdleThreadStack) # Set the high half of the stack pointer to that of the idle thread stack
+    addiu $t2, %lo(main_func) # Get the low half of the init function address
+    jr    $t2 # Jump to the init function
+     addiu $sp, %lo(gIdleThreadStack) # Set the low half of the stack pointer to that of the idle thread stack

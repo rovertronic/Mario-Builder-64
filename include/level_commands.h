@@ -169,8 +169,13 @@
     CMD_PTR(romEnd)
 #endif
 
+#ifdef GODDARD
+#define LOAD_MARIO_HEAD(sethead) \
+    CMD_BBH(0x19, 0x04, sethead)
+#else
 #define LOAD_MARIO_HEAD() \
     CMD_BBH(0x32, 0x04, 0x0000)
+#endif
 
 #ifdef NO_SEGMENTED_MEMORY
 #define LOAD_YAY0_TEXTURE(seg, romStart, romEnd) \
