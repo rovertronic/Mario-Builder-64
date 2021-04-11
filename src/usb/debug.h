@@ -7,17 +7,17 @@
 
     // Settings
     #define DEBUG_MODE        1   // Enable/Disable debug mode
-    #define DEBUG_INIT_MSG    0   // Print a message when debug mode has initialized
-    #define USE_FAULTTHREAD   0   // Create a fault detection thread 
-    #define OVERWRITE_OSPRINT 0   // Replaces osSyncPrintf calls with debug_printf
+    #define DEBUG_INIT_MSG    1   // Print a message when debug mode has initialized
+    #define USE_FAULTTHREAD   1   // Create a fault detection thread (libultra only)
+    #define OVERWRITE_OSPRINT 0   // Replaces osSyncPrintf calls with debug_printf (libultra only)
     #define MAX_COMMANDS      25  // The max amount of user defined commands possible
     
-    // Fault thread definitions
+    // Fault thread definitions (libultra only)
     #define FAULT_THREAD_ID    13
     #define FAULT_THREAD_PRI   125
     #define FAULT_THREAD_STACK 0x2000
     
-    // USB thread definitions
+    // USB thread definitions (libultra only)
     #define USB_THREAD_ID    14
     #define USB_THREAD_PRI   126
     #define USB_THREAD_STACK 0x2000
@@ -49,15 +49,23 @@
         
         
         /*==============================
-            debug_screenshot
-            Sends the currently displayed framebuffer through USB.
-            @param The size of each pixel of the framebuffer in bytes
-                   Typically 4 if 32-bit or 2 if 16-bit
-            @param The width of the framebuffer
-            @param The height of the framebuffer
+            debug_dumpbinary
+            Dumps a binary file through USB
+            @param The file to dump
+            @param The size of the file
         ==============================*/
         
-        extern void debug_screenshot(int size, int w, int h);
+        extern void debug_dumpbinary(void* file, int size);
+        
+        
+        /*==============================
+            debug_screenshot
+            Sends the currently displayed framebuffer through USB.
+            DOES NOT PAUSE DRAWING THREAD! Using outside the drawing
+            thread may lead to a screenshot with visible tearing
+        ==============================*/
+        
+        extern void debug_screenshot();
         
         
         /*==============================
@@ -126,7 +134,7 @@
         
         // Overwrite library functions with useless macros if debug mode is disabled
         #define debug_initialize() 
-        #define debug_printf(a, __VA_ARGS__) 
+        #define debug_printf(__VA_ARGS__) 
         #define debug_screenshot(a, b, c)
         #define debug_assert(a)
         #define debug_pollcommands()

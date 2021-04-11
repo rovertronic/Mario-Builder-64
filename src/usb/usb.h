@@ -4,11 +4,14 @@
     /*********************************
              DataType macros
     *********************************/
+    
+    // UNCOMMENT THE #DEFINE IF USING LIBDRAGON
+    //#define LIBDRAGON                    
 
     // Settings
-    #define USE_OSRAW          0           // Use if you're doing USB operations without the PI Manager
-    #define DEBUG_ADDRESS_SIZE 1*1024*1024 // Max size of USB I/O. The bigger this value, the more ROM you lose!
-    
+    #define USE_OSRAW          0           // Use if you're doing USB operations without the PI Manager (libultra only)
+    #define DEBUG_ADDRESS_SIZE 8*1024*1024 // Max size of USB I/O. The bigger this value, the more ROM you lose!
+   
     // Cart definitions
     #define CART_NONE      0
     #define CART_64DRIVE   1
@@ -26,7 +29,6 @@
     extern int usb_dataleft;
     extern int usb_readblock;
 
-    
     
     /*********************************
             Convenience macros
@@ -78,7 +80,7 @@
         @return The data header, or 0
     ==============================*/
     
-    extern u32 usb_poll();
+    extern unsigned int usb_poll();
     
     
     /*==============================

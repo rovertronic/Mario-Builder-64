@@ -315,7 +315,9 @@ void thread3_main(UNUSED void *arg) {
     setup_mesg_queues();
     alloc_pool();
     load_engine_code_segment();
+#ifndef UNF
     crash_screen_init();
+#endif
 
 #ifdef UNF
     debug_printf("Super Mario 64\n");
@@ -475,8 +477,14 @@ void thread1_idle(UNUSED void *arg) {
     }
 }
 
+static void ClearRAM(void)
+{
+    bzero(_mainSegmentEnd, (size_t)osMemSize - (size_t)OS_K0_TO_PHYSICAL(_mainSegmentEnd));
+}
+
 void main_func(void) {
-    osInitialize();
+    ClearRAM();
+    __osInitialize_common();
 
     create_thread(&gIdleThread, 1, thread1_idle, NULL, gIdleThreadStack + 0x800, 100);
     osStartThread(&gIdleThread);

@@ -44,6 +44,7 @@ DECLARE_SEGMENT(framebuffers)
 extern u8 _goddardSegmentStart[];
 extern u8 _engineSegmentStart[];
 extern u8 _engineSegmentBssEnd[];
+extern u8 _mainSegmentEnd[];
 extern u8 _engineSegmentEnd[];
 extern u8 _framebuffersSegmentBssEnd[];
 
