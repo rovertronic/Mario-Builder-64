@@ -869,6 +869,11 @@ f64 stub_renderer_1(UNUSED f64 x) {
     return 0.0;
 }
 
+
+#if defined(ISVPRINT) || defined(UNF)
+#define stubbed_printf osSyncPrintf
+#else
+
 /* 249BCC -> 24A19C */
 void gd_printf(const char *format, ...) {
     s32 i;
@@ -967,6 +972,7 @@ void gd_printf(const char *format, ...) {
         fatal_printf("printf too long");
     }
 }
+#endif
 
 /* 24A19C -> 24A1D4 */
 void gd_exit(UNUSED s32 code) {

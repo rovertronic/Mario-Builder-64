@@ -63,6 +63,10 @@
 #define FLOAT_CAST(x) (f32) (s32) (x)
 #endif
 
+#if defined(ISVPRINT) || defined(UNF)
+#define stubbed_printf osSyncPrintf
+#else
+
 // No-op printf macro which leaves string literals in rodata in IDO. IDO
 // doesn't support variadic macros, so instead we let the parameter list
 // expand to a no-op comma expression. Another possibility is that it might
@@ -72,6 +76,7 @@
 #define stubbed_printf
 #else
 #define stubbed_printf(...)
+#endif
 #endif
 
 #ifdef VERSION_EU

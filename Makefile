@@ -166,7 +166,6 @@ ifeq ($(filter $(TARGET_STRING), sm64.jp.f3d_old sm64.us.f3d_old sm64.eu.f3d_new
   COMPARE := 0
 endif
 
-
 # UNF - whether to use UNFLoader flashcart library
 #   1 - includes code in ROM
 #   0 - does not 
@@ -175,6 +174,23 @@ $(eval $(call validate-option,UNF,0 1))
 ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
+  ULTRALIB := ultra_d
+else
+  ULTRALIB := ultra_rom
+endif
+
+
+# ISVPRINT - whether to fake IS-Viewer presence,
+# allowing for usage of CEN64 (and possibly Project64) to print messages to terminal.
+#   1 - includes code in ROM
+#   0 - does not 
+ISVPRINT ?= 0
+$(eval $(call validate-option,ISVPRINT,0 1))
+ifeq ($(ISVPRINT),1)
+  DEFINES += ISVPRINT=1
+  ULTRALIB := ultra_d
+else
+  ULTRALIB := ultra_rom
 endif
 
 # HVQM - whether to use HVQM fmv library
@@ -724,7 +740,7 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -lultra_rom -Llib -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
+	$(V)$(LD) -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
 
 # Build ROM
 $(ROM): $(ELF)

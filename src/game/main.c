@@ -319,13 +319,11 @@ void thread3_main(UNUSED void *arg) {
     crash_screen_init();
 #endif
 
-#ifdef UNF
-    debug_printf("Super Mario 64\n");
-    debug_printf("Built by: %s\n", __username__);
-    debug_printf("Date    : %s\n", __datetime__);
-    debug_printf("Compiler: %s\n", __compiler__);
-    debug_printf("Linker  : %s\n", __linker__);
-#endif
+    osSyncPrintf("Super Mario 64\n");
+    osSyncPrintf("Built by: %s\n", __username__);
+    osSyncPrintf("Date    : %s\n", __datetime__);
+    osSyncPrintf("Compiler: %s\n", __compiler__);
+    osSyncPrintf("Linker  : %s\n", __linker__);
 
     create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + 0x2000, 20);
     osStartThread(&gSoundThread);
@@ -477,14 +475,33 @@ void thread1_idle(UNUSED void *arg) {
     }
 }
 
-static void ClearRAM(void)
+void ClearRAM(void)
 {
     bzero(_mainSegmentEnd, (size_t)osMemSize - (size_t)OS_K0_TO_PHYSICAL(_mainSegmentEnd));
 }
 
+#ifdef ISVPRINT
+extern u32 gISVDbgPrnAdrs;
+extern u32 gISVFlag;
+
+void osInitialize_fakeisv() {
+    /* global flag to skip `__checkHardware_isv` from being called. */
+    gISVFlag = 0x49533634;  // 'IS64'
+ 
+    /* printf writes go to this address, cen64(1) has this hardcoded. */
+    gISVDbgPrnAdrs = 0x13FF0000;
+ 
+    /* `__printfunc`, used by `osSyncPrintf` will be set. */
+    __osInitialize_isv();
+}
+#endif
+
 void main_func(void) {
     ClearRAM();
     __osInitialize_common();
+#ifdef ISVPRINT
+    osInitialize_fakeisv();
+#endif
 
     create_thread(&gIdleThread, 1, thread1_idle, NULL, gIdleThreadStack + 0x800, 100);
     osStartThread(&gIdleThread);
