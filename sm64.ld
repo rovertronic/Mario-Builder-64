@@ -25,7 +25,7 @@ OUTPUT_ARCH (mips)
 #define YAY0_SEG(name, segAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
    { \
-      BUILD_DIR/bin/name.szp.o(.data); \
+      KEEP(BUILD_DIR/bin/name.szp.o(.data)); \
       . = ALIGN(0x10); \
    } \
    END_SEG(name##_yay0)
@@ -33,7 +33,7 @@ OUTPUT_ARCH (mips)
 #define YAY0_EU_SEG(name, segAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
    { \
-      BUILD_DIR/bin/eu/name.szp.o(.data); \
+      KEEP(BUILD_DIR/bin/eu/name.szp.o(.data)); \
       . = ALIGN(0x10); \
    } \
    END_SEG(name##_yay0)
@@ -41,27 +41,27 @@ OUTPUT_ARCH (mips)
 #define STANDARD_LEVEL(name) \
    BEGIN_SEG(name##_segment_7, 0x07000000) \
    { \
-      BUILD_DIR/levels/name/leveldata.szp.o(.data); \
+      KEEP(BUILD_DIR/levels/name/leveldata.szp.o(.data)); \
       . = ALIGN(0x10); \
    } \
    END_SEG(name##_segment_7) \
    BEGIN_SEG(name, 0x0E000000) \
    { \
-      BUILD_DIR/levels/name/script.o(.data); \
-      BUILD_DIR/levels/name/geo.o(.data); \
+      KEEP(BUILD_DIR/levels/name/script.o(.data)); \
+      KEEP(BUILD_DIR/levels/name/geo.o(.data)); \
    } \
    END_SEG(name)
 
 #define STANDARD_OBJECTS(name, segAddr, geoAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
    { \
-      BUILD_DIR/actors/name.szp.o(.data); \
+      KEEP(BUILD_DIR/actors/name.szp.o(.data)); \
       . = ALIGN(0x10); \
    } \
    END_SEG(name##_yay0) \
    BEGIN_SEG(name##_geo, geoAddr) \
    { \
-      BUILD_DIR/actors/name##_geo.o(.data); \
+      KEEP(BUILD_DIR/actors/name##_geo.o(.data)); \
    } \
    END_SEG(name##_geo)
 
@@ -71,8 +71,8 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      BUILD_DIR/asm/rom_header.o(.text);
-      BUILD_DIR/asm/boot.o(.text);
+      KEEP(BUILD_DIR/asm/rom_header.o(.text));
+      KEEP(BUILD_DIR/asm/boot.o(.text));
    }
    END_SEG(boot)
 
@@ -122,7 +122,7 @@ SECTIONS
 
    BEGIN_SEG(main, .) SUBALIGN(16)
    {
-      BUILD_DIR/asm/entry.o(.text);
+      KEEP(BUILD_DIR/asm/entry.o(.text));
 
       BUILD_DIR/src/game*.o(.text);
 #ifdef HVQM
@@ -307,7 +307,7 @@ SECTIONS
    /* use segmented addressing for behaviors */
    BEGIN_SEG(behavior, 0x13000000)
    {
-      BUILD_DIR/data/behavior_data.o(.data);
+      KEEP(BUILD_DIR/data/behavior_data.o(.data));
    }
    END_SEG(behavior)
 
@@ -362,13 +362,13 @@ SECTIONS
    /* 0x268020 0x268020-0 [0] */
    BEGIN_SEG(intro, 0x14000000)
    {
-      BUILD_DIR/levels/intro/script.o(.data);
-      BUILD_DIR/levels/intro/geo.o(.data);
+      KEEP(BUILD_DIR/levels/intro/script.o(.data));
+      KEEP(BUILD_DIR/levels/intro/geo.o(.data));
    }
    END_SEG(intro)
    BEGIN_SEG(intro_segment_7, 0x07000000)
    {
-      BUILD_DIR/levels/intro/leveldata.szp.o(.data);
+      KEEP(BUILD_DIR/levels/intro/leveldata.szp.o(.data));
       . = ALIGN(0x10);
    }
    END_SEG(intro_segment_7)
@@ -404,13 +404,13 @@ SECTIONS
 
    BEGIN_SEG(menu, 0x14000000)
    {
-      BUILD_DIR/levels/menu/script.o(.data);
-      BUILD_DIR/levels/menu/geo.o(.data);
+      KEEP(BUILD_DIR/levels/menu/script.o(.data));
+      KEEP(BUILD_DIR/levels/menu/geo.o(.data));
    }
    END_SEG(menu)
    BEGIN_SEG(menu_segment_7, 0x07000000)
    {
-      BUILD_DIR/levels/menu/leveldata.szp.o(.data);
+      KEEP(BUILD_DIR/levels/menu/leveldata.szp.o(.data));
       . = ALIGN(0x10);
    }
    END_SEG(menu_segment_7)
@@ -458,16 +458,16 @@ SECTIONS
    /* 4E9FA0-? [?] */
    BEGIN_SEG(assets, __romPos)
    {
-      BUILD_DIR/assets/mario_anim_data.o(.data);
-      BUILD_DIR/assets/mario_anim_data.o(.rodata);
-      BUILD_DIR/assets/demo_data.o(.data);
-      BUILD_DIR/sound/sound_data.o(.data);
+      KEEP(BUILD_DIR/assets/mario_anim_data.o(.data));
+      KEEP(BUILD_DIR/assets/mario_anim_data.o(.rodata));
+      KEEP(BUILD_DIR/assets/demo_data.o(.data));
+      KEEP(BUILD_DIR/sound/sound_data.o(.data));
    }
    END_SEG(assets)
 #ifdef HVQM 
    BEGIN_SEG(capcom, __romPos) SUBALIGN(2)
    {
-      BUILD_DIR/data/capcom.o(.data);
+      KEEP(BUILD_DIR/data/capcom.o(.data));
    }
 	END_SEG(capcom)
 #endif
