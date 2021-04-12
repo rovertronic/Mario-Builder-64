@@ -86,22 +86,18 @@ ifeq      ($(VERSION),jp)
   DEFINES   += VERSION_JP=1
   OPT_FLAGS := -g
   GRUCODE   ?= f3dzex
-  VERSION_JP_US  ?= true
 else ifeq ($(VERSION),us)
   DEFINES   += VERSION_US=1
   OPT_FLAGS := -g
   GRUCODE   ?= f3dzex
-  VERSION_JP_US  ?= true
 else ifeq ($(VERSION),eu)
   DEFINES   += VERSION_EU=1
   OPT_FLAGS := -O2
   GRUCODE   ?= f3dzex
-  VERSION_JP_US  ?= false
 else ifeq ($(VERSION),sh)
   DEFINES   += VERSION_SH=1
   OPT_FLAGS := -O2
   GRUCODE   ?= f3dzex
-  VERSION_JP_US  ?= false
 endif
 
 TARGET := sm64.$(VERSION)
@@ -745,7 +741,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 # Build ROM
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
-	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
 	$(V)$(N64CKSUM) $@
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)
