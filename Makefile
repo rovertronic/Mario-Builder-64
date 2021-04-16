@@ -170,9 +170,6 @@ $(eval $(call validate-option,UNF,0 1))
 ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
-  ULTRALIB := ultra_d
-else
-  ULTRALIB := ultra_rom
 endif
 
 

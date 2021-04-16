@@ -17,6 +17,10 @@
 #if defined(RNC1) || defined(RNC2)
 #include <rnc.h>
 #endif
+#ifdef UNF
+#include "usb/usb.h"
+#include "usb/debug.h"
+#endif
 
 
 // round up to the next multiple
