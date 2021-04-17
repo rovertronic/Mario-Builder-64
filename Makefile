@@ -131,7 +131,7 @@ endif
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -O2 -g
 endif
 
 
@@ -171,6 +171,17 @@ $(eval $(call validate-option,UNF,0 1))
 ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
+  USE_DEBUG := 1
+endif
+
+# GDB - whether to use GDB + UNFLoader
+#   1 - includes code in ROM
+#   0 - does not 
+GDB ?= 0
+$(eval $(call validate-option,GDB,0 1))
+ifeq ($(GDB),1)
+  DEFINES += GDB=1
+  SRC_DIRS += src/gdb
   USE_DEBUG := 1
 endif
 

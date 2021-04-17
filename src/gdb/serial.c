@@ -4,7 +4,7 @@
 u8 (*gdbSerialCanRead)();
 
 #if USE_UNF_LOADER
-#include "usb.h"
+#include <usb/usb.h>
 
 u32 gdbPendingUNFHeader;
 u32 gdbPendingUNFData;

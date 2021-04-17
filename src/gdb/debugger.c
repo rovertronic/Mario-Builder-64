@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 #define MAX_PACKET_SIZE     0x4000
 #define MAX_DEBUGGER_THREADS    8

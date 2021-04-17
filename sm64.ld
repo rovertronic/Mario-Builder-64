@@ -125,90 +125,63 @@ SECTIONS
       KEEP(BUILD_DIR/asm/entry.o(.text));
 
       BUILD_DIR/src/game*.o(.text);
-#ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.text);
-#endif
-#ifdef UNF
+      BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
-#endif
       BUILD_DIR/src/audio*.o(.text);
-#if defined(ISVPRINT) || defined(UNF)
+#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
       */libultra_d.a:*.o(.text);
 #else
       */libultra_rom.a:*.o(.text);
 #endif
       */libnustd.a:*.o(.text);
       */libgcc.a:*.o(.text);
-#ifdef GZIP
       */libz.a:*.o(.text);
-#endif
-#ifdef HVQM
       */libhvqm2.a:*.o(.text);
-#endif
-
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
 
       /* data */
       BUILD_DIR/src/game*.o(.*data*);
-#ifdef UNF
+      BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
-#endif
       BUILD_DIR/src/audio*.o(.*data*);
-#ifdef GZIP
-      */libz.a:*.o(.*data*);
-#endif
-#if defined(ISVPRINT) || defined(UNF)
+#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
       */libultra_d.a:*.o(.*data*);
 #else
       */libultra_rom.a:*.o(.*data*);
 #endif
-#ifdef HVQM
       */libhvqm2.a:*.o(.*data*);
-#endif
+      */libz.a:*.o(.*data*);
 
       BUILD_DIR/lib/rsp.o(.data*);
-#ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.data*);
-#endif
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
-#ifdef UNF
+      BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
-#endif
       BUILD_DIR/src/audio*.o(.rodata*);
-#if defined(ISVPRINT) || defined(UNF)
+#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
       */libultra_d.a:*.o(.*rodata*);
 #else
       */libultra_rom.a:*.o(.*rodata*);
 #endif
       */libgcc.a:*.o(.rodata*);
-#ifdef GZIP
       */libz.a:*.o(.rodata*);
-#endif
 
       BUILD_DIR/lib/rsp.o(.rodata*);
-#ifdef HVQM
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
-#endif
    }
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
       BUILD_DIR/src/game*.o(.*bss*);
-#ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.*bss*);
-#endif
-#ifdef UNF
+      BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
-#endif
       BUILD_DIR/src/audio*.o(.*bss*);
-#ifdef GZIP
-      BUILD_DIR/src/gzip*.o(.bss*);
-#endif
-      BUILD_DIR/src/audio*.o(.*bss*);
-#if defined(ISVPRINT) || defined(UNF)
+#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
       */libultra_d.a:*.o(COMMON);
       */libultra_d.a:*.o(.scommon);
       */libultra_d.a:*.o(.*bss*);
@@ -217,12 +190,8 @@ SECTIONS
       */libultra_rom.a:*.o(.scommon);
       */libultra_rom.a:*.o(.*bss*);
 #endif
-#ifdef HVQM
       */libhvqm2.a:*.o(.bss*);
-#endif
-#ifdef GZIP
       */libz.a:*.o(.bss*);
-#endif
       . = ALIGN(0x8);
    }
    END_NOLOAD(main)
@@ -471,6 +440,37 @@ SECTIONS
    }
 	END_SEG(capcom)
 #endif
+   /* DWARF debug sections.
+      Symbols in the DWARF debugging sections are relative to the beginning
+      of the section so we begin them at 0.  */
+   /* DWARF 1 */
+   .debug          0 : { *(.debug) }
+   .line           0 : { *(.line) }
+   /* GNU DWARF 1 extensions */
+   .debug_srcinfo  0 : { *(.debug_srcinfo) }
+   .debug_sfnames  0 : { *(.debug_sfnames) }
+   /* DWARF 1.1 and DWARF 2 */
+   .debug_aranges  0 : { *(.debug_aranges) }
+   .debug_pubnames 0 : { *(.debug_pubnames) }
+   /* DWARF 2 */
+   .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+   .debug_abbrev   0 : { *(.debug_abbrev) }
+   .debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end ) }
+   .debug_frame    0 : { *(.debug_frame) }
+   .debug_str      0 : { *(.debug_str) }
+   .debug_loc      0 : { *(.debug_loc) }
+   .debug_macinfo  0 : { *(.debug_macinfo) }
+   /* SGI/MIPS DWARF 2 extensions */
+   .debug_weaknames 0 : { *(.debug_weaknames) }
+   .debug_funcnames 0 : { *(.debug_funcnames) }
+   .debug_typenames 0 : { *(.debug_typenames) }
+   .debug_varnames  0 : { *(.debug_varnames) }
+   /* DWARF 3 */
+   .debug_pubtypes 0 : { *(.debug_pubtypes) }
+   .debug_ranges   0 : { *(.debug_ranges) }
+   /* DWARF Extension.  */
+   .debug_macro    0 : { *(.debug_macro) }
+   .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
    /* Discard everything not specifically mentioned above. */
    /DISCARD/ :
    {
