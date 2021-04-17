@@ -9,6 +9,7 @@ default: all
 DEFINES :=
 
 SRC_DIRS :=
+USE_DEBUG := 0
 
 #==============================================================================#
 # Build Options                                                                #
@@ -170,6 +171,7 @@ $(eval $(call validate-option,UNF,0 1))
 ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
+  USE_DEBUG := 1
 endif
 
 
@@ -181,6 +183,10 @@ ISVPRINT ?= 0
 $(eval $(call validate-option,ISVPRINT,0 1))
 ifeq ($(ISVPRINT),1)
   DEFINES += ISVPRINT=1
+  USE_DEBUG := 1
+endif
+
+ifeq ($(USE_DEBUG),1)
   ULTRALIB := ultra_d
 else
   ULTRALIB := ultra_rom
@@ -738,7 +744,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 # Build ROM
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
-	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
 	$(V)$(N64CKSUM) $@
 
 $(BUILD_DIR)/$(TARGET).objdump: $(ELF)

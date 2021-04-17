@@ -236,9 +236,11 @@ void func_sh_8024CA04(void) {
 static void thread6_rumble_loop(UNUSED void *a0) {
     OSMesg msg;
 
+	osSyncPrintf("start motor thread\n");
     cancel_rumble();
 
     sRumblePakThreadActive = TRUE;
+	osSyncPrintf("go motor thread\n");
 
     while (TRUE) {
         // Block until VI

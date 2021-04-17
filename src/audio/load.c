@@ -1977,11 +1977,11 @@ void audio_init() {
     gAudioLoadLock = AUDIO_LOCK_NOT_LOADING;
     // Should probably contain the sizes of the data banks, but those aren't
     // easily accessible from here.
-    eu_stubbed_printf_0("---------- Init Completed. ------------\n");
-    eu_stubbed_printf_1(" Syndrv    :[%6d]\n", 0); // gSoundDataADSR
-    eu_stubbed_printf_1(" Seqdrv    :[%6d]\n", 0); // gMusicData
-    eu_stubbed_printf_1(" audiodata :[%6d]\n", 0); // gSoundDataRaw
-    eu_stubbed_printf_0("---------------------------------------\n");
+    osSyncPrintf("---------- Init Completed. ------------\n");
+    osSyncPrintf(" Syndrv    :[%6d]\n", gSoundDataADSR); // gSoundDataADSR
+    osSyncPrintf(" Seqdrv    :[%6d]\n", gMusicData); // gMusicData
+    osSyncPrintf(" audiodata :[%6d]\n", gSoundDataRaw); // gSoundDataRaw
+    osSyncPrintf("---------------------------------------\n");
 #endif
 }
 

@@ -7,10 +7,15 @@
 
 #ifdef VERSION_EU
 
+#if defined(ISVPRINT) || defined(UNF)
+#define stubbed_printf osSyncPrintf
+#else
+
 #ifdef __sgi
 #define stubbed_printf
 #else
 #define stubbed_printf(...)
+#endif
 #endif
 
 #define SAMPLES_TO_OVERPRODUCE 0x10

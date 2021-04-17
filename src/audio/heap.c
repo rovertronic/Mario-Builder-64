@@ -216,8 +216,10 @@ void discard_bank(s32 bankId) {
 #else
             if (note->priority >= NOTE_PRIORITY_MIN) {
 #endif
+#if defined(VERSION_EU)
                 eu_stubbed_printf_3("Kill Voice %d (ID %d) %d\n", note->waveId,
                         bankId, note->priority);
+#endif
                 eu_stubbed_printf_0("Warning: Running Sequence's data disappear!\n");
                 note->parentLayer->enabled = FALSE; // is 0x48, should be 0x44
                 note->parentLayer->finished = TRUE;
@@ -760,7 +762,9 @@ void *alloc_bank_or_seq(struct SoundMultiPool *arg0, s32 arg1, s32 size, s32 arg
 #ifdef VERSION_SH
             case 0:
 #endif
+#ifdef VERSION_EU
                 eu_stubbed_printf_1("MEMORY:StayHeap OVERFLOW (REQ:%d)", arg1 * size);
+#endif
                 return NULL;
         }
     }
@@ -1118,8 +1122,9 @@ void audio_reset_session(void) {
 #else
     struct SynthesisReverb *reverb;
 #endif
+#ifdef VERSION_EU
     eu_stubbed_printf_1("Heap Reconstruct Start %x\n", gAudioResetPresetIdToLoad);
-
+#endif
 #if defined(VERSION_JP) || defined(VERSION_US)
     if (gAudioLoadLock != AUDIO_LOCK_UNINITIALIZED) {
         decrease_reverb_gain();
