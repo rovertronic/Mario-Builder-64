@@ -129,7 +129,7 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
       BUILD_DIR/src/audio*.o(.text);
-#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
+#if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.text);
 #else
       */libultra_rom.a:*.o(.text);
@@ -146,7 +146,7 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
-#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
+#if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.*data*);
 #else
       */libultra_rom.a:*.o(.*data*);
@@ -162,7 +162,7 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
-#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
+#if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.*rodata*);
 #else
       */libultra_rom.a:*.o(.*rodata*);
@@ -181,7 +181,7 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
       BUILD_DIR/src/audio*.o(.*bss*);
-#if defined(ISVPRINT) || defined(UNF) || defined(GDB)
+#if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(COMMON);
       */libultra_d.a:*.o(.scommon);
       */libultra_d.a:*.o(.*bss*);

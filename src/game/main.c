@@ -18,9 +18,6 @@
 #include "usb/usb.h"
 #include "usb/debug.h"
 #endif
-#ifdef GDB
-#include "gdb/debugger.h"
-#endif
 
 // Message IDs
 #define MESG_SP_COMPLETE 100
@@ -315,10 +312,6 @@ void handle_dp_complete(void) {
 extern void crash_screen_init(void);
 
 void thread3_main(UNUSED void *arg) {
-#ifdef GDB
-OSPiHandle *gdbpihandle;
-  gdbpihandle = osCartRomInit();
-#endif
     setup_mesg_queues();
     alloc_pool();
     load_engine_code_segment();
@@ -337,12 +330,6 @@ OSPiHandle *gdbpihandle;
 
     create_thread(&gGameLoopThread, 5, thread5_game_loop, NULL, gThread5Stack + 0x2000, 10);
     osStartThread(&gGameLoopThread);
-
-#ifdef GDB
-OSThread* threadPtr = &gMainThread;
-    gdbInitDebugger(gdbpihandle, &gDmaMesgQueue, &threadPtr, 1);
-#endif
-
 
     while (TRUE) {
         OSMesg msg;
