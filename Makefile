@@ -59,7 +59,7 @@ endif
 DEFINES += NO_ERRNO_H=1 NO_GZIP=1
 
 COMPRESS ?= yay0
-$(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2))
+$(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
 else ifeq ($(COMPRESS),rnc1)
@@ -70,6 +70,8 @@ else ifeq ($(COMPRESS),yay0)
   DEFINES += YAY0=1
 else ifeq ($(COMPRESS),mio0)
   DEFINES += MIO0=1
+else ifeq ($(COMPRESS),uncomp)
+  DEFINES += UNCOMPRESSED=1
 endif
 
 GZIPVER ?= std
@@ -600,6 +602,8 @@ else ifeq ($(COMPRESS),yay0)
 include yay0rules.mk
 else ifeq ($(COMPRESS),mio0)
 include mio0rules.mk
+else ifeq ($(COMPRESS),uncomp)
+include uncomprules.mk
 endif
 
 #==============================================================================#

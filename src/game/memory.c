@@ -343,12 +343,17 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     // Decompressed size from end of gzip
     u32 *size = (u32 *) (compressed + compSize);
 #else
-    // Decompressed size from mio0 header
+    // Decompressed size from header (This works for non-mio0 because they also have the size in same place)
     u32 *size = (u32 *) (compressed + 4);
 #endif
     if (compressed != NULL) {
+#ifdef UNCOMPRESSED
+        dest = main_pool_alloc(compSize, MEMORY_POOL_LEFT);
+        dma_read(dest, srcStart, srcEnd);
+#else
         dma_read(compressed, srcStart, srcEnd);
         dest = main_pool_alloc(*size, MEMORY_POOL_LEFT);
+#endif
         if (dest != NULL) {
 			osSyncPrintf("start decompress\n");
 #ifdef GZIP
@@ -386,7 +391,11 @@ void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
     u32 *size = (u32 *) (compressed + compSize);
 #endif
     if (compressed != NULL) {
+#ifdef UNCOMPRESSED
+        dma_read(gDecompressionHeap, srcStart, srcEnd);
+#else
         dma_read(compressed, srcStart, srcEnd);
+#endif
 #ifdef GZIP
         expand_gzip(compressed, gDecompressionHeap, compSize, (u32)size);
 #elif RNC1

@@ -55,6 +55,12 @@ Both methods are fast. Method 1 has better compression than 2, so I suggest usin
 
 To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
 
+The repo also supports building a ROM with no compression.
+
+This is not recommended as it increases ROM size significantly, with little point other than load times decreased to almost nothing.
+
+To switch to no compression, run make with the ``COMPRESS=uncomp`` argument.
+
 
 ## FAQ
 
