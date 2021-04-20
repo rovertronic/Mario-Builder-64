@@ -7,6 +7,8 @@ int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
 int drop_shadow = FALSE;
+int drop_x = 0;
+int drop_y = 0;
 
 Gfx s2d_text_init_dl[] = {
     gsDPPipeSync(),
@@ -94,6 +96,12 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
     mtx_pipeline2(mt, x, y);
 
     if (drop_shadow) {
+        // uObjSprite *tmp = (uObjSprite *)segmented_to_virtual(&s2d_dropshadow);
+        // uObjSprite *orig = (uObjSprite *)segmented_to_virtual(&s2d_font);
+
+        // tmp->s.objX = orig->s.objX + drop_x;
+        // tmp->s.objY = orig->s.objY + drop_y;
+
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++,
                    CLAMP_0(s2d_red - 100),

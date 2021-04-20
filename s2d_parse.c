@@ -82,7 +82,17 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				break;
 			case CH_DROPSHADOW:
 				drop_shadow ^= 1;
+
+				// WIP: drop shadow custom offset
+				// TODO: unique offset per string; fix negative offsets
 				// CH_SKIP(p);
+				// drop_x = s2d_atoi(p, &p);
+				// CH_SKIP(p);	CH_SKIP(p);
+				// drop_y = s2d_atoi(p, &p);
+
+				// drop_x <<= 2;
+				// drop_y <<= 2;
+
 				break;
 			case '\n':
 				line++;
@@ -112,6 +122,8 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				s2d_red = s2d_green = s2d_blue = 255;
 				s2d_alpha = 255;
 				drop_shadow = FALSE;
+				drop_x = 0;
+				drop_y = 0;
 				myScale = 1;
 				myDegrees = 0;
 				break;
@@ -129,6 +141,9 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 	} while (tmp_len < len);
 	myScale = 1.0f;
 	myDegrees = 0;
+	drop_shadow = FALSE;
+	drop_x = 0;
+	drop_y = 0;
 }
 
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {

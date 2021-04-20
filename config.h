@@ -6,7 +6,7 @@
 /**
  * SET YOUR FONT NAME HERE
  */
-#define FONTNAME impact
+#define FONTNAME comicsans
 
 
 /***********
@@ -29,11 +29,12 @@
 #define STR2(x) STR(x)
 
 #define __headername(hd) fonts/hd.h
+#define __fontinclude(f) src/s2d_engine/fonts/f.c
 
 #define _FONT_HEADER STR2(__headername(FONTNAME))
+#define FONT_C_FILE STR2(__fontinclude(FONTNAME))
 
 #include _FONT_HEADER
-
 
 // get your font symbols defined here
 #define s2d_font          GLUE2(FONTNAME, _obj)

@@ -5,7 +5,7 @@
 #define ROTATE     "\x81" // ROTATE (degrees) // TODO: maybe add axis?
 #define TRANSLATE  "\x82" // TRANSLATE (x) (y)
 #define COLOR      "\x83" // COLOR (r) (g) (b) (a)
-#define DROPSHADOW "\x84" // DROPSHADOW (no params)
+#define DROPSHADOW "\x84" // DROPSHADOW (no args)
 #define BACKGROUND "\x85" // BACKGROUND (w) (h) (alpha)
 #define SEPARATOR  "\x86"
 #define RESET      "\x87"

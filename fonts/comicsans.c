@@ -1673,8 +1673,8 @@ uObjMtx comicsans_mtx = {
 	1<<10,    1<<10           /* BaseScaleX, BaseScaleY */
 };
 uObjSprite comicsans_obj = {
-	0<<2, 1<<10, 64<<5, 0,          /* objX, scaleX, imageW, unused */
-	0<<2, 1<<10, 64<<5, 0,          /* objY, scaleY, imageH, unused */
+	-32<<2, 1<<10, 64<<5, 0,          /* objX, scaleX, imageW, unused */
+	-32<<2, 1<<10, 64<<5, 0,          /* objY, scaleY, imageH, unused */
 	GS_PIX2TMEM(64, G_IM_SIZ_8b), /* imageStride */
 	GS_PIX2TMEM(0, G_IM_SIZ_8b), /* imageAdrs */
 	G_IM_FMT_IA, /* imageFmt */
@@ -1683,8 +1683,8 @@ uObjSprite comicsans_obj = {
 	0, /* imageFlags */
 };
 uObjSprite comicsans_obj_dropshadow = {
-	-32<<2, 1<<10, 64<<5, 0,          /* objX, scaleX, imageW, unused */
-	-32<<2, 1<<10, 64<<5, 0,          /* objY, scaleY, imageH, unused */
+	-24<<2, 1<<10, 64<<5, 0,          /* objX, scaleX, imageW, unused */
+	-24<<2, 1<<10, 64<<5, 0,          /* objY, scaleY, imageH, unused */
 	GS_PIX2TMEM(64, G_IM_SIZ_8b), /* imageStride */
 	GS_PIX2TMEM(0, G_IM_SIZ_8b), /* imageAdrs */
 	G_IM_FMT_IA, /* imageFmt */

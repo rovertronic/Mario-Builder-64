@@ -1,6 +1,6 @@
 #include <PR/ultratypes.h>
 #include <PR/gs2dex.h>
-extern uObjTxtrBlock_t comicsans_tex[];
+extern uObjTxtr comicsans_tex[];
 extern uObjMtx comicsans_mtx;
 extern uObjSprite comicsans_obj;
 extern void call_comicsans_sprite_dl(int idx, int x, int y, uObjMtx *buffer, int buf_idx);
@@ -133,4 +133,4 @@ extern u8 comicsans_tex_125[];
 extern u8 comicsans_tex_126[];
 extern u8 comicsans_tex_127[];
 
-extern char comicsans_obj_dropshadow[];
+extern uObjSprite comicsans_obj_dropshadow;
