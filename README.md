@@ -4,7 +4,8 @@
 - Clone this repo into a folder in your SM64 decomp or homebrew repo
 - Include that folder in your makefile's `SRC_DIRS`
 - Add that folder to the linker script (`sm64.ld`) or specfile
-- Wherever you're including your font (I use actors/group0.c for SM64), insert: ```c
+- Wherever you're including your font (I use actors/group0.c for SM64), insert:
+```c
 #include "src/s2d_engine/config.h"
 #include FONT_C_FILE
 ```
