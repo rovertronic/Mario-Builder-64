@@ -1,6 +1,6 @@
 #include <PR/ultratypes.h>
 #include <PR/gs2dex.h>
-extern uObjTxtrBlock_t impact_tex[];
+extern uObjTxtr impact_tex[];
 extern uObjMtx impact_mtx;
 extern uObjSprite impact_obj;
 extern void call_impact_sprite_dl(int idx, int x, int y, uObjMtx *buffer, int buf_idx);
@@ -133,4 +133,4 @@ extern u8 impact_tex_125[];
 extern u8 impact_tex_126[];
 extern u8 impact_tex_127[];
 
-extern char impact_obj_dropshadow[];
+extern uObjSprite impact_obj_dropshadow;

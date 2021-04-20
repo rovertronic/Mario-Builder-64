@@ -96,21 +96,20 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
     mtx_pipeline2(mt, x, y);
 
     if (drop_shadow) {
-        // uObjSprite *tmp = (uObjSprite *)segmented_to_virtual(&s2d_dropshadow);
-        // uObjSprite *orig = (uObjSprite *)segmented_to_virtual(&s2d_font);
-
-        // tmp->s.objX = orig->s.objX + drop_x;
-        // tmp->s.objY = orig->s.objY + drop_y;
-
-        gDPPipeSync(gdl_head++);
-        gDPSetEnvColor(gdl_head++,
-                   CLAMP_0(s2d_red - 100),
-                   CLAMP_0(s2d_green - 100),
-                   CLAMP_0(s2d_blue - 100),
-                   s2d_alpha);
-        gSPObjSprite(gdl_head++, &s2d_dropshadow);
-        gDPPipeSync(gdl_head++);
-        gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
+        if (s2d_red != 0
+            && s2d_green != 0
+            && s2d_blue != 0
+            ) {
+            gDPPipeSync(gdl_head++);
+            gDPSetEnvColor(gdl_head++,
+                       CLAMP_0(s2d_red - 100),
+                       CLAMP_0(s2d_green - 100),
+                       CLAMP_0(s2d_blue - 100),
+                       s2d_alpha);
+            gSPObjSprite(gdl_head++, &s2d_dropshadow);
+            gDPPipeSync(gdl_head++);
+            gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
+        }
     }
 
     gSPObjSprite(gdl_head++, &s2d_font);

@@ -6,7 +6,7 @@
 /**
  * SET YOUR FONT NAME HERE
  */
-#define FONTNAME comicsans
+#define FONTNAME impact
 
 
 /***********
