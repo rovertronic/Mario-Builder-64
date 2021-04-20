@@ -1,7 +1,7 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
 
-#define SCALE      "\x80" // SCALE (some scale)
+#define SCALE      "\x80" // SCALE (an integer percentage; 100 -> 100%, 25 -> 25%, etc.)
 #define ROTATE     "\x81" // ROTATE (degrees) // TODO: maybe add axis?
 #define TRANSLATE  "\x82" // TRANSLATE (x) (y)
 #define COLOR      "\x83" // COLOR (r) (g) (b) (a)
