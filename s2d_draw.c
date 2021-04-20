@@ -2,7 +2,7 @@
 #include "config.h"
 #include "mtx.h"
 
-int myScale = 1;
+float myScale = 1.0f;
 int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
@@ -68,7 +68,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
     Mat4 tmp, rot, scal, translate;
     guMtxIdentF(tmp);
-    guScaleF(scal, myScale, myScale, 0);
+    guScaleF(scal, BASE_SCALE * (myScale), BASE_SCALE * (myScale), 0);
     guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 
@@ -100,7 +100,7 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
                    CLAMP_0(s2d_green - 100),
                    CLAMP_0(s2d_blue - 100),
                    s2d_alpha);
-        gSPObjSprite(gdl_head++, &impact_obj_dropshadow);
+        gSPObjSprite(gdl_head++, &s2d_dropshadow);
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }

@@ -42,7 +42,7 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 		switch (current_char) {
 			case CH_SCALE:
 				CH_SKIP(p);
-				myScale = s2d_atoi(p, &p);
+				myScale = (f32)s2d_atoi(p, &p) / 100.0f;
 				break;
 			case CH_ROT:
 				CH_SKIP(p);
@@ -117,15 +117,17 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				break;
 			default:
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
+					char *tbl = segmented_to_virtual(s2d_kerning_table);
+
 					draw_s2d_glyph(current_char, x, y, (buf++));
-					(x += (s2d_kerning_table[(int) current_char] * myScale));
+					(x += (tbl[(int) current_char] * (BASE_SCALE * myScale)));
 				}
 		}
 		if (*p == '\0') break;
 		p++;
 		tmp_len++;
 	} while (tmp_len < len);
-	myScale = 1;
+	myScale = 1.0f;
 	myDegrees = 0;
 }
 

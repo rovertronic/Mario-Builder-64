@@ -2,7 +2,7 @@
 #define S2D_DRAW_H
 #include <ultra64.h>
 
-extern int myScale;
+extern float myScale;
 extern int myDegrees;
 extern int drop_shadow;
 extern uObjMtx final_mtx, rot_mtx;

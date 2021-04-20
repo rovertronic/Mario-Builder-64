@@ -3,19 +3,48 @@
 #ifndef S2D_CONFIG_H
 #define S2D_CONFIG_H
 
-#define const
+/**
+ * SET YOUR FONT NAME HERE
+ */
+#define FONTNAME comicsans
 
-// include your font header here
-#include "fonts/impact.h"
+
+/***********
+ * Helpful defines to change
+ ***********/
+
+#define BASE_SCALE 1.0f
+
+/******************************
+ *
+ * ONLY CHANGE THE BELOW CONTENTS IF YOU'RE DEVELOPING
+ * FOR A GAME THAT ISN'T SM64
+ *
+ *****************************/
+
+// magic macros and font header inclusion
+#define GLUE(a, b) a##b
+#define GLUE2(a, b) GLUE(a, b)
+#define STR(x) #x
+#define STR2(x) STR(x)
+
+#define __headername(hd) fonts/hd.h
+
+#define _FONT_HEADER STR2(__headername(FONTNAME))
+
+#include _FONT_HEADER
+
 
 // get your font symbols defined here
-#define s2d_font          impact_obj
-#define s2d_tex           impact_tex
-#define s2d_kerning_table impact_kerning_table
+#define s2d_font          GLUE2(FONTNAME, _obj)
+#define s2d_dropshadow    GLUE2(FONTNAME, _obj_dropshadow)
+#define s2d_tex           GLUE2(FONTNAME, _tex)
+#define s2d_kerning_table GLUE2(FONTNAME, _kerning_table)
+
 extern char s2d_kerning_table[];
 
 // Debug: bypass custom matrix setup
-#define s2d_mat impact_mtx
+#define s2d_mat GLUE2(FONTNAME, _mtx)
 
 // Homebrew users: use this to rename your gdl head
 #define gdl_head gDisplayListHead
