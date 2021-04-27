@@ -1532,7 +1532,7 @@ u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
             marioObj->oMarioPoleUnk108 = 0;
             marioObj->oMarioPoleYawVel = 0;
-            marioObj->oMarioPolePos = m->pos[1] - o->oPosY;
+            marioObj->oMarioPolePos = (m->pos[1] - o->oPosY) < 0 ? 0 : (m->pos[1] - o->oPosY);
 
             if (lowSpeed) {
                 return set_mario_action(m, ACT_GRAB_POLE_SLOW, 0);
