@@ -252,12 +252,12 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         }
         // Determine if checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera != 0) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
         }
         // Ignore camera only surfaces.
-        else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
+        else if (surf->type == SURFACE_CAMERA_BOUNDARY || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
             continue;
         }
 		nx = surf->normal.x;
@@ -414,7 +414,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         }
         // Determine if we are checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera != 0) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) {
                 continue;
             }
         }
