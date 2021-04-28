@@ -1,3 +1,15 @@
+# UltraSM64-extbounds
+Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches: 
+- slope fix
+- exposed ceilings fix
+- pole fix
+- better extended boundaries by anonymous_moose
+- coordinate overflow fix by falcobuster
+- water surface type patch by thecozies
+- platform displacement 2 by arthur. 
+
+It also uncringes the way that apply_patch.s works, and removes the black border.
+
 # UltraSM64
 
 - This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
