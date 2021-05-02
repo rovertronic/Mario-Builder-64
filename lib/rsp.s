@@ -27,7 +27,7 @@ glabel gspFast3D_fifoTextEnd
     glabel gspF3DEX2_fifoTextStart
         .incbin "lib/PR/f3dex2/F3DEX2.bin"
     glabel gspF3DEX2_fifoTextEnd
-    #elseif F3DEX_GBI == 1
+    #elif F3DEX_GBI == 1
     glabel gspF3DEX_fifoTextStart
         .incbin "lib/PR/f3dex/F3DEX.bin"
     glabel gspF3DEX_fifoTextEnd
@@ -179,7 +179,7 @@ glabel gspFast3D_fifoDataEnd
     glabel gspF3DEX2_fifoDataStart
         .incbin "lib/PR/f3dex2/F3DEX2_data.bin"
     glabel gspF3DEX2_fifoDataEnd
-    #elseif F3DEX_GBI == 1
+    #elif F3DEX_GBI == 1
     glabel gspF3DEX_fifoDataStart
         .incbin "lib/PR/f3dex/F3DEX_data.bin"
     glabel gspF3DEX_fifoDataEnd
