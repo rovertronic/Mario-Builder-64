@@ -21,6 +21,46 @@
  * cannon reticle, and the unused keys.
  **/
 
+// ------------- FPS COUNTER ---------------
+// To use it, call print_fps(x,y); every frame.
+#define FRAMETIME_COUNT 30
+
+OSTime frameTimes[FRAMETIME_COUNT];
+u8 curFrameTimeIndex = 0;
+
+#include "PR/os_convert.h"
+
+u32 get_clockspeed(void);
+
+// Call once per frame
+f32 calculate_and_update_fps()
+{
+    OSTime newTime = osGetTime();
+    OSTime oldTime = frameTimes[curFrameTimeIndex];
+    frameTimes[curFrameTimeIndex] = newTime;
+
+    curFrameTimeIndex++;
+    if (curFrameTimeIndex >= FRAMETIME_COUNT)
+        curFrameTimeIndex = 0;
+
+
+    return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+
+    // return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+}
+
+void print_fps(s32 x, s32 y)
+{
+    f32 fps = calculate_and_update_fps();
+    char text[10];
+
+    sprintf(text, "%2.2f", fps);
+
+    print_text(x, y, text);
+}
+
+// ------------ END OF FPS COUNER -----------------
+
 struct PowerMeterHUD {
     s8 animation;
     s16 x;
