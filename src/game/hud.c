@@ -30,8 +30,6 @@ u8 curFrameTimeIndex = 0;
 
 #include "PR/os_convert.h"
 
-u32 get_clockspeed(void);
-
 // Call once per frame
 f32 calculate_and_update_fps()
 {
@@ -45,8 +43,6 @@ f32 calculate_and_update_fps()
 
 
     return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
-
-    // return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
 }
 
 void print_fps(s32 x, s32 y)
