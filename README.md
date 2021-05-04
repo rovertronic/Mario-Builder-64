@@ -7,8 +7,10 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - coordinate overflow fix by falcobuster
 - water surface type patch by thecozies
 - platform displacement 2 by arthur. 
+- FPS counter
+- Automatic console/emulator detection. If emulator is detected, LODs are disabled.
 
-It also uncringes the way that apply_patch.s works, and removes the black border.
+It also uncringes the way that apply_patch.sh works, and removes the black border.
 
 # UltraSM64
 
