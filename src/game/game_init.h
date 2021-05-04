@@ -41,6 +41,7 @@ extern Gfx *gDisplayListHead;
 extern u8 *gGfxPoolEnd;
 extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
+extern u8 gIsConsole;
 #ifdef EEP
 extern s8 gEepromProbe;
 #endif

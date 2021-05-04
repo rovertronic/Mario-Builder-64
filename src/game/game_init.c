@@ -62,6 +62,7 @@ UNUSED u8 filler80339D30[0x90];
 
 s32 unused8032C690 = 0;
 u32 gGlobalTimer = 0;
+u8 gIsConsole;
 
 u16 sCurrFBNum = 0;
 u16 frameBufferIndex = 0;
@@ -319,6 +320,11 @@ void draw_reset_bars(void) {
 }
 
 void rendering_init(void) {
+    if (IO_READ(DPC_PIPEBUSY_REG) == 0) {
+        gIsConsole = 0;
+    } else {
+        gIsConsole = 1;
+    }
     gGfxPool = &gGfxPools[0];
     set_segment_base_addr(1, gGfxPool->buffer);
     gGfxSPTask = &gGfxPool->spTask;

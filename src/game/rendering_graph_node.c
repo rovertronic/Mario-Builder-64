@@ -267,7 +267,13 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
  * range of this node.
  */
 static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
-	f32 distanceFromCam = -gMatStack[gMatStackIndex][3][2];
+    f32 distanceFromCam;
+    if (gIsConsole) {
+        distanceFromCam = -gMatStack[gMatStackIndex][3][2];
+    } else {
+        distanceFromCam = 50;
+    }
+	
     if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
         if (node->node.children != 0) {
             geo_process_node_and_siblings(node->node.children);
