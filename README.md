@@ -3,6 +3,8 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - slope fix
 - exposed ceilings fix
 - pole fix
+- Mario head skip
+- Peach letter cutscene skip
 - better extended boundaries by anonymous_moose
 - coordinate overflow fix by falcobuster
 - water surface type patch by thecozies
