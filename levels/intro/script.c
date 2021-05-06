@@ -45,6 +45,7 @@ const LevelScript level_intro_splash_screen[] = {
 
 const LevelScript level_intro_mario_head_regular[] = {
     INIT_LEVEL(),
+    EXIT_AND_EXECUTE(/*seg*/ 0x14, _menuSegmentRomStart, _menuSegmentRomEnd, level_main_menu_entry_1),
     BLACKOUT(/*active*/ TRUE),
     FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
 #ifdef GODDARD
