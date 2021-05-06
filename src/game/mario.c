@@ -541,6 +541,20 @@ struct Surface *resolve_and_return_wall_collisions(Vec3f pos, f32 offset, f32 ra
     return wall;
 }
 
+void resolve_and_return_wall_collisions_frame(Vec3f pos, f32 offset, f32 radius, struct WallCollisionData *collisionData) {
+    collisionData->x = pos[0];
+    collisionData->y = pos[1];
+    collisionData->z = pos[2];
+    collisionData->radius = radius;
+    collisionData->offsetY = offset;
+
+    find_wall_collisions(collisionData);
+
+    pos[0] = collisionData->x;
+    pos[1] = collisionData->y;
+    pos[2] = collisionData->z;
+}
+
 /**
  * Finds the ceiling from a vec3f horizontally and a height (with 80 vertical buffer).
  */
