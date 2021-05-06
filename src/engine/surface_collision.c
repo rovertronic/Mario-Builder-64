@@ -55,7 +55,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
 
         offset = surf->normal.x * x + surf->normal.y * y + surf->normal.z * z + surf->originOffset;
 
-        if (offset < /*-radius*/ 0 || offset > radius) {
+        if (offset < -radius || offset > radius) {
             continue;
         }
 
@@ -343,43 +343,23 @@ s32 find_wall_collisions(struct WallCollisionData *colData) {
  *                     CEILINGS                   *
  **************************************************/
 
-void add_ceil_margin(s32 *x, s32 *z, Vec3s target1, Vec3s target2, f32 margin) {
-	register f32 diff_x, diff_z, invDenom;
-    f32 newX = (f32)*x;
-    f32 newZ = (f32)*z;
-    
-	diff_x = target1[0] - newX + target2[0] - newX;
-	diff_z = target1[2] - newZ + target2[2] - newZ;
-	invDenom = margin / sqrtf(diff_x * diff_x + diff_z * diff_z);
-	*x += diff_x * invDenom;
-	*z += diff_z * invDenom;
-}
 /**
  * Iterate through the list of ceilings and find the first ceiling over a given point.
  */
 static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
     register struct Surface *surf;
-    s32 x1, z1, x2, z2, x3, z3;
+    register s32 x1, z1, x2, z2, x3, z3;
     f32 nx, ny, nz, oo, height;
     struct Surface *ceil = NULL;
     *pheight = CELL_HEIGHT_LIMIT;
-    f32 newHeight;
-	const f32 margin = 1.5f;
-
-    ceil = NULL;
-
     // Stay in this loop until out of ceilings.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];
-        if (surf->type != SURFACE_HANGABLE)
-			add_ceil_margin(&x1, &z1, surf->vertex2, surf->vertex3, margin);
         z2 = surf->vertex2[2];
         x2 = surf->vertex2[0];
-        if (surf->type != SURFACE_HANGABLE)
-			add_ceil_margin(&x2, &z2, surf->vertex3, surf->vertex1, margin);
         // Checking if point is in bounds of the triangle laterally.
         if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) > 0) {
             continue;
@@ -387,8 +367,6 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         // Slight optimization by checking these later.
         x3 = surf->vertex3[0];
         z3 = surf->vertex3[2];
-        if (surf->type != SURFACE_HANGABLE)
-			add_ceil_margin(&x3, &z3, surf->vertex1, surf->vertex2, margin);
         if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) > 0) {
             continue;
         }
@@ -419,7 +397,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
 			continue;
 		}
 		// Checks for ceiling interaction
-		if (/*y > height*/ y - (height - -78.0f) > 0.0f) {
+		if (y > height) {
 			continue;
 		}
 		if (y >= surf->upperY) {

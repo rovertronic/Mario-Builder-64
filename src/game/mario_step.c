@@ -394,7 +394,7 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *grabbedWa
     // a higher ledge than expected (glitchy ledge grab)
     ledgePos[0] = nextPos[0] - wall->normal.x * 60.0f;
     ledgePos[2] = nextPos[2] - wall->normal.z * 60.0f;
-    ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], &ledgeFloor);
+    ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], ledgeFloor);
 
     if (ledgePos[1] - nextPos[1] <= 100.0f) {
         return grabbedWall;
@@ -490,7 +490,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
     waterLevel = find_water_level(nextPos[0], nextPos[2]);
 
-    m->wall = NULL;
+    //m->wall = NULL;
 
     //! The water pseudo floor is not referenced when your intended qstep is
     // out of bounds, so it won't detect you as landing.
