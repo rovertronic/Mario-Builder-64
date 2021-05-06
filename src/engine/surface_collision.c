@@ -18,6 +18,8 @@
  */
 static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
                                           struct WallCollisionData *data) {
+    const f32 corner_threshold = -0.9f;
+
     register struct Surface *surf;
     register f32 offset;
     register f32 radius = data->radius;
@@ -27,6 +29,13 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
     register f32 px, pz;
     register f32 w1, w2, w3;
     register f32 y1, y2, y3;
+    register f32 v0x, v0y, v0z;
+	register f32 v1x, v1y, v1z;
+	register f32 v2x, v2y, v2z;
+	register f32 d00, d01, d11, d20, d21;
+	register f32 invDenom;
+	register f32 v, w;
+	register f32 margin_radius = radius - 1.0f;
     s32 numCols = 0;
 
     // Max collision radius = 200
@@ -46,67 +55,67 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
 
         offset = surf->normal.x * x + surf->normal.y * y + surf->normal.z * z + surf->originOffset;
 
-        if (offset < -radius || offset > radius) {
+        if (offset < /*-radius*/ 0 || offset > radius) {
             continue;
         }
 
-        px = x;
-        pz = z;
+        // px = x;
+        // pz = z;
 
-        //! (Quantum Tunneling) Due to issues with the vertices walls choose and
-        //  the fact they are floating point, certain floating point positions
-        //  along the seam of two walls may collide with neither wall or both walls.
-        if (surf->flags & SURFACE_FLAG_X_PROJECTION) {
-            w1 = -surf->vertex1[2];            w2 = -surf->vertex2[2];            w3 = -surf->vertex3[2];
-            y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
+        // //! (Quantum Tunneling) Due to issues with the vertices walls choose and
+        // //  the fact they are floating point, certain floating point positions
+        // //  along the seam of two walls may collide with neither wall or both walls.
+        // if (surf->flags & SURFACE_FLAG_X_PROJECTION) {
+        //     w1 = -surf->vertex1[2];            w2 = -surf->vertex2[2];            w3 = -surf->vertex3[2];
+        //     y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
 
-            if (surf->normal.x > 0.0f) {
-                if ((y1 - y) * (w2 - w1) - (w1 - -pz) * (y2 - y1) > 0.0f) {
-                    continue;
-                }
-                if ((y2 - y) * (w3 - w2) - (w2 - -pz) * (y3 - y2) > 0.0f) {
-                    continue;
-                }
-                if ((y3 - y) * (w1 - w3) - (w3 - -pz) * (y1 - y3) > 0.0f) {
-                    continue;
-                }
-            } else {
-                if ((y1 - y) * (w2 - w1) - (w1 - -pz) * (y2 - y1) < 0.0f) {
-                    continue;
-                }
-                if ((y2 - y) * (w3 - w2) - (w2 - -pz) * (y3 - y2) < 0.0f) {
-                    continue;
-                }
-                if ((y3 - y) * (w1 - w3) - (w3 - -pz) * (y1 - y3) < 0.0f) {
-                    continue;
-                }
-            }
-        } else {
-            w1 = surf->vertex1[0];            w2 = surf->vertex2[0];            w3 = surf->vertex3[0];
-            y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
+        //     if (surf->normal.x > 0.0f) {
+        //         if ((y1 - y) * (w2 - w1) - (w1 - -pz) * (y2 - y1) > 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y2 - y) * (w3 - w2) - (w2 - -pz) * (y3 - y2) > 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y3 - y) * (w1 - w3) - (w3 - -pz) * (y1 - y3) > 0.0f) {
+        //             continue;
+        //         }
+        //     } else {
+        //         if ((y1 - y) * (w2 - w1) - (w1 - -pz) * (y2 - y1) < 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y2 - y) * (w3 - w2) - (w2 - -pz) * (y3 - y2) < 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y3 - y) * (w1 - w3) - (w3 - -pz) * (y1 - y3) < 0.0f) {
+        //             continue;
+        //         }
+        //     }
+        // } else {
+        //     w1 = surf->vertex1[0];            w2 = surf->vertex2[0];            w3 = surf->vertex3[0];
+        //     y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
 
-            if (surf->normal.z > 0.0f) {
-                if ((y1 - y) * (w2 - w1) - (w1 - px) * (y2 - y1) > 0.0f) {
-                    continue;
-                }
-                if ((y2 - y) * (w3 - w2) - (w2 - px) * (y3 - y2) > 0.0f) {
-                    continue;
-                }
-                if ((y3 - y) * (w1 - w3) - (w3 - px) * (y1 - y3) > 0.0f) {
-                    continue;
-                }
-            } else {
-                if ((y1 - y) * (w2 - w1) - (w1 - px) * (y2 - y1) < 0.0f) {
-                    continue;
-                }
-                if ((y2 - y) * (w3 - w2) - (w2 - px) * (y3 - y2) < 0.0f) {
-                    continue;
-                }
-                if ((y3 - y) * (w1 - w3) - (w3 - px) * (y1 - y3) < 0.0f) {
-                    continue;
-                }
-            }
-        }
+        //     if (surf->normal.z > 0.0f) {
+        //         if ((y1 - y) * (w2 - w1) - (w1 - px) * (y2 - y1) > 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y2 - y) * (w3 - w2) - (w2 - px) * (y3 - y2) > 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y3 - y) * (w1 - w3) - (w3 - px) * (y1 - y3) > 0.0f) {
+        //             continue;
+        //         }
+        //     } else {
+        //         if ((y1 - y) * (w2 - w1) - (w1 - px) * (y2 - y1) < 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y2 - y) * (w3 - w2) - (w2 - px) * (y3 - y2) < 0.0f) {
+        //             continue;
+        //         }
+        //         if ((y3 - y) * (w1 - w3) - (w3 - px) * (y1 - y3) < 0.0f) {
+        //             continue;
+        //         }
+        //     }
+        // }
 
         // Determine if checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera) {
@@ -137,9 +146,121 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
 
         //! (Wall Overlaps) Because this doesn't update the x and z local variables,
         //  multiple walls can push mario more than is required.
-        data->x += surf->normal.x * (radius - offset);
-        data->z += surf->normal.z * (radius - offset);
+        // data->x += surf->normal.x * (radius - offset);
+        // data->z += surf->normal.z * (radius - offset);
 
+        v0x = (f32)(surf->vertex2[0] - surf->vertex1[0]);
+		v0y = (f32)(surf->vertex2[1] - surf->vertex1[1]);
+		v0z = (f32)(surf->vertex2[2] - surf->vertex1[2]);
+
+		v1x = (f32)(surf->vertex3[0] - surf->vertex1[0]);
+		v1y = (f32)(surf->vertex3[1] - surf->vertex1[1]);
+		v1z = (f32)(surf->vertex3[2] - surf->vertex1[2]);
+
+		v2x = x - (f32)surf->vertex1[0];
+		v2y = y - (f32)surf->vertex1[1];
+		v2z = z - (f32)surf->vertex1[2];
+
+		//Face
+		d00 = v0x * v0x + v0y * v0y + v0z * v0z;
+		d01 = v0x * v1x + v0y * v1y + v0z * v1z;
+		d11 = v1x * v1x + v1y * v1y + v1z * v1z;
+		d20 = v2x * v0x + v2y * v0y + v2z * v0z;
+		d21 = v2x * v1x + v2y * v1y + v2z * v1z;
+		invDenom = 1.0f / (d00 * d11 - d01 * d01);
+		v = (d11 * d20 - d01 * d21) * invDenom;
+		if (v < 0.0f || v > 1.0f)
+			goto edge_1_2;
+
+		w = (d00 * d21 - d01 * d20) * invDenom;
+		if (w < 0.0f || w > 1.0f || v + w > 1.0f)
+			goto edge_1_2;
+
+		x += surf->normal.x * (radius - offset);
+		z += surf->normal.z * (radius - offset);
+		goto hasCollision;
+
+	edge_1_2:
+		if (offset < 0)
+			continue;
+		//Edge 1-2
+		if (v0y != 0.0f) {
+			v = (v2y / v0y);
+			if (v < 0.0f || v > 1.0f)
+				goto edge_1_3;
+			d00 = v0x * v - v2x;
+			d01 = v0z * v - v2z;
+			invDenom = sqrtf(d00 * d00 + d01 * d01);
+			offset = invDenom - margin_radius;
+			if (offset > 0.0f)
+				goto edge_1_3;
+			invDenom = offset / invDenom;
+			x += (d00 *= invDenom);
+			z += (d01 *= invDenom);
+			margin_radius += 0.01f;
+
+			if (d00 * surf->normal.x + d01 * surf->normal.z < corner_threshold * offset)
+				continue;
+			else
+				goto hasCollision;
+		}
+
+	edge_1_3:
+		//Edge 1-3
+		if (v1y != 0.0f) {
+			v = (v2y / v1y);
+			if (v < 0.0f || v > 1.0f)
+				goto edge_2_3;
+			d00 = v1x * v - v2x;
+			d01 = v1z * v - v2z;
+			invDenom = sqrtf(d00 * d00 + d01 * d01);
+			offset = invDenom - margin_radius;
+			if (offset > 0.0f)
+				goto edge_2_3;
+			invDenom = offset / invDenom;
+			x += (d00 *= invDenom);
+			z += (d01 *= invDenom);
+			margin_radius += 0.01f;
+
+			if (d00 * surf->normal.x + d01 * surf->normal.z < corner_threshold * offset)
+				continue;
+			else
+				goto hasCollision;
+		}
+
+	edge_2_3:
+		//Edge 2-3
+		v1x = (f32)(surf->vertex3[0] - surf->vertex2[0]);
+		v1y = (f32)(surf->vertex3[1] - surf->vertex2[1]);
+		v1z = (f32)(surf->vertex3[2] - surf->vertex2[2]);
+
+		v2x = x - (f32)surf->vertex2[0];
+		v2y = y - (f32)surf->vertex2[1];
+		v2z = z - (f32)surf->vertex2[2];
+
+		if (v1y != 0.0f) {
+			v = (v2y / v1y);
+			if (v < 0.0f || v > 1.0f)
+				continue;
+			d00 = v1x * v - v2x;
+			d01 = v1z * v - v2z;
+			invDenom = sqrtf(d00 * d00 + d01 * d01);
+			offset = invDenom - margin_radius;
+			if (offset > 0.0f)
+				continue;
+			invDenom = offset / invDenom;
+			x += (d00 *= invDenom);
+			z += (d01 *= invDenom);
+			margin_radius += 0.01f;
+			if (d00 * surf->normal.x + d01 * surf->normal.z < corner_threshold * offset)
+				continue;
+			else
+				goto hasCollision;
+		}
+		else
+			continue;
+
+	hasCollision:
         //! (Unreferenced Walls) Since this only returns the first four walls,
         //  this can lead to wall interaction being missed. Typically unreferenced walls
         //  come from only using one wall, however.
@@ -150,6 +271,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
         numCols++;
     }
 
+	data->x = x;
+	data->z = z;
     return numCols;
 }
 
@@ -220,23 +343,43 @@ s32 find_wall_collisions(struct WallCollisionData *colData) {
  *                     CEILINGS                   *
  **************************************************/
 
+void add_ceil_margin(s32 *x, s32 *z, Vec3s target1, Vec3s target2, f32 margin) {
+	register f32 diff_x, diff_z, invDenom;
+    f32 newX = (f32)*x;
+    f32 newZ = (f32)*z;
+    
+	diff_x = target1[0] - newX + target2[0] - newX;
+	diff_z = target1[2] - newZ + target2[2] - newZ;
+	invDenom = margin / sqrtf(diff_x * diff_x + diff_z * diff_z);
+	*x += diff_x * invDenom;
+	*z += diff_z * invDenom;
+}
 /**
  * Iterate through the list of ceilings and find the first ceiling over a given point.
  */
 static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
     register struct Surface *surf;
-    register s32 x1, z1, x2, z2, x3, z3;
+    s32 x1, z1, x2, z2, x3, z3;
     f32 nx, ny, nz, oo, height;
     struct Surface *ceil = NULL;
     *pheight = CELL_HEIGHT_LIMIT;
+    f32 newHeight;
+	const f32 margin = 1.5f;
+
+    ceil = NULL;
+
     // Stay in this loop until out of ceilings.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];
+        if (surf->type != SURFACE_HANGABLE)
+			add_ceil_margin(&x1, &z1, surf->vertex2, surf->vertex3, margin);
         z2 = surf->vertex2[2];
         x2 = surf->vertex2[0];
+        if (surf->type != SURFACE_HANGABLE)
+			add_ceil_margin(&x2, &z2, surf->vertex3, surf->vertex1, margin);
         // Checking if point is in bounds of the triangle laterally.
         if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) > 0) {
             continue;
@@ -244,6 +387,8 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         // Slight optimization by checking these later.
         x3 = surf->vertex3[0];
         z3 = surf->vertex3[2];
+        if (surf->type != SURFACE_HANGABLE)
+			add_ceil_margin(&x3, &z3, surf->vertex1, surf->vertex2, margin);
         if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) > 0) {
             continue;
         }
@@ -274,7 +419,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
 			continue;
 		}
 		// Checks for ceiling interaction
-		if (y > height) {
+		if (/*y > height*/ y - (height - -78.0f) > 0.0f) {
 			continue;
 		}
 		if (y >= surf->upperY) {
