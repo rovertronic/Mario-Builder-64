@@ -9,7 +9,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - coordinate overflow fix by falcobuster
 - water surface type patch by thecozies
 - platform displacement 2 by arthur. 
-- FPS counter
+- FPS counter (use the function `print_fps(x,y)` anywhere that runs code every frame)
 - Automatic console/emulator detection. If emulator is detected, LODs are disabled. (If you want to turn this feature off, just set `gIsconsole` to 1)
 - Rounded corners by Frame, merged by Cheezepin
 
