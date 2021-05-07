@@ -11,6 +11,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - platform displacement 2 by arthur. 
 - FPS counter
 - Automatic console/emulator detection. If emulator is detected, LODs are disabled.
+- Rounded corners
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
