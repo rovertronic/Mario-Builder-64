@@ -10,7 +10,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - water surface type patch by thecozies
 - platform displacement 2 by arthur. 
 - FPS counter
-- Automatic console/emulator detection. If emulator is detected, LODs are disabled.
+- Automatic console/emulator detection. If emulator is detected, LODs are disabled. (If you want to turn this feature off, just set `gIsconsole` to 1)
 - Rounded corners by Frame, merged by Cheezepin
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
