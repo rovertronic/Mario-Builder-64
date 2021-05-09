@@ -113,7 +113,7 @@ TARGET := sm64.$(VERSION)
 #   f3dex2  -
 #   f3dzex  - newer, experimental microcode used in Animal Crossing
 #   super3d - extremely experimental version of Fast3D lacking many features for speed
-$(eval $(call validate-option,GRUCODE,f3d_old f3dex f3dex2 f3d_new f3dzex super3d))
+$(eval $(call validate-option,GRUCODE,f3d_old f3dex f3dex2 f3dex2pl f3d_new f3dzex super3d))
 
 ifeq      ($(GRUCODE),f3d_old)
   DEFINES += F3D_OLD=1
@@ -123,6 +123,8 @@ else ifeq ($(GRUCODE),f3dex) # Fast3DEX
   DEFINES += F3DEX_GBI=1 F3DEX_GBI_SHARED=1
 else ifeq ($(GRUCODE),f3dex2) # Fast3DEX2
   DEFINES += F3DEX_GBI_2=1 F3DEX_GBI_SHARED=1
+else ifeq ($(GRUCODE),f3dex2pl) # Fast3DEX2_PosLight
+  DEFINES += F3DEX2PL_GBI=1 F3DEX_GBI_2=1 F3DEX_GBI_SHARED=1
 else ifeq ($(GRUCODE),f3dzex) # Fast3DZEX (2.08J / Animal Forest - Dōbutsu no Mori)
   DEFINES += F3DZEX_GBI_2=1 F3DEX_GBI_2=1 F3DEX_GBI_SHARED=1
 else ifeq ($(GRUCODE),super3d) # Super3D
