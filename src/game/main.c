@@ -319,11 +319,11 @@ void thread3_main(UNUSED void *arg) {
     crash_screen_init();
 #endif
 
-    osSyncPrintf("Super Mario 64\n");
+    /*osSyncPrintf("Super Mario 64\n");
     osSyncPrintf("Built by: %s\n", __username__);
     osSyncPrintf("Date    : %s\n", __datetime__);
     osSyncPrintf("Compiler: %s\n", __compiler__);
-    osSyncPrintf("Linker  : %s\n", __linker__);
+    osSyncPrintf("Linker  : %s\n", __linker__);*/
 
     create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + 0x2000, 20);
     osStartThread(&gSoundThread);
