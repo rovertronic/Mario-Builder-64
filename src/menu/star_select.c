@@ -52,7 +52,7 @@ static s8 sSelectableStarIndex = 0;
 
 // Act Selector menu timer that keeps counting until you choose an act.
 static s32 sActSelectorMenuTimer = 0;
-
+extern u8 widescreen;
 /**
  * Act Selector Star Type Loop Action
  * Defines a select type for a star in the act selector.
@@ -92,8 +92,15 @@ void bhv_act_selector_star_type_loop(void) {
 void render_100_coin_star(u8 stars) {
     if (stars & (1 << 6)) {
         // If the 100 coin star has been collected, create a new star selector next to the coin score.
-        sStarSelectorModels[6] = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR,
-                                                        bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
+        if (widescreen == 1){
+            sStarSelectorModels[6] = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR,
+                                                            bhvActSelectorStarType, ((370*4.0f)/3), 24, -300, 0, 0, 0);
+        }
+        else{
+            sStarSelectorModels[6] = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR,
+                                                            bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
+        }
+
         sStarSelectorModels[6]->oStarSelectorSize = 0.8;
         sStarSelectorModels[6]->oStarSelectorType = STAR_SELECTOR_100_COINS;
     }
@@ -147,11 +154,21 @@ void bhv_act_selector_init(void) {
     }
 
     // Render star selector objects
-    for (i = 0; i < sVisibleStars; i++) {
-        sStarSelectorModels[i] =
-            spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
-                                      75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
-        sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
+    if (widescreen == 1) {
+        for (i = 0; i < sVisibleStars; i++) {
+            sStarSelectorModels[i] =
+                spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
+                                        (((75 + sVisibleStars * -75 + i * 152)*4.0f)/3), 248, -300, 0, 0, 0);
+            sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
+        }
+    }
+    else {
+        for (i = 0; i < sVisibleStars; i++) {
+            sStarSelectorModels[i] =
+                spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
+                                        75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
+            sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
+        }
     }
 
     render_100_coin_star(stars);
