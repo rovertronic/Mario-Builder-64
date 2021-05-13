@@ -191,8 +191,10 @@ endif
 
 ifeq ($(USE_DEBUG),1)
   ULTRALIB := ultra_d
+  DEFINES += DEBUG=1
 else
   ULTRALIB := ultra_rom
+  DEFINES += _FINALROM=1 NDEBUG=1
 endif
 
 # HVQM - whether to use HVQM fmv library
