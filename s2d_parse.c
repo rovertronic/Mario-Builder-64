@@ -12,12 +12,13 @@
 
 static int s2d_width(const char *str, int line, int len);
 
-static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
+static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tmp_len = 0;
 	int orig_x = x;
 	int orig_y = y;
 	int line = 0;
+	char button = '\0';
 
 	if (*p == '\0') return;
 
@@ -94,6 +95,35 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				// drop_y <<= 2;
 
 				break;
+			case CH_BUTTON:
+				if (len - tmp_len == 1) break;
+				if (len - tmp_len > 2) {
+					CH_SKIP(p);
+					break;
+				}
+				button = p[1];
+				CH_SKIP(p);
+				switch (button) {
+					case 'A':
+						if (!(CONTROLLER_HELD_INPUT & A_BUTTON)) return 1;
+						break;
+					case 'B':
+						if (!(CONTROLLER_HELD_INPUT & B_BUTTON)) return 1;
+						break;
+					case 'Z':
+						if (!(CONTROLLER_HELD_INPUT & Z_TRIG)) return 1;
+						break;
+					case 'L':
+						if (!(CONTROLLER_HELD_INPUT & L_TRIG)) return 1;
+						break;
+					case 'R':
+						if (!(CONTROLLER_HELD_INPUT & R_TRIG)) return 1;
+						break;
+					case 'S':
+						if (!(CONTROLLER_HELD_INPUT & START_BUTTON)) return 1;
+						break;
+				}
+				break;
 			case '\n':
 				line++;
 				switch (align) {
@@ -144,6 +174,7 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 	drop_shadow = FALSE;
 	drop_x = 0;
 	drop_y = 0;
+	return 0;
 }
 
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
@@ -173,12 +204,24 @@ void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int 
 	
 	len = s2d_strlen(str);
 
-	s2d_snprint(x, y, align, str, buf, *pos);
+	int result = s2d_snprint(x, y, align, str, buf, *pos);
 	if (s2d_timer % 2 == 0) {
-		if (*pos < len) {
+		if (*pos < len && result != 1) {
 			(*pos)++;
 		}
 	}
+}
+
+void s2d_type_print_alloc(int x, int y, int align, const char *str, int *pos) {
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
+	len = s2d_strlen(str);
+
+	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+	s2d_type_print(x, y, align, str, b, pos);
 }
 
 static int s2d_width(const char *str, int line, int len) {

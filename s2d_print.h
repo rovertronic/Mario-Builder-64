@@ -9,6 +9,7 @@
 #define BACKGROUND "\x85" // BACKGROUND (w) (h) (alpha)
 #define SEPARATOR  "\x86"
 #define RESET      "\x87"
+#define BUTTON     "\x88"
 
 #define CH_SCALE      '\x80'
 #define CH_ROT        '\x81'
@@ -18,6 +19,7 @@
 #define CH_BACKGROUND '\x85'
 #define CH_SEPARATOR  '\x86'
 #define CH_RESET      '\x87'
+#define CH_BUTTON     '\x88'
 
 // ASCII standard escape codes
 #define CH_NEWLINE   '\n'
