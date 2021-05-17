@@ -2,6 +2,7 @@
 Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches: 
 - slope fix
 - exposed ceilings fix
+- Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
 - pole fix
 - Mario head skip
 - Peach letter cutscene skip
