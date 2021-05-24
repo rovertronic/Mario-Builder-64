@@ -16,7 +16,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - Rounded corners by Frame, merged by Cheezepin
 - Widescreen (16:9) support toggleable by pressing `L` in the pause menu.
   - If you don't want this, you can disable it by removing `#define wide` in `ingame_menu.c`
-  - If you want widescreen to be the default, just call the following function in the level script of your start level: `lvl_set_widescreen`
+- Removed course-specific camera processing
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
