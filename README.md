@@ -18,6 +18,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
   - If you don't want this, you can disable it by removing `#define wide` in `ingame_menu.c`
 - Removed course-specific camera processing
 - Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole)
+- bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
