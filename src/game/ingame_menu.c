@@ -2288,8 +2288,8 @@ void render_pause_my_score_coins(void) {
                 print_generic_string(10, 20, textCurrRatio169);
             }
             
-            print_generic_string(10, 200, textWideInfo);
-            print_generic_string(10, 180, textWideInfo2);
+            print_generic_string(10, 220, textWideInfo);
+            print_generic_string(10, 200, textWideInfo2);
         }
 #endif
 #endif
@@ -2601,8 +2601,8 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
     }
     else {
         print_generic_string(10, 20, textCurrRatio169);
-        print_generic_string(10, 200, textWideInfo);
-        print_generic_string(10, 180, textWideInfo2);
+        print_generic_string(10, 220, textWideInfo);
+        print_generic_string(10, 200, textWideInfo2);
     }
 #endif
     if (gDialogLineNum < COURSE_STAGES_COUNT) {
