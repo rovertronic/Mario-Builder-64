@@ -6554,7 +6554,7 @@ s16 camera_course_processing(struct Camera *c) {
     }
 
     // Area-specific camera processing
-    /*if (!(sStatusFlags & CAM_FLAG_BLOCK_AREA_PROCESSING)) {
+    if (!(sStatusFlags & CAM_FLAG_BLOCK_AREA_PROCESSING)) {
         switch (gCurrLevelArea) {
             case AREA_WF:
                 if (sMarioCamState->action == ACT_RIDING_HOOT) {
@@ -6668,7 +6668,7 @@ s16 camera_course_processing(struct Camera *c) {
         c->mode = oldMode;
     }
     mode = c->mode;
-    return mode;*/
+    return mode;
 }
 
 /**
