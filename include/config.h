@@ -54,7 +54,7 @@
 #define PEACH_SKIP
 // Remove course specific camera processing
 #define CAMERA_FIX
-// Increase the maximum pone length (it will treat bparam1 and bparam2 as a single value)
+// Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
 //#define GLOBAL_STAR_IDS
