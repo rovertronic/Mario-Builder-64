@@ -37,6 +37,7 @@ s16 gCutsceneMsgYOffset;
 s8 gRedCoinsCollected;
 u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
+u8 textPressL[] = { TEXT_HUD_PRESS_L };
 u8 textWideInfo[] = { TEXT_HUD_WIDE_INFO };
 u8 textWideInfo2[] = { TEXT_HUD_WIDE_INFO2 };
 
@@ -2273,22 +2274,14 @@ void render_pause_my_score_coins(void) {
         print_generic_string(CRS_NUM_X1, 157, strCourseNum);
 #ifdef WIDE
         if (!gWidescreen) {
-            if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)) {
-                print_generic_string(10, 40, textCurrRatio43);
-            } else {
                 print_generic_string(10, 20, textCurrRatio43);
-            }
-            
+                print_generic_string(10, 7, textPressL);           
         }
         else {
-            if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)) {
-                print_generic_string(10, 40, textCurrRatio169);
-            } else {
                 print_generic_string(10, 20, textCurrRatio169);
-            }
-            
-            print_generic_string(10, 220, textWideInfo);
-            print_generic_string(10, 200, textWideInfo2);
+                print_generic_string(10, 7, textPressL);
+                print_generic_string(10, 220, textWideInfo);
+                print_generic_string(10, 200, textWideInfo2);
         }
 #endif
 #endif
@@ -2596,13 +2589,15 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 #ifdef WIDE
     if (!gWidescreen) {
-        print_generic_string(10, 20, textCurrRatio43);
+            print_generic_string(10, 20, textCurrRatio43);
+            print_generic_string(10, 7, textPressL);           
     }
     else {
-        print_generic_string(10, 20, textCurrRatio169);
-        print_generic_string(10, 220, textWideInfo);
-        print_generic_string(10, 200, textWideInfo2);
-    }
+            print_generic_string(10, 20, textCurrRatio169);
+            print_generic_string(10, 7, textPressL);
+            print_generic_string(10, 220, textWideInfo);
+            print_generic_string(10, 200, textWideInfo2);
+        }
 #endif
     if (gDialogLineNum < COURSE_STAGES_COUNT) {
         courseName = segmented_to_virtual(courseNameTbl[gDialogLineNum]);
