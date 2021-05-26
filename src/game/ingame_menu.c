@@ -35,11 +35,13 @@ s16 gDialogY; // D_8032F69C
 s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
 s8 gRedCoinsCollected;
+#ifdef WIDE
 u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
 u8 textPressL[] = { TEXT_HUD_PRESS_L };
 u8 textWideInfo[] = { TEXT_HUD_WIDE_INFO };
 u8 textWideInfo2[] = { TEXT_HUD_WIDE_INFO2 };
+#endif
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
