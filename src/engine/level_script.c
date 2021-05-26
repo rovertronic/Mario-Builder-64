@@ -388,10 +388,10 @@ static void level_cmd_load_model_from_dl(void) {
 }
 
 static void level_cmd_load_model_from_geo(void) {
-    s16 arg0 = CMD_GET(s16, 2);
+    u16 arg0 = CMD_GET(u16, 2);
     void *arg1 = CMD_GET(void *, 4);
 
-    if (arg0 < 256) {
+    if (arg0 < 65536) {
         gLoadedGraphNodes[arg0] = process_geo_layout(sLevelPool, arg1);
     }
 
