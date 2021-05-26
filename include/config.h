@@ -55,6 +55,8 @@
 #define CAMERA_FIX
 // Increase the maximum pone lenght (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
+// Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
+//#define GLOBAL_STAR_IDS
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
@@ -62,7 +64,7 @@
 
 /* Coordinate overflow fix setting: 
  * Scales the world down by this factor, increasing how far you can render on
- * console in exchange for a slight loss in precision.
+ * console and LLE plugins in exchange for a slight loss in precision.
  * 
  * For double extended boundary hacks, a value of 1.5f or 2.0f is good.
  * For quadruple extended bounds, use 3.f or 4.f
