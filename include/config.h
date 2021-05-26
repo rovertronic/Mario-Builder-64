@@ -51,6 +51,8 @@
 #define AUTO_LOD
 // Skip peach letter cutscene
 #define PEACH_SKIP
+// Remove course specific camera processing
+#define CAMERA_FIX
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
