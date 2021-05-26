@@ -375,20 +375,20 @@ static void level_cmd_end_area(void) {
 }
 
 static void level_cmd_load_model_from_dl(void) {
-    s16 val1 = CMD_GET(s16, 2) & 0x0FFF;
-    s16 val2 = ((u16)CMD_GET(s16, 2)) >> 12;
-    void *val3 = CMD_GET(void *, 4);
+    ModelID model = CMD_GET(ModelID, 0xA);
+    s16 layer = CMD_GET(u16, 0x8);
+    void *dl_ptr = CMD_GET(void *, 4);
 
-    if (val1 < 256) {
-        gLoadedGraphNodes[val1] =
-            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, val2, val3);
+    if (model < 65536) {
+        gLoadedGraphNodes[model] =
+            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, layer, dl_ptr);
     }
 
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_model_from_geo(void) {
-    u16 arg0 = CMD_GET(u16, 2);
+    ModelID arg0 = CMD_GET(ModelID, 2);
     void *arg1 = CMD_GET(void *, 4);
 
     if (arg0 < 65536) {
@@ -404,13 +404,13 @@ static void level_cmd_23(void) {
         f32 f;
     } arg2;
 
-    s16 model = CMD_GET(s16, 2) & 0x0FFF;
+    ModelID model = CMD_GET(s16, 2) & 0x0FFF;
     s16 arg0H = ((u16)CMD_GET(s16, 2)) >> 12;
     void *arg1 = CMD_GET(void *, 4);
     // load an f32, but using an integer load instruction for some reason (hence the union)
     arg2.i = CMD_GET(s32, 8);
 
-    if (model < 256) {
+    if (model < 65536) {
         // GraphNodeScale has a GraphNode at the top. This
         // is being stored to the array, so cast the pointer.
         gLoadedGraphNodes[model] =
@@ -428,7 +428,7 @@ static void level_cmd_init_mario(void) {
     gMarioSpawnInfo->areaIndex = 0;
     gMarioSpawnInfo->behaviorArg = CMD_GET(u32, 4);
     gMarioSpawnInfo->behaviorScript = CMD_GET(void *, 8);
-    gMarioSpawnInfo->unk18 = gLoadedGraphNodes[CMD_GET(u8, 3)];
+    gMarioSpawnInfo->unk18 = gLoadedGraphNodes[CMD_GET(ModelID, 0xE)];
     gMarioSpawnInfo->next = NULL;
 
     sCurrentCmd = CMD_NEXT;
@@ -440,7 +440,7 @@ static void level_cmd_place_object(void) {
     struct SpawnInfo *spawnInfo;
 
     if (sCurrAreaIndex != -1 && ((CMD_GET(u8, 2) & val7) || CMD_GET(u8, 2) == 0x1F)) {
-        model = CMD_GET(u8, 3);
+        model = CMD_GET(ModelID, 0x1A);
         spawnInfo = alloc_only_pool_alloc(sLevelPool, sizeof(struct SpawnInfo));
 
         spawnInfo->startPos[0] = CMD_GET(s16, 4);
