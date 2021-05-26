@@ -12,13 +12,12 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - FPS counter (use the function `print_fps(x,y)` anywhere that runs code every frame)
 - Automatic console/emulator detection. If emulator is detected, LODs are disabled. *
 - Rounded corners by Frame, merged by Cheezepin
-- Widescreen (16:9) support toggleable by pressing `L` in the pause menu.
-  - If you don't want this, you can disable it by removing `#define wide` in `ingame_menu.c`
-- Removed course-specific camera processing
-- Increased maximum pole length (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole)
+- Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
+- Removed course-specific camera processing *
+- Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole) *
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
+- Global star IDs (disabled by default, toggleable in config.h). This allows you to create an open world (MVC-style) hack.
 - coordinate overflow fix by falcobuster 
-- Global star IDs (disabled by default, toggleable in config.h). Useful for creating an open world hack like MVC.
   - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
