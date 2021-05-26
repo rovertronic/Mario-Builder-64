@@ -2,6 +2,7 @@ OUTPUT_ARCH (mips)
 
 #define LINKER /* Removes externs from preprocessed script */
 #include "segments.h"
+#include "config.h"
 #undef LINKER
 
 #define BEGIN_SEG(name, addr) \
@@ -286,7 +287,7 @@ SECTIONS
       BUILD_DIR/src/menu*.o(.text);
       BUILD_DIR/src/menu*.o(.data*);
       BUILD_DIR/src/menu*.o(.rodata*);
-#ifdef GODDARD
+#ifdef KEEP_MARIO_HEAD
       BUILD_DIR/libgoddard.a:*.o(.text);
       /* goddard subsystem data */
       BUILD_DIR/libgoddard.a:gd_main.o(.data*);
@@ -319,7 +320,7 @@ SECTIONS
    BEGIN_NOLOAD(goddard)
    {
       BUILD_DIR/src/menu*.o(.bss*);
-#ifdef GODDARD
+#ifdef KEEP_MARIO_HEAD
       BUILD_DIR/libgoddard.a:*.o(.bss*);
 #endif
    }
@@ -345,7 +346,7 @@ SECTIONS
    YAY0_SEG(debug_level_select, 0x07000000)
    YAY0_SEG(title_screen_bg, 0x0A000000)
 
-#ifdef GODDARD
+#ifdef KEEP_MARIO_HEAD
    BEGIN_SEG(gd_dynlists, 0x04000000)
    {
       BUILD_DIR/libgoddard.a:dynlist_test_cube.o(.data);

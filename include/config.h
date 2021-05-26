@@ -49,5 +49,7 @@
 // When this option is enabled, LODs will ONLY work on console.
 // When this option is disabled, LODs will work regardless of whether console or emulator is used.
 #define AUTO_LOD
+// Uncomment this if you want to keep the mario head and not skip it
+#define KEEP_MARIO_HEAD
 
 #endif // CONFIG_H

@@ -25,6 +25,8 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 
+#include "config.h"
+
 #define CMD_GET(type, offset) (*(type *) (CMD_PROCESS_OFFSET(offset) + (u8 *) sCurrentCmd))
 
 // These are equal
@@ -281,7 +283,7 @@ static void level_cmd_load_yay0(void) {
 }
 
 static void level_cmd_load_mario_head(void) {
-#ifdef GODDARD
+#ifdef KEEP_MARIO_HEAD
     // TODO: Fix these hardcoded sizes
     void *addr = main_pool_alloc(DOUBLE_SIZE_ON_64_BIT(0xE1000), MEMORY_POOL_LEFT);
     if (addr != NULL) {

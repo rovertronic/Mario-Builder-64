@@ -4,6 +4,7 @@
 #include "command_macros_base.h"
 
 #include "level_table.h"
+#include "config.h"
 
 #define OP_AND   0
 #define OP_NAND  1
@@ -169,7 +170,7 @@
     CMD_PTR(romEnd)
 #endif
 
-#ifdef GODDARD
+#ifdef KEEP_MARIO_HEAD
 #define LOAD_MARIO_HEAD(sethead) \
     CMD_BBH(0x19, 0x04, sethead)
 #else
