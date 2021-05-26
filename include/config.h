@@ -51,5 +51,8 @@
 #define AUTO_LOD
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
+// Uncomment this if you want to skip the title screen (Super Mario 64 logo)
+//#define SKIP_TITLE_SCREEN
+
 
 #endif // CONFIG_H
