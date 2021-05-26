@@ -40,6 +40,11 @@
 #else
 // What's the point of having a border?
 #define BORDER_HEIGHT 0
+
 #endif
+
+// --ultrasm64-extbounds specific settings--
+// Enable widescreen (16:9) support
+#define WIDE
 
 #endif // CONFIG_H

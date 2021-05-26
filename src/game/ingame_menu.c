@@ -22,7 +22,7 @@
 #include "sm64.h"
 #include "text_strings.h"
 #include "types.h"
-#define wide // DELETE THIS DEFINE IF YOU DON'T WANT WIDESCREEN SUPPORT IN YOUR HACK (why tho)
+#include "config.h"
 
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
@@ -39,7 +39,6 @@ u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
 u8 textWideInfo[] = { TEXT_HUD_WIDE_INFO };
 u8 textWideInfo2[] = { TEXT_HUD_WIDE_INFO2 };
-u8 widescreen = 0;
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
@@ -2272,8 +2271,8 @@ void render_pause_my_score_coins(void) {
         print_generic_string(get_string_width(gTextCourseArr[gInGameLanguage]) + 51, 157, strCourseNum);
 #else
         print_generic_string(CRS_NUM_X1, 157, strCourseNum);
-#ifdef wide
-        if (widescreen == 0) {
+#ifdef WIDE
+        if (!gWidescreen) {
             if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)) {
                 print_generic_string(10, 40, textCurrRatio43);
             } else {
@@ -2583,20 +2582,20 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
             }
         }
     }
-#ifdef wide
+#ifdef WIDE
     if (gPlayer1Controller->buttonPressed & L_TRIG){
-        if (widescreen == 0){
-                widescreen = 1;
+        if (!gWidescreen){
+                gWidescreen = 1;
             }
         else{
-                widescreen = 0;
+                gWidescreen = 0;
             }
     }
 #endif
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-#ifdef wide
-    if (widescreen == 0) {
+#ifdef WIDE
+    if (!gWidescreen) {
         print_generic_string(10, 20, textCurrRatio43);
     }
     else {
@@ -2670,14 +2669,16 @@ s16 render_pause_courses_and_castle(void) {
             shade_screen();
             render_pause_my_score_coins();
             render_pause_red_coins();
+        #ifdef WIDE
         if (gPlayer1Controller->buttonPressed & L_TRIG){
-                if (widescreen == 0){
-                    widescreen = 1;
+                if (!gWidescreen){
+                    gWidescreen = 1;
                 }
                 else{
-                    widescreen = 0;
+                    gWidescreen = 0;
                 }
             }
+        #endif
 
             if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
                 render_pause_course_options(99, 93, &gDialogLineNum, 15);
