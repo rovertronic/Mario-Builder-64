@@ -275,11 +275,15 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
  */
 static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
     f32 distanceFromCam;
+#ifdef AUTO_LOD
     if (gIsConsole) {
         distanceFromCam = -gMatStack[gMatStackIndex][3][2];
     } else {
         distanceFromCam = 50;
     }
+#else
+    distanceFromCam = -gMatStack[gMatStackIndex][3][2];
+#endif
 	
     if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
         if (node->node.children != 0) {

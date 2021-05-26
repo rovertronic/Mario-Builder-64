@@ -46,5 +46,8 @@
 // --ultrasm64-extbounds specific settings--
 // Enable widescreen (16:9) support
 #define WIDE
+// When this option is enabled, LODs will ONLY work on console.
+// When this option is disabled, LODs will work regardless of whether console or emulator is used.
+#define AUTO_LOD
 
 #endif // CONFIG_H
