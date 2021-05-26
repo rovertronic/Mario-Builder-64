@@ -1,3 +1,4 @@
+#include "config.h"
 /**
  * Behaviors for bhvPoleGrabbing and bhvGiantPole.
  *
@@ -17,9 +18,12 @@ void bhv_pole_init(void) {
      * `spawn_objects_from_info`.
      */
 
-    // POLE "FIX": The game will read bparam1 and bparam2 together as a single value,
-    // so you can have a snake eater pole
+#ifdef LONGER_POLES
     o->hitboxHeight = ((o->oBehParams & 0xFFFF0000) >> 16) * 10;
+#else
+    s32 tenthHitboxHeight = o->oBehParams >> 0x10 & 0xFF;
+    o->hitboxHeight = tenthHitboxHeight * 10;
+#endif
 }
 
 /**

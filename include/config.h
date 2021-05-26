@@ -53,6 +53,8 @@
 #define PEACH_SKIP
 // Remove course specific camera processing
 #define CAMERA_FIX
+// Increase the maximum pone lenght (it will treat bparam1 and bparam2 as a single value)
+#define LONGER_POLES
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
