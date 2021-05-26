@@ -188,7 +188,7 @@ s8 sObjectListUpdateOrder[] = { OBJ_LIST_SPAWNER,
 struct ParticleProperties {
     u32 particleFlag;
     u32 activeParticleFlag;
-    u8 model;
+    ModelID model;
     const BehaviorScript *behavior;
 };
 

@@ -57,7 +57,7 @@ struct Struct8032F34C {
     s16 numBridgeSections;
     s16 bridgeRelativeStartingXorZ;
     s16 platformWidth;
-    s16 model;
+    ModelID model;
     const void *segAddr;
 };
 
@@ -73,7 +73,7 @@ struct Struct802C0DF0 {
     u8 unk0;
     u8 unk1;
     u8 unk2;
-    u8 model;
+    ModelID model;
     const BehaviorScript *behavior;
 };
 
@@ -85,7 +85,7 @@ struct Struct8032F754 {
 
 struct OpenableGrill {
     s16 halfWidth;
-    s16 modelID;
+    ModelID modelID;
     const Collision *collision;
 };
 
