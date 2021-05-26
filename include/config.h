@@ -60,4 +60,19 @@
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
 
+/* Coordinate overflow fix setting: 
+ * Scales the world down by this factor, increasing how far you can render on
+ * console in exchange for a slight loss in precision.
+ * 
+ * For double extended boundary hacks, a value of 1.5f or 2.0f is good.
+ * For quadruple extended bounds, use 3.f or 4.f
+ * 
+ * In a nutshell: 
+ * - If you're not using extbounds, set this to 1.f.
+ * - If you're using 2x bounds, set this to 2.f
+ * - If you're using 4x bounds, use a value between 3.f and 4.f, depending on whether you're filling up the entire 4x bounds or not.
+ * If you want to change the extended bounds mode, go to src/engine/extended_bounds.h
+ */
+#define WORLD_SCALE 2.f
+
 #endif // CONFIG_H
