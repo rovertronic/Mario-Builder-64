@@ -1,24 +1,23 @@
 # UltraSM64-extbounds
-Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches: 
+Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 - slope fix
 - exposed ceilings fix
 - Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
 - pole fix
-- Mario head skip
-- Peach letter cutscene skip
+- Mario head skip *
+- Peach letter cutscene skip *
 - better extended boundaries by anonymous_moose
-- coordinate overflow fix by falcobuster
-  - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `math_util.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 - water surface type patch by thecozies
 - platform displacement 2 by arthur. 
 - FPS counter (use the function `print_fps(x,y)` anywhere that runs code every frame)
-- Automatic console/emulator detection. If emulator is detected, LODs are disabled. (If you want to turn this feature off, just set `gIsconsole` to 1)
+- Automatic console/emulator detection. If emulator is detected, LODs are disabled. *
 - Rounded corners by Frame, merged by Cheezepin
-- Widescreen (16:9) support toggleable by pressing `L` in the pause menu.
-  - If you don't want this, you can disable it by removing `#define wide` in `ingame_menu.c`
-- Removed course-specific camera processing
-- Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole)
+- Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
+- Removed course-specific camera processing *
+- Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole) *
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
+- coordinate overflow fix by falcobuster 
+  - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
