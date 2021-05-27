@@ -54,7 +54,7 @@ typedef s16 Trajectory;
 typedef s16 PaintingData;
 typedef uintptr_t BehaviorScript;
 typedef u8 Texture;
-typedef s32 ModelID;
+typedef u32 ModelID;
 
 enum SpTaskState {
     SPTASK_STATE_NOT_STARTED,
