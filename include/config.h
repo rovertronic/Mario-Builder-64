@@ -56,6 +56,8 @@
 #define CAMERA_FIX
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
+// Disable lives and hide the lives counter
+#define DISABLE_LIVES
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
 //#define GLOBAL_STAR_IDS
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
