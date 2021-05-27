@@ -11,6 +11,9 @@
 #include "shadow.h"
 #include "sm64.h"
 #include "game_init.h"
+
+#include "config.h"
+
 #define WIDESCREEN
 
 /**
