@@ -375,8 +375,8 @@ static void level_cmd_end_area(void) {
 }
 
 static void level_cmd_load_model_from_dl(void) {
-    ModelID model = CMD_GET(ModelID, 0xA);
-    s16 layer = CMD_GET(u16, 0x8);
+    ModelID model = CMD_GET(ModelID, 0xC);
+    s16 layer = CMD_GET(u32, 0x8);
     void *dl_ptr = CMD_GET(void *, 4);
 
     if (model < ARRAY_COUNT(gGraphNodePointers)) {

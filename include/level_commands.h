@@ -210,9 +210,10 @@
     CMD_BBH(0x20, 0x04, 0x0000)
 
 #define LOAD_MODEL_FROM_DL(model, dl, layer) \
-    CMD_BBH(0x21, 0x0C, 0), \
+    CMD_BBH(0x21, 0x10, 0), \
     CMD_PTR(dl), \
-    CMD_HH(layer, model)
+    CMD_W(layer), \
+    CMD_W(model)
 
 #define LOAD_MODEL_FROM_GEO(model, geo) \
     CMD_BBH(0x22, 0x0C, 0), \
