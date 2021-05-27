@@ -210,15 +210,13 @@
     CMD_BBH(0x20, 0x04, 0x0000)
 
 #define LOAD_MODEL_FROM_DL(model, dl, layer) \
-    CMD_BBH(0x21, 0x10, 0), \
+    CMD_BBH(0x21, 0x0C, 0), \
     CMD_PTR(dl), \
-    CMD_W(layer), \
-    CMD_W(model)
+    CMD_HH(layer, model)
 
 #define LOAD_MODEL_FROM_GEO(model, geo) \
-    CMD_BBH(0x22, 0x0C, 0), \
-    CMD_PTR(geo), \
-    CMD_W(model)
+    CMD_BBH(0x22, 0x08, model), \
+    CMD_PTR(geo)
 
 // unk8 is float, but doesn't really matter since CMD23 is unused
 #define CMD23(model, unk4, unk8) \
@@ -237,10 +235,9 @@
     OBJECT_WITH_ACTS(model, posX, posY, posZ, angleX, angleY, angleZ, behParam, beh, 0x1F)
 
 #define MARIO(model, behArg, beh) \
-    CMD_BBH(0x25, 0x10, 0), \
+    CMD_BBH(0x25, 0x0C, model), \
     CMD_W(behArg), \
-    CMD_PTR(beh), \
-    CMD_W(model)
+    CMD_PTR(beh)
 
 #define WARP_NODE(id, destLevel, destArea, destNode, flags) \
     CMD_BBBB(0x26, 0x08, id, destLevel), \
