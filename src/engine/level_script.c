@@ -375,8 +375,8 @@ static void level_cmd_end_area(void) {
 }
 
 static void level_cmd_load_model_from_dl(void) {
-    ModelID model = CMD_GET(ModelID, 0xC);
-    s16 layer = CMD_GET(u32, 0x8);
+    ModelID model = CMD_GET(ModelID, 0xA);
+    s16 layer = CMD_GET(u16, 0x8);
     void *dl_ptr = CMD_GET(void *, 4);
 
     if (model < MODEL_ID_COUNT) {
@@ -388,7 +388,7 @@ static void level_cmd_load_model_from_dl(void) {
 }
 
 static void level_cmd_load_model_from_geo(void) {
-    ModelID model = CMD_GET(ModelID, 8);
+    ModelID model = CMD_GET(ModelID, 2);
     void *geo = CMD_GET(void *, 4);
 
     if (model < MODEL_ID_COUNT) {
@@ -428,7 +428,7 @@ static void level_cmd_init_mario(void) {
     gMarioSpawnInfo->areaIndex = 0;
     gMarioSpawnInfo->behaviorArg = CMD_GET(u32, 4);
     gMarioSpawnInfo->behaviorScript = CMD_GET(void *, 8);
-    gMarioSpawnInfo->unk18 = gLoadedGraphNodes[CMD_GET(ModelID, 0xC)];
+    gMarioSpawnInfo->unk18 = gLoadedGraphNodes[CMD_GET(ModelID, 0x2)];
     gMarioSpawnInfo->next = NULL;
 
     sCurrentCmd = CMD_NEXT;
@@ -440,7 +440,7 @@ static void level_cmd_place_object(void) {
     struct SpawnInfo *spawnInfo;
 
     if (sCurrAreaIndex != -1 && ((CMD_GET(u8, 2) & val7) || CMD_GET(u8, 2) == 0x1F)) {
-        model = CMD_GET(ModelID, 0x18);
+        model = CMD_GET(u32, 0x18);
         spawnInfo = alloc_only_pool_alloc(sLevelPool, sizeof(struct SpawnInfo));
 
         spawnInfo->startPos[0] = CMD_GET(s16, 4);
