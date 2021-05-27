@@ -18,6 +18,7 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 - Global star IDs (disabled by default, toggleable in config.h). This allows you to create an open world (MVC-style) hack.
 - Included `actors/group0.c` in `behavior_data.c`
+- 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
 - coordinate overflow fix by falcobuster 
   - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 

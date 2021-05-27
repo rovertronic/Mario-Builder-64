@@ -23,7 +23,7 @@
 #include "level_table.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
-struct GraphNode *D_8033A160[0x100];
+struct GraphNode *D_8033A160[0x10000];
 struct Area gAreaData[8];
 
 struct WarpTransition gWarpTransition;
