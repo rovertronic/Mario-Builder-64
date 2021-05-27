@@ -64,6 +64,8 @@
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
+// Number of possible unique model ID's (keep it higher than 256)
+#define MODEL_ID_COUNT 0x10000
 
 /* Coordinate overflow fix setting: 
  * Scales the world down by this factor, increasing how far you can render on

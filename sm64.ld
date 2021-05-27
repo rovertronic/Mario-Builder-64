@@ -231,7 +231,9 @@ SECTIONS
    __mainPoolSize = RAM_END - .;
 
    __expansionRamStart = 0x80400000;
-   ASSERT((. <= __expansionRamStart), "Error: RDRAM expanded into Expansion RAM, despite Expansion RAM not being defined.")
+   #ifndef USE_EXT_RAM
+      ASSERT((. <= __expansionRamStart), "Error: RDRAM expanded into Expansion RAM, despite Expansion RAM not being defined.")
+   #endif
 
 
    BEGIN_SEG(entry, 0x10000000)
