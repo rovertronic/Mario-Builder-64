@@ -379,7 +379,7 @@ static void level_cmd_load_model_from_dl(void) {
     s16 layer = CMD_GET(u32, 0x8);
     void *dl_ptr = CMD_GET(void *, 4);
 
-    if (model < ARRAY_COUNT(gGraphNodePointers)) {
+    if (model < MODEL_ID_COUNT) {
         gLoadedGraphNodes[model] =
             (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, layer, dl_ptr);
     }
@@ -391,7 +391,7 @@ static void level_cmd_load_model_from_geo(void) {
     ModelID model = CMD_GET(ModelID, 8);
     void *geo = CMD_GET(void *, 4);
 
-    if (model < ARRAY_COUNT(gGraphNodePointers)) {
+    if (model < MODEL_ID_COUNT) {
         gLoadedGraphNodes[model] = process_geo_layout(sLevelPool, geo);
     }
 
@@ -410,7 +410,7 @@ static void level_cmd_23(void) {
     // load an f32, but using an integer load instruction for some reason (hence the union)
     arg2.i = CMD_GET(s32, 8);
 
-    if (model < ARRAY_COUNT(gGraphNodePointers)) {
+    if (model < MODEL_ID_COUNT) {
         // GraphNodeScale has a GraphNode at the top. This
         // is being stored to the array, so cast the pointer.
         gLoadedGraphNodes[model] =
