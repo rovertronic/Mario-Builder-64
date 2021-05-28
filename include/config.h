@@ -58,6 +58,8 @@
 #define LONGER_POLES
 // Disable lives and hide the lives counter
 #define DISABLE_LIVES
+// Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
+#define DISABLE_AA
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
 //#define GLOBAL_STAR_IDS
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
