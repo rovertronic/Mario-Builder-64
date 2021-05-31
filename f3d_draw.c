@@ -1,5 +1,6 @@
 #include "config.h"
-#ifdef DRAW_S2D
+#ifdef DRAW_F3D
+
 #include <ultra64.h>
 #include "mtx.h"
 #include "debug.h"
@@ -59,6 +60,7 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
     mat2_translate(m, x, y);
 
     gSPObjSubMatrix(gdl_head++, &m->m.X);
+    gDPPipeSync(gdl_head++);
 }
 
 #define CLAMP_0(x) ((x < 0) ? 0 : x)

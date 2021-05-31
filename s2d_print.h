@@ -31,6 +31,5 @@
 #define ALIGN_CENTER 1
 #define ALIGN_RIGHT 2
 
-extern void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf);
 extern void s2d_print_alloc(int x, int y, int align, const char *str);
 extern void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos);

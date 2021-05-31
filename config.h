@@ -13,6 +13,8 @@
  * Helpful defines to change
  ***********/
 
+#define DRAW_F3D
+
 #define BASE_SCALE 1.0f
 
 /******************************

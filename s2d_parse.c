@@ -12,7 +12,12 @@
 
 static int s2d_width(const char *str, int line, int len);
 
-static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
+enum S2DPrintModes {
+	MODE_DRAW_DROPSHADOW,
+	MODE_DRAW_NORMALTEXT,
+};
+
+static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len, int mode) {
 	char *p = str;
 	int tmp_len = 0;
 	int orig_x = x;
@@ -82,18 +87,14 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 				s2d_alpha = s2d_atoi(p, &p);
 				break;
 			case CH_DROPSHADOW:
-				drop_shadow ^= 1;
+				drop_shadow = 1;
 
 				// WIP: drop shadow custom offset
 				// TODO: unique offset per string; fix negative offsets
-				// CH_SKIP(p);
-				// drop_x = s2d_atoi(p, &p);
-				// CH_SKIP(p);	CH_SKIP(p);
-				// drop_y = s2d_atoi(p, &p);
-
-				// drop_x <<= 2;
-				// drop_y <<= 2;
-
+				CH_SKIP(p);
+				drop_x = s2d_atoi(p, &p);
+				CH_SKIP(p);	CH_SKIP(p);
+				drop_y = s2d_atoi(p, &p);
 				break;
 			case CH_BUTTON:
 				if (len - tmp_len == 1) break;
@@ -161,7 +162,11 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
 					char *tbl = segmented_to_virtual(s2d_kerning_table);
 
-					draw_s2d_glyph(current_char, x, y, (buf++));
+					if (drop_shadow && mode == MODE_DRAW_DROPSHADOW) {
+						draw_s2d_shadow(current_char, x + drop_x, y + drop_y, (buf++));
+					} else if (mode == MODE_DRAW_NORMALTEXT) {
+						draw_s2d_glyph(current_char, x, y, (buf++));
+					}
 					(x += (tbl[(int) current_char] * (BASE_SCALE * myScale)));
 				}
 		}
@@ -177,11 +182,23 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 	return 0;
 }
 
+static int s2d_string_has_dropshadow(const char *str) {
+	char *p = str;
+
+	int result = FALSE;
+
+	do {if (*p == CH_DROPSHADOW) result = TRUE;} while (*(++p) != '\0');
+
+	return result;
+}
+
+// deprecated
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
 	if (s2d_check_align(align) != 0) return;
 	if (s2d_check_str(str)     != 0) return;
 
-	s2d_snprint(x, y, align, str, buf, s2d_strlen(str));
+	s2d_snprint(x, y, align, str, buf, s2d_strlen(str), MODE_DRAW_DROPSHADOW);
+	s2d_snprint(x, y, align, str, buf, s2d_strlen(str), MODE_DRAW_NORMALTEXT);
 }
 
 void s2d_print_alloc(int x, int y, int align, const char *str) {
@@ -192,10 +209,16 @@ void s2d_print_alloc(int x, int y, int align, const char *str) {
 
 	len = s2d_strlen(str);
 
-	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
-	s2d_snprint(x, y, align, str, b, len);
+	if (s2d_string_has_dropshadow(str)) {
+		uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+		s2d_snprint(x, y, align, str, b, len, MODE_DRAW_DROPSHADOW);
+	}
+
+	uObjMtx *b2 = alloc(sizeof(uObjMtx) * len);
+	s2d_snprint(x, y, align, str, b2, len, MODE_DRAW_NORMALTEXT);
 }
 
+// deprecated
 void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos) {
 	int len;
 
@@ -204,7 +227,9 @@ void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int 
 	
 	len = s2d_strlen(str);
 
-	int result = s2d_snprint(x, y, align, str, buf, *pos);
+	s2d_snprint(x, y, align, str, buf, *pos, MODE_DRAW_DROPSHADOW);
+
+	int result = s2d_snprint(x, y, align, str, buf, *pos, MODE_DRAW_NORMALTEXT);
 	if (s2d_timer % 2 == 0) {
 		if (*pos < len && result != 1) {
 			(*pos)++;
@@ -220,10 +245,22 @@ void s2d_type_print_alloc(int x, int y, int align, const char *str, int *pos) {
 
 	len = s2d_strlen(str);
 
-	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
-	s2d_type_print(x, y, align, str, b, pos);
+	uObjMtx *b = alloc(sizeof(uObjMtx) * (*pos));
+
+	if (s2d_string_has_dropshadow(str)) {
+		uObjMtx *b_d = alloc(sizeof(uObjMtx) * (*pos));
+		s2d_snprint(x, y, align, str, b_d, *pos, MODE_DRAW_DROPSHADOW);
+	}
+
+	int result = s2d_snprint(x, y, align, str, b, *pos, MODE_DRAW_NORMALTEXT);
+	if (s2d_timer % 2 == 0) {
+		if (*pos < len && result != 1) {
+			(*pos)++;
+		}
+	}
 }
 
+// broken atm
 static int s2d_width(const char *str, int line, int len) {
 	char *p = str;
 	int tmp_len = 0;

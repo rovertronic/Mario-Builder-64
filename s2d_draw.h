@@ -18,5 +18,6 @@ extern void setup_font_texture(int idx);
 extern void mtx_pipeline(uObjMtx *m, int x, int y);
 
 extern void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt);
+extern void draw_s2d_shadow(char c, int x, int y, uObjMtx *ds);
 
 #endif
