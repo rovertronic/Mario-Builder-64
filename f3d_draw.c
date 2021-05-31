@@ -1,17 +1,10 @@
 #include "config.h"
-#ifdef DRAW_F3D
 
 #include <ultra64.h>
 #include "mtx.h"
 #include "debug.h"
 
-float myScale = 1.0f;
-int myDegrees = 0;
-uObjMtx final_mtx, rot_mtx;
-int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
-int drop_shadow = FALSE;
-int drop_x = 0;
-int drop_y = 0;
+#include "s2d_draw.h"
 
 #define s(sprite) ((uObjSprite *)seg2virt(&sprite))
 #define t(texture) ((uObjTxtr *)seg2virt(&texture))
@@ -30,7 +23,7 @@ void f3d_rdp_init(void) {
     );
 }
 
-void setup_font_texture(int idx) {
+void setup_f3d_texture(int idx) {
     gDPPipeSync(gdl_head++);
 
 
@@ -70,7 +63,7 @@ void texrect(int x, int y, float scale) {
 }
 
 void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
-    setup_font_texture(c);
+    setup_f3d_texture(c);
 
     if (s2d_red != 0
         && s2d_green != 0
@@ -89,7 +82,7 @@ void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
 }
 
 void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
-    setup_font_texture(c);
+    setup_f3d_texture(c);
 
     texrect(x, y, myScale);
     gDPPipeSync(gdl_head++);
@@ -97,5 +90,3 @@ void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
 
 #undef s
 #undef t
-
-#endif

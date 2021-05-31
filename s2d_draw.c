@@ -1,5 +1,4 @@
 #include "config.h"
-#ifdef DRAW_S2D
 #include <ultra64.h>
 #include "mtx.h"
 #include "debug.h"
@@ -21,8 +20,6 @@ Gfx s2d_text_init_dl[] = {
     gsDPSetAlphaCompare(G_AC_THRESHOLD),
     gsDPSetBlendColor(0, 0, 0, 0x01),
 
-    // IA8
-    // TODO: add more formats
     gsDPSetCombineLERP(
         0, 0, 0, ENVIRONMENT,
         0, 0, 0, TEXEL0,
@@ -44,17 +41,15 @@ void s2d_rdp_init(void) {
     }
 }
 
-void setup_font_texture(int idx) {
+void setup_s2d_texture(int idx) {
     gDPPipeSync(gdl_head++);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 
-// Original Mtx Pipeline
-// Distorts when rotating, but is faster
 void mtx_pipeline(uObjMtx *m, int x, int y) {
-    // init
     gDPPipeSync(gdl_head++);
+
     mat2_ident(m, 1.0f / myScale);
     mat2_translate(m, x, y);
 
@@ -63,9 +58,9 @@ void mtx_pipeline(uObjMtx *m, int x, int y) {
 
 #define CLAMP_0(x) ((x < 0) ? 0 : x)
 
-void draw_s2d_shadow(char c, int x, int y, uObjMtx *ds) {
+void draw_s2d_dropshadow(char c, int x, int y, uObjMtx *ds) {
     if (mtx_cond) mtx_pipeline(ds, x, y);
-    if (tex_cond) setup_font_texture(c);
+    if (tex_cond) setup_s2d_texture(c);
 
     if (s2d_red != 0
         && s2d_green != 0
@@ -84,10 +79,8 @@ void draw_s2d_shadow(char c, int x, int y, uObjMtx *ds) {
 
 void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
     if (mtx_cond) mtx_pipeline(mt, x, y);
-    if (tex_cond) setup_font_texture(c);
-    // mtx_pipeline2(mt, x, y);
+    if (tex_cond) setup_s2d_texture(c);
 
     if (spr_cond) gSPObjRectangleR(gdl_head++, &s2d_font);
 }
 
-#endif
