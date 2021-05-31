@@ -11,6 +11,7 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "config.h"
 #ifdef SRAM
 #include "sram.h"
 #endif
