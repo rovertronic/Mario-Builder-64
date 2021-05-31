@@ -87,6 +87,11 @@ extern char *proutSprintf(char *dst, const char *src, size_t count);
 #define TEX_HEIGHT 16
 #define TEX_BITDEPTH 8
 
+#define glyph_draw draw_f3d_glyph
+#define glyph_shadow draw_f3d_dropshadow
+
+#define seg2virt segmented_to_virtual
+
 // Texture resolution (pixels on the texture per pixel on the framebuffer)
 #define TEX_RES 1
 

@@ -13,83 +13,103 @@ int drop_shadow = FALSE;
 int drop_x = 0;
 int drop_y = 0;
 
-Gfx s2d_text_init_dl[] = {
-    gsDPPipeSync(),
-    gsDPSetTexturePersp(G_TP_NONE),
-    gsDPSetTextureLOD(G_TL_TILE),
-    gsDPSetTextureLUT(G_TT_NONE),
-    gsDPSetTextureConvert(G_TC_FILT),
-    gsDPSetAlphaCompare(G_AC_THRESHOLD),
-    gsDPSetBlendColor(0, 0, 0, 0x01),
+#define s(sprite) ((uObjSprite *)seg2virt(&sprite))
+#define t(texture) ((uObjTxtr *)seg2virt(&texture))
 
-    // IA8
-    // TODO: add more formats
-    gsDPSetCombineLERP(
+void f3d_rdp_init(void) {
+    gDPPipeSync(gdl_head++);
+    gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
+    // gDPSetRenderMode(gdl_head++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+    gDPSetCombineLERP(gdl_head++,
         0, 0, 0, ENVIRONMENT,
         0, 0, 0, TEXEL0,
         0, 0, 0, ENVIRONMENT,
         0, 0, 0, TEXEL0
-    ),
-
-    gsSPEndDisplayList(),
-};
-
-void s2d_rdp_init(void) {
-        gDPPipeSync(gdl_head++);
-        gDPSetTextureFilter(gdl_head++, G_TF_POINT);
-        gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
-        gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
-    if (init_cond) {
-        gSPDisplayList(gdl_head++, s2d_text_init_dl);
-        gSPObjRenderMode(gdl_head++, G_OBJRM_XLU);
-    }
+    );
 }
 
 void setup_font_texture(int idx) {
     gDPPipeSync(gdl_head++);
+
+
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
-    gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
-}
 
-// Original Mtx Pipeline
-// Distorts when rotating, but is faster
-void mtx_pipeline(uObjMtx *m, int x, int y) {
-    // init
-    gDPPipeSync(gdl_head++);
-    mat2_ident(m, 1.0f / myScale);
-    mat2_translate(m, x, y);
-
-    gSPObjSubMatrix(gdl_head++, &m->m.X);
-    gDPPipeSync(gdl_head++);
+    gDPLoadTextureBlock(
+        gdl_head++,
+        t(s2d_tex[idx])->block.image,
+        s(s2d_font)->s.imageFmt,
+        G_IM_SIZ_8b,
+        s(s2d_font)->s.imageW >> 5,
+        s(s2d_font)->s.imageH >> 5,
+        s(s2d_font)->s.imagePal,
+        s(s2d_font)->s.imageFlags,
+        s(s2d_font)->s.imageFlags,
+        G_TX_NOMASK,
+        G_TX_NOMASK,
+        G_TX_NOLOD,
+        G_TX_NOLOD);
+    gDPLoadSync(gdl_head++);
 }
 
 #define CLAMP_0(x) ((x < 0) ? 0 : x)
 
-void draw_s2d_shadow(char c, int x, int y, uObjMtx *ds) {
-    if (mtx_cond) mtx_pipeline(ds, x, y);
-    if (tex_cond) setup_font_texture(c);
+void cpu_quad(int x, int y, float scale) {
+    Vtx *v0 = alloc(sizeof(Vtx) * 4);
+    bzero(v0, sizeof(Vtx) * 4);
+
+    v0[0].v.ob[0] =
+    v0[2].v.ob[0] = x;
+    v0[1].v.ob[0] =
+    v0[3].v.ob[0] = x + ((f32) (s(s2d_font)->s.imageW >> 5) * scale);
+
+    v0[0].v.ob[1] =
+    v0[1].v.ob[1] = y;
+    v0[2].v.ob[1] =
+    v0[3].v.ob[1] = y + ((f32) (s(s2d_font)->s.imageW >> 5) * scale);
+
+    v0[0].v.tc[0] = 0;
+    v0[0].v.tc[1] = 0;
+
+    v0[1].v.tc[0] = (s(s2d_font)->s.imageW >> 5);
+    v0[1].v.tc[1] = 0;
+
+    v0[2].v.tc[0] = 0;
+    v0[2].v.tc[1] = (s(s2d_font)->s.imageH >> 5);
+
+    v0[3].v.tc[0] = (s(s2d_font)->s.imageW >> 5);
+    v0[3].v.tc[1] = (s(s2d_font)->s.imageH >> 5);
+
+    gSPVertex(gdl_head++, v0, 4, 0);
+    gSP2Triangles(gdl_head++, 0, 1, 2, 0, 1, 3, 2, 0);
+}
+
+void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
+    setup_font_texture(c);
 
     if (s2d_red != 0
         && s2d_green != 0
         && s2d_blue != 0
-        ) {
+    ) {
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++,
                    CLAMP_0(s2d_red - 100),
                    CLAMP_0(s2d_green - 100),
                    CLAMP_0(s2d_blue - 100),
                    s2d_alpha);
-        if (spr_cond) gSPObjRectangleR(gdl_head++, &s2d_font);
+        cpu_quad(x, 240 - y, myScale);
+        gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }
 }
 
-void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
-    if (mtx_cond) mtx_pipeline(mt, x, y);
-    if (tex_cond) setup_font_texture(c);
-    // mtx_pipeline2(mt, x, y);
+void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
+    setup_font_texture(c);
 
-    if (spr_cond) gSPObjRectangleR(gdl_head++, &s2d_font);
+    cpu_quad(x, 240 - y, myScale);
+    gDPPipeSync(gdl_head++);
 }
+
+#undef s
+#undef t
 
 #endif

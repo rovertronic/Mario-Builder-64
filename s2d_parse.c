@@ -27,7 +27,11 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 
 	if (*p == '\0') return;
 
-	s2d_rdp_init();
+	#ifdef DRAW_S2D
+		s2d_rdp_init();
+	#else
+		f3d_rdp_init();
+	#endif
 
 	// resets parameters
 	s2d_red = s2d_green = s2d_blue = 255;
@@ -163,9 +167,9 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 					char *tbl = segmented_to_virtual(s2d_kerning_table);
 
 					if (drop_shadow && mode == MODE_DRAW_DROPSHADOW) {
-						draw_s2d_shadow(current_char, x + drop_x, y + drop_y, (buf++));
+						glyph_shadow(current_char, x + drop_x, y + drop_y, (buf++));
 					} else if (mode == MODE_DRAW_NORMALTEXT) {
-						draw_s2d_glyph(current_char, x, y, (buf++));
+						glyph_draw(current_char, x, y, (buf++));
 					}
 					(x += (tbl[(int) current_char] * (BASE_SCALE * myScale)));
 				}
