@@ -19,7 +19,9 @@ int drop_y = 0;
 void f3d_rdp_init(void) {
     gDPPipeSync(gdl_head++);
     gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
-    // gDPSetRenderMode(gdl_head++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+    gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
+    gDPSetTextureLUT(gdl_head++, G_TT_NONE);
+    gDPSetTexturePersp(gdl_head++, G_TP_NONE);
     gDPSetCombineLERP(gdl_head++,
         0, 0, 0, ENVIRONMENT,
         0, 0, 0, TEXEL0,
@@ -42,8 +44,8 @@ void setup_font_texture(int idx) {
         s(s2d_font)->s.imageW >> 5,
         s(s2d_font)->s.imageH >> 5,
         s(s2d_font)->s.imagePal,
-        s(s2d_font)->s.imageFlags,
-        s(s2d_font)->s.imageFlags,
+        G_TX_WRAP,
+        G_TX_WRAP,
         G_TX_NOMASK,
         G_TX_NOMASK,
         G_TX_NOLOD,
@@ -53,34 +55,18 @@ void setup_font_texture(int idx) {
 
 #define CLAMP_0(x) ((x < 0) ? 0 : x)
 
-void cpu_quad(int x, int y, float scale) {
-    Vtx *v0 = alloc(sizeof(Vtx) * 4);
-    bzero(v0, sizeof(Vtx) * 4);
-
-    v0[0].v.ob[0] =
-    v0[2].v.ob[0] = x;
-    v0[1].v.ob[0] =
-    v0[3].v.ob[0] = x + ((f32) (s(s2d_font)->s.imageW >> 5) * scale);
-
-    v0[0].v.ob[1] =
-    v0[1].v.ob[1] = y;
-    v0[2].v.ob[1] =
-    v0[3].v.ob[1] = y + ((f32) (s(s2d_font)->s.imageW >> 5) * scale);
-
-    v0[0].v.tc[0] = 0;
-    v0[0].v.tc[1] = 0;
-
-    v0[1].v.tc[0] = (s(s2d_font)->s.imageW >> 5);
-    v0[1].v.tc[1] = 0;
-
-    v0[2].v.tc[0] = 0;
-    v0[2].v.tc[1] = (s(s2d_font)->s.imageH >> 5);
-
-    v0[3].v.tc[0] = (s(s2d_font)->s.imageW >> 5);
-    v0[3].v.tc[1] = (s(s2d_font)->s.imageH >> 5);
-
-    gSPVertex(gdl_head++, v0, 4, 0);
-    gSP2Triangles(gdl_head++, 0, 1, 2, 0, 1, 3, 2, 0);
+void texrect(int x, int y, float scale) {
+    #define qs510(n) ((s16)((n)*0x0400))
+    gSPScisTextureRectangle (
+        gdl_head++,
+        x << 2,
+        y << 2,
+        (u32)(x + ((f32) ((s(s2d_font)->s.imageW >> 5) - 1) * scale)) << 2,
+        (u32)(y + ((f32) ((s(s2d_font)->s.imageH >> 5) - 1) * scale)) << 2,
+        G_TX_RENDERTILE,
+        0,
+        0,
+        qs510(1.0f / myScale), qs510(1.0f / myScale));
 }
 
 void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
@@ -96,7 +82,7 @@ void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
                    CLAMP_0(s2d_green - 100),
                    CLAMP_0(s2d_blue - 100),
                    s2d_alpha);
-        cpu_quad(x, 240 - y, myScale);
+        texrect(x, y, myScale);
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }
@@ -105,7 +91,7 @@ void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
 void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
     setup_font_texture(c);
 
-    cpu_quad(x, 240 - y, myScale);
+    texrect(x, y, myScale);
     gDPPipeSync(gdl_head++);
 }
 
