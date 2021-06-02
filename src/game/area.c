@@ -403,6 +403,13 @@ void render_game(void) {
                 gWarpTransDelay--;
             }
         }
+        if (gMarioObject &&gMarioState) {
+            #include "s2d_engine/init.h"
+            #include "s2d_engine/s2d_print.h"
+            s2d_init();
+            s2d_print_alloc(50, 50, ALIGN_LEFT, SCALE "25" "BRUH MOMentum i guess");
+            s2d_stop();
+        }
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {
