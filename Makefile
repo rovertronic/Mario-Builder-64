@@ -493,7 +493,7 @@ endif
 
 clean:
 	$(RM) -r $(BUILD_DIR_BASE)
-	make -C src/s2d_engine clean COPY_DIR=.
+	make -C src/s2d_engine clean
 
 distclean: clean
 	$(PYTHON) extract_assets.py --clean
