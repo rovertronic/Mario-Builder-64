@@ -6,7 +6,9 @@
 /**
  * SET YOUR FONT NAME HERE
  */
-#define FONTNAME impact
+#ifndef FONTNAME
+    #define FONTNAME impact
+#endif
 
 
 /***********
