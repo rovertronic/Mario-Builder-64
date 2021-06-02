@@ -29,8 +29,10 @@ clean:
 	rm -r build/
 
 COPY_DIR := none
-ifeq ($(COPY_DIR),none)
-	$(error S2DEX Text Engine: No COPY_DIR defined!)
+ifneq ($(MAKECMDGOALS),clean)
+	ifeq ($(COPY_DIR),none)
+		$(error S2DEX Text Engine: No COPY_DIR defined!)
+	endif
 endif
 
 $(BUILD_DIR)/$(TARGET): $(O_FILES)
