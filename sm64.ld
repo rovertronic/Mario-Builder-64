@@ -130,6 +130,9 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
       BUILD_DIR/src/audio*.o(.text);
+#ifdef S2DEX_TEXT_ENGINE
+      lib/libs2d_engine.a:*(.text);
+#endif
 #if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.text);
 #else
@@ -147,6 +150,9 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
+#ifdef S2DEX_TEXT_ENGINE
+      lib/libs2d_engine.a:*(.*data*);
+#endif
 #if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.*data*);
 #else
@@ -163,6 +169,9 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
+#ifdef S2DEX_TEXT_ENGINE
+      lib/libs2d_engine.a:*(.rodata*);
+#endif
 #if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(.*rodata*);
 #else
@@ -182,6 +191,9 @@ SECTIONS
       BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
       BUILD_DIR/src/audio*.o(.*bss*);
+#ifdef S2DEX_TEXT_ENGINE
+      lib/libs2d_engine.a:*(.*bss*);
+#endif
 #if defined(ISVPRINT) || defined(UNF)
       */libultra_d.a:*.o(COMMON);
       */libultra_d.a:*.o(.scommon);

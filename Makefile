@@ -132,13 +132,19 @@ else ifeq ($(GRUCODE),super3d) # Super3D
   DEFINES += SUPER3D_GBI=1 F3D_NEW=1
 endif
 
+LIBRARIES := gcc nustd hvqm2 z goddard
+
 # TEXT ENGINES
 #   s2dex_text_engine - Text Engine by someone2639
 TEXT_ENGINE := none
 ifeq ($(TEXT_ENGINE), s2dex_text_engine)
   DEFINES += S2DEX_GBI_2=1 S2DEX_TEXT_ENGINE=1
+  LIBRARIES += s2d_engine
+  DUMMY != make -C src/s2d_engine COPY_DIR=$(shell pwd)/lib/
 endif
+# add more text engines here
 
+LINK_LIBRARIES = $(foreach i,$(LIBRARIES),-l$(i))
 
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
@@ -754,7 +760,7 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB
 
 # Build ROM
 $(ROM): $(ELF)
