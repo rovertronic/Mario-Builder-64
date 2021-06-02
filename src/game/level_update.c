@@ -29,6 +29,8 @@
 #include "course_table.h"
 #include "rumble_init.h"
 
+#include "config.h"
+
 #define PLAY_MODE_NORMAL 0
 #define PLAY_MODE_PAUSED 2
 #define PLAY_MODE_CHANGE_AREA 3
@@ -557,7 +559,11 @@ void check_instant_warp(void) {
                 gMarioState->marioObj->oPosX = gMarioState->pos[0];
                 gMarioState->marioObj->oPosY = gMarioState->pos[1];
                 gMarioState->marioObj->oPosZ = gMarioState->pos[2];
-
+            #ifdef INSTANT_WARP_OFFSET_FIX
+                gMarioObject->header.gfx.pos[0] = gMarioState->pos[0];
+                gMarioObject->header.gfx.pos[1] = gMarioState->pos[1];
+                gMarioObject->header.gfx.pos[2] = gMarioState->pos[2];               
+            #endif
                 cameraAngle = gMarioState->area->camera->yaw;
 
                 change_area(warp->area);
