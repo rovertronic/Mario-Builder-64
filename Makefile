@@ -132,6 +132,14 @@ else ifeq ($(GRUCODE),super3d) # Super3D
   DEFINES += SUPER3D_GBI=1 F3D_NEW=1
 endif
 
+# TEXT ENGINES
+#   s2dex_text_engine - Text Engine by someone2639
+TEXT_ENGINE := none
+ifeq ($(TEXT_ENGINE), s2dex_text_engine)
+  DEFINES += S2DEX_GBI_2=1 S2DEX_TEXT_ENGINE=1
+endif
+
+
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
@@ -440,8 +448,8 @@ else
   RSPASM              := $(TOOLS_DIR)/armips
 endif
 ENDIAN_BITWIDTH       := $(BUILD_DIR)/endian-and-bitwidth
-EMULATOR = mupen64plus
-EMU_FLAGS = --noosd
+EMULATOR = ~/Downloads/mupen64plus/mupen64plus-gui
+EMU_FLAGS = 
 LOADER = loader64
 LOADER_FLAGS = -vwf
 SHA1SUM = sha1sum
