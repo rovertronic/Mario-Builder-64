@@ -25,6 +25,8 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
+This repo needs gcc in order to be able to build it. To install it, run `sudo apt install gcc-mips-linux-gnu`
+
 # UltraSM64
 
 - This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
