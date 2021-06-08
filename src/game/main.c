@@ -476,10 +476,12 @@ void thread1_idle(UNUSED void *arg) {
     }
 }
 
+#if CLEARRAM
 void ClearRAM(void)
 {
     bzero(_mainSegmentEnd, (size_t)osMemSize - (size_t)OS_K0_TO_PHYSICAL(_mainSegmentEnd));
 }
+#endif
 
 #ifdef ISVPRINT
 extern u32 gISVDbgPrnAdrs;
@@ -498,7 +500,9 @@ void osInitialize_fakeisv() {
 #endif
 
 void main_func(void) {
+#if CLEARRAM
     ClearRAM();
+#endif
     __osInitialize_common();
 #ifdef ISVPRINT
     osInitialize_fakeisv();
