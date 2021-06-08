@@ -26,6 +26,9 @@
 // Support Rumble Pak
 #define ENABLE_RUMBLE (1 || VERSION_SH)
 
+// Clear RAM on boot
+#define CLEARRAM 1
+
 // Screen Size Defines
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
