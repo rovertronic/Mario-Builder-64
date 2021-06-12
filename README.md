@@ -2,6 +2,7 @@
 Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 - slope fix
 - exposed ceilings fix
+- No false ledgegrabs fix * 
 - Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
 - pole fix
 - Mario head skip *
@@ -14,8 +15,9 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 - Rounded corners by Frame, merged by Cheezepin
 - Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
 - Removed course-specific camera processing *
-- Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a Snake Eater pole) *
+- Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a very long pole) *
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
+- Instant warp offset fix (makes the instant warp offset work even when warping to a different area) *
 - Global star IDs (disabled by default, toggleable in config.h). This allows you to create an open world (MVC-style) hack.
 - Included `actors/group0.c` in `behavior_data.c`
 - 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
