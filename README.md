@@ -1,5 +1,9 @@
 # UltraSM64-extbounds
-Fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
+**AFTER CLONING THE REPO, CHECK OUT THE `include/config.h` FILE BEFORE ANYTHING ELSE! IT THERE'S A LOT OF STUFF IN THIS REPO THAT CAN BE TOGGLED THERE.
+
+This repo needs gcc in order to be able to build it. To install it, run `sudo apt install gcc-mips-linux-gnu`
+
+This is a fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 - slope fix
 - exposed ceilings fix
 - No false ledgegrabs fix * 
@@ -26,9 +30,6 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
   - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
-
-This repo needs gcc in order to be able to build it. To install it, run `sudo apt install gcc-mips-linux-gnu`
-
 # UltraSM64
 
 - This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
