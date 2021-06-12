@@ -65,6 +65,8 @@
 #define DISABLE_AA
 // Fix instant warp offset not working when warping across different areas
 #define INSTANT_WARP_OFFSET_FIX
+// Allows Mario to ledgegrab sloped floors
+#define NO_FALSE_LEDGEGRABS
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
 //#define GLOBAL_STAR_IDS
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
