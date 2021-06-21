@@ -7,6 +7,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - slope fix
 - exposed ceilings fix
 - No false ledgegrabs fix * 
+- Jump kick fix * 
 - Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
 - pole fix
 - Mario head skip *
