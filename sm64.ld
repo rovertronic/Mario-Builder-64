@@ -219,7 +219,7 @@ SECTIONS
    BEGIN_NOLOAD(engine)
    {
       BUILD_DIR/src/engine*.o(.bss*);
-      . = ALIGN(0x100);
+      . = ALIGN(0x40);
    }
    END_NOLOAD(engine)
 
