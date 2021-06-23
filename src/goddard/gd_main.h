@@ -11,15 +11,11 @@
 // This macro is separate from the gd_printf function; one probably
 // forwarded to the other, but it is hard to tell in which direction.
 
-#if defined(ISVPRINT) || defined(UNF)
-#define printf osSyncPrintf
-#else
 #define printf(...)                                       \
     _Pragma ("GCC diagnostic push")                       \
     _Pragma ("GCC diagnostic ignored \"-Wunused-value\"") \
     (__VA_ARGS__);                                        \
     _Pragma ("GCC diagnostic pop")
-#endif
 
 // structs
 struct GdControl { // gGdCtrl
