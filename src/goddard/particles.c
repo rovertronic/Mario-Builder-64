@@ -494,30 +494,6 @@ void Unknown801835C8(struct ObjParticle *ptc) {
     gd_printf("\n");
 }
 
-/**
- * Unused
- */
-void stub_particles_1(UNUSED s32 a) {
-}
-
-/**
- * Unused
- */
-void stub_particles_2(UNUSED s32 a) {
-}
-
-/**
- * Unused
- */
-void stub_particles_3(UNUSED s32 a, UNUSED s32 b, UNUSED s32 c) {
-}
-
-/**
- * Unused
- */
-void stub_particles_4(UNUSED s32 a, UNUSED s32 b, UNUSED s32 c) {
-}
-
 /* 2320A0 -> 2320D4; pad to 2320E0 */
 void func_801838D0(struct ObjParticle *ptc) {
     D_801B9E3C = ptc;
