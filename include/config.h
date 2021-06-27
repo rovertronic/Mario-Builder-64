@@ -71,6 +71,8 @@
 #define JUMP_KICK_FIX
 // Disables fall damage
 #define NO_FALL_DAMAGE
+// Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
+#define X_COIN_STAR 100
 // Stars don't kick you out of the level
 // #define NON_STOP_STARS
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
