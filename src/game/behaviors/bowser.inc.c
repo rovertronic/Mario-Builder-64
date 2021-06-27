@@ -1,3 +1,5 @@
+#include "config.h"
+
 // bowser.c.inc
 
 void bowser_tail_anchor_act_0(void) {
@@ -972,8 +974,9 @@ s32 bowser_check_fallen_off_stage(void) // bowser off stage?
     return 0;
 }
 
+#ifdef PLATFORM_DISPLACEMENT_2
 struct PlatformDisplacementInfo sBowserDisplacementInfo;
-
+#endif
 void (*sBowserActions[])(void) = { bowser_act_default,  bowser_act_thrown_dropped,  bowser_act_jump_onto_stage,  bowser_act_dance,
                                    bowser_act_dead,  bowser_act_text_wait,  bowser_act_intro_walk,  bowser_act_charge_mario,
                                    bowser_act_spit_fire_into_sky,  bowser_act_spit_fire_onto_floor,  bowser_act_hit_edge, bowser_act_turn_from_edge,
@@ -1034,9 +1037,14 @@ void bowser_free_update(void) {
     struct Surface *floor;
     struct Object *platform;
     UNUSED f32 floorHeight;
+#ifdef PLATFORM_DISPLACEMENT_2
     if ((platform = o->platform) != NULL) {
         apply_platform_displacement(&sBowserDisplacementInfo, &o->oPosX, &o->oFaceAngleYaw, platform);
     }
+#else
+    if ((platform = o->platform) != NULL)
+        apply_platform_displacement(FALSE, platform);
+#endif
     o->oBowserUnk10E = 0;
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sBowserActions);

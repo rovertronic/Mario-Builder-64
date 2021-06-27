@@ -17,7 +17,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Non-stop stars *
 - better extended boundaries by anonymous_moose
 - water surface type patch by thecozies
-- platform displacement 2 by arthur. 
+- platform displacement 2 by arthur *
 - FPS counter (use the function `print_fps(x,y)` anywhere that runs code every frame)
 - Automatic console/emulator detection. If emulator is detected, LODs are disabled. *
 - Rounded corners by Frame, merged by Cheezepin
@@ -26,7 +26,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Increased maximum pole lenght (The game will read bparam1 and bparam2 together as a single value, so you can have a very long pole) *
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 - Instant warp offset fix (makes the instant warp offset work even when warping to a different area) *
-- Global star IDs (disabled by default, toggleable in config.h). This allows you to create an open world (MVC-style) hack.
+- Global star IDs (disabled by default, toggleable in config.h). This allows you to create an open world (MVC-style) hack. *
 - Included `actors/group0.c` in `behavior_data.c`
 - 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
 - s2dex engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
