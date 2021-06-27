@@ -30,6 +30,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Included `actors/group0.c` in `behavior_data.c`
 - 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
 - s2dex engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
+- haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
 - coordinate overflow fix by falcobuster 
   - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
 
