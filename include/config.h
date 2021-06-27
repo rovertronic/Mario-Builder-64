@@ -77,6 +77,8 @@
 #define X_COIN_STAR 100
 // Platform displacement 2 also known as momentum patch. Makes Mario keep the momemtum from moving platforms. Breaks treadmills.
 #define PLATFORM_DISPLACEMENT_2
+// Whether a tree uses snow particles or not is decided via the model IDs instead of the course number
+#define TREE_PARTICLE_FIX
 // Stars don't kick you out of the level
 // #define NON_STOP_STARS
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
