@@ -59,6 +59,7 @@ s32 lava_boost_on_wall(struct MarioState *m) {
 }
 
 s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
+#ifndef NO_FALL_DAMAGE
     f32 fallHeight;
     f32 damageHeight;
 
@@ -97,7 +98,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
             }
         }
     }
-
+#endif
     return FALSE;
 }
 

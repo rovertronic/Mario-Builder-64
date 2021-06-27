@@ -69,6 +69,8 @@
 #define NO_FALSE_LEDGEGRABS
 // Allows Mario to jump kick on steep surfaces that are set to be non slippery, instead of being forced to dive
 #define JUMP_KICK_FIX
+// Disables fall damage
+#define NO_FALL_DAMAGE
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
 //#define GLOBAL_STAR_IDS
 // Uncomment this if you want to skip the title screen (Super Mario 64 logo)
