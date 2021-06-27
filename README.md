@@ -13,7 +13,8 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Mario head skip *
 - Peach letter cutscene skip *
 - Toggle to disable fall damage and the fall damage sound *
-- Ability to configure whether there's a 100 coin star at all and how many coins are required to spawn it
+- Ability to configure whether there's a 100 coin star at all and how many coins are required to spawn it *
+- Non-stop stars *
 - better extended boundaries by anonymous_moose
 - water surface type patch by thecozies
 - platform displacement 2 by arthur. 
