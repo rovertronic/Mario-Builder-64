@@ -32,6 +32,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - s2dex engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
 - haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
 - Tree particle fix (Whether a tree uses snow particles or not is decided via the model IDs instead of the course number)
+- Removed the ifdef hell in `file_select.c` and `ingame_menu.c`
 - Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins. **This is automatic now, you don't have to set WORLD_SCALE manually.**
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
