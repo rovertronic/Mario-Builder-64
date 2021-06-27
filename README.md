@@ -31,8 +31,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
 - s2dex engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
 - haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
-- coordinate overflow fix by falcobuster 
-  - If you're planning on making maps bigger than 2x bounds, change the value of `WORLD_SCALE` in `config.h` to a bigger value. `3.5f` should be enough for 4x boundaries but you can go up to `4.0f` if you somehow still get rendering glitches on your map.
+- Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins.
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 # UltraSM64

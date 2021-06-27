@@ -11,6 +11,7 @@
 #include "shadow.h"
 #include "sm64.h"
 #include "game_init.h"
+#include "engine/extended_bounds.h"
 
 #include "config.h"
 
