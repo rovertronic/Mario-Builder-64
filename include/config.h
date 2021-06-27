@@ -71,6 +71,8 @@
 #define JUMP_KICK_FIX
 // Disables fall damage
 #define NO_FALL_DAMAGE
+// Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)
+//#define NO_FALL_DAMAGE_SOUND
 // Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
 #define X_COIN_STAR 100
 // Stars don't kick you out of the level

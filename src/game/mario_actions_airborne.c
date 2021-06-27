@@ -2063,8 +2063,9 @@ s32 mario_execute_airborne_action(struct MarioState *m) {
     if (check_common_airborne_cancels(m)) {
         return TRUE;
     }
-
+#ifndef NO_FALL_DAMAGE_SOUND
     play_far_fall_sound(m);
+#endif
 
     /* clang-format off */
     switch (m->action) {
