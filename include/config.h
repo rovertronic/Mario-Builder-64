@@ -24,6 +24,7 @@
 #define BUGFIX_STAR_BOWSER_KEY (0 || VERSION_US || VERSION_EU || VERSION_SH)
 
 // Support Rumble Pak
+// Currently not recommended, as it may cause random crashes.
 //#define ENABLE_RUMBLE (1 || VERSION_SH)
 
 // Clear RAM on boot
