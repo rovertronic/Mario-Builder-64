@@ -586,7 +586,6 @@ void draw_label(struct ObjLabel *label) {
     position.y += label->position.y;
     position.z += label->position.z;
     func_801A4438(position.x, position.y, position.z);
-    stub_renderer_10(label->unk30);
     stub_draw_label_text(strbuf);
 }
 

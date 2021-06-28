@@ -537,18 +537,6 @@ void func_8018FF28(struct ObjJoint *a0, struct ObjJoint *a1) {
     }
 }
 
-/**
- * Unused (not called) - possibly was used to print indent levels inside
- * recursive functions
- */
-void print_some_spaces(s32 size) {
-    s32 i;
-
-    for (i = 0; i < size - 1; i++) {
-        gd_printf("  ");
-    }
-}
-
 /* 23E7B8 -> 23E938 */
 s32 func_8018FFE8(struct ObjBone **a0, struct ObjJoint **a1, struct ObjJoint *a2, struct ObjJoint *a3) {
     struct ObjBone *b; // 1C
