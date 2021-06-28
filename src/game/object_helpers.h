@@ -298,4 +298,9 @@ void cur_obj_spawn_loot_blue_coin(void);
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY);
 #endif
 
+// Extra functions for ultrasm64-extbounds
+void obj_set_model(struct Object *obj, s32 modelID);
+s32 obj_has_model(struct Object *obj, u16 modelID);
+// End of ultrasm64-extbounds stuff
+
 #endif // OBJECT_HELPERS_H

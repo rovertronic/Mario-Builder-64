@@ -2889,3 +2889,14 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
     o->oPosY = objectPosY;
 }
 #endif
+
+// Extra functions for ultrasm64-extbounds
+void obj_set_model(struct Object *obj, s32 modelID) {
+    obj->header.gfx.sharedChild = gLoadedGraphNodes[modelID];
+}
+
+s32 obj_has_model(struct Object *obj, u16 modelID) {
+    return (obj->header.gfx.sharedChild == gLoadedGraphNodes[modelID]);
+}
+// End of ultrasm64-extbounds stuff
+
