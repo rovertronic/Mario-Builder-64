@@ -70,6 +70,8 @@
 #define NO_FALSE_LEDGEGRABS
 // Allows Mario to jump kick on steep surfaces that are set to be non slippery, instead of being forced to dive
 #define JUMP_KICK_FIX
+// 46 degree walkicks
+//#define WALLKICKS_46_DEGREES
 // Disables fall damage
 #define NO_FALL_DAMAGE
 // Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)
