@@ -14,6 +14,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Hanging fix (mario can grab hangable ceilings from any state, instead of only jump or double jump) *
 - Mario head skip *
 - Peach letter cutscene skip *
+- Ability to easily change the warp that EXIT COURSE takes you to via config.h, or disable it entirely
 - Toggle to disable fall damage and the fall damage sound *
 - Ability to configure whether there's a 100 coin star at all and how many coins are required to spawn it *
 - Non-stop stars *
