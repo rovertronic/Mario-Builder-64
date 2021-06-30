@@ -450,8 +450,12 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
             m->vel[1] = 0.0f;
 
             //! Uses referenced ceiling instead of ceil (ceiling hang upwarp)
+            #ifdef HANGING_FIX
+            if (m->ceil != NULL && m->ceil->type == SURFACE_HANGABLE) {
+            #else
             if ((stepArg & AIR_STEP_CHECK_HANG) && m->ceil != NULL
                 && m->ceil->type == SURFACE_HANGABLE) {
+            #endif
                 return AIR_STEP_GRABBED_CEILING;
             }
 
