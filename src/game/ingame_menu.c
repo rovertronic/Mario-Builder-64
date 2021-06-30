@@ -1753,7 +1753,9 @@ s16 render_pause_courses_and_castle(void) {
         #endif
 
             if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
+            #ifndef DISABLE_EXIT_COURSE
                 render_pause_course_options(99, 93, &gDialogLineNum, 15);
+            #endif
             }
 
             if (gPlayer3Controller->buttonPressed & A_BUTTON
