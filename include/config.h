@@ -70,8 +70,6 @@
 #define NO_FALSE_LEDGEGRABS
 // Allows Mario to jump kick on steep surfaces that are set to be non slippery, instead of being forced to dive
 #define JUMP_KICK_FIX
-// Allow Mario to grab hangable ceilings from any state
-#define HANGING_FIX
 // 46 degree walkicks
 //#define WALLKICKS_46_DEGREES
 // Disables fall damage
