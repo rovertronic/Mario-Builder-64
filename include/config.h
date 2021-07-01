@@ -74,6 +74,8 @@
 #define HANGING_FIX
 // 46 degree walkicks
 //#define WALLKICKS_46_DEGREES
+// Disable BLJs and crush SimpleFlips's dreams
+//#define DISABLE_BLJ
 // Disables fall damage
 #define NO_FALL_DAMAGE
 // Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)

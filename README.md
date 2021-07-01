@@ -9,6 +9,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - No false ledgegrabs fix * 
 - Jump kick fix * 
 - 46 degree wallkicks * 
+- Possibility of disabling BLJs *
 - Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
 - pole fix
 - Hanging fix (mario can grab hangable ceilings from any state, instead of only jump or double jump) *
