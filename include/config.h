@@ -88,6 +88,8 @@
 #define TREE_PARTICLE_FIX
 // Disable exit course
 //#define DISABLE_EXIT_COURSE
+// Decides whether you can exit course while moving (has no effect if you disable exit course)
+//#define EXIT_COURSE_WHILE_MOVING
 // Decides which level "exit course" takes you to (has no effect if you disable exit course)
 #define EXIT_COURSE_LEVEL LEVEL_CASTLE
 // Decides the area node "exit course" takes you to (has no effect if you disable exit course)

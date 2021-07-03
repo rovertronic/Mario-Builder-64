@@ -1751,8 +1751,12 @@ s16 render_pause_courses_and_castle(void) {
                 }
             }
         #endif
-
-            if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
+        #ifndef EXIT_COURSE_WHILE_MOVING
+            s32 exitCheck = gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT;
+        #else
+            s32 exitCheck = 1;
+        #endif
+            if (exitCheck) {
             #ifndef DISABLE_EXIT_COURSE
                 render_pause_course_options(99, 93, &gDialogLineNum, 15);
             #endif
