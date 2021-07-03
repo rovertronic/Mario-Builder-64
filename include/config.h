@@ -56,6 +56,8 @@
 #define AUTO_LOD
 // Skip peach letter cutscene
 #define PEACH_SKIP
+// Fixes the castle music sometimes triggering after getting a dialog
+#define CASTLE_MUSIC_FIX
 // Remove course specific camera processing
 #define CAMERA_FIX
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)

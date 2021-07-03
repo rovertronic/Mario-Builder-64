@@ -15,6 +15,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Hanging fix (mario can grab hangable ceilings from any state, instead of only jump or double jump) *
 - Mario head skip *
 - Peach letter cutscene skip *
+- Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
 - Ability to easily change the warp that EXIT COURSE takes you to via config.h, or disable it entirely
 - Exit course while moving *
 - Toggle to disable fall damage and the fall damage sound *
