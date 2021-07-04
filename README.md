@@ -11,6 +11,8 @@
 - It has been patched with someone2639's shiftable segments patch
 - Getting HVQM FMV support to work with the game is WIP.
 
+Requirements are the same as regular SM64, however a GCC MIPS cross compiler is also required. If you're on Debian-like Linux, you can use the ``gcc-mips-linux-gnu`` package. The toolchain that comes with my SDK is also supported.
+
 ## UNFLoader support
 
 The repository supports UNFLoader for debugging.
