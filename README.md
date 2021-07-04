@@ -9,6 +9,8 @@
 - Newer compression options are supported.
 - UNFLoader (flashcart USB library) is supported, allowing for debugging on EverDrive/64Drive.
 - It has been patched with someone2639's shiftable segments patch
+- Wiseguy's instant input patch has been added to allow for less input lag on emulation (Does not affect console)
+  This does mean that any framebuffer effects will have to be done on buffer 0 if targeting emulators
 - Getting HVQM FMV support to work with the game is WIP.
 
 Requirements are the same as regular SM64, however a GCC MIPS cross compiler is also required. If you're on Debian-like Linux, you can use the ``gcc-mips-linux-gnu`` package. The toolchain that comes with my SDK is also supported.
