@@ -1157,4 +1157,87 @@
 #define /*0x0FC*/ oYoshiChosenHome OBJECT_FIELD_S32(0x1D)
 #define /*0x100*/ oYoshiTargetYaw  OBJECT_FIELD_S32(0x1E)
 
+
+/*Custom general defines:
+
+For general s32 ints, use o->oF4, oF8, oFC, o100, o104, o108, o10C, and o110
+
+For floats, apply the prefix "oFloat" before the index. For object pointers, apply "oObj", and for surface pointers, apply "oSurf"
+
+Examples: o->oFloatF4, o->oSurf10C
+
+s16 variables are also supported, and using them effectly can double the number of available members. The full list of s16 defines is:
+
+os16F4
+os16F6
+os16F8
+os16FA
+os16FC
+os16FE
+os16100
+os16102
+os16104
+os16106
+os16108
+os1610A
+os1610C
+os1610E
+os16110
+os16112*/
+
+#define /*0x0F4*/ oF4              OBJECT_FIELD_S32(0x1B)
+#define /*0x0F8*/ oF8              OBJECT_FIELD_S32(0x1C)
+#define /*0x0FC*/ oFC              OBJECT_FIELD_S32(0x1D)
+#define /*0x100*/ o100             OBJECT_FIELD_S32(0x1E)
+#define /*0x104*/ o104             OBJECT_FIELD_S32(0x1F)
+#define /*0x108*/ o108             OBJECT_FIELD_S32(0x20)
+#define /*0x10C*/ o10C             OBJECT_FIELD_S32(0x21)
+#define /*0x110*/ o110             OBJECT_FIELD_S32(0x22)
+
+
+#define /*0x0F4*/ oFloatF4         OBJECT_FIELD_F32(0x1B)
+#define /*0x0F8*/ oFloatF8         OBJECT_FIELD_F32(0x1C)
+#define /*0x0FC*/ oFloatFC         OBJECT_FIELD_F32(0x1D)
+#define /*0x100*/ oFloat100        OBJECT_FIELD_F32(0x1E)
+#define /*0x104*/ oFloat104        OBJECT_FIELD_F32(0x1F)
+#define /*0x108*/ oFloat108        OBJECT_FIELD_F32(0x20)
+#define /*0x10C*/ oFloat10C        OBJECT_FIELD_F32(0x21)
+#define /*0x110*/ oFloat110        OBJECT_FIELD_F32(0x22)
+
+#define /*0x0F4*/ oObjF4           OBJECT_FIELD_OBJ(0x1B)
+#define /*0x0F8*/ oObjF8           OBJECT_FIELD_OBJ(0x1C)
+#define /*0x0FC*/ oObjFC           OBJECT_FIELD_OBJ(0x1D)
+#define /*0x100*/ oObj100          OBJECT_FIELD_OBJ(0x1E)
+#define /*0x104*/ oObj104          OBJECT_FIELD_OBJ(0x1F)
+#define /*0x108*/ oObj108          OBJECT_FIELD_OBJ(0x20)
+#define /*0x10C*/ oObj10C          OBJECT_FIELD_OBJ(0x21)
+#define /*0x110*/ oObj110          OBJECT_FIELD_OBJ(0x22)
+
+#define /*0x0F4*/ oSurfF4           OBJECT_FIELD_SURFACE(0x1B)
+#define /*0x0F8*/ oSurfF8           OBJECT_FIELD_SURFACE(0x1C)
+#define /*0x0FC*/ oSurfFC           OBJECT_FIELD_SURFACE(0x1D)
+#define /*0x100*/ oSurf100          OBJECT_FIELD_SURFACE(0x1E)
+#define /*0x104*/ oSurf104          OBJECT_FIELD_SURFACE(0x1F)
+#define /*0x108*/ oSurf108          OBJECT_FIELD_SURFACE(0x20)
+#define /*0x10C*/ oSurf10C          OBJECT_FIELD_SURFACE(0x21)
+#define /*0x110*/ oSurf110          OBJECT_FIELD_SURFACE(0x22)
+
+#define /*0x0F4*/ os16F4              OBJECT_FIELD_S16(0x1B, 0)
+#define /*0x0F6*/ os16F6              OBJECT_FIELD_S16(0x1B, 1)
+#define /*0x0F8*/ os16F8              OBJECT_FIELD_S16(0x1C, 0)
+#define /*0x0FA*/ os16FA              OBJECT_FIELD_S16(0x1C, 1)
+#define /*0x0FC*/ os16FC              OBJECT_FIELD_S16(0x1D, 0)
+#define /*0x0FE*/ os16FE              OBJECT_FIELD_S16(0x1D, 1)
+#define /*0x100*/ os16100             OBJECT_FIELD_S16(0x1E, 0)
+#define /*0x102*/ os16102             OBJECT_FIELD_S16(0x1E, 1)
+#define /*0x104*/ os16104             OBJECT_FIELD_S16(0x1F, 0)
+#define /*0x106*/ os16106             OBJECT_FIELD_S16(0x1F, 1)
+#define /*0x108*/ os16108             OBJECT_FIELD_S16(0x20, 0)
+#define /*0x10A*/ os1610A             OBJECT_FIELD_S16(0x20, 1)
+#define /*0x10C*/ os1610C             OBJECT_FIELD_S16(0x21, 0)
+#define /*0x10E*/ os1610E             OBJECT_FIELD_S16(0x21, 1)
+#define /*0x110*/ os16110             OBJECT_FIELD_S16(0x22, 0)
+#define /*0x112*/ os16112             OBJECT_FIELD_S16(0x22, 1)
+
+
 #endif // OBJECT_FIELDS_H

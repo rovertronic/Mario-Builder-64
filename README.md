@@ -42,6 +42,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Added blake's custom function for object model stuff: `obj_set_model` and `obj_has_model`
 - Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins. **This is automatic now, you don't have to set WORLD_SCALE manually.**
 - The "far" variable has been turned into a u16, which allows you to increase the farclip (the maximum distance at which geometry gets rendered). However, when increasing the farclip, make sure to increase the nearclip by the same ratio, or the rendering will break on console and LLE plugins. 
+- Many general use defines for object struct members, meant for use in custom object behaviors. Check `object_fields.h` for more info on this. (By MrComit)
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 # UltraSM64
