@@ -11,6 +11,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - 46 degree wallkicks * 
 - Possibility of disabling BLJs *
 - Instant Input patch by Wiseguy (Removes all input lag caused by good emulators and plugins)
+  - The Intant Input patch means that you'll have to do your framebuffer effects on buffer 0 for emulator, but NOT for console. You can use the `gIsConsole` variable to check for console when doing your framebuffer effects.
 - pole fix
 - Hanging fix (mario can grab hangable ceilings from any state, instead of only jump or double jump) *
 - Mario head skip *
