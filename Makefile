@@ -42,6 +42,14 @@ COMPILER ?= gcc
 $(eval $(call validate-option,COMPILER,gcc))
 
 
+# LIBGCCDIR - selects the libgcc configuration for checking for dividing by zero
+#   trap - GCC default behavior, uses teq instructions which some emulators don't like
+#   divbreak - this is similar to IDO behavior, and is default.
+#   nocheck - never checks for dividing by 0. Technically fastest, but also UB so not recommended
+LIBGCCDIR ?= divbreak
+$(eval $(call validate-option,LIBGCCDIR,trap divbreak nocheck))
+
+
 # SAVETYPE - selects the save type
 #   eep4k - uses EEPROM 4kbit
 #   eep16k - uses EEPROM 16kbit (There aren't any differences in syntax, but this is provided just in case)
@@ -742,7 +750,7 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -Llib/gcclib/$(LIBGCCDIR) -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
 
 # Build ROM
 $(ROM): $(ELF)
