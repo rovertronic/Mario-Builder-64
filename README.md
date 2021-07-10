@@ -19,6 +19,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Rounded corners by FramePerfection, merged by Cheezepin
 
 **Common Hack Changes:**
+- Better extended boundaries by anonymous_moose
 - Mario head skip *
 - Peach letter cutscene skip *
 - Exit course while moving *
@@ -42,7 +43,6 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
-- better extended boundaries by anonymous_moose
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 - Instant warp offset fix (makes the instant warp offset work even when warping to a different area) *
 - haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
