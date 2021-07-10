@@ -13,7 +13,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Pole fix
 - Possibility of disabling BLJs *
 - Hanging fix (mario can grab hangable ceilings from any state, instead of only jump or double jump) *
-- - Increased maximum pole length (The game will read bparam1 and bparam2 together as a single value, so you can have a very long pole) *
+- Increased maximum pole length (The game will read bparam1 and bparam2 together as a single value, so you can have a very long pole) *
 - Platform Displacement 2 by Arthurtilly *
 - Water Surface Type patch by thecozies
 - Rounded corners by FramePerfection, merged by Cheezepin
