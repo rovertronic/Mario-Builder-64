@@ -5,7 +5,7 @@ This repo needs gcc in order to be able to build it. To install it, run `sudo ap
 
 This is a fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 
-**Collison:**
+**Collision:**
 - Slope fix and exposed ceilings fix
 - No false ledgegrabs fix * 
 - Jump kick fix * 
@@ -19,6 +19,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Rounded corners by FramePerfection, merged by Cheezepin
 
 **Common Hack Changes:**
+- Better extended boundaries by anonymous_moose
 - Mario head skip *
 - Peach letter cutscene skip *
 - Exit course while moving *
@@ -43,19 +44,18 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
-- better extended boundaries by anonymous_moose
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 - Instant warp offset fix (makes the instant warp offset work even when warping to a different area) *
 - haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
 - Tree particle fix (Whether a tree uses snow particles or not is decided via the model IDs instead of the course number)
 - Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins. *This is automatic now, you don't have to set WORLD_SCALE manually.*
+- A couple vanilla texture fixes
 
 **Neat Misc. Changes:**
 - Instant Input patch by Wiseguy (Removes all input lag caused by plugins supporting framebuffer)
   - This means that you'll have to do your framebuffer effects on buffer 0 for emulator, but NOT for console. You can use the `gIsConsole` variable to check for console when doing your framebuffer effects.
 - Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
 - S2DEX engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
-
 
 # UltraSM64
 
@@ -108,7 +108,6 @@ To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, d
 The repo also supports building a ROM with no compression.
 This is not recommended as it increases ROM size significantly, with little point other than load times decreased to almost nothing.
 To switch to no compression, run make with the ``COMPRESS=uncomp`` argument.
-
 
 ## FAQ
 
