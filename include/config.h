@@ -74,6 +74,8 @@
 #define JUMP_KICK_FIX
 // Allow Mario to grab hangable ceilings from any state
 #define HANGING_FIX
+// The last frame that will be considered a firsty when wallkicking
+#define FIRSTY_LAST_FRAME 1
 // 46 degree walkicks
 //#define WALLKICKS_46_DEGREES
 // Disable BLJs and crush SimpleFlips's dreams

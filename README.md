@@ -25,6 +25,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Toggle to disable fall damage and the fall damage sound *
 - Nonstop stars *
 - Removed course-specific camera processing *
+- You can increase the number of frames that you have to perform a firsty *
 
 **Hacker QOL:**
 - Global, non-level based, star IDs (off by default) *
