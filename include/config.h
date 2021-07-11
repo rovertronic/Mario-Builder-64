@@ -1,10 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-
+// ULTRASM64-EXTBOUNDS CONFIG FLAGS NEAR BOTTOM
 /**
  * @file config.h
- * A catch-all file for configuring various bugfixes and other settings
- * (maybe eventually) in SM64
+ * A catch-all file for configuring various bugfixes and other settings (maybe eventually) in SM64
  */
 
 // Bug Fixes
@@ -47,29 +46,55 @@
 
 #endif
 
-// --ultrasm64-extbounds specific settings--
-// Enable widescreen (16:9) support
-#define WIDE
-// When this option is enabled, LODs will ONLY work on console.
-// When this option is disabled, LODs will work regardless of whether console or emulator is used.
-// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
-#define AUTO_LOD
+// -- ultrasm64-extbounds specific settings --
+
+// COMMON HACK CHANGES
+// Disable lives and hide the lives counter
+#define DISABLE_LIVES
 // Skip peach letter cutscene
 #define PEACH_SKIP
 // Fixes the castle music sometimes triggering after getting a dialog
 #define CASTLE_MUSIC_FIX
 // Remove course specific camera processing
 #define CAMERA_FIX
+// Disables fall damage
+#define NO_FALL_DAMAGE
+// Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)
+//#define NO_FALL_DAMAGE_SOUND
+// Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
+#define X_COIN_STAR 100
+// Platform displacement 2 also known as momentum patch. Makes Mario keep the momemtum from moving platforms. Breaks treadmills.
+#define PLATFORM_DISPLACEMENT_2
+// Stars don't kick you out of the level
+// #define NON_STOP_STARS
+// Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
+//#define GLOBAL_STAR_IDS
+// Uncomment this if you want to skip the title screen (Super Mario 64 logo)
+//#define SKIP_TITLE_SCREEN
+// Uncomment this if you want to keep the mario head and not skip it
+//#define KEEP_MARIO_HEAD
+
+// HACKER QOL 
+// Enable widescreen (16:9) support
+#define WIDE
+// When this option is enabled, LODs will ONLY work on console.
+// When this option is disabled, LODs will work regardless of whether console or emulator is used.
+// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
+#define AUTO_LOD
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
-// Disable lives and hide the lives counter
-#define DISABLE_LIVES
 // Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
 #define DISABLE_AA
-// Fix instant warp offset not working when warping across different areas
-#define INSTANT_WARP_OFFSET_FIX
 // Allows Mario to ledgegrab sloped floors
 #define NO_FALSE_LEDGEGRABS
+// Number of possible unique model ID's (keep it higher than 256)
+#define MODEL_ID_COUNT 256
+
+// BUG/GAME QOL FIXES
+// Fix instant warp offset not working when warping across different areas
+#define INSTANT_WARP_OFFSET_FIX
+// Whether a tree uses snow particles or not is decided via the model IDs instead of the course number
+#define TREE_PARTICLE_FIX
 // Allows Mario to jump kick on steep surfaces that are set to be non slippery, instead of being forced to dive
 #define JUMP_KICK_FIX
 // Allow Mario to grab hangable ceilings from any state
@@ -80,16 +105,8 @@
 //#define WALLKICKS_46_DEGREES
 // Disable BLJs and crush SimpleFlips's dreams
 //#define DISABLE_BLJ
-// Disables fall damage
-#define NO_FALL_DAMAGE
-// Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)
-//#define NO_FALL_DAMAGE_SOUND
-// Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
-#define X_COIN_STAR 100
-// Platform displacement 2 also known as momentum patch. Makes Mario keep the momemtum from moving platforms. Breaks treadmills.
-#define PLATFORM_DISPLACEMENT_2
-// Whether a tree uses snow particles or not is decided via the model IDs instead of the course number
-#define TREE_PARTICLE_FIX
+
+// RELATING TO EXIT COURSE
 // Disable exit course
 //#define DISABLE_EXIT_COURSE
 // Decides whether you can exit course while moving (has no effect if you disable exit course)
@@ -100,16 +117,6 @@
 #define EXIT_COURSE_AREA 0x01
 // Decides the warp node "exit course" takes you to (has no effect if you disable exit course)
 #define EXIT_COURSE_NODE 0x1F
-// Stars don't kick you out of the level
-// #define NON_STOP_STARS
-// Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
-//#define GLOBAL_STAR_IDS
-// Uncomment this if you want to skip the title screen (Super Mario 64 logo)
-//#define SKIP_TITLE_SCREEN
-// Uncomment this if you want to keep the mario head and not skip it
-//#define KEEP_MARIO_HEAD
-// Number of possible unique model ID's (keep it higher than 256)
-#define MODEL_ID_COUNT 256
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 
