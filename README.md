@@ -50,12 +50,14 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Tree particle fix (Whether a tree uses snow particles or not is decided via the model IDs instead of the course number)
 - Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins. *This is automatic now, you don't have to set WORLD_SCALE manually.*
 - A couple vanilla texture fixes
+- Smoke fix (the smoke texture uses the correct texture format)
 
 **Neat Misc. Changes:**
 - Instant Input patch by Wiseguy (Removes all input lag caused by plugins supporting framebuffer)
   - This means that you'll have to do your framebuffer effects on buffer 0 for emulator, but NOT for console. You can use the `gIsConsole` variable to check for console when doing your framebuffer effects.
 - Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
 - S2DEX engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
+- ia8 coins (64x64), the vanilla coin texture is upgraded to accomodate.
 
 # UltraSM64
 
