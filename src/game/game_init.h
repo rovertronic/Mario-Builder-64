@@ -45,6 +45,7 @@ extern u8 gIsConsole;
 #ifdef WIDE
 extern u8 gWidescreen;
 #endif
+extern u8 gBorderHeight;
 #ifdef EEP
 extern s8 gEepromProbe;
 #endif
