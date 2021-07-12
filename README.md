@@ -41,6 +41,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - The "far" variable is now u16, allowing you to increase the farclip (the max distance at which geometry is rendered). However, when increasing the farclip, make sure to increase the nearclip by the same ratio, or rendering will break on console and LLE plugins. 
 - Many general use defines for object struct members, meant for use in custom object behaviors. Check `object_fields.h` for more info on this. (By MrComit)
 - Included `actors/group0.c` in `behavior_data.c`
+- The internal ROM name is now set with a define in `config.h` to make it simpler
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
