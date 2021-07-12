@@ -121,6 +121,11 @@
 // Decides the warp node "exit course" takes you to (has no effect if you disable exit course)
 #define EXIT_COURSE_NODE 0x1F
 
+// OTHER ENHANCEMENTS
+//Skybox size modifier, changing this will add support for larger skybox images. NOTE: Vanilla skyboxes may break if you change this option. Be sure to rescale them accordingly.
+//Whenever you change this, make sure to run "make -C tools clean" to rebuild the skybox tool (alternatively go into skyconv.c and change the file in any way (like adding/deleting a space) to specifically rebuild that tool).
+#define SKYBOX_SIZE 1
+
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 
 #endif // CONFIG_H
