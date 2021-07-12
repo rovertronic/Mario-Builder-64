@@ -1722,6 +1722,10 @@ void func_sh_8025574C(void) {
 s32 execute_mario_action(UNUSED struct Object *o) {
     s32 inLoop = TRUE;
 
+    if (gPlayer1Controller->buttonPressed & L_TRIG) {
+        gMarioState->pos[0] += 65536.0f;
+    }
+
     if (gMarioState->action) {
         gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         mario_reset_bodystate(gMarioState);

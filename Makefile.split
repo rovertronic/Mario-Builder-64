@@ -250,8 +250,8 @@ $(BUILD_DIR)/bin/eu/translation_fr.elf:  SEGMENT_ADDRESS := 0x19000000
 # --------------------------------------
 
 $(BUILD_DIR)/bin/%_skybox.c: textures/skyboxes/%.png
-	@$(PRINT) "$(GREEN)Splitting $(YELLOW)$< $(GREEN)to:  $(BLUE)$@ $(NO_COL)\n"
-	@$(SKYCONV) --type sky --split $^ $(BUILD_DIR)/bin
+	$(V)$(PRINT) "$(GREEN)Splitting $(YELLOW)$< $(GREEN)to:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(SKYCONV) --type sky --split $^ $(BUILD_DIR)/bin
 
 $(BUILD_DIR)/bin/%_skybox.elf: SEGMENT_ADDRESS := 0x0A000000
 

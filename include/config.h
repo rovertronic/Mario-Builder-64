@@ -108,6 +108,9 @@
 //#define KEEP_MARIO_HEAD
 // Number of possible unique model ID's (keep it higher than 256)
 #define MODEL_ID_COUNT 256
+//Skybox size modifier, changing this will add support for larger skybox images. NOTE: Vanilla skyboxes may break if you change this option. Be sure to rescale them accordingly.
+//Whenever you change this, make sure to run "make -C tools clean" to rebuild the skybox tool (alternatively go into skyconv.c and change the file in any way (like adding/deleting a space) to specifically rebuild that tool).
+#define SKYBOX_SIZE 1
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 
