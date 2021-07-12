@@ -36,13 +36,15 @@
 // Border Height Define for NTSC Versions
 #ifdef TARGET_N64
 #ifndef VERSION_EU
-#define BORDER_HEIGHT 8
+#define BORDER_HEIGHT_CONSOLE 8
+#define BORDER_HEIGHT_EMULATOR 0
 #else
-#define BORDER_HEIGHT 1
+#define BORDER_HEIGHT_CONSOLE 1
+#define BORDER_HEIGHT_EMULATOR 0
 #endif
 #else
-// What's the point of having a border?
-#define BORDER_HEIGHT 0
+#define BORDER_HEIGHT_CONSOLE 0
+#define BORDER_HEIGHT_EMULATOR 0
 #endif
 
 #endif // CONFIG_H
