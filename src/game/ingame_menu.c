@@ -1826,13 +1826,13 @@ void render_dialog_entries(void) {
         render_dialog_triangle_choice();
     }
     #ifdef VERSION_EU
-    #undef BORDER_HEIGHT
-    #define BORDER_HEIGHT 8
+    #undef gBorderHeight
+    #define gBorderHeight 8
     #endif
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, SCREEN_WIDTH - BORDER_HEIGHT/2, SCREEN_HEIGHT - BORDER_HEIGHT/2);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 2, 2, SCREEN_WIDTH - gBorderHeight/2, SCREEN_HEIGHT - gBorderHeight/2);
     #ifdef VERSION_EU
-    #undef BORDER_HEIGHT
-    #define BORDER_HEIGHT 1
+    #undef gBorderHeight
+    #define gBorderHeight 1
     #endif
     if (gLastDialogPageStrPos != -1 && gDialogBoxState == DIALOG_STATE_VERTICAL) {
         render_dialog_string_color(dialog->linesPerBox);
