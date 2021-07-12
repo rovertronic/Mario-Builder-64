@@ -72,7 +72,7 @@
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
-// Makes the coins ia8 64x64 instead of ia16 32x32. Uses new i8 textures so that vanilla coins look better.
+// Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
 #define IA8_COINS
 
 
