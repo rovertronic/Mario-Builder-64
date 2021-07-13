@@ -64,6 +64,10 @@
 #define CASTLE_MUSIC_FIX
 // Remove course specific camera processing
 #define CAMERA_FIX
+// Change the movement speed when hanging from a ceiling
+#define HANGING_SPEED 4.f
+// Makes Mario face the direction of the analog stick directly while hanging from a ceiling, without doing "semicircles"
+#define TIGHTER_HANGING_CONTROLS
 // Disables fall damage
 #define NO_FALL_DAMAGE
 // Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)

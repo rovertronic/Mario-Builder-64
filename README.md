@@ -27,6 +27,8 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Nonstop stars *
 - Removed course-specific camera processing *
 - You can increase the number of frames that you have to perform a firsty *
+- Ability to set Mario's movement speed when hanging from a ceiling *
+- Tighter hanging controls (mario will face the direction of the analog stick directly while hanging from a ceiling) *
 
 **Hacker QOL:**
 - Global, non-level based, star IDs (off by default) *

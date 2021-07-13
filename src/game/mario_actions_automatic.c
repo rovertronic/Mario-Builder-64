@@ -17,6 +17,8 @@
 #include "level_table.h"
 #include "rumble_init.h"
 
+#include "config.h"
+
 #define POLE_NONE          0
 #define POLE_TOUCHED_FLOOR 1
 #define POLE_FELL_OFF      2
@@ -345,7 +347,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
 s32 update_hang_moving(struct MarioState *m) {
     s32 stepResult;
     Vec3f nextPos;
-    f32 maxSpeed = 4.0f;
+    f32 maxSpeed = HANGING_SPEED;
 
     m->forwardVel += 1.0f;
     if (m->forwardVel > maxSpeed) {
@@ -353,7 +355,11 @@ s32 update_hang_moving(struct MarioState *m) {
     }
 
     m->faceAngle[1] =
+    #ifdef TIGHTER_HANGING_CONTROLS
+        m->intendedYaw;
+    #else
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
+    #endif
 
     m->slideYaw = m->faceAngle[1];
     m->slideVelX = m->forwardVel * sins(m->faceAngle[1]);
