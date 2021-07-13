@@ -386,8 +386,13 @@ void update_shell_speed(struct MarioState *m) {
         m->forwardVel = 64.0f;
     }
 
+#ifdef SUPER_RESPONSIVE_CONTROLS
+    m->faceAngle[1] = m->intendedYaw;
+#else
     m->faceAngle[1] =
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
+#endif
+
 
     apply_slope_accel(m);
 }
