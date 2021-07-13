@@ -41,6 +41,8 @@ struct GfxPool *gGfxPool;
 OSContStatus gControllerStatuses[4];
 OSContPad gControllerPads[4];
 u8 gControllerBits;
+u8 gIsConsole;
+u8 gBorderHeight;
 #ifdef EEP
 s8 gEepromProbe;
 #endif
