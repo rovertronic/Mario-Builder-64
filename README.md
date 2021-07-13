@@ -33,8 +33,8 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - FPS counter (use the function `print_fps(x,y)` anywhere that runs code every frame)
 - Automatic console/emulator detection. If emulator is detected, LODs are disabled. *
 - Ability to configure whether there's a 100 coin star at all and how many coins are required to spawn it *
-- Ability to easily change the warp that EXIT COURSE takes you to via config.h, or disable it entirely
-- 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol)
+- Ability to easily change the warp that EXIT COURSE takes you to via config.h, or disable it entirely. *
+- 16 bit model IDs by someone2639. This means you can have up to 65536 models (lol). You can set the maximum number of model IDs in `config.h`. 
 - Apply_patch.sh improved
 - Removed the ifdef hell in `file_select.c` and `ingame_menu.c`
 - Added Blake's custom function for object model stuff: `obj_set_model` and `obj_has_model`
@@ -43,14 +43,14 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Included `actors/group0.c` in `behavior_data.c`
 - The internal ROM name is now set with a define in `config.h` to make it simpler
 - There is a `gIsConsole` variable that is 1 when running on console and 0 when running on emulator. This way you can wrap your code in a console check.
-- Expanded audio heap allows for a larger concurrent note count and the importing of more m64 sequences and sound banks (By ArcticJaguar725)
+- Expanded audio heap allows for a larger concurrent note count and the importing of more m64 sequences and sound banks (By ArcticJaguar725) *
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
 - bparam4 fix (the game no longer uses bparam4 to check if an object is mario and therefore you can safely use it)
 - Instant warp offset fix (makes the instant warp offset work even when warping to a different area) *
 - haveyourcake, also known as cake screen fix. Made by Wiseguy and ported/PR'd by Cheezepin
-- Tree particle fix (Whether a tree uses snow particles or not is decided via the model IDs instead of the course number)
+- Tree particle fix (Whether a tree uses snow particles or not is decided via the model IDs instead of the course number) *
 - Coordinate overflow fix by falcobuster. Your levels will render correctly on console and LLE emulators even when using 2x or 4x bounds, while not hurting anything on HLE plugins. *This is automatic now, you don't have to set WORLD_SCALE manually.*
 - A couple vanilla texture fixes
 - Smoke fix (the smoke texture uses the correct texture format)
@@ -60,9 +60,9 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
   - This means that you'll have to do your framebuffer effects on buffer 0 for emulator, but NOT for console. You can use the `gIsConsole` variable to check for console when doing your framebuffer effects.
 - Widescreen (16:9) support toggleable by pressing `L` in the pause menu. *
 - S2DEX engine by someone2639! To use it, compile with `make TEXT_ENGINE=s2dex_text_engine` or just set `TEXT_ENGINE` to `s2dex_text_engine` in the makefile.
-- ia8 coins (64x64), the vanilla coin texture is upgraded to accomodate.
-- Skybox size modifier. You can have 2x, 3x and 4x size skyboxes (you can select the skybox size in `config.h`.) Please note that this might affect console performance, especially 4x mode. 2x or 3x mode is recommended if aiming for console. By CowQuack
-- You can set the black border size to different values for console and emulator. It's set to 0 by default for both.
+- ia8 coins (64x64), the vanilla coin texture is upgraded to accomodate. *
+- Skybox size modifier. You can have 2x, 3x and 4x size skyboxes (you can select the skybox size in `config.h`.) Please note that this might affect console performance, especially 4x mode. 2x or 3x mode is recommended if aiming for console. By CowQuack *
+- You can set the black border size to different values for console and emulator. It's set to 0 by default for both. *
 
 # UltraSM64
 
