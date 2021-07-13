@@ -22,6 +22,7 @@
 #include "engine/geo_layout.h"
 #include "save_file.h"
 #include "level_table.h"
+#include "dialog_ids.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -33,7 +34,7 @@ s16 gCurrCourseNum;
 s16 gCurrActNum;
 s16 gCurrAreaIndex;
 s16 gSavedCourseNum;
-s16 gPauseScreenMode;
+s16 gMenuOptSelectIndex;
 s16 gSaveOptSelectIndex;
 
 struct SpawnInfo *gMarioSpawnInfo = &gPlayerSpawnInfos[0];
@@ -197,8 +198,8 @@ void clear_areas(void) {
         gAreaData[i].unused28 = NULL;
         gAreaData[i].whirlpools[0] = NULL;
         gAreaData[i].whirlpools[1] = NULL;
-        gAreaData[i].dialog[0] = 255;
-        gAreaData[i].dialog[1] = 255;
+        gAreaData[i].dialog[0] = DIALOG_NONE;
+        gAreaData[i].dialog[1] = DIALOG_NONE;
         gAreaData[i].musicParam = 0;
         gAreaData[i].musicParam2 = 0;
     }
@@ -376,10 +377,10 @@ void render_game(void) {
         print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
-        gPauseScreenMode = render_menus_and_dialogs();
+        gMenuOptSelectIndex = render_menus_and_dialogs();
 
-        if (gPauseScreenMode != 0) {
-            gSaveOptSelectIndex = gPauseScreenMode;
+        if (gMenuOptSelectIndex != 0) {
+            gSaveOptSelectIndex = gMenuOptSelectIndex;
         }
 
         if (D_8032CE78 != NULL) {

@@ -253,7 +253,6 @@ SECTIONS
       ASSERT((. <= __expansionRamStart), "Error: RDRAM expanded into Expansion RAM, despite Expansion RAM not being defined.")
    #endif
 
-
    BEGIN_SEG(entry, 0x10000000)
    {
       BUILD_DIR/levels/entry.o(.data);
@@ -347,7 +346,6 @@ SECTIONS
    END_NOLOAD(goddard)
 
    ASSERT((. <= (SEG_POOL_START + POOL_SIZE)), "Error: extended past pool end.")
-
 
    /* 0x268020 0x268020-0 [0] */
    BEGIN_SEG(intro, 0x14000000)

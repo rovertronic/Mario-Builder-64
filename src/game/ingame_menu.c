@@ -89,14 +89,14 @@ f32 gDialogBoxOpenTimer = DEFAULT_DIALOG_BOX_ANGLE;
 f32 gDialogBoxScale = DEFAULT_DIALOG_BOX_SCALE;
 s16 gDialogScrollOffsetY = 0;
 s8 gDialogBoxType = DIALOG_TYPE_ROTATE;
-s16 gDialogID = -1;
+s16 gDialogID = DIALOG_NONE;
 s16 gLastDialogPageStrPos = 0;
 s16 gDialogTextPos = 0;
 s8 gDialogLineNum = 1;
 s8 gLastDialogResponse = 0;
 u8 gMenuHoldKeyIndex = 0;
 u8 gMenuHoldKeyTimer = 0;
-s32 gDialogResponse = 0;
+s32 gDialogResponse = DIALOG_RESPONSE_NONE;
 
 
 void create_dl_identity_matrix(void) {
@@ -184,6 +184,9 @@ void create_dl_ortho_matrix(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH)
 }
 
+#if !defined(VERSION_JP) && !defined(VERSION_SH)
+UNUSED
+#endif
 static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
     s32 inPos;
     u16 bitMask;
@@ -587,14 +590,14 @@ s16 get_dialog_id(void) {
 }
 
 void create_dialog_box(s16 dialog) {
-    if (gDialogID == -1) {
+    if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogBoxType = DIALOG_TYPE_ROTATE;
     }
 }
 
 void create_dialog_box_with_var(s16 dialog, s32 dialogVar) {
-    if (gDialogID == -1) {
+    if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogVariable = dialogVar;
         gDialogBoxType = DIALOG_TYPE_ROTATE;
@@ -602,14 +605,14 @@ void create_dialog_box_with_var(s16 dialog, s32 dialogVar) {
 }
 
 void create_dialog_inverted_box(s16 dialog) {
-    if (gDialogID == -1) {
+    if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogBoxType = DIALOG_TYPE_ZOOM;
     }
 }
 
 void create_dialog_box_with_response(s16 dialog) {
-    if (gDialogID == -1) {
+    if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogBoxType = DIALOG_TYPE_ROTATE;
         gLastDialogResponse = 1;
@@ -626,11 +629,11 @@ void reset_dialog_render_state(void) {
     gDialogBoxScale = 19.0f;
     gDialogBoxOpenTimer = 90.0f;
     gDialogBoxState = DIALOG_STATE_OPENING;
-    gDialogID = -1;
+    gDialogID = DIALOG_NONE;
     gDialogTextPos = 0;
     gLastDialogResponse = 0;
     gLastDialogPageStrPos = 0;
-    gDialogResponse = 0;
+    gDialogResponse = DIALOG_RESPONSE_NONE;
 }
 
 #define X_VAL1 -7.0f
@@ -926,18 +929,18 @@ void render_dialog_string_color(s8 linesPerBox) {
 
 void handle_special_dialog_text(s16 dialogID) { // dialog ID tables, in order
     // King Bob-omb (Start), Whomp (Start), King Bob-omb (throw him out), Eyerock (Start), Wiggler (Start)
-    s16 dialogBossStart[] = { 17, 114, 128, 117, 150 };
+    s16 dialogBossStart[] = { DIALOG_017, DIALOG_114, DIALOG_128, DIALOG_117, DIALOG_150 };
     // Koopa the Quick (BOB), Koopa the Quick (THI), Penguin Race, Fat Penguin Race (120 stars)
-    s16 dialogRaceSound[] = { 5, 9, 55, 164 };
+    s16 dialogRaceSound[] = { DIALOG_005, DIALOG_009, DIALOG_055, DIALOG_164 };
     // Red Switch, Green Switch, Blue Switch, 100 coins star, Bowser Red Coin Star
-    s16 dialogStarSound[] = { 10, 11, 12, 13, 14 };
+    s16 dialogStarSound[] = { DIALOG_010, DIALOG_011, DIALOG_012, DIALOG_013, DIALOG_014 };
     // King Bob-omb (Start), Whomp (Defeated), King Bob-omb (Defeated, missing in JP), Eyerock (Defeated), Wiggler (Defeated)
 #if BUGFIX_KING_BOB_OMB_FADE_MUSIC
-    s16 dialogBossStop[] = { 17, 115, 116, 118, 152 };
+    s16 dialogBossStop[] = { DIALOG_017, DIALOG_115, DIALOG_116, DIALOG_118, DIALOG_152 };
 #else
-    //! @bug JP misses King Bob-omb defeated dialog "116", meaning that the boss music will still
+    //! @bug JP misses King Bob-omb defeated DIALOG_116, meaning that the boss music will still
     //! play after King Bob-omb is defeated until BOB loads it's music after the star cutscene
-    s16 dialogBossStop[] = { 17, 115, 118, 152 };
+    s16 dialogBossStop[] = { DIALOG_017, DIALOG_115, DIALOG_118, DIALOG_152 };
 #endif
     s16 i;
 
@@ -971,7 +974,7 @@ void handle_special_dialog_text(s16 dialogID) { // dialog ID tables, in order
     }
 }
 
-s16 gMenuMode = -1;
+s16 gMenuMode = MENU_MODE_NONE;
 
 u8 gEndCutsceneStrEn0[] = { TEXT_FILE_MARIO_EXCLAMATION };
 u8 gEndCutsceneStrEn1[] = { TEXT_POWER_STARS_RESTORED };
@@ -1023,7 +1026,7 @@ void render_dialog_entries(void) {
 
     // if the dialog entry is invalid, set the ID to -1.
     if (segmented_to_virtual(NULL) == dialog) {
-        gDialogID = -1;
+        gDialogID = DIALOG_NONE;
         return;
     }
 
@@ -1091,11 +1094,11 @@ void render_dialog_entries(void) {
 
             if (gDialogBoxOpenTimer == DEFAULT_DIALOG_BOX_ANGLE) {
                 gDialogBoxState = DIALOG_STATE_OPENING;
-                gDialogID = -1;
+                gDialogID = DIALOG_NONE;
                 gDialogTextPos = 0;
                 gLastDialogResponse = 0;
                 gLastDialogPageStrPos = 0;
-                gDialogResponse = 0;
+                gDialogResponse = DIALOG_RESPONSE_NONE;
             }
             lowerBound = 1;
             break;
@@ -1130,7 +1133,7 @@ void render_dialog_entries(void) {
 
 // Calls a gMenuMode value defined by render_menus_and_dialogs cases
 void set_menu_mode(s16 mode) {
-    if (gMenuMode == -1) {
+    if (gMenuMode == MENU_MODE_NONE) {
         gMenuMode = mode;
     }
 }
@@ -1305,7 +1308,7 @@ void print_peach_letter_message(void) {
     if (gCutsceneMsgTimer > (PEACH_MESSAGE_TIMER + 20)) {
         gCutsceneMsgIndex = -1;
         gCutsceneMsgFade = 0; //! uselessly reset since the next execution will just set it to 0 again.
-        gDialogID = -1;
+        gDialogID = DIALOG_NONE;
         gCutsceneMsgTimer = 0;
         return; // return to avoid incrementing the timer
     }
@@ -1507,17 +1510,17 @@ void render_pause_camera_options(s16 x, s16 y, s8 *index, s16 xIndex) {
     print_generic_string(x + TXT2_X, y - 13, textNormalFixed);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    create_dl_translation_matrix(MENU_MTX_PUSH, ((index[0] - 1) * xIndex) + x, y + Y_VAL7, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, ((*index - 1) * xIndex) + x, y + Y_VAL7, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    switch (index[0]) {
-        case 1:
-            cam_select_alt_mode(1);
+    switch (*index) {
+        case CAM_SELECTION_MARIO:
+            cam_select_alt_mode(CAM_SELECTION_MARIO);
             break;
-        case 2:
-            cam_select_alt_mode(2);
+        case CAM_SELECTION_FIXED:
+            cam_select_alt_mode(CAM_SELECTION_FIXED);
             break;
     }
 }
@@ -1538,18 +1541,18 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
     print_generic_string(x + 10, y - 2, textContinue);
     print_generic_string(x + 10, y - 17, textExitCourse);
 
-    if (index[0] != 3) {
+    if (*index != MENU_OPT_CAMERA_ANGLE_R) {
         print_generic_string(x + 10, y - 33, textCameraAngleR);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-        create_dl_translation_matrix(MENU_MTX_PUSH, x - X_VAL8, (y - ((index[0] - 1) * yIndex)) - Y_VAL8, 0);
+        create_dl_translation_matrix(MENU_MTX_PUSH, x - X_VAL8, (y - ((*index - 1) * yIndex)) - Y_VAL8, 0);
 
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
         gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 
-    if (index[0] == 3) {
+    if (*index == MENU_OPT_CAMERA_ANGLE_R) {
         render_pause_camera_options(x - 42, y - 42, &gDialogCameraAngleIndex, 110);
     }
 }
@@ -1719,12 +1722,12 @@ s32 gCourseCompleteCoins = 0;
 s8 gHudFlash = 0;
 
 s16 render_pause_courses_and_castle(void) {
-    s16 num;
+    s16 index;
 
 
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
-            gDialogLineNum = 1;
+            gDialogLineNum = MENU_OPT_DEFAULT;
             gDialogTextAlpha = 0;
             level_set_transition(-1, NULL);
             play_sound(SOUND_MENU_PAUSE_HIGHPRIO, gGlobalSoundSource);
@@ -1762,15 +1765,15 @@ s16 render_pause_courses_and_castle(void) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
-                gMenuMode = -1;
+                gMenuMode = MENU_MODE_NONE;
 
-                if (gDialogLineNum == 2) {
-                    num = gDialogLineNum;
-                } else {
-                    num = 1;
+                if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
+                    index = gDialogLineNum;
+                } else { // MENU_OPT_CONTINUE or MENU_OPT_CAMERA_ANGLE_R
+                    index = MENU_OPT_DEFAULT;
                 }
 
-                return num;
+                return index;
             }
             break;
         case DIALOG_STATE_HORIZONTAL:
@@ -1784,10 +1787,10 @@ s16 render_pause_courses_and_castle(void) {
             {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
-                gMenuMode = -1;
+                gMenuMode = MENU_MODE_NONE;
                 gDialogBoxState = DIALOG_STATE_OPENING;
 
-                return 1;
+                return MENU_OPT_DEFAULT;
             }
             break;
     }
@@ -1796,7 +1799,7 @@ s16 render_pause_courses_and_castle(void) {
         gDialogTextAlpha += 25;
     }
 
-    return 0;
+    return MENU_OPT_NONE;
 }
 
 #define TXT_HISCORE_X 109
@@ -1967,7 +1970,7 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 sp6e)
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, X_VAL9, y - ((index[0] - 1) * sp6e), 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, X_VAL9, y - ((*index - 1) * sp6e), 0);
 
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
@@ -1976,7 +1979,10 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 sp6e)
 }
 
 s16 render_course_complete_screen(void) {
-    s16 num;
+    s16 index;
+#ifdef VERSION_EU
+    gInGameLanguage = eu_get_language();
+#endif
 
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
@@ -1985,7 +1991,7 @@ s16 render_course_complete_screen(void) {
                 gDialogBoxState = DIALOG_STATE_VERTICAL;
                 level_set_transition(-1, NULL);
                 gDialogTextAlpha = 0;
-                gDialogLineNum = 1;
+                gDialogLineNum = MENU_OPT_DEFAULT;
             }
             break;
         case DIALOG_STATE_VERTICAL:
@@ -2000,14 +2006,14 @@ s16 render_course_complete_screen(void) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
-                gMenuMode = -1;
-                num = gDialogLineNum;
+                gMenuMode = MENU_MODE_NONE;
+                index = gDialogLineNum;
                 gCourseDoneMenuTimer = 0;
                 gCourseCompleteCoins = 0;
                 gCourseCompleteCoinsEqual = 0;
                 gHudFlash = 0;
 
-                return num;
+                return index;
             }
             break;
     }
@@ -2018,41 +2024,40 @@ s16 render_course_complete_screen(void) {
 
     gCourseDoneMenuTimer++;
 
-    return 0;
+    return MENU_OPT_NONE;
 }
 
-// Only case 1 and 2 are used
 s16 render_menus_and_dialogs(void) {
-    s16 mode = 0;
+    s16 index = MENU_OPT_NONE;
 
     create_dl_ortho_matrix();
 
-    if (gMenuMode != -1) {
+    if (gMenuMode != MENU_MODE_NONE) {
         switch (gMenuMode) {
-            case 0:
-                mode = render_pause_courses_and_castle();
+            case MENU_MODE_UNUSED_0:
+                index = render_pause_courses_and_castle();
                 break;
-            case 1:
-                mode = render_pause_courses_and_castle();
+            case MENU_MODE_RENDER_PAUSE_SCREEN:
+                index = render_pause_courses_and_castle();
                 break;
-            case 2:
-                mode = render_course_complete_screen();
+            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+                index = render_course_complete_screen();
                 break;
-            case 3:
-                mode = render_course_complete_screen();
+            case MENU_MODE_UNUSED_3:
+                index = render_course_complete_screen();
                 break;
         }
 
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
-    } else if (gDialogID != -1) {
+    } else if (gDialogID != DIALOG_NONE) {
         // The Peach "Dear Mario" message needs to be repositioned separately
-        if (gDialogID == 20) {
+        if (gDialogID == DIALOG_020) {
             print_peach_letter_message();
-            return mode;
+            return index;
         }
 
         render_dialog_entries();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     }
-    return mode;
+    return index;
 }
