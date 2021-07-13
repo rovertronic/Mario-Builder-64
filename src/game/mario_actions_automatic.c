@@ -563,8 +563,8 @@ s32 act_ledge_grab(struct MarioState *m) {
         return set_mario_action(m, ACT_LEDGE_CLIMB_FAST, 0);
     }
 
-    if (m->input & INPUT_UNKNOWN_10) {
-        if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_UNK1) {
+    if (m->input & INPUT_STOMPED) {
+        if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_KNOCKBACK_DMG) {
             m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18;
         }
         return let_go_of_ledge(m);

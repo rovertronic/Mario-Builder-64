@@ -16,4 +16,4 @@ $(BUILD_DIR)/%.szp: $(BUILD_DIR)/%.gz
 # convert binary szp to object file
 $(BUILD_DIR)/%.szp.o: $(BUILD_DIR)/%.szp
 	$(call print,Converting GZIP to ELF:,$<,$@)
-	$(V)printf ".section .data\n\n.incbin \"$<\"\n" | $(AS) $(ASFLAGS) -o $@
+	$(V)$(LD) -r -b binary $< -o $@

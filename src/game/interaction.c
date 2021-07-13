@@ -336,7 +336,7 @@ void mario_stop_riding_and_holding(struct MarioState *m) {
     mario_stop_riding_object(m);
 
     if (m->action == ACT_RIDING_HOOT) {
-        m->usedObj->oInteractStatus = 0;
+        m->usedObj->oInteractStatus = FALSE;
         m->usedObj->oHootMarioReleaseTime = gGlobalTimer;
     }
 }
@@ -526,7 +526,7 @@ void hit_object_from_below(struct MarioState *m, UNUSED struct Object *o) {
     set_camera_shake_from_hit(SHAKE_HIT_FROM_BELOW);
 }
 
-static u32 unused_determine_knockback_action(struct MarioState *m) {
+UNUSED static u32 unused_determine_knockback_action(struct MarioState *m) {
     u32 bonkAction;
     s16 angleToObject = mario_obj_angle_to_object(m, m->interactObj);
     s16 facingDYaw = angleToObject - m->faceAngle[1];
@@ -1100,7 +1100,7 @@ u32 interact_tornado(struct MarioState *m, UNUSED u32 interactType, struct Objec
         marioObj->oMarioTornadoPosY = m->pos[1] - o->oPosY;
 
         play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
         queue_rumble_data(30, 60);
 #endif
         return set_mario_action(m, ACT_TORNADO_TWIRLING, m->action == ACT_TWIRLING);
@@ -1301,7 +1301,7 @@ u32 interact_shock(struct MarioState *m, UNUSED u32 interactType, struct Object 
     return FALSE;
 }
 
-static u32 interact_stub(UNUSED struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
+UNUSED static u32 interact_stub(UNUSED struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     if (!(o->oInteractionSubtype & INT_SUBTYPE_DELAY_INVINCIBILITY)) {
         sDelayInvincTimer = TRUE;
     }
@@ -1564,7 +1564,8 @@ u32 interact_hoot(struct MarioState *m, UNUSED u32 interactType, struct Object *
     if (actionId >= 0x080 && actionId < 0x098
         && (gGlobalTimer - m->usedObj->oHootMarioReleaseTime > 30)) {
         mario_stop_riding_and_holding(m);
-        o->oInteractStatus = INT_STATUS_HOOT_GRABBED_BY_MARIO;
+
+        o->oInteractStatus = TRUE; //! Note: Not a flag, treated as a TRUE/FALSE statement
         m->interactObj = o;
         m->usedObj = o;
 
@@ -1781,7 +1782,7 @@ void mario_process_interactions(struct MarioState *m) {
 
     if (!(m->action & ACT_FLAG_INTANGIBLE) && m->collidedObjInteractTypes != 0) {
         s32 i;
-        for (i = 0; i < 31; i++) {
+        for (i = 0; i < ARRAY_COUNT(sInteractionHandlers); i++) {
             u32 interactType = sInteractionHandlers[i].interactType;
             if (m->collidedObjInteractTypes & interactType) {
                 struct Object *object = mario_get_collided_object(m, interactType);

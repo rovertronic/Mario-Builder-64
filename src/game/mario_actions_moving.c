@@ -1955,7 +1955,7 @@ s32 check_common_moving_cancels(struct MarioState *m) {
         return set_water_plunge_action(m);
     }
 
-    if (!(m->action & ACT_FLAG_INVULNERABLE) && (m->input & INPUT_UNKNOWN_10)) {
+    if (!(m->action & ACT_FLAG_INVULNERABLE) && (m->input & INPUT_STOMPED)) {
         return drop_and_set_mario_action(m, ACT_SHOCKWAVE_BOUNCE, 0);
     }
 

@@ -14,22 +14,23 @@
 .word  0x00000000               /* Checksum 2 */
 .word  0x00000000               /* Unknown */
 .word  0x00000000               /* Unknown */
-.if VERSION_SH == 1
+#ifdef VERSION_SH
 .ascii "SUPERMARIO64        "   /* Internal ROM name */
-.else
+#else
 .ascii "SUPER MARIO 64      "   /* Internal ROM name */
-.endif
+#endif
 .word  0x00000000               /* Unknown */
 .word  0x0000004E               /* Cartridge */
 .ascii "SM"                     /* Cartridge ID */
 
 /* Region */
-.if VERSION_US == 1
-    .ascii "E"                  /* NTSC-U (North America) */
-.elseif (VERSION_JP == 1 || VERSION_SH == 1)
-    .ascii "J"                  /* NTSC-J (Japan) */
-.else
+#ifdef VERSION_EU
     .ascii "P"                  /* PAL (Europe) */
-.endif
+#elif defined(VERSION_US)
+    .ascii "E"                  /* NTSC-U (North America) */
+#else
+    .ascii "J"                  /* NTSC-J (Japan) */
+#endif
+
 
     .byte  0x00                 /* Version */
