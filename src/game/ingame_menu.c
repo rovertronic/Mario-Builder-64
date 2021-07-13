@@ -1743,13 +1743,8 @@ s16 render_pause_courses_and_castle(void) {
             render_pause_red_coins();
         #ifdef WIDE
         if (gPlayer1Controller->buttonPressed & L_TRIG){
-                if (!gWidescreen){
-                    gWidescreen = 1;
-                }
-                else{
-                    gWidescreen = 0;
-                }
-            }
+            gWidescreen ^= 1;
+        }
         #endif
         #ifndef EXIT_COURSE_WHILE_MOVING
             s32 exitCheck = gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT;
