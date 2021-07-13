@@ -43,6 +43,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Included `actors/group0.c` in `behavior_data.c`
 - The internal ROM name is now set with a define in `config.h` to make it simpler
 - There is a `gIsConsole` variable that is 1 when running on console and 0 when running on emulator. This way you can wrap your code in a console check.
+- Expanded audio heap allows for a larger concurrent note count and the importing of more m64 sequences and sound banks (By ArcticJaguar725)
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *

@@ -2,6 +2,7 @@
 #include <hvqm2dec.h>
 
 #include "buffers.h"
+#include "audio/data.h"
 #ifdef HVQM
 #include <hvqm/hvqm.h>
 #endif
@@ -9,11 +10,11 @@
 
 ALIGNED8 u8 gDecompressionHeap[0xD000];
 #if defined(VERSION_EU)
-ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200) - 0x3800];
+ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE) - 0x3800];
 #elif defined(VERSION_SH)
-ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200) - 0x4800];
+ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE) - 0x4800];
 #else
-ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200)];
+ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE)];
 #endif
 
 ALIGNED8 u8 gIdleThreadStack[0x800];

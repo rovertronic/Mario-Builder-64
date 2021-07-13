@@ -91,6 +91,8 @@
 #define NO_FALSE_LEDGEGRABS
 // Number of possible unique model ID's (keep it higher than 256)
 #define MODEL_ID_COUNT 256
+// Increase audio heap size to allow for more concurrent notes to be played and for more custom sequences/banks to be imported (does nothing with EU and SH versions)
+#define EXPAND_AUDIO_HEAP
 
 // BUG/GAME QOL FIXES
 // Fix instant warp offset not working when warping across different areas
