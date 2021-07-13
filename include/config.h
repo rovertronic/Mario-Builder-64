@@ -35,24 +35,11 @@
 
 // Border Height Define for NTSC Versions
 #ifdef TARGET_N64
-<<<<<<< HEAD
 // Size of the black border at the top and bottom of the screen. You can set it to different values for console and emulator.
 // There is generally no reason to have a value other than 0 for emulator. As for console, it provides a (small) performance boost.
 #define BORDER_HEIGHT_CONSOLE 0
 #define BORDER_HEIGHT_EMULATOR 0
 
-=======
-#ifndef VERSION_EU
-#define BORDER_HEIGHT_CONSOLE 8
-#define BORDER_HEIGHT_EMULATOR 0
-#else
-#define BORDER_HEIGHT_CONSOLE 1
-#define BORDER_HEIGHT_EMULATOR 0
-#endif
-#else
-#define BORDER_HEIGHT_CONSOLE 0
-#define BORDER_HEIGHT_EMULATOR 0
->>>>>>> 225c1eef55c40d77f3ec9991248fefd390c788d8
 #endif
 
 // -- ultrasm64-extbounds specific settings --

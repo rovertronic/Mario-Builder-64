@@ -74,13 +74,10 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Newer compression options are supported.
 - UNFLoader (flashcart USB library) is supported, allowing for debugging on EverDrive/64Drive.
 - It has been patched with someone2639's shiftable segments patch
-<<<<<<< HEAD
-=======
 - Wiseguy's instant input patch has been added to allow for less input lag on emulation (Does not affect console)
   This does mean that any framebuffer effects will have to be done on buffer 0 if targeting emulators
 - Automatic console and emulator detection: Use the `gIsConsole` variable to wrap your code in an emulator check.
 - Separate defines for emulator and console black border height.
->>>>>>> 225c1eef55c40d77f3ec9991248fefd390c788d8
 - Getting HVQM FMV support to work with the game is WIP.
 
 Requirements are the same as regular SM64, however a GCC MIPS cross compiler is also required. If you're on Debian-like Linux, you can use the ``gcc-mips-linux-gnu`` package. The toolchain that comes with my SDK is also supported.
