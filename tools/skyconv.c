@@ -118,15 +118,18 @@ static void split_tile(int col, int row, rgba *image, bool expanded) {
         for (int x = 0; x < tileWidth; x++) {
             int ny = row * tileHeight + y;
             int nx = col * tileWidth + x;
-            if (nx < imageWidth && ny < imageHeight)
-            {
+            if(type == CakeEU) {
                 tiles[row * numCols + col].px[y * expandedWidth + x] = image[(ny * imageWidth + nx)];
+            } else {
+                if (nx < imageWidth && ny < imageHeight)
+                {
+                    tiles[row * numCols + col].px[y * expandedWidth + x] = image[(ny * imageWidth + nx)];
+                }
+                else
+                {
+                    tiles[row * numCols + col].px[y * expandedWidth + x] = black;
+                }
             }
-            else
-            {
-                tiles[row * numCols + col].px[y * expandedWidth + x] = black;
-            }
-            
         }
     }
 }
@@ -345,19 +348,24 @@ static void write_cake_c() {
 
     FILE *cFile = fopen(buffer, "w");
 
-    const char *euSuffx = "";
+    int numTiles = TABLE_DIMENSIONS[type].cols * TABLE_DIMENSIONS[type].rows;
+
     if (type == CakeEU) {
-        euSuffx = "eu_";
+        for (int i = 0; i < numTiles; ++i) {
+            fprintf(cFile, "ALIGNED8 static const Texture cake_end_texture_eu_%d[] = {\n", i);
+            print_raw_data(cFile, &tiles[i]);
+            fputs("};\n\n", cFile);
+        }
+    } else {
+        fprintf(cFile, "ALIGNED8 static const u8 cake_end_texture_data[] = {\n");
+        for (int i = 0; i < numTiles; ++i) {
+            print_raw_data(cFile, &tiles[i]);
+            fputc(',', cFile);
+            fputc('\n', cFile);
+        }
+        fputs("};\n\n", cFile);
     }
 
-    int numTiles = TABLE_DIMENSIONS[type].cols * TABLE_DIMENSIONS[type].rows;
-    fprintf(cFile, "ALIGNED8 static const Texture cake_end_texture_%sdata[] = {\n", euSuffx);
-    for (int i = 0; i < numTiles; ++i) {
-        print_raw_data(cFile, &tiles[i]);
-        fputc(',', cFile);
-        fputc('\n', cFile);
-    }
-    fputs("};\n\n", cFile);
     fclose(cFile);
 }
 

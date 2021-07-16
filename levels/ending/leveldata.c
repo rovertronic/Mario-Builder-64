@@ -200,6 +200,7 @@ static const Gfx dl_cake_end_eu_070296D8[] = {
     gsSPEndDisplayList(),
 };
 
+#ifndef EU_CUSTOM_CAKE_FIX
 // 0x070296F8 - 0x07029768
 const Gfx dl_cake_end_screen_eu_070296F8[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, cake_end_texture_eu_38),
@@ -241,6 +242,13 @@ const Gfx dl_cake_end_screen_eu_070297D8[] = {
     gsSPDisplayList(dl_cake_end_eu_070296D8),
     gsSPEndDisplayList(),
 };
+
+#else
+const Gfx dl_cake_end_screen_eu_fix[] = {
+    gsSPDisplayList(dl_cake_end_eu_070296D8),
+    gsSPEndDisplayList(),
+};
+#endif
 
 // VERSION_EU
 #else
