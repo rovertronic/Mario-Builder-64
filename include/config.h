@@ -30,6 +30,8 @@
 #define BUGFIX_BOWSER_FALLEN_OFF_STAGE (0 || VERSION_US || VERSION_EU || VERSION_SH)
 /// Fixes bug where Bowser would look weird while fading out
 #define BUGFIX_BOWSER_FADING_OUT (0 || VERSION_US || VERSION_EU || VERSION_SH)
+/// Removes multi-language cake screen
+#define EU_CUSTOM_CAKE_FIX 1
 
 // Support Rumble Pak
 #define ENABLE_RUMBLE (1 || VERSION_SH)
