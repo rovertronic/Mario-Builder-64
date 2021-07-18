@@ -58,9 +58,9 @@ struct MainMenuSaveData
     // the older the high score is. This is used for tie-breaking when displaying
     // on the high score screen.
     u32 coinScoreAges[NUM_SAVE_FILES];
-    u16 soundMode;
+    u16 soundMode: 2;
 #ifdef WIDE
-    u8 wideMode;
+    u8 wideMode: 1;
 #endif
 
 #ifdef VERSION_EU
