@@ -394,7 +394,8 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
     UNUSED s32 unused;
-    s16 targetAngle, startAngle;
+    s16 targetAngle = 0;
+    s16 startAngle;
 
     switch (angleIndex) {
         case O_MOVE_ANGLE_PITCH_INDEX:
@@ -1825,7 +1826,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     }
 }
 
-static s32 cur_obj_within_12k_bounds(void) {
+UNUSED static s32 cur_obj_within_12k_bounds(void) {
     if (o->oPosX < -12000.0f || 12000.0f < o->oPosX) {
         return FALSE;
     }

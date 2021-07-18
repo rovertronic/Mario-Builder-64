@@ -492,7 +492,7 @@ void warp_level(void) {
 }
 
 void warp_credits(void) {
-    s32 marioAction;
+    s32 marioAction = 0;
 
     switch (sWarpDest.nodeId) {
         case WARP_NODE_CREDITS_START:
@@ -1144,7 +1144,7 @@ UNUSED static s32 play_mode_unused(void) {
 }
 
 s32 update_level(void) {
-    s32 changeLevel;
+    s32 changeLevel = FALSE;
 
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:

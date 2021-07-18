@@ -1564,8 +1564,11 @@ void bowser_free_update(void) {
     struct Object *platform;
     UNUSED f32 floorHeight;
 #ifdef PLATFORM_DISPLACEMENT_2
+    s16 tmpOFaceAngleYaw = (s16) o->oFaceAngleYaw;
     if ((platform = o->platform) != NULL) {
-        apply_platform_displacement(&sBowserDisplacementInfo, &o->oPosX, &o->oFaceAngleYaw, platform);
+        // NOTE: This function was at one point using '&o->oFaceAngleYaw', which is a s32 address. Should tmpOFaceAngleYaw be using the first 16 bits instead, or was that a bug?
+        apply_platform_displacement(&sBowserDisplacementInfo, &o->oPosX, &tmpOFaceAngleYaw, platform);
+        o->oFaceAngleYaw = tmpOFaceAngleYaw;
     }
 #else
     if ((platform = o->platform) != NULL) {

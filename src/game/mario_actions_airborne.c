@@ -61,9 +61,11 @@ s32 lava_boost_on_wall(struct MarioState *m) {
 }
 
 s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
-#ifndef NO_FALL_DAMAGE
     f32 fallHeight;
     f32 damageHeight;
+#ifdef NO_FALL_DAMAGE
+    return FALSE;
+#endif
 
     fallHeight = m->peakHeight - m->pos[1];
 
@@ -104,7 +106,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
             }
         }
     }
-#endif
+
     return FALSE;
 }
 
@@ -526,7 +528,7 @@ s32 act_backflip(struct MarioState *m) {
 }
 
 s32 act_freefall(struct MarioState *m) {
-    s32 animation;
+    s32 animation = 0;
 
     if (m->input & INPUT_B_PRESSED) {
         return set_mario_action(m, ACT_DIVE, 0);
@@ -1034,7 +1036,7 @@ s32 act_burning_fall(struct MarioState *m) {
 }
 
 s32 act_crazy_box_bounce(struct MarioState *m) {
-    f32 minSpeed;
+    f32 minSpeed = 0.0f;
 
     if (m->actionTimer == 0) {
         switch (m->actionArg) {
@@ -2069,7 +2071,7 @@ s32 check_common_airborne_cancels(struct MarioState *m) {
 }
 
 s32 mario_execute_airborne_action(struct MarioState *m) {
-    u32 cancel;
+    u32 cancel = FALSE;
 
     if (check_common_airborne_cancels(m)) {
         return TRUE;

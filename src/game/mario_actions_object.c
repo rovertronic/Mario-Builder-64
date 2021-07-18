@@ -37,7 +37,7 @@ s32 mario_update_punch_sequence(struct MarioState *m) {
     switch (m->actionArg) {
         case 0:
             play_sound(SOUND_MARIO_PUNCH_YAH, m->marioObj->header.gfx.cameraToObject);
-            // Fall-through:
+            // fall through
         case 1:
             set_mario_animation(m, MARIO_ANIM_FIRST_PUNCH);
             if (is_anim_past_end(m)) {
@@ -77,7 +77,7 @@ s32 mario_update_punch_sequence(struct MarioState *m) {
 
         case 3:
             play_sound(SOUND_MARIO_PUNCH_WAH, m->marioObj->header.gfx.cameraToObject);
-            // Fall-through:
+            // fall through
         case 4:
             set_mario_animation(m, MARIO_ANIM_SECOND_PUNCH);
             if (is_anim_past_end(m)) {
@@ -456,7 +456,7 @@ s32 check_common_object_cancels(struct MarioState *m) {
 }
 
 s32 mario_execute_object_action(struct MarioState *m) {
-    s32 cancel;
+    s32 cancel = FALSE;
 
     if (check_common_object_cancels(m)) {
         return TRUE;

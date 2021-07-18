@@ -595,7 +595,7 @@ u32 get_area_terrain_size(s16 *data) {
  */
 void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects) {
     s16 terrainLoadType;
-    s16 *vertexData;
+    s16 *vertexData = NULL;
     UNUSED s32 unused;
 
     // Initialize the data for this.
