@@ -1408,7 +1408,23 @@ void render_pause_red_coins(void) {
         print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
     }
 }
-
+#ifdef WIDE
+void render_widescreen_setting(void) {
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+    if (!gWidescreen) {
+        print_generic_string(10, 20, textCurrRatio43);
+        print_generic_string(10, 7, textPressL);           
+    }
+    else {
+        print_generic_string(10, 20, textCurrRatio169);
+        print_generic_string(10, 7, textPressL);
+        print_generic_string(10, 220, textWideInfo);
+        print_generic_string(10, 200, textWideInfo2);
+    }
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+}
+#endif
 
 #define CRS_NUM_X1 100
 #define TXT_STAR_X 98
@@ -1460,18 +1476,6 @@ void render_pause_my_score_coins(void) {
         print_generic_string(63, 157, textCourse);
         int_to_str(gCurrCourseNum, strCourseNum);
         print_generic_string(CRS_NUM_X1, 157, strCourseNum);
-#ifdef WIDE
-        if (!gWidescreen) {
-                print_generic_string(10, 20, textCurrRatio43);
-                print_generic_string(10, 7, textPressL);           
-        }
-        else {
-                print_generic_string(10, 20, textCurrRatio169);
-                print_generic_string(10, 7, textPressL);
-                print_generic_string(10, 220, textWideInfo);
-                print_generic_string(10, 200, textWideInfo2);
-        }
-#endif
 
         actName = segmented_to_virtual(actNameTbl[(gCurrCourseNum - 1) * 6 + gDialogCourseActNum - 1]);
 
@@ -1685,18 +1689,6 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
 #endif
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-#ifdef WIDE
-    if (!gWidescreen) {
-            print_generic_string(10, 20, textCurrRatio43);
-            print_generic_string(10, 7, textPressL);           
-    }
-    else {
-            print_generic_string(10, 20, textCurrRatio169);
-            print_generic_string(10, 7, textPressL);
-            print_generic_string(10, 220, textWideInfo);
-            print_generic_string(10, 200, textWideInfo2);
-        }
-#endif
     if (gDialogLineNum < COURSE_STAGES_COUNT) {
         courseName = segmented_to_virtual(courseNameTbl[gDialogLineNum]);
         render_pause_castle_course_stars(x, y, gCurrSaveFileNum - 1, gDialogLineNum);
@@ -1794,7 +1786,9 @@ s16 render_pause_courses_and_castle(void) {
             }
             break;
     }
-
+    #ifdef WIDE
+        render_widescreen_setting();
+    #endif
     if (gDialogTextAlpha < 250) {
         gDialogTextAlpha += 25;
     }
