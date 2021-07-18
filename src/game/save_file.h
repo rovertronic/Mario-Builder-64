@@ -59,7 +59,9 @@ struct MainMenuSaveData
     // on the high score screen.
     u32 coinScoreAges[NUM_SAVE_FILES];
     u16 soundMode;
+#ifdef WIDE
     u8 wideMode;
+#endif
 
 #ifdef VERSION_EU
     u16 language;
@@ -161,8 +163,10 @@ void save_file_set_cap_pos(s16 x, s16 y, s16 z);
 s32 save_file_get_cap_pos(Vec3s capPos);
 void save_file_set_sound_mode(u16 mode);
 u16 save_file_get_sound_mode(void);
+#ifdef WIDE
 u8 save_file_get_widescreen_mode(void);
 void save_file_set_widescreen_mode(u8 mode);
+#endif
 void save_file_move_cap_to_default_location(void);
 
 void disable_warp_checkpoint(void);
