@@ -52,13 +52,13 @@ ALIGNED8 static const Texture bowser_seg6_texture_06025C38[] = {
 
 // unreferenced, seen in pre-Spaceworld 1995 B-roll footage build
 // 0x06026438
-ALIGNED8 static const Texture bowser_seg6_texture_06026438[] = {
+UNUSED ALIGNED8 static const Texture bowser_seg6_texture_06026438[] = {
 #include "actors/bowser/bowser_blue_eye_unused.rgba16.inc.c"
 };
 
 // unreferenced (stubbed texture? possibly original texture for mouth)
 // 0x06027438
-ALIGNED8 static const Texture bowser_seg6_texture_06027438[] = {
+UNUSED ALIGNED8 static const Texture bowser_seg6_texture_06027438[] = {
 #include "actors/bowser/bowser_mouth_unused.rgba16.inc.c"
 };
 

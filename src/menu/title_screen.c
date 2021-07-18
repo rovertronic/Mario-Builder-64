@@ -229,7 +229,7 @@ s32 intro_play_its_a_me_mario(void) {
  * Returns a level ID after their criteria is met.
  */
 s32 lvl_intro_update(s16 arg, UNUSED s32 unusedArg) {
-    s32 retVar;
+    s32 retVar = 0;
 
     switch (arg) {
         case LVL_INTRO_PLAY_ITS_A_ME_MARIO:

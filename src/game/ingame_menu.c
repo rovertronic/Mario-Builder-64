@@ -1020,7 +1020,7 @@ s8 gDialogCourseActNum = 1;
 void render_dialog_entries(void) {
     void **dialogTable;
     struct DialogEntry *dialog;
-    s8 lowerBound;
+    s8 lowerBound = 0;
     dialogTable = segmented_to_virtual(seg2_dialog_table);
     dialog = segmented_to_virtual(dialogTable[gDialogID]);
 

@@ -1684,7 +1684,7 @@ int main(int argc, char *argv[])
     v->file_size = ftell(in) - v->read_start_offset;
     fseek(in, v->read_start_offset, SEEK_SET);
     v->input = (uint8*)malloc(v->file_size);
-    fread(v->input, v->file_size, 1, in);
+    size_t fread_result = fread(v->input, v->file_size, 1, in);
     fclose(in);
 
     v->output = (uint8*)malloc(MAX_BUF_SIZE);
