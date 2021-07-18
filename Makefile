@@ -66,7 +66,7 @@ endif
 
 DEFINES += NO_ERRNO_H=1 NO_GZIP=1
 
-COMPRESS ?= yay0
+COMPRESS ?= rnc1
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1

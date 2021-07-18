@@ -41,7 +41,17 @@ To target iQue, run make with the ``CONSOLE=bb`` argument.
 
 ## Compression
 
-The repository supports using DEFLATE compression instead of Nintendo's Yay0. This boasts a better compression ratio, but at a slight cost to load times.
+The repo also supports RNC (Rob Northen Compression). RNC has two methods. 
+
+Method 1 is designed to compress as small as possible, while method 2 is designed so that decompression is as fast as possible.
+
+Method 1 is the current default, and is the best all-rounder in terms of speed and ratio.
+
+Both methods are fast. Method 1 has better compression than 2, so I suggest using method 1 if using RNC.
+
+To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
+
+The repository also supports using DEFLATE compression. This boasts a better compression ratio, but at a slight cost to load times.
 
 On average I'd estimate that the bottleneck on decompression is about 1-2 seconds.
 
@@ -49,17 +59,9 @@ To switch to gzip, run make with the ``COMPRESS=gzip`` argument.
 
 The repo also supports gziping with ``libdeflate-gzip``. This compresses at a slightly better ratio than standard ``gzip``, with no real downside from a decompression standpoint.
 
-To use ``libdeflate-gzip``, first clone the [repo](https://github.com/ebiggers/libdeflate), then make and make install it.
+To use ``libdeflate-gzip``, first clone the [repo](https://github.com/ebiggers/libdeflate), then `make` and `make install` it.
 
 Then run make for sm64 with ``GZIPVER=libdef`` in addition to ``COMPRESS=gzip``
-
-The repo also supports RNC (Rob Northen Compression). RNC has two methods. 
-
-Method 1 is designed to compress as small as possible, while method 2 is designed so that decompression is as fast as possible.
-
-Both methods are fast. Method 1 has better compression than 2, so I suggest using method 1 if using RNC.
-
-To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
 
 The repo also supports building a ROM with no compression.
 
