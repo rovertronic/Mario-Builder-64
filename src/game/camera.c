@@ -28,6 +28,7 @@
 #include "paintings.h"
 #include "engine/graph_node.h"
 #include "level_table.h"
+#include "config.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -878,21 +879,21 @@ void pan_ahead_of_player(struct Camera *c) {
     vec3f_add(c->focus, pan);
 }
 
-s16 find_in_bounds_yaw_wdw_bob_thi(Vec3f pos, Vec3f origin, s16 yaw) {
-    switch (gCurrLevelArea) {
-        case AREA_WDW_MAIN:
-            yaw = clamp_positions_and_find_yaw(pos, origin, 4508.f, -3739.f, 4508.f, -3739.f);
-            break;
-        case AREA_BOB:
-            yaw = clamp_positions_and_find_yaw(pos, origin, 8000.f, -8000.f, 7050.f, -8000.f);
-            break;
-        case AREA_THI_HUGE:
-            yaw = clamp_positions_and_find_yaw(pos, origin, 8192.f, -8192.f, 8192.f, -8192.f);
-            break;
-        case AREA_THI_TINY:
-            yaw = clamp_positions_and_find_yaw(pos, origin, 2458.f, -2458.f, 2458.f, -2458.f);
-            break;
-    }
+s16 find_in_bounds_yaw_wdw_bob_thi(UNUSED Vec3f pos, UNUSED Vec3f origin, s16 yaw) {
+    // switch (gCurrLevelArea) {
+    //     case AREA_WDW_MAIN:
+    //         yaw = clamp_positions_and_find_yaw(pos, origin, 4508.f, -3739.f, 4508.f, -3739.f);
+    //         break;
+    //     case AREA_BOB:
+    //         yaw = clamp_positions_and_find_yaw(pos, origin, 8000.f, -8000.f, 7050.f, -8000.f);
+    //         break;
+    //     case AREA_THI_HUGE:
+    //         yaw = clamp_positions_and_find_yaw(pos, origin, 8192.f, -8192.f, 8192.f, -8192.f);
+    //         break;
+    //     case AREA_THI_TINY:
+    //         yaw = clamp_positions_and_find_yaw(pos, origin, 2458.f, -2458.f, 2458.f, -2458.f);
+    //         break;
+    // }
     return yaw;
 }
 
@@ -1187,6 +1188,22 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset -= DEGREES(45);
         play_sound_cbutton_side();
     }
+#ifdef PARALLEL_LAKITU_CAM
+ // extra functionality
+    else if (gPlayer1Controller->buttonPressed & U_JPAD) {
+        s8DirModeYawOffset = 0;
+        s8DirModeYawOffset = gMarioState->faceAngle[1]-0x8000;
+    }
+    else if (gPlayer1Controller->buttonDown & L_JPAD) {
+        s8DirModeYawOffset -= DEGREES(2);
+    }
+    else if (gPlayer1Controller->buttonDown & R_JPAD) {
+        s8DirModeYawOffset += DEGREES(2);
+    }
+    else if (gPlayer1Controller->buttonPressed & D_JPAD) {
+        s8DirModeYawOffset = s8DirModeYawOffset&0xE000;
+    }   
+#endif
 
     lakitu_zoom(400.f, 0x900);
     c->nextYaw = update_8_directions_camera(c, c->focus, pos);
@@ -1608,7 +1625,8 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
         switch (gCurrLevelArea) {
             case AREA_BOB:
                 pos[1] += 125.f;
-                //! fall through, makes the BoB boss fight camera move up twice as high as it should
+                // fall through
+                //! makes the BoB boss fight camera move up twice as high as it should
             case AREA_WF:
                 pos[1] += 125.f;
         }
@@ -3059,8 +3077,9 @@ void update_camera(struct Camera *c) {
     c->nextYaw = gLakituState.nextYaw;
     c->mode = gLakituState.mode;
     c->defMode = gLakituState.defMode;
-
+#ifndef CAMERA_FIX
     camera_course_processing(c);
+#endif
     stub_camera_3(c);
     sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed,
                                               gPlayer1Controller->buttonDown);
@@ -5109,7 +5128,7 @@ s32 determine_dance_cutscene(UNUSED struct Camera *c) {
  * @return `pullResult` or `pushResult` depending on Mario's door action
  */
 u8 open_door_cutscene(u8 pullResult, u8 pushResult) {
-    s16 result;
+    s16 result = 0;
 
     if (sMarioCamState->action == ACT_PULLING_DOOR) {
         result = pullResult;

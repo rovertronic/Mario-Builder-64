@@ -12,6 +12,7 @@
 
 #include "n64graphics.h"
 #include "utils.h"
+#include "config.h"
 
 #define SKYCONV_ENCODING ENCODING_U8
 
@@ -45,8 +46,8 @@ typedef struct {
 
 static const ImageProps IMAGE_PROPERTIES[ImageType_MAX][2] = {
     [Skybox] = {
-        {248, 248, 31, 31, 8, 8, true, true},
-        {256, 256, 32, 32, 8, 8, true, true},
+        {(248 * SKYBOX_SIZE), (248 * SKYBOX_SIZE), 31, 31, (8 * SKYBOX_SIZE), (8 * SKYBOX_SIZE), true, true},
+        {(256 * SKYBOX_SIZE), (256 * SKYBOX_SIZE), 32, 32, (8 * SKYBOX_SIZE), (8 * SKYBOX_SIZE), true, true},
     },
     [Cake] = {
         {316, 228, 63, 29, 5, 8, false, false},
@@ -63,7 +64,7 @@ typedef struct {
 } TableDimension;
 
 static const TableDimension TABLE_DIMENSIONS[ImageType_MAX] = {
-    [Skybox]   = {8, 10},
+    [Skybox]   = {(8 * SKYBOX_SIZE), (10 * SKYBOX_SIZE)},
     [Cake]     = {5,  8},
     [CakeEU]   = {5,  7},
 };
@@ -321,9 +322,9 @@ static void write_skybox_c() { /* write c data to disc */
 
     fprintf(cFile, "const Texture *const %s_skybox_ptrlist[] = {\n", skyboxName);
 
-    for (int row = 0; row < 8; row++) {
-        for (int col = 0; col < 10; col++) {
-            fprintf(cFile, "%s_skybox_texture_%05X,\n", skyboxName, get_index(tiles, row * 8 + (col % 8)));
+    for (int row = 0; row < (8 * SKYBOX_SIZE); row++) {
+        for (int col = 0; col < (10 * SKYBOX_SIZE); col++) {
+            fprintf(cFile, "%s_skybox_texture_%05X,\n", skyboxName, get_index(tiles, row * (8 * SKYBOX_SIZE) + (col % (8 * SKYBOX_SIZE))));
         }
     }
 
@@ -575,6 +576,7 @@ bool imageMatchesDimensions(int width, int height) {
             break;
         }
     }
+    
     if (!matchesDimensions) {
         if (type != CakeEU) {
             fprintf(stderr, "err: That type of image must be either %d x %d or %d x %d. Yours is %d x %d.\n",

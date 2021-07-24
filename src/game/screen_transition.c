@@ -30,7 +30,7 @@ s32 set_and_reset_transition_fade_timer(s8 fadeTimer, u8 transTime) {
 }
 
 u8 set_transition_color_fade_alpha(s8 fadeType, s8 fadeTimer, u8 transTime) {
-    u8 time;
+    u8 time = 0;
 
     switch (fadeType) {
         case 0:

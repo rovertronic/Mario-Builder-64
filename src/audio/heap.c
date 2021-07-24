@@ -409,9 +409,9 @@ void *alloc_bank_or_seq(struct SoundMultiPool *arg0, s32 arg1, s32 size, s32 arg
 #endif
     u32 nullID = -1;
     UNUSED s32 i;
-    u8 *table;
+    u8 *table = NULL;
 #ifndef VERSION_SH
-    u8 isSound;
+    u8 isSound = FALSE;
 #endif
 #if defined(VERSION_JP) || defined(VERSION_US)
     u16 firstVal;

@@ -136,6 +136,20 @@ else ifeq ($(GRUCODE),super3d) # Super3D
   DEFINES += SUPER3D_GBI=1 F3D_NEW=1
 endif
 
+LIBRARIES := nustd hvqm2 z goddard
+
+# TEXT ENGINES
+#   s2dex_text_engine - Text Engine by someone2639
+TEXT_ENGINE := none
+ifeq ($(TEXT_ENGINE), s2dex_text_engine)
+  DEFINES += S2DEX_GBI_2=1 S2DEX_TEXT_ENGINE=1
+  LIBRARIES += s2d_engine
+  DUMMY != make -C src/s2d_engine COPY_DIR=$(shell pwd)/lib/
+endif
+# add more text engines here
+
+LINK_LIBRARIES = $(foreach i,$(LIBRARIES),-l$(i))
+
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
@@ -403,7 +417,7 @@ DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 # C compiler options
 CFLAGS = -G 0 $(OPT_FLAGS) $(TARGET_CFLAGS) $(MIPSISET) $(DEF_INC_CFLAGS)
 ifeq ($(COMPILER),gcc)
-  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra
+  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra -Wno-missing-braces
 else
   CFLAGS += -non_shared -Wab,-r4300_mul -Xcpluscomm -Xfullwarn -signed -32
 endif
@@ -444,8 +458,8 @@ else
   RSPASM              := $(TOOLS_DIR)/armips
 endif
 ENDIAN_BITWIDTH       := $(BUILD_DIR)/endian-and-bitwidth
-EMULATOR = mupen64plus
-EMU_FLAGS = --noosd
+EMULATOR = ~/Downloads/mupen64plus/mupen64plus-gui
+EMU_FLAGS = 
 LOADER = loader64
 LOADER_FLAGS = -vwf
 SHA1SUM = sha1sum
@@ -482,6 +496,7 @@ endif
 
 clean:
 	$(RM) -r $(BUILD_DIR_BASE)
+	make -C src/s2d_engine clean
 
 distclean: clean
 	$(PYTHON) extract_assets.py --clean
@@ -511,6 +526,7 @@ $(CRASH_TEXTURE_C_FILES): TEXTURE_ENCODING := u32
 
 ifeq ($(COMPILER),gcc)
 $(BUILD_DIR)/src/libz/%.o: OPT_FLAGS := -Os
+$(BUILD_DIR)/src/libz/%.o: CFLAGS += -Wno-implicit-fallthrough -Wno-unused-parameter -Wno-pointer-sign
 endif
 
 ifeq ($(VERSION),eu)
@@ -746,7 +762,7 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 # Link SM64 ELF file
 $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -Llib/gcclib/$(LIBGCCDIR) -lgcc -lnustd -lhvqm2 -lz -lgoddard -u sprintf -u osMapTLB
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc
 
 # Build ROM
 $(ROM): $(ELF)

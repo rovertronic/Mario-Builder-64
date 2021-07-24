@@ -37,6 +37,8 @@ s16 sSurfacePoolSize;
 
 u8 unused8038EEA8[0x30];
 
+u8 gSurfacePoolError = 0;
+
 /**
  * Allocate the part of the surface node pool to contain a surface node.
  */
@@ -49,7 +51,8 @@ static struct SurfaceNode *alloc_surface_node(void) {
     //! A bounds check! If there's more surface nodes than 7000 allowed,
     //  we, um...
     // Perhaps originally just debug feedback?
-    if (gSurfaceNodesAllocated >= 7000) {
+    if (gSurfaceNodesAllocated >= SURFACE_NODE_POOL_SIZE) {
+        gSurfacePoolError |= NOT_ENOUGH_ROOM_FOR_NODES;
     }
 
     return node;
@@ -68,6 +71,7 @@ static struct Surface *alloc_surface(void) {
     //  we, um...
     // Perhaps originally just debug feedback?
     if (gSurfacesAllocated >= sSurfacePoolSize) {
+        gSurfacePoolError |= NOT_ENOUGH_ROOM_FOR_SURFACES;
     }
 
     surface->type = 0;
@@ -89,6 +93,7 @@ static void clear_spatial_partition(SpatialPartitionCell *cells) {
         (*cells)[SPATIAL_PARTITION_FLOORS].next = NULL;
         (*cells)[SPATIAL_PARTITION_CEILS].next = NULL;
         (*cells)[SPATIAL_PARTITION_WALLS].next = NULL;
+        (*cells)[SPATIAL_PARTITION_WATER].next = NULL;
 
         cells++;
     }
@@ -115,9 +120,10 @@ static void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surfac
     s16 priority;
     s16 sortDir;
     s16 listIndex;
+    s16 isWater = surface->type == SURFACE_NEW_WATER || surface->type == SURFACE_NEW_WATER_BOTTOM;
 
     if (surface->normal.y > 0.01) {
-        listIndex = SPATIAL_PARTITION_FLOORS;
+        listIndex = isWater ? SPATIAL_PARTITION_WATER : SPATIAL_PARTITION_FLOORS;
         sortDir = 1; // highest to lowest, then insertion order
     } else if (surface->normal.y < -0.01) {
         listIndex = SPATIAL_PARTITION_CEILS;
@@ -197,7 +203,7 @@ static s16 max_3(s16 a0, s16 a1, s16 a2) {
  * time). This function determines the lower cell for a given x/z position.
  * @param coord The coordinate to test
  */
-static s16 lower_cell_index(s16 coord) {
+static s16 lower_cell_index(s32 coord) {
     s16 index;
 
     // Move from range [-0x2000, 0x2000) to [0, 0x4000)
@@ -229,7 +235,7 @@ static s16 lower_cell_index(s16 coord) {
  * time). This function determines the upper cell for a given x/z position.
  * @param coord The coordinate to test
  */
-static s16 upper_cell_index(s16 coord) {
+static s16 upper_cell_index(s32 coord) {
     s16 index;
 
     // Move from range [-0x2000, 0x2000) to [0, 0x4000)
@@ -524,8 +530,8 @@ static void load_environmental_regions(s16 **data) {
  * Allocate some of the main pool for surfaces (2300 surf) and for surface nodes (7000 nodes).
  */
 void alloc_surface_pools(void) {
-    sSurfacePoolSize = 2300;
-    sSurfaceNodePool = main_pool_alloc(7000 * sizeof(struct SurfaceNode), MEMORY_POOL_LEFT);
+    sSurfacePoolSize = SURFACE_POOL_SIZE;
+    sSurfaceNodePool = main_pool_alloc(SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode), MEMORY_POOL_LEFT);
     sSurfacePool = main_pool_alloc(sSurfacePoolSize * sizeof(struct Surface), MEMORY_POOL_LEFT);
 
     gCCMEnteredSlide = 0;
@@ -589,7 +595,7 @@ u32 get_area_terrain_size(s16 *data) {
  */
 void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects) {
     s16 terrainLoadType;
-    s16 *vertexData;
+    s16 *vertexData = NULL;
     UNUSED s32 unused;
 
     // Initialize the data for this.

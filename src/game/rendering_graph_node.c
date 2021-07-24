@@ -10,6 +10,12 @@
 #include "rendering_graph_node.h"
 #include "shadow.h"
 #include "sm64.h"
+#include "game_init.h"
+#include "engine/extended_bounds.h"
+
+#include "config.h"
+
+#define WIDESCREEN
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -39,6 +45,7 @@
 s16 gMatStackIndex;
 Mat4 gMatStack[32];
 Mtx *gMatStackFixed[32];
+f32 aspect;
 
 /**
  * Animation nodes have state in global variables, so this struct captures
@@ -72,6 +79,52 @@ struct RenderModeContainer {
 };
 
 /* Rendermode settings for cycle 1 for all 8 layers. */
+#ifdef DISABLE_AA
+struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
+    G_RM_OPA_SURF,
+    G_RM_AA_OPA_SURF,
+    G_RM_AA_OPA_SURF,
+    G_RM_AA_OPA_SURF,
+    G_RM_AA_TEX_EDGE,
+    G_RM_AA_XLU_SURF,
+    G_RM_AA_XLU_SURF,
+    G_RM_AA_XLU_SURF,
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF,
+    G_RM_ZB_OPA_SURF,
+    G_RM_ZB_OPA_DECAL,
+    G_RM_AA_ZB_OPA_INTER,
+    G_RM_AA_ZB_TEX_EDGE,
+    G_RM_ZB_XLU_SURF,
+    G_RM_ZB_XLU_DECAL,
+    G_RM_AA_ZB_XLU_INTER,
+    } } };
+
+/* Rendermode settings for cycle 2 for all 8 layers. */
+struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
+    G_RM_OPA_SURF2,
+    G_RM_AA_OPA_SURF2,
+    G_RM_AA_OPA_SURF2,
+    G_RM_AA_OPA_SURF2,
+    G_RM_AA_TEX_EDGE2,
+    G_RM_AA_XLU_SURF2,
+    G_RM_AA_XLU_SURF2,
+    G_RM_AA_XLU_SURF2,
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_DECAL2,
+    G_RM_AA_ZB_OPA_INTER2,
+    G_RM_AA_ZB_TEX_EDGE2,
+    G_RM_ZB_XLU_SURF2,
+    G_RM_ZB_XLU_DECAL2,
+    G_RM_AA_ZB_XLU_INTER2,
+    } } };
+#else
 struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_OPA_SURF,
     G_RM_AA_OPA_SURF,
@@ -116,6 +169,7 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_AA_ZB_XLU_DECAL2,
     G_RM_AA_ZB_XLU_INTER2,
     } } };
+#endif
 
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
 struct GraphNodeMasterList *gCurGraphNodeMasterList = NULL;
@@ -242,14 +296,22 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
     if (node->fnNode.node.children != NULL) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
+        #ifdef WIDE
+        if (gWidescreen){
+            if (gCurrLevelNum == 0x01) {
+                aspect = 1.33333f;
+            } else {
+                aspect = 1.775f;
+            }
+        }
+        else{
+            aspect = 1.33333f;
+        }
+        #else
+        aspect = 1.33333f;
+        #endif
 
-#ifdef VERSION_EU
-        f32 aspect = ((f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height) * 1.1f;
-#else
-        f32 aspect = (f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height;
-#endif
-
-        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near, node->far, 1.0f);
+        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -267,17 +329,18 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
  * range of this node.
  */
 static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
-#ifdef GBI_FLOATS
-    Mtx *mtx = gMatStackFixed[gMatStackIndex];
-    s16 distanceFromCam = (s32) -mtx->m[3][2]; // z-component of the translation column
+    f32 distanceFromCam;
+#ifdef AUTO_LOD
+    if (gIsConsole) {
+        distanceFromCam = -gMatStack[gMatStackIndex][3][2];
+    } else {
+        distanceFromCam = 50;
+    }
 #else
-    // The fixed point Mtx type is defined as 16 longs, but it's actually 16
-    // shorts for the integer parts followed by 16 shorts for the fraction parts
-    Mtx *mtx = gMatStackFixed[gMatStackIndex];
-    s16 distanceFromCam = -GET_HIGH_S16_OF_32(mtx->m[1][3]); // z-component of the translation column
+    distanceFromCam = -gMatStack[gMatStackIndex][3][2];
 #endif
-
-    if (node->minDistance <= distanceFromCam && distanceFromCam < node->maxDistance) {
+	
+    if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
         if (node->node.children != 0) {
             geo_process_node_and_siblings(node->node.children);
         }
@@ -304,6 +367,17 @@ static void geo_process_switch(struct GraphNodeSwitchCase *node) {
     }
 }
 
+static void make_roll_matrix(Mtx *mtx, s16 angle) {
+    Mat4 temp;
+
+    mtxf_identity(temp);
+    temp[0][0] = coss(angle);
+    temp[0][1] = sins(angle);
+    temp[1][0] = -temp[0][1];
+    temp[1][1] = temp[0][0];
+    guMtxF2L(temp, mtx);
+}
+
 /**
  * Process a camera node.
  */
@@ -315,7 +389,7 @@ static void geo_process_camera(struct GraphNodeCamera *node) {
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
-    mtxf_rotate_xy(rollMtx, node->rollScreen);
+    make_roll_matrix(rollMtx, node->rollScreen);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
 
@@ -696,7 +770,7 @@ static void geo_process_shadow(struct GraphNodeShadow *node) {
             gMatStackFixed[gMatStackIndex] = mtx;
             if (gShadowAboveWaterOrLava == TRUE) {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
-            } else if (gMarioOnIceOrCarpet == 1) {
+            } else if (gMarioOnIceOrCarpet == 1 || gShadowAboveCustomWater == 1) {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
             } else {
                 geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
@@ -755,7 +829,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     // ! @bug The aspect ratio is not accounted for. When the fov value is 45,
     // the horizontal effective fov is actually 60 degrees, so you can see objects
     // visibly pop in or out at the edge of the screen.
-    halfFov = (gCurGraphNodeCamFrustum->fov / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
+    halfFov = ((gCurGraphNodeCamFrustum->fov*aspect) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
 
     hScreenEdge = -matrix[3][2] * sins(halfFov) / coss(halfFov);
     // -matrix[3][2] is the depth, which gets multiplied by tan(halfFov) to get

@@ -1493,7 +1493,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
     u8 loBits;
     u16 sp5A;
     s32 sp38;
-    s8 value;
+    s8 value = 0;
     s32 i;
     u8 *seqData;
 
@@ -2235,7 +2235,7 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 #endif
     u8 loBits;
     u8 temp;
-    s32 value;
+    s32 value = 0;
     s32 i;
     u16 u16v;
     u8 *seqData;

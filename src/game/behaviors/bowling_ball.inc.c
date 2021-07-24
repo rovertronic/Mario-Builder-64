@@ -258,7 +258,7 @@ void bhv_free_bowling_ball_init(void) {
 }
 
 void bhv_free_bowling_ball_roll_loop(void) {
-    s16 collisionFlags = object_step();
+    /*s16 collisionFlags = */object_step();
     bowling_ball_set_hitbox();
 
     if (o->oForwardVel > 10.0f) {
@@ -266,8 +266,9 @@ void bhv_free_bowling_ball_roll_loop(void) {
         cur_obj_play_sound_1(SOUND_ENV_UNKNOWN2);
     }
 
-    if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) && !(collisionFlags & OBJ_COL_FLAGS_LANDED))
-        cur_obj_play_sound_2(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
+    /* Always false, commented out to suppress compiler warnings */
+    // if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) && !(collisionFlags & OBJ_COL_FLAGS_LANDED))
+    //     cur_obj_play_sound_2(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
 
     if (!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 6000)) {
         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;

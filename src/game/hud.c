@@ -13,12 +13,49 @@
 #include "area.h"
 #include "save_file.h"
 #include "print.h"
+#include "engine/surface_load.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
  * That includes stars, lives, coins, camera status, power meter, timer
  * cannon reticle, and the unused keys.
  **/
+
+// ------------- FPS COUNTER ---------------
+// To use it, call print_fps(x,y); every frame.
+#define FRAMETIME_COUNT 30
+
+OSTime frameTimes[FRAMETIME_COUNT];
+u8 curFrameTimeIndex = 0;
+
+#include "PR/os_convert.h"
+
+// Call once per frame
+f32 calculate_and_update_fps()
+{
+    OSTime newTime = osGetTime();
+    OSTime oldTime = frameTimes[curFrameTimeIndex];
+    frameTimes[curFrameTimeIndex] = newTime;
+
+    curFrameTimeIndex++;
+    if (curFrameTimeIndex >= FRAMETIME_COUNT)
+        curFrameTimeIndex = 0;
+
+
+    return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+}
+
+void print_fps(s32 x, s32 y)
+{
+    f32 fps = calculate_and_update_fps();
+    char text[10];
+
+    sprintf(text, "%2.2f", fps);
+
+    print_text(x, y, text);
+}
+
+// ------------ END OF FPS COUNER -----------------
 
 struct PowerMeterHUD {
     s8 animation;
@@ -450,11 +487,11 @@ void render_hud(void) {
         if (gCurrentArea != NULL && gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
             render_hud_cannon_reticle();
         }
-
+    #ifndef DISABLE_LIVES
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
             render_hud_mario_lives();
         }
-
+    #endif
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_COIN_COUNT) {
             render_hud_coins();
         }
@@ -474,6 +511,15 @@ void render_hud(void) {
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
             render_hud_timer();
+        }
+
+        if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_SURFACES)
+        {
+            print_text(10, 40, "SURFACE POOL FULL");
+        }
+        if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_NODES)
+        {
+            print_text(10, 60, "SURFACE NODE POOL FULL");
         }
     }
 }

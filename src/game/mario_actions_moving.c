@@ -13,6 +13,8 @@
 #include "behavior_data.h"
 #include "rumble_init.h"
 
+#include "config.h"
+
 struct LandingAction {
     s16 numFrames;
     s16 unk02;
@@ -384,8 +386,13 @@ void update_shell_speed(struct MarioState *m) {
         m->forwardVel = 64.0f;
     }
 
+#ifdef SUPER_RESPONSIVE_CONTROLS
+    m->faceAngle[1] = m->intendedYaw;
+#else
     m->faceAngle[1] =
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
+#endif
+
 
     apply_slope_accel(m);
 }
@@ -1285,6 +1292,7 @@ s32 act_crawling(struct MarioState *m) {
                 mario_set_forward_vel(m, 10.0f);
             }
             //! Possibly unintended missing break
+            // fall through
 
         case GROUND_STEP_NONE:
             align_with_floor(m);
@@ -1845,7 +1853,7 @@ s32 act_hold_freefall_land(struct MarioState *m) {
 }
 
 s32 act_long_jump_land(struct MarioState *m) {
-#ifdef VERSION_SH
+#if defined (VERSION_SH) || defined(DISABLE_BLJ)
     // BLJ (Backwards Long Jump) speed build up fix, crushing SimpleFlips's dreams since July 1997
     if (m->forwardVel < 0.0f) {
         m->forwardVel = 0.0f;

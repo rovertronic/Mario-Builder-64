@@ -17,6 +17,8 @@
 #include "level_table.h"
 #include "rumble_init.h"
 
+#include "config.h"
+
 #define POLE_NONE          0
 #define POLE_TOUCHED_FLOOR 1
 #define POLE_FELL_OFF      2
@@ -308,7 +310,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
 
     m->wall = resolve_and_return_wall_collisions(nextPos, 50.0f, 50.0f);
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
-    ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    ceilHeight = vec3f_find_ceil(nextPos, nextPos[1], &ceil);
 
     if (floor == NULL) {
         return HANG_HIT_CEIL_OR_OOB;
@@ -345,7 +347,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
 s32 update_hang_moving(struct MarioState *m) {
     s32 stepResult;
     Vec3f nextPos;
-    f32 maxSpeed = 4.0f;
+    f32 maxSpeed = HANGING_SPEED;
 
     m->forwardVel += 1.0f;
     if (m->forwardVel > maxSpeed) {
@@ -353,7 +355,11 @@ s32 update_hang_moving(struct MarioState *m) {
     }
 
     m->faceAngle[1] =
+    #ifdef TIGHTER_HANGING_CONTROLS
+        m->intendedYaw;
+    #else
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
+    #endif
 
     m->slideYaw = m->faceAngle[1];
     m->slideVelX = m->forwardVel * sins(m->faceAngle[1]);
@@ -550,11 +556,11 @@ s32 act_ledge_grab(struct MarioState *m) {
     if (m->actionTimer < 10) {
         m->actionTimer++;
     }
-
+#ifndef NO_FALSE_LEDGEGRABS
     if (m->floor->normal.y < 0.9063078f) {
         return let_go_of_ledge(m);
     }
-
+#endif
     if (m->input & (INPUT_Z_PRESSED | INPUT_OFF_FLOOR)) {
         return let_go_of_ledge(m);
     }
@@ -854,7 +860,7 @@ s32 check_common_automatic_cancels(struct MarioState *m) {
 }
 
 s32 mario_execute_automatic_action(struct MarioState *m) {
-    s32 cancel;
+    s32 cancel = FALSE;
 
     if (check_common_automatic_cancels(m)) {
         return TRUE;

@@ -55,7 +55,7 @@ struct SpawnParticlesInfo
 {
     /*0x00*/ s8 behParam;
     /*0x01*/ s8 count;
-    /*0x02*/ u8 model;
+    /*0x02*/ ModelID model;
     /*0x03*/ s8 offsetY;
     /*0x04*/ s8 forwardVelBase;
     /*0x05*/ s8 forwardVelRange;
@@ -297,5 +297,10 @@ void cur_obj_spawn_loot_blue_coin(void);
 #ifndef VERSION_JP
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY);
 #endif
+
+// Extra functions for ultrasm64-extbounds
+void obj_set_model(struct Object *obj, s32 modelID);
+s32 obj_has_model(struct Object *obj, u16 modelID);
+// End of ultrasm64-extbounds stuff
 
 #endif // OBJECT_HELPERS_H

@@ -72,10 +72,15 @@ struct DmaHandlerList gDemoInputsBuf;
 
 // fillers
 UNUSED static u8 sfillerGameInit[0x90];
-static s32 sUnusedGameInitValue = 0;
+UNUSED static s32 sUnusedGameInitValue = 0;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
+u8 gIsConsole;
+#ifdef WIDE
+u8 gWidescreen;
+#endif
+u8 gBorderHeight;
 
 // Framebuffer rendering values (max 3)
 u16 sRenderedFramebuffer = 0;
@@ -367,7 +372,7 @@ void render_init(void) {
     } else {
         gIsConsole = 1;
         gBorderHeight = BORDER_HEIGHT_CONSOLE;
-    }    
+    }
     gGfxPool = &gGfxPools[0];
     set_segment_base_addr(1, gGfxPool->buffer);
     gGfxSPTask = &gGfxPool->spTask;
@@ -710,6 +715,9 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
+#ifdef WIDE
+    gWidescreen = save_file_get_widescreen_mode();
+#endif
     render_init();
 
     while (TRUE) {

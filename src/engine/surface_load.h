@@ -6,6 +6,8 @@
 #include "surface_collision.h"
 #include "types.h"
 
+extern u8 gSurfacePoolError;
+
 #define NUM_CELLS       (2 * LEVEL_BOUNDARY_MAX / CELL_SIZE)
 #define NUM_CELLS_INDEX (NUM_CELLS - 1)
 
@@ -19,10 +21,11 @@ enum
 {
     SPATIAL_PARTITION_FLOORS,
     SPATIAL_PARTITION_CEILS,
-    SPATIAL_PARTITION_WALLS
+    SPATIAL_PARTITION_WALLS,
+    SPATIAL_PARTITION_WATER
 };
 
-typedef struct SurfaceNode SpatialPartitionCell[3];
+typedef struct SurfaceNode SpatialPartitionCell[4];
 
 // Needed for bs bss reordering memes.
 extern s32 unused8038BE90;

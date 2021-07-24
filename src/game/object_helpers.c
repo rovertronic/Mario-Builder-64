@@ -394,7 +394,8 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
     UNUSED s32 unused;
-    s16 targetAngle, startAngle;
+    s16 targetAngle = 0;
+    s16 startAngle;
 
     switch (angleIndex) {
         case O_MOVE_ANGLE_PITCH_INDEX:
@@ -1825,7 +1826,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     }
 }
 
-static s32 cur_obj_within_12k_bounds(void) {
+UNUSED static s32 cur_obj_within_12k_bounds(void) {
     if (o->oPosX < -12000.0f || 12000.0f < o->oPosX) {
         return FALSE;
     }
@@ -1842,12 +1843,10 @@ static s32 cur_obj_within_12k_bounds(void) {
 }
 
 void cur_obj_move_using_vel_and_gravity(void) {
-    if (cur_obj_within_12k_bounds()) {
         o->oPosX += o->oVelX;
         o->oPosZ += o->oVelZ;
         o->oVelY += o->oGravity; //! No terminal velocity
         o->oPosY += o->oVelY;
-    }
 }
 
 void cur_obj_move_using_fvel_and_gravity(void) {
@@ -2913,3 +2912,14 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
     o->oPosY = objectPosY;
 }
 #endif
+
+// Extra functions for ultrasm64-extbounds
+void obj_set_model(struct Object *obj, s32 modelID) {
+    obj->header.gfx.sharedChild = gLoadedGraphNodes[modelID];
+}
+
+s32 obj_has_model(struct Object *obj, u16 modelID) {
+    return (obj->header.gfx.sharedChild == gLoadedGraphNodes[modelID]);
+}
+// End of ultrasm64-extbounds stuff
+

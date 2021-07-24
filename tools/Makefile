@@ -56,6 +56,7 @@ vadpcm_enc_CFLAGS  := -Wno-unused-result -Wno-uninitialized -Wno-sign-compare -W
 extract_data_for_mio_SOURCES := extract_data_for_mio.c
 
 skyconv_SOURCES := skyconv.c n64graphics.c utils.c
+skyconv_CFLAGS := -g -I../include
 
 armips: CC := $(CXX)
 armips_SOURCES := armips.cpp

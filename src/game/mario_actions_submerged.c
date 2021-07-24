@@ -76,7 +76,7 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
 
     wall = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
-    ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    ceilHeight = vec3f_find_ceil(nextPos, nextPos[1], &ceil);
 
     if (floor == NULL) {
         return WATER_STEP_CANCELLED;
@@ -1500,7 +1500,12 @@ static s32 act_hold_metal_water_fall_land(struct MarioState *m) {
 static s32 check_common_submerged_cancels(struct MarioState *m) {
     if (m->pos[1] > m->waterLevel - 80) {
         if (m->waterLevel - 80 > m->floorHeight) {
-            m->pos[1] = m->waterLevel - 80;
+            if (m->pos[1] - (m->waterLevel - 80) < 50) {
+                m->pos[1] = m->waterLevel - 80; // lock mario to top if the falloff isn't big enough
+            } else {
+                // m->pos[1] = m->waterLevel - 80; //! BUG: Downwarp swimming out of waterfalls
+                return transition_submerged_to_airborne(m);
+            }
         } else {
             //! If you press B to throw the shell, there is a ~5 frame window
             // where your held object is the shell, but you are not in the
