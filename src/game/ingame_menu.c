@@ -23,6 +23,7 @@
 #include "text_strings.h"
 #include "types.h"
 #include "config.h"
+#include "puppycam2.h"
 
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
@@ -1414,7 +1415,7 @@ void render_widescreen_setting(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     if (!gWidescreen) {
         print_generic_string(10, 20, textCurrRatio43);
-        print_generic_string(10, 7, textPressL);           
+        print_generic_string(10, 7, textPressL);
     }
     else {
         print_generic_string(10, 20, textCurrRatio169);
@@ -1713,6 +1714,9 @@ s16 render_pause_courses_and_castle(void) {
     s16 index;
 
 
+    puppycam_check_pause_buttons();
+    if (!gPCOptionOpen)
+    {
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
             gDialogLineNum = MENU_OPT_DEFAULT;
@@ -1787,7 +1791,14 @@ s16 render_pause_courses_and_castle(void) {
     if (gDialogTextAlpha < 250) {
         gDialogTextAlpha += 25;
     }
+    }
+    else
+    {
+        shade_screen();
+        puppycam_display_options();
+    }
 
+    puppycam_render_option_text();
     return MENU_OPT_NONE;
 }
 

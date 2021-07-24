@@ -14,6 +14,7 @@
 #include "save_file.h"
 #include "print.h"
 #include "engine/surface_load.h"
+#include "puppycam2.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
@@ -506,7 +507,8 @@ void render_hud(void) {
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
             render_hud_power_meter();
-            render_hud_camera_status();
+            if (!gPuppyCam.enabled)
+                render_hud_camera_status();
         }
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
