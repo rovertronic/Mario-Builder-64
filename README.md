@@ -18,7 +18,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Water Surface Type patch by thecozies
 - Rounded corners by FramePerfection, merged by Cheezepin
 - reonucam3: custom camera by me. This is included as a .patch file in the enhancements folder, you need to apply it if you want this camera.
-  This video shows a rundown of the features: https://youtu.be/nWYVOi0rxpc
+  This video shows a rundown of the features: https://youtu.be/TQNkznX9Z3k
 
 **Common Hack Changes:**
 - Better extended boundaries by anonymous_moose
