@@ -6,7 +6,7 @@ This repo needs gcc in order to be able to build it. To install it, run `sudo ap
 This is a fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 
 **About Puppycam**
-- Puppycam is avaiable **on a dedicated branch**. If you want puppycam in your hack, clone the `puppycamera2` branch instead of `master`.
+- Puppycam is available **on a dedicated branch**. If you want puppycam in your hack, clone the `puppycamera2` branch instead of `master`.
 
 **Collision:**
 - Slope fix and exposed ceilings fix
