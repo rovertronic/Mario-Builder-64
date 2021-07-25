@@ -54,6 +54,12 @@
 
 // -- ultrasm64-extbounds specific settings --
 
+// TEST LEVEL
+// Uncomment this define and set a test level in order to boot straight into said level.
+// This allows you to quickly test the level you're working on.
+// If you want the game to boot normally, just comment out the define again.
+//#define TEST_LEVEL LEVEL_BOB
+
 // COMMON HACK CHANGES
 // Internal ROM name. NEEDS TO BE **EXACTLY** 20 CHARACTERS. Can't be 19 characters, can't be 21 characters. You can fill it with spaces.
 // The end quote should be here:               "
@@ -79,7 +85,7 @@
 // Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
 #define X_COIN_STAR 100
 // Platform displacement 2 also known as momentum patch. Makes Mario keep the momemtum from moving platforms. Breaks treadmills.
-#define PLATFORM_DISPLACEMENT_2
+//#define PLATFORM_DISPLACEMENT_2
 // Stars don't kick you out of the level
 // #define NON_STOP_STARS
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
