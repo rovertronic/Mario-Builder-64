@@ -98,21 +98,13 @@
 #define IA8_COINS
 // Enables "parallel lakitu camera" or "aglab cam" which lets you move the camera smoothly with the dpad
 #define PARALLEL_LAKITU_CAM
+// Allows Mario to ledgegrab sloped floors
+#define NO_FALSE_LEDGEGRABS
 
 
 // HACKER QOL 
-// Enable widescreen (16:9) support
-#define WIDE
-// When this option is enabled, LODs will ONLY work on console.
-// When this option is disabled, LODs will work regardless of whether console or emulator is used.
-// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
-#define AUTO_LOD
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
-// Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
-#define DISABLE_AA
-// Allows Mario to ledgegrab sloped floors
-#define NO_FALSE_LEDGEGRABS
 // Number of possible unique model ID's (keep it higher than 256)
 #define MODEL_ID_COUNT 256
 // Increase audio heap size to allow for more concurrent notes to be played and for more custom sequences/banks to be imported (does nothing with EU and SH versions)
@@ -147,10 +139,18 @@
 #define EXIT_COURSE_NODE 0x1F
 
 // OTHER ENHANCEMENTS
+// Enable widescreen (16:9) support
+#define WIDE
 // Skybox size modifier, changing this will add support for larger skybox images. NOTE: Vanilla skyboxes may break if you change this option. Be sure to rescale them accordingly.
 // Whenever you change this, make sure to run "make -C tools clean" to rebuild the skybox tool (alternatively go into skyconv.c and change the file in any way (like adding/deleting a space) to specifically rebuild that tool).
 // When increasing this, you should probably also increase the GFX pool size. (the GFX_POOL_SIZE define in src/game/game_init.h)
 #define SKYBOX_SIZE 1
+// When this option is enabled, LODs will ONLY work on console.
+// When this option is disabled, LODs will work regardless of whether console or emulator is used.
+// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
+#define AUTO_LOD
+// Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
+#define DISABLE_AA
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 
