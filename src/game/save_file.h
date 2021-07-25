@@ -64,7 +64,7 @@ struct MainMenuSaveData
 #endif
 
 #ifdef VERSION_EU
-    u16 language;
+    u8 language: 2;
 #define SUBTRAHEND 8
 #else
 #define SUBTRAHEND 6
