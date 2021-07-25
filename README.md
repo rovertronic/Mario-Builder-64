@@ -5,6 +5,9 @@ This repo needs gcc in order to be able to build it. To install it, run `sudo ap
 
 This is a fork of the ultrasm64 repo by CrashOveride which includes the following commonly used patches (patches marked with `*` are toggleable in `config.h`): 
 
+**About Puppycam**
+- Puppycam is available **on a dedicated branch**. If you want puppycam in your hack, clone the `puppycamera2` branch instead of `master`.
+
 **Collision:**
 - Slope fix and exposed ceilings fix
 - No false ledgegrabs fix * 
@@ -17,8 +20,6 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Platform Displacement 2 by Arthurtilly *
 - Water Surface Type patch by thecozies
 - Rounded corners by FramePerfection, merged by Cheezepin
-- reonucam3: custom camera by me. This is included as a .patch file in the enhancements folder, you need to apply it if you want this camera.
-  This video shows a rundown of the features: https://youtu.be/TQNkznX9Z3k
 
 **Common Hack Changes:**
 - Better extended boundaries by anonymous_moose
@@ -31,6 +32,8 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - You can increase the number of frames that you have to perform a firsty *
 - Ability to set Mario's movement speed when hanging from a ceiling *
 - Tighter hanging controls (mario will face the direction of the analog stick directly while hanging from a ceiling) *
+- reonucam3: custom camera by me. This is included as a .patch file in the enhancements folder, you need to apply it if you want this camera.
+  This video shows a rundown of the features: https://youtu.be/TQNkznX9Z3k
 
 **Hacker QOL:**
 - Global, non-level based, star IDs (off by default) *
@@ -48,6 +51,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - The internal ROM name is now set with a define in `config.h` to make it simpler
 - There is a `gIsConsole` variable that is 1 when running on console and 0 when running on emulator. This way you can wrap your code in a console check.
 - Expanded audio heap allows for a larger concurrent note count and the importing of more m64 sequences and sound banks (By ArcticJaguar725) *
+- You can set a test level in config.h in order to boot straight into it, so you can quickly test the level you're working on. *
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *

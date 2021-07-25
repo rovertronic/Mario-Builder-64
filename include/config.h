@@ -54,6 +54,12 @@
 
 // -- ultrasm64-extbounds specific settings --
 
+// TEST LEVEL
+// Uncomment this define and set a test level in order to boot straight into said level.
+// This allows you to quickly test the level you're working on.
+// If you want the game to boot normally, just comment out the define again.
+//#define TEST_LEVEL LEVEL_BOB
+
 // COMMON HACK CHANGES
 // Internal ROM name. NEEDS TO BE **EXACTLY** 20 CHARACTERS. Can't be 19 characters, can't be 21 characters. You can fill it with spaces.
 // The end quote should be here:               "
@@ -79,7 +85,7 @@
 // Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
 #define X_COIN_STAR 100
 // Platform displacement 2 also known as momentum patch. Makes Mario keep the momemtum from moving platforms. Breaks treadmills.
-#define PLATFORM_DISPLACEMENT_2
+//#define PLATFORM_DISPLACEMENT_2
 // Stars don't kick you out of the level
 // #define NON_STOP_STARS
 // Uncomment this if you want global star IDs (useful for creating an open world hack ala MVC)
@@ -88,25 +94,15 @@
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
-// Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
-#define IA8_COINS
 // Enables "parallel lakitu camera" or "aglab cam" which lets you move the camera smoothly with the dpad
 #define PARALLEL_LAKITU_CAM
+// Allows Mario to ledgegrab sloped floors
+#define NO_FALSE_LEDGEGRABS
 
 
 // HACKER QOL 
-// Enable widescreen (16:9) support
-#define WIDE
-// When this option is enabled, LODs will ONLY work on console.
-// When this option is disabled, LODs will work regardless of whether console or emulator is used.
-// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
-#define AUTO_LOD
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
-// Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
-#define DISABLE_AA
-// Allows Mario to ledgegrab sloped floors
-#define NO_FALSE_LEDGEGRABS
 // Number of possible unique model ID's (keep it higher than 256)
 #define MODEL_ID_COUNT 256
 // Increase audio heap size to allow for more concurrent notes to be played and for more custom sequences/banks to be imported (does nothing with EU and SH versions)
@@ -141,10 +137,20 @@
 #define EXIT_COURSE_NODE 0x1F
 
 // OTHER ENHANCEMENTS
+// Enable widescreen (16:9) support
+#define WIDE
 // Skybox size modifier, changing this will add support for larger skybox images. NOTE: Vanilla skyboxes may break if you change this option. Be sure to rescale them accordingly.
 // Whenever you change this, make sure to run "make -C tools clean" to rebuild the skybox tool (alternatively go into skyconv.c and change the file in any way (like adding/deleting a space) to specifically rebuild that tool).
 // When increasing this, you should probably also increase the GFX pool size. (the GFX_POOL_SIZE define in src/game/game_init.h)
 #define SKYBOX_SIZE 1
+// When this option is enabled, LODs will ONLY work on console.
+// When this option is disabled, LODs will work regardless of whether console or emulator is used.
+// Regardless of whether this setting is enabled or not, you can use gIsConsole to wrap your own code in a console check.
+#define AUTO_LOD
+// Disable AA (Recommended: it changes nothing on emulator, and it makes console run better)
+#define DISABLE_AA
+// Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
+#define IA8_COINS
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 

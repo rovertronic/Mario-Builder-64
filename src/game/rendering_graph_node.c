@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-#define WIDESCREEN
-
 /**
  * This file contains the code that processes the scene graph for rendering.
  * The scene graph is responsible for drawing everything except the HUD / text boxes.
@@ -297,14 +295,9 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
         #ifdef WIDE
-        if (gWidescreen){
-            if (gCurrLevelNum == 0x01) {
-                aspect = 1.33333f;
-            } else {
-                aspect = 1.775f;
-            }
-        }
-        else{
+        if (gWidescreen && (gCurrLevelNum != 0x01)){
+            aspect = 1.775f;
+        } else {
             aspect = 1.33333f;
         }
         #else
@@ -836,11 +829,10 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     // the amount of units between the center of the screen and the horizontal edge
     // given the distance from the object to the camera.
 
-#ifdef WIDESCREEN
     // This multiplication should really be performed on 4:3 as well,
     // but the issue will be more apparent on widescreen.
+    // HackerSM64: This multiplication is done regardless of aspect ratio to fix object pop-in on the edges of the screen (which happens at 4:3 too)
     hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
-#endif
 
     if (geo != NULL && geo->type == GRAPH_NODE_TYPE_CULLING_RADIUS) {
         cullingRadius =
