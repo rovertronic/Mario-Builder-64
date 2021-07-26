@@ -52,6 +52,9 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - There is a `gIsConsole` variable that is 1 when running on console and 0 when running on emulator. This way you can wrap your code in a console check.
 - Expanded audio heap allows for a larger concurrent note count and the importing of more m64 sequences and sound banks (By ArcticJaguar725) *
 - You can set a test level in config.h in order to boot straight into it, so you can quickly test the level you're working on. *
+- Colored ia4 text support. Format: `"@XXXXXXXX[YOUR TEXT]@--------"` (By ArcticJaguar725)
+  - Example Text: `"@FF0000FFRED @00FF00FFGREEN @0000FFFFBLUE @FFFFFF00INVISIBLE @--------NORMAL"`
+  - NOTE: It is not mandatory to reset the text color with `"@--------"`, but text will need to be recolored each time it scrolls in a dialog box, or the custom color will reset.
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
@@ -71,9 +74,6 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - ia8 coins (64x64), the vanilla coin texture is upgraded to accomodate. *
 - Skybox size modifier. You can have 2x, 3x and 4x size skyboxes (you can select the skybox size in `config.h`.) Please note that this might affect console performance, especially 4x mode. 2x or 3x mode is recommended if aiming for console. By CowQuack *
 - You can set the black border size to different values for console and emulator. It's set to 0 by default for both. *
-- Colored ia4 text support. Format: "@XXXXXXXX[YOUR TEXT]@--------" (By ArcticJaguar725)
-  - Example Text: "@FF0000FFRED @00FF00FFGREEN @0000FFFFBLUE @FFFFFF00INVISIBLE @--------NORMAL"
-  - NOTE: It is not mandatory to reset the text color with "@--------", but text will need to be recolored each time it scrolls in a dialog box, or the custom color will reset.
 
 # UltraSM64
 
