@@ -301,7 +301,7 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
                         customColor = 2;
                         strPos = colorLoop - 8;
                         for (diffTmp = 0; diffTmp < 8; ++diffTmp) {
-                            if (str[strIdx + diffTmp] != 0x9F)
+                            if (str[strPos + diffTmp] != 0x9F)
                                 break;
                         }
                         if (diffTmp == 8)
