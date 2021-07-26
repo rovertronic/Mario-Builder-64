@@ -1498,6 +1498,10 @@ void render_widescreen_setting(void) {
         print_generic_string(10, 200, textWideInfo2);
     }
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    if (gPlayer1Controller->buttonPressed & L_TRIG){
+        gWidescreen ^= 1;
+        save_file_set_widescreen_mode(gWidescreen);
+    }
 }
 #endif
 
@@ -1854,10 +1858,6 @@ s16 render_pause_courses_and_castle(void) {
     }
     #ifdef WIDE
         render_widescreen_setting();
-        if (gPlayer1Controller->buttonPressed & L_TRIG){
-            gWidescreen ^= 1;
-            save_file_set_widescreen_mode(gWidescreen);
-        }
     #endif
     if (gDialogTextAlpha < 250) {
         gDialogTextAlpha += 25;
