@@ -300,8 +300,12 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
                     else if (str[strPos] >= 0x10) {
                         customColor = 2;
                         strPos = colorLoop - 8;
-                        if (str[strPos] == 0x9F)
-                            strPos = colorLoop;
+                        for (diffTmp = 0; diffTmp < 8; ++diffTmp) {
+                            if (str[strIdx + diffTmp] != 0x9F)
+                                break;
+                        }
+                        if (diffTmp == 8)
+                            strPos += diffTmp;
                         break;
                     }
                     if ((8 - (colorLoop - strPos)) % 2 == 0) {
@@ -884,8 +888,12 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
                     else if (str[strIdx] >= 0x10) {
                         customColor = 2;
                         strIdx = colorLoop - 8;
-                        if (str[strIdx] == 0x9F)
-                            strIdx = colorLoop;
+                        for (diffTmp = 0; diffTmp < 8; ++diffTmp) {
+                            if (str[strIdx + diffTmp] != 0x9F)
+                                break;
+                        }
+                        if (diffTmp == 8)
+                            strIdx += diffTmp;
                         break;
                     }
                     if ((8 - (colorLoop - strIdx)) % 2 == 0) {
