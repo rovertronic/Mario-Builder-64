@@ -37,7 +37,6 @@ u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
 u8 textPressL[] = { TEXT_HUD_PRESS_L };
 u8 textWideInfo[] = { TEXT_HUD_WIDE_INFO };
-u8 textWideInfo2[] = { TEXT_HUD_WIDE_INFO2 };
 #endif
 
 extern u8 gLastCompletedCourseNum;
@@ -1506,7 +1505,6 @@ void render_widescreen_setting(void) {
         print_generic_string(10, 20, textCurrRatio169);
         print_generic_string(10, 7, textPressL);
         print_generic_string(10, 220, textWideInfo);
-        print_generic_string(10, 200, textWideInfo2);
     }
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     if (gPlayer1Controller->buttonPressed & L_TRIG){
