@@ -826,6 +826,7 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
     s16 colorLoop;
     u8 rgbaColors[4] = {0, 0, 0, 0};
     u8 customColor = FALSE;
+    u8 diffTmp = 0;
 
     u8 *str = segmented_to_virtual(dialog->str);
     s8 lineNum = 1;
@@ -876,8 +877,9 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
                 customColor = TRUE;
                 strIdx++;
                 for (colorLoop = strIdx + 8; strIdx < colorLoop; ++strIdx) {
+                    diffTmp = 0;
                     if (str[strIdx] >= 0x24 && str[strIdx] <= 0x29) {
-                        str[strIdx] -= 0x1A; // This can technically cause undesirable capitalization if invalid color syntax is used.
+                        diffTmp = 0x1A;
                     }
                     else if (str[strIdx] >= 0x10) {
                         customColor = 2;
@@ -887,10 +889,10 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
                         break;
                     }
                     if ((8 - (colorLoop - strIdx)) % 2 == 0) {
-                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] = (str[strIdx] & 0x0F) << 4;
+                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] = ((str[strIdx] - diffTmp) & 0x0F) << 4;
                     }
                     else {
-                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] += (str[strIdx] & 0x0F);
+                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] += ((str[strIdx] - diffTmp) & 0x0F);
                     }
                 }
                 strIdx--;
