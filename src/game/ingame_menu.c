@@ -877,7 +877,7 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
                 strIdx++;
                 for (colorLoop = strIdx + 8; strIdx < colorLoop; ++strIdx) {
                     if (str[strIdx] >= 0x24 && str[strIdx] <= 0x29) {
-                        str[strIdx] -= 0x1A;
+                        str[strIdx] -= 0x1A; // This can technically cause undesirable capitalization if invalid color syntax is used.
                     }
                     else if (str[strIdx] >= 0x10) {
                         customColor = 2;
