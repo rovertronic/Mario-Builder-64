@@ -270,10 +270,51 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
     s32 strPos = 0;
     u8 lineNum = 1;
 
+    s16 colorLoop;
+    u8 rgbaColors[4] = {0, 0, 0, 0};
+    u8 customColor = FALSE;
+    u8 diffTmp = 0;
+
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0.0f);
 
     while (str[strPos] != DIALOG_CHAR_TERMINATOR) {
+        if (customColor == TRUE) {
+            gDPSetEnvColor(gDisplayListHead++, rgbaColors[0], rgbaColors[1], rgbaColors[2], rgbaColors[3]);
+        }
+        else {
+            if (customColor == 2) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255); // TODO: Is it possible to retrieve the original color that was set before print_generic_string was called?
+                customColor = FALSE;
+            }
+        }
+
         switch (str[strPos]) {
+            case DIALOG_CHAR_COLOR:
+                customColor = TRUE;
+                strPos++;
+                for (colorLoop = strPos + 8; strPos < colorLoop; ++strPos) {
+                    diffTmp = 0;
+                    if (str[strPos] >= 0x24 && str[strPos] <= 0x29) {
+                        diffTmp = 0x1A;
+                    }
+                    else if (str[strPos] >= 0x10) {
+                        customColor = 2;
+                        if (str[strPos] == 0x9F)
+                            strPos = colorLoop;
+                        else
+                            strPos = colorLoop - 8;
+                        break;
+                        break;
+                    }
+                    if ((8 - (colorLoop - strPos)) % 2 == 0) {
+                        rgbaColors[(8 - (colorLoop - strPos)) / 2] = ((str[strPos] - diffTmp) & 0x0F) << 4;
+                    }
+                    else {
+                        rgbaColors[(8 - (colorLoop - strPos)) / 2] += ((str[strPos] - diffTmp) & 0x0F);
+                    }
+                }
+                strPos--;
+                break;
             case DIALOG_CHAR_DAKUTEN:
                 mark = DIALOG_MARK_DAKUTEN;
                 break;
@@ -671,7 +712,7 @@ void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
-void change_and_flash_dialog_text_color_lines(s8 colorMode, s8 lineNum) {
+void change_and_flash_dialog_text_color_lines(s8 colorMode, s8 lineNum, u8 *customColor) {
     u8 colorFade;
 
     if (colorMode == 1) {
@@ -688,6 +729,10 @@ void change_and_flash_dialog_text_color_lines(s8 colorMode, s8 lineNum) {
     } else {
         switch (gDialogBoxType) {
             case DIALOG_TYPE_ROTATE:
+                if (*customColor == 2) {
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                    *customColor = FALSE;
+                }
                 break;
             case DIALOG_TYPE_ZOOM:
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
@@ -780,6 +825,10 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
 
     u8 strChar;
 
+    s16 colorLoop;
+    u8 rgbaColors[4] = {0, 0, 0, 0};
+    u8 customColor = FALSE;
+
     u8 *str = segmented_to_virtual(dialog->str);
     s8 lineNum = 1;
 
@@ -812,13 +861,42 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
     create_dl_translation_matrix(MENU_MTX_PUSH, X_VAL3, 2 - lineNum * Y_VAL3, 0);
 
     while (pageState == DIALOG_PAGE_STATE_NONE) {
-        change_and_flash_dialog_text_color_lines(colorMode, lineNum);
+        if (customColor == TRUE) {
+            gDPSetEnvColor(gDisplayListHead++, rgbaColors[0], rgbaColors[1], rgbaColors[2], rgbaColors[3]);
+        }
+        else {
+            change_and_flash_dialog_text_color_lines(colorMode, lineNum, &customColor);
+        }
         strChar = str[strIdx];
 
         switch (strChar) {
             case DIALOG_CHAR_TERMINATOR:
                 pageState = DIALOG_PAGE_STATE_END;
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                break;
+            case DIALOG_CHAR_COLOR:
+                customColor = TRUE;
+                strIdx++;
+                for (colorLoop = strIdx + 8; strIdx < colorLoop; ++strIdx) {
+                    if (str[strIdx] >= 0x24 && str[strIdx] <= 0x29) {
+                        str[strIdx] -= 0x1A;
+                    }
+                    else if (str[strIdx] >= 0x10) {
+                        customColor = 2;
+                        if (str[strIdx] == 0x9F)
+                            strIdx = colorLoop;
+                        else
+                            strIdx = colorLoop - 8;
+                        break;
+                    }
+                    if ((8 - (colorLoop - strIdx)) % 2 == 0) {
+                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] = (str[strIdx] & 0x0F) << 4;
+                    }
+                    else {
+                        rgbaColors[(8 - (colorLoop - strIdx)) / 2] += (str[strIdx] & 0x0F);
+                    }
+                }
+                strIdx--;
                 break;
             case DIALOG_CHAR_NEWLINE:
                 lineNum++;

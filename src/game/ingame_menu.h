@@ -98,6 +98,7 @@ enum DialogSpecialChars {
 #endif
     DIALOG_CHAR_PERIOD = 0x6E,
     DIALOG_CHAR_COMMA = 0x6F,
+    DIALOG_CHAR_COLOR = 0xDF,
     DIALOG_CHAR_SPACE = 0x9E,
     DIALOG_CHAR_STAR_COUNT = 0xE0, // number of stars
     DIALOG_CHAR_UMLAUT = 0xE9,
