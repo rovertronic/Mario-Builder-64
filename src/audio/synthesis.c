@@ -123,19 +123,19 @@ inline s16 clamp16(s32 x) {
 
 inline s16 reverb_sample_left(s32 inSample) {
     u32 i = 0;
+    s32 j = 0;
+    u8 k = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
-    // u32 modCheck;
 
     for (; i < NUM_ALLPASS; ++i) {
         tmpBuf[i] = delayBufs[0][i][allpassIdx[0][i]];
     }
 
-    for (i = 0; i < NUM_ALLPASS; ++i) {
-        // modCheck = i % 6;
-
-        if (/*modCheck == 2 || modCheck == 5*/ i % 3 == 2) {
-            outTmp += (tmpBuf[i] * reverbMults[0][i / 3]) / 256;
+    for (i = 0; i < NUM_ALLPASS; ++i, ++j) {
+        if (j == 2) {
+            j -= 3;
+            outTmp += (tmpBuf[i] * reverbMults[0][k++]) / 256;
             delayBufs[0][i][allpassIdx[0][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
                 tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
@@ -146,8 +146,7 @@ inline s16 reverb_sample_left(s32 inSample) {
 
             delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 256) + tmpCarryover;
 
-            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256;
-            tmpCarryover += tmpBuf[i];
+            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256 + tmpBuf[i];
         }
 
         if (++allpassIdx[0][i] == delays[i])
@@ -159,19 +158,19 @@ inline s16 reverb_sample_left(s32 inSample) {
 
 inline s16 reverb_sample_right(s32 inSample) {
     u32 i = 0;
+    s32 j = 0;
+    u8 k = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
-    // u32 modCheck;
 
     for (; i < NUM_ALLPASS; ++i) {
         tmpBuf[i] = delayBufs[1][i][allpassIdx[1][i]];
     }
 
-    for (i = 0; i < NUM_ALLPASS; ++i) {
-        // modCheck = i % 6;
-
-        if (/*modCheck == 2 || modCheck == 5*/ i % 3 == 2) {
-            outTmp += (tmpBuf[i] * reverbMults[1][i / 3]) / 256;
+    for (i = 0; i < NUM_ALLPASS; ++i, ++j) {
+        if (j == 2) {
+            j -= 3;
+            outTmp += (tmpBuf[i] * reverbMults[1][k++]) / 256;
             delayBufs[1][i][allpassIdx[1][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
                 tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
@@ -182,11 +181,10 @@ inline s16 reverb_sample_right(s32 inSample) {
 
             delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
 
-            if (/*modCheck == 3*/ i == 6)
+            if (i == 6)
                 delayBufs[1][i][allpassIdx[1][i]] += inSample;
 
-            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256;
-            tmpCarryover += tmpBuf[i];
+            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256 + tmpBuf[i];
         }
 
         if (++allpassIdx[1][i] == delays[i])
