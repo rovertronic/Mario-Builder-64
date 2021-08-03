@@ -51,9 +51,9 @@ s32 gReverbGainIndex = 0xA6; // Affects signal retransmitted back into buffers; 
 s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with at any time
 s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
 
-// These values affect reverb delays, bigger values result in fatter echo (and more memory); can be messed with, but must be cumulatively smaller than BETTER_REVERB_SIZE/8.
+// These values affect reverb delays, bigger values result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/8.
 // If setting reverb downsample value to 1 (which currently does not work anyway), this must be BETTER_REVERB_SIZE/16.
-// These values should never be changed
+// These values should never be changed unless in this declaration or during a call to audio_reset_session, or it could lead to a major memory leak or garbage audio.
 u32 delays[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
@@ -66,7 +66,7 @@ const u32 delaysBaseline[NUM_ALLPASS] = { // Like delays variable, but represent
     1200, 1232, 1432,
     928, 1504, 1512
 };
-const s32 reverbMults[2][NUM_ALLPASS / 3] = { // These values affect reverb decay depending on the filter index; can be messed with
+const s32 reverbMults[2][NUM_ALLPASS / 3] = { // These values affect reverb decay depending on the filter index; can be messed with at any time
     {0xD2, 0x6E, 0x36, 0x1F},
     {0x38, 0x26, 0xCF, 0x71}
 };
