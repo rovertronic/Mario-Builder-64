@@ -47,11 +47,10 @@ struct VolumeChange {
 s16 *lastSamplePtrL;
 s16 *lastSamplePtrR;
 
-// Treat these like percentages; not recommended to exceed 100
-s32 gReverbRevIndex = 60;
-s32 gReverbGainIndex = 65;
-s32 gReverbWetSignal = 95;
-s32 gReverbDrySignal = 15;
+s32 gReverbRevIndex = 0x9A;
+s32 gReverbGainIndex = 0xA6;
+s32 gReverbWetSignal = 0xF3;
+s32 gReverbDrySignal = 0x26;
 
 const u32 delaysBaseline[NUM_ALLPASS] = {
     1080, 1352, 1200,
@@ -66,8 +65,8 @@ u32 delays[NUM_ALLPASS] = {
     928, 1504, 1512
 };
 const s32 reverbMults[2][NUM_ALLPASS / 3] = {
-    {82, 43, 21, 12},
-    {22, 15, 81, 44}
+    {0xD2, 0x6E, 0x36, 0x1F},
+    {0x38, 0x26, 0xCF, 0x71}
 };
 u32 allpassIdx[2][NUM_ALLPASS] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -111,7 +110,7 @@ inline s16 clamp16(s32 x) {
     return (s16) x;
 }
 
-inline s16 reverb_sample_left(s16 inSample) {
+inline s16 reverb_sample_left(s32 inSample) {
     u32 i = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
@@ -125,21 +124,21 @@ inline s16 reverb_sample_left(s16 inSample) {
         // modCheck = i % 6;
 
         if (/*modCheck == 2 || modCheck == 5*/ i % 3 == 2) {
-            outTmp += (tmpBuf[i] * reverbMults[0][i / 3]) / 100;
+            outTmp += (tmpBuf[i] * reverbMults[0][i / 3]) / 256;
             delayBufs[0][i][allpassIdx[0][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 100;
+                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
         }
         else {
             if (i == 0)
-                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 100);
+                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
 
-            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 100) + tmpCarryover;
+            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 256) + tmpCarryover;
 
             if (/*modCheck == 0*/ i == 0)
                 delayBufs[0][i][allpassIdx[0][i]] += inSample;
 
-            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 100;
+            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256;
             tmpCarryover += tmpBuf[i];
         }
 
@@ -147,10 +146,10 @@ inline s16 reverb_sample_left(s16 inSample) {
             allpassIdx[0][i] = 0;
     }
 
-    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 100);
+    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 256);
 }
 
-inline s16 reverb_sample_right(s16 inSample) {
+inline s16 reverb_sample_right(s32 inSample) {
     u32 i = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
@@ -164,21 +163,21 @@ inline s16 reverb_sample_right(s16 inSample) {
         // modCheck = i % 6;
 
         if (/*modCheck == 2 || modCheck == 5*/ i % 3 == 2) {
-            outTmp += (tmpBuf[i] * reverbMults[1][i / 3]) / 100;
+            outTmp += (tmpBuf[i] * reverbMults[1][i / 3]) / 256;
             delayBufs[1][i][allpassIdx[1][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 100;
+                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
         }
         else {
             if (i == 0)
-                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 100);
+                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
 
-            delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 100 + tmpCarryover;
+            delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
 
             if (/*modCheck == 3*/ i == 6)
                 delayBufs[1][i][allpassIdx[1][i]] += inSample;
 
-            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 100;
+            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256;
             tmpCarryover += tmpBuf[i];
         }
 
@@ -186,7 +185,7 @@ inline s16 reverb_sample_right(s16 inSample) {
             allpassIdx[1][i] = 0;
     }
 
-    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 100);
+    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 256);
 }
 
 #ifdef VERSION_EU
