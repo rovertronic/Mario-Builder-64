@@ -151,6 +151,8 @@
 #define DISABLE_AA
 // Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
 #define IA8_COINS
+// tmp
+// #define BETTER_REVERB
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
 

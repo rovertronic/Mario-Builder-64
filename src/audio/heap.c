@@ -1229,6 +1229,10 @@ void audio_reset_session(void) {
     gMaxSimultaneousNotes = preset->maxSimultaneousNotes;
     gSamplesPerFrameTarget = ALIGN16(gAiFrequency / 60);
     gReverbDownsampleRate = preset->reverbDownsampleRate;
+#ifdef BETTER_REVERB
+    if (gReverbDownsampleRate == 1)
+        gReverbDownsampleRate = 2;
+#endif
 
     switch (gReverbDownsampleRate) {
         case 1:
@@ -1250,7 +1254,6 @@ void audio_reset_session(void) {
             sReverbDownsampleRateLog = 0;
     }
 
-    gReverbDownsampleRate = preset->reverbDownsampleRate;
     gVolume = preset->volume;
     gMinAiBufferLength = gSamplesPerFrameTarget - 0x10;
     updatesPerFrame = gSamplesPerFrameTarget / 160 + 1;
@@ -1278,7 +1281,7 @@ void audio_reset_session(void) {
     temporaryMem = DOUBLE_SIZE_ON_64_BIT(preset->temporaryBankMem + preset->temporarySeqMem);
 #endif
     totalMem = persistentMem + temporaryMem;
-    wantMisc = gAudioSessionPool.size - totalMem - 0x100;
+    wantMisc = gAudioSessionPool.size - totalMem - 0x100 - BETTER_REVERB_SIZE;
     sSessionPoolSplit.wantSeq = wantMisc;
     sSessionPoolSplit.wantCustom = totalMem;
     session_pools_init(&sSessionPoolSplit);
@@ -1421,6 +1424,15 @@ void audio_reset_session(void) {
                 gSynthesisReverb.items[1][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
             }
         }
+#ifdef BETTER_REVERB
+        delayBufs = (s32***) soundAlloc(&gAudioSessionPool, 2 * sizeof(s32**));
+        delayBufs[0] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+        delayBufs[1] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+        for (i = 0; i < NUM_ALLPASS; ++i) {
+            delayBufs[0][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+            delayBufs[1][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+        }
+#endif
     }
 #endif
 

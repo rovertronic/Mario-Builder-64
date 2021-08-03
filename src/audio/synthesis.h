@@ -17,6 +17,17 @@
 #define MAX_UPDATES_PER_FRAME 4
 #endif
 
+#ifdef BETTER_REVERB
+#define BETTER_REVERB_SIZE 0xF000 // Size of ~all delay values * 8
+#else
+#define BETTER_REVERB_SIZE 0
+#endif
+
+#define NUM_ALLPASS 12
+
+extern u32 delays[NUM_ALLPASS];
+extern s32 ***delayBufs;
+
 struct ReverbRingBufferItem
 {
     s16 numSamplesAfterDownsampling;
