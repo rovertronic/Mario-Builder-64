@@ -46,15 +46,15 @@ struct VolumeChange {
 
 /* ----------------------------------------------------------REVERB PARAMETERS----------------------------------------------------------------- */
 
-s16 *lastSamplePtrL;
-s16 *lastSamplePtrR;
+s32 gReverbRevIndex = 0x9A; // Affects decay time mostly; can be messed with at any time
+s32 gReverbGainIndex = 0xA6; // Affects signal retransmitted back into buffers; can be messed with at any time
+s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with at any time
+s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
 
-s32 gReverbRevIndex = 0x9A; // Affects decay time mostly; can be messed with
-s32 gReverbGainIndex = 0xA6; // Affects signal retransmitted back into buffers; can be messed with
-s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with
-s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with
-
-u32 delays[NUM_ALLPASS] = { // These values affect reverb delays, bigger values result in fatter echo (and more memory); can be messed with, but must be cumulatively smaller than BETTER_REVERB_SIZE/8
+// These values affect reverb delays, bigger values result in fatter echo (and more memory); can be messed with, but must be cumulatively smaller than BETTER_REVERB_SIZE/8.
+// If setting reverb downsample value to 1 (which currently does not work anyway), this must be BETTER_REVERB_SIZE/16.
+// These values should never be changed
+u32 delays[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
@@ -77,8 +77,12 @@ u32 allpassIdx[2][NUM_ALLPASS] = {
 s32 tmpBuf[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 ***delayBufs;
 
-u8 consoleBetterReverb = TRUE;
-s8 betterReverbConsoleDownsample = 3; // Set this to 4 if game is running too slow; set this to -1 to vanilla reverb on console only
+u8 consoleBetterReverb = TRUE; // Do not change this line unless you know what you're doing; Please use the variable below instead.
+
+// Setting this to 4 completely breaks game sound, so set this value to -1 to use vanilla reverb for console if this is too slow.
+// You can change this value back and forth before audio_reset_session is called if different levels can tolerate the demand better than others.
+// A higher downsample value hits the game's frequency limit sooner, which may cause the reverb to be off pitch. This is a vanilla level issue (and counter intuitive).
+s8 betterReverbConsoleDownsample = 3;
 
 /* --------------------------------------------------------END REVERB PARAMETERS--------------------------------------------------------------- */
 

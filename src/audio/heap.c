@@ -1232,10 +1232,10 @@ void audio_reset_session(void) {
     gSamplesPerFrameTarget = ALIGN16(gAiFrequency / 60);
     gReverbDownsampleRate = preset->reverbDownsampleRate;
 #ifdef BETTER_REVERB
-    if (gIsConsole)
-        reverbConsole = betterReverbConsoleDownsample;
+    if (IO_READ(DPC_PIPEBUSY_REG) == 0)
+        reverbConsole = 2; // Setting this to 1 will crash unless you increase the better reverb buffer (in which case it will just freeze instead)
     else
-        reverbConsole = 2;
+        reverbConsole = betterReverbConsoleDownsample; // Console!
 
     if (reverbConsole <= 0) {
         reverbConsole = 1;
@@ -1245,9 +1245,9 @@ void audio_reset_session(void) {
         consoleBetterReverb = TRUE;
     }
     
-    if (gReverbDownsampleRate < reverbConsole)
-        gReverbDownsampleRate = reverbConsole;
-    reverbWindowSize /= (1 << (gReverbDownsampleRate - 1));
+    if (gReverbDownsampleRate < (1 << (reverbConsole - 1)))
+        gReverbDownsampleRate = (1 << (reverbConsole - 1));
+    reverbWindowSize /= gReverbDownsampleRate;
 #endif
 
     switch (gReverbDownsampleRate) {
