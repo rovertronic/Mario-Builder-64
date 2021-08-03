@@ -47,10 +47,11 @@ struct VolumeChange {
 s16 *lastSamplePtrL;
 s16 *lastSamplePtrR;
 
-f32 gReverbRevIndex = 0.6f;
-f32 gReverbGainIndex = 0.65f;
-f32 gReverbWetSignal = 0.95f;
-f32 gReverbDrySignal = 0.2f;
+// Treat these like percentages; not recommended to exceed 100
+s32 gReverbRevIndex = 60;
+s32 gReverbGainIndex = 65;
+s32 gReverbWetSignal = 95;
+s32 gReverbDrySignal = 15;
 
 u32 delays[NUM_ALLPASS] = {
     540, 675, 600,
@@ -95,7 +96,7 @@ struct SynthesisReverb gSynthesisReverb;
 u8 sAudioSynthesisPad[0x20];
 #endif
 
-s16 clamp16(s32 x) {
+inline s16 clamp16(s32 x) {
     if (x >= 32767)
         return 32767;
     if (x <= -32768)
@@ -104,7 +105,7 @@ s16 clamp16(s32 x) {
     return (s16) x;
 }
 
-s16 reverb_sample_left(s16 inSample) {
+inline s16 reverb_sample_left(s16 inSample) {
     u32 i = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
@@ -121,18 +122,18 @@ s16 reverb_sample_left(s16 inSample) {
             outTmp += tmpBuf[i] * reverbMults[0][i / 3];
             delayBufs[0][i][allpassIdx[0][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex);
+                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 100;
         }
         else {
             if (i == 0)
-                tmpCarryover += (tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex);
+                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 100);
 
-            delayBufs[0][i][allpassIdx[0][i]] = tmpBuf[i] * (-gReverbGainIndex) + tmpCarryover;
+            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 100) + tmpCarryover;
 
             if (/*modCheck == 0*/ i == 0)
                 delayBufs[0][i][allpassIdx[0][i]] += inSample;
 
-            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex);
+            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 100;
             tmpCarryover += tmpBuf[i];
         }
 
@@ -140,10 +141,10 @@ s16 reverb_sample_left(s16 inSample) {
             allpassIdx[0][i] = 0;
     }
 
-    return clamp16(outTmp * gReverbWetSignal + inSample * gReverbDrySignal);
+    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 100);
 }
 
-s16 reverb_sample_right(s16 inSample) {
+inline s16 reverb_sample_right(s16 inSample) {
     u32 i = 0;
     s32 outTmp = 0;
     s32 tmpCarryover = 0;
@@ -160,18 +161,18 @@ s16 reverb_sample_right(s16 inSample) {
             outTmp += tmpBuf[i] * reverbMults[1][i / 3];
             delayBufs[1][i][allpassIdx[1][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex);
+                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 100;
         }
         else {
             if (i == 0)
-                tmpCarryover += (tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex);
+                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 100);
 
-            delayBufs[1][i][allpassIdx[1][i]] = tmpBuf[i] * (-gReverbGainIndex) + tmpCarryover;
+            delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 100 + tmpCarryover;
 
             if (/*modCheck == 3*/ i == 6)
                 delayBufs[1][i][allpassIdx[1][i]] += inSample;
 
-            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex);
+            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 100;
             tmpCarryover += tmpBuf[i];
         }
 
@@ -179,7 +180,7 @@ s16 reverb_sample_right(s16 inSample) {
             allpassIdx[1][i] = 0;
     }
 
-    return clamp16(outTmp * gReverbWetSignal + inSample * gReverbDrySignal);
+    return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 100);
 }
 
 #ifdef VERSION_EU
@@ -287,7 +288,7 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
     }
 #else
     item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
-    if (gReverbDownsampleRate == 2) {
+    if (gReverbDownsampleRate != 1) {
         for (srcPos = 0, dstPos = 0; dstPos < item->lengthA / 2;
                 srcPos += gReverbDownsampleRate, dstPos++) {
             gSynthesisReverb.ringBuffer.left[dstPos + item->startPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
