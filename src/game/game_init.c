@@ -385,9 +385,13 @@ void render_init(void) {
 
     // Skip incrementing the initial framebuffer index on emulators so that they display immediately as the Gfx task finishes
     // VC probably emulates osViSwapBuffer accurately so instant patch breaks VC compatibility
-    if (!gIsConsole) { // Read RDP Clock Register, has a value of zero on emulators
+#ifndef VC_HACKS
+    if ((*(volatile u32 *)0xA4100010) != 0) { // Read RDP Clock Register, has a value of zero on emulators
+#endif
         sRenderingFrameBuffer++;
+#ifndef VC_HACKS
     }
+#endif
     gGlobalTimer++;
 }
 
@@ -423,14 +427,18 @@ void display_and_vsync(void) {
     profiler_log_thread5_time(THREAD5_END);
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     // Skip swapping buffers on emulator so that they display immediately as the Gfx task finishes
-    if (!gIsConsole) { // Read RDP Clock Register, has a value of zero on emulators
+#ifndef VC_HACKS
+    if ((*(volatile u32 *)0xA4100010) != 0) { // Read RDP Clock Register, has a value of zero on emulators
+#endif
         if (++sRenderedFramebuffer == 3) {
             sRenderedFramebuffer = 0;
         }
         if (++sRenderingFrameBuffer == 3) {
             sRenderingFrameBuffer = 0;
         }
+#ifndef VC_HACKS
     }
+#endif
     gGlobalTimer++;
 }
 
