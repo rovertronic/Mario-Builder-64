@@ -1443,7 +1443,7 @@ void audio_reset_session(void) {
 #ifdef BETTER_REVERB
         if (consoleBetterReverb) {
             for (i = 0; i < NUM_ALLPASS; ++i)
-                delays[i] = delaysBaseline[i] / (1 << (gReverbDownsampleRate - 1));
+                delays[i] = delaysBaseline[i] / gReverbDownsampleRate;
 
             delayBufs = (s32***) soundAlloc(&gAudioSessionPool, 2 * sizeof(s32**));
             delayBufs[0] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));

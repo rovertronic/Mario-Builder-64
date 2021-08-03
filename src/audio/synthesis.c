@@ -46,7 +46,7 @@ struct VolumeChange {
 
 /* ----------------------------------------------------------REVERB PARAMETERS----------------------------------------------------------------- */
 
-s32 gReverbRevIndex = 0x9A; // Affects decay time mostly; can be messed with at any time
+s32 gReverbRevIndex = 0x9A; // Affects decay time mostly; can be messed with at any time (and also probably the most useful parameter here)
 s32 gReverbGainIndex = 0xA6; // Affects signal retransmitted back into buffers; can be messed with at any time
 s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with at any time
 s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
@@ -299,6 +299,7 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
 #ifdef BETTER_REVERB
     if (consoleBetterReverb) {
         item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
+        osInvalDCache(item->toDownsampleLeft, DEFAULT_LEN_2CH);
         if (gReverbDownsampleRate != 1) {
             for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
                     srcPos += gReverbDownsampleRate, dstPos++) {
