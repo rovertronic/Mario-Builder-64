@@ -18,7 +18,7 @@
 #endif
 
 #ifdef BETTER_REVERB
-#define BETTER_REVERB_SIZE 0xF000 // Size of ~all delay values * 8
+#define BETTER_REVERB_SIZE 0xF000 // Size of all delaysBaseline values * 8 (plus array pointers)
 #else
 #define BETTER_REVERB_SIZE 0
 #endif
@@ -28,6 +28,9 @@
 extern const u32 delaysBaseline[NUM_ALLPASS];
 extern u32 delays[NUM_ALLPASS];
 extern s32 ***delayBufs;
+
+extern u8 consoleBetterReverb;
+extern s8 betterReverbConsoleDownsample;
 
 struct ReverbRingBufferItem
 {

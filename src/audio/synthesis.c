@@ -44,27 +44,29 @@ struct VolumeChange {
     u16 targetRight;
 };
 
+/* ----------------------------------------------------------REVERB PARAMETERS----------------------------------------------------------------- */
+
 s16 *lastSamplePtrL;
 s16 *lastSamplePtrR;
 
-s32 gReverbRevIndex = 0x9A;
-s32 gReverbGainIndex = 0xA6;
-s32 gReverbWetSignal = 0xF3;
-s32 gReverbDrySignal = 0x26;
+s32 gReverbRevIndex = 0x9A; // Affects decay time mostly; can be messed with
+s32 gReverbGainIndex = 0xA6; // Affects signal retransmitted back into buffers; can be messed with
+s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with
+s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with
 
-const u32 delaysBaseline[NUM_ALLPASS] = {
+u32 delays[NUM_ALLPASS] = { // These values affect reverb delays, bigger values result in fatter echo (and more memory); can be messed with, but must be cumulatively smaller than BETTER_REVERB_SIZE/8
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
-u32 delays[NUM_ALLPASS] = {
+const u32 delaysBaseline[NUM_ALLPASS] = { // Like delays variable, but represent max values that never change (also probably somewhat redundant)
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
-const s32 reverbMults[2][NUM_ALLPASS / 3] = {
+const s32 reverbMults[2][NUM_ALLPASS / 3] = { // These values affect reverb decay depending on the filter index; can be messed with
     {0xD2, 0x6E, 0x36, 0x1F},
     {0x38, 0x26, 0xCF, 0x71}
 };
@@ -74,6 +76,11 @@ u32 allpassIdx[2][NUM_ALLPASS] = {
 };
 s32 tmpBuf[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 ***delayBufs;
+
+u8 consoleBetterReverb = TRUE;
+s8 betterReverbConsoleDownsample = 3; // Set this to 4 if game is running too slow; set this to -1 to vanilla reverb on console only
+
+/* --------------------------------------------------------END REVERB PARAMETERS--------------------------------------------------------------- */
 
 u64 *synthesis_do_one_audio_update(s16 *aiBuf, s32 bufLen, u64 *cmd, s32 updateIndex);
 #ifdef VERSION_EU
@@ -268,8 +275,11 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
     s32 numSamplesAfterDownsampling;
     s32 excessiveSamples;
 
-#ifndef BETTER_REVERB
+#ifdef BETTER_REVERB
+    if (!consoleBetterReverb && gReverbDownsampleRate != 1) {
+#else
     if (gReverbDownsampleRate != 1) {
+#endif
         if (gSynthesisReverb.framesLeftToIgnore == 0) {
             // Now that the RSP has finished, downsample the samples produced two frames ago by skipping
             // samples.
@@ -291,17 +301,19 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
             }
         }
     }
-#else
-    item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
-    if (gReverbDownsampleRate != 1) {
-        for (srcPos = 0, dstPos = 0; dstPos < item->lengthA / 2;
-                srcPos += gReverbDownsampleRate, dstPos++) {
-            gSynthesisReverb.ringBuffer.left[dstPos + item->startPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
-            gSynthesisReverb.ringBuffer.right[dstPos + item->startPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
-        }
-        for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
-            gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
-            gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+#ifdef BETTER_REVERB
+    if (consoleBetterReverb) {
+        item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
+        if (gReverbDownsampleRate != 1) {
+            for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
+                    srcPos += gReverbDownsampleRate, dstPos++) {
+                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
+                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+            }
+            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
+                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
+                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+            }
         }
     }
 #endif
