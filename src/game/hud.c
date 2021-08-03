@@ -522,4 +522,6 @@ void render_hud(void) {
             print_text(10, 60, "SURFACE NODE POOL FULL");
         }
     }
+
+    print_fps(16, 16);
 }
