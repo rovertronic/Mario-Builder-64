@@ -25,6 +25,7 @@
 
 #define NUM_ALLPASS 12
 
+extern const u32 delaysBaseline[NUM_ALLPASS];
 extern u32 delays[NUM_ALLPASS];
 extern s32 ***delayBufs;
 

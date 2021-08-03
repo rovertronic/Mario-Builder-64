@@ -1117,6 +1117,7 @@ void audio_reset_session(void) {
 #if defined(VERSION_JP) || defined(VERSION_US)
     s32 frames;
     s32 remainingDmas;
+    s8 reverbConsole;
 #else
     struct SynthesisReverb *reverb;
 #endif
@@ -1230,8 +1231,14 @@ void audio_reset_session(void) {
     gSamplesPerFrameTarget = ALIGN16(gAiFrequency / 60);
     gReverbDownsampleRate = preset->reverbDownsampleRate;
 #ifdef BETTER_REVERB
-    if (gReverbDownsampleRate == 1)
-        gReverbDownsampleRate = 2;
+    if (IO_READ(DPC_PIPEBUSY_REG) != 0)
+        reverbConsole = 3; // Is a console user; change to 4 if still too slow
+    else
+        reverbConsole = 2;
+    
+    if (gReverbDownsampleRate < reverbConsole)
+        gReverbDownsampleRate = reverbConsole;
+    reverbWindowSize /= (1 << (gReverbDownsampleRate - 1));
 #endif
 
     switch (gReverbDownsampleRate) {
@@ -1425,6 +1432,9 @@ void audio_reset_session(void) {
             }
         }
 #ifdef BETTER_REVERB
+        for (i = 0; i < NUM_ALLPASS; ++i)
+            delays[i] = delaysBaseline[i] / (1 << (gReverbDownsampleRate - 1));
+
         delayBufs = (s32***) soundAlloc(&gAudioSessionPool, 2 * sizeof(s32**));
         delayBufs[0] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
         delayBufs[1] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
