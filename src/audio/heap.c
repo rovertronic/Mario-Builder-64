@@ -1233,9 +1233,9 @@ void audio_reset_session(void) {
     gReverbDownsampleRate = preset->reverbDownsampleRate;
 #ifdef BETTER_REVERB
     if (gIsConsole)
-        reverbConsole = 2; // Setting this to 1 will crash unless you increase the better reverb buffer (in which case it will just freeze instead)
-    else
         reverbConsole = betterReverbConsoleDownsample; // Console!
+    else
+        reverbConsole = 2; // Setting this to 1 will crash unless you increase the better reverb buffer (in which case it will just freeze instead)
 
     if (reverbConsole <= 0) {
         reverbConsole = 1;

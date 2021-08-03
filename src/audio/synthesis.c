@@ -142,12 +142,9 @@ inline s16 reverb_sample_left(s32 inSample) {
         }
         else {
             if (i == 0)
-                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
+                tmpCarryover += ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
 
             delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 256) + tmpCarryover;
-
-            if (/*modCheck == 0*/ i == 0)
-                delayBufs[0][i][allpassIdx[0][i]] += inSample;
 
             tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256;
             tmpCarryover += tmpBuf[i];
