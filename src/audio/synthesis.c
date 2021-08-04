@@ -37,6 +37,7 @@
 
 #define AUDIO_ALIGN(val, amnt) (((val) + (1 << amnt) - 1) & ~((1 << amnt) - 1))
 
+#ifdef BETTER_REVERB
 /* ----------------------------------------------------------------------BEGIN REVERB PARAMETERS---------------------------------------------------------------------- */
 
 
@@ -47,6 +48,8 @@
  * To take advantage of the reverb effect, you can change the echo parameters set in levels/level_defines.h to tailor the reverb to each specific level area.
  * To adjust reverb presence with individual sound effects, apply the .set_reverb command within sound/sequences/00_sound_player.s (see examples of other sounds that use it).
  * To use with M64 sequences, set the Effect parameter for each channel accordingly (CC 91 for MIDI files).
+ * 
+ * Most parameter configuration is to be done here, though BETTER_REVERB_SIZE can be adjusted in audio/synthesis.h.
  */
 
 
@@ -62,6 +65,10 @@ s8 betterReverbConsoleDownsample = 3;
 // A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
 // Higher downsample values also result in slightly shorter reverb decay times.
 s8 betterReverbEmulatorDownsample = 2;
+
+// Set this to TRUE to use mono over stereo for reverb. This should increase performance, but at the cost of a less fullfilling reverb experience.
+// This can be changed at any time, but is best set when calling audio_reset_session.
+u8 monoReverb = FALSE;
 
 s32 gReverbRevIndex = 0x5F; // Affects decay time mostly (large values can cause terrible feedback!); can be messed with at any time
 s32 gReverbGainIndex = 0x9F; // Affects signal immediately retransmitted back into buffers (mid-high values yield the strongest effect); can be messed with at any time
@@ -119,6 +126,7 @@ s32 allpassIdx[2][NUM_ALLPASS] = {
 s32 tmpBufL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 ***delayBufs;
+#endif
 
 
 struct VolumeChange {
@@ -154,6 +162,7 @@ struct SynthesisReverb gSynthesisReverb;
 u8 sAudioSynthesisPad[0x20];
 #endif
 
+#ifdef BETTER_REVERB
 inline s16 clamp16(s32 x) {
     if (x >= 32767)
         return 32767;
@@ -237,7 +246,7 @@ inline s16 reverb_sample_left(s32 inSample) {
 
     return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 256);
 }
-
+/* UNUSED
 inline s16 reverb_sample_right(s32 inSample) {
     u32 i = 0;
     s32 j = 0;
@@ -269,7 +278,8 @@ inline s16 reverb_sample_right(s32 inSample) {
     }
 
     return clamp16((outTmp * gReverbWetSignal + inSample * gReverbDrySignal) / 256);
-}
+}*/
+#endif
 
 #ifdef VERSION_EU
 s16 gVolume;
@@ -380,7 +390,7 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
 #ifdef BETTER_REVERB
     else if (toggleBetterReverb) {
         item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
-        if (gSoundMode == SOUND_MODE_MONO) {
+        if (gSoundMode == SOUND_MODE_MONO || monoReverb) {
             if (gReverbDownsampleRate != 1) {
                 osInvalDCache(item->toDownsampleLeft, DEFAULT_LEN_2CH);
                 for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos; srcPos += gReverbDownsampleRate, dstPos++) {
