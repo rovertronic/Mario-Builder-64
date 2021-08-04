@@ -53,6 +53,13 @@ s32 gReverbGainIndex = 0xA3; // Affects signal immediately retransmitted back in
 s32 gReverbWetSignal = 0xEF; // Amount of reverb specific output in final signal; can be messed with at any time
 s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
 
+// This value controls the size of the reverb buffer. It affects the global reverb delay time. This is probably the easiest parameter to control usefully.
+// It is not recommended setting this to values greater than 0x1000 * 2^(downsample factor - 1), as you run the risk of running into a memory issue (though this is far from a guarantee).
+// Setting the value lower than the downsample buffer size will destroy the game audio, so this is taken into account automatically but may limit the lower possibilities.
+// If this value is changed, it will go into effect the next time audio_reset_session is called.
+// Set to -1 to use a default preset instead. Higher values represent more audio delay (usually better for echoey spaces).
+s32 betterReverbWindowsSize = -1;
+
 // These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/4.
 // If setting a reverb downsample value to 1, this must be smaller than BETTER_REVERB_SIZE/8.
 // These values should never be changed unless in this declaration or during a call to audio_reset_session, as it could otherwise lead to a major memory leak or garbage audio.
@@ -81,7 +88,7 @@ const s32 reverbMults[2][NUM_ALLPASS / 3] = {
     {0x38, 0x26, 0xCF, 0x71} // Right Channel
 };
 
-// Setting this to 4 completely ruins game sound, so set this value to -1 to use vanilla reverb if this is too slow, or if it just doesn't fit the desired aesthetic of a level.
+// Setting this to 4 corrupts the game, so set this value to -1 to use vanilla reverb if this is too slow, or if it just doesn't fit the desired aesthetic of a level.
 // You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
 // A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
 // Higher downsample values also result in slightly shorter reverb decay times.

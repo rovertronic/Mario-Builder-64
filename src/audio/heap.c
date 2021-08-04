@@ -1251,12 +1251,15 @@ void audio_reset_session(void) {
     else {
         toggleBetterReverb = TRUE;
     }
+
+    if (toggleBetterReverb && betterReverbWindowsSize >= 0)
+        reverbWindowSize = betterReverbWindowsSize;
     
     if (gReverbDownsampleRate < (1 << (reverbConsole - 1)))
         gReverbDownsampleRate = (1 << (reverbConsole - 1));
     reverbWindowSize /= gReverbDownsampleRate;
-    // if (reverbWindowSize < DEFAULT_LEN_2CH) // This might not actually be necessary?
-    //     reverbWindowSize = DEFAULT_LEN_2CH;
+    if (reverbWindowSize < DEFAULT_LEN_2CH) // Minimum window size to not overflow
+        reverbWindowSize = DEFAULT_LEN_2CH;
 #endif
 
     switch (gReverbDownsampleRate) {

@@ -26,6 +26,7 @@
 
 #define NUM_ALLPASS 12 // Number of delay filters to use with better reverb; do not change this value if you don't know what you're doing.
 
+extern s32 betterReverbWindowsSize;
 extern const s32 delaysBaseline[NUM_ALLPASS];
 extern s32 delays[NUM_ALLPASS];
 extern s32 ***delayBufs;
