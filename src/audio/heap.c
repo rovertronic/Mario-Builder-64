@@ -1248,6 +1248,8 @@ void audio_reset_session(void) {
     if (gReverbDownsampleRate < (1 << (reverbConsole - 1)))
         gReverbDownsampleRate = (1 << (reverbConsole - 1));
     reverbWindowSize /= gReverbDownsampleRate;
+    if (reverbWindowSize < DEFAULT_LEN_2CH) // This might not actually be necessary?
+        reverbWindowSize = DEFAULT_LEN_2CH;
 #endif
 
     switch (gReverbDownsampleRate) {
