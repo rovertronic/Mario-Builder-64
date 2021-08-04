@@ -37,7 +37,8 @@
 
 #define AUDIO_ALIGN(val, amnt) (((val) + (1 << amnt) - 1) & ~((1 << amnt) - 1))
 
-/* -------------------------------------------------------BEGIN REVERB PARAMETERS-------------------------------------------------------------- */
+/* ----------------------------------------------------------------------BEGIN REVERB PARAMETERS---------------------------------------------------------------------- */
+
 
 /**
  * This reverb is a much more natural, ambient implementation over vanilla's, though at the cost of some memory and performance.
@@ -48,9 +49,23 @@
  * To use with M64 sequences, set the Effect parameter for each channel accordingly (CC 91 for MIDI files).
  */
 
-s32 gReverbRevIndex = 0x7F; // Affects decay time mostly; can be messed with at any time (and also probably the most useful parameter here)
-s32 gReverbGainIndex = 0xA3; // Affects signal immediately retransmitted back into buffers; can be messed with at any time
-s32 gReverbWetSignal = 0xEF; // Amount of reverb specific output in final signal; can be messed with at any time
+
+// Setting this to 4 corrupts the game, so set this value to -1 to use vanilla reverb if this is too slow, or if it just doesn't fit the desired aesthetic of a level.
+// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
+// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
+// Higher downsample values also result in slightly shorter reverb decay times.
+s8 betterReverbConsoleDownsample = 3;
+
+// Most emulators can handle a default value of 2, but 3 may be advisable in some cases if targeting older emulators (e.g. PJ64 1.6). Setting this to -1 also uses vanilla reverb.
+// Using a value of 1 is not recommended except in very specific situations. If you do decide to use 1 here, you must adjust BETTER_REVERB_SIZE appropriately.
+// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
+// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
+// Higher downsample values also result in slightly shorter reverb decay times.
+s8 betterReverbEmulatorDownsample = 2;
+
+s32 gReverbRevIndex = 0x5F; // Affects decay time mostly (large values can cause terrible feedback!); can be messed with at any time
+s32 gReverbGainIndex = 0x9F; // Affects signal immediately retransmitted back into buffers (mid-high values yield the strongest effect); can be messed with at any time
+s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal (also affects decay); can be messed with at any time
 s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
 
 // This value controls the size of the reverb buffer. It affects the global reverb delay time. This is probably the easiest parameter to control usefully.
@@ -59,6 +74,10 @@ s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large 
 // If this value is changed, it will go into effect the next time audio_reset_session is called.
 // Set to -1 to use a default preset instead. Higher values represent more audio delay (usually better for echoey spaces).
 s32 betterReverbWindowsSize = -1;
+
+
+/* ---------------------------------------------------------------------ADVANCED REVERB PARAMETERS-------------------------------------------------------------------- */
+
 
 // These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/4.
 // If setting a reverb downsample value to 1, this must be smaller than BETTER_REVERB_SIZE/8.
@@ -88,20 +107,8 @@ const s32 reverbMults[2][NUM_ALLPASS / 3] = {
     {0x38, 0x26, 0xCF, 0x71} // Right Channel
 };
 
-// Setting this to 4 corrupts the game, so set this value to -1 to use vanilla reverb if this is too slow, or if it just doesn't fit the desired aesthetic of a level.
-// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
-// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
-// Higher downsample values also result in slightly shorter reverb decay times.
-s8 betterReverbConsoleDownsample = 3;
 
-// Most emulators can handle a default value of 2, but 3 may be advisable in some cases if targeting older emulators (e.g. PJ64 1.6). Setting this to -1 also uses vanilla reverb.
-// Using a value of 1 is not recommended except in very specific situations. If you do decide to use 1 here, you must adjust BETTER_REVERB_SIZE appropriately.
-// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
-// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
-// Higher downsample values also result in slightly shorter reverb decay times.
-s8 betterReverbEmulatorDownsample = 2;
-
-/* --------------------------------------------------------END REVERB PARAMETERS--------------------------------------------------------------- */
+/* -----------------------------------------------------------------------END REVERB PARAMETERS----------------------------------------------------------------------- */
 
 // Do not touch these values.
 u8 toggleBetterReverb = TRUE;
