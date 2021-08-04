@@ -74,6 +74,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - ia8 coins (64x64), the vanilla coin texture is upgraded to accomodate. *
 - Skybox size modifier. You can have 2x, 3x and 4x size skyboxes (you can select the skybox size in `config.h`.) Please note that this might affect console performance, especially 4x mode. 2x or 3x mode is recommended if aiming for console. By CowQuack *
 - You can set the black border size to different values for console and emulator. It's set to 0 by default for both. *
+- This repo supports much better implementation of reverb over vanilla's fake echo reverb. Great for caves or eerie levels, as well as just a better audio experience in general. See `audio/synthesis.c` for more configuration info. (By ArcticJaguar725) *
 
 # UltraSM64
 

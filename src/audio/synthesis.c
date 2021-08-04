@@ -37,40 +37,67 @@
 
 #define AUDIO_ALIGN(val, amnt) (((val) + (1 << amnt) - 1) & ~((1 << amnt) - 1))
 
-struct VolumeChange {
-    u16 sourceLeft;
-    u16 sourceRight;
-    u16 targetLeft;
-    u16 targetRight;
-};
+/* -------------------------------------------------------BEGIN REVERB PARAMETERS-------------------------------------------------------------- */
 
-/* ----------------------------------------------------------REVERB PARAMETERS----------------------------------------------------------------- */
+/**
+ * This reverb is a much more natural, ambient implementation over vanilla's, though at the cost of some memory and performance.
+ * These parameters are here to provide maximum control over the usage of the reverb effect, as well as with game performance.
+ * 
+ * To take advantage of the reverb effect, you can change the echo parameters set in levels/level_defines.h to tailor the reverb to each specific level area.
+ * To adjust reverb presence with individual sound effects, apply the .set_reverb command within sound/sequences/00_sound_player.s (see examples of other sounds that use it).
+ * To use with M64 sequences, set the Effect parameter for each channel accordingly (CC 91 for MIDI files).
+ */
 
 s32 gReverbRevIndex = 0x7F; // Affects decay time mostly; can be messed with at any time (and also probably the most useful parameter here)
-s32 gReverbGainIndex = 0xA3; // Affects signal retransmitted back into buffers; can be messed with at any time
-s32 gReverbWetSignal = 0xF3; // Amount of reverb specific output in final signal; can be messed with at any time
+s32 gReverbGainIndex = 0xA3; // Affects signal immediately retransmitted back into buffers; can be messed with at any time
+s32 gReverbWetSignal = 0xEF; // Amount of reverb specific output in final signal; can be messed with at any time
 s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large values can cause terrible feedback!); can be messed with at any time
 
-// These values affect reverb delays, bigger values result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/8.
-// If setting reverb downsample value to 1 (which currently does not work anyway), this must be BETTER_REVERB_SIZE/16.
-// These values should never be changed unless in this declaration or during a call to audio_reset_session, or it could lead to a major memory leak or garbage audio.
-// These values should also never be negative; these are just s32s to avoid typecasts
+// These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/4.
+// If setting a reverb downsample value to 1, this must be smaller than BETTER_REVERB_SIZE/8.
+// These values should never be changed unless in this declaration or during a call to audio_reset_session, as it could otherwise lead to a major memory leak or garbage audio.
+// None of the delay values should ever be smaller than 1 either; these are s32s purely to avoid typecasts.
+// These values are currently set by using delaysBaseline in the audio_reset_session function, so its behavior must be overridden to use dynamically (or at all).
 s32 delays[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
-const s32 delaysBaseline[NUM_ALLPASS] = { // Like delays variable, but represent max values that never change (also probably somewhat redundant)
+
+// Like the delays array, but represents default max values that don't change (also probably somewhat redundant)
+// Change this array rather than the delays array to customize reverb delay times globally.
+// Similarly to delays, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
+const s32 delaysBaseline[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
-const s32 reverbMults[2][NUM_ALLPASS / 3] = { // These values affect reverb decay depending on the filter index; can be messed with at any time
-    {0xD2, 0x6E, 0x36, 0x1F},
-    {0x38, 0x26, 0xCF, 0x71}
+
+// These values affect reverb decay depending on the filter index; can be messed with at any time
+const s32 reverbMults[2][NUM_ALLPASS / 3] = {
+    {0xD2, 0x6E, 0x36, 0x1F}, // Left Channel
+    {0x38, 0x26, 0xCF, 0x71} // Right Channel
 };
+
+// Setting this to 4 completely ruins game sound, so set this value to -1 to use vanilla reverb if this is too slow, or if it just doesn't fit the desired aesthetic of a level.
+// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
+// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
+// Higher downsample values also result in slightly shorter reverb decay times.
+s8 betterReverbConsoleDownsample = 3;
+
+// Most emulators can handle a default value of 2, but 3 may be advisable in some cases if targeting older emulators (e.g. PJ64 1.6). Setting this to -1 also uses vanilla reverb.
+// Using a value of 1 is not recommended except in very specific situations. If you do decide to use 1 here, you must adjust BETTER_REVERB_SIZE appropriately.
+// You can change this value before audio_reset_session gets called if different levels can tolerate the demand better than others or just have different reverb goals.
+// A higher downsample value hits the game's frequency limit sooner, which can cause the reverb sometimes to be off pitch. This is a vanilla level issue (and also counter intuitive).
+// Higher downsample values also result in slightly shorter reverb decay times.
+s8 betterReverbEmulatorDownsample = 2;
+
+/* --------------------------------------------------------END REVERB PARAMETERS--------------------------------------------------------------- */
+
+// Do not touch these values.
+u8 toggleBetterReverb = TRUE;
 s32 allpassIdx[2][NUM_ALLPASS] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -79,14 +106,13 @@ s32 tmpBufL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 ***delayBufs;
 
-u8 consoleBetterReverb = TRUE; // Do not change this line unless you know what you're doing; Please use the variable below instead.
 
-// Setting this to 4 completely breaks game sound, so set this value to -1 to use vanilla reverb for console if this is too slow.
-// You can change this value back and forth before audio_reset_session is called if different levels can tolerate the demand better than others.
-// A higher downsample value hits the game's frequency limit sooner, which may cause the reverb to be off pitch. This is a vanilla level issue (and counter intuitive).
-s8 betterReverbConsoleDownsample = 3;
-
-/* --------------------------------------------------------END REVERB PARAMETERS--------------------------------------------------------------- */
+struct VolumeChange {
+    u16 sourceLeft;
+    u16 sourceRight;
+    u16 targetLeft;
+    u16 targetRight;
+};
 
 u64 *synthesis_do_one_audio_update(s16 *aiBuf, s32 bufLen, u64 *cmd, s32 updateIndex);
 #ifdef VERSION_EU
@@ -312,7 +338,7 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
     s32 excessiveSamples;
 
 #ifdef BETTER_REVERB
-    if (!consoleBetterReverb && gReverbDownsampleRate != 1) {
+    if (!toggleBetterReverb && gReverbDownsampleRate != 1) {
 #else
     if (gReverbDownsampleRate != 1) {
 #endif
@@ -338,7 +364,7 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
         }
     }
 #ifdef BETTER_REVERB
-    else if (consoleBetterReverb) {
+    else if (toggleBetterReverb) {
         item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
         if (gSoundMode == SOUND_MODE_MONO) {
             if (gReverbDownsampleRate != 1) {

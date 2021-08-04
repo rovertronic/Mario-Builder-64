@@ -1118,7 +1118,9 @@ void audio_reset_session(void) {
 #if defined(VERSION_JP) || defined(VERSION_US)
     s32 frames;
     s32 remainingDmas;
+#ifdef BETTER_REVERB
     s8 reverbConsole;
+#endif
 #else
     struct SynthesisReverb *reverb;
 #endif
@@ -1235,14 +1237,14 @@ void audio_reset_session(void) {
     if (gIsConsole)
         reverbConsole = betterReverbConsoleDownsample; // Console!
     else
-        reverbConsole = 2; // Setting this to 1 is REALLY slow, please use sparingly!
+        reverbConsole = betterReverbEmulatorDownsample; // Setting this to 1 is REALLY slow, please use sparingly!
 
     if (reverbConsole <= 0) {
         reverbConsole = 1;
-        consoleBetterReverb = FALSE;
+        toggleBetterReverb = FALSE;
     }
     else {
-        consoleBetterReverb = TRUE;
+        toggleBetterReverb = TRUE;
     }
     
     if (gReverbDownsampleRate < (1 << (reverbConsole - 1)))
@@ -1446,7 +1448,7 @@ void audio_reset_session(void) {
  // This does not have to be reset after being initialized for the first time, which would speed up load times dramatically.
  // However, reseting this allows for proper clearing of the reverb buffers, as well as dynamic customization of the delays array.
 #ifdef BETTER_REVERB
-        if (consoleBetterReverb) {
+        if (toggleBetterReverb) {
             for (i = 0; i < NUM_ALLPASS; ++i)
                 delays[i] = delaysBaseline[i] / gReverbDownsampleRate;
 

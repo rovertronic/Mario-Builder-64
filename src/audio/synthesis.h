@@ -18,20 +18,21 @@
 #endif
 
 #ifdef BETTER_REVERB
-#define BETTER_REVERB_SIZE 0xF200 // Size of all delaysBaseline values * 8 / 2^downsampleFactor (plus array pointers)
-// #define BETTER_REVERB_SIZE 0x1E200 // For use with no downsampling (Warning: very slow!)
+#define BETTER_REVERB_SIZE 0xF200 // Size determined by ((all delaysBaseline values * 16) / (2 ^ Minimum Downsample Factor)) + array pointers; can be increased if needed
+// #define BETTER_REVERB_SIZE 0x1E200 // For use with a downsampling value of 1 (i.e. no downsampling at all)
 #else
 #define BETTER_REVERB_SIZE 0
 #endif
 
-#define NUM_ALLPASS 12
+#define NUM_ALLPASS 12 // Number of delay filters to use with better reverb; do not change this value if you don't know what you're doing.
 
 extern const s32 delaysBaseline[NUM_ALLPASS];
 extern s32 delays[NUM_ALLPASS];
 extern s32 ***delayBufs;
 
-extern u8 consoleBetterReverb;
+extern u8 toggleBetterReverb;
 extern s8 betterReverbConsoleDownsample;
+extern s8 betterReverbEmulatorDownsample;
 
 struct ReverbRingBufferItem
 {
