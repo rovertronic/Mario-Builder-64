@@ -20,6 +20,7 @@ USE_DEBUG := 0
 
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
+VC_HACKS ?= 0
 
 # CONSOLE - selects the console to target
 #   bb - Targets the iQue Player (codenamed BB)
@@ -34,6 +35,10 @@ else ifeq ($(CONSOLE),bb)
   INCLUDE_DIRS   += include/ique
   LIBS_DIR       := lib/ique
   DEFINES        += BBPLAYER=1
+endif
+
+ifeq ($(VC_HACKS), 1)
+  DEFINES += VC_HACKS=1
 endif
 
 # COMPILER - selects the C compiler to use
@@ -417,7 +422,7 @@ DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 # C compiler options
 CFLAGS = -G 0 $(OPT_FLAGS) $(TARGET_CFLAGS) $(MIPSISET) $(DEF_INC_CFLAGS)
 ifeq ($(COMPILER),gcc)
-  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra -Wno-missing-braces
+  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra -Wno-missing-braces -fno-jump-tables
 else
   CFLAGS += -non_shared -Wab,-r4300_mul -Xcpluscomm -Xfullwarn -signed -32
 endif
@@ -492,6 +497,9 @@ all: $(ROM)
 ifeq ($(COMPARE),1)
 	@$(PRINT) "$(GREEN)Checking if ROM matches.. $(NO_COL)\n"
 	@$(SHA1SUM) --quiet -c $(TARGET).sha1 && $(PRINT) "$(TARGET): $(GREEN)OK$(NO_COL)\n" || ($(PRINT) "$(YELLOW)Building the ROM file has succeeded, but does not match the original ROM.\nThis is expected, and not an error, if you are making modifications.\nTo silence this message, use 'make COMPARE=0.' $(NO_COL)\n" && false)
+else
+	@$(SHA1SUM) $(ROM)
+	@$(PRINT) "${GREEN}Build succeeded.\n"
 endif
 
 clean:
