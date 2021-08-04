@@ -45,7 +45,7 @@ struct GfxPool *gGfxPool;
 OSContStatus gControllerStatuses[4];
 OSContPad gControllerPads[4];
 u8 gControllerBits;
-u8 gIsConsole;
+u8 gIsConsole = TRUE; // Needs to be initialized before audio_reset_session is called
 u8 gBorderHeight;
 #ifdef EEP
 s8 gEepromProbe;
@@ -77,11 +77,9 @@ UNUSED static s32 sUnusedGameInitValue = 0;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
-u8 gIsConsole;
 #ifdef WIDE
 u8 gWidescreen;
 #endif
-u8 gBorderHeight;
 
 // Framebuffer rendering values (max 3)
 u16 sRenderedFramebuffer = 0;

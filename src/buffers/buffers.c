@@ -7,6 +7,7 @@
 #include <hvqm/hvqm.h>
 #endif
 #include "config.h"
+#include "audio/synthesis.h"
 
 ALIGNED8 u8 gDecompressionHeap[0xD000];
 #if defined(VERSION_EU)
@@ -14,7 +15,7 @@ ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EX
 #elif defined(VERSION_SH)
 ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE) - 0x4800];
 #else
-ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE)];
+ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE + BETTER_REVERB_SIZE)];
 #endif
 
 ALIGNED8 u8 gIdleThreadStack[0x800];
