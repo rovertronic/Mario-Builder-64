@@ -126,24 +126,20 @@ inline s16 reverb_sample_left(s32 inSample) {
     s32 j = 0;
     u8 k = 0;
     s32 outTmp = 0;
-    s32 tmpCarryover = 0;
+    s32 tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
 
-    for (i = 0; i < NUM_ALLPASS; ++i, ++j) {
+    for (; i < NUM_ALLPASS; ++i, ++j) {
         tmpBuf[i] = delayBufs[0][i][allpassIdx[0][i]];
 
         if (j == 2) {
-            j -= 3;
+            j = -1;
             outTmp += (tmpBuf[i] * reverbMults[0][k++]) / 256;
             delayBufs[0][i][allpassIdx[0][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
                 tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
         }
         else {
-            if (i == 0)
-                tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
-
-            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex) / 256) + tmpCarryover;
-
+            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
             tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256 + tmpBuf[i];
         }
 
@@ -159,22 +155,19 @@ inline s16 reverb_sample_right(s32 inSample) {
     s32 j = 0;
     u8 k = 0;
     s32 outTmp = 0;
-    s32 tmpCarryover = 0;
+    s32 tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
 
-    for (i = 0; i < NUM_ALLPASS; ++i, ++j) {
+    for (; i < NUM_ALLPASS; ++i, ++j) {
         tmpBuf[i] = delayBufs[1][i][allpassIdx[1][i]];
 
         if (j == 2) {
-            j -= 3;
+            j = -1;
             outTmp += (tmpBuf[i] * reverbMults[1][k++]) / 256;
             delayBufs[1][i][allpassIdx[1][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
                 tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
         }
         else {
-            if (i == 0)
-                tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
-
             delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
 
             if (i == 6)
@@ -297,10 +290,10 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
         }
     }
 #ifdef BETTER_REVERB
-    if (consoleBetterReverb) {
+    else if (consoleBetterReverb) {
         item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
-        osInvalDCache(item->toDownsampleLeft, DEFAULT_LEN_2CH);
         if (gReverbDownsampleRate != 1) {
+            osInvalDCache(item->toDownsampleLeft, DEFAULT_LEN_2CH);
             for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
                     srcPos += gReverbDownsampleRate, dstPos++) {
                 gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
@@ -309,6 +302,17 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
             for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
                 gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
                 gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+            }
+        }
+        else { // Too slow for practical use?
+            for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
+                    srcPos += gReverbDownsampleRate, dstPos++) {
+                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
+                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
+            }
+            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
+                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
+                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
             }
         }
     }
