@@ -18,15 +18,16 @@
 #endif
 
 #ifdef BETTER_REVERB
-#define BETTER_REVERB_SIZE 0xF000 // Size of all delaysBaseline values * 8 (plus array pointers)
+#define BETTER_REVERB_SIZE 0xF200 // Size of all delaysBaseline values * 8 / 2^downsampleFactor (plus array pointers)
+// #define BETTER_REVERB_SIZE 0x1E200 // For use with no downsampling (Warning: very slow!)
 #else
 #define BETTER_REVERB_SIZE 0
 #endif
 
 #define NUM_ALLPASS 12
 
-extern const u32 delaysBaseline[NUM_ALLPASS];
-extern u32 delays[NUM_ALLPASS];
+extern const s32 delaysBaseline[NUM_ALLPASS];
+extern s32 delays[NUM_ALLPASS];
 extern s32 ***delayBufs;
 
 extern u8 consoleBetterReverb;

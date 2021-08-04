@@ -54,13 +54,14 @@ s32 gReverbDrySignal = 0x26; // Amount of original input in final signal (large 
 // These values affect reverb delays, bigger values result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/8.
 // If setting reverb downsample value to 1 (which currently does not work anyway), this must be BETTER_REVERB_SIZE/16.
 // These values should never be changed unless in this declaration or during a call to audio_reset_session, or it could lead to a major memory leak or garbage audio.
-u32 delays[NUM_ALLPASS] = {
+// These values should also never be negative; these are just s32s to avoid typecasts
+s32 delays[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
-const u32 delaysBaseline[NUM_ALLPASS] = { // Like delays variable, but represent max values that never change (also probably somewhat redundant)
+const s32 delaysBaseline[NUM_ALLPASS] = { // Like delays variable, but represent max values that never change (also probably somewhat redundant)
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
@@ -70,11 +71,12 @@ const s32 reverbMults[2][NUM_ALLPASS / 3] = { // These values affect reverb deca
     {0xD2, 0x6E, 0x36, 0x1F},
     {0x38, 0x26, 0xCF, 0x71}
 };
-u32 allpassIdx[2][NUM_ALLPASS] = {
+s32 allpassIdx[2][NUM_ALLPASS] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
-s32 tmpBuf[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+s32 tmpBufL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+s32 tmpBufR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 ***delayBufs;
 
 u8 consoleBetterReverb = TRUE; // Do not change this line unless you know what you're doing; Please use the variable below instead.
@@ -121,26 +123,72 @@ inline s16 clamp16(s32 x) {
     return (s16) x;
 }
 
+inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 inSampleR) {
+    u32 i = 0;
+    s32 j = 0;
+    u8 k = 0;
+    s32 outTmpL = 0;
+    s32 outTmpR = 0;
+    s32 tmpCarryoverL = ((tmpBufL[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSampleL; // Unique to left channel
+    s32 tmpCarryoverR = ((tmpBufR[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
+
+    for (; i < NUM_ALLPASS; ++i, ++j) {
+        tmpBufL[i] = delayBufs[0][i][allpassIdx[0][i]];
+        tmpBufR[i] = delayBufs[1][i][allpassIdx[1][i]];
+
+        if (j == 2) {
+            j = -1;
+            outTmpL += (tmpBufL[i] * reverbMults[0][k]) / 256;
+            outTmpR += (tmpBufR[i] * reverbMults[1][k++]) / 256;
+            delayBufs[0][i][allpassIdx[0][i]] = tmpCarryoverL;
+            delayBufs[1][i][allpassIdx[1][i]] = tmpCarryoverR;
+            if (i != NUM_ALLPASS - 1) {
+                tmpCarryoverL = (tmpBufL[i] * gReverbRevIndex) / 256;
+                tmpCarryoverR = (tmpBufR[i] * gReverbRevIndex) / 256;
+            }
+        }
+        else {
+            delayBufs[0][i][allpassIdx[0][i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverL;
+            delayBufs[1][i][allpassIdx[1][i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverR;
+
+            if (i == 6)
+                delayBufs[1][i][allpassIdx[1][i]] += inSampleR; // Unique to right channel
+
+            tmpCarryoverL = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256 + tmpBufL[i];
+            tmpCarryoverR = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256 + tmpBufR[i];
+        }
+
+        if (++allpassIdx[0][i] == delays[i]) {
+            allpassIdx[0][i] = 0;
+            allpassIdx[1][i] = -1; // To avoid an else branch
+        }
+        ++allpassIdx[1][i];
+    }
+
+    *outSampleL = clamp16((outTmpL * gReverbWetSignal + inSampleL * gReverbDrySignal) / 256);
+    *outSampleR = clamp16((outTmpR * gReverbWetSignal + inSampleR * gReverbDrySignal) / 256);
+}
+
 inline s16 reverb_sample_left(s32 inSample) {
     u32 i = 0;
     s32 j = 0;
     u8 k = 0;
     s32 outTmp = 0;
-    s32 tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
+    s32 tmpCarryover = ((tmpBufL[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
 
     for (; i < NUM_ALLPASS; ++i, ++j) {
-        tmpBuf[i] = delayBufs[0][i][allpassIdx[0][i]];
+        tmpBufL[i] = delayBufs[0][i][allpassIdx[0][i]];
 
         if (j == 2) {
             j = -1;
-            outTmp += (tmpBuf[i] * reverbMults[0][k++]) / 256;
+            outTmp += (tmpBufL[i] * reverbMults[0][k++]) / 256;
             delayBufs[0][i][allpassIdx[0][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
+                tmpCarryover = (tmpBufL[i] * gReverbRevIndex) / 256;
         }
         else {
-            delayBufs[0][i][allpassIdx[0][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
-            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256 + tmpBuf[i];
+            delayBufs[0][i][allpassIdx[0][i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
+            tmpCarryover = (delayBufs[0][i][allpassIdx[0][i]] * gReverbGainIndex) / 256 + tmpBufL[i];
         }
 
         if (++allpassIdx[0][i] == delays[i])
@@ -155,25 +203,25 @@ inline s16 reverb_sample_right(s32 inSample) {
     s32 j = 0;
     u8 k = 0;
     s32 outTmp = 0;
-    s32 tmpCarryover = ((tmpBuf[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
+    s32 tmpCarryover = ((tmpBufR[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
 
     for (; i < NUM_ALLPASS; ++i, ++j) {
-        tmpBuf[i] = delayBufs[1][i][allpassIdx[1][i]];
+        tmpBufR[i] = delayBufs[1][i][allpassIdx[1][i]];
 
         if (j == 2) {
             j = -1;
-            outTmp += (tmpBuf[i] * reverbMults[1][k++]) / 256;
+            outTmp += (tmpBufR[i] * reverbMults[1][k++]) / 256;
             delayBufs[1][i][allpassIdx[1][i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
-                tmpCarryover = (tmpBuf[i] * gReverbRevIndex) / 256;
+                tmpCarryover = (tmpBufR[i] * gReverbRevIndex) / 256;
         }
         else {
-            delayBufs[1][i][allpassIdx[1][i]] = (tmpBuf[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
+            delayBufs[1][i][allpassIdx[1][i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
 
             if (i == 6)
                 delayBufs[1][i][allpassIdx[1][i]] += inSample;
 
-            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256 + tmpBuf[i];
+            tmpCarryover = (delayBufs[1][i][allpassIdx[1][i]] * gReverbGainIndex) / 256 + tmpBufR[i];
         }
 
         if (++allpassIdx[1][i] == delays[i])
@@ -294,26 +342,35 @@ void prepare_reverb_ring_buffer(s32 chunkLen, u32 updateIndex) {
         item = &gSynthesisReverb.items[gSynthesisReverb.curFrame][updateIndex];
         if (gReverbDownsampleRate != 1) {
             osInvalDCache(item->toDownsampleLeft, DEFAULT_LEN_2CH);
-            for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
-                    srcPos += gReverbDownsampleRate, dstPos++) {
-                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
-                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
-            }
-            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
-                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
-                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
-            }
+            for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos; srcPos += gReverbDownsampleRate, dstPos++)
+                reverb_samples(&gSynthesisReverb.ringBuffer.left[dstPos], &gSynthesisReverb.ringBuffer.right[dstPos], item->toDownsampleLeft[srcPos], item->toDownsampleRight[srcPos]);
+            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++)
+                reverb_samples(&gSynthesisReverb.ringBuffer.left[dstPos], &gSynthesisReverb.ringBuffer.right[dstPos], item->toDownsampleLeft[srcPos], item->toDownsampleRight[srcPos]);
+
+            // for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
+            //         srcPos += gReverbDownsampleRate, dstPos++) {
+            //     gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
+            //     gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+            // }
+            // for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
+            //     gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(item->toDownsampleLeft[srcPos]);
+            //     gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(item->toDownsampleRight[srcPos]);
+            // }
         }
-        else { // Too slow for practical use?
-            for (srcPos = 0, dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos;
-                    srcPos += gReverbDownsampleRate, dstPos++) {
-                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
-                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
-            }
-            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
-                gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
-                gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
-            }
+        else { // Too slow for practical use, not recommended most of the time.
+            for (dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos; dstPos++)
+                reverb_samples(&gSynthesisReverb.ringBuffer.left[dstPos], &gSynthesisReverb.ringBuffer.right[dstPos], gSynthesisReverb.ringBuffer.left[dstPos], gSynthesisReverb.ringBuffer.right[dstPos]);
+            for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++)
+                reverb_samples(&gSynthesisReverb.ringBuffer.left[dstPos], &gSynthesisReverb.ringBuffer.right[dstPos], gSynthesisReverb.ringBuffer.left[dstPos], gSynthesisReverb.ringBuffer.right[dstPos]);
+
+            // for (dstPos = item->startPos; dstPos < item->lengthA / 2 + item->startPos; dstPos++) {
+            //     gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
+            //     gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
+            // }
+            // for (dstPos = 0; dstPos < item->lengthB / 2; srcPos += gReverbDownsampleRate, dstPos++) {
+            //     gSynthesisReverb.ringBuffer.left[dstPos] = reverb_sample_left(gSynthesisReverb.ringBuffer.left[dstPos]);
+            //     gSynthesisReverb.ringBuffer.right[dstPos] = reverb_sample_right(gSynthesisReverb.ringBuffer.right[dstPos]);
+            // }
         }
     }
 #endif
