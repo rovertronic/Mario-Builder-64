@@ -6,6 +6,7 @@
 #include "synthesis.h"
 #include "seqplayer.h"
 #include "effects.h"
+#include "game/game_init.h"
 
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
 
@@ -1122,6 +1123,9 @@ void audio_reset_session(void) {
 #if defined(VERSION_JP) || defined(VERSION_US)
     s32 frames;
     s32 remainingDmas;
+#ifdef BETTER_REVERB
+    s8 reverbConsole;
+#endif
 #else
     struct SynthesisReverb *reverb;
 #endif
@@ -1234,6 +1238,29 @@ void audio_reset_session(void) {
     gMaxSimultaneousNotes = preset->maxSimultaneousNotes;
     gSamplesPerFrameTarget = ALIGN16(gAiFrequency / 60);
     gReverbDownsampleRate = preset->reverbDownsampleRate;
+#ifdef BETTER_REVERB
+    if (gIsConsole)
+        reverbConsole = betterReverbConsoleDownsample; // Console!
+    else
+        reverbConsole = betterReverbEmulatorDownsample; // Setting this to 1 is REALLY slow, please use sparingly!
+
+    if (reverbConsole <= 0) {
+        reverbConsole = 1;
+        toggleBetterReverb = FALSE;
+    }
+    else {
+        toggleBetterReverb = TRUE;
+    }
+
+    if (toggleBetterReverb && betterReverbWindowsSize >= 0)
+        reverbWindowSize = betterReverbWindowsSize;
+    
+    if (gReverbDownsampleRate < (1 << (reverbConsole - 1)))
+        gReverbDownsampleRate = (1 << (reverbConsole - 1));
+    reverbWindowSize /= gReverbDownsampleRate;
+    if (reverbWindowSize < DEFAULT_LEN_2CH) // Minimum window size to not overflow
+        reverbWindowSize = DEFAULT_LEN_2CH;
+#endif
 
     switch (gReverbDownsampleRate) {
         case 1:
@@ -1255,7 +1282,6 @@ void audio_reset_session(void) {
             sReverbDownsampleRateLog = 0;
     }
 
-    gReverbDownsampleRate = preset->reverbDownsampleRate;
     gVolume = preset->volume;
     gMinAiBufferLength = gSamplesPerFrameTarget - 0x10;
     updatesPerFrame = gSamplesPerFrameTarget / 160 + 1;
@@ -1283,7 +1309,7 @@ void audio_reset_session(void) {
     temporaryMem = DOUBLE_SIZE_ON_64_BIT(preset->temporaryBankMem + preset->temporarySeqMem);
 #endif
     totalMem = persistentMem + temporaryMem;
-    wantMisc = gAudioSessionPool.size - totalMem - 0x100;
+    wantMisc = gAudioSessionPool.size - totalMem - 0x100 - BETTER_REVERB_SIZE;
     sSessionPoolSplit.wantSeq = wantMisc;
     sSessionPoolSplit.wantCustom = totalMem;
     session_pools_init(&sSessionPoolSplit);
@@ -1426,6 +1452,23 @@ void audio_reset_session(void) {
                 gSynthesisReverb.items[1][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
             }
         }
+
+ // This does not have to be reset after being initialized for the first time, which would speed up load times dramatically.
+ // However, reseting this allows for proper clearing of the reverb buffers, as well as dynamic customization of the delays array.
+#ifdef BETTER_REVERB
+        if (toggleBetterReverb) {
+            for (i = 0; i < NUM_ALLPASS; ++i)
+                delays[i] = delaysBaseline[i] / gReverbDownsampleRate;
+
+            delayBufs = (s32***) soundAlloc(&gAudioSessionPool, 2 * sizeof(s32**));
+            delayBufs[0] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+            delayBufs[1] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+            for (i = 0; i < NUM_ALLPASS; ++i) {
+                delayBufs[0][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+                delayBufs[1][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+            }
+        }
+#endif
     }
 #endif
 
