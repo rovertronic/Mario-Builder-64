@@ -105,7 +105,7 @@ s32 gReverbRevIndex = 0x5F; // Affects decay time mostly (large values can cause
 s32 gReverbGainIndex = 0x9F; // Affects signal immediately retransmitted back into buffers (mid-high values yield the strongest effect); can be messed with at any time
 s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal (also affects decay); can be messed with at any time, also very easy to control
 
-// s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large values can cause terrible feedback!); disabled by default to improve compiler optimization
+// s32 gReverbDrySignal = 0x00; // Amount of original input in final signal (large values can cause terrible feedback!); declaration and uses commented out by default to improve compiler optimization
 
 
 /* ---------------------------------------------------------------------ADVANCED REVERB PARAMETERS-------------------------------------------------------------------- */
