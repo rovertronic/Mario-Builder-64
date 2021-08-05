@@ -106,8 +106,8 @@ s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal
 /* ---------------------------------------------------------------------ADVANCED REVERB PARAMETERS-------------------------------------------------------------------- */
 
 
-// These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/4.
-// If setting a reverb downsample value to 1, this must be smaller than BETTER_REVERB_SIZE/8.
+// These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/2.
+// If setting a reverb downsample value to 1, these must be cumulatively smaller than BETTER_REVERB_SIZE/4.
 // These values should never be changed unless in this declaration or during a call to audio_reset_session, as it could otherwise lead to a major memory leak or garbage audio.
 // None of the delay values should ever be smaller than 1 either; these are s32s purely to avoid typecasts.
 // These values are currently set by using delaysBaseline in the audio_reset_session function, so its behavior must be overridden to use dynamically (or at all).
@@ -126,7 +126,7 @@ s32 delaysR[NUM_ALLPASS] = {
 
 // Like the delays array, but represents default max values that don't change (also probably somewhat redundant)
 // Change this array rather than the delays array to customize reverb delay times globally.
-// Similarly to delays, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
+// Similarly to delaysL/R, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
 const s32 delaysBaselineL[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
