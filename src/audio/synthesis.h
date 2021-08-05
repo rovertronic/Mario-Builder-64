@@ -18,8 +18,8 @@
 #endif
 
 #ifdef BETTER_REVERB
- // Size determined by ((all delaysBaseline values * 16) / (2 ^ Minimum Downsample Factor)) + array pointers.
- // The default value can be increased or decreased in conjunction with the values in delaysBaseline
+ // Size determined by ((all delaysBaselineL/R values * 8) / (2 ^ Minimum Downsample Factor)) + array pointers.
+ // The default value can be increased or decreased in conjunction with the values in delaysBaselineL/R
 #define BETTER_REVERB_SIZE 0xF200
 
 // #define BETTER_REVERB_SIZE 0x7A00 // Default for use only with a downsampling value of 3 (i.e. double the emulator default)
@@ -39,8 +39,10 @@ extern s32 gReverbGainIndex;
 extern s32 gReverbWetSigna;
 // extern s32 gReverbDrySignal;
 
-extern const s32 delaysBaseline[NUM_ALLPASS];
-extern s32 delays[NUM_ALLPASS];
+extern const s32 delaysBaselineL[NUM_ALLPASS];
+extern const s32 delaysBaselineR[NUM_ALLPASS];
+extern s32 delaysL[NUM_ALLPASS];
+extern s32 delaysR[NUM_ALLPASS];
 extern s32 reverbMultsL[NUM_ALLPASS / 3];
 extern s32 reverbMultsR[NUM_ALLPASS / 3];
 extern s32 **delayBufsL;

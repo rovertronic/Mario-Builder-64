@@ -1457,14 +1457,16 @@ void audio_reset_session(void) {
  // However, reseting this allows for proper clearing of the reverb buffers, as well as dynamic customization of the delays array.
 #ifdef BETTER_REVERB
         if (toggleBetterReverb) {
-            for (i = 0; i < NUM_ALLPASS; ++i)
-                delays[i] = delaysBaseline[i] / gReverbDownsampleRate;
+            for (i = 0; i < NUM_ALLPASS; ++i) {
+                delaysL[i] = delaysBaselineL[i] / gReverbDownsampleRate;
+                delaysR[i] = delaysBaselineR[i] / gReverbDownsampleRate;
+            }
 
             delayBufsL = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
             delayBufsR = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
             for (i = 0; i < NUM_ALLPASS; ++i) {
-                delayBufsL[i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
-                delayBufsR[i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+                delayBufsL[i] = (s32*) soundAlloc(&gAudioSessionPool, delaysL[i] * sizeof(s32));
+                delayBufsR[i] = (s32*) soundAlloc(&gAudioSessionPool, delaysR[i] * sizeof(s32));
             }
         }
 #endif

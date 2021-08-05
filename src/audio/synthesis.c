@@ -69,21 +69,23 @@ s8 betterReverbDownsampleEmulator = 2;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Setting this to 3 will only generate reverb in one channel, and setting it to anything less 0 will disable reverb outright.
+// Setting this to 3 will only generate reverb in one channel (using mono is recommended here), and setting it to anything less 0 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountConsole = NUM_ALLPASS - 3;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Setting this to 3 will only generate reverb in one channel, and setting it to anything less 0 will disable reverb outright.
+// Ssetting it to anything less 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountEmulator = NUM_ALLPASS;
 
 // Set this to TRUE to use mono over stereo for reverb. This should increase performance, but at the cost of a less fullfilling reverb experience.
+// If performance is desirable, it is recommended to change reverbFilterCountConsole or betterReverbDownsampleConsole first.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u8 monoReverbConsole = FALSE;
 
 // Set this to TRUE to use mono over stereo for reverb. This should increase performance, but at the cost of a less fullfilling reverb experience.
+// If performance is desirable, it is recommended to change reverbFilterCountEmulator or betterReverbDownsampleEmulator first.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u8 monoReverbEmulator = FALSE;
 
@@ -109,36 +111,49 @@ s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal
 // These values should never be changed unless in this declaration or during a call to audio_reset_session, as it could otherwise lead to a major memory leak or garbage audio.
 // None of the delay values should ever be smaller than 1 either; these are s32s purely to avoid typecasts.
 // These values are currently set by using delaysBaseline in the audio_reset_session function, so its behavior must be overridden to use dynamically (or at all).
-s32 delays[NUM_ALLPASS] = {
+s32 delaysL[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
+};
+s32 delaysR[NUM_ALLPASS] = {
+    1200, 1232, 1432,
+    928, 1504, 1512,
+    1080, 1352, 1200,
+    1384, 1048, 1352
 };
 
 // Like the delays array, but represents default max values that don't change (also probably somewhat redundant)
 // Change this array rather than the delays array to customize reverb delay times globally.
 // Similarly to delays, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
-const s32 delaysBaseline[NUM_ALLPASS] = {
+const s32 delaysBaselineL[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1384, 1048, 1352,
     1200, 1232, 1432,
     928, 1504, 1512
 };
+const s32 delaysBaselineR[NUM_ALLPASS] = {
+    1200, 1432, 1232,
+    928, 1512, 1504,
+    1080, 1200, 1352,
+    1384, 1352, 1048
+};
 
 // These values affect reverb decay depending on the filter index; can be messed with at any time
-s32 reverbMultsL[NUM_ALLPASS / 3] = {0xD2, 0x6E, 0x36, 0x1F};
-s32 reverbMultsR[NUM_ALLPASS / 3] = {0x26, 0xCF, 0x71, 0x38};
+s32 reverbMultsL[NUM_ALLPASS / 3] = {0xD5, 0x6E, 0x36, 0x1F};
+s32 reverbMultsR[NUM_ALLPASS / 3] = {0xCF, 0x71, 0x38, 0x26};
 
 
 /* -----------------------------------------------------------------------END REVERB PARAMETERS----------------------------------------------------------------------- */
 
 // Do not touch these values manually, unless you want potential for problems.
 u32 reverbFilterCount = NUM_ALLPASS;
-u32 reverbFilterRightChIdx = 6;
+u32 reverbFilterCountm1 = NUM_ALLPASS - 1;
 u8 monoReverb = FALSE;
 u8 toggleBetterReverb = TRUE;
-s32 allpassIdx[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+s32 allpassIdxL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+s32 allpassIdxR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 **delayBufsL;
@@ -195,37 +210,35 @@ inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 
     u8 k = 0;
     s32 outTmpL = 0;
     s32 outTmpR = 0;
-    s32 tmpCarryoverL = ((tmpBufL[reverbFilterCount-1] * gReverbRevIndex) / 256) + inSampleL; // Unique to left channel
-    s32 tmpCarryoverR = ((tmpBufR[reverbFilterCount-1] * gReverbRevIndex) / 256);
+    s32 tmpCarryoverL = ((tmpBufL[reverbFilterCountm1] * gReverbRevIndex) / 256) + inSampleL;
+    s32 tmpCarryoverR = ((tmpBufR[reverbFilterCountm1] * gReverbRevIndex) / 256) + inSampleR;
 
     for (; i < reverbFilterCount; ++i, ++j) {
-        tmpBufL[i] = delayBufsL[i][allpassIdx[i]];
-        tmpBufR[i] = delayBufsR[i][allpassIdx[i]];
+        tmpBufL[i] = delayBufsL[i][allpassIdxL[i]];
+        tmpBufR[i] = delayBufsR[i][allpassIdxR[i]];
 
         if (j == 2) {
             j = -1;
             outTmpL += (tmpBufL[i] * reverbMultsL[k]) / 256;
             outTmpR += (tmpBufR[i] * reverbMultsR[k++]) / 256;
-            delayBufsL[i][allpassIdx[i]] = tmpCarryoverL;
-            delayBufsR[i][allpassIdx[i]] = tmpCarryoverR;
-            if (i != reverbFilterCount - 1) {
+            delayBufsL[i][allpassIdxL[i]] = tmpCarryoverL;
+            delayBufsR[i][allpassIdxR[i]] = tmpCarryoverR;
+            if (i != reverbFilterCountm1) {
                 tmpCarryoverL = (tmpBufL[i] * gReverbRevIndex) / 256;
                 tmpCarryoverR = (tmpBufR[i] * gReverbRevIndex) / 256;
             }
         }
         else {
-            delayBufsL[i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverL;
-            delayBufsR[i][allpassIdx[i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverR;
-
-            if (i == reverbFilterRightChIdx)
-                delayBufsR[i][allpassIdx[i]] += inSampleR; // Unique to right channel
-
-            tmpCarryoverL = (delayBufsL[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
-            tmpCarryoverR = (delayBufsR[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufR[i];
+            delayBufsL[i][allpassIdxL[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverL;
+            delayBufsR[i][allpassIdxR[i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverR;
+            tmpCarryoverL = (delayBufsL[i][allpassIdxL[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
+            tmpCarryoverR = (delayBufsR[i][allpassIdxR[i]] * gReverbGainIndex) / 256 + tmpBufR[i];
         }
 
-        if (++allpassIdx[i] == delays[i])
-            allpassIdx[i] = 0;
+        if (++allpassIdxL[i] == delaysL[i])
+            allpassIdxL[i] = 0;
+        if (++allpassIdxR[i] == delaysR[i])
+            allpassIdxR[i] = 0;
     }
 
     *outSampleL = clamp16((outTmpL * gReverbWetSignal/* + inSampleL * gReverbDrySignal*/) / 256);
@@ -237,25 +250,25 @@ inline void reverb_mono_sample(s16 *outSample, s32 inSample) {
     s32 j = 0;
     u8 k = 0;
     s32 outTmp = 0;
-    s32 tmpCarryover = ((tmpBufL[reverbFilterCount-1] * gReverbRevIndex) / 256) + inSample;
+    s32 tmpCarryover = ((tmpBufL[reverbFilterCountm1] * gReverbRevIndex) / 256) + inSample;
 
     for (; i < reverbFilterCount; ++i, ++j) {
-        tmpBufL[i] = delayBufsL[i][allpassIdx[i]];
+        tmpBufL[i] = delayBufsL[i][allpassIdxL[i]];
 
         if (j == 2) {
             j = -1;
             outTmp += (tmpBufL[i] * reverbMultsL[k++]) / 256;
-            delayBufsL[i][allpassIdx[i]] = tmpCarryover;
-            if (i != reverbFilterCount - 1)
+            delayBufsL[i][allpassIdxL[i]] = tmpCarryover;
+            if (i != reverbFilterCountm1)
                 tmpCarryover = (tmpBufL[i] * gReverbRevIndex) / 256;
         }
         else {
-            delayBufsL[i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
-            tmpCarryover = (delayBufsL[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
+            delayBufsL[i][allpassIdxL[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
+            tmpCarryover = (delayBufsL[i][allpassIdxL[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
         }
 
-        if (++allpassIdx[i] == delays[i])
-            allpassIdx[i] = 0;
+        if (++allpassIdxL[i] == delaysL[i])
+            allpassIdxL[i] = 0;
     }
 
     *outSample = clamp16((outTmp * gReverbWetSignal/* + inSample * gReverbDrySignal*/) / 256);
@@ -578,10 +591,11 @@ u64 *synthesis_execute(u64 *cmdBuf, s32 *writtenCmds, s16 *aiBuf, s32 bufLen) {
         reverbFilterCount = reverbFilterCountEmulator;
         monoReverb = monoReverbEmulator;
     }
-    if (reverbFilterCount >= 6)
-        reverbFilterRightChIdx = 6;
-    else
-        reverbFilterRightChIdx = 3;
+    if (reverbFilterCount > NUM_ALLPASS)
+        reverbFilterCount = NUM_ALLPASS;
+    reverbFilterCountm1 = reverbFilterCount - 1;
+    if (reverbFilterCount < 3)
+        reverbFilterCountm1 = 0;
 #endif
 
     for (i = gAudioUpdatesPerFrame; i > 0; i--) {
