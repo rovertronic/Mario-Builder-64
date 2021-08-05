@@ -30,7 +30,8 @@
 extern s32 betterReverbWindowsSize;
 extern const s32 delaysBaseline[NUM_ALLPASS];
 extern s32 delays[NUM_ALLPASS];
-extern s32 ***delayBufs;
+extern s32 **delayBufsL;
+extern s32 **delayBufsR;
 
 extern u8 toggleBetterReverb;
 extern s8 betterReverbConsoleDownsample;

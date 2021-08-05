@@ -123,7 +123,8 @@ u8 toggleBetterReverb = TRUE;
 s32 allpassIdx[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufL[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s32 tmpBufR[NUM_ALLPASS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-s32 ***delayBufs;
+s32 **delayBufsL;
+s32 **delayBufsR;
 #endif
 
 
@@ -180,29 +181,29 @@ inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 
     s32 tmpCarryoverR = ((tmpBufR[NUM_ALLPASS-1] * gReverbRevIndex) / 256);
 
     for (; i < NUM_ALLPASS; ++i, ++j) {
-        tmpBufL[i] = delayBufs[0][i][allpassIdx[i]];
-        tmpBufR[i] = delayBufs[1][i][allpassIdx[i]];
+        tmpBufL[i] = delayBufsL[i][allpassIdx[i]];
+        tmpBufR[i] = delayBufsR[i][allpassIdx[i]];
 
         if (j == 2) {
             j = -1;
             outTmpL += (tmpBufL[i] * reverbMults[0][k]) / 256;
             outTmpR += (tmpBufR[i] * reverbMults[1][k++]) / 256;
-            delayBufs[0][i][allpassIdx[i]] = tmpCarryoverL;
-            delayBufs[1][i][allpassIdx[i]] = tmpCarryoverR;
+            delayBufsL[i][allpassIdx[i]] = tmpCarryoverL;
+            delayBufsR[i][allpassIdx[i]] = tmpCarryoverR;
             if (i != NUM_ALLPASS - 1) {
                 tmpCarryoverL = (tmpBufL[i] * gReverbRevIndex) / 256;
                 tmpCarryoverR = (tmpBufR[i] * gReverbRevIndex) / 256;
             }
         }
         else {
-            delayBufs[0][i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverL;
-            delayBufs[1][i][allpassIdx[i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverR;
+            delayBufsL[i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverL;
+            delayBufsR[i][allpassIdx[i]] = (tmpBufR[i] * (-gReverbGainIndex)) / 256 + tmpCarryoverR;
 
             if (i == 6)
-                delayBufs[1][i][allpassIdx[i]] += inSampleR; // Unique to right channel
+                delayBufsR[i][allpassIdx[i]] += inSampleR; // Unique to right channel
 
-            tmpCarryoverL = (delayBufs[0][i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
-            tmpCarryoverR = (delayBufs[1][i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufR[i];
+            tmpCarryoverL = (delayBufsL[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
+            tmpCarryoverR = (delayBufsR[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufR[i];
         }
 
         if (++allpassIdx[i] == delays[i])
@@ -221,18 +222,18 @@ inline void reverb_mono_sample(s16 *outSample, s32 inSample) {
     s32 tmpCarryover = ((tmpBufL[NUM_ALLPASS-1] * gReverbRevIndex) / 256) + inSample;
 
     for (; i < NUM_ALLPASS; ++i, ++j) {
-        tmpBufL[i] = delayBufs[0][i][allpassIdx[i]];
+        tmpBufL[i] = delayBufsL[i][allpassIdx[i]];
 
         if (j == 2) {
             j = -1;
             outTmp += (tmpBufL[i] * reverbMults[0][k++]) / 256;
-            delayBufs[0][i][allpassIdx[i]] = tmpCarryover;
+            delayBufsL[i][allpassIdx[i]] = tmpCarryover;
             if (i != NUM_ALLPASS - 1)
                 tmpCarryover = (tmpBufL[i] * gReverbRevIndex) / 256;
         }
         else {
-            delayBufs[0][i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
-            tmpCarryover = (delayBufs[0][i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
+            delayBufsL[i][allpassIdx[i]] = (tmpBufL[i] * (-gReverbGainIndex)) / 256 + tmpCarryover;
+            tmpCarryover = (delayBufsL[i][allpassIdx[i]] * gReverbGainIndex) / 256 + tmpBufL[i];
         }
 
         if (++allpassIdx[i] == delays[i])

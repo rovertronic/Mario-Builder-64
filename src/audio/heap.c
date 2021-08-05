@@ -1460,12 +1460,11 @@ void audio_reset_session(void) {
             for (i = 0; i < NUM_ALLPASS; ++i)
                 delays[i] = delaysBaseline[i] / gReverbDownsampleRate;
 
-            delayBufs = (s32***) soundAlloc(&gAudioSessionPool, 2 * sizeof(s32**));
-            delayBufs[0] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
-            delayBufs[1] = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+            delayBufsL = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
+            delayBufsR = (s32**) soundAlloc(&gAudioSessionPool, NUM_ALLPASS * sizeof(s32*));
             for (i = 0; i < NUM_ALLPASS; ++i) {
-                delayBufs[0][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
-                delayBufs[1][i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+                delayBufsL[i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
+                delayBufsR[i] = (s32*) soundAlloc(&gAudioSessionPool, delays[i] * sizeof(s32));
             }
         }
 #endif
