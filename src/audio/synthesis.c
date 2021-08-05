@@ -195,7 +195,7 @@ u8 sAudioSynthesisPad[0x20];
 #endif
 
 #ifdef BETTER_REVERB
-inline s16 clamp16(s32 x) {
+static inline s16 clamp16(s32 x) {
     if (x >= 32767)
         return 32767;
     if (x <= -32768)
@@ -204,7 +204,7 @@ inline s16 clamp16(s32 x) {
     return (s16) x;
 }
 
-inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 inSampleR) {
+static inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 inSampleR) {
     u32 i = 0;
     s32 j = 0;
     u8 k = 0;
@@ -245,7 +245,7 @@ inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 
     *outSampleR = clamp16((outTmpR * gReverbWetSignal/* + inSampleR * gReverbDrySignal*/) / 256);
 }
 
-inline void reverb_mono_sample(s16 *outSample, s32 inSample) {
+static inline void reverb_mono_sample(s16 *outSample, s32 inSample) {
     u32 i = 0;
     s32 j = 0;
     u8 k = 0;
