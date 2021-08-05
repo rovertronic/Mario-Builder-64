@@ -1,4 +1,22 @@
-   BEGIN_NOLOAD(goddard_sz)
+#define BEGIN_SEG(name, addr) \
+    _##name##SegmentStart = ADDR(.name); \
+    _##name##SegmentRomStart = __romPos; \
+    .name addr : AT(__romPos)
+
+#define END_SEG(name) \
+    _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
+    _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
+    __romPos += SIZEOF(.name);
+
+#define BEGIN_NOLOAD(name) \
+    _##name##SegmentBssStart = ADDR(.name.noload); \
+    .name.noload (NOLOAD) :
+
+#define END_NOLOAD(name) \
+    _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
+    _##name##SegmentBssSize = SIZEOF(.name.noload);
+
+BEGIN_NOLOAD(goddard_sz)
    {
       BUILD_DIR/src/menu*.o(.text);
       BUILD_DIR/src/menu*.o(.data*);
@@ -38,4 +56,6 @@
 #endif
       . = ALIGN(16);
    }
-   END_NOLOAD(goddard_sz)
+END_NOLOAD(goddard_sz)
+
+GODDARD_SIZE = SIZEOF(.goddard_sz.noload);
