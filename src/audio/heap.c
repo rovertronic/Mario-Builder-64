@@ -1240,9 +1240,9 @@ void audio_reset_session(void) {
     gReverbDownsampleRate = preset->reverbDownsampleRate;
 #ifdef BETTER_REVERB
     if (gIsConsole)
-        reverbConsole = betterReverbConsoleDownsample; // Console!
+        reverbConsole = betterReverbDownsampleConsole; // Console!
     else
-        reverbConsole = betterReverbEmulatorDownsample; // Setting this to 1 is REALLY slow, please use sparingly!
+        reverbConsole = betterReverbDownsampleEmulator; // Setting this to 1 is REALLY slow, please use sparingly!
 
     if (reverbConsole <= 0) {
         reverbConsole = 1;

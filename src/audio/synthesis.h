@@ -27,15 +27,26 @@
 
 #define NUM_ALLPASS 12 // Number of delay filters to use with better reverb; do not change this value if you don't know what you're doing.
 
+extern s8 betterReverbDownsampleConsole;
+extern s8 betterReverbDownsampleEmulator;
+extern u32 reverbFilterCountConsole;
+extern u32 reverbFilterCountEmulator;
+extern u8 monoReverbConsole;
+extern u8 monoReverbEmulator;
 extern s32 betterReverbWindowsSize;
+extern s32 gReverbRevIndex;
+extern s32 gReverbGainIndex;
+extern s32 gReverbWetSigna;
+// extern s32 gReverbDrySignal;
+
 extern const s32 delaysBaseline[NUM_ALLPASS];
 extern s32 delays[NUM_ALLPASS];
+extern s32 reverbMultsL[NUM_ALLPASS / 3];
+extern s32 reverbMultsR[NUM_ALLPASS / 3];
 extern s32 **delayBufsL;
 extern s32 **delayBufsR;
 
 extern u8 toggleBetterReverb;
-extern s8 betterReverbConsoleDownsample;
-extern s8 betterReverbEmulatorDownsample;
 #else
 #define BETTER_REVERB_SIZE 0
 #endif
