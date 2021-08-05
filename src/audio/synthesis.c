@@ -51,6 +51,11 @@
  * To use with M64 sequences, set the Effect parameter for each channel accordingly (CC 91 for MIDI files).
  * 
  * Most parameter configuration is to be done here, though BETTER_REVERB_SIZE can be adjusted in audio/synthesis.h.
+ * 
+ * If after changing the parameters, you hear increasing noise followed by a sudden disappearance of reverb and/or scratchy audio, this indicates an s16 overflow.
+ * If this happens, stop immediately and reduce the parameters at fault. This becomes a ticking time bomb, and may eventually result in very loud noise if it reaches the point of s32 overflow.
+ * Checks to prevent this have not been implemented to maximize performance potential, so choose your parameters wisely.
+ * Generally speaking, a sound that doesn't seem to be fading is a parameter red flag (also known as feedback).
  */
 
 
@@ -113,15 +118,15 @@ s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal
 // These values are currently set by using delaysBaseline in the audio_reset_session function, so its behavior must be overridden to use dynamically (or at all).
 s32 delaysL[NUM_ALLPASS] = {
     1080, 1352, 1200,
-    1384, 1048, 1352,
     1200, 1232, 1432,
+    1384, 1048, 1352,
     928, 1504, 1512
 };
 s32 delaysR[NUM_ALLPASS] = {
-    1200, 1232, 1432,
-    928, 1504, 1512,
-    1080, 1352, 1200,
-    1384, 1048, 1352
+    1384, 1352, 1048,
+    928, 1512, 1504,
+    1080, 1200, 1352,
+    1200, 1432, 1232
 };
 
 // Like the delays array, but represents default max values that don't change (also probably somewhat redundant)
@@ -129,20 +134,20 @@ s32 delaysR[NUM_ALLPASS] = {
 // Similarly to delaysL/R, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
 const s32 delaysBaselineL[NUM_ALLPASS] = {
     1080, 1352, 1200,
-    1384, 1048, 1352,
     1200, 1232, 1432,
+    1384, 1048, 1352,
     928, 1504, 1512
 };
 const s32 delaysBaselineR[NUM_ALLPASS] = {
-    1200, 1432, 1232,
+    1384, 1352, 1048,
     928, 1512, 1504,
     1080, 1200, 1352,
-    1384, 1352, 1048
+    1200, 1432, 1232
 };
 
 // These values affect reverb decay depending on the filter index; can be messed with at any time
-s32 reverbMultsL[NUM_ALLPASS / 3] = {0xD5, 0x6E, 0x36, 0x1F};
-s32 reverbMultsR[NUM_ALLPASS / 3] = {0xCF, 0x71, 0x38, 0x26};
+s32 reverbMultsL[NUM_ALLPASS / 3] = {0xD7, 0x6F, 0x36, 0x22};
+s32 reverbMultsR[NUM_ALLPASS / 3] = {0xCF, 0x73, 0x38, 0x1F};
 
 
 /* -----------------------------------------------------------------------END REVERB PARAMETERS----------------------------------------------------------------------- */
