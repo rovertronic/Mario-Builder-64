@@ -74,13 +74,13 @@ s8 betterReverbDownsampleEmulator = 2;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Setting this to 3 will only generate reverb in one channel (using mono is recommended here), and setting it to anything less 0 will disable reverb outright.
+// Setting it to anything less 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountConsole = NUM_ALLPASS - 3;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Ssetting it to anything less 3 will disable reverb outright.
+// Setting it to anything less 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountEmulator = NUM_ALLPASS;
 
