@@ -303,6 +303,7 @@ SECTIONS
       #define LOAD
          #include "goddard.ld.inc"
       #undef LOAD
+      . = ALIGN(16);
    }
    END_SEG(goddard)
    BEGIN_NOLOAD(goddard)
@@ -310,6 +311,7 @@ SECTIONS
       #define NOLOAD
          #include "goddard.ld.inc"
       #undef NOLOAD
+      . = ALIGN(16);
    }
    END_NOLOAD(goddard)
 

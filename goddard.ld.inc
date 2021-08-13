@@ -28,7 +28,6 @@
     KEEP(BUILD_DIR/libgoddard.a:shape_helper.o(.rodata*));
     KEEP(BUILD_DIR/libgoddard.a:renderer.o(.rodata*));
 #endif
-    . = ALIGN(16);
 #endif
 
 
@@ -38,6 +37,5 @@
 #ifdef KEEP_MARIO_HEAD
     KEEP(BUILD_DIR/libgoddard.a:*.o(.bss*));
 #endif
-    . = ALIGN(16);
 #endif
 
