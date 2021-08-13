@@ -7,6 +7,7 @@ with open(sys.argv[1]) as f:
 			print(tokens)
 			with open("build/us/goddard.txt", "w+") as f:
 				sz = int(tokens[0], 16)
+				sz += 16
 				sz &= 0xFFFFFFF0
 				f.write("GODDARD_SIZE = 0x%X;" % sz)
 				
