@@ -1029,37 +1029,44 @@ void find_surface_on_ray_list(struct SurfaceNode *list, Vec3f orig, Vec3f dir, f
     }
 }
 
-
-void find_surface_on_ray_cell(s16 cellX, s16 cellZ, Vec3f orig, Vec3f normalized_dir, f32 dir_length, struct Surface **hit_surface, Vec3f hit_pos, f32 *max_length)
+void find_surface_on_ray_cell(s16 cellX, s16 cellZ, Vec3f orig, Vec3f normalized_dir, f32 dir_length, struct Surface **hit_surface, Vec3f hit_pos, f32 *max_length, s32 flags)
 {
 	// Skip if OOB
 	if (cellX >= 0 && cellX <= (NUM_CELLS - 1) && cellZ >= 0 && cellZ <= (NUM_CELLS - 1))
 	{
 		// Iterate through each surface in this partition
-		if (normalized_dir[1] > -0.99999f)
+		if (normalized_dir[1] > -0.99999f && flags & RAYCAST_FIND_CEIL)
 		{
 			find_surface_on_ray_list(gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
 			find_surface_on_ray_list(gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
 		}
-		if (normalized_dir[1] < 0.99999f)
+		if (normalized_dir[1] < 0.99999f && flags & RAYCAST_FIND_FLOOR)
 		{
 			find_surface_on_ray_list(gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
 			find_surface_on_ray_list(gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
 		}
-		find_surface_on_ray_list(gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
-		find_surface_on_ray_list(gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
+		if (flags & RAYCAST_FIND_WALL)
+        {
+            find_surface_on_ray_list(gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
+            find_surface_on_ray_list(gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
+        }
+        if (flags & RAYCAST_FIND_WATER)
+        {
+            find_surface_on_ray_list(gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
+            find_surface_on_ray_list(gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next, orig, normalized_dir, dir_length, hit_surface, hit_pos, max_length);
+        }
 	}
 }
 
-void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos)
+void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags)
 {
     f32 max_length;
-    s16 cellZ, cellX, cellPrevX, cellPrevZ;
+    s32 cellZ, cellX, cellPrevX, cellPrevZ;
     f32 fCellZ, fCellX;
     f32 dir_length;
     Vec3f normalized_dir;
     f32 step, dx, dz;
-    u32 i;
+    s32 i;
 
     // Set that no surface has been hit
     *hit_surface = NULL;
@@ -1074,13 +1081,15 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     // Get our cell coordinate
     fCellX = (orig[0] + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
     fCellZ = (orig[2] + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
-    cellX = (s16)fCellX;
-    cellZ = (s16)fCellZ;
+    cellX = fCellX;
+    cellZ = fCellZ;
+    cellPrevX = cellX;
+    cellPrevZ = cellZ;
 
     // Don't do DDA if straight down
     if (normalized_dir[1] >= 0.99999f || normalized_dir[1] <= -0.99999f)
     {
-		find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length);
+		find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
 		return;
 	}
 
@@ -1095,20 +1104,20 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
 
     for (i = 0; i < step && *hit_surface == NULL; i++)
     {
-		find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length);
+        find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
 
         // Move cell coordinate
         fCellX += dx;
         fCellZ += dz;
         cellPrevX = cellX;
         cellPrevZ = cellZ;
-        cellX = (s16)fCellX;
-        cellZ = (s16)fCellZ;
+        cellX = fCellX;
+        cellZ = fCellZ;
 
         if ((cellPrevX != cellX) && (cellPrevZ != cellZ))
         {
-            find_surface_on_ray_cell(cellX, cellPrevZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length);
-            find_surface_on_ray_cell(cellPrevX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length);
+            find_surface_on_ray_cell(cellX, cellPrevZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
+            find_surface_on_ray_cell(cellPrevX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
         }
     }
 }
@@ -1475,8 +1484,8 @@ static void puppycam_collision(void)
     camdir[1][1] = camdir[0][1];
     camdir[1][2] = camdir[0][2];
 
-    find_surface_on_ray(target[0], camdir[0], &surf[0], hitpos[0]);
-    find_surface_on_ray(target[1], camdir[1], &surf[1], hitpos[1]);
+    find_surface_on_ray(target[0], camdir[0], &surf[0], hitpos[0], RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
+    find_surface_on_ray(target[1], camdir[1], &surf[1], hitpos[1], RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     resolve_and_return_wall_collisions(hitpos[0], 0.0f, 25.0f);
     resolve_and_return_wall_collisions(hitpos[1], 0.0f, 25.0f);
     dist[0] = ((target[0][0] - hitpos[0][0]) * (target[0][0] - hitpos[0][0]) + (target[0][1] - hitpos[0][1]) * (target[0][1] - hitpos[0][1]) + (target[0][2] - hitpos[0][2]) * (target[0][2] - hitpos[0][2]));
