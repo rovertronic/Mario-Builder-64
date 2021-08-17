@@ -24,7 +24,7 @@
 #include "mario.h"
 #include "puppyprint.h"
 
-//#ifdef PUPPYCAM
+#ifdef PUPPYCAM
 
 #define OFFSET 30.0f
 #define STEPS 4
@@ -1452,7 +1452,7 @@ static void puppycam_collision(void)
     Vec3f camdir[2];
     Vec3f hitpos[2];
     Vec3f target[2];
-    s16 pitchTotal = CLAMP(gPuppyCam.pitch+(gPuppyCam.swimPitch*10) + gPuppyCam.terrainPitch, 800, 0x7800);
+    s16 pitchTotal = CLAMP(gPuppyCam.pitch+(gPuppyCam.swimPitch*10) + gPuppyCam.edgePitch + gPuppyCam.terrainPitch, 800, 0x7800);
     s32 dist[2];
 
     if (gPuppyCam.targetObj == NULL)
@@ -1477,11 +1477,10 @@ static void puppycam_collision(void)
 
     find_surface_on_ray(target[0], camdir[0], &surf[0], hitpos[0]);
     find_surface_on_ray(target[1], camdir[1], &surf[1], hitpos[1]);
-    resolve_and_return_wall_collisions(hitpos[0], 0.0f, 50.0f);
-    resolve_and_return_wall_collisions(hitpos[1], 0.0f, 50.0f);
+    resolve_and_return_wall_collisions(hitpos[0], 0.0f, 25.0f);
+    resolve_and_return_wall_collisions(hitpos[1], 0.0f, 25.0f);
     dist[0] = ((target[0][0] - hitpos[0][0]) * (target[0][0] - hitpos[0][0]) + (target[0][1] - hitpos[0][1]) * (target[0][1] - hitpos[0][1]) + (target[0][2] - hitpos[0][2]) * (target[0][2] - hitpos[0][2]));
     dist[1] = ((target[1][0] - hitpos[1][0]) * (target[1][0] - hitpos[1][0]) + (target[1][1] - hitpos[1][1]) * (target[1][1] - hitpos[1][1]) + (target[1][2] - hitpos[1][2]) * (target[1][2] - hitpos[1][2]));
-
 
     gPuppyCam.collisionDistance = gPuppyCam.zoomTarget;
 
@@ -1595,4 +1594,4 @@ void puppycam_loop(void)
     puppycam_apply();
 }
 
-//#endif
+#endif
