@@ -1,8 +1,8 @@
 diff --git a/include/text_strings.h.in b/include/text_strings.h.in
-index 8ccc6b1..d2bb516 100644
+index 711d4562..f1c83171 100644
 --- a/include/text_strings.h.in
 +++ b/include/text_strings.h.in
-@@ -33,6 +33,12 @@
+@@ -93,6 +93,12 @@
  #define TEXT_HUD_WIDE_INFO _("PLEASE CONFIGURE YOUR DISPLAY OR YOUR EMULATOR TO\nSTRETCH THE IMAGE TO 16:9")
  #endif
  
@@ -16,7 +16,7 @@ index 8ccc6b1..d2bb516 100644
  
  /**
 diff --git a/src/game/camera.c b/src/game/camera.c
-index dfcf16a..e56f8c0 100644
+index 25b27983..2ff11930 100644
 --- a/src/game/camera.c
 +++ b/src/game/camera.c
 @@ -98,6 +98,7 @@ Vec3f sPlayer2FocusOffset;
@@ -137,6 +137,10 @@ index dfcf16a..e56f8c0 100644
 -    if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
 -        s8DirModeYawOffset += DEGREES(45);
 -        play_sound_cbutton_side();
+-    }
+-    if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
+-        s8DirModeYawOffset -= DEGREES(45);
+-        play_sound_cbutton_side();
 +    if ((gPlayer1Controller->buttonPressed & L_CBUTTONS) && !(gPlayer1Controller->buttonDown & R_TRIG)) {
 +        s8DirModeBaseYaw -= DEGREES(45);
 +    } else if ((gPlayer1Controller->buttonPressed & R_CBUTTONS) && !(gPlayer1Controller->buttonDown & R_TRIG)) {
@@ -144,10 +148,6 @@ index dfcf16a..e56f8c0 100644
 +    } else if (gPlayer2Controller->rawStickX) {
 +        s8DirModeBaseYaw += DEGREES(gPlayer2Controller->rawStickX * 4 / 64); // Analog camera support (Use the "Dual Analog" input mode in Parallel Launcher)
      }
--    if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
--        s8DirModeYawOffset -= DEGREES(45);
--        play_sound_cbutton_side();
--    }
 -#ifdef PARALLEL_LAKITU_CAM
 - // extra functionality
 -    else if (gPlayer1Controller->buttonPressed & U_JPAD) {
@@ -156,6 +156,9 @@ index dfcf16a..e56f8c0 100644
 -    }
 -    else if (gPlayer1Controller->buttonDown & L_JPAD) {
 -        s8DirModeYawOffset -= DEGREES(2);
+-    }
+-    else if (gPlayer1Controller->buttonDown & R_JPAD) {
+-        s8DirModeYawOffset += DEGREES(2);
 +
 +    if (gPlayer1Controller->buttonDown & R_TRIG) {
 +        if (gPlayer1Controller->buttonDown & L_CBUTTONS) {
@@ -184,14 +187,11 @@ index dfcf16a..e56f8c0 100644
 +    } else {
 +        rButtonCounter2++;
      }
--    else if (gPlayer1Controller->buttonDown & R_JPAD) {
--        s8DirModeYawOffset += DEGREES(2);
+-    else if (gPlayer1Controller->buttonPressed & D_JPAD) {
+-        s8DirModeYawOffset = s8DirModeYawOffset&0xE000;
 +    if (gPlayer1Controller->buttonPressed & D_JPAD) {
 +        s8DirModeBaseYaw = (s8DirModeBaseYaw + 0x1000) & 0xE000; // Lock the camera to the nearest 45deg axis
      }
--    else if (gPlayer1Controller->buttonPressed & D_JPAD) {
--        s8DirModeYawOffset = s8DirModeYawOffset&0xE000;
--    }   
 -#endif
  
      lakitu_zoom(400.f, 0x900);
@@ -216,7 +216,7 @@ index dfcf16a..e56f8c0 100644
      handle_c_button_movement(c);
      vec3f_get_dist_and_angle(sMarioCamState->pos, c->pos, &dist, &pitch, &yaw);
  
-@@ -3036,20 +3097,21 @@ void update_lakitu(struct Camera *c) {
+@@ -3036,6 +3097,8 @@ void update_lakitu(struct Camera *c) {
  void update_camera(struct Camera *c) {
      UNUSED u8 unused[24];
  
@@ -224,7 +224,8 @@ index dfcf16a..e56f8c0 100644
 +
      gCamera = c;
      update_camera_hud_status(c);
-     if (c->cutscene == 0) {
+     if (c->cutscene == 0 &&
+@@ -3046,14 +3109,13 @@ void update_camera(struct Camera *c) {
          // Only process R_TRIG if 'fixed' is not selected in the menu
          if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
              if (gPlayer1Controller->buttonPressed & R_TRIG) {
@@ -242,7 +243,15 @@ index dfcf16a..e56f8c0 100644
      }
  
      // Initialize the camera
-@@ -4849,15 +4911,15 @@ void play_camera_buzz_if_c_sideways(void) {
+@@ -3356,7 +3418,6 @@ void init_camera(struct Camera *c) {
+     struct Surface *floor = 0;
+     Vec3f marioOffset;
+     s32 i;
+-
+     sCreditsPlayer2Pitch = 0;
+     sCreditsPlayer2Yaw = 0;
+     gPrevLevel = gCurrLevelArea / 16;
+@@ -4901,15 +4962,15 @@ void play_camera_buzz_if_c_sideways(void) {
  }
  
  void play_sound_cbutton_up(void) {
@@ -261,7 +270,7 @@ index dfcf16a..e56f8c0 100644
  }
  
  void play_sound_button_change_blocked(void) {
-@@ -4961,7 +5023,7 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
+@@ -5013,7 +5074,7 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
      }
  
      // Zoom in / enter C-Up
@@ -270,7 +279,7 @@ index dfcf16a..e56f8c0 100644
          if (gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) {
              gCameraMovementFlags &= ~CAM_MOVE_ZOOMED_OUT;
              play_sound_cbutton_up();
-@@ -4971,7 +5033,7 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
+@@ -5023,7 +5084,7 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
      }
  
      // Zoom out
@@ -279,7 +288,7 @@ index dfcf16a..e56f8c0 100644
          if (gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) {
              gCameraMovementFlags |= CAM_MOVE_ALREADY_ZOOMED_OUT;
  #ifndef VERSION_JP
-@@ -4983,6 +5045,12 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
+@@ -5035,6 +5096,12 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
          }
      }
  
@@ -292,7 +301,7 @@ index dfcf16a..e56f8c0 100644
      //! returning uninitialized variable
      return dummy;
  }
-@@ -5548,7 +5616,7 @@ void set_camera_mode_8_directions(struct Camera *c) {
+@@ -5600,7 +5667,7 @@ void set_camera_mode_8_directions(struct Camera *c) {
      if (c->mode != CAMERA_MODE_8_DIRECTIONS) {
          c->mode = CAMERA_MODE_8_DIRECTIONS;
          sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
@@ -302,10 +311,10 @@ index dfcf16a..e56f8c0 100644
      }
  }
 diff --git a/src/game/game_init.c b/src/game/game_init.c
-index 8693507..fb8729d 100644
+index 317e33bf..6687016d 100644
 --- a/src/game/game_init.c
 +++ b/src/game/game_init.c
-@@ -49,6 +49,11 @@ u8 gBorderHeight;
+@@ -51,6 +51,11 @@ u8 gBorderHeight;
  #ifdef CUSTOM_DEBUG
  u8 gCustomDebugMode;
  #endif
@@ -317,7 +326,7 @@ index 8693507..fb8729d 100644
  #ifdef EEP
  s8 gEepromProbe;
  #endif
-@@ -725,6 +730,7 @@ void thread5_game_loop(UNUSED void *arg) {
+@@ -739,6 +744,7 @@ void thread5_game_loop(UNUSED void *arg) {
  
      play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
      set_sound_mode(save_file_get_sound_mode());
@@ -326,12 +335,12 @@ index 8693507..fb8729d 100644
      gWidescreen = save_file_get_widescreen_mode();
  #endif
 diff --git a/src/game/game_init.h b/src/game/game_init.h
-index f3f650c..fdf20b6 100644
+index 84a31755..817c58df 100644
 --- a/src/game/game_init.h
 +++ b/src/game/game_init.h
 @@ -45,6 +45,10 @@ extern u8 gIsConsole;
  #ifdef WIDE
- extern u8 gWidescreen;
+ extern s16 gWidescreen;
  #endif
 +extern u8 gCameraSpeed;
 +extern u8 gWaterCamOverride;
@@ -341,12 +350,12 @@ index f3f650c..fdf20b6 100644
  #ifdef CUSTOM_DEBUG
  extern u8 gCustomDebugMode;
 diff --git a/src/game/ingame_menu.c b/src/game/ingame_menu.c
-index 158154c..9ffefec 100644
+index 6cbfd8e1..01dd4de8 100644
 --- a/src/game/ingame_menu.c
 +++ b/src/game/ingame_menu.c
-@@ -38,6 +38,12 @@ u8 textPressL[] = { TEXT_HUD_PRESS_L };
- u8 textWideInfo[] = { TEXT_HUD_WIDE_INFO };
- #endif
+@@ -59,6 +59,12 @@ void *languageTable[][3] =
+     #endif
+ };
  
 +u8 textCamInfoSlowest[] = { TEXT_CAM_INFO_SLOWEST };
 +u8 textCamInfoSlow[] = { TEXT_CAM_INFO_SLOW };
@@ -357,7 +366,7 @@ index 158154c..9ffefec 100644
  extern u8 gLastCompletedCourseNum;
  extern u8 gLastCompletedStarNum;
  
-@@ -1434,6 +1440,45 @@ void reset_red_coins_collected(void) {
+@@ -1504,6 +1510,45 @@ void reset_red_coins_collected(void) {
      gRedCoinsCollected = 0;
  }
  
@@ -403,9 +412,9 @@ index 158154c..9ffefec 100644
  void change_dialog_camera_angle(void) {
      if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
          gDialogCameraAngleIndex = CAM_SELECTION_MARIO;
-@@ -1866,6 +1911,11 @@ s16 render_pause_courses_and_castle(void) {
+@@ -1942,6 +1987,11 @@ s16 render_pause_courses_and_castle(void) {
      }
-     #ifdef WIDE
+     #if defined(WIDE) && !defined(PUPPYCAM)
          render_widescreen_setting();
 +        render_camera_speed_setting();
 +        if (gPlayer1Controller->buttonPressed & L_TRIG){
@@ -416,10 +425,10 @@ index 158154c..9ffefec 100644
      if (gDialogTextAlpha < 250) {
          gDialogTextAlpha += 25;
 diff --git a/src/game/mario.c b/src/game/mario.c
-index c0b5f76..b6da9d4 100644
+index 31e97bce..29b5e9c4 100644
 --- a/src/game/mario.c
 +++ b/src/game/mario.c
-@@ -1460,32 +1460,39 @@ void update_mario_inputs(struct MarioState *m) {
+@@ -1468,32 +1468,39 @@ void update_mario_inputs(struct MarioState *m) {
  void set_submerged_cam_preset_and_spawn_bubbles(struct MarioState *m) {
      f32 heightBelowWater;
      s16 camPreset;
@@ -481,7 +490,7 @@ index c0b5f76..b6da9d4 100644
  }
  
 diff --git a/src/game/mario_actions_airborne.c b/src/game/mario_actions_airborne.c
-index ce6467e..c7e998c 100644
+index ce6467ef..c7e998c1 100644
 --- a/src/game/mario_actions_airborne.c
 +++ b/src/game/mario_actions_airborne.c
 @@ -1736,6 +1736,10 @@ s32 act_shot_from_cannon(struct MarioState *m) {
@@ -526,10 +535,10 @@ index ce6467e..c7e998c 100644
      }
  
 diff --git a/src/game/save_file.c b/src/game/save_file.c
-index b27d869..7fbf045 100644
+index bcdcdbaf..3f0b8ca1 100644
 --- a/src/game/save_file.c
 +++ b/src/game/save_file.c
-@@ -634,6 +634,12 @@ u8 save_file_get_widescreen_mode(void) {
+@@ -673,6 +673,12 @@ u8 save_file_get_widescreen_mode(void) {
      return gSaveBuffer.menuData[0].wideMode;
  }
  
@@ -542,7 +551,7 @@ index b27d869..7fbf045 100644
  void save_file_set_widescreen_mode(u8 mode) {
      gSaveBuffer.menuData[0].wideMode = mode;
  
-@@ -646,6 +652,10 @@ u16 save_file_get_sound_mode(void) {
+@@ -685,6 +691,10 @@ u16 save_file_get_sound_mode(void) {
      return gSaveBuffer.menuData[0].soundMode;
  }
  
@@ -554,10 +563,10 @@ index b27d869..7fbf045 100644
      if (save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND) {
          switch (gSaveBuffer.files[gCurrSaveFileNum - 1][0].capLevel) {
 diff --git a/src/game/save_file.h b/src/game/save_file.h
-index 3ac0c4d..d46a7e1 100644
+index 64cf0c63..085ec1d9 100644
 --- a/src/game/save_file.h
 +++ b/src/game/save_file.h
-@@ -62,6 +62,7 @@ struct MainMenuSaveData
+@@ -63,6 +63,7 @@ struct MainMenuSaveData
  #ifdef WIDE
      u8 wideMode: 1;
  #endif
@@ -565,7 +574,7 @@ index 3ac0c4d..d46a7e1 100644
  
  #ifdef VERSION_EU
      u8 language: 2;
-@@ -167,6 +168,8 @@ u16 save_file_get_sound_mode(void);
+@@ -178,6 +179,8 @@ u16 save_file_get_sound_mode(void);
  u8 save_file_get_widescreen_mode(void);
  void save_file_set_widescreen_mode(u8 mode);
  #endif
