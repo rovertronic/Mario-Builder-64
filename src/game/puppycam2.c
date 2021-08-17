@@ -503,7 +503,7 @@ void puppycam_input_pitch(void)
         if (gPlayer1Controller->buttonDown & D_CBUTTONS || gPuppyCam.stick2[1] != 0)
             gPuppyCam.pitchAcceleration += 50*(gPuppyCam.options.sensitivityY/100.f);
         else
-            gPuppyCam.pitchAcceleration = approach_f32_asymptotic(gPuppyCam.pitchAcceleration, 0, DECELERATION);
+            gPuppyCam.pitchAcceleration = 0;
 
         gPuppyCam.pitchAcceleration = CLAMP(gPuppyCam.pitchAcceleration, -100, 100);
 
@@ -531,7 +531,7 @@ void puppycam_input_zoom(void)
 void puppycam_input_centre(void)
 {
     s32 inputDefault = L_TRIG;
-    if (gPuppyCam.options.inputType == 3)
+    if (gPuppyCam.options.inputType == 2)
         inputDefault = R_TRIG;
     //Handles L button centering.
     if (gPlayer1Controller->buttonPressed & inputDefault && gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_YAW_ROTATION &&
@@ -559,17 +559,17 @@ static void puppycam_input_hold_preset1(f32 ivX)
 
     if ((gPlayer1Controller->buttonDown & L_CBUTTONS && !gPuppyCam.options.analogue) || gPuppyCam.stick2[0] != 0)
     {
-        gPuppyCam.yawAcceleration -= 50*(gPuppyCam.options.sensitivityX/100.f);
+        gPuppyCam.yawAcceleration -= 75*(gPuppyCam.options.sensitivityX/100.f);
         gPuppyCam.framesSinceC[0] = 0;
     }
     else
     if ((gPlayer1Controller->buttonDown & R_CBUTTONS && !gPuppyCam.options.analogue) || gPuppyCam.stick2[0] != 0)
     {
-        gPuppyCam.yawAcceleration += 50*(gPuppyCam.options.sensitivityX/100.f);
+        gPuppyCam.yawAcceleration += 75*(gPuppyCam.options.sensitivityX/100.f);
         gPuppyCam.framesSinceC[1] = 0;
     }
     else
-        gPuppyCam.yawAcceleration = approach_f32_asymptotic(gPuppyCam.yawAcceleration, 0, DECELERATION);
+        gPuppyCam.yawAcceleration = 0;
 }
 
 //An alternative control scheme, hold the button down to turn the camera, or press it once to turn it quickly.
@@ -604,15 +604,15 @@ static void puppycam_input_hold_preset2(f32 ivX)
     //Handles continuous movement as normal, as long as the button's held.
     if (gPlayer1Controller->buttonDown & L_CBUTTONS)
     {
-        gPuppyCam.yawAcceleration -= 10*(gPuppyCam.options.sensitivityX/100.f);
+        gPuppyCam.yawAcceleration -= 75*(gPuppyCam.options.sensitivityX/100.f);
     }
     else
     if (gPlayer1Controller->buttonDown & R_CBUTTONS)
     {
-        gPuppyCam.yawAcceleration += 10*(gPuppyCam.options.sensitivityX/100.f);
+        gPuppyCam.yawAcceleration += 75*(gPuppyCam.options.sensitivityX/100.f);
     }
     else
-        gPuppyCam.yawAcceleration = approach_f32_asymptotic(gPuppyCam.yawAcceleration, 0, DECELERATION);
+        gPuppyCam.yawAcceleration = 0;
 }
 
 //Another alternative control scheme. This one aims to mimic the parallel camera scheme down to the last bit from the original game.
@@ -636,7 +636,7 @@ static void puppycam_input_hold_preset3(f32 ivX)
             gPuppyCam.yawAcceleration -= (gPuppyCam.options.sensitivityX/100.f)*stickMag[0];
         }
         else
-            gPuppyCam.yawAcceleration = approach_f32_asymptotic(gPuppyCam.yawAcceleration, 0, DECELERATION);
+            gPuppyCam.yawAcceleration = 0;
 
         if (ABS(gPlayer1Controller->rawStickY) > DEADZONE)
         {
