@@ -3509,6 +3509,9 @@ void init_camera(struct Camera *c) {
     gLakituState.nextYaw = gLakituState.yaw;
     c->yaw = gLakituState.yaw;
     c->nextYaw = gLakituState.yaw;
+    #ifdef CAMERA_FIX
+    set_camera_mode(c, CAMERA_MODE_8_DIRECTIONS, 0);
+    #endif
     #ifdef PUPPYCAM
     puppycam_init();
     #endif
