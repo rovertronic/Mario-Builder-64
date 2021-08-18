@@ -1,6 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-// ULTRASM64-EXTBOUNDS CONFIG FLAGS NEAR BOTTOM
+// HACKERSM64 CONFIG DEFINES NEAR BOTTOM
 /**
  * @file config.h
  * A catch-all file for configuring various bugfixes and other settings (maybe eventually) in SM64
@@ -52,7 +52,7 @@
 
 #endif
 
-// -- ultrasm64-extbounds specific settings --
+// -- HackerSM64 specific settings --
 
 // TEST LEVEL
 // Uncomment this define and set a test level in order to boot straight into said level.
