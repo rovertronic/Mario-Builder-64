@@ -708,10 +708,10 @@ f32 find_water_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 f32 find_water_level_and_floor(f32 x, f32 z, struct Surface **pfloor) {
     s32 i;
     s32 numRegions;
-    s16 val;
-    f32 loX, hiX, loZ, hiZ;
-    f32 waterLevel = FLOOR_LOWER_LIMIT;
-    s16 *p = gEnvironmentRegions;
+    s32 val;
+    s32 loX, hiX, loZ, hiZ;
+    s32 waterLevel = FLOOR_LOWER_LIMIT;
+    TerrainData *p = gEnvironmentRegions;
     struct Surface *floor = NULL;
     #ifdef PUPPYPRINT
     OSTime first = osGetTime();
@@ -759,10 +759,10 @@ f32 find_water_level_and_floor(f32 x, f32 z, struct Surface **pfloor) {
 f32 find_water_level(f32 x, f32 z) {
     s32 i;
     s32 numRegions;
-    s16 val;
-    f32 loX, hiX, loZ, hiZ;
-    f32 waterLevel = FLOOR_LOWER_LIMIT;
-    s16 *p = gEnvironmentRegions;
+    s32 val;
+    s32 loX, hiX, loZ, hiZ;
+    s32 waterLevel = FLOOR_LOWER_LIMIT;
+    TerrainData *p = gEnvironmentRegions;
     struct Surface *floor;
     #ifdef PUPPYPRINT
     OSTime first = osGetTime();
@@ -808,11 +808,10 @@ f32 find_water_level(f32 x, f32 z) {
 f32 find_poison_gas_level(f32 x, f32 z) {
     s32 i;
     s32 numRegions;
-    UNUSED s32 unused;
-    s16 val;
-    f32 loX, hiX, loZ, hiZ;
-    f32 gasLevel = FLOOR_LOWER_LIMIT;
-    s16 *p = gEnvironmentRegions;
+    s32 val;
+    s32 loX, hiX, loZ, hiZ;
+    s32 gasLevel = FLOOR_LOWER_LIMIT;
+    TerrainData *p = gEnvironmentRegions;
     #ifdef PUPPYPRINT
     OSTime first = osGetTime();
     #endif

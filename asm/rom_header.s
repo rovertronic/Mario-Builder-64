@@ -24,12 +24,10 @@
 .ascii "SM"                     /* Cartridge ID */
 
 /* Region */
-#ifdef VERSION_EU
-    .ascii "P"                  /* PAL (Europe) */
-#elif defined(VERSION_US)
-    .ascii "E"                  /* NTSC-U (North America) */
-#else
+#if defined(VERSION_JP) || defined(VERSION_SH)
     .ascii "J"                  /* NTSC-J (Japan) */
+#else
+    .ascii "E"                  /* NTSC-U (North America) */
 #endif
 
 

@@ -49,12 +49,14 @@ typedef uintptr_t GeoLayout;
 typedef uintptr_t LevelScript;
 typedef s16 Movtex;
 typedef s16 MacroObject;
-typedef s16 Collision;
+typedef COLLISION_DATA_TYPE Collision; //Collision is by default an s16, but it's best to have it match the type of COLLISION_DATA_TYPE
 typedef s16 Trajectory;
 typedef s16 PaintingData;
 typedef uintptr_t BehaviorScript;
 typedef u8 Texture;
 typedef u16 ModelID;
+typedef COLLISION_DATA_TYPE TerrainData;
+typedef ROOM_DATA_TYPE RoomData;
 
 enum SpTaskState {
     SPTASK_STATE_NOT_STARTED,

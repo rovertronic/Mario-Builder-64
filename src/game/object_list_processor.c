@@ -147,9 +147,9 @@ struct MemoryPool *gObjectMemoryPool;
 
 s16 gCheckingSurfaceCollisionsForCamera;
 s16 gFindFloorIncludeSurfaceIntangible;
-s16 *gEnvironmentRegions;
+TerrainData *gEnvironmentRegions;
 s32 gEnvironmentLevels[20];
-s8 gDoorAdjacentRooms[60][2];
+RoomData gDoorAdjacentRooms[60][2];
 s16 gMarioCurrentRoom;
 s16 D_8035FEE2;
 s16 D_8035FEE4;
