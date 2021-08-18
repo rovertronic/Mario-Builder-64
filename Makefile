@@ -20,6 +20,8 @@ USE_DEBUG := 0
 
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
+# Virtual Console hacks. Enabling this makes your hack (hopefully) compatible with the Wii Virtual Console.
+# One of the thing this does is disable the instant input patch, so do NOT use this for your normal z64 release.
 VC_HACKS ?= 0
 
 # CONSOLE - selects the console to target
