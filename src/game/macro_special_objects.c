@@ -104,7 +104,7 @@ struct LoadedPreset {
 #define MACRO_OBJ_Z 3
 #define MACRO_OBJ_PARAMS 4
 
-void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
+void spawn_macro_objects(s32 areaIndex, s16 *macroObjList) {
     UNUSED u32 pad5C;
     s32 presetID;
 
@@ -171,7 +171,7 @@ void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
     }
 }
 
-void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList) {
+void spawn_macro_objects_hardcoded(s32 areaIndex, s16 *macroObjList) {
     UNUSED u8 pad[8];
 
     // This version of macroObjList has the preset and Y-Rotation separated,
@@ -237,7 +237,7 @@ void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList) {
     }
 }
 
-void spawn_special_objects(s16 areaIndex, s16 **specialObjList) {
+void spawn_special_objects(s32 areaIndex, TerrainData **specialObjList) {
     s32 numOfSpecialObjects;
     s32 i;
     s32 offset;
