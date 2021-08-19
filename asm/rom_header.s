@@ -20,7 +20,7 @@
 .ascii "ED"                     /* Cartridge ID */
 
 /* Region */
-#ifdef defined(VERSION_JP) || defined(VERSION_SH)
+#if defined(VERSION_JP) || defined(VERSION_SH)
     .ascii "J"                  /* NTSC-J (Japan) */
 #else
     .ascii "E"                  /* NTSC-U (North America) */
