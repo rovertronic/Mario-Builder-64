@@ -3,6 +3,9 @@
 
 #ifdef PUPPYCAM
 
+//How many times to store the terrain pitch. This stores it over 10 frames to help smooth over changes in curvature.
+#define NUM_PITCH_ITERATIONS 10
+
 #define PUPPYCAM_FLAGS_CUTSCENE    0x0001
 #define PUPPYCAM_FLAGS_SMOOTH      0x0002
 
@@ -21,6 +24,13 @@
 #define PUPPYCAM_MODE3_ZOOMED_MED 0x2
 #define PUPPYCAM_MODE3_ZOOMED_OUT 0x4
 #define PUPPYCAM_MODE3_ENTER_FIRST_PERSON 0x8
+
+#define RAYCAST_FIND_FLOOR  (0x1)
+#define RAYCAST_FIND_WALL   (0x2)
+#define RAYCAST_FIND_CEIL   (0x4)
+#define RAYCAST_FIND_WATER  (0x8)
+#define RAYCAST_FIND_ALL    (0xFFFFFFFF)
+
 
 #include "include/command_macros_base.h"
 
@@ -56,7 +66,6 @@ struct gPuppyStruct
     s16 pitch; //Vertical Direction the game reads as the active value.
     s16 pitchTarget; //Vertical Direction that pitch tries to be.
     f32 pitchAcceleration; //Vertical Direction that sets pitchTarget.
-    s16 posHeight[2]; //The first index is the ground offset of pos[1], the second index is the ground offset of focus[1].
     s16 zoom; //How far the camera is currently zoomed out
     u8 zoomSet; //The current setting of which zoompoint to set the target to.
     s16 zoomTarget; //The value that zoom tries to be.
@@ -80,13 +89,15 @@ struct gPuppyStruct
     u8 opacity; //A value set by collision distance, to fade Mario out if you're too close.
     s8 stick2[2];//The value that's set and read for analogue stick.
     u8 stickN[2]; //This is set when the stick is neutral. It's to prevent rapidfire input.
-    u8 enabled; //A boolean that decides whether to use vanilla camera or puppy camera. Of course, anybody with this enabled is obligated to a death sentence :)
+    u8 enabled; //A boolean that decides whether to use vanilla camera or puppy camera.
     s16 swimPitch; //Pitch adjustment that's applied when swimming. All pitch adjustment is clamped.
     s16 edgePitch; //Pitch adjustment that's applied when stood near an edge. All pitch adjustment is clamped.
     s16 moveZoom; //A small zoom value that's added on top of the regular zoom when moving. It's pretty subtle, but gives the feeling of a bit of speed.
     u8 mode3Flags; //A flagset for classic mode.
     u8 moveFlagAdd; //A bit that multiplies movement rate of axes when moving, to centre them faster.
-    s16 targetDist[2];
+    s16 targetDist[2]; //Used with secondary view targets to smooth out the between status.
+    s16 intendedTerrainPitch; //The pitch that the game wants the game to tilt towards, following the terrain.
+    s16 terrainPitch; //The pitch the game tilts towards, when following terrain inclines.
 
     u8 cutscene; //A boolean that decides whether a cutscene is active
     s32 (*sceneFunc)();
@@ -162,7 +173,7 @@ extern void puppycam_boot(void);
 extern void puppycam_init(void);
 extern void puppycam_loop(void);
 extern void puppycam_shake(s16 x, s16 y, s16 z);
-extern void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos);
+extern void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
 extern f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
 extern void puppycam_default_config(void);
 extern s16 LENCOS(s16 length, s16 direction);

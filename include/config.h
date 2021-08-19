@@ -1,6 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-// ULTRASM64-EXTBOUNDS CONFIG FLAGS NEAR BOTTOM
+// HACKERSM64 CONFIG DEFINES NEAR BOTTOM
 /**
  * @file config.h
  * A catch-all file for configuring various bugfixes and other settings (maybe eventually) in SM64
@@ -52,7 +52,7 @@
 
 #endif
 
-// -- ultrasm64-extbounds specific settings --
+// -- HackerSM64 specific settings --
 
 // TEST LEVEL
 // Uncomment this define and set a test level in order to boot straight into said level.
@@ -98,11 +98,13 @@
 #define PARALLEL_LAKITU_CAM
 // Allows Mario to ledgegrab sloped floors
 #define NO_FALSE_LEDGEGRABS
+//Adds multiple languages to the game. Just a placeholder for the most part, because it only works with EU, and must be enabled with EU.
+#define MULTILANG (0 || VERSION_EU)
 //Enables Puppy Camera 2, a rewritten camera that can be freely configured and modified.
 //#define PUPPYCAM
 
 
-// HACKER QOL 
+// HACKER QOL
 // Increase the maximum pole length (it will treat bparam1 and bparam2 as a single value)
 #define LONGER_POLES
 // Number of possible unique model ID's (keep it higher than 256)
@@ -115,7 +117,7 @@
 //#define CUSTOM_DEBUG
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
 //#define PUPPYPRINT
-#define PUPPYPRINT_DEBUG 0
+//#define PUPPYPRINT_DEBUG 0
 
 // BUG/GAME QOL FIXES
 // Fix instant warp offset not working when warping across different areas

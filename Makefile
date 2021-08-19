@@ -20,6 +20,8 @@ USE_DEBUG := 0
 
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
+# Virtual Console hacks. Enabling this makes your hack (hopefully) compatible with the Wii Virtual Console.
+# One of the thing this does is disable the instant input patch, so do NOT use this for your normal z64 release.
 VC_HACKS ?= 0
 
 # CONSOLE - selects the console to target
@@ -294,6 +296,10 @@ ifeq ($(filter clean distclean print-%,$(MAKECMDGOALS)),)
   NOEXTRACT ?= 0
   ifeq ($(NOEXTRACT),0)
     DUMMY != $(PYTHON) extract_assets.py $(VERSION) >&2 || echo FAIL
+    ifeq ($(DUMMY),FAIL)
+      $(error Failed to extract assets)
+    endif
+    DUMMY != $(PYTHON) extract_assets.py jp >&2 || echo FAIL
     ifeq ($(DUMMY),FAIL)
       $(error Failed to extract assets)
     endif
@@ -780,20 +786,20 @@ $(BUILD_DIR)/libz.a: $(LIBZ_O_FILES)
 	$(V)$(AR) rcs -o $@ $(LIBZ_O_FILES)
 
 # SS2: Goddard rules to get size
-$(BUILD_DIR)/goddard.ld: goddard.ld $(BUILD_DIR)/libgoddard.a
-	$(call print,Preprocessing linker script:,$<,$@)
-	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
+$(BUILD_DIR)/sm64_prelim.ld: sm64.ld $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/libgoddard.a $(BUILD_DIR)/libz.a
+	$(call print,Preprocessing preliminary linker script:,$<,$@)
+	$(V)$(CPP) $(CPPFLAGS) -DPRELIMINARY=1 -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
-$(BUILD_DIR)/goddard.elf: $(BUILD_DIR)/goddard.ld
-	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $< -Map $(BUILD_DIR)/goddard.map --no-check-sections -o $@ -T tools/hardcoded_syms.txt $(wildcard $(BUILD_DIR)/src/menu/*.o) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -lgoddard -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc
+$(BUILD_DIR)/sm64_prelim.elf: $(BUILD_DIR)/sm64_prelim.ld
+	@$(PRINT) "$(GREEN)Linking Preliminary ELF file:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $< -Map $(BUILD_DIR)/sm64_prelim.map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc
 
-$(BUILD_DIR)/goddard.txt: $(BUILD_DIR)/goddard.elf
+$(BUILD_DIR)/goddard.txt: $(BUILD_DIR)/sm64_prelim.elf
 	$(call print,Getting Goddard size...)
-	$(V)python3 tools/getGoddardSize.py $(BUILD_DIR)/goddard.map
+	$(V)python3 tools/getGoddardSize.py $(BUILD_DIR)/sm64_prelim.map $(VERSION)
 
 # Link SM64 ELF file
-$(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
+$(ELF): $(BUILD_DIR)/sm64_prelim.elf $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -T goddard.txt -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc
 
@@ -801,7 +807,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
 ifeq      ($(CONSOLE),n64)
-	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x101000 --gap-fill=0xFF $< $@ -O binary
 else ifeq ($(CONSOLE),bb)
 	$(V)$(OBJCOPY) --gap-fill=0x00 $< $@ -O binary
 	$(V)dd if=$@ of=tmp bs=16K conv=sync
