@@ -2,6 +2,7 @@
 #define SCRIPTS_H
 
 #include "types.h"
+#include "game/puppycam2.h"
 
 // scripts
 extern const LevelScript level_main_scripts_entry[];
