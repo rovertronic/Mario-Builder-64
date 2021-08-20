@@ -28,6 +28,7 @@
 #include "print.h"
 #include "engine/surface_collision.h"
 #include "engine/surface_load.h"
+#include "object_list_processor.h"
 
 #include "debug_box.h"
 
@@ -88,6 +89,16 @@ static const Gfx dl_debug_box_begin[] = {
     gsSPEndDisplayList(),
 };
 
+static const Gfx dl_debug_box_begin_water[] = {
+    gsDPPipeSync(),
+    gsDPSetRenderMode(G_RM_ZB_XLU_SURF, G_RM_NOOP2),
+    gsSPClearGeometryMode(G_LIGHTING),
+    gsSPSetGeometryMode(G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH),
+    gsSPTexture(0, 0, 0, 0, G_OFF),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsSPEndDisplayList(),
+};
+
 static const Gfx dl_debug_box_end[] = {
     gsDPPipeSync(),
     gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
@@ -130,6 +141,7 @@ void debug_box_input(void)
 }
 
 s16 gVisualSurfaceCount;
+s32 gVisualOffset;
 extern s32 gSurfaceNodesAllocated;
 extern s32 gSurfacesAllocated;
 
@@ -179,18 +191,53 @@ void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts)
     }
 }
 
+void iterate_surfaces_envbox(Vtx *verts)
+{
+    TerrainData *p = gEnvironmentRegions;
+    s32 numRegions;
+    s32 col[3] = {0xFF, 0xFF, 0x00};
+    s32 i = 0;
+
+    if (p != NULL)
+    {
+        numRegions = *p++;
+        for (i = 0; i < numRegions; i++)
+        {
+            make_vertex(verts, gVisualSurfaceCount, p[1], p[5], p[2], 0, 0, col[0], col[1], col[2], 0x80);
+            make_vertex(verts, gVisualSurfaceCount+1, p[1], p[5], p[4], 0, 0, col[0], col[1], col[2], 0x80);
+            make_vertex(verts, gVisualSurfaceCount+2, p[3], p[5], p[2], 0, 0, col[0], col[1], col[2], 0x80);
+
+            make_vertex(verts, gVisualSurfaceCount+3, p[3], p[5], p[2], 0, 0, col[0], col[1], col[2], 0x80);
+            make_vertex(verts, gVisualSurfaceCount+4, p[1], p[5], p[4], 0, 0, col[0], col[1], col[2], 0x80);
+            make_vertex(verts, gVisualSurfaceCount+5, p[3], p[5], p[4], 0, 0, col[0], col[1], col[2], 0x80);
+
+            gVisualSurfaceCount+=6;
+            gVisualOffset+=6;
+            p+= 6;
+        }
+    }
+}
+
 #if defined(F3DEX_GBI_2) || defined(F3DEX_GBI)
 #define VERTCOUNT 30
 #else
 #define VERTCOUNT 12
 #endif // F3DEX_GBI_2
 
-void visual_surface_display(Vtx *verts)
+void visual_surface_display(Vtx *verts, s32 iteration)
 {
-    s32 vts = (gVisualSurfaceCount);
+    s32 vts;
     s32 vtl = 0;
     s32 count = VERTCOUNT;
     s32 ntx = 0;
+    if (!iteration)
+    {
+        vts = gVisualSurfaceCount;
+    }
+    else
+    {
+        vts = gVisualOffset;
+    }
 
     while (vts > 0)
     {
@@ -226,6 +273,8 @@ s32 iterate_surface_count(s32 x, s32 z)
     s32 cellX, cellZ;
     s32 i = 0;
     s32 j = 0;
+    TerrainData *p = gEnvironmentRegions;
+    s32 numRegions;
 
     if (x <= -LEVEL_BOUNDARY_MAX || x >= LEVEL_BOUNDARY_MAX) {
         return 0;
@@ -257,6 +306,12 @@ s32 iterate_surface_count(s32 x, s32 z)
             j++;
         }
     }
+    if (p != NULL)
+    {
+        numRegions = *p++;
+        j += numRegions*6;
+    }
+
     return j;
 }
 
@@ -272,6 +327,7 @@ void visual_surface_loop(void)
     verts = alloc_display_list((iterate_surface_count(gMarioState->pos[0], gMarioState->pos[2])*3) * sizeof(Vtx));
 
     gVisualSurfaceCount = 0;
+    gVisualOffset = 0;
 
     if (mtx == NULL || verts == NULL)
         return;
@@ -284,7 +340,13 @@ void visual_surface_loop(void)
 
     iterate_surfaces_visual(gMarioState->pos[0], gMarioState->pos[2], verts);
 
-    visual_surface_display(verts);
+    visual_surface_display(verts, 0);
+
+    iterate_surfaces_envbox(verts);
+
+    gSPDisplayList(gDisplayListHead++, dl_debug_box_begin_water);
+
+    visual_surface_display(verts, 1);
 
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, dl_debug_box_end);
