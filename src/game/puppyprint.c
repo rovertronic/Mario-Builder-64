@@ -38,6 +38,7 @@ There's also a custom option that's left blank. It runs benchmark_custom which c
 #include "engine/surface_load.h"
 #include "audio/data.h"
 #include "hud.h"
+#include "debug_box.h"
 
 u8 currEnv[4];
 u8 fDebug = 0;
@@ -79,6 +80,9 @@ s8 ramViewer = 0;
 s32 ramsizeSegment[33] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 s32 audioPool[12];
 s32 mempool;
+//Collision
+u8 collisionViewer = 0;
+s32 numSurfaces = 0;
 
 extern u8 _mainSegmentStart[];
 extern u8 _mainSegmentEnd[];
@@ -451,13 +455,22 @@ void puppyprint_profiler_process(void)
         {
             benchViewer ^= 1;
             ramViewer = 0;
+            collisionViewer = 0;
         }
         else
-        if (gPlayer1Controller->buttonPressed & U_JPAD && !(gPlayer1Controller->buttonPressed & L_TRIG))
+        if (gPlayer1Controller->buttonPressed & U_JPAD)
         {
             ramViewer ^= 1;
             benchViewer = 0;
+            collisionViewer = 0;
         }
+        #ifdef VISUAL_DEBUG
+        else
+        if (!benchViewer && !ramViewer)
+        {
+            debug_box_input();
+        }
+        #endif
         if (benchViewer)
         {
             if (gPlayer1Controller->buttonPressed & R_JPAD)
