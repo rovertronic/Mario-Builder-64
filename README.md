@@ -59,6 +59,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Colored ia4 text support. Format: `"@XXXXXXXX[YOUR TEXT]@--------"` (By ArcticJaguar725)
   - Example Text: `"@FF0000FFRED @00FF00FFGREEN @0000FFFFBLUE @FFFFFF00INVISIBLE @--------NORMAL"`
   - NOTE: It is not mandatory to reset the text color with `"@--------"`, but text will need to be recolored each time it scrolls in a dialog box, or the custom color will reset.
+- Toggle visiblity of collision surfaces and object hitboxes with Visual Surface Debug. `config.h` has VISUAL_DEBUG which can be turned on to enable this feature.
 
 **Other Bugfixes:**
 - Castle music fix (Fixes the castle music sometimes triggering after getting a dialog) *
