@@ -5,7 +5,7 @@
 #define PLASTERED "splattered"
 #define SCAM_ME "cheat!\n"
 #define SCRAM "get lost"
-#define YOU_CANT_SWIM_IN_IT "It's too heavy to\nswim with."
+#define YOU_CANT_SWIM_IN_IT "It is too heavy to\nswim with."
 #define GIVE_UP "give up"
 #else
 #define COMRADES "comrades"
