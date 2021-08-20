@@ -13,6 +13,7 @@
 #include "game_init.h"
 #include "engine/extended_bounds.h"
 #include "puppyprint.h"
+#include "debug_box.h"
 
 #include "config.h"
 
@@ -854,6 +855,33 @@ static void geo_process_object(struct Object *node) {
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (node->header.gfx.sharedChild != NULL) {
+                #ifdef VISUAL_DEBUG
+                if (hitboxView)
+                {
+                    Vec3f bnds1;
+                    Vec3f bnds2;
+                    //This will create a cylinder that visualises their hitbox.
+                    //If they do not have a hitbox, it will be a small white cube instead.
+                    if (node->oIntangibleTimer != -1)
+                    {
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+                        vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
+                        debug_box_color(0x800000FF);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+                        vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
+                        debug_box_color(0x8FF00000);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                    }
+                    else
+                    {
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
+                        vec3f_set(bnds2, 30, 30, 30);
+                        debug_box_color(0x80FFFFFF);
+                    debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX);
+                    }
+                }
+                #endif
                 gCurGraphNodeObject = (struct GraphNodeObject *) node;
                 node->header.gfx.sharedChild->parent = &node->header.gfx.node;
                 geo_process_node_and_siblings(node->header.gfx.sharedChild);

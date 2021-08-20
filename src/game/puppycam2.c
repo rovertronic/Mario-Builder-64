@@ -23,6 +23,7 @@
 #include "save_file.h"
 #include "mario.h"
 #include "puppyprint.h"
+#include "debug_box.h"
 
 #ifdef PUPPYCAM
 
@@ -1147,6 +1148,10 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index)
     if (sPuppyVolumeStack[index]->room != gMarioCurrentRoom && sPuppyVolumeStack[index]->room != -1)
         return FALSE;
 
+    #ifdef VISUAL_DEBUG
+
+    #endif
+
     if (sPuppyVolumeStack[index]->shape == PUPPYVOLUME_SHAPE_BOX)
     {
         //Fetch the relative position. to the triggeree.
@@ -1156,7 +1161,13 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index)
         //Use the dark, forbidden arts of trig to rotate the volume.
         pos[0] = rel[2] * sins(sPuppyVolumeStack[index]->rot) + rel[0] * coss(sPuppyVolumeStack[index]->rot);
         pos[1] = rel[2] * coss(sPuppyVolumeStack[index]->rot) - rel[0] * sins(sPuppyVolumeStack[index]->rot);
-
+        #ifdef VISUAL_DEBUG
+        Vec3f debugPos[2];
+        vec3f_set(debugPos[0], sPuppyVolumeStack[index]->pos[0], sPuppyVolumeStack[index]->pos[1], sPuppyVolumeStack[index]->pos[2]);
+        vec3f_set(debugPos[1], sPuppyVolumeStack[index]->radius[0], sPuppyVolumeStack[index]->radius[1], sPuppyVolumeStack[index]->radius[2]);
+        debug_box_color(0x0000FF00);
+        debug_box_rot(debugPos[0], debugPos[1], sPuppyVolumeStack[index]->rot, DEBUG_SHAPE_BOX);
+        #endif
         //Now compare values.
         if (-sPuppyVolumeStack[index]->radius[0] < pos[0] && pos[0] < sPuppyVolumeStack[index]->radius[0] &&
             -sPuppyVolumeStack[index]->radius[1] < rel[1] && rel[1] < sPuppyVolumeStack[index]->radius[1] &&
@@ -1175,7 +1186,13 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index)
         rel[1] = sPuppyVolumeStack[index]->pos[1] - gPuppyCam.targetObj->oPosY;
         rel[2] = sPuppyVolumeStack[index]->pos[2] - gPuppyCam.targetObj->oPosZ;
         dist = sqrtf((rel[0] * rel[0]) + (rel[2] * rel[2]));
-
+        #ifdef VISUAL_DEBUG
+        Vec3f debugPos[2];
+        vec3f_set(debugPos[0], sPuppyVolumeStack[index]->pos[0], sPuppyVolumeStack[index]->pos[1], sPuppyVolumeStack[index]->pos[2]);
+        vec3f_set(debugPos[1], sPuppyVolumeStack[index]->radius[0], sPuppyVolumeStack[index]->radius[1], sPuppyVolumeStack[index]->radius[2]);
+        debug_box_color(0x0000FF00);
+        debug_box_rot(debugPos[0], debugPos[1], sPuppyVolumeStack[index]->rot, DEBUG_SHAPE_CYLINDER);
+        #endif
         distCheck = (dist < sPuppyVolumeStack[index]->radius[0]);
 
         if (-sPuppyVolumeStack[index]->radius[1] < rel[1] && rel[1] < sPuppyVolumeStack[index]->radius[1] && distCheck)

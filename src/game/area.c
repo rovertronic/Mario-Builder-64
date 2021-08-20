@@ -24,6 +24,7 @@
 #include "level_table.h"
 #include "dialog_ids.h"
 #include "puppyprint.h"
+#include "debug_box.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -365,6 +366,13 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
+
+        #ifdef VISUAL_DEBUG
+        if (hitboxView)
+            render_debug_boxes();
+        if (surfaceView)
+            visual_surface_loop();
+        #endif
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 
