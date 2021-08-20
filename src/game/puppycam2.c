@@ -1148,10 +1148,6 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index)
     if (sPuppyVolumeStack[index]->room != gMarioCurrentRoom && sPuppyVolumeStack[index]->room != -1)
         return FALSE;
 
-    #ifdef VISUAL_DEBUG
-
-    #endif
-
     if (sPuppyVolumeStack[index]->shape == PUPPYVOLUME_SHAPE_BOX)
     {
         //Fetch the relative position. to the triggeree.
