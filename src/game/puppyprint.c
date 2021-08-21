@@ -261,6 +261,8 @@ void print_ram_overview(void)
 
 void benchmark_custom(void)
 {
+    if (benchmarkLoop == 0 || benchOption != 2)
+        return;
     OSTime lastTime;
     while (TRUE)
     {
