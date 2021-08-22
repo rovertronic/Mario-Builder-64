@@ -52,10 +52,20 @@ OUTPUT_ARCH (mips)
    END_SEG(name##_segment_7) \
    BEGIN_SEG(name, 0x0E000000) \
    { \
-      KEEP(BUILD_DIR/levels/name/script.o(.data)); \
-      KEEP(BUILD_DIR/levels/name/geo.o(.data)); \
+      KEEP(BUILD_DIR/levels/name/script.o(.*data*)); \
+      KEEP(BUILD_DIR/levels/name/script.o(.text)); \
+      KEEP(BUILD_DIR/levels/name/script.o(.rodata*)); \
+      KEEP(BUILD_DIR/levels/name/geo.o(.*data*)); \
+      KEEP(BUILD_DIR/levels/name/geo.o(.text)); \
+      KEEP(BUILD_DIR/levels/name/geo.o(.rodata*)); \
    } \
-   END_SEG(name)
+   END_SEG(name) \
+   BEGIN_NOLOAD(name) \
+   { \
+      KEEP(BUILD_DIR/levels/name/script.o(.bss*)); \
+      KEEP(BUILD_DIR/levels/name/geo.o(.bss*)); \
+   } \
+   END_NOLOAD(name)
 
 #define STANDARD_OBJECTS(name, segAddr, geoAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
@@ -66,9 +76,16 @@ OUTPUT_ARCH (mips)
    END_SEG(name##_yay0) \
    BEGIN_SEG(name##_geo, geoAddr) \
    { \
-      KEEP(BUILD_DIR/actors/name##_geo.o(.data)); \
+      KEEP(BUILD_DIR/actors/name##_geo.o(.*data*)); \
+      KEEP(BUILD_DIR/actors/name##_geo.o(.rodata*)); \
+      KEEP(BUILD_DIR/actors/name##_geo.o(.text)); \
    } \
    END_SEG(name##_geo) \
+   BEGIN_NOLOAD(name##_geo) \
+   { \
+      KEEP(BUILD_DIR/actors/name##_geo.o(.bss*)); \
+   } \
+   END_NOLOAD(name##_geo) \
    _##name##_mio0SegmentRomStart = _##name##_yay0SegmentRomStart; \
    _##name##_mio0SegmentRomEnd = _##name##_yay0SegmentRomEnd;
 
@@ -356,10 +373,17 @@ SECTIONS
    /* 0x268020 0x268020-0 [0] */
    BEGIN_SEG(intro, 0x14000000)
    {
-      KEEP(BUILD_DIR/levels/intro/script.o(.data));
+      KEEP(BUILD_DIR/levels/intro/script.o(.*data));
+      KEEP(BUILD_DIR/levels/intro/script.o(.rodata*));
+      KEEP(BUILD_DIR/levels/intro/script.o(.text));
       KEEP(BUILD_DIR/levels/intro/geo.o(.data));
    }
    END_SEG(intro)
+   BEGIN_NOLOAD(intro)
+   {
+      KEEP(BUILD_DIR/levels/intro/script.o(.bss*));
+   }
+   END_NOLOAD(intro)
    BEGIN_SEG(intro_segment_7, 0x07000000)
    {
       KEEP(BUILD_DIR/levels/intro/leveldata.szp.o(.data));
