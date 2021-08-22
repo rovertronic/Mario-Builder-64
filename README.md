@@ -84,6 +84,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
   - Use `print_small_text` to print normal text. The two last params are aligment and how many characters to print (-1 means PRINT_ALL). 
   - Use `render_multi_image` to draw large texture rectangles consisting of multiple images on the screen.
   - More info in `puppyprint.c`
+- Wiseguy's Farcall TLB mapping allows to store executable code inside uncompressed segments, that can be loaded and ran as needed, instead of it having to be loaded at all times. See `farcall.h` in the include folder for instructions and details.
 
 # UltraSM64
 
