@@ -28,6 +28,7 @@
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 #define ALIGN8(val) (((val) + 0x7) & ~0x7)
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
+#define ALIGN(val, alignment) (((val) + ((alignment) - 1)) & ~((alignment) - 1))
 
 struct MainPoolState {
     u32 freeSpace;
@@ -285,15 +286,47 @@ void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
  * Perform a DMA read from ROM, allocating space in the memory pool to write to.
  * Return the destination address.
  */
-static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
+static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bssLength) {
     void *dest;
     u32 size = ALIGN16(srcEnd - srcStart);
+    u32 offset = 0;
 
-    dest = main_pool_alloc(size, side);
+    if (alignment && side == MEMORY_POOL_LEFT)
+    {
+        offset = ALIGN((uintptr_t)sPoolListHeadL + 16, alignment) - ((uintptr_t)sPoolListHeadL + 16);
+    }
+
+    dest = main_pool_alloc(offset + size + bssLength, side);
     if (dest != NULL) {
-        dma_read(dest, srcStart, srcEnd);
+        dma_read((u8 *)dest + offset, srcStart, srcEnd);
+        if (bssLength)
+            bzero((u8 *)dest + offset + size, bssLength);
     }
     return dest;
+}
+
+#define TLB_PAGE_SIZE 4096 //Blocksize of TLB transfers. Larger values can be faster to transfer, but more wasteful of RAM.
+s32 gTlbEntries = 0;
+
+void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length)
+{
+    while (length > 0)
+    {
+        if (length > TLB_PAGE_SIZE)
+        {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, physicalAddress + TLB_PAGE_SIZE, -1);
+            virtualAddress += TLB_PAGE_SIZE;
+            physicalAddress += TLB_PAGE_SIZE;
+            length -= TLB_PAGE_SIZE;
+        }
+        else
+        {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, -1, -1);
+        }
+        virtualAddress += TLB_PAGE_SIZE;
+        physicalAddress += TLB_PAGE_SIZE;
+        length -= TLB_PAGE_SIZE;
+    }
 }
 
 #ifndef NO_SEGMENTED_MEMORY
@@ -301,15 +334,28 @@ static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
  * Load data from ROM into a newly allocated block, and set the segment base
  * address to this block.
  */
-void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side) {
-    void *addr = dynamic_dma_read(srcStart, srcEnd, side);
+void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side, u8 *bssStart, u8 *bssEnd) {
+    void *addr;
+
+    if (bssStart != NULL && side == MEMORY_POOL_LEFT)
+    {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, TLB_PAGE_SIZE, (uintptr_t)bssEnd - (uintptr_t)bssStart);
+        if (addr != NULL) {
+            u8 *realAddr = (u8 *)ALIGN((uintptr_t)addr, TLB_PAGE_SIZE);
+            set_segment_base_addr(segment, realAddr);
+            mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart));
+        }
+    }
+    else
+    {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, 0, 0);
+        if (addr != NULL) {
+            set_segment_base_addr(segment, addr);
+        }
+    }
     #ifdef PUPPYPRINT
     ramsizeSegment[segment+nameTable-2] = (s32)srcEnd- (s32)srcStart;
     #endif
-
-    if (addr != NULL) {
-        set_segment_base_addr(segment, addr);
-    }
     return addr;
 }
 
@@ -606,12 +652,12 @@ void *alloc_display_list(u32 size) {
 
 static struct DmaTable *load_dma_table_address(u8 *srcAddr) {
     struct DmaTable *table = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32),
-                                                             MEMORY_POOL_LEFT);
-    u32 size = table->count * sizeof(struct OffsetSizePair) + 
+                                                             MEMORY_POOL_LEFT, NULL, NULL);
+    u32 size = table->count * sizeof(struct OffsetSizePair) +
         sizeof(struct DmaTable) - sizeof(struct OffsetSizePair);
     main_pool_free(table);
 
-    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT);
+    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT, NULL, NULL);
     table->srcAddr = srcAddr;
     return table;
 }

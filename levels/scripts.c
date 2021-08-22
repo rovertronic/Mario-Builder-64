@@ -44,14 +44,14 @@ static const LevelScript script_exec_level_table[2
 #undef DEFINE_LEVEL
 #undef STUB_LEVEL
 
-static const LevelScript script_L1[4];
-static const LevelScript script_L2[4];
-static const LevelScript goto_mario_head_regular[4];
-static const LevelScript goto_mario_head_dizzy[4];
-static const LevelScript script_L5[4];
+static const LevelScript script_L1[6];
+static const LevelScript script_L2[6];
+static const LevelScript goto_mario_head_regular[6];
+static const LevelScript goto_mario_head_dizzy[6];
+static const LevelScript script_L5[6];
 
 #define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) static const LevelScript script_exec_ ## folder [4 + 1];
+#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) static const LevelScript script_exec_ ## folder [6 + 1];
 
 #include "level_defines.h"
 
@@ -61,8 +61,8 @@ static const LevelScript script_L5[4];
 const LevelScript level_main_scripts_entry[] = {
     LOAD_YAY0(/*seg*/ 0x04, _group0_yay0SegmentRomStart, _group0_yay0SegmentRomEnd),
     LOAD_YAY0(/*seg*/ 0x03, _common1_yay0SegmentRomStart, _common1_yay0SegmentRomEnd),
-    LOAD_RAW( /*seg*/ 0x17, _group0_geoSegmentRomStart, _group0_geoSegmentRomEnd),
-    LOAD_RAW( /*seg*/ 0x16, _common1_geoSegmentRomStart, _common1_geoSegmentRomEnd),
+    LOAD_RAW_WITH_CODE( /*seg*/ 0x17, _group0_geoSegmentRomStart, _group0_geoSegmentRomEnd, _group0_geoSegmentBssStart, _group0_geoSegmentBssEnd),
+    LOAD_RAW_WITH_CODE( /*seg*/ 0x16, _common1_geoSegmentRomStart, _common1_geoSegmentRomEnd, _common1_geoSegmentBssStart, _common1_geoSegmentBssEnd),
     LOAD_RAW( /*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd),
     ALLOC_LEVEL_POOL(),
     LOAD_MODEL_FROM_GEO(MODEL_MARIO,                   mario_geo),
@@ -127,23 +127,23 @@ const LevelScript level_main_scripts_entry[] = {
 };
 
 static const LevelScript script_L1[] = {
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 static const LevelScript script_L2[] = {
-    EXIT_AND_EXECUTE(/*seg*/ 0x0E, _endingSegmentRomStart, _endingSegmentRomEnd, level_ending_entry),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x0E, _endingSegmentRomStart, _endingSegmentRomEnd, level_ending_entry, _endingSegmentBssStart, _endingSegmentBssEnd),
 };
 
 static const LevelScript goto_mario_head_regular[] = {
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 static const LevelScript goto_mario_head_dizzy[] = {
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_dizzy),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_dizzy, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 static const LevelScript script_L5[] = {
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 // Include the level jumptable.
@@ -161,7 +161,7 @@ static const LevelScript script_exec_level_table[] = {
 
 #define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) \
 static const LevelScript script_exec_ ## folder [] = { \
-    EXECUTE(0x0E, _ ## folder ## SegmentRomStart, _ ## folder ## SegmentRomEnd, level_ ## folder ## _entry), \
+    EXECUTE_WITH_CODE(0x0E, _ ## folder ## SegmentRomStart, _ ## folder ## SegmentRomEnd, level_ ## folder ## _entry, _ ## folder ## SegmentBssStart, _ ## folder ## SegmentBssEnd), \
     RETURN(), \
 };
 
