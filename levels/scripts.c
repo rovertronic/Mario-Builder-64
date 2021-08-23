@@ -63,7 +63,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_YAY0(/*seg*/ 0x03, _common1_yay0SegmentRomStart, _common1_yay0SegmentRomEnd),
     LOAD_RAW_WITH_CODE( /*seg*/ 0x17, _group0_geoSegmentRomStart, _group0_geoSegmentRomEnd, _group0_geoSegmentBssStart, _group0_geoSegmentBssEnd),
     LOAD_RAW_WITH_CODE( /*seg*/ 0x16, _common1_geoSegmentRomStart, _common1_geoSegmentRomEnd, _common1_geoSegmentBssStart, _common1_geoSegmentBssEnd),
-    LOAD_RAW( /*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd),
+    LOAD_RAW_WITH_CODE( /*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd, _behaviorSegmentBssStart, _behaviorSegmentBssEnd),
     ALLOC_LEVEL_POOL(),
     LOAD_MODEL_FROM_GEO(MODEL_MARIO,                   mario_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),

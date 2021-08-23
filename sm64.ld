@@ -314,9 +314,17 @@ SECTIONS
    /* use segmented addressing for behaviors */
    BEGIN_SEG(behavior, 0x13000000)
    {
-      KEEP(BUILD_DIR/data/behavior_data.o(.data));
+      KEEP(BUILD_DIR/data/behavior_data.o(.data*));
+      KEEP(BUILD_DIR/data/behavior_data.o(.rodata*));
+      KEEP(BUILD_DIR/data/behavior_data.o(.text));
    }
    END_SEG(behavior)
+   BEGIN_NOLOAD(behavior)
+   {
+      KEEP(BUILD_DIR/data/behavior_data.o(.bss*));
+   }
+   END_NOLOAD(behavior)
+
 
    /* 0x8016F000 21D7D0-255EC0 [386F0] */
    BEGIN_SEG(goddard, RAM_END - GODDARD_SIZE)

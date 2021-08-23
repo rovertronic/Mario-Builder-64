@@ -20,6 +20,7 @@
 #include "level_update.h"
 #include "mario.h"
 #include "save_file.h"
+#include "game_init.h"
 
 #define o gCurrentObject
 

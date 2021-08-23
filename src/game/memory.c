@@ -28,7 +28,7 @@
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 #define ALIGN8(val) (((val) + 0x7) & ~0x7)
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
-#define ALIGN(val, alignment) (((val) + ((alignment) - 1)) & ~((alignment) - 1))
+//#define ALIGN(val, alignment) (((val) + ((alignment) - 1)) & ~((alignment) - 1))
 
 struct MainPoolState {
     u32 freeSpace;
@@ -286,7 +286,7 @@ void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
  * Perform a DMA read from ROM, allocating space in the memory pool to write to.
  * Return the destination address.
  */
-static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bssLength) {
+void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bssLength) {
     void *dest;
     u32 size = ALIGN16(srcEnd - srcStart);
     u32 offset = 0;
@@ -652,12 +652,12 @@ void *alloc_display_list(u32 size) {
 
 static struct DmaTable *load_dma_table_address(u8 *srcAddr) {
     struct DmaTable *table = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32),
-                                                             MEMORY_POOL_LEFT, NULL, NULL);
+                                                             MEMORY_POOL_LEFT, 0, 0);
     u32 size = table->count * sizeof(struct OffsetSizePair) +
         sizeof(struct DmaTable) - sizeof(struct OffsetSizePair);
     main_pool_free(table);
 
-    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT, NULL, NULL);
+    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT, 0, 0);
     table->srcAddr = srcAddr;
     return table;
 }
