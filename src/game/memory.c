@@ -28,7 +28,6 @@
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 #define ALIGN8(val) (((val) + 0x7) & ~0x7)
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
-//#define ALIGN(val, alignment) (((val) + ((alignment) - 1)) & ~((alignment) - 1))
 
 struct MainPoolState {
     u32 freeSpace;
@@ -307,6 +306,7 @@ void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bs
 
 #define TLB_PAGE_SIZE 4096 //Blocksize of TLB transfers. Larger values can be faster to transfer, but more wasteful of RAM.
 s32 gTlbEntries = 0;
+u8 gTlbSegments[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length)
 {
@@ -344,6 +344,7 @@ void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side, u8 *bssStart
             u8 *realAddr = (u8 *)ALIGN((uintptr_t)addr, TLB_PAGE_SIZE);
             set_segment_base_addr(segment, realAddr);
             mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart));
+            gTlbSegments[segment] = gTlbEntries;
         }
     }
     else
