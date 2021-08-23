@@ -325,9 +325,13 @@ void unmap_tlbs(void)
     {
         if (gTlbSegments[i] && i != 0x17 && i != 0x16 && i != 0x13)
         {
-            osUnmapTLB(gTlbEntries);
-            gTlbSegments[i] = 0;
-            gTlbEntries--;
+            while (gTlbSegments[i] > 0)
+            {
+                osUnmapTLB(gTlbEntries);
+                gTlbSegments[i]--;
+                gTlbEntries--;
+            }
+
         }
 
     }

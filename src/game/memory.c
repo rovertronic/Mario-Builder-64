@@ -308,7 +308,7 @@ void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bs
 s32 gTlbEntries = 0;
 u8 gTlbSegments[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length)
+void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length, s32 segment)
 {
     while (length > 0)
     {
@@ -318,10 +318,12 @@ void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length
             virtualAddress += TLB_PAGE_SIZE;
             physicalAddress += TLB_PAGE_SIZE;
             length -= TLB_PAGE_SIZE;
+            gTlbSegments[segment]++;
         }
         else
         {
             osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, -1, -1);
+            gTlbSegments[segment]++;
         }
         virtualAddress += TLB_PAGE_SIZE;
         physicalAddress += TLB_PAGE_SIZE;
@@ -343,8 +345,7 @@ void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side, u8 *bssStart
         if (addr != NULL) {
             u8 *realAddr = (u8 *)ALIGN((uintptr_t)addr, TLB_PAGE_SIZE);
             set_segment_base_addr(segment, realAddr);
-            mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart));
-            gTlbSegments[segment] = gTlbEntries;
+            mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart), segment);
         }
     }
     else
