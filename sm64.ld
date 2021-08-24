@@ -130,7 +130,7 @@ SECTIONS
    {
       KEEP(BUILD_DIR/asm/entry.o(.text));
 
-      BUILD_DIR/src/game*.o(.text);
+      BUILD_DIR/src/boot*.o(.text);
       BUILD_DIR/src/hvqm*.o(.text);
       BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
@@ -148,7 +148,7 @@ SECTIONS
       lib/PR/hvqm/hvqm2sp1.o(.text);
 
       /* data */
-      BUILD_DIR/src/game*.o(.*data*);
+      BUILD_DIR/src/boot*.o(.*data*);
       BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
@@ -164,7 +164,7 @@ SECTIONS
       lib/PR/hvqm/hvqm2sp1.o(.data*);
 
       /* rodata */
-      BUILD_DIR/src/game*.o(.rodata*);
+      BUILD_DIR/src/boot*.o(.rodata*);
       BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
@@ -182,7 +182,7 @@ SECTIONS
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
-      BUILD_DIR/src/game*.o(.*bss*);
+      BUILD_DIR/src/boot*.o(.*bss*);
       BUILD_DIR/src/hvqm*.o(.*bss*);
       BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
@@ -208,16 +208,20 @@ SECTIONS
 
    BEGIN_SEG(engine, .)
    {
+      BUILD_DIR/src/game*.o(.text);
       BUILD_DIR/src/engine*.o(.text);
       /* data */
+      BUILD_DIR/src/game*.o(.*data*);
       BUILD_DIR/src/engine*.o(.data*);
       BUILD_DIR/src/engine*.o(.sdata*);
       /* rodata */
+      BUILD_DIR/src/game*.o(.rodata*);
       BUILD_DIR/src/engine*.o(.rodata*);
    }
    END_SEG(engine)
    BEGIN_NOLOAD(engine)
    {
+      BUILD_DIR/src/game*.o(.*bss*);
       BUILD_DIR/src/engine*.o(.bss*);
       . = ALIGN(0x40);
    }
