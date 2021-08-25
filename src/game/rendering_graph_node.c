@@ -260,7 +260,7 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         aspect = 1.33333f;
         #endif
 
-        if (gCurrLevelNum > 3)
+        if (gCamera)
             gWorldScale = MAX(((gCamera->pos[0] * gCamera->pos[0]) + (gCamera->pos[1] * gCamera->pos[1]) + (gCamera->pos[2] * gCamera->pos[2]))/67108864, 1.0f);
         else
             gWorldScale = 1.0f;
