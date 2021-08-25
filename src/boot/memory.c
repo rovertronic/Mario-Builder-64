@@ -6,9 +6,9 @@
 
 #include "buffers/buffers.h"
 #include "slidec.h"
-#include "game_init.h"
-#include "main.h"
-#include "memory.h"
+#include "game/game_init.h"
+#include "game/main.h"
+#include "game/memory.h"
 #include "segment_symbols.h"
 #include "segments.h"
 #ifdef GZIP
