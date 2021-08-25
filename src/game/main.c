@@ -189,7 +189,7 @@ void start_gfx_sptask(void) {
     if (gActiveSPTask == NULL && sCurrentDisplaySPTask != NULL
         && sCurrentDisplaySPTask->state == SPTASK_STATE_NOT_STARTED) {
         profiler_log_gfx_time(TASKS_QUEUED);
-        #ifdef PUPPYPRINT
+        #if PUPPYPRINT_DEBUG
         rspDelta = osGetTime();
         #endif
         start_sptask(M_GFXTASK);
@@ -237,7 +237,7 @@ void handle_vblank(void) {
         if (gActiveSPTask == NULL && sCurrentDisplaySPTask != NULL
             && sCurrentDisplaySPTask->state != SPTASK_STATE_FINISHED) {
             profiler_log_gfx_time(TASKS_QUEUED);
-            #ifdef PUPPYPRINT
+            #if PUPPYPRINT_DEBUG
             rspDelta = osGetTime();
             #endif
             start_sptask(M_GFXTASK);
@@ -272,7 +272,7 @@ void handle_sp_complete(void) {
             // The gfx task completed before we had time to interrupt it.
             // Mark it finished, just like below.
             curSPTask->state = SPTASK_STATE_FINISHED;
-            #ifdef PUPPYPRINT
+            #if PUPPYPRINT_DEBUG
             profiler_update(rspGenTime, rspDelta);
             #endif
             profiler_log_gfx_time(RSP_COMPLETE);
@@ -305,7 +305,7 @@ void handle_sp_complete(void) {
             // The SP process is done, but there is still a Display Processor notification
             // that needs to arrive before we can consider the task completely finished and
             // null out sCurrentDisplaySPTask. That happens in handle_dp_complete.
-            #ifdef PUPPYPRINT
+            #if PUPPYPRINT_DEBUG
             profiler_update(rspGenTime, rspDelta);
             #endif
             profiler_log_gfx_time(RSP_COMPLETE);
@@ -503,10 +503,10 @@ extern u32 gISVFlag;
 void osInitialize_fakeisv() {
     /* global flag to skip `__checkHardware_isv` from being called. */
     gISVFlag = 0x49533634;  // 'IS64'
- 
+
     /* printf writes go to this address, cen64(1) has this hardcoded. */
     gISVDbgPrnAdrs = 0x13FF0000;
- 
+
     /* `__printfunc`, used by `osSyncPrintf` will be set. */
     __osInitialize_isv();
 }

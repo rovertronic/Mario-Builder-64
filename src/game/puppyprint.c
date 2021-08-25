@@ -42,9 +42,10 @@ There's also a custom option that's left blank. It runs benchmark_custom which c
 
 u8 currEnv[4];
 u8 fDebug = 0;
+
+#if PUPPYPRINT_DEBUG
 s8 benchViewer = 0;
 u8 benchOption = 0;
-
 //Profiler values
 s8 perfIteration = 0;
 s16 benchmarkLoop = 0;
@@ -491,19 +492,18 @@ void puppyprint_profiler_process(void)
         }
         benchmark_custom();
     }
-    #if PUPPYPRINT_DEBUG
     if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG)
     {
         ramViewer = 0;
         benchViewer = 0;
         fDebug ^= 1;
     }
-    #endif
 
 
     if (perfIteration++ == NUM_PERF_ITERATIONS-1)
         perfIteration = 0;
 }
+#endif
 
 void print_set_envcolour(s32 r, s32 g, s32 b, s32 a)
 {
