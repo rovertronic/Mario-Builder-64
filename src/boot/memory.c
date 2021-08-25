@@ -5,7 +5,7 @@
 #define INCLUDED_FROM_MEMORY_C
 
 #include "buffers/buffers.h"
-#include "game/slidec.h"
+#include "slidec.h"
 #include "game/game_init.h"
 #include "game/main.h"
 #include "game/memory.h"
