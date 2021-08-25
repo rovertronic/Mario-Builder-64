@@ -18,7 +18,7 @@
 #include "usb/usb.h"
 #include "usb/debug.h"
 #endif
-#include "puppyprint.h"
+#include "game/puppyprint.h"
 
 // Message IDs
 #define MESG_SP_COMPLETE 100

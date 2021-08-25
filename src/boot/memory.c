@@ -21,7 +21,7 @@
 #include "usb/usb.h"
 #include "usb/debug.h"
 #endif
-#include "puppyprint.h"
+#include "game/puppyprint.h"
 
 
 // round up to the next multiple
