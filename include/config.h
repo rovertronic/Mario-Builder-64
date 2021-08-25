@@ -101,7 +101,7 @@
 //Adds multiple languages to the game. Just a placeholder for the most part, because it only works with EU, and must be enabled with EU.
 #define MULTILANG (0 || VERSION_EU)
 //Enables Puppy Camera 2, a rewritten camera that can be freely configured and modified.
-//#define PUPPYCAM
+#define PUPPYCAM
 
 
 // HACKER QOL
@@ -116,8 +116,8 @@
 // Custom debug mode. Press DPAD left to show the debug UI. Press DPAD right to enter the noclip mode.
 //#define CUSTOM_DEBUG
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
-//#define PUPPYPRINT
-#define PUPPYPRINT_DEBUG 0
+#define PUPPYPRINT
+#define PUPPYPRINT_DEBUG 1
 //Visual debug enables some collision visuals. Tapping Right on the dpad will cycle between visual hitboxes, visual surfaces, both, and neither.
 //If puppyprint is enabled, then this can be cycled only while the screen is active.
 //#define VISUAL_DEBUG
