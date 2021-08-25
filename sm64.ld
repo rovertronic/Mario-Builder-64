@@ -132,7 +132,6 @@ SECTIONS
 
       BUILD_DIR/src/boot*.o(.text);
       BUILD_DIR/src/hvqm*.o(.text);
-      BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
       BUILD_DIR/src/audio*.o(.text);
 #if defined(ISVPRINT) || defined(UNF)
@@ -149,7 +148,6 @@ SECTIONS
 
       /* data */
       BUILD_DIR/src/boot*.o(.*data*);
-      BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
 #if defined(ISVPRINT) || defined(UNF)
@@ -165,7 +163,6 @@ SECTIONS
 
       /* rodata */
       BUILD_DIR/src/boot*.o(.rodata*);
-      BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
 #if defined(ISVPRINT) || defined(UNF)
@@ -184,7 +181,6 @@ SECTIONS
    {
       BUILD_DIR/src/boot*.o(.*bss*);
       BUILD_DIR/src/hvqm*.o(.*bss*);
-      BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
       BUILD_DIR/src/audio*.o(.*bss*);
 #if defined(ISVPRINT) || defined(UNF)
