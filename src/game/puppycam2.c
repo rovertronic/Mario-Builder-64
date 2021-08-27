@@ -1189,7 +1189,7 @@ void puppycam_projection_behaviours(void)
         puppycam_terrain_angle();
 
         //This will shift the intended yaw when wall kicking, to align with the wall being kicked.
-        puppycam_wall_angle();
+        //puppycam_wall_angle();
     }
     else
     {
