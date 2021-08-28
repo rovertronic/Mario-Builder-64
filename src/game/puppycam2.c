@@ -27,6 +27,15 @@
 
 #ifdef PUPPYCAM
 
+static inline float smooth(float x) {
+    x = CLAMP(x, 0, 1);
+    return x * x * (3.f - 2.f * x);
+}
+
+static inline float softClamp(float x, float a, float b) {
+    return smooth((2.f / 3.f) * (x - a) / (b - a) + (1.f / 6.f)) * (b - a) + a;
+}
+
 #define DECELERATION 0.66f
 #define DEADZONE 20
 #define SCRIPT_MEMORY_POOL 0x1000
@@ -1164,8 +1173,8 @@ void puppycam_projection_behaviours(void)
 
         if (!(gMarioState->action & ACT_FLAG_SWIMMING))
         {
-            gPuppyCam.floorY[0] = CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, -300, 300);
-            gPuppyCam.floorY[1] = CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, -300, 350);
+            gPuppyCam.floorY[0] = softClamp(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, -180, 300);
+            gPuppyCam.floorY[1] = softClamp(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, -180, 350);
             gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch,0,0.2f);
         }
         else
