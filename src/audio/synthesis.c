@@ -54,8 +54,9 @@
  * 
  * If after changing the parameters, you hear increasing noise followed by a sudden disappearance of reverb and/or scratchy audio, this indicates an s16 overflow.
  * If this happens, stop immediately and reduce the parameters at fault. This becomes a ticking time bomb, and may eventually result in very loud noise if it reaches the point of s32 overflow.
- * Checks to prevent this have not been implemented to maximize performance potential, so choose your parameters wisely.
- * Generally speaking, a sound that doesn't seem to be fading is a parameter red flag (also known as feedback).
+ * Depending on the violating parameters chosen, you probably won't ever experience s32 overflow, but s16 overflow still isn't a pleasant experience.
+ * Checks to prevent this have not been implemented to maximize performance potential, so choose your parameters wisely. The current defaults are unlikely to have this problem.
+ * Generally speaking, a sound that doesn't seem to be fading at a natural rate is a parameter red flag (also known as feedback).
  */
 
 
@@ -76,7 +77,7 @@ s8 betterReverbDownsampleEmulator = 2;
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
 // Setting it to anything less 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
-u32 reverbFilterCountConsole = NUM_ALLPASS - 3;
+u32 reverbFilterCountConsole = NUM_ALLPASS - 6;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
