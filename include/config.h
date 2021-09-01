@@ -166,7 +166,7 @@
 // Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
 #define IA8_COINS
 // Use a much better implementation of reverb over vanilla's fake echo reverb. Great for caves or eerie levels, as well as just a better audio experience in general.
-// Reverb parameters can be configured in audio/synthesis.c to meet desired aesthetic/performance needs.
+// Reverb parameters can be configured in audio/synthesis.c to meet desired aesthetic/performance needs. Currently US/JP only.
 //#define BETTER_REVERB
 //Collision data is the type that the collision system uses. All data by default is stored as an s16, but you may change it to s32.
 //Naturally, that would double the size of all collision data, but would allow you to use 32 bit values instead of 16.

@@ -38,7 +38,7 @@
 
 #define AUDIO_ALIGN(val, amnt) (((val) + (1 << amnt) - 1) & ~((1 << amnt) - 1))
 
-#ifdef BETTER_REVERB
+#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
 /* ----------------------------------------------------------------------BEGIN REVERB PARAMETERS---------------------------------------------------------------------- */
 
 
@@ -199,7 +199,7 @@ struct SynthesisReverb gSynthesisReverb;
 u8 sAudioSynthesisPad[0x20];
 #endif
 
-#ifdef BETTER_REVERB
+#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
 static inline s16 clamp16(s32 x) {
     if (x >= 32767)
         return 32767;
