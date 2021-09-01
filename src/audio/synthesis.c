@@ -75,13 +75,13 @@ s8 betterReverbDownsampleEmulator = 2;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Setting it to anything less 3 will disable reverb outright.
+// Setting it to anything less than 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountConsole = NUM_ALLPASS - 6;
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
-// Setting it to anything less 3 will disable reverb outright.
+// Setting it to anything less than 3 will disable reverb outright.
 // This can be changed at any time, but is best set when calling audio_reset_session.
 u32 reverbFilterCountEmulator = NUM_ALLPASS;
 
@@ -102,6 +102,7 @@ u8 monoReverbEmulator = FALSE;
 // Set to -1 to use a default preset instead. Higher values represent more audio delay (usually better for echoey spaces).
 s32 betterReverbWindowsSize = -1;
 
+// These values are set to s32 instead of u8 to increase performance. Setting these to values larger than 0xFF (255) or less than 0 may cause issues and is not recommended.
 s32 gReverbRevIndex = 0x5F; // Affects decay time mostly (large values can cause terrible feedback!); can be messed with at any time
 s32 gReverbGainIndex = 0x9F; // Affects signal immediately retransmitted back into buffers (mid-high values yield the strongest effect); can be messed with at any time
 s32 gReverbWetSignal = 0xE7; // Amount of reverb specific output in final signal (also affects decay); can be messed with at any time, also very easy to control
