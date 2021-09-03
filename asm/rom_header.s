@@ -8,17 +8,7 @@
 .word  entry_point              /* Entrypoint */
 
 /* Revision */
-#if defined(SRAM)
-.word  0x0000344C
-#elif defined(EEP16K)
-.word  0x0000244C
-#elif defined(SRAM768K)
-.word  0x0000444C
-#elif defined(FLASHRAM)
-.word  0x0000544C
-#else
 .word  0x0000144C
-#endif
 
 .word  0x00000000               /* Checksum 1 */
 .word  0x00000000               /* Checksum 2 */
@@ -35,4 +25,14 @@
 #else
     .ascii "E"                  /* NTSC-U (North America) */
 #endif
-    .byte  0x00                 /* Version */
+#if defined(SRAM)
+    .byte  0x32                 /* Version */
+#elif defined(EEP16K)
+    .byte  0x22                 /* Version */
+#elif defined(SRAM768K)
+    .byte  0x42                 /* Version */
+#elif defined(FLASHRAM)
+    .byte  0x52                 /* Version */
+#else
+    .byte  0x12                 /* Version */
+#endif
