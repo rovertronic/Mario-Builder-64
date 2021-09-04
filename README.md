@@ -27,6 +27,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Platform Displacement 2 by Arthurtilly *
 - Water Surface Type patch by thecozies
 - Rounded corners by FramePerfection, merged by Cheezepin
+- Automatically calculate the optimal collision distance for an object based on its vertices, by Kaze *
 
 **Common Hack Changes:**
 - Better extended boundaries by anonymous_moose

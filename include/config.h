@@ -102,6 +102,8 @@
 #define MULTILANG (0 || VERSION_EU)
 // Enables Puppy Camera 2, a rewritten camera that can be freely configured and modified.
 //#define PUPPYCAM
+// Automatically calculate the optimal collision distance for an object based on its vertices.
+#define AUTO_COLLISION_DISTANCE
 
 
 // HACKER QOL
