@@ -324,17 +324,6 @@ u8 sSoundBankFreeListFront[SOUND_BANK_COUNT] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 u8 sNumSoundsInBank[SOUND_BANK_COUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // only used for debugging
 u8 sMaxChannelsForSoundBank[SOUND_BANK_COUNT] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
-// Banks 2 and 7 both grew from 0x30 sounds to 0x40 in size in US.
-#ifdef VERSION_JP
-#define BANK27_SIZE 0x30
-#else
-#define BANK27_SIZE 0x40
-#endif
-u8 sNumSoundsPerBank[SOUND_BANK_COUNT] = {
-    0x70, 0x30, BANK27_SIZE, 0x80, 0x20, 0x80, 0x20, BANK27_SIZE, 0x80, 0x80,
-};
-#undef BANK27_SIZE
-
 // sBackgroundMusicMaxTargetVolume and sBackgroundMusicTargetVolume use the 0x80
 // bit to indicate that they are set, and the rest of the bits for the actual value
 #define TARGET_VOLUME_IS_PRESENT_FLAG 0x80
@@ -484,15 +473,9 @@ void unused_8031E4F0(void) {
     stubbed_printf("\n");
 
     stubbed_printf("BNK ");
-#ifdef VERSION_SH
-#define count 1
-#else
-#define count 4
-#endif
-    for (i = 0; i < 40; i += count) {
+    for (i = 0; i < 40; i += 4) {
         stubbed_printf("%1x", 0);
     }
-#undef count
     stubbed_printf("\n");
 
     stubbed_printf("FIXHEAP ");
@@ -820,17 +803,15 @@ void play_sound(s32 soundBits, f32 *pos) {
  * Called from threads: thread4_sound, thread5_game_loop (EU only)
  */
 static void process_sound_request(u32 bits, f32 *pos) {
-    u8 bank;
-    u8 soundIndex;
-    u8 counter = 0;
-    u8 soundId;
+    s32 bank;
+    s32 soundIndex;
+    s32 counter = 0;
     f32 dist;
     const f32 one = 1.0f;
 
     bank = (bits & SOUNDARGS_MASK_BANK) >> SOUNDARGS_SHIFT_BANK;
-    soundId = (bits & SOUNDARGS_MASK_SOUNDID) >> SOUNDARGS_SHIFT_SOUNDID;
 
-    if (soundId >= sNumSoundsPerBank[bank] || sSoundBankDisabled[bank]) {
+    if (sSoundBankDisabled[bank]) {
         return;
     }
 
@@ -1148,8 +1129,8 @@ static void select_current_sounds(u8 bank) {
 }
 
 /**
- * Given an x and z coordinates, return the pan. This is a value between 0 and
- * 1 that represents the audio direction.
+ * Given x and z coordinates, return the pan. This is a value nominally between
+ * 0 and 1 that represents the audio direction.
  *
  * Pan:
  * 0.0 - fully left
@@ -1183,12 +1164,17 @@ static f32 get_sound_pan(f32 x, f32 z) {
         pan = US_FLOAT(0.5);
     } else if (x >= US_FLOAT(0.0) && absX >= absZ) {
         // far right pan
-        pan = US_FLOAT(1.0) - (US_FLOAT(44000.0) - absX) / (US_FLOAT(3.0) * (US_FLOAT(44000.0) - absZ));
+        pan = US_FLOAT(1.0) - (2 * AUDIO_MAX_DISTANCE - absX) / (US_FLOAT(3.0) * (2 * AUDIO_MAX_DISTANCE - absZ));
     } else if (x < 0 && absX > absZ) {
         // far left pan
-        pan = (US_FLOAT(44000.0) - absX) / (US_FLOAT(3.0) * (US_FLOAT(44000.0) - absZ));
+        pan = (2 * AUDIO_MAX_DISTANCE - absX) / (US_FLOAT(3.0) * (2 * AUDIO_MAX_DISTANCE - absZ));
     } else {
         // center pan
+        //! @bug (JP PU sound glitch) If |x|, |z| > AUDIO_MAX_DISTANCE, we'll
+        // end up in this case, and pan may be set to something outside of [0,1]
+        // since x is not clamped. On JP, this can lead to an out-of-bounds
+        // float read in note_set_vel_pan_reverb when x is highly negative,
+        // causing console crashes when that float is a nan or denormal.
         pan = 0.5 + x / (US_FLOAT(6.0) * absZ);
     }
 
@@ -1234,6 +1220,8 @@ static f32 get_sound_volume(u8 bank, u8 soundIndex, f32 volumeRange) {
 
         if (sSoundBanks[bank][soundIndex].soundBits & SOUND_VIBRATO) {
 #ifdef VERSION_JP
+            //! @bug Intensity is 0 when the sound is far away. Due to the subtraction below, it is possible to end up with a negative intensity.
+            // When it is, objects with a volumeRange of 1 can still occasionally be lightly heard.
             if (intensity != 0.0)
 #else
             if (intensity >= 0.08f)
@@ -1435,7 +1423,7 @@ static void update_game_sound(void) {
                                 func_802ad770(0x05020000 | ((channelIndex & 0xff) << 8),
                                               get_sound_reverb(bank, soundIndex, channelIndex));
 #else
-                                gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                                gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                     get_sound_reverb(bank, soundIndex, channelIndex);
 #endif
 
@@ -1476,7 +1464,7 @@ static void update_game_sound(void) {
                                               *sSoundBanks[bank][soundIndex].z);
                             gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->freqScale =
                                 get_sound_freq_scale(bank, soundIndex);
-                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                 get_sound_reverb(bank, soundIndex, channelIndex);
 #endif
                             break;
@@ -1499,7 +1487,7 @@ static void update_game_sound(void) {
                             func_802ad728(0x04020000 | ((channelIndex & 0xff) << 8),
                                           get_sound_freq_scale(bank, soundIndex));
 #else
-                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                 get_sound_reverb(bank, soundIndex, channelIndex);
                             gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->volume =
                                 get_sound_volume(bank, soundIndex, VOLUME_RANGE_UNK2);
@@ -1515,6 +1503,13 @@ static void update_game_sound(void) {
 #ifdef VERSION_JP
                 // If the sound was marked for deletion (bits set to NO_SOUND), then stop playing it
                 // and delete it
+                // @bug (JP double red coin sound) If the sound finished within the same frame as
+                // being marked for deletion, the signal to stop playing will be interpreted as a
+                // signal to *start* playing, as .main_loop_023589 in 00_sound_player does not check
+                // for soundScriptIO[0] being zero. This happens most commonly for red coin sounds
+                // whose sound spawners deactivate 30 frames after the sound starts to play, while
+                // the sound itself runs for 1.20 seconds. With enough lag these may coincide.
+                // Fixed on US by checking that layer0->finished is FALSE.
                 else if (soundStatus == SOUND_STATUS_STOPPED) {
                     update_background_music_after_sound(bank, soundIndex);
                     gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->soundScriptIO[0] = 0;
@@ -1526,17 +1521,19 @@ static void update_game_sound(void) {
                     sSoundBanks[bank][soundIndex].soundStatus = SOUND_STATUS_STOPPED;
                     delete_sound_from_bank(bank, soundIndex);
                 } else if (soundStatus == SOUND_STATUS_STOPPED
-                           && gSequencePlayers[SEQ_PLAYER_SFX]
-                                      .channels[channelIndex]
-                                      ->layers[0]
-                                      ->finished
-                                  == FALSE) {
+                           && gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]
+                                      ->layers[0]->finished == FALSE) {
                     update_background_music_after_sound(bank, soundIndex);
                     gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->soundScriptIO[0] = 0;
                     delete_sound_from_bank(bank, soundIndex);
                 }
 #endif
                 // If sound has finished playing, then delete it
+                // @bug (JP sound glitch) On JP, ...->layers[0] has not been checked for null,
+                // so this access can crash if an earlier layer allocation failed due to too
+                // many sounds playing at once. This crash is comparatively common; RTA
+                // speedrunners even have a setup for avoiding it within the SSL pyramid:
+                // https://www.youtube.com/watch?v=QetyTgbQxcw
                 else if (gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->layers[0]->enabled
                          == FALSE) {
                     update_background_music_after_sound(bank, soundIndex);
@@ -1610,7 +1607,7 @@ static void update_game_sound(void) {
                                 func_802ad770(0x05020000 | ((channelIndex & 0xff) << 8),
                                               get_sound_reverb(bank, soundIndex, channelIndex));
 #else
-                                gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                                gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                     get_sound_reverb(bank, soundIndex, channelIndex);
 #endif
 
@@ -1651,7 +1648,7 @@ static void update_game_sound(void) {
                                               *sSoundBanks[bank][soundIndex].z);
                             gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->freqScale =
                                 get_sound_freq_scale(bank, soundIndex);
-                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                 get_sound_reverb(bank, soundIndex, channelIndex);
 #endif
                             break;
@@ -1674,7 +1671,7 @@ static void update_game_sound(void) {
                             func_802ad728(0x04020000 | ((channelIndex & 0xff) << 8),
                                           get_sound_freq_scale(bank, soundIndex));
 #else
-                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverb =
+                            gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->reverbVol =
                                 get_sound_reverb(bank, soundIndex, channelIndex);
                             gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->volume =
                                 get_sound_volume(bank, soundIndex, VOLUME_RANGE_UNK2);

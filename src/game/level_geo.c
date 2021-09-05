@@ -40,7 +40,7 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
                 mtxf_to_mtx(mtx, mtxf);
                 gSPMatrix(&gfx[0], VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPBranchList(&gfx[1], VIRTUAL_TO_PHYSICAL(particleList));
-                execNode->fnNode.node.flags = (execNode->fnNode.node.flags & 0xFF) | 0x400;
+                execNode->fnNode.node.flags = (execNode->fnNode.node.flags & 0xFF) | (LAYER_ALPHA << 8);
             }
             SET_HIGH_U16_OF_32(*params, gAreaUpdateCounter);
         }
@@ -70,9 +70,11 @@ Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) 
         struct GraphNodePerspective *camFrustum =
             (struct GraphNodePerspective *) camNode->fnNode.node.parent;
 
+#ifndef L3DEX2_ALONE
         gfx = create_skybox_facing_camera(0, backgroundNode->background, camFrustum->fov, gLakituState.pos[0],
                             gLakituState.pos[1], gLakituState.pos[2], gLakituState.focus[0],
                             gLakituState.focus[1], gLakituState.focus[2]);
+#endif
     }
 
     return gfx;

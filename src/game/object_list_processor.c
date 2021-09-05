@@ -19,6 +19,7 @@
 #include "platform_displacement.h"
 #include "profiler.h"
 #include "spawn_object.h"
+#include "puppyprint.h"
 
 
 /**
@@ -146,9 +147,9 @@ struct MemoryPool *gObjectMemoryPool;
 
 s16 gCheckingSurfaceCollisionsForCamera;
 s16 gFindFloorIncludeSurfaceIntangible;
-s16 *gEnvironmentRegions;
+TerrainData *gEnvironmentRegions;
 s32 gEnvironmentLevels[20];
-s8 gDoorAdjacentRooms[60][2];
+RoomData gDoorAdjacentRooms[60][2];
 s16 gMarioCurrentRoom;
 s16 D_8035FEE2;
 s16 D_8035FEE4;
@@ -602,7 +603,7 @@ void unload_deactivated_objects(void) {
 /**
  * Unused profiling function.
  */
-static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
+UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
     u16 time;
     f64 cycles;
 
@@ -625,6 +626,10 @@ static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
  */
 void update_objects(UNUSED s32 unused) {
     s64 cycleCounts[30];
+    #if PUPPYPRINT_DEBUG
+    OSTime first = osGetTime();
+    OSTime colTime = collisionTime[perfIteration];
+    #endif
 
     cycleCounts[0] = get_current_clock();
 
@@ -683,4 +688,8 @@ void update_objects(UNUSED s32 unused) {
     }
 
     gPrevFrameObjectCount = gObjectCounter;
+    #if PUPPYPRINT_DEBUG
+    profiler_update(behaviourTime, first);
+    behaviourTime[perfIteration] -= collisionTime[perfIteration]+colTime;
+    #endif
 }

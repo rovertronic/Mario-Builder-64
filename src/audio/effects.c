@@ -190,6 +190,7 @@ s8 get_vibrato_pitch_change(struct VibratoState *vib) {
     switch (index & 0x30) {
         case 0x10:
             index = 31 - index;
+            // fall through
 
         case 0x00:
             return vib->curve[index];
@@ -291,6 +292,7 @@ void note_vibrato_init(struct Note *note) {
 
     vib = &note->vibratoState;
 
+/* This code was probably removed from EU and SH for a reason; probably because it's dumb and makes vibrato harder to use well.
 #if defined(VERSION_JP) || defined(VERSION_US)
     if (note->parentLayer->seqChannel->vibratoExtentStart == 0
         && note->parentLayer->seqChannel->vibratoExtentTarget == 0
@@ -299,6 +301,7 @@ void note_vibrato_init(struct Note *note) {
         return;
     }
 #endif
+*/
 
     vib->active = TRUE;
     vib->time = 0;
@@ -385,8 +388,8 @@ s32 adsr_update(struct AdsrState *adsr) {
                 adsr->state = ADSR_STATE_HANG;
                 break;
             }
-            // fallthrough
         }
+        // fall through
 
         case ADSR_STATE_START_LOOP:
             adsr->envIndex = 0;
@@ -394,11 +397,12 @@ s32 adsr_update(struct AdsrState *adsr) {
             adsr->currentHiRes = adsr->current << 0x10;
 #endif
             adsr->state = ADSR_STATE_LOOP;
-            // fallthrough
 
 #ifdef VERSION_SH
             restart:
 #endif
+            // fall through
+            
         case ADSR_STATE_LOOP:
             adsr->delay = BSWAP16(adsr->envelope[adsr->envIndex].delay);
             switch (adsr->delay) {

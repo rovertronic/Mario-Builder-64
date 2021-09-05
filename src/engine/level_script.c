@@ -24,6 +24,7 @@
 #include "math_util.h"
 #include "surface_collision.h"
 #include "surface_load.h"
+#include "game/puppycam2.h"
 
 #include "config.h"
 
@@ -92,7 +93,7 @@ static s32 eval_script_op(s8 op, s32 arg) {
 
 static void level_cmd_load_and_execute(void) {
     main_pool_push_state();
-    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT);
+    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT, CMD_GET(void *, 16), CMD_GET(void *, 20));
 
     *sStackTop++ = (uintptr_t) NEXT_CMD;
     *sStackTop++ = (uintptr_t) sStackBase;
@@ -108,7 +109,7 @@ static void level_cmd_exit_and_execute(void) {
     main_pool_push_state();
 
     load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8),
-            MEMORY_POOL_LEFT);
+            MEMORY_POOL_LEFT, CMD_GET(void *, 16), CMD_GET(void *, 20));
 
     sStackTop = sStackBase;
     sCurrentCmd = segmented_to_virtual(targetAddr);
@@ -273,7 +274,7 @@ static void level_cmd_load_to_fixed_address(void) {
 
 static void level_cmd_load_raw(void) {
     load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8),
-            MEMORY_POOL_LEFT);
+            MEMORY_POOL_LEFT, CMD_GET(void *, 12), CMD_GET(void *, 16));
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -323,11 +324,36 @@ static void level_cmd_init_level(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
+extern s32 gTlbEntries;
+extern u8 gTlbSegments[32];
+
+//This clears all the temporary bank TLB maps. group0, common1 and behavourdata are always loaded,
+//and they're also loaded first, so that means we just leave the first 3 indexes mapped.
+void unmap_tlbs(void)
+{
+    s32 i;
+    for (i = 0; i < 32; i++)
+    {
+        if (gTlbSegments[i] && i != 0x17 && i != 0x16 && i != 0x13)
+        {
+            while (gTlbSegments[i] > 0)
+            {
+                osUnmapTLB(gTlbEntries);
+                gTlbSegments[i]--;
+                gTlbEntries--;
+            }
+
+        }
+
+    }
+}
+
 static void level_cmd_clear_level(void) {
     clear_objects();
     clear_area_graph_nodes();
     clear_areas();
     main_pool_pop_state();
+    unmap_tlbs();
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -768,6 +794,43 @@ static void level_cmd_get_or_set_var(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
+static void level_cmd_puppyvolume(void)
+{
+#ifdef PUPPYCAM
+    if ((sPuppyVolumeStack[gPuppyVolumeCount] = mem_pool_alloc(gPuppyMemoryPool,sizeof(struct sPuppyVolume))) == NULL)
+    {
+        sCurrentCmd = CMD_NEXT;
+        gPuppyError |= PUPPY_ERROR_POOL_FULL;
+        return;
+    }
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->pos[0] = CMD_GET(s16, 2);
+    sPuppyVolumeStack[gPuppyVolumeCount]->pos[1] = CMD_GET(s16, 4);
+    sPuppyVolumeStack[gPuppyVolumeCount]->pos[2] = CMD_GET(s16, 6);
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->radius[0] = CMD_GET(s16, 8);
+    sPuppyVolumeStack[gPuppyVolumeCount]->radius[1] = CMD_GET(s16, 10);
+    sPuppyVolumeStack[gPuppyVolumeCount]->radius[2] = CMD_GET(s16, 12);
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->rot = CMD_GET(s16, 14);
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->func = CMD_GET(void *, 16);
+    sPuppyVolumeStack[gPuppyVolumeCount]->angles = segmented_to_virtual(CMD_GET(void *, 20));
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->flagsAdd = CMD_GET(s32, 24);
+    sPuppyVolumeStack[gPuppyVolumeCount]->flagsRemove = CMD_GET(s32, 28);
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->flagPersistance = CMD_GET(u8, 32);
+
+    sPuppyVolumeStack[gPuppyVolumeCount]->shape = CMD_GET(u8, 33);
+    sPuppyVolumeStack[gPuppyVolumeCount]->room = CMD_GET(s16, 34);
+
+    gPuppyVolumeCount++;
+#endif
+    sCurrentCmd = CMD_NEXT;
+}
+
+
 static void (*LevelScriptJumpTable[])(void) = {
     /*00*/ level_cmd_load_and_execute,
     /*01*/ level_cmd_exit_and_execute,
@@ -830,7 +893,8 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*3A*/ level_cmd_3A,
     /*3B*/ level_cmd_create_whirlpool,
     /*3C*/ level_cmd_get_or_set_var,
-    /*3D*/ level_cmd_change_area_skybox,
+    /*3D*/ level_cmd_puppyvolume,
+    /*3E*/ level_cmd_change_area_skybox,    
 };
 
 struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
@@ -842,7 +906,7 @@ struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
     }
 
     profiler_log_thread5_time(LEVEL_SCRIPT_EXECUTE);
-    init_render_image();
+    init_rcp();
     render_game();
     end_master_display_list();
     alloc_display_list(0);

@@ -6,9 +6,9 @@
 
 #include "buffers/buffers.h"
 #include "slidec.h"
-#include "game_init.h"
-#include "main.h"
-#include "memory.h"
+#include "game/game_init.h"
+#include "game/main.h"
+#include "game/memory.h"
 #include "segment_symbols.h"
 #include "segments.h"
 #ifdef GZIP
@@ -21,6 +21,7 @@
 #include "usb/usb.h"
 #include "usb/debug.h"
 #endif
+#include "game/puppyprint.h"
 
 
 // round up to the next multiple
@@ -134,6 +135,9 @@ void main_pool_init(void *start, void *end) {
     sPoolListHeadL->next = NULL;
     sPoolListHeadR->prev = NULL;
     sPoolListHeadR->next = NULL;
+    #if PUPPYPRINT_DEBUG
+    mempool = sPoolFreeSpace;
+    #endif
 }
 
 /**
@@ -256,6 +260,9 @@ u32 main_pool_pop_state(void) {
  */
 void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
     u32 size = ALIGN16(srcEnd - srcStart);
+    #if PUPPYPRINT_DEBUG
+    OSTime first = osGetTime();
+    #endif
 
     osInvalDCache(dest, size);
     while (size != 0) {
@@ -263,27 +270,65 @@ void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
 
         osPiStartDma(&gDmaIoMesg, OS_MESG_PRI_NORMAL, OS_READ, (uintptr_t) srcStart, dest, copySize,
                      &gDmaMesgQueue);
-        osRecvMesg(&gDmaMesgQueue, &D_80339BEC, OS_MESG_BLOCK);
+        osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 
         dest += copySize;
         srcStart += copySize;
         size -= copySize;
     }
+    #if PUPPYPRINT_DEBUG
+    dmaTime[perfIteration] += osGetTime()-first;
+    #endif
 }
 
 /**
  * Perform a DMA read from ROM, allocating space in the memory pool to write to.
  * Return the destination address.
  */
-static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
+void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bssLength) {
     void *dest;
     u32 size = ALIGN16(srcEnd - srcStart);
+    u32 offset = 0;
 
-    dest = main_pool_alloc(size, side);
+    if (alignment && side == MEMORY_POOL_LEFT)
+    {
+        offset = ALIGN((uintptr_t)sPoolListHeadL + 16, alignment) - ((uintptr_t)sPoolListHeadL + 16);
+    }
+
+    dest = main_pool_alloc(offset + size + bssLength, side);
     if (dest != NULL) {
-        dma_read(dest, srcStart, srcEnd);
+        dma_read((u8 *)dest + offset, srcStart, srcEnd);
+        if (bssLength)
+            bzero((u8 *)dest + offset + size, bssLength);
     }
     return dest;
+}
+
+#define TLB_PAGE_SIZE 4096 //Blocksize of TLB transfers. Larger values can be faster to transfer, but more wasteful of RAM.
+s32 gTlbEntries = 0;
+u8 gTlbSegments[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length, s32 segment)
+{
+    while (length > 0)
+    {
+        if (length > TLB_PAGE_SIZE)
+        {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, physicalAddress + TLB_PAGE_SIZE, -1);
+            virtualAddress += TLB_PAGE_SIZE;
+            physicalAddress += TLB_PAGE_SIZE;
+            length -= TLB_PAGE_SIZE;
+            gTlbSegments[segment]++;
+        }
+        else
+        {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, -1, -1);
+            gTlbSegments[segment]++;
+        }
+        virtualAddress += TLB_PAGE_SIZE;
+        physicalAddress += TLB_PAGE_SIZE;
+        length -= TLB_PAGE_SIZE;
+    }
 }
 
 #ifndef NO_SEGMENTED_MEMORY
@@ -291,12 +336,28 @@ static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
  * Load data from ROM into a newly allocated block, and set the segment base
  * address to this block.
  */
-void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side) {
-    void *addr = dynamic_dma_read(srcStart, srcEnd, side);
+void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side, u8 *bssStart, u8 *bssEnd) {
+    void *addr;
 
-    if (addr != NULL) {
-        set_segment_base_addr(segment, addr);
+    if (bssStart != NULL && side == MEMORY_POOL_LEFT)
+    {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, TLB_PAGE_SIZE, (uintptr_t)bssEnd - (uintptr_t)bssStart);
+        if (addr != NULL) {
+            u8 *realAddr = (u8 *)ALIGN((uintptr_t)addr, TLB_PAGE_SIZE);
+            set_segment_base_addr(segment, realAddr);
+            mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart), segment);
+        }
     }
+    else
+    {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, 0, 0);
+        if (addr != NULL) {
+            set_segment_base_addr(segment, addr);
+        }
+    }
+    #if PUPPYPRINT_DEBUG
+    ramsizeSegment[segment+nameTable-2] = (s32)srcEnd- (s32)srcStart;
+    #endif
     return addr;
 }
 
@@ -374,6 +435,9 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
         }
     } else {
     }
+    #if PUPPYPRINT_DEBUG
+    ramsizeSegment[segment+nameTable-2] = (s32)srcEnd - (s32)srcStart;
+    #endif
     return dest;
 }
 
@@ -588,41 +652,37 @@ void *alloc_display_list(u32 size) {
     return ptr;
 }
 
-static struct MarioAnimDmaRelatedThing *func_802789F0(u8 *srcAddr) {
-    struct MarioAnimDmaRelatedThing *sp1C = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32),
-                                                             MEMORY_POOL_LEFT);
-    u32 size = sizeof(u32) + (sizeof(u8 *) - sizeof(u32)) + sizeof(u8 *) +
-               sp1C->count * sizeof(struct OffsetSizePair);
-    main_pool_free(sp1C);
+static struct DmaTable *load_dma_table_address(u8 *srcAddr) {
+    struct DmaTable *table = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32),
+                                                             MEMORY_POOL_LEFT, 0, 0);
+    u32 size = table->count * sizeof(struct OffsetSizePair) +
+        sizeof(struct DmaTable) - sizeof(struct OffsetSizePair);
+    main_pool_free(table);
 
-    sp1C = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT);
-    sp1C->srcAddr = srcAddr;
-    return sp1C;
+    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT, 0, 0);
+    table->srcAddr = srcAddr;
+    return table;
 }
 
-void func_80278A78(struct MarioAnimation *a, void *b, struct Animation *target) {
-    if (b != NULL) {
-        a->animDmaTable = func_802789F0(b);
+void setup_dma_table_list(struct DmaHandlerList *list, void *srcAddr, void *buffer) {
+    if (srcAddr != NULL) {
+        list->dmaTable = load_dma_table_address(srcAddr);
     }
-    a->currentAnimAddr = NULL;
-    a->targetAnim = target;
+    list->currentAddr = NULL;
+    list->bufTarget = buffer;
 }
 
-// TODO: (Scrub C)
-s32 load_patchable_table(struct MarioAnimation *a, u32 index) {
+s32 load_patchable_table(struct DmaHandlerList *list, s32 index) {
     s32 ret = FALSE;
-    struct MarioAnimDmaRelatedThing *sp20 = a->animDmaTable;
-    u8 *addr;
-    u32 size;
+    struct DmaTable *table = list->dmaTable;
 
-    if (index < sp20->count) {
-        do {
-            addr = sp20->srcAddr + sp20->anim[index].offset;
-            size = sp20->anim[index].size;
-        } while (0);
-        if (a->currentAnimAddr != addr) {
-            dma_read((u8 *) a->targetAnim, addr, addr + size);
-            a->currentAnimAddr = addr;
+    if ((u32)index < table->count) {
+        u8 *addr = table->srcAddr + table->anim[index].offset;
+        s32 size = table->anim[index].size;
+
+        if (list->currentAddr != addr) {
+            dma_read(list->bufTarget, addr, addr + size);
+            list->currentAddr = addr;
             ret = TRUE;
         }
     }

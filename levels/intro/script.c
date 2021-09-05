@@ -8,7 +8,7 @@
 
 #include "game/area.h"
 #include "game/level_update.h"
-#include "menu/level_select_menu.h"
+#include "menu/title_screen.h"
 
 #include "levels/scripts.h"
 #include "levels/menu/header.h"
@@ -17,13 +17,15 @@
 
 #include "make_const_nonconst.h"
 #include "levels/intro/header.h"
+#include "farcall.h"
 
 #include "config.h"
+#include "game/print.h"
 
 const LevelScript level_intro_splash_screen[] = {
     INIT_LEVEL(),
 #ifdef SKIP_TITLE_SCREEN
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
 #endif
     FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
     LOAD_RAW(/*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd),
@@ -38,14 +40,14 @@ const LevelScript level_intro_splash_screen[] = {
     // Start animation
     LOAD_AREA(/*area*/ 1),
 
-    CALL(/*arg*/ 0, /*func*/ lvl_intro_update),
+    CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
     SLEEP(/*frames*/ 75),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 16, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 16),
     CMD2A(/*unk2*/ 1),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 const LevelScript level_intro_mario_head_regular[] = {
@@ -69,10 +71,10 @@ const LevelScript level_intro_mario_head_regular[] = {
     SLEEP(/*frames*/ 2),
     BLACKOUT(/*active*/ FALSE),
     LOAD_AREA(/*area*/ 1),
-    SET_MENU_MUSIC(/*seq*/ 0x0002),
+    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_TITLE_SCREEN),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 20),
-    CALL_LOOP(/*arg*/ 1, /*func*/ lvl_intro_update),
+    CALL_LOOP(/*arg*/ LVL_INTRO_REGULAR, /*func*/ lvl_intro_update),
     JUMP_IF(/*op*/ OP_EQ, /*arg*/ 100, script_intro_L1),
     JUMP_IF(/*op*/ OP_EQ, /*arg*/ 101, script_intro_L2),
     JUMP(script_intro_L4),
@@ -96,10 +98,10 @@ const LevelScript level_intro_mario_head_dizzy[] = {
     SLEEP(/*frames*/ 2),
     BLACKOUT(/*active*/ FALSE),
     LOAD_AREA(/*area*/ 1),
-    SET_MENU_MUSIC(/*seq*/ 0x0082),
+    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_GAME_OVER),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 20),
-    CALL_LOOP(/*arg*/ 2, /*func*/ lvl_intro_update),
+    CALL_LOOP(/*arg*/ LVL_INTRO_GAME_OVER, /*func*/ lvl_intro_update),
     JUMP_IF(/*op*/ OP_EQ, /*arg*/ 100, script_intro_L1),
     JUMP_IF(/*op*/ OP_EQ, /*arg*/ 101, script_intro_L2),
     JUMP(script_intro_L4),
@@ -118,10 +120,10 @@ const LevelScript level_intro_entry_4[] = {
 
     FREE_LEVEL_POOL(),
     LOAD_AREA(/*area*/ 1),
-    SET_MENU_MUSIC(/*seq*/ 0x0002),
+    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_TITLE_SCREEN),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_COLOR, /*time*/ 16, /*color*/ 0xFF, 0xFF, 0xFF),
     SLEEP(/*frames*/ 16),
-    CALL_LOOP(/*arg*/ 3, /*func*/ lvl_intro_update),
+    CALL_LOOP(/*arg*/ LVL_INTRO_LEVEL_SELECT, /*func*/ lvl_intro_update),
     JUMP_IF(/*op*/ OP_EQ, /*arg*/ -1, script_intro_L5),
     JUMP(script_intro_L3),
 };
@@ -143,7 +145,7 @@ const LevelScript script_intro_L2[] = {
     SLEEP(/*frames*/ 16),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 const LevelScript script_intro_L3[] = {
@@ -169,5 +171,5 @@ const LevelScript script_intro_L5[] = {
     SLEEP(/*frames*/ 16),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen, _introSegmentBssStart, _introSegmentBssEnd),
 };

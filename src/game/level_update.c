@@ -20,7 +20,7 @@
 #include "obj_behaviors.h"
 #include "save_file.h"
 #include "debug_course.h"
-#ifdef VERSION_EU
+#if MULTILANG
 #include "memory.h"
 #include "eu_translation.h"
 #include "segment_symbols.h"
@@ -28,6 +28,8 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "puppycam2.h"
+#include "puppyprint.h"
 
 #include "config.h"
 
@@ -214,10 +216,10 @@ u16 level_control_timer(s32 timerOp) {
 }
 
 u32 pressed_pause(void) {
-    u32 val4 = get_dialog_id() >= 0;
+    u32 dialogActive = get_dialog_id() >= 0;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
 
-    if (!intangible && !val4 && !gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
+    if (!intangible && !dialogActive && !gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
         && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
         return TRUE;
     }
@@ -268,7 +270,7 @@ void load_level_init_text(u32 arg) {
             gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP;
             break;
 
-        case 255:
+        case (u8)DIALOG_NONE: // 255, cast value to u8 to match (-1)
             gotAchievement = TRUE;
             break;
 
@@ -492,7 +494,7 @@ void warp_level(void) {
 }
 
 void warp_credits(void) {
-    s32 marioAction;
+    s32 marioAction = 0;
 
     switch (sWarpDest.nodeId) {
         case WARP_NODE_CREDITS_START:
@@ -562,7 +564,7 @@ void check_instant_warp(void) {
             #ifdef INSTANT_WARP_OFFSET_FIX
                 gMarioObject->header.gfx.pos[0] = gMarioState->pos[0];
                 gMarioObject->header.gfx.pos[1] = gMarioState->pos[1];
-                gMarioObject->header.gfx.pos[2] = gMarioState->pos[2];               
+                gMarioObject->header.gfx.pos[2] = gMarioState->pos[2];
             #endif
                 cameraAngle = gMarioState->area->camera->yaw;
 
@@ -640,6 +642,18 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = arg3;
+
+    #ifdef PUPPYCAM
+    s32 i = 0;
+    if (sWarpDest.type != WARP_TYPE_SAME_AREA)
+    {
+        for (i = 0; i < gPuppyVolumeCount; i++)
+        {
+            mem_pool_free(gPuppyMemoryPool, sPuppyVolumeStack[i]);
+        }
+        gPuppyVolumeCount = 0;
+    }
+    #endif
 }
 
 // From Surface 0xD3 to 0xFC
@@ -1029,15 +1043,13 @@ s32 play_mode_normal(void) {
 }
 
 s32 play_mode_paused(void) {
-    if (gPauseScreenMode == 0) {
-        set_menu_mode(RENDER_PAUSE_SCREEN);
-    } else if (gPauseScreenMode == 1) {
+    if (gMenuOptSelectIndex == MENU_OPT_NONE) {
+        set_menu_mode(MENU_MODE_RENDER_PAUSE_SCREEN);
+    } else if (gMenuOptSelectIndex == MENU_OPT_DEFAULT) {
         raise_background_noise(1);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
-    } else {
-        // Exit level
-
+    } else { // MENU_OPT_EXIT_COURSE
         if (gDebugLevelSelect) {
             fade_into_special_warp(-9, 1);
         } else {
@@ -1131,7 +1143,7 @@ s32 play_mode_change_level(void) {
 /**
  * Unused play mode. Doesn't call transition update and doesn't reset transition at the end.
  */
-static s32 play_mode_unused(void) {
+UNUSED static s32 play_mode_unused(void) {
     if (--sTransitionTimer == -1) {
         gHudDisplay.flags = HUD_DISPLAY_NONE;
 
@@ -1146,7 +1158,7 @@ static s32 play_mode_unused(void) {
 }
 
 s32 update_level(void) {
-    s32 changeLevel;
+    s32 changeLevel = FALSE;
 
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:
@@ -1176,6 +1188,10 @@ s32 update_level(void) {
 
 s32 init_level(void) {
     s32 val4 = 0;
+    #if PUPPYPRINT_DEBUG
+    char textBytes[64];
+    OSTime first = osGetTime();
+    #endif
 
     set_play_mode(PLAY_MODE_NORMAL);
 
@@ -1249,6 +1265,10 @@ s32 init_level(void) {
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
     }
 
+    #if PUPPYPRINT_DEBUG
+    sprintf(textBytes, "Level loaded in %dus", (s32)(OS_CYCLES_TO_USEC(osGetTime() - first)));
+    append_puppyprint_log(textBytes);
+    #endif
     return 1;
 }
 
@@ -1270,23 +1290,28 @@ s32 lvl_init_or_update(s16 initOrUpdate, UNUSED s32 unused) {
     return result;
 }
 
-s32 lvl_init_from_save_file(UNUSED s16 arg0, s32 levelNum) {
-#ifdef VERSION_EU
-    s16 var = eu_get_language();
-    switch (var) {
+#if MULTILANG
+void load_language_text(void)
+{
+    switch (gInGameLanguage-1)
+    {
         case LANGUAGE_ENGLISH:
-            load_segment_decompress(0x19, _translation_en_yay0SegmentRomStart,
-                                    _translation_en_yay0SegmentRomEnd);
+            load_segment_decompress(0x19, _translation_en_yay0SegmentRomStart, _translation_en_yay0SegmentRomEnd);
             break;
         case LANGUAGE_FRENCH:
-            load_segment_decompress(0x19, _translation_fr_yay0SegmentRomStart,
-                                    _translation_fr_yay0SegmentRomEnd);
+            load_segment_decompress(0x19, _translation_fr_yay0SegmentRomStart, _translation_fr_yay0SegmentRomEnd);
             break;
         case LANGUAGE_GERMAN:
-            load_segment_decompress(0x19, _translation_de_yay0SegmentRomStart,
-                                    _translation_de_yay0SegmentRomEnd);
+            load_segment_decompress(0x19, _translation_de_yay0SegmentRomStart, _translation_de_yay0SegmentRomEnd);
             break;
     }
+}
+#endif
+
+s32 lvl_init_from_save_file(UNUSED s16 arg0, s32 levelNum) {
+#if MULTILANG
+    gInGameLanguage = eu_get_language()+1;
+    load_language_text();
 #endif
     sWarpDest.type = WARP_TYPE_NOT_WARPING;
     sDelayedWarpOp = WARP_OP_NONE;

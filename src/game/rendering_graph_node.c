@@ -12,10 +12,10 @@
 #include "sm64.h"
 #include "game_init.h"
 #include "engine/extended_bounds.h"
+#include "puppyprint.h"
+#include "debug_box.h"
 
 #include "config.h"
-
-#define WIDESCREEN
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -46,6 +46,7 @@ s16 gMatStackIndex;
 Mat4 gMatStack[32];
 Mtx *gMatStackFixed[32];
 f32 aspect;
+f32 gWorldScale = 1.0f;
 
 /**
  * Animation nodes have state in global variables, so this struct captures
@@ -79,52 +80,6 @@ struct RenderModeContainer {
 };
 
 /* Rendermode settings for cycle 1 for all 8 layers. */
-#ifdef DISABLE_AA
-struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
-    G_RM_OPA_SURF,
-    G_RM_AA_OPA_SURF,
-    G_RM_AA_OPA_SURF,
-    G_RM_AA_OPA_SURF,
-    G_RM_AA_TEX_EDGE,
-    G_RM_AA_XLU_SURF,
-    G_RM_AA_XLU_SURF,
-    G_RM_AA_XLU_SURF,
-    } },
-    { {
-    /* z-buffered */
-    G_RM_ZB_OPA_SURF,
-    G_RM_ZB_OPA_SURF,
-    G_RM_ZB_OPA_DECAL,
-    G_RM_AA_ZB_OPA_INTER,
-    G_RM_AA_ZB_TEX_EDGE,
-    G_RM_ZB_XLU_SURF,
-    G_RM_ZB_XLU_DECAL,
-    G_RM_AA_ZB_XLU_INTER,
-    } } };
-
-/* Rendermode settings for cycle 2 for all 8 layers. */
-struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
-    G_RM_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_OPA_SURF2,
-    G_RM_AA_TEX_EDGE2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
-    } },
-    { {
-    /* z-buffered */
-    G_RM_ZB_OPA_SURF2,
-    G_RM_ZB_OPA_SURF2,
-    G_RM_ZB_OPA_DECAL2,
-    G_RM_AA_ZB_OPA_INTER2,
-    G_RM_AA_ZB_TEX_EDGE2,
-    G_RM_ZB_XLU_SURF2,
-    G_RM_ZB_XLU_DECAL2,
-    G_RM_AA_ZB_XLU_INTER2,
-    } } };
-#else
 struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_OPA_SURF,
     G_RM_AA_OPA_SURF,
@@ -169,7 +124,6 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_AA_ZB_XLU_DECAL2,
     G_RM_AA_ZB_XLU_INTER2,
     } } };
-#endif
 
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
 struct GraphNodeMasterList *gCurGraphNodeMasterList = NULL;
@@ -297,17 +251,21 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
         #ifdef WIDE
-        if (gWidescreen){
+        if (gWidescreen && (gCurrLevelNum != 0x01)){
             aspect = 1.775f;
-        }
-        else{
+        } else {
             aspect = 1.33333f;
         }
         #else
         aspect = 1.33333f;
         #endif
 
-        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+        if (gCamera)
+            gWorldScale = MAX(((gCamera->pos[0] * gCamera->pos[0]) + (gCamera->pos[1] * gCamera->pos[1]) + (gCamera->pos[2] * gCamera->pos[2]))/67108864, 1.0f);
+        else
+            gWorldScale = 1.0f;
+
+        guPerspective(mtx, &perspNorm, node->fov, aspect, (node->far/300) / gWorldScale, node->far / gWorldScale, 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -335,7 +293,7 @@ static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
 #else
     distanceFromCam = -gMatStack[gMatStackIndex][3][2];
 #endif
-	
+
     if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
         if (node->node.children != 0) {
             geo_process_node_and_siblings(node->node.children);
@@ -591,13 +549,13 @@ static void geo_process_background(struct GraphNodeBackground *node) {
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_FILL);
         gDPSetFillColor(gfx++, node->background);
-        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
-        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - BORDER_HEIGHT - 1);
+        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), gBorderHeight,
+        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - gBorderHeight - 1);
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_1CYCLE);
         gSPEndDisplayList(gfx++);
 
-        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0);
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), LAYER_FORCE);
     }
     if (node->fnNode.node.children != NULL) {
         geo_process_node_and_siblings(node->fnNode.node.children);
@@ -765,11 +723,11 @@ static void geo_process_shadow(struct GraphNodeShadow *node) {
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (gShadowAboveWaterOrLava == TRUE) {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_ALPHA);
             } else if (gMarioOnIceOrCarpet == 1 || gShadowAboveCustomWater == 1) {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_TRANSPARENT);
             } else {
-                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), LAYER_TRANSPARENT_DECAL);
             }
             gMatStackIndex--;
         }
@@ -832,11 +790,10 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     // the amount of units between the center of the screen and the horizontal edge
     // given the distance from the object to the camera.
 
-#ifdef WIDESCREEN
     // This multiplication should really be performed on 4:3 as well,
     // but the issue will be more apparent on widescreen.
+    // HackerSM64: This multiplication is done regardless of aspect ratio to fix object pop-in on the edges of the screen (which happens at 4:3 too)
     hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
-#endif
 
     if (geo != NULL && geo->type == GRAPH_NODE_TYPE_CULLING_RADIUS) {
         cullingRadius =
@@ -904,6 +861,33 @@ static void geo_process_object(struct Object *node) {
             mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
             gMatStackFixed[gMatStackIndex] = mtx;
             if (node->header.gfx.sharedChild != NULL) {
+                #ifdef VISUAL_DEBUG
+                if (hitboxView)
+                {
+                    Vec3f bnds1;
+                    Vec3f bnds2;
+                    //This will create a cylinder that visualises their hitbox.
+                    //If they do not have a hitbox, it will be a small white cube instead.
+                    if (node->oIntangibleTimer != -1)
+                    {
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+                        vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
+                        debug_box_color(0x800000FF);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+                        vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
+                        debug_box_color(0x8FF00000);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                    }
+                    else
+                    {
+                        vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
+                        vec3f_set(bnds2, 30, 30, 30);
+                        debug_box_color(0x80FFFFFF);
+                    debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX);
+                    }
+                }
+                #endif
                 gCurGraphNodeObject = (struct GraphNodeObject *) node;
                 node->header.gfx.sharedChild->parent = &node->header.gfx.node;
                 geo_process_node_and_siblings(node->header.gfx.sharedChild);
@@ -1111,6 +1095,9 @@ void geo_process_node_and_siblings(struct GraphNode *firstNode) {
  */
 void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) {
     UNUSED s32 unused;
+    #if PUPPYPRINT_DEBUG
+    OSTime first = osGetTime();
+    #endif
 
     if (node->node.flags & GRAPH_RENDER_ACTIVE) {
         Mtx *initialMatrix;
@@ -1151,4 +1138,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         }
         main_pool_free(gDisplayListHeap);
     }
+    #if PUPPYPRINT_DEBUG
+    profiler_update(graphTime, first);
+    #endif
 }

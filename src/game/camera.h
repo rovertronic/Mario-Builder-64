@@ -7,6 +7,7 @@
 #include "area.h"
 #include "engine/geo_layout.h"
 #include "engine/graph_node.h"
+#include "puppycam2.h"
 
 #include "level_table.h"
 
@@ -16,7 +17,6 @@
  * @see camera.c
  */
 
-#define ABS(x) ((x) > 0.f ? (x) : -(x))
 #define ABS2(x) ((x) >= 0.f ? (x) : -(x))
 
 /**

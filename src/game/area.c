@@ -22,6 +22,9 @@
 #include "engine/geo_layout.h"
 #include "save_file.h"
 #include "level_table.h"
+#include "dialog_ids.h"
+#include "puppyprint.h"
+#include "debug_box.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -33,7 +36,7 @@ s16 gCurrCourseNum;
 s16 gCurrActNum;
 s16 gCurrAreaIndex;
 s16 gSavedCourseNum;
-s16 gPauseScreenMode;
+s16 gMenuOptSelectIndex;
 s16 gSaveOptSelectIndex;
 
 struct SpawnInfo *gMarioSpawnInfo = &gPlayerSpawnInfos[0];
@@ -197,8 +200,8 @@ void clear_areas(void) {
         gAreaData[i].unused28 = NULL;
         gAreaData[i].whirlpools[0] = NULL;
         gAreaData[i].whirlpools[1] = NULL;
-        gAreaData[i].dialog[0] = 255;
-        gAreaData[i].dialog[1] = 255;
+        gAreaData[i].dialog[0] = DIALOG_NONE;
+        gAreaData[i].dialog[1] = DIALOG_NONE;
         gAreaData[i].musicParam = 0;
         gAreaData[i].musicParam2 = 0;
     }
@@ -301,6 +304,7 @@ void area_update_objects(void) {
  * transition type, time in frames, and the RGB color that will fill the screen.
  */
 void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue) {
+#ifndef L3DEX2_ALONE
     gWarpTransition.isActive = TRUE;
     gWarpTransition.type = transType;
     gWarpTransition.time = time;
@@ -351,6 +355,7 @@ void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue) {
             gWarpTransition.data.endTexRadius = GFX_DIMENSIONS_FULL_RADIUS;
         }
     }
+#endif
 }
 
 /*
@@ -367,29 +372,36 @@ void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
+        #ifdef VISUAL_DEBUG
+        if (hitboxView)
+            render_debug_boxes();
+        if (surfaceView)
+            visual_surface_loop();
+        #endif
+
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
-                      SCREEN_HEIGHT - BORDER_HEIGHT);
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
+                      SCREEN_HEIGHT - gBorderHeight);
         render_hud();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();
         do_cutscene_handler();
         print_displaying_credits_entry();
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
-                      SCREEN_HEIGHT - BORDER_HEIGHT);
-        gPauseScreenMode = render_menus_and_dialogs();
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
+                      SCREEN_HEIGHT - gBorderHeight);
+        gMenuOptSelectIndex = render_menus_and_dialogs();
 
-        if (gPauseScreenMode != 0) {
-            gSaveOptSelectIndex = gPauseScreenMode;
+        if (gMenuOptSelectIndex != 0) {
+            gSaveOptSelectIndex = gMenuOptSelectIndex;
         }
 
         if (D_8032CE78 != NULL) {
             make_viewport_clip_rect(D_8032CE78);
         } else
-            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
-                          SCREEN_HEIGHT - BORDER_HEIGHT);
+            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
+                          SCREEN_HEIGHT - gBorderHeight);
 
         if (gWarpTransition.isActive) {
             if (gWarpTransDelay == 0) {
@@ -414,6 +426,11 @@ void render_game(void) {
             clear_frame_buffer(gWarpTransFBSetColor);
         }
     }
+
+
+    #if PUPPYPRINT_DEBUG
+    puppyprint_render_profiler();
+    #endif
 
     D_8032CE74 = NULL;
     D_8032CE78 = NULL;
