@@ -3,6 +3,8 @@
 
 #include "sm64.h"
 
+extern u8 gIsVC;
+
 // This function must not be inlined by the compiler so I move it to a different C file
 f32 round_double_to_float(f64);
 

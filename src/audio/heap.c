@@ -8,10 +8,9 @@
 #include "effects.h"
 #include "game/game_init.h"
 #include "game/puppyprint.h"
+#include "game/vc_check.h"
 
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
-
-extern u8 gIsVC;
 
 struct PoolSplit {
     u32 wantSeq;
