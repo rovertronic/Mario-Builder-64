@@ -86,8 +86,8 @@ u32 gGlobalTimer = 0;
 #ifdef WIDE
 s16 gWidescreen;
 #endif
-u8 *gAreaSkyboxStart[AREA_COUNT-1];
-u8 *gAreaSkyboxEnd[AREA_COUNT-1];
+u8 *gAreaSkyboxStart[AREA_COUNT];
+u8 *gAreaSkyboxEnd[AREA_COUNT];
 
 // Framebuffer rendering values (max 3)
 u16 sRenderedFramebuffer = 0;
