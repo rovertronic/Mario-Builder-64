@@ -315,6 +315,10 @@ static void level_cmd_init_level(void) {
     clear_objects();
     clear_areas();
     main_pool_push_state();
+    for (u8 clearPointers; clearPointers < 8; clearPointers++) {
+        gAreaSkyboxStart[clearPointers] = 0;
+        gAreaSkyboxEnd[clearPointers] = 0;
+    }
 
     sCurrentCmd = CMD_NEXT;
 }
