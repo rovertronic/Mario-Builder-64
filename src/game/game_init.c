@@ -66,6 +66,8 @@ u8 gIsConsole;
 #ifdef WIDE
 u8 gWidescreen;
 #endif
+u8 *gAreaSkyboxStart[7];
+u8 *gAreaSkyboxEnd[7];
 
 u16 sCurrFBNum = 0;
 u16 frameBufferIndex = 0;

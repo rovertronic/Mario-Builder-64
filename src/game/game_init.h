@@ -45,6 +45,8 @@ extern u8 gIsConsole;
 #ifdef WIDE
 extern u8 gWidescreen;
 #endif
+extern u8 *gAreaSkyboxStart[7];
+extern u8 *gAreaSkyboxEnd[7];
 #ifdef EEP
 extern s8 gEepromProbe;
 #endif
