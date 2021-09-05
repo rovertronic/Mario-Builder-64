@@ -264,7 +264,7 @@ void load_mario_area(void) {
     }
     if (gAreaSkyboxStart[gCurrAreaIndex-1]) {
         load_segment_decompress(0x0A, gAreaSkyboxStart[gCurrAreaIndex-1], gAreaSkyboxEnd[gCurrAreaIndex-1]);
-        }
+    }
 }
 
 void unload_mario_area(void) {

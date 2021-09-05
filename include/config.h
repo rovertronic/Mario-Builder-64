@@ -123,6 +123,8 @@
 // Visual debug enables some collision visuals. Tapping Right on the dpad will cycle between visual hitboxes, visual surfaces, both, and neither.
 // If puppyprint is enabled, then this can be cycled only while the screen is active.
 //#define VISUAL_DEBUG
+// Number of supported areas per level.
+#define AREA_COUNT 8
 
 // BUG/GAME QOL FIXES
 // Fix instant warp offset not working when warping across different areas
