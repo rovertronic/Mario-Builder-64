@@ -220,7 +220,7 @@
 #endif
 
 #define CHANGE_AREA_SKYBOX(area, segStart, segEnd) \
-    CMD_BBH(0x3D, 0x0C, area), \
+    CMD_BBH(0x3E, 0x0C, area), \
     CMD_PTR(segStart), \
     CMD_PTR(segEnd) 
     
