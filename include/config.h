@@ -104,6 +104,8 @@
 //#define PUPPYCAM
 // Automatically calculate the optimal collision distance for an object based on its vertices.
 #define AUTO_COLLISION_DISTANCE
+// Makes obj_resolve_object_collisions work consistently
+#define FIX_RESOLVE_OBJ_COLLISIONS
 
 
 // HACKER QOL
