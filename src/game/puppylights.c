@@ -277,15 +277,17 @@ void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 off
     light->pos[0][0] = x;
     light->pos[0][1] = y;
     light->pos[0][2] = z;
-    light->pos[1][0] = offsetX;
-    light->pos[1][1] = offsetY;
-    light->pos[1][2] = offsetZ;
+    light->pos[1][0] = MAX(offsetX, 10);
+    light->pos[1][1] = MAX(offsetY, 10);
+    light->pos[1][2] = MAX(offsetZ, 10);
     light->rgba[0] = (colour >> 24) & 0xFF;
     light->rgba[1] = (colour >> 16) & 0xFF;
     light->rgba[2] = (colour >> 8) & 0xFF;
     light->rgba[3] = colour & 0xFF;
     light->yaw = yaw;
     light->epicentre = epicentre;
+    if (!(flags & PUPPYLIGHT_SHAPE_CYLINDER) && flags & PUPPYLIGHT_SHAPE_CUBE)
+        light->flags |= PUPPYLIGHT_SHAPE_CYLINDER;
     light->flags |= flags | PUPPYLIGHT_DYNAMIC;
 }
 
