@@ -40,7 +40,7 @@ extern u16 gNumLights;
 extern u8 levelAmbient;
 extern struct PuppyLight *gPuppyLights[MAX_LIGHTS];
 extern struct MemoryPool *gLightsPool;
-extern void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, s32 baseColour);
+extern void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour);
 extern void puppylights_object_emit(struct Object *obj);
 extern void cur_obj_enable_light(void);
 extern void cur_obj_disable_light(void);

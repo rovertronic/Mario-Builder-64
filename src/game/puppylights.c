@@ -178,7 +178,7 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
 
 //Main function. Run this in the object you wish to illuminate, and just give it its light, object pointer and any potential flags if you want to use them.
 //If the object has multiple lights, then you run this for each light.
-void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, s32 baseColour)
+void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour)
 {
     s32 i;
 
