@@ -285,7 +285,9 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.pos[1] = -10000.0f;
     obj->header.gfx.pos[2] = -10000.0f;
     obj->header.gfx.throwMatrix = NULL;
+#ifdef PUPPYLIGHTS
     obj->oLightID = 0xFFFF;
+#endif
 
     return obj;
 }

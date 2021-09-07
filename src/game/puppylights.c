@@ -9,8 +9,6 @@ but it will not be affected by environmental tinting. If you wish for an object 
 simply set the object flag OBJ_FLAG_EMIT_LIGHT and set some values to o->puppylight.
 **/
 
-#ifdef PUPPYLIGHTS
-
 #include <ultra64.h>
 #include "types.h"
 #include "puppylights.h"
@@ -25,6 +23,8 @@ simply set the object flag OBJ_FLAG_EMIT_LIGHT and set some values to o->puppyli
 #include "debug_box.h"
 #include "object_list_processor.h"
 #include "level_update.h"
+
+#ifdef PUPPYLIGHTS
 
 Lights1 gLevelLight; //Existing ambient light in the area. Will be set by the level script, though can always be changed afterwards if desired.
 u8 levelAmbient = FALSE;

@@ -1,7 +1,6 @@
+#ifdef PUPPYLIGHTS
 #ifndef PUPPYLIGHTS_H
 #define PUPPYLIGHTS_H
-
-#ifdef PUPPYLIGHTS
 
 #include "types.h"
 #include "command_macros_base.h"
