@@ -129,6 +129,8 @@
 #define AREA_COUNT 8
 // Lightweight directional lighting engine by Fazana. Intended for giving proximity and positional pointlights to small objects.
 //#define PUPPYLIGHTS
+// Open all courses and doors. Used for debugging purposes to unlock all content.
+//#define UNLOCK_ALL
 
 // BUG/GAME QOL FIXES
 // Fix instant warp offset not working when warping across different areas
