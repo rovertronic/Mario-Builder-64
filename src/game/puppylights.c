@@ -65,7 +65,7 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     Lights1 *tempLight;
     s32 lightPos[2];
     Vec3i lightRelative;
-    Vec3i lightDir;
+    Vec3i lightDir = {0, 0, 0};
     s32 lightIntensity = 0;
     s32 i;
     s32 colour;
@@ -73,7 +73,6 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     f64 scale = 1.0f;
     f32 scale2;
     f64 scaleVal = 1.0f;
-    f64 preScale;
 
     //Relative positions of the object vs the centre of the node.
     lightRelative[0] = light->pos[0][0] - obj->oPosX;
@@ -138,7 +137,6 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     tempLight = segmented_to_virtual(src);
     //Now we have a scale value and a scale factor, we can start lighting things up.
     //Convert to a percentage.
-    preScale = scale;
     scale /= scaleVal;
     scale = CLAMP(scale, 0.0f, 1.0f);
     //Reduce scale2 by the epicentre.
@@ -150,9 +148,9 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     //Note: can this be optimised further? Simply squaring lightRelative and then dividing it by preScale doesn't work.
     if (light->flags & PUPPYLIGHT_DIRECTIONAL)
     {
-        lightDir[0] = ((lightRelative[0]) * 64.0f) / sqrtf(preScale);
-        lightDir[1] = ((lightRelative[1]) * 64.0f) / sqrtf(preScale);
-        lightDir[2] = ((lightRelative[2]) * 64.0f) / sqrtf(preScale);
+        lightDir[0] = ((lightRelative[0]) * 64.0f) / light->pos[1][0];
+        lightDir[1] = ((lightRelative[1]) * 64.0f) / light->pos[1][1];
+        lightDir[2] = ((lightRelative[2]) * 64.0f) / light->pos[1][2];
     }
     //Get direction if applicable.
     for (i = 0; i < 3; i++)
