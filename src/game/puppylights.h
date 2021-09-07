@@ -1,5 +1,8 @@
 #ifndef PUPPYLIGHTS_H
 #define PUPPYLIGHTS_H
+
+#ifdef PUPPYLIGHTS
+
 #include "types.h"
 #include "command_macros_base.h"
 
@@ -47,4 +50,5 @@ extern void obj_disable_light(struct Object *obj);
 extern void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active);
 extern void puppylights_allocate(void);
 
+#endif
 #endif

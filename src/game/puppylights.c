@@ -9,6 +9,8 @@ but it will not be affected by environmental tinting. If you wish for an object 
 simply set the object flag OBJ_FLAG_EMIT_LIGHT and set some values to o->puppylight.
 **/
 
+#ifdef PUPPYLIGHTS
+
 #include <ultra64.h>
 #include "types.h"
 #include "puppylights.h"
@@ -309,3 +311,5 @@ void obj_disable_light(struct Object *obj)
 {
     obj->oFlags &= ~OBJ_FLAG_EMIT_LIGHT;
 }
+
+#endif
