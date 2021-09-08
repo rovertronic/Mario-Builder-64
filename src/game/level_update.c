@@ -1128,6 +1128,10 @@ s32 play_mode_change_area(void) {
         set_play_mode(PLAY_MODE_NORMAL);
     }
 
+#ifdef PUPPYLIGHTS
+    puppylights_allocate();
+#endif
+
     return 0;
 }
 
