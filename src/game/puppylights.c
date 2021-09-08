@@ -177,8 +177,6 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
         //Index 1 of the first dimension of gMatStack is perspective. Note that if you ever decide to cheat your way into rendering things after the game does :^)
         if (light->flags & PUPPYLIGHT_DIRECTIONAL)
             tempLight->l->l.dir[i] = approach_f32_asymptotic((s8)(lightDir[0] * gMatStack[1][0][i] + lightDir[1] * gMatStack[1][1][i] + lightDir[2] * gMatStack[1][2][i]), tempLight->l->l.dir[i], scale);
-        else
-            tempLight->l->l.dir[i] = 0x28;
     }
 }
 
