@@ -7,6 +7,10 @@ Puppylights is generally intended to be used with things that don't directly use
 themselves. Inside the main function, you can pass through a colour to override the default light
 but it will not be affected by environmental tinting. If you wish for an object to emit a light,
 simply set the object flag OBJ_FLAG_EMIT_LIGHT and set some values to o->puppylight.
+
+For easy light modification, you can call set_light_properties, so set all the attributes of any
+given loaded puppylight struct. Objects will ignore x, y, z, active and room, as it will set all
+of these automatically. It will force the PUPPYLIGHT_DYNAMIC flag, too.
 **/
 
 #include <ultra64.h>
@@ -173,6 +177,8 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
         //Index 1 of the first dimension of gMatStack is perspective. Note that if you ever decide to cheat your way into rendering things after the game does :^)
         if (light->flags & PUPPYLIGHT_DIRECTIONAL)
             tempLight->l->l.dir[i] = approach_f32_asymptotic((s8)(lightDir[0] * gMatStack[1][0][i] + lightDir[1] * gMatStack[1][1][i] + lightDir[2] * gMatStack[1][2][i]), tempLight->l->l.dir[i], scale);
+        else
+            tempLight->l->l.dir[i] = 0x28;
     }
 }
 
@@ -273,7 +279,7 @@ void puppylights_object_emit(struct Object *obj)
 
 //A bit unorthodox, but anything to avoid having to set up data to pass through in the original function.
 //Objects will completely ignore X, Y, Z and active though.
-void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active, s32 room)
+void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 room, s32 active)
 {
     light->active = active;
     light->pos[0][0] = x;

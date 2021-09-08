@@ -376,7 +376,7 @@ static void level_cmd_free_level_pool(void) {
     alloc_only_pool_resize(sLevelPool, sLevelPool->usedSpace);
     sLevelPool = NULL;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < AREA_COUNT; i++) {
         if (gAreaData[i].terrainData != NULL) {
             alloc_surface_pools();
             break;
@@ -390,7 +390,7 @@ static void level_cmd_begin_area(void) {
     u8 areaIndex = CMD_GET(u8, 2);
     void *geoLayoutAddr = CMD_GET(void *, 4);
 
-    if (areaIndex < 8) {
+    if (areaIndex < AREA_COUNT) {
         struct GraphNodeRoot *screenArea =
             (struct GraphNodeRoot *) process_geo_layout(sLevelPool, geoLayoutAddr);
         struct GraphNodeCamera *node = (struct GraphNodeCamera *) screenArea->views[0];
