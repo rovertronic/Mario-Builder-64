@@ -830,6 +830,7 @@ static void level_cmd_puppyvolume(void)
 
     sPuppyVolumeStack[gPuppyVolumeCount]->shape = CMD_GET(u8, 33);
     sPuppyVolumeStack[gPuppyVolumeCount]->room = CMD_GET(s16, 34);
+    sPuppyVolumeStack[gPuppyVolumeCount]->area = sCurrAreaIndex;
 
     gPuppyVolumeCount++;
 #endif
@@ -876,6 +877,8 @@ static void level_cmd_puppylight_node(void)
     gPuppyLights[gNumLights]->epicentre = CMD_GET(u8, 20);
     gPuppyLights[gNumLights]->flags |= CMD_GET(u8, 21);
     gPuppyLights[gNumLights]->active = TRUE;
+    gPuppyLights[gNumLights]->area = sCurrAreaIndex;
+    gPuppyLights[gNumLights]->room = CMD_GET(s16, 22);
 
     gNumLights++;
 

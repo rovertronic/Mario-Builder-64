@@ -648,7 +648,7 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
     s32 i = 0;
 #endif
 #ifdef PUPPYCAM
-    if (sWarpDest.type != WARP_TYPE_SAME_AREA)
+    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
     {
         for (i = 0; i < gPuppyVolumeCount; i++)
         {
@@ -658,7 +658,7 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
     }
 #endif
 #ifdef PUPPYLIGHTS
-    if (sWarpDest.type != WARP_TYPE_SAME_AREA)
+    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
     {
         for (i = 0; i < gNumLights; i++)
         {
@@ -1127,10 +1127,6 @@ s32 play_mode_change_area(void) {
         sTransitionUpdate = NULL;
         set_play_mode(PLAY_MODE_NORMAL);
     }
-
-#ifdef PUPPYLIGHTS
-    puppylights_allocate();
-#endif
 
     return 0;
 }

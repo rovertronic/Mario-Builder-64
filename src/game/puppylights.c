@@ -215,7 +215,7 @@ void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour
 
     for (i = 0; i < gNumLights; i++)
     {
-        if (gPuppyLights[i]->rgba[3] > 0 && gPuppyLights[i]->active == TRUE)
+        if (gPuppyLights[i]->rgba[3] > 0 && gPuppyLights[i]->active == TRUE && gPuppyLights[i]->area == gCurrAreaIndex && (gPuppyLights[i]->room == -1 || gPuppyLights[i]->room == gMarioCurrentRoom))
             puppylights_iterate(gPuppyLights[i], src, obj);
     }
 }
@@ -248,6 +248,8 @@ void puppylights_object_emit(struct Object *obj)
                     continue;
                 memcpy(gPuppyLights[i], &obj->puppylight, sizeof(struct PuppyLight));
                 gPuppyLights[i]->active = TRUE;
+                gPuppyLights[i]->area = gCurrAreaIndex;
+                gPuppyLights[i]->room = obj->oRoom;
                 obj->oLightID = i;
                 goto updatepos;
             }
@@ -271,7 +273,7 @@ void puppylights_object_emit(struct Object *obj)
 
 //A bit unorthodox, but anything to avoid having to set up data to pass through in the original function.
 //Objects will completely ignore X, Y, Z and active though.
-void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active)
+void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active, s32 room)
 {
     light->active = active;
     light->pos[0][0] = x;
@@ -285,6 +287,8 @@ void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 off
     light->rgba[2] = (colour >> 8) & 0xFF;
     light->rgba[3] = colour & 0xFF;
     light->yaw = yaw;
+    light->area = gCurrAreaIndex;
+    light->room = room;
     light->epicentre = epicentre;
     if (!(flags & PUPPYLIGHT_SHAPE_CYLINDER) && flags & PUPPYLIGHT_SHAPE_CUBE)
         light->flags |= PUPPYLIGHT_SHAPE_CYLINDER;

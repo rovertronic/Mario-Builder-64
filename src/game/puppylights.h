@@ -24,13 +24,13 @@
     CMD_BBBB(ambientB, diffuseR, diffuseG, diffuseB), \
     CMD_BBBB(diffuseX, diffuseY, diffuseZ, 0x0)
 
-#define PUPPYLIGHT_NODE(r, g, b, a, x, y, z, offsetX, offsetY, offsetZ, yaw, epicentre, flags) \
+#define PUPPYLIGHT_NODE(r, g, b, a, x, y, z, offsetX, offsetY, offsetZ, yaw, epicentre, flags, room) \
     CMD_BBBB(0x40, 0x18, r, g), \
     CMD_BBH(b, a, x), \
     CMD_HH(y, z), \
     CMD_HH(offsetX, offsetY), \
     CMD_HH(offsetZ, yaw), \
-    CMD_BBH(epicentre, flags, 0x0)
+    CMD_BBH(epicentre, flags, room)
 
 //How much RAM is allocated to puppylights
 #define PUPPYLIGHTS_POOL sizeof(struct PuppyLight) * MAX_LIGHTS
@@ -46,7 +46,7 @@ extern void cur_obj_enable_light(void);
 extern void cur_obj_disable_light(void);
 extern void obj_enable_light(struct Object *obj);
 extern void obj_disable_light(struct Object *obj);
-extern void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active);
+extern void set_light_properties(struct PuppyLight *light, s32 x, s32 y, s32 z, s32 offsetX, s32 offsetY, s32 offsetZ, s32 yaw, s32 epicentre, s32 colour, s32 flags, s32 active, s32 room);
 extern void puppylights_allocate(void);
 
 #endif
