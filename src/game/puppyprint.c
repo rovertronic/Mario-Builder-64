@@ -33,6 +33,8 @@ a modern game engine's developer's console.
 #include "print.h"
 #include "segment2.h"
 #include "string.h"
+#include "stdarg.h"
+#include "printf.h"
 #include "engine/math_util.h"
 #include "engine/behavior_script.h"
 #include "camera.h"
@@ -309,14 +311,29 @@ void print_which_benchmark(void)
 
 char consoleLogTable[LOG_BUFFER_SIZE][255];
 
-void append_puppyprint_log(char str[255])
+static char *write_to_buf(char *buffer, const char *data, size_t size) {
+    return (char *) memcpy(buffer, data, size) + size;
+}
+
+void append_puppyprint_log(const char *str, ...)
 {
     s32 i;
+    char textBytes[255];
+
+    memset(textBytes, 0, sizeof(textBytes));
+    va_list arguments;
+    va_start(arguments, str);
+    if ((_Printf(write_to_buf, textBytes, str, arguments)) <= 0)
+    {
+        va_end(arguments);
+        return;
+    }
     for (i = 0; i < LOG_BUFFER_SIZE-1; i++)
     {
         memcpy(consoleLogTable[i], consoleLogTable[i+1], 255);
     }
-        memcpy(consoleLogTable[LOG_BUFFER_SIZE-1], str, 255);
+        memcpy(consoleLogTable[LOG_BUFFER_SIZE-1], textBytes, 255);
+    va_end(arguments);
 }
 
 #define LINE_HEIGHT 8 + ((LOG_BUFFER_SIZE-1)*12)

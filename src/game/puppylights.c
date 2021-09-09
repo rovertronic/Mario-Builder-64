@@ -27,6 +27,8 @@ of these automatically. It will force the PUPPYLIGHT_DYNAMIC flag, too.
 #include "debug_box.h"
 #include "object_list_processor.h"
 #include "level_update.h"
+#include "engine/surface_collision.h"
+#include "surface_terrains.h"
 
 #ifdef PUPPYLIGHTS
 
@@ -55,8 +57,8 @@ void puppylights_allocate(void)
         gPuppyLights[gNumLights] = mem_pool_alloc(gLightsPool, sizeof(struct PuppyLight));
         if (gPuppyLights[gNumLights] == NULL)
             return;
-        gPuppyLights[gNumLights]->flags = PUPPYLIGHT_DYNAMIC;
         gPuppyLights[gNumLights]->active = FALSE;
+        gPuppyLights[gNumLights]->flags = 0;
         gNumLights++;
     }
 }
@@ -309,7 +311,7 @@ void cur_obj_disable_light(void)
 {
     gCurrentObject->oFlags &= ~OBJ_FLAG_EMIT_LIGHT;
     if (gPuppyLights[gCurrentObject->oLightID] && gCurrentObject->oLightID != 0xFFFF)
-        gPuppyLights[gCurrentObject->oLightID]->active = FALSE;
+        gPuppyLights[gCurrentObject->oLightID]->flags |= PUPPYLIGHT_DELETE;
 }
 
 void obj_enable_light(struct Object *obj)
@@ -321,7 +323,28 @@ void obj_disable_light(struct Object *obj)
 {
     obj->oFlags &= ~OBJ_FLAG_EMIT_LIGHT;
     if (gPuppyLights[obj->oLightID] && obj->oLightID != 0xFFFF)
-        gPuppyLights[obj->oLightID]->active = FALSE;
+        gPuppyLights[obj->oLightID]->flags |= PUPPYLIGHT_DELETE;
+}
+
+//This is ran during a standard area update
+void delete_lights(void)
+{
+    s32 i;
+
+    for (i = 0; i < gNumLights; i++)
+    {
+        if (gPuppyLights[i]->active == TRUE && gPuppyLights[i]->flags & PUPPYLIGHT_DELETE)
+        {
+            gPuppyLights[i]->pos[1][0] = approach_f32_asymptotic(gPuppyLights[i]->pos[1][0], 0, 0.15f);
+            gPuppyLights[i]->pos[1][1] = approach_f32_asymptotic(gPuppyLights[i]->pos[1][1], 0, 0.15f);
+            gPuppyLights[i]->pos[1][2] = approach_f32_asymptotic(gPuppyLights[i]->pos[1][2], 0, 0.15f);
+            if (gPuppyLights[i]->pos[1][0] < 1.0f && gPuppyLights[i]->pos[1][1] < 1.0f && gPuppyLights[i]->pos[1][2] < 1.0f)
+            {
+                gPuppyLights[i]->flags &= ~ PUPPYLIGHT_DELETE;
+                gPuppyLights[i]->active = FALSE;
+            }
+        }
+    }
 }
 
 #endif

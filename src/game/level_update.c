@@ -1001,6 +1001,9 @@ void update_hud_values(void) {
 void basic_update(UNUSED s16 *arg) {
     area_update_objects();
     update_hud_values();
+#ifdef PUPPYLIGHTS
+    delete_lights();
+#endif
 
     if (gCurrentArea != NULL) {
         update_camera(gCurrentArea->camera);
@@ -1028,6 +1031,9 @@ s32 play_mode_normal(void) {
 
     area_update_objects();
     update_hud_values();
+#ifdef PUPPYLIGHTS
+    delete_lights();
+#endif
 
     if (gCurrentArea != NULL) {
         update_camera(gCurrentArea->camera);
@@ -1203,7 +1209,6 @@ s32 update_level(void) {
 s32 init_level(void) {
     s32 val4 = 0;
     #if PUPPYPRINT_DEBUG
-    char textBytes[64];
     OSTime first = osGetTime();
     #endif
 
@@ -1284,8 +1289,7 @@ s32 init_level(void) {
 #endif
 
 #if PUPPYPRINT_DEBUG
-    sprintf(textBytes, "Level loaded in %dus", (s32)(OS_CYCLES_TO_USEC(osGetTime() - first)));
-    append_puppyprint_log(textBytes);
+    append_puppyprint_log("Level loaded in %dus", (s32)(OS_CYCLES_TO_USEC(osGetTime() - first)));
 #endif
     return 1;
 }

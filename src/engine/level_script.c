@@ -875,7 +875,7 @@ static void level_cmd_puppylight_node(void)
     gPuppyLights[gNumLights]->yaw = CMD_GET(s16, 18);
 
     gPuppyLights[gNumLights]->epicentre = CMD_GET(u8, 20);
-    gPuppyLights[gNumLights]->flags |= CMD_GET(u8, 21);
+    gPuppyLights[gNumLights]->flags = CMD_GET(u8, 21);
     gPuppyLights[gNumLights]->active = TRUE;
     gPuppyLights[gNumLights]->area = sCurrAreaIndex;
     gPuppyLights[gNumLights]->room = CMD_GET(s16, 22);
