@@ -85,57 +85,50 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     lightRelative[1] = light->pos[0][1] - obj->oPosY;
     lightRelative[2] = light->pos[0][2] - obj->oPosZ;
 
-    //If the node is a cube, then calculate the distance a bit differently.
-    if (light->flags & PUPPYLIGHT_SHAPE_CUBE)
-    {
-        //Get the position based off the rotation of the cube.
-        lightPos[0] = lightRelative[2] * sins(light->yaw) + lightRelative[0] * coss(light->yaw);
-        lightPos[1] = lightRelative[2] * coss(light->yaw) - lightRelative[0] * sins(light->yaw);
+    //Get the position based off the rotation of the box.
+    lightPos[0] = lightRelative[2] * sins(-light->yaw) + lightRelative[0] * coss(-light->yaw);
+    lightPos[1] = lightRelative[2] * coss(-light->yaw) - lightRelative[0] * sins(-light->yaw);
 
-        #ifdef VISUAL_DEBUG
-        Vec3f debugPos[2];
-        vec3f_set(debugPos[0], light->pos[0][0], light->pos[0][1], light->pos[0][2]);
-        vec3f_set(debugPos[1], light->pos[1][0], light->pos[1][1], light->pos[1][2]);
-        debug_box_color(0x00FFFF00);
-        debug_box_rot(debugPos[0], debugPos[1], light->yaw, DEBUG_SHAPE_BOX);
-        #endif
-
-        if (-light->pos[1][0] < lightPos[0] && lightPos[0] < light->pos[1][0] &&
-            -light->pos[1][1] < lightRelative[1] && lightRelative[1] < light->pos[1][1] &&
-            -light->pos[1][2] < lightPos[1] && lightPos[1] < light->pos[1][2])
-        {
-            scale = (lightPos[0] * lightPos[0]) + (lightRelative[1] * lightRelative[1]) + (lightPos[1] * lightPos[1]);
-            scaleVal = (light->pos[1][0] + light->pos[1][1] + light->pos[1][2])/3;
-            scaleVal *= scaleVal;
-        }
-        else
-            return;
-    }
-    else
+    #ifdef VISUAL_DEBUG
+    Vec3f debugPos[2];
+    vec3f_set(debugPos[0], light->pos[0][0], light->pos[0][1], light->pos[0][2]);
+    vec3f_set(debugPos[1], light->pos[1][0], light->pos[1][1], light->pos[1][2]);
+    debug_box_color(0x00FF00FF);
     if (light->flags & PUPPYLIGHT_SHAPE_CYLINDER)
+        debug_box_rot(debugPos[0], debugPos[1], light->yaw, DEBUG_SHAPE_CYLINDER);
+    else
+        debug_box_rot(debugPos[0], debugPos[1], light->yaw, DEBUG_SHAPE_BOX);
+    #endif
+    //Check if the object is inside the box, after correcting it for rotation.
+    if (-light->pos[1][0] < lightPos[0] && lightPos[0] < light->pos[1][0] &&
+        -light->pos[1][1] < lightRelative[1] && lightRelative[1] < light->pos[1][1] &&
+        -light->pos[1][2] < lightPos[1] && lightPos[1] < light->pos[1][2])
     {
-
-        #ifdef VISUAL_DEBUG
-        Vec3f debugPos[2];
-        vec3f_set(debugPos[0], light->pos[0][0], light->pos[0][1], light->pos[0][2]);
-        vec3f_set(debugPos[1], light->pos[1][0], light->pos[1][1], light->pos[1][2]);
-        debug_box_color(0x00FFFF00);
-        debug_box_rot(debugPos[0], debugPos[1], 0, DEBUG_SHAPE_CYLINDER);
-        #endif
-        //First do an AABB check, since it's a fair bit faster than doing just a distance check.
-        if (-light->pos[1][0] < lightRelative[0] && lightRelative[0] < light->pos[1][0] &&
-            -light->pos[1][1] < lightRelative[1] && lightRelative[1] < light->pos[1][1] &&
-            -light->pos[1][2] < lightRelative[2] && lightRelative[2] < light->pos[1][2])
+        //If so, then start making preparations to see how alongside they're in.
+        //This takes the largest side of the box and multiplies the other axis to match the numbers.
+        //This way, the colour value will scale correctly, no matter which side is entered.
+        //Because positions are a vector, and Y is up, it means tempID needs to be multiplied
+        //By 2 in order to reach the X and Z axis. Thanks SM64.
+        s32 lightPos2[2];
+        lightPos2[0] = light->pos[1][2] * sins(-light->yaw) + light->pos[1][0] * coss(-light->yaw);
+        lightPos2[1] = light->pos[1][2] * coss(-light->yaw) - light->pos[1][0] * sins(-light->yaw);
+        s32 tempID;
+        f32 scaleFac;
+        if (ABS(lightPos2[0]) > ABS(lightPos2[1]))
+            tempID = 0;
+        else
+            tempID = 1;
+        scaleFac = (f32)light->pos[1][(tempID^1)*2]/(f32)light->pos[1][tempID*2];
+        lightPos[tempID] *= scaleFac;
+        scale = (lightPos[0] * lightPos[0]) + (lightRelative[1] * lightRelative[1]) + (lightPos[1] * lightPos[1]);
+        scaleVal = (light->pos[1][0] + light->pos[1][1] + light->pos[1][2])/3;
+        scaleVal *= scaleVal;
+        //If it's a cylinder, then bin anything outside it.
+        if (light->flags & PUPPYLIGHT_SHAPE_CYLINDER)
         {
-            //Okay now we can do a distance check
-            scale = (lightRelative[0] * lightRelative[0]) + (lightRelative[1] * lightRelative[1]) + (lightRelative[2] * lightRelative[2]);
-            scaleVal = (light->pos[1][0] + light->pos[1][1] + light->pos[1][2])/3;
-            scaleVal *= scaleVal;
             if (scale > scaleVal)
                 return;
         }
-        else
-            return;
     }
     else
         return;
