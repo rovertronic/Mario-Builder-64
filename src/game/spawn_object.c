@@ -357,6 +357,8 @@ struct Object *create_object(const BehaviorScript *bhvScript) {
  */
 void mark_obj_for_deletion(struct Object *obj) {
     //! Same issue as obj_mark_for_deletion
+#ifdef PUPPYLIGHTS
     obj_disable_light(obj);
+#endif
     obj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 }
