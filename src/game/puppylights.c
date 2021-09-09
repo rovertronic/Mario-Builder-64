@@ -11,6 +11,13 @@ simply set the object flag OBJ_FLAG_EMIT_LIGHT and set some values to o->puppyli
 For easy light modification, you can call set_light_properties, so set all the attributes of any
 given loaded puppylight struct. Objects will ignore x, y, z, active and room, as it will set all
 of these automatically. It will force the PUPPYLIGHT_DYNAMIC flag, too.
+
+If you're introducing a static light in the level script with PUPPYLIGHT_NODE, ensure it's contained
+inside the respective area node it's going to be inside, otherwise it will not show up. If you do not
+use rooms in your level, or if you wish for this light to be seen from any room, use -1 for that param.
+
+If you have visual debug enabled, light nodes will show up as magenta in the world. They will be
+shaped and rotated correctly, for accurate representation of their properties.
 **/
 
 #include <ultra64.h>
@@ -93,7 +100,7 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
     Vec3f debugPos[2];
     vec3f_set(debugPos[0], light->pos[0][0], light->pos[0][1], light->pos[0][2]);
     vec3f_set(debugPos[1], light->pos[1][0], light->pos[1][1], light->pos[1][2]);
-    debug_box_color(0x00FF00FF);
+    debug_box_color(0x00FF0040);
     if (light->flags & PUPPYLIGHT_SHAPE_CYLINDER)
         debug_box_rot(debugPos[0], debugPos[1], light->yaw, DEBUG_SHAPE_CYLINDER);
     else
