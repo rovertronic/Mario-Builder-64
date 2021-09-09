@@ -12,6 +12,7 @@
 #include "object_list_processor.h"
 #include "spawn_object.h"
 #include "types.h"
+#include "puppylights.h"
 
 /**
  * An unused linked list struct that seems to have been replaced by ObjectNode.
@@ -285,6 +286,9 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.pos[1] = -10000.0f;
     obj->header.gfx.pos[2] = -10000.0f;
     obj->header.gfx.throwMatrix = NULL;
+#ifdef PUPPYLIGHTS
+    obj->oLightID = 0xFFFF;
+#endif
 
     return obj;
 }
@@ -353,5 +357,8 @@ struct Object *create_object(const BehaviorScript *bhvScript) {
  */
 void mark_obj_for_deletion(struct Object *obj) {
     //! Same issue as obj_mark_for_deletion
+#ifdef PUPPYLIGHTS
+    obj_disable_light(obj);
+#endif
     obj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 }
