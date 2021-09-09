@@ -9,6 +9,7 @@
 #include "game/game_init.h"
 #include "game/puppyprint.h"
 #include "game/vc_check.h"
+#include "string.h"
 
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
 
@@ -997,8 +998,7 @@ void decrease_reverb_gain(void) {
     }
 #endif
 }
-
-#if defined(VERSION_SH)
+#ifdef VERSION_EU
 void clear_curr_ai_buffer(void) {
     s32 currIndex = gCurrAiBufferIndex;
     s32 i;
@@ -1009,97 +1009,54 @@ void clear_curr_ai_buffer(void) {
 }
 #endif
 
-
 #if defined(VERSION_EU) || defined(VERSION_SH)
 s32 audio_shut_down_and_reset_step(void) {
     s32 i;
     s32 j;
-#ifdef VERSION_SH
-    s32 num = gAudioBufferParameters.presetUnk4 == 2 ? 2 : 1;
-#endif
+    OSTime first;
 
     switch (gAudioResetStatus) {
         case 5:
             for (i = 0; i < SEQUENCE_PLAYERS; i++) {
                 sequence_player_disable(&gSequencePlayers[i]);
             }
-#ifdef VERSION_SH
-            gAudioResetFadeOutFramesLeft = 4 / num;
-#else
-            gAudioResetFadeOutFramesLeft = 4;
-#endif
             gAudioResetStatus--;
             break;
         case 4:
-            if (gAudioResetFadeOutFramesLeft != 0) {
-                gAudioResetFadeOutFramesLeft--;
-                decrease_reverb_gain();
-            } else {
-                for (i = 0; i < gMaxSimultaneousNotes; i++) {
-                    if (gNotes[i].noteSubEu.enabled && gNotes[i].adsr.state != ADSR_STATE_DISABLED) {
-                        gNotes[i].adsr.fadeOutVel = gAudioBufferParameters.updatesPerFrameInv;
-                        gNotes[i].adsr.action |= ADSR_ACTION_RELEASE;
-                    }
+            for (i = 0; i < gMaxSimultaneousNotes; i++) {
+                if (gNotes[i].noteSubEu.enabled && gNotes[i].adsr.state != ADSR_STATE_DISABLED) {
+                    gNotes[i].adsr.fadeOutVel = gAudioBufferParameters.updatesPerFrameInv;
+                    gNotes[i].adsr.action |= ADSR_ACTION_RELEASE;
                 }
-#ifdef VERSION_SH
-                gAudioResetFadeOutFramesLeft = 16 / num;
-#else
-                gAudioResetFadeOutFramesLeft = 16;
-#endif
-                gAudioResetStatus--;
             }
+            gAudioResetFadeOutFramesLeft = 0;
+            gAudioResetStatus--;
             break;
         case 3:
-            if (gAudioResetFadeOutFramesLeft != 0) {
-                gAudioResetFadeOutFramesLeft--;
-#ifdef VERSION_SH
-                if (1) {
-                }
-#endif
-                decrease_reverb_gain();
-            } else {
-                for (i = 0; i < NUMAIBUFFERS; i++) {
-                    for (j = 0; j < (s32) (AIBUFFER_LEN / sizeof(s16)); j++) {
-                        gAiBuffers[i][j] = 0;
-                    }
-                }
-#ifdef VERSION_SH
-                gAudioResetFadeOutFramesLeft = 4 / num;
-#else
-                gAudioResetFadeOutFramesLeft = 4;
-#endif
-                gAudioResetStatus--;
-            }
-            break;
-        case 2:
-#ifdef VERSION_SH
-            clear_curr_ai_buffer();
-#endif
-            if (gAudioResetFadeOutFramesLeft != 0) {
-                gAudioResetFadeOutFramesLeft--;
-            } else {
-                gAudioResetStatus--;
-#ifdef VERSION_SH
-                func_sh_802f23ec();
-#endif
-            }
-            break;
-        case 1:
-            audio_reset_session();
-            gAudioResetStatus = 0;
-#ifdef VERSION_SH
             for (i = 0; i < NUMAIBUFFERS; i++) {
-                gAiBufferLengths[i] = gAudioBufferParameters.maxAiBufferLength;
                 for (j = 0; j < (s32) (AIBUFFER_LEN / sizeof(s16)); j++) {
                     gAiBuffers[i][j] = 0;
                 }
             }
-#endif
-    }
+            gAudioResetStatus--;
+            break;
+        case 2:
+            clear_curr_ai_buffer();
+            gAudioResetStatus--;
 #ifdef VERSION_SH
-    if (gAudioResetFadeOutFramesLeft) {
-    }
+            func_sh_802f23ec();
 #endif
+            break;
+        case 1:
+            audio_reset_session();
+            gAudioResetStatus = 0;
+            first = osGetTime();
+            for (i = 0; i < NUMAIBUFFERS; i++) {
+                gAiBufferLengths[i] = gAudioBufferParameters.maxAiBufferLength;
+            }
+            //memset(&gAiBufferLengths, gAudioBufferParameters.maxAiBufferLength, sizeof(s16) * NUMAIBUFFERS);
+            bzero(&gAiBuffers[0][0], ((s32) (AIBUFFER_LEN / sizeof(s16)))*NUMAIBUFFERS);
+    }
     if (gAudioResetStatus < 3) {
         return 0;
     }
@@ -1112,7 +1069,7 @@ s32 audio_shut_down_and_reset_step(void) {
 void wait_for_audio_frames(s32 frames) {
     // VC emulator stubs this function because busy loops are not supported
     // Technically we can put infinite loop that _looks_ like -O0 for emu but this is cleaner
-    if (gIsVC)
+    //if (gIsVC)
         return;
 
     gAudioFrameCount = 0;
@@ -1122,6 +1079,10 @@ void wait_for_audio_frames(s32 frames) {
     }
 }
 #endif
+
+#define VERSION_EU
+
+s32 built = 0;
 
 #if defined(VERSION_JP) || defined(VERSION_US)
 void audio_reset_session(struct AudioSessionSettings *preset) {
@@ -1135,6 +1096,9 @@ void audio_reset_session(void) {
     s8 updatesPerFrame;
     s32 reverbWindowSize;
     s32 k;
+#endif
+#ifdef PUPPYPRINT
+    OSTime first = osGetTime();
 #endif
     s32 i;
     s32 j;
@@ -1498,7 +1462,11 @@ void audio_reset_session(void) {
     init_sample_dma_buffers(gMaxSimultaneousNotes);
 
 #if defined(VERSION_EU)
+if (!built)
+{
     build_vol_rampings_table(0, gAudioBufferParameters.samplesPerUpdate);
+    built = 1;
+}
 #endif
 
 #ifdef VERSION_SH
@@ -1512,6 +1480,9 @@ void audio_reset_session(void) {
     if (gAudioLoadLock != AUDIO_LOCK_UNINITIALIZED) {
         gAudioLoadLock = AUDIO_LOCK_NOT_LOADING;
     }
+#endif
+#ifdef PUPPYPRINT
+    append_puppyprint_log("Audio Initialised in %dus.", (s32)OS_CYCLES_TO_USEC(osGetTime() - first));
 #endif
 }
 

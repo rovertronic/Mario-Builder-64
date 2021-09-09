@@ -796,6 +796,11 @@ void thread5_game_loop(UNUSED void *arg) {
 
         display_and_vsync();
 
+        if (gPlayer1Controller->buttonPressed & L_TRIG)
+        {
+            set_background_music(SEQ_LEVEL_SLIDE, SEQUENCE_ARGS(0xFF, SEQ_LEVEL_SLIDE), 30);
+        }
+
         // when debug info is enabled, print the "BUF %d" information.
         if (gShowDebugText) {
             // subtract the end of the gfx pool with the display list to obtain the
