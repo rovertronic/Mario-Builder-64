@@ -1140,7 +1140,9 @@ void obj_mark_for_deletion(struct Object *obj) {
     //  setting it to 0 could potentially enable unexpected behavior. After an
     //  object is marked for deletion, it still updates on that frame (I think),
     //  so this is worth looking into.
+#ifdef PUPPYLIGHTS
     obj_disable_light(obj);
+#endif
     obj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 }
 
