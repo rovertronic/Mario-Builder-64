@@ -83,9 +83,6 @@ UNUSED static s32 sUnusedGameInitValue = 0;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
-#ifdef WIDE
-s16 gWidescreen;
-#endif
 u8 *gAreaSkyboxStart[AREA_COUNT];
 u8 *gAreaSkyboxEnd[AREA_COUNT];
 
@@ -740,7 +737,7 @@ void thread5_game_loop(UNUSED void *arg) {
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
 #ifdef WIDE
-    gWidescreen = save_file_get_widescreen_mode();
+    gConfig.widescreen = save_file_get_widescreen_mode();
 #endif
     render_init();
 

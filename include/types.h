@@ -19,6 +19,14 @@
     #define BAD_RETURN(cmd) cmd
 #endif
 
+struct Config
+{
+    f32 audioFrequency;
+#ifdef WIDE
+    s16 widescreen;
+#endif
+    u8 tvType;
+};
 
 struct Controller
 {
