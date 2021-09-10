@@ -11,7 +11,7 @@ extern struct OSMesgQueue OSMesgQueue3;
 //Since the audio session is just one now, the reverb settings are duplicated to match the original audio setting scenario.
 //It's a bit hacky but whatever lol.
 #ifdef VERSION_EU
-struct ReverbSettingsEU sReverbSettings[] = {
+struct ReverbSettingsEU sReverbSettings[8] = {
     {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
     {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF },
     {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
