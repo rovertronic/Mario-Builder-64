@@ -16,6 +16,7 @@
 // constant .data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
+extern struct ReverbSettingsEU sReverbSettings[];
 #else
 extern struct AudioSessionSettings gAudioSessionPresets[18];
 #endif

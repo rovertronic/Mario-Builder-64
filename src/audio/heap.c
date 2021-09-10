@@ -1080,16 +1080,98 @@ void wait_for_audio_frames(s32 frames) {
 }
 #endif
 
-#define VERSION_EU
-
-s32 built = 0;
+s32 sAudioFirstBoot = 0;
+//Separate the reverb settings into their own func. Bit unstable currently, so still only runs at boot.
+#ifdef VERSION_EU
+void init_reverb_eu(void)
+{
+    s16 *mem;
+    struct AudioSessionSettingsEU *preset = &gAudioSessionPresets[0];
+    struct SynthesisReverb *reverb;
+    struct ReverbSettingsEU *reverbSettings;
+    s32 j, i;
+    for (j = 0; j < 4; j++) {
+        gSynthesisReverbs[j].useReverb = 0;
+    }
+    //gAudioResetPresetIdToLoad
+    gNumSynthesisReverbs = preset->numReverbs;
+    for (j = 0; j < gNumSynthesisReverbs; j++) {
+        reverb = &gSynthesisReverbs[j];
+        reverbSettings = &sReverbSettings[j];
+#ifdef VERSION_SH
+        reverb->downsampleRate = reverbSettings->downsampleRate;
+        reverb->windowSize = reverbSettings->windowSize * 64;
+        reverb->windowSize /= reverb->downsampleRate;
+#else
+        reverb->windowSize = reverbSettings->windowSize * 64;
+        reverb->downsampleRate = reverbSettings->downsampleRate;
+#endif
+        reverb->reverbGain = reverbSettings->gain;
+#ifdef VERSION_SH
+        reverb->panRight = reverbSettings->unk4;
+        reverb->panLeft = reverbSettings->unk6;
+        reverb->unk5 = reverbSettings->unk8;
+        reverb->unk08 = reverbSettings->unkA;
+#endif
+        reverb->useReverb = 8;
+        reverb->ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
+        reverb->ringBuffer.right = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
+        reverb->nextRingBufferPos = 0;
+        reverb->unkC = 0;
+        reverb->curFrame = 0;
+        reverb->bufSizePerChannel = reverb->windowSize;
+        reverb->framesLeftToIgnore = 2;
+#ifdef VERSION_SH
+        reverb->resampleFlags = A_INIT;
+#endif
+        if (reverb->downsampleRate != 1) {
+#ifndef VERSION_SH
+            reverb->resampleFlags = A_INIT;
+#endif
+            reverb->resampleRate = 0x8000 / reverb->downsampleRate;
+            reverb->resampleStateLeft = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            reverb->resampleStateRight = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            reverb->unk24 = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            reverb->unk28 = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            for (i = 0; i < gAudioBufferParameters.updatesPerFrame; i++) {
+                mem = soundAlloc(&gNotesAndBuffersPool, DEFAULT_LEN_2CH);
+                reverb->items[0][i].toDownsampleLeft = mem;
+                reverb->items[0][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
+                mem = soundAlloc(&gNotesAndBuffersPool, DEFAULT_LEN_2CH);
+                reverb->items[1][i].toDownsampleLeft = mem;
+                reverb->items[1][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
+            }
+        }
+#ifdef VERSION_SH
+        if (reverbSettings->unkC != 0) {
+            reverb->unk108 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            reverb->unk100 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 8 * sizeof(s16));
+            func_sh_802F0DE8(reverb->unk100, reverbSettings->unkC);
+        } else {
+            reverb->unk100 = NULL;
+        }
+        if (reverbSettings->unkE != 0) {
+            reverb->unk10C = sound_alloc_uninitialized(&gNotesAndBuffersPool, 16 * sizeof(s16));
+            reverb->unk104 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 8 * sizeof(s16));
+            func_sh_802F0DE8(reverb->unk104, reverbSettings->unkE);
+        } else {
+            reverb->unk104 = NULL;
+        }
+#endif
+    }
+}
+#endif
 
 #if defined(VERSION_JP) || defined(VERSION_US)
 void audio_reset_session(struct AudioSessionSettings *preset) {
 #else
 void audio_reset_session(void) {
-    struct AudioSessionSettingsEU *preset = &gAudioSessionPresets[gAudioResetPresetIdToLoad];
-    struct ReverbSettingsEU *reverbSettings;
+    if (sAudioFirstBoot)
+    {
+        //init_reverb_eu();
+        return;
+    }
+    struct AudioSessionSettingsEU *preset = &gAudioSessionPresets[0];
 #endif
     s16 *mem;
 #if defined(VERSION_JP) || defined(VERSION_US)
@@ -1340,74 +1422,7 @@ void audio_reset_session(void) {
         gAudioCmdBuffers[j] = soundAlloc(&gNotesAndBuffersPool, gMaxAudioCmds * sizeof(u64));
     }
 
-    for (j = 0; j < 4; j++) {
-        gSynthesisReverbs[j].useReverb = 0;
-    }
-    gNumSynthesisReverbs = preset->numReverbs;
-    for (j = 0; j < gNumSynthesisReverbs; j++) {
-        reverb = &gSynthesisReverbs[j];
-        reverbSettings = &preset->reverbSettings[j];
-#ifdef VERSION_SH
-        reverb->downsampleRate = reverbSettings->downsampleRate;
-        reverb->windowSize = reverbSettings->windowSize * 64;
-        reverb->windowSize /= reverb->downsampleRate;
-#else
-        reverb->windowSize = reverbSettings->windowSize * 64;
-        reverb->downsampleRate = reverbSettings->downsampleRate;
-#endif
-        reverb->reverbGain = reverbSettings->gain;
-#ifdef VERSION_SH
-        reverb->panRight = reverbSettings->unk4;
-        reverb->panLeft = reverbSettings->unk6;
-        reverb->unk5 = reverbSettings->unk8;
-        reverb->unk08 = reverbSettings->unkA;
-#endif
-        reverb->useReverb = 8;
-        reverb->ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
-        reverb->ringBuffer.right = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
-        reverb->nextRingBufferPos = 0;
-        reverb->unkC = 0;
-        reverb->curFrame = 0;
-        reverb->bufSizePerChannel = reverb->windowSize;
-        reverb->framesLeftToIgnore = 2;
-#ifdef VERSION_SH
-        reverb->resampleFlags = A_INIT;
-#endif
-        if (reverb->downsampleRate != 1) {
-#ifndef VERSION_SH
-            reverb->resampleFlags = A_INIT;
-#endif
-            reverb->resampleRate = 0x8000 / reverb->downsampleRate;
-            reverb->resampleStateLeft = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            reverb->resampleStateRight = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            reverb->unk24 = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            reverb->unk28 = soundAlloc(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            for (i = 0; i < gAudioBufferParameters.updatesPerFrame; i++) {
-                mem = soundAlloc(&gNotesAndBuffersPool, DEFAULT_LEN_2CH);
-                reverb->items[0][i].toDownsampleLeft = mem;
-                reverb->items[0][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
-                mem = soundAlloc(&gNotesAndBuffersPool, DEFAULT_LEN_2CH);
-                reverb->items[1][i].toDownsampleLeft = mem;
-                reverb->items[1][i].toDownsampleRight = mem + DEFAULT_LEN_1CH / sizeof(s16);
-            }
-        }
-#ifdef VERSION_SH
-        if (reverbSettings->unkC != 0) {
-            reverb->unk108 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            reverb->unk100 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 8 * sizeof(s16));
-            func_sh_802F0DE8(reverb->unk100, reverbSettings->unkC);
-        } else {
-            reverb->unk100 = NULL;
-        }
-        if (reverbSettings->unkE != 0) {
-            reverb->unk10C = sound_alloc_uninitialized(&gNotesAndBuffersPool, 16 * sizeof(s16));
-            reverb->unk104 = sound_alloc_uninitialized(&gNotesAndBuffersPool, 8 * sizeof(s16));
-            func_sh_802F0DE8(reverb->unk104, reverbSettings->unkE);
-        } else {
-            reverb->unk104 = NULL;
-        }
-#endif
-    }
+    init_reverb_eu();
 
 #else
     if (reverbWindowSize == 0) {
@@ -1462,11 +1477,7 @@ void audio_reset_session(void) {
     init_sample_dma_buffers(gMaxSimultaneousNotes);
 
 #if defined(VERSION_EU)
-if (!built)
-{
     build_vol_rampings_table(0, gAudioBufferParameters.samplesPerUpdate);
-    built = 1;
-}
 #endif
 
 #ifdef VERSION_SH
@@ -1484,6 +1495,7 @@ if (!built)
 #ifdef PUPPYPRINT
     append_puppyprint_log("Audio Initialised in %dus.", (s32)OS_CYCLES_TO_USEC(osGetTime() - first));
 #endif
+    sAudioFirstBoot = 1;
 }
 
 #ifdef VERSION_SH

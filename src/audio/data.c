@@ -8,32 +8,39 @@ extern struct OSMesgQueue OSMesgQueue1;
 extern struct OSMesgQueue OSMesgQueue2;
 extern struct OSMesgQueue OSMesgQueue3;
 
+//Since the audio session is just one now, the reverb settings are duplicated to match the original audio setting scenario.
+//It's a bit hacky but whatever lol.
 #ifdef VERSION_EU
 struct ReverbSettingsEU sReverbSettings[] = {
-    { 0x04, 0x0c, 0x2fff },
-    { 0x04, 0x0a, 0x47ff },
-    { 0x04, 0x10, 0x2fff },
-    { 0x04, 0x0e, 0x3fff },
-    { 0x04, 0x0c, 0x4fff },
-    { 0x04, 0x0a, 0x37ff }
+    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF },
+    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 4,/*Window Size*/ 15,/*Gain*/ 0x3FFF },
+    {/*Downsample Rate*/ 4,/*Window Size*/ 12,/*Gain*/ 0x4FFF },
+    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF }, //Duplicate of the first index
+    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF }, //Duplicate of the second index
+    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x37FF },
 };
+/**
+1: Frequency
+2: Unk1 - Should be 1
+3: Simultaneous Notes
+4: Number of Reverberations
+5: Unk2 - Should be 0
+6: Volume
+7: Unk3 - Should be 0
+8: Persistent Sequence Memory
+9: Persistent Bank Memory
+10: Temporary Sequence Memory
+11: Temporary Bank Memory
+*/
+
 struct AudioSessionSettingsEU gAudioSessionPresets[] = {
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[0], 0x7fff, 0x0000, 0x00003a40, 0x00006d00,
-      0x00004400, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[1], 0x7fff, 0x0000, 0x00003a40, 0x00006d00,
-      0x00004400, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[2], 0x7fff, 0x0000, 0x00003a40, 0x00006d00,
-      0x00004400, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[3], 0x7fff, 0x0000, 0x00003a40, 0x00006d00,
-      0x00004400, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[4], 0x7fff, 0x0000, 0x00003a40, 0x00006d00,
-      0x00004400, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[0], 0x7fff, 0x0000, 0x00004000, 0x00006e00,
-      0x00003f00, 0x00002a00 },
-    { 0x00007d00, 0x01, 0x10, 0x01, 0x00, &sReverbSettings[1], 0x7fff, 0x0000, 0x00004100, 0x00006e00,
-      0x00004400, 0x00002a80 },
-    { 0x00007d00, 0x01, 0x14, 0x01, 0x00, &sReverbSettings[5], 0x7fff, 0x0000, 0x00003500, 0x00006280,
-      0x00004000, 0x00001b00 }
+#ifdef EXPAND_AUDIO_HEAP
+    {/*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x7200,/*9*/ 0xC000,/*10*/ 0x8800,/*11*/ 0x5400 },
+#else
+    {/*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x4100,/*9*/ 0x6E00,/*10*/ 0x4400,/*11*/ 0x2A80 },
+#endif
 };
 #endif
 
