@@ -187,6 +187,7 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
 void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour)
 {
     s32 i;
+    s32 numlights = 0;
 
     if (gCurrLevelNum < 4)
         return;
@@ -222,7 +223,10 @@ void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour
     for (i = 0; i < gNumLights; i++)
     {
         if (gPuppyLights[i]->rgba[3] > 0 && gPuppyLights[i]->active == TRUE && gPuppyLights[i]->area == gCurrAreaIndex && (gPuppyLights[i]->room == -1 || gPuppyLights[i]->room == gMarioCurrentRoom))
+        {
             puppylights_iterate(gPuppyLights[i], src, obj);
+            numlights++;
+        }
     }
 }
 
@@ -248,7 +252,7 @@ void puppylights_object_emit(struct Object *obj)
         {
             if (ABS(gNumLights - gDynLightStart) < MAX_LIGHTS_DYNAMIC)
                 goto deallocate;
-            for (i = gDynLightStart; i < MAX_LIGHTS; i++)
+            for (i = gDynLightStart; i < MIN(gDynLightStart+MAX_LIGHTS_DYNAMIC, MAX_LIGHTS); i++)
             {
                 if (gPuppyLights[i]->active == TRUE)
                     continue;
@@ -272,7 +276,10 @@ void puppylights_object_emit(struct Object *obj)
     {
         deallocate:
         if (obj->oLightID != 0xFFFF)
+        {
             gPuppyLights[obj->oLightID]->active = FALSE;
+            gPuppyLights[obj->oLightID]->flags = 0;
+        }
         obj->oLightID = 0xFFFF;
     }
 }
