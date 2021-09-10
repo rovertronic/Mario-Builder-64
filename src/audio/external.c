@@ -57,11 +57,6 @@ struct SoundCharacteristics {
 // Also the number of frames a discrete sound can be in the WAITING state before being deleted
 #define SOUND_MAX_FRESHNESS 10
 
-struct SequenceQueueItem {
-    u8 seqId;
-    u8 priority;
-}; // size = 0x2
-
 // data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 // moved to bss in data.c

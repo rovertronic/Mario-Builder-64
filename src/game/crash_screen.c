@@ -5,6 +5,7 @@
 #include "buffers/framebuffers.h"
 #include "types.h"
 #include "puppyprint.h"
+#include "audio/external.h"
 
 #include "sm64.h"
 
@@ -188,7 +189,7 @@ void draw_crash_screen(OSThread *thread) {
     }
 
     osWritebackDCacheAll();
-    crash_screen_sleep(2000);
+    crash_screen_sleep(500);
     crash_screen_draw_rect(25, 20, 270, 25);
     crash_screen_print(30, 25, "THREAD:%d  (%s)", thread->id, gCauseDesc[cause]);
 #if !PUPPYPRINT_DEBUG
@@ -238,10 +239,12 @@ void draw_crash_screen(OSThread *thread) {
     crash_screen_print_float_reg(30, 220, 30, &tc->fp30.f.f_even);
 #else
     s32 i;
+#define LINE_HEIGHT 60 + ((LOG_BUFFER_SIZE-1)*10)
     for (i = 0; i < LOG_BUFFER_SIZE; i++)
     {
-        crash_screen_print(30, 50+(10*i), consoleLogTable[i]);
+        crash_screen_print(30, (LINE_HEIGHT)-(i*10), consoleLogTable[i]);
     }
+#undef LINE_HEIGHT
 #endif
     osWritebackDCacheAll();
     osViBlack(FALSE);
@@ -263,6 +266,9 @@ OSThread *get_crashed_thread(void) {
 }
 
 extern u16 sRenderedFramebuffer;
+extern void audio_signal_game_loop_tick(void);
+extern void stop_sounds_in_continuous_banks(void);
+extern struct SequenceQueueItem sBackgroundMusicQueue[6];
 
 void thread2_crash_screen(UNUSED void *arg) {
     OSMesg mesg;
@@ -275,7 +281,13 @@ void thread2_crash_screen(UNUSED void *arg) {
         thread = get_crashed_thread();
         gCrashScreen.framebuffer = (u16 *) gFrameBuffers[sRenderedFramebuffer];
     } while (thread == NULL);
+    gCrashScreen.thread.priority = 15;
+    stop_sounds_in_continuous_banks();
+    stop_background_music(sBackgroundMusicQueue[0].seqId);
+    audio_signal_game_loop_tick();
     draw_crash_screen(thread);
+    play_sound(SOUND_MARIO_WAAAOOOW, gGlobalSoundSource);
+    audio_signal_game_loop_tick();
     for (;;) {
     }
 }

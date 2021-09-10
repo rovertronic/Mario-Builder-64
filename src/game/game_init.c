@@ -795,7 +795,8 @@ void thread5_game_loop(UNUSED void *arg) {
 
         if (gPlayer1Controller->buttonPressed & L_TRIG)
         {
-            set_background_music(SEQ_LEVEL_SLIDE, SEQUENCE_ARGS(0xFF, SEQ_LEVEL_SLIDE), 30);
+            *(volatile int*) 0 = 0;
+            //set_background_music(SEQ_LEVEL_SLIDE, SEQUENCE_ARGS(0xFF, SEQ_LEVEL_SLIDE), 30);
         }
         if (gPlayer1Controller->buttonPressed & R_TRIG)
         {

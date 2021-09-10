@@ -299,8 +299,6 @@ u8 audioString1[] = "pitch %x: delaybytes %d : olddelay %d\n";
 u8 audioString2[] = "cont %x: delaybytes %d : olddelay %d\n";
 #endif
 
-#define VERSION_EU
-
 #ifdef VERSION_EU
 // Equivalent functionality as the US/JP version,
 // just that the reverb structure is chosen from an array with index

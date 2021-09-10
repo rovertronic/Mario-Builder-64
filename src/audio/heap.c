@@ -1073,9 +1073,6 @@ void wait_for_audio_frames(s32 frames) {
 }
 #endif
 
-
-#define VERSION_EU
-
 u8 sAudioFirstBoot = 0;
 //Separate the reverb settings into their own func. Bit unstable currently, so still only runs at boot.
 #if defined(VERSION_EU) || defined(VERSION_SH)
