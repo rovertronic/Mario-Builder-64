@@ -190,13 +190,9 @@ void reset_bank_and_seq_load_status(void) {
         }
     }
 #else
-    for (i = 0; i < 64; i++) {
-        gBankLoadStatus[i] = SOUND_LOAD_STATUS_NOT_LOADED;
-    }
+    bzero(&gBankLoadStatus, sizeof(gBankLoadStatus)); //Setting this array to zero is equivilent to SOUND_LOAD_STATUS_NOT_LOADED
+    bzero(&gSeqLoadStatus, sizeof(gSeqLoadStatus)); //Same dealio
 
-    for (i = 0; i < 256; i++) {
-        gSeqLoadStatus[i] = SOUND_LOAD_STATUS_NOT_LOADED;
-    }
 #endif
 }
 
@@ -254,6 +250,7 @@ void *soundAlloc(struct SoundAllocPool *pool, u32 size) {
     u32 alignedSize = ALIGN16(size);
 
     start = pool->cur;
+    //append_puppyprint_log("Pool %X %X/%X", &pool, pool->cur - pool->start, pool->size);
     if (start + alignedSize <= pool->start + pool->size) {
         pool->cur += alignedSize;
         for (pos = start; pos < pool->cur; pos++) {
@@ -263,9 +260,7 @@ void *soundAlloc(struct SoundAllocPool *pool, u32 size) {
         eu_stubbed_printf_1("Heap OverFlow : Not Allocate %d!\n", size);
         return NULL;
     }
-#ifdef VERSION_SH
     pool->numAllocatedEntries++;
-#endif
     return start;
 #else
     u8 *start;
@@ -883,7 +878,7 @@ void *get_bank_or_seq(struct SoundMultiPool *arg0, s32 arg1, s32 id) {
         struct PersistentPool *persistent = &arg0->persistent;
         for (i = 0; i < persistent->numEntries; i++) {
             if (id == persistent->entries[i].id) {
-                eu_stubbed_printf_2("Cache hit %d at stay %d\n", id, i);
+                //eu_stubbed_printf_2("Cache hit %d at stay %d\n", id, i);
                 return persistent->entries[i].ptr;
             }
         }
@@ -1078,7 +1073,10 @@ void wait_for_audio_frames(s32 frames) {
 }
 #endif
 
-s32 sAudioFirstBoot = 0;
+
+#define VERSION_EU
+
+u8 sAudioFirstBoot = 0;
 //Separate the reverb settings into their own func. Bit unstable currently, so still only runs at boot.
 #if defined(VERSION_EU) || defined(VERSION_SH)
 void init_reverb_eu(void)
@@ -1101,8 +1099,11 @@ void init_reverb_eu(void)
         reverb->downsampleRate = reverbSettings->downsampleRate;
         reverb->reverbGain = reverbSettings->gain;
         reverb->useReverb = 8;
-        reverb->ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
-        reverb->ringBuffer.right = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
+        if (!sAudioFirstBoot)
+        {
+            reverb->ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
+            reverb->ringBuffer.right = soundAlloc(&gNotesAndBuffersPool, reverb->windowSize * 2);
+        }
         reverb->nextRingBufferPos = 0;
         reverb->unkC = 0;
         reverb->curFrame = 0;
@@ -1131,16 +1132,40 @@ void init_reverb_eu(void)
 }
 #endif
 
+
 #if defined(VERSION_JP) || defined(VERSION_US)
 void audio_reset_session(struct AudioSessionSettings *preset) {
     if (sAudioFirstBoot)
     {
+        gAudioSessionPool.cur = gAudioSessionPool.start;
+        gSeqAndBankPool.cur = gSeqAndBankPool.start;
+        gPersistentCommonPool.cur = gPersistentCommonPool.start;
+        gTemporaryCommonPool.cur = gTemporaryCommonPool.start;
+        persistent_pool_clear(&gSeqLoadedPool.persistent);
+        persistent_pool_clear(&gBankLoadedPool.persistent);
+        persistent_pool_clear(&gUnusedLoadedPool.persistent);
+        temporary_pool_clear(&gSeqLoadedPool.temporary);
+        temporary_pool_clear(&gBankLoadedPool.temporary);
+        temporary_pool_clear(&gUnusedLoadedPool.temporary);
+
         return;
     }
 #else
 void audio_reset_session(void) {
     if (sAudioFirstBoot)
     {
+        s32 j;
+        gAudioSessionPool.cur = gAudioSessionPool.start;
+        gSeqAndBankPool.cur = gSeqAndBankPool.start;
+        gPersistentCommonPool.cur = gPersistentCommonPool.start;
+        gTemporaryCommonPool.cur = gTemporaryCommonPool.start;
+        persistent_pool_clear(&gSeqLoadedPool.persistent);
+        persistent_pool_clear(&gBankLoadedPool.persistent);
+        persistent_pool_clear(&gUnusedLoadedPool.persistent);
+        temporary_pool_clear(&gSeqLoadedPool.temporary);
+        temporary_pool_clear(&gBankLoadedPool.temporary);
+        temporary_pool_clear(&gUnusedLoadedPool.temporary);
+
         init_reverb_eu();
         return;
     }

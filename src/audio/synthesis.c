@@ -45,13 +45,13 @@
 /**
  * This reverb is a much more natural, ambient implementation over vanilla's, though at the cost of some memory and performance.
  * These parameters are here to provide maximum control over the usage of the reverb effect, as well as with game performance.
- * 
+ *
  * To take advantage of the reverb effect, you can change the echo parameters set in levels/level_defines.h to tailor the reverb to each specific level area.
  * To adjust reverb presence with individual sound effects, apply the .set_reverb command within sound/sequences/00_sound_player.s (see examples of other sounds that use it).
  * To use with M64 sequences, set the Effect parameter for each channel accordingly (CC 91 for MIDI files).
- * 
+ *
  * Most parameter configuration is to be done here, though BETTER_REVERB_SIZE can be adjusted in audio/synthesis.h.
- * 
+ *
  * If after changing the parameters, you hear increasing noise followed by a sudden disappearance of reverb and/or scratchy audio, this indicates an s16 overflow.
  * If this happens, stop immediately and reduce the parameters at fault. This becomes a ticking time bomb, and may eventually result in very loud noise if it reaches the point of s32 overflow.
  * Depending on the violating parameters chosen, you probably won't ever experience s32 overflow, but s16 overflow still isn't a pleasant experience.
@@ -298,6 +298,8 @@ f32 *gCurrentRightVolRamping; // Points to any of the three right buffers above
 u8 audioString1[] = "pitch %x: delaybytes %d : olddelay %d\n";
 u8 audioString2[] = "cont %x: delaybytes %d : olddelay %d\n";
 #endif
+
+#define VERSION_EU
 
 #ifdef VERSION_EU
 // Equivalent functionality as the US/JP version,

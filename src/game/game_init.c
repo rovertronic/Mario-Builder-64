@@ -797,6 +797,11 @@ void thread5_game_loop(UNUSED void *arg) {
         {
             set_background_music(SEQ_LEVEL_SLIDE, SEQUENCE_ARGS(0xFF, SEQ_LEVEL_SLIDE), 30);
         }
+        if (gPlayer1Controller->buttonPressed & R_TRIG)
+        {
+            set_background_music(SEQ_LEVEL_GRASS, SEQUENCE_ARGS(0xFF, SEQ_LEVEL_GRASS), 30);
+        }
+
 
         // when debug info is enabled, print the "BUF %d" information.
         if (gShowDebugText) {

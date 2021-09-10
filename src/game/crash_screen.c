@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include "buffers/framebuffers.h"
+#include "types.h"
+#include "puppyprint.h"
 
 #include "sm64.h"
 
@@ -189,8 +191,13 @@ void draw_crash_screen(OSThread *thread) {
     crash_screen_sleep(2000);
     crash_screen_draw_rect(25, 20, 270, 25);
     crash_screen_print(30, 25, "THREAD:%d  (%s)", thread->id, gCauseDesc[cause]);
+#if !PUPPYPRINT_DEBUG
     crash_screen_print(30, 35, "PC:%08XH   SR:%08XH   VA:%08XH", tc->pc, tc->sr, tc->badvaddr);
+#else
+    crash_screen_print(30, 35, "PC:%08XH   SR:%08XH   RA:%08XH", tc->pc, tc->sr, (u32) tc->ra);
+#endif
     crash_screen_draw_rect(25, 45, 270, 185);
+#ifndef PUPPYPRINT
     crash_screen_print(30, 50, "AT:%08XH   V0:%08XH   V1:%08XH", (u32) tc->at, (u32) tc->v0,
                        (u32) tc->v1);
     crash_screen_print(30, 60, "A0:%08XH   A1:%08XH   A2:%08XH", (u32) tc->a0, (u32) tc->a1,
@@ -211,6 +218,7 @@ void draw_crash_screen(OSThread *thread) {
                        (u32) tc->sp);
     crash_screen_print(30, 140, "S8:%08XH   RA:%08XH", (u32) tc->s8, (u32) tc->ra);
     crash_screen_print_fpcsr(tc->fpcsr);
+
     osWritebackDCacheAll();
     crash_screen_print_float_reg(30, 170, 0, &tc->fp0.f.f_even);
     crash_screen_print_float_reg(120, 170, 2, &tc->fp2.f.f_even);
@@ -228,6 +236,13 @@ void draw_crash_screen(OSThread *thread) {
     crash_screen_print_float_reg(120, 210, 26, &tc->fp26.f.f_even);
     crash_screen_print_float_reg(210, 210, 28, &tc->fp28.f.f_even);
     crash_screen_print_float_reg(30, 220, 30, &tc->fp30.f.f_even);
+#else
+    s32 i;
+    for (i = 0; i < LOG_BUFFER_SIZE; i++)
+    {
+        crash_screen_print(30, 50+(10*i), consoleLogTable[i]);
+    }
+#endif
     osWritebackDCacheAll();
     osViBlack(FALSE);
     osViSwapBuffer(gCrashScreen.framebuffer);
