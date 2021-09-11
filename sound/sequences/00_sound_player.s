@@ -2074,6 +2074,9 @@ chan_setlayer 0, .layer_C3C
 chan_end
 
 .layer_C3C:
+#if defined(VERSION_EU) || defined(VERSION_SH)
+  layer_transpose 2
+#endif
 layer_portamento 0x82, 41, 127
 layer_note1 37, 0x14, 127
 layer_end
