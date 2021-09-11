@@ -11,6 +11,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 
 **Lighting Engine by Wiseguy**
 - Lighting Engine is available on a separate branch `(lighting-engine)`. Instructions on how to use it are in the readme of that branch.
+- Alternatively, the main repo has `Puppylights` available, which is a more lightweight, but limited lighting library intended to be used to modify existing light properties. You can look at `puppylights.c` to find out how to use it.
 
 **Puppycam**
 - Puppycam is available on the master branch now, you can toogle it in config.h. *

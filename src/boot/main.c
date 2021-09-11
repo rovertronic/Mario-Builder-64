@@ -354,6 +354,9 @@ void thread3_main(UNUSED void *arg) {
 
     while (TRUE) {
         OSMesg msg;
+#if PUPPYPRINT_DEBUG
+        OSTime first = osGetTime();
+#endif
 
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
         switch ((uintptr_t) msg) {
@@ -373,6 +376,9 @@ void thread3_main(UNUSED void *arg) {
                 handle_nmi_request();
                 break;
         }
+#if PUPPYPRINT_DEBUG
+        profiler_update(taskTime, first);
+#endif
     }
 }
 
