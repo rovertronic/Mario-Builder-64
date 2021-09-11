@@ -1243,6 +1243,7 @@ void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
         while (gAudioFrameCount < 1) {
             // spin
         }
+        bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
         return;
     }
 #else
@@ -1262,14 +1263,12 @@ void audio_reset_session(void) {
         reset_bank_and_seq_load_status();
 
         init_reverb_eu();
-        bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
         return;
     }
     struct AudioSessionSettingsEU *preset = &gAudioSessionPresets[0];
 #endif
 #if defined(VERSION_JP) || defined(VERSION_US)
     s8 updatesPerFrame;
-    s32 k;
     s32 i;
 #endif
 #ifdef PUPPYPRINT
@@ -1287,6 +1286,7 @@ void audio_reset_session(void) {
 #ifdef VERSION_EU
     eu_stubbed_printf_1("Heap Reconstruct Start %x\n", gAudioResetPresetIdToLoad);
 #endif
+/*
 #if defined(VERSION_JP) || defined(VERSION_US)
     if (gAudioLoadLock != AUDIO_LOCK_UNINITIALIZED) {
         decrease_reverb_gain();
@@ -1337,14 +1337,10 @@ void audio_reset_session(void) {
         }
         gCurrAudioFrameDmaCount = 0;
 
-        for (j = 0; j < NUMAIBUFFERS; j++) {
-            for (k = 0; k < (s32) (AIBUFFER_LEN / sizeof(s16)); k++) {
-                gAiBuffers[j][k] = 0;
-            }
-        }
+        bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
     }
 #endif
-
+*/
     gSampleDmaNumListItems = 0;
 #if defined(VERSION_EU) || defined(VERSION_SH)
     gAudioBufferParameters.frequency = preset->frequency;
