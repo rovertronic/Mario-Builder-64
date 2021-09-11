@@ -18,7 +18,8 @@
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
 extern struct ReverbSettingsEU sReverbSettings[8];
 #else
-extern struct AudioSessionSettings gAudioSessionPresets[18];
+extern struct AudioSessionSettings gAudioSessionPresets[1];
+extern struct ReverbSettingsUS gReverbSettings[18];
 #endif
 extern u16 D_80332388[128]; // unused
 
