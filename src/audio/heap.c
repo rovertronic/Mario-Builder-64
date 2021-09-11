@@ -1137,8 +1137,8 @@ void init_reverb_us(s32 presetId)
     s8 reverbConsole;
 #endif
 
-    reverbWindowSize = gReverbSettings[presetId].windowSize;
-    gReverbDownsampleRate = gReverbSettings[presetId].downsampleRate;
+    reverbWindowSize = gReverbSettings[0].windowSize;
+    gReverbDownsampleRate = gReverbSettings[0].downsampleRate;
 #if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
     if (gIsConsole)
         reverbConsole = betterReverbDownsampleConsole; // Console!
@@ -1196,7 +1196,7 @@ void init_reverb_us(s32 presetId)
         gSynthesisReverb.unkC = 0;
         gSynthesisReverb.curFrame = 0;
         gSynthesisReverb.bufSizePerChannel = reverbWindowSize;
-        gSynthesisReverb.reverbGain = gReverbSettings[presetId].gain;
+        gSynthesisReverb.reverbGain = gReverbSettings[0].gain;
         gSynthesisReverb.framesLeftToIgnore = 2;
         if (!sAudioFirstBoot)
         {
@@ -1256,6 +1256,7 @@ void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
         temporary_pool_clear(&gSeqLoadedPool.temporary);
         temporary_pool_clear(&gBankLoadedPool.temporary);
         temporary_pool_clear(&gUnusedLoadedPool.temporary);
+        reset_bank_and_seq_load_status();
 
         init_reverb_us(presetId);
         return;
@@ -1275,6 +1276,7 @@ void audio_reset_session(void) {
         temporary_pool_clear(&gSeqLoadedPool.temporary);
         temporary_pool_clear(&gBankLoadedPool.temporary);
         temporary_pool_clear(&gUnusedLoadedPool.temporary);
+        reset_bank_and_seq_load_status();
 
         init_reverb_eu();
         return;
@@ -1479,8 +1481,9 @@ void audio_reset_session(void) {
     }
 
     init_reverb_eu();
-#endif
+#else
     init_reverb_us(presetId);
+#endif
 
     init_sample_dma_buffers(gMaxSimultaneousNotes);
 
