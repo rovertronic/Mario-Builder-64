@@ -1259,6 +1259,11 @@ void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
         reset_bank_and_seq_load_status();
 
         init_reverb_us(presetId);
+        
+        gAudioFrameCount = 0;
+        while (gAudioFrameCount < 1) {
+            // spin
+        }
         return;
     }
 #else
