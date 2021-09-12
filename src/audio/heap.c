@@ -237,6 +237,7 @@ void *soundAlloc(struct SoundAllocPool *pool, u32 size) {
     u8 *start;
     u32 alignedSize = ALIGN16(size);
 
+    start = pool->cur;
     if (start + alignedSize <= pool->start + pool->size) {
         bzero(start, alignedSize);
         pool->cur += alignedSize;
