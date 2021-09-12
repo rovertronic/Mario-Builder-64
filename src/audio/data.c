@@ -10,16 +10,17 @@ extern struct OSMesgQueue OSMesgQueue3;
 
 //Since the audio session is just one now, the reverb settings are duplicated to match the original audio setting scenario.
 //It's a bit hacky but whatever lol. Index range must be defined, since it's needed by the compiler.
+//To increase reverb window sizes beyond 64, please increase the REVERB_WINDOW_SIZE_MAX in heap.c by a factor of 0x40 and update AUDIO_HEAP_SIZE by 4x the same amount.
 #ifdef VERSION_EU
 struct ReverbSettingsEU sReverbSettings[8] = {
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 15,/*Gain*/ 0x3FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 12,/*Gain*/ 0x4FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF }, //Duplicate of the first index
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF }, //Duplicate of the second index
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x37FF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x47FF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 60,/*Gain*/ 0x3FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 48,/*Gain*/ 0x4FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF }, //Duplicate of the first index
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x47FF }, //Duplicate of the second index
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x37FF },
 };
 /**
 1: Frequency
@@ -37,9 +38,9 @@ struct ReverbSettingsEU sReverbSettings[8] = {
 
 struct AudioSessionSettingsEU gAudioSessionPresets[] = {
 #ifdef EXPAND_AUDIO_HEAP
-    {/*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x7200,/*9*/ 0xC000,/*10*/ 0x8800,/*11*/ 0x5400 },
+    {/*1*/ 32000,/*2*/ 1,/*3*/ 40,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x8200,/*9*/ 0xDC00,/*10*/ 0xE800,/*11*/ 0x5500 },
 #else
-    {/*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x4100,/*9*/ 0x6E00,/*10*/ 0x4400,/*11*/ 0x2A80 },
+    {/*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x4100,/*9*/ 0x6E00,/*10*/ 0x7400,/*11*/ 0x2A80 },
 #endif
 };
 #endif
@@ -55,6 +56,8 @@ struct AudioSessionSettingsEU gAudioSessionPresets[] = {
 // - memory used for persistent banks
 // - memory used for temporary sequences
 // - memory used for temporary banks
+
+// To increase reverb window sizes beyond 0x1000, please increase the REVERB_WINDOW_SIZE_MAX in heap.c and update AUDIO_HEAP_SIZE by the same amount.
 #if defined(VERSION_JP) || defined(VERSION_US)
 struct ReverbSettingsUS gReverbSettings[18] =
 {
@@ -77,13 +80,15 @@ struct ReverbSettingsUS gReverbSettings[18] =
     {1, 0x0800, 0x2FFF},
     {1, 0x0800, 0x2FFF},
 };
+
+// TODO: Does using 40/20 instead of 32/16 for gMaxSimultaneousNotes cause memory problems at high capacities or is it good as is?
 #ifdef EXPAND_AUDIO_HEAP
 struct AudioSessionSettings gAudioSessionPresets[1] = {
-    { 32000, 40, 1, 0x0C00, 0x2FFF, 0x7FFF, 0x8000, 0xDC00, 0x8800, 0x5400 },
+    { 32000, 40, 1, 0x1000, 0x2FFF, 0x7FFF, 0x8200, 0xDC00, 0xE800, 0x5500 },
 };
 #else
 struct AudioSessionSettings gAudioSessionPresets[1] = {
-    { 32000, 20, 1, 0x0800, 0x2FFF, 0x7FFF, 0x4000, 0x6E00, 0x7400, 0x2A80 },
+    { 32000, 20, 1, 0x1000, 0x2FFF, 0x7FFF, 0x4100, 0x6E00, 0x7400, 0x2A80 },
 };
 #endif
 #endif
