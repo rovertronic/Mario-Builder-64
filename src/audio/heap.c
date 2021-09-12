@@ -235,15 +235,11 @@ void discard_sequence(s32 seqId) {
 void *soundAlloc(struct SoundAllocPool *pool, u32 size) {
 #if defined(VERSION_EU) || defined(VERSION_SH)
     u8 *start;
-    u8 *pos;
     u32 alignedSize = ALIGN16(size);
 
-    start = pool->cur;
     if (start + alignedSize <= pool->start + pool->size) {
+        bzero(start, alignedSize);
         pool->cur += alignedSize;
-        for (pos = start; pos < pool->cur; pos++) {
-            *pos = 0;
-        }
     } else {
         eu_stubbed_printf_1("Heap OverFlow : Not Allocate %d!\n", size);
         return NULL;
@@ -252,16 +248,12 @@ void *soundAlloc(struct SoundAllocPool *pool, u32 size) {
     return start;
 #else
     u8 *start;
-    s32 last;
-    s32 i;
+    u32 alignedSize = ALIGN16(size);
 
-    if ((pool->cur + ALIGN16(size) <= pool->size + pool->start)) {
-        start = pool->cur;
-        pool->cur += ALIGN16(size);
-        last = pool->cur - start - 1;
-        for (i = 0; i <= last; i++) {
-            start[i] = 0;
-        }
+    start = pool->cur;
+    if ((start + alignedSize <= pool->size + pool->start)) {
+        bzero(start, alignedSize);
+        pool->cur += alignedSize;
     } else {
         return NULL;
     }
@@ -1057,9 +1049,13 @@ void init_reverb_eu(void)
     struct SynthesisReverb *reverb;
     struct ReverbSettingsEU *reverbSettings;
     s32 i, j;
+
+    // This is called 4 times for numReverbs to work at higher values. This does eat up some memory though.
     for (j = 0; j < 4; j++)
     {
         gSynthesisReverbs[j].useReverb = 0;
+
+        // Both left and right channels are allocated/cleared together, then separated based on the reverb window size
         if (!sAudioFirstBoot)
             gSynthesisReverbs[j].ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, REVERB_WINDOW_SIZE_MAX * 4);
     }
@@ -1072,12 +1068,11 @@ void init_reverb_eu(void)
         reverb->downsampleRate = reverbSettings->downsampleRate;
         reverb->reverbGain = reverbSettings->gain;
         reverb->useReverb = 8;
+        if (reverb->windowSize > REVERB_WINDOW_SIZE_MAX)
+            reverb->windowSize = REVERB_WINDOW_SIZE_MAX;
 
         if (sAudioFirstBoot)
             bzero(reverb->ringBuffer.left, REVERB_WINDOW_SIZE_MAX * 4);
-
-        if (reverb->windowSize > REVERB_WINDOW_SIZE_MAX)
-            reverb->windowSize = REVERB_WINDOW_SIZE_MAX;
 
         reverb->ringBuffer.right = &reverb->ringBuffer.left[reverb->windowSize];
         reverb->nextRingBufferPos = 0;
@@ -1104,12 +1099,9 @@ void init_reverb_eu(void)
             }
             else {
                 reverb->resampleRate = 0x8000 / reverb->downsampleRate;
-                for (i = 0; i < gAudioBufferParameters.updatesPerFrame; i++) {
-                    bzero(reverb->items[0][i].toDownsampleLeft, DEFAULT_LEN_1CH);
-                    bzero(reverb->items[0][i].toDownsampleRight, DEFAULT_LEN_1CH);
-                    bzero(reverb->items[1][i].toDownsampleLeft, DEFAULT_LEN_1CH);
-                    bzero(reverb->items[1][i].toDownsampleRight, DEFAULT_LEN_1CH);
-                }
+
+                // All reverb downsample buffers are adjacent in memory, so clear them all in a single call
+                bzero(reverb->items[0][0].toDownsampleLeft, DEFAULT_LEN_1CH * 4 * gAudioBufferParameters.updatesPerFrame);
             }
         }
     }
@@ -1175,13 +1167,14 @@ void init_reverb_us(s32 presetId)
         gSynthesisReverb.useReverb = 0;
     } else {
         gSynthesisReverb.useReverb = 8;
+        if (reverbWindowSize > REVERB_WINDOW_SIZE_MAX)
+            reverbWindowSize = REVERB_WINDOW_SIZE_MAX;
+
+        // Both left and right channels are allocated/cleared together, then separated based on the reverb window size
         if (!sAudioFirstBoot)
             gSynthesisReverb.ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, REVERB_WINDOW_SIZE_MAX * 4);
         else
             bzero(gSynthesisReverb.ringBuffer.left, REVERB_WINDOW_SIZE_MAX * 4);
-
-        if (reverbWindowSize > REVERB_WINDOW_SIZE_MAX)
-            reverbWindowSize = REVERB_WINDOW_SIZE_MAX;
 
         gSynthesisReverb.ringBuffer.right = &gSynthesisReverb.ringBuffer.left[reverbWindowSize];
         gSynthesisReverb.nextRingBufferPos = 0;
@@ -1210,12 +1203,9 @@ void init_reverb_us(s32 presetId)
             else {
                 gSynthesisReverb.resampleFlags = A_INIT;
                 gSynthesisReverb.resampleRate = 0x8000 / gReverbDownsampleRate;
-                for (i = 0; i < gAudioUpdatesPerFrame; i++) {
-                    bzero(gSynthesisReverb.items[0][i].toDownsampleLeft, DEFAULT_LEN_1CH);
-                    bzero(gSynthesisReverb.items[0][i].toDownsampleRight, DEFAULT_LEN_1CH);
-                    bzero(gSynthesisReverb.items[1][i].toDownsampleLeft, DEFAULT_LEN_1CH);
-                    bzero(gSynthesisReverb.items[1][i].toDownsampleRight, DEFAULT_LEN_1CH);
-                }
+
+                // All reverb downsample buffers are adjacent in memory, so clear them all in a single call
+                bzero(gSynthesisReverb.items[0][0].toDownsampleLeft, DEFAULT_LEN_1CH * 4 * gAudioUpdatesPerFrame);
             }
         }
 
