@@ -200,7 +200,7 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
         //A slightly hacky way to offset the ambient lighting in order to prevent directional lighting from having a noticeable change in ambient brightness.
         if (flags & LIGHTFLAG_DIRECTIONAL_OFFSET)
         {
-            ambient = approach_f32_asymptotic(tempLight->a.l.col[i] * 1.5f, tempLight->a.l.col[i], scale2*((f32)light->rgba[3]/255.0f));
+            ambient = approach_f32_asymptotic(MIN(tempLight->a.l.col[i] * 2, 0xFF), tempLight->a.l.col[i], scale2*((f32)light->rgba[3]/255.0f));
             tempLight->a.l.col[i] = ambient;
             tempLight->a.l.colc[i] = ambient;
         }
