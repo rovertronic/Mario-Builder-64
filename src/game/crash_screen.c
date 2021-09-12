@@ -277,9 +277,15 @@ void thread2_crash_screen(UNUSED void *arg) {
     osSetEventMesg(OS_EVENT_CPU_BREAK, &gCrashScreen.mesgQueue, (OSMesg) 1);
     osSetEventMesg(OS_EVENT_FAULT, &gCrashScreen.mesgQueue, (OSMesg) 2);
     do {
+#if PUPPYPRINT_DEBUG
+        OSTime first = osGetTime();
+#endif
         osRecvMesg(&gCrashScreen.mesgQueue, &mesg, 1);
         thread = get_crashed_thread();
         gCrashScreen.framebuffer = (u16 *) gFrameBuffers[sRenderedFramebuffer];
+#if PUPPYPRINT_DEBUG
+        profiler_update(faultTime, first);
+#endif
     } while (thread == NULL);
     gCrashScreen.thread.priority = 15;
     stop_sounds_in_continuous_banks();

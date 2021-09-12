@@ -200,8 +200,9 @@ void puppylights_iterate(struct PuppyLight *light, Lights1 *src, struct Object *
         //A slightly hacky way to offset the ambient lighting in order to prevent directional lighting from having a noticeable change in ambient brightness.
         if (flags & LIGHTFLAG_DIRECTIONAL_OFFSET)
         {
-            tempLight->a.l.col[i] *= 1.5f;
-            tempLight->a.l.colc[i] *= 1.5f;
+            ambient = approach_f32_asymptotic(MIN(tempLight->a.l.col[i] * 2, 0xFF), tempLight->a.l.col[i], scale2*((f32)light->rgba[3]/255.0f));
+            tempLight->a.l.col[i] = ambient;
+            tempLight->a.l.colc[i] = ambient;
         }
         //Apply direction. It takes the relative positions, and then multiplies them with the perspective matrix to get a correct direction.
         //Index 1 of the first dimension of gMatStack is perspective. Note that if you ever decide to cheat your way into rendering things after the game does :^)
@@ -216,6 +217,7 @@ void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour
 {
     s32 i;
     s32 numlights = 0;
+    s32 offsetPlaced = 0;
     s32 lightFlags = flags;
 
     if (gCurrLevelNum < 4)
@@ -252,8 +254,11 @@ void puppylights_run(Lights1 *src, struct Object *obj, s32 flags, u32 baseColour
     {
         if (gPuppyLights[i]->rgba[3] > 0 && gPuppyLights[i]->active == TRUE && gPuppyLights[i]->area == gCurrAreaIndex && (gPuppyLights[i]->room == -1 || gPuppyLights[i]->room == gMarioCurrentRoom))
         {
-            if (i == gDynLightStart)
+            if (gPuppyLights[i]->flags & PUPPYLIGHT_DIRECTIONAL && !offsetPlaced)
+            {
                 lightFlags |= LIGHTFLAG_DIRECTIONAL_OFFSET;
+                offsetPlaced = 1;
+            }
             else
                 lightFlags &= ~LIGHTFLAG_DIRECTIONAL_OFFSET;
             puppylights_iterate(gPuppyLights[i], src, obj, lightFlags);
@@ -282,18 +287,39 @@ void puppylights_object_emit(struct Object *obj)
             goto deallocate; //That's right. I used a goto. Eat your heart out xkcd.
         if (obj->oLightID == 0xFFFF)
         {
+            s32 fadingExists = FALSE;
             if (ABS(gNumLights - gDynLightStart) < MAX_LIGHTS_DYNAMIC)
                 goto deallocate;
             for (i = gDynLightStart; i < MIN(gDynLightStart+MAX_LIGHTS_DYNAMIC, MAX_LIGHTS); i++)
             {
                 if (gPuppyLights[i]->active == TRUE)
+                {
+                    if (gPuppyLights[i]->flags & PUPPYLIGHT_DELETE)
+                        fadingExists = TRUE;
                     continue;
+                }
                 memcpy(gPuppyLights[i], &obj->puppylight, sizeof(struct PuppyLight));
                 gPuppyLights[i]->active = TRUE;
                 gPuppyLights[i]->area = gCurrAreaIndex;
                 gPuppyLights[i]->room = obj->oRoom;
                 obj->oLightID = i;
                 goto updatepos;
+            }
+            //Go through all the lights again, now this time, ignore the fading light flag and overwrite them.
+            if (fadingExists)
+            {
+                for (i = gDynLightStart; i < MIN(gDynLightStart+MAX_LIGHTS_DYNAMIC, MAX_LIGHTS); i++)
+                {
+                    if (gPuppyLights[i]->active == TRUE && !(gPuppyLights[i]->flags & PUPPYLIGHT_DELETE))
+                        continue;
+                    memcpy(gPuppyLights[i], &obj->puppylight, sizeof(struct PuppyLight));
+                    gPuppyLights[i]->active = TRUE;
+                    gPuppyLights[i]->area = gCurrAreaIndex;
+                    gPuppyLights[i]->room = obj->oRoom;
+                    gPuppyLights[i]->flags &= ~PUPPYLIGHT_DELETE;
+                    obj->oLightID = i;
+                    goto updatepos;
+                }
             }
         }
         else
