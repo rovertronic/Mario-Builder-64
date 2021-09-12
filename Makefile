@@ -157,12 +157,12 @@ LINK_LIBRARIES = $(foreach i,$(LIBRARIES),-l$(i))
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Ofast
 else ifeq ($(COMPILER),clang)
   NON_MATCHING := 1
   # clang doesn't support ABI 'o32' for 'mips3'
   MIPSISET     := -mips2
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Ofast
 endif
 
 
@@ -398,8 +398,8 @@ export LD_LIBRARY_PATH=./tools
 AS        := $(CROSS)as
 ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
-  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -O2 -mlong-calls
-  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -O2 -mlong-calls
+  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Ofast -mlong-calls
+  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Ofast -mlong-calls
 else ifeq ($(COMPILER),clang)
   CC      := clang
 endif
