@@ -998,12 +998,10 @@ s32 audio_shut_down_and_reset_step(void) {
             gAudioResetStatus--;
             break;
         case 3:
-            bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
             gAudioResetStatus--;
             break;
         case 2:
-            //gAiBufferLengths[gCurrAiBufferIndex] = gAudioBufferParameters.minAiBufferLength;
-            //bzero(&gAiBuffers[gCurrAiBufferIndex][0], (AIBUFFER_LEN));
+            bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
             gAudioResetStatus--;
 #ifdef VERSION_SH
             func_sh_802f23ec();
@@ -1011,11 +1009,8 @@ s32 audio_shut_down_and_reset_step(void) {
             break;
         case 1:
             audio_reset_session();
+            bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
             gAudioResetStatus = 0;
-            //for (i = 0; i < NUMAIBUFFERS; i++) {
-            //    gAiBufferLengths[i] = gAudioBufferParameters.maxAiBufferLength;
-            //}
-            //bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
     }
     if (gAudioResetStatus < 3) {
         return 0;
