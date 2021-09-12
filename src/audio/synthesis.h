@@ -34,10 +34,6 @@ extern u32 reverbFilterCountEmulator;
 extern u8 monoReverbConsole;
 extern u8 monoReverbEmulator;
 extern s32 betterReverbWindowsSize;
-extern s32 gReverbRevIndex;
-extern s32 gReverbGainIndex;
-extern s32 gReverbWetSigna;
-// extern s32 gReverbDrySignal;
 
 extern const s32 delaysBaselineL[NUM_ALLPASS];
 extern const s32 delaysBaselineR[NUM_ALLPASS];
