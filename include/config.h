@@ -113,7 +113,7 @@
 #define LONGER_POLES
 // Number of possible unique model ID's (keep it higher than 256)
 #define MODEL_ID_COUNT 256
-// Increase audio heap size to allow for more concurrent notes to be played and for more custom sequences/banks to be imported (does nothing with EU and SH versions)
+// Increase audio heap size to allow for more concurrent notes to be played and for more custom sequences/banks to be imported (not supported for SH)
 #define EXPAND_AUDIO_HEAP
 // Allow all surfaces types to have force, (doesn't require setting force, just allows it to be optional).
 #define ALL_SURFACES_HAVE_FORCE

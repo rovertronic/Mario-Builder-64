@@ -13,14 +13,14 @@ extern struct OSMesgQueue OSMesgQueue3;
 //To increase reverb window sizes beyond 64, please increase the REVERB_WINDOW_SIZE_MAX in heap.c by a factor of 0x40.
 #ifdef VERSION_EU
 struct ReverbSettingsEU sReverbSettings[8] = {
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 15,/*Gain*/ 0x3FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 12,/*Gain*/ 0x4FFF },
-    {/*Downsample Rate*/ 4,/*Window Size*/ 16,/*Gain*/ 0x2FFF }, //Duplicate of the first index
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x47FF }, //Duplicate of the second index
-    {/*Downsample Rate*/ 4,/*Window Size*/ 10,/*Gain*/ 0x37FF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x47FF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 60,/*Gain*/ 0x3FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 48,/*Gain*/ 0x4FFF },
+    {/*Downsample Rate*/ 1,/*Window Size*/ 64,/*Gain*/ 0x2FFF }, //Duplicate of the first index
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x47FF }, //Duplicate of the second index
+    {/*Downsample Rate*/ 1,/*Window Size*/ 40,/*Gain*/ 0x37FF },
 };
 /**
 1: Frequency
