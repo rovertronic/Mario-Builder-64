@@ -24,6 +24,7 @@
 #include "mario.h"
 #include "puppyprint.h"
 #include "debug_box.h"
+#include "main.h"
 
 #ifdef PUPPYCAM
 
