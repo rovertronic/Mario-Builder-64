@@ -25,6 +25,8 @@ To build with UNF, run make with ``UNF=1``.
 
 Further instructions can be found at the [official repository](https://github.com/buu342/N64-UNFLoader)
 
+**NOTE: Closing the UNFLoader window will result in your game eventually hanging due to lacking a USB device to send messages to, so beware of that**
+
 ## Multi-Save support
 
 The repository supports SRAM in addition to EEPROM. The standard save data functions are #ifdef'd to accommedate this.
