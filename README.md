@@ -112,12 +112,20 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 
 Requirements are the same as regular SM64, however a GCC MIPS cross compiler is also required. If you're on Debian-like Linux, you can use the ``gcc-mips-linux-gnu`` package. The toolchain that comes with my SDK is also supported.
 
+## Additional Prerequisites
+
+BinPNG (the CI texture converter) requires some python3 dependencies. Use pip to install them.
+
+``pip install pypng bitstring`` 
+
 ## UNFLoader support
 
 The repository supports UNFLoader for debugging.
 To build with UNF, run make with ``UNF=1``.
 
 Further instructions can be found at the [official repository](https://github.com/buu342/N64-UNFLoader)
+
+**NOTE: Closing the UNFLoader window will result in your game eventually hanging due to lacking a USB device to send messages to, so beware of that**
 
 ## Multi-Save support
 The repository supports SRAM in addition to EEPROM. The standard save data functions are #ifdef'd to accommedate this.
