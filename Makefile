@@ -71,6 +71,8 @@ COMPRESS ?= rnc1
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
+  LIBZRULE := $(BUILD_DIR)/libz.a
+  LIBZLINK := -lz
 else ifeq ($(COMPRESS),rnc1)
   DEFINES += RNC1=1
 else ifeq ($(COMPRESS),rnc2)
@@ -240,6 +242,8 @@ endif
 GODDARD ?= 0
 $(eval $(call validate-option,GODDARD,0 1))
 ifeq ($(GODDARD),1)
+  GODDARDRULE := $(BUILD_DIR)/libgoddard.a
+  GODDARDLINK := -lgoddard
   DEFINES += GODDARD=1
 endif
 
@@ -461,6 +465,7 @@ FILESIZER             := $(TOOLS_DIR)/filesizer
 N64CKSUM              := $(TOOLS_DIR)/n64cksum
 N64GRAPHICS           := $(TOOLS_DIR)/n64graphics
 N64GRAPHICS_CI        := $(TOOLS_DIR)/n64graphics_ci
+BINPNG                := $(TOOLS_DIR)/BinPNG.py
 TEXTCONV              := $(TOOLS_DIR)/textconv
 AIFF_EXTRACT_CODEBOOK := $(TOOLS_DIR)/aiff_extract_codebook
 VADPCM_ENC            := $(TOOLS_DIR)/vadpcm_enc
@@ -607,14 +612,14 @@ $(BUILD_DIR)/%.inc.c: %.png
 	$(V)$(N64GRAPHICS) -s $(TEXTURE_ENCODING) -i $@ -g $< -f $(lastword ,$(subst ., ,$(basename $<)))
 
 # Color Index CI8
-$(BUILD_DIR)/%.ci8: %.ci8.png
-	$(call print,Converting:,$<,$@)
-	$(V)$(N64GRAPHICS_CI) -i $@ -g $< -f ci8
+$(BUILD_DIR)/%.ci8.inc.c: %.ci8.png
+	$(call print,Converting CI:,$<,$@)
+	$(V)$(BINPNG) $< $@ 8
 
 # Color Index CI4
-$(BUILD_DIR)/%.ci4: %.ci4.png
-	$(call print,Converting:,$<,$@)
-	$(V)$(N64GRAPHICS_CI) -i $@ -g $< -f ci4
+$(BUILD_DIR)/%.ci4.inc.c: %.ci4.png
+	$(call print,Converting CI:,$<,$@)
+	$(V)$(BINPNG) $< $@ 4
 
 
 #==============================================================================#
@@ -797,9 +802,9 @@ $(BUILD_DIR)/goddard.txt: $(BUILD_DIR)/sm64_prelim.elf
 	$(V)python3 tools/getGoddardSize.py $(BUILD_DIR)/sm64_prelim.map $(VERSION)
 
 # Link SM64 ELF file
-$(ELF): $(BUILD_DIR)/sm64_prelim.elf $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
+$(ELF): $(BUILD_DIR)/sm64_prelim.elf $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(LIBZRULE) $(GODDARDRULE)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -T goddard.txt -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -T goddard.txt -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -Llib/gcclib/$(LIBGCCDIR) -lgcc -lnustd -lhvqm2 $(LIBZLINK) $(GODDARDLINK) -u sprintf -u osMapTLB
 
 # Build ROM
 $(ROM): $(ELF)
