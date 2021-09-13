@@ -31,6 +31,7 @@ if __name__=='__main__':
 	[texture,palette] = MakeCI(sys.argv[1],int(sys.argv[3]))
 	pname = sys.argv[2].split('.')
 	pname.insert(2,'pal')
+	pname = pname[:3]
 	pname = '.'.join(pname)
 	p = open(pname,'w')
 	t = open(sys.argv[2],'w')
