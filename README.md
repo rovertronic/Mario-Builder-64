@@ -17,6 +17,12 @@
 
 Requirements are the same as regular SM64, however a GCC MIPS cross compiler is also required. If you're on Debian-like Linux, you can use the ``gcc-mips-linux-gnu`` package. The toolchain that comes with my SDK is also supported.
 
+## Additional Prerequisites
+
+BinPNG (the CI texture converter) requires some python3 dependencies. Use pip to install them.
+
+``pip install pypng bitstring`` 
+
 ## UNFLoader support
 
 The repository supports UNFLoader for debugging.
