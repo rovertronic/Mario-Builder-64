@@ -71,8 +71,6 @@ COMPRESS ?= rnc1
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
-  LIBZRULE := $(BUILD_DIR)/libz.a
-  LIBZLINK := -lz
 else ifeq ($(COMPRESS),rnc1)
   DEFINES += RNC1=1
 else ifeq ($(COMPRESS),rnc2)
@@ -242,8 +240,6 @@ endif
 GODDARD ?= 0
 $(eval $(call validate-option,GODDARD,0 1))
 ifeq ($(GODDARD),1)
-  GODDARDRULE := $(BUILD_DIR)/libgoddard.a
-  GODDARDLINK := -lgoddard
   DEFINES += GODDARD=1
 endif
 
@@ -802,9 +798,9 @@ $(BUILD_DIR)/goddard.txt: $(BUILD_DIR)/sm64_prelim.elf
 	$(V)python3 tools/getGoddardSize.py $(BUILD_DIR)/sm64_prelim.map $(VERSION)
 
 # Link SM64 ELF file
-$(ELF): $(BUILD_DIR)/sm64_prelim.elf $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(LIBZRULE) $(GODDARDRULE)
+$(ELF): $(BUILD_DIR)/sm64_prelim.elf $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) undefined_syms.txt $(BUILD_DIR)/libz.a $(BUILD_DIR)/libgoddard.a
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -T goddard.txt -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib -Llib/gcclib/$(LIBGCCDIR) -lgcc -lnustd -lhvqm2 $(LIBZLINK) $(GODDARDLINK) -u sprintf -u osMapTLB
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T undefined_syms.txt -T $(BUILD_DIR)/$(LD_SCRIPT) -T goddard.txt -Map $(BUILD_DIR)/sm64.$(VERSION).map --no-check-sections $(addprefix -R ,$(SEG_FILES)) -o $@ $(O_FILES) -L$(LIBS_DIR) -l$(ULTRALIB) -Llib $(LINK_LIBRARIES) -u sprintf -u osMapTLB -Llib/gcclib/$(LIBGCCDIR) -lgcc -lnustd -lhvqm2
 
 # Build ROM
 $(ROM): $(ELF)
