@@ -1228,7 +1228,7 @@ static s32 act_hold_metal_water_standing(struct MarioState *m) {
 }
 
 static s32 act_metal_water_walking(struct MarioState *m) {
-    s32 val04;
+    s32 animSpeed;
 
     if (!(m->flags & MARIO_METAL_CAP)) {
         return set_mario_action(m, ACT_WATER_IDLE, 0);
@@ -1246,11 +1246,11 @@ static s32 act_metal_water_walking(struct MarioState *m) {
         return set_mario_action(m, ACT_METAL_WATER_STANDING, 0);
     }
 
-    if ((val04 = (s32)(m->forwardVel / 4.0f * 0x10000)) < 0x1000) {
-        val04 = 0x1000;
+    if ((animSpeed = (s32)(m->forwardVel / 4.0f * 0x10000)) < 0x1000) {
+        animSpeed = 0x1000;
     }
 
-    set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, val04);
+    set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, animSpeed);
     play_metal_water_walking_sound(m);
     update_metal_water_walking_speed(m);
 
@@ -1268,7 +1268,7 @@ static s32 act_metal_water_walking(struct MarioState *m) {
 }
 
 static s32 act_hold_metal_water_walking(struct MarioState *m) {
-    s32 val04;
+    s32 animSpeed;
 
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_METAL_WATER_WALKING, 0);
@@ -1288,11 +1288,11 @@ static s32 act_hold_metal_water_walking(struct MarioState *m) {
 
     m->intendedMag *= 0.4f;
 
-    if ((val04 = (s32)(m->forwardVel / 2.0f * 0x10000)) < 0x1000) {
-        val04 = 0x1000;
+    if ((animSpeed = (s32)(m->forwardVel / 2.0f * 0x10000)) < 0x1000) {
+        animSpeed = 0x1000;
     }
 
-    set_mario_anim_with_accel(m, MARIO_ANIM_RUN_WITH_LIGHT_OBJ, val04);
+    set_mario_anim_with_accel(m, MARIO_ANIM_RUN_WITH_LIGHT_OBJ, animSpeed);
     play_metal_water_walking_sound(m);
     update_metal_water_walking_speed(m);
 

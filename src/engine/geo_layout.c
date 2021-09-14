@@ -504,14 +504,14 @@ void geo_layout_cmd_node_translation(void) {
 void geo_layout_cmd_node_rotation(void) {
     struct GraphNodeRotation *graphNode;
 
-    Vec3s sp2c;
+    Vec3s angle;
 
     s16 drawingLayer = 0;
     s16 params = cur_geo_cmd_u8(0x01);
     s16 *cmdPos = (s16 *) gGeoLayoutCommand;
     void *displayList = NULL;
 
-    cmdPos = read_vec3s_angle(sp2c, &cmdPos[1]);
+    cmdPos = read_vec3s_angle(angle, &cmdPos[1]);
 
     if (params & 0x80) {
         displayList = *(void **) &cmdPos[0];
@@ -519,7 +519,7 @@ void geo_layout_cmd_node_rotation(void) {
         cmdPos += 2 << CMD_SIZE_SHIFT;
     }
 
-    graphNode = init_graph_node_rotation(gGraphNodePool, NULL, drawingLayer, displayList, sp2c);
+    graphNode = init_graph_node_rotation(gGraphNodePool, NULL, drawingLayer, displayList, angle);
 
     register_scene_graph_node(&graphNode->node);
 

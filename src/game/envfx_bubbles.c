@@ -205,17 +205,15 @@ void envfx_rotate_around_whirlpool(s32 *x, s32 *y, s32 *z) {
  * low or close to the center.
  */
 s32 envfx_is_whirlpool_bubble_alive(s32 index) {
-    s32 UNUSED sp4;
-
     if ((gEnvFxBuffer + index)->bubbleY < gEnvFxBubbleConfig[ENVFX_STATE_DEST_Y] - 100) {
-        return 0;
+        return FALSE;
     }
 
     if ((gEnvFxBuffer + index)->angleAndDist[1] < 10) {
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 /**

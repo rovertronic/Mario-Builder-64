@@ -2,15 +2,15 @@
 
 // Copy of geo_update_projectile_pos_from_parent
 Gfx *geo_update_held_mario_pos(s32 run, UNUSED struct GraphNode *node, Mat4 mtx) {
-    Mat4 sp20;
-    struct Object *sp1C;
+    Mat4 mtx2;
+    struct Object *obj;
 
     if (run == TRUE) {
-        sp1C = (struct Object *) gCurGraphNodeObject;
-        if (sp1C->prevObj != NULL) {
-            create_transformation_from_matrices(sp20, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(sp20, sp1C->prevObj);
-            obj_set_gfx_pos_from_pos(sp1C->prevObj);
+        obj = (struct Object *) gCurGraphNodeObject;
+        if (obj->prevObj != NULL) {
+            create_transformation_from_matrices(mtx2, mtx, *gCurGraphNodeCamera->matrixPtr);
+            obj_update_pos_from_parent_transformation(mtx2, obj->prevObj);
+            obj_set_gfx_pos_from_pos(obj->prevObj);
         }
     }
     return NULL;
@@ -305,9 +305,6 @@ void king_bobomb_move(void) {
 }
 
 void bhv_king_bobomb_loop(void) {
-    f32 sp34 = 20.0f;
-    f32 sp30 = 50.0f;
-    UNUSED u8 pad[8];
     o->oInteractionSubtype |= INT_SUBTYPE_GRABS_MARIO;
     switch (o->oHeldState) {
         case HELD_FREE:
@@ -318,7 +315,7 @@ void bhv_king_bobomb_loop(void) {
             break;
         case HELD_THROWN:
         case HELD_DROPPED:
-            cur_obj_get_thrown_or_placed(sp34, sp30, 4);
+            cur_obj_get_thrown_or_placed(20.0f, 50.0f, 4);
             cur_obj_become_intangible();
             o->oPosY += 20.0f;
             break;

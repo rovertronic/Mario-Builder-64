@@ -208,7 +208,6 @@ static void geo_append_display_list(void *displayList, s16 layer) {
  */
 static void geo_process_master_list(struct GraphNodeMasterList *node) {
     s32 i;
-    UNUSED s32 sp1C;
 
     if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
         gCurGraphNodeMasterList = node;
