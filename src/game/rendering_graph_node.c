@@ -250,7 +250,7 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
         #ifdef WIDE
-        if (gWidescreen && (gCurrLevelNum != 0x01)){
+        if (gConfig.widescreen && (gCurrLevelNum != 0x01)){
             aspect = 1.775f;
         } else {
             aspect = 1.33333f;

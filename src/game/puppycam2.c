@@ -24,6 +24,7 @@
 #include "mario.h"
 #include "puppyprint.h"
 #include "debug_box.h"
+#include "main.h"
 
 #ifdef PUPPYCAM
 
@@ -84,7 +85,7 @@ static const struct gPCOptionStruct
 static const struct gPCOptionStruct gPCOptions[]=
 { //If the min and max are 0 and 1, then the value text is used, otherwise it's ignored.
     #ifdef WIDE
-    {/*Option Name*/ 7, /*Option Variable*/ &gWidescreen,       /*Option Value Text Start*/ 0, /*Option Minimum*/ FALSE, /*Option Maximum*/ TRUE},
+    {/*Option Name*/ 7, /*Option Variable*/ &gConfig.widescreen,       /*Option Value Text Start*/ 0, /*Option Minimum*/ FALSE, /*Option Maximum*/ TRUE},
     #endif
     #if MULTILANG
     {/*Option Name*/ 8, /*Option Variable*/ &gInGameLanguage,       /*Option Value Text Start*/ 4, /*Option Minimum*/ 1, /*Option Maximum*/ 3},

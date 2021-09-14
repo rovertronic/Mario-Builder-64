@@ -42,9 +42,6 @@ extern u8 *gGfxPoolEnd;
 extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
 extern u8 gIsConsole;
-#ifdef WIDE
-extern s16 gWidescreen;
-#endif
 extern u8 gBorderHeight;
 #ifdef CUSTOM_DEBUG
 extern u8 gCustomDebugMode;

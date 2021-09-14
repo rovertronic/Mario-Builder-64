@@ -57,11 +57,6 @@ struct SoundCharacteristics {
 // Also the number of frames a discrete sound can be in the WAITING state before being deleted
 #define SOUND_MAX_FRESHNESS 10
 
-struct SequenceQueueItem {
-    u8 seqId;
-    u8 priority;
-}; // size = 0x2
-
 // data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 // moved to bss in data.c
@@ -2355,7 +2350,10 @@ void play_music(u8 player, u16 seqArgs, u16 fadeTimer) {
     }
 
     // Abort if the queue is already full.
-    if (sBackgroundMusicQueueSize == MAX_BACKGROUND_MUSIC_QUEUE_SIZE) {
+    if (sBackgroundMusicQueueSize >= MAX_BACKGROUND_MUSIC_QUEUE_SIZE) {
+#if PUPPYPRINT_DEBUG
+        append_puppyprint_log("Sequence queue full, aborting.");
+#endif
         return;
     }
 
@@ -2686,7 +2684,7 @@ void sound_reset(u8 presetId) {
     func_802ad74c(0xF2000000, 0);
 #endif
 #if defined(VERSION_JP) || defined(VERSION_US)
-    audio_reset_session(&gAudioSessionPresets[presetId]);
+    audio_reset_session(&gAudioSessionPresets[0], presetId);
 #else
     audio_reset_session_eu(presetId);
 #endif
