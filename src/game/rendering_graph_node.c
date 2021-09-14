@@ -138,11 +138,17 @@ LookAt lookAt;
 #endif
 
 /**
- * Process a master list node.
+ * Process a master list node. This has been modified, so now it runs twice, for each microcode.
+ It iterates through the first 5 layers of if the first index using F3DZEX, then it switches
+ to F3DLX2.Rej and iterates through all layers, then switches back to F3DZEX and finishes the last
+ 3. It does this, because layers 5-7 are non zbuffered, and just doing 0-7 of ZEX, then 0-7 of REJ
+ would make the rej 0-4 render on top of ZEX's 5-7.
  */
 static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
-    s32 i, j;
+    s32 i = 0;
+    s32 j = 0;
+    s32 renderPhase = 0;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
@@ -155,45 +161,59 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
 #endif
 
-
     if (enableZBuffer != 0)
     {
         gDPPipeSync(gDisplayListHead++);
         gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
 #ifdef F3DZEX_GBI_2
-    for (j = 0; j < 2; j++)
+    loopBegin:
+    //Load rejection on pass 2. ZEX is loaded afterwards.
+    if (renderPhase > 0)
     {
-        //Load rejection on pass 2. ZEX is loaded afterwards.
         if (j == 1)
         {
             gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
             init_rcp(0);
             gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
-            if (enableZBuffer != 0)
-            {
-                gDPPipeSync(gDisplayListHead++);
-                gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
-            }
-            guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
         }
-#else
-j = 0;
-#endif
-        for (i = 0; i < GFX_NUM_MASTER_LISTS; i++)
+        else
         {
-            if ((currList = node->listHeads[j][i]) != NULL)
+            gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
+            init_rcp(0);
+            gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
+        }
+        if (enableZBuffer != 0)
+        {
+            gDPPipeSync(gDisplayListHead++);
+            gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+        }
+        guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+    }
+#endif
+    for (; i < GFX_NUM_MASTER_LISTS; i++)
+    {
+#ifdef F3DZEX_GBI_2
+        if (i == 5 && (renderPhase == 0 || renderPhase == 2))
+            break;
+#endif
+        if ((currList = node->listHeads[j][i]) != NULL)
+        {
+            gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
+            while (currList != NULL)
             {
-                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
-                while (currList != NULL)
-                {
-                    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-                    gSPDisplayList(gDisplayListHead++, currList->displayList);
-                    currList = currList->next;
-                }
+                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                gSPDisplayList(gDisplayListHead++, currList->displayList);
+                currList = currList->next;
             }
         }
+    }
 #ifdef F3DZEX_GBI_2
+    switch (renderPhase)
+    {
+    case 0: renderPhase++; j = 1; i = 0; goto loopBegin;
+    case 1: renderPhase++; i = 5; goto loopBegin;
+    case 2: renderPhase++; j = 0; i = 5; goto loopBegin;
     }
 #endif
     if (enableZBuffer != 0)
@@ -201,10 +221,6 @@ j = 0;
         gDPPipeSync(gDisplayListHead++);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
-#ifdef F3DZEX_GBI_2
-    gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
-    init_rcp(0);
-#endif
 }
 
 /**
