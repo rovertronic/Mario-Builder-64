@@ -111,9 +111,8 @@ void crash_screen_print(s32 x, s32 y, const char *fmt, ...) {
     u32 glyph;
     s32 size;
     char buf[0x108];
-    UNUSED s32 i = 0;
 
-    memset(buf, 0, sizeof(buf));
+    bzero(&buf ,sizeof(buf));
 
     va_list args;
     va_start(args, fmt);

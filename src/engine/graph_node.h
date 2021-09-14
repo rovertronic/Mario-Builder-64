@@ -7,6 +7,9 @@
 #include "types.h"
 #include "game/memory.h"
 
+#define UCODE_DEFAULT 0
+#define UCODE_REJ     1
+
 #define GRAPH_RENDER_ACTIVE         (1 << 0)
 #define GRAPH_RENDER_CHILDREN_FIRST (1 << 1)
 #define GRAPH_RENDER_BILLBOARD      (1 << 2)
@@ -126,8 +129,8 @@ struct DisplayListNode
 struct GraphNodeMasterList
 {
     /*0x00*/ struct GraphNode node;
-    /*0x14*/ struct DisplayListNode *listHeads[GFX_NUM_MASTER_LISTS];
-    /*0x34*/ struct DisplayListNode *listTails[GFX_NUM_MASTER_LISTS];
+    /*0x14*/ struct DisplayListNode *listHeads[2][GFX_NUM_MASTER_LISTS];
+    /*0x34*/ struct DisplayListNode *listTails[2][GFX_NUM_MASTER_LISTS];
 };
 
 /** Simply used as a parent to group multiple children.
