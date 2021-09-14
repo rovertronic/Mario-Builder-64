@@ -198,7 +198,7 @@ void draw_crash_screen(OSThread *thread) {
     crash_screen_print(30, 35, "PC:%08XH   SR:%08XH   RA:%08XH", tc->pc, tc->sr, (u32) tc->ra);
 #endif
     crash_screen_draw_rect(25, 45, 270, 185);
-#ifndef PUPPYPRINT
+#if !PUPPYPRINT_DEBUG
     crash_screen_print(30, 50, "AT:%08XH   V0:%08XH   V1:%08XH", (u32) tc->at, (u32) tc->v0,
                        (u32) tc->v1);
     crash_screen_print(30, 60, "A0:%08XH   A1:%08XH   A2:%08XH", (u32) tc->a0, (u32) tc->a1,
