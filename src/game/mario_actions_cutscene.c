@@ -1982,18 +1982,16 @@ void generate_yellow_sparkles(s16 x, s16 y, s16 z, f32 radius) {
 // (animation related?)
 static f32 end_obj_set_visual_pos(struct Object *o) {
     struct Surface *surf;
-    Vec3s sp24;
-    f32 sp20;
-    f32 sp1C;
-    f32 sp18;
+    Vec3s translation;
+    f32 x, y, z;
 
-    find_mario_anim_flags_and_translation(o, o->header.gfx.angle[1], sp24);
+    find_mario_anim_flags_and_translation(o, o->header.gfx.angle[1], translation);
 
-    sp20 = o->header.gfx.pos[0] + sp24[0];
-    sp1C = o->header.gfx.pos[1] + 10.0f;
-    sp18 = o->header.gfx.pos[2] + sp24[2];
+    x = o->header.gfx.pos[0] + translation[0];
+    y = o->header.gfx.pos[1] + 10.0f;
+    z = o->header.gfx.pos[2] + translation[2];
 
-    return find_floor(sp20, sp1C, sp18, &surf);
+    return find_floor(x, y, z, &surf);
 }
 
 // make Mario fall and soften wing cap gravity

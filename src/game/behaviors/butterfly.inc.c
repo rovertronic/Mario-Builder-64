@@ -10,8 +10,6 @@ void bhv_butterfly_init(void) {
     o->oHomeZ = o->oPosZ;
 }
 
-// sp28 = speed
-
 void butterfly_step(s32 speed) {
     struct FloorGeometry *sp24;
     s16 yaw = o->oMoveAngleYaw;

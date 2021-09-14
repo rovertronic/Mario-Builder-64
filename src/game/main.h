@@ -4,21 +4,21 @@
 #include "config.h"
 
 struct RumbleData {
-    u8 unk00;
-    u8 unk01;
-    s16 unk02;
-    s16 unk04;
+    u8 unk00; // comm
+    u8 unk01; // level
+    s16 unk02; // time
+    s16 unk04; // decay
 };
 
-struct StructSH8031D9B0 {
-    s16 unk00;
-    s16 unk02;
-    s16 unk04;
-    s16 unk06;
-    s16 unk08;
-    s16 unk0A;
-    s16 unk0C;
-    s16 unk0E;
+struct RumbleSettings {
+    s16 unk00; // event
+    s16 unk02; // level
+    s16 unk04; // timer
+    s16 unk06; // count
+    s16 unk08; // start
+    s16 unk0A; // slip
+    s16 unk0C; // vibrate
+    s16 unk0E; // decay
 };
 extern struct Config gConfig;
 
@@ -55,7 +55,7 @@ extern OSMesg gRumblePakSchedulerMesgBuf[1];
 extern OSMesg gRumbleThreadVIMesgBuf[1];
 
 extern struct RumbleData gRumbleDataQueue[3];
-extern struct StructSH8031D9B0 gCurrRumbleSettings;
+extern struct RumbleSettings gCurrRumbleSettings;
 #endif
 
 extern struct VblankHandler *gVblankHandler1;

@@ -101,11 +101,11 @@ void bhv_treasure_chest_bottom_loop(void) {
     o->oInteractStatus = 0;
 }
 
-void spawn_treasure_chest(s8 sp3B, s32 sp3C, s32 sp40, s32 sp44, s16 sp4A) {
-    struct Object *sp34;
-    sp34 = spawn_object_abs_with_rot(o, 0, MODEL_TREASURE_CHEST_BASE, bhvTreasureChestBottom, sp3C,
-                                     sp40, sp44, 0, sp4A, 0);
-    sp34->oBehParams2ndByte = sp3B;
+void spawn_treasure_chest(s8 param, s32 x, s32 y, s32 z, s16 ry) {
+    struct Object *chestBaseObj;
+    chestBaseObj = spawn_object_abs_with_rot(o, 0, MODEL_TREASURE_CHEST_BASE, bhvTreasureChestBottom, x,
+                                     y, z, 0, ry, 0);
+    chestBaseObj->oBehParams2ndByte = param;
 }
 
 void bhv_treasure_chest_ship_init(void) {

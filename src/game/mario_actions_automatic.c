@@ -190,7 +190,7 @@ s32 act_holding_pole(struct MarioState *m) {
 }
 
 s32 act_climbing_pole(struct MarioState *m) {
-    s32 sp24;
+    s32 animSpeed;
     struct Object *marioObj = m->marioObj;
     s16 cameraAngle = m->area->camera->yaw;
 
@@ -217,8 +217,8 @@ s32 act_climbing_pole(struct MarioState *m) {
     m->faceAngle[1] = cameraAngle - approach_s32((s16)(cameraAngle - m->faceAngle[1]), 0, 0x400, 0x400);
 
     if (set_pole_position(m, 0.0f) == POLE_NONE) {
-        sp24 = m->controller->stickY / 4.0f * 0x10000;
-        set_mario_anim_with_accel(m, MARIO_ANIM_CLIMB_UP_POLE, sp24);
+        animSpeed = m->controller->stickY / 4.0f * 0x10000;
+        set_mario_anim_with_accel(m, MARIO_ANIM_CLIMB_UP_POLE, animSpeed);
         add_tree_leaf_particles(m);
         play_climbing_sounds(m, 1);
     }
@@ -522,15 +522,15 @@ void climb_up_ledge(struct MarioState *m) {
 }
 
 void update_ledge_climb_camera(struct MarioState *m) {
-    f32 sp4;
+    f32 dist;
 
     if (m->actionTimer < 14) {
-        sp4 = m->actionTimer;
+        dist = m->actionTimer;
     } else {
-        sp4 = 14.0f;
+        dist = 14.0f;
     }
-    m->statusForCamera->pos[0] = m->pos[0] + sp4 * sins(m->faceAngle[1]);
-    m->statusForCamera->pos[2] = m->pos[2] + sp4 * coss(m->faceAngle[1]);
+    m->statusForCamera->pos[0] = m->pos[0] + dist * sins(m->faceAngle[1]);
+    m->statusForCamera->pos[2] = m->pos[2] + dist * coss(m->faceAngle[1]);
     m->statusForCamera->pos[1] = m->pos[1];
     m->actionTimer++;
     m->flags |= MARIO_UNKNOWN_25;

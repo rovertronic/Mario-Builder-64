@@ -205,7 +205,7 @@ extern const BehaviorScript bhvLllBowserPuzzlePiece[];
 extern const BehaviorScript bhvLllBowserPuzzle[];
 extern const BehaviorScript bhvTuxiesMother[];
 extern const BehaviorScript bhvPenguinBaby[];
-extern const BehaviorScript bhvUnused20E0[];
+extern const BehaviorScript bhvSmallPenguinReturned[];
 extern const BehaviorScript bhvSmallPenguin[];
 extern const BehaviorScript bhvManyBlueFishSpawner[];
 extern const BehaviorScript bhvFewBlueFishSpawner[];

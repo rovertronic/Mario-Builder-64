@@ -244,58 +244,51 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
     }
 }
 
-static void cur_obj_spin_all_dimensions(f32 arg0, f32 arg1) {
-    f32 val24;
-    f32 val20;
-    f32 val1C;
-    f32 c;
-    f32 s;
-    f32 val10;
-    f32 val0C;
-    f32 val08;
-    f32 val04;
-    f32 val00;
+static void cur_obj_spin_all_dimensions(f32 pitchSpeed, f32 rollSpeed) {
+    f32 pitch, yaw, roll;
+    f32 c, s;
+    f32 px, pz, ny, nz, nx;
 
     if (o->oForwardVel == 0.0f) {
-        val24 = val20 = val1C = 0.0f;
+        roll = yaw = pitch = 0.0f;
 
         if (o->oMoveFlags & OBJ_MOVE_IN_AIR) {
-            val20 = 50.0f;
+            yaw = 50.0f;
         } else {
             if (o->oFaceAnglePitch < 0) {
-                val1C = -arg0;
+                pitch = -pitchSpeed;
             } else if (o->oFaceAnglePitch > 0) {
-                val1C = arg0;
+                pitch = pitchSpeed;
             }
 
             if (o->oFaceAngleRoll < 0) {
-                val24 = -arg1;
+                roll = -rollSpeed;
             } else if (o->oFaceAngleRoll > 0) {
-                val24 = arg1;
+                roll = rollSpeed;
             }
         }
 
         c = coss(o->oFaceAnglePitch);
         s = sins(o->oFaceAnglePitch);
-        val08 = val1C * c + val20 * s;
-        val0C = val20 * c - val1C * s;
+        nz = pitch * c + yaw * s;
+        ny = yaw * c - pitch * s;
 
         c = coss(o->oFaceAngleRoll);
         s = sins(o->oFaceAngleRoll);
-        val04 = val24 * c + val0C * s;
-        val0C = val0C * c - val24 * s;
+        nx = roll * c + ny * s;
+        ny = ny * c - roll * s;
 
         c = coss(o->oFaceAngleYaw);
         s = sins(o->oFaceAngleYaw);
-        val10 = val04 * c - val08 * s;
-        val08 = val08 * c + val04 * s;
+        px = nx * c - nz * s;
+        nz = nz * c + nx * s;
 
-        val04 = val24 * c - val1C * s;
-        val00 = val1C * c + val24 * s;
+        nx = roll * c - pitch * s;
+        pz = pitch * c + roll * s;
 
-        o->oPosX = o->oHomeX - val04 + val10;
-        o->oGraphYOffset = val20 - val0C;
-        o->oPosZ = o->oHomeZ + val00 - val08;
+        o->oPosX = o->oHomeX - nx + px;
+        o->oGraphYOffset = yaw - ny;
+        o->oPosZ = o->oHomeZ + pz - nz;
     }
 }
 
@@ -362,14 +355,14 @@ static s32 cur_obj_set_anim_if_at_end(s32 arg0) {
     return FALSE;
 }
 
-static s32 cur_obj_play_sound_at_anim_range(s8 arg0, s8 arg1, u32 sound) {
-    s32 val04;
+static s32 cur_obj_play_sound_at_anim_range(s8 startFrame1, s8 startFrame2, u32 sound) {
+    s32 rangeLength;
 
-    if ((val04 = o->header.gfx.animInfo.animAccel / 0x10000) <= 0) {
-        val04 = 1;
+    if ((rangeLength = o->header.gfx.animInfo.animAccel / 0x10000) <= 0) {
+        rangeLength = 1;
     }
 
-    if (cur_obj_check_anim_frame_in_range(arg0, val04) || cur_obj_check_anim_frame_in_range(arg1, val04)) {
+    if (cur_obj_check_anim_frame_in_range(startFrame1, rangeLength) || cur_obj_check_anim_frame_in_range(startFrame2, rangeLength)) {
         cur_obj_play_sound_2(sound);
         return TRUE;
     }

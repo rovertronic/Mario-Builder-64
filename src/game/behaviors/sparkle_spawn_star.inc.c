@@ -13,11 +13,11 @@ struct ObjectHitbox sSparkleSpawnStarHitbox = {
 };
 
 void bhv_spawned_star_init(void) {
-    s32 sp24;
+    s32 param;
     if (!(o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT))
         o->oBehParams = o->parentObj->oBehParams;
-    sp24 = (o->oBehParams >> 24) & 0xFF;
-    if (bit_shift_left(sp24) & save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1))
+    param = (o->oBehParams >> 24) & 0xFF;
+    if (bit_shift_left(param) & save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1))
         cur_obj_set_model(MODEL_TRANSPARENT_STAR);
     cur_obj_play_sound_2(SOUND_GENERAL2_STAR_APPEARS);
 }
@@ -31,16 +31,16 @@ void set_sparkle_spawn_star_hitbox(void) {
 }
 
 void set_home_to_mario(void) {
-    f32 sp1C;
-    f32 sp18;
+    f32 dx;
+    f32 dz;
     o->oHomeX = gMarioObject->oPosX;
     o->oHomeZ = gMarioObject->oPosZ;
     o->oHomeY = gMarioObject->oPosY;
     o->oHomeY += 250.0f;
     o->oPosY = o->oHomeY;
-    sp1C = o->oHomeX - o->oPosX;
-    sp18 = o->oHomeZ - o->oPosZ;
-    o->oForwardVel = sqrtf(sp1C * sp1C + sp18 * sp18) / 23.0f;
+    dx = o->oHomeX - o->oPosX;
+    dz = o->oHomeZ - o->oPosZ;
+    o->oForwardVel = sqrtf(dx * dx + dz * dz) / 23.0f;
 }
 
 void set_y_home_to_pos(void) {
@@ -110,9 +110,9 @@ void bhv_spawned_star_loop(void) {
     o->oInteractStatus = 0;
 }
 
-void bhv_spawn_star_no_level_exit(u32 sp20) {
-    struct Object *sp1C = spawn_object(o, MODEL_STAR, bhvSpawnedStarNoLevelExit);
-    sp1C->oBehParams = sp20 << 24;
-    sp1C->oInteractionSubtype = INT_SUBTYPE_NO_EXIT;
-    obj_set_angle(sp1C, 0, 0, 0);
+void bhv_spawn_star_no_level_exit(u32 params) {
+    struct Object *starObj = spawn_object(o, MODEL_STAR, bhvSpawnedStarNoLevelExit);
+    starObj->oBehParams = params << 24;
+    starObj->oInteractionSubtype = INT_SUBTYPE_NO_EXIT;
+    obj_set_angle(starObj, 0, 0, 0);
 }
