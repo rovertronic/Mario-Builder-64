@@ -102,6 +102,8 @@
 #define MULTILANG (0 || VERSION_EU)
 // Enables Puppy Camera 2, a rewritten camera that can be freely configured and modified.
 //#define PUPPYCAM
+// Allows Mario's shadow to be transparent on top of transparent surfaces, such as water, lava, and ice
+#define FIX_SHADOW_TRANSPARENCY
 // Automatically calculate the optimal collision distance for an object based on its vertices.
 #define AUTO_COLLISION_DISTANCE
 // Makes obj_resolve_object_collisions work consistently
