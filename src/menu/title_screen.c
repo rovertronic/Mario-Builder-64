@@ -235,12 +235,20 @@ s32 lvl_intro_update(s16 arg, UNUSED s32 unusedArg) {
         case LVL_INTRO_PLAY_ITS_A_ME_MARIO:
             retVar = intro_play_its_a_me_mario();
             break;
+#ifdef KEEP_MARIO_HEAD
         case LVL_INTRO_REGULAR:
             retVar = intro_regular();
             break;
         case LVL_INTRO_GAME_OVER:
             retVar = intro_game_over();
             break;
+#else
+        case LVL_INTRO_REGULAR:
+            // fall through
+        case LVL_INTRO_GAME_OVER:
+            retVar = (100 + gDebugLevelSelect);
+            break;
+#endif
         case LVL_INTRO_LEVEL_SELECT:
             retVar = intro_level_select();
             break;
