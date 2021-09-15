@@ -137,6 +137,8 @@ u16 gAreaUpdateCounter = 0;
 LookAt lookAt;
 #endif
 
+u8 ucodeTestSwitch = 1;
+
 /**
  * Process a master list node. This has been modified, so now it runs twice, for each microcode.
  It iterates through the first 5 layers of if the first index using F3DLX2.Rej, then it switches
@@ -158,10 +160,13 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         gDPPipeSync(gDisplayListHead++);
         gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
+    //if (gPlayer1Controller->buttonPressed & L_TRIG)
+    //    ucodeTestSwitch ^= 1;
+    //print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
 #ifdef F3DZEX_GBI_2
     loopBegin:
     //Load rejection on pass 2. ZEX is loaded afterwards.
-    if (renderPhase == 2)
+    if (renderPhase == 0 || renderPhase == 2)
     {
         gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
         init_rcp(0);
@@ -235,7 +240,7 @@ static void geo_append_display_list(void *displayList, s32 layer)
 #ifdef F3DZEX_GBI_2
     if (gCurGraphNodeObject != NULL)
     {
-        if (gCurGraphNodeObject->uCode == UCODE_REJ)
+        if (gCurGraphNodeObject->uCode == UCODE_REJ && ucodeTestSwitch)
             index = 1;
     }
 #endif
