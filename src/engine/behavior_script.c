@@ -952,6 +952,9 @@ void cur_obj_update(void) {
                 gCurrentObject->oPrevAction = gCurrentObject->oAction);
     }
 
+    // Execute various code based on object flags.
+    objFlags = gCurrentObject->oFlags;
+
     if (objFlags & OBJ_FLAG_SET_FACE_ANGLE_TO_MOVE_ANGLE) {
         obj_set_face_angle_to_move_angle(gCurrentObject);
     }
