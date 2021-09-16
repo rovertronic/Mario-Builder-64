@@ -43,6 +43,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Tighter hanging controls (mario will face the direction of the analog stick directly while hanging from a ceiling) *
 - reonucam3: custom camera by me. This is included as a .patch file in the enhancements folder, you need to apply it if you want this camera.
   This video shows a rundown of the features: https://youtu.be/TQNkznX9Z3k
+- Ability to disable Mario getting suck in snow or sand
 
 **Hacker QOL:**
 - Global, non-level based, star IDs (off by default) *

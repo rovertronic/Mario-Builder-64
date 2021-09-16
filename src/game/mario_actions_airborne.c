@@ -123,6 +123,9 @@ s32 should_get_stuck_in_ground(struct MarioState *m) {
     s32 flags = floor->flags;
     s32 type = floor->type;
 
+#ifdef NO_GETTING_BURIED
+    return FALSE;
+#else
     if (floor != NULL && (terrainType == TERRAIN_SNOW || terrainType == TERRAIN_SAND)
         && type != SURFACE_BURNING && SURFACE_IS_NOT_HARD(type)) {
         if (!(flags & 0x01) && m->peakHeight - m->pos[1] > 1000.0f && floor->normal.y >= 0.8660254f) {
@@ -131,6 +134,7 @@ s32 should_get_stuck_in_ground(struct MarioState *m) {
     }
 
     return FALSE;
+#endif
 }
 
 s32 check_fall_damage_or_get_stuck(struct MarioState *m, u32 hardFallAction) {
