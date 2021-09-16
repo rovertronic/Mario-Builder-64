@@ -169,14 +169,14 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     if (renderPhase == 0 || renderPhase == 2)
     {
         gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
-        init_rcp(0);
+        init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
     }
     else
     if (renderPhase == 1)
     {
         gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
-        init_rcp(0);
+        init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
     }
     if (enableZBuffer != 0)
@@ -216,7 +216,7 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     case 1: renderPhase++; j = 1;  i = 5; goto loopBegin;
     }
     gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
-    init_rcp(0);
+    init_rcp(KEEP_ZBUFFER);
     gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
 #endif
     if (enableZBuffer != 0)

@@ -382,7 +382,7 @@ void render_init(void) {
     gGfxSPTask = &gGfxPool->spTask;
     gDisplayListHead = gGfxPool->buffer;
     gGfxPoolEnd = (u8 *)(gGfxPool->buffer + GFX_POOL_SIZE);
-    init_rcp(1);
+    init_rcp(CLEAR_ZBUFFER);
     clear_frame_buffer(0);
     end_master_display_list();
     exec_display_list(&gGfxPool->spTask);

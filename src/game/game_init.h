@@ -24,6 +24,11 @@ struct DemoInput
     u8 buttonMask;
 };
 
+enum ZBmodes {
+    KEEP_ZBUFFER = 0,
+    CLEAR_ZBUFFER = 1,
+};
+
 extern struct Controller gControllers[3];
 extern OSContStatus gControllerStatuses[4];
 extern OSContPad gControllerPads[4];
