@@ -1418,7 +1418,7 @@ void update_mario_inputs(struct MarioState *m) {
     m->flags &= 0xFFFFFF;
 
     #ifdef PUPPYCAM
-    if (gPuppyCam.mode3Flags & PUPPYCAM_MODE3_ENTER_FIRST_PERSON)
+    if (gPuppyCam.mode3Flags & PUPPYCAM_MODE3_ENTER_FIRST_PERSON || (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE && gPuppyCam.debugFlags & PUPPYDEBUG_LOCK_CONTROLS))
     {
         m->input = INPUT_FIRST_PERSON;
         return;
@@ -1752,6 +1752,9 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         mario_reset_bodystate(gMarioState);
         update_mario_inputs(gMarioState);
+#ifdef PUPPYCAM
+        if (!(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE))
+#endif
         mario_handle_special_floors(gMarioState);
         mario_process_interactions(gMarioState);
 
