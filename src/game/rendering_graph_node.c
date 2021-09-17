@@ -137,16 +137,54 @@ u16 gAreaUpdateCounter = 0;
 LookAt lookAt;
 #endif
 
+u8 ucodeTestSwitch = 1;
+
 /**
- * Process a master list node.
+ * Process a master list node. This has been modified, so now it runs twice, for each microcode.
+ It iterates through the first 5 layers of if the first index using F3DLX2.Rej, then it switches
+ to F3DZEX and iterates through all layers, then switches back to F3DLX2.Rej and finishes the last
+ 3. It does this, because layers 5-7 are non zbuffered, and just doing 0-7 of ZEX, then 0-7 of REJ
+ would make the ZEX 0-4 render on top of Rej's 5-7.
  */
 static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
-    s32 i;
+    s32 i = 0;
+    s32 j = 1;
+    s32 renderPhase = 0;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
 
+    if (enableZBuffer != 0)
+    {
+        gDPPipeSync(gDisplayListHead++);
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+    }
+    //if (gPlayer1Controller->buttonPressed & L_TRIG)
+    //    ucodeTestSwitch ^= 1;
+    //print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
+#ifdef F3DZEX_GBI_2
+    loopBegin:
+    //Load rejection on pass 2. ZEX is loaded afterwards.
+    if (renderPhase == 0 || renderPhase == 2)
+    {
+        gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
+        init_rcp(KEEP_ZBUFFER);
+        gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
+    }
+    else
+    if (renderPhase == 1)
+    {
+        gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
+        init_rcp(KEEP_ZBUFFER);
+        gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
+    }
+    if (enableZBuffer != 0)
+    {
+        gDPPipeSync(gDisplayListHead++);
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+    }
+#endif
     // @bug This is where the LookAt values should be calculated but aren't.
     // As a result, environment mapping is broken on Fast3DEX2 without the
     // changes below.
@@ -154,24 +192,35 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     Mtx lMtx;
     guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
 #endif
-
-    if (enableZBuffer != 0) {
-        gDPPipeSync(gDisplayListHead++);
-        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
-    }
-
-    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
-        if ((currList = node->listHeads[i]) != NULL) {
+    for (; i < GFX_NUM_MASTER_LISTS; i++)
+    {
+#ifdef F3DZEX_GBI_2
+        if (i == 5 && renderPhase == 0)
+            break;
+#endif
+        if ((currList = node->listHeads[j][i]) != NULL)
+        {
             gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
-            while (currList != NULL) {
-                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
-                          G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            while (currList != NULL)
+            {
+                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPDisplayList(gDisplayListHead++, currList->displayList);
                 currList = currList->next;
             }
         }
     }
-    if (enableZBuffer != 0) {
+#ifdef F3DZEX_GBI_2
+    switch (renderPhase)
+    {
+    case 0: renderPhase++; j = 0; i = 0; goto loopBegin;
+    case 1: renderPhase++; j = 1;  i = 5; goto loopBegin;
+    }
+    gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
+    init_rcp(KEEP_ZBUFFER);
+    gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
+#endif
+    if (enableZBuffer != 0)
+    {
         gDPPipeSync(gDisplayListHead++);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
@@ -182,24 +231,35 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
  * parameter. Look at the RenderModeContainer struct to see the corresponding
  * render modes of layers.
  */
-static void geo_append_display_list(void *displayList, s16 layer) {
-
+static void geo_append_display_list(void *displayList, s32 layer)
+{
+    s32 index = 0;
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, &lookAt);
 #endif
-    if (gCurGraphNodeMasterList != 0) {
-        struct DisplayListNode *listNode =
-            alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
+#ifdef F3DZEX_GBI_2
+    if (gCurGraphNodeObject != NULL)
+    {
+        if (gCurGraphNodeObject->uCode == UCODE_REJ && ucodeTestSwitch)
+            index = 1;
+    }
+#endif
+    if (gCurGraphNodeMasterList != 0)
+    {
+        struct DisplayListNode *listNode = alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
 
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = 0;
-        if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
-            gCurGraphNodeMasterList->listHeads[layer] = listNode;
-        } else {
-            gCurGraphNodeMasterList->listTails[layer]->next = listNode;
+        if (gCurGraphNodeMasterList->listHeads[index][layer] == 0)
+        {
+            gCurGraphNodeMasterList->listHeads[index][layer] = listNode;
         }
-        gCurGraphNodeMasterList->listTails[layer] = listNode;
+        else
+        {
+            gCurGraphNodeMasterList->listTails[index][layer]->next = listNode;
+        }
+        gCurGraphNodeMasterList->listTails[index][layer] = listNode;
     }
 }
 
@@ -209,13 +269,16 @@ static void geo_append_display_list(void *displayList, s16 layer) {
 static void geo_process_master_list(struct GraphNodeMasterList *node) {
     s32 i;
 
-    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
+    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL)
+    {
         gCurGraphNodeMasterList = node;
-        for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
-            node->listHeads[i] = NULL;
+        for (i = 0; i < GFX_NUM_MASTER_LISTS; i++)
+        {
+            node->listHeads[0][i] = NULL;
+            node->listHeads[1][i] = NULL;
         }
         geo_process_node_and_siblings(node->node.children);
-        geo_process_master_list_sub(node);
+        geo_process_master_list_sub(gCurGraphNodeMasterList);
         gCurGraphNodeMasterList = NULL;
     }
 }
@@ -772,8 +835,8 @@ static void geo_process_shadow(struct GraphNodeShadow *node) {
  * Since (0,0,0) is unaffected by rotation, columns 0, 1 and 2 are ignored.
  */
 static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
-    s16 cullingRadius;
-    s16 halfFov; // half of the fov in in-game angle units instead of degrees
+    s32 cullingRadius;
+    s32 halfFov; // half of the fov in in-game angle units instead of degrees
     struct GraphNode *geo;
     f32 hScreenEdge;
 

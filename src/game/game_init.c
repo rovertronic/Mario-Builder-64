@@ -125,9 +125,7 @@ void init_rdp(void) {
     gDPSetColorDither(gDisplayListHead++, G_CD_MAGICSQ);
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
 
-#ifdef VERSION_SH
     gDPSetAlphaDither(gDisplayListHead++, G_AD_PATTERN);
-#endif
     gDPPipeSync(gDisplayListHead++);
 }
 
@@ -135,6 +133,7 @@ void init_rdp(void) {
  * Sets the initial RSP (Reality Signal Processor) settings.
  */
 void init_rsp(void) {
+
     gSPClearGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG
                         | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
 
@@ -153,13 +152,15 @@ void init_rsp(void) {
 /**
  * Initialize the z buffer for the current frame.
  */
-void init_z_buffer(void) {
+void init_z_buffer(s32 resetZB) {
     gDPPipeSync(gDisplayListHead++);
 
     gDPSetDepthSource(gDisplayListHead++, G_ZS_PIXEL);
     gDPSetDepthImage(gDisplayListHead++, gPhysicalZBuffer);
 
     gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
+    if (!resetZB)
+        return;
     gDPSetFillColor(gDisplayListHead++,
                     GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
 
@@ -273,7 +274,7 @@ void create_gfx_task_structure(void) {
     gGfxSPTask->task.t.type = M_GFXTASK;
     gGfxSPTask->task.t.ucode_boot = rspbootTextStart;
     gGfxSPTask->task.t.ucode_boot_size = ((u8 *) rspbootTextEnd - (u8 *) rspbootTextStart);
-    gGfxSPTask->task.t.flags = 0;
+    gGfxSPTask->task.t.flags = OS_TASK_LOADABLE | OS_TASK_DP_WAIT;
 #ifdef  L3DEX2_ALONE
     gGfxSPTask->task.t.ucode = gspL3DEX2_fifoTextStart;
     gGfxSPTask->task.t.ucode_data = gspL3DEX2_fifoDataStart;
@@ -312,11 +313,11 @@ void create_gfx_task_structure(void) {
 /**
  * Set default RCP (Reality Co-Processor) settings.
  */
-void init_rcp(void) {
+void init_rcp(s32 resetZB) {
     move_segment_table_to_dmem();
     init_rdp();
     init_rsp();
-    init_z_buffer();
+    init_z_buffer(resetZB);
     select_frame_buffer();
 }
 
@@ -381,7 +382,7 @@ void render_init(void) {
     gGfxSPTask = &gGfxPool->spTask;
     gDisplayListHead = gGfxPool->buffer;
     gGfxPoolEnd = (u8 *)(gGfxPool->buffer + GFX_POOL_SIZE);
-    init_rcp();
+    init_rcp(CLEAR_ZBUFFER);
     clear_frame_buffer(0);
     end_master_display_list();
     exec_display_list(&gGfxPool->spTask);

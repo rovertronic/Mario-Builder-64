@@ -24,6 +24,11 @@ struct DemoInput
     u8 buttonMask;
 };
 
+enum ZBmodes {
+    KEEP_ZBUFFER = 0,
+    CLEAR_ZBUFFER = 1,
+};
+
 extern struct Controller gControllers[3];
 extern OSContStatus gControllerStatuses[4];
 extern OSContPad gControllerPads[4];
@@ -79,7 +84,7 @@ void thread5_game_loop(UNUSED void *arg);
 void clear_frame_buffer(s32 color);
 void clear_viewport(Vp *viewport, s32 color);
 void make_viewport_clip_rect(Vp *viewport);
-void init_rcp(void);
+void init_rcp(s32 resetZB);
 void end_master_display_list(void);
 void render_init(void);
 void select_gfx_pool(void);

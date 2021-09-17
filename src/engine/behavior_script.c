@@ -905,7 +905,7 @@ static BhvCommandProc BehaviorCmdTable[] = {
 
 // Execute the behavior script of the current object, process the object flags, and other miscellaneous code for updating objects.
 void cur_obj_update(void) {
-    s32 objFlags = gCurrentObject->oFlags;
+    u32 objFlags = gCurrentObject->oFlags;
     f32 distanceFromMario;
     BhvCommandProc bhvCmdProc;
     s32 bhvProcResult;
@@ -980,6 +980,12 @@ void cur_obj_update(void) {
     if (objFlags & OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE) {
         obj_update_gfx_pos_and_angle(gCurrentObject);
     }
+
+
+    if (objFlags & OBJ_FLAG_UCODE_LARGE)
+        gCurrentObject->header.gfx.uCode = UCODE_DEFAULT;
+    else
+        gCurrentObject->header.gfx.uCode = UCODE_REJ;
 
 #ifdef PUPPYLIGHTS
     puppylights_object_emit(gCurrentObject);

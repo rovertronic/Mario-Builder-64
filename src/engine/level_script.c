@@ -963,7 +963,7 @@ struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
     }
 
     profiler_log_thread5_time(LEVEL_SCRIPT_EXECUTE);
-    init_rcp();
+    init_rcp(CLEAR_ZBUFFER);
     render_game();
     end_master_display_list();
     alloc_display_list(0);
