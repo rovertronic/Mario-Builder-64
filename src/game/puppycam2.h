@@ -81,7 +81,7 @@ struct gPuppyStruct
     u8 opacity; //A value set by collision distance, to fade Mario out if you're too close.
     s8 stick2[2];//The value that's set and read for analogue stick.
     u8 stickN[2]; //This is set when the stick is neutral. It's to prevent rapidfire input.
-    u8 enabled; //A boolean that decides whether to use vanilla camera or puppy camera.
+    u8 enabled : 1; //A boolean that decides whether to use vanilla camera or puppy camera.
     s16 swimPitch; //Pitch adjustment that's applied when swimming. All pitch adjustment is clamped.
     s16 edgePitch; //Pitch adjustment that's applied when stood near an edge. All pitch adjustment is clamped.
     s16 moveZoom; //A small zoom value that's added on top of the regular zoom when moving. It's pretty subtle, but gives the feeling of a bit of speed.
@@ -140,26 +140,27 @@ struct sPuppyVolume
 
 enum gPuppyCamBeh
 {
-    PUPPYCAM_BEHAVIOUR_X_MOVEMENT = 0x0001,
-    PUPPYCAM_BEHAVIOUR_Y_MOVEMENT = 0x0002,
-    PUPPYCAM_BEHAVIOUR_Z_MOVEMENT = 0x0004,
+    PUPPYCAM_BEHAVIOUR_X_MOVEMENT =       0x0001,
+    PUPPYCAM_BEHAVIOUR_Y_MOVEMENT =       0x0002,
+    PUPPYCAM_BEHAVIOUR_Z_MOVEMENT =       0x0004,
 
-    PUPPYCAM_BEHAVIOUR_YAW_ROTATION = 0x0008,
-    PUPPYCAM_BEHAVIOUR_PITCH_ROTATION = 0x0010,
-    PUPPYCAM_BEHAVIOUR_ZOOM_CHANGE = 0x0020,
+    PUPPYCAM_BEHAVIOUR_YAW_ROTATION =     0x0008,
+    PUPPYCAM_BEHAVIOUR_PITCH_ROTATION =   0x0010,
+    PUPPYCAM_BEHAVIOUR_ZOOM_CHANGE =      0x0020,
 
-    PUPPYCAM_BEHAVIOUR_INPUT_NORMAL = 0x0040,
-    PUPPYCAM_BEHAVIOUR_INPUT_8DIR = 0x0080,
-    PUPPYCAM_BEHAVIOUR_INPUT_4DIR = 0x0100,
-    PUPPYCAM_BEHAVIOUR_INPUT_2D = 0x0200,
+    PUPPYCAM_BEHAVIOUR_INPUT_NORMAL =     0x0040,
+    PUPPYCAM_BEHAVIOUR_INPUT_8DIR =       0x0080,
+    PUPPYCAM_BEHAVIOUR_INPUT_4DIR =       0x0100,
+    PUPPYCAM_BEHAVIOUR_INPUT_2D =         0x0200,
 
     PUPPYCAM_BEHAVIOUR_SLIDE_CORRECTION = 0x0400,
-    PUPPYCAM_BEHAVIOUR_TURN_HELPER = 0x0800,
-    PUPPYCAM_BEHAVIOUR_HEIGHT_HELPER = 0x1000,
-    PUPPYCAM_BEHAVIOUR_PANSHIFT = 0x2000,
+    PUPPYCAM_BEHAVIOUR_TURN_HELPER =      0x0800,
+    PUPPYCAM_BEHAVIOUR_HEIGHT_HELPER =    0x1000,
+    PUPPYCAM_BEHAVIOUR_PANSHIFT =         0x2000,
 
-    PUPPYCAM_BEHAVIOUR_COLLISION = 0x4000,
+    PUPPYCAM_BEHAVIOUR_COLLISION =        0x4000,
 
+    PUPPYCAM_BEHAVIOUR_FREE =             0x8000,
 
     PUPPYCAM_BEHAVIOUR_DEFAULT = PUPPYCAM_BEHAVIOUR_X_MOVEMENT | PUPPYCAM_BEHAVIOUR_Y_MOVEMENT | PUPPYCAM_BEHAVIOUR_Z_MOVEMENT |
     PUPPYCAM_BEHAVIOUR_YAW_ROTATION | PUPPYCAM_BEHAVIOUR_PITCH_ROTATION | PUPPYCAM_BEHAVIOUR_ZOOM_CHANGE |

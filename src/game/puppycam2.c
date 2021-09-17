@@ -616,6 +616,8 @@ void puppycam_input_zoom(void)
 
 void puppycam_input_centre(void)
 {
+    if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE)
+        return;
     s32 inputDefault = L_TRIG;
     if (gPuppyCam.options.inputType == 2)
         inputDefault = R_TRIG;
@@ -811,6 +813,9 @@ static void puppycam_input_hold(void)
     f32 ivY = ((gPuppyCam.options.invertY*2)-1)*(gPuppyCam.options.sensitivityY/100.f);
     s8 stickMag[2] = {100, 100};
 
+    if (gPuppyCam.intendedFlags & PUPPYCAM_BEHAVIOUR_FREE)
+        gPuppyCam.flags = PUPPYCAM_BEHAVIOUR_FREE | PUPPYCAM_BEHAVIOUR_YAW_ROTATION | PUPPYCAM_BEHAVIOUR_PITCH_ROTATION;
+
     //Analogue Camera stuff. If it fails to find an input, then it just sets stickmag to 100, which after calculations means the value goes unchanged.
     if (gPuppyCam.options.analogue && gPuppyCam.options.inputType != 2)
     {
@@ -822,7 +827,7 @@ static void puppycam_input_hold(void)
     if (!(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_YAW_ROTATION))
         return;
 
-    if (!gPuppyCam.options.analogue)
+    if (!gPuppyCam.options.analogue && !(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE))
     {
         switch (gPuppyCam.options.inputType)
         {
@@ -834,6 +839,9 @@ static void puppycam_input_hold(void)
     else
     {
         puppycam_input_hold_preset1(ivX);
+        puppycam_input_pitch();
+        puppycam_input_zoom();
+        puppycam_input_centre();
     }
 
     gPuppyCam.framesSinceC[0]++;
@@ -885,7 +893,32 @@ static void puppycam_input_press(void)
         play_sound(SOUND_MENU_CAMERA_ZOOM_IN,gGlobalSoundSource);
     }
     puppycam_input_pitch();
+    puppycam_input_zoom();
+    puppycam_input_centre();
     gPuppyCam.pitchTarget += ((4+gPuppyCam.moveFlagAdd)*gPuppyCam.pitchAcceleration*ivY)*(stickMag*0.01f);
+}
+
+void puppycam_debug_view(void)
+{
+    if (ABS(gPlayer1Controller->rawStickX) > DEADZONE)
+    {
+        gPuppyCam.pos[0] += (gPlayer1Controller->rawStickX/4) * -sins(gPuppyCam.yawTarget);
+        gPuppyCam.pos[2] += (gPlayer1Controller->rawStickX/4) * coss(gPuppyCam.yawTarget);
+    }
+    if (ABS(gPlayer1Controller->rawStickY) > DEADZONE)
+    {
+        gPuppyCam.pos[0] += (gPlayer1Controller->rawStickY/4) * coss(gPuppyCam.yawTarget);
+        gPuppyCam.pos[1] += (gPlayer1Controller->rawStickY/4) * sins(gPuppyCam.pitchTarget);
+        gPuppyCam.pos[2] += (gPlayer1Controller->rawStickY/4) * sins(gPuppyCam.yawTarget);
+    }
+    if (gPlayer1Controller->buttonDown & Z_TRIG || gPlayer1Controller->buttonDown & L_TRIG)
+        gPuppyCam.pos[1] -= 20;
+    if (gPlayer1Controller->buttonDown & R_TRIG)
+        gPuppyCam.pos[1] += 20;
+
+    gPuppyCam.focus[0] = gPuppyCam.pos[0] + (100 *coss(gPuppyCam.yawTarget));
+    gPuppyCam.focus[1] = gPuppyCam.pos[1] + (100 *sins(gPuppyCam.pitchTarget));
+    gPuppyCam.focus[2] = gPuppyCam.pos[2] + (100 *sins(gPuppyCam.yawTarget));
 }
 
 static void puppycam_view_panning(void)
@@ -1222,8 +1255,9 @@ static void puppycam_input_core(void)
     gPuppyCam.moveFlagAdd = 0;
 
     //Decide which input for left and right C buttons to use based on behaviour type.
-    if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_NORMAL)
+    if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_NORMAL || gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE)
         puppycam_input_hold();
+    else
     if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_8DIR || gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_4DIR)
         puppycam_input_press();
 }
@@ -1234,6 +1268,13 @@ static void puppycam_projection(void)
     Vec3s targetPos, targetPos2, targetPos3;
     s16 pitchTotal;
     s32 panD = (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PANSHIFT)/8192;
+
+    if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE)
+    {
+        puppycam_reset_values();
+        puppycam_debug_view();
+        return;
+    }
 
     //Extra behaviours that get tacked onto the projection. Will be completely ignored if there is no target object.
     puppycam_projection_behaviours();
