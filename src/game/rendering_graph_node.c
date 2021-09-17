@@ -215,15 +215,26 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     case 0: renderPhase++; j = 0; i = 0; goto loopBegin;
     case 1: renderPhase++; j = 1;  i = 5; goto loopBegin;
     }
-    gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
-    init_rcp(KEEP_ZBUFFER);
-    gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
-#endif
     if (enableZBuffer != 0)
     {
         gDPPipeSync(gDisplayListHead++);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
+#ifdef VISUAL_DEBUG
+    if (hitboxView)
+        render_debug_boxes(DEBUG_UCODE_REJ);
+#endif
+    gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
+    init_rcp(KEEP_ZBUFFER);
+    gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
+#endif
+
+#ifdef VISUAL_DEBUG
+    if (hitboxView)
+        render_debug_boxes(DEBUG_UCODE_DEFAULT | DEBUG_BOX_CLEAR);
+    if (surfaceView)
+        visual_surface_loop();
+#endif
 }
 
 /**
@@ -939,18 +950,18 @@ static void geo_process_object(struct Object *node) {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
                         debug_box_color(0x800000FF);
-                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
                         debug_box_color(0x8FF00000);
-                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
                     }
                     else
                     {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
                         vec3f_set(bnds2, 30, 30, 30);
                         debug_box_color(0x80FFFFFF);
-                    debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX);
+                    debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ);
                     }
                 }
                 #endif

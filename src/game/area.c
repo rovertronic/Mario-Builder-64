@@ -372,13 +372,6 @@ void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
-        #ifdef VISUAL_DEBUG
-        if (hitboxView)
-            render_debug_boxes();
-        if (surfaceView)
-            visual_surface_loop();
-        #endif
-
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
