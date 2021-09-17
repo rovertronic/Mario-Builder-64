@@ -2911,7 +2911,7 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
 }
 #endif
 
-// Extra functions for ultrasm64-extbounds
+// Extra functions for HackerSM64
 void obj_set_model(struct Object *obj, s32 modelID) {
     obj->header.gfx.sharedChild = gLoadedGraphNodes[modelID];
 }
@@ -2919,5 +2919,15 @@ void obj_set_model(struct Object *obj, s32 modelID) {
 s32 obj_has_model(struct Object *obj, u16 modelID) {
     return (obj->header.gfx.sharedChild == gLoadedGraphNodes[modelID]);
 }
-// End of ultrasm64-extbounds stuff
+
+u32 obj_get_model_id(struct Object *obj) {
+    s32 i;
+    for (i = 0; i < MODEL_ID_COUNT; i++) {
+        if (obj->header.gfx.sharedChild == gLoadedGraphNodes[i]) {
+            return i;
+        }
+    }
+    return 0;
+}
+// End of HackerSM64 stuff
 

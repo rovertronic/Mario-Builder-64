@@ -55,6 +55,7 @@ This is a fork of the ultrasm64 repo by CrashOveride which includes the followin
 - Apply_patch.sh improved
 - Removed the ifdef hell in `file_select.c` and `ingame_menu.c`
 - Added Blake's custom function for object model stuff: `obj_set_model` and `obj_has_model`
+- Added function to get the model ID from an object: `obj_get_model_id` (by Arceveti)
 - The "far" variable is now u16, allowing you to increase the farclip (the max distance at which geometry is rendered). However, when increasing the farclip, make sure to increase the nearclip by the same ratio, or rendering will break on console and LLE plugins. 
 - Many general use defines for object struct members, meant for use in custom object behaviors. Check `object_fields.h` for more info on this. (By MrComit)
 - Included `actors/group0.c` in `behavior_data.c`
