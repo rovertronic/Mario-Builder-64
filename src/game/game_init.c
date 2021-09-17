@@ -389,7 +389,7 @@ void render_init(void) {
 
     // Skip incrementing the initial framebuffer index on emulators so that they display immediately as the Gfx task finishes
     // VC probably emulates osViSwapBuffer accurately so instant patch breaks VC compatibility
-    if (gIsConsole) { // Read RDP Clock Register, has a value of zero on emulators
+    if (gIsConsole || gIsVC) { // Read RDP Clock Register, has a value of zero on emulators
         sRenderingFrameBuffer++;
     }
     gGlobalTimer++;
