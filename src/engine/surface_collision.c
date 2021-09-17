@@ -39,6 +39,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode,
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
+        if (y > surf->upperY)
+            continue;
 
         // Exclude a large number of walls immediately to optimize.
         if (y < surf->lowerY || y > surf->upperY) {
@@ -407,6 +409,8 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
+        if (y < surf->lowerY - 30)
+            continue;
         x1 = surf->vertex1[0];
         z1 = surf->vertex1[2];
         x2 = surf->vertex2[0];
