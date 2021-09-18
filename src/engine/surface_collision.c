@@ -368,35 +368,6 @@ f32 unused_obj_find_floor_height(struct Object *obj) {
 }
 
 /**
- * Basically a local variable that passes through floor geo info.
- */
-struct FloorGeometry sFloorGeo;
-
-UNUSED static u8 unused8038BE50[0x40];
-
-/**
- * Return the floor height underneath (xPos, yPos, zPos) and populate `floorGeo`
- * with data about the floor's normal vector and origin offset. Also update
- * sFloorGeo.
- */
-f32 find_floor_height_and_data(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometry **floorGeo) {
-    struct Surface *floor;
-    f32 floorHeight = find_floor(xPos, yPos, zPos, &floor);
-
-    *floorGeo = NULL;
-
-    if (floor != NULL) {
-        sFloorGeo.normalX = floor->normal.x;
-        sFloorGeo.normalY = floor->normal.y;
-        sFloorGeo.normalZ = floor->normal.z;
-        sFloorGeo.originOffset = floor->originOffset;
-
-        *floorGeo = &sFloorGeo;
-    }
-    return floorHeight;
-}
-
-/**
  * Iterate through the list of floors and find the first floor under a given point.
  */
 static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {

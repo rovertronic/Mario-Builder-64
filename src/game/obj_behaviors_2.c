@@ -548,7 +548,6 @@ static s32 obj_resolve_object_collisions(s32 *targetYaw) {
     f32 radius, otherRadius, relativeRadius;
 
     if (o->numCollidedObjs != 0) {
-#ifdef FIX_RESOLVE_OBJ_COLLISIONS
         s32 i;
         for ((i = 0); (i < o->numCollidedObjs); (i++)) {
             otherObject = o->collidedObjs[i];
@@ -568,38 +567,6 @@ static s32 obj_resolve_object_collisions(s32 *targetYaw) {
                 return TRUE;
             }
         }
-#else
-        f32 newCenterX, newCenterZ;
-        otherObject = o->collidedObjs[0];
-        if (otherObject != gMarioObject) {
-            //! If one object moves after collisions are detected and this code
-            //  runs, the objects can move toward each other (transport cloning)
-
-            dx = otherObject->oPosX - o->oPosX;
-            dz = otherObject->oPosZ - o->oPosZ;
-            angle = atan2s(dx, dz); //! This should be atan2s(dz, dx)
-
-            radius = o->hitboxRadius;
-            otherRadius = otherObject->hitboxRadius;
-            relativeRadius = radius / (radius + otherRadius);
-
-            newCenterX = o->oPosX + dx * relativeRadius;
-            newCenterZ = o->oPosZ + dz * relativeRadius;
-
-            o->oPosX = newCenterX - radius * coss(angle);
-            o->oPosZ = newCenterZ - radius * sins(angle);
-
-            otherObject->oPosX = newCenterX + otherRadius * coss(angle);
-            otherObject->oPosZ = newCenterZ + otherRadius * sins(angle);
-
-            if (targetYaw != NULL && abs_angle_diff(o->oMoveAngleYaw, angle) < 0x4000) {
-                // Bounce off object (or it would, if the above atan2s bug
-                // were fixed)
-                *targetYaw = (s16)(angle - o->oMoveAngleYaw + angle + 0x8000);
-                return TRUE;
-            }
-        }
-#endif
     }
 
     return FALSE;

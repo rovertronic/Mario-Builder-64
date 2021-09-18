@@ -64,7 +64,7 @@ void butterfly_act_follow_mario(void);
 void butterfly_act_return_home(void);
 void bhv_butterfly_loop(void);
 void bhv_hoot_init(void);
-f32 hoot_find_next_floor(struct FloorGeometry **arg0, f32 arg1);
+f32  hoot_find_next_floor(f32 dist);
 void hoot_floor_bounce(void);
 void hoot_free_step(s16 fastOscY, s32 speed);
 void hoot_player_set_yaw(void);

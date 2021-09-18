@@ -948,7 +948,7 @@ void audio_init() {
 #if defined(VERSION_JP) || defined(VERSION_US)
     u8 buf[0x10];
 #endif
-    s32 i, j, k;
+    s32 i, /*j,*/ k;
     UNUSED s32 lim1; // lim1 unused in EU
 #if defined(VERSION_EU)
     UNUSED u8 buf[0x10];
