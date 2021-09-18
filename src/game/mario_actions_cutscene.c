@@ -534,6 +534,7 @@ s32 act_reading_sign(struct MarioState *m) {
 }
 
 s32 act_debug_free_move(struct MarioState *m) {
+    struct WallCollisionData wallData;
     struct Surface *surf;
     f32 floorHeight;
     Vec3f pos;
@@ -561,7 +562,7 @@ s32 act_debug_free_move(struct MarioState *m) {
         pos[2] += 32.0f * speed * coss(m->intendedYaw);
     }
 
-    resolve_and_return_wall_collisions(pos, 60.0f, 50.0f);
+    resolve_and_return_wall_collisions(pos, 60.0f, 50.0f, &wallData);
 
     floorHeight = find_floor(pos[0], pos[1], pos[2], &surf);
     if (surf != NULL) {

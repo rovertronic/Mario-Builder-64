@@ -516,41 +516,6 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
 }
 
 /**
- * Collides with walls and returns the most recent wall.
- */
-struct Surface *resolve_and_return_wall_collisions(Vec3f pos, f32 offset, f32 radius) {
-    struct WallCollisionData collisionData;
-    struct Surface *wall = NULL;
-
-    collisionData.x = pos[0];
-    collisionData.y = pos[1];
-    collisionData.z = pos[2];
-    collisionData.radius = radius;
-    collisionData.offsetY = offset;
-
-    if (find_wall_collisions(&collisionData)) {
-        wall = collisionData.walls[collisionData.numWalls - 1];
-    }
-
-    pos[0] = collisionData.x;
-    pos[1] = collisionData.y;
-    pos[2] = collisionData.z;
-
-    // This only returns the most recent wall and can also return NULL
-    // there are no wall collisions.
-    return wall;
-}
-
-/**
- * Finds the ceiling from a vec3f horizontally and a height (with 80 vertical buffer).
- */
-f32 vec3f_find_ceil(Vec3f pos, f32 height, struct Surface **ceil) {
-    UNUSED f32 unused;
-
-    return find_ceil(pos[0], height + 3.0f, pos[2], ceil);
-}
-
-/**
  * Determines if Mario is facing "downhill."
  */
 s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
@@ -1370,7 +1335,7 @@ void update_mario_geometry_inputs(struct MarioState *m) {
         m->floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &m->floor);
     }
 
-    m->ceilHeight = vec3f_find_ceil(m->pos, m->pos[1], &m->ceil);
+    m->ceilHeight = find_ceil(m->pos[0], m->pos[1] + 3.0f, m->pos[2], &m->ceil);
     gasLevel = find_poison_gas_level(m->pos[0], m->pos[2]);
     m->waterLevel = find_water_level(m->pos[0], m->pos[2]);
 

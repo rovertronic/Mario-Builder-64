@@ -68,15 +68,17 @@ static f32 get_buoyancy(struct MarioState *m) {
 }
 
 static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
+    struct WallCollisionData wallData;
     struct Surface *wall;
     struct Surface *ceil;
     struct Surface *floor;
     f32 ceilHeight;
     f32 floorHeight;
 
-    wall = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
+    resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f, &wallData);
+	wall = wallData.numWalls == 0 ? NULL : wallData.walls[0];
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
-    ceilHeight = vec3f_find_ceil(nextPos, nextPos[1], &ceil);
+    ceilHeight = find_ceil(nextPos[0], nextPos[1] + 3.0f, nextPos[2], &ceil);
 
     if (floor == NULL) {
         return WATER_STEP_CANCELLED;

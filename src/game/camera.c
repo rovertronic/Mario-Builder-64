@@ -4010,7 +4010,7 @@ s32 collide_with_walls(Vec3f pos, f32 offsetY, f32 radius) {
     f32 originOffset;
     f32 offset;
     f32 offsetAbsolute;
-    Vec3f newPos[4];
+    Vec3f newPos[MAX_REFEREMCED_WALLS];
     s32 i;
     s32 numCollisions = 0;
 

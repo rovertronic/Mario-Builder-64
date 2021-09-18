@@ -129,6 +129,8 @@
 //#define VISUAL_DEBUG
 // Number of supported areas per level.
 #define AREA_COUNT 8
+// Number of walls that can push Mario at once.
+#define MAX_REFEREMCED_WALLS 4
 // Lightweight directional lighting engine by Fazana. Intended for giving proximity and positional pointlights to small objects.
 //#define PUPPYLIGHTS
 // Open all courses and doors. Used for debugging purposes to unlock all content.

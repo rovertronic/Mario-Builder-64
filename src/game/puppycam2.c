@@ -1446,6 +1446,7 @@ static void puppycam_script(void)
 //Handles collision detection using ray casting.
 static void puppycam_collision(void)
 {
+    struct WallCollisionData wall0, wall1;
     struct Surface *surf[2];
     Vec3f camdir[2];
     Vec3f hitpos[2];
@@ -1475,8 +1476,8 @@ static void puppycam_collision(void)
 
     find_surface_on_ray(target[0], camdir[0], &surf[0], hitpos[0], RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     find_surface_on_ray(target[1], camdir[1], &surf[1], hitpos[1], RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
-    resolve_and_return_wall_collisions(hitpos[0], 0.0f, 25.0f);
-    resolve_and_return_wall_collisions(hitpos[1], 0.0f, 25.0f);
+    resolve_and_return_wall_collisions(hitpos[0], 0.0f, 25.0f, &wall0);
+    resolve_and_return_wall_collisions(hitpos[1], 0.0f, 25.0f, &wall1);
     dist[0] = ((target[0][0] - hitpos[0][0]) * (target[0][0] - hitpos[0][0]) + (target[0][1] - hitpos[0][1]) * (target[0][1] - hitpos[0][1]) + (target[0][2] - hitpos[0][2]) * (target[0][2] - hitpos[0][2]));
     dist[1] = ((target[1][0] - hitpos[1][0]) * (target[1][0] - hitpos[1][0]) + (target[1][1] - hitpos[1][1]) * (target[1][1] - hitpos[1][1]) + (target[1][2] - hitpos[1][2]) * (target[1][2] - hitpos[1][2]));
 
