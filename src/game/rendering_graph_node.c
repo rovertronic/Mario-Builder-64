@@ -168,7 +168,11 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     //Load rejection on pass 2. ZEX is loaded afterwards.
     if (renderPhase == 0 || renderPhase == 2)
     {
-        gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
+        if (gIsConsole) {
+            gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
+        } else {
+            gSPLoadUcodeL(gDisplayListHead++, gspF3DEX2_Rej_fifo);
+        }
         init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
     }
@@ -213,7 +217,7 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     switch (renderPhase)
     {
     case 0: renderPhase++; j = 0; i = 0; goto loopBegin;
-    case 1: renderPhase++; j = 1;  i = 5; goto loopBegin;
+    case 1: renderPhase++; j = 1; i = 5; goto loopBegin;
     }
     if (enableZBuffer != 0)
     {

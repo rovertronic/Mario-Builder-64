@@ -44,6 +44,11 @@ glabel gspF3DZEX2_PosLight_fifoTextStart
 glabel gspF3DZEX2_PosLight_fifoTextEnd
 
 .balign 16
+glabel gspF3DEX2_Rej_fifoTextStart
+	.incbin "lib/PR/f3dex2/F3DEX2_Rej.bin"
+glabel gspF3DEX2_Rej_fifoTextEnd
+
+.balign 16
 glabel gspF3DLX2_Rej_fifoTextStart
 	.incbin "lib/PR/f3dex2/F3DLX2_Rej.bin"
 glabel gspF3DLX2_Rej_fifoTextEnd
@@ -192,12 +197,17 @@ glabel gspFast3D_fifoDataEnd
 glabel gspF3DEX2_fifoDataStart
 	.incbin "lib/PR/f3dex2/F3DEX2_data.bin"
 glabel gspF3DEX2_fifoDataEnd
-	
+
 .balign 16
 glabel gspF3DZEX2_PosLight_fifoDataStart
 	.incbin "lib/PR/f3dzex/F3DZEX_data.bin"
 glabel gspF3DZEX2_PosLight_fifoDataEnd
-	
+
+.balign 16
+glabel gspF3DEX2_Rej_fifoDataStart
+	.incbin "lib/PR/f3dex2/F3DEX2_Rej_data.bin"
+glabel gspF3DEX2_Rej_fifoDataEnd
+
 .balign 16
 glabel gspF3DLX2_Rej_fifoDataStart
 	.incbin "lib/PR/f3dex2/F3DLX2_Rej_data.bin"
