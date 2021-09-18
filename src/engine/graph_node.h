@@ -5,6 +5,7 @@
 #include <PR/gbi.h>
 
 #include "types.h"
+#include "sm64.h"
 #include "game/memory.h"
 
 #define UCODE_DEFAULT 0
@@ -46,7 +47,7 @@
 
 // The number of master lists. A master list determines the order and render
 // mode with which display lists are drawn.
-#define GFX_NUM_MASTER_LISTS 8
+#define GFX_NUM_MASTER_LISTS (LAYER_LAST_ALL + 1)
 
 // Passed as first argument to a GraphNodeFunc to give information about in
 // which context it was called and what it is expected to do.

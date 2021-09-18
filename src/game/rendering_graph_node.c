@@ -76,9 +76,76 @@ s16 *gCurAnimData;
 struct AllocOnlyPool *gDisplayListHeap;
 
 struct RenderModeContainer {
-    u32 modes[8];
+    u32 modes[GFX_NUM_MASTER_LISTS];
 };
 
+#if SILHOUETTE
+/* Rendermode settings for cycle 1 for all 13 layers. */
+struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
+    G_RM_OPA_SURF,                      // LAYER_FORCE
+    G_RM_AA_OPA_SURF,                   // LAYER_OPAQUE
+    G_RM_AA_OPA_SURF,                   // LAYER_OPAQUE_INTER
+    G_RM_AA_OPA_SURF,                   // LAYER_OPAQUE_DECAL
+    G_RM_AA_TEX_EDGE,                   // LAYER_ALPHA
+    G_RM_AA_TEX_EDGE | ZMODE_DEC,       // LAYER_ALPHA_DECAL
+    G_RM_AA_OPA_SURF,                   // LAYER_SILHOUETTE_OPAQUE
+    G_RM_AA_TEX_EDGE,                   // LAYER_SILHOUETTE_ALPHA
+    G_RM_AA_OPA_SURF,                   // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
+    G_RM_AA_TEX_EDGE,                   // LAYER_OCCLUDE_SILHOUETTE_ALPHA
+    G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_DECAL
+    G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT
+    G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_INTER
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF,                   // LAYER_FORCE
+    G_RM_AA_ZB_OPA_SURF,                // LAYER_OPAQUE
+    G_RM_AA_ZB_OPA_INTER,               // LAYER_OPAQUE_INTER
+    G_RM_AA_ZB_OPA_DECAL,               // LAYER_OPAQUE_DECAL
+    G_RM_AA_ZB_TEX_EDGE,                // LAYER_ALPHA
+    G_RM_AA_ZB_TEX_EDGE | ZMODE_DEC,    // LAYER_ALPHA_DECAL
+    G_RM_AA_ZB_OPA_SURF,                // LAYER_SILHOUETTE_OPAQUE
+    G_RM_AA_ZB_TEX_EDGE,                // LAYER_SILHOUETTE_ALPHA
+    G_RM_AA_ZB_OPA_SURF,                // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
+    G_RM_AA_ZB_TEX_EDGE,                // LAYER_OCCLUDE_SILHOUETTE_ALPHA
+    G_RM_AA_ZB_XLU_DECAL,               // LAYER_TRANSPARENT_DECAL
+    G_RM_AA_ZB_XLU_SURF,                // LAYER_TRANSPARENT
+    G_RM_AA_ZB_XLU_INTER,               // LAYER_TRANSPARENT_INTER
+    } } };
+
+/* Rendermode settings for cycle 2 for all 13 layers. */
+struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
+    G_RM_OPA_SURF2,                     // LAYER_FORCE
+    G_RM_AA_OPA_SURF2,                  // LAYER_OPAQUE
+    G_RM_AA_OPA_SURF2,                  // LAYER_OPAQUE_INTER
+    G_RM_AA_OPA_SURF2,                  // LAYER_OPAQUE_DECAL
+    G_RM_AA_TEX_EDGE2,                  // LAYER_ALPHA
+    G_RM_AA_TEX_EDGE2 | ZMODE_DEC,      // LAYER_ALPHA_DECAL
+    G_RM_AA_OPA_SURF2,                  // LAYER_SILHOUETTE_OPAQUE
+    G_RM_AA_TEX_EDGE2,                  // LAYER_SILHOUETTE_ALPHA
+    G_RM_AA_OPA_SURF2,                  // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
+    G_RM_AA_TEX_EDGE2,                  // LAYER_OCCLUDE_SILHOUETTE_ALPHA
+    G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_DECAL
+    G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT
+    G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_INTER
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF2,                  // LAYER_FORCE
+    G_RM_AA_ZB_OPA_SURF2,               // LAYER_OPAQUE
+    G_RM_AA_ZB_OPA_INTER2,              // LAYER_OPAQUE_INTER
+    G_RM_AA_ZB_OPA_DECAL2,              // LAYER_OPAQUE_DECAL
+    G_RM_AA_ZB_TEX_EDGE2,               // LAYER_ALPHA
+    G_RM_AA_ZB_TEX_EDGE2 | ZMODE_DEC,   // LAYER_ALPHA_DECAL
+    G_RM_AA_ZB_OPA_SURF2,               // LAYER_SILHOUETTE_OPAQUE
+    G_RM_AA_ZB_TEX_EDGE2,               // LAYER_SILHOUETTE_ALPHA
+    G_RM_AA_ZB_OPA_SURF2,               // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
+    G_RM_AA_ZB_TEX_EDGE2,               // LAYER_OCCLUDE_SILHOUETTE_ALPHA
+    G_RM_AA_ZB_XLU_DECAL2,              // LAYER_TRANSPARENT_DECAL
+    G_RM_AA_ZB_XLU_SURF2,               // LAYER_TRANSPARENT
+    G_RM_AA_ZB_XLU_INTER2,              // LAYER_TRANSPARENT_INTER
+    } } };
+#else
 /* Rendermode settings for cycle 1 for all 8 layers. */
 struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     G_RM_OPA_SURF,
@@ -124,6 +191,7 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_AA_ZB_XLU_DECAL2,
     G_RM_AA_ZB_XLU_INTER2,
     } } };
+#endif
 
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
 struct GraphNodeMasterList *gCurGraphNodeMasterList = NULL;
@@ -137,6 +205,26 @@ u16 gAreaUpdateCounter = 0;
 LookAt lookAt;
 #endif
 
+#if SILHOUETTE
+#define SIL_CVG_THRESHOLD    0x3F // 32..255, 63 seems to give best results
+#define SCHWA (AA_EN | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | CVG_X_ALPHA | FORCE_BL)
+#define SET_SILHOUETTE_F3D(gfx) {                                                                    \
+    gDPSetRenderMode(  (gfx)++, (SCHWA | GBL_c1(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA)),  \
+                                (SCHWA | GBL_c2(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA))); \
+    gSPSetGeometryMode((gfx)++, G_FOG);                      /* Enable fog                  */       \
+    gSPFogPosition(    (gfx)++, 0, 1 );                      /* Fox position                */       \
+    gDPSetFogColor(    (gfx)++, 0, 0, 0, SILHOUETTE       ); /* silhouette color & alpha    */       \
+    gDPSetEnvColor(    (gfx)++, 0, 0, 0, SIL_CVG_THRESHOLD); /* silhouette env transparency */       \
+}
+#define CLEAR_SILHOUETTE_F3D(gfx, i) {                                                                 \
+    gSPClearGeometryMode((gfx)++, G_FOG             );               /* Disable fog                 */ \
+    gDPSetEnvColor(      (gfx)++, 255, 255, 255, 255);               /* Reset env color & alpha     */ \
+    gDPSetRenderMode(    (gfx)++, (mode1List->modes[(i)] & ~IM_RD),                                    \
+                                  (mode2List->modes[(i)] & ~IM_RD)); /* Use normal mode list, no AA */ \
+}
+#define IS_LAYER_SILHOUETTE(layer) (((layer) >= LAYER_SILHOUETTE_FIRST) || ((layer) <= LAYER_SILHOUETTE_LAST))
+#endif
+
 u8 ucodeTestSwitch = 1;
 
 /**
@@ -148,11 +236,11 @@ u8 ucodeTestSwitch = 1;
  */
 static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
-    s32 i = 0;
-    s32 j = 1;
+    s32 startLayer, endLayer, currLayer = LAYER_FORCE;
+    s32 headsIndex = 1;
     s32 renderPhase = 0;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
-    struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
+    struct RenderModeContainer *mode1List = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
     // @bug This is where the LookAt values should be calculated but aren't.
     // As a result, environment mapping is broken on Fast3DEX2 without the
@@ -166,9 +254,23 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     //print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
 #ifdef F3DZEX_GBI_2
     loopBegin:
-    //Load rejection on pass 2. ZEX is loaded afterwards.
-    if (renderPhase == 0 || renderPhase == 2)
-    {
+    switch (renderPhase) {
+#if SILHOUETTE
+        case RENDER_PHASE_REJ_ZB:                 headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FORCE;                    endLayer = LAYER_LAST_BEFORE_SILHOUETTE;  break;
+        case RENDER_PHASE_ZEX_BEFORE_SILHOUETTE:  headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_FORCE;                    endLayer = LAYER_LAST_BEFORE_SILHOUETTE;  break;
+        case RENDER_PHASE_REJ_SILHOUETTE:         headsIndex = LIST_HEADS_REJ; startLayer = LAYER_SILHOUETTE_FIRST;         endLayer = LAYER_SILHOUETTE_LAST;         break;
+        case RENDER_PHASE_REJ_NON_SILHOUETTE:     headsIndex = LIST_HEADS_REJ; startLayer = LAYER_SILHOUETTE_FIRST;         endLayer = LAYER_SILHOUETTE_LAST;         break;
+        case RENDER_PHASE_REJ_OCCLUDE_SILHOUETTE: headsIndex = LIST_HEADS_REJ; startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST; endLayer = LAYER_OCCLUDE_SILHOUETTE_LAST; break;
+        case RENDER_PHASE_ZEX_AFTER_SILHOUETTE:   headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST; endLayer = LAYER_LAST_ALL;                break;
+        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = LAYER_LAST_ALL;                break;
+#else
+        case RENDER_PHASE_REJ_ZB:                 headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FORCE;                    endLayer = LAYER_ZB_LAST;                 break;
+        case RENDER_PHASE_ZEX_ALL:                headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_FORCE;                    endLayer = LAYER_LAST_ALL;                break;
+        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = LAYER_LAST_ALL;                break;
+#endif
+    }
+    // Load rejection on pass 2. ZEX is loaded afterwards.
+    if (headsIndex == LIST_HEADS_REJ) {
         if (gIsConsole) {
             gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo);
         } else {
@@ -176,52 +278,49 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         }
         init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
-    }
-    else
-    if (renderPhase == 1)
-    {
+    } else {
         gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
         init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
     }
     gSPLookAt(gDisplayListHead++, &lookAt);
 #endif
-    if (enableZBuffer != 0)
-    {
+    if (enableZBuffer) {
         gDPPipeSync(gDisplayListHead++);
         gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
-    for (; i < GFX_NUM_MASTER_LISTS; i++)
-    {
-#ifdef F3DZEX_GBI_2
-        if (i == 5 && renderPhase == 0)
-            break;
+    for (currLayer = startLayer; currLayer <= endLayer; currLayer++) {
+        currList = node->listHeads[headsIndex][currLayer];
+        while (currList != NULL) {
+#if SILHOUETTE
+            if (renderPhase == RENDER_PHASE_REJ_SILHOUETTE) {
+                SET_SILHOUETTE_F3D(gDisplayListHead);
+            } else if (renderPhase == RENDER_PHASE_REJ_NON_SILHOUETTE) {
+                CLEAR_SILHOUETTE_F3D(gDisplayListHead, currLayer);
+            } else {
 #endif
-        if ((currList = node->listHeads[j][i]) != NULL)
-        {
-            gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
-            while (currList != NULL)
-            {
-                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-                gSPDisplayList(gDisplayListHead++, currList->displayList);
-                currList = currList->next;
+                gDPSetRenderMode(gDisplayListHead++, mode1List->modes[currLayer], mode2List->modes[currLayer]);
+#if SILHOUETTE
             }
+#endif
+            gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            gSPDisplayList(gDisplayListHead++, currList->displayList);
+            currList = currList->next;
         }
     }
-#ifdef F3DZEX_GBI_2
-    switch (renderPhase)
-    {
-    case 0: renderPhase++; j = 0; i = 0; goto loopBegin;
-    case 1: renderPhase++; j = 1; i = 5; goto loopBegin;
+    if (renderPhase < RENDER_PHASE_LAST) {
+        renderPhase++;
+        goto loopBegin;
     }
-    if (enableZBuffer != 0)
-    {
+#ifdef F3DZEX_GBI_2
+    if (enableZBuffer) {
         gDPPipeSync(gDisplayListHead++);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
 #ifdef VISUAL_DEBUG
-    if (hitboxView)
+    if (hitboxView) {
         render_debug_boxes(DEBUG_UCODE_REJ);
+    }
 #endif
     gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
     init_rcp(KEEP_ZBUFFER);
@@ -229,12 +328,18 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 #endif
 
 #ifdef VISUAL_DEBUG
-    if (hitboxView)
+    if (hitboxView) {
         render_debug_boxes(DEBUG_UCODE_DEFAULT | DEBUG_BOX_CLEAR);
-    if (surfaceView)
+    }
+    if (surfaceView) {
         visual_surface_loop();
+    }
 #endif
 }
+#if SILHOUETTE
+#undef SIL_CVG_THRESHOLD
+#undef SCHWA
+#endif
 
 /**
  * Appends the display list to one of the master lists based on the layer

@@ -179,6 +179,12 @@
 #define DISABLE_AA
 // Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
 #define IA8_COINS
+// Mario's silhouette when behind solid objects/surfaces
+// Also enables new render layers, such as LAYER_ALPHA_DECAL.
+// The number is the intensity of the silhouette, from 0-255.
+// NOTE: The overlap between Mario's model parts is visible on certain HLE plugins.
+// Also, this also disables anti-aliasing on Mario, and the outermost pixel edges of the silhouette are slightly visible on Mario's normal model at lower resolutions.
+#define SILHOUETTE 127
 // Use a much better implementation of reverb over vanilla's fake echo reverb. Great for caves or eerie levels, as well as just a better audio experience in general.
 // Reverb parameters can be configured in audio/synthesis.c to meet desired aesthetic/performance needs. Currently US/JP only.
 //#define BETTER_REVERB
