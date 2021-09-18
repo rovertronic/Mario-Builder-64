@@ -154,12 +154,13 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
-
-    if (enableZBuffer != 0)
-    {
-        gDPPipeSync(gDisplayListHead++);
-        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
-    }
+    // @bug This is where the LookAt values should be calculated but aren't.
+    // As a result, environment mapping is broken on Fast3DEX2 without the
+    // changes below.
+#ifdef F3DEX_GBI_2
+    Mtx lMtx;
+    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+#endif
     //if (gPlayer1Controller->buttonPressed & L_TRIG)
     //    ucodeTestSwitch ^= 1;
     //print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
@@ -183,19 +184,13 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         init_rcp(KEEP_ZBUFFER);
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
     }
+    gSPLookAt(gDisplayListHead++, &lookAt);
+#endif
     if (enableZBuffer != 0)
     {
         gDPPipeSync(gDisplayListHead++);
         gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
-#endif
-    // @bug This is where the LookAt values should be calculated but aren't.
-    // As a result, environment mapping is broken on Fast3DEX2 without the
-    // changes below.
-#ifdef F3DEX_GBI_2
-    Mtx lMtx;
-    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
-#endif
     for (; i < GFX_NUM_MASTER_LISTS; i++)
     {
 #ifdef F3DZEX_GBI_2
