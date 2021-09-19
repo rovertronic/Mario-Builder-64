@@ -270,7 +270,7 @@ void draw_stacktrace(OSThread *thread, s32 cause) {
 
     osWritebackDCacheAll();
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 18; i++) {
         if ((u32) find_function_in_stack == 0x80345678) {
             crash_screen_print(30, 45 + (i * 10), "STACK TRACE DISABLED");
             break;
