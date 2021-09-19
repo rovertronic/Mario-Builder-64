@@ -4,6 +4,8 @@
 #include <string.h>
 #include "segments.h"
 
+#define STACK_TRAVERSAL_LIMIT 100
+
 struct MapEntry {
 	u32 addr;
 	u32 nm_offset;
@@ -49,8 +51,38 @@ char *parse_map(u32 pc) {
 	}
 
 	if (i == gMapEntrySize - 1) {
-		return "Unknown";
+		return NULL;
 	} else {
 		return (char*) ((u32)gMapStrings + gMapEntries[i - 1].nm_offset);
 	}
 }
+
+extern u8 _mainSegmentStart[];
+extern u8 _mainSegmentTextEnd[];
+extern u8 _engineSegmentStart[];
+extern u8 _engineSegmentTextEnd[];
+extern u8 _goddardSegmentStart[];
+extern u8 _goddardSegmentTextEnd[];
+
+char *find_function_in_stack(u32 *sp) {
+	for (int i = 0; i < STACK_TRAVERSAL_LIMIT; i++) {
+		u32 val = *sp;
+		val = *(u32 *)val;
+		*sp = *sp + 4;
+
+		if ((val >= (u32)_mainSegmentStart) && (val <= (u32)_mainSegmentTextEnd)) {
+			return parse_map(val);
+		}
+		else if ((val >= (u32)_engineSegmentStart) && (val <= (u32)_engineSegmentTextEnd)) {
+			return parse_map(val);
+		}
+		else if ((val >= (u32)_goddardSegmentStart) && (val <= (u32)_goddardSegmentTextEnd)) {
+			return parse_map(val);
+		}
+
+
+	}
+	return NULL;
+}
+
+
