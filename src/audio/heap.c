@@ -1292,7 +1292,7 @@ void audio_reset_session(void) {
 #if defined(VERSION_JP) || defined(VERSION_US)
     s8 updatesPerFrame;
 #endif
-#ifdef PUPPYPRINT
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
 #endif
     s32 j;
@@ -1507,7 +1507,7 @@ void audio_reset_session(void) {
         gAudioLoadLock = AUDIO_LOCK_NOT_LOADING;
     }
 #endif
-#ifdef PUPPYPRINT
+#if PUPPYPRINT_DEBUG
     append_puppyprint_log("Audio Initialised in %dus.", (s32)OS_CYCLES_TO_USEC(osGetTime() - first));
 #endif
     sAudioFirstBoot = 1;
