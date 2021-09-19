@@ -6,6 +6,7 @@
 #include "types.h"
 #include "puppyprint.h"
 #include "audio/external.h"
+#include "farcall.h"
 
 #include "sm64.h"
 
@@ -54,6 +55,8 @@ char *gFpcsrDesc[6] = {
 
 
 extern u64 osClockRate;
+extern far char *parse_map(u32);
+extern far void map_data_init(void);
 
 struct {
     OSThread thread;
@@ -154,7 +157,7 @@ void crash_screen_print_float_reg(s32 x, s32 y, s32 regNum, void *addr) {
     if ((exponent >= -0x7e && exponent <= 0x7f) || bits == 0) {
         crash_screen_print(x, y, "F%02d:%.3e", regNum, *(f32 *) addr);
     } else {
-        crash_screen_print(x, y, "F%02d:%08X", regNum, *(u32 *) addr);
+        crash_screen_print(x, y, "F%02d:%08XD", regNum, *(u32 *) addr);
     }
 }
 
@@ -198,8 +201,14 @@ void draw_crash_screen(OSThread *thread) {
 #endif
     crash_screen_draw_rect(25, 45, 270, 185);
 #if !PUPPYPRINT_DEBUG
-    crash_screen_print(30, 50, "AT:%08XH   V0:%08XH   V1:%08XH", (u32) tc->at, (u32) tc->v0,
+    if ((u32)parse_map == 0x80345678) {
+        crash_screen_print(30, 50, "AT:%08XH   V0:%08XH   V1:%08XH", (u32) tc->at, (u32) tc->v0,
                        (u32) tc->v1);
+    } else {
+        crash_screen_print(30, 50, "CRASH AT: %s", parse_map(tc->pc));
+    }
+    // crash_screen_print(30, 50, "AT:%08XH   V0:%08XH   V1:%08XH", (u32) tc->at, (u32) tc->v0,
+    //                    (u32) tc->v1);
     crash_screen_print(30, 60, "A0:%08XH   A1:%08XH   A2:%08XH", (u32) tc->a0, (u32) tc->a1,
                        (u32) tc->a2);
     crash_screen_print(30, 70, "A3:%08XH   T0:%08XH   T1:%08XH", (u32) tc->a3, (u32) tc->t0,
@@ -286,6 +295,9 @@ void thread2_crash_screen(UNUSED void *arg) {
         profiler_update(faultTime, first);
 #endif
     } while (thread == NULL);
+    if ((u32) map_data_init != 0x80345678) {
+        map_data_init();
+    }
     gCrashScreen.thread.priority = 15;
     stop_sounds_in_continuous_banks();
     stop_background_music(sBackgroundMusicQueue[0].seqId);
