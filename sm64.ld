@@ -175,6 +175,7 @@ SECTIONS
       */libhvqm2.a:*.o(.text);
       BUILD_DIR/lib/rsp.o(.text);   
       lib/PR/hvqm/hvqm2sp1.o(.text);
+      _mainSegmentTextEnd = .;
 
       /* data */
       BUILD_DIR/src/boot*.o(.*data*);
@@ -243,6 +244,7 @@ SECTIONS
    {
       BUILD_DIR/src/game*.o(.text);
       BUILD_DIR/src/engine*.o(.text);
+      _engineSegmentTextEnd = .;
       /* data */
       BUILD_DIR/src/game*.o(.*data*);
       BUILD_DIR/src/engine*.o(.data*);
@@ -336,6 +338,7 @@ SECTIONS
    BEGIN_SEG(goddard, RAM_END - GODDARD_SIZE)
    {
       KEEP(BUILD_DIR/src/menu*.o(.text));
+      _goddardSegmentTextEnd = .;
       KEEP(BUILD_DIR/src/menu*.o(.data*));
       KEEP(BUILD_DIR/src/menu*.o(.rodata*));
    #ifdef KEEP_MARIO_HEAD
