@@ -577,12 +577,13 @@ void run_demo_inputs(void) {
 /**
  * Update the controller struct with available inputs if present.
  */
-void read_controller_inputs(void) {
+void read_controller_inputs(s32 threadID) {
     s32 i;
 
     // If any controllers are plugged in, update the controller information.
     if (gControllerBits) {
-        osRecvMesg(&gSIEventMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        if (threadID == 5)
+            osRecvMesg(&gSIEventMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         osContGetReadData(&gControllerPads[0]);
 #if ENABLE_RUMBLE
         release_rumble_pak_control();
@@ -765,7 +766,7 @@ void thread5_game_loop(UNUSED void *arg) {
 
         audio_game_loop_tick();
         select_gfx_pool();
-        read_controller_inputs();
+        read_controller_inputs(5);
         addr = level_script_execute(addr);
         #if PUPPYPRINT_DEBUG == 0 && defined(VISUAL_DEBUG)
         debug_box_input();

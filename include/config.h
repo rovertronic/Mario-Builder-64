@@ -76,6 +76,8 @@
 #define HANGING_SPEED 12.f
 // Makes Mario face the direction of the analog stick directly while hanging from a ceiling, without doing "semicircles"
 #define TIGHTER_HANGING_CONTROLS
+// Fixes Mario's turn radius by making it dependent on forward speed.
+#define FIX_GROUND_TURN_RADIUS
 // Makes Mario turn around instantly when moving on the ground
 //#define SUPER_RESPONSIVE_CONTROLS
 // Disables fall damage

@@ -434,6 +434,11 @@ s32 update_decelerating_speed(struct MarioState *m) {
     return stopped;
 }
 
+s32 analog_stick_held_back(struct MarioState *m) {
+    s16 intendedDYaw = m->intendedYaw - m->faceAngle[1];
+    return intendedDYaw < -0x471C || intendedDYaw > 0x471C;
+}
+
 void update_walking_speed(struct MarioState *m) {
     f32 maxTargetSpeed;
     f32 targetSpeed;
@@ -461,9 +466,30 @@ void update_walking_speed(struct MarioState *m) {
     if (m->forwardVel > 48.0f) {
         m->forwardVel = 48.0f;
     }
-    
-#ifdef SUPER_RESPONSIVE_CONTROLS
-    m->faceAngle[1] = m->intendedYaw;
+
+#ifdef FIX_GROUND_TURN_RADIUS
+    if ((m->forwardVel < 0.0f) && (m->heldObj == NULL) && !(m->action & ACT_FLAG_SHORT_HITBOX)) {
+        m->faceAngle[1] += 0x8000;
+        m->forwardVel *= -1.0f;
+    }
+    if (analog_stick_held_back(m) && (m->heldObj == NULL) && !(m->action & ACT_FLAG_SHORT_HITBOX)) {
+        set_mario_action(m, ACT_TURNING_AROUND, 0);
+        if (m->forwardVel < 10.0f) {
+            m->faceAngle[1] = m->intendedYaw;
+        }
+    } else {
+        s16 turnRange = (0xFFF - (m->forwardVel * 0x20));
+        if (turnRange < 0x800) {
+            turnRange = 0x800;
+            set_mario_action(m, ACT_TURNING_AROUND, 0);
+        } else if (turnRange > 0xFFF) {
+            turnRange = 0xFFF;
+        }
+        m->faceAngle[1] =
+            m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
+    }
+#elif SUPER_RESPONSIVE_CONTROLS
+    m->faceAngle[1] =  m->intendedYaw;
 #else
     m->faceAngle[1] =
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
@@ -482,11 +508,6 @@ s32 should_begin_sliding(struct MarioState *m) {
     }
 
     return FALSE;
-}
-
-s32 analog_stick_held_back(struct MarioState *m) {
-    s16 intendedDYaw = m->intendedYaw - m->faceAngle[1];
-    return intendedDYaw < -0x471C || intendedDYaw > 0x471C;
 }
 
 s32 check_ground_dive_or_punch(struct MarioState *m) {
