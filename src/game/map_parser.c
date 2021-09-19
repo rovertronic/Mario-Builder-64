@@ -15,8 +15,6 @@ extern struct MapEntry gMapEntries[];
 extern u32 gMapEntrySize;
 extern u8 _mapDataSegmentRomStart[];
 
-u8 *gMapStringAddr;
-struct MapEntry *gMapEntryAddr;
 
 // code provided by Wiseguy
 static s32 headless_dma(u32 devAddr, void *dramAddr, u32 size)
