@@ -275,6 +275,10 @@ void draw_stacktrace(OSThread *thread, s32 cause) {
             crash_screen_print(30, 45 + (i * 10), "STACK TRACE DISABLED");
             break;
         } else {
+            if ((u32) find_function_in_stack == 0x80345678) {
+                return;
+            }
+
             char *fname = find_function_in_stack(&temp_sp);
             if (fname == NULL || (*(u32*)temp_sp & 0x80000000 == 0)) {
                 crash_screen_print(30, 45 + (i * 10), "%08X: UNKNOWN", temp_sp);
