@@ -144,6 +144,15 @@ SECTIONS
    . = _hvqbufSegmentBssEnd;
 #endif
 
+/* hardcoded symbols to satisfy preliminary link for map parser */
+#ifndef DEBUG_MAP_STACKTRACE
+      parse_map = 0x80345678;
+      _mapDataSegmentRomStart = 0;
+      gMapEntries = 0;
+      gMapEntrySize = 0;
+      gMapStrings = 0;
+#endif
+
    BEGIN_SEG(main, .) SUBALIGN(16)
    {
       KEEP(BUILD_DIR/asm/entry.o(.text));
@@ -202,29 +211,10 @@ SECTIONS
 
       BUILD_DIR/lib/rsp.o(.rodata*);
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
-#ifndef PRELIMINARY
-      BUILD_DIR/src/game/crash_screen.o(.text*);
-      BUILD_DIR/src/game/crash_screen.o(.data*);
-      BUILD_DIR/src/game/crash_screen.o(.rodata*);
-      BUILD_DIR/src/game/map_parser.o(.text*);
-      BUILD_DIR/src/game/map_parser.o(.data*);
-      BUILD_DIR/src/game/map_parser.o(.rodata*);
-#else
-      parse_map = 0x80345678;
-#endif
    }
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
-// pad out the space this would've taken
-#ifdef PRELIMINARY
-      BUILD_DIR/src/game/crash_screen.o(.text*);
-      BUILD_DIR/src/game/crash_screen.o(.data*);
-      BUILD_DIR/src/game/crash_screen.o(.rodata*);
-      BUILD_DIR/src/game/map_parser.o(.text*);
-      BUILD_DIR/src/game/map_parser.o(.data*);
-      BUILD_DIR/src/game/map_parser.o(.rodata*);
-#endif
       BUILD_DIR/src/boot*.o(.*bss*);
       BUILD_DIR/src/hvqm*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
@@ -514,7 +504,7 @@ SECTIONS
 	END_SEG(capcom)
 #endif
 
-#ifndef PRELIMINARY
+#ifdef DEBUG_MAP_STACKTRACE
    BEGIN_SEG(mapData, 0x80700000) {
       KEEP(BUILD_DIR/asm/debug/map.o(.data*));
    }
