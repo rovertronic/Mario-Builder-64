@@ -28,7 +28,7 @@
 #define LAYER_OPAQUE LAYER_OPAQUE_ORIG
 #define LAYER_ALPHA  LAYER_ALPHA_ORIG
 #undef LAYER_OPAQUE_ORIG
-#undef LAYER_ALPHA_OGIG
+#undef LAYER_ALPHA_ORIG
 #else
 #include "mario/geo.inc.c"
 #endif
