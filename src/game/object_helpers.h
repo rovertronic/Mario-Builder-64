@@ -17,12 +17,13 @@ struct ChainSegment
     s16 roll;
 };
 
-#define WATER_DROPLET_FLAG_RAND_ANGLE                0x02
-#define WATER_DROPLET_FLAG_RAND_OFFSET_XZ            0x04 // Unused
-#define WATER_DROPLET_FLAG_RAND_OFFSET_XYZ           0x08 // Unused
-#define WATER_DROPLET_FLAG_SET_Y_TO_WATER_LEVEL      0x20
-#define WATER_DROPLET_FLAG_RAND_ANGLE_INCR_PLUS_8000 0x40
-#define WATER_DROPLET_FLAG_RAND_ANGLE_INCR           0x80 // Unused
+#define WATER_DROPLET_FLAG_RAND_ANGLE               (1 << 1) // 0x02
+#define WATER_DROPLET_FLAG_RAND_OFFSET_XZ           (1 << 2) // 0x04 // Unused
+#define WATER_DROPLET_FLAG_RAND_OFFSET_XYZ          (1 << 3) // 0x08 // Unused
+#define WATER_DROPLET_FLAG_UNUSED                   (1 << 4) // 0x10 // Unused
+#define WATER_DROPLET_FLAG_SET_Y_TO_WATER_LEVEL     (1 << 5) // 0x20
+#define WATER_DROPLET_FLAG_RAND_ANGLE_INCR_BACKWARD (1 << 6) // 0x40
+#define WATER_DROPLET_FLAG_RAND_ANGLE_INCR_FORWARD  (1 << 7) // 0x80 // Unused
 
 // Call spawn_water_droplet with this struct to spawn an object.
 struct WaterDropletParams
@@ -38,16 +39,6 @@ struct WaterDropletParams
     f32 randYVelScale;
     f32 randSizeOffset;
     f32 randSizeScale;
-};
-
-struct struct802A1230 {
-    /*0x00*/ s16 unk00;
-    /*0x02*/ s16 unk02;
-};
-
-struct Struct802A272C {
-    Vec3f vecF;
-    Vec3s vecS;
 };
 
 // TODO: Field names
@@ -97,7 +88,7 @@ struct Object *spawn_object_abs_with_rot(struct Object *parent, s16 uselessArg, 
                                          s16 x, s16 y, s16 z, s16 rx, s16 ry, s16 rz);
 struct Object *spawn_object_rel_with_rot(struct Object *parent, u32 model, const BehaviorScript *behavior,
                                          s16 xOff, s16 yOff, s16 zOff, s16 rx, s16 ry, UNUSED s16 rz);
-struct Object *spawn_obj_with_transform_flags(struct Object *sp20, s32 model, const BehaviorScript *sp28);
+struct Object *spawn_obj_with_transform_flags(struct Object *sp20, s32 model, const BehaviorScript *behavior);
 struct Object *spawn_water_droplet(struct Object *parent, struct WaterDropletParams *params);
 struct Object *spawn_object_at_origin(struct Object *, s32, u32, const BehaviorScript *);
 struct Object *spawn_object_at_origin(struct Object *parent, UNUSED s32 unusedArg, u32 model, const BehaviorScript *behavior);
@@ -266,7 +257,7 @@ void obj_set_collision_data(struct Object *obj, const void *segAddr);
 void cur_obj_if_hit_wall_bounce_away(void);
 s32 cur_obj_hide_if_mario_far_away_y(f32 distY);
 Gfx *geo_offset_klepto_held_object(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx);
-s32 geo_offset_klepto_debug(s32 a0, struct GraphNode *a1, UNUSED s32 sp8);
+Gfx *geo_offset_klepto_debug(s32 callContext, struct GraphNode *node, UNUSED s32 context);
 s32 obj_is_hidden(struct Object *obj);
 void enable_time_stop(void);
 void disable_time_stop(void);

@@ -180,18 +180,19 @@ Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat
 #include "behaviors/jumping_box.inc.c"
 #include "behaviors/boo_cage.inc.c"
 
+static s16 sSpawnSparkleParticleAngle = 0x0;
+
 // not in behavior file
 // n is the number of objects to spawn, r if the rate of change of phase (frequency?)
-void spawn_sparkle_particles(s32 n, s32 a1, s32 a2, s32 r) {
-    static s16 D_8035FF10;
+void spawn_sparkle_particles(s32 n, s32 radius, s32 height, s32 r) {
     s32 i;
     s16 separation = 0x10000 / n; // Evenly spread around a circle
     for (i = 0; i < n; i++) {
-        spawn_object_relative(0, sins(D_8035FF10 + i * separation) * a1, (i + 1) * a2,
-                              coss(D_8035FF10 + i * separation) * a1, o, MODEL_NONE, bhvSparkleSpawn);
+        spawn_object_relative(0, sins(sSpawnSparkleParticleAngle + i * separation) * radius, (i + 1) * height,
+                              coss(sSpawnSparkleParticleAngle + i * separation) * radius, o, MODEL_NONE, bhvSparkleSpawn);
     }
 
-    D_8035FF10 += r * 0x100;
+    sSpawnSparkleParticleAngle += r * 0x100;
 }
 
 #include "behaviors/beta_boo_key.inc.c"

@@ -420,14 +420,14 @@ s32 bonk_or_hit_lava_wall(struct MarioState *m, struct WallCollisionData *wallDa
                 return AIR_STEP_HIT_LAVA_WALL;
             }
 
-            //Update wall reference (bonked wall) only if the new wall has a better facing angle
+            // Update wall reference (bonked wall) only if the new wall has a better facing angle
             absWallDYaw = wallDYaw < 0 ? -wallDYaw : wallDYaw;
             if (absWallDYaw > oldWallDYaw) {
                 oldWallDYaw = absWallDYaw;
                 m->wall = wallData->walls[i];
 
                 if (wallDYaw < -0x6000 || wallDYaw > 0x6000) {
-                    m->flags |= MARIO_UNKNOWN_30;
+                    m->flags |= MARIO_AIR_HIT_WALL;
                     result = AIR_STEP_HIT_WALL;
                 }
             }
@@ -585,7 +585,7 @@ void apply_twirl_gravity(struct MarioState *m) {
 }
 
 u32 should_strengthen_gravity_for_jump_ascent(struct MarioState *m) {
-    if (!(m->flags & MARIO_UNKNOWN_08)) {
+    if (!(m->flags & MARIO_JUMPING)) {
         return FALSE;
     }
 
@@ -620,7 +620,7 @@ void apply_gravity(struct MarioState *m) {
             m->vel[1] = -65.0f;
         }
     } else if (m->action == ACT_GETTING_BLOWN) {
-        m->vel[1] -= m->unkC4;
+        m->vel[1] -= m->windGravity;
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
         }

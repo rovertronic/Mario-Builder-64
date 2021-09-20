@@ -17,7 +17,7 @@
 
 struct LandingAction {
     s16 numFrames;
-    s16 unk02;
+    s16 doubleJumpTimer;
     u32 verySteepAction;
     u32 endAction;
     u32 aPressedAction;
@@ -89,8 +89,8 @@ void play_step_sound(struct MarioState *m, s16 frame1, s16 frame2) {
 
 void align_with_floor(struct MarioState *m) {
     m->pos[1] = m->floorHeight;
-    mtxf_align_terrain_triangle(sFloorAlignMatrix[m->unk00], m->pos, m->faceAngle[1], 40.0f);
-    m->marioObj->header.gfx.throwMatrix = &sFloorAlignMatrix[m->unk00];
+    mtxf_align_terrain_triangle(sFloorAlignMatrix[m->playerID], m->pos, m->faceAngle[1], 40.0f);
+    m->marioObj->header.gfx.throwMatrix = &sFloorAlignMatrix[m->playerID];
 }
 
 s32 begin_walking_action(struct MarioState *m, f32 forwardVel, u32 action, u32 actionArg) {
@@ -710,7 +710,7 @@ void push_or_sidle_wall(struct MarioState *m, Vec3f startPos) {
     }
 
     if (m->wall == NULL || dWallAngle <= -0x71C8 || dWallAngle >= 0x71C8) {
-        m->flags |= MARIO_UNKNOWN_31;
+        m->flags |= MARIO_PUSHING;
         set_mario_animation(m, MARIO_ANIM_PUSHING);
         play_step_sound(m, 6, 18);
     } else {
@@ -1263,7 +1263,7 @@ s32 act_riding_shell_ground(struct MarioState *m) {
 
     adjust_sound_for_speed(m);
 #if ENABLE_RUMBLE
-    reset_rumble_timers();
+    reset_rumble_timers_slip();
 #endif
     return FALSE;
 }
@@ -1370,7 +1370,7 @@ s32 act_burning_ground(struct MarioState *m) {
 
     m->marioBodyState->eyeState = MARIO_EYES_DEAD;
 #if ENABLE_RUMBLE
-    reset_rumble_timers();
+    reset_rumble_timers_slip();
 #endif
     return FALSE;
 }
@@ -1388,7 +1388,7 @@ void common_slide_action(struct MarioState *m, u32 endAction, u32 airAction, s32
     play_sound(SOUND_MOVING_TERRAIN_SLIDE + m->terrainSoundAddend, m->marioObj->header.gfx.cameraToObject);
 
 #if ENABLE_RUMBLE
-    reset_rumble_timers();
+    reset_rumble_timers_slip();
 #endif
 
     adjust_sound_for_speed(m);
@@ -1789,7 +1789,7 @@ s32 common_landing_cancels(struct MarioState *m, struct LandingAction *landingAc
         return mario_push_off_steep_floor(m, landingAction->verySteepAction, 0);
     }
 
-    m->doubleJumpTimer = landingAction->unk02;
+    m->doubleJumpTimer = landingAction->doubleJumpTimer;
 
     if (should_begin_sliding(m)) {
         return set_mario_action(m, landingAction->slideAction, 0);

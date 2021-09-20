@@ -104,7 +104,6 @@ extern TerrainData *gEnvironmentRegions;
 extern s32 gEnvironmentLevels[20];
 extern RoomData gDoorAdjacentRooms[60][2];
 extern s16 gMarioCurrentRoom;
-extern s16 D_8035FEE2;
 extern s16 gDoorRenderingTimer;
 extern s16 gTHIWaterDrained;
 extern s16 gTTCSpeedSetting;

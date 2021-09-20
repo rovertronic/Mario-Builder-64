@@ -10,7 +10,7 @@ struct ObjectHitbox sEyerokHitbox = {
     /* hurtboxHeight:     */ 1,
 };
 
-s8 D_80331BA4[] = { 0, 1, 3, 2, 1, 0 };
+s8 sEyerokAnimStatesList[] = { 0, 1, 3, 2, 1, 0 };
 
 static s32 eyerok_check_mario_relative_z(s32 arg0) {
     if (gMarioObject->oPosZ - o->oHomeZ < arg0) {
@@ -277,7 +277,7 @@ static void eyerok_hand_act_show_eye(void) {
                 if (o->oEyerokHandUnkFC != 0) {
                     o->oEyerokHandUnkFC -= 1;
                 }
-                o->oAnimState = D_80331BA4[o->oEyerokHandUnkFC];
+                o->oAnimState = sEyerokAnimStatesList[o->oEyerokHandUnkFC];
             } else {
                 o->oEyerokHandUnkFC = 5;
                 o->oEyerokHandUnk100 = random_linear_offset(20, 50);

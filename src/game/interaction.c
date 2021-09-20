@@ -517,7 +517,7 @@ void bounce_off_object(struct MarioState *m, struct Object *o, f32 velY) {
     m->pos[1] = o->oPosY + o->hitboxHeight;
     m->vel[1] = velY;
 
-    m->flags &= ~MARIO_UNKNOWN_08;
+    m->flags &= ~MARIO_JUMPING;
 
     play_sound(SOUND_ACTION_BOUNCE_OFF_OBJECT, m->marioObj->header.gfx.cameraToObject);
 }
@@ -1158,7 +1158,7 @@ u32 interact_strong_wind(struct MarioState *m, UNUSED u32 interactType, struct O
         m->usedObj = o;
 
         m->faceAngle[1] = o->oMoveAngleYaw + 0x8000;
-        m->unkC4 = 0.4f;
+        m->windGravity = 0.4f;
         m->forwardVel = -24.0f;
         m->vel[1] = 12.0f;
 
@@ -1837,7 +1837,7 @@ void mario_process_interactions(struct MarioState *m) {
 
 void check_death_barrier(struct MarioState *m) {
     if (m->pos[1] < m->floorHeight + 2048.0f) {
-        if (level_trigger_warp(m, WARP_OP_WARP_FLOOR) == 20 && !(m->flags & MARIO_UNKNOWN_18)) {
+        if (level_trigger_warp(m, WARP_OP_WARP_FLOOR) == 20 && !(m->flags & MARIO_FALL_SOUND_PLAYED)) {
             play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
         }
     }

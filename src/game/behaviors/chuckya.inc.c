@@ -67,15 +67,15 @@ s32 unknown_chuckya_function(s32 sp20, f32 sp24, f32 sp28, s32 sp2C) {
     return sp1C;
 }
 
-s32 approach_forward_vel(f32 *arr, f32 spC, f32 sp10) {
-    if (arr[0] > spC) {
-        arr[0] -= sp10;
-        if (arr[0] < spC)
-            arr[0] = spC;
-    } else if (arr[0] < spC) {
-        arr[0] += sp10;
-        if (arr[0] > spC)
-            arr[0] = spC;
+s32 approach_forward_vel(f32 *arr, f32 target, f32 inc) {
+    if (arr[0] > target) {
+        arr[0] -= inc;
+        if (arr[0] < target)
+            arr[0] = target;
+    } else if (arr[0] < target) {
+        arr[0] += inc;
+        if (arr[0] > target)
+            arr[0] = target;
     } else {
         return TRUE;
     }

@@ -44,8 +44,8 @@ struct GraphNode **gLoadedGraphNodes = gGraphNodePointers;
 struct Area *gAreas = gAreaData;
 struct Area *gCurrentArea = NULL;
 struct CreditsEntry *gCurrCreditsEntry = NULL;
-Vp *D_8032CE74 = NULL;
-Vp *D_8032CE78 = NULL;
+Vp *gViewportOverride = NULL;
+Vp *gViewportClip = NULL;
 s16 gWarpTransDelay = 0;
 u32 gFBSetColor = 0;
 u32 gWarpTransFBSetColor = 0;
@@ -78,7 +78,7 @@ u8 sSpawnTypeFromWarpBhv[] = {
     MARIO_SPAWN_AIRBORNE_STAR_COLLECT, MARIO_SPAWN_AIRBORNE_DEATH,       MARIO_SPAWN_LAUNCH_STAR_COLLECT,   MARIO_SPAWN_LAUNCH_DEATH,
 };
 
-Vp D_8032CF00 = { {
+Vp gViewport = { {
     { 640, 480, 511, 0 },
     { 640, 480, 511, 0 },
 } };
@@ -95,8 +95,8 @@ void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e) {
     u16 sp6 = ((c >> 3) << 11) | ((d >> 3) << 6) | ((e >> 3) << 1) | 1;
 
     gFBSetColor = (sp6 << 16) | sp6;
-    D_8032CE74 = a;
-    D_8032CE78 = b;
+    gViewportOverride = a;
+    gViewportClip = b;
 }
 
 void set_warp_transition_rgb(u8 red, u8 green, u8 blue) {
@@ -188,7 +188,7 @@ void clear_areas(void) {
         gAreaData[i].index = i;
         gAreaData[i].flags = 0;
         gAreaData[i].terrainType = 0;
-        gAreaData[i].unk04 = NULL;
+        gAreaData[i].graphNode = NULL;
         gAreaData[i].terrainData = NULL;
         gAreaData[i].surfaceRooms = NULL;
         gAreaData[i].macroObjects = NULL;
@@ -211,21 +211,21 @@ void clear_area_graph_nodes(void) {
     s32 i;
 
     if (gCurrentArea != NULL) {
-        geo_call_global_function_nodes(&gCurrentArea->unk04->node, GEO_CONTEXT_AREA_UNLOAD);
+        geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_UNLOAD);
         gCurrentArea = NULL;
         gWarpTransition.isActive = FALSE;
     }
 
     for (i = 0; i < 8; i++) {
-        if (gAreaData[i].unk04 != NULL) {
-            geo_call_global_function_nodes(&gAreaData[i].unk04->node, GEO_CONTEXT_AREA_INIT);
-            gAreaData[i].unk04 = NULL;
+        if (gAreaData[i].graphNode != NULL) {
+            geo_call_global_function_nodes(&gAreaData[i].graphNode->node, GEO_CONTEXT_AREA_INIT);
+            gAreaData[i].graphNode = NULL;
         }
     }
 }
 
 void load_area(s32 index) {
-    if (gCurrentArea == NULL && gAreaData[index].unk04 != NULL) {
+    if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
         gCurrentArea = &gAreaData[index];
         gCurrAreaIndex = gCurrentArea->index;
 
@@ -239,14 +239,14 @@ void load_area(s32 index) {
         }
 
         load_obj_warp_nodes();
-        geo_call_global_function_nodes(&gCurrentArea->unk04->node, GEO_CONTEXT_AREA_LOAD);
+        geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_LOAD);
     }
 }
 
 void unload_area(void) {
     if (gCurrentArea != NULL) {
         unload_objects_from_area(0, gCurrentArea->index);
-        geo_call_global_function_nodes(&gCurrentArea->unk04->node, GEO_CONTEXT_AREA_UNLOAD);
+        geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_UNLOAD);
 
         gCurrentArea->flags = 0;
         gCurrentArea = NULL;
@@ -370,9 +370,9 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
-        geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
+        geo_process_root(gCurrentArea->graphNode, gViewportOverride, gViewportClip, gFBSetColor);
 
-        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
+        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gViewport));
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
@@ -390,8 +390,8 @@ void render_game(void) {
             gSaveOptSelectIndex = gMenuOptSelectIndex;
         }
 
-        if (D_8032CE78 != NULL) {
-            make_viewport_clip_rect(D_8032CE78);
+        if (gViewportClip != NULL) {
+            make_viewport_clip_rect(gViewportClip);
         } else
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                           SCREEN_HEIGHT - gBorderHeight);
@@ -413,8 +413,8 @@ void render_game(void) {
         }
     } else {
         render_text_labels();
-        if (D_8032CE78 != NULL) {
-            clear_viewport(D_8032CE78, gWarpTransFBSetColor);
+        if (gViewportClip != NULL) {
+            clear_viewport(gViewportClip, gWarpTransFBSetColor);
         } else {
             clear_frame_buffer(gWarpTransFBSetColor);
         }
@@ -425,6 +425,6 @@ void render_game(void) {
     puppyprint_render_profiler();
     #endif
 
-    D_8032CE74 = NULL;
-    D_8032CE78 = NULL;
+    gViewportOverride = NULL;
+    gViewportClip = NULL;
 }

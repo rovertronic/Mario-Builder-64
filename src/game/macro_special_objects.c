@@ -68,8 +68,7 @@ void spawn_macro_abs_yrot_param1(s32 model, const BehaviorScript *behavior, s16 
  * Spawns an object at an absolute location with currently 3 unknown variables that get converted to
  * floats. Oddly enough, this function doesn't care if 'behavior' is NULL or not.
  */
-void spawn_macro_abs_special(s32 model, const BehaviorScript *behavior, s16 x, s16 y, s16 z, s16 unkA, s16 unkB,
-                             s16 unkC) {
+void spawn_macro_abs_special(s32 model, const BehaviorScript *behavior, s16 x, s16 y, s16 z, s16 unkA, s16 unkB, s16 unkC) {
     struct Object *newObj =
         spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior, x, y, z, 0, 0, 0);
 

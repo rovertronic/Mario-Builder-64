@@ -741,7 +741,7 @@ void geo_obj_init_spawninfo(struct GraphNodeObject *graphNode, struct SpawnInfo 
 
     graphNode->areaIndex = spawn->areaIndex;
     graphNode->activeAreaIndex = spawn->activeAreaIndex;
-    graphNode->sharedChild = spawn->unk18;
+    graphNode->sharedChild = spawn->modelNode;
     graphNode->unk4C = spawn;
     graphNode->throwMatrix = NULL;
     graphNode->animInfo.curAnim = 0;
@@ -817,7 +817,7 @@ s16 geo_update_animation_frame(struct AnimInfo *obj, s32 *accelAssist) {
 
     anim = obj->curAnim;
 
-    if (obj->animTimer == gAreaUpdateCounter || anim->flags & ANIM_FLAG_2) {
+    if (obj->animTimer == gAreaUpdateCounter || anim->flags & ANIM_FLAG_NO_ACCEL) {
         if (accelAssist != NULL) {
             accelAssist[0] = obj->animFrameAccelAssist;
         }

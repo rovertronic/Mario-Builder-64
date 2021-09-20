@@ -25,9 +25,6 @@ static Gfx *sGfxCursor; // points to end of display list for bubble particles
 static s32 sBubbleParticleCount;
 static s32 sBubbleParticleMaxCount;
 
-UNUSED s32 D_80330690 = 0;
-UNUSED s32 D_80330694 = 0;
-
 /// Template for a bubble particle triangle
 Vtx_t gBubbleTempVtx[3] = {
     { { 0, 0, 0 }, 0, { 1544, 964 }, { 0xFF, 0xFF, 0xFF, 0xFF } },

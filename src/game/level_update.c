@@ -169,11 +169,10 @@ struct CreditsEntry sCreditsSequence[] = {
 struct MarioState gMarioStates[1];
 struct HudDisplay gHudDisplay;
 s16 sCurrPlayMode;
-u16 D_80339ECA;
 s16 sTransitionTimer;
 void (*sTransitionUpdate)(s16 *);
 struct WarpDest sWarpDest;
-s16 D_80339EE0;
+s16 sSpecialWarpDest;
 s16 sDelayedWarpOp;
 s16 sDelayedWarpTimer;
 s16 sSourceWarpNodeId;
@@ -230,13 +229,11 @@ u32 pressed_pause(void) {
 
 void set_play_mode(s16 playMode) {
     sCurrPlayMode = playMode;
-    D_80339ECA = 0;
 }
 
 void warp_special(s32 arg) {
     sCurrPlayMode = PLAY_MODE_CHANGE_LEVEL;
-    D_80339ECA = 0;
-    D_80339EE0 = arg;
+    sSpecialWarpDest = arg;
 }
 
 void fade_into_special_warp(u32 arg, u32 color) {
@@ -426,7 +423,7 @@ void init_mario_after_warp(void) {
         case MARIO_SPAWN_SPIN_AIRBORNE_CIRCLE:
             play_transition(WARP_TRANSITION_FADE_FROM_CIRCLE, 0x10, 0x00, 0x00, 0x00);
             break;
-        case MARIO_SPAWN_UNKNOWN_27:
+        case MARIO_SPAWN_FADE_FROM_BLACK:
             play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x10, 0x00, 0x00, 0x00);
             break;
         default:
@@ -725,7 +722,7 @@ void initiate_painting_warp(void) {
                 fadeout_music(398);
 #if ENABLE_RUMBLE
                 queue_rumble_data(80, 70);
-                func_sh_8024C89C(1);
+                queue_rumble_decay(1);
 #endif
             }
         }
@@ -906,7 +903,7 @@ void initiate_delayed_warp(void) {
                     sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL);
 
                     gCurrCreditsEntry += 1;
-                    gCurrActNum = gCurrCreditsEntry->unk02 & 0x07;
+                    gCurrActNum = gCurrCreditsEntry->actNum & 0x07;
                     if ((gCurrCreditsEntry + 1)->levelNum == LEVEL_NONE) {
                         destWarpNode = WARP_NODE_CREDITS_END;
                     } else {
@@ -1153,7 +1150,7 @@ s32 play_mode_change_level(void) {
         if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
             return sWarpDest.levelNum;
         } else {
-            return D_80339EE0;
+            return sSpecialWarpDest;
         }
     }
 
@@ -1170,7 +1167,7 @@ UNUSED static s32 play_mode_unused(void) {
         if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
             return sWarpDest.levelNum;
         } else {
-            return D_80339EE0;
+            return sSpecialWarpDest;
         }
     }
 
@@ -1216,7 +1213,7 @@ s32 init_level(void) {
 
     sDelayedWarpOp = WARP_OP_NONE;
     sTransitionTimer = 0;
-    D_80339EE0 = 0;
+    sSpecialWarpDest = 0;
 
     if (gCurrCreditsEntry == NULL) {
         gHudDisplay.flags = HUD_DISPLAY_DEFAULT;

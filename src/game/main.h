@@ -4,25 +4,25 @@
 #include "config.h"
 
 struct RumbleData {
-    u8 unk00; // comm
-    u8 unk01; // level
-    s16 unk02; // time
-    s16 unk04; // decay
+    u8  comm;
+    u8  level;
+    s16 time;
+    s16 decay;
 };
 
 struct RumbleSettings {
-    s16 unk00; // event
-    s16 unk02; // level
-    s16 unk04; // timer
-    s16 unk06; // count
-    s16 unk08; // start
-    s16 unk0A; // slip
-    s16 unk0C; // vibrate
-    s16 unk0E; // decay
+    s16 event;
+    s16 level;
+    s16 timer;
+    s16 count;
+    s16 start;
+    s16 slip;
+    s16 vibrate;
+    s16 decay;
 };
 extern struct Config gConfig;
 
-extern OSThread D_80339210;
+extern OSThread gUnkThread;
 extern OSThread gIdleThread;
 extern OSThread gMainThread;
 extern OSThread gGameLoopThread;

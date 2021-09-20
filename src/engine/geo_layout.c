@@ -48,8 +48,6 @@ struct GraphNode gObjParentGraphNode;
 struct AllocOnlyPool *gGraphNodePool;
 struct GraphNode *gCurRootGraphNode;
 
-UNUSED s32 D_8038BCA8;
-
 /* The gGeoViews array is a mysterious one. Some background:
  *
  * If there are e.g. multiple Goombas, the multiple Goomba objects share one
@@ -96,11 +94,8 @@ uintptr_t gGeoLayoutStack[16];
 struct GraphNode *gCurGraphNodeList[32];
 s16 gCurGraphNodeIndex;
 s16 gGeoLayoutStackIndex; // similar to SP register in MIPS
-UNUSED s16 D_8038BD7C;
 s16 gGeoLayoutReturnIndex; // similar to RA register in MIPS
 u8 *gGeoLayoutCommand;
-
-u32 unused_8038B894[3] = { 0 };
 
 /*
   0x00: Branch and store return address

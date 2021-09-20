@@ -172,7 +172,7 @@ s32 intro_regular(void) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
 #if ENABLE_RUMBLE
         queue_rumble_data(60, 70);
-        func_sh_8024C89C(1);
+        queue_rumble_decay(1);
 #endif
         // calls level ID 100 (or 101 adding level select bool value)
         // defined in level_intro_mario_head_regular JUMP_IF commands
@@ -204,7 +204,7 @@ s32 intro_game_over(void) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
 #if ENABLE_RUMBLE
         queue_rumble_data(60, 70);
-        func_sh_8024C89C(1);
+        queue_rumble_decay(1);
 #endif
         // same criteria as intro_regular
         level = 100 + gDebugLevelSelect;

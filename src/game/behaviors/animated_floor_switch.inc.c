@@ -2,7 +2,7 @@
 
 struct FloorSwitchTriggeredAnimationFrame {
     const void *collisionDataPtr;
-    s16 model;
+    ModelID model;
 };
 
 struct FloorSwitchTriggeredAnimationFrame sFloorSwitchTriggeredAnimationFrames[][5] = {
@@ -29,7 +29,7 @@ struct FloorSwitchTriggeredAnimationFrame sFloorSwitchTriggeredAnimationFrames[]
     },
 };
 
-s16 D_80331ACC[] = { 250, 200, 200 };
+s16 sAnimatesOnFloorSwitchPressTimers[] = { 250, 200, 200 };
 
 void bhv_animates_on_floor_switch_press_init(void) {
     o->parentObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchAnimatesObject);
@@ -42,7 +42,7 @@ void bhv_animates_on_floor_switch_press_loop(void) {
         }
 
         if (o->oFloorSwitchPressAnimationUnkFC != 0) {
-            o->oFloorSwitchPressAnimationUnkF4 = D_80331ACC[o->oBehParams2ndByte];
+            o->oFloorSwitchPressAnimationUnkF4 = sAnimatesOnFloorSwitchPressTimers[o->oBehParams2ndByte];
         } else {
             o->oFloorSwitchPressAnimationUnkF4 = 0;
         }

@@ -882,14 +882,14 @@ void geo_set_animation_globals(struct AnimInfo *node, s32 hasAnimation) {
         gCurAnimType = ANIM_TYPE_VERTICAL_TRANSLATION;
     } else if (anim->flags & ANIM_FLAG_VERT_TRANS) {
         gCurAnimType = ANIM_TYPE_LATERAL_TRANSLATION;
-    } else if (anim->flags & ANIM_FLAG_6) {
+    } else if (anim->flags & ANIM_FLAG_NO_TRANS) {
         gCurAnimType = ANIM_TYPE_NO_TRANSLATION;
     } else {
         gCurAnimType = ANIM_TYPE_TRANSLATION;
     }
 
     gCurrAnimFrame = node->animFrame;
-    gCurAnimEnabled = (anim->flags & ANIM_FLAG_5) == 0;
+    gCurAnimEnabled = (anim->flags & ANIM_FLAG_DISABLED) == 0;
     gCurrAnimAttribute = segmented_to_virtual((void *) anim->index);
     gCurAnimData = segmented_to_virtual((void *) anim->values);
 

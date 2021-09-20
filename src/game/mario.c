@@ -74,9 +74,9 @@ s16 set_mario_animation(struct MarioState *m, s32 targetAnimID) {
         o->header.gfx.animInfo.animID = targetAnimID;
         o->header.gfx.animInfo.curAnim = targetAnim;
         o->header.gfx.animInfo.animAccel = 0;
-        o->header.gfx.animInfo.animYTrans = m->unkB0;
+        o->header.gfx.animInfo.animYTrans = m->animYTrans;
 
-        if (targetAnim->flags & ANIM_FLAG_2) {
+        if (targetAnim->flags & ANIM_FLAG_NO_ACCEL) {
             o->header.gfx.animInfo.animFrame = targetAnim->startFrame;
         } else {
             if (targetAnim->flags & ANIM_FLAG_FORWARD) {
@@ -106,9 +106,9 @@ s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel)
     if (o->header.gfx.animInfo.animID != targetAnimID) {
         o->header.gfx.animInfo.animID = targetAnimID;
         o->header.gfx.animInfo.curAnim = targetAnim;
-        o->header.gfx.animInfo.animYTrans = m->unkB0;
+        o->header.gfx.animInfo.animYTrans = m->animYTrans;
 
-        if (targetAnim->flags & ANIM_FLAG_2) {
+        if (targetAnim->flags & ANIM_FLAG_NO_ACCEL) {
             o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
         } else {
             if (targetAnim->flags & ANIM_FLAG_FORWARD) {
@@ -210,12 +210,12 @@ void update_mario_pos_for_anim(struct MarioState *m) {
 
     flags = find_mario_anim_flags_and_translation(m->marioObj, m->faceAngle[1], translation);
 
-    if (flags & (ANIM_FLAG_HOR_TRANS | ANIM_FLAG_6)) {
+    if (flags & (ANIM_FLAG_HOR_TRANS | ANIM_FLAG_NO_TRANS)) {
         m->pos[0] += (f32) translation[0];
         m->pos[2] += (f32) translation[2];
     }
 
-    if (flags & (ANIM_FLAG_VERT_TRANS | ANIM_FLAG_6)) {
+    if (flags & (ANIM_FLAG_VERT_TRANS | ANIM_FLAG_NO_TRANS)) {
         m->pos[1] += (f32) translation[1];
     }
 }
@@ -855,7 +855,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
     }
 
     m->peakHeight = m->pos[1];
-    m->flags |= MARIO_UNKNOWN_08;
+    m->flags |= MARIO_JUMPING;
 
     return action;
 }
@@ -969,7 +969,7 @@ u32 set_mario_action(struct MarioState *m, u32 action, u32 actionArg) {
     m->flags &= ~(MARIO_ACTION_SOUND_PLAYED | MARIO_MARIO_SOUND_PLAYED);
 
     if (!(m->action & ACT_FLAG_AIR)) {
-        m->flags &= ~MARIO_UNKNOWN_18;
+        m->flags &= ~MARIO_FALL_SOUND_PLAYED;
     }
 
     // Initialize the action information.
@@ -1533,7 +1533,7 @@ void update_mario_info_for_cam(struct MarioState *m) {
 
     vec3s_copy(m->statusForCamera->faceAngle, m->faceAngle);
 
-    if (!(m->flags & MARIO_UNKNOWN_25)) {
+    if (!(m->flags & MARIO_LEDGE_CLIMB_CAMERA)) {
         vec3f_copy(m->statusForCamera->pos, m->pos);
     }
 }
@@ -1668,7 +1668,7 @@ void mario_update_hitbox_and_cap_model(struct MarioState *m) {
 
     if ((m->flags & MARIO_TELEPORTING) && (m->fadeWarpOpacity != 0xFF)) {
         bodyState->modelState &= ~0xFF;
-        bodyState->modelState |= (0x100 | m->fadeWarpOpacity);
+        bodyState->modelState |= (MODEL_STATE_ALPHA | m->fadeWarpOpacity);
     }
 }
 
@@ -1702,7 +1702,7 @@ void func_sh_8025574C(void) {
         queue_rumble_data(5, 80);
     }
     if (gMarioState->heldObj && gMarioState->heldObj->behavior == segmented_to_virtual(bhvBobomb)) {
-        reset_rumble_timers();
+        reset_rumble_timers_slip();
     }
 }
 #endif
@@ -1814,9 +1814,7 @@ void init_mario(void) {
 
     gMarioState->invincTimer = 0;
 
-    if (save_file_get_flags()
-        & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
-           | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
+    if (save_file_get_flags() & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
         gMarioState->flags = 0;
     } else {
         gMarioState->flags = (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
@@ -1835,8 +1833,7 @@ void init_mario(void) {
     gMarioState->riddenObj = NULL;
     gMarioState->usedObj = NULL;
 
-    gMarioState->waterLevel =
-        find_water_level(gMarioSpawnInfo->startPos[0], gMarioSpawnInfo->startPos[2]);
+    gMarioState->waterLevel = find_water_level(gMarioSpawnInfo->startPos[0], gMarioSpawnInfo->startPos[2]);
 
     gMarioState->area = gCurrentArea;
     gMarioState->marioObj = gMarioObject;
@@ -1845,8 +1842,7 @@ void init_mario(void) {
     vec3s_set(gMarioState->angleVel, 0, 0, 0);
     vec3s_to_vec3f(gMarioState->pos, gMarioSpawnInfo->startPos);
     vec3f_set(gMarioState->vel, 0, 0, 0);
-    gMarioState->floorHeight =
-        find_floor(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], &gMarioState->floor);
+    gMarioState->floorHeight = find_floor(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], &gMarioState->floor);
 
     if (gMarioState->pos[1] < gMarioState->floorHeight) {
         gMarioState->pos[1] = gMarioState->floorHeight;
@@ -1886,7 +1882,7 @@ void init_mario(void) {
 }
 
 void init_mario_from_save_file(void) {
-    gMarioState->unk00 = 0;
+    gMarioState->playerID = 0;
     gMarioState->flags = 0;
     gMarioState->action = 0;
     gMarioState->spawnInfo = &gPlayerSpawnInfos[0];
@@ -1896,15 +1892,14 @@ void init_mario_from_save_file(void) {
     gMarioState->animList = &gMarioAnimsBuf;
 
     gMarioState->numCoins = 0;
-    gMarioState->numStars =
-        save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    gMarioState->numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
     gMarioState->numKeys = 0;
 
     gMarioState->numLives = 4;
     gMarioState->health = 0x880;
 
     gMarioState->prevNumStarsForDialog = gMarioState->numStars;
-    gMarioState->unkB0 = 0xBD;
+    gMarioState->animYTrans = 0xBD;
 
     gHudDisplay.coins = 0;
     gHudDisplay.wedges = 8;

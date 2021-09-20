@@ -487,12 +487,12 @@ struct Object *spawn_water_droplet(struct Object *parent, struct WaterDropletPar
         newObj->oMoveAngleYaw = random_u16();
     }
 
-    if (params->flags & WATER_DROPLET_FLAG_RAND_ANGLE_INCR_PLUS_8000) {
+    if (params->flags & WATER_DROPLET_FLAG_RAND_ANGLE_INCR_BACKWARD) {
         newObj->oMoveAngleYaw = (s16)(newObj->oMoveAngleYaw + 0x8000)
                                 + (s16) random_f32_around_zero(params->moveAngleRange);
     }
 
-    if (params->flags & WATER_DROPLET_FLAG_RAND_ANGLE_INCR) {
+    if (params->flags & WATER_DROPLET_FLAG_RAND_ANGLE_INCR_FORWARD) {
         newObj->oMoveAngleYaw =
             (s16) newObj->oMoveAngleYaw + (s16) random_f32_around_zero(params->moveAngleRange);
     }
@@ -954,13 +954,13 @@ void cur_obj_set_vel_from_mario_vel(f32 min, f32 mul) {
     }
 }
 
-BAD_RETURN(s16) cur_obj_reverse_animation(void) {
+void cur_obj_reverse_animation(void) {
     if (o->header.gfx.animInfo.animFrame >= 0) {
         o->header.gfx.animInfo.animFrame--;
     }
 }
 
-BAD_RETURN(s32) cur_obj_extend_animation_if_at_end(void) {
+void cur_obj_extend_animation_if_at_end(void) {
     s32 animFrame = o->header.gfx.animInfo.animFrame;
     s32 nearLoopEnd = o->header.gfx.animInfo.curAnim->loopEnd - 2;
 
@@ -1015,15 +1015,15 @@ s32 cur_obj_check_anim_frame_in_range(s32 startFrame, s32 rangeLength) {
     }
 }
 
-s32 cur_obj_check_frame_prior_current_frame(s16 *a0) {
-    s16 sp6 = o->header.gfx.animInfo.animFrame;
+s32 cur_obj_check_frame_prior_current_frame(s16 *frame) {
+    s16 animFrame = o->header.gfx.animInfo.animFrame;
 
-    while (*a0 != -1) {
-        if (*a0 == sp6) {
+    while (*frame != -1) {
+        if (*frame == animFrame) {
             return TRUE;
         }
 
-        a0++;
+        frame++;
     }
 
     return FALSE;
@@ -2501,17 +2501,17 @@ Gfx *geo_offset_klepto_held_object(s32 callContext, struct GraphNode *node, UNUS
     return NULL;
 }
 
-s32 geo_offset_klepto_debug(s32 callContext, struct GraphNode *a1, UNUSED s32 sp8) {
+Gfx *geo_offset_klepto_debug(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        ((struct GraphNode_802A45E4 *) a1->next)->unk18 = gDebugInfo[4][0];
-        ((struct GraphNode_802A45E4 *) a1->next)->unk1A = gDebugInfo[4][1];
-        ((struct GraphNode_802A45E4 *) a1->next)->unk1C = gDebugInfo[4][2];
-        ((struct GraphNode_802A45E4 *) a1->next)->unk1E = gDebugInfo[4][3];
-        ((struct GraphNode_802A45E4 *) a1->next)->unk20 = gDebugInfo[4][4];
-        ((struct GraphNode_802A45E4 *) a1->next)->unk22 = gDebugInfo[4][5];
+        ((struct GraphNode_802A45E4 *) node->next)->unk18 = gDebugInfo[4][0];
+        ((struct GraphNode_802A45E4 *) node->next)->unk1A = gDebugInfo[4][1];
+        ((struct GraphNode_802A45E4 *) node->next)->unk1C = gDebugInfo[4][2];
+        ((struct GraphNode_802A45E4 *) node->next)->unk1E = gDebugInfo[4][3];
+        ((struct GraphNode_802A45E4 *) node->next)->unk20 = gDebugInfo[4][4];
+        ((struct GraphNode_802A45E4 *) node->next)->unk22 = gDebugInfo[4][5];
     }
 
-    return 0;
+    return NULL;
 }
 
 s32 obj_is_hidden(struct Object *obj) {

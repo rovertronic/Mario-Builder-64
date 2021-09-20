@@ -152,7 +152,6 @@ TerrainData *gEnvironmentRegions;
 s32 gEnvironmentLevels[20];
 RoomData gDoorAdjacentRooms[60][2];
 s16 gMarioCurrentRoom;
-s16 D_8035FEE2;
 s16 gDoorRenderingTimer;
 s16 gTHIWaterDrained;
 s16 gTTCSpeedSetting;
