@@ -356,6 +356,7 @@ const BehaviorScript bhvMrI[] = {
     SET_HOME(),
     SPAWN_CHILD(/*Model*/ MODEL_MR_I_IRIS, /*Behavior*/ bhvMrIBody),
     SET_MODEL(MODEL_MR_I),
+    SET_FLOAT(oGraphYOffset, 100),
     BILLBOARD(),
     CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
