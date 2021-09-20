@@ -39,7 +39,7 @@ static u32 headless_pi_status(void)
 
 
 void map_data_init(void) {
-	headless_dma(_mapDataSegmentRomStart, 0x80700000, 0x100000);
+	headless_dma((u32)_mapDataSegmentRomStart, (u32*)0x80700000, 0x100000);
 	while (headless_pi_status() & (PI_STATUS_DMA_BUSY | PI_STATUS_ERROR));
 }
 
@@ -68,7 +68,7 @@ char *find_function_in_stack(u32 *sp) {
 	for (int i = 0; i < STACK_TRAVERSAL_LIMIT; i++) {
 		u32 val = *sp;
 		val = *(u32 *)val;
-		*sp = *sp + 4;
+		*sp += 4;
 
 		if ((val >= (u32)_mainSegmentStart) && (val <= (u32)_mainSegmentTextEnd)) {
 			return parse_map(val);

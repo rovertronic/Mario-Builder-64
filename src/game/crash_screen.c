@@ -236,7 +236,7 @@ void draw_crash_context(OSThread *thread, s32 cause)
     crash_screen_print_float_reg(30, 220, 30, &tc->fp30.f.f_even);
 }
 
-void draw_crash_log(OSThread *thread, s32 cause)
+void draw_crash_log(UNUSED OSThread *thread, UNUSED s32 cause)
 {
 #if PUPPYPRINT_DEBUG
     s32 i;
@@ -256,7 +256,7 @@ void draw_crash_log(OSThread *thread, s32 cause)
 // prints any function pointers it finds in the stack
 // format:
 // SP address: function name
-void draw_stacktrace(OSThread *thread, s32 cause) {
+void draw_stacktrace(OSThread *thread, UNUSED s32 cause) {
     __OSThreadContext *tc = &thread->context;
     u32 temp_sp = tc->sp + 0x14;
 
@@ -280,7 +280,7 @@ void draw_stacktrace(OSThread *thread, s32 cause) {
             }
 
             char *fname = find_function_in_stack(&temp_sp);
-            if (fname == NULL || (*(u32*)temp_sp & 0x80000000 == 0)) {
+            if ((fname == NULL) || ((*(u32*)temp_sp & 0x80000000) == 0)) {
                 crash_screen_print(30, 45 + (i * 10), "%08X: UNKNOWN", temp_sp);
             } else {
                 crash_screen_print(30, 45 + (i * 10), "%08X: %s", temp_sp, fname);
@@ -368,7 +368,7 @@ extern struct SequenceQueueItem sBackgroundMusicQueue[6];
 
 void thread2_crash_screen(UNUSED void *arg) {
     OSMesg mesg;
-    OSThread *thread;
+    OSThread *thread = NULL;
 
     osSetEventMesg(OS_EVENT_CPU_BREAK, &gCrashScreen.mesgQueue, (OSMesg) 1);
     osSetEventMesg(OS_EVENT_FAULT, &gCrashScreen.mesgQueue, (OSMesg) 2);
