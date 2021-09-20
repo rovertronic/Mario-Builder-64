@@ -76,6 +76,6 @@ void geo_layout_cmd_node_held_obj(void);
 void geo_layout_cmd_node_culling_radius(void);
 void geo_layout_cmd_bone(void);
 
-struct GraphNode *process_geo_layout(struct AllocOnlyPool *a0, void *segptr);
+struct GraphNode *process_geo_layout(struct AllocOnlyPool *pool, void *segptr);
 
 #endif // GEO_LAYOUT_H

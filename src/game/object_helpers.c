@@ -2324,9 +2324,8 @@ void cur_obj_call_action_function(void (*actionFunctions[])(void)) {
     actionFunction();
 }
 
-static struct Object *spawn_star_with_no_lvl_exit(s32 param, s32 sp24) {
+static struct Object *spawn_star_with_no_lvl_exit(s32 param) {
     struct Object *starObj = spawn_object(o, MODEL_STAR, bhvSpawnedStarNoLevelExit);
-    starObj->oSparkleSpawnUnk1B0 = sp24;
     starObj->oBehParams = o->oBehParams;
     starObj->oBehParams2ndByte = param;
 
@@ -2336,18 +2335,14 @@ static struct Object *spawn_star_with_no_lvl_exit(s32 param, s32 sp24) {
 // old unused initializer for 2d star spawn behavior.
 // uses behavior parameters not used in the current sparkle code.
 void spawn_base_star_with_no_lvl_exit(void) {
-    spawn_star_with_no_lvl_exit(0, 0);
-}
-
-s32 bit_shift_left(s32 a0) {
-    return 1 << a0;
+    spawn_star_with_no_lvl_exit(0);
 }
 
 s32 cur_obj_mario_far_away(void) {
     f32 dx = o->oHomeX - gMarioObject->oPosX;
     f32 dy = o->oHomeY - gMarioObject->oPosY;
     f32 dz = o->oHomeZ - gMarioObject->oPosZ;
-    f32 marioDistToHome = sqrtf(dx * dx + dy * dy + dz * dz);
+    f32 marioDistToHome = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
 
     if (o->oDistanceToMario > 2000.0f && marioDistToHome > 2000.0f) {
         return TRUE;

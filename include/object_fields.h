@@ -925,10 +925,6 @@
 // Secrets/Red Coins
 #define /*0x0F4*/ oHiddenStarTriggerCounter OBJECT_FIELD_S32(0x1B)
 
-// Overall very difficult to determine usage, mostly stubbed code.
-/* Sparkle Spawn Star */
-#define /*0x1B0*/ oSparkleSpawnUnk1B0 OBJECT_FIELD_S32(0x4A)
-
 /* Sealed Door Star */
 #define /*0x108*/ oUnlockDoorStarState  OBJECT_FIELD_U32(0x20)
 #define /*0x10C*/ oUnlockDoorStarTimer  OBJECT_FIELD_S32(0x21)

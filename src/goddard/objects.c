@@ -431,38 +431,35 @@ struct ObjValPtr *make_valptr(struct GdObj *obj, s32 flag, enum ValPtrType type,
 
 /* @ 22B1DC for 0x430 */
 void reset_plane(struct ObjPlane *plane) {
-    struct ObjFace *sp4C;
+    struct ObjFace *face;
     f32 sp48;
     f32 sp44;
-    UNUSED u32 sp40;
-    UNUSED u32 sp3C;
-    UNUSED u32 sp38;
     s32 i;
     s32 sp30;
     register f32 sp28;
 
     imin("reset_plane");
 
-    sp4C = plane->unk40;
-    calc_face_normal(sp4C);
-    plane->unk1C = gd_dot_vec3f(&sp4C->vertices[0]->pos, &sp4C->normal);
+    face = plane->unk40;
+    calc_face_normal(face);
+    plane->unk1C = gd_dot_vec3f(&face->vertices[0]->pos, &face->normal);
     sp48 = 0.0f;
 
-    sp28 = sp4C->normal.x < 0.0f ? -sp4C->normal.x : sp4C->normal.x;
+    sp28 = face->normal.x < 0.0f ? -face->normal.x : face->normal.x;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 0;
         sp48 = sp44;
     }
 
-    sp28 = sp4C->normal.y < 0.0f ? -sp4C->normal.y : sp4C->normal.y;
+    sp28 = face->normal.y < 0.0f ? -face->normal.y : face->normal.y;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 1;
         sp48 = sp44;
     }
 
-    sp28 = sp4C->normal.z < 0.0f ? -sp4C->normal.z : sp4C->normal.z;
+    sp28 = face->normal.z < 0.0f ? -face->normal.z : face->normal.z;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 2;
@@ -485,8 +482,8 @@ void reset_plane(struct ObjPlane *plane) {
 
     reset_bounding_box();
 
-    for (i = 0; i < sp4C->vtxCount; i++) {
-        add_obj_pos_to_bounding_box(&sp4C->vertices[i]->header);
+    for (i = 0; i < face->vtxCount; i++) {
+        add_obj_pos_to_bounding_box(&face->vertices[i]->header);
     }
 
     plane->boundingBox.minX = gSomeBoundingBox.minX;
@@ -513,7 +510,6 @@ void reset_plane(struct ObjPlane *plane) {
 
 /* @ 22B60C for 0x94; orig name: func_8017CE3C */
 struct ObjPlane *make_plane(s32 inZone, struct ObjFace *a1) {
-    UNUSED u32 pad1C;
     struct ObjPlane *newPlane = (struct ObjPlane *) make_object(OBJ_TYPE_PLANES);
 
     gGdPlaneCount++;

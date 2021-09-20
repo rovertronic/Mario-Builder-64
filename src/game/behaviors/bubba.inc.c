@@ -121,9 +121,9 @@ void bhv_bubba_loop(void) {
 
     if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
         if (o->oMoveFlags & OBJ_MOVE_ENTERED_WATER) {
-            struct Object *sp38 = spawn_object(o, MODEL_WATER_SPLASH, bhvWaterSplash);
-            if (sp38 != NULL) {
-                obj_scale(sp38, 3.0f);
+            struct Object *splashObj = spawn_object(o, MODEL_WATER_SPLASH, bhvWaterSplash);
+            if (splashObj != NULL) {
+                obj_scale(splashObj, 3.0f);
             }
 
             o->oBubbaUnk108 = o->oVelY;

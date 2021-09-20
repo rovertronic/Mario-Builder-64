@@ -67,9 +67,9 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node);
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node);
 #endif
-void obj_update_pos_from_parent_transformation(Mat4 a0, struct Object *a1);
+void obj_update_pos_from_parent_transformation(Mat4 mtx, struct Object *obj);
 void obj_apply_scale_to_matrix(struct Object *obj, Mat4 dst, Mat4 src);
-void create_transformation_from_matrices(Mat4 a0, Mat4 a1, Mat4 a2);
+void create_transformation_from_matrices(Mat4 dst, Mat4 a1, Mat4 a2);
 void obj_set_held_state(struct Object *obj, const BehaviorScript *heldBehavior);
 f32 lateral_dist_between_objects(struct Object *obj1, struct Object *obj2);
 f32 dist_between_objects(struct Object *obj1, struct Object *obj2);
@@ -246,7 +246,6 @@ s32 cur_obj_is_mario_on_platform(void);
 s32 jiggle_bbh_stair(s32 timer);
 void cur_obj_call_action_function(void (*actionFunctions[])(void));
 void spawn_base_star_with_no_lvl_exit(void);
-s32 bit_shift_left(s32 a0);
 s32 cur_obj_mario_far_away(void);
 s32 is_mario_moving_fast_or_in_air(s32 speedThreshold);
 s32 is_item_in_array(s8 item, s8 *array);

@@ -91,12 +91,12 @@ const char *gNoControllerMsg[] = {
 };
 #endif
 
-void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e) {
-    u16 sp6 = ((c >> 3) << 11) | ((d >> 3) << 6) | ((e >> 3) << 1) | 1;
+void override_viewport_and_clip(Vp *vpOverride, Vp *vpClip, u8 red, u8 green, u8 blue) {
+    u16 color = ((red >> 3) << 11) | ((green >> 3) << 6) | ((blue >> 3) << 1) | 1;
 
-    gFBSetColor = (sp6 << 16) | sp6;
-    gViewportOverride = a;
-    gViewportClip = b;
+    gFBSetColor = (color << 16) | color;
+    gViewportOverride = vpOverride;
+    gViewportClip = vpClip;
 }
 
 void set_warp_transition_rgb(u8 red, u8 green, u8 blue) {

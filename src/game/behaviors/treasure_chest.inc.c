@@ -16,7 +16,7 @@ static struct ObjectHitbox sTreasureChestBottomHitbox = {
 };
 
 void bhv_treasure_chest_top_loop(void) {
-    struct Object *sp34 = o->parentObj->parentObj;
+    struct Object *parent = o->parentObj->parentObj;
 
     switch (o->oAction) {
         case 0:
@@ -26,7 +26,7 @@ void bhv_treasure_chest_top_loop(void) {
 
         case 1:
             if (o->oTimer == 0) {
-                if (sp34->oTreasureChestUnkFC == 0) {
+                if (parent->oTreasureChestUnkFC == 0) {
                     spawn_object_relative(0, 0, -80, 120, o, MODEL_BUBBLE, bhvWaterAirBubble);
                     play_sound(SOUND_GENERAL_CLAM_SHELL1, o->header.gfx.cameraToObject);
                 } else {
