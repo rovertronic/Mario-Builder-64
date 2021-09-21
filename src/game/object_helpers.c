@@ -263,15 +263,15 @@ void obj_set_held_state(struct Object *obj, const BehaviorScript *heldBehavior) 
     obj->parentObj = o;
 
     if (obj->oFlags & OBJ_FLAG_HOLDABLE) {
-        if (heldBehavior == bhvCarrySomething3) {
+        if (heldBehavior == bhvCarrySomethingHeld) {
             obj->oHeldState = HELD_HELD;
         }
 
-        if (heldBehavior == bhvCarrySomething5) {
+        if (heldBehavior == bhvCarrySomethingThrown) {
             obj->oHeldState = HELD_THROWN;
         }
 
-        if (heldBehavior == bhvCarrySomething4) {
+        if (heldBehavior == bhvCarrySomethingDropped) {
             obj->oHeldState = HELD_DROPPED;
         }
     } else {

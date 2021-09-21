@@ -289,7 +289,7 @@ void mario_stop_riding_object(struct MarioState *m) {
 void mario_grab_used_object(struct MarioState *m) {
     if (m->heldObj == NULL) {
         m->heldObj = m->usedObj;
-        obj_set_held_state(m->heldObj, bhvCarrySomething3);
+        obj_set_held_state(m->heldObj, bhvCarrySomethingHeld);
     }
 }
 
@@ -299,7 +299,7 @@ void mario_drop_held_object(struct MarioState *m) {
             stop_shell_music();
         }
 
-        obj_set_held_state(m->heldObj, bhvCarrySomething4);
+        obj_set_held_state(m->heldObj, bhvCarrySomethingDropped);
 
         // ! When dropping an object instead of throwing it, it will be put at Mario's
         // y-positon instead of the HOLP's y-position. This fact is often exploited when
@@ -320,7 +320,7 @@ void mario_throw_held_object(struct MarioState *m) {
             stop_shell_music();
         }
 
-        obj_set_held_state(m->heldObj, bhvCarrySomething5);
+        obj_set_held_state(m->heldObj, bhvCarrySomethingThrown);
 
         m->heldObj->oPosX = m->marioBodyState->heldObjLastPosition[0] + 32.0f * sins(m->faceAngle[1]);
         m->heldObj->oPosY = m->marioBodyState->heldObjLastPosition[1];

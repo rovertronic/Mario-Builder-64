@@ -219,6 +219,7 @@ void mr_i_act_0(void) {
     o->oMoveAngleRoll = 0;
 #endif
     cur_obj_scale(o->oBehParams2ndByte + 1);
+    o->oGraphYOffset = 100.0f * o->header.gfx.scale[1];
     if (o->oTimer == 0)
         cur_obj_set_pos_to_home();
     if (o->oDistanceToMario < 1500.0f)
