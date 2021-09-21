@@ -30,14 +30,14 @@ void bhv_koopa_shell_flame_loop(void) {
         o->oGravity = -4.0f;
         o->oAnimState = random_float() * 10.0f;
         obj_translate_xz_random(o, 110.0f);
-        o->oKoopaShellFlameUnkF8 = 4.0f;
+        o->oKoopaShellFlameScale = 4.0f;
     }
     cur_obj_update_floor_height();
     cur_obj_move_using_fvel_and_gravity();
     if (o->oFloorHeight > o->oPosY || o->oTimer > 10)
         obj_mark_for_deletion(o);
-    o->oKoopaShellFlameUnkF8 += -0.3;
-    cur_obj_scale(o->oKoopaShellFlameUnkF8);
+    o->oKoopaShellFlameScale += -0.3;
+    cur_obj_scale(o->oKoopaShellFlameScale);
 }
 
 void bhv_koopa_shell_flame_spawn(void) {

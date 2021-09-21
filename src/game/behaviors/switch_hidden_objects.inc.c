@@ -13,7 +13,7 @@ struct ObjectHitbox sBreakableBoxHitbox = {
 };
 
 void breakable_box_init(void) {
-    o->oHiddenObjectUnkF4 = NULL;
+    o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = 1;
     switch (o->oBehParams2ndByte) {
         case 0:
@@ -40,9 +40,9 @@ void hidden_breakable_box_actions(void) {
         cur_obj_become_intangible();
         if (o->oTimer == 0)
             breakable_box_init();
-        if (o->oHiddenObjectUnkF4 == NULL)
-            o->oHiddenObjectUnkF4 = cur_obj_nearest_object_with_behavior(bhvFloorSwitchHiddenObjects);
-        if ((sp1C = o->oHiddenObjectUnkF4) != NULL)
+        if (o->oHiddenObjectSwitchObj == NULL)
+            o->oHiddenObjectSwitchObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchHiddenObjects);
+        if ((sp1C = o->oHiddenObjectSwitchObj) != NULL)
             if (sp1C->oAction == 2) {
                 o->oAction++;
                 cur_obj_enable_rendering();
@@ -63,7 +63,7 @@ void hidden_breakable_box_actions(void) {
         cur_obj_become_intangible();
         cur_obj_disable_rendering();
         o->oInteractStatus = 0;
-        if ((sp1C = o->oHiddenObjectUnkF4) != NULL)
+        if ((sp1C = o->oHiddenObjectSwitchObj) != NULL)
             if (sp1C->oAction == 0)
                 o->oAction = 0;
     }
@@ -75,9 +75,9 @@ void hidden_unbreakable_box_actions(void) {
     if (o->oAction == 0) {
         cur_obj_disable_rendering();
         cur_obj_become_intangible();
-        if (o->oHiddenObjectUnkF4 == NULL)
-            o->oHiddenObjectUnkF4 = cur_obj_nearest_object_with_behavior(bhvFloorSwitchHiddenObjects);
-        if ((sp1C = o->oHiddenObjectUnkF4) != NULL)
+        if (o->oHiddenObjectSwitchObj == NULL)
+            o->oHiddenObjectSwitchObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchHiddenObjects);
+        if ((sp1C = o->oHiddenObjectSwitchObj) != NULL)
             if (sp1C->oAction == 2) {
                 o->oAction++;
                 cur_obj_enable_rendering();

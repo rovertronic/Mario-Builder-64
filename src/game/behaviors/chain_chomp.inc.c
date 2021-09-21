@@ -214,7 +214,7 @@ static void chain_chomp_sub_act_lunge(void) {
 
         if (o->oChainChompRestrictedByChain == TRUE) {
             o->oForwardVel = o->oVelY = 0.0f;
-            o->oChainChompUnk104 = 30.0f;
+            o->oChainChompSignedMaxDistBetweenChainParts = 30.0f;
         }
 
         // TODO: What is this
@@ -230,15 +230,15 @@ static void chain_chomp_sub_act_lunge(void) {
         cur_obj_rotate_yaw_toward(atan2s(o->oChainChompSegments[0].posZ, o->oChainChompSegments[0].posX),
                               0x1000);
 
-        if (o->oChainChompUnk104 != 0.0f) {
-            approach_f32_ptr(&o->oChainChompUnk104, 0.0f, 0.8f);
+        if (o->oChainChompSignedMaxDistBetweenChainParts != 0.0f) {
+            approach_f32_ptr(&o->oChainChompSignedMaxDistBetweenChainParts, 0.0f, 0.8f);
         } else {
             o->oSubAction = CHAIN_CHOMP_SUB_ACT_TURN;
         }
 
-        o->oChainChompMaxDistBetweenChainParts = o->oChainChompUnk104;
+        o->oChainChompMaxDistBetweenChainParts = o->oChainChompSignedMaxDistBetweenChainParts;
         if (gGlobalTimer % 2 != 0) {
-            o->oChainChompMaxDistBetweenChainParts = -o->oChainChompUnk104;
+            o->oChainChompMaxDistBetweenChainParts = -o->oChainChompSignedMaxDistBetweenChainParts;
         }
     }
 

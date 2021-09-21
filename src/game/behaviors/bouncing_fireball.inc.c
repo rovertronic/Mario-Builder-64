@@ -46,8 +46,8 @@ void bhv_bouncing_fireball_spawner_loop(void) {
             break;
         case 2:
             if (o->oTimer == 0)
-                o->oBouncingFireBallUnkF4 = random_float() * 100.0f;
-            if (o->oBouncingFireBallUnkF4 + 100 < o->oTimer)
+                o->oBouncingFireBallSpawnerRandomCooldown = random_float() * 100.0f;
+            if (o->oBouncingFireBallSpawnerRandomCooldown + 100 < o->oTimer)
                 o->oAction = 0;
             break;
     }

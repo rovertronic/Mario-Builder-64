@@ -1611,7 +1611,7 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 baseYVel,
         coin = spawn_object(obj, model, coinBehavior);
         obj_translate_xz_random(coin, posJitter);
         coin->oPosY = spawnHeight;
-        coin->oCoinUnk110 = baseYVel;
+        coin->oCoinBaseYVel = baseYVel;
     }
 }
 
@@ -1905,8 +1905,8 @@ void obj_translate_local(struct Object *obj, s16 posIndex, s16 localTranslateInd
 }
 
 void obj_build_transform_from_pos_and_angle(struct Object *obj, s16 posIndex, s16 angleIndex) {
-    f32 translate[3];
-    s16 rotation[3];
+    Vec3f translate;
+    Vec3s rotation;
 
     translate[0] = obj->rawData.asF32[posIndex + 0];
     translate[1] = obj->rawData.asF32[posIndex + 1];
@@ -1945,9 +1945,7 @@ void obj_build_transform_relative_to_parent(struct Object *obj) {
 
     obj->header.gfx.throwMatrix = &obj->transform;
 
-    //! Sets scale of gCurrentObject instead of obj. Not exploitable since this
-    //  function is only called with obj = gCurrentObject
-    cur_obj_scale(1.0f);
+    obj_scale(obj, 1.0f);
 }
 
 void obj_create_transform_from_self(struct Object *obj) {
@@ -2062,9 +2060,9 @@ static void obj_build_vel_from_transform(struct Object *obj) {
     f32 forward = obj->oForwardVel;
 
     //! Typo, up and left should be swapped
-    obj->oVelX = obj->transform[0][0] * up + obj->transform[1][0] * left + obj->transform[2][0] * forward;
-    obj->oVelY = obj->transform[0][1] * up + obj->transform[1][1] * left + obj->transform[2][1] * forward;
-    obj->oVelZ = obj->transform[0][2] * up + obj->transform[1][2] * left + obj->transform[2][2] * forward;
+    obj->oVelX = obj->transform[0][0] * left + obj->transform[1][0] * up + obj->transform[2][0] * forward;
+    obj->oVelY = obj->transform[0][1] * left + obj->transform[1][1] * up + obj->transform[2][1] * forward;
+    obj->oVelZ = obj->transform[0][2] * left + obj->transform[1][2] * up + obj->transform[2][2] * forward;
 }
 
 void cur_obj_set_pos_via_transform(void) {
@@ -2837,7 +2835,7 @@ void cur_obj_init_animation_and_extend_if_at_end(s32 animIndex) {
 
 s32 cur_obj_check_grabbed_mario(void) {
     if (o->oInteractStatus & INT_STATUS_GRABBED_MARIO) {
-        o->oKingBobombUnk88 = 1;
+        o->oKingBobombHoldingMarioState = 1;
         cur_obj_become_intangible();
         return TRUE;
     }
