@@ -1472,17 +1472,12 @@ void move_animator(struct ObjAnimator *animObj) {
 
 /* @ 22EDF4 for 0x300; orig name: func_80180624 */
 void drag_picked_object(struct GdObj *inputObj) {
-    UNUSED u32 spE4;
-    UNUSED u32 spE0;
-    UNUSED u32 spDC;
     struct GdVec3f displacement;
     struct GdVec3f spC4;
     struct GdControl *ctrl;
     Mat4f sp80;
     Mat4f sp40;
-    UNUSED u32 pad34[3];
     struct GdObj *obj;
-    UNUSED u32 pad2C;
     f32 dispMag;
 
     ctrl = &gGdCtrl;
@@ -1549,15 +1544,13 @@ void find_and_drag_picked_object(struct ObjGroup *group) {
 
 /* @ 22F180 for 0x624; orig name: func_801809B0 */
 void move_camera(struct ObjCamera *cam) {
-    struct GdObj *spEC;
-    struct GdVec3f spE0;
+    struct GdObj *obj;
+    struct GdVec3f worldPos;
     struct GdVec3f spD4;
     struct GdVec3f spC8;
-    UNUSED u8 padBC[0xC8 - 0xBC];
     struct GdVec3f spB0;
-    Mat4f sp70;
-    UNUSED u8 pad30[0x70 - 0x30];
-    Mat4f *sp2C;
+    Mat4f mtx;
+    Mat4f *idMtx;
     struct GdControl *ctrl;
 
     ctrl = &gGdCtrl;
@@ -1565,16 +1558,16 @@ void move_camera(struct ObjCamera *cam) {
         return;
     }
 
-    spE0.x = spE0.y = spE0.z = 0.0f;
+    worldPos.x = worldPos.y = worldPos.z = 0.0f;
     spB0.x = spB0.y = spB0.z = 0.0f;
 
-    if ((spEC = cam->unk30) != NULL) {
-        set_cur_dynobj(spEC);
-        d_get_world_pos(&spE0);
-        d_get_matrix(&sp70);
+    if ((obj = cam->unk30) != NULL) {
+        set_cur_dynobj(obj);
+        d_get_world_pos(&worldPos);
+        d_get_matrix(&mtx);
 
-        spC8.x = sp70[2][0] - cam->unk58;
-        spC8.z = sp70[2][2] - cam->unk60;
+        spC8.x = mtx[2][0] - cam->unk58;
+        spC8.z = mtx[2][2] - cam->unk60;
 
         cam->unk58 += spC8.x * cam->unk180.y;
         cam->unk60 += spC8.z * cam->unk180.y;
@@ -1597,7 +1590,7 @@ void move_camera(struct ObjCamera *cam) {
         gd_set_identity_mat4(&cam->unkA8);
     }
 
-    sp2C = &cam->unk64;
+    idMtx = &cam->unk64;
     if ((cam->flags & CAMERA_FLAG_CONTROLLABLE) != 0) {
         if (ctrl->btnB != FALSE && ctrl->prevFrame->btnB == FALSE) {  // new B press
             cam->zoomLevel++;
@@ -1645,7 +1638,7 @@ void move_camera(struct ObjCamera *cam) {
         cam->unk40.y += (cam->unk4C.y - cam->unk40.y) * cam->unk17C;
         cam->unk40.z += (cam->unk4C.z - cam->unk40.z) * cam->unk17C;
     } else {
-        gd_set_identity_mat4(sp2C);
+        gd_set_identity_mat4(idMtx);
     }
 
     spD4.x = cam->unk40.x;
@@ -1656,16 +1649,16 @@ void move_camera(struct ObjCamera *cam) {
     spD4.y += spB0.y;
     spD4.z += spB0.z;
 
-    gd_mult_mat4f(sp2C, &cam->unkA8, &cam->unkA8);
+    gd_mult_mat4f(idMtx, &cam->unkA8, &cam->unkA8);
     gd_mat4f_mult_vec3f(&spD4, &cam->unkA8);
 
     cam->worldPos.x = spD4.x;
     cam->worldPos.y = spD4.y;
     cam->worldPos.z = spD4.z;
 
-    cam->worldPos.x += spE0.x;
-    cam->worldPos.y += spE0.y;
-    cam->worldPos.z += spE0.z;
+    cam->worldPos.x += worldPos.x;
+    cam->worldPos.y += worldPos.y;
+    cam->worldPos.z += worldPos.z;
 }
 
 /* @ 22F7A4 for 0x38; orig name: func_80180FD4 */
@@ -1675,9 +1668,6 @@ void move_cameras_in_grp(struct ObjGroup *group) {
 
 /* @ 22F7DC for 0x36C*/
 void func_8018100C(struct ObjLight *light) {
-    Mat4f mtx;
-    UNUSED u32 pad1C[3];
-
     if (light->unk40 == 3) {
         if (light->unk30 > 0.0) { //? 0.0f
             light->unk30 -= 0.2;  //? 0.2f
@@ -1693,44 +1683,7 @@ void func_8018100C(struct ObjLight *light) {
 
         light->unk3C &= ~1;
     }
-    // if (1)?
     return;
-    // unreachable
-    light->position.x += light->unk80.x;
-    light->position.y += light->unk80.y;
-    light->position.z += light->unk80.z;
-
-    // should be position.x for second comparison?
-    if (light->position.x > 500.0f || light->position.y < -500.0f) {
-        light->unk80.x = -light->unk80.x;
-    }
-
-    if (light->position.y > 500.0f || light->position.y < -500.0f) {
-        light->unk80.y = -light->unk80.y;
-    }
-
-    if (light->position.z > 500.0f || light->position.z < -500.0f) {
-        light->unk80.z = -light->unk80.z;
-    }
-
-    return;
-    // more unreachable
-    D_801A81C0 += 1.0; //? 1.0f
-    D_801A81C4 += 0.6; //? 0.6f
-
-    gd_set_identity_mat4(&mtx);
-    gd_absrot_mat4(&mtx, GD_Y_AXIS, light->unk68.y);
-    gd_absrot_mat4(&mtx, GD_X_AXIS, light->unk68.x);
-    gd_absrot_mat4(&mtx, GD_Z_AXIS, light->unk68.z);
-    gd_mat4f_mult_vec3f(&light->unk8C, &mtx);
-
-    light->position.x = light->unk8C.x;
-    light->position.y = light->unk8C.y;
-    light->position.z = light->unk8C.z;
-    return;
-    // even more unreachable
-    gd_mat4f_mult_vec3f(&light->unk80, &mtx);
-    imout(); // this call would cause an issue if it was reachable
 }
 
 /* @ 22FB48 for 0x38; orig name: func_80181378 */

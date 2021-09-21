@@ -331,8 +331,6 @@ u8 sSoundBankDisabled[16] = { 0 };
 u8 D_80332108 = 0;
 u8 sHasStartedFadeOut = FALSE;
 u16 sSoundBanksThatLowerBackgroundMusic = 0;
-u8 sUnused80332114 = 0;  // never read, set to 0
-u16 sUnused80332118 = 0; // never read, set to 0
 u8 sBackgroundMusicMaxTargetVolume = TARGET_VOLUME_UNSET;
 u8 D_80332120 = 0;
 u8 D_80332124 = 0;
@@ -2142,11 +2140,9 @@ void sound_init(void) {
 
     sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL_BITS);
 
-    sUnused80332118 = 0;
     sBackgroundMusicTargetVolume = TARGET_VOLUME_UNSET;
     sLowerBackgroundMusicVolume = FALSE;
     sSoundBanksThatLowerBackgroundMusic = 0;
-    sUnused80332114 = 0;
     sCurrentBackgroundMusicSeqId = 0xff;
     gSoundMode = SOUND_MODE_STEREO;
     sBackgroundMusicQueueSize = 0;
@@ -2504,9 +2500,6 @@ void func_80320ED8(void) {
  * Called from threads: thread5_game_loop
  */
 void play_secondary_music(u8 seqId, u8 bgMusicVolume, u8 volume, u16 fadeTimer) {
-    UNUSED u32 dummy;
-
-    sUnused80332118 = 0;
     if (sCurrentBackgroundMusicSeqId == 0xff || sCurrentBackgroundMusicSeqId == SEQ_MENU_TITLE_SCREEN) {
         return;
     }
@@ -2530,6 +2523,7 @@ void play_secondary_music(u8 seqId, u8 bgMusicVolume, u8 volume, u16 fadeTimer) 
 
 /**
  * Called from threads: thread5_game_loop
+ * Seems to be related to music fading based on position, such as sleeping Piranha Plants, BBH Merry-Go-Round, and Endless Stairs
  */
 void func_80321080(u16 fadeTimer) {
     if (sBackgroundMusicTargetVolume != TARGET_VOLUME_UNSET) {

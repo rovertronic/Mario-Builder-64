@@ -15,6 +15,20 @@
  *                      WALLS                     *
  **************************************************/
 
+#define CALC_OFFSET(vert, next_step) {          \
+    if ((vert)[1] != 0.0f) {                    \
+        v = (v2[1] / (vert)[1]);                \
+        if ((v < 0.0f) || (v > 1.0f)) next_step;\
+        d00 = (((vert)[0] * v) - v2[0]);        \
+        d01 = (((vert)[2] * v) - v2[2]);        \
+        invDenom = sqrtf(sqr(d00) + sqr(d01));  \
+        offset   = (invDenom - margin_radius);  \
+        if (offset > 0.0f) next_step;           \
+        goto check_collision;                   \
+    }                                           \
+    next_step;                                  \
+}
+
 /**
  * Iterate through the list of walls until all walls are checked and
  * have given their wall push.
@@ -24,12 +38,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
     register struct Surface *surf;
     register f32 offset;
     register f32 radius = data->radius;
-    register f32 x = data->x;
-    register f32 y = data->y + data->offsetY;
-    register f32 z = data->z;
-    register f32 v0x, v0y, v0z;
-    register f32 v1x, v1y, v1z;
-    register f32 v2x, v2y, v2z;
+    register Vec3f pos = { data->x, data->y + data->offsetY, data->z };
+    register Vec3f v0, v1, v2;
     register f32 d00, d01, d11, d20, d21;
     register f32 invDenom;
     register f32 v, w;
@@ -57,11 +67,11 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         surfaceNode = surfaceNode->next;
 
         // Exclude a large number of walls immediately to optimize.
-        if (y < surf->lowerY || y > surf->upperY) {
+        if (pos[1] < surf->lowerY || pos[1] > surf->upperY) {
             continue;
         }
 
-        offset = (surf->normal.x * x) + (surf->normal.y * y) + (surf->normal.z * z) + surf->originOffset;
+        offset = (surf->normal.x * pos[0]) + (surf->normal.y * pos[1]) + (surf->normal.z * pos[2]) + surf->originOffset;
 
         if (offset < -radius || offset > radius) {
             continue;
@@ -94,24 +104,24 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             }
         }
 
-        v0x = (f32)(surf->vertex2[0] - surf->vertex1[0]);
-        v0y = (f32)(surf->vertex2[1] - surf->vertex1[1]);
-        v0z = (f32)(surf->vertex2[2] - surf->vertex1[2]);
+        v0[0] = (f32)(surf->vertex2[0] - surf->vertex1[0]);
+        v0[1] = (f32)(surf->vertex2[1] - surf->vertex1[1]);
+        v0[2] = (f32)(surf->vertex2[2] - surf->vertex1[2]);
 
-        v1x = (f32)(surf->vertex3[0] - surf->vertex1[0]);
-        v1y = (f32)(surf->vertex3[1] - surf->vertex1[1]);
-        v1z = (f32)(surf->vertex3[2] - surf->vertex1[2]);
+        v1[0] = (f32)(surf->vertex3[0] - surf->vertex1[0]);
+        v1[1] = (f32)(surf->vertex3[1] - surf->vertex1[1]);
+        v1[2] = (f32)(surf->vertex3[2] - surf->vertex1[2]);
 
-        v2x = x - (f32)surf->vertex1[0];
-        v2y = y - (f32)surf->vertex1[1];
-        v2z = z - (f32)surf->vertex1[2];
+        v2[0] = pos[0] - (f32)surf->vertex1[0];
+        v2[1] = pos[1] - (f32)surf->vertex1[1];
+        v2[2] = pos[2] - (f32)surf->vertex1[2];
 
         // Face
-        d00 = (v0x * v0x) + (v0y * v0y) + (v0z * v0z);
-        d01 = (v0x * v1x) + (v0y * v1y) + (v0z * v1z);
-        d11 = (v1x * v1x) + (v1y * v1y) + (v1z * v1z);
-        d20 = (v2x * v0x) + (v2y * v0y) + (v2z * v0z);
-        d21 = (v2x * v1x) + (v2y * v1y) + (v2z * v1z);
+        d00 = (v0[0] * v0[0]) + (v0[1] * v0[1]) + (v0[2] * v0[2]);
+        d01 = (v0[0] * v1[0]) + (v0[1] * v1[1]) + (v0[2] * v1[2]);
+        d11 = (v1[0] * v1[0]) + (v1[1] * v1[1]) + (v1[2] * v1[2]);
+        d20 = (v2[0] * v0[0]) + (v2[1] * v0[1]) + (v2[2] * v0[2]);
+        d21 = (v2[0] * v1[0]) + (v2[1] * v1[1]) + (v2[2] * v1[2]);
         invDenom = 1.0f / ((d00 * d11) - (d01 * d01));
         v = ((d11 * d20) - (d01 * d21)) * invDenom;
         if (v < 0.0f || v > 1.0f) {
@@ -121,97 +131,38 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         if (w < 0.0f || w > 1.0f || v + w > 1.0f) {
             goto edge_1_2;
         }
-        x += surf->normal.x * (radius - offset);
-        z += surf->normal.z * (radius - offset);
+        pos[0] += surf->normal.x * (radius - offset);
+        pos[2] += surf->normal.z * (radius - offset);
         goto hasCollision;
 
     edge_1_2:
         if (offset < 0) continue;
-        // Edge 1-2
-        if (v0y != 0.0f) {
-            v = (v2y / v0y);
-            if (v < 0.0f || v > 1.0f) {
-                goto edge_1_3;
-            }
-            d00 = v0x * v - v2x;
-            d01 = v0z * v - v2z;
-            invDenom = sqrtf(sqr(d00) + sqr(d01));
-            offset = invDenom - margin_radius;
-            if (offset > 0.0f) {
-                goto edge_1_3;
-            }
-            invDenom = offset / invDenom;
-            x += (d00 *= invDenom);
-            z += (d01 *= invDenom);
-            margin_radius += 0.01f;
-
-            if ((d00 * surf->normal.x) + (d01 * surf->normal.z) < (corner_threshold * offset)) {
-                continue;
-            } else {
-                goto hasCollision;
-            }
-        }
-
+        CALC_OFFSET(v0, goto edge_1_3);
     edge_1_3:
-        // Edge 1-3
-        if (v1y != 0.0f) {
-            v = (v2y / v1y);
-            if (v < 0.0f || v > 1.0f) {
-                goto edge_2_3;
-            }
-            d00 = v1x * v - v2x;
-            d01 = v1z * v - v2z;
-            invDenom = sqrtf(sqr(d00) + sqr(d01));
-            offset = invDenom - margin_radius;
-            if (offset > 0.0f) {
-                goto edge_2_3;
-            }
-            invDenom = offset / invDenom;
-            x += (d00 *= invDenom);
-            z += (d01 *= invDenom);
-            margin_radius += 0.01f;
-
-            if ((d00 * surf->normal.x) + (d01 * surf->normal.z) < (corner_threshold * offset)) {
-                continue;
-            } else {
-                goto hasCollision;
-            }
-        }
-
+        CALC_OFFSET(v1, goto edge_2_3);
     edge_2_3:
         // Edge 2-3
-        v1x = (f32)(surf->vertex3[0] - surf->vertex2[0]);
-        v1y = (f32)(surf->vertex3[1] - surf->vertex2[1]);
-        v1z = (f32)(surf->vertex3[2] - surf->vertex2[2]);
+        v1[0] = (f32)(surf->vertex3[0] - surf->vertex2[0]);
+        v1[1] = (f32)(surf->vertex3[1] - surf->vertex2[1]);
+        v1[2] = (f32)(surf->vertex3[2] - surf->vertex2[2]);
 
-        v2x = x - (f32)surf->vertex2[0];
-        v2y = y - (f32)surf->vertex2[1];
-        v2z = z - (f32)surf->vertex2[2];
+        v2[0] = pos[0] - (f32)surf->vertex2[0];
+        v2[1] = pos[1] - (f32)surf->vertex2[1];
+        v2[2] = pos[2] - (f32)surf->vertex2[2];
 
-        if (v1y != 0.0f) {
-            v = (v2y / v1y);
-            if (v < 0.0f || v > 1.0f) continue;
-            d00 = v1x * v - v2x;
-            d01 = v1z * v - v2z;
-            invDenom = sqrtf(sqr(d00) + sqr(d01));
-            offset = invDenom - margin_radius;
-            if (offset > 0.0f) continue;
-            invDenom = offset / invDenom;
-            x += (d00 *= invDenom);
-            z += (d01 *= invDenom);
-            margin_radius += 0.01f;
-            if ((d00 * surf->normal.x) + (d01 * surf->normal.z) < (corner_threshold * offset)) {
-                continue;
-            } else {
-                goto hasCollision;
-            }
-        } else {
+        CALC_OFFSET(v1, continue);
+    check_collision:
+        invDenom = offset / invDenom;
+        pos[0] += (d00 *= invDenom);
+        pos[2] += (d01 *= invDenom);
+        margin_radius += 0.01f;
+        if ((d00 * surf->normal.x) + (d01 * surf->normal.z) < (corner_threshold * offset)) {
             continue;
         }
     hasCollision:
-        //! (Unreferenced Walls) Since this only returns the first four walls,
-        //  this can lead to wall interaction being missed. Typically unreferenced walls
-        //  come from only using one wall, however.
+        // (Unreferenced Walls) Since this only returns the first MAX_REFEREMCED_WALLS walls,
+        // this can lead to wall interaction being missed. Typically unreferenced walls
+        // come from only using one wall, however.
         if (data->numWalls < MAX_REFEREMCED_WALLS) {
             data->walls[data->numWalls++] = surf;
         }
@@ -225,8 +176,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
 //     z *= gWorldScale;
 // #endif
 
-    data->x = x;
-    data->z = z;
+    data->x = pos[0];
+    data->z = pos[2];
 
     return numCols;
 }

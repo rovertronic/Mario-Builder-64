@@ -718,7 +718,7 @@ void geo_obj_init(struct GraphNodeObject *graphNode, void *sharedChild, Vec3f po
     vec3s_copy(graphNode->angle, angle);
 
     graphNode->sharedChild = sharedChild;
-    graphNode->unk4C = 0;
+    graphNode->spawnInfo = 0;
     graphNode->throwMatrix = NULL;
     graphNode->animInfo.curAnim = NULL;
 
@@ -742,7 +742,7 @@ void geo_obj_init_spawninfo(struct GraphNodeObject *graphNode, struct SpawnInfo 
     graphNode->areaIndex = spawn->areaIndex;
     graphNode->activeAreaIndex = spawn->activeAreaIndex;
     graphNode->sharedChild = spawn->modelNode;
-    graphNode->unk4C = spawn;
+    graphNode->spawnInfo = spawn;
     graphNode->throwMatrix = NULL;
     graphNode->animInfo.curAnim = 0;
 
