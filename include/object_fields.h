@@ -720,13 +720,13 @@
 #define /*0x100*/ oIntroLakituDistToBirdsX                      OBJECT_FIELD_F32(0x1E)
 #define /*0x104*/ oIntroLakituDistToBirdsZ                      OBJECT_FIELD_F32(0x1F)
 #define /*0x108*/ O_INTRO_LAKITU_END_BIRDS_DEST_INDEX           0x20
-#define /*0x108*/ O_INTRO_LAKITU_END_BIRDS_DEST_Z_INDEX         (O_INTRO_LAKITU_END_BIRDS_DEST_INDEX + 0) // 0x20
+#define /*0x108*/ O_INTRO_LAKITU_END_BIRDS_DEST_X_INDEX         (O_INTRO_LAKITU_END_BIRDS_DEST_INDEX + 0) // 0x20
 #define /*0x10C*/ O_INTRO_LAKITU_END_BIRDS_DEST_Y_INDEX         (O_INTRO_LAKITU_END_BIRDS_DEST_INDEX + 1) // 0x21
-#define /*0x110*/ O_INTRO_LAKITU_END_BIRDS_DEST_X_INDEX         (O_INTRO_LAKITU_END_BIRDS_DEST_INDEX + 2) // 0x22
+#define /*0x110*/ O_INTRO_LAKITU_END_BIRDS_DEST_Z_INDEX         (O_INTRO_LAKITU_END_BIRDS_DEST_INDEX + 2) // 0x22
 #define /*0x108*/ oIntroLakituEndBirds1DestVec                  OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_INDEX)
-#define /*0x108*/ oIntroLakituEndBirds1DestZ                    OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_Z_INDEX)
-#define /*0x10C*/ oIntroLakituEndBirds1DestY                    OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_Y_INDEX)
 #define /*0x110*/ oIntroLakituEndBirds1DestX                    OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_X_INDEX)
+#define /*0x10C*/ oIntroLakituEndBirds1DestY                    OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_Y_INDEX)
+#define /*0x108*/ oIntroLakituEndBirds1DestZ                    OBJECT_FIELD_F32(O_INTRO_LAKITU_END_BIRDS_DEST_Z_INDEX)
 #define /*0x1AC*/ oIntroLakituCloud                             OBJECT_FIELD_OBJ(0x49)
 
 /* Main Menu Button */

@@ -171,8 +171,7 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
 #endif
     s16 roomCase;
     struct Surface *floor;
-    UNUSED struct Object *sp1C =
-        (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
+    UNUSED struct Object *obj = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
 
     if (callContext == GEO_CONTEXT_RENDER) {
@@ -2059,7 +2058,6 @@ static void obj_build_vel_from_transform(struct Object *obj) {
     f32 left = obj->oLeftVel;
     f32 forward = obj->oForwardVel;
 
-    //! Typo, up and left should be swapped
     obj->oVelX = obj->transform[0][0] * left + obj->transform[1][0] * up + obj->transform[2][0] * forward;
     obj->oVelY = obj->transform[0][1] * left + obj->transform[1][1] * up + obj->transform[2][1] * forward;
     obj->oVelZ = obj->transform[0][2] * left + obj->transform[1][2] * up + obj->transform[2][2] * forward;

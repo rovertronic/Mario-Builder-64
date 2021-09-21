@@ -7,9 +7,9 @@
 // TODO: Rename these. These have nothing to do with birds.
 void bub_spawner_act_0(void) {
     s32 i;
-    s32 sp18 = o->oCheepCheepSpawnerSpawnAmount;
+    s32 amt = o->oCheepCheepSpawnerSpawnAmount;
     if (o->oDistanceToMario < 1500.0f) {
-        for (i = 0; i < sp18; i++)
+        for (i = 0; i < amt; i++)
             spawn_object(o, MODEL_BUB, bhvBub);
         o->oAction = 1;
     }
@@ -35,12 +35,10 @@ void bhv_bub_spawner_loop(void) {
     cur_obj_call_action_function(sBirdChirpChirpActions);
 }
 
-void bub_move_vertically(s32 a0) {
-    f32 sp1C = o->parentObj->oPosY;
-    if (sp1C - 100.0f - o->oCheepCheepMaxYOffset < o->oPosY
-        && o->oPosY < sp1C + 1000.0f + o->oCheepCheepMaxYOffset)
-        o->oPosY = approach_f32_symmetric(o->oPosY, o->oCheepCheepTargetY, a0);
-    else {
+void bub_move_vertically(s32 ySpeed) {
+    f32 parentY = o->parentObj->oPosY;
+    if (parentY - 100.0f - o->oCheepCheepMaxYOffset < o->oPosY && o->oPosY < parentY + 1000.0f + o->oCheepCheepMaxYOffset) {
+        o->oPosY = approach_f32_symmetric(o->oPosY, o->oCheepCheepTargetY, ySpeed);
     }
 }
 
