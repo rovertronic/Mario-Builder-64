@@ -1691,7 +1691,7 @@ UNUSED static void debug_update_mario_cap(u16 button, s32 flags, u16 capTimer, u
 }
 
 #if ENABLE_RUMBLE
-void func_sh_8025574C(void) {
+void queue_rumble_particles(void) {
     if (gMarioState->particleFlags & PARTICLE_HORIZONTAL_STAR) {
         queue_rumble_data(5, 80);
     } else if (gMarioState->particleFlags & PARTICLE_VERTICAL_STAR) {
@@ -1787,7 +1787,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         play_infinite_stairs_music();
         gMarioState->marioObj->oInteractStatus = 0;
 #if ENABLE_RUMBLE
-        func_sh_8025574C();
+        queue_rumble_particles();
 #endif
 
         return gMarioState->particleFlags;

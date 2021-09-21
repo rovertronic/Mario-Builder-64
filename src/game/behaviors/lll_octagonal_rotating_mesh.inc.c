@@ -50,7 +50,7 @@ s32 lll_octagonal_mesh_move(struct LllOctagonalMeshAction *actionTable, s32 acti
             o->oMoveAngleYaw = action->moveAngle;
             o->oForwardVel = action->forwardVel / 100.0f;
             if (cur_obj_is_mario_on_platform()) {
-                actionOffset += 4;
+                actionOffset++;
                 o->oTimer = 0;
             }
             break;
@@ -58,14 +58,14 @@ s32 lll_octagonal_mesh_move(struct LllOctagonalMeshAction *actionTable, s32 acti
             o->oMoveAngleYaw = action->moveAngle;
             o->oForwardVel = action->forwardVel / 100.0f;
             if (o->oTimer > action->time) {
-                actionOffset += 4;
+                actionOffset++;
                 o->oTimer = 0;
             }
             break;
         case LLL_OCTMESH_CHANGE_DIR:
             approach_f32_signed(&o->oForwardVel, action->moveAngle / 100.0f, action->forwardVel / 100.0f);
             if (o->oTimer > action->time) {
-                actionOffset += 4;
+                actionOffset++;
                 o->oTimer = 0;
             }
             break;
