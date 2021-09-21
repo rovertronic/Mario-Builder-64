@@ -981,11 +981,17 @@ void cur_obj_update(void) {
         obj_update_gfx_pos_and_angle(gCurrentObject);
     }
 
+    if (objFlags & OBJ_FLAG_UCODE_LARGE) {
+        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_UCODE_REJ;
+    } else {
+        gCurrentObject->header.gfx.node.flags |=  GRAPH_RENDER_UCODE_REJ;
+    }
 
-    if (objFlags & OBJ_FLAG_UCODE_LARGE)
-        gCurrentObject->header.gfx.uCode = UCODE_DEFAULT;
-    else
-        gCurrentObject->header.gfx.uCode = UCODE_REJ;
+    if (objFlags & OBJ_FLAG_SILHOUETTE) {
+        gCurrentObject->header.gfx.node.flags |=  GRAPH_RENDER_SILHOUETTE;
+    } else {
+        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_SILHOUETTE;
+    }
 
 #ifdef PUPPYLIGHTS
     puppylights_object_emit(gCurrentObject);

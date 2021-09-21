@@ -9,15 +9,14 @@
 #include "geo_commands.h"
 #include "game/memory.h"
 
-#define UCODE_DEFAULT 0
-#define UCODE_REJ     1
-
 #define GRAPH_RENDER_ACTIVE         (1 << 0)
 #define GRAPH_RENDER_CHILDREN_FIRST (1 << 1)
 #define GRAPH_RENDER_BILLBOARD      (1 << 2)
 #define GRAPH_RENDER_Z_BUFFER       (1 << 3)
 #define GRAPH_RENDER_INVISIBLE      (1 << 4)
 #define GRAPH_RENDER_HAS_ANIMATION  (1 << 5)
+#define GRAPH_RENDER_UCODE_REJ      (1 << 6)
+#define GRAPH_RENDER_SILHOUETTE     (1 << 7)
 
 // Whether the node type has a function pointer of type GraphNodeFunc
 #define GRAPH_NODE_TYPE_FUNCTIONAL            0x100

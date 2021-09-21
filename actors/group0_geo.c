@@ -15,20 +15,4 @@
 #include "sparkle/geo.inc.c"
 #include "water_splash/geo.inc.c"
 #include "sparkle_animation/geo.inc.c"
-#if SILHOUETTE
-#define LAYER_OPAQUE_ORIG LAYER_OPAQUE
-#define LAYER_ALPHA_ORIG LAYER_ALPHA
-#undef LAYER_OPAQUE
-#undef LAYER_ALPHA
-#define LAYER_OPAQUE LAYER_SILHOUETTE_OPAQUE
-#define LAYER_ALPHA  LAYER_SILHOUETTE_ALPHA
 #include "mario/geo.inc.c"
-#undef LAYER_OPAQUE
-#undef LAYER_ALPHA
-#define LAYER_OPAQUE LAYER_OPAQUE_ORIG
-#define LAYER_ALPHA  LAYER_ALPHA_ORIG
-#undef LAYER_OPAQUE_ORIG
-#undef LAYER_ALPHA_ORIG
-#else
-#include "mario/geo.inc.c"
-#endif

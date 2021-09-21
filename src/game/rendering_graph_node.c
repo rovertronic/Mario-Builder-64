@@ -222,7 +222,6 @@ LookAt lookAt;
     gDPSetRenderMode(    (gfx)++, (mode1List->modes[(i)] & ~IM_RD),                                    \
                                   (mode2List->modes[(i)] & ~IM_RD)); /* Use normal mode list, no AA */ \
 }
-#define IS_LAYER_SILHOUETTE(layer) (((layer) >= LAYER_SILHOUETTE_FIRST) || ((layer) <= LAYER_SILHOUETTE_LAST))
 #endif
 
 u8 ucodeTestSwitch = 1;
@@ -339,6 +338,8 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 #if SILHOUETTE
 #undef SIL_CVG_THRESHOLD
 #undef SCHWA
+#undef SET_SILHOUETTE_F3D
+#undef CLEAR_SILHOUETTE_F3D
 #endif
 
 /**
@@ -351,11 +352,21 @@ static void geo_append_display_list(void *displayList, s32 layer) {
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, &lookAt);
 #endif
+#if defined(F3DZEX_GBI_2) || (SILHOUETTE > 0)
+    if (gCurGraphNodeObject != NULL) {
 #ifdef F3DZEX_GBI_2
-    if (gCurGraphNodeObject != NULL)
-    {
-        if (gCurGraphNodeObject->uCode == UCODE_REJ && ucodeTestSwitch)
+        if (gCurGraphNodeObject->node.flags & GRAPH_RENDER_UCODE_REJ && ucodeTestSwitch) {
             index = 1;
+        }
+#endif
+#if SILHOUETTE
+        if (gCurGraphNodeObject->node.flags & GRAPH_RENDER_SILHOUETTE) {
+            switch (layer) {
+                case LAYER_OPAQUE: layer = LAYER_SILHOUETTE_OPAQUE; break;
+                case LAYER_ALPHA:  layer = LAYER_SILHOUETTE_ALPHA;  break;
+            }
+        }
+#endif
     }
 #endif
     if (gCurGraphNodeMasterList != 0) {
@@ -382,8 +393,8 @@ static void geo_process_master_list(struct GraphNodeMasterList *node) {
     if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
         gCurGraphNodeMasterList = node;
         for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
-            node->listHeads[0][i] = NULL;
-            node->listHeads[1][i] = NULL;
+            node->listHeads[LIST_HEADS_ZEX][i] = NULL;
+            node->listHeads[LIST_HEADS_REJ][i] = NULL;
         }
         geo_process_node_and_siblings(node->node.children);
         geo_process_master_list_sub(gCurGraphNodeMasterList);

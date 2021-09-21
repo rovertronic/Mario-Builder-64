@@ -35,6 +35,8 @@ extern f32 gWorldScale;
 #define IS_LAYER_NON_ZB(layer) (((layer) >= LAYER_FIRST_NON_ZB) || ((layer) <= LAYER_LAST_ALL))
 
 #if SILHOUETTE
+#define IS_LAYER_SILHOUETTE(layer) (((layer) >= LAYER_SILHOUETTE_FIRST) || ((layer) <= LAYER_SILHOUETTE_LAST))
+
 #define RENDER_PHASE_REJ_ZB                 0
 #define RENDER_PHASE_ZEX_BEFORE_SILHOUETTE  1
 #define RENDER_PHASE_REJ_SILHOUETTE         2
@@ -47,6 +49,7 @@ extern f32 gWorldScale;
 #define RENDER_PHASE_ZEX_ALL                1
 #define RENDER_PHASE_REJ_NON_ZB             2
 #endif
+
 #define RENDER_PHASE_FIRST RENDER_PHASE_REJ_ZB
 #define RENDER_PHASE_LAST  RENDER_PHASE_REJ_NON_ZB
 

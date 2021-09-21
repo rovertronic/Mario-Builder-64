@@ -3429,7 +3429,7 @@ UNUSED static const u64 behavior_data_unused_0 = 0;
 const BehaviorScript bhvMario[] = {
     BEGIN(OBJ_LIST_PLAYER),
     SET_INT(oIntangibleTimer, 0),
-    OR_INT(oFlags, OBJ_FLAG_PLAYER),
+    OR_LONG(oFlags, (OBJ_FLAG_PLAYER | OBJ_FLAG_SILHOUETTE)),
     OR_INT(oUnk94, 0x0001),
     SET_HITBOX(/*Radius*/ 37, /*Height*/ 160),
     BEGIN_LOOP(),
@@ -4472,7 +4472,7 @@ const BehaviorScript bhvBigBoulderGenerator[] = {
 
 const BehaviorScript bhvWingCap[] = {
     BEGIN(OBJ_LIST_LEVEL),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_SILHOUETTE)),
     CALL_NATIVE(bhv_wing_cap_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_wing_vanish_cap_loop),
@@ -4481,7 +4481,7 @@ const BehaviorScript bhvWingCap[] = {
 
 const BehaviorScript bhvMetalCap[] = {
     BEGIN(OBJ_LIST_LEVEL),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_SILHOUETTE)),
     CALL_NATIVE(bhv_metal_cap_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_metal_cap_loop),
@@ -4490,7 +4490,7 @@ const BehaviorScript bhvMetalCap[] = {
 
 const BehaviorScript bhvNormalCap[] = {
     BEGIN(OBJ_LIST_LEVEL),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_SILHOUETTE)),
     CALL_NATIVE(bhv_normal_cap_init),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),
@@ -4500,7 +4500,7 @@ const BehaviorScript bhvNormalCap[] = {
 
 const BehaviorScript bhvVanishCap[] = {
     BEGIN(OBJ_LIST_LEVEL),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_SILHOUETTE)),
     CALL_NATIVE(bhv_vanish_cap_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_wing_vanish_cap_loop),

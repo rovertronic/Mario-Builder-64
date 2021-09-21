@@ -177,7 +177,6 @@ struct GraphNodeObject
     /*0x4C*/ struct SpawnInfo *spawnInfo;
     /*0x50*/ Mat4 *throwMatrix; // matrix ptr
     /*0x54*/ Vec3f cameraToObject;
-    u8 uCode;
 };
 
 struct ObjectNode
