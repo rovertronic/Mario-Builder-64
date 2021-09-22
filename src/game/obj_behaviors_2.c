@@ -126,7 +126,7 @@ static s32 obj_is_near_to_and_facing_mario(f32 maxDist, s16 maxAngleDiff) {
 
 //! Although having no return value, this function
 //! must be u32 to match other functions on -O2.
-static BAD_RETURN(u32) obj_perform_position_op(s32 op) {
+static void obj_perform_position_op(s32 op) {
     switch (op) {
         case POS_OP_SAVE_POSITION:
             sObjSavedPosX = o->oPosX;
