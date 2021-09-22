@@ -46,6 +46,8 @@
 #define GRAPH_NODE_TYPE_HELD_OBJ             (0x02E | GRAPH_NODE_TYPE_FUNCTIONAL)
 #define GRAPH_NODE_TYPE_CULLING_RADIUS        0x02F
 
+#define GRAPH_NODE_TYPES_MASK                 0xFF
+
 // The number of master lists. A master list determines the order and render
 // mode with which display lists are drawn.
 #define GFX_NUM_MASTER_LISTS (LAYER_LAST_ALL + 1)

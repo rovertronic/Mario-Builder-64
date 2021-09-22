@@ -154,6 +154,8 @@
 #define MODEL_STATE_NOISE_ALPHA         ((1 << 7) | MODEL_STATE_ALPHA) // (0x080 | MODEL_STATE_ALPHA)
 #define MODEL_STATE_METAL                (1 << 9)                      //  0x200
 
+#define MODEL_STATE_MASK                0xFF
+
 #define MARIO_NORMAL_CAP                /* 0x00000001 */ (1 <<  0)
 #define MARIO_VANISH_CAP                /* 0x00000002 */ (1 <<  1)
 #define MARIO_METAL_CAP                 /* 0x00000004 */ (1 <<  2)
