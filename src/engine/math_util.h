@@ -6,9 +6,6 @@
 #include "types.h"
 
 
-#define BIT(i)  (1 << (i))
-#define BITMASK(size) ((BIT(size)) - 1)
-
 /*
  * The sine and cosine tables overlap, but "#define gCosineTable (gSineTable +
  * 0x400)" doesn't give expected codegen; gSineTable and gCosineTable need to

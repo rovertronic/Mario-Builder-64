@@ -8,6 +8,9 @@
 #include "macros.h"
 #include "config.h"
 
+#define BIT(i)  (1 << (i))
+#define BITMASK(size) ((BIT(size)) - 1)
+
 struct Config
 {
     f32 audioFrequency;

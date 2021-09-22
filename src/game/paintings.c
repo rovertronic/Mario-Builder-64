@@ -1138,10 +1138,10 @@ void move_ddd_painting(struct Painting *painting, f32 frontPos, f32 backPos, f32
 void set_painting_layer(struct GraphNodeGenerated *gen, struct Painting *painting) {
     switch (painting->alpha) {
         case 0xFF: // Opaque
-            gen->fnNode.node.flags = (gen->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_OPAQUE << 8);
+            SET_GRAPH_NODE_LAYER(gen->fnNode.node.flags, LAYER_OPAQUE);
             break;
         default:
-            gen->fnNode.node.flags = (gen->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_TRANSPARENT << 8);
+            SET_GRAPH_NODE_LAYER(gen->fnNode.node.flags, LAYER_TRANSPARENT);
             break;
     }
 }

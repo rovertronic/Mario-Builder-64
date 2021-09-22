@@ -308,11 +308,11 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
     Gfx *gfxHead = NULL;
 
     if (alpha == 255) {
-        node->fnNode.node.flags = (node->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_OPAQUE << 8);
+        SET_GRAPH_NODE_LAYER(node->fnNode.node.flags, LAYER_OPAQUE);
         gfxHead = alloc_display_list(2 * sizeof(*gfxHead));
         gfx = gfxHead;
     } else {
-        node->fnNode.node.flags = (node->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_TRANSPARENT << 8);
+        SET_GRAPH_NODE_LAYER(node->fnNode.node.flags, LAYER_TRANSPARENT);
         gfxHead = alloc_display_list(3 * sizeof(*gfxHead));
         gfx = gfxHead;
         if (gMarioState->flags & MARIO_VANISH_CAP) {
@@ -655,7 +655,7 @@ Gfx *geo_mirror_mario_backface_culling(s32 callContext, struct GraphNode *node, 
             gSPSetGeometryMode(&gfx[1], G_CULL_BACK);
             gSPEndDisplayList(&gfx[2]);
         }
-        asGenerated->fnNode.node.flags = (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_OPAQUE << 8);
+        SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, LAYER_OPAQUE);
     }
     return gfx;
 }

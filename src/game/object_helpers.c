@@ -73,21 +73,17 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
 
         if (objectOpacity == 0xFF) {
             if (currentGraphNode->parameter == 20) {
-                currentGraphNode->fnNode.node.flags =
-                (LAYER_TRANSPARENT_DECAL << 8) | (currentGraphNode->fnNode.node.flags & GRAPH_NODE_TYPES_MASK);
+                SET_GRAPH_NODE_LAYER(currentGraphNode->fnNode.node.flags, LAYER_TRANSPARENT_DECAL);
             } else {
-                currentGraphNode->fnNode.node.flags =
-                (LAYER_OPAQUE << 8) | (currentGraphNode->fnNode.node.flags & GRAPH_NODE_TYPES_MASK);
+                SET_GRAPH_NODE_LAYER(currentGraphNode->fnNode.node.flags, LAYER_OPAQUE);
             }
 
             objectGraphNode->oAnimState = 0;
         } else {
             if (currentGraphNode->parameter == 20) {
-                currentGraphNode->fnNode.node.flags =
-                (LAYER_TRANSPARENT_DECAL << 8) | (currentGraphNode->fnNode.node.flags & GRAPH_NODE_TYPES_MASK);
+                SET_GRAPH_NODE_LAYER(currentGraphNode->fnNode.node.flags, LAYER_TRANSPARENT_DECAL);
             } else {
-                currentGraphNode->fnNode.node.flags =
-                (LAYER_TRANSPARENT << 8) | (currentGraphNode->fnNode.node.flags & GRAPH_NODE_TYPES_MASK);
+                SET_GRAPH_NODE_LAYER(currentGraphNode->fnNode.node.flags, LAYER_TRANSPARENT);
             }
 
             objectGraphNode->oAnimState = 1;

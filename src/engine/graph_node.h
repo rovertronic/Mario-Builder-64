@@ -9,14 +9,24 @@
 #include "geo_commands.h"
 #include "game/memory.h"
 
-#define GRAPH_RENDER_ACTIVE         (1 << 0)
-#define GRAPH_RENDER_CHILDREN_FIRST (1 << 1)
-#define GRAPH_RENDER_BILLBOARD      (1 << 2)
-#define GRAPH_RENDER_Z_BUFFER       (1 << 3)
-#define GRAPH_RENDER_INVISIBLE      (1 << 4)
-#define GRAPH_RENDER_HAS_ANIMATION  (1 << 5)
-#define GRAPH_RENDER_UCODE_REJ      (1 << 6)
-#define GRAPH_RENDER_SILHOUETTE     (1 << 7)
+#define GRAPH_RENDER_ACTIVE                 (1 << 0) // 0x0001
+#define GRAPH_RENDER_CHILDREN_FIRST         (1 << 1) // 0x0002
+#define GRAPH_RENDER_BILLBOARD              (1 << 2) // 0x0004
+#define GRAPH_RENDER_Z_BUFFER               (1 << 3) // 0x0008
+#define GRAPH_RENDER_INVISIBLE              (1 << 4) // 0x0010
+#define GRAPH_RENDER_HAS_ANIMATION          (1 << 5) // 0x0020
+#define GRAPH_RENDER_UCODE_REJ              (1 << 6) // 0x0040
+#define GRAPH_RENDER_SILHOUETTE             (1 << 7) // 0x0080
+
+// The amount of bits to use for the above flags out of a s16 variable.
+// The remaining bits to the left are used for the render layers.
+// The vanilla value is 8, allowing for 8 flags and 255 layers.
+#define GRAPH_RENDER_FLAGS_SIZE             8
+
+#define GRAPH_RENDER_LAYERS_MASK            (BITMASK(16 - GRAPH_RENDER_FLAGS_SIZE) << GRAPH_RENDER_FLAGS_SIZE)
+#define GRAPH_RENDER_FLAGS_MASK             BITMASK(GRAPH_RENDER_FLAGS_SIZE)
+#define SET_GRAPH_NODE_LAYER(flags, layer)  ((flags) = ((flags) & GRAPH_RENDER_FLAGS_MASK) | (((layer) << GRAPH_RENDER_FLAGS_SIZE) & GRAPH_RENDER_LAYERS_MASK))
+#define GET_GRAPH_NODE_LAYER(flags       )  ((flags & GRAPH_RENDER_LAYERS_MASK) >> GRAPH_RENDER_FLAGS_SIZE)
 
 // Whether the node type has a function pointer of type GraphNodeFunc
 #define GRAPH_NODE_TYPE_FUNCTIONAL            0x100
@@ -46,7 +56,7 @@
 #define GRAPH_NODE_TYPE_HELD_OBJ             (0x02E | GRAPH_NODE_TYPE_FUNCTIONAL)
 #define GRAPH_NODE_TYPE_CULLING_RADIUS        0x02F
 
-#define GRAPH_NODE_TYPES_MASK                 0xFF
+#define GRAPH_NODE_TYPES_MASK                 0x0FF
 
 // The number of master lists. A master list determines the order and render
 // mode with which display lists are drawn.

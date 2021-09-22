@@ -659,9 +659,7 @@ Gfx *geo_movtex_draw_water_regions(s32 callContext, struct GraphNode *node, UNUS
         if (quadCollection == NULL) {
             return NULL;
         }
-
-        asGenerated->fnNode.node.flags =
-            (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (LAYER_TRANSPARENT_INTER << 8);
+        SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, LAYER_TRANSPARENT_INTER);
 
         movtex_change_texture_format(asGenerated->parameter, &gfx);
         gMovetexLastTextureId = -1;
@@ -840,8 +838,7 @@ Gfx *geo_movtex_draw_nocolor(s32 callContext, struct GraphNode *node, UNUSED Mat
         asGenerated = (struct GraphNodeGenerated *) node;
         while (gMovtexNonColored[i].movtexVerts != 0) {
             if (gMovtexNonColored[i].geoId == asGenerated->parameter) {
-                asGenerated->fnNode.node.flags =
-                    (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (gMovtexNonColored[i].layer << 8);
+                SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, gMovtexNonColored[i].layer);
                 movtexVerts = segmented_to_virtual(gMovtexNonColored[i].movtexVerts);
                 update_moving_texture_offset(movtexVerts, MOVTEX_ATTR_NOCOLOR_S);
                 gfx = movtex_gen_list(movtexVerts, &gMovtexNonColored[i],
@@ -868,8 +865,7 @@ Gfx *geo_movtex_draw_colored(s32 callContext, struct GraphNode *node, UNUSED Mat
         asGenerated = (struct GraphNodeGenerated *) node;
         while (gMovtexColored[i].movtexVerts != 0) {
             if (gMovtexColored[i].geoId == asGenerated->parameter) {
-                asGenerated->fnNode.node.flags =
-                    (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (gMovtexColored[i].layer << 8);
+                SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, gMovtexColored[i].layer);
                 movtexVerts = segmented_to_virtual(gMovtexColored[i].movtexVerts);
                 update_moving_texture_offset(movtexVerts, MOVTEX_ATTR_COLORED_S);
                 gfx = movtex_gen_list(movtexVerts, &gMovtexColored[i], MOVTEX_LAYOUT_COLORED);
@@ -899,8 +895,7 @@ Gfx *geo_movtex_draw_colored_no_update(s32 callContext, struct GraphNode *node, 
         asGenerated = (struct GraphNodeGenerated *) node;
         while (gMovtexColored[i].movtexVerts != 0) {
             if (gMovtexColored[i].geoId == asGenerated->parameter) {
-                asGenerated->fnNode.node.flags =
-                    (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (gMovtexColored[i].layer << 8);
+                SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, gMovtexColored[i].layer);
                 movtexVerts = segmented_to_virtual(gMovtexColored[i].movtexVerts);
                 gfx = movtex_gen_list(movtexVerts, &gMovtexColored[i], MOVTEX_LAYOUT_COLORED);
                 break;
@@ -926,8 +921,7 @@ Gfx *geo_movtex_draw_colored_2_no_update(s32 callContext, struct GraphNode *node
         asGenerated = (struct GraphNodeGenerated *) node;
         while (gMovtexColored2[i].movtexVerts != 0) {
             if (gMovtexColored2[i].geoId == asGenerated->parameter) {
-                asGenerated->fnNode.node.flags =
-                    (asGenerated->fnNode.node.flags & GRAPH_NODE_TYPES_MASK) | (gMovtexColored2[i].layer << 8);
+                SET_GRAPH_NODE_LAYER(asGenerated->fnNode.node.flags, gMovtexColored2[i].layer);
                 movtexVerts = segmented_to_virtual(gMovtexColored2[i].movtexVerts);
                 gfx = movtex_gen_list(movtexVerts, &gMovtexColored2[i], MOVTEX_LAYOUT_COLORED);
                 break;
