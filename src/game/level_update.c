@@ -500,6 +500,10 @@ void warp_credits(void) {
             break;
 
         case WARP_NODE_CREDITS_NEXT:
+        sEndCutsceneVp.vp.vscale[0] = 640;
+        sEndCutsceneVp.vp.vscale[1] = 360;
+        sEndCutsceneVp.vp.vtrans[0] = 640;
+        sEndCutsceneVp.vp.vtrans[1] = 480;
             marioAction = ACT_CREDITS_CUTSCENE;
             break;
 

@@ -14,6 +14,7 @@
 #include "engine/extended_bounds.h"
 #include "puppyprint.h"
 #include "debug_box.h"
+#include "level_update.h"
 
 #include "config.h"
 
@@ -226,6 +227,14 @@ LookAt lookAt;
 
 u8 ucodeTestSwitch = 1;
 
+void reset_clipping(void)
+{
+    if (gMarioState->action == ACT_CREDITS_CUTSCENE)
+        make_viewport_clip_rect(&sEndCutsceneVp);
+    else
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH, SCREEN_HEIGHT - gBorderHeight);
+}
+
 /**
  * Process a master list node. This has been modified, so now it runs twice, for each microcode.
  It iterates through the first 5 layers of if the first index using F3DLX2.Rej, then it switches
@@ -236,8 +245,8 @@ u8 ucodeTestSwitch = 1;
 static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
     s32 startLayer, endLayer, currLayer = LAYER_FORCE;
-    s32 headsIndex = 1;
-    s32 renderPhase = 0;
+    s32 headsIndex = LIST_HEADS_REJ;
+    s32 renderPhase = RENDER_PHASE_REJ_ZB;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *mode1List = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
@@ -283,6 +292,7 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
     }
     gSPLookAt(gDisplayListHead++, &lookAt);
+    reset_clipping();
 #endif
     if (enableZBuffer) {
         gDPPipeSync(gDisplayListHead++);
@@ -324,6 +334,7 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
     init_rcp(KEEP_ZBUFFER);
     gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
+    reset_clipping();
 #endif
 
 #ifdef VISUAL_DEBUG
