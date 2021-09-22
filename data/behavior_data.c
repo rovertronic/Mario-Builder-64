@@ -1715,7 +1715,7 @@ const BehaviorScript bhvFloorSwitchHiddenObjects[] = {
 
 const BehaviorScript bhvHiddenObject[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_UCODE_LARGE)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision_08012D70),
     SET_FLOAT(oCollisionDistance, 300),
     BEGIN_LOOP(),
@@ -1725,7 +1725,7 @@ const BehaviorScript bhvHiddenObject[] = {
 
 const BehaviorScript bhvBreakableBox[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_UCODE_LARGE)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision_08012D70),
     SET_FLOAT(oCollisionDistance, 500),
     CALL_NATIVE(bhv_init_room),
@@ -2358,7 +2358,7 @@ const BehaviorScript bhvLllSinkingSquarePlatforms[] = {
 
 const BehaviorScript bhvLllTiltingInvertedPyramid[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_UCODE_LARGE)),
     LOAD_COLLISION_DATA(lll_seg7_collision_inverted_pyramid),
     ADD_FLOAT(oPosY, 5),
     SET_HOME(),
