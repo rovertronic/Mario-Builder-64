@@ -436,13 +436,9 @@ Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *c
 Gfx *geo_intro_rumble_pak_graphic(s32 state, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeGenerated *genNode = (struct GraphNodeGenerated *)node;
     Gfx *dlIter;
-    Gfx *dl;
+    Gfx *dl = NULL;
     s32 introContext;
-    s8 backgroundTileSix;
-#ifdef AVOID_UB
-    dl = NULL;
-    backgroundTileSix = 0;
-#endif
+    s8 backgroundTileSix = 0;
 
     if (state != 1) {
         dl = NULL;

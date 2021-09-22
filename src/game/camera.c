@@ -1124,7 +1124,7 @@ void lakitu_zoom(f32 rangeDist, s16 rangePitch) {
 }
 
 void radial_camera_input_default(struct Camera *c) {
-    radial_camera_input(c, 0.f);
+    radial_camera_input(c);
 }
 
 /**
@@ -1175,10 +1175,9 @@ void mode_radial_camera(struct Camera *c) {
  */
 void mode_8_directions_camera(struct Camera *c) {
     Vec3f pos;
-    UNUSED u8 unused[8];
     s16 oldAreaYaw = sAreaYaw;
 
-    radial_camera_input(c, 0.f);
+    radial_camera_input(c);
 
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         s8DirModeYawOffset += DEGREES(45);
@@ -1725,9 +1724,7 @@ struct ParallelTrackingPoint sBBHLibraryParTrackPath[] = {
 };
 
 s32 unused_update_mode_5_camera(UNUSED struct Camera *c, UNUSED Vec3f focus, UNUSED Vec3f pos) {
-#ifdef AVOID_UB
    return 0;
-#endif
 }
 
 UNUSED static void stub_camera_1(UNUSED s32 unused) {
@@ -1745,7 +1742,7 @@ void mode_boss_fight_camera(struct Camera *c) {
 void mode_parallel_tracking_camera(struct Camera *c) {
     s16 dummy;
 
-    radial_camera_input(c, 0.f);
+    radial_camera_input(c);
     set_fov_function(CAM_FOV_DEFAULT);
     c->nextYaw = update_parallel_tracking_camera(c, c->focus, c->pos);
     camera_approach_s16_symmetric_bool(&dummy, 0, 0x0400);
@@ -2053,9 +2050,7 @@ void mode_behind_mario_camera(struct Camera *c) {
 }
 
 s32 nop_update_water_camera(UNUSED struct Camera *c, UNUSED Vec3f focus, UNUSED Vec3f pos) {
-#ifdef AVOID_UB
    return 0;
-#endif
 }
 
 /**
@@ -4907,12 +4902,7 @@ void play_sound_if_cam_switched_to_lakitu_or_mario(void) {
 /**
  * Handles input for radial, outwards radial, parallel tracking, and 8 direction mode.
  */
-s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
-    s16 dummy;
-#ifdef AVOID_UB
-    dummy = 0;
-#endif
-
+void radial_camera_input(struct Camera *c) {
     if ((gCameraMovementFlags & CAM_MOVE_ENTERED_ROTATE_SURFACE) || !(gCameraMovementFlags & CAM_MOVE_ROTATE)) {
 
         // If C-L or C-R are pressed, the camera is rotating
@@ -5008,9 +4998,6 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
             play_sound_cbutton_down();
         }
     }
-
-    //! returning uninitialized variable
-    return dummy;
 }
 
 /**

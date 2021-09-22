@@ -365,9 +365,7 @@ s32 func_sh_802f2f38(struct AudioBankSample *sample, s32 bankId) {
         sample->medium = 0;
         sample->sampleAddr = sp24;
     }
-#ifdef AVOID_UB
     return 0;
-#endif
 }
 
 s32 func_sh_802f3024(s32 bankId, s32 instId, s32 arg2) {
@@ -395,9 +393,7 @@ s32 func_sh_802f3024(s32 bankId, s32 instId, s32 arg2) {
         func_sh_802f2f38(drum->sound.sample, bankId);
         return 0;
     }
-#ifdef AVOID_UB
     return 0;
-#endif
 }
 
 void func_sh_802f30f4(s32 arg0, s32 arg1, s32 arg2, OSMesgQueue *arg3) {

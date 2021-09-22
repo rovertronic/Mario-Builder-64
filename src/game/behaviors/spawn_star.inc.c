@@ -129,28 +129,19 @@ struct Object *spawn_star(struct Object *starObj, f32 x, f32 y, f32 z) {
 }
 
 void spawn_default_star(f32 x, f32 y, f32 z) {
-    struct Object *starObj;
-#ifdef AVOID_UB
-    starObj = 0;
-#endif
+    struct Object *starObj = NULL;
     starObj = spawn_star(starObj, x, y, z);
     starObj->oBehParams2ndByte = 0;
 }
 
 void spawn_red_coin_cutscene_star(f32 x, f32 y, f32 z) {
-    struct Object *starObj;
-#ifdef AVOID_UB
-    starObj = 0;
-#endif
+    struct Object *starObj = NULL;
     starObj = spawn_star(starObj, x, y, z);
     starObj->oBehParams2ndByte = 1;
 }
 
 void spawn_no_exit_star(f32 x, f32 y, f32 z) {
-    struct Object *starObj;
-#ifdef AVOID_UB
-    starObj = 0;
-#endif
+    struct Object *starObj = NULL;
     starObj = spawn_star(starObj, x, y, z);
     starObj->oBehParams2ndByte = 1;
     starObj->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
@@ -158,11 +149,11 @@ void spawn_no_exit_star(f32 x, f32 y, f32 z) {
 
 void bhv_hidden_red_coin_star_init(void) {
     s16 numRedCoinsRemaining;
-    struct Object *starObj;
+    struct Object *starObj = NULL;
 
-    if (gCurrCourseNum != COURSE_JRB)
+    if (gCurrCourseNum != COURSE_JRB) {
         spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
-
+    }
     numRedCoinsRemaining = count_objects_with_behavior(bhvRedCoin);
     if (numRedCoinsRemaining == 0) {
         starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
