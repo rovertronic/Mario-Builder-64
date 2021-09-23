@@ -173,7 +173,7 @@ s32 check_horizontal_wind(struct MarioState *m) {
         if (speed > 48.0f) {
             m->slideVelX = m->slideVelX * 48.0f / speed;
             m->slideVelZ = m->slideVelZ * 48.0f / speed;
-            speed = 32.0f; //! This was meant to be 48?
+            speed = 48.0f;
         } else if (speed > 32.0f) {
             speed = 32.0f;
         }
