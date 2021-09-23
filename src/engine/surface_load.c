@@ -132,13 +132,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
         sortDir = 0; // insertion order
     }
 
-    //! (Surface Cucking) Surfaces are sorted by the height of their first
-    //  vertex. Since vertices aren't ordered by height, this causes many
-    //  lower triangles to be sorted higher. This worsens surface cucking since
-    //  many functions only use the first triangle in surface order that fits,
-    //  missing higher surfaces.
-    //  upperY would be a better sort method.
-    surfacePriority = surface->vertex1[1] * sortDir;
+    surfacePriority = surface->upperY * sortDir;
 
     newNode->surface = surface;
 
@@ -150,7 +144,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
 
     // Loop until we find the appropriate place for the surface in the list.
     while (list->next != NULL) {
-        priority = list->next->surface->vertex1[1] * sortDir;
+        priority = list->next->surface->upperY * sortDir;
 
         if (surfacePriority > priority) {
             break;
