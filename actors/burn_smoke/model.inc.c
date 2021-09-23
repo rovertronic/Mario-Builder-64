@@ -24,7 +24,7 @@ const Gfx burn_smoke_seg4_dl_04022000[] = {
 #else
     gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
 #endif
-    gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
+    gsSPClearGeometryMode(G_LIGHTING),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsSPEndDisplayList(),
 };
