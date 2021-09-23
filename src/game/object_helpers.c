@@ -1297,7 +1297,7 @@ static f32 cur_obj_move_y_and_get_water_level(f32 gravity, f32 buoyancy) {
     }
 
     o->oPosY += o->oVelY;
-    if (o->activeFlags & ACTIVE_FLAG_UNK10) {
+    if (o->activeFlags & ACTIVE_FLAG_IGNORE_ENV_BOXES) {
         waterLevel = FLOOR_LOWER_LIMIT;
     } else {
         waterLevel = find_water_level(o->oPosX, o->oPosZ);
