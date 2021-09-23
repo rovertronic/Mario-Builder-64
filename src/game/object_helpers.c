@@ -368,7 +368,6 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
-    UNUSED s32 unused;
     s16 targetAngle = 0;
     s16 startAngle;
 
@@ -1186,9 +1185,6 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
     f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
-    UNUSED f32 unused;
-    UNUSED f32 ny;
-
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
 
     if (o->oRoom != -1 && intendedFloor != NULL) {
@@ -1222,7 +1218,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
         }
-    } else if ((ny = intendedFloor->normal.y) > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
+    } else if (intendedFloor->normal.y > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
         // Allow movement upward, provided either:
         // - The target floor is flat enough (e.g. walking up stairs)
         // - We are above the target floor (most likely in the air)

@@ -38,7 +38,6 @@ void bhv_flamethrower_loop(void) {
     f32 flameVel;
     s32 flameTimeRemaining;
     s32 model;
-    UNUSED u8 pad[8];
     if (o->oAction == 0) {
         if (gCurrLevelNum != LEVEL_BBH || gMarioOnMerryGoRound == TRUE)
             if (o->oDistanceToMario < 2000.0f)

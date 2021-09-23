@@ -1316,7 +1316,6 @@ void geo_process_node_and_siblings(struct GraphNode *firstNode) {
  * to set up the projection and draw display lists.
  */
 void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) {
-    UNUSED s32 unused;
     #if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
     #endif

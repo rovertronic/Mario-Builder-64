@@ -68,7 +68,6 @@ extern struct MarioState *gMarioState;
 extern s16 sCurrPlayMode;
 extern s16 sTransitionTimer;
 extern void (*sTransitionUpdate)(s16 *);
-extern u8 unused3[4];
 extern void load_language_text(void);
 
 struct WarpDest {
@@ -86,7 +85,6 @@ extern s16 sDelayedWarpOp;
 extern s16 sDelayedWarpTimer;
 extern s16 sSourceWarpNodeId;
 extern s32 sDelayedWarpArg;
-extern u8 unused4[2];
 extern s8 sTimerRunning;
 
 struct HudDisplay {

@@ -1,11 +1,11 @@
 // elevator.c.inc
 
-static s16 sElevatorHeights[] = {   -51,    0, 0, 
-                                    -461,    0, 0, 
-                                    -512,    0, 0, 
-                                   -2611,    0, 0, 
-                                   -2360,    0, 0, 
-                                     214,    0, 0, 
+static s16 sElevatorHeights[] = {   -51,    0, 0,
+                                    -461,    0, 0,
+                                    -512,    0, 0,
+                                   -2611,    0, 0,
+                                   -2360,    0, 0,
+                                     214,    0, 0,
                                      -50, 1945, 1 };
 
 void elevator_starting_shake(void) {

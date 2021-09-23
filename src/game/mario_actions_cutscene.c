@@ -34,7 +34,6 @@ static struct Object *sEndPeachObj;
 static struct Object *sEndRightToadObj;
 static struct Object *sEndLeftToadObj;
 static struct Object *sEndJumboStarObj;
-static UNUSED s32 sUnused;
 static s16 sEndPeachAnimation;
 static s16 sEndToadAnims[2];
 

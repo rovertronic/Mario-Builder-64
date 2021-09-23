@@ -34,8 +34,6 @@ s32 gDebugInfoFlags;
  */
 s32 gNumFindFloorMisses;
 
-UNUSED s32 unused_8033BEF8;
-
 /**
  * An unused debug counter with the label "WALL".
  */
@@ -475,9 +473,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
 
     while (spawnInfo != NULL) {
         struct Object *object;
-        UNUSED s32 unused;
         const BehaviorScript *script;
-        UNUSED s16 arg16 = (s16)(spawnInfo->behaviorArg & 0xFFFF);
 
         script = segmented_to_virtual(spawnInfo->behaviorScript);
 
@@ -588,7 +584,6 @@ void update_non_terrain_objects(void) {
  * Unload deactivated objects in any object list.
  */
 void unload_deactivated_objects(void) {
-    UNUSED s32 unused;
     s32 listIndex;
 
     s32 i = 0;

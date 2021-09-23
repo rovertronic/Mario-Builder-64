@@ -86,7 +86,6 @@ void opened_cannon_act_5(void) {
 }
 
 void opened_cannon_act_1(void) {
-    UNUSED s32 unused;
     cur_obj_become_intangible();
     cur_obj_disable_rendering();
     o->oCannonIsActive = 0;
@@ -98,7 +97,6 @@ void opened_cannon_act_2(void) {
 }
 
 void opened_cannon_act_3(void) {
-    UNUSED s32 unused;
     if (o->oTimer > 3)
         o->oAction = 0;
 }

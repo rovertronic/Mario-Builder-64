@@ -171,7 +171,7 @@ void king_bobomb_act_6(void) {
 
 void king_bobomb_act_7(void) {
     cur_obj_init_animation_with_sound(2);
-    if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+    if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
         DIALOG_FLAG_TEXT_DEFAULT, CUTSCENE_DIALOG, DIALOG_116)) {
         create_sound_spawner(SOUND_OBJ_KING_WHOMP_DEATH);
         cur_obj_hide();
@@ -264,7 +264,7 @@ void king_bobomb_act_5(void) { // bobomb returns home
                 o->oSubAction++;
             break;
         case 4:
-            if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+            if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
                 DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, DIALOG_128))
                 o->oAction = 2;
             break;

@@ -75,7 +75,6 @@ struct DmaHandlerList gDemoInputsBuf;
 
 // fillers
 UNUSED static u8 sfillerGameInit[0x90];
-UNUSED static s32 sUnusedGameInitValue = 0;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
@@ -481,8 +480,6 @@ UNUSED static void record_demo(void) {
  * Take the updated controller struct and calculate the new x, y, and distance floats.
  */
 void adjust_analog_stick(struct Controller *controller) {
-    UNUSED u8 pad[8];
-
     // Reset the controller's x and y floats.
     controller->stickX = 0;
     controller->stickY = 0;

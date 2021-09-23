@@ -340,8 +340,6 @@ void update_flying_pitch(struct MarioState *m) {
 }
 
 void update_flying(struct MarioState *m) {
-    UNUSED u32 unused;
-
     update_flying_pitch(m);
     update_flying_yaw(m);
 

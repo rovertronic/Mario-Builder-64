@@ -519,8 +519,6 @@ static void koopa_the_quick_act_show_init_text(void) {
         sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].initText);
 
     if (response == DIALOG_RESPONSE_YES) {
-        UNUSED s32 unused;
-
         gMarioShotFromCannon = FALSE;
         o->oAction = KOOPA_THE_QUICK_ACT_RACE;
         o->oForwardVel = 0.0f;
@@ -731,7 +729,7 @@ static void koopa_the_quick_act_after_race(void) {
             o->oFlags &= ~OBJ_FLAG_ACTIVE_FROM_AFAR;
         }
     } else if (o->parentObj->oKoopaRaceEndpointDialog > 0) {
-        s32 dialogResponse = cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+        s32 dialogResponse = cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
             DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, o->parentObj->oKoopaRaceEndpointDialog);
         if (dialogResponse != 0) {
             o->parentObj->oKoopaRaceEndpointDialog = DIALOG_NONE;

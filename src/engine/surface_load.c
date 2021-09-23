@@ -498,23 +498,9 @@ static void load_environmental_regions(TerrainData **data) {
     gEnvironmentRegions = *data;
     numRegions = *(*data)++;
 
-    if (numRegions > 20) {
-    }
-
     for (i = 0; i < numRegions; i++) {
-        UNUSED TerrainData val, loX, loZ, hiX, hiZ;
-        TerrainData height;
-
-        val = *(*data)++;
-
-        loX = *(*data)++;
-        hiX = *(*data)++;
-        loZ = *(*data)++;
-        hiZ = *(*data)++;
-
-        height = *(*data)++;
-
-        gEnvironmentLevels[i] = height;
+        *data += 5;
+        gEnvironmentLevels[i] = *(*data)++;
     }
 }
 

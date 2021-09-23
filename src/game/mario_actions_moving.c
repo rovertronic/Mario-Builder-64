@@ -511,8 +511,6 @@ s32 should_begin_sliding(struct MarioState *m) {
 }
 
 s32 check_ground_dive_or_punch(struct MarioState *m) {
-    UNUSED s32 unused;
-
     if (m->input & INPUT_B_PRESSED) {
         //! Speed kick (shoutouts to SimpleFlips)
         if (m->forwardVel >= 29.0f && m->controller->stickMag > 48.0f) {

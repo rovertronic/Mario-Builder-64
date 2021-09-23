@@ -69,7 +69,6 @@ void spawn_and_init_wf_platforms(s16 a, const BehaviorScript *bhv) {
 }
 
 void spawn_wf_platform_group(void) {
-    UNUSED s32 unused = 8;
     o->oPlatformSpawnerWFTowerPlatformNum = 0;
     o->oPlatformSpawnerWFTowerYawOffset = 0;
     o->oPlatformSpawnerWFTowerDYaw = 0x2000;

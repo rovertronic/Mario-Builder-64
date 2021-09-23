@@ -52,7 +52,7 @@ void tuxies_mother_act_1(void) {
                     dialogID = DIALOG_058;
                 else
                     dialogID = DIALOG_059;
-                if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+                if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
                         DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, dialogID)) {
                     if (dialogID == DIALOG_058)
                         o->oSubAction = 1;
@@ -115,7 +115,7 @@ void tuxies_mother_act_0(void) {
                         o->oSubAction++;
                 break;
             case 1:
-                if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+                if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
                     DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, DIALOG_057))
                     o->oSubAction++;
                 break;

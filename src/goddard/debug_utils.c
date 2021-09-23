@@ -439,7 +439,6 @@ void print_stack_trace(void) {
  */
 void fatal_printf(const char *fmt, ...) {
     char cur;
-    UNUSED u8 pad[4];
     va_list vl;
 
     va_start(vl, fmt);
@@ -669,7 +668,6 @@ char *sprint_val_withspecifiers(char *str, union PrintVal val, char *specifiers)
     s32 intPart;  // sp38
     s32 intPrec;  // sp34
     s32 fracPrec; // sp30
-    UNUSED u8 pad[4];
     char cur; // sp2B
 
     fracPrec = 6;

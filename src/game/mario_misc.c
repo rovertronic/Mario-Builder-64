@@ -243,9 +243,7 @@ void bhv_unlock_door_star_init(void) {
 }
 
 void bhv_unlock_door_star_loop(void) {
-    UNUSED u8 unused1[4];
     s16 prevYaw = gCurrentObject->oMoveAngleYaw;
-    UNUSED u8 unused2[4];
 
     // Speed up the star every frame
     if (gCurrentObject->oUnlockDoorStarYawVel < 0x2400) {

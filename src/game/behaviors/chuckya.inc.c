@@ -6,12 +6,6 @@ struct UnusedChuckyaData {
     f32 unk8;
 };
 
-struct UnusedChuckyaData sUnusedChuckyaData[] = { { 2, 0.f,  1.f },
-                                                  { 2, 10.f, 1.f }, 
-                                                  { 2, 20.f, 1.f }, 
-                                                  { 2, 20.f, 1.f }, 
-                                                  { 8, 10.f, 1.f }};
-
 void common_anchor_mario_behavior(f32 forwardVel, f32 yVel, s32 flag) {
     switch (o->parentObj->oCommonAnchorAction) {
         case 0:

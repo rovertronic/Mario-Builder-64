@@ -24,11 +24,9 @@ void intro_lakitu_set_offset_from_camera(struct Object *o, Vec3f offset) {
 }
 
 void intro_lakitu_set_focus(struct Object *o, Vec3f newFocus) {
-    UNUSED Vec3f unusedVec3f;
     Vec3f origin;
     f32 dist;
     s16 pitch, yaw;
-    UNUSED u32 unused;
 
     // newFocus is an offset from lakitu's origin, not a point in the world.
     vec3f_set(origin, 0.f, 0.f, 0.f);
@@ -59,7 +57,6 @@ s32 intro_lakitu_set_pos_and_focus(struct Object *o, struct CutsceneSplinePoint 
 
 void bhv_intro_lakitu_loop(void) {
     Vec3f offset, fromPoint, toPoint;
-    UNUSED u32 pad[4];
 
     switch (gCurrentObject->oAction) {
         case 0:

@@ -13,7 +13,6 @@ struct ObjectHitbox sKoopaShellHitbox = {
 };
 
 void koopa_shell_spawn_water_drop(void) {
-    UNUSED s32 unused;
     struct Object *drop;
     spawn_object(o, MODEL_WAVE_TRAIL, bhvObjectWaveTrail);
     if (gMarioStates[0].forwardVel > 10.0f) {

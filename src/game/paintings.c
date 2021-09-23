@@ -770,7 +770,6 @@ s8 normalize_component(f32 comp) {
  * The table used in game, seg2_painting_mesh_neighbor_tris, is in bin/segment2.c.
  */
 void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
-    UNUSED s16 unused;
     s16 tri;
     s16 i;
     s16 j;

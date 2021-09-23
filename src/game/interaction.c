@@ -1242,8 +1242,6 @@ u32 interact_clam_or_bubba(struct MarioState *m, UNUSED u32 interactType, struct
 }
 
 u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    UNUSED u32 unused;
-
     u32 interaction;
     if (m->flags & MARIO_METAL_CAP) {
         interaction = INT_FAST_ATTACK_OR_SHELL;
@@ -1337,8 +1335,6 @@ u32 interact_mr_blizzard(struct MarioState *m, UNUSED u32 interactType, struct O
 }
 
 u32 interact_hit_from_below(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    UNUSED u32 unused;
-
     u32 interaction;
     if (m->flags & MARIO_METAL_CAP) {
         interaction = INT_FAST_ATTACK_OR_SHELL;
@@ -1775,8 +1771,8 @@ void check_kick_or_punch_wall(struct MarioState *m) {
         detector.x = m->pos[0] + 50.0f * sins(m->faceAngle[1]);
         detector.z = m->pos[2] + 50.0f * coss(m->faceAngle[1]);
         detector.y = m->pos[1];
-		detector.offsetY = 80.0f;
-		detector.radius = 5.0f;
+        detector.offsetY = 80.0f;
+        detector.radius = 5.0f;
 
         if (find_wall_collisions(&detector) > 0) {
             if (m->action != ACT_MOVE_PUNCHING || m->forwardVel >= 0.0f) {

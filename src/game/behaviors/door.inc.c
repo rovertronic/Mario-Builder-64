@@ -45,7 +45,7 @@ void play_warp_door_open_noise(void) {
 
 void bhv_door_loop(void) {
     s32 index = 0;
-    
+
     while (sDoorActions[index].flag != (u32)~0) {
         if (cur_obj_clear_interact_status_flag(sDoorActions[index].flag)) {
             set_door_camera_event();

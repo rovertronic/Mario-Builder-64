@@ -303,7 +303,6 @@ struct MovtexObject gMovtexColored2[] = {
  */
 Gfx *geo_wdw_set_initial_water_level(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     s32 i;
-    UNUSED u8 unused[] = { 1, 0, 4, 0, 7, 0, 10, 0 };
     s16 wdwWaterHeight;
 
     // Why was this global variable needed when they could just check for GEO_CONTEXT_AREA_LOAD?

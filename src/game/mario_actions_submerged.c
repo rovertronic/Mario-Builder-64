@@ -76,7 +76,7 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
     f32 floorHeight;
 
     resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f, &wallData);
-	wall = wallData.numWalls == 0 ? NULL : wallData.walls[0];
+    wall = wallData.numWalls == 0 ? NULL : wallData.walls[0];
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     ceilHeight = find_ceil(nextPos[0], nextPos[1] + 3.0f, nextPos[2], &ceil);
 
@@ -167,7 +167,6 @@ static void apply_water_current(struct MarioState *m, Vec3f step) {
 }
 
 static u32 perform_water_step(struct MarioState *m) {
-    UNUSED u32 unused;
     u32 stepResult;
     Vec3f nextPos;
     Vec3f step;
