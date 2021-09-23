@@ -110,6 +110,8 @@
 #define FIX_SHADOW_TRANSPARENCY
 // Fixes the game reading the ia8 burn smoke texture as an rgba16
 #define BURN_SMOKE_FIX
+// Disable the fix to Koopa's unshelled model
+#define KOOPA_KEEP_PINK_SHORTS
 // Automatically calculate the optimal collision distance for an object based on its vertices.
 #define AUTO_COLLISION_DISTANCE
 
