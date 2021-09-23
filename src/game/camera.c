@@ -736,10 +736,6 @@ static UNUSED void set_pos_to_mario(Vec3f foc, Vec3f pos, f32 yOff, f32 focYOff,
     vec3f_set_dist_and_angle(marioPos, pos, dist, pitch + sLakituPitch, yaw);
     vec3f_get_dist_and_angle(pos, sMarioCamState->pos, &posDist, &posPitch, &posYaw);
 
-    //! Useless get and set
-    vec3f_get_dist_and_angle(pos, foc, &focDist, &focPitch, &focYaw);
-    vec3f_set_dist_and_angle(pos, foc, focDist, focPitch, focYaw);
-
     foc[1] = sMarioCamState->pos[1] + focYOff;
 }
 
@@ -751,8 +747,6 @@ void set_camera_height(struct Camera *c, f32 goalHeight) {
     f32 marioFloorHeight;
     f32 marioCeilHeight;
     f32 camFloorHeight;
-    UNUSED u8 filler[8];
-    UNUSED s16 action = sMarioCamState->action;
     f32 baseOff = 125.f;
     f32 camCeilHeight = find_ceil(c->pos[0], gLakituState.goalPos[1] - 50.f, c->pos[2], &surface);
 
@@ -10299,12 +10293,6 @@ void cutscene_door_move_behind_mario(struct Camera *c) {
     vec3s_set(sCutsceneVars[0].angle, 0, sMarioCamState->faceAngle[1] + doorRotation, 0);
     vec3f_set(camOffset, 0.f, 125.f, 250.f);
 
-    if (doorRotation == 0) { //! useless code
-        camOffset[0] = 0.f;
-    } else {
-        camOffset[0] = 0.f;
-    }
-
     offset_rotated(c->pos, sMarioCamState->pos, camOffset, sCutsceneVars[0].angle);
 }
 
@@ -11220,9 +11208,7 @@ void play_cutscene(struct Camera *c) {
 #undef CUTSCENE
 
     if ((cutsceneDuration != 0) && !(gCutsceneTimer & CUTSCENE_STOP)) {
-        //! @bug This should check for 0x7FFF (CUTSCENE_LOOP)
-        //! instead, cutscenes that last longer than 0x3FFF frames will never end on their own
-        if (gCutsceneTimer < 0x3FFF) {
+        if (gCutsceneTimer < CUTSCENE_LOOP) {
             gCutsceneTimer += 1;
         }
         //! Because gCutsceneTimer is often set to 0x7FFF (CUTSCENE_LOOP), this conditional can only

@@ -1959,10 +1959,9 @@ void generate_yellow_sparkles(s16 x, s16 y, s16 z, f32 radius) {
     spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_NONE, bhvSparkleSpawn, x + offsetX, y + offsetY,
                               z + offsetZ, 0, 0, 0);
 
-    //! copy paste error
     offsetX = offsetX * 4 / 3;
-    offsetX = offsetY * 4 / 3;
-    offsetX = offsetZ * 4 / 3;
+    offsetY = offsetY * 4 / 3;
+    offsetZ = offsetZ * 4 / 3;
 
     spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_NONE, bhvSparkleSpawn, x - offsetX, y - offsetY,
                               z - offsetZ, 0, 0, 0);

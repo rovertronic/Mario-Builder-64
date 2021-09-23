@@ -121,12 +121,15 @@ void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
 
 /// Scale vector 'dest' so it has length 1
 void vec3f_normalize(Vec3f dest) {
-    //! Possible division by zero
-    f32 invsqrt = 1.0f / sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
+    f32 invsqrt = sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
 
-    dest[0] *= invsqrt;
-    dest[1] *= invsqrt;
-    dest[2] *= invsqrt;
+    if (invsqrt != 0.0f) {
+        invsqrt = 1.0f / invsqrt;
+
+        dest[0] *= invsqrt;
+        dest[1] *= invsqrt;
+        dest[2] *= invsqrt;
+    }
 }
 
 /// Copy matrix 'src' to 'dest'

@@ -358,7 +358,6 @@ s32 scan_to_next_non_whitespace(void) {
 
         if (curChar == '\x1a') { //'SUB' character: "soft EOF" in older systems
             return FALSE;
-            continue; // unreachable
         }
 
         if (is_line_end(curChar)) {
@@ -383,7 +382,6 @@ s32 is_next_buf_word(char *a0) {
     for (curChar = get_and_advance_buf(); curChar != '\0'; curChar = get_and_advance_buf()) {
         if (is_white_space(curChar) || is_line_end(curChar)) {
             break;
-            continue; // unreachable + nonsensical
         }
         wordBuf[bufLength] = curChar;
         bufLength++;

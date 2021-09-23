@@ -566,9 +566,8 @@ void clear_objects(void) {
  * Update spawner and surface objects.
  */
 void update_terrain_objects(void) {
-    gObjectCounter = update_objects_in_list(&gObjectLists[OBJ_LIST_SPAWNER]);
-    //! This was meant to be +=
-    gObjectCounter = update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
+    gObjectCounter  = update_objects_in_list(&gObjectLists[OBJ_LIST_SPAWNER]);
+    gObjectCounter += update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
 }
 
 /**
@@ -576,7 +575,6 @@ void update_terrain_objects(void) {
  * the order specified by sObjectListUpdateOrder.
  */
 void update_non_terrain_objects(void) {
-    UNUSED s32 unused;
     s32 listIndex;
 
     s32 i = 2;

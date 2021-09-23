@@ -212,12 +212,11 @@ void stop_other_paintings(s16 *idptr, struct Painting *paintingGroup[]) {
  * @return Mario's y position inside the painting (bounded).
  */
 f32 painting_mario_y(struct Painting *painting) {
-    //! Unnecessary use of double constants
     // Add 50 to make the ripple closer to Mario's center of mass.
-    f32 relY = gPaintingMarioYPos - painting->posY + 50.0;
+    f32 relY = gPaintingMarioYPos - painting->posY + 50.0f;
 
-    if (relY < 0.0) {
-        relY = 0.0;
+    if (relY < 0.0f) {
+        relY = 0.0f;
     } else if (relY > painting->size) {
         relY = painting->size;
     }
