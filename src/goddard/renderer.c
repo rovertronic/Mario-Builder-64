@@ -1164,8 +1164,6 @@ void gdm_init(void *blockpool, u32 size) {
  * Initializes the Mario head demo
  */
 void gdm_setup(void) {
-    UNUSED u32 pad;
-
     imin("gdm_setup");
     sYoshiSceneGrp = NULL;
     sMarioSceneGrp = NULL;

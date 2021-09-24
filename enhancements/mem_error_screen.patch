@@ -84,15 +84,15 @@ index 30a87806..6bf7b79a 100644
 +};
 +
  // 0x0E0002D0
- const GeoLayout intro_geo_0002D0[] = {
+ const GeoLayout intro_geo_splash_screen[] = {
     GEO_NODE_SCREEN_AREA(0, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
 diff --git a/levels/intro/header.h b/levels/intro/header.h
 index 99277e86..04797cd7 100644
 --- a/levels/intro/header.h
 +++ b/levels/intro/header.h
-@@ -26,4 +26,8 @@ extern const LevelScript script_intro_L3[];
- extern const LevelScript script_intro_L4[];
- extern const LevelScript script_intro_L5[];
+@@ -26,4 +26,8 @@ extern const LevelScript script_intro_main_level_entry_stop_music[];
+ extern const LevelScript script_intro_main_level_entry[];
+ extern const LevelScript script_intro_splash_screen[];
 
 +extern const GeoLayout intro_geo_error_screen[];
 +extern const LevelScript level_intro_entry_error_screen[];

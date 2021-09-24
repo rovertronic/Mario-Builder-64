@@ -253,7 +253,8 @@ void handle_save_menu(struct MarioState *m) {
             save_file_do_save(gCurrSaveFileNum - 1);
 
             if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
-                fade_into_special_warp(-2, 0); // reset game
+                //! crashes
+                fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0);// reset game
             }
         }
 
@@ -778,7 +779,7 @@ s32 act_unlocking_key_door(struct MarioState *m) {
     m->pos[0] = m->usedObj->oPosX + coss(m->faceAngle[1]) * 75.0f;
     m->pos[2] = m->usedObj->oPosZ + sins(m->faceAngle[1]) * 75.0f;
 
-    if (m->actionArg & 2) {
+    if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
         m->faceAngle[1] += 0x8000;
     }
 
@@ -818,7 +819,7 @@ s32 act_unlocking_star_door(struct MarioState *m) {
     switch (m->actionState) {
         case 0:
             m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
-            if (m->actionArg & 2) {
+            if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
                 m->faceAngle[1] += 0x8000;
             }
             m->marioObj->oMarioReadingSignDPosX = m->pos[0];
@@ -865,7 +866,7 @@ s32 act_entering_star_door(struct MarioState *m) {
 
         // ~30 degrees / 1/12 rot
         targetAngle = m->usedObj->oMoveAngleYaw + 0x1555;
-        if (m->actionArg & 2) {
+        if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
             targetAngle += 0x5556; // ~120 degrees / 1/3 rot (total 150d / 5/12)
         }
 
@@ -897,7 +898,7 @@ s32 act_entering_star_door(struct MarioState *m) {
     else {
         m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
 
-        if (m->actionArg & 2) {
+        if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
             m->faceAngle[1] += 0x8000;
         }
 
@@ -918,7 +919,7 @@ s32 act_entering_star_door(struct MarioState *m) {
 
 s32 act_going_through_door(struct MarioState *m) {
     if (m->actionTimer == 0) {
-        if (m->actionArg & 1) {
+        if (m->actionArg & WARP_FLAG_DOOR_PULLED) {
             m->interactObj->oInteractStatus = INT_STATUS_DOOR_PULLED;
             set_mario_animation(m, MARIO_ANIM_PULL_DOOR_WALK_IN);
         } else {
@@ -933,12 +934,12 @@ s32 act_going_through_door(struct MarioState *m) {
     update_mario_pos_for_anim(m);
     stop_and_set_height_to_floor(m);
 
-    if (m->actionArg & 4) {
+    if (m->actionArg & WARP_FLAG_DOOR_IS_WARP) {
         if (m->actionTimer == 16) {
             level_trigger_warp(m, WARP_OP_WARP_DOOR);
         }
     } else if (is_anim_at_end(m)) {
-        if (m->actionArg & 2) {
+        if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
             m->faceAngle[1] += 0x8000;
         }
         set_mario_action(m, ACT_IDLE, 0);
@@ -951,7 +952,7 @@ s32 act_going_through_door(struct MarioState *m) {
 s32 act_warp_door_spawn(struct MarioState *m) {
     if (m->actionState == 0) {
         m->actionState = 1;
-        if (m->actionArg & 1) {
+        if (m->actionArg & WARP_FLAG_DOOR_PULLED) {
             m->usedObj->oInteractStatus = INT_STATUS_WARP_DOOR_PULLED;
         } else {
             m->usedObj->oInteractStatus = INT_STATUS_WARP_DOOR_PUSHED;
@@ -1328,7 +1329,7 @@ s32 act_bbh_enter_spin(struct MarioState *m) {
             mario_set_forward_vel(m, forwardVel);
             m->flags &= ~MARIO_JUMPING;
             if (perform_air_step(m, 0) == AIR_STEP_LANDED) {
-                level_trigger_warp(m, WARP_OP_UNKNOWN_02);
+                level_trigger_warp(m, WARP_OP_SPIN_SHRINK);
 #if ENABLE_RUMBLE
                 queue_rumble_data(15, 80);
 #endif

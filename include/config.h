@@ -98,6 +98,8 @@
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
+// Disables the demo that plays when idle on the start screen (Arceveti)
+#define DISABLE_DEMO
 // Enables "parallel lakitu camera" or "aglab cam" which lets you move the camera smoothly with the dpad
 #define PARALLEL_LAKITU_CAM
 // Allows Mario to ledgegrab sloped floors
