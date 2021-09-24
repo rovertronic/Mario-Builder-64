@@ -109,11 +109,11 @@ extern u8 _goddardSegmentEnd[];
 
 //Here is stored the rom addresses of the global code segments. If you get rid of any, it's best to just write them as NULL.
 s32 ramP[5][2] = {
-    {&_buffersSegmentBssStart, &_buffersSegmentBssEnd},
-    {&_mainSegmentStart, &_mainSegmentEnd},
-    {&_engineSegmentStart, &_engineSegmentEnd},
-    {&_framebuffersSegmentBssStart, &_framebuffersSegmentBssEnd},
-    {&_goddardSegmentStart, &_goddardSegmentEnd},
+    {(u32)&_buffersSegmentBssStart,      (u32)&_buffersSegmentBssEnd},
+    {(u32)&_mainSegmentStart,            (u32)&_mainSegmentEnd},
+    {(u32)&_engineSegmentStart,          (u32)&_engineSegmentEnd},
+    {(u32)&_framebuffersSegmentBssStart, (u32)&_framebuffersSegmentBssEnd},
+    {(u32)&_goddardSegmentStart,         (u32)&_goddardSegmentEnd},
 };
 
 void puppyprint_calculate_ram_usage(void)
@@ -984,7 +984,7 @@ void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-void render_multi_image(Texture *image, s32 x, s32 y, s32 width, s32 height, s32 scaleX, s32 scaleY, s32 mode)
+void render_multi_image(Texture *image, s32 x, s32 y, s32 width, s32 height, UNUSED s32 scaleX, UNUSED s32 scaleY, s32 mode)
 {
     s32 posW, posH, imW, imH, peakH, maskW, maskH, cycles, num, i, modeSC, mOne;
     i = 0;
