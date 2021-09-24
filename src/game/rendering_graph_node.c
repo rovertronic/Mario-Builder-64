@@ -208,7 +208,7 @@ LookAt lookAt;
 
 #if SILHOUETTE
 #define SIL_CVG_THRESHOLD    0x3F // 32..255, 63 seems to give best results
-#define SCHWA (IM_RD | CLR_ON_CVG | CVG_DST_WRAP | CVG_X_ALPHA | FORCE_BL)
+#define SCHWA (AA_EN | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | CVG_X_ALPHA | FORCE_BL)
 #define SET_SILHOUETTE_F3D(gfx) {                                                                    \
     gDPSetRenderMode(  (gfx)++, (SCHWA | GBL_c1(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA)),  \
                                 (SCHWA | GBL_c2(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA))); \
