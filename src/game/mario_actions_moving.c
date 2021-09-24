@@ -694,7 +694,7 @@ void push_or_sidle_wall(struct MarioState *m, Vec3f startPos) {
     s16 dWallAngle;
     f32 dx = m->pos[0] - startPos[0];
     f32 dz = m->pos[2] - startPos[2];
-    f32 movedDistance = sqrtf(dx * dx + dz * dz);
+    f32 movedDistance = sqrtf(sqr(dx) + sqr(dz));
     //! (Speed Crash) If a wall is after moving 16384 distance, this crashes.
     s32 animSpeed = (s32)(movedDistance * 2.0f * 0x10000);
 

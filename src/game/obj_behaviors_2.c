@@ -191,7 +191,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
             dy = nextWaypoint->pos[1] - y;
             dz = nextWaypoint->pos[2] - z;
 
-            distToNextWaypoint = sqrtf(dx * dx + dy * dy + dz * dz);
+            distToNextWaypoint = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
 
             // Move directly to the next waypoint, even if it's farther away
             // than amountToMove
@@ -856,7 +856,7 @@ static void treat_far_home_as_mario(f32 threshold) {
     f32 dx = o->oHomeX - o->oPosX;
     f32 dy = o->oHomeY - o->oPosY;
     f32 dz = o->oHomeZ - o->oPosZ;
-    f32 distance = sqrtf(dx * dx + dy * dy + dz * dz);
+    f32 distance = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
 
     if (distance > threshold) {
         o->oAngleToMario = atan2s(dz, dx);
@@ -865,7 +865,7 @@ static void treat_far_home_as_mario(f32 threshold) {
         dx = o->oHomeX - gMarioObject->oPosX;
         dy = o->oHomeY - gMarioObject->oPosY;
         dz = o->oHomeZ - gMarioObject->oPosZ;
-        distance = sqrtf(dx * dx + dy * dy + dz * dz);
+        distance = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
 
         if (distance > threshold) {
             o->oDistanceToMario = 20000.0f;

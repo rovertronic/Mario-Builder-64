@@ -566,7 +566,7 @@ static void geo_process_translation_rotation(struct GraphNodeTranslationRotation
     Vec3f translation;
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
-    vec3s_to_vec3f(translation, node->translation);
+    vec3_copy(translation, node->translation);
     mtxf_rotate_zxy_and_translate(mtxf, translation, node->rotation);
     mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
     gMatStackIndex++;
@@ -591,7 +591,7 @@ static void geo_process_translation(struct GraphNodeTranslation *node) {
     Vec3f translation;
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
-    vec3s_to_vec3f(translation, node->translation);
+    vec3_copy(translation, node->translation);
     mtxf_rotate_zxy_and_translate(mtxf, translation, gVec3sZero);
     mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
     gMatStackIndex++;
@@ -664,7 +664,7 @@ static void geo_process_billboard(struct GraphNodeBillboard *node) {
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
     gMatStackIndex++;
-    vec3s_to_vec3f(translation, node->translation);
+    vec3_copy(translation, node->translation);
     mtxf_billboard(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex - 1], translation,
                    gCurGraphNodeCamera->roll);
     if (gCurGraphNodeHeldObject != NULL) {
@@ -1058,8 +1058,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
 
     if (geo != NULL && geo->type == GRAPH_NODE_TYPE_CULLING_RADIUS) {
-        cullingRadius =
-            (f32)((struct GraphNodeCullingRadius *) geo)->cullingRadius; //! Why is there a f32 cast?
+        cullingRadius = ((struct GraphNodeCullingRadius *) geo)->cullingRadius;
     } else {
         cullingRadius = 300;
     }

@@ -1287,8 +1287,8 @@ s32 update_parallel_tracking_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     vec3f_copy(focOffset, marioOffset);
 
     // OK
-    focOffset[0] = -focOffset[0] * 0.f;
-    focOffset[1] = focOffset[1] * 0.f;
+    focOffset[0] = 0.f;
+    focOffset[1] = 0.f;
 
     // Repeat above calcs with camOffset
     camOffset[0] = pos[0] - parMidPoint[0];
@@ -1318,11 +1318,6 @@ s32 update_parallel_tracking_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     marioOffset[0] = -marioOffset[0] * zoom;
     marioOffset[1] = marioOffset[1] * zoom;
     marioOffset[2] = camOffset[2];
-
-    //! Does nothing because focOffset[0] is always 0
-    focOffset[0] *= 0.3f;
-    //! Does nothing because focOffset[1] is always 0
-    focOffset[1] *= 0.3f;
 
     pathAngle[0] = pathPitch;
     pathAngle[1] = pathYaw; //! No effect
@@ -2128,12 +2123,8 @@ s16 update_default_camera(struct Camera *c) {
         unusedFreeRoamWallYaw = avoidYaw;
         sAvoidYawVel = yaw;
         sStatusFlags |= CAM_FLAG_COLLIDED_WITH_WALL;
-        //! Does nothing
-        vec3f_get_dist_and_angle(sMarioCamState->pos, cPos, &xzDist, &tempPitch, &tempYaw);
         // Rotate to avoid the wall
         approach_s16_asymptotic_bool(&yaw, avoidYaw, 10);
-        //! Does nothing
-        vec3f_set_dist_and_angle(sMarioCamState->pos, cPos, xzDist, tempPitch, tempYaw);
         sAvoidYawVel = (sAvoidYawVel - yaw) / 0x100;
     } else {
         if (gMarioStates[0].forwardVel == 0.f) {
@@ -2386,8 +2377,6 @@ s32 update_spiral_stairs_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     }
     focYaw += sSpiralStairsYawOffset;
     posYaw = focYaw;
-    //! @bug unnecessary
-    camera_approach_s16_symmetric_bool(&posYaw, focYaw, 0x1000);
 
     vec3f_set_dist_and_angle(sFixedModeBasePosition, cPos, 300.f, 0, posYaw);
 
@@ -4442,7 +4431,7 @@ s16 calculate_pitch(Vec3f from, Vec3f to) {
     f32 dx = to[0] - from[0];
     f32 dy = to[1] - from[1];
     f32 dz = to[2] - from[2];
-    s16 pitch = atan2s(sqrtf(dx * dx + dz * dz), dy);
+    s16 pitch = atan2s(sqrtf(sqr(dx) + sqr(dz)), dy);
 
     return pitch;
 }
@@ -4464,7 +4453,7 @@ void calculate_angles(Vec3f from, Vec3f to, s16 *pitch, s16 *yaw) {
     f32 dy = to[1] - from[1];
     f32 dz = to[2] - from[2];
 
-    *pitch = atan2s(sqrtf(dx * dx + dz * dz), dy);
+    *pitch = atan2s(sqrtf(sqr(dx) + sqr(dz)), dy);
     *yaw = atan2s(dz, dx);
 }
 
@@ -4475,7 +4464,7 @@ f32 calc_abs_dist(Vec3f a, Vec3f b) {
     f32 distX = b[0] - a[0];
     f32 distY = b[1] - a[1];
     f32 distZ = b[2] - a[2];
-    f32 distAbs = sqrtf(distX * distX + distY * distY + distZ * distZ);
+    f32 distAbs = sqrtf(sqr(distX) + sqr(distY) + sqr(distZ));
 
     return distAbs;
 }
@@ -4486,7 +4475,7 @@ f32 calc_abs_dist(Vec3f a, Vec3f b) {
 f32 calc_hor_dist(Vec3f a, Vec3f b) {
     f32 distX = b[0] - a[0];
     f32 distZ = b[2] - a[2];
-    f32 distHor = sqrtf(distX * distX + distZ * distZ);
+    f32 distHor = sqrtf(sqr(distX) + sqr(distZ));
 
     return distHor;
 }
@@ -7028,20 +7017,6 @@ void retrieve_info_star(struct Camera *c) {
     vec3f_copy(c->focus, sCameraStoreCutscene.focus);
 }
 
-static UNUSED void unused_vec3s_to_vec3f(Vec3f dst, Vec3s src) {
-    dst[0] = src[0];
-    dst[1] = src[1];
-    dst[2] = src[2];
-}
-
-static UNUSED void unused_vec3f_to_vec3s(Vec3s dst, Vec3f src) {
-    // note: unlike vec3f_to_vec3s(), this function doesn't round the numbers and instead simply
-    // truncates them
-    dst[0] = src[0];
-    dst[1] = src[1];
-    dst[2] = src[2];
-}
-
 /**
  * Rotate the camera's focus around the camera's position by incYaw and incPitch
  */
@@ -7942,11 +7917,8 @@ void cutscene_bowser_arena_set_pos(struct Camera *c) {
  * The y offset starts at 120, then decreases to 0 before reaching ~240 on the last frame.
  */
 void cutscene_bowser_arena_focus_sine(UNUSED struct Camera *c) {
-    //! unused initialization
-    f32 yOff = 150.0f;
-
     // cvar4 was zeroed when the cutscene started.
-    yOff = sins(sCutsceneVars[4].angle[1]) * 120.0f + 120.0f;
+    f32 yOff = sins(sCutsceneVars[4].angle[1]) * 120.0f + 120.0f;
     sCutsceneVars[4].angle[1] -= 0x200;
     approach_f32_asymptotic_bool(&sCutsceneVars[0].point[1], yOff, 0.5f);
 }

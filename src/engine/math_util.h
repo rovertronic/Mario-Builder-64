@@ -23,6 +23,7 @@ extern f32 gSineTable[];
 
 #define sins(x) gSineTable[(u16) (x) >> 4]
 #define coss(x) gCosineTable[(u16) (x) >> 4]
+#define atans(x) gArctanTable[(s32)((((x) * 1024) + 0.5f))] // is this correct? used for atan2_lookup
 
 #define DEG_PER_RAD 57.29577950560105
 #define RAD_PER_DEG (1.0 / DEG_PER_RAD)
@@ -349,7 +350,6 @@ void vec3s_set(Vec3s dest, s16 x, s16 y, s16 z);
 void vec3s_add(Vec3s dest, Vec3s a);
 void vec3s_sum(Vec3s dest, Vec3s a, Vec3s b);
 void vec3s_sub(Vec3s dest, Vec3s a);
-void vec3s_to_vec3f(Vec3f dest, Vec3s a);
 void vec3f_to_vec3s(Vec3s dest, Vec3f a);
 void find_vector_perpendicular_to_plane(Vec3f dest, Vec3f a, Vec3f b, Vec3f c);
 void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b);

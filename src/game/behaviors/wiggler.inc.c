@@ -192,7 +192,7 @@ void wiggler_init_segments(void) {
         bodyPart->yaw = prevBodyPart->yaw + dyaw;
 
         // As the head tilts, propagate the tilt backward
-        dxz = sqrtf(dx * dx + dz * dz);
+        dxz = sqrtf(sqr(dx) + sqr(dz));
         dpitch = atan2s(dxz, dy) - prevBodyPart->pitch;
         clamp_s16(&dpitch, -0x2000, 0x2000);
         bodyPart->pitch = prevBodyPart->pitch + dpitch;

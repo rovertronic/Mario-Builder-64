@@ -104,7 +104,7 @@ static void klepto_change_target(void) {
             dx = gMarioObject->oPosX - sKleptoTargetPositions[i][0];
             dz = gMarioObject->oPosZ - sKleptoTargetPositions[i][2];
 
-            targetDist = sqrtf(dx * dx + dz * dz);
+            targetDist = sqrtf(sqr(dx) + sqr(dz));
             if (targetDist < minTargetDist) {
                 minTargetDist = targetDist;
                 newTarget = i;

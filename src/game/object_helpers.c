@@ -263,7 +263,7 @@ f32 lateral_dist_between_objects(struct Object *obj1, struct Object *obj2) {
     f32 dx = obj1->oPosX - obj2->oPosX;
     f32 dz = obj1->oPosZ - obj2->oPosZ;
 
-    return sqrtf(dx * dx + dz * dz);
+    return sqrtf(sqr(dx) + sqr(dz));
 }
 
 f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
@@ -271,7 +271,7 @@ f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
     f32 dy = obj1->oPosY - obj2->oPosY;
     f32 dz = obj1->oPosZ - obj2->oPosZ;
 
-    return sqrtf(dx * dx + dy * dy + dz * dz);
+    return sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
 }
 
 void cur_obj_forward_vel_approach_upward(f32 target, f32 increment) {
@@ -1462,7 +1462,7 @@ f32 cur_obj_lateral_dist_from_mario_to_home(void) {
     f32 dx = o->oHomeX - gMarioObject->oPosX;
     f32 dz = o->oHomeZ - gMarioObject->oPosZ;
 
-    dist = sqrtf(dx * dx + dz * dz);
+    dist = sqrtf(sqr(dx) + sqr(dz));
     return dist;
 }
 
@@ -1471,7 +1471,7 @@ f32 cur_obj_lateral_dist_to_home(void) {
     f32 dx = o->oHomeX - o->oPosX;
     f32 dz = o->oHomeZ - o->oPosZ;
 
-    dist = sqrtf(dx * dx + dz * dz);
+    dist = sqrtf(sqr(dx) + sqr(dz));
     return dist;
 }
 
