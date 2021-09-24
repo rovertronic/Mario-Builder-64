@@ -488,8 +488,6 @@ void update_walking_speed(struct MarioState *m) {
         m->faceAngle[1] =
             m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
     }
-#elif SUPER_RESPONSIVE_CONTROLS
-    m->faceAngle[1] =  m->intendedYaw;
 #else
     m->faceAngle[1] =
         m->intendedYaw - approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
@@ -1407,13 +1405,9 @@ void common_slide_action(struct MarioState *m, u32 endAction, u32 airAction, s32
 
         case GROUND_STEP_HIT_WALL:
             if (!mario_floor_is_slippery(m)) {
-#ifdef VERSION_JP
-                m->particleFlags |= PARTICLE_VERTICAL_STAR;
-#else
                 if (m->forwardVel > 16.0f) {
                     m->particleFlags |= PARTICLE_VERTICAL_STAR;
                 }
-#endif
                 slide_bonk(m, ACT_GROUND_BONK, endAction);
             } else if (m->wall != NULL) {
                 s16 wallAngle = atan2s(m->wall->normal.z, m->wall->normal.x);

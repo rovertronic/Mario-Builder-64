@@ -264,9 +264,7 @@ s32 set_obj_anim_with_accel_and_sound(s16 frame1, s16 frame2, s32 sound) {
 #include "behaviors/bbh_merry_go_round.inc.c"
 #include "behaviors/static_checkered_platform.inc.c"
 #include "behaviors/beta_bowser_anchor.inc.c"
-#ifndef VERSION_JP
 #include "behaviors/music_touch.inc.c"
-#endif
 #include "behaviors/castle_floor_trap.inc.c"
 #include "behaviors/pole_base.inc.c"
 #include "behaviors/sparkle_spawn.inc.c"

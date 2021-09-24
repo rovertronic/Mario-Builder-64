@@ -253,7 +253,6 @@ void handle_save_menu(struct MarioState *m) {
             save_file_do_save(gCurrSaveFileNum - 1);
 
             if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
-                //! crashes
                 fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
             }
         }
