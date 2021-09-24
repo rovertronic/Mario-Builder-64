@@ -383,7 +383,7 @@ void puppyprint_render_profiler(void)
     if (!ramViewer && !benchViewer && !logViewer)
     {
         print_fps(16,40);
-        sprintf(textBytes, "CPU: %dus (%d_)#RSP: %dus (%d_)#RDP: %dus (%d_)", (s32)cpuCount, (s32)OS_CYCLES_TO_USEC(cpuTime)/248, (s32)OS_CYCLES_TO_USEC(rspTime), (s32)OS_CYCLES_TO_USEC(rspTime)/333, (s32)OS_CYCLES_TO_USEC(rdpTime), (s32)OS_CYCLES_TO_USEC(rdpTime)/333);
+        sprintf(textBytes, "CPU: %dus (%d_)#RSP: %dus (%d_)#RDP: %dus (%d_)", (s32)cpuCount, (s32)(cpuCount/333), (s32)OS_CYCLES_TO_USEC(rspTime), (s32)OS_CYCLES_TO_USEC(rspTime)/333, (s32)OS_CYCLES_TO_USEC(rdpTime), (s32)OS_CYCLES_TO_USEC(rdpTime)/333);
         print_small_text(16, 52, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
 
         sprintf(textBytes, "OBJ: %d/%d", gObjectCounter, OBJECT_POOL_CAPACITY);

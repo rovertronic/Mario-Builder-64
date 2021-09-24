@@ -208,7 +208,7 @@ LookAt lookAt;
 
 #if SILHOUETTE
 #define SIL_CVG_THRESHOLD    0x3F // 32..255, 63 seems to give best results
-#define SCHWA (AA_EN | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | CVG_X_ALPHA | FORCE_BL)
+#define SCHWA (IM_RD | CLR_ON_CVG | CVG_DST_WRAP | CVG_X_ALPHA | FORCE_BL)
 #define SET_SILHOUETTE_F3D(gfx) {                                                                    \
     gDPSetRenderMode(  (gfx)++, (SCHWA | GBL_c1(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA)),  \
                                 (SCHWA | GBL_c2(G_BL_CLR_FOG, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA))); \
@@ -515,7 +515,7 @@ static void geo_process_switch(struct GraphNodeSwitchCase *node) {
     }
 }
 
-static void make_roll_matrix(Mtx *mtx, s16 angle) {
+static void make_roll_matrix(Mtx *mtx, s32 angle) {
     Mat4 temp;
 
     mtxf_identity(temp);
@@ -1262,7 +1262,7 @@ void geo_try_process_children(struct GraphNode *node) {
  * be iterated over.
  */
 void geo_process_node_and_siblings(struct GraphNode *firstNode) {
-    s16 iterateChildren = TRUE;
+    s32 iterateChildren = TRUE;
     struct GraphNode *curGraphNode = firstNode;
     struct GraphNode *parent = curGraphNode->parent;
 
