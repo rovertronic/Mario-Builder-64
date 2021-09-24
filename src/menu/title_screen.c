@@ -136,13 +136,11 @@ s16 intro_level_select(void) { //! this function runs and crashes on save+quit e
     print_text_fmt_int(40, 60, "%2d", gCurrLevelNum);
     print_text(80, 60, sLevelSelectStageNames[gCurrLevelNum - 1]); // print stage name
 
-#define QUIT_LEVEL_SELECT_COMBO (Z_TRIG | START_BUTTON | L_CBUTTONS | R_CBUTTONS)
-
     // start being pressed signals the stage to be started. that is, unless...
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         // ... the level select quit combo is being pressed, which uses START. If this
         // is the case, quit the menu instead.
-        if (gPlayer1Controller->buttonDown == QUIT_LEVEL_SELECT_COMBO) {
+        if (gPlayer1Controller->buttonDown == (Z_TRIG | START_BUTTON | L_CBUTTONS | R_CBUTTONS)) {
             gDebugLevelSelect = FALSE;
             return LEVEL_RESTART_GAME;
         }
@@ -230,6 +228,8 @@ s32 intro_game_over(void) {
 #endif
 }
 
+#endif
+
 /**
  * Plays the casual "It's a me mario" when the game stars.
  */
@@ -239,8 +239,6 @@ s32 intro_play_its_a_me_mario(void) {
     return (LEVEL_NONE + 1);
 }
 
-#endif
-
 /**
  * Update intro functions to handle title screen actions.
  * Returns a level ID after their criteria is met.
@@ -249,12 +247,11 @@ s32 lvl_intro_update(s16 arg, UNUSED s32 unusedArg) {
     s32 retVar = LEVEL_NONE;
 
     switch (arg) {
-#ifdef KEEP_MARIO_HEAD
         case LVL_INTRO_PLAY_ITS_A_ME_MARIO: retVar = intro_play_its_a_me_mario(); break;
+#ifdef KEEP_MARIO_HEAD
         case LVL_INTRO_REGULAR:             retVar = intro_regular();             break;
         case LVL_INTRO_GAME_OVER:           retVar = intro_game_over();           break;
 #else
-        case LVL_INTRO_PLAY_ITS_A_ME_MARIO: // fall through
         case LVL_INTRO_REGULAR:             // fall through
         case LVL_INTRO_GAME_OVER:           retVar = (LEVEL_FILE_SELECT + gDebugLevelSelect);   break;
 #endif
