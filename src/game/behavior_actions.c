@@ -203,15 +203,6 @@ void spawn_sparkle_particles(s32 n, s32 radius, s32 height, s32 r) {
 #include "behaviors/bowser_falling_platform.inc.c"
 #include "behaviors/bowser_flame.inc.c"
 #include "behaviors/blue_fish.inc.c"
-
-// Not in behavior file, duplicate of vec3f_copy except without bad return.
-// Used in a few behavior files.
-void vec3f_copy_2(Vec3f dest, Vec3f src) {
-    dest[0] = src[0];
-    dest[1] = src[1];
-    dest[2] = src[2];
-}
-
 #include "behaviors/checkerboard_platform.inc.c"
 #include "behaviors/ddd_warp.inc.c"
 #include "behaviors/water_pillar.inc.c"
