@@ -62,7 +62,7 @@
 // Makes Mario face the direction of the analog stick directly while hanging from a ceiling, without doing "semicircles"
 #define TIGHTER_HANGING_CONTROLS
 // Fixes Mario's turn radius by making it dependent on forward speed.
-#define FIX_GROUND_TURN_RADIUS
+//#define FIX_GROUND_TURN_RADIUS
 // Disables fall damage
 #define NO_FALL_DAMAGE
 // Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage)
