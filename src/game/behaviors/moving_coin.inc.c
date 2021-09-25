@@ -77,11 +77,11 @@ void bhv_moving_yellow_coin_loop(void) {
             moving_coin_flicker();
             break;
 
-        case MOV_YCOIN_ACT_LAVA_DEATH:
+        case OBJ_ACT_LAVA_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
 
-        case MOV_YCOIN_ACT_DEATH_PLANE_DEATH:
+        case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
