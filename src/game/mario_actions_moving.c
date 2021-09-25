@@ -159,9 +159,6 @@ s32 set_triple_jump_action(struct MarioState *m, UNUSED u32 action, UNUSED u32 a
 }
 
 void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
-    s32 newFacingDYaw;
-    s16 facingDYaw;
-
     struct Surface *floor = m->floor;
     s16 slopeAngle = atan2s(floor->normal.z, floor->normal.x);
     f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
@@ -174,23 +171,22 @@ void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
 
     m->slideYaw = atan2s(m->slideVelZ, m->slideVelX);
 
-    facingDYaw = m->faceAngle[1] - m->slideYaw;
-    newFacingDYaw = facingDYaw;
+    s16 facingDYaw = m->faceAngle[1] - m->slideYaw;
+    s32 newFacingDYaw = facingDYaw;
 
-    //! -0x4000 not handled - can slide down a slope while facing perpendicular to it
-    if (newFacingDYaw > 0 && newFacingDYaw <= 0x4000) {
+    if (newFacingDYaw > 0 && newFacingDYaw <= 0x4000) { // (0..0x4000]
         if ((newFacingDYaw -= 0x200) < 0) {
             newFacingDYaw = 0;
         }
-    } else if (newFacingDYaw > -0x4000 && newFacingDYaw < 0) {
+    } else if (newFacingDYaw >= -0x4000 && newFacingDYaw < 0) { // [-0x4000..0)
         if ((newFacingDYaw += 0x200) > 0) {
             newFacingDYaw = 0;
         }
-    } else if (newFacingDYaw > 0x4000 && newFacingDYaw < 0x8000) {
+    } else if (newFacingDYaw > 0x4000 && newFacingDYaw < 0x8000) { // (0x4000..0x8000)
         if ((newFacingDYaw += 0x200) > 0x8000) {
             newFacingDYaw = 0x8000;
         }
-    } else if (newFacingDYaw > -0x8000 && newFacingDYaw < -0x4000) {
+    } else if (newFacingDYaw > -0x8000 && newFacingDYaw < -0x4000) { // (-0x8000..-0x4000)
         if ((newFacingDYaw -= 0x200) < -0x8000) {
             newFacingDYaw = -0x8000;
         }
@@ -220,14 +216,11 @@ void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
 s32 update_sliding(struct MarioState *m, f32 stopSpeed) {
     f32 lossFactor;
     f32 accel;
-    f32 oldSpeed;
-    f32 newSpeed;
 
     s32 stopped = FALSE;
 
     s16 intendedDYaw = m->intendedYaw - m->slideYaw;
     f32 forward = coss(intendedDYaw);
-    f32 sideward = sins(intendedDYaw);
 
     //! 10k glitch
     if (forward < 0.0f && m->forwardVel >= 0.0f) {
@@ -256,15 +249,16 @@ s32 update_sliding(struct MarioState *m, f32 stopSpeed) {
             break;
     }
 
-    oldSpeed = sqrtf(sqr(m->slideVelX) + sqr(m->slideVelZ));
+    f32 oldSpeed = sqrtf(sqr(m->slideVelX) + sqr(m->slideVelZ));
 
-    //! This is attempting to use trig derivatives to rotate Mario's speed.
-    // It is slightly off/asymmetric since it uses the new X speed, but the old
-    // Z speed.
-    m->slideVelX += m->slideVelZ * (m->intendedMag / 32.0f) * sideward * 0.05f;
-    m->slideVelZ -= m->slideVelX * (m->intendedMag / 32.0f) * sideward * 0.05f;
+    f32 sideward          = ((m->intendedMag / 32.0f) * sins(intendedDYaw) * 0.05f);
+    f32 slideVelXModifier = (m->slideVelZ * sideward);
+    f32 slideVelZModifier = (m->slideVelX * sideward);
 
-    newSpeed = sqrtf(sqr(m->slideVelX) + sqr(m->slideVelZ));
+    m->slideVelX         += slideVelXModifier;
+    m->slideVelZ         -= slideVelZModifier;
+
+    f32 newSpeed = sqrtf(sqr(m->slideVelX) + sqr(m->slideVelZ));
 
     if (oldSpeed > 0.0f && newSpeed > 0.0f) {
         m->slideVelX = m->slideVelX * oldSpeed / newSpeed;
