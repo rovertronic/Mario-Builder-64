@@ -64,9 +64,7 @@ struct LandingAction sBackflipLandAction = {
 Mat4 sFloorAlignMatrix[2];
 
 s16 tilt_body_running(struct MarioState *m) {
-    s16 pitch = find_floor_slope(m, 0);
-    pitch = pitch * m->forwardVel / 40.0f;
-    return -pitch;
+    return -(find_floor_slope(m, 0) * m->forwardVel / 40.0f);
 }
 
 void play_step_sound(struct MarioState *m, s16 frame1, s16 frame2) {
@@ -88,9 +86,21 @@ void play_step_sound(struct MarioState *m, s16 frame1, s16 frame2) {
 }
 
 void align_with_floor(struct MarioState *m) {
-    m->pos[1] = m->floorHeight;
-    mtxf_align_terrain_triangle(sFloorAlignMatrix[m->playerID], m->pos, m->faceAngle[1], 40.0f);
-    m->marioObj->header.gfx.throwMatrix = &sFloorAlignMatrix[m->playerID];
+    struct Surface *floor = m->floor;
+    if ((floor != NULL) && (m->pos[1] < (m->floorHeight + 80.0f))) {
+        m->pos[1] = m->floorHeight;
+#ifdef FAST_FLOOR_ALIGN
+        if (ABS(m->forwardVel) > FAST_FLOOR_ALIGN) {
+            Vec3f floorNormal = { floor->normal.x, floor->normal.y, floor->normal.z };
+            mtxf_align_terrain_normal(sFloorAlignMatrix[m->playerID], floorNormal, m->pos, m->faceAngle[1]);
+        } else {
+            mtxf_align_terrain_triangle(sFloorAlignMatrix[m->playerID], m->pos, m->faceAngle[1], 40.0f);
+        }
+#else
+        mtxf_align_terrain_triangle(sFloorAlignMatrix[m->playerID], m->pos, m->faceAngle[1], 40.0f);
+#endif
+        m->marioObj->header.gfx.throwMatrix = &sFloorAlignMatrix[m->playerID];
+    }
 }
 
 s32 begin_walking_action(struct MarioState *m, f32 forwardVel, u32 action, u32 actionArg) {
