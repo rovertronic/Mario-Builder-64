@@ -588,6 +588,25 @@ f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec) {
 }
 
 /**
+ * Similar to approach_s32, but converts to s16 and allows for overflow between 32767 and -32768
+ */
+s32 approach_angle(s32 current, s32 target, s32 inc) {
+    s32 dist = (s16)(target - current);
+    if (dist < 0) {
+        dist += inc;
+        if (dist > 0) {
+            dist = 0;
+        }
+    } else if (dist > 0) {
+        dist -= inc;
+        if (dist < 0) {
+            dist = 0;
+        }
+    }
+    return (target - dist);
+}
+
+/**
  * Helper function for atan2s. Does a look up of the arctangent of y/x assuming
  * the resulting angle is in range [0, 0x2000] (1/8 of a circle).
  */
