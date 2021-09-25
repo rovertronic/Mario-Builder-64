@@ -43,7 +43,7 @@ void bhv_hidden_blue_coin_loop(void) {
 
             // Delete the coin once collected
             if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-                spawn_object(o, MODEL_SPARKLES, bhvGoldenCoinSparkles);
+                spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
                 obj_mark_for_deletion(o);
             }
 
