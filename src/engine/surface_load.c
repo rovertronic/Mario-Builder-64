@@ -11,6 +11,7 @@
 #include "game/object_helpers.h"
 #include "game/macro_special_objects.h"
 #include "surface_collision.h"
+#include "math_util.h"
 #include "game/mario.h"
 #include "game/object_list_processor.h"
 #include "surface_load.h"
@@ -688,10 +689,6 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData) {
     s32 surfaceType;
     s32 i;
     s32 numSurfaces;
-#ifndef ALL_SURFACES_HAVE_FORCE
-    TerrainData hasForce;
-#endif
-    s32 flags;
     s32 room;
 
     surfaceType = *(*data);
@@ -701,11 +698,10 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData) {
     (*data)++;
 
 #ifndef ALL_SURFACES_HAVE_FORCE
-    hasForce = surface_has_force(surfaceType);
+    TerrainData hasForce = surface_has_force(surfaceType);
 #endif
 
-    flags = surf_has_no_cam_collision(surfaceType);
-    flags |= SURFACE_FLAG_DYNAMIC;
+    s32 flags = surf_has_no_cam_collision(surfaceType) | SURFACE_FLAG_DYNAMIC;
 
     // The DDD warp is initially loaded at the origin and moved to the proper
     // position in paintings.c and doesn't update its room, so set it here.
@@ -764,7 +760,7 @@ static void get_optimal_coll_dist(struct Object *o) {
         v[0] = *(collisionData + 0) * o->header.gfx.scale[0];
         v[1] = *(collisionData + 1) * o->header.gfx.scale[1];
         v[2] = *(collisionData + 2) * o->header.gfx.scale[2];
-        thisVertDist = ((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]));
+        thisVertDist = (sqr(v[0]) + sqr(v[1]) + sqr(v[2]));
         if (thisVertDist > maxDist) maxDist = thisVertDist;
         collisionData += 3;
         vertsLeft--;

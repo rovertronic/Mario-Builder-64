@@ -1307,12 +1307,10 @@ s32 update_parallel_tracking_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     marioOffset[1] = marioOffset[1] * zoom;
     marioOffset[2] = camOffset[2];
 
-    pathAngle[0] = pathPitch;
-    pathAngle[1] = pathYaw; //! No effect
-
     // make marioOffset[2] == distance from the start of the path
     marioOffset[2] = pathLength / 2 - marioOffset[2];
 
+    pathAngle[0] = pathPitch;
     pathAngle[1] = pathYaw + DEGREES(180);
     pathAngle[2] = 0;
 
@@ -1548,9 +1546,10 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
         }
     }
 
-    //! Must be same line to match on -O2
     // Prevent the camera from going to the ground in the outside boss fight
-    if (gCurrLevelNum == LEVEL_BBH) { pos[1] = 2047.f; }
+    if (gCurrLevelNum == LEVEL_BBH) {
+        pos[1] = 2047.f;
+    }
 
     // Rotate from C-Button input
     if (sCSideButtonYaw < 0) {
@@ -4112,8 +4111,8 @@ s16 reduce_by_dist_from_camera(s16 value, f32 maxDist, f32 posX, f32 posY, f32 p
         vec3f_get_dist_and_angle(gLakituState.goalPos, pos, &dist, &pitch, &yaw);
         if (dist < maxDist) {
             calculate_angles(gLakituState.goalPos, gLakituState.goalFocus, &goalPitch, &goalYaw);
-            //! Must be same line to match on -O2
-            pitch -= goalPitch; yaw -= goalYaw;
+            pitch -= goalPitch;
+            yaw -= goalYaw;
             dist -= 2000.f;
             if (dist < 0.f) {
                 dist = 0.f;
@@ -11086,7 +11085,9 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
             case CAM_FOV_APP_60:
                 approach_fov_60(marioState);
                 break;
-            //! No default case
+            default:
+                set_fov_45(marioState);
+                break;
         }
     }
 
