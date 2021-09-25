@@ -47,9 +47,6 @@ static struct SurfaceNode *alloc_surface_node(void) {
 
     node->next = NULL;
 
-    //! A bounds check! If there's more surface nodes than 7000 allowed,
-    //  we, um...
-    // Perhaps originally just debug feedback?
     if (gSurfaceNodesAllocated >= SURFACE_NODE_POOL_SIZE) {
         gSurfacePoolError |= NOT_ENOUGH_ROOM_FOR_NODES;
     }
@@ -66,9 +63,6 @@ static struct Surface *alloc_surface(void) {
     struct Surface *surface = &sSurfacePool[gSurfacesAllocated];
     gSurfacesAllocated++;
 
-    //! A bounds check! If there's more surfaces than the 2300 allowed,
-    //  we, um...
-    // Perhaps originally just debug feedback?
     if (gSurfacesAllocated >= sSurfacePoolSize) {
         gSurfacePoolError |= NOT_ENOUGH_ROOM_FOR_SURFACES;
     }

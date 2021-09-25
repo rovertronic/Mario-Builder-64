@@ -489,6 +489,4 @@ void Unknown801835C8(struct ObjParticle *ptc) {
 /* 2320A0 -> 2320D4; pad to 2320E0 */
 void func_801838D0(struct ObjParticle *ptc) {
     D_801B9E3C = ptc;
-    if (ptc->pos.y < -15.0f) {
-    }
 }

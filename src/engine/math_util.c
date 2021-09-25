@@ -65,6 +65,10 @@ void vec3s_sub(Vec3s dest, Vec3s a) {
     vec3_sub(dest, a);
 }
 
+void vec3f_sub(Vec3f dest, Vec3f src) {
+    vec3_sub(dest, src);
+}
+
 /**
  * Convert float vector a to a short vector 'dest' by rounding the components
  * to the nearest integer.
