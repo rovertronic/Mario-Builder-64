@@ -736,13 +736,15 @@ void reset_mario_pitch(struct MarioState *m) {
     }
 }
 
-u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    m->numCoins += o->oDamageOrCoinValue;
-    m->healCounter += 4 * o->oDamageOrCoinValue;
-
-    o->oInteractStatus = INT_STATUS_INTERACTED;
+u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
+    m->numCoins += obj->oDamageOrCoinValue;
+    m->healCounter += 4 * obj->oDamageOrCoinValue;
+#ifdef BREATH_METER
+    m->breathCounter += (4 * obj->oDamageOrCoinValue);
+#endif
+    obj->oInteractStatus = INT_STATUS_INTERACTED;
 #ifdef X_COIN_STAR
-    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && m->numCoins - o->oDamageOrCoinValue < X_COIN_STAR
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && m->numCoins - obj->oDamageOrCoinValue < X_COIN_STAR
         && m->numCoins >= X_COIN_STAR) {
         bhv_spawn_star_no_level_exit(6);
     }
@@ -752,13 +754,16 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
         queue_rumble_data(5, 80);
     }
 #endif
-
     return FALSE;
 }
 
-u32 interact_water_ring(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    m->healCounter += 4 * o->oDamageOrCoinValue;
-    o->oInteractStatus = INT_STATUS_INTERACTED;
+u32 interact_water_ring(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
+#ifdef BREATH_METER
+    m->breathCounter += (4 * obj->oDamageOrCoinValue);
+#else
+    m->healCounter += (4 * obj->oDamageOrCoinValue);
+#endif
+    obj->oInteractStatus = INT_STATUS_INTERACTED;
     return FALSE;
 }
 
@@ -781,6 +786,9 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
         if (!noExit) {
             m->hurtCounter = 0;
             m->healCounter = 0;
+#ifdef BREATH_METER
+            m->breathCounter = 0;
+#endif
             if (m->capTimer > 1) {
                 m->capTimer = 1;
             }

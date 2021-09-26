@@ -12,6 +12,15 @@ enum PowerMeterAnimation {
     POWER_METER_VISIBLE
 };
 
+#ifdef BREATH_METER
+enum AirMeterAnimation {
+    BREATH_METER_HIDDEN,
+    BREATH_METER_SHOWING,
+    BREATH_METER_HIDING,
+    BREATH_METER_VISIBLE
+};
+#endif
+
 enum CameraHUDLut {
     GLYPH_CAM_CAMERA,
     GLYPH_CAM_MARIO_HEAD,

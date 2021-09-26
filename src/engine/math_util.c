@@ -554,7 +554,6 @@ void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *
     register f32 x = to[0] - from[0];
     register f32 y = to[1] - from[1];
     register f32 z = to[2] - from[2];
-
     *dist = sqrtf(sqr(x) + sqr(y) + sqr(z));
     *pitch = atan2s(sqrtf(sqr(x) + sqr(z)), y);
     *yaw = atan2s(z, x);
@@ -568,6 +567,21 @@ void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32 dist, s32 pitch, s32 yaw
     to[0] = from[0] + dist * coss(pitch) * sins(yaw);
     to[1] = from[1] + dist * sins(pitch);
     to[2] = from[2] + dist * coss(pitch) * coss(yaw);
+}
+
+s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec) {
+    s16 dist = (target - current);
+    if (dist >= 0) { // target >= current
+        current = ((dist >  inc) ? (current + inc) : target);
+    } else { // target < current
+        current = ((dist < -dec) ? (current - dec) : target);
+    }
+    return current;
+}
+
+Bool32 approach_s16_bool(s16 *current, s32 target, s32 inc, s32 dec) {
+    *current = approach_s16(*current, target, inc, dec);
+    return !(*current == target);
 }
 
 /**
@@ -584,6 +598,11 @@ s32 approach_s32(s32 current, s32 target, s32 inc, s32 dec) {
     return current;
 }
 
+Bool32 approach_s32_bool(s32 *current, s32 target, s32 inc, s32 dec) {
+    *current = approach_s32(*current, target, inc, dec);
+    return !(*current == target);
+}
+
 /**
  * Return the value 'current' after it tries to approach target, going up at
  * most 'inc' and going down at most 'dec'.
@@ -596,6 +615,28 @@ f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec) {
         current = ((dist < -dec) ? (current - dec) : target);
     }
     return current;
+}
+
+Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec) {
+    *current = approach_f32(*current, target, inc, dec);
+    return !(*current == target);
+}
+
+s32 approach_f32_signed(f32 *current, f32 target, f32 inc) {
+    s32 reachedTarget = FALSE;
+    *current += inc;
+    if (inc >= 0.0f) {
+        if (*current > target) {
+            *current = target;
+            reachedTarget = TRUE;
+        }
+    } else {
+        if (*current < target) {
+            *current = target;
+            reachedTarget = TRUE;
+        }
+    }
+    return reachedTarget;
 }
 
 /**

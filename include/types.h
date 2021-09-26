@@ -377,6 +377,10 @@ struct MarioState
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;
     /*0xC4*/ f32 windGravity;
+#ifdef BREATH_METER
+             s16 breath;
+             u8  breathCounter;
+#endif
 };
 
 #endif // TYPES_H

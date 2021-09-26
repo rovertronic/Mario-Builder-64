@@ -282,88 +282,15 @@ void cur_obj_forward_vel_approach_upward(f32 target, f32 increment) {
     }
 }
 
-s32 approach_f32_signed(f32 *value, f32 target, f32 increment) {
-    s32 reachedTarget = FALSE;
-
-    *value += increment;
-
-    if (increment >= 0.0f) {
-        if (*value > target) {
-            *value = target;
-            reachedTarget = TRUE;
-        }
-    } else {
-        if (*value < target) {
-            *value = target;
-            reachedTarget = TRUE;
-        }
-    }
-
-    return reachedTarget;
-}
-
-f32 approach_f32_symmetric(f32 value, f32 target, f32 increment) {
-    f32 dist;
-
-    if ((dist = target - value) >= 0.0f) {
-        if (dist > increment) {
-            value += increment;
-        } else {
-            value = target;
-        }
-    } else {
-        if (dist < -increment) {
-            value -= increment;
-        } else {
-            value = target;
-        }
-    }
-
-    return value;
-}
-
-s16 approach_s16_symmetric(s16 value, s16 target, s16 increment) {
-    s16 dist = target - value;
-
-    if (dist >= 0) {
-        if (dist > increment) {
-            value += increment;
-        } else {
-            value = target;
-        }
-    } else {
-        if (dist < -increment) {
-            value -= increment;
-        } else {
-            value = target;
-        }
-    }
-
-    return value;
-}
-
 s32 cur_obj_rotate_yaw_toward(s16 target, s16 increment) {
-    s16 startYaw;
-
-    startYaw = (s16) o->oMoveAngleYaw;
+    s16 startYaw = (s16) o->oMoveAngleYaw;
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, target, increment);
 
-    if ((o->oAngleVelYaw = (s16)((s16) o->oMoveAngleYaw - startYaw)) == 0) {
-        return TRUE;
-    } else {
-        return FALSE;
-    }
+    return ((o->oAngleVelYaw = (s16)((s16) o->oMoveAngleYaw - startYaw)) == 0);
 }
 
 s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
-    f32 z1, x1, z2, x2;
-    s16 angle;
-
-    z1 = obj1->oPosZ; z2 = obj2->oPosZ; // ordering of instructions..
-    x1 = obj1->oPosX; x2 = obj2->oPosX;
-
-    angle = atan2s(z2 - z1, x2 - x1);
-    return angle;
+    return atan2s((obj2->oPosZ - obj1->oPosZ), (obj2->oPosX - obj1->oPosX));
 }
 
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
@@ -376,12 +303,12 @@ s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleI
         case O_FACE_ANGLE_PITCH_INDEX:
             a = target->oPosX - obj->oPosX;
             c = target->oPosZ - obj->oPosZ;
-            a = sqrtf(a * a + c * c);
+            a = sqrtf(sqr(a) + sqr(c));
 
             b = -obj->oPosY;
             d = -target->oPosY;
 
-            targetAngle = atan2s(a, d - b);
+            targetAngle = atan2s(a, (d - b));
             break;
 
         case O_MOVE_ANGLE_YAW_INDEX:
@@ -391,7 +318,7 @@ s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleI
             b = obj->oPosX;
             d = target->oPosX;
 
-            targetAngle = atan2s(c - a, d - b);
+            targetAngle = atan2s((c - a), (d - b));
             break;
     }
 
@@ -401,25 +328,16 @@ s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleI
 }
 
 void obj_set_parent_relative_pos(struct Object *obj, s16 relX, s16 relY, s16 relZ) {
-    obj->oParentRelativePosX = relX;
-    obj->oParentRelativePosY = relY;
-    obj->oParentRelativePosZ = relZ;
+    vec3_set(&obj->oParentRelativePosVec, relX, relY, relZ);
 }
 
 void obj_set_pos(struct Object *obj, s16 x, s16 y, s16 z) {
-    obj->oPosX = x;
-    obj->oPosY = y;
-    obj->oPosZ = z;
+    vec3_set(&obj->oPosVec, x, y, z);
 }
 
 void obj_set_angle(struct Object *obj, s16 pitch, s16 yaw, s16 roll) {
-    obj->oFaceAnglePitch = pitch;
-    obj->oFaceAngleYaw = yaw;
-    obj->oFaceAngleRoll = roll;
-
-    obj->oMoveAnglePitch = pitch;
-    obj->oMoveAngleYaw = yaw;
-    obj->oMoveAngleRoll = roll;
+    vec3_set(&obj->oFaceAngleVec, pitch, yaw, roll);
+    vec3_set(&obj->oMoveAngleVec, pitch, yaw, roll);
 }
 
 /*
@@ -453,7 +371,7 @@ struct Object *spawn_object_rel_with_rot(struct Object *parent, u32 model, const
 
 struct Object *spawn_obj_with_transform_flags(struct Object *parent, s32 model, const BehaviorScript *behavior) {
     struct Object *newObj = spawn_object(parent, model, behavior);
-    newObj->oFlags |= OBJ_FLAG_UPDATE_TRANSFORM_FOR_THROW_MATRIX | OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
+    newObj->oFlags |= (OBJ_FLAG_UPDATE_TRANSFORM_FOR_THROW_MATRIX | OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM);
     return newObj;
 }
 
@@ -508,8 +426,7 @@ struct Object *spawn_object_at_origin(struct Object *parent, UNUSED s32 unusedAr
     obj->header.gfx.areaIndex = parent->header.gfx.areaIndex;
     obj->header.gfx.activeAreaIndex = parent->header.gfx.areaIndex;
 
-    geo_obj_init((struct GraphNodeObject *) &obj->header.gfx, gLoadedGraphNodes[model], gVec3fZero,
-                 gVec3sZero);
+    geo_obj_init((struct GraphNodeObject *) &obj->header.gfx, gLoadedGraphNodes[model], gVec3fZero, gVec3sZero);
 
     return obj;
 }
@@ -575,9 +492,7 @@ struct Object *spawn_object_relative_with_scale(s16 behaviorParam, s16 relativeP
 }
 
 void cur_obj_move_using_vel(void) {
-    o->oPosX += o->oVelX;
-    o->oPosY += o->oVelY;
-    o->oPosZ += o->oVelZ;
+    vec3f_add(&o->oPosVec, &o->oVelVec);
 }
 
 void obj_copy_graph_y_offset(struct Object *dst, struct Object *src) {
@@ -590,25 +505,16 @@ void obj_copy_pos_and_angle(struct Object *dst, struct Object *src) {
 }
 
 void obj_copy_pos(struct Object *dst, struct Object *src) {
-    dst->oPosX = src->oPosX;
-    dst->oPosY = src->oPosY;
-    dst->oPosZ = src->oPosZ;
+    vec3f_copy(&dst->oPosVec, &src->oPosVec);
 }
 
 void obj_copy_angle(struct Object *dst, struct Object *src) {
-    dst->oMoveAnglePitch = src->oMoveAnglePitch;
-    dst->oMoveAngleYaw = src->oMoveAngleYaw;
-    dst->oMoveAngleRoll = src->oMoveAngleRoll;
-
-    dst->oFaceAnglePitch = src->oFaceAnglePitch;
-    dst->oFaceAngleYaw = src->oFaceAngleYaw;
-    dst->oFaceAngleRoll = src->oFaceAngleRoll;
+    vec3_copy(&dst->oMoveAngleVec, &src->oMoveAngleVec);
+    vec3_copy(&dst->oFaceAngleVec, &src->oFaceAngleVec);
 }
 
 void obj_set_gfx_pos_from_pos(struct Object *obj) {
-    obj->header.gfx.pos[0] = obj->oPosX;
-    obj->header.gfx.pos[1] = obj->oPosY;
-    obj->header.gfx.pos[2] = obj->oPosZ;
+    vec3f_copy(obj->header.gfx.pos, &obj->oPosVec);
 }
 
 void obj_init_animation(struct Object *obj, s32 animIndex) {

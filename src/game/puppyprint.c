@@ -139,8 +139,7 @@ void puppyprint_calculate_ram_usage(void)
                         audioPool[6] + audioPool[7] + audioPool[8] + audioPool[9] + audioPool[10] + audioPool[11];
 }
 
-void puppyprint_profiler_finished(void)
-{
+void puppyprint_profiler_finished(void) {
     s32 i = 0;
     benchMark[NUM_BENCH_ITERATIONS] = 0;
     benchMark[NUM_BENCH_ITERATIONS+1] = 0;
@@ -158,37 +157,37 @@ void puppyprint_profiler_finished(void)
 
 //RGB colour lookup table for colouring all the funny ram prints.
 u8 colourChart[33][3] = {
-    {255, 0, 0},
-    {0, 0, 255},
-    {0, 255, 0},
-    {255, 255, 0},
-    {255, 0, 255},
-    {255, 127, 0},
-    {0, 255, 255},
-    {51, 255, 51},
-    {255, 153, 153},
-    {204, 0, 102},
-    {0, 153, 153},
-    {153, 255, 153},
-    {0, 0, 128},
-    {128, 0, 128},
-    {218, 165, 32},
-    {107, 142, 35},
-    {188, 143, 143},
-    {210, 105, 30},
-    {154, 205, 50},
-    {165, 42, 42},
-    {255, 105, 180},
-    {139, 69, 19},
-    {250, 240, 230},
-    {95, 158, 160},
-    {60, 179, 113},
-    {255, 69, 0},
-    {128, 0, 0},
-    {216, 191, 216},
-    {244, 164, 96},
-    {176, 196, 222},
-    {255, 255, 255}};
+    { 255,   0,   0 },
+    {   0,   0, 255 },
+    {   0, 255,   0 },
+    { 255, 255,   0 },
+    { 255,   0, 255 },
+    { 255, 127,   0 },
+    {   0, 255, 255 },
+    {  51, 255,  51 },
+    { 255, 153, 153 },
+    { 204,   0, 102 },
+    {   0, 153, 153 },
+    { 153, 255, 153 },
+    {   0,   0, 128 },
+    { 128,   0, 128 },
+    { 218, 165,  32 },
+    { 107, 142,  35 },
+    { 188, 143, 143 },
+    { 210, 105,  30 },
+    { 154, 205,  50 },
+    { 165,  42,  42 },
+    { 255, 105, 180 },
+    { 139,  69,  19 },
+    { 250, 240, 230 },
+    {  95, 158, 160 },
+    {  60, 179, 113 },
+    { 255,  69,   0 },
+    { 128,   0,   0 },
+    { 216, 191, 216 },
+    { 244, 164,  96 },
+    { 176, 196, 222 },
+    { 255, 255, 255 }};
 
 //Change this to alter the width of the bar at the bottom.
 #define BAR_LENGTH 200
@@ -366,8 +365,13 @@ void puppyprint_render_profiler(void)
     s32 perfPercentage[5];
     s32 graphPos;
     s32 prevGraph;
+#ifdef PUPPYPRINT_DEBUG_CYCLES
+    OSTime cpuCount = (cpuTime+audioTime[NUM_PERF_ITERATIONS]+dmaAudioTime[NUM_PERF_ITERATIONS]+faultTime[NUM_PERF_ITERATIONS]
+                               +taskTime[NUM_PERF_ITERATIONS]-profilerTime[NUM_PERF_ITERATIONS]-profilerTime2[NUM_PERF_ITERATIONS]);
+#else
     OSTime cpuCount = OS_CYCLES_TO_USEC(cpuTime+audioTime[NUM_PERF_ITERATIONS]+dmaAudioTime[NUM_PERF_ITERATIONS]+faultTime[NUM_PERF_ITERATIONS]
                                         +taskTime[NUM_PERF_ITERATIONS]-profilerTime[NUM_PERF_ITERATIONS]-profilerTime2[NUM_PERF_ITERATIONS]);
+#endif
     OSTime first = osGetTime();
     char textBytes[80];
 
@@ -383,7 +387,11 @@ void puppyprint_render_profiler(void)
     if (!ramViewer && !benchViewer && !logViewer)
     {
         print_fps(16,40);
+#ifdef PUPPYPRINT_DEBUG_CYCLES
+        sprintf(textBytes, "CPU: %dc (%d_)#RSP: %dc (%d_)#RDP: %dc (%d_)", (s32)cpuCount, (s32)(cpuCount/333), (s32)(rspTime), (s32)(rspTime)/333, (s32)(rdpTime), (s32)(rdpTime)/333);
+#else
         sprintf(textBytes, "CPU: %dus (%d_)#RSP: %dus (%d_)#RDP: %dus (%d_)", (s32)cpuCount, (s32)(cpuCount/333), (s32)OS_CYCLES_TO_USEC(rspTime), (s32)OS_CYCLES_TO_USEC(rspTime)/333, (s32)OS_CYCLES_TO_USEC(rdpTime), (s32)OS_CYCLES_TO_USEC(rdpTime)/333);
+#endif
         print_small_text(16, 52, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
 
         sprintf(textBytes, "OBJ: %d/%d", gObjectCounter, OBJECT_POOL_CAPACITY);
@@ -406,8 +414,13 @@ void puppyprint_render_profiler(void)
         {
             benchmarkTimer--;
             prepare_blank_box();
+#ifdef PUPPYPRINT_DEBUG_CYCLES
+            //sprintf(textBytes, "Benchmark: %dus#High: %dc", (s32)(benchMark[NUM_BENCH_ITERATIONS]), (s32)(benchMark[NUM_BENCH_ITERATIONS+1]));
+            sprintf(textBytes, "Done in %0.000f seconds#Benchmark: %dc#High: %dc", (f32)(benchmarkProgramTimer)*0.000001f, (s32)(benchMark[NUM_BENCH_ITERATIONS]), (s32)(benchMark[NUM_BENCH_ITERATIONS+1]));
+#else
             //sprintf(textBytes, "Benchmark: %dus#High: %dus", (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS+1]));
             sprintf(textBytes, "Done in %0.000f seconds#Benchmark: %dus#High: %dus", (f32)(benchmarkProgramTimer)*0.000001f, (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS+1]));
+#endif
             render_blank_box(160-(get_text_width(textBytes)/2)-4, 158, 160+(get_text_width(textBytes)/2)+4, 196, 0, 0, 0, 255);
             print_set_envcolour(255, 255, 255, 255);
             print_small_text(160, 160, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL);
@@ -422,6 +435,18 @@ void puppyprint_render_profiler(void)
         perfPercentage[4] = MAX((dmaTime[NUM_PERF_ITERATIONS]/ADDTIMES), 1);
         #undef ADDTIMES
 
+#ifdef PUPPYPRINT_DEBUG_CYCLES
+        sprintf(textBytes, "Collision: <COL_99505099>%dc", (s32)(collisionTime[NUM_PERF_ITERATIONS]));
+        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        sprintf(textBytes, "Graph: <COL_50509999>%dc", (s32)(graphTime[NUM_PERF_ITERATIONS]));
+        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        sprintf(textBytes, "Behaviour: <COL_50995099>%dc", (s32)(behaviourTime[NUM_PERF_ITERATIONS]));
+        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        sprintf(textBytes, "Audio: <COL_99995099>%dc", (s32)(audioTime[NUM_PERF_ITERATIONS]));
+        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        sprintf(textBytes, "DMA: <COL_99509999>%dc", (s32)(dmaTime[NUM_PERF_ITERATIONS]));
+        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+#else
         sprintf(textBytes, "Collision: <COL_99505099>%dus", (s32)OS_CYCLES_TO_USEC(collisionTime[NUM_PERF_ITERATIONS]));
         print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
         sprintf(textBytes, "Graph: <COL_50509999>%dus", (s32)OS_CYCLES_TO_USEC(graphTime[NUM_PERF_ITERATIONS]));
@@ -432,6 +457,7 @@ void puppyprint_render_profiler(void)
         print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
         sprintf(textBytes, "DMA: <COL_99509999>%dus", (s32)OS_CYCLES_TO_USEC(dmaTime[NUM_PERF_ITERATIONS]));
         print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+#endif
 
         //Render CPU breakdown bar.
         prepare_blank_box();

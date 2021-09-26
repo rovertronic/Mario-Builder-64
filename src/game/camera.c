@@ -3793,42 +3793,21 @@ s32 collide_with_walls(Vec3f pos, f32 offsetY, f32 radius) {
  * Compare a vector to a position, return TRUE if they match.
  */
 s32 vec3f_compare(Vec3f pos, f32 posX, f32 posY, f32 posZ) {
-    s32 equal = FALSE;
-
-    if (pos[0] == posX && pos[1] == posY && pos[2] == posZ) {
-        equal = TRUE;
-    }
-    return equal;
+    return (pos[0] == posX && pos[1] == posY && pos[2] == posZ);
 }
 
-s32 clamp_pitch(Vec3f from, Vec3f to, s16 maxPitch, s16 minPitch) {
-    s32 outOfRange = 0;
-    s16 pitch;
-    s16 yaw;
+void clamp_pitch(Vec3f from, Vec3f to, s16 maxPitch, s16 minPitch) {
+    s16 pitch, yaw;
     f32 dist;
-
     vec3f_get_dist_and_angle(from, to, &dist, &pitch, &yaw);
-    if (pitch > maxPitch) {
-        pitch = maxPitch;
-        outOfRange++;
-    }
-    if (pitch < minPitch) {
-        pitch = minPitch;
-        outOfRange++;
-    }
+    pitch = CLAMP(pitch, minPitch, maxPitch);
     vec3f_set_dist_and_angle(from, to, dist, pitch, yaw);
-    return outOfRange;
 }
 
 s32 is_within_100_units_of_mario(f32 posX, f32 posY, f32 posZ) {
-    s32 isCloseToMario = 0;
     Vec3f pos;
-
     vec3f_set(pos, posX, posY, posZ);
-    if (calc_abs_dist(sMarioCamState->pos, pos) < 100.f) {
-        isCloseToMario = 1;
-    }
-    return isCloseToMario;
+    return (calc_abs_dist(sMarioCamState->pos, pos) < 100.f);
 }
 
 s32 set_or_approach_f32_asymptotic(f32 *dst, f32 goal, f32 scale) {
@@ -3837,11 +3816,7 @@ s32 set_or_approach_f32_asymptotic(f32 *dst, f32 goal, f32 scale) {
     } else {
         *dst = goal;
     }
-    if (*dst == goal) {
-        return FALSE;
-    } else {
-        return TRUE;
-    }
+    return (*dst != goal);
 }
 
 /**
@@ -3854,11 +3829,7 @@ s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier) {
         multiplier = 1.f;
     }
     *current = *current + (target - *current) * multiplier;
-    if (*current == target) {
-        return FALSE;
-    } else {
-        return TRUE;
-    }
+    return (*current != target);
 }
 
 /**
@@ -3885,11 +3856,7 @@ s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor) {
         temp += target;
         *current = temp;
     }
-    if (*current == target) {
-        return FALSE;
-    } else {
-        return TRUE;
-    }
+    return (*current != target);
 }
 
 /**

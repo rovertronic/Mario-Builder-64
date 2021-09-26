@@ -28,6 +28,8 @@
 // -- GAME SETTINGS --
 // Disable lives and hide the lives counter
 #define DISABLE_LIVES
+// Air/Breath meter is separate from health meter when underwater
+//#define BREATH_METER
 // Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
 #define X_COIN_STAR 100
 // Stars don't kick you out of the level
@@ -190,6 +192,8 @@
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
 //#define PUPPYPRINT
 #define PUPPYPRINT_DEBUG 0
+// Use cycles instead of microseconds
+//#define PUPPYPRINT_DEBUG_CYCLES
 // Visual debug enables some collision visuals. Tapping Right on the dpad will cycle between visual hitboxes, visual surfaces, both, and neither.
 // If puppyprint is enabled, then this can be cycled only while the screen is active.
 //#define VISUAL_DEBUG
