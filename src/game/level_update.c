@@ -904,8 +904,10 @@ void initiate_delayed_warp(void) {
 
 void update_hud_values(void) {
     if (gCurrCreditsEntry == NULL) {
-        s16 numHealthWedges = gMarioState->health > 0 ? gMarioState->health >> 8 : 0;
-
+        s16 numHealthWedges = ((gMarioState->health > 0) ? (gMarioState->health >> 8) : 0);
+#ifdef BREATH_METER
+        s16 numBreathWedges = ((gMarioState->breath > 0) ? (gMarioState->breath >> 8) : 0);
+#endif
         if (gCurrCourseNum >= COURSE_MIN) {
             gHudDisplay.flags |= HUD_DISPLAY_FLAG_COIN_COUNT;
         } else {
@@ -946,12 +948,19 @@ void update_hud_values(void) {
             play_sound(SOUND_MENU_POWER_METER, gGlobalSoundSource);
         }
         gHudDisplay.wedges = numHealthWedges;
-
         if (gMarioState->hurtCounter > 0) {
             gHudDisplay.flags |= HUD_DISPLAY_FLAG_EMPHASIZE_POWER;
         } else {
             gHudDisplay.flags &= ~HUD_DISPLAY_FLAG_EMPHASIZE_POWER;
         }
+#ifdef BREATH_METER
+        gHudDisplay.breath = numBreathWedges;
+        if (gMarioState->breath > 0) {
+            gHudDisplay.flags |=  HUD_DISPLAY_FLAG_BREATH_METER;
+        } else {
+            gHudDisplay.flags &= ~HUD_DISPLAY_FLAG_BREATH_METER;
+        }
+#endif
     }
 }
 

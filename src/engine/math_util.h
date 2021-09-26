@@ -374,8 +374,19 @@ void mtxf_rotate_xy(Mtx *mtx, s32 angle);
 void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, Mat4 camMtx);
 void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *yaw);
 void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32  dist, s32  pitch, s32  yaw);
+s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec);
 s32 approach_s32(s32 current, s32 target, s32 inc, s32 dec);
 f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec);
+Bool32 approach_s16_bool(s16 *current, s32 target, s32 inc, s32 dec);
+Bool32 approach_s32_bool(s32 *current, s32 target, s32 inc, s32 dec);
+Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec);
+#define approach_s16_symmetric(current, target, inc) approach_s16((current), (target), (inc), (inc))
+#define approach_s32_symmetric(current, target, inc) approach_s32((current), (target), (inc), (inc))
+#define approach_f32_symmetric(current, target, inc) approach_f32((current), (target), (inc), (inc))
+#define approach_s16_symmetric_bool(current, target, inc) approach_s16_bool((current), (target), (inc), (inc))
+#define approach_s32_symmetric_bool(current, target, inc) approach_s32_bool((current), (target), (inc), (inc))
+#define approach_f32_symmetric_bool(current, target, inc) approach_f32_bool((current), (target), (inc), (inc))
+s32 approach_f32_signed(f32 *current, f32 target, f32 inc);
 s32 approach_angle(s32 current, s32 target, s32 inc);
 s16 atan2s(f32 y, f32 x);
 f32 atan2f(f32 a, f32 b);
