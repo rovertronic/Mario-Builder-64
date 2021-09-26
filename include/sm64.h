@@ -29,55 +29,45 @@
 #define SET_HIGH_U16_OF_32(var, x) ((var) = ((var) & 0xFFFF) | ((x) << 16))
 #define SET_HIGH_S16_OF_32(var, x) ((var) = ((var) & 0xFFFF) | ((x) << 16))
 
-// Layers
+enum RenderLayers
+{
+    LAYER_FORCE,
+    LAYER_OPAQUE,
+    LAYER_OPAQUE_INTER,
+    LAYER_OPAQUE_DECAL,
+    LAYER_ALPHA,
 #if SILHOUETTE
-#define LAYER_FORCE                         0x0 //  is zbuffered
-#define LAYER_OPAQUE                        0x1 //  is zbuffered
-#define LAYER_OPAQUE_INTER                  0x2 //  is zbuffered
-#define LAYER_OPAQUE_DECAL                  0x3 //  is zbuffered
-#define LAYER_ALPHA                         0x4 //  is zbuffered
-#define LAYER_ALPHA_DECAL                   0x5 //  is zbuffered
-#define LAYER_SILHOUETTE_OPAQUE             0x6 //  is zbuffered
-#define LAYER_SILHOUETTE_ALPHA              0x7 //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_OPAQUE     0x8 //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_ALPHA      0x9 //  is zbuffered
-#define LAYER_TRANSPARENT_DECAL             0xA // not zbuffered
-#define LAYER_TRANSPARENT                   0xB // not zbuffered
-#define LAYER_TRANSPARENT_INTER             0xC // not zbuffered
-
-#define LAYER_ZB_LAST                       LAYER_OCCLUDE_SILHOUETTE_ALPHA
-
+    LAYER_ALPHA_DECAL,
+    LAYER_SILHOUETTE_OPAQUE,
+    LAYER_SILHOUETTE_ALPHA,
+    LAYER_OCCLUDE_SILHOUETTE_OPAQUE,
+    LAYER_OCCLUDE_SILHOUETTE_ALPHA,
+#endif
+    LAYER_TRANSPARENT_DECAL,
+    LAYER_TRANSPARENT,
+    LAYER_TRANSPARENT_INTER,
+    LAYER_COUNT,
+};
+#if SILHOUETTE
+#define LAYER_ZB_LAST LAYER_OCCLUDE_SILHOUETTE_ALPHA
 #define LAYER_SILHOUETTE_FIRST              LAYER_SILHOUETTE_OPAQUE
 #define LAYER_LAST_BEFORE_SILHOUETTE        (LAYER_SILHOUETTE_FIRST - 1)
 #define LAYER_SILHOUETTE_LAST               LAYER_SILHOUETTE_ALPHA
 #define LAYER_OCCLUDE_SILHOUETTE_FIRST      LAYER_OCCLUDE_SILHOUETTE_OPAQUE
 #define LAYER_OCCLUDE_SILHOUETTE_LAST       LAYER_OCCLUDE_SILHOUETTE_ALPHA
-
 #define LAYER_OPAQUE_ORIG LAYER_OPAQUE
 #define LAYER_ALPHA_ORIG  LAYER_ALPHA
-
 #else
-#define LAYER_FORCE                         0x0 //  is zbuffered
-#define LAYER_OPAQUE                        0x1 //  is zbuffered
-#define LAYER_OPAQUE_DECAL                  0x2 //  is zbuffered
-#define LAYER_OPAQUE_INTER                  0x3 //  is zbuffered
-#define LAYER_ALPHA                         0x4 //  is zbuffered
-#define LAYER_TRANSPARENT                   0x5 // not zbuffered
-#define LAYER_TRANSPARENT_DECAL             0x6 // not zbuffered
-#define LAYER_TRANSPARENT_INTER             0x7 // not zbuffered
-
-#define LAYER_ZB_LAST                       LAYER_ALPHA
-
-#define LAYER_ALPHA_DECAL                   0x4 //  is zbuffered
-#define LAYER_SILHOUETTE_OPAQUE             0x1 //  is zbuffered
-#define LAYER_SILHOUETTE_ALPHA              0x4 //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_OPAQUE     0x1 //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_ALPHA      0x4 //  is zbuffered
-
+#define LAYER_ZB_LAST LAYER_ALPHA
+#define LAYER_ALPHA_DECAL                   LAYER_ALPHA
+#define LAYER_SILHOUETTE_OPAQUE             LAYER_OPAQUE //  is zbuffered
+#define LAYER_SILHOUETTE_ALPHA              LAYER_ALPHA //  is zbuffered
+#define LAYER_OCCLUDE_SILHOUETTE_OPAQUE     LAYER_OPAQUE //  is zbuffered
+#define LAYER_OCCLUDE_SILHOUETTE_ALPHA      LAYER_ALPHA //  is zbuffered
 #endif
 
+
 #define LAYER_FIRST_NON_ZB                  (LAYER_ZB_LAST + 1)
-#define LAYER_LAST_ALL                      LAYER_TRANSPARENT_INTER
 
 #define INPUT_NONZERO_ANALOG         /* 0x0001 */ (1 <<  0)
 #define INPUT_A_PRESSED              /* 0x0002 */ (1 <<  1)
