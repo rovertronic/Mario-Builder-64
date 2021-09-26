@@ -213,15 +213,13 @@ extern const Gfx transparent_star_seg3_dl_0302C620[];
 extern const GeoLayout bubbly_tree_geo[];
 extern const GeoLayout spiky_tree_geo[];
 extern const GeoLayout snow_tree_geo[];
-extern const GeoLayout spiky_tree1_geo[];
 extern const GeoLayout palm_tree_geo[];
-extern const Gfx tree_seg3_dl_0302FE88[];
-extern const Gfx tree_seg3_dl_0302FEB8[];
-extern const Gfx tree_seg3_dl_0302FEE8[];
-extern const Gfx tree_seg3_dl_03030FA0[];
-extern const Gfx tree_seg3_dl_03032088[];
-extern const Gfx tree_seg3_dl_03032170[];
-extern const Gfx tree_seg3_dl_03033258[];
+extern const Gfx tree_seg3_sub_dl_bubbly_left_side[];
+extern const Gfx tree_seg3_sub_dl_bubbly_right_side[];
+extern const Gfx tree_seg3_dl_bubbly[];
+extern const Gfx tree_seg3_dl_spiky[];
+extern const Gfx tree_seg3_dl_snowy_pine[];
+extern const Gfx tree_seg3_dl_palm[];
 
 // warp_collision
 extern const Collision door_seg3_collision_0301CE78[];

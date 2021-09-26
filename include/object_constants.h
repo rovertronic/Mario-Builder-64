@@ -46,6 +46,7 @@
 #define OBJ_FLAG_EMIT_LIGHT                         (1 << 17) // 0x00020000
 #define OBJ_FLAG_UCODE_LARGE                        (1 << 18) // 0x00040000
 #define OBJ_FLAG_SILHOUETTE                         (1 << 19) // 0x00080000
+#define OBJ_FLAG_OPACITY_FROM_CAMERA_DIST           (1 << 20) // 0x00100000
 #define OBJ_FLAG_HITBOX_WAS_SET                     (1 << 30) // 0x40000000
 
 /* oHeldState */
