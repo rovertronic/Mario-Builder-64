@@ -372,8 +372,24 @@ void mtxf_to_mtx_constant(register s16 *dest, register f32 *src);
 void mtxf_to_mtx_scale(Mtx *dest, Mat4 src);
 void mtxf_rotate_xy(Mtx *mtx, s32 angle);
 void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, Mat4 camMtx);
-void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *yaw);
-void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32  dist, s32  pitch, s32  yaw);
+
+void vec2f_get_lateral_dist(                   Vec2f from, Vec2f to,            f32 *lateralDist                          );
+void vec3f_get_lateral_dist(                   Vec3f from, Vec3f to,            f32 *lateralDist                          );
+void vec3f_get_dist(                           Vec3f from, Vec3f to, f32 *dist                                            );
+void vec3f_get_dist_squared(                   Vec3f from, Vec3f to, f32 *dist                                            );
+void vec3f_get_dist_and_yaw(                   Vec3f from, Vec3f to, f32 *dist,                                 Angle *yaw);
+void vec3f_get_pitch(                          Vec3f from, Vec3f to,                              Angle *pitch            );
+void vec3f_get_yaw(                            Vec3f from, Vec3f to,                                            Angle *yaw);
+void vec3f_get_angle(                          Vec3f from, Vec3f to,                              Angle *pitch, Angle *yaw);
+void vec3f_get_lateral_dist_and_pitch(         Vec3f from, Vec3f to,            f32 *lateralDist, Angle *pitch            );
+void vec3f_get_lateral_dist_and_yaw(           Vec3f from, Vec3f to,            f32 *lateralDist,               Angle *yaw);
+void vec3f_get_lateral_dist_and_angle(         Vec3f from, Vec3f to,            f32 *lateralDist, Angle *pitch, Angle *yaw);
+void vec3f_get_dist_and_lateral_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, f32 *lateralDist, Angle *pitch, Angle *yaw);
+void vec3s_get_dist_and_angle(                 Vec3s from, Vec3s to, s16 *dist,                   Angle *pitch, Angle *yaw);
+void vec3f_get_dist_and_angle(                 Vec3f from, Vec3f to, f32 *dist,                   Angle *pitch, Angle *yaw);
+void vec3s_set_dist_and_angle(                 Vec3s from, Vec3s to, s16  dist,                   Angle32 pitch, Angle32 yaw);
+void vec3f_set_dist_and_angle(                 Vec3f from, Vec3f to, f32  dist,                   Angle32 pitch, Angle32 yaw);
+
 s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec);
 s32 approach_s32(s32 current, s32 target, s32 inc, s32 dec);
 f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec);
@@ -388,6 +404,10 @@ Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec);
 #define approach_f32_symmetric_bool(current, target, inc) approach_f32_bool((current), (target), (inc), (inc))
 s32 approach_f32_signed(f32 *current, f32 target, f32 inc);
 s32 approach_angle(s32 current, s32 target, s32 inc);
+s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier);
+f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
+s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor);
+s32 approach_s16_asymptotic(s16 current, s16 target, s16 divisor);
 s16 atan2s(f32 y, f32 x);
 f32 atan2f(f32 a, f32 b);
 void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);

@@ -49,42 +49,42 @@ enum RenderLayers
     LAYER_COUNT,
 };
 #if SILHOUETTE
-#define LAYER_ZB_LAST LAYER_OCCLUDE_SILHOUETTE_ALPHA
+#define LAYER_ZB_LAST                       LAYER_OCCLUDE_SILHOUETTE_ALPHA
 #define LAYER_SILHOUETTE_FIRST              LAYER_SILHOUETTE_OPAQUE
 #define LAYER_LAST_BEFORE_SILHOUETTE        (LAYER_SILHOUETTE_FIRST - 1)
 #define LAYER_SILHOUETTE_LAST               LAYER_SILHOUETTE_ALPHA
 #define LAYER_OCCLUDE_SILHOUETTE_FIRST      LAYER_OCCLUDE_SILHOUETTE_OPAQUE
 #define LAYER_OCCLUDE_SILHOUETTE_LAST       LAYER_OCCLUDE_SILHOUETTE_ALPHA
-#define LAYER_OPAQUE_ORIG LAYER_OPAQUE
-#define LAYER_ALPHA_ORIG  LAYER_ALPHA
+#define LAYER_OPAQUE_ORIG                   LAYER_OPAQUE
+#define LAYER_ALPHA_ORIG                    LAYER_ALPHA
 #else
 #define LAYER_ZB_LAST LAYER_ALPHA
 #define LAYER_ALPHA_DECAL                   LAYER_ALPHA
-#define LAYER_SILHOUETTE_OPAQUE             LAYER_OPAQUE //  is zbuffered
-#define LAYER_SILHOUETTE_ALPHA              LAYER_ALPHA //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_OPAQUE     LAYER_OPAQUE //  is zbuffered
-#define LAYER_OCCLUDE_SILHOUETTE_ALPHA      LAYER_ALPHA //  is zbuffered
+#define LAYER_SILHOUETTE_OPAQUE             LAYER_OPAQUE // is zbuffered
+#define LAYER_SILHOUETTE_ALPHA              LAYER_ALPHA  // is zbuffered
+#define LAYER_OCCLUDE_SILHOUETTE_OPAQUE     LAYER_OPAQUE // is zbuffered
+#define LAYER_OCCLUDE_SILHOUETTE_ALPHA      LAYER_ALPHA  // is zbuffered
 #endif
 
 
 #define LAYER_FIRST_NON_ZB                  (LAYER_ZB_LAST + 1)
 
-#define INPUT_NONZERO_ANALOG         /* 0x0001 */ (1 <<  0)
-#define INPUT_A_PRESSED              /* 0x0002 */ (1 <<  1)
-#define INPUT_OFF_FLOOR              /* 0x0004 */ (1 <<  2)
-#define INPUT_ABOVE_SLIDE            /* 0x0008 */ (1 <<  3)
-#define INPUT_FIRST_PERSON           /* 0x0010 */ (1 <<  4)
-#define INPUT_IDLE                   /* 0x0020 */ (1 <<  5)
-#define INPUT_SQUISHED               /* 0x0040 */ (1 <<  6)
-#define INPUT_A_DOWN                 /* 0x0080 */ (1 <<  7)
-#define INPUT_IN_POISON_GAS          /* 0x0100 */ (1 <<  8)
-#define INPUT_IN_WATER               /* 0x0200 */ (1 <<  9)
-#define INPUT_STOMPED                /* 0x0400 */ (1 << 10)
-#define INPUT_INTERACT_OBJ_GRABBABLE /* 0x0800 */ (1 << 11)
-#define INPUT_UNKNOWN_12             /* 0x1000 */ (1 << 12)
-#define INPUT_B_PRESSED              /* 0x2000 */ (1 << 13)
-#define INPUT_Z_DOWN                 /* 0x4000 */ (1 << 14)
-#define INPUT_Z_PRESSED              /* 0x8000 */ (1 << 15)
+#define INPUT_NONZERO_ANALOG                /* 0x0001 */ (1 <<  0)
+#define INPUT_A_PRESSED                     /* 0x0002 */ (1 <<  1)
+#define INPUT_OFF_FLOOR                     /* 0x0004 */ (1 <<  2)
+#define INPUT_ABOVE_SLIDE                   /* 0x0008 */ (1 <<  3)
+#define INPUT_FIRST_PERSON                  /* 0x0010 */ (1 <<  4)
+#define INPUT_IDLE                          /* 0x0020 */ (1 <<  5)
+#define INPUT_SQUISHED                      /* 0x0040 */ (1 <<  6)
+#define INPUT_A_DOWN                        /* 0x0080 */ (1 <<  7)
+#define INPUT_IN_POISON_GAS                 /* 0x0100 */ (1 <<  8)
+#define INPUT_IN_WATER                      /* 0x0200 */ (1 <<  9)
+#define INPUT_STOMPED                       /* 0x0400 */ (1 << 10)
+#define INPUT_INTERACT_OBJ_GRABBABLE        /* 0x0800 */ (1 << 11)
+#define INPUT_UNKNOWN_12                    /* 0x1000 */ (1 << 12)
+#define INPUT_B_PRESSED                     /* 0x2000 */ (1 << 13)
+#define INPUT_Z_DOWN                        /* 0x4000 */ (1 << 14)
+#define INPUT_Z_PRESSED                     /* 0x8000 */ (1 << 15)
 
 #define GROUND_STEP_LEFT_GROUND              0
 #define GROUND_STEP_NONE                     1
@@ -92,43 +92,43 @@ enum RenderLayers
 #define GROUND_STEP_HIT_WALL_STOP_QSTEPS     2
 #define GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS 3
 
-#define AIR_STEP_CHECK_LEDGE_GRAB 0x00000001
-#define AIR_STEP_CHECK_HANG       0x00000002
+#define AIR_STEP_CHECK_LEDGE_GRAB       0x1
+#define AIR_STEP_CHECK_HANG             0x2
 
-#define AIR_STEP_NONE            0
-#define AIR_STEP_LANDED          1
-#define AIR_STEP_HIT_WALL        2
-#define AIR_STEP_GRABBED_LEDGE   3
-#define AIR_STEP_GRABBED_CEILING 4
-#define AIR_STEP_HIT_LAVA_WALL   6
-#define AIR_STEP_HIT_CEILING     7
+#define AIR_STEP_NONE                   0x0
+#define AIR_STEP_LANDED                 0x1
+#define AIR_STEP_HIT_WALL               0x2
+#define AIR_STEP_GRABBED_LEDGE          0x3
+#define AIR_STEP_GRABBED_CEILING        0x4
+#define AIR_STEP_HIT_LAVA_WALL          0x6
+#define AIR_STEP_HIT_CEILING            0x7
 
-#define WATER_STEP_NONE        0
-#define WATER_STEP_HIT_FLOOR   1
-#define WATER_STEP_HIT_CEILING 2
-#define WATER_STEP_CANCELLED   3
-#define WATER_STEP_HIT_WALL    4
+#define WATER_STEP_NONE                 0x0
+#define WATER_STEP_HIT_FLOOR            0x1
+#define WATER_STEP_HIT_CEILING          0x2
+#define WATER_STEP_CANCELLED            0x3
+#define WATER_STEP_HIT_WALL             0x4
 
-#define PARTICLE_DUST                 /* 0x00000001 */ (1 <<  0)
-#define PARTICLE_VERTICAL_STAR        /* 0x00000002 */ (1 <<  1)
-#define PARTICLE_2                    /* 0x00000004 */ (1 <<  2)
-#define PARTICLE_SPARKLES             /* 0x00000008 */ (1 <<  3)
-#define PARTICLE_HORIZONTAL_STAR      /* 0x00000010 */ (1 <<  4)
-#define PARTICLE_BUBBLE               /* 0x00000020 */ (1 <<  5)
-#define PARTICLE_WATER_SPLASH         /* 0x00000040 */ (1 <<  6)
-#define PARTICLE_IDLE_WATER_WAVE      /* 0x00000080 */ (1 <<  7)
-#define PARTICLE_SHALLOW_WATER_WAVE   /* 0x00000100 */ (1 <<  8)
-#define PARTICLE_PLUNGE_BUBBLE        /* 0x00000200 */ (1 <<  9)
-#define PARTICLE_WAVE_TRAIL           /* 0x00000400 */ (1 << 10)
-#define PARTICLE_FIRE                 /* 0x00000800 */ (1 << 11)
-#define PARTICLE_SHALLOW_WATER_SPLASH /* 0x00001000 */ (1 << 12)
-#define PARTICLE_LEAF                 /* 0x00002000 */ (1 << 13)
-#define PARTICLE_SNOW                 /* 0x00004000 */ (1 << 14)
-#define PARTICLE_DIRT                 /* 0x00008000 */ (1 << 15)
-#define PARTICLE_MIST_CIRCLE          /* 0x00010000 */ (1 << 16)
-#define PARTICLE_BREATH               /* 0x00020000 */ (1 << 17)
-#define PARTICLE_TRIANGLE             /* 0x00040000 */ (1 << 18)
-#define PARTICLE_19                   /* 0x00080000 */ (1 << 19)
+#define PARTICLE_DUST                   /* 0x00000001 */ (1 <<  0)
+#define PARTICLE_VERTICAL_STAR          /* 0x00000002 */ (1 <<  1)
+#define PARTICLE_2                      /* 0x00000004 */ (1 <<  2)
+#define PARTICLE_SPARKLES               /* 0x00000008 */ (1 <<  3)
+#define PARTICLE_HORIZONTAL_STAR        /* 0x00000010 */ (1 <<  4)
+#define PARTICLE_BUBBLE                 /* 0x00000020 */ (1 <<  5)
+#define PARTICLE_WATER_SPLASH           /* 0x00000040 */ (1 <<  6)
+#define PARTICLE_IDLE_WATER_WAVE        /* 0x00000080 */ (1 <<  7)
+#define PARTICLE_SHALLOW_WATER_WAVE     /* 0x00000100 */ (1 <<  8)
+#define PARTICLE_PLUNGE_BUBBLE          /* 0x00000200 */ (1 <<  9)
+#define PARTICLE_WAVE_TRAIL             /* 0x00000400 */ (1 << 10)
+#define PARTICLE_FIRE                   /* 0x00000800 */ (1 << 11)
+#define PARTICLE_SHALLOW_WATER_SPLASH   /* 0x00001000 */ (1 << 12)
+#define PARTICLE_LEAF                   /* 0x00002000 */ (1 << 13)
+#define PARTICLE_SNOW                   /* 0x00004000 */ (1 << 14)
+#define PARTICLE_DIRT                   /* 0x00008000 */ (1 << 15)
+#define PARTICLE_MIST_CIRCLE            /* 0x00010000 */ (1 << 16)
+#define PARTICLE_BREATH                 /* 0x00020000 */ (1 << 17)
+#define PARTICLE_TRIANGLE               /* 0x00040000 */ (1 << 18)
+#define PARTICLE_19                     /* 0x00080000 */ (1 << 19)
 
 #define MODEL_STATE_ALPHA                (1 << 8)                      //  0x100
 #define MODEL_STATE_NOISE_ALPHA         ((1 << 7) | MODEL_STATE_ALPHA) // (0x080 | MODEL_STATE_ALPHA)
@@ -159,39 +159,39 @@ enum RenderLayers
 #define MARIO_SPECIAL_CAPS (MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP)
 #define MARIO_CAPS (MARIO_NORMAL_CAP | MARIO_SPECIAL_CAPS)
 
-#define ACT_ID_MASK 0x000001FF
+#define ACT_ID_MASK                         0x000001FF
 
-#define ACT_GROUP_MASK       0x000001C0
-#define ACT_GROUP_STATIONARY /* 0x00000000 */ (0 << 6)
-#define ACT_GROUP_MOVING     /* 0x00000040 */ (1 << 6)
-#define ACT_GROUP_AIRBORNE   /* 0x00000080 */ (2 << 6)
-#define ACT_GROUP_SUBMERGED  /* 0x000000C0 */ (3 << 6)
-#define ACT_GROUP_CUTSCENE   /* 0x00000100 */ (4 << 6)
-#define ACT_GROUP_AUTOMATIC  /* 0x00000140 */ (5 << 6)
-#define ACT_GROUP_OBJECT     /* 0x00000180 */ (6 << 6)
+#define ACT_GROUP_MASK                      0x000001C0
+#define ACT_GROUP_STATIONARY                /* 0x00000000 */ (0 << 6)
+#define ACT_GROUP_MOVING                    /* 0x00000040 */ (1 << 6)
+#define ACT_GROUP_AIRBORNE                  /* 0x00000080 */ (2 << 6)
+#define ACT_GROUP_SUBMERGED                 /* 0x000000C0 */ (3 << 6)
+#define ACT_GROUP_CUTSCENE                  /* 0x00000100 */ (4 << 6)
+#define ACT_GROUP_AUTOMATIC                 /* 0x00000140 */ (5 << 6)
+#define ACT_GROUP_OBJECT                    /* 0x00000180 */ (6 << 6)
 
-#define ACT_FLAG_STATIONARY                  /* 0x00000200 */ (1 <<  9)
-#define ACT_FLAG_MOVING                      /* 0x00000400 */ (1 << 10)
-#define ACT_FLAG_AIR                         /* 0x00000800 */ (1 << 11)
-#define ACT_FLAG_INTANGIBLE                  /* 0x00001000 */ (1 << 12)
-#define ACT_FLAG_SWIMMING                    /* 0x00002000 */ (1 << 13)
-#define ACT_FLAG_METAL_WATER                 /* 0x00004000 */ (1 << 14)
-#define ACT_FLAG_SHORT_HITBOX                /* 0x00008000 */ (1 << 15)
-#define ACT_FLAG_RIDING_SHELL                /* 0x00010000 */ (1 << 16)
-#define ACT_FLAG_INVULNERABLE                /* 0x00020000 */ (1 << 17)
-#define ACT_FLAG_BUTT_OR_STOMACH_SLIDE       /* 0x00040000 */ (1 << 18)
-#define ACT_FLAG_DIVING                      /* 0x00080000 */ (1 << 19)
-#define ACT_FLAG_ON_POLE                     /* 0x00100000 */ (1 << 20)
-#define ACT_FLAG_HANGING                     /* 0x00200000 */ (1 << 21)
-#define ACT_FLAG_IDLE                        /* 0x00400000 */ (1 << 22)
-#define ACT_FLAG_ATTACKING                   /* 0x00800000 */ (1 << 23)
-#define ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION  /* 0x01000000 */ (1 << 24)
-#define ACT_FLAG_CONTROL_JUMP_HEIGHT         /* 0x02000000 */ (1 << 25)
-#define ACT_FLAG_ALLOW_FIRST_PERSON          /* 0x04000000 */ (1 << 26)
-#define ACT_FLAG_PAUSE_EXIT                  /* 0x08000000 */ (1 << 27)
-#define ACT_FLAG_SWIMMING_OR_FLYING          /* 0x10000000 */ (1 << 28)
-#define ACT_FLAG_WATER_OR_TEXT               /* 0x20000000 */ (1 << 29)
-#define ACT_FLAG_THROWING                    /* 0x80000000 */ (1 << 31)
+#define ACT_FLAG_STATIONARY                 /* 0x00000200 */ (1 <<  9)
+#define ACT_FLAG_MOVING                     /* 0x00000400 */ (1 << 10)
+#define ACT_FLAG_AIR                        /* 0x00000800 */ (1 << 11)
+#define ACT_FLAG_INTANGIBLE                 /* 0x00001000 */ (1 << 12)
+#define ACT_FLAG_SWIMMING                   /* 0x00002000 */ (1 << 13)
+#define ACT_FLAG_METAL_WATER                /* 0x00004000 */ (1 << 14)
+#define ACT_FLAG_SHORT_HITBOX               /* 0x00008000 */ (1 << 15)
+#define ACT_FLAG_RIDING_SHELL               /* 0x00010000 */ (1 << 16)
+#define ACT_FLAG_INVULNERABLE               /* 0x00020000 */ (1 << 17)
+#define ACT_FLAG_BUTT_OR_STOMACH_SLIDE      /* 0x00040000 */ (1 << 18)
+#define ACT_FLAG_DIVING                     /* 0x00080000 */ (1 << 19)
+#define ACT_FLAG_ON_POLE                    /* 0x00100000 */ (1 << 20)
+#define ACT_FLAG_HANGING                    /* 0x00200000 */ (1 << 21)
+#define ACT_FLAG_IDLE                       /* 0x00400000 */ (1 << 22)
+#define ACT_FLAG_ATTACKING                  /* 0x00800000 */ (1 << 23)
+#define ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION /* 0x01000000 */ (1 << 24)
+#define ACT_FLAG_CONTROL_JUMP_HEIGHT        /* 0x02000000 */ (1 << 25)
+#define ACT_FLAG_ALLOW_FIRST_PERSON         /* 0x04000000 */ (1 << 26)
+#define ACT_FLAG_PAUSE_EXIT                 /* 0x08000000 */ (1 << 27)
+#define ACT_FLAG_SWIMMING_OR_FLYING         /* 0x10000000 */ (1 << 28)
+#define ACT_FLAG_WATER_OR_TEXT              /* 0x20000000 */ (1 << 29)
+#define ACT_FLAG_THROWING                   /* 0x80000000 */ (1 << 31)
 
 #define ACT_UNINITIALIZED              0x00000000 // (0x000)
 

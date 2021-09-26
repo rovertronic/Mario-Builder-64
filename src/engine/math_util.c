@@ -483,34 +483,31 @@ void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
 void mtxf_to_mtx_scale(Mtx *dest, Mat4 src) {
     Mat4 temp;
     register s32 i, j;
-
     for( i = 0; i < 4; i++ ) {
         for( j = 0; j < 3; j++ ) {
-                temp[i][j] = src[i][j] / gWorldScale;
+            temp[i][j] = src[i][j] / gWorldScale;
         }
         temp[i][3] = src[i][3];
     }
-
     guMtxF2L( temp, dest );
 }
 
 void mtxf_to_mtx_constant(register s16 *dest, register f32 *src) {
     s32 asFixedPoint;
     s32 i;
-    for (i = 0; i < 16; i++)
-    {
-        asFixedPoint = src[i] * (1 << 16);
-        dest[i] = asFixedPoint >> 16;
-        dest[i + 16] = asFixedPoint & 0xFFFF;
+    for (i = 0; i < 16; i++) {
+        asFixedPoint = (src[i] * (1 << 16));
+        dest[i] = (asFixedPoint >> 16);
+        dest[i + 16] = (asFixedPoint & 0xFFFF);
     }
 }
 
-void mtxf_to_mtx(void *dest, void *src)
-{
-    if (gWorldScale > 2.0f)
+void mtxf_to_mtx(void *dest, void *src) {
+    if (gWorldScale > 2.0f) {
         mtxf_to_mtx_scale(dest, src);
-    else
+    } else {
         mtxf_to_mtx_constant(dest, src);
+    }
 }
 
 /**
@@ -518,7 +515,6 @@ void mtxf_to_mtx(void *dest, void *src)
  */
 void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
     Mat4 temp;
-
     mtxf_identity(temp);
     temp[0][0] = coss(angle);
     temp[0][1] = sins(angle);
@@ -545,18 +541,123 @@ void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, Mat4 camMtx) {
     dest[2] = objMtx[3][0] * camMtx[2][0] + objMtx[3][1] * camMtx[2][1] + objMtx[3][2] * camMtx[2][2] - camZ;
 }
 
+
 /**
  * Take the vector starting at 'from' pointed at 'to' an retrieve the length
  * of that vector, as well as the yaw and pitch angles.
  * Basically it converts the direction to spherical coordinates.
  */
+
+/// Finds the horizontal distance between two vectors.
+void vec3f_get_lateral_dist(Vec3f from, Vec3f to, f32 *lateralDist) {
+    register f32 dx = (to[0] - from[0]);
+    register f32 dz = (to[2] - from[2]);
+    *lateralDist = sqrtf(sqr(dx) + sqr(dz));
+}
+
+/// Finds the squared horizontal distance between two vectors.
+void vec3f_get_lateral_dist_squared(Vec3f from, Vec3f to, f32 *lateralDist) {
+    register f32 dx = (to[0] - from[0]);
+    register f32 dz = (to[2] - from[2]);
+    *lateralDist = (sqr(dx) + sqr(dz));
+}
+
+/// Finds the distance between two vectors.
+void vec3f_get_dist(Vec3f from, Vec3f to, f32 *dist) {
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    *dist = vec3_mag(d);
+}
+
+/// Finds the squared distance between two vectors.
+void vec3f_get_dist_squared(Vec3f from, Vec3f to, f32 *dist) {
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    *dist = vec3_sumsq(d);
+}
+
+/// Finds the distance and yaw etween two vectors.
+void vec3f_get_dist_and_yaw(Vec3f from, Vec3f to, f32 *dist, s16 *yaw) {
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    *dist = vec3_mag(d);
+    *yaw = atan2s(d[2], d[0]);
+}
+
+/// Finds the pitch between two vectors.
+void vec3f_get_pitch(Vec3f from, Vec3f to, s16 *pitch) {
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    *pitch = atan2s(sqrtf(sqr(d[0]) + sqr(d[2])), d[1]);
+}
+
+/// Finds the yaw between two vectors.
+void vec3f_get_yaw(Vec3f from, Vec3f to, s16 *yaw) {
+    register f32 dx = (to[0] - from[0]);
+    register f32 dz = (to[2] - from[2]);
+    *yaw = atan2s(dz, dx);
+}
+
+/// Finds the pitch and yaw between two vectors.
+void vec3f_get_angle(Vec3f from, Vec3f to, s16 *pitch, s16 *yaw) {
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    *pitch = atan2s(sqrtf(sqr(d[0]) + sqr(d[2])), d[1]);
+    *yaw = atan2s(d[2], d[0]);
+}
+
+/// Finds the horizontal distance and pitch between two vectors.
+void vec3f_get_lateral_dist_and_pitch(Vec3f from, Vec3f to, f32 *lateralDist, Angle *pitch) {
+    Vec3f d;
+    vec3_diff(d, to, from);
+    *lateralDist = sqrtf(sqr(d[0]) + sqr(d[2]));
+    *pitch          = atan2s(*lateralDist, d[1]);
+}
+
+/// Finds the horizontal distance and yaw between two vectors.
+void vec3f_get_lateral_dist_and_yaw(Vec3f from, Vec3f to, f32 *lateralDist, Angle *yaw) {
+    register f32 dx = (to[0] - from[0]);
+    register f32 dz = (to[2] - from[2]);
+    *lateralDist = sqrtf(sqr(dx) + sqr(dz));
+    *yaw         = atan2s(dz, dx);
+}
+
+/// Finds the horizontal distance and angles between two vectors.
+void vec3f_get_lateral_dist_and_angle(Vec3f from, Vec3f to, f32 *lateralDist, Angle *pitch, Angle *yaw) {
+    Vec3f d;
+    vec3_diff(d, to, from);
+    *lateralDist = sqrtf(sqr(d[0]) + sqr(d[2]));
+    *pitch       = atan2s(*lateralDist, d[1]);
+    *yaw         = atan2s(d[2], d[0]);
+}
+
+/// Finds the distance and angles between two vectors.
 void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *yaw) {
-    register f32 x = to[0] - from[0];
-    register f32 y = to[1] - from[1];
-    register f32 z = to[2] - from[2];
-    *dist = sqrtf(sqr(x) + sqr(y) + sqr(z));
-    *pitch = atan2s(sqrtf(sqr(x) + sqr(z)), y);
-    *yaw = atan2s(z, x);
+    register Vec3f d;
+    vec3_diff(d, to, from);
+    register f32 xz = sqr(d[0]) + sqr(d[2]);
+    *dist           = sqrtf(xz + sqr(d[1]));
+    *pitch          = atan2s(sqrtf(xz), d[1]);
+    *yaw            = atan2s(d[2], d[0]);
+}
+void vec3s_get_dist_and_angle(Vec3s from, Vec3s to, s16 *dist, Angle *pitch, Angle *yaw) {
+    Vec3s d;
+    vec3_diff(d, to, from);
+    register f32 xz = (sqr(d[0]) + sqr(d[2]));
+    *dist           = sqrtf(xz + sqr(d[1]));
+    *pitch          = atan2s(sqrtf(xz), d[1]);
+    *yaw            = atan2s(d[2], d[0]);
+}
+
+/// Finds the distance, horizontal distance, and angles between two vectors.
+void vec3f_get_dist_and_lateral_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, f32 *lateralDist, Angle *pitch, Angle *yaw) {
+    Vec3f d;
+    vec3_diff(d, to, from);
+    register f32 xz = (sqr(d[0]) + sqr(d[2]));
+    *dist           = sqrtf(xz + sqr(d[1]));
+    *lateralDist    = sqrtf(xz);
+    *pitch          = atan2s(*lateralDist, d[1]);
+    *yaw            = atan2s(d[2], d[0]);
 }
 
 /**
@@ -564,9 +665,16 @@ void vec3f_get_dist_and_angle(Vec3f from, Vec3f to, f32 *dist, s16 *pitch, s16 *
  * and has the angles pitch and yaw.
  */
 void vec3f_set_dist_and_angle(Vec3f from, Vec3f to, f32 dist, s32 pitch, s32 yaw) {
-    to[0] = from[0] + dist * coss(pitch) * sins(yaw);
-    to[1] = from[1] + dist * sins(pitch);
-    to[2] = from[2] + dist * coss(pitch) * coss(yaw);
+    register f32 dcos = (dist * coss(pitch));
+    to[0] = (from[0] + (dcos * sins(yaw  )));
+    to[1] = (from[1] + (dist * sins(pitch)));
+    to[2] = (from[2] + (dcos * coss(yaw  )));
+}
+void vec3s_set_dist_and_angle(Vec3s from, Vec3s to, s16 dist, Angle32 pitch, Angle32 yaw) {
+    register f32 dcos = (dist * coss(pitch));
+    to[0] = (from[0] + (dcos * sins(yaw  )));
+    to[1] = (from[1] + (dist * sins(pitch)));
+    to[2] = (from[2] + (dcos * coss(yaw  )));
 }
 
 s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec) {
@@ -646,16 +754,70 @@ s32 approach_angle(s32 current, s32 target, s32 inc) {
     s32 dist = (s16)(target - current);
     if (dist < 0) {
         dist += inc;
-        if (dist > 0) {
-            dist = 0;
-        }
+        if (dist > 0) dist = 0;
     } else if (dist > 0) {
         dist -= inc;
-        if (dist < 0) {
-            dist = 0;
-        }
+        if (dist < 0) dist = 0;
     }
     return (target - dist);
+}
+
+/**
+ * Approaches an f32 value by taking the difference between the target and current value
+ * and adding a fraction of that to the current value.
+ * Edits the current value directly, returns TRUE if the target has been reached, FALSE otherwise.
+ */
+s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier) {
+    if (multiplier > 1.f) {
+        multiplier = 1.f;
+    }
+    *current = *current + (target - *current) * multiplier;
+    return (*current != target);
+}
+
+/**
+ * Nearly the same as the above function, returns new value instead.
+ */
+f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier) {
+    current = current + (target - current) * multiplier;
+    return current;
+}
+
+/**
+ * Approaches an s16 value in the same fashion as approach_f32_asymptotic_bool, returns TRUE if target
+ * is reached. Note: Since this function takes integers as parameters, the last argument is the
+ * reciprocal of what it would be in the previous two functions.
+ */
+s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor) {
+    s16 temp = *current;
+
+    if (divisor == 0) {
+        *current = target;
+    } else {
+        temp -= target;
+        temp -= temp / divisor;
+        temp += target;
+        *current = temp;
+    }
+    return (*current != target);
+}
+
+/**
+ * Approaches an s16 value in the same fashion as approach_f32_asymptotic, returns the new value.
+ * Note: last parameter is the reciprocal of what it would be in the f32 functions
+ */
+s32 approach_s16_asymptotic(s16 current, s16 target, s16 divisor) {
+    s16 temp = current;
+
+    if (divisor == 0) {
+        current = target;
+    } else {
+        temp -= target;
+        temp -= temp / divisor;
+        temp += target;
+        current = temp;
+    }
+    return current;
 }
 
 /**
@@ -670,20 +832,19 @@ s32 approach_angle(s32 current, s32 target, s32 inc) {
  */
 s16 atan2s(f32 y, f32 x) {
     u16 ret;
-
     if (x >= 0) {
         if (y >= 0) {
             if (y >= x) {
                 ret = atan2_lookup(x, y);
             } else {
-                ret = 0x4000 - atan2_lookup(y, x);
+                ret = (0x4000 - atan2_lookup(y, x));
             }
         } else {
             y = -y;
             if (y < x) {
-                ret = 0x4000 + atan2_lookup(y, x);
+                ret = (0x4000 + atan2_lookup(y, x));
             } else {
-                ret = 0x8000 - atan2_lookup(x, y);
+                ret = (0x8000 - atan2_lookup(x, y));
             }
         }
     } else {
@@ -691,13 +852,13 @@ s16 atan2s(f32 y, f32 x) {
         if (y < 0) {
             y = -y;
             if (y >= x) {
-                ret = 0x8000 + atan2_lookup(x, y);
+                ret = (0x8000 + atan2_lookup(x, y));
             } else {
-                ret = 0xC000 - atan2_lookup(y, x);
+                ret = (0xC000 - atan2_lookup(y, x));
             }
         } else {
             if (y < x) {
-                ret = 0xC000 + atan2_lookup(y, x);
+                ret = (0xC000 + atan2_lookup(y, x));
             } else {
                 ret = -atan2_lookup(x, y);
             }
@@ -710,7 +871,7 @@ s16 atan2s(f32 y, f32 x) {
  * Compute the atan2 in radians by calling atan2s and converting the result.
  */
 f32 atan2f(f32 y, f32 x) {
-    return (f32) atan2s(y, x) * M_PI / 0x8000;
+    return ((f32) atan2s(y, x) * M_PI / 0x8000);
 }
 
 #define CURVE_BEGIN_1 0x1

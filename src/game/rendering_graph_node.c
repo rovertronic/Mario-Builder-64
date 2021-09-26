@@ -205,8 +205,8 @@ void reset_clipping(void)
 static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
     s32 startLayer, endLayer, currLayer = LAYER_FORCE;
-    s32 headsIndex = LIST_HEADS_REJ;
-    s32 renderPhase = RENDER_PHASE_REJ_ZB;
+    s32 headsIndex    = LIST_HEADS_REJ;
+    s32 renderPhase   = RENDER_PHASE_REJ_ZB;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
     struct RenderModeContainer *mode1List = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
@@ -217,9 +217,9 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     Mtx lMtx;
     guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
 #endif
-    //if (gPlayer1Controller->buttonPressed & L_TRIG)
-    //    ucodeTestSwitch ^= 1;
-    //print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
+    // if (gPlayer1Controller->buttonPressed & L_TRIG)
+    //     ucodeTestSwitch ^= 1;
+    // print_text_fmt_int(32,32,"%d",ucodeTestSwitch);
 #ifdef F3DZEX_GBI_2
     loopBegin:
     switch (renderPhase) {
@@ -229,12 +229,12 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         case RENDER_PHASE_REJ_SILHOUETTE:         headsIndex = LIST_HEADS_REJ; startLayer = LAYER_SILHOUETTE_FIRST;         endLayer = LAYER_SILHOUETTE_LAST;         break;
         case RENDER_PHASE_REJ_NON_SILHOUETTE:     headsIndex = LIST_HEADS_REJ; startLayer = LAYER_SILHOUETTE_FIRST;         endLayer = LAYER_SILHOUETTE_LAST;         break;
         case RENDER_PHASE_REJ_OCCLUDE_SILHOUETTE: headsIndex = LIST_HEADS_REJ; startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST; endLayer = LAYER_OCCLUDE_SILHOUETTE_LAST; break;
-        case RENDER_PHASE_ZEX_AFTER_SILHOUETTE:   headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST; endLayer = LAYER_COUNT-1;                break;
-        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = LAYER_COUNT-1;                break;
+        case RENDER_PHASE_ZEX_AFTER_SILHOUETTE:   headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST; endLayer = (LAYER_COUNT - 1);             break;
+        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = (LAYER_COUNT - 1);             break;
 #else
         case RENDER_PHASE_REJ_ZB:                 headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FORCE;                    endLayer = LAYER_ZB_LAST;                 break;
-        case RENDER_PHASE_ZEX_ALL:                headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_FORCE;                    endLayer = LAYER_COUNT-1;                break;
-        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = LAYER_COUNT-1;                break;
+        case RENDER_PHASE_ZEX_ALL:                headsIndex = LIST_HEADS_ZEX; startLayer = LAYER_FORCE;                    endLayer = (LAYER_COUNT - 1);             break;
+        case RENDER_PHASE_REJ_NON_ZB:             headsIndex = LIST_HEADS_REJ; startLayer = LAYER_FIRST_NON_ZB;             endLayer = (LAYER_COUNT - 1);             break;
 #endif
     }
     // Load rejection on pass 2. ZEX is loaded afterwards.

@@ -622,9 +622,7 @@ Gfx *create_shadow_player(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
     }
 
     switch (correct_shadow_solidity_for_animations(isLuigi, solidity, &shadow)) {
-        case SHADOW_SOLIDITY_NO_SHADOW:
-            return NULL;
-            break;
+        case SHADOW_SOLIDITY_NO_SHADOW: return NULL; break;
         case SHADOW_SOILDITY_ALREADY_SET:
             ret = init_shadow(&shadow, xPos, yPos, zPos, shadowScale, /* overwriteSolidity */ 0);
             break;
@@ -804,17 +802,10 @@ Gfx *create_shadow_square(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
 
     distFromShadow = yPos - shadowHeight;
     switch (shadowType) {
-        case SHADOW_SQUARE_PERMANENT:
-            shadowRadius = shadowScale / 2;
-            break;
-        case SHADOW_SQUARE_SCALABLE:
-            shadowRadius = scale_shadow_with_distance(shadowScale, distFromShadow) / 2.0;
-            break;
-        case SHADOW_SQUARE_TOGGLABLE:
-            shadowRadius = disable_shadow_with_distance(shadowScale, distFromShadow) / 2.0;
-            break;
-        default:
-            return NULL;
+        case SHADOW_SQUARE_PERMANENT: shadowRadius = shadowScale / 2; break;
+        case SHADOW_SQUARE_SCALABLE:  shadowRadius =   scale_shadow_with_distance(shadowScale, distFromShadow) / 2.0; break;
+        case SHADOW_SQUARE_TOGGLABLE: shadowRadius = disable_shadow_with_distance(shadowScale, distFromShadow) / 2.0; break;
+        default: return NULL;
     }
 
     return create_shadow_rectangle(shadowRadius, shadowRadius, -distFromShadow, solidity);
@@ -875,36 +866,14 @@ Gfx *create_shadow_below_xyz(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 s
         sSurfaceTypeBelowShadow = pfloor->type;
     }
     switch (shadowType) {
-        case SHADOW_CIRCLE_9_VERTS:
-            displayList = create_shadow_circle_9_verts(xPos, yPos, zPos, shadowScale, shadowSolidity);
-            break;
-        case SHADOW_CIRCLE_4_VERTS:
-            displayList = create_shadow_circle_4_verts(xPos, yPos, zPos, shadowScale, shadowSolidity);
-            break;
-        case SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED: // unused shadow type
-            displayList = create_shadow_circle_assuming_flat_ground(xPos, yPos, zPos, shadowScale,
-                                                                    shadowSolidity);
-            break;
-        case SHADOW_SQUARE_PERMANENT:
-            displayList =
-                create_shadow_square(xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType);
-            break;
-        case SHADOW_SQUARE_SCALABLE:
-            displayList =
-                create_shadow_square(xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType);
-            break;
-        case SHADOW_SQUARE_TOGGLABLE:
-            displayList =
-                create_shadow_square(xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType);
-            break;
-        case SHADOW_CIRCLE_PLAYER:
-            displayList = create_shadow_player(xPos, yPos, zPos, shadowScale, shadowSolidity,
-                                               /* isLuigi */ FALSE);
-            break;
-        default:
-            displayList = create_shadow_hardcoded_rectangle(xPos, yPos, zPos, shadowScale,
-                                                            shadowSolidity, shadowType);
-            break;
+        case SHADOW_CIRCLE_9_VERTS:             displayList = create_shadow_circle_9_verts             (xPos, yPos, zPos, shadowScale, shadowSolidity                     ); break;
+        case SHADOW_CIRCLE_4_VERTS:             displayList = create_shadow_circle_4_verts             (xPos, yPos, zPos, shadowScale, shadowSolidity                     ); break;
+        case SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED: displayList = create_shadow_circle_assuming_flat_ground(xPos, yPos, zPos, shadowScale, shadowSolidity                     ); break; // unused shadow type
+        case SHADOW_SQUARE_PERMANENT:           displayList = create_shadow_square                     (xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType         ); break;
+        case SHADOW_SQUARE_SCALABLE:            displayList = create_shadow_square                     (xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType         ); break;
+        case SHADOW_SQUARE_TOGGLABLE:           displayList = create_shadow_square                     (xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType         ); break;
+        case SHADOW_CIRCLE_PLAYER:              displayList = create_shadow_player                     (xPos, yPos, zPos, shadowScale, shadowSolidity, /* isLuigi */ FALSE); break;
+        default:                                displayList = create_shadow_hardcoded_rectangle        (xPos, yPos, zPos, shadowScale, shadowSolidity, shadowType         ); break;
     }
     return displayList;
 }

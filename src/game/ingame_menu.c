@@ -869,11 +869,7 @@ void render_multi_text_string_lines(s8 multiTextId, s8 lineNum, s16 *linePos, s8
 
 
 u32 ensure_nonnegative(s16 value) {
-    if (value < 0) {
-        value = 0;
-    }
-
-    return value;
+    return ((value < 0) ? 0 : value);
 }
 
 void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 lowerBound) {
@@ -1289,29 +1285,13 @@ void dl_rgba16_stop_cutscene_msg_fade(void) {
 }
 
 u8 ascii_to_credits_char(u8 c) {
-    if (c >= 'A' && c <= 'Z') {
-        return (c - ('A' - 0xA));
-    }
-
-    if (c >= 'a' && c <= 'z') { // remap lower to upper case
-        return (c - ('a' - 0xA));
-    }
-
-    if (c == ' ') {
-        return GLOBAL_CHAR_SPACE;
-    }
-    if (c == '.') {
-        return 0x24;
-    }
-    if (c == '3') {
-        return ASCII_TO_DIALOG('3');
-    }
-    if (c == '4') {
-        return ASCII_TO_DIALOG('4');
-    }
-    if (c == '6') {
-        return ASCII_TO_DIALOG('6');
-    }
+    if (c >= 'A' && c <= 'Z') return (c - ('A' - 0xA));
+    if (c >= 'a' && c <= 'z') return (c - ('a' - 0xA)); // remap lower to upper case
+    if (c == ' ') return GLOBAL_CHAR_SPACE;
+    if (c == '.') return 0x24;
+    if (c == '3') return ASCII_TO_DIALOG('3');
+    if (c == '4') return ASCII_TO_DIALOG('4');
+    if (c == '6') return ASCII_TO_DIALOG('6');
 
     return GLOBAL_CHAR_SPACE;
 }
@@ -1348,8 +1328,7 @@ void do_cutscene_handler(void) {
 
     create_dl_ortho_matrix();
 
-    if (gMarioState->action == ACT_CREDITS_CUTSCENE || gMarioState->action == ACT_END_PEACH_CUTSCENE || gMarioState->action == ACT_END_WAVING_CUTSCENE)
-    {
+    if (gMarioState->action == ACT_CREDITS_CUTSCENE || gMarioState->action == ACT_END_PEACH_CUTSCENE || gMarioState->action == ACT_END_WAVING_CUTSCENE) {
         gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
         gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
 
