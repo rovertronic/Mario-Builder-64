@@ -3422,11 +3422,11 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
 }
 
 void object_pos_to_vec3f(Vec3f dst, struct Object *o) {
-    vec3_copy(dst, &o->oPosVec);
+    vec3f_copy(dst, &o->oPosVec);
 }
 
 void vec3f_to_object_pos(struct Object *o, Vec3f src) {
-    vec3_copy(&o->oPosVec, src);
+    vec3f_copy(&o->oPosVec, src);
 }
 
 /**
