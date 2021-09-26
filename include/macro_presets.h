@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MACRO_PRESETS_H
+#define MACRO_PRESETS_H
 
 #include "macro_preset_names.h"
 #include "behavior_data.h"
@@ -379,3 +380,5 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0}
 };
+
+#endif // MACRO_PRESETS_H

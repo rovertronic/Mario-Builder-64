@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BEHAVIOR_ACTIONS_H
+#define BEHAVIOR_ACTIONS_H
 
 void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size);
 void bhv_spawn_star_no_level_exit(u32);
@@ -573,3 +574,5 @@ Gfx *geo_scale_bowser_key(s32 run, struct GraphNode *node, UNUSED f32 mtx[4][4])
 // Water splash
 extern struct WaterDropletParams gShallowWaterSplashDropletParams;
 extern struct WaterDropletParams gShallowWaterWaveDropletParams;
+
+#endif // BEHAVIOR_ACTIONS_H

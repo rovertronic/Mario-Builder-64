@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MATH_UTIL_H
+#define MATH_UTIL_H
 
 #include <PR/ultratypes.h>
 
@@ -381,3 +382,5 @@ f32 atan2f(f32 a, f32 b);
 void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);
 void anim_spline_init(Vec4s *keyFrames);
 s32 anim_spline_poll(Vec3f result);
+
+#endif // MATH_UTIL_H

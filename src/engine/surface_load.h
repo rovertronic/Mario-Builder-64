@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SURFACE_LOAD_H
+#define SURFACE_LOAD_H
 
 #include <PR/ultratypes.h>
 
@@ -39,3 +40,5 @@ u32 get_area_terrain_size(TerrainData *data);
 void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16 *macroObjects);
 void clear_dynamic_surfaces(void);
 void load_object_collision_model(void);
+
+#endif // SURFACE_LOAD_H

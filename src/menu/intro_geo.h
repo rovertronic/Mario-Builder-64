@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTRO_GEO_H
+#define INTRO_GEO_H
 
 #include <PR/ultratypes.h>
 #include <PR/gbi.h>
@@ -17,3 +18,5 @@ Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *c
 #if ENABLE_RUMBLE
 Gfx *geo_intro_rumble_pak_graphic(s32 state, struct GraphNode *node, UNUSED void *context);
 #endif
+
+#endif // INTRO_GEO_H

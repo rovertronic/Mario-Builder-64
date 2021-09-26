@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GEO_MISC_H
+#define GEO_MISC_H
 
 #include <PR/ultratypes.h>
 #include <PR/gbi.h>
@@ -36,3 +37,5 @@ extern Gfx *geo_exec_cake_end_screen(s32 callContext, struct GraphNode *node, UN
     gDPLoadSync((dl));                                                                                       \
     gDPLoadBlock((dl), G_TX_LOADTILE, 0, 0, (width) * (height) - 1, CALC_DXT((width), G_IM_SIZ_16b_BYTES))   \
 }
+
+#endif // GEO_MISC_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HMC_HEADER_H
+#define HMC_HEADER_H
 
 #include "types.h"
 #include "game/moving_texture.h"
@@ -88,3 +89,5 @@ extern const struct MovtexQuadCollection hmc_movtex_toxic_maze_mist[];
 
 // script
 extern const LevelScript level_hmc_entry[];
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BBH_HEADER_H
+#define BBH_HEADER_H
 
 #include "types.h"
 #include "game/moving_texture.h"
@@ -109,3 +110,5 @@ extern const struct MovtexQuadCollection bbh_movtex_merry_go_round_water_side[];
 
 // script
 extern const LevelScript level_bbh_entry[];
+
+#endif

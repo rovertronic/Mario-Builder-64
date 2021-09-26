@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OBJECT_FIELDS_H
+#define OBJECT_FIELDS_H
 
 /**
  * The array [0x88, 0x1C8) in struct Object consists of fields that can vary by
@@ -1340,3 +1341,6 @@ os16112*/
 #define /*0x10E*/ os1610E                                       OBJECT_FIELD_S16(0x21, 1)
 #define /*0x110*/ os16110                                       OBJECT_FIELD_S16(0x22, 0)
 #define /*0x112*/ os16112                                       OBJECT_FIELD_S16(0x22, 1)
+
+
+#endif // OBJECT_FIELDS_H

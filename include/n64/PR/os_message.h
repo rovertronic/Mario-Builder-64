@@ -27,7 +27,8 @@
         $Date: 1998/10/09 08:01:15 $
  *---------------------------------------------------------------------*/
 
-#pragma once
+#ifndef _OS_MESSAGE_H_
+#define	_OS_MESSAGE_H_
 
 #ifdef _LANGUAGE_C_PLUS_PLUS
 extern "C" {
@@ -158,3 +159,5 @@ extern void		osSetEventMesg(OSEvent, OSMesgQueue *, OSMesg);
 #ifdef _LANGUAGE_C_PLUS_PLUS
 }
 #endif
+
+#endif /* !_OS_MESSAGE_H_ */

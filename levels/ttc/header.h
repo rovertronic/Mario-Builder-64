@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TTC_HEADER_H
+#define TTC_HEADER_H
 
 #include "types.h"
 
@@ -63,3 +64,5 @@ extern const Gfx ttc_dl_surface_treadmill[];
 
 // script
 extern const LevelScript level_ttc_entry[];
+
+#endif
