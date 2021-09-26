@@ -58,10 +58,6 @@
 
 #define GRAPH_NODE_TYPES_MASK                 0x0FF
 
-// The number of master lists. A master list determines the order and render
-// mode with which display lists are drawn.
-#define GFX_NUM_MASTER_LISTS (LAYER_LAST_ALL + 1)
-
 // Passed as first argument to a GraphNodeFunc to give information about in
 // which context it was called and what it is expected to do.
 #define GEO_CONTEXT_CREATE        0 // called when node is created from a geo command
@@ -143,8 +139,8 @@ struct DisplayListNode
 struct GraphNodeMasterList
 {
     /*0x00*/ struct GraphNode node;
-    /*0x14*/ struct DisplayListNode *listHeads[2][GFX_NUM_MASTER_LISTS];
-    /*0x34*/ struct DisplayListNode *listTails[2][GFX_NUM_MASTER_LISTS];
+    /*0x14*/ struct DisplayListNode *listHeads[2][LAYER_COUNT];
+    /*0x34*/ struct DisplayListNode *listTails[2][LAYER_COUNT];
 };
 
 /** Simply used as a parent to group multiple children.
