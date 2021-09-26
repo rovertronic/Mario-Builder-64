@@ -1252,7 +1252,11 @@ s32 init_level(void) {
 #endif
 
 #if PUPPYPRINT_DEBUG
+#ifdef PUPPYPRINT_DEBUG_CYCLES
+    append_puppyprint_log("Level loaded in %dc", (s32)(osGetTime() - first));
+#else
     append_puppyprint_log("Level loaded in %dus", (s32)(OS_CYCLES_TO_USEC(osGetTime() - first)));
+#endif
 #endif
     return TRUE;
 }

@@ -35,8 +35,7 @@ u8 curFrameTimeIndex = 0;
 #include "PR/os_convert.h"
 
 // Call once per frame
-f32 calculate_and_update_fps()
-{
+f32 calculate_and_update_fps() {
     OSTime newTime = osGetTime();
     OSTime oldTime = frameTimes[curFrameTimeIndex];
     frameTimes[curFrameTimeIndex] = newTime;
@@ -45,12 +44,10 @@ f32 calculate_and_update_fps()
     if (curFrameTimeIndex >= FRAMETIME_COUNT)
         curFrameTimeIndex = 0;
 
-
     return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
 }
 
-void print_fps(s32 x, s32 y)
-{
+void print_fps(s32 x, s32 y) {
     f32 fps = calculate_and_update_fps();
     char text[14];
 

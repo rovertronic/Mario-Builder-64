@@ -190,6 +190,8 @@
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
 //#define PUPPYPRINT
 #define PUPPYPRINT_DEBUG 0
+// Use cycles instead of microseconds
+//#define PUPPYPRINT_DEBUG_CYCLES
 // Visual debug enables some collision visuals. Tapping Right on the dpad will cycle between visual hitboxes, visual surfaces, both, and neither.
 // If puppyprint is enabled, then this can be cycled only while the screen is active.
 //#define VISUAL_DEBUG
