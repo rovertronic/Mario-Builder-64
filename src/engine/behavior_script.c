@@ -988,20 +988,20 @@ void cur_obj_update(void) {
         f32 dist;
         Vec3f d;
         if (gCurrentObject->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
-            d[0] = gCurrentObject->oPosX - gCamera->pos[0];
-            d[2] = gCurrentObject->oPosZ - gCamera->pos[2];
-            dist = sqrtf(sqr(d[0]) + sqr(d[2]));
+            d[0] = (gCurrentObject->oPosX - gCamera->pos[0]);
+            d[2] = (gCurrentObject->oPosZ - gCamera->pos[2]);
+            dist = (sqr(d[0]) + sqr(d[2]));
         } else {
             vec3_diff(d, &gCurrentObject->oPosVec, gCamera->pos);
-            dist = sqrtf(sqr(d[0]) + sqr(d[1]) + sqr(d[2]));
+            dist = (sqr(d[0]) + sqr(d[1]) + sqr(d[2]));
         }
         if (dist > 0.0f) {
             gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_UCODE_REJ;
         }
 #ifdef PUPPYCAM
-        s32 opacityDist = ((gPuppyCam.zoom > 0) ? ((dist / gPuppyCam.zoom) * 255.0f) : 255);
+        s32 opacityDist = ((gPuppyCam.zoom > 0) ? ((dist / sqr(gPuppyCam.zoom)) * 255.0f) : 255);
 #else
-        s32 opacityDist = (dist * (255.0f / 1024.0f));
+        s32 opacityDist = (dist * (255.0f / sqr(1024.0f)));
 #endif
         gCurrentObject->oOpacity = CLAMP(opacityDist, 0x00, 0xFF);
     }
