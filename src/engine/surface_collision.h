@@ -38,4 +38,4 @@ s32 find_water_level_and_floor(s32 x, s32 z, struct Surface **pfloor);
 s32 find_water_level(s32 x, s32 z);
 s32 find_poison_gas_level(s32 x, s32 z);
 void debug_surface_list_info(f32 xPos, f32 zPos);
-extern void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
+void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);

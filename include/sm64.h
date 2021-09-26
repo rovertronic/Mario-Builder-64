@@ -83,7 +83,7 @@
 #define INPUT_OFF_FLOOR              /* 0x0004 */ (1 <<  2)
 #define INPUT_ABOVE_SLIDE            /* 0x0008 */ (1 <<  3)
 #define INPUT_FIRST_PERSON           /* 0x0010 */ (1 <<  4)
-#define INPUT_UNKNOWN_5              /* 0x0020 */ (1 <<  5)
+#define INPUT_IDLE                   /* 0x0020 */ (1 <<  5)
 #define INPUT_SQUISHED               /* 0x0040 */ (1 <<  6)
 #define INPUT_A_DOWN                 /* 0x0080 */ (1 <<  7)
 #define INPUT_IN_POISON_GAS          /* 0x0100 */ (1 <<  8)

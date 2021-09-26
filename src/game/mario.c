@@ -1410,7 +1410,7 @@ void update_mario_inputs(struct MarioState *m) {
     }
 
     if (!(m->input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED))) {
-        m->input |= INPUT_UNKNOWN_5;
+        m->input |= INPUT_IDLE;
     }
 
     // These 3 flags are defined by Bowser stomping attacks
