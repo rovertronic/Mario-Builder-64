@@ -468,17 +468,17 @@ static s16 check_within_triangle_bounds(s32 x, s32 z, struct Surface *surf) {
 /**
  * Iterate through the list of water floors and find the first water floor under a given point.
  */
-struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, s32 *pheight) {
+struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
     register struct Surface *surf;
     struct Surface *floor = NULL;
     struct SurfaceNode *topSurfaceNode = surfaceNode;
     struct SurfaceNode *bottomSurfaceNode = surfaceNode;
-    s32 height = FLOOR_LOWER_LIMIT;
-    s32 bottomHeight = FLOOR_LOWER_LIMIT;
+    f32 height = FLOOR_LOWER_LIMIT;
+    f32 bottomHeight = FLOOR_LOWER_LIMIT;
 
     // Iterate through the list of water floors until there are no more water floors.
     while (bottomSurfaceNode != NULL) {
-        s32 curBottomHeight = FLOOR_LOWER_LIMIT;
+        f32 curBottomHeight = FLOOR_LOWER_LIMIT;
         surf = bottomSurfaceNode->surface;
         bottomSurfaceNode = bottomSurfaceNode->next;
 
@@ -492,7 +492,7 @@ struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 
 
     // Iterate through the list of water tops until there are no more water tops.
     while (topSurfaceNode != NULL) {
-        s32 curHeight = FLOOR_LOWER_LIMIT;
+        f32 curHeight = FLOOR_LOWER_LIMIT;
         surf = topSurfaceNode->surface;
         topSurfaceNode = topSurfaceNode->next;
 
@@ -633,13 +633,13 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 /**
  * Find the highest water floor under a given position and return the height.
  */
-s32 find_water_floor(s32 xPos, s32 yPos, s32 zPos, struct Surface **pfloor) {
+f32 find_water_floor(s32 xPos, s32 yPos, s32 zPos, struct Surface **pfloor) {
     s32 cellZ, cellX;
 
     struct Surface *floor = NULL;
     struct SurfaceNode *surfaceList;
 
-    s32 height = FLOOR_LOWER_LIMIT;
+    f32 height = FLOOR_LOWER_LIMIT;
 
     s32 x = xPos;
     s32 y = yPos;
