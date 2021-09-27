@@ -153,36 +153,6 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
 }
 
 /**
- * Returns the lowest of three values.
- */
-static s32 min_3(s32 a0, s32 a1, s32 a2) {
-    if (a1 < a0) {
-        a0 = a1;
-    }
-
-    if (a2 < a0) {
-        a0 = a2;
-    }
-
-    return a0;
-}
-
-/**
- * Returns the highest of three values.
- */
-static s32 max_3(s32 a0, s32 a1, s32 a2) {
-    if (a1 > a0) {
-        a0 = a1;
-    }
-
-    if (a2 > a0) {
-        a0 = a2;
-    }
-
-    return a0;
-}
-
-/**
  * Every level is split into 16 * 16 cells of surfaces (to limit computing
  * time). This function determines the lower cell for a given x/z position.
  * @param coord The coordinate to test
@@ -260,10 +230,10 @@ static void add_surface(struct Surface *surface, s32 dynamic) {
 
     s32 cellZ, cellX;
 
-    minX = min_3(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
-    minZ = min_3(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
-    maxX = max_3(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
-    maxZ = max_3(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
+    minX = min_3i(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
+    minZ = min_3i(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
+    maxX = max_3i(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
+    maxZ = max_3i(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
 
     minCellX = lower_cell_index(minX);
     maxCellX = upper_cell_index(maxX);
@@ -287,14 +257,12 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     register s32 x1, y1, z1;
     register s32 x2, y2, z2;
     register s32 x3, y3, z3;
-    s32 maxY, minY;
-    f32 nx, ny, nz;
-    f32 mag;
+    Vec3f n;
     s32 offset1, offset2, offset3;
 
-    offset1 = 3 * (*vertexIndices)[0];
-    offset2 = 3 * (*vertexIndices)[1];
-    offset3 = 3 * (*vertexIndices)[2];
+    offset1 = (3 * (*vertexIndices)[0]);
+    offset2 = (3 * (*vertexIndices)[1]);
+    offset3 = (3 * (*vertexIndices)[2]);
 
     x1 = *(vertexData + offset1 + 0);
     y1 = *(vertexData + offset1 + 1);
@@ -309,36 +277,11 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     z3 = *(vertexData + offset3 + 2);
 
     // (v2 - v1) x (v3 - v2)
-    nx = (y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2);
-    ny = (z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2);
-    nz = (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2);
-    mag = sqrtf(sqr(nx) + sqr(ny) + sqr(nz));
+    n[0] = ((y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2));
+    n[1] = ((z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2));
+    n[2] = ((x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2));
 
-    // Could have used min_3 and max_3 for this...
-    minY = y1;
-    if (y2 < minY) {
-        minY = y2;
-    }
-    if (y3 < minY) {
-        minY = y3;
-    }
-
-    maxY = y1;
-    if (y2 > maxY) {
-        maxY = y2;
-    }
-    if (y3 > maxY) {
-        maxY = y3;
-    }
-
-    // Checking to make sure no DIV/0
-    if (mag < 0.0001) {
-        return NULL;
-    }
-    mag = (f32)(1.0 / mag);
-    nx *= mag;
-    ny *= mag;
-    nz *= mag;
+    vec3f_normalize(n);
 
     surface = alloc_surface();
 
@@ -354,14 +297,14 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     surface->vertex2[2] = z2;
     surface->vertex3[2] = z3;
 
-    surface->normal.x = nx;
-    surface->normal.y = ny;
-    surface->normal.z = nz;
+    surface->normal.x = n[0];
+    surface->normal.y = n[1];
+    surface->normal.z = n[2];
 
-    surface->originOffset = -(nx * x1 + ny * y1 + nz * z1);
+    surface->originOffset = -(n[0] * x1 + n[1] * y1 + n[2] * z1);
 
-    surface->lowerY = minY - 5;
-    surface->upperY = maxY + 5;
+    surface->lowerY = (min_3i(y1, y2, y3) - 5);
+    surface->upperY = (max_3i(y1, y2, y3) + 5);
 
     return surface;
 }

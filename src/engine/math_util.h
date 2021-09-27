@@ -341,6 +341,10 @@ extern f32 gSineTable[];
 #define RAYCAST_FIND_WATER  (0x8)
 #define RAYCAST_FIND_ALL    (0xFFFFFFFF)
 
+s32 min_3i(s32 a0, s32 a1, s32 a2);
+f32 min_3f(f32 a0, f32 a1, f32 a2);
+s32 max_3i(s32 a0, s32 a1, s32 a2);
+f32 max_3f(f32 a0, f32 a1, f32 a2);
 void vec3f_copy(Vec3f dest, Vec3f src);
 void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z);
 void vec3f_add(Vec3f dest, Vec3f a);

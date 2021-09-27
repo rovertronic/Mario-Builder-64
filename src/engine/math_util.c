@@ -12,10 +12,13 @@
 
 #include "config.h"
 
-// Variables for a spline curve animation (used for the flight path in the grand star cutscene)
-Vec4s *gSplineKeyframe;
-float gSplineKeyframeFraction;
-int gSplineState;
+/// Returns the lowest of three values.
+s32 min_3i(s32 a0, s32 a1, s32 a2) { if (a1 < a0) a0 = a1; if (a2 < a0) a0 = a2; return a0; }
+f32 min_3f(f32 a0, f32 a1, f32 a2) { if (a1 < a0) a0 = a1; if (a2 < a0) a0 = a2; return a0; }
+
+/// Returns the highest of three values.
+s32 max_3i(s32 a0, s32 a1, s32 a2) { if (a1 > a0) a0 = a1; if (a2 > a0) a0 = a2; return a0; }
+f32 max_3f(f32 a0, f32 a1, f32 a2) { if (a1 > a0) a0 = a1; if (a2 > a0) a0 = a2; return a0; }
 
 /// Copy vector 'src' to 'dest'
 void vec3f_copy(Vec3f dest, Vec3f src) {
@@ -873,6 +876,11 @@ s16 atan2s(f32 y, f32 x) {
 f32 atan2f(f32 y, f32 x) {
     return ((f32) atan2s(y, x) * M_PI / 0x8000);
 }
+
+// Variables for a spline curve animation (used for the flight path in the grand star cutscene)
+Vec4s *gSplineKeyframe;
+float gSplineKeyframeFraction;
+int gSplineState;
 
 #define CURVE_BEGIN_1 0x1
 #define CURVE_BEGIN_2 0x2
