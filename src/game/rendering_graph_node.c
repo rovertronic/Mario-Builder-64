@@ -417,6 +417,8 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
     }
     if (node->fnNode.node.children != NULL) {
         u16 perspNorm;
+        f32 farClip = node->far;
+        f32 farClipDelta = farClip;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
 #ifdef WIDE
         if (gConfig.widescreen && (gCurrLevelNum != 0x01)){
@@ -434,7 +436,14 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         } else {
             gWorldScale = 1.0f;
         }
-        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, ((node->far / 300) / gWorldScale), (node->far / gWorldScale), 1.0f);
+        farClip = CLAMP(farClip / gWorldScale, 4096, 61440);
+        if (farClip / farClipDelta != 1)
+        {
+            farClipDelta /= farClip;
+            gWorldScale *= farClipDelta;
+        }
+
+        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, ((farClip / 300) / gWorldScale), (farClip / gWorldScale), 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), (G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH));
         gCurGraphNodeCamFrustum = node;
