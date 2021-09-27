@@ -170,7 +170,7 @@
 #define KOOPA_KEEP_PINK_SHORTS
 // Lightweight directional lighting engine by Fazana. Intended for giving proximity and positional pointlights to small objects.
 // NOTE: Stil breaks occasionally, and PUPPYLIGHT_NODE doesn't work in areas that aren't area 1.
-#define PUPPYLIGHTS
+//#define PUPPYLIGHTS
 
 // -- AUDIO SETTINGS --
 // Fixes the castle music sometimes triggering after getting a dialog
