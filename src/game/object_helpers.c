@@ -1268,20 +1268,6 @@ void cur_obj_unused_resolve_wall_collisions(f32 offsetY, f32 radius) {
     }
 }
 
-s16 abs_angle_diff(s16 x0, s16 x1) {
-    s16 diff = x1 - x0;
-
-    if (diff == -0x8000) {
-        diff = -0x7FFF;
-    }
-
-    if (diff < 0) {
-        diff = -diff;
-    }
-
-    return diff;
-}
-
 void cur_obj_move_xz_using_fvel_and_yaw(void) {
     o->oVelX = o->oForwardVel * sins(o->oMoveAngleYaw);
     o->oVelZ = o->oForwardVel * coss(o->oMoveAngleYaw);

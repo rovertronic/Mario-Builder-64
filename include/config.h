@@ -93,8 +93,8 @@
 #define HANGING_FIX
 // The last frame that will be considered a firsty when wallkicking
 #define FIRSTY_LAST_FRAME 1
-// 46 degree walkicks
-//#define WALLKICKS_46_DEGREES
+// The maximum angle the player can wall kick, in degrees. 0..90
+#define WALL_KICK_DEGREES 45
 // Disable BLJs and crush SimpleFlips's dreams
 //#define DISABLE_BLJ
 

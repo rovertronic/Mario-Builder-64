@@ -5,6 +5,11 @@
 
 #include "types.h"
 
+/**
+ * Converts an angle in degrees to sm64's s16 angle units. For example, DEGREES(90) == 0x4000
+ * This should be used mainly to make camera code clearer at first glance.
+ */
+#define DEGREES(x) ((x) * 0x10000 / 360)
 
 /*
  * The sine and cosine tables overlap, but "#define gCosineTable (gSineTable +
@@ -412,6 +417,7 @@ s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier);
 f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
 s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor);
 s32 approach_s16_asymptotic(s16 current, s16 target, s16 divisor);
+s16 abs_angle_diff(s16 a0, s16 a1);
 s16 atan2s(f32 y, f32 x);
 f32 atan2f(f32 a, f32 b);
 void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);

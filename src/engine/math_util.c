@@ -869,6 +869,12 @@ s32 approach_s16_asymptotic(s16 current, s16 target, s16 divisor) {
     return current;
 }
 
+s16 abs_angle_diff(s16 a0, s16 a1) {
+    s16 diff = (a1 - a0);
+    if (diff == -0x8000) diff = -0x7FFF;
+    return ABSI(diff);
+}
+
 /**
  * Helper function for atan2s. Does a look up of the arctangent of y/x assuming
  * the resulting angle is in range [0, 0x2000] (1/8 of a circle).

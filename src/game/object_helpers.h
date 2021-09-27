@@ -153,7 +153,6 @@ struct Surface *cur_obj_update_floor_height_and_get_floor(void);
 void cur_obj_apply_drag_xz(f32 dragStrength);
 void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy);
 void cur_obj_unused_resolve_wall_collisions(f32 offsetY, f32 radius);
-s16 abs_angle_diff(s16 x0, s16 x1);
 void cur_obj_move_xz_using_fvel_and_yaw(void);
 void cur_obj_move_y_with_terminal_vel(void);
 void cur_obj_compute_vel_xz(void);
