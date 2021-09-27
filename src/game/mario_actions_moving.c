@@ -291,7 +291,7 @@ void apply_slope_accel(struct MarioState *m) {
     struct Surface *floor = m->floor;
     f32 steepness = sqrtf(sqr(floor->normal.x) + sqr(floor->normal.z));
 
-    s16 floorDYaw = m->floorAngle - m->faceAngle[1];
+    s16 floorDYaw = m->floorYaw - m->faceAngle[1];
 
     if (mario_floor_is_slope(m)) {
         s16 slopeClass = 0;
@@ -356,8 +356,7 @@ void update_shell_speed(struct MarioState *m) {
     f32 targetSpeed;
 
     if (m->floorHeight < m->waterLevel) {
-        m->floorHeight = m->waterLevel;
-        m->floor = &gWaterSurfacePseudoFloor;
+        set_mario_floor(m, &gWaterSurfacePseudoFloor, m->waterLevel);
         m->floor->originOffset = m->waterLevel; //! Negative origin offset
     }
 
@@ -432,11 +431,6 @@ s32 update_decelerating_speed(struct MarioState *m) {
     mario_update_windy_ground(m);
 
     return stopped;
-}
-
-s32 analog_stick_held_back(struct MarioState *m) {
-    s16 intendedDYaw = (m->intendedYaw - m->faceAngle[1]);
-    return ((intendedDYaw < -0x471C) || (intendedDYaw > 0x471C));
 }
 
 void update_walking_speed(struct MarioState *m) {

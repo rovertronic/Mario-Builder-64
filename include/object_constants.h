@@ -97,6 +97,7 @@
     OBJ_MOVE_UNDERWATER_ON_GROUND)
 
 /* oActiveParticleFlags */
+#define ACTIVE_PARTICLE_NONE                        (0 <<  0) // 0x00000000
 #define ACTIVE_PARTICLE_DUST                        (1 <<  0) // 0x00000001
 #define ACTIVE_PARTICLE_UNUSED_1                    (1 <<  1) // 0x00000002
 #define ACTIVE_PARTICLE_UNUSED_2                    (1 <<  2) // 0x00000004

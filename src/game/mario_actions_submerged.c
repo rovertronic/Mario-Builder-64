@@ -87,8 +87,7 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
     if (nextPos[1] >= floorHeight) {
         if (ceilHeight - nextPos[1] >= 160.0f) {
             vec3f_copy(m->pos, nextPos);
-            m->floor = floor;
-            m->floorHeight = floorHeight;
+            set_mario_floor(m, floor, floorHeight);
 
             if (wall != NULL) {
                 return WATER_STEP_HIT_WALL;
@@ -103,8 +102,7 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
 
         //! Water ceiling downwarp
         vec3f_set(m->pos, nextPos[0], ceilHeight - 160.0f, nextPos[2]);
-        m->floor = floor;
-        m->floorHeight = floorHeight;
+        set_mario_floor(m, floor, floorHeight);
         return WATER_STEP_HIT_CEILING;
     } else {
         if (ceilHeight - floorHeight < 160.0f) {
@@ -112,8 +110,7 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
         }
 
         vec3f_set(m->pos, nextPos[0], floorHeight, nextPos[2]);
-        m->floor = floor;
-        m->floorHeight = floorHeight;
+        set_mario_floor(m, floor, floorHeight);
         return WATER_STEP_HIT_FLOOR;
     }
 }

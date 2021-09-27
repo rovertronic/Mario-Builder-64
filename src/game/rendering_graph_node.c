@@ -437,8 +437,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
             gWorldScale = 1.0f;
         }
         farClip = CLAMP(farClip / gWorldScale, 4096, 61440);
-        if (farClip / farClipDelta != 1)
-        {
+        if (farClip / farClipDelta != 1) {
             farClipDelta /= farClip;
             gWorldScale *= farClipDelta;
         }

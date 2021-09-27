@@ -348,7 +348,7 @@ struct MarioState
     /*0x68*/ struct Surface *floor;
     /*0x6C*/ f32 ceilHeight;
     /*0x70*/ f32 floorHeight;
-    /*0x74*/ s16 floorAngle;
+    /*0x74*/ s16 floorYaw;
     /*0x76*/ s16 waterLevel;
     /*0x78*/ struct Object *interactObj;
     /*0x7C*/ struct Object *heldObj;
@@ -364,14 +364,14 @@ struct MarioState
     /*0xA4*/ u32 collidedObjInteractTypes;
     /*0xA8*/ s16 numCoins;
     /*0xAA*/ s16 numStars;
-    /*0xAC*/ s8 numKeys; // Unused key mechanic
-    /*0xAD*/ s8 numLives;
+    /*0xAC*/ s8  numKeys; // Unused key mechanic
+    /*0xAD*/ s8  numLives;
     /*0xAE*/ s16 health;
     /*0xB0*/ s16 animYTrans;
-    /*0xB2*/ u8 hurtCounter;
-    /*0xB3*/ u8 healCounter;
-    /*0xB4*/ u8 squishTimer;
-    /*0xB5*/ u8 fadeWarpOpacity;
+    /*0xB2*/ u8  hurtCounter;
+    /*0xB3*/ u8  healCounter;
+    /*0xB4*/ u8  squishTimer;
+    /*0xB5*/ u8  fadeWarpOpacity;
     /*0xB6*/ u16 capTimer;
     /*0xB8*/ s16 prevNumStarsForDialog;
     /*0xBC*/ f32 peakHeight;
@@ -381,6 +381,14 @@ struct MarioState
              s16 breath;
              u8  breathCounter;
 #endif
+           Vec3f lastSafePos;
+           Vec3f prevPos;
+             f32 lateralSpeed;
+             f32 moveSpeed;
+           Angle movePitch;
+           Angle moveYaw;
+           Angle ceilYaw;
+           Angle wallYaw;
 };
 
 #endif // TYPES_H

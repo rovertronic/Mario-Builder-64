@@ -290,7 +290,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
     struct WallCollisionData wallCollisionData;
 
     resolve_and_return_wall_collisions(nextPos, 50.0f, 50.0f, &wallCollisionData);
-    m->wall = wallCollisionData.numWalls == 0 ? NULL : wallCollisionData.walls[0];
+    set_mario_wall(m, wallCollisionData.numWalls == 0 ? NULL : wallCollisionData.walls[0]);
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     ceilHeight = find_ceil(nextPos[0], nextPos[1] + 3.0f, nextPos[2], &ceil);
@@ -319,10 +319,8 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
     nextPos[1] = m->ceilHeight - 160.0f;
     vec3f_copy(m->pos, nextPos);
 
-    m->floor = floor;
-    m->floorHeight = floorHeight;
-    m->ceil = ceil;
-    m->ceilHeight = ceilHeight;
+    set_mario_floor(m, floor, floorHeight);
+    set_mario_ceil(m, ceil, ceilHeight);
 
     return HANG_NONE;
 }
@@ -830,8 +828,7 @@ s32 act_tornado_twirling(struct MarioState *m) {
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     if (floor != NULL) {
-        m->floor = floor;
-        m->floorHeight = floorHeight;
+        set_mario_floor(m, floor, floorHeight);
         vec3f_copy(m->pos, nextPos);
     } else {
         if (nextPos[1] >= m->floorHeight) {
