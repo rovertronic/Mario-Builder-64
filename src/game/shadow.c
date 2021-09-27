@@ -159,7 +159,7 @@ f32 disable_shadow_with_distance(f32 shadowScale, f32 distFromFloor) {
 /**
  * Dim a shadow when its parent object is further from the ground.
  */
-u8 dim_shadow_with_distance(u8 solidity, f32 distFromFloor) {
+s32 dim_shadow_with_distance(u8 solidity, f32 distFromFloor) {
     f32 ret;
 
     if (solidity < 121) {
@@ -197,7 +197,7 @@ f32 get_water_level_below_shadow(struct Shadow *s, struct Surface **waterFloor) 
  * @param overwriteSolidity Flag for whether the existing shadow solidity should
  *                          be dimmed based on its distance to the floor
  */
-s8 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 overwriteSolidity) {
+s32 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 overwriteSolidity) {
     f32 waterLevel = FLOOR_LOWER_LIMIT_SHADOW;
     f32 floorSteepness;
     struct Surface *floor;
@@ -207,7 +207,16 @@ s8 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, 
     s->parentY = yPos;
     s->parentZ = zPos;
 
-    s->floorHeight = find_floor(s->parentX, s->parentY, s->parentZ, &floor);
+
+    if (gCurGraphNodeObjectNode->oFloor != NULL)
+    {
+        s->floorHeight = gCurGraphNodeObjectNode->oFloorHeight;
+        floor = gCurGraphNodeObjectNode->oFloor;
+    }
+    else
+    {
+        s->floorHeight = find_floor(s->parentX, s->parentY, s->parentZ, &floor);
+    }
 
     waterLevel = get_water_level_below_shadow(s, &waterFloor);
 
@@ -531,7 +540,7 @@ void linearly_interpolate_solidity_negative(struct Shadow *s, u8 initialSolidity
 /**
  * Change a shadow's solidity based on the player's current animation frame.
  */
-s8 correct_shadow_solidity_for_animations(s32 isLuigi, u8 initialSolidity, struct Shadow *shadow) {
+s32 correct_shadow_solidity_for_animations(s32 isLuigi, u8 initialSolidity, struct Shadow *shadow) {
     struct Object *player;
     s8 ret;
     s16 animFrame;
@@ -711,8 +720,17 @@ Gfx *create_shadow_circle_assuming_flat_ground(f32 xPos, f32 yPos, f32 zPos, s16
     Vtx *verts;
     Gfx *displayList;
     f32 distBelowFloor;
-    f32 floorHeight = find_floor_height(xPos, yPos, zPos);
+    f32 floorHeight;
     f32 radius = shadowScale / 2;
+
+    if (gCurGraphNodeObjectNode->oFloor != NULL)
+    {
+        floorHeight = gCurGraphNodeObjectNode->oFloorHeight;
+    }
+    else
+    {
+        floorHeight = find_floor_height(xPos, yPos, zPos);
+    }
 
     if (floorHeight < FLOOR_LOWER_LIMIT_SHADOW) {
         return NULL;
@@ -770,7 +788,15 @@ Gfx *create_shadow_rectangle(f32 halfWidth, f32 halfLength, f32 relY, u8 solidit
  */
 s32 get_shadow_height_solidity(f32 xPos, f32 yPos, f32 zPos, f32 *shadowHeight, u8 *solidity) {
     f32 waterLevel;
-    *shadowHeight = find_floor_height(xPos, yPos, zPos);
+
+    if (gCurGraphNodeObjectNode->oFloor != NULL)
+    {
+        *shadowHeight = gCurGraphNodeObjectNode->oFloorHeight;
+    }
+    else
+    {
+        *shadowHeight = find_floor_height(xPos, yPos, zPos);
+    }
 
     if (*shadowHeight < FLOOR_LOWER_LIMIT_SHADOW) {
         return 1;
