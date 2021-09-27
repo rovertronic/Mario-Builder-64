@@ -1,4 +1,5 @@
 #include <PR/ultratypes.h>
+#include <stdio.h>
 #include "macros.h"
 #include "farcall.h"
 
@@ -94,16 +95,17 @@ char registerMaps[][4] = {
 char *insn_disasm(InsnData insn, u32 isPC) {
     char *strp = &insn_as_string[0];
     int successful_print = 0;
+    u32 target;
 
     if (insn.d == 0) { // trivial case
-        if (isPC)
+        if (isPC) {
             return "NOP <-- CRASH";
-        else
+        } else {
             return "NOP";
+        }
     }
 
     for (int i = 0;  i < ARRAY_COUNT(insn_as_string); i++) insn_as_string[i] = 0;
-
 
     for (int i = 0; i < ARRAY_COUNT(insn_db); i++) {
         if (insn.i.opcode != 0 && insn.i.opcode == insn_db[i].opcode) {
@@ -121,7 +123,7 @@ char *insn_disasm(InsnData insn, u32 isPC) {
                     ); break;
                     break;
                 case PARAM_JAL:
-                    u32 target = 0x80000000 | ((insn.d & 0x1FFFFFF) * 4);
+                    target = 0x80000000 | ((insn.d & 0x1FFFFFF) * 4);
                     if ((u32)parse_map != 0x80345678) {
                         strp += sprintf(strp, "%-8s %s", insn_db[i].name,
                                                          parse_map(target)

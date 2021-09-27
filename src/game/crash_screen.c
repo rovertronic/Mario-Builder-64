@@ -290,6 +290,7 @@ void draw_stacktrace(OSThread *thread, UNUSED s32 cause) {
     }
 }
 
+extern char *insn_disasm(u32 insn, u32 isPC);
 static u32 sProgramPosition = 0;
 void draw_disasm(OSThread *thread) {
     __OSThreadContext *tc = &thread->context;
@@ -306,8 +307,6 @@ void draw_disasm(OSThread *thread) {
     for (int i = 0; i < 19; i++) {
         u32 addr = sProgramPosition + (i * 4);
         u32 toDisasm = *(u32*)(addr);
-
-
 
         crash_screen_print(30, 35 + (i * 10), "%s", insn_disasm(toDisasm, addr == tc->pc));
     }
@@ -360,12 +359,11 @@ void draw_crash_screen(OSThread *thread)
     {
         crash_screen_draw_rect(25, 8, 270, 12);
         crash_screen_print(30, 10, "Page:%02d                L/Z: Left   R: Right", crashPage);
-        switch (crashPage)
-        {
-        case PAGE_CONTEXT:    draw_crash_context(thread, cause); break;
-        case PAGE_LOG: 		  draw_crash_log(); break;
-        case PAGE_STACKTRACE: draw_stacktrace(thread, cause); break;
-        case PAGE_DISASM:     draw_disasm(thread); break;
+        switch (crashPage) {
+            case PAGE_CONTEXT:    draw_crash_context(thread, cause); break;
+            case PAGE_LOG: 		  draw_crash_log(); break;
+            case PAGE_STACKTRACE: draw_stacktrace(thread, cause); break;
+            case PAGE_DISASM:     draw_disasm(thread); break;
         }
 
         osWritebackDCacheAll();
