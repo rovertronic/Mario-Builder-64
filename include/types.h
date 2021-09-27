@@ -69,26 +69,103 @@ typedef f32 Mat2[2][2];
 typedef f32 Mat3[3][3];
 typedef f32 Mat4[4][4];
 
+// -- Scripts --
 typedef uintptr_t GeoLayout;
 typedef uintptr_t LevelScript;
-typedef s16 Movtex;
-typedef s16 MacroObject;
-typedef COLLISION_DATA_TYPE Collision; //Collision is by default an s16, but it's best to have it match the type of COLLISION_DATA_TYPE
-typedef s16 Trajectory;
-typedef s16 PaintingData;
 typedef uintptr_t BehaviorScript;
-typedef u8 Texture;
-typedef u16 ModelID;
-typedef COLLISION_DATA_TYPE TerrainData;
-typedef ROOM_DATA_TYPE RoomData;
-typedef TerrainData Vec3t[3];
+
+// -- Mario/Objects --
+typedef s32 MarioAction;
+typedef s32 MarioActionArg;
+typedef u32 MarioInteraction;
+typedef u32 InteractType;
+typedef u32 MarioStep;
+
+typedef s8  ObjAction8;
+typedef s32 ObjAction32;
+typedef s16 ColFlags;
 
 // -- Angle --
-
 typedef s16 Angle;
 typedef u16 UAngle;
 typedef s32 Angle32;
 typedef Angle Vec3a[3];
+
+// -- Collision --
+typedef ROOM_DATA_TYPE RoomData;
+typedef COLLISION_DATA_TYPE Collision; // Collision is by default an s16, but it's best to have it match the type of COLLISION_DATA_TYPE
+typedef Collision TerrainData;
+typedef Collision Vec3t[3];
+typedef Collision SurfaceType;
+
+typedef f32       Normal;
+typedef Normal    Vec3n[3];
+
+// -- Colors/Textures --
+
+// 0.0f to 1.0f
+typedef f32    ColorF;
+typedef ColorF AlphaF;
+typedef ColorF ColorRGBf[3];
+typedef ColorF ColorRGBAf[4];
+typedef ColorF ColorHSVf[3];
+typedef ColorF ColorHSVAf[4];
+
+// 0 to 255
+typedef u8    Color;
+typedef Color Alpha;
+typedef Color ColorRGB[3];
+typedef Color ColorRGBA[4];
+typedef Color ColorHSV[3];
+typedef Color ColorHSVA[4];
+
+// Formats:
+typedef u32   CompositeColor;  // to be casted to one of the following:
+typedef u8    I4;              // u4
+typedef u8    I8;
+typedef u8    IA4;             // u4, components u3 & u1
+typedef u8    IA8;
+typedef u8    IA16Component;
+typedef u16   IA16;
+typedef u8    RGBA16Component; // components u5 & u1
+typedef u16   RGBA16;
+typedef u32   RGBA16FILL;      // RGBA16 but twice, Used for gDPSetFillColor
+typedef u8    RGBA32Component;
+typedef u32   RGBA32;
+typedef u8    CI4;             // u4
+typedef u8    CI8;
+typedef Color Texture;
+
+typedef s16   TextureCoord;
+
+// -- Models --
+
+typedef u8  ModelID8;
+typedef u16 ModelID16;
+typedef u32 ModelID32;
+
+// -- Animations --
+typedef s16 AnimValue;
+typedef u16 AnimIndex;
+typedef s16 AnimID16;
+typedef s32 AnimID32;
+typedef s16 AnimFrame16;
+typedef s32 AnimFrame32;
+typedef s32 AnimAccel;
+
+// -- Misc. Data --
+
+typedef s16 DialogID16;
+typedef s32 DialogID;
+typedef s32 DrawingLayer;
+typedef s16 PaintingData;
+typedef s32 CameraTransitionAngle;
+typedef s16 Movtex;
+typedef s16 MacroObject;
+typedef s16 Trajectory;
+typedef u8  CutsceneID;
+
+typedef u8 uchar;
 
 enum SpTaskState {
     SPTASK_STATE_NOT_STARTED,

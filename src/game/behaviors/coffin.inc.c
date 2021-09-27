@@ -57,19 +57,17 @@ void bhv_coffin_spawner_loop(void) {
 }
 
 /**
- * The main action for the coffins. Coffins with COFFIN_BP_STATIC skip the behavior, while
+ * The main action for the coffins. Coffins with COFFIN_BP_STATIONARY skip the behavior, while
  * the other coffins will enter a standing action when Mario is near.
  * Also controls laying the coffin down after it has stood up.
  */
 void coffin_act_idle(void) {
     f32 yawCos;
-    f32 yawSin;
-    f32 dx;
-    f32 dz;
-    f32 distForwards;
-    f32 distSideways;
+    // f32 yawSin;
+    f32 dx, dz;
+    f32 distForwards, distSideways;
 
-    if (o->oBehParams2ndByte != COFFIN_BP_STATIC) {
+    if (o->oBehParams2ndByte != COFFIN_BP_STATIONARY) {
         // Lay down if standing
         if (o->oFaceAnglePitch != 0) {
             o->oAngleVelPitch = approach_s16_symmetric(o->oAngleVelPitch, -2000, 200);
@@ -91,13 +89,13 @@ void coffin_act_idle(void) {
         } else {
             // Yaw never changes and is aligned, so yawCos = 1 or -1, yawSin = 0
             yawCos = coss(o->oFaceAngleYaw);
-            yawSin = sins(o->oFaceAngleYaw);
+            // yawSin = sins(o->oFaceAngleYaw);
 
             dx = gMarioObject->oPosX - o->oPosX;
             dz = gMarioObject->oPosZ - o->oPosZ;
 
-            distForwards = dx * yawCos + dz * yawSin;
-            distSideways = dz * yawCos - dx * yawSin;
+            distForwards = dx * yawCos; // + dz * yawSin;
+            distSideways = dz * yawCos; // - dx * yawSin;
 
             // This checks a box around the coffin and if it has been a bit since it stood up.
             // It also checks in the case Mario is squished, so he doesn't get permanently squished.

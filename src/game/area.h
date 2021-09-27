@@ -118,6 +118,13 @@ struct WarpTransition
     /*0x04*/ struct WarpTransitionData data;
 };
 
+enum CurrSaveFileNum {
+    SAVE_FILE_NUM_A = 0x1,
+    SAVE_FILE_NUM_B,
+    SAVE_FILE_NUM_C,
+    SAVE_FILE_NUM_D,
+};
+
 enum MenuOption {
     MENU_OPT_NONE,
     MENU_OPT_1,

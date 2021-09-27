@@ -3,10 +3,11 @@
 void play_penguin_walking_sound(s32 walk) {
     s32 sound;
     if (o->oSoundStateID == 0) {
-        if (walk == PENGUIN_WALK_BABY)
+        if (walk == PENGUIN_SOUND_WALK_BABY) {
             sound = SOUND_OBJ_BABY_PENGUIN_WALK;
-        else // PENGUIN_WALK_BIG
+        } else { // PENGUIN_SOUND_WALK_BIG
             sound = SOUND_OBJ_BIG_PENGUIN_WALK;
+        }
         set_obj_anim_with_accel_and_sound(1, 11, sound);
     }
 }
@@ -133,7 +134,7 @@ void bhv_tuxies_mother_loop(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sTuxiesMotherActions);
     cur_obj_move_standard(-78);
-    play_penguin_walking_sound(PENGUIN_WALK_BIG);
+    play_penguin_walking_sound(PENGUIN_SOUND_WALK_BIG);
     o->oInteractStatus = 0;
 }
 
@@ -244,7 +245,7 @@ void small_penguin_free_actions(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sSmallPenguinActions);
     cur_obj_move_standard(-78);
-    play_penguin_walking_sound(PENGUIN_WALK_BABY);
+    play_penguin_walking_sound(PENGUIN_SOUND_WALK_BABY);
 }
 
 void bhv_small_penguin_loop(void) {

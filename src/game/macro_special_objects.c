@@ -80,7 +80,7 @@ void spawn_macro_abs_special(s32 model, const BehaviorScript *behavior, s16 x, s
 
 UNUSED static void spawn_macro_coin_unknown(const BehaviorScript *behavior, s16 a1[]) {
     struct Object *obj;
-    ModelID model = bhvYellowCoin == behavior ? MODEL_YELLOW_COIN : MODEL_NONE;
+    ModelID16 model = bhvYellowCoin == behavior ? MODEL_YELLOW_COIN : MODEL_NONE;
 
     obj = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior,
                                     a1[1], a1[2], a1[3], 0, convert_rotation(a1[0]), 0);
@@ -92,7 +92,7 @@ UNUSED static void spawn_macro_coin_unknown(const BehaviorScript *behavior, s16 
 struct LoadedPreset {
     /*0x00*/ const BehaviorScript *behavior;
     /*0x04*/ s16 param; // huh? why does the below function swap these.. just use the struct..
-    /*0x06*/ ModelID model;
+    /*0x06*/ ModelID16 model;
 };
 
 #define MACRO_OBJ_Y_ROT 0
@@ -237,7 +237,7 @@ void spawn_special_objects(s32 areaIndex, TerrainData **specialObjList) {
     s16 y;
     s16 z;
     s16 extraParams[4];
-    ModelID model;
+    ModelID16 model;
     u8 type;
     u8 presetID;
     u8 defaultParam;

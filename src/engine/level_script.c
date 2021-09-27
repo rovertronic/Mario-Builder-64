@@ -415,7 +415,7 @@ static void level_cmd_end_area(void) {
 }
 
 static void level_cmd_load_model_from_dl(void) {
-    ModelID model = CMD_GET(ModelID, 0xA);
+    ModelID16 model = CMD_GET(ModelID16, 0xA);
     s16 layer = CMD_GET(u16, 0x8);
     void *dl_ptr = CMD_GET(void *, 4);
 
@@ -428,7 +428,7 @@ static void level_cmd_load_model_from_dl(void) {
 }
 
 static void level_cmd_load_model_from_geo(void) {
-    ModelID model = CMD_GET(ModelID, 2);
+    ModelID16 model = CMD_GET(ModelID16, 2);
     void *geo = CMD_GET(void *, 4);
 
     if (model < MODEL_ID_COUNT) {
@@ -444,7 +444,7 @@ static void level_cmd_23(void) {
         f32 f;
     } arg2;
 
-    ModelID model = CMD_GET(s16, 2) & 0x0FFF;
+    ModelID16 model = CMD_GET(s16, 2) & 0x0FFF;
     s16 arg0H = ((u16)CMD_GET(s16, 2)) >> 12;
     void *arg1 = CMD_GET(void *, 4);
     // load an f32, but using an integer load instruction for some reason (hence the union)
@@ -468,7 +468,7 @@ static void level_cmd_init_mario(void) {
     gMarioSpawnInfo->areaIndex = 0;
     gMarioSpawnInfo->behaviorArg = CMD_GET(u32, 4);
     gMarioSpawnInfo->behaviorScript = CMD_GET(void *, 8);
-    gMarioSpawnInfo->modelNode = gLoadedGraphNodes[CMD_GET(ModelID, 0x2)];
+    gMarioSpawnInfo->modelNode = gLoadedGraphNodes[CMD_GET(ModelID16, 0x2)];
     gMarioSpawnInfo->next = NULL;
 
     sCurrentCmd = CMD_NEXT;

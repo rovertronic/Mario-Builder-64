@@ -59,7 +59,7 @@ struct TumblingBridgeParams {
     s16 numBridgeSections;
     s16 bridgeRelativeStartingXorZ;
     s16 platformWidth;
-    ModelID model;
+    ModelID16 model;
     const void *segAddr;
 };
 
@@ -67,7 +67,7 @@ struct ExclamationBoxContents {
     u8 id;
     u8 unk1;
     u8 behParams;
-    ModelID model;
+    ModelID16 model;
     const BehaviorScript *behavior;
 };
 
@@ -79,7 +79,7 @@ struct CheckerBoardPlatformInitPosition {
 
 struct OpenableGrill {
     s16 halfWidth;
-    ModelID modelID;
+    ModelID16 modelID;
     const Collision *collision;
 };
 

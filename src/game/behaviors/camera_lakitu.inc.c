@@ -41,7 +41,7 @@ static void camera_lakitu_intro_act_trigger_cutscene(void) {
  */
 static void camera_lakitu_intro_act_spawn_cloud(void) {
     if (set_mario_npc_dialog(MARIO_DIALOG_LOOK_UP) == MARIO_DIALOG_STATUS_SPEAK) {
-        o->oAction = CAMERA_LAKITU_INTRO_ACT_UNK2;
+        o->oAction = CAMERA_LAKITU_INTRO_ACT_SHOW_DIALOG;
 
         o->oPosX = 1800.0f;
         o->oPosY = 2400.0f;
@@ -145,7 +145,7 @@ void bhv_camera_lakitu_update(void) {
                 case CAMERA_LAKITU_INTRO_ACT_SPAWN_CLOUD:
                     camera_lakitu_intro_act_spawn_cloud();
                     break;
-                case CAMERA_LAKITU_INTRO_ACT_UNK2:
+                case CAMERA_LAKITU_INTRO_ACT_SHOW_DIALOG:
                     camera_lakitu_intro_act_show_dialog();
                     break;
             }

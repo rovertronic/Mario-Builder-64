@@ -4,13 +4,13 @@
 // value. The later action functions seem to check Y distance to Mario and proceed
 // to do nothing, which indicates this behavior set is incomplete.
 
-// TODO: Rename these. These have nothing to do with birds.
 void bub_spawner_act_0(void) {
     s32 i;
     s32 amt = o->oCheepCheepSpawnerSpawnAmount;
     if (o->oDistanceToMario < 1500.0f) {
-        for (i = 0; i < amt; i++)
+        for (i = 0; i < amt; i++) {
             spawn_object(o, MODEL_BUB, bhvBub);
+        }
         o->oAction = 1;
     }
 }
