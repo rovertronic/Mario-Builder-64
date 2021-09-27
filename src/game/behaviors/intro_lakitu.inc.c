@@ -45,7 +45,7 @@ s32 intro_lakitu_set_pos_and_focus(struct Object *o, struct CutsceneSplinePoint 
 
     if ((move_point_along_spline(newFocus, offset, &splineSegment, &(o->oIntroLakituSplineSegmentProgress)) == 1)
         || (move_point_along_spline(newOffset, focus, &splineSegment, &(o->oIntroLakituSplineSegmentProgress)) == 1))
-        splineFinished += 1;
+        splineFinished++;
 
     o->oIntroLakituSplineSegment = splineSegment;
     intro_lakitu_set_offset_from_camera(o, newOffset);
@@ -64,10 +64,11 @@ void bhv_intro_lakitu_loop(void) {
             gCurrentObject->oIntroLakituSplineSegmentProgress = 0.f;
             gCurrentObject->oIntroLakituCloud =
                 spawn_object_relative_with_scale(1, 0, 0, 0, 2.f, gCurrentObject, MODEL_MIST, bhvCloud);
-            if (gCamera->cutscene == CUTSCENE_END_WAVING)
+            if (gCamera->cutscene == CUTSCENE_END_WAVING) {
                 gCurrentObject->oAction = 100;
-            else
-                gCurrentObject->oAction += 1;
+            } else {
+                gCurrentObject->oAction = 1;
+            }
             break;
 
         case 1:
@@ -82,7 +83,7 @@ void bhv_intro_lakitu_loop(void) {
 
             if (intro_lakitu_set_pos_and_focus(gCurrentObject, gIntroLakituStartToPipeOffsetFromCamera,
                                                gIntroLakituStartToPipeFocus) == 1)
-                gCurrentObject->oAction += 1;
+                gCurrentObject->oAction = 2;
 
             switch (gCurrentObject->oTimer) {
 #if defined(VERSION_US) || defined(VERSION_SH)
@@ -111,7 +112,7 @@ void bhv_intro_lakitu_loop(void) {
 #else
             if (gCutsceneTimer > 720) {
 #endif
-                gCurrentObject->oAction += 1;
+                gCurrentObject->oAction = 3;
                 gCurrentObject->oIntroLakituDistToBirdsX = 1400.f;
                 gCurrentObject->oIntroLakituDistToBirdsZ = -4096.f;
                 gCurrentObject->oIntroLakituEndBirds1DestZ = 2048.f;
@@ -173,7 +174,7 @@ void bhv_intro_lakitu_loop(void) {
             gCurrentObject->oMoveAngleYaw = 0x9000;
             gCurrentObject->oFaceAnglePitch = gCurrentObject->oMoveAnglePitch / 2;
             gCurrentObject->oFaceAngleYaw = gCurrentObject->oMoveAngleYaw;
-            gCurrentObject->oAction += 1;
+            gCurrentObject->oAction++;
             break;
 
         case 101:
@@ -186,7 +187,7 @@ void bhv_intro_lakitu_loop(void) {
                 gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(gCurrentObject->oFaceAngleYaw, yawToCam, 0x200);
             }
             if (gCurrentObject->oTimer > 105) {
-                gCurrentObject->oAction += 1;
+                gCurrentObject->oAction++;
                 gCurrentObject->oMoveAnglePitch = 0xE00;
             }
             gCurrentObject->oFaceAnglePitch = 0;

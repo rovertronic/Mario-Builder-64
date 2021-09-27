@@ -3396,7 +3396,7 @@ s32 move_point_along_spline(Vec3f p, struct CutsceneSplinePoint spline[], s16 *s
             *splineSegment = 0;
             finished = 1;
         }
-        *progress -= 1;
+        (*progress)--;
     }
     return finished;
 }
@@ -5397,17 +5397,17 @@ u32 surface_type_modes(struct Camera *c) {
     switch (sMarioGeometry.currFloorType) {
         case SURFACE_CLOSE_CAMERA:
             transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
-            modeChanged += 1;
+            modeChanged++;
             break;
 
         case SURFACE_CAMERA_FREE_ROAM:
             transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-            modeChanged += 1;
+            modeChanged++;
             break;
 
         case SURFACE_NO_CAM_COL_SLIPPERY:
             transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
-            modeChanged += 1;
+            modeChanged++;
             break;
     }
     return modeChanged;
@@ -6255,12 +6255,12 @@ void copy_spline_segment(struct CutsceneSplinePoint dst[], struct CutsceneSpline
     s32 i = 0;
 
     init_spline_point(&dst[i], src[j].index, src[j].speed, src[j].point);
-    i += 1;
+    i++;
     do {
         do {
             init_spline_point(&dst[i], src[j].index, src[j].speed, src[j].point);
-            i += 1;
-            j += 1;
+            i++;
+            j++;
         } while (src[j].index != -1);
     } while (j > 16);
 
@@ -6938,12 +6938,6 @@ void cutscene_dance_rotate_move_back(struct Camera *c) {
 
 void cutscene_dance_rotate_move_towards_mario(struct Camera *c) {
     rotate_and_move_vec3f(c->pos, sMarioCamState->pos, 20.f, 0, 0);
-}
-
-/**
- * Speculated to be dance-related due to its proximity to the other dance functions
- */
-UNUSED static void cutscene_dance_unused(UNUSED struct Camera *c) {
 }
 
 /**
@@ -8270,7 +8264,7 @@ void cutscene_read_message(struct Camera *c) {
         // Do nothing until message is gone.
         case 0:
             if (get_dialog_id() != DIALOG_NONE) {
-                sCutsceneVars[0].angle[0] += 1;
+                sCutsceneVars[0].angle[0]++;
                 set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
             }
             break;
@@ -10305,12 +10299,12 @@ void play_cutscene(struct Camera *c) {
 
     if ((cutsceneDuration != 0) && !(gCutsceneTimer & CUTSCENE_STOP)) {
         if (gCutsceneTimer < CUTSCENE_LOOP) {
-            gCutsceneTimer += 1;
+            gCutsceneTimer++;
         }
         //! Because gCutsceneTimer is often set to 0x7FFF (CUTSCENE_LOOP), this conditional can only
         //! check for == due to overflow
         if (gCutsceneTimer == cutsceneDuration) {
-            sCutsceneShot += 1;
+            sCutsceneShot++;
             gCutsceneTimer = 0;
         }
     } else {

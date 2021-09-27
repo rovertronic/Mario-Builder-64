@@ -59,7 +59,7 @@ void haunted_chair_act_0(void) {
         }
     } else if (o->oHauntedChairSpinTimer != 0) {
         if (o->oDistanceToMario < 500.0f) {
-            o->oHauntedChairSpinTimer -= 1;
+            o->oHauntedChairSpinTimer--;
         }
         o->oTimer = 0.0f;
     } else {

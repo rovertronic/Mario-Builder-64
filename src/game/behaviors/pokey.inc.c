@@ -58,15 +58,12 @@ void bhv_pokey_body_part_update(void) {
             //  index by killing two body parts on the frame before a new part
             //  spawns, but one of the body parts shifts upward immediately,
             //  so not very interesting
-            if (o->oBehParams2ndByte > 1
-                && !(o->parentObj->oPokeyAliveBodyPartFlags & (1 << (o->oBehParams2ndByte - 1)))) {
-                o->parentObj->oPokeyAliveBodyPartFlags =
-                    o->parentObj->oPokeyAliveBodyPartFlags | 1 << (o->oBehParams2ndByte - 1);
+            if (o->oBehParams2ndByte > 1 && !(o->parentObj->oPokeyAliveBodyPartFlags & (1 << (o->oBehParams2ndByte - 1)))) {
+                o->parentObj->oPokeyAliveBodyPartFlags |= (1 << (o->oBehParams2ndByte - 1));
 
-                o->parentObj->oPokeyAliveBodyPartFlags =
-                    o->parentObj->oPokeyAliveBodyPartFlags & ((1 << o->oBehParams2ndByte) ^ ~0);
+                o->parentObj->oPokeyAliveBodyPartFlags &= ((1 << o->oBehParams2ndByte) ^ ~0);
 
-                o->oBehParams2ndByte -= 1;
+                o->oBehParams2ndByte--;
             }
 
             // Set the bottom body part size, and gradually increase it.
@@ -109,7 +106,7 @@ void bhv_pokey_body_part_update(void) {
             // then die after a delay.
 
             if (obj_handle_attacks(&sPokeyBodyPartHitbox, o->oAction, sPokeyBodyPartAttackHandlers)) {
-                o->parentObj->oPokeyNumAliveBodyParts -= 1;
+                o->parentObj->oPokeyNumAliveBodyParts--;
                 if (o->oBehParams2ndByte == 0) {
                     o->parentObj->oPokeyHeadWasKilled = TRUE;
                     // Last minute change to blue coins - not sure why they didn't
@@ -123,7 +120,7 @@ void bhv_pokey_body_part_update(void) {
                 cur_obj_become_intangible();
 
                 if (--o->oPokeyBodyPartDeathDelayAfterHeadKilled < 0) {
-                    o->parentObj->oPokeyNumAliveBodyParts -= 1;
+                    o->parentObj->oPokeyNumAliveBodyParts--;
                     obj_die_if_health_non_positive();
                 }
             } else {
@@ -208,9 +205,8 @@ static void pokey_act_wander(void) {
                                                      MODEL_POKEY_BODY_PART, bhvPokeyBodyPart);
 
                     if (bodyPart != NULL) {
-                        o->oPokeyAliveBodyPartFlags =
-                            o->oPokeyAliveBodyPartFlags | (1 << o->oPokeyNumAliveBodyParts);
-                        o->oPokeyNumAliveBodyParts += 1;
+                        o->oPokeyAliveBodyPartFlags |= (1 << o->oPokeyNumAliveBodyParts);
+                        o->oPokeyNumAliveBodyParts++;
                         o->oPokeyBottomBodyPartSize = 0.0f;
 
                         obj_scale(bodyPart, 0.0f);
@@ -234,7 +230,7 @@ static void pokey_act_wander(void) {
                 if (!(o->oPokeyTurningAwayFromWall =
                           obj_bounce_off_walls_edges_objects(&o->oPokeyTargetYaw))) {
                     if (o->oPokeyChangeTargetTimer != 0) {
-                        o->oPokeyChangeTargetTimer -= 1;
+                        o->oPokeyChangeTargetTimer--;
                     } else if (o->oDistanceToMario > 2000.0f) {
                         o->oPokeyTargetYaw = obj_random_fixed_turn(0x2000);
                         o->oPokeyChangeTargetTimer = random_linear_offset(30, 50);

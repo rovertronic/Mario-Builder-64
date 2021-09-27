@@ -1281,9 +1281,6 @@ static u8 get_sound_reverb(UNUSED u8 bank, UNUSED u8 soundIndex, u8 channelIndex
     return reverb;
 }
 
-static void noop_8031EEC8(void) {
-}
-
 /**
  * Called from the game loop thread to inform the audio thread that a new game
  * frame has started.
@@ -1295,7 +1292,6 @@ void audio_signal_game_loop_tick(void) {
 #if defined(VERSION_EU) || defined(VERSION_SH)
     maybe_tick_game_sound();
 #endif
-    noop_8031EEC8();
 }
 
 /**

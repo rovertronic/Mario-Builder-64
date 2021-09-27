@@ -16,7 +16,7 @@ void bhv_bowser_shock_wave_loop(void) {
     cur_obj_scale(o->oBowserShockWaveScale);
     // Slightly reduce opacity each 3 frames
     if (gGlobalTimer % 3)
-        o->oOpacity -= 1;
+        o->oOpacity--;
     // Reduce opacity faster after 70 frames have passed
     if (o->oTimer > fadeFrames)
         o->oOpacity -= 5;

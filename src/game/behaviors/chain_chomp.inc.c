@@ -190,7 +190,7 @@ static void chain_chomp_sub_act_turn(void) {
                         o->oChainChompTargetPitch = obj_get_pitch_from_vel();
                     }
                 } else {
-                    o->oTimer -= 1;
+                    o->oTimer--;
                 }
             } else {
                 o->oForwardVel = 0.0f;
@@ -276,7 +276,7 @@ static void chain_chomp_released_lunge_around(void) {
         if (o->oChainChompNumLunges == 0) {
             if (cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x320)) {
                 if (o->oTimer > 60) {
-                    o->oChainChompNumLunges += 1;
+                    o->oChainChompNumLunges++;
                     // enable wall collision
                     o->oWallHitboxRadius = 200.0f;
                 }

@@ -19,7 +19,6 @@
 #include "ingame_menu.h"
 #include "obj_behaviors.h"
 #include "save_file.h"
-#include "debug_course.h"
 #if MULTILANG
 #include "memory.h"
 #include "eu_translation.h"
@@ -874,7 +873,7 @@ void initiate_delayed_warp(void) {
                 case WARP_OP_CREDITS_NEXT:
                     sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL);
 
-                    gCurrCreditsEntry += 1;
+                    gCurrCreditsEntry++;
                     gCurrActNum = gCurrCreditsEntry->actNum & 0x07;
                     if ((gCurrCreditsEntry + 1)->levelNum == LEVEL_NONE) {
                         destWarpNode = WARP_NODE_CREDITS_END;
@@ -915,7 +914,7 @@ void update_hud_values(void) {
         }
 
         if (gHudDisplay.coins < gMarioState->numCoins) {
-            if (gGlobalTimer & 0x00000001) {
+            if (gGlobalTimer & 0x1) {
                 u32 coinSound;
                 if (gMarioState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
                     coinSound = SOUND_GENERAL_COIN_WATER;
@@ -923,7 +922,7 @@ void update_hud_values(void) {
                     coinSound = SOUND_GENERAL_COIN;
                 }
 
-                gHudDisplay.coins += 1;
+                gHudDisplay.coins++;
                 play_sound(coinSound, gMarioState->marioObj->header.gfx.cameraToObject);
             }
         }
@@ -998,7 +997,7 @@ s32 play_mode_normal(void) {
     check_instant_warp();
 
     if (sTimerRunning && gHudDisplay.timer < 17999) {
-        gHudDisplay.timer += 1;
+        gHudDisplay.timer++;
     }
 
     area_update_objects();
@@ -1098,7 +1097,7 @@ s32 play_mode_change_area(void) {
     }
 
     if (sTransitionTimer > 0) {
-        sTransitionTimer -= 1;
+        sTransitionTimer--;
     }
 
     if (sTransitionTimer == 0) {
@@ -1341,7 +1340,6 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
 
     if (gSavedCourseNum != gCurrCourseNum) {
         gSavedCourseNum = gCurrCourseNum;
-        nop_change_course();
         disable_warp_checkpoint();
     }
 
