@@ -503,7 +503,7 @@ void run_demo_inputs(void) {
         } else {
             // Backup the start button if it is pressed, since we don't want the
             // demo input to override the mask where start may have been pressed.
-            u16 startPushed = gControllers[0].controllerData->button & START_BUTTON;
+            u16 startPushed = (gControllers[0].controllerData->button & START_BUTTON);
 
             // Perform the demo inputs by assigning the current button mask and the stick inputs.
             gControllers[0].controllerData->stick_x = gCurrDemoInput->rawStickX;
