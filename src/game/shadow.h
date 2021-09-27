@@ -10,40 +10,41 @@
  */
 enum ShadowType
 {
-    SHADOW_CIRCLE_9_VERTS = 0,
-    SHADOW_CIRCLE_4_VERTS = 1,
-    SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED = 2,
-    SHADOW_SQUARE_PERMANENT = 10,
-    SHADOW_SQUARE_SCALABLE = 11,
-    SHADOW_SQUARE_TOGGLABLE = 12,
+    SHADOW_CIRCLE_9_VERTS             =  0,
+    SHADOW_CIRCLE_4_VERTS             =  1,
+    SHADOW_CIRCLE_4_VERTS_FLAT_UNUSED =  2,
+    SHADOW_SQUARE_PERMANENT           = 10,
+    SHADOW_SQUARE_SCALABLE            = 11,
+    SHADOW_SQUARE_TOGGLABLE           = 12,
     /**
      * This defines an offset after which rectangular shadows with custom
      * widths and heights can be defined.
      */
     SHADOW_RECTANGLE_HARDCODED_OFFSET = 50,
-    SHADOW_CIRCLE_PLAYER = 99
+    SHADOW_CIRCLE_PLAYER              = 99
 };
 
+#define SHADOW_FLAGS_NONE         (0 << 0)
+/**
+ * Flag for if the current shadow is above water or lava.
+ */
+#define SHADOW_FLAG_WATER_BOX     (1 << 0)
+#define SHADOW_FLAG_WATER_SURFACE (1 << 1)
+/**
+ * Flag for if Mario is on ice or a flying carpet.
+ */
+#define SHADOW_FLAG_ICE_CARPET    (1 << 2)
 /**
  * Flag for if Mario is on a flying carpet.
  */
-extern s8 sMarioOnFlyingCarpet;
+#define SHADOW_FLAG_RAISED        (1 << 3)
+
+extern s8 gShadowFlags;
 
 /**
  * The surface type below the current shadow.
  */
 extern s16 sSurfaceTypeBelowShadow;
-
-/**
- * Flag for if the current shadow is above water or lava.
- */
-extern s8 gShadowAboveWaterOrLava;
-extern s8 gShadowAboveCustomWater;
-
-/**
- * Flag for if Mario is on ice or a flying carpet.
- */
-extern s8 gMarioOnIceOrCarpet;
 
 /**
  * Given the (x, y, z) location of an object, create a shadow below that object

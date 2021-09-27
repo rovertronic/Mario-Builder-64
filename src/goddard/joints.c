@@ -19,10 +19,6 @@
 #include "skin.h"
 #include "skin_movement.h"
 
-// data
-static s32 D_801A82D0 = 0;
-static struct ObjBone *gGdTempBone = NULL; // @ 801A82D4
-
 // bss
 s32 sResetWeightVtxNum; // WTF? why is this not in skin_movement.c?
 
@@ -711,7 +707,6 @@ void func_80190574(s32 a0, struct ObjJoint *a1, struct ObjJoint *a2, f32 x, f32 
 void func_801909B4(void) {
     struct ObjJoint *node;
 
-    D_801A82D0 = 0;
     node = gGdJointList;
     while (node != NULL) {
         node->unk1C0 = 0;
