@@ -41,15 +41,14 @@ static s32 D_801A8238[5] = {
 static struct ObjFace *D_801B9EF0;
 
 // fn declarations
-struct Connection *make_connection(struct ObjVertex *, struct ObjVertex *);
-void Unknown80181D14(struct ObjFace *);
-void func_80181EB0(struct Connection *);
-void func_80182088(struct Connection *);
-void move_particle(struct ObjParticle *);
-struct Connection *make_connection(struct ObjVertex *, struct ObjVertex *);
-int func_80182778(struct ObjParticle *);
-void func_80182A08(struct ObjParticle *, struct GdVec3f *b);
-void func_801838D0(struct ObjParticle *);
+struct Connection *make_connection(struct ObjVertex *vtx1, struct ObjVertex *vtx2);
+void Unknown80181D14(struct ObjFace *face);
+void func_80181EB0(struct Connection *cxn);
+void func_80182088(struct Connection *cxn);
+void move_particle(struct ObjParticle *ptc);
+int func_80182778(struct ObjParticle *ptc);
+void func_80182A08(struct ObjParticle *ptc, struct GdVec3f *b);
+void func_801838D0(struct ObjParticle *ptc);
 void Unknown801835C8(struct ObjParticle *ptc);
 
 static void connect_vertices(struct ObjVertex *vtx1, struct ObjVertex *vtx2) {

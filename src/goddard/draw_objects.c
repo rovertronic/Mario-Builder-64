@@ -21,10 +21,10 @@
  */
 
 // forward declarations
-void func_80179B64(struct ObjGroup *);
-void update_shaders(struct ObjShape *, struct GdVec3f *);
-void draw_shape_faces(struct ObjShape *);
-void register_light(struct ObjLight *);
+void func_80179B64(struct ObjGroup *group);
+void update_shaders(struct ObjShape *shape, struct GdVec3f *offset);
+void draw_shape_faces(struct ObjShape *shape);
+void register_light(struct ObjLight *light);
 
 // types
 /**
@@ -32,7 +32,7 @@ void register_light(struct ObjLight *);
  */
 enum SceneType {
     RENDER_SCENE = 26, ///< render the primitives to screen
-    FIND_PICKS = 27    ///< only check position of primitives relative to cursor click
+    FIND_PICKS   = 27  ///< only check position of primitives relative to cursor click
 };
 
 /**

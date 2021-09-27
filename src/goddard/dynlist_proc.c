@@ -85,41 +85,41 @@ static char sDynNetNameSuffix[0x20];               // @ 801B9F48
 static char sStashedDynNameSuffix[0x100];                  // @ 801B9F68
 
 // necessary foreward declarations
-void d_add_net_with_subgroup(s32, DynObjName);
-void d_end_net_with_subgroup(DynObjName);
-void d_attach_joint_to_net(s32, DynObjName);
-void d_addto_group(DynObjName);
-void d_link_with(DynObjName);
-void d_link_with_ptr(void *);
-void d_set_normal(f32, f32, f32);
-void d_make_vertex(struct GdVec3f *);
-void d_set_rotation(f32, f32, f32);
-void d_center_of_gravity(f32, f32, f32);
-void d_set_shape_offset(f32, f32, f32);
-void d_clear_flags(s32);
-void d_attach(DynObjName);
-void d_attach_to(s32, struct GdObj *);
-void d_attachto_dynid(s32, DynObjName);
-void d_set_att_offset(const struct GdVec3f *);
-void d_set_nodegroup(DynObjName);
-void d_set_matgroup(DynObjName);
-void d_set_skinshape(DynObjName);
-void d_set_planegroup(DynObjName);
-void d_set_shapeptr(DynObjName);
-void d_friction(f32, f32, f32);
-void d_set_spring(f32);
-void d_set_ambient(f32, f32, f32);
-void d_set_control_type(s32);
-void d_set_skin_weight(s32, f32);
-void d_set_id(s32);
-void d_set_material(void *, s32);
-void d_map_materials(DynObjName);
-void d_map_vertices(DynObjName);
-void d_set_texture_st(f32, f32);
-void d_use_texture(void *);
-void d_make_netfromshapeid(DynObjName);
-void d_make_netfromshape_ptrptr(struct ObjShape **);
-void add_to_dynobj_list(struct GdObj *, DynObjName);
+void d_add_net_with_subgroup(s32 a0, DynObjName name);
+void d_end_net_with_subgroup(DynObjName name);
+void d_attach_joint_to_net(s32 arg0, DynObjName name);
+void d_addto_group(DynObjName name);
+void d_link_with(DynObjName name);
+void d_link_with_ptr(void *ptr);
+void d_set_normal(f32 x, f32 y, f32 z);
+void d_make_vertex(struct GdVec3f *pos);
+void d_set_rotation(f32 x, f32 y, f32 z);
+void d_center_of_gravity(f32 x, f32 y, f32 z);
+void d_set_shape_offset(f32 x, f32 y, f32 z);
+void d_clear_flags(s32 flags);
+void d_attach(DynObjName name);
+void d_attach_to(s32 flag, struct GdObj *obj);
+void d_attachto_dynid(s32 flag, DynObjName name);
+void d_set_att_offset(const struct GdVec3f *off);
+void d_set_nodegroup(DynObjName name);
+void d_set_matgroup(DynObjName name);
+void d_set_skinshape(DynObjName name);
+void d_set_planegroup(DynObjName name);
+void d_set_shapeptr(DynObjName name);
+void d_friction(f32 x, f32 y, f32 z);
+void d_set_spring(f32 spring);
+void d_set_ambient(f32 r, f32 g, f32 b);
+void d_set_control_type(s32 ctrlType);
+void d_set_skin_weight(s32 vtxId, f32 percentWeight);
+void d_set_id(s32 id);
+void d_set_material(void *a0, s32 mtlId);
+void d_map_materials(DynObjName name);
+void d_map_vertices(DynObjName name);
+void d_set_texture_st(f32 s, f32 t);
+void d_use_texture(void *texture);
+void d_make_netfromshapeid(DynObjName name);
+void d_make_netfromshape_ptrptr(struct ObjShape **shapePtr);
+void add_to_dynobj_list(struct GdObj *newObj, DynObjName name);
 
 /**
  * Store the active dynamic `GdObj` into a one object stash.

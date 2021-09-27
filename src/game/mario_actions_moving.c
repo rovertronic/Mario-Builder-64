@@ -1787,7 +1787,7 @@ u32 common_landing_action(struct MarioState *m, s16 animation, u32 airAction) {
 }
 
 s32 common_landing_cancels(struct MarioState *m, struct LandingAction *landingAction,
-                           s32 (*setAPressAction)(struct MarioState *, u32, u32)) {
+                           s32 (*setAPressAction)(struct MarioState *m, u32, u32)) {
     //! Everything here, including floor steepness, is checked before checking
     // if Mario is actually on the floor. This leads to e.g. remote sliding.
 

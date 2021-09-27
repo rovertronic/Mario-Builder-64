@@ -27,6 +27,7 @@ UNUSED static const u64 binid_4 = 4;
 #include "door/model.inc.c"
 #include "door/anims/data.inc.c"
 #include "door/anims/table.inc.c"
+#include "door/collision.inc.c"
 UNUSED static const u64 binid_5 = 5;
 
 #include "bowser_key/model.inc.c"
@@ -48,8 +49,6 @@ UNUSED static const u64 binid_9 = 9;
 #include "leaves/model.inc.c"
 UNUSED static const u64 binid_10 = 10;
 
-// this is still weird...
-#include "warp_collision/collision.inc.c"
 UNUSED static const u64 binid_11 = 11;
 
 #include "mario_cap/model.inc.c"

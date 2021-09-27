@@ -104,7 +104,7 @@ static struct ObjGroup *D_801BAD08; // group of planes from make_netfromshape
 static struct GdVec3f sShapeCenter;   // printed with "c="
 
 // Forward Declarations
-struct ObjMaterial *find_or_add_new_mtl(struct ObjGroup *, s32, f32, f32, f32);
+struct ObjMaterial *find_or_add_new_mtl(struct ObjGroup *group, s32 a1, f32 r, f32 g, f32 b);
 
 /* @ 245A50 for 0x40 */
 /* Something to do with shape list/group initialization? */

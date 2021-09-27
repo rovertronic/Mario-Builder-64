@@ -1245,13 +1245,8 @@ void debug_print_speed_action_normal(struct MarioState *m) {
  * Update the button inputs for Mario.
  */
 void update_mario_button_inputs(struct MarioState *m) {
-    if (m->controller->buttonPressed & A_BUTTON) {
-        m->input |= INPUT_A_PRESSED;
-    }
-
-    if (m->controller->buttonDown & A_BUTTON) {
-        m->input |= INPUT_A_DOWN;
-    }
+    if (m->controller->buttonPressed & A_BUTTON) m->input |= INPUT_A_PRESSED;
+    if (m->controller->buttonDown    & A_BUTTON) m->input |= INPUT_A_DOWN;
 
 #ifdef CUSTOM_DEBUG
     if (m->controller->buttonPressed & L_JPAD) {
@@ -1272,17 +1267,10 @@ void update_mario_button_inputs(struct MarioState *m) {
 
     // Don't update for these buttons if squished.
     if (m->squishTimer == 0) {
-        if (m->controller->buttonPressed & B_BUTTON) {
-            m->input |= INPUT_B_PRESSED;
-        }
-
-        if (m->controller->buttonDown & Z_TRIG) {
-            m->input |= INPUT_Z_DOWN;
-        }
-
-        if (m->controller->buttonPressed & Z_TRIG) {
-            m->input |= INPUT_Z_PRESSED;
-        }
+        if (m->controller->buttonDown    & B_BUTTON) m->input |= INPUT_B_DOWN;
+        if (m->controller->buttonPressed & B_BUTTON) m->input |= INPUT_B_PRESSED;
+        if (m->controller->buttonDown    & Z_TRIG  ) m->input |= INPUT_Z_DOWN;
+        if (m->controller->buttonPressed & Z_TRIG  ) m->input |= INPUT_Z_PRESSED;
     }
 
     if (m->input & INPUT_A_PRESSED) {

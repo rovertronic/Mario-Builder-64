@@ -113,6 +113,7 @@ extern const Gfx door_seg3_dl_03015078[];
 extern const Gfx door_seg3_dl_030150E8[];
 extern const Gfx door_seg3_dl_03015158[];
 extern const struct Animation *const door_seg3_anims_030156C0[];
+extern const Collision door_seg3_collision_door[];
 
 // explosion
 extern const GeoLayout explosion_geo[];
@@ -229,10 +230,6 @@ extern const Gfx tree_seg3_dl_bubbly[];
 extern const Gfx tree_seg3_dl_spiky[];
 extern const Gfx tree_seg3_dl_snowy_pine[];
 extern const Gfx tree_seg3_dl_palm[];
-
-// warp_collision
-extern const Collision door_seg3_collision_0301CE78[];
-extern const Collision lll_hexagonal_mesh_seg3_collision_0301CECC[];
 
 // warp_pipe
 extern const GeoLayout warp_pipe_geo[];

@@ -46,7 +46,7 @@
 s16 gMatStackIndex;
 Mat4 gMatStack[32];
 Mtx *gMatStackFixed[32];
-f32 aspect;
+f32 sAspectRatio;
 f32 gWorldScale = 1.0f;
 
 /**
@@ -402,15 +402,15 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
     if (node->fnNode.node.children != NULL) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
-        #ifdef WIDE
+#ifdef WIDE
         if (gConfig.widescreen && (gCurrLevelNum != 0x01)){
-            aspect = (16.0f / 9.0f); // 1.775f
+            sAspectRatio = (16.0f / 9.0f); // 1.775f
         } else {
-            aspect = (4.0f / 3.0f); // 1.33333f
+            sAspectRatio = (4.0f / 3.0f); // 1.33333f
         }
-        #else
-        aspect = (4.0f / 3.0f); // 1.33333f
-        #endif
+#else
+        sAspectRatio = (4.0f / 3.0f); // 1.33333f
+#endif
 
         if (gCamera) {
             gWorldScale = ((sqr(gCamera->pos[0]) + sqr(gCamera->pos[1]) + sqr(gCamera->pos[2])) / sqr(0x2000));
@@ -419,7 +419,7 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
             gWorldScale = 1.0f;
         }
 
-        guPerspective(mtx, &perspNorm, node->fov, aspect, (node->far/300) / gWorldScale, node->far / gWorldScale, 1.0f);
+        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, (node->far/300) / gWorldScale, node->far / gWorldScale, 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -437,15 +437,10 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
  * range of this node.
  */
 static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
-    f32 distanceFromCam;
 #ifdef AUTO_LOD
-    if (gIsConsole) {
-        distanceFromCam = -gMatStack[gMatStackIndex][3][2];
-    } else {
-        distanceFromCam = 50;
-    }
+    f32 distanceFromCam = (gIsConsole ? -gMatStack[gMatStackIndex][3][2] : 50);
 #else
-    distanceFromCam = -gMatStack[gMatStackIndex][3][2];
+    f32 distanceFromCam = -gMatStack[gMatStackIndex][3][2];
 #endif
 
     if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
@@ -477,7 +472,6 @@ static void geo_process_switch(struct GraphNodeSwitchCase *node) {
 
 static void make_roll_matrix(Mtx *mtx, s32 angle) {
     Mat4 temp;
-
     mtxf_identity(temp);
     temp[0][0] = coss(angle);
     temp[0][1] = sins(angle);
@@ -992,7 +986,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 
     geo = node->sharedChild;
 
-    halfFov = ((gCurGraphNodeCamFrustum->fov * aspect) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
+    halfFov = ((gCurGraphNodeCamFrustum->fov * sAspectRatio) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
 
     hScreenEdge = -matrix[3][2] * sins(halfFov) / coss(halfFov);
     // -matrix[3][2] is the depth, which gets multiplied by tan(halfFov) to get
@@ -1002,7 +996,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     // This multiplication should really be performed on 4:3 as well,
     // but the issue will be more apparent on widescreen.
     // HackerSM64: This multiplication is done regardless of aspect ratio to fix object pop-in on the edges of the screen (which happens at 4:3 too)
-    hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
+    // hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
 
     if (geo != NULL && geo->type == GRAPH_NODE_TYPE_CULLING_RADIUS) {
         cullingRadius = ((struct GraphNodeCullingRadius *) geo)->cullingRadius;
@@ -1011,7 +1005,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     }
 
     // Don't render if the object is close to or behind the camera
-    if (matrix[3][2] > -100.0f + cullingRadius) {
+    if (matrix[3][2] > (-100.0f + cullingRadius)) {
         return FALSE;
     }
 
@@ -1019,15 +1013,15 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     //  makes PU travel safe when the camera is locked on the main map.
     //  If Mario were rendered with a depth over 65536 it would cause overflow
     //  when converting the transformation matrix to a fixed point matrix.
-    if (matrix[3][2] < -20000.0f - cullingRadius) {
+    if (matrix[3][2] < (-20000.0f - cullingRadius)) {
         return FALSE;
     }
 
     // Check whether the object is horizontally in view
-    if (matrix[3][0] > hScreenEdge + cullingRadius) {
+    if (matrix[3][0] > (hScreenEdge + cullingRadius)) {
         return FALSE;
     }
-    if (matrix[3][0] < -hScreenEdge - cullingRadius) {
+    if (matrix[3][0] < (-hScreenEdge - cullingRadius)) {
         return FALSE;
     }
     return TRUE;
@@ -1052,8 +1046,7 @@ static void geo_process_object(struct Object *node) {
             mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
         }
 
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1],
-                         node->header.gfx.scale);
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->header.gfx.scale);
         node->header.gfx.throwMatrix = &gMatStack[++gMatStackIndex];
         node->header.gfx.cameraToObject[0] = gMatStack[gMatStackIndex][3][0];
         node->header.gfx.cameraToObject[1] = gMatStack[gMatStackIndex][3][1];
@@ -1070,14 +1063,11 @@ static void geo_process_object(struct Object *node) {
             gMatStackFixed[gMatStackIndex] = mtx;
             if (node->header.gfx.sharedChild != NULL) {
                 #ifdef VISUAL_DEBUG
-                if (hitboxView)
-                {
-                    Vec3f bnds1;
-                    Vec3f bnds2;
-                    //This will create a cylinder that visualises their hitbox.
-                    //If they do not have a hitbox, it will be a small white cube instead.
-                    if (node->oIntangibleTimer != -1)
-                    {
+                if (hitboxView) {
+                    Vec3f bnds1, bnds2;
+                    // This will create a cylinder that visualises their hitbox.
+                    // If they do not have a hitbox, it will be a small white cube instead.
+                    if (node->oIntangibleTimer != -1) {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
                         debug_box_color(0x800000FF);
@@ -1086,13 +1076,11 @@ static void geo_process_object(struct Object *node) {
                         vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
                         debug_box_color(0x8FF00000);
                         debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
-                    }
-                    else
-                    {
+                    } else {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
                         vec3f_set(bnds2, 30, 30, 30);
                         debug_box_color(0x80FFFFFF);
-                    debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ);
+                        debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ);
                     }
                 }
                 #endif
@@ -1270,8 +1258,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         Mtx *initialMatrix;
         Vp *viewport = alloc_display_list(sizeof(*viewport));
 
-        gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
-                                                MEMORY_POOL_LEFT);
+        gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool), MEMORY_POOL_LEFT);
         initialMatrix = alloc_display_list(sizeof(*initialMatrix));
         gMatStackIndex = 0;
         gCurAnimType = 0;
@@ -1300,8 +1287,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         }
         gCurGraphNodeRoot = NULL;
         if (gShowDebugText) {
-            print_text_fmt_int(180, 36, "MEM %d",
-                               gDisplayListHeap->totalSpace - gDisplayListHeap->usedSpace);
+            print_text_fmt_int(180, 36, "MEM %d", gDisplayListHeap->totalSpace - gDisplayListHeap->usedSpace);
         }
         main_pool_free(gDisplayListHeap);
     }

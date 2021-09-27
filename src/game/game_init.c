@@ -397,9 +397,9 @@ void render_init(void) {
 void select_gfx_pool(void) {
     gGfxPool = &gGfxPools[gGlobalTimer % ARRAY_COUNT(gGfxPools)];
     set_segment_base_addr(1, gGfxPool->buffer);
-    gGfxSPTask = &gGfxPool->spTask;
+    gGfxSPTask       = &gGfxPool->spTask;
     gDisplayListHead = gGfxPool->buffer;
-    gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
+    gGfxPoolEnd      = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
 }
 
 /**
@@ -703,9 +703,9 @@ void setup_game_memory(void) {
  */
 void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime lastTime = 0;
-    #endif
+#endif
 
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -719,9 +719,9 @@ void thread5_game_loop(UNUSED void *arg) {
     createHvqmThread();
 #endif
     save_file_load_all();
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     puppycam_boot();
-    #endif
+#endif
 
     set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 
@@ -742,14 +742,13 @@ void thread5_game_loop(UNUSED void *arg) {
             continue;
         }
         profiler_log_thread5_time(THREAD5_START);
-        #if PUPPYPRINT_DEBUG
-        while (TRUE)
-        {
+#if PUPPYPRINT_DEBUG
+        while (TRUE) {
             lastTime = osGetTime();
             collisionTime[perfIteration] = 0;
             behaviourTime[perfIteration] = 0;
             dmaTime[perfIteration] = 0;
-        #endif
+#endif
 
         // If any controllers are plugged in, start read the data for when
         // read_controller_inputs is called later.
@@ -764,26 +763,24 @@ void thread5_game_loop(UNUSED void *arg) {
         select_gfx_pool();
         read_controller_inputs(5);
         addr = level_script_execute(addr);
-        #if PUPPYPRINT_DEBUG == 0 && defined(VISUAL_DEBUG)
+#if PUPPYPRINT_DEBUG == 0 && defined(VISUAL_DEBUG)
         debug_box_input();
-        #endif
-        #if PUPPYPRINT_DEBUG
+#endif
+#if PUPPYPRINT_DEBUG
         profiler_update(scriptTime, lastTime);
-            if (benchmarkLoop > 0 && benchOption == 0)
-            {
+            if (benchmarkLoop > 0 && benchOption == 0) {
                 benchmarkLoop--;
                 benchMark[benchmarkLoop] = osGetTime() - lastTime;
-                if (benchmarkLoop == 0)
-                {
+                if (benchmarkLoop == 0) {
                     puppyprint_profiler_finished();
                     break;
                 }
-            }
-            else
+            } else {
                 break;
+            }
         }
         puppyprint_profiler_process();
-        #endif
+#endif
 
         display_and_vsync();
 

@@ -690,15 +690,15 @@ extern u8 _gd_dynlistsSegmentRomStart[];
 extern u8 _gd_dynlistsSegmentRomEnd[];
 
 // forward declarations
-u32 new_gddl_from(Gfx *, s32);
-void gd_setup_cursor(struct ObjGroup *);
+u32 new_gddl_from(Gfx *dl, s32 arg1);
+void gd_setup_cursor(struct ObjGroup *parentgrp);
 void parse_p1_controller(void);
 void update_cursor(void);
-void update_view_and_dl(struct ObjView *);
+void update_view_and_dl(struct ObjView *view);
 static void update_render_mode(void);
-void gddl_is_loading_shine_dl(s32);
-void func_801A3370(f32, f32, f32);
-void gd_put_sprite(u16 *, s32, s32, s32, s32);
+void gddl_is_loading_shine_dl(s32 dlLoad);
+void func_801A3370(f32 x, f32 y, f32 z);
+void gd_put_sprite(u16 *sprite, s32 x, s32 y, s32 wx, s32 wy);
 void reset_cur_dl_indices(void);
 
 // TODO: make a gddl_num_t?

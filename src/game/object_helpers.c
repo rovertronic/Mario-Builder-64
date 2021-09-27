@@ -31,7 +31,7 @@
 static s8 sBbhStairJiggleOffsets[] = { -8, 8, -4, 4 };
 static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
-static s32 clear_move_flag(u32 *, s32);
+static s32 clear_move_flag(u32 * bitSet, s32 flag);
 
 #define o gCurrentObject
 

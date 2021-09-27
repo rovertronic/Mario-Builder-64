@@ -1080,7 +1080,7 @@ s32 check_common_stationary_cancels(struct MarioState *m) {
         return drop_and_set_mario_action(m, ACT_SQUISHED, 0);
     }
 
-    if (m->action != ACT_UNKNOWN_0002020E) {
+    if (m->action != ACT_NO_STANDING_DEATH) {
         if (m->health < 0x100) {
             update_mario_sound_and_camera(m);
             return drop_and_set_mario_action(m, ACT_STANDING_DEATH, 0);

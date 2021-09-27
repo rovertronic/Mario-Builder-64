@@ -66,7 +66,7 @@
 // 1 is similar to vanilla, but prevents Mario from moving in the wrong direction, and allows finer control with the analog stick.
 // 2 is similar to mode 1, but a bit further from vanilla, and allows instant turnaround if Mario is moving slower than a certain threshold.
 // 3 is instant turning to the intended direction regardless of speed and angle.
-#define GROUND_TURN_MODE    0
+#define GROUND_TURN_MODE 0
 // Improved hanging:
 // - Doesn't require holding down the A button
 // - Percise turning control ()
@@ -187,11 +187,13 @@
 // This allows you to quickly test the level you're working on.
 // If you want the game to boot normally, just comment out the define again.
 //#define TEST_LEVEL LEVEL_BOB
+// Enable debug level select
+//#define DEBUG_LEVEL_SELECT
 // Custom debug mode. Press DPAD left to show the debug UI. Press DPAD right to enter the noclip mode.
 //#define CUSTOM_DEBUG
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
-//#define PUPPYPRINT
-#define PUPPYPRINT_DEBUG 0
+#define PUPPYPRINT
+#define PUPPYPRINT_DEBUG 1
 // Use cycles instead of microseconds
 //#define PUPPYPRINT_DEBUG_CYCLES
 // Visual debug enables some collision visuals. Tapping Right on the dpad will cycle between visual hitboxes, visual surfaces, both, and neither.

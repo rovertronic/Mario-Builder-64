@@ -41,7 +41,7 @@ static struct GdVec3f D_801BAAD0;
 static struct GdVec3f D_801BAAE0;
 
 // forward declarations
-void set_joint_vecs(struct ObjJoint *, f32, f32, f32);
+void set_joint_vecs(struct ObjJoint *j, f32 x, f32 y, f32 z);
 
 /**
  * Controls movement of grabbable joints
