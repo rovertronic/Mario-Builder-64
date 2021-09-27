@@ -208,15 +208,7 @@ s32 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     s->parentZ = zPos;
 
 
-    if (gCurGraphNodeObjectNode->oFloor != NULL)
-    {
-        s->floorHeight = gCurGraphNodeObjectNode->oFloorHeight;
-        floor = gCurGraphNodeObjectNode->oFloor;
-    }
-    else
-    {
-        s->floorHeight = find_floor(s->parentX, s->parentY, s->parentZ, &floor);
-    }
+    s->floorHeight = find_floor(s->parentX, s->parentY, s->parentZ, &floor);
 
     waterLevel = get_water_level_below_shadow(s, &waterFloor);
 
