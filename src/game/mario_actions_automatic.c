@@ -148,13 +148,7 @@ s32 act_holding_pole(struct MarioState *m) {
         m->faceAngle[1] += marioObj->oMarioPoleYawVel;
         marioObj->oMarioPolePos -= marioObj->oMarioPoleYawVel / 0x100;
 
-        if (m->usedObj->behavior == segmented_to_virtual(bhvTree)) {
-            //! The Shifting Sand Land palm tree check is done climbing up in
-            // add_tree_leaf_particles, but not here, when climbing down.
-            if (m->pos[1] - m->floorHeight > 100.0f) {
-                m->particleFlags |= PARTICLE_LEAF;
-            }
-        }
+        add_tree_leaf_particles(m);
         play_climbing_sounds(m, 2);
 #if ENABLE_RUMBLE
         reset_rumble_timers_slip();

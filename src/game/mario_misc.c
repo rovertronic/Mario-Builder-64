@@ -589,9 +589,6 @@ Gfx *geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode *b, Mat4 *
     return NULL;
 }
 
-// X position of the mirror
-#define MIRROR_X 4331.53
-
 /**
  * Geo node that creates a clone of Mario's geo node and updates it to becomes
  * a mirror image of the player.
@@ -620,8 +617,8 @@ Gfx *geo_render_mirror_mario(s32 callContext, struct GraphNode *node, UNUSED Mat
                 vec3f_copy(gMirrorMario.scale, mario->header.gfx.scale);
 
                 gMirrorMario.animInfo = mario->header.gfx.animInfo;
-                mirroredX = MIRROR_X - gMirrorMario.pos[0];
-                gMirrorMario.pos[0] = mirroredX + MIRROR_X;
+                mirroredX = CASTLE_MIRROR_X - gMirrorMario.pos[0];
+                gMirrorMario.pos[0] = mirroredX + CASTLE_MIRROR_X;
                 gMirrorMario.angle[1] = -gMirrorMario.angle[1];
                 gMirrorMario.scale[0] *= -1.0f;
                 ((struct GraphNode *) &gMirrorMario)->flags |= GRAPH_RENDER_ACTIVE;

@@ -46,25 +46,24 @@ struct BetaVtx {
 };
 
 // data
-static struct GdColour sClrWhite = { 1.0, 1.0, 1.0 };            // @ 801A8070
-static struct GdColour sClrRed = { 1.0, 0.0, 0.0 };              // @ 801A807C
-static struct GdColour sClrGreen = { 0.0, 1.0, 0.0 };            // @ 801A8088
-static struct GdColour sClrBlue = { 0.0, 0.0, 1.0 };             // @ 801A8094
-static struct GdColour sClrErrDarkBlue = { 0.0, 0.0, 6.0 };      // @ 801A80A0
-static struct GdColour sClrPink = { 1.0, 0.0, 1.0 };             // @ 801A80AC
-static struct GdColour sClrBlack = { 0.0, 0.0, 0.0 };            // @ 801A80B8
-static struct GdColour sClrGrey = { 0.6, 0.6, 0.6 };             // @ 801A80C4
-static struct GdColour sClrDarkGrey = { 0.4, 0.4, 0.4 };         // @ 801A80D0
-static struct GdColour sClrYellow = { 1.0, 1.0, 0.0 };           // @ 801A80DC
-static struct GdColour sLightColours[1] = { { 1.0, 1.0, 0.0 } }; // @ 801A80E8
-static struct GdColour *sSelectedColour = &sClrRed;              // @ 801A80F4
-struct ObjCamera *gViewUpdateCamera = NULL;                      // @ 801A80F8
-static s32 sUnreadShapeFlag = 0;       // @ 801A8100
-struct GdColour *sColourPalette[5] = { // @ 801A8104
+static struct GdColour sClrWhite        = { 1.0f, 1.0f, 1.0f };
+static struct GdColour sClrRed          = { 1.0f, 0.0f, 0.0f };
+static struct GdColour sClrGreen        = { 0.0f, 1.0f, 0.0f };
+static struct GdColour sClrBlue         = { 0.0f, 0.0f, 1.0f };
+static struct GdColour sClrErrDarkBlue  = { 0.0f, 0.0f, 6.0f };
+static struct GdColour sClrPink         = { 1.0f, 0.0f, 1.0f };
+static struct GdColour sClrBlack        = { 0.0f, 0.0f, 0.0f };
+static struct GdColour sClrGrey         = { 0.6f, 0.6f, 0.6f };
+static struct GdColour sClrDarkGrey     = { 0.4f, 0.4f, 0.4f };
+static struct GdColour sClrYellow       = { 1.0f, 1.0f, 0.0f };
+static struct GdColour sLightColours    = { 1.0f, 1.0f, 0.0f };
+static struct GdColour *sSelectedColour = &sClrRed;
+struct ObjCamera *gViewUpdateCamera = NULL; 
+static s32 sUnreadShapeFlag = 0;
+struct GdColour *sColourPalette[5] = {
     &sClrWhite, &sClrYellow, &sClrRed, &sClrBlack, &sClrBlack
 };
 struct GdColour *sWhiteBlack[2] = {
-    //@ 801A8118
     &sClrWhite,
     &sClrBlack,
 };
@@ -260,9 +259,9 @@ void draw_light(struct ObjLight *light) {
         return;
     }
 
-    sLightColours[0].r = light->colour.r;
-    sLightColours[0].g = light->colour.g;
-    sLightColours[0].b = light->colour.b;
+    sLightColours.r = light->colour.r;
+    sLightColours.g = light->colour.g;
+    sLightColours.b = light->colour.b;
 
     if (light->flags & LIGHT_UNK02) {
         gd_set_identity_mat4(&sp54);
@@ -386,7 +385,7 @@ struct GdColour *gd_get_colour(s32 idx) {
             return &sClrPink;
             break;
         case -1:
-            return &sLightColours[0];
+            return &sLightColours;
             break;
         default:
             return NULL;
@@ -834,14 +833,14 @@ void draw_particle(struct GdObj *obj) {
         white = sColourPalette[0];
         black = sWhiteBlack[1];
         brightness = ptc->timeout / 10.0;
-        sLightColours[0].r = (white->r - black->r) * brightness + black->r;
-        sLightColours[0].g = (white->g - black->g) * brightness + black->g;
-        sLightColours[0].b = (white->b - black->b) * brightness + black->b;
+        sLightColours.r = (white->r - black->r) * brightness + black->r;
+        sLightColours.g = (white->g - black->g) * brightness + black->g;
+        sLightColours.b = (white->b - black->b) * brightness + black->b;
         ; // needed to match
     } else {
-        sLightColours[0].r = 0.0f;
-        sLightColours[0].g = 0.0f;
-        sLightColours[0].b = 0.0f;
+        sLightColours.r = 0.0f;
+        sLightColours.g = 0.0f;
+        sLightColours.b = 0.0f;
     }
 
     if (ptc->timeout > 0) {

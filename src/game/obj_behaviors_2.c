@@ -47,7 +47,9 @@
 #include "spawn_sound.h"
 #include "puppylights.h"
 
-#define POS_OP_SAVE_POSITION 0
+//! TODO: remove static
+
+#define POS_OP_SAVE_POSITION    0
 #define POS_OP_COMPUTE_VELOCITY 1
 #define POS_OP_RESTORE_POSITION 2
 
@@ -56,9 +58,6 @@
 /* BSS (declared to force order) */
 extern s32 sNumActiveFirePiranhaPlants;
 extern s32 sNumKilledFirePiranhaPlants;
-extern f32 sObjSavedPosX;
-extern f32 sObjSavedPosY;
-extern f32 sObjSavedPosZ;
 extern struct Object *sMontyMoleHoleList;
 extern s32 sMontyMoleKillStreak;
 extern f32 sMontyMoleLastKilledPosX;
@@ -71,20 +70,13 @@ extern struct Object *sMasterTreadmill;
  */
 struct Object *sMasterTreadmill;
 
-
-f32 sObjSavedPosX;
-f32 sObjSavedPosY;
-f32 sObjSavedPosZ;
+Vec3f sObjSavedPos;
 
 void wiggler_jumped_on_attack_handler(void);
 void huge_goomba_weakly_attacked(void);
 
 static s32 obj_is_rendering_enabled(void) {
-    if (o->header.gfx.node.flags & GRAPH_RENDER_ACTIVE) {
-        return TRUE;
-    } else {
-        return FALSE;
-    }
+    return (o->header.gfx.node.flags & GRAPH_RENDER_ACTIVE);
 }
 
 static s16 obj_get_pitch_from_vel(void) {
@@ -117,34 +109,16 @@ static void obj_set_dist_from_home(f32 distFromHome) {
 }
 
 static s32 obj_is_near_to_and_facing_mario(f32 maxDist, s16 maxAngleDiff) {
-    if (o->oDistanceToMario < maxDist
-        && abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < maxAngleDiff) {
-        return TRUE;
-    }
-    return FALSE;
+    return (o->oDistanceToMario < maxDist && abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < maxAngleDiff);
 }
 
 //! Although having no return value, this function
 //! must be u32 to match other functions on -O2.
 static void obj_perform_position_op(s32 op) {
     switch (op) {
-        case POS_OP_SAVE_POSITION:
-            sObjSavedPosX = o->oPosX;
-            sObjSavedPosY = o->oPosY;
-            sObjSavedPosZ = o->oPosZ;
-            break;
-
-        case POS_OP_COMPUTE_VELOCITY:
-            o->oVelX = o->oPosX - sObjSavedPosX;
-            o->oVelY = o->oPosY - sObjSavedPosY;
-            o->oVelZ = o->oPosZ - sObjSavedPosZ;
-            break;
-
-        case POS_OP_RESTORE_POSITION:
-            o->oPosX = sObjSavedPosX;
-            o->oPosY = sObjSavedPosY;
-            o->oPosZ = sObjSavedPosZ;
-            break;
+        case POS_OP_SAVE_POSITION:    vec3_copy(sObjSavedPos, &o->oPosVec); break;
+        case POS_OP_COMPUTE_VELOCITY: vec3_diff(&o->oVelVec, &o->oPosVec, sObjSavedPos); break;
+        case POS_OP_RESTORE_POSITION: vec3_copy(&o->oPosVec, sObjSavedPos); break;
     }
 }
 
@@ -154,9 +128,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
     struct Waypoint *nextWaypoint;
     struct Waypoint *prevWaypoint;
     f32 amountToMove;
-    f32 dx;
-    f32 dy;
-    f32 dz;
+    f32 dx, dy, dz;
     f32 distToNextWaypoint;
 
     if (ballIndex == 0 || ((u16)(o->oBehParams >> 16) & 0x0080)) {
@@ -229,15 +201,10 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
                 }
                 o->oPlatformOnTrackPrevWaypoint = prevWaypoint;
             }
-
-            o->oPosX = x;
-            o->oPosY = y;
-            o->oPosZ = z;
-
+            vec3_set(&o->oPosVec, x, y, z);
             obj_perform_position_op(POS_OP_COMPUTE_VELOCITY);
 
-            o->oPlatformOnTrackPitch =
-                atan2s(sqrtf(o->oVelX * o->oVelX + o->oVelZ * o->oVelZ), -o->oVelY);
+            o->oPlatformOnTrackPitch = atan2s(sqrtf(sqr(o->oVelX) + sqr(o->oVelZ)), -o->oVelY);
             o->oPlatformOnTrackYaw = atan2s(o->oVelZ, o->oVelX);
         }
     }
@@ -315,7 +282,6 @@ static s32 clamp_s16(s16 *value, s16 minimum, s16 maximum) {
     } else {
         return FALSE;
     }
-
     return TRUE;
 }
 
@@ -327,7 +293,6 @@ static s32 clamp_f32(f32 *value, f32 minimum, f32 maximum) {
     } else {
         return FALSE;
     }
-
     return TRUE;
 }
 
@@ -403,42 +368,22 @@ static s32 obj_y_vel_approach(f32 target, f32 delta) {
 
 static s32 obj_move_pitch_approach(s16 target, s16 delta) {
     o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, target, delta);
-
-    if ((s16) o->oMoveAnglePitch == target) {
-        return TRUE;
-    }
-
-    return FALSE;
+    return ((s16) o->oMoveAnglePitch == target);
 }
 
 static s32 obj_face_pitch_approach(s16 targetPitch, s16 deltaPitch) {
     o->oFaceAnglePitch = approach_s16_symmetric(o->oFaceAnglePitch, targetPitch, deltaPitch);
-
-    if ((s16) o->oFaceAnglePitch == targetPitch) {
-        return TRUE;
-    }
-
-    return FALSE;
+    return ((s16) o->oFaceAnglePitch == targetPitch);
 }
 
 static s32 obj_face_yaw_approach(s16 targetYaw, s16 deltaYaw) {
     o->oFaceAngleYaw = approach_s16_symmetric(o->oFaceAngleYaw, targetYaw, deltaYaw);
-
-    if ((s16) o->oFaceAngleYaw == targetYaw) {
-        return TRUE;
-    }
-
-    return FALSE;
+    return ((s16) o->oFaceAngleYaw == targetYaw);
 }
 
 static s32 obj_face_roll_approach(s16 targetRoll, s16 deltaRoll) {
     o->oFaceAngleRoll = approach_s16_symmetric(o->oFaceAngleRoll, targetRoll, deltaRoll);
-
-    if ((s16) o->oFaceAngleRoll == targetRoll) {
-        return TRUE;
-    }
-
-    return FALSE;
+    return ((s16) o->oFaceAngleRoll == targetRoll);
 }
 
 static s32 obj_smooth_turn(s16 *angleVel, s32 *angle, s16 targetAngle, f32 targetSpeedProportion,
@@ -585,12 +530,7 @@ static s32 obj_bounce_off_walls_edges_objects(s32 *targetYaw) {
 
 static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
     obj_resolve_object_collisions(NULL);
-
-    if (cur_obj_rotate_yaw_toward(targetYaw, turnSpeed)) {
-        return FALSE;
-    } else {
-        return TRUE;
-    }
+    return (!cur_obj_rotate_yaw_toward(targetYaw, turnSpeed));
 }
 
 static void obj_die_if_health_non_positive(void) {

@@ -150,8 +150,8 @@ void bhv_camera_lakitu_update(void) {
                     break;
             }
         } else {
-            f32 val0C = (f32) 0x875C3D / 0x800 - gLakituState.curPos[0];
-            if (gLakituState.curPos[0] < 1700.0f || val0C < 0.0f) {
+            f32 mirroredX = CASTLE_MIRROR_X - gLakituState.curPos[0];
+            if (gLakituState.curPos[0] < 1700.0f || mirroredX < 0.0f) {
                 cur_obj_hide();
             } else {
                 cur_obj_unhide();
@@ -167,7 +167,7 @@ void bhv_camera_lakitu_update(void) {
                 o->oFaceAnglePitch = atan2s(cur_obj_lateral_dist_to_home(),
                                             o->oPosY - gLakituState.curFocus[1]);
 
-                o->oPosX = (f32) 0x875C3D / 0x800 + val0C;
+                o->oPosX = CASTLE_MIRROR_X + mirroredX;
             }
         }
     }

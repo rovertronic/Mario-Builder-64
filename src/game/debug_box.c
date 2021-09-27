@@ -100,8 +100,8 @@ Gfx dl_debug_cylinder_verts[] = {
 	gsSPEndDisplayList(),
 };
 
-u8 hitboxView = 0;
-u8 surfaceView = 0;
+u8 hitboxView = FALSE;
+u8 surfaceView = FALSE;
 
 /**
  * Internal struct containing box info
@@ -189,22 +189,15 @@ static const Gfx dl_visual_surface[] = {
 
 u8 viewCycle = 0;
 
-//Puppyprint will call this from elsewhere.
-void debug_box_input(void)
-{
-    if (gPlayer1Controller->buttonPressed & R_JPAD)
-    {
+// Puppyprint will call this from elsewhere.
+void debug_box_input(void) {
+    if (gPlayer1Controller->buttonPressed & R_JPAD) {
         viewCycle++;
-        if (viewCycle > 3)
+        if (viewCycle > 3) {
             viewCycle = 0;
-
-        hitboxView = 0;
-        surfaceView = 0;
-
-        if (viewCycle == 1 || viewCycle == 3)
-            hitboxView = 1;
-        if (viewCycle == 2 || viewCycle == 3)
-            surfaceView = 1;
+        }
+        hitboxView  = (viewCycle == 1 || viewCycle == 3);
+        surfaceView = (viewCycle == 2 || viewCycle == 3);
     }
 }
 
@@ -213,8 +206,7 @@ s32 gVisualOffset;
 extern s32 gSurfaceNodesAllocated;
 extern s32 gSurfacesAllocated;
 
-void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts)
-{
+void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
     struct SurfaceNode *node;
     struct Surface *surf;
     s32 cellX, cellZ;
@@ -231,22 +223,19 @@ void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts)
     cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
     cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
 
-    for (i = 0; i < 8; i++)
-    {
-        switch (i)
-        {
-        case 0: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next; col[0] = 0x00; col[1] = 0xFF; col[2] = 0x00; break;
-        case 1: node = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next; col[0] = 0x00; col[1] = 0xFF; col[2] = 0x00; break;
-        case 2: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next; col[0] = 0x00; col[1] = 0x00; col[2] = 0xFF; break;
-        case 3: node = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next; col[0] = 0x00; col[1] = 0x00; col[2] = 0xFF; break;
-        case 4: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next; col[0] = 0xFF; col[1] = 0x00; col[2] = 0x00; break;
-        case 5: node = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next; col[0] = 0xFF; col[1] = 0x00; col[2] = 0x00; break;
-        case 6: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next; col[0] = 0xFF; col[1] = 0xFF; col[2] = 0x00; break;
-        case 7: node = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next; col[0] = 0xFF; col[1] = 0xFF; col[2] = 0x00; break;
+    for (i = 0; i < 8; i++) {
+        switch (i) {
+            case 0: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ].next; col[0] = 0x00; col[1] = 0xFF; col[2] = 0x00; break;
+            case 1: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ].next; col[0] = 0x00; col[1] = 0xFF; col[2] = 0x00; break;
+            case 2: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next; col[0] = 0x00; col[1] = 0x00; col[2] = 0xFF; break;
+            case 3: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next; col[0] = 0x00; col[1] = 0x00; col[2] = 0xFF; break;
+            case 4: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ].next; col[0] = 0xFF; col[1] = 0x00; col[2] = 0x00; break;
+            case 5: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ].next; col[0] = 0xFF; col[1] = 0x00; col[2] = 0x00; break;
+            case 6: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER ].next; col[0] = 0xFF; col[1] = 0xFF; col[2] = 0x00; break;
+            case 7: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER ].next; col[0] = 0xFF; col[1] = 0xFF; col[2] = 0x00; break;
         }
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
             surf = node->surface;
             node = node->next;
 

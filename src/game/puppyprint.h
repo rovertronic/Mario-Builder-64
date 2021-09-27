@@ -3,19 +3,19 @@
 
 #ifdef PUPPYPRINT
 
-//This is how many indexes of timers are saved at once. higher creates a smoother average, but naturally uses more RAM. 15's fine.
-#define NUM_PERF_ITERATIONS 15
+// This is how many indexes of timers are saved at once. higher creates a smoother average, but naturally uses more RAM. 15's fine.
+#define NUM_PERF_ITERATIONS   15
 #define NUM_BENCH_ITERATIONS 150
-#define LOG_BUFFER_SIZE 16
+#define LOG_BUFFER_SIZE       16
 
-#define BENCHMARK_GAME 1
-#define BENCHMARK_AUDIO 2
+#define BENCHMARK_GAME     1
+#define BENCHMARK_AUDIO    2
 #define BENCHMARK_GRAPHICS 3
 
-#define PRINT_TEXT_ALIGN_LEFT 0
+#define PRINT_TEXT_ALIGN_LEFT   0
 #define PRINT_TEXT_ALIGN_CENTRE 1
-#define PRINT_TEXT_ALIGN_RIGHT 2
-#define PRINT_ALL -1
+#define PRINT_TEXT_ALIGN_RIGHT  2
+#define PRINT_ALL              -1
 
 extern Texture small_font[];
 extern s8 perfIteration;

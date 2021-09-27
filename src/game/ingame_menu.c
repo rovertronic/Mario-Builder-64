@@ -221,10 +221,10 @@ void create_dl_ortho_matrix(void) {
 #if !defined(VERSION_JP) && !defined(VERSION_SH)
 UNUSED
 #endif
-static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
+static Texture *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) { //! Texture type for *in?
     s32 inPos;
     u16 bitMask;
-    u8 *out;
+    Texture *out;
     s16 outPos = 0;
 
     out = alloc_display_list((u32) width * (u32) height);
@@ -251,15 +251,15 @@ static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
     return out;
 }
 
-u8 *alloc_ia4_tex_from_i1(u8 *in, s16 width, s16 height) {
+Texture *alloc_ia4_tex_from_i1(Texture *in, s16 width, s16 height) {
     u32 size = (u32) width * (u32) height;
-    u8 *out;
+    Texture *out;
     s32 inPos;
     s16 outPos;
     u8 bitMask;
 
     outPos = 0;
-    out = (u8 *) alloc_display_list(size);
+    out = (Texture *) alloc_display_list(size);
 
     if (out == NULL) {
         return NULL;
@@ -555,21 +555,11 @@ void handle_menu_scrolling(s8 scrollDirection, s8 *currentIndex, s8 minIndex, s8
     u8 index = 0;
 
     if (scrollDirection == MENU_SCROLL_VERTICAL) {
-        if (gPlayer3Controller->rawStickY > 60) {
-            index++;
-        }
-
-        if (gPlayer3Controller->rawStickY < -60) {
-            index += 2;
-        }
+        if (gPlayer3Controller->rawStickY >  60) index++;
+        if (gPlayer3Controller->rawStickY < -60) index += 2;
     } else if (scrollDirection == MENU_SCROLL_HORIZONTAL) {
-        if (gPlayer3Controller->rawStickX > 60) {
-            index += 2;
-        }
-
-        if (gPlayer3Controller->rawStickX < -60) {
-            index++;
-        }
+        if (gPlayer3Controller->rawStickX >  60) index += 2;
+        if (gPlayer3Controller->rawStickX < -60) index++;
     }
 
     if (((index ^ gMenuHoldKeyIndex) & index) == 2) {

@@ -60,7 +60,7 @@ struct Skybox {
 
 struct Skybox sSkyBoxInfo[2];
 
-typedef const u8 *const SkyboxTexture[80 * SKYBOX_SIZE];
+typedef const Texture *const SkyboxTexture[80 * SKYBOX_SIZE];
 
 extern SkyboxTexture bbh_skybox_ptrlist;
 extern SkyboxTexture bidw_skybox_ptrlist;
@@ -223,7 +223,7 @@ void draw_skybox_tile_grid(Gfx **dlist, s8 background, s8 player, s8 colorIndex)
     for (row = 0; row < (3 * SKYBOX_SIZE); row++) {
         for (col = 0; col < (3 * SKYBOX_SIZE); col++) {
             s32 tileIndex = sSkyBoxInfo[player].upperLeftTile + row * SKYBOX_COLS + col;
-            const u8 *const texture =
+            const Texture *const texture =
                 (*(SkyboxTexture *) segmented_to_virtual(sSkyboxTextures[background]))[tileIndex];
             Vtx *vertices = make_skybox_rect(tileIndex, colorIndex);
 

@@ -145,12 +145,12 @@ static Gfx *intro_backdrop_one_image(s32 index, s8 *backgroundTable) {
     };
 
     // table that points to either the "Super Mario 64" or "Game Over" tables
-    static const u8 *const *textureTables[] = { mario_title_texture_table, game_over_texture_table };
+    static const Texture *const *textureTables[] = { mario_title_texture_table, game_over_texture_table };
 
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
     Gfx *displayList = alloc_display_list(36 * sizeof(*displayList));
     Gfx *displayListIter = displayList;
-    const u8 *const *vIntroBgTable = segmented_to_virtual(textureTables[backgroundTable[index]]);
+    const Texture *const *vIntroBgTable = segmented_to_virtual(textureTables[backgroundTable[index]]);
     s32 i;
 
     guTranslate(mtx, xCoords[index], yCoords[index], 0.0f);

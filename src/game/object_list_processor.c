@@ -9,6 +9,7 @@
 #include "engine/graph_node.h"
 #include "engine/surface_collision.h"
 #include "engine/surface_load.h"
+#include "engine/math_util.h"
 #include "interaction.h"
 #include "level_update.h"
 #include "mario.h"
@@ -224,28 +225,13 @@ void copy_mario_state_to_object(void) {
     s32 i = 0;
     // L is real
     if (gCurrentObject != gMarioObject) {
-        i += 1;
+        i++;
     }
-
-    gCurrentObject->oVelX = gMarioStates[i].vel[0];
-    gCurrentObject->oVelY = gMarioStates[i].vel[1];
-    gCurrentObject->oVelZ = gMarioStates[i].vel[2];
-
-    gCurrentObject->oPosX = gMarioStates[i].pos[0];
-    gCurrentObject->oPosY = gMarioStates[i].pos[1];
-    gCurrentObject->oPosZ = gMarioStates[i].pos[2];
-
-    gCurrentObject->oMoveAnglePitch = gCurrentObject->header.gfx.angle[0];
-    gCurrentObject->oMoveAngleYaw = gCurrentObject->header.gfx.angle[1];
-    gCurrentObject->oMoveAngleRoll = gCurrentObject->header.gfx.angle[2];
-
-    gCurrentObject->oFaceAnglePitch = gCurrentObject->header.gfx.angle[0];
-    gCurrentObject->oFaceAngleYaw = gCurrentObject->header.gfx.angle[1];
-    gCurrentObject->oFaceAngleRoll = gCurrentObject->header.gfx.angle[2];
-
-    gCurrentObject->oAngleVelPitch = gMarioStates[i].angleVel[0];
-    gCurrentObject->oAngleVelYaw = gMarioStates[i].angleVel[1];
-    gCurrentObject->oAngleVelRoll = gMarioStates[i].angleVel[2];
+    vec3_copy(&gCurrentObject->oVelVec, gMarioStates[i].vel);
+    vec3_copy(&gCurrentObject->oPosVec, gMarioStates[i].pos);
+    vec3_copy(&gCurrentObject->oMoveAngleVec, gCurrentObject->header.gfx.angle);
+    vec3_copy(&gCurrentObject->oFaceAngleVec, gCurrentObject->header.gfx.angle);
+    vec3_copy(&gCurrentObject->oAngleVelVec, gMarioStates[i].angleVel);
 }
 
 /**
@@ -497,18 +483,9 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
             }
 
             geo_obj_init_spawninfo(&object->header.gfx, spawnInfo);
-
-            object->oPosX = spawnInfo->startPos[0];
-            object->oPosY = spawnInfo->startPos[1];
-            object->oPosZ = spawnInfo->startPos[2];
-
-            object->oFaceAnglePitch = spawnInfo->startAngle[0];
-            object->oFaceAngleYaw = spawnInfo->startAngle[1];
-            object->oFaceAngleRoll = spawnInfo->startAngle[2];
-
-            object->oMoveAnglePitch = spawnInfo->startAngle[0];
-            object->oMoveAngleYaw = spawnInfo->startAngle[1];
-            object->oMoveAngleRoll = spawnInfo->startAngle[2];
+            vec3_copy(&object->oPosVec, spawnInfo->startPos);
+            vec3_copy(&object->oFaceAngleVec, spawnInfo->startAngle);
+            vec3_copy(&object->oMoveAngleVec, spawnInfo->startAngle);
             object->oFloorHeight = find_floor(object->oPosX, object->oPosY, object->oPosZ, &object->oFloor);
         }
 

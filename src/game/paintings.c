@@ -4,6 +4,7 @@
 #include "area.h"
 #include "engine/graph_node.h"
 #include "engine/surface_collision.h"
+#include "engine/math_util.h"
 #include "game_init.h"
 #include "geo_misc.h"
 #include "levels/castle_inside/header.h"
@@ -575,16 +576,12 @@ void painting_update_floors(struct Painting *painting) {
 void painting_update_ripple_state(struct Painting *painting) {
     if (gPaintingUpdateCounter != gLastPaintingUpdateCounter) {
         painting->currRippleMag *= painting->rippleDecay;
-
-        //! After ~6.47 days, paintings with RIPPLE_TRIGGER_CONTINUOUS will increment this to
-        //! 16777216 (1 << 24), at which point it will freeze (due to floating-point
-        //! imprecision?) and the painting will stop rippling. This happens to HMC, DDD, and
-        //! CotMC.
-        painting->rippleTimer += 1.0;
+        if (painting->rippleTimer >= ((1 << 24) - 1.0f)) painting->rippleTimer = 0.0f;
+        painting->rippleTimer += 1.0f;
     }
     if (painting->rippleTrigger == RIPPLE_TRIGGER_PROXIMITY) {
         // if the painting is barely rippling, make it stop rippling
-        if (painting->currRippleMag <= 1.0) {
+        if (painting->currRippleMag <= 1.0f) {
             painting->state = PAINTING_IDLE;
             gRipplingPainting = NULL;
         }
@@ -621,14 +618,13 @@ s16 calculate_ripple_at_point(struct Painting *painting, f32 posX, f32 posY) {
     f32 rippleX = painting->rippleX;
     f32 rippleY = painting->rippleY;
 
-    f32 distanceToOrigin;
-    f32 rippleDistance;
-
     posX *= painting->size / PAINTING_SIZE;
     posY *= painting->size / PAINTING_SIZE;
-    distanceToOrigin = sqrtf((posX - rippleX) * (posX - rippleX) + (posY - rippleY) * (posY - rippleY));
+    f32 dx = (posX - rippleX);
+    f32 dy = (posY - rippleY);
+    f32 distanceToOrigin = sqrtf(sqr(dx) + sqr(dy));
     // A larger dispersionFactor makes the ripple spread slower
-    rippleDistance = distanceToOrigin / dispersionFactor;
+    f32 rippleDistance = distanceToOrigin / dispersionFactor;
     if (rippleTimer < rippleDistance) {
         // if the ripple hasn't reached the point yet, make the point magnitude 0
         return 0;
@@ -647,12 +643,10 @@ s16 calculate_ripple_at_point(struct Painting *painting, f32 posX, f32 posY) {
  * else return 0
  */
 s16 ripple_if_movable(struct Painting *painting, s16 movable, s16 posX, s16 posY) {
-    s16 rippleZ = 0;
-
     if (movable) {
-        rippleZ = calculate_ripple_at_point(painting, posX, posY);
+        return calculate_ripple_at_point(painting, posX, posY);
     }
-    return rippleZ;
+    return 0;
 }
 
 /**
@@ -769,8 +763,7 @@ s8 normalize_component(f32 comp) {
  */
 void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
     s16 tri;
-    s16 i;
-    s16 j;
+    s16 i, j;
     s16 neighbors;
     s16 entry = 0;
 
@@ -795,7 +788,7 @@ void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
         nx /= neighbors;
         ny /= neighbors;
         nz /= neighbors;
-        nlen = sqrtf(nx * nx + ny * ny + nz * nz);
+        nlen = sqrtf(sqr(nx) + sqr(ny) + sqr(nz));
 
         if (nlen == 0.0) {
             gPaintingMesh[i].norm[0] = 0;
@@ -822,8 +815,7 @@ Gfx *render_painting(u8 *img, s16 tWidth, s16 tHeight, s16 *textureMap, s16 mapV
     s16 triGroup;
     s16 mapping;
     s16 meshVtx;
-    s16 tx;
-    s16 ty;
+    s16 tx, ty;
 
     // We can fit 15 (16 / 3) vertices in the RSP's vertex buffer.
     // Group triangles by 5, with one remainder group.

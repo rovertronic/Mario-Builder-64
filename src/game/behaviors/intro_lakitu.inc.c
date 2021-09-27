@@ -24,13 +24,11 @@ void intro_lakitu_set_offset_from_camera(struct Object *o, Vec3f offset) {
 }
 
 void intro_lakitu_set_focus(struct Object *o, Vec3f newFocus) {
-    Vec3f origin;
     f32 dist;
     s16 pitch, yaw;
 
     // newFocus is an offset from lakitu's origin, not a point in the world.
-    vec3f_set(origin, 0.f, 0.f, 0.f);
-    vec3f_get_dist_and_angle(origin, newFocus, &dist, &pitch, &yaw);
+    vec3f_get_dist_and_angle(gVec3fZero, newFocus, &dist, &pitch, &yaw);
     o->oFaceAnglePitch = pitch;
     o->oFaceAngleYaw = yaw;
 }
@@ -57,6 +55,7 @@ s32 intro_lakitu_set_pos_and_focus(struct Object *o, struct CutsceneSplinePoint 
 
 void bhv_intro_lakitu_loop(void) {
     Vec3f offset, fromPoint, toPoint;
+    s16 yawToCam;
 
     switch (gCurrentObject->oAction) {
         case 0:
@@ -94,18 +93,10 @@ void bhv_intro_lakitu_loop(void) {
                     cur_obj_play_sound_2(SOUND_ACTION_INTRO_UNK45E);
                     break;
 #endif
-                case 73:
-                    gCurrentObject->oAnimState += 1;
-                    break;
-                case 74:
-                    gCurrentObject->oAnimState -= 1;
-                    break;
-                case 82:
-                    gCurrentObject->oAnimState += 1;
-                    break;
-                case 84:
-                    gCurrentObject->oAnimState -= 1;
-                    break;
+                case 73: gCurrentObject->oAnimState++; break;
+                case 74: gCurrentObject->oAnimState--; break;
+                case 82: gCurrentObject->oAnimState++; break;
+                case 84: gCurrentObject->oAnimState--; break;
             }
 #ifdef VERSION_EU
             if (gCurrentObject->oTimer == 446)
@@ -163,14 +154,14 @@ void bhv_intro_lakitu_loop(void) {
 #else
 #define TIMER 98
 #endif
-
             if (gCurrentObject->oTimer == TIMER) {
                 obj_mark_for_deletion(gCurrentObject);
                 obj_mark_for_deletion(gCurrentObject->oIntroLakituCloud);
             }
 #ifndef VERSION_JP
-            if (gCurrentObject->oTimer == 14)
+            if (gCurrentObject->oTimer == 14) {
                 cur_obj_play_sound_2(SOUND_ACTION_INTRO_UNK45F);
+            }
 #endif
             break;
         case 100:
@@ -188,13 +179,11 @@ void bhv_intro_lakitu_loop(void) {
         case 101:
             object_pos_to_vec3f(toPoint, gCurrentObject);
             if (gCurrentObject->oTimer > 60) {
-                gCurrentObject->oForwardVel =
-                    approach_f32_asymptotic(gCurrentObject->oForwardVel, -10.f, 0.05f);
+                gCurrentObject->oForwardVel = approach_f32_asymptotic(gCurrentObject->oForwardVel, -10.f, 0.05f);
                 gCurrentObject->oMoveAngleYaw += 0x78;
                 gCurrentObject->oMoveAnglePitch += 0x40;
-                gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(
-                    gCurrentObject->oFaceAngleYaw, (s16) calculate_yaw(toPoint, gCamera->pos),
-                    0x200);
+                vec3f_get_yaw(toPoint, gCamera->pos, &yawToCam);
+                gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(gCurrentObject->oFaceAngleYaw, yawToCam, 0x200);
             }
             if (gCurrentObject->oTimer > 105) {
                 gCurrentObject->oAction += 1;
@@ -206,15 +195,13 @@ void bhv_intro_lakitu_loop(void) {
 
         case 102:
             object_pos_to_vec3f(toPoint, gCurrentObject);
-            gCurrentObject->oForwardVel =
-                approach_f32_asymptotic(gCurrentObject->oForwardVel, 60.f, 0.05f);
-            gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(
-                gCurrentObject->oFaceAngleYaw, (s16) calculate_yaw(toPoint, gCamera->pos), 0x200);
-            if (gCurrentObject->oTimer < 62)
-                gCurrentObject->oMoveAngleYaw =
-                    approach_s16_asymptotic(gCurrentObject->oMoveAngleYaw, 0x1800, 0x1E);
-            gCurrentObject->oMoveAnglePitch =
-                camera_approach_s16_symmetric(gCurrentObject->oMoveAnglePitch, -0x2000, 0x5A);
+            gCurrentObject->oForwardVel = approach_f32_asymptotic(gCurrentObject->oForwardVel, 60.f, 0.05f);
+            vec3f_get_yaw(toPoint, gCamera->pos, &yawToCam);
+            gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(gCurrentObject->oFaceAngleYaw, yawToCam, 0x200);
+            if (gCurrentObject->oTimer < 62) {
+                gCurrentObject->oMoveAngleYaw = approach_s16_asymptotic(gCurrentObject->oMoveAngleYaw, 0x1800, 0x1E);
+            }
+            gCurrentObject->oMoveAnglePitch = camera_approach_s16_symmetric(gCurrentObject->oMoveAnglePitch, -0x2000, 0x5A);
             gCurrentObject->oFaceAnglePitch = 0;
             cur_obj_set_pos_via_transform();
             break;

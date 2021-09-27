@@ -287,9 +287,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     }
 #ifdef VISUAL_DEBUG
-    if (hitboxView) {
-        render_debug_boxes(DEBUG_UCODE_REJ);
-    }
+    if (hitboxView) render_debug_boxes(DEBUG_UCODE_REJ);
 #endif
     gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_PosLight_fifo);
     init_rcp(KEEP_ZBUFFER);
@@ -298,12 +296,8 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 #endif
 
 #ifdef VISUAL_DEBUG
-    if (hitboxView) {
-        render_debug_boxes(DEBUG_UCODE_DEFAULT | DEBUG_BOX_CLEAR);
-    }
-    if (surfaceView) {
-        visual_surface_loop();
-    }
+    if ( hitboxView) render_debug_boxes(DEBUG_UCODE_DEFAULT | DEBUG_BOX_CLEAR);
+    if (surfaceView) visual_surface_loop();
 #endif
 }
 #if SILHOUETTE
@@ -326,7 +320,7 @@ void geo_append_display_list(void *displayList, s32 layer) {
 #if defined(F3DZEX_GBI_2) || (SILHOUETTE > 0)
     if (gCurGraphNodeObject != NULL) {
 #ifdef F3DZEX_GBI_2
-        if (gCurGraphNodeObject->node.flags & GRAPH_RENDER_UCODE_REJ && ucodeTestSwitch) {
+        if ((gCurGraphNodeObject->node.flags & GRAPH_RENDER_UCODE_REJ) && ucodeTestSwitch) {
             index = 1;
         }
 #endif
@@ -395,10 +389,10 @@ void geo_process_master_list(struct GraphNodeMasterList *node) {
 void geo_process_ortho_projection(struct GraphNodeOrthoProjection *node) {
     if (node->node.children != NULL) {
         Mtx *mtx   = alloc_display_list(sizeof(*mtx));
-        f32 left   = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width ) / 2.0f * node->scale;
-        f32 right  = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width ) / 2.0f * node->scale;
-        f32 top    = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
-        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+        f32 left   = (((gCurGraphNodeRoot->x - gCurGraphNodeRoot->width ) / 2.0f) * node->scale);
+        f32 right  = (((gCurGraphNodeRoot->x + gCurGraphNodeRoot->width ) / 2.0f) * node->scale);
+        f32 top    = (((gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f) * node->scale);
+        f32 bottom = (((gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f) * node->scale);
 
         guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
         gSPPerspNormalize(gDisplayListHead++, 0xFFFF);

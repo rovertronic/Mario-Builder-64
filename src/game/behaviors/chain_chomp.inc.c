@@ -210,20 +210,20 @@ static void chain_chomp_sub_act_lunge(void) {
     obj_face_pitch_approach(o->oChainChompTargetPitch, 0x400);
 
     if (o->oForwardVel != 0.0f) {
-        f32 val04;
+        // f32 val04;
 
         if (o->oChainChompRestrictedByChain == TRUE) {
             o->oForwardVel = o->oVelY = 0.0f;
             o->oChainChompSignedMaxDistBetweenChainParts = 30.0f;
         }
 
-        // TODO: What is this
-        if ((val04 = 900.0f - o->oChainChompDistToPivot) > 220.0f) {
-            val04 = 220.0f;
-        }
+        // // TODO: What is this
+        // if ((val04 = 900.0f - o->oChainChompDistToPivot) > 220.0f) {
+        //     val04 = 220.0f;
+        // }
 
-        o->oChainChompMaxDistBetweenChainParts =
-            val04 / 220.0f * o->oChainChompMaxDistFromPivotPerChainPart;
+        // o->oChainChompMaxDistBetweenChainParts =
+        //     val04 / 220.0f * o->oChainChompMaxDistFromPivotPerChainPart;
         o->oTimer = 0;
     } else {
         // Turn toward pivot
