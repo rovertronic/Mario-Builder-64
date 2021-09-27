@@ -148,6 +148,52 @@ void mtxf_translate(Mat4 dest, Vec3f b) {
     vec3f_copy(dest[3], b);
 }
 
+void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
+    register f32 sx = sins(rot[0]);
+    register f32 cx = coss(rot[0]);
+
+    register f32 sy = sins(rot[1]);
+    register f32 cy = coss(rot[1]);
+
+    register f32 sz = sins(rot[2]);
+    register f32 cz = coss(rot[2]);
+    register f32 entry0;
+    register f32 entry1;
+    register f32 entry2;
+
+    entry0 = cy * cz;
+    entry1 = cy * sz;
+    entry2 = -sy;
+    dest[0][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
+    dest[0][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
+    dest[0][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+
+    entry1 = sx * sy;
+    entry0 = entry1 * cz - cx * sz;
+    entry1 = entry1 * sz + cx * cz;
+    entry2 = sx * cy;
+    dest[1][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
+    dest[1][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
+    dest[1][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+
+    entry1 = cx * sy;
+    entry0 = entry1 * cz + sx * sz;
+    entry1 = entry1 * sz - sx * cz;
+    entry2 = cx * cy;
+    dest[2][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
+    dest[2][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
+    dest[2][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+
+    entry0 = trans[0];
+    entry1 = trans[1];
+    entry2 = trans[2];
+    dest[3][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0] + src[3][0];
+    dest[3][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1] + src[3][1];
+    dest[3][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2] + src[3][2];
+    dest[0][3] = dest[1][3] = dest[2][3] = 0;
+    ((u32 *) dest)[15] = 0x3F800000;
+}
+
 /**
  * Set mtx to a look-at matrix for the camera. The resulting transformation
  * transforms the world as if there exists a camera at position 'from' pointed
