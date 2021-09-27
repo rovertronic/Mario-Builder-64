@@ -1421,7 +1421,7 @@ void common_slide_action(struct MarioState *m, u32 endAction, u32 airAction, s32
                 s16 wallAngle = atan2s(m->wall->normal.z, m->wall->normal.x);
                 f32 slideSpeed = sqrtf(m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ);
 
-                if ((slideSpeed *= 0.9) < 4.0f) {
+                if ((slideSpeed *= 0.9f) < 4.0f) {
                     slideSpeed = 4.0f;
                 }
 

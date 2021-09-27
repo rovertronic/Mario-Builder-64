@@ -562,7 +562,7 @@ void cap_ukiki_held_loop(void) {
             if (mario_lose_cap_to_enemy(2)) {
                 o->oUkikiTextState = UKIKI_TEXT_STEAL_CAP;
                 o->oUkikiHasCap |= UKIKI_CAP_ON;
-            } else {}
+            }
             break;
 
         case UKIKI_TEXT_STEAL_CAP:

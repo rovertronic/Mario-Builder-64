@@ -138,10 +138,9 @@ u8 sSkyboxColors[][3] = {
 s32 calculate_skybox_scaled_x(s8 player, f32 fov) {
     f32 yaw = sSkyBoxInfo[player].yaw;
 
-    //! double literals are used instead of floats
-    f32 yawScaled = SCREEN_WIDTH * 360.0 * yaw / (fov * 65536.0);
+    f32 yawScaled = SCREEN_WIDTH * 360.0f * yaw / (fov * 65536.0f);
     // Round the scaled yaw. Since yaw is a u16, it doesn't need to check for < 0
-    s32 scaledX = yawScaled + 0.5;
+    s32 scaledX = yawScaled + 0.5f;
 
     if (scaledX > SKYBOX_WIDTH) {
         scaledX -= scaledX / SKYBOX_WIDTH * SKYBOX_WIDTH;
@@ -157,10 +156,10 @@ s32 calculate_skybox_scaled_x(s8 player, f32 fov) {
  */
 s32 calculate_skybox_scaled_y(s8 player, UNUSED f32 fov) {
     // Convert pitch to degrees. Pitch is bounded between -90 (looking down) and 90 (looking up).
-    f32 pitchInDegrees = (f32) sSkyBoxInfo[player].pitch * 360.0 / 65535.0;
+    f32 pitchInDegrees = (f32) sSkyBoxInfo[player].pitch * 360.0f / 65535.0f;
 
     // Scale by 360 / fov
-    f32 degreesToScale = 360.0f * pitchInDegrees / 90.0;
+    f32 degreesToScale = 360.0f * pitchInDegrees / 90.0f;
     s32 roundedY = round_float(degreesToScale);
 
     // Since pitch can be negative, and the tile grid starts 1 octant above the camera's focus, add

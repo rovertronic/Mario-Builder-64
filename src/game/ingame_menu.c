@@ -601,7 +601,7 @@ s16 get_str_x_pos_from_center(s16 centerPos, u8 *str, UNUSED f32 scale) {
     }
     // return the x position of where the string starts as half the string's
     // length from the position of the provided center.
-    return (s16)(centerPos - (s16)(spacesWidth / 2.0));
+    return (s16)(centerPos - (s16)(spacesWidth / 2.0f));
 }
 
 
@@ -732,17 +732,13 @@ void reset_dialog_render_state(void) {
     gDialogResponse = DIALOG_RESPONSE_NONE;
 }
 
-#define X_VAL1 -7.0f
-#define Y_VAL1 5.0
-#define Y_VAL2 5.0f
-
 void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
     create_dl_translation_matrix(MENU_MTX_NOPUSH, dialog->leftOffset, dialog->width, 0);
 
     switch (gDialogBoxType) {
         case DIALOG_TYPE_ROTATE: // Renders a dialog black box with zoom and rotation
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScale, 1.0 / gDialogBoxScale, 1.0f);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0f / gDialogBoxScale, 1.0f / gDialogBoxScale, 1.0f);
                 // convert the speed into angle
                 create_dl_rotation_matrix(MENU_MTX_NOPUSH, gDialogBoxOpenTimer * 4.0f, 0, 0, 1.0f);
             }
@@ -750,16 +746,15 @@ void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
             break;
         case DIALOG_TYPE_ZOOM: // Renders a dialog white box with zoom
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0 - (65.0 / gDialogBoxScale),
-                                              (40.0 / gDialogBoxScale) - 40, 0);
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScale, 1.0 / gDialogBoxScale, 1.0f);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0f - (65.0f / gDialogBoxScale), (40.0f / gDialogBoxScale) - 40, 0);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0f / gDialogBoxScale, 1.0f / gDialogBoxScale, 1.0f);
             }
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 150);
             break;
     }
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, X_VAL1, Y_VAL1, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.1f, ((f32) linesPerBox / Y_VAL2) + 0.1, 1.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, -7.0f, 5.0f, 0);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.1f, ((f32) linesPerBox / 5.0f) + 0.1f, 1.0f);
 
     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -1156,11 +1151,11 @@ void render_dialog_entries(void) {
             }
 
             if (gDialogBoxType == DIALOG_TYPE_ROTATE) {
-                gDialogBoxOpenTimer -= 7.5;
-                gDialogBoxScale -= 1.5;
+                gDialogBoxOpenTimer -= 7.5f;
+                gDialogBoxScale -= 1.5f;
             } else {
-                gDialogBoxOpenTimer -= 10.0;
-                gDialogBoxScale -= 2.0;
+                gDialogBoxOpenTimer -= 10.0f;
+                gDialogBoxScale -= 2.0f;
             }
 
             if (gDialogBoxOpenTimer == 0.0f) {

@@ -13,9 +13,9 @@ static struct ObjectHitbox sBobombHitbox = {
 };
 
 void bhv_bobomb_init(void) {
-    o->oGravity = 2.5;
-    o->oFriction = 0.8;
-    o->oBuoyancy = 1.3;
+    o->oGravity  = 2.5f;
+    o->oFriction = 0.8f;
+    o->oBuoyancy = 1.3f;
     o->oInteractionSubtype = INT_SUBTYPE_KICKABLE;
 }
 
@@ -30,7 +30,7 @@ void bobomb_spawn_coin(void) {
 void bobomb_act_explode(void) {
     struct Object *explosion;
     if (o->oTimer < 5)
-        cur_obj_scale(1.0 + (f32) o->oTimer / 5.0);
+        cur_obj_scale(1.0f + (f32) o->oTimer / 5.0f);
     else {
         explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
         explosion->oGraphYOffset += 100.0f;
@@ -49,9 +49,9 @@ void bobomb_check_interactions(void) {
         if ((o->oInteractStatus & INT_STATUS_MARIO_KNOCKBACK_DMG) != 0)
         {
             o->oMoveAngleYaw = gMarioObject->header.gfx.angle[1];
-            o->oForwardVel = 25.0;
-            o->oVelY = 30.0;
-            o->oAction = BOBOMB_ACT_LAUNCHED;
+            o->oForwardVel   = 25.0f;
+            o->oVelY         = 30.0f;
+            o->oAction       = BOBOMB_ACT_LAUNCHED;
         }
 
         if ((o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB) != 0)
@@ -67,7 +67,7 @@ void bobomb_check_interactions(void) {
 void bobomb_act_patrol(void) {
     s16 collisionFlags;
 
-    o->oForwardVel = 5.0;
+    o->oForwardVel = 5.0f;
 
     collisionFlags = object_step();
     if ((obj_return_home_if_safe(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400) == 1)
@@ -82,7 +82,7 @@ void bobomb_act_chase_mario(void) {
     s16 animFrame, collisionFlags;
 
     animFrame = ++o->header.gfx.animInfo.animFrame;
-    o->oForwardVel = 20.0;
+    o->oForwardVel = 20.0f;
 
     collisionFlags = object_step();
 
@@ -171,7 +171,7 @@ void bobomb_free_loop(void) {
 void bobomb_held_loop(void) {
     o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
     cur_obj_init_animation(1);
-    cur_obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0);
+    cur_obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0f);
 
     o->oBobombFuseLit = 1;
     if (o->oBobombFuseTimer >= 151) {
@@ -197,11 +197,11 @@ void bobomb_thrown_loop(void) {
     cur_obj_enable_rendering_2();
 
     o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    o->oHeldState = 0;
-    o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW; /* bit 3 */
-    o->oForwardVel = 25.0;
-    o->oVelY = 20.0;
-    o->oAction = BOBOMB_ACT_LAUNCHED;
+    o->oHeldState  = 0;
+    o->oFlags     &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW; /* bit 3 */
+    o->oForwardVel = 25.0f;
+    o->oVelY       = 20.0f;
+    o->oAction     = BOBOMB_ACT_LAUNCHED;
 }
 
 // sp18 = blinkTimer
@@ -273,9 +273,9 @@ void bhv_bobomb_fuse_smoke_init(void) {
 }
 
 void bhv_bobomb_buddy_init(void) {
-    o->oGravity = 2.5;
-    o->oFriction = 0.8;
-    o->oBuoyancy = 1.3;
+    o->oGravity  = 2.5f;
+    o->oFriction = 0.8f;
+    o->oBuoyancy = 1.3f;
     o->oInteractionSubtype = INT_SUBTYPE_NPC;
 }
 

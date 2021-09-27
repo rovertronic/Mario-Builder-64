@@ -190,9 +190,9 @@ void beh_yellow_background_menu_loop(void) {
  * depth = 200.0 for main menu, 22.0 for submenus.
  */
 s32 check_clicked_button(s16 x, s16 y, f32 depth) {
-    f32 a = 52.4213;
-    f32 newX = ((f32) x * 160.0) / (a * depth);
-    f32 newY = ((f32) y * 120.0) / (a * 3 / 4 * depth);
+    f32 a = 52.4213f;
+    f32 newX = ((f32) x * 160.0f) / (a * depth);
+    f32 newY = ((f32) y * 120.0f) / (a * 3 / 4 * depth);
     s16 maxX = newX + 25.0f;
     s16 minX = newX - 25.0f;
     s16 maxY = newY + 21.0f;
@@ -217,10 +217,10 @@ void bhv_menu_button_growing_from_main_menu(struct Object *button) {
     if (button->oMenuButtonTimer >= 8 && button->oMenuButtonTimer < 16) {
         button->oFaceAnglePitch -= 0x800;
     }
-    button->oParentRelativePosX -= button->oMenuButtonOrigPosX / 16.0;
-    button->oParentRelativePosY -= button->oMenuButtonOrigPosY / 16.0;
-    if (button->oPosZ < button->oMenuButtonOrigPosZ + 17800.0) {
-        button->oParentRelativePosZ += 1112.5;
+    button->oParentRelativePosX -= button->oMenuButtonOrigPosX / 16.0f;
+    button->oParentRelativePosY -= button->oMenuButtonOrigPosY / 16.0f;
+    if (button->oPosZ < button->oMenuButtonOrigPosZ + 17800.0f) {
+        button->oParentRelativePosZ += 1112.5f;
     }
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 16) {
@@ -244,10 +244,10 @@ void bhv_menu_button_shrinking_to_main_menu(struct Object *button) {
     if (button->oMenuButtonTimer >= 8 && button->oMenuButtonTimer < 16) {
         button->oFaceAnglePitch += 0x800;
     }
-    button->oParentRelativePosX += button->oMenuButtonOrigPosX / 16.0;
-    button->oParentRelativePosY += button->oMenuButtonOrigPosY / 16.0;
+    button->oParentRelativePosX += button->oMenuButtonOrigPosX / 16.0f;
+    button->oParentRelativePosY += button->oMenuButtonOrigPosY / 16.0f;
     if (button->oPosZ > button->oMenuButtonOrigPosZ) {
-        button->oParentRelativePosZ -= 1112.5;
+        button->oParentRelativePosZ -= 1112.5f;
     }
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 16) {
@@ -271,9 +271,9 @@ void bhv_menu_button_growing_from_submenu(struct Object *button) {
     if (button->oMenuButtonTimer >= 8 && button->oMenuButtonTimer < 16) {
         button->oFaceAnglePitch -= 0x800;
     }
-    button->oParentRelativePosX -= button->oMenuButtonOrigPosX / 16.0;
-    button->oParentRelativePosY -= button->oMenuButtonOrigPosY / 16.0;
-    button->oParentRelativePosZ -= 116.25;
+    button->oParentRelativePosX -= button->oMenuButtonOrigPosX / 16.0f;
+    button->oParentRelativePosY -= button->oMenuButtonOrigPosY / 16.0f;
+    button->oParentRelativePosZ -= 116.25f;
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 16) {
         button->oParentRelativePosX = 0.0f;
@@ -296,10 +296,10 @@ void bhv_menu_button_shrinking_to_submenu(struct Object *button) {
     if (button->oMenuButtonTimer >= 8 && button->oMenuButtonTimer < 16) {
         button->oFaceAnglePitch += 0x800;
     }
-    button->oParentRelativePosX += button->oMenuButtonOrigPosX / 16.0;
-    button->oParentRelativePosY += button->oMenuButtonOrigPosY / 16.0;
+    button->oParentRelativePosX += button->oMenuButtonOrigPosX / 16.0f;
+    button->oParentRelativePosY += button->oMenuButtonOrigPosY / 16.0f;
     if (button->oPosZ > button->oMenuButtonOrigPosZ) {
-        button->oParentRelativePosZ += 116.25;
+        button->oParentRelativePosZ += 116.25f;
     }
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 16) {
@@ -342,7 +342,7 @@ void bhv_menu_button_zoom_in_out(struct Object *button) {
  * Used while selecting a target copy/erase file or yes/no erase confirmation prompt.
  */
 void bhv_menu_button_zoom_in(struct Object *button) {
-    button->oMenuButtonScale += 0.0022;
+    button->oMenuButtonScale += 0.0022f;
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 10) {
         button->oMenuButtonState = MENU_BUTTON_STATE_DEFAULT;
@@ -356,7 +356,7 @@ void bhv_menu_button_zoom_in(struct Object *button) {
  * yes/no erase confirmation prompt to undo the zoom in.
  */
 void bhv_menu_button_zoom_out(struct Object *button) {
-    button->oMenuButtonScale -= 0.0022;
+    button->oMenuButtonScale -= 0.0022f;
     button->oMenuButtonTimer++;
     if (button->oMenuButtonTimer == 10) {
         button->oMenuButtonState = MENU_BUTTON_STATE_DEFAULT;
@@ -1532,7 +1532,7 @@ void handle_controller_cursor_input(void) {
  */
 void print_menu_cursor(void) {
     handle_controller_cursor_input();
-    create_dl_translation_matrix(MENU_MTX_PUSH, sCursorPos[0] + 160.0f - 5.0, sCursorPos[1] + 120.0f - 25.0, 0.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, sCursorPos[0] + 160.0f - 5.0f, sCursorPos[1] + 120.0f - 25.0f, 0.0f);
     // Get the right graphic to use for the cursor.
     if (sCursorClickingTimer == 0)
         // Idle

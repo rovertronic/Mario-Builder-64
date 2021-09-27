@@ -230,8 +230,8 @@ f32 painting_mario_y(struct Painting *painting) {
 f32 painting_mario_z(struct Painting *painting) {
     f32 relZ = painting->posZ - gPaintingMarioZPos;
 
-    if (relZ < 0.0) {
-        relZ = 0.0;
+    if (relZ < 0.0f) {
+        relZ = 0.0f;
     } else if (relZ > painting->size) {
         relZ = painting->size;
     }
@@ -289,8 +289,8 @@ f32 painting_nearest_4th(struct Painting *painting) {
 f32 painting_mario_x(struct Painting *painting) {
     f32 relX = gPaintingMarioXPos - painting->posX;
 
-    if (relX < 0.0) {
-        relX = 0.0;
+    if (relX < 0.0f) {
+        relX = 0.0f;
     } else if (relX > painting->size) {
         relX = painting->size;
     }
@@ -309,7 +309,7 @@ f32 painting_ripple_x(struct Painting *painting, s8 xSource) {
             return painting_mario_x(painting);
             break;
         case MIDDLE_X: // concentric rippling may not care about Mario
-            return painting->size / 2.0;
+            return painting->size / 2.0f;
             break;
     }
     return 0.0f;
@@ -790,7 +790,7 @@ void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
         nz /= neighbors;
         nlen = sqrtf(sqr(nx) + sqr(ny) + sqr(nz));
 
-        if (nlen == 0.0) {
+        if (nlen == 0.0f) {
             gPaintingMesh[i].norm[0] = 0;
             gPaintingMesh[i].norm[1] = 0;
             gPaintingMesh[i].norm[2] = 0;

@@ -520,8 +520,8 @@ void set_camera_shake_from_hit(s16 shake) {
             break;
 
         case SHAKE_HIT_FROM_BELOW:
-            gLakituState.focHSpeed = 0.07;
-            gLakituState.posHSpeed = 0.07;
+            gLakituState.focHSpeed = 0.07f;
+            gLakituState.posHSpeed = 0.07f;
             break;
 
         case SHAKE_SHOCK:

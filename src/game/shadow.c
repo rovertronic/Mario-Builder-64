@@ -115,8 +115,10 @@ s16 sSurfaceTypeBelowShadow;
  */
 void rotate_rectangle(f32 *newZ, f32 *newX, f32 oldZ, f32 oldX) {
     struct Object *obj = (struct Object *) gCurGraphNodeObject;
-    *newZ = oldZ * coss(obj->oFaceAngleYaw) - oldX * sins(obj->oFaceAngleYaw);
-    *newX = oldZ * sins(obj->oFaceAngleYaw) + oldX * coss(obj->oFaceAngleYaw);
+    f32 s = sins(obj->oFaceAngleYaw);
+    f32 c = coss(obj->oFaceAngleYaw);
+    *newZ = oldZ * c - oldX * s;
+    *newX = oldZ * s + oldX * c;
 }
 
 /**
@@ -134,12 +136,12 @@ f32 atan2_deg(f32 a, f32 b) {
 f32 scale_shadow_with_distance(f32 initial, f32 distFromFloor) {
     f32 newScale;
 
-    if (distFromFloor <= 0.0) {
+    if (distFromFloor <= 0.0f) {
         newScale = initial;
-    } else if (distFromFloor >= 600.0) {
-        newScale = initial * 0.5;
+    } else if (distFromFloor >= 600.0f) {
+        newScale = initial * 0.5f;
     } else {
-        newScale = initial * (1.0 - (0.5 * distFromFloor / 600.0));
+        newScale = initial * (1.0f - (0.5f * distFromFloor / 600.0f));
     }
 
     return newScale;
@@ -149,7 +151,7 @@ f32 scale_shadow_with_distance(f32 initial, f32 distFromFloor) {
  * Disable a shadow when its parent object is more than 600 units from the ground.
  */
 f32 disable_shadow_with_distance(f32 shadowScale, f32 distFromFloor) {
-    if (distFromFloor >= 600.0) {
+    if (distFromFloor >= 600.0f) {
         return 0.0f;
     } else {
         return shadowScale;
@@ -164,12 +166,12 @@ s32 dim_shadow_with_distance(u8 solidity, f32 distFromFloor) {
 
     if (solidity < 121) {
         return solidity;
-    } else if (distFromFloor <= 0.0) {
+    } else if (distFromFloor <= 0.0f) {
         return solidity;
-    } else if (distFromFloor >= 600.0) {
+    } else if (distFromFloor >= 600.0f) {
         return 120;
     } else {
-        ret = ((120 - solidity) * distFromFloor) / 600.0 + (f32) solidity;
+        ret = ((120 - solidity) * distFromFloor) / 600.0f + (f32) solidity;
         return ret;
     }
 }
@@ -230,16 +232,16 @@ s32 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
         } else {
             gShadowAboveCustomWater = FALSE;
             // Assume that the water is flat.
-            s->floorNormalX = 0;
-            s->floorNormalY = 1.0;
-            s->floorNormalZ = 0;
+            s->floorNormalX = 0.0f;
+            s->floorNormalY = 1.0f;
+            s->floorNormalZ = 0.0f;
             s->floorOriginOffset = -waterLevel;
         }
 
     } else {
         // Don't draw a shadow if the floor is lower than expected possible,
         // or if the y-normal is negative (an unexpected result).
-        if (s->floorHeight < FLOOR_LOWER_LIMIT_SHADOW || floor->normal.y <= 0.0) {
+        if (s->floorHeight < FLOOR_LOWER_LIMIT_SHADOW || floor->normal.y <= 0.0f) {
             return 1;
         }
 
@@ -260,10 +262,10 @@ s32 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
     floorSteepness = sqrtf(s->floorNormalX * s->floorNormalX + s->floorNormalZ * s->floorNormalZ);
 
     // This if-statement avoids dividing by 0.
-    if (floorSteepness == 0.0) {
+    if (floorSteepness == 0.0f) {
         s->floorTilt = 0;
     } else {
-        s->floorTilt = 90.0 - atan2_deg(floorSteepness, s->floorNormalY);
+        s->floorTilt = 90.0f - atan2_deg(floorSteepness, s->floorNormalY);
     }
     return 0;
 }
@@ -370,8 +372,7 @@ void get_vertex_coords(s8 index, s8 shadowVertexType, s8 *xCoord, s8 *zCoord) {
  * vertex and 4 vertex cases are identical, and the above-described clamping
  * behavior is overwritten.
  */
-void calculate_vertex_xyz(s8 index, struct Shadow s, f32 *xPosVtx, f32 *yPosVtx, f32 *zPosVtx,
-                          s8 shadowVertexType) {
+void calculate_vertex_xyz(s8 index, struct Shadow s, f32 *xPosVtx, f32 *yPosVtx, f32 *zPosVtx, s8 shadowVertexType) {
     f32 tiltedScale = cosf(s.floorTilt * M_PI / 180.0) * s.shadowScale;
     f32 downwardAngle = s.floorDownwardAngle * M_PI / 180.0;
     f32 halfScale;
@@ -382,8 +383,8 @@ void calculate_vertex_xyz(s8 index, struct Shadow s, f32 *xPosVtx, f32 *yPosVtx,
     // This makes xCoordUnit and yCoordUnit each one of -1, 0, or 1.
     get_vertex_coords(index, shadowVertexType, &xCoordUnit, &zCoordUnit);
 
-    halfScale = (xCoordUnit * s.shadowScale) / 2.0;
-    halfTiltedScale = (zCoordUnit * tiltedScale) / 2.0;
+    halfScale       = (xCoordUnit * s.shadowScale) / 2.0f;
+    halfTiltedScale = (zCoordUnit *   tiltedScale) / 2.0f;
 
     *xPosVtx = (halfTiltedScale * sinf(downwardAngle)) + (halfScale * cosf(downwardAngle)) + s.parentX;
     *zPosVtx = (halfTiltedScale * cosf(downwardAngle)) - (halfScale * sinf(downwardAngle)) + s.parentZ;
@@ -523,7 +524,7 @@ void linearly_interpolate_solidity_negative(struct Shadow *s, u8 initialSolidity
     // This is not necessarily a bug, since this function is only used once,
     // with start == 0.
     if (curr >= start && end >= curr) {
-        s->solidity = ((f32) initialSolidity * (1.0 - (f32)(curr - start) / (end - start)));
+        s->solidity = ((f32) initialSolidity * (1.0f - (f32)(curr - start) / (end - start)));
     } else {
         s->solidity = 0;
     }
@@ -584,16 +585,16 @@ s32 correct_shadow_solidity_for_animations(s32 isLuigi, u8 initialSolidity, stru
  */
 void correct_lava_shadow_height(struct Shadow *s) {
     if (gCurrLevelNum == LEVEL_BITFS && sSurfaceTypeBelowShadow == SURFACE_BURNING) {
-        if (s->floorHeight < -3000.0) {
-            s->floorHeight = -3062.0;
+        if (s->floorHeight < -3000.0f) {
+            s->floorHeight = -3062.0f;
             gShadowAboveWaterOrLava = TRUE;
-        } else if (s->floorHeight > 3400.0) {
-            s->floorHeight = 3492.0;
+        } else if (s->floorHeight > 3400.0f) {
+            s->floorHeight = 3492.0f;
             gShadowAboveWaterOrLava = TRUE;
         }
     } else if (gCurrLevelNum == LEVEL_LLL && gCurrAreaIndex == 1
                && sSurfaceTypeBelowShadow == SURFACE_BURNING) {
-        s->floorHeight = 5.0;
+        s->floorHeight = 5.0f;
         gShadowAboveWaterOrLava = TRUE;
     }
 }
@@ -821,8 +822,8 @@ Gfx *create_shadow_square(f32 xPos, f32 yPos, f32 zPos, s16 shadowScale, u8 soli
     distFromShadow = yPos - shadowHeight;
     switch (shadowType) {
         case SHADOW_SQUARE_PERMANENT: shadowRadius = shadowScale / 2; break;
-        case SHADOW_SQUARE_SCALABLE:  shadowRadius =   scale_shadow_with_distance(shadowScale, distFromShadow) / 2.0; break;
-        case SHADOW_SQUARE_TOGGLABLE: shadowRadius = disable_shadow_with_distance(shadowScale, distFromShadow) / 2.0; break;
+        case SHADOW_SQUARE_SCALABLE:  shadowRadius =   scale_shadow_with_distance(shadowScale, distFromShadow) / 2.0f; break;
+        case SHADOW_SQUARE_TOGGLABLE: shadowRadius = disable_shadow_with_distance(shadowScale, distFromShadow) / 2.0f; break;
         default: return NULL;
     }
 

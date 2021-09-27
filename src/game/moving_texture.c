@@ -310,9 +310,9 @@ Gfx *geo_wdw_set_initial_water_level(s32 callContext, UNUSED struct GraphNode *n
         gWdwWaterLevelSet = FALSE;
     } else if (callContext == GEO_CONTEXT_RENDER && gEnvironmentRegions != NULL
                && !gWdwWaterLevelSet) {
-        if (gPaintingMarioYEntry <= 1382.4) {
+        if (gPaintingMarioYEntry <= 1382.4f) {
             wdwWaterHeight = 31;
-        } else if (gPaintingMarioYEntry >= 1600.0) {
+        } else if (gPaintingMarioYEntry >= 1600.0f) {
             wdwWaterHeight = 2816;
         } else {
             wdwWaterHeight = 1024;
@@ -643,7 +643,7 @@ Gfx *geo_movtex_draw_water_regions(s32 callContext, struct GraphNode *node, UNUS
         }
         asGenerated = (struct GraphNodeGenerated *) node;
         if (asGenerated->parameter == JRB_MOVTEX_INTIAL_MIST) {
-            if (gLakituState.goalPos[1] < 1024.0) { // if camera under water
+            if (gLakituState.goalPos[1] < 1024.0f) { // if camera under water
                 return NULL;
             }
             if (save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_JRB - 1) & 1) { // first star in JRB complete

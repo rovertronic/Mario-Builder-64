@@ -71,7 +71,7 @@ void bub_act_1(void) {
         o->oAngleToMario = cur_obj_angle_to_home();
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x100);
     if (o->oDistanceToMario < 200.0f)
-        if (o->oCheepCheepRandomSwimAway < 0.5)
+        if (o->oCheepCheepRandomSwimAway < 0.5f)
             o->oAction = 2;
     if (o->oInteractStatus & INT_STATUS_INTERACTED)
         o->oAction = 2;

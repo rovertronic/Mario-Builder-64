@@ -999,7 +999,7 @@ s32 act_spawn_spin_airborne(struct MarioState *m) {
     mario_set_forward_vel(m, m->forwardVel);
 
     // landed on floor, play spawn land animation
-    if (perform_air_step(m, 0.0) == AIR_STEP_LANDED) {
+    if (perform_air_step(m, 0.0f) == AIR_STEP_LANDED) {
         play_mario_landing_sound(m, SOUND_ACTION_TERRAIN_LANDING);
         set_mario_action(m, ACT_SPAWN_SPIN_LANDING, 0);
     }
@@ -2026,7 +2026,7 @@ static void end_peach_cutscene_mario_landing(struct MarioState *m) {
 
         sEndJumboStarObj = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR, bhvStaticObject, 0,
                                                      2528, -1800, 0, 0, 0);
-        obj_scale(sEndJumboStarObj, 3.0);
+        obj_scale(sEndJumboStarObj, 3.0f);
         advance_cutscene_step(m);
     }
 }

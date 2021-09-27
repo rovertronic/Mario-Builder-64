@@ -8,9 +8,9 @@ void bhv_flamethrower_flame_loop(void) {
         obj_translate_xyz_random(o, 10.0f);
     }
     if (o->oBehParams2ndByte == 2)
-        size = o->oTimer * (o->oForwardVel - 6.0f) / 100.0 + 2.0;
+        size = o->oTimer * (o->oForwardVel -  6.0f) / 100.0f + 2.0f;
     else
-        size = o->oTimer * (o->oForwardVel - 20.0) / 100.0 + 1.0;
+        size = o->oTimer * (o->oForwardVel - 20.0f) / 100.0f + 1.0f;
     if (o->oBehParams2ndByte == 3) {
         o->hitboxHeight = 200.0f;
         o->hitboxDownOffset = 150.0f;
@@ -20,7 +20,7 @@ void bhv_flamethrower_flame_loop(void) {
             o->oVelY = 0;
             o->oPosY = o->oFloorHeight + 25.0f * size;
         }
-        remainingTime = o->parentObj->oFlameThowerTimeRemaining / 1.2;
+        remainingTime = o->parentObj->oFlameThowerTimeRemaining / 1.2f;
     } else
         remainingTime = o->parentObj->oFlameThowerTimeRemaining;
     cur_obj_scale(size);

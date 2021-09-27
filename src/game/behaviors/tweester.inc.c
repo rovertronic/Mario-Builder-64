@@ -23,7 +23,7 @@ struct ObjectHitbox sTweesterHitbox = {
  */
 void tweester_scale_and_move(f32 preScale) {
     s16 dYaw  = 0x2C00;
-    f32 scale = preScale * 0.4;
+    f32 scale = preScale * 0.4f;
 
     o->header.gfx.scale[0] = (( coss(o->oTweesterScaleTimer) + 1.0f) * 0.5f * 0.3f + 1.0f) * scale;
     o->header.gfx.scale[1] = ((-coss(o->oTweesterScaleTimer) + 1.0f) * 0.5f * 0.5f + 0.5f) * scale;
@@ -140,7 +140,7 @@ void bhv_tweester_sand_particle_loop(void) {
     o->oForwardVel += 15.0f;
     o->oPosY += 22.0f;
 
-    cur_obj_scale(random_float() + 1.0);
+    cur_obj_scale(random_float() + 1.0f);
 
     if (o->oTimer == 0) {
         obj_translate_xz_random(o, 100.0f);

@@ -160,8 +160,8 @@ void piranha_plant_act_shrink_and_die(void) {
      * programmers meant to type `else if`.
      */
     if (o->oPiranhaPlantScale > 0.0f) {
-        // Shrink by 0.04 per frame.
-        o->oPiranhaPlantScale = o->oPiranhaPlantScale - 0.04;
+        // Shrink by 0.04f per frame.
+        o->oPiranhaPlantScale = o->oPiranhaPlantScale - 0.04f;
     } else {
         o->oPiranhaPlantScale = 0.0f;
         cur_obj_spawn_loot_blue_coin();
@@ -198,9 +198,9 @@ void piranha_plant_act_respawn(void) {
      * sets the Piranha Plant's scale to 0, therefore the Piranha Plant will
      * grow from the ground unconditionally when in this state.
      */
-    if (o->oPiranhaPlantScale < 1.0) {
-        // Grow by 0.02 per frame.
-        o->oPiranhaPlantScale += 0.02;
+    if (o->oPiranhaPlantScale < 1.0f) {
+        // Grow by 0.02f per frame.
+        o->oPiranhaPlantScale += 0.02f;
     } else {
         o->oPiranhaPlantScale = 1.0f;
         o->oAction = PIRANHA_PLANT_ACT_IDLE;

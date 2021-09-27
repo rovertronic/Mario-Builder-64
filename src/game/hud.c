@@ -190,7 +190,7 @@ void animate_power_meter_emphasized(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
 
     if (!(hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER)) {
-        if (sPowerMeterVisibleTimer == 45.0) {
+        if (sPowerMeterVisibleTimer == 45.0f) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
         }
     } else {
@@ -240,7 +240,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
         sPowerMeterVisibleTimer = 0;
     }
     // After health is full, hide power meter
-    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0) {
+    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0f) {
         sPowerMeterHUD.animation = POWER_METER_HIDING;
     }
     // Update to match health value

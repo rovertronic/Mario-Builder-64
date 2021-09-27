@@ -9,7 +9,7 @@ void hexagonal_ring_spawn_flames(void) {
     flameObj->oVelY = random_float() * 50.0f + 10.0f;
     f32 size = random_float() * 6.0f + 3.0f;
     obj_scale_xyz(flameObj, size, size, size);
-    if (random_float() < 0.1)
+    if (random_float() < 0.1f)
         cur_obj_play_sound_2(SOUND_GENERAL_VOLCANO_EXPLOSION);
 }
 

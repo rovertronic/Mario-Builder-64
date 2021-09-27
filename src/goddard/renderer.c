@@ -665,7 +665,7 @@ static Gfx gd_dl_rdp_init[] = {
     gsSPEndDisplayList(),
 };
 
-float sGdPerspTimer = 1.0;
+float sGdPerspTimer = 1.0f;
 
 UNUSED static Gfx gd_texture4_dummy_aligner1[] = {
     gsDPPipeSync(),
@@ -963,16 +963,6 @@ void *gd_malloc_perm(u32 size) {
 /* 24A420 -> 24A458; orig name: func_8019BC50 */
 void *gd_malloc_temp(u32 size) {
     return gd_malloc(size, TEMP_G_MEM_BLOCK);
-}
-
-/* 24A458 -> 24A4A4 */
-void *Unknown8019BC88(u32 size, u32 count) {
-    return gd_malloc_perm(size * count);
-}
-
-/* 24A4A4 -> 24A4DC */
-void *Unknown8019BCD4(u32 size) {
-    return gd_malloc_perm(size);
 }
 
 /* 24A4DC -> 24A598 */
@@ -1979,8 +1969,8 @@ void gd_dl_hilite(s32 idx, // material GdDl number; offsets into hilite array
     sp40.y = cam->unkE8[1][2] + arg4->y;
     sp40.x = cam->unkE8[2][2] + arg4->z;
     sp3C = sqrtf(SQ(sp40.z) + SQ(sp40.y) + SQ(sp40.x));
-    if (sp3C > 0.1) {
-        sp3C = 1.0 / sp3C; //? 1.0f
+    if (sp3C > 0.1f) {
+        sp3C = 1.0f / sp3C;
         sp40.z *= sp3C;
         sp40.y *= sp3C;
         sp40.x *= sp3C;
@@ -2362,10 +2352,10 @@ void parse_p1_controller(void) {
 
     // deadzone checks
     if (ABS(gdctrl->stickX) >= 6) {
-        gdctrl->csrX += gdctrl->stickX * 0.1;
+        gdctrl->csrX += gdctrl->stickX * 0.1f;
     }
     if (ABS(gdctrl->stickY) >= 6) {
-        gdctrl->csrY -= gdctrl->stickY * 0.1;
+        gdctrl->csrY -= gdctrl->stickY * 0.1f;
     }
 
     // clamp cursor position within screen view bounds
@@ -2549,7 +2539,7 @@ void gd_create_perspective_matrix(f32 fovy, f32 aspect, f32 near, f32 far) {
     uintptr_t perspecMtx;
     uintptr_t rotMtx;
 
-    sGdPerspTimer += 0.1;
+    sGdPerspTimer += 0.1f;
     guPerspective(&DL_CURRENT_MTX(sCurrentGdDl), &perspNorm, fovy, aspect, near, far, 1.0f);
 
     gSPPerspNormalize(next_gfx(), perspNorm);
@@ -2969,7 +2959,7 @@ void add_debug_view(struct ObjView *view) {
 union ObjVarVal *cvrt_val_to_kb(union ObjVarVal *dst, union ObjVarVal src) {
     union ObjVarVal temp;
 
-    temp.f = src.f / 1024.0; //? 1024.0f
+    temp.f = src.f / 1024.0f;
     return (*dst = temp, dst);
 }
 

@@ -41,7 +41,7 @@ void bhv_bubble_wave_init(void) {
 }
 
 void scale_bubble_random(void) {
-    cur_obj_scale(random_float() + 1.0);
+    cur_obj_scale(random_float() + 1.0f);
 }
 
 void bhv_bubble_maybe_loop(void) {

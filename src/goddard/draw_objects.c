@@ -21,7 +21,6 @@
  */
 
 // forward declarations
-void func_80179B64(struct ObjGroup *group);
 void update_shaders(struct ObjShape *shape, struct GdVec3f *offset);
 void draw_shape_faces(struct ObjShape *shape);
 void register_light(struct ObjLight *light);
@@ -104,46 +103,6 @@ void setup_lights(void) {
     gd_setproperty(GD_PROP_AMB_COLOUR, 0.5f, 0.5f, 0.5f);
     gd_setproperty(GD_PROP_CULLING, 1.0f, 0.0f, 0.0f); // set G_CULL_BACK
     return;
-}
-
-/**
- * @note Not called
- */
-void Unknown801781DC(struct ObjZone *zone) {
-    struct GdVec3f lightPos; // 3c
-    struct ObjUnk200000 *unk;
-    f32 sp34;
-    f32 sp30;
-    f32 sp2C;
-    struct ObjLight *light;
-    register struct ListNode *link = zone->unk30->firstMember; // s0 (24)
-    struct GdObj *obj;                                 // 20
-
-    while (link != NULL) {
-        obj = link->obj;
-        light = (struct ObjLight *) gGdLightGroup->firstMember->obj;
-        lightPos.x = light->position.x;
-        lightPos.y = light->position.y;
-        lightPos.z = light->position.z;
-        unk = (struct ObjUnk200000 *) obj;
-        sp34 = gd_dot_vec3f(&unk->unk34->normal, &unk->unk30->pos);
-        sp30 = gd_dot_vec3f(&unk->unk34->normal, &lightPos);
-        lightPos.x -= unk->unk34->normal.x * (sp30 - sp34);
-        lightPos.y -= unk->unk34->normal.y * (sp30 - sp34);
-        lightPos.z -= unk->unk34->normal.z * (sp30 - sp34);
-        unk->unk30->pos.x = lightPos.x;
-        unk->unk30->pos.y = lightPos.y;
-        unk->unk30->pos.z = lightPos.z;
-        sp2C = ABS((sp30 - sp34));
-        if (sp2C > 600.0f) {
-            sp2C = 600.0f;
-        }
-        sp2C = 1.0 - sp2C / 600.0;
-        unk->unk30->normal.x = sp2C * light->colour.r;
-        unk->unk30->normal.y = sp2C * light->colour.g;
-        unk->unk30->normal.z = sp2C * light->colour.b;
-        link = link->next;
-    }
 }
 
 /* 226C6C -> 226FDC */
@@ -315,28 +274,6 @@ void create_mtl_gddl_if_empty(struct ObjMaterial *mtl) {
 }
 
 /**
- * A function for checking if an `ObjFace` has bad vertices. These could be either
- * unconverted vertex data, or old vertex structures (like `BetaVtx`)
- * @note Not called
- */
-void check_face_bad_vtx(struct ObjFace *face) {
-    s32 i;
-    struct ObjVertex *vtx;
-
-    for (i = 0; i < face->vtxCount; i++) {
-        vtx = face->vertices[i];
-        // These seem to be checks against bad conversions, or an outdated vertex structure..?
-        if ((uintptr_t) vtx == 39) {
-            gd_printf("bad1\n");
-            return;
-        }
-        if ((uintptr_t) vtx->gbiVerts == 0x3F800000) {
-            fatal_printf("bad2 %x,%d,%d,%d\n", (u32) (uintptr_t) vtx, vtx->scaleFactor, vtx->id, vtx->header.type);
-        }
-    }
-}
-
-/**
  * @brief Convert a numeric index into pointer to a struct GdColour
  *
  * A simple switch case to convert from index @p idx to a pointer to the
@@ -351,57 +288,20 @@ void check_face_bad_vtx(struct ObjFace *face) {
  */
 struct GdColour *gd_get_colour(s32 idx) {
     switch (idx) {
-        case COLOUR_BLACK:
-            return &sClrBlack;
-            break;
-        case COLOUR_WHITE:
-            return &sClrWhite;
-            break;
-        case COLOUR_RED:
-            return &sClrRed;
-            break;
-        case COLOUR_GREEN:
-            return &sClrGreen;
-            break;
-        case COLOUR_BLUE:
-            return &sClrBlue;
-            break;
-        case COLOUR_GRAY:
-            return &sClrGrey;
-            break;
-        case COLOUR_DARK_GRAY:
-            return &sClrDarkGrey;
-            break;
-        case COLOUR_DARK_BLUE:
-            return &sClrErrDarkBlue;
-            break;
-        case COLOUR_BLACK2:
-            return &sClrBlack;
-            break;
-        case COLOUR_YELLOW:
-            return &sClrYellow;
-            break;
-        case COLOUR_PINK:
-            return &sClrPink;
-            break;
-        case -1:
-            return &sLightColours;
-            break;
-        default:
-            return NULL;
+        case COLOUR_BLACK:     return &sClrBlack;       break;
+        case COLOUR_WHITE:     return &sClrWhite;       break;
+        case COLOUR_RED:       return &sClrRed;         break;
+        case COLOUR_GREEN:     return &sClrGreen;       break;
+        case COLOUR_BLUE:      return &sClrBlue;        break;
+        case COLOUR_GRAY:      return &sClrGrey;        break;
+        case COLOUR_DARK_GRAY: return &sClrDarkGrey;    break;
+        case COLOUR_DARK_BLUE: return &sClrErrDarkBlue; break;
+        case COLOUR_BLACK2:    return &sClrBlack;       break;
+        case COLOUR_YELLOW:    return &sClrYellow;      break;
+        case COLOUR_PINK:      return &sClrPink;        break;
+        case -1:               return &sLightColours;   break;
+        default:               return NULL;
     }
-}
-
-/**
- * Uncalled function that would render a triangle
- * @note Not called
- */
-void Unknown80178ECC(f32 v0X, f32 v0Y, f32 v0Z, f32 v1X, f32 v1Y, f32 v1Z) {
-    f32 difY = v1Y - v0Y;
-    f32 difX = v1X - v0X;
-    f32 difZ = v1Z - v0Z;
-
-    gd_dl_make_triangle(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v0X + difY * 0.1, v0Y + difX * 0.1, v0Z + difZ * 0.1);
 }
 
 /**
@@ -483,20 +383,6 @@ void draw_rect_fill(s32 color, f32 ulx, f32 uly, f32 lrx, f32 lry) {
 void draw_rect_stroke(s32 color, f32 ulx, f32 uly, f32 lrx, f32 lry) {
     gd_dl_set_fill(gd_get_colour(color));
     gd_draw_border_rect(ulx, uly, lrx, lry);
-}
-
-/**
- * Uncalled function that calls other orphan stub functions.
- * @note Not called
- */
-void Unknown801792F0(struct GdObj *obj) {
-    char objId[32];
-    struct GdVec3f objPos;
-
-    format_object_id(objId, obj);
-    set_cur_dynobj(obj);
-    d_get_world_pos(&objPos);
-    func_801A4438(objPos.x, objPos.y, objPos.z);
 }
 
 /**
@@ -610,7 +496,6 @@ void draw_gadget(struct ObjGadget *gdgt) {
 /* 22803C -> 22829C */
 void draw_camera(struct ObjCamera *cam) {
     struct GdVec3f sp44;
-    UNUSED f32 sp40 = 0.0f;
 
     sp44.x = 0.0f;
     sp44.y = 0.0f;
@@ -635,35 +520,6 @@ void draw_camera(struct ObjCamera *cam) {
     gd_dl_lookat(cam, cam->worldPos.x, cam->worldPos.y, cam->worldPos.z, sp44.x, sp44.y, sp44.z, cam->unkA4);
 }
 
-/**
- * Forms uncalled recursive loop with func_80179B64().
- * This function seems to turn off the otherwise unused `OBJ_DRAW_UNK01` flag
- * for the GdObj.drawFlags
- * @note Not called
- */
-void Unknown80179ACC(struct GdObj *obj) {
-    switch (obj->type) {
-        case OBJ_TYPE_NETS:
-            if (((struct ObjNet *) obj)->unk1C8 != NULL) {
-                func_80179B64(((struct ObjNet *) obj)->unk1C8);
-            }
-            break;
-        default:
-            break;
-    }
-    obj->drawFlags &= ~OBJ_DRAW_UNK01;
-}
-
-/**
- * Forms uncalled recursive loop with Unknown80179ACC()
- * @note Not called
- */
-void func_80179B64(struct ObjGroup *group) {
-    apply_to_obj_types_in_group(OBJ_TYPE_LABELS | OBJ_TYPE_GADGETS | OBJ_TYPE_CAMERAS | OBJ_TYPE_NETS
-                                    | OBJ_TYPE_JOINTS | OBJ_TYPE_BONES,
-                                (applyproc_t) Unknown80179ACC, group);
-}
-
 /* 22836C -> 228498 */
 void world_pos_to_screen_coords(struct GdVec3f *pos, struct ObjCamera *cam, struct ObjView *view) {
     gd_rotate_and_translate_vec3f(pos, &cam->unkE8);
@@ -671,8 +527,8 @@ void world_pos_to_screen_coords(struct GdVec3f *pos, struct ObjCamera *cam, stru
         return;
     }
 
-    pos->x *= 256.0 / -pos->z;
-    pos->y *= 256.0 / pos->z;
+    pos->x *= 256.0f / -pos->z;
+    pos->y *= 256.0f /  pos->z;
     pos->x += view->lowerRight.x / 2.0f;
     pos->y += view->lowerRight.y / 2.0f;
 }
@@ -744,8 +600,8 @@ void drawscene(enum SceneType process, struct ObjGroup *interactables, struct Ob
                       sUpdateViewState.view->clipping.x, sUpdateViewState.view->clipping.y);
     } else {
         gd_create_ortho_matrix(
-            -sUpdateViewState.view->lowerRight.x / 2.0, sUpdateViewState.view->lowerRight.x / 2.0,
-            -sUpdateViewState.view->lowerRight.y / 2.0, sUpdateViewState.view->lowerRight.y / 2.0,
+            -sUpdateViewState.view->lowerRight.x / 2.0f, sUpdateViewState.view->lowerRight.x / 2.0f,
+            -sUpdateViewState.view->lowerRight.y / 2.0f, sUpdateViewState.view->lowerRight.y / 2.0f,
             sUpdateViewState.view->clipping.x, sUpdateViewState.view->clipping.y);
     }
 
@@ -832,7 +688,7 @@ void draw_particle(struct GdObj *obj) {
     if (ptc->timeout > 0) {
         white = sColourPalette[0];
         black = sWhiteBlack[1];
-        brightness = ptc->timeout / 10.0;
+        brightness = ptc->timeout / 10.0f;
         sLightColours.r = (white->r - black->r) * brightness + black->r;
         sLightColours.g = (white->g - black->g) * brightness + black->g;
         sLightColours.b = (white->b - black->b) * brightness + black->b;
@@ -967,11 +823,11 @@ void Proc8017A980(struct ObjLight *light) {
     sp24 = light->unk30;
     if (light->flags & LIGHT_UNK02) {
         sp20 = -gd_dot_vec3f(&sLightPositionCache[light->id], &light->unk80);
-        sp1C = 1.0 - light->unk38 / 90.0;
+        sp1C = 1.0f - light->unk38 / 90.0f;
         if (sp20 > sp1C) {
-            sp20 = (sp20 - sp1C) * (1.0 / (1.0 - sp1C));
-            if (sp20 > 1.0) {
-                sp20 = 1.0;
+            sp20 = (sp20 - sp1C) * (1.0f / (1.0f - sp1C));
+            if (sp20 > 1.0f) {
+                sp20 = 1.0f;
             } else if (sp20 < 0.0f) {
                 sp20 = 0.0f;
             }
@@ -1236,9 +1092,8 @@ void map_vertices(struct ObjGroup *facegrp, struct ObjGroup *vtxgrp) {
  * @note Not Called
  */
 void unpick_obj(struct GdObj *obj) {
-    struct GdObj *why = obj;
-    if (why->drawFlags & OBJ_IS_GRABBALE) {
-        why->drawFlags &= ~(OBJ_PICKED | OBJ_HIGHLIGHTED);
+    if (obj->drawFlags & OBJ_IS_GRABBALE) {
+        obj->drawFlags &= ~(OBJ_PICKED | OBJ_HIGHLIGHTED);
     }
 }
 
