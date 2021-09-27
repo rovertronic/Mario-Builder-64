@@ -65,7 +65,7 @@ s8 sAudioEnabled = TRUE;
 u32 gNumVblanks = 0;
 s8 gResetTimer = 0;
 s8 gNmiResetBarsTimer = 0;
-s8 gDebugLevelSelect = TRUE;
+s8 gDebugLevelSelect = FALSE;
 
 s8 gShowProfiler = FALSE;
 s8 gShowDebugText = FALSE;
