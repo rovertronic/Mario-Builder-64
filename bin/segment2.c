@@ -10,9 +10,41 @@
 
 // SM64 (US/JP/EU/SH) Segment 02
 #ifdef PUPPYPRINT
-ALIGNED8 const Texture small_font[] = {
+ALIGNED8 static const Texture small_font_1[] = {
 #include "textures/segment2/custom_text.i4.inc.c"
 };
+ALIGNED8 static const Texture small_font_2[] = {
+#include "textures/segment2/custom_text2.i4.inc.c"
+};
+
+const Texture *const puppyprint_font_lut[2] =
+{
+    small_font_1, small_font_2
+};
+
+static const u8 small_font_kerning_1[80] =
+{
+    /*0*/ 7, /*1*/ 7, /*2*/ 7, /*3*/ 7, /*4*/ 7, /*5*/ 7, /*6*/ 7, /*7*/ 7, /*8*/ 7, /*9*/ 7, /*-*/ 7, /*+*/ 7, /*(*/ 4, /*)*/ 4, /*!*/ 5, /*?*/ 6,
+    /*A*/ 7, /*B*/ 7, /*C*/ 7, /*D*/ 7, /*E*/ 7, /*F*/ 7, /*G*/ 7, /*H*/ 7, /*I*/ 7, /*J*/ 7, /*K*/ 7, /*L*/ 7, /*M*/ 7, /*N*/ 7, /*O*/ 7, /*P*/ 7,
+    /*Q*/ 7, /*R*/ 7, /*S*/ 7, /*T*/ 7, /*U*/ 7, /*V*/ 7, /*W*/ 7, /*X*/ 7, /*Y*/ 7, /*Z*/ 7, /*"*/ 5, /*'*/ 2, /*:*/ 3, /*;*/ 3, /*.*/ 3, /*,*/ 3,
+    /*a*/ 6, /*b*/ 6, /*c*/ 6, /*d*/ 6, /*e*/ 6, /*f*/ 6, /*g*/ 6, /*h*/ 6, /*i*/ 2, /*j*/ 6, /*k*/ 6, /*l*/ 3, /*m*/ 6, /*n*/ 6, /*o*/ 6, /*p*/ 6,
+    /*q*/ 6, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 6, /*w*/ 6, /*x*/ 6, /*y*/ 6, /*z*/ 6, /*~*/ 7, /*¨*/ 6, /*^*/ 7, /*/*/ 6, /*%*/ 6, /*&*/ 7,
+};
+
+static const u8 small_font_kerning_2[80] =
+{
+    /*0*/ 6, /*1*/ 5, /*2*/ 7, /*3*/ 7, /*4*/ 7, /*5*/ 7, /*6*/ 8, /*7*/ 7, /*8*/ 7, /*9*/ 6, /*-*/ 8, /*+*/ 8, /*(*/ 5, /*)*/ 5, /*!*/ 4, /*?*/ 6,
+    /*A*/ 7, /*B*/ 7, /*C*/ 7, /*D*/ 7, /*E*/ 6, /*F*/ 5, /*G*/ 8, /*H*/ 6, /*I*/ 6, /*J*/ 5, /*K*/ 7, /*L*/ 6, /*M*/ 7, /*N*/ 7, /*O*/ 7, /*P*/ 6,
+    /*Q*/ 8, /*R*/ 6, /*S*/ 7, /*T*/ 7, /*U*/ 7, /*V*/ 7, /*W*/ 8, /*X*/ 7, /*Y*/ 7, /*Z*/ 7, /*"*/ 5, /*'*/ 2, /*:*/ 3, /*;*/ 3, /*.*/ 3, /*,*/ 3,
+    /*a*/ 7, /*b*/ 7, /*c*/ 6, /*d*/ 7, /*e*/ 7, /*f*/ 7, /*g*/ 7, /*h*/ 7, /*i*/ 3, /*j*/ 5, /*k*/ 8, /*l*/ 4, /*m*/ 7, /*n*/ 7, /*o*/ 7, /*p*/ 7,
+    /*q*/ 7, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 7, /*w*/ 8, /*x*/ 6, /*y*/ 8, /*z*/ 7, /*~*/ 8, /*¨*/ 7, /*^*/ 8, /*/*/ 8, /*%*/ 8, /*&*/ 8,
+};
+
+const u8 *const puppyprint_kerning_lut[2][80] =
+{
+    small_font_kerning_1, small_font_kerning_2
+};
+
 #endif
 
 ALIGNED8 static const Texture texture_hud_char_0[] = {

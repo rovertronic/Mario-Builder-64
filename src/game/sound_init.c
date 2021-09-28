@@ -9,7 +9,6 @@
 #include "main.h"
 #include "paintings.h"
 #include "print.h"
-#include "profiler.h"
 #include "save_file.h"
 #include "seq_ids.h"
 #include "sm64.h"
@@ -358,12 +357,10 @@ void thread4_sound(UNUSED void *arg) {
             #endif
             if (gResetTimer < 25) {
                 struct SPTask *spTask;
-                profiler_log_thread4_time();
                 spTask = create_next_audio_frame_task();
                 if (spTask != NULL) {
                     dispatch_audio_sptask(spTask);
                 }
-                profiler_log_thread4_time();
                 #if PUPPYPRINT_DEBUG
                 profiler_update(audioTime, lastTime);
                 audioTime[perfIteration] -= dmaAudioTime[perfIteration];

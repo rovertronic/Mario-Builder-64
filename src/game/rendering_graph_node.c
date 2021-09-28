@@ -15,6 +15,7 @@
 #include "puppyprint.h"
 #include "debug_box.h"
 #include "level_update.h"
+#include "behavior_data.h"
 
 #include "config.h"
 
@@ -426,7 +427,6 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         if (gCamera) {
             // gWorldScale = ((sqr(gCamera->pos[0]) + sqr(gCamera->pos[1]) + sqr(gCamera->pos[2])) / sqr(0x2000));
             gWorldScale = (max_3f(ABS(gCamera->pos[0]), ABS(gCamera->pos[1]), ABS(gCamera->pos[2])) / (f32)0x2000);
-            gWorldScale = MAX(gWorldScale, 1.0f);
         } else {
             gWorldScale = 1.0f;
         }
@@ -435,6 +435,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
             farClipDelta /= farClip;
             gWorldScale *= farClipDelta;
         }
+        gWorldScale = MAX(gWorldScale, 1.0f);
 
         guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, ((farClip / 300) / gWorldScale), (farClip / gWorldScale), 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
@@ -965,7 +966,10 @@ void geo_process_object(struct Object *node) {
                     if (node->oIntangibleTimer != -1) {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
-                        debug_box_color(0x800000FF);
+                        if (node->behavior == segmented_to_virtual(bhvWarp) || node->behavior == segmented_to_virtual(bhvDoorWarp) || node->behavior == segmented_to_virtual(bhvFadingWarp))
+                            debug_box_color(0x80FFA500);
+                        else
+                            debug_box_color(0x800000FF);
                         debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);

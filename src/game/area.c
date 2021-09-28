@@ -369,7 +369,9 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
-        geo_process_root(gCurrentArea->graphNode, gViewportOverride, gViewportClip, gFBSetColor);
+        if (gCurrentArea->graphNode) {
+            geo_process_root(gCurrentArea->graphNode, gViewportOverride, gViewportClip, gFBSetColor);
+        }
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gViewport));
 

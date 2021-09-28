@@ -13,7 +13,6 @@
 #include "game/memory.h"
 #include "game/object_helpers.h"
 #include "game/object_list_processor.h"
-#include "game/profiler.h"
 #include "game/save_file.h"
 #include "game/sound_init.h"
 #include "goddard/renderer.h"
@@ -961,7 +960,6 @@ struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
         LevelScriptJumpTable[sCurrentCmd->type]();
     }
 
-    profiler_log_thread5_time(LEVEL_SCRIPT_EXECUTE);
     init_rcp(CLEAR_ZBUFFER);
     render_game();
     end_master_display_list();

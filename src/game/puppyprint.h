@@ -2,6 +2,7 @@
 #define PUPPYPRINT_H
 
 #ifdef PUPPYPRINT
+#include "segment2.h"
 
 // This is how many indexes of timers are saved at once. higher creates a smoother average, but naturally uses more RAM. 15's fine.
 #define NUM_PERF_ITERATIONS   15
@@ -17,7 +18,13 @@
 #define PRINT_TEXT_ALIGN_RIGHT  2
 #define PRINT_ALL              -1
 
-extern Texture small_font[];
+enum PuppyFont {
+    FONT_DEFAULT,
+    FONT_OUTLINE,
+    FONT_NUM,
+};
+
+extern u8 gPuppyFont;
 extern s8 perfIteration;
 extern s16 benchmarkLoop;
 extern s32 benchmarkTimer;
@@ -62,14 +69,13 @@ extern void puppyprint_profiler_finished(void);
 extern void print_set_envcolour(s32 r, s32 g, s32 b, s32 a);
 extern void prepare_blank_box(void);
 extern void finish_blank_box(void);
-extern void render_blank_box(s16 x1, s16 y1, s16 x2, s16 y2, u8 r, u8 g, u8 b, u8 a);
-extern void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount);
+extern void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount, s32 font);
 extern void render_multi_image(Texture *image, s32 x, s32 y, s32 width, s32 height, s32 scaleX, s32 scaleY, s32 mode);
 extern s32  get_text_height(const char *str);
-extern s32  get_text_width(const char *str);
+extern s32  get_text_width(const char *str, s32 font);
 extern void prepare_blank_box(void);
 extern void finish_blank_box(void);
-extern void render_blank_box(s16 x1, s16 y1, s16 x2, s16 y2, u8 r, u8 g, u8 b, u8 a);
+extern void render_blank_box(s32 x1, s32 y1, s32 x2, s32 y2, s32 r, s32 g, s32 b, s32 a);
 extern void append_puppyprint_log(const char *str, ...);
 extern char consoleLogTable[LOG_BUFFER_SIZE][255];
 

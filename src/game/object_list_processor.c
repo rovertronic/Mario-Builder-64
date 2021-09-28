@@ -18,7 +18,6 @@
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "platform_displacement.h"
-#include "profiler.h"
 #include "spawn_object.h"
 #include "puppyprint.h"
 #include "puppylights.h"
