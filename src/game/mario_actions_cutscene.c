@@ -273,14 +273,14 @@ void handle_save_menu(struct MarioState *m) {
  * and yaw plus relative yaw.
  */
 struct Object *spawn_obj_at_mario_rel_yaw(struct MarioState *m, s32 model, const BehaviorScript *behavior, s16 relYaw) {
-    struct Object *o = spawn_object(m->marioObj, model, behavior);
+    struct Object *obj = spawn_object(m->marioObj, model, behavior);
 
-    o->oFaceAngleYaw = m->faceAngle[1] + relYaw;
-    o->oPosX = m->pos[0];
-    o->oPosY = m->pos[1];
-    o->oPosZ = m->pos[2];
+    obj->oFaceAngleYaw = m->faceAngle[1] + relYaw;
+    obj->oPosX = m->pos[0];
+    obj->oPosY = m->pos[1];
+    obj->oPosZ = m->pos[2];
 
-    return o;
+    return obj;
 }
 
 /**
@@ -1983,16 +1983,16 @@ void generate_yellow_sparkles(s16 x, s16 y, s16 z, f32 radius) {
 
 // not sure what this does, returns the height of the floor.
 // (animation related?)
-static f32 end_obj_set_visual_pos(struct Object *o) {
+static f32 end_obj_set_visual_pos(struct Object *obj) {
     struct Surface *surf;
     Vec3s translation;
     f32 x, y, z;
 
-    find_mario_anim_flags_and_translation(o, o->header.gfx.angle[1], translation);
+    find_mario_anim_flags_and_translation(obj, obj->header.gfx.angle[1], translation);
 
-    x = o->header.gfx.pos[0] + translation[0];
-    y = o->header.gfx.pos[1] + 10.0f;
-    z = o->header.gfx.pos[2] + translation[2];
+    x = obj->header.gfx.pos[0] + translation[0];
+    y = obj->header.gfx.pos[1] + 10.0f;
+    z = obj->header.gfx.pos[2] + translation[2];
 
     return find_floor(x, y, z, &surf);
 }

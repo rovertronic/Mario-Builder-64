@@ -169,7 +169,7 @@ extern s16 gCurrLevelNum;
 
 void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e);
 void print_intro_text(void);
-u32 get_mario_spawn_type(struct Object *o);
+u32 get_mario_spawn_type(struct Object *obj);
 struct ObjectWarpNode *area_get_warp_node(u8 id);
 void clear_areas(void);
 void clear_area_graph_nodes(void);

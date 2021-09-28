@@ -1456,7 +1456,7 @@ s32 update_fixed_camera(struct Camera *c, Vec3f focus, UNUSED Vec3f pos) {
  * Updates the camera during a boss fight
  */
 s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
-    struct Object *o;
+    struct Object *obj;
     f32 focusDistance;
     s16 yaw;
     s16 heldState;
@@ -1478,9 +1478,9 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
 
     yaw = sModeOffsetYaw + DEGREES(45);
     // Get boss's position and whether Mario is holding it.
-    if ((o = gSecondCameraFocus) != NULL) {
-        object_pos_to_vec3f(secondFocus, o);
-        heldState = o->oHeldState;
+    if ((obj = gSecondCameraFocus) != NULL) {
+        vec3f_copy(secondFocus, &obj->oPosVec);
+        heldState = obj->oHeldState;
     } else {
     // If no boss is there, just rotate around the area's center point.
         secondFocus[0] = c->areaCenX;
@@ -3306,13 +3306,6 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
     return NULL;
 }
 
-void object_pos_to_vec3f(Vec3f dst, struct Object *o) {
-    vec3f_copy(dst, &o->oPosVec);
-}
-
-void vec3f_to_object_pos(struct Object *o, Vec3f src) {
-    vec3f_copy(&o->oPosVec, src);
-}
 
 /**
  * Produces values using a cubic b-spline curve. Basically Q is the used output,
@@ -3331,9 +3324,9 @@ void evaluate_cubic_spline(f32 u, Vec3f Q, Vec3f a0, Vec3f a1, Vec3f a2, Vec3f a
     B[1] = (( hcu ) -  su                      + (2.0f / 3.0f));
     B[2] = ((-hcu ) + (su / 2.0f) + (u / 2.0f) + (5.0f / 3.0f));
     B[3] =  ( hcu / 3.0f);
-    Q[0] = B[0] * a0[0] + B[1] * a1[0] + B[2] * a2[0] + B[3] * a3[0];
-    Q[1] = B[0] * a0[1] + B[1] * a1[1] + B[2] * a2[1] + B[3] * a3[1];
-    Q[2] = B[0] * a0[2] + B[1] * a1[2] + B[2] * a2[2] + B[3] * a3[2];
+    Q[0] = ((B[0] * a0[0]) + (B[1] * a1[0]) + (B[2] * a2[0]) + (B[3] * a3[0]));
+    Q[1] = ((B[0] * a0[1]) + (B[1] * a1[1]) + (B[2] * a2[1]) + (B[3] * a3[1]));
+    Q[2] = ((B[0] * a0[2]) + (B[1] * a1[2]) + (B[2] * a2[2]) + (B[3] * a3[2]));
 }
 
 /**
@@ -6146,10 +6139,10 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
  * Start a cutscene focusing on an object
  * This will play if nothing else happened in the same frame, like exiting or warping.
  */
-void start_object_cutscene(u8 cutscene, struct Object *o) {
-    sObjectCutscene = cutscene;
-    gRecentCutscene = 0;
-    gCutsceneFocus = o;
+void start_object_cutscene(u8 cutscene, struct Object *obj) {
+    sObjectCutscene  = cutscene;
+    gRecentCutscene  = 0;
+    gCutsceneFocus   = obj;
     gObjCutsceneDone = FALSE;
 }
 
@@ -6177,12 +6170,12 @@ s16 unused_dialog_cutscene_response(u8 cutscene) {
     }
 }
 
-s16 cutscene_object_with_dialog(u8 cutscene, struct Object *o, s16 dialogID) {
+s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID) {
     s16 response = DIALOG_RESPONSE_NONE;
 
     if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
         if (gRecentCutscene != cutscene) {
-            start_object_cutscene(cutscene, o);
+            start_object_cutscene(cutscene, obj);
             if (dialogID != DIALOG_NONE) {
                 sCutsceneDialogID = dialogID;
             } else {
@@ -6197,21 +6190,21 @@ s16 cutscene_object_with_dialog(u8 cutscene, struct Object *o, s16 dialogID) {
     return response;
 }
 
-s16 cutscene_object_without_dialog(u8 cutscene, struct Object *o) {
-    s16 response = cutscene_object_with_dialog(cutscene, o, DIALOG_NONE);
+s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
+    s16 response = cutscene_object_with_dialog(cutscene, obj, DIALOG_NONE);
     return response;
 }
 
 /**
  * @return 0 if not started, 1 if started, and -1 if finished
  */
-s16 cutscene_object(u8 cutscene, struct Object *o) {
+s16 cutscene_object(u8 cutscene, struct Object *obj) {
     s16 status = 0;
 
     if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
         if (gRecentCutscene != cutscene) {
-            start_object_cutscene(cutscene, o);
-            status = 1;
+            start_object_cutscene(cutscene, obj);
+            status =  1;
         } else {
             status = -1;
         }
@@ -7442,7 +7435,7 @@ void cutscene_star_spawn_store_info(struct Camera *c) {
 void cutscene_star_spawn_focus_star(struct Camera *c) {
     Vec3f starPos;
     if (gCutsceneFocus != NULL) {
-        object_pos_to_vec3f(starPos, gCutsceneFocus);
+        vec3f_copy(starPos, &gCutsceneFocus->oPosVec);
         starPos[1] += gCutsceneFocus->hitboxHeight;
         approach_vec3f_asymptotic(c->focus, starPos, 0.1f, 0.1f, 0.1f);
     }
@@ -7552,7 +7545,7 @@ void cutscene_exit_fall_to_castle_grounds(struct Camera *c) {
  * Start the red coin star spawning cutscene.
  */
 void cutscene_red_coin_star_start(struct Camera *c) {
-    object_pos_to_vec3f(sCutsceneVars[1].point, gCutsceneFocus);
+    vec3f_copy(sCutsceneVars[1].point, &gCutsceneFocus->oPosVec);
     store_info_star(c);
     // Store the default fov for after the cutscene
     sCutsceneVars[2].point[2] = sFOVState.fov;
@@ -7586,9 +7579,9 @@ void cutscene_red_coin_star_look_up_at_star(struct Camera *c) {
 void cutscene_red_coin_star_warp(struct Camera *c) {
     f32 dist;
     s16 pitch, yaw, posYaw;
-    struct Object *o = gCutsceneFocus;
+    struct Object *obj = gCutsceneFocus;
 
-    vec3f_set(sCutsceneVars[1].point, o->oHomeX, o->oHomeY, o->oHomeZ);
+    vec3f_copy(sCutsceneVars[1].point, &obj->oHomeVec);
     vec3f_get_dist_and_angle(sCutsceneVars[1].point, c->pos, &dist, &pitch, &yaw);
     vec3f_get_yaw(sCutsceneVars[1].point, c->pos, &posYaw);
     vec3f_get_yaw(sCutsceneVars[1].point, sMarioCamState->pos, &yaw);
@@ -7707,7 +7700,7 @@ void cutscene_prepare_cannon_start(struct Camera *c) {
     vec3f_copy(sCutsceneVars[0].point, c->focus);
     sCutsceneVars[2].point[0] = 30.f;
     // Store the cannon door's position in sCutsceneVars[3]'s point
-    object_pos_to_vec3f(sCutsceneVars[3].point, gCutsceneFocus);
+    vec3f_copy(sCutsceneVars[3].point, &gCutsceneFocus->oPosVec);
     vec3s_set(sCutsceneVars[5].angle, 0, 0, 0);
 }
 
@@ -8125,7 +8118,7 @@ void cutscene_dialog_start(struct Camera *c) {
     sCutsceneVars[8].point[1] += 125.f;
 
     // Store gCutsceneFocus's position and yaw
-    object_pos_to_vec3f(sCutsceneVars[9].point, gCutsceneFocus);
+    vec3f_copy(sCutsceneVars[9].point, &gCutsceneFocus->oPosVec);
     sCutsceneVars[9].point[1] += gCutsceneFocus->hitboxHeight + 200.f;
     vec3f_get_yaw(sCutsceneVars[8].point, sCutsceneVars[9].point, &sCutsceneVars[9].angle[1]);
     vec3f_get_yaw(sMarioCamState->pos, gLakituState.curPos, &yaw);
@@ -9282,7 +9275,7 @@ void cutscene_enter_cannon_end(struct Camera *c) {
  * Rotate around the cannon as it rises out of the hole.
  */
 void cutscene_enter_cannon_raise(struct Camera *c) {
-    struct Object *o;
+    struct Object *obj;
     f32 floorHeight;
     struct Surface *floor;
     Vec3f cannonFocus;
@@ -9301,14 +9294,14 @@ void cutscene_enter_cannon_raise(struct Camera *c) {
     sCutsceneVars[3].point[1] += 2.f;
     c->pos[1] += sCutsceneVars[3].point[1];
 
-    if ((o = sMarioCamState->usedObj) != NULL) {
-        sCutsceneVars[0].point[1] = o->oPosY;
-        cannonAngle[0] = o->oMoveAnglePitch;
-        cannonAngle[1] = o->oMoveAngleYaw;
-        cannonAngle[2] = o->oMoveAngleRoll;
-        c->focus[0] = o->oPosX;
-        c->focus[1] = o->oPosY;
-        c->focus[2] = o->oPosZ;
+    if ((obj = sMarioCamState->usedObj) != NULL) {
+        sCutsceneVars[0].point[1] = obj->oPosY;
+        cannonAngle[0] = obj->oMoveAnglePitch;
+        cannonAngle[1] = obj->oMoveAngleYaw;
+        cannonAngle[2] = obj->oMoveAngleRoll;
+        c->focus[0]    = obj->oPosX;
+        c->focus[1]    = obj->oPosY;
+        c->focus[2]    = obj->oPosZ;
         cannonFocus[0] = 0.f;
         cannonFocus[1] = 100.f;
         cannonFocus[2] = 0.f;
@@ -9326,19 +9319,19 @@ void cutscene_enter_cannon_raise(struct Camera *c) {
  * Start the cannon entering cutscene
  */
 void cutscene_enter_cannon_start(struct Camera *c) {
-    struct Object *o;
+    struct Object *obj;
 
     sStatusFlags |= CAM_FLAG_SMOOTH_MOVEMENT;
     sMarioCamState->cameraEvent = 0;
 
     // Store the cannon's position and angle in cvar0
-    if ((o = sMarioCamState->usedObj) != NULL) {
-        sCutsceneVars[0].point[0] = o->oPosX;
-        sCutsceneVars[0].point[1] = o->oPosY;
-        sCutsceneVars[0].point[2] = o->oPosZ;
-        sCutsceneVars[0].angle[0] = o->oMoveAnglePitch;
-        sCutsceneVars[0].angle[1] = o->oMoveAngleYaw;
-        sCutsceneVars[0].angle[2] = o->oMoveAngleRoll;
+    if ((obj = sMarioCamState->usedObj) != NULL) {
+        sCutsceneVars[0].point[0] = obj->oPosX;
+        sCutsceneVars[0].point[1] = obj->oPosY;
+        sCutsceneVars[0].point[2] = obj->oPosZ;
+        sCutsceneVars[0].angle[0] = obj->oMoveAnglePitch;
+        sCutsceneVars[0].angle[1] = obj->oMoveAngleYaw;
+        sCutsceneVars[0].angle[2] = obj->oMoveAngleRoll;
     }
 
     // Store the camera's polar offset from the cannon in cvar1
@@ -10532,34 +10525,33 @@ void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ) {
 /**
  * Offset an object's position in a random direction within the given bounds.
  */
-static UNUSED void unused_displace_obj_randomly(struct Object *o, f32 xRange, f32 yRange, f32 zRange) {
+static UNUSED void unused_displace_obj_randomly(struct Object *obj, f32 xRange, f32 yRange, f32 zRange) {
     f32 rnd = random_float();
-    o->oPosX += (rnd * xRange - xRange / 2.f);
-    o->oPosY += (rnd * yRange - yRange / 2.f);
-    o->oPosZ += (rnd * zRange - zRange / 2.f);
+    obj->oPosX += (rnd * xRange - xRange / 2.f);
+    obj->oPosY += (rnd * yRange - yRange / 2.f);
+    obj->oPosZ += (rnd * zRange - zRange / 2.f);
 }
 
 /**
  * Rotate an object in a random direction within the given bounds.
  */
-static UNUSED void unused_rotate_obj_randomly(struct Object *o, f32 pitchRange, f32 yawRange) {
+static UNUSED void unused_rotate_obj_randomly(struct Object *obj, f32 pitchRange, f32 yawRange) {
     f32 rnd = random_float();
-    o->oMoveAnglePitch += (s16)(rnd * pitchRange - pitchRange / 2.f);
-    o->oMoveAngleYaw += (s16)(rnd * yawRange - yawRange / 2.f);
+    obj->oMoveAnglePitch += (s16)(rnd * pitchRange - pitchRange / 2.f);
+    obj->oMoveAngleYaw   += (s16)(rnd *   yawRange -   yawRange / 2.f);
 }
 
 /**
  * Rotate the object towards the point `point`.
  */
-void obj_rotate_towards_point(struct Object *o, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv) {
+void obj_rotate_towards_point(struct Object *obj, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv) {
     f32 dist;
     s16 pitch, yaw;
     Vec3f oPos;
-
-    object_pos_to_vec3f(oPos, o);
+    vec3f_copy(oPos, &obj->oPosVec);
     vec3f_get_dist_and_angle(oPos, point, &dist, &pitch, &yaw);
-    o->oMoveAnglePitch = approach_s16_asymptotic(o->oMoveAnglePitch, pitchOff - pitch, pitchDiv);
-    o->oMoveAngleYaw = approach_s16_asymptotic(o->oMoveAngleYaw, yaw + yawOff, yawDiv);
+    obj->oMoveAnglePitch = approach_s16_asymptotic(obj->oMoveAnglePitch, pitchOff - pitch, pitchDiv);
+    obj->oMoveAngleYaw = approach_s16_asymptotic(obj->oMoveAngleYaw, yaw + yawOff, yawDiv);
 }
 
 #include "behaviors/intro_peach.inc.c"

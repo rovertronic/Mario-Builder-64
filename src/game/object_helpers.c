@@ -33,8 +33,6 @@ static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 * bitSet, s32 flag);
 
-#define o gCurrentObject
-
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
     Mat4 mtx2;
     struct Object *projObj;

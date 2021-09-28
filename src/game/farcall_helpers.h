@@ -25,8 +25,6 @@
 #include "level_headers.h"
 #include "level_misc_macros.h"
 
-#define o gCurrentObject
-
 s32 obj_is_rendering_enabled(void);
 s16 obj_get_pitch_from_vel(void);
 s32 obj_update_race_proposition_dialog(s16 dialogID);

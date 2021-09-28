@@ -53,8 +53,6 @@
 #define POS_OP_COMPUTE_VELOCITY 1
 #define POS_OP_RESTORE_POSITION 2
 
-#define o gCurrentObject
-
 /* BSS (declared to force order) */
 extern s32 sNumActiveFirePiranhaPlants;
 extern s32 sNumKilledFirePiranhaPlants;

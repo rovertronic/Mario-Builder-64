@@ -9,7 +9,7 @@
  * Add the camera's position to `offset`, rotate the point to be relative to the camera's focus, then
  * set lakitu's location.
  */
-void intro_lakitu_set_offset_from_camera(struct Object *o, Vec3f offset) {
+void intro_lakitu_set_offset_from_camera(struct Object *obj, Vec3f offset) {
     f32 dist;
     Vec3s focusAngles;
     s16 offsetPitch, offsetYaw;
@@ -20,36 +20,36 @@ void intro_lakitu_set_offset_from_camera(struct Object *o, Vec3f offset) {
     vec3f_get_dist_and_angle(gCamera->pos, offset, &dist, &offsetPitch, &offsetYaw);
     vec3f_set_dist_and_angle(gCamera->pos, offset, dist,
                              focusAngles[0] + offsetPitch, focusAngles[1] + offsetYaw);
-    vec3f_to_object_pos(o, offset);
+    vec3f_copy(&obj->oPosVec, offset);
 }
 
-void intro_lakitu_set_focus(struct Object *o, Vec3f newFocus) {
+void intro_lakitu_set_focus(struct Object *obj, Vec3f newFocus) {
     f32 dist;
     s16 pitch, yaw;
 
     // newFocus is an offset from lakitu's origin, not a point in the world.
     vec3f_get_dist_and_angle(gVec3fZero, newFocus, &dist, &pitch, &yaw);
-    o->oFaceAnglePitch = pitch;
-    o->oFaceAngleYaw = yaw;
+    obj->oFaceAnglePitch = pitch;
+    obj->oFaceAngleYaw = yaw;
 }
 
 /**
  * Move lakitu along the spline `offset`, relative to the camera, and face him towards the corresponding
  * location along the spline `focus`.
  */
-s32 intro_lakitu_set_pos_and_focus(struct Object *o, struct CutsceneSplinePoint offset[],
+s32 intro_lakitu_set_pos_and_focus(struct Object *obj, struct CutsceneSplinePoint offset[],
                                    struct CutsceneSplinePoint focus[]) {
     Vec3f newOffset, newFocus;
     s32 splineFinished = 0;
-    s16 splineSegment = o->oIntroLakituSplineSegment;
+    s16 splineSegment = obj->oIntroLakituSplineSegment;
 
-    if ((move_point_along_spline(newFocus, offset, &splineSegment, &(o->oIntroLakituSplineSegmentProgress)) == 1)
-        || (move_point_along_spline(newOffset, focus, &splineSegment, &(o->oIntroLakituSplineSegmentProgress)) == 1))
+    if ((move_point_along_spline(newFocus, offset, &splineSegment, &(obj->oIntroLakituSplineSegmentProgress)) == 1)
+     || (move_point_along_spline(newOffset, focus, &splineSegment, &(obj->oIntroLakituSplineSegmentProgress)) == 1))
         splineFinished++;
 
-    o->oIntroLakituSplineSegment = splineSegment;
-    intro_lakitu_set_offset_from_camera(o, newOffset);
-    intro_lakitu_set_focus(o, newFocus);
+    obj->oIntroLakituSplineSegment = splineSegment;
+    intro_lakitu_set_offset_from_camera(obj, newOffset);
+    intro_lakitu_set_focus(obj, newFocus);
     return splineFinished;
 }
 
@@ -142,7 +142,7 @@ void bhv_intro_lakitu_loop(void) {
             toPoint[0] += gCurrentObject->oIntroLakituEndBirds1DestY;
             gCurrentObject->oIntroLakituEndBirds1DestY =
                 approach_f32_asymptotic(gCurrentObject->oIntroLakituEndBirds1DestY, 0.f, 0.05f);
-            vec3f_to_object_pos(gCurrentObject, toPoint);
+            vec3f_copy(&gCurrentObject->oPosVec, toPoint);
 
             if (gCurrentObject->oTimer == 31) {
                 gCurrentObject->oPosY -= 158.f;
@@ -169,7 +169,7 @@ void bhv_intro_lakitu_loop(void) {
             cur_obj_enable_rendering();
             vec3f_set(offset, -100.f, 100.f, 300.f);
             offset_rotated(toPoint, gCamera->pos, offset, sMarioCamState->faceAngle);
-            vec3f_to_object_pos(gCurrentObject, toPoint);
+            vec3f_copy(&gCurrentObject->oPosVec, toPoint);
             gCurrentObject->oMoveAnglePitch = 0x1000;
             gCurrentObject->oMoveAngleYaw = 0x9000;
             gCurrentObject->oFaceAnglePitch = gCurrentObject->oMoveAnglePitch / 2;
@@ -178,7 +178,7 @@ void bhv_intro_lakitu_loop(void) {
             break;
 
         case 101:
-            object_pos_to_vec3f(toPoint, gCurrentObject);
+            vec3f_copy(toPoint, &gCurrentObject->oPosVec);
             if (gCurrentObject->oTimer > 60) {
                 gCurrentObject->oForwardVel = approach_f32_asymptotic(gCurrentObject->oForwardVel, -10.f, 0.05f);
                 gCurrentObject->oMoveAngleYaw += 0x78;
@@ -195,7 +195,7 @@ void bhv_intro_lakitu_loop(void) {
             break;
 
         case 102:
-            object_pos_to_vec3f(toPoint, gCurrentObject);
+            vec3f_copy(toPoint, &gCurrentObject->oPosVec);
             gCurrentObject->oForwardVel = approach_f32_asymptotic(gCurrentObject->oForwardVel, 60.f, 0.05f);
             vec3f_get_yaw(toPoint, gCamera->pos, &yawToCam);
             gCurrentObject->oFaceAngleYaw = camera_approach_s16_symmetric(gCurrentObject->oFaceAngleYaw, yawToCam, 0x200);

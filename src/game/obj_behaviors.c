@@ -40,8 +40,6 @@
  * specific behaviors. Few functions besides the bhv_ functions are used elsewhere in the repo.
  */
 
-#define o gCurrentObject
-
 #define OBJ_COL_FLAG_GROUNDED   (1 << 0)
 #define OBJ_COL_FLAG_HIT_WALL   (1 << 1)
 #define OBJ_COL_FLAG_UNDERWATER (1 << 2)

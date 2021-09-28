@@ -42,50 +42,50 @@
  * Checks if Mario's animation has reached its end point.
  */
 s32 is_anim_at_end(struct MarioState *m) {
-    struct Object *o = m->marioObj;
+    struct Object *marioObj = m->marioObj;
 
-    return (o->header.gfx.animInfo.animFrame + 1) == o->header.gfx.animInfo.curAnim->loopEnd;
+    return (marioObj->header.gfx.animInfo.animFrame + 1) == marioObj->header.gfx.animInfo.curAnim->loopEnd;
 }
 
 /**
  * Checks if Mario's animation has surpassed 2 frames before its end point.
  */
 s32 is_anim_past_end(struct MarioState *m) {
-    struct Object *o = m->marioObj;
+    struct Object *marioObj = m->marioObj;
 
-    return o->header.gfx.animInfo.animFrame >= (o->header.gfx.animInfo.curAnim->loopEnd - 2);
+    return marioObj->header.gfx.animInfo.animFrame >= (marioObj->header.gfx.animInfo.curAnim->loopEnd - 2);
 }
 
 /**
  * Sets Mario's animation without any acceleration, running at its default rate.
  */
 s16 set_mario_animation(struct MarioState *m, s32 targetAnimID) {
-    struct Object *o = m->marioObj;
+    struct Object *marioObj = m->marioObj;
     struct Animation *targetAnim = m->animList->bufTarget;
 
     if (load_patchable_table(m->animList, targetAnimID)) {
         targetAnim->values = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->values);
-        targetAnim->index = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->index);
+        targetAnim->index  = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->index);
     }
 
-    if (o->header.gfx.animInfo.animID != targetAnimID) {
-        o->header.gfx.animInfo.animID = targetAnimID;
-        o->header.gfx.animInfo.curAnim = targetAnim;
-        o->header.gfx.animInfo.animAccel = 0;
-        o->header.gfx.animInfo.animYTrans = m->animYTrans;
+    if (marioObj->header.gfx.animInfo.animID != targetAnimID) {
+        marioObj->header.gfx.animInfo.animID = targetAnimID;
+        marioObj->header.gfx.animInfo.curAnim = targetAnim;
+        marioObj->header.gfx.animInfo.animAccel = 0;
+        marioObj->header.gfx.animInfo.animYTrans = m->animYTrans;
 
         if (targetAnim->flags & ANIM_FLAG_NO_ACCEL) {
-            o->header.gfx.animInfo.animFrame = targetAnim->startFrame;
+            marioObj->header.gfx.animInfo.animFrame = targetAnim->startFrame;
         } else {
             if (targetAnim->flags & ANIM_FLAG_FORWARD) {
-                o->header.gfx.animInfo.animFrame = targetAnim->startFrame + 1;
+                marioObj->header.gfx.animInfo.animFrame = targetAnim->startFrame + 1;
             } else {
-                o->header.gfx.animInfo.animFrame = targetAnim->startFrame - 1;
+                marioObj->header.gfx.animInfo.animFrame = targetAnim->startFrame - 1;
             }
         }
     }
 
-    return o->header.gfx.animInfo.animFrame;
+    return marioObj->header.gfx.animInfo.animFrame;
 }
 
 /**
@@ -93,7 +93,7 @@ s16 set_mario_animation(struct MarioState *m, s32 targetAnimID) {
  * slowed down via acceleration.
  */
 s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel) {
-    struct Object *o = m->marioObj;
+    struct Object *marioObj = m->marioObj;
     struct Animation *targetAnim = m->animList->bufTarget;
 
     if (load_patchable_table(m->animList, targetAnimID)) {
@@ -101,27 +101,27 @@ s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel)
         targetAnim->index = (void *) VIRTUAL_TO_PHYSICAL((u8 *) targetAnim + (uintptr_t) targetAnim->index);
     }
 
-    if (o->header.gfx.animInfo.animID != targetAnimID) {
-        o->header.gfx.animInfo.animID = targetAnimID;
-        o->header.gfx.animInfo.curAnim = targetAnim;
-        o->header.gfx.animInfo.animYTrans = m->animYTrans;
+    if (marioObj->header.gfx.animInfo.animID != targetAnimID) {
+        marioObj->header.gfx.animInfo.animID = targetAnimID;
+        marioObj->header.gfx.animInfo.curAnim = targetAnim;
+        marioObj->header.gfx.animInfo.animYTrans = m->animYTrans;
 
         if (targetAnim->flags & ANIM_FLAG_NO_ACCEL) {
-            o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
+            marioObj->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
         } else {
             if (targetAnim->flags & ANIM_FLAG_FORWARD) {
-                o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) + accel;
+                marioObj->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) + accel;
             } else {
-                o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) - accel;
+                marioObj->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) - accel;
             }
         }
 
-        o->header.gfx.animInfo.animFrame = (o->header.gfx.animInfo.animFrameAccelAssist >> 0x10);
+        marioObj->header.gfx.animInfo.animFrame = (marioObj->header.gfx.animInfo.animFrameAccelAssist >> 0x10);
     }
 
-    o->header.gfx.animInfo.animAccel = accel;
+    marioObj->header.gfx.animInfo.animAccel = accel;
 
-    return o->header.gfx.animInfo.animFrame;
+    return marioObj->header.gfx.animInfo.animFrame;
 }
 
 /**
@@ -1554,13 +1554,13 @@ void mario_reset_bodystate(struct MarioState *m) {
  * Adjusts Mario's graphical height for quicksand.
  */
 void sink_mario_in_quicksand(struct MarioState *m) {
-    struct Object *o = m->marioObj;
+    struct Object *marioObj = m->marioObj;
 
-    if (o->header.gfx.throwMatrix) {
-        (*o->header.gfx.throwMatrix)[3][1] -= m->quicksandDepth;
+    if (marioObj->header.gfx.throwMatrix) {
+        (*marioObj->header.gfx.throwMatrix)[3][1] -= m->quicksandDepth;
     }
 
-    o->header.gfx.pos[1] -= m->quicksandDepth;
+    marioObj->header.gfx.pos[1] -= m->quicksandDepth;
 }
 
 /**

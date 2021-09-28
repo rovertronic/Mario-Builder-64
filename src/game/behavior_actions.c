@@ -46,8 +46,6 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 
-#define o gCurrentObject
-
 struct WFRotatingPlatformData {
     s16 pad;
     s16 scale;

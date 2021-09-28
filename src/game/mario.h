@@ -12,7 +12,7 @@ s16 set_mario_animation(struct MarioState *m, s32 targetAnimID);
 s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel);
 void set_anim_to_frame(struct MarioState *m, s16 animFrame);
 s32 is_anim_past_frame(struct MarioState *m, s16 animFrame);
-s16 find_mario_anim_flags_and_translation(struct Object *o, s32 yaw, Vec3s translation);
+s16 find_mario_anim_flags_and_translation(struct Object *obj, s32 yaw, Vec3s translation);
 void update_mario_pos_for_anim(struct MarioState *m);
 s16 return_mario_anim_y_translation(struct MarioState *m);
 void play_sound_if_no_flag(struct MarioState *m, u32 soundBits, u32 flags);

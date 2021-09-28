@@ -568,9 +568,9 @@ void mtxf_to_mtx(void *dest, void *src) {
 /**
  * Set 'mtx' to a transformation matrix that rotates around the z axis.
  */
-#define MATENTRY(a, b)                                                                                 \
-    ((s16 *) mtx)[a] = ((s32) b) >> 16;                                                                \
-    ((s16 *) mtx)[a + 16] = ((s32) b) & 0xFFFF;
+#define MATENTRY(a, b)                          \
+    ((s16 *) mtx)[a     ] = (((s32) b) >> 16);  \
+    ((s16 *) mtx)[a + 16] = (((s32) b) & 0xFFFF);
 void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
     register s32 i = coss(angle) * 65536;
     register s32 j = sins(angle) * 65536;
@@ -580,10 +580,10 @@ void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
         *temp = 0;
         temp++;
     }
-    MATENTRY(0, i)
-    MATENTRY(1, j)
+    MATENTRY(0,  i)
+    MATENTRY(1,  j)
     MATENTRY(4, -j)
-    MATENTRY(5, i)
+    MATENTRY(5,  i)
     ((s16 *) mtx)[10] = 1;
     ((s16 *) mtx)[15] = 1;
 }
@@ -1086,24 +1086,4 @@ s32 anim_spline_poll(Vec3f result) {
     }
 
     return hasEnded;
-}
-
-/// Multiply vector 'dest' by a
-void vec3f_mul(Vec3f dest, f32 a) {
-    vec3_mul_val(dest, a);
-}
-
-/// Get length of vector 'a'
-f32 vec3f_length(Vec3f a) {
-    return sqrtf(sqr(a[0]) + sqr(a[1]) + sqr(a[2]));
-}
-
-/// Get dot product of vectors 'a' and 'b'
-f32 vec3f_dot(Vec3f a, Vec3f b) {
-    return vec3_dot(a, b);
-}
-
-/// Make 'dest' the difference of vectors a and b.
-void vec3f_dif(Vec3f dest, Vec3f a, Vec3f b) {
-    vec3_diff(dest, a, b);
 }
