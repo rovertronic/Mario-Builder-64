@@ -15,6 +15,7 @@
 #include "puppyprint.h"
 #include "debug_box.h"
 #include "level_update.h"
+#include "behavior_data.h"
 
 #include "config.h"
 
@@ -965,7 +966,10 @@ void geo_process_object(struct Object *node) {
                     if (node->oIntangibleTimer != -1) {
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
-                        debug_box_color(0x800000FF);
+                        if (node->behavior == segmented_to_virtual(bhvWarp) || node->behavior == segmented_to_virtual(bhvDoorWarp) || node->behavior == segmented_to_virtual(bhvFadingWarp))
+                            debug_box_color(0x80FFA500);
+                        else
+                            debug_box_color(0x800000FF);
                         debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
                         vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
                         vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);

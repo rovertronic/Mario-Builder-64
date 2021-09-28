@@ -451,7 +451,7 @@ void puppycam_check_pause_buttons(void) {
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 if (gPlayer1Controller->rawStickX >= 60 || gPlayer1Controller->buttonDown & R_JPAD) {
                     puppycam_change_setting(1);
-                } else if (gPlayer1Controller->rawStickX <= -60 || gPlayer1Controller->buttonDown & L_JPAD)
+                } else if (gPlayer1Controller->rawStickX <= -60 || gPlayer1Controller->buttonDown & L_JPAD) {
                     puppycam_change_setting(-1);
                 }
             }
@@ -1079,7 +1079,7 @@ void puppycam_projection_behaviours(void) {
             gPuppyCam.floorY[1] = 0;
             gPuppyCam.targetFloorHeight = gPuppyCam.targetObj->oPosY;
             gPuppyCam.lastTargetFloorHeight = gPuppyCam.targetObj->oPosY;
-            
+
             gPuppyCam.yawTarget = approach_angle(gPuppyCam.yawTarget, (gMarioState->faceAngle[1] + 0x8000), (1000 * (gMarioState->forwardVel / 32)));
             if (gMarioState->waterLevel - 100 - gMarioState->pos[1] > 5 && gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PITCH_ROTATION) {
                 gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch,gMarioState->faceAngle[0] / 10, 0.05f);

@@ -29,6 +29,7 @@
 #include "engine/surface_collision.h"
 #include "engine/surface_load.h"
 #include "object_list_processor.h"
+#include "behavior_data.h"
 
 #include "debug_box.h"
 
@@ -239,9 +240,18 @@ void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
             surf = node->surface;
             node = node->next;
 
-            make_vertex(verts, gVisualSurfaceCount, surf->vertex1[0], surf->vertex1[1], surf->vertex1[2], 0, 0, col[0], col[1], col[2], 0x80);
-            make_vertex(verts, gVisualSurfaceCount+1, surf->vertex2[0], surf->vertex2[1], surf->vertex2[2], 0, 0, col[0], col[1], col[2], 0x80);
-            make_vertex(verts, gVisualSurfaceCount+2, surf->vertex3[0], surf->vertex3[1], surf->vertex3[2], 0, 0, col[0], col[1], col[2], 0x80);
+            if (surf->type >= SURFACE_INSTANT_WARP_1B && surf->type <= SURFACE_INSTANT_WARP_1E)
+            {
+                make_vertex(verts, gVisualSurfaceCount, surf->vertex1[0], surf->vertex1[1], surf->vertex1[2], 0, 0, 0xFF, 0xA0, 0x00, 0x80);
+                make_vertex(verts, gVisualSurfaceCount+1, surf->vertex2[0], surf->vertex2[1], surf->vertex2[2], 0, 0, 0xFF, 0xA0, 0x00, 0x80);
+                make_vertex(verts, gVisualSurfaceCount+2, surf->vertex3[0], surf->vertex3[1], surf->vertex3[2], 0, 0, 0xFF, 0xA0, 0x00, 0x80);
+            }
+            else
+            {
+                make_vertex(verts, gVisualSurfaceCount, surf->vertex1[0], surf->vertex1[1], surf->vertex1[2], 0, 0, col[0], col[1], col[2], 0x80);
+                make_vertex(verts, gVisualSurfaceCount+1, surf->vertex2[0], surf->vertex2[1], surf->vertex2[2], 0, 0, col[0], col[1], col[2], 0x80);
+                make_vertex(verts, gVisualSurfaceCount+2, surf->vertex3[0], surf->vertex3[1], surf->vertex3[2], 0, 0, col[0], col[1], col[2], 0x80);
+            }
 
             gVisualSurfaceCount+=3;
         }

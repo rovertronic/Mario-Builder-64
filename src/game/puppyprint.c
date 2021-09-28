@@ -31,7 +31,6 @@ a modern game engine's developer's console.
 #include "game_init.h"
 #include "memory.h"
 #include "print.h"
-#include "segment2.h"
 #include "string.h"
 #include "stdarg.h"
 #include "printf.h"
@@ -265,7 +264,7 @@ void print_ram_overview(void) {
             sprintf(textBytes, "Segment %02X: %X", i - nameTable + 2, ramsizeSegment[i]);
         }
         print_set_envcolour(colourChart[i][0], colourChart[i][1], colourChart[i][2], 255);
-        print_small_text(x, y, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL);
+        print_small_text(x, y, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
         y += 12;
         drawn++;
     }
@@ -306,7 +305,7 @@ void print_which_benchmark(void) {
     render_blank_box(110, 115, 210, 160, 0, 0, 0, 255);
     finish_blank_box();
     sprintf(textBytes, "Select Option#%s#L: Confirm", benchNames[benchOption]);
-    print_small_text(160,120, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL);
+    print_small_text(160,120, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
 }
 
 char consoleLogTable[LOG_BUFFER_SIZE][255];
@@ -346,7 +345,7 @@ void print_console_log(void) {
         if (consoleLogTable[i] == NULL) {
             continue;
         }
-        print_small_text(16, (LINE_HEIGHT) - (i * 12), consoleLogTable[i], PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
+        print_small_text(16, (LINE_HEIGHT) - (i * 12), consoleLogTable[i], PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_DEFAULT);
     }
 }
 #undef LINE_HEIGHT
@@ -373,7 +372,7 @@ void puppyprint_render_profiler(void) {
     }
 
     sprintf(textBytes, "RAM: %06X /%06X (%d_)", main_pool_available(), mempool, (s32)(((f32)main_pool_available() / (f32)mempool) * 100));
-    print_small_text(160, 224, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL);
+    print_small_text(160, 224, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
 
     if (!ramViewer && !benchViewer && !logViewer) {
         print_fps(16,40);
@@ -382,20 +381,20 @@ void puppyprint_render_profiler(void) {
 #else
         sprintf(textBytes, "CPU: %dus (%d_)#RSP: %dus (%d_)#RDP: %dus (%d_)", (s32)cpuCount, (s32)(cpuCount / 333), (s32)OS_CYCLES_TO_USEC(rspTime), (s32)OS_CYCLES_TO_USEC(rspTime) / 333, (s32)OS_CYCLES_TO_USEC(rdpTime), (s32)OS_CYCLES_TO_USEC(rdpTime) / 333);
 #endif
-        print_small_text(16, 52, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
+        print_small_text(16, 52, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 
         sprintf(textBytes, "OBJ: %d/%d", gObjectCounter, OBJECT_POOL_CAPACITY);
-        print_small_text(16, 124, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
+        print_small_text(16, 124, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 
         // Very little point printing useless info if Mayro doesn't even exist.
         if (gMarioState->marioObj) {
             sprintf(textBytes, "Mario Pos#X: %d#Y: %d#Z: %d#D: %X", (s32)(gMarioState->pos[0]), (s32)(gMarioState->pos[1]), (s32)(gMarioState->pos[2]), (u16)(gMarioState->faceAngle[1]));
-            print_small_text(16, 140, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
+            print_small_text(16, 140, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
         }
         // Same for the camera, especially so because this will crash otherwise.
         if (gCamera) {
             sprintf(textBytes, "Camera Pos#X: %d#Y: %d#Z: %d#D: %X", (s32)(gCamera->pos[0]), (s32)(gCamera->pos[1]), (s32)(gCamera->pos[2]), (u16)(gCamera->yaw));
-            print_small_text(304, 140, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+            print_small_text(304, 140, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         }
 
         if (benchmarkTimer > 0) {
@@ -408,9 +407,9 @@ void puppyprint_render_profiler(void) {
             // sprintf(textBytes, "Benchmark: %dus#High: %dus", (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS+1]));
             sprintf(textBytes, "Done in %0.000f seconds#Benchmark: %dus#High: %dus", (f32)(benchmarkProgramTimer) * 0.000001f, (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS + 1]));
 #endif
-            render_blank_box(160 - (get_text_width(textBytes) / 2) - 4, 158, 160 + (get_text_width(textBytes) / 2) + 4, 196, 0, 0, 0, 255);
+            render_blank_box(160 - (get_text_width(textBytes, FONT_OUTLINE) / 2) - 4, 158, 160 + (get_text_width(textBytes, FONT_OUTLINE) / 2) + 4, 196, 0, 0, 0, 255);
             print_set_envcolour(255, 255, 255, 255);
-            print_small_text(160, 160, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL);
+            print_small_text(160, 160, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
             finish_blank_box();
         }
 
@@ -424,26 +423,26 @@ void puppyprint_render_profiler(void) {
 
 #ifdef PUPPYPRINT_DEBUG_CYCLES
         sprintf(textBytes, "Collision: <COL_99505099>%dc", (s32)(collisionTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Graph: <COL_50509999>%dc", (s32)(graphTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Behaviour: <COL_50995099>%dc", (s32)(behaviourTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Audio: <COL_99995099>%dc", (s32)(audioTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "DMA: <COL_99509999>%dc", (s32)(dmaTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
 #else
         sprintf(textBytes, "Collision: <COL_99505099>%dus", (s32)OS_CYCLES_TO_USEC(collisionTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Graph: <COL_50509999>%dus", (s32)OS_CYCLES_TO_USEC(graphTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Behaviour: <COL_50995099>%dus", (s32)OS_CYCLES_TO_USEC(behaviourTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Audio: <COL_99995099>%dus", (s32)OS_CYCLES_TO_USEC(audioTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "DMA: <COL_99509999>%dus", (s32)OS_CYCLES_TO_USEC(dmaTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL);
+        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
 #endif
 
         // Render CPU breakdown bar.
@@ -595,7 +594,7 @@ void finish_blank_box(void) {
 // This does some epic shenanigans to figure out the optimal way to draw this.
 // If the width is a multiple of 4, then use fillmode (fastest)
 // Otherwise, if there's transparency, it uses that rendermode, which is slower than using opaque rendermodes.
-void render_blank_box(s16 x1, s16 y1, s16 x2, s16 y2, u8 r, u8 g, u8 b, u8 a) {
+void render_blank_box(s32 x1, s32 y1, s32 x2, s32 y2, s32 r, s32 g, s32 b, s32 a) {
     s32 cycleadd = 0;
     if (ABS(x1 - x2) % 4 == 0 && a == 255) {
         gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
@@ -616,19 +615,12 @@ void render_blank_box(s16 x1, s16 y1, s16 x2, s16 y2, u8 r, u8 g, u8 b, u8 a) {
     gDPFillRectangle(gDisplayListHead++, x1, y1, x2-cycleadd, y2-cycleadd);
 }
 
-
-u8 textLen[] = {
-    /*0*/ 7, /*1*/ 7, /*2*/ 7, /*3*/ 7, /*4*/ 7, /*5*/ 7, /*6*/ 7, /*7*/ 7, /*8*/ 7, /*9*/ 7, /*-*/ 7, /*+*/ 7, /*(*/ 4, /*)*/ 4, /*!*/ 5, /*?*/ 6,
-    /*A*/ 7, /*B*/ 7, /*C*/ 7, /*D*/ 7, /*E*/ 7, /*F*/ 7, /*G*/ 7, /*H*/ 7, /*I*/ 7, /*J*/ 7, /*K*/ 7, /*L*/ 7, /*M*/ 7, /*N*/ 7, /*O*/ 7, /*P*/ 7,
-    /*Q*/ 7, /*R*/ 7, /*S*/ 7, /*T*/ 7, /*U*/ 7, /*V*/ 7, /*W*/ 7, /*X*/ 7, /*Y*/ 7, /*Z*/ 7, /*"*/ 5, /*'*/ 2, /*:*/ 3, /*;*/ 3, /*.*/ 3, /*,*/ 3,
-    /*a*/ 6, /*b*/ 6, /*c*/ 6, /*d*/ 6, /*e*/ 6, /*f*/ 6, /*g*/ 6, /*h*/ 6, /*i*/ 2, /*j*/ 6, /*k*/ 6, /*l*/ 3, /*m*/ 6, /*n*/ 6, /*o*/ 6, /*p*/ 6,
-    /*q*/ 6, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 6, /*w*/ 6, /*x*/ 6, /*y*/ 6, /*z*/ 6, /*~*/ 7, /*¨*/ 6, /*^*/ 7, /*/*/ 6, /*%*/ 6, /*&*/ 7,
-};
-
 #include "level_update.h"
 
-void get_char_from_byte(u8 letter, s32 *textX, s32 *textY, s32 *spaceX, s32 *offsetY) {
+void get_char_from_byte(u8 letter, s32 *textX, s32 *textY, s32 *spaceX, s32 *offsetY, s32 font) {
     *offsetY = 0;
+    u8 **textKern = segmented_to_virtual(puppyprint_kerning_lut);
+    u8 *textLen = segmented_to_virtual(textKern[font]);
     if (letter >= '0' && letter <= '9') { // Line 1
         *textX = (letter - '0') * 4;
         *textY = 0;
@@ -680,8 +672,8 @@ void get_char_from_byte(u8 letter, s32 *textX, s32 *textY, s32 *spaceX, s32 *off
         // This is for the letters that sit differently on the line. It just moves them down a bit.
         case 'g': *offsetY = 1; break;
         case 'q': *offsetY = 1; break;
-        // case 'p': *offsetY = 1; break;
-        // case 'y': *offsetY = 1; break;
+        case 'p': if (font == FONT_DEFAULT) *offsetY = 3; break;
+        case 'y': if (font == FONT_DEFAULT) *offsetY = 1; break;
     }
 }
 
@@ -756,7 +748,7 @@ s32 text_iterate_command(const char *str, s32 i, s32 runCMD) {
     return len;
 }
 
-s32 get_text_width(const char *str) {
+s32 get_text_width(const char *str, s32 font) {
     s32 i= 0;
     s32 textPos = 0;
     s32 wideX = 0;
@@ -770,7 +762,7 @@ s32 get_text_width(const char *str) {
         if (str[i] == '<') {
             i += text_iterate_command(str, i, FALSE);
         }
-        get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY);
+        get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY, font);
         textPos += spaceX + 1;
         wideX = MAX(textPos, wideX);
     }
@@ -790,7 +782,7 @@ s32 get_text_height(const char *str) {
     return textPos;
 }
 
-void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
+void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount, s32 font)
 {
     s32 textX = 0;
     s32 textY = 0;
@@ -805,6 +797,7 @@ void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
     s32 lines = 0;
     s32 xlu = currEnv[3];
     s32 prevxlu = 256; //Set out of bounds, so it will *always* be different at first.
+    Texture *(*fontTex)[] = segmented_to_virtual(&puppyprint_font_lut);
 
     shakeToggle = 0;
     waveToggle = 0;
@@ -825,7 +818,7 @@ void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
             if (str[i] == '<') {
                 i += text_iterate_command(str, i, FALSE);
             }
-            get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY);
+            get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY, font);
             textPos[0] += spaceX + 1;
             wideX[lines] = MAX(textPos[0], wideX[lines]);
         }
@@ -842,14 +835,14 @@ void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
             if (str[i] == '<') {
                 i += text_iterate_command(str, i, FALSE);
             }
-            get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY);
+            get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY, font);
 
             wideX[lines] = MAX(textPos[0], wideX[lines]);
         }
         textPos[0] = -wideX[0];
     }
     lines = 0;
-    gDPLoadTextureBlock_4b(gDisplayListHead++, segmented_to_virtual(small_font), G_IM_FMT_I, 128, 60, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 0, 0, 0, 0, 0);
+    gDPLoadTextureBlock_4b(gDisplayListHead++, (*fontTex)[font], G_IM_FMT_I, 128, 60, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 0, 0, 0, 0, 0);
     for (i = 0; i < tx; i++) {
         if (str[i] == '#') {
             i++;
@@ -876,7 +869,7 @@ void print_small_text(s32 x, s32 y, const char *str, s32 align, s32 amount)
         } else {
             wavePos = 0;
         }
-        get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY);
+        get_char_from_byte(str[i], &textX, &textY, &spaceX, &offsetY, font);
         if (xlu != prevxlu) {
             prevxlu = xlu;
             if (xlu > 250) {
