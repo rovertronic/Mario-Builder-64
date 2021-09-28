@@ -1537,12 +1537,11 @@ s8 sBowserHealth[] = { 1, 1, 3 };
 void bowser_free_update(void) {
     struct Surface *floor;
     struct Object *platform;
-    UNUSED f32 floorHeight;
 #ifdef PLATFORM_DISPLACEMENT_2
     s16 tmpOFaceAngleYaw = (s16) o->oFaceAngleYaw;
     if ((platform = o->platform) != NULL) {
         // NOTE: This function was at one point using '&o->oFaceAngleYaw', which is a s32 address. Should tmpOFaceAngleYaw be using the first 16 bits instead, or was that a bug?
-        apply_platform_displacement(&sBowserDisplacementInfo, &o->oPosX, &tmpOFaceAngleYaw, platform);
+        apply_platform_displacement(&sBowserDisplacementInfo, &o->oPosVec, &tmpOFaceAngleYaw, platform);
         o->oFaceAngleYaw = tmpOFaceAngleYaw;
     }
 #else
@@ -1561,7 +1560,7 @@ void bowser_free_update(void) {
         o->oAction = BOWSER_ACT_JUMP_ONTO_STAGE;
     }
     // Check floor height and platform
-    floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+    find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
     if ((floor != NULL) && (floor->object != NULL)) {
         o->platform = floor->object;
     } else {

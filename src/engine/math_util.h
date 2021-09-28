@@ -5,6 +5,10 @@
 
 #include "types.h"
 
+#define NEAR_ZERO   0.00001f
+#define NEARER_ZERO 0.000001f
+#define NEAR_ONE    0.99999f
+
 /**
  * Converts an angle in degrees to sm64's s16 angle units. For example, DEGREES(90) == 0x4000
  * This should be used mainly to make camera code clearer at first glance.
@@ -122,6 +126,32 @@ extern f32 gSineTable[];
     (dst)[0] = (((a)[1] * (b)[2]) - ((a)[2] * (b)[1])); \
     (dst)[1] = (((a)[2] * (b)[0]) - ((a)[0] * (b)[2])); \
     (dst)[2] = (((a)[0] * (b)[1]) - ((a)[1] * (b)[0])); \
+}
+
+/**
+ * | ? ? ? 0 |
+ * | ? ? ? 0 |
+ * | ? ? ? 0 |
+ * | 0 0 0 1 |
+ * i.e. a matrix representing a linear transformation over 3 space.
+ */
+// Multiply a vector by a matrix of the form
+#define linear_mtxf_mul_vec3(mtx, dstV, srcV) {                                                     \
+    (dstV)[0] = (((mtx)[0][0] * (srcV)[0]) + ((mtx)[1][0] * (srcV)[1]) + ((mtx)[2][0] * (srcV)[2]));\
+    (dstV)[1] = (((mtx)[0][1] * (srcV)[0]) + ((mtx)[1][1] * (srcV)[1]) + ((mtx)[2][1] * (srcV)[2]));\
+    (dstV)[2] = (((mtx)[0][2] * (srcV)[0]) + ((mtx)[1][2] * (srcV)[1]) + ((mtx)[2][2] * (srcV)[2]));\
+}
+
+#define linear_mtxf_mul_vec3_and_translate(mtx, dstV, srcV) {   \
+    linear_mtxf_mul_vec3f((mtx), (dstV), (srcV));               \
+    vec3_add((dstV), (mtx)[3]);                                 \
+}
+
+// Multiply a vector by the transpose of a matrix of the form
+#define linear_mtxf_transpose_mul_vec3(mtx, dstV, srcV) {   \
+    (dstV)[0] = vec3_dot((mtx)[0], (srcV));                 \
+    (dstV)[1] = vec3_dot((mtx)[1], (srcV));                 \
+    (dstV)[2] = vec3_dot((mtx)[2], (srcV));                 \
 }
 
 #define vec2_set(dst, x, y) {           \
@@ -340,11 +370,68 @@ extern f32 gSineTable[];
 #define vec3_div_val(dst, x) vec3_quot_val((dst), (dst), (x))
 #define vec4_div_val(dst, x) vec4_quot_val((dst), (dst), (x))
 
-#define RAYCAST_FIND_FLOOR  (0x1)
-#define RAYCAST_FIND_WALL   (0x2)
-#define RAYCAST_FIND_CEIL   (0x4)
-#define RAYCAST_FIND_WATER  (0x8)
-#define RAYCAST_FIND_ALL    (0xFFFFFFFF)
+#define MAT4_VEC_DOT_PROD(R, A, B, row, col) {              \
+    (R)[(row)][(col)]  = ((A)[(row)][0] * (B)[0][(col)]);   \
+    (R)[(row)][(col)] += ((A)[(row)][1] * (B)[1][(col)]);   \
+    (R)[(row)][(col)] += ((A)[(row)][2] * (B)[2][(col)]);   \
+}
+#define MAT4_DOT_PROD(R, A, B, row, col) {                  \
+    (R)[(row)][(col)]  = ((A)[(row)][0] * (B)[0][(col)]);   \
+    (R)[(row)][(col)] += ((A)[(row)][1] * (B)[1][(col)]);   \
+    (R)[(row)][(col)] += ((A)[(row)][2] * (B)[2][(col)]);   \
+    (R)[(row)][(col)] += ((A)[(row)][3] * (B)[3][(col)]);   \
+}
+
+#define MAT4_MULTIPLY(R, A, B) {        \
+    MAT4_DOT_PROD((R), (A), (B), 0, 0); \
+    MAT4_DOT_PROD((R), (A), (B), 0, 1); \
+    MAT4_DOT_PROD((R), (A), (B), 0, 2); \
+    MAT4_DOT_PROD((R), (A), (B), 0, 3); \
+    MAT4_DOT_PROD((R), (A), (B), 1, 0); \
+    MAT4_DOT_PROD((R), (A), (B), 1, 1); \
+    MAT4_DOT_PROD((R), (A), (B), 1, 2); \
+    MAT4_DOT_PROD((R), (A), (B), 1, 3); \
+    MAT4_DOT_PROD((R), (A), (B), 2, 0); \
+    MAT4_DOT_PROD((R), (A), (B), 2, 1); \
+    MAT4_DOT_PROD((R), (A), (B), 2, 2); \
+    MAT4_DOT_PROD((R), (A), (B), 2, 3); \
+    MAT4_DOT_PROD((R), (A), (B), 3, 0); \
+    MAT4_DOT_PROD((R), (A), (B), 3, 1); \
+    MAT4_DOT_PROD((R), (A), (B), 3, 2); \
+    MAT4_DOT_PROD((R), (A), (B), 3, 3); \
+}
+
+#define MTXF_END(mtx) { \
+    (mtx)[0][3] = 0.0f; \
+    (mtx)[1][3] = 0.0f; \
+    (mtx)[2][3] = 0.0f; \
+    (mtx)[3][3] = 1.0f; \
+}
+
+#define NAME_INVMAG(v) v##_invmag
+
+/// Scale vector 'v' so it has length  1
+#define vec3_normalize(v) {                                     \
+    register f32 NAME_INVMAG(v) = vec3_mag((v));                \
+    NAME_INVMAG(v) = (1.0f / MAX(NAME_INVMAG(v), NEAR_ZERO));   \
+    vec3_mul_val((v), NAME_INVMAG(v));                          \
+}
+
+/// Scale vector 'v' so it has length -1
+#define vec3_normalize_negative(v) {                    \
+    register f32 v##_invmag = vec3_mag((v));            \
+    v##_invmag = -(1.0f / MAX(v##_invmag, NEAR_ZERO));  \
+    vec3_mul_val((v), v##_invmag);                      \
+}
+
+#define vec3_normalize_max(v, max) {    \
+    register f32 v##_mag = vec3_mag(v); \
+    v##_mag = MAX(v##_mag, NEAR_ZERO);  \
+    if (v##_mag > max) {                \
+        v##_mag = (max / v##_mag);      \
+        vec3_mul_val(v, v##_mag);       \
+    }                                   \
+}
 
 s32 min_3i(s32 a0, s32 a1, s32 a2);
 f32 min_3f(f32 a0, f32 a1, f32 a2);

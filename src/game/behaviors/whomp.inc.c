@@ -146,12 +146,12 @@ void king_whomp_on_ground(void) {
             if (o->oHealth == 0)
                 o->oAction = 8;
             else {
-                vec3f_copy(pos, &o->oPosX);
-                vec3f_copy(&o->oPosX, &gMarioObject->oPosX);
+                vec3f_copy(pos, &o->oPosVec);
+                vec3f_copy(&o->oPosVec, &gMarioObject->oPosVec);
                 spawn_mist_particles_variable(0, 0, 100.0f);
                 spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
                 cur_obj_shake_screen(SHAKE_POS_SMALL);
-                vec3f_copy(&o->oPosX, pos);
+                vec3f_copy(&o->oPosVec, pos);
             }
             o->oSubAction++;
         }

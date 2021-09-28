@@ -1704,8 +1704,7 @@ void cur_obj_move_using_fvel_and_gravity(void) {
     cur_obj_move_using_vel_and_gravity(); //! No terminal velocity
 }
 
-void obj_set_pos_relative(struct Object *obj, struct Object *other, f32 dleft, f32 dy,
-                             f32 dforward) {
+void obj_set_pos_relative(struct Object *obj, struct Object *other, f32 dleft, f32 dy, f32 dforward) {
     f32 facingZ = coss(other->oMoveAngleYaw);
     f32 facingX = sins(other->oMoveAngleYaw);
 
@@ -1720,12 +1719,9 @@ void obj_set_pos_relative(struct Object *obj, struct Object *other, f32 dleft, f
 }
 
 s16 cur_obj_angle_to_home(void) {
-    s16 angle;
     f32 dx = o->oHomeX - o->oPosX;
     f32 dz = o->oHomeZ - o->oPosZ;
-
-    angle = atan2s(dz, dx);
-    return angle;
+    return atan2s(dz, dx);
 }
 
 void obj_set_gfx_pos_at_obj_pos(struct Object *obj1, struct Object *obj2) {
@@ -1747,26 +1743,16 @@ void obj_translate_local(struct Object *obj, s16 posIndex, s16 localTranslateInd
     f32 dy = obj->rawData.asF32[localTranslateIndex + 1];
     f32 dz = obj->rawData.asF32[localTranslateIndex + 2];
 
-    obj->rawData.asF32[posIndex + 0] +=
-        obj->transform[0][0] * dx + obj->transform[1][0] * dy + obj->transform[2][0] * dz;
-    obj->rawData.asF32[posIndex + 1] +=
-        obj->transform[0][1] * dx + obj->transform[1][1] * dy + obj->transform[2][1] * dz;
-    obj->rawData.asF32[posIndex + 2] +=
-        obj->transform[0][2] * dx + obj->transform[1][2] * dy + obj->transform[2][2] * dz;
+    obj->rawData.asF32[posIndex + 0] += obj->transform[0][0] * dx + obj->transform[1][0] * dy + obj->transform[2][0] * dz;
+    obj->rawData.asF32[posIndex + 1] += obj->transform[0][1] * dx + obj->transform[1][1] * dy + obj->transform[2][1] * dz;
+    obj->rawData.asF32[posIndex + 2] += obj->transform[0][2] * dx + obj->transform[1][2] * dy + obj->transform[2][2] * dz;
 }
 
 void obj_build_transform_from_pos_and_angle(struct Object *obj, s16 posIndex, s16 angleIndex) {
     Vec3f translate;
+    vec3_copy(translate, &obj->rawData.asF32[posIndex]);
     Vec3s rotation;
-
-    translate[0] = obj->rawData.asF32[posIndex + 0];
-    translate[1] = obj->rawData.asF32[posIndex + 1];
-    translate[2] = obj->rawData.asF32[posIndex + 2];
-
-    rotation[0] = obj->rawData.asS32[angleIndex + 0];
-    rotation[1] = obj->rawData.asS32[angleIndex + 1];
-    rotation[2] = obj->rawData.asS32[angleIndex + 2];
-
+    vec3_copy(rotation,  &obj->rawData.asS32[angleIndex]);
     mtxf_rotate_zxy_and_translate(obj->transform, translate, rotation);
 }
 
@@ -1790,9 +1776,7 @@ void obj_build_transform_relative_to_parent(struct Object *obj) {
     obj_apply_scale_to_transform(obj);
     mtxf_mul(obj->transform, obj->transform, parent->transform);
 
-    obj->oPosX = obj->transform[3][0];
-    obj->oPosY = obj->transform[3][1];
-    obj->oPosZ = obj->transform[3][2];
+    vec3_copy(&obj->oPosVec, obj->transform[3]);
 
     obj->header.gfx.throwMatrix = &obj->transform;
 
@@ -1802,10 +1786,7 @@ void obj_build_transform_relative_to_parent(struct Object *obj) {
 void obj_create_transform_from_self(struct Object *obj) {
     obj->oFlags &= ~OBJ_FLAG_TRANSFORM_RELATIVE_TO_PARENT;
     obj->oFlags |= OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
-
-    obj->transform[3][0] = obj->oPosX;
-    obj->transform[3][1] = obj->oPosY;
-    obj->transform[3][2] = obj->oPosZ;
+    vec3_copy(obj->transform[3], &obj->oPosVec);
 }
 
 void cur_obj_rotate_move_angle_using_vel(void) {

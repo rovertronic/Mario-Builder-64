@@ -112,15 +112,23 @@ void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
 
 /// Scale vector 'dest' so it has length 1
 void vec3f_normalize(Vec3f dest) {
-    f32 size = sqrtf(dest[0] * dest[0] + dest[1] * dest[1] + dest[2] * dest[2]);
-    register f32 invsqrt;
-    if (size > 0.01f) {
-
-        invsqrt = 1.0f / size;
+    f32 mag = sqrtf(sqr(dest[0] + sqr(dest[1]) + sqr(dest[2]));
+    if (mag > __FLT_EPSILON__) {
+        register f32 invsqrt = 1.0f / mag;
         vec3_mul_val(dest, invsqrt);
-        /*dest[0] *= invsqrt;
-        dest[1] *= invsqrt;
-        dest[2] *= invsqrt;*/
+    } else {
+        dest[0] = 0;
+        dest[1] = 1;
+        dest[2] = 0;
+    }
+}
+
+/// Scale vector 'dest' so it has length -1
+void vec3f_normalize_negative(Vec3f dest) {
+    f32 mag = sqrtf(sqr(dest[0] + sqr(dest[1]) + sqr(dest[2]));
+    if (mag > __FLT_EPSILON__) {
+        register f32 invsqrt = -1.0f / mag;
+        vec3_mul_val(dest, invsqrt);
     } else {
         dest[0] = 0;
         dest[1] = 1;
@@ -130,7 +138,7 @@ void vec3f_normalize(Vec3f dest) {
 
 #pragma GCC diagnostic pop
 struct CopyMe {
-    f32 x; f32 y; f32 z; f32 w;
+    f32 x;  f32 y;  f32 z;  f32 w;
     f32 x1; f32 y1; f32 z1; f32 w1;
     f32 x2; f32 y2; f32 z2; f32 w2;
     f32 x3; f32 y3; f32 z3; f32 w3;
@@ -209,14 +217,6 @@ void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
     ((u32 *) dest)[15] = 0x3F800000;
 }
 
-f32 lookAtCalc(f32 sqrtsqrt) {
-    f32 calc = sqrtf(sqrtsqrt);
-    if (calc == 0)
-        calc = 0.00000000001;
-
-    return -1.0 / calc;
-}
-
 /**
  * Set mtx to a look-at matrix for the camera. The resulting transformation
  * transforms the world as if there exists a camera at position 'from' pointed
@@ -224,78 +224,36 @@ f32 lookAtCalc(f32 sqrtsqrt) {
  * angle allows a bank rotation of the camera.
  */
 void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
-    register f32 invLength;
-    f32 dx;
-    f32 dz;
-    f32 xColY;
-    f32 yColY;
-    f32 zColY;
-    f32 xColZ;
-    f32 yColZ;
-    f32 zColZ;
-    f32 xColX;
-    f32 yColX;
-    f32 zColX;
-    f32 calc;
-
-    dx = to[0] - from[0];
-    dz = to[2] - from[2];
-
-    invLength = lookAtCalc(dx * dx + dz * dz);
+    Vec3f colX, colY, colZ;
+    register f32 dx = (to[0] - from[0]);
+    register f32 dz = (to[2] - from[2]);
+    register f32 invLength = sqrtf(sqr(dx) + sqr(dz));
+    invLength = -(1.0f / MAX(invLength, NEAR_ZERO));
     dx *= invLength;
     dz *= invLength;
-
-    yColY = coss(roll);
-    xColY = sins(roll) * dz;
-    zColY = -sins(roll) * dx;
-
-    xColZ = to[0] - from[0];
-    yColZ = to[1] - from[1];
-    zColZ = to[2] - from[2];
-
-    invLength = lookAtCalc(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ);
-    xColZ *= invLength;
-    yColZ *= invLength;
-    zColZ *= invLength;
-
-    xColX = yColY * zColZ - zColY * yColZ;
-    yColX = zColY * xColZ - xColY * zColZ;
-    zColX = xColY * yColZ - yColY * xColZ;
-
-    invLength = -lookAtCalc(xColX * xColX + yColX * yColX + zColX * zColX);
-
-    xColX *= invLength;
-    yColX *= invLength;
-    zColX *= invLength;
-
-    xColY = yColZ * zColX - zColZ * yColX;
-    yColY = zColZ * xColX - xColZ * zColX;
-    zColY = xColZ * yColX - yColZ * xColX;
-
-    invLength = -lookAtCalc(xColY * xColY + yColY * yColY + zColY * zColY);
-    xColY *= invLength;
-    yColY *= invLength;
-    zColY *= invLength;
-
-    mtx[0][0] = xColX;
-    mtx[1][0] = yColX;
-    mtx[2][0] = zColX;
-    mtx[3][0] = -(from[0] * xColX + from[1] * yColX + from[2] * zColX);
-
-    mtx[0][1] = xColY;
-    mtx[1][1] = yColY;
-    mtx[2][1] = zColY;
-    mtx[3][1] = -(from[0] * xColY + from[1] * yColY + from[2] * zColY);
-
-    mtx[0][2] = xColZ;
-    mtx[1][2] = yColZ;
-    mtx[2][2] = zColZ;
-    mtx[3][2] = -(from[0] * xColZ + from[1] * yColZ + from[2] * zColZ);
-
-    mtx[0][3] = 0;
-    mtx[1][3] = 0;
-    mtx[2][3] = 0;
-    mtx[3][3] = 1;
+    f32 sr  = sins(roll);
+    colY[1] = coss(roll);
+    colY[0] = ( sr * dz);
+    colY[2] = (-sr * dx);
+    vec3_diff(colZ, to, from);
+    vec3_normalize_negative(colZ);
+    vec3f_cross(colX, colY, colZ);
+    vec3f_normalize(colX);
+    vec3f_cross(colY, colZ, colX);
+    vec3f_normalize(colY);
+    mtx[0][0] = colX[0];
+    mtx[1][0] = colX[1];
+    mtx[2][0] = colX[2];
+    mtx[0][1] = colY[0];
+    mtx[1][1] = colY[1];
+    mtx[2][1] = colY[2];
+    mtx[0][2] = colZ[0];
+    mtx[1][2] = colZ[1];
+    mtx[2][2] = colZ[2];
+    mtx[3][0] = -vec3_dot(from, colX);
+    mtx[3][1] = -vec3_dot(from, colY);
+    mtx[3][2] = -vec3_dot(from, colZ);
+    MTXF_END(mtx);
 }
 
 /**
@@ -375,7 +333,7 @@ void mtxf_rotate_xyz_and_translate(Mat4 dest, Vec3f b, Vec3s c) {
 void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, s32 angle) {
     register s32 i;
     register f32 *temp, *temp2;
-    temp = dest;
+    temp = (f32 *)dest;
     for (i = 0; i < 16; i++) {
         *temp = 0;
         temp++;
@@ -388,8 +346,8 @@ void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, s32 angle) {
     dest[2][3] = 0;
     ((u32 *) dest)[15] = 0x3F800000;
 
-    temp = dest;
-    temp2 = mtx;
+    temp = (f32 *)dest;
+    temp2 = (f32 *)mtx;
     for (i = 0; i < 3; i++) {
         temp[12] = temp2[0] * position[0] + temp2[4] * position[1] + temp2[8] * position[2] + temp2[12];
         temp++;
@@ -448,14 +406,10 @@ void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s32 yaw) {
  * 'radius' is the distance from each triangle vertex to the center
  */
 void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s32 yaw, f32 radius) {
-    struct Surface *sp74;
-    Vec3f point0;
-    Vec3f point1;
-    Vec3f point2;
+    struct Surface *floor;
+    Vec3f point0, point1, point2;
     Vec3f forward;
-    Vec3f xColumn;
-    Vec3f yColumn;
-    Vec3f zColumn;
+    Vec3f xColumn, yColumn, zColumn;
     f32 avgY;
     f32 minY = -radius * 3;
 
@@ -466,9 +420,9 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s32 yaw, f32 radius) {
     point2[0] = pos[0] + radius * sins(yaw + 0xD555);
     point2[2] = pos[2] + radius * coss(yaw + 0xD555);
 
-    point0[1] = find_floor(point0[0], pos[1] + 150, point0[2], &sp74);
-    point1[1] = find_floor(point1[0], pos[1] + 150, point1[2], &sp74);
-    point2[1] = find_floor(point2[0], pos[1] + 150, point2[2], &sp74);
+    point0[1] = find_floor(point0[0], pos[1] + 150, point0[2], &floor);
+    point1[1] = find_floor(point1[0], pos[1] + 150, point1[2], &floor);
+    point2[1] = find_floor(point2[0], pos[1] + 150, point2[2], &floor);
 
     if (point0[1] - pos[1] < minY) {
         point0[1] = pos[1];
@@ -491,20 +445,11 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s32 yaw, f32 radius) {
     vec3f_normalize(xColumn);
     vec3f_cross(zColumn, xColumn, yColumn);
     vec3f_normalize(zColumn);
-
-    mtx[0][0] = xColumn[0];
-    mtx[0][1] = xColumn[1];
-    mtx[0][2] = xColumn[2];
+    vec3_copy(mtx[0], xColumn);
+    vec3_copy(mtx[1], yColumn);
+    vec3_copy(mtx[2], zColumn);
     mtx[3][0] = pos[0];
-
-    mtx[1][0] = yColumn[0];
-    mtx[1][1] = yColumn[1];
-    mtx[1][2] = yColumn[2];
     mtx[3][1] = (avgY < pos[1]) ? pos[1] : avgY;
-
-    mtx[2][0] = zColumn[0];
-    mtx[2][1] = zColumn[1];
-    mtx[2][2] = zColumn[2];
     mtx[3][2] = pos[2];
 
     mtx[0][3] = 0;
@@ -522,20 +467,16 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s32 yaw, f32 radius) {
  * then a.
  */
 void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b) {
-    register f32 entry0;
-    register f32 entry1;
-    register f32 entry2;
-    register f32 *temp = a;
-    register f32 *temp2 = dest;
+    register Vec3f entry;
+    register f32 *temp = (f32 *)a;
+    register f32 *temp2 = (f32 *)dest;
     register f32 *temp3;
     register s32 i;
     for (i = 0; i < 16; i++) {
-        entry0 = temp[0];
-        entry1 = temp[1];
-        entry2 = temp[2];
-        temp3 = b;
+        vec3_copy(entry, temp);
+        temp3 = (f32 *)b;
         for (; (i & 3) !=3; i++) {
-            *temp2 = entry0 * temp3[0] + entry1 * temp3[4] + entry2 * temp3[8];
+            *temp2 = entry[0] * temp3[0] + entry[1] * temp3[4] + entry[2] * temp3[8];
             temp2++;
             temp3++;
         }
@@ -551,8 +492,8 @@ void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b) {
  * Set matrix 'dest' to 'mtx' scaled by vector s
  */
 void mtxf_scale_vec3f(Mat4 dest, Mat4 mtx, register Vec3f s) {
-    register f32 *temp = dest;
-    register f32 *temp2 = mtx;
+    register f32 *temp = (f32 *)dest;
+    register f32 *temp2 = (f32 *)mtx;
     register s32 i;
     for (i = 0; i < 4; i++) {
         temp[0] = temp2[0] * s[0];
@@ -573,7 +514,7 @@ void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
     register f32 x = b[0];
     register f32 y = b[1];
     register f32 z = b[2];
-    register f32 *temp2 = mtx;
+    register f32 *temp2 = (f32 *)mtx;
     register s32 i;
     register s16 *c = b;
     for (i = 0; i < 3; i++) {
@@ -636,7 +577,7 @@ void mtxf_to_mtx(void *dest, void *src) {
 void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
     register s32 i = coss(angle) * 65536;
     register s32 j = sins(angle) * 65536;
-    register f32 *temp = mtx;
+    register f32 *temp = (f32 *)mtx;
     register s32 k;
     for (k = 0; k < 16; k++) {
         *temp = 0;
@@ -672,11 +613,11 @@ void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
  */
 void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, register Mat4 camMtx) {
     register s32 i;
-    register f32 *temp = dest;
-    register f32 *temp2 = camMtx;
+    register f32 *temp = (f32 *)dest;
+    register f32 *temp2 = (f32 *)camMtx;
     f32 y[3];
     register f32 *x = y;
-    register f32 *temp3 = objMtx;
+    register f32 *temp3 = (f32 *)objMtx;
 
     for (i = 0; i < 3; i++) {
         *x = (temp3[12] - temp2[12]);
@@ -690,7 +631,6 @@ void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, register Mat4 camMtx) {
         temp++;
         temp2 += 4;
     }
-
 }
 
 
