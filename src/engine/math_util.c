@@ -14,7 +14,6 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-local-addr"
-#pragma intrinsic(sqrtf);
 
 /// Returns the lowest of three values.
 s32 min_3i(s32 a0, s32 a1, s32 a2) { if (a1 < a0) a0 = a1; if (a2 < a0) a0 = a2; return a0; }
