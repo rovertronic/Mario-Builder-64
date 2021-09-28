@@ -11,7 +11,6 @@
 #include "game_init.h"
 #include "main.h"
 #include "memory.h"
-#include "profiler.h"
 #include "save_file.h"
 #include "seq_ids.h"
 #include "sound_init.h"
@@ -322,9 +321,6 @@ void init_rcp(s32 resetZB) {
  */
 void end_master_display_list(void) {
     draw_screen_borders();
-    if (gShowProfiler) {
-        draw_profiler();
-    }
 
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
@@ -415,7 +411,6 @@ void display_and_vsync(void) {
         gIsConsole = 1;
         gBorderHeight = BORDER_HEIGHT_CONSOLE;
     }
-    profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
     //gIsConsole = (IO_READ(DPC_PIPEBUSY_REG));
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     if (gGoddardVblankCallback != NULL) {
@@ -423,10 +418,8 @@ void display_and_vsync(void) {
         gGoddardVblankCallback = NULL;
     }
     exec_display_list(&gGfxPool->spTask);
-    profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFrameBuffers[sRenderedFramebuffer]));
-    profiler_log_thread5_time(THREAD5_END);
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     // Skip swapping buffers on emulator so that they display immediately as the Gfx task finishes
     if (gIsConsole || gIsVC) { // Read RDP Clock Register, has a value of zero on emulators
@@ -741,7 +734,6 @@ void thread5_game_loop(UNUSED void *arg) {
             draw_reset_bars();
             continue;
         }
-        profiler_log_thread5_time(THREAD5_START);
 #if PUPPYPRINT_DEBUG
         while (TRUE) {
             lastTime = osGetTime();

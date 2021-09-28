@@ -8,7 +8,6 @@
 #include "game/game_init.h"
 #include "game/memory.h"
 #include "game/sound_init.h"
-#include "game/profiler.h"
 #include "buffers/buffers.h"
 #include "segments.h"
 #include "game/main.h"
@@ -71,27 +70,14 @@ s8 gDebugLevelSelect = TRUE;
 s8 gDebugLevelSelect = FALSE;
 #endif
 
-s8 gShowProfiler = FALSE;
 s8 gShowDebugText = FALSE;
 
 // unused
 void handle_debug_key_sequences(void) {
-    static u16 sProfilerKeySequence[] = {
-        U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD
-    };
     static u16 sDebugTextKeySequence[] = { D_JPAD, D_JPAD, U_JPAD, U_JPAD,
                                            L_JPAD, R_JPAD, L_JPAD, R_JPAD };
-    static s16 sProfilerKey = 0;
     static s16 sDebugTextKey = 0;
     if (gPlayer3Controller->buttonPressed != 0) {
-        if (sProfilerKeySequence[sProfilerKey++] == gPlayer3Controller->buttonPressed) {
-            if (sProfilerKey == ARRAY_COUNT(sProfilerKeySequence)) {
-                sProfilerKey = 0, gShowProfiler ^= 1;
-            }
-        } else {
-            sProfilerKey = 0;
-        }
-
         if (sDebugTextKeySequence[sDebugTextKey++] == gPlayer3Controller->buttonPressed) {
             if (sDebugTextKey == ARRAY_COUNT(sDebugTextKeySequence)) {
                 sDebugTextKey = 0, gShowDebugText ^= 1;
@@ -192,7 +178,6 @@ void interrupt_gfx_sptask(void) {
 void start_gfx_sptask(void) {
     if (gActiveSPTask == NULL && sCurrentDisplaySPTask != NULL
         && sCurrentDisplaySPTask->state == SPTASK_STATE_NOT_STARTED) {
-        profiler_log_gfx_time(TASKS_QUEUED);
 #if PUPPYPRINT_DEBUG
         rspDelta = osGetTime();
 #endif
@@ -224,7 +209,6 @@ void handle_vblank(void) {
         if (gActiveSPTask != NULL) {
             interrupt_gfx_sptask();
         } else {
-            profiler_log_vblank_time();
             if (sAudioEnabled) {
                 start_sptask(M_AUDTASK);
             } else {
@@ -234,7 +218,6 @@ void handle_vblank(void) {
     } else {
         if (gActiveSPTask == NULL && sCurrentDisplaySPTask != NULL
             && sCurrentDisplaySPTask->state != SPTASK_STATE_FINISHED) {
-            profiler_log_gfx_time(TASKS_QUEUED);
 #if PUPPYPRINT_DEBUG
             rspDelta = osGetTime();
 #endif
@@ -267,11 +250,9 @@ void handle_sp_complete(void) {
             #if PUPPYPRINT_DEBUG
             profiler_update(rspGenTime, rspDelta);
             #endif
-            profiler_log_gfx_time(RSP_COMPLETE);
         }
 
         // Start the audio task, as expected by handle_vblank.
-        profiler_log_vblank_time();
         if (sAudioEnabled) {
             start_sptask(M_AUDTASK);
         } else {
@@ -281,12 +262,8 @@ void handle_sp_complete(void) {
         curSPTask->state = SPTASK_STATE_FINISHED;
         if (curSPTask->task.t.type == M_AUDTASK) {
             // After audio tasks come gfx tasks.
-            profiler_log_vblank_time();
             if (sCurrentDisplaySPTask != NULL
                 && sCurrentDisplaySPTask->state != SPTASK_STATE_FINISHED) {
-                if (sCurrentDisplaySPTask->state != SPTASK_STATE_INTERRUPTED) {
-                    profiler_log_gfx_time(TASKS_QUEUED);
-                }
                 start_sptask(M_GFXTASK);
             }
             sCurrentAudioSPTask = NULL;
@@ -300,7 +277,6 @@ void handle_sp_complete(void) {
 #if PUPPYPRINT_DEBUG
             profiler_update(rspGenTime, rspDelta);
 #endif
-            profiler_log_gfx_time(RSP_COMPLETE);
         }
     }
 }
@@ -310,7 +286,6 @@ void handle_dp_complete(void) {
     if (sCurrentDisplaySPTask->msgqueue != NULL) {
         osSendMesg(sCurrentDisplaySPTask->msgqueue, sCurrentDisplaySPTask->msg, OS_MESG_NOBLOCK);
     }
-    profiler_log_gfx_time(RDP_COMPLETE);
     sCurrentDisplaySPTask->state = SPTASK_STATE_FINISHED_DP;
     sCurrentDisplaySPTask = NULL;
 }
