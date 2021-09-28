@@ -427,7 +427,6 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         if (gCamera) {
             // gWorldScale = ((sqr(gCamera->pos[0]) + sqr(gCamera->pos[1]) + sqr(gCamera->pos[2])) / sqr(0x2000));
             gWorldScale = (max_3f(ABS(gCamera->pos[0]), ABS(gCamera->pos[1]), ABS(gCamera->pos[2])) / (f32)0x2000);
-            gWorldScale = MAX(gWorldScale, 1.0f);
         } else {
             gWorldScale = 1.0f;
         }
@@ -436,6 +435,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
             farClipDelta /= farClip;
             gWorldScale *= farClipDelta;
         }
+        gWorldScale = MAX(gWorldScale, 1.0f);
 
         guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, ((farClip / 300) / gWorldScale), (farClip / gWorldScale), 1.0f);
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
