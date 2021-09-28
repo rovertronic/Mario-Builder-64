@@ -16,6 +16,7 @@
 #include "debug_box.h"
 #include "level_update.h"
 #include "behavior_data.h"
+#include "string.h"
 
 #include "config.h"
 
@@ -1018,6 +1019,7 @@ void geo_process_object_parent(struct GraphNodeObjectParent *node) {
 void geo_process_held_object(struct GraphNodeHeldObject *node) {
     Mat4 mat;
     Vec3f translation;
+    Mat4 tempMtx;
 
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, &lookAt);
@@ -1033,9 +1035,8 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
         mtxf_translate(mat, translation);
         mtxf_copy(gMatStack[gMatStackIndex + 1], *gCurGraphNodeObject->throwMatrix);
         vec3_copy(gMatStack[gMatStackIndex + 1][3], gMatStack[gMatStackIndex][3]);
-        Mat4 temp;
-        mtxf_copy(temp, gMatStack[gMatStackIndex + 1]);
-        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, temp);
+        mtxf_copy(tempMtx, gMatStack[gMatStackIndex + 1]);
+        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, tempMtx);
         mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->objNode->header.gfx.scale);
         if (node->fnNode.func != NULL) {
             node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);

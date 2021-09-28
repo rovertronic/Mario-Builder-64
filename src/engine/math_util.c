@@ -37,7 +37,7 @@ void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
 
 /// Add vector 'a' to 'dest'
 void vec3f_add(Vec3f dest, Vec3f a) {
-    register f32 *temp = dest;
+    register f32 *temp = (f32 *)dest;
     register s32 j;
     register f32 sum, sum2;
     for (j = 0; j < 3; j++) {
@@ -168,7 +168,7 @@ void mtxf_identity(register Mat4 mtx) {
  */
 void mtxf_translate(Mat4 dest, Vec3f b) {
     mtxf_identity(dest);
-    vec3f_copy(dest[3], b);
+    vec3_copy(dest[3], b);
 }
 
 void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
@@ -436,18 +436,19 @@ void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s32 yaw, f32 radius) {
         point2[1] = pos[1];
     }
 
-    avgY = (point0[1] + point1[1] + point2[1]) * .3333333333333333333333333333333333333333333333f;
+    avgY = (point0[1] + point1[1] + point2[1]) / 3;
 
-    vec3f_set(forward, sins(yaw), 0, coss(yaw));
+    vec3_set(forward, sins(yaw), 0, coss(yaw));
     find_vector_perpendicular_to_plane(yColumn, point0, point1, point2);
     vec3f_normalize(yColumn);
-    vec3f_cross(xColumn, yColumn, forward);
+    vec3_cross(xColumn, yColumn, forward);
     vec3f_normalize(xColumn);
-    vec3f_cross(zColumn, xColumn, yColumn);
+    vec3_cross(zColumn, xColumn, yColumn);
     vec3f_normalize(zColumn);
-    vec3_copy(mtx[0], xColumn);
-    vec3_copy(mtx[1], yColumn);
-    vec3_copy(mtx[2], zColumn);
+    vec3f_copy(mtx[0], xColumn);
+    vec3f_copy(mtx[1], yColumn);
+    vec3f_copy(mtx[2], zColumn);
+
     mtx[3][0] = pos[0];
     mtx[3][1] = (avgY < pos[1]) ? pos[1] : avgY;
     mtx[3][2] = pos[2];
@@ -484,7 +485,7 @@ void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b) {
         temp += 4;
         temp2++;
     }
-    vec3f_add(&dest[3][0], &b[3][0]);
+    vec3_add(&dest[3][0], &b[3][0]);
     ((u32 *) dest)[15] = 0x3F800000;
 }
 
@@ -495,6 +496,7 @@ void mtxf_scale_vec3f(Mat4 dest, Mat4 mtx, register Vec3f s) {
     register f32 *temp = (f32 *)dest;
     register f32 *temp2 = (f32 *)mtx;
     register s32 i;
+
     for (i = 0; i < 4; i++) {
         temp[0] = temp2[0] * s[0];
         temp[4] = temp2[4] * s[1];
@@ -585,20 +587,8 @@ void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
     }
     MATENTRY(0, i)
     MATENTRY(1, j)
-    //((s32 *) mtx)[1] = 0;
     MATENTRY(4, -j)
     MATENTRY(5, i)
-    /*((s32 *) mtx)[3] = 0;
-    ((s32 *) mtx)[4] = 0;
-    ((s32 *) mtx)[5] = 0;
-    ((s32 *) mtx)[6] = 0;
-    ((s32 *) mtx)[7] = 0;
-    ((s32 *) mtx)[9] = 0;
-    ((s32 *) mtx)[11] = 0;
-    ((s32 *) mtx)[12] = 0;
-    ((s32 *) mtx)[13] = 0;
-    ((s32 *) mtx)[14] = 0;
-    ((s32 *) mtx)[15] = 0;*/
     ((s16 *) mtx)[10] = 1;
     ((s16 *) mtx)[15] = 1;
 }
