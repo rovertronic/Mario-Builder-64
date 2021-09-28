@@ -434,23 +434,19 @@ s32 update_decelerating_speed(struct MarioState *m) {
 }
 
 void update_walking_speed(struct MarioState *m) {
-    f32 maxTargetSpeed;
+    f32 maxTargetSpeed = ((m->floor != NULL && m->floor->type == SURFACE_SLOW) ? 24.0f : 32.0f);
 
-    if (m->floor != NULL && m->floor->type == SURFACE_SLOW) {
-        maxTargetSpeed = 24.0f;
-    } else {
-        maxTargetSpeed = 32.0f;
-    }
-
-    f32 targetSpeed = m->intendedMag < maxTargetSpeed ? m->intendedMag : maxTargetSpeed;
+    f32 targetSpeed = ((m->intendedMag < maxTargetSpeed) ? m->intendedMag : maxTargetSpeed);
 
     if (m->quicksandDepth > 10.0f) {
         targetSpeed *= 6.25 / m->quicksandDepth;
     }
 
     if (m->forwardVel <= 0.0f) {
+        // Slow down if moving backwards
         m->forwardVel += 1.1f;
     } else if (m->forwardVel <= targetSpeed) {
+        // If accelerating
         m->forwardVel += 1.1f - m->forwardVel / 43.0f;
     } else if (m->floor->normal.y >= 0.95f) {
         m->forwardVel -= 1.0f;
@@ -476,14 +472,15 @@ void update_walking_speed(struct MarioState *m) {
     }
     m->faceAngle[1] = approach_angle(m->faceAngle[1], m->intendedYaw, turnRange);
 #elif GROUND_TURN_MODE == 2 // similar to mode 1, but a bit further from vanilla, and allows instant turnaround if Mario is moving slower than a certain threshold.
-    if ((m->forwardVel < 0.0f) && (m->heldObj == NULL) && !(m->action & ACT_FLAG_SHORT_HITBOX)) {
+    Bool32 doFullTurn = (m->heldObj == NULL) && !(m->action & ACT_FLAG_SHORT_HITBOX);
+    if ((m->forwardVel < 0.0f) && doFullTurn) {
         // Flip Mario if he is moving backwards
         m->faceAngle[1] += 0x8000;
         m->forwardVel *= -1.0f;
     }
-    if (analog_stick_held_back(m) && (m->heldObj == NULL) && !(m->action & ACT_FLAG_SHORT_HITBOX)) {
+    if (analog_stick_held_back(m) && doFullTurn) {
         // Turn around instantly
-        set_mario_action(m, ACT_TURNING_AROUND, 0);
+        // set_mario_action(m, ACT_TURNING_AROUND, 0);
         if (m->forwardVel < 10.0f) {
             m->faceAngle[1] = m->intendedYaw;
         }
