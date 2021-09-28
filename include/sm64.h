@@ -29,6 +29,31 @@
 #define SET_HIGH_U16_OF_32(var, x) ((var) = ((var) & 0xFFFF) | ((x) << 16))
 #define SET_HIGH_S16_OF_32(var, x) ((var) = ((var) & 0xFFFF) | ((x) << 16))
 
+// Common cos values for degrees, often used for surface Y normals
+// These are different than coss()
+#define COS1    0.9998477f
+#define COS5    0.9961947f
+#define COS10   0.9848077f
+#define COS15   0.9659258f
+#define COS20   0.9396926f
+#define COS25   0.9063078f  // ledge grabs
+#define COS30   0.8660254f
+#define COS35   0.85264016f
+#define COS36   0.8443279f
+#define COS38   0.7880108f  // mario_floor_is_slippery default
+#define COS40   0.80901699f
+#define COS45   0.76040596f
+#define COS50   0.70710678f // SURFACE_FLAG_X_PROJECTION
+#define COS55   0.64944805f
+#define COS60   0.58778525f
+#define COS65   0.52249856f
+#define COS70   0.4539905f
+#define COS73   0.29237169f // common_landing_cancels, check_common_idle_cancels, check_common_hold_idle_cancels
+#define COS75   0.38268343f
+#define COS78   0.20791169f
+#define COS80   0.17364818f // braking action
+#define COS85   0.23344536f
+
 enum RenderLayers
 {
     LAYER_FORCE,

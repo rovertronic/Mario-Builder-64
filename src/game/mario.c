@@ -533,15 +533,15 @@ s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
 u32 mario_floor_is_slippery(struct MarioState *m) {
     f32 normY;
 
-    if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE  && m->floor->normal.y < 0.9998477f) { //~cos(1 deg)
+    if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE  && m->floor->normal.y < COS1) {
         return TRUE;
     }
 
     switch (mario_get_floor_class(m)) {
-        case SURFACE_VERY_SLIPPERY: normY = 0.9848077f; break; //~cos(10 deg)
-        case SURFACE_SLIPPERY:      normY = 0.9396926f; break; //~cos(20 deg)
-        default:                    normY = 0.7880108f; break; //~cos(38 deg)
-        case SURFACE_NOT_SLIPPERY:  normY = 0.0f;       break;
+        case SURFACE_VERY_SLIPPERY: normY = COS10; break;
+        case SURFACE_SLIPPERY:      normY = COS20; break;
+        default:                    normY = COS38; break;
+        case SURFACE_NOT_SLIPPERY:  normY = 0.0f;  break;
     }
 
     return m->floor->normal.y <= normY;
@@ -554,15 +554,15 @@ s32 mario_floor_is_slope(struct MarioState *m) {
     f32 normY;
 
     if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE
-        && m->floor->normal.y < 0.9998477f) { // ~cos(1 deg)
+        && m->floor->normal.y < COS1) {
         return TRUE;
     }
 
     switch (mario_get_floor_class(m)) {
-        case SURFACE_VERY_SLIPPERY: normY = 0.9961947f; break; // ~cos(5 deg)
-        case SURFACE_SLIPPERY:      normY = 0.9848077f; break; // ~cos(10 deg)
-        default:                    normY = 0.9659258f; break; // ~cos(15 deg)
-        case SURFACE_NOT_SLIPPERY:  normY = 0.9396926f; break; // ~cos(20 deg)
+        case SURFACE_VERY_SLIPPERY: normY = COS5;  break;
+        case SURFACE_SLIPPERY:      normY = COS10; break;
+        default:                    normY = COS15; break;
+        case SURFACE_NOT_SLIPPERY:  normY = COS20; break;
     }
 
     return m->floor->normal.y <= normY;
@@ -586,10 +586,10 @@ s32 mario_floor_is_steep(struct MarioState *m) {
     // This does not matter in vanilla game practice.
     if (!mario_facing_downhill(m, FALSE)) {
         switch (mario_get_floor_class(m)) {
-            case SURFACE_VERY_SLIPPERY: normY = 0.9659258f; break; // ~cos(15 deg)
-            case SURFACE_SLIPPERY:      normY = 0.9396926f; break; // ~cos(20 deg)
-            default:                    normY = 0.8660254f; break; // ~cos(30 deg)
-            case SURFACE_NOT_SLIPPERY:  normY = 0.8660254f; break; // ~cos(30 deg)
+            case SURFACE_VERY_SLIPPERY: normY = COS15; break;
+            case SURFACE_SLIPPERY:      normY = COS20; break;
+            default:                    normY = COS30; break;
+            case SURFACE_NOT_SLIPPERY:  normY = COS30; break;
         }
 
         result = m->floor->normal.y <= normY;

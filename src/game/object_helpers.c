@@ -1652,8 +1652,13 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
             careAboutEdgesAndSteepSlopes = TRUE; steepSlopeAngleDegrees = -steepSlopeAngleDegrees;
             // clang-format on
         }
-
-        steepSlopeNormalY = coss(steepSlopeAngleDegrees * (0x10000 / 360));
+        if (steepSlopeAngleDegrees == 78) {
+            steepSlopeNormalY =  COS78;
+        } else if (steepSlopeAngleDegrees == -78) {
+            steepSlopeNormalY = -COS78;
+        } else {
+            steepSlopeNormalY = coss(DEGREES(steepSlopeAngleDegrees));
+        }
 
         cur_obj_compute_vel_xz();
         cur_obj_apply_drag_xz(dragStrength);
