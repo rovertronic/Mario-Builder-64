@@ -52,7 +52,7 @@ void format_integer(s32 n, s32 base, char *dest, s32 *totalLength, u8 width, s8 
     s8 negative = FALSE;
     char pad;
 
-    if (zeroPad == TRUE) {
+    if (zeroPad) {
         pad = '0';
     } else {
         pad = -1;
@@ -207,8 +207,7 @@ void print_text_fmt_int(s32 x, s32 y, const char *str, s32 n) {
             srcIndex++;
 
             format_integer(n, base, sTextLabels[sTextLabelsCount]->buffer + len, &len, width, zeroPad);
-        } else // straight copy
-        {
+        } else { // straight copy
             sTextLabels[sTextLabelsCount]->buffer[len] = c;
             len++;
             srcIndex++;

@@ -30,7 +30,7 @@
 
 static inline float smooth(float x) {
     x = CLAMP(x, 0, 1);
-    return x * x * (3.f - 2.f * x);
+    return sqr(x) * (3.f - 2.f * x);
 }
 
 static inline float softClamp(float x, float a, float b) {
@@ -43,12 +43,12 @@ static inline float softClamp(float x, float a, float b) {
 
 struct gPuppyStruct gPuppyCam;
 struct sPuppyVolume *sPuppyVolumeStack[MAX_PUPPYCAM_VOLUMES];
-s16 sFloorHeight = 0;
-u8 gPCOptionOpen = 0;
-s8 gPCOptionSelected = 0;
+s16 sFloorHeight  = 0;
+u8  gPCOptionOpen = 0;
+s8  gPCOptionSelected = 0;
 s32 gPCOptionTimer = 0;
-u8 gPCOptionIndex = 0;
-u8 gPCOptionScroll = 0;
+u8  gPCOptionIndex = 0;
+u8  gPCOptionScroll = 0;
 u16 gPuppyVolumeCount = 0;
 struct MemoryPool *gPuppyMemoryPool;
 s32 gPuppyError = 0;
@@ -196,9 +196,9 @@ void puppycam_activate_cutscene(s32 (*scene)(), s32 lockinput) {
     gPuppyCam.sceneInput = lockinput;
 }
 
-//If you've read camera.c this will look familiar.
-//It takes the next 4 spline points and extrapolates a curvature based positioning of the camera vector that's passed through.
-//It's a standard B spline
+// If you've read camera.c this will look familiar.
+// It takes the next 4 spline points and extrapolates a curvature based positioning of the camera vector that's passed through.
+// It's a standard B spline
 static void puppycam_evaluate_spline(f32 progress, Vec3s cameraPos, Vec3f spline1, Vec3f spline2, Vec3f spline3, Vec3f spline4) {
     f32 tempP[4];
 
@@ -227,11 +227,11 @@ s32 puppycam_move_spline(struct sPuppySpline splinePos[], struct sPuppySpline sp
         gPuppyCam.splineIndex = index;
     }
     if (splinePos[gPuppyCam.splineIndex].index == -1 || splinePos[gPuppyCam.splineIndex + 1].index == -1 || splinePos[gPuppyCam.splineIndex + 2].index == -1) {
-        return 1;
+        return TRUE;
     }
     if (mode == PUPPYSPLINE_FOLLOW) {
         if (splineFocus[gPuppyCam.splineIndex].index == -1 || splineFocus[gPuppyCam.splineIndex + 1].index == -1 || splineFocus[gPuppyCam.splineIndex + 2].index == -1) {
-            return 1;
+            return TRUE;
         }
     }
     vec3f_set(prevPos, gPuppyCam.pos[0], gPuppyCam.pos[1], gPuppyCam.pos[2]);
@@ -262,12 +262,12 @@ s32 puppycam_move_spline(struct sPuppySpline splinePos[], struct sPuppySpline sp
         if (splinePos[gPuppyCam.splineIndex + 3].index == -1) {
             gPuppyCam.splineIndex = 0;
             gPuppyCam.splineProgress = 0;
-            return 1;
+            return TRUE;
         }
         gPuppyCam.splineProgress -=1;
     }
 
-    return 0;
+    return FALSE;
 }
 
 static void puppycam_process_cutscene(void) {
@@ -979,7 +979,6 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) 
 void puppycam_wall_angle(void) {
     struct Surface *wall;
     struct WallCollisionData cData;
-    s16 wallYaw;
 
     if (!(gMarioState->action & ACT_WALL_KICK_AIR) || ((gMarioState->action & ACT_FLAG_AIR) && ABS(gMarioState->forwardVel) < 16.0f) || !(gMarioState->action & ACT_FLAG_AIR)) {
         return;
@@ -995,7 +994,7 @@ void puppycam_wall_angle(void) {
     } else {
         return;
     }
-    wallYaw = atan2s(wall->normal.z, wall->normal.x) + 0x4000;
+    s16 wallYaw = atan2s(wall->normal.z, wall->normal.x) + 0x4000;
 
     wallYaw -= gPuppyCam.yawTarget;
     if (wallYaw % 0x4000) {
@@ -1345,15 +1344,15 @@ void puppycam_loop(void) {
         puppycam_input_core();
         puppycam_projection();
         puppycam_script();
-        if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_COLLISION)
+        if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_COLLISION) {
             puppycam_collision();
-        else
+        } else {
             gPuppyCam.opacity = 255;
+        }
     } else if (gPuppyCam.cutscene) {
         gPuppyCam.opacity = 255;
         puppycam_process_cutscene();
     }
-
     puppycam_apply();
 }
 

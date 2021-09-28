@@ -47,18 +47,18 @@ a modern game engine's developer's console.
 #include "debug_box.h"
 
 ColorRGBA currEnv;
-u8 fDebug = 0;
+u8 fDebug = FALSE;
 
 #if PUPPYPRINT_DEBUG
-s8 benchViewer = 0;
+s8 benchViewer = FALSE;
 u8 benchOption = 0;
-s8 logViewer = 0;
+s8 logViewer = FALSE;
 // Profiler values
-s8 perfIteration = 0;
+s8  perfIteration = 0;
 s16 benchmarkLoop = 0;
 s32 benchmarkTimer = 0;
 s32 benchmarkProgramTimer = 0;
-s8 benchmarkType = 0;
+s8  benchmarkType = 0;
 // General
 OSTime cpuTime = 0;
 OSTime rspTime = 0;
@@ -67,34 +67,41 @@ OSTime ramTime = 0;
 OSTime loadTime = 0;
 OSTime gLastOSTime = 0;
 OSTime rspDelta = 0;
-s32 benchMark[NUM_BENCH_ITERATIONS+2];
+s32       benchMark[NUM_BENCH_ITERATIONS + 2];
 // CPU
-OSTime collisionTime[NUM_PERF_ITERATIONS+1];
-OSTime behaviourTime[NUM_PERF_ITERATIONS+1];
-OSTime scriptTime[NUM_PERF_ITERATIONS+1];
-OSTime graphTime[NUM_PERF_ITERATIONS+1];
-OSTime audioTime[NUM_PERF_ITERATIONS+1];
-OSTime dmaTime[NUM_PERF_ITERATIONS+1];
-OSTime dmaAudioTime[NUM_PERF_ITERATIONS+1];
-OSTime faultTime[NUM_PERF_ITERATIONS+1];
-OSTime taskTime[NUM_PERF_ITERATIONS+1];
-OSTime profilerTime[NUM_PERF_ITERATIONS+1];
-OSTime profilerTime2[NUM_PERF_ITERATIONS+1];
+OSTime collisionTime[NUM_PERF_ITERATIONS + 1];
+OSTime behaviourTime[NUM_PERF_ITERATIONS + 1];
+OSTime    scriptTime[NUM_PERF_ITERATIONS + 1];
+OSTime     graphTime[NUM_PERF_ITERATIONS + 1];
+OSTime     audioTime[NUM_PERF_ITERATIONS + 1];
+OSTime       dmaTime[NUM_PERF_ITERATIONS + 1];
+OSTime  dmaAudioTime[NUM_PERF_ITERATIONS + 1];
+OSTime     faultTime[NUM_PERF_ITERATIONS + 1];
+OSTime      taskTime[NUM_PERF_ITERATIONS + 1];
+OSTime  profilerTime[NUM_PERF_ITERATIONS + 1];
+OSTime profilerTime2[NUM_PERF_ITERATIONS + 1];
 // RSP
-OSTime audioTime[NUM_PERF_ITERATIONS+1];
-OSTime rspGenTime[NUM_PERF_ITERATIONS+1];
+OSTime     audioTime[NUM_PERF_ITERATIONS + 1];
+OSTime    rspGenTime[NUM_PERF_ITERATIONS + 1];
 // RDP
-OSTime bufferTime[NUM_PERF_ITERATIONS+1];
-OSTime tmemTime[NUM_PERF_ITERATIONS+1];
-OSTime busTime[NUM_PERF_ITERATIONS+1];
+OSTime    bufferTime[NUM_PERF_ITERATIONS + 1];
+OSTime      tmemTime[NUM_PERF_ITERATIONS + 1];
+OSTime       busTime[NUM_PERF_ITERATIONS + 1];
 // RAM
-s8 ramViewer = 0;
-s32 ramsizeSegment[33] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+s8  ramViewer = FALSE;
+s32 ramsizeSegment[33] = { 0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0,
+                           0, 0, 0 };
 s32 audioPool[12];
 s32 mempool;
-// Collision
-u8 collisionViewer = 0;
-s32 numSurfaces = 0;
 
 extern u8 _mainSegmentStart[];
 extern u8 _mainSegmentEnd[];
@@ -107,7 +114,7 @@ extern u8 _buffersSegmentBssEnd[];
 extern u8 _goddardSegmentStart[];
 extern u8 _goddardSegmentEnd[];
 
-//Here is stored the rom addresses of the global code segments. If you get rid of any, it's best to just write them as NULL.
+// Here is stored the rom addresses of the global code segments. If you get rid of any, it's best to just write them as NULL.
 s32 ramP[5][2] = {
     {(u32)&_buffersSegmentBssStart,      (u32)&_buffersSegmentBssEnd},
     {(u32)&_mainSegmentStart,            (u32)&_mainSegmentEnd},
@@ -143,7 +150,7 @@ void puppyprint_profiler_finished(void) {
     benchMark[NUM_BENCH_ITERATIONS] = 0;
     benchMark[NUM_BENCH_ITERATIONS+1] = 0;
     benchmarkTimer = 300;
-    benchViewer = 0;
+    benchViewer = FALSE;
     for (i = 0; i < NUM_BENCH_ITERATIONS - 2; i++) {
         benchMark[NUM_BENCH_ITERATIONS] += benchMark[i];
         if (benchMark[i] > benchMark[NUM_BENCH_ITERATIONS + 1]) {
@@ -521,17 +528,17 @@ void puppyprint_profiler_process(void) {
     }
     if (fDebug) {
         if (gPlayer1Controller->buttonPressed & D_JPAD) {
-            benchViewer ^= 1;
-            ramViewer = 0;
-            logViewer = 0;
+            benchViewer ^= TRUE;
+            ramViewer = FALSE;
+            logViewer = FALSE;
         } else if (gPlayer1Controller->buttonPressed & U_JPAD) {
-            ramViewer ^= 1;
-            benchViewer = 0;
-            logViewer = 0;
+            ramViewer ^= TRUE;
+            benchViewer = FALSE;
+            logViewer = FALSE;
         } else if (gPlayer1Controller->buttonPressed & L_JPAD) {
-            logViewer ^= 1;
-            ramViewer = 0;
-            benchViewer = 0;
+            logViewer ^= TRUE;
+            ramViewer = FALSE;
+            benchViewer = FALSE;
         }
 #ifdef VISUAL_DEBUG
         else if (!benchViewer && !ramViewer && !logViewer) {
@@ -551,9 +558,9 @@ void puppyprint_profiler_process(void) {
         benchmark_custom();
     }
     if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
-        ramViewer = 0;
-        benchViewer = 0;
-        fDebug ^= 1;
+        ramViewer = FALSE;
+        benchViewer = FALSE;
+        fDebug ^= TRUE;
     }
 
 
