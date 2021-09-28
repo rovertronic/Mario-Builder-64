@@ -112,7 +112,7 @@ void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
 
 /// Scale vector 'dest' so it has length 1
 void vec3f_normalize(Vec3f dest) {
-    f32 mag = sqrtf(sqr(dest[0] + sqr(dest[1]) + sqr(dest[2]));
+    f32 mag = sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
     if (mag > __FLT_EPSILON__) {
         register f32 invsqrt = 1.0f / mag;
         vec3_mul_val(dest, invsqrt);
@@ -125,7 +125,7 @@ void vec3f_normalize(Vec3f dest) {
 
 /// Scale vector 'dest' so it has length -1
 void vec3f_normalize_negative(Vec3f dest) {
-    f32 mag = sqrtf(sqr(dest[0] + sqr(dest[1]) + sqr(dest[2]));
+    f32 mag = sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
     if (mag > __FLT_EPSILON__) {
         register f32 invsqrt = -1.0f / mag;
         vec3_mul_val(dest, invsqrt);
