@@ -66,6 +66,7 @@
 // 1 is similar to vanilla, but prevents Mario from moving in the wrong direction, and allows finer control with the analog stick.
 // 2 is similar to mode 1, but a bit further from vanilla, and allows instant turnaround if Mario is moving slower than a certain threshold.
 // 3 is instant turning to the intended direction regardless of speed and angle.
+// 4 is an expeimental asymptotic turn.
 #define GROUND_TURN_MODE 0
 // Improved hanging:
 // - Doesn't require holding down the A button

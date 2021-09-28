@@ -248,7 +248,7 @@ void unload_area(void) {
         unload_objects_from_area(0, gCurrentArea->index);
         geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_UNLOAD);
 
-        gCurrentArea->flags = 0;
+        gCurrentArea->flags = AREA_FLAG_UNLOAD;
         gCurrentArea = NULL;
         gWarpTransition.isActive = FALSE;
     }
@@ -259,20 +259,19 @@ void load_mario_area(void) {
     load_area(gMarioSpawnInfo->areaIndex);
 
     if (gCurrentArea->index == gMarioSpawnInfo->areaIndex) {
-        gCurrentArea->flags |= 0x01;
+        gCurrentArea->flags |= AREA_FLAG_LOAD;
         spawn_objects_from_info(0, gMarioSpawnInfo);
     }
-    if (gAreaSkyboxStart[gCurrAreaIndex-1]) {
-        load_segment_decompress(0x0A, gAreaSkyboxStart[gCurrAreaIndex-1], gAreaSkyboxEnd[gCurrAreaIndex-1]);
+    if (gAreaSkyboxStart[gCurrAreaIndex - 1]) {
+        load_segment_decompress(0x0A, gAreaSkyboxStart[gCurrAreaIndex - 1], gAreaSkyboxEnd[gCurrAreaIndex - 1]);
     }
 }
 
 void unload_mario_area(void) {
-    if (gCurrentArea != NULL && (gCurrentArea->flags & 0x01)) {
+    if (gCurrentArea != NULL && (gCurrentArea->flags & AREA_FLAG_LOAD)) {
         unload_objects_from_area(0, gMarioSpawnInfo->activeAreaIndex);
-
-        gCurrentArea->flags &= ~0x01;
-        if (gCurrentArea->flags == 0) {
+        gCurrentArea->flags &= ~AREA_FLAG_LOAD;
+        if (gCurrentArea->flags == AREA_FLAG_UNLOAD) {
             unload_area();
         }
     }

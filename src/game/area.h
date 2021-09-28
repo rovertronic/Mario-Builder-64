@@ -60,6 +60,9 @@ struct Whirlpool
     /*0x03*/ s16 strength;
 };
 
+#define AREA_FLAG_UNLOAD    0x0
+#define AREA_FLAG_LOAD      0x1
+
 struct Area
 {
     /*0x00*/ s8 index;

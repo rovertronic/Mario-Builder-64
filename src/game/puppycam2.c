@@ -821,19 +821,11 @@ void puppycam_debug_view(void) {
         vec3f_set(gMarioState->pos, gPuppyCam.pos[0], gPuppyCam.pos[1], gPuppyCam.pos[2]);
     }
     if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-        if (gPuppyCam.debugFlags & PUPPYDEBUG_LOCK_CONTROLS) {
-            gPuppyCam.debugFlags &= ~PUPPYDEBUG_LOCK_CONTROLS;
-        } else {
-            gPuppyCam.debugFlags |= PUPPYDEBUG_LOCK_CONTROLS;
-        }
+        gPuppyCam.debugFlags ^= PUPPYDEBUG_LOCK_CONTROLS;
     }
 
     if (gPlayer1Controller->buttonPressed & R_TRIG && !(gPuppyCam.debugFlags & PUPPYDEBUG_LOCK_CONTROLS)) {
-        if (gPuppyCam.debugFlags & PUPPYDEBUG_TRACK_MARIO) {
-            gPuppyCam.debugFlags &= ~PUPPYDEBUG_TRACK_MARIO;
-        } else {
-            gPuppyCam.debugFlags |= PUPPYDEBUG_TRACK_MARIO;
-        }
+        gPuppyCam.debugFlags ^= PUPPYDEBUG_TRACK_MARIO;
     }
 }
 

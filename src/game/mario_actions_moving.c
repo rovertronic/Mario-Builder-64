@@ -500,6 +500,8 @@ void update_walking_speed(struct MarioState *m) {
     }
 #elif GROUND_TURN_MODE == 3 // Instant turn.
     m->faceAngle[1] = m->intendedYaw;
+#elif GROUND_TURN_MODE == 4
+    m->faceAngle[1] = approach_s16_asymptotic(m->faceAngle[1], m->intendedYaw, m->forwardVel / 8.0f); // should be max speed for the current action instead of m->forwardVel
 #endif
     apply_slope_accel(m);
 }

@@ -1267,8 +1267,7 @@ void update_view(struct ObjView *view) {
             }
 
             find_and_drag_picked_object(sUpdateViewState.view->components);
-        } else // check for any previously picked objects, and turn off?
-        {
+        } else { // check for any previously picked objects, and turn off?
             if (sUpdateViewState.view->pickedObj != NULL) {
                 sUpdateViewState.view->pickedObj->drawFlags &= ~OBJ_PICKED;
                 sUpdateViewState.view->pickedObj->drawFlags &= ~OBJ_HIGHLIGHTED;

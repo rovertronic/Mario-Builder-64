@@ -590,10 +590,10 @@ UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
  */
 void update_objects(UNUSED s32 unused) {
     s64 cycleCounts[30];
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
     OSTime colTime = collisionTime[perfIteration];
-    #endif
+#endif
 
     cycleCounts[0] = get_current_clock();
 
@@ -641,17 +641,12 @@ void update_objects(UNUSED s32 unused) {
     cycleCounts[0] = 0;
     try_print_debug_mario_object_info();
 
-    // If time stop was enabled this frame, activate it now so that it will
-    // take effect next frame
-    if (gTimeStopState & TIME_STOP_ENABLED) {
-        gTimeStopState |= TIME_STOP_ACTIVE;
-    } else {
-        gTimeStopState &= ~TIME_STOP_ACTIVE;
-    }
+    // If time stop was enabled this frame, activate it now so that it will take effect next frame
+    COND_BIT((gTimeStopState & TIME_STOP_ENABLED), gTimeStopState, TIME_STOP_ACTIVE);
 
     gPrevFrameObjectCount = gObjectCounter;
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     profiler_update(behaviourTime, first);
     behaviourTime[perfIteration] -= collisionTime[perfIteration]+colTime;
-    #endif
+#endif
 }

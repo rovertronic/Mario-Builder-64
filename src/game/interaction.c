@@ -364,22 +364,19 @@ void mario_blow_off_cap(struct MarioState *m, f32 capSpeed) {
 }
 
 u32 mario_lose_cap_to_enemy(u32 enemyType) {
-    u32 wasWearingCap = FALSE;
-
     if (does_mario_have_normal_cap_on_head(gMarioState)) {
         save_file_set_flags(enemyType == 1 ? SAVE_FLAG_CAP_ON_KLEPTO : SAVE_FLAG_CAP_ON_UKIKI);
         gMarioState->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
-        wasWearingCap = TRUE;
+        return TRUE;
     }
-
-    return wasWearingCap;
+    return FALSE;
 }
 
 void mario_retrieve_cap(void) {
     mario_drop_held_object(gMarioState);
     save_file_clear_flags(SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI);
     gMarioState->flags &= ~MARIO_CAP_ON_HEAD;
-    gMarioState->flags |= MARIO_NORMAL_CAP | MARIO_CAP_IN_HAND;
+    gMarioState->flags |= (MARIO_NORMAL_CAP | MARIO_CAP_IN_HAND);
 }
 
 u32 able_to_grab_object(struct MarioState *m, UNUSED struct Object *obj) {

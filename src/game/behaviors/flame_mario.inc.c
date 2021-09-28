@@ -33,8 +33,8 @@ void bhv_flame_mario_loop(void) {
             spawn_object(o, MODEL_BURN_SMOKE, bhvBlackSmokeMario);
     gMarioObject->prevObj = o; // weird?
     obj_set_parent_relative_pos(o, 40, -120, 0);
-    if (!(gMarioObject->oMarioParticleFlags & 0x800)) {
-        o->parentObj->oActiveParticleFlags &= ~0x800;
+    if (!(gMarioObject->oMarioParticleFlags & ACTIVE_PARTICLE_FIRE)) {
+        o->parentObj->oActiveParticleFlags &= ~ACTIVE_PARTICLE_FIRE;
         obj_mark_for_deletion(o);
         gMarioObject->prevObj = NULL;
     }

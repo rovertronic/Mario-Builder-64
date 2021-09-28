@@ -753,13 +753,8 @@ void load_object_collision_model(void) {
             load_object_surfaces(&collisionData, vertexData);
         }
     }
-
-    if (marioDist < gCurrentObject->oDrawingDistance) {
-        gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
-    } else {
-        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
-    }
-    #if PUPPYPRINT_DEBUG
+    COND_BIT((marioDist < gCurrentObject->oDrawingDistance), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_ACTIVE);
+#if PUPPYPRINT_DEBUG
     collisionTime[perfIteration] += osGetTime()-first;
-    #endif
+#endif
 }

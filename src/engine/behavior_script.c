@@ -971,17 +971,8 @@ void cur_obj_update(void) {
         obj_update_gfx_pos_and_angle(gCurrentObject);
     }
 
-    if (objFlags & OBJ_FLAG_UCODE_LARGE) {
-        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_UCODE_REJ;
-    } else {
-        gCurrentObject->header.gfx.node.flags |=  GRAPH_RENDER_UCODE_REJ;
-    }
-
-    if (objFlags & OBJ_FLAG_SILHOUETTE) {
-        gCurrentObject->header.gfx.node.flags |=  GRAPH_RENDER_SILHOUETTE;
-    } else {
-        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_SILHOUETTE;
-    }
+    COND_BIT((!(objFlags & OBJ_FLAG_UCODE_LARGE)), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_UCODE_REJ );
+    COND_BIT(  (objFlags & OBJ_FLAG_SILHOUETTE ),  gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_SILHOUETTE);
 
 #ifdef OBJ_OPACITY_BY_CAM_DIST
     if (objFlags & OBJ_FLAG_OPACITY_FROM_CAMERA_DIST) {

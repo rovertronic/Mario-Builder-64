@@ -722,9 +722,9 @@ void geo_obj_init(struct GraphNodeObject *graphNode, void *sharedChild, Vec3f po
     graphNode->throwMatrix = NULL;
     graphNode->animInfo.curAnim = NULL;
 
-    graphNode->node.flags |= GRAPH_RENDER_ACTIVE;
+    graphNode->node.flags |=  GRAPH_RENDER_ACTIVE;
     graphNode->node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    graphNode->node.flags |= GRAPH_RENDER_HAS_ANIMATION;
+    graphNode->node.flags |=  GRAPH_RENDER_HAS_ANIMATION;
     graphNode->node.flags &= ~GRAPH_RENDER_BILLBOARD;
 }
 
