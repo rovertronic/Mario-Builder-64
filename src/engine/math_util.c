@@ -180,39 +180,35 @@ void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
 
     register f32 sz = sins(rot[2]);
     register f32 cz = coss(rot[2]);
-    register f32 entry0;
-    register f32 entry1;
-    register f32 entry2;
+    register Vec3f entry;
 
-    entry0 = cy * cz;
-    entry1 = cy * sz;
-    entry2 = -sy;
-    dest[0][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
-    dest[0][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
-    dest[0][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+    entry[0] = cy * cz;
+    entry[1] = cy * sz;
+    entry[2] = -sy;
+    dest[0][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
+    dest[0][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
+    dest[0][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
 
-    entry1 = sx * sy;
-    entry0 = entry1 * cz - cx * sz;
-    entry1 = entry1 * sz + cx * cz;
-    entry2 = sx * cy;
-    dest[1][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
-    dest[1][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
-    dest[1][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+    entry[1] = sx * sy;
+    entry[0] = (entry[1] * cz) - (cx * sz);
+    entry[1] = (entry[1] * sz) + (cx * cz);
+    entry[2] = sx * cy;
+    dest[1][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
+    dest[1][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
+    dest[1][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
 
-    entry1 = cx * sy;
-    entry0 = entry1 * cz + sx * sz;
-    entry1 = entry1 * sz - sx * cz;
-    entry2 = cx * cy;
-    dest[2][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0];
-    dest[2][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1];
-    dest[2][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2];
+    entry[1] = cx * sy;
+    entry[0] = (entry[1] * cz) + (sx * sz);
+    entry[1] = (entry[1] * sz) - (sx * cz);
+    entry[2] = cx * cy;
+    dest[2][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
+    dest[2][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
+    dest[2][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
 
-    entry0 = trans[0];
-    entry1 = trans[1];
-    entry2 = trans[2];
-    dest[3][0] = entry0 * src[0][0] + entry1 * src[1][0] + entry2 * src[2][0] + src[3][0];
-    dest[3][1] = entry0 * src[0][1] + entry1 * src[1][1] + entry2 * src[2][1] + src[3][1];
-    dest[3][2] = entry0 * src[0][2] + entry1 * src[1][2] + entry2 * src[2][2] + src[3][2];
+    vec3_copy(entry, trans);
+    dest[3][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0] + src[3][0];
+    dest[3][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1] + src[3][1];
+    dest[3][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2] + src[3][2];
     dest[0][3] = dest[1][3] = dest[2][3] = 0;
     ((u32 *) dest)[15] = 0x3F800000;
 }
@@ -228,7 +224,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
     register f32 dx = (to[0] - from[0]);
     register f32 dz = (to[2] - from[2]);
     register f32 invLength = sqrtf(sqr(dx) + sqr(dz));
-    invLength = -(1.0f / MAX(invLength, NEAR_ZERO));
+    invLength = -(1.0f / MAX(invLength, __FLT_EPSILON__));
     dx *= invLength;
     dz *= invLength;
     f32 sr  = sins(roll);
