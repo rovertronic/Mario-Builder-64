@@ -16,6 +16,7 @@
 #include "debug_box.h"
 #include "level_update.h"
 #include "behavior_data.h"
+#include "string.h"
 
 #include "config.h"
 
@@ -350,12 +351,13 @@ void geo_append_display_list(void *displayList, s32 layer) {
     }
 }
 
-void incrementMatStack() {
+void incrementMatStack(void) {
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
     gMatStackIndex++;
     mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
     gMatStackFixed[gMatStackIndex] = mtx;
 }
+
 void appendDLandReturn(struct GraphNodeDisplayList *node) {
     if (node->displayList != NULL) {
         geo_append_display_list(node->displayList, node->node.flags >> 8);
@@ -1022,6 +1024,7 @@ void geo_process_object_parent(struct GraphNodeObjectParent *node) {
 void geo_process_held_object(struct GraphNodeHeldObject *node) {
     Mat4 mat;
     Vec3f translation;
+    Mat4 tempMtx;
 
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, &lookAt);
@@ -1033,16 +1036,17 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
     if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
         s32 hasAnimation = (node->objNode->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
 
-        translation[0] = node->translation[0] / 4.0f;
-        translation[1] = node->translation[1] / 4.0f;
-        translation[2] = node->translation[2] / 4.0f;
+        translation[0] = node->translation[0] / 4;
+        translation[1] = node->translation[1] / 4;
+        translation[2] = node->translation[2] / 4;
 
         mtxf_translate(mat, translation);
         mtxf_copy(gMatStack[gMatStackIndex + 1], *gCurGraphNodeObject->throwMatrix);
         gMatStack[gMatStackIndex + 1][3][0] = gMatStack[gMatStackIndex][3][0];
         gMatStack[gMatStackIndex + 1][3][1] = gMatStack[gMatStackIndex][3][1];
         gMatStack[gMatStackIndex + 1][3][2] = gMatStack[gMatStackIndex][3][2];
-        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, gMatStack[gMatStackIndex + 1]);
+        mtxf_copy(temp, gMatStack[gMatStackIndex + 1]);
+        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, tempMtx);
         mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->objNode->header.gfx.scale);
         if (node->fnNode.func != NULL) {
             node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);
