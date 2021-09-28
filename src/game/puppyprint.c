@@ -201,7 +201,7 @@ void print_ram_bar(void) {
     s32 i = 0;
     f32 perfPercentage;
     s32 graphPos = 0;
-    s32 prevGraph = 160 - (BAR_LENGTH / 2);
+    s32 prevGraph = (SCREEN_WIDTH/2) - (BAR_LENGTH / 2);
     s32 ramsize = osGetMemSize();
 
     prepare_blank_box();
@@ -211,16 +211,16 @@ void print_ram_bar(void) {
             continue;
         }
         perfPercentage = (f32)ramsizeSegment[i]/ramsize;
-        graphPos = prevGraph + CLAMP((BAR_LENGTH * perfPercentage), 1, 160 + (BAR_LENGTH / 2));
-        render_blank_box(prevGraph, 210, graphPos, 218, colourChart[i][0], colourChart[i][1], colourChart[i][2], 255);
+        graphPos = prevGraph + CLAMP((BAR_LENGTH * perfPercentage), 1, (SCREEN_WIDTH/2) + (BAR_LENGTH / 2));
+        render_blank_box(prevGraph, SCREEN_HEIGHT-30, graphPos, SCREEN_HEIGHT-22, colourChart[i][0], colourChart[i][1], colourChart[i][2], 255);
         prevGraph = graphPos;
     }
     perfPercentage = (f32)ramsizeSegment[32]/ramsize;
-    graphPos = prevGraph + CLAMP((BAR_LENGTH * perfPercentage), 1, 160 + (BAR_LENGTH / 2));
-    render_blank_box(prevGraph, 210, graphPos, 218, 255, 255, 255, 255);
+    graphPos = prevGraph + CLAMP((BAR_LENGTH * perfPercentage), 1, (SCREEN_WIDTH/2) + (BAR_LENGTH / 2));
+    render_blank_box(prevGraph, SCREEN_HEIGHT-30, graphPos, SCREEN_HEIGHT-22, 255, 255, 255, 255);
     prevGraph = graphPos;
 
-    render_blank_box(prevGraph, 210, 160+(BAR_LENGTH / 2), 218, 0, 0, 0, 255);
+    render_blank_box(prevGraph, SCREEN_HEIGHT-30, (SCREEN_WIDTH/2)+(BAR_LENGTH / 2), SCREEN_HEIGHT-22, 0, 0, 0, 255);
 
     finish_blank_box();
 }
@@ -247,7 +247,7 @@ void print_ram_overview(void) {
     s32 y = 16;
     s32 drawn = 0;
     prepare_blank_box();
-    render_blank_box(0, 0, 320, 240, 0, 0, 0, 192);
+    render_blank_box(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 192);
     finish_blank_box();
 
     for (i = 0; i < 33; i++) {
@@ -302,10 +302,10 @@ void print_which_benchmark(void) {
     char textBytes[40];
 
     prepare_blank_box();
-    render_blank_box(110, 115, 210, 160, 0, 0, 0, 255);
+    render_blank_box((SCREEN_WIDTH/2)-50, 115, (SCREEN_WIDTH/2)+50, 160, 0, 0, 0, 255);
     finish_blank_box();
     sprintf(textBytes, "Select Option#%s#L: Confirm", benchNames[benchOption]);
-    print_small_text(160,120, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
+    print_small_text((SCREEN_WIDTH/2),120, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
 }
 
 char consoleLogTable[LOG_BUFFER_SIZE][255];
@@ -372,7 +372,7 @@ void puppyprint_render_profiler(void) {
     }
 
     sprintf(textBytes, "RAM: %06X /%06X (%d_)", main_pool_available(), mempool, (s32)(((f32)main_pool_available() / (f32)mempool) * 100));
-    print_small_text(160, 224, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
+    print_small_text((SCREEN_WIDTH/2), SCREEN_HEIGHT-16, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
 
     if (!ramViewer && !benchViewer && !logViewer) {
         print_fps(16,40);
@@ -394,7 +394,7 @@ void puppyprint_render_profiler(void) {
         // Same for the camera, especially so because this will crash otherwise.
         if (gCamera) {
             sprintf(textBytes, "Camera Pos#X: %d#Y: %d#Z: %d#D: %X", (s32)(gCamera->pos[0]), (s32)(gCamera->pos[1]), (s32)(gCamera->pos[2]), (u16)(gCamera->yaw));
-            print_small_text(304, 140, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+            print_small_text(SCREEN_WIDTH-16, 140, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         }
 
         if (benchmarkTimer > 0) {
@@ -407,9 +407,9 @@ void puppyprint_render_profiler(void) {
             // sprintf(textBytes, "Benchmark: %dus#High: %dus", (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS+1]));
             sprintf(textBytes, "Done in %0.000f seconds#Benchmark: %dus#High: %dus", (f32)(benchmarkProgramTimer) * 0.000001f, (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS]), (s32)OS_CYCLES_TO_USEC(benchMark[NUM_BENCH_ITERATIONS + 1]));
 #endif
-            render_blank_box(160 - (get_text_width(textBytes, FONT_OUTLINE) / 2) - 4, 158, 160 + (get_text_width(textBytes, FONT_OUTLINE) / 2) + 4, 196, 0, 0, 0, 255);
+            render_blank_box((SCREEN_WIDTH/2) - (get_text_width(textBytes, FONT_OUTLINE) / 2) - 4, 158, (SCREEN_WIDTH/2) + (get_text_width(textBytes, FONT_OUTLINE) / 2) + 4, 196, 0, 0, 0, 255);
             print_set_envcolour(255, 255, 255, 255);
-            print_small_text(160, 160, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
+            print_small_text((SCREEN_WIDTH/2), 160, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
             finish_blank_box();
         }
 
@@ -423,32 +423,32 @@ void puppyprint_render_profiler(void) {
 
 #ifdef PUPPYPRINT_DEBUG_CYCLES
         sprintf(textBytes, "Collision: <COL_99505099>%dc", (s32)(collisionTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Graph: <COL_50509999>%dc", (s32)(graphTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Behaviour: <COL_50995099>%dc", (s32)(behaviourTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Audio: <COL_99995099>%dc", (s32)(audioTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "DMA: <COL_99509999>%dc", (s32)(dmaTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
 #else
         sprintf(textBytes, "Collision: <COL_99505099>%dus", (s32)OS_CYCLES_TO_USEC(collisionTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 40, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Graph: <COL_50509999>%dus", (s32)OS_CYCLES_TO_USEC(graphTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 52, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Behaviour: <COL_50995099>%dus", (s32)OS_CYCLES_TO_USEC(behaviourTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 64, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "Audio: <COL_99995099>%dus", (s32)OS_CYCLES_TO_USEC(audioTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 76, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
         sprintf(textBytes, "DMA: <COL_99509999>%dus", (s32)OS_CYCLES_TO_USEC(dmaTime[NUM_PERF_ITERATIONS]));
-        print_small_text(304, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
+        print_small_text(SCREEN_WIDTH-16, 88, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
 #endif
 
         // Render CPU breakdown bar.
         prepare_blank_box();
-        graphPos = 224 + perfPercentage[0];
-        render_blank_box(224, 104, graphPos, 112, 255, 0, 0, 255);
+        graphPos = SCREEN_WIDTH-96 + perfPercentage[0];
+        render_blank_box(SCREEN_WIDTH-96, 104, graphPos, 112, 255, 0, 0, 255);
         prevGraph = graphPos;
         graphPos += perfPercentage[1];
         render_blank_box(prevGraph, 104, graphPos, 112, 0, 0, 255, 255);
@@ -460,7 +460,7 @@ void puppyprint_render_profiler(void) {
         render_blank_box(prevGraph, 104, graphPos, 112, 255, 255, 0, 255);
         prevGraph = graphPos;
         graphPos += perfPercentage[4];
-        render_blank_box(prevGraph, 104, 304, 112, 255, 0, 255, 255);
+        render_blank_box(prevGraph, 104, SCREEN_WIDTH-16, 112, 255, 0, 255, 255);
     } else if (ramViewer) {
         print_ram_overview();
     } else if (logViewer) {
