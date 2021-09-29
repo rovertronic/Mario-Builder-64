@@ -292,8 +292,8 @@ void intro_gen_face_texrect(Gfx **dlIter) {
 
     for (y = 0; y < 6; y++) {
         for (x = 0; x < 8; x++) {
-            if (sFaceVisible[y*8 + x] != 0) {
-                gSPTextureRectangle((*dlIter)++, (x * 40) << 2, (y * 40) << 2, (x * 40 + 39) << 2, (y * 40 + 39) << 2, 0,
+            if (sFaceVisible[(y * 8) + x] != 0) {
+                gSPTextureRectangle((*dlIter)++, (x * 40) << 2, (y * 40) << 2, ((x * 40) + 39) << 2, ((y * 40) + 39) << 2, 0,
                                     0, 0, 4 << 10, 1 << 10);
             }
         }
@@ -301,10 +301,9 @@ void intro_gen_face_texrect(Gfx **dlIter) {
 }
 
 Gfx *intro_draw_face(u16 *image, s32 imageW, s32 imageH) {
-    Gfx *dl;
     Gfx *dlIter;
 
-    dl = alloc_display_list(110 * sizeof(Gfx));
+    Gfx *dl = alloc_display_list(130 * sizeof(Gfx));
 
     if (dl == NULL) {
         return dl;
@@ -326,8 +325,6 @@ Gfx *intro_draw_face(u16 *image, s32 imageW, s32 imageH) {
 }
 
 u16 *intro_sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH) {
-    u16 *fb;
-    u16 *image;
     s32 pixel;
     f32 size;
     f32 r, g, b;
@@ -336,8 +333,8 @@ u16 *intro_sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH)
     s32 xOffset = 120;
     s32 yOffset = 80;
 
-    fb = gFrameBuffers[sRenderingFrameBuffer];
-    image = alloc_display_list(imageW * imageH * sizeof(u16));
+    u16 *fb = gFrameBuffers[sRenderingFrameBuffer];
+    u16 *image = alloc_display_list(imageW * imageH * sizeof(u16));
 
     if (image == NULL) {
         return image;
@@ -381,7 +378,6 @@ u16 *intro_sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH)
 
 Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeGenerated *genNode = (struct GraphNodeGenerated *)node;
-    u16 *image;
     Gfx *dl = NULL;
     s32 i;
 
@@ -406,7 +402,7 @@ Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *c
 
         // Draw while the first or last face is visible.
         if (sFaceVisible[0] == 1 || sFaceVisible[17] == 1) {
-            image = intro_sample_frame_buffer(40, 40, 2, 2);
+            u16 *image = intro_sample_frame_buffer(40, 40, 2, 2);
             if (image != NULL) {
                 SET_GRAPH_NODE_LAYER(genNode->fnNode.node.flags, LAYER_OPAQUE);
                 dl = intro_draw_face(image, 40, 40);
