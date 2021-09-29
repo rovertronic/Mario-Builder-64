@@ -339,7 +339,6 @@ void move_particle(struct ObjParticle *ptc) {
                 if (sp4C->unk18C->pickedObj != NULL) {
                     set_cur_dynobj(sp4C->unk18C->pickedObj);
                     ptc->flags |= 0x20;
-                    ; // needed to match
                 } else {
                     ptc->flags &= ~0x10;
                     ptc->flags &= ~0x20;

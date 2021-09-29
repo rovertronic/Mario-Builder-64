@@ -715,11 +715,12 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
 
         switch (warpOp) {
             case WARP_OP_DEMO_NEXT:
-            case WARP_OP_DEMO_END: sDelayedWarpTimer = 20; // Must be one line to match on -O2
+            case WARP_OP_DEMO_END:
+                sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = WARP_NODE_F0;
                 gSavedCourseNum = COURSE_NONE;
                 fadeMusic = FALSE;
-                play_transition(WARP_TRANSITION_FADE_INTO_STAR, 0x14, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_CREDITS_END:
@@ -727,14 +728,14 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 sSourceWarpNodeId = WARP_NODE_F0;
                 fadeMusic = FALSE;
                 gSavedCourseNum = COURSE_NONE;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x3C, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_STAR_EXIT:
                 sDelayedWarpTimer = 32;
                 sSourceWarpNodeId = WARP_NODE_F0;
                 gSavedCourseNum = COURSE_NONE;
-                play_transition(WARP_TRANSITION_FADE_INTO_MARIO, 0x20, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_MARIO, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_DEATH:
@@ -745,7 +746,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             #endif
                 sDelayedWarpTimer = 48;
                 sSourceWarpNodeId = WARP_NODE_DEATH;
-                play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, 0x30, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 play_sound(SOUND_MENU_BOWSER_LAUGH, gGlobalSoundSource);
                 break;
 
@@ -764,13 +765,13 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 }
 
                 sDelayedWarpTimer = 20;
-                play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_LOOK_UP: // enter totwc
                 sDelayedWarpTimer = 30;
                 sSourceWarpNodeId = WARP_NODE_LOOK_UP;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0xFF, 0xFF, 0xFF);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0xFF, 0xFF, 0xFF);
 #ifndef VERSION_JP
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
 #endif
@@ -779,14 +780,14 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             case WARP_OP_SPIN_SHRINK: // bbh enter
                 sDelayedWarpTimer = 30;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0xFF, 0xFF, 0xFF);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0xFF, 0xFF, 0xFF);
                 break;
 
             case WARP_OP_TELEPORT:
                 sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
                 fadeMusic = !music_unchanged_through_warp(sSourceWarpNodeId);
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0xFF, 0xFF, 0xFF);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0xFF, 0xFF, 0xFF);
                 break;
 
             case WARP_OP_WARP_DOOR:
@@ -794,28 +795,28 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 sDelayedWarpArg = m->actionArg;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
                 fadeMusic = !music_unchanged_through_warp(sSourceWarpNodeId);
-                play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_WARP_OBJECT:
                 sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
                 fadeMusic = !music_unchanged_through_warp(sSourceWarpNodeId);
-                play_transition(WARP_TRANSITION_FADE_INTO_STAR, 0x14, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_CREDITS_START:
                 sDelayedWarpTimer = 30;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0x00, 0x00, 0x00);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_CREDITS_NEXT:
                 if (gCurrCreditsEntry == &sCreditsSequence[0]) {
                     sDelayedWarpTimer = 60;
-                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x3C, 0x00, 0x00, 0x00);
+                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 } else {
                     sDelayedWarpTimer = 20;
-                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x00, 0x00, 0x00);
+                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 }
                 fadeMusic = FALSE;
                 break;
@@ -856,8 +857,7 @@ void initiate_delayed_warp(void) {
 
                 case WARP_OP_CREDITS_END:
                     warp_special(WARP_SPECIAL_ENDING);
-                    sound_banks_enable(SEQ_PLAYER_SFX,
-                                       SOUND_BANKS_ALL & ~SOUND_BANKS_DISABLED_AFTER_CREDITS);
+                    sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL & ~SOUND_BANKS_DISABLED_AFTER_CREDITS);
                     break;
 
                 case WARP_OP_DEMO_NEXT:
@@ -881,8 +881,7 @@ void initiate_delayed_warp(void) {
                         destWarpNode = WARP_NODE_CREDITS_NEXT;
                     }
 
-                    initiate_warp(gCurrCreditsEntry->levelNum, gCurrCreditsEntry->areaIndex,
-                                  destWarpNode, 0);
+                    initiate_warp(gCurrCreditsEntry->levelNum, gCurrCreditsEntry->areaIndex, destWarpNode, WARP_FLAGS_NONE);
                     break;
 
                 default:

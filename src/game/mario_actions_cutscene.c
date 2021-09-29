@@ -1525,9 +1525,7 @@ s32 act_squished(struct MarioState *m) {
                     play_sound_if_no_flag(m, SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);
                 }
 
-                // Both of the 1.8's are really floats, but one of them has to
-                // be written as a double for this to match on -O2.
-                vec3f_set(m->marioObj->header.gfx.scale, 1.8, 0.05f, 1.8f);
+                vec3f_set(m->marioObj->header.gfx.scale, 1.8f, 0.05f, 1.8f);
 #if ENABLE_RUMBLE
                 queue_rumble_data(10, 80);
 #endif

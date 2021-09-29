@@ -617,10 +617,9 @@ s32 act_side_flip(struct MarioState *m) {
         m->marioObj->header.gfx.angle[1] += 0x8000;
     }
 
-    // This must be one line to match on -O2
-    // clang-format off
-    if (m->marioObj->header.gfx.animInfo.animFrame == 6) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, m->marioObj->header.gfx.cameraToObject);
-    // clang-format on
+    if (m->marioObj->header.gfx.animInfo.animFrame == 6) {
+        play_sound(SOUND_ACTION_SIDE_FLIP_UNK, m->marioObj->header.gfx.cameraToObject);
+    }
     return FALSE;
 }
 

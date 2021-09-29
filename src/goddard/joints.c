@@ -61,7 +61,6 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
         self->velocity.z = offset.z * -0.25f;
 
         self->flags |= 0x2000;
-        ;  // needed to match
     } else {
         if (gGdCtrl.trgR == FALSE)  // R trigger is released
         {

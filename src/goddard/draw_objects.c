@@ -506,7 +506,6 @@ void draw_camera(struct ObjCamera *cam) {
         sp44.x += cam->lookAt.x;
         sp44.y += cam->lookAt.y;
         sp44.z += cam->lookAt.z;
-        ; // needed to match
     } else {
         sp44.x = cam->lookAt.x;
         sp44.y = cam->lookAt.y;
@@ -692,7 +691,6 @@ void draw_particle(struct GdObj *obj) {
         sLightColours.r = (white->r - black->r) * brightness + black->r;
         sLightColours.g = (white->g - black->g) * brightness + black->g;
         sLightColours.b = (white->b - black->b) * brightness + black->b;
-        ; // needed to match
     } else {
         sLightColours.r = 0.0f;
         sLightColours.g = 0.0f;
@@ -765,7 +763,6 @@ void draw_plane(struct GdObj *obj) {
 
     if (obj->drawFlags & OBJ_HIGHLIGHTED) {
         obj->drawFlags &= ~OBJ_HIGHLIGHTED;
-        ; // needed to match; presumably setting up the color to draw the plane with
     } else {
         sUseSelectedColor = FALSE;
     }

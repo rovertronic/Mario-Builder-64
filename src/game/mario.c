@@ -692,10 +692,8 @@ void update_mario_sound_and_camera(struct MarioState *m) {
         raise_background_noise(2);
     }
 
-    if (!(action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER))) {
-        if (camPreset == CAMERA_MODE_BEHIND_MARIO || camPreset == CAMERA_MODE_WATER_SURFACE) {
-            set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
-        }
+    if (!(action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) && (camPreset == CAMERA_MODE_BEHIND_MARIO || camPreset == CAMERA_MODE_WATER_SURFACE)) {
+        set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
     }
 }
 

@@ -16,28 +16,12 @@ static void fish_spawner_act_spawn(void) {
     struct Object *fishObject;
 
     switch (o->oBehParams2ndByte) {
-
-        // Cases need to be on one line to match with and without optimizations.
-        case FISH_SPAWNER_BP_MANY_BLUE:
-            model = MODEL_FISH;      schoolQuantity = 20; minDistToMario = 1500.0f; fishAnimation = blue_fish_seg3_anims_0301C2B0;
-            break;
-
-        case FISH_SPAWNER_BP_FEW_BLUE:
-            model = MODEL_FISH;      schoolQuantity = 5;  minDistToMario = 1500.0f; fishAnimation = blue_fish_seg3_anims_0301C2B0;
-            break;
-
-        case FISH_SPAWNER_BP_MANY_CYAN:
-            model = MODEL_CYAN_FISH; schoolQuantity = 20; minDistToMario = 1500.0f; fishAnimation = cyan_fish_seg6_anims_0600E264;
-            break;
-
-        case FISH_SPAWNER_BP_FEW_CYAN:
-            model = MODEL_CYAN_FISH; schoolQuantity = 5;  minDistToMario = 1500.0f; fishAnimation = cyan_fish_seg6_anims_0600E264;
-            break;
-
-        default:
-            return;
+        case FISH_SPAWNER_BP_MANY_BLUE: model = MODEL_FISH;      schoolQuantity = 20; minDistToMario = 1500.0f; fishAnimation = blue_fish_seg3_anims_0301C2B0; break;
+        case FISH_SPAWNER_BP_FEW_BLUE:  model = MODEL_FISH;      schoolQuantity =  5; minDistToMario = 1500.0f; fishAnimation = blue_fish_seg3_anims_0301C2B0; break;
+        case FISH_SPAWNER_BP_MANY_CYAN: model = MODEL_CYAN_FISH; schoolQuantity = 20; minDistToMario = 1500.0f; fishAnimation = cyan_fish_seg6_anims_0600E264; break;
+        case FISH_SPAWNER_BP_FEW_CYAN:  model = MODEL_CYAN_FISH; schoolQuantity =  5; minDistToMario = 1500.0f; fishAnimation = cyan_fish_seg6_anims_0600E264; break;
+        default: return;
     }
-
 
     // Spawn and animate the schoolQuantity of fish if Mario enters render distance
     // or the stage is Secret Aquarium.

@@ -89,8 +89,7 @@ static s16 obj_get_pitch_from_vel(void) {
  * move again.
  */
 static s32 obj_update_race_proposition_dialog(s16 dialogID) {
-    s32 dialogResponse =
-        cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
+    s32 dialogResponse = cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
         (DIALOG_FLAG_TURN_TO_MARIO | DIALOG_FLAG_TIME_STOP_ENABLED), CUTSCENE_RACE_DIALOG, dialogID);
 
     if (dialogResponse == DIALOG_RESPONSE_NO) {
@@ -110,8 +109,6 @@ static s32 obj_is_near_to_and_facing_mario(f32 maxDist, s16 maxAngleDiff) {
     return (o->oDistanceToMario < maxDist && abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < maxAngleDiff);
 }
 
-//! Although having no return value, this function
-//! must be u32 to match other functions on -O2.
 static void obj_perform_position_op(s32 op) {
     switch (op) {
         case POS_OP_SAVE_POSITION:    vec3_copy(sObjSavedPos, &o->oPosVec); break;

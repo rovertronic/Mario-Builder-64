@@ -2,10 +2,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#if defined(VERSION_JP) || defined(VERSION_US)
-#include "prevent_bss_reordering.h"
-#endif
-
 #include "debug_utils.h"
 #include "draw_objects.h"
 #include "dynlist_proc.h"
@@ -858,7 +854,6 @@ void gd_printf(const char *format, ...) {
                         csr++;
                         *csr = '\0';
                         break;
-                        break; // needed to match
                     case 'f':
                         val.f = (f32) va_arg(args, double);
                         csr = sprint_val_withspecifiers(csr, val, spec);

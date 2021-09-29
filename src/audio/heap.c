@@ -1742,7 +1742,7 @@ void func_sh_802f23ec(void) {
     s32 drumId;
     struct Drum *drum;
     struct Instrument *inst;
-    struct UnkEntry *entry; //! @bug: not initialized but nevertheless used
+    struct UnkEntry *entry = NULL; //! @bug: not initialized but nevertheless used
 
     seqCount = gAlCtlHeader->seqCount;
     for (idx = 0; idx < seqCount; idx++) {

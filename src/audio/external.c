@@ -228,8 +228,8 @@ struct MusicDynamic sMusicDynamics[8] = {
     { 0x0e43, 127, 200, 0x0000, 0, 200 }, // SEQ_LEVEL_WATER
     { 0x02ff, 127, 100, 0x0100, 0, 100 }, // SEQ_LEVEL_UNDERGROUND
     { 0x03f7, 127, 100, 0x0008, 0, 100 }, // SEQ_LEVEL_UNDERGROUND
-    { 0x0070, 127, 10, 0x0000, 0, 100 },  // SEQ_LEVEL_SPOOKY
-    { 0x0000, 127, 100, 0x0070, 0, 10 },  // SEQ_LEVEL_SPOOKY
+    { 0x0070, 127,  10, 0x0000, 0, 100 }, // SEQ_LEVEL_SPOOKY
+    { 0x0000, 127, 100, 0x0070, 0,  10 }, // SEQ_LEVEL_SPOOKY
     { 0xffff, 127, 100, 0x0000, 0, 100 }, // any (unused)
 };
 
@@ -256,11 +256,7 @@ u16 sLevelAcousticReaches[LEVEL_COUNT] = {
 
 #define AUDIO_MAX_DISTANCE US_FLOAT(22000.0)
 
-#ifdef VERSION_JP
-#define LOW_VOLUME_REVERB 48.0
-#else
 #define LOW_VOLUME_REVERB 40.0f
-#endif
 
 #ifdef VERSION_JP
 #define VOLUME_RANGE_UNK1 0.8f

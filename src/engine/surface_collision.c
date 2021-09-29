@@ -561,7 +561,7 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     struct Surface *floor, *dynamicFloor;
     struct SurfaceNode *surfaceList;
 
-    f32 height = FLOOR_LOWER_LIMIT;
+    f32 height       = FLOOR_LOWER_LIMIT;
     f32 dynamicHeight = FLOOR_LOWER_LIMIT;
 
     //! (Parallel Universes) Because position is casted to an s16, reaching higher
@@ -575,7 +575,7 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 
     if (is_outside_level_bounds(x, z)) {
         #if PUPPYPRINT_DEBUG
-        collisionTime[perfIteration] += osGetTime()-first;
+        collisionTime[perfIteration] += osGetTime() - first;
         #endif
         return height;
     }

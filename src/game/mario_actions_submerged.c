@@ -482,9 +482,9 @@ static void common_swimming_step(struct MarioState *m, s16 swimStrength) {
 
 static void play_swimming_noise(struct MarioState *m) {
     s16 animFrame = m->marioObj->header.gfx.animInfo.animFrame;
-
-    // This must be one line to match on -O2
-    if (animFrame == 0 || animFrame == 12) play_sound(SOUND_ACTION_UNKNOWN434, m->marioObj->header.gfx.cameraToObject);
+    if (animFrame == 0 || animFrame == 12) {
+        play_sound(SOUND_ACTION_UNKNOWN434, m->marioObj->header.gfx.cameraToObject);
+    }
 }
 
 static s32 check_water_jump(struct MarioState *m) {
