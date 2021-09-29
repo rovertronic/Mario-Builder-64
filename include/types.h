@@ -427,6 +427,7 @@ struct MarioState
     /*0x6C*/ f32 ceilHeight;
     /*0x70*/ f32 floorHeight;
     /*0x74*/ s16 floorYaw;
+    #define floorAngle floorYaw
     /*0x76*/ s16 waterLevel;
     /*0x78*/ struct Object *interactObj;
     /*0x7C*/ struct Object *heldObj;
