@@ -155,9 +155,13 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
         if (gMarioObject == NULL) {
             switchCase->selectedCase = 0;
         } else {
-            gFindFloorIncludeSurfaceIntangible = TRUE;
-
-            find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &floor);
+            if (gCurrLevelNum == LEVEL_BBH) {
+                // In BBH, check for a floor manually, since there is an intangible floor. In custom hacks this can be removed.
+                find_room_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &floor);
+            } else {
+                // Since no intangible floors are nearby, use Mario's floor instead.
+                floor = gMarioState->floor;
+            }
 
             if (floor) {
                 gMarioCurrentRoom = floor->room;
@@ -1981,28 +1985,15 @@ s32 is_item_in_array(s8 item, s8 *array) {
 }
 
 void bhv_init_room(void) {
-    struct Surface *floor;
-    f32 floorHeight;
-
+    struct Surface *floor = NULL;
     if (is_item_in_array(gCurrLevelNum, sLevelsWithRooms)) {
-        floorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
-
+        find_room_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
         if (floor != NULL) {
-            if (floor->room != 0) {
-                o->oRoom = floor->room;
-            } else {
-                // Floor probably belongs to a platform object. Try looking
-                // underneath it
-                find_floor(o->oPosX, floorHeight - 100.0f, o->oPosZ, &floor);
-                if (floor != NULL) {
-                    //! Technically possible that the room could still be 0 here
-                    o->oRoom = floor->room;
-                }
-            }
+            o->oRoom = floor->room;
+            return;
         }
-    } else {
-        o->oRoom = -1;
     }
+    o->oRoom = -1;
 }
 
 void cur_obj_enable_rendering_if_mario_in_room(void) {

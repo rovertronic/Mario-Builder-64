@@ -146,6 +146,7 @@ struct MemoryPool *gObjectMemoryPool;
 
 s16 gCheckingSurfaceCollisionsForCamera;
 s16 gFindFloorIncludeSurfaceIntangible;
+s16 gFindFloorExcludeDynamic;
 TerrainData *gEnvironmentRegions;
 s32 gEnvironmentLevels[20];
 RoomData gDoorAdjacentRooms[60][2];

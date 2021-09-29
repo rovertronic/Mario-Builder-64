@@ -100,6 +100,7 @@ extern struct MemoryPool *gObjectMemoryPool;
 
 extern s16 gCheckingSurfaceCollisionsForCamera;
 extern s16 gFindFloorIncludeSurfaceIntangible;
+extern s16 gFindFloorExcludeDynamic;
 extern TerrainData *gEnvironmentRegions;
 extern s32 gEnvironmentLevels[20];
 extern RoomData gDoorAdjacentRooms[60][2];

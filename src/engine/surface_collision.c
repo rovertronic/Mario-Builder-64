@@ -499,41 +499,43 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 #endif
         return height;
     }
-
     // Each level is split into cells to limit load, find the appropriate cell.
     cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
     cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-
-    // Check for surfaces belonging to objects.
-    surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
-    dynamicFloor = find_floor_from_list(surfaceList, x, y, z, &dynamicHeight);
-
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     floor = find_floor_from_list(surfaceList, x, y, z, &height);
-
+    if (!gFindFloorExcludeDynamic) {
+        // In the next check, only check for floors higher than the previous check
+        dynamicHeight = height;
+        // Check for surfaces belonging to objects.
+        surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
+        dynamicFloor = find_floor_from_list(surfaceList, x, y, z, &dynamicHeight);
+        if (dynamicHeight > height) {
+            floor  = dynamicFloor;
+            height = dynamicHeight;
+        }
+    }
     // To prevent accidentally leaving the floor tangible, stop checking for it.
     gFindFloorIncludeSurfaceIntangible = FALSE;
+    gFindFloorExcludeDynamic           = FALSE;
     // If a floor was missed, increment the debug counter.
     if (floor == NULL) {
         gNumFindFloorMisses++;
     }
-
-    if (dynamicHeight > height) {
-        floor = dynamicFloor;
-        height = dynamicHeight;
-    }
-
     *pfloor = floor;
-
     // Increment the debug tracker.
     gNumCalls.floor++;
-
-    #if PUPPYPRINT_DEBUG
-    collisionTime[perfIteration] += osGetTime()-first;
-    #endif
-
+#if PUPPYPRINT_DEBUG
+    collisionTime[perfIteration] += osGetTime() - first;
+#endif
     return height;
+}
+
+f32 find_room_floor(f32 x, f32 y, f32 z, struct Surface **pfloor) {
+    gFindFloorIncludeSurfaceIntangible = TRUE;
+    gFindFloorExcludeDynamic           = TRUE;
+    return find_floor(x, y, z, pfloor);
 }
 
 /**
