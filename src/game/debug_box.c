@@ -221,8 +221,8 @@ void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
         return;
     }
 
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    s32 cellX = GET_CELL_COORD(x);
+    s32 cellZ = GET_CELL_COORD(z);
 
     for (i = 0; i < 8; i++) {
         switch (i) {
@@ -350,8 +350,8 @@ s32 iterate_surface_count(s32 x, s32 z)
         return 0;
     }
 
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    cellX = GET_CELL_COORD(x);
+    cellZ = GET_CELL_COORD(z);
 
     for (i = 0; i < 8; i++)
     {

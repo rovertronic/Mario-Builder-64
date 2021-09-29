@@ -8,8 +8,6 @@
 
 extern u8 gSurfacePoolError;
 
-#define NUM_CELLS_INDEX (NUM_CELLS - 1)
-
 struct SurfaceNode
 {
     struct SurfaceNode *next;

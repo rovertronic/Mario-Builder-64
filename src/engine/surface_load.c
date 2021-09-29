@@ -153,7 +153,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
 }
 
 /**
- * Every level is split into 16 * 16 cells of surfaces (to limit computing
+ * Every level is split into CELL_SIZE * CELL_SIZE cells of surfaces (to limit computing
  * time). This function determines the lower cell for a given x/z position.
  * @param coord The coordinate to test
  */
@@ -185,7 +185,7 @@ static s32 lower_cell_index(s32 coord) {
 }
 
 /**
- * Every level is split into 16 * 16 cells of surfaces (to limit computing
+ * Every level is split into CELL_SIZE * CELL_SIZE cells of surfaces (to limit computing
  * time). This function determines the upper cell for a given x/z position.
  * @param coord The coordinate to test
  */
@@ -208,8 +208,8 @@ static s32 upper_cell_index(s32 coord) {
         index++;
     }
 
-    if (index > NUM_CELLS_INDEX) {
-        index = NUM_CELLS_INDEX;
+    if (index > (NUM_CELLS - 1)) {
+        index = (NUM_CELLS - 1);
     }
 
     // Potentially < 0, but since lower index is >= 0, not exploitable
@@ -430,11 +430,10 @@ static TerrainData *read_vertex_data(TerrainData **data) {
  * Loads in special environmental regions, such as water, poison gas, and JRB fog.
  */
 static void load_environmental_regions(TerrainData **data) {
-    s32 numRegions;
     s32 i;
 
     gEnvironmentRegions = *data;
-    numRegions = *(*data)++;
+    s32 numRegions = *(*data)++;
 
     for (i = 0; i < numRegions; i++) {
         *data += 5;
@@ -518,9 +517,9 @@ u32 get_area_terrain_size(TerrainData *data) {
 void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16 *macroObjects) {
     s32 terrainLoadType;
     TerrainData *vertexData = NULL;
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
-    #endif
+#endif
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
@@ -568,9 +567,9 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
-    #if PUPPYPRINT_DEBUG
-    collisionTime[perfIteration] += osGetTime()-first;
-    #endif
+#if PUPPYPRINT_DEBUG
+    collisionTime[perfIteration] += osGetTime() - first;
+#endif
 }
 
 /**

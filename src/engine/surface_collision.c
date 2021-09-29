@@ -158,10 +158,9 @@ s32 find_wall_collisions(struct WallCollisionData *colData) {
         return numCollisions;
     }
 
-    // World (level) consists of a 16x16 grid. Find where the collision is on
-    // the grid (round toward -inf)
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    // World (level) consists of a 16x16 grid. Find where the collision is on the grid (round toward -inf)
+    cellX = GET_CELL_COORD(x);
+    cellZ = GET_CELL_COORD(z);
 
     // Check for surfaces belonging to objects.
     node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next;
@@ -285,8 +284,8 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
     }
 
     // Each level is split into cells to limit load, find the appropriate cell.
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    cellX = GET_CELL_COORD(x);
+    cellZ = GET_CELL_COORD(z);
 
     // Check for surfaces belonging to objects.
     surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next;
@@ -458,8 +457,8 @@ f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfl
     s32 z = zPos;
 
     // Each level is split into cells to limit load, find the appropriate cell.
-    s32 cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    s32 cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    s32 cellX = GET_CELL_COORD(x);
+    s32 cellZ = GET_CELL_COORD(z);
 
     surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     floor = find_floor_from_list(surfaceList, x, y, z, &floorHeight);
@@ -500,8 +499,8 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
         return height;
     }
     // Each level is split into cells to limit load, find the appropriate cell.
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    cellX = GET_CELL_COORD(x);
+    cellZ = GET_CELL_COORD(z);
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     floor = find_floor_from_list(surfaceList, x, y, z, &height);
@@ -556,8 +555,8 @@ f32 find_water_floor(s32 xPos, s32 yPos, s32 zPos, struct Surface **pfloor) {
     if (is_outside_level_bounds(x, z)) return height;
 
     // Each level is split into cells to limit load, find the appropriate cell.
-    cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+    cellX = GET_CELL_COORD(x);
+    cellZ = GET_CELL_COORD(z);
 
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next;
@@ -741,26 +740,28 @@ void debug_surface_list_info(f32 xPos, f32 zPos) {
     s32 numFloors = 0;
     s32 numWalls = 0;
     s32 numCeils = 0;
+    s32 x = xPos;
+    s32 z = zPos;
 
-    s32 cellX = (xPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
-    s32 cellZ = (zPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
+    s32 cellX = GET_CELL_COORD(x);
+    s32 cellZ = GET_CELL_COORD(z);
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
+    list = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     numFloors += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
+    list = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     numFloors += surface_list_length(list);
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
+    list = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next;
     numWalls += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
+    list = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS].next;
     numWalls += surface_list_length(list);
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
+    list = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next;
     numCeils += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
+    list = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS].next;
     numCeils += surface_list_length(list);
 
     print_debug_top_down_mapinfo("area   %x", cellZ * NUM_CELLS + cellX);
