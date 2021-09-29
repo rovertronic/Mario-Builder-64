@@ -14,9 +14,9 @@ static struct ObjectHitbox sBooGivingStarHitbox = {
 
 // Relative positions
 static s16 sCourtyardBooTripletPositions[][3] = {
-    {0, 50, 0},
-    {210, 110, 210},
-    {-210, 70, -210}
+    {   0,  50,    0},
+    { 210, 110,  210},
+    {-210,  70, -210}
 };
 
 static void boo_stop(void) {
@@ -31,20 +31,14 @@ void bhv_boo_init(void) {
 
 static s32 boo_should_be_stopped(void) {
     if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo) || cur_obj_has_behavior(bhvMerryGoRoundBoo)) {
-        if (!gMarioOnMerryGoRound) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return (!gMarioOnMerryGoRound);
     } else {
         if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
             return TRUE;
         }
 
-        if (o->oRoom == 10) {
-            if (gTimeStopState & TIME_STOP_MARIO_OPENED_DOOR) {
-                return TRUE;
-            }
+        if ((o->oRoom == 10) && (gTimeStopState & TIME_STOP_MARIO_OPENED_DOOR)) {
+            return TRUE;
         }
     }
 
@@ -52,20 +46,10 @@ static s32 boo_should_be_stopped(void) {
 }
 
 static s32 boo_should_be_active(void) {
-    f32 activationRadius;
-
-    if (cur_obj_has_behavior(bhvBalconyBigBoo)) {
-        activationRadius = 5000.0f;
-    } else {
-        activationRadius = 1500.0f;
-    }
+    f32 activationRadius = (cur_obj_has_behavior(bhvBalconyBigBoo) ? 5000.0f : 1500.0f);
 
     if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo) || cur_obj_has_behavior(bhvMerryGoRoundBoo)) {
-        if (gMarioOnMerryGoRound == TRUE) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return (gMarioOnMerryGoRound);
     } else if (o->oRoom == -1) {
         if (o->oDistanceToMario < activationRadius) {
             return TRUE;
@@ -299,11 +283,7 @@ static s32 boo_update_during_death(void) {
 }
 
 static s32 obj_has_attack_type(u32 attackType) {
-    if ((o->oInteractStatus & INT_STATUS_ATTACK_MASK) == attackType) {
-        return TRUE;
-    } else {
-        return FALSE;
-    }
+    return ((o->oInteractStatus & INT_STATUS_ATTACK_MASK) == attackType);
 }
 
 static s32 boo_get_attack_status(void) {
@@ -338,7 +318,7 @@ static void boo_chase_mario(f32 minDY, s16 yawIncrement, f32 mul) {
     if (boo_vanish_or_appear()) {
         o->oInteractType = 0x8000;
 
-        if (cur_obj_lateral_dist_from_mario_to_home() > 1500.0f) {
+        if (!cur_obj_lateral_dist_from_mario_to_home_is_in_range(1500.0f)) {
             targetYaw = cur_obj_angle_to_home();
         } else {
             targetYaw = o->oAngleToMario;

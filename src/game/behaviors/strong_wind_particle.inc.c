@@ -39,8 +39,8 @@ void bhv_strong_wind_particle_loop(void) {
     if (penguinObj != NULL) {
         penguinXDist = penguinObj->oSLWalkingPenguinWindCollisionXPos - o->oPosX;
         penguinZDist = penguinObj->oSLWalkingPenguinWindCollisionZPos - o->oPosZ;
-        distanceFromPenguin = sqrtf(penguinXDist * penguinXDist + penguinZDist * penguinZDist);
-        if (distanceFromPenguin < 300.0f) {
+        distanceFromPenguin = (sqr(penguinXDist) + sqr(penguinZDist));
+        if (distanceFromPenguin < sqr(300.0f)) {
             obj_mark_for_deletion(o);
             cur_obj_become_intangible();
         }

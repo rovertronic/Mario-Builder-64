@@ -717,9 +717,9 @@ static void get_optimal_coll_dist(struct Object *obj) {
  */
 void load_object_collision_model(void) {
     TerrainData vertexData[600];
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
-    #endif
+#endif
 
     TerrainData *collisionData = gCurrentObject->collisionData;
     f32 marioDist = gCurrentObject->oDistanceToMario;

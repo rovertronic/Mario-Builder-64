@@ -28,9 +28,9 @@ s32 detect_object_hitbox_overlap(struct Object *a, struct Object *b) {
     f32 dx = a->oPosX - b->oPosX;
     f32 dz = a->oPosZ - b->oPosZ;
     f32 collisionRadius = a->hitboxRadius + b->hitboxRadius;
-    f32 distance = sqrtf(sqr(dx) + sqr(dz));
+    f32 distance = (sqr(dx) + sqr(dz));
 
-    if (collisionRadius > distance) {
+    if (sqr(collisionRadius) > distance) {
         f32 dya_top = a->hitboxHeight + dya_bottom;
         f32 dyb_top = b->hitboxHeight + dyb_bottom;
 
@@ -56,13 +56,13 @@ s32 detect_object_hurtbox_overlap(struct Object *a, struct Object *b) {
     f32 dx = a->oPosX - b->oPosX;
     f32 dz = a->oPosZ - b->oPosZ;
     f32 collisionRadius = a->hurtboxRadius + b->hurtboxRadius;
-    f32 distance = sqrtf(sqr(dx) + sqr(dz));
+    f32 distance = (sqr(dx) + sqr(dz));
 
     if (a == gMarioObject) {
         b->oInteractionSubtype |= INT_SUBTYPE_DELAY_INVINCIBILITY;
     }
 
-    if (collisionRadius > distance) {
+    if (sqr(collisionRadius) > distance) {
         f32 dya_top = a->hitboxHeight + dya_bottom;
         f32 dyb_top = b->hurtboxHeight + dyb_bottom;
 

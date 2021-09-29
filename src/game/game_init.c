@@ -8,6 +8,7 @@
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
 #include "engine/level_script.h"
+#include "engine/math_util.h"
 #include "game_init.h"
 #include "main.h"
 #include "memory.h"
@@ -535,25 +536,13 @@ void adjust_analog_stick(struct Controller *controller) {
     controller->stickY = 0;
 
     // Modulate the rawStickX and rawStickY to be the new f32 values by adding/subtracting 6.
-    if (controller->rawStickX <= -8) {
-        controller->stickX = controller->rawStickX + 6;
-    }
-
-    if (controller->rawStickX >= 8) {
-        controller->stickX = controller->rawStickX - 6;
-    }
-
-    if (controller->rawStickY <= -8) {
-        controller->stickY = controller->rawStickY + 6;
-    }
-
-    if (controller->rawStickY >= 8) {
-        controller->stickY = controller->rawStickY - 6;
-    }
+    if (controller->rawStickX <= -8) controller->stickX = controller->rawStickX + 6;
+    if (controller->rawStickX >=  8) controller->stickX = controller->rawStickX - 6;
+    if (controller->rawStickY <= -8) controller->stickY = controller->rawStickY + 6;
+    if (controller->rawStickY >=  8) controller->stickY = controller->rawStickY - 6;
 
     // Calculate f32 magnitude from the center by vector length.
-    controller->stickMag =
-        sqrtf(controller->stickX * controller->stickX + controller->stickY * controller->stickY);
+    controller->stickMag = sqrtf(sqr(controller->stickX) + sqr(controller->stickY));
 
     // Magnitude cannot exceed 64.0f: if it does, modify the values
     // appropriately to flatten the values down to the allowed maximum value.
@@ -595,28 +584,27 @@ void read_controller_inputs(s32 threadID) {
             // 0.5x A presses are a good meme
             controller->buttonDown = controller->controllerData->button;
             adjust_analog_stick(controller);
-        } else // otherwise, if the controllerData is NULL, 0 out all of the inputs.
-        {
-            controller->rawStickX = 0;
-            controller->rawStickY = 0;
+        } else { // otherwise, if the controllerData is NULL, 0 out all of the inputs.
+            controller->rawStickX     = 0;
+            controller->rawStickY     = 0;
             controller->buttonPressed = 0;
-            controller->buttonDown = 0;
-            controller->stickX = 0;
-            controller->stickY = 0;
-            controller->stickMag = 0;
+            controller->buttonDown    = 0;
+            controller->stickX        = 0;
+            controller->stickY        = 0;
+            controller->stickMag      = 0;
         }
     }
 
     // For some reason, player 1's inputs are copied to player 3's port.
     // This potentially may have been a way the developers "recorded"
     // the inputs for demos, despite record_demo existing.
-    gPlayer3Controller->rawStickX = gPlayer1Controller->rawStickX;
-    gPlayer3Controller->rawStickY = gPlayer1Controller->rawStickY;
-    gPlayer3Controller->stickX = gPlayer1Controller->stickX;
-    gPlayer3Controller->stickY = gPlayer1Controller->stickY;
-    gPlayer3Controller->stickMag = gPlayer1Controller->stickMag;
+    gPlayer3Controller->rawStickX     = gPlayer1Controller->rawStickX;
+    gPlayer3Controller->rawStickY     = gPlayer1Controller->rawStickY;
+    gPlayer3Controller->stickX        = gPlayer1Controller->stickX;
+    gPlayer3Controller->stickY        = gPlayer1Controller->stickY;
+    gPlayer3Controller->stickMag      = gPlayer1Controller->stickMag;
     gPlayer3Controller->buttonPressed = gPlayer1Controller->buttonPressed;
-    gPlayer3Controller->buttonDown = gPlayer1Controller->buttonDown;
+    gPlayer3Controller->buttonDown    = gPlayer1Controller->buttonDown;
 }
 
 /**

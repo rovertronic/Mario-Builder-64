@@ -49,9 +49,9 @@
 
 //! TODO: remove static
 
-#define POS_OP_SAVE_POSITION    0
-#define POS_OP_COMPUTE_VELOCITY 1
-#define POS_OP_RESTORE_POSITION 2
+#define POS_OP_SAVE_POSITION    0x0
+#define POS_OP_COMPUTE_VELOCITY 0x1
+#define POS_OP_RESTORE_POSITION 0x2
 
 /* BSS (declared to force order) */
 extern s32 sNumActiveFirePiranhaPlants;
@@ -185,9 +185,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, f32 x, f32
                                               MODEL_TRAJECTORY_MARKER_BALL, bhvTrackBall);
 
             if (trackBall != NULL) {
-                trackBall->oPosX = x;
-                trackBall->oPosY = y;
-                trackBall->oPosZ = z;
+                vec3_set(&trackBall->oPosVec, x, y, z);
             }
         } else {
             if (prevWaypoint != initialPrevWaypoint) {
@@ -225,7 +223,7 @@ static void cur_obj_spin_all_dimensions(f32 pitchSpeed, f32 rollSpeed) {
             if (o->oFaceAngleRoll < 0) {
                 roll = -rollSpeed;
             } else if (o->oFaceAngleRoll > 0) {
-                roll = rollSpeed;
+                roll =  rollSpeed;
             }
         }
 
@@ -265,11 +263,11 @@ static s16 obj_get_pitch_to_home(f32 latDistToHome) {
 }
 
 static void obj_compute_vel_from_move_pitch(f32 speed) {
-    o->oForwardVel = speed * coss(o->oMoveAnglePitch);
-    o->oVelY = speed * -sins(o->oMoveAnglePitch);
+    o->oForwardVel = speed *  coss(o->oMoveAnglePitch);
+    o->oVelY       = speed * -sins(o->oMoveAnglePitch);
 }
 
-static s32 clamp_s16(s16 *value, s16 minimum, s16 maximum) {
+static s32 clamp_s16(s16 *value, s16 minimum, s16 maximum) { // move to math_util?
     if (*value <= minimum) {
         *value = minimum;
     } else if (*value >= maximum) {
@@ -280,7 +278,7 @@ static s32 clamp_s16(s16 *value, s16 minimum, s16 maximum) {
     return TRUE;
 }
 
-static s32 clamp_f32(f32 *value, f32 minimum, f32 maximum) {
+static s32 clamp_f32(f32 *value, f32 minimum, f32 maximum) { // move to math_util?
     if (*value <= minimum) {
         *value = minimum;
     } else if (*value >= maximum) {
@@ -343,9 +341,7 @@ static s32 approach_f32_ptr(f32 *px, f32 target, f32 delta) {
     if (*px > target) {
         delta = -delta;
     }
-
     *px += delta;
-
     if ((*px - target) * delta >= 0) {
         *px = target;
         return TRUE;
@@ -439,8 +435,7 @@ static s32 obj_grow_then_shrink(f32 *scaleVel, f32 shootFireScale, f32 endScale)
     return 0;
 }
 
-static s32 oscillate_toward(s32 *value, f32 *vel, s32 target, f32 velCloseToZero, f32 accel,
-                            f32 slowdown) {
+static s32 oscillate_toward(s32 *value, f32 *vel, s32 target, f32 velCloseToZero, f32 accel, f32 slowdown) {
     s32 startValue = *value;
     *value += (s32) *vel;
 
@@ -786,21 +781,18 @@ static s32 obj_move_for_one_second(s32 endAction) {
  * with partial updates.
  */
 static void treat_far_home_as_mario(f32 threshold) {
-    f32 dx = o->oHomeX - o->oPosX;
-    f32 dy = o->oHomeY - o->oPosY;
-    f32 dz = o->oHomeZ - o->oPosZ;
-    f32 distance = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
+    Vec3f d;
+    vec3_diff(d, &o->oHomeVec, &o->oPosVec);
+    f32 distance = vec3_sumsq(d);
 
-    if (distance > threshold) {
-        o->oAngleToMario = atan2s(dz, dx);
+    if (distance > sqr(threshold)) {
+        o->oAngleToMario = atan2s(d[2], d[0]);
         o->oDistanceToMario = 25000.0f;
     } else {
-        dx = o->oHomeX - gMarioObject->oPosX;
-        dy = o->oHomeY - gMarioObject->oPosY;
-        dz = o->oHomeZ - gMarioObject->oPosZ;
-        distance = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
+        vec3_diff(d, &o->oHomeVec, &gMarioObject->oPosVec);
+        distance = vec3_sumsq(d);
 
-        if (distance > threshold) {
+        if (distance > sqr(threshold)) {
             o->oDistanceToMario = 20000.0f;
         }
     }

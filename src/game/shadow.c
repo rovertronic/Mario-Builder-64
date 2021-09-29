@@ -253,12 +253,13 @@ s32 init_shadow(struct Shadow *s, f32 xPos, f32 yPos, f32 zPos, s16 shadowScale,
 
     s->floorDownwardAngle = atan2_deg(s->floorNormalZ, s->floorNormalX);
 
-    f32 floorSteepness = sqrtf(sqr(s->floorNormalX) + sqr(s->floorNormalZ));
+    f32 floorSteepness = (sqr(s->floorNormalX) + sqr(s->floorNormalZ));
 
     // This if-statement avoids dividing by 0.
     if (floorSteepness == 0.0f) {
         s->floorTilt = 0;
     } else {
+        floorSteepness = sqrtf(floorSteepness);
         s->floorTilt = 90.0f - atan2_deg(floorSteepness, s->floorNormalY);
     }
     return 0;

@@ -88,10 +88,8 @@ static void chain_chomp_act_uninitialized(void) {
 static void chain_chomp_update_chain_segments(void) {
     struct ChainSegment *prevSegment;
     struct ChainSegment *segment;
-    f32 offsetX;
-    f32 offsetY;
-    f32 offsetZ;
-    f32 offset;
+    Vec3f offset;
+    f32 mag;
     f32 segmentVelY;
     f32 maxTotalOffset;
     s32 i;
@@ -115,40 +113,41 @@ static void chain_chomp_update_chain_segments(void) {
             segment->posY = 0.0f;
         }
 
-        // Cap distance to previous chain part (so that the tail follows the
-        // chomp)
+        // Cap distance to previous chain part (so that the tail follows the chomp)
 
-        offsetX = segment->posX - prevSegment->posX;
-        offsetY = segment->posY - prevSegment->posY;
-        offsetZ = segment->posZ - prevSegment->posZ;
-        offset = sqrtf(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
+        offset[0] = segment->posX - prevSegment->posX;
+        offset[1] = segment->posY - prevSegment->posY;
+        offset[2] = segment->posZ - prevSegment->posZ;
+        mag = (sqr(offset[0]) + sqr(offset[1]) + sqr(offset[2]));
 
-        if (offset > o->oChainChompMaxDistBetweenChainParts) {
-            offset = o->oChainChompMaxDistBetweenChainParts / offset;
-            offsetX *= offset;
-            offsetY *= offset;
-            offsetZ *= offset;
+        if (mag > sqr(o->oChainChompMaxDistBetweenChainParts)) {
+            mag = sqrtf(mag);
+            mag = o->oChainChompMaxDistBetweenChainParts / mag;
+            offset[0] *= mag;
+            offset[1] *= mag;
+            offset[2] *= mag;
         }
 
         // Cap distance to pivot (so that it stretches when the chomp moves far
         // from the wooden post)
 
-        offsetX += prevSegment->posX;
-        offsetY += prevSegment->posY;
-        offsetZ += prevSegment->posZ;
-        offset = sqrtf(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
+        offset[0] += prevSegment->posX;
+        offset[1] += prevSegment->posY;
+        offset[2] += prevSegment->posZ;
+        mag = (sqr(offset[0]) + sqr(offset[1]) + sqr(offset[2]));
 
         maxTotalOffset = o->oChainChompMaxDistFromPivotPerChainPart * (5 - i);
-        if (offset > maxTotalOffset) {
-            offset = maxTotalOffset / offset;
-            offsetX *= offset;
-            offsetY *= offset;
-            offsetZ *= offset;
+        if (mag > sqr(maxTotalOffset)) {
+            mag = sqrtf(mag);
+            mag = maxTotalOffset / mag;
+            offset[0] *= mag;
+            offset[1] *= mag;
+            offset[2] *= mag;
         }
 
-        segment->posX = offsetX;
-        segment->posY = offsetY;
-        segment->posZ = offsetZ;
+        segment->posX = offset[0];
+        segment->posY = offset[1];
+        segment->posZ = offset[2];
     }
 }
 
@@ -397,9 +396,9 @@ static void chain_chomp_act_move(void) {
         o->oChainChompSegments[0].posZ = o->oPosZ - o->parentObj->oPosZ;
 
         o->oChainChompDistToPivot =
-            sqrtf(o->oChainChompSegments[0].posX * o->oChainChompSegments[0].posX
-                  + o->oChainChompSegments[0].posY * o->oChainChompSegments[0].posY
-                  + o->oChainChompSegments[0].posZ * o->oChainChompSegments[0].posZ);
+            sqrtf(sqr(o->oChainChompSegments[0].posX)
+                + sqr(o->oChainChompSegments[0].posY)
+                + sqr(o->oChainChompSegments[0].posZ));
 
         // If the chain is fully stretched
         maxDistToPivot = o->oChainChompMaxDistFromPivotPerChainPart * 5;

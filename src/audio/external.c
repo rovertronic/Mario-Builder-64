@@ -10,14 +10,11 @@
 #include "game/level_update.h"
 #include "game/object_list_processor.h"
 #include "game/camera.h"
+#include "engine/math_util.h"
 #include "seq_ids.h"
 #include "dialog_ids.h"
 
-#if defined(VERSION_EU) || defined(VERSION_SH)
 #define EU_FLOAT(x) x##f
-#else
-#define EU_FLOAT(x) x
-#endif
 
 // N.B. sound banks are different from the audio banks referred to in other
 // files. We should really fix our naming to be less ambiguous...
@@ -845,7 +842,7 @@ static void process_sound_request(u32 bits, f32 *pos) {
         // Allocate from free list
         soundIndex = sSoundBankFreeListFront[bank];
 
-        dist = sqrtf(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]) * one;
+        dist = sqrtf(sqr(pos[0]) + sqr(pos[1]) + sqr(pos[2])) * one;
         sSoundBanks[bank][soundIndex].x = &pos[0];
         sSoundBanks[bank][soundIndex].y = &pos[1];
         sSoundBanks[bank][soundIndex].z = &pos[2];

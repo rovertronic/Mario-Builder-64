@@ -270,7 +270,7 @@ static void fixed_circling_amp_idle_loop(void) {
     f32 xToMario = gMarioObject->header.gfx.pos[0] - o->oPosX;
     f32 yToMario = gMarioObject->header.gfx.pos[1] + 120.0f - o->oPosY;
     f32 zToMario = gMarioObject->header.gfx.pos[2] - o->oPosZ;
-    s16 vAngleToMario = atan2s(sqrtf(xToMario * xToMario + zToMario * zToMario), -yToMario);
+    s16 vAngleToMario = atan2s(sqrtf(sqr(xToMario) + sqr(zToMario)), -yToMario);
 
     obj_turn_toward_object(o, gMarioObject, 19, 0x1000);
     o->oFaceAnglePitch = approach_s16_symmetric(o->oFaceAnglePitch, vAngleToMario, 0x1000);

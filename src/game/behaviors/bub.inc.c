@@ -67,7 +67,7 @@ void bub_act_1(void) {
         if (dy > 300.0f)
             o->oPosY = o->oPosY - 1.0f;
     }
-    if (800.0f < cur_obj_lateral_dist_from_mario_to_home())
+    if (!cur_obj_lateral_dist_from_mario_to_home_is_in_range(800.0f))
         o->oAngleToMario = cur_obj_angle_to_home();
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x100);
     if (o->oDistanceToMario < 200.0f)
@@ -101,7 +101,7 @@ void bub_act_2(void) {
         if (dy > 300.0f)
             o->oPosY -= 1.0f;
     }
-    if (cur_obj_lateral_dist_from_mario_to_home() > 800.0f)
+    if (!cur_obj_lateral_dist_from_mario_to_home_is_in_range(800.0f))
         o->oAngleToMario = cur_obj_angle_to_home();
     cur_obj_rotate_yaw_toward(o->oAngleToMario + 0x8000, 0x400);
     if (o->oTimer > 200 && o->oDistanceToMario > 600.0f)

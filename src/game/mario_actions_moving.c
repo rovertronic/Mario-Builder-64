@@ -171,7 +171,7 @@ s32 set_triple_jump_action(struct MarioState *m, UNUSED u32 action, UNUSED u32 a
 void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
     struct Surface *floor = m->floor;
     s16 slopeAngle = atan2s(floor->normal.z, floor->normal.x);
-    f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
+    f32 steepness = sqrtf(sqr(floor->normal.x) + sqr(floor->normal.z));
 
     m->slideVelX += accel * steepness * sins(slopeAngle);
     m->slideVelZ += accel * steepness * coss(slopeAngle);
@@ -301,18 +301,10 @@ void apply_slope_accel(struct MarioState *m) {
         }
 
         switch (slopeClass) {
-            case SURFACE_CLASS_VERY_SLIPPERY:
-                slopeAccel = 5.3f;
-                break;
-            case SURFACE_CLASS_SLIPPERY:
-                slopeAccel = 2.7f;
-                break;
-            default:
-                slopeAccel = 1.7f;
-                break;
-            case SURFACE_CLASS_NOT_SLIPPERY:
-                slopeAccel = 0.0f;
-                break;
+            case SURFACE_CLASS_VERY_SLIPPERY: slopeAccel = 5.3f; break;
+            case SURFACE_CLASS_SLIPPERY:      slopeAccel = 2.7f; break;
+            default:                          slopeAccel = 1.7f; break;
+            case SURFACE_CLASS_NOT_SLIPPERY:  slopeAccel = 0.0f; break;
         }
 
         if (floorDYaw > -0x4000 && floorDYaw < 0x4000) {
@@ -1418,7 +1410,7 @@ void common_slide_action(struct MarioState *m, u32 endAction, u32 airAction, s32
                 slide_bonk(m, ACT_GROUND_BONK, endAction);
             } else if (m->wall != NULL) {
                 s16 wallAngle = atan2s(m->wall->normal.z, m->wall->normal.x);
-                f32 slideSpeed = sqrtf(m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ);
+                f32 slideSpeed = sqrtf(sqr(m->slideVelX) + sqr(m->slideVelZ));
 
                 if ((slideSpeed *= 0.9f) < 4.0f) {
                     slideSpeed = 4.0f;

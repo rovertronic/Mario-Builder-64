@@ -227,7 +227,7 @@ void apply_platform_displacement(u32 isMario, struct Object *platform) {
     Vec3f relativeOffset;
     Vec3f newObjectOffset;
     Vec3s rotation;
-    f32 displaceMatrix[4][4];
+    Mat4 displaceMatrix;
 
     rotation[0] = platform->oAngleVelPitch;
     rotation[1] = platform->oAngleVelYaw;

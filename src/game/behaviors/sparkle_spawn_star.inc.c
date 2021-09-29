@@ -32,15 +32,13 @@ void set_sparkle_spawn_star_hitbox(void) {
 }
 
 void set_home_to_mario(void) {
-    f32 dx;
-    f32 dz;
     o->oHomeX = gMarioObject->oPosX;
     o->oHomeZ = gMarioObject->oPosZ;
     o->oHomeY = gMarioObject->oPosY;
     o->oHomeY += 250.0f;
     o->oPosY = o->oHomeY;
-    dx = o->oHomeX - o->oPosX;
-    dz = o->oHomeZ - o->oPosZ;
+    f32 dx = o->oHomeX - o->oPosX;
+    f32 dz = o->oHomeZ - o->oPosZ;
     o->oForwardVel = sqrtf(sqr(dx) + sqr(dz)) / 23.0f;
 }
 

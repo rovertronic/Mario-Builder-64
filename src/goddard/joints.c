@@ -62,8 +62,7 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
 
         self->flags |= 0x2000;
     } else {
-        if (gGdCtrl.trgR == FALSE)  // R trigger is released
-        {
+        if (!gGdCtrl.trgR) { // R trigger is released
             // Set velocity so that the joint approaches its initial position
             self->velocity.x -= offset.x * 0.5f;
             self->velocity.y -= offset.y * 0.5f;

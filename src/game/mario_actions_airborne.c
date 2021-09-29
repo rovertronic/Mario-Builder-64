@@ -156,21 +156,18 @@ s32 check_fall_damage_or_get_stuck(struct MarioState *m, u32 hardFallAction) {
 }
 
 s32 check_horizontal_wind(struct MarioState *m) {
-    struct Surface *floor;
-    f32 speed;
-    s16 pushAngle;
-
-    floor = m->floor;
+    struct Surface *floor = m->floor;
 
     if (floor->type == SURFACE_HORIZONTAL_WIND) {
-        pushAngle = floor->force << 8;
+        s16 pushAngle = floor->force << 8;
 
         m->slideVelX += 1.2f * sins(pushAngle);
         m->slideVelZ += 1.2f * coss(pushAngle);
 
-        speed = sqrtf(m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ);
+        f32 speed = (sqr(m->slideVelX) + sqr(m->slideVelZ));
 
-        if (speed > 48.0f) {
+        if (speed > sqr(48.0f)) {
+            speed = sqrtf(speed);
             m->slideVelX = m->slideVelX * 48.0f / speed;
             m->slideVelZ = m->slideVelZ * 48.0f / speed;
             speed = 48.0f;

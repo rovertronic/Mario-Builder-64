@@ -9,10 +9,6 @@
 #include "game/area.h"
 #include "geo_layout.h"
 
-// unused Mtx(s)
-s16 identityMtx[4][4] = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-s16 zeroMtx[4][4] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-
 /**
  * Initialize a geo node with a given type. Sets all links such that there
  * are no siblings, parent or children for this node.

@@ -1997,10 +1997,10 @@ s16 update_default_camera(struct Camera *c) {
         nextYawVel = 0;
     }
     sYawSpeed = 0x400;
-    vec3f_get_lateral_dist(sMarioCamState->pos, c->pos, &xzDist);
+    vec3f_get_lateral_dist_squared(sMarioCamState->pos, c->pos, &xzDist);
 
     if (sStatusFlags & CAM_FLAG_BEHIND_MARIO_POST_DOOR) {
-        if (xzDist >= 250) {
+        if (xzDist >= sqr(250.0f)) {
             sStatusFlags &= ~CAM_FLAG_BEHIND_MARIO_POST_DOOR;
         }
         if (ABS((sMarioCamState->faceAngle[1] - yaw) / 2) < 0x1800) {
@@ -2009,7 +2009,8 @@ s16 update_default_camera(struct Camera *c) {
             dist = 800.f;
             sStatusFlags |= CAM_FLAG_BLOCK_SMOOTH_MOVEMENT;
         }
-    } else if (xzDist < 250) {
+    } else if (xzDist < sqr(250.0f)) {
+        xzDist = sqrtf(xzDist);
         // Turn rapidly if very close to Mario
         c->pos[0] += (250 - xzDist) * sins(yaw);
         c->pos[2] += (250 - xzDist) * coss(yaw);
@@ -6081,7 +6082,7 @@ s32 rotate_camera_around_walls(UNUSED struct Camera *c, Vec3f cPos, s16 *avoidYa
                 if ((is_range_behind_surface(sMarioCamState->pos, cPos, wall, yawRange, SURFACE_WALL_MISC) == 0)
                     && (is_behind_surface(sMarioCamState->pos, wall) == TRUE)
                     // Also check if the wall is tall enough to cover Mario
-                    && (is_surf_within_bounding_box(wall, -1.f, 150.f, -1.f) == FALSE)) {
+                    && (!is_surf_within_bounding_box(wall, -1.f, 150.f, -1.f))) {
                     // Calculate the avoid direction. The function returns the opposite direction so add 180
                     // degrees.
                     *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw) + DEGREES(180);

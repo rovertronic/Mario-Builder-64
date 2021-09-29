@@ -771,7 +771,6 @@ void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
         f32 nx = 0.0f;
         f32 ny = 0.0f;
         f32 nz = 0.0f;
-        f32 nlen;
 
         // The first number of each entry is the number of adjacent tris
         neighbors = neighborTris[entry];
@@ -788,13 +787,14 @@ void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
         nx /= neighbors;
         ny /= neighbors;
         nz /= neighbors;
-        nlen = sqrtf(sqr(nx) + sqr(ny) + sqr(nz));
+        f32 nlen = (sqr(nx) + sqr(ny) + sqr(nz));
 
         if (nlen == 0.0f) {
             gPaintingMesh[i].norm[0] = 0;
             gPaintingMesh[i].norm[1] = 0;
             gPaintingMesh[i].norm[2] = 0;
         } else {
+            nlen = sqrtf(nlen);
             gPaintingMesh[i].norm[0] = normalize_component(nx / nlen);
             gPaintingMesh[i].norm[1] = normalize_component(ny / nlen);
             gPaintingMesh[i].norm[2] = normalize_component(nz / nlen);

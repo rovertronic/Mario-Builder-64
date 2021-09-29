@@ -476,12 +476,12 @@ u32 bully_knock_back_mario(struct MarioState *mario) {
     marioDYaw = newMarioYaw - mario->faceAngle[1];
 
     mario->faceAngle[1] = newMarioYaw;
-    mario->forwardVel = sqrtf(marioData.velX * marioData.velX + marioData.velZ * marioData.velZ);
+    mario->forwardVel = sqrtf(sqr(marioData.velX) + sqr(marioData.velZ));
     mario->pos[0] = marioData.posX;
     mario->pos[2] = marioData.posZ;
 
     bully->oMoveAngleYaw = newBullyYaw;
-    bully->oForwardVel = sqrtf(bullyData.velX * bullyData.velX + bullyData.velZ * bullyData.velZ);
+    bully->oForwardVel = sqrtf(sqr(bullyData.velX) + sqr(bullyData.velZ));
     bully->oPosX = bullyData.posX;
     bully->oPosZ = bullyData.posZ;
 
@@ -611,9 +611,9 @@ void push_mario_out_of_object(struct MarioState *m, struct Object *obj, f32 padd
 
     f32 offsetX = m->pos[0] - obj->oPosX;
     f32 offsetZ = m->pos[2] - obj->oPosZ;
-    f32 distance = sqrtf(offsetX * offsetX + offsetZ * offsetZ);
+    f32 distance = (sqr(offsetX) + sqr(offsetZ));
 
-    if (distance < minDistance) {
+    if (distance < sqr(minDistance)) {
         struct Surface *floor;
         s16 pushAngle;
         f32 newMarioX;
@@ -662,8 +662,8 @@ void bounce_back_from_attack(struct MarioState *m, u32 interaction) {
 }
 
 u32 should_push_or_pull_door(struct MarioState *m, struct Object *obj) {
-    f32 dx = obj->oPosX - m->pos[0];
-    f32 dz = obj->oPosZ - m->pos[2];
+    f32 dx = (obj->oPosX - m->pos[0]);
+    f32 dz = (obj->oPosZ - m->pos[2]);
     s16 dYaw = abs_angle_diff(obj->oMoveAngleYaw, atan2s(dz, dx));
     return (dYaw <= 0x4000) ? WARP_FLAG_DOOR_PULLED : WARP_FLAG_DOOR_FLIP_MARIO;
 }
@@ -1226,9 +1226,7 @@ u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object 
         attack_object(obj, interaction);
         bounce_back_from_attack(m, interaction);
         return TRUE;
-    }
-
-    else if (!sInvulnerable && !(m->flags & MARIO_VANISH_CAP)
+    } else if (!sInvulnerable && !(m->flags & MARIO_VANISH_CAP)
              && !(obj->oInteractionSubtype & INT_SUBTYPE_DELAY_INVINCIBILITY)) {
         obj->oInteractStatus = INT_STATUS_INTERACTED;
         m->invincTimer = 2;

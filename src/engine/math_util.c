@@ -12,6 +12,10 @@
 
 #include "config.h"
 
+// unused Mtx(s)
+s16 identityMtx[4][4] = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+s16 zeroMtx[4][4]     = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
 Vec3f gVec3fX    = {  1.0f,  0.0f,  0.0f };
 Vec3f gVec3fY    = {  0.0f,  1.0f,  0.0f };
 Vec3f gVec3fZ    = {  0.0f,  0.0f,  1.0f };
@@ -40,11 +44,7 @@ static inline s32 roundf(f32 in) {
 // }
 
 f32 absf(f32 x) {
-    if (x >= 0) {
-        return x;
-    } else {
-        return -x;
-    }
+    return ABSF(x);
 }
 
 /// Returns the lowest of three values.
@@ -543,7 +543,7 @@ void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
     register s32 i;
     register s16 *c = b;
     for (i = 0; i < 3; i++) {
-        c[0] = x * temp2[0] + y * temp2[4] + z * temp2[8] + temp2[12];
+        c[0] = (x * temp2[0]) + (y * temp2[4]) + (z * temp2[8]) + temp2[12];
         c++;
         temp2++;
     }
@@ -566,13 +566,13 @@ void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
 void mtxf_to_mtx_scale(Mtx *dest, Mat4 src) {
     Mat4 temp;
     register s32 i, j;
-    for( i = 0; i < 4; i++ ) {
-        for( j = 0; j < 3; j++ ) {
-            temp[i][j] = src[i][j] / gWorldScale;
+    for(i = 0; i < 4; i++) {
+        for(j = 0; j < 3; j++) {
+            temp[i][j] = (src[i][j] / gWorldScale);
         }
         temp[i][3] = src[i][3];
     }
-    guMtxF2L( temp, dest );
+    guMtxF2L(temp, dest);
 }
 
 void mtxf_to_mtx_constant(register s16 *dest, register f32 *src) {
@@ -580,7 +580,7 @@ void mtxf_to_mtx_constant(register s16 *dest, register f32 *src) {
     s32 i;
     for (i = 0; i < 16; i++) {
         asFixedPoint = (src[i] * (1 << 16));
-        dest[i] = (asFixedPoint >> 16);
+        dest[i     ] = (asFixedPoint >> 16);
         dest[i + 16] = (asFixedPoint & 0xFFFF);
     }
 }
@@ -660,7 +660,7 @@ void vec3f_get_lateral_dist(Vec3f from, Vec3f to, f32 *lateralDist) {
     *lateralDist = sqrtf(sqr(dx) + sqr(dz));
 }
 
-/// Finds the squared horizontal distance between two vectors.
+/// Finds the squared horizontal distance between two vectors. Avoids a sqrtf call.
 void vec3f_get_lateral_dist_squared(Vec3f from, Vec3f to, f32 *lateralDist) {
     register f32 dx = (to[0] - from[0]);
     register f32 dz = (to[2] - from[2]);
@@ -674,7 +674,7 @@ void vec3f_get_dist(Vec3f from, Vec3f to, f32 *dist) {
     *dist = vec3_mag(d);
 }
 
-/// Finds the squared distance between two vectors.
+/// Finds the squared distance between two vectors. Avoids a sqrtf call.
 void vec3f_get_dist_squared(Vec3f from, Vec3f to, f32 *dist) {
     register Vec3f d;
     vec3_diff(d, to, from);

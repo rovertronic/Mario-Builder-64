@@ -137,7 +137,7 @@ static void apply_water_current(struct MarioState *m, Vec3f step) {
             f32 dz = whirlpool->pos[2] - m->pos[2];
 
             f32 lateralDist = sqrtf(sqr(dx) + sqr(dz));
-            f32 distance = sqrtf(lateralDist * lateralDist + sqr(dy));
+            f32 distance = sqrtf(sqr(lateralDist) + sqr(dy));
 
             s16 pitchToWhirlpool = atan2s(lateralDist, dy);
             s16 yawToWhirlpool = atan2s(dz, dx);

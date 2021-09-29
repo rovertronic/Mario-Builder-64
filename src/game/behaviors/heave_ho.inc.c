@@ -42,7 +42,7 @@ void heave_ho_act_1(void) {
 
 void heave_ho_act_2(void) {
     s16 angleVel;
-    if (1000.0f < cur_obj_lateral_dist_from_mario_to_home())
+    if (!cur_obj_lateral_dist_from_mario_to_home_is_in_range(1000.0f))
         o->oAngleToMario = cur_obj_angle_to_home();
     if (o->oTimer > 150) {
         o->oHeaveHoTimedSpeed = (302 - o->oTimer) / 152.0f;

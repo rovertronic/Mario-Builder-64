@@ -1292,19 +1292,18 @@ s32 act_spawn_no_spin_landing(struct MarioState *m) {
 s32 act_bbh_enter_spin(struct MarioState *m) {
     f32 floorDist;
     f32 scale;
-    f32 cageDX;
-    f32 cageDZ;
+    f32 cageDX, cageDZ;
     f32 cageDist;
     f32 forwardVel;
 
     cageDX = m->usedObj->oPosX - m->pos[0];
     cageDZ = m->usedObj->oPosZ - m->pos[2];
-    cageDist = sqrtf(cageDX * cageDX + cageDZ * cageDZ);
+    cageDist = (sqr(cageDX) + sqr(cageDZ));
 
-    if (cageDist > 20.0f) {
+    if (cageDist > sqr(20.0f)) {
         forwardVel = 10.0f;
     } else {
-        forwardVel = cageDist / 2.0f;
+        forwardVel = sqrtf(cageDist) / 2.0f;
     }
     if (forwardVel < 0.5f) {
         forwardVel = 0.0f;
@@ -1374,8 +1373,7 @@ s32 act_bbh_enter_spin(struct MarioState *m) {
 }
 
 s32 act_bbh_enter_jump(struct MarioState *m) {
-    f32 cageDX;
-    f32 cageDZ;
+    f32 cageDX, cageDZ;
     f32 cageDist;
 
     play_mario_action_sound(
@@ -1385,7 +1383,7 @@ s32 act_bbh_enter_jump(struct MarioState *m) {
     if (m->actionState == 0) {
         cageDX = m->usedObj->oPosX - m->pos[0];
         cageDZ = m->usedObj->oPosZ - m->pos[2];
-        cageDist = sqrtf(cageDX * cageDX + cageDZ * cageDZ);
+        cageDist = sqrtf(sqr(cageDX) + sqr(cageDZ));
 
         m->vel[1] = 60.0f;
         m->faceAngle[1] = atan2s(cageDZ, cageDX);
@@ -1914,7 +1912,7 @@ static s32 jumbo_star_cutscene_flying(struct MarioState *m) {
                 targetDX = targetPos[0] - m->pos[0];
                 targetDY = targetPos[1] - m->pos[1];
                 targetDZ = targetPos[2] - m->pos[2];
-                targetHyp = sqrtf(targetDX * targetDX + targetDZ * targetDZ);
+                targetHyp = sqrtf(sqr(targetDX) + sqr(targetDZ));
                 targetAngle = atan2s(targetDZ, targetDX);
 
                 vec3f_copy(m->pos, targetPos);

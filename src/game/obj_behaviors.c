@@ -296,7 +296,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
         }
 
         calc_obj_friction(&objFriction, floor_nY);
-        o->oForwardVel = sqrtf(objVelX * objVelX + objVelZ * objVelZ) * objFriction;
+        o->oForwardVel = sqrtf(sqr(objVelX) + sqr(objVelZ)) * objFriction;
     }
 }
 
@@ -628,18 +628,9 @@ s8 current_mario_room_check(s16 room) {
     // Since object surfaces have room 0, this tests if the surface is an
     // object first and uses the last room if so.
     if (gMarioCurrentRoom == 0) {
-        if (room == sPrevCheckMarioRoom) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return (room == sPrevCheckMarioRoom);
     } else {
-        if (room == gMarioCurrentRoom) {
-            result = TRUE;
-        } else {
-            result = FALSE;
-        }
-
+        result = (room == gMarioCurrentRoom);
         sPrevCheckMarioRoom = gMarioCurrentRoom;
     }
 

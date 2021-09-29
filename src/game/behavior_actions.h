@@ -569,7 +569,7 @@ Gfx *geo_snufit_move_mask(s32 callContext, struct GraphNode *node, UNUSED Mat4 *
 Gfx *geo_snufit_scale_body(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c);
 
 // Bowser key cutscene
-Gfx *geo_scale_bowser_key(s32 run, struct GraphNode *node, UNUSED f32 mtx[4][4]);
+Gfx *geo_scale_bowser_key(s32 run, struct GraphNode *node, UNUSED Mat4 mtx);
 
 // Water splash
 extern struct WaterDropletParams gShallowWaterSplashDropletParams;

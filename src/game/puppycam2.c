@@ -946,7 +946,7 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) 
     } else if (sPuppyVolumeStack[index]->shape == PUPPYVOLUME_SHAPE_CYLINDER) {
         // s16 dir;
         vec3_diff(rel, sPuppyVolumeStack[index]->pos, &gPuppyCam.targetObj->oPosVec);
-        f32 dist = sqrtf(sqr(rel[0]) + sqr(rel[2]));
+        f32 dist = (sqr(rel[0]) + sqr(rel[2]));
 #ifdef VISUAL_DEBUG
         Vec3f debugPos[2];
         vec3f_set(debugPos[0], sPuppyVolumeStack[index]->pos[0],    sPuppyVolumeStack[index]->pos[1],    sPuppyVolumeStack[index]->pos[2]);
@@ -954,7 +954,7 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) 
         debug_box_color(0x0000FF00);
         debug_box_rot(debugPos[0], debugPos[1], sPuppyVolumeStack[index]->rot, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_DEFAULT);
 #endif
-        f32 distCheck = (dist < sPuppyVolumeStack[index]->radius[0]);
+        f32 distCheck = (dist < sqr(sPuppyVolumeStack[index]->radius[0]));
 
         if (-sPuppyVolumeStack[index]->radius[1] < rel[1] && rel[1] < sPuppyVolumeStack[index]->radius[1] && distCheck) {
             *volume = *sPuppyVolumeStack[index];
@@ -1141,8 +1141,10 @@ static void puppycam_projection(void) {
             targetPos3[0] = (s16)approach_f32_asymptotic(targetPos[0], targetPos2[0], 0.5f);
             targetPos3[1] = (s16)approach_f32_asymptotic(targetPos[1], targetPos2[1], 0.5f);
             targetPos3[2] = (s16)approach_f32_asymptotic(targetPos[2], targetPos2[2], 0.5f);
-            gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0],(ABS(LENCOS(sqrtf(((targetPos[0] - targetPos2[0]) * (targetPos[0] - targetPos2[0])) + ((targetPos[2] - targetPos2[2]) * (targetPos[2] - targetPos2[2]))),
-                            (s16)ABS(((gPuppyCam.yaw + 0x8000) % 0xFFFF - 0x8000) - (atan2s(targetPos[2] - targetPos2[2], targetPos[0] - targetPos2[0])) % 0xFFFF - 0x8000) + 0x4000))), 0.2f);
+            Vec3s d;
+            vec3_diff(d, targetPos, targetPos2);
+            gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0], (ABS(LENCOS(sqrtf(sqr(d[0]) + sqr(d[2])),
+                            (s16)ABS(((gPuppyCam.yaw + 0x8000) % 0xFFFF - 0x8000) - (atan2s(d[2], d[0])) % 0xFFFF - 0x8000) + 0x4000))), 0.2f);
         } else {
             gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0], 0, 0.2f);
         }

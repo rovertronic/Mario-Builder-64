@@ -1192,8 +1192,7 @@ void debug_print_speed_action_normal(struct MarioState *m) {
     f32 floor_nY;
 
     if (gShowDebugText) {
-        steepness = sqrtf(
-            ((m->floor->normal.x * m->floor->normal.x) + (m->floor->normal.z * m->floor->normal.z)));
+        steepness = sqrtf(sqr(m->floor->normal.x) + sqr(m->floor->normal.z));
         floor_nY = m->floor->normal.y;
 
         print_text_fmt_int(210, 88, "ANG %d", (atan2s(floor_nY, steepness) * 180.0f) / 32768.0f);

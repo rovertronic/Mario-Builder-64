@@ -115,7 +115,7 @@ void raise_background_noise(s32 a) {
  * Called from threads: thread5_game_loop
  */
 void disable_background_sound(void) {
-    if (sBgMusicDisabled == FALSE) {
+    if (!sBgMusicDisabled) {
         sBgMusicDisabled = TRUE;
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_BACKGROUND);
     }
@@ -125,7 +125,7 @@ void disable_background_sound(void) {
  * Called from threads: thread5_game_loop
  */
 void enable_background_sound(void) {
-    if (sBgMusicDisabled == TRUE) {
+    if (sBgMusicDisabled) {
         sBgMusicDisabled = FALSE;
         sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_BACKGROUND);
     }
