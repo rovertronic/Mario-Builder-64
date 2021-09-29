@@ -76,7 +76,7 @@ f32 random_float(void) {
 // Return either -1 or 1 with a 50:50 chance.
 s32 random_sign(void) {
     if (random_u16() >= 0x7FFF) {
-        return 1;
+        return  1;
     } else {
         return -1;
     }
@@ -84,18 +84,15 @@ s32 random_sign(void) {
 
 // Update an object's graphical position and rotation to match its real position and rotation.
 void obj_update_gfx_pos_and_angle(struct Object *obj) {
-    obj->header.gfx.pos[0] = obj->oPosX;
-    obj->header.gfx.pos[1] = obj->oPosY + obj->oGraphYOffset;
-    obj->header.gfx.pos[2] = obj->oPosZ;
-
-    obj->header.gfx.angle[0] = obj->oFaceAnglePitch & 0xFFFF;
-    obj->header.gfx.angle[1] = obj->oFaceAngleYaw & 0xFFFF;
-    obj->header.gfx.angle[2] = obj->oFaceAngleRoll & 0xFFFF;
+    vec3_copy_y_off(obj->header.gfx.pos, &obj->oPosVec, obj->oGraphYOffset);
+    obj->header.gfx.angle[0] = (obj->oFaceAnglePitch & 0xFFFF);
+    obj->header.gfx.angle[1] = (obj->oFaceAngleYaw   & 0xFFFF);
+    obj->header.gfx.angle[2] = (obj->oFaceAngleRoll  & 0xFFFF);
 }
 
 #ifdef OBJ_OPACITY_BY_CAM_DIST
 void obj_set_opacity_from_cam_dist(struct Object *obj) {
-    f32 dist;
+    f32 dist; //! Should this be done via LOD's instead?
     Vec3f d;
     if (obj->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
         d[0] = (obj->oPosX - gCamera->pos[0]);
@@ -995,8 +992,9 @@ void cur_obj_update(void) {
         obj_update_gfx_pos_and_angle(gCurrentObject);
     }
 
-    COND_BIT((!(objFlags & OBJ_FLAG_UCODE_LARGE)), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_UCODE_REJ );
-    COND_BIT(  (objFlags & OBJ_FLAG_SILHOUETTE ),  gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_SILHOUETTE);
+    COND_BIT((!(objFlags & OBJ_FLAG_UCODE_LARGE       )), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_UCODE_REJ         );
+    COND_BIT((  objFlags & OBJ_FLAG_SILHOUETTE         ), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_SILHOUETTE        );
+    COND_BIT((  objFlags & OBJ_FLAG_OCCLUDE_SILHOUETTE ), gCurrentObject->header.gfx.node.flags, GRAPH_RENDER_OCCLUDE_SILHOUETTE);
 
 #ifdef OBJ_OPACITY_BY_CAM_DIST
     if (objFlags & OBJ_FLAG_OPACITY_FROM_CAMERA_DIST) {

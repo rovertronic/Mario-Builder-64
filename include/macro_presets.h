@@ -109,7 +109,7 @@ struct MacroPreset MacroObjectPresets[] = {
     {bhvSmallBully, MODEL_BULLY, 0},
     {bhvSmallBully, MODEL_BULLY_BOSS, 0}, // unused
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},
-    {bhvStub1D0C, MODEL_UNKNOWN_58, 0}, // unused
+    {bhvYellowCoin, MODEL_UNKNOWN_58, 0}, // unused
     {bhvBouncingFireball, MODEL_NONE, 0},
     {bhvFlamethrower, MODEL_NONE, 4},
     {bhvYellowCoin, MODEL_YELLOW_COIN, 0},

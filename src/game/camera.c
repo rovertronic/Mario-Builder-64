@@ -2713,8 +2713,7 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
  */
 void update_lakitu(struct Camera *c) {
     struct Surface *floor = NULL;
-    Vec3f newPos;
-    Vec3f newFoc;
+    Vec3f newPos, newFoc;
     f32 distToFloor;
     s16 newYaw;
 

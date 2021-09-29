@@ -333,6 +333,12 @@ void geo_append_display_list(void *displayList, s32 layer) {
                 case LAYER_ALPHA:  layer = LAYER_SILHOUETTE_ALPHA;  break;
             }
         }
+        if (gCurGraphNodeObject->node.flags & GRAPH_RENDER_OCCLUDE_SILHOUETTE) {
+            switch (layer) {
+                case LAYER_OPAQUE: layer = LAYER_OCCLUDE_SILHOUETTE_OPAQUE; break;
+                case LAYER_ALPHA:  layer = LAYER_OCCLUDE_SILHOUETTE_ALPHA;  break;
+            }
+        }
 #endif
     }
 #endif
@@ -360,7 +366,7 @@ void inc_mat_stack() {
 
 void append_dl_and_return(struct GraphNodeDisplayList *node) {
     if (node->displayList != NULL) {
-        geo_append_display_list(node->displayList, node->node.flags >> 8);
+        geo_append_display_list(node->displayList, GET_GRAPH_NODE_LAYER(node->node.flags));
     }
     if (node->node.children != NULL) {
         geo_process_node_and_siblings(node->node.children);
