@@ -373,11 +373,9 @@ void update_flying(struct MarioState *m) {
 }
 
 u32 common_air_action_step(struct MarioState *m, u32 landAction, s32 animation, u32 stepArg) {
-    u32 stepResult;
-
     update_air_without_turn(m);
 
-    stepResult = perform_air_step(m, stepArg);
+    u32 stepResult = perform_air_step(m, stepArg);
     switch (stepResult) {
         case AIR_STEP_NONE:
             set_mario_animation(m, animation);

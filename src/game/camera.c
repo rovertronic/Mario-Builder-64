@@ -2681,6 +2681,9 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
         sLakituDist = 0;
         sLakituPitch = 0;
         sAreaYawChange = 0;
+// #ifdef CAMERA_FIX
+//         if ((sMarioCamState->action & ACT_GROUP_MASK) != ACT_GROUP_SUBMERGED) mode = CAMERA_MODE_8_DIRECTIONS;
+// #endif
 
         sModeInfo.newMode = (mode != -1) ? mode : sModeInfo.lastMode;
         sModeInfo.lastMode = c->mode;
@@ -4932,8 +4935,11 @@ void set_fixed_cam_axis_sa_lobby(UNUSED s16 preset) {
  *      Only block area mode changes if Mario is in a cannon,
  *      or if the camera is in Mario mode and Mario is not swimming or in water with the metal cap
  */
-void check_blocking_area_processing(const u8 *mode) {
-    if (sMarioCamState->action & ACT_FLAG_METAL_WATER ||
+void check_blocking_area_processing(UNUSED const u8 *mode) {
+#ifdef CAMERA_FIX
+    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+#else
+    if ((sMarioCamState->action & ACT_FLAG_METAL_WATER) || (sMarioCamState->action == ACT_DEBUG_FREE_MOVE) ||
                         *mode == CAMERA_MODE_BEHIND_MARIO || *mode == CAMERA_MODE_WATER_SURFACE) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
@@ -4947,6 +4953,7 @@ void check_blocking_area_processing(const u8 *mode) {
          *mode == CAMERA_MODE_INSIDE_CANNON) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
+#endif
 }
 
 void cam_rr_exit_building_side(struct Camera *c) {
@@ -5809,7 +5816,6 @@ struct CutsceneSplinePoint sEndingLookAtSkyFocus[] = {
  */
 s16 camera_course_processing(struct Camera *c) {
     s16 level = gCurrLevelNum;
-    s16 mode;
     s8 area = gCurrentArea->index;
     // Bounds iterator
     u32 b;
@@ -5866,7 +5872,7 @@ s16 camera_course_processing(struct Camera *c) {
             b++;
         }
     }
-
+#if !defined(CAMERA_FIX) && !defined(DISABLE_LEVEL_SPECIFIC_CHECKS)
     // Area-specific camera processing
     if (!(sStatusFlags & CAM_FLAG_BLOCK_AREA_PROCESSING)) {
         switch (gCurrLevelArea) {
@@ -5968,14 +5974,13 @@ s16 camera_course_processing(struct Camera *c) {
                 break;
         }
     }
-
+#endif
     sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     if (oldMode == CAMERA_MODE_C_UP) {
         sModeInfo.lastMode = c->mode;
         c->mode = oldMode;
     }
-    mode = c->mode;
-    return mode;
+    return c->mode;
 }
 
 /**

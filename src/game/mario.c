@@ -1709,6 +1709,12 @@ s32 execute_mario_action(struct MarioState *m) {
     vec3f_get_dist_and_lateral_dist_and_angle(m->prevPos, m->pos, &m->moveSpeed, &m->lateralSpeed, &m->movePitch, &m->moveYaw);
     vec3_copy(m->prevPos, m->pos);
     if (m->action) {
+#ifdef ENABLE_DEBUG_FREE_MOVE
+        if (gPlayer1Controller->buttonDown & U_JPAD) {
+            set_camera_mode(m->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
+            set_mario_action(m, ACT_DEBUG_FREE_MOVE, 0);
+        }
+#endif
         m->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         mario_reset_bodystate(m);
         update_mario_inputs(m);
@@ -1722,7 +1728,6 @@ s32 execute_mario_action(struct MarioState *m) {
         if (m->floor == NULL) {
             return ACTIVE_PARTICLE_NONE;
         }
-
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
         // if a loop of actions were found, but there has not been a situation found.

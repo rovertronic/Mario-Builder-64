@@ -524,55 +524,48 @@ s32 act_reading_sign(struct MarioState *m) {
 
 s32 act_debug_free_move(struct MarioState *m) {
     struct WallCollisionData wallData;
-    struct Surface *surf;
-    f32 floorHeight;
+    struct Surface *floor, *ceil;
     Vec3f pos;
-    f32 speed;
-    u32 action;
-
-    // integer immediates, generates convert instructions for some reason
-    speed = gPlayer1Controller->buttonDown & B_BUTTON ? 4 : 1;
-    if (gPlayer1Controller->buttonDown & L_TRIG) {
-        speed = 0.01f;
-    }
-
+    f32 speed = ((gPlayer1Controller->buttonDown & B_BUTTON) ? 4.0f : 1.0f);
+    if (gPlayer1Controller->buttonDown & L_TRIG) speed = 0.01f;
+    if (m->area->camera->mode != CAMERA_MODE_8_DIRECTIONS) set_camera_mode(m->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
     set_mario_animation(m, MARIO_ANIM_A_POSE);
     vec3f_copy(pos, m->pos);
-
     if (gPlayer1Controller->buttonDown & U_JPAD) {
         pos[1] += 16.0f * speed;
+    } else if (gPlayer1Controller->buttonPressed == A_BUTTON) {
+        m->vel[1] = 0.0f;
+        set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
+        m->input &= ~INPUT_A_PRESSED;
+        if (m->pos[1] <= (m->waterLevel - 100)) {
+            return set_mario_action(m, ACT_WATER_IDLE, 0);
+        } else if (m->pos[1] <= m->floorHeight) {
+            return set_mario_action(m, ACT_IDLE, 0);
+        } else {
+            gPlayer1Controller->buttonDown &= ~U_JPAD;
+            return set_mario_action(m, ACT_FREEFALL, 0);
+        }
     }
     if (gPlayer1Controller->buttonDown & D_JPAD) {
         pos[1] -= 16.0f * speed;
     }
-
     if (m->intendedMag > 0) {
-        pos[0] += 32.0f * speed * sins(m->intendedYaw);
-        pos[2] += 32.0f * speed * coss(m->intendedYaw);
+        pos[0] += (2.0f * speed * sins(m->intendedYaw) * m->intendedMag);
+        pos[2] += (2.0f * speed * coss(m->intendedYaw) * m->intendedMag);
     }
-
     resolve_and_return_wall_collisions(pos, 60.0f, 50.0f, &wallData);
-
-    floorHeight = find_floor(pos[0], pos[1], pos[2], &surf);
-    if (surf != NULL) {
-        if (pos[1] < floorHeight) {
-            pos[1] = floorHeight;
-        }
-        vec3f_copy(m->pos, pos);
+    set_mario_wall(m, ((wallData.numWalls > 0) ? wallData.walls[0] : NULL));
+    f32 floorHeight = find_floor(pos[0], pos[1], pos[2], &floor);
+    f32 ceilHeight  = find_ceil( pos[0], pos[1], pos[2], &ceil);
+    if (floor == NULL) return FALSE;
+    if ((ceilHeight - floorHeight) >= 160.0f) {
+        if ((floor != NULL) && ( pos[1] < floorHeight)) pos[1] = floorHeight;
+        if (( ceil != NULL) && ((pos[1] + 160.0f) > ceilHeight)) pos[1] = (ceilHeight - 160.0f);
+        vec3_copy(m->pos, pos);
     }
-
     m->faceAngle[1] = m->intendedYaw;
     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
     vec3s_set(m->marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
-
-    if (gPlayer1Controller->buttonPressed == A_BUTTON) {
-        if (m->pos[1] <= m->waterLevel - 100) {
-            action = ACT_WATER_IDLE;
-        } else {
-            action = ACT_IDLE;
-        }
-        set_mario_action(m, action, 0);
-    }
 
     return FALSE;
 }

@@ -192,6 +192,8 @@
 //#define TEST_LEVEL LEVEL_BOB
 // Enable debug level select
 //#define DEBUG_LEVEL_SELECT
+// Enable debug free move (DPad up to enter, A to exit)
+//#define ENABLE_DEBUG_FREE_MOVE
 // Custom debug mode. Press DPAD left to show the debug UI. Press DPAD right to enter the noclip mode.
 //#define CUSTOM_DEBUG
 // Include Puppyprint, a display library for text and large images. Also includes a custom, enhanced performance profiler.
