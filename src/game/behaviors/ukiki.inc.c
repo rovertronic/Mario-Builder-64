@@ -329,7 +329,17 @@ static Trajectory sCageUkikiPath[] = {
  * our death. Ukiki is a tad suicidal.
  */
 void ukiki_act_go_to_cage(void) {
-    struct Object *obj = cur_obj_nearest_object_with_behavior(bhvUkikiCageChild);
+    struct Object* obj;
+    f32 latDistToCage = 0.0f;
+    s16 yawToCage = 0;
+    obj = cur_obj_nearest_object_with_behavior(bhvUkikiCageChild);
+
+    // Ultimately is checking the cage, as it points to the parent
+    // of a dummy child object of the cage.
+    if (obj != NULL) {
+        latDistToCage = lateral_dist_between_objects(o, obj->parentObj);
+        yawToCage = obj_angle_to_object(o, obj->parentObj);
+    }
 
     cur_obj_become_intangible();
     o->oFlags |= OBJ_FLAG_ACTIVE_FROM_AFAR;
@@ -358,7 +368,7 @@ void ukiki_act_go_to_cage(void) {
             if (cur_obj_can_mario_activate_textbox(200.0f, 30.0f, 0x7FFF)) {
                 o->oSubAction++; // fallthrough
             } else {
-                break;
+            break;
             }
 
         case UKIKI_SUB_ACT_CAGE_TALK_TO_MARIO:
@@ -372,9 +382,8 @@ void ukiki_act_go_to_cage(void) {
 
         case UKIKI_SUB_ACT_CAGE_TURN_TO_CAGE:
             cur_obj_init_animation_with_sound(UKIKI_ANIM_RUN);
-            // Ultimately is checking the cage, as it points to the parent
-            // of a dummy child object of the cage.
-            if (obj != NULL && cur_obj_rotate_yaw_toward(obj_angle_to_object(o, obj->parentObj), 0x400)) {
+
+            if (cur_obj_rotate_yaw_toward(yawToCage, 0x400)) {
                 o->oForwardVel = 10.0f;
                 o->oSubAction++;
             }
@@ -387,9 +396,7 @@ void ukiki_act_go_to_cage(void) {
             break;
 
         case UKIKI_SUB_ACT_CAGE_LAND_ON_CAGE:
-            // Ultimately is checking the cage, as it points to the parent
-            // of a dummy child object of the cage.
-            if ((obj != NULL) && lateral_dist_between_objects_squared(o, obj->parentObj) < sqr(50.0f)) {
+            if (latDistToCage < 50.0f) {
                 o->oForwardVel = 0.0f;
             }
 

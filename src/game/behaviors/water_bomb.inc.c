@@ -29,10 +29,14 @@ static struct ObjectHitbox sWaterBombHitbox = {
  * Spawn water bombs targeting mario when he comes in range.
  */
 void bhv_water_bomb_spawner_update(void) {
-    f32 spawnerRadius = 50 * (u16)(o->oBehParams >> 16) + 200.0f;
+    f32 latDistToMario;
+    f32 spawnerRadius;
+
+    spawnerRadius = 50 * (u16)(o->oBehParams >> 16) + 200.0f;
+    latDistToMario = lateral_dist_between_objects(o, gMarioObject);
 
     // When mario is in range and a water bomb isn't already active
-    if (!o->oWaterBombSpawnerBombActive && lateral_dist_between_objects_squared(o, gMarioObject) < sqr(spawnerRadius)
+    if (!o->oWaterBombSpawnerBombActive && latDistToMario < spawnerRadius
         && gMarioObject->oPosY - o->oPosY < 1000.0f) {
         if (o->oWaterBombSpawnerTimeToSpawn != 0) {
             o->oWaterBombSpawnerTimeToSpawn--;

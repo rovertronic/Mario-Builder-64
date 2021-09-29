@@ -29,7 +29,7 @@ void haunted_chair_act_0(void) {
 
     if (o->parentObj != o) {
         if (o->oHauntedChairFallTargetAngle == 0) {
-            if (lateral_dist_between_objects_squared(o, o->parentObj) < sqr(250.0f)) {
+            if (lateral_dist_between_objects(o, o->parentObj) < 250.0f) {
                 dAngleToPiano = obj_angle_to_object(o, o->parentObj) - o->oFaceAngleYaw + 0x2000;
                 if (dAngleToPiano & 0x4000) {
                     o->oHauntedChairFallFromPianoAngle = &o->oFaceAngleRoll;

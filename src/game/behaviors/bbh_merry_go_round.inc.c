@@ -12,7 +12,7 @@
 static void handle_merry_go_round_music(void) {
     // If the music should play, play it and check whether it still should.
     // Otherwise, don't play it and check whether it should.
-    if (!o->oMerryGoRoundMusicShouldPlay) {
+    if (o->oMerryGoRoundMusicShouldPlay == FALSE) {
         if (gMarioCurrentRoom == BBH_NEAR_MERRY_GO_ROUND_ROOM) {
             // Play the merry-go-round and BBH music at the same time
             play_secondary_music(SEQ_EVENT_MERRY_GO_ROUND, 45, 20, 200);

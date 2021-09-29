@@ -44,7 +44,7 @@ void bhv_beta_chest_bottom_loop(void) {
 void bhv_beta_chest_lid_loop(void) {
     switch (o->oAction) {
         case BETA_CHEST_ACT_IDLE_CLOSED:
-            if (dist_between_objects_squared(o->parentObj, gMarioObject) < sqr(300.0f)) {
+            if (dist_between_objects(o->parentObj, gMarioObject) < 300.0f) {
                 o->oAction++; // Set to BETA_CHEST_ACT_OPENING
             }
 

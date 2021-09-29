@@ -64,47 +64,78 @@ f32 approach_by_increment(f32 goal, f32 src, f32 inc) {
  * then gradually tilt back moving Mario with them.
  */
 void bhv_tilting_inverted_pyramid_loop(void) {
-    Vec3f d;
-#ifndef PLATFORM_DISPLACEMENT_2
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 d;
+
     Vec3f dist;
     Vec3f posBeforeRotation;
     Vec3f posAfterRotation;
 
     // Mario's position
-    Vec3f m;
-#endif
+    f32 mx;
+    f32 my;
+    f32 mz;
+
+    s32 marioOnPlatform = FALSE;
     Mat4 *transform = &o->transform;
+
     if (gMarioObject->platform == o) {
-#ifndef PLATFORM_DISPLACEMENT_2
-        get_mario_pos(&m[0], &m[1], &m[2]);
-        vec3_diff(dist, &gMarioObject->oPosVec, &o->oPosVec);
+        get_mario_pos(&mx, &my, &mz);
+
+        dist[0] = gMarioObject->oPosX - o->oPosX;
+        dist[1] = gMarioObject->oPosY - o->oPosY;
+        dist[2] = gMarioObject->oPosZ - o->oPosZ;
         linear_mtxf_mul_vec3f(*transform, posBeforeRotation, dist);
-#endif
-        d[0] = gMarioObject->oPosX - o->oPosX;
-        d[1] = 500.0f;
-        d[2] = gMarioObject->oPosZ - o->oPosZ;
-        vec3f_normalize(d);
+
+        dx = gMarioObject->oPosX - o->oPosX;
+        dy = 500.0f;
+        dz = gMarioObject->oPosZ - o->oPosZ;
+        d = sqrtf(sqr(dx) + sqr(dy) + sqr(dz));
+
+        //! Always true since dy = 500, making d >= 500.
+        if (d != 0.0f) {
+            // Normalizing
+            d = 1.0f / d;
+            dx *= d;
+            dy *= d;
+            dz *= d;
+        } else {
+            dx = 0.0f;
+            dy = 1.0f;
+            dz = 0.0f;
+        }
+
+        if (o->oTiltingPyramidMarioOnPlatform == TRUE)
+            marioOnPlatform++;
+
         o->oTiltingPyramidMarioOnPlatform = TRUE;
     } else {
-        vec3_copy(d, gVec3fY);
+        dx = 0.0f;
+        dy = 1.0f;
+        dz = 0.0f;
         o->oTiltingPyramidMarioOnPlatform = FALSE;
     }
+
     // Approach the normals by 0.01f towards the new goal, then create a transform matrix and orient the object.
     // Outside of the other conditionals since it needs to tilt regardless of whether Mario is on.
-    o->oTiltingPyramidNormalX = approach_by_increment(d[0], o->oTiltingPyramidNormalX, 0.01f);
-    o->oTiltingPyramidNormalY = approach_by_increment(d[1], o->oTiltingPyramidNormalY, 0.01f);
-    o->oTiltingPyramidNormalZ = approach_by_increment(d[2], o->oTiltingPyramidNormalZ, 0.01f);
+    o->oTiltingPyramidNormalX = approach_by_increment(dx, o->oTiltingPyramidNormalX, 0.01f);
+    o->oTiltingPyramidNormalY = approach_by_increment(dy, o->oTiltingPyramidNormalY, 0.01f);
+    o->oTiltingPyramidNormalZ = approach_by_increment(dz, o->oTiltingPyramidNormalZ, 0.01f);
     create_transform_from_normals(*transform, o->oTiltingPyramidNormalX, o->oTiltingPyramidNormalY, o->oTiltingPyramidNormalZ);
-#ifndef PLATFORM_DISPLACEMENT_2
-    // If Mario is on the platform, adjust his position for the platform tilt.
-    if (o->oTiltingPyramidMarioOnPlatform) {
-        linear_mtxf_mul_vec3f(*transform, posAfterRotation, dist);
-        m[0] += posAfterRotation[0] - posBeforeRotation[0];
-        m[1] += posAfterRotation[1] - posBeforeRotation[1];
-        m[2] += posAfterRotation[2] - posBeforeRotation[2];
 
-        set_mario_pos(m[0], m[1], m[2]);
+    // If Mario is on the platform, adjust his position for the platform tilt.
+    if (marioOnPlatform != FALSE) {
+        linear_mtxf_mul_vec3f(*transform, posAfterRotation, dist);
+        mx += posAfterRotation[0] - posBeforeRotation[0];
+        my += posAfterRotation[1] - posBeforeRotation[1];
+        mz += posAfterRotation[2] - posBeforeRotation[2];
+
+    #ifndef PLATFORM_DISPLACEMENT_2
+        set_mario_pos(mx, my, mz);
+    #endif
     }
-#endif
+
     o->header.gfx.throwMatrix = transform;
 }

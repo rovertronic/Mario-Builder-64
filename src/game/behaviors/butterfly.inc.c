@@ -73,7 +73,7 @@ void butterfly_act_return_home(void) {
     f32 homeDistY = o->oHomeY - o->oPosY;
     f32 homeDistZ = o->oHomeZ - o->oPosZ;
     s16 hAngleToHome = atan2s(homeDistZ, homeDistX);
-    s16 vAngleToHome = atan2s(sqrtf(sqr(homeDistX) + sqr(homeDistZ)), -homeDistY);
+    s16 vAngleToHome = atan2s(sqrtf(homeDistX * homeDistX + homeDistZ * homeDistZ), -homeDistY);
 
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, hAngleToHome, 0x800);
     o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, vAngleToHome, 0x50);
@@ -84,7 +84,9 @@ void butterfly_act_return_home(void) {
         cur_obj_init_animation(1);
 
         o->oAction = BUTTERFLY_ACT_RESTING;
-        vec3_copy(&o->oPosVec, &o->oHomeVec);
+        o->oPosX = o->oHomeX;
+        o->oPosY = o->oHomeY;
+        o->oPosZ = o->oHomeZ;
     }
 }
 

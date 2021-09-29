@@ -38,8 +38,12 @@ void king_bobomb_act_0(void) {
     }
 }
 
-s32 mario_is_far_below_object(f32 maxY) {
-    return (maxY < (o->oPosY - gMarioObject->oPosY));
+s32 mario_is_far_below_object(f32 arg0) {
+    if (arg0 < o->oPosY - gMarioObject->oPosY) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
 }
 
 void king_bobomb_act_2(void) {

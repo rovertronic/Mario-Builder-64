@@ -20,13 +20,13 @@ void tuxies_mother_act_2(void) {
         if (o->oSubAction == 0) {
             cur_obj_init_animation_with_sound(0);
             o->oForwardVel = 10.0f;
-            if (!cur_obj_lateral_dist_from_mario_to_home_is_in_range(800.0f))
+            if (800.0f < cur_obj_lateral_dist_from_mario_to_home())
                 o->oSubAction = 1;
             cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
         } else {
             o->oForwardVel = 0.0f;
             cur_obj_init_animation_with_sound(3);
-            if (cur_obj_lateral_dist_from_mario_to_home_is_in_range(700.0f))
+            if (cur_obj_lateral_dist_from_mario_to_home() < 700.0f)
                 o->oSubAction = 0;
         }
     } else {
@@ -213,20 +213,20 @@ void small_penguin_act_0(void) {
 }
 
 void small_penguin_act_5(void) {
+    f32 distToMother;
     s16 angleToMother;
     struct Object *motherPenguinObj = cur_obj_nearest_object_with_behavior(bhvTuxiesMother);
     if (motherPenguinObj != NULL) {
-        if (o->oDistanceToMario < 1000.0f) {
+        if (o->oDistanceToMario < 1000.0f)
             o->oForwardVel = 2.0f;
-        } else {
+        else
             o->oForwardVel = 0.0f;
-        }
+        distToMother = dist_between_objects(o, motherPenguinObj);
         angleToMother = obj_angle_to_object(o, motherPenguinObj);
-        if (dist_between_objects_squared(o, motherPenguinObj) > sqr(200.0f)) {
+        if (distToMother > 200.0f)
             cur_obj_rotate_yaw_toward(angleToMother, 0x400);
-        } else {
+        else
             cur_obj_rotate_yaw_toward(angleToMother + 0x8000, 0x400);
-        }
         cur_obj_init_animation_with_sound(0);
     }
     small_penguin_dive_with_mario();

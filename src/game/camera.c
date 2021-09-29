@@ -1997,10 +1997,10 @@ s16 update_default_camera(struct Camera *c) {
         nextYawVel = 0;
     }
     sYawSpeed = 0x400;
-    vec3f_get_lateral_dist_squared(sMarioCamState->pos, c->pos, &xzDist);
+    vec3f_get_lateral_dist(sMarioCamState->pos, c->pos, &xzDist);
 
     if (sStatusFlags & CAM_FLAG_BEHIND_MARIO_POST_DOOR) {
-        if (xzDist >= sqr(250.0f)) {
+        if (xzDist >= 250) {
             sStatusFlags &= ~CAM_FLAG_BEHIND_MARIO_POST_DOOR;
         }
         if (ABS((sMarioCamState->faceAngle[1] - yaw) / 2) < 0x1800) {
@@ -2009,8 +2009,7 @@ s16 update_default_camera(struct Camera *c) {
             dist = 800.f;
             sStatusFlags |= CAM_FLAG_BLOCK_SMOOTH_MOVEMENT;
         }
-    } else if (xzDist < sqr(250.0f)) {
-        xzDist = sqrtf(xzDist);
+    } else if (xzDist < 250) {
         // Turn rapidly if very close to Mario
         c->pos[0] += (250 - xzDist) * sins(yaw);
         c->pos[2] += (250 - xzDist) * coss(yaw);

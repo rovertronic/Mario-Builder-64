@@ -242,24 +242,10 @@ f32 lateral_dist_between_objects(struct Object *obj1, struct Object *obj2) {
     return lateralDist;
 }
 
-// Same as above, but doesn't do sqrtf.
-f32 lateral_dist_between_objects_squared(struct Object *obj1, struct Object *obj2) {
-    register f32 dx = obj2->oPosX - obj1->oPosX;
-    register f32 dz = obj2->oPosZ - obj1->oPosZ;
-    return (sqr(dx) + sqr(dz));
-}
-
 f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
     f32 dist;
     vec3f_get_dist(&obj1->oPosVec, &obj2->oPosVec, &dist);
     return dist;
-}
-
-// Same as above, but doesn't do sqrtf.
-f32 dist_between_objects_squared(struct Object *obj1, struct Object *obj2) {
-    register Vec3f d;
-    vec3_diff(d, &obj2->oPosVec, &obj1->oPosVec);
-    return vec3_sumsq(d);
 }
 
 void cur_obj_forward_vel_approach_upward(f32 target, f32 increment) {
@@ -283,7 +269,7 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
-    s16 targetAngle = 0x0;
+    s16 targetAngle = 0;
     s16 startAngle;
 
     switch (angleIndex) {
@@ -681,15 +667,17 @@ f32 cur_obj_dist_to_nearest_object_with_behavior(const BehaviorScript *behavior)
 struct Object *cur_obj_find_nearest_object_with_behavior(const BehaviorScript *behavior, f32 *dist) {
     uintptr_t *behaviorAddr = segmented_to_virtual(behavior);
     struct Object *closestObj = NULL;
-    f32 minDist = F32_MAX;
+    struct Object *obj;
+    struct ObjectNode *listHead;
+    f32 minDist = 0x20000;
 
-    struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
-    struct Object *obj = (struct Object *) listHead->next;
+    listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
+    obj = (struct Object *) listHead->next;
 
     while (obj != (struct Object *) listHead) {
         if (obj->behavior == behaviorAddr) {
             if (obj->activeFlags != ACTIVE_FLAG_DEACTIVATED && obj != o) {
-                f32 objDist = dist_between_objects_squared(o, obj);
+                f32 objDist = dist_between_objects(o, obj);
                 if (objDist < minDist) {
                     closestObj = obj;
                     minDist = objDist;
@@ -698,11 +686,8 @@ struct Object *cur_obj_find_nearest_object_with_behavior(const BehaviorScript *b
         }
         obj = (struct Object *) obj->header.next;
     }
-    if (minDist == F32_MAX) {
-        *dist = F32_MAX;
-    } else {
-        *dist = sqrtf(minDist);   
-    }
+
+    *dist = minDist;
     return closestObj;
 }
 
@@ -763,7 +748,7 @@ struct Object *cur_obj_find_nearby_held_actor(const BehaviorScript *behavior, f3
                 // This includes the dropped and thrown states. By combining instant
                 // release, this allows us to activate mama penguin remotely
                 if (obj->oHeldState != HELD_FREE) {
-                    if (dist_between_objects_squared(o, obj) < sqr(maxDist)) {
+                    if (dist_between_objects(o, obj) < maxDist) {
                         foundObj = obj;
                         break;
                     }
@@ -1053,7 +1038,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
 }
 
 static void cur_obj_move_update_underwater_flags(void) {
-    f32 decelY = (f32)(ABSF(o->oVelY) * (o->oDragStrength * 7.0f)) / 100.0L;
+    f32 decelY = (f32)(sqrtf(o->oVelY * o->oVelY) * (o->oDragStrength * 7.0f)) / 100.0L;
 
     if (o->oVelY > 0) {
         o->oVelY -= decelY;
@@ -1193,6 +1178,7 @@ void cur_obj_move_y_with_terminal_vel(void) {
     if (o->oVelY < -70.0f) {
         o->oVelY = -70.0f;
     }
+
     o->oPosY += o->oVelY;
 }
 
@@ -1225,6 +1211,7 @@ s32 obj_check_if_collided_with_object(struct Object *obj1, struct Object *obj2) 
             return TRUE;
         }
     }
+
     return FALSE;
 }
 
@@ -1244,22 +1231,16 @@ s32 obj_has_behavior(struct Object *obj, const BehaviorScript *behavior) {
     return (obj->behavior == segmented_to_virtual(behavior));
 }
 
-Bool32 cur_obj_lateral_dist_from_mario_to_home_is_in_range(f32 dist) {
+f32 cur_obj_lateral_dist_from_mario_to_home(void) {
     f32 dx = o->oHomeX - gMarioObject->oPosX;
     f32 dz = o->oHomeZ - gMarioObject->oPosZ;
-    return ((sqr(dx) + sqr(dz)) < sqr(dist));
+    return sqrtf(sqr(dx) + sqr(dz));
 }
 
 f32 cur_obj_lateral_dist_to_home(void) {
     f32 dx = o->oHomeX - o->oPosX;
     f32 dz = o->oHomeZ - o->oPosZ;
     return sqrtf(sqr(dx) + sqr(dz));
-}
-
-Bool32 cur_obj_lateral_dist_to_home_is_in_range(f32 dist) {
-    f32 dx = o->oHomeX - o->oPosX;
-    f32 dz = o->oHomeZ - o->oPosZ;
-    return ((sqr(dx) + sqr(dz)) < sqr(dist));
 }
 
 s32 cur_obj_outside_home_square(f32 halfLength) {
@@ -1303,6 +1284,13 @@ void cur_obj_shake_y(f32 amount) {
 void cur_obj_start_cam_event(UNUSED struct Object *obj, s32 cameraEvent) {
     gPlayerCameraState->cameraEvent = (s16) cameraEvent;
     gSecondCameraFocus = o;
+}
+
+// unused, self explanatory, maybe oInteractStatus originally had TRUE/FALSE statements
+void set_mario_interact_true_if_in_range(UNUSED s32 arg0, UNUSED s32 arg1, f32 range) {
+    if (o->oDistanceToMario < range) {
+        gMarioObject->oInteractStatus = TRUE;
+    }
 }
 
 void obj_set_billboard(struct Object *obj) {
@@ -1676,8 +1664,9 @@ s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
     struct Waypoint *startWaypoint;
     struct Waypoint *lastWaypoint;
     struct Waypoint *targetWaypoint;
-    Vec3f prevToNext, objToNext;
+    f32 prevToNextX, prevToNextY, prevToNextZ;
     f32 objToNextXZ;
+    f32 objToNextX, objToNextY, objToNextZ;
 
     if (o->oPathedPrevWaypointFlags == 0) {
         o->oPathedPrevWaypoint = o->oPathedStartWaypoint;
@@ -1694,16 +1683,21 @@ s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
     }
 
     o->oPathedPrevWaypointFlags = lastWaypoint->flags | WAYPOINT_FLAGS_INITIALIZED;
-    vec3_diff(prevToNext, targetWaypoint->pos, lastWaypoint->pos);
-    vec3_diff(objToNext,  targetWaypoint->pos, &o->oPosVec);
 
-    objToNextXZ = sqrtf(sqr(objToNext[0]) + sqr(objToNext[2]));
+    prevToNextX = targetWaypoint->pos[0] - lastWaypoint->pos[0];
+    prevToNextY = targetWaypoint->pos[1] - lastWaypoint->pos[1];
+    prevToNextZ = targetWaypoint->pos[2] - lastWaypoint->pos[2];
 
-    o->oPathedTargetYaw = atan2s(objToNext[2], objToNext[0]);
-    o->oPathedTargetPitch = atan2s(objToNextXZ, -objToNext[1]);
+    objToNextX = targetWaypoint->pos[0] - o->oPosX;
+    objToNextY = targetWaypoint->pos[1] - o->oPosY;
+    objToNextZ = targetWaypoint->pos[2] - o->oPosZ;
+    objToNextXZ = sqrtf(sqr(objToNextX) + sqr(objToNextZ));
+
+    o->oPathedTargetYaw = atan2s(objToNextZ, objToNextX);
+    o->oPathedTargetPitch = atan2s(objToNextXZ, -objToNextY);
 
     // If dot(prevToNext, objToNext) <= 0 (i.e. reached other side of target waypoint)
-    if (vec3_dot(prevToNext, objToNext) <= 0.0f) {
+    if (prevToNextX * objToNextX + prevToNextY * objToNextY + prevToNextZ * objToNextZ <= 0.0f) {
         o->oPathedPrevWaypoint = targetWaypoint;
         if ((targetWaypoint + 1)->flags == WAYPOINT_FLAGS_END) {
             return PATH_REACHED_END;
@@ -1856,7 +1850,6 @@ void cur_obj_push_mario_away(f32 radius) {
     f32 marioDist = (sqr(marioRelX) + sqr(marioRelZ));
 
     if (marioDist < sqr(radius)) {
-        marioDist = sqrtf(marioDist);
         //! If this function pushes Mario out of bounds, it will trigger Mario's
         //  oob failsafe
         gMarioStates[0].pos[0] += (radius - marioDist) / radius * marioRelX;
@@ -2141,7 +2134,7 @@ void clear_time_stop_flags(s32 flags) {
 s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused) {
     if (o->oDistanceToMario < 1500.0f) {
         if (o->oPosY < gMarioObject->oPosY + 160.0f && gMarioObject->oPosY < o->oPosY + height && !(gMarioStates[0].action & ACT_FLAG_AIR)
-         && lateral_dist_between_objects_squared(o, gMarioObject) < sqr(radius) && mario_ready_to_speak()) {
+         && lateral_dist_between_objects(o, gMarioObject) < radius && mario_ready_to_speak()) {
             return TRUE;
         }
     }
