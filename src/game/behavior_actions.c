@@ -46,48 +46,6 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 
-struct WFRotatingPlatformData {
-    s16 pad;
-    s16 scale;
-    const Collision *collisionData;
-    s16 collisionDistance;
-};
-
-struct TumblingBridgeParams {
-    s16 numBridgeSections;
-    s16 bridgeRelativeStartingXorZ;
-    s16 platformWidth;
-    ModelID16 model;
-    const void *segAddr;
-};
-
-struct ExclamationBoxContents {
-    u8 id;
-    u8 unk1;
-    u8 behParams;
-    ModelID16 model;
-    const BehaviorScript *behavior;
-};
-
-struct CheckerBoardPlatformInitPosition {
-    s32 relPosZ;
-    Vec3f scale;
-    f32 radius;
-};
-
-struct OpenableGrill {
-    s16 halfWidth;
-    ModelID16 modelID;
-    const Collision *collision;
-};
-
-static s32 sCapSaveFlags[] = { SAVE_FLAG_HAVE_WING_CAP, SAVE_FLAG_HAVE_METAL_CAP, SAVE_FLAG_HAVE_VANISH_CAP };
-
-// Boo Roll
-static s16 sBooHitRotations[] = { 6047, 5664, 5292, 4934, 4587, 4254, 3933, 3624, 3329, 3046, 2775,
-                     2517, 2271, 2039, 1818, 1611, 1416, 1233, 1063, 906,  761,  629,
-                     509,  402,  308,  226,  157,  100,  56,   25,   4,    0 };
-
 #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"
 #include "behaviors/pole.inc.c"

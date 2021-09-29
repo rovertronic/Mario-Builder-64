@@ -186,6 +186,11 @@ static void boo_set_move_yaw_for_during_hit(s32 hurt) {
     }
 }
 
+// Boo Roll
+static s16 sBooHitRotations[] = { 6047, 5664, 5292, 4934, 4587, 4254, 3933, 3624, 3329, 3046, 2775,
+                     2517, 2271, 2039, 1818, 1611, 1416, 1233, 1063, 906,  761,  629,
+                     509,  402,  308,  226,  157,  100,  56,   25,   4,    0 };
+
 static void boo_move_during_hit(s32 roll, f32 fVel) {
     // Boos seem to have been supposed to oscillate up then down then back again
     // when hit. However it seems the programmers forgot to scale the cosine,

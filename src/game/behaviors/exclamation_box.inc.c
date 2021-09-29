@@ -1,5 +1,13 @@
 // exclamation_box.c.inc
 
+struct ExclamationBoxContents {
+    u8 id;
+    u8 unk1;
+    u8 behParams;
+    ModelID16 model;
+    const BehaviorScript *behavior;
+};
+
 struct ObjectHitbox sExclamationBoxHitbox = {
     /* interactType: */ INTERACT_BREAKABLE,
     /* downOffset: */ 5,
