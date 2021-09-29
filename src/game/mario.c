@@ -1100,7 +1100,7 @@ s32 check_common_hold_action_exits(struct MarioState *m) {
 s32 transition_submerged_to_walking(struct MarioState *m) {
     set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
 
-    vec3s_set(m->angleVel, 0, 0, 0);
+    vec3_zero(m->angleVel);
 
     if (m->heldObj == NULL) {
         return set_mario_action(m, ACT_WALKING, 0);

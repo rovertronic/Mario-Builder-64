@@ -486,9 +486,11 @@ void vec3f_get_dist_and_angle(                 Vec3f from, Vec3f to, f32 *dist, 
 void vec3s_set_dist_and_angle(                 Vec3s from, Vec3s to, s16  dist,                   Angle32 pitch, Angle32 yaw);
 void vec3f_set_dist_and_angle(                 Vec3f from, Vec3f to, f32  dist,                   Angle32 pitch, Angle32 yaw);
 
+s32 approach_angle(s32 current, s32 target, s32 inc);
 s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec);
 s32 approach_s32(s32 current, s32 target, s32 inc, s32 dec);
 f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec);
+Bool32 approach_angle_bool(s16 *current, s32 target, s32 inc);
 Bool32 approach_s16_bool(s16 *current, s32 target, s32 inc, s32 dec);
 Bool32 approach_s32_bool(s32 *current, s32 target, s32 inc, s32 dec);
 Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec);
@@ -499,7 +501,6 @@ Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec);
 #define approach_s32_symmetric_bool(current, target, inc) approach_s32_bool((current), (target), (inc), (inc))
 #define approach_f32_symmetric_bool(current, target, inc) approach_f32_bool((current), (target), (inc), (inc))
 s32 approach_f32_signed(f32 *current, f32 target, f32 inc);
-s32 approach_angle(s32 current, s32 target, s32 inc);
 s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier);
 f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
 s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor);

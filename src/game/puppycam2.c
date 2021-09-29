@@ -637,10 +637,8 @@ static void puppycam_input_hold_preset3(void) {
             gPuppyCam.pitchAcceleration = approach_f32_asymptotic(gPuppyCam.pitchAcceleration, 0, DECELERATION);
         }
     } else {
-        if (gPlayer1Controller->buttonPressed & L_TRIG) {
-            if (gPuppyCam.yawTarget % 0x2000) {
-                gPuppyCam.yawTarget += 0x2000 - gPuppyCam.yawTarget % 0x2000;
-            }
+        if ((gPlayer1Controller->buttonPressed & L_TRIG) && (gPuppyCam.yawTarget % 0x2000)) {
+            gPuppyCam.yawTarget += 0x2000 - gPuppyCam.yawTarget % 0x2000;
         }
 
         if (gPuppyCam.mode3Flags & PUPPYCAM_MODE3_ZOOMED_MED) gPuppyCam.pitchTarget = approach_s32(gPuppyCam.pitchTarget, 0x3800, 0x200, 0x200);
@@ -702,8 +700,8 @@ static void puppycam_input_hold_preset3(void) {
 
 // Handles C Button inputs for modes that have held inputs, rather than presses.
 static void puppycam_input_hold(void) {
-    f32 ivX = ((gPuppyCam.options.invertX*2)-1)*(gPuppyCam.options.sensitivityX/100.f);
-    f32 ivY = ((gPuppyCam.options.invertY*2)-1)*(gPuppyCam.options.sensitivityY/100.f);
+    f32 ivX = ((gPuppyCam.options.invertX * 2) - 1) * (gPuppyCam.options.sensitivityX / 100.f);
+    f32 ivY = ((gPuppyCam.options.invertY * 2) - 1) * (gPuppyCam.options.sensitivityY / 100.f);
     s8 stickMag[2] = {100, 100};
 
     if (gPuppyCam.intendedFlags & PUPPYCAM_BEHAVIOUR_FREE) {
@@ -830,13 +828,12 @@ void puppycam_debug_view(void) {
 }
 
 static void puppycam_view_panning(void) {
-    f32 panFloor, panMulti;
     s32 expectedPanX, expectedPanZ;
     s32 height = gPuppyCam.targetObj->oPosY;
     s32 panEx = (gPuppyCam.zoomTarget >= 1000) * 160; //Removes the basic panning when idling if the zoom level is at the closest.
     f32 slideSpeed = 1;
 
-    panMulti = CLAMP(gPuppyCam.zoom / (f32)gPuppyCam.zoomPoints[2], 0.f, 1.f);
+    f32 panMulti = CLAMP(gPuppyCam.zoom / (f32)gPuppyCam.zoomPoints[2], 0.f, 1.f);
     if (gPuppyCam.options.inputType == 2) {
         panMulti /= 2;
     }
@@ -850,7 +847,7 @@ static void puppycam_view_panning(void) {
         gPuppyCam.pan[0] = approach_f32_asymptotic(gPuppyCam.pan[0], expectedPanX, 0.02f*slideSpeed);
         gPuppyCam.pan[2] = approach_f32_asymptotic(gPuppyCam.pan[2], expectedPanZ, 0.02f*slideSpeed);
         if (gMarioState->vel[1] == 0.0f) {
-            panFloor = CLAMP(find_floor_height((s16)(gPuppyCam.targetObj->oPosX+expectedPanX), (s16)(gPuppyCam.targetObj->oPosY + 200),
+            f32 panFloor = CLAMP(find_floor_height((s16)(gPuppyCam.targetObj->oPosX+expectedPanX), (s16)(gPuppyCam.targetObj->oPosY + 200),
             (s16)(gPuppyCam.targetObj->oPosZ+expectedPanZ)), gPuppyCam.targetObj->oPosY - 50,gPuppyCam.targetObj->oPosY + 50);
             // If the floor is lower than 150 units below Mario, then ignore the Y value and tilt the camera instead.
             if (panFloor <= gPuppyCam.targetObj->oPosY - 150) {
@@ -922,26 +919,23 @@ const struct sPuppyAngles puppyAnglesNull = {
 static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) {
     s32 rel[3];
     s32 pos[2];
-    f32 distCheck;
 
     if (sPuppyVolumeStack[index]->room != gMarioCurrentRoom && sPuppyVolumeStack[index]->room != -1) {
         return FALSE;
     }
     if (sPuppyVolumeStack[index]->shape == PUPPYVOLUME_SHAPE_BOX) {
         // Fetch the relative position. to the triggeree.
-        rel[0] = sPuppyVolumeStack[index]->pos[0] - gPuppyCam.targetObj->oPosX;
-        rel[1] = sPuppyVolumeStack[index]->pos[1] - gPuppyCam.targetObj->oPosY;
-        rel[2] = sPuppyVolumeStack[index]->pos[2] - gPuppyCam.targetObj->oPosZ;
+        vec3_diff(rel, sPuppyVolumeStack[index]->pos, &gPuppyCam.targetObj->oPosVec);
         // Use the dark, forbidden arts of trig to rotate the volume.
         pos[0] = rel[2] * sins(sPuppyVolumeStack[index]->rot) + rel[0] * coss(sPuppyVolumeStack[index]->rot);
         pos[1] = rel[2] * coss(sPuppyVolumeStack[index]->rot) - rel[0] * sins(sPuppyVolumeStack[index]->rot);
-        #ifdef VISUAL_DEBUG
+#ifdef VISUAL_DEBUG
         Vec3f debugPos[2];
         vec3f_set(debugPos[0], sPuppyVolumeStack[index]->pos[0],    sPuppyVolumeStack[index]->pos[1],    sPuppyVolumeStack[index]->pos[2]);
         vec3f_set(debugPos[1], sPuppyVolumeStack[index]->radius[0], sPuppyVolumeStack[index]->radius[1], sPuppyVolumeStack[index]->radius[2]);
         debug_box_color(0x0000FF00);
         debug_box_rot(debugPos[0], debugPos[1], sPuppyVolumeStack[index]->rot, DEBUG_SHAPE_BOX | DEBUG_UCODE_DEFAULT);
-        #endif
+#endif
         // Now compare values.
         if (-sPuppyVolumeStack[index]->radius[0] < pos[0] && pos[0] < sPuppyVolumeStack[index]->radius[0] &&
             -sPuppyVolumeStack[index]->radius[1] < rel[1] && rel[1] < sPuppyVolumeStack[index]->radius[1] &&
@@ -951,11 +945,8 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) 
         }
     } else if (sPuppyVolumeStack[index]->shape == PUPPYVOLUME_SHAPE_CYLINDER) {
         // s16 dir;
-        f32 dist;
-        rel[0] = sPuppyVolumeStack[index]->pos[0] - gPuppyCam.targetObj->oPosX;
-        rel[1] = sPuppyVolumeStack[index]->pos[1] - gPuppyCam.targetObj->oPosY;
-        rel[2] = sPuppyVolumeStack[index]->pos[2] - gPuppyCam.targetObj->oPosZ;
-        dist = sqrtf(sqr(rel[0]) + sqr(rel[2]));
+        vec3_diff(rel, sPuppyVolumeStack[index]->pos, &gPuppyCam.targetObj->oPosVec);
+        f32 dist = sqrtf(sqr(rel[0]) + sqr(rel[2]));
 #ifdef VISUAL_DEBUG
         Vec3f debugPos[2];
         vec3f_set(debugPos[0], sPuppyVolumeStack[index]->pos[0],    sPuppyVolumeStack[index]->pos[1],    sPuppyVolumeStack[index]->pos[2]);
@@ -963,7 +954,7 @@ static s32 puppycam_check_volume_bounds(struct sPuppyVolume *volume, s32 index) 
         debug_box_color(0x0000FF00);
         debug_box_rot(debugPos[0], debugPos[1], sPuppyVolumeStack[index]->rot, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_DEFAULT);
 #endif
-        distCheck = (dist < sPuppyVolumeStack[index]->radius[0]);
+        f32 distCheck = (dist < sPuppyVolumeStack[index]->radius[0]);
 
         if (-sPuppyVolumeStack[index]->radius[1] < rel[1] && rel[1] < sPuppyVolumeStack[index]->radius[1] && distCheck) {
             *volume = *sPuppyVolumeStack[index];
@@ -1151,8 +1142,8 @@ static void puppycam_projection(void) {
             targetPos3[0] = (s16)approach_f32_asymptotic(targetPos[0], targetPos2[0], 0.5f);
             targetPos3[1] = (s16)approach_f32_asymptotic(targetPos[1], targetPos2[1], 0.5f);
             targetPos3[2] = (s16)approach_f32_asymptotic(targetPos[2], targetPos2[2], 0.5f);
-            gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0],(ABS(LENCOS(sqrtf(((targetPos[0]-targetPos2[0])*(targetPos[0]-targetPos2[0]))+((targetPos[2]-targetPos2[2])*(targetPos[2]-targetPos2[2]))),
-                            (s16)ABS(((gPuppyCam.yaw + 0x8000) % 0xFFFF - 0x8000) - (atan2s(targetPos[2]-targetPos2[2], targetPos[0]-targetPos2[0])) % 0xFFFF - 0x8000)+0x4000))), 0.2f);
+            gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0],(ABS(LENCOS(sqrtf(((targetPos[0] - targetPos2[0]) * (targetPos[0] - targetPos2[0])) + ((targetPos[2] - targetPos2[2]) * (targetPos[2] - targetPos2[2]))),
+                            (s16)ABS(((gPuppyCam.yaw + 0x8000) % 0xFFFF - 0x8000) - (atan2s(targetPos[2] - targetPos2[2], targetPos[0] - targetPos2[0])) % 0xFFFF - 0x8000) + 0x4000))), 0.2f);
         } else {
             gPuppyCam.targetDist[0] = approach_f32_asymptotic(gPuppyCam.targetDist[0], 0, 0.2f);
         }
@@ -1229,7 +1220,7 @@ static void puppycam_script(void) {
     }
 }
 
-//Handles collision detection using ray casting.
+// Handles collision detection using ray casting.
 static void puppycam_collision(void) {
     struct WallCollisionData wall0, wall1;
     struct Surface *surf[2];
@@ -1243,17 +1234,13 @@ static void puppycam_collision(void) {
         return;
     }
     // The ray, starting from the top
-    target[0][0] = gPuppyCam.targetObj->oPosX;
-    target[0][1] = gPuppyCam.targetObj->oPosY + (gPuppyCam.povHeight) - CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.targetFloorHeight, 0, 300);
-    target[0][2] = gPuppyCam.targetObj->oPosZ;
+    vec3_copy_y_off(target[0], &gPuppyCam.targetObj->oPosVec, (gPuppyCam.povHeight) - CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.targetFloorHeight, 0, 300));
     // The ray, starting from the bottom
-    target[1][0] = gPuppyCam.targetObj->oPosX;
-    target[1][1] = gPuppyCam.targetObj->oPosY + (gPuppyCam.povHeight * 0.4f);
-    target[1][2] = gPuppyCam.targetObj->oPosZ;
+    vec3_copy_y_off(target[1], &gPuppyCam.targetObj->oPosVec, (gPuppyCam.povHeight * 0.4f));
 
-    camdir[0][0] = LENSIN(LENSIN(gPuppyCam.zoomTarget,pitchTotal),gPuppyCam.yaw) + gPuppyCam.shake[0];
-    camdir[0][1] = LENCOS(gPuppyCam.zoomTarget,pitchTotal) + gPuppyCam.shake[1];
-    camdir[0][2] = LENCOS(LENSIN(gPuppyCam.zoomTarget,pitchTotal),gPuppyCam.yaw) + gPuppyCam.shake[2];
+    camdir[0][0] = LENSIN(LENSIN(gPuppyCam.zoomTarget, pitchTotal), gPuppyCam.yaw) + gPuppyCam.shake[0];
+    camdir[0][1] = LENCOS(gPuppyCam.zoomTarget, pitchTotal) + gPuppyCam.shake[1];
+    camdir[0][2] = LENCOS(LENSIN(gPuppyCam.zoomTarget, pitchTotal), gPuppyCam.yaw) + gPuppyCam.shake[2];
 
     vec3_copy(camdir[1], camdir[0]);
 
@@ -1274,9 +1261,7 @@ static void puppycam_collision(void) {
                 if (dist[0] >= dist[1]) {
                     vec3_copy(gPuppyCam.pos, hitpos[0]);
                 } else {
-                    gPuppyCam.pos[0] = hitpos[1][0];
-                    gPuppyCam.pos[1] = hitpos[1][1] + (gPuppyCam.povHeight * 0.6f);
-                    gPuppyCam.pos[2] = hitpos[1][2];
+                    vec3_copy_y_off(gPuppyCam.pos, hitpos[1], (gPuppyCam.povHeight * 0.6f));
                 }
             }
         }

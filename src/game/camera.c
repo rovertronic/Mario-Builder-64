@@ -1618,7 +1618,7 @@ void mode_fixed_camera(struct Camera *c) {
     c->nextYaw = update_fixed_camera(c, c->focus, c->pos);
     c->yaw = c->nextYaw;
     pan_ahead_of_player(c);
-    vec3f_set(sCastleEntranceOffset, 0.f, 0.f, 0.f);
+    vec3_zero(sCastleEntranceOffset);
 }
 
 /**
@@ -2756,7 +2756,7 @@ void update_lakitu(struct Camera *c) {
 
         if (c->cutscene) {
             vec3f_add(gLakituState.focus, sPlayer2FocusOffset);
-            vec3f_set(sPlayer2FocusOffset, 0, 0, 0);
+            vec3_zero(sPlayer2FocusOffset);
         }
 
         vec3f_get_dist_and_angle(gLakituState.pos, gLakituState.focus, &gLakituState.focusDistance,
@@ -3072,8 +3072,8 @@ void init_camera(struct Camera *c) {
     gLakituState.keyDanceRoll = 0;
     gLakituState.unused = 0;
     sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-    vec3f_set(sCastleEntranceOffset, 0.f, 0.f, 0.f);
-    vec3f_set(sPlayer2FocusOffset, 0.f, 0.f, 0.f);
+    vec3_zero(sCastleEntranceOffset);
+    vec3_zero(sPlayer2FocusOffset);
     find_mario_floor_and_ceil(&sMarioGeometry);
     sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
     sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
@@ -3494,7 +3494,7 @@ void shake_camera_handheld(Vec3f pos, Vec3f focus) {
     s16 pitch, yaw;
 
     if (sHandheldShakeMag == 0) {
-        vec3f_set(shakeOffset, 0.f, 0.f, 0.f);
+        vec3_zero(shakeOffset);
     } else {
         for (i = 0; i < 4; i++) {
             shakeSpline[i][0] = sHandheldShakeSpline[i].point[0];
@@ -4437,9 +4437,9 @@ void clear_cutscene_vars(UNUSED struct Camera *c) {
 
     for (i = 0; i < 10; i++) {
         sCutsceneVars[i].unused1 = 0;
-        vec3f_set(sCutsceneVars[i].point, 0.f, 0.f, 0.f);
-        vec3f_set(sCutsceneVars[i].unusedPoint, 0.f, 0.f, 0.f);
-        vec3s_set(sCutsceneVars[i].angle, 0, 0, 0);
+        vec3_zero(sCutsceneVars[i].point);
+        vec3_zero(sCutsceneVars[i].unusedPoint);
+        vec3_zero(sCutsceneVars[i].angle);
         sCutsceneVars[i].unused2 = 0;
     }
 }
@@ -5885,11 +5885,8 @@ s16 camera_course_processing(struct Camera *c) {
 
             case AREA_BBH:
                 // if camera is fixed at bbh_room_13_balcony_camera (but as floats)
-                if (vec3f_compare(sFixedModeBasePosition, 210.f, 420.f, 3109.f) == 1)
-                {
-                    if (sMarioCamState->pos[1] < 1800.f) {
-                        transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
-                    }
+                if (sFixedModeBasePosition[0] == 210.f && sFixedModeBasePosition[1] == 420.f && sFixedModeBasePosition[2] == 3109.f && sMarioCamState->pos[1] < 1800.f) {
+                    transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
                 }
                 break;
 
@@ -6756,7 +6753,7 @@ void cutscene_grand_star_front_of_mario(struct Camera *c) {
  */
 void cutscene_grand_star_mario_jump(UNUSED struct Camera *c) {
     vec3s_set(sCutsceneVars[0].angle, 0, sMarioCamState->faceAngle[1], 0);
-    vec3f_set(sCutsceneVars[2].point, 0.f, 0.f, 0.f);
+    vec3_zero(sCutsceneVars[2].point);
 }
 
 /**
@@ -7362,20 +7359,12 @@ void cutscene_bowser_arena_start(struct Camera *c) {
  * Create the dialog box depending on which bowser fight Mario is in.
  */
 void bowser_fight_intro_dialog(UNUSED struct Camera *c) {
-    s16 dialog;
-
     switch (gCurrLevelNum) {
-        case LEVEL_BOWSER_1:
-            dialog = DIALOG_067;
-            break;
-        case LEVEL_BOWSER_2:
-            dialog = DIALOG_092;
-            break;
-        default: // LEVEL_BOWSER_3
-            dialog = DIALOG_093;
+        case LEVEL_BOWSER_1: create_dialog_box(DIALOG_067); break;
+        case LEVEL_BOWSER_2: create_dialog_box(DIALOG_092); break;
+        case LEVEL_BOWSER_3: create_dialog_box(DIALOG_093); break;
+        default:                                            break;
     }
-
-    create_dialog_box(dialog);
 }
 
 /**
@@ -7383,7 +7372,6 @@ void bowser_fight_intro_dialog(UNUSED struct Camera *c) {
  */
 void cutscene_bowser_arena_dialog(struct Camera *c) {
     cutscene_event(bowser_fight_intro_dialog, c, 0, 0);
-
     if (get_dialog_id() == DIALOG_NONE) {
         gCutsceneTimer = CUTSCENE_LOOP;
     }
@@ -7449,7 +7437,7 @@ void cutscene_star_spawn_update_boss_fight(struct Camera *c) {
 
     update_boss_fight_camera(c, focus, pos);
     approach_vec3f_asymptotic(c->focus, focus, 0.2f, 0.2f, 0.2f);
-    approach_vec3f_asymptotic(c->pos, pos, 0.2f, 0.2f, 0.2f);
+    approach_vec3f_asymptotic(c->pos,     pos, 0.2f, 0.2f, 0.2f);
 }
 
 /**
@@ -7496,7 +7484,7 @@ void cutscene_star_spawn_end(struct Camera *c) {
 
 void cutscene_exit_waterfall_warp(struct Camera *c) {
     //! hardcoded position
-    vec3f_set(c->pos, -3899.f, 39.f, -5671.f);
+    vec3_set(c->pos, -3899.f, 39.f, -5671.f);
 }
 
 /**
@@ -7504,7 +7492,7 @@ void cutscene_exit_waterfall_warp(struct Camera *c) {
  */
 void cutscene_exit_to_castle_grounds_focus_mario(struct Camera *c) {
     vec3f_copy(c->focus, sMarioCamState->pos);
-    c->focus[1] = c->pos[1] + (sMarioCamState->pos[1] + 125.f - c->pos[1]) * 0.5f;
+    c->focus[1] = c->pos[1] + ((sMarioCamState->pos[1] + 125.f - c->pos[1]) * 0.5f);
     approach_vec3f_asymptotic(c->focus, sMarioCamState->pos, 0.05f, 0.4f, 0.05f);
 }
 
@@ -7701,7 +7689,7 @@ void cutscene_prepare_cannon_start(struct Camera *c) {
     sCutsceneVars[2].point[0] = 30.f;
     // Store the cannon door's position in sCutsceneVars[3]'s point
     vec3f_copy(sCutsceneVars[3].point, &gCutsceneFocus->oPosVec);
-    vec3s_set(sCutsceneVars[5].angle, 0, 0, 0);
+    vec3_zero(sCutsceneVars[5].angle);
 }
 
 /**

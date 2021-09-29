@@ -150,7 +150,7 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 
         // Make sure inertia isn't set on the first frame otherwise the previous value isn't cleared
         if ((platform != displaceInfo->prevPlatform) || (gGlobalTimer != displaceInfo->prevTimer + 1)) {
-            vec3f_set(sMarioAmountDisplaced, 0.f, 0.f, 0.f);
+            vec3_zero(sMarioAmountDisplaced);
         }
     }
 

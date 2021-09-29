@@ -460,8 +460,8 @@ static void level_cmd_23(void) {
 }
 
 static void level_cmd_init_mario(void) {
-    vec3s_set(gMarioSpawnInfo->startPos, 0, 0, 0);
-    vec3s_set(gMarioSpawnInfo->startAngle, 0, 0, 0);
+    vec3_zero(gMarioSpawnInfo->startPos);
+    vec3_zero(gMarioSpawnInfo->startAngle);
 
     gMarioSpawnInfo->activeAreaIndex = -1;
     gMarioSpawnInfo->areaIndex = 0;

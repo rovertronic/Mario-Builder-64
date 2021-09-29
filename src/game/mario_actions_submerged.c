@@ -492,7 +492,7 @@ static s32 check_water_jump(struct MarioState *m) {
 
     if (m->input & INPUT_A_PRESSED) {
         if (probe >= m->waterLevel - 80 && m->faceAngle[0] >= 0 && m->controller->stickY < -60.0f) {
-            vec3s_set(m->angleVel, 0, 0, 0);
+            vec3_zero(m->angleVel);
 
             m->vel[1] = 62.0f;
 

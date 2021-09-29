@@ -774,9 +774,6 @@ s32 act_stop_crawling(struct MarioState *m) {
 }
 
 s32 act_shockwave_bounce(struct MarioState *m) {
-    s16 bounceTimer;
-    f32 bounceAmt;
-
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_SHOCKWAVE) {
 #if ENABLE_RUMBLE
         queue_rumble_data(70, 40);
@@ -797,10 +794,10 @@ s32 act_shockwave_bounce(struct MarioState *m) {
         return set_mario_action(m, ACT_IDLE, 0);
     }
 
-    bounceTimer = (m->actionTimer % 16) << 12;
-    bounceAmt = (f32)(((f32)(6 - m->actionTimer / 8) * 8.0f) + 4.0f);
+    s16 bounceTimer = (m->actionTimer % 16) << 12;
+    f32 bounceAmt = (f32)(((f32)(6 - m->actionTimer / 8) * 8.0f) + 4.0f);
     mario_set_forward_vel(m, 0);
-    vec3f_set(m->vel, 0.0f, 0.0f, 0.0f);
+    vec3_zero(m->vel);
     if (sins(bounceTimer) >= 0.0f) {
         m->pos[1] = sins(bounceTimer) * bounceAmt + m->floorHeight;
     } else {

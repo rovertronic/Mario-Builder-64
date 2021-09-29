@@ -697,11 +697,8 @@ s32 act_in_cannon(struct MarioState *m) {
             m->statusForCamera->cameraEvent = CAM_EVENT_CANNON;
             m->statusForCamera->usedObj = m->usedObj;
 
-            vec3f_set(m->vel, 0.0f, 0.0f, 0.0f);
-
-            m->pos[0] = m->usedObj->oPosX;
-            m->pos[1] = m->usedObj->oPosY + 350.0f;
-            m->pos[2] = m->usedObj->oPosZ;
+            vec3_zero(m->vel);
+            vec3_copy_y_off(m->pos, &m->usedObj->oPosVec, 350.0f);
 
             m->forwardVel = 0.0f;
 

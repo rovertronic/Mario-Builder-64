@@ -598,7 +598,7 @@ void mtxf_rotate_xy(Mtx *mtx, s32 angle) {
  */
 void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, register Mat4 camMtx) {
     register s32 i;
-    register f32 *temp = (f32 *)dest;
+    register f32 *temp1 = (f32 *)dest;
     register f32 *temp2 = (f32 *)camMtx;
     f32 y[3];
     register f32 *x = y;
@@ -608,12 +608,12 @@ void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, register Mat4 camMtx) {
         *x = (temp3[12] - temp2[12]);
         temp2++;
         temp3++;
-        x = ((u32)x)+4;
+        x = (f32 *)(((u32)x) + 4);
     }
     temp2 -=3;;
     for (i = 0; i < 3; i++) {
-        *temp = x[-3] * temp2[0] + x[-2] * temp2[1] + x[-1] * temp2[2];
-        temp++;
+        *temp1 = x[-3] * temp2[0] + x[-2] * temp2[1] + x[-1] * temp2[2];
+        temp1++;
         temp2 += 4;
     }
 }
@@ -756,6 +756,25 @@ void vec3s_set_dist_and_angle(Vec3s from, Vec3s to, s16 dist, Angle32 pitch, Ang
     to[2] = (from[2] + (dcos * coss(yaw  )));
 }
 
+/**
+ * Similar to approach_s32, but converts to s16 and allows for overflow between 32767 and -32768
+ */
+s32 approach_angle(s32 current, s32 target, s32 inc) {
+    s32 dist = (s16)(target - current);
+    if (dist < 0) {
+        dist += inc;
+        if (dist > 0) dist = 0;
+    } else if (dist > 0) {
+        dist -= inc;
+        if (dist < 0) dist = 0;
+    }
+    return (target - dist);
+}
+Bool32 approach_angle_bool(s16 *current, s32 target, s32 inc) {
+    *current = approach_angle(*current, target, inc);
+    return (*current != target);
+}
+
 s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec) {
     s16 dist = (target - current);
     if (dist >= 0) { // target >= current
@@ -765,10 +784,9 @@ s32 approach_s16(s32 current, s32 target, s32 inc, s32 dec) {
     }
     return current;
 }
-
 Bool32 approach_s16_bool(s16 *current, s32 target, s32 inc, s32 dec) {
     *current = approach_s16(*current, target, inc, dec);
-    return !(*current == target);
+    return (*current != target);
 }
 
 /**
@@ -784,10 +802,9 @@ s32 approach_s32(s32 current, s32 target, s32 inc, s32 dec) {
     }
     return current;
 }
-
 Bool32 approach_s32_bool(s32 *current, s32 target, s32 inc, s32 dec) {
     *current = approach_s32(*current, target, inc, dec);
-    return !(*current == target);
+    return (*current != target);
 }
 
 /**
@@ -803,7 +820,6 @@ f32 approach_f32(f32 current, f32 target, f32 inc, f32 dec) {
     }
     return current;
 }
-
 Bool32 approach_f32_bool(f32 *current, f32 target, f32 inc, f32 dec) {
     *current = approach_f32(*current, target, inc, dec);
     return !(*current == target);
@@ -824,21 +840,6 @@ s32 approach_f32_signed(f32 *current, f32 target, f32 inc) {
         }
     }
     return reachedTarget;
-}
-
-/**
- * Similar to approach_s32, but converts to s16 and allows for overflow between 32767 and -32768
- */
-s32 approach_angle(s32 current, s32 target, s32 inc) {
-    s32 dist = (s16)(target - current);
-    if (dist < 0) {
-        dist += inc;
-        if (dist > 0) dist = 0;
-    } else if (dist > 0) {
-        dist -= inc;
-        if (dist < 0) dist = 0;
-    }
-    return (target - dist);
 }
 
 /**

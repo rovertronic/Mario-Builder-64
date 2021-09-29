@@ -887,7 +887,7 @@ void geo_retreive_animation_translation(struct GraphNodeObject *obj, Vec3f posit
         position[1] = (f32) values[retrieve_animation_index(frame, &attribute)];
         position[2] = (f32) values[retrieve_animation_index(frame, &attribute)];
     } else {
-        vec3f_set(position, 0, 0, 0);
+        vec3_zero(position);
     }
 }
 
