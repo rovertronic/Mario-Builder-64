@@ -216,15 +216,24 @@ void add_ceil_margin(s32 *x, s32 *z, Vec3s target1, Vec3s target2, f32 margin) {
  */
 static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
     const f32 margin = 1.5f;
-    register struct Surface *surf;
+    register struct Surface *surf, *ceil = NULL;
     Vec3i vx, vz;
     f32 height;
-    struct Surface *ceil = NULL;
+    s16 type;
     *pheight = CELL_HEIGHT_LIMIT;
     // Stay in this loop until out of ceilings.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
+        type = surf->type;
+        // Determine if checking for the camera or not.
+        if (type == SURFACE_NEW_WATER || type == SURFACE_NEW_WATER_BOTTOM) continue;
+        if (gCheckingSurfaceCollisionsForCamera) {
+            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) continue;
+        } else if (type == SURFACE_CAMERA_BOUNDARY) {
+            // Ignore camera only surfaces.
+            continue;
+        }
         if (y > surf->upperY) continue;
         vx[0] = surf->vertex1[0];
         vz[0] = surf->vertex1[2];
@@ -240,14 +249,6 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         if (surf->type != SURFACE_HANGABLE) add_ceil_margin(&vx[2], &vz[2], surf->vertex1, surf->vertex2, margin);
         if ((vz[1] - z) * (vx[2] - vx[1]) - (vx[1] - x) * (vz[2] - vz[1]) > 0) continue;
         if ((vz[2] - z) * (vx[0] - vx[2]) - (vx[2] - x) * (vz[0] - vz[2]) > 0) continue;
-        // Determine if checking for the camera or not.
-        if (surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) continue;
-        if (gCheckingSurfaceCollisionsForCamera) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) continue;
-        } else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
-            // Ignore camera only surfaces.
-            continue;
-        }
         // Find the ceil height at the specific point.
         height = get_surface_height_at_location(x, z, surf);
         if (height > *pheight) continue;
@@ -321,23 +322,33 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
  */
 f32 unused_obj_find_floor_height(struct Object *obj) {
     struct Surface *floor;
-    f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
-    return floorHeight;
+    return find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
 }
 
 /**
  * Iterate through the list of floors and find the first floor under a given point.
  */
 static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
-    register struct Surface *surf;
+    register struct Surface *surf, *floor = NULL;
     register Vec3i vx, vz;
     f32 height;
-    struct Surface *floor = NULL;
+    s16 type = SURFACE_DEFAULT;
     *pheight = FLOOR_LOWER_LIMIT;
     // Iterate through the list of floors until there are no more floors.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
+        type        = surf->type;
+        // To prevent the Merry-Go-Round room from loading when Mario passes above the hole that leads
+        // there, SURFACE_INTANGIBLE is used. This prevent the wrong room from loading, but can also allow
+        // Mario to pass through.
+        if (!gFindFloorIncludeSurfaceIntangible && (type == SURFACE_INTANGIBLE)) continue;
+        // Determine if we are checking for the camera or not.
+        if (gCheckingSurfaceCollisionsForCamera) {
+            if ((surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) || (surf->type == SURFACE_NEW_WATER) || (surf->type == SURFACE_NEW_WATER_BOTTOM)) continue;
+        } else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
+            continue; // If we are not checking for the camera, ignore camera only floors.
+        }
         if (y < (surf->lowerY - 30)) continue;
         vx[0] = surf->vertex1[0];
         vz[0] = surf->vertex1[2];
@@ -350,13 +361,6 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         vz[2] = surf->vertex3[2];
         if ((vz[1] - z) * (vx[2] - vx[1]) - (vx[1] - x) * (vz[2] - vz[1]) < 0) continue;
         if ((vz[2] - z) * (vx[0] - vx[2]) - (vx[2] - x) * (vz[0] - vz[2]) < 0) continue;
-        // Determine if we are checking for the camera or not.
-        if (gCheckingSurfaceCollisionsForCamera != 0) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION || surf->type == SURFACE_NEW_WATER || surf->type == SURFACE_NEW_WATER_BOTTOM) continue;
-        } else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
-            // If we are not checking for the camera, ignore camera only floors.
-            continue;
-        }
         // Find the height of the floor at a given location.
         height = get_surface_height_at_location(x, z, surf);
         if (height < *pheight) continue;
@@ -508,22 +512,8 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
     floor = find_floor_from_list(surfaceList, x, y, z, &height);
 
-    // To prevent the Merry-Go-Round room from loading when Mario passes above the hole that leads
-    // there, SURFACE_INTANGIBLE is used. This prevent the wrong room from loading, but can also allow
-    // Mario to pass through.
-    if (!gFindFloorIncludeSurfaceIntangible) {
-        //! (BBH Crash) Most NULL checking is done by checking the height of the floor returned
-        //  instead of checking directly for a NULL floor. If this check returns a NULL floor
-        //  (happens when there is no floor under the SURFACE_INTANGIBLE floor) but returns the height
-        //  of the SURFACE_INTANGIBLE floor instead of the typical -11000 returned for a NULL floor.
-        if (floor != NULL && floor->type == SURFACE_INTANGIBLE) {
-            floor = find_floor_from_list(surfaceList, x, (s32)(height - 200.0f), z, &height);
-        }
-    } else {
-        // To prevent accidentally leaving the floor tangible, stop checking for it.
-        gFindFloorIncludeSurfaceIntangible = FALSE;
-    }
-
+    // To prevent accidentally leaving the floor tangible, stop checking for it.
+    gFindFloorIncludeSurfaceIntangible = FALSE;
     // If a floor was missed, increment the debug counter.
     if (floor == NULL) {
         gNumFindFloorMisses++;
