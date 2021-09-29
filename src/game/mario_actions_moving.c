@@ -468,7 +468,7 @@ void update_walking_speed(struct MarioState *m) {
         // Reduce Mario's forward speed by the turn amount, so Mario won't move off sideward from the intended angle when turning around.
         m->forwardVel *= ((coss(dYaw) + 1.0f) / 2.0f); // 1.0f is turning forwards, 0.0f is turning backwards
         // Increase turn speed if forwardVel is lower and intendedMag is higher
-        turnRange     *= (2.0f - (ABSF(m->forwardVel) / MAX(m->intendedMag, __FLT_EPSILON__))); // 1.0f front, 2.0f back
+        turnRange     *= (2.0f - (ABSF(m->forwardVel) / MAX(m->intendedMag, NEAR_ZERO))); // 1.0f front, 2.0f back
     }
     m->faceAngle[1] = approach_angle(m->faceAngle[1], m->intendedYaw, turnRange);
 #elif GROUND_TURN_MODE == 2 // similar to mode 1, but a bit further from vanilla, and allows instant turnaround if Mario is moving slower than a certain threshold.

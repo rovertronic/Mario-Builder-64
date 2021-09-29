@@ -508,10 +508,9 @@ void bhv_wooden_post_update(void) {
         if (o->oDistanceToMario > 400.0f) {
             o->oTimer = o->oWoodenPostTotalMarioAngle = 0;
         } else {
-            // When mario runs around the post 3 times within 200 frames, spawn
-            // coins
+            // When mario runs around the post 3 times within 200 frames, spawn coins
             o->oWoodenPostTotalMarioAngle += (s16)(o->oAngleToMario - o->oWoodenPostPrevAngleToMario);
-            if (absi(o->oWoodenPostTotalMarioAngle) > 0x30000 && o->oTimer < 200) {
+            if (ABSI(o->oWoodenPostTotalMarioAngle) > 0x30000 && o->oTimer < 200) {
                 obj_spawn_loot_yellow_coins(o, 5, 20.0f);
                 set_object_respawn_info_bits(o, 1);
             }

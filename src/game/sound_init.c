@@ -18,7 +18,6 @@
 
 #define MUSIC_NONE 0xFFFF
 
-static Vec3f unused80339DC0;
 static OSMesgQueue sSoundMesgQueue;
 static OSMesg sSoundMesgBuf[1];
 static struct VblankHandler sSoundVblankHandler;
@@ -334,52 +333,45 @@ void audio_game_loop_tick(void) {
 void thread4_sound(UNUSED void *arg) {
     audio_init();
     sound_init();
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime lastTime;
-    #endif
-
-    // Zero-out unused vector
-    vec3f_copy(unused80339DC0, gVec3fZero);
+#endif
 
     osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
     set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
 
-    while (TRUE)
-    {
+    while (TRUE) {
         OSMesg msg;
 
         osRecvMesg(&sSoundMesgQueue, &msg, OS_MESG_BLOCK);
-        #if PUPPYPRINT_DEBUG
-        while (TRUE)
-        {
+#if PUPPYPRINT_DEBUG
+        while (TRUE) {
             lastTime = osGetTime();
             dmaAudioTime[perfIteration] = 0;
-            #endif
+#endif
             if (gResetTimer < 25) {
                 struct SPTask *spTask;
                 spTask = create_next_audio_frame_task();
                 if (spTask != NULL) {
                     dispatch_audio_sptask(spTask);
                 }
-                #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
                 profiler_update(audioTime, lastTime);
                 audioTime[perfIteration] -= dmaAudioTime[perfIteration];
-                if (benchmarkLoop > 0 && benchOption == 1)
-                {
+                if (benchmarkLoop > 0 && benchOption == 1) {
                     benchmarkLoop--;
                     benchMark[benchmarkLoop] = osGetTime() - lastTime;
-                    if (benchmarkLoop == 0)
-                    {
+                    if (benchmarkLoop == 0) {
                         puppyprint_profiler_finished();
                         break;
                     }
-                }
-                else
+                } else {
                     break;
-                #endif
+                }
+#endif
             }
-        #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
         }
-        #endif
+#endif
     }
 }

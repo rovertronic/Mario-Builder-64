@@ -101,7 +101,7 @@ void coffin_act_idle(void) {
             // It also checks in the case Mario is squished, so he doesn't get permanently squished.
             if (o->oTimer > 60
                 && (o->oDistanceToMario > 100.0f || gMarioState->action == ACT_SQUISHED)) {
-                if (gMarioObject->oPosY - o->oPosY < 200.0f && absf(distForwards) < 140.0f) {
+                if (gMarioObject->oPosY - o->oPosY < 200.0f && ABSF(distForwards) < 140.0f) {
                     if (distSideways < 150.0f && distSideways > -450.0f) {
                         cur_obj_play_sound_2(SOUND_GENERAL_BUTTON_PRESS_2_LOWPRIO);
                         o->oAction = COFFIN_ACT_STAND_UP;

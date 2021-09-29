@@ -854,6 +854,17 @@ void bhv_boo_in_castle_loop(void) {
     cur_obj_move_using_fvel_and_gravity();
 }
 
+static s8 sBbhStairJiggleOffsets[] = { -8, 8, -4, 4 };
+
+s32 jiggle_bbh_stair(s32 index) {
+    if (index >= 4 || index < 0) {
+        return TRUE;
+    }
+
+    o->oPosY += sBbhStairJiggleOffsets[index];
+    return FALSE;
+}
+
 void bhv_boo_staircase(void) {
     f32 targetY = 0.0f;
 

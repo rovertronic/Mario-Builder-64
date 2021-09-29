@@ -12,8 +12,40 @@
 
 #include "config.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-local-addr"
+Vec3f gVec3fX    = {  1.0f,  0.0f,  0.0f };
+Vec3f gVec3fY    = {  0.0f,  1.0f,  0.0f };
+Vec3f gVec3fZ    = {  0.0f,  0.0f,  1.0f };
+Vec3f gVec3fNX   = { -1.0f,  0.0f,  0.0f };
+Vec3f gVec3fNY   = {  0.0f, -1.0f,  0.0f };
+Vec3f gVec3fNZ   = {  0.0f,  0.0f, -1.0f };
+Vec3f gVec3fZero = {  0.0f,  0.0f,  0.0f };
+Vec3f gVec3fOne  = {  1.0f,  1.0f,  1.0f };
+Vec3s gVec3sZero = {     0,     0,     0 };
+Vec3i gVec3iZero = {     0,     0,     0 };
+Vec3s gVec3sOne  = {     1,     1,     1 };
+
+/// From Wiseguy
+static inline s32 roundf(f32 in) {
+    f32 tmp;
+    s32 out;
+    __asm__("round.w.s %0,%1" : "=f" (tmp) : "f" (in));
+    __asm__("mfc1 %0,%1" : "=r" (out) : "f" (tmp));
+    return out;
+}
+
+// static inline float absf(float in) {
+//     f32 out;
+//     __asm__("abs.s %0,%1" : "=f" (out) : "f" (in));
+//     return out;
+// }
+
+f32 absf(f32 x) {
+    if (x >= 0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
 
 /// Returns the lowest of three values.
 s32 min_3i(s32 a0, s32 a1, s32 a2) { if (a1 < a0) a0 = a1; if (a2 < a0) a0 = a2; return a0; }
@@ -112,7 +144,7 @@ void vec3f_cross(Vec3f dest, Vec3f a, Vec3f b) {
 /// Scale vector 'dest' so it has length 1
 void vec3f_normalize(Vec3f dest) {
     f32 mag = sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
-    if (mag > __FLT_EPSILON__) {
+    if (mag > NEAR_ZERO) {
         register f32 invsqrt = 1.0f / mag;
         vec3_mul_val(dest, invsqrt);
     } else {
@@ -125,7 +157,7 @@ void vec3f_normalize(Vec3f dest) {
 /// Scale vector 'dest' so it has length -1
 void vec3f_normalize_negative(Vec3f dest) {
     f32 mag = sqrtf(sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
-    if (mag > __FLT_EPSILON__) {
+    if (mag > NEAR_ZERO) {
         register f32 invsqrt = -1.0f / mag;
         vec3_mul_val(dest, invsqrt);
     } else {
@@ -135,7 +167,6 @@ void vec3f_normalize_negative(Vec3f dest) {
     }
 }
 
-#pragma GCC diagnostic pop
 struct CopyMe {
     f32 x;  f32 y;  f32 z;  f32 w;
     f32 x1; f32 y1; f32 z1; f32 w1;
@@ -173,33 +204,31 @@ void mtxf_translate(Mat4 dest, Vec3f b) {
 void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
     register f32 sx = sins(rot[0]);
     register f32 cx = coss(rot[0]);
-
     register f32 sy = sins(rot[1]);
     register f32 cy = coss(rot[1]);
-
     register f32 sz = sins(rot[2]);
     register f32 cz = coss(rot[2]);
     register Vec3f entry;
 
-    entry[0] = cy * cz;
-    entry[1] = cy * sz;
+    entry[0] = (cy * cz);
+    entry[1] = (cy * sz);
     entry[2] = -sy;
     dest[0][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
     dest[0][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
     dest[0][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
 
-    entry[1] = sx * sy;
+    entry[1] = (sx * sy);
     entry[0] = (entry[1] * cz) - (cx * sz);
     entry[1] = (entry[1] * sz) + (cx * cz);
-    entry[2] = sx * cy;
+    entry[2] = (sx * cy);
     dest[1][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
     dest[1][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
     dest[1][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
 
-    entry[1] = cx * sy;
+    entry[1] = (cx * sy);
     entry[0] = (entry[1] * cz) + (sx * sz);
     entry[1] = (entry[1] * sz) - (sx * cz);
-    entry[2] = cx * cy;
+    entry[2] = (cx * cy);
     dest[2][0] = entry[0] * src[0][0] + entry[1] * src[1][0] + entry[2] * src[2][0];
     dest[2][1] = entry[0] * src[0][1] + entry[1] * src[1][1] + entry[2] * src[2][1];
     dest[2][2] = entry[0] * src[0][2] + entry[1] * src[1][2] + entry[2] * src[2][2];
@@ -223,7 +252,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
     register f32 dx = (to[0] - from[0]);
     register f32 dz = (to[2] - from[2]);
     register f32 invLength = sqrtf(sqr(dx) + sqr(dz));
-    invLength = -(1.0f / MAX(invLength, __FLT_EPSILON__));
+    invLength = -(1.0f / MAX(invLength, NEAR_ZERO));
     dx *= invLength;
     dz *= invLength;
     f32 sr  = sins(roll);
@@ -256,30 +285,26 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
  * axis, and then translates.
  */
 void mtxf_rotate_zxy_and_translate(Mat4 dest, Vec3f translate, Vec3s rotate) {
-    register f32 sx = sins(rotate[0]);
-    register f32 cx = coss(rotate[0]);
-
-    register f32 sy = sins(rotate[1]);
-    register f32 cy = coss(rotate[1]);
-
-    register f32 sz = sins(rotate[2]);
-    register f32 cz = coss(rotate[2]);
-
-    dest[0][0] = cy * cz + sx * sy * sz;
-    dest[1][0] = -cy * sz + sx * sy * cz;
-    dest[2][0] = cx * sy;
-    dest[3][0] = translate[0];
-
-    dest[0][1] = cx * sz;
-    dest[1][1] = cx * cz;
+    register f32 sx   = sins(rotate[0]);
+    register f32 cx   = coss(rotate[0]);
+    register f32 sy   = sins(rotate[1]);
+    register f32 cy   = coss(rotate[1]);
+    register f32 sz   = sins(rotate[2]);
+    register f32 cz   = coss(rotate[2]);
+    register f32 cycz = (cy * cz);
+    register f32 cysz = (cy * sz);
+    register f32 sycz = (sy * cz);
+    register f32 sysz = (sy * sz);
+    dest[0][0] = ((sx * sysz) + cycz);
+    dest[1][0] = ((sx * sycz) - cysz);
+    dest[2][0] = (cx * sy);
+    dest[0][1] = (cx * sz);
+    dest[1][1] = (cx * cz);
     dest[2][1] = -sx;
-    dest[3][1] = translate[1];
-
-    dest[0][2] = -sy * cz + sx * cy * sz;
-    dest[1][2] = sy * sz + sx * cy * cz;
+    dest[0][2] = ((sx * cysz) - sycz);
+    dest[1][2] = ((sx * cycz) + sysz);
     dest[2][2] = cx * cy;
-    dest[3][2] = translate[2];
-
+    vec3_copy(dest[3], translate);
     dest[0][3] = dest[1][3] = dest[2][3] = 0.;
     ((u32 *) dest)[15] = 0x3F800000;
 }
@@ -289,33 +314,29 @@ void mtxf_rotate_zxy_and_translate(Mat4 dest, Vec3f translate, Vec3s rotate) {
  * axis, and then translates.
  */
 void mtxf_rotate_xyz_and_translate(Mat4 dest, Vec3f b, Vec3s c) {
-    register f32 sx = sins(c[0]);
-    register f32 cx = coss(c[0]);
-
-    register f32 sy = sins(c[1]);
-    register f32 cy = coss(c[1]);
-
-    register f32 sz = sins(c[2]);
-    register f32 cz = coss(c[2]);
-
-    dest[0][0] = cy * cz;
-    dest[0][1] = cy * sz;
+    register f32 sx   = sins(c[0]);
+    register f32 cx   = coss(c[0]);
+    register f32 sy   = sins(c[1]);
+    register f32 cy   = coss(c[1]);
+    register f32 sz   = sins(c[2]);
+    register f32 cz   = coss(c[2]);
+    register f32 cxsz = (cx * sz);
+    register f32 cxcz = (cx * cz);
+    register f32 sxsz = (sx * sz);
+    register f32 sxcz = (sx * cz);
+    dest[0][0] = (cy * cz);
+    dest[0][1] = (cy * sz);
     dest[0][2] = -sy;
+    dest[1][0] = ((sxcz * sy) - cxsz);
+    dest[1][1] = ((sxsz * sy) + cxcz);
+    dest[1][2] = (sx * cy);
+    dest[2][0] = ((cxcz * sy) + sxsz);
+    dest[2][1] = ((cxsz * sy) - sxcz);
+    dest[2][2] = (cx * cy);
     dest[0][3] = 0;
-
-    dest[1][0] = sx * sy * cz - cx * sz;
-    dest[1][1] = sx * sy * sz + cx * cz;
-    dest[1][2] = sx * cy;
     dest[1][3] = 0;
-
-    dest[2][0] = cx * sy * cz + sx * sz;
-    dest[2][1] = cx * sy * sz - sx * cz;
-    dest[2][2] = cx * cy;
     dest[2][3] = 0;
-
-    dest[3][0] = b[0];
-    dest[3][1] = b[1];
-    dest[3][2] = b[2];
+    vec3_copy(dest[3], b);
     ((u32 *) dest)[15] = 0x3F800000;
 }
 
@@ -333,10 +354,17 @@ void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, s32 angle) {
         *temp = 0;
         temp++;
     }
-    dest[0][0] = coss(angle);
-    dest[0][1] = sins(angle);
-    dest[1][0] = -dest[0][1];
-    dest[1][1] = dest[0][0];
+    if (angle == 0x0) {
+        dest[0][0] = 1;
+        dest[0][1] = 0;
+        dest[1][0] = 0;
+        dest[1][1] = 1;
+    } else {
+        dest[0][0] = coss(angle);
+        dest[0][1] = sins(angle);
+        dest[1][0] = -dest[0][1];
+        dest[1][1] =  dest[0][0];
+    }
     ((u32 *) dest)[10] = 0x3F800000;
     dest[2][3] = 0;
     ((u32 *) dest)[15] = 0x3F800000;
@@ -344,7 +372,7 @@ void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, s32 angle) {
     temp = (f32 *)dest;
     temp2 = (f32 *)mtx;
     for (i = 0; i < 3; i++) {
-        temp[12] = temp2[0] * position[0] + temp2[4] * position[1] + temp2[8] * position[2] + temp2[12];
+        temp[12] = (temp2[0] * position[0]) + (temp2[4] * position[1]) + (temp2[8] * position[2]) + temp2[12];
         temp++;
         temp2++;
     }

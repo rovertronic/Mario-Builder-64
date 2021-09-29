@@ -5,9 +5,20 @@
 
 #include "types.h"
 
-#define NEAR_ZERO   0.00001f
-#define NEARER_ZERO 0.000001f
-#define NEAR_ONE    0.99999f
+#define NEAR_ZERO   __FLT_EPSILON__
+#define NEAR_ONE    (1.0f - __FLT_EPSILON__)
+
+extern Vec3f gVec3fX;
+extern Vec3f gVec3fY;
+extern Vec3f gVec3fZ;
+extern Vec3f gVec3fNX;
+extern Vec3f gVec3fNY;
+extern Vec3f gVec3fNZ;
+extern Vec3f gVec3fZero;
+extern Vec3s gVec3sZero;
+extern Vec3i gVec3iZero;
+extern Vec3f gVec3fOne;
+extern Vec3s gVec3sOne;
 
 /**
  * Converts an angle in degrees to sm64's s16 angle units. For example, DEGREES(90) == 0x4000
@@ -433,6 +444,7 @@ extern f32 gSineTable[];
     }                                   \
 }
 
+f32 absf(f32 x);
 s32 min_3i(s32 a0, s32 a1, s32 a2);
 f32 min_3f(f32 a0, f32 a1, f32 a2);
 s32 max_3i(s32 a0, s32 a1, s32 a2);
