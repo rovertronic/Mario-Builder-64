@@ -26,6 +26,10 @@
 #endif // TARGET_N64
 
 // -- GAME SETTINGS --
+// Disables some mechanics that change behavior depending on hardcoded level numbers.
+// You may also need to change sLevelsWithRooms in object_helpers.c
+// TODO: separate this into separate defines, behavior params, or make these mechanics otherwise dynamic
+// #define DISABLE_LEVEL_SPECIFIC_CHECKS
 // Disable lives and hide the lives counter
 #define DISABLE_LIVES
 // Air/Breath meter is separate from health meter when underwater
@@ -127,12 +131,10 @@
 //#define SKIP_TITLE_SCREEN
 // Uncomment this if you want to keep the mario head and not skip it
 //#define KEEP_MARIO_HEAD
-#ifdef KEEP_MARIO_HEAD // safeguard
-//Goddard easter egg from Shindou (has no effect if KEEP_MARIO_HEAD is disabled)
+// Goddard easter egg from Shindou (has no effect if KEEP_MARIO_HEAD is disabled)
 #define GODDARD_EASTER_EGG
 // Disables the demo that plays when idle on the start screen (has no effect if KEEP_MARIO_HEAD is disabled)
 #define DISABLE_DEMO
-#endif // KEEP_MARIO_HEAD
 
 // -- CAMERA SETTINGS --
 // Remove course specific camera processing
@@ -204,3 +206,9 @@
 //#define UNLOCK_ALL
 
 // If you want to change the extended boundaries mode, go to engine/extended_bounds.h and change EXTENDED_BOUNDS_MODE
+
+// -- Compatibility safeguards. Don't mess with these unless you know what you're doing.--
+#ifndef KEEP_MARIO_HEAD
+#undef GODDARD_EASTER_EGG
+#define DISABLE_DEMO
+#endif

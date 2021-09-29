@@ -1525,12 +1525,12 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
                 pos[1] += 125.f;
         }
     }
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     // Prevent the camera from going to the ground in the outside boss fight
     if (gCurrLevelNum == LEVEL_BBH) {
         pos[1] = 2047.f;
     }
-
+#endif
     // Rotate from C-Button input
     if (sCSideButtonYaw < 0) {
         sModeOffsetYaw += 0x200;
@@ -1610,11 +1610,15 @@ void mode_parallel_tracking_camera(struct Camera *c) {
  * Fixed camera mode, the camera rotates around a point and looks and zooms toward Mario.
  */
 void mode_fixed_camera(struct Camera *c) {
+#ifdef DISABLE_LEVEL_SPECIFIC_CHECKS
+    set_fov_function(CAM_FOV_APP_45);
+#else
     if (gCurrLevelNum == LEVEL_BBH) {
         set_fov_function(CAM_FOV_BBH);
     } else {
         set_fov_function(CAM_FOV_APP_45);
     }
+#endif
     c->nextYaw = update_fixed_camera(c, c->focus, c->pos);
     c->yaw = c->nextYaw;
     pan_ahead_of_player(c);
@@ -2149,9 +2153,11 @@ s16 update_default_camera(struct Camera *c) {
     }
     if ((gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) && (sSelectionFlags & CAM_MODE_MARIO_ACTIVE)) {
         posHeight = 610.f;
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelArea == AREA_SSL_PYRAMID || gCurrLevelNum == LEVEL_CASTLE) {
             posHeight /= 2;
         }
+#endif
     }
 
     // Make Lakitu fly above the gas
@@ -2806,9 +2812,9 @@ void update_camera(struct Camera *c) {
     gCamera = c;
     update_camera_hud_status(c);
     if (c->cutscene == 0 &&
-        #ifdef PUPPYCAM
+#ifdef PUPPYCAM
         !gPuppyCam.enabled &&
-        #endif
+#endif
         !(gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
         if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
@@ -2831,9 +2837,9 @@ void update_camera(struct Camera *c) {
         sStatusFlags |= CAM_FLAG_FRAME_AFTER_CAM_INIT;
     }
 
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
-    #endif
+#endif
     // Store previous geometry information
     sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
     sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
@@ -2903,62 +2909,65 @@ void update_camera(struct Camera *c) {
             }
         }
     }
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     }
-    #endif
+#endif
     // Start any Mario-related cutscenes
     start_cutscene(c, get_cutscene_from_mario_status(c));
     gCheckingSurfaceCollisionsForCamera = FALSE;
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
-    #endif
-    if (gCurrLevelNum != LEVEL_CASTLE) {
-        // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
-        // trigger is held
-        if ((c->cutscene == 0 &&
-            (gPlayer1Controller->buttonDown & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED)
-            || (gCameraMovementFlags & CAM_MOVE_FIX_IN_PLACE)
-            || (sMarioCamState->action) == ACT_GETTING_BLOWN) {
+#endif
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
+        if (gCurrLevelNum != LEVEL_CASTLE) {
+#endif
+            // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
+            // trigger is held
+            if ((c->cutscene == 0 &&
+                (gPlayer1Controller->buttonDown & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED)
+                || (gCameraMovementFlags & CAM_MOVE_FIX_IN_PLACE)
+                || (sMarioCamState->action) == ACT_GETTING_BLOWN) {
 
-            // If this is the first frame that R_TRIG is held, play the "click" sound
-            if (c->cutscene == 0 && (gPlayer1Controller->buttonPressed & R_TRIG)
-                && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
-                sCameraSoundFlags |= CAM_SOUND_FIXED_ACTIVE;
-                play_sound_rbutton_changed();
+                // If this is the first frame that R_TRIG is held, play the "click" sound
+                if (c->cutscene == 0 && (gPlayer1Controller->buttonPressed & R_TRIG)
+                    && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
+                    sCameraSoundFlags |= CAM_SOUND_FIXED_ACTIVE;
+                    play_sound_rbutton_changed();
+                }
+
+                // Fixed mode only prevents Lakitu from moving. The camera pos still updates, so
+                // Lakitu will fly to his next position as normal whenever R_TRIG is released.
+                gLakituState.posHSpeed = 0.f;
+                gLakituState.posVSpeed = 0.f;
+
+                vec3f_get_yaw(gLakituState.focus, gLakituState.pos, &c->nextYaw);
+                c->yaw = c->nextYaw;
+                gCameraMovementFlags &= ~CAM_MOVE_FIX_IN_PLACE;
+            } else {
+                // Play the "click" sound when fixed mode is released
+                if (sCameraSoundFlags & CAM_SOUND_FIXED_ACTIVE) {
+                    play_sound_rbutton_changed();
+                    sCameraSoundFlags &= ~CAM_SOUND_FIXED_ACTIVE;
+                }
             }
-
-            // Fixed mode only prevents Lakitu from moving. The camera pos still updates, so
-            // Lakitu will fly to his next position as normal whenever R_TRIG is released.
-            gLakituState.posHSpeed = 0.f;
-            gLakituState.posVSpeed = 0.f;
-
-            vec3f_get_yaw(gLakituState.focus, gLakituState.pos, &c->nextYaw);
-            c->yaw = c->nextYaw;
-            gCameraMovementFlags &= ~CAM_MOVE_FIX_IN_PLACE;
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         } else {
-            // Play the "click" sound when fixed mode is released
-            if (sCameraSoundFlags & CAM_SOUND_FIXED_ACTIVE) {
-                play_sound_rbutton_changed();
-                sCameraSoundFlags &= ~CAM_SOUND_FIXED_ACTIVE;
+            if ((gPlayer1Controller->buttonPressed & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
+                play_sound_button_change_blocked();
             }
         }
-    } else {
-        if ((gPlayer1Controller->buttonPressed & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
-            play_sound_button_change_blocked();
-        }
-    }
+#endif
 
-    update_lakitu(c);
-    #ifdef PUPPYCAM
+        update_lakitu(c);
+#ifdef PUPPYCAM
     }
-    //Just a cute little bit that syncs puppycamera up to vanilla when playing a vanilla cutscene :3
+    // Just a cute little bit that syncs puppycamera up to vanilla when playing a vanilla cutscene :3
     if (c->cutscene != 0) {
         gPuppyCam.yawTarget = gCamera->yaw;
         gPuppyCam.yaw = gCamera->yaw;
-        if (gMarioState->action == ACT_ENTERING_STAR_DOOR)
-        { //god this is stupid and the fact I have to continue doing this is testament to the idiocy of the star door cutscene >:(
-            gPuppyCam.yawTarget = gMarioState->faceAngle[1]+0x8000;
-            gPuppyCam.yaw = gMarioState->faceAngle[1]+0x8000;
+        if (gMarioState->action == ACT_ENTERING_STAR_DOOR) { // god this is stupid and the fact I have to continue doing this is testament to the idiocy of the star door cutscene >:(
+            gPuppyCam.yawTarget = gMarioState->faceAngle[1] + 0x8000;
+            gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         }
     }
     if (c->cutscene == 0 && gPuppyCam.enabled && !(gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)) {
@@ -2983,7 +2992,7 @@ void update_camera(struct Camera *c) {
         gLakituState.roll += sHandheldShakeRoll;
         gLakituState.roll += gLakituState.keyDanceRoll;
     }
-    #endif
+#endif
     gLakituState.lastFrameAction = sMarioCamState->action;
 }
 
@@ -3246,9 +3255,11 @@ void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera) {
                 camera->focus[2] = gCamera->areaCenZ;
                 vec3f_get_yaw(camera->focus, sMarioCamState->pos, &yaw);
                 vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
                 if (gCurrLevelNum != LEVEL_THI) {
                     find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
                 }
+#endif
             }
         } else {
             sFramesPaused++;
@@ -4926,11 +4937,11 @@ void check_blocking_area_processing(const u8 *mode) {
                         *mode == CAMERA_MODE_BEHIND_MARIO || *mode == CAMERA_MODE_WATER_SURFACE) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if (gCurrLevelNum == LEVEL_DDD || gCurrLevelNum == LEVEL_WDW || gCurrLevelNum == LEVEL_COTMC) {
         sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-
+#endif
     if ((*mode == CAMERA_MODE_BEHIND_MARIO &&
             !(sMarioCamState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER))) ||
          *mode == CAMERA_MODE_INSIDE_CANNON) {
@@ -7358,12 +7369,14 @@ void cutscene_bowser_arena_start(struct Camera *c) {
  * Create the dialog box depending on which bowser fight Mario is in.
  */
 void bowser_fight_intro_dialog(UNUSED struct Camera *c) {
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     switch (gCurrLevelNum) {
         case LEVEL_BOWSER_1: create_dialog_box(DIALOG_067); break;
         case LEVEL_BOWSER_2: create_dialog_box(DIALOG_092); break;
         case LEVEL_BOWSER_3: create_dialog_box(DIALOG_093); break;
         default:                                            break;
     }
+#endif
 }
 
 /**
@@ -7640,11 +7653,12 @@ void cutscene_goto_cvar_pos(struct Camera *c, f32 goalDist, s16 goalPitch, s16 r
         nextPitch = goalPitch;
         vec3f_copy(sCutsceneVars[0].point, sCutsceneVars[3].point);
         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelNum == LEVEL_TTM) {
             nextYaw = atan2s(sCutsceneVars[3].point[2] - c->areaCenZ,
                              sCutsceneVars[3].point[0] - c->areaCenX);
         }
+#endif
     } else {
         if (c->cutscene == CUTSCENE_PREPARE_CANNON) {
             vec3f_get_dist_and_angle(c->pos, sCutsceneVars[0].point, &curDist, &curPitch, &curYaw);
@@ -7928,14 +7942,14 @@ void cutscene_suffocation(struct Camera *c) {
 
 void cutscene_enter_pool_start(struct Camera *c) {
     vec3f_copy(sCutsceneVars[3].point, sMarioCamState->pos);
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if (gCurrLevelNum == LEVEL_CASTLE) { // entering HMC
         vec3f_set(sCutsceneVars[3].point, 2485.f, -1589.f, -2659.f);
     }
     if (gCurrLevelNum == LEVEL_HMC) { // entering CotMC
         vec3f_set(sCutsceneVars[3].point, 3350.f, -4589.f, 4800.f);
     }
-
+#endif
     vec3f_copy(sCutsceneVars[0].point, c->focus);
 }
 

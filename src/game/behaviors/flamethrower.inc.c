@@ -39,9 +39,13 @@ void bhv_flamethrower_loop(void) {
     s32 flameTimeRemaining;
     s32 model;
     if (o->oAction == 0) {
-        if (gCurrLevelNum != LEVEL_BBH || gMarioOnMerryGoRound == TRUE)
-            if (o->oDistanceToMario < 2000.0f)
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
+        if (gCurrLevelNum != LEVEL_BBH || gMarioOnMerryGoRound == TRUE) {
+            if (o->oDistanceToMario < 2000.0f) {
                 o->oAction++;
+            }
+        }
+#endif
     } else if (o->oAction == 1) {
         model = MODEL_RED_FLAME;
         flameVel = 95.0f;
@@ -50,12 +54,13 @@ void bhv_flamethrower_loop(void) {
         if (o->oBehParams2ndByte == 2)
             flameVel = 50.0f;
         flameTimeRemaining = 1;
-        if (o->oTimer < 60)
+        if (o->oTimer < 60) {
             flameTimeRemaining = 15;
-        else if (o->oTimer < 74)
+        } else if (o->oTimer < 74) {
             flameTimeRemaining = 75 - o->oTimer; // Range: [15..2]
-        else
+        } else {
             o->oAction++;
+        }
         o->oFlameThowerTimeRemaining = flameTimeRemaining;
         flame = spawn_object_relative(o->oBehParams2ndByte, 0, 0, 0, o, model, bhvFlamethrowerFlame);
         flame->oForwardVel = flameVel;

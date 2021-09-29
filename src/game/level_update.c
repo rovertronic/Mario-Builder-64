@@ -433,7 +433,7 @@ void init_mario_after_warp(void) {
             play_cap_music(SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP));
         }
 
-#ifndef VERSION_JP
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelNum == LEVEL_BOB
             && get_current_background_music() != SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE)
             && sTimerRunning) {
@@ -443,7 +443,7 @@ void init_mario_after_warp(void) {
 
         if (sWarpDest.levelNum == LEVEL_CASTLE && sWarpDest.areaIdx == 1 && (sWarpDest.nodeId == 31 || sWarpDest.nodeId == 32))
             play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
-#ifndef VERSION_JP
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (sWarpDest.levelNum == LEVEL_CASTLE_GROUNDS && sWarpDest.areaIdx == 1
             && (sWarpDest.nodeId == 7 || sWarpDest.nodeId == 10 || sWarpDest.nodeId == 20
                 || sWarpDest.nodeId == 30)) {
@@ -573,6 +573,7 @@ s16 music_unchanged_through_warp(s16 arg) {
     s16 unchanged = TRUE;
     s16 currBgMusic;
 
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if (levelNum == LEVEL_BOB && levelNum == gCurrLevelNum && destArea == gCurrAreaIndex) {
         currBgMusic = get_current_background_music();
         if (currBgMusic == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION)
@@ -580,6 +581,7 @@ s16 music_unchanged_through_warp(s16 arg) {
             unchanged = FALSE;
         }
     } else {
+#endif
         u16 destParam1 = gAreas[destArea].musicParam;
         u16 destParam2 = gAreas[destArea].musicParam2;
 
@@ -589,7 +591,9 @@ s16 music_unchanged_through_warp(s16 arg) {
         if (get_current_background_music() != destParam2) {
             unchanged = FALSE;
         }
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     }
+#endif
     return unchanged;
 }
 
@@ -969,16 +973,17 @@ void basic_update(UNUSED s16 *arg) {
 }
 
 s32 play_mode_normal(void) {
+#ifndef DISABLE_DEMO
     if (gCurrDemoInput != NULL) {
         print_intro_text();
         if (gPlayer1Controller->buttonPressed & END_DEMO) {
-            level_trigger_warp(gMarioState,
-                               gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
+            level_trigger_warp(gMarioState, gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
         } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
                    && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
         }
     }
+#endif
 
     warp_area();
     check_instant_warp();

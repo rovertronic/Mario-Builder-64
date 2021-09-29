@@ -155,6 +155,7 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
         if (gMarioObject == NULL) {
             switchCase->selectedCase = 0;
         } else {
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
             if (gCurrLevelNum == LEVEL_BBH) {
                 // In BBH, check for a floor manually, since there is an intangible floor. In custom hacks this can be removed.
                 find_room_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &floor);
@@ -162,7 +163,9 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
                 // Since no intangible floors are nearby, use Mario's floor instead.
                 floor = gMarioState->floor;
             }
-
+#else
+            floor = gMarioState->floor;
+#endif
             if (floor) {
                 gMarioCurrentRoom = floor->room;
                 roomCase = floor->room - 1;
@@ -2458,11 +2461,11 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
 }
 
 // Extra functions for HackerSM64
-void obj_set_model(struct Object *obj, s32 modelID) {
+void obj_set_model(struct Object *obj, ModelID16 modelID) {
     obj->header.gfx.sharedChild = gLoadedGraphNodes[modelID];
 }
 
-s32 obj_has_model(struct Object *obj, u16 modelID) {
+s32 obj_has_model(struct Object *obj, ModelID16 modelID) {
     return (obj->header.gfx.sharedChild == gLoadedGraphNodes[modelID]);
 }
 

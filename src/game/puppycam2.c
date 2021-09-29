@@ -486,10 +486,11 @@ void puppycam_init(void) {
     gPuppyCam.targetObj2 = NULL;
 
     gPuppyCam.intendedFlags = PUPPYCAM_BEHAVIOUR_DEFAULT;
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if (gCurrLevelNum == LEVEL_PSS || (gCurrLevelNum == LEVEL_TTM && gCurrAreaIndex == 2) || (gCurrLevelNum == LEVEL_CCM && gCurrAreaIndex == 2)) {
         gPuppyCam.intendedFlags |= PUPPYCAM_BEHAVIOUR_SLIDE_CORRECTION;
     }
+#endif
     gPuppyCam.flags                 = gPuppyCam.intendedFlags;
     gPuppyCam.zoom                  = gPuppyCam.zoomPoints[1];
     gPuppyCam.zoomSet               = 1;

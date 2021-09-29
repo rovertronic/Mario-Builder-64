@@ -216,7 +216,11 @@ void coin_inside_boo_act_0(void) {
     s16 marioMoveYaw;
     struct Object *parent = o->parentObj;
     cur_obj_become_intangible();
+#ifdef DISABLE_LEVEL_SPECIFIC_CHECKS
+    if (o->oTimer == 0) {
+#else
     if (o->oTimer == 0 && gCurrLevelNum == LEVEL_BBH) {
+#endif
         cur_obj_set_model(MODEL_BLUE_COIN);
         cur_obj_scale(0.7f);
     }

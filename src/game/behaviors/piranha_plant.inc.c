@@ -309,13 +309,15 @@ void (*TablePiranhaPlantActions[])(void) = {
  */
 void bhv_piranha_plant_loop(void) {
     cur_obj_call_action_function(TablePiranhaPlantActions);
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     // In WF, hide all Piranha Plants once high enough up.
     if (gCurrLevelNum == LEVEL_WF) {
-        if (gMarioObject->oPosY > 3400.0f)
+        if (gMarioObject->oPosY > 3400.0f) {
             cur_obj_hide();
-        else
+        } else {
             cur_obj_unhide();
+        }
     }
+#endif
     o->oInteractStatus = 0;
 }

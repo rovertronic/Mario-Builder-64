@@ -7,6 +7,14 @@ void cap_switch_act_0(void) {
     cur_obj_scale(0.5f);
     o->oPosY += 71.0f;
     spawn_object_relative_with_scale(0, 0, -71, 0, 0.5f, o, MODEL_CAP_SWITCH_BASE, bhvCapSwitchBase);
+#ifdef DISABLE_LEVEL_SPECIFIC_CHECKS
+    if (save_file_get_flags() & sCapSaveFlags[o->oBehParams2ndByte]) {
+        o->oAction = 3;
+        o->header.gfx.scale[1] = 0.1f;
+    } else {
+        o->oAction = 1;
+    }
+#else
     if (gCurrLevelNum != LEVEL_UNKNOWN_32) {
         if (save_file_get_flags() & sCapSaveFlags[o->oBehParams2ndByte]) {
             o->oAction = 3;
@@ -17,6 +25,7 @@ void cap_switch_act_0(void) {
     } else {
         o->oAction = 1;
     }
+#endif
 }
 
 void cap_switch_act_1(void) {
