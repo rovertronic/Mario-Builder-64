@@ -37,19 +37,18 @@ static s32 sTmCopyrightAlpha;
 /**
  * Geo callback to render the "Super Mario 64" logo on the title screen
  */
-Gfx *geo_intro_super_mario_64_logo(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_super_mario_64_logo(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNode *graphNode = node;
     Gfx *dl = NULL;
     Gfx *dlIter = NULL;
-    Mtx *scaleMat;
-    f32 *scaleTable1 = segmented_to_virtual(intro_seg7_table_scale_1);
-    f32 *scaleTable2 = segmented_to_virtual(intro_seg7_table_scale_2);
 
-    if (state != 1) {
+    if (callContext != GEO_CONTEXT_RENDER) {
         sIntroFrameCounter = 0;
-    } else if (state == 1) {
+    } else if (callContext == GEO_CONTEXT_RENDER) {
+        f32 *scaleTable1 = segmented_to_virtual(intro_seg7_table_scale_1);
+        f32 *scaleTable2 = segmented_to_virtual(intro_seg7_table_scale_2);
         SET_GRAPH_NODE_LAYER(graphNode->flags, LAYER_OPAQUE);
-        scaleMat = alloc_display_list(sizeof(*scaleMat));
+        Mtx *scaleMat = alloc_display_list(sizeof(*scaleMat));
         dl = alloc_display_list(4 * sizeof(*dl));
         dlIter = dl;
         Vec3f scale;
@@ -83,14 +82,14 @@ Gfx *geo_intro_super_mario_64_logo(s32 state, struct GraphNode *node, UNUSED voi
 /**
  * Geo callback to render TM and Copyright on the title screen
  */
-Gfx *geo_intro_tm_copyright(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_tm_copyright(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNode *graphNode = node;
     Gfx *dl = NULL;
     Gfx *dlIter = NULL;
 
-    if (state != 1) {  // reset
+    if (callContext != GEO_CONTEXT_RENDER) {  // reset
         sTmCopyrightAlpha = 0;
-    } else if (state == 1) {  // draw
+    } else if (callContext == GEO_CONTEXT_RENDER) {  // draw
         dl = alloc_display_list(5 * sizeof(*dl));
         dlIter = dl;
         gSPDisplayList(dlIter++, dl_proj_mtx_fullscreen);
@@ -179,7 +178,7 @@ static s8 *introBackgroundTables[] = { introBackgroundIndexTable };
 /**
  * Geo callback to render the intro background tiles
  */
-Gfx *geo_intro_regular_backdrop(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_regular_backdrop(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeMore *graphNode = (struct GraphNodeMore *) node;
     s32 index = graphNode->bgTableID & 0xff; // TODO: word at offset 0x18 of struct GraphNode (always ends up being 0)
     s8 *backgroundTable = introBackgroundTables[index];
@@ -187,7 +186,7 @@ Gfx *geo_intro_regular_backdrop(s32 state, struct GraphNode *node, UNUSED void *
     Gfx *dlIter = NULL;
     s32 i;
 
-    if (state == 1) {  // draw
+    if (callContext == GEO_CONTEXT_RENDER) {  // draw
         dl = alloc_display_list(16 * sizeof(*dl));
         dlIter = dl;
         SET_GRAPH_NODE_LAYER(graphNode->node.flags, LAYER_OPAQUE);
@@ -212,14 +211,13 @@ static s8 gameOverBackgroundTable[] = {
 /**
  * Geo callback to render the Game Over background tiles
  */
-Gfx *geo_intro_gameover_backdrop(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_gameover_backdrop(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNode *graphNode = node;
     Gfx *dl = NULL;
     Gfx *dlIter = NULL;
-    s32 j;
-    s32 i;
+    s32 i, j;
 
-    if (state != 1) {  // reset
+    if (callContext != GEO_CONTEXT_RENDER) {  // reset
         sGameOverFrameCounter = 0;
         sGameOverTableIndex = -2;
         for (i = 0; i < ARRAY_COUNT(gameOverBackgroundTable); ++i)
@@ -376,17 +374,16 @@ u16 *intro_sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH)
     return image;
 }
 
-Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_face_easter_egg(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeGenerated *genNode = (struct GraphNodeGenerated *)node;
     Gfx *dl = NULL;
     s32 i;
 
-    if (state != 1) {
+    if (callContext != GEO_CONTEXT_RENDER) {
         for (i = 0; i < 48; i++) {
             sFaceVisible[i] = 0;
         }
-
-    } else if (state == 1) {
+    } else if (callContext == GEO_CONTEXT_RENDER) {
         if (sFaceCounter == 0) {
             if (gPlayer1Controller->buttonPressed & Z_TRIG) {
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
@@ -399,7 +396,6 @@ Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *c
                 sFaceCounter = 0;
             }
         }
-
         // Draw while the first or last face is visible.
         if (sFaceVisible[0] == 1 || sFaceVisible[17] == 1) {
             u16 *image = intro_sample_frame_buffer(40, 40, 2, 2);
@@ -415,18 +411,17 @@ Gfx *geo_intro_face_easter_egg(s32 state, struct GraphNode *node, UNUSED void *c
 #endif
 
 #if ENABLE_RUMBLE
-Gfx *geo_intro_rumble_pak_graphic(s32 state, struct GraphNode *node, UNUSED void *context) {
+Gfx *geo_intro_rumble_pak_graphic(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeGenerated *genNode = (struct GraphNodeGenerated *)node;
     Gfx *dlIter;
     Gfx *dl = NULL;
-    s32 introContext;
     s8 backgroundTileSix = 0;
 
-    if (state != 1) {
+    if (callContext != GEO_CONTEXT_RENDER) {
         dl = NULL;
-    } else if (state == 1) {
+    } else if (callContext == GEO_CONTEXT_RENDER) {
         SET_GRAPH_NODE_LAYER(genNode->fnNode.node.flags, LAYER_OPAQUE);
-        introContext = genNode->parameter & 0xFF;
+        s32 introContext = (genNode->parameter & 0xFF);
         if (introContext == 0) {
             backgroundTileSix = introBackgroundIndexTable[6];
         } else if (introContext == 1) {
