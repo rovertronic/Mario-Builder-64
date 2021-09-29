@@ -55,7 +55,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         surfaceNode = surfaceNode->next;
         type        = surf->type;
         // Exclude a large number of walls immediately to optimize.
-        if ((type == SURFACE_NEW_WATER) || (type == SURFACE_NEW_WATER_BOTTOM)) continue;
+        if (SURFACE_IS_NEW_WATER(type)) continue;
         // Determine if checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera) {
             if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) continue;
@@ -227,7 +227,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         surfaceNode = surfaceNode->next;
         type = surf->type;
         // Determine if checking for the camera or not.
-        if (type == SURFACE_NEW_WATER || type == SURFACE_NEW_WATER_BOTTOM) continue;
+        if (SURFACE_IS_NEW_WATER(type)) continue;
         if (gCheckingSurfaceCollisionsForCamera) {
             if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) continue;
         } else if (type == SURFACE_CAMERA_BOUNDARY) {
@@ -345,7 +345,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         if (!gFindFloorIncludeSurfaceIntangible && (type == SURFACE_INTANGIBLE)) continue;
         // Determine if we are checking for the camera or not.
         if (gCheckingSurfaceCollisionsForCamera) {
-            if ((surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) || (surf->type == SURFACE_NEW_WATER) || (surf->type == SURFACE_NEW_WATER_BOTTOM)) continue;
+            if ((surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) || SURFACE_IS_NEW_WATER(type)) continue;
         } else if (surf->type == SURFACE_CAMERA_BOUNDARY) {
             continue; // If we are not checking for the camera, ignore camera only floors.
         }

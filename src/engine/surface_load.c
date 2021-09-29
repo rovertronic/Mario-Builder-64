@@ -114,7 +114,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
     s32 priority;
     s32 sortDir;
     s32 listIndex;
-    s32 isWater = surface->type == SURFACE_NEW_WATER || surface->type == SURFACE_NEW_WATER_BOTTOM;
+    s32 isWater = SURFACE_IS_NEW_WATER(surface->type);
 
     if (surface->normal.y > 0.01) {
         listIndex = isWater ? SPATIAL_PARTITION_WATER : SPATIAL_PARTITION_FLOORS;
