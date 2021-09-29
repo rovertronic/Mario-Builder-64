@@ -4935,10 +4935,11 @@ void set_fixed_cam_axis_sa_lobby(UNUSED s16 preset) {
  *      Only block area mode changes if Mario is in a cannon,
  *      or if the camera is in Mario mode and Mario is not swimming or in water with the metal cap
  */
-void check_blocking_area_processing(UNUSED const u8 *mode) {
 #ifdef CAMERA_FIX
+void check_blocking_area_processing(UNUSED const UNUSED u8 *mode) {
     sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
 #else
+void check_blocking_area_processing(UNUSED const u8 *mode) {
     if ((sMarioCamState->action & ACT_FLAG_METAL_WATER) || (sMarioCamState->action == ACT_DEBUG_FREE_MOVE) ||
                         *mode == CAMERA_MODE_BEHIND_MARIO || *mode == CAMERA_MODE_WATER_SURFACE) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
