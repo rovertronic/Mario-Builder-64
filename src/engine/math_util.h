@@ -58,7 +58,7 @@ extern f32 gSineTable[];
 #define ABSF(x) ((x) > 0.0f ? (x) : -(x))
 #define ABSI(x) ((x) > 0    ? (x) : -(x))
 #define ABS(x)  ABSF((x))
-#define absf(x) ABSF((x))
+// #define absf(x) ABSF((x))
 #define absi(x) ABSI((x))
 #define abs(x)  ABS((x))
 
