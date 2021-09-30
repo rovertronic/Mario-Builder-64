@@ -1080,9 +1080,11 @@ void level_set_transition(s16 length, void (*updateFunction)(s16 *)) {
  * Play the transition and then return to normal play mode.
  */
 s32 play_mode_change_area(void) {
-    // sm64ex-axo
+    // sm64ex-alo
     // Change function to have similar change_level defines
-    if (sTransitionUpdate != NULL) sTransitionUpdate(&sTransitionTimer);
+    if (sTransitionUpdate != NULL) {
+        sTransitionUpdate(&sTransitionTimer);
+    }
     if (--sTransitionTimer == -1) {
         update_camera(gCurrentArea->camera);
         sTransitionTimer  = 0;
@@ -1129,7 +1131,7 @@ UNUSED static s32 play_mode_unused(void) {
         }
     }
 
-    return 0;
+    return FALSE;
 }
 
 s32 update_level(void) {
