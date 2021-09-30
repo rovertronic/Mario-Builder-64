@@ -920,7 +920,7 @@ void cur_obj_update(void) {
     f32 distanceFromMario;
     BhvCommandProc bhvCmdProc;
     s32 bhvProcResult;
-    s32 objListIndex;
+    s32 objListIndex = OBJ_LIST_PLAYER;
 
     // Calculate the distance from the object to Mario.
     if (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) {
@@ -1000,10 +1000,9 @@ void cur_obj_update(void) {
     if ((bhvScript[0] >> 24) == 0) {
         objListIndex = (bhvScript[0] >> 16) & 0xFFFF;
     }
-    if (objListIndex == OBJ_LIST_SURFACE && !(objFlags & OBJ_FLAG_UCODE_SMALL))
-    {
+    if (objListIndex == OBJ_LIST_SURFACE && !(objFlags & OBJ_FLAG_UCODE_SMALL)) {
         gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_UCODE_REJ;
-        gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_UCODE_ZEX;
+        gCurrentObject->header.gfx.node.flags |=  GRAPH_RENDER_UCODE_ZEX;
     }
 
 #ifdef OBJ_OPACITY_BY_CAM_DIST
