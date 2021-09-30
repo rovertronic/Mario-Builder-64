@@ -210,7 +210,6 @@ extern s32 gSurfacesAllocated;
 void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
     struct SurfaceNode *node;
     struct Surface *surf;
-    s32 cellX, cellZ;
     s32 i = 0;
     s32 col[3] = {0xFF, 0x00, 0x00};
 
@@ -337,7 +336,6 @@ void visual_surface_display(Vtx *verts, s32 iteration)
 s32 iterate_surface_count(s32 x, s32 z)
 {
     struct SurfaceNode *node;
-    s32 cellX, cellZ;
     s32 i = 0;
     s32 j = 0;
     TerrainData *p = gEnvironmentRegions;
@@ -350,8 +348,8 @@ s32 iterate_surface_count(s32 x, s32 z)
         return 0;
     }
 
-    cellX = GET_CELL_COORD(x);
-    cellZ = GET_CELL_COORD(z);
+    s32 cellX = GET_CELL_COORD(x);
+    s32 cellZ = GET_CELL_COORD(z);
 
     for (i = 0; i < 8; i++)
     {
