@@ -9,12 +9,8 @@
 // used for chain chomp and wiggler
 struct ChainSegment
 {
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    s16 pitch;
-    s16 yaw;
-    s16 roll;
+    Vec3f pos;
+    Vec3s angle;
 };
 
 #define WATER_DROPLET_FLAG_RAND_ANGLE               (1 << 1) // 0x02

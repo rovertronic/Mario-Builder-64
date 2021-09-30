@@ -1717,13 +1717,8 @@ s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
 }
 
 void chain_segment_init(struct ChainSegment *segment) {
-    segment->posX = 0.0f;
-    segment->posY = 0.0f;
-    segment->posZ = 0.0f;
-
-    segment->pitch = 0;
-    segment->yaw = 0;
-    segment->roll = 0;
+    vec3_zero(segment->pos);
+    vec3_zero(segment->angle);
 }
 
 f32 random_f32_around_zero(f32 diameter) {

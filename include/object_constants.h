@@ -1282,7 +1282,7 @@
 /* Pokey Body Part */
     /* oBehParams2ndByte */
     #define POKEY_PART_BP_HEAD                              0x0
-    #define POKEY_PART_BP_LOWEST                            POKEY_NUM_PARTS-0x1
+    #define POKEY_PART_BP_LOWEST                            (POKEY_NUM_SEGMENTS - 0x1)
 
 /* Swoop */
     /* oAction */
