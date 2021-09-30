@@ -2710,11 +2710,9 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
 void update_lakitu(struct Camera *c) {
     struct Surface *floor = NULL;
     Vec3f newPos, newFoc;
-    f32 distToFloor;
-    s16 newYaw;
 
     if (!(gCameraMovementFlags & CAM_MOVE_PAUSE_SCREEN)) {
-        newYaw = next_lakitu_state(newPos, newFoc, c->pos, c->focus, sOldPosition, sOldFocus, c->nextYaw);
+        s16 newYaw = next_lakitu_state(newPos, newFoc, c->pos, c->focus, sOldPosition, sOldFocus, c->nextYaw);
         set_or_approach_s16_symmetric(&c->yaw, newYaw, sYawSpeed);
         sStatusFlags &= ~CAM_FLAG_UNUSED_CUTSCENE_ACTIVE;
 
@@ -2775,9 +2773,9 @@ void update_lakitu(struct Camera *c) {
 
         if (c->mode != CAMERA_MODE_C_UP && c->cutscene == 0) {
             gCheckingSurfaceCollisionsForCamera = TRUE;
-            distToFloor = find_floor(gLakituState.pos[0],
-                                     gLakituState.pos[1] + 20.0f,
-                                     gLakituState.pos[2], &floor);
+            f32 distToFloor = find_floor(gLakituState.pos[0],
+                                         gLakituState.pos[1] + 20.0f,
+                                         gLakituState.pos[2], &floor);
             if (distToFloor != FLOOR_LOWER_LIMIT) {
                 if (gLakituState.pos[1] < (distToFloor += 100.0f)) {
                     gLakituState.pos[1] = distToFloor;
@@ -2844,8 +2842,8 @@ void update_camera(struct Camera *c) {
 
     c->yaw = gLakituState.yaw;
     c->nextYaw = gLakituState.nextYaw;
-    c->mode = gLakituState.mode;
-    c->defMode = gLakituState.defMode;
+    c->mode = gLakituState.mode;// = c->mode;
+    c->defMode = gLakituState.defMode;// = c->defMode;
 #ifdef CAMERA_FIX
     if (gCurrDemoInput != NULL) camera_course_processing(c);
 #else

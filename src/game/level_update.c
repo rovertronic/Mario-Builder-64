@@ -757,15 +757,15 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             case WARP_OP_WARP_FLOOR:
                 sSourceWarpNodeId = WARP_NODE_WARP_FLOOR;
                 if (area_get_warp_node(sSourceWarpNodeId) == NULL) {
-                #ifndef DISABLE_LIVES
+#ifndef DISABLE_LIVES
                     if (m->numLives == 0) {
                         sDelayedWarpOp = WARP_OP_GAME_OVER;
                     } else {
                         sSourceWarpNodeId = WARP_NODE_DEATH;
                     }
-                #else
+#else
                         sSourceWarpNodeId = WARP_NODE_DEATH;
-                #endif
+#endif
                 }
 
                 sDelayedWarpTimer = 20;
@@ -1022,7 +1022,7 @@ s32 play_mode_normal(void) {
         }
     }
 
-    return 0;
+    return FALSE;
 }
 
 s32 play_mode_paused(void) {
@@ -1044,7 +1044,7 @@ s32 play_mode_paused(void) {
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
     }
 
-    return 0;
+    return FALSE;
 }
 
 /**
@@ -1080,24 +1080,16 @@ void level_set_transition(s16 length, void (*updateFunction)(s16 *)) {
  * Play the transition and then return to normal play mode.
  */
 s32 play_mode_change_area(void) {
-    //! This maybe was supposed to be sTransitionTimer == -1? sTransitionUpdate
-    // is never set to -1.
-    if (sTransitionUpdate == (void (*)(s16 *)) - 1) {
+    // sm64ex-axo
+    // Change function to have similar change_level defines
+    if (sTransitionUpdate != NULL) sTransitionUpdate(&sTransitionTimer);
+    if (--sTransitionTimer == -1) {
         update_camera(gCurrentArea->camera);
-    } else if (sTransitionUpdate != NULL) {
-        sTransitionUpdate(&sTransitionTimer);
-    }
-
-    if (sTransitionTimer > 0) {
-        sTransitionTimer--;
-    }
-
-    if (sTransitionTimer == 0) {
+        sTransitionTimer  = 0;
         sTransitionUpdate = NULL;
         set_play_mode(PLAY_MODE_NORMAL);
     }
-
-    return 0;
+    return FALSE;
 }
 
 /**
@@ -1120,7 +1112,7 @@ s32 play_mode_change_level(void) {
         }
     }
 
-    return 0;
+    return FALSE;
 }
 
 /**
@@ -1269,10 +1261,8 @@ s32 lvl_init_or_update(s16 initOrUpdate, UNUSED s32 unused) {
 }
 
 #if MULTILANG
-void load_language_text(void)
-{
-    switch (gInGameLanguage-1)
-    {
+void load_language_text(void) {
+    switch (gInGameLanguage - 1) {
         case LANGUAGE_ENGLISH:
             load_segment_decompress(0x19, _translation_en_yay0SegmentRomStart, _translation_en_yay0SegmentRomEnd);
             break;
@@ -1321,7 +1311,7 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
     gCurrCourseNum = gLevelToCourseNumTable[levelNum - 1];
 
     if (gCurrDemoInput != NULL || gCurrCreditsEntry != NULL || gCurrCourseNum == COURSE_NONE) {
-        return 0;
+        return FALSE;
     }
 
     if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2 && gCurrLevelNum != LEVEL_BOWSER_3) {
@@ -1336,14 +1326,14 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
     }
 
     if (gCurrCourseNum > COURSE_STAGES_MAX || warpCheckpointActive) {
-        return 0;
+        return FALSE;
     }
 
     if (gDebugLevelSelect) {
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 /**
@@ -1351,5 +1341,5 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
  */
 s32 lvl_play_the_end_screen_sound(UNUSED s16 arg0, UNUSED s32 arg1) {
     play_sound(SOUND_MENU_THANK_YOU_PLAYING_MY_GAME, gGlobalSoundSource);
-    return 1;
+    return TRUE;
 }
