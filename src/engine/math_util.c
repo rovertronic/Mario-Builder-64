@@ -57,9 +57,9 @@ f32 max_3f(f32 a0, f32 a1, f32 a2) { if (a1 > a0) a0 = a1; if (a2 > a0) a0 = a2;
 
 /// Copy vector 'src' to 'dest'
 void vec3f_copy(Vec3f dest, Vec3f src) {
-    register s32 x = ((u32 *) src)[0];
-    register s32 y = ((u32 *) src)[1];
-    register s32 z = ((u32 *) src)[2];
+    register u32 x = ((u32 *) src)[0];
+    register u32 y = ((u32 *) src)[1];
+    register u32 z = ((u32 *) src)[2];
     ((u32 *) dest)[0] = x;
     ((u32 *) dest)[1] = y;
     ((u32 *) dest)[2] = z;
@@ -67,9 +67,7 @@ void vec3f_copy(Vec3f dest, Vec3f src) {
 
 /// Set vector 'dest' to (x, y, z)
 inline void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
-    dest[0] = x;
-    dest[1] = y;
-    dest[2] = z;
+    vec3_set(dest, x, y, z);
 }
 
 /// Add vector 'a' to 'dest'
@@ -88,26 +86,36 @@ void vec3f_add(Vec3f dest, Vec3f a) {
 
 /// Make 'dest' the sum of vectors a and b.
 void vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
-    register f32 *temp = dest;
+    register f32 *temp = (f32 *)dest;
     register s32 j;
-    register f32 x,y;
+    register f32 x, y;
     for (j = 0; j < 3; j++) {
         x = *a;
         a++;
         y = *b;
         b++;
-        *temp = x+y;
+        *temp = x + y;
         temp++;
     }
 }
 
+/// Make 'dest' the difference of vectors a and b.
+void vec3f_diff(Vec3f dest, Vec3f a, Vec3f b) {
+    vec3_diff(dest, a, b);
+}
+
 /// Copy vector src to dest
 void vec3s_copy(Vec3s dest, Vec3s src) {
-    vec3_copy(dest, src);
+    register s16 x = src[0];
+    register s16 y = src[1];
+    register s16 z = src[2];
+    dest[0] = x;
+    dest[1] = y;
+    dest[2] = z;
 }
 
 /// Set vector 'dest' to (x, y, z)
-void vec3s_set(Vec3s dest, s16 x, s16 y, s16 z) {
+inline void vec3s_set(Vec3s dest, s16 x, s16 y, s16 z) {
     vec3_set(dest, x, y, z);
 }
 
@@ -128,6 +136,10 @@ void vec3s_sub(Vec3s dest, Vec3s a) {
 
 void vec3f_sub(Vec3f dest, Vec3f src) {
     vec3_sub(dest, src);
+}
+
+f32 vec3f_dot(Vec3f a, Vec3f b) {
+    return vec3_dot(a, b);
 }
 
 /**
@@ -184,10 +196,7 @@ void vec3f_normalize_negative(Vec3f dest) {
 }
 
 struct CopyMe {
-    f32 x;  f32 y;  f32 z;  f32 w;
-    f32 x1; f32 y1; f32 z1; f32 w1;
-    f32 x2; f32 y2; f32 z2; f32 w2;
-    f32 x3; f32 y3; f32 z3; f32 w3;
+    f32 a[4 * 4];
 };
 
 /// Copy matrix 'src' to 'dest'
@@ -213,8 +222,15 @@ void mtxf_identity(register Mat4 mtx) {
  * Set dest to a translation matrix of vector b
  */
 void mtxf_translate(Mat4 dest, Vec3f b) {
-    mtxf_identity(dest);
-    vec3_copy(dest[3], b);
+    register s32 i;
+    register f32 *pen;
+    for (pen = (f32 *) dest + 1, i = 0; i < 12; pen++, i++) {
+        *pen = 0;
+    }
+    for (pen = (f32 *) dest, i = 0; i < 4; pen += 5, i++) {
+        *((u32 *) pen) = 0x3F800000;
+    }
+    vec3f_copy(&dest[3][0], &b[0]);
 }
 
 void mtxf_rot_trans_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src) {
@@ -276,7 +292,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
     colY[0] = ( sr * dz);
     colY[2] = (-sr * dx);
     vec3_diff(colZ, to, from);
-    vec3_normalize_negative(colZ);
+    vec3f_normalize_negative(colZ);
     vec3f_cross(colX, colY, colZ);
     vec3f_normalize(colX);
     vec3f_cross(colY, colZ, colX);
@@ -290,9 +306,9 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s32 roll) {
     mtx[0][2] = colZ[0];
     mtx[1][2] = colZ[1];
     mtx[2][2] = colZ[2];
-    mtx[3][0] = -vec3_dot(from, colX);
-    mtx[3][1] = -vec3_dot(from, colY);
-    mtx[3][2] = -vec3_dot(from, colZ);
+    mtx[3][0] = -vec3f_dot(from, colX);
+    mtx[3][1] = -vec3f_dot(from, colY);
+    mtx[3][2] = -vec3f_dot(from, colZ);
     MTXF_END(mtx);
 }
 
@@ -591,7 +607,7 @@ void mtxf_to_mtx_scale(Mtx *dest, Mat4 src) {
     guMtxF2L(temp, dest);
 }
 
-void mtxf_to_mtx_constant(register s16 *dest, register f32 *src) {
+void mtxf_to_mtx_constant(register s16 *dest, register f32 *src) { //! TODO: asm
     s32 asFixedPoint;
     s32 i;
     for (i = 0; i < 16; i++) {
@@ -1153,25 +1169,25 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     vec3_copy(v0, surface->vertex1);
     vec3_copy(v1, surface->vertex2);
     vec3_copy(v2, surface->vertex3);
-    vec3_add( v0, norm);
-    vec3_add( v1, norm);
-    vec3_add( v2, norm);
-    vec3_diff(e1, v1, v0);
-    vec3_diff(e2, v2, v0);
-    vec3_cross(h, dir, e2);
+    vec3f_add( v0, norm);
+    vec3f_add( v1, norm);
+    vec3f_add( v2, norm);
+    vec3f_diff(e1, v1, v0);
+    vec3f_diff(e2, v2, v0);
+    vec3f_cross(h, dir, e2);
     // Check if we're perpendicular from the surface
-    a = vec3_dot(e1, h);
+    a = vec3f_dot(e1, h);
     if ((a > -NEAR_ZERO) && (a < NEAR_ZERO)) return FALSE;
     // Check if we're making contact with the surface
     f = 1.0f / a;
-    vec3_diff(s, orig, v0);
-    u = f * vec3_dot(s, h);
+    vec3f_diff(s, orig, v0);
+    u = f * vec3f_dot(s, h);
     if ((u < 0.0f) || (u > 1.0f)) return FALSE;
-    vec3_cross(q, s, e1);
-    v = f * vec3_dot(dir, q);
+    vec3f_cross(q, s, e1);
+    v = f * vec3f_dot(dir, q);
     if ((v < 0.0f) || ((u + v) > 1.0f)) return FALSE;
     // Get the length between our origin and the surface contact point
-    *length = f * vec3_dot(e2, q);
+    *length = f * vec3f_dot(e2, q);
     if (*length <= 0.00001 || *length > dir_length) return FALSE;
     // Successful contact
     vec3f_copy(add_dir, dir);
@@ -1185,9 +1201,9 @@ void find_surface_on_ray_list(struct SurfaceNode *list, Vec3f orig, Vec3f dir, f
     f32 length;
     Vec3f chk_hit_pos;
     f32 top, bottom;
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
-    #endif
+#endif
 
     // Get upper and lower bounds of ray
     if (dir[1] >= 0.0f) {
@@ -1263,7 +1279,7 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     cellPrevZ = cellZ;
 
     // Don't do DDA if straight down
-    if (normalized_dir[1] >= 0.99999f || normalized_dir[1] <= -0.99999f) {
+    if (normalized_dir[1] >= NEAR_ONE || normalized_dir[1] <= -NEAR_ONE) {
         find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
         return;
     }
@@ -1274,8 +1290,8 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     } else {
         step = RAY_STEPS * ABS(dir[2]) / CELL_SIZE;
     }
-    f32 dx = dir[0] / step / CELL_SIZE;
-    f32 dz = dir[2] / step / CELL_SIZE;
+    f32 dx = (dir[0] / step) / CELL_SIZE;
+    f32 dz = (dir[2] / step) / CELL_SIZE;
 
     for (i = 0; i < step && *hit_surface == NULL; i++) {
         find_surface_on_ray_cell(cellX, cellZ, orig, normalized_dir, dir_length, hit_surface, hit_pos, &max_length, flags);
