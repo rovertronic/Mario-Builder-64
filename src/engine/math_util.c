@@ -57,13 +57,19 @@ f32 max_3f(f32 a0, f32 a1, f32 a2) { if (a1 > a0) a0 = a1; if (a2 > a0) a0 = a2;
 
 /// Copy vector 'src' to 'dest'
 void vec3f_copy(Vec3f dest, Vec3f src) {
-    ((u64 *) dest)[0] = ((u64 *) src)[0];
-    ((u32 *) dest)[2] = ((u32 *) src)[2];
+    register s32 x = ((u32 *) src)[0];
+    register s32 y = ((u32 *) src)[1];
+    register s32 z = ((u32 *) src)[2];
+    ((u32 *) dest)[0] = x;
+    ((u32 *) dest)[1] = y;
+    ((u32 *) dest)[2] = z;
 }
 
 /// Set vector 'dest' to (x, y, z)
-void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
-    vec3_set(dest, x, y, z);
+inline void vec3f_set(Vec3f dest, f32 x, f32 y, f32 z) {
+    dest[0] = x;
+    dest[1] = y;
+    dest[2] = z;
 }
 
 /// Add vector 'a' to 'dest'
@@ -82,7 +88,17 @@ void vec3f_add(Vec3f dest, Vec3f a) {
 
 /// Make 'dest' the sum of vectors a and b.
 void vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
-    vec3_sum(dest, a, b);
+    register f32 *temp = dest;
+    register s32 j;
+    register f32 x,y;
+    for (j = 0; j < 3; j++) {
+        x = *a;
+        a++;
+        y = *b;
+        b++;
+        *temp = x+y;
+        temp++;
+    }
 }
 
 /// Copy vector src to dest
