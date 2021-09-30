@@ -18,6 +18,7 @@
 #define GRAPH_RENDER_SILHOUETTE         (1 << 6) // 0x0040
 #define GRAPH_RENDER_OCCLUDE_SILHOUETTE (1 << 7) // 0x0080
 #define GRAPH_RENDER_UCODE_REJ          (1 << 8) // 0x0100
+#define GRAPH_RENDER_UCODE_ZEX          (1 << 9) // 0x0200
 
 // The amount of bits to use for the above flags out of a s16 variable.
 // The remaining bits to the left are used for the render layers.
