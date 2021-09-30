@@ -428,7 +428,7 @@ s32 update_8_directions_camera     (struct Camera *c, Vec3f focus, Vec3f pos);
 s32 update_slide_or_0f_camera      (struct Camera *c, Vec3f focus, Vec3f pos);
 s32 update_spiral_stairs_camera    (struct Camera *c, Vec3f focus, Vec3f pos);
 
-typedef s32 (*CameraTransition)(struct Camera *c, Vec3f, Vec3f);
+typedef s32 (*CameraTransition)(struct Camera *c, Vec3f focus, Vec3f pos);
 CameraTransition sModeTransitions[] = {
     NULL,
     update_radial_camera,
@@ -679,8 +679,7 @@ void focus_on_mario(Vec3f focus, Vec3f pos, f32 posYOff, f32 focYOff, f32 dist, 
 static UNUSED void set_pos_to_mario(Vec3f foc, Vec3f pos, f32 yOff, f32 focYOff, f32 dist, s16 pitch, s16 yaw) {
     Vec3f marioPos;
     f32 posDist;
-    s16 posPitch;
-    s16 posYaw;
+    s16 posPitch, posYaw;
 
     vec3f_copy(marioPos, sMarioCamState->pos);
     marioPos[1] += yOff;
@@ -1260,11 +1259,7 @@ s32 update_parallel_tracking_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     pathPitch = -pathPitch;
     rotate_in_yz(marioOffset, marioOffset, pathPitch);
     pathPitch = -pathPitch;
-    vec3f_copy(focOffset, marioOffset);
-
-    // OK
-    focOffset[0] = 0.f;
-    focOffset[1] = 0.f;
+    focOffset[2] = marioOffset[2];
 
     // Repeat above calcs with camOffset
     camOffset[0] = pos[0] - parMidPoint[0];
@@ -2356,21 +2351,19 @@ void store_lakitu_cam_info_for_c_up(struct Camera *c) {
  *
  * @see update_mario_inputs
  */
-s32 set_mode_c_up(struct Camera *c) {
+void set_mode_c_up(struct Camera *c) {
     if (!(gCameraMovementFlags & CAM_MOVE_C_UP_MODE)) {
         gCameraMovementFlags |= CAM_MOVE_C_UP_MODE;
         store_lakitu_cam_info_for_c_up(c);
         sCameraSoundFlags &= ~CAM_SOUND_C_UP_PLAYED;
-        return 1;
     }
-    return 0;
 }
 
 /**
  * Zoom the camera out of C-Up mode, avoiding moving into a wall, if possible, by searching for an open
  * direction.
  */
-s32 exit_c_up(struct Camera *c) {
+void exit_c_up(struct Camera *c) {
     struct Surface *surface;
     Vec3f checkFoc;
     Vec3f curPos;
@@ -2378,12 +2371,10 @@ s32 exit_c_up(struct Camera *c) {
     s32 searching = 0;
     /// The current sector of the circle that we are checking
     s32 sector;
-    f32 ceilHeight;
-    f32 floorHeight;
+    f32 ceilHeight, floorHeight;
     f32 curDist;
     f32 d;
-    s16 curPitch;
-    s16 curYaw;
+    s16 curPitch, curYaw;
     s16 checkYaw = 0;
 
     if ((gCameraMovementFlags & CAM_MOVE_C_UP_MODE) && !(gCameraMovementFlags & CAM_MOVE_STARTED_EXITING_C_UP)) {
@@ -2462,7 +2453,6 @@ s32 exit_c_up(struct Camera *c) {
         }
         play_sound_cbutton_down();
     }
-    return 0;
 }
 
 /**
@@ -2541,7 +2531,7 @@ void move_into_c_up(struct Camera *c) {
 /**
  * The main update function for C-Up mode
  */
-s32 mode_c_up_camera(struct Camera *c) {
+void mode_c_up_camera(struct Camera *c) {
     // Play a sound when entering C-Up mode
     if (!(sCameraSoundFlags & CAM_SOUND_C_UP_PLAYED)) {
         play_sound_cbutton_up();
@@ -2552,7 +2542,6 @@ s32 mode_c_up_camera(struct Camera *c) {
     if (gCameraMovementFlags & CAM_MOVING_INTO_MODE) {
         gCameraMovementFlags |= CAM_MOVE_C_UP_MODE;
         move_into_c_up(c);
-        return 1;
     }
 
     if (!(gCameraMovementFlags & CAM_MOVE_STARTED_EXITING_C_UP)) {
@@ -2581,7 +2570,6 @@ s32 mode_c_up_camera(struct Camera *c) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)) {
         exit_c_up(c);
     }
-    return 0;
 }
 
 /**
@@ -2820,13 +2808,11 @@ void update_camera(struct Camera *c) {
 #endif
         !(gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
-        if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
-                    set_cam_angle(CAM_ANGLE_MARIO);
-                } else {
-                    set_cam_angle(CAM_ANGLE_LAKITU);
-                }
+        if ((cam_select_alt_mode(0) == CAM_SELECTION_MARIO) && (gPlayer1Controller->buttonPressed & R_TRIG)) {
+            if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
+                set_cam_angle(CAM_ANGLE_MARIO);
+            } else {
+                set_cam_angle(CAM_ANGLE_LAKITU);
             }
         }
         play_sound_if_cam_switched_to_lakitu_or_mario();
@@ -2865,8 +2851,7 @@ void update_camera(struct Camera *c) {
 #else
     camera_course_processing(c);
 #endif
-    sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed,
-                                              gPlayer1Controller->buttonDown);
+    sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed, gPlayer1Controller->buttonDown);
 
     if (c->cutscene != 0) {
         sYawSpeed = 0;
@@ -2924,8 +2909,7 @@ void update_camera(struct Camera *c) {
 #ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelNum != LEVEL_CASTLE) {
 #endif
-            // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
-            // trigger is held
+            // If fixed camera is selected as the alternate mode, then fix the camera as long as the right trigger is held
             if ((c->cutscene == 0 &&
                 (gPlayer1Controller->buttonDown & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED)
                 || (gCameraMovementFlags & CAM_MOVE_FIX_IN_PLACE)
@@ -3318,7 +3302,6 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
     }
     return NULL;
 }
-
 
 /**
  * Produces values using a cubic b-spline curve. Basically Q is the used output,
@@ -3718,7 +3701,6 @@ void approach_vec3s_asymptotic(Vec3s current, Vec3s target, s16 xMul, s16 yMul, 
     approach_s16_asymptotic_bool(&current[2], target[2], zMul);
 }
 
-
 //! move these to math_util
 s32 camera_approach_s16_symmetric_bool(s16 *current, s16 target, s16 inc) {
     s16 dist = (target - *current);
@@ -4021,9 +4003,9 @@ void rotate_in_xz(Vec3f dst, Vec3f src, s16 yaw) {
     register f32 z = src[2];
     register f32 sy = sins(yaw);
     register f32 cy = coss(yaw);
-    dst[0] = ((x * sy) + (z * cy));
+    dst[0] = (z * sy) + (x * cy);
     dst[1] = src[1];
-    dst[2] = ((x * cy) - (z * sy));
+    dst[2] = (z * cy) - (x * sy);
 }
 
 /**
@@ -5428,8 +5410,7 @@ u32 surface_type_modes(struct Camera *c) {
  * Set the camera mode to `mode` if Mario is not standing on a special surface
  */
 u32 set_mode_if_not_set_by_surface(struct Camera *c, u8 mode) {
-    u32 modeChanged = 0;
-    modeChanged = surface_type_modes(c);
+    u32 modeChanged = surface_type_modes(c);
 
     if ((modeChanged == 0) && (mode != 0)) {
         transition_to_camera_mode(c, mode, 90);
@@ -5988,12 +5969,11 @@ s16 camera_course_processing(struct Camera *c) {
  * Move `pos` between the nearest floor and ceiling
  */
 void resolve_geometry_collisions(Vec3f pos) {
-    f32 ceilY, floorY;
     struct Surface *surf;
 
     f32_find_wall_collision(&pos[0], &pos[1], &pos[2], 0.f, 100.f);
-    floorY = find_floor(pos[0], pos[1] + 50.f, pos[2], &surf);
-    ceilY = find_ceil(pos[0], pos[1] - 50.f, pos[2], &surf);
+    f32 floorY = find_floor(pos[0], pos[1] + 50.f, pos[2], &surf);
+    f32 ceilY = find_ceil(pos[0], pos[1] - 50.f, pos[2], &surf);
 
     if ((FLOOR_LOWER_LIMIT != floorY) && (CELL_HEIGHT_LIMIT == ceilY)) {
         if (pos[1] < (floorY += 125.f)) {
@@ -6095,7 +6075,7 @@ s32 rotate_camera_around_walls(UNUSED struct Camera *c, Vec3f cPos, s16 *avoidYa
                 wallYaw = horWallNorm + DEGREES(90);
                 // If Mario would be blocked by the surface, then avoid it
                 if ((is_range_behind_surface(sMarioCamState->pos, cPos, wall, yawRange, SURFACE_WALL_MISC) == 0)
-                    && (is_behind_surface(sMarioCamState->pos, wall) == TRUE)
+                    && (is_behind_surface(sMarioCamState->pos, wall))
                     // Also check if the wall is tall enough to cover Mario
                     && (!is_surf_within_bounding_box(wall, -1.f, 150.f, -1.f))) {
                     // Calculate the avoid direction. The function returns the opposite direction so add 180
@@ -7585,9 +7565,8 @@ void cutscene_red_coin_star_look_up_at_star(struct Camera *c) {
 void cutscene_red_coin_star_warp(struct Camera *c) {
     f32 dist;
     s16 pitch, yaw, posYaw;
-    struct Object *obj = gCutsceneFocus;
 
-    vec3f_copy(sCutsceneVars[1].point, &obj->oHomeVec);
+    vec3f_copy(sCutsceneVars[1].point, &gCutsceneFocus->oHomeVec);
     vec3f_get_dist_and_angle(sCutsceneVars[1].point, c->pos, &dist, &pitch, &yaw);
     vec3f_get_yaw(sCutsceneVars[1].point, c->pos, &posYaw);
     vec3f_get_yaw(sCutsceneVars[1].point, sMarioCamState->pos, &yaw);
@@ -8108,16 +8087,12 @@ void cutscene_dialog_start(struct Camera *c) {
     cutscene_soften_music(c);
     set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
 
-#ifndef VERSION_JP
     if (c->mode == CAMERA_MODE_BOSS_FIGHT) {
         vec3f_copy(sCameraStoreCutscene.focus, c->focus);
         vec3f_copy(sCameraStoreCutscene.pos, c->pos);
     } else {
-#endif
         store_info_star(c);
-#ifndef VERSION_JP
     }
-#endif
 
     // Store Mario's position and faceAngle
     sCutsceneVars[8].angle[0] = 0;

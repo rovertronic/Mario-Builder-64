@@ -1171,9 +1171,9 @@ s32 update_level(void) {
 
 s32 init_level(void) {
     s32 fadeFromColor = FALSE;
-    #if PUPPYPRINT_DEBUG
+#if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
-    #endif
+#endif
 
     set_play_mode(PLAY_MODE_NORMAL);
 
