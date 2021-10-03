@@ -130,12 +130,12 @@
 // -- SPECIFIC OBJECT SETTINGS --
 // Allow for retries on collecting the remaining blue coins from a blue coin switch
 #define BLUE_COIN_SWITCH_RETRY
+// Fixes shell cancel
+#define SHELL_CANCEL_FIX
 // The number of chain balls the Chain Chomp has.  Vanilla is 5.
 #define CHAIN_CHOMP_NUM_SEGMENTS 5
-
 // The number of parts Pokey has, including the head. Vanilla is 5, max is 30.
 #define POKEY_NUM_SEGMENTS       5
-
 // The number of segments Wiggler has, not including the head. Vanilla is 4.
 #define WIGGLER_NUM_SEGMENTS     4
 

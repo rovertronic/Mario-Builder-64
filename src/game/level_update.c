@@ -1324,7 +1324,6 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
 
     if (gSavedCourseNum != gCurrCourseNum) {
         gSavedCourseNum = gCurrCourseNum;
-        nop_change_course();
         disable_warp_checkpoint();
     }
 

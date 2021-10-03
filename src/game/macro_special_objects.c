@@ -123,8 +123,8 @@ void spawn_macro_objects(s32 areaIndex, s16 *macroObjList) {
             // Spawn the new macro object.
             newObj = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, // Parent object
                                           0,                          // Unused
-                                          MacroObjectPresets[presetID].model,             // Model ID
-                                          MacroObjectPresets[presetID].behavior,          // Behavior address
+                                          preset.model,               // Model ID
+                                          preset.behavior,            // Behavior address
                                           macroObject[MACRO_OBJ_X],   // X-position
                                           macroObject[MACRO_OBJ_Y],   // Y-position
                                           macroObject[MACRO_OBJ_Z],   // Z-position
