@@ -916,6 +916,33 @@ s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     return TRUE;
 }
 
+#ifdef VISUAL_DEBUG
+void visualise_object_hitbox(struct Object *node)
+{
+    Vec3f bnds1, bnds2;
+    // This will create a cylinder that visualises their hitbox.
+    // If they do not have a hitbox, it will be a small white cube instead.
+    if (node->oIntangibleTimer != -1) {
+        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+        vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
+        if (node->behavior == segmented_to_virtual(bhvWarp) || node->behavior == segmented_to_virtual(bhvDoorWarp) || node->behavior == segmented_to_virtual(bhvFadingWarp))
+            debug_box_color(0x80FFA500);
+        else
+            debug_box_color(0x800000FF);
+        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
+        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
+        vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
+        debug_box_color(0x8FF00000);
+        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
+    } else {
+        vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
+        vec3f_set(bnds2, 30, 30, 30);
+        debug_box_color(0x80FFFFFF);
+        debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ);
+    }
+}
+#endif
+
 /**
  * Process an object node.
  */
@@ -946,31 +973,9 @@ void geo_process_object(struct Object *node) {
             gMatStackIndex--;
             inc_mat_stack();
             if (node->header.gfx.sharedChild != NULL) {
-                #ifdef VISUAL_DEBUG
-                if (hitboxView) {
-                    Vec3f bnds1, bnds2;
-                    // This will create a cylinder that visualises their hitbox.
-                    // If they do not have a hitbox, it will be a small white cube instead.
-                    if (node->oIntangibleTimer != -1) {
-                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
-                        vec3f_set(bnds2, node->hitboxRadius, node->hitboxHeight-node->hitboxDownOffset, node->hitboxRadius);
-                        if (node->behavior == segmented_to_virtual(bhvWarp) || node->behavior == segmented_to_virtual(bhvDoorWarp) || node->behavior == segmented_to_virtual(bhvFadingWarp))
-                            debug_box_color(0x80FFA500);
-                        else
-                            debug_box_color(0x800000FF);
-                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
-                        vec3f_set(bnds1, node->oPosX, node->oPosY - node->hitboxDownOffset, node->oPosZ);
-                        vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
-                        debug_box_color(0x8FF00000);
-                        debug_box(bnds1, bnds2, DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ);
-                    } else {
-                        vec3f_set(bnds1, node->oPosX, node->oPosY - 15, node->oPosZ);
-                        vec3f_set(bnds2, 30, 30, 30);
-                        debug_box_color(0x80FFFFFF);
-                        debug_box(bnds1, bnds2, DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ);
-                    }
-                }
-                #endif
+#ifdef VISUAL_DEBUG
+                if (hitboxView) visualise_object_hitbox(node);
+#endif
                 gCurGraphNodeObject = (struct GraphNodeObject *) node;
                 node->header.gfx.sharedChild->parent = &node->header.gfx.node;
                 geo_process_node_and_siblings(node->header.gfx.sharedChild);
