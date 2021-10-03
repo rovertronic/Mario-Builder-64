@@ -877,7 +877,7 @@ void initiate_delayed_warp(void) {
                 case WARP_OP_CREDITS_NEXT:
                     sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL);
 
-                    gCurrCreditsEntry++;
+                    gCurrCreditsEntry += 1;
                     gCurrActNum = gCurrCreditsEntry->actNum & 0x07;
                     if ((gCurrCreditsEntry + 1)->levelNum == LEVEL_NONE) {
                         destWarpNode = WARP_NODE_CREDITS_END;
@@ -913,7 +913,7 @@ void update_hud_values(void) {
         COND_BIT((gCurrCourseNum >= COURSE_MIN), gHudDisplay.flags, HUD_DISPLAY_FLAG_COIN_COUNT);
 
         if (gHudDisplay.coins < gMarioState->numCoins) {
-            if (gGlobalTimer & 0x1) {
+            if (gGlobalTimer & 0x00000001) {
                 u32 coinSound;
                 if (gMarioState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
                     coinSound = SOUND_GENERAL_COIN_WATER;
@@ -921,7 +921,7 @@ void update_hud_values(void) {
                     coinSound = SOUND_GENERAL_COIN;
                 }
 
-                gHudDisplay.coins++;
+                gHudDisplay.coins += 1;
                 play_sound(coinSound, gMarioState->marioObj->header.gfx.cameraToObject);
             }
         }
@@ -989,7 +989,7 @@ s32 play_mode_normal(void) {
     check_instant_warp();
 
     if (sTimerRunning && gHudDisplay.timer < 17999) {
-        gHudDisplay.timer++;
+        gHudDisplay.timer += 1;
     }
 
     area_update_objects();
@@ -1324,6 +1324,7 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
 
     if (gSavedCourseNum != gCurrCourseNum) {
         gSavedCourseNum = gCurrCourseNum;
+        nop_change_course();
         disable_warp_checkpoint();
     }
 
