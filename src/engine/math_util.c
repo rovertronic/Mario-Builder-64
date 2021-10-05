@@ -29,7 +29,7 @@ Vec3i gVec3iZero = {     0,     0,     0 };
 Vec3s gVec3sOne  = {     1,     1,     1 };
 
 /// From Wiseguy
-static inline s32 roundf(f32 in) {
+static inline s32 asm_roundf(f32 in) {
     f32 tmp;
     s32 out;
     __asm__("round.w.s %0,%1" : "=f" (tmp) : "f" (in));
@@ -37,14 +37,18 @@ static inline s32 roundf(f32 in) {
     return out;
 }
 
-// static inline float absf(float in) {
-//     f32 out;
-//     __asm__("abs.s %0,%1" : "=f" (out) : "f" (in));
-//     return out;
-// }
+f32 roundf(f32 x) {
+    return asm_roundf(x);
+}
+
+static inline float asm_absf(float in) {
+    f32 out;
+    __asm__("abs.s %0,%1" : "=f" (out) : "f" (in));
+    return out;
+}
 
 f32 absf(f32 x) {
-    return ABSF(x);
+    return asm_absf(x);
 }
 
 /// Returns the lowest of three values.
