@@ -434,13 +434,6 @@ end:;
 }
 
 /**
- * Unused action function.
- */
-static void koopa_unshelled_act_unused3(void) {
-    cur_obj_init_anim_extend(0);
-}
-
-/**
  * Update function for koopa after losing his shell.
  */
 static void koopa_unshelled_update(void) {
@@ -455,9 +448,9 @@ static void koopa_unshelled_update(void) {
         case KOOPA_UNSHELLED_ACT_LYING:
             koopa_unshelled_act_dive();
             break;
-        case KOOPA_UNSHELLED_ACT_UNUSED3:
-            koopa_unshelled_act_unused3();
-            break;
+        // case KOOPA_UNSHELLED_ACT_UNUSED3:
+        //     cur_obj_init_anim_extend(KOOPA_ANIM_SHELLED_UNUSED3);
+        //     break;
     }
 
     obj_handle_attacks(&sKoopaHitbox, o->oAction, sKoopaUnshelledAttackHandlers);

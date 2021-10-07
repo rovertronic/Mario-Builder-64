@@ -71,7 +71,7 @@ void print_fps(s32 x, s32 y) {
 
     sprintf(text, "FPS %2.2f", fps);
     #ifdef PUPPYPRINT
-    print_small_text(x, y, text, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL);
+    print_small_text(x, y, text, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
     #else
     print_text(x, y, text);
     #endif
@@ -190,7 +190,7 @@ void animate_power_meter_emphasized(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
 
     if (!(hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER)) {
-        if (sPowerMeterVisibleTimer == 45.0) {
+        if (sPowerMeterVisibleTimer == 45.0f) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
         }
     } else {
@@ -240,7 +240,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
         sPowerMeterVisibleTimer = 0;
     }
     // After health is full, hide power meter
-    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0) {
+    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0f) {
         sPowerMeterHUD.animation = POWER_METER_HIDING;
     }
     // Update to match health value

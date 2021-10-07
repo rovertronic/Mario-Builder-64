@@ -28,15 +28,9 @@
 #define HANG_LEFT_CEIL       2
 
 void add_tree_leaf_particles(struct MarioState *m) {
-    f32 leafHeight;
-
     if (m->usedObj->behavior == segmented_to_virtual(bhvTree)) {
         // make leaf effect spawn higher on the Shifting Sand Land palm tree
-        if (gCurrLevelNum == LEVEL_SSL) {
-            leafHeight = 250.0f;
-        } else {
-            leafHeight = 100.0f;
-        }
+        f32 leafHeight = (obj_has_model(m->usedObj, MODEL_SSL_PALM_TREE) ? 250.0f : 100.0f);
         if (m->pos[1] - m->floorHeight > leafHeight) {
             m->particleFlags |= PARTICLE_LEAF;
         }
@@ -148,13 +142,7 @@ s32 act_holding_pole(struct MarioState *m) {
         m->faceAngle[1] += marioObj->oMarioPoleYawVel;
         marioObj->oMarioPolePos -= marioObj->oMarioPoleYawVel / 0x100;
 
-        if (m->usedObj->behavior == segmented_to_virtual(bhvTree)) {
-            //! The Shifting Sand Land palm tree check is done climbing up in
-            // add_tree_leaf_particles, but not here, when climbing down.
-            if (m->pos[1] - m->floorHeight > 100.0f) {
-                m->particleFlags |= PARTICLE_LEAF;
-            }
-        }
+        add_tree_leaf_particles(m);
         play_climbing_sounds(m, 2);
 #if ENABLE_RUMBLE
         reset_rumble_timers_slip();
@@ -290,7 +278,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
     struct WallCollisionData wallCollisionData;
 
     resolve_and_return_wall_collisions(nextPos, 50.0f, 50.0f, &wallCollisionData);
-    m->wall = wallCollisionData.numWalls == 0 ? NULL : wallCollisionData.walls[0];
+    set_mario_wall(m, wallCollisionData.numWalls == 0 ? NULL : wallCollisionData.walls[0]);
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     ceilHeight = find_ceil(nextPos[0], nextPos[1] + 3.0f, nextPos[2], &ceil);
@@ -319,10 +307,8 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
     nextPos[1] = m->ceilHeight - 160.0f;
     vec3f_copy(m->pos, nextPos);
 
-    m->floor = floor;
-    m->floorHeight = floorHeight;
-    m->ceil = ceil;
-    m->ceilHeight = ceilHeight;
+    set_mario_floor(m, floor, floorHeight);
+    set_mario_ceil(m, ceil, ceilHeight);
 
     return HANG_NONE;
 }
@@ -351,7 +337,7 @@ s32 update_hang_moving(struct MarioState *m) {
         // Reduce Mario's forward speed by the turn amount, so Mario won't move off sideward from the intended angle when turning around.
         m->forwardVel *= ((coss(dYaw) + 1.0f) / 2.0f); // 1.0f is turning forwards, 0.0f is turning backwards
         // Increase turn speed if forwardVel is lower and intendedMag is higher
-        turnRange     *= (2.0f - (ABSF(m->forwardVel) / MAX(m->intendedMag, __FLT_EPSILON__))); // 1.0f front, 2.0f back
+        turnRange     *= (2.0f - (ABSF(m->forwardVel) / MAX(m->intendedMag, NEAR_ZERO))); // 1.0f front, 2.0f back
     }
     m->faceAngle[1] = approach_angle(m->faceAngle[1], m->intendedYaw, turnRange);
 #else
@@ -569,7 +555,7 @@ s32 act_ledge_grab(struct MarioState *m) {
         m->actionTimer++;
     }
 #ifndef NO_FALSE_LEDGEGRABS
-    if (m->floor->normal.y < 0.9063078f) {
+    if (m->floor->normal.y < COS25) {
         return let_go_of_ledge(m);
     }
 #endif
@@ -705,11 +691,8 @@ s32 act_in_cannon(struct MarioState *m) {
             m->statusForCamera->cameraEvent = CAM_EVENT_CANNON;
             m->statusForCamera->usedObj = m->usedObj;
 
-            vec3f_set(m->vel, 0.0f, 0.0f, 0.0f);
-
-            m->pos[0] = m->usedObj->oPosX;
-            m->pos[1] = m->usedObj->oPosY + 350.0f;
-            m->pos[2] = m->usedObj->oPosZ;
+            vec3_zero(m->vel);
+            vec3_copy_y_off(m->pos, &m->usedObj->oPosVec, 350.0f);
 
             m->forwardVel = 0.0f;
 
@@ -830,8 +813,7 @@ s32 act_tornado_twirling(struct MarioState *m) {
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     if (floor != NULL) {
-        m->floor = floor;
-        m->floorHeight = floorHeight;
+        set_mario_floor(m, floor, floorHeight);
         vec3f_copy(m->pos, nextPos);
     } else {
         if (nextPos[1] >= m->floorHeight) {

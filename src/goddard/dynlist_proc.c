@@ -57,14 +57,13 @@ struct DynObjInfo {
 #define DynVecX(dyn) ((dyn)->vec.x)
 #define DynVecY(dyn) ((dyn)->vec.y)
 #define DynVecZ(dyn) ((dyn)->vec.z)
-///@}
 
 // data
-static struct DynObjInfo *sGdDynObjList = NULL; // @ 801A8250; info for all loaded/made dynobjs
-static struct GdObj *sDynListCurObj = NULL;     // @ 801A8254
-static struct GdBoundingBox sNullBoundingBox = {        // @ 801A8258
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0
+static struct DynObjInfo *sGdDynObjList = NULL; // info for all loaded/made dynobjs
+static struct GdObj *sDynListCurObj = NULL;
+static struct GdBoundingBox sNullBoundingBox = {
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f
 };
 static s32 sUseIntegerNames = FALSE;  // if TRUE, then all DynNames are specified as integers
 
@@ -632,7 +631,7 @@ struct GdObj *d_makeobj(enum DObjTypes type, DynObjName name) {
             dobj = &gd_make_vertex(0.0f, 0.0f, 0.0f)->header;
             break;
         case D_FACE:
-            dobj = &make_face_with_colour(1.0, 1.0, 1.0)->header;
+            dobj = &make_face_with_colour(1.0f, 1.0f, 1.0f)->header;
             break;
         case D_PLANE:
             dobj = &make_plane(FALSE, NULL)->header;
@@ -1001,10 +1000,7 @@ void chk_shapegen(struct ObjShape *shape) {
 
             oldObjHead = gGdObjectList;
             for (i = 0; i < facedata->count; i++) {
-                //! @bug Call to `make_face_with_colour()` compiles incorrectly
-                //!      due to Goddard only declaring the functions,
-                //!      not prototyping the functions
-                face = make_face_with_colour(1.0, 1.0, 1.0);
+                face = make_face_with_colour(1.0f, 1.0f, 1.0f);
                 face->mtlId = (s32) facedata->data[i][0];
                 add_3_vtx_to_face(face, vtxbuf[facedata->data[i][1]], vtxbuf[facedata->data[i][2]],
                                   vtxbuf[facedata->data[i][3]]);
@@ -1629,7 +1625,6 @@ void d_get_init_rot(struct GdVec3f *dst) {
  */
 void d_set_rel_pos(f32 x, f32 y, f32 z) {
     struct GdObj *dynobj = sDynListCurObj; // sp34
-    UNUSED struct GdVec3f unusedVec;       // sp28
 
     if (sDynListCurObj == NULL) {
         fatal_printf("proc_dynlist(): No current object");
@@ -1642,10 +1637,6 @@ void d_set_rel_pos(f32 x, f32 y, f32 z) {
             ((struct ObjJoint *) dynobj)->unk3C.z = z;
             break;
         case OBJ_TYPE_CAMERAS:
-            unusedVec.x = x;
-            unusedVec.y = y;
-            unusedVec.z = z;
-
             ((struct ObjCamera *) dynobj)->unk40.x = x;
             ((struct ObjCamera *) dynobj)->unk40.y = y;
             ((struct ObjCamera *) dynobj)->unk40.z = z;
@@ -1654,9 +1645,9 @@ void d_set_rel_pos(f32 x, f32 y, f32 z) {
             ((struct ObjCamera *) dynobj)->zoomPositions[0].y = y;
             ((struct ObjCamera *) dynobj)->zoomPositions[0].z = z;
 
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].x = x * 1.5; //? 1.5f
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].y = y * 1.5; //? 1.5f
-            ((struct ObjCamera *) dynobj)->zoomPositions[1].z = z * 1.5; //? 1.5f
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].x = x * 1.5f;
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].y = y * 1.5f;
+            ((struct ObjCamera *) dynobj)->zoomPositions[1].z = z * 1.5f;
 
             ((struct ObjCamera *) dynobj)->zoomPositions[2].x = x * 2.0f;
             ((struct ObjCamera *) dynobj)->zoomPositions[2].y = y * 2.0f;
@@ -2126,9 +2117,9 @@ void d_get_world_pos(struct GdVec3f *dst) {
             dst->y += ((struct ObjPlane *) sDynListCurObj)->boundingBox.maxY;
             dst->z += ((struct ObjPlane *) sDynListCurObj)->boundingBox.maxZ;
 
-            dst->x *= 0.5; //? 0.5f
-            dst->y *= 0.5; //? 0.5f
-            dst->z *= 0.5; //? 0.5f
+            dst->x *= 0.5f;
+            dst->y *= 0.5f;
+            dst->z *= 0.5f;
             break;
         case OBJ_TYPE_ZONES:
             dst->x = ((struct ObjZone *) sDynListCurObj)->boundingBox.minX;
@@ -2139,9 +2130,9 @@ void d_get_world_pos(struct GdVec3f *dst) {
             dst->y += ((struct ObjZone *) sDynListCurObj)->boundingBox.maxY;
             dst->z += ((struct ObjZone *) sDynListCurObj)->boundingBox.maxZ;
 
-            dst->x *= 0.5; //? 0.5f
-            dst->y *= 0.5; //? 0.5f
-            dst->z *= 0.5; //? 0.5f
+            dst->x *= 0.5f;
+            dst->y *= 0.5f;
+            dst->z *= 0.5f;
             break;
         case OBJ_TYPE_LIGHTS:
             dst->x = ((struct ObjLight *) sDynListCurObj)->position.x;
@@ -3098,11 +3089,9 @@ void d_set_skin_weight(s32 vtxId, f32 percentWeight) {
 
     switch (sDynListCurObj->type) {
         case OBJ_TYPE_JOINTS:
-            set_skin_weight((struct ObjJoint *) sDynListCurObj, vtxId, NULL,
-                            percentWeight / 100.0);
+            set_skin_weight((struct ObjJoint *) sDynListCurObj, vtxId, NULL, percentWeight / 100.0f);
             break;
         default:
-            fatal_printf("%s: Object '%s'(%x) does not support this function.", "dSetSkinWeight()",
-                         sDynListCurInfo->name, sDynListCurObj->type);
+            fatal_printf("%s: Object '%s'(%x) does not support this function.", "dSetSkinWeight()", sDynListCurInfo->name, sDynListCurObj->type);
     }
 }

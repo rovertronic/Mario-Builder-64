@@ -19,10 +19,10 @@ void bhv_bobomb_explosion_bubble_init(void) {
 void bhv_bobomb_explosion_bubble_loop(void) {
     f32 waterY = gMarioStates[0].waterLevel;
 
-    o->header.gfx.scale[0] = sins(o->oBobombExpBubGfxScaleFacX) * 0.5 + 2.0;
+    o->header.gfx.scale[0] = sins(o->oBobombExpBubGfxScaleFacX) * 0.5f + 2.0f;
     o->oBobombExpBubGfxScaleFacX += o->oBobombExpBubGfxExpRateX;
 
-    o->header.gfx.scale[1] = sins(o->oBobombExpBubGfxScaleFacY) * 0.5 + 2.0;
+    o->header.gfx.scale[1] = sins(o->oBobombExpBubGfxScaleFacY) * 0.5f + 2.0f;
     o->oBobombExpBubGfxScaleFacY += o->oBobombExpBubGfxExpRateY;
 
     if (o->oPosY > waterY) {

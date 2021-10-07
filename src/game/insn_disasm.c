@@ -21,15 +21,15 @@ extern far char *parse_map(u32);
 static char insn_as_string[100];
 
 typedef struct __attribute__((packed)) {
-    u8 rd : 5;
-    u8 shift_amt : 5;
-    u8 function : 6;
+    u16 rd        : 5;
+    u16 shift_amt : 5;
+    u16 function  : 6;
 } RTypeData;
 
 typedef struct __attribute__((packed)) {
-    u8 opcode : 6;
-    u8 rs : 5;
-    u8 rt : 5;
+    u16 opcode : 6;
+    u16 rs     : 5;
+    u16 rt     : 5;
     union {
         RTypeData rdata;
         u16 immediate;
@@ -44,8 +44,8 @@ typedef union {
 typedef struct __attribute__((packed)) {
     u32 type;
     u32 arbitraryParam;
-    u8 opcode : 6;
-    u8 function : 6;
+    u16 opcode   : 6;
+    u16 function : 6;
     u8 name[10];
 } InsnTemplate;
 
@@ -67,7 +67,7 @@ InsnTemplate insn_db[] = {
     {I_TYPE, PARAM_NONE, 0b100101, 0, "LHU"},
     {I_TYPE, PARAM_NONE, 0b101011, 0, "SW"},
     {I_TYPE, PARAM_NONE, 0b100011, 0, "LW"},
-    {I_TYPE, PARAM_LUI, 0b001111, 0, "LUI"},
+    {I_TYPE, PARAM_LUI,  0b001111, 0, "LUI"},
 
     // branches
     {I_TYPE, PARAM_SWAP_RS_IMM, 0b000100, 0, "BEQ"},

@@ -4,6 +4,9 @@
 #include <PR/ultratypes.h>
 #include <PR/gbi.h>
 
+extern void *puppyprint_font_lut[2];
+extern void *puppyprint_kerning_lut[2][80];
+
 extern u8 seg2_course_name_table[];
 extern u8 seg2_act_name_table[];
 extern Gfx dl_rgba16_text_begin[];

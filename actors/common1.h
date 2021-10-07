@@ -50,18 +50,18 @@ extern const Gfx coin_seg3_dl_030079B8[];
 extern const GeoLayout dirt_animation_geo[];
 extern const GeoLayout cartoon_star_geo[];
 extern const Gfx dirt_seg3_dl_0302BFF8[];
-extern const Gfx dirt_seg3_dl_0302C028[];
-extern const Gfx dirt_seg3_dl_0302C238[];
-extern const Gfx dirt_seg3_dl_0302C298[];
-extern const Gfx dirt_seg3_dl_0302C2B8[];
-extern const Gfx dirt_seg3_dl_0302C2D8[];
-extern const Gfx dirt_seg3_dl_0302C2F8[];
-extern const Gfx dirt_seg3_dl_0302C318[];
-extern const Gfx dirt_seg3_dl_0302C378[];
-extern const Gfx dirt_seg3_dl_0302C3B0[];
-extern const Gfx dirt_seg3_dl_0302C3E8[];
-extern const Gfx dirt_seg3_dl_0302C420[];
-extern const Gfx dirt_seg3_dl_0302C458[];
+extern const Gfx dirt_seg3_dl_dirt_particle[];
+extern const Gfx dirt_seg3_sub_dl_cartoon_star[];
+extern const Gfx dirt_seg3_dl_cartoon_star_red[];
+extern const Gfx dirt_seg3_dl_cartoon_star_green[];
+extern const Gfx dirt_seg3_dl_cartoon_star_blue[];
+extern const Gfx dirt_seg3_dl_cartoon_star_yellow[];
+extern const Gfx dirt_seg3_dl_cartoon_star_billboard[];
+extern const Gfx dirt_seg3_dl_tiny_particle_red[];
+extern const Gfx dirt_seg3_dl_tiny_particle_green[];
+extern const Gfx dirt_seg3_dl_tiny_particle_blue[];
+extern const Gfx dirt_seg3_dl_tiny_particle_yellow[];
+extern const Gfx dirt_seg3_dl_tiny_particle_billboard[];
 
 // door
 extern const GeoLayout castle_door_geo[];
@@ -191,7 +191,7 @@ extern const GeoLayout number_geo[];
 extern const Gfx pebble_seg3_dl_0301CB00[];
 
 // power_meter
-extern const u8 *const power_meter_health_segments_lut[];
+extern const Texture *const power_meter_health_segments_lut[];
 extern const Gfx dl_power_meter_base[];
 extern const Gfx dl_power_meter_health_segments_begin[];
 extern const Gfx dl_power_meter_health_segments_end[];

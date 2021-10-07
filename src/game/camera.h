@@ -11,6 +11,10 @@
 
 #include "level_table.h"
 
+// X position of the mirror
+// 0x875C3D = 8870973, 0x800 = 2048, 8870973 / 2048 = ~4331.52978515625
+#define CASTLE_MIRROR_X ((f32)0x875C3D / 0x800)
+
 /**
  * @file camera.h
  * Constants, defines, and structs used by the camera system.
@@ -18,13 +22,6 @@
  */
 
 #define ABS2(x) ((x) >= 0.f ? (x) : -(x))
-
-/**
- * Converts an angle in degrees to sm64's s16 angle units. For example, DEGREES(90) == 0x4000
- * This should be used mainly to make camera code clearer at first glance.
- */
-#define DEGREES(x) ((x) * 0x10000 / 360)
-
 #define LEVEL_AREA_INDEX(levelNum, areaNum) (((levelNum) << 4) + (areaNum))
 
 /**
@@ -686,8 +683,6 @@ void reset_camera(struct Camera *c);
 void init_camera(struct Camera *c);
 void select_mario_cam_mode(void);
 Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context);
-void object_pos_to_vec3f(Vec3f dst, struct Object *o);
-void vec3f_to_object_pos(struct Object *o, Vec3f src);
 s32 move_point_along_spline(Vec3f p, struct CutsceneSplinePoint spline[], s16 *splineSegment, f32 *progress);
 s32 cam_select_alt_mode(s32 angle);
 s32 set_cam_angle(s32 mode);
@@ -709,8 +704,8 @@ void random_vec3s(Vec3s dst, s16 xRange, s16 yRange, s16 zRange);
 s32 clamp_positions_and_find_yaw(Vec3f pos, Vec3f origin, f32 xMax, f32 xMin, f32 zMax, f32 zMin);
 s32 is_range_behind_surface(Vec3f from, Vec3f to, struct Surface *surf, s16 range, s16 surfType);
 void scale_along_line(Vec3f dest, Vec3f from, Vec3f to, f32 scale);
-s16 calculate_pitch(Vec3f from, Vec3f to);
-s16 calculate_yaw(Vec3f from, Vec3f to);
+s32 calculate_pitch(Vec3f from, Vec3f to);
+s32 calculate_yaw(Vec3f from, Vec3f to);
 void calculate_angles(Vec3f from, Vec3f to, s16 *pitch, s16 *yaw);
 f32 calc_abs_dist(Vec3f a, Vec3f b);
 f32 calc_abs_dist_squared(Vec3f a, Vec3f b);
@@ -749,9 +744,9 @@ void resolve_geometry_collisions(Vec3f pos);
 s32 rotate_camera_around_walls(struct Camera *c, Vec3f cPos, s16 *avoidYaw, s16 yawRange);
 void find_mario_floor_and_ceil(struct PlayerGeometry *pg);
 u8 start_object_cutscene_without_focus(u8 cutscene);
-s16 cutscene_object_with_dialog(u8 cutscene, struct Object *o, s16 dialogID);
-s16 cutscene_object_without_dialog(u8 cutscene, struct Object *o);
-s16 cutscene_object(u8 cutscene, struct Object *o);
+s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID);
+s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj);
+s16 cutscene_object(u8 cutscene, struct Object *obj);
 void play_cutscene(struct Camera *c);
 s32 cutscene_event(CameraEvent event, struct Camera * c, s16 start, s16 end);
 s32 cutscene_spawn_obj(u32 obj, s16 frame);
@@ -760,7 +755,7 @@ void set_fov_shake(s16 amplitude, s16 decay, s16 shakeSpeed);
 void set_fov_function(u8 func);
 void cutscene_set_fov_shake_preset(u8 preset);
 void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ);
-void obj_rotate_towards_point(struct Object *o, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv);
+void obj_rotate_towards_point(struct Object *obj, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv);
 
 Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context);
 

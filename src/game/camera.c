@@ -428,7 +428,7 @@ s32 update_8_directions_camera     (struct Camera *c, Vec3f focus, Vec3f pos);
 s32 update_slide_or_0f_camera      (struct Camera *c, Vec3f focus, Vec3f pos);
 s32 update_spiral_stairs_camera    (struct Camera *c, Vec3f focus, Vec3f pos);
 
-typedef s32 (*CameraTransition)(struct Camera *c, Vec3f, Vec3f);
+typedef s32 (*CameraTransition)(struct Camera *c, Vec3f focus, Vec3f pos);
 CameraTransition sModeTransitions[] = {
     NULL,
     update_radial_camera,
@@ -520,8 +520,8 @@ void set_camera_shake_from_hit(s16 shake) {
             break;
 
         case SHAKE_HIT_FROM_BELOW:
-            gLakituState.focHSpeed = 0.07;
-            gLakituState.posHSpeed = 0.07;
+            gLakituState.focHSpeed = 0.07f;
+            gLakituState.posHSpeed = 0.07f;
             break;
 
         case SHAKE_SHOCK:
@@ -679,8 +679,7 @@ void focus_on_mario(Vec3f focus, Vec3f pos, f32 posYOff, f32 focYOff, f32 dist, 
 static UNUSED void set_pos_to_mario(Vec3f foc, Vec3f pos, f32 yOff, f32 focYOff, f32 dist, s16 pitch, s16 yaw) {
     Vec3f marioPos;
     f32 posDist;
-    s16 posPitch;
-    s16 posYaw;
+    s16 posPitch, posYaw;
 
     vec3f_copy(marioPos, sMarioCamState->pos);
     marioPos[1] += yOff;
@@ -897,13 +896,7 @@ void radial_camera_move(struct Camera *c) {
 
     // How much the camera's yaw changed
     s16 yawOffset = calculate_yaw(sMarioCamState->pos, c->pos) - atan2s(areaDistZ, areaDistX);
-
-    if (yawOffset > maxAreaYaw) {
-        yawOffset = maxAreaYaw;
-    }
-    if (yawOffset < minAreaYaw) {
-        yawOffset = minAreaYaw;
-    }
+    yawOffset = CLAMP(yawOffset, minAreaYaw, maxAreaYaw);
 
     // Check if Mario stepped on a surface that rotates the camera. For example, when Mario enters the
     // gate in BoB, the camera turns right to face up the hill path
@@ -1128,7 +1121,7 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset += DEGREES(2);
     }
     else if (gPlayer1Controller->buttonPressed & D_JPAD) {
-        s8DirModeYawOffset = s8DirModeYawOffset&0xE000;
+        s8DirModeYawOffset = (s8DirModeYawOffset + 0x1000) & 0xE000;
     }
 #endif
 
@@ -1258,11 +1251,7 @@ s32 update_parallel_tracking_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     pathPitch = -pathPitch;
     rotate_in_yz(marioOffset, marioOffset, pathPitch);
     pathPitch = -pathPitch;
-    vec3f_copy(focOffset, marioOffset);
-
-    // OK
-    focOffset[0] = 0.f;
-    focOffset[1] = 0.f;
+    focOffset[2] = marioOffset[2];
 
     // Repeat above calcs with camOffset
     camOffset[0] = pos[0] - parMidPoint[0];
@@ -1454,7 +1443,7 @@ s32 update_fixed_camera(struct Camera *c, Vec3f focus, UNUSED Vec3f pos) {
  * Updates the camera during a boss fight
  */
 s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
-    struct Object *o;
+    struct Object *obj;
     f32 focusDistance;
     s16 yaw;
     s16 heldState;
@@ -1476,9 +1465,9 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
 
     yaw = sModeOffsetYaw + DEGREES(45);
     // Get boss's position and whether Mario is holding it.
-    if ((o = gSecondCameraFocus) != NULL) {
-        object_pos_to_vec3f(secondFocus, o);
-        heldState = o->oHeldState;
+    if ((obj = gSecondCameraFocus) != NULL) {
+        vec3f_copy(secondFocus, &obj->oPosVec);
+        heldState = obj->oHeldState;
     } else {
     // If no boss is there, just rotate around the area's center point.
         secondFocus[0] = c->areaCenX;
@@ -1521,12 +1510,12 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
                 pos[1] += 125.f;
         }
     }
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     // Prevent the camera from going to the ground in the outside boss fight
     if (gCurrLevelNum == LEVEL_BBH) {
         pos[1] = 2047.f;
     }
-
+#endif
     // Rotate from C-Button input
     if (sCSideButtonYaw < 0) {
         sModeOffsetYaw += 0x200;
@@ -1606,15 +1595,19 @@ void mode_parallel_tracking_camera(struct Camera *c) {
  * Fixed camera mode, the camera rotates around a point and looks and zooms toward Mario.
  */
 void mode_fixed_camera(struct Camera *c) {
+#ifdef DISABLE_LEVEL_SPECIFIC_CHECKS
+    set_fov_function(CAM_FOV_APP_45);
+#else
     if (gCurrLevelNum == LEVEL_BBH) {
         set_fov_function(CAM_FOV_BBH);
     } else {
         set_fov_function(CAM_FOV_APP_45);
     }
+#endif
     c->nextYaw = update_fixed_camera(c, c->focus, c->pos);
     c->yaw = c->nextYaw;
     pan_ahead_of_player(c);
-    vec3f_set(sCastleEntranceOffset, 0.f, 0.f, 0.f);
+    vec3_zero(sCastleEntranceOffset);
 }
 
 /**
@@ -1983,21 +1976,13 @@ s16 update_default_camera(struct Camera *c) {
 
     // Determine how fast to rotate the camera
     if (sCSideButtonYaw == 0) {
-        if (c->mode == CAMERA_MODE_FREE_ROAM) {
-            nextYawVel = 0xC0;
-        } else {
-            nextYawVel = 0x100;
-        }
+        nextYawVel = ((c->mode == CAMERA_MODE_FREE_ROAM) ? 0xC0 : 0x100);
         if ((gPlayer1Controller->stickX != 0.f || gPlayer1Controller->stickY != 0.f) != 0) {
             nextYawVel = 0x20;
         }
     } else {
-        if (sCSideButtonYaw < 0) {
-            yaw += 0x200;
-        }
-        if (sCSideButtonYaw > 0) {
-            yaw -= 0x200;
-        }
+        if (sCSideButtonYaw < 0) yaw += 0x200;
+        if (sCSideButtonYaw > 0) yaw -= 0x200;
         camera_approach_s16_symmetric_bool(&sCSideButtonYaw, 0, 0x100);
         nextYawVel = 0;
     }
@@ -2154,9 +2139,11 @@ s16 update_default_camera(struct Camera *c) {
     }
     if ((gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) && (sSelectionFlags & CAM_MODE_MARIO_ACTIVE)) {
         posHeight = 610.f;
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelArea == AREA_SSL_PYRAMID || gCurrLevelNum == LEVEL_CASTLE) {
             posHeight /= 2;
         }
+#endif
     }
 
     // Make Lakitu fly above the gas
@@ -2364,21 +2351,19 @@ void store_lakitu_cam_info_for_c_up(struct Camera *c) {
  *
  * @see update_mario_inputs
  */
-s32 set_mode_c_up(struct Camera *c) {
+void set_mode_c_up(struct Camera *c) {
     if (!(gCameraMovementFlags & CAM_MOVE_C_UP_MODE)) {
         gCameraMovementFlags |= CAM_MOVE_C_UP_MODE;
         store_lakitu_cam_info_for_c_up(c);
         sCameraSoundFlags &= ~CAM_SOUND_C_UP_PLAYED;
-        return 1;
     }
-    return 0;
 }
 
 /**
  * Zoom the camera out of C-Up mode, avoiding moving into a wall, if possible, by searching for an open
  * direction.
  */
-s32 exit_c_up(struct Camera *c) {
+void exit_c_up(struct Camera *c) {
     struct Surface *surface;
     Vec3f checkFoc;
     Vec3f curPos;
@@ -2386,12 +2371,10 @@ s32 exit_c_up(struct Camera *c) {
     s32 searching = 0;
     /// The current sector of the circle that we are checking
     s32 sector;
-    f32 ceilHeight;
-    f32 floorHeight;
+    f32 ceilHeight, floorHeight;
     f32 curDist;
     f32 d;
-    s16 curPitch;
-    s16 curYaw;
+    s16 curPitch, curYaw;
     s16 checkYaw = 0;
     Vec3f storePos; // unused
     Vec3f storeFoc; // unused
@@ -2477,7 +2460,6 @@ s32 exit_c_up(struct Camera *c) {
         }
         play_sound_cbutton_down();
     }
-    return 0;
 }
 
 /**
@@ -2556,7 +2538,7 @@ void move_into_c_up(struct Camera *c) {
 /**
  * The main update function for C-Up mode
  */
-s32 mode_c_up_camera(struct Camera *c) {
+void mode_c_up_camera(struct Camera *c) {
     // Play a sound when entering C-Up mode
     if (!(sCameraSoundFlags & CAM_SOUND_C_UP_PLAYED)) {
         play_sound_cbutton_up();
@@ -2567,7 +2549,6 @@ s32 mode_c_up_camera(struct Camera *c) {
     if (gCameraMovementFlags & CAM_MOVING_INTO_MODE) {
         gCameraMovementFlags |= CAM_MOVE_C_UP_MODE;
         move_into_c_up(c);
-        return 1;
     }
 
     if (!(gCameraMovementFlags & CAM_MOVE_STARTED_EXITING_C_UP)) {
@@ -2596,7 +2577,6 @@ s32 mode_c_up_camera(struct Camera *c) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)) {
         exit_c_up(c);
     }
-    return 0;
 }
 
 /**
@@ -2696,6 +2676,9 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
         sLakituDist = 0;
         sLakituPitch = 0;
         sAreaYawChange = 0;
+// #ifdef CAMERA_FIX
+//         if ((sMarioCamState->action & ACT_GROUP_MASK) != ACT_GROUP_SUBMERGED) mode = CAMERA_MODE_8_DIRECTIONS;
+// #endif
 
         sModeInfo.newMode = (mode != -1) ? mode : sModeInfo.lastMode;
         sModeInfo.lastMode = c->mode;
@@ -2733,13 +2716,10 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
  */
 void update_lakitu(struct Camera *c) {
     struct Surface *floor = NULL;
-    Vec3f newPos;
-    Vec3f newFoc;
-    f32 distToFloor;
-    s16 newYaw;
+    Vec3f newPos, newFoc;
 
     if (!(gCameraMovementFlags & CAM_MOVE_PAUSE_SCREEN)) {
-        newYaw = next_lakitu_state(newPos, newFoc, c->pos, c->focus, sOldPosition, sOldFocus, c->nextYaw);
+        s16 newYaw = next_lakitu_state(newPos, newFoc, c->pos, c->focus, sOldPosition, sOldFocus, c->nextYaw);
         set_or_approach_s16_symmetric(&c->yaw, newYaw, sYawSpeed);
         sStatusFlags &= ~CAM_FLAG_UNUSED_CUTSCENE_ACTIVE;
 
@@ -2777,7 +2757,7 @@ void update_lakitu(struct Camera *c) {
 
         if (c->cutscene) {
             vec3f_add(gLakituState.focus, sPlayer2FocusOffset);
-            vec3f_set(sPlayer2FocusOffset, 0, 0, 0);
+            vec3_zero(sPlayer2FocusOffset);
         }
 
         vec3f_get_dist_and_angle(gLakituState.pos, gLakituState.focus, &gLakituState.focusDistance,
@@ -2800,9 +2780,9 @@ void update_lakitu(struct Camera *c) {
 
         if (c->mode != CAMERA_MODE_C_UP && c->cutscene == 0) {
             gCheckingSurfaceCollisionsForCamera = TRUE;
-            distToFloor = find_floor(gLakituState.pos[0],
-                                     gLakituState.pos[1] + 20.0f,
-                                     gLakituState.pos[2], &floor);
+            f32 distToFloor = find_floor(gLakituState.pos[0],
+                                         gLakituState.pos[1] + 20.0f,
+                                         gLakituState.pos[2], &floor);
             if (distToFloor != FLOOR_LOWER_LIMIT) {
                 if (gLakituState.pos[1] < (distToFloor += 100.0f)) {
                     gLakituState.pos[1] = distToFloor;
@@ -2828,18 +2808,16 @@ void update_camera(struct Camera *c) {
     gCamera = c;
     update_camera_hud_status(c);
     if (c->cutscene == 0 &&
-        #ifdef PUPPYCAM
+#ifdef PUPPYCAM
         !gPuppyCam.enabled &&
-        #endif
+#endif
         !(gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
-        if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
-                    set_cam_angle(CAM_ANGLE_MARIO);
-                } else {
-                    set_cam_angle(CAM_ANGLE_LAKITU);
-                }
+        if ((cam_select_alt_mode(0) == CAM_SELECTION_MARIO) && (gPlayer1Controller->buttonPressed & R_TRIG)) {
+            if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
+                set_cam_angle(CAM_ANGLE_MARIO);
+            } else {
+                set_cam_angle(CAM_ANGLE_LAKITU);
             }
         }
         play_sound_if_cam_switched_to_lakitu_or_mario();
@@ -2853,9 +2831,9 @@ void update_camera(struct Camera *c) {
         sStatusFlags |= CAM_FLAG_FRAME_AFTER_CAM_INIT;
     }
 
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
-    #endif
+#endif
     // Store previous geometry information
     sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
     sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
@@ -2878,8 +2856,7 @@ void update_camera(struct Camera *c) {
 #else
     camera_course_processing(c);
 #endif
-    sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed,
-                                              gPlayer1Controller->buttonDown);
+    sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed, gPlayer1Controller->buttonDown);
 
     if (c->cutscene != 0) {
         sYawSpeed = 0;
@@ -2925,62 +2902,64 @@ void update_camera(struct Camera *c) {
             }
         }
     }
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     }
-    #endif
+#endif
     // Start any Mario-related cutscenes
     start_cutscene(c, get_cutscene_from_mario_status(c));
     gCheckingSurfaceCollisionsForCamera = FALSE;
-    #ifdef PUPPYCAM
+#ifdef PUPPYCAM
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
-    #endif
-    if (gCurrLevelNum != LEVEL_CASTLE) {
-        // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
-        // trigger is held
-        if ((c->cutscene == 0 &&
-            (gPlayer1Controller->buttonDown & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED)
-            || (gCameraMovementFlags & CAM_MOVE_FIX_IN_PLACE)
-            || (sMarioCamState->action) == ACT_GETTING_BLOWN) {
+#endif
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
+        if (gCurrLevelNum != LEVEL_CASTLE) {
+#endif
+            // If fixed camera is selected as the alternate mode, then fix the camera as long as the right trigger is held
+            if ((c->cutscene == 0 &&
+                (gPlayer1Controller->buttonDown & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED)
+                || (gCameraMovementFlags & CAM_MOVE_FIX_IN_PLACE)
+                || (sMarioCamState->action) == ACT_GETTING_BLOWN) {
 
-            // If this is the first frame that R_TRIG is held, play the "click" sound
-            if (c->cutscene == 0 && (gPlayer1Controller->buttonPressed & R_TRIG)
-                && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
-                sCameraSoundFlags |= CAM_SOUND_FIXED_ACTIVE;
-                play_sound_rbutton_changed();
+                // If this is the first frame that R_TRIG is held, play the "click" sound
+                if (c->cutscene == 0 && (gPlayer1Controller->buttonPressed & R_TRIG)
+                    && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
+                    sCameraSoundFlags |= CAM_SOUND_FIXED_ACTIVE;
+                    play_sound_rbutton_changed();
+                }
+
+                // Fixed mode only prevents Lakitu from moving. The camera pos still updates, so
+                // Lakitu will fly to his next position as normal whenever R_TRIG is released.
+                gLakituState.posHSpeed = 0.f;
+                gLakituState.posVSpeed = 0.f;
+
+                vec3f_get_yaw(gLakituState.focus, gLakituState.pos, &c->nextYaw);
+                c->yaw = c->nextYaw;
+                gCameraMovementFlags &= ~CAM_MOVE_FIX_IN_PLACE;
+            } else {
+                // Play the "click" sound when fixed mode is released
+                if (sCameraSoundFlags & CAM_SOUND_FIXED_ACTIVE) {
+                    play_sound_rbutton_changed();
+                    sCameraSoundFlags &= ~CAM_SOUND_FIXED_ACTIVE;
+                }
             }
-
-            // Fixed mode only prevents Lakitu from moving. The camera pos still updates, so
-            // Lakitu will fly to his next position as normal whenever R_TRIG is released.
-            gLakituState.posHSpeed = 0.f;
-            gLakituState.posVSpeed = 0.f;
-
-            c->nextYaw = calculate_yaw(gLakituState.focus, gLakituState.pos);
-            c->yaw = c->nextYaw;
-            gCameraMovementFlags &= ~CAM_MOVE_FIX_IN_PLACE;
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         } else {
-            // Play the "click" sound when fixed mode is released
-            if (sCameraSoundFlags & CAM_SOUND_FIXED_ACTIVE) {
-                play_sound_rbutton_changed();
-                sCameraSoundFlags &= ~CAM_SOUND_FIXED_ACTIVE;
+            if ((gPlayer1Controller->buttonPressed & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
+                play_sound_button_change_blocked();
             }
         }
-    } else {
-        if ((gPlayer1Controller->buttonPressed & R_TRIG) && cam_select_alt_mode(0) == CAM_SELECTION_FIXED) {
-            play_sound_button_change_blocked();
-        }
-    }
+#endif
 
-    update_lakitu(c);
-    #ifdef PUPPYCAM
+        update_lakitu(c);
+#ifdef PUPPYCAM
     }
-    //Just a cute little bit that syncs puppycamera up to vanilla when playing a vanilla cutscene :3
+    // Just a cute little bit that syncs puppycamera up to vanilla when playing a vanilla cutscene :3
     if (c->cutscene != 0) {
         gPuppyCam.yawTarget = gCamera->yaw;
         gPuppyCam.yaw = gCamera->yaw;
-        if (gMarioState->action == ACT_ENTERING_STAR_DOOR)
-        { //god this is stupid and the fact I have to continue doing this is testament to the idiocy of the star door cutscene >:(
-            gPuppyCam.yawTarget = gMarioState->faceAngle[1]+0x8000;
-            gPuppyCam.yaw = gMarioState->faceAngle[1]+0x8000;
+        if (gMarioState->action == ACT_ENTERING_STAR_DOOR) { // god this is stupid and the fact I have to continue doing this is testament to the idiocy of the star door cutscene >:(
+            gPuppyCam.yawTarget = gMarioState->faceAngle[1] + 0x8000;
+            gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         }
     }
     if (c->cutscene == 0 && gPuppyCam.enabled && !(gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)) {
@@ -3005,7 +2984,7 @@ void update_camera(struct Camera *c) {
         gLakituState.roll += sHandheldShakeRoll;
         gLakituState.roll += gLakituState.keyDanceRoll;
     }
-    #endif
+#endif
     gLakituState.lastFrameAction = sMarioCamState->action;
 }
 
@@ -3093,8 +3072,8 @@ void init_camera(struct Camera *c) {
     gLakituState.keyDanceRoll = 0;
     gLakituState.unused = 0;
     sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-    vec3f_set(sCastleEntranceOffset, 0.f, 0.f, 0.f);
-    vec3f_set(sPlayer2FocusOffset, 0.f, 0.f, 0.f);
+    vec3_zero(sCastleEntranceOffset);
+    vec3_zero(sPlayer2FocusOffset);
     find_mario_floor_and_ceil(&sMarioGeometry);
     sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
     sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
@@ -3270,9 +3249,11 @@ void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera) {
                 camera->focus[2] = gCamera->areaCenZ;
                 vec3f_get_dist_and_angle(camera->focus, sMarioCamState->pos, &dist, &pitch, &yaw);
                 vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
                 if (gCurrLevelNum != LEVEL_THI) {
                     find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
                 }
+#endif
             }
         } else {
             sFramesPaused++;
@@ -3329,14 +3310,6 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
     return NULL;
 }
 
-void object_pos_to_vec3f(Vec3f dst, struct Object *o) {
-    vec3f_copy(dst, &o->oPosVec);
-}
-
-void vec3f_to_object_pos(struct Object *o, Vec3f src) {
-    vec3f_copy(&o->oPosVec, src);
-}
-
 /**
  * Produces values using a cubic b-spline curve. Basically Q is the used output,
  * u is a value between 0 and 1 that represents the position along the spline,
@@ -3346,19 +3319,17 @@ void vec3f_to_object_pos(struct Object *o, Vec3f src) {
  */
 void evaluate_cubic_spline(f32 u, Vec3f Q, Vec3f a0, Vec3f a1, Vec3f a2, Vec3f a3) {
     f32 B[4];
-
-    if (u > 1.f) {
-        u = 1.f;
-    }
-
-    B[0] = (1.f - u) * (1.f - u) * (1.f - u) / 6.f;
-    B[1] = u * u * u / 2.f - u * u + 0.6666667f;
-    B[2] = -u * u * u / 2.f + u * u / 2.f + u / 2.f + 0.16666667f;
-    B[3] = u * u * u / 6.f;
-
-    Q[0] = B[0] * a0[0] + B[1] * a1[0] + B[2] * a2[0] + B[3] * a3[0];
-    Q[1] = B[0] * a0[1] + B[1] * a1[1] + B[2] * a2[1] + B[3] * a3[1];
-    Q[2] = B[0] * a0[2] + B[1] * a1[2] + B[2] * a2[2] + B[3] * a3[2];
+    if (u > 1.0f) u = 1.0f;
+    register f32 nu = (1.0f - u);
+    register f32 su = sqr(u);
+    register f32 hcu = (cube(u) / 2.0f);
+    B[0] = (cube(nu) / 6.0f);
+    B[1] = (( hcu ) -  su                      + (2.0f / 3.0f));
+    B[2] = ((-hcu ) + (su / 2.0f) + (u / 2.0f) + (5.0f / 3.0f));
+    B[3] =  ( hcu / 3.0f);
+    Q[0] = ((B[0] * a0[0]) + (B[1] * a1[0]) + (B[2] * a2[0]) + (B[3] * a3[0]));
+    Q[1] = ((B[0] * a0[1]) + (B[1] * a1[1]) + (B[2] * a2[1]) + (B[3] * a3[1]));
+    Q[2] = ((B[0] * a0[2]) + (B[1] * a1[2]) + (B[2] * a2[2]) + (B[3] * a3[2]));
 }
 
 /**
@@ -3547,7 +3518,7 @@ void shake_camera_handheld(Vec3f pos, Vec3f focus) {
     s16 pitch, yaw;
 
     if (sHandheldShakeMag == 0) {
-        vec3f_set(shakeOffset, 0.f, 0.f, 0.f);
+        vec3_zero(shakeOffset);
     } else {
         for (i = 0; i < 4; i++) {
             shakeSpline[i][0] = sHandheldShakeSpline[i].point[0];
@@ -3757,7 +3728,6 @@ void approach_vec3s_asymptotic(Vec3s current, Vec3s target, s16 xMul, s16 yMul, 
     approach_s16_asymptotic_bool(&current[2], target[2], zMul);
 }
 
-
 //! move these to math_util
 s32 camera_approach_s16_symmetric_bool(s16 *current, s16 target, s16 inc) {
     s16 dist = (target - *current);
@@ -3889,19 +3859,8 @@ s16 reduce_by_dist_from_camera(s16 value, f32 maxDist, f32 posX, f32 posY, f32 p
 
 s32 clamp_positions_and_find_yaw(Vec3f pos, Vec3f origin, f32 xMax, f32 xMin, f32 zMax, f32 zMin) {
     s16 yaw = gCamera->nextYaw;
-
-    if (pos[0] >= xMax) {
-        pos[0] = xMax;
-    }
-    if (pos[0] <= xMin) {
-        pos[0] = xMin;
-    }
-    if (pos[2] >= zMax) {
-        pos[2] = zMax;
-    }
-    if (pos[2] <= zMin) {
-        pos[2] = zMin;
-    }
+    pos[0] = CLAMP(pos[0], xMin, xMax);
+    pos[2] = CLAMP(pos[2], zMin, zMax);
     yaw = calculate_yaw(origin, pos);
     return yaw;
 }
@@ -3909,23 +3868,16 @@ s32 clamp_positions_and_find_yaw(Vec3f pos, Vec3f origin, f32 xMax, f32 xMin, f3
 /**
  * The yaw passed here is the yaw of the direction FROM Mario TO Lakitu.
  *
- * wallYaw always has 90 degrees added to it before this is called -- it's parallel to the wall.
- *
  * @return the new yaw from Mario to rotate towards.
- *
- * @warning this is jank. It actually returns the yaw that will rotate further INTO the wall. So, the
- *          developers just add 180 degrees to the result.
  */
 s32 calc_avoid_yaw(s16 yawFromMario, s16 wallYaw) {
-    s16 yawDiff = wallYaw - yawFromMario + DEGREES(90);
-
-    if (yawDiff < 0) {
+    if (yawFromMario < (s16)(wallYaw + DEGREES(180))) {
         // Deflect to the right
-        yawFromMario = wallYaw;
+        yawFromMario = wallYaw + DEGREES(90);
     } else {
         // Note: this favors the left side if the wall is exactly perpendicular to the camera.
         // Deflect to the left
-        yawFromMario = wallYaw + DEGREES(180);
+        yawFromMario = wallYaw - DEGREES(90);
     }
     return yawFromMario;
 }
@@ -4071,14 +4023,14 @@ s32 is_pos_in_bounds(Vec3f pos, Vec3f center, Vec3f bounds, s16 boundsYaw) {
             -bounds[2] < rel[2] && rel[2] < bounds[2]);
 }
 
-s16 calculate_pitch(Vec3f from, Vec3f to) {
+s32 calculate_pitch(Vec3f from, Vec3f to) {
     f32 dx = to[0] - from[0];
     f32 dy = to[1] - from[1];
     f32 dz = to[2] - from[2];
     return atan2s(sqrtf(sqr(dx) + sqr(dz)), dy);
 }
 
-s16 calculate_yaw(Vec3f from, Vec3f to) {
+s32 calculate_yaw(Vec3f from, Vec3f to) {
     f32 dx = to[0] - from[0];
     f32 dz = to[2] - from[2];
     return atan2s(dz, dx);
@@ -4129,9 +4081,9 @@ void rotate_in_xz(Vec3f dst, Vec3f src, s16 yaw) {
     register f32 z = src[2];
     register f32 sy = sins(yaw);
     register f32 cy = coss(yaw);
-    dst[0] = ((x * sy) + (z * cy));
+    dst[0] = (z * sy) + (x * cy);
     dst[1] = src[1];
-    dst[2] = ((x * cy) - (z * sy));
+    dst[2] = (z * cy) - (x * sy);
 }
 
 /**
@@ -4556,9 +4508,9 @@ void clear_cutscene_vars(UNUSED struct Camera *c) {
 
     for (i = 0; i < 10; i++) {
         sCutsceneVars[i].unused1 = 0;
-        vec3f_set(sCutsceneVars[i].point, 0.f, 0.f, 0.f);
-        vec3f_set(sCutsceneVars[i].unusedPoint, 0.f, 0.f, 0.f);
-        vec3s_set(sCutsceneVars[i].angle, 0, 0, 0);
+        vec3_zero(sCutsceneVars[i].point);
+        vec3_zero(sCutsceneVars[i].unusedPoint);
+        vec3_zero(sCutsceneVars[i].angle);
         sCutsceneVars[i].unused2 = 0;
     }
 }
@@ -5046,21 +4998,24 @@ void set_fixed_cam_axis_sa_lobby(UNUSED s16 preset) {
  *      Only block area mode changes if Mario is in a cannon,
  *      or if the camera is in Mario mode and Mario is not swimming or in water with the metal cap
  */
+#ifdef CAMERA_FIX
+void check_blocking_area_processing(UNUSED const u8 *mode) {
+    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+#else
 void check_blocking_area_processing(const u8 *mode) {
-    if (sMarioCamState->action & ACT_FLAG_METAL_WATER ||
+    if ((sMarioCamState->action & ACT_FLAG_METAL_WATER) || (sMarioCamState->action == ACT_DEBUG_FREE_MOVE) ||
                         *mode == CAMERA_MODE_BEHIND_MARIO || *mode == CAMERA_MODE_WATER_SURFACE) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-
     if (gCurrLevelNum == LEVEL_DDD || gCurrLevelNum == LEVEL_WDW || gCurrLevelNum == LEVEL_COTMC) {
         sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-
     if ((*mode == CAMERA_MODE_BEHIND_MARIO &&
             !(sMarioCamState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER))) ||
          *mode == CAMERA_MODE_INSIDE_CANNON) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
+#endif
 }
 
 void cam_rr_exit_building_side(struct Camera *c) {
@@ -5534,8 +5489,7 @@ u32 surface_type_modes(struct Camera *c) {
  * Set the camera mode to `mode` if Mario is not standing on a special surface
  */
 u32 set_mode_if_not_set_by_surface(struct Camera *c, u8 mode) {
-    u32 modeChanged = 0;
-    modeChanged = surface_type_modes(c);
+    u32 modeChanged = surface_type_modes(c);
 
     if ((modeChanged == 0) && (mode != 0)) {
         transition_to_camera_mode(c, mode, 90);
@@ -5923,7 +5877,6 @@ struct CutsceneSplinePoint sEndingLookAtSkyFocus[] = {
  */
 s16 camera_course_processing(struct Camera *c) {
     s16 level = gCurrLevelNum;
-    s16 mode;
     s8 area = gCurrentArea->index;
     // Bounds iterator
     u32 b;
@@ -5982,7 +5935,7 @@ s16 camera_course_processing(struct Camera *c) {
             b += 1;
         }
     }
-
+#if !defined(CAMERA_FIX) && !defined(DISABLE_LEVEL_SPECIFIC_CHECKS)
     // Area-specific camera processing
     if (!(sStatusFlags & CAM_FLAG_BLOCK_AREA_PROCESSING)) {
         switch (gCurrLevelArea) {
@@ -6011,11 +5964,11 @@ s16 camera_course_processing(struct Camera *c) {
 
             case AREA_BBH:
                 // if camera is fixed at bbh_room_13_balcony_camera (but as floats)
-                if (vec3f_compare(sFixedModeBasePosition, 210.f, 420.f, 3109.f) == 1)
-                {
-                    if (sMarioCamState->pos[1] < 1800.f) {
-                        transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
-                    }
+                if (sFixedModeBasePosition[0] == 210.f
+                 && sFixedModeBasePosition[1] == 420.f
+                 && sFixedModeBasePosition[2] == 3109.f
+                 && sMarioCamState->pos[1] < 1800.f) {
+                    transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
                 }
                 break;
 
@@ -6091,26 +6044,24 @@ s16 camera_course_processing(struct Camera *c) {
                 break;
         }
     }
-
+#endif
     sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     if (oldMode == CAMERA_MODE_C_UP) {
         sModeInfo.lastMode = c->mode;
         c->mode = oldMode;
     }
-    mode = c->mode;
-    return mode;
+    return c->mode;
 }
 
 /**
  * Move `pos` between the nearest floor and ceiling
  */
 void resolve_geometry_collisions(Vec3f pos) {
-    f32 ceilY, floorY;
     struct Surface *surf;
 
     f32_find_wall_collision(&pos[0], &pos[1], &pos[2], 0.f, 100.f);
-    floorY = find_floor(pos[0], pos[1] + 50.f, pos[2], &surf);
-    ceilY = find_ceil(pos[0], pos[1] - 50.f, pos[2], &surf);
+    f32 floorY = find_floor(pos[0], pos[1] + 50.f, pos[2], &surf);
+    f32 ceilY = find_ceil(pos[0], pos[1] - 50.f, pos[2], &surf);
 
     if ((FLOOR_LOWER_LIMIT != floorY) && (CELL_HEIGHT_LIMIT == ceilY)) {
         if (pos[1] < (floorY += 125.f)) {
@@ -6154,7 +6105,7 @@ void resolve_geometry_collisions(Vec3f pos) {
 s32 rotate_camera_around_walls(UNUSED struct Camera *c, Vec3f cPos, s16 *avoidYaw, s16 yawRange) {
     struct WallCollisionData colData;
     struct Surface *wall;
-    s16 wallYaw, horWallNorm;
+    s16 wallYaw;
     // The yaw of the vector from Mario to the camera.
     s16 yawFromMario;
     s32 status = 0;
@@ -6192,10 +6143,9 @@ s32 rotate_camera_around_walls(UNUSED struct Camera *c, Vec3f cPos, s16 *avoidYa
                     status = 1;
                     wall = colData.walls[colData.numWalls - 1];
                     // wallYaw is parallel to the wall, not perpendicular
-                    wallYaw = atan2s(wall->normal.z, wall->normal.x) + DEGREES(90);
-                    // Calculate the avoid direction. The function returns the opposite direction so add 180
-                    // degrees.
-                    *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw) + DEGREES(180);
+                    wallYaw = SURFACE_YAW(wall);
+                    // Calculate the avoid direction. The function returns the opposite direction so add 180 degrees.
+                    *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw);
                 }
             }
 
@@ -6208,17 +6158,16 @@ s32 rotate_camera_around_walls(UNUSED struct Camera *c, Vec3f cPos, s16 *avoidYa
 
             if (find_wall_collisions(&colData) != 0) {
                 wall = colData.walls[colData.numWalls - 1];
-                horWallNorm = atan2s(wall->normal.z, wall->normal.x);
-                wallYaw = horWallNorm + DEGREES(90);
+                wallYaw = SURFACE_YAW(wall);
                 // If Mario would be blocked by the surface, then avoid it
                 if ((is_range_behind_surface(sMarioCamState->pos, cPos, wall, yawRange, SURFACE_WALL_MISC) == 0)
-                    && (is_behind_surface(sMarioCamState->pos, wall) == TRUE)
+                    && (is_behind_surface(sMarioCamState->pos, wall))
                     // Also check if the wall is tall enough to cover Mario
-                    && (is_surf_within_bounding_box(wall, -1.f, 150.f, -1.f) == FALSE)) {
+                    && (!is_surf_within_bounding_box(wall, -1.f, 150.f, -1.f))) {
                     // Calculate the avoid direction. The function returns the opposite direction so add 180
                     // degrees.
-                    *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw) + DEGREES(180);
-                    camera_approach_s16_symmetric_bool(avoidYaw, horWallNorm, yawRange);
+                    *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw);
+                    camera_approach_s16_symmetric_bool(avoidYaw, wallYaw, yawRange);
                     status = 3;
                     step = 8;
                 }
@@ -6269,10 +6218,10 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
  * Start a cutscene focusing on an object
  * This will play if nothing else happened in the same frame, like exiting or warping.
  */
-void start_object_cutscene(u8 cutscene, struct Object *o) {
-    sObjectCutscene = cutscene;
-    gRecentCutscene = 0;
-    gCutsceneFocus = o;
+void start_object_cutscene(u8 cutscene, struct Object *obj) {
+    sObjectCutscene  = cutscene;
+    gRecentCutscene  = 0;
+    gCutsceneFocus   = obj;
     gObjCutsceneDone = FALSE;
 }
 
@@ -6300,12 +6249,12 @@ s16 unused_dialog_cutscene_response(u8 cutscene) {
     }
 }
 
-s16 cutscene_object_with_dialog(u8 cutscene, struct Object *o, s16 dialogID) {
+s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID) {
     s16 response = DIALOG_RESPONSE_NONE;
 
     if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
         if (gRecentCutscene != cutscene) {
-            start_object_cutscene(cutscene, o);
+            start_object_cutscene(cutscene, obj);
             if (dialogID != DIALOG_NONE) {
                 sCutsceneDialogID = dialogID;
             } else {
@@ -6320,21 +6269,21 @@ s16 cutscene_object_with_dialog(u8 cutscene, struct Object *o, s16 dialogID) {
     return response;
 }
 
-s16 cutscene_object_without_dialog(u8 cutscene, struct Object *o) {
-    s16 response = cutscene_object_with_dialog(cutscene, o, DIALOG_NONE);
+s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
+    s16 response = cutscene_object_with_dialog(cutscene, obj, DIALOG_NONE);
     return response;
 }
 
 /**
  * @return 0 if not started, 1 if started, and -1 if finished
  */
-s16 cutscene_object(u8 cutscene, struct Object *o) {
+s16 cutscene_object(u8 cutscene, struct Object *obj) {
     s16 status = 0;
 
     if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
         if (gRecentCutscene != cutscene) {
-            start_object_cutscene(cutscene, o);
-            status = 1;
+            start_object_cutscene(cutscene, obj);
+            status =  1;
         } else {
             status = -1;
         }
@@ -6886,7 +6835,7 @@ void cutscene_grand_star_front_of_mario(struct Camera *c) {
  */
 void cutscene_grand_star_mario_jump(UNUSED struct Camera *c) {
     vec3s_set(sCutsceneVars[0].angle, 0, sMarioCamState->faceAngle[1], 0);
-    vec3f_set(sCutsceneVars[2].point, 0.f, 0.f, 0.f);
+    vec3_zero(sCutsceneVars[2].point);
 }
 
 /**
@@ -7145,6 +7094,7 @@ void star_dance_bound_yaw(struct Camera *c, s16 absYaw, s16 yawMax) {
  * Store the camera's focus in cvar9.
  */
 void cutscene_dance_closeup_start(struct Camera *c) {
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if ((gLastCompletedStarNum == 4) && (gCurrCourseNum == COURSE_JRB)) {
         star_dance_bound_yaw(c, 0x0, 0x4000);
     }
@@ -7154,7 +7104,7 @@ void cutscene_dance_closeup_start(struct Camera *c) {
     if ((gLastCompletedStarNum == 5) && (gCurrCourseNum == COURSE_WDW)) {
         star_dance_bound_yaw(c, 0x8000, 0x800);
     }
-
+#endif
     vec3f_copy(sCutsceneVars[9].point, c->focus);
     //! cvar8 is unused in the closeup cutscene
     sCutsceneVars[8].angle[0] = 0x2000;
@@ -7178,12 +7128,12 @@ void cutscene_dance_closeup_fly_above(struct Camera *c) {
     s16 pitch, yaw;
     f32 dist;
     s16 goalPitch = 0x1800;
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if ((gLastCompletedStarNum == 6 && gCurrCourseNum == COURSE_SL) ||
         (gLastCompletedStarNum == 4 && gCurrCourseNum == COURSE_TTC)) {
         goalPitch = 0x800;
     }
-
+#endif
     vec3f_get_dist_and_angle(sMarioCamState->pos, c->pos, &dist, &pitch, &yaw);
     approach_f32_asymptotic_bool(&dist, 800.f, 0.05f);
     approach_s16_asymptotic_bool(&pitch, goalPitch, 16);
@@ -7258,20 +7208,13 @@ void cutscene_dance_fly_away_start(struct Camera *c) {
         c->yaw = calculate_yaw(areaCenter, c->pos);
         c->nextYaw = c->yaw;
     }
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     // Restrict the camera yaw in tight spaces
-    if ((gLastCompletedStarNum == 6) && (gCurrCourseNum == COURSE_CCM)) {
-        star_dance_bound_yaw(c, 0x5600, 0x800);
-    }
-    if ((gLastCompletedStarNum == 2) && (gCurrCourseNum == COURSE_TTM)) {
-        star_dance_bound_yaw(c, 0x0,    0x800);
-    }
-    if ((gLastCompletedStarNum == 1) && (gCurrCourseNum == COURSE_SL)) {
-        star_dance_bound_yaw(c, 0x2000, 0x800);
-    }
-    if ((gLastCompletedStarNum == 3) && (gCurrCourseNum == COURSE_RR)) {
-        star_dance_bound_yaw(c, 0x0,    0x800);
-    }
+    if ((gLastCompletedStarNum == 6) && (gCurrCourseNum == COURSE_CCM)) star_dance_bound_yaw(c, 0x5600, 0x800);
+    if ((gLastCompletedStarNum == 2) && (gCurrCourseNum == COURSE_TTM)) star_dance_bound_yaw(c, 0x0,    0x800);
+    if ((gLastCompletedStarNum == 1) && (gCurrCourseNum == COURSE_SL )) star_dance_bound_yaw(c, 0x2000, 0x800);
+    if ((gLastCompletedStarNum == 3) && (gCurrCourseNum == COURSE_RR )) star_dance_bound_yaw(c, 0x0,    0x800);
+#endif
 }
 
 void cutscene_dance_fly_away_approach_mario(struct Camera *c) {
@@ -7506,20 +7449,14 @@ void cutscene_bowser_arena_start(struct Camera *c) {
  * Create the dialog box depending on which bowser fight Mario is in.
  */
 void bowser_fight_intro_dialog(UNUSED struct Camera *c) {
-    s16 dialog;
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     switch (gCurrLevelNum) {
-        case LEVEL_BOWSER_1:
-            dialog = DIALOG_067;
-            break;
-        case LEVEL_BOWSER_2:
-            dialog = DIALOG_092;
-            break;
-        default: // LEVEL_BOWSER_3
-            dialog = DIALOG_093;
+        case LEVEL_BOWSER_1: create_dialog_box(DIALOG_067); break;
+        case LEVEL_BOWSER_2: create_dialog_box(DIALOG_092); break;
+        case LEVEL_BOWSER_3: create_dialog_box(DIALOG_093); break;
+        default:                                            break;
     }
-
-    create_dialog_box(dialog);
+#endif
 }
 
 /**
@@ -7527,7 +7464,6 @@ void bowser_fight_intro_dialog(UNUSED struct Camera *c) {
  */
 void cutscene_bowser_arena_dialog(struct Camera *c) {
     cutscene_event(bowser_fight_intro_dialog, c, 0, 0);
-
     if (get_dialog_id() == DIALOG_NONE) {
         gCutsceneTimer = CUTSCENE_LOOP;
     }
@@ -7579,7 +7515,7 @@ void cutscene_star_spawn_store_info(struct Camera *c) {
 void cutscene_star_spawn_focus_star(struct Camera *c) {
     Vec3f starPos;
     if (gCutsceneFocus != NULL) {
-        object_pos_to_vec3f(starPos, gCutsceneFocus);
+        vec3f_copy(starPos, &gCutsceneFocus->oPosVec);
         starPos[1] += gCutsceneFocus->hitboxHeight;
         approach_vec3f_asymptotic(c->focus, starPos, 0.1f, 0.1f, 0.1f);
     }
@@ -7593,7 +7529,7 @@ void cutscene_star_spawn_update_boss_fight(struct Camera *c) {
 
     update_boss_fight_camera(c, focus, pos);
     approach_vec3f_asymptotic(c->focus, focus, 0.2f, 0.2f, 0.2f);
-    approach_vec3f_asymptotic(c->pos, pos, 0.2f, 0.2f, 0.2f);
+    approach_vec3f_asymptotic(c->pos,     pos, 0.2f, 0.2f, 0.2f);
 }
 
 /**
@@ -7640,7 +7576,7 @@ void cutscene_star_spawn_end(struct Camera *c) {
 
 void cutscene_exit_waterfall_warp(struct Camera *c) {
     //! hardcoded position
-    vec3f_set(c->pos, -3899.f, 39.f, -5671.f);
+    vec3_set(c->pos, -3899.f, 39.f, -5671.f);
 }
 
 /**
@@ -7648,7 +7584,7 @@ void cutscene_exit_waterfall_warp(struct Camera *c) {
  */
 void cutscene_exit_to_castle_grounds_focus_mario(struct Camera *c) {
     vec3f_copy(c->focus, sMarioCamState->pos);
-    c->focus[1] = c->pos[1] + (sMarioCamState->pos[1] + 125.f - c->pos[1]) * 0.5f;
+    c->focus[1] = c->pos[1] + ((sMarioCamState->pos[1] + 125.f - c->pos[1]) * 0.5f);
     approach_vec3f_asymptotic(c->focus, sMarioCamState->pos, 0.05f, 0.4f, 0.05f);
 }
 
@@ -7689,7 +7625,7 @@ void cutscene_exit_fall_to_castle_grounds(struct Camera *c) {
  * Start the red coin star spawning cutscene.
  */
 void cutscene_red_coin_star_start(struct Camera *c) {
-    object_pos_to_vec3f(sCutsceneVars[1].point, gCutsceneFocus);
+    vec3f_copy(sCutsceneVars[1].point, &gCutsceneFocus->oPosVec);
     store_info_star(c);
     // Store the default fov for after the cutscene
     sCutsceneVars[2].point[2] = sFOVState.fov;
@@ -7723,9 +7659,8 @@ void cutscene_red_coin_star_look_up_at_star(struct Camera *c) {
 void cutscene_red_coin_star_warp(struct Camera *c) {
     f32 dist;
     s16 pitch, yaw, posYaw;
-    struct Object *o = gCutsceneFocus;
 
-    vec3f_set(sCutsceneVars[1].point, o->oHomeX, o->oHomeY, o->oHomeZ);
+    vec3f_copy(sCutsceneVars[1].point, &gCutsceneFocus->oHomeVec);
     vec3f_get_dist_and_angle(sCutsceneVars[1].point, c->pos, &dist, &pitch, &yaw);
     posYaw = calculate_yaw(sCutsceneVars[1].point, c->pos);
     yaw = calculate_yaw(sCutsceneVars[1].point, sMarioCamState->pos);
@@ -7797,11 +7732,12 @@ void cutscene_goto_cvar_pos(struct Camera *c, f32 goalDist, s16 goalPitch, s16 r
         nextPitch = goalPitch;
         vec3f_copy(sCutsceneVars[0].point, sCutsceneVars[3].point);
         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
         if (gCurrLevelNum == LEVEL_TTM) {
             nextYaw = atan2s(sCutsceneVars[3].point[2] - c->areaCenZ,
                              sCutsceneVars[3].point[0] - c->areaCenX);
         }
+#endif
     } else {
         if (c->cutscene == CUTSCENE_PREPARE_CANNON) {
             vec3f_get_dist_and_angle(c->pos, sCutsceneVars[0].point, &curDist, &curPitch, &curYaw);
@@ -7844,8 +7780,8 @@ void cutscene_prepare_cannon_start(struct Camera *c) {
     vec3f_copy(sCutsceneVars[0].point, c->focus);
     sCutsceneVars[2].point[0] = 30.f;
     // Store the cannon door's position in sCutsceneVars[3]'s point
-    object_pos_to_vec3f(sCutsceneVars[3].point, gCutsceneFocus);
-    vec3s_set(sCutsceneVars[5].angle, 0, 0, 0);
+    vec3f_copy(sCutsceneVars[3].point, &gCutsceneFocus->oPosVec);
+    vec3_zero(sCutsceneVars[5].angle);
 }
 
 /**
@@ -7869,7 +7805,9 @@ void cannon_approach_prev(f32 *value, f32 target) {
  * Fly or warp back to the previous pos and focus, stored in sCameraStoreCutscene.
  */
 void cutscene_prepare_cannon_fly_back(struct Camera *c) {
-    if (calc_abs_dist_squared(c->pos, sCameraStoreCutscene.pos) < sqr(8000.f)) {
+    f32 distToPrevPos;
+    vec3f_get_dist_squared(c->pos, sCameraStoreCutscene.pos, &distToPrevPos);
+    if (distToPrevPos < sqr(8000.f)) {
         cannon_approach_prev(&c->pos[0], sCameraStoreCutscene.pos[0]);
         cannon_approach_prev(&c->pos[1], sCameraStoreCutscene.pos[1]);
         cannon_approach_prev(&c->pos[2], sCameraStoreCutscene.pos[2]);
@@ -8083,14 +8021,14 @@ void cutscene_suffocation(struct Camera *c) {
 
 void cutscene_enter_pool_start(struct Camera *c) {
     vec3f_copy(sCutsceneVars[3].point, sMarioCamState->pos);
-
+#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
     if (gCurrLevelNum == LEVEL_CASTLE) { // entering HMC
         vec3f_set(sCutsceneVars[3].point, 2485.f, -1589.f, -2659.f);
     }
     if (gCurrLevelNum == LEVEL_HMC) { // entering CotMC
         vec3f_set(sCutsceneVars[3].point, 3350.f, -4589.f, 4800.f);
     }
-
+#endif
     vec3f_copy(sCutsceneVars[0].point, c->focus);
 }
 
@@ -8243,16 +8181,12 @@ void cutscene_dialog_start(struct Camera *c) {
     cutscene_soften_music(c);
     set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
 
-#ifndef VERSION_JP
     if (c->mode == CAMERA_MODE_BOSS_FIGHT) {
         vec3f_copy(sCameraStoreCutscene.focus, c->focus);
         vec3f_copy(sCameraStoreCutscene.pos, c->pos);
     } else {
-#endif
         store_info_star(c);
-#ifndef VERSION_JP
     }
-#endif
 
     // Store Mario's position and faceAngle
     sCutsceneVars[8].angle[0] = 0;
@@ -8260,7 +8194,7 @@ void cutscene_dialog_start(struct Camera *c) {
     sCutsceneVars[8].point[1] += 125.f;
 
     // Store gCutsceneFocus's position and yaw
-    object_pos_to_vec3f(sCutsceneVars[9].point, gCutsceneFocus);
+    vec3f_copy(sCutsceneVars[9].point, &gCutsceneFocus->oPosVec);
     sCutsceneVars[9].point[1] += gCutsceneFocus->hitboxHeight + 200.f;
     sCutsceneVars[9].angle[1] = calculate_yaw(sCutsceneVars[8].point, sCutsceneVars[9].point);
 
@@ -9417,7 +9351,7 @@ void cutscene_enter_cannon_end(struct Camera *c) {
  * Rotate around the cannon as it rises out of the hole.
  */
 void cutscene_enter_cannon_raise(struct Camera *c) {
-    struct Object *o;
+    struct Object *obj;
     f32 floorHeight;
     struct Surface *floor;
     Vec3f cannonFocus;
@@ -9436,14 +9370,14 @@ void cutscene_enter_cannon_raise(struct Camera *c) {
     sCutsceneVars[3].point[1] += 2.f;
     c->pos[1] += sCutsceneVars[3].point[1];
 
-    if ((o = sMarioCamState->usedObj) != NULL) {
-        sCutsceneVars[0].point[1] = o->oPosY;
-        cannonAngle[0] = o->oMoveAnglePitch;
-        cannonAngle[1] = o->oMoveAngleYaw;
-        cannonAngle[2] = o->oMoveAngleRoll;
-        c->focus[0] = o->oPosX;
-        c->focus[1] = o->oPosY;
-        c->focus[2] = o->oPosZ;
+    if ((obj = sMarioCamState->usedObj) != NULL) {
+        sCutsceneVars[0].point[1] = obj->oPosY;
+        cannonAngle[0] = obj->oMoveAnglePitch;
+        cannonAngle[1] = obj->oMoveAngleYaw;
+        cannonAngle[2] = obj->oMoveAngleRoll;
+        c->focus[0]    = obj->oPosX;
+        c->focus[1]    = obj->oPosY;
+        c->focus[2]    = obj->oPosZ;
         cannonFocus[0] = 0.f;
         cannonFocus[1] = 100.f;
         cannonFocus[2] = 0.f;
@@ -9461,19 +9395,19 @@ void cutscene_enter_cannon_raise(struct Camera *c) {
  * Start the cannon entering cutscene
  */
 void cutscene_enter_cannon_start(struct Camera *c) {
-    struct Object *o;
+    struct Object *obj;
 
     sStatusFlags |= CAM_FLAG_SMOOTH_MOVEMENT;
     sMarioCamState->cameraEvent = 0;
 
     // Store the cannon's position and angle in cvar0
-    if ((o = sMarioCamState->usedObj) != NULL) {
-        sCutsceneVars[0].point[0] = o->oPosX;
-        sCutsceneVars[0].point[1] = o->oPosY;
-        sCutsceneVars[0].point[2] = o->oPosZ;
-        sCutsceneVars[0].angle[0] = o->oMoveAnglePitch;
-        sCutsceneVars[0].angle[1] = o->oMoveAngleYaw;
-        sCutsceneVars[0].angle[2] = o->oMoveAngleRoll;
+    if ((obj = sMarioCamState->usedObj) != NULL) {
+        sCutsceneVars[0].point[0] = obj->oPosX;
+        sCutsceneVars[0].point[1] = obj->oPosY;
+        sCutsceneVars[0].point[2] = obj->oPosZ;
+        sCutsceneVars[0].angle[0] = obj->oMoveAnglePitch;
+        sCutsceneVars[0].angle[1] = obj->oMoveAngleYaw;
+        sCutsceneVars[0].angle[2] = obj->oMoveAngleRoll;
     }
 
     // Store the camera's polar offset from the cannon in cvar1
@@ -10667,34 +10601,33 @@ void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ) {
 /**
  * Offset an object's position in a random direction within the given bounds.
  */
-static UNUSED void unused_displace_obj_randomly(struct Object *o, f32 xRange, f32 yRange, f32 zRange) {
+static UNUSED void unused_displace_obj_randomly(struct Object *obj, f32 xRange, f32 yRange, f32 zRange) {
     f32 rnd = random_float();
-    o->oPosX += (rnd * xRange - xRange / 2.f);
-    o->oPosY += (rnd * yRange - yRange / 2.f);
-    o->oPosZ += (rnd * zRange - zRange / 2.f);
+    obj->oPosX += (rnd * xRange - xRange / 2.f);
+    obj->oPosY += (rnd * yRange - yRange / 2.f);
+    obj->oPosZ += (rnd * zRange - zRange / 2.f);
 }
 
 /**
  * Rotate an object in a random direction within the given bounds.
  */
-static UNUSED void unused_rotate_obj_randomly(struct Object *o, f32 pitchRange, f32 yawRange) {
+static UNUSED void unused_rotate_obj_randomly(struct Object *obj, f32 pitchRange, f32 yawRange) {
     f32 rnd = random_float();
-    o->oMoveAnglePitch += (s16)(rnd * pitchRange - pitchRange / 2.f);
-    o->oMoveAngleYaw += (s16)(rnd * yawRange - yawRange / 2.f);
+    obj->oMoveAnglePitch += (s16)(rnd * pitchRange - pitchRange / 2.f);
+    obj->oMoveAngleYaw   += (s16)(rnd *   yawRange -   yawRange / 2.f);
 }
 
 /**
  * Rotate the object towards the point `point`.
  */
-void obj_rotate_towards_point(struct Object *o, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv) {
+void obj_rotate_towards_point(struct Object *obj, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv) {
     f32 dist;
     s16 pitch, yaw;
     Vec3f oPos;
-
-    object_pos_to_vec3f(oPos, o);
+    vec3f_copy(oPos, &obj->oPosVec);
     vec3f_get_dist_and_angle(oPos, point, &dist, &pitch, &yaw);
-    o->oMoveAnglePitch = approach_s16_asymptotic(o->oMoveAnglePitch, pitchOff - pitch, pitchDiv);
-    o->oMoveAngleYaw = approach_s16_asymptotic(o->oMoveAngleYaw, yaw + yawOff, yawDiv);
+    obj->oMoveAnglePitch = approach_s16_asymptotic(obj->oMoveAnglePitch, pitchOff - pitch, pitchDiv);
+    obj->oMoveAngleYaw = approach_s16_asymptotic(obj->oMoveAngleYaw, yaw + yawOff, yawDiv);
 }
 
 #include "behaviors/intro_peach.inc.c"

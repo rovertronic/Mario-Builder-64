@@ -86,6 +86,7 @@ extern struct ObjectNode gFreeObjectList;
 extern struct Object *gMarioObject;
 extern struct Object *gLuigiObject;
 extern struct Object *gCurrentObject;
+#define o gCurrentObject
 
 extern const BehaviorScript *gCurBhvCommand;
 extern s16 gPrevFrameObjectCount;
@@ -99,6 +100,7 @@ extern struct MemoryPool *gObjectMemoryPool;
 
 extern s16 gCheckingSurfaceCollisionsForCamera;
 extern s16 gFindFloorIncludeSurfaceIntangible;
+extern s16 gFindFloorExcludeDynamic;
 extern TerrainData *gEnvironmentRegions;
 extern s32 gEnvironmentLevels[20];
 extern RoomData gDoorAdjacentRooms[60][2];
