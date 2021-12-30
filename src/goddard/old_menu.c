@@ -21,6 +21,9 @@
  */
 
 // bss
+UNUSED static char sDefSettingsMenuStr[0x100];
+static struct GdVec3f sStaticVec;
+UNUSED static struct GdVec3f unusedVec;
 static struct ObjGadget *sCurGadgetPtr;
 
 // forward declarations
@@ -40,6 +43,19 @@ void get_objvalue(union ObjVarVal *dst, enum ValPtrType type, void *base, size_t
         default:
             fatal_printf("%s: Undefined ValueType", "get_objvalue");
     }
+}
+
+/* 239F78 -> 23A00C */
+void Unknown8018B7A8(void *a0) {
+    struct GdVec3f sp1C;
+
+    set_cur_dynobj(a0);
+    d_get_init_pos(&sp1C);
+
+    sp1C.x += sStaticVec.x;
+    sp1C.y += sStaticVec.y;
+    sp1C.z += sStaticVec.z;
+    d_set_world_pos(sp1C.x, sp1C.y, sp1C.z);
 }
 
 /* 23A190 -> 23A250 */
@@ -102,12 +118,15 @@ void set_static_gdgt_value(struct ObjValPtr *vp) {
 
 /* 23A488 -> 23A4D0 */
 static void reset_gadget_default(struct ObjGadget *gdgt) {
+    UNUSED u8 filler[4];
+
     sCurGadgetPtr = gdgt;
     apply_to_obj_types_in_group(OBJ_TYPE_VALPTRS, (applyproc_t) set_static_gdgt_value, gdgt->valueGrp);
 }
 
 /* 23A4D0 -> 23A784 */
 void adjust_gadget(struct ObjGadget *gdgt, s32 a1, s32 a2) {
+    UNUSED u8 filler[8];
     f32 range;
     struct ObjValPtr *vp;
 
@@ -146,6 +165,7 @@ void adjust_gadget(struct ObjGadget *gdgt, s32 a1, s32 a2) {
 
 /* 23A784 -> 23A940; orig name: Unknown8018BFB4 */
 void reset_gadget(struct ObjGadget *gdgt) {
+    UNUSED u8 filler[8];
     f32 range;
     struct ObjValPtr *vp;
 
@@ -153,7 +173,7 @@ void reset_gadget(struct ObjGadget *gdgt) {
         fatal_printf("gadget has zero range (%f -> %f)\n", gdgt->rangeMin, gdgt->rangeMax);
     }
 
-    range = (1.0f / (gdgt->rangeMax - gdgt->rangeMin));
+    range = (f32)(1.0 / (gdgt->rangeMax - gdgt->rangeMin));
 
     if (gdgt->valueGrp != NULL) {
         vp = (struct ObjValPtr *) gdgt->valueGrp->firstMember->obj;

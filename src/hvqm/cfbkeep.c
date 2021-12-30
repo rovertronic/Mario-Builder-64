@@ -1,10 +1,10 @@
-/*
+/* 
  *  N64-HVQM2 library  Sample program
- *
+ * 
  *  FILE : cfbkeep.c (frame buffer management)
- *
+ * 
  *  Copyright (C) 1998,1999 NINTENDO Co.,Ltd.
- *
+ * 
  */
 
 /* 1998-12-16 */
@@ -32,7 +32,7 @@ void init_cfb(void) {
   int i, j;
 
   for ( i = 0; i < NUM_CFBs; i++ ) {
-    for ( j = 0; j < SCREEN_WD*SCREEN_HT; j++ ) gFrameBuffers[i][j] = 0;
+    for ( j = 0; j < SCREEN_WD*SCREEN_HT; j++ ) gFramebuffers[i][j] = 0;
     cfb_status[i] = CFB_FREE;
   }
 }

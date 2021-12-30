@@ -4,8 +4,7 @@
 #include <ultra64.h>
 
 /* Vector Types */
-struct GdVec3f
-{
+struct GdVec3f {
     f32 x, y, z;
 };
 
@@ -47,28 +46,28 @@ struct DynList {
 /* Goddard Code Object Structs */
 /* Object Type Flags */
 enum ObjTypeFlag {
-    OBJ_TYPE_GROUPS    = (1 <<  0), // 0x00000001
-    OBJ_TYPE_BONES     = (1 <<  1), // 0x00000002 // unused
-    OBJ_TYPE_JOINTS    = (1 <<  2), // 0x00000004
-    OBJ_TYPE_PARTICLES = (1 <<  3), // 0x00000008
-    OBJ_TYPE_SHAPES    = (1 <<  4), // 0x00000010
-    OBJ_TYPE_NETS      = (1 <<  5), // 0x00000020
-    OBJ_TYPE_PLANES    = (1 <<  6), // 0x00000040 // unused
-    OBJ_TYPE_FACES     = (1 <<  7), // 0x00000080
-    OBJ_TYPE_VERTICES  = (1 <<  8), // 0x00000100
-    OBJ_TYPE_CAMERAS   = (1 <<  9), // 0x00000200
-    OBJ_TYPE_UNUSED_10 = (1 << 10), // 0x00000400 // unused
-    OBJ_TYPE_MATERIALS = (1 << 11), // 0x00000800
-    OBJ_TYPE_WEIGHTS   = (1 << 12), // 0x00001000
-    OBJ_TYPE_GADGETS   = (1 << 13), // 0x00002000 // unused
-    OBJ_TYPE_VIEWS     = (1 << 14), // 0x00004000
-    OBJ_TYPE_LABELS    = (1 << 15), // 0x00008000
-    OBJ_TYPE_ANIMATORS = (1 << 16), // 0x00010000
-    OBJ_TYPE_VALPTRS   = (1 << 17), // 0x00020000
-    OBJ_TYPE_UNUSED_18 = (1 << 18), // 0x00040000 // unused
-    OBJ_TYPE_LIGHTS    = (1 << 19), // 0x00080000
-    OBJ_TYPE_ZONES     = (1 << 20), // 0x00100000 // unused
-    OBJ_TYPE_UNK200000 = (1 << 21), // 0x00200000 // unused
+    OBJ_TYPE_GROUPS    = 0x00000001,
+    OBJ_TYPE_BONES     = 0x00000002,
+    OBJ_TYPE_JOINTS    = 0x00000004,
+    OBJ_TYPE_PARTICLES = 0x00000008,
+    OBJ_TYPE_SHAPES    = 0x00000010,
+    OBJ_TYPE_NETS      = 0x00000020,
+    OBJ_TYPE_PLANES    = 0x00000040,
+    OBJ_TYPE_FACES     = 0x00000080,
+    OBJ_TYPE_VERTICES  = 0x00000100,
+    OBJ_TYPE_CAMERAS   = 0x00000200,
+    // 0x400 was not used
+    OBJ_TYPE_MATERIALS = 0x00000800,
+    OBJ_TYPE_WEIGHTS   = 0x00001000,
+    OBJ_TYPE_GADGETS   = 0x00002000,
+    OBJ_TYPE_VIEWS     = 0x00004000,
+    OBJ_TYPE_LABELS    = 0x00008000,
+    OBJ_TYPE_ANIMATORS = 0x00010000,
+    OBJ_TYPE_VALPTRS   = 0x00020000,
+    // 0x40000 was not used
+    OBJ_TYPE_LIGHTS    = 0x00080000,
+    OBJ_TYPE_ZONES     = 0x00100000,
+    OBJ_TYPE_UNK200000 = 0x00200000
 };
 /* This constant seems to be used to indicate the type of any or all objects */
 #define OBJ_TYPE_ALL 0x00FFFFFF
@@ -78,11 +77,11 @@ enum ObjTypeFlag {
 typedef void (*drawmethod_t)(void *);
 /// Flags for the drawFlags field of an GdObj
 enum ObjDrawingFlags {
-    OBJ_DRAW_UNK01  = (1 << 0), // 0x01
-    OBJ_INVISIBLE   = (1 << 1), // 0x02 ///< This `GdObj` shouldn't be drawn when updating a scene
-    OBJ_PICKED      = (1 << 2), // 0x04 ///< This `GdObj` is held by the cursor
-    OBJ_IS_GRABBALE = (1 << 3), // 0x08 ///< This `GdObj` can be grabbed/picked by the cursor
-    OBJ_HIGHLIGHTED = (1 << 4)  // 0x10
+    OBJ_DRAW_UNK01   = 0x01,
+    OBJ_INVISIBLE    = 0x02, ///< This `GdObj` shouldn't be drawn when updating a scene
+    OBJ_PICKED       = 0x04, ///< This `GdObj` is held by the cursor
+    OBJ_IS_GRABBABLE = 0x08, ///< This `GdObj` can be grabbed/picked by the cursor
+    OBJ_HIGHLIGHTED  = 0x10
 };
 
 /**
@@ -160,9 +159,9 @@ struct ObjBone {
     /* 0x020 */ struct ObjBone *prev;   // maybe, based on make_bone
     /* 0x024 */ struct ObjBone *next;   // maybe, based on make_bone
     /* 0x028 */ struct GdVec3f unk28;   // "rotation"?? from dead code in draw_bone
-    /* 0x034 */ u8  pad34[0x40-0x34];
+    /* 0x034 */ u8  filler1[12];
     /* 0x040 */ struct GdVec3f unk40;
-    /* 0x04C */ u8  pad4C[0x58-0x4C];
+    /* 0x04C */ u8  filler2[12];
     /* 0x058 */ struct GdVec3f unk58;  // orientation?
     /* 0x064 */ struct GdVec3f unk64;
     /* 0x070 */ Mat4f mat70;
@@ -178,7 +177,7 @@ struct ObjBone {
     /* 0x110 */ f32 spring;
     /* 0x114 */ f32 unk114;
     /* 0x118 */ f32 unk118;
-    /* 0x11C */ u8  pad11C[0x124-0x11C];
+    /* 0x11C */ u8  filler3[8];
 }; /* sizeof = 0x124 */
 
 struct ObjJoint {
@@ -192,7 +191,7 @@ struct ObjJoint {
     /* 0x03C */ struct GdVec3f unk3C;   // relative position?
     /* 0x048 */ struct GdVec3f unk48;
     /* 0x054 */ struct GdVec3f initPos;   // attached offset? (with +200 as well)
-    /* 0x060 */ u8  pad60[0x6C-0x60];
+    /* 0x060 */ u8  filler1[12];
     /* 0x06C */ struct GdVec3f unk6C;   // initial rotation vec
     /* 0x078 */ struct GdVec3f velocity;
     /* 0x084 */ struct GdVec3f unk84;
@@ -202,27 +201,27 @@ struct ObjJoint {
     /* 0x0B4 */ struct GdVec3f unkB4;
     /* 0x0C0 */ struct GdVec3f shapeOffset;
     /* 0x0CC */ struct GdVec3f unkCC;
-    /* 0x0D8 */ u8  padD8[4];
+    /* 0x0D8 */ u8  filler2[4];
     /* 0x0DC */ struct GdVec3f friction;
     /* 0x0E8 */ Mat4f matE8;     //matrix4x4
     /* 0x128 */ Mat4f mat128;    // "rot matrix"
     /* 0x168 */ Mat4f mat168;    // "id matrix"
     /* 0x1A8 */ struct GdVec3f unk1A8;
     /* 0x1B4 */ s32 id;
-    /* 0x1B8 */ u8  pad1B8[4];
+    /* 0x1B8 */ u8  filler3[4];
     /* 0x1BC */ s32 flags;     // "flags" - 0x2000 = grabbed
     /* 0x1C0 */ s32 unk1C0;
     /* 0x1C4 */ struct ObjGroup *unk1C4;    // bone group?
     /* 0x1C8 */ s32 colourNum;
     /* 0x1CC */ s32 type;     // 0 = normal joint, 5 = grabbable joint. seems to be set, but never used
     /* 0x1D0 */ struct ObjAnimator *rootAnimator;  // root animator? used by eye_joint_update_func
-    /* 0x1D4 */ u8  pad1D4[0x1f4-0x1d4];
+    /* 0x1D4 */ u8  filler4[32];
     /* 0x1F4 */ struct ObjGroup *weightGrp;    //Group of ObjWeights, only? skin weights?
     /* 0x1F8 */ struct ObjGroup *attachedObjsGrp;    //attach object group
     /* 0x1FC */ s32 attachFlags;                 //d_attach_to arg 0; "AttFlag"
     /* 0x200 */ struct GdVec3f attachOffset;
     /* 0x20C */ struct GdObj *attachedToObj;  // object that this object is attached to
-    /* 0x210 */ u8  pad210[0x228-0x210];
+    /* 0x210 */ u8  filler5[24];
     /* 0x228 */ f32 unk228;
 }; /* sizeof = 0x22C */
 
@@ -232,30 +231,30 @@ struct ObjJoint {
 
 struct ObjParticle {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8 pad14[0x1C-0x14];
+    /* 0x14 */ u8 filler1[8];
     /* 0x1C */ struct ObjShape *shapePtr;     // looks like a shape...
     /* 0x20 */ struct GdVec3f pos;    // some kind of position - relative? world?
-    /* 0x2C */ u8 pad2C[0x30-0x2C];
+    /* 0x2C */ u8 filler2[4];
     /* 0x30 */ f32 unk30;
-    /* 0x34 */ u8 pad34[0x38-0x34];
+    /* 0x34 */ u8 filler3[4];
     /* 0x38 */ struct GdVec3f unk38;
     /* 0x44 */ f32 unk44; //not vec?
     /* 0x48 */ f32 unk48; //not vec?
-    /* 0x4C */ u8 pad4C[0x50-0x4C];
+    /* 0x4C */ u8 filler4[4];
     /* 0x50 */ s32 id;
     /* 0x54 */ u32 flags;   // "dflags"?
     /* 0x58 */ s32 colourNum;
     /* 0x5C */ s32 timeout;  // when this reaches zero, the particle disappears
     /* 0x60 */ s32 unk60;   //type?
     /* 0x64 */ s32 unk64;   //type? (1 = has 50 sub-particles, 2,3 = has 30 sub-particles
-    /* 0x68 */ u8 pad68[0x6C-0x68];
+    /* 0x68 */ u8 filler5[4];
     /* 0x6C */ struct ObjGroup *subParticlesGrp;   // group of other Particles ?
-    /* 0x70 */ u8 pad70[4];
+    /* 0x70 */ u8 filler6[4];
     /* 0x74 */ s32 unk74;
     /* 0x78 */ u8 unk78[4];
     /* 0x7C */ struct ObjAnimator *unk7C;   // guessing on type; doesn't seem to be used in final code
     /* 0x80 */ struct ObjLight *unk80;  // could be a Net or Light; not seen as non-null in running code
-    /* 0x84 */ u8 pad84[0xB0-0x84];
+    /* 0x84 */ u8 filler7[44];
     /* 0xB0 */ s32 unkB0;   //state?
     /* 0xB4 */ struct ObjGroup *attachedObjsGrp;  // attach group? unused group of particles
     /* 0xB8 */ s32 attachFlags;   //attached arg0; "AttFlag"
@@ -272,7 +271,7 @@ struct ObjShape {
     /* 0x1C */ struct ObjGroup *faceGroup;  /* face group; based on get_3DG1_shape */
     /* 0x20 */ struct ObjGroup *vtxGroup;  /* vtx group; based on get_3DG1_shape */
     /* 0x24 */ struct ObjGroup *scaledVtxGroup; /* group for type 2 shapenets only ? vertices whose scaleFactor is not 1 get put into this group. */
-    /* 0x28 */ u8 pad28[4];
+    /* 0x28 */ u8 filler1[4];
     /* 0x2C */ struct ObjGroup *mtlGroup;  /* what does this group do? materials? */
     /* 0x30 */ s32 unk30;
     /* 0x34 */ s32 faceCount;   /* face count? based on get_3DG1_shape */
@@ -282,7 +281,7 @@ struct ObjShape {
     /* 0x44 */ s32 flag; // what are the flag values? only from dynlists?
     /* 0x48 */ s32 dlNums[2];  // gd dl number for each frame buffer (??) [0, 1]
                s32 unk50;      // frame number (index into dlNums)?
-    /* 0x54 */ u8  pad54[0x58-0x54]; // part of above array??
+    /* 0x54 */ u8  filler2[4]; // part of above array??
     /* 0x58 */ f32 alpha;       // paramF? opacitiy? something with rendertype
     /* 0x5C */ char name[0x40];
 }; /* sizeof = 0x9C */
@@ -307,7 +306,7 @@ struct ObjNet {
     /* 0x000 */ struct GdObj header;
     /* 0x014 */ struct GdVec3f worldPos;   // position? d_set_initpos + d_set_world_pos; print_net says world
     /* 0x020 */ struct GdVec3f initPos;   // position? d_set_initpos? attached offset? dynamic? scratch?
-    /* 0x02C */ u8  pad2c[0x34-0x2C];
+    /* 0x02C */ u8  filler1[8];
     /* 0x034 */ s32 flags;       // "dflags"?
     /* 0x038 */ u32 id;      // some sort of id? from move_net
     /* 0x03C */ s32 unk3C;      // state flags? vertex info flags?
@@ -348,7 +347,7 @@ struct ObjNet {
     /* 0x200 */ struct GdVec3f unk200;
     /* 0x20C */ struct ObjGroup *unk20C;
     /* 0x210 */ s32 ctrlType;     // has no purpose
-    /* 0x214 */ u8  pad214[0x21C-0x214];
+    /* 0x214 */ u8  filler2[8];
     /* 0x21C */ struct ObjGroup *unk21C;
 }; /* sizeof = 0x220 */
 
@@ -402,7 +401,7 @@ struct ObjCamera {
     /* 0x040 */ struct GdVec3f unk40;   // relative position related?
     /* 0x04C */ struct GdVec3f unk4C;
     /* 0x058 */ f32 unk58;      // GdVec3f ?
-    /* 0x05C */ u8  pad5C[0x4];
+    /* 0x05C */ u8  filler[4];
     /* 0x060 */ f32 unk60;
     /* 0x064 */ Mat4f unk64;    //matrix4x4
     /* 0x0A4 */ f32 unkA4;
@@ -429,24 +428,24 @@ enum GdMtlTypes {
 
 struct ObjMaterial {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8  pad14[0x1c-0x14];
+    /* 0x14 */ u8  filler1[8];
     /* 0x1C */ s32 id;
     /* 0x20 */ char name[8];
     /* 0x28 */ s32 type;
-    /* 0x2C */ u8  pad2C[4];
+    /* 0x2C */ u8  filler2[4];
     /* 0x30 */ struct GdColour Ka;  // ambient color
     /* 0x3C */ struct GdColour Kd;  // diffuse color
-    /* 0x48 */ u8  pad48[0x58-0x48];
+    /* 0x48 */ u8  filler3[16];
     /* 0x58 */ void *texture; //set by d_usetexture; never seems to be non-null though.
     /* 0x5C */ s32 gddlNumber;
 }; /* sizeof = 0x60 */
 
 struct ObjWeight {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8  pad14[0x8];
+    /* 0x14 */ u8  filler1[8];
     /* 0x1C */ s32 vtxId;  // ID of vertex that this weight applies to
     /* 0x20 */ struct GdVec3f vec20;    // based on func_80181894? maybe a GdBoundingBox?
-    /* 0x2C */ u8  pad2C[0x38-0x2c];
+    /* 0x2C */ u8  filler2[12];
     /* 0x38 */ f32 weightVal; // weight (unit?)
     /* 0x3C */ struct ObjVertex* vtx;
 }; /* sizeof = 0x40 */
@@ -468,40 +467,40 @@ struct ObjGadget {
     /* 0x20 */ s32 unk20;  // unused; only ever set to 0
     /* 0x24 */ s32 type;
     /* 0x28 */ f32 sliderPos;  // position of the slider (from 0 to 1)
-    /* 0x2C */ u8 pad2C[4];
+    /* 0x2C */ u8 filler1[4];
     /* 0x30 */ union ObjVarVal varval; //retype and rename varval30
     /* 0x38 */ f32 rangeMin;
     /* 0x3C */ f32 rangeMax;
     /* 0x40 */ struct GdVec3f size;   // size (x = width, y = height)
-    /* 0x4C */ struct ObjGroup *valueGrp;  // group containing `ObjValPtr`s controlled by this gadget
+    /* 0x4C */ struct ObjGroup *valueGrp;  // group containing `ObjValPtr`s controlled by this gadget 
     /* 0x50 */ struct ObjShape *shapePtr;
     /* 0x54 */ struct ObjGroup *unk54;  //node group?
-    /* 0x58 */ u8 pad58[4];
+    /* 0x58 */ u8 filler2[4];
     /* 0x5C */ s32 colourNum;
 }; /* sizeof = 0x60 */
 
 enum GdViewFlags {
-    VIEW_2_COL_BUF      = (1 <<  3), // 0x000008
-    VIEW_ALLOC_ZBUF     = (1 <<  4), // 0x000010
-    VIEW_SAVE_TO_GLOBAL = (1 <<  6), // 0x000040
-    VIEW_DEFAULT_PARENT = (1 <<  8), // 0x000100
-    VIEW_BORDERED       = (1 << 10), // 0x000400
-    VIEW_UPDATE         = (1 << 11), // 0x000800
-    VIEW_UNK_1000       = (1 << 12), // 0x001000 // used in setup_view_buffers
-    VIEW_UNK_2000       = (1 << 13), // 0x002000 // only see together with 0x4000
-    VIEW_UNK_4000       = (1 << 14), // 0x004000
-    VIEW_COLOUR_BUF     = (1 << 15), // 0x008000
-    VIEW_Z_BUF          = (1 << 16), // 0x010000
-    VIEW_1_CYCLE        = (1 << 17), // 0x020000
-    VIEW_MOVEMENT       = (1 << 18), // 0x040000
-    VIEW_DRAW           = (1 << 19), // 0x080000
-    VIEW_WAS_UPDATED    = (1 << 20), // 0x100000
-    VIEW_LIGHT          = (1 << 21)  // 0x200000
+    VIEW_2_COL_BUF      = 0x000008,
+    VIEW_ALLOC_ZBUF     = 0x000010,
+    VIEW_SAVE_TO_GLOBAL = 0x000040,
+    VIEW_DEFAULT_PARENT = 0x000100,
+    VIEW_BORDERED       = 0x000400,
+    VIEW_UPDATE         = 0x000800,
+    VIEW_UNK_1000       = 0x001000, // used in setup_view_buffers
+    VIEW_UNK_2000       = 0x002000, // only see together with 0x4000
+    VIEW_UNK_4000       = 0x004000,
+    VIEW_COLOUR_BUF     = 0x008000,
+    VIEW_Z_BUF          = 0x010000,
+    VIEW_1_CYCLE        = 0x020000,
+    VIEW_MOVEMENT       = 0x040000,
+    VIEW_DRAW           = 0x080000,
+    VIEW_WAS_UPDATED    = 0x100000,
+    VIEW_LIGHT          = 0x200000
 };
 
 struct ObjView {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8  pad14[0x8];
+    /* 0x14 */ u8  filler1[8];
     /* 0x1C */ s32 unk1C; // set as nonexistent return of `setup_view_buffers`
     /* 0x20 */ s32 id;
     /* 0x24 */ struct ObjCamera *activeCam; // is this really active?
@@ -513,7 +512,7 @@ struct ObjView {
     /* 0x3C */ struct GdVec3f upperLeft; // position vec?
     /* 0x48 */ f32 unk48; // what are these? are they another vec?
     /* 0x4C */ f32 unk4C;
-    /* 0x50 */ u8  pad50[0x4];
+    /* 0x50 */ u8  filler2[4];
     /* 0x54 */ struct GdVec3f lowerRight;
     /* 0x60 */ struct GdVec3f clipping; // z-coordinate of (x: near, y: far) clipping plane?
     /* 0x6C */ const char *namePtr;
@@ -549,14 +548,14 @@ struct ObjAnimator {
     /* 0x00 */ struct GdObj header;
     /* 0x14 */ struct ObjGroup* animatedPartsGrp;  // group containing objects animated by this animator. I think all of them are joints.
     /* 0x18 */ struct ObjGroup* animdataGrp;  //animation data? a group, but the link points to something weird..
-    /* 0x1C */ u8  pad1C[0x4];
+    /* 0x1C */ u8  filler1[4];
     /* 0x20 */ s32 animSeqNum;  // which entry in the AnimDataInfo array to use
     /* 0x24 */ f32 unk24;
     /* 0x28 */ f32 frame;  // key frame number. This is a float so that it can interpolate between key frames, though I think in practice, it's always a whole number.
-    /* 0x2C */ u8  pad2C[4];
+    /* 0x2C */ u8  filler2[4];
     /* 0x30 */ struct ObjGroup *attachedObjsGrp;
     /* 0x34 */ s32 attachFlags;   //attach arg0, not used
-    /* 0x38 */ u8  pad38[0x44-0x38];
+    /* 0x38 */ u8  filler3[12];
     /* 0x44 */ struct GdObj* attachedToObj;   // object that this object is attached to. Normally another Objanimator?
     /* 0x48 */ void (*controlFunc) (struct ObjAnimator *);  // function that "controls" the animation sequence by choosing the frame number
     /* 0x4C */ s32 state;   //state enum?
@@ -605,7 +604,7 @@ struct ObjValPtr {
     /* 0x14 */ struct GdObj *obj;   // maybe just a void *?
     /* 0x18 */ uintptr_t offset;  // value pointed to is `obj` + `offset`
     /* 0x1C */ enum ValPtrType datatype;
-    /* 0x20 */ s32 flag;       // TODO: better name for this? If 0x40000, then `offset` is an offset to a field in `obj`. Otherwise, `obj` is NULL, and `offset` is the address of a variable.
+    /* 0x20 */ s32 flag;       // TODO: better name for this? If 0x40000, then `offset` is an offset to a field in `obj`. Otherwise, `obj` is NULL, and `offset` is the address of a variable. 
 }; /* sizeof = 0x24 */
 
 enum GdLightFlags {
@@ -616,17 +615,17 @@ enum GdLightFlags {
 
 struct ObjLight {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8  pad0[0x8];
+    /* 0x14 */ u8  filler1[8];
     /* 0x1C */ s32 id;
     /* 0x20 */ char name[8];
-    /* 0x28 */ u8  pad28[4];
+    /* 0x28 */ u8  filler2[4];
     /* 0x2C */ s32 flags;
     /* 0x30 */ f32 unk30;       // color (5C) = Kd (50) * 30
-    /* 0x34 */ u8  pad34[4];
+    /* 0x34 */ u8  filler3[4];
     /* 0x38 */ f32 unk38; // calculated diffuse theta (in degrees?)
     /* 0x3C */ s32 unk3C;
     /* 0x40 */ s32 unk40;
-    /* 0x44 */ u8  pad3[0x8];
+    /* 0x44 */ u8  filler4[8];
     /* 0x4C */ s32 unk4C;
     /* 0x50 */ struct GdColour diffuse;
     /* 0x5C */ struct GdColour colour;
@@ -643,12 +642,12 @@ struct ObjZone {
     /* 0x14 */ struct GdBoundingBox boundingBox;
     /* 0x2C */ struct ObjGroup *unk2C;   // plane group?
     /* 0x30 */ struct ObjGroup *unk30;   // guess based on Unknown801781DC; might have to change later
-    /* 0x34 */ u8  pad[4];
+    /* 0x34 */ u8  filler[4];
 }; /* sizeof = 0x38*/
 
 struct ObjUnk200000 {
     /* 0x00 */ struct GdObj header;
-    /* 0x14 */ u8  pad14[0x30-0x14];
+    /* 0x14 */ u8  filler[28];
     /* 0x30 */ struct ObjVertex *unk30; //not sure; guessing for Unknown801781DC; 30 and 34 could switch with ObjZone
     /* 0x34 */ struct ObjFace *unk34;   //not sure; guessing for Unknown801781DC
 }; /* sizeof = 0x38*/

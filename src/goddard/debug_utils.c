@@ -153,7 +153,9 @@ void remove_all_memtrackers(void) {
         sMemTrackers[i].total = 0.0f;
     }
 
+#ifdef AVOID_UB
     sNumActiveMemTrackers = 0;
+#endif
 }
 
 /**
@@ -218,7 +220,7 @@ void remove_all_timers(void) {
     for (i = 0; i < ARRAY_COUNT(sTimers); i++) {
         sTimers[i].name = NULL;
         sTimers[i].total = 0;
-        sTimers[i].unused0C = 0.0f;
+        sTimers[i].unused = 0.0f;
         sTimers[i].scaledTotal = 0.0f;
         sTimers[i].prevScaledTotal = 0.0f;
         sTimers[i].gadgetColourNum = sTimerGadgetColours[(u32) i % 7];
@@ -439,6 +441,7 @@ void print_stack_trace(void) {
  */
 void fatal_printf(const char *fmt, ...) {
     char cur;
+    UNUSED u8 filler[4];
     va_list vl;
 
     va_start(vl, fmt);
@@ -456,7 +459,11 @@ void fatal_printf(const char *fmt, ...) {
                         gd_printf("%s", va_arg(vl, char *));
                         break;
                     case 'c':
+#ifdef AVOID_UB
                         gd_printf("%c", (char)va_arg(vl, int));
+#else
+                        gd_printf("%c", va_arg(vl, char));
+#endif
                         break;
                     case 'x':
                         gd_printf("%x", va_arg(vl, s32));
@@ -521,7 +528,9 @@ void imout(void) {
  * TODO: figure out type of rng generator?
  */
 f32 gd_rand_float(void) {
+    u32 temp;
     u32 i;
+    f32 val;
 
     for (i = 0; i < 4; i++) {
         if (sPrimarySeed & 0x80000000) {
@@ -534,12 +543,14 @@ f32 gd_rand_float(void) {
 
     /* Seed Switch */
     if ((sPrimarySeed ^= gd_get_ostime()) & 1) {
-        u32 temp = sPrimarySeed;
+        temp = sPrimarySeed;
         sPrimarySeed = sSecondarySeed;
         sSecondarySeed = temp;
     }
 
-    return (sPrimarySeed & 0xFFFF) / 65535.0f;
+    val = (sPrimarySeed & 0xFFFF) / 65535.0; // 65535.0f
+
+    return val;
 }
 
 /**
@@ -664,6 +675,7 @@ char *sprint_val_withspecifiers(char *str, union PrintVal val, char *specifiers)
     s32 intPart;  // sp38
     s32 intPrec;  // sp34
     s32 fracPrec; // sp30
+    UNUSED u8 filler[4];
     char cur; // sp2B
 
     fracPrec = 6;
@@ -799,6 +811,7 @@ struct GdFile *gd_fopen(const char *filename, const char *mode) {
     struct GdFile *f; // sp74
     char *loadedname; // sp70
     u32 i;            // sp6C
+    UNUSED u8 filler[4];
     struct UnkBufThing buf; // sp24
     u8 *bufbytes;           // sp20
     u8 *fileposptr;         // sp1C
@@ -889,6 +902,7 @@ s32 is_newline(char c) {
 s32 gd_fread_line(char *buf, u32 size, struct GdFile *f) {
     signed char c;
     u32 pos = 0;
+    UNUSED u8 filler[4];
 
     do {
         if (gd_fread(&c, 1, 1, f) == -1) {

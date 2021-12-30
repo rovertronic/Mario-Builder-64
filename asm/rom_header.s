@@ -25,6 +25,7 @@
 #else
     .ascii "E"                  /* NTSC-U (North America) */
 #endif
+
 #if defined(SRAM)
     .byte  0x32                 /* Version */
 #elif defined(EEP16K)

@@ -12,8 +12,8 @@ static OSMesgQueue  audioDmaMessageQ;
 static OSMesg       audioDmaMessages[AUDIO_DMA_MSG_SIZE];
 
 /***********************************************************************
- *    Message queue for receiving message blocks and end of DMA
- * notifications when requesting that video records be read from
+ *    Message queue for receiving message blocks and end of DMA 
+ * notifications when requesting that video records be read from 
  * the HVQM2 data (ROM).
  ***********************************************************************/
 #define  VIDEO_DMA_MSG_SIZE  1
@@ -50,7 +50,7 @@ static u64 disptime;		/* Counter for scheduled display time of next video frame 
 static ADPCMstate adpcm_state;	/* Buffer for state information passed to the ADPCM decoder */
 
 /*
- * Macro for loading multi-byte data from buffer holding data from stream
+ * Macro for loading multi-byte data from buffer holding data from stream 
  */
 #define load32(from) (*(u32*)&(from))
 #define load16(from) (*(u16*)&(from))
@@ -99,16 +99,16 @@ void hvqm_main_proc() {
     u32 usec_per_frame;
     int prev_bufno = -1;
 
-
+    
     hvqm_header = OS_DCACHE_ROUNDUP_ADDR( hvqm_headerBuf );
-
+    
     osCreateMesgQueue( &spMesgQ, &spMesgBuf, 1 );
     osSetEventMesg( OS_EVENT_SP, &spMesgQ, NULL );
-
+    
     osCreateMesgQueue( &audioDmaMessageQ, audioDmaMessages, AUDIO_DMA_MSG_SIZE );
     osCreateMesgQueue( &videoDmaMessageQ, videoDmaMessages, VIDEO_DMA_MSG_SIZE );
     createTimekeeper();
-
+    
     hvqm2InitSP1(0xff);
     hvqtask.t.ucode = (u64 *)hvqm2sp1TextStart;
     hvqtask.t.ucode_size = (int)hvqm2sp1TextEnd - (int)hvqm2sp1TextStart;
@@ -123,19 +123,19 @@ void hvqm_main_proc() {
     hvqtask.t.yield_data_size = HVQM2_YIELD_DATA_SIZE;
 
     init_cfb();
-    osViSwapBuffer( gFrameBuffers[NUM_CFBs-1] );
+    osViSwapBuffer( gFramebuffers[NUM_CFBs-1] );
 
     romcpy(hvqm_header, (void *)_capcomSegmentRomStart, sizeof(HVQM2Header), OS_MESG_PRI_NORMAL, &videoDmaMesgBlock, &videoDmaMessageQ);
 
     total_frames = load32(hvqm_header->total_frames);
     usec_per_frame = load32(hvqm_header->usec_per_frame);
     total_audio_records = load32(hvqm_header->total_audio_records);
-
+    
     hvqm2SetupSP1(hvqm_header, SCREEN_WD);
-
+    
     release_all_cfb();
     tkStart( &rewind, load32( hvqm_header->samples_per_sec ) );
-
+    
     for ( ; ; ) {
 
         //while ( video_remain > 0 ) {
@@ -147,18 +147,18 @@ void hvqm_main_proc() {
 
             if ( disptime > 0 && tkGetTime() > 0) {
                 if ( tkGetTime() < (disptime - (usec_per_frame * 2)) ) {
-                   tkPushVideoframe( gFrameBuffers[prev_bufno], &cfb_status[prev_bufno], disptime );
+                   tkPushVideoframe( gFramebuffers[prev_bufno], &cfb_status[prev_bufno], disptime );
                    continue;
                   //if ( video_remain == 0 ) break;
                 }
             }
-
+            
             record_header = OS_DCACHE_ROUNDUP_ADDR( header_buffer );
-
-            video_streamP = get_record(record_header, hvqbuf,
-                        HVQM2_VIDEO, video_streamP,
+            
+            video_streamP = get_record(record_header, hvqbuf, 
+                        HVQM2_VIDEO, video_streamP, 
                         &videoDmaMesgBlock, &videoDmaMessageQ);
-
+                        
             //! SYNC VIDEO code
 
             if ( disptime > 0 && tkGetTime() > 0) {
@@ -167,18 +167,18 @@ void hvqm_main_proc() {
                   do {
                     disptime += usec_per_frame;
                     if ( --video_remain == 0 ) break;
-                    video_streamP = get_record( record_header, hvqbuf,
-				    HVQM2_VIDEO, video_streamP,
+                    video_streamP = get_record( record_header, hvqbuf, 
+				    HVQM2_VIDEO, video_streamP, 
 				    &videoDmaMesgBlock, &videoDmaMessageQ );
                   } while (load16( record_header->format ) != HVQM2_VIDEO_KEYFRAME || tkGetTime() > disptime );
                   if ( video_remain == 0 ) break;
                 }
             }
-
+            
             frame_format = load16(record_header->format);
             if (frame_format == HVQM2_VIDEO_HOLD) {
                 /*
-                 *   Just like when frame_format != HVQM2_VIDEO_HOLD you
+                 *   Just like when frame_format != HVQM2_VIDEO_HOLD you 
                      * could call hvqm2Decode*() and decode in a new frame
                      * buffer (in this case, just copying from the buffer of
                      * the preceding frame).  But here we make use of the
@@ -194,9 +194,9 @@ void hvqm_main_proc() {
                  * Process first half in the CPU
                  */
                 hvqtask.t.flags = 0;
-                status = hvqm2DecodeSP1( hvqbuf, frame_format,
-                           &gFrameBuffers[bufno][screen_offset],
-                           &gFrameBuffers[prev_bufno][screen_offset],
+                status = hvqm2DecodeSP1( hvqbuf, frame_format, 
+                           &gFramebuffers[bufno][screen_offset], 
+                           &gFramebuffers[prev_bufno][screen_offset], 
                            hvqwork, &hvq_sparg, hvq_spfifo );
 
                 osWritebackDCacheAll();
@@ -205,23 +205,23 @@ void hvqm_main_proc() {
                  * Process last half in the RSP
                  */
                 if ( status > 0 ) {
-                    osInvalDCache( (void *)gFrameBuffers[bufno], sizeof gFrameBuffers[bufno] );
+                    osInvalDCache( (void *)gFramebuffers[bufno], sizeof gFramebuffers[bufno] );
                     osSpTaskStart( &hvqtask );
                     osRecvMesg( &spMesgQ, NULL, OS_MESG_BLOCK );
                 }
             }
-
+        
         keep_cfb( bufno );
-
-        if ( prev_bufno >= 0 && prev_bufno != bufno )
+        
+        if ( prev_bufno >= 0 && prev_bufno != bufno ) 
           release_cfb( prev_bufno );
 
-        tkPushVideoframe( gFrameBuffers[bufno], &cfb_status[bufno], disptime );
+        tkPushVideoframe( gFramebuffers[bufno], &cfb_status[bufno], disptime );
 
         prev_bufno = bufno;
         disptime += usec_per_frame;
         --video_remain;
-
+        
         //if (1) {
             //osAiSetFrequency(gAudioSessionPresets[0].frequency);
             //osSendMesg(&gDmaMesgQueue, 0, OS_MESG_BLOCK);
@@ -232,7 +232,7 @@ void hvqm_main_proc() {
 
 void createHvqmThread(void) {
   osCreateMesgQueue( &hvqmMesgQ, &hvqmMesgBuf, 1 );
-  osCreateThread( &hvqmThread, HVQM_THREAD_ID, hvqm_main_proc,
-		 NULL, hvqmStack + (STACKSIZE/sizeof(u64)),
+  osCreateThread( &hvqmThread, HVQM_THREAD_ID, hvqm_main_proc, 
+		 NULL, hvqmStack + (STACKSIZE/sizeof(u64)), 
 		 (OSPri)HVQM_PRIORITY );
 }

@@ -1,11 +1,8 @@
-// falling_rising_platform.c.inc
+// falling_rising_platform.inc.c
 
 void bhv_squishable_platform_loop(void) {
     o->header.gfx.scale[1] = (sins(o->oBitfsPlatformTimer) + 1.0f) * 0.3f + 0.4f;
     o->oBitfsPlatformTimer += 0x80;
-#ifdef AUTO_COLLISION_DISTANCE
-    o->oFlags &= ~OBJ_FLAG_DONT_CALC_COLL_DIST;
-#endif
 }
 
 void bhv_bitfs_sinking_platform_loop(void) {
@@ -27,5 +24,6 @@ void bhv_bitfs_sinking_cage_platform_loop(void) {
     } else {
         o->oPosY -= sins(o->oBitfsPlatformTimer) * 3.0f;
     }
+
     o->oBitfsPlatformTimer += 0x100;
 }

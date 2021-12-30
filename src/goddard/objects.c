@@ -23,11 +23,11 @@
 // structs
 struct Unk801B9E68 {
     /* 0x00 */ s32 count;
-    /* 0x04 */ u8 pad[0x14];
+    /* 0x04 */ u8 filler[20];
 }; /* sizeof() = 0x18 */
 
 struct Unk8017F3CC {
-    /*0x00*/ u8 pad[0x20];
+    /*0x00*/ u8 filler[32];
     /*0x20*/ struct GdVec3f unk20;
 };
 
@@ -116,6 +116,13 @@ void get_some_bounding_box(struct GdBoundingBox *a0) {
     a0->maxX = gSomeBoundingBox.maxX;
     a0->maxY = gSomeBoundingBox.maxY;
     a0->maxZ = gSomeBoundingBox.maxZ;
+}
+
+/* @ 22A6A0 for 0x24 */
+void stub_objects_1(UNUSED struct ObjGroup *a0, UNUSED struct GdObj *a1) {
+    UNUSED u8 sp00[8];
+    /* Debug stub? */
+    return;
 }
 
 /**
@@ -340,7 +347,10 @@ struct ObjZone *make_zone(struct ObjGroup *a0, struct GdBoundingBox *bbox, struc
     newZone->unk2C = a2;
     newZone->unk30 = a0;
 
+//! @bug Created `ObjZone` is not returned
+#ifdef AVOID_UB
     return newZone;
+#endif
 }
 
 /* @ 22AF70 for 0x60 */
@@ -421,35 +431,36 @@ struct ObjValPtr *make_valptr(struct GdObj *obj, s32 flag, enum ValPtrType type,
 
 /* @ 22B1DC for 0x430 */
 void reset_plane(struct ObjPlane *plane) {
-    struct ObjFace *face;
+    struct ObjFace *sp4C;
     f32 sp48;
     f32 sp44;
+    UNUSED u8 filler[12];
     s32 i;
     s32 sp30;
     register f32 sp28;
 
     imin("reset_plane");
 
-    face = plane->unk40;
-    calc_face_normal(face);
-    plane->unk1C = gd_dot_vec3f(&face->vertices[0]->pos, &face->normal);
+    sp4C = plane->unk40;
+    calc_face_normal(sp4C);
+    plane->unk1C = gd_dot_vec3f(&sp4C->vertices[0]->pos, &sp4C->normal);
     sp48 = 0.0f;
 
-    sp28 = face->normal.x < 0.0f ? -face->normal.x : face->normal.x;
+    sp28 = sp4C->normal.x < 0.0f ? -sp4C->normal.x : sp4C->normal.x;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 0;
         sp48 = sp44;
     }
 
-    sp28 = face->normal.y < 0.0f ? -face->normal.y : face->normal.y;
+    sp28 = sp4C->normal.y < 0.0f ? -sp4C->normal.y : sp4C->normal.y;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 1;
         sp48 = sp44;
     }
 
-    sp28 = face->normal.z < 0.0f ? -face->normal.z : face->normal.z;
+    sp28 = sp4C->normal.z < 0.0f ? -sp4C->normal.z : sp4C->normal.z;
     sp44 = sp28;
     if (sp44 > sp48) {
         sp30 = 2;
@@ -472,8 +483,8 @@ void reset_plane(struct ObjPlane *plane) {
 
     reset_bounding_box();
 
-    for (i = 0; i < face->vtxCount; i++) {
-        add_obj_pos_to_bounding_box(&face->vertices[i]->header);
+    for (i = 0; i < sp4C->vtxCount; i++) {
+        add_obj_pos_to_bounding_box(&sp4C->vertices[i]->header);
     }
 
     plane->boundingBox.minX = gSomeBoundingBox.minX;
@@ -500,6 +511,7 @@ void reset_plane(struct ObjPlane *plane) {
 
 /* @ 22B60C for 0x94; orig name: func_8017CE3C */
 struct ObjPlane *make_plane(s32 inZone, struct ObjFace *a1) {
+    UNUSED u8 filler[4];
     struct ObjPlane *newPlane = (struct ObjPlane *) make_object(OBJ_TYPE_PLANES);
 
     gGdPlaneCount++;
@@ -740,7 +752,9 @@ void format_object_id(char *str, struct GdObj *obj) {
 struct ObjGroup *make_group(s32 count, ...) {
     va_list args;
     s32 i;
+    UNUSED u8 filler1[4];
     struct GdObj *curObj;
+    UNUSED u8 filler2[12];
     struct ObjGroup *newGroup;
     struct ObjGroup *oldGroupListHead;
     struct GdObj *vargObj;
@@ -800,6 +814,7 @@ struct ObjGroup *make_group(s32 count, ...) {
  */
 void addto_group(struct ObjGroup *group, struct GdObj *obj) {
     char strbuf[0x20];
+    UNUSED u8 filler[8];
 
     imin("addto_group");
 
@@ -863,6 +878,20 @@ s32 group_contains_obj(struct ObjGroup *group, struct GdObj *obj) {
     return FALSE;
 }
 
+/* @ 22C9B8 for 0x24 */
+s32 stub_objects_2(void) {
+    s32 sp4 = 0;
+    return sp4;
+}
+
+/**
+ * Unused - called by __main__
+ */
+s32 make_scene(void) {
+    s32 sp4 = 0;
+    return sp4;
+}
+
 /* @ 22CA00 for 0x88 */
 static void reset_joint_or_net(struct GdObj *obj) {
     struct GdObj *localObjPtr = obj;
@@ -887,6 +916,39 @@ void menu_cb_reset_positions(void) {
 }
 
 /**
+ * Unused (not called) - does nothing useful
+ */
+struct GdObj *func_8017E2F0(struct GdObj *obj, enum ObjTypeFlag type) {
+    UNUSED u8 filler[4];
+    enum ObjTypeFlag curObjType;
+    struct ListNode *node;
+
+    curObjType = obj->type;
+
+    switch (curObjType) {
+        case OBJ_TYPE_GROUPS:
+            node = ((struct ObjGroup *) obj)->firstMember;
+            while (node != NULL) {
+                func_8017E2F0(node->obj, type);
+                node = node->next;
+            }
+            break;
+        case OBJ_TYPE_BONES:
+            break;
+        default:;
+    }
+
+    if (curObjType == type) {
+        return obj;
+    }
+
+//! @bug Nothing is returned if a GdObj of `type` is not found
+#ifdef AVOID_UB
+    return NULL;
+#endif
+}
+
+/**
  * Recursively calls `func` on all members of `group` whose type is in the
  * `types` bitmask.
  * Returns the number of objects this function was called on.
@@ -897,12 +959,19 @@ s32 apply_to_obj_types_in_group(s32 types, applyproc_t func, struct ObjGroup *gr
     struct GdObj *linkedObj;
     enum ObjTypeFlag linkedObjType;
     applyproc_t objFn;
+    UNUSED u8 filler[32];
     s32 fnAppliedCount;
 
     fnAppliedCount = 0;
 
+    //! @bug When `group` pointer is NULL, garbage is returned, not the
+    //!      count of `fn` calls
     if (group == NULL) {
+#ifdef AVOID_UB
         return fnAppliedCount;
+#else
+        return;
+#endif
     }
 
     if (group->linkType & 1) { // compressed data, not an Obj
@@ -941,7 +1010,9 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     struct GdVec3f sp88;
     struct GdVec3f sp7C;
     struct GdVec3f sp70;
+    UNUSED u8 filler1[64]; // unused MyMatrix4x4? f32[4][4]
     f32 sp2C;
+    UNUSED u8 filler2[4];
     struct GdVec3f sp1C;
 
     sp70.x = a2->x;
@@ -971,14 +1042,14 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     }
 
     gd_cross_vec3f(&sp70, a1, &sp94);
-    sp2C = (f32) gd_sqrt_d(SQ(sp94.x) + SQ(sp94.z));
+    sp2C = (f32) gd_sqrt_d((sp94.x * sp94.x) + (sp94.z * sp94.z));
 
-    if (sp2C > 1000.0f) {
+    if (sp2C > 1000.0) { //? 1000.0f
         sp2C = 1000.0f;
     }
 
-    sp2C /= 1000.0f;
-    sp2C = 1.0f - sp2C;
+    sp2C /= 1000.0;    //? 1000.0f
+    sp2C = 1.0 - sp2C; //? 1.0f - sp2C
 
     sp88.x = a2->x * sp2C;
     sp88.y = a2->y * sp2C;
@@ -991,8 +1062,10 @@ void func_8017E584(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
 
 /* @ 22D008 for 0x1B4 */
 void func_8017E838(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
+    UNUSED u8 filler1[12];
     struct GdVec3f sp70;
     struct GdVec3f sp64;
+    UNUSED u8 filler2[64];
     struct GdVec3f sp18;
 
     sp64.x = a1->x;
@@ -1009,9 +1082,9 @@ void func_8017E838(struct ObjNet *a0, struct GdVec3f *a1, struct GdVec3f *a2) {
     sp64.y -= sp18.y;
     sp64.z -= sp18.z;
 
-    sp64.x *= 0.01f;
-    sp64.y *= 0.01f;
-    sp64.z *= 0.01f;
+    sp64.x *= 0.01; //? 0.01f;
+    sp64.y *= 0.01; //? 0.01f;
+    sp64.z *= 0.01; //? 0.01f;
 
     gd_cross_vec3f(a2, &sp64, &sp70);
     gd_clamp_vec3f(&sp70, 5.0f);
@@ -1037,15 +1110,69 @@ void func_8017E9EC(struct ObjNet *net) {
     gd_mult_mat4f(&D_801B9DC8, &sp1C, &D_801B9DC8);
 }
 
+/**
+ * Unused (called by func_801A71CC) - returns TRUE if any of the four corners of
+ * box1's X-Z plane lie within box2's X-Z plane
+ */
+s32 gd_plane_point_within(struct GdBoundingBox *box1, struct GdBoundingBox *box2) {
+    // test if min x and min z of box1 are within box2
+    if (box1->minX >= box2->minX) {
+        if (box1->minX <= box2->maxX) {
+            if (box1->minZ >= box2->minZ) {
+                if (box1->minZ <= box2->maxZ) {
+                    return TRUE;
+                }
+            }
+        }
+    }
+
+    // test if max x and min z of box1 are within box2
+    if (box1->maxX >= box2->minX) {
+        if (box1->maxX <= box2->maxX) {
+            if (box1->minZ >= box2->minZ) {
+                if (box1->minZ <= box2->maxZ) {
+                    return TRUE;
+                }
+            }
+        }
+    }
+
+    // test if max x and max z of box1 are within box2
+    if (box1->maxX >= box2->minX) {
+        if (box1->maxX <= box2->maxX) {
+            if (box1->maxZ >= box2->minZ) {
+                if (box1->maxZ <= box2->maxZ) {
+                    return TRUE;
+                }
+            }
+        }
+    }
+
+    // test if min x and max z of box1 are within box2
+    if (box1->minX >= box2->minX) {
+        if (box1->minX <= box2->maxX) {
+            if (box1->maxZ >= box2->minZ) {
+                if (box1->maxZ <= box2->maxZ) {
+                    return TRUE;
+                }
+            }
+        }
+    }
+
+    return FALSE;
+}
+
 /* @ 22D824 for 0x1BC */
 s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj) {
     struct ListNode *curLink;
     struct ObjGroup *curGroup;
+    UNUSED u8 filler1[4];
     Mat4f *parentUnkMtx;
     Mat4f *iMtx;
     Mat4f *unkMtx;
     Mat4f *rotMtx;
     Mat4f *rotMtx2;
+    UNUSED u8 filler2[24];
     struct GdVec3f scale;
 
     if (parentObj != NULL) {
@@ -1093,11 +1220,13 @@ s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj
 s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
     struct ListNode *sp6C;
     struct ObjGroup *sp68;
+    UNUSED u8 filler1[4];
     UNUSED Mat4f *sp60;
     Mat4f *sp5C;
     UNUSED Mat4f *sp58;
     Mat4f *sp54;
     Mat4f *sp50;
+    UNUSED u8 filler2[24];
     struct GdVec3f sp2C;
     s32 count = 0;
 
@@ -1142,6 +1271,11 @@ s32 func_8017F210(struct GdObj *a0, struct GdObj *a1) {
 /* @ 22DB9C for 0x38; a0 might be ObjUnk200000* */
 void func_8017F3CC(struct Unk8017F3CC *a0) {
     gd_rotate_and_translate_vec3f(&a0->unk20, D_801B9E48);
+}
+
+/* @ 22DBD4 for 0x20 */
+void stub_objects_3(UNUSED f32 a0, UNUSED struct GdObj *a1, UNUSED struct GdObj *a2) {
+    UNUSED u8 filler[48];
 }
 
 /**
@@ -1194,6 +1328,8 @@ void move_animator(struct ObjAnimator *animObj) {
     s16(*animDataCam)[6];         // camera GdPlaneH[]?
     struct GdObj *stubObj1 = NULL; // used only for call to stubbed function
     struct GdObj *stubObj2 = NULL; // used only for call to stubbed function
+    UNUSED u8 filler[12];
+    UNUSED struct GdVec3f unusedVec;
     s32 currKeyFrame;
     s32 nextKeyFrame;
     f32 dt;
@@ -1221,6 +1357,10 @@ void move_animator(struct ObjAnimator *animObj) {
     if (animData->type == 0) {
         return;
     }
+
+    unusedVec.x = 4.0f;
+    unusedVec.y = 1.0f;
+    unusedVec.z = 1.0f;
 
     if (animObj->frame > (f32) animData->count) {
         animObj->frame = 1.0f;
@@ -1406,6 +1546,7 @@ void move_animator(struct ObjAnimator *animObj) {
                 } else {
                     if (stubObj2 == NULL) {
                         stubObj2 = linkedObj;
+                        stub_objects_3(animObj->frame, stubObj1, stubObj2);
                     } else {
                         fatal_printf("Too many objects to morph");
                     }
@@ -1420,12 +1561,15 @@ void move_animator(struct ObjAnimator *animObj) {
 
 /* @ 22EDF4 for 0x300; orig name: func_80180624 */
 void drag_picked_object(struct GdObj *inputObj) {
+    UNUSED u8 filler1[12];
     struct GdVec3f displacement;
     struct GdVec3f spC4;
     struct GdControl *ctrl;
     Mat4f sp80;
     Mat4f sp40;
+    UNUSED u8 filler2[12];
     struct GdObj *obj;
+    UNUSED u8 filler3[4];
     f32 dispMag;
 
     ctrl = &gGdCtrl;
@@ -1492,13 +1636,15 @@ void find_and_drag_picked_object(struct ObjGroup *group) {
 
 /* @ 22F180 for 0x624; orig name: func_801809B0 */
 void move_camera(struct ObjCamera *cam) {
-    struct GdObj *obj;
-    struct GdVec3f worldPos;
+    struct GdObj *spEC;
+    struct GdVec3f spE0;
     struct GdVec3f spD4;
     struct GdVec3f spC8;
+    UNUSED u8 filler1[12];
     struct GdVec3f spB0;
-    Mat4f mtx;
-    Mat4f *idMtx;
+    Mat4f sp70;
+    UNUSED u8 filler2[64];
+    Mat4f *sp2C;
     struct GdControl *ctrl;
 
     ctrl = &gGdCtrl;
@@ -1506,16 +1652,16 @@ void move_camera(struct ObjCamera *cam) {
         return;
     }
 
-    worldPos.x = worldPos.y = worldPos.z = 0.0f;
+    spE0.x = spE0.y = spE0.z = 0.0f;
     spB0.x = spB0.y = spB0.z = 0.0f;
 
-    if ((obj = cam->unk30) != NULL) {
-        set_cur_dynobj(obj);
-        d_get_world_pos(&worldPos);
-        d_get_matrix(&mtx);
+    if ((spEC = cam->unk30) != NULL) {
+        set_cur_dynobj(spEC);
+        d_get_world_pos(&spE0);
+        d_get_matrix(&sp70);
 
-        spC8.x = mtx[2][0] - cam->unk58;
-        spC8.z = mtx[2][2] - cam->unk60;
+        spC8.x = sp70[2][0] - cam->unk58;
+        spC8.z = sp70[2][2] - cam->unk60;
 
         cam->unk58 += spC8.x * cam->unk180.y;
         cam->unk60 += spC8.z * cam->unk180.y;
@@ -1538,7 +1684,7 @@ void move_camera(struct ObjCamera *cam) {
         gd_set_identity_mat4(&cam->unkA8);
     }
 
-    idMtx = &cam->unk64;
+    sp2C = &cam->unk64;
     if ((cam->flags & CAMERA_FLAG_CONTROLLABLE) != 0) {
         if (ctrl->btnB != FALSE && ctrl->prevFrame->btnB == FALSE) {  // new B press
             cam->zoomLevel++;
@@ -1586,7 +1732,7 @@ void move_camera(struct ObjCamera *cam) {
         cam->unk40.y += (cam->unk4C.y - cam->unk40.y) * cam->unk17C;
         cam->unk40.z += (cam->unk4C.z - cam->unk40.z) * cam->unk17C;
     } else {
-        gd_set_identity_mat4(idMtx);
+        gd_set_identity_mat4(sp2C);
     }
 
     spD4.x = cam->unk40.x;
@@ -1597,16 +1743,16 @@ void move_camera(struct ObjCamera *cam) {
     spD4.y += spB0.y;
     spD4.z += spB0.z;
 
-    gd_mult_mat4f(idMtx, &cam->unkA8, &cam->unkA8);
+    gd_mult_mat4f(sp2C, &cam->unkA8, &cam->unkA8);
     gd_mat4f_mult_vec3f(&spD4, &cam->unkA8);
 
     cam->worldPos.x = spD4.x;
     cam->worldPos.y = spD4.y;
     cam->worldPos.z = spD4.z;
 
-    cam->worldPos.x += worldPos.x;
-    cam->worldPos.y += worldPos.y;
-    cam->worldPos.z += worldPos.z;
+    cam->worldPos.x += spE0.x;
+    cam->worldPos.y += spE0.y;
+    cam->worldPos.z += spE0.z;
 }
 
 /* @ 22F7A4 for 0x38; orig name: func_80180FD4 */
@@ -1616,9 +1762,12 @@ void move_cameras_in_grp(struct ObjGroup *group) {
 
 /* @ 22F7DC for 0x36C*/
 void func_8018100C(struct ObjLight *light) {
+    Mat4f mtx;
+    UNUSED u8 filler[12];
+
     if (light->unk40 == 3) {
-        if (light->unk30 > 0.0f) {
-            light->unk30 -= 0.2f;
+        if (light->unk30 > 0.0) { //? 0.0f
+            light->unk30 -= 0.2;  //? 0.2f
         }
 
         if (light->unk30 < 0.0f) {
@@ -1631,7 +1780,44 @@ void func_8018100C(struct ObjLight *light) {
 
         light->unk3C &= ~1;
     }
+    // if (1)?
     return;
+    // unreachable
+    light->position.x += light->unk80.x;
+    light->position.y += light->unk80.y;
+    light->position.z += light->unk80.z;
+
+    // should be position.x for second comparison?
+    if (light->position.x > 500.0f || light->position.y < -500.0f) {
+        light->unk80.x = -light->unk80.x;
+    }
+
+    if (light->position.y > 500.0f || light->position.y < -500.0f) {
+        light->unk80.y = -light->unk80.y;
+    }
+
+    if (light->position.z > 500.0f || light->position.z < -500.0f) {
+        light->unk80.z = -light->unk80.z;
+    }
+
+    return;
+    // more unreachable
+    D_801A81C0 += 1.0; //? 1.0f
+    D_801A81C4 += 0.6; //? 0.6f
+
+    gd_set_identity_mat4(&mtx);
+    gd_absrot_mat4(&mtx, GD_Y_AXIS, light->unk68.y);
+    gd_absrot_mat4(&mtx, GD_X_AXIS, light->unk68.x);
+    gd_absrot_mat4(&mtx, GD_Z_AXIS, light->unk68.z);
+    gd_mat4f_mult_vec3f(&light->unk8C, &mtx);
+
+    light->position.x = light->unk8C.x;
+    light->position.y = light->unk8C.y;
+    light->position.z = light->unk8C.z;
+    return;
+    // even more unreachable
+    gd_mat4f_mult_vec3f(&light->unk80, &mtx);
+    imout(); // this call would cause an issue if it was reachable
 }
 
 /* @ 22FB48 for 0x38; orig name: func_80181378 */
