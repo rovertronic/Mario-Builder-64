@@ -300,7 +300,7 @@ struct SequencePlayer {
     /*     , 0x028, 0x02C*/ f32 fadeVolumeScale;
     /*     , 0x02C*/ f32 appliedFadeVolume;
 #else
-    /*            */ u8 pad2[4];
+    /*0x028,      */ f32 volumeDefault;
 #endif
     /*0x02C, 0x030, 0x034*/ struct SequenceChannel *channels[CHANNELS_MAX];
     /*0x06C, 0x070*/ struct M64ScriptState scriptState;
