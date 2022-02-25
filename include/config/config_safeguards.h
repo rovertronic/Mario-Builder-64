@@ -11,6 +11,39 @@
 
 
 /*****************
+ * config_audio
+ */
+
+#ifndef MAX_SIMULTANEOUS_NOTES_EMULATOR
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 40
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 20
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_EMULATOR
+
+#ifndef MAX_SIMULTANEOUS_NOTES_CONSOLE
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 32
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 16
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_CONSOLE
+
+#if (MAX_SIMULTANEOUS_NOTES_EMULATOR >= MAX_SIMULTANEOUS_NOTES_CONSOLE)
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_EMULATOR
+#else
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_CONSOLE
+#endif
+
+// Anything higher than 64 will most likely crash on boot. Even if it doesn't, it's still dangerous.
+#if (MAX_SIMULTANEOUS_NOTES > 64)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 64
+#endif
+
+
+/*****************
  * config_graphics
  */
 

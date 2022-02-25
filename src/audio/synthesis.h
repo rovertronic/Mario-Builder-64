@@ -63,7 +63,22 @@ extern u8 toggleBetterReverb;
 
 #endif
 
-#define REVERB_WINDOW_HEAP_SIZE (REVERB_WINDOW_SIZE_MAX * sizeof(s16) * 2)
+#if defined(VERSION_JP) || defined(VERSION_US)
+#define REVERB_WINDOW_HEAP_SIZE \
+( \
+    (REVERB_WINDOW_SIZE_MAX * sizeof(s16) * 2) \
+    + (4 * (16 * sizeof(s16))) \
+    + (4 /* gAudioUpdatesPerFrame */ * (2 * DEFAULT_LEN_2CH)) \
+)
+#else
+#define REVERB_WINDOW_HEAP_SIZE \
+( \
+    ((REVERB_WINDOW_SIZE_MAX * sizeof(s16) * 2) \
+    + (4 * (16 * sizeof(s16))) \
+    + (4 /* gAudioUpdatesPerFrame */ * (2 * DEFAULT_LEN_2CH))) \
+    * 4 /* gNumSynthesisReverbs */ \
+)
+#endif
 
 struct ReverbRingBufferItem {
     s16 numSamplesAfterDownsampling;

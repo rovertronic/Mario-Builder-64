@@ -13,6 +13,14 @@
 
 #define NUMAIBUFFERS 3
 
+#if defined(VERSION_EU)
+#define DMA_BUF_SIZE_0 0x400
+#define DMA_BUF_SIZE_1 0x200
+#else
+#define DMA_BUF_SIZE_0 (144 * 9)
+#define DMA_BUF_SIZE_1 (160 * 9)
+#endif
+
 // constant .data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
@@ -108,18 +116,42 @@ extern s16 gAiBufferLengths[NUMAIBUFFERS];
 
 extern u32 gAudioRandom;
 
+#if defined(VERSION_US) || defined(VERSION_JP)
+#define NOTES_BUFFER_SIZE \
+( \
+    MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 20 * 2 * sizeof(u64)) \
+    + ALIGN16(sizeof(struct Note)) \
+    + (DMA_BUF_SIZE_0 * 3) \
+    + (DMA_BUF_SIZE_1) \
+    + ALIGN16(sizeof(struct NoteSynthesisBuffers))) \
+    + 320 * 2 * sizeof(u64) /* gMaxAudioCmds */ \
+)
+#elif defined(VERSION_EU)
+#define NOTES_BUFFER_SIZE \
+( \
+    MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 0x10 * 2 * sizeof(u64)) \
+    + ALIGN16(sizeof(struct Note)) \
+    + (DMA_BUF_SIZE_0 * 3 * 1 /* presetUnk4 */) \
+    + (DMA_BUF_SIZE_1) \
+    + ALIGN16(sizeof(struct NoteSynthesisBuffers)) \
+    + ALIGN16(4 /* updatesPerFrame */ * sizeof(struct NoteSubEu))) \
+    + (0x300 + 4 /* numReverbs */ * 0x20) * 2 * sizeof(u64) /* gMaxAudioCmds */ \
+    + 0x4000 /* Extra space to hopefully tolerate whatever the note patch behavior is */ \
+)
+#endif
+
 #ifdef EXPAND_AUDIO_HEAP
 #if defined(VERSION_US) || defined(VERSION_JP) || defined(VERSION_EU)
-#define EXT_AUDIO_HEAP_SIZE      0x27400
-#define EXT_AUDIO_INIT_POOL_SIZE 0x02000
+#define EXT_AUDIO_INIT_POOL_SIZE (0x1800 + 0x300)
+#define EXT_AUDIO_HEAP_SIZE      0x14D80
 #else
 // SH not yet supported for expanded audio heap
-#define EXT_AUDIO_HEAP_SIZE      0x0
 #define EXT_AUDIO_INIT_POOL_SIZE 0x0
+#define EXT_AUDIO_HEAP_SIZE      0x0
 #endif
 #else
-#define EXT_AUDIO_HEAP_SIZE      0x0
 #define EXT_AUDIO_INIT_POOL_SIZE 0x0
+#define EXT_AUDIO_HEAP_SIZE      0x0
 #endif
 
 #ifdef VERSION_SH
@@ -148,14 +180,15 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_HEAP_BASE 0x36B00
-#define AUDIO_INIT_POOL_SIZE (0x2C00 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x1B00 + EXT_AUDIO_INIT_POOL_SIZE + ALIGN16(MAX_SIMULTANEOUS_NOTES * sizeof(struct Note)))
 #else
-#define AUDIO_HEAP_BASE 0x30750
-#define AUDIO_INIT_POOL_SIZE (0x2500 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x1600 + EXT_AUDIO_INIT_POOL_SIZE + ALIGN16(MAX_SIMULTANEOUS_NOTES * sizeof(struct Note)))
 #endif
 
-#define AUDIO_HEAP_SIZE (AUDIO_HEAP_BASE + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
+// TODO: needs validation once EU can compile. EU is very likely incorrect!
+#define AUDIO_HEAP_BASE (0x14D80 /* sound bank space */ + AUDIO_INIT_POOL_SIZE + EXT_AUDIO_HEAP_SIZE + NOTES_BUFFER_SIZE)
+
+#define AUDIO_HEAP_SIZE (AUDIO_HEAP_BASE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
 
 #ifdef VERSION_SH
 extern u32 D_SH_80315EF0;

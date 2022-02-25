@@ -1382,19 +1382,20 @@ void audio_reset_session(void) {
 
 #if defined(VERSION_JP) || defined(VERSION_US)
     for (j = 0; j < 2; j++) {
-        gAudioCmdBuffers[j] = soundAlloc(&gNotesAndBuffersPool, gMaxAudioCmds * sizeof(u64));
+        gAudioCmdBuffers[j] = soundAlloc(&gNotesAndBuffersPool, ALIGN16(gMaxAudioCmds * sizeof(u64)));
     }
 #endif
 
-    gNotes = soundAlloc(&gNotesAndBuffersPool, gMaxSimultaneousNotes * sizeof(struct Note));
+    gNotes = soundAlloc(&gNotesAndBuffersPool, ALIGN16(gMaxSimultaneousNotes * sizeof(struct Note)));
     note_init_all();
     init_note_free_list();
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-    gNoteSubsEu = soundAlloc(&gNotesAndBuffersPool, (gAudioBufferParameters.updatesPerFrame * gMaxSimultaneousNotes) * sizeof(struct NoteSubEu));
+    // NOTE: Cannot be computed automatically in the audio heap define; approximation to be used instead
+    gNoteSubsEu = soundAlloc(&gNotesAndBuffersPool, ALIGN16((gAudioBufferParameters.updatesPerFrame * gMaxSimultaneousNotes) * sizeof(struct NoteSubEu)));
 
     for (j = 0; j != 2; j++) {
-        gAudioCmdBuffers[j] = soundAlloc(&gNotesAndBuffersPool, gMaxAudioCmds * sizeof(u64));
+        gAudioCmdBuffers[j] = soundAlloc(&gNotesAndBuffersPool, ALIGN16(gMaxAudioCmds * sizeof(u64)));
     }
 
     init_reverb_eu();
@@ -1427,6 +1428,15 @@ void audio_reset_session(void) {
     append_puppyprint_log("Audio Initialised in %dus.", (s32)OS_CYCLES_TO_USEC(osGetTime() - first));
 #endif
 #endif
+
+    if (gIsConsole)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_CONSOLE;
+    else
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_EMULATOR;
+    
+    if (gMaxSimultaneousNotes > MAX_SIMULTANEOUS_NOTES)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES;
+
     sAudioFirstBoot = 1;
 }
 

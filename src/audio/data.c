@@ -38,9 +38,9 @@ struct ReverbSettingsEU sReverbSettings[8] = {
 
 struct AudioSessionSettingsEU gAudioSessionPresets[] = {
 #ifdef EXPAND_AUDIO_HEAP
-    { /*1*/ 32000,/*2*/ 1,/*3*/ 40,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x8200,/*9*/ 0xDC00,/*10*/ 0xE800,/*11*/ 0x5500 },
+    { /*1*/ 32000,/*2*/ 1,/*3*/ MAX_SIMULTANEOUS_NOTES,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x8200,/*9*/ 0xDC00,/*10*/ 0xE800,/*11*/ 0x5500 },
 #else
-    { /*1*/ 32000,/*2*/ 1,/*3*/ 20,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x4100,/*9*/ 0x6E00,/*10*/ 0x7400,/*11*/ 0x2A80 },
+    { /*1*/ 32000,/*2*/ 1,/*3*/ MAX_SIMULTANEOUS_NOTES,/*4*/ 1,/*5*/ 0, &sReverbSettings[0],/*6*/ 0x7FFF,/*7*/ 0,/*8*/ 0x4100,/*9*/ 0x6E00,/*10*/ 0x7400,/*11*/ 0x2A80 },
 #endif
 };
 #endif
@@ -80,14 +80,13 @@ struct ReverbSettingsUS gReverbSettings[18] = {
     { 1, 0x0800, 0x2FFF },
 };
 
-// TODO: Does using 40/20 instead of 32/16 for gMaxSimultaneousNotes cause memory problems at high capacities or is it good as is?
 #ifdef EXPAND_AUDIO_HEAP
 struct AudioSessionSettings gAudioSessionPresets[1] = {
-    { 32000, 40, 1, 0x1000, 0x2FFF, 0x7FFF, 0x8200, 0xDC00, 0xE800, 0x5500 },
+    { 32000, MAX_SIMULTANEOUS_NOTES, 1, 0x1000, 0x2FFF, 0x7FFF, 0x8200, 0xDC00, 0xE800, 0x5500 },
 };
 #else
 struct AudioSessionSettings gAudioSessionPresets[1] = {
-    { 32000, 20, 1, 0x1000, 0x2FFF, 0x7FFF, 0x4100, 0x6E00, 0x7400, 0x2A80 },
+    { 32000, MAX_SIMULTANEOUS_NOTES, 1, 0x1000, 0x2FFF, 0x7FFF, 0x4100, 0x6E00, 0x7400, 0x2A80 },
 };
 #endif
 #endif
