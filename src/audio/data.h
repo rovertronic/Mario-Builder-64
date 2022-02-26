@@ -141,7 +141,7 @@ extern u32 gAudioRandom;
 
 #ifdef EXPAND_AUDIO_HEAP
 #if defined(VERSION_US) || defined(VERSION_JP) || defined(VERSION_EU)
-#define EXT_AUDIO_INIT_POOL_SIZE (0x1800 + 0x300)
+#define EXT_AUDIO_INIT_POOL_SIZE (0x2000 + 0x300)
 #define EXT_AUDIO_HEAP_SIZE      0x14D80
 #else
 // SH not yet supported for expanded audio heap
@@ -179,9 +179,9 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_INIT_POOL_SIZE (0x1B00 + EXT_AUDIO_INIT_POOL_SIZE + ALIGN16(MAX_SIMULTANEOUS_NOTES * sizeof(struct Note)))
+#define AUDIO_INIT_POOL_SIZE (0x2C00 + EXT_AUDIO_INIT_POOL_SIZE)
 #else
-#define AUDIO_INIT_POOL_SIZE (0x1600 + EXT_AUDIO_INIT_POOL_SIZE + ALIGN16(MAX_SIMULTANEOUS_NOTES * sizeof(struct Note)))
+#define AUDIO_INIT_POOL_SIZE (0x2500 + EXT_AUDIO_INIT_POOL_SIZE)
 #endif
 
 // TODO: needs validation once EU can compile. EU is very likely incorrect!

@@ -307,8 +307,8 @@ void puppyprint_get_allocated_pools(s32 *audioPoolList) {
         &gAudioInitPool,
         &gNotesAndBuffersPool,
         &gSeqLoadedPool.persistent.pool,
-        &gSeqLoadedPool.temporary.pool,
         &gBankLoadedPool.persistent.pool,
+        &gSeqLoadedPool.temporary.pool,
         &gBankLoadedPool.temporary.pool,
 #ifdef BETTER_REVERB
         &gBetterReverbPool,
