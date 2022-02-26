@@ -10,7 +10,7 @@ extern struct OSMesgQueue OSMesgQueue3;
 
 // Since the audio session is just one now, the reverb settings are duplicated to match the original audio setting scenario.
 // It's a bit hacky but whatever lol. Index range must be defined, since it's needed by the compiler.
-// To increase reverb window sizes beyond 64, please increase the REVERB_WINDOW_SIZE_MAX in heap.c by a factor of 0x40 and update AUDIO_HEAP_SIZE by 4x the same amount.
+// To increase reverb window sizes beyond 64, please increase the REVERB_WINDOW_SIZE_MAX in heap.c by a factor of 0x40.
 #ifdef VERSION_EU
 struct ReverbSettingsEU sReverbSettings[8] = {
     { /*Downsample Rate*/ 1, /*Window Size*/ 64, /*Gain*/ 0x2FFF },
@@ -57,7 +57,7 @@ struct AudioSessionSettingsEU gAudioSessionPresets[] = {
 // - memory used for temporary sequences
 // - memory used for temporary banks
 
-// To increase reverb window sizes beyond 0x1000, please increase the REVERB_WINDOW_SIZE_MAX in heap.c and update AUDIO_HEAP_SIZE by the same amount.
+// To increase reverb window sizes beyond 0x1000, please increase the REVERB_WINDOW_SIZE_MAX in heap.c.
 #if defined(VERSION_JP) || defined(VERSION_US)
 struct ReverbSettingsUS gReverbSettings[18] = {
     { 1, 0x0C00, 0x2FFF },

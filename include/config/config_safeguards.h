@@ -40,6 +40,13 @@
 #if (MAX_SIMULTANEOUS_NOTES > 64)
     #undef MAX_SIMULTANEOUS_NOTES
     #define MAX_SIMULTANEOUS_NOTES 64
+#elif (MAX_SIMULTANEOUS_NOTES < 0)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 0
+#endif
+
+#if defined(BETTER_REVERB) && !(defined(VERSION_US) || defined(VERSION_JP))
+    #undef BETTER_REVERB
 #endif
 
 

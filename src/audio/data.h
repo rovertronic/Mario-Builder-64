@@ -122,11 +122,11 @@ extern u32 gAudioRandom;
     MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 20 * 2 * sizeof(u64)) \
     + ALIGN16(sizeof(struct Note)) \
     + (DMA_BUF_SIZE_0 * 3) \
-    + (DMA_BUF_SIZE_1) \
+    + DMA_BUF_SIZE_1 \
     + ALIGN16(sizeof(struct NoteSynthesisBuffers))) \
-    + 320 * 2 * sizeof(u64) /* gMaxAudioCmds */ \
+    + (320 * 2 * sizeof(u64)) /* gMaxAudioCmds */ \
 )
-#elif defined(VERSION_EU)
+#else // Probably SH incompatible but that's an entirely different headache to save at this point tbh
 #define NOTES_BUFFER_SIZE \
 ( \
     MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 0x10 * 2 * sizeof(u64)) \
@@ -135,8 +135,7 @@ extern u32 gAudioRandom;
     + (DMA_BUF_SIZE_1) \
     + ALIGN16(sizeof(struct NoteSynthesisBuffers)) \
     + ALIGN16(4 /* updatesPerFrame */ * sizeof(struct NoteSubEu))) \
-    + (0x300 + 4 /* numReverbs */ * 0x20) * 2 * sizeof(u64) /* gMaxAudioCmds */ \
-    + 0x4000 /* Extra space to hopefully tolerate whatever the note patch behavior is */ \
+    + ((0x300 + (4 /* numReverbs */ * 0x20)) * 2 * sizeof(u64)) /* gMaxAudioCmds */ \
 )
 #endif
 

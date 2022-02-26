@@ -316,7 +316,7 @@ const char *audioPoolNames[NUM_AUDIO_POOLS] = {
     "gSeqLoadedPool.temporary.pool",
     "gBankLoadedPool.persistent.pool",
     "gBankLoadedPool.temporary.pool",
-#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
+#ifdef BETTER_REVERB
     "gBetterReverbPool",
 #endif
 };
