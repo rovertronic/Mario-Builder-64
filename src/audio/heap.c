@@ -1313,6 +1313,16 @@ void audio_reset_session(void) {
     gAudioBufferParameters.minAiBufferLength *= gAudioBufferParameters.presetUnk4;
     gAudioBufferParameters.updatesPerFrame *= gAudioBufferParameters.presetUnk4;
 
+    if (gIsConsole)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_CONSOLE;
+    else
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_EMULATOR;
+    
+    if (gMaxSimultaneousNotes > MAX_SIMULTANEOUS_NOTES)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES;
+    else if (gMaxSimultaneousNotes < 0)
+        gMaxSimultaneousNotes = 0;
+
 #ifdef VERSION_SH
     if (gAudioBufferParameters.presetUnk4 >= 2) {
         gAudioBufferParameters.maxAiBufferLength -= 0x10;
@@ -1329,6 +1339,16 @@ void audio_reset_session(void) {
     gVolume = preset->volume;
     gMinAiBufferLength = gSamplesPerFrameTarget - 0x10;
     gAudioUpdatesPerFrame = updatesPerFrame = gSamplesPerFrameTarget / 160 + 1;
+
+    if (gIsConsole)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_CONSOLE;
+    else
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_EMULATOR;
+    
+    if (gMaxSimultaneousNotes > MAX_SIMULTANEOUS_NOTES)
+        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES;
+    else if (gMaxSimultaneousNotes < 0)
+        gMaxSimultaneousNotes = 0;
 
     // Compute conversion ratio from the internal unit tatums/tick to the
     // external beats/minute (JP) or tatums/minute (US). In practice this is
@@ -1425,16 +1445,6 @@ void audio_reset_session(void) {
     append_puppyprint_log("Audio Initialised in %dus.", (s32)OS_CYCLES_TO_USEC(osGetTime() - first));
 #endif
 #endif
-
-    if (gIsConsole)
-        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_CONSOLE;
-    else
-        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES_EMULATOR;
-    
-    if (gMaxSimultaneousNotes > MAX_SIMULTANEOUS_NOTES)
-        gMaxSimultaneousNotes = MAX_SIMULTANEOUS_NOTES;
-    else if (gMaxSimultaneousNotes < 0)
-        gMaxSimultaneousNotes = 0;
 
     sAudioFirstBoot = 1;
 }
