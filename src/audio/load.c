@@ -983,13 +983,8 @@ void audio_init() {
     alSeqFileNew(gAlTbl, gSoundDataRaw);
 
     // Load bank sets for each sequence
-#ifdef EXPAND_AUDIO_HEAP
-    gAlBankSets = soundAlloc(&gAudioInitPool, 0x400);
-    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, 0x400);
-#else
-    gAlBankSets = soundAlloc(&gAudioInitPool, 0x100);
-    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, 0x100);
-#endif
+    gAlBankSets = soundAlloc(&gAudioInitPool, BANK_SETS_ALLOC);
+    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, BANK_SETS_ALLOC);
 
     init_sequence_players();
     gAudioLoadLock = AUDIO_LOCK_NOT_LOADING;

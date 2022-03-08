@@ -2517,10 +2517,10 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
                         break;
 
                     case 0xda: // seq_changevol
-                        temp = (f32)(s8) m64_read_u8(state) / 127.0f;
-                        seqPlayer->fadeVolume += temp;
+                        temp = m64_read_u8(state);
+                        seqPlayer->fadeVolume += (f32)(s8) temp / 127.0f;
                         
-                        seqPlayer->volumeDefault += temp;
+                        seqPlayer->volumeDefault += (f32)(s8) temp / 127.0f;
                         if (seqPlayer->volumeDefault > 1.0f)
                             seqPlayer->volumeDefault = 1.0f;
                         else if (seqPlayer->volumeDefault < 0.0f)

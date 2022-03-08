@@ -21,6 +21,24 @@
 #define DMA_BUF_SIZE_1 (160 * 9)
 #endif
 
+#ifdef EXPAND_AUDIO_HEAP
+#define PERSISTENT_SEQ_MEM 0x8200
+#define PERSISTENT_BANK_MEM 0xDC00
+#define TEMPORARY_SEQ_MEM 0xE800
+#define TEMPORARY_BANK_MEM 0x5500
+#define BANK_SETS_ALLOC 0x400
+#define EXT_AUDIO_INIT_POOL_SIZE 0x2000
+#else
+#define PERSISTENT_SEQ_MEM 0x4100
+#define PERSISTENT_BANK_MEM 0x6E00
+#define TEMPORARY_SEQ_MEM 0x7400
+#define TEMPORARY_BANK_MEM 0x2A80
+#define BANK_SETS_ALLOC 0x100
+#define EXT_AUDIO_INIT_POOL_SIZE 0x0
+#endif
+
+#define SEQ_BANK_MEM (PERSISTENT_SEQ_MEM + PERSISTENT_BANK_MEM + TEMPORARY_SEQ_MEM + TEMPORARY_BANK_MEM)
+
 // constant .data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
@@ -139,20 +157,6 @@ extern u32 gAudioRandom;
 )
 #endif
 
-#ifdef EXPAND_AUDIO_HEAP
-#if defined(VERSION_US) || defined(VERSION_JP) || defined(VERSION_EU)
-#define EXT_AUDIO_INIT_POOL_SIZE (0x2000 + 0x300)
-#define EXT_AUDIO_HEAP_SIZE      0x14D80
-#else
-// SH not yet supported for expanded audio heap
-#define EXT_AUDIO_INIT_POOL_SIZE 0x0
-#define EXT_AUDIO_HEAP_SIZE      0x0
-#endif
-#else
-#define EXT_AUDIO_INIT_POOL_SIZE 0x0
-#define EXT_AUDIO_HEAP_SIZE      0x0
-#endif
-
 #ifdef VERSION_SH
 extern f32 unk_sh_data_1[];
 
@@ -179,15 +183,13 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_INIT_POOL_SIZE (0x2C00 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2C00 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
 #else
-#define AUDIO_INIT_POOL_SIZE (0x2500 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2500 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
 #endif
 
 // TODO: needs validation once EU can compile. EU is very likely incorrect!
-#define AUDIO_HEAP_BASE (0x14D80 /* sound bank space */ + AUDIO_INIT_POOL_SIZE + EXT_AUDIO_HEAP_SIZE + NOTES_BUFFER_SIZE)
-
-#define AUDIO_HEAP_SIZE (AUDIO_HEAP_BASE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
+#define AUDIO_HEAP_SIZE (SEQ_BANK_MEM + AUDIO_INIT_POOL_SIZE + NOTES_BUFFER_SIZE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
 
 #ifdef VERSION_SH
 extern u32 D_SH_80315EF0;
