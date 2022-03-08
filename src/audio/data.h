@@ -183,9 +183,9 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_INIT_POOL_SIZE (0x2C00 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2B00 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
 #else
-#define AUDIO_INIT_POOL_SIZE (0x2500 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2400 + BANK_SETS_ALLOC + EXT_AUDIO_INIT_POOL_SIZE)
 #endif
 
 // TODO: needs validation once EU can compile. EU is very likely incorrect!
