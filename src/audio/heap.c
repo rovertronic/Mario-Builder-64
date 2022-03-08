@@ -985,7 +985,7 @@ void wait_for_audio_frames(s32 frames) {
 }
 #endif
 
-u8 sAudioFirstBoot = 0;
+u8 sAudioIsInitialized = FALSE;
 // Separate the reverb settings into their own func. Bit unstable currently, so still only runs at boot.
 #if defined(VERSION_EU) || defined(VERSION_SH)
 void init_reverb_eu(void) {
@@ -1000,7 +1000,7 @@ void init_reverb_eu(void) {
         gSynthesisReverbs[j].useReverb = 0;
 
         // Both left and right channels are allocated/cleared together, then separated based on the reverb window size
-        if (!sAudioFirstBoot) {
+        if (!sAudioIsInitialized) {
             gSynthesisReverbs[j].ringBuffer.left = soundAlloc(&gNotesAndBuffersPool, REVERB_WINDOW_SIZE_MAX * 4);
         }
     }
@@ -1015,7 +1015,7 @@ void init_reverb_eu(void) {
         if (reverb->windowSize > REVERB_WINDOW_SIZE_MAX) {
             reverb->windowSize = REVERB_WINDOW_SIZE_MAX;
         }
-        if (sAudioFirstBoot) {
+        if (sAudioIsInitialized) {
             bzero(reverb->ringBuffer.left, (REVERB_WINDOW_SIZE_MAX * 4));
         } else {
             reverb->resampleRate = (0x8000 / reverb->downsampleRate);
@@ -1041,7 +1041,7 @@ void init_reverb_eu(void) {
         reverb->framesLeftToIgnore = 2;
         if (reverb->downsampleRate != 1) {
             reverb->resampleRate = (0x8000 / reverb->downsampleRate);
-            if (sAudioFirstBoot) {
+            if (sAudioIsInitialized) {
                 bzero(reverb->resampleStateLeft,  (16 * sizeof(s16)));
                 bzero(reverb->resampleStateRight, (16 * sizeof(s16)));
                 bzero(reverb->unk24, (16 * sizeof(s16)));
@@ -1096,7 +1096,7 @@ void init_reverb_us(s32 presetId) {
             reverbWindowSize = REVERB_WINDOW_SIZE_MAX;
         }
         // Both left and right channels are allocated/cleared together, then separated based on the reverb window size
-        if (!sAudioFirstBoot) {
+        if (!sAudioIsInitialized) {
             gSynthesisReverb.ringBuffer.left    = soundAlloc(&gNotesAndBuffersPool, REVERB_WINDOW_SIZE_MAX * 2 * sizeof(s16));
 
             gSynthesisReverb.resampleStateLeft  = soundAlloc(&gNotesAndBuffersPool, (16 * sizeof(s16)));
@@ -1130,7 +1130,7 @@ void init_reverb_us(s32 presetId) {
         if (gReverbDownsampleRate != 1) {
             gSynthesisReverb.resampleFlags = A_INIT;
             gSynthesisReverb.resampleRate = (0x8000 / gReverbDownsampleRate);
-            if (sAudioFirstBoot) {
+            if (sAudioIsInitialized) {
                 bzero(gSynthesisReverb.resampleStateLeft,  (16 * sizeof(s16)));
                 bzero(gSynthesisReverb.resampleStateRight, (16 * sizeof(s16)));
                 bzero(gSynthesisReverb.unk24, (16 * sizeof(s16)));
@@ -1145,7 +1145,7 @@ void init_reverb_us(s32 presetId) {
         // However, reseting this allows for proper clearing of the reverb buffers, as well as dynamic customization of the delays array.
 #ifdef BETTER_REVERB
         if (toggleBetterReverb) {
-            if (sAudioFirstBoot) {
+            if (sAudioIsInitialized) {
                 bzero(delayBufsL[0], (BETTER_REVERB_SIZE - BETTER_REVERB_PTR_SIZE));
             }            
 
@@ -1166,7 +1166,7 @@ void init_reverb_us(s32 presetId) {
 
 #if defined(VERSION_JP) || defined(VERSION_US)
 void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
-    if (sAudioFirstBoot) {
+    if (sAudioIsInitialized) {
         bzero(&gAiBuffers[0][0], (AIBUFFER_LEN * NUMAIBUFFERS));
         persistent_pool_clear(&gSeqLoadedPool.persistent);
         persistent_pool_clear(&gBankLoadedPool.persistent);
@@ -1187,7 +1187,7 @@ void audio_reset_session(struct AudioSessionSettings *preset, s32 presetId) {
     }
 #else
 void audio_reset_session(void) {
-    if (sAudioFirstBoot) {
+    if (sAudioIsInitialized) {
         persistent_pool_clear(&gSeqLoadedPool.persistent);
         persistent_pool_clear(&gBankLoadedPool.persistent);
         temporary_pool_clear(&gSeqLoadedPool.temporary);
@@ -1446,7 +1446,7 @@ void audio_reset_session(void) {
 #endif
 #endif
 
-    sAudioFirstBoot = 1;
+    sAudioIsInitialized = TRUE;
 }
 
 #ifdef VERSION_SH
