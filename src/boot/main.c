@@ -312,7 +312,6 @@ void thread3_main(UNUSED void *arg) {
 #ifdef DEBUG
     osSyncPrintf("Super Mario 64\n");
     osSyncPrintf("Built by: %s\n", __username__);
-    osSyncPrintf("Date    : %s\n", __datetime__);
     osSyncPrintf("Compiler: %s\n", __compiler__);
     osSyncPrintf("Linker  : %s\n", __linker__);
 #endif
