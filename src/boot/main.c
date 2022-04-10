@@ -311,7 +311,9 @@ void thread3_main(UNUSED void *arg) {
 
 #ifdef DEBUG
     osSyncPrintf("Super Mario 64\n");
+#if 0 // if your PC username isn't your real name feel free to uncomment
     osSyncPrintf("Built by: %s\n", __username__);
+#endif
     osSyncPrintf("Compiler: %s\n", __compiler__);
     osSyncPrintf("Linker  : %s\n", __linker__);
 #endif
