@@ -4,9 +4,6 @@
  * AUDIO SETTINGS *
  ******************/
 
-// Fixes the castle music sometimes triggering after getting a dialog.
-#define CASTLE_MUSIC_FIX
-
 // Do not restart the music on cap grabs.
 #define PERSISTENT_CAP_MUSIC
 
