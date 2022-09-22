@@ -315,7 +315,7 @@ void stop_rcp_hang_timer(void) {
 }
 
 void alert_rcp_hung_up(void) {
-    assert(0, "RCP is HUNG UP!! Oh! MY GOD!!");
+    error("RCP is HUNG UP!! Oh! MY GOD!!");
 }
 
 void check_cache_emulation() {
