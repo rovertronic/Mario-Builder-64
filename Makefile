@@ -210,6 +210,12 @@ endif
 #   0 - does not
 UNF ?= 0
 $(eval $(call validate-option,UNF,0 1))
+
+# if `unf` is a target, make sure that UNF is set
+ifneq ($(filter unf,$(MAKECMDGOALS)),)
+	UNF = 1
+endif
+
 ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
@@ -502,8 +508,13 @@ endif
 ENDIAN_BITWIDTH       := $(BUILD_DIR)/endian-and-bitwidth
 EMULATOR = mupen64plus
 EMU_FLAGS =
-LOADER = loader64
-LOADER_FLAGS = -vwf
+
+ifneq (,$(call find-command,wslview))
+    LOADER = ./$(TOOLS_DIR)/UNFLoader.exe
+else
+    LOADER = ./$(TOOLS_DIR)/UNFLoader
+endif
+
 SHA1SUM = sha1sum
 PRINT = printf
 
@@ -553,8 +564,18 @@ test-pj64: $(ROM)
 	wine ~/Desktop/new64/Project64.exe $<
 # someone2639
 
-load: $(ROM)
-	$(LOADER) $(LOADER_FLAGS) $<
+# download and extract most recent unfloader build if needed
+$(LOADER):
+ifeq (,$(wildcard $(LOADER)))
+	@$(PRINT) "Downloading latest UNFLoader...$(NO_COL)\n"
+	$(PYTHON) $(TOOLS_DIR)/get_latest_unfloader.py $(TOOLS_DIR)
+endif
+
+load: $(ROM) $(LOADER)
+	$(LOADER) -r $<
+
+unf: $(ROM) $(LOADER)
+	$(LOADER) -d -r $<
 
 libultra: $(BUILD_DIR)/libultra.a
 
