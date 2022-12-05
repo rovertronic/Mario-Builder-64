@@ -135,23 +135,25 @@ LINK_LIBRARIES = $(foreach i,$(LIBRARIES),-l$(i))
 
 # Default non-gcc opt flags
 DEFAULT_OPT_FLAGS = -Ofast
-SAFETY_OPT_FLAGS = -ftrapping-math
+# Note: -fno-associative-math is used here to suppress warnings, ideally we would enable this as an optimization but
+# this conflicts with -ftrapping-math apparently.
+# TODO: Figure out how to allow -fassociative-math to be enabled
+SAFETY_OPT_FLAGS = -ftrapping-math -fno-associative-math
 
 # Main opt flags
 GCC_MAIN_OPT_FLAGS = \
-  -Ofast \
+  $(DEFAULT_OPT_FLAGS) $(SAFETY_OPT_FLAGS) \
   --param case-values-threshold=20 \
   --param max-completely-peeled-insns=10 \
   --param max-unrolled-insns=10 \
   -finline-limit=1 \
   -freorder-blocks-algorithm=simple  \
   -ffunction-sections \
-  -fdata-sections \
-  $(SAFETY_OPT_FLAGS)
+  -fdata-sections
 
 # Surface Collision
 GCC_COLLISION_OPT_FLAGS = \
-  -Ofast \
+  $(DEFAULT_OPT_FLAGS) $(SAFETY_OPT_FLAGS) \
   --param case-values-threshold=20 \
   --param max-completely-peeled-insns=100 \
   --param max-unrolled-insns=100 \
@@ -160,25 +162,23 @@ GCC_COLLISION_OPT_FLAGS = \
   -freorder-blocks-algorithm=simple  \
   -ffunction-sections \
   -fdata-sections \
-  -falign-functions=32 \
-  $(SAFETY_OPT_FLAGS)
+  -falign-functions=32
 
 # Math Util
 GCC_MATH_UTIL_OPT_FLAGS = \
-  -Ofast \
+  $(DEFAULT_OPT_FLAGS) $(SAFETY_OPT_FLAGS) \
   -fno-unroll-loops \
   -fno-peel-loops \
   --param case-values-threshold=20  \
   -ffunction-sections \
   -fdata-sections \
-  -falign-functions=32 \
-  $(SAFETY_OPT_FLAGS)
+  -falign-functions=32
 #   - setting any sort of -finline-limit has shown to worsen performance with math_util.c,
 #     lower values were the worst, the higher you go - the closer performance gets to not setting it at all
 
 # Rendering graph node
 GCC_GRAPH_NODE_OPT_FLAGS = \
-  -Ofast \
+  $(DEFAULT_OPT_FLAGS) $(SAFETY_OPT_FLAGS) \
   --param case-values-threshold=20 \
   --param max-completely-peeled-insns=100 \
   --param max-unrolled-insns=100 \
@@ -186,8 +186,7 @@ GCC_GRAPH_NODE_OPT_FLAGS = \
   -freorder-blocks-algorithm=simple  \
   -ffunction-sections \
   -fdata-sections \
-  -falign-functions=32 \
-  $(SAFETY_OPT_FLAGS)
+  -falign-functions=32
 #==============================================================================#
 
 ifeq ($(COMPILER),gcc)
