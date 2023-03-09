@@ -39,11 +39,10 @@ u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
 
 // OS Controllers
-struct Controller gControllers[4];
-OSContStatus gControllerStatuses[4];
-OSContPadEx gControllerPads[4];
-u8 gControllerBits;
-s8 gGamecubeControllerPort = -1; // HackerSM64: This is set to -1 if there's no GC controller, 0 if there's one in the first port and 1 if there's one in the second port.
+struct Controller gControllers[MAX_NUM_PLAYERS];
+OSContStatus gControllerStatuses[MAXCONTROLLERS];
+OSContPadEx gControllerPads[MAXCONTROLLERS];
+u8 gControllerBits = 0b0000;
 u8 gIsConsole = TRUE; // Needs to be initialized before audio_reset_session is called
 u8 gCacheEmulated = TRUE;
 u8 gBorderHeight;
@@ -86,11 +85,11 @@ u16 sRenderingFramebuffer = 0;
 // Goddard Vblank Function Caller
 void (*gGoddardVblankCallback)(void) = NULL;
 
-// Defined controller slots
-struct Controller *gPlayer1Controller = &gControllers[0];
-struct Controller *gPlayer2Controller = &gControllers[1];
-struct Controller *gPlayer3Controller = &gControllers[2];
-struct Controller *gPlayer4Controller = &gControllers[3];
+// Defined controller slots. Anything above MAX_NUM_PLAYERS will be unused.
+struct Controller* const gPlayer1Controller = &gControllers[0];
+struct Controller* const gPlayer2Controller = &gControllers[1];
+struct Controller* const gPlayer3Controller = &gControllers[2];
+struct Controller* const gPlayer4Controller = &gControllers[3];
 
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
@@ -492,36 +491,25 @@ UNUSED static void record_demo(void) {
  */
 void run_demo_inputs(void) {
     // Eliminate the unused bits.
-    gControllers[0].controllerData->button &= VALID_BUTTONS;
+    gPlayer1Controller->controllerData->button &= VALID_BUTTONS;
 
     // Check if a demo inputs list exists and if so,
     // run the active demo input list.
     if (gCurrDemoInput != NULL) {
-        // Clear player 2's inputs if they exist. Player 2's controller
-        // cannot be used to influence a demo. At some point, Nintendo
-        // may have planned for there to be a demo where 2 players moved
-        // around instead of just one, so clearing player 2's influence from
-        // the demo had to have been necessary to perform this. Co-op mode, perhaps?
-        if (gControllers[1].controllerData != NULL) {
-            gControllers[1].controllerData->stick_x = 0;
-            gControllers[1].controllerData->stick_y = 0;
-            gControllers[1].controllerData->button = 0;
-        }
-
         // The timer variable being 0 at the current input means the demo is over.
         // Set the button to the END_DEMO mask to end the demo.
         if (gCurrDemoInput->timer == 0) {
-            gControllers[0].controllerData->stick_x = 0;
-            gControllers[0].controllerData->stick_y = 0;
-            gControllers[0].controllerData->button = END_DEMO;
+            gPlayer1Controller->controllerData->stick_x = 0;
+            gPlayer1Controller->controllerData->stick_y = 0;
+            gPlayer1Controller->controllerData->button = END_DEMO;
         } else {
             // Backup the start button if it is pressed, since we don't want the
             // demo input to override the mask where start may have been pressed.
-            u16 startPushed = gControllers[0].controllerData->button & START_BUTTON;
+            u16 startPushed = (gPlayer1Controller->controllerData->button & START_BUTTON);
 
             // Perform the demo inputs by assigning the current button mask and the stick inputs.
-            gControllers[0].controllerData->stick_x = gCurrDemoInput->rawStickX;
-            gControllers[0].controllerData->stick_y = gCurrDemoInput->rawStickY;
+            gPlayer1Controller->controllerData->stick_x = gCurrDemoInput->rawStickX;
+            gPlayer1Controller->controllerData->stick_y = gCurrDemoInput->rawStickY;
 
             // To assign the demo input, the button information is stored in
             // an 8-bit mask rather than a 16-bit mask. this is because only
@@ -530,11 +518,11 @@ void run_demo_inputs(void) {
             // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
             // match the correct input mask. We then add this to the masked
             // lower 4 bits to get the correct button mask.
-            gControllers[0].controllerData->button =
+            gPlayer1Controller->controllerData->button =
                 ((gCurrDemoInput->buttonMask & 0xF0) << 8) + ((gCurrDemoInput->buttonMask & 0xF));
 
             // If start was pushed, put it into the demo sequence being input to end the demo.
-            gControllers[0].controllerData->button |= startPushed;
+            gPlayer1Controller->controllerData->button |= startPushed;
 
             // Run the current demo input's timer down. if it hits 0, advance the demo input list.
             if (--gCurrDemoInput->timer == 0) {
@@ -604,38 +592,39 @@ void read_controller_inputs(s32 threadID) {
     run_demo_inputs();
 #endif
 
-    for (i = 0; i < 4; i++) {
-        struct Controller *controller = &gControllers[i];
+    for (i = 0; i < MAX_NUM_PLAYERS; i++) {
+        struct Controller* controller = &gControllers[i];
+        OSContPadEx* controllerData = controller->controllerData;
         // if we're receiving inputs, update the controller struct with the new button info.
         if (controller->controllerData != NULL) {
             // HackerSM64: Swaps Z and L, only on console, and only when playing with a GameCube controller.
-            if (gIsConsole && i == gGamecubeControllerPort) {
-                u32 oldButton = controller->controllerData->button;
+            if (__osControllerTypes[controller->port] == CONT_TYPE_GCN) {
+                u32 oldButton = controllerData->button;
                 u32 newButton = oldButton & ~(Z_TRIG | L_TRIG);
                 if (oldButton & Z_TRIG) {
                     newButton |= L_TRIG;
                 }
-                if (controller->controllerData->l_trig > 85) { // How far the player has to press the L trigger for it to be considered a Z press. 64 is about 25%. 127 would be about 50%.
+                if (controllerData->l_trig > 85) { // How far the player has to press the L trigger for it to be considered a Z press. 64 is about 25%. 127 would be about 50%.
                     newButton |= Z_TRIG;
                 }
-                controller->controllerData->button = newButton;
+                controllerData->button = newButton;
             }
-            controller->rawStickX = controller->controllerData->stick_x;
-            controller->rawStickY = controller->controllerData->stick_y;
-            controller->buttonPressed = ~controller->buttonDown & controller->controllerData->button;
-            controller->buttonReleased = ~controller->controllerData->button & controller->buttonDown;
+            controller->rawStickX = controllerData->stick_x;
+            controller->rawStickY = controllerData->stick_y;
+            controller->buttonPressed  = (~controller->buttonDown & controllerData->button);
+            controller->buttonReleased = (~controllerData->button & controller->buttonDown);
             // 0.5x A presses are a good meme
-            controller->buttonDown = controller->controllerData->button;
+            controller->buttonDown = controllerData->button;
             adjust_analog_stick(controller);
         } else { // otherwise, if the controllerData is NULL, 0 out all of the inputs.
-            controller->rawStickX = 0;
-            controller->rawStickY = 0;
-            controller->buttonPressed = 0;
-            controller->buttonReleased = 0;
-            controller->buttonDown = 0;
-            controller->stickX = 0;
-            controller->stickY = 0;
-            controller->stickMag = 0;
+            controller->rawStickX      = 0x0000;
+            controller->rawStickY      = 0x0000;
+            controller->buttonPressed  = 0x0000;
+            controller->buttonReleased = 0x0000;
+            controller->buttonDown     = 0x0000;
+            controller->stickX         = 0.0f;
+            controller->stickY         = 0.0f;
+            controller->stickMag       = 0.0f;
         }
     }
 }
@@ -644,7 +633,9 @@ void read_controller_inputs(s32 threadID) {
  * Initialize the controller structs to point at the OSCont information.
  */
 void init_controllers(void) {
-    s16 port, cont;
+    struct Controller* controller = NULL;
+    int port, cont = 0;
+    int lastUsedPort = -1;
 
     // Set controller 1 to point to the set of status/pads for input 1 and
     // init the controllers.
@@ -664,29 +655,43 @@ void init_controllers(void) {
 #endif
 
     // Loop over the 4 ports and link the controller structs to the appropriate status and pad.
-    for (cont = 0, port = 0; port < 4 && cont < 4; port++) {
+    for (port = 0; port < MAXCONTROLLERS; port++) {
+        if (cont >= MAX_NUM_PLAYERS) {
+            break;
+        }
+
         // Is controller plugged in?
         if (gControllerBits & (1 << port)) {
             // The game allows you to have just 1 controller plugged
             // into any port in order to play the game. this was probably
             // so if any of the ports didn't work, you can have controllers
             // plugged into any of them and it will work.
-#if ENABLE_RUMBLE
-            gControllers[cont].port = port;
+            controller = &gControllers[cont];
+            controller->statusData = &gControllerStatuses[port];
+            controller->controllerData = &gControllerPads[port];
+            controller->port = port;
+
+            lastUsedPort = port;
+
+            cont++;
+        }
+    }
+
+#if (MAX_NUM_PLAYERS >= 2)
+    //! Some flashcarts (eg. ED64p) don't let you start a ROM with a GameCube controller in port 1,
+    //   so if port 1 is an N64 controller and port 2 is a GC controller, swap them.
+    if (gIsConsole) {
+        if (__osControllerTypes[0] == CONT_TYPE_N64
+         && __osControllerTypes[1] == CONT_TYPE_GCN) {
+            struct Controller temp = gControllers[0];
+            gControllers[0] = gControllers[1];
+            gControllers[1] = temp;
+        }
+    }
 #endif
-            gControllers[cont].statusData = &gControllerStatuses[port];
-            gControllers[cont++].controllerData = &gControllerPads[port];
-        }
-    }
-    if ((__osControllerTypes[1] == CONT_TYPE_GCN) && (gIsConsole)) {
-        gGamecubeControllerPort = 1;
-        gPlayer1Controller = &gControllers[1];
-    } else {
-        if (__osControllerTypes[0] == CONT_TYPE_GCN) {
-            gGamecubeControllerPort = 0;
-        }
-        gPlayer1Controller = &gControllers[0];
-    }
+
+    // Disable the ports after the last used one.
+    osContSetCh(lastUsedPort + 1);
 }
 
 // Game thread core
