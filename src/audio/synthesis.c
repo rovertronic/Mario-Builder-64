@@ -1206,7 +1206,12 @@ u64 *synthesis_process_notes(s16 *aiBuf, s32 bufLen, u64 *cmd) {
 
                         switch (flags) {
                             case A_INIT: // = 1
-                                sp130 = 0;
+                                /**
+                                 * !NOTE: Removing this seems to produce a more accurate waveform, however I have no idea why Nintendo decided to add this originally.
+                                 * I can only speculate (and hope) that this was just an oversight on their part and this has no reason to exist, given my testing.
+                                 * I'm leaving it commented out here just in case though.
+                                 */
+                                // sp130 = 0;
                                 s5 = s0 * 2 + s5;
                                 break;
 
@@ -1422,8 +1427,14 @@ u64 *load_wave_samples(u64 *cmd, struct Note *note, s32 nSamplesToLoad) {
 u64 *process_envelope(u64 *cmd, struct Note *note, s32 nSamples, u16 inBuf, s32 headsetPanSettings,
                       UNUSED u32 flags) {
     struct VolumeChange vol;
-    vol.sourceLeft = note->curVolLeft;
-    vol.sourceRight = note->curVolRight;
+    if (note->initFullVelocity) {
+        note->initFullVelocity = FALSE;
+        vol.sourceLeft = note->targetVolLeft;
+        vol.sourceRight = note->targetVolRight;
+    } else {
+        vol.sourceLeft = note->curVolLeft;
+        vol.sourceRight = note->curVolRight;
+    }
     vol.targetLeft = note->targetVolLeft;
     vol.targetRight = note->targetVolRight;
     note->curVolLeft = vol.targetLeft;
@@ -1775,6 +1786,7 @@ void note_enable(struct Note *note) {
     note->stereoStrongRight = FALSE;
     note->stereoStrongLeft = FALSE;
     note->usesHeadsetPanEffects = FALSE;
+    note->initFullVelocity = FALSE;
     note->headsetPanLeft = 0;
     note->headsetPanRight = 0;
     note->prevHeadsetPanRight = 0;
