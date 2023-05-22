@@ -824,12 +824,12 @@ void save_file_one_second() {
     }
 }
 
-u16 save_file_get_time() {
+u32 save_file_get_time() {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
     return (saveFile->PlayTime);
 }
 
-u16 save_file_index_get_time(s8 index) {
+u32 save_file_index_get_time(s8 index) {
     struct SaveFile *saveFile = &gSaveBuffer.files[index][0];
     return (saveFile->PlayTime);
 }
