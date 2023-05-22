@@ -892,8 +892,11 @@ I implore you to defeat him, once and for\n\
 all -- for the sake of the kingdom.\n\
 -Yours truly, The Showrunner''"))
 
-DEFINE_DIALOG(DIALOG_093, 1, 1, 95, 180, _("\
-Speedrun Shortcut"))
+DEFINE_DIALOG(DIALOG_093, 1, 2, 95, 180, _("\
+Speedrun Shortcut\n\
+\n\
+Do not enter on first\n\
+playthrough."))
 
 //do not add anything to this, used for showrunner start cutscene
 DEFINE_DIALOG(DIALOG_094, 1, 4, 30, 200, _("\
@@ -3192,6 +3195,10 @@ Special Thanks:\n\
 YHWH, Family, My 3 Brothers\n\
 Chillyn', RationaLess, SimpleFlips"))
 
+DEFINE_DIALOG(DIALOG_CREDITS_26, 1, 6, 95, 180, _("\
+Patreons as of 5-22-23:\n\
+Henry Kumpel"))
+
 DEFINE_DIALOG(DIALOG_PALAMEDES_1, 1, 6, 95, 180, _("\
 the sustenance of thought is required to synthesize\n\
 further seeds. it is gathered by the heralds. the earths\n\
@@ -3655,3 +3662,16 @@ On your back, I do\n\
 pats!\n\
 ...That one kind of\n\
 sucked, lol."))
+
+DEFINE_DIALOG(DIALOG_WALLET_HELP, 1, 4, 95, 180, _("\
+Looking for wallets?\n\
+There is one wallet inside\n\
+every main course from\n\
+course 1 to course 11.\n\
+If you collect all 12\n\
+wallet upgrades, you\n\
+also get a double income\n\
+boost.\n\
+Combined with the greed\n\
+badge, your net income\n\
+will be quadrupled."))

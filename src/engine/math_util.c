@@ -1387,6 +1387,8 @@ s32 anim_spline_poll(Vec3f result) {
  *                    RAYCASTING                  *
  **************************************************/
 
+u8 cam = FALSE; //determines if the raycast should ignore surface_flag_no_cam_collision.
+
 #define RAY_OFFSET 30.0f /* How many units to extrapolate surfaces when testing for a raycast */
 #define RAY_STEPS      4 /* How many steps to do when casting rays, default to quartersteps.  */
 
@@ -1403,7 +1405,7 @@ s32 anim_spline_poll(Vec3f result) {
  */
 s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface *surface, Vec3f hit_pos, f32 *length) {
     // Ignore certain surface types.
-    if ((surface->type == SURFACE_INTANGIBLE) || (surface->flags & SURFACE_FLAG_NO_CAM_COLLISION)) return FALSE;
+    if (((surface->type == SURFACE_INTANGIBLE) || (surface->flags & SURFACE_FLAG_NO_CAM_COLLISION)) && (cam)) return FALSE;
     // Convert the vertices to Vec3f.
     Vec3f v0, v1, v2;
     vec3s_to_vec3f(v0, surface->vertex1);
@@ -1519,6 +1521,8 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     f32 step;
     s32 i;
     const f32 invcell = 1.0f / CELL_SIZE;
+
+    cam = (flags != RAYCAST_FIND_ALL);
 
     // Set that no surface has been hit
     *hit_surface = NULL;

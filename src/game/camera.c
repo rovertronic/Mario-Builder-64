@@ -2937,6 +2937,10 @@ void update_lakitu(struct Camera *c) {
             }
         gLakituState.roll += seasick;
 
+        if (!(gMarioState->Options & (1<<OPT_CAMWOB))) {
+            gLakituState.roll = 0;
+        }
+
         if (gMarioState->_2D) {
             gLakituState.roll = 0;
         }
@@ -3108,6 +3112,8 @@ void update_camera(struct Camera *c) {
             }
         }
     }
+
+    u8 sliding = FALSE;
     // If not in a cutscene, do mode processing
     if (c->cutscene == CUTSCENE_NONE) {
         sYawSpeed = 0x400;
@@ -3152,10 +3158,22 @@ void update_camera(struct Camera *c) {
                     break;
 
                 case CAMERA_MODE_8_DIRECTIONS:
-                    if (gMarioState->_2D) {
-                        cutscene_2D(c);
+
+                    if ((gCurrLevelNum==LEVEL_WF)&&(gCurrAreaIndex==2)) {
+                        sliding=TRUE;
+                    }
+                    if ((gCurrLevelNum==LEVEL_CCM)&&(gCurrAreaIndex==2)) {
+                        sliding=TRUE;
+                    }
+
+                    if (sliding) {
+                        mode_slide_camera(c);
                     } else {
-                        mode_8_directions_camera(c);
+                        if (gMarioState->_2D) {
+                            cutscene_2D(c);
+                        } else {
+                            mode_8_directions_camera(c);
+                        }
                     }
                     break;
 

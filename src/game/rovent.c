@@ -122,6 +122,7 @@ u8 rtext_choice = 0;
 u8 rtext_choice_amount = 0;
 u8 rtext_choice_index = 0;
 u8 rtext_offset_buffer[4];
+u16 rtext_current_read_dialog = 0;
 
 f32 rtext_opacity = 0.0f;
 
@@ -706,6 +707,8 @@ void read_dialog(s32 dialog_id) {
     u8 **dialogTable = segmented_to_virtual(seg2_dialog_table);
     struct DialogEntry *sdialog = segmented_to_virtual(dialogTable[dialog_id]);
     u8 *sstr = segmented_to_virtual(sdialog->str);
+
+    rtext_current_read_dialog = dialog_id;
 
     i = 0;
     iwrite = 0;
@@ -1299,7 +1302,9 @@ void render_revent_textbox(void) {
                     rtext_display[rtext_read_index+1] = DIALOG_CHAR_TERMINATOR;
 
                     if (rtext_read[rtext_read_index] != DIALOG_CHAR_SPACE) {
-                        play_sound(SOUND_OBJ_KOOPA_WALK,gGlobalSoundSource);
+                        if (rtext_current_read_dialog != DIALOG_MUSICROOM) {
+                            play_sound(SOUND_OBJ_KOOPA_WALK,gGlobalSoundSource);
+                        }
                         rtext_dialog_delay = 0;
                     }
                     if (rtext_read[rtext_read_index] == DIALOG_CHAR_COMMA) {

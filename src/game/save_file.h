@@ -59,6 +59,7 @@ enum Options {
     OPT_HUD,
     OPT_SAVE,
     OPT_CAMCOL,
+    OPT_CAMWOB,
 };
 
 struct MainMenuSaveData {

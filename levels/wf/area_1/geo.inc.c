@@ -1,5 +1,4 @@
 #include "src/game/envfx_snow.h"
-#include "actors/group0.h"
 
 const GeoLayout wf_area_1_geo[] = {
 	GEO_NODE_START(),
@@ -15,7 +14,7 @@ const GeoLayout wf_area_1_geo[] = {
 		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_ALPHA, 0, 3638, 8361, 90, 0, 0, wf_dl_FenceVisual_mesh),
 		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_ALPHA, 9784, 5885, -6952, 90, 0, -45, wf_dl_FenceVisual_001_mesh),
 		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_ALPHA, 9345, 5885, -7391, 90, 0, 135, wf_dl_FenceVisual_002_mesh),
-		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_ALPHA, -5694, 3665, -790, 90, 0, -163, wf_dl_FenceVisual_003_mesh),
+		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_ALPHA, -5694, 3665, -790, 90, 79, -84, wf_dl_FenceVisual_003_mesh),
 		GEO_TRANSLATE_ROTATE_WITH_DL(LAYER_OPAQUE, 0, 2501, 0, -180, 0, 0, wf_dl_Island_mesh),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE, wf_dl_Island_mesh_layer_1),
@@ -79,8 +78,6 @@ const GeoLayout wf_area_1[] = {
 					GEO_BRANCH(1, wf_area_1_geo),
 					GEO_RENDER_OBJ(),
 					GEO_ASM(ENVFX_MODE_NONE, geo_envfx_main),
-					GEO_ASM(0, geo_moon_move),
-					GEO_TRANSLATE_NODE_WITH_DL(LAYER_FORCE, 0, 0, 0, executive__circle_mesh),
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),

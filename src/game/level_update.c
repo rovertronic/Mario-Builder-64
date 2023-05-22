@@ -767,29 +767,33 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                     play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x0, 0x0, 0x0);
                 }
                 else{
+                    //make death floor work in sign game
+                    if (minigame_real) {
+                        end_minigame();
+                    } else {
+                        mario_stop_riding_and_holding(gMarioState);
 
-                    mario_stop_riding_and_holding(gMarioState);
-
-                    //what the fuck is this bruhhhh
-                    //fuck sm64 hp
-                    //i have no idea if changing the 8 to a 5 will work, hope it does!
-                    resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
-                    if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
-                        resp_cond = (gMarioState->numBadgePoints > 0);
-                    }
-
-                    if (resp_cond) {
-                        //make mario respawn if he has over a third of his HP
-                            fadeMusic = FALSE;
-                            sSourceWarpNodeId = 0x0A;
-                            gMarioState->NewLevel = TRUE;
-                        } else {
-                        //if he has under, then go gaga and die
-                            sSourceWarpNodeId = WARP_NODE_DEATH;
-                            gMarioState->InsideCourse = TRUE;
+                        //what the fuck is this bruhhhh
+                        //fuck sm64 hp
+                        //i have no idea if changing the 8 to a 5 will work, hope it does!
+                        resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
+                        if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+                            resp_cond = (gMarioState->numBadgePoints > 0);
                         }
-                    play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
-                    sDelayedWarpTimer = 20;
+
+                        if (resp_cond) {
+                            //make mario respawn if he has over a third of his HP
+                                fadeMusic = FALSE;
+                                sSourceWarpNodeId = 0x0A;
+                                gMarioState->NewLevel = TRUE;
+                            } else {
+                            //if he has under, then go gaga and die
+                                sSourceWarpNodeId = WARP_NODE_DEATH;
+                                gMarioState->InsideCourse = TRUE;
+                            }
+                        play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
+                        sDelayedWarpTimer = 20;
+                    }
                 }
                 break;
 

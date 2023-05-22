@@ -2009,6 +2009,8 @@ void bhv_keydoor2(void) {
 }
 
 void bhv_donut(void) {
+    o->oDontInertia = TRUE;
+
     switch(o->oAction) {
         case 0://grow into place
             cur_obj_scale((f32)(o->oTimer)/(30.0f));
@@ -4415,6 +4417,11 @@ void bhv_killer_laser(void) {
                     }
                 }
             }
+
+            if (revent_active) {
+                o->oAction = 3;
+                o->oOpacity = 0;
+            }
         break;
         case 3:
             if (o->oTimer > 150) {
@@ -6067,6 +6074,11 @@ void bhv_postgame_hint() {
                 if (!((costume_flags >> i) & 1)) {
                     hint_dialog = (DIALOG_COSTUME_HINT1+i)-1;
                 }
+            }
+
+            if (o->oBehParams2ndByte == 1) {
+                //hint for wallets
+                hint_dialog = DIALOG_WALLET_HELP;
             }
 
             if (cur_obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, hint_dialog)) {

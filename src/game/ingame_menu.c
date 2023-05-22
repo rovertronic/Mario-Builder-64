@@ -2475,6 +2475,9 @@ s32 render_pause_courses_and_castle(void) {
                         gMenuMode = MENU_MODE_NONE;
 
                         if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
+                            //restore hp and mana on course exit
+                            gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+                            gMarioState->numBadgePoints = gMarioState->numMaxFP;
                             index = gDialogLineNum;
                         } else { // MENU_OPT_CONTINUE or MENU_OPT_CAMERA_ANGLE_R
                             index = MENU_OPT_DEFAULT;
@@ -2704,14 +2707,14 @@ s32 render_pause_courses_and_castle(void) {
             if ((gPlayer1Controller->rawStickY > 60)&&(letgo == FALSE)) {
                 mindex--;
                 if (mindex < 0) {
-                    mindex = 5;
+                    mindex = 6;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
             if ((gPlayer1Controller->rawStickY < -60)&&(letgo == FALSE)) {
                 mindex++;
-                if (mindex > 5) {
+                if (mindex > 6) {
                     mindex = 0;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
@@ -2735,7 +2738,7 @@ s32 render_pause_courses_and_castle(void) {
             print_generic_string(45,166, optiontext);
 
 
-            for (i=0;i<6;i++) {
+            for (i=0;i<7;i++) {
                 changetext = txt_off;
                 if (gMarioState->Options &  (1 << i)) {
                     changetext = txt_on;
@@ -2986,11 +2989,12 @@ void print_hud_course_complete_string(s8 str) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-void print_hud_course_complete_coins(s16 x, s16 y) {
+void print_hud_course_complete_coins(s16 x, s16 y, u8 maincourse) {
     u8 courseCompleteCoinsStr[4];
     u8 hudTextSymCoin[] = { GLYPH_COIN, GLYPH_SPACE };
     u8 hudTextSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 
+    if (maincourse) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
@@ -3001,6 +3005,9 @@ void print_hud_course_complete_coins(s16 x, s16 y) {
     print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, courseCompleteCoinsStr);
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+    } else {
+        print_text_fmt_int2(x, y, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
+    }
 
     if (gCourseCompleteCoins >= gHudDisplay.coins) {
         gCourseCompleteCoinsEqual = TRUE;
@@ -3068,7 +3075,7 @@ void render_course_complete_lvl_info_and_hud_str(void) {
     void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
 
     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
-        print_hud_course_complete_coins(65, 103);
+        print_hud_course_complete_coins(65, 103,TRUE);
         print_text_fmt_int2(150, 121, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
         play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, (1 << (gLastCompletedStarNum - 1)));
 
@@ -3107,13 +3114,13 @@ void render_course_complete_lvl_info_and_hud_str(void) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
         print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
-        print_hud_course_complete_coins(118, 111);
+        print_hud_course_complete_coins(118, 111,FALSE);
         play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
         return;
     } else { // Castle secret stars
         name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
 
-        print_hud_course_complete_coins(118, 103);
+        print_hud_course_complete_coins(118, 130,FALSE);
         play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
     }
 

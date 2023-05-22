@@ -3,7 +3,7 @@
 
 #include "text_menu_strings.h"
 
-#define TEXT_VERSION _("RELEASE 1.0")
+#define TEXT_VERSION _("RELEASE 1.1")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
@@ -378,7 +378,7 @@
 #define MAGICCOST _("2\n1\n3")
 
 #define CHEATTEXT _("Infinite HP\nInfinite Mana\nMoon Jump\nAlways have vanetal cap\nAlways have rocket boots\nLow Gravity\nEquip Unlimited Badges\nD-Pad Up Debug")
-#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow Minimap (L)\nShow HUD\nSave Data\nCamera Collision")
+#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow Minimap (L)\nShow HUD\nSave Data\nCamera Collision\nCamera Wobble")
 
 #define TEXT_WARPTOLEVEL _("Press A to warp to this level")
 

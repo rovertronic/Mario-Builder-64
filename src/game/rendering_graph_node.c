@@ -499,7 +499,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         
         sAspectRatio = 4.0f / 3.0f;
         if (gMarioState->Options & (1<<OPT_WIDESCREEN)) {
-            sAspectRatio = 16.0f / 10.0f;
+            sAspectRatio = 16.0f / 9.0f; //Used to be evil fake widescreen (16:10)
         }
 
         //guOrtho

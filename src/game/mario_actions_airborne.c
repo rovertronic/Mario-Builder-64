@@ -18,6 +18,7 @@
 #include "ingame_menu.h"
 #include "platform_displacement.h"
 #include "rovent.h"
+#include "src/engine/surface_collision.h"
 
 u8 bullet_fuel;
 
@@ -412,7 +413,10 @@ void update_flying(struct MarioState *m) {
         }//
         spawn_object(m->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
         play_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
-        cur_obj_shake_screen(SHAKE_POS_SMALL);
+
+        if (gMarioState->Options & (1<<OPT_CAMWOB)) {
+            cur_obj_shake_screen(SHAKE_POS_SMALL);
+        }
     }
 }
 
@@ -726,7 +730,7 @@ s32 act_wall_stick(struct MarioState *m) {
         return set_mario_action(m, ACT_WALL_KICK_AIR, 0);
     }
 
-    find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, 0xFFFFFFFF);
+    find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, RAYCAST_FIND_ALL);
     if (surf == NULL) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     } else {
