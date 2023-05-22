@@ -244,7 +244,7 @@ u32 save_file_set_progression(u32 prog_enum);
 u32 save_file_get_progression(void);
 
 void save_file_one_second();
-u16 save_file_get_time();
+u32 save_file_get_time();
 u16 save_file_index_get_time(s8 index);
 u16 save_file_index_get_prog(s8 index);
 u8 get_evil_badge_bonus(void);
