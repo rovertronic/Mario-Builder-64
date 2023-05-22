@@ -1,0 +1,12 @@
+extern const GeoLayout pump_geo[];
+extern u8 pump_rgba16_anonmoose_envmap_silver1_i8[];
+extern Vtx pump_Cube_032_mesh_layer_1_vtx_0[32];
+extern Gfx pump_Cube_032_mesh_layer_1_tri_0[];
+extern Vtx pump_Cube_032_mesh_layer_1_vtx_1[4];
+extern Gfx pump_Cube_032_mesh_layer_1_tri_1[];
+extern Gfx mat_pump_pump2[];
+extern Gfx mat_revert_pump_pump2[];
+extern Gfx mat_pump_pump[];
+extern Gfx mat_revert_pump_pump[];
+extern Gfx pump_Cube_032_mesh_layer_1[];
+extern Gfx pump_material_revert_render_settings[];

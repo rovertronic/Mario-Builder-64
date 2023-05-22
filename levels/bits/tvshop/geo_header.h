@@ -1,0 +1,18 @@
+extern const GeoLayout tvshop_geo[];
+extern Lights1 tvshop_QBlock_lights;
+extern u8 tvshop_qblock_i8[];
+extern u8 tvshop_Static_i8[];
+extern u8 tvshop_dollarsign_ia8[];
+extern Vtx tvshop_Cube_002_mesh_layer_1_vtx_0[92];
+extern Gfx tvshop_Cube_002_mesh_layer_1_tri_0[];
+extern Vtx tvshop_Cube_002_mesh_layer_1_vtx_1[8];
+extern Gfx tvshop_Cube_002_mesh_layer_1_tri_1[];
+extern Vtx tvshop_Cube_002_mesh_layer_5_vtx_0[4];
+extern Gfx tvshop_Cube_002_mesh_layer_5_tri_0[];
+extern Gfx mat_tvshop_QBlock[];
+extern Gfx mat_tvshop_Static[];
+extern Gfx mat_revert_tvshop_Static[];
+extern Gfx mat_tvshop_dollarsign[];
+extern Gfx tvshop_Cube_002_mesh_layer_1[];
+extern Gfx tvshop_Cube_002_mesh_layer_5[];
+extern Gfx tvshop_material_revert_render_settings[];

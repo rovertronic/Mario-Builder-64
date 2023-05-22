@@ -94,4 +94,49 @@ extern const Gfx bitfs_dl_lava_floor[];
 // script
 extern const LevelScript level_bitfs_entry[];
 
+
+#include "levels/bitfs/header.inc.h"
+
+#include "levels/bitfs/flip/geo_header.h"
+
+#include "levels/bitfs/flip/collision_header.h"
+
+#include "levels/bitfs/projector2/collision_header.h"
+
+#include "levels/bitfs/projector2/geo_header.h"
+
+#include "levels/bitfs/projectorhandle2/geo_header.h"
+
+#include "levels/bitfs/movie3/geo_header.h"
+
+#include "levels/bitfs/movie3/collision_header.h"
+
+#include "levels/bitfs/movie4/geo_header.h"
+
+#include "levels/bitfs/movie4/collision_header.h"
+
+#include "levels/bitfs/sr_statue/geo_header.h"
+
+#include "levels/bitfs/sr_statue/collision_header.h"
+
+#include "levels/bitfs/movie5/geo_header.h"
+
+#include "levels/bitfs/movie5/collision_header.h"
+
+#include "levels/bitfs/saw/geo_header.h"
+
+#include "levels/bitfs/movie6/collision_header.h"
+
+#include "levels/bitfs/movie6/geo_header.h"
+
+#include "levels/bitfs/movie7/collision_header.h"
+
+#include "levels/bitfs/movie7/geo_header.h"
+
+#include "levels/bitfs/sr_spike/geo_header.h"
+
+#include "levels/bitfs/sr_ball/geo_header.h"
+
+#include "levels/bitfs/sr_fight_sky/header.h"
+
 #endif

@@ -6,11 +6,11 @@
 
 // Internal ROM name. NEEDS TO BE **EXACTLY** 20 CHARACTERS. Can't be 19 characters, can't be 21 characters. You can fill it with spaces.
 // The end quote should be here:               "
-#define INTERNAL_ROM_NAME "HackerSM64          "
+#define INTERNAL_ROM_NAME "SM64:BTCM           "
 
 // Enables Rumble Pak Support.
 // Currently not recommended, as it may cause random crashes.
-// #define ENABLE_RUMBLE (1 || VERSION_SH)
+#define ENABLE_RUMBLE (1 || VERSION_SH)
 
 // Screen Size Defines.
 #define SCREEN_WIDTH  320
@@ -20,3 +20,8 @@
 // There is generally no reason to have a value other than 0 for emulator. As for console, it provides a (small) performance boost.
 #define BORDER_HEIGHT_CONSOLE  0
 #define BORDER_HEIGHT_EMULATOR 0
+
+/**
+ * Informs supported emulators to default to gamecube controller inputs.
+ */
+// #define USE_GAMECUBE_CONTROLLER

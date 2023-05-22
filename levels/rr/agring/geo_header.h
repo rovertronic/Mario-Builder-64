@@ -1,0 +1,10 @@
+extern const GeoLayout agring_geo[];
+extern Lights1 agring_AudienceDecor_lights;
+extern u8 agring_Audience_i8[];
+extern Vtx agring_audience_ring_mesh_layer_5_vtx_cull[8];
+extern Vtx agring_audience_ring_mesh_layer_5_vtx_0[192];
+extern Gfx agring_audience_ring_mesh_layer_5_tri_0[];
+extern Gfx mat_agring_AudienceDecor[];
+extern Gfx mat_revert_agring_AudienceDecor[];
+extern Gfx agring_audience_ring_mesh_layer_5[];
+extern Gfx agring_material_revert_render_settings[];

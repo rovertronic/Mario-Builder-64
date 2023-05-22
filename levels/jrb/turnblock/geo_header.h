@@ -1,0 +1,10 @@
+extern const GeoLayout turnblock_geo[];
+extern Lights1 turnblock_Flipblock_lights;
+extern u8 turnblock_TurnBlock_ci4[];
+extern u8 turnblock_TurnBlock_ci4_pal_rgba16[];
+extern Vtx turnblock_Cube_002_mesh_layer_1_vtx_0[24];
+extern Gfx turnblock_Cube_002_mesh_layer_1_tri_0[];
+extern Gfx mat_turnblock_Flipblock[];
+extern Gfx mat_revert_turnblock_Flipblock[];
+extern Gfx turnblock_Cube_002_mesh_layer_1[];
+extern Gfx turnblock_material_revert_render_settings[];

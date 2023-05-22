@@ -17,6 +17,24 @@
 #include "engine/math_util.h"
 #include "puppycam2.h"
 #include "puppyprint.h"
+#include "puppycamold.h"
+
+#include "levels/bob/header.h"
+#include "levels/wf/header.h"
+#include "levels/ccm/header.h"
+#include "levels/bbh/header.h"
+#include "levels/jrb/header.h"
+#include "levels/lll/header.h"
+#include "levels/hmc/header.h"
+#include "levels/ddd/header.h"
+#include "levels/sl/header.h"
+#include "levels/ttm/header.h"
+#include "levels/thi/header.h"
+#include "levels/ttc/header.h"
+#include "levels/wdw/header.h"
+#include "actors/group0.h"
+
+#include "rovent.h"
 
 #include "config.h"
 
@@ -101,6 +119,281 @@ static struct PowerMeterHUD sPowerMeterHUD = {
     HUD_POWER_METER_X,
     HUD_POWER_METER_HIDDEN_Y,
 };
+
+u8 MapOn;
+
+void display_rocket_boot(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+    
+    //smtx = alloc_display_list(sizeof(*smtx));
+
+    //if (smtx == NULL) {
+    //    return;
+    //}
+
+    guTranslate(mtx, 30.0f, 75.0f, 0);
+    //guScale(smtx, (f32)gMarioState->numAir*.002, (f32) gMarioState->numAir*.002, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    //gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+    gSPDisplayList(gDisplayListHead++, &rb_hud_Plane_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+void display_boss(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+    
+    //smtx = alloc_display_list(sizeof(*smtx));
+
+    //if (smtx == NULL) {
+    //    return;
+    //}
+
+    guTranslate(mtx, 30.0f, 75.0f, 0);
+    //guScale(smtx, (f32)gMarioState->numAir*.002, (f32) gMarioState->numAir*.002, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    //gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+    gSPDisplayList(gDisplayListHead++, &bs_hud_Plane_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+void display_rocket_boot_bar(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+    
+    smtx = alloc_display_list(sizeof(*smtx));
+
+    if (smtx == NULL) {
+        return;
+    }
+
+    guTranslate(mtx, 30.0f, 75.0f, 0);
+    guScale(smtx, (f32)1.0, (f32) gMarioState->RFuel*.01, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+    gSPDisplayList(gDisplayListHead++, &rb_bar_Plane_001_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+#include "src/engine/math_util.h"
+
+f32 bar_visual;
+#define BAR_TARGET (f32)(gMarioState->BossHealth)/(f32)(gMarioState->BossHealthMax)
+
+void display_boss_bar(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+    
+    smtx = alloc_display_list(sizeof(*smtx));
+
+    if (smtx == NULL) {
+        return;
+    }
+
+    guTranslate(mtx, 30.0f, 75.0f, 0);
+
+    bar_visual = lerp(bar_visual, BAR_TARGET, 0.1f);
+
+    guScale(smtx, (f32)1.0, bar_visual, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+    gSPDisplayList(gDisplayListHead++, &bs_bar_Plane_001_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+void display_air(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+    
+    smtx = alloc_display_list(sizeof(*smtx));
+
+    if (smtx == NULL) {
+        return;
+    }
+
+    guTranslate(mtx, 35.0f, 40.0f, 0);
+    guScale(smtx, (f32)gMarioState->numAir*.0014, (f32) gMarioState->numAir*.0014, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+
+    gSPDisplayList(gDisplayListHead++, &bubble_seg4_dl_0401DD60);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+//title_Plane_001_mesh_vtx_0
+
+void display_title(void) {
+    //bubble_seg4_dl_0401DD60
+    Mtx *mtx;
+    Mtx *smtx;
+    
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+
+    guTranslate(mtx, 160.0f, 120.0f, 0);
+
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+
+    //gSPDisplayList(gDisplayListHead++, &title_Plane_001_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
+
+void display_minimap(void) {
+    Mtx *mtx;
+    f32 mx;
+    f32 my;
+    u8 wideoffet9 = 0;
+
+    if (0) {
+        wideoffet9 = 40;
+        }
+
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+
+    mx = ((gMarioState->pos[0]/14834)*64)-wideoffet9;
+    my = (gMarioState->pos[2]/14834)*64;
+
+    guTranslate(mtx, (f32) 268-mx, (f32) 52+my, 0);
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    MapOn = TRUE;
+
+    gDPSetScissor(gDisplayListHead++,G_SC_NON_INTERLACE, 236+(wideoffet9/4), 156, 300, 220 );
+    switch(gCurrLevelNum) {
+        case LEVEL_BOB:
+            gSPDisplayList(gDisplayListHead++, &Map1_Plane_mesh);
+            break;
+        case LEVEL_WF:
+            gSPDisplayList(gDisplayListHead++, &Map2_Plane_mesh);
+            break;
+        case LEVEL_JRB:
+            gSPDisplayList(gDisplayListHead++, &Map3_Plane_mesh);
+            break;
+        case LEVEL_CCM:
+            gSPDisplayList(gDisplayListHead++, &Map4_Plane_mesh);
+            break;
+        case LEVEL_BBH:
+            gSPDisplayList(gDisplayListHead++, &Map5_Plane_mesh);
+            break;
+        case LEVEL_HMC:
+            gSPDisplayList(gDisplayListHead++, &Map6_Plane_mesh);
+            break;
+        case LEVEL_LLL:
+            gSPDisplayList(gDisplayListHead++, &Map7_Plane_mesh);
+            break;
+        case LEVEL_DDD:
+            gSPDisplayList(gDisplayListHead++, &Map9_Plane_mesh);
+            break;
+        case LEVEL_SL:
+            gSPDisplayList(gDisplayListHead++, &Map10_Plane_mesh);
+            break;
+        case LEVEL_WDW:
+            gSPDisplayList(gDisplayListHead++, &Map11_Plane_mesh);
+            break; 
+        case LEVEL_TTM:
+            gSPDisplayList(gDisplayListHead++, &Map12_Plane_mesh);
+            break;
+        case LEVEL_THI:
+            gSPDisplayList(gDisplayListHead++, &Map13_Plane_mesh);
+            break;
+        case LEVEL_TTC:
+            gSPDisplayList(gDisplayListHead++, &Map14_Plane_mesh);
+            break;
+
+        default:
+            MapOn = FALSE;
+        }
+    gSPPopMatrix(gDisplayListHead++, 0);
+}
+
+void display_arrow(void) {
+    Mtx *mtx;
+    Mtx *rmtx;
+    u8 wideoffet11 = 0;
+
+    if (0) {
+        wideoffet11 = 40;
+        }
+
+    mtx = alloc_display_list(sizeof(*mtx));
+
+    if (mtx == NULL) {
+        return;
+    }
+
+   rmtx = alloc_display_list(sizeof(*rmtx));
+
+    if (rmtx == NULL) {
+        return;
+    }
+
+    guTranslate(mtx, (f32) 268+wideoffet11, (f32) 52, 0);
+    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    guRotate(rmtx, gMarioState->faceAngle[1] / 180.0f + 180.0f, 0.0f, 0.0f, 1.0f);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rmtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+    gSPDisplayList(gDisplayListHead++, &arrow_Plane_001_mesh);
+    gSPPopMatrix(gDisplayListHead++, 0);
+}
 
 // Power Meter timer that keeps counting when it's visible.
 // Gets reset when the health is filled and stops counting
@@ -278,18 +571,47 @@ void handle_power_meter_actions(s16 numHealthWedges) {
  * or has taken damage and has less than 8 health segments.
  * And calls a power meter animation function depending of the value defined.
  */
+//
+
 void render_hud_power_meter(void) {
-    s16 shownHealthWedges = gHudDisplay.wedges;
-    if (sPowerMeterHUD.animation != POWER_METER_HIDING) handle_power_meter_actions(shownHealthWedges);
-    if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) return;
-    switch (sPowerMeterHUD.animation) {
-        case POWER_METER_EMPHASIZED:    animate_power_meter_emphasized();    break;
-        case POWER_METER_DEEMPHASIZING: animate_power_meter_deemphasizing(); break;
-        case POWER_METER_HIDING:        animate_power_meter_hiding();        break;
-        default:                                                             break;
-    }
-    render_dl_power_meter(shownHealthWedges);
-    sPowerMeterVisibleTimer++;
+    s16 loop;
+    s16 loop2;
+    u8 wideoffet5 = 0;
+
+    if (0) {
+        wideoffet5 = 22;
+        }
+    //RENDER BLANK METERS FIRST
+    loop = gMarioState->numMaxHP;
+    loop2 = gMarioState->health > 0 ? gMarioState->health >> 8 : 0;
+    while (loop > 0) {
+        loop --;
+        if (loop >= loop2) {
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet5+(loop*8), 30, "V");
+            }
+            else
+            {
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet5+(loop*8), 30, "Z");
+            }
+        }
+
+    loop = gMarioState->numMaxFP;
+    loop2 = gMarioState->numBadgePoints;
+    while (loop > 0) {
+        loop --;
+        if (loop >= loop2) {
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet5+(loop*8), 20, "V");
+            }
+            else
+            {
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet5+(loop*8), 20, "X");
+            }
+        }
+
+    //render_dl_power_meter(shownHealthWedges);
+
+    //RENDER COINS
+    
 }
 
 #ifdef BREATH_METER
@@ -395,9 +717,12 @@ void render_hud_breath_meter(void) {
  * Renders the amount of lives Mario has.
  */
 void render_hud_mario_lives(void) {
-    print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, ","); // 'Mario Head' glyph
-    print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(38), HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(54), HUD_TOP_Y, "%d", gHudDisplay.lives);
+    s8 showX = 0;
+    u8 wideoffet2 = 0;
+
+    if (gMarioState->gCurrMinigame == 0) {
+        print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, ",%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
+        }
 }
 
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
@@ -416,9 +741,34 @@ void render_debug_mode(void) {
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    print_text(HUD_COINS_X, HUD_TOP_Y, "$"); // 'Coin' glyph
-    print_text((HUD_COINS_X + 16), HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int((HUD_COINS_X + 30), HUD_TOP_Y, "%d", gHudDisplay.coins);
+    u8 wideoffet3 = 0;
+    u8 i;
+
+    if (0) {
+        wideoffet3 = 22;
+        }
+
+    if (gMarioState->gCurrMinigame == 0) {
+        print_text(168-wideoffet3, HUD_TOP_Y, "$"); // 'Coin' glyph
+        print_text(184-wideoffet3, HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int(198-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+
+        if (gRedCoinsCollected > 0) {
+            print_text(168-wideoffet3, HUD_TOP_Y-18, "@"); // 'Coin' glyph
+            print_text(184-wideoffet3, HUD_TOP_Y-18, "*"); // 'X' glyph
+            print_text_fmt_int(198-wideoffet3, HUD_TOP_Y-18, "%d", gRedCoinsCollected);
+        }
+    }
+
+    for (i = 0; i < gMarioState->YoshiCoins; i++) {
+        print_text(168+(i*8), HUD_TOP_Y-18, "$");
+        }
+
+    if ((gCurrLevelNum == LEVEL_RR)&&(gCurrAreaIndex==1)) {
+        print_text_fmt_int(168-wideoffet3, HUD_TOP_Y-18, "%dQ3", trial_counter);
+    }
+
+
 }
 
 /**
@@ -426,12 +776,25 @@ void render_hud_coins(void) {
  * Disables "X" glyph when Mario has 100 stars or more.
  */
 void render_hud_stars(void) {
-    if (gHudFlash == HUD_FLASH_STARS && gGlobalTimer & 0x8) return;
-    s8 showX = (gHudDisplay.stars < 100);
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
-    if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16),
+    s8 showX = 0;
+    u8 wideoffet1 = 0;
+
+    if (gHudFlash == 1 && gGlobalTimer & 0x08) {
+        return;
+    }
+
+    if (0) {
+        wideoffet1 = 40;
+        }
+
+
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X)+wideoffet1, HUD_TOP_Y, "^"); // 'Star' glyph
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X)+wideoffet1, HUD_TOP_Y-18, "."); // 'Metal Star' glyph
+
+    print_text_fmt_int( 2 + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16)+wideoffet1,
                        HUD_TOP_Y, "%d", gHudDisplay.stars);
+    print_text_fmt_int( 2 + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16)+wideoffet1,
+                       HUD_TOP_Y-18, "%d", gMarioState->numMetalStars);//
 }
 
 /**
@@ -524,12 +887,25 @@ void render_hud_camera_status(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
+
+
+
+
+
+u8 lframes = 0;
+u8 lease = 2;
 /**
  * Render HUD strings using hudDisplayFlags with it's render functions,
  * excluding the cannon reticle which detects a camera preset for it.
  */
 void render_hud(void) {
+    u8 wideoffet4 = 0;
+    //gDPPipelineMode(gDisplayListHead++,G_PM_1PRIMITIVE);
     s16 hudDisplayFlags = gHudDisplay.flags;
+
+    if (0) {
+        wideoffet4 = 22;
+    }
 
     if (hudDisplayFlags == HUD_DISPLAY_NONE) {
         sPowerMeterHUD.animation = POWER_METER_HIDDEN;
@@ -562,45 +938,169 @@ void render_hud(void) {
             render_hud_cannon_reticle();
         }
 
+    if (gCurrDemoInput != NULL) {
+        display_title();
+        }
+
+        gMarioState->toggleHud = (gMarioState->Options & (1<<OPT_HUD));
+        if (gCurrLevelNum == LEVEL_SA) {
+            gMarioState->toggleHud = FALSE;
+        }
+
+        if ((revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
+
 #ifndef DISABLE_LIVES
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
-            render_hud_mario_lives();
-        }
-#endif
-
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_COIN_COUNT) {
-            render_hud_coins();
-        }
-
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_STAR_COUNT) {
-            render_hud_stars();
-        }
-
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_KEYS) {
-            render_hud_keys();
-        }
-
-#ifdef BREATH_METER
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_BREATH_METER) render_hud_breath_meter();
-#endif
-
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
-            render_hud_power_meter();
-#ifdef PUPPYCAM
-            if (!gPuppyCam.enabled) {
-#endif
-            render_hud_camera_status();
-#ifdef PUPPYCAM
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
+                render_hud_mario_lives();
             }
 #endif
-        }
 
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
-            render_hud_timer();
-        }
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_COIN_COUNT) {
+                render_hud_coins();
+            }
 
-        if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_SURFACES) print_text(10, 40, "SURFACE POOL FULL");
-        if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_NODES) print_text(10, 60, "SURFACE NODE POOL FULL");
+            //i should have programmed a proper quest system lmfao
+            if (gMarioState->DeadRexMissionActivate) {
+                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%02dQ10", gMarioState->DeadRexes);
+                }
+            if (gMarioState->DeadCowboyMissionActivate) {
+                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->DeadRexes);
+                }
+            if (gMarioState->CheeseMissionActivate) {
+                //this hardcoded bullshit is so fucking awful. if i made cursed mirror again i would make a quest SYSTEM! AUTOMATION! WE LIVE
+                //IN THE AGE OF FUCKING AUTOMATION. AND MY BITCHASS HARD CODED THESE MISSIONS. stupid bitch, fycj you
+                if (gCurrLevelNum == LEVEL_TTC) {
+                    //highcane mission
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ20", gMarioState->CheeseCollection);
+                } else {
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ5", gMarioState->CheeseCollection);
+                }
+            }
+            if (gMarioState->SockMissionActivate) {
+                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->SockCollection);
+                }
+
+            switch(gMarioState->gCurrMinigame) {
+                case 1://arena
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "ROUND %d", gMarioState->EA_WAVES);
+                    print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "%dQ%d", gMarioState->EA_LEFT, gMarioState->EA_TOTAL);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-36, "HI %d", save_file_get_hiscore(0));
+                    }
+                break;
+                case 2://hotrope
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(1));
+                    }
+                break;
+                case 3://hexagonheat
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(2));
+                    }
+                break;
+                case 4://snakio
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "LENGTH %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(3));
+                    }
+                break;
+                case 5://edsurv
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "EDWARDS %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(4));
+                    }
+                break;
+                case 6://bapple
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(5));
+                    }
+                break;
+                case 7://flappy bird
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+                    if (minigame_real) {
+                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(6));
+                    }
+                break;
+            }
+
+            //Use this later for the star radar badge
+            if (save_file_get_badge_equip() & (1<<11)) {
+                if (gMarioState->StarRadarExist == TRUE) {
+                    gMarioState->StarRadarExist = FALSE;
+                    print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);
+
+                    //print_text_fmt_int(40,40,"%d",gMarioState->ScreenPosX);
+                    //print_text_fmt_int(40,80,"Y %d",gMarioState->ScreenPosY);
+                    }
+                }
+
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_STAR_COUNT) {
+                render_hud_stars();
+            }
+
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_KEYS) {
+                render_hud_keys();
+            }
+
+            render_hud_power_meter();
+
+            if (gMarioState->numAir < 700) {
+                display_air();
+                }
+                else
+                {
+                if (gMarioState->BossHealth > 0) {
+                        display_boss();
+                        display_boss_bar();
+                    } else {//only display rocket boot bar if not fighting boss
+                        if (gMarioState->RFuel > 0) {
+                            display_rocket_boot();
+                            display_rocket_boot_bar();
+                        }
+                    }
+                }
+
+
+#ifdef BREATH_METER
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_BREATH_METER) render_hud_breath_meter();
+#endif
+
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
+                // render_hud_power_meter();
+#ifdef PUPPYCAM
+                if (!gPuppyCam.enabled) {
+#endif
+                // render_hud_camera_status();
+#ifdef PUPPYCAM
+                }
+#endif
+            }
+
+            if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
+                render_hud_timer();
+            }
+
+            if (gMarioState->NewTimer > 0) {
+                if (!(gMarioState->Options & (1<<OPT_MINIMAP))) {
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),20, "j %d", gMarioState->NewTimer);
+                    }else{
+                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),90, "j %d", gMarioState->NewTimer);
+                    }
+                }
+
+            if (gMarioState->Options & (1<<OPT_MINIMAP)) {
+                if (gCurrentArea->index == 1) {
+                    display_minimap();
+
+                    if (MapOn) {
+                        display_arrow();
+                    }
+                }
+            }
+        }
 
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
         if (gCustomDebugMode) {

@@ -49,6 +49,10 @@ enum HUDFlashModes {
     HUD_FLASH_KEYS
 };
 
+extern u32 pooptable[];
+
+extern s16 gDialogID;
+
 extern s8 gHudFlash;
 
 extern s8 gDialogCourseActNum;
@@ -147,6 +151,10 @@ extern u16 gDialogTextAlpha;
 extern s16 gCutsceneMsgXOffset;
 extern s16 gCutsceneMsgYOffset;
 extern s8  gRedCoinsCollected;
+extern s16 gMenuMode;
+extern u16 UPGRADE_TABLE[][4];
+extern u8 *costume_text[];
+extern u8 start_precredits;
 
 void create_dl_identity_matrix(void);
 void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z);
@@ -175,5 +183,52 @@ void do_cutscene_handler(void);
 void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);
 s32 render_menus_and_dialogs(void);
+
+void int_to_str_time(s32 num, s32 num2, s32 num3, u8 *dst);
+
+enum costume_enum {
+    CTM_MARIO,
+    CTM_FIRE,
+    CTM_GLITCHY,
+    CTM_LUIGI,
+    CTM_WARIO,
+    CTM_DISCO,
+    CTM_PIRATE,
+    CTM_MOCAP,
+    CTM_DARIUS,
+    CTM_BUTLER,
+    CTM_RETRO,
+    CTM_THWOMPIO,
+    CTM_BUILDER,
+    CTM_RUNNER,
+    CTM_PHANTASM
+};
+
+enum badge_enum {
+    BADGE_LAVA,//SOLD!
+    BADGE_FALL,//SOLD!
+    BADGE_DEFENSE,//SOLD!
+    BADGE_DAMAGE,//SOLD!
+    BADGE_GILLS,//SOLD!
+    BADGE_FINS,//SOLD!
+    BADGE_HP,//SOLD!
+    BADGE_MANA,//SOLD!
+    BADGE_GREED,//SOLD!
+    BADGE_TIME,//SOLD!
+    BADGE_MAGNET,//SOLD!
+    BADGE_STAR,//SOLD!
+    BADGE_BURN,//SOLD!
+    BADGE_SQUISH,//SOLD!
+    BADGE_FEATHER,//SOLD!
+    BADGE_WEIGHT,//SOLD!
+    BADGE_STICKY,//SOLD!
+    BADGE_FEET,//SOLD!
+    BADGE_HEAL,//SOLD!
+    BADGE_BOTTOMLESS,//SOLD!
+    BADGE_SLAYER,//SOLD!
+    BADGE_BRITTLE,//SOLD!
+    BADGE_WITHER,//SOLD!
+    BADGE_HARDCORE,//SOLD!
+};
 
 #endif // INGAME_MENU_H

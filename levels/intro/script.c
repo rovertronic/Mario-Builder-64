@@ -25,11 +25,30 @@
 
 #include "game/object_list_processor.h"
 
-const LevelScript level_intro_splash_screen[] = {
+const LevelScript level_intro_entry_error_screen[] = {
     INIT_LEVEL(),
+    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
+    LOAD_YAY0(/*seg*/ 0x07, _intro_segment_7SegmentRomStart, _intro_segment_7SegmentRomEnd),
+    ALLOC_LEVEL_POOL(),
+
+    AREA(/*index*/ 1, intro_geo_error_screen),
+	END_AREA(),
+
+    FREE_LEVEL_POOL(),
+    LOAD_AREA(/*area*/ 1),
+    SLEEP(/*frames*/ 32767),
+
+    UNLOAD_AREA(/*area*/ 1),
+    CLEAR_LEVEL(),
+    SLEEP(/*frames*/ 1),
+    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_error_screen),
+};
+
+const LevelScript level_intro_splash_screen[] = {
 #ifdef SKIP_TITLE_SCREEN
     EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
 #endif
+    INIT_LEVEL(),
     LOAD_GODDARD(),
     LOAD_BEHAVIOR_DATA(),
     LOAD_LEVEL_DATA(intro),
@@ -48,10 +67,11 @@ const LevelScript level_intro_splash_screen[] = {
     // Start animation
     LOAD_AREA(/*area*/ 1),
 
+    SLEEP(/*frames*/ 65),
     CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
     CALL(/*arg*/ 0, /*func*/ load_mario_area),
     
-    JUMP_LINK_PUSH_ARG(75),
+    JUMP_LINK_PUSH_ARG(85),
         UPDATE_OBJECTS(),
         SLEEP(/*frames*/ 1),
     JUMP_N_TIMES(),
@@ -71,6 +91,7 @@ const LevelScript level_intro_splash_screen[] = {
     LOAD_AREA(/*area*/ 1),
 
     CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
+    //SLEEP(/*frames*/ 75),
     SLEEP(/*frames*/ 75),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 16, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 16),
@@ -81,12 +102,20 @@ const LevelScript level_intro_splash_screen[] = {
     EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
+const LevelScript level_intro_mario_head_regular_bypass[] = {
+    PUSH_POOL(),
+    PUSH_POOL(),
+    JUMP(script_intro_file_select), // go to ingame
+};
+
 const LevelScript level_intro_mario_head_regular[] = {
+    JUMP(level_intro_mario_head_regular_bypass),
+
     INIT_LEVEL(),
+
     BLACKOUT(/*active*/ TRUE),
     LOAD_GODDARD(),
 #ifdef KEEP_MARIO_HEAD
-    LOAD_MARIO_HEAD(/*loadHeadID*/ REGULAR_FACE),
     LOAD_BEHAVIOR_DATA(),
     LOAD_TITLE_SCREEN_BG(),
 
@@ -102,6 +131,7 @@ const LevelScript level_intro_mario_head_regular[] = {
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 20),
 #else
+    PUSH_POOL(),
     BLACKOUT(/*active*/ FALSE),
 #endif
     CALL_LOOP(/*arg*/ LVL_INTRO_REGULAR, /*func*/ lvl_intro_update),
@@ -111,30 +141,7 @@ const LevelScript level_intro_mario_head_regular[] = {
 };
 
 const LevelScript level_intro_mario_head_dizzy[] = {
-    INIT_LEVEL(),
-    BLACKOUT(/*active*/ TRUE),
-    LOAD_GODDARD(),
-#ifdef KEEP_MARIO_HEAD
-    LOAD_MARIO_HEAD(/*loadHeadID*/ DIZZY_FACE),
-#endif
-    LOAD_BEHAVIOR_DATA(),
-    LOAD_TITLE_SCREEN_BG(),
-    ALLOC_LEVEL_POOL(),
-
-    AREA(/*index*/ 1, intro_geo_mario_head_dizzy),
-    END_AREA(),
-
-    FREE_LEVEL_POOL(),
-    SLEEP(/*frames*/ 2),
-    BLACKOUT(/*active*/ FALSE),
-    LOAD_AREA(/*area*/ 1),
-    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_GAME_OVER),
-    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
-    SLEEP(/*frames*/ 20),
-    CALL_LOOP(/*arg*/ LVL_INTRO_GAME_OVER, /*func*/ lvl_intro_update),
-    JUMP_IF(/*op*/ OP_EQ, /*arg*/ LEVEL_FILE_SELECT,  script_intro_file_select),
-    JUMP_IF(/*op*/ OP_EQ, /*arg*/ LEVEL_LEVEL_SELECT, script_intro_level_select),
-    JUMP(script_intro_main_level_entry),
+    JUMP(level_intro_mario_head_regular),
 };
 
 const LevelScript level_intro_entry_level_select[] = {

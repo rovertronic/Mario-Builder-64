@@ -1,6 +1,8 @@
 #ifndef BEHAVIOR_ACTIONS_H
 #define BEHAVIOR_ACTIONS_H
 
+extern u16 RandomMinMaxU16(u16 min, u16 max); // rovert why did you put a math function in tilting inverted pyramid
+
 void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size);
 void bhv_spawn_star_no_level_exit(u32 params);
 void bhv_door_rendering_loop(void);
@@ -15,11 +17,132 @@ void tox_box_move(f32 forwardVel, f32 a1, s16 deltaPitch, s16 deltaRoll);
 void play_penguin_walking_sound(s32 walk);
 s32 update_angle_from_move_flags(s32 *angle);
 void cur_obj_spawn_strong_wind_particles(s32 windSpread, f32 scale, f32 relPosX, f32 relPosY, f32 relPosZ);
-
+//
+//crimas only//
+void bhv_darius_spawner(void);
+//crimas only//
+void bhv_press(void);
+void bhv_ferris(void);
+void bhv_balloon(void);
+void bhv_cone(void);
+void bhv_whomp_wall(void);
+void bhv_contestant(void);
+void bhv_manual_key(void);
+void bhv_curtain_call(void);
+void bhv_spotlight(void);
+void bhv_movie(void);
+void bhv_projector(void);
+void bhv_snake_food(void);
+void bhv_flappy_pipe(void);
+void bhv_Showrunner(void);
+void new_bowser(void);
+void bhv_pipespew(void);
+void bhv_pump(void);
+void bhv_metal_crate_platform(void);
+void bhv_lava_pit(void);
+void bhv_hint(void);
+void bhv_ttrap(void);
+void bhv_mirror_shard(void);
+void bhv_cursed_mirror(void);
+void bhv_obj_random_rotate(void);
+void bhv_spiketube(void);
+void bhv_HH_screen(void);
+void bhv_HH(void);
+void bhv_firebroball_loop(void);
+void bhv_woogly(void);
+void bhv_fern(void);
+void bhv_instant_warp(void);
+void bhv_edward_mother(void);
+void bhv_edward(void);
+void bhv_mgb(void);
+void bhv_bigmine(void);
+void worm_loop(void);
+void bhv_thomwpguard(void);
+void bhv_thwompgate(void);
+void bhv_monster_loop(void);
+void bhv_weak_platform(void);
+void bhv_thwomp_queen(void);
+void bhv_thwomp_king_flame(void);
+void bhv_thwomp_king(void);
+void bhv_whform(void);
+void bhv_path_coin(void);
+void bhv_bewer(void);
+void bhv_thwompform(void);
+void bhv_boss_cobie(void);
+void bhv_trash(void);
+void bhv_mess(void);
+void bhv_BadCobie(void);
+void bhv_jumprope(void);
+void bhv_boulder(void);
+void bhv_minecart(void);
+void bhv_rbowser(void);
+void bhv_donut(void);
+void bhv_ladybug(void);
+void bhv_keydoor2(void);
+void bhv_mask2(void);
+void bhv_log2(void);
+void bhv_retro_thwomp(void);
+void bhv_retro_pipe(void);
+void bhv_retrobill_spawner(void);
+void bhv_retrobill(void);
+void bhv_retroplant(void);
+void bhv_smb_platform_spawn(void);
+void bhv_smb_platform(void);
+void bhv_vaccum(void);
+void bhv_spork_loop(void);
+void bhv_cheese(void);
+void bhv_trap(void);
+void bhv_evil_pig(void);
+void bhv_bookelevator_loop(void);
+void bhv_tollbridge_loop(void);
+void bhv_rex_boss_loop(void);
+void bhv_slob_loop(void);
+void bhv_booball_loop(void);
+void bhv_boocannon_loop(void);
+void bhv_puddle_loop(void);
+void bhv_evil_ship_loop(void);
+void bhv_crablet_spawner(void);
+void bhv_GhostGate(void);
+void bhv_pig_loop(void);
+void noteblock_function(void);
+void bhv_loop_wallet(void);
+void bhv_SafeZone_function(void);
+void bhv_scroll_obj(void);
+void bhv_yoshi_ride_loop(void);
+void bhv_dragon_coin_loop(void);
+void bhv_cactusball_loop(void);
+void bhv_turnblock_update(void);
+void bhv_item_bubble_loop(void);
+void loop_bone_swap_gate(void);
+void loop_bone_gate(void);
+void loop_bone_train(void);
+void loop_VRset(void);
+void loop_lightning(void);
+void loop_snakeblock_minion(void);
+void loop_snakeblock_main(void);
+void bhv_motos_loop(void);
+void bhv_motos_hand_loop(void);
+void bhv_GhostBoard_loop (void);
+void bhv_ship_elevator_loop (void);
+void bhv_horse_carriage_loop (void);
+void loop_flimboard (void);
+void loop_bone_elevator (void);
+void loop_bone_platform (void);
+void loop_costume_token (void);
+void loop_dressing_room (void);
+void bhv_Tree_Osc (void);
+void mirror_room_change(void);
+void evil_mirrror_mario(void);
+void bhv_zipline_loop(void);
+void bhv_metal_crate_col(void);
+void bhv_metal_crate(void);
+void bhv_coin_ring_loop(void);
+void bhv_HotBackForth_loop(void);
 //! Lots of these are duplicates
 void bhv_cap_switch_loop(void);
 void bhv_tiny_star_particles_init(void);
 void bhv_grindel_thwomp_loop(void);
+void bhv_lava_spewer_loop(void);
 void bhv_door_init(void);
 void bhv_door_loop(void);
 void bhv_star_door_loop(void);
@@ -127,6 +250,7 @@ void bhv_pushable_loop(void);
 void bhv_init_room(void);
 void bhv_small_water_wave_loop(void);
 void bhv_yellow_coin_init(void);
+void bhv_green_coin_init(void);
 void bhv_yellow_coin_loop(void);
 void bhv_squarish_path_moving_loop(void);
 void bhv_heave_ho_loop(void);
@@ -204,7 +328,7 @@ void bhv_bub_loop(void);
 void bhv_exclamation_box_loop(void);
 void bhv_rotating_exclamation_mark_loop(void);
 void bhv_sound_spawner_init(void);
-void bhv_bowsers_sub_loop(void);
+void bhv_bowsers_sub_init(void);
 void bhv_sushi_shark_loop(void);
 void bhv_jrb_sliding_box_loop(void);
 void bhv_ship_part_3_loop(void);
@@ -393,6 +517,8 @@ void bhv_1up_running_away_loop(void);
 void bhv_1up_sliding_loop(void);
 void bhv_1up_init(void);
 void bhv_1up_loop(void);
+void bhv_crowbar_power_loop(void);
+void bhv_crowbar_attack_loop(void);
 void bhv_1up_jump_on_approach_loop(void);
 void bhv_1up_hidden_loop(void);
 void bhv_1up_hidden_trigger_loop(void);
@@ -549,6 +675,19 @@ void bhv_intro_scene_loop(void);
 void bhv_dust_smoke_loop(void);
 void bhv_yoshi_loop(void);
 void bhv_volcano_trap_loop(void);
+void bhv_hammer_bro_loop(void);
+void bhv_hammer_loop(void);
+void bhv_truck(void);
+void bhv_podoboo_loop(void);
+void bhv_badsign(void);
+void bhv_garage(void);
+void bhv_bad_apple(void);
+void bhv_valve(void);
+void bhv_enemy_arena_spawner(void);
+void bhv_phono_init(void);
+void bhv_phono_loop(void);
+
+extern u8 MouthOpen;
 
 Gfx *geo_move_mario_part_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 
@@ -570,8 +709,13 @@ Gfx *geo_snufit_scale_body(s32 callContext, struct GraphNode *node, UNUSED Mat4 
 // Bowser key cutscene
 Gfx *geo_scale_bowser_key(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx);
 
+Gfx *geo_rotate_signjaw1(s32 run, struct GraphNode *node);
+Gfx *geo_rotate_signjaw2(s32 run, struct GraphNode *node);
+
 // Water splash
 extern struct WaterDropletParams gShallowWaterSplashDropletParams;
 extern struct WaterDropletParams gShallowWaterWaveDropletParams;
+
+extern u8 trial_counter;
 
 #endif // BEHAVIOR_ACTIONS_H

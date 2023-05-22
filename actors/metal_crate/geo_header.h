@@ -1,0 +1,11 @@
+extern const GeoLayout metal_crate_geo[];
+extern Lights1 metal_crate_metal_box_lights;
+extern u8 metal_crate_block_ci8[];
+extern u8 metal_crate_block_ci8_pal_rgba16[];
+extern Vtx metal_crate_Cube_mesh_vtx_cull[8];
+extern Vtx metal_crate_Cube_mesh_vtx_0[26];
+extern Gfx metal_crate_Cube_mesh_tri_0[];
+extern Gfx mat_metal_crate_metal_box[];
+extern Gfx mat_revert_metal_crate_metal_box[];
+extern Gfx metal_crate_Cube_mesh[];
+extern Gfx metal_crate_material_revert_render_settings[];

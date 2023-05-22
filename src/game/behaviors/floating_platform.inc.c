@@ -20,8 +20,8 @@ void floating_platform_act_move_to_home(void) {
         f32 dz = gMarioObject->header.gfx.pos[2] - o->oPosZ;
         f32 cy = coss(-o->oMoveAngleYaw);
         f32 sy = sins(-o->oMoveAngleYaw);
-        o->oFaceAnglePitch = ((dz * cy) + (dx * sy)) * 2;
-        o->oFaceAngleRoll = -((dx * cy) + (dz * sy)) * 2;
+        o->oFaceAnglePitch = o->oFaceAnglePitch + ((dz * cy) + (dx * sy / o->oBehParams2ndByte));
+        o->oFaceAngleRoll = o->oFaceAngleRoll - ((dx * cy) + (dz * sy / o->oBehParams2ndByte));
         o->oVelY -= 1.0f;
         if (o->oVelY < 0.0f) {
             o->oVelY = 0.0f;
@@ -32,8 +32,8 @@ void floating_platform_act_move_to_home(void) {
             o->oFloatingPlatformMarioWeightWobbleOffset = 90.0f;
         }
     } else {
-        o->oFaceAnglePitch /= 2;
-        o->oFaceAngleRoll /= 2;
+        o->oFaceAnglePitch /= 1.1;
+        o->oFaceAngleRoll /= 1.1;
         o->oFloatingPlatformMarioWeightWobbleOffset -= 5.0f;
 
         o->oVelY = 10.0f;
@@ -51,9 +51,18 @@ void floating_platform_act_move_to_home(void) {
     if (o->oFloatingPlatformWaterSurfaceWobbleOffset == 32) {
         o->oFloatingPlatformWaterSurfaceWobbleOffset = 0;
     }
+
+    o->oFaceAnglePitch = 0;
+    o->oFaceAngleRoll = 0;
+    //vetoed because this apparently actually sucks cock and balls
 }
 
 void bhv_floating_platform_loop(void) {
+    if (o->oHealth != 5) {//init
+        o->oHealth = 5;
+        obj_scale(o,o->oBehParams2ndByte);
+    }
+
     o->oHomeY = floating_platform_find_home_y();
 
     // o->oAction = o->oFloatingPlatformIsOnFloor;
@@ -62,4 +71,11 @@ void bhv_floating_platform_loop(void) {
     } else {
         floating_platform_act_move_to_home();
     }
+
+    //LOD
+    o->header.gfx.sharedChild = gLoadedGraphNodes[0xFE];
+    if (o->oDistanceToMario > 5000) {
+        //far
+        o->header.gfx.sharedChild = gLoadedGraphNodes[0xF9];
+        }
 }

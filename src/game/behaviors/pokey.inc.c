@@ -17,8 +17,8 @@ static struct ObjectHitbox sPokeyBodyPartHitbox = {
     /* health:            */ 0,
     /* numLootCoins:      */ 0,
     /* radius:            */ 40,
-    /* height:            */ 20,
-    /* hurtboxRadius:     */ 20,
+    /* height:            */ 30,
+    /* hurtboxRadius:     */ 42,
     /* hurtboxHeight:     */ 20,
 };
 
@@ -28,8 +28,8 @@ static struct ObjectHitbox sPokeyBodyPartHitbox = {
 static u8 sPokeyBodyPartAttackHandlers[] = {
     /* ATTACK_PUNCH:                 */ ATTACK_HANDLER_KNOCKBACK,
     /* ATTACK_KICK_OR_TRIP:          */ ATTACK_HANDLER_KNOCKBACK,
-    /* ATTACK_FROM_ABOVE:            */ ATTACK_HANDLER_SQUISHED,
-    /* ATTACK_GROUND_POUND_OR_TWIRL: */ ATTACK_HANDLER_SQUISHED,
+    /* ATTACK_FROM_ABOVE:            */ ATTACK_HANDLER_DIE_IF_HEALTH_NON_POSITIVE,
+    /* ATTACK_GROUND_POUND_OR_TWIRL: */ ATTACK_HANDLER_DIE_IF_HEALTH_NON_POSITIVE,
     /* ATTACK_FAST_ATTACK:           */ ATTACK_HANDLER_KNOCKBACK,
     /* ATTACK_FROM_BELOW:            */ ATTACK_HANDLER_KNOCKBACK,
 };
@@ -95,7 +95,11 @@ void bhv_pokey_body_part_update(void) {
             }
 
             // Only the head has loot coins
-            o->oNumLootCoins = o->oBehParams2ndByte == POKEY_PART_BP_HEAD;
+            if (o->oBehParams2ndByte == POKEY_PART_BP_HEAD) {
+                o->oNumLootCoins = -1;
+            } else {
+                o->oNumLootCoins = 0;
+            }
 
             // If the body part was attacked, then die. If the head was killed,
             // then die after a delay.

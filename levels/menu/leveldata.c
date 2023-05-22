@@ -425,6 +425,7 @@ ALIGNED8 static const Texture texture_menu_grabbing_hand[] = {
 
 // 0x07007328 - 0x070073A0
 static const Gfx dl_menu_hand[] = {
+    gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsDPSetRenderMode(G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
@@ -1854,3 +1855,5 @@ const Collision main_menu_seg7_collision[] = {
 #undef COURSE_TABLE
 
 #endif
+
+#include "levels/menu/replaced/model.inc.c"

@@ -1,0 +1,121 @@
+{
+    "date": "1996-03-19",
+    "sample_bank": "instruments",
+    "envelopes": {
+        "envelope0": [
+            [1, 32700],
+            [220, 0],
+            "hang"
+        ],
+        "envelope1": [
+            [1, 32000],
+            [5, 28000],
+            "hang"
+        ],
+        "envelope2": [
+            [1, 32700],
+            [48, 12000],
+            "hang"
+        ],
+        "envelope3": [
+            [1, 20000],
+            [29, 32700],
+            "hang"
+        ],
+        "envelope4": [
+            [1, 12000],
+            "hang"
+        ],
+        "envelope5": [
+            [1, 0],
+            [1, 32700],
+            "hang"
+        ],
+        "envelope6": [
+            [1, 32700],
+            [24, 0],
+            "hang"
+        ],
+        "envelope7": [
+            [1, 32700],
+            [3, 32700],
+            [1, 0],
+            "hang"
+        ],
+        "envelope8": [
+            [1, 32700],
+            [19, 32700],
+            [1, 0],
+            "hang"
+        ]
+    },
+    "instruments": {
+        "inst0": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope0",
+            "sound_lo": "custom_12.5_low",
+            "sound": "custom_12.5_mid",
+            "sound_hi": "custom_12.5_high"
+        },
+        "inst1": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope1",
+            "sound_lo": "custom_50_low",
+            "sound": "custom_50_mid",
+            "sound_hi": "custom_50_high"
+        },
+        "inst2": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope2",
+            "sound_lo": "custom_25_low",
+            "sound": "custom_25_mid",
+            "sound_hi": "custom_25_high"
+        },
+        "inst3": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope3",
+            "sound_lo": "custom_25_low",
+            "sound": "custom_25_mid",
+            "sound_hi": "custom_25_high"
+        },
+        "inst4": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope4",
+            "sound_lo": "custom_25_low",
+            "sound": "custom_25_mid",
+            "sound_hi": "custom_25_high"
+        },
+        "inst5": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope5",
+            "sound_lo": "custom_tri_low",
+            "sound": "custom_tri_mid",
+            "sound_hi": "custom_tri_high"
+        },
+        "percussion": [
+            {"release_rate": 255, "pan": 63, "envelope": "envelope6", "sound": "custom_noise_6"},
+            {"release_rate": 255, "pan": 63, "envelope": "envelope7", "sound": "custom_noise_C"},
+            {"release_rate": 255, "pan": 63, "envelope": "envelope8", "sound": "custom_noise_C"}
+        ]
+    },
+    "instrument_list": [
+		"inst0",
+		"inst1",
+		"inst2",
+		"inst3",
+		"inst4",
+        "inst5"
+    ]
+}

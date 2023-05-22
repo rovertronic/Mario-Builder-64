@@ -171,9 +171,11 @@ void bhv_snufit_loop(void) {
 void bhv_snufit_balls_loop(void) {
     // If far from Mario or in a different room, despawn.
     if ((o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)
-        || (o->oTimer != 0 && o->oDistanceToMario > 1500.0f)) {
+        || (o->oTimer != 0 && o->oDistanceToMario > 3000.0f)) {
         obj_mark_for_deletion(o);
     }
+
+    obj_turn_pitch_toward_mario(-800.0f, 0);
 
     // Gravity =/= 0 after it has hit Mario while metal.
     if (o->oGravity == 0.0f) {
@@ -196,6 +198,8 @@ void bhv_snufit_balls_loop(void) {
             //! situation that does not trigger those flags (Water?). If found,
             //! this would be a route to hang the game via too many snufit bullets.
             o->oDeathSound = -1;
+            gMarioState->EA_ACTIVE ++;
+            gMarioState->EA_LEFT ++;
             obj_die_if_health_non_positive();
         }
 

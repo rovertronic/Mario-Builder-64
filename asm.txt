@@ -1,0 +1,3744 @@
+
+build/us/src/game/rendering_graph_node.o:     file format elf32-tradbigmips
+
+
+Disassembly of section .text:
+
+00000000 <Get_Screen_Coords-0x788>:
+#endif
+
+/**
+ * Process a master list node.
+ */
+static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
+       0:	27bdff28 	addiu	sp,sp,-216
+       4:	afbf0044 	sw	ra,68(sp)
+       8:	afb30040 	sw	s3,64(sp)
+       c:	afb2003c 	sw	s2,60(sp)
+      10:	afb10038 	sw	s1,56(sp)
+      14:	afb00034 	sw	s0,52(sp)
+      18:	44800000 	mtc1	zero,$f0
+    struct DisplayListNode *currList;
+    s32 i;
+    s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
+      1c:	84900002 	lh	s0,2(a0)
+static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
+      20:	3c013f80 	lui	at,0x3f80
+      24:	44811000 	mtc1	at,$f2
+      28:	00808825 	move	s1,a0
+    // @bug This is where the LookAt values should be calculated but aren't.
+    // As a result, environment mapping is broken on Fast3DEX2 without the
+    // changes below.
+#ifdef F3DEX_GBI_2
+    Mtx lMtx;
+    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+      2c:	3c050000 	lui	a1,0x0
+    s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
+      30:	32100008 	andi	s0,s0,0x8
+    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+      34:	44060000 	mfc1	a2,$f0
+      38:	44070000 	mfc1	a3,$f0
+    s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
+      3c:	0010802b 	sltu	s0,zero,s0
+    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+      40:	24a50000 	addiu	a1,a1,0
+      44:	27a40080 	addiu	a0,sp,128
+      48:	e7a00028 	swc1	$f0,40(sp)
+      4c:	e7a00024 	swc1	$f0,36(sp)
+      50:	e7a00018 	swc1	$f0,24(sp)
+      54:	e7a00014 	swc1	$f0,20(sp)
+      58:	e7a00010 	swc1	$f0,16(sp)
+      5c:	e7a2001c 	swc1	$f2,28(sp)
+      60:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+      64:	e7a20020 	swc1	$f2,32(sp)
+#endif
+
+    if (enableZBuffer != 0) {
+      68:	12000011 	beqz	s0,b0 <Get_Screen_Coords-0x6d8>
+        gDPPipeSync(gDisplayListHead++);
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+    }
+
+    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+      6c:	00005025 	move	t2,zero
+    if (enableZBuffer != 0) {
+      70:	3c060000 	lui	a2,0x0
+      74:	24c60000 	addiu	a2,a2,0
+        gDPPipeSync(gDisplayListHead++);
+      78:	8cc20000 	lw	v0,0(a2)
+      7c:	3c0fe700 	lui	t7,0xe700
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+      80:	3c19d9ff 	lui	t9,0xd9ff
+        gDPPipeSync(gDisplayListHead++);
+      84:	244e0008 	addiu	t6,v0,8
+      88:	acce0000 	sw	t6,0(a2)
+      8c:	ac400004 	sw	zero,4(v0)
+      90:	ac4f0000 	sw	t7,0(v0)
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+      94:	8cc20000 	lw	v0,0(a2)
+      98:	240e0001 	li	t6,1
+      9c:	3739ffff 	ori	t9,t9,0xffff
+      a0:	24580008 	addiu	t8,v0,8
+      a4:	acd80000 	sw	t8,0(a2)
+      a8:	ac4e0004 	sw	t6,4(v0)
+      ac:	ac590000 	sw	t9,0(v0)
+      b0:	3c060000 	lui	a2,0x0
+    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+      b4:	02206825 	move	t5,s1
+      b8:	3c130000 	lui	s3,0x0
+      bc:	3c1fe200 	lui	ra,0xe200
+      c0:	3c081fff 	lui	t0,0x1fff
+      c4:	3c07da38 	lui	a3,0xda38
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+      c8:	24c60000 	addiu	a2,a2,0
+    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+      cc:	34e70003 	ori	a3,a3,0x3
+      d0:	3508ffff 	ori	t0,t0,0xffff
+      d4:	37ff001c 	ori	ra,ra,0x1c
+      d8:	26730000 	addiu	s3,s3,0
+      dc:	24110010 	li	s1,16
+      e0:	24120020 	li	s2,32
+      e4:	3c09de00 	lui	t1,0xde00
+        if ((currList = node->listHeads[i]) != NULL) {
+      e8:	8da50014 	lw	a1,20(t5)
+            switch (i) {
+      ec:	00102140 	sll	a0,s0,0x5
+      f0:	008a7821 	addu	t7,a0,t2
+        if ((currList = node->listHeads[i]) != NULL) {
+      f4:	10a0002d 	beqz	a1,1ac <Get_Screen_Coords-0x5dc>
+            switch (i) {
+      f8:	3c180000 	lui	t8,0x0
+      fc:	27180000 	addiu	t8,t8,0
+     100:	1551000e 	bne	t2,s1,13c <Get_Screen_Coords-0x64c>
+     104:	01f85821 	addu	t3,t7,t8
+                case 4:
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode5List->modes[i]);
+     108:	8cc20000 	lw	v0,0(a2)
+            switch (i) {
+     10c:	3c0e0000 	lui	t6,0x0
+     110:	25ce0000 	addiu	t6,t6,0
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode5List->modes[i]);
+     114:	244f0008 	addiu	t7,v0,8
+            switch (i) {
+     118:	008ac821 	addu	t9,a0,t2
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode5List->modes[i]);
+     11c:	accf0000 	sw	t7,0(a2)
+            switch (i) {
+     120:	032e6021 	addu	t4,t9,t6
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode5List->modes[i]);
+     124:	ac5f0000 	sw	ra,0(v0)
+     128:	8d790000 	lw	t9,0(t3)
+     12c:	8d980000 	lw	t8,0(t4)
+     130:	03197025 	or	t6,t8,t9
+                break;
+     134:	1000000b 	b	164 <Get_Screen_Coords-0x624>
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode5List->modes[i]);
+     138:	ac4e0004 	sw	t6,4(v0)
+                default:
+                gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
+     13c:	8cc20000 	lw	v0,0(a2)
+     140:	0264c021 	addu	t8,s3,a0
+     144:	030ac821 	addu	t9,t8,t2
+     148:	244f0008 	addiu	t7,v0,8
+     14c:	accf0000 	sw	t7,0(a2)
+     150:	ac5f0000 	sw	ra,0(v0)
+     154:	8d6f0000 	lw	t7,0(t3)
+     158:	8f2e0000 	lw	t6,0(t9)
+     15c:	01cfc025 	or	t8,t6,t7
+     160:	ac580004 	sw	t8,4(v0)
+                break;
+                }
+            while (currList != NULL) {
+     164:	50a00012 	beqzl	a1,1b0 <Get_Screen_Coords-0x5d8>
+     168:	254a0004 	addiu	t2,t2,4
+                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
+     16c:	8cc20000 	lw	v0,0(a2)
+     170:	24590008 	addiu	t9,v0,8
+     174:	acd90000 	sw	t9,0(a2)
+     178:	ac470000 	sw	a3,0(v0)
+     17c:	8cae0000 	lw	t6,0(a1)
+     180:	01c87824 	and	t7,t6,t0
+     184:	ac4f0004 	sw	t7,4(v0)
+                          G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                gSPDisplayList(gDisplayListHead++, currList->displayList);
+     188:	8cc20000 	lw	v0,0(a2)
+     18c:	24580008 	addiu	t8,v0,8
+     190:	acd80000 	sw	t8,0(a2)
+     194:	ac490000 	sw	t1,0(v0)
+     198:	8cb90004 	lw	t9,4(a1)
+     19c:	ac590004 	sw	t9,4(v0)
+                currList = currList->next;
+     1a0:	8ca50008 	lw	a1,8(a1)
+            while (currList != NULL) {
+     1a4:	54a0fff2 	bnezl	a1,170 <Get_Screen_Coords-0x618>
+     1a8:	8cc20000 	lw	v0,0(a2)
+    for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+     1ac:	254a0004 	addiu	t2,t2,4
+     1b0:	1552ffcd 	bne	t2,s2,e8 <Get_Screen_Coords-0x6a0>
+     1b4:	25ad0004 	addiu	t5,t5,4
+            }
+        }
+    }
+    if (enableZBuffer != 0) {
+     1b8:	5200000f 	beqzl	s0,1f8 <Get_Screen_Coords-0x590>
+     1bc:	8fbf0044 	lw	ra,68(sp)
+        gDPPipeSync(gDisplayListHead++);
+     1c0:	8cc20000 	lw	v0,0(a2)
+     1c4:	3c0fe700 	lui	t7,0xe700
+        gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
+     1c8:	3c19d9ff 	lui	t9,0xd9ff
+        gDPPipeSync(gDisplayListHead++);
+     1cc:	244e0008 	addiu	t6,v0,8
+     1d0:	acce0000 	sw	t6,0(a2)
+     1d4:	ac400004 	sw	zero,4(v0)
+     1d8:	ac4f0000 	sw	t7,0(v0)
+        gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
+     1dc:	8cc20000 	lw	v0,0(a2)
+     1e0:	3739fffe 	ori	t9,t9,0xfffe
+     1e4:	24580008 	addiu	t8,v0,8
+     1e8:	acd80000 	sw	t8,0(a2)
+     1ec:	ac400004 	sw	zero,4(v0)
+     1f0:	ac590000 	sw	t9,0(v0)
+    }
+}
+     1f4:	8fbf0044 	lw	ra,68(sp)
+     1f8:	8fb00034 	lw	s0,52(sp)
+     1fc:	8fb10038 	lw	s1,56(sp)
+     200:	8fb2003c 	lw	s2,60(sp)
+     204:	8fb30040 	lw	s3,64(sp)
+     208:	03e00008 	jr	ra
+     20c:	27bd00d8 	addiu	sp,sp,216
+/**
+ * Appends the display list to one of the master lists based on the layer
+ * parameter. Look at the RenderModeContainer struct to see the corresponding
+ * render modes of layers.
+ */
+static void geo_append_display_list(void *displayList, s16 layer) {
+     210:	3c070000 	lui	a3,0x0
+     214:	24e70000 	addiu	a3,a3,0
+
+#ifdef F3DEX_GBI_2
+    gSPLookAt(gDisplayListHead++, &lookAt);
+     218:	8ce20000 	lw	v0,0(a3)
+static void geo_append_display_list(void *displayList, s16 layer) {
+     21c:	27bdffe8 	addiu	sp,sp,-24
+     220:	afbf0014 	sw	ra,20(sp)
+    gSPLookAt(gDisplayListHead++, &lookAt);
+     224:	244e0008 	addiu	t6,v0,8
+static void geo_append_display_list(void *displayList, s16 layer) {
+     228:	afa40018 	sw	a0,24(sp)
+     22c:	afa5001c 	sw	a1,28(sp)
+    gSPLookAt(gDisplayListHead++, &lookAt);
+     230:	acee0000 	sw	t6,0(a3)
+     234:	3c0fdc08 	lui	t7,0xdc08
+     238:	3c180000 	lui	t8,0x0
+     23c:	27180000 	addiu	t8,t8,0
+     240:	35ef000a 	ori	t7,t7,0xa
+     244:	ac4f0000 	sw	t7,0(v0)
+     248:	ac580004 	sw	t8,4(v0)
+     24c:	8ce20000 	lw	v0,0(a3)
+     250:	3c09dc08 	lui	t1,0xdc08
+     254:	3c0a0000 	lui	t2,0x0
+     258:	24590008 	addiu	t9,v0,8
+     25c:	acf90000 	sw	t9,0(a3)
+static void geo_append_display_list(void *displayList, s16 layer) {
+     260:	3c080000 	lui	t0,0x0
+    gSPLookAt(gDisplayListHead++, &lookAt);
+     264:	254a0010 	addiu	t2,t2,16
+     268:	3529030a 	ori	t1,t1,0x30a
+static void geo_append_display_list(void *displayList, s16 layer) {
+     26c:	25080000 	addiu	t0,t0,0
+    gSPLookAt(gDisplayListHead++, &lookAt);
+     270:	ac490000 	sw	t1,0(v0)
+     274:	ac4a0004 	sw	t2,4(v0)
+#endif
+    if (gCurGraphNodeMasterList != 0) {
+     278:	8d0b0000 	lw	t3,0(t0)
+        struct DisplayListNode *listNode =
+     27c:	2405000c 	li	a1,12
+     280:	3c040000 	lui	a0,0x0
+    if (gCurGraphNodeMasterList != 0) {
+     284:	5160001e 	beqzl	t3,300 <Get_Screen_Coords-0x488>
+     288:	8fbf0014 	lw	ra,20(sp)
+        struct DisplayListNode *listNode =
+     28c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     290:	8c840000 	lw	a0,0(a0)
+            alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
+
+        listNode->transform = gMatStackFixed[gMatStackIndex];
+     294:	3c0c0000 	lui	t4,0x0
+     298:	858c0000 	lh	t4,0(t4)
+     29c:	3c0e0000 	lui	t6,0x0
+        struct DisplayListNode *listNode =
+     2a0:	3c080000 	lui	t0,0x0
+        listNode->transform = gMatStackFixed[gMatStackIndex];
+     2a4:	000c6880 	sll	t5,t4,0x2
+     2a8:	01cd7021 	addu	t6,t6,t5
+     2ac:	8dce0000 	lw	t6,0(t6)
+        struct DisplayListNode *listNode =
+     2b0:	25080000 	addiu	t0,t0,0
+        listNode->transform = gMatStackFixed[gMatStackIndex];
+     2b4:	ac4e0000 	sw	t6,0(v0)
+        listNode->displayList = displayList;
+     2b8:	8faf0018 	lw	t7,24(sp)
+        listNode->next = 0;
+     2bc:	ac400008 	sw	zero,8(v0)
+        listNode->displayList = displayList;
+     2c0:	ac4f0004 	sw	t7,4(v0)
+        if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
+     2c4:	87a4001e 	lh	a0,30(sp)
+     2c8:	8d180000 	lw	t8,0(t0)
+     2cc:	00042080 	sll	a0,a0,0x2
+     2d0:	03041821 	addu	v1,t8,a0
+     2d4:	8c790014 	lw	t9,20(v1)
+     2d8:	57200004 	bnezl	t9,2ec <Get_Screen_Coords-0x49c>
+     2dc:	8c690034 	lw	t1,52(v1)
+            gCurGraphNodeMasterList->listHeads[layer] = listNode;
+     2e0:	10000003 	b	2f0 <Get_Screen_Coords-0x498>
+     2e4:	ac620014 	sw	v0,20(v1)
+        } else {
+            gCurGraphNodeMasterList->listTails[layer]->next = listNode;
+     2e8:	8c690034 	lw	t1,52(v1)
+     2ec:	ad220008 	sw	v0,8(t1)
+        }
+        gCurGraphNodeMasterList->listTails[layer] = listNode;
+     2f0:	8d0a0000 	lw	t2,0(t0)
+     2f4:	01445821 	addu	t3,t2,a0
+     2f8:	ad620034 	sw	v0,52(t3)
+    }
+}
+     2fc:	8fbf0014 	lw	ra,20(sp)
+     300:	27bd0018 	addiu	sp,sp,24
+     304:	03e00008 	jr	ra
+     308:	00000000 	nop
+
+/**
+ * Process the master list node.
+ */
+static void geo_process_master_list(struct GraphNodeMasterList *node) {
+     30c:	3c060000 	lui	a2,0x0
+     310:	24c60000 	addiu	a2,a2,0
+    s32 i;
+    UNUSED s32 sp1C;
+
+    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
+     314:	8cce0000 	lw	t6,0(a2)
+static void geo_process_master_list(struct GraphNodeMasterList *node) {
+     318:	27bdffe8 	addiu	sp,sp,-24
+     31c:	afbf0014 	sw	ra,20(sp)
+    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
+     320:	15c00016 	bnez	t6,37c <Get_Screen_Coords-0x40c>
+static void geo_process_master_list(struct GraphNodeMasterList *node) {
+     324:	00802825 	move	a1,a0
+    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
+     328:	8c8f0010 	lw	t7,16(a0)
+        gCurGraphNodeMasterList = node;
+        for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+     32c:	00001825 	move	v1,zero
+     330:	00801025 	move	v0,a0
+    if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
+     334:	51e00012 	beqzl	t7,380 <Get_Screen_Coords-0x408>
+     338:	8fbf0014 	lw	ra,20(sp)
+        gCurGraphNodeMasterList = node;
+     33c:	acc40000 	sw	a0,0(a2)
+        for (i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
+     340:	24040008 	li	a0,8
+     344:	24630004 	addiu	v1,v1,4
+     348:	ac400018 	sw	zero,24(v0)
+     34c:	ac40001c 	sw	zero,28(v0)
+     350:	ac400020 	sw	zero,32(v0)
+     354:	24420010 	addiu	v0,v0,16
+     358:	1464fffa 	bne	v1,a0,344 <Get_Screen_Coords-0x444>
+            node->listHeads[i] = NULL;
+     35c:	ac400004 	sw	zero,4(v0)
+        }
+        geo_process_node_and_siblings(node->node.children);
+     360:	8ca40010 	lw	a0,16(a1)
+     364:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     368:	afa50018 	sw	a1,24(sp)
+        geo_process_master_list_sub(node);
+     36c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        geo_process_node_and_siblings(node->node.children);
+     370:	8fa40018 	lw	a0,24(sp)
+        gCurGraphNodeMasterList = NULL;
+     374:	3c010000 	lui	at,0x0
+     378:	ac200000 	sw	zero,0(at)
+    }
+}
+     37c:	8fbf0014 	lw	ra,20(sp)
+     380:	27bd0018 	addiu	sp,sp,24
+     384:	03e00008 	jr	ra
+     388:	00000000 	nop
+
+/**
+ * Process an orthographic projection node.
+ */
+static void geo_process_ortho_projection(struct GraphNodeOrthoProjection *node) {
+     38c:	27bdffd0 	addiu	sp,sp,-48
+     390:	afbf0024 	sw	ra,36(sp)
+     394:	afa40030 	sw	a0,48(sp)
+    if (node->node.children != NULL) {
+     398:	8c8f0010 	lw	t7,16(a0)
+     39c:	51e0004a 	beqzl	t7,4c8 <Get_Screen_Coords-0x2c0>
+     3a0:	8fbf0024 	lw	ra,36(sp)
+        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     3a4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     3a8:	24040040 	li	a0,64
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3ac:	3c030000 	lui	v1,0x0
+     3b0:	8c630000 	lw	v1,0(v1)
+        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     3b4:	afa2002c 	sw	v0,44(sp)
+     3b8:	3c013f00 	lui	at,0x3f00
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3bc:	8469001a 	lh	t1,26(v1)
+     3c0:	84680016 	lh	t0,22(v1)
+        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     3c4:	44811000 	mtc1	at,$f2
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3c8:	8fb80030 	lw	t8,48(sp)
+     3cc:	0109c823 	subu	t9,t0,t1
+     3d0:	44992000 	mtc1	t9,$f4
+        f32 right = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3d4:	01096021 	addu	t4,t0,t1
+     3d8:	448c5000 	mtc1	t4,$f10
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3dc:	468021a0 	cvt.s.w	$f6,$f4
+     3e0:	c7000014 	lwc1	$f0,20(t8)
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     3e4:	846b001c 	lh	t3,28(v1)
+     3e8:	846a0018 	lh	t2,24(v1)
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     3ec:	3c01c000 	lui	at,0xc000
+        f32 right = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3f0:	46805120 	cvt.s.w	$f4,$f10
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     3f4:	46023202 	mul.s	$f8,$f6,$f2
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     3f8:	014b6823 	subu	t5,t2,t3
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     3fc:	014b7021 	addu	t6,t2,t3
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     400:	00402025 	move	a0,v0
+        f32 left = (gCurGraphNodeRoot->x - gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     404:	46004302 	mul.s	$f12,$f8,$f0
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     408:	448d4000 	mtc1	t5,$f8
+        f32 right = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     40c:	46022182 	mul.s	$f6,$f4,$f2
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     410:	44056000 	mfc1	a1,$f12
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     414:	468042a0 	cvt.s.w	$f10,$f8
+        f32 right = (gCurGraphNodeRoot->x + gCurGraphNodeRoot->width) / 2.0f * node->scale;
+     418:	46003382 	mul.s	$f14,$f6,$f0
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     41c:	448e3000 	mtc1	t6,$f6
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     420:	46025102 	mul.s	$f4,$f10,$f2
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     424:	44067000 	mfc1	a2,$f14
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     428:	46803220 	cvt.s.w	$f8,$f6
+        f32 top = (gCurGraphNodeRoot->y - gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     42c:	46002402 	mul.s	$f16,$f4,$f0
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     430:	44812000 	mtc1	at,$f4
+     434:	3c014000 	lui	at,0x4000
+     438:	44813000 	mtc1	at,$f6
+     43c:	3c013f80 	lui	at,0x3f80
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     440:	46024282 	mul.s	$f10,$f8,$f2
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     444:	44814000 	mtc1	at,$f8
+     448:	e7b00010 	swc1	$f16,16(sp)
+     44c:	e7a40014 	swc1	$f4,20(sp)
+     450:	e7a60018 	swc1	$f6,24(sp)
+     454:	e7a8001c 	swc1	$f8,28(sp)
+        f32 bottom = (gCurGraphNodeRoot->y + gCurGraphNodeRoot->height) / 2.0f * node->scale;
+     458:	46005482 	mul.s	$f18,$f10,$f0
+        guOrtho(mtx, left, right, bottom, top, -2.0f, 2.0f, 1.0f);
+     45c:	44079000 	mfc1	a3,$f18
+     460:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     464:	00000000 	nop
+     468:	3c060000 	lui	a2,0x0
+     46c:	24c60000 	addiu	a2,a2,0
+        gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
+     470:	8cc20000 	lw	v0,0(a2)
+     474:	3c18db0e 	lui	t8,0xdb0e
+     478:	3419ffff 	li	t9,0xffff
+     47c:	244f0008 	addiu	t7,v0,8
+     480:	accf0000 	sw	t7,0(a2)
+     484:	ac590004 	sw	t9,4(v0)
+     488:	ac580000 	sw	t8,0(v0)
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     48c:	8cc20000 	lw	v0,0(a2)
+     490:	3c0dda38 	lui	t5,0xda38
+     494:	35ad0007 	ori	t5,t5,0x7
+     498:	244c0008 	addiu	t4,v0,8
+     49c:	accc0000 	sw	t4,0(a2)
+     4a0:	ac4d0000 	sw	t5,0(v0)
+     4a4:	8fae002c 	lw	t6,44(sp)
+     4a8:	3c011fff 	lui	at,0x1fff
+     4ac:	3421ffff 	ori	at,at,0xffff
+     4b0:	01c17824 	and	t7,t6,at
+     4b4:	ac4f0004 	sw	t7,4(v0)
+
+        geo_process_node_and_siblings(node->node.children);
+     4b8:	8fb80030 	lw	t8,48(sp)
+     4bc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     4c0:	8f040010 	lw	a0,16(t8)
+    }
+}
+     4c4:	8fbf0024 	lw	ra,36(sp)
+     4c8:	27bd0030 	addiu	sp,sp,48
+     4cc:	03e00008 	jr	ra
+     4d0:	00000000 	nop
+
+/**
+ * Process a perspective projection node.
+ */
+static void geo_process_perspective(struct GraphNodePerspective *node) {
+     4d4:	27bdffb8 	addiu	sp,sp,-72
+     4d8:	afbf002c 	sw	ra,44(sp)
+     4dc:	afb00028 	sw	s0,40(sp)
+    if (node->fnNode.func != NULL) {
+     4e0:	8c820014 	lw	v0,20(a0)
+static void geo_process_perspective(struct GraphNodePerspective *node) {
+     4e4:	00808025 	move	s0,a0
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+     4e8:	02002825 	move	a1,s0
+    if (node->fnNode.func != NULL) {
+     4ec:	10400008 	beqz	v0,510 <Get_Screen_Coords-0x278>
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+     4f0:	24040001 	li	a0,1
+     4f4:	3c0e0000 	lui	t6,0x0
+     4f8:	85ce0000 	lh	t6,0(t6)
+     4fc:	3c180000 	lui	t8,0x0
+     500:	27180000 	addiu	t8,t8,0
+     504:	000e7980 	sll	t7,t6,0x6
+     508:	0040f809 	jalr	v0
+     50c:	01f83021 	addu	a2,t7,t8
+    }
+    if (node->fnNode.node.children != NULL) {
+     510:	8e190010 	lw	t9,16(s0)
+     514:	53200055 	beqzl	t9,66c <Get_Screen_Coords-0x11c>
+     518:	8fbf002c 	lw	ra,44(sp)
+        u16 perspNorm;
+        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     51c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     520:	24040040 	li	a0,64
+
+        switch (opt_widescreen) {
+     524:	3c030000 	lui	v1,0x0
+     528:	90630000 	lbu	v1,0(v1)
+        Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     52c:	00402025 	move	a0,v0
+        case 0:
+            aspect = 4.0f / 3.0f;
+     530:	3c010000 	lui	at,0x0
+        switch (opt_widescreen) {
+     534:	1060000a 	beqz	v1,560 <Get_Screen_Coords-0x228>
+     538:	00000000 	nop
+     53c:	24010001 	li	at,1
+     540:	1061000b 	beq	v1,at,570 <Get_Screen_Coords-0x218>
+     544:	24010002 	li	at,2
+     548:	1061000e 	beq	v1,at,584 <Get_Screen_Coords-0x204>
+     54c:	24010003 	li	at,3
+     550:	10610011 	beq	v1,at,598 <Get_Screen_Coords-0x1f0>
+     554:	00000000 	nop
+     558:	10000014 	b	5ac <Get_Screen_Coords-0x1dc>
+     55c:	86080020 	lh	t0,32(s0)
+            aspect = 4.0f / 3.0f;
+     560:	c4240008 	lwc1	$f4,8(at)
+     564:	3c010000 	lui	at,0x0
+            break;
+     568:	1000000f 	b	5a8 <Get_Screen_Coords-0x1e0>
+            aspect = 4.0f / 3.0f;
+     56c:	e4240000 	swc1	$f4,0(at)
+        case 1:
+            aspect = 16.0f / 10.0f;
+     570:	3c010000 	lui	at,0x0
+     574:	c426000c 	lwc1	$f6,12(at)
+     578:	3c010000 	lui	at,0x0
+            break;
+     57c:	1000000a 	b	5a8 <Get_Screen_Coords-0x1e0>
+            aspect = 16.0f / 10.0f;
+     580:	e4260000 	swc1	$f6,0(at)
+        case 2:
+            aspect = 16.0f / 9.0f;
+     584:	3c010000 	lui	at,0x0
+     588:	c4280010 	lwc1	$f8,16(at)
+     58c:	3c010000 	lui	at,0x0
+            break;
+     590:	10000005 	b	5a8 <Get_Screen_Coords-0x1e0>
+            aspect = 16.0f / 9.0f;
+     594:	e4280000 	swc1	$f8,0(at)
+        case 3:
+            aspect = 21.0f / 9.0f;
+     598:	3c010000 	lui	at,0x0
+     59c:	c42a0014 	lwc1	$f10,20(at)
+     5a0:	3c010000 	lui	at,0x0
+     5a4:	e42a0000 	swc1	$f10,0(at)
+            break;
+        }
+
+        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+     5a8:	86080020 	lh	t0,32(s0)
+            break;
+     5ac:	3c013f00 	lui	at,0x3f00
+     5b0:	44810000 	mtc1	at,$f0
+        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+     5b4:	44888000 	mtc1	t0,$f16
+     5b8:	8e06001c 	lw	a2,28(s0)
+     5bc:	3c013f80 	lui	at,0x3f80
+     5c0:	468084a0 	cvt.s.w	$f18,$f16
+     5c4:	44818000 	mtc1	at,$f16
+     5c8:	3c070000 	lui	a3,0x0
+     5cc:	8ce70000 	lw	a3,0(a3)
+     5d0:	27a50046 	addiu	a1,sp,70
+     5d4:	46009102 	mul.s	$f4,$f18,$f0
+     5d8:	e7a40010 	swc1	$f4,16(sp)
+     5dc:	86090022 	lh	t1,34(s0)
+     5e0:	afa40040 	sw	a0,64(sp)
+     5e4:	e7b00018 	swc1	$f16,24(sp)
+     5e8:	44893000 	mtc1	t1,$f6
+     5ec:	00000000 	nop
+     5f0:	46803220 	cvt.s.w	$f8,$f6
+     5f4:	46004282 	mul.s	$f10,$f8,$f0
+     5f8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     5fc:	e7aa0014 	swc1	$f10,20(sp)
+     600:	3c060000 	lui	a2,0x0
+     604:	24c60000 	addiu	a2,a2,0
+        gSPPerspNormalize(gDisplayListHead++, perspNorm);
+     608:	8cc20000 	lw	v0,0(a2)
+     60c:	3c0bdb0e 	lui	t3,0xdb0e
+
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     610:	3c0eda38 	lui	t6,0xda38
+        gSPPerspNormalize(gDisplayListHead++, perspNorm);
+     614:	244a0008 	addiu	t2,v0,8
+     618:	acca0000 	sw	t2,0(a2)
+     61c:	ac4b0000 	sw	t3,0(v0)
+     620:	97ac0046 	lhu	t4,70(sp)
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     624:	35ce0007 	ori	t6,t6,0x7
+     628:	3c011fff 	lui	at,0x1fff
+        gSPPerspNormalize(gDisplayListHead++, perspNorm);
+     62c:	ac4c0004 	sw	t4,4(v0)
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     630:	8cc20000 	lw	v0,0(a2)
+     634:	3421ffff 	ori	at,at,0xffff
+     638:	244d0008 	addiu	t5,v0,8
+     63c:	accd0000 	sw	t5,0(a2)
+     640:	ac4e0000 	sw	t6,0(v0)
+     644:	8faf0040 	lw	t7,64(sp)
+     648:	01e1c024 	and	t8,t7,at
+
+        gCurGraphNodeCamFrustum = node;
+     64c:	3c010000 	lui	at,0x0
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     650:	ac580004 	sw	t8,4(v0)
+        gCurGraphNodeCamFrustum = node;
+     654:	ac300000 	sw	s0,0(at)
+        geo_process_node_and_siblings(node->fnNode.node.children);
+     658:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     65c:	8e040010 	lw	a0,16(s0)
+        gCurGraphNodeCamFrustum = NULL;
+     660:	3c010000 	lui	at,0x0
+     664:	ac200000 	sw	zero,0(at)
+    }
+}
+     668:	8fbf002c 	lw	ra,44(sp)
+     66c:	8fb00028 	lw	s0,40(sp)
+     670:	27bd0048 	addiu	sp,sp,72
+     674:	03e00008 	jr	ra
+     678:	00000000 	nop
+ * range of this node.
+ */
+static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
+    // The fixed point Mtx type is defined as 16 longs, but it's actually 16
+    // shorts for the integer parts followed by 16 shorts for the fraction parts
+    s16 *mtx = (s16 *) gMatStackFixed[gMatStackIndex];
+     67c:	3c0e0000 	lui	t6,0x0
+     680:	85ce0000 	lh	t6,0(t6)
+     684:	3c020000 	lui	v0,0x0
+static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
+     688:	27bdffe8 	addiu	sp,sp,-24
+    s16 *mtx = (s16 *) gMatStackFixed[gMatStackIndex];
+     68c:	000e7880 	sll	t7,t6,0x2
+     690:	004f1021 	addu	v0,v0,t7
+     694:	8c420000 	lw	v0,0(v0)
+static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
+     698:	afbf0014 	sw	ra,20(sp)
+    s16 distanceFromCam = -mtx[14]; // z-component of the translation column
+
+    if (node->minDistance <= distanceFromCam && distanceFromCam < node->maxDistance) {
+     69c:	84980014 	lh	t8,20(a0)
+    s16 distanceFromCam = -mtx[14]; // z-component of the translation column
+     6a0:	8443001c 	lh	v1,28(v0)
+     6a4:	00031823 	negu	v1,v1
+     6a8:	00031c00 	sll	v1,v1,0x10
+     6ac:	00031c03 	sra	v1,v1,0x10
+    if (node->minDistance <= distanceFromCam && distanceFromCam < node->maxDistance) {
+     6b0:	0078082a 	slt	at,v1,t8
+     6b4:	5420000b 	bnezl	at,6e4 <Get_Screen_Coords-0xa4>
+     6b8:	8fbf0014 	lw	ra,20(sp)
+     6bc:	84990016 	lh	t9,22(a0)
+     6c0:	0079082a 	slt	at,v1,t9
+     6c4:	50200007 	beqzl	at,6e4 <Get_Screen_Coords-0xa4>
+     6c8:	8fbf0014 	lw	ra,20(sp)
+        if (node->node.children != 0) {
+     6cc:	8c850010 	lw	a1,16(a0)
+     6d0:	50a00004 	beqzl	a1,6e4 <Get_Screen_Coords-0xa4>
+     6d4:	8fbf0014 	lw	ra,20(sp)
+            geo_process_node_and_siblings(node->node.children);
+     6d8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     6dc:	00a02025 	move	a0,a1
+        }
+    }
+}
+     6e0:	8fbf0014 	lw	ra,20(sp)
+     6e4:	27bd0018 	addiu	sp,sp,24
+     6e8:	03e00008 	jr	ra
+     6ec:	00000000 	nop
+/**
+ * Process a switch case node. The node's selection function is called
+ * if it is 0, and among the node's children, only the selected child is
+ * processed next.
+ */
+static void geo_process_switch(struct GraphNodeSwitchCase *node) {
+     6f0:	27bdffe0 	addiu	sp,sp,-32
+     6f4:	afbf0014 	sw	ra,20(sp)
+    struct GraphNode *selectedChild = node->fnNode.node.children;
+    s32 i;
+
+    if (node->fnNode.func != NULL) {
+     6f8:	8c820014 	lw	v0,20(a0)
+static void geo_process_switch(struct GraphNodeSwitchCase *node) {
+     6fc:	00802825 	move	a1,a0
+    struct GraphNode *selectedChild = node->fnNode.node.children;
+     700:	8c870010 	lw	a3,16(a0)
+    if (node->fnNode.func != NULL) {
+     704:	1040000c 	beqz	v0,738 <Get_Screen_Coords-0x50>
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+     708:	24040001 	li	a0,1
+     70c:	3c0e0000 	lui	t6,0x0
+     710:	85ce0000 	lh	t6,0(t6)
+     714:	3c180000 	lui	t8,0x0
+     718:	27180000 	addiu	t8,t8,0
+     71c:	000e7980 	sll	t7,t6,0x6
+     720:	01f83021 	addu	a2,t7,t8
+     724:	afa50020 	sw	a1,32(sp)
+     728:	0040f809 	jalr	v0
+     72c:	afa7001c 	sw	a3,28(sp)
+     730:	8fa50020 	lw	a1,32(sp)
+     734:	8fa7001c 	lw	a3,28(sp)
+    }
+    for (i = 0; selectedChild != NULL && node->selectedCase > i; i++) {
+     738:	10e0000b 	beqz	a3,768 <Get_Screen_Coords-0x20>
+     73c:	00001025 	move	v0,zero
+     740:	84a3001e 	lh	v1,30(a1)
+     744:	18600008 	blez	v1,768 <Get_Screen_Coords-0x20>
+     748:	00000000 	nop
+        selectedChild = selectedChild->next;
+     74c:	8ce70008 	lw	a3,8(a3)
+    for (i = 0; selectedChild != NULL && node->selectedCase > i; i++) {
+     750:	24420001 	addiu	v0,v0,1
+     754:	0043082a 	slt	at,v0,v1
+     758:	10e00003 	beqz	a3,768 <Get_Screen_Coords-0x20>
+     75c:	00000000 	nop
+     760:	5420fffb 	bnezl	at,750 <Get_Screen_Coords-0x38>
+     764:	8ce70008 	lw	a3,8(a3)
+    }
+    if (selectedChild != NULL) {
+     768:	50e00004 	beqzl	a3,77c <Get_Screen_Coords-0xc>
+     76c:	8fbf0014 	lw	ra,20(sp)
+        geo_process_node_and_siblings(selectedChild);
+     770:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     774:	00e02025 	move	a0,a3
+    }
+}
+     778:	8fbf0014 	lw	ra,20(sp)
+     77c:	27bd0020 	addiu	sp,sp,32
+     780:	03e00008 	jr	ra
+     784:	00000000 	nop
+
+00000788 <Get_Screen_Coords>:
+        s32 screenY;
+
+
+
+        // Convert Mario's coordinates into vec3s so they can be used in mtxf_mul_vec3s
+        vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
+     788:	3c050000 	lui	a1,0x0
+     78c:	8ca50000 	lw	a1,0(a1)
+void Get_Screen_Coords(void) {
+     790:	27bdffd8 	addiu	sp,sp,-40
+     794:	afbf0014 	sw	ra,20(sp)
+        vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
+     798:	27a40020 	addiu	a0,sp,32
+     79c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     7a0:	24a500b8 	addiu	a1,a1,184
+
+        // Transform Mario's coordinates into view frustrum
+        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+     7a4:	3c0e0000 	lui	t6,0x0
+     7a8:	85ce0000 	lh	t6,0(t6)
+     7ac:	3c180000 	lui	t8,0x0
+     7b0:	27180000 	addiu	t8,t8,0
+     7b4:	000e7980 	sll	t7,t6,0x6
+     7b8:	01f82021 	addu	a0,t7,t8
+     7bc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     7c0:	27a50020 	addiu	a1,sp,32
+
+        // Perspective divide
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     7c4:	87b90024 	lh	t9,36(sp)
+     7c8:	87a80020 	lh	t0,32(sp)
+        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+     7cc:	3c013f00 	lui	at,0x3f00
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     7d0:	44992000 	mtc1	t9,$f4
+     7d4:	44883000 	mtc1	t0,$f6
+     7d8:	3c020000 	lui	v0,0x0
+     7dc:	46802020 	cvt.s.w	$f0,$f4
+        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+     7e0:	44811000 	mtc1	at,$f2
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     7e4:	8c420000 	lw	v0,0(v0)
+        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+     7e8:	3c014000 	lui	at,0x4000
+     7ec:	44816000 	mtc1	at,$f12
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     7f0:	46803220 	cvt.s.w	$f8,$f6
+     7f4:	8449001a 	lh	t1,26(v0)
+        screenY = 2 * (0.5f - marioPos3s[1] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->height);
+     7f8:	87ab0022 	lh	t3,34(sp)
+     7fc:	844c001c 	lh	t4,28(v0)
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     800:	44892000 	mtc1	t1,$f4
+
+        if (marioPos3s[2] > 0) {
+            return;
+     804:	3c020000 	lui	v0,0x0
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     808:	46004283 	div.s	$f10,$f8,$f0
+            return;
+     80c:	24420000 	addiu	v0,v0,0
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     810:	468021a0 	cvt.s.w	$f6,$f4
+     814:	460a1401 	sub.s	$f16,$f2,$f10
+     818:	460c8482 	mul.s	$f18,$f16,$f12
+        screenY = 2 * (0.5f - marioPos3s[1] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->height);
+     81c:	448b8000 	mtc1	t3,$f16
+     820:	00000000 	nop
+     824:	46808120 	cvt.s.w	$f4,$f16
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     828:	46069202 	mul.s	$f8,$f18,$f6
+        screenY = 2 * (0.5f - marioPos3s[1] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->height);
+     82c:	46002483 	div.s	$f18,$f4,$f0
+        screenX = 2 * (0.5f - marioPos3s[0] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->width);
+     830:	4600428d 	trunc.w.s	$f10,$f8
+     834:	44035000 	mfc1	v1,$f10
+        screenY = 2 * (0.5f - marioPos3s[1] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->height);
+     838:	448c5000 	mtc1	t4,$f10
+     83c:	00000000 	nop
+     840:	46805420 	cvt.s.w	$f16,$f10
+     844:	46121181 	sub.s	$f6,$f2,$f18
+     848:	460c3202 	mul.s	$f8,$f6,$f12
+void Get_Screen_Coords(void) {
+     84c:	00000000 	nop
+        screenY = 2 * (0.5f - marioPos3s[1] / (f32)marioPos3s[2]) * (gCurGraphNodeRoot->height);
+     850:	46104102 	mul.s	$f4,$f8,$f16
+     854:	4600248d 	trunc.w.s	$f18,$f4
+     858:	44049000 	mfc1	a0,$f18
+        if (marioPos3s[2] > 0) {
+     85c:	1f200005 	bgtz	t9,874 <Get_Screen_Coords+0xec>
+     860:	00000000 	nop
+            }
+
+        gMarioState->ScreenPosX = screenX;
+     864:	8c4e0000 	lw	t6,0(v0)
+     868:	adc300d8 	sw	v1,216(t6)
+        gMarioState->ScreenPosY = screenY;
+     86c:	8c4f0000 	lw	t7,0(v0)
+     870:	ade400d4 	sw	a0,212(t7)
+    }
+     874:	8fbf0014 	lw	ra,20(sp)
+     878:	27bd0028 	addiu	sp,sp,40
+     87c:	03e00008 	jr	ra
+     880:	00000000 	nop
+
+static void make_roll_matrix(Mtx *mtx, s16 angle) {
+     884:	27bdffa0 	addiu	sp,sp,-96
+     888:	afbf0014 	sw	ra,20(sp)
+     88c:	afa40060 	sw	a0,96(sp)
+     890:	afa50064 	sw	a1,100(sp)
+    Mat4 temp;
+
+    mtxf_identity(temp);
+     894:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     898:	27a40020 	addiu	a0,sp,32
+    temp[0][0] = coss(angle);
+     89c:	97a20066 	lhu	v0,102(sp)
+     8a0:	3c010000 	lui	at,0x0
+    temp[0][1] = sins(angle);
+    temp[1][0] = -temp[0][1];
+    temp[1][1] = temp[0][0];
+    guMtxF2L(temp, mtx);
+     8a4:	27a40020 	addiu	a0,sp,32
+    temp[0][0] = coss(angle);
+     8a8:	00021103 	sra	v0,v0,0x4
+     8ac:	00021080 	sll	v0,v0,0x2
+     8b0:	00220821 	addu	at,at,v0
+     8b4:	c4200000 	lwc1	$f0,0(at)
+    temp[0][1] = sins(angle);
+     8b8:	3c010000 	lui	at,0x0
+     8bc:	00220821 	addu	at,at,v0
+     8c0:	c4220000 	lwc1	$f2,0(at)
+    guMtxF2L(temp, mtx);
+     8c4:	8fa50060 	lw	a1,96(sp)
+    temp[1][1] = temp[0][0];
+     8c8:	e7a00034 	swc1	$f0,52(sp)
+    temp[1][0] = -temp[0][1];
+     8cc:	46001107 	neg.s	$f4,$f2
+    guMtxF2L(temp, mtx);
+     8d0:	e7a00020 	swc1	$f0,32(sp)
+    temp[1][0] = -temp[0][1];
+     8d4:	e7a40030 	swc1	$f4,48(sp)
+    guMtxF2L(temp, mtx);
+     8d8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     8dc:	e7a20024 	swc1	$f2,36(sp)
+}
+     8e0:	8fbf0014 	lw	ra,20(sp)
+     8e4:	27bd0060 	addiu	sp,sp,96
+     8e8:	03e00008 	jr	ra
+     8ec:	00000000 	nop
+
+/**
+ * Process a camera node.
+ */
+static void geo_process_camera(struct GraphNodeCamera *node) {
+     8f0:	27bdff90 	addiu	sp,sp,-112
+     8f4:	afb00014 	sw	s0,20(sp)
+     8f8:	00808025 	move	s0,a0
+     8fc:	afbf001c 	sw	ra,28(sp)
+     900:	afb10018 	sw	s1,24(sp)
+    Mat4 cameraTransform;
+    Mtx *rollMtx = alloc_display_list(sizeof(*rollMtx));
+     904:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     908:	24040040 	li	a0,64
+     90c:	afa2002c 	sw	v0,44(sp)
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     910:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     914:	24040040 	li	a0,64
+     918:	afa20028 	sw	v0,40(sp)
+
+    
+
+    if (node->fnNode.func != NULL) {
+     91c:	8e030014 	lw	v1,20(s0)
+     920:	3c110000 	lui	s1,0x0
+     924:	26310000 	addiu	s1,s1,0
+     928:	10600008 	beqz	v1,94c <Get_Screen_Coords+0x1c4>
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+     92c:	24040001 	li	a0,1
+     930:	862e0000 	lh	t6,0(s1)
+     934:	3c180000 	lui	t8,0x0
+     938:	27180000 	addiu	t8,t8,0
+     93c:	000e7980 	sll	t7,t6,0x6
+     940:	01f83021 	addu	a2,t7,t8
+     944:	0060f809 	jalr	v1
+     948:	02002825 	move	a1,s0
+     94c:	3c110000 	lui	s1,0x0
+     950:	26310000 	addiu	s1,s1,0
+    }
+    make_roll_matrix(rollMtx, node->rollScreen);
+     954:	8fa4002c 	lw	a0,44(sp)
+     958:	0c000221 	jal	884 <Get_Screen_Coords+0xfc>
+     95c:	8605003a 	lh	a1,58(s0)
+     960:	3c080000 	lui	t0,0x0
+     964:	25080000 	addiu	t0,t0,0
+
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
+     968:	8d030000 	lw	v1,0(t0)
+     96c:	3c09da38 	lui	t1,0xda38
+     970:	35290005 	ori	t1,t1,0x5
+     974:	24790008 	addiu	t9,v1,8
+     978:	ad190000 	sw	t9,0(t0)
+     97c:	ac690000 	sw	t1,0(v1)
+     980:	8faa002c 	lw	t2,44(sp)
+     984:	3c011fff 	lui	at,0x1fff
+     988:	3421ffff 	ori	at,at,0xffff
+     98c:	01415824 	and	t3,t2,at
+     990:	ac6b0004 	sw	t3,4(v1)
+
+    mtxf_lookat(cameraTransform, node->pos, node->focus, node->roll);
+     994:	86070038 	lh	a3,56(s0)
+     998:	27a40030 	addiu	a0,sp,48
+     99c:	2605001c 	addiu	a1,s0,28
+     9a0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     9a4:	26060028 	addiu	a2,s0,40
+    mtxf_mul(gMatStack[gMatStackIndex + 1], cameraTransform, gMatStack[gMatStackIndex]);
+     9a8:	862c0000 	lh	t4,0(s1)
+     9ac:	3c0e0000 	lui	t6,0x0
+     9b0:	25ce0000 	addiu	t6,t6,0
+     9b4:	000c6980 	sll	t5,t4,0x6
+     9b8:	01ae3021 	addu	a2,t5,t6
+     9bc:	24c40040 	addiu	a0,a2,64
+     9c0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     9c4:	27a50030 	addiu	a1,sp,48
+    gMatStackIndex++;
+     9c8:	862f0000 	lh	t7,0(s1)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     9cc:	3c0a0000 	lui	t2,0x0
+     9d0:	254a0000 	addiu	t2,t2,0
+    gMatStackIndex++;
+     9d4:	25f80001 	addiu	t8,t7,1
+     9d8:	a6380000 	sh	t8,0(s1)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     9dc:	86390000 	lh	t9,0(s1)
+     9e0:	8fa40028 	lw	a0,40(sp)
+     9e4:	00194980 	sll	t1,t9,0x6
+     9e8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     9ec:	012a2821 	addu	a1,t1,t2
+    gMatStackFixed[gMatStackIndex] = mtx;
+     9f0:	86220000 	lh	v0,0(s1)
+     9f4:	8fab0028 	lw	t3,40(sp)
+     9f8:	3c010000 	lui	at,0x0
+     9fc:	00026080 	sll	t4,v0,0x2
+     a00:	002c0821 	addu	at,at,t4
+     a04:	ac2b0000 	sw	t3,0(at)
+    if (node->fnNode.node.children != 0) {
+     a08:	8e0d0010 	lw	t5,16(s0)
+        gCurGraphNodeCamera = node;
+     a0c:	3c010000 	lui	at,0x0
+        node->matrixPtr = gMatStack[gMatStackIndex];
+     a10:	3c0f0000 	lui	t7,0x0
+    if (node->fnNode.node.children != 0) {
+     a14:	11a00009 	beqz	t5,a3c <Get_Screen_Coords+0x2b4>
+        node->matrixPtr = gMatStack[gMatStackIndex];
+     a18:	00027180 	sll	t6,v0,0x6
+     a1c:	25ef0000 	addiu	t7,t7,0
+        gCurGraphNodeCamera = node;
+     a20:	ac300000 	sw	s0,0(at)
+        node->matrixPtr = gMatStack[gMatStackIndex];
+     a24:	01cfc021 	addu	t8,t6,t7
+     a28:	ae180034 	sw	t8,52(s0)
+        geo_process_node_and_siblings(node->fnNode.node.children);
+     a2c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     a30:	8e040010 	lw	a0,16(s0)
+        gCurGraphNodeCamera = NULL;
+     a34:	3c010000 	lui	at,0x0
+     a38:	ac200000 	sw	zero,0(at)
+    }
+    Get_Screen_Coords();
+     a3c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     a40:	00000000 	nop
+    gMatStackIndex--;
+     a44:	86390000 	lh	t9,0(s1)
+}
+     a48:	8fbf001c 	lw	ra,28(sp)
+     a4c:	8fb00014 	lw	s0,20(sp)
+    gMatStackIndex--;
+     a50:	2729ffff 	addiu	t1,t9,-1
+     a54:	a6290000 	sh	t1,0(s1)
+}
+     a58:	8fb10018 	lw	s1,24(sp)
+     a5c:	03e00008 	jr	ra
+     a60:	27bd0070 	addiu	sp,sp,112
+ * Process a translation / rotation node. A transformation matrix based
+ * on the node's translation and rotation is created and pushed on both
+ * the float and fixed point matrix stacks.
+ * For the rest it acts as a normal display list node.
+ */
+static void geo_process_translation_rotation(struct GraphNodeTranslationRotation *node) {
+     a64:	27bdff88 	addiu	sp,sp,-120
+     a68:	afb10018 	sw	s1,24(sp)
+     a6c:	00808825 	move	s1,a0
+     a70:	afbf001c 	sw	ra,28(sp)
+     a74:	afb00014 	sw	s0,20(sp)
+    Mat4 mtxf;
+    Vec3f translation;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     a78:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     a7c:	24040040 	li	a0,64
+     a80:	27b0002c 	addiu	s0,sp,44
+     a84:	afa20028 	sw	v0,40(sp)
+
+    vec3s_to_vec3f(translation, node->translation);
+     a88:	02002025 	move	a0,s0
+     a8c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     a90:	26250018 	addiu	a1,s1,24
+    mtxf_rotate_zxy_and_translate(mtxf, translation, node->rotation);
+     a94:	27a40038 	addiu	a0,sp,56
+     a98:	02002825 	move	a1,s0
+     a9c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     aa0:	2626001e 	addiu	a2,s1,30
+     aa4:	3c100000 	lui	s0,0x0
+     aa8:	26100000 	addiu	s0,s0,0
+    mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
+     aac:	860e0000 	lh	t6,0(s0)
+     ab0:	3c180000 	lui	t8,0x0
+     ab4:	27180000 	addiu	t8,t8,0
+     ab8:	000e7980 	sll	t7,t6,0x6
+     abc:	01f83021 	addu	a2,t7,t8
+     ac0:	24c40040 	addiu	a0,a2,64
+     ac4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     ac8:	27a50038 	addiu	a1,sp,56
+    gMatStackIndex++;
+     acc:	86190000 	lh	t9,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     ad0:	3c0b0000 	lui	t3,0x0
+     ad4:	256b0000 	addiu	t3,t3,0
+    gMatStackIndex++;
+     ad8:	27280001 	addiu	t0,t9,1
+     adc:	a6080000 	sh	t0,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     ae0:	86090000 	lh	t1,0(s0)
+     ae4:	8fa40028 	lw	a0,40(sp)
+     ae8:	00095180 	sll	t2,t1,0x6
+     aec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     af0:	014b2821 	addu	a1,t2,t3
+    gMatStackFixed[gMatStackIndex] = mtx;
+     af4:	860d0000 	lh	t5,0(s0)
+     af8:	8fac0028 	lw	t4,40(sp)
+     afc:	3c010000 	lui	at,0x0
+     b00:	000d7080 	sll	t6,t5,0x2
+     b04:	002e0821 	addu	at,at,t6
+     b08:	ac2c0000 	sw	t4,0(at)
+    if (node->displayList != NULL) {
+     b0c:	8e240014 	lw	a0,20(s1)
+     b10:	50800007 	beqzl	a0,b30 <Get_Screen_Coords+0x3a8>
+     b14:	8e240010 	lw	a0,16(s1)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     b18:	86250002 	lh	a1,2(s1)
+     b1c:	00052a03 	sra	a1,a1,0x8
+     b20:	00052c00 	sll	a1,a1,0x10
+     b24:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     b28:	00052c03 	sra	a1,a1,0x10
+    }
+    if (node->node.children != NULL) {
+     b2c:	8e240010 	lw	a0,16(s1)
+     b30:	50800004 	beqzl	a0,b44 <Get_Screen_Coords+0x3bc>
+     b34:	860f0000 	lh	t7,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+     b38:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     b3c:	00000000 	nop
+    }
+    gMatStackIndex--;
+     b40:	860f0000 	lh	t7,0(s0)
+}
+     b44:	8fbf001c 	lw	ra,28(sp)
+     b48:	8fb10018 	lw	s1,24(sp)
+    gMatStackIndex--;
+     b4c:	25f8ffff 	addiu	t8,t7,-1
+     b50:	a6180000 	sh	t8,0(s0)
+}
+     b54:	8fb00014 	lw	s0,20(sp)
+     b58:	03e00008 	jr	ra
+     b5c:	27bd0078 	addiu	sp,sp,120
+/**
+ * Process a translation node. A transformation matrix based on the node's
+ * translation is created and pushed on both the float and fixed point matrix stacks.
+ * For the rest it acts as a normal display list node.
+ */
+static void geo_process_translation(struct GraphNodeTranslation *node) {
+     b60:	27bdff88 	addiu	sp,sp,-120
+     b64:	afbf001c 	sw	ra,28(sp)
+     b68:	afa40078 	sw	a0,120(sp)
+     b6c:	afb00018 	sw	s0,24(sp)
+    Mat4 mtxf;
+    Vec3f translation;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     b70:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     b74:	24040040 	li	a0,64
+
+    vec3s_to_vec3f(translation, node->translation);
+     b78:	8fa50078 	lw	a1,120(sp)
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     b7c:	27b0002c 	addiu	s0,sp,44
+     b80:	afa20028 	sw	v0,40(sp)
+    vec3s_to_vec3f(translation, node->translation);
+     b84:	02002025 	move	a0,s0
+     b88:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     b8c:	24a50018 	addiu	a1,a1,24
+    mtxf_rotate_zxy_and_translate(mtxf, translation, gVec3sZero);
+     b90:	3c060000 	lui	a2,0x0
+     b94:	24c60000 	addiu	a2,a2,0
+     b98:	27a40038 	addiu	a0,sp,56
+     b9c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     ba0:	02002825 	move	a1,s0
+     ba4:	3c100000 	lui	s0,0x0
+     ba8:	26100000 	addiu	s0,s0,0
+    mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
+     bac:	860e0000 	lh	t6,0(s0)
+     bb0:	3c180000 	lui	t8,0x0
+     bb4:	27180000 	addiu	t8,t8,0
+     bb8:	000e7980 	sll	t7,t6,0x6
+     bbc:	01f83021 	addu	a2,t7,t8
+     bc0:	24c40040 	addiu	a0,a2,64
+     bc4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     bc8:	27a50038 	addiu	a1,sp,56
+    gMatStackIndex++;
+     bcc:	86190000 	lh	t9,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     bd0:	3c0b0000 	lui	t3,0x0
+     bd4:	256b0000 	addiu	t3,t3,0
+    gMatStackIndex++;
+     bd8:	27280001 	addiu	t0,t9,1
+     bdc:	a6080000 	sh	t0,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     be0:	86090000 	lh	t1,0(s0)
+     be4:	8fa40028 	lw	a0,40(sp)
+     be8:	00095180 	sll	t2,t1,0x6
+     bec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     bf0:	014b2821 	addu	a1,t2,t3
+    gMatStackFixed[gMatStackIndex] = mtx;
+     bf4:	860d0000 	lh	t5,0(s0)
+     bf8:	8fac0028 	lw	t4,40(sp)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     bfc:	8fa20078 	lw	v0,120(sp)
+    gMatStackFixed[gMatStackIndex] = mtx;
+     c00:	3c010000 	lui	at,0x0
+     c04:	000d7080 	sll	t6,t5,0x2
+     c08:	002e0821 	addu	at,at,t6
+     c0c:	ac2c0000 	sw	t4,0(at)
+    if (node->displayList != NULL) {
+     c10:	8c440014 	lw	a0,20(v0)
+     c14:	50800008 	beqzl	a0,c38 <Get_Screen_Coords+0x4b0>
+     c18:	8c440010 	lw	a0,16(v0)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     c1c:	84450002 	lh	a1,2(v0)
+     c20:	00052a03 	sra	a1,a1,0x8
+     c24:	00052c00 	sll	a1,a1,0x10
+     c28:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     c2c:	00052c03 	sra	a1,a1,0x10
+     c30:	8fa20078 	lw	v0,120(sp)
+    }
+    if (node->node.children != NULL) {
+     c34:	8c440010 	lw	a0,16(v0)
+     c38:	50800004 	beqzl	a0,c4c <Get_Screen_Coords+0x4c4>
+     c3c:	860f0000 	lh	t7,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+     c40:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     c44:	00000000 	nop
+    }
+    gMatStackIndex--;
+     c48:	860f0000 	lh	t7,0(s0)
+}
+     c4c:	8fbf001c 	lw	ra,28(sp)
+    gMatStackIndex--;
+     c50:	25f8ffff 	addiu	t8,t7,-1
+     c54:	a6180000 	sh	t8,0(s0)
+}
+     c58:	8fb00018 	lw	s0,24(sp)
+     c5c:	03e00008 	jr	ra
+     c60:	27bd0078 	addiu	sp,sp,120
+/**
+ * Process a rotation node. A transformation matrix based on the node's
+ * rotation is created and pushed on both the float and fixed point matrix stacks.
+ * For the rest it acts as a normal display list node.
+ */
+static void geo_process_rotation(struct GraphNodeRotation *node) {
+     c64:	27bdff98 	addiu	sp,sp,-104
+     c68:	afbf001c 	sw	ra,28(sp)
+     c6c:	afa40068 	sw	a0,104(sp)
+     c70:	afb00018 	sw	s0,24(sp)
+    Mat4 mtxf;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     c74:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     c78:	24040040 	li	a0,64
+
+    mtxf_rotate_zxy_and_translate(mtxf, gVec3fZero, node->rotation);
+     c7c:	8fa60068 	lw	a2,104(sp)
+     c80:	3c050000 	lui	a1,0x0
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     c84:	afa20024 	sw	v0,36(sp)
+    mtxf_rotate_zxy_and_translate(mtxf, gVec3fZero, node->rotation);
+     c88:	24a50000 	addiu	a1,a1,0
+     c8c:	27a40028 	addiu	a0,sp,40
+     c90:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     c94:	24c60018 	addiu	a2,a2,24
+     c98:	3c100000 	lui	s0,0x0
+     c9c:	26100000 	addiu	s0,s0,0
+    mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
+     ca0:	860e0000 	lh	t6,0(s0)
+     ca4:	3c180000 	lui	t8,0x0
+     ca8:	27180000 	addiu	t8,t8,0
+     cac:	000e7980 	sll	t7,t6,0x6
+     cb0:	01f83021 	addu	a2,t7,t8
+     cb4:	24c40040 	addiu	a0,a2,64
+     cb8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     cbc:	27a50028 	addiu	a1,sp,40
+    gMatStackIndex++;
+     cc0:	86190000 	lh	t9,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     cc4:	3c0b0000 	lui	t3,0x0
+     cc8:	256b0000 	addiu	t3,t3,0
+    gMatStackIndex++;
+     ccc:	27280001 	addiu	t0,t9,1
+     cd0:	a6080000 	sh	t0,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     cd4:	86090000 	lh	t1,0(s0)
+     cd8:	8fa40024 	lw	a0,36(sp)
+     cdc:	00095180 	sll	t2,t1,0x6
+     ce0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     ce4:	014b2821 	addu	a1,t2,t3
+    gMatStackFixed[gMatStackIndex] = mtx;
+     ce8:	860d0000 	lh	t5,0(s0)
+     cec:	8fac0024 	lw	t4,36(sp)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     cf0:	8fa20068 	lw	v0,104(sp)
+    gMatStackFixed[gMatStackIndex] = mtx;
+     cf4:	3c010000 	lui	at,0x0
+     cf8:	000d7080 	sll	t6,t5,0x2
+     cfc:	002e0821 	addu	at,at,t6
+     d00:	ac2c0000 	sw	t4,0(at)
+    if (node->displayList != NULL) {
+     d04:	8c440014 	lw	a0,20(v0)
+     d08:	50800008 	beqzl	a0,d2c <Get_Screen_Coords+0x5a4>
+     d0c:	8c440010 	lw	a0,16(v0)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     d10:	84450002 	lh	a1,2(v0)
+     d14:	00052a03 	sra	a1,a1,0x8
+     d18:	00052c00 	sll	a1,a1,0x10
+     d1c:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     d20:	00052c03 	sra	a1,a1,0x10
+     d24:	8fa20068 	lw	v0,104(sp)
+    }
+    if (node->node.children != NULL) {
+     d28:	8c440010 	lw	a0,16(v0)
+     d2c:	50800004 	beqzl	a0,d40 <Get_Screen_Coords+0x5b8>
+     d30:	860f0000 	lh	t7,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+     d34:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     d38:	00000000 	nop
+    }
+    gMatStackIndex--;
+     d3c:	860f0000 	lh	t7,0(s0)
+}
+     d40:	8fbf001c 	lw	ra,28(sp)
+    gMatStackIndex--;
+     d44:	25f8ffff 	addiu	t8,t7,-1
+     d48:	a6180000 	sh	t8,0(s0)
+}
+     d4c:	8fb00018 	lw	s0,24(sp)
+     d50:	03e00008 	jr	ra
+     d54:	27bd0068 	addiu	sp,sp,104
+/**
+ * Process a scaling node. A transformation matrix based on the node's
+ * scale is created and pushed on both the float and fixed point matrix stacks.
+ * For the rest it acts as a normal display list node.
+ */
+static void geo_process_scale(struct GraphNodeScale *node) {
+     d58:	27bdff88 	addiu	sp,sp,-120
+     d5c:	afbf001c 	sw	ra,28(sp)
+     d60:	afa40078 	sw	a0,120(sp)
+     d64:	afb00018 	sw	s0,24(sp)
+    UNUSED Mat4 transform;
+    Vec3f scaleVec;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     d68:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     d6c:	24040040 	li	a0,64
+
+    vec3f_set(scaleVec, node->scale, node->scale, node->scale);
+     d70:	8fae0078 	lw	t6,120(sp)
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     d74:	afa20028 	sw	v0,40(sp)
+    vec3f_set(scaleVec, node->scale, node->scale, node->scale);
+     d78:	27a4002c 	addiu	a0,sp,44
+     d7c:	c5c00018 	lwc1	$f0,24(t6)
+     d80:	44050000 	mfc1	a1,$f0
+     d84:	44060000 	mfc1	a2,$f0
+     d88:	44070000 	mfc1	a3,$f0
+     d8c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     d90:	00000000 	nop
+     d94:	3c100000 	lui	s0,0x0
+     d98:	26100000 	addiu	s0,s0,0
+    mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], scaleVec);
+     d9c:	860f0000 	lh	t7,0(s0)
+     da0:	3c190000 	lui	t9,0x0
+     da4:	27390000 	addiu	t9,t9,0
+     da8:	000fc180 	sll	t8,t7,0x6
+     dac:	03192821 	addu	a1,t8,t9
+     db0:	24a40040 	addiu	a0,a1,64
+     db4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     db8:	27a6002c 	addiu	a2,sp,44
+    gMatStackIndex++;
+     dbc:	86080000 	lh	t0,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     dc0:	3c0c0000 	lui	t4,0x0
+     dc4:	258c0000 	addiu	t4,t4,0
+    gMatStackIndex++;
+     dc8:	25090001 	addiu	t1,t0,1
+     dcc:	a6090000 	sh	t1,0(s0)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     dd0:	860a0000 	lh	t2,0(s0)
+     dd4:	8fa40028 	lw	a0,40(sp)
+     dd8:	000a5980 	sll	t3,t2,0x6
+     ddc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     de0:	016c2821 	addu	a1,t3,t4
+    gMatStackFixed[gMatStackIndex] = mtx;
+     de4:	860e0000 	lh	t6,0(s0)
+     de8:	8fad0028 	lw	t5,40(sp)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     dec:	8fa20078 	lw	v0,120(sp)
+    gMatStackFixed[gMatStackIndex] = mtx;
+     df0:	3c010000 	lui	at,0x0
+     df4:	000e7880 	sll	t7,t6,0x2
+     df8:	002f0821 	addu	at,at,t7
+     dfc:	ac2d0000 	sw	t5,0(at)
+    if (node->displayList != NULL) {
+     e00:	8c440014 	lw	a0,20(v0)
+     e04:	50800008 	beqzl	a0,e28 <Get_Screen_Coords+0x6a0>
+     e08:	8c440010 	lw	a0,16(v0)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     e0c:	84450002 	lh	a1,2(v0)
+     e10:	00052a03 	sra	a1,a1,0x8
+     e14:	00052c00 	sll	a1,a1,0x10
+     e18:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     e1c:	00052c03 	sra	a1,a1,0x10
+     e20:	8fa20078 	lw	v0,120(sp)
+    }
+    if (node->node.children != NULL) {
+     e24:	8c440010 	lw	a0,16(v0)
+     e28:	50800004 	beqzl	a0,e3c <Get_Screen_Coords+0x6b4>
+     e2c:	86180000 	lh	t8,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+     e30:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     e34:	00000000 	nop
+    }
+    gMatStackIndex--;
+     e38:	86180000 	lh	t8,0(s0)
+}
+     e3c:	8fbf001c 	lw	ra,28(sp)
+    gMatStackIndex--;
+     e40:	2719ffff 	addiu	t9,t8,-1
+     e44:	a6190000 	sh	t9,0(s0)
+}
+     e48:	8fb00018 	lw	s0,24(sp)
+     e4c:	03e00008 	jr	ra
+     e50:	27bd0078 	addiu	sp,sp,120
+ * Process a billboard node. A transformation matrix is created that makes its
+ * children face the camera, and it is pushed on the floating point and fixed
+ * point matrix stacks.
+ * For the rest it acts as a normal display list node.
+ */
+static void geo_process_billboard(struct GraphNodeBillboard *node) {
+     e54:	27bdffc8 	addiu	sp,sp,-56
+     e58:	afbf001c 	sw	ra,28(sp)
+     e5c:	afa40038 	sw	a0,56(sp)
+     e60:	afb00018 	sw	s0,24(sp)
+    Vec3f translation;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     e64:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     e68:	24040040 	li	a0,64
+     e6c:	3c100000 	lui	s0,0x0
+     e70:	26100000 	addiu	s0,s0,0
+
+    gMatStackIndex++;
+     e74:	860e0000 	lh	t6,0(s0)
+    vec3s_to_vec3f(translation, node->translation);
+     e78:	8fa50038 	lw	a1,56(sp)
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+     e7c:	afa20028 	sw	v0,40(sp)
+    gMatStackIndex++;
+     e80:	25cf0001 	addiu	t7,t6,1
+     e84:	a60f0000 	sh	t7,0(s0)
+    vec3s_to_vec3f(translation, node->translation);
+     e88:	27a4002c 	addiu	a0,sp,44
+     e8c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     e90:	24a50018 	addiu	a1,a1,24
+    mtxf_billboard(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex - 1], translation,
+     e94:	86180000 	lh	t8,0(s0)
+     e98:	3c080000 	lui	t0,0x0
+     e9c:	3c090000 	lui	t1,0x0
+     ea0:	8d290000 	lw	t1,0(t1)
+     ea4:	25080000 	addiu	t0,t0,0
+     ea8:	0018c980 	sll	t9,t8,0x6
+     eac:	03282021 	addu	a0,t9,t0
+     eb0:	2485ffc0 	addiu	a1,a0,-64
+     eb4:	27a6002c 	addiu	a2,sp,44
+     eb8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     ebc:	85270038 	lh	a3,56(t1)
+                   gCurGraphNodeCamera->roll);
+    if (gCurGraphNodeHeldObject != NULL) {
+     ec0:	3c020000 	lui	v0,0x0
+     ec4:	8c420000 	lw	v0,0(v0)
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
+     ec8:	3c0c0000 	lui	t4,0x0
+    if (gCurGraphNodeHeldObject != NULL) {
+     ecc:	1040000b 	beqz	v0,efc <Get_Screen_Coords+0x774>
+     ed0:	00000000 	nop
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
+     ed4:	860a0000 	lh	t2,0(s0)
+     ed8:	8c46001c 	lw	a2,28(v0)
+     edc:	258c0000 	addiu	t4,t4,0
+     ee0:	000a5980 	sll	t3,t2,0x6
+     ee4:	016c2021 	addu	a0,t3,t4
+     ee8:	00802825 	move	a1,a0
+     eec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     ef0:	24c6002c 	addiu	a2,a2,44
+     ef4:	1000000e 	b	f30 <Get_Screen_Coords+0x7a8>
+     ef8:	86180000 	lh	t8,0(s0)
+                         gCurGraphNodeHeldObject->objNode->header.gfx.scale);
+    } else if (gCurGraphNodeObject != NULL) {
+     efc:	3c020000 	lui	v0,0x0
+     f00:	8c420000 	lw	v0,0(v0)
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
+     f04:	3c0f0000 	lui	t7,0x0
+    } else if (gCurGraphNodeObject != NULL) {
+     f08:	50400009 	beqzl	v0,f30 <Get_Screen_Coords+0x7a8>
+     f0c:	86180000 	lh	t8,0(s0)
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
+     f10:	860d0000 	lh	t5,0(s0)
+     f14:	25ef0000 	addiu	t7,t7,0
+     f18:	2446002c 	addiu	a2,v0,44
+     f1c:	000d7180 	sll	t6,t5,0x6
+     f20:	01cf2021 	addu	a0,t6,t7
+     f24:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     f28:	00802825 	move	a1,a0
+                         gCurGraphNodeObject->scale);
+    }
+
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     f2c:	86180000 	lh	t8,0(s0)
+     f30:	3c080000 	lui	t0,0x0
+     f34:	25080000 	addiu	t0,t0,0
+     f38:	0018c980 	sll	t9,t8,0x6
+     f3c:	03282821 	addu	a1,t9,t0
+     f40:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     f44:	8fa40028 	lw	a0,40(sp)
+    gMatStackFixed[gMatStackIndex] = mtx;
+     f48:	860a0000 	lh	t2,0(s0)
+     f4c:	8fa90028 	lw	t1,40(sp)
+    mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+     f50:	8fa20038 	lw	v0,56(sp)
+    gMatStackFixed[gMatStackIndex] = mtx;
+     f54:	3c010000 	lui	at,0x0
+     f58:	000a5880 	sll	t3,t2,0x2
+     f5c:	002b0821 	addu	at,at,t3
+     f60:	ac290000 	sw	t1,0(at)
+    if (node->displayList != NULL) {
+     f64:	8c440014 	lw	a0,20(v0)
+     f68:	50800008 	beqzl	a0,f8c <Get_Screen_Coords+0x804>
+     f6c:	8c440010 	lw	a0,16(v0)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     f70:	84450002 	lh	a1,2(v0)
+     f74:	00052a03 	sra	a1,a1,0x8
+     f78:	00052c00 	sll	a1,a1,0x10
+     f7c:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     f80:	00052c03 	sra	a1,a1,0x10
+     f84:	8fa20038 	lw	v0,56(sp)
+    }
+    if (node->node.children != NULL) {
+     f88:	8c440010 	lw	a0,16(v0)
+     f8c:	50800004 	beqzl	a0,fa0 <Get_Screen_Coords+0x818>
+     f90:	860c0000 	lh	t4,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+     f94:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+     f98:	00000000 	nop
+    }
+    gMatStackIndex--;
+     f9c:	860c0000 	lh	t4,0(s0)
+}
+     fa0:	8fbf001c 	lw	ra,28(sp)
+    gMatStackIndex--;
+     fa4:	258dffff 	addiu	t5,t4,-1
+     fa8:	a60d0000 	sh	t5,0(s0)
+}
+     fac:	8fb00018 	lw	s0,24(sp)
+     fb0:	03e00008 	jr	ra
+     fb4:	27bd0038 	addiu	sp,sp,56
+/**
+ * Process a display list node. It draws a display list without first pushing
+ * a transformation on the stack, so all transformations are inherited from the
+ * parent node. It processes its children if it has them.
+ */
+static void geo_process_display_list(struct GraphNodeDisplayList *node) {
+     fb8:	27bdffe8 	addiu	sp,sp,-24
+     fbc:	afbf0014 	sw	ra,20(sp)
+    if (node->displayList != NULL) {
+     fc0:	8c870014 	lw	a3,20(a0)
+static void geo_process_display_list(struct GraphNodeDisplayList *node) {
+     fc4:	00803025 	move	a2,a0
+    if (node->displayList != NULL) {
+     fc8:	50e0000a 	beqzl	a3,ff4 <Get_Screen_Coords+0x86c>
+     fcc:	8cc40010 	lw	a0,16(a2)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+     fd0:	84c50002 	lh	a1,2(a2)
+     fd4:	afa60018 	sw	a2,24(sp)
+     fd8:	00e02025 	move	a0,a3
+     fdc:	00052a03 	sra	a1,a1,0x8
+     fe0:	00052c00 	sll	a1,a1,0x10
+     fe4:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+     fe8:	00052c03 	sra	a1,a1,0x10
+     fec:	8fa60018 	lw	a2,24(sp)
+    }
+    if (node->node.children != NULL) {
+     ff0:	8cc40010 	lw	a0,16(a2)
+     ff4:	50800004 	beqzl	a0,1008 <Get_Screen_Coords+0x880>
+     ff8:	8fbf0014 	lw	ra,20(sp)
+        geo_process_node_and_siblings(node->node.children);
+     ffc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1000:	00000000 	nop
+    }
+}
+    1004:	8fbf0014 	lw	ra,20(sp)
+    1008:	27bd0018 	addiu	sp,sp,24
+    100c:	03e00008 	jr	ra
+    1010:	00000000 	nop
+
+/**
+ * Process a generated list. Instead of storing a pointer to a display list,
+ * the list is generated on the fly by a function.
+ */
+static void geo_process_generated_list(struct GraphNodeGenerated *node) {
+    1014:	27bdffe8 	addiu	sp,sp,-24
+    1018:	afbf0014 	sw	ra,20(sp)
+    101c:	afa40018 	sw	a0,24(sp)
+    if (node->fnNode.func != NULL) {
+    1020:	8c820014 	lw	v0,20(a0)
+    1024:	00807025 	move	t6,a0
+        Gfx *list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node,
+    1028:	01c02825 	move	a1,t6
+    if (node->fnNode.func != NULL) {
+    102c:	10400012 	beqz	v0,1078 <Get_Screen_Coords+0x8f0>
+        Gfx *list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node,
+    1030:	24040001 	li	a0,1
+    1034:	3c0f0000 	lui	t7,0x0
+    1038:	85ef0000 	lh	t7,0(t7)
+    103c:	3c190000 	lui	t9,0x0
+    1040:	27390000 	addiu	t9,t9,0
+    1044:	000fc180 	sll	t8,t7,0x6
+    1048:	0040f809 	jalr	v0
+    104c:	03193021 	addu	a2,t8,t9
+                                     (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
+
+        if (list != 0) {
+    1050:	10400009 	beqz	v0,1078 <Get_Screen_Coords+0x8f0>
+            geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
+    1054:	8fa80018 	lw	t0,24(sp)
+    1058:	85050002 	lh	a1,2(t0)
+    105c:	3c011fff 	lui	at,0x1fff
+    1060:	3421ffff 	ori	at,at,0xffff
+    1064:	00052a03 	sra	a1,a1,0x8
+    1068:	00052c00 	sll	a1,a1,0x10
+    106c:	00052c03 	sra	a1,a1,0x10
+    1070:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    1074:	00412024 	and	a0,v0,at
+        }
+    }
+    if (node->fnNode.node.children != NULL) {
+    1078:	8fa90018 	lw	t1,24(sp)
+    107c:	8d240010 	lw	a0,16(t1)
+    1080:	50800004 	beqzl	a0,1094 <Get_Screen_Coords+0x90c>
+    1084:	8fbf0014 	lw	ra,20(sp)
+        geo_process_node_and_siblings(node->fnNode.node.children);
+    1088:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    108c:	00000000 	nop
+    }
+}
+    1090:	8fbf0014 	lw	ra,20(sp)
+    1094:	27bd0018 	addiu	sp,sp,24
+    1098:	03e00008 	jr	ra
+    109c:	00000000 	nop
+/**
+ * Process a background node. Tries to retrieve a background display list from
+ * the function of the node. If that function is null or returns null, a black
+ * rectangle is drawn instead.
+ */
+static void geo_process_background(struct GraphNodeBackground *node) {
+    10a0:	27bdffe0 	addiu	sp,sp,-32
+    10a4:	afbf001c 	sw	ra,28(sp)
+    10a8:	afb00018 	sw	s0,24(sp)
+    Gfx *list = NULL;
+
+    if (node->fnNode.func != NULL) {
+    10ac:	8c820014 	lw	v0,20(a0)
+static void geo_process_background(struct GraphNodeBackground *node) {
+    10b0:	00808025 	move	s0,a0
+    Gfx *list = NULL;
+    10b4:	00001825 	move	v1,zero
+    if (node->fnNode.func != NULL) {
+    10b8:	1040000a 	beqz	v0,10e4 <Get_Screen_Coords+0x95c>
+        list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node,
+    10bc:	24040001 	li	a0,1
+    10c0:	3c0e0000 	lui	t6,0x0
+    10c4:	85ce0000 	lh	t6,0(t6)
+    10c8:	3c180000 	lui	t8,0x0
+    10cc:	27180000 	addiu	t8,t8,0
+    10d0:	000e7980 	sll	t7,t6,0x6
+    10d4:	01f83021 	addu	a2,t7,t8
+    10d8:	0040f809 	jalr	v0
+    10dc:	02002825 	move	a1,s0
+    10e0:	00401825 	move	v1,v0
+                                 (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
+    }
+    if (list != 0) {
+    10e4:	1060000b 	beqz	v1,1114 <Get_Screen_Coords+0x98c>
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
+    } else if (gCurGraphNodeMasterList != NULL) {
+    10e8:	3c190000 	lui	t9,0x0
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
+    10ec:	86050002 	lh	a1,2(s0)
+    10f0:	3c011fff 	lui	at,0x1fff
+    10f4:	3421ffff 	ori	at,at,0xffff
+    10f8:	00052a03 	sra	a1,a1,0x8
+    10fc:	00052c00 	sll	a1,a1,0x10
+    1100:	00052c03 	sra	a1,a1,0x10
+    1104:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    1108:	00612024 	and	a0,v1,at
+    110c:	10000023 	b	119c <Get_Screen_Coords+0xa14>
+    1110:	8e040010 	lw	a0,16(s0)
+    } else if (gCurGraphNodeMasterList != NULL) {
+    1114:	8f390000 	lw	t9,0(t9)
+    1118:	53200020 	beqzl	t9,119c <Get_Screen_Coords+0xa14>
+    111c:	8e040010 	lw	a0,16(s0)
+#ifndef F3DEX_GBI_2E
+        Gfx *gfxStart = alloc_display_list(sizeof(Gfx) * 7);
+    1120:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1124:	24040038 	li	a0,56
+    1128:	3c06e300 	lui	a2,0xe300
+    112c:	34c60a01 	ori	a2,a2,0xa01
+    1130:	3c03e700 	lui	v1,0xe700
+        Gfx *gfxStart = alloc_display_list(sizeof(Gfx) * 8);
+#endif
+        Gfx *gfx = gfxStart;
+
+        gDPPipeSync(gfx++);
+        gDPSetCycleType(gfx++, G_CYC_FILL);
+    1134:	3c080030 	lui	t0,0x30
+        gDPSetFillColor(gfx++, node->background);
+    1138:	3c09f700 	lui	t1,0xf700
+        gDPPipeSync(gfx++);
+    113c:	ac430000 	sw	v1,0(v0)
+    1140:	ac400004 	sw	zero,4(v0)
+        gDPSetCycleType(gfx++, G_CYC_FILL);
+    1144:	ac48000c 	sw	t0,12(v0)
+    1148:	ac460008 	sw	a2,8(v0)
+        gDPSetFillColor(gfx++, node->background);
+    114c:	ac490010 	sw	t1,16(v0)
+    1150:	8e0a001c 	lw	t2,28(s0)
+        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
+    1154:	3c0bf64f 	lui	t3,0xf64f
+        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - BORDER_HEIGHT - 1);
+        gDPPipeSync(gfx++);
+        gDPSetCycleType(gfx++, G_CYC_1CYCLE);
+        gSPEndDisplayList(gfx++);
+
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0);
+    1158:	3c011fff 	lui	at,0x1fff
+        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
+    115c:	356bc3bc 	ori	t3,t3,0xc3bc
+        gSPEndDisplayList(gfx++);
+    1160:	3c0cdf00 	lui	t4,0xdf00
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0);
+    1164:	3421ffff 	ori	at,at,0xffff
+        gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
+    1168:	ac4b0018 	sw	t3,24(v0)
+    116c:	ac40001c 	sw	zero,28(v0)
+        gDPPipeSync(gfx++);
+    1170:	ac400024 	sw	zero,36(v0)
+    1174:	ac430020 	sw	v1,32(v0)
+        gDPSetCycleType(gfx++, G_CYC_1CYCLE);
+    1178:	ac40002c 	sw	zero,44(v0)
+    117c:	ac460028 	sw	a2,40(v0)
+        gSPEndDisplayList(gfx++);
+    1180:	ac4c0030 	sw	t4,48(v0)
+    1184:	ac400034 	sw	zero,52(v0)
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0);
+    1188:	00412024 	and	a0,v0,at
+    118c:	00002825 	move	a1,zero
+    1190:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+        gDPSetFillColor(gfx++, node->background);
+    1194:	ac4a0014 	sw	t2,20(v0)
+    }
+    if (node->fnNode.node.children != NULL) {
+    1198:	8e040010 	lw	a0,16(s0)
+    119c:	50800004 	beqzl	a0,11b0 <Get_Screen_Coords+0xa28>
+    11a0:	8fbf001c 	lw	ra,28(sp)
+        geo_process_node_and_siblings(node->fnNode.node.children);
+    11a4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    11a8:	00000000 	nop
+    }
+}
+    11ac:	8fbf001c 	lw	ra,28(sp)
+    11b0:	8fb00018 	lw	s0,24(sp)
+    11b4:	27bd0020 	addiu	sp,sp,32
+    11b8:	03e00008 	jr	ra
+    11bc:	00000000 	nop
+
+/**
+ * Render an animated part. The current animation state is not part of the node
+ * but set in global variables. If an animated part is skipped, everything afterwards desyncs.
+ */
+static void geo_process_animated_part(struct GraphNodeAnimatedPart *node) {
+    11c0:	27bdff80 	addiu	sp,sp,-128
+    11c4:	afbf001c 	sw	ra,28(sp)
+    11c8:	afa40080 	sw	a0,128(sp)
+    11cc:	afb00018 	sw	s0,24(sp)
+    Mat4 matrix;
+    Vec3s rotation;
+    Vec3f translation;
+    Mtx *matrixPtr = alloc_display_list(sizeof(*matrixPtr));
+    11d0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    11d4:	24040040 	li	a0,64
+
+    vec3s_copy(rotation, gVec3sZero);
+    11d8:	3c050000 	lui	a1,0x0
+    Mtx *matrixPtr = alloc_display_list(sizeof(*matrixPtr));
+    11dc:	afa20028 	sw	v0,40(sp)
+    vec3s_copy(rotation, gVec3sZero);
+    11e0:	24a50000 	addiu	a1,a1,0
+    11e4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    11e8:	27a40038 	addiu	a0,sp,56
+    11ec:	8fa30080 	lw	v1,128(sp)
+    vec3f_set(translation, node->translation[0], node->translation[1], node->translation[2]);
+    11f0:	27a4002c 	addiu	a0,sp,44
+    11f4:	846e0018 	lh	t6,24(v1)
+    11f8:	846f001a 	lh	t7,26(v1)
+    11fc:	8478001c 	lh	t8,28(v1)
+    1200:	448e2000 	mtc1	t6,$f4
+    1204:	448f3000 	mtc1	t7,$f6
+    1208:	44984000 	mtc1	t8,$f8
+    120c:	46802120 	cvt.s.w	$f4,$f4
+    1210:	468031a0 	cvt.s.w	$f6,$f6
+    1214:	44052000 	mfc1	a1,$f4
+    1218:	46804220 	cvt.s.w	$f8,$f8
+    121c:	44063000 	mfc1	a2,$f6
+    1220:	44074000 	mfc1	a3,$f8
+    1224:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1228:	00000000 	nop
+    122c:	3c060000 	lui	a2,0x0
+    1230:	24c60000 	addiu	a2,a2,0
+    if (gCurAnimType == ANIM_TYPE_TRANSLATION) {
+    1234:	90c30000 	lbu	v1,0(a2)
+    1238:	24010001 	li	at,1
+    123c:	3c100000 	lui	s0,0x0
+    1240:	14610039 	bne	v1,at,1328 <Get_Screen_Coords+0xba0>
+    1244:	26100000 	addiu	s0,s0,0
+        translation[0] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1248:	3c040000 	lui	a0,0x0
+    124c:	84840000 	lh	a0,0(a0)
+    1250:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1254:	02002825 	move	a1,s0
+    1258:	3c190000 	lui	t9,0x0
+    125c:	8f390000 	lw	t9,0(t9)
+    1260:	00024040 	sll	t0,v0,0x1
+    1264:	3c010000 	lui	at,0x0
+    1268:	03284821 	addu	t1,t9,t0
+    126c:	852a0000 	lh	t2,0(t1)
+    1270:	c4320000 	lwc1	$f18,0(at)
+    1274:	c7a6002c 	lwc1	$f6,44(sp)
+    1278:	448a5000 	mtc1	t2,$f10
+                          * gCurAnimTranslationMultiplier;
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    127c:	3c040000 	lui	a0,0x0
+    1280:	84840000 	lh	a0,0(a0)
+        translation[0] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1284:	46805420 	cvt.s.w	$f16,$f10
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1288:	02002825 	move	a1,s0
+        translation[0] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    128c:	46128102 	mul.s	$f4,$f16,$f18
+    1290:	46043200 	add.s	$f8,$f6,$f4
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1294:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        translation[0] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1298:	e7a8002c 	swc1	$f8,44(sp)
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    129c:	3c0b0000 	lui	t3,0x0
+    12a0:	8d6b0000 	lw	t3,0(t3)
+    12a4:	00026040 	sll	t4,v0,0x1
+    12a8:	3c010000 	lui	at,0x0
+    12ac:	016c6821 	addu	t5,t3,t4
+    12b0:	85ae0000 	lh	t6,0(t5)
+    12b4:	c4320000 	lwc1	$f18,0(at)
+    12b8:	c7a40030 	lwc1	$f4,48(sp)
+    12bc:	448e5000 	mtc1	t6,$f10
+                          * gCurAnimTranslationMultiplier;
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12c0:	3c040000 	lui	a0,0x0
+    12c4:	84840000 	lh	a0,0(a0)
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12c8:	46805420 	cvt.s.w	$f16,$f10
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12cc:	02002825 	move	a1,s0
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12d0:	46128182 	mul.s	$f6,$f16,$f18
+    12d4:	46062200 	add.s	$f8,$f4,$f6
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12d8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        translation[1] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12dc:	e7a80030 	swc1	$f8,48(sp)
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    12e0:	3c0f0000 	lui	t7,0x0
+    12e4:	8def0000 	lw	t7,0(t7)
+    12e8:	0002c040 	sll	t8,v0,0x1
+    12ec:	3c010000 	lui	at,0x0
+    12f0:	01f8c821 	addu	t9,t7,t8
+    12f4:	87280000 	lh	t0,0(t9)
+    12f8:	c4320000 	lwc1	$f18,0(at)
+    12fc:	c7a60034 	lwc1	$f6,52(sp)
+    1300:	44885000 	mtc1	t0,$f10
+                          * gCurAnimTranslationMultiplier;
+        gCurAnimType = ANIM_TYPE_ROTATION;
+    1304:	3c010000 	lui	at,0x0
+    1308:	24090005 	li	t1,5
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    130c:	46805420 	cvt.s.w	$f16,$f10
+        gCurAnimType = ANIM_TYPE_ROTATION;
+    1310:	a0290000 	sb	t1,0(at)
+    1314:	24030005 	li	v1,5
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1318:	46128102 	mul.s	$f4,$f16,$f18
+    131c:	46043200 	add.s	$f8,$f6,$f4
+        gCurAnimType = ANIM_TYPE_ROTATION;
+    1320:	10000059 	b	1488 <Get_Screen_Coords+0xd00>
+        translation[2] += gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+    1324:	e7a80034 	swc1	$f8,52(sp)
+    } else {
+        if (gCurAnimType == ANIM_TYPE_LATERAL_TRANSLATION) {
+    1328:	24010003 	li	at,3
+    132c:	1461002c 	bne	v1,at,13e0 <Get_Screen_Coords+0xc58>
+    1330:	3c100000 	lui	s0,0x0
+    1334:	26100000 	addiu	s0,s0,0
+            translation[0] +=
+    1338:	3c040000 	lui	a0,0x0
+    133c:	84840000 	lh	a0,0(a0)
+    1340:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1344:	02002825 	move	a1,s0
+    1348:	3c0a0000 	lui	t2,0x0
+    134c:	8d4a0000 	lw	t2,0(t2)
+    1350:	00025840 	sll	t3,v0,0x1
+    1354:	3c010000 	lui	at,0x0
+    1358:	014b6021 	addu	t4,t2,t3
+    135c:	858d0000 	lh	t5,0(t4)
+    1360:	c4320000 	lwc1	$f18,0(at)
+    1364:	c7a4002c 	lwc1	$f4,44(sp)
+    1368:	448d5000 	mtc1	t5,$f10
+                gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+                * gCurAnimTranslationMultiplier;
+            gCurrAnimAttribute += 2;
+    136c:	8e0e0000 	lw	t6,0(s0)
+            translation[2] +=
+    1370:	3c040000 	lui	a0,0x0
+            translation[0] +=
+    1374:	46805420 	cvt.s.w	$f16,$f10
+            gCurrAnimAttribute += 2;
+    1378:	25cf0004 	addiu	t7,t6,4
+    137c:	ae0f0000 	sw	t7,0(s0)
+            translation[2] +=
+    1380:	84840000 	lh	a0,0(a0)
+    1384:	02002825 	move	a1,s0
+            translation[0] +=
+    1388:	46128182 	mul.s	$f6,$f16,$f18
+    138c:	46062200 	add.s	$f8,$f4,$f6
+            translation[2] +=
+    1390:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+            translation[0] +=
+    1394:	e7a8002c 	swc1	$f8,44(sp)
+            translation[2] +=
+    1398:	3c180000 	lui	t8,0x0
+    139c:	8f180000 	lw	t8,0(t8)
+    13a0:	0002c840 	sll	t9,v0,0x1
+    13a4:	3c010000 	lui	at,0x0
+    13a8:	03194021 	addu	t0,t8,t9
+    13ac:	85090000 	lh	t1,0(t0)
+    13b0:	c4320000 	lwc1	$f18,0(at)
+    13b4:	c7a60034 	lwc1	$f6,52(sp)
+    13b8:	44895000 	mtc1	t1,$f10
+                gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+                * gCurAnimTranslationMultiplier;
+            gCurAnimType = ANIM_TYPE_ROTATION;
+    13bc:	3c010000 	lui	at,0x0
+    13c0:	240a0005 	li	t2,5
+            translation[2] +=
+    13c4:	46805420 	cvt.s.w	$f16,$f10
+            gCurAnimType = ANIM_TYPE_ROTATION;
+    13c8:	a02a0000 	sb	t2,0(at)
+    13cc:	24030005 	li	v1,5
+            translation[2] +=
+    13d0:	46128102 	mul.s	$f4,$f16,$f18
+    13d4:	46043200 	add.s	$f8,$f6,$f4
+            gCurAnimType = ANIM_TYPE_ROTATION;
+    13d8:	1000002b 	b	1488 <Get_Screen_Coords+0xd00>
+            translation[2] +=
+    13dc:	e7a80034 	swc1	$f8,52(sp)
+        } else {
+            if (gCurAnimType == ANIM_TYPE_VERTICAL_TRANSLATION) {
+    13e0:	24010002 	li	at,2
+    13e4:	1461001e 	bne	v1,at,1460 <Get_Screen_Coords+0xcd8>
+    13e8:	3c100000 	lui	s0,0x0
+    13ec:	26100000 	addiu	s0,s0,0
+                gCurrAnimAttribute += 2;
+    13f0:	8e0b0000 	lw	t3,0(s0)
+                translation[1] +=
+    13f4:	3c040000 	lui	a0,0x0
+    13f8:	02002825 	move	a1,s0
+                gCurrAnimAttribute += 2;
+    13fc:	256c0004 	addiu	t4,t3,4
+    1400:	ae0c0000 	sw	t4,0(s0)
+                translation[1] +=
+    1404:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1408:	84840000 	lh	a0,0(a0)
+    140c:	3c0d0000 	lui	t5,0x0
+    1410:	8dad0000 	lw	t5,0(t5)
+    1414:	00027040 	sll	t6,v0,0x1
+    1418:	3c010000 	lui	at,0x0
+    141c:	01ae7821 	addu	t7,t5,t6
+    1420:	85f80000 	lh	t8,0(t7)
+    1424:	c4320000 	lwc1	$f18,0(at)
+    1428:	c7a40030 	lwc1	$f4,48(sp)
+    142c:	44985000 	mtc1	t8,$f10
+                    gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+                    * gCurAnimTranslationMultiplier;
+                gCurrAnimAttribute += 2;
+    1430:	8e190000 	lw	t9,0(s0)
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1434:	3c010000 	lui	at,0x0
+                translation[1] +=
+    1438:	46805420 	cvt.s.w	$f16,$f10
+                gCurrAnimAttribute += 2;
+    143c:	27280004 	addiu	t0,t9,4
+    1440:	ae080000 	sw	t0,0(s0)
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1444:	24090005 	li	t1,5
+    1448:	a0290000 	sb	t1,0(at)
+    144c:	24030005 	li	v1,5
+                translation[1] +=
+    1450:	46128182 	mul.s	$f6,$f16,$f18
+    1454:	46062200 	add.s	$f8,$f4,$f6
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1458:	1000000b 	b	1488 <Get_Screen_Coords+0xd00>
+                translation[1] +=
+    145c:	e7a80030 	swc1	$f8,48(sp)
+            } else if (gCurAnimType == ANIM_TYPE_NO_TRANSLATION) {
+    1460:	24010004 	li	at,4
+    1464:	14610008 	bne	v1,at,1488 <Get_Screen_Coords+0xd00>
+    1468:	3c100000 	lui	s0,0x0
+    146c:	26100000 	addiu	s0,s0,0
+                gCurrAnimAttribute += 6;
+    1470:	8e0a0000 	lw	t2,0(s0)
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1474:	240c0005 	li	t4,5
+    1478:	a0cc0000 	sb	t4,0(a2)
+                gCurrAnimAttribute += 6;
+    147c:	254b000c 	addiu	t3,t2,12
+    1480:	ae0b0000 	sw	t3,0(s0)
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1484:	318300ff 	andi	v1,t4,0xff
+    1488:	3c100000 	lui	s0,0x0
+            }
+        }
+    }
+
+    if (gCurAnimType == ANIM_TYPE_ROTATION) {
+    148c:	24010005 	li	at,5
+    1490:	1461001f 	bne	v1,at,1510 <Get_Screen_Coords+0xd88>
+                gCurAnimType = ANIM_TYPE_ROTATION;
+    1494:	26100000 	addiu	s0,s0,0
+        rotation[0] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    1498:	3c040000 	lui	a0,0x0
+    149c:	84840000 	lh	a0,0(a0)
+    14a0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    14a4:	02002825 	move	a1,s0
+    14a8:	3c0d0000 	lui	t5,0x0
+    14ac:	8dad0000 	lw	t5,0(t5)
+    14b0:	00027040 	sll	t6,v0,0x1
+        rotation[1] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14b4:	3c040000 	lui	a0,0x0
+        rotation[0] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14b8:	01ae7821 	addu	t7,t5,t6
+    14bc:	85f80000 	lh	t8,0(t7)
+        rotation[1] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14c0:	84840000 	lh	a0,0(a0)
+    14c4:	02002825 	move	a1,s0
+    14c8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        rotation[0] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14cc:	a7b80038 	sh	t8,56(sp)
+        rotation[1] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14d0:	3c190000 	lui	t9,0x0
+    14d4:	8f390000 	lw	t9,0(t9)
+    14d8:	00024040 	sll	t0,v0,0x1
+        rotation[2] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14dc:	3c040000 	lui	a0,0x0
+        rotation[1] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14e0:	03284821 	addu	t1,t9,t0
+    14e4:	852a0000 	lh	t2,0(t1)
+        rotation[2] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14e8:	84840000 	lh	a0,0(a0)
+    14ec:	02002825 	move	a1,s0
+    14f0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        rotation[1] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14f4:	a7aa003a 	sh	t2,58(sp)
+        rotation[2] = gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)];
+    14f8:	3c0b0000 	lui	t3,0x0
+    14fc:	8d6b0000 	lw	t3,0(t3)
+    1500:	00026040 	sll	t4,v0,0x1
+    1504:	016c6821 	addu	t5,t3,t4
+    1508:	85ae0000 	lh	t6,0(t5)
+    150c:	a7ae003c 	sh	t6,60(sp)
+    }
+    mtxf_rotate_xyz_and_translate(matrix, translation, rotation);
+    1510:	27a40040 	addiu	a0,sp,64
+    1514:	27a5002c 	addiu	a1,sp,44
+    1518:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    151c:	27a60038 	addiu	a2,sp,56
+    1520:	3c100000 	lui	s0,0x0
+    1524:	26100000 	addiu	s0,s0,0
+    mtxf_mul(gMatStack[gMatStackIndex + 1], matrix, gMatStack[gMatStackIndex]);
+    1528:	860f0000 	lh	t7,0(s0)
+    152c:	3c190000 	lui	t9,0x0
+    1530:	27390000 	addiu	t9,t9,0
+    1534:	000fc180 	sll	t8,t7,0x6
+    1538:	03193021 	addu	a2,t8,t9
+    153c:	24c40040 	addiu	a0,a2,64
+    1540:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1544:	27a50040 	addiu	a1,sp,64
+    gMatStackIndex++;
+    1548:	86080000 	lh	t0,0(s0)
+    mtxf_to_mtx(matrixPtr, gMatStack[gMatStackIndex]);
+    154c:	3c0c0000 	lui	t4,0x0
+    1550:	258c0000 	addiu	t4,t4,0
+    gMatStackIndex++;
+    1554:	25090001 	addiu	t1,t0,1
+    1558:	a6090000 	sh	t1,0(s0)
+    mtxf_to_mtx(matrixPtr, gMatStack[gMatStackIndex]);
+    155c:	860a0000 	lh	t2,0(s0)
+    1560:	8fa40028 	lw	a0,40(sp)
+    1564:	000a5980 	sll	t3,t2,0x6
+    1568:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    156c:	016c2821 	addu	a1,t3,t4
+    gMatStackFixed[gMatStackIndex] = matrixPtr;
+    1570:	860e0000 	lh	t6,0(s0)
+    1574:	8fad0028 	lw	t5,40(sp)
+    mtxf_to_mtx(matrixPtr, gMatStack[gMatStackIndex]);
+    1578:	8fa20080 	lw	v0,128(sp)
+    gMatStackFixed[gMatStackIndex] = matrixPtr;
+    157c:	3c010000 	lui	at,0x0
+    1580:	000e7880 	sll	t7,t6,0x2
+    1584:	002f0821 	addu	at,at,t7
+    1588:	ac2d0000 	sw	t5,0(at)
+    if (node->displayList != NULL) {
+    158c:	8c440014 	lw	a0,20(v0)
+    1590:	50800008 	beqzl	a0,15b4 <Get_Screen_Coords+0xe2c>
+    1594:	8c440010 	lw	a0,16(v0)
+        geo_append_display_list(node->displayList, node->node.flags >> 8);
+    1598:	84450002 	lh	a1,2(v0)
+    159c:	00052a03 	sra	a1,a1,0x8
+    15a0:	00052c00 	sll	a1,a1,0x10
+    15a4:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    15a8:	00052c03 	sra	a1,a1,0x10
+    15ac:	8fa20080 	lw	v0,128(sp)
+    }
+    if (node->node.children != NULL) {
+    15b0:	8c440010 	lw	a0,16(v0)
+    15b4:	50800004 	beqzl	a0,15c8 <Get_Screen_Coords+0xe40>
+    15b8:	86180000 	lh	t8,0(s0)
+        geo_process_node_and_siblings(node->node.children);
+    15bc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    15c0:	00000000 	nop
+    }
+    gMatStackIndex--;
+    15c4:	86180000 	lh	t8,0(s0)
+}
+    15c8:	8fbf001c 	lw	ra,28(sp)
+    gMatStackIndex--;
+    15cc:	2719ffff 	addiu	t9,t8,-1
+    15d0:	a6190000 	sh	t9,0(s0)
+}
+    15d4:	8fb00018 	lw	s0,24(sp)
+    15d8:	03e00008 	jr	ra
+    15dc:	27bd0080 	addiu	sp,sp,128
+
+000015e0 <geo_set_animation_globals>:
+
+/**
+ * Initialize the animation-related global variables for the currently drawn
+ * object's animation.
+ */
+void geo_set_animation_globals(struct GraphNodeObject_sub *node, s32 hasAnimation) {
+    15e0:	27bdffe0 	addiu	sp,sp,-32
+    15e4:	afbf001c 	sw	ra,28(sp)
+    15e8:	afb10018 	sw	s1,24(sp)
+    15ec:	afb00014 	sw	s0,20(sp)
+    15f0:	00808825 	move	s1,a0
+    struct Animation *anim = node->curAnim;
+
+    if (hasAnimation != 0) {
+    15f4:	10a00004 	beqz	a1,1608 <geo_set_animation_globals+0x28>
+    struct Animation *anim = node->curAnim;
+    15f8:	8c900004 	lw	s0,4(a0)
+        node->animFrame = geo_update_animation_frame(node, &node->animFrameAccelAssist);
+    15fc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1600:	2625000c 	addiu	a1,s1,12
+    1604:	a6220008 	sh	v0,8(s1)
+    }
+    node->animTimer = gAreaUpdateCounter;
+    1608:	3c0e0000 	lui	t6,0x0
+    160c:	95ce0000 	lhu	t6,0(t6)
+    if (anim->flags & ANIM_FLAG_HOR_TRANS) {
+        gCurAnimType = ANIM_TYPE_VERTICAL_TRANSLATION;
+    1610:	24180002 	li	t8,2
+    1614:	3c010000 	lui	at,0x0
+    node->animTimer = gAreaUpdateCounter;
+    1618:	a62e000a 	sh	t6,10(s1)
+    if (anim->flags & ANIM_FLAG_HOR_TRANS) {
+    161c:	86020000 	lh	v0,0(s0)
+    1620:	304f0008 	andi	t7,v0,0x8
+    1624:	11e00003 	beqz	t7,1634 <geo_set_animation_globals+0x54>
+    } else if (anim->flags & ANIM_FLAG_VERT_TRANS) {
+    1628:	30590010 	andi	t9,v0,0x10
+        gCurAnimType = ANIM_TYPE_VERTICAL_TRANSLATION;
+    162c:	1000000f 	b	166c <geo_set_animation_globals+0x8c>
+    1630:	a0380000 	sb	t8,0(at)
+    } else if (anim->flags & ANIM_FLAG_VERT_TRANS) {
+    1634:	13200005 	beqz	t9,164c <geo_set_animation_globals+0x6c>
+        gCurAnimType = ANIM_TYPE_LATERAL_TRANSLATION;
+    } else if (anim->flags & ANIM_FLAG_6) {
+    1638:	30490040 	andi	t1,v0,0x40
+        gCurAnimType = ANIM_TYPE_LATERAL_TRANSLATION;
+    163c:	24080003 	li	t0,3
+    1640:	3c010000 	lui	at,0x0
+    1644:	10000009 	b	166c <geo_set_animation_globals+0x8c>
+    1648:	a0280000 	sb	t0,0(at)
+    } else if (anim->flags & ANIM_FLAG_6) {
+    164c:	11200005 	beqz	t1,1664 <geo_set_animation_globals+0x84>
+        gCurAnimType = ANIM_TYPE_NO_TRANSLATION;
+    } else {
+        gCurAnimType = ANIM_TYPE_TRANSLATION;
+    1650:	240b0001 	li	t3,1
+        gCurAnimType = ANIM_TYPE_NO_TRANSLATION;
+    1654:	240a0004 	li	t2,4
+    1658:	3c010000 	lui	at,0x0
+    165c:	10000003 	b	166c <geo_set_animation_globals+0x8c>
+    1660:	a02a0000 	sb	t2,0(at)
+        gCurAnimType = ANIM_TYPE_TRANSLATION;
+    1664:	3c010000 	lui	at,0x0
+    1668:	a02b0000 	sb	t3,0(at)
+    }
+
+    gCurrAnimFrame = node->animFrame;
+    166c:	862c0008 	lh	t4,8(s1)
+    1670:	3c010000 	lui	at,0x0
+    1674:	a42c0000 	sh	t4,0(at)
+    gCurAnimEnabled = (anim->flags & ANIM_FLAG_5) == 0;
+    1678:	860d0000 	lh	t5,0(s0)
+    167c:	3c010000 	lui	at,0x0
+    1680:	31ae0020 	andi	t6,t5,0x20
+    1684:	2dcf0001 	sltiu	t7,t6,1
+    1688:	a02f0000 	sb	t7,0(at)
+    gCurrAnimAttribute = segmented_to_virtual((void *) anim->index);
+    168c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1690:	8e040010 	lw	a0,16(s0)
+    1694:	3c010000 	lui	at,0x0
+    1698:	ac220000 	sw	v0,0(at)
+    gCurAnimData = segmented_to_virtual((void *) anim->values);
+    169c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    16a0:	8e04000c 	lw	a0,12(s0)
+    16a4:	3c010000 	lui	at,0x0
+    16a8:	ac220000 	sw	v0,0(at)
+
+    if (anim->unk02 == 0) {
+    16ac:	86030002 	lh	v1,2(s0)
+        gCurAnimTranslationMultiplier = 1.0f;
+    16b0:	3c013f80 	lui	at,0x3f80
+    if (anim->unk02 == 0) {
+    16b4:	54600006 	bnezl	v1,16d0 <geo_set_animation_globals+0xf0>
+    16b8:	86380002 	lh	t8,2(s1)
+        gCurAnimTranslationMultiplier = 1.0f;
+    16bc:	44812000 	mtc1	at,$f4
+    16c0:	3c010000 	lui	at,0x0
+    16c4:	10000009 	b	16ec <geo_set_animation_globals+0x10c>
+    16c8:	e4240000 	swc1	$f4,0(at)
+    } else {
+        gCurAnimTranslationMultiplier = (f32) node->animYTrans / (f32) anim->unk02;
+    16cc:	86380002 	lh	t8,2(s1)
+    16d0:	44835000 	mtc1	v1,$f10
+    16d4:	3c010000 	lui	at,0x0
+    16d8:	44983000 	mtc1	t8,$f6
+    16dc:	46805420 	cvt.s.w	$f16,$f10
+    16e0:	46803220 	cvt.s.w	$f8,$f6
+    16e4:	46104483 	div.s	$f18,$f8,$f16
+    16e8:	e4320000 	swc1	$f18,0(at)
+    }
+}
+    16ec:	8fbf001c 	lw	ra,28(sp)
+    16f0:	8fb00014 	lw	s0,20(sp)
+    16f4:	8fb10018 	lw	s1,24(sp)
+    16f8:	03e00008 	jr	ra
+    16fc:	27bd0020 	addiu	sp,sp,32
+    f32 sinAng;
+    f32 cosAng;
+    struct GraphNode *geo;
+    Mtx *mtx;
+
+    if (gCurGraphNodeCamera != NULL && gCurGraphNodeObject != NULL) {
+    1700:	3c020000 	lui	v0,0x0
+    1704:	8c420000 	lw	v0,0(v0)
+static void geo_process_shadow(struct GraphNodeShadow *node) {
+    1708:	27bdff60 	addiu	sp,sp,-160
+    170c:	afbf001c 	sw	ra,28(sp)
+    if (gCurGraphNodeCamera != NULL && gCurGraphNodeObject != NULL) {
+    1710:	104000da 	beqz	v0,1a7c <geo_set_animation_globals+0x49c>
+static void geo_process_shadow(struct GraphNodeShadow *node) {
+    1714:	afa400a0 	sw	a0,160(sp)
+    if (gCurGraphNodeCamera != NULL && gCurGraphNodeObject != NULL) {
+    1718:	3c030000 	lui	v1,0x0
+    171c:	8c630000 	lw	v1,0(v1)
+        if (gCurGraphNodeHeldObject != NULL) {
+    1720:	3c0e0000 	lui	t6,0x0
+    if (gCurGraphNodeCamera != NULL && gCurGraphNodeObject != NULL) {
+    1724:	506000d6 	beqzl	v1,1a80 <geo_set_animation_globals+0x4a0>
+    1728:	8fb800a0 	lw	t8,160(sp)
+        if (gCurGraphNodeHeldObject != NULL) {
+    172c:	8dce0000 	lw	t6,0(t6)
+            get_pos_from_transform_mtx(shadowPos, gMatStack[gMatStackIndex],
+    1730:	3c0f0000 	lui	t7,0x0
+    1734:	3c190000 	lui	t9,0x0
+        if (gCurGraphNodeHeldObject != NULL) {
+    1738:	11c0000d 	beqz	t6,1770 <geo_set_animation_globals+0x190>
+                                       gCurGraphNodeCamera->matrixPtr);
+            shadowScale = node->shadowScale;
+        } else {
+            vec3f_copy(shadowPos, gCurGraphNodeObject->pos);
+    173c:	27a40050 	addiu	a0,sp,80
+            get_pos_from_transform_mtx(shadowPos, gMatStack[gMatStackIndex],
+    1740:	85ef0000 	lh	t7,0(t7)
+    1744:	27390000 	addiu	t9,t9,0
+    1748:	27a40050 	addiu	a0,sp,80
+    174c:	000fc180 	sll	t8,t7,0x6
+    1750:	03192821 	addu	a1,t8,t9
+    1754:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1758:	8c460034 	lw	a2,52(v0)
+    175c:	8fa300a0 	lw	v1,160(sp)
+            shadowScale = node->shadowScale;
+    1760:	84680014 	lh	t0,20(v1)
+    1764:	44882000 	mtc1	t0,$f4
+    1768:	1000000d 	b	17a0 <geo_set_animation_globals+0x1c0>
+    176c:	46802420 	cvt.s.w	$f16,$f4
+            vec3f_copy(shadowPos, gCurGraphNodeObject->pos);
+    1770:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1774:	24650020 	addiu	a1,v1,32
+            shadowScale = node->shadowScale * gCurGraphNodeObject->scale[0];
+    1778:	8fa300a0 	lw	v1,160(sp)
+    177c:	3c090000 	lui	t1,0x0
+    1780:	8d290000 	lw	t1,0(t1)
+    1784:	846b0014 	lh	t3,20(v1)
+    1788:	c526002c 	lwc1	$f6,44(t1)
+    178c:	448b4000 	mtc1	t3,$f8
+    1790:	00000000 	nop
+    1794:	468042a0 	cvt.s.w	$f10,$f8
+    1798:	460a3402 	mul.s	$f16,$f6,$f10
+    179c:	00000000 	nop
+        }
+
+        objScale = 1.0f;
+        if (gCurAnimEnabled != 0) {
+    17a0:	3c0c0000 	lui	t4,0x0
+    17a4:	918c0000 	lbu	t4,0(t4)
+        objScale = 1.0f;
+    17a8:	3c013f80 	lui	at,0x3f80
+    17ac:	44816000 	mtc1	at,$f12
+        if (gCurAnimEnabled != 0) {
+    17b0:	1180005c 	beqz	t4,1924 <geo_set_animation_globals+0x344>
+            if (gCurAnimType == ANIM_TYPE_TRANSLATION
+    17b4:	3c020000 	lui	v0,0x0
+    17b8:	90420000 	lbu	v0,0(v0)
+    17bc:	24010001 	li	at,1
+                || gCurAnimType == ANIM_TYPE_LATERAL_TRANSLATION) {
+                geo = node->node.children;
+                if (geo != NULL && geo->type == GRAPH_NODE_TYPE_SCALE) {
+                    objScale = ((struct GraphNodeScale *) geo)->scale;
+    17c0:	3c050000 	lui	a1,0x0
+            if (gCurAnimType == ANIM_TYPE_TRANSLATION
+    17c4:	10410004 	beq	v0,at,17d8 <geo_set_animation_globals+0x1f8>
+                    objScale = ((struct GraphNodeScale *) geo)->scale;
+    17c8:	24a50000 	addiu	a1,a1,0
+            if (gCurAnimType == ANIM_TYPE_TRANSLATION
+    17cc:	24010003 	li	at,3
+    17d0:	54410055 	bnel	v0,at,1928 <geo_set_animation_globals+0x348>
+    17d4:	4600848d 	trunc.w.s	$f18,$f16
+                geo = node->node.children;
+    17d8:	8c620010 	lw	v0,16(v1)
+                }
+                animOffset[0] =
+    17dc:	3c040000 	lui	a0,0x0
+                if (geo != NULL && geo->type == GRAPH_NODE_TYPE_SCALE) {
+    17e0:	10400006 	beqz	v0,17fc <geo_set_animation_globals+0x21c>
+    17e4:	00000000 	nop
+    17e8:	844d0000 	lh	t5,0(v0)
+    17ec:	2401001c 	li	at,28
+    17f0:	15a10002 	bne	t5,at,17fc <geo_set_animation_globals+0x21c>
+    17f4:	00000000 	nop
+                    objScale = ((struct GraphNodeScale *) geo)->scale;
+    17f8:	c44c0018 	lwc1	$f12,24(v0)
+                animOffset[0] =
+    17fc:	84840000 	lh	a0,0(a0)
+    1800:	e7ac0040 	swc1	$f12,64(sp)
+    1804:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1808:	e7b0003c 	swc1	$f16,60(sp)
+    180c:	3c0e0000 	lui	t6,0x0
+    1810:	8dce0000 	lw	t6,0(t6)
+    1814:	00027840 	sll	t7,v0,0x1
+    1818:	3c010000 	lui	at,0x0
+    181c:	01cfc021 	addu	t8,t6,t7
+    1820:	87190000 	lh	t9,0(t8)
+    1824:	c4280000 	lwc1	$f8,0(at)
+    1828:	c7ac0040 	lwc1	$f12,64(sp)
+    182c:	44999000 	mtc1	t9,$f18
+    1830:	3c050000 	lui	a1,0x0
+    1834:	24a50000 	addiu	a1,a1,0
+    1838:	46809120 	cvt.s.w	$f4,$f18
+                    gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+                    * gCurAnimTranslationMultiplier * objScale;
+                animOffset[1] = 0.0f;
+                gCurrAnimAttribute += 2;
+    183c:	8ca80000 	lw	t0,0(a1)
+                animOffset[1] = 0.0f;
+    1840:	44809000 	mtc1	zero,$f18
+                animOffset[2] =
+    1844:	3c040000 	lui	a0,0x0
+                gCurrAnimAttribute += 2;
+    1848:	25090004 	addiu	t1,t0,4
+    184c:	aca90000 	sw	t1,0(a1)
+                animOffset[0] =
+    1850:	46082182 	mul.s	$f6,$f4,$f8
+                animOffset[2] =
+    1854:	84840000 	lh	a0,0(a0)
+                animOffset[1] = 0.0f;
+    1858:	e7b20048 	swc1	$f18,72(sp)
+                animOffset[0] =
+    185c:	460c3282 	mul.s	$f10,$f6,$f12
+                animOffset[2] =
+    1860:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+                animOffset[0] =
+    1864:	e7aa0044 	swc1	$f10,68(sp)
+                animOffset[2] =
+    1868:	3c0b0000 	lui	t3,0x0
+    186c:	8d6b0000 	lw	t3,0(t3)
+    1870:	00025040 	sll	t2,v0,0x1
+    1874:	3c010000 	lui	at,0x0
+    1878:	016a6021 	addu	t4,t3,t2
+    187c:	858d0000 	lh	t5,0(t4)
+    1880:	c4260000 	lwc1	$f6,0(at)
+    1884:	c7ac0040 	lwc1	$f12,64(sp)
+    1888:	448d2000 	mtc1	t5,$f4
+    188c:	3c050000 	lui	a1,0x0
+    1890:	24a50000 	addiu	a1,a1,0
+    1894:	46802220 	cvt.s.w	$f8,$f4
+                    gCurAnimData[retrieve_animation_index(gCurrAnimFrame, &gCurrAnimAttribute)]
+                    * gCurAnimTranslationMultiplier * objScale;
+                gCurrAnimAttribute -= 6;
+    1898:	8cae0000 	lw	t6,0(a1)
+
+                // simple matrix rotation so the shadow offset rotates along with the object
+                sinAng = sins(gCurGraphNodeObject->angle[1]);
+    189c:	3c180000 	lui	t8,0x0
+    18a0:	3c010000 	lui	at,0x0
+                gCurrAnimAttribute -= 6;
+    18a4:	25cffff4 	addiu	t7,t6,-12
+    18a8:	acaf0000 	sw	t7,0(a1)
+                animOffset[2] =
+    18ac:	46064282 	mul.s	$f10,$f8,$f6
+                sinAng = sins(gCurGraphNodeObject->angle[1]);
+    18b0:	8f180000 	lw	t8,0(t8)
+                cosAng = coss(gCurGraphNodeObject->angle[1]);
+
+                shadowPos[0] += animOffset[0] * cosAng + animOffset[2] * sinAng;
+    18b4:	c7a40044 	lwc1	$f4,68(sp)
+                animOffset[2] =
+    18b8:	c7b0003c 	lwc1	$f16,60(sp)
+    18bc:	460c5482 	mul.s	$f18,$f10,$f12
+    18c0:	e7b2004c 	swc1	$f18,76(sp)
+                sinAng = sins(gCurGraphNodeObject->angle[1]);
+    18c4:	9703001c 	lhu	v1,28(t8)
+                shadowPos[0] += animOffset[0] * cosAng + animOffset[2] * sinAng;
+    18c8:	c7a6004c 	lwc1	$f6,76(sp)
+                sinAng = sins(gCurGraphNodeObject->angle[1]);
+    18cc:	00031903 	sra	v1,v1,0x4
+    18d0:	00031880 	sll	v1,v1,0x2
+    18d4:	00230821 	addu	at,at,v1
+    18d8:	c4200000 	lwc1	$f0,0(at)
+                cosAng = coss(gCurGraphNodeObject->angle[1]);
+    18dc:	3c010000 	lui	at,0x0
+    18e0:	00230821 	addu	at,at,v1
+    18e4:	c4220000 	lwc1	$f2,0(at)
+                shadowPos[2] += -animOffset[0] * sinAng + animOffset[2] * cosAng;
+    18e8:	8fa300a0 	lw	v1,160(sp)
+                shadowPos[0] += animOffset[0] * cosAng + animOffset[2] * sinAng;
+    18ec:	46022202 	mul.s	$f8,$f4,$f2
+static void geo_process_shadow(struct GraphNodeShadow *node) {
+    18f0:	00000000 	nop
+                shadowPos[0] += animOffset[0] * cosAng + animOffset[2] * sinAng;
+    18f4:	46003282 	mul.s	$f10,$f6,$f0
+    18f8:	460a4480 	add.s	$f18,$f8,$f10
+    18fc:	c7a80050 	lwc1	$f8,80(sp)
+    1900:	46124280 	add.s	$f10,$f8,$f18
+                shadowPos[2] += -animOffset[0] * sinAng + animOffset[2] * cosAng;
+    1904:	46002207 	neg.s	$f8,$f4
+                shadowPos[0] += animOffset[0] * cosAng + animOffset[2] * sinAng;
+    1908:	e7aa0050 	swc1	$f10,80(sp)
+                shadowPos[2] += -animOffset[0] * sinAng + animOffset[2] * cosAng;
+    190c:	46004482 	mul.s	$f18,$f8,$f0
+    1910:	c7a80058 	lwc1	$f8,88(sp)
+    1914:	46023282 	mul.s	$f10,$f6,$f2
+    1918:	460a9100 	add.s	$f4,$f18,$f10
+    191c:	46044180 	add.s	$f6,$f8,$f4
+    1920:	e7a60058 	swc1	$f6,88(sp)
+            }
+        }
+
+        shadowList = create_shadow_below_xyz(shadowPos[0], shadowPos[1], shadowPos[2], shadowScale,
+    1924:	4600848d 	trunc.w.s	$f18,$f16
+    1928:	90680016 	lbu	t0,22(v1)
+    192c:	c7ac0050 	lwc1	$f12,80(sp)
+    1930:	c7ae0054 	lwc1	$f14,84(sp)
+    1934:	44079000 	mfc1	a3,$f18
+    1938:	afa80010 	sw	t0,16(sp)
+    193c:	90690017 	lbu	t1,23(v1)
+    1940:	00073c00 	sll	a3,a3,0x10
+    1944:	00073c03 	sra	a3,a3,0x10
+    1948:	8fa60058 	lw	a2,88(sp)
+    194c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1950:	afa90014 	sw	t1,20(sp)
+                                             node->shadowSolidity, node->shadowType);
+        if (shadowList != NULL) {
+    1954:	10400049 	beqz	v0,1a7c <geo_set_animation_globals+0x49c>
+        shadowList = create_shadow_below_xyz(shadowPos[0], shadowPos[1], shadowPos[2], shadowScale,
+    1958:	afa2009c 	sw	v0,156(sp)
+            mtx = alloc_display_list(sizeof(*mtx));
+    195c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1960:	24040040 	li	a0,64
+    1964:	3c030000 	lui	v1,0x0
+    1968:	24630000 	addiu	v1,v1,0
+            gMatStackIndex++;
+    196c:	846b0000 	lh	t3,0(v1)
+            mtx = alloc_display_list(sizeof(*mtx));
+    1970:	afa2002c 	sw	v0,44(sp)
+            mtxf_translate(mtxf, shadowPos);
+    1974:	27a4005c 	addiu	a0,sp,92
+            gMatStackIndex++;
+    1978:	256a0001 	addiu	t2,t3,1
+    197c:	a46a0000 	sh	t2,0(v1)
+            mtxf_translate(mtxf, shadowPos);
+    1980:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1984:	27a50050 	addiu	a1,sp,80
+            mtxf_mul(gMatStack[gMatStackIndex], mtxf, gCurGraphNodeCamera->matrixPtr);
+    1988:	3c0c0000 	lui	t4,0x0
+    198c:	858c0000 	lh	t4,0(t4)
+    1990:	3c0f0000 	lui	t7,0x0
+    1994:	8def0000 	lw	t7,0(t7)
+    1998:	3c0e0000 	lui	t6,0x0
+    199c:	25ce0000 	addiu	t6,t6,0
+    19a0:	000c6980 	sll	t5,t4,0x6
+    19a4:	01ae2021 	addu	a0,t5,t6
+    19a8:	27a5005c 	addiu	a1,sp,92
+    19ac:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    19b0:	8de60034 	lw	a2,52(t7)
+            mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    19b4:	3c180000 	lui	t8,0x0
+    19b8:	87180000 	lh	t8,0(t8)
+    19bc:	3c080000 	lui	t0,0x0
+    19c0:	25080000 	addiu	t0,t0,0
+    19c4:	0018c980 	sll	t9,t8,0x6
+    19c8:	03282821 	addu	a1,t9,t0
+    19cc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    19d0:	8fa4002c 	lw	a0,44(sp)
+            gMatStackFixed[gMatStackIndex] = mtx;
+    19d4:	3c0b0000 	lui	t3,0x0
+    19d8:	856b0000 	lh	t3,0(t3)
+    19dc:	8fa9002c 	lw	t1,44(sp)
+    19e0:	3c010000 	lui	at,0x0
+            if (gShadowAboveWaterOrLava == 1) {
+    19e4:	3c0c0000 	lui	t4,0x0
+            gMatStackFixed[gMatStackIndex] = mtx;
+    19e8:	000b5080 	sll	t2,t3,0x2
+            if (gShadowAboveWaterOrLava == 1) {
+    19ec:	818c0000 	lb	t4,0(t4)
+            gMatStackFixed[gMatStackIndex] = mtx;
+    19f0:	002a0821 	addu	at,at,t2
+    19f4:	ac290000 	sw	t1,0(at)
+            if (gShadowAboveWaterOrLava == 1) {
+    19f8:	24010001 	li	at,1
+    19fc:	15810009 	bne	t4,at,1a24 <geo_set_animation_globals+0x444>
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
+            } else if (gMarioOnIceOrCarpet == 1) {
+    1a00:	3c0d0000 	lui	t5,0x0
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 4);
+    1a04:	8fa4009c 	lw	a0,156(sp)
+    1a08:	3c011fff 	lui	at,0x1fff
+    1a0c:	3421ffff 	ori	at,at,0xffff
+    1a10:	24050004 	li	a1,4
+    1a14:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    1a18:	00812024 	and	a0,a0,at
+    1a1c:	10000012 	b	1a68 <geo_set_animation_globals+0x488>
+    1a20:	00000000 	nop
+            } else if (gMarioOnIceOrCarpet == 1) {
+    1a24:	81ad0000 	lb	t5,0(t5)
+    1a28:	24010001 	li	at,1
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
+            } else {
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
+    1a2c:	8fa4009c 	lw	a0,156(sp)
+            } else if (gMarioOnIceOrCarpet == 1) {
+    1a30:	15a10009 	bne	t5,at,1a58 <geo_set_animation_globals+0x478>
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
+    1a34:	24050006 	li	a1,6
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 5);
+    1a38:	8fa4009c 	lw	a0,156(sp)
+    1a3c:	3c011fff 	lui	at,0x1fff
+    1a40:	3421ffff 	ori	at,at,0xffff
+    1a44:	24050005 	li	a1,5
+    1a48:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    1a4c:	00812024 	and	a0,a0,at
+    1a50:	10000005 	b	1a68 <geo_set_animation_globals+0x488>
+    1a54:	00000000 	nop
+                geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), 6);
+    1a58:	3c011fff 	lui	at,0x1fff
+    1a5c:	3421ffff 	ori	at,at,0xffff
+    1a60:	0c000084 	jal	210 <Get_Screen_Coords-0x578>
+    1a64:	00812024 	and	a0,a0,at
+            }
+            gMatStackIndex--;
+    1a68:	3c0e0000 	lui	t6,0x0
+    1a6c:	85ce0000 	lh	t6,0(t6)
+    1a70:	3c010000 	lui	at,0x0
+    1a74:	25cfffff 	addiu	t7,t6,-1
+    1a78:	a42f0000 	sh	t7,0(at)
+        }
+    }
+    if (node->node.children != NULL) {
+    1a7c:	8fb800a0 	lw	t8,160(sp)
+    1a80:	8f040010 	lw	a0,16(t8)
+    1a84:	50800004 	beqzl	a0,1a98 <geo_set_animation_globals+0x4b8>
+    1a88:	8fbf001c 	lw	ra,28(sp)
+        geo_process_node_and_siblings(node->node.children);
+    1a8c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1a90:	00000000 	nop
+    }
+}
+    1a94:	8fbf001c 	lw	ra,28(sp)
+    1a98:	27bd00a0 	addiu	sp,sp,160
+    1a9c:	03e00008 	jr	ra
+    1aa0:	00000000 	nop
+    s16 cullingRadius;
+    s16 halfFov; // half of the fov in in-game angle units instead of degrees
+    struct GraphNode *geo;
+    f32 hScreenEdge;
+
+    if (node->node.flags & GRAPH_RENDER_INVISIBLE) {
+    1aa4:	848e0002 	lh	t6,2(a0)
+    geo = node->sharedChild;
+
+    // ! @bug The aspect ratio is not accounted for. When the fov value is 45,
+    // the horizontal effective fov is actually 60 degrees, so you can see objects
+    // visibly pop in or out at the edge of the screen.
+    halfFov = ((gCurGraphNodeCamFrustum->fov * aspect) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
+    1aa8:	3c180000 	lui	t8,0x0
+    if (node->node.flags & GRAPH_RENDER_INVISIBLE) {
+    1aac:	31cf0010 	andi	t7,t6,0x10
+    1ab0:	11e00003 	beqz	t7,1ac0 <geo_set_animation_globals+0x4e0>
+    1ab4:	00000000 	nop
+        return FALSE;
+    1ab8:	03e00008 	jr	ra
+    1abc:	00001025 	move	v0,zero
+    halfFov = ((gCurGraphNodeCamFrustum->fov * aspect) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
+    1ac0:	8f180000 	lw	t8,0(t8)
+    1ac4:	3c010000 	lui	at,0x0
+    1ac8:	c4260000 	lwc1	$f6,0(at)
+    1acc:	c704001c 	lwc1	$f4,28(t8)
+    1ad0:	3c013f00 	lui	at,0x3f00
+    1ad4:	44815000 	mtc1	at,$f10
+    1ad8:	46062202 	mul.s	$f8,$f4,$f6
+    1adc:	3c013f80 	lui	at,0x3f80
+    1ae0:	44819000 	mtc1	at,$f18
+    1ae4:	3c014700 	lui	at,0x4700
+    1ae8:	44813000 	mtc1	at,$f6
+    1aec:	3c014334 	lui	at,0x4334
+
+    hScreenEdge = -matrix[3][2] * sins(halfFov) / coss(halfFov);
+    1af0:	c4a20038 	lwc1	$f2,56(a1)
+    halfFov = ((gCurGraphNodeCamFrustum->fov * aspect) / 2.0f + 1.0f) * 32768.0f / 180.0f + 0.5f;
+    1af4:	460a4402 	mul.s	$f16,$f8,$f10
+    1af8:	44815000 	mtc1	at,$f10
+    1afc:	3c013f00 	lui	at,0x3f00
+    // -matrix[3][2] is the depth, which gets multiplied by tan(halfFov) to get
+    // the amount of units between the center of the screen and the horizontal edge
+--
+    1c4c:	00001025 	move	v0,zero
+    return TRUE;
+    1c50:	03e00008 	jr	ra
+    1c54:	00000000 	nop
+}
+
+/**
+ * Process an object node.
+ */
+static void geo_process_object(struct Object *node) {
+    1c58:	27bdff80 	addiu	sp,sp,-128
+    1c5c:	afbf0024 	sw	ra,36(sp)
+    1c60:	afb30020 	sw	s3,32(sp)
+    1c64:	afb2001c 	sw	s2,28(sp)
+    1c68:	afb10018 	sw	s1,24(sp)
+    1c6c:	afb00014 	sw	s0,20(sp)
+    Mat4 mtxf;
+    s32 hasAnimation = (node->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+    1c70:	84820002 	lh	v0,2(a0)
+
+    if (node->header.gfx.unk18 == gCurGraphNodeRoot->areaIndex) {
+    1c74:	3c180000 	lui	t8,0x0
+    1c78:	8f180000 	lw	t8,0(t8)
+    s32 hasAnimation = (node->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+    1c7c:	304e0020 	andi	t6,v0,0x20
+    1c80:	000e782b 	sltu	t7,zero,t6
+    1c84:	afaf003c 	sw	t7,60(sp)
+    if (node->header.gfx.unk18 == gCurGraphNodeRoot->areaIndex) {
+    1c88:	80880018 	lb	t0,24(a0)
+    1c8c:	93190014 	lbu	t9,20(t8)
+static void geo_process_object(struct Object *node) {
+    1c90:	00808825 	move	s1,a0
+    if (node->header.gfx.unk18 == gCurGraphNodeRoot->areaIndex) {
+    1c94:	57280081 	bnel	t9,t0,1e9c <geo_set_animation_globals+0x8bc>
+    1c98:	8fbf0024 	lw	ra,36(sp)
+        if (node->header.gfx.throwMatrix != NULL) {
+    1c9c:	8c850050 	lw	a1,80(a0)
+    1ca0:	3c120000 	lui	s2,0x0
+    1ca4:	26520000 	addiu	s2,s2,0
+    1ca8:	50a0000c 	beqzl	a1,1cdc <geo_set_animation_globals+0x6fc>
+    1cac:	304b0004 	andi	t3,v0,0x4
+            mtxf_mul(gMatStack[gMatStackIndex + 1], (void *) node->header.gfx.throwMatrix,
+    1cb0:	86490000 	lh	t1,0(s2)
+        if (node->header.gfx.throwMatrix != NULL) {
+    1cb4:	3c130000 	lui	s3,0x0
+    1cb8:	26730000 	addiu	s3,s3,0
+            mtxf_mul(gMatStack[gMatStackIndex + 1], (void *) node->header.gfx.throwMatrix,
+    1cbc:	00095180 	sll	t2,t1,0x6
+    1cc0:	026a8021 	addu	s0,s3,t2
+    1cc4:	26040040 	addiu	a0,s0,64
+    1cc8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1ccc:	02003025 	move	a2,s0
+    1cd0:	10000023 	b	1d60 <geo_set_animation_globals+0x780>
+    1cd4:	86590000 	lh	t9,0(s2)
+                     gMatStack[gMatStackIndex]);
+        } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
+    1cd8:	304b0004 	andi	t3,v0,0x4
+    1cdc:	11600010 	beqz	t3,1d20 <geo_set_animation_globals+0x740>
+    1ce0:	3c120000 	lui	s2,0x0
+    1ce4:	26520000 	addiu	s2,s2,0
+            mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
+    1ce8:	864c0000 	lh	t4,0(s2)
+        } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
+    1cec:	3c130000 	lui	s3,0x0
+            mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
+    1cf0:	3c0e0000 	lui	t6,0x0
+    1cf4:	8dce0000 	lw	t6,0(t6)
+        } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
+    1cf8:	26730000 	addiu	s3,s3,0
+            mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
+    1cfc:	000c6980 	sll	t5,t4,0x6
+    1d00:	026d8021 	addu	s0,s3,t5
+    1d04:	26040040 	addiu	a0,s0,64
+    1d08:	02002825 	move	a1,s0
+    1d0c:	26260020 	addiu	a2,s1,32
+    1d10:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1d14:	85c70038 	lh	a3,56(t6)
+    1d18:	10000011 	b	1d60 <geo_set_animation_globals+0x780>
+    1d1c:	86590000 	lh	t9,0(s2)
+                           node->header.gfx.pos, gCurGraphNodeCamera->roll);
+        } else {
+            mtxf_rotate_zxy_and_translate(mtxf, node->header.gfx.pos, node->header.gfx.angle);
+    1d20:	27a40040 	addiu	a0,sp,64
+    1d24:	26250020 	addiu	a1,s1,32
+    1d28:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1d2c:	2626001a 	addiu	a2,s1,26
+    1d30:	3c120000 	lui	s2,0x0
+    1d34:	26520000 	addiu	s2,s2,0
+            mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
+    1d38:	864f0000 	lh	t7,0(s2)
+            mtxf_rotate_zxy_and_translate(mtxf, node->header.gfx.pos, node->header.gfx.angle);
+    1d3c:	3c130000 	lui	s3,0x0
+    1d40:	26730000 	addiu	s3,s3,0
+            mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
+    1d44:	000fc180 	sll	t8,t7,0x6
+    1d48:	02788021 	addu	s0,s3,t8
+    1d4c:	26040040 	addiu	a0,s0,64
+    1d50:	02003025 	move	a2,s0
+    1d54:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1d58:	27a50040 	addiu	a1,sp,64
+        }
+
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1],
+    1d5c:	86590000 	lh	t9,0(s2)
+    1d60:	2626002c 	addiu	a2,s1,44
+    1d64:	00194180 	sll	t0,t9,0x6
+    1d68:	02682021 	addu	a0,s3,t0
+    1d6c:	24840040 	addiu	a0,a0,64
+    1d70:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1d74:	00802825 	move	a1,a0
+                         node->header.gfx.scale);
+        node->header.gfx.throwMatrix = gMatStack[++gMatStackIndex];
+    1d78:	86420000 	lh	v0,0(s2)
+    1d7c:	24420001 	addiu	v0,v0,1
+    1d80:	00021400 	sll	v0,v0,0x10
+    1d84:	00021403 	sra	v0,v0,0x10
+    1d88:	00024980 	sll	t1,v0,0x6
+    1d8c:	02695021 	addu	t2,s3,t1
+    1d90:	a6420000 	sh	v0,0(s2)
+    1d94:	ae2a0050 	sw	t2,80(s1)
+        node->header.gfx.cameraToObject[0] = gMatStack[gMatStackIndex][3][0];
+    1d98:	864b0000 	lh	t3,0(s2)
+        node->header.gfx.cameraToObject[1] = gMatStack[gMatStackIndex][3][1];
+        node->header.gfx.cameraToObject[2] = gMatStack[gMatStackIndex][3][2];
+
+        // FIXME: correct types
+        if (node->header.gfx.unk38.curAnim != NULL) {
+    1d9c:	8e2a003c 	lw	t2,60(s1)
+        node->header.gfx.cameraToObject[0] = gMatStack[gMatStackIndex][3][0];
+    1da0:	000b6180 	sll	t4,t3,0x6
+    1da4:	026c6821 	addu	t5,s3,t4
+    1da8:	c5a40030 	lwc1	$f4,48(t5)
+    1dac:	e6240054 	swc1	$f4,84(s1)
+        node->header.gfx.cameraToObject[1] = gMatStack[gMatStackIndex][3][1];
+    1db0:	864e0000 	lh	t6,0(s2)
+    1db4:	000e7980 	sll	t7,t6,0x6
+    1db8:	026fc021 	addu	t8,s3,t7
+    1dbc:	c7060034 	lwc1	$f6,52(t8)
+    1dc0:	e6260058 	swc1	$f6,88(s1)
+        node->header.gfx.cameraToObject[2] = gMatStack[gMatStackIndex][3][2];
+    1dc4:	86590000 	lh	t9,0(s2)
+    1dc8:	00194180 	sll	t0,t9,0x6
+    1dcc:	02684821 	addu	t1,s3,t0
+    1dd0:	c5280038 	lwc1	$f8,56(t1)
+        if (node->header.gfx.unk38.curAnim != NULL) {
+    1dd4:	11400004 	beqz	t2,1de8 <geo_set_animation_globals+0x808>
+        node->header.gfx.cameraToObject[2] = gMatStack[gMatStackIndex][3][2];
+    1dd8:	e628005c 	swc1	$f8,92(s1)
+            geo_set_animation_globals(&node->header.gfx.unk38, hasAnimation);
+    1ddc:	26240038 	addiu	a0,s1,56
+    1de0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1de4:	8fa5003c 	lw	a1,60(sp)
+        }
+        if (obj_is_in_view(&node->header.gfx, gMatStack[gMatStackIndex])) {
+    1de8:	864b0000 	lh	t3,0(s2)
+    1dec:	02202025 	move	a0,s1
+    1df0:	000b6180 	sll	t4,t3,0x6
+    1df4:	0c0006a9 	jal	1aa4 <geo_set_animation_globals+0x4c4>
+    1df8:	026c2821 	addu	a1,s3,t4
+    1dfc:	50400021 	beqzl	v0,1e84 <geo_set_animation_globals+0x8a4>
+    1e00:	864a0000 	lh	t2,0(s2)
+            Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    1e04:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1e08:	24040040 	li	a0,64
+
+            mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    1e0c:	864d0000 	lh	t5,0(s2)
+            Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    1e10:	00408025 	move	s0,v0
+            mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    1e14:	00402025 	move	a0,v0
+    1e18:	000d7180 	sll	t6,t5,0x6
+    1e1c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1e20:	026e2821 	addu	a1,s3,t6
+            gMatStackFixed[gMatStackIndex] = mtx;
+    1e24:	864f0000 	lh	t7,0(s2)
+    1e28:	3c010000 	lui	at,0x0
+    1e2c:	000fc080 	sll	t8,t7,0x2
+    1e30:	00380821 	addu	at,at,t8
+    1e34:	ac300000 	sw	s0,0(at)
+            if (node->header.gfx.sharedChild != NULL) {
+    1e38:	8e390014 	lw	t9,20(s1)
+    1e3c:	3c100000 	lui	s0,0x0
+    1e40:	26100000 	addiu	s0,s0,0
+    1e44:	5320000a 	beqzl	t9,1e70 <geo_set_animation_globals+0x890>
+    1e48:	8e240010 	lw	a0,16(s1)
+                gCurGraphNodeObject = (struct GraphNodeObject *) node;
+    1e4c:	ae110000 	sw	s1,0(s0)
+                node->header.gfx.sharedChild->parent = &node->header.gfx.node;
+    1e50:	8e280014 	lw	t0,20(s1)
+    1e54:	ad11000c 	sw	s1,12(t0)
+                geo_process_node_and_siblings(node->header.gfx.sharedChild);
+    1e58:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1e5c:	8e240014 	lw	a0,20(s1)
+                node->header.gfx.sharedChild->parent = NULL;
+    1e60:	8e290014 	lw	t1,20(s1)
+    1e64:	ad20000c 	sw	zero,12(t1)
+                gCurGraphNodeObject = NULL;
+    1e68:	ae000000 	sw	zero,0(s0)
+            }
+            if (node->header.gfx.node.children != NULL) {
+    1e6c:	8e240010 	lw	a0,16(s1)
+    1e70:	50800004 	beqzl	a0,1e84 <geo_set_animation_globals+0x8a4>
+    1e74:	864a0000 	lh	t2,0(s2)
+                geo_process_node_and_siblings(node->header.gfx.node.children);
+    1e78:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1e7c:	00000000 	nop
+            }
+        }
+
+        gMatStackIndex--;
+    1e80:	864a0000 	lh	t2,0(s2)
+        gCurAnimType = ANIM_TYPE_NONE;
+    1e84:	3c010000 	lui	at,0x0
+        gMatStackIndex--;
+    1e88:	254bffff 	addiu	t3,t2,-1
+    1e8c:	a64b0000 	sh	t3,0(s2)
+        gCurAnimType = ANIM_TYPE_NONE;
+    1e90:	a0200000 	sb	zero,0(at)
+        node->header.gfx.throwMatrix = NULL;
+    1e94:	ae200050 	sw	zero,80(s1)
+    }
+}
+    1e98:	8fbf0024 	lw	ra,36(sp)
+    1e9c:	8fb00014 	lw	s0,20(sp)
+    1ea0:	8fb10018 	lw	s1,24(sp)
+    1ea4:	8fb2001c 	lw	s2,28(sp)
+    1ea8:	8fb30020 	lw	s3,32(sp)
+    1eac:	03e00008 	jr	ra
+    1eb0:	27bd0080 	addiu	sp,sp,128
+/**
+ * Process an object parent node. Temporarily assigns itself as the parent of
+ * the subtree rooted at 'sharedChild' and processes the subtree, after which the
+ * actual children are be processed. (in practice they are null though)
+ */
+static void geo_process_object_parent(struct GraphNodeObjectParent *node) {
+    1eb4:	27bdffe8 	addiu	sp,sp,-24
+    1eb8:	afbf0014 	sw	ra,20(sp)
+    if (node->sharedChild != NULL) {
+    1ebc:	8c820014 	lw	v0,20(a0)
+static void geo_process_object_parent(struct GraphNodeObjectParent *node) {
+    1ec0:	00802825 	move	a1,a0
+    if (node->sharedChild != NULL) {
+    1ec4:	50400009 	beqzl	v0,1eec <geo_set_animation_globals+0x90c>
+    1ec8:	8ca40010 	lw	a0,16(a1)
+        node->sharedChild->parent = (struct GraphNode *) node;
+    1ecc:	ac44000c 	sw	a0,12(v0)
+        geo_process_node_and_siblings(node->sharedChild);
+    1ed0:	8c840014 	lw	a0,20(a0)
+    1ed4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1ed8:	afa50018 	sw	a1,24(sp)
+    1edc:	8fa50018 	lw	a1,24(sp)
+        node->sharedChild->parent = NULL;
+    1ee0:	8cae0014 	lw	t6,20(a1)
+    1ee4:	adc0000c 	sw	zero,12(t6)
+    }
+    if (node->node.children != NULL) {
+    1ee8:	8ca40010 	lw	a0,16(a1)
+    1eec:	50800004 	beqzl	a0,1f00 <geo_set_animation_globals+0x920>
+    1ef0:	8fbf0014 	lw	ra,20(sp)
+        geo_process_node_and_siblings(node->node.children);
+    1ef4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1ef8:	00000000 	nop
+    }
+}
+    1efc:	8fbf0014 	lw	ra,20(sp)
+    1f00:	27bd0018 	addiu	sp,sp,24
+    1f04:	03e00008 	jr	ra
+    1f08:	00000000 	nop
+
+00001f0c <geo_process_held_object>:
+
+/**
+ * Process a held object node.
+ */
+void geo_process_held_object(struct GraphNodeHeldObject *node) {
+    1f0c:	27bdff78 	addiu	sp,sp,-136
+    1f10:	afb00014 	sw	s0,20(sp)
+    1f14:	00808025 	move	s0,a0
+    1f18:	afbf001c 	sw	ra,28(sp)
+    1f1c:	afb10018 	sw	s1,24(sp)
+    Mat4 mat;
+    Vec3f translation;
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    1f20:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    1f24:	24040040 	li	a0,64
+    1f28:	3c060000 	lui	a2,0x0
+    1f2c:	24c60000 	addiu	a2,a2,0
+
+#ifdef F3DEX_GBI_2
+    gSPLookAt(gDisplayListHead++, &lookAt);
+    1f30:	8cc30000 	lw	v1,0(a2)
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    1f34:	afa20038 	sw	v0,56(sp)
+    gSPLookAt(gDisplayListHead++, &lookAt);
+    1f38:	3c0fdc08 	lui	t7,0xdc08
+    1f3c:	246e0008 	addiu	t6,v1,8
+    1f40:	acce0000 	sw	t6,0(a2)
+    1f44:	3c180000 	lui	t8,0x0
+    1f48:	27180000 	addiu	t8,t8,0
+    1f4c:	35ef000a 	ori	t7,t7,0xa
+    1f50:	ac6f0000 	sw	t7,0(v1)
+    1f54:	ac780004 	sw	t8,4(v1)
+    1f58:	8cc30000 	lw	v1,0(a2)
+    1f5c:	3c08dc08 	lui	t0,0xdc08
+    1f60:	3c090000 	lui	t1,0x0
+    1f64:	24790008 	addiu	t9,v1,8
+    1f68:	acd90000 	sw	t9,0(a2)
+    1f6c:	25290010 	addiu	t1,t1,16
+    1f70:	3508030a 	ori	t0,t0,0x30a
+    1f74:	ac680000 	sw	t0,0(v1)
+    1f78:	ac690004 	sw	t1,4(v1)
+#endif
+
+    if (node->fnNode.func != NULL) {
+    1f7c:	8e070014 	lw	a3,20(s0)
+    1f80:	3c110000 	lui	s1,0x0
+    1f84:	26310000 	addiu	s1,s1,0
+    1f88:	10e00008 	beqz	a3,1fac <geo_process_held_object+0xa0>
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+    1f8c:	24040001 	li	a0,1
+    1f90:	862a0000 	lh	t2,0(s1)
+    1f94:	3c0c0000 	lui	t4,0x0
+    1f98:	258c0000 	addiu	t4,t4,0
+    1f9c:	000a5980 	sll	t3,t2,0x6
+    1fa0:	016c3021 	addu	a2,t3,t4
+    1fa4:	00e0f809 	jalr	a3
+    1fa8:	02002825 	move	a1,s0
+    }
+    if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
+    1fac:	8e03001c 	lw	v1,28(s0)
+        node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+    1fb0:	3c110000 	lui	s1,0x0
+    1fb4:	26310000 	addiu	s1,s1,0
+    if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
+    1fb8:	5060009a 	beqzl	v1,2224 <geo_process_held_object+0x318>
+    1fbc:	8e040010 	lw	a0,16(s0)
+    1fc0:	8c6d0014 	lw	t5,20(v1)
+    1fc4:	51a00097 	beqzl	t5,2224 <geo_process_held_object+0x318>
+    1fc8:	8e040010 	lw	a0,16(s0)
+        s32 hasAnimation = (node->objNode->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+    1fcc:	846e0002 	lh	t6,2(v1)
+    if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
+    1fd0:	3c013e80 	lui	at,0x3e80
+    1fd4:	44810000 	mtc1	at,$f0
+        s32 hasAnimation = (node->objNode->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+    1fd8:	31cf0020 	andi	t7,t6,0x20
+    1fdc:	000fc02b 	sltu	t8,zero,t7
+    1fe0:	afb8002c 	sw	t8,44(sp)
+
+        translation[0] = node->translation[0] / 4.0f;
+    1fe4:	86190020 	lh	t9,32(s0)
+        translation[1] = node->translation[1] / 4.0f;
+        translation[2] = node->translation[2] / 4.0f;
+
+        mtxf_translate(mat, translation);
+    1fe8:	27a40048 	addiu	a0,sp,72
+    1fec:	27a5003c 	addiu	a1,sp,60
+        translation[0] = node->translation[0] / 4.0f;
+    1ff0:	44992000 	mtc1	t9,$f4
+    1ff4:	00000000 	nop
+    1ff8:	468021a0 	cvt.s.w	$f6,$f4
+    1ffc:	46003202 	mul.s	$f8,$f6,$f0
+    2000:	e7a8003c 	swc1	$f8,60(sp)
+        translation[1] = node->translation[1] / 4.0f;
+    2004:	86080022 	lh	t0,34(s0)
+    2008:	44885000 	mtc1	t0,$f10
+    200c:	00000000 	nop
+    2010:	46805420 	cvt.s.w	$f16,$f10
+    2014:	46008482 	mul.s	$f18,$f16,$f0
+    2018:	e7b20040 	swc1	$f18,64(sp)
+        translation[2] = node->translation[2] / 4.0f;
+    201c:	86090024 	lh	t1,36(s0)
+    2020:	44892000 	mtc1	t1,$f4
+    2024:	00000000 	nop
+    2028:	468021a0 	cvt.s.w	$f6,$f4
+    202c:	46003202 	mul.s	$f8,$f6,$f0
+        mtxf_translate(mat, translation);
+    2030:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        translation[2] = node->translation[2] / 4.0f;
+    2034:	e7a80044 	swc1	$f8,68(sp)
+        mtxf_copy(gMatStack[gMatStackIndex + 1], (void *) gCurGraphNodeObject->throwMatrix);
+    2038:	862a0000 	lh	t2,0(s1)
+    203c:	3c0e0000 	lui	t6,0x0
+    2040:	8dce0000 	lw	t6,0(t6)
+    2044:	3c0d0000 	lui	t5,0x0
+    2048:	000a5980 	sll	t3,t2,0x6
+    204c:	256c0040 	addiu	t4,t3,64
+    2050:	25ad0000 	addiu	t5,t5,0
+    2054:	018d2021 	addu	a0,t4,t5
+    2058:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    205c:	8dc50050 	lw	a1,80(t6)
+        gMatStack[gMatStackIndex + 1][3][0] = gMatStack[gMatStackIndex][3][0];
+    2060:	862f0000 	lh	t7,0(s1)
+    2064:	3c190000 	lui	t9,0x0
+    2068:	27390000 	addiu	t9,t9,0
+    206c:	000fc180 	sll	t8,t7,0x6
+    2070:	03191021 	addu	v0,t8,t9
+    2074:	c44a0030 	lwc1	$f10,48(v0)
+        gMatStack[gMatStackIndex + 1][3][1] = gMatStack[gMatStackIndex][3][1];
+    2078:	c4500034 	lwc1	$f16,52(v0)
+        gMatStack[gMatStackIndex + 1][3][2] = gMatStack[gMatStackIndex][3][2];
+    207c:	c4520038 	lwc1	$f18,56(v0)
+        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, gMatStack[gMatStackIndex + 1]);
+    2080:	24440040 	addiu	a0,v0,64
+    2084:	00803025 	move	a2,a0
+    2088:	27a50048 	addiu	a1,sp,72
+        gMatStack[gMatStackIndex + 1][3][0] = gMatStack[gMatStackIndex][3][0];
+    208c:	e44a0070 	swc1	$f10,112(v0)
+        gMatStack[gMatStackIndex + 1][3][1] = gMatStack[gMatStackIndex][3][1];
+    2090:	e4500074 	swc1	$f16,116(v0)
+        mtxf_mul(gMatStack[gMatStackIndex + 1], mat, gMatStack[gMatStackIndex + 1]);
+    2094:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        gMatStack[gMatStackIndex + 1][3][2] = gMatStack[gMatStackIndex][3][2];
+    2098:	e4520078 	swc1	$f18,120(v0)
+        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1],
+    209c:	86280000 	lh	t0,0(s1)
+    20a0:	3c0b0000 	lui	t3,0x0
+    20a4:	8e06001c 	lw	a2,28(s0)
+    20a8:	00084980 	sll	t1,t0,0x6
+    20ac:	252a0040 	addiu	t2,t1,64
+    20b0:	256b0000 	addiu	t3,t3,0
+    20b4:	014b2021 	addu	a0,t2,t3
+    20b8:	00802825 	move	a1,a0
+    20bc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    20c0:	24c6002c 	addiu	a2,a2,44
+                         node->objNode->header.gfx.scale);
+        if (node->fnNode.func != NULL) {
+    20c4:	8e070014 	lw	a3,20(s0)
+            node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node,
+    20c8:	24040005 	li	a0,5
+    20cc:	02002825 	move	a1,s0
+        if (node->fnNode.func != NULL) {
+    20d0:	50e00009 	beqzl	a3,20f8 <geo_process_held_object+0x1ec>
+    20d4:	86380000 	lh	t8,0(s1)
+            node->fnNode.func(GEO_CONTEXT_HELD_OBJ, &node->fnNode.node,
+    20d8:	862c0000 	lh	t4,0(s1)
+    20dc:	3c0f0000 	lui	t7,0x0
+    20e0:	25ef0000 	addiu	t7,t7,0
+    20e4:	000c6980 	sll	t5,t4,0x6
+    20e8:	25ae0040 	addiu	t6,t5,64
+    20ec:	00e0f809 	jalr	a3
+    20f0:	01cf3021 	addu	a2,t6,t7
+                              (struct AllocOnlyPool *) gMatStack[gMatStackIndex + 1]);
+        }
+        gMatStackIndex++;
+    20f4:	86380000 	lh	t8,0(s1)
+        mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    20f8:	3c0a0000 	lui	t2,0x0
+    20fc:	254a0000 	addiu	t2,t2,0
+        gMatStackIndex++;
+    2100:	27190001 	addiu	t9,t8,1
+    2104:	a6390000 	sh	t9,0(s1)
+        mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    2108:	86280000 	lh	t0,0(s1)
+    210c:	8fa40038 	lw	a0,56(sp)
+    2110:	00084980 	sll	t1,t0,0x6
+    2114:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2118:	012a2821 	addu	a1,t1,t2
+        gMatStackFixed[gMatStackIndex] = mtx;
+    211c:	862c0000 	lh	t4,0(s1)
+    2120:	8fab0038 	lw	t3,56(sp)
+        gGeoTempState.type = gCurAnimType;
+    2124:	3c0e0000 	lui	t6,0x0
+    2128:	91ce0000 	lbu	t6,0(t6)
+        gMatStackFixed[gMatStackIndex] = mtx;
+    212c:	3c010000 	lui	at,0x0
+    2130:	000c6880 	sll	t5,t4,0x2
+        mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    2134:	3c020000 	lui	v0,0x0
+        gMatStackFixed[gMatStackIndex] = mtx;
+    2138:	002d0821 	addu	at,at,t5
+        mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+    213c:	24420000 	addiu	v0,v0,0
+        gMatStackFixed[gMatStackIndex] = mtx;
+    2140:	ac2b0000 	sw	t3,0(at)
+        gGeoTempState.enabled = gCurAnimEnabled;
+    2144:	3c0f0000 	lui	t7,0x0
+        gGeoTempState.type = gCurAnimType;
+    2148:	a04e0000 	sb	t6,0(v0)
+        gGeoTempState.enabled = gCurAnimEnabled;
+    214c:	91ef0000 	lbu	t7,0(t7)
+        gGeoTempState.frame = gCurrAnimFrame;
+    2150:	3c180000 	lui	t8,0x0
+        gGeoTempState.translationMultiplier = gCurAnimTranslationMultiplier;
+    2154:	3c010000 	lui	at,0x0
+        gGeoTempState.enabled = gCurAnimEnabled;
+    2158:	a04f0001 	sb	t7,1(v0)
+        gGeoTempState.frame = gCurrAnimFrame;
+    215c:	87180000 	lh	t8,0(t8)
+        gGeoTempState.attribute = gCurrAnimAttribute;
+    2160:	3c190000 	lui	t9,0x0
+        gGeoTempState.data = gCurAnimData;
+    2164:	3c080000 	lui	t0,0x0
+        gGeoTempState.frame = gCurrAnimFrame;
+    2168:	a4580002 	sh	t8,2(v0)
+        gGeoTempState.translationMultiplier = gCurAnimTranslationMultiplier;
+    216c:	c4240000 	lwc1	$f4,0(at)
+        gCurAnimType = 0;
+    2170:	3c010000 	lui	at,0x0
+        gGeoTempState.translationMultiplier = gCurAnimTranslationMultiplier;
+    2174:	e4440004 	swc1	$f4,4(v0)
+        gGeoTempState.attribute = gCurrAnimAttribute;
+    2178:	8f390000 	lw	t9,0(t9)
+    217c:	ac590008 	sw	t9,8(v0)
+        gGeoTempState.data = gCurAnimData;
+    2180:	8d080000 	lw	t0,0(t0)
+    2184:	ac48000c 	sw	t0,12(v0)
+        gCurAnimType = 0;
+    2188:	a0200000 	sb	zero,0(at)
+        gCurGraphNodeHeldObject = (void *) node;
+    218c:	3c010000 	lui	at,0x0
+    2190:	ac300000 	sw	s0,0(at)
+        if (node->objNode->header.gfx.unk38.curAnim != NULL) {
+    2194:	8e03001c 	lw	v1,28(s0)
+    2198:	8c69003c 	lw	t1,60(v1)
+            geo_set_animation_globals(&node->objNode->header.gfx.unk38, hasAnimation);
+    219c:	24640038 	addiu	a0,v1,56
+        if (node->objNode->header.gfx.unk38.curAnim != NULL) {
+    21a0:	11200004 	beqz	t1,21b4 <geo_process_held_object+0x2a8>
+    21a4:	00000000 	nop
+            geo_set_animation_globals(&node->objNode->header.gfx.unk38, hasAnimation);
+    21a8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    21ac:	8fa5002c 	lw	a1,44(sp)
+    21b0:	8e03001c 	lw	v1,28(s0)
+        }
+
+        geo_process_node_and_siblings(node->objNode->header.gfx.sharedChild);
+    21b4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    21b8:	8c640014 	lw	a0,20(v1)
+    21bc:	3c020000 	lui	v0,0x0
+        gCurGraphNodeHeldObject = NULL;
+    21c0:	3c010000 	lui	at,0x0
+        geo_process_node_and_siblings(node->objNode->header.gfx.sharedChild);
+    21c4:	24420000 	addiu	v0,v0,0
+        gCurGraphNodeHeldObject = NULL;
+    21c8:	ac200000 	sw	zero,0(at)
+        gCurAnimType = gGeoTempState.type;
+    21cc:	904a0000 	lbu	t2,0(v0)
+    21d0:	3c010000 	lui	at,0x0
+    21d4:	a02a0000 	sb	t2,0(at)
+        gCurAnimEnabled = gGeoTempState.enabled;
+    21d8:	904c0001 	lbu	t4,1(v0)
+    21dc:	3c010000 	lui	at,0x0
+    21e0:	a02c0000 	sb	t4,0(at)
+        gCurrAnimFrame = gGeoTempState.frame;
+    21e4:	844b0002 	lh	t3,2(v0)
+    21e8:	3c010000 	lui	at,0x0
+    21ec:	a42b0000 	sh	t3,0(at)
+        gCurAnimTranslationMultiplier = gGeoTempState.translationMultiplier;
+    21f0:	c4460004 	lwc1	$f6,4(v0)
+    21f4:	3c010000 	lui	at,0x0
+    21f8:	e4260000 	swc1	$f6,0(at)
+        gCurrAnimAttribute = gGeoTempState.attribute;
+    21fc:	8c4d0008 	lw	t5,8(v0)
+    2200:	3c010000 	lui	at,0x0
+    2204:	ac2d0000 	sw	t5,0(at)
+        gCurAnimData = gGeoTempState.data;
+    2208:	8c4e000c 	lw	t6,12(v0)
+    220c:	3c010000 	lui	at,0x0
+    2210:	ac2e0000 	sw	t6,0(at)
+        gMatStackIndex--;
+    2214:	862f0000 	lh	t7,0(s1)
+    2218:	25f8ffff 	addiu	t8,t7,-1
+    221c:	a6380000 	sh	t8,0(s1)
+    }
+
+    if (node->fnNode.node.children != NULL) {
+    2220:	8e040010 	lw	a0,16(s0)
+    2224:	50800004 	beqzl	a0,2238 <geo_process_held_object+0x32c>
+    2228:	8fbf001c 	lw	ra,28(sp)
+        geo_process_node_and_siblings(node->fnNode.node.children);
+    222c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2230:	00000000 	nop
+    }
+}
+    2234:	8fbf001c 	lw	ra,28(sp)
+    2238:	8fb00014 	lw	s0,20(sp)
+    223c:	8fb10018 	lw	s1,24(sp)
+    2240:	03e00008 	jr	ra
+    2244:	27bd0088 	addiu	sp,sp,136
+
+00002248 <geo_try_process_children>:
+
+/**
+ * Processes the children of the given GraphNode if it has any
+ */
+void geo_try_process_children(struct GraphNode *node) {
+    2248:	27bdffe8 	addiu	sp,sp,-24
+    224c:	afbf0014 	sw	ra,20(sp)
+    if (node->children != NULL) {
+    2250:	8c850010 	lw	a1,16(a0)
+    2254:	50a00004 	beqzl	a1,2268 <geo_try_process_children+0x20>
+    2258:	8fbf0014 	lw	ra,20(sp)
+        geo_process_node_and_siblings(node->children);
+    225c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2260:	00a02025 	move	a0,a1
+    }
+}
+    2264:	8fbf0014 	lw	ra,20(sp)
+    2268:	27bd0018 	addiu	sp,sp,24
+    226c:	03e00008 	jr	ra
+    2270:	00000000 	nop
+
+00002274 <geo_process_node_and_siblings>:
+/**
+ * Process a generic geo node and its siblings.
+ * The first argument is the start node, and all its siblings will
+ * be iterated over.
+ */
+void geo_process_node_and_siblings(struct GraphNode *firstNode) {
+    2274:	27bdffd8 	addiu	sp,sp,-40
+    s16 iterateChildren = TRUE;
+    2278:	240e0001 	li	t6,1
+void geo_process_node_and_siblings(struct GraphNode *firstNode) {
+    227c:	afbf001c 	sw	ra,28(sp)
+    2280:	afb00018 	sw	s0,24(sp)
+    2284:	afa40028 	sw	a0,40(sp)
+    s16 iterateChildren = TRUE;
+    2288:	a7ae0026 	sh	t6,38(sp)
+    struct GraphNode *curGraphNode = firstNode;
+    struct GraphNode *parent = curGraphNode->parent;
+    228c:	8c82000c 	lw	v0,12(a0)
+    struct GraphNode *curGraphNode = firstNode;
+    2290:	00808025 	move	s0,a0
+
+    // In the case of a switch node, exactly one of the children of the node is
+    // processed instead of all children like usual
+    if (parent != NULL) {
+    2294:	50400006 	beqzl	v0,22b0 <geo_process_node_and_siblings+0x3c>
+    2298:	86020002 	lh	v0,2(s0)
+        iterateChildren = (parent->type != GRAPH_NODE_TYPE_SWITCH_CASE);
+    229c:	84580000 	lh	t8,0(v0)
+    22a0:	3b19010c 	xori	t9,t8,0x10c
+    22a4:	0019c82b 	sltu	t9,zero,t9
+    22a8:	a7b90026 	sh	t9,38(sp)
+    }
+
+    do {
+        if (curGraphNode->flags & GRAPH_RENDER_ACTIVE) {
+    22ac:	86020002 	lh	v0,2(s0)
+    22b0:	30480001 	andi	t0,v0,0x1
+    22b4:	1100006c 	beqz	t0,2468 <geo_process_node_and_siblings+0x1f4>
+            if (curGraphNode->flags & GRAPH_RENDER_CHILDREN_FIRST) {
+    22b8:	30490002 	andi	t1,v0,0x2
+    22bc:	51200006 	beqzl	t1,22d8 <geo_process_node_and_siblings+0x64>
+    22c0:	86020000 	lh	v0,0(s0)
+                geo_try_process_children(curGraphNode);
+    22c4:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    22c8:	02002025 	move	a0,s0
+    22cc:	1000006c 	b	2480 <geo_process_node_and_siblings+0x20c>
+    22d0:	87ad0026 	lh	t5,38(sp)
+            } else {
+                switch (curGraphNode->type) {
+    22d4:	86020000 	lh	v0,0(s0)
+    22d8:	2841002a 	slti	at,v0,42
+    22dc:	1420000a 	bnez	at,2308 <geo_process_node_and_siblings+0x94>
+    22e0:	244bfffe 	addiu	t3,v0,-2
+    22e4:	244afefd 	addiu	t2,v0,-259
+    22e8:	2d41002c 	sltiu	at,t2,44
+    22ec:	1020005a 	beqz	at,2458 <geo_process_node_and_siblings+0x1e4>
+    22f0:	000a5080 	sll	t2,t2,0x2
+    22f4:	3c010000 	lui	at,0x0
+    22f8:	002a0821 	addu	at,at,t2
+    22fc:	8c2a0020 	lw	t2,32(at)
+    2300:	01400008 	jr	t2
+    2304:	00000000 	nop
+    2308:	2d610028 	sltiu	at,t3,40
+    230c:	10200052 	beqz	at,2458 <geo_process_node_and_siblings+0x1e4>
+    2310:	000b5880 	sll	t3,t3,0x2
+    2314:	3c010000 	lui	at,0x0
+    2318:	002b0821 	addu	at,at,t3
+    231c:	8c2b00d0 	lw	t3,208(at)
+    2320:	01600008 	jr	t3
+    2324:	00000000 	nop
+                    case GRAPH_NODE_TYPE_ORTHO_PROJECTION:
+                        geo_process_ortho_projection((struct GraphNodeOrthoProjection *) curGraphNode);
+    2328:	0c0000e3 	jal	38c <Get_Screen_Coords-0x3fc>
+    232c:	02002025 	move	a0,s0
+                        break;
+    2330:	10000053 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2334:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_PERSPECTIVE:
+                        geo_process_perspective((struct GraphNodePerspective *) curGraphNode);
+    2338:	0c000135 	jal	4d4 <Get_Screen_Coords-0x2b4>
+    233c:	02002025 	move	a0,s0
+                        break;
+    2340:	1000004f 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2344:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_MASTER_LIST:
+                        geo_process_master_list((struct GraphNodeMasterList *) curGraphNode);
+    2348:	0c0000c3 	jal	30c <Get_Screen_Coords-0x47c>
+    234c:	02002025 	move	a0,s0
+                        break;
+    2350:	1000004b 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2354:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_LEVEL_OF_DETAIL:
+                        geo_process_level_of_detail((struct GraphNodeLevelOfDetail *) curGraphNode);
+    2358:	0c00019f 	jal	67c <Get_Screen_Coords-0x10c>
+    235c:	02002025 	move	a0,s0
+                        break;
+    2360:	10000047 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2364:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_SWITCH_CASE:
+                        geo_process_switch((struct GraphNodeSwitchCase *) curGraphNode);
+    2368:	0c0001bc 	jal	6f0 <Get_Screen_Coords-0x98>
+    236c:	02002025 	move	a0,s0
+                        break;
+    2370:	10000043 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2374:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_CAMERA:
+                        geo_process_camera((struct GraphNodeCamera *) curGraphNode);
+    2378:	0c00023c 	jal	8f0 <Get_Screen_Coords+0x168>
+    237c:	02002025 	move	a0,s0
+                        break;
+    2380:	1000003f 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2384:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_TRANSLATION_ROTATION:
+                        geo_process_translation_rotation(
+    2388:	0c000299 	jal	a64 <Get_Screen_Coords+0x2dc>
+    238c:	02002025 	move	a0,s0
+                            (struct GraphNodeTranslationRotation *) curGraphNode);
+                        break;
+    2390:	1000003b 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2394:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_TRANSLATION:
+                        geo_process_translation((struct GraphNodeTranslation *) curGraphNode);
+    2398:	0c0002d8 	jal	b60 <Get_Screen_Coords+0x3d8>
+    239c:	02002025 	move	a0,s0
+                        break;
+    23a0:	10000037 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23a4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_ROTATION:
+                        geo_process_rotation((struct GraphNodeRotation *) curGraphNode);
+    23a8:	0c000319 	jal	c64 <Get_Screen_Coords+0x4dc>
+    23ac:	02002025 	move	a0,s0
+                        break;
+    23b0:	10000033 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23b4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_OBJECT:
+                        geo_process_object((struct Object *) curGraphNode);
+    23b8:	0c000716 	jal	1c58 <geo_set_animation_globals+0x678>
+    23bc:	02002025 	move	a0,s0
+                        break;
+    23c0:	1000002f 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23c4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_ANIMATED_PART:
+                        geo_process_animated_part((struct GraphNodeAnimatedPart *) curGraphNode);
+    23c8:	0c000470 	jal	11c0 <Get_Screen_Coords+0xa38>
+    23cc:	02002025 	move	a0,s0
+                        break;
+    23d0:	1000002b 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23d4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_BILLBOARD:
+                        geo_process_billboard((struct GraphNodeBillboard *) curGraphNode);
+    23d8:	0c000395 	jal	e54 <Get_Screen_Coords+0x6cc>
+    23dc:	02002025 	move	a0,s0
+                        break;
+    23e0:	10000027 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23e4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_DISPLAY_LIST:
+                        geo_process_display_list((struct GraphNodeDisplayList *) curGraphNode);
+    23e8:	0c0003ee 	jal	fb8 <Get_Screen_Coords+0x830>
+    23ec:	02002025 	move	a0,s0
+                        break;
+    23f0:	10000023 	b	2480 <geo_process_node_and_siblings+0x20c>
+    23f4:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_SCALE:
+                        geo_process_scale((struct GraphNodeScale *) curGraphNode);
+    23f8:	0c000356 	jal	d58 <Get_Screen_Coords+0x5d0>
+    23fc:	02002025 	move	a0,s0
+                        break;
+    2400:	1000001f 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2404:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_SHADOW:
+                        geo_process_shadow((struct GraphNodeShadow *) curGraphNode);
+    2408:	0c0005c0 	jal	1700 <geo_set_animation_globals+0x120>
+    240c:	02002025 	move	a0,s0
+                        break;
+    2410:	1000001b 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2414:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_OBJECT_PARENT:
+                        geo_process_object_parent((struct GraphNodeObjectParent *) curGraphNode);
+    2418:	0c0007ad 	jal	1eb4 <geo_set_animation_globals+0x8d4>
+    241c:	02002025 	move	a0,s0
+                        break;
+    2420:	10000017 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2424:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_GENERATED_LIST:
+                        geo_process_generated_list((struct GraphNodeGenerated *) curGraphNode);
+    2428:	0c000405 	jal	1014 <Get_Screen_Coords+0x88c>
+    242c:	02002025 	move	a0,s0
+                        break;
+    2430:	10000013 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2434:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_BACKGROUND:
+                        geo_process_background((struct GraphNodeBackground *) curGraphNode);
+    2438:	0c000428 	jal	10a0 <Get_Screen_Coords+0x918>
+    243c:	02002025 	move	a0,s0
+                        break;
+    2440:	1000000f 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2444:	87ad0026 	lh	t5,38(sp)
+                    case GRAPH_NODE_TYPE_HELD_OBJ:
+                        geo_process_held_object((struct GraphNodeHeldObject *) curGraphNode);
+    2448:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    244c:	02002025 	move	a0,s0
+                        break;
+    2450:	1000000b 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2454:	87ad0026 	lh	t5,38(sp)
+                    default:
+                        geo_try_process_children((struct GraphNode *) curGraphNode);
+    2458:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    245c:	02002025 	move	a0,s0
+                        break;
+    2460:	10000007 	b	2480 <geo_process_node_and_siblings+0x20c>
+    2464:	87ad0026 	lh	t5,38(sp)
+                }
+            }
+        } else {
+            if (curGraphNode->type == GRAPH_NODE_TYPE_OBJECT) {
+    2468:	860c0000 	lh	t4,0(s0)
+    246c:	24010018 	li	at,24
+    2470:	55810003 	bnel	t4,at,2480 <geo_process_node_and_siblings+0x20c>
+    2474:	87ad0026 	lh	t5,38(sp)
+                ((struct GraphNodeObject *) curGraphNode)->throwMatrix = NULL;
+    2478:	ae000050 	sw	zero,80(s0)
+    247c:	87ad0026 	lh	t5,38(sp)
+    2480:	8fae0028 	lw	t6,40(sp)
+    2484:	51a00005 	beqzl	t5,249c <geo_process_node_and_siblings+0x228>
+    2488:	8fbf001c 	lw	ra,28(sp)
+    248c:	8e100008 	lw	s0,8(s0)
+    2490:	560eff87 	bnel	s0,t6,22b0 <geo_process_node_and_siblings+0x3c>
+    2494:	86020002 	lh	v0,2(s0)
+            }
+        }
+    } while (iterateChildren && (curGraphNode = curGraphNode->next) != firstNode);
+}
+    2498:	8fbf001c 	lw	ra,28(sp)
+    249c:	8fb00018 	lw	s0,24(sp)
+    24a0:	27bd0028 	addiu	sp,sp,40
+    24a4:	03e00008 	jr	ra
+    24a8:	00000000 	nop
+
+000024ac <geo_process_root>:
+/**
+ * Process a root node. This is the entry point for processing the scene graph.
+ * The root node itself sets up the viewport, then all its children are processed
+ * to set up the projection and draw display lists.
+ */
+void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) {
+    24ac:	27bdffd0 	addiu	sp,sp,-48
+    24b0:	afbf001c 	sw	ra,28(sp)
+    24b4:	afb00018 	sw	s0,24(sp)
+    24b8:	afa50034 	sw	a1,52(sp)
+    24bc:	afa60038 	sw	a2,56(sp)
+    24c0:	afa7003c 	sw	a3,60(sp)
+    UNUSED s32 unused;
+
+    if (node->node.flags & GRAPH_RENDER_ACTIVE) {
+    24c4:	848e0002 	lh	t6,2(a0)
+void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) {
+    24c8:	00808025 	move	s0,a0
+    if (node->node.flags & GRAPH_RENDER_ACTIVE) {
+    24cc:	31cf0001 	andi	t7,t6,0x1
+    24d0:	51e0008c 	beqzl	t7,2704 <geo_process_root+0x258>
+    24d4:	8fbf001c 	lw	ra,28(sp)
+        Mtx *initialMatrix;
+        Vp *viewport = alloc_display_list(sizeof(*viewport));
+    24d8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    24dc:	24040010 	li	a0,16
+
+        gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
+    24e0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+        Vp *viewport = alloc_display_list(sizeof(*viewport));
+    24e4:	afa20024 	sw	v0,36(sp)
+        gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
+    24e8:	2444fff0 	addiu	a0,v0,-16
+    24ec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    24f0:	00002825 	move	a1,zero
+    24f4:	3c010000 	lui	at,0x0
+    24f8:	ac220000 	sw	v0,0(at)
+                                                MEMORY_POOL_LEFT);
+        initialMatrix = alloc_display_list(sizeof(*initialMatrix));
+    24fc:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2500:	24040040 	li	a0,64
+        gMatStackIndex = 0;
+    2504:	3c010000 	lui	at,0x0
+    2508:	a4200000 	sh	zero,0(at)
+        gCurAnimType = 0;
+    250c:	3c010000 	lui	at,0x0
+        initialMatrix = alloc_display_list(sizeof(*initialMatrix));
+    2510:	afa20028 	sw	v0,40(sp)
+        gCurAnimType = 0;
+    2514:	a0200000 	sb	zero,0(at)
+        vec3s_set(viewport->vp.vtrans, node->x * 4, node->y * 4, 511);
+    2518:	86060018 	lh	a2,24(s0)
+    251c:	86050016 	lh	a1,22(s0)
+    2520:	8fa40024 	lw	a0,36(sp)
+    2524:	00063080 	sll	a2,a2,0x2
+    2528:	00052880 	sll	a1,a1,0x2
+    252c:	00052c00 	sll	a1,a1,0x10
+    2530:	00063400 	sll	a2,a2,0x10
+    2534:	00063403 	sra	a2,a2,0x10
+    2538:	00052c03 	sra	a1,a1,0x10
+    253c:	240701ff 	li	a3,511
+    2540:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2544:	24840008 	addiu	a0,a0,8
+        vec3s_set(viewport->vp.vscale, node->width * 4, node->height * 4, 511);
+    2548:	8605001a 	lh	a1,26(s0)
+    254c:	8606001c 	lh	a2,28(s0)
+    2550:	8fa40024 	lw	a0,36(sp)
+    2554:	00052880 	sll	a1,a1,0x2
+    2558:	00063080 	sll	a2,a2,0x2
+    255c:	00063400 	sll	a2,a2,0x10
+    2560:	00052c00 	sll	a1,a1,0x10
+    2564:	00052c03 	sra	a1,a1,0x10
+    2568:	00063403 	sra	a2,a2,0x10
+    256c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2570:	240701ff 	li	a3,511
+        if (b != NULL) {
+    2574:	8fb80034 	lw	t8,52(sp)
+            clear_frame_buffer(clearColor);
+            make_viewport_clip_rect(b);
+            *viewport = *b;
+        }
+
+        else if (c != NULL) {
+    2578:	8fac0038 	lw	t4,56(sp)
+        if (b != NULL) {
+    257c:	13000010 	beqz	t8,25c0 <geo_process_root+0x114>
+    2580:	00000000 	nop
+            clear_frame_buffer(clearColor);
+    2584:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2588:	8fa4003c 	lw	a0,60(sp)
+            make_viewport_clip_rect(b);
+    258c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2590:	8fa40034 	lw	a0,52(sp)
+            *viewport = *b;
+    2594:	8fa90034 	lw	t1,52(sp)
+    2598:	8fb90024 	lw	t9,36(sp)
+    259c:	8d2b0000 	lw	t3,0(t1)
+    25a0:	af2b0000 	sw	t3,0(t9)
+    25a4:	8d2a0004 	lw	t2,4(t1)
+    25a8:	af2a0004 	sw	t2,4(t9)
+    25ac:	8d2b0008 	lw	t3,8(t1)
+    25b0:	af2b0008 	sw	t3,8(t9)
+    25b4:	8d2a000c 	lw	t2,12(t1)
+    25b8:	10000007 	b	25d8 <geo_process_root+0x12c>
+    25bc:	af2a000c 	sw	t2,12(t9)
+        else if (c != NULL) {
+    25c0:	11800005 	beqz	t4,25d8 <geo_process_root+0x12c>
+    25c4:	00000000 	nop
+            clear_frame_buffer(clearColor);
+    25c8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    25cc:	8fa4003c 	lw	a0,60(sp)
+            make_viewport_clip_rect(c);
+    25d0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    25d4:	8fa40038 	lw	a0,56(sp)
+        }
+
+        mtxf_identity(gMatStack[gMatStackIndex]);
+    25d8:	3c0d0000 	lui	t5,0x0
+    25dc:	85ad0000 	lh	t5,0(t5)
+    25e0:	3c0f0000 	lui	t7,0x0
+    25e4:	25ef0000 	addiu	t7,t7,0
+    25e8:	000d7180 	sll	t6,t5,0x6
+    25ec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    25f0:	01cf2021 	addu	a0,t6,t7
+        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+    25f4:	3c180000 	lui	t8,0x0
+    25f8:	87180000 	lh	t8,0(t8)
+    25fc:	3c090000 	lui	t1,0x0
+    2600:	25290000 	addiu	t1,t1,0
+    2604:	0018c980 	sll	t9,t8,0x6
+    2608:	03292821 	addu	a1,t9,t1
+    260c:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    2610:	8fa40028 	lw	a0,40(sp)
+        gMatStackFixed[gMatStackIndex] = initialMatrix;
+    2614:	3c0b0000 	lui	t3,0x0
+    2618:	856b0000 	lh	t3,0(t3)
+    261c:	8faa0028 	lw	t2,40(sp)
+        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+    2620:	3c070000 	lui	a3,0x0
+    2624:	24e70000 	addiu	a3,a3,0
+        gMatStackFixed[gMatStackIndex] = initialMatrix;
+    2628:	000b6080 	sll	t4,t3,0x2
+        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+    262c:	3c050000 	lui	a1,0x0
+        gMatStackFixed[gMatStackIndex] = initialMatrix;
+    2630:	00ec6821 	addu	t5,a3,t4
+        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+    2634:	24a50000 	addiu	a1,a1,0
+        gMatStackFixed[gMatStackIndex] = initialMatrix;
+    2638:	adaa0000 	sw	t2,0(t5)
+        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(viewport));
+    263c:	8ca20000 	lw	v0,0(a1)
+    2640:	3c0fdc08 	lui	t7,0xdc08
+    2644:	35ef0008 	ori	t7,t7,0x8
+    2648:	244e0008 	addiu	t6,v0,8
+    264c:	acae0000 	sw	t6,0(a1)
+    2650:	ac4f0000 	sw	t7,0(v0)
+    2654:	8fb80024 	lw	t8,36(sp)
+        mtxf_to_mtx(initialMatrix, gMatStack[gMatStackIndex]);
+    2658:	3c081fff 	lui	t0,0x1fff
+    265c:	3508ffff 	ori	t0,t0,0xffff
+        gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(viewport));
+    2660:	0308c824 	and	t9,t8,t0
+    2664:	ac590004 	sw	t9,4(v0)
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(gMatStackFixed[gMatStackIndex]),
+    2668:	8ca20000 	lw	v0,0(a1)
+    266c:	3c0bda38 	lui	t3,0xda38
+    2670:	356b0003 	ori	t3,t3,0x3
+    2674:	24490008 	addiu	t1,v0,8
+    2678:	aca90000 	sw	t1,0(a1)
+    267c:	3c0c0000 	lui	t4,0x0
+    2680:	ac4b0000 	sw	t3,0(v0)
+    2684:	858c0000 	lh	t4,0(t4)
+                  G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+        gCurGraphNodeRoot = node;
+    2688:	3c010000 	lui	at,0x0
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(gMatStackFixed[gMatStackIndex]),
+    268c:	000c5080 	sll	t2,t4,0x2
+    2690:	00ea6821 	addu	t5,a3,t2
+    2694:	8dae0000 	lw	t6,0(t5)
+    2698:	01c87824 	and	t7,t6,t0
+    269c:	ac4f0004 	sw	t7,4(v0)
+        gCurGraphNodeRoot = node;
+    26a0:	ac300000 	sw	s0,0(at)
+        if (node->node.children != NULL) {
+    26a4:	8e060010 	lw	a2,16(s0)
+    26a8:	10c00003 	beqz	a2,26b8 <geo_process_root+0x20c>
+    26ac:	00000000 	nop
+            geo_process_node_and_siblings(node->node.children);
+    26b0:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    26b4:	00c02025 	move	a0,a2
+        }
+        gCurGraphNodeRoot = NULL;
+        if (gShowDebugText) {
+    26b8:	3c180000 	lui	t8,0x0
+    26bc:	83180000 	lb	t8,0(t8)
+        gCurGraphNodeRoot = NULL;
+    26c0:	3c010000 	lui	at,0x0
+    26c4:	ac200000 	sw	zero,0(at)
+        if (gShowDebugText) {
+    26c8:	1300000a 	beqz	t8,26f4 <geo_process_root+0x248>
+            print_text_fmt_int(180, 36, "MEM %d",
+    26cc:	240400b4 	li	a0,180
+    26d0:	3c020000 	lui	v0,0x0
+    26d4:	8c420000 	lw	v0,0(v0)
+    26d8:	3c060000 	lui	a2,0x0
+    26dc:	24c60000 	addiu	a2,a2,0
+    26e0:	8c590000 	lw	t9,0(v0)
+    26e4:	8c490004 	lw	t1,4(v0)
+    26e8:	24050024 	li	a1,36
+    26ec:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    26f0:	03293823 	subu	a3,t9,t1
+                               gDisplayListHeap->totalSpace - gDisplayListHeap->usedSpace);
+        }
+        main_pool_free(gDisplayListHeap);
+    26f4:	3c040000 	lui	a0,0x0
+    26f8:	0c000000 	jal	0 <Get_Screen_Coords-0x788>
+    26fc:	8c840000 	lw	a0,0(a0)
+    }
+}
+    2700:	8fbf001c 	lw	ra,28(sp)
+    2704:	8fb00018 	lw	s0,24(sp)
+    2708:	27bd0030 	addiu	sp,sp,48
+    270c:	03e00008 	jr	ra
+    2710:	00000000 	nop
+	...

@@ -87,7 +87,7 @@ endif
 
 DEBUG_MAP_STACKTRACE_FLAG := -D DEBUG_MAP_STACKTRACE
 
-TARGET := sm64
+TARGET := btcm
 
 
 # GRUCODE - selects which RSP microcode to use.
@@ -134,7 +134,7 @@ LINK_LIBRARIES = $(foreach i,$(LIBRARIES),-l$(i))
 #==============================================================================#
 
 # Default non-gcc opt flags
-DEFAULT_OPT_FLAGS = -Ofast
+DEFAULT_OPT_FLAGS = -Ofast -ggdb
 # Note: -fno-associative-math is used here to suppress warnings, ideally we would enable this as an optimization but
 # this conflicts with -ftrapping-math apparently.
 # TODO: Figure out how to allow -fassociative-math to be enabled
@@ -222,7 +222,7 @@ ifeq ($(NON_MATCHING),1)
 endif
 
 
-TARGET_STRING := sm64
+TARGET_STRING := btcm
 
 # UNF - whether to use UNFLoader flashcart library
 #   1 - includes code in ROM
@@ -233,6 +233,9 @@ ifeq ($(UNF),1)
   DEFINES += UNF=1
   SRC_DIRS += src/usb
   USE_DEBUG := 1
+  LOADER_FLAGS = -d -r
+else
+  LOADER_FLAGS =
 endif
 
 # ISVPRINT - whether to fake IS-Viewer presence,
@@ -531,8 +534,8 @@ endif
 ENDIAN_BITWIDTH       := $(BUILD_DIR)/endian-and-bitwidth
 EMULATOR = mupen64plus
 EMU_FLAGS =
-LOADER = loader64
-LOADER_FLAGS = -vwf
+LOADER = ./UNFLoader.exe
+
 SHA1SUM = sha1sum
 PRINT = printf
 
@@ -656,6 +659,8 @@ $(BUILD_DIR)/src/menu/file_select.o: $(BUILD_DIR)/include/text_strings.h
 $(BUILD_DIR)/src/menu/star_select.o: $(BUILD_DIR)/include/text_strings.h
 $(BUILD_DIR)/src/game/ingame_menu.o: $(BUILD_DIR)/include/text_strings.h
 $(BUILD_DIR)/src/game/puppycam2.o:   $(BUILD_DIR)/include/text_strings.h
+$(BUILD_DIR)/src/game/mem_error_screen.o: $(BUILD_DIR)/include/text_strings.h
+$(BUILD_DIR)/src/game/camera.o: $(BUILD_DIR)/include/text_strings.h
 
 
 

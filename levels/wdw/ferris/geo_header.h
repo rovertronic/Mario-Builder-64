@@ -1,0 +1,15 @@
+extern const GeoLayout ferris_geo[];
+extern u8 ferris_FerrisWheel_ia8[];
+extern u8 ferris_NeonRoundLights_ci4[];
+extern u8 ferris_NeonRoundLights_ci4_pal_rgba16[];
+extern Vtx ferris_Cylinder_002_mesh_layer_4_vtx_0[136];
+extern Gfx ferris_Cylinder_002_mesh_layer_4_tri_0[];
+extern Vtx ferris_Cylinder_002_mesh_layer_6_vtx_0[128];
+extern Gfx ferris_Cylinder_002_mesh_layer_6_tri_0[];
+extern Gfx mat_ferris_FerrisWheel[];
+extern Gfx mat_revert_ferris_FerrisWheel[];
+extern Gfx mat_ferris_Blinkers[];
+extern Gfx mat_revert_ferris_Blinkers[];
+extern Gfx ferris_Cylinder_002_mesh_layer_4[];
+extern Gfx ferris_Cylinder_002_mesh_layer_6[];
+extern Gfx ferris_material_revert_render_settings[];

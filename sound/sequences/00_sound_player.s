@@ -2575,29 +2575,26 @@ layer_end
 chan_setbank 10
 chan_setinstr 16
 chan_setlayer 0, .layer_F18
-chan_setlayer 1, .layer_F18
 chan_end
 
 .layer_F18:
-layer_note1 39, 0x46, 127
+layer_note1 39, 0x68, 104
 layer_end
 
 .sound_peach_power_of_the_stars:
 chan_setbank 10
 chan_setinstr 17
 chan_setlayer 0, .layer_F27
-chan_setlayer 1, .layer_F27
 chan_end
 
 .layer_F27:
-layer_note1 39, 0x15e, 127
+layer_note1 39, 0x183, 127
 layer_end
 
 .sound_peach_thanks_to_you:
 chan_setbank 10
 chan_setinstr 18
 chan_setlayer 0, .layer_F37
-chan_setlayer 1, .layer_F37
 chan_end
 
 .layer_F37:
@@ -2608,7 +2605,6 @@ layer_end
 chan_setbank 10
 chan_setinstr 19
 chan_setlayer 0, .layer_F47
-chan_setlayer 1, .layer_F47
 chan_end
 
 .layer_F47:
@@ -2619,29 +2615,26 @@ layer_end
 chan_setbank 10
 chan_setinstr 20
 chan_setlayer 0, .layer_F56
-chan_setlayer 1, .layer_F56
 chan_end
 
 .layer_F56:
-layer_note1 39, 0xdc, 127
+layer_note1 39, 0xBB, 127
 layer_end
 
 .sound_peach_bake_a_cake:
 chan_setbank 10
 chan_setinstr 21
 chan_setlayer 0, .layer_F66
-chan_setlayer 1, .layer_F66
 chan_end
 
 .layer_F66:
-layer_note1 39, 0x190, 127
+layer_note1 39, 0x80, 97
 layer_end
 
 .sound_peach_for_mario:
 chan_setbank 10
 chan_setinstr 22
 chan_setlayer 0, .layer_F76
-chan_setlayer 1, .layer_F76
 chan_end
 
 .layer_F76:
@@ -2654,7 +2647,6 @@ chan_setinstr 23
 chan_setval 20
 chan_call .set_reverb
 chan_setlayer 0, .layer_F8A
-chan_setlayer 1, .layer_F8A
 chan_end
 
 .layer_F8A:
@@ -2794,7 +2786,7 @@ sound_ref .sound_general_grand_star_jump
 sound_ref .sound_general_boat_rock
 sound_ref .sound_general_vanish_sfx
 sound_ref .sound_menu_enter_hole
-sound_ref .sound_general_red_coin
+sound_ref .sound_peach_something_special
 sound_ref .sound_general_birds_fly_away
 sound_ref .sound_general_right_answer
 sound_ref .sound_general_metal_pound
@@ -4421,7 +4413,7 @@ sound_ref .chan_1D81
 sound_ref .sound_env_water_drain
 sound_ref .sound_env_metal_box_push
 sound_ref .sound_env_sink_quicksand
-sound_ref .sound_air_peach_twinkle
+sound_ref .sound_peach_power_of_the_stars
 sound_ref .sound_env_elevator1
 sound_ref .sound_env_droning1
 sound_ref .sound_env_waterfall1
@@ -4994,7 +4986,7 @@ sound_ref .sound_obj_wiggler_low_pitch
 sound_ref .sound_obj_snufit_skeeter_death
 sound_ref .sound_obj_bubba_chomp
 sound_ref .sound_obj_enemy_defeat_shrink
-sound_ref .sound_obj_bowser_tail_pickup
+sound_ref .sound_peach_bake_a_cake
 sound_ref .sound_obj_bowser_defeated
 sound_ref .sound_obj_bowser_spinning
 sound_ref .sound_obj_klepto2

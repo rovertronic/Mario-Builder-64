@@ -1,0 +1,11 @@
+extern const GeoLayout agcrumble_geo[];
+extern Lights1 agcrumble_crumble_lights;
+extern u8 agcrumble_crumble_ci8[];
+extern u8 agcrumble_crumble_ci8_pal_rgba16[];
+extern Vtx agcrumble_Cube_011_mesh_layer_1_vtx_cull[8];
+extern Vtx agcrumble_Cube_011_mesh_layer_1_vtx_0[48];
+extern Gfx agcrumble_Cube_011_mesh_layer_1_tri_0[];
+extern Gfx mat_agcrumble_crumble[];
+extern Gfx mat_revert_agcrumble_crumble[];
+extern Gfx agcrumble_Cube_011_mesh_layer_1[];
+extern Gfx agcrumble_material_revert_render_settings[];

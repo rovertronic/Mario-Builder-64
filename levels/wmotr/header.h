@@ -16,4 +16,7 @@ extern const MacroObject wmotr_seg7_macro_objs[];
 // script
 extern const LevelScript level_wmotr_entry[];
 
+
+#include "levels/wmotr/header.inc.h"
+
 #endif

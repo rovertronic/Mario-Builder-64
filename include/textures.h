@@ -261,6 +261,7 @@ extern const Texture water_0900B800[];
 extern const Texture *const flower_bubbles_textures_ptr_0B002008[];
 extern const Texture *const lava_bubble_ptr_0B006020[];
 extern const Texture *const bubble_ptr_0B006848[];
+extern const u8 *const rain_ptr[];
 extern const Gfx tiny_bubble_dl_0B006A50[];
 extern const Gfx tiny_bubble_dl_0B006AB0[];
 extern const Gfx tiny_bubble_dl_0B006CD8[];

@@ -1,0 +1,213 @@
+{
+	"$schema": "https://parallel-launcher.ca/layout/advanced-01/schema.json",
+	"format": {
+		"save_type": "EEPROM",
+		"num_slots": 3,
+		"slots_start": 16,
+		"slot_size": 160,
+		"active_bit": 159,
+		"checksum_offset": 72
+	},
+	"groups": [
+		{
+			"name": "Main Courses",
+			"side": "top",
+			"courses": [
+				{
+					"name": "C1:",
+					"data": [
+						{
+							"offset": 20,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C2:",
+					"data": [
+						{
+							"offset": 21,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C3:",
+					"data": [
+						{
+							"offset": 22,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C4:",
+					"data": [
+						{
+							"offset": 23,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C5:",
+					"data": [
+						{
+							"offset": 24,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C6:",
+					"data": [
+						{
+							"offset": 25,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C7:",
+					"data": [
+						{
+							"offset": 26,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C8:",
+					"data": [
+						{
+							"offset": 27,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C9:",
+					"data": [
+						{
+							"offset": 28,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C10:",
+					"data": [
+						{
+							"offset": 29,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C11:",
+					"data": [
+						{
+							"offset": 30,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C12:",
+					"data": [
+						{
+							"offset": 31,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C13:",
+					"data": [
+						{
+							"offset": 32,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C14:",
+					"data": [
+						{
+							"offset": 33,
+							"mask": 127
+						}
+					]
+				},
+				{
+					"name": "C15:",
+					"data": [
+						{
+							"offset": 34,
+							"mask": 127
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Boss Courses",
+			"side": "top",
+			"courses": [
+				{
+					"name": "Boss Course 1:",
+					"data": [
+						{
+							"offset": 35,
+							"mask": 67
+						}
+					]
+				},
+				{
+					"name": "Boss Course 2:",
+					"data": [
+						{
+							"offset": 36,
+							"mask": 65
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Secret Courses",
+			"side": "top",
+			"courses": [
+				{
+					"name": "Minigames:",
+					"data": [
+						{
+							"offset": 16,
+							"mask": 255
+						}
+					]
+				},
+				{
+					"name": "Cap 1:",
+					"data": [
+						{
+							"offset": 38,
+							"mask": 1
+						}
+					]
+				},
+				{
+					"name": "Cap 2:",
+					"data": [
+						{
+							"offset": 42,
+							"mask": 1
+						}
+					]
+				}
+			]
+		}
+	],
+	"collectedStarIcon": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEUUlEQVRIia2Uz29UVRTHP+/e9968eTPzptNOkZZif0ItmrQRJSFq2mBcEI0GXJCYQOc/sEuXGF2bujBxOfwFoiYGNzAuTGRFCyGiBanRFlotTOfn+3XvczEVikVsIjc5i5tz7vdzz7nnHtjl8v3KoO//dmVkePjK9PT04G7Pid0GQlyC5pSbyUwZhlF6qgDfPz8JQQlCTNMklUqVjh8/PvnUAMACSX2I2uc06nW0UkNSiIWnAvD9C7MkMbSvgn+RRqNBvVZDCMG7J0/O/i+A7y/MgjVPvAGNCugqSmvurK3RbDZZW1+fn5iYeCLE2CnqDwJDwBSE8yTX4d4HEP0EwP6XFQCe5+G6aar3Nih223R1pWdyObn81TfXf92uZ24Tnt0SnumYgngVWt8+EN++arUajXodIwnIuzkcW1YsROXI1LOV60sby81m8xyA6fv+JDDfuTFd0IZ4Edo/QPAjqO8fERaGgTAMYq2RMsFxHDYbPvnuNI7NjONYM5Ylq1Mj46V8OjNn1G68l1iF1zDslyAug38BVPNfa/r8jI3WisCPSOfStNotEmCg12XyhSGiSLG6Lhk9OE5ffz/mH198XXaLl0rmXhd3vIa05ZPejLw0cNIuIpfh1sYd4s6TEPsJmzWfVMrh9TeOsWfvAFLIsoiCaO7Plc3y2sJdGjdjUOqJAB1oMrj0uDmU1gBIBL3dWbq8IgeeO8zE2DC2aZYTkrkHXbRw1rmUyYmZ7iNpMnslmAYYO5qMsaMaW0A7NlA6ISVMXj18FMeBkUOjHBg/QMrJVcN2NHfqzOlz5razZdXQM/XFEL0usXsNrLxE2IBtwlblMm4GP/JJlMZJpyh2Fejev49iocjIwXEyXpawVZs7deb0OfjHP7j9cfZ925bzhmnQboPlQdoDWRCYaUDAiY8O4YchOpGkHYdizx5Gxw4xODRCf38/Qhpzb7157NO/NbdnQN9AtkLeWaaQGlq/vIauwuZ90EudWpPAvt4B/DgkNhRRoPC8PdhOgWxXkRixbChR2a75yKhwSncXmegrM1bE8sDMg+OB29WxlAdBs40gjaVsMmaeyPa404hoRYp2EJVPvD29uF3zkQwA8HLgQCoPRBAr2GoWZAyWWSDKdqOlSRxDvW0QNaqMjbZIHtMUOwGhgATcHlAhmAkQPnTfK+wniCPCICZoK9ABUhgkWhPH8S4A8ZZ5ICOQurPXGqpVjSUltXqLdhARRyGO4yCkJAwCGoneBaC1RclbEEW0G3DzRsjK75rVVc0rL05wv7rJ0u0VflnZwFeaqBlhComR7KZEviZYa3D554DVu4pb13yavsLueBdGj2XJuNZU3zM9HI1jfl9Z4361gZ2y0Cr5b4C/VGXx6jpfXqxhyE6AcDi75S5HKsaQsiQMTdpMnR0Z3oeKt0bGY8bYDkClssy15RbKYMGEOYBPKnz3MOAdgA8BPiufr0ghEZaY14me2ikPfwFTDcwreaaDogAAAABJRU5ErkJggg==",
+	"missingStarIcon": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAACXBIWXMAAA7DAAAOwwHHb6hkAAACGElEQVQ4jYWTPW9TMRSGH9tpcvMhCiqtEEvv0AWW3A3Y0n/QmSUZGRBkBZbyD8LGmK4stAMTDEGiiRBCpFIiUUqrBAYShtLSJL1J7rUZGpk0vVLPZJ/Xj499/FoQEdVlsfmD72vP2hc1GQVQMF7fM4UoKQLYzpoCjPELT7IX1VjEJnXDKQt03V4dcWmF7bxhxIgEixge5Wd1dX5azVPSzgCDIEmfa7n7na2d6RW2ZG0ZF4+S5oRwkvuLzwKGdE61VttTQC2PS44chPgMz9VMogFZERVaqxsgallKeFyFgCGB3f3/mRUBMQTi6LQeFsVrkyHOmDE6omHT0WaXJmrFPfROSFzs30yEvOItv8rqbqV3448X58olSINNRmVRVNVhbetObugmSSAiIY1Pm3f0j8KX3Y8K4B5mzWeERgDSYoYhJxyyT42fyAcHG/Ydnj6OlyQ+KVKkiCMxjBnSY8CYLp/RxcYLsF66WUm0ku43BvQIAQMIJAqFwx66ReVs5cRLD3eWytdJkiRNhgwp0mRITzIBstyYGMS61SFGCk2IBkIUoJBIYsyRsC2wQIBhngBNYEWFJIZETJnaAhqNQ4hBozlGM88cAjVjaAuMAIeQAbt06WBYxGUFB8U4Cgg4pkmHrwxQUA/Z9z7hcJsl/KmPaUe/afLm7JLrQFlBAfz1L4CY8rAFPnCArssi7L2fpJ7DrYqCkvGMBf4Bkq/BHgDpHXoAAAAASUVORK5CYII="
+}

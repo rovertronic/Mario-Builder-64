@@ -1,0 +1,10 @@
+#include "levels/bbh/GhostBoard/texscroll.inc.h"
+#include "levels/bbh/lightning/texscroll.inc.h"
+#include "levels/bbh/iceberg_LOD/texscroll.inc.h"
+#include "levels/bbh/ship_elevator_pulley/texscroll.inc.h"
+#include "levels/bbh/ship_elevator_rope/texscroll.inc.h"
+#include "levels/bbh/ship_elevator/texscroll.inc.h"
+#include "levels/bbh/iceberg/texscroll.inc.h"
+#include "levels/bbh/barell/texscroll.inc.h"
+#include "levels/bbh/texscroll.inc.h"
+extern void scroll_textures_bbh();

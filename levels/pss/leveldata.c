@@ -19,3 +19,12 @@
 #include "levels/pss/areas/1/7/model.inc.c"
 #include "levels/pss/areas/1/collision.inc.c"
 #include "levels/pss/areas/1/macro.inc.c"
+#include "levels/pss/leveldata.inc.c"
+
+#include "levels/pss/valve/model.inc.c"
+#include "levels/pss/valve/collision.inc.c"
+#include "levels/pss/gatess/model.inc.c"
+#include "levels/pss/gatess/collision.inc.c"
+#include "levels/pss/slob/model.inc.c"
+#include "levels/pss/slob/anims/data.inc.c"
+#include "levels/pss/slob/anims/table.inc.c"

@@ -33,4 +33,6 @@ s32 stationary_ground_step(struct MarioState *m);
 s32 perform_ground_step(struct MarioState *m);
 s32 perform_air_step(struct MarioState *m, u32 stepArg);
 
+extern u8 tile_flip_state;
+
 #endif // MARIO_STEP_H

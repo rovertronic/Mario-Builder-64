@@ -1,0 +1,10 @@
+extern const GeoLayout cfan_geo[];
+extern Lights1 cfan_Wood_lights;
+extern u8 cfan_Wood_i8[];
+extern Vtx cfan_Cylinder_001_mesh_layer_1_vtx_cull[8];
+extern Vtx cfan_Cylinder_001_mesh_layer_1_vtx_0[128];
+extern Gfx cfan_Cylinder_001_mesh_layer_1_tri_0[];
+extern Gfx mat_cfan_Wood[];
+extern Gfx mat_revert_cfan_Wood[];
+extern Gfx cfan_Cylinder_001_mesh_layer_1[];
+extern Gfx cfan_material_revert_render_settings[];

@@ -1,0 +1,11 @@
+extern const GeoLayout valve_geo[];
+extern Lights1 valve_Valve_lights;
+extern u8 valve_valve_ci8[];
+extern u8 valve_valve_ci8_pal_rgba16[];
+extern Vtx valve_valve_vis_mesh_layer_4_vtx_cull[8];
+extern Vtx valve_valve_vis_mesh_layer_4_vtx_0[4];
+extern Gfx valve_valve_vis_mesh_layer_4_tri_0[];
+extern Gfx mat_valve_Valve[];
+extern Gfx mat_revert_valve_Valve[];
+extern Gfx valve_valve_vis_mesh_layer_4[];
+extern Gfx valve_material_revert_render_settings[];

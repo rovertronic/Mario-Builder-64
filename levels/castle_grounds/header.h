@@ -11,6 +11,8 @@ extern const GeoLayout castle_grounds_geo_00070C[];
 extern const GeoLayout castle_grounds_geo_000724[];
 extern const GeoLayout castle_grounds_geo_00073C[];
 
+extern const f32 cg_frames[][2][3];
+
 // leveldata
 extern const Gfx castle_grounds_seg7_dl_07006D70[];
 extern const Gfx castle_grounds_seg7_dl_070095F0[];
@@ -40,5 +42,32 @@ extern const Gfx castle_grounds_dl_waterfall[];
 
 // script
 extern const LevelScript level_castle_grounds_entry[];
+
+
+#include "levels/castle_grounds/header.inc.h"
+
+#include "levels/castle_grounds/cg_sky/header.h"
+
+#include "levels/castle_grounds/giant_tree/geo_header.h"
+
+#include "levels/castle_grounds/giant_tree/collision_header.h"
+
+#include "levels/castle_grounds/cursedmirror/geo_header.h"
+
+#include "levels/castle_grounds/cursedmirror/collision_header.h"
+
+#include "levels/castle_grounds/mirror_shard/geo_header.h"
+
+#include "levels/castle_grounds/t_trap/geo_header.h"
+
+#include "levels/castle_grounds/t_trap/collision_header.h"
+
+#include "levels/castle_grounds/tutorialgate/geo_header.h"
+
+#include "levels/castle_grounds/tutorialgate/collision_header.h"
+
+#include "levels/castle_grounds/shrnling1/geo_header.h"
+
+#include "levels/castle_grounds/shrnling1/anim_header.h"
 
 #endif

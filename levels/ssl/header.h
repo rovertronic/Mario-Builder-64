@@ -18,8 +18,8 @@ extern const GeoLayout ssl_geo_0007CC[];
 extern const GeoLayout ssl_geo_00088C[];
 
 // leveldata
-extern const Texture ssl_pyramid_sand[];
-extern const Texture ssl_quicksand[];
+extern const u8 ssl_pyramid_sand[];
+extern const u8 ssl_quicksand[];
 extern const Gfx ssl_dl_quicksand_pit_begin[];
 extern const Gfx ssl_dl_quicksand_pit_end[];
 extern const Gfx ssl_dl_pyramid_quicksand_pit_begin[];
@@ -84,5 +84,44 @@ extern const Gfx ssl_dl_pyramid_sand_pathway_side_end[];
 
 // script
 extern const LevelScript level_ssl_entry[];
+
+
+#include "levels/ssl/header.inc.h"
+
+#include "levels/ssl/smb_platform/collision_header.h"
+
+#include "levels/ssl/smb_platform/geo_header.h"
+
+#include "levels/ssl/retroplant/geo_header.h"
+
+#include "levels/ssl/retrobill/geo_header.h"
+
+#include "levels/ssl/retrothwomp/geo_header.h"
+
+#include "levels/ssl/retrothwomp/collision_header.h"
+
+#include "levels/ssl/retrodonut/geo_header.h"
+
+#include "levels/ssl/retrodonut/collision_header.h"
+
+#include "levels/ssl/log2/geo_header.h"
+
+#include "levels/ssl/log2/collision_header.h"
+
+#include "levels/ssl/mask2/geo_header.h"
+
+#include "levels/ssl/cursedkey/geo_header.h"
+
+#include "levels/ssl/keydoor2/geo_header.h"
+
+#include "levels/ssl/ladybug/geo_header.h"
+
+#include "levels/ssl/retrotoad/geo_header.h"
+
+#include "levels/ssl/smashbrick/geo_header.h"
+
+#include "levels/ssl/smashbrick/collision_header.h"
+
+#include "levels/ssl/rbowser/geo_header.h"
 
 #endif

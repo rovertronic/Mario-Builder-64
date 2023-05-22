@@ -20,4 +20,18 @@ extern const MacroObject pss_seg7_macro_objs[];
 // script
 extern const LevelScript level_pss_entry[];
 
+#include "levels/pss/header.inc.h"
+
+#include "levels/pss/valve/geo_header.h"
+
+#include "levels/pss/valve/collision_header.h"
+
+#include "levels/pss/gatess/geo_header.h"
+
+#include "levels/pss/gatess/collision_header.h"
+
+#include "levels/pss/slob/geo_header.h"
+
+#include "levels/pss/slob/anim_header.h"
+
 #endif

@@ -1,0 +1,18 @@
+const Collision rr_pyramid_collision[] = {
+	COL_INIT(),
+	COL_VERTEX_INIT(5),
+	COL_VERTEX(-1236, -2473, 1236),
+	COL_VERTEX(0, 0, 0),
+	COL_VERTEX(-1236, -2473, -1236),
+	COL_VERTEX(1236, -2473, -1236),
+	COL_VERTEX(1236, -2473, 1236),
+	COL_TRI_INIT(SURFACE_HARD_NOT_SLIPPERY, 6),
+	COL_TRI(0, 1, 2),
+	COL_TRI(2, 1, 3),
+	COL_TRI(3, 1, 4),
+	COL_TRI(4, 1, 0),
+	COL_TRI(2, 3, 4),
+	COL_TRI(2, 4, 0),
+	COL_TRI_STOP(),
+	COL_END()
+};

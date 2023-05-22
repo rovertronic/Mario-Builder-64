@@ -10,6 +10,13 @@
  */
 void bhv_hidden_blue_coin_loop(void) {
     struct Object *blueCoinSwitch;
+    u16 time = 200;
+    u16 time2 = 20;
+
+    if (save_file_get_badge_equip() & (1<<9)) {
+        time*=2;
+        time2*=2;
+    }
 
     switch (o->oAction) {
         case HIDDEN_BLUE_COIN_ACT_INACTIVE:
@@ -29,6 +36,13 @@ void bhv_hidden_blue_coin_loop(void) {
         case HIDDEN_BLUE_COIN_ACT_WAITING:
             // Wait until the blue coin switch starts ticking to activate.
             blueCoinSwitch = o->oHiddenBlueCoinSwitch;
+
+            cur_obj_disable_rendering();
+            cur_obj_become_intangible();
+            if (gMarioState->onbluecoinswitch) {
+                cur_obj_enable_rendering();
+                cur_obj_become_tangible();
+            }
 
             if (blueCoinSwitch->oAction == BLUE_COIN_SWITCH_ACT_TICKING) {
                 o->oAction = HIDDEN_BLUE_COIN_ACT_ACTIVE;
@@ -52,7 +66,7 @@ void bhv_hidden_blue_coin_loop(void) {
 
             // After 200 frames of waiting and 20 2-frame blinks (for 240 frames total),
             // delete the object.
-            if (cur_obj_wait_then_blink(200, 20)) {
+            if (cur_obj_wait_then_blink(time, time2)) {
 #ifdef BLUE_COIN_SWITCH_RETRY
                 o->oAction = HIDDEN_BLUE_COIN_ACT_INACTIVE;
 #else
@@ -70,6 +84,13 @@ void bhv_hidden_blue_coin_loop(void) {
  * Update function for bhvBlueCoinSwitch.
  */
 void bhv_blue_coin_switch_loop(void) {
+    u16 time = 240;
+    u16 time2 = 200;
+
+    if (save_file_get_badge_equip() & (1<<9)) {
+        time*=2;
+        time2*=2;
+    }
     // The switch's model is 1/3 size.
     cur_obj_scale(3.0f);
 
@@ -77,7 +98,9 @@ void bhv_blue_coin_switch_loop(void) {
         case BLUE_COIN_SWITCH_ACT_IDLE:
             // If Mario is on the switch and has ground-pounded,
             // recede and get ready to start ticking.
+            gMarioState->onbluecoinswitch = FALSE;
             if (gMarioObject->platform == o) {
+                gMarioState->onbluecoinswitch = TRUE;
                 if (gMarioStates[0].action == ACT_GROUND_POUND_LAND) {
                     // Set to BLUE_COIN_SWITCH_ACT_RECEDING
                     o->oAction = BLUE_COIN_SWITCH_ACT_RECEDING;
@@ -101,6 +124,7 @@ void bhv_blue_coin_switch_loop(void) {
             break;
 
         case BLUE_COIN_SWITCH_ACT_RECEDING:
+            gMarioState->onbluecoinswitch = FALSE;
             // Recede for 6 frames before going invisible and ticking.
             // This is probably an off-by-one error, since the switch is 100 units tall
             // and recedes at 20 units/frame, which means it will fully recede after 5 frames.
@@ -134,7 +158,7 @@ void bhv_blue_coin_switch_loop(void) {
 
         case BLUE_COIN_SWITCH_ACT_TICKING:
             // Tick faster when the blue coins start blinking
-            if (o->oTimer < 200) {
+            if (o->oTimer < time2) {
                 play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gGlobalSoundSource);
             } else {
                 play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
@@ -164,7 +188,7 @@ void bhv_blue_coin_switch_loop(void) {
 #else
             // Delete the switch (which stops the sound) after the last coin is collected,
             // or after the coins unload after the 240-frame timer expires.
-            if ((cur_obj_nearest_object_with_behavior(bhvHiddenBlueCoin) == NULL) || (o->oTimer > 240)) {
+            if ((cur_obj_nearest_object_with_behavior(bhvHiddenBlueCoin) == NULL) || (o->oTimer > time)) {
                 obj_mark_for_deletion(o);
             }
 #endif

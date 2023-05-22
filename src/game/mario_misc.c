@@ -25,6 +25,12 @@
 #include "skybox.h"
 #include "sound_init.h"
 #include "puppycam2.h"
+#include "puppycamold.h"
+#include "game/rovent.h"
+#include "ingame_menu.h"
+#include "src/engine/surface_load.h"
+#include "spawn_sound.h"
+#include "mario.h"
 
 #include "config.h"
 
@@ -55,6 +61,7 @@ enum UnlockDoorStarStates {
     UNLOCK_DOOR_STAR_DONE
 };
 
+u8 MetalAppear = FALSE;
 /**
  * The eye texture on succesive frames of Mario's blink animation.
  * He intentionally blinks twice each time.
@@ -102,6 +109,128 @@ Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, UNUSED
 }
 #endif
 
+u8 MaxCostumes = 11;
+
+void loop_costume_token(void) {
+    gMarioState->TokenParam2 = gCurrentObject->oBehParams2ndByte;
+
+    if (gCurrentObject->oAction == 0) {
+        if (save_file_get_costume_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
+            obj_mark_for_deletion(gCurrentObject);
+            }
+        gCurrentObject->oAction = 1;
+        }
+
+    if (gCurrentObject->oAction == 1) {
+        if (gCurrentObject->oDistanceToMario < 150.0f) {
+            save_file_set_costume_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
+            gMarioState->LastCostumeID = gCurrentObject->oBehParams2ndByte;
+            gCurrentObject->oAction = 2;
+            gCurrentObject->oTimer = 0;
+            rtext_insert_pointer[0] = costume_text[gCurrentObject->oBehParams2ndByte];
+            rtext_insert_pointer[1] = costume_effect_text[gCurrentObject->oBehParams2ndByte];
+            run_event(EVENT_COSTUME);
+            }
+        }
+    if (gCurrentObject->oAction == 2) {
+            gCurrentObject->oMoveAngleYaw += 100;
+            gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
+            cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
+            if (gCurrentObject->oTimer > 30) {
+                obj_mark_for_deletion(gCurrentObject);
+            }
+        }
+    }
+
+u8 wallet_text_buffer[4];
+u8 wallet_text_buffer2[4];
+
+void bhv_loop_wallet(void) {
+    switch(gCurrentObject->oAction) {
+
+        case 0:
+            if (save_file_get_wallet_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
+                obj_mark_for_deletion(gCurrentObject);
+            } else {
+                gCurrentObject->oAction = 1;
+            }
+        break;
+
+        case 1:
+            gCurrentObject->oFaceAngleYaw = gCurrentObject->oAngleToMario + sins(gCurrentObject->oTimer * 0x400) * 3000;
+            gCurrentObject->oPosY = gCurrentObject->oHomeY + 100.0f + sinf(gCurrentObject->oTimer * 0x400) * 25.0f;
+            spawn_object(gCurrentObject, MODEL_NONE, bhvSparkleSpawn);
+
+            if (gCurrentObject->oDistanceToMario < 200.0f) {
+                save_file_set_wallet_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
+
+                int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer2);
+                rtext_insert_pointer[0] = &wallet_text_buffer2;
+
+                gMarioState->numMaxGlobalCoins+= 50;
+                gMarioState->gGlobalCoinGain+=50;
+
+                //gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+                gCurrentObject->oAction = 2;
+                gCurrentObject->oTimer = 0;
+
+                int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer);
+                rtext_insert_pointer[1] = &wallet_text_buffer;
+                run_event(EVENT_WALLET);
+                }
+        break;
+
+        case 2:
+            gCurrentObject->oMoveAngleYaw += 100;
+            gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
+            cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
+            if (gCurrentObject->oTimer > 30) {
+                obj_mark_for_deletion(gCurrentObject);
+            }
+        break;
+
+        }
+    }
+
+void loop_dressing_room(void) {
+    if (gCurrentObject->oDistanceToMario < 500.0f) {
+
+        gMarioState->MenuToRender = 1;
+
+        //CONTROLS
+        if (gPlayer1Controller->buttonPressed & R_JPAD) {
+            gMarioState->CostumeID ++;
+            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+                gMarioState->CostumeID ++;
+                if (gMarioState->CostumeID > MaxCostumes) {
+                    gMarioState->CostumeID = 0;
+                    }
+                }
+            }
+        if (gPlayer1Controller->buttonPressed & L_JPAD) {
+            if (gMarioState->CostumeID == 0) {
+                gMarioState->CostumeID = MaxCostumes;
+                }
+                else
+                {
+                gMarioState->CostumeID --;
+                }
+            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+                gMarioState->CostumeID --;
+                if (gMarioState->CostumeID < 0) {
+                    gMarioState->CostumeID = MaxCostumes;
+                    }
+                }
+            }
+        //CONTROLS
+
+        }
+        else
+        {
+        gMarioState->MenuToRender = 0;
+        }
+    }
+
 static void toad_message_faded(void) {
     if (o->oDistanceToMario > 700.0f) {
         o->oToadMessageRecentlyTalked = FALSE;
@@ -125,6 +254,7 @@ static void toad_message_opaque(void) {
 }
 
 static void toad_message_talking(void) {
+    //
     if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_DOWN,
         DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, o->oToadMessageDialogId)) {
         o->oToadMessageRecentlyTalked = TRUE;
@@ -159,6 +289,7 @@ static void toad_message_fading(void) {
 }
 
 void bhv_toad_message_loop(void) {
+
     if (o->header.gfx.node.flags & GRAPH_RENDER_ACTIVE) {
         o->oInteractionSubtype = INT_STATUS_NONE;
         switch (o->oToadMessageState) {
@@ -180,6 +311,69 @@ void bhv_toad_message_loop(void) {
         }
     }
 }
+
+void mirror_room_change(void) {
+
+    if (gCurrentObject->oBehParams2ndByte == 1) {
+        load_object_collision_model();
+        if (save_file_check_progression(PROG_MIRROR)&&(gCurrentObject->oAction == 0)) {
+            gCurrentObject->oAction = 1;
+            gCurrentObject->oHomeX = 0;
+            gCurrentObject->oHomeZ = 0;
+            gCurrentObject->oTimer = 0;
+            }
+        if (gCurrentObject->oAction == 1) {
+            gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f - gCurrentObject->oHomeX;
+            gCurrentObject->oHomeX += gCurrentObject->oHomeZ;
+            gCurrentObject->oHomeZ ++;
+            if (gCurrentObject->oTimer > 60) {
+                obj_mark_for_deletion(gCurrentObject);
+                }
+            }
+        }
+
+    if (gCurrentObject->oBehParams2ndByte == 0) {
+        if (save_file_check_progression(PROG_MIRROR)) {
+            gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f;
+            }
+        }
+}
+
+void evil_mirrror_mario(void) {
+    struct Animation **animations = gCurrentObject->oAnimations;
+
+    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    if ((gCurrentObject->oDistanceToMario < 500.0f)&&(gCurrentObject->oAction == 0)) {
+        //starting off with shitty code, ending off with shitty code, haha
+        start_precredits = FALSE;
+        if (save_file_check_progression(PROG_MIRROR)) {
+            obj_mark_for_deletion(gCurrentObject);
+            }
+            else {
+            geo_obj_init_animation(&gCurrentObject->header.gfx, &animations[1]);
+            gCurrentObject->oAction = 1;
+            gCurrentObject->oTimer = 0;
+            MetalAppear = TRUE;
+            spawn_mist_particles_variable(0, 0, 100.0f);
+            }
+        }
+
+    if (gCurrentObject->oAction == 1) {
+        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        if ((gCurrentObject->oTimer == 2)||(gCurrentObject->oTimer == 27)||(gCurrentObject->oTimer == 53)) {
+            cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
+            }
+        if ((gCurrentObject->oTimer > 80) && (gCurrentObject->oTimer < 165) && (gCurrentObject->oTimer%5==0)) {
+            cur_obj_play_sound_2(SOUND_ACTION_SIDE_FLIP_UNK);
+            }
+        if (gCurrentObject->oTimer > 209) {
+            //BREAK THE MIRROR
+            save_file_set_progression(PROG_MIRROR);
+                play_sound(SOUND_CUSTOM_PEACH_BAKE_A_CAKE,gCurrentObject->header.gfx.cameraToObject);
+            obj_mark_for_deletion(gCurrentObject);
+            }
+        }
+    }
 
 void bhv_toad_message_init(void) {
     s32 saveFlags = save_file_get_flags();
@@ -300,6 +494,8 @@ void bhv_unlock_door_star_loop(void) {
 static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
     Gfx *gfx;
     Gfx *gfxHead = NULL;
+    u8 alphaBias;
+    s32 flags = update_and_return_cap_flags(gMarioState);
 
     if (alpha == 255) {
         SET_GRAPH_NODE_LAYER(node->fnNode.node.flags, LAYER_OPAQUE);
@@ -309,13 +505,14 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
         SET_GRAPH_NODE_LAYER(node->fnNode.node.flags, LAYER_TRANSPARENT);
         gfxHead = alloc_display_list(3 * sizeof(*gfxHead));
         gfx = gfxHead;
-        if (gMarioState->flags & MARIO_VANISH_CAP) {
+        if (gMarioState->flags & MARIO_VANISH_CAP || gMarioState->flags & MARIO_TELEPORTING) {
             gDPSetAlphaCompare(gfx++, G_AC_DITHER);
         } else {
             gDPSetAlphaCompare(gfx++, G_AC_NONE);
         }
     }
-    gDPSetEnvColor(gfx++, 255, 255, 255, alpha);
+    alphaBias = min(alpha, newcam_xlu);
+    gDPSetEnvColor(gfx++, 255, 255, 255, alphaBias);
     gSPEndDisplayList(gfx);
     return gfxHead;
 }
@@ -377,6 +574,10 @@ Gfx *geo_switch_mario_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4 
         } else {
             switchCase->selectedCase = bodyState->eyeState - 1;
         }
+
+        if (gMarioState->isAfterlife) {
+            switchCase->selectedCase = 3;
+        }
     }
     return NULL;
 }
@@ -406,7 +607,9 @@ Gfx *geo_mario_tilt_torso(s32 callContext, struct GraphNode *node, UNUSED Mat4 *
 /**
  * Makes Mario's head rotate with the camera angle when in C-up mode
  */
-Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
+Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx) {
+    //Vec3f crabDisplacement, crabNewDisplacement;
+
     struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
     struct MarioBodyState *bodyState = &gBodyStates[asGenerated->parameter];
     s32 action = bodyState->action;
@@ -414,6 +617,8 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, UNUSED Mat
     if (callContext == GEO_CONTEXT_RENDER) {
         struct GraphNodeRotation *rotNode = (struct GraphNodeRotation *) node->next;
         struct Camera *camera = gCurGraphNodeCamera->config.camera;
+
+
 
         if (camera->mode == CAMERA_MODE_C_UP) {
             rotNode->rotation[0] = gPlayerCameraState->headRotation[1];
@@ -426,6 +631,24 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, UNUSED Mat
             vec3_zero(bodyState->headAngle);
             vec3_zero(rotNode->rotation);
         }
+
+
+        if (revent_head_move) {
+            vec3s_set(bodyState->headAngle, 0, 0, 0);
+            vec3s_set(rotNode->rotation, 0, 0, 0);
+            rotNode->rotation[0] = revent_headangle[0];
+            rotNode->rotation[1] = revent_headangle[1];
+            rotNode->rotation[2] = revent_headangle[2];
+        }
+
+        //get_pos_from_transform_mtx(gMarioState->HeadPosition, *curTransform, gCurGraphNodeCamera->matrixPtr);
+
+        if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
+            create_transformation_from_matrices(gMarioState->HeadMatrix, *mtx, gCurGraphNodeCamera->matrixPtr);
+        }
+
+        
+        
     }
     return NULL;
 }
@@ -451,7 +674,18 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
                     (bodyState->handState < 2) ? bodyState->handState : MARIO_HAND_FISTS;
             }
         }
+        if (gMarioState->powerup == 1) {
+            switchCase->selectedCase = MARIO_HAND_RIGHT_CROWBAR;
+        }
+        if ((gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+            switchCase->selectedCase = MARIO_HAND_RIGHT_WING;
+        }
+
+        if (revent_active) {
+            switchCase->selectedCase = revent_handstate;
+        }
     }
+
     return NULL;
 }
 
@@ -491,9 +725,26 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
     struct MarioBodyState *bodyState = &gBodyStates[switchCase->numCases];
 
+    //if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
+        //bodyState->modelState |= MODEL_STATE_METAL;
+        //}
+
     if (callContext == GEO_CONTEXT_RENDER) {
         switchCase->selectedCase = bodyState->modelState >> 8;
     }
+
+    if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
+        switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+        }
+
+    if ((gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+        switchCase->selectedCase = 4;
+    }
+
+    if (gMarioState->CostumeID == 14) { // phat asm
+        switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+    }
+
     return NULL;
 }
 
@@ -506,15 +757,58 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
     struct MarioBodyState *bodyState = &gBodyStates[switchCase->numCases];
 
+    switchCase->selectedCase = 2;
     if (callContext == GEO_CONTEXT_RENDER) {
         switchCase->selectedCase = bodyState->capState & MARIO_HAS_DEFAULT_CAP_OFF;
         while (next != node) {
             if (next->type == GRAPH_NODE_TYPE_TRANSLATION_ROTATION) {
-                COND_BIT((bodyState->capState & MARIO_HAS_WING_CAP_ON), next->flags, GRAPH_RENDER_ACTIVE);
+                COND_BIT((/*bodyState->capState & MARIO_HAS_WING_CAP_ON*/0), next->flags, GRAPH_RENDER_ACTIVE);
             }
             next = next->next;
         }
     }
+
+
+    //WARIO
+    if (gMarioState->CostumeID == 4) {
+        switchCase->selectedCase = 3;
+        }
+    //LUIGI
+    if (gMarioState->CostumeID == 3) {
+        switchCase->selectedCase = 2;
+        }
+    if (gMarioState->CostumeID == 6) {
+        switchCase->selectedCase = 4;
+        }
+    if (gMarioState->CostumeID == 7) {
+        switchCase->selectedCase = 1;
+        }
+    if (gMarioState->CostumeID == 8) { // darius
+        switchCase->selectedCase = 6;
+        }
+
+    if (gMarioState->CostumeID == 10) { // retro dario gaming XDDD
+        switchCase->selectedCase = 7;
+        }
+    if (gMarioState->CostumeID == 11) { // thwompio
+        switchCase->selectedCase = 9;
+        }
+
+    if (gMarioState->CostumeID == 13) { // srnr
+        switchCase->selectedCase = 10;
+        }
+
+
+    //POWERUP
+    //Majora's Mask
+    if (gMarioState->powerup == 2) {
+        switchCase->selectedCase = 5;
+        }
+
+    if (gMarioState->powerup == 3) {
+        switchCase->selectedCase = 8;
+        }
+
     return NULL;
 }
 
@@ -546,6 +840,10 @@ Gfx *geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode *node, Mat
     struct GraphNodeHeldObject *asHeldObj = (struct GraphNodeHeldObject *) node;
     Mat4 *curTransform = mtx;
     struct MarioState *marioState = &gMarioStates[asHeldObj->playerIndex];
+
+    if (gCurGraphNodeObject != &gMarioObject->header.gfx) {
+        return NULL;
+    }
 
     if (callContext == GEO_CONTEXT_RENDER) {
         asHeldObj->objNode = NULL;
@@ -585,6 +883,7 @@ Gfx *geo_render_mirror_mario(s32 callContext, struct GraphNode *node, UNUSED Mat
     f32 mirroredX;
     struct Object *mario = gMarioStates[0].marioObj;
 
+
     switch (callContext) {
         case GEO_CONTEXT_CREATE:
             init_graph_node_object(NULL, &gMirrorMario, NULL, gVec3fZero, gVec3sZero, gVec3fOne);
@@ -596,8 +895,8 @@ Gfx *geo_render_mirror_mario(s32 callContext, struct GraphNode *node, UNUSED Mat
             geo_remove_child(&gMirrorMario.node);
             break;
         case GEO_CONTEXT_RENDER:
-            if (mario->header.gfx.pos[0] > 1700.0f) {
                 // TODO: Is this a geo layout copy or a graph node copy?
+            if (MetalAppear == FALSE) {
                 gMirrorMario.sharedChild = mario->header.gfx.sharedChild;
                 gMirrorMario.areaIndex = mario->header.gfx.areaIndex;
                 vec3s_copy(gMirrorMario.angle, mario->header.gfx.angle);
@@ -609,8 +908,17 @@ Gfx *geo_render_mirror_mario(s32 callContext, struct GraphNode *node, UNUSED Mat
                 gMirrorMario.pos[0] = mirroredX + CASTLE_MIRROR_X;
                 gMirrorMario.angle[1] = -gMirrorMario.angle[1];
                 gMirrorMario.scale[0] *= -1.0f;
+
                 ((struct GraphNode *) &gMirrorMario)->flags |= GRAPH_RENDER_ACTIVE;
             } else {
+                gMirrorMario.sharedChild = mario->header.gfx.sharedChild;
+                gMirrorMario.areaIndex = mario->header.gfx.areaIndex;
+
+                gMirrorMario.animInfo = mario->header.gfx.animInfo;
+                gMirrorMario.pos[1] = -500.0f;
+                gMirrorMario.angle[1] = -gMirrorMario.angle[1];
+                gMirrorMario.scale[0] *= -1.0f;
+                
                 ((struct GraphNode *) &gMirrorMario)->flags &= ~GRAPH_RENDER_ACTIVE;
             }
             break;

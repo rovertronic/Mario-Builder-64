@@ -13,3 +13,9 @@
 #include "levels/sa/areas/1/2/model.inc.c"
 #include "levels/sa/areas/1/collision.inc.c"
 #include "levels/sa/areas/1/macro.inc.c"
+
+#include "levels/sa/leveldata.inc.c"
+
+#include "levels/sa/signmorph/model.inc.c"
+#include "levels/sa/signmorph/anims/data.inc.c"
+#include "levels/sa/signmorph/anims/table.inc.c"

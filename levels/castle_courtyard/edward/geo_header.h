@@ -1,0 +1,12 @@
+extern const GeoLayout edward_geo[];
+extern u8 edward_EdwardFace_ia8[];
+extern u8 edward_EdwardBody_ia8[];
+extern Vtx edward_root_mesh_layer_5_vtx_0[16];
+extern Gfx edward_root_mesh_layer_5_tri_0[];
+extern Vtx edward_bill_mesh_layer_4_vtx_0[4];
+extern Gfx edward_bill_mesh_layer_4_tri_0[];
+extern Gfx mat_edward_EdwardFace[];
+extern Gfx mat_edward_EdwardSkin[];
+extern Gfx edward_root_mesh_layer_5[];
+extern Gfx edward_bill_mesh_layer_4[];
+extern Gfx edward_material_revert_render_settings[];

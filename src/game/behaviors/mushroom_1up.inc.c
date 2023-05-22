@@ -9,10 +9,7 @@ void bhv_1up_interact(void) {
         gMarioState->breathCounter = 31;
 #endif
 #endif
-        gMarioState->numLives++;
-#ifdef SAVE_NUM_LIVES
-        save_file_set_num_lives(gMarioState->numLives);
-#endif
+        gMarioState->gGlobalCoinGain += 10;
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 #if ENABLE_RUMBLE
         queue_rumble_data(5, 80);
@@ -26,6 +23,7 @@ void bhv_1up_common_init(void) {
     o->oFriction = 1.0f;
     o->oBuoyancy = 1.0f;
 }
+//gMarioState->powerup
 
 void bhv_1up_init(void) {
     bhv_1up_common_init();
@@ -84,7 +82,7 @@ void one_up_move_away_from_mario(s16 collisionFlags) {
 }
 
 void bhv_1up_walking_loop(void) {
-    object_step();
+    object_step();//
 
     switch (o->oAction) {
         case MUSHROOM_ACT_INIT:
@@ -342,3 +340,272 @@ void bhv_1up_hidden_in_pole_spawner_loop(void) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 }
+
+void bhv_crowbar_power_loop() {
+        struct Object *sp1C;
+        u8 power = o->oBehParams2ndByte+1;
+        sp1C = cur_obj_nearest_object_with_behavior(bhvCrowbarThrow);
+
+        if (gMarioState->powerup != power && sp1C == NULL) {
+            spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+            o->oFaceAngleYaw += 1000;
+            o->oFaceAnglePitch = 0x1A00;
+        
+            if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
+                play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource);
+                gMarioState->powerup = power;
+            }
+        }
+        else
+        {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        }
+    }
+
+void bhv_crowbar_attack_loop() {
+        s16 sp1E = object_step_without_floor_orient();
+        struct Object *sp1C;
+        sp1C = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
+
+        o->oFaceAngleYaw += 8000;
+            if (o->oFaceAngleYaw > 0x10000) {
+                cur_obj_play_sound_2(SOUND_ACTION_SIDE_FLIP_UNK);
+                o->oFaceAngleYaw = 0;
+            }
+
+
+        if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+            cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
+        }
+
+        if (o->oAction == 0) {
+            //DESTROY METAL CRATE
+            if (sp1C != 0) {
+                if (dist_between_objects(o,sp1C) < 250.0f) {
+                    sp1C->oHealth --;
+                    sp1C->oPosY += 10.0f;
+                    sp1C->oVelY -= 20.0f;
+                    cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
+                    o->oAction = 1;
+                    o->oTimer = 0;
+                    o->oMoveAngleYaw += 0x8000;
+                    cur_obj_become_intangible();
+                    }
+                }
+            //KILL ENEMIES
+            obj_attack_collided_from_other_object(o);
+
+            if (o->oTimer > 5) {
+                cur_obj_become_tangible();
+                }
+
+            if (sp1E & 2) {
+                cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
+                }
+
+            o->oForwardVel --;
+
+            if (o->oTimer > 40) {
+                o->oAction = 1;
+                o->oTimer = 0;
+                o->oMoveAngleYaw += 0x8000;
+                cur_obj_become_intangible();
+                }
+            
+            if (o->numCollidedObjs > 0) {
+                o->oAction = 1;
+                o->oTimer = 0;
+                o->oMoveAngleYaw += 0x8000;
+                cur_obj_become_intangible();
+                }
+            }
+        
+        if (o->oAction == 1) {
+            f32 sp34 = gMarioObject->header.gfx.pos[0] - o->oPosX;
+            f32 sp30 = gMarioObject->header.gfx.pos[1] + 120.0f - o->oPosY;
+            f32 sp2C = gMarioObject->header.gfx.pos[2] - o->oPosZ;
+            s16 sp2A = atan2s(sqrtf(sqr(sp34) + sqr(sp2C)), sp30);
+
+            obj_turn_toward_object(o, gMarioObject, 16, 0x1000);
+            o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, sp2A, 0x1000);
+            o->oVelY = sins(o->oMoveAnglePitch) * 80.0f;
+            o->oForwardVel = coss(o->oMoveAnglePitch) * 80.0f;
+
+            //DIE
+            if (o->oDistanceToMario < 200.0f || o->oTimer > 120) {
+                if (gMarioState->powerup == 0) {
+                    gMarioState->powerup = 1;
+                    }
+                mark_obj_for_deletion(o);
+                }
+
+            }
+    }
+
+//>forwardVel mario
+
+void bhv_zipline_loop() {
+    if (o->oAction == 0) {
+        if ((o->oDistanceToMario < 200.0f)&&(gMarioState->powerup == 1)) {
+            gMarioState->faceAngle[0] = o->oFaceAngleYaw;
+            gMarioObject->header.gfx.angle[1] = o->oFaceAngleYaw;
+            set_mario_action(gMarioState, ACT_ZIPLINE, 0);
+            o->oAction = 1;
+            o->oForwardVel = 20;
+            o->oHomeY = gMarioState->forwardVel;
+            }
+        }
+    if (o->oAction == 1) {
+            o->oForwardVel += o->oHomeY;
+            if (o->oHomeY < 40.0f) {
+                o->oHomeY += 1.0f;
+                }
+            gMarioState->pos[0] = o->oPosX + o->oForwardVel * sins(o->oFaceAngleYaw);
+            gMarioState->pos[1] = o->oPosY + o->oForwardVel * -sins(o->oFaceAnglePitch);
+            gMarioState->pos[2] = o->oPosZ + o->oForwardVel * coss(o->oFaceAngleYaw);
+            gMarioState->faceAngle[0] = o->oFaceAngleYaw;
+            gMarioObject->header.gfx.angle[1] = o->oFaceAngleYaw;
+
+            if (o->oForwardVel > o->oBehParams2ndByte*100.0f) {
+                o->oAction = 0;
+                gMarioState->forwardVel = o->oHomeY;
+                set_mario_action(gMarioState, ACT_FREEFALL, 0);
+                }
+        }
+    }
+
+
+
+void bhv_item_bubble_loop() {
+    s32 behparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
+
+    struct Object *bubble;
+    f32 BubDist;
+    BubDist = 999.0f;
+
+    bubble = cur_obj_nearest_object_with_behavior(bhvItemBubble);
+
+    if (bubble != NULL) {
+            BubDist = lateral_dist_between_objects(o,bubble);
+            }
+
+    switch (o->oAction) {
+        case 0:
+            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+            if (o->oDistanceToMario < 3000) {
+                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+                o->oAction = 1;
+                switch(o->oBehParams2ndByte) {
+                    case 0:
+                    o->prevObj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+                    break;
+                    case 1:
+                    o->prevObj = spawn_object(o, MODEL_1UP, bhv1upSliding);
+                    break;
+                    case 2:
+                    o->prevObj = spawn_object(o, 0xEF, bhvMovingGreenCoin);
+                    break;
+                    case 3:
+                    o->prevObj = spawn_object(o, MODEL_GOOMBA, bhvGoomba);
+                    break;
+                    case 4:
+                    o->prevObj = spawn_object(o, MODEL_THWOMP, bhvThwomp);
+                    break;
+                    }
+                }
+
+        break;
+        case 1:
+            //set object
+            o->prevObj->oTimer = 0;
+            o->prevObj->oVelY = 0;
+            o->prevObj->oPosX = o->oPosX;
+            o->prevObj->oPosZ = o->oPosZ;
+            o->prevObj->oAction = 0;
+
+
+            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+            o->prevObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+
+            if (o->oDistanceToMario < 3000) {
+                o->prevObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+
+                if (o->oBehParams2ndByte > 2) {
+                    o->prevObj->oFaceAngleRoll = 0x7FFF;
+                    o->prevObj->oPosY = o->oPosY+140;
+                    }
+                    else
+                    {
+                    o->prevObj->oPosY = o->oPosY+70;
+                    }
+
+                //Move
+                o->oPosY = o->oHomeY + (55.0f * sins(o->oTimer*500));
+
+                if (o->oBehParams2ndByte > 2) {
+                //CHASE MARIO CUZ UR EVIL
+                    if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
+                        o->oAngleToMario = cur_obj_angle_to_home();
+                        o->oForwardVel = 5.0f;
+                    } else {
+                        o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
+                        o->oForwardVel = 20.0f;
+                        }
+
+                    cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+                    cur_obj_move_using_vel_and_gravity();
+                    }
+                }
+
+            //collision
+            if ((o->oDistanceToMario < 200)||(BubDist < 200)) {
+                cur_obj_play_sound_2(SOUND_OBJ2_PIRANHA_PLANT_BITE);
+                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+                o->prevObj->oFaceAngleRoll = 0;
+                o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+                o->oAction = 5;
+                o->oTimer = 0;
+                }
+
+        break;
+        case 5:
+            if (o->oTimer > 30) {
+                o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                }
+        break;
+        }
+
+    }
+
+u8 shitcum_animstate_table[] = {0,0,0,0,0,0,1,1,2,2,3,3,3,3,3,3,2,2,1,1};
+//im eating fucking doritos right now
+// im such a sfucking labzy slob
+
+//shut the fuck up bruh ^^^
+
+void bhv_dragon_coin_loop() {
+
+    //change B pressed to not B pressed
+    if (gMarioState->IsYoshi) {
+        o->oAnimState = shitcum_animstate_table[o->oTimer];
+        if (o->oTimer == 19) {
+            o->oTimer = 0;
+            }
+
+        if (o->oDistanceToMario < 100.0f) {
+            gMarioState->numCoins += 2;
+            gMarioState->YoshiCoins ++;
+            spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
+            mark_obj_for_deletion(o);
+            }
+        }
+        else
+        {
+        o->oAnimState = 4;
+        o->oTimer = 0;
+        }
+    }

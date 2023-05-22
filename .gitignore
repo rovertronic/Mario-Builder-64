@@ -47,6 +47,7 @@ doxygen/doxygen/*
 build/*
 *.dump
 *.mio0
+*.szp
 *.z64
 *.map
 .assets-local.txt
@@ -192,14 +193,6 @@ actors/door/zero_star_door_sign.rgba16.png
 actors/dorrie/dorrie_eye.rgba16.png
 actors/dorrie/dorrie_skin.rgba16.png
 actors/dorrie/dorrie_tongue.rgba16.png
-actors/exclamation_box/exclamation_box_front.rgba16.png
-actors/exclamation_box/exclamation_box_side.rgba16.png
-actors/exclamation_box/metal_cap_box_front.rgba16.png
-actors/exclamation_box/metal_cap_box_side.rgba16.png
-actors/exclamation_box/vanish_cap_box_front.rgba16.png
-actors/exclamation_box/vanish_cap_box_side.rgba16.png
-actors/exclamation_box/wing_cap_box_front.rgba16.png
-actors/exclamation_box/wing_cap_box_side.rgba16.png
 actors/exclamation_box_outline/exclamation_box_outline.rgba16.png
 actors/exclamation_box_outline/exclamation_point.rgba16.png
 actors/explosion/explosion_0.rgba16.png
@@ -1180,12 +1173,8 @@ sound/samples/sfx_mario_peach/0B_mario_okey_dokey.aiff
 sound/samples/sfx_mario_peach/0C_mario_drowning.aiff
 sound/samples/sfx_mario_peach/0D_mario_thank_you_playing_my_game.aiff
 sound/samples/sfx_mario_peach/0E_peach_dear_mario.aiff
-sound/samples/sfx_mario_peach/0F_peach_mario.aiff
-sound/samples/sfx_mario_peach/10_peach_power_of_the_stars.aiff
 sound/samples/sfx_mario_peach/11_peach_thanks_to_you.aiff
 sound/samples/sfx_mario_peach/12_peach_thank_you_mario.aiff
-sound/samples/sfx_mario_peach/13_peach_something_special.aiff
-sound/samples/sfx_mario_peach/14_peach_bake_a_cake.aiff
 sound/samples/sfx_mario_peach/15_peach_for_mario.aiff
 sound/samples/sfx_mario_peach/16_peach_mario2.aiff
 sound/samples/sfx_terrain/00_step_default.aiff
@@ -2146,3 +2135,6 @@ lib/libs2d_engine.a
 
 # :Zone_Identifier files
 *Zone.Identifier
+
+# others
+*.lnk

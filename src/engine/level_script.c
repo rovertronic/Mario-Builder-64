@@ -28,6 +28,10 @@
 #include "game/puppycam2.h"
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
+#include "game/puppycamold.h"
+
+#include "game/game_init.h"
+#include "level_table.h"
 
 #include "config.h"
 
@@ -292,6 +296,18 @@ static void level_cmd_load_yay0(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
+void level_cmd_fileselect_condition(void) {
+    if (save_file_check_progression(PROG_TRUE_START)) {
+        sRegister = LEVEL_CASTLE;
+    } else {
+        sRegister = LEVEL_CASTLE_GROUNDS;
+    }
+    if (save_file_get_progression() == PROG_ON_AGAMEMNON) {
+        sRegister = LEVEL_BITS;
+    }
+    sCurrentCmd = CMD_NEXT;
+}
+
 static void level_cmd_load_mario_head(void) {
 #ifdef KEEP_MARIO_HEAD
     // TODO: Fix these hardcoded sizes
@@ -360,6 +376,8 @@ static void level_cmd_clear_level(void) {
     clear_area_graph_nodes();
     clear_areas();
     main_pool_pop_state();
+    // the game does a push on level load and a pop on level unload, we need to add another push to store state after the level has been loaded, so one more pop is needed
+    main_pool_pop_state();
     unmap_tlbs();
 
     sCurrentCmd = CMD_NEXT;
@@ -386,6 +404,7 @@ static void level_cmd_free_level_pool(void) {
             break;
         }
     }
+    main_pool_push_state();
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -750,6 +769,8 @@ static void level_cmd_fadeout_music(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
+extern int gPressedStart;
+
 static void level_cmd_get_or_set_var(void) {
     if (CMD_GET(u8, 2) == OP_SET) {
         switch (CMD_GET(u8, 3)) {
@@ -767,6 +788,9 @@ static void level_cmd_get_or_set_var(void) {
                 break;
             case VAR_CURR_AREA_INDEX:
                 gCurrAreaIndex = sRegister;
+                break;
+            case VAR_PRESSED_START: 
+                gPressedStart = sRegister; 
                 break;
         }
     } else {
@@ -786,9 +810,46 @@ static void level_cmd_get_or_set_var(void) {
             case VAR_CURR_AREA_INDEX:
                 sRegister = gCurrAreaIndex;
                 break;
+            case VAR_PRESSED_START: 
+                sRegister = gPressedStart; 
+                break;
         }
     }
 
+    sCurrentCmd = CMD_NEXT;
+}
+
+int gDemoLevels[7] = {
+    LEVEL_BOB,
+    LEVEL_CCM,
+    LEVEL_WF,
+    LEVEL_BBH,
+    LEVEL_BOB,
+    LEVEL_BOB,
+    LEVEL_BOB,
+};
+
+int gDemoLevelID = 0;
+u16 gDemoInputListIDForIntro = 0;
+
+extern void start_demo(int);
+
+static void level_cmd_adv_demo(void)
+{
+    if(gDemoLevelID == 6) {
+        sRegister = gDemoLevels[6];
+        gDemoLevelID = 0;
+    } else {
+        sRegister = gDemoLevels[gDemoLevelID++];
+    }
+
+    start_demo(0);
+    sCurrentCmd = CMD_NEXT;
+}
+
+static void level_cmd_clear_demo_ptr(void)
+{
+    gCurrDemoInput = NULL;
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -945,7 +1006,12 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_CHANGE_AREA_SKYBOX          */ level_cmd_change_area_skybox,
     /*LEVEL_CMD_PUPPYLIGHT_ENVIRONMENT      */ level_cmd_puppylight_environment,
     /*LEVEL_CMD_PUPPYLIGHT_NODE             */ level_cmd_puppylight_node,
+    /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
+    /*LEVEL_CMD_ADV_DEMO                    */ level_cmd_adv_demo,
+    /*LEVEL_CMD_CLEAR_DEMO_PTR              */ level_cmd_clear_demo_ptr,
 };
+
+
 
 struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
     sScriptStatus = SCRIPT_RUNNING;

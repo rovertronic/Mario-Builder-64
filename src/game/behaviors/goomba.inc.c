@@ -152,11 +152,7 @@ static void goomba_begin_jump(void) {
  */
 static void mark_goomba_as_dead(void) {
     if (o->parentObj != o) {
-        set_object_respawn_info_bits(
-            o->parentObj, (o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) >> 2);
-
-        o->parentObj->oBehParams =
-            o->parentObj->oBehParams | (o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) << 6;
+        set_object_respawn_info_bits(o->parentObj,(o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) >> 2);o->parentObj->oBehParams =o->parentObj->oBehParams | (o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) << 6;
     }
 }
 
@@ -312,18 +308,35 @@ void huge_goomba_weakly_attacked(void) {
  */
 void bhv_goomba_update(void) {
     // PARTIAL_UPDATE
-
+    struct Object *flame;
+    // f32 flameVel; // all unused
+    // s32 sp34;
+    // s32 model;
+    s32 bparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
     f32 animSpeed;
+
+    if (gMarioState->gCurrMinigame == 1) {
+        o->oHomeX = gMarioState->pos[0];
+        o->oHomeY = gMarioState->pos[1];
+        o->oHomeZ = gMarioState->pos[2];
+
+        if (o->oDistanceToMario > 800.0f) {
+            o->oFaceAngleYaw = o->oAngleToMario;
+            o->oMoveAngleYaw = o->oAngleToMario;
+            o->oForwardVel = 15.0f;
+            o->oDrawingDistance = 9000.0f;
+            }
+        }
 
     if (obj_update_standard_actions(o->oGoombaScale)) {
         // If this goomba has a spawner and mario moved away from the spawner, unload
-        if (o->parentObj != o) {
+        if (o->parentObj->behavior == bhvGoombaTripletSpawner) {
             if (o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
                 obj_mark_for_deletion(o);
             }
         }
 
-        cur_obj_scale(o->oGoombaScale);
+        // cur_obj_scale(o->oGoombaScale);
         obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
 #ifdef FLOOMBAS
         if (o->oIsFloomba) {
@@ -358,13 +371,56 @@ void bhv_goomba_update(void) {
                 break;
 #endif
         }
+
+        if (o->oHealth == 1) {
+            o->oDamageOrCoinValue = 2;
+            o->oNumLootCoins = 2;
+            }
+
+        if (o->oNumLootCoins == 2) {
+            o->oAnimState = 0;
+            }
+
+        if (bparam1 == 1) {
+
+            o->oAnimState = 1;
+            o->oNumLootCoins = -1;
+
+            o->oForwardVel = 0;
+
+
+            
+
+            if (o->oDistanceToMario < 4500.0f) {
+                o->oGoombaTargetYaw = o->oAngleToMario;
+                if (o->oTimer > 100) {
+                    flame = spawn_object(o,MODEL_RED_FLAME,bhvThwompFlame);
+                    flame->oPosY += 70.0f;
+                    flame->oForwardVel = 20.0f;
+
+                    cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
+                    o->oTimer = RandomMinMaxU16(0,60);
+                }
+
+            }
+        }
+
         if (obj_handle_attacks(&sGoombaHitbox, GOOMBA_ACT_ATTACKED_MARIO,
                                sGoombaAttackHandlers[o->oGoombaSize & 0x1])
                                && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO)) {
             mark_goomba_as_dead();
         }
+        if (gMarioState->_2D) {
+            o->oPosZ = 0.0f;
+        }
 
-        cur_obj_move_standard(-78);
+        if (gMarioState->gCurrMinigame == 0) {
+            cur_obj_move_standard(-78);
+        }
+        else
+        {
+            cur_obj_move_standard(78);
+        }
     } else {
         o->oAnimState = GOOMBA_ANIM_STATE_EYES_CLOSED;
 #ifdef FLOOMBAS

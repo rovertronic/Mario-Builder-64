@@ -136,6 +136,12 @@ void wing_vanish_cap_act_0(void) {
 }
 
 void bhv_wing_vanish_cap_loop(void) {
+
+    o->oAnimState++;
+    if (o->oAnimState > 2) {
+        o->oAnimState = 0;
+    }
+
     switch (o->oAction) {
         case CAP_ACT_MOVE:
             wing_vanish_cap_act_0();

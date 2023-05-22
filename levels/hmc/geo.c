@@ -13,7 +13,7 @@
 
 #include "levels/hmc/header.h"
 
-#include "levels/hmc/grill_door/geo.inc.c"
+#include "levels/hmc/areas/1/grill_door/geo.inc.c"
 #include "levels/hmc/rolling_rock/geo.inc.c"
 #include "levels/hmc/rolling_rock_fragment_1/geo.inc.c"
 #include "levels/hmc/rolling_rock_fragment_2/geo.inc.c"
@@ -21,3 +21,9 @@
 #include "levels/hmc/arrow_platform_button/geo.inc.c"
 #include "levels/hmc/elevator_platform/geo.inc.c"
 #include "levels/hmc/areas/1/geo.inc.c"
+
+#include "levels/hmc/geo.inc.c"
+
+#include "levels/hmc/minecart/geo.inc.c"
+#include "levels/hmc/wboulder/geo.inc.c"
+#include "levels/hmc/cobie/geo.inc.c"

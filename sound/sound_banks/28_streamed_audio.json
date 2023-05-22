@@ -1,0 +1,28 @@
+{
+    "date": "1996-03-19",
+    "sample_bank": "streamed_audio",
+    "envelopes": {
+        "envelope0": [
+            [1, 32700],
+            "hang"
+        ]
+    },
+    "instruments": {
+        "inst2": {
+            "release_rate": 10,
+            "envelope": "envelope0",
+            "sound": "custom_rain_outside"
+        },
+        "inst3": {
+            "release_rate": 10,
+            "envelope": "envelope0",
+            "sound": "custom_rain_inside"
+        }
+    },
+    "instrument_list": [
+        null,
+        null,
+        "inst2",
+        "inst3"
+    ]
+}

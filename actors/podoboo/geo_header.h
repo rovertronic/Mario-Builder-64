@@ -1,0 +1,16 @@
+extern const GeoLayout podoboo_geo[];
+extern Lights1 podoboo_podoboo_eye_lights;
+extern u8 podoboo_podo_boo_ci8[];
+extern u8 podoboo_podo_boo_ci8_pal_rgba16[];
+extern u8 podoboo_eye_bool_ia8[];
+extern Vtx podoboo_Sphere_mesh_layer_1_vtx_0[63];
+extern Gfx podoboo_Sphere_mesh_layer_1_tri_0[];
+extern Vtx podoboo_Sphere_mesh_layer_4_vtx_0[6];
+extern Gfx podoboo_Sphere_mesh_layer_4_tri_0[];
+extern Gfx mat_podoboo_podoboo[];
+extern Gfx mat_revert_podoboo_podoboo[];
+extern Gfx mat_podoboo_podoboo_eye[];
+extern Gfx mat_revert_podoboo_podoboo_eye[];
+extern Gfx podoboo_Sphere_mesh_layer_1[];
+extern Gfx podoboo_Sphere_mesh_layer_4[];
+extern Gfx podoboo_material_revert_render_settings[];

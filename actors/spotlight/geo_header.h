@@ -1,0 +1,16 @@
+extern const GeoLayout spotlight_geo[];
+extern Lights1 spotlight_spotlightlight_lights;
+extern u8 spotlight_rgba16_anonmoose_envmap_silver1_i8[];
+extern Vtx spotlight_Cylinder_002_mesh_layer_1_vtx_cull[8];
+extern Vtx spotlight_Cylinder_002_mesh_layer_1_vtx_0[50];
+extern Gfx spotlight_Cylinder_002_mesh_layer_1_tri_0[];
+extern Vtx spotlight_Cylinder_002_mesh_layer_5_vtx_cull[8];
+extern Vtx spotlight_Cylinder_002_mesh_layer_5_vtx_0[18];
+extern Gfx spotlight_Cylinder_002_mesh_layer_5_tri_0[];
+extern Gfx mat_spotlight_spotlight[];
+extern Gfx mat_revert_spotlight_spotlight[];
+extern Gfx mat_spotlight_spotlightlight[];
+extern Gfx mat_revert_spotlight_spotlightlight[];
+extern Gfx spotlight_Cylinder_002_mesh_layer_1[];
+extern Gfx spotlight_Cylinder_002_mesh_layer_5[];
+extern Gfx spotlight_material_revert_render_settings[];

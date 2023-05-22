@@ -1,0 +1,11 @@
+extern const GeoLayout rr_eye_geo[];
+extern Lights1 rr_eye_Eye_lights;
+extern u8 rr_eye_eye_ci8[];
+extern u8 rr_eye_eye_ci8_pal_rgba16[];
+extern Vtx rr_eye_Sphere_mesh_layer_1_vtx_cull[8];
+extern Vtx rr_eye_Sphere_mesh_layer_1_vtx_0[416];
+extern Gfx rr_eye_Sphere_mesh_layer_1_tri_0[];
+extern Gfx mat_rr_eye_Eye[];
+extern Gfx mat_revert_rr_eye_Eye[];
+extern Gfx rr_eye_Sphere_mesh_layer_1[];
+extern Gfx rr_eye_material_revert_render_settings[];

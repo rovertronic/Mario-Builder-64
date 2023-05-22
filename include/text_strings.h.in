@@ -3,6 +3,25 @@
 
 #include "text_menu_strings.h"
 
+#define TEXT_VERSION _("RELEASE 1.0")
+
+// pain
+#define NC_CAMX 				_("Camera X Sensitivity")
+#define NC_CAMY 				_("Camera Y Sensitivity")
+#define NC_INVERTX				_("Invert X Axis")
+#define NC_INVERTY				_("Invert Y Axis")
+#define NC_CAMC 				_("Camera Centre Aggression")
+#define NC_CAMD 				_("Camera Deceleration Speed")
+#define NC_CAMP 				_("Camera Pan Level")
+#define NC_ENABLED 				_("Enabled")
+#define NC_DISABLED 			_("Disabled")
+#define NC_BUTTON 				_("[R]: Options")
+#define NC_BUTTON2 				_("[R]: Return")
+#define NC_OPTION 				_("   GAME OPTIONS")
+#define NC_HIGHLIGHT_L 			_(">")
+#define NC_HIGHLIGHT_R 			_("<")
+#define NC_ANALOGUE				_("Analogue Camera")
+
 #if defined(PUPPYCAM)
 #define NC_CAMX_EN 				_("Camera X Sensitivity")
 #define NC_CAMY_EN 				_("Camera Y Sensitivity")
@@ -63,9 +82,40 @@
 #endif
 #endif
 
+//MUSIC AUTHORS
+#define TEXT_THORNDUST _("Thorndust")
+#define TEXT_JAGUAR _("Koji Kondo\nPorted by: ArcticJaguar725")
+#define TEXT_SPK _("SpK")
+#define TEXT_NOMICO _("ZUN, nomico") //bad apple
+
+#define TEXT_SONG1 _("Cosmic Castle")
+#define TEXT_SONG2 _("The Showrunner")
+#define TEXT_SONG3 _("Red Hot")
+#define TEXT_SONG4 _("Floating Farm")
+#define TEXT_SONG5 _("Jungle Temple")
+#define TEXT_SONG6 _("VR World")
+#define TEXT_SONG7 _("Spooky Pirate")
+#define TEXT_SONG8 _("Cursed Boss")
+
+#define TEXT_SONG9 _("Road To The Boss")
+#define TEXT_SONG10 _("Urbowser")
+#define TEXT_SONG11 _("Big House")
+
+#define TEXT_SONG12 _("SMB1 Overworld")
+#define TEXT_SONG13 _("SMB2 Overworld")
+#define TEXT_SONG14 _("SMB3 Fortress")
+#define TEXT_SONG15 _("NSMB Castle")
+
+#define TEXT_SONG16 _("The Show's Finale")
+#define TEXT_SONG17 _("Parasite Moon")
+#define TEXT_SONG18 _("AGAMEMNON")
+#define TEXT_SONG19 _("Bad Apple!!")
+
+
 /**
  * Global Symbols
  */
+#define TEXT_LETTER_M _("M")
 #define TEXT_ZERO _("0")
 #define TEXT_COIN _("$")
 #define TEXT_STAR _("★")
@@ -82,8 +132,13 @@
 #define TEXT_4DASHES _("----") // Used in Score File Menu
 
 // Ingame Menu
-#define TEXT_PAUSE _("PAUSE") // Pause text, Castle Courses
+#define TEXT_PAUSE _("BADGES") // Pause text, Castle Courses
 #define TEXT_HUD_CONGRATULATIONS _("CONGRATULATIONS") // Course Complete Text, Bowser Courses
+
+// Memory Expansion Error Screen
+#define TEXT_CONSOLE_8MB _("If you're using an N64 console, then you will need to buy an\nExpansion Pak to play this ROM hack.")
+#define TEXT_PJ64 _("If you are using PJ64 1.6, go to:\nOptions > Settings > Rom Settings Tab > Memory Size\nthen select 8 MB from the drop-down box.")
+#define TEXT_PJ64_2 _("If you are using PJ64 2.X, go to:\nOptions > Settings > Config: > Memory Size, select 8 MB")
 
 //Widescreen stuff
 #if defined(WIDE) && !defined(PUPPYCAM)
@@ -202,11 +257,147 @@
 #define TEXT_CHECK_FILE _("CHECK FILE")
 #define TEXT_COPY_FILE _("COPY FILE")
 #define TEXT_ERASE_FILE _("ERASE FILE")
-#define TEXT_SOUND_SELECT _("SOUND SELECT")
+#define TEXT_SOUND_SELECT _("OPTIONS")
 #define TEXT_FILE_MARIO_A _("MARIO A")
 #define TEXT_FILE_MARIO_B _("MARIO B")
 #define TEXT_FILE_MARIO_C _("MARIO C")
 #define TEXT_FILE_MARIO_D _("MARIO D")
+
+#define TEXT_YESNO _("Yes   No")
+#define TEXT_ABCD _("A)  B)  C)  D)")
+#define TEXT_ABC _("A)  B)  C)")
+#define TEXT_AB _("A)  B)")
+
+#define TEXT_OPTION_1 _("Show Minimap")
+#define TEXT_OPTION_2 _("Play Music")
+#define TEXT_OPTION_3 _("Widescreen")
+#define TEXT_OPTION_4 _("Show HUD")
+
+#define TEXT_OPTION_O _("Y")
+#define TEXT_OPTION_N _("N")
+
+#define TEXT_OPTION_ON _("ON")
+#define TEXT_OPTION_OFF _("OFF")
+
+//CUSTOM TEXT
+#define TEXT_CHAR_CHANGE _("Change Costume with DPad")
+
+
+#define MINIGAME1 _("ARENA SURVIVAL")
+#define MINIGAME2 _("HOT ROPE JUMP")
+#define MINIGAME3 _("HEXAGON HEAT")
+#define MINIGAME4 _("SNAKIO")
+#define MINIGAME5 _("EDWARD SURVIVAL")
+#define MINIGAME6 _("BAD APPLE DODGE")
+#define MINIGAME7 _("FLAPPY MARIO")
+#define MINIGAME8 _("SIGN GAME")
+#define MINIGAMEE _("Exit Minigame Zone")
+
+#define MUSIC_TEXT _("Lobby\nShowrunner\nRed Hot\nFloating Farm\nJungle Temple\nVR World\nSpooky Pirate\nBoss")
+
+#define COSTUME1 _("MARIO")//0-0
+#define COSTUME2 _("FIRE MARIO")//2-1 
+#define COSTUME3 _("GLITCHY")
+#define COSTUME4 _("LUIGI")//1-3
+#define COSTUME5 _("WARIO")//3
+#define COSTUME6 _("DISCO MARIO")
+#define COSTUME7 _("UNDEAD PIRATE")//5
+#define COSTUME8 _("MOCAP MARIO")//4
+#define COSTUME9 _("DARIUS")
+#define COSTUME10 _("BUTLER MARIO")
+#define COSTUME11 _("RETRO MARIO")
+#define COSTUME12 _("THWOMPIO")
+#define COSTUME13 _("BUILDER MARIO")
+#define COSTUME14 _("SHOWRUNNER")
+#define COSTUME15 _("C.PHANTASM")
+
+#define CTM_EFF_NONE _("No Effect")
+
+#define CTM_EFF_2 _("Fire damage reduced by 50[$]")
+#define CTM_EFF_5 _("Gravity increased to 130[$]")
+
+#define CTM_EFF_8 _("Crablet suck damage reduced by 50[$]")
+
+#define CTM_EFF_12 _("Invulnerable to sqash damage")
+
+#define BADGE1  _("Lava Boost Badge")
+#define BADGE2  _("Fall Damage Badge")
+#define BADGE3  _("Defense Badge")
+#define BADGE4  _("Double Damage Badge")
+#define BADGE5  _("Gills Badge")
+#define BADGE6  _("Fins Badge")
+#define BADGE7  _("HP Regen Badge")
+#define BADGE8  _("Mana Regen Badge")
+#define BADGE9  _("Greed Badge")
+#define BADGE10 _("Double Time Badge")
+#define BADGE11 _("Magnet Badge")
+#define BADGE12 _("Star Radar Badge")
+#define BADGE13 _("Burn Badge")
+#define BADGE14 _("Squish Badge")
+#define BADGE15 _("Feather Badge")
+#define BADGE16 _("Weight Badge")
+#define BADGE17 _("Sticky Badge")
+#define BADGE18 _("Fast Foot Badge")
+#define BADGE19 _("Heal Plus Badge")
+#define BADGE20 _("Bottomless Badge")
+#define BADGE21 _("Boss Slayer Badge")
+#define BADGE22 _("Brittle Burden")
+#define BADGE23 _("Withering Burden")
+#define BADGE24 _("Save Shatter Burden")
+
+#define SHOP1 _("2 Health Points")
+#define SHOP2 _("2 Mana Points")
+#define SHOP3 _("1 Badge Capacity")
+
+#define BADGE1D  _("Reduces lava damage by 2 at the cost of 1 Mana")
+#define BADGE2D  _("Fall Damage is negated at the cost of 1 Mana")
+#define BADGE3D  _("Damage to you is absorbed by Mana")
+#define BADGE4D  _("Enemies take 2x damage from you")
+#define BADGE5D  _("Lets you breathe underwater")
+#define BADGE6D  _("Lets you swim faster underwater")
+#define BADGE7D  _("Slowly regenerates HP at cost of Mana")
+#define BADGE8D  _("Slowly regenerates Mana at cost of HP")
+#define BADGE9D  _("Doubles every coin you collect using 1/4 Mana")
+#define BADGE10D _("Timed events are twice as long")
+#define BADGE11D _("Loose coins are attracted to you")
+#define BADGE12D _("Displays an indicator for the current mission's star")
+#define BADGE13D _("Mitigates fire damage by 50[$] using Mana")
+#define BADGE14D _("Invulnerable to squish damage")
+#define BADGE15D _("Decreases gravity by 10[$]")
+#define BADGE16D _("Increases gravity by 30[$]")
+#define BADGE17D _("Lets you stick to walls")
+#define BADGE18D _("You run twice as fast")
+#define BADGE19D _("Green coins heal full HP instead of 1/2 HP")
+#define BADGE20D _("Uses 1 Mana instead of 1/3 HP when falling out of level")
+#define BADGE21D _("Bosses in courses 1-10 take 2x damage from you")
+#define BADGE22D _("You take double damage")
+#define BADGE23D _("You take 1 damage every 15 seconds")
+#define BADGE24D _("Deletes your save file if you die")
+
+#define MAGICTEXT _("Heal 3 HP\nVanish for 10 seconds\nTurn metal for 10 seconds")
+#define MAGICCOST _("2\n1\n3")
+
+#define CHEATTEXT _("Infinite HP\nInfinite Mana\nMoon Jump\nAlways have vanetal cap\nAlways have rocket boots\nLow Gravity\nEquip Unlimited Badges\nD-Pad Up Debug")
+#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow Minimap (L)\nShow HUD\nSave Data\nCamera Collision")
+
+#define TEXT_WARPTOLEVEL _("Press A to warp to this level")
+
+#define TEXT_PROGRESS_1 _("- Progress 000[$] -\nStars:\nCostumes:\nWallets:\nBadges:\nUpg.Level:\nSwitches:")
+#define TEXT_PROGRESS_2 _("\n /120\n /16\n /16")
+
+#define TEXT_UPGRADE _("You can spend coins and use starpower\nto upgrade Mario's stats.")
+#define TEXT_UPGRADE_YES _("Press [A] to upgrade!")
+#define TEXT_UPGRADE_NO _("You do not meet the requirements\nto upgrade yet.")
+
+#define TAB1 _("COURSES")
+#define TAB2 _("BADGES")
+#define TAB3 _("UPGRADE")
+#define TAB4 _("OPTIONS")
+#define TAB5 _("MAGIC")
+#define TAB6 _("CHEATS")
+
+#define TEXT_FILE_OPTIONS _("BEGIN       ERASE")
+#define TEXT_HOLD_TO_ERASE _("HOLD A TO ERASE")
 
 // Menu Options
 #define TEXT_SCORE _("SCORE")
@@ -272,8 +463,8 @@
 #define TEXT_HUD_HI_SCORE _("HI SCORE")
 
 // Save Options
-#define TEXT_SAVE_AND_CONTINUE _("SAVE & CONTINUE")
-#define TEXT_SAVE_AND_QUIT _("SAVE & QUIT")
+#define TEXT_SAVE_AND_CONTINUE _("CONTINUE")
+#define TEXT_SAVE_AND_QUIT _("QUIT")
 #define TEXT_CONTINUE_WITHOUT_SAVING _("CONTINUE, DON'T SAVE")
 
 /**
@@ -539,5 +730,32 @@
 #define TEXT_MENU_NONE_DE _("")
 #define TEXT_MENU_STARS_DE _("   GEHEIME STERNE")
 #endif // VERSION_EU
+
+#define PRE_CREDITS_1 _("Created By:")
+#define PRE_CREDITS_2 _("Rovert")
+
+#define PRE_CREDITS_3 _("Written By:")
+#define PRE_CREDITS_4 _("RationaLess")
+
+#define PRE_CREDITS_5 _("Original Soundtrack")
+#define PRE_CREDITS_6 _("Thorndust, SpK")
+
+#define PRE_CREDITS_7 _("Music Ports")
+#define PRE_CREDITS_8 _("ArcticJaguar725")
+
+#define PRE_CREDITS_9 _("Castle Painting Art")
+#define PRE_CREDITS_10 _("BoomerDaCat")
+
+#define PRE_CREDITS_11 _("HackerSM64 Port")
+#define PRE_CREDITS_12 _("axollyon")
+
+#define PRE_CREDITS_13 _("Badge Art")
+#define PRE_CREDITS_14 _("HeroTechne,Pyro Jay")
+
+#define PRE_CREDITS_15 _("Title Screen")
+#define PRE_CREDITS_16 _("Biobak")
+
+#define PRE_CREDITS_17 _("Major Code Contributions")
+#define PRE_CREDITS_18 _("Arthurtilly")
 
 #endif // TEXT_STRINGS_H

@@ -1,0 +1,66 @@
+{
+    "date": "1996-03-19",
+    "sample_bank": "instruments",
+    "envelopes": {
+        "envelope0": [
+            [1, 32700],
+            [60, 0],
+            "hang"
+        ],
+        "envelope1": [
+            [1, 32700],
+            [23, 28000],
+            [207, 28000],
+            [20, 23000],
+            "hang"
+        ],
+        "envelope2": [
+            [1, 32700],
+            "hang"
+        ],
+        "envelope3": [
+            [1, 32700],
+            "hang"
+        ]
+    },
+    "instruments": {
+        "inst0": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope0",
+            "sound_lo": "custom_25_low",
+            "sound": "custom_25_mid",
+            "sound_hi": "custom_25_high"
+        },
+        "inst1": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope1",
+            "sound_lo": "custom_50_low",
+            "sound": "custom_50_mid",
+            "sound_hi": "custom_50_high"
+        },
+        "inst2": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope2",
+            "sound_lo": "custom_tri_low",
+            "sound": "custom_tri_mid",
+            "sound_hi": "custom_tri_high"
+        },
+        "inst3": {
+            "release_rate": 255,
+            "envelope": "envelope3",
+            "sound": "custom_smb3_castle_timpani"
+        }
+    },
+    "instrument_list": [
+		"inst0",
+        "inst1",
+        "inst2",
+        "inst3"
+    ]
+}

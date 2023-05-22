@@ -17,6 +17,24 @@
 
 #include "config.h"
 
+const GeoLayout intro_geo_error_screen[] = {
+    GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
+    GEO_OPEN_NODE(),
+        GEO_ZBUFFER(0),
+        GEO_OPEN_NODE(),
+            GEO_NODE_ORTHO(100),
+            GEO_OPEN_NODE(),
+                GEO_BACKGROUND_COLOR(0x0001),
+            GEO_CLOSE_NODE(),
+        GEO_CLOSE_NODE(),
+        GEO_ZBUFFER(0),
+        GEO_OPEN_NODE(),
+            GEO_ASM(0, geo18_display_error_message),
+        GEO_CLOSE_NODE(),
+    GEO_CLOSE_NODE(),
+    GEO_END(),
+};
+
 // 0x0E0002D0
 const GeoLayout intro_geo_splash_screen[] = {
    GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
@@ -34,16 +52,18 @@ const GeoLayout intro_geo_splash_screen[] = {
          GEO_OPEN_NODE(),
             GEO_CAMERA(CAMERA_MODE_NONE, 0, 0, 3200, 0, 0, 0, 0x00000000),
             GEO_OPEN_NODE(),
+            
                GEO_ASM(0, geo_intro_super_mario_64_logo),
-#if defined(FLOOMBAS) && defined(INTRO_FLOOMBAS)
-               GEO_RENDER_OBJ(),
-#endif
+               GEO_ASM(0, geo_title_screen3),
+               GEO_ASM(0, geo_title_screen2),
+               GEO_ASM(0, geo_rovert_logo),
+
             GEO_CLOSE_NODE(),
          GEO_CLOSE_NODE(),
       GEO_CLOSE_NODE(),
       GEO_ZBUFFER(0),
       GEO_OPEN_NODE(),
-         GEO_ASM(0, geo_intro_tm_copyright),
+        //  GEO_ASM(0, geo_intro_tm_copyright),
       GEO_CLOSE_NODE(),
    GEO_CLOSE_NODE(),
    GEO_END(),
@@ -72,12 +92,6 @@ const GeoLayout intro_geo_mario_head_regular[] = {
          GEO_CLOSE_NODE(),
 #endif
       GEO_CLOSE_NODE(),
-#if defined(ENABLE_RUMBLE)
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_ASM(INTRO_CONTEXT_NORMAL, geo_intro_rumble_pak_graphic),
-      GEO_CLOSE_NODE(),
-#endif
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
@@ -105,12 +119,6 @@ const GeoLayout intro_geo_mario_head_dizzy[] = {
          GEO_CLOSE_NODE(),
 #endif
       GEO_CLOSE_NODE(),
-#if defined(ENABLE_RUMBLE)
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_ASM(INTRO_CONTEXT_GAME_OVER, geo_intro_rumble_pak_graphic),
-      GEO_CLOSE_NODE(),
-#endif
    GEO_CLOSE_NODE(),
    GEO_END(),
 };

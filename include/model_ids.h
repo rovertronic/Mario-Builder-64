@@ -324,6 +324,7 @@
 #define MODEL_BLARGG                      0x54        // blargg_geo
 #define MODEL_BULLY                       0x56        // bully_geo
 #define MODEL_BULLY_BOSS                  0x57        // bully_boss_geo
+#define MODEL_MOTOS                       0x58        // betah motos
 
 // group 3
 #define MODEL_WATER_BOMB                  0x54        // water_bomb_geo
@@ -543,11 +544,11 @@
 #define MODEL_PEACH                       0xDE        // peach_geo
 #define MODEL_CHUCKYA                     0xDF        // chuckya_geo
 #define MODEL_WHITE_PUFF                  0xE0        // white_puff_geo
-#define MODEL_TRAJECTORY_MARKER_BALL      0xE1        // bowling_ball_track_geo - duplicate used in SSL Pyramid small sized and as a track ball
+#define MODEL_TRAJECTORY_MARKER_BALL      0xB4        // bowling_ball_track_geo - duplicate used in SSL Pyramid small sized and as a track ball
 
 #ifdef IA8_30FPS_COINS
-#define MODEL_SILVER_COIN                 0xE2        // silver_coin_geo
-#define MODEL_SILVER_COIN_NO_SHADOW       0xE3        // silver_coin_no_shadow_geo
+#define MODEL_SILVER_COIN                 0x100       // silver_coin_geo
+#define MODEL_SILVER_COIN_NO_SHADOW       0x101       // silver_coin_no_shadow_geo
 #endif
 
 // Menu Models (overwrites Level Geometry IDs)
@@ -571,5 +572,222 @@
 #define MODEL_THI_WARP_PIPE                       MODEL_LEVEL_GEOMETRY_16   // warp_pipe_geo
 #define MODEL_VCUTM_WARP_PIPE                     MODEL_LEVEL_GEOMETRY_16   // warp_pipe_geo
 #define MODEL_CASTLE_GROUNDS_WARP_PIPE            MODEL_LEVEL_GEOMETRY_16   // warp_pipe_geo
+
+#define MODEL_METAL_STAR         0xED
+#define MODEL_NOTEBLOCK          0xE2
+#define MODEL_ATM                0xE8
+#define MODEL_SHOWRUNNER         0xE9
+#define MODEL_TARGET             0xF6
+#define MODEL_MUSICBOX             0xF5
+
+#define MODEL_BIGMINE             0xF7
+
+#define MODEL_DARKBOWSER         0xF7
+#define MODEL_LAVAPIT         0xF6
+#define MODEL_PUMP         0xF5
+#define MODEL_CAMMERBRO 0xF4
+#define MODEL_LENS 0xF3
+
+#define MODEL_MOUSE              0xFF
+#define MODEL_CFAN              0xFE
+#define MODEL_BDOOR              0xFD
+#define MODEL_TRAP              0xFC
+#define MODEL_CHEESE              0xFB
+#define MODEL_SPORK              0xFA
+#define MODEL_VACCUM              0xF9
+#define MODEL_SOCK              0xF8
+
+#define MODEL_SMB_PLATFORM 0xFF
+#define MODEL_RETROPLANT 0xFE
+#define MODEL_RETROBILL 0xFD
+#define MODEL_RETROTHWOMP 0xFC
+#define MODEL_RETRODONUT 0xFB
+#define MODEL_LOG2 0xFA
+//f9 reserved
+#define MODEL_MASK2 0xF8
+#define MODEL_KEY2 0xF7
+#define MODEL_KEYDOOR2 0xF6
+#define MODEL_LADYBUG 0xF5
+#define MODEL_RETROTOAD 0xF4
+#define MODEL_SMASHBRICK 0xF3
+#define MODEL_RBOWSER 0xF2
+
+#define MODEL_TELE 0xF6
+#define MODEL_MGB 0xF5
+#define MODEL_MGB2 0xF4
+#define MODEL_SHOWRUNNER_TV 0xF3
+#define MODEL_GRATE30 0xF2
+#define MODEL_DEMENTOR 0xF1
+#define MODEL_SHOWRUNNER_TV_ANGRY 0x102
+#define MODEL_PHONOGRAPH 0x103
+
+#define MODEL_MINECART 0xFF
+#define MODEL_BOULDER 0xFE
+#define MODEL_COBIE 0xFD
+#define MODEL_BILLMASK_C6 0xFC
+
+#define MODEL_THWOMPFORM 0xFF
+#define MODEL_BANNER 0xFE
+#define MODEL_BEWER 0xFD
+#define MODEL_WHPLAT 0xFC
+#define MODEL_WEAKGRATE 0xFB
+#define MODEL_THWOMPKING 0xFA
+//podoboo
+#define MODEL_QUEEN 0xF8
+#define MODEL_QUEEN_ROCK 0xF7
+#define MODEL_THWOMPGATE 0xF6
+#define MODEL_BILLMASK_C9 0xF5
+#define MODEL_PIPE_C9 0xF4
+#define MODEL_THWOMPGUARD 0xF3
+
+
+#define MODEL_EDWARD 0xFF
+#define MODEL_FLAPPY_PIPE 0xFE
+#define MODEL_SNAKEBALL 0xFD
+
+//f4
+//c4 ccm
+#define MODEL_PIPE1_CCM 0xF3
+#define MODEL_PIPE2_CCM 0xF2
+#define MODEL_CONV2_CCM 0xF1
+#define MODEL_CONV1_CCM 0x10A
+#define MODEL_EXECUTIVE 0x10B
+#define MODEL_TVHEAD_CCM 0x10C
+#define MODEL_EXEC_MISSILE 0x10D
+
+//c10
+#define MODEL_FERN 0xFF
+#define MODEL_WOOGLY 0xFE
+#define MODEL_HEXAGON 0xFD
+#define MODEL_SS 0xFC
+#define MODEL_ROBOT 0xFB
+#define MODEL_SPIKETUBE 0xFA
+#define MODEL_C10_SPOTLIGHT 0xF9
+#define MODEL_CURTAIN 0xF8
+#define MODEL_REGGIE 0xF7
+#define MODEL_CURTAIN_2 0xF6
+#define MODEL_MOTOS_C10 0xF5
+
+//castle grounds
+#define MODEL_GIANT_TREE 0xFF
+#define MODEL_CURSED_MIRROR 0xFE
+#define MODEL_MIRROR_SHARD 0xFD
+#define MODEL_TTRAP 0xFC
+#define MODEL_CG_SPOTLIGHT 0xFB
+#define MODEL_TUTORIAL_GATE 0xFA
+#define MODEL_SHRNLING 0xF9
+
+//c11
+#define MODEL_THEATER_KEYDOOR 0xFF
+#define MODEL_PROJECTOR 0xFE
+#define MODEL_MOVIE_1 0xFD
+#define MODEL_PROJECTOR_HANDLE 0xFC
+#define MODEL_MOVIE_2 0xFB
+#define MODEL_CONE 0xFA
+#define MODEL_BALLOON 0xF9
+#define MODEL_STOPSIGN 0xF8
+#define MODEL_STREETLIGHT 0xF7
+#define MODEL_FERRIS 0xF6
+#define MODEL_FERRISCART 0xF5
+#define MODEL_PRESS 0xF4
+#define MODEL_GIRL 0xF3
+#define MODEL_MOVIE_8 0xF2
+#define MODEL_STAR_SIGN 0xF1
+#define MODEL_MOVIE_9 0x102
+#define MODEL_COBIE2 0x103
+#define MODEL_MOLEMAN2 0x104
+#define MODEL_EDWARD2 0x105
+#define MODEL_ROBOZO2 0x106
+
+//hub3
+#define MODEL_FOUNTAIN 0xFF
+#define MODEL_BITS_STAIRS 0xFE
+#define MODEL_TVSHOP 0xFD
+
+//orchestral keys
+#define MODEL_KILLER_LASER 0xFF
+#define MODEL_BEAN 0xFE
+#define MODEL_MIC 0xFD
+#define MODEL_PINK_COIN_TTM 0xFC
+#define MODEL_ALIENTREE 0xFB
+#define MODEL_ALIENBALL 0xFA
+#define MODEL_MILL 0xF9
+#define MODEL_VFLOOD 0xF8
+
+//b2
+#define MODEL_FLIP 0xFF
+#define MODEL_PROJECTOR2 0xFE
+#define MODEL_MOVIE_3 0xFD
+//#define MODEL_PROJECTOR_HANDLE 0xFC
+#define MODEL_MOVIE_4 0xFB
+#define MODEL_SR_STATUE 0xFA
+#define MODEL_MOVIE_5 0xF9
+#define MODEL_SAW 0xF8
+#define MODEL_MOVIE_6 0xF7
+#define MODEL_BITFS_SPOTLIGHT 0xF6
+#define MODEL_BITFS_PIPE 0xF5
+#define MODEL_MOVIE_7 0xF4
+#define MODEL_SR_SPIKE 0xF3
+#define MODEL_SR_BALL 0xF2
+
+//c15
+//FF Fountain
+#define MODEL_BLOCKER 0xFE
+#define MODEL_RR_DOOR 0xFD
+#define MODEL_RR_TUBE 0xFC
+#define MODEL_PINK_COIN_RR 0xFB
+#define MODEL_RR_EYE 0xFA
+#define MODEL_RR_BILLMASK 0xF9
+#define MODEL_RR_PYRAMID 0xF8
+#define MODEL_SPINSEED 0xF7
+#define MODEL_STATIC_FLOOD 0xF6
+#define MODEL_TVHEAD_RR 0xF5
+#define MODEL_BLOOD 0xF4
+#define MODEL_PALAMEDES 0xF3
+#define MODEL_AGHEART 0xF2
+#define MODEL_AGPORTAL 0xF1
+#define MODEL_BLOOD_PARTICLE 0x102
+#define MODEL_AGCRACK 0x103
+#define MODEL_AGPILLAR1 0x104
+#define MODEL_AGPILLAR2 0x105
+#define MODEL_AGPILLAR3 0x106
+#define MODEL_AGWALL 0x107
+#define MODEL_AGCRUMBLE 0x108
+#define MODEL_AGRING 0x109
+#define MODEL_AG_KILLER_LASER 0x10A
+#define MODEL_AGBOOM 0x10B
+#define MODEL_AGMOON 0x10C
+#define MODEL_AGFLAMES 0x10D
+#define MODEL_AGTRI 0x10E
+#define MODEL_FORM1 0x10F
+#define MODEL_FORM2  0x110
+#define MODEL_FORM2A 0x111
+#define MODEL_FORM3 0x112
+#define MODEL_LOPALAM 0x113
+
+//c13
+#define MODEL_THI_PINK_COIN 0xFF
+#define MODEL_ANGEL 0xFE
+#define MODEL_TWISTY 0xFD
+#define MODEL_IDOL_1 0xFC
+#define MODEL_IDOL_2 0xFB
+#define MODEL_IDOL_3 0xFA
+#define MODEL_IDOL_4 0xF9
+#define MODEL_TVHEAD_THI 0xF8
+#define MODEL_THI_CAGE 0xF7
+
+//c14
+#define MODEL_TTC_PINKCOIN 0xFF
+#define MODEL_OCEAN_TTC 0xFE
+#define MODEL_HIGHCANE 0xFD
+#define MODEL_DENORMA 0xFC
+#define MODEL_DENORMB 0xFB
+#define MODEL_TVHEAD_TTC 0xFA
+#define MODEL_RAFT 0xF9
+
+//more globals
+#define MODEL_TV_CORPSE 0x120//fuck you, corpse!
+#define MODEL_QUEST 0x121
+#define MODEL_COSMIC_SPIKE 0x122
 
 #endif // MODEL_IDS_H

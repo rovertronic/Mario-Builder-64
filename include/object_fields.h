@@ -102,6 +102,11 @@
 #define /*0x0E8*/ oFloorHeight                                  OBJECT_FIELD_F32(0x18)
 #define /*0x0EC*/ oMoveFlags                                    OBJECT_FIELD_U32(0x19)
 #define /*0x0F0*/ oAnimState                                    OBJECT_FIELD_S32(0x1A)
+
+#define /*0x0F4*/ oDontInertia                                  OBJECT_FIELD_S32(0x1B)
+#define /*0x0F8*/ oExtraVariable1                               OBJECT_FIELD_S32(0x1C)
+#define /*0x0FC*/ oDontFallDamage                               OBJECT_FIELD_S32(0x1D)
+
 // 0x0F4-0x110 (0x1B-0x22) are object specific and defined below the common fields.
 /* Angle Velocity vector */
 #define /*0x114*/ O_ANGLE_VEL_INDEX                             0x23
@@ -161,6 +166,7 @@
 #define /*0x19C*/ oDrawingDistance                              OBJECT_FIELD_F32(0x45)
 #define /*0x1A0*/ oRoom                                         OBJECT_FIELD_S32(0x46)
 // 0x1A4 is unused, possibly related to 0x1A8 in removed macro purposes.
+#define /*0x1A8*/ oDmgFade                                      OBJECT_FIELD_U32(0x48)
 #define /*0x1A8*/ oUnusedCoinParams                             OBJECT_FIELD_U32(0x48)
 // 0x1AC-0x1B2 (0x48-0x4A) are object specific and defined below the common fields.
 #define /*0x1B4*/ oWallAngle                  OBJECT_FIELD_S32(0x4B)
@@ -800,6 +806,10 @@
 /* Openable Grill */
 #define /*0x088*/ oOpenableGrillIsOpen         OBJECT_FIELD_S32(0x00)
 #define /*0x0F4*/ oOpenableGrillFloorSwitchObj OBJECT_FIELD_OBJ(0x1B)
+
+/* Phonograph */
+#define /*0x0F4*/ oPhonographScale             OBJECT_FIELD_F32(0x1B)
+#define /*0x0F4*/ oPhonographScaleLast         OBJECT_FIELD_F32(0x1C)
 
 /* Intro Cutscene Peach */
 #define /*0x108*/ oIntroPeachYawFromFocus OBJECT_FIELD_F32(0x20)

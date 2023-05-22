@@ -74,4 +74,46 @@ extern const Collision bitdw_seg7_collision_0700FD9C[];
 // script
 extern const LevelScript level_bitdw_entry[];
 
+#include "levels/bitdw/header.inc.h"
+
+#include "levels/bitdw/scroll_object/geo_header.h"
+
+#include "levels/bitdw/wheelo/geo_header.h"
+
+#include "levels/bitdw/sinkrock/geo_header.h"
+
+#include "levels/bitdw/sinkrock/collision_header.h"
+
+#include "levels/bitdw/metalbullet/geo_header.h"
+
+#include "levels/bitdw/tankie/geo_header.h"
+
+#include "levels/bitdw/tankie/collision_header.h"
+
+#include "levels/bitdw/truck/geo_header.h"
+
+#include "levels/bitdw/truck/collision_header.h"
+
+#include "levels/bitdw/badsign/collision_header.h"
+
+#include "levels/bitdw/badsign/geo_header.h"
+
+#include "levels/bitdw/darkbowser/geo_header.h"
+
+#include "levels/bitdw/bsky_dl/header.h"
+
+#include "levels/bitdw/lavapit/collision_header.h"
+
+#include "levels/bitdw/lavapit/geo_header.h"
+
+#include "levels/bitdw/pump/geo_header.h"
+
+#include "levels/bitdw/pump/collision_header.h"
+
+#include "levels/bitdw/cosmic_shard/geo_header.h"
+
+#include "levels/bitdw/cammer_bro/geo_header.h"
+
+#include "levels/bitdw/lens/geo_header.h"
+
 #endif

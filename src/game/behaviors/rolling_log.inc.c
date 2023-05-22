@@ -20,6 +20,8 @@ void bhv_ttm_rolling_log_init(void) {
 }
 
 void rolling_log_roll_log(void) {
+    o->oDontInertia = FALSE;
+
     if (gMarioObject->platform == o) {
         f32 rollAmount = (gMarioObject->header.gfx.pos[2] - o->oPosZ) * coss(-o->oMoveAngleYaw)
                        - (gMarioObject->header.gfx.pos[0] - o->oPosX) * sins(-o->oMoveAngleYaw);

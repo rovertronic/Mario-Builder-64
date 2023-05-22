@@ -183,6 +183,8 @@ SECTIONS
       lib/PR/audio/n_aspMain.o(.text*);
       lib/PR/hvqm/hvqm2sp1.o(.text*);
       _mainSegmentTextEnd = .;
+      /* Overwrite a libultra function with its modified counterpart for GCN controller support */
+      __osContGetInitData = __osContGetInitDataEx;
 
       /* data */
       BUILD_DIR/asm/n64_assert.o(.*data*);
@@ -523,6 +525,13 @@ SECTIONS
       KEEP(BUILD_DIR/sound/sound_data.o(.data*));
    }
    END_SEG(assets)
+
+   BEGIN_SEG(bad_apple, 0x09000000)
+   {
+      KEEP(BUILD_DIR/data/bad_apple_data.o(.data*));
+   }
+   END_SEG(bad_apple)
+
 #ifdef HVQM
    BEGIN_SEG(capcom, __romPos) SUBALIGN(2)
    {

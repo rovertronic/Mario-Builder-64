@@ -12,13 +12,45 @@ struct ObjectHitbox sSparkleSpawnStarHitbox = {
     /* hurtboxHeight:     */ 0,
 };
 
+void prevent_ceiling_clipping(void) {
+    struct Surface *ceil;
+    f32 ceil_y;
+    ceil_y = find_ceil(o->oPosX,o->oPosY-50.0f,o->oPosZ,&ceil);
+
+    if (ceil) {
+        if (o->oPosY + 50.0f > ceil_y) {
+            o->oPosY = ceil_y - 50.0f;
+        }
+    }
+}
+
 void bhv_spawned_star_init(void) {
+    s8 starId = GET_BPARAM1(o->oBehParams);
+    u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
+    u8 sfair_level = (gCurrCourseNum == COURSE_WDW)||(gCurrCourseNum == COURSE_NONE);
+    u8 currentLevelStarFlags = save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum));
+
     if (!(o->oInteractionSubtype & INT_SUBTYPE_NO_EXIT)) {
         o->oBehParams = o->parentObj->oBehParams;
     }
-    s32 param = GET_BPARAM1(o->oBehParams);
-    if ((1 << param) & save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum))) {
-        cur_obj_set_model(MODEL_TRANSPARENT_STAR);
+
+    if (((o->oBehParams >> 24 == 6)||(aglevel))&&(!sfair_level)) {
+        //cosmic seed
+        if (currentLevelStarFlags & (1 << starId)) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+            o->oAnimState = 1;
+        } else {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[0xED];
+        }
+    } else {
+        //normal star
+        if (currentLevelStarFlags & (1 << starId)) {
+            if (currentLevelStarFlags & (1 << starId)) {
+                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+            } else {
+                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
+            }
+        }
     }
 
     cur_obj_play_sound_2(SOUND_GENERAL2_STAR_APPEARS);
@@ -91,6 +123,7 @@ void bhv_spawned_star_loop(void) {
             o->oAction++; // SPAWN_STAR_POS_CUTSCENE_ACT_END
         }
         spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        prevent_ceiling_clipping();
     } else if (o->oAction == SPAWN_STAR_POS_CUTSCENE_ACT_END) {
         if (gCamera->cutscene == 0 && gRecentCutscene == 0) {
             clear_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);

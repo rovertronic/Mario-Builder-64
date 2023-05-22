@@ -12,6 +12,20 @@ struct ObjectHitbox sYellowCoinHitbox = {
     /* hurtboxHeight:     */ 0,
 };
 
+struct ObjectHitbox sGreenCoinHitbox = {
+    /* interactType: */ INTERACT_COIN,
+    /* downOffset: */ 0,
+    /* damageOrCoinValue: */ 3,
+    /* health: */ 0,
+    /* numLootCoins: */ 0,
+    /* radius: */ 100,
+    /* height: */ 64,
+    /* hurtboxRadius: */ 0,
+    /* hurtboxHeight: */ 0,
+};
+
+
+//fuck you arrow, let's take this asshole down!!!
 /**
  *     3
  *   4   6
@@ -21,6 +35,7 @@ struct ObjectHitbox sYellowCoinHitbox = {
  * 
  *     0
  **/
+ //some arrows don't realize what a piece of shit they are!!!
 s16 sCoinArrowPositions[][2] = {
     { 0, -150 },
     { 0, -50 },
@@ -31,6 +46,8 @@ s16 sCoinArrowPositions[][2] = {
     { 50, 100 },
     { 100, 50 },
 };
+
+s16 cock_hard_resevoir[][2] = { {-200, 0} , {200, 0}, {0, 200}, {0, -200} , {-100, 0} , {100, 0}, {0, 100}, {0, -100} };
 
 s32 bhv_coin_sparkles_init(void) {
     if (o->oInteractStatus & INT_STATUS_INTERACTED
@@ -69,6 +86,17 @@ void bhv_yellow_coin_init(void) {
     }
 }
 
+void bhv_green_coin_init(void) {
+    cur_obj_set_behavior(bhvYellowCoin);
+    obj_set_hitbox(o, &sGreenCoinHitbox);
+    bhv_init_room();
+    cur_obj_update_floor_height();
+    if (500.0f < absf(o->oPosY - o->oFloorHeight))
+        cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
+    if (o->oFloorHeight < -10000.0f)
+        obj_mark_for_deletion(o);
+}
+
 void bhv_yellow_coin_loop(void) {
     bhv_coin_sparkles_init();
     o->oAnimState++;
@@ -85,6 +113,10 @@ void bhv_temp_coin_loop(void) {
 }
 
 void bhv_coin_init(void) {
+    if (gMarioState->gCurrMinigame > 0) {
+        obj_mark_for_deletion(o);
+        }
+
     o->oVelY = random_float() * 10.0f + 30 + o->oCoinBaseYVel;
     o->oForwardVel = random_float() * 10.0f;
     o->oMoveAngleYaw = random_u16();
@@ -100,6 +132,17 @@ void bhv_coin_loop(void) {
     cur_obj_move_standard(-62);
 
     struct Surface *floor = o->oFloor;
+
+    u8 cosmetic = FALSE;
+    u16 lifespan = 400;
+    if (o->parentObj == gMarioObject) {
+        cosmetic = TRUE;
+        lifespan = 10;
+    }
+
+    if ((save_file_get_badge_equip() & (1<<10))&&(!cosmetic)) {
+        o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
+    }
 
     if (floor != NULL) {
         if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
@@ -118,7 +161,7 @@ void bhv_coin_loop(void) {
         cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
     }
 
-    if (o->oVelY < 0) {
+    if ((o->oVelY < 0) && (!cosmetic)) {
         cur_obj_become_tangible();
     }
 
@@ -142,7 +185,7 @@ void bhv_coin_loop(void) {
         o->oCoinBounceTimer++;
     }
 
-    if (cur_obj_wait_then_blink(400, 20)) {
+    if (cur_obj_wait_then_blink(lifespan, 20)) {
         obj_mark_for_deletion(o);
     }
 
@@ -207,6 +250,10 @@ void spawn_coin_in_formation(s32 index, s32 shape) {
         case COIN_FORMATION_BP_SHAPE_ARROW:
             pos[0] = sCoinArrowPositions[index][0];
             pos[2] = sCoinArrowPositions[index][1];
+            break;
+        case 5:
+            pos[0] = cock_hard_resevoir[index][0];
+            pos[2] = cock_hard_resevoir[index][1];
             break;
     }
 
@@ -284,10 +331,7 @@ void coin_inside_boo_act_carried(void) {
     struct Object *parent = o->parentObj;
 
     cur_obj_become_intangible();
-    if (o->oTimer == 0 && GET_BPARAM1(parent->oBehParams) != COIN_INSIDE_BOO_BP_YELLOW_COIN) {
-        cur_obj_set_model(MODEL_BLUE_COIN);
-        cur_obj_scale(0.7f);
-    }
+
 
     obj_copy_pos(o, parent);
 

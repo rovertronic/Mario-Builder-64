@@ -25,12 +25,26 @@ extern const Gfx butterfly_seg3_dl_030054A0[];
 extern const struct Animation *const butterfly_seg3_anims_030056B0[];
 
 // coin
+extern const Gfx coin_dl_start1[];
+extern const Gfx coin_dl_start2[];
+extern const Gfx coin_dl_start3[];
+extern const Gfx coin_dl_start4[];
+
+extern ALIGNED8 const Texture coin_seg3_texture_tilt_left[];
+extern ALIGNED8 const Texture coin_seg3_texture_front[];
+extern ALIGNED8 const Texture coin_seg3_texture_tilt_right[];
+extern ALIGNED8 const Texture coin_seg3_texture_side[];
+
 extern const GeoLayout yellow_coin_geo[];
 extern const GeoLayout yellow_coin_no_shadow_geo[];
 extern const GeoLayout blue_coin_geo[];
 extern const GeoLayout blue_coin_no_shadow_geo[];
 extern const GeoLayout red_coin_geo[];
 extern const GeoLayout red_coin_no_shadow_geo[];
+extern const GeoLayout green_coin_geo[];
+extern const GeoLayout green_coin_no_shadow_geo[];
+extern const GeoLayout pink_coin_geo[];
+extern const GeoLayout pink_coin_no_shadow_geo[];
 #ifdef IA8_30FPS_COINS
 extern const GeoLayout silver_coin_geo[];
 extern const GeoLayout silver_coin_no_shadow_geo[];
@@ -71,6 +85,24 @@ extern const Gfx coin_seg3_dl_secret_67_5_r[];
 extern const Gfx coin_seg3_dl_secret_45_r[];
 extern const Gfx coin_seg3_dl_secret_22_5_r[];
 
+extern const Gfx coin_seg3_dl_green_0[];
+extern const Gfx coin_seg3_dl_green_22_5[];
+extern const Gfx coin_seg3_dl_green_45[];
+extern const Gfx coin_seg3_dl_green_67_5[];
+extern const Gfx coin_seg3_dl_green_90[];
+extern const Gfx coin_seg3_dl_green_67_5_r[];
+extern const Gfx coin_seg3_dl_green_45_r[];
+extern const Gfx coin_seg3_dl_green_22_5_r[];
+
+extern const Gfx coin_seg3_dl_pink_0[];
+extern const Gfx coin_seg3_dl_pink_22_5[];
+extern const Gfx coin_seg3_dl_pink_45[];
+extern const Gfx coin_seg3_dl_pink_67_5[];
+extern const Gfx coin_seg3_dl_pink_90[];
+extern const Gfx coin_seg3_dl_pink_67_5_r[];
+extern const Gfx coin_seg3_dl_pink_45_r[];
+extern const Gfx coin_seg3_dl_pink_22_5_r[];
+
 #else
 extern const Gfx coin_seg3_sub_dl_begin[];
 extern const Gfx coin_seg3_sub_dl_end[];
@@ -86,6 +118,14 @@ extern const Gfx coin_seg3_dl_red_front[];
 extern const Gfx coin_seg3_dl_red_tilt_right[];
 extern const Gfx coin_seg3_dl_red_side[];
 extern const Gfx coin_seg3_dl_red_tilt_left[];
+extern const Gfx coin_seg3_dl_green_front[];
+extern const Gfx coin_seg3_dl_green_tilt_right[];
+extern const Gfx coin_seg3_dl_green_side[];
+extern const Gfx coin_seg3_dl_green_tilt_left[];
+extern const Gfx coin_seg3_dl_pink_front[];
+extern const Gfx coin_seg3_dl_pink_tilt_right[];
+extern const Gfx coin_seg3_dl_pink_side[];
+extern const Gfx coin_seg3_dl_pink_tilt_left[];
 #endif
 
 // dirt
@@ -253,10 +293,18 @@ extern const Gfx star_seg3_dl_body[];
 extern const Gfx star_seg3_sub_dl_eyes[];
 extern const Gfx star_seg3_dl_eyes[];
 
+// metalstar
+extern const GeoLayout metalstar_geo[];
+extern const Gfx metalstar_seg3_sub_dl_body[];
+extern const Gfx metalstar_seg3_dl_body[];
+extern const Gfx metalstar_seg3_sub_dl_eyes[];
+extern const Gfx metalstar_seg3_dl_eyes[];
+
 // transparent_star
 extern const GeoLayout transparent_star_geo[];
 extern const Gfx transparent_star_seg3_sub_dl_body[];
 extern const Gfx transparent_star_seg3_dl_body[];
+extern const Gfx transparent_star_black[];
 
 // tree
 extern const GeoLayout bubbly_tree_geo[];
@@ -293,5 +341,34 @@ extern const Gfx wooden_signpost_seg3_dl_0302DC40[];
 extern const Gfx wooden_signpost_seg3_dl_0302DCD0[];
 extern const Gfx wooden_signpost_seg3_dl_0302DD08[];
 extern const Collision wooden_signpost_seg3_collision_0302DD80[];
+
+// yoshi
+extern const GeoLayout yoshi_geo[];
+extern const Gfx yoshi_seg5_dl_0501D440[];
+extern const Gfx yoshi_seg5_dl_0501D488[];
+extern const Gfx yoshi_seg5_dl_0501D4E0[];
+extern const Gfx yoshi_seg5_dl_0501D8F8[];
+extern const Gfx yoshi_seg5_dl_0501D940[];
+extern const Gfx yoshi_seg5_dl_0501D970[];
+extern const Gfx yoshi_seg5_dl_0501D998[];
+extern const Gfx yoshi_seg5_dl_050212B0[];
+extern const Gfx yoshi_seg5_dl_05021490[];
+extern const Gfx yoshi_seg5_dl_050215D8[];
+extern const Gfx yoshi_seg5_dl_05021678[];
+extern const Gfx yoshi_seg5_dl_05021718[];
+extern const Gfx yoshi_seg5_dl_05021860[];
+extern const Gfx yoshi_seg5_dl_05021900[];
+extern const Gfx yoshi_seg5_dl_050219A0[];
+extern const Gfx yoshi_seg5_dl_05021B90[];
+extern const Gfx yoshi_seg5_dl_05021CD8[];
+extern const Gfx yoshi_seg5_dl_05021E38[];
+extern const Gfx yoshi_seg5_dl_05021F70[];
+extern const Gfx yoshi_seg5_dl_05022160[];
+extern const Gfx yoshi_seg5_dl_050222A8[];
+extern const Gfx yoshi_seg5_dl_05022408[];
+extern const Gfx yoshi_seg5_dl_05022608[];
+extern const struct Animation *const yoshi_seg5_anims_05024100[];
+
+#include "podoboo/geo_header.h"
 
 #endif

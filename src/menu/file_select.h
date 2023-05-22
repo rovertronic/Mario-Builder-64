@@ -142,4 +142,7 @@ Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct Grap
 s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused);
 s32 lvl_update_obj_and_load_file_selected(UNUSED s32 arg, UNUSED s32 unused);
 
+extern s8 sSelectedFileNum;
+extern u8 fs_ms;
+
 #endif // FILE_SELECT_H

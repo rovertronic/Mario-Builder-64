@@ -30,7 +30,7 @@ static s16 sFlyGuyJitterAmounts[] = { 0x1000, -0x2000, 0x2000 };
 static void fly_guy_act_idle(void) {
     o->oForwardVel = 0.0f;
 
-    if (approach_f32_ptr(&o->header.gfx.scale[0], 1.5f, 0.02f)) {
+    if (approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.02f)) {
         // If we are >2000 units from home or Mario is <2000 units from us
         if (o->oDistanceToMario >= 25000.0f || o->oDistanceToMario < 2000.0f) {
             // Turn toward home or Mario
@@ -76,6 +76,7 @@ static void fly_guy_act_approach_mario(void) {
                 o->oFlyGuyScaleVel = 0.06f;
             } else {
                 o->oAction = FLY_GUY_ACT_LUNGE;
+                cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_SHORT);
                 o->oFlyGuyLungeTargetPitch = obj_turn_pitch_toward_mario(-200.0f, 0);
 
                 o->oForwardVel = 25.0f * coss(o->oFlyGuyLungeTargetPitch);
@@ -132,6 +133,7 @@ static void fly_guy_act_lunge(void) {
  * Turn toward mario, then shoot fire. Then enter the idle action.
  */
 static void fly_guy_act_shoot_fire(void) {
+    struct Object *hammer;
     o->oForwardVel = 0.0f;
 
     if (obj_face_yaw_approach(o->oAngleToMario, 0x800)) {
@@ -150,18 +152,14 @@ static void fly_guy_act_shoot_fire(void) {
                 o->oAction = FLY_GUY_ACT_IDLE;
             } else {
                 // We have reached below scale 1.2 in the shrinking portion
-                s16 fireMovePitch = obj_turn_pitch_toward_mario(0.0f, 0);
+                // s16 fireMovePitch = obj_turn_pitch_toward_mario(0.0f, 0);
 
-                cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
-                clamp_s16(&fireMovePitch, 0x800, 0x3000);
+                cur_obj_play_sound_2(SOUND_OBJ_SNUFIT_SHOOT);
+                // clamp_s16(&fireMovePitch, 0x800, 0x3000);
 
-                obj_spit_fire(
-                    /*relativePos*/ 0, 38, 20,
-                    /*scale      */ 2.5f,
-                    /*model      */ MODEL_RED_FLAME_SHADOW,
-                    /*startSpeed */ 25.0f,
-                    /*endSpeed   */ 20.0f,
-                    /*movePitch  */ fireMovePitch);
+                //o->oMoveAngleYaw = o->oFaceAngleYaw;
+                hammer = spawn_object(o, 0xE5, bhvSnufitBalls);
+                hammer->oMoveAnglePitch = obj_turn_pitch_toward_mario(0.0f, 0);
             }
         }
     } else {
@@ -178,6 +176,11 @@ static void fly_guy_act_shoot_fire(void) {
  */
 void bhv_fly_guy_update(void) {
     // PARTIAL_UPDATE (appears in non-roomed levels)
+
+    if (revent_active) {
+        o->oTimer --;
+        return;
+    }
 
     if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
         o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
@@ -210,6 +213,19 @@ void bhv_fly_guy_update(void) {
                 fly_guy_act_shoot_fire();
                 break;
         }
+
+        if (gMarioState->gCurrMinigame == 1) {
+            o->oHomeX = gMarioState->pos[0];
+            o->oHomeY = gMarioState->pos[1];
+            o->oHomeZ = gMarioState->pos[2];
+
+            if (o->oDistanceToMario > 800.0f) {
+                o->oFaceAngleYaw = o->oAngleToMario;
+                o->oMoveAngleYaw = o->oAngleToMario;
+                o->oForwardVel = 15.0f;
+                o->oDrawingDistance = 9000.0f;
+                }
+            }
 
         cur_obj_move_standard(78);
         obj_check_attacks(&sFlyGuyHitbox, o->oAction);

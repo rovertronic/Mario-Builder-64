@@ -3,7 +3,8 @@
 static s32 sCapSaveFlags[] = {
     SAVE_FLAG_HAVE_WING_CAP,
     SAVE_FLAG_HAVE_METAL_CAP,
-    SAVE_FLAG_HAVE_VANISH_CAP
+    SAVE_FLAG_HAVE_VANISH_CAP,
+    SAVE_FLAG_HAVE_YELLOW
 };
 
 void cap_switch_act_init(void) {
@@ -53,14 +54,11 @@ void cap_switch_act_being_pressed(void) {
 #endif
         }
     } else {
-        //! Neither of these flags are defined in this function so they do nothing.
-        //  On an extra note, there's a specific check for this cutscene and 
-        //  there's no dialog defined since the cutscene itself calls the dialog.
-        s32 dialogResponse = cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_FRONT, 
-            (DIALOG_FLAG_TEXT_RESPONSE | DIALOG_FLAG_UNK_CAPSWITCH), CUTSCENE_CAP_SWITCH_PRESS, 0);
-        if (dialogResponse) {
-            o->oAction = CAP_SWITCH_ACT_IDLE_PRESSED;
+        run_event(EVENT_SWITCH_1+o->oBehParams2ndByte);
+        if (o->oBehParams2ndByte == 1) {
+            save_file_set_progression(PROG_CORE_DEFEAT);
         }
+        o->oAction = CAP_SWITCH_ACT_IDLE_PRESSED;
     }
 }
 

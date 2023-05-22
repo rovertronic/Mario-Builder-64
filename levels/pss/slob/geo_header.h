@@ -1,0 +1,16 @@
+extern const GeoLayout slob_geo[];
+extern Lights1 slob_slob_lights;
+extern u8 slob_slob_ci4[];
+extern u8 slob_slob_ci4_pal_rgba16[];
+extern Vtx slob_root_mesh_layer_1_vtx_0[169];
+extern Gfx slob_root_mesh_layer_1_tri_0[];
+extern Vtx slob_larm_mesh_layer_1_vtx_0[74];
+extern Gfx slob_larm_mesh_layer_1_tri_0[];
+extern Vtx slob_rarm_mesh_layer_1_vtx_0[74];
+extern Gfx slob_rarm_mesh_layer_1_tri_0[];
+extern Gfx mat_slob_slob[];
+extern Gfx mat_revert_slob_slob[];
+extern Gfx slob_root_mesh_layer_1[];
+extern Gfx slob_larm_mesh_layer_1[];
+extern Gfx slob_rarm_mesh_layer_1[];
+extern Gfx slob_material_revert_render_settings[];

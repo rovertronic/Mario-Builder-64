@@ -40,8 +40,9 @@ struct Controller {
   /*0x0C*/ f32 stickMag;        // distance from center [0, 64]
   /*0x10*/ u16 buttonDown;
   /*0x12*/ u16 buttonPressed;
-  /*0x14*/ OSContStatus *statusData;
-  /*0x18*/ OSContPad *controllerData;
+  /*0x14*/ u16 buttonReleased;
+  /*0x18*/ OSContStatus *statusData;
+  /*0x1C*/ OSContPadEx *controllerData;
 #if ENABLE_RUMBLE
   /*0x1C*/ s32 port;
 #endif
@@ -325,7 +326,7 @@ struct Object {
         const void *asConstVoidPtr[MAX_OBJECT_FIELDS];
     } ptrData;
 #endif
-    /*0x1C8*/ u32 unused1;
+    /*0x1C8*/ struct RigidBody *rigidBody;
     /*0x1CC*/ const BehaviorScript *curBhvCommand;
     /*0x1D0*/ u32 bhvStackIndex;
     /*0x1D4*/ uintptr_t bhvStack[8];
@@ -446,6 +447,7 @@ struct MarioState {
     /*0x76*/ s16 waterLevel;
     /*0x78*/ struct Object *interactObj;
     /*0x7C*/ struct Object *heldObj;
+             u8 heldObjParam2;
     /*0x80*/ struct Object *usedObj;
     /*0x84*/ struct Object *riddenObj;
     /*0x88*/ struct Object *marioObj;
@@ -457,11 +459,103 @@ struct MarioState {
     /*0xA0*/ struct DmaHandlerList *animList;
     /*0xA4*/ u32 collidedObjInteractTypes;
     /*0xA8*/ s16 numCoins;
+
+            f32 PortalTint;
+            u8 hundredSpawned;
+
+            f32 waterBottomHeight;
+            u16 waterBottomParam;
+
+            u8 _2D;
+            u8 _2D_Setting;
+
+            //crimas only!
+            u8 MessHeld;
+            u8 MessNumber;
+            u8 IntroDid;
+            //crimas only!
+
+            Mat4 HeadMatrix;
+
+             u16 numGlobalCoins;
+             u16 numMaxGlobalCoins;
+             u8 LastCostumeID;
+             u8 CostumeID;
+             u8 numMaxHP;
+             u8 numMaxFP;
+             u8 numMaxBP;
+
+             s16 numAir;
+
+             Vec3f StarRadarLocation;
+             u8 StarRadarExist;
+
+             s8 numBadgeSelect;
+             u32 EquippedBadges;
+            u8 numEquippedBadges;
+
+             u8 numFakeHP;
+             u8 numFakeHPdamage;
+             u8 numFakeHPheal;
+
+             u8 TokenParam2;
+             u8 MenuToRender;
+            
+            s32 ScreenPosY;
+            s32 ScreenPosX;
+
+            u8 OptionMusic;
+            u8 OptionWidescreen;
+
+            s16 SwitchPressed;
+
+             s16 numBadgePoints;
     /*0xAA*/ s16 numStars;
+             s16 numMetalStars;
+             s16 lastStarCollected;
+             u16 NewTimer;
+             u8 NewTimerMode;
+
+            u8 NewLevel;
+
+             s16 SubNewTimer;
+             s16 GoldRingCount;
+             s16 PirCount;
+
+            u8 YoshiCoins;
+            u8 DeadRexes;
+            u8 DeadRexMissionActivate;
+            u8 DeadCowboyMissionActivate;
+            u8 DeadPokeys;
+            u8 CheeseCollection;
+            u8 CheeseMissionActivate;
+            u8 SockCollection;
+            u8 SockMissionActivate;
+
+            u8 RFuel;
+            u8 SFuel;
+
+            u8 Yoshi_Flutter;
+            u8 IsYoshi;
+
+             u16 toggleHud;
+
+            u8 BadAppleActivate;
+            u8 GlobalPaused;
+
+            u8 gCurrMinigame;
+            u8 gMinigameWon;
+            u8 EA_TOTAL;
+            u8 EA_LEFT;
+            u8 EA_ACTIVE;
+            u8 EA_WAVES;
+
     /*0xAC*/ s8 numKeys; // Unused key mechanic
     /*0xAD*/ s8 numLives;
+             s16 gGlobalCoinGain;
     /*0xAE*/ s16 health;
     /*0xB0*/ s16 animYTrans;
+             s8 powerup;
     /*0xB2*/ u8 hurtCounter;
     /*0xB3*/ u8 healCounter;
     /*0xB4*/ u8 squishTimer;
@@ -471,6 +565,36 @@ struct MarioState {
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;
     /*0xC4*/ f32 windGravity;
+             u8 ShopID;
+             u8 Level;
+            u8 ISSAFE;
+            u8 _2DSecret;
+
+            s8 BossHealth;
+            s8 BossHealthMax;
+
+            u8 TollPaid;
+            Vec3f posDelay;
+
+            f32 _2D_FOV_PUBLIC;
+
+            u8 MaskChase;
+
+            u8 InsideCourse;
+
+            u8 LavaHeat;
+
+            u8 Cheats;
+            u8 Options;
+
+            u8 nearVendor;
+            u8 onbluecoinswitch;
+            u8 isAfterlife;
+
+            f32 gravMult;
+
+            struct Object *SpotlightTarget;
+            f32 SpotlightTargetYOffset;
     // -- HackerSM64 MarioState fields begin --
 #ifdef BREATH_METER
              s16 breath;

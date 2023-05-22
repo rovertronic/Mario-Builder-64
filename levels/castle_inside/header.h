@@ -59,6 +59,7 @@ extern const Gfx inside_castle_seg7_dl_070225D8[];
 extern const Gfx inside_castle_seg7_dl_07022610[];
 extern const Gfx inside_castle_seg7_dl_070234C0[];
 extern const Gfx inside_castle_seg7_dl_07023520[];
+
 extern struct Painting bob_painting;
 extern struct Painting ccm_painting;
 extern struct Painting wf_painting;
@@ -73,7 +74,8 @@ extern struct Painting ttm_painting;
 extern struct Painting ttc_painting;
 extern struct Painting sl_painting;
 extern struct Painting thi_huge_painting;
-extern const Gfx inside_castle_seg7_dl_bowser_1_painting[];
+
+extern const Gfx inside_castle_seg7_dl_07023DB0[];
 extern const Gfx inside_castle_seg7_dl_07028FD0[];
 extern const Gfx inside_castle_seg7_dl_07029578[];
 extern const Gfx inside_castle_seg7_dl_0702A650[];
@@ -141,17 +143,76 @@ extern const Collision inside_castle_seg7_collision_ddd_warp_2[];
 extern const MacroObject inside_castle_seg7_area_1_macro_objs[];
 extern const MacroObject inside_castle_seg7_area_2_macro_objs[];
 extern const MacroObject inside_castle_seg7_area_3_macro_objs[];
-extern const RoomData inside_castle_seg7_area_1_rooms[];
-extern const RoomData inside_castle_seg7_area_2_rooms[];
-extern const RoomData inside_castle_seg7_area_3_rooms[];
+extern const u8 inside_castle_seg7_area_1_rooms[];
+extern const u8 inside_castle_seg7_area_2_rooms[];
+extern const u8 inside_castle_seg7_area_3_rooms[];
 extern const Collision inside_castle_seg7_collision_floor_trap[];
 extern const Collision inside_castle_seg7_collision_star_door[];
 extern const Collision inside_castle_seg7_collision_water_level_pillar[];
 extern const Trajectory *const inside_castle_seg7_trajectory_mips[];
 extern const struct MovtexQuadCollection inside_castle_movtex_green_room_water[];
 extern const struct MovtexQuadCollection inside_castle_movtex_moat_water[];
+//extern const Gfx castle_inside_dl_sus_i8[];
 
 // script
 extern const LevelScript level_castle_inside_entry[];
+
+#include "levels/castle_inside/header.inc.h"
+
+#include "levels/castle_inside/secret_books/geo_header.h"
+
+#include "levels/castle_inside/secret_books_collision/collision_header.h"
+
+#include "levels/castle_inside/reflection_change/geo_header.h"
+
+#include "levels/castle_inside/fucking_mirror/collision_header.h"
+
+#include "levels/castle_inside/fucking_mirror/geo_header.h"
+
+#include "levels/castle_inside/vr/geo_header.h"
+
+#include "levels/castle_inside/vr/collision_header.h"
+
+#include "levels/castle_inside/garage/geo_header.h"
+
+#include "levels/castle_inside/garage/collision_header.h"
+
+#include "levels/castle_inside/rocking_chair/collision_header.h"
+
+#include "levels/castle_inside/rocking_chair/geo_header.h"
+
+#include "levels/castle_inside/ghoad/geo_header.h"
+
+#include "levels/castle_inside/ghoad/anim_header.h"
+
+#include "levels/castle_inside/c5_bridge/collision_header.h"
+
+#include "levels/castle_inside/c5_bridge/geo_header.h"
+
+#include "levels/castle_inside/book_elevator/geo_header.h"
+
+#include "levels/castle_inside/book_elevator/collision_header.h"
+
+#include "levels/castle_inside/tele/geo_header.h"
+
+#include "levels/castle_inside/mgb/geo_header.h"
+
+#include "levels/castle_inside/mgb/collision_header.h"
+
+#include "levels/castle_inside/mgb2/geo_header.h"
+
+#include "levels/castle_inside/grate30/collision_header.h"
+
+#include "levels/castle_inside/grate30/geo_header.h"
+
+#include "levels/castle_inside/showrunner_tv/geo_header.h"
+
+#include "levels/castle_inside/dementor/anim_header.h"
+
+#include "levels/castle_inside/dementor/geo_header.h"
+
+#include "levels/castle_inside/showrunner_tv_angry/geo_header.h"
+
+#include "levels/castle_inside/phonograph/geo_header.h"
 
 #endif

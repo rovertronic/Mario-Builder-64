@@ -34,13 +34,14 @@ const struct DialogEntry *const seg2_dialog_table[] = {
 // == acts ==
 // (defines en_act_name_table etc.)
 
-#define COURSE_ACTS(id, name, a,b,c,d,e,f) \
+#define COURSE_ACTS(id, name, a,b,c,d,e,f,g) \
     static const u8 act_name_ ## id ## _1[] = { a }; \
     static const u8 act_name_ ## id ## _2[] = { b }; \
     static const u8 act_name_ ## id ## _3[] = { c }; \
     static const u8 act_name_ ## id ## _4[] = { d }; \
     static const u8 act_name_ ## id ## _5[] = { e }; \
-    static const u8 act_name_ ## id ## _6[] = { f };
+    static const u8 act_name_ ## id ## _6[] = { f }; \
+    static const u8 act_name_ ## id ## _7[] = { g }; 
 
 #define SECRET_STAR(id, name)
 #define CASTLE_SECRET_STARS(str)
@@ -54,9 +55,9 @@ const struct DialogEntry *const seg2_dialog_table[] = {
 #undef COURSE_ACTS
 #undef EXTRA_TEXT
 
-#define COURSE_ACTS(id, name, a,b,c,d,e,f) \
+#define COURSE_ACTS(id, name, a,b,c,d,e,f,g) \
     act_name_ ## id ## _1, act_name_ ## id ## _2, act_name_ ## id ## _3, \
-    act_name_ ## id ## _4, act_name_ ## id ## _5, act_name_ ## id ## _6,
+    act_name_ ## id ## _4, act_name_ ## id ## _5, act_name_ ## id ## _6, act_name_ ## id ## _7,
 #define EXTRA_TEXT(id, str) extra_text_ ## id,
 
 const u8 *const seg2_act_name_table[] = {

@@ -27,7 +27,7 @@
 // #define NO_SLEEP
 
 // Disables fall damage.
-#define NO_FALL_DAMAGE
+// #define NO_FALL_DAMAGE
 
 // Disables the scream that mario makes when falling off a great height (this is separate from actual fall damage).
 // #define NO_FALL_DAMAGE_SOUND

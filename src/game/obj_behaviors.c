@@ -33,6 +33,7 @@
 #include "spawn_sound.h"
 #include "rumble_init.h"
 #include "puppylights.h"
+#include "game/rovent.h"
 
 /**
  * @file obj_behaviors.c
@@ -43,7 +44,7 @@
 /**
  * Current object floor as defined in object_step.
  */
-static struct Surface *sObjFloor;
+struct Surface *sObjFloor;
 
 /**
  * Set to false when an object close to the floor should not be oriented in reference
@@ -669,7 +670,7 @@ s32 obj_lava_death(void) {
 
     if ((o->oTimer % 8) == 0) {
         cur_obj_play_sound_2(SOUND_OBJ_BULLY_EXPLODE_LAVA);
-        deathSmoke = spawn_object(o, MODEL_SMOKE, bhvBobombBullyDeathSmoke);
+        deathSmoke = spawn_object(o, MODEL_SMOKE, bhvBlackSmokeUpward);
         deathSmoke->oPosX += random_float() * 20.0f;
         deathSmoke->oPosY += random_float() * 20.0f;
         deathSmoke->oPosZ += random_float() * 20.0f;
@@ -780,3 +781,5 @@ UNUSED s32 debug_sequence_tracker(s16 debugInputSequence[]) {
 #include "behaviors/treasure_chest.inc.c"
 #include "behaviors/mips.inc.c"
 #include "behaviors/yoshi.inc.c"
+#include "behaviors/motos.inc.c"
+#include "behaviors/metal_box.inc.c"

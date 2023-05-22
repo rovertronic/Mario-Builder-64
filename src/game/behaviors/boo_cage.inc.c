@@ -40,10 +40,9 @@ void bhv_boo_cage_loop(void) {
             // If the cage's parent boo is killed, set the action to BOO_CAGE_ACT_FALLING,
             // give the cage an initial Y velocity of 60 units/frame, and play the puzzle jingle.
             // Otherwise, stay inside the boo.
-            if (o->parentObj->oBooDeathStatus != BOO_DEATH_STATUS_ALIVE) {
-                o->oAction = BOO_CAGE_ACT_FALLING;
-                o->oVelY = 60.0f;
-                play_puzzle_jingle();
+            if (1) {
+                o->oAction = BOO_CAGE_ACT_ON_GROUND;
+                // play_puzzle_jingle();
             } else {
                 obj_copy_pos_and_angle(o, o->parentObj);
             }

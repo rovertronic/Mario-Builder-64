@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "area.h"
+#include "seq_ids.h"
 #include "sm64.h"
 #include "gfx_dimensions.h"
 #include "behavior_data.h"
@@ -20,12 +21,15 @@
 #include "level_update.h"
 #include "engine/geo_layout.h"
 #include "save_file.h"
+#include "sound_init.h"
 #include "level_table.h"
 #include "dialog_ids.h"
 #include "puppyprint.h"
 #include "debug_box.h"
 #include "engine/colors.h"
 #include "profiling.h"
+#include "puppycamold.h"
+#include "rovent.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -39,6 +43,10 @@ s16 gCurrAreaIndex;
 s16 gSavedCourseNum;
 s16 gMenuOptSelectIndex;
 s16 gSaveOptSelectIndex;
+
+#ifdef MUSIC_PREVIEWING
+s32 lastBGM = MUSIC_PREVIEWING;
+#endif
 
 struct SpawnInfo *gMarioSpawnInfo = &gPlayerSpawnInfos[0];
 struct GraphNode **gLoadedGraphNodes = gGraphNodePointers;
@@ -65,7 +73,7 @@ s16 gCurrLevelNum = LEVEL_MIN;
 */
 
 const BehaviorScript *sWarpBhvSpawnTable[] = {
-    bhvDoorWarp,                bhvStar,                   bhvExitPodiumWarp,          bhvWarp,
+    bhvDoorWarp,                                           bhvExitPodiumWarp,          bhvWarp,
     bhvWarpPipe,                bhvFadingWarp,             bhvInstantActiveWarp,       bhvAirborneWarp,
     bhvHardAirKnockBackWarp,    bhvSpinAirborneCircleWarp, bhvDeathWarp,               bhvSpinAirborneWarp,
     bhvFlyingWarp,              bhvSwimmingWarp,           bhvPaintingStarCollectWarp, bhvPaintingDeathWarp,
@@ -73,7 +81,7 @@ const BehaviorScript *sWarpBhvSpawnTable[] = {
 };
 
 u8 sSpawnTypeFromWarpBhv[] = {
-    MARIO_SPAWN_DOOR_WARP,             MARIO_SPAWN_IDLE,                 MARIO_SPAWN_PIPE,                  MARIO_SPAWN_PIPE,
+    MARIO_SPAWN_DOOR_WARP,                                               MARIO_SPAWN_PIPE,                  MARIO_SPAWN_PIPE,
     MARIO_SPAWN_PIPE,                  MARIO_SPAWN_TELEPORT,             MARIO_SPAWN_INSTANT_ACTIVE,        MARIO_SPAWN_AIRBORNE,
     MARIO_SPAWN_HARD_AIR_KNOCKBACK,    MARIO_SPAWN_SPIN_AIRBORNE_CIRCLE, MARIO_SPAWN_DEATH,                 MARIO_SPAWN_SPIN_AIRBORNE,
     MARIO_SPAWN_FLYING,                MARIO_SPAWN_SWIMMING,             MARIO_SPAWN_PAINTING_STAR_COLLECT, MARIO_SPAWN_PAINTING_DEATH,
@@ -132,11 +140,27 @@ void print_intro_text(void) {
     }
 }
 
+void print_intro_text2(void)
+{
+    if (gControllerBits == 0)
+    {
+        print_text_centered(160, 20, "NO CONTROLLER");
+    }
+    else
+    {
+        //print_text_centered(160, 164, "SUPER MARIO 64");
+        //print_text_centered(160, 128, "MADE BY");
+        //print_text_centered(160, 110, "NINTENDO");
+        print_text_centered(160, 38, "PRESS START");
+        //print_text_centered(160, 20, "COPYRIGHT 1996");
+    }
+}
+
 u32 get_mario_spawn_type(struct Object *obj) {
     s32 i;
     const BehaviorScript *behavior = virtual_to_segmented(SEGMENT_BEHAVIOR_DATA, obj->behavior);
 
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < 19; i++) {
         if (sWarpBhvSpawnTable[i] == behavior) {
             return sSpawnTypeFromWarpBhv[i];
         }
@@ -228,10 +252,19 @@ void clear_area_graph_nodes(void) {
     }
 }
 
+#include "rigid_body.h"
+
 void load_area(s32 index) {
+
     if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
         gCurrentArea = &gAreaData[index];
         gCurrAreaIndex = gCurrentArea->index;
+        main_pool_pop_state();
+        main_pool_push_state();
+
+        for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
+            deallocate_rigid_body(&gRigidBodies[i]);
+        }
 
         if (gCurrentArea->terrainData != NULL) {
             load_area_terrain(index, gCurrentArea->terrainData, gCurrentArea->surfaceRooms,
@@ -376,6 +409,26 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 }
 
 void render_game(void) {
+#ifdef MUSIC_PREVIEWING
+    u32 currBGM = get_current_background_music() & 0x7F;
+    if (gPlayer1Controller->buttonPressed & U_JPAD) {
+        if (currBGM != MUSIC_PREVIEWING) {
+            lastBGM = currBGM;
+        }
+        set_background_music(0, MUSIC_PREVIEWING, 0);
+    } else if (gPlayer1Controller->buttonPressed & D_JPAD) {
+        set_background_music(0, lastBGM, 0);
+    } else if (gPlayer1Controller->buttonPressed & L_JPAD) {
+        currBGM = (currBGM - 1 + SEQ_COUNT) % SEQ_COUNT;
+        set_background_music(0, currBGM, 0);
+        lastBGM = currBGM;
+    } else if (gPlayer1Controller->buttonPressed & R_JPAD) {
+        currBGM = (currBGM + 1) % SEQ_COUNT;
+        set_background_music(0, currBGM, 0);
+        lastBGM = currBGM;
+    }
+#endif
+
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         if (gCurrentArea->graphNode) {
             geo_process_root(gCurrentArea->graphNode, gViewportOverride, gViewportClip, gFBSetColor);
@@ -385,15 +438,25 @@ void render_game(void) {
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
+
         render_hud();
 
+
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        render_text_labels();
+
         do_cutscene_handler();
         print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
+
         gMenuOptSelectIndex = render_menus_and_dialogs();
+
+        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        render_text_labels();
+
+        if (sCurrPlayMode == 0) {
+            render_revent_textbox();
+        }
 
         if (gMenuOptSelectIndex != 0) {
             gSaveOptSelectIndex = gMenuOptSelectIndex;
@@ -402,6 +465,7 @@ void render_game(void) {
         if (gViewportClip != NULL) {
             make_viewport_clip_rect(gViewportClip);
         } else
+        
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                           SCREEN_HEIGHT - gBorderHeight);
 

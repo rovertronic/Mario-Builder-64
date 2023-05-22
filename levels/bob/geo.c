@@ -16,4 +16,18 @@
 #include "levels/bob/chain_chomp_gate/geo.inc.c"
 #include "levels/bob/seesaw_platform/geo.inc.c"
 #include "levels/bob/grate_door/geo.inc.c"
+#include "levels/bob/Tilt_Platform/geo.inc.c"
+#include "levels/bob/Tilt_Platform/model.inc.c"
+#include "levels/bob/Tilt_Platform/collision.inc.c"
+
+#include "levels/bob/Spewer/collision.inc.c"
+#include "levels/bob/Spewer/geo.inc.c"
+#include "levels/bob/Spewer/model.inc.c"
+
+
 #include "levels/bob/areas/1/geo.inc.c"
+#include "levels/bob/geo.inc.c"
+
+#include "levels/bob/shock/geo.inc.c"
+#include "levels/bob/kingbully/geo.inc.c"
+#include "levels/bob/shard/geo.inc.c"

@@ -1,0 +1,100 @@
+Vtx killerlaser_laser_mesh_layer_5_vtx_cull[8] = {
+	{{{-50, -50, 100},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-50, 50, 100},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-50, 50, 0},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-50, -50, 0},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{50, -50, 100},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{50, 50, 100},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{50, 50, 0},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+	{{{50, -50, 0},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
+};
+
+Vtx killerlaser_laser_mesh_layer_5_vtx_0[37] = {
+	{{{0, 50, 0},0, {1008, 496},{0x0, 0x63, 0xB0, 0xFF}}},
+	{{{0, 50, 100},0, {1008, -16},{0x0, 0x63, 0x50, 0xFF}}},
+	{{{35, 35, 100},0, {880, -16},{0x46, 0x46, 0x50, 0xFF}}},
+	{{{35, 35, 0},0, {880, 496},{0x46, 0x46, 0xB0, 0xFF}}},
+	{{{50, 0, 100},0, {752, -16},{0x63, 0x0, 0x50, 0xFF}}},
+	{{{50, 0, 0},0, {752, 496},{0x63, 0x0, 0xB0, 0xFF}}},
+	{{{35, -35, 100},0, {624, -16},{0x46, 0xBA, 0x50, 0xFF}}},
+	{{{35, -35, 0},0, {624, 496},{0x46, 0xBA, 0xB0, 0xFF}}},
+	{{{0, -50, 100},0, {496, -16},{0x0, 0x9D, 0x50, 0xFF}}},
+	{{{0, -50, 0},0, {496, 496},{0x0, 0x9D, 0xB0, 0xFF}}},
+	{{{-35, -35, 100},0, {368, -16},{0xBA, 0xBA, 0x50, 0xFF}}},
+	{{{-35, -35, 0},0, {368, 496},{0xBA, 0xBA, 0xB0, 0xFF}}},
+	{{{-50, 0, 100},0, {240, -16},{0x9D, 0x0, 0x50, 0xFF}}},
+	{{{-50, 0, 0},0, {240, 496},{0x9D, 0x0, 0xB0, 0xFF}}},
+	{{{-35, 35, 100},0, {112, -16},{0xBA, 0x46, 0x50, 0xFF}}},
+	{{{-35, 35, 0},0, {112, 496},{0xBA, 0x46, 0xB0, 0xFF}}},
+	{{{0, 50, 100},0, {-16, -16},{0x0, 0x63, 0x50, 0xFF}}},
+	{{{0, 50, 0},0, {-16, 496},{0x0, 0x63, 0xB0, 0xFF}}},
+	{{{50, 0, 100},0, {486, 752},{0x63, 0x0, 0x50, 0xFF}}},
+	{{{35, 35, 100},0, {414, 578},{0x46, 0x46, 0x50, 0xFF}}},
+	{{{0, 50, 100},0, {240, 506},{0x0, 0x63, 0x50, 0xFF}}},
+	{{{-50, 0, 100},0, {-6, 752},{0x9D, 0x0, 0x50, 0xFF}}},
+	{{{-35, 35, 100},0, {66, 578},{0xBA, 0x46, 0x50, 0xFF}}},
+	{{{0, -50, 100},0, {240, 998},{0x0, 0x9D, 0x50, 0xFF}}},
+	{{{-35, -35, 100},0, {66, 926},{0xBA, 0xBA, 0x50, 0xFF}}},
+	{{{35, -35, 100},0, {414, 926},{0x46, 0xBA, 0x50, 0xFF}}},
+	{{{-35, 35, 0},0, {578, 578},{0xBA, 0x46, 0xB0, 0xFF}}},
+	{{{0, 50, 0},0, {752, 506},{0x0, 0x63, 0xB0, 0xFF}}},
+	{{{35, 35, 0},0, {926, 578},{0x46, 0x46, 0xB0, 0xFF}}},
+	{{{35, -35, 0},0, {926, 926},{0x46, 0xBA, 0xB0, 0xFF}}},
+	{{{50, 0, 0},0, {998, 752},{0x63, 0x0, 0xB0, 0xFF}}},
+	{{{-35, -35, 0},0, {578, 926},{0xBA, 0xBA, 0xB0, 0xFF}}},
+	{{{35, -35, 0},0, {926, 926},{0x46, 0xBA, 0xB0, 0xFF}}},
+	{{{0, -50, 0},0, {752, 998},{0x0, 0x9D, 0xB0, 0xFF}}},
+	{{{-35, -35, 0},0, {578, 926},{0xBA, 0xBA, 0xB0, 0xFF}}},
+	{{{-50, 0, 0},0, {506, 752},{0x9D, 0x0, 0xB0, 0xFF}}},
+	{{{-35, 35, 0},0, {578, 578},{0xBA, 0x46, 0xB0, 0xFF}}},
+};
+
+Gfx killerlaser_laser_mesh_layer_5_tri_0[] = {
+	gsSPVertex(killerlaser_laser_mesh_layer_5_vtx_0 + 0, 32, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSP2Triangles(3, 2, 4, 0, 3, 4, 5, 0),
+	gsSP2Triangles(5, 4, 6, 0, 5, 6, 7, 0),
+	gsSP2Triangles(7, 6, 8, 0, 7, 8, 9, 0),
+	gsSP2Triangles(9, 8, 10, 0, 9, 10, 11, 0),
+	gsSP2Triangles(11, 10, 12, 0, 11, 12, 13, 0),
+	gsSP2Triangles(13, 12, 14, 0, 13, 14, 15, 0),
+	gsSP2Triangles(15, 14, 16, 0, 15, 16, 17, 0),
+	gsSP2Triangles(18, 19, 20, 0, 18, 20, 21, 0),
+	gsSP2Triangles(20, 22, 21, 0, 21, 23, 18, 0),
+	gsSP2Triangles(21, 24, 23, 0, 23, 25, 18, 0),
+	gsSP2Triangles(26, 27, 28, 0, 26, 28, 29, 0),
+	gsSP2Triangles(28, 30, 29, 0, 29, 31, 26, 0),
+	gsSPVertex(killerlaser_laser_mesh_layer_5_vtx_0 + 32, 5, 0),
+	gsSP2Triangles(0, 1, 2, 0, 2, 3, 4, 0),
+	gsSPEndDisplayList(),
+};
+
+
+Gfx mat_killerlaser_Beam[] = {
+	gsDPPipeSync(),
+	gsDPSetCombineLERP(0, 0, 0, 1, 0, 0, 0, ENVIRONMENT, 0, 0, 0, 1, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 1),
+	gsSPEndDisplayList(),
+};
+
+Gfx killerlaser_laser_mesh_layer_5[] = {
+	gsSPClearGeometryMode(G_LIGHTING),
+	gsSPVertex(killerlaser_laser_mesh_layer_5_vtx_cull + 0, 8, 0),
+	gsSPSetGeometryMode(G_LIGHTING),
+	gsSPCullDisplayList(0, 7),
+	gsSPDisplayList(mat_killerlaser_Beam),
+	gsSPDisplayList(killerlaser_laser_mesh_layer_5_tri_0),
+	gsSPEndDisplayList(),
+};
+
+Gfx killerlaser_material_revert_render_settings[] = {
+	gsDPPipeSync(),
+	gsSPSetGeometryMode(G_LIGHTING),
+	gsSPClearGeometryMode(G_TEXTURE_GEN),
+	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 0),
+	gsDPSetEnvColor(255, 255, 255, 255),
+	gsDPSetAlphaCompare(G_AC_NONE),
+	gsSPEndDisplayList(),
+};
+

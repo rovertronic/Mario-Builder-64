@@ -11,7 +11,47 @@
 
 
 /*****************
- * config_graphics.h
+ * config_audio
+ */
+
+#ifndef MAX_SIMULTANEOUS_NOTES_EMULATOR
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 40
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 20
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_EMULATOR
+
+#ifndef MAX_SIMULTANEOUS_NOTES_CONSOLE
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_CONSOLE 24
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_CONSOLE 16
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_CONSOLE
+
+#if (MAX_SIMULTANEOUS_NOTES_EMULATOR >= MAX_SIMULTANEOUS_NOTES_CONSOLE)
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_EMULATOR
+#else
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_CONSOLE
+#endif
+
+// Anything higher than 64 will most likely crash on boot. Even if it doesn't, it's still dangerous.
+#if (MAX_SIMULTANEOUS_NOTES > 64)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 64
+#elif (MAX_SIMULTANEOUS_NOTES < 0)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 0
+#endif
+
+#if defined(BETTER_REVERB) && !(defined(VERSION_US) || defined(VERSION_JP))
+    #undef BETTER_REVERB
+#endif
+
+
+/*****************
+ * config_graphics
  */
 
 #ifndef F3DEX_GBI_2
@@ -47,6 +87,7 @@
     #undef COMPLETE_SAVE_FILE
     #undef DEBUG_FORCE_CRASH_ON_BOOT
     #undef USE_PROFILER
+    #undef MUSIC_PREVIEWING
 #endif // DISABLE_ALL
 
 #ifdef DEBUG_ALL
@@ -83,6 +124,11 @@
     #undef UNLOCK_ALL
     #define UNLOCK_ALL
 #endif // COMPLETE_SAVE_FILE
+
+#ifdef MUSIC_PREVIEWING
+    #undef NO_SLEEP
+    #define NO_SLEEP
+#endif // MUSIC_PREVIEWING
 
 
 /*****************

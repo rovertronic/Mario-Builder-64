@@ -16,6 +16,9 @@ enum ObjCollisionFlags {
     OBJ_COL_FLAGS_LANDED    = (OBJ_COL_FLAG_GROUNDED | OBJ_COL_FLAG_NO_Y_VEL)
 };
 
+extern void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ);
+extern s32 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range);
+
 //! Lots of these are duplicates
 void set_yoshi_as_not_dead(void);
 s32 coin_step(s16 *collisionFlagsPtr);

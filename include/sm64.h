@@ -63,24 +63,26 @@ enum RenderLayers {
     LAYER_OPAQUE_INTER,
     LAYER_OPAQUE_DECAL,
     LAYER_ALPHA,
-#if SILHOUETTE
-    LAYER_ALPHA_DECAL,
-    LAYER_SILHOUETTE_OPAQUE,
-    LAYER_SILHOUETTE_ALPHA,
-    LAYER_OCCLUDE_SILHOUETTE_OPAQUE,
-    LAYER_OCCLUDE_SILHOUETTE_ALPHA,
-#endif
+
     LAYER_TRANSPARENT_DECAL,
     LAYER_TRANSPARENT,
     LAYER_TRANSPARENT_INTER,
+    LAYER_CIRCLE_SHADOW,
+    LAYER_CIRCLE_SHADOW_TRANSPARENT,
+    LAYER_COIN,
     LAYER_COUNT
 };
+
+//#define LAYER_CIRCLE_SHADOW   LAYER_TRANSPARENT_DECAL
+//#define LAYER_CIRCLE_SHADOW_TRANSPARENT   LAYER_TRANSPARENT_INTER
+//#define LAYER_COIN   LAYER_ALPHA
 
 #define LAYER_FIRST                         LAYER_FORCE
 #define LAYER_LAST                          (LAYER_COUNT - 1)
 
 #define LAYER_ZB_FIRST                      LAYER_OPAQUE
 #if SILHOUETTE
+/*
 #define LAYER_ZB_LAST                       LAYER_OCCLUDE_SILHOUETTE_ALPHA
 #define LAYER_SILHOUETTE_FIRST              LAYER_SILHOUETTE_OPAQUE
 #define LAYER_LAST_BEFORE_SILHOUETTE        (LAYER_SILHOUETTE_FIRST - 1)
@@ -89,6 +91,7 @@ enum RenderLayers {
 #define LAYER_OCCLUDE_SILHOUETTE_LAST       LAYER_OCCLUDE_SILHOUETTE_ALPHA
 #define LAYER_OPAQUE_ORIG                   LAYER_OPAQUE
 #define LAYER_ALPHA_ORIG                    LAYER_ALPHA
+*/
 #else
 #define LAYER_ZB_LAST                       LAYER_ALPHA
 #define LAYER_ALPHA_DECAL                   LAYER_ALPHA
@@ -125,7 +128,8 @@ enum GroundStep {
     GROUND_STEP_NONE,
     GROUND_STEP_HIT_WALL,
     GROUND_STEP_HIT_WALL_STOP_QSTEPS = GROUND_STEP_HIT_WALL,
-    GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS
+    GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS,
+    GROUND_STEP_DEATH
 };
 
 enum AirStepCheck {
@@ -140,7 +144,7 @@ enum AirStep {
     AIR_STEP_HIT_WALL,
     AIR_STEP_GRABBED_LEDGE,
     AIR_STEP_GRABBED_CEILING,
-    AIR_STEP_UNK,
+    AIR_STEP_DEATH,
     AIR_STEP_HIT_LAVA_WALL,
     AIR_STEP_HIT_CEILING
 };
@@ -221,6 +225,8 @@ enum MarioFlags {
     MARIO_SPECIAL_CAPS        = (MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP),
     MARIO_CAPS                = (MARIO_NORMAL_CAP | MARIO_SPECIAL_CAPS),
 };
+
+#define METAL_SOUND_FLAG (MARIO_METAL_CAP | MARIO_WING_CAP)
 
 #define ACT_ID_MASK                         0x000001FF
 
@@ -518,6 +524,7 @@ enum MarioActionFlags {
 #define ACT_JUMBO_STAR_CUTSCENE        0x00001909 // (0x109 | ACT_FLAG_AIR | ACT_FLAG_INTANGIBLE)
 #define ACT_WAITING_FOR_DIALOG         0x0000130A // (0x10A | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE)
 #define ACT_UNUSED_10B                 0x0000010B // (0x10B)
+#define ACT_LVUP_DANCE                 0x0000110B
 #define ACT_UNUSED_10C                 0x0000010C // (0x10C)
 #define ACT_UNUSED_10D                 0x0000010D // (0x10D)
 #define ACT_UNUSED_10E                 0x0000010E // (0x10E)
@@ -657,6 +664,11 @@ enum MarioActionFlags {
 #define ACT_PICKING_UP_BOWSER          0x00000390 // (0x190 | ACT_FLAG_STATIONARY)
 #define ACT_HOLDING_BOWSER             0x00000391 // (0x191 | ACT_FLAG_STATIONARY)
 #define ACT_RELEASING_BOWSER           0x00000392 // (0x192 | ACT_FLAG_STATIONARY)
+
+#define ACT_ZIPLINE                    0x03000893
+#define ACT_WARP_PIPE                  0x03000895
+#define ACT_WALL_STICK                 0x03000896
+
 #define ACT_UNUSED_193                 0x00000193 // (0x193)
 #define ACT_UNUSED_194                 0x00000194 // (0x194)
 #define ACT_UNUSED_195                 0x00000195 // (0x195)
@@ -717,7 +729,8 @@ enum MarioActionFlags {
 #define VALID_BUTTONS (A_BUTTON   | B_BUTTON   | Z_TRIG     | START_BUTTON | \
                        U_JPAD     | D_JPAD     | L_JPAD     | R_JPAD       | \
                        L_TRIG     | R_TRIG     |                             \
-                       U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS   )
+                       U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS   | \
+                       GCN_X_BUTTON | GCN_Y_BUTTON)
 
 #define C_BUTTONS     (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS   )
 

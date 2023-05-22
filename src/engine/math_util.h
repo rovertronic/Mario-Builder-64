@@ -63,8 +63,8 @@ extern f32 gSineTable[];
 
 #define signum_positive(x) ((x < 0) ? -1 : 1)
 
-// #define min(a, b) MIN((a), (b)) // ((a) < (b) ? (a) : (b))
-// #define max(a, b) MAX((a), (b)) // ((a) > (b) ? (a) : (b))
+#define min(a, b) MIN((a), (b)) // ((a) < (b) ? (a) : (b))
+#define max(a, b) MAX((a), (b)) // ((a) > (b) ? (a) : (b))
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 // from limits.h
@@ -516,6 +516,8 @@ void vec3s_sum (Vec3s dest, const Vec3s a, const Vec3s b);
 void vec3f_sub (Vec3f dest, const Vec3f a               );
 void vec3i_sub (Vec3i dest, const Vec3i a               );
 void vec3s_sub (Vec3s dest, const Vec3s a               );
+f32 vec3f_length(Vec3f a);
+f32 lerp(f32 a, f32 b, f32 f);
 void vec3f_diff(Vec3f dest, const Vec3f a, const Vec3f b);
 void vec3i_diff(Vec3i dest, const Vec3i a, const Vec3i b);
 void vec3s_diff(Vec3s dest, const Vec3s a, const Vec3s b);
@@ -535,6 +537,7 @@ void vec3s_quot(Vec3s dest, const Vec3s a, const Vec3s b);
 f32  vec3f_dot(              const Vec3f a, const Vec3f b);
 void vec3f_cross(Vec3f dest, const Vec3f a, const Vec3f b);
 void vec3f_normalize(Vec3f dest);
+s32 vec3f_normalize2(Vec3f dest);
 void mtxf_copy(Mat4 dest, Mat4 src);
 void mtxf_identity(Mat4 mtx);
 void mtxf_translate(Mat4 dest, Vec3f b);
@@ -608,5 +611,7 @@ void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);
 void anim_spline_init(Vec4s *keyFrames);
 s32  anim_spline_poll(Vec3f result);
 void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
+u8 count_u16_bits(u16 bitfield);
+u8 count_u32_bits(u32 bitfield);
 
 #endif // MATH_UTIL_H

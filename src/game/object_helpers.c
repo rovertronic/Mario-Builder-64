@@ -27,10 +27,21 @@
 #include "spawn_object.h"
 #include "spawn_sound.h"
 #include "puppylights.h"
+#include "puppycamold.h"
+#include "game/rovent.h"
+#include "save_file.h"
 
 static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
+
+void cur_obj_shake(struct Object *obj) {
+    if (obj->oTimer % 2 == 0) {
+        obj->oPosY += 5.0f;
+    } else {
+        obj->oPosY -= 5.0f;
+    }
+}
 
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
@@ -97,6 +108,30 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     return dlStart;
 }
 
+Gfx *geo_set_color_env(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    struct Object *objectGraphNode;
+    struct GraphNodeGenerated *currentGraphNode;
+    dlStart = NULL;
+    
+    if (callContext == GEO_CONTEXT_RENDER) {
+        objectGraphNode = (struct Object *) gCurGraphNodeObject; // TODO: change this to object pointer?
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+
+        if (gCurGraphNodeHeldObject) {
+            objectGraphNode = gCurGraphNodeHeldObject->objNode;
+        }
+        dlStart = alloc_display_list(sizeof(Gfx) * 3);
+        dlHead = dlStart;
+        currentGraphNode->fnNode.node.flags = (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+
+        objectGraphNode->oDmgFade /= 1.2;
+        gDPSetEnvColor(dlHead++, objectGraphNode->oDmgFade, 0, 0, 255);
+        gSPEndDisplayList(dlHead);
+    }
+    return dlStart;
+}
+
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     if (callContext == GEO_CONTEXT_RENDER) {
         struct Object *obj = gCurGraphNodeObjectNode;
@@ -130,24 +165,23 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
         if (gMarioObject == NULL) {
             switchCase->selectedCase = 0;
         } else {
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-            if (gCurrLevelNum == LEVEL_BBH) {
-                // In BBH, check for a floor manually, since there is an intangible floor. In custom hacks this can be removed.
-                find_room_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &floor);
-            } else {
-                // Since no intangible floors are nearby, use Mario's floor instead.
-                floor = gMarioState->floor;
-            }
-#else
-            floor = gMarioState->floor;
-#endif
-            if (floor) {
-                gMarioCurrentRoom = floor->room;
-                s16 roomCase = floor->room - 1;
-                print_debug_top_down_objectinfo("areainfo %d", floor->room);
+            s16 roomCase;
+            if (revent_active) {
+                gMarioCurrentRoom = revent_room;
+                roomCase = revent_room - 1;
 
                 if (roomCase >= 0) {
                     switchCase->selectedCase = roomCase;
+                }
+            } else {
+                floor = gMarioState->floor;
+                if (floor) {
+                    gMarioCurrentRoom = floor->room;
+                    roomCase = floor->room - 1;
+
+                    if (roomCase >= 0) {
+                        switchCase->selectedCase = roomCase;
+                    }
                 }
             }
         }
@@ -262,6 +296,16 @@ s32 cur_obj_rotate_yaw_toward(s16 target, s16 increment) {
 
 s32 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
     return atan2s(obj2->oPosZ - obj1->oPosZ, obj2->oPosX - obj1->oPosX);
+}
+
+void adjust_faceangleyaw_to_angle(u16 targetangle) {
+    if (targetangle > o->oFaceAngleYaw) {
+        o->oFaceAngleYaw += abs_angle_diff(o->oFaceAngleYaw,targetangle)/8;
+    }
+    else
+    {
+        o->oFaceAngleYaw -= abs_angle_diff(o->oFaceAngleYaw,targetangle)/8;
+    }
 }
 
 s32 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
@@ -516,6 +560,11 @@ void cur_obj_scale(f32 scale) {
 void cur_obj_init_animation(s32 animIndex) {
     struct Animation **anims = o->oAnimations;
     geo_obj_init_animation(&o->header.gfx, &anims[animIndex]);
+}
+
+void super_cum_working(struct Object *obj, s32 animIndex) {
+    struct Animation **anims = obj->oAnimations;
+    geo_obj_init_animation(&obj->header.gfx, &anims[animIndex]);
 }
 
 void cur_obj_init_animation_with_sound(s32 animIndex) {
@@ -1213,6 +1262,13 @@ f32 cur_obj_lateral_dist_to_home(void) {
     return sqrtf(sqr(dx) + sqr(dz));
 }
 
+f32 pythag(f32 dx, f32 dz) {
+    f32 dist;
+
+    dist = sqrtf(dx * dx + dz * dz);
+    return dist;
+}
+
 s32 cur_obj_outside_home_square(f32 halfLength) {
     if (o->oHomeX - halfLength > o->oPosX) return TRUE;
     if (o->oHomeX + halfLength < o->oPosX) return TRUE;
@@ -1517,6 +1573,16 @@ s32 cur_obj_angle_to_home(void) {
     return atan2s(dz, dx);
 }
 
+f32 floatclamp(f32 flote, f32 clampn, f32 clampp) {
+    if (flote < clampn) {
+        return clampn;
+    }
+    if (flote > clampp) {
+        return clampp;
+    }
+    return flote;
+}
+
 void obj_set_gfx_pos_at_obj_pos(struct Object *obj1, struct Object *obj2) {
     vec3f_copy_y_off(obj1->header.gfx.pos, &obj2->oPosVec, obj2->oGraphYOffset);
 
@@ -1682,9 +1748,9 @@ void cur_obj_spawn_particles(struct SpawnParticlesInfo *info) {
 
     // We're close to running out of object slots, so don't spawn particles at
     // all
-    if (gPrevFrameObjectCount > (OBJECT_POOL_CAPACITY - 30)) {
-        numParticles = 0;
-    }
+    // if (gPrevFrameObjectCount > (OBJECT_POOL_CAPACITY - 30)) {
+    //     numParticles = 0;
+    // }
 
     for (i = 0; i < numParticles; i++) {
         scale = random_float() * (info->sizeRange * 0.1f) + info->sizeBase * 0.1f;
@@ -1916,7 +1982,9 @@ void cur_obj_enable_rendering_if_mario_in_room(void) {
 s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deathSound, s32 noLootCoins) {
     s32 interacted = FALSE;
 
-    obj_set_hitbox(o, hitbox);
+    if (hitbox != NULL) {
+        obj_set_hitbox(o, hitbox);
+        }
 
     if (noLootCoins) {
         o->oNumLootCoins = 0;
@@ -1924,10 +1992,26 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-            spawn_mist_particles();
-            obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-            obj_mark_for_deletion(o);
-            create_sound_spawner(deathSound);
+            if (o->oHealth < 2) {
+                if (o->oNumLootCoins > 0) {
+                    gMarioState->DeadRexes ++;
+                }
+                spawn_mist_particles();
+                obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+                gMarioState->EA_LEFT --;
+                gMarioState->EA_ACTIVE --;
+                obj_mark_for_deletion(o);
+                create_sound_spawner(deathSound);
+                }else{
+                o->oDmgFade = 255;
+                if (save_file_get_badge_equip() & (1<<3)) {
+                    o->oHealth-=2;
+                }
+                else
+                {
+                    o->oHealth--;
+                }
+            }
         } else {
             interacted = TRUE;
         }
@@ -2202,6 +2286,7 @@ s32 cur_obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cuts
     return dialogResponse;
 }
 
+
 void cur_obj_align_gfx_with_floor(void) {
     struct Surface *floor;
     Vec3f position;
@@ -2218,6 +2303,7 @@ void cur_obj_align_gfx_with_floor(void) {
     }
 }
 
+//
 UNUSED s32 mario_is_within_rectangle(s16 minX, s16 maxX, s16 minZ, s16 maxZ) {
     if (gMarioObject->oPosX < minX || maxX < gMarioObject->oPosX) {
         return FALSE;

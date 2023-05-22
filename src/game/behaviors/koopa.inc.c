@@ -102,6 +102,8 @@ static void koopa_play_footstep_sound(s8 animFrame1, s8 animFrame2) {
  * running away.
  */
 static s32 koopa_check_run_from_mario(void) {
+    return FALSE;
+    /*
     if (o->oKoopaDistanceToMario < 300.0f
         && abs_angle_diff(o->oKoopaAngleToMario, o->oMoveAngleYaw) < 0x3000) {
         o->oAction = KOOPA_SHELLED_ACT_RUN_FROM_MARIO;
@@ -109,6 +111,7 @@ static s32 koopa_check_run_from_mario(void) {
     }
 
     return FALSE;
+    */
 }
 
 /**
@@ -284,6 +287,9 @@ void shelled_koopa_attack_handler(s32 attackType) {
 static void koopa_shelled_update(void) {
     cur_obj_update_floor_and_walls();
     obj_update_blinking(&o->oKoopaBlinkTimer, 20, 50, 4);
+    o->oIntangibleTimer = 0;
+    o->oInteractStatus = 0;
+    o->oInteractType = INTERACT_IGLOO_BARRIER;
 
     switch (o->oAction) {
         case KOOPA_SHELLED_ACT_STOPPED:
@@ -304,6 +310,7 @@ static void koopa_shelled_update(void) {
             break;
     }
 
+    /*
     if (o->header.gfx.scale[0] > 0.8f) {
         obj_handle_attacks(&sKoopaHitbox, o->oAction, sKoopaShelledAttackHandlers);
     } else {
@@ -313,6 +320,7 @@ static void koopa_shelled_update(void) {
             obj_die_if_health_non_positive();
         }
     }
+    */
 
     cur_obj_move_standard(-78);
 }

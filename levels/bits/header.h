@@ -89,4 +89,21 @@ extern const Collision bits_seg7_collision_0701B734[];
 // script
 extern const LevelScript level_bits_entry[];
 
+
+#include "levels/bits/header.inc.h"
+
+#include "levels/bits/spacebox/header.h"
+
+#include "levels/bits/fountain/geo_header.h"
+
+#include "levels/bits/bits_stairs/collision_header.h"
+
+#include "levels/bits/bits_stairs/geo_header.h"
+
+#include "levels/bits/mgba/collision_header.h"
+
+#include "levels/bits/mgba/geo_header.h"
+
+#include "levels/bits/tvshop/geo_header.h"
+
 #endif

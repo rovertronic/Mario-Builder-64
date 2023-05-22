@@ -1,0 +1,12 @@
+extern const GeoLayout projectorhandle2_geo[];
+extern Lights1 projectorhandle2_Handle_lights;
+extern u8 projectorhandle2_rgba16_anonmoose_envmap_silver1_i8[];
+extern Vtx projectorhandle2_Cube_003_mesh_layer_1_vtx_0[25];
+extern Gfx projectorhandle2_Cube_003_mesh_layer_1_tri_0[];
+extern Vtx projectorhandle2_Cube_003_mesh_layer_1_vtx_1[15];
+extern Gfx projectorhandle2_Cube_003_mesh_layer_1_tri_1[];
+extern Gfx mat_projectorhandle2_Metal[];
+extern Gfx mat_revert_projectorhandle2_Metal[];
+extern Gfx mat_projectorhandle2_Handle[];
+extern Gfx projectorhandle2_Cube_003_mesh_layer_1[];
+extern Gfx projectorhandle2_material_revert_render_settings[];

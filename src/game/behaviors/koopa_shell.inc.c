@@ -65,8 +65,17 @@ void bhv_koopa_shell_loop(void) {
     obj_set_hitbox(o, &sKoopaShellHitbox);
     cur_obj_scale(1.0f);
 
+
     switch (o->oAction) {
         case KOOPA_SHELL_ACT_MARIO_NOT_RIDING:
+
+            if (o->oTimer > 300) {
+                obj_flicker_and_disappear(o, 300);
+                o->oInteractType = INTERACT_NONE;
+                //instead of letting the player ride no object, don't let them ride
+                //if the shell is about to (i cant fucking spell dissapear) byt yeah
+            }
+
             cur_obj_update_floor_and_walls();
             cur_obj_if_hit_wall_bounce_away();
 
@@ -77,10 +86,13 @@ void bhv_koopa_shell_loop(void) {
             o->oFaceAngleYaw += 0x1000;
             cur_obj_move_standard(-20);
             koopa_shell_spawn_sparkles(10.0f);
-            shell_despawn();
             break;
 
         case KOOPA_SHELL_ACT_MARIO_RIDING:
+            //BUGFIX: Shell vanishes when mario jumps on it on an invisible frame
+            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+
+            gMarioState->IsYoshi = FALSE;
             obj_copy_pos(o, gMarioObject);
             floor = cur_obj_update_floor_height_and_get_floor();
 
@@ -107,4 +119,75 @@ void bhv_koopa_shell_loop(void) {
     }
 
     o->oInteractStatus = INT_STATUS_NONE;
+}
+
+void bhv_yoshi_ride_loop(void) {
+    struct Surface *sp34;
+    s16 sp24 = o->header.gfx.animInfo.animFrame;
+
+    obj_set_hitbox(o, &sKoopaShellHitbox);
+    cur_obj_scale(1.0f);
+    switch (o->oAction) {
+        case 0:
+            cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
+
+            gMarioState->IsYoshi = FALSE;
+
+            cur_obj_update_floor_and_walls();
+            cur_obj_if_hit_wall_bounce_away();
+            if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+                o->oAction++;
+                play_sound(SOUND_GENERAL_YOSHI_TALK, gMarioState->marioObj->header.gfx.cameraToObject);
+                }
+            cur_obj_move_standard(-20);
+
+            if (o->oDistanceToMario < 3000.0f) {
+                o->oTimer = 0;
+                }
+
+            if (o->oTimer > 300) {
+                o->oPosX = o->oHomeX;
+                o->oPosY = o->oHomeY;
+                o->oPosZ = o->oHomeZ;
+                }
+
+            break;
+        case 1:
+            obj_copy_pos(o, gMarioObject);
+            sp34 = cur_obj_update_floor_height_and_get_floor();
+            o->oFaceAngleYaw = gMarioObject->oMoveAngleYaw;
+
+            if ((gMarioState->YoshiCoins > 4)&&(o->oBehParams2ndByte == 0)) {
+                spawn_default_star(o->oPosX, o->oPosY+400.0f, o->oPosZ);
+                o->oBehParams2ndByte = 1;
+                }
+
+            gMarioState->IsYoshi = TRUE;
+            o->oTimer = 0;
+            o->oVelY = 0;
+
+            if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
+                spawn_mist_particles();
+                o->oAction = 0;
+            }
+
+            if (gMarioState->forwardVel < 1.0f) {
+                cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
+                }
+                else
+                {
+                if ((sp24 == 0 || sp24 == 15)&&((o->oPosY - o->oFloorHeight) < 10.0f)) {
+                    cur_obj_play_sound_2(SOUND_GENERAL_YOSHI_WALK);
+                    }
+
+                cur_obj_init_animation_with_accel_and_sound(1, gMarioState->forwardVel/12.0f);
+                }
+
+            if (gMarioState->Yoshi_Flutter == TRUE) {
+                cur_obj_init_animation_with_accel_and_sound(1, 5.0f);
+                }
+
+            break;
+    }
+    o->oInteractStatus = 0;
 }

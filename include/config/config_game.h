@@ -12,7 +12,7 @@
 // #define ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
 
 // Disables lives and hides the lives counter.
-#define DISABLE_LIVES
+// #define DISABLE_LIVES
 
 // Saves the number of lives to the save file (Does nothing if DISABLE_LIVES is enabled).
 #define SAVE_NUM_LIVES
@@ -42,7 +42,7 @@
 // #define GLOBAL_STAR_IDS
 
 // Number of possible unique model ID's (keep it higher than 256).
-#define MODEL_ID_COUNT 256
+#define MODEL_ID_COUNT 500
 
 // Number of supported areas per level.
 #define AREA_COUNT 8

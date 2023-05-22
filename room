@@ -1,0 +1,190 @@
+enhancements/puppycam.inc.c:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+enhancements/puppycam.inc.c.orig:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+enhancements/puppycam.inc.c.rej:-        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+extended_bounds.patch:         sFloorGeo.normalX = floor->normal.x;
+extended_bounds.patch:         sFloorGeo.normalY = floor->normal.y;
+extended_bounds.patch:         sFloorGeo.normalZ = floor->normal.z;
+extended_bounds.patch:-        sFloorGeo.originOffset = floor->originOffset;
+extended_bounds.patch:+        sFloorGeo.originOffset = floor->originOffset * BOUNDS_EXTENSION;
+oFloor:src/game/behaviors/bowser.inc.c:        o->platform = floor->object;
+oFloor:src/game/behaviors/door.inc.c:        o->oDoorUnkF8 = floor->room;
+oFloor:src/game/behaviors/door.inc.c:        o->oDoorUnkFC = floor->room;
+oFloor:src/game/behaviors/door.inc.c:        o->oDoorUnk100 = floor->room;
+oFloor:src/game/object_helpers.c:        o->oFloorType = floor->type;
+oFloor:src/game/object_helpers.c:        o->oFloorRoom = floor->room;
+oFloor:src/game/object_helpers.c:                o->oRoom = floor->room;
+oFloor:src/game/object_helpers.c:                    o->oRoom = floor->room;
+oFloor:src/game/object_helpers.c.orig:        o->oFloorType = floor->type;
+oFloor:src/game/object_helpers.c.orig:        o->oFloorRoom = floor->room;
+oFloor:src/game/object_helpers.c.orig:                o->oRoom = floor->room;
+oFloor:src/game/object_helpers.c.orig:                    o->oRoom = floor->room;
+puppycam.patch:+        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+ScreenPosX:enhancements/puppycam.inc.c:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+ScreenPosX:enhancements/puppycam.inc.c.orig:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+ScreenPosX:enhancements/puppycam.inc.c.rej:-        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+ScreenPosX:puppycam.patch:+        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+ScreenPosX:src/game/level_update.c:    s32 paintingIndex = gMarioState->floor->type - SURFACE_PAINTING_WARP_D3;
+ScreenPosX:src/game/mario.c:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+ScreenPosX:src/game/mario.c:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+ScreenPosX:src/game/mario.c:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+ScreenPosX:src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+ScreenPosX:src/game/mario.c.orig:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+ScreenPosX:src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+ScreenPosX:src/game/sound_init.c:        if (gMarioState->floor != NULL && gMarioState->floor->room == 6) {
+src/engine/surface_collision.c:        sFloorGeo.normalX = floor->normal.x;
+src/engine/surface_collision.c:        sFloorGeo.normalY = floor->normal.y;
+src/engine/surface_collision.c:        sFloorGeo.normalZ = floor->normal.z;
+src/engine/surface_collision.c:        sFloorGeo.originOffset = floor->originOffset;
+src/engine/surface_collision.c:        if (floor != NULL && floor->type == SURFACE_INTANGIBLE) {
+src/engine/surface_collision.c.orig:        sFloorGeo.normalX = floor->normal.x;
+src/engine/surface_collision.c.orig:        sFloorGeo.normalY = floor->normal.y;
+src/engine/surface_collision.c.orig:        sFloorGeo.normalZ = floor->normal.z;
+src/engine/surface_collision.c.orig:        sFloorGeo.originOffset = floor->originOffset;
+src/engine/surface_collision.c.orig:        if (floor != NULL && floor->type == SURFACE_INTANGIBLE) {
+src/game/behaviors/bowser.inc.c:    if ((floor != NULL) && (floor->object != 0))
+src/game/behaviors/bowser.inc.c:        o->platform = floor->object;
+src/game/behaviors/door.inc.c:        o->oDoorUnkF8 = floor->room;
+src/game/behaviors/door.inc.c:        o->oDoorUnkFC = floor->room;
+src/game/behaviors/door.inc.c:        o->oDoorUnk100 = floor->room;
+src/game/camera.c:        if (floor->type != SURFACE_WALL_MISC && floorDY > 0) {
+src/game/camera.c:            if (floor->normal.z == 0.f && floorDY < 100.f) {
+src/game/camera.c:        nx = floor->normal.x;
+src/game/camera.c:        ny = floor->normal.y;
+src/game/camera.c:        nz = floor->normal.z;
+src/game/camera.c:        oo = floor->originOffset;
+src/game/camera.c:        if ((floor->type < SURFACE_PAINTING_WOBBLE_A6) || (floor->type > SURFACE_PAINTING_WARP_F9)) {
+src/game/camera.c.orig:        if (floor->type != SURFACE_WALL_MISC && floorDY > 0) {
+src/game/camera.c.orig:            if (floor->normal.z == 0.f && floorDY < 100.f) {
+src/game/camera.c.orig:        nx = floor->normal.x;
+src/game/camera.c.orig:        ny = floor->normal.y;
+src/game/camera.c.orig:        nz = floor->normal.z;
+src/game/camera.c.orig:        oo = floor->originOffset;
+src/game/camera.c.orig:        if ((floor->type < SURFACE_PAINTING_WOBBLE_A6) || (floor->type > SURFACE_PAINTING_WARP_F9)) {
+src/game/debug.c:        print_debug_top_down_mapinfo("bgcode   %d", pfloor->type);
+src/game/debug.c:        print_debug_top_down_mapinfo("bgstatus %d", pfloor->flags);
+src/game/debug.c:        print_debug_top_down_mapinfo("bgarea   %d", pfloor->room);
+src/game/debug.c:    //    print_debug_top_down_mapinfo("bgcode   %d", pfloor->type);
+src/game/debug.c:    //    print_debug_top_down_mapinfo("bgstatus %d", pfloor->flags);
+src/game/debug.c:    //    print_debug_top_down_mapinfo("bgarea   %d", pfloor->room);
+src/game/interaction.c:        s32 floorType = m->floor->type;
+src/game/level_update.c:        s32 index = floor->type - SURFACE_INSTANT_WARP_1B;
+src/game/level_update.c:    s32 paintingIndex = gMarioState->floor->type - SURFACE_PAINTING_WARP_D3;
+src/game/level_update.c:                if (m->floor->type != SURFACE_DEATH_PLANE) {
+src/game/level_update.c:                    sSourceWarpNodeId = m->floor->force;
+src/game/mario.c:        switch (m->floor->type) {
+src/game/mario.c:    if (m->action == ACT_CRAWLING && m->floor->normal.y > 0.5f && floorClass == SURFACE_CLASS_DEFAULT) {
+src/game/mario.c:        floorType = m->floor->type;
+src/game/mario.c:        && m->floor->normal.y < 0.9998477f //~cos(1 deg)
+src/game/mario.c:    return m->floor->normal.y <= normY;
+src/game/mario.c:        && m->floor->normal.y < 0.9998477f //~cos(1 deg)
+src/game/mario.c:    return m->floor->normal.y <= normY;
+src/game/mario.c:        result = m->floor->normal.y <= normY;
+src/game/mario.c:            ((m->floor->normal.x * m->floor->normal.x) + (m->floor->normal.z * m->floor->normal.z)));
+src/game/mario.c:        floor_nY = m->floor->normal.y;
+src/game/mario.c:        m->floorAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
+src/game/mario.c:        if ((m->floor->flags & SURFACE_FLAG_DYNAMIC)
+src/game/mario.c:            //if ((!(gMarioState->floor->type == SURFACE_DEATH_PLANE))&&(!(gMarioState->floor->type == SURFACE_HARD_VERY_SLIPPERY))
+src/game/mario.c:            //..&&(gMarioState->input & INPUT_OFF_FLOOR)&&(gMarioState->floor->object == NULL)&&((gMarioState->area->terrainType & TERRAIN_MASK) != TERRAIN_SLIDE)) {
+src/game/mario.c:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario.c:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+src/game/mario.c:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+src/game/mario.c.orig:        switch (m->floor->type) {
+src/game/mario.c.orig:    if (m->action == ACT_CRAWLING && m->floor->normal.y > 0.5f && floorClass == SURFACE_CLASS_DEFAULT) {
+src/game/mario.c.orig:        floorType = m->floor->type;
+src/game/mario.c.orig:        && m->floor->normal.y < 0.9998477f //~cos(1 deg)
+src/game/mario.c.orig:    return m->floor->normal.y <= normY;
+src/game/mario.c.orig:        && m->floor->normal.y < 0.9998477f //~cos(1 deg)
+src/game/mario.c.orig:    return m->floor->normal.y <= normY;
+src/game/mario.c.orig:        result = m->floor->normal.y <= normY;
+src/game/mario.c.orig:            ((m->floor->normal.x * m->floor->normal.x) + (m->floor->normal.z * m->floor->normal.z)));
+src/game/mario.c.orig:        floor_nY = m->floor->normal.y;
+src/game/mario.c.orig:        m->floorAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
+src/game/mario.c.orig:        if ((m->floor->flags & SURFACE_FLAG_DYNAMIC)
+src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario.c.orig:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+src/game/mario_actions_airborne.c:    if (gMarioState->floor->object != NULL) {
+src/game/mario_actions_airborne.c:        ignorefalldamage = gMarioState->floor->object->oDontFallDamage;
+src/game/mario_actions_airborne.c:            if (m->action != ACT_TWIRLING && m->floor->type != SURFACE_BURNING) {
+src/game/mario_actions_airborne.c:    s32 flags = floor->flags;
+src/game/mario_actions_airborne.c:    s32 type = floor->type;
+src/game/mario_actions_airborne.c:        if (!(flags & 0x01) && m->peakHeight - m->pos[1] > 1000.0f && floor->normal.y >= 0.8660254f) {
+src/game/mario_actions_airborne.c:    if (floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario_actions_airborne.c:        pushAngle = floor->force << 8;
+src/game/mario_actions_airborne.c:    if (m->floor->type == SURFACE_VERTICAL_WIND && m->actionState == 0) {
+src/game/mario_actions_airborne.c:            if (m->actionState == 0 && m->vel[1] < 0.0f && m->floor->normal.y >= 0.9848077f) {
+src/game/mario_actions_airborne.c:            if (m->actionState == 0 && m->vel[1] < 0.0f && m->floor->normal.y >= 0.9848077f) {
+src/game/mario_actions_airborne.c:            if (m->floor->type == SURFACE_BURNING) {
+src/game/mario_actions_airborne.c:    if (m->floor->type == SURFACE_VERTICAL_WIND && (m->action & ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)) {
+src/game/mario_actions_automatic.c:    if (m->floor->normal.y < 0.9063078f) {
+src/game/mario_actions_cutscene.c:    if (m->floor != NULL && m->floor->normal.y < 0.5f) {
+src/game/mario_actions_cutscene.c:        surfAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
+src/game/mario_actions_cutscene.c:    if (m->floor->type == SURFACE_INSTANT_QUICKSAND && m->action & ACT_FLAG_INVULNERABLE
+src/game/mario_actions_cutscene.c.orig:    if (m->floor != NULL && m->floor->normal.y < 0.5f) {
+src/game/mario_actions_cutscene.c.orig:        surfAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
+src/game/mario_actions_cutscene.c.orig:    if (m->floor->type == SURFACE_INSTANT_QUICKSAND && m->action & ACT_FLAG_INVULNERABLE
+src/game/mario_actions_moving.c:    s16 slopeAngle = atan2s(floor->normal.z, floor->normal.x);
+src/game/mario_actions_moving.c:    f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
+src/game/mario_actions_moving.c:    UNUSED f32 normalY = floor->normal.y;
+src/game/mario_actions_moving.c:    f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
+src/game/mario_actions_moving.c:    UNUSED f32 normalY = floor->normal.y;
+src/game/mario_actions_moving.c:        m->floor->originOffset = m->waterLevel; //! Negative origin offset
+src/game/mario_actions_moving.c:    if (m->floor != NULL && m->floor->type == SURFACE_SLOW) {
+src/game/mario_actions_moving.c:    } else if (m->floor->normal.y >= 0.95f) {
+src/game/mario_actions_moving.c:    if (m->floor != NULL && m->floor->type == SURFACE_SLOW) {
+src/game/mario_actions_moving.c:    } else if (m->floor->normal.y >= 0.95f) {
+src/game/mario_actions_moving.c:    if (m->forwardVel >= 16.0f && m->floor->normal.y >= 0.17364818f) {
+src/game/mario_actions_moving.c:            if (m->floor->type == SURFACE_BURNING) {
+src/game/mario_actions_moving.c:    if (m->floor->type == SURFACE_BURNING) {
+src/game/mario_actions_moving.c:    if (m->floor->type >= SURFACE_SHALLOW_QUICKSAND && m->floor->type <= SURFACE_MOVING_QUICKSAND) {
+src/game/mario_actions_moving.c:    if (m->floor->normal.y < 0.2923717f) {
+src/game/mario_actions_stationary.c:    if (m->floor->normal.y < 0.29237169f) {
+src/game/mario_actions_stationary.c:    if (m->floor->normal.y < 0.29237169f) {
+src/game/mario_actions_stationary.c:                if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->flags & SURFACE_FLAG_DYNAMIC) {
+src/game/mario_actions_stationary.c:    if (m->floor->type == SURFACE_LOOK_UP_WARP) {
+src/game/mario_actions_submerged.c:    if (m->floor->type == SURFACE_FLOWING_WATER) {
+src/game/mario_actions_submerged.c:        s16 currentAngle = m->floor->force << 8;
+src/game/mario_actions_submerged.c:        f32 currentSpeed = sWaterCurrentSpeeds[m->floor->force >> 8];
+src/game/mario_actions_submerged.c:    } else if (m->floor->normal.y >= 0.95f) {
+src/game/mario_step.c:        switch (m->floor->type) {
+src/game/mario_step.c:    s32 floorType = floor->type;
+src/game/mario_step.c:        s16 pushAngle = floor->force << 8;
+src/game/mario_step.c:        f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
+src/game/mario_step.c:    if (floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario_step.c:        s16 pushAngle = floor->force << 8;
+src/game/mario_step.c:        floor->originOffset = floorHeight; //! Wrong origin offset (no effect)
+src/game/mario_step.c:        intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
+src/game/mario_step.c:        intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
+src/game/mario_step.c:        floor->originOffset = floorHeight; //! Incorrect origin offset (no effect)
+src/game/mario_step.c:        if (m->floor->type == SURFACE_VERTICAL_WIND && -3000.0f < offsetY && offsetY < 2000.0f) {
+src/game/object_helpers.c:        if (floor->type == SURFACE_BURNING) {
+src/game/object_helpers.c:        else if (floor->type == SURFACE_DEATH_PLANE) {
+src/game/object_helpers.c:        o->oFloorType = floor->type;
+src/game/object_helpers.c:        o->oFloorRoom = floor->room;
+src/game/object_helpers.c:            if (floor->room != 0) {
+src/game/object_helpers.c:                o->oRoom = floor->room;
+src/game/object_helpers.c:                    o->oRoom = floor->room;
+src/game/object_helpers.c:        floorNormal[0] = floor->normal.x;
+src/game/object_helpers.c:        floorNormal[1] = floor->normal.y;
+src/game/object_helpers.c:        floorNormal[2] = floor->normal.z;
+src/game/object_helpers.c:        floorNormal[0] = floor->normal.x;
+src/game/object_helpers.c:        floorNormal[1] = floor->normal.y;
+src/game/object_helpers.c:        floorNormal[2] = floor->normal.z;
+src/game/object_helpers.c.orig:        if (floor->type == SURFACE_BURNING) {
+src/game/object_helpers.c.orig:        else if (floor->type == SURFACE_DEATH_PLANE) {
+src/game/object_helpers.c.orig:        o->oFloorType = floor->type;
+src/game/object_helpers.c.orig:        o->oFloorRoom = floor->room;
+src/game/object_helpers.c.orig:            if (floor->room != 0) {
+src/game/object_helpers.c.orig:                o->oRoom = floor->room;
+src/game/object_helpers.c.orig:                    o->oRoom = floor->room;
+src/game/object_helpers.c.orig:        floorNormal[0] = floor->normal.x;
+src/game/object_helpers.c.orig:        floorNormal[1] = floor->normal.y;
+src/game/object_helpers.c.orig:        floorNormal[2] = floor->normal.z;
+src/game/obj_behaviors.c:        switch (floor->type) {
+src/game/obj_behaviors.c.orig:        switch (floor->type) {
+src/game/platform_displacement.c:            if (floor != NULL && floor->object != NULL) {
+src/game/platform_displacement.c:                gMarioPlatform = floor->object;
+src/game/platform_displacement.c:                gMarioObject->platform = floor->object;
+src/game/shadow.c:        if (pfloor->type == SURFACE_ICE) {
+src/game/shadow.c:        sSurfaceTypeBelowShadow = pfloor->type;
+src/game/sound_init.c:        if (gMarioState->floor != NULL && gMarioState->floor->room == 6) {

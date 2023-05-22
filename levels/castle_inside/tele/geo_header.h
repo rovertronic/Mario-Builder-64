@@ -1,0 +1,18 @@
+extern const GeoLayout tele_Bone_opt1[];
+extern const GeoLayout tele_geo[];
+extern Lights1 tele_telescope_lights;
+extern u8 tele_rgba16_anonmoose_envmap_silver1_i8[];
+extern Vtx tele_tele_mesh_layer_1_vtx_0[142];
+extern Gfx tele_tele_mesh_layer_1_tri_0[];
+extern Vtx tele_tele_mesh_layer_1_vtx_1[16];
+extern Gfx tele_tele_mesh_layer_1_tri_1[];
+extern Vtx tele_tele_mesh_layer_1_vtx_2[8];
+extern Gfx tele_tele_mesh_layer_1_tri_2[];
+extern Gfx mat_tele_telescope[];
+extern Gfx mat_revert_tele_telescope[];
+extern Gfx mat_tele_Lens[];
+extern Gfx mat_revert_tele_Lens[];
+extern Gfx mat_tele_Lenshole[];
+extern Gfx tele_tele_mesh_layer_1[];
+extern Gfx tele_tele_mesh_layer_1_mat_override_Lens_0[];
+extern Gfx tele_material_revert_render_settings[];

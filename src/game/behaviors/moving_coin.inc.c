@@ -25,6 +25,9 @@ static struct ObjectHitbox sMovingBlueCoinHitbox = {
 };
 
 s32 coin_step(s16 *collisionFlagsPtr) {
+    if (save_file_get_badge_equip() & (1<<10)) {
+        o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
+    }
     *collisionFlagsPtr = object_step();
 
     obj_check_floor_death(*collisionFlagsPtr, sObjFloor);
@@ -103,7 +106,7 @@ void bhv_moving_yellow_coin_loop(void) {
 }
 
 void bhv_moving_blue_coin_init(void) {
-    o->oGravity = 5.0f;
+    o->oGravity = 3.0f;
     o->oFriction = 1.0f;
     o->oBuoyancy = 1.5f;
 

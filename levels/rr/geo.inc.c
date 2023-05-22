@@ -1,0 +1,8 @@
+#include "levels/rr/area_1/geo.inc.c"
+#include "levels/rr/area_2/geo.inc.c"
+#include "levels/rr/area_3/geo.inc.c"
+#include "levels/rr/area_4/geo.inc.c"
+#include "levels/rr/area_5/geo.inc.c"
+#include "levels/rr/area_6/geo.inc.c"
+#include "levels/rr/area_7/geo.inc.c"
+#include "levels/rr/area_0/geo.inc.c"

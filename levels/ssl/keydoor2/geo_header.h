@@ -1,0 +1,10 @@
+extern const GeoLayout keydoor2_geo[];
+extern u8 keydoor2_KeyGate_ci4[];
+extern u8 keydoor2_KeyGate_ci4_pal_rgba16[];
+extern Vtx keydoor2_Plane_008_mesh_layer_1_vtx_cull[8];
+extern Vtx keydoor2_Plane_008_mesh_layer_1_vtx_0[4];
+extern Gfx keydoor2_Plane_008_mesh_layer_1_tri_0[];
+extern Gfx mat_keydoor2_f3d_material_001[];
+extern Gfx mat_revert_keydoor2_f3d_material_001[];
+extern Gfx keydoor2_Plane_008_mesh_layer_1[];
+extern Gfx keydoor2_material_revert_render_settings[];

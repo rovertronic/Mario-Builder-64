@@ -33,6 +33,7 @@ extern const GeoLayout hmc_geo_000B48[];
 extern const GeoLayout hmc_geo_000B90[];
 
 // leveldata
+extern const f32 blender_export[][6][3];
 extern const Gfx hmc_seg7_dl_070078B0[];
 extern const Gfx hmc_seg7_dl_07007B50[];
 extern const Gfx hmc_seg7_dl_070080E8[];
@@ -89,5 +90,22 @@ extern const struct MovtexQuadCollection hmc_movtex_toxic_maze_mist[];
 
 // script
 extern const LevelScript level_hmc_entry[];
+
+
+#include "levels/hmc/header.inc.h"
+
+#include "levels/hmc/minecart/geo_header.h"
+
+#include "levels/hmc/minecart/collision_header.h"
+
+#include "levels/hmc/wboulder/geo_header.h"
+
+#include "levels/hmc/cobie/geo_header.h"
+
+#include "levels/hmc/cobie/anim_header.h"
+
+#include "levels/hmc/Map6/header.h"
+
+#include "levels/hmc/banner/anim_header.h"
 
 #endif

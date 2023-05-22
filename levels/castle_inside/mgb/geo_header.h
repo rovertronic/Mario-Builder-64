@@ -1,0 +1,10 @@
+extern const GeoLayout mgb_geo[];
+extern Lights1 mgb_btn_lights;
+extern u8 mgb_MinigameButton_i8[];
+extern Vtx mgb_mgb_mesh_layer_1_vtx_cull[8];
+extern Vtx mgb_mgb_mesh_layer_1_vtx_0[8];
+extern Gfx mgb_mgb_mesh_layer_1_tri_0[];
+extern Gfx mat_mgb_btn[];
+extern Gfx mat_revert_mgb_btn[];
+extern Gfx mgb_mgb_mesh_layer_1[];
+extern Gfx mgb_material_revert_render_settings[];

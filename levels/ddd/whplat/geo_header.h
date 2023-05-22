@@ -1,0 +1,16 @@
+extern const GeoLayout whplat_geo[];
+extern Lights1 whplat_Bricks_lights;
+extern Lights1 whplat_Floor_lights;
+extern u8 whplat_Bricks_ci8[];
+extern u8 whplat_Bricks_ci8_pal_rgba16[];
+extern u8 whplat_Floor_i8[];
+extern Vtx whplat_viscol_001_mesh_layer_1_vtx_0[18];
+extern Gfx whplat_viscol_001_mesh_layer_1_tri_0[];
+extern Vtx whplat_viscol_001_mesh_layer_1_vtx_1[24];
+extern Gfx whplat_viscol_001_mesh_layer_1_tri_1[];
+extern Gfx mat_whplat_Bricks[];
+extern Gfx mat_revert_whplat_Bricks[];
+extern Gfx mat_whplat_Floor[];
+extern Gfx mat_revert_whplat_Floor[];
+extern Gfx whplat_viscol_001_mesh_layer_1[];
+extern Gfx whplat_material_revert_render_settings[];

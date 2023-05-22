@@ -45,3 +45,10 @@
 #include "levels/bits/areas/1/31/geo.inc.c"
 #include "levels/bits/areas/1/32/geo.inc.c"
 #include "levels/bits/areas/1/geo.inc.c"
+
+#include "levels/bits/geo.inc.c"
+
+#include "levels/bits/fountain/geo.inc.c"
+#include "levels/bits/bits_stairs/geo.inc.c"
+#include "levels/bits/mgba/geo.inc.c"
+#include "levels/bits/tvshop/geo.inc.c"

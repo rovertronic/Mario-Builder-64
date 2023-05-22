@@ -1,0 +1,583 @@
+enhancements/motos_full.patch:+        vec3f_copy(gMarioState->pos, gMarioObject->header.gfx.pos); // Added to fix camera
+enhancements/puppycam.inc.c:    print_text_fmt_int(32,160,"X %d",gMarioState->pos[0]);
+enhancements/puppycam.inc.c:    print_text_fmt_int(32,144,"Y %d",gMarioState->pos[1]);
+enhancements/puppycam.inc.c:    print_text_fmt_int(32,128,"Z %d",gMarioState->pos[2]);
+enhancements/puppycam.inc.c:        newcam_yaw_target = -gMarioState->faceAngle[1]-0x4000;
+enhancements/puppycam.inc.c:        if (newcam_turnwait > 0 && gMarioState->vel[1] == 0)
+enhancements/puppycam.inc.c:        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN)
+enhancements/puppycam.inc.c:            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,((newcam_aggression*(ABS(gPlayer1Controller->rawStickX/10)))*(gMarioState->forwardVel/32))));
+enhancements/puppycam.inc.c:            switch (gMarioState->action)
+enhancements/puppycam.inc.c:                case ACT_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c:                case ACT_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c:                case ACT_HOLD_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c:                case ACT_HOLD_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c:        switch (gMarioState->action)
+enhancements/puppycam.inc.c:        if (gMarioState->action & ACT_FLAG_SWIMMING)
+enhancements/puppycam.inc.c:            if (gMarioState->forwardVel > 2)
+enhancements/puppycam.inc.c:            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,(gMarioState->forwardVel*128)));
+enhancements/puppycam.inc.c:            if ((signed)gMarioState->forwardVel > 1)
+enhancements/puppycam.inc.c:                newcam_tilt = (approach_s16_symmetric(newcam_tilt,(-gMarioState->faceAngle[0]*0.8)+3000,(gMarioState->forwardVel*32)));
+enhancements/puppycam.inc.c:    if (gMarioState->action != ACT_HOLDING_BOWSER && gMarioState->action != ACT_SLEEPING && gMarioState->action != ACT_START_SLEEPING)
+enhancements/puppycam.inc.c:        approach_f32_asymptotic_bool(&newcam_pan_x, lengthdir_x((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c:        approach_f32_asymptotic_bool(&newcam_pan_z, lengthdir_y((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c:    if (!(gMarioState->action & ACT_FLAG_SWIMMING) && newcam_modeflags & NC_FLAG_FOCUSY && newcam_modeflags & NC_FLAG_POSY)
+enhancements/puppycam.inc.c:    newcam_pos_target[0] = gMarioState->pos[0];
+enhancements/puppycam.inc.c:    newcam_pos_target[1] = gMarioState->pos[1]+newcam_extheight;
+enhancements/puppycam.inc.c:    newcam_pos_target[2] = gMarioState->pos[2];
+enhancements/puppycam.inc.c:        newcam_pos[2] = gMarioState->pos[2];
+enhancements/puppycam.inc.c:    if (gMarioState->floor != NULL)
+enhancements/puppycam.inc.c:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+enhancements/puppycam.inc.c:                if (newcam_tilt < -8000 && gMarioState->forwardVel == 0) {
+enhancements/puppycam.inc.c:        newcam_yaw = -gMarioState->faceAngle[1]-0x4000;
+enhancements/puppycam.inc.c.orig:    print_text_fmt_int(32,160,"X %d",gMarioState->pos[0]);
+enhancements/puppycam.inc.c.orig:    print_text_fmt_int(32,144,"Y %d",gMarioState->pos[1]);
+enhancements/puppycam.inc.c.orig:    print_text_fmt_int(32,128,"Z %d",gMarioState->pos[2]);
+enhancements/puppycam.inc.c.orig:        newcam_yaw_target = -gMarioState->faceAngle[1]-0x4000;
+enhancements/puppycam.inc.c.orig:        if (newcam_turnwait > 0 && gMarioState->vel[1] == 0)
+enhancements/puppycam.inc.c.orig:        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN)
+enhancements/puppycam.inc.c.orig:            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,((newcam_aggression*(ABS(gPlayer1Controller->rawStickX/10)))*(gMarioState->forwardVel/32))));
+enhancements/puppycam.inc.c.orig:            switch (gMarioState->action)
+enhancements/puppycam.inc.c.orig:                case ACT_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.orig:                case ACT_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.orig:                case ACT_HOLD_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.orig:                case ACT_HOLD_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.orig:        switch (gMarioState->action)
+enhancements/puppycam.inc.c.orig:        if (gMarioState->action & ACT_FLAG_SWIMMING)
+enhancements/puppycam.inc.c.orig:            if (gMarioState->forwardVel > 2)
+enhancements/puppycam.inc.c.orig:            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,(gMarioState->forwardVel*128)));
+enhancements/puppycam.inc.c.orig:            if ((signed)gMarioState->forwardVel > 1)
+enhancements/puppycam.inc.c.orig:                newcam_tilt = (approach_s16_symmetric(newcam_tilt,(-gMarioState->faceAngle[0]*0.8)+3000,(gMarioState->forwardVel*32)));
+enhancements/puppycam.inc.c.orig:    if (gMarioState->action != ACT_HOLDING_BOWSER && gMarioState->action != ACT_SLEEPING && gMarioState->action != ACT_START_SLEEPING)
+enhancements/puppycam.inc.c.orig:        approach_f32_asymptotic_bool(&newcam_pan_x, lengthdir_x((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c.orig:        approach_f32_asymptotic_bool(&newcam_pan_z, lengthdir_y((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c.orig:    if (!(gMarioState->action & ACT_FLAG_SWIMMING) && newcam_modeflags & NC_FLAG_FOCUSY && newcam_modeflags & NC_FLAG_POSY)
+enhancements/puppycam.inc.c.orig:    newcam_pos_target[0] = gMarioState->pos[0];
+enhancements/puppycam.inc.c.orig:    newcam_pos_target[1] = gMarioState->pos[1]+newcam_extheight;
+enhancements/puppycam.inc.c.orig:    newcam_pos_target[2] = gMarioState->pos[2];
+enhancements/puppycam.inc.c.orig:    if (gMarioState->floor != NULL)
+enhancements/puppycam.inc.c.orig:        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+enhancements/puppycam.inc.c.orig:                if (newcam_tilt < -8000 && gMarioState->forwardVel == 0) {
+enhancements/puppycam.inc.c.orig:        newcam_yaw = -gMarioState->faceAngle[1]-0x4000;
+enhancements/puppycam.inc.c.rej:-    print_text_fmt_int(32,160,"X %d",gMarioState->pos[0]);
+enhancements/puppycam.inc.c.rej:-    print_text_fmt_int(32,144,"Y %d",gMarioState->pos[1]);
+enhancements/puppycam.inc.c.rej:-    print_text_fmt_int(32,128,"Z %d",gMarioState->pos[2]);
+enhancements/puppycam.inc.c.rej:-        newcam_yaw_target = -gMarioState->faceAngle[1]-0x4000;
+enhancements/puppycam.inc.c.rej:-        if (newcam_turnwait > 0 && gMarioState->vel[1] == 0)
+enhancements/puppycam.inc.c.rej:-        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN)
+enhancements/puppycam.inc.c.rej:-            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,((newcam_aggression*(ABS(gPlayer1Controller->rawStickX/10)))*(gMarioState->forwardVel/32))));
+enhancements/puppycam.inc.c.rej:-            switch (gMarioState->action)
+enhancements/puppycam.inc.c.rej:-                case ACT_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.rej:-                case ACT_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.rej:-                case ACT_HOLD_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.rej:-                case ACT_HOLD_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+enhancements/puppycam.inc.c.rej:-        switch (gMarioState->action)
+enhancements/puppycam.inc.c.rej:-        if (gMarioState->action & ACT_FLAG_SWIMMING)
+enhancements/puppycam.inc.c.rej:-            if (gMarioState->forwardVel > 2)
+enhancements/puppycam.inc.c.rej:-            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,(gMarioState->forwardVel*128)));
+enhancements/puppycam.inc.c.rej:-            if ((signed)gMarioState->forwardVel > 1)
+enhancements/puppycam.inc.c.rej:-                newcam_tilt = (approach_s16_symmetric(newcam_tilt,(-gMarioState->faceAngle[0]*0.8)+3000,(gMarioState->forwardVel*32)));
+enhancements/puppycam.inc.c.rej:-    if (gMarioState->action != ACT_HOLDING_BOWSER && gMarioState->action != ACT_SLEEPING && gMarioState->action != ACT_START_SLEEPING)
+enhancements/puppycam.inc.c.rej:-        approach_f32_asymptotic_bool(&newcam_pan_x, lengthdir_x((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c.rej:-        approach_f32_asymptotic_bool(&newcam_pan_z, lengthdir_y((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+enhancements/puppycam.inc.c.rej:-    if (!(gMarioState->action & ACT_FLAG_SWIMMING) && newcam_modeflags & NC_FLAG_FOCUSY && newcam_modeflags & NC_FLAG_POSY)
+enhancements/puppycam.inc.c.rej:-    newcam_pos_target[0] = gMarioState->pos[0];
+enhancements/puppycam.inc.c.rej:-    newcam_pos_target[1] = gMarioState->pos[1]+newcam_extheight;
+enhancements/puppycam.inc.c.rej:-    newcam_pos_target[2] = gMarioState->pos[2];
+enhancements/puppycam.inc.c.rej:-    if (gMarioState->floor != NULL)
+enhancements/puppycam.inc.c.rej:-        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+enhancements/puppycam.inc.c.rej:-                if (newcam_tilt < -8000 && gMarioState->forwardVel == 0) {
+enhancements/puppycam.inc.c.rej:-        newcam_yaw = -gMarioState->faceAngle[1]-0x4000;
+puppycam.patch:+    print_text_fmt_int(32,160,"X %d",gMarioState->pos[0]);
+puppycam.patch:+    print_text_fmt_int(32,144,"Y %d",gMarioState->pos[1]);
+puppycam.patch:+    print_text_fmt_int(32,128,"Z %d",gMarioState->pos[2]);
+puppycam.patch:+        newcam_yaw_target = -gMarioState->faceAngle[1]-0x4000;
+puppycam.patch:+        if (newcam_turnwait > 0 && gMarioState->vel[1] == 0)
+puppycam.patch:+        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN)
+puppycam.patch:+            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,((newcam_aggression*(ABS(gPlayer1Controller->rawStickX/10)))*(gMarioState->forwardVel/32))));
+puppycam.patch:+            switch (gMarioState->action)
+puppycam.patch:+                case ACT_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+puppycam.patch:+                case ACT_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+puppycam.patch:+                case ACT_HOLD_BUTT_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+puppycam.patch:+                case ACT_HOLD_STOMACH_SLIDE: if (gMarioState->forwardVel > 8) waterflag = 1; break;
+puppycam.patch:+        switch (gMarioState->action)
+puppycam.patch:+        if (gMarioState->action & ACT_FLAG_SWIMMING)
+puppycam.patch:+            if (gMarioState->forwardVel > 2)
+puppycam.patch:+            newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,(gMarioState->forwardVel*128)));
+puppycam.patch:+            if ((signed)gMarioState->forwardVel > 1)
+puppycam.patch:+                newcam_tilt = (approach_s16_symmetric(newcam_tilt,(-gMarioState->faceAngle[0]*0.8)+3000,(gMarioState->forwardVel*32)));
+puppycam.patch:+    if (gMarioState->action != ACT_HOLDING_BOWSER && gMarioState->action != ACT_SLEEPING && gMarioState->action != ACT_START_SLEEPING)
+puppycam.patch:+        approach_f32_asymptotic_bool(&newcam_pan_x, lengthdir_x((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+puppycam.patch:+        approach_f32_asymptotic_bool(&newcam_pan_z, lengthdir_y((160*newcam_panlevel)/100, -gMarioState->faceAngle[1]-0x4000), 0.05);
+puppycam.patch:+    if (!(gMarioState->action & ACT_FLAG_SWIMMING) && newcam_modeflags & NC_FLAG_FOCUSY && newcam_modeflags & NC_FLAG_POSY)
+puppycam.patch:+    newcam_pos_target[0] = gMarioState->pos[0];
+puppycam.patch:+    newcam_pos_target[1] = gMarioState->pos[1]+newcam_extheight;
+puppycam.patch:+    newcam_pos_target[2] = gMarioState->pos[2];
+puppycam.patch:+    if (gMarioState->floor != NULL)
+puppycam.patch:+        if (gMarioState->floor->type == SURFACE_LOOK_UP_WARP) {
+puppycam.patch:+                if (newcam_tilt < -8000 && gMarioState->forwardVel == 0) {
+puppycam.patch:+        newcam_yaw = -gMarioState->faceAngle[1]-0x4000;
+puppycam.patch:+    if (gMarioState->action == ACT_SHOT_FROM_CANNON && newcam_active)
+puppycam.patch:+        gMarioState->area->camera->mode = CAM_MODE_NEWCAM;
+puppycam.patch:+        if (flags & MARIO_VANISH_CAP || gMarioState->flags & MARIO_TELEPORTING)
+src/engine/surface_collision.c:                    && (gMarioState->flags & MARIO_VANISH_CAP)) {
+src/engine/surface_collision.c.orig:                    && (gMarioState->flags & MARIO_VANISH_CAP)) {
+src/game/behaviors/bully.inc.c:        o->oMoveAngleYaw = gMarioState->faceAngle[1];
+src/game/behaviors/coffin.inc.c:                && (o->oDistanceToMario > 100.0f || gMarioState->action == ACT_SQUISHED)) {
+src/game/behaviors/fire_piranha_plant.inc.c:            gMarioState->PirCount --;
+src/game/behaviors/fire_piranha_plant.inc.c:                if (gMarioState->PirCount > 0) {
+src/game/behaviors/fire_piranha_plant.inc.c:                    spawn_orange_number(gMarioState->PirCount, 0, 0, 0);
+src/game/behaviors/metal_box.inc.c:            gMarioState->pos[0] = (gMarioState->pos[0]+o->oPosX)/2;
+src/game/behaviors/metal_box.inc.c:            gMarioState->pos[2] = (gMarioState->pos[2]+o->oPosZ)/2;
+src/game/behaviors/motos.inc.c:        vec3f_copy(gMarioState->pos, gMarioObject->header.gfx.pos); // Added to fix camera
+src/game/behaviors/mushroom_1up.inc.c:        gMarioState->numLives++;
+src/game/behaviors/mushroom_1up.inc.c://gMarioState->powerup
+src/game/behaviors/mushroom_1up.inc.c:        if (gMarioState->powerup != 1 && sp1C == 0) {
+src/game/behaviors/mushroom_1up.inc.c:                gMarioState->powerup = 1;
+src/game/behaviors/mushroom_1up.inc.c:                if (gMarioState->powerup == 0) {
+src/game/behaviors/mushroom_1up.inc.c:                    gMarioState->powerup = 1;
+src/game/behaviors/mushroom_1up.inc.c:            gMarioState->faceAngle[0] = o->oFaceAngleYaw;
+src/game/behaviors/mushroom_1up.inc.c:            o->oHomeY = gMarioState->forwardVel;
+src/game/behaviors/mushroom_1up.inc.c:            gMarioState->pos[0] = o->oPosX + o->oForwardVel * sins(o->oFaceAngleYaw);
+src/game/behaviors/mushroom_1up.inc.c:            gMarioState->pos[1] = o->oPosY + o->oForwardVel * -sins(o->oFaceAnglePitch);
+src/game/behaviors/mushroom_1up.inc.c:            gMarioState->pos[2] = o->oPosZ + o->oForwardVel * coss(o->oFaceAngleYaw);
+src/game/behaviors/mushroom_1up.inc.c:            gMarioState->faceAngle[0] = o->oFaceAngleYaw;
+src/game/behaviors/mushroom_1up.inc.c:                gMarioState->forwardVel = o->oHomeY;
+src/game/behaviors/piranha_plant.inc.c:        if (gMarioState->flags & MARIO_METAL_CAP)
+src/game/behaviors/purple_switch.inc.c:                    gMarioState->SwitchPressed = behparam1;
+src/game/behaviors/purple_switch.inc.c:                    gMarioState->NewTimer = o->oBehParams2ndByte;
+src/game/behaviors/purple_switch.inc.c:            if (gMarioState->NewTimer < 1) {
+src/game/behaviors/purple_switch.inc.c:                if (gMarioState->GoldRingCount > 4) {
+src/game/behaviors/purple_switch.inc.c:                    gMarioState->NewTimer = 0;
+src/game/behaviors/purple_switch.inc.c:                gMarioState->SwitchPressed = 0;
+src/game/behaviors/purple_switch.inc.c:        if (gMarioState->NewTimer > 0) {
+src/game/behaviors/purple_switch.inc.c:            gMarioState->GoldRingCount ++;
+src/game/behaviors/purple_switch.inc.c:            spawn_orange_number(gMarioState->GoldRingCount, 0, 0, 0);
+src/game/behaviors/purple_switch.inc.c:        if (gMarioState->NewTimer < 1) {
+src/game/behaviors/purple_switch.inc.c:            gMarioState->GoldRingCount = 0;
+src/game/behaviors/racing_penguin.inc.c:    if (gMarioState->numStars == 120) {
+src/game/behaviors/scuttlebug.inc.c:        if ((o->oDistanceToMario < 200.0f)&&(o->oPosY-30.0f>gMarioState->pos[1])) {
+src/game/behaviors/scuttlebug.inc.c:            o->oPosX = gMarioState->pos[0];
+src/game/behaviors/scuttlebug.inc.c:            o->oPosY = gMarioState->pos[1]+55.0f;
+src/game/behaviors/scuttlebug.inc.c:            o->oPosZ = gMarioState->pos[2];
+src/game/behaviors/scuttlebug.inc.c:            o->oMoveAngleYaw = gMarioState->faceAngle[1];
+src/game/behaviors/scuttlebug.inc.c:                gMarioState->hurtCounter ++;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:            if (gMarioState->pos[1] < o->oPosY-50.0f) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    if (gMarioState->pos[1] < o->oPosY-50.0f) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                        gMarioState->hurtCounter += 8;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                        play_sound(ooftable[RandomMinMaxU162(0,2)], gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                if (gMarioState->pos[1] > 10000.0f) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    o->oPosX = gMarioState->pos[0] + (random_u16()/10)-3276.8;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    o->oPosZ = gMarioState->pos[2] + (random_u16()/10)-3276.8;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                if ((mdist < 500.0f)&&(gMarioState->pos[1] > o->oPosY-100.0f))  {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    o->oPosX = gMarioState->pos[0];
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    o->oPosZ = gMarioState->pos[2];
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    o->oPosY = gMarioState->pos[1];
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                    gMarioState->health = 0x100;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:                        if (gMarioState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:        gMarioState->pos[0] = o->oPosX;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:        if (gMarioState->pos[1] > o->oPosY) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:            gMarioState->pos[1] = o->oPosY;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:        gMarioState->pos[2] = o->oPosZ;
+src/game/behaviors/tilting_inverted_pyramid.inc.c:        o->oFaceAngleYaw = gMarioState->faceAngle[1];
+src/game/behaviors/tilting_inverted_pyramid.inc.c:        if (gMarioState->SwitchPressed == 10) {
+src/game/behaviors/tilting_inverted_pyramid.inc.c:    u8 triggerd = gMarioState->SwitchPressed == 11;
+src/game/behaviors/whomp.inc.c:        if (o->oTimer > 100 || (gMarioState->action == ACT_SQUISHED && o->oTimer > 30))
+src/game/behaviors/yoshi.inc.c:        gMarioState->numLives++;
+src/game/camera.c:        if ((gMarioState->action & ACT_FLAG_SWIMMING)||(gCurrLevelNum != LEVEL_BBH)) {
+src/game/camera.c:    if (gMarioState->action == ACT_SHOT_FROM_CANNON && newcam_active)
+src/game/camera.c:        gMarioState->area->camera->mode = CAM_MODE_NEWCAM;
+src/game/camera.c.orig:    if (gMarioState->action == ACT_SHOT_FROM_CANNON && newcam_active)
+src/game/camera.c.orig:        gMarioState->area->camera->mode = CAM_MODE_NEWCAM;
+src/game/hud.c:    guScale(smtx, (f32)gMarioState->numAir*.002, (f32) gMarioState->numAir*.002, 0);
+src/game/hud.c:    mx = ((gMarioState->pos[0]/14834)*64)-wideoffet9;
+src/game/hud.c:    my = (gMarioState->pos[2]/14834)*64;
+src/game/hud.c:    guRotate(rmtx, gMarioState->faceAngle[1] / 180.0f + 180.0f, 0.0f, 0.0f, 1.0f);
+src/game/hud.c:    loop = gMarioState->numMaxHP;
+src/game/hud.c:    loop2 = gMarioState->health > 0 ? gMarioState->health >> 8 : 0;
+src/game/hud.c:    loop = gMarioState->numMaxFP;
+src/game/hud.c:    loop2 = gMarioState->numBadgePoints;
+src/game/hud.c:    //gMarioState->numGlobalCoins
+src/game/hud.c:                       HUD_TOP_Y-18, "%d", gMarioState->numMetalStars);//
+src/game/hud.c:        gMarioState->toggleHud = !gMarioState->toggleHud;
+src/game/hud.c:    if (gMarioState->toggleHud) {
+src/game/hud.c:        print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "+%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
+src/game/hud.c:        print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"-",0);
+src/game/hud.c:        if (gMarioState->numAir < 500) {
+src/game/hud.c:        if (gMarioState->NewTimer > 0) {
+src/game/hud.c:                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),20, "j %d", gMarioState->NewTimer);
+src/game/hud.c:                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),90, "j %d", gMarioState->NewTimer);
+src/game/hud.c.orig:    loop = gMarioState->numMaxFP;
+src/game/hud.c.orig:    loop = 4+gMarioState->numMaxHP;
+src/game/hud.c.orig:    loop = gHudDisplay.wedges+gMarioState->numFakeHP;
+src/game/hud.c.orig:    loop = gMarioState->numBadgePoints;
+src/game/hud.c.orig:    //gMarioState->numGlobalCoins
+src/game/hud.c.orig:                       HUD_TOP_Y-18, "%d", gMarioState->numMetalStars);//
+src/game/hud.c.orig:        gMarioState->toggleHud = !gMarioState->toggleHud;
+src/game/hud.c.orig:    if (gMarioState->toggleHud) {
+src/game/hud.c.orig:        print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "+%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
+src/game/hud.c.orig:        if (gMarioState->NewTimer > 0) {
+src/game/hud.c.orig:            print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),20, "j %d", gMarioState->NewTimer);
+src/game/ingame_menu.c:                gMarioState->numBadgeSelect ++;
+src/game/ingame_menu.c:                if (gMarioState->numBadgeSelect > 11) {
+src/game/ingame_menu.c:                    gMarioState->numBadgeSelect = 0;
+src/game/ingame_menu.c:                gMarioState->numBadgeSelect --;
+src/game/ingame_menu.c:                if (gMarioState->numBadgeSelect > 253) {
+src/game/ingame_menu.c:                    gMarioState->numBadgeSelect = 11;
+src/game/ingame_menu.c:                save_file_set_badge_equip( (1<<gMarioState->numBadgeSelect) );
+src/game/ingame_menu.c:                save_file_set_badge_equip( (1<<gMarioState->numBadgeSelect) );
+src/game/ingame_menu.c:            print_text_fmt_int(20, 56, "%d" , (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)));
+src/game/ingame_menu.c:            if (gMarioState->numBadgeSelect < 6) {
+src/game/ingame_menu.c:                display_icon(&BadgeSelect_Plane_mesh, 80+(gMarioState->numBadgeSelect*32), 192);
+src/game/ingame_menu.c:                display_icon(&BadgeSelect_Plane_mesh, (gMarioState->numBadgeSelect*32)-112, 160);
+src/game/ingame_menu.c:            if (gMarioState->numGlobalCoins < gMarioState->numMaxGlobalCoins) {
+src/game/ingame_menu.c:                gMarioState->numGlobalCoins++;
+src/game/ingame_menu.c:    if (gMarioState->MenuToRender == 1) {
+src/game/ingame_menu.c:        //print_text_fmt_int(100, 96+70, CostumeNames[gMarioState->CostumeID], 0);
+src/game/ingame_menu.c:        print_hud_lut_string(HUD_LUT_GLOBAL, 84, 60, costume1[gMarioState->CostumeID]);
+src/game/interaction.c:        gMarioState->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
+src/game/interaction.c:    gMarioState->flags &= ~MARIO_CAP_ON_HEAD;
+src/game/interaction.c:    gMarioState->flags |= MARIO_NORMAL_CAP | MARIO_CAP_IN_HAND;
+src/game/interaction.c:    if ((save_file_get_badge_equip() & (1<<8)) && (gMarioState->numBadgePoints > 0)) {
+src/game/interaction.c:            gMarioState->numBadgePoints --;
+src/game/interaction.c:            if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
+src/game/interaction.c:                gMarioState->numBadgePoints --;
+src/game/level_update.c:    u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
+src/game/level_update.c:    if (gMarioState->action != ACT_UNINITIALIZED) {
+src/game/level_update.c:        gMarioState->interactObj = spawnNode->object;
+src/game/level_update.c:        gMarioState->usedObj = spawnNode->object;
+src/game/level_update.c:        if (gMarioState->flags & MARIO_METAL_CAP) {
+src/game/level_update.c:        if (gMarioState->flags & (MARIO_VANISH_CAP | MARIO_WING_CAP)) {
+src/game/level_update.c:    if ((floor = gMarioState->floor) != NULL) {
+src/game/level_update.c:                gMarioState->pos[0] += warp->displacement[0];
+src/game/level_update.c:                gMarioState->pos[1] += warp->displacement[1];
+src/game/level_update.c:                gMarioState->pos[2] += warp->displacement[2];
+src/game/level_update.c:                gMarioState->marioObj->oPosX = gMarioState->pos[0];
+src/game/level_update.c:                gMarioState->marioObj->oPosY = gMarioState->pos[1];
+src/game/level_update.c:                gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+src/game/level_update.c:                cameraAngle = gMarioState->area->camera->yaw;
+src/game/level_update.c:                gMarioState->area = gCurrentArea;
+src/game/level_update.c:                gMarioState->area->camera->yaw = cameraAngle;
+src/game/level_update.c:    s32 paintingIndex = gMarioState->floor->type - SURFACE_PAINTING_WARP_D3;
+src/game/level_update.c:            || gMarioState->pos[1] - gMarioState->floorHeight < 80.0f) {
+src/game/level_update.c:    if (gCurrentArea->paintingWarpNodes != NULL && gMarioState->floor != NULL) {
+src/game/level_update.c:            if (gMarioState->action & ACT_FLAG_INTANGIBLE) {
+src/game/level_update.c:                gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
+src/game/level_update.c:        s16 numHealthWedges = gMarioState->health > 0 ? gMarioState->health >> 8 : 0;
+src/game/level_update.c:        if (gHudDisplay.coins < gMarioState->numCoins) {
+src/game/level_update.c:                if (gMarioState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
+src/game/level_update.c:                play_sound(coinSound, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/level_update.c:        if (gMarioState->numLives > 100) {
+src/game/level_update.c:            gMarioState->numLives = 100;
+src/game/level_update.c:        if (gMarioState->numCoins > 999) {
+src/game/level_update.c:            gMarioState->numCoins = 999;
+src/game/level_update.c:        if (gMarioState->numCoins > 999) {
+src/game/level_update.c:            gMarioState->numLives = (s8) 999; //! Wrong variable
+src/game/level_update.c:        gHudDisplay.stars = gMarioState->numStars;
+src/game/level_update.c:        gHudDisplay.lives = gMarioState->numLives;
+src/game/level_update.c:        gHudDisplay.keys = gMarioState->numKeys;
+src/game/level_update.c:        if (gMarioState->hurtCounter > 0) {
+src/game/level_update.c:                if (gMarioState->action != ACT_UNINITIALIZED) {
+src/game/level_update.c:    if (gMarioState->action == ACT_INTRO_CUTSCENE) {
+src/game/level_update.c:        gMarioState->numCoins = 0;
+src/game/mario.c:            if ((gMarioState->numBadgePoints > 0) && ((save_file_get_badge_equip() & (1<<2)))) {
+src/game/mario.c:                gMarioState->numBadgePoints --;
+src/game/mario.c:            if (gMarioState->powerup != 0) {
+src/game/mario.c:                gMarioState->powerup = 0;
+src/game/mario.c:        if (m->health > 255 + (255*gMarioState->numMaxHP)) {
+src/game/mario.c:            m->health = 255 + (255*gMarioState->numMaxHP);
+src/game/mario.c:                    if (gMarioState->numAir > 0) {
+src/game/mario.c:                        gMarioState->numAir --;
+src/game/mario.c:                        gMarioState->numAir = 0;
+src/game/mario.c:                    if (gMarioState->numAir < 500) {
+src/game/mario.c:                        gMarioState->numAir += 5;
+src/game/mario.c:                        gMarioState->numAir = 500;
+src/game/mario.c:        if (((m->action & ACT_GROUP_MASK) == ACT_GROUP_SUBMERGED) && (gMarioState->numAir < 200)) {
+src/game/mario.c:            gMarioState->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+src/game/mario.c:        && ((gMarioState->flags & flags) == 0)) {
+src/game/mario.c:        gMarioState->flags |= (flags + MARIO_CAP_ON_HEAD);
+src/game/mario.c:        if (capTimer > gMarioState->capTimer) {
+src/game/mario.c:            gMarioState->capTimer = capTimer;
+src/game/mario.c:    if (gMarioState->particleFlags & PARTICLE_HORIZONTAL_STAR) {
+src/game/mario.c:    } else if (gMarioState->particleFlags & PARTICLE_VERTICAL_STAR) {
+src/game/mario.c:    } else if (gMarioState->particleFlags & PARTICLE_TRIANGLE) {
+src/game/mario.c:    if(gMarioState->heldObj && gMarioState->heldObj->behavior == segmented_to_virtual(bhvBobomb)) {
+src/game/mario.c:    u8 CostumeId = gMarioState->CostumeID;
+src/game/mario.c:    Tokencol[8] = CostumeData[gMarioState->TokenParam2][0];//Diffuse
+src/game/mario.c:    Tokencol[9] = CostumeData[gMarioState->TokenParam2][1];
+src/game/mario.c:    Tokencol[10] = CostumeData[gMarioState->TokenParam2][2];
+src/game/mario.c:    Tokencol[12] = CostumeData[gMarioState->TokenParam2][0];
+src/game/mario.c:    Tokencol[13] = CostumeData[gMarioState->TokenParam2][1];
+src/game/mario.c:    Tokencol[14] = CostumeData[gMarioState->TokenParam2][2];
+src/game/mario.c:    Tokencol[0] = CostumeData[gMarioState->TokenParam2][0]/2;//Ambient
+src/game/mario.c:    Tokencol[1] = CostumeData[gMarioState->TokenParam2][1]/2;
+src/game/mario.c:    Tokencol[2] = CostumeData[gMarioState->TokenParam2][2]/2;
+src/game/mario.c:    Tokencol[4] = CostumeData[gMarioState->TokenParam2][0]/2;
+src/game/mario.c:    Tokencol[5] = CostumeData[gMarioState->TokenParam2][1]/2;
+src/game/mario.c:    Tokencol[6] = CostumeData[gMarioState->TokenParam2][2]/2;
+src/game/mario.c:        if (gMarioState->NewTimer > 0) {
+src/game/mario.c:            gMarioState->SubNewTimer ++;
+src/game/mario.c:            if (gMarioState->SubNewTimer > timerdelay) {
+src/game/mario.c:                gMarioState->NewTimer --;
+src/game/mario.c:                gMarioState->SubNewTimer = 0;
+src/game/mario.c:        if (gMarioState->powerup == 1) {
+src/game/mario.c:            if (gMarioState->input & INPUT_B_PRESSED) {
+src/game/mario.c:                play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c:                gMarioState->powerup = 0;
+src/game/mario.c:        if (gMarioState->input & INPUT_B_PRESSED) {
+src/game/mario.c:    if (gMarioState->action) {
+src/game/mario.c:        gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+src/game/mario.c:        if (gMarioState->floor == NULL) {
+src/game/mario.c:            switch (gMarioState->action & ACT_GROUP_MASK) {
+src/game/mario.c:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario.c:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+src/game/mario.c:            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+src/game/mario.c:            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c:        gMarioState->marioObj->oInteractStatus = 0;
+src/game/mario.c:        return gMarioState->particleFlags;
+src/game/mario.c:    gMarioState->numAir = 500;
+src/game/mario.c:    gMarioState->SwitchPressed = 0;
+src/game/mario.c:    gMarioState->actionTimer = 0;
+src/game/mario.c:    gMarioState->framesSinceA = 0xFF;
+src/game/mario.c:    gMarioState->framesSinceB = 0xFF;
+src/game/mario.c:    gMarioState->invincTimer = 0;
+src/game/mario.c:        gMarioState->flags = 0;
+src/game/mario.c:        gMarioState->flags = (MARIO_CAP_ON_HEAD | MARIO_NORMAL_CAP);
+src/game/mario.c:    gMarioState->powerup = 0;
+src/game/mario.c:    gMarioState->NewTimer = 0;
+src/game/mario.c:    gMarioState->SubNewTimer = 0;
+src/game/mario.c:    gMarioState->GoldRingCount = 0;
+src/game/mario.c:    gMarioState->PirCount = 10;
+src/game/mario.c:    gMarioState->forwardVel = 0.0f;
+src/game/mario.c:    gMarioState->squishTimer = 0;
+src/game/mario.c:    gMarioState->hurtCounter = 0;
+src/game/mario.c:    gMarioState->healCounter = 0;
+src/game/mario.c:    gMarioState->capTimer = 0;
+src/game/mario.c:    gMarioState->quicksandDepth = 0.0f;
+src/game/mario.c:    gMarioState->heldObj = NULL;
+src/game/mario.c:    gMarioState->riddenObj = NULL;
+src/game/mario.c:    gMarioState->usedObj = NULL;
+src/game/mario.c:    gMarioState->waterLevel =
+src/game/mario.c:    gMarioState->area = gCurrentArea;
+src/game/mario.c:    gMarioState->marioObj = gMarioObject;
+src/game/mario.c:    gMarioState->marioObj->header.gfx.unk38.animID = -1;
+src/game/mario.c:    vec3s_copy(gMarioState->faceAngle, gMarioSpawnInfo->startAngle);
+src/game/mario.c:    vec3s_set(gMarioState->angleVel, 0, 0, 0);
+src/game/mario.c:    vec3s_to_vec3f(gMarioState->pos, gMarioSpawnInfo->startPos);
+src/game/mario.c:    vec3f_set(gMarioState->vel, 0, 0, 0);
+src/game/mario.c:    gMarioState->floorHeight =
+src/game/mario.c:        find_floor(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], &gMarioState->floor);
+src/game/mario.c:    if (gMarioState->pos[1] < gMarioState->floorHeight) {
+src/game/mario.c:        gMarioState->pos[1] = gMarioState->floorHeight;
+src/game/mario.c:    gMarioState->marioObj->header.gfx.pos[1] = gMarioState->pos[1];
+src/game/mario.c:    gMarioState->action =
+src/game/mario.c:        (gMarioState->pos[1] <= (gMarioState->waterLevel - 100)) ? ACT_WATER_IDLE : ACT_IDLE;
+src/game/mario.c:    gMarioState->marioBodyState->punchState = 0;
+src/game/mario.c:    gMarioState->marioObj->oPosX = gMarioState->pos[0];
+src/game/mario.c:    gMarioState->marioObj->oPosY = gMarioState->pos[1];
+src/game/mario.c:    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+src/game/mario.c:    gMarioState->marioObj->oMoveAnglePitch = gMarioState->faceAngle[0];
+src/game/mario.c:    gMarioState->marioObj->oMoveAngleYaw = gMarioState->faceAngle[1];
+src/game/mario.c:    gMarioState->marioObj->oMoveAngleRoll = gMarioState->faceAngle[2];
+src/game/mario.c:    vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
+src/game/mario.c:    vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
+src/game/mario.c:        capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
+src/game/mario.c:    gMarioState->numBadgePoints = gMarioState->numMaxFP;
+src/game/mario.c:    gMarioState->numFakeHP = gMarioState->numMaxHP;
+src/game/mario.c:    gMarioState->toggleHud = TRUE;
+src/game/mario.c:    gMarioState->unk00 = 0;
+src/game/mario.c:    gMarioState->flags = 0;
+src/game/mario.c:    gMarioState->action = 0;
+src/game/mario.c:    gMarioState->spawnInfo = &gPlayerSpawnInfos[0];
+src/game/mario.c:    gMarioState->statusForCamera = &gPlayerCameraState[0];
+src/game/mario.c:    gMarioState->marioBodyState = &gBodyStates[0];
+src/game/mario.c:    gMarioState->controller = &gControllers[0];
+src/game/mario.c:    gMarioState->animation = &D_80339D10;
+src/game/mario.c:    gMarioState->numCoins = 0;
+src/game/mario.c:    gMarioState->numMetalStars = 0;
+src/game/mario.c:    gMarioState->lastStarCollected = 0;
+src/game/mario.c:    gMarioState->numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+src/game/mario.c:    gMarioState->numStars -= gMarioState->numMetalStars;
+src/game/mario.c:    gMarioState->numKeys = 0;
+src/game/mario.c:    gMarioState->numLives = 4;
+src/game/mario.c:    gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+src/game/mario.c:    gMarioState->prevNumStarsForDialog = gMarioState->numStars;
+src/game/mario.c:    gMarioState->unkB0 = 0xBD;
+src/game/mario.c.orig:            if (gMarioState->powerup != 0) {
+src/game/mario.c.orig:                gMarioState->powerup = 0;
+src/game/mario.c.orig:    if (gMarioState->powerup == 1) {
+src/game/mario.c.orig:            gMarioState->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+src/game/mario.c.orig:        && ((gMarioState->flags & flags) == 0)) {
+src/game/mario.c.orig:        gMarioState->flags |= (flags + MARIO_CAP_ON_HEAD);
+src/game/mario.c.orig:        if (capTimer > gMarioState->capTimer) {
+src/game/mario.c.orig:            gMarioState->capTimer = capTimer;
+src/game/mario.c.orig:    if (gMarioState->particleFlags & PARTICLE_HORIZONTAL_STAR) {
+src/game/mario.c.orig:    } else if (gMarioState->particleFlags & PARTICLE_VERTICAL_STAR) {
+src/game/mario.c.orig:    } else if (gMarioState->particleFlags & PARTICLE_TRIANGLE) {
+src/game/mario.c.orig:    if(gMarioState->heldObj && gMarioState->heldObj->behavior == segmented_to_virtual(bhvBobomb)) {
+src/game/mario.c.orig:        if (gMarioState->NewTimer > 0) {
+src/game/mario.c.orig:            gMarioState->SubNewTimer ++;
+src/game/mario.c.orig:            if (gMarioState->SubNewTimer > 30) {
+src/game/mario.c.orig:                gMarioState->NewTimer --;
+src/game/mario.c.orig:                gMarioState->SubNewTimer = 0;
+src/game/mario.c.orig:        if (gMarioState->powerup == 1) {
+src/game/mario.c.orig:            if (gMarioState->input & INPUT_B_PRESSED) {
+src/game/mario.c.orig:                play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c.orig:                gMarioState->powerup = 0;
+src/game/mario.c.orig:    if (gMarioState->action) {
+src/game/mario.c.orig:        gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+src/game/mario.c.orig:        if (gMarioState->floor == NULL) {
+src/game/mario.c.orig:            switch (gMarioState->action & ACT_GROUP_MASK) {
+src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+src/game/mario.c.orig:            spawn_wind_particles(0, (gMarioState->floor->force << 8));
+src/game/mario.c.orig:            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c.orig:        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+src/game/mario.c.orig:            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+src/game/mario.c.orig:        gMarioState->marioObj->oInteractStatus = 0;
+src/game/mario.c.orig:        return gMarioState->particleFlags;
+src/game/mario.c.orig:    gMarioState->actionTimer = 0;
+src/game/mario.c.orig:    gMarioState->framesSinceA = 0xFF;
+src/game/mario.c.orig:    gMarioState->framesSinceB = 0xFF;
+src/game/mario.c.orig:    gMarioState->invincTimer = 0;
+src/game/mario.c.orig:        gMarioState->flags = 0;
+src/game/mario.c.orig:        gMarioState->flags = (MARIO_CAP_ON_HEAD | MARIO_NORMAL_CAP);
+src/game/mario.c.orig:    gMarioState->powerup = 0;
+src/game/mario.c.orig:    gMarioState->NewTimer = 0;
+src/game/mario.c.orig:    gMarioState->SubNewTimer = 0;
+src/game/mario.c.orig:    gMarioState->GoldRingCount = 0;
+src/game/mario.c.orig:    gMarioState->PirCount = 10;
+src/game/mario.c.orig:    gMarioState->forwardVel = 0.0f;
+src/game/mario.c.orig:    gMarioState->squishTimer = 0;
+src/game/mario.c.orig:    gMarioState->hurtCounter = 0;
+src/game/mario.c.orig:    gMarioState->healCounter = 0;
+src/game/mario.c.orig:    gMarioState->capTimer = 0;
+src/game/mario.c.orig:    gMarioState->quicksandDepth = 0.0f;
+src/game/mario.c.orig:    gMarioState->heldObj = NULL;
+src/game/mario.c.orig:    gMarioState->riddenObj = NULL;
+src/game/mario.c.orig:    gMarioState->usedObj = NULL;
+src/game/mario.c.orig:    gMarioState->waterLevel =
+src/game/mario.c.orig:    gMarioState->area = gCurrentArea;
+src/game/mario.c.orig:    gMarioState->marioObj = gMarioObject;
+src/game/mario.c.orig:    gMarioState->marioObj->header.gfx.unk38.animID = -1;
+src/game/mario.c.orig:    vec3s_copy(gMarioState->faceAngle, gMarioSpawnInfo->startAngle);
+src/game/mario.c.orig:    vec3s_set(gMarioState->angleVel, 0, 0, 0);
+src/game/mario.c.orig:    vec3s_to_vec3f(gMarioState->pos, gMarioSpawnInfo->startPos);
+src/game/mario.c.orig:    vec3f_set(gMarioState->vel, 0, 0, 0);
+src/game/mario.c.orig:    gMarioState->floorHeight =
+src/game/mario.c.orig:        find_floor(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], &gMarioState->floor);
+src/game/mario.c.orig:    if (gMarioState->pos[1] < gMarioState->floorHeight) {
+src/game/mario.c.orig:        gMarioState->pos[1] = gMarioState->floorHeight;
+src/game/mario.c.orig:    gMarioState->marioObj->header.gfx.pos[1] = gMarioState->pos[1];
+src/game/mario.c.orig:    gMarioState->action =
+src/game/mario.c.orig:        (gMarioState->pos[1] <= (gMarioState->waterLevel - 100)) ? ACT_WATER_IDLE : ACT_IDLE;
+src/game/mario.c.orig:    gMarioState->marioBodyState->punchState = 0;
+src/game/mario.c.orig:    gMarioState->marioObj->oPosX = gMarioState->pos[0];
+src/game/mario.c.orig:    gMarioState->marioObj->oPosY = gMarioState->pos[1];
+src/game/mario.c.orig:    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+src/game/mario.c.orig:    gMarioState->marioObj->oMoveAnglePitch = gMarioState->faceAngle[0];
+src/game/mario.c.orig:    gMarioState->marioObj->oMoveAngleYaw = gMarioState->faceAngle[1];
+src/game/mario.c.orig:    gMarioState->marioObj->oMoveAngleRoll = gMarioState->faceAngle[2];
+src/game/mario.c.orig:    vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
+src/game/mario.c.orig:    vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
+src/game/mario.c.orig:        capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
+src/game/mario.c.orig:    gMarioState->unk00 = 0;
+src/game/mario.c.orig:    gMarioState->flags = 0;
+src/game/mario.c.orig:    gMarioState->action = 0;
+src/game/mario.c.orig:    gMarioState->spawnInfo = &gPlayerSpawnInfos[0];
+src/game/mario.c.orig:    gMarioState->statusForCamera = &gPlayerCameraState[0];
+src/game/mario.c.orig:    gMarioState->marioBodyState = &gBodyStates[0];
+src/game/mario.c.orig:    gMarioState->controller = &gControllers[0];
+src/game/mario.c.orig:    gMarioState->animation = &D_80339D10;
+src/game/mario.c.orig:    gMarioState->numCoins = 0;
+src/game/mario.c.orig:    gMarioState->numMetalStars = 0;
+src/game/mario.c.orig:    gMarioState->lastStarCollected = 0;
+src/game/mario.c.orig:    gMarioState->numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+src/game/mario.c.orig:    gMarioState->numStars -= gMarioState->numMetalStars;
+src/game/mario.c.orig:    gMarioState->numKeys = 0;
+src/game/mario.c.orig:    gMarioState->numLives = 4;
+src/game/mario.c.orig:    gMarioState->health = 0x880;
+src/game/mario.c.orig:    gMarioState->prevNumStarsForDialog = gMarioState->numStars;
+src/game/mario.c.orig:    gMarioState->unkB0 = 0xBD;
+src/game/mario_actions_airborne.c:        if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
+src/game/mario_actions_airborne.c:            gMarioState->numBadgePoints --;
+src/game/mario_actions_airborne.c:    if ((save_file_get_badge_equip() & (1<<1))&&(gMarioState->numBadgePoints > 0)) {
+src/game/mario_actions_airborne.c:            gMarioState->numBadgePoints --;
+src/game/mario_actions_airborne.c:                    if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
+src/game/mario_actions_airborne.c:                        gMarioState->numBadgePoints --;
+src/game/mario_actions_cutscene.c:    u32 actionGroup = gMarioState->action & ACT_GROUP_MASK;
+src/game/mario_actions_cutscene.c:    if ((gMarioState->action == ACT_WAITING_FOR_DIALOG || actionGroup == ACT_GROUP_STATIONARY
+src/game/mario_actions_cutscene.c:        && (!(gMarioState->action & (ACT_FLAG_RIDING_SHELL | ACT_FLAG_INVULNERABLE))
+src/game/mario_actions_cutscene.c:            && gMarioState->action != ACT_FIRST_PERSON)) {
+src/game/mario_actions_cutscene.c:    if (gMarioState->action == ACT_READING_NPC_DIALOG) {
+src/game/mario_actions_cutscene.c:        if (gMarioState->actionState < 8) {
+src/game/mario_actions_cutscene.c:        if (gMarioState->actionState == 8) {
+src/game/mario_actions_cutscene.c:                gMarioState->actionState++; // exit dialog
+src/game/mario_actions_cutscene.c:        gMarioState->usedObj = gCurrentObject;
+src/game/mario_misc.c:    gMarioState->TokenParam2 = gCurrentObject->oBehParams2ndByte;
+src/game/mario_misc.c:        gMarioState->MenuToRender = 1;
+src/game/mario_misc.c:            gMarioState->CostumeID ++;
+src/game/mario_misc.c:            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+src/game/mario_misc.c:                gMarioState->CostumeID ++;
+src/game/mario_misc.c:                if (gMarioState->CostumeID > MaxCostumes) {
+src/game/mario_misc.c:                    gMarioState->CostumeID = 0;
+src/game/mario_misc.c:            if (gMarioState->CostumeID == 0) {
+src/game/mario_misc.c:                gMarioState->CostumeID = MaxCostumes;
+src/game/mario_misc.c:                gMarioState->CostumeID --;
+src/game/mario_misc.c:            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+src/game/mario_misc.c:                gMarioState->CostumeID --;
+src/game/mario_misc.c:                if (gMarioState->CostumeID < 0) {
+src/game/mario_misc.c:                    gMarioState->CostumeID = MaxCostumes;
+src/game/mario_misc.c:        gMarioState->MenuToRender = 0;
+src/game/mario_misc.c:    gCurrentObject->oPosX += 30.0f * sins(gMarioState->faceAngle[1] - 0x4000);
+src/game/mario_misc.c:    gCurrentObject->oPosZ += 30.0f * coss(gMarioState->faceAngle[1] - 0x4000);
+src/game/mario_misc.c:        if (flags & MARIO_VANISH_CAP || gMarioState->flags & MARIO_TELEPORTING)
+src/game/mario_misc.c:        if (gMarioState->powerup == 1) {
+src/game/mario_misc.c:        if (gMarioState->flags & MARIO_WING_CAP) {
+src/game/mario_misc.c:    if (gMarioState->CostumeID == 4) {
+src/game/mario_misc.c:    if (gMarioState->CostumeID == 3) {
+src/game/mario_misc.c:    if (gMarioState->CostumeID == 6) {
+src/game/mario_misc.c:    if (gMarioState->CostumeID == 7) {
+src/game/mario_misc.c.orig:    gCurrentObject->oPosX += 30.0f * sins(gMarioState->faceAngle[1] - 0x4000);
+src/game/mario_misc.c.orig:    gCurrentObject->oPosZ += 30.0f * coss(gMarioState->faceAngle[1] - 0x4000);
+src/game/mario_misc.c.orig:        if (flags & MARIO_VANISH_CAP || gMarioState->flags & MARIO_TELEPORTING)
+src/game/mario_misc.c.rej:-        if (flags & MARIO_VANISH_CAP || gMarioState->flags & MARIO_TELEPORTING)
+src/game/object_helpers.c:            if (gMarioState->health >= 0x100) {
+src/game/object_helpers.c:            if (mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG) {
+src/game/object_helpers.c:            if (gMarioState->action != ACT_READING_NPC_DIALOG || (dialogFlags & DIALOG_UNK1_FLAG_4)) {
+src/game/object_helpers.c:            if (gMarioState->health >= 0x0100) {
+src/game/object_helpers.c:            if (mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG) {
+src/game/object_helpers.c:            } else if (gMarioState->action != ACT_READING_NPC_DIALOG) {
+src/game/object_helpers.c.orig:            if (gMarioState->health >= 0x100) {
+src/game/object_helpers.c.orig:            if (mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG) {
+src/game/object_helpers.c.orig:            if (gMarioState->action != ACT_READING_NPC_DIALOG || (dialogFlags & DIALOG_UNK1_FLAG_4)) {
+src/game/object_helpers.c.orig:            if (gMarioState->health >= 0x0100) {
+src/game/object_helpers.c.orig:            if (mario_ready_to_speak() || gMarioState->action == ACT_READING_NPC_DIALOG) {
+src/game/object_helpers.c.orig:            } else if (gMarioState->action != ACT_READING_NPC_DIALOG) {
+src/game/rendering_graph_node.c:        vec3f_to_vec3s(marioPos3s, gMarioState->pos);
+src/game/rendering_graph_node.c:        //print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"%d",screenX);
+src/game/rendering_graph_node.c:        gMarioState->ScreenPosX = screenX;
+src/game/rendering_graph_node.c:        gMarioState->ScreenPosY = screenY;
+src/game/save_file.c:    gMarioState->numMetalStars = 0;
+src/game/save_file.c:        gMarioState->numMetalStars += save_file_get_course_star_count_metal(fileIndex, minCourse);
+src/game/save_file.c:    saveFile->GlobalCoins = gMarioState->numGlobalCoins;
+src/game/save_file.c:    gMarioState->numGlobalCoins = saveFile->GlobalCoins;
+src/game/save_file.c:    saveFile->MaxGlobalCoins = gMarioState->numMaxGlobalCoins;
+src/game/save_file.c:    saveFile->MaxHP = gMarioState->numMaxHP;
+src/game/save_file.c:    saveFile->MaxFP = gMarioState->numMaxFP;
+src/game/save_file.c:    saveFile->MaxBP = gMarioState->numMaxBP;
+src/game/save_file.c:    saveFile->SavedCostume = gMarioState->CostumeID;
+src/game/save_file.c:        gMarioState->numMaxGlobalCoins = saveFile->MaxGlobalCoins;
+src/game/save_file.c:        gMarioState->numMaxHP = saveFile->MaxHP;
+src/game/save_file.c:        gMarioState->numMaxFP = saveFile->MaxFP;
+src/game/save_file.c:        gMarioState->numMaxBP = saveFile->MaxBP;
+src/game/save_file.c:        gMarioState->CostumeID = saveFile->SavedCostume;
+src/game/save_file.c:        gMarioState->numMaxGlobalCoins = 100;
+src/game/save_file.c:        gMarioState->numMaxHP = 20;
+src/game/save_file.c:        gMarioState->numMaxFP = 20;
+src/game/save_file.c:        gMarioState->numMaxBP = 1;
+src/game/save_file.c:        gMarioState->CostumeID = 0;
+src/game/save_file.c.orig:    gMarioState->numMetalStars = 0;
+src/game/save_file.c.orig:        gMarioState->numMetalStars += save_file_get_course_star_count_metal(fileIndex, minCourse);
+src/game/sound_init.c:    if (gCurrLevelNum == LEVEL_CASTLE && gCurrAreaIndex == 2 && gMarioState->numStars < 70) {
+src/game/sound_init.c:        if (gMarioState->floor != NULL && gMarioState->floor->room == 6) {
+src/game/sound_init.c:            if (gMarioState->pos[2] < 2540.0f) {

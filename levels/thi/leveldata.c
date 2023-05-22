@@ -32,3 +32,18 @@
 #include "levels/thi/areas/1/trajectory.inc.c"
 #include "levels/thi/areas/1/movtext.inc.c"
 #include "levels/thi/areas/2/movtext.inc.c"
+
+#include "levels/thi/leveldata.inc.c"
+
+#include "levels/thi/thi_cage/model.inc.c"
+#include "levels/thi/idol/collision.inc.c"
+#include "levels/thi/idol1/model.inc.c"
+#include "levels/thi/idol2/model.inc.c"
+#include "levels/thi/idol3/model.inc.c"
+#include "levels/thi/idol4/model.inc.c"
+#include "levels/thi/twisty/model.inc.c"
+#include "levels/thi/twisty/collision.inc.c"
+#include "levels/thi/angel/anims/data.inc.c"
+#include "levels/thi/angel/anims/table.inc.c"
+#include "levels/thi/angel/model.inc.c"
+#include "levels/thi/Map13/model.inc.c"

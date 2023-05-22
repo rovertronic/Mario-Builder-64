@@ -20,6 +20,14 @@
 
 #include "config.h"
 #include "config/config_world.h"
+#include "level_update.h"
+
+#include "actors/common1.h"
+
+#include "src/game/save_file.h"
+
+#include "puppycamold.h"
+f32 aspect;
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -89,16 +97,13 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
         G_RM_AA_OPA_SURF,                   // LAYER_OPAQUE_INTER
         G_RM_AA_OPA_SURF,                   // LAYER_OPAQUE_DECAL
         G_RM_AA_TEX_EDGE,                   // LAYER_ALPHA
-#if SILHOUETTE
-        G_RM_AA_TEX_EDGE | ZMODE_DEC,       // LAYER_ALPHA_DECAL
-        G_RM_AA_OPA_SURF,                   // LAYER_SILHOUETTE_OPAQUE
-        G_RM_AA_TEX_EDGE,                   // LAYER_SILHOUETTE_ALPHA
-        G_RM_AA_OPA_SURF,                   // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
-        G_RM_AA_TEX_EDGE,                   // LAYER_OCCLUDE_SILHOUETTE_ALPHA
-#endif
+
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_DECAL
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_INTER
+        G_RM_CLD_SURF,                      // LAYER_CIRCLE_SHADOW
+        G_RM_CLD_SURF,                      // LAYER_CIRCLE_SHADOW_TRANSPARENT
+        G_RM_AA_TEX_EDGE,                   // LAYER_COIN
     } },
     { {
         /* z-buffered */
@@ -107,16 +112,13 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
         G_RM_AA_ZB_OPA_INTER,               // LAYER_OPAQUE_INTER
         G_RM_AA_ZB_OPA_DECAL,               // LAYER_OPAQUE_DECAL
         G_RM_AA_ZB_TEX_EDGE,                // LAYER_ALPHA
-#if SILHOUETTE
-        G_RM_AA_ZB_TEX_EDGE | ZMODE_DEC,    // LAYER_ALPHA_DECAL
-        G_RM_AA_ZB_OPA_SURF,                // LAYER_SILHOUETTE_OPAQUE
-        G_RM_AA_ZB_TEX_EDGE,                // LAYER_SILHOUETTE_ALPHA
-        G_RM_AA_ZB_OPA_SURF,                // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
-        G_RM_AA_ZB_TEX_EDGE,                // LAYER_OCCLUDE_SILHOUETTE_ALPHA
-#endif
+
         G_RM_AA_ZB_XLU_DECAL,               // LAYER_TRANSPARENT_DECAL
         G_RM_AA_ZB_XLU_SURF,                // LAYER_TRANSPARENT
         G_RM_AA_ZB_XLU_INTER,               // LAYER_TRANSPARENT_INTER
+        G_RM_AA_ZB_XLU_DECAL,              // LAYER_CIRCLE_SHADOW
+        G_RM_ZB_CLD_SURF,              // LAYER_CIRCLE_SHADOW_TRANSPARENT
+        G_RM_AA_ZB_TEX_EDGE,                // LAYER_COIN
     } } };
 
 /* Rendermode settings for cycle 2 for all 13 layers. */
@@ -126,16 +128,13 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
         G_RM_AA_OPA_SURF2,                  // LAYER_OPAQUE_INTER
         G_RM_AA_OPA_SURF2,                  // LAYER_OPAQUE_DECAL
         G_RM_AA_TEX_EDGE2,                  // LAYER_ALPHA
-#if SILHOUETTE
-        G_RM_AA_TEX_EDGE2 | ZMODE_DEC,      // LAYER_ALPHA_DECAL
-        G_RM_AA_OPA_SURF2,                  // LAYER_SILHOUETTE_OPAQUE
-        G_RM_AA_TEX_EDGE2,                  // LAYER_SILHOUETTE_ALPHA
-        G_RM_AA_OPA_SURF2,                  // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
-        G_RM_AA_TEX_EDGE2,                  // LAYER_OCCLUDE_SILHOUETTE_ALPHA
-#endif
+
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_DECAL
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_INTER
+        G_RM_CLD_SURF2,                  // LAYER_CIRCLE_SHADOW
+        G_RM_CLD_SURF2,                  // LAYER_CIRCLE_SHADOW_TRANSPARENT
+        G_RM_AA_TEX_EDGE2,              // LAYER_COIN
     } },
     { {
         /* z-buffered */
@@ -144,16 +143,13 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
         G_RM_AA_ZB_OPA_INTER2,              // LAYER_OPAQUE_INTER
         G_RM_AA_ZB_OPA_DECAL2,              // LAYER_OPAQUE_DECAL
         G_RM_AA_ZB_TEX_EDGE2,               // LAYER_ALPHA
-#if SILHOUETTE
-        G_RM_AA_ZB_TEX_EDGE2 | ZMODE_DEC,   // LAYER_ALPHA_DECAL
-        G_RM_AA_ZB_OPA_SURF2,               // LAYER_SILHOUETTE_OPAQUE
-        G_RM_AA_ZB_TEX_EDGE2,               // LAYER_SILHOUETTE_ALPHA
-        G_RM_AA_ZB_OPA_SURF2,               // LAYER_OCCLUDE_SILHOUETTE_OPAQUE
-        G_RM_AA_ZB_TEX_EDGE2,               // LAYER_OCCLUDE_SILHOUETTE_ALPHA
-#endif
+
         G_RM_AA_ZB_XLU_DECAL2,              // LAYER_TRANSPARENT_DECAL
         G_RM_AA_ZB_XLU_SURF2,               // LAYER_TRANSPARENT
         G_RM_AA_ZB_XLU_INTER2,              // LAYER_TRANSPARENT_INTER
+        G_RM_AA_ZB_XLU_DECAL2,              // LAYER_CIRCLE_SHADOW
+        G_RM_ZB_CLD_SURF2,              // LAYER_CIRCLE_SHADOW_TRANSPARENT
+        G_RM_AA_ZB_TEX_EDGE2,          // LAYER_COIN
     } } };
 
 ALIGNED16 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
@@ -305,12 +301,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         renderPhase = &sRenderPhases[phaseIndex];
         startLayer  = renderPhase->startLayer;
         endLayer    = renderPhase->endLayer;
-#ifdef OBJECTS_REJ
-        ucode       = renderPhase->ucode;
-        // Set the ucode for the current render phase
-        switch_ucode(ucode);
-        gSPLookAt(gDisplayListHead++, &lookAt);
-#endif
+
         if (enableZBuffer) {
             // Enable z buffer.
             gDPPipeSync(gDisplayListHead++);
@@ -320,44 +311,55 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         for (currLayer = startLayer; currLayer <= endLayer; currLayer++) {
             // Set 'currList' to the first DisplayListNode on the current layer.
             currList = node->listHeads[ucode][currLayer];
-#if defined(DISABLE_AA) || !SILHOUETTE
+
             // Set the render mode for the current layer.
             gDPSetRenderMode(gDisplayListHead++, mode1List->modes[currLayer],
                                                  mode2List->modes[currLayer]);
-#else
-            if (phaseIndex == RENDER_PHASE_NON_SILHOUETTE) {
-                // To properly cover the silhouette, disable AA.
-                // The silhouette model does not have AA due to the hack used to prevent triangle overlap.
-                gDPSetRenderMode(gDisplayListHead++, (mode1List->modes[currLayer] & ~IM_RD),
-                                                     (mode2List->modes[currLayer] & ~IM_RD));
-            } else {
-                // Set the render mode for the current dl.
-                gDPSetRenderMode(gDisplayListHead++, mode1List->modes[currLayer],
-                                                     mode2List->modes[currLayer]);
+
+
+            if (currLayer == LAYER_CIRCLE_SHADOW) {
+                gSPDisplayList(gDisplayListHead++, dl_shadow_circle);
             }
-#endif
+
+
+            //mr beast: batching coins breaks the game!
+            if (currLayer == LAYER_COIN) {
+                switch((gGlobalTimer/2)%4) {
+                    case 0:
+                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_front);
+                    break;
+                    case 1:
+                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_left);
+                    break;
+                    case 2:
+                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_side);
+                    break;
+                    case 3:
+                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_right);
+                    break;
+                }
+            }
+            
+
             // Iterate through all the displaylists on the current layer.
             while (currList != NULL) {
                 // Add the display list's transformation to the master list.
                 gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
                           (G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH));
-#if SILHOUETTE
-                if (phaseIndex == RENDER_PHASE_SILHOUETTE) {
-                    // Add the current display list to the master list, with silhouette F3D.
-                    gSPDisplayList(gDisplayListHead++, dl_silhouette_begin);
-                    gSPDisplayList(gDisplayListHead++, currList->displayList);
-                    gSPDisplayList(gDisplayListHead++, dl_silhouette_end);
-                } else {
-                    // Add the current display list to the master list.
-                    gSPDisplayList(gDisplayListHead++, currList->displayList);
-                }
-#else
+
                 // Add the current display list to the master list.
                 gSPDisplayList(gDisplayListHead++, currList->displayList);
-#endif
+
                 // Move to the next DisplayListNode.
                 currList = currList->next;
             }
+
+            if (currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT) {
+                gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
+                gSPSetGeometryMode(gDisplayListHead++, G_LIGHTING | G_CULL_BACK);
+                gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
+            }
+
         }
     }
 
@@ -481,6 +483,9 @@ void geo_process_master_list(struct GraphNodeMasterList *node) {
     }
 }
 
+f32 _2DFOV;
+f32 _2DTable[] = {0.6f,0.7f,0.9f};
+
 /**
  * Process a perspective projection node.
  */
@@ -491,18 +496,22 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
     if (node->fnNode.node.children != NULL) {
         u16 perspNorm;
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
-#ifdef WIDE
-        if (gConfig.widescreen && gCurrLevelNum != 0x01){
-            sAspectRatio = 16.0f / 9.0f; // 1.775f
-        } else {
-            sAspectRatio = 4.0f / 3.0f; // 1.33333f
+        
+        sAspectRatio = 4.0f / 3.0f;
+        if (gMarioState->Options & (1<<OPT_WIDESCREEN)) {
+            sAspectRatio = 16.0f / 10.0f;
         }
-#else
-        sAspectRatio = 4.0f / 3.0f; // 1.33333f
-#endif
 
-        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near / (f32)WORLD_SCALE, node->far / (f32)WORLD_SCALE, 1.0f);
-        gSPPerspNormalize(gDisplayListHead++, perspNorm);
+        //guOrtho
+        if (gMarioState->_2D) {
+            _2DFOV = approach_f32_asymptotic(_2DFOV, _2DTable[gMarioState->_2D_Setting], 0.2f);
+            guOrtho(mtx, -800.0f*_2DFOV,800.0f*_2DFOV,-600.0f*_2DFOV,600.0f*_2DFOV, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 100.0f);
+            gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
+            gMarioState->_2D_FOV_PUBLIC = _2DFOV;
+        } else {
+            guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near / (f32)WORLD_SCALE, node->far / (f32)WORLD_SCALE, 1.0f);
+            gSPPerspNormalize(gDisplayListHead++, perspNorm);
+        }
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 
@@ -552,6 +561,100 @@ void geo_process_switch(struct GraphNodeSwitchCase *node) {
     }
 }
 
+union IEEEf2bits {
+    float    f;
+    struct {
+        unsigned int    sign    :1;
+        unsigned int    exp    :8;
+        unsigned int    man    :23;
+    } bits;
+};
+
+enum
+  {
+    FP_NAN =
+# define FP_NAN 0
+      FP_NAN,
+    FP_INFINITE =
+# define FP_INFINITE 1
+      FP_INFINITE,
+    FP_ZERO =
+# define FP_ZERO 2
+      FP_ZERO,
+    FP_SUBNORMAL =
+# define FP_SUBNORMAL 3
+      FP_SUBNORMAL,
+    FP_NORMAL =
+# define FP_NORMAL 4
+      FP_NORMAL
+  };
+
+int
+__fpclassifyf(float f)
+{
+    union IEEEf2bits u;
+    u.f = f;
+    if (u.bits.exp == 0) {
+        if (u.bits.man == 0)
+            return (FP_ZERO);
+        return (FP_SUBNORMAL);
+    }
+    if (u.bits.exp == 255) {
+        if (u.bits.man == 0)
+            return (FP_INFINITE);
+        return (FP_NAN);
+    }
+    return (FP_NORMAL);
+}
+
+#define fpclassify(f) __fpclassifyf(f)
+
+void Get_Screen_Coords(void) {
+        Vec3s marioPos3s;
+        s32 screenX;
+        s32 screenY;
+        f32 float1;
+        f32 float2;
+
+        // Convert Mario's coordinates into vec3s so they can be used in mtxf_mul_vec3s
+        vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
+
+        // Transform Mario's coordinates into view frustrum
+        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+
+        // Perspective divide
+        if (marioPos3s[2] != 0) {
+            float1 = 0.5f - marioPos3s[0] / (f32)marioPos3s[2];
+            float2 = 0.5f - marioPos3s[1] / (f32)marioPos3s[2];
+            if ((fpclassify(float1) == FP_NAN) || (fpclassify(float1) == FP_SUBNORMAL)) {
+                float1 = 0.0f;
+                }
+            if ((fpclassify(float2) == FP_NAN) || (fpclassify(float2) == FP_SUBNORMAL)) {
+                float2 = 0.0f;
+                }
+            screenX = 2 * (float1) * (gCurGraphNodeRoot->width);
+            screenY = 2 * (float2) * (gCurGraphNodeRoot->height);
+            }
+
+        if (marioPos3s[2] > 0) {
+            return;
+            }
+
+        gMarioState->ScreenPosX = screenX;
+        gMarioState->ScreenPosY = screenY;
+    }
+
+static void make_roll_matrix(Mtx *mtx, s16 angle) {
+    Mat4 temp;
+
+    mtxf_identity(temp);
+    temp[0][0] = coss(angle);
+    temp[0][1] = sins(angle);
+    temp[1][0] = -temp[0][1];
+    temp[1][1] = temp[0][0];
+    guMtxF2L(temp, mtx);
+}
+
 /**
  * Process a camera node.
  */
@@ -559,10 +662,12 @@ void geo_process_camera(struct GraphNodeCamera *node) {
     Mat4 cameraTransform;
     Mtx *rollMtx = alloc_display_list(sizeof(*rollMtx));
 
+
+
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
-    mtxf_rotate_xy(rollMtx, node->rollScreen);
+    make_roll_matrix(rollMtx, node->rollScreen);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rollMtx), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
 
@@ -576,6 +681,7 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         geo_process_node_and_siblings(node->fnNode.node.children);
         gCurGraphNodeCamera = NULL;
     }
+    Get_Screen_Coords();
     gMatStackIndex--;
 }
 
@@ -921,10 +1027,15 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
                 gCurrShadow.floorNormal, shadowPos, gCurrShadow.scale, gCurGraphNodeObject->angle[1]);
 
             inc_mat_stack();
-            geo_append_display_list(
-                (void *) VIRTUAL_TO_PHYSICAL(shadowList),
-                gCurrShadow.isDecal ? LAYER_TRANSPARENT_DECAL : LAYER_TRANSPARENT
-            );
+
+            s32 layer;
+            if (node->shadowType == SHADOW_CIRCLE) {
+                layer = gCurrShadow.isDecal ? LAYER_CIRCLE_SHADOW : LAYER_CIRCLE_SHADOW_TRANSPARENT;
+            } else {
+                layer = gCurrShadow.isDecal ? LAYER_TRANSPARENT_DECAL : LAYER_TRANSPARENT;
+            }
+
+            geo_append_display_list( (void *) VIRTUAL_TO_PHYSICAL(shadowList), layer);
 
             gMatStackIndex--;
         }
@@ -1006,6 +1117,10 @@ s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
     // but the issue will be more apparent on widescreen.
     // HackerSM64: This multiplication is done regardless of aspect ratio to fix object pop-in on the edges of the screen (which happens at 4:3 too)
     // hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
+
+    if (gMarioState->_2D) {
+        hScreenEdge *= 8.0f;
+    }
 
     // Check whether the object is horizontally in view
     if (matrix[3][0] > hScreenEdge + cullingRadius) {
@@ -1250,6 +1365,10 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         vec3s_set(viewport->vp.vtrans, node->x * 4, node->y * 4, 511);
         vec3s_set(viewport->vp.vscale, node->width * 4, node->height * 4, 511);
 
+        if (gIsConsole == FALSE) {
+            clear_framebuffer(0);
+        }
+
         if (b != NULL) {
             clear_framebuffer(clearColor);
             make_viewport_clip_rect(b);
@@ -1273,10 +1392,11 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         }
         gCurGraphNodeRoot = NULL;
 #ifdef VANILLA_DEBUG
-        if (gShowDebugText) {
+        if (1) {
             print_text_fmt_int(180, 36, "MEM %d", gDisplayListHeap->totalSpace - gDisplayListHeap->usedSpace);
         }
 #endif
         main_pool_free(gDisplayListHeap);
     }
 }
+

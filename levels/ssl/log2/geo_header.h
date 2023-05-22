@@ -1,0 +1,10 @@
+extern const GeoLayout log2_geo[];
+extern u8 log2_SMB2_Log_ci4[];
+extern u8 log2_SMB2_Log_ci4_pal_rgba16[];
+extern Vtx log2_vis_001_mesh_layer_4_vtx_cull[8];
+extern Vtx log2_vis_001_mesh_layer_4_vtx_0[4];
+extern Gfx log2_vis_001_mesh_layer_4_tri_0[];
+extern Gfx mat_log2_SMB2_Log[];
+extern Gfx mat_revert_log2_SMB2_Log[];
+extern Gfx log2_vis_001_mesh_layer_4[];
+extern Gfx log2_material_revert_render_settings[];

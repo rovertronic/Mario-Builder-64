@@ -45,6 +45,7 @@
 #include "spawn_sound.h"
 #include "rumble_init.h"
 #include "puppylights.h"
+#include "rovent.h"
 
 #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"
@@ -124,7 +125,7 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 #include "behaviors/square_platform_cycle.inc.c"
 #include "behaviors/piranha_bubbles.inc.c"
 #include "behaviors/purple_switch.inc.c"
-#include "behaviors/metal_box.inc.c"
+// #include "behaviors/metal_box.inc.c"
 #include "behaviors/breakable_box.inc.c"
 
 // not sure what this is doing here. not in a behavior file.
@@ -188,6 +189,8 @@ void spawn_sparkle_particles(s32 n, s32 radius, s32 height, s32 r) {
 #include "behaviors/lll_volcano_flames.inc.c"
 #include "behaviors/lll_hexagonal_ring.inc.c"
 #include "behaviors/lll_sinking_rectangle.inc.c"
+#include "behaviors/cosmic_phantasm.inc.c"
+#include "behaviors/phonograph.inc.c"
 #include "behaviors/tilting_inverted_pyramid.inc.c"
 #include "behaviors/tox_box.inc.c"
 #include "behaviors/piranha_plant.inc.c"
@@ -234,3 +237,41 @@ void set_obj_anim_with_accel_and_sound(s16 frame1, s16 frame2, s32 sound) {
 #include "behaviors/strong_wind_particle.inc.c"
 #include "behaviors/sl_snowman_wind.inc.c"
 #include "behaviors/sl_walking_penguin.inc.c"
+#include "behaviors/edward.inc.c"
+#include "behaviors/snake.inc.c"
+
+u8 MouthOpen;
+
+Gfx *geo_rotate_signjaw1(s32 run, struct GraphNode *node) {
+    if (run == TRUE) {
+        if (MouthOpen == FALSE) {
+            if (((struct GraphNodeRotation *) node->next)->rotation[2] > -0x4000) {
+                ((struct GraphNodeRotation *) node->next)->rotation[2] -= 0x400;
+                }
+            }
+            else
+            {
+            if (((struct GraphNodeRotation *) node->next)->rotation[2] < 0x3000) {
+                ((struct GraphNodeRotation *) node->next)->rotation[2] += 0x400;
+                }
+            }
+    }
+    return 0;
+}
+
+Gfx *geo_rotate_signjaw2(s32 run, struct GraphNode *node) {
+    if (run == TRUE) {
+        if (MouthOpen == TRUE) {
+            if (((struct GraphNodeRotation *) node->next)->rotation[2] > -0x3000) {
+                ((struct GraphNodeRotation *) node->next)->rotation[2] -= 0x400;
+                }
+            }
+            else
+            {
+            if (((struct GraphNodeRotation *) node->next)->rotation[2] < 0x4000) {
+                ((struct GraphNodeRotation *) node->next)->rotation[2] += 0x400;
+                }
+            }
+    }
+    return 0;
+}

@@ -1,0 +1,10 @@
+extern const GeoLayout agtri_geo[];
+extern Lights1 agtri_fanmetal_lights;
+extern u8 agtri_Fan1_ci8[];
+extern u8 agtri_Fan1_ci8_pal_rgba16[];
+extern Vtx agtri_staticplatforms_mesh_layer_1_vtx_0[48];
+extern Gfx agtri_staticplatforms_mesh_layer_1_tri_0[];
+extern Gfx mat_agtri_fanmetal[];
+extern Gfx mat_revert_agtri_fanmetal[];
+extern Gfx agtri_staticplatforms_mesh_layer_1[];
+extern Gfx agtri_material_revert_render_settings[];

@@ -15,3 +15,9 @@
 
 #include "levels/castle_courtyard/areas/1/spire/geo.inc.c"
 #include "levels/castle_courtyard/areas/1/geo.inc.c"
+#include "levels/castle_courtyard/geo.inc.c"
+
+#include "levels/castle_courtyard/edward/geo.inc.c"
+#include "levels/castle_courtyard/flappy_pipe/geo.inc.c"
+#include "levels/castle_courtyard/snakeball/geo.inc.c"
+#include "levels/castle_courtyard/shrnling/geo.inc.c"

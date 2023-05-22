@@ -129,7 +129,7 @@ void bhv_flame_moving_forward_growing_loop(void) {
     cur_obj_set_pos_via_transform();
     cur_obj_update_floor_height();
 
-    if (o->oFlameScale > 30.0f) {
+    if (o->oFlameScale > 20.0f) {
         obj_mark_for_deletion(o);
     }
 

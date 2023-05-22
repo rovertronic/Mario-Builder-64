@@ -32,14 +32,10 @@ static char sLevelSelectStageNames[64][16] = {
 #undef STUB_LEVEL
 #undef DEFINE_LEVEL
 
-#ifdef KEEP_MARIO_HEAD
-#ifndef DISABLE_DEMO
 static u16 sDemoCountdown = 0;
-#endif
-static s16 sPlayMarioGreeting = TRUE;
-static s16 sPlayMarioGameOver = TRUE;
+// static s16 sPlayMarioGreeting = TRUE; // unused
+// static s16 sPlayMarioGameOver = TRUE;
 
-#ifndef DISABLE_DEMO
 #define PRESS_START_DEMO_TIMER 800
 
 /**
@@ -79,12 +75,32 @@ s32 run_level_id_or_demo(s32 level) {
     }
     return level;
 }
-#endif
-#endif
-
 
 u8 gLevelSelectHoldKeyIndex = 0;
 u8 gLevelSelectHoldKeyTimer = 0;
+
+extern u16 gDemoInputListIDForIntro;
+extern int gPressedStart;
+
+int start_demo(int timer)
+{
+	gCurrDemoInput = NULL;
+	gPressedStart = 0;
+    // start the mario demo animation for the demo list.
+    load_patchable_table(&gDemoInputsBuf, gDemoInputListIDForIntro);
+
+    // if the next demo sequence ID is the count limit, reset it back to
+    // the first sequence.
+
+    if((++gDemoInputListIDForIntro) == gDemoInputsBuf.dmaTable->count)
+        gDemoInputListIDForIntro = 0;
+
+    gCurrDemoInput = ((struct DemoInput *) gDemoInputsBuf.bufTarget) + 1; // add 1 (+4) to the pointer to skip the demoID.
+    timer = (s8)((struct DemoInput *) gDemoInputsBuf.bufTarget)->timer; // TODO: see if making timer s8 matches
+    gCurrSaveFileNum = 1;
+    gCurrActNum = 6;
+    return timer;
+}
 
 /**
  * Level select intro function, updates the selected stage
@@ -247,7 +263,7 @@ s32 intro_game_over(void) {
  */
 s32 intro_play_its_a_me_mario(void) {
     set_background_music(0, SEQ_SOUND_PLAYER, 0);
-    play_sound(SOUND_MENU_COIN_ITS_A_ME_MARIO, gGlobalSoundSource);
+    play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_COSMIC_SEED_COLLECT), 0);
     return LEVEL_NONE + 1;
 }
 

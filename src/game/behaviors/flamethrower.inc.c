@@ -35,7 +35,7 @@ void bhv_flamethrower_flame_loop(void) {
     cur_obj_scale(scale);
 
     if (o->oBehParams2ndByte == FLAMETHROWER_BP_UPWARDS) {
-        o->oPosY += o->oForwardVel; // weird?
+        o->oPosY += o->oForwardVel; // weird? //not wierd dumb ass, this is for flame going up // rude :(
     } else {
         cur_obj_move_using_fvel_and_gravity();
     }

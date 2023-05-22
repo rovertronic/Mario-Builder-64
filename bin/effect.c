@@ -105,6 +105,17 @@ const Texture *const bubble_ptr_0B006848[] = {
     effect_0B006048,
 };
 
+// Rain
+// 0x0B006048
+ALIGNED8 static const u8 effect_rain[] = {
+#include "textures/effect/rain.rgba16.inc.c"
+};
+
+// rainarry
+const u8 *const rain_ptr[] = {
+    effect_rain,
+};
+
 // Tiny Bubble
 // 0x0B00684C
 ALIGNED8 const Texture effect_0B00684C[] = {

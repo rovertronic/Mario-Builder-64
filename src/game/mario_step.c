@@ -9,6 +9,15 @@
 #include "game_init.h"
 #include "interaction.h"
 #include "mario_step.h"
+#include "surface_terrains.h"
+#include "ingame_menu.h"
+
+#include "level_table.h"
+#include "level_update.h"
+#include "main.h"
+#include "area.h"
+#include "platform_displacement.h"
+#include "mario_actions_airborne.h"
 
 #include "config.h"
 
@@ -110,7 +119,7 @@ void mario_bonk_reflection(struct MarioState *m, u32 negateSpeed) {
         s16 wallAngle = m->wallYaw;
         m->faceAngle[1] = wallAngle - (s16)(m->faceAngle[1] - wallAngle);
 
-        play_sound((m->flags & MARIO_METAL_CAP) ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
+        play_sound((m->flags & METAL_SOUND_FLAG) ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
                    m->marioObj->header.gfx.cameraToObject);
     } else {
         play_sound(SOUND_ACTION_HIT, m->marioObj->header.gfx.cameraToObject);
@@ -249,6 +258,21 @@ void stop_and_set_height_to_floor(struct MarioState *m) {
     vec3s_set(marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
 }
 
+void apply_conveyor(struct MarioState *m) {
+    s16 currentAngle;
+    f32 currentSpeed;
+
+    if (m->floor->type == SURFACE_FLOWING_WATER) {
+        currentAngle = m->floor->force << 8;
+        currentSpeed = (f32)(m->floor->force >> 8);
+
+        sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
+        sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
+        sShouldApplyInertia = TRUE;
+        sInertiaFirstFrame = TRUE;
+    }
+}
+
 s32 stationary_ground_step(struct MarioState *m) {
     struct Object *marioObj = m->marioObj;
     u32 stepResult = GROUND_STEP_NONE;
@@ -266,6 +290,8 @@ s32 stationary_ground_step(struct MarioState *m) {
         vec3f_copy(marioObj->header.gfx.pos, m->pos);
         vec3s_set(marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
     }
+
+    apply_conveyor(m);
 
     return stepResult;
 }
@@ -341,11 +367,15 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     return GROUND_STEP_NONE;
 }
 
+u8 do_tile_flip = FALSE;
+
 s32 perform_ground_step(struct MarioState *m) {
     s32 i;
     u32 stepResult;
     Vec3f intendedPos;
     const f32 numSteps = 4.0f;
+
+    do_tile_flip = FALSE;
 
     set_mario_wall(m, NULL);
 
@@ -367,6 +397,19 @@ s32 perform_ground_step(struct MarioState *m) {
     if (stepResult == GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS) {
         stepResult = GROUND_STEP_HIT_WALL;
     }
+
+    if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND)
+    {
+        stepResult = GROUND_STEP_DEATH;
+        m->vel[0] = -2 * m->wall->normal.x;
+        m->vel[1] = -2 * m->wall->normal.y;
+        m->vel[2] = -2 * m->wall->normal.z;
+        drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 1);
+        return stepResult;
+    }
+
+    apply_conveyor(m);
+
     return stepResult;
 }
 
@@ -470,9 +513,13 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
     f32 waterLevel = find_water_level(nextPos[0], nextPos[2]);
 
+    if ((upperWall.numWalls>0)||(lowerWall.numWalls>0)) {
+        bullet_fuel = 60;
+    }
+
+
     //! The water pseudo floor is not referenced when your intended qstep is
     // out of bounds, so it won't detect you as landing.
-
     if (floor == NULL) {
         if (nextPos[1] <= m->floorHeight) {
             m->pos[1] = m->floorHeight;
@@ -606,21 +653,23 @@ u32 should_strengthen_gravity_for_jump_ascent(struct MarioState *m) {
 }
 
 void apply_gravity(struct MarioState *m) {
+    f32 grav_mult = m->gravMult;
+
     if (m->action == ACT_TWIRLING && m->vel[1] < 0.0f) {
         apply_twirl_gravity(m);
     } else if (m->action == ACT_SHOT_FROM_CANNON) {
-        m->vel[1] -= 1.0f;
+        m->vel[1] -= 1.0f*grav_mult;
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
         }
     } else if (m->action == ACT_LONG_JUMP || m->action == ACT_SLIDE_KICK
                || m->action == ACT_BBH_ENTER_SPIN) {
-        m->vel[1] -= 2.0f;
+        m->vel[1] -= 2.0f*grav_mult;
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
         }
     } else if (m->action == ACT_LAVA_BOOST || m->action == ACT_FALL_AFTER_STAR_GRAB) {
-        m->vel[1] -= 3.2f;
+        m->vel[1] -= 3.2f*grav_mult;
         if (m->vel[1] < -65.0f) {
             m->vel[1] = -65.0f;
         }
@@ -646,7 +695,7 @@ void apply_gravity(struct MarioState *m) {
             }
         }
     } else {
-        m->vel[1] -= 4.0f;
+        m->vel[1] -= 4.0f*grav_mult;
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
         }
@@ -675,12 +724,19 @@ void apply_vertical_wind(struct MarioState *m) {
     }
 }
 
+u8 tile_flip_state;
+
 s32 perform_air_step(struct MarioState *m, u32 stepArg) {
     Vec3f intendedPos;
     const f32 numSteps = 4.0f;
     s32 i;
     s32 quarterStepResult;
     s32 stepResult = AIR_STEP_NONE;
+
+    if (do_tile_flip == FALSE) {
+        do_tile_flip = TRUE;
+        tile_flip_state = !tile_flip_state;
+    }
 
     set_mario_wall(m, NULL);
 
@@ -699,6 +755,16 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
             || quarterStepResult == AIR_STEP_GRABBED_CEILING
             || quarterStepResult == AIR_STEP_HIT_LAVA_WALL) {
             break;
+        }
+
+        if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND)
+        {
+            stepResult = AIR_STEP_DEATH;
+            m->vel[0] = -2 * m->wall->normal.x;
+            m->vel[1] = -2 * m->wall->normal.y;
+            m->vel[2] = -2 * m->wall->normal.z;
+            drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 1);
+            return stepResult;
         }
     }
 

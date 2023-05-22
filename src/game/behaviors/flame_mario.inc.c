@@ -19,7 +19,11 @@ void bhv_black_smoke_bowser_loop(void) {
 
 void bhv_black_smoke_mario_loop(void) {
     if (o->oTimer == 0) {
-        cur_obj_set_pos_relative(gMarioObject, 0, 0, -30.0f);
+        //if (gCurrLevelNum != LEVEL_CCM) { //worst hardcoded bullshit you've seen in your entire life
+
+        if (o->parentObj == gMarioObject) { //that's better
+            cur_obj_set_pos_relative(gMarioObject, 0, 0, -30.0f);
+            }
         o->oForwardVel = random_float() * 2 + 0.5f;
         o->oMoveAngleYaw = (gMarioObject->oMoveAngleYaw + 0x7000) + random_float() * 8192.0f;
         o->oVelY = 8.0f;
@@ -28,13 +32,14 @@ void bhv_black_smoke_mario_loop(void) {
     o->oMoveAngleYaw += o->oAngleVelYaw;
     o->oPosY += o->oVelY;
 #ifdef BURN_SMOKE_FIX
-    cur_obj_scale(1.0f + (o->oTimer / 16.0f));
+    cur_obj_scale(0.5f + (o->oTimer / 32.0f)); //fuck you rdp
     o->oOpacity -= 4;
     if (o->oOpacity < 10) {
         obj_mark_for_deletion(o);
     }
 #endif
 }
+//hackersm64 devs are so evil, diobolical even!
 
 void bhv_flame_mario_loop(void) {
     cur_obj_scale(2.0f);

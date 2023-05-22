@@ -43,3 +43,13 @@
 #include "levels/ttm/star_smiley/geo.inc.c"
 #include "levels/ttm/moon_smiley/geo.inc.c"
 #include "levels/ttm/slide_exit_podium/geo.inc.c"
+
+#include "levels/ttm/geo.inc.c"
+
+#include "levels/ttm/killerlaser/geo.inc.c"
+#include "levels/ttm/bean/geo.inc.c"
+#include "levels/ttm/mic/geo.inc.c"
+#include "levels/ttm/alientree/geo.inc.c"
+#include "levels/ttm/alienball/geo.inc.c"
+#include "levels/ttm/mill/geo.inc.c"
+#include "levels/ttm/vflood/geo.inc.c"

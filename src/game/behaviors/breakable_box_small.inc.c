@@ -14,7 +14,7 @@ struct ObjectHitbox sBreakableBoxSmallHitbox = {
 
 void bhv_breakable_box_small_init(void) {
     o->oGravity = 2.5f;
-    o->oFriction = 0.99f;
+    o->oFriction = 0.97f;
     o->oBuoyancy = 1.4f;
     cur_obj_scale(0.4f);
     obj_set_hitbox(o, &sBreakableBoxSmallHitbox);
@@ -45,11 +45,11 @@ void small_breakable_box_act_move(void) {
     }
 
     if (collisionFlags & OBJ_COL_FLAG_HIT_WALL) {
-        spawn_mist_particles();
-        spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 0.7f, 3);
-        obj_spawn_yellow_coins(o, 3);
-        create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        // spawn_mist_particles();
+        // spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 0.7f, 3);
+        // obj_spawn_yellow_coins(o, 3);
+        // create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+        // o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 
     obj_check_floor_death(collisionFlags, sObjFloor);
@@ -58,16 +58,7 @@ void small_breakable_box_act_move(void) {
 void breakable_box_small_released_loop(void) {
     o->oBreakableBoxSmallFramesSinceReleased++;
 
-    // Begin flashing
-    if (o->oBreakableBoxSmallFramesSinceReleased > 810) {
-        COND_BIT((o->oBreakableBoxSmallFramesSinceReleased & 0x1), o->header.gfx.node.flags, GRAPH_RENDER_INVISIBLE);
-    }
 
-    // Despawn, and create a corkbox respawner
-    if (o->oBreakableBoxSmallFramesSinceReleased > 900) {
-        create_respawner(MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall, 3000);
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    }
 }
 
 void breakable_box_small_idle_loop(void) {
@@ -77,12 +68,21 @@ void breakable_box_small_idle_loop(void) {
             break;
 
         case OBJ_ACT_LAVA_DEATH:
-            obj_lava_death();
+            // obj_lava_death();
+                o->oPosX = o->oHomeX;
+                o->oPosY = o->oHomeY;
+                o->oPosZ = o->oHomeZ;
+                o->oAction = 0;
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
-            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall, 3000);
+            // o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+            // create_respawner(MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall, 3000);
+                o->oPosX = o->oHomeX;
+                o->oPosY = o->oHomeY;
+                o->oPosZ = o->oHomeZ;
+                o->oAction = 0;
+
             break;
     }
 
@@ -116,12 +116,27 @@ void breakable_box_small_get_thrown(void) {
 }
 
 void bhv_breakable_box_small_loop(void) {
+
+    o->oForwardVel = 0.0f;
+    near_music_box = FALSE;
+
+    if (o->oBehParams2ndByte == 0) {
+        if (o->oDistanceToMario < 1000.0f) {
+                play_secondary_music(0x0B, 0, 255, 1000);
+                o->oPiranhaPlantSleepMusicState = 0;
+            } else if ((o->oPiranhaPlantSleepMusicState == 0)&&(o->oHeldState == 0)) {
+                o->oPiranhaPlantSleepMusicState++;
+                func_80321080(50);
+            }
+        }
+
     switch (o->oHeldState) {
         case HELD_FREE:
             breakable_box_small_idle_loop();
             break;
 
         case HELD_HELD:
+            near_music_box = TRUE;
             cur_obj_disable_rendering();
             cur_obj_become_intangible();
             break;

@@ -1,0 +1,11 @@
+extern void scroll_wdw_dl_vis_mesh_layer_5_vtx_0();
+extern void scroll_sts_mat_wdw_dl_Blinkers();
+extern void scroll_wdw_dl_vis_mesh_layer_1_vtx_0();
+extern void scroll_sts_mat_wdw_dl_Sign11();
+extern void scroll_sts_mat_wdw_dl_Lights();
+extern void scroll_sts_mat_wdw_dl_Sign9();
+extern void scroll_sts_mat_wdw_dl_Sign10();
+extern void scroll_wdw_dl_Cube_010_mesh_layer_1_vtx_7();
+extern void scroll_wdw_dl_Cube_010_mesh_layer_1_vtx_8();
+extern void scroll_wdw_dl_Cube_010_mesh_layer_1_vtx_9();
+extern void scroll_wdw();

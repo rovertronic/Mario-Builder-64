@@ -62,7 +62,7 @@ YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 KOOPA_DIRS       := koopa_flag poundable_pole koopa piranha_plant whomp chain_ball chain_chomp
 CAPSWITCH_DIRS   := capswitch springboard
 CHILLYCHIEF_DIRS := chillychief moneybag
-BULLY_DIRS       := bully blargg
+BULLY_DIRS       := bully blargg motos
 SPINDRIFT_DIRS   := spindrift penguin snowman
 KING_BOBOMB_DIRS := king_bobomb water_bubble
 BOO_DIRS         := bookend book chair small_key mad_piano boo haunted_cage
@@ -264,6 +264,9 @@ $(BUILD_DIR)/bin/%_skybox.elf: SEGMENT_ADDRESS := 0x0A000000
 # intro and ipl3 textures are not compressed
 INTRO_RAW_FILES              := $(wildcard $(TEXTURE_DIR)/intro_raw/*.png)
 $(BUILD_DIR)/src/goddard/renderer.o: $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%.inc.c,$(INTRO_RAW_FILES)))
+
+BAD_APPLE_TEXTURE_FILES     := $(wildcard  $(TEXTURE_DIR)/bad_apple/*.png)
+BAD_APPLE_RAW_FILES         := $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%,$(BAD_APPLE_TEXTURE_FILES)))
 
 IPL3_TEXTURE_FILES          := $(wildcard $(TEXTURE_DIR)/ipl3_raw/*.png)
 IPL3_RAW_FILES              := $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%,$(IPL3_TEXTURE_FILES)))

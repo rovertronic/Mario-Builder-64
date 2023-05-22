@@ -18,3 +18,16 @@
 #include "levels/ddd/submarine/geo.inc.c"
 #include "levels/ddd/areas/1/geo.inc.c"
 #include "levels/ddd/areas/2/geo.inc.c"
+
+#include "levels/ddd/geo.inc.c"
+
+#include "levels/ddd/thwompform/geo.inc.c"
+#include "levels/ddd/banner/geo.inc.c"
+#include "levels/ddd/bewer/geo.inc.c"
+#include "levels/ddd/whplat/geo.inc.c"
+#include "levels/ddd/weakgrate/geo.inc.c"
+#include "levels/ddd/thwompking/geo.inc.c"
+#include "levels/ddd/thwompqueen/geo.inc.c"
+#include "levels/ddd/queenrock/geo.inc.c"
+#include "levels/ddd/thwompgate/geo.inc.c"
+#include "levels/ddd/thwompguard/geo.inc.c"

@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "print.h"
 #include "segment2.h"
+#include "puppycamold.h"
 
 /**
  * This file handles printing and formatting the colorful text that
@@ -22,7 +23,7 @@ struct TextLabel {
  * Stores the text to be rendered on screen
  * and how they are to be rendered.
  */
-struct TextLabel *sTextLabels[52];
+struct TextLabel *sTextLabels[70];
 s16 sTextLabelsCount = 0;
 
 /**
@@ -168,6 +169,65 @@ void parse_width_field(const char *str, s32 *srcIndex, u8 *width, s8 *zeroPad) {
  * Warning: this fails on too large numbers, because format_integer has bugs
  * related to overflow. For romhacks, prefer sprintf + print_text.
  */
+void print_text_fmt_int2(s32 x, s32 y, const char *str, s32 n, s32 n2) {
+    char c = 0;
+    s8 zeroPad = FALSE;
+    u8 width = 0;
+    s32 base = 0;
+    s32 len = 0;
+    s32 srcIndex = 0;
+    u8 counts = 0;
+
+    // Don't continue if there is no memory to do so.
+    if ((sTextLabels[sTextLabelsCount] = mem_pool_alloc(gEffectsMemoryPool,
+                                                        sizeof(struct TextLabel))) == NULL) {
+        return;
+    }
+
+    sTextLabels[sTextLabelsCount]->x = x;
+    sTextLabels[sTextLabelsCount]->y = y;
+    //
+    c = str[srcIndex];
+
+    while (c != 0) {
+        if (c == '%') {
+            srcIndex++;
+
+            parse_width_field(str, &srcIndex, &width, &zeroPad);
+
+            if (str[srcIndex] != 'd' && str[srcIndex] != 'x') {
+                break;
+            }
+            if (str[srcIndex] == 'd') {
+                base = 10;
+                counts++;
+            }
+            if (str[srcIndex] == 'x') {
+                base = 16;
+            }
+
+            srcIndex++;
+
+            if (counts == 1) {
+                format_integer(n, base, sTextLabels[sTextLabelsCount]->buffer + len, &len, width, zeroPad);
+                }
+                else
+                {
+                format_integer(n2, base, sTextLabels[sTextLabelsCount]->buffer + len, &len, width, zeroPad);
+                }
+        } else // straight copy
+        {
+            sTextLabels[sTextLabelsCount]->buffer[len] = c;
+            len++;
+            srcIndex++;
+        }
+        c = str[srcIndex];
+    }
+
+    sTextLabels[sTextLabelsCount]->length = len;
+    sTextLabelsCount++;
+}
+
 void print_text_fmt_int(s32 x, s32 y, const char *str, s32 n) {
     char c = 0;
     s8 zeroPad = FALSE;
@@ -184,7 +244,7 @@ void print_text_fmt_int(s32 x, s32 y, const char *str, s32 n) {
 
     sTextLabels[sTextLabelsCount]->x = x;
     sTextLabels[sTextLabelsCount]->y = y;
-
+    //
     c = str[srcIndex];
 
     while (c != 0) {
@@ -402,10 +462,10 @@ void render_textrect(s32 x, s32 y, s32 pos) {
     s32 rectX;
     s32 rectY;
 
-#ifndef WIDESCREEN
-    // For widescreen we must allow drawing outside the usual area
-    clip_to_bounds(&rectBaseX, &rectBaseY);
-#endif
+    if (!opt_widescreen) {
+        // For widescreen we must allow drawing outside the usual area
+        clip_to_bounds(&rectBaseX, &rectBaseY);
+    }
     rectX = rectBaseX;
     rectY = rectBaseY;
     gSPTextureRectangle(gDisplayListHead++, rectX << 2, rectY << 2, (rectX + 15) << 2,

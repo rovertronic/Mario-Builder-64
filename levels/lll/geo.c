@@ -42,3 +42,14 @@
 #include "levels/lll/areas/1/geo.inc.c"
 #include "levels/lll/volcano_falling_trap/geo.inc.c"
 #include "levels/lll/areas/2/geo.inc.c"
+
+#include "levels/lll/geo.inc.c"
+
+#include "levels/lll/mouse/geo.inc.c"
+#include "levels/lll/cfan/geo.inc.c"
+#include "levels/lll/bdoor/geo.inc.c"
+#include "levels/lll/trap/geo.inc.c"
+#include "levels/lll/cheese/geo.inc.c"
+#include "levels/lll/spork/geo.inc.c"
+#include "levels/lll/vaccum/geo.inc.c"
+#include "levels/lll/sock/geo.inc.c"

@@ -45,3 +45,18 @@
 #include "levels/bitfs/sinking_platforms/geo.inc.c"
 #include "levels/bitfs/seesaw_platform/geo.inc.c"
 #include "levels/bitfs/areas/1/geo.inc.c"
+
+#include "levels/bitfs/geo.inc.c"
+
+#include "levels/bitfs/flip/geo.inc.c"
+#include "levels/bitfs/projector2/geo.inc.c"
+#include "levels/bitfs/projectorhandle2/geo.inc.c"
+#include "levels/bitfs/movie3/geo.inc.c"
+#include "levels/bitfs/movie4/geo.inc.c"
+#include "levels/bitfs/sr_statue/geo.inc.c"
+#include "levels/bitfs/movie5/geo.inc.c"
+#include "levels/bitfs/saw/geo.inc.c"
+#include "levels/bitfs/movie6/geo.inc.c"
+#include "levels/bitfs/movie7/geo.inc.c"
+#include "levels/bitfs/sr_spike/geo.inc.c"
+#include "levels/bitfs/sr_ball/geo.inc.c"

@@ -1300,55 +1300,55 @@ static const Gfx inside_castle_seg7_painting_dl_070235B8[] = {
     gsSPBranchList(inside_castle_seg7_painting_dl_07023580),
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235C0[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235C0[] = {
     inside_castle_seg7_texture_0700B800, inside_castle_seg7_texture_0700A800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235C8[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235C8[] = {
     inside_castle_seg7_texture_0700D800, inside_castle_seg7_texture_0700C800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235D0[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235D0[] = {
     inside_castle_seg7_texture_0700F800, inside_castle_seg7_texture_0700E800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235D8[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235D8[] = {
     inside_castle_seg7_texture_07011800, inside_castle_seg7_texture_07010800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235E0[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235E0[] = {
     inside_castle_seg7_texture_07012800, inside_castle_seg7_texture_07013800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235E8[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235E8[] = {
     inside_castle_seg7_texture_07015800, inside_castle_seg7_texture_07014800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235F0[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235F0[] = {
     inside_castle_seg7_texture_07016800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235F4[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235F4[] = {
     inside_castle_seg7_texture_07017000,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_070235F8[] = {
+static const u8 *const inside_castle_seg7_painting_textures_070235F8[] = {
     inside_castle_seg7_texture_07018800, inside_castle_seg7_texture_07017800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_07023600[] = {
+static const u8 *const inside_castle_seg7_painting_textures_07023600[] = {
     inside_castle_seg7_texture_0701A800, inside_castle_seg7_texture_07019800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_07023608[] = {
+static const u8 *const inside_castle_seg7_painting_textures_07023608[] = {
     inside_castle_seg7_texture_0701C800, inside_castle_seg7_texture_0701B800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_07023610[] = {
+static const u8 *const inside_castle_seg7_painting_textures_07023610[] = {
     inside_castle_seg7_texture_0701E800, inside_castle_seg7_texture_0701D800,
 };
 
-ALIGNED8 static const Texture *const inside_castle_seg7_painting_textures_07023618[] = {
+static const u8 *const inside_castle_seg7_painting_textures_07023618[] = {
     inside_castle_seg7_texture_07020800, inside_castle_seg7_texture_0701F800,
 };
 
@@ -1360,7 +1360,7 @@ struct Painting bob_painting = {
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
     /* Rotation */     0.0f,    90.0f,
-    /* Position */ -5222.4f,   409.6f,   -153.6f,
+    /* Position */ -1441, 143, 175,
     /*                         curr   passive     entry */
     /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
@@ -1376,7 +1376,7 @@ struct Painting bob_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
+    /* Size */  350.0f,
 };
 
 // 0x07023698 - 0x07023710
@@ -1386,8 +1386,8 @@ struct Painting ccm_painting = {
     /* Texture Type */ PAINTING_IMAGE,
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
-    /* Rotation */     0.0f,     0.0f,
-    /* Position */ -2611.2f,  -307.2f, -4352.0f,
+    /* Rotation */     0.0f,    90.0f,
+    /* Position */ -1441, 780, 143,
     /*                         curr   passive     entry */
     /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
@@ -1403,7 +1403,7 @@ struct Painting ccm_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
+    /* Size */  286.0f,
 };
 
 // 0x07023710 - 0x07023788
@@ -1413,8 +1413,8 @@ struct Painting wf_painting = {
     /* Texture Type */ PAINTING_IMAGE,
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
-    /* Rotation */     0.0f,     0.0f,
-    /* Position */   -51.2f,  -204.8f, -4505.6f,
+    /* Rotation */     0.0f,     45.0f,
+    /* Position */   -4501, -129, -2223,
     /*                         curr   passive     entry */
     /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
@@ -1430,7 +1430,7 @@ struct Painting wf_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
+    /* Size */  433.8f,
 };
 
 // 0x07023788 - 0x07023800
@@ -1440,10 +1440,10 @@ struct Painting jrb_painting = {
     /* Texture Type */ PAINTING_IMAGE,
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
-    /* Rotation */     0.0f,   270.0f,
-    /* Position */  4300.8f,   409.6f,  -537.6f,
+    /* Rotation */     0.0f,   90.0f,
+    /* Position */  -5823.0f, 139.0f, 3712.0f,
     /*                         curr   passive     entry */
-    /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
+    /* Ripple Magnitude */     0.0f,    20.0f,    120.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
     /* Ripple Rate */          0.0f,    0.24f,    0.14f,
     /* Ripple Dispersion */    0.0f,    40.0f,    30.0f,
@@ -1457,7 +1457,7 @@ struct Painting jrb_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
+    /* Size */  573.0f,
 };
 
 // 0x07023800 - 0x07023878
@@ -1467,8 +1467,8 @@ struct Painting lll_painting = {
     /* Texture Type */ PAINTING_IMAGE,
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
-    /* Rotation */     0.0f,     0.0f,
-    /* Position */ -1689.6f, -1126.4f, -3942.4f,
+    /* Rotation */     0.0f,     180.0f,
+    /* Position */ -911.0f, 693.0f, 5251.0f,
     /*                         curr   passive     entry */
     /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
@@ -1484,8 +1484,8 @@ struct Painting lll_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
-};
+    /* Size */  640.0f,
+};//
 
 // 0x07023878 - 0x070238F0
 struct Painting ssl_painting = {
@@ -1494,8 +1494,8 @@ struct Painting ssl_painting = {
     /* Texture Type */ PAINTING_IMAGE,
     /* Floor Status */ 0x00, 0x00, 0x00 /* which of the painting's nearby special floors Mario's on */,
     /* Ripple Status */ 0x00,
-    /* Rotation */     0.0f,   180.0f,
-    /* Position */ -2611.2f, -1177.6f, -1075.2f,
+    /* Rotation */     0.0f,   90.0f,
+    /* Position */ -4760.0f, 1610.0f, 514.0f,
     /*                         curr   passive     entry */
     /* Ripple Magnitude */     0.0f,    20.0f,    80.0f,
     /* Ripple Decay */         1.0f,  0.9608f,  0.9524f,
@@ -1511,7 +1511,7 @@ struct Painting ssl_painting = {
     /* Ripple Trigger */ RIPPLE_TRIGGER_PROXIMITY,
     /* Alpha */ 0xFF,
     /* Mario Below */  0x00, 0x00, 0x00, /* Whether or not Mario is below the painting */
-    /* Size */  614.0f,
+    /* Size */  1028.0f,
 };
 
 // 0x070238F0 - 0x07023968

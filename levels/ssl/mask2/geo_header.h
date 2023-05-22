@@ -1,0 +1,10 @@
+extern const GeoLayout mask2_geo[];
+extern u8 mask2_Mask_ci4[];
+extern u8 mask2_Mask_ci4_pal_rgba16[];
+extern Vtx mask2_Plane_006_mesh_layer_4_vtx_cull[8];
+extern Vtx mask2_Plane_006_mesh_layer_4_vtx_0[4];
+extern Gfx mask2_Plane_006_mesh_layer_4_tri_0[];
+extern Gfx mat_mask2_Mask[];
+extern Gfx mat_revert_mask2_Mask[];
+extern Gfx mask2_Plane_006_mesh_layer_4[];
+extern Gfx mask2_material_revert_render_settings[];

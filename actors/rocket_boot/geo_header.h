@@ -1,0 +1,13 @@
+extern const GeoLayout rocket_boot_geo[];
+extern u8 rocket_boot_NormalMetal_ci8[];
+extern u8 rocket_boot_NormalMetal_ci8_pal_rgba16[];
+extern Vtx rocket_boot_Cube_mesh_layer_1_vtx_cull[8];
+extern Vtx rocket_boot_Cube_mesh_layer_1_vtx_0[43];
+extern Gfx rocket_boot_Cube_mesh_layer_1_tri_0[];
+extern Vtx rocket_boot_Cube_mesh_layer_1_vtx_1[12];
+extern Gfx rocket_boot_Cube_mesh_layer_1_tri_1[];
+extern Gfx mat_rocket_boot_rocket_boot_metal[];
+extern Gfx mat_revert_rocket_boot_rocket_boot_metal[];
+extern Gfx mat_rocket_boot_Black[];
+extern Gfx rocket_boot_Cube_mesh_layer_1[];
+extern Gfx rocket_boot_material_revert_render_settings[];

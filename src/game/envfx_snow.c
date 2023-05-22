@@ -5,6 +5,8 @@
 #include "game_init.h"
 #include "memory.h"
 #include "ingame_menu.h"
+#include "area.h"
+#include "level_update.h"
 #include "envfx_snow.h"
 #include "envfx_bubbles.h"
 #include "engine/surface_collision.h"
@@ -13,6 +15,7 @@
 #include "audio/external.h"
 #include "obj_behaviors.h"
 #include "level_geo.h"
+#include "include/types.h"
 
 /**
  * This file contains the function that handles 'environment effects',
@@ -65,8 +68,8 @@ s32 envfx_init_snow(s32 mode) {
             return FALSE;
 
         case ENVFX_SNOW_NORMAL:
-            gSnowParticleMaxCount = 140;
-            gSnowParticleCount = 5;
+            gSnowParticleMaxCount = 50;
+            gSnowParticleCount = 20;
             break;
 
         case ENVFX_SNOW_WATER:
@@ -183,7 +186,7 @@ s32 envfx_is_snowflake_alive(s32 index, s32 snowCylinderX, s32 snowCylinderY, s3
         return FALSE;
     }
 
-    if ((y < snowCylinderY - 201) || (snowCylinderY + 201 < y)) {
+    if ((y < snowCylinderY - 401) || (snowCylinderY + 401 < y)) {
         return FALSE;
     }
 
@@ -218,11 +221,11 @@ void envfx_update_snow_normal(s32 snowCylinderX, s32 snowCylinderY, s32 snowCyli
                 400.0f * random_float() - 200.0f + snowCylinderX + (s16)(deltaX * 2);
             (gEnvFxBuffer + i)->zPos =
                 400.0f * random_float() - 200.0f + snowCylinderZ + (s16)(deltaZ * 2);
-            (gEnvFxBuffer + i)->yPos = 200.0f * random_float() + snowCylinderY;
+            (gEnvFxBuffer + i)->yPos = -400.0f * random_float() + snowCylinderY;
             (gEnvFxBuffer + i)->isAlive = TRUE;
         } else {
             (gEnvFxBuffer + i)->xPos += random_float() * 2 - 1.0f + (s16)(deltaX / 1.2);
-            (gEnvFxBuffer + i)->yPos -= 2 -(s16)(deltaY * 0.8);
+            (gEnvFxBuffer + i)->yPos += 2 -(s16)(deltaY * 0.8);
             (gEnvFxBuffer + i)->zPos += random_float() * 2 - 1.0f + (s16)(deltaZ / 1.2);
         }
     }
@@ -438,9 +441,9 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
 
     rotate_triangle_vertices((s16 *) &vertex1, (s16 *) &vertex2, (s16 *) &vertex3, pitch, yaw);
 
-    if (snowMode == ENVFX_SNOW_NORMAL || snowMode == ENVFX_SNOW_BLIZZARD) {
+    if (snowMode == ENVFX_SNOW_BLIZZARD) {
         gSPDisplayList(gfx++, &tiny_bubble_dl_0B006A50); // snowflake with gray edge
-    } else if (snowMode == ENVFX_SNOW_WATER) {
+    } else if (snowMode == ENVFX_SNOW_NORMAL || snowMode == ENVFX_SNOW_WATER) {
         gSPDisplayList(gfx++, &tiny_bubble_dl_0B006CD8); // snowflake with blue edge
     }
 
@@ -468,6 +471,12 @@ Gfx *envfx_update_particles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom
 
     if (get_dialog_id() != DIALOG_NONE) {
         return NULL;
+    }
+
+    if (gCurrLevelNum==LEVEL_LLL) {
+        if ((gCurrActNum!=5)||(gMarioState->NewTimerMode==0)) {
+            return NULL;
+            }
     }
 
     if (gEnvFxMode != ENVFX_MODE_NONE && gEnvFxMode != mode) {

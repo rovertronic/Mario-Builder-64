@@ -1,0 +1,15 @@
+extern Lights1 shopgui_Border_lights;
+extern Lights1 shopgui_Check_lights;
+extern u8 shopgui_shopgui_ci8[];
+extern u8 shopgui_shopgui_ci8_pal_rgba16[];
+extern u8 shopgui_check_ci4[];
+extern u8 shopgui_check_ci4_pal_rgba16[];
+extern Vtx shopgui_Plane_001_mesh_vtx_0[68];
+extern Gfx shopgui_Plane_001_mesh_tri_0[];
+extern Vtx shopgui_Plane_001_mesh_vtx_1[34];
+extern Gfx shopgui_Plane_001_mesh_tri_1[];
+extern Gfx mat_shopgui_Border[];
+extern Gfx mat_revert_shopgui_Border[];
+extern Gfx mat_shopgui_Check[];
+extern Gfx mat_revert_shopgui_Check[];
+extern Gfx shopgui_Plane_001_mesh[];

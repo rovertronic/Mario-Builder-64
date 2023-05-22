@@ -12,6 +12,7 @@ extern const GeoLayout ddd_geo_0004C0[];
 extern const GeoLayout ddd_geo_000570[];
 
 // leveldata
+extern const f32 coinpath[][2][3];
 extern const Gfx ddd_seg7_dl_07004D48[];
 extern const Gfx ddd_seg7_dl_070057E8[];
 extern const Gfx ddd_seg7_dl_07005C40[];
@@ -39,5 +40,48 @@ extern const struct MovtexQuadCollection ddd_movtex_area2_water[];
 
 // script
 extern const LevelScript level_ddd_entry[];
+
+
+#include "levels/ddd/header.inc.h"
+
+#include "levels/ddd/thwompform/collision_header.h"
+
+#include "levels/ddd/thwompform/geo_header.h"
+
+#include "levels/ddd/banner/geo_header.h"
+
+#include "levels/ddd/bannera/anim_header.h"
+
+#include "levels/ddd/bewer/geo_header.h"
+
+#include "levels/ddd/whplat/collision_header.h"
+
+#include "levels/ddd/whplat/geo_header.h"
+
+#include "levels/ddd/weakgrate/geo_header.h"
+
+#include "levels/ddd/weakgrate/collision_header.h"
+
+#include "levels/ddd/thwompking/geo_header.h"
+
+#include "levels/ddd/thwompking/collision_header.h"
+
+#include "levels/ddd/thwompqueen/geo_header.h"
+
+#include "levels/ddd/thwompqueen/anim_header.h"
+
+#include "levels/ddd/queenrock/geo_header.h"
+
+#include "levels/ddd/thwompqueen/collision_header.h"
+
+#include "levels/ddd/thwompgate/geo_header.h"
+
+#include "levels/ddd/thwompgate/collision_header.h"
+
+#include "levels/ddd/Map9/header.h"
+
+#include "levels/ddd/thwompguard/geo_header.h"
+
+#include "levels/ddd/thwompguard/collision_header.h"
 
 #endif

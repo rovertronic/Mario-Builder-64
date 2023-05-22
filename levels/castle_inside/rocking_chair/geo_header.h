@@ -1,0 +1,11 @@
+extern const GeoLayout rocking_chair_geo[];
+extern Lights1 rocking_chair_Rocking_Wood_lights;
+extern u8 rocking_chair_LightPole_ci8[];
+extern u8 rocking_chair_LightPole_ci8_pal_rgba16[];
+extern Vtx rocking_chair_Cube_015_mesh_layer_1_vtx_cull[8];
+extern Vtx rocking_chair_Cube_015_mesh_layer_1_vtx_0[442];
+extern Gfx rocking_chair_Cube_015_mesh_layer_1_tri_0[];
+extern Gfx mat_rocking_chair_Rocking_Wood[];
+extern Gfx mat_revert_rocking_chair_Rocking_Wood[];
+extern Gfx rocking_chair_Cube_015_mesh_layer_1[];
+extern Gfx rocking_chair_material_revert_render_settings[];

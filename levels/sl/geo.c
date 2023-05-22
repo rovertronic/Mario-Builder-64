@@ -18,3 +18,17 @@
 #include "levels/sl/snow_mound/geo.inc.c"
 #include "levels/sl/areas/1/geo.inc.c"
 #include "levels/sl/areas/2/geo.inc.c"
+
+#include "levels/sl/geo.inc.c"
+
+#include "levels/sl/server_acid_fern/geo.inc.c"
+#include "levels/sl/woogly/geo.inc.c"
+#include "levels/sl/HH/geo.inc.c"
+#include "levels/sl/SS/geo.inc.c"
+#include "levels/sl/robot/geo.inc.c"
+#include "levels/sl/spiketube/geo.inc.c"
+#include "levels/sl/curtaincall/geo.inc.c"
+#include "levels/sl/reggie/geo.inc.c"
+#include "levels/sl/curtain2/geo.inc.c"
+
+#include "actors/motos/geo.inc.c"

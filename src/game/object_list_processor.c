@@ -483,7 +483,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
             object->oBehParams2ndByte = GET_BPARAM2(spawnInfo->behaviorArg);
 
             object->behavior = script;
-            object->unused1 = 0;
+            object->rigidBody = NULL;
 
             // Record death/collection in the SpawnInfo
             object->respawnInfoType = RESPAWN_INFO_TYPE_NORMAL;
@@ -552,6 +552,9 @@ void update_terrain_objects(void) {
 
     gObjectCounter += update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
     profiler_update(PROFILER_TIME_DYNAMIC);
+
+    // If the dynamic surface pool has overflowed, throw an error.
+    assert((uintptr_t)gDynamicSurfacePoolEnd <= (uintptr_t)gDynamicSurfacePool + DYNAMIC_SURFACE_POOL_SIZE, "Dynamic surface pool size exceeded");
 }
 
 /**
@@ -611,6 +614,8 @@ UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
     return time;
 }
 
+#include "rigid_body.h"
+
 /**
  * Update all objects. This includes script execution, object collision detection,
  * and object surface management.
@@ -630,6 +635,10 @@ void update_objects(UNUSED s32 unused) {
 
     // If time stop is not active, unload object surfaces
     clear_dynamic_surfaces();
+
+    for (u32 i = 0; i < NUM_RIGID_BODY_STEPS; i++) {
+        do_rigid_body_step();
+    }
 
     // Update spawners and objects with surfaces
     update_terrain_objects();

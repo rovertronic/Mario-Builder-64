@@ -1,19 +1,19 @@
 // swing_platform.inc.c
 
 void bhv_swing_platform_init(void) {
-    o->oSwingPlatformAngle = 0x2000;
+    o->oVelY = 0x1000;
 }
 
 void bhv_swing_platform_update(void) {
-    s32 startRoll = o->oFaceAngleRoll;
-
     if (o->oFaceAngleRoll < 0) {
-        o->oSwingPlatformSpeed += 4.0f;
+        o->oVelX += 4.0f;
     } else {
-        o->oSwingPlatformSpeed -= 4.0f;
+        o->oVelX -= 4.0f;
     }
 
-    o->oSwingPlatformAngle += o->oSwingPlatformSpeed;
-    o->oFaceAngleRoll = o->oSwingPlatformAngle;
-    o->oAngleVelRoll = o->oFaceAngleRoll - startRoll;
+    o->oVelY += o->oVelX;
+    o->oFaceAngleRoll = o->oVelY;
+    //o->oAngleVelRoll = o->oFaceAngleRoll - startRoll;
+
+    o->oDontInertia = FALSE;
 }

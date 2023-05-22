@@ -18,3 +18,13 @@
 #include "levels/thi/areas/1/geo.inc.c"
 #include "levels/thi/areas/2/geo.inc.c"
 #include "levels/thi/areas/3/geo.inc.c"
+
+#include "levels/thi/geo.inc.c"
+
+#include "levels/thi/thi_cage/geo.inc.c"
+#include "levels/thi/idol1/geo.inc.c"
+#include "levels/thi/idol2/geo.inc.c"
+#include "levels/thi/idol3/geo.inc.c"
+#include "levels/thi/idol4/geo.inc.c"
+#include "levels/thi/twisty/geo.inc.c"
+#include "levels/thi/angel/geo.inc.c"

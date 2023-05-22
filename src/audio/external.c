@@ -14,6 +14,10 @@
 #include "engine/math_util.h"
 #include "seq_ids.h"
 #include "dialog_ids.h"
+#include "menu/file_select.h"
+#include "include/types.h"
+#include "game/puppycamold.h"
+#include "src/game/save_file.h"
 
 // N.B. sound banks are different from the audio banks referred to in other
 // files. We should really fix our naming to be less ambiguous...
@@ -81,30 +85,6 @@ enum DialogSpeakers {
 
 #define _ 0xFF
 
-u8 sDialogSpeaker[] = {
-    //       0      1      2      3      4      5      6      7      8      9
-    /* 0*/ _,     BOMB,  BOMB,  BOMB,  BOMB,  KOOPA, KOOPA, KOOPA, _,     KOOPA,
-    /* 1*/ _,     _,     _,     _,     _,     _,     _,     KBOMB, _,     _,
-    /* 2*/ _,     BOWS1, BOWS1, BOWS1, BOWS1, BOWS1, BOWS1, BOWS1, BOWS1, BOWS1,
-    /* 3*/ _,     _,     _,     _,     _,     _,     _,     TUXIE, _,     _,
-    /* 4*/ _,     KOOPA, _,     _,     _,     _,     _,     BOMB,  _,     _,
-    /* 5*/ _,     _,     _,     _,     _,     TUXIE, TUXIE, TUXIE, TUXIE, TUXIE,
-    /* 6*/ _,     _,     _,     _,     _,     _,     _,     BOWS2, _,     _,
-    /* 7*/ _,     _,     _,     _,     _,     _,     _,     _,     _,     UKIKI,
-    /* 8*/ UKIKI, _,     _,     _,     _,     BOO,   _,     _,     _,     _,
-    /* 9*/ BOWS2, _,     BOWS2, BOWS2, _,     _,     _,     _,     BOO,   BOO,
-    /*10*/ UKIKI, UKIKI, _,     _,     _,     BOMB,  BOMB,  BOO,   BOO,   _,
-    /*11*/ _,     _,     _,     _,     GRUNT, GRUNT, KBOMB, GRUNT, GRUNT, _,
-    /*12*/ _,     _,     _,     _,     _,     _,     _,     _,     KBOMB, _,
-    /*13*/ _,     _,     TUXIE, _,     _,     _,     _,     _,     _,     _,
-    /*14*/ _,     _,     _,     _,     _,     _,     _,     _,     _,     _,
-    /*15*/ WIGLR, WIGLR, WIGLR, _,     _,     _,     _,     _,     _,     _,
-    /*16*/ _,     YOSHI, _,     _,     _,     _,     _,     _,     WIGLR, _
-};
-#undef _
-STATIC_ASSERT(ARRAY_COUNT(sDialogSpeaker) == DIALOG_COUNT,
-              "change this array if you are adding dialogs");
-
 s32 sDialogSpeakerVoice[] = {
     SOUND_OBJ_UKIKI_CHATTER_LONG,
     SOUND_OBJ_BIG_PENGUIN_YELL,
@@ -155,8 +135,10 @@ enum MusicDynConditionTypes {
     (s16)(1 << (15 - cond1) | 1 << (15 - cond2) | 1 << (15 - cond3) | res), val1, val2, val3
 
 s16 sDynBbh[] = {
-    SEQ_LEVEL_SPOOKY, DYN1(MARIO_IS_IN_ROOM, BBH_OUTSIDE_ROOM, 6),
-    DYN1(MARIO_IS_IN_ROOM, BBH_NEAR_MERRY_GO_ROUND_ROOM, 6), 5,
+    SEQ_PIRATE,
+    // DYN1(MARIO_IS_IN_ROOM, BBH_OUTSIDE_ROOM, 6),
+    // DYN1(MARIO_IS_IN_ROOM, BBH_NEAR_MERRY_GO_ROUND_ROOM, 6),
+    5,
 };
 s16 sDynDdd[] = {
     SEQ_LEVEL_WATER,
@@ -259,7 +241,12 @@ u16 sLevelAcousticReaches[LEVEL_COUNT] = {
 #define VOLUME_RANGE_UNK2 0.8f
 #endif
 
-// Default volume for background music sequences (playing on player 0).
+// sBackgroundMusicDefaultVolume represents the default volume for background music sequences using the level player (deprecated).
+// This code block is simply commented out for now as to not destroy compatibility with any streamed audio tools.
+// TODO: Delete this entirely once the unsupporting streamed tools or their builds are outdated.
+
+/*
+
 u8 sBackgroundMusicDefaultVolume[] = {
     127, // SEQ_SOUND_PLAYER
     80,  // SEQ_EVENT_CUTSCENE_COLLECT_STAR
@@ -296,10 +283,24 @@ u8 sBackgroundMusicDefaultVolume[] = {
     70,  // SEQ_EVENT_CUTSCENE_ENDING
     65,  // SEQ_MENU_FILE_SELECT
     0,   // SEQ_EVENT_CUTSCENE_LAKITU (not in JP)
+    100, //streamed
+    127, //streamed
+    100, //farm
+    100, //pirate
+    100, //jungle
+    100, //redhot
+    127,
+    127,
+    100,
+    120,
+    120,
+    120,
 };
 
 STATIC_ASSERT(ARRAY_COUNT(sBackgroundMusicDefaultVolume) == SEQ_COUNT,
               "change this array if you are adding sequences");
+
+*/
 
 u8 sCurrentBackgroundMusicSeqId = SEQUENCE_NONE;
 u8 sMusicDynamicDelay = 0;
@@ -1885,7 +1886,7 @@ static u8 begin_background_music_fade(u16 fadeDuration) {
         targetVolume = 40;
     }
 
-    if (sSoundBanksThatLowerBackgroundMusic != 0 && targetVolume > 20) {
+    if (sSoundBanksThatLowerBackgroundMusic && targetVolume > 20) {
         targetVolume = 20;
     }
 
@@ -1894,8 +1895,7 @@ static u8 begin_background_music_fade(u16 fadeDuration) {
             seq_player_fade_to_target_volume(SEQ_PLAYER_LEVEL, fadeDuration, targetVolume);
         } else {
 #if defined(VERSION_JP) || defined(VERSION_US)
-            gSequencePlayers[SEQ_PLAYER_LEVEL].volume =
-                sBackgroundMusicDefaultVolume[sCurrentBackgroundMusicSeqId] / 127.0f;
+            gSequencePlayers[SEQ_PLAYER_LEVEL].volume = gSequencePlayers[SEQ_PLAYER_LEVEL].volumeDefault;
 #endif
             seq_player_fade_to_normal_volume(SEQ_PLAYER_LEVEL, fadeDuration);
         }
@@ -2133,30 +2133,8 @@ void set_sound_moving_speed(u8 bank, u8 speed) {
 /**
  * Called from threads: thread5_game_loop
  */
-void play_dialog_sound(u8 dialogID) {
-    u8 speaker;
+void play_dialog_sound(UNUSED u8 dialogID) {
 
-    if (dialogID >= DIALOG_COUNT) {
-        dialogID = 0;
-    }
-
-    speaker = sDialogSpeaker[dialogID];
-    if (speaker != 0xff) {
-        play_sound(sDialogSpeakerVoice[speaker], gGlobalSoundSource);
-
-        // Play music during bowser message that appears when first entering the
-        // castle or when trying to enter a door without enough stars
-        if (speaker == BOWS1) {
-            seq_player_play_sequence(SEQ_PLAYER_ENV, SEQ_EVENT_KOOPA_MESSAGE, 0);
-        }
-    }
-
-    // "You've stepped on the (Wing|Metal|Vanish) Cap Switch"
-    if (dialogID == DIALOG_010
-     || dialogID == DIALOG_011
-     || dialogID == DIALOG_012) {
-        play_puzzle_jingle();
-    }
 }
 
 /**
@@ -2429,7 +2407,7 @@ void play_peachs_jingle(void) {
 /**
  * Plays the puzzle jingle. Plays the dadada dadada *dadada* jingle
  * that usually plays when you solve a "puzzle", like chests, talking to
- * yoshi, releasing chain chomp, opening the pyramid top, etc.
+ * _, releasing chain chomp, opening the pyramid top, etc.
  *
  * Called from threads: thread5_game_loop
  */

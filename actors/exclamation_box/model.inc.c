@@ -41,6 +41,10 @@ ALIGNED8 static const Texture exclamation_box_seg8_texture_08017628[] = {
 #include "actors/exclamation_box/exclamation_box_front.rgba16.inc.c"
 };
 
+ALIGNED8 static const u8 question_box_texture[] = {
+#include "actors/exclamation_box/question_box_custom.rgba16.inc.c"
+};
+
 // 0x08017E28
 ALIGNED8 static const Texture exclamation_box_seg8_texture_08017E28[] = {
 #include "actors/exclamation_box/exclamation_box_side.rgba16.inc.c"
@@ -236,6 +240,21 @@ const Gfx exclamation_box_seg8_dl_080193D8[] = {
 const Gfx exclamation_box_seg8_dl_08019438[] = {
     gsSPDisplayList(exclamation_box_seg8_dl_080192D0),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_seg8_texture_08017628),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPDisplayList(exclamation_box_seg8_dl_08019220),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 6, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (64 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_seg8_texture_08017E28),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 64 * 32 - 1, CALC_DXT(64, G_IM_SIZ_16b_BYTES)),
+    gsSPBranchList(exclamation_box_seg8_dl_08019280),
+};
+
+const Gfx question_box_dl[] = {
+    gsSPDisplayList(exclamation_box_seg8_dl_080192D0),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, question_box_texture),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
     gsSPDisplayList(exclamation_box_seg8_dl_08019220),

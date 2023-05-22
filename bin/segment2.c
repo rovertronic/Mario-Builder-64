@@ -119,15 +119,9 @@ ALIGNED8 static const Texture texture_hud_char_I[] = {
 #include "textures/segment2/segment2.02400.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_J[] = {
-#include "textures/segment2/segment2.02600.rgba16.inc.c"
+#include "textures/segment2/custom_HUD_Clock.rgba16.inc.c"
 };
-#else
-ALIGNED8 static const Texture texture_hud_char_J[] = {
-#include "textures/segment2/segment2.hud_char_j.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_hud_char_K[] = {
 #include "textures/segment2/segment2.02800.rgba16.inc.c"
@@ -153,15 +147,9 @@ ALIGNED8 static const Texture texture_hud_char_P[] = {
 #include "textures/segment2/segment2.03200.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_Q[] = {
-#include "textures/segment2/segment2.03400.rgba16.inc.c"
+#include "textures/segment2/custom_slash.rgba16.inc.c"
 };
-#else
-ALIGNED8 static const Texture texture_hud_char_Q[] = {
-#include "textures/segment2/segment2.hud_char_q.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_hud_char_R[] = {
 #include "textures/segment2/segment2.03600.rgba16.inc.c"
@@ -179,43 +167,25 @@ ALIGNED8 static const Texture texture_hud_char_U[] = {
 #include "textures/segment2/segment2.03C00.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_EU) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_V[] = {
-#include "textures/segment2/segment2.03E00.rgba16.inc.c"
+#include "textures/segment2/custom_Empty.rgba16.inc.c"
 };
-#else
-ALIGNED8 static const Texture texture_hud_char_V[] = {
-#include "textures/segment2/segment2.hud_char_v.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_hud_char_W[] = {
 #include "textures/segment2/segment2.04000.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_X[] = {
-#include "textures/segment2/segment2.04200.rgba16.inc.c"
+#include "textures/segment2/custom_BP.rgba16.inc.c"
 };
-#else
-ALIGNED8 static const Texture texture_hud_char_X[] = {
-#include "textures/segment2/segment2.hud_char_x.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_hud_char_Y[] = {
 #include "textures/segment2/segment2.04400.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_EU) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_Z[] = {
-#include "textures/segment2/segment2.04600.rgba16.inc.c"
+#include "textures/segment2/custom_HP.rgba16.inc.c"
 };
-#else
-ALIGNED8 static const Texture texture_hud_char_Z[] = {
-#include "textures/segment2/segment2.hud_char_z.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_hud_char_apostrophe[] = {
 #include "textures/segment2/segment2.04800.rgba16.inc.c"
@@ -306,19 +276,15 @@ ALIGNED8 static const Texture texture_hud_char_star[] = {
 #include "textures/segment2/segment2.05C00.rgba16.inc.c"
 };
 
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_decimal_point[] = {
-#include "textures/segment2/segment2.05E00.rgba16.inc.c"
+#include "textures/segment2/custom_MetalStar.rgba16.inc.c"
 };
 
+#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
 ALIGNED8 static const Texture texture_hud_char_beta_key[] = {
 #include "textures/segment2/segment2.06000.rgba16.inc.c"
 };
 #else
-ALIGNED8 static const Texture texture_hud_char_decimal_point[] = {
-#include "textures/segment2/segment2.decimal_point.rgba16.inc.c"
-};
-
 ALIGNED8 static const Texture texture_hud_char_beta_key[] = {
 #include "textures/segment2/segment2.beta_key.rgba16.inc.c"
 };
@@ -1839,6 +1805,14 @@ ALIGNED8 static const Texture texture_font_char_us_slash[] = {
 #include "textures/segment2/font_graphics.06D40.ia4.inc.c"
 };
 
+ALIGNED8 static const u8 texture_font_char_us_actual_slash[] = {
+#include "textures/segment2/custom_font_graphics_slash.ia4.inc.c"
+};
+
+ALIGNED8 static const u8 texture_font_char_us_percentile[] = {
+#include "textures/segment2/font_graphics.06AC0.ia4.inc.c"
+};
+
 ALIGNED8 static const Texture texture_font_char_us_ampersand[] = {
 #include "textures/segment2/font_graphics.06D80.ia4.inc.c"
 };
@@ -2017,7 +1991,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0, texture_font_char_us_comma,
-                  0x0,               0x0,               0x0,               0x0,
+    texture_font_char_us_actual_slash,               texture_font_char_us_percentile,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
@@ -2556,7 +2530,7 @@ const Texture texture_transition_mario[] = {
 };
 
 const Texture texture_transition_bowser_half[] = {
-#include "textures/segment2/segment2.11458.ia8.inc.c"
+#include "textures/segment2/showrunner_transition.ia8.inc.c"
 };
 
 const Texture texture_waterbox_water[] = {
@@ -2667,6 +2641,7 @@ const Gfx dl_shadow_square[] = {
 };
 #endif
 
+
 static const Vtx vertex_shadow[] = {
 #ifdef HD_SHADOWS
     {{{    -1,      0,     -1}, 0, { -2048,  -2048}, {0xff, 0xff, 0xff, 0xff}}},
@@ -2679,6 +2654,13 @@ static const Vtx vertex_shadow[] = {
     {{{    -1,      0,      1}, 0, {  -512,    512}, {0xff, 0xff, 0xff, 0xff}}},
     {{{     1,      0,      1}, 0, {   512,    512}, {0xff, 0xff, 0xff, 0xff}}},
 #endif
+};
+
+const Gfx dl_shadow_circle_tris[] = {
+    gsSPVertex(vertex_shadow, 4, 0),
+    gsSP2Triangles( 0,  2,  1, 0x0,  1,  2,  3, 0x0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
 };
 
 // 0x02014638 - 0x02014660

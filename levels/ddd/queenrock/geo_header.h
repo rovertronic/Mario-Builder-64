@@ -1,0 +1,11 @@
+extern const GeoLayout queenrock_geo[];
+extern Lights1 queenrock_ThwompQueen_lights;
+extern u8 queenrock_ThwompQueen_ci8[];
+extern u8 queenrock_ThwompQueen_ci8_pal_rgba16[];
+extern Vtx queenrock_Icosphere_mesh_layer_1_vtx_cull[8];
+extern Vtx queenrock_Icosphere_mesh_layer_1_vtx_0[22];
+extern Gfx queenrock_Icosphere_mesh_layer_1_tri_0[];
+extern Gfx mat_queenrock_ThwompQueen[];
+extern Gfx mat_revert_queenrock_ThwompQueen[];
+extern Gfx queenrock_Icosphere_mesh_layer_1[];
+extern Gfx queenrock_material_revert_render_settings[];

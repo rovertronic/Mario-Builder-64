@@ -46,6 +46,7 @@
 #include "seq_ids.h"
 #include "spawn_sound.h"
 #include "puppylights.h"
+#include "game/rovent.h"
 
 //! TODO: remove static
 
@@ -465,6 +466,7 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 }
 
 static void obj_die_if_health_non_positive(void) {
+    s8 old_loot_coins = o->oNumLootCoins;
     if (o->oHealth <= 0) {
         if (o->oDeathSound == 0) {
             spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
@@ -486,8 +488,30 @@ static void obj_die_if_health_non_positive(void) {
             cur_obj_hide();
             cur_obj_become_intangible();
         } else {
+            gMarioState->EA_ACTIVE --;
+            gMarioState->EA_LEFT --;
+            if ( old_loot_coins == 2 ) {
+                gMarioState->DeadRexes++;
+            }
+            if ( old_loot_coins == -1 ) {
+                gMarioState->DeadRexes++;
+            }
             obj_mark_for_deletion(o);
         }
+    }
+    else
+    {
+        o->oAction = 0;
+        o->oInteractStatus &= ~INT_STATUS_INTERACTED;
+        if (save_file_get_badge_equip() & (1<<3)) {
+            o->oHealth--;
+            obj_die_if_health_non_positive();
+        }
+        else
+        {
+            o->oHealth--;
+        }
+        cur_obj_become_tangible();
     }
 }
 
@@ -512,7 +536,7 @@ static void obj_set_knockback_action(s32 attackType) {
             break;
     }
 
-    o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
+    // o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
     o->oMoveAngleYaw = obj_angle_to_object(gMarioObject, o);
 }
 
@@ -527,7 +551,7 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void) {
             || find_water_level(o->oPosX, o->oPosZ) - o->oPosY < 150.0f) {
             return FALSE;
         }
-    } else if (!(o->oMoveFlags & OBJ_MOVE_ABOVE_LAVA)) {
+    } else if (!((o->oMoveFlags & OBJ_MOVE_ABOVE_LAVA)&&(o->oMoveFlags & OBJ_MOVE_ON_GROUND)) ) {
         if (o->oMoveFlags & OBJ_MOVE_ENTERED_WATER) {
             if (o->oWallHitboxRadius < 200.0f) {
                 cur_obj_play_sound_2(SOUND_OBJ_DIVING_INTO_WATER);
@@ -573,7 +597,9 @@ static s32 obj_handle_attacks(struct ObjectHitbox *hitbox, s32 attackedMarioActi
                     break;
 
                 case ATTACK_HANDLER_SQUISHED:
-                    obj_set_squished_action();
+                    if (hitbox->downOffset != 10) {
+                        obj_set_squished_action();
+                    }
                     break;
 
                 case ATTACK_HANDLER_SPECIAL_KOOPA_LOSE_SHELL:
@@ -623,9 +649,13 @@ static void obj_act_knockback(UNUSED f32 baseScale) {
 
     cur_obj_move_standard(-78);
 }
-
+//
 static void obj_act_squished(f32 baseScale) {
-    f32 targetScaleY = baseScale * 0.3f;
+    f32 targetScaleY = baseScale * 0.25f;
+
+    if (o->oHealth == 1) {
+        targetScaleY = baseScale * 0.6f;
+    }
 
     cur_obj_update_floor_and_walls();
 
@@ -815,3 +845,4 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
 #include "behaviors/reds_star_marker.inc.c"
 #include "behaviors/triplet_butterfly.inc.c"
 #include "behaviors/bubba.inc.c"
+#include "behaviors/worm.inc.c"

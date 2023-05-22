@@ -10,6 +10,8 @@
 extern struct GraphNodeObject gMirrorMario;
 extern struct MarioBodyState gBodyStates[2];
 
+extern u8 *CostumeNames[];
+
 #ifdef KEEP_MARIO_HEAD
 Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, Mat4 *mtx);
 #endif

@@ -399,12 +399,25 @@ struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool,
     return graphNode;
 }
 
+//u8 parse_position;
+u8 found;
+
 /**
  * Allocates and returns a newly created displaylist node
  */
 struct GraphNodeDisplayList *init_graph_node_display_list(struct AllocOnlyPool *pool,
                                                           struct GraphNodeDisplayList *graphNode,
                                                           s32 drawingLayer, void *displayList) {
+
+    //parse displayList?
+    //parse_position = 0;
+    //while (!found) {
+        //if (displayList[parse_position] == 0xDF) {
+            //found = 1;
+            //}
+        //parse_position += 8;
+        //}
+
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeDisplayList));
     }

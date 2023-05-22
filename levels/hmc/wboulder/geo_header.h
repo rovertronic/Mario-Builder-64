@@ -1,0 +1,11 @@
+extern const GeoLayout wboulder_geo[];
+extern Lights1 wboulder_Boulder_lights;
+extern u8 wboulder_Boulder_ci8[];
+extern u8 wboulder_Boulder_ci8_pal_rgba16[];
+extern Vtx wboulder_Icosphere_mesh_layer_1_vtx_cull[8];
+extern Vtx wboulder_Icosphere_mesh_layer_1_vtx_0[240];
+extern Gfx wboulder_Icosphere_mesh_layer_1_tri_0[];
+extern Gfx mat_wboulder_Boulder[];
+extern Gfx mat_revert_wboulder_Boulder[];
+extern Gfx wboulder_Icosphere_mesh_layer_1[];
+extern Gfx wboulder_material_revert_render_settings[];

@@ -14,3 +14,8 @@
 #include "levels/pss/header.h"
 
 #include "levels/pss/areas/1/geo.inc.c"
+#include "levels/pss/geo.inc.c"
+
+#include "levels/pss/valve/geo.inc.c"
+#include "levels/pss/gatess/geo.inc.c"
+#include "levels/pss/slob/geo.inc.c"

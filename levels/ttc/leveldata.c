@@ -10,6 +10,7 @@
 #include "make_const_nonconst.h"
 // LEVEL DATA
 #include "levels/ttc/texture.inc.c"
+#include "levels/ssl/eyerok_col/collision.inc.c"
 #include "levels/ttc/areas/1/1/model.inc.c"
 #include "levels/ttc/areas/1/2/model.inc.c"
 #include "levels/ttc/areas/1/3/model.inc.c"
@@ -46,3 +47,17 @@
 #include "levels/ttc/large_gear/collision.inc.c"
 #include "levels/ttc/areas/1/macro.inc.c"
 #include "levels/ttc/areas/1/movtext.inc.c"
+
+#include "levels/ttc/leveldata.inc.c"
+
+#include "levels/ttc/ocean_ttc/collision.inc.c"
+#include "levels/ttc/tickocean/model.inc.c"
+#include "levels/ttc/highcane/model.inc.c"
+#include "levels/ttc/denormO/model.inc.c"
+#include "levels/ttc/denormA/model.inc.c"
+#include "levels/ttc/denorm/anims/data.inc.c"
+#include "levels/ttc/denorm/anims/table.inc.c"
+#include "levels/ttc/raft/model.inc.c"
+#include "levels/ttc/raft/collision.inc.c"
+#include "levels/ttc/Map14/model.inc.c"
+#include "levels/ttc/ocean_ttc/model.inc.c"

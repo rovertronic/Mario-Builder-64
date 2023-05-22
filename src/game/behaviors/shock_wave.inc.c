@@ -3,7 +3,7 @@
 /**
  * Shockwave scale distance hit points
  */
-f32 sBowserShockwaveHitPoints[] = { 1.9f, 2.4f, 4.0f, 4.8f };
+f32 sBowserShockwaveHitPoints[] = { 1.9f, 2.4f, 4.2f, 5.0f };
 
 /**
  * Bowser's shockwave attack main loop
@@ -30,8 +30,8 @@ void bhv_bowser_shock_wave_loop(void) {
     // If object times is less than 70 frame and Mario is not in the air...
     if (o->oTimer < fadeFrames && !mario_is_in_air_action()) {
         // ..define distance values depending of the scale multiplied by hit points
-        f32 distMin1 = o->oBowserShockWaveScale * sBowserShockwaveHitPoints[0];
-        f32 distMax1 = o->oBowserShockWaveScale * sBowserShockwaveHitPoints[1];
+        f32 distMin1 = 0;
+        f32 distMax1 = 0;
         f32 distMin2 = o->oBowserShockWaveScale * sBowserShockwaveHitPoints[2];
         f32 distMax2 = o->oBowserShockWaveScale * sBowserShockwaveHitPoints[3];
         // If Mario is in between distMin and distMax values, shock him

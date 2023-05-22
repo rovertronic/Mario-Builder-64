@@ -80,4 +80,6 @@ enum ActionArgsFreefall { // act_freefall
 
 s32 mario_execute_airborne_action(struct MarioState *m);
 
+extern u8 bullet_fuel;
+
 #endif // MARIO_ACTIONS_AIRBORNE_H

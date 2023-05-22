@@ -11,7 +11,7 @@
 #define COIN_FORMATION_DISTANCE 2000.0f
 
 // Moving Coins flicker and disappear when they hit lava instead of being instantly deleted.
-#define COIN_LAVA_FLICKER
+//#define COIN_LAVA_FLICKER
 
 // Allows for retries on collecting the remaining blue coins from a blue coin switch.
 // #define BLUE_COIN_SWITCH_RETRY

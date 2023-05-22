@@ -1,0 +1,10 @@
+extern const GeoLayout vanetalc_geo[];
+extern u8 vanetalc_NormalMetal_ci8[];
+extern u8 vanetalc_NormalMetal_ci8_pal_rgba16[];
+extern Vtx vanetalc_skinned_013_mesh_layer_5_vtx_cull[8];
+extern Vtx vanetalc_skinned_013_mesh_layer_5_vtx_0[40];
+extern Gfx vanetalc_skinned_013_mesh_layer_5_tri_0[];
+extern Gfx mat_vanetalc_vanetal[];
+extern Gfx mat_revert_vanetalc_vanetal[];
+extern Gfx vanetalc_skinned_013_mesh_layer_5[];
+extern Gfx vanetalc_material_revert_render_settings[];

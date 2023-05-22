@@ -16,6 +16,8 @@ extern const GeoLayout ccm_geo_0004E4[];
 extern const GeoLayout ccm_geo_00051C[];
 extern const GeoLayout ccm_geo_0005E8[];
 
+extern const f32 ccm_frames[][2][3];
+
 // leveldata
 extern const Gfx ccm_seg7_dl_0700B090[];
 extern const Gfx ccm_seg7_dl_0700B1D8[];
@@ -56,5 +58,79 @@ extern const Trajectory ccm_seg7_trajectory_penguin_race[];
 
 // script
 extern const LevelScript level_ccm_entry[];
+
+#include "levels/ccm/header.inc.h"
+
+#include "levels/ccm/fan/geo_header.h"
+
+#include "levels/ccm/crab/geo_header.h"
+
+#include "levels/ccm/bone_plat/geo_header.h"
+
+#include "levels/ccm/bone_plat/collision_header.h"
+
+#include "levels/ccm/bone_elevator/geo_header.h"
+
+#include "levels/ccm/bone_elevator/collision_header.h"
+
+#include "levels/ccm/bone_train/geo_header.h"
+
+#include "levels/ccm/bone_train/collision_header.h"
+
+#include "levels/ccm/bonespin/geo_header.h"
+
+#include "levels/ccm/bonespin/collision_header.h"
+
+#include "levels/ccm/bonespin2/geo_header.h"
+
+#include "levels/ccm/bonespin2/collision_header.h"
+
+#include "levels/ccm/bonegate/geo_header.h"
+
+#include "levels/ccm/bonegate/collision_header.h"
+
+#include "levels/ccm/boneswapgate/collision_header.h"
+
+#include "levels/ccm/boneswapgate/geo_header.h"
+
+#include "levels/ccm/Map4/header.h"
+
+#include "levels/ccm/corenode/geo_header.h"
+
+#include "levels/ccm/nullbody/geo_header.h"
+
+#include "levels/ccm/can/geo_header.h"
+
+#include "levels/ccm/trashbag/geo_header.h"
+
+#include "levels/ccm/puddlepoop/geo_header.h"
+
+#include "levels/ccm/pipe_ccm/collision_header.h"
+
+#include "levels/ccm/pipe1_ccm/geo_header.h"
+
+#include "levels/ccm/pipe2_ccm/geo_header.h"
+
+#include "levels/ccm/conv1_ccm/collision_header.h"
+
+#include "levels/ccm/conv2_ccm/collision_header.h"
+
+#include "levels/ccm/conv1_ccm/geo_header.h"
+
+#include "levels/ccm/conv2_ccm/geo_header.h"
+
+#include "levels/ccm/executive/collision_header.h"
+
+#include "levels/ccm/executive/geo_header.h"
+
+#include "levels/ccm/stencil/header.h"
+
+#include "levels/ccm/ccm_sky/header.h"
+
+#include "levels/ccm/cosmic_missile/geo_header.h"
+
+#include "levels/ccm/conv1ccm/geo_header.h"
+
+#include "levels/ccm/conv2ccm/geo_header.h"
 
 #endif

@@ -1,0 +1,18 @@
+extern const GeoLayout agpillar1_geo[];
+extern Lights1 agpillar1_BioTechPillar_lights;
+extern Lights1 agpillar1_gross_top_lights;
+extern u8 agpillar1_biotech_pillar_ci8[];
+extern u8 agpillar1_biotech_pillar_ci8_pal_rgba16[];
+extern u8 agpillar1_gross_top_ci8[];
+extern u8 agpillar1_gross_top_ci8_pal_rgba16[];
+extern Vtx agpillar1_Cylinder_002_mesh_layer_1_vtx_cull[8];
+extern Vtx agpillar1_Cylinder_002_mesh_layer_1_vtx_0[211];
+extern Gfx agpillar1_Cylinder_002_mesh_layer_1_tri_0[];
+extern Vtx agpillar1_Cylinder_002_mesh_layer_1_vtx_1[61];
+extern Gfx agpillar1_Cylinder_002_mesh_layer_1_tri_1[];
+extern Gfx mat_agpillar1_BioTechPillar[];
+extern Gfx mat_revert_agpillar1_BioTechPillar[];
+extern Gfx mat_agpillar1_gross_top[];
+extern Gfx mat_revert_agpillar1_gross_top[];
+extern Gfx agpillar1_Cylinder_002_mesh_layer_1[];
+extern Gfx agpillar1_material_revert_render_settings[];

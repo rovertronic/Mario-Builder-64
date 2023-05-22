@@ -32,3 +32,6 @@ UNUSED static const u64 binid_5 = 5;
 
 #include "haunted_cage/model.inc.c"
 UNUSED static const u64 binid_6 = 6;
+
+#include "bomb/model.inc.c"
+UNUSED static const u64 binid_7 = 7;

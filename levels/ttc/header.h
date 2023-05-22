@@ -55,7 +55,7 @@ extern const Collision ttc_seg7_collision_clock_platform[];
 extern const Collision ttc_seg7_collision_clock_main_rotation[];
 extern const Collision ttc_seg7_collision_rotating_clock_platform2[];
 extern const MacroObject ttc_seg7_macro_objs[];
-extern const Texture ttc_yellow_triangle[];
+extern const u8 ttc_yellow_triangle[];
 extern const Gfx ttc_dl_surface_treadmill_begin[];
 extern const Gfx ttc_dl_surface_treadmill_end[];
 extern Movtex ttc_movtex_tris_big_surface_treadmill[];
@@ -64,5 +64,28 @@ extern const Gfx ttc_dl_surface_treadmill[];
 
 // script
 extern const LevelScript level_ttc_entry[];
+
+
+#include "levels/ttc/header.inc.h"
+
+#include "levels/ttc/ocean_ttc/collision_header.h"
+
+#include "levels/ttc/tickocean/geo_header.h"
+
+#include "levels/ttc/highcane/geo_header.h"
+
+#include "levels/ttc/denormO/geo_header.h"
+
+#include "levels/ttc/denormA/geo_header.h"
+
+#include "levels/ttc/denorm/anim_header.h"
+
+#include "levels/ttc/raft/geo_header.h"
+
+#include "levels/ttc/raft/collision_header.h"
+
+#include "levels/ttc/Map14/header.h"
+
+#include "levels/ttc/ocean_ttc/geo_header.h"
 
 #endif

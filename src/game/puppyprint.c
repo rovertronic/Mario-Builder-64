@@ -126,8 +126,7 @@ void puppyprint_calculate_ram_usage(void) {
     // gEffectsMemoryPool is 0x4000, gObjectMemoryPool is 0x800. Epic C limitations mean I can't just sizeof their values :)
     ramsizeSegment[5] = (EFFECTS_MEMORY_POOL + OBJECT_MEMORY_POOL
                        + EFFECTS_MEMORY_POOL + OBJECT_MEMORY_POOL);
-    ramsizeSegment[6] = ((SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode))
-                       + (     SURFACE_POOL_SIZE * sizeof(struct Surface    )));
+    ramsizeSegment[6] = gTotalStaticSurfaceData + DYNAMIC_SURFACE_POOL_SIZE;
     ramsizeSegment[7] = gAudioHeapSize;
 }
 
@@ -286,14 +285,14 @@ void print_ram_overview(void) {
 }
 
 const char *audioPoolNames[NUM_AUDIO_POOLS] = {
-    "gAudioInitPool",
-    "gNotesAndBuffersPool",
-    "gSeqLoadedPool.persistent.pool",
-    "gSeqLoadedPool.temporary.pool",
-    "gBankLoadedPool.persistent.pool",
-    "gBankLoadedPool.temporary.pool",
-#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
-    "gBetterReverbPool",
+    "Audio Init Pool",
+    "Notes And Buffers Pool",
+    "Persistent Sequence Pool",
+    "Persistent Bank Pool",
+    "Temporary Sequence Pool",
+    "Temporary Bank Pool",
+#ifdef BETTER_REVERB
+    "Better Reverb Pool",
 #endif
 };
 
@@ -454,8 +453,8 @@ extern s16 gVisualSurfaceCount;
 void puppyprint_render_collision(void) {
     char textBytes[200];
 
-    sprintf(textBytes, "Pool Size: %X#Node Size: %X#Surfaces Allocated: %d#Nodes Allocated: %d#Current Cell: %d", (SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode)), (SURFACE_POOL_SIZE * sizeof(struct Surface)),
-            gSurfacesAllocated, gSurfaceNodesAllocated, gVisualSurfaceCount);
+    sprintf(textBytes, "Static Pool Size: 0x%X#Dynamic Pool Size: 0x%X#Dynamic Pool Used: 0x%X#Surfaces Allocated: %d#Nodes Allocated: %d", gTotalStaticSurfaceData, DYNAMIC_SURFACE_POOL_SIZE,(uintptr_t)gDynamicSurfacePoolEnd - (uintptr_t)gDynamicSurfacePool,
+            gSurfacesAllocated, gSurfaceNodesAllocated);
     print_small_text(304, 60, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, 1);
 
 

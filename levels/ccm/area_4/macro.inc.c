@@ -1,0 +1,8 @@
+const MacroObject ccm_area_4_macro_objs[] = {
+	MACRO_OBJECT_WITH_BEH_PARAM(macro_goomba, -40, 670, -5450, -1202, 0x00000000),
+	MACRO_OBJECT_WITH_BEH_PARAM(macro_goomba, 46, -832, -5450, -1202, 0x00000000),
+	MACRO_OBJECT_WITH_BEH_PARAM(macro_goomba, 135, -832, -5450, -23, 0x00000000),
+	MACRO_OBJECT_WITH_BEH_PARAM(macro_goomba, -129, 741, -5450, -23, 0x00000000),
+	MACRO_OBJECT_END(),
+};
+

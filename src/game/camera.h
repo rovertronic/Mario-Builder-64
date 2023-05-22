@@ -12,7 +12,7 @@
 #include "level_table.h"
 
 // X position of the mirror
-#define CASTLE_MIRROR_X 4331.53f
+#define CASTLE_MIRROR_X 6252.0f
 
 /**
  * @file camera.h
@@ -283,7 +283,8 @@ enum Cutscenes {
     CUTSCENE_CREDITS,
     CUTSCENE_EXIT_WATERFALL,
     CUTSCENE_EXIT_FALL_WMOTR,
-    CUTSCENE_ENTER_POOL
+    CUTSCENE_ENTER_POOL,
+    CUTSCENE_2D
 };
 
 /**

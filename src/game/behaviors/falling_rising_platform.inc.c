@@ -7,7 +7,7 @@ void bhv_squishable_platform_loop(void) {
 
 void bhv_bitfs_sinking_platform_loop(void) {
     o->oPosY -= sins(o->oBitfsPlatformTimer) * 0.58f;
-    o->oBitfsPlatformTimer += 0x100;
+    o->oBitfsPlatformTimer += 0x100; //change to 0x200 or whatever you want
 }
 
 // TODO: Named incorrectly. fix

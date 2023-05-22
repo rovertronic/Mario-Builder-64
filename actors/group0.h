@@ -16,6 +16,25 @@ extern const Gfx burn_smoke_seg4_sub_dl_model[];
 extern const Gfx burn_smoke_seg4_sub_dl_end[];
 extern const Gfx burn_smoke_seg4_dl[];
 
+/*
+//Crowbar
+extern Vtx Crowbar_Crowbar_Mesh_mesh_vtx_0[496];
+extern Gfx Crowbar_Crowbar_Mesh_mesh_tri_0[];
+extern Vtx Crowbar_Crowbar_Mesh_mesh_vtx_1[40];
+extern Gfx Crowbar_Crowbar_Mesh_mesh_tri_1[];
+
+extern Gfx Crowbar_Crowbar_Mesh_mesh[];
+
+extern GeoLayout crowbar_geo[];
+*/
+
+//extern const Lights1 mario_button_v4_lights;
+//extern const Lights1 mario_hat_v4_lights;
+//extern const Lights1 mario_skin_v4_lights;
+//extern const Lights1 mario_shoes_v4_lights;
+
+extern const Lights1 token_token_lights[];
+
 // mario
 extern const GeoLayout mario_geo_face_and_wings[];
 extern const GeoLayout mario_geo_left_hand[];
@@ -330,5 +349,219 @@ extern const Gfx white_particle_small_dl_begin[];
 extern const Gfx white_particle_small_dl_end[];
 extern const Gfx white_particle_small_dl[];
 extern const Gfx white_particle_small_unused_dl[];
+
+// moneybag
+extern const GeoLayout moneybag_geo_000000[];
+extern const GeoLayout moneybag_geo_000078[];
+extern const GeoLayout moneybag_geo[];
+extern const Gfx moneybag_seg6_dl_06005300[];
+extern const Gfx moneybag_seg6_dl_06005358[];
+extern const Gfx moneybag_seg6_dl_060053B8[];
+extern const Gfx moneybag_seg6_dl_06005590[];
+extern const Gfx moneybag_seg6_dl_06005618[];
+extern const Gfx moneybag_seg6_dl_06005688[];
+extern const Gfx moneybag_seg6_dl_06005708[];
+extern const Gfx moneybag_seg6_dl_06005750[];
+extern const Gfx moneybag_seg6_dl_06005980[];
+extern const Gfx moneybag_seg6_dl_060059F0[];
+extern const struct Animation *const moneybag_seg6_anims_06005E5C[];
+
+// monty_mole
+extern const GeoLayout monty_mole_geo[];
+extern const Gfx monty_mole_seg5_dl_05003208[];
+extern const Gfx monty_mole_seg5_dl_050032A0[];
+extern const Gfx monty_mole_seg5_dl_05003438[];
+extern const Gfx monty_mole_seg5_dl_050034A0[];
+extern const Gfx monty_mole_seg5_dl_05003518[];
+extern const Gfx monty_mole_seg5_dl_05003730[];
+extern const Gfx monty_mole_seg5_dl_050037A8[];
+extern const Gfx monty_mole_seg5_dl_05003820[];
+extern const Gfx monty_mole_seg5_dl_05003938[];
+extern const Gfx monty_mole_seg5_dl_050039D0[];
+extern const Gfx monty_mole_seg5_dl_05003B68[];
+extern const Gfx monty_mole_seg5_dl_05003BD0[];
+extern const Gfx monty_mole_seg5_dl_05003C48[];
+extern const Gfx monty_mole_seg5_dl_05003E60[];
+extern const Gfx monty_mole_seg5_dl_05003ED8[];
+extern const Gfx monty_mole_seg5_dl_05003F50[];
+extern const Gfx monty_mole_seg5_dl_050042B8[];
+extern const Gfx monty_mole_seg5_dl_05004368[];
+extern const Gfx monty_mole_seg5_dl_050044B0[];
+extern const Gfx monty_mole_seg5_dl_050049B0[];
+extern const Gfx monty_mole_seg5_dl_05004A10[];
+extern const Gfx monty_mole_seg5_dl_05004B50[];
+extern const Gfx monty_mole_seg5_dl_05004BE0[];
+extern const Gfx monty_mole_seg5_dl_05004C00[];
+extern const Gfx monty_mole_seg5_dl_05004CE8[];
+extern const Gfx monty_mole_seg5_dl_05004D30[];
+extern const struct Animation *const monty_mole_seg5_anims_05007248[];
+
+//bowsers animations??
+extern const struct Animation *const bowser_seg6_anims_06057690[];
+
+// monty_mole_hole
+extern const Gfx monty_mole_hole_seg5_dl_05000840[];
+
+extern const struct Animation *const Hammerbro_anims[];
+
+#include "mario/geo_header.h"
+
+#include "Hammerbro/geo_header.h"
+
+
+#include "Hammerbro/anim_header.h"
+#include "hammer/geo_header.h"
+
+#include "ring/geo_header.h"
+
+#include "metal_crate/geo_header.h"
+
+#include "metal_crate/collision_header.h"
+
+
+#include "evil_mario/anim_header.h"
+#include "chicken/geo_header.h"
+
+
+#include "chicken/anim_header.h"
+#include "token/geo_header.h"
+
+
+#include "crab_anims/anim_header.h"
+#include "egg/geo_header.h"
+
+#include "arrow/header.h"
+
+#include "BadgeSelect/header.h"
+
+#include "MysteryBadge/header.h"
+
+#include "snakeblock/collision_header.h"
+
+#include "snakeblock1/geo_header.h"
+
+#include "snakeblock2/geo_header.h"
+
+#include "snakeblock3/geo_header.h"
+
+#include "b0/header.h"
+
+#include "b1/header.h"
+
+#include "b2/header.h"
+
+#include "b3/header.h"
+
+#include "b4/header.h"
+
+#include "b5/header.h"
+
+#include "b6/header.h"
+
+#include "b7/header.h"
+
+#include "b8/header.h"
+
+#include "b9/header.h"
+
+#include "b10/header.h"
+
+#include "b11/header.h"
+
+#include "bE/header.h"
+
+//#include "title/header.h"
+
+#include "Rex/geo_header.h"
+
+
+#include "Rex/anim_header.h"
+#include "dcoin/geo_header.h"
+
+#include "shopgui/header.h"
+
+#include "shopselect/header.h"
+
+#include "wallet/geo_header.h"
+
+#include "noteblock/geo_header.h"
+#include "noteblock/collision_header.h"
+
+
+#include "null_anims/anim_header.h"
+#include "ico_heart/header.h"
+
+#include "ico_mana/header.h"
+
+#include "ico_badge/header.h"
+
+
+#include "rb_hud/header.h"
+
+#include "rb_bar/header.h"
+
+#include "bs_hud/header.h"
+
+#include "bs_bar/header.h"
+
+#include "billmask/geo_header.h"
+
+#include "gradibox/header.h"
+
+#include "showrunner/geo_header.h"
+
+
+#include "showrunner/anim_header.h"
+#include "b12/header.h"
+
+#include "b13/header.h"
+
+#include "b14/header.h"
+
+#include "b15/header.h"
+
+#include "b16/header.h"
+
+#include "b21/header.h"
+
+#include "b22/header.h"
+
+#include "b17/header.h"
+
+#include "executive_/header.h"
+
+#include "spotlight/geo_header.h"
+
+#include "executive_loom_/header.h"
+
+
+#include "girl/anim_header.h"
+#include "b23/header.h"
+
+#include "b20/header.h"
+
+#include "b18/header.h"
+
+#include "tvhead/collision_header.h"
+
+#include "tvhead/geo_header.h"
+
+
+#include "tvhead/anim_header.h"
+#include "b19/header.h"
+
+#include "quest/geo_header.h"
+
+#include "rocket_boot/geo_header.h"
+
+#include "vanetalc/geo_header.h"
+
+#include "ocean_ttc/geo_header.h"
+
+#include "tvcorpse/geo_header.h"
+
+#include "cosmic_spike/geo_header.h"
+
+#include "crowbar2/geo_header.h"
 
 #endif

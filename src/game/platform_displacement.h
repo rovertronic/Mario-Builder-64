@@ -15,7 +15,14 @@
 		struct Object *prevPlatform;
 		s32 prevTimer;
 	};
+
+    extern struct PlatformDisplacementInfo sMarioDisplacementInfo;
+
+    extern Vec3f sMarioAmountDisplaced;
+    extern u8 sShouldApplyInertia;
+    extern u8 sInertiaFirstFrame;
 #endif
+
 void update_mario_platform(void);
 void get_mario_pos(f32 *x, f32 *y, f32 *z);
 void set_mario_pos(f32 x, f32 y, f32 z);

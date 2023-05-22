@@ -13,6 +13,7 @@
 #include "game/main.h"
 #include "game/rumble_init.h"
 #include "game/version.h"
+#include "game/vc_check.h"
 #ifdef UNF
 #include "usb/usb.h"
 #include "usb/debug.h"
@@ -20,6 +21,7 @@
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
 #include "game/profiling.h"
+#include "game/mem_error_screen.h"
 
 // Message IDs
 enum MessageIDs {
@@ -105,9 +107,15 @@ void setup_mesg_queues(void) {
     osSetEventMesg(OS_EVENT_PRENMI, &gIntrMesgQueue, (OSMesg) MESG_NMI_REQUEST);
 }
 
+#define SEG_POOL_END_4MB 0x80400000
+
 void alloc_pool(void) {
     void *start = (void *) SEG_POOL_START;
     void *end = (void *) (SEG_POOL_START + POOL_SIZE);
+
+    // Detect memory size (Broken for now)
+    // if (does_pool_end_lie_out_of_bounds(end))
+    //     end = (void *)SEG_POOL_END_4MB;
 
     main_pool_init(start, end);
     gEffectsMemoryPool = mem_pool_init(EFFECTS_MEMORY_POOL, MEMORY_POOL_LEFT);
@@ -122,19 +130,13 @@ void create_thread(OSThread *thread, OSId id, void (*entry)(void *), void *arg, 
     osCreateThread(thread, id, entry, arg, sp, pri);
 }
 
-#ifdef VERSION_SH
-extern void func_sh_802f69cc(void);
-#endif
-
 void handle_nmi_request(void) {
     gResetTimer = 1;
     gNmiResetBarsTimer = 0;
     stop_sounds_in_continuous_banks();
     sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_BACKGROUND);
     fadeout_music(90);
-#ifdef VERSION_SH
-    func_sh_802f69cc();
-#endif
+
 }
 
 void receive_new_tasks(void) {
@@ -300,6 +302,21 @@ void handle_dp_complete(void) {
 }
 extern void crash_screen_init(void);
 
+void check_cache_emulation() {
+    // Disable interrupts to ensure that nothing evicts the variable from cache while we're using it.
+    u32 saved = __osDisableInt();
+    // Create a variable with an initial value of 1. This value will remain cached.
+    volatile u8 sCachedValue = 1;
+    // Overwrite the variable directly in RDRAM without going through cache.
+    // This should preserve its value of 1 in dcache if dcache is emulated correctly.
+    *(u8*)(K0_TO_K1(&sCachedValue)) = 0;
+    // Read the variable back from dcache, if it's still 1 then cache is emulated correctly.
+    // If it's zero, then dcache is not emulated correctly.
+    gCacheEmulated = sCachedValue;
+    // Restore interrupts
+    __osRestoreInt(saved);
+}
+
 void thread3_main(UNUSED void *arg) {
     setup_mesg_queues();
     alloc_pool();
@@ -321,10 +338,23 @@ void thread3_main(UNUSED void *arg) {
     osSyncPrintf("Linker  : %s\n", __linker__);
 #endif
 
+    if (IO_READ(DPC_CLOCK_REG) == 0) {
+        gIsConsole = FALSE;
+        gBorderHeight = BORDER_HEIGHT_EMULATOR;
+        gIsVC = IS_VC();
+        check_cache_emulation();
+    } else {
+        gIsConsole = TRUE;
+        gBorderHeight = BORDER_HEIGHT_CONSOLE;
+    }
+
     create_thread(&gSoundThread, THREAD_4_SOUND, thread4_sound, NULL, gThread4Stack + 0x2000, 20);
     osStartThread(&gSoundThread);
 
-    create_thread(&gGameLoopThread, THREAD_5_GAME_LOOP, thread5_game_loop, NULL, gThread5Stack + 0x2000, 10);
+    if (!gNotEnoughMemory)
+        create_thread(&gGameLoopThread, THREAD_5_GAME_LOOP, thread5_game_loop, NULL, gThread5Stack + 0x2000, 10);
+    else
+        create_thread(&gGameLoopThread, 5, thread5_mem_error_message_loop, NULL, gThread5Stack + 0x2000, 10);
     osStartThread(&gGameLoopThread);
 
     while (TRUE) {

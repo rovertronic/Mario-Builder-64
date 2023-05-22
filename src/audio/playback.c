@@ -287,6 +287,7 @@ s32 note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer
 #endif
 
 void note_init(struct Note *note) {
+
     if (note->parentLayer->adsr.releaseRate == 0) {
         adsr_init(&note->adsr, note->parentLayer->seqChannel->adsr.envelope, &note->adsrVolScale);
     } else {
@@ -578,7 +579,7 @@ void process_notes(void) {
                 }
             }
 
-            adsr_update(&note->adsr);
+            adsr_update(note);
             note_vibrato_update(note);
             attributes = &note->attributes;
             if (note->priority == NOTE_PRIORITY_STOPPING) {
@@ -1165,6 +1166,11 @@ s32 note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer
     if (note->sound == NULL) {
         build_synthetic_wave(note, seqLayer);
     }
+
+    if (seqLayer->seqChannel->seqPlayer != &gSequencePlayers[SEQ_PLAYER_SFX] && seqLayer->seqChannel->instOrWave < 5) {
+        global_audio_hit = TRUE;
+    }
+
     note_init(note);
     return FALSE;
 }
@@ -1426,6 +1432,7 @@ void note_init_all(void) {
 #else
         note->reverbVol = 0;
         note->usesHeadsetPanEffects = FALSE;
+        note->initFullVelocity = FALSE;
         note->sampleCount = 0;
         note->instOrWave = 0;
         note->targetVolLeft = 0;
@@ -1443,9 +1450,9 @@ void note_init_all(void) {
 #if defined(VERSION_SH)
         note->synthesisState.synthesisBuffers = sound_alloc_uninitialized(&gNotesAndBuffersPool, sizeof(struct NoteSynthesisBuffers));
 #elif defined(VERSION_EU)
-        note->synthesisState.synthesisBuffers = soundAlloc(&gNotesAndBuffersPool, sizeof(struct NoteSynthesisBuffers));
+        note->synthesisState.synthesisBuffers = soundAlloc(&gNotesAndBuffersPool, ALIGN16(sizeof(struct NoteSynthesisBuffers)));
 #else
-        note->synthesisBuffers = soundAlloc(&gNotesAndBuffersPool, sizeof(struct NoteSynthesisBuffers));
+        note->synthesisBuffers = soundAlloc(&gNotesAndBuffersPool, ALIGN16(sizeof(struct NoteSynthesisBuffers)));
 #endif
     }
 }

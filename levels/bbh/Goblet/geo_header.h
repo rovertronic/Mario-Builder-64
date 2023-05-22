@@ -1,0 +1,12 @@
+extern const GeoLayout Goblet_geo[];
+extern u8 Goblet_Gold_ci8[];
+extern u8 Goblet_Gold_ci8_pal_rgba16[];
+extern Vtx Goblet_Cylinder_003_mesh_layer_1_vtx_0[216];
+extern Gfx Goblet_Cylinder_003_mesh_layer_1_tri_0[];
+extern Vtx Goblet_Cylinder_003_mesh_layer_1_vtx_1[8];
+extern Gfx Goblet_Cylinder_003_mesh_layer_1_tri_1[];
+extern Gfx mat_Goblet_gold[];
+extern Gfx mat_revert_Goblet_gold[];
+extern Gfx mat_Goblet_cum[];
+extern Gfx Goblet_Cylinder_003_mesh_layer_1[];
+extern Gfx Goblet_material_revert_render_settings[];

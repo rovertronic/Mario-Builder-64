@@ -46,4 +46,69 @@ extern const struct MovtexQuadCollection wdw_movtex_area2_water[];
 // script
 extern const LevelScript level_wdw_entry[];
 
+
+#include "levels/wdw/header.inc.h"
+
+#include "levels/wdw/projector/geo_header.h"
+
+#include "levels/wdw/projector/collision_header.h"
+
+#include "levels/wdw/movie_1/collision_header.h"
+
+#include "levels/wdw/movie_1/geo_header.h"
+
+#include "levels/wdw/projector_handle/geo_header.h"
+
+#include "levels/wdw/theater_sky/header.h"
+
+#include "levels/wdw/movie_2/geo_header.h"
+
+#include "levels/wdw/movie_2/collision_header.h"
+
+#include "levels/wdw/cone/geo_header.h"
+
+#include "levels/wdw/balloon/geo_header.h"
+
+#include "levels/wdw/stopsign/geo_header.h"
+
+#include "levels/wdw/streetlight/geo_header.h"
+
+#include "levels/wdw/ferris/geo_header.h"
+
+#include "levels/wdw/ferriscart/geo_header.h"
+
+#include "levels/wdw/ferriscart/collision_header.h"
+
+#include "levels/wdw/press/geo_header.h"
+
+#include "levels/wdw/press/collision_header.h"
+
+#include "levels/wdw/girl/geo_header.h"
+
+#include "levels/wdw/movie8/geo_header.h"
+
+#include "levels/wdw/movie_8/collision_header.h"
+
+#include "levels/wdw/movie_9/collision_header.h"
+
+#include "levels/wdw/movie_9/geo_header.h"
+
+#include "levels/wdw/star_sign/geo_header.h"
+
+#include "levels/wdw/cobie2/anim_header.h"
+
+#include "levels/wdw/cobie2/geo_header.h"
+
+#include "levels/wdw/Map11/header.h"
+
+#include "levels/wdw/moleman2/anim_header.h"
+
+#include "levels/wdw/moleman2/geo_header.h"
+
+#include "levels/wdw/edward2/geo_header.h"
+
+#include "levels/wdw/robozo2/geo_header.h"
+
+#include "levels/wdw/robozo2/anim_header.h"
+
 #endif

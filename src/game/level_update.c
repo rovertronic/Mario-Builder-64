@@ -1,3 +1,4 @@
+#include "texscroll.h"
 #include <ultra64.h>
 
 #include "sm64.h"
@@ -31,6 +32,7 @@
 #include "puppyprint.h"
 #include "puppylights.h"
 #include "level_commands.h"
+#include "game/rovent.h"
 
 #include "config.h"
 
@@ -174,6 +176,10 @@ u16 level_control_timer(s32 timerOp) {
 u32 pressed_pause(void) {
     u32 dialogActive = get_dialog_id() >= 0;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
+
+    if ((minigame_real)||(revent_active)) {
+        return FALSE;
+    }
 
     if (!intangible && !dialogActive && !gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
         && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
@@ -412,13 +418,13 @@ void init_mario_after_warp(void) {
         if (sWarpDest.levelNum == LEVEL_CASTLE && sWarpDest.areaIdx == 1
             && (sWarpDest.nodeId == 31 || sWarpDest.nodeId == 32)
         ) {
-            play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
+            // play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
         }
 
         if (sWarpDest.levelNum == LEVEL_CASTLE_GROUNDS && sWarpDest.areaIdx == 1
             && (sWarpDest.nodeId == 7 || sWarpDest.nodeId == 10 || sWarpDest.nodeId == 20
                 || sWarpDest.nodeId == 30)) {
-            play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
+            // play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
         }
 #endif
     }
@@ -590,6 +596,12 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
         sWarpDest.type = WARP_TYPE_SAME_AREA;
     }
 
+    if (gCurrLevelNum == LEVEL_BITS) {
+        sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
+        //ensure that every time mario visits this level, it gets reset
+        //so that mario doesn't become invisible in the light beam
+    }
+
     sWarpDest.levelNum = destLevel;
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
@@ -673,10 +685,10 @@ void initiate_painting_warp(void) {
 
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 fadeout_music(398);
-#if ENABLE_RUMBLE
-                queue_rumble_data(80, 70);
-                queue_rumble_decay(1);
-#endif
+
+
+
+
             }
         }
     }
@@ -689,11 +701,13 @@ void initiate_painting_warp(void) {
  */
 s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
     s32 fadeMusic = TRUE;
+    u8 dmg_amount = 0x40;
+    u8 resp_cond = FALSE;
+    if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
+        dmg_amount = 0x80;
+    }
 
     if (sDelayedWarpOp == WARP_OP_NONE) {
-#ifdef SAVE_NUM_LIVES
-        save_file_set_num_lives(m->numLives);
-#endif
         m->invincTimer = -1;
         sDelayedWarpArg = WARP_FLAGS_NONE;
         sDelayedWarpOp = warpOp;
@@ -720,47 +734,70 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 sDelayedWarpTimer = 32;
                 sSourceWarpNodeId = WARP_NODE_DEFAULT;
                 gSavedCourseNum = COURSE_NONE;
+                gMarioState->InsideCourse = TRUE;
                 play_transition(WARP_TRANSITION_FADE_INTO_MARIO, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
             case WARP_OP_DEATH:
-#ifndef DISABLE_LIVES
-                if (m->numLives == 0) {
-                    sDelayedWarpOp = WARP_OP_GAME_OVER;
-                }
-#endif
-                sDelayedWarpTimer = 48;
-                sSourceWarpNodeId = WARP_NODE_DEATH;
-                play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                play_sound(SOUND_MENU_BOWSER_LAUGH, gGlobalSoundSource);
+                if (minigame_real) {
+                    end_minigame();
+                } else {
+                    if (save_file_get_badge_equip() & (1<<BADGE_HARDCORE)) {
+                        //DELETE SAVE FILE!!!!
+                        save_file_erase(gCurrSaveFileNum-1);
+                        sDelayedWarpOp = WARP_OP_GAME_OVER;
+                    }
+                    sDelayedWarpTimer = 48;
+                    sSourceWarpNodeId = WARP_NODE_DEATH;
+                    if (gCurrLevelNum != LEVEL_CASTLE) {
+                        gMarioState->InsideCourse = TRUE;
+                    }
+                    play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, 0x30, 0x00, 0x00, 0x00);
+                    play_sound(SOUND_MENU_BOWSER_LAUGH, gGlobalSoundSource);
 #ifdef PREVENT_DEATH_LOOP
-                m->isDead = TRUE;
+                    m->isDead = TRUE;
 #endif
+                }
                 break;
 
             case WARP_OP_WARP_FLOOR:
-                sSourceWarpNodeId = WARP_NODE_WARP_FLOOR;
-                if (area_get_warp_node(sSourceWarpNodeId) == NULL) {
-#ifndef DISABLE_LIVES
-                    if (m->numLives == 0) {
-                        sDelayedWarpOp = WARP_OP_GAME_OVER;
-                    } else {
-                        sSourceWarpNodeId = WARP_NODE_DEATH;
-                    }
-#else
-                    sSourceWarpNodeId = WARP_NODE_DEATH;
-#endif
+                if (m->floor->type != SURFACE_DEATH_PLANE) {
+                    sDelayedWarpTimer = 20;
+                    sSourceWarpNodeId = m->floor->force;
+                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x0, 0x0, 0x0);
                 }
+                else{
 
-                sDelayedWarpTimer = 20;
-                play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, sDelayedWarpTimer, 0x00, 0x00, 0x00);
+                    mario_stop_riding_and_holding(gMarioState);
+
+                    //what the fuck is this bruhhhh
+                    //fuck sm64 hp
+                    //i have no idea if changing the 8 to a 5 will work, hope it does!
+                    resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
+                    if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+                        resp_cond = (gMarioState->numBadgePoints > 0);
+                    }
+
+                    if (resp_cond) {
+                        //make mario respawn if he has over a third of his HP
+                            fadeMusic = FALSE;
+                            sSourceWarpNodeId = 0x0A;
+                            gMarioState->NewLevel = TRUE;
+                        } else {
+                        //if he has under, then go gaga and die
+                            sSourceWarpNodeId = WARP_NODE_DEATH;
+                            gMarioState->InsideCourse = TRUE;
+                        }
+                    play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
+                    sDelayedWarpTimer = 20;
+                }
                 break;
 
             case WARP_OP_LOOK_UP: // enter totwc
                 sDelayedWarpTimer = 30;
                 sSourceWarpNodeId = WARP_NODE_LOOK_UP;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0xFF, 0xFF, 0xFF);
-                play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0, 0, 0);
+                // play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 break;
 
             case WARP_OP_SPIN_SHRINK: // bbh enter
@@ -908,17 +945,9 @@ void update_hud_values(void) {
                 play_sound(coinSound, gMarioState->marioObj->header.gfx.cameraToObject);
             }
         }
-
-#ifdef SAVE_NUM_LIVES
-        if (gMarioState->numLives > MAX_NUM_LIVES) {
-            gMarioState->numLives = MAX_NUM_LIVES;
-            save_file_set_num_lives(MAX_NUM_LIVES);
-        }
-#else
         if (gMarioState->numLives > 100) {
             gMarioState->numLives = 100;
         }
-#endif
 
 #if BUGFIX_MAX_LIVES
         if (gMarioState->numCoins > 999) {
@@ -969,8 +998,20 @@ void basic_update(void) {
     }
 }
 
+extern void print_intro_text2(void);
+int gPressedStart = 0;
+
+u8 playtimer = 0;
+
 s32 play_mode_normal(void) {
-#ifndef DISABLE_DEMO
+    event_main();
+
+    playtimer++;
+    if (playtimer>29) {
+        playtimer = 0;
+        save_file_one_second();
+    }
+    
     if (gCurrDemoInput != NULL) {
         print_intro_text();
         if (gPlayer1Controller->buttonPressed & END_DEMO) {
@@ -980,7 +1021,6 @@ s32 play_mode_normal(void) {
             level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
         }
     }
-#endif
 
     warp_area();
     check_instant_warp();
@@ -1023,6 +1063,12 @@ s32 play_mode_normal(void) {
 }
 
 s32 play_mode_paused(void) {
+    playtimer++;
+    if (playtimer>29) {
+        playtimer = 0;
+        save_file_one_second();
+    }
+
     if (gMenuOptSelectIndex == MENU_OPT_NONE) {
         set_menu_mode(MENU_MODE_RENDER_PAUSE_SCREEN);
     } else if (gMenuOptSelectIndex == MENU_OPT_DEFAULT) {
@@ -1034,7 +1080,13 @@ s32 play_mode_paused(void) {
         if (gDebugLevelSelect) {
             fade_into_special_warp(WARP_SPECIAL_LEVEL_SELECT, 1);
         } else {
-            initiate_warp(EXIT_COURSE_LEVEL, EXIT_COURSE_AREA, EXIT_COURSE_NODE, WARP_FLAGS_NONE);
+            if (save_file_get_progression() == PROG_ON_AGAMEMNON) {
+                //agamemnon pause exit
+                initiate_warp(LEVEL_BITS, 0x01, 0x0A, WARP_FLAGS_NONE);
+            } else {
+                //normal pause exit
+                initiate_warp(EXIT_COURSE_LEVEL, EXIT_COURSE_AREA, EXIT_COURSE_NODE, WARP_FLAGS_NONE);
+            }
             fade_into_special_warp(WARP_SPECIAL_NONE, 0);
             gSavedCourseNum = COURSE_NONE;
         }
@@ -1140,7 +1192,7 @@ s32 update_level(void) {
 
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:
-            changeLevel = play_mode_normal();
+            changeLevel = play_mode_normal(); scroll_textures();
             break;
         case PLAY_MODE_PAUSED:
             changeLevel = play_mode_paused();
@@ -1164,11 +1216,82 @@ s32 update_level(void) {
     return changeLevel;
 }
 
-s32 init_level(void) {
+s32 init_level(void) {//
     s32 fadeFromColor = FALSE;
 #if PUPPYPRINT_DEBUG
     OSTime first = osGetTime();
 #endif
+
+    //starter variables
+    gMarioState->MaskChase = FALSE;
+
+    gMarioState->BossHealth = 0;
+    gMarioState->BossHealthMax = 0;
+
+    gMarioState->powerup = 0;
+
+    revent_tempo = 0;
+    gMarioState->hundredSpawned = FALSE;
+    gMarioState->YoshiCoins = 0;
+    gMarioState->DeadRexes = 0;
+    gMarioState->DeadRexMissionActivate = 0;
+    gMarioState->DeadCowboyMissionActivate = 0;
+    gMarioState->CheeseCollection = 0;
+    gMarioState->CheeseMissionActivate = 0;
+    gMarioState->SockCollection = 0;
+    gMarioState->SockMissionActivate = 0;
+
+    gMarioState->gMinigameWon = FALSE;
+
+    gMarioState->NewTimer = 0;
+    gMarioState->NewTimerMode = 0;
+    gMarioState->SubNewTimer = 0;
+
+    gMarioState->GoldRingCount = 0;
+    gMarioState->PirCount = 10;
+
+    gMarioState->NewLevel = FALSE;
+
+    //De-Dither optimization
+    if (gIsConsole) {
+        switch(gCurrLevelNum) {
+            case LEVEL_BBH:
+            case LEVEL_CCM:
+            case LEVEL_TTC:
+            case LEVEL_WDW://star fair is laggy as shit on n64
+            osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+            osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+            break;
+            default:
+            osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+            osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+            break;
+        }
+    }
+
+    if ((gCurrActNum == 5)&&(gCurrLevelNum == LEVEL_LLL)) {
+        gMarioState->NewTimer = 30;
+        gMarioState->NewTimerMode = 1;
+    }
+
+    gMarioState->LavaHeat = 3;
+    switch(gCurrLevelNum) {
+        case LEVEL_HMC:
+        case LEVEL_JRB:
+            gMarioState->LavaHeat = 2;
+        break;
+        case LEVEL_SL:
+            gMarioState->LavaHeat = 5;
+        break;
+        case LEVEL_BITFS:
+            gMarioState->LavaHeat = 4;
+        break;
+    }
+
+    gMarioState->_2D = FALSE;
+    if (gCurrLevelNum == LEVEL_SSL) {
+        gMarioState->_2D = TRUE;
+    }
 
     set_play_mode(PLAY_MODE_NORMAL);
 
@@ -1233,11 +1356,6 @@ s32 init_level(void) {
             set_background_music(gCurrentArea->musicParam, gCurrentArea->musicParam2, 0);
         }
     }
-#if ENABLE_RUMBLE
-    if (gCurrDemoInput == NULL) {
-        cancel_rumble();
-    }
-#endif
 
     if (gMarioState->action == ACT_INTRO_CUTSCENE) {
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
@@ -1313,6 +1431,18 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
     sWarpCheckpointActive = FALSE;
     gCurrLevelNum = levelNum;
     gCurrCourseNum = gLevelToCourseNumTable[levelNum - 1];
+    if (gCurrLevelNum == LEVEL_SA) return 0;
+
+    if (gMarioState->InsideCourse) {
+        gCurrActNum = 2;
+        gMarioState->InsideCourse = FALSE;
+        return 0;
+    }
+    //return 0; //Star Select Disable
+
+    if (minigame_real) {
+        return 0;
+    }
 
     if (gCurrDemoInput != NULL || gCurrCreditsEntry != NULL || gCurrCourseNum == COURSE_NONE) {
         return FALSE;

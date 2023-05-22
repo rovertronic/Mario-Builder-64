@@ -14,15 +14,44 @@ static struct ObjectHitbox sCollectStarHitbox = {
 
 void bhv_collect_star_init(void) {
     s8 starId = GET_BPARAM1(o->oBehParams);
+    u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
+    u8 sfair_level = (gCurrCourseNum == COURSE_WDW)||(gCurrCourseNum == COURSE_NONE);
 #ifdef GLOBAL_STAR_IDS
     u8 currentLevelStarFlags = save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(starId / 7));
-    if (currentLevelStarFlags & (1 << (starId % 7))) {
 #else
     u8 currentLevelStarFlags = save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum));
-    if (currentLevelStarFlags & (1 << starId)) {
 #endif
-        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+
+    if (((o->oBehParams >> 24 == 6)||(aglevel))&&(!sfair_level)) {
+        //cosmic seed
+#ifdef GLOBAL_STAR_IDS
+        if (currentLevelStarFlags & (1 << (starId % 7)))
+#else
+        if (currentLevelStarFlags & (1 << starId))
+#endif
+        {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+            o->oAnimState = 1;
+        } else {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[0xED];
+        }
     } else {
+        //normal star
+#ifdef GLOBAL_STAR_IDS
+        if (currentLevelStarFlags & (1 << (starId % 7)))
+#else
+        if (currentLevelStarFlags & (1 << starId))
+#endif
+        {
+            if (currentLevelStarFlags & (1 << starId)) {
+                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
+            } else {
+                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
+            }
+        }
+    }
+
+    if (o->oBehParams2ndByte == 2) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
     }
 
@@ -30,11 +59,39 @@ void bhv_collect_star_init(void) {
 }
 
 void bhv_collect_star_loop(void) {
+    s8 starId;
+    starId = (o->oBehParams >> 24) & 0xFF;
+
     o->oFaceAngleYaw += 0x800;
 
-    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-        obj_mark_for_deletion(o);
-        o->oInteractStatus = INT_STATUS_NONE;
+    //STAR RADAR TRACKER
+    if ((gDialogCourseActNum-1 == starId)&&(o->oBehParams2ndByte == 0)) {
+        gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
+        gMarioState->StarRadarLocation[1] = (s16)o->oPosY;
+        gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
+        gMarioState->StarRadarExist = TRUE;
+    }
+
+    if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex==4)) {
+        o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
+    }
+
+    if (o->oBehParams2ndByte > 1) {
+        if (o->oDistanceToMario < 300.0f || o->oBehParams2ndByte == 3) {
+            if (o->oBehParams2ndByte == 2) {
+                spawn_object(o,MODEL_STAR,bhvFlyGuy);
+                o->oBehParams2ndByte = 3;
+            } else {
+                mark_obj_for_deletion(o);
+            }
+        }
+    }
+    else
+    {
+        if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+            obj_mark_for_deletion(o);
+            o->oInteractStatus = INT_STATUS_NONE;
+        }
     }
 }
 
@@ -168,7 +225,17 @@ void bhv_hidden_red_coin_star_init(void) {
 }
 
 void bhv_hidden_red_coin_star_loop(void) {
+    s8 starId;
+    starId = (o->oBehParams >> 24) & 0xFF;
     gRedCoinsCollected = o->oHiddenStarTriggerCounter;
+
+    //STAR RADAR TRACKER
+    if ((gDialogCourseActNum-1 == starId)&&(o->oBehParams2ndByte == 0)) {
+        gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
+        gMarioState->StarRadarLocation[1] = (s16)o->oPosY;
+        gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
+        gMarioState->StarRadarExist = TRUE;
+    }
 
     switch (o->oAction) {
         case HIDDEN_STAR_ACT_INACTIVE:

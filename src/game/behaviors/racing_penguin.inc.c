@@ -64,7 +64,7 @@ static void racing_penguin_act_race(void) {
         o->oRacingPenguinReachedBottom = TRUE;
         o->oAction = RACING_PENGUIN_ACT_FINISH_RACE;
     } else {
-        f32 targetSpeed = o->oPosY - gMarioObject->oPosY;
+        f32 targetSpeed = o->oPosY - gMarioObject->oPosY; //set targetspeed to be a constant value. the lower mario is on the slide the faster the penguin goes
         f32 minSpeed = 70.0f;
 
         cur_obj_play_sound_1(SOUND_AIR_ROUGH_SLIDE);

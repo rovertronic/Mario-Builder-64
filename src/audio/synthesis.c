@@ -11,7 +11,9 @@
 #include "game/game_init.h"
 #include "engine/math_util.h"
 
+u8 global_audio_hit = FALSE;
 
+#define aSetVolume32(pkt, f, v, tr) aSetVolume(pkt, f, v, (int16_t)((tr) >> 16), (int16_t)(tr))
 #define DMEM_ADDR_TEMP 0x0
 #define DMEM_ADDR_RESAMPLED 0x20
 #define DMEM_ADDR_RESAMPLED2 0x160
@@ -38,8 +40,10 @@
     aSaveBuffer(pkt, VIRTUAL_TO_PHYSICAL2(gSynthesisReverb.ringBuffer.right + (off)));
 
 #define AUDIO_ALIGN(val, amnt) (((val) + (1 << amnt) - 1) & ~((1 << amnt) - 1))
+#define VOLRAMPING_MASK (~(0x8000 | ((1 << (15 - VOL_RAMPING_EXPONENT)) - 1)))
 
-#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
+
+#ifdef BETTER_REVERB
 /* ----------------------------------------------------------------------BEGIN REVERB PARAMETERS---------------------------------------------------------------------- */
 
 
@@ -61,6 +65,7 @@
  * 
  * This is also known to cause severe lag on emulators that have counter factor set to 2 or greater.
  * Be sure either you alert the user in advance, or check for and set betterReverbDownsampleEmulator to -1 if it's detected the user isn't using good settings.
+ * Reducing performance heavy parameters or using RCVI hack may be another working solution to this problem.
  */
 
 
@@ -80,28 +85,28 @@ s8 betterReverbDownsampleEmulator = 2;
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
 // Setting it to anything less than 3 will disable reverb outright.
-// This can be changed at any time, but is best set when calling audio_reset_session.
+// This can be changed at any time, but is best set immediately before calling audio_reset_session.
 u32 reverbFilterCountConsole = (NUM_ALLPASS - 6);
 
 // This value represents the number of filters to use with the reverb. This can be decreased to improve performance, but at the cost of a lesser presence of reverb in the final audio.
 // Filter count should always be a multiple of 3. Never ever set this value to be greater than NUM_ALLPASS.
 // Setting it to anything less than 3 will disable reverb outright.
-// This can be changed at any time, but is best set when calling audio_reset_session.
+// This can be changed at any time, but is best set immediately before calling audio_reset_session.
 u32 reverbFilterCountEmulator = NUM_ALLPASS;
 
 // Set this to TRUE to use mono over stereo for reverb. This should increase performance, but at the cost of a less fullfilling reverb experience.
 // If performance is desirable, it is recommended to change reverbFilterCountConsole or betterReverbDownsampleConsole first.
-// This can be changed at any time, but is best set when calling audio_reset_session.
+// This can be changed at any time, but is best set immediately before calling audio_reset_session.
 u8 monoReverbConsole = FALSE;
 
 // Set this to TRUE to use mono over stereo for reverb. This should increase performance, but at the cost of a less fullfilling reverb experience.
 // If performance is desirable, it is recommended to change reverbFilterCountEmulator or betterReverbDownsampleEmulator first.
-// This can be changed at any time, but is best set when calling audio_reset_session.
+// This can be changed at any time, but is best set immediately before calling audio_reset_session.
 u8 monoReverbEmulator = FALSE;
 
 // This value controls the size of the reverb buffer. It affects the global reverb delay time. This variable is one of the easiest to control.
-// It is not recommended setting this to values greater than 0x1000 * 2^(downsample factor - 1), as you run the risk of running into a memory issue (though this is far from a guarantee).
 // Setting the value lower than the downsample buffer size will destroy the game audio. This is taken into account automatically, but also means the value set here isn't what always gets used.
+// Similarly, this value maxes out at (REVERB_WINDOW_SIZE_MAX * 2^(downsample factor - 1)).
 // If this value is changed, it will go into effect the next time audio_reset_session is called.
 // Set to -1 to use a default preset instead. Higher values represent more audio delay (usually better for echoey spaces).
 s32 betterReverbWindowsSize = -1;
@@ -120,32 +125,15 @@ s32 betterReverbWindowsSize = -1;
 
 // These values affect filter delays. Bigger values will result in fatter echo (and more memory); must be cumulatively smaller than BETTER_REVERB_SIZE/2.
 // If setting a reverb downsample value to 1, these must be cumulatively smaller than BETTER_REVERB_SIZE/4.
-// These values should never be changed unless in this declaration or during a call to audio_reset_session, as it could otherwise lead to a major memory leak or garbage audio.
-// None of the delay values should ever be smaller than 1 either; these are s32s purely to avoid typecasts.
-// These values are currently set by using delaysBaseline in the audio_reset_session function, so its behavior must be overridden to use dynamically (or at all).
-s32 delaysL[NUM_ALLPASS] = {
+// None of the delay values should ever be smaller than 1; these are s32s purely to avoid typecasts.
+// These values are applied any time audio_reset_session is called, and as such can be changed at any time without issues.
+s32 delaysBaselineL[NUM_ALLPASS] = {
     1080, 1352, 1200,
     1200, 1232, 1432,
     1384, 1048, 1352,
      928, 1504, 1512
 };
-s32 delaysR[NUM_ALLPASS] = {
-    1384, 1352, 1048,
-     928, 1512, 1504,
-    1080, 1200, 1352,
-    1200, 1432, 1232
-};
-
-// Like the delays array, but represents default max values that don't change (also probably somewhat redundant)
-// Change this array rather than the delays array to customize reverb delay times globally.
-// Similarly to delaysL/R, these should be kept within the memory constraints defined by BETTER_REVERB_SIZE.
-const s32 delaysBaselineL[NUM_ALLPASS] = {
-    1080, 1352, 1200,
-    1200, 1232, 1432,
-    1384, 1048, 1352,
-     928, 1504, 1512
-};
-const s32 delaysBaselineR[NUM_ALLPASS] = {
+s32 delaysBaselineR[NUM_ALLPASS] = {
     1384, 1352, 1048,
      928, 1512, 1504,
     1080, 1200, 1352,
@@ -164,10 +152,12 @@ s32 reverbFilterCount   =  NUM_ALLPASS;
 s32 reverbFilterCountm1 = (NUM_ALLPASS - 1);
 u8 monoReverb = FALSE;
 u8 toggleBetterReverb = TRUE;
-s32 allpassIdxL[NUM_ALLPASS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-s32 allpassIdxR[NUM_ALLPASS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-s32     tmpBufL[NUM_ALLPASS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-s32     tmpBufR[NUM_ALLPASS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s32 allpassIdxL[NUM_ALLPASS] = {0};
+s32 allpassIdxR[NUM_ALLPASS] = {0};
+s32     tmpBufL[NUM_ALLPASS] = {0};
+s32     tmpBufR[NUM_ALLPASS] = {0};
+s32     delaysL[NUM_ALLPASS] = {0};
+s32     delaysR[NUM_ALLPASS] = {0};
 s32 **delayBufsL;
 s32 **delayBufsR;
 #endif
@@ -206,7 +196,7 @@ struct SynthesisReverb gSynthesisReverb;
 u8 sAudioSynthesisPad[0x20];
 #endif
 
-#if defined(BETTER_REVERB) && (defined(VERSION_US) || defined(VERSION_JP))
+#ifdef BETTER_REVERB
 static inline void reverb_samples(s16 *outSampleL, s16 *outSampleR, s32 inSampleL, s32 inSampleR) {
     s32 i = 0;
     s32 j = 0;
@@ -479,32 +469,7 @@ void synthesis_load_note_subs_eu(s32 updateIndex) {
         }
     }
 }
-#endif
 
-#ifndef VERSION_EU
-s32 get_volume_ramping(u16 sourceVol, u16 targetVol, s32 arg2) {
-    // This roughly computes 2^16 * (targetVol / sourceVol) ^ (8 / arg2),
-    // but with discretizations of targetVol, sourceVol and arg2.
-    f32 ret;
-    switch (arg2) {
-        default:
-            ret = gVolRampingLhs136[targetVol >> 8] * gVolRampingRhs136[sourceVol >> 8];
-            break;
-        case 128:
-            ret = gVolRampingLhs128[targetVol >> 8] * gVolRampingRhs128[sourceVol >> 8];
-            break;
-        case 136:
-            ret = gVolRampingLhs136[targetVol >> 8] * gVolRampingRhs136[sourceVol >> 8];
-            break;
-        case 144:
-            ret = gVolRampingLhs144[targetVol >> 8] * gVolRampingRhs144[sourceVol >> 8];
-            break;
-    }
-    return ret;
-}
-#endif
-
-#ifdef VERSION_EU
 // TODO: (Scrub C) pointless mask and whitespace
 u64 *synthesis_execute(u64 *cmdBuf, s32 *writtenCmds, s16 *aiBuf, s32 bufLen) {
     s32 i, j;
@@ -1147,7 +1112,12 @@ u64 *synthesis_process_notes(s16 *aiBuf, s32 bufLen, u64 *cmd) {
 
                         switch (flags) {
                             case A_INIT: // = 1
-                                sp130 = 0;
+                                /**
+                                 * !NOTE: Removing this seems to produce a more accurate waveform, however I have no idea why Nintendo decided to add this originally.
+                                 * I can only speculate (and hope) that this was just an oversight on their part and this has no reason to exist, given my testing.
+                                 * I'm leaving it commented out here just in case though.
+                                 */
+                                // sp130 = 0;
                                 s5 = s0 * 2 + s5;
                                 break;
 
@@ -1373,8 +1343,14 @@ u64 *final_resample(u64 *cmd, struct Note *note, s32 count, u16 pitch, u16 dmemI
 u64 *process_envelope(u64 *cmd, struct Note *note, s32 nSamples, u16 inBuf, s32 headsetPanSettings,
                       UNUSED u32 flags) {
     struct VolumeChange vol;
-    vol.sourceLeft = note->curVolLeft;
-    vol.sourceRight = note->curVolRight;
+    if (note->initFullVelocity) {
+        note->initFullVelocity = FALSE;
+        vol.sourceLeft = note->targetVolLeft;
+        vol.sourceRight = note->targetVolRight;
+    } else {
+        vol.sourceLeft = note->curVolLeft;
+        vol.sourceRight = note->curVolRight;
+    }
     vol.targetLeft = note->targetVolLeft;
     vol.targetRight = note->targetVolRight;
     note->curVolLeft = vol.targetLeft;
@@ -1468,8 +1444,24 @@ u64 *process_envelope(u64 *cmd, struct NoteSubEu *note, struct NoteSynthesisStat
         rampLeft = gCurrentLeftVolRamping[targetLeft >> 5] * gCurrentRightVolRamping[sourceLeft >> 5];
         rampRight = gCurrentLeftVolRamping[targetRight >> 5] * gCurrentRightVolRamping[sourceRight >> 5];
 #else
-        rampLeft = get_volume_ramping(vol->sourceLeft, vol->targetLeft, nSamples);
-        rampRight = get_volume_ramping(vol->sourceRight, vol->targetRight, nSamples);
+        // volume ramping
+        // This roughly computes 2^16 * (targetVol / sourceVol) ^ (8 / arg2),
+        // but with discretizations of targetVol, sourceVol and arg2.
+        switch (nSamples) {
+            case 128:
+                rampLeft = gVolRampingLhs128[vol->targetLeft >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs128[vol->sourceLeft >> (15 - VOL_RAMPING_EXPONENT)];
+                rampRight = gVolRampingLhs128[vol->targetRight >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs128[vol->sourceRight >> (15 - VOL_RAMPING_EXPONENT)];
+                break;
+            case 144:
+                rampLeft = gVolRampingLhs144[vol->targetLeft >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs144[vol->sourceLeft >> (15 - VOL_RAMPING_EXPONENT)];
+                rampRight = gVolRampingLhs144[vol->targetRight >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs144[vol->sourceRight >> (15 - VOL_RAMPING_EXPONENT)];
+                break;
+            case 136:
+            default:
+                rampLeft = gVolRampingLhs136[vol->targetLeft >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs136[vol->sourceLeft >> (15 - VOL_RAMPING_EXPONENT)];
+                rampRight = gVolRampingLhs136[vol->targetRight >> (15 - VOL_RAMPING_EXPONENT)] * gVolRampingRhs136[vol->sourceRight >> (15 - VOL_RAMPING_EXPONENT)];
+                break;
+        }
 #endif
 
         // The operation's parameters change meanings depending on flags
@@ -1680,8 +1672,8 @@ void note_set_vel_pan_reverb(struct Note *note, f32 velocity, f32 pan, u8 reverb
     if (velocity < 0) {
         velocity = 0;
     }
-    note->targetVolLeft = (u16)(s32)(velocity * volLeft) & ~0x80FF;
-    note->targetVolRight = (u16)(s32)(velocity * volRight) & ~0x80FF;
+    note->targetVolLeft = (u16)(s32)(velocity * volLeft) & VOLRAMPING_MASK;
+    note->targetVolRight = (u16)(s32)(velocity * volRight) & VOLRAMPING_MASK;
     if (note->targetVolLeft == 0) {
         note->targetVolLeft++;
     }
@@ -1710,6 +1702,7 @@ void note_enable(struct Note *note) {
     note->stereoStrongRight = FALSE;
     note->stereoStrongLeft = FALSE;
     note->usesHeadsetPanEffects = FALSE;
+    note->initFullVelocity = FALSE;
     note->headsetPanLeft = 0;
     note->headsetPanRight = 0;
     note->prevHeadsetPanRight = 0;

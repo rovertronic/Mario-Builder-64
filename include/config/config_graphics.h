@@ -5,7 +5,7 @@
  *********************/
 
 // The size of the master display list (gDisplayListHead). 6400 is vanilla.
-#define GFX_POOL_SIZE 10000
+#define GFX_POOL_SIZE 25600
 
 // Show a watermark on the title screen that reads "Made with HackerSM64", instead of the copyright message.
 #define INTRO_CREDIT
@@ -14,7 +14,7 @@
 #define INTRO_FLOOMBAS
 
 // Enables widescreen (16:9) support.
-#define WIDE
+// #define WIDE
 
 // Skybox size modifier, changing this will add support for larger skybox images. NOTE: Vanilla skyboxes may break if you change this option. Be sure to rescale them accordingly.
 // Whenever you change this, make sure to run "make -C tools clean" to rebuild the skybox tool (alternatively go into skyconv.c and change the file in any way (like adding/deleting a space) to specifically rebuild that tool).
@@ -31,13 +31,13 @@
 // #define PUPPYPRINT
 
 // Disables AA (Improves console performance but causes visible seams between unconnected geometry).
-// #define DISABLE_AA
+#define DISABLE_AA
 
 // Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
-#define IA8_COINS
+//#define IA8_COINS
 
 // Similar to the above, but 30 FPS (Textures by InTheBeef, cleaned up by Arceveti).
-#define IA8_30FPS_COINS
+//#define IA8_30FPS_COINS
 
 // Use .rej microcode for certain objects (experimental - only should be used when F3DEX_GBI_2 is defined).
 // For advanced users only. Does not work perfectly out the box, best used when exported actor models are
@@ -80,7 +80,7 @@
 // #define FIX_REFLECT_MTX
 
 // This improves performance a bit, and does not seem to break anything.
-#define DISABLE_GRAPH_NODE_TYPE_FUNCTIONAL
+//#define DISABLE_GRAPH_NODE_TYPE_FUNCTIONAL
 
 // Disables all object shadows. You'll probably only want this either as a last resort for performance or if you're making a super stylized hack.
 // #define DISABLE_SHADOWS

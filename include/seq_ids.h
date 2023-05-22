@@ -45,6 +45,29 @@ enum SeqId {
     SEQ_EVENT_CUTSCENE_ENDING,        // 0x20
     SEQ_MENU_FILE_SELECT,             // 0x21
     SEQ_EVENT_CUTSCENE_LAKITU,        // 0x22 (not in JP)
+    SEQ_STREAMED_BAD_APPLE,           // 0x23
+    SEQ_STREAMED_BONEARENA,           // 0x24
+    SEQ_FARM,                         // 0x25
+    SEQ_PIRATE,                       // 0x26
+    SEQ_JUNGLE,                       // 0x27
+    SEQ_REDHOT,                       // 0x28
+    SEQ_STREAMED_RAIN_OUTSIDE,        // 0x29
+    SEQ_STREAMED_RAIN_INSIDE,         // 0x2A
+    SEQ_SHOWRUNNER,                   // 0x2B
+
+    SEQ_COSMIC_SEED_COLLECT,          // 0x2C
+    SEQ_COSMIC_SEED_LEVEL,            // 0x2D
+    SEQ_COSMIC_SEED_BOSS,             // 0x2E
+
+    SEQ_SMB1_OVERWORLD,               // 0x2F
+    SEQ_SMB2_OVERWORLD,               // 0x30
+    SEQ_SMB3_CASTLE,                  // 0x31
+    SEQ_NSMB_CASTLE,                  // 0x32
+
+    SEQ_FINAL_BOSS,                   // 0x33
+    SEQ_SHOWRUNNER_BOSS,              // 0x34
+    SEQ_BIG_HOUSE,                    // 0x35
+
     SEQ_COUNT
 };
 

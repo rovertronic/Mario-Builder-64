@@ -56,3 +56,13 @@
 #include "levels/bits/areas/1/30/collision.inc.c"
 #include "levels/bits/areas/1/31/collision.inc.c"
 #include "levels/bits/areas/1/32/collision.inc.c"
+
+#include "levels/bits/leveldata.inc.c"
+
+#include "levels/bits/spacebox/model.inc.c"
+#include "levels/bits/fountain/model.inc.c"
+#include "levels/bits/bits_stairs/collision.inc.c"
+#include "levels/bits/bits_stairs/model.inc.c"
+#include "levels/bits/mgba/collision.inc.c"
+#include "levels/bits/mgba/model.inc.c"
+#include "levels/bits/tvshop/model.inc.c"

@@ -21,3 +21,12 @@
 #include "levels/jrb/wooden_ship/geo.inc.c"
 #include "levels/jrb/areas/1/geo.inc.c"
 #include "levels/jrb/areas/2/geo.inc.c"
+#include "levels/jrb/geo.inc.c"
+
+#include "levels/jrb/rockplate/geo.inc.c"
+#include "levels/jrb/turnblock/geo.inc.c"
+#include "levels/jrb/lily/geo.inc.c"
+#include "levels/jrb/moleman/geo.inc.c"
+#include "levels/jrb/pode_seg/geo.inc.c"
+#include "levels/jrb/pode_head/geo.inc.c"
+#include "levels/jrb/bigmine/geo.inc.c"

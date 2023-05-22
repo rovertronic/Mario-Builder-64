@@ -1,0 +1,11 @@
+extern const GeoLayout c5_bridge_geo[];
+extern Lights1 c5_bridge_wood_lights;
+extern u8 c5_bridge_Siding_ci4[];
+extern u8 c5_bridge_Siding_ci4_pal_rgba16[];
+extern Vtx c5_bridge_Cube_007_mesh_layer_1_vtx_cull[8];
+extern Vtx c5_bridge_Cube_007_mesh_layer_1_vtx_0[84];
+extern Gfx c5_bridge_Cube_007_mesh_layer_1_tri_0[];
+extern Gfx mat_c5_bridge_wood[];
+extern Gfx mat_revert_c5_bridge_wood[];
+extern Gfx c5_bridge_Cube_007_mesh_layer_1[];
+extern Gfx c5_bridge_material_revert_render_settings[];

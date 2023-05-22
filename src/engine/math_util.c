@@ -27,6 +27,32 @@ Vec3s gVec3sOne  = {     1,     1,     1 };
 
 static u16 gRandomSeed16;
 
+u8 count_u16_bits(u16 bitfield) {
+    u8 count = 0;
+    u8 i;
+
+    for (i=0;i<16;i++) {
+        if (bitfield & (1 << i)) {
+            count ++;
+        }
+    }
+
+    return count;
+}
+
+u8 count_u32_bits(u32 bitfield) {
+    u8 count = 0;
+    u8 i;
+
+    for (i=0;i<32;i++) {
+        if (bitfield & (1 << i)) {
+            count ++;
+        }
+    }
+
+    return count;
+}
+
 // Generate a pseudorandom integer from 0 to 65535 from the random seed, and update the seed.
 u16 random_u16(void) {
     if (gRandomSeed16 == 22026) {
@@ -237,6 +263,12 @@ void vec3i_mul(Vec3i dest, const Vec3i a) { vec3_mul_func(s32, dest, a); }
 void vec3s_mul(Vec3s dest, const Vec3s a) { vec3_mul_func(s16, dest, a); }
 #undef vec3_mul_func
 
+/// Get length of vector 'a'
+f32 vec3f_length(Vec3f a)
+{
+	return sqrtf(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+}
+
 /// Make 'dest' the product of vectors a and b.
 #define vec3_prod_func(fmt, dest, a, b) {   \
     register fmt x1 = ((fmt *) a)[0];       \
@@ -294,6 +326,21 @@ f32 vec3f_dot(const Vec3f a, const Vec3f b) {
 /// Make vector 'dest' the cross product of vectors a and b.
 void vec3f_cross(Vec3f dest, const Vec3f a, const Vec3f b) {
     vec3_cross(dest, a, b);
+}
+
+s32 vec3f_normalize2(Vec3f dest) {
+    register f32 mag = (sqr(dest[0]) + sqr(dest[1]) + sqr(dest[2]));
+    if (mag > NEAR_ZERO) {
+        register f32 invsqrt = (1.0f / sqrtf(mag));
+        vec3_mul_val(dest, invsqrt);
+        return TRUE;
+    } else {
+        // Default to up vector.
+        dest[0] = 0;
+        ((u32 *) dest)[1] = FLOAT_ONE;
+        dest[2] = 0;
+        return FALSE;
+    }
 }
 
 /// Scale vector 'dest' so it has length 1
@@ -621,6 +668,13 @@ void mtxf_shadow(Mat4 dest, Mat4 src, Vec3f upDir, Vec3f pos, Vec3f scale, s16 y
  * 'yaw' is the angle which it should face
  * 'pos' is the object's position in the world
  */
+ //
+
+f32 lerp(f32 a, f32 b, f32 f)
+{
+    return (a * (1.0 - f)) + (b * f);
+}
+
 void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
     Vec3f lateralDir;
     Vec3f leftDir;
@@ -636,6 +690,41 @@ void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
     vec3f_copy(dest[2], forwardDir);
     vec3f_copy(dest[3], pos);
     MTXF_END(dest);
+}
+
+void mtxf_align_terrain_normal_lerp(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
+    Vec3f lateralDir;
+    Vec3f leftDir;
+    Vec3f forwardDir;
+
+    vec3f_set(lateralDir, sins(yaw), 0, coss(yaw));
+    vec3f_normalize(upDir);
+
+    vec3f_cross(leftDir, upDir, lateralDir);
+    vec3f_normalize(leftDir);
+
+    vec3f_cross(forwardDir, leftDir, upDir);
+    vec3f_normalize(forwardDir);
+
+    dest[0][0] = lerp(dest[0][0],leftDir[0], 0.1);
+    dest[0][1] = lerp(dest[0][1],leftDir[1], 0.1);
+    dest[0][2] = lerp(dest[0][2],leftDir[2], 0.1);
+    dest[3][0] = pos[0];
+
+    dest[1][0] = lerp(dest[1][0],upDir[0], 0.1);
+    dest[1][1] = lerp(dest[1][1],upDir[1], 0.1);
+    dest[1][2] = lerp(dest[1][2],upDir[2], 0.1);
+    dest[3][1] = pos[1];
+
+    dest[2][0] = lerp(dest[2][0],forwardDir[0], 0.1);
+    dest[2][1] = lerp(dest[2][1],forwardDir[1], 0.1);
+    dest[2][2] = lerp(dest[2][2],forwardDir[2], 0.1);
+    dest[3][2] = pos[2];
+
+    dest[0][3] = 0.0f;
+    dest[1][3] = 0.0f;
+    dest[2][3] = 0.0f;
+    dest[3][3] = 1.0f;
 }
 
 /**
@@ -1323,7 +1412,7 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     // Get surface normal and extend it by RAY_OFFSET.
     Vec3f norm;
     surface_normal_to_vec3f(norm, surface);
-    vec3_mul_val(norm, RAY_OFFSET);
+    //vec3_mul_val(norm, RAY_OFFSET); STAY OUT!!!!!! YOU BITCH!
     // Move the face forward by RAY_OFFSET.
     vec3f_add(v0, norm);
     vec3f_add(v1, norm);

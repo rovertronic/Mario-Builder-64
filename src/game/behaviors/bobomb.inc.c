@@ -41,6 +41,7 @@ void bobomb_act_explode(void) {
     }
 }
 
+//
 void bobomb_check_interactions(void) {
     obj_set_hitbox(o, &sBobombHitbox);
 
@@ -129,6 +130,10 @@ void generic_bobomb_free_loop(void) {
     }
 
     bobomb_check_interactions();
+
+    if (gMarioState->_2D) {
+        o->oPosZ = 0.0f;
+    }
 
     if (o->oBobombFuseTimer > 150) {
         o->oAction = 3;
@@ -287,6 +292,38 @@ void bhv_bobomb_buddy_init(void) {
     o->oFriction = 0.8f;
     o->oBuoyancy = 1.3f;
     o->oInteractionSubtype = INT_SUBTYPE_NPC;
+
+    //advice after showrunner first ecounter
+    if ((o->oBehParams2ndByte==169)&&(!(save_file_get_flags() & SAVE_FLAG_TALKED_TO_TOAD))) {
+        save_file_set_progression(PROG_TRUE_START);
+        run_event(EVENT_TOAD_MEET);
+        save_file_set_flags(SAVE_FLAG_TALKED_TO_TOAD);
+    }
+
+    //make quest indicator if have quest
+    switch(o->oBehParams2ndByte) {
+        case 41:
+        case 42:
+        case 3:
+        case 66:
+        case 130:
+            o->prevObj = spawn_object(o,MODEL_QUEST,bhvQuest);
+        break;
+    }
+
+    //if you killed the showrunner, and DIALOG_169, then change to DIALOG_154
+    if (save_file_check_progression(PROG_DEFEAT_SHOWRUNNER)) {
+        if (o->oBehParams2ndByte == DIALOG_169) {
+            o->oBehParams2ndByte = DIALOG_154;
+        }
+    }
+}
+
+void bhv_dismiss_quest(void) {
+    if (o->prevObj != NULL) {
+        mark_obj_for_deletion(o->prevObj);
+        o->prevObj = NULL;
+    }
 }
 
 void bobomb_buddy_act_idle(void) {
@@ -294,11 +331,15 @@ void bobomb_buddy_act_idle(void) {
 
     // vec3f_copy(&o->oBobombBuddyPosCopyVec, &o->oPosVec);
 
-    object_step();
+    if (gCurrLevelNum != LEVEL_TTC) {
+        //hard coded horse shit
+        object_step();
+        //the reason for this though is because a lot of npcs in ttc are on top of objects, which unload collision when you walk away from them
+        }
 
-    if (animFrame == 5 || animFrame == 16) {
-        cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
-    }
+    // if (animFrame == 5 || animFrame == 16) {
+    //     cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
+    // }
 
     if (o->oDistanceToMario < 1000.0f) {
         o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x140);
@@ -363,11 +404,30 @@ void bobomb_buddy_cannon_dialog(s16 dialogFirstText, s16 dialogSecondText) {
 }
 
 void bobomb_buddy_act_talk(void) {
+    struct Object *keyobj;
+    u8 givestar;
+    u8 teledialog;
+
+    keyobj = cur_obj_nearest_object_with_behavior(bhvBreakableBoxSmall);
+
+    givestar = FALSE;
+    if (keyobj != NULL) {
+        if (keyobj->oBehParams2ndByte == 1) {
+            if (lateral_dist_between_objects(o,keyobj) < 800.0f) {
+                givestar = TRUE;
+                }
+            }
+        }
+
+    gMarioState->ShopID = (gCurrentObject->oBehParams >> 24) & 0xFF;
+
     if (set_mario_npc_dialog(MARIO_DIALOG_LOOK_FRONT) == MARIO_DIALOG_STATUS_SPEAK) {
         o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
 
         switch (o->oBobombBuddyRole) {
+            case 3:
             case BOBOMB_BUDDY_ROLE_ADVICE:
+
                 if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte)
                     != BOBOMB_BUDDY_BP_STYPE_GENERIC) {
                     set_mario_npc_dialog(MARIO_DIALOG_STOP);
@@ -376,6 +436,52 @@ void bobomb_buddy_act_talk(void) {
                     o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;
                     o->oInteractStatus = INT_STATUS_NONE;
                     o->oAction = BOBOMB_BUDDY_ACT_IDLE;
+
+                    //hardcoded quest bullshit lol
+                    if ((o->oBehParams2ndByte == 3)&&(gMarioState->DeadRexMissionActivate == 0)) {
+                        gMarioState->DeadRexMissionActivate = 1;
+                        bhv_dismiss_quest();
+                        }
+                    //
+                    if ((o->oBehParams2ndByte == 66)&&(gMarioState->DeadRexMissionActivate == 0)) {
+                        gMarioState->DeadCowboyMissionActivate = 1;
+                        bhv_dismiss_quest();
+                        }
+                    //
+                    if (o->oBehParams2ndByte == 30) {
+                        o->oBehParams2ndByte = 1;
+                        o->oAction = BOBOMB_BUDDY_ACT_TURN_TO_TALK;
+                        }
+                    if (o->oBehParams2ndByte == 36) {
+                        o->oBehParams2ndByte = 1;
+                        o->oAction = BOBOMB_BUDDY_ACT_TURN_TO_TALK;
+                        }
+                    if (o->oBehParams2ndByte == 107) {
+                        o->oBehParams2ndByte = 1;
+                        o->oAction = BOBOMB_BUDDY_ACT_TURN_TO_TALK;
+                        }
+                    if (o->oBehParams2ndByte == DIALOG_TUTORIAL_3) {
+                        o->oBehParams2ndByte = 1;
+                        o->oAction = BOBOMB_BUDDY_ACT_TURN_TO_TALK;    
+                    }
+                    if ((o->oBehParams2ndByte == 41)&&(gMarioState->CheeseMissionActivate == 0)) {
+                        bhv_dismiss_quest();
+                        gMarioState->CheeseMissionActivate = 1;
+                        if (gMarioState->SockMissionActivate == 1) {
+                            gMarioState->SockMissionActivate = 0;
+                            }
+                        }
+                    if ((o->oBehParams2ndByte == 42)&&(gMarioState->SockMissionActivate == 0)) {
+                        bhv_dismiss_quest();
+                        gMarioState->SockMissionActivate = 1;
+                        if (gMarioState->CheeseMissionActivate == 1) {
+                            gMarioState->CheeseMissionActivate = 0;
+                            }
+                        }
+                    if ((o->oBehParams2ndByte == 130)&&(gMarioState->CheeseMissionActivate == 0)) {//highcane mission
+                        bhv_dismiss_quest();
+                        gMarioState->CheeseMissionActivate = 1;
+                        }
                 }
                 break;
 
@@ -386,6 +492,56 @@ void bobomb_buddy_act_talk(void) {
                     bobomb_buddy_cannon_dialog(DIALOG_047, DIALOG_106);
                 }
                 break;
+
+
+            case 2:
+                if ((o->oBehParams2ndByte == 4 )&&(givestar)) {
+                    o->oBehParams2ndByte = 6;
+                    }
+        
+                if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte)
+                    != BOBOMB_BUDDY_BP_STYPE_GENERIC) {
+                    set_mario_npc_dialog(0);
+
+                    o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
+                    o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;
+                    o->oInteractStatus = 0;
+                    o->oAction = BOBOMB_BUDDY_ACT_IDLE;
+
+                    if (o->oBehParams2ndByte == 6) {
+                        o->oBehParams2ndByte = 7;
+                        spawn_default_star(o->oPosX, o->oPosY+ 400.0f, o->oPosZ+400.0f);
+                        }
+                }
+            break;
+            case 4://telescope
+
+                teledialog = 58;
+                if (save_file_get_flags() & SAVE_FLAG_HAVE_KEY_1) {
+                    teledialog = 59;
+                }
+                if (save_file_get_flags() & SAVE_FLAG_LENS_INSERTED) {
+                    teledialog = 60;
+                }
+
+                if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, teledialog) != BOBOMB_BUDDY_BP_STYPE_GENERIC) {
+                    set_mario_npc_dialog(0);
+
+                    if (teledialog == 59) {
+                        save_file_set_flags(SAVE_FLAG_LENS_INSERTED);
+                    }
+                    if (teledialog == 60) {
+                        level_trigger_warp(gMarioState, WARP_OP_TELEPORT);
+                    }
+
+                    o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
+                    o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;
+                    o->oInteractStatus = 0;
+                    o->oAction = BOBOMB_BUDDY_ACT_IDLE;
+
+                }
+            break;
+
         }
     }
 }
@@ -399,7 +555,7 @@ void bobomb_buddy_act_turn_to_talk(void) {
 
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x1000);
 
-    if ((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario) {
+    if (((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario) || (o->oBobombBuddyRole == 3)) {
         o->oAction = BOBOMB_BUDDY_ACT_TALK;
     }
 
@@ -407,6 +563,37 @@ void bobomb_buddy_act_turn_to_talk(void) {
 }
 
 void bobomb_buddy_actions(void) {
+
+    if ((o->oBehParams2ndByte == 3)&&(gMarioState->DeadRexMissionActivate == 1)&&(gMarioState->DeadRexes > 9)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        gMarioState->DeadRexMissionActivate = 2;
+        }
+
+    if ((o->oBehParams2ndByte == 41)&&(gMarioState->CheeseMissionActivate == 1)&&(gMarioState->CheeseCollection > 4)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        gMarioState->CheeseMissionActivate = 2;
+        }
+
+    if ((o->oBehParams2ndByte == 42)&&(gMarioState->SockMissionActivate == 1)&&(gMarioState->SockCollection > 6)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        gMarioState->SockMissionActivate = 2;
+        }
+
+    if ((o->oBehParams2ndByte == 43)&&(gMarioState->SwitchPressed == 10)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        o->oBehParams2ndByte = 44;
+    }
+
+    if ((o->oBehParams2ndByte == 66)&&(gMarioState->DeadCowboyMissionActivate == 1)&&(gMarioState->DeadRexes > 6)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        gMarioState->DeadCowboyMissionActivate = 2;
+        }
+
+    if ((o->oBehParams2ndByte == 130)&&(gMarioState->CheeseMissionActivate == 1)&&(gMarioState->CheeseCollection > 19)) {
+        spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
+        gMarioState->CheeseMissionActivate = 2;
+        }
+
     switch (o->oAction) {
         case BOBOMB_BUDDY_ACT_IDLE:
             bobomb_buddy_act_idle();
@@ -425,9 +612,29 @@ void bobomb_buddy_actions(void) {
 }
 
 void bhv_bobomb_buddy_loop(void) {
+
+    if ((o->oBehParams2ndByte == 1)&&(o->oDistanceToMario < 400.0f)) {
+        gMarioState->nearVendor = 20;
+    }
+
     bobomb_buddy_actions();
 
+    if (o->oBobombBuddyRole == 2) {
+        o->oExtraVariable1 ++;
+        o->oGraphYOffset = sins(o->oExtraVariable1*0x200) * 20.0f;
+        }
+
     curr_obj_random_blink(&o->oBobombBuddyBlinkTimer);
+
+    if ((o->oTimer%20==0)&&(o->oBobombBuddyRole==3)) {
+        o->oVelY=12.0f;
+    }
+    if (o->oBobombBuddyRole==4) {
+        o->oAnimState = 0;
+        if (save_file_get_flags() & SAVE_FLAG_LENS_INSERTED) {
+            o->oAnimState = 1;
+        }
+    }
 
     o->oInteractStatus = INT_STATUS_NONE;
 }

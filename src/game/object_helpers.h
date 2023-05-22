@@ -59,8 +59,11 @@ enum GeoUpdateLayerTransparencyModes {
     GEO_TRANSPARENCY_MODE_INTER     = 30,
 };
 
+void cur_obj_shake(struct Object *obj);
+
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUSED void *context);
+Gfx *geo_set_color_env(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context);
 void obj_update_pos_from_parent_transformation(Mat4 mtx, struct Object *obj);
@@ -165,6 +168,8 @@ s32 cur_obj_has_behavior(const BehaviorScript *behavior);
 s32 obj_has_behavior(struct Object *obj, const BehaviorScript *behavior);
 f32 cur_obj_lateral_dist_from_mario_to_home(void);
 f32 cur_obj_lateral_dist_to_home(void);
+f32 pythag(f32 dx, f32 dz);
+f32 floatclamp(f32 flote, f32 clampn, f32 clampp);
 void cur_obj_set_pos_to_home(void);
 void cur_obj_set_pos_to_home_and_stop(void);
 void cur_obj_shake_y(f32 amount);

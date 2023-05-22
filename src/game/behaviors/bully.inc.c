@@ -1,5 +1,7 @@
 // bully.inc.c
 
+#include "include/seq_ids.h"
+
 static struct ObjectHitbox sSmallBullyHitbox = {
     /* interactType:      */ INTERACT_BULLY,
     /* downOffset:        */ 0,
@@ -24,6 +26,21 @@ static struct ObjectHitbox sBigBullyHitbox = {
     /* hurtboxHeight:     */ 225,
 };
 
+#define BULLY_ACT_BOSS 10
+#define BULLY_ACT_FLY 11
+
+u8 bossaction;
+
+static s16 obj_turn_pitch_toward_mario_e(f32 targetOffsetY, s16 turnAmount) {
+    s16 targetPitch;
+
+    o->oPosY -= targetOffsetY;
+    targetPitch = obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_PITCH_INDEX, turnAmount);
+    o->oPosY += targetOffsetY;
+
+    return targetPitch;
+}
+
 void bhv_small_bully_init(void) {
     cur_obj_init_animation(0);
     vec3f_copy(&o->oHomeVec, &o->oPosVec);
@@ -38,12 +55,16 @@ void bhv_small_bully_init(void) {
 void bhv_big_bully_init(void) {
     cur_obj_init_animation(0);
     vec3f_copy(&o->oHomeVec, &o->oPosVec);
+    o->oPosY += 2000.0f;
     o->oBehParams2ndByte = BULLY_BP_SIZE_BIG;
     o->oGravity = 5.0f;
     o->oFriction = 0.93f;
     o->oBuoyancy = 1.3f;
 
     obj_set_hitbox(o, &sBigBullyHitbox);
+
+    o->oAction = BULLY_ACT_BOSS;
+    bossaction = 2;
 }
 
 void bully_check_mario_collision(void) {
@@ -56,6 +77,9 @@ void bully_check_mario_collision(void) {
 
         o->oInteractStatus &= ~INT_STATUS_INTERACTED;
         o->oAction = BULLY_ACT_KNOCKBACK;
+
+        o->oForwardVel = 2500.0f / o->hitboxRadius;
+        o->oMoveAngleYaw = o->oAngleToMario+0x8000;
         o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
         cur_obj_init_animation(3);
         o->oBullyMarioCollisionAngle = o->oMoveAngleYaw;
@@ -82,13 +106,19 @@ void bully_act_chase_mario(void) {
         }
     }
 
-    if (!is_point_within_radius_of_mario(homeX, posY, homeZ, 1000)) {
+    if ((!is_point_within_radius_of_mario(homeX, posY, homeZ, 1000))&&((o->oBehParams2ndByte != BULLY_BP_SIZE_SMALL))) {
         o->oAction = BULLY_ACT_PATROL;
         cur_obj_init_animation(0);
     }
 }
 
 void bully_act_knockback(void) {
+
+    if (bossaction == 4) {
+        o->oPosX = o->oHomeX;
+        o->oPosZ = o->oHomeZ;
+        }
+
     if (o->oForwardVel < 10.0f && (s32) o->oVelY == 0) {
         o->oForwardVel = 1.0f;
         o->oBullyKBTimerAndMinionKOCounter++;
@@ -101,9 +131,16 @@ void bully_act_knockback(void) {
 
     if (o->oBullyKBTimerAndMinionKOCounter == 18) {
         o->oAction = BULLY_ACT_CHASE_MARIO;
+        if (o->oBehParams2ndByte == BULLY_BP_SIZE_BIG ) {
+            o->oAction = BULLY_ACT_BOSS;
+            if (bossaction == 4) {
+                o->oMoveAngleYaw = 0x1000;
+                }
+            }
         o->oBullyKBTimerAndMinionKOCounter = 0;
         cur_obj_init_animation(1);
     }
+
 }
 
 void bully_act_back_up(void) {
@@ -165,8 +202,9 @@ void bully_play_stomping_sound(void) {
 
 void bully_step(void) {
     s16 collisionFlags = object_step();
-
+    o->oMoveFlags = collisionFlags;
     bully_backup_check(collisionFlags);
+
     bully_play_stomping_sound();
     obj_check_floor_death(collisionFlags, sObjFloor);
 
@@ -189,6 +227,27 @@ void bully_spawn_coin(void) {
 }
 
 void bully_act_level_death(void) {
+    if ((o->oBehParams2ndByte==BULLY_BP_SIZE_BIG)&&(gMarioState->BossHealth > 0)&&(bossaction != 5)) {
+
+        if (save_file_get_badge_equip() & (1 << BADGE_SLAYER)) {
+            gMarioState->BossHealth -= 16;
+        } else {
+            gMarioState->BossHealth -= 8;
+        }
+        bossaction = 0;
+        o->oPosY += 100.0f;
+
+        
+        if (gMarioState->BossHealth < 1) {
+            gMarioState->BossHealth = 0;
+            bossaction = 5;
+            } else {
+                cur_obj_play_sound_2(SOUND_OBJ_KING_BOBOMB_JUMP);
+                o->oAction = BULLY_ACT_FLY;
+            }
+        return;
+        }
+
     if (obj_lava_death() == TRUE) {
         if (o->oBehParams2ndByte == BULLY_BP_SIZE_SMALL) {
             if (o->oBullySubtype == BULLY_STYPE_MINION) {
@@ -201,25 +260,41 @@ void bully_act_level_death(void) {
             if (o->oBullySubtype == BULLY_STYPE_CHILL) {
                 spawn_default_star(130.0f, 1600.0f, -4335.0f);
             } else {
-                spawn_default_star(0, 950.0f, -6800.0f);
-                spawn_object_abs_with_rot(o, 0, MODEL_NONE, bhvLllTumblingBridge,
-                                          0, 154, -5631, 0, 0, 0);
+                stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+                spawn_default_star(o->oHomeX, o->oHomeY, o->oHomeZ);
+                //spawn_object_abs_with_rot(o, 0, MODEL_NONE, bhvLllTumblingBridge, 0, 154, -5631, 0, 0,
+                                          //0);
             }
         }
     }
 }
 
 void bhv_bully_loop(void) {
+    s16 collisionFlags;
+    struct Object *flame;
+
     vec3f_copy(&o->oBullyPrevVec, &o->oPosVec);
 
     //! Because this function runs no matter what, Mario is able to interrupt the bully's
     //  death action by colliding with it. Since the bully hitbox is tall enough to collide
     //  with Mario even when it is under a lava floor, this can get the bully stuck OOB
     //  if there is nothing under the lava floor.
-    bully_check_mario_collision();
+    if (bossaction != 4) {
+        bully_check_mario_collision();
+    }
+
+    if (o->oBehParams2ndByte==BULLY_BP_SIZE_BIG) {
+        //print_text_fmt_int(210, 72, "ACT %d", o->oAction);
+        //print_text_fmt_int(210, 92, "ACT2 %d", bossaction);
+        //print_text_fmt_int(210, 112, "HP %d", gMarioState->BossHealth);
+    }
 
     switch (o->oAction) {
         case BULLY_ACT_PATROL:
+            if (o->oBehParams2ndByte == BULLY_BP_SIZE_BIG ) {
+                o->oAction = BULLY_ACT_BOSS;
+                }
+
             o->oForwardVel = 5.0f;
 
             if (obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 800) == TRUE) {
@@ -231,6 +306,11 @@ void bhv_bully_loop(void) {
             break;
 
         case BULLY_ACT_CHASE_MARIO:
+
+            if (o->oBehParams2ndByte == BULLY_BP_SIZE_BIG ) {
+                o->oAction = BULLY_ACT_BOSS;
+                }
+
             bully_act_chase_mario();
             bully_step();
             break;
@@ -241,17 +321,157 @@ void bhv_bully_loop(void) {
             break;
 
         case BULLY_ACT_BACK_UP:
+            if (o->oBehParams2ndByte == BULLY_BP_SIZE_BIG ) {
+                o->oAction = BULLY_ACT_BOSS;
+                }
+
             bully_act_back_up();
             bully_step();
+            break;
+
+        case BULLY_ACT_BOSS:
+
+            if ((gMarioState->pos[1] < o->oHomeY-500.0f)&&(o->oDistanceToMario < 3000.0f)) {
+                return;
+                }
+
+            if ((bossaction != 2)&&(bossaction != 4)) {
+                bully_step();
+                }
+
+            switch (bossaction) {
+                case 0:
+                    bossaction = 1;
+                    o->oHealth = (30-gMarioState->BossHealth)/5;
+                    o->oPosY += 100.0f;
+                    o->oVelY = 80.0f;
+                    cur_obj_play_sound_2(SOUND_OBJ_KING_BOBOMB_JUMP);
+                break;
+                case 1:
+                    o->oForwardVel = 20.0f;
+                    o->oPosX += o->oForwardVel * sins(o->oMoveAngleYaw);
+                    o->oPosZ += o->oForwardVel * coss(o->oMoveAngleYaw);
+
+                    if (o->oMoveFlags & 1) {
+                        cur_obj_play_sound_2(SOUND_OBJ_KING_BOBOMB_POUNDING1_HIGHPRIO);
+                        o->oVelY = 80.0f-gMarioState->BossHealth;
+                        if (cur_obj_lateral_dist_to_home() < 1000.0f) {
+                            o->oMoveAngleYaw = random_u16();
+                            }
+                            else
+                            {
+                            o->oMoveAngleYaw = cur_obj_angle_to_home();
+                            }
+                        o->oFaceAngleYaw = o->oMoveAngleYaw;
+                        spawn_object(o, 0xFD, bhvBowserShockWave);
+                        o->oHealth --;
+
+                        if (o->oHealth < 1) {
+                            bossaction = 2;
+                            }
+                        }
+                break;
+                case 2:
+                    o->oFaceAngleYaw = o->oMoveAngleYaw;
+                    bully_act_chase_mario();
+                    bully_step();
+                    if (gMarioState->pos[1] < o->oPosY - 100.0f) {
+                        o->oForwardVel = 0.0f;
+                    }
+                break;
+                case 3:
+                    o->oMoveAngleYaw = cur_obj_angle_to_home();
+                    o->oFaceAngleYaw = o->oMoveAngleYaw;
+                    o->oForwardVel = 30.0f;
+                    if (cur_obj_lateral_dist_to_home() < 25.0f) {
+                        bossaction = 4;
+                        o->oMoveAngleYaw = 0;
+                        }
+                break;
+                case 4:
+                    o->oPosX = o->oHomeX;
+                    o->oPosZ = o->oHomeZ;
+                    if (o->oTimer*0x10 < 0x1000) {
+                        o->oMoveAngleYaw += o->oTimer*0x10;
+                        }
+                        else
+                        {
+                        o->oMoveAngleYaw += 0x1000;
+                        }
+
+                    o->oFaceAngleYaw = o->oMoveAngleYaw;
+
+                    flame = spawn_object(o, MODEL_BLUE_FLAME, bhvFlameMovingForwardGrowing);
+                    flame->oPosY += 100.0f;
+                    flame->oFaceAngleYaw = o->oFaceAngleYaw;
+                    flame->oMoveAngleYaw = o->oFaceAngleYaw;
+                    cur_obj_play_sound_1(SOUND_AIR_BLOW_FIRE);
+
+                    if (o->oTimer > 900) {
+                        bossaction = 5;
+                        gMarioState->BossHealth = 1;
+                        }
+
+                    if ((o->oTimer % 9 == 0)&&(o->oTimer>100)) {
+                        flame = spawn_object(o, 0xFB, bhvVoidTriangle);
+                        flame->oPosY += 150.0f;
+                        flame->oDamageOrCoinValue = 3;
+                        flame->oMoveAnglePitch = obj_turn_pitch_toward_mario_e(0.0f, 0);
+                        flame->oMoveAngleYaw = o->oAngleToMario;
+                        }
+                    if ((o->oTimer % 4 == 0)&&(o->oTimer>300)) {
+                        flame = spawn_object(o, 0xFB, bhvVoidTriangle);
+                        flame->oPosY += 150.0f;
+                        flame->oDamageOrCoinValue = 3;
+                        flame->oMoveAnglePitch = obj_turn_pitch_toward_mario_e(0.0f, 0);
+                        flame->oMoveAngleYaw = random_u16();
+                        }
+                    if ((o->oTimer % 2 == 0)&&(o->oTimer>700)) {
+                        flame = spawn_object(o, 0xFB, bhvVoidTriangle);
+                        flame->oPosY += 150.0f;
+                        flame->oDamageOrCoinValue = 3;
+                        flame->oMoveAnglePitch = random_u16();
+                        flame->oMoveAngleYaw = random_u16();
+                        }
+                break;
+                case 5:
+                    o->header.gfx.animInfo.animFrame = 0;
+                break;
+                }
+                
+                if (o->oAction != OBJ_ACT_LAVA_DEATH) {
+                    o->oAction = BULLY_ACT_BOSS;
+                }
+
             break;
 
         case OBJ_ACT_LAVA_DEATH:
             bully_act_level_death();
             break;
 
+        case BULLY_ACT_FLY:
+
+            o->oFaceAngleYaw = o->oMoveAngleYaw;
+            if (((o->oTimer % 8) == 0)&&(o->oTimer < 40)) {
+                cur_obj_play_sound_2(SOUND_OBJ_BULLY_EXPLODE_LAVA);
+                }
+
+            collisionFlags = object_step();
+            o->oMoveFlags = collisionFlags;
+            o->oMoveAngleYaw =  cur_obj_angle_to_home();
+            o->oForwardVel = 25.0f;
+            if (o->oPosY < o->oHomeY-350.0f) {
+                o->oVelY = 250.0f;
+                }
+            if (o->oMoveFlags & 1) {
+                o->oAction = BULLY_ACT_BOSS;
+                }
+            break;
+
         case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
+            
     }
 
     set_object_visibility(o, 3000);

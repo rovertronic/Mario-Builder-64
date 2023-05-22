@@ -10,6 +10,7 @@
 
 #include "make_const_nonconst.h"
 #include "levels/castle_grounds/texture.inc.c"
+#include "levels/castle_grounds/cg_frames.c"
 #include "levels/castle_grounds/areas/1/1/model.inc.c"
 #include "levels/castle_grounds/areas/1/2/model.inc.c"
 #include "levels/castle_grounds/areas/1/3/model.inc.c"
@@ -31,3 +32,19 @@
 #include "levels/castle_grounds/areas/1/7/collision.inc.c"
 #include "levels/castle_grounds/areas/1/8/collision.inc.c"
 #include "levels/castle_grounds/areas/1/movtext.inc.c"
+
+#include "levels/castle_grounds/leveldata.inc.c"
+
+#include "levels/castle_grounds/cg_sky/model.inc.c"
+#include "levels/castle_grounds/giant_tree/model.inc.c"
+#include "levels/castle_grounds/giant_tree/collision.inc.c"
+#include "levels/castle_grounds/cursedmirror/model.inc.c"
+#include "levels/castle_grounds/cursedmirror/collision.inc.c"
+#include "levels/castle_grounds/mirror_shard/model.inc.c"
+#include "levels/castle_grounds/t_trap/model.inc.c"
+#include "levels/castle_grounds/t_trap/collision.inc.c"
+#include "levels/castle_grounds/tutorialgate/model.inc.c"
+#include "levels/castle_grounds/tutorialgate/collision.inc.c"
+#include "levels/castle_grounds/shrnling1/model.inc.c"
+#include "levels/castle_grounds/shrnling1/anims/data.inc.c"
+#include "levels/castle_grounds/shrnling1/anims/table.inc.c"

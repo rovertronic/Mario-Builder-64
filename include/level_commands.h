@@ -73,6 +73,9 @@ enum LevelCommands {
     /*0x3E*/ LEVEL_CMD_CHANGE_AREA_SKYBOX,
     /*0x3F*/ LEVEL_CMD_PUPPYLIGHT_ENVIRONMENT,
     /*0x40*/ LEVEL_CMD_PUPPYLIGHT_NODE,
+    /*0x41*/ LEVEL_CMD_FILESELECT_CONDITION,
+    /*0x42*/ LEVEL_CMD_ADV_DEMO,
+    /*0x43*/ LEVEL_CMD_CLEAR_DEMO_PTR,
 };
 
 enum LevelActs {
@@ -106,7 +109,8 @@ enum LevelCommandVar {
     VAR_CURR_COURSE_NUM,
     VAR_CURR_ACT_NUM,
     VAR_CURR_LEVEL_NUM,
-    VAR_CURR_AREA_INDEX
+    VAR_CURR_AREA_INDEX,
+    VAR_PRESSED_START
 };
 
 enum WarpCheckpointFlags {
@@ -119,12 +123,6 @@ enum LevelCommandCreateWhirlpoolCondition {
     WHIRLPOOL_COND_BOWSER2_NOT_BEATEN,
     WHIRLPOOL_COND_BOWSER2_BEATEN,
     WHIRLPOOL_COND_AT_LEAST_SECOND_STAR
-};
-
-// Head defines
-enum GoddardScene {
-    REGULAR_FACE = 0x2,
-    DIZZY_FACE   = 0x3,
 };
 
 #ifdef NO_SEGMENTED_MEMORY
@@ -453,6 +451,17 @@ enum GoddardScene {
 
 #define GET_OR_SET(op, var) \
     CMD_BBBB(LEVEL_CMD_GET_OR_SET_VAR, 0x04, op, var)
+
+// BtCM
+
+#define FILESELECT_CHECK(op, var) \
+    CMD_BBBB(LEVEL_CMD_FILESELECT_CONDITION, 0x04, op, var)
+
+#define ADV_DEMO() \
+    CMD_BBH(LEVEL_CMD_ADV_DEMO, 0x04, 0x0000)
+    
+#define CLEAR_DEMO_PTR() \
+    CMD_BBH(LEVEL_CMD_CLEAR_DEMO_PTR, 0x04, 0x0000)
 
 // Presets
 

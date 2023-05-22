@@ -31,6 +31,7 @@ enum PrintfGlyphs {
 };
 
 void print_text_fmt_int(s32 x, s32 y, const char *str, s32 n);
+void print_text_fmt_int2(s32 x, s32 y, const char *str, s32 n, s32 n2);
 void print_text(s32 x, s32 y, const char *str);
 void print_text_centered(s32 x, s32 y, const char *str);
 void render_text_labels(void);

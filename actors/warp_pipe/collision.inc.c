@@ -41,7 +41,7 @@ const Collision warp_pipe_seg3_collision_03009AC8[] = {
     COL_VERTEX(72, 205, -71),
     COL_VERTEX(102, 205, 0),
 
-    COL_TRI_INIT(SURFACE_WALL_MISC, 50),
+    COL_TRI_INIT(SURFACE_NO_CAM_COLLISION, 50),
     COL_TRI(14, 12, 9),
     COL_TRI(0, 1, 2),
     COL_TRI(0, 3, 1),

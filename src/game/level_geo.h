@@ -13,10 +13,14 @@ enum EnvFxMode {
     /*11*/ ENVFX_FLOWERS,           // unused
     /*12*/ ENVFX_LAVA_BUBBLES,      // LLL, BitFS, Bowser 2
     /*13*/ ENVFX_WHIRLPOOL_BUBBLES, // DDD
-    /*14*/ ENVFX_JETSTREAM_BUBBLES  // JRB, DDD (submarine area)
+    /*14*/ ENVFX_JETSTREAM_BUBBLES, // JRB, DDD (submarine area)
+    /*15*/ ENVFX_RAIN
 };
 
 Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf);
 Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);
+
+Gfx *geo_backdrop_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);
+Gfx *geo_moon_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);
 
 #endif // LEVEL_GEO_H

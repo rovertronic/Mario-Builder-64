@@ -1,0 +1,11 @@
+extern const GeoLayout sinkrock_geo[];
+extern Lights1 sinkrock_vtx_rock_lights;
+extern u8 sinkrock_Stone_ci8[];
+extern u8 sinkrock_Stone_ci8_pal_rgba16[];
+extern Vtx sinkrock_Cube_011_mesh_layer_1_vtx_cull[8];
+extern Vtx sinkrock_Cube_011_mesh_layer_1_vtx_0[26];
+extern Gfx sinkrock_Cube_011_mesh_layer_1_tri_0[];
+extern Gfx mat_sinkrock_vtx_rock[];
+extern Gfx mat_revert_sinkrock_vtx_rock[];
+extern Gfx sinkrock_Cube_011_mesh_layer_1[];
+extern Gfx sinkrock_material_revert_render_settings[];

@@ -17,6 +17,9 @@
 #include "sram.h"
 #endif
 #include "puppycam2.h"
+#include "ingame_menu.h"
+#include "puppycamold.h"
+#include "game/rovent.h"
 
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 
@@ -292,7 +295,9 @@ static void restore_save_file_data(s32 fileIndex, s32 srcSlot) {
 }
 
 void save_file_do_save(s32 fileIndex) {
-    if (gSaveFileModified) {
+    if ((gSaveFileModified)
+    && (gMarioState->Options & (1<<OPT_SAVE))
+    && (gSaveBuffer.files[fileIndex][0].progression >= PROG_TRUE_START ) ) { // do not save game until you start
         // Compute checksum
         add_save_block_signature(&gSaveBuffer.files[fileIndex][0],
                                  sizeof(gSaveBuffer.files[fileIndex][0]), SAVE_FILE_MAGIC);
@@ -306,6 +311,23 @@ void save_file_do_save(s32 fileIndex) {
 
         gSaveFileModified = FALSE;
     }
+
+    save_main_menu_data();
+}
+
+void save_file_do_save_force(s32 fileIndex) {
+        // Compute checksum
+        add_save_block_signature(&gSaveBuffer.files[fileIndex][0],
+                                 sizeof(gSaveBuffer.files[fileIndex][0]), SAVE_FILE_MAGIC);
+
+        // Copy to backup slot
+        bcopy(&gSaveBuffer.files[fileIndex][0], &gSaveBuffer.files[fileIndex][1],
+              sizeof(gSaveBuffer.files[fileIndex][1]));
+
+        // Write to EEPROM
+        write_eeprom_data(&gSaveBuffer.files[fileIndex], sizeof(gSaveBuffer.files[fileIndex]));
+
+        gSaveFileModified = FALSE;
 
     save_main_menu_data();
 }
@@ -508,7 +530,15 @@ u32 save_file_get_max_coin_score(s32 courseIndex) {
 
 #ifdef COMPLETE_SAVE_FILE
 s32 save_file_get_course_star_count(UNUSED s32 fileIndex, UNUSED s32 courseIndex) {
-    return 7;
+    return 8;
+}
+
+s32 save_file_get_course_star_count_golden(UNUSED s32 fileIndex, UNUSED s32 courseIndex) {
+    return 8;
+}
+
+s32 save_file_get_course_star_count_metal(UNUSED s32 fileIndex, UNUSED s32 courseIndex) {
+    return 8;
 }
 #else
 s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex) {
@@ -517,9 +547,46 @@ s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex) {
     u8 flag = 1;
     u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
 
-    for (i = 0; i < 7; i++, flag <<= 1) {
+    for (i = 0; i < 8; i++, flag <<= 1) {
         if (starFlags & flag) {
             count++;
+        }
+    }
+    return count;
+}
+
+s32 save_file_get_course_star_count_golden(s32 fileIndex, s32 courseIndex) {
+    s32 i;
+    s32 count = 0;
+    u8 flag = 1;
+    u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+    u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
+    u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
+
+
+    for (i = 0; i < 8; i++, flag <<= 1) {
+        if (((i != 6)&&(!aglevel))||(sfair_level)) {
+            if (starFlags & flag) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+s32 save_file_get_course_star_count_metal(s32 fileIndex, s32 courseIndex) {
+    s32 i;
+    s32 count = 0;
+    u8 flag = 1;
+    u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+    u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
+    u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
+
+    for (i = 0; i < 8; i++, flag <<= 1) {
+        if (((i == 6)||(aglevel))&&(!sfair_level)) {
+            if (starFlags & flag) {
+                count++;
+            }
         }
     }
     return count;
@@ -529,7 +596,6 @@ s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex) {
 s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
     s32 count = 0;
 
-    // Get standard course star count.
     for (; minCourse <= maxCourse; minCourse++) {
         count += save_file_get_course_star_count(fileIndex, minCourse);
     }
@@ -538,8 +604,38 @@ s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) 
     return save_file_get_course_star_count(fileIndex, COURSE_NUM_TO_INDEX(COURSE_NONE)) + count;
 }
 
+s32 save_file_get_total_golden_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+    s32 count = 0;
+
+    for (; minCourse <= maxCourse; minCourse++) {
+        count += save_file_get_course_star_count_golden(fileIndex, minCourse);
+    }
+
+    // Add castle secret star count.
+    return save_file_get_course_star_count(fileIndex, -1) + count;
+}
+
+s32 save_file_get_total_metal_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+    s32 count = 0;
+
+    for (; minCourse <= maxCourse; minCourse++) {
+       count += save_file_get_course_star_count_metal(fileIndex, minCourse);
+    }
+    return count;
+}
+
 void save_file_set_flags(u32 flags) {
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);
+    gSaveFileModified = TRUE;
+}
+
+void save_file_set_costume_unlock(u32 flags) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedCostumes |= (flags);
+    gSaveFileModified = TRUE;
+}
+
+void save_file_set_wallet_unlock(u32 flags) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].WalletCollected |= (flags);
     gSaveFileModified = TRUE;
 }
 
@@ -547,6 +643,21 @@ void save_file_clear_flags(u32 flags) {
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags &= ~flags;
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;
+}
+
+u32 save_file_get_progression() {
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].progression;
+}
+
+u32 save_file_check_progression(u32 prog_enum) {
+    return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].progression >= prog_enum);
+}
+
+u32 save_file_set_progression(u32 prog_enum) {
+    if (gSaveBuffer.files[gCurrSaveFileNum - 1][0].progression < prog_enum) {
+        gSaveBuffer.files[gCurrSaveFileNum - 1][0].progression = prog_enum;
+        gSaveFileModified = TRUE;
+    }
 }
 
 u32 save_file_get_flags(void) {
@@ -559,7 +670,6 @@ u32 save_file_get_flags(void) {
             SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR |
             SAVE_FLAG_DDD_MOVED_BACK         |
             SAVE_FLAG_MOAT_DRAINED           |
-            SAVE_FLAG_UNLOCKED_PSS_DOOR      |
             SAVE_FLAG_UNLOCKED_WF_DOOR       |
             SAVE_FLAG_UNLOCKED_CCM_DOOR      |
             SAVE_FLAG_UNLOCKED_JRB_DOOR      |
@@ -579,6 +689,54 @@ u32 save_file_get_flags(void) {
 #endif
 }
 
+u32 save_file_get_costume_unlock(void) {
+    if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
+        return 0;
+    }
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedCostumes;
+}
+
+u32 save_file_get_wallet_unlock(void) {
+    if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
+        return 0;
+    }
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].WalletCollected;
+}
+
+u32 save_file_get_badge_equip(void) {
+    if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
+        return 0;
+    }
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges;
+}
+
+u32 save_file_get_badge_unlock(void) {
+    if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
+        return 0;
+    }
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedBadges;
+}
+
+void save_file_set_badge_unlock(u32 flags) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedBadges |= (flags);
+    gSaveFileModified = TRUE;
+}
+
+void save_file_set_badge_equip(u32 flags) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges |= (flags);
+    gSaveFileModified = TRUE;
+}
+
+void save_file_set_badge_unequip(u32 flags) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges &= (~flags);
+    gSaveFileModified = TRUE;
+}
+
+void save_file_set_badge_unequip_all(void) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges = 0;
+    gSaveFileModified = TRUE;
+}
+
 /**
  * Return the bitset of obtained stars in the specified course.
  * If course is COURSE_NONE, return the bitset of obtained castle secret stars.
@@ -592,9 +750,9 @@ u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
     u32 starFlags;
 
     if (courseIndex == COURSE_NUM_TO_INDEX(COURSE_NONE)) {
-        starFlags = SAVE_FLAG_TO_STAR_FLAG(gSaveBuffer.files[fileIndex][0].flags);
+        starFlags = (gSaveBuffer.files[fileIndex][0].flags >> 24);
     } else {
-        starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] & 0x7F;
+        starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex];
     }
 
     return starFlags;
@@ -646,88 +804,111 @@ void save_file_set_cannon_unlocked(void) {
     gSaveFileModified = TRUE;
 }
 
-void save_file_set_cap_pos(s16 x, s16 y, s16 z) {
-    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+void save_file_set_cap_pos(UNUSED s16 x, UNUSED s16 y, UNUSED s16 z) {
 
-    saveFile->capLevel = gCurrLevelNum;
-    saveFile->capArea = gCurrAreaIndex;
-#ifndef SAVE_NUM_LIVES
-    vec3s_set(saveFile->capPos, x, y, z);
-#else
-    (void) x; (void) y; (void) z; // Address compiler warnings for unused variables
-#endif
-    save_file_set_flags(SAVE_FLAG_CAP_ON_GROUND);
 }
 
-s32 save_file_get_cap_pos(Vec3s capPos) {
+void save_file_set_stats() {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
-    s32 flags = save_file_get_flags();
-
-    if (saveFile->capLevel == gCurrLevelNum && saveFile->capArea == gCurrAreaIndex
-        && (flags & SAVE_FLAG_CAP_ON_GROUND)) {
-#ifdef SAVE_NUM_LIVES
-        vec3_zero(capPos);
-#else
-        vec3s_copy(capPos, saveFile->capPos);
-#endif
-        return TRUE;
-    }
-    return FALSE;
-}
-
-#ifdef SAVE_NUM_LIVES
-void save_file_set_num_lives(s8 numLives) {
-    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
-    saveFile->numLives = numLives;
-    saveFile->flags |= SAVE_FLAG_FILE_EXISTS;
+    saveFile->SavedCostume = gMarioState->CostumeID;
+    saveFile->UpgradeLevel = gMarioState->Level;
+    saveFile->GlobalCoins = gMarioState->numGlobalCoins;
+    saveFile->OptionFlags = gMarioState->Options;
     gSaveFileModified = TRUE;
 }
 
-s32 save_file_get_num_lives(void) {
+void save_file_one_second() {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
-    return saveFile->numLives;
-}
-#endif
-
-void save_file_set_sound_mode(u16 mode) {
-    set_sound_mode(mode);
-    gSaveBuffer.menuData.soundMode = mode;
-
-    gMainMenuDataModified = TRUE;
-    save_main_menu_data();
+    if (saveFile->PlayTime < 352800) {
+        saveFile->PlayTime++;
+    }
 }
 
-#ifdef WIDE
-u32 save_file_get_widescreen_mode(void) {
-    return gSaveBuffer.menuData.wideMode;
+u16 save_file_get_time() {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    return (saveFile->PlayTime);
 }
 
-void save_file_set_widescreen_mode(u8 mode) {
-    gSaveBuffer.menuData.wideMode = mode;
-
-    gMainMenuDataModified = TRUE;
-    save_main_menu_data();
+u16 save_file_index_get_time(s8 index) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[index][0];
+    return (saveFile->PlayTime);
 }
-#endif
 
-u32 save_file_get_sound_mode(void) {
-    return gSaveBuffer.menuData.soundMode;
+u16 save_file_index_get_prog(s8 index) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[index][0];
+    return (saveFile->progression);
+}
+
+u8 get_evil_badge_bonus(void) {
+    if (save_file_get_badge_equip() & ((1<<BADGE_BRITTLE)|(1<<BADGE_WITHER)|(1<<BADGE_HARDCORE))) {
+        return 2;
+    }
+    return 0;
+}
+
+void save_file_get_stats() {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+
+    if (save_file_exists(gCurrSaveFileNum - 1)) {
+        gMarioState->CostumeID = saveFile->SavedCostume;
+        gMarioState->Level = saveFile->UpgradeLevel;
+
+        //TEMPORARY
+        //gMarioState->Level = 7;
+        //TEMPORARY
+
+
+        gMarioState->numMaxGlobalCoins = 100+(50*count_u16_bits(saveFile->WalletCollected));
+        gMarioState->numGlobalCoins = saveFile->GlobalCoins;
+        gMarioState->numEquippedBadges = count_u32_bits(saveFile->EquippedBadges);
+        gMarioState->numMaxHP = UPGRADE_TABLE[gMarioState->Level][2];
+        gMarioState->numMaxFP = UPGRADE_TABLE[gMarioState->Level][2];
+        gMarioState->numMaxBP = UPGRADE_TABLE[gMarioState->Level][3] + get_evil_badge_bonus();
+        gMarioState->Options = saveFile->OptionFlags;
+    }else{
+        //FIRST TRY STATS
+        gMarioState->numMaxGlobalCoins = 100;
+        gMarioState->numGlobalCoins = 0;
+        gMarioState->numMaxHP = 5;
+        gMarioState->numMaxFP = 5;
+        gMarioState->numMaxBP = 0;
+        gMarioState->CostumeID = 0;
+        gMarioState->Level = 0;
+        gMarioState->numEquippedBadges = 0;
+        gMarioState->Options = 0xFD;
+        save_file_set_costume_unlock( (1<<0) );
+        save_file_set_stats();
+    }
+}
+
+s32 save_file_get_cap_pos(UNUSED Vec3s capPos) {
+    //stubbed
+    return FALSE;
 }
 
 void save_file_move_cap_to_default_location(void) {
-    if (save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND) {
-        switch (gSaveBuffer.files[gCurrSaveFileNum - 1][0].capLevel) {
-            case LEVEL_SSL:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
-                break;
-            case LEVEL_SL:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
-                break;
-            case LEVEL_TTM:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_UKIKI);
-                break;
-        }
-        save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+    //stubbed
+}
+
+void save_file_unlock_minigame(u8 minigame) {
+    gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedMinigames |= (1<<minigame);
+    save_file_set_stats();
+    gSaveFileModified = TRUE;
+}
+
+s32 save_file_check_minigame(u8 minigame) {
+    return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedMinigames & (1<<minigame));
+}
+
+s32 save_file_get_hiscore(u8 minigame) {
+    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].MinigameHighscores[minigame];
+}
+
+s32 save_file_set_hiscore(u8 minigame, u8 newscore) {
+    u8 *hi = &gSaveBuffer.files[gCurrSaveFileNum - 1][0].MinigameHighscores[minigame];
+    if (*hi < newscore) {
+        *hi = newscore;
+        minigame_newscore = TRUE;
     }
 }
 

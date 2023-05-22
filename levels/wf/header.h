@@ -99,4 +99,38 @@ extern const struct MovtexQuadCollection wf_movtex_water[];
 // script
 extern const LevelScript level_wf_entry[];
 
+#include "levels/wf/header.inc.h"
+
+#include "levels/wf/spingrass/geo_header.h"
+
+#include "levels/wf/spingrass_col/collision_header.h"
+
+#include "levels/wf/flimsy_board/geo_header.h"
+
+#include "levels/wf/flimsy_board/collision_header.h"
+
+#include "levels/wf/chainpole/geo_header.h"
+
+#include "levels/wf/horse_cart/geo_header.h"
+
+#include "levels/wf/horse_cart/collision_header.h"
+
+#include "levels/wf/horse_cart_w/geo_header.h"
+
+#include "levels/wf/Map2/header.h"
+
+#include "levels/wf/horse/geo_header.h"
+
+#include "levels/wf/horse/anim_header.h"
+
+#include "levels/wf/pig/geo_header.h"
+
+#include "levels/wf/pig/anim_header.h"
+
+#include "levels/wf/target/geo_header.h"
+
+#include "levels/wf/mhole/geo_header.h"
+
+#include "levels/wf/msbox/geo_header.h"
+
 #endif

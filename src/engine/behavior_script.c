@@ -15,6 +15,8 @@
 #include "graph_node.h"
 #include "surface_collision.h"
 #include "game/puppylights.h"
+#include "game/level_update.h"
+#include "game/rovent.h"
 
 // Macros for retrieving arguments from behavior scripts.
 #define BHV_CMD_GET_1ST_U8(index)  (u8)((gCurBhvCommand[index] >> 24) & 0xFF) // unused
@@ -819,6 +821,12 @@ void cur_obj_update(void) {
     f32 distanceFromMario;
     BhvCommandProc bhvCmdProc;
     s32 bhvProcResult;
+    // s32 hasAnimation = (gCurrentObject->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+
+    //if (hasAnimation && gCurrentObject->header.gfx.unk38.curAnim != NULL) {
+    //    struct GraphNodeObject_sub *node = &gCurrentObject->header.gfx.unk38;
+    //    node->animFrame = geo_update_animation_frame(node, &node->animFrameAccelAssist);
+    //}
 
     // Calculate the distance from the object to Mario.
     if (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) {
@@ -934,6 +942,13 @@ void cur_obj_update(void) {
             // In render distance (and not being held), show the object.
             o->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
             o->activeFlags &= ~ACTIVE_FLAG_FAR_AWAY;
+        }
+    }
+
+    if ( revent_active ) {
+        if (objFlags & OBJ_FLAG_EVENT_VISIBLE) {
+            gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
+            gCurrentObject->activeFlags &= ~ACTIVE_FLAG_FAR_AWAY;
         }
     }
 }

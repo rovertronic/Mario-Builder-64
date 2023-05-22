@@ -198,7 +198,7 @@ static void boo_move_during_hit(s32 roll, f32 fVel) {
     s32 oscillationVel = o->oTimer * 0x800 + 0x800;
 
     o->oForwardVel = fVel;
-    o->oVelY = coss(oscillationVel);
+    o->oVelY = coss(oscillationVel)*10.0f;
     o->oMoveAngleYaw = o->oBooMoveYawDuringHit;
 
     if (roll) {
@@ -437,12 +437,8 @@ static void boo_act_2(void) {
 
 static void boo_act_3(void) {
     if (boo_update_during_death()) {
-        if (o->oBehParams2ndByte != 0) {
             obj_mark_for_deletion(o);
-        } else {
-            o->oAction = 4;
-            cur_obj_disable();
-        }
+
     }
 }
 
@@ -489,6 +485,14 @@ void bhv_boo_loop(void) {
         o->parentObj->oMerryGoRoundBooManagerNumBoosKilled++;
     }
 
+    if (o->oDistanceToMario < 4000.0f) {
+        o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        }
+        else
+        {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        }
+
     o->oInteractStatus = INT_STATUS_NONE;
 }
 
@@ -512,7 +516,7 @@ static void big_boo_act_0(void) {
 
         o->oBooTargetOpacity = 255;
         o->oBooBaseScale = 3.0f;
-        o->oHealth = 3;
+        o->oHealth = 5;
 
         cur_obj_scale(3.0f);
         cur_obj_become_tangible();

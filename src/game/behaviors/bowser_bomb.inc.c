@@ -1,9 +1,25 @@
 // bowser_bomb.inc.c
 
+f32 bbomb_floating_platform_find_home_y(void) {
+    struct Surface *sp24;
+    f32 sp20;
+    f32 sp1C;
+
+    sp20 = find_water_level(o->oPosX, o->oPosZ);
+    sp1C = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sp24);
+    if (sp20 > sp1C) {
+        return sp20;
+    } else {
+        return sp1C;
+    }
+}
+
 void bhv_bowser_bomb_loop(void) {
     if (obj_check_if_collided_with_object(o, gMarioObject) == TRUE) {
         o->oInteractStatus &= ~INT_STATUS_INTERACTED;
         spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
+        create_sound_spawner(SOUND_GENERAL_BOWSER_BOMB_EXPLOSION);
+        set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 
@@ -14,7 +30,24 @@ void bhv_bowser_bomb_loop(void) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 
-    set_object_visibility(o, 7000);
+    set_object_visibility(o, 6000);
+
+    if (o->oBehParams2ndByte == 1) {
+        o->oHomeY = bbomb_floating_platform_find_home_y();
+        o->oPosY = o->oHomeY + sins(o->oTimer * 0x800) * 10.0f;
+
+        //CHASE MARIO CUZ UR EVIL
+            if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
+                o->oAngleToMario = cur_obj_angle_to_home();
+                o->oForwardVel = 5.0f;
+            } else {
+                o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
+                o->oForwardVel = 20.0f;
+                }
+
+            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+            
+        }
 }
 
 void bhv_bowser_bomb_explosion_loop(void) {

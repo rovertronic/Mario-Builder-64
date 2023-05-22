@@ -169,13 +169,13 @@ void correct_lava_shadow_height(f32 *floorHeight) {
  * Uses environment alpha for shadow solidity.
  */
 static void add_shadow_to_display_list(Gfx *displayListHead, s8 shadowType) {
+    gDPSetEnvColor(displayListHead++, 255, 255, 255, s->solidity);
     if (shadowType == SHADOW_CIRCLE) {
-        gSPDisplayList(displayListHead++, dl_shadow_circle);
+        gSPDisplayList(displayListHead++, dl_shadow_circle_tris);
     } else {
         gSPDisplayList(displayListHead++, dl_shadow_square);
+        gSPDisplayList(displayListHead++, dl_shadow_end);
     }
-    gDPSetEnvColor(displayListHead++, 255, 255, 255, s->solidity);
-    gSPDisplayList(displayListHead++, dl_shadow_end);
     gSPEndDisplayList(displayListHead);
 }
 
@@ -207,11 +207,11 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
         // The object is Mario and has a referenced floor.
         floor       = gMarioState->floor;
         floorHeight = gMarioState->floorHeight;
-    } else if (notHeldObj && (gCurGraphNodeObject != &gMirrorMario) && obj->oFloor) {
-        // The object is not Mario but has a referenced floor.
-        //! Some objects only get their oFloor from bhv_init_room, which skips dynamic floors.
-        floor       = obj->oFloor;
-        floorHeight = obj->oFloorHeight;
+    // } else if (notHeldObj && (gCurGraphNodeObject != &gMirrorMario) && obj->oFloor) {
+    //     // The object is not Mario but has a referenced floor.
+    //     //! Some objects only get their oFloor from bhv_init_room, which skips dynamic floors.
+    //     floor       = obj->oFloor;
+    //     floorHeight = obj->oFloorHeight;
     } else {
         // The object has no referenced floor, so find a new one.
         // gCollisionFlags |= COLLISION_FLAG_RETURN_FIRST;
@@ -311,7 +311,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     }
 
     // No shadow if the non-Mario object is too high.
-    if (!isPlayer && distToShadow > 1024.0f) {
+    if (!isPlayer && distToShadow > 2000.0f) {//INCREASED VALUE DUE TO FALLING OBJECTS
         return NULL;
     }
 
@@ -353,6 +353,10 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
         }
     }
 
+    if (gCurrLevelNum == LEVEL_BBH) {
+        s->isDecal = FALSE;
+    }
+
     Gfx *displayList = alloc_display_list(4 * sizeof(Gfx));
 
     if (displayList == NULL) {
@@ -364,6 +368,10 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
 
     // Move the shadow position to the floor height.
     pos[1] = floorHeight;
+
+    if (gCurrLevelNum == LEVEL_BBH) {
+        pos[1] += 3.0f;
+    }
 
     return displayList;
 }

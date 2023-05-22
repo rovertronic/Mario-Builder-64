@@ -1,15 +1,12 @@
-#include <PR/ultratypes.h>
-#include <PR/gbi.h>
-
-#include "dialog_ids.h"
-#include "level_misc_macros.h"
-#include "macros.h"
-#include "macro_preset_names.h"
-#include "moving_texture_macros.h"
-#include "special_preset_names.h"
+#include <ultra64.h>
+#include "sm64.h"
 #include "surface_terrains.h"
+#include "moving_texture_macros.h"
+#include "level_misc_macros.h"
+#include "macro_preset_names.h"
+#include "special_preset_names.h"
 #include "textures.h"
-#include "types.h"
+#include "dialog_ids.h"
 
 #include "make_const_nonconst.h"
 // LEVEL DATA
@@ -47,5 +44,25 @@
 #include "levels/ssl/spindel/collision.inc.c"
 #include "levels/ssl/moving_pyramid_wall/collision.inc.c"
 #include "levels/ssl/pyramid_elevator/collision.inc.c"
-#include "levels/ssl/eyerok_col/collision.inc.c"
 #include "levels/ssl/areas/2/movtext.inc.c"
+
+#include "levels/ssl/leveldata.inc.c"
+
+#include "levels/ssl/smb_platform/collision.inc.c"
+#include "levels/ssl/smb_platform/model.inc.c"
+#include "levels/ssl/retroplant/model.inc.c"
+#include "levels/ssl/retrobill/model.inc.c"
+#include "levels/ssl/retrothwomp/model.inc.c"
+#include "levels/ssl/retrothwomp/collision.inc.c"
+#include "levels/ssl/retrodonut/model.inc.c"
+#include "levels/ssl/retrodonut/collision.inc.c"
+#include "levels/ssl/log2/model.inc.c"
+#include "levels/ssl/log2/collision.inc.c"
+#include "levels/ssl/mask2/model.inc.c"
+#include "levels/ssl/cursedkey/model.inc.c"
+#include "levels/ssl/keydoor2/model.inc.c"
+#include "levels/ssl/ladybug/model.inc.c"
+#include "levels/ssl/retrotoad/model.inc.c"
+#include "levels/ssl/smashbrick/model.inc.c"
+#include "levels/ssl/smashbrick/collision.inc.c"
+#include "levels/ssl/rbowser/model.inc.c"

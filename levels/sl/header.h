@@ -37,4 +37,45 @@ extern const struct MovtexQuadCollection sl_movtex_water[];
 // script
 extern const LevelScript level_sl_entry[];
 
+
+#include "levels/sl/header.inc.h"
+
+#include "levels/sl/server_acid_fern/geo_header.h"
+
+#include "levels/sl/woogly/geo_header.h"
+
+#include "levels/sl/woogly/collision_header.h"
+
+#include "levels/sl/woogly/anim_header.h"
+
+#include "levels/sl/HH/geo_header.h"
+
+#include "levels/sl/HH/collision_header.h"
+
+#include "levels/sl/SS/geo_header.h"
+
+#include "levels/sl/robot/geo_header.h"
+
+#include "levels/sl/robot/collision_header.h"
+
+#include "levels/sl/robot/anim_header.h"
+
+#include "levels/sl/spiketube/collision_header.h"
+
+#include "levels/sl/spiketube/geo_header.h"
+
+#include "levels/sl/Map10/header.h"
+
+#include "levels/sl/curtaincall/geo_header.h"
+
+#include "levels/sl/curtaincall/collision_header.h"
+
+#include "levels/sl/reggie/geo_header.h"
+
+#include "levels/sl/reggie/anim_header.h"
+
+#include "levels/sl/curtain2/geo_header.h"
+
+#include "actors/motos/header.h"
+
 #endif

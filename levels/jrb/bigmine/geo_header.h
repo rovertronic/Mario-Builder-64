@@ -1,0 +1,17 @@
+extern const GeoLayout bigmine_geo[];
+extern Lights1 bigmine_Mine_lights;
+extern u8 bigmine_regular_mine_ci8[];
+extern u8 bigmine_regular_mine_ci8_pal_rgba16[];
+extern u8 bigmine_mine_ci8[];
+extern u8 bigmine_mine_ci8_pal_rgba16[];
+extern Vtx bigmine_Cylinder_010_mesh_layer_1_vtx_cull[8];
+extern Vtx bigmine_Cylinder_010_mesh_layer_1_vtx_0[16];
+extern Gfx bigmine_Cylinder_010_mesh_layer_1_tri_0[];
+extern Vtx bigmine_Cylinder_010_mesh_layer_1_vtx_1[16];
+extern Gfx bigmine_Cylinder_010_mesh_layer_1_tri_1[];
+extern Gfx mat_bigmine_Mine[];
+extern Gfx mat_revert_bigmine_Mine[];
+extern Gfx mat_bigmine_Mine2[];
+extern Gfx mat_revert_bigmine_Mine2[];
+extern Gfx bigmine_Cylinder_010_mesh_layer_1[];
+extern Gfx bigmine_material_revert_render_settings[];

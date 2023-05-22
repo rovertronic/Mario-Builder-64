@@ -526,12 +526,24 @@ static s32 act_breaststroke(struct MarioState *m) {
         return TRUE;
     }
 
-    if (m->actionTimer < 6) {
-        m->forwardVel += 0.5f;
-    }
+    if (save_file_get_badge_equip() & (1<<5)) {
+        if (m->actionTimer < 6) {
+            m->forwardVel += 10.0f;
+        }
 
-    if (m->actionTimer >= 9) {
-        m->forwardVel += 1.5f;
+        if (m->actionTimer >= 9) {
+            m->forwardVel += 30.0f;
+        }
+    }
+    else
+    {
+        if (m->actionTimer < 6) {
+            m->forwardVel += 0.5f;
+        }
+
+        if (m->actionTimer >= 9) {
+            m->forwardVel += 1.5f;
+        }
     }
 
     if (m->actionTimer >= 2) {
@@ -551,6 +563,10 @@ static s32 act_breaststroke(struct MarioState *m) {
         play_sound(sSwimStrength == MIN_SWIM_STRENGTH ? SOUND_ACTION_SWIM : SOUND_ACTION_SWIM_FAST,
                    m->marioObj->header.gfx.cameraToObject);
         reset_bob_variables(m);
+    }
+
+    if (save_file_get_badge_equip() & (1<<5)) {
+        sSwimStrength = 1000;
     }
 
 #if ENABLE_RUMBLE
@@ -618,9 +634,18 @@ static s32 act_flutter_kick(struct MarioState *m) {
         return set_mario_action(m, ACT_SWIMMING_END, 0);
     }
 
-    m->forwardVel = approach_f32(m->forwardVel, 12.0f, 0.1f, 0.15f);
-    m->actionTimer = 1;
     sSwimStrength = MIN_SWIM_STRENGTH;
+
+    if (save_file_get_badge_equip() & (1<<5)) {
+        m->forwardVel = 200.0f;
+        sSwimStrength = 1000;
+        set_mario_animation(m, MARIO_ANIM_FLUTTERKICK);
+    }
+    else
+    {
+        m->forwardVel = approach_f32(m->forwardVel, 12.0f, 0.1f, 0.15f);
+    }
+    m->actionTimer = 1;
 
     if (m->forwardVel < 14.0f) {
         play_swimming_noise(m);

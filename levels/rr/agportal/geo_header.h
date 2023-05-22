@@ -1,0 +1,12 @@
+extern const GeoLayout agportal_geo[];
+extern u8 agportal_portal_2_rgba16[];
+extern u8 agportal_portal_1_rgba16[];
+extern Vtx agportal_Plane_002_mesh_layer_4_vtx_cull[8];
+extern Vtx agportal_Plane_002_mesh_layer_4_vtx_0[4];
+extern Gfx agportal_Plane_002_mesh_layer_4_tri_0[];
+extern Vtx agportal_Plane_002_mesh_layer_4_vtx_1[4];
+extern Gfx agportal_Plane_002_mesh_layer_4_tri_1[];
+extern Gfx mat_agportal_portal2[];
+extern Gfx mat_agportal_portal1[];
+extern Gfx agportal_Plane_002_mesh_layer_4[];
+extern Gfx agportal_material_revert_render_settings[];

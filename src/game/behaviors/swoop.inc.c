@@ -99,6 +99,9 @@ static void swoop_act_move(void) {
  */
 void bhv_swoop_update(void) {
     // No partial update (only appears in roomed levels)
+    if (minigame_real) {
+        return;
+    }
 
     if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
         o->oDeathSound = SOUND_OBJ_SWOOP_DEATH;

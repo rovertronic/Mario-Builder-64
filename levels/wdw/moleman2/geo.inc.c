@@ -1,0 +1,28 @@
+#include "src/game/envfx_snow.h"
+
+const GeoLayout moleman2_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, moleman2_root_mesh_layer_1),
+		GEO_OPEN_NODE(),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, moleman2_root_mesh_layer_4),
+			GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 83, 0, moleman2_head_mesh_layer_1),
+			GEO_TRANSLATE_ROTATE(LAYER_OPAQUE, 29, 82, -7, 170, 75, 11),
+			GEO_OPEN_NODE(),
+				GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, moleman2_larm_mesh_layer_1),
+			GEO_CLOSE_NODE(),
+			GEO_TRANSLATE_ROTATE(LAYER_OPAQUE, -30, 82, -7, -178, 72, 15),
+			GEO_OPEN_NODE(),
+				GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, moleman2_rarm_mesh_layer_1),
+			GEO_CLOSE_NODE(),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, moleman2_skirt_skinned_mesh_layer_4),
+			GEO_TRANSLATE_ROTATE(LAYER_OPAQUE, 0, 23, 0, 0, -90, -180),
+			GEO_OPEN_NODE(),
+				GEO_ANIMATED_PART(LAYER_ALPHA, 0, 0, 0, moleman2_skirt_mesh_layer_4),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, moleman2_material_revert_render_settings),
+		GEO_DISPLAY_LIST(LAYER_ALPHA, moleman2_material_revert_render_settings),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

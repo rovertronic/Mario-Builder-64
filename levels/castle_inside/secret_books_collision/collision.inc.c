@@ -1,0 +1,23 @@
+const Collision secret_books_collision_collision[] = {
+	COL_INIT(),
+	COL_VERTEX_INIT(8),
+	COL_VERTEX(83, -200, -83),
+	COL_VERTEX(-200, -200, -366),
+	COL_VERTEX(-200, 0, -366),
+	COL_VERTEX(83, 0, -83),
+	COL_VERTEX(0, -200, 0),
+	COL_VERTEX(0, 0, 0),
+	COL_VERTEX(-283, 0, -283),
+	COL_VERTEX(-283, -200, -283),
+	COL_TRI_INIT(SURFACE_DEFAULT, 8),
+	COL_TRI(0, 1, 2),
+	COL_TRI(0, 2, 3),
+	COL_TRI(4, 0, 3),
+	COL_TRI(4, 3, 5),
+	COL_TRI(6, 5, 3),
+	COL_TRI(6, 3, 2),
+	COL_TRI(7, 6, 2),
+	COL_TRI(7, 2, 1),
+	COL_TRI_STOP(),
+	COL_END()
+};

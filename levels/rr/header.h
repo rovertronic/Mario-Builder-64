@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+//cam spline : )
+extern const f32 rr_frames[][2][3];
+
 // geo
 extern const GeoLayout rr_geo_000660[];
 extern const GeoLayout rr_geo_000678[];
@@ -109,5 +112,94 @@ extern const Trajectory rr_seg7_trajectory_0702EEE0[];
 
 // script
 extern const LevelScript level_rr_entry[];
+
+#include "levels/rr/fountain2/geo_header.h"
+
+
+#include "levels/rr/header.inc.h"
+
+#include "levels/rr/blocker/geo_header.h"
+
+#include "levels/rr/rr_door/geo_header.h"
+
+#include "levels/rr/rr_door/collision_header.h"
+
+#include "levels/rr/rr_tube/geo_header.h"
+
+#include "levels/rr/rr_tube/collision_header.h"
+
+#include "levels/rr/rr_eye/geo_header.h"
+
+#include "levels/rr/rr_pyramid/geo_header.h"
+
+#include "levels/rr/rr_pyramid/collision_header.h"
+
+#include "levels/rr/spinseed/collision_header.h"
+
+#include "levels/rr/spinseed/geo_header.h"
+
+#include "levels/rr/staticflood/geo_header.h"
+
+#include "levels/rr/staticflood/collision_header.h"
+
+#include "levels/rr/blood/geo_header.h"
+
+#include "levels/rr/blood/collision_header.h"
+
+#include "levels/rr/palamedes/geo_header.h"
+
+#include "levels/rr/palamedes/anim_header.h"
+
+#include "levels/rr/agheart/geo_header.h"
+
+#include "levels/rr/agportal/geo_header.h"
+
+#include "levels/rr/blood_particle/geo_header.h"
+
+#include "levels/rr/agcrack/geo_header.h"
+
+#include "levels/rr/agcrack/collision_header.h"
+
+#include "levels/rr/agpillar1/collision_header.h"
+
+#include "levels/rr/agpillar1/geo_header.h"
+
+#include "levels/rr/agwall/geo_header.h"
+
+#include "levels/rr/agwall/collision_header.h"
+
+#include "levels/rr/agcrumble/geo_header.h"
+
+#include "levels/rr/agring/geo_header.h"
+
+#include "levels/rr/ag_killer_laser/geo_header.h"
+
+#include "levels/rr/agboom/geo_header.h"
+
+#include "levels/rr/agmoon/geo_header.h"
+
+#include "levels/rr/agpillar2/collision_header.h"
+
+#include "levels/rr/agpillar2/geo_header.h"
+
+#include "levels/rr/agpillar3/geo_header.h"
+
+#include "levels/rr/agpillar3/collision_header.h"
+
+#include "levels/rr/endflames/geo_header.h"
+
+#include "levels/rr/agtri/geo_header.h"
+
+#include "levels/rr/agtri/collision_header.h"
+
+#include "levels/rr/form1/geo_header.h"
+
+#include "levels/rr/form2a/geo_header.h"
+
+#include "levels/rr/form2/geo_header.h"
+
+#include "levels/rr/form3/geo_header.h"
+
+#include "levels/rr/lopalam/geo_header.h"
 
 #endif

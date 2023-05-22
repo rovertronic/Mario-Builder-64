@@ -1,0 +1,61 @@
+{
+    "date": "1996-03-19",
+    "sample_bank": "instruments",
+    "envelopes": {
+        "envelope0": [
+            [4, 0],
+            [1, 32700],
+            [27, 24000],
+            [1, 0],
+            "hang"
+        ],
+        "envelope1": [
+            [1, 0],
+            [1, 32700],
+            [30, 32700],
+            [1, 0],
+            "hang"
+        ],
+        "envelope2": [
+            [1, 32700],
+            [3, 32700],
+            [1, 0],
+            "hang"
+        ],
+        "envelope3": [
+            [1, 32700],
+            [19, 32700],
+            [1, 0],
+            "hang"
+        ]
+    },
+    "instruments": {
+        "inst0": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope0",
+            "sound_lo": "custom_50_low",
+            "sound": "custom_50_mid",
+            "sound_hi": "custom_50_high"
+        },
+        "inst1": {
+            "release_rate": 255,
+            "normal_range_lo": 58,
+            "normal_range_hi": 74,
+            "envelope": "envelope1",
+            "sound_lo": "custom_tri_low",
+            "sound": "custom_tri_mid",
+            "sound_hi": "custom_tri_high"
+        },
+        "percussion": [
+            {"release_rate": 255, "pan": 63, "envelope": "envelope2", "sound": "custom_noise_3"},
+            {"release_rate": 255, "pan": 63, "envelope": "envelope2", "sound": "custom_noise_C"},
+            {"release_rate": 255, "pan": 63, "envelope": "envelope3", "sound": "custom_noise_C"}
+        ]
+    },
+    "instrument_list": [
+		"inst0",
+        "inst1"
+    ]
+}

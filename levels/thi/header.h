@@ -39,4 +39,29 @@ extern const struct MovtexQuadCollection thi_movtex_area2_water[];
 // script
 extern const LevelScript level_thi_entry[];
 
+
+#include "levels/thi/header.inc.h"
+
+#include "levels/thi/thi_cage/geo_header.h"
+
+#include "levels/thi/idol/collision_header.h"
+
+#include "levels/thi/idol1/geo_header.h"
+
+#include "levels/thi/idol2/geo_header.h"
+
+#include "levels/thi/idol3/geo_header.h"
+
+#include "levels/thi/idol4/geo_header.h"
+
+#include "levels/thi/twisty/geo_header.h"
+
+#include "levels/thi/twisty/collision_header.h"
+
+#include "levels/thi/angel/anim_header.h"
+
+#include "levels/thi/angel/geo_header.h"
+
+#include "levels/thi/Map13/header.h"
+
 #endif

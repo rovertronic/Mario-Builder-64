@@ -1,0 +1,16 @@
+extern const GeoLayout denormA_geo[];
+extern Lights1 denormA_Denorm_lights;
+extern u8 denormA_Denorm_ci8[];
+extern u8 denormA_Denorm_ci8_pal_rgba16[];
+extern Vtx denormA_root_mesh_layer_1_vtx_0[42];
+extern Gfx denormA_root_mesh_layer_1_tri_0[];
+extern Vtx denormA_arm_mesh_layer_1_vtx_0[68];
+extern Gfx denormA_arm_mesh_layer_1_tri_0[];
+extern Vtx denormA_head_mesh_layer_1_vtx_0[242];
+extern Gfx denormA_head_mesh_layer_1_tri_0[];
+extern Gfx mat_denormA_Denorm[];
+extern Gfx mat_revert_denormA_Denorm[];
+extern Gfx denormA_root_mesh_layer_1[];
+extern Gfx denormA_arm_mesh_layer_1[];
+extern Gfx denormA_head_mesh_layer_1[];
+extern Gfx denormA_material_revert_render_settings[];

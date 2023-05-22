@@ -25,3 +25,9 @@
 #include "levels/bob/seesaw_platform/collision.inc.c"
 #include "levels/bob/grate_door/collision.inc.c"
 #include "levels/bob/areas/1/trajectory.inc.c"
+#include "levels/bob/leveldata.inc.c"
+
+#include "levels/bob/Map1/model.inc.c"
+#include "levels/bob/shock/model.inc.c"
+#include "levels/bob/kingbully/model.inc.c"
+#include "levels/bob/shard/model.inc.c"

@@ -17,3 +17,9 @@
 #include "levels/castle_courtyard/areas/1/collision.inc.c"
 #include "levels/castle_courtyard/areas/1/macro.inc.c"
 #include "levels/castle_courtyard/areas/1/movtext.inc.c"
+#include "levels/castle_courtyard/leveldata.inc.c"
+
+#include "levels/castle_courtyard/edward/model.inc.c"
+#include "levels/castle_courtyard/flappy_pipe/model.inc.c"
+#include "levels/castle_courtyard/snakeball/model.inc.c"
+#include "levels/castle_courtyard/shrnling/model.inc.c"

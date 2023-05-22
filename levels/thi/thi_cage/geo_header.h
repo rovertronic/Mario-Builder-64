@@ -1,0 +1,17 @@
+extern const GeoLayout thi_cage_geo[];
+extern u8 thi_cage_DarkGold_rgba16[];
+extern u8 thi_cage_Fence_ci8[];
+extern u8 thi_cage_Fence_ci8_pal_rgba16[];
+extern Vtx thi_cage_Cylinder_mesh_layer_1_vtx_cull[8];
+extern Vtx thi_cage_Cylinder_mesh_layer_1_vtx_0[37];
+extern Gfx thi_cage_Cylinder_mesh_layer_1_tri_0[];
+extern Vtx thi_cage_Cylinder_mesh_layer_4_vtx_cull[8];
+extern Vtx thi_cage_Cylinder_mesh_layer_4_vtx_0[44];
+extern Gfx thi_cage_Cylinder_mesh_layer_4_tri_0[];
+extern Gfx mat_thi_cage_Gold[];
+extern Gfx mat_revert_thi_cage_Gold[];
+extern Gfx mat_thi_cage_Fence[];
+extern Gfx mat_revert_thi_cage_Fence[];
+extern Gfx thi_cage_Cylinder_mesh_layer_1[];
+extern Gfx thi_cage_Cylinder_mesh_layer_4[];
+extern Gfx thi_cage_material_revert_render_settings[];

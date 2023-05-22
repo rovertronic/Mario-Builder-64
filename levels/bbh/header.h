@@ -96,7 +96,7 @@ extern const Gfx bbh_seg7_dl_0701FFE8[];
 extern const Gfx bbh_seg7_dl_070202F0[];
 extern const Gfx bbh_seg7_dl_070206F0[];
 extern const Collision bbh_seg7_collision_level[];
-extern const RoomData bbh_seg7_rooms[];
+extern const u8 bbh_seg7_rooms[];
 extern const MacroObject bbh_seg7_macro_objs[];
 extern const Collision bbh_seg7_collision_staircase_step[];
 extern const Collision bbh_seg7_collision_tilt_floor_platform[];
@@ -110,5 +110,61 @@ extern const struct MovtexQuadCollection bbh_movtex_merry_go_round_water_side[];
 
 // script
 extern const LevelScript level_bbh_entry[];
+
+#include "levels/bbh/header.inc.h"
+
+#include "levels/bbh/barrell/collision_header.h"
+
+#include "levels/bbh/barell/geo_header.h"
+
+#include "levels/bbh/iceberg/geo_header.h"
+
+#include "levels/bbh/iceberg/collision_header.h"
+
+#include "levels/bbh/ShipElevator/collision_header.h"
+
+#include "levels/bbh/ship_elevator/geo_header.h"
+
+#include "levels/bbh/ship_elevator_rope/geo_header.h"
+
+#include "levels/bbh/ship_elevator_pulley/geo_header.h"
+
+#include "levels/bbh/GhostBoard/collision_header.h"
+
+#include "levels/bbh/GhostBoard/geo_header.h"
+
+#include "levels/bbh/iceberg_LOD/geo_header.h"
+
+
+
+#include "levels/bbh/lightning/geo_header.h"
+
+#include "levels/bbh/boomate/geo_header.h"
+
+#include "levels/bbh/GhostGate/collision_header.h"
+
+#include "levels/bbh/GhostGate/geo_header.h"
+
+#include "levels/bbh/GhostKey/geo_header.h"
+
+#include "levels/bbh/Goblet/geo_header.h"
+
+#include "levels/bbh/BooCaptain/geo_header.h"
+
+#include "levels/bbh/Evilship/geo_header.h"
+
+#include "levels/bbh/Evilship/collision_header.h"
+
+#include "levels/bbh/puddle/collision_header.h"
+
+#include "levels/bbh/puddle/geo_header.h"
+
+#include "levels/bbh/puddlebomb/geo_header.h"
+
+#include "levels/bbh/boocannon/collision_header.h"
+
+#include "levels/bbh/boocannon/geo_header.h"
+
+#include "levels/bbh/Map5/header.h"
 
 #endif

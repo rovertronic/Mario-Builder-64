@@ -29,3 +29,13 @@
 #include "levels/ttc/small_gear/geo.inc.c"
 #include "levels/ttc/large_gear/geo.inc.c"
 #include "levels/ttc/areas/1/geo.inc.c"
+#include "levels/ssl/eyerok_col/geo.inc.c"
+
+#include "levels/ttc/geo.inc.c"
+
+#include "levels/ttc/tickocean/geo.inc.c"
+#include "levels/ttc/highcane/geo.inc.c"
+#include "levels/ttc/denormO/geo.inc.c"
+#include "levels/ttc/denormA/geo.inc.c"
+#include "levels/ttc/raft/geo.inc.c"
+#include "levels/ttc/ocean_ttc/geo.inc.c"

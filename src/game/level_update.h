@@ -90,6 +90,8 @@ extern s16 sTransitionTimer;
 extern void (*sTransitionUpdate)(s16 *);
 extern void load_language_text(void);
 
+extern s8 gameLagged;
+
 struct WarpDest {
     u8 type;
     u8 levelNum;
@@ -179,5 +181,7 @@ s32 lvl_init_from_save_file(      UNUSED s16 initOrUpdate,        s32 levelNum);
 s32 lvl_set_current_level(        UNUSED s16 initOrUpdate,        s32 levelNum);
 s32 lvl_play_the_end_screen_sound(UNUSED s16 initOrUpdate, UNUSED s32 levelNum);
 void basic_update(void);
+
+void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
 
 #endif // LEVEL_UPDATE_H
