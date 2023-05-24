@@ -1,4 +1,5 @@
 #include "src/game/envfx_snow.h"
+#include "actors/group0.h"
 
 const GeoLayout wf_area_1_geo[] = {
 	GEO_NODE_START(),
@@ -78,6 +79,8 @@ const GeoLayout wf_area_1[] = {
 					GEO_BRANCH(1, wf_area_1_geo),
 					GEO_RENDER_OBJ(),
 					GEO_ASM(ENVFX_MODE_NONE, geo_envfx_main),
+					GEO_ASM(0, geo_moon_move),
+					GEO_TRANSLATE_NODE_WITH_DL(LAYER_FORCE, 0, 0, 0, executive__circle_mesh),
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),

@@ -1635,9 +1635,9 @@ void new_file_select() {
     u8 starCountText[10];
     u8 fnaf_stars = 0;
 
-    u16 hour;
-    u16 minute;
-    u16 second;
+    u32 hour;
+    u32 minute;
+    u32 second;
 
     create_dl_ortho_matrix();
 
@@ -1680,7 +1680,7 @@ void new_file_select() {
         //does save file exist
         if (save_file_exists(i)) {
             //print deets
-            u16 time = save_file_index_get_time(i);
+            u32 time = save_file_index_get_time(i);
             hour = time /3600;
             minute = (time/60)%60;
             second = time%60;

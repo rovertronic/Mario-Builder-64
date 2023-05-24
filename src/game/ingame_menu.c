@@ -2393,9 +2393,9 @@ s32 render_pause_courses_and_castle(void) {
     u8 *changetext;
     u16 prog_thing;
     u16 prog_max;
-    u16 hour = save_file_get_time()/3600;
-    u16 minute = (save_file_get_time()/60)%60;
-    u16 second = save_file_get_time()%60;
+    u32 hour = save_file_get_time()/3600;
+    u32 minute = (save_file_get_time()/60)%60;
+    u32 second = save_file_get_time()%60;
 
     menu_sintimer += 1200;
     sine = sins(menu_sintimer);
