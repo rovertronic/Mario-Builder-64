@@ -1535,11 +1535,14 @@ void render_pause_red_coins(void) {
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
         gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
 
+        s8 redCoinCount = gRedCoinsCollected;
+        if (redCoinCount > 99) redCoinCount = 99;
+
         add_glyph_texture(GLYPH_MULTIPLY);
         render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(100), 16, 0);
-        add_glyph_texture(char_to_glyph_index((char) (48 + (gRedCoinsCollected / 10))));
+        add_glyph_texture(char_to_glyph_index((char) (48 + (redCoinCount / 10))));
         render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(86), 16, 0);
-        add_glyph_texture(char_to_glyph_index((char) (48 + (gRedCoinsCollected % 10))));
+        add_glyph_texture(char_to_glyph_index((char) (48 + (redCoinCount % 10))));
         render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(86), 16, 1);
 
         gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
