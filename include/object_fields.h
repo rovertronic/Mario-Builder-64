@@ -798,7 +798,7 @@
 #define /*0x0FC*/ oRespawnerBehaviorToRespawn OBJECT_FIELD_CVPTR(0x1D)
 
 /* Orange Number */
-#define /*0x110*/ oOrangeNumberOffset    OBJECT_FIELD_S32(0x22)
+#define /*0x110*/ oOrangeNumberOffset OBJECT_FIELD_S32(0x22)
 
 /* Openable Grill */
 #define /*0x088*/ oOpenableGrillIsOpen         OBJECT_FIELD_S32(0x00)

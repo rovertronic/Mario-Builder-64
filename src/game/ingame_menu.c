@@ -1536,7 +1536,9 @@ void render_pause_red_coins(void) {
         gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
 
         s8 redCoinCount = gRedCoinsCollected;
-        if (redCoinCount > 99) redCoinCount = 99;
+        if (redCoinCount > 99) {
+            redCoinCount = 99;
+        }
 
         add_glyph_texture(GLYPH_MULTIPLY);
         render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(100), 16, 0);
