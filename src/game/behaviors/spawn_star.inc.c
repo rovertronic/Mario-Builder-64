@@ -157,18 +157,22 @@ void bhv_hidden_red_coin_star_init(void) {
         spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
     }
 
-    s16 numRedCoinsRemaining = count_objects_with_behavior(bhvRedCoin);
-    if (numRedCoinsRemaining == 0) {
-        starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
-        starObj->oBehParams = o->oBehParams;
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    }
-
     if (o->oBehParams2ndByte != 0) {
         o->oHiddenStarTriggerTotal = o->oBehParams2ndByte;
         o->oHiddenStarTriggerCounter = gRedCoinsCollected;
+        if (o->oHiddenStarTriggerCounter >= o->oHiddenStarTriggerTotal) {
+            starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
+            starObj->oBehParams = o->oBehParams;
+            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        }
     }
     else {
+        s16 numRedCoinsRemaining = count_objects_with_behavior(bhvRedCoin);
+        if (numRedCoinsRemaining == 0) {
+            starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
+            starObj->oBehParams = o->oBehParams;
+            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        }
         o->oHiddenStarTriggerTotal = numRedCoinsRemaining + gRedCoinsCollected;
         o->oHiddenStarTriggerCounter = o->oHiddenStarTriggerTotal - numRedCoinsRemaining;
     }

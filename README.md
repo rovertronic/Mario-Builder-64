@@ -121,8 +121,7 @@ Thanks to Frame#5375 and AloXado320 for also helping with silhouette stuff
   - Use `render_multi_image` to draw large texture rectangles consisting of multiple images on the screen.
   - More info in `puppyprint.c`
 - Wiseguy's Farcall TLB mapping allows to store executable code inside uncompressed segments, that can be loaded and ran as needed, instead of it having to be loaded at all times. See `farcall.h` in the include folder for instructions and details.
-- Red Coin Stars now support up to 99 red coins! You can have red coin stars specific to areas, or you can use the hidden red coin star's 2nd behavior param to set a red coin
-count required to spawn the star.
+- Red Coin Stars now support up to 99 red coins! You can have red coin stars specific to areas, or you can use the hidden red coin star's 2nd behavior param to set a red coin count required to spawn the star.
 
 # UltraSM64
 
