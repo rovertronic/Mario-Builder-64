@@ -106,6 +106,7 @@ enum revent_command_h {
     E_WARP,//warp id
 
     E_START_PRECREDITS,
+    E_HUNDO,
     E_END,
 };
 

@@ -443,7 +443,7 @@ void bobomb_buddy_act_talk(void) {
                         bhv_dismiss_quest();
                         }
                     //
-                    if ((o->oBehParams2ndByte == 66)&&(gMarioState->DeadRexMissionActivate == 0)) {
+                    if ((o->oBehParams2ndByte == 66)&&(gMarioState->DeadCowboyMissionActivate == 0)) {
                         gMarioState->DeadCowboyMissionActivate = 1;
                         bhv_dismiss_quest();
                         }
@@ -587,6 +587,7 @@ void bobomb_buddy_actions(void) {
     if ((o->oBehParams2ndByte == 66)&&(gMarioState->DeadCowboyMissionActivate == 1)&&(gMarioState->DeadRexes > 6)) {
         spawn_default_star(o->oPosX,o->oPosY+300.0f,o->oPosZ+200.0f);
         gMarioState->DeadCowboyMissionActivate = 2;
+        o->oBehParams2ndByte = DIALOG_029;
         }
 
     if ((o->oBehParams2ndByte == 130)&&(gMarioState->CheeseMissionActivate == 1)&&(gMarioState->CheeseCollection > 19)) {

@@ -337,7 +337,7 @@ void save_file_erase(s32 fileIndex) {
     bzero(&gSaveBuffer.files[fileIndex][0], sizeof(gSaveBuffer.files[fileIndex][0]));
 
     gSaveFileModified = TRUE;
-    save_file_do_save(fileIndex);
+    save_file_do_save_force(fileIndex);
 }
 
 void save_file_copy(s32 srcFileIndex, s32 destFileIndex) {

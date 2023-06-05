@@ -3265,7 +3265,7 @@ void bhv_HH(void) {
                 if (minigame_real) {
                     save_file_set_hiscore(2,gMarioState->EA_WAVES);
                 } else {
-                    if (gMarioState->EA_WAVES == 20) {
+                    if (gMarioState->EA_WAVES == 10) {
                         spawn_default_star(o->oPosX,o->oPosY+500.0f,o->oPosZ);
                         o->oAction = 6;
                     }
@@ -4558,13 +4558,18 @@ void bhv_saw(void) {
 void bhv_showrunner_statue(void) {
     switch(o->oAction) {
         case 0:
-            //do nthing bitch
+            //do init bitch
+            o->oAction = 1;
+            o->oFaceAngleYaw -= 0x111 * 30 * shrn_checkpoint;
         break;
         case 1:
+            //do nthing bitch
+        break;
+        case 2:
             o->oFaceAngleYaw -= 0x111;
             cur_obj_play_sound_1(SOUND_ENV_METAL_BOX_PUSH);
             if (o->oTimer > 29) {
-                o->oAction = 0;
+                o->oAction = 1;
             }
         break;
     }

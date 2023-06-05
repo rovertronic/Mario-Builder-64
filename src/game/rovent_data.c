@@ -976,6 +976,8 @@ s32 event_quiz_2[] = {
     E_WAIT, 90,
     E_SAVEGAME,
 
+    E_HUNDO,
+
     E_END,
 };
 
@@ -990,7 +992,7 @@ s32 event_statue_rotate[] = {
     E_CAM_FOCUS_TARGET,
 
     E_WAIT, 20,
-    E_TARGET_OBJECT_ACTION, 1,
+    E_TARGET_OBJECT_ACTION, 2,
 
     E_WAIT, 50,
 

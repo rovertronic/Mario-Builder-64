@@ -87,7 +87,7 @@ struct ObjectHitbox sCactusHitbox = {
 struct ObjectHitbox sMaskHitbox = {
     /* interactType: */ INTERACT_MR_BLIZZARD,
     /* downOffset: */ 32,
-    /* damageOrCoinValue: */ 4,
+    /* damageOrCoinValue: */ 3,
     /* health: */ 1,
     /* numLootCoins: */ 7,
     /* radius: */ 75,
@@ -836,9 +836,9 @@ void bhv_mask2(void) {
 
             o->oVelX += sins(o->oMoveAngleRoll)*((dist*.025f)+0.05f);
             o->oVelY += coss(o->oMoveAngleRoll)*((dist*.025f)+0.05f);
-            if (dist < 2500.0f) {
-                o->oVelX = floatclamp(o->oVelX, -22.0f,25.0f);
-                o->oVelY = floatclamp(o->oVelY, -22.0f,25.0f);
+            if (dist < 3000.0f) {
+                o->oVelX = floatclamp(o->oVelX, -19.0f,19.0f);
+                o->oVelY = floatclamp(o->oVelY, -19.0f,19.0f);
             } else {
                 o->oVelX = floatclamp(o->oVelX, -70.0f,70.0f);
                 o->oVelY = floatclamp(o->oVelY, -70.0f,70.0f);         

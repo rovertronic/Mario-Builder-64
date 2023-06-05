@@ -505,7 +505,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         //guOrtho
         if (gMarioState->_2D) {
             _2DFOV = approach_f32_asymptotic(_2DFOV, _2DTable[gMarioState->_2D_Setting], 0.2f);
-            guOrtho(mtx, -800.0f*_2DFOV,800.0f*_2DFOV,-600.0f*_2DFOV,600.0f*_2DFOV, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 100.0f);
+            guOrtho(mtx, -600.0f*sAspectRatio*_2DFOV,600.0f*sAspectRatio*_2DFOV,-600.0f*_2DFOV,600.0f*_2DFOV, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 100.0f);
             gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
             gMarioState->_2D_FOV_PUBLIC = _2DFOV;
         } else {

@@ -54,6 +54,7 @@ const LevelScript level_bitfs_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_BITFS_PIPE, warp_pipe_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SR_SPIKE, sr_spike_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SR_BALL, sr_ball_geo), 
+	LOAD_MODEL_FROM_GEO(MODEL_SR_BALL_SHADOW, sr_ball_shadow_geo), 
 
 	/* Fast64 begin persistent block [level commands] */
 	/* Fast64 end persistent block [level commands] */
@@ -133,8 +134,8 @@ const LevelScript level_bitfs_entry[] = {
 		OBJECT(MODEL_NONE, -2997, -7, 4197, 0, 0, 0, (6 << 16), bhvMovie),
 		OBJECT(MODEL_NONE, 12198, 2439, 9789, 0, 0, 0, (7 << 16), bhvMovie),
 		OBJECT(MODEL_LAKITU, 7094, 3632, -11642, 0, -50, 0, 0x00000000, bhvPaparazzi),
-		OBJECT(MODEL_LAKITU, 4734, 5564, 218, 0, -90, 0, 0x00000000, bhvPaparazzi),
-		OBJECT(MODEL_LAKITU, 13659, 3998, 9838, 0, -114, 0, 0x00000000, bhvPaparazzi),
+		OBJECT(MODEL_LAKITU, 4734, 5564, 218, 0, -90, 0, 0x00010000, bhvPaparazzi),
+		OBJECT(MODEL_LAKITU, 13659, 3998, 9838, 0, -114, 0, 0x00020000, bhvPaparazzi),
 		OBJECT(MODEL_MARIO, 1198, 2432, -7121, 0, 41, 0, 0x00000000, bhvPhantasm),
 		OBJECT(MODEL_MARIO, 7812, 537, -163, 0, -54, 0, 0x00000000, bhvPhantasm),
 		OBJECT(MODEL_MARIO, 11503, 1980, 8127, 0, -14, 0, 0x00000000, bhvPhantasm),

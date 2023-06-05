@@ -729,6 +729,7 @@
 #define MODEL_MOVIE_7 0xF4
 #define MODEL_SR_SPIKE 0xF3
 #define MODEL_SR_BALL 0xF2
+#define MODEL_SR_BALL_SHADOW 0xF1
 
 //c15
 //FF Fountain

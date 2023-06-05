@@ -2264,6 +2264,20 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
             }
         }
 
+    struct Object *seed;
+    struct Object *key;
+    //hardcoded way to warp mario out of the quizshow
+    if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex == 4)) {
+        seed = cur_obj_nearest_object_with_behavior(bhvStar);
+        key = cur_obj_nearest_object_with_behavior(bhvManualKey);
+        if ((!seed)&&(!key)) {
+            //initiate_warp(EXIT_COURSE_LEVEL, EXIT_COURSE_AREA, EXIT_COURSE_NODE, WARP_FLAGS_NONE);
+            //fade_into_special_warp(WARP_SPECIAL_NONE, 0);
+            //gSavedCourseNum = COURSE_NONE;
+            level_trigger_warp(gMarioState, WARP_OP_STAR_EXIT);
+        }
+    }
+
     //press b to start cutscene
     //if (gPlayer1Controller->buttonPressed & L_TRIG) {
         //*(vs8*)0=0;
@@ -2449,6 +2463,12 @@ void init_mario(void) {
         minigame_transition_func();
     }
 
+    //hardcoded boss health reset for showrunner
+    if (gCurrLevelNum == LEVEL_BITFS) {
+        gMarioState->BossHealth = 0;
+        gMarioState->BossHealthMax = 0;
+    }
+
     gMarioState->_2DSecret = FALSE;
     gMarioState->BadAppleActivate = FALSE;
     bapple_frame = 0;
@@ -2592,9 +2612,6 @@ void init_mario(void) {
             gMarioState->hurtCounter += 4 * ((f32)(gMarioState->numMaxHP)/3.0f);
         }
 
-        if (gMarioState->MaskChase) {
-            gMarioState->hurtCounter += 999;
-        }
         gMarioState->NewLevel = FALSE;
     }
 

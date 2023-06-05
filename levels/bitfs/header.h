@@ -139,4 +139,6 @@ extern const LevelScript level_bitfs_entry[];
 
 #include "levels/bitfs/sr_fight_sky/header.h"
 
+#include "levels/bitfs/sr_ball_shadow/geo_header.h"
+
 #endif

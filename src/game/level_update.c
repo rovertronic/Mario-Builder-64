@@ -790,6 +790,12 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                             //if he has under, then go gaga and die
                                 sSourceWarpNodeId = WARP_NODE_DEATH;
                                 gMarioState->InsideCourse = TRUE;
+
+                                if (save_file_get_badge_equip() & (1<<BADGE_HARDCORE)) {
+                                    //DELETE SAVE FILE!!!!
+                                    save_file_erase(gCurrSaveFileNum-1);
+                                    sDelayedWarpOp = WARP_OP_GAME_OVER;
+                                }
                             }
                         play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
                         sDelayedWarpTimer = 20;

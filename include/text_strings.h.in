@@ -3,7 +3,7 @@
 
 #include "text_menu_strings.h"
 
-#define TEXT_VERSION _("RELEASE 1.1.1")
+#define TEXT_VERSION _("RELEASE 1.2")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

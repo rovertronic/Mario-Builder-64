@@ -3163,7 +3163,7 @@ void update_camera(struct Camera *c) {
                         sliding=TRUE;
                     }
                     if ((gCurrLevelNum==LEVEL_CCM)&&(gCurrAreaIndex==2)) {
-                        sliding=TRUE;
+                        //sliding=TRUE;
                     }
 
                     if (sliding) {

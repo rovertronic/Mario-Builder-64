@@ -21,11 +21,10 @@ House made by rock.\n\
 House very hard!\n\
 Nomole get in!"))
 
-DEFINE_DIALOG(DIALOG_001, 1, 4, 130, 220, _("\
-Welcome to the shop!\n\
-Press [B] to buy an item,\n\
-and use the analog stick\n\
-to select an item."))
+DEFINE_DIALOG(DIALOG_001, 1, 3, 130-42, 220, _("\
+Welcome to the badge shop!\n\
+Use the analog stick to\n\
+select a badge."))
 
 DEFINE_DIALOG(DIALOG_002, 1, 4, 95, 180, _("\
 I am boss. This place\n\
@@ -298,11 +297,10 @@ Seems like this door is sealed by the Showrunner.\n\
 Maybe visit again after a big event?"))
 
 DEFINE_DIALOG(DIALOG_029, 1, 5, 95, 180, _("\
-To open the door that\n\
-leads to the 『endless』\n\
-stairs, you need 70\n\
-Stars.\n\
-Bwa ha ha!"))
+Sheriff Mario...\n\
+You've done it!\n\
+You deserve a golden\n\
+belt buckle for that!"))
 
 DEFINE_DIALOG(DIALOG_030, 1, 4, 95, 180, _("\
 Ah, a visitor!\n\
@@ -344,15 +342,14 @@ more badges, upgrade\n\
 your BP at the stat\n\
 upgrade station."))
 
-DEFINE_DIALOG(DIALOG_033, 1, 4, 95, 180, _("\
+DEFINE_DIALOG(DIALOG_033, 1, 7, 95, 180, _("\
 You're going to have\n\
 to pay a toll of 10\n\
 coins for me to raise\n\
 this bridge.\n\
 Showrunner's taxes,\n\
 I know...\n\
-\n\
-Press [B] to pay up!"))
+Press [A] to pay up!"))
 
 /*
 DEFINE_DIALOG(DIALOG_034, 1, 4, 95, 180, _("\
@@ -361,9 +358,6 @@ water of the fountain\n\
 will cleanse one's\n\
 woes and sorrows."))
 */
-
-//sorry rovert, i knew you wanted to be a gravis wannabe
-//this just mislead the players into thinking the fountain healed them
 
 //VALVE PLAYTESTER MOMENT:
 //
@@ -424,7 +418,7 @@ around here."))
 
 DEFINE_DIALOG(DIALOG_040, 1, 5, 95, 180, _("\
 Hello young lad!\n\
-Hold [B] to deposit your\n\
+Hold [A] to deposit your\n\
 level coins into your\n\
 castle wallet."))
 
@@ -2971,8 +2965,8 @@ You fail to see any gray in any circumstances..."))
 
 DEFINE_DIALOG(DIALOG_QUIZ_59_A, 1, 6, 95, 180, _("\
 I am dissapointed you can't grasp the most basic\n\
-form of nuance... Well, maybe you'll understand once you end up\n\
-with a Cosmic Seed wedged into you. Maybe."))
+form of nuance... Well, maybe you'll understand once you end\n\
+up with a Cosmic Seed wedged into you. Maybe."))
 
 DEFINE_DIALOG(DIALOG_QUIZ_58_B, 1, 6, 95, 180, _("\
 Huh. My end goal is art. Entertainment. Always has been.\n\
