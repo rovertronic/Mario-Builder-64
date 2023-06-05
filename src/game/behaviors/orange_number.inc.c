@@ -18,8 +18,8 @@ void bhv_orange_number_loop(void) {
         }
 
         s32 offsetX, offsetZ;
-        offsetX = o->oOrangeNumberOffset * sins(gLakituState.nextYaw + 0x4000);
-        offsetZ = o->oOrangeNumberOffset * coss(gLakituState.nextYaw + 0x4000);
+        offsetX = o->oOrangeNumberOffset * sins(gCamera->nextYaw + 0x4000);
+        offsetZ = o->oOrangeNumberOffset * coss(gCamera->nextYaw + 0x4000);
 
         o->oPosX = o->oHomeX + offsetX;
         o->oPosZ = o->oHomeZ + offsetZ;
