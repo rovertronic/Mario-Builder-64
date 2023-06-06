@@ -168,7 +168,7 @@ const LevelScript level_thi_entry[] = {
 		OBJECT(MODEL_NONE, -3231, 4517, -686, 0, 0, 0, 0x00000000, bhvWaterfallSoundLoop),
 		TERRAIN(thi_area_1_collision),
 		MACRO_OBJECTS(thi_area_1_macro_objs),
-		STOP_MUSIC(0),
+		SET_BACKGROUND_MUSIC(0x00, SEQ_NSMB_CASTLE),
 		TERRAIN_TYPE(TERRAIN_GRASS),
 		/* Fast64 begin persistent block [area commands] */
 		/* Fast64 end persistent block [area commands] */
@@ -191,7 +191,7 @@ const LevelScript level_thi_entry[] = {
 		OBJECT(MODEL_NONE, 0, -664, -5141, 0, 0, 0, (50 << 24) | (5 << 16), bhvWarp),
 		TERRAIN(thi_area_2_collision),
 		MACRO_OBJECTS(thi_area_2_macro_objs),
-		STOP_MUSIC(0),
+		SET_BACKGROUND_MUSIC(0x00, SEQ_LEVEL_UNDERGROUND),
 		TERRAIN_TYPE(TERRAIN_GRASS),
 		/* Fast64 begin persistent block [area commands] */
 		/* Fast64 end persistent block [area commands] */
