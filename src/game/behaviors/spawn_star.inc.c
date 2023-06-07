@@ -157,6 +157,7 @@ void bhv_hidden_red_coin_star_init(void) {
         spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
     }
 
+    // check if bparam2 specifies a total number of coins that should spawn the star
     if (o->oBehParams2ndByte != 0) {
         o->oHiddenStarTriggerTotal = o->oBehParams2ndByte;
         o->oHiddenStarTriggerCounter = gRedCoinsCollected;
