@@ -48,6 +48,7 @@ struct cmm_object_type_struct {
     u16 model_id;
     u8 billboarded:1;
     f32 scale;
+    struct Animation **anim;
 };
 enum {
     OBJECT_TYPE_STAR,

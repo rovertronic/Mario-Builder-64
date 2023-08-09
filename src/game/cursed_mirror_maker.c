@@ -1,7 +1,9 @@
 //object includes (a lot)
 #include "text_strings.h"
 #include "types.h"
+#include "actors/common0.h"
 #include "actors/common1.h"
+#include "actors/group2.h"
 #include "actors/group12.h"
 #include "actors/group13.h"
 #include "area.h"
@@ -90,22 +92,22 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE
-    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f},
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f},
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f},
-    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f},
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f},
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f},
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,1.0f},
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f},
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f},
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f},
-    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f},
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f},
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f},
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f},
-    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f},
+    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE  //ANIMATION PTR
+    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f   ,NULL                         },
+    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f   ,goomba_seg8_anims_0801DA4C   },
+    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f   ,NULL                         },
+    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f   ,NULL                         },
+    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f   ,NULL                         },
+    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f   ,NULL                         },
+    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,1.0f   ,NULL                         },
+    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f   ,NULL                         },
+    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f   ,NULL                         },
+    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f   ,NULL                         },
+    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f   ,Rex_anims                    },
+    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f   ,bully_seg5_anims_0500470C    },
+    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f   ,bobomb_seg8_anims_0802396C   },
+    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f   ,NULL                         },
+    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f   ,NULL                         },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -681,6 +683,10 @@ void generate_object_preview(void) {
         obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
             preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+        }
+        if (cmm_object_types[cmm_object_data[i].type].anim) {
+            preview_object->oAnimations = cmm_object_types[cmm_object_data[i].type].anim;
+            super_cum_working(preview_object,0);
         }
     }
 }
