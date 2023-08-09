@@ -12,6 +12,7 @@
 #include "game/debug.h"
 #include "menu/file_select.h"
 #include "engine/surface_load.h"
+#include "game/cursed_mirror_maker.h"
 //evil_mario_anims
 #include "actors/common0.h"
 #include "actors/common1.h"
@@ -9253,6 +9254,15 @@ const BehaviorScript bhvAgform[] = {
         SET_INT(oIntangibleTimer, 0),
         SET_INT(oInteractStatus, 0),
         CALL_NATIVE(bhv_agform_loop),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvSB[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_COLLISION_DATA(cube_collision_collision),
+    BEGIN_LOOP(),
+        CALL_NATIVE(sb_loop),
     END_LOOP(),
 };
 

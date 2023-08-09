@@ -28,6 +28,7 @@
 #include "actors/group15.h"
 #include "actors/group16.h"
 #include "actors/group17.h"
+#include "game/cursed_mirror_maker.h"
 
 #include "levels/menu/header.h"
 #include "levels/intro/header.h"
@@ -136,6 +137,9 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_DIRT_ANIMATION,          dirt_animation_geo),
     LOAD_MODEL_FROM_GEO(MODEL_CARTOON_STAR,            cartoon_star_geo),
     LOAD_MODEL_FROM_GEO(MODEL_QUEST ,quest_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SB ,sb_cube_geo),
+    LOAD_MODEL_FROM_DL(MODEL_LEV, cmm_terrain_gfx, LAYER_OPAQUE),
+    LOAD_MODEL_FROM_GEO(MODEL_PODOBOO ,podoboo_geo),
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN_NO_SHADOW,   silver_coin_no_shadow_geo),

@@ -499,13 +499,13 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         
         sAspectRatio = 4.0f / 3.0f;
         if (gMarioState->Options & (1<<OPT_WIDESCREEN)) {
-            sAspectRatio = 16.0f / 9.0f; //Used to be evil fake widescreen (16:10)
+            sAspectRatio = 16.0f / 10.0f;
         }
 
         //guOrtho
         if (gMarioState->_2D) {
             _2DFOV = approach_f32_asymptotic(_2DFOV, _2DTable[gMarioState->_2D_Setting], 0.2f);
-            guOrtho(mtx, -600.0f*sAspectRatio*_2DFOV,600.0f*sAspectRatio*_2DFOV,-600.0f*_2DFOV,600.0f*_2DFOV, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 100.0f);
+            guOrtho(mtx, -800.0f*_2DFOV,800.0f*_2DFOV,-600.0f*_2DFOV,600.0f*_2DFOV, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 100.0f);
             gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
             gMarioState->_2D_FOV_PUBLIC = _2DFOV;
         } else {
@@ -1078,6 +1078,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
  * Since (0,0,0) is unaffected by rotation, columns 0, 1 and 2 are ignored.
  */
 s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
+
     if (node->node.flags & GRAPH_RENDER_INVISIBLE) {
         return FALSE;
     }

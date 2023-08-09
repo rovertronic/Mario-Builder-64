@@ -1026,9 +1026,9 @@ static const Vec3s sSaveFileButtonInitPositions[] = {
  */
 void bhv_menu_button_manager_init(void) {
 
-    if (gEepromProbe != 1) {
-        ShowAllFiles = TRUE;
-        }
+    //if (gEepromProbe != 1) {
+    //    ShowAllFiles = TRUE;
+    //    }
 
     // File A
     sMainMenuButtons[MENU_BUTTON_PLAY_FILE_A] = SPAWN_FILE_SELECT_FILE_BUTTON_INIT(SAVE_FILE_A);
@@ -1635,9 +1635,9 @@ void new_file_select() {
     u8 starCountText[10];
     u8 fnaf_stars = 0;
 
-    u32 hour;
-    u32 minute;
-    u32 second;
+    u16 hour;
+    u16 minute;
+    u16 second;
 
     create_dl_ortho_matrix();
 
@@ -1680,7 +1680,7 @@ void new_file_select() {
         //does save file exist
         if (save_file_exists(i)) {
             //print deets
-            u32 time = save_file_index_get_time(i);
+            u16 time = save_file_index_get_time(i);
             hour = time /3600;
             minute = (time/60)%60;
             second = time%60;

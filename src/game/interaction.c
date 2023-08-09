@@ -27,7 +27,6 @@
 #include "rovent.h"
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
-#include "object_list_processor.h"
 
 u8  sDelayInvincTimer;
 s16 sInvulnerable;
@@ -735,7 +734,6 @@ void reset_mario_pitch(struct MarioState *m) {
 
 u8 coinloop = 0;
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
-    u32 old_params;
     if (obj->oDamageOrCoinValue == 3) { //green coin
         if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
             m->healCounter += 4 * gMarioState->numMaxHP;//green coins fully heal with badge
@@ -761,15 +759,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && m->numCoins - obj->oDamageOrCoinValue < 100 && m->numCoins >= 100 && (!gMarioState->hundredSpawned)) {
         gMarioState->hundredSpawned = TRUE;
-        if (gCurrLevelNum == LEVEL_RR) {
-            //hacky way of spawning a 100 coin star that warps u out
-            old_params = gCurrentObject->oBehParams;
-            gCurrentObject->oBehParams = 0x05000000;
-            spawn_default_star(gMarioState->pos[0],gMarioState->pos[1]+300.0f,gMarioState->pos[2]);
-            gCurrentObject->oBehParams = old_params;
-        } else {
-            bhv_spawn_star_no_level_exit(STAR_BP_ACT_6);
-        }
+        bhv_spawn_star_no_level_exit(STAR_BP_ACT_6);
     }
 
     if (m->numCoins > 255) {

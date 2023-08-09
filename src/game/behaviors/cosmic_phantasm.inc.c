@@ -268,8 +268,6 @@ void bhv_cosmic_phantasm(void) {
     }
 }
 
-u8 shrn_checkpoint = 0;
-
 void bhv_paparazzi(void) {
     cur_obj_set_hitbox_radius_and_height(100.0f, 100.0f);
     cur_obj_set_hurtbox_radius_and_height(100.0f, 80.0f);
@@ -281,13 +279,9 @@ void bhv_paparazzi(void) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
             set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
             mario_stop_riding_and_holding(gMarioState);
+            run_event(EVENT_STATUE_ROTATE);
             spawn_mist_particles_variable(0, 0, 100.0f);
             obj_mark_for_deletion(o);
-
-            if (shrn_checkpoint < o->oBehParams2ndByte+1) {
-                shrn_checkpoint = o->oBehParams2ndByte+1;
-                run_event(EVENT_STATUE_ROTATE);
-            }
         }
     }
 
@@ -419,7 +413,7 @@ void showrunner_battle_function(void) {
                     cur_obj_init_animation_with_sound(0);//reset
                     cur_obj_init_animation_with_sound(4);//block
                     cur_obj_play_sound_2(SOUND_OBJ_MRI_SHOOT);
-                    obj_attack = spawn_object(o,MODEL_SR_BALL_SHADOW,bhvTennis);
+                    obj_attack = spawn_object(o,MODEL_SR_BALL,bhvTennis);
                     obj_attack->oPosY += 500.0f;
                 }
             }

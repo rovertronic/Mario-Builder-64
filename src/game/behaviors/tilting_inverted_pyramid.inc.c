@@ -2009,8 +2009,6 @@ void bhv_keydoor2(void) {
 }
 
 void bhv_donut(void) {
-    o->oDontInertia = TRUE;
-
     switch(o->oAction) {
         case 0://grow into place
             cur_obj_scale((f32)(o->oTimer)/(30.0f));
@@ -3265,7 +3263,7 @@ void bhv_HH(void) {
                 if (minigame_real) {
                     save_file_set_hiscore(2,gMarioState->EA_WAVES);
                 } else {
-                    if (gMarioState->EA_WAVES == 10) {
+                    if (gMarioState->EA_WAVES == 20) {
                         spawn_default_star(o->oPosX,o->oPosY+500.0f,o->oPosZ);
                         o->oAction = 6;
                     }
@@ -4417,11 +4415,6 @@ void bhv_killer_laser(void) {
                     }
                 }
             }
-
-            if (revent_active) {
-                o->oAction = 3;
-                o->oOpacity = 0;
-            }
         break;
         case 3:
             if (o->oTimer > 150) {
@@ -4558,18 +4551,13 @@ void bhv_saw(void) {
 void bhv_showrunner_statue(void) {
     switch(o->oAction) {
         case 0:
-            //do init bitch
-            o->oAction = 1;
-            o->oFaceAngleYaw -= 0x111 * 30 * shrn_checkpoint;
-        break;
-        case 1:
             //do nthing bitch
         break;
-        case 2:
+        case 1:
             o->oFaceAngleYaw -= 0x111;
             cur_obj_play_sound_1(SOUND_ENV_METAL_BOX_PUSH);
             if (o->oTimer > 29) {
-                o->oAction = 1;
+                o->oAction = 0;
             }
         break;
     }
@@ -6079,11 +6067,6 @@ void bhv_postgame_hint() {
                 if (!((costume_flags >> i) & 1)) {
                     hint_dialog = (DIALOG_COSTUME_HINT1+i)-1;
                 }
-            }
-
-            if (o->oBehParams2ndByte == 1) {
-                //hint for wallets
-                hint_dialog = DIALOG_WALLET_HELP;
             }
 
             if (cur_obj_update_dialog_with_cutscene(2, 1, CUTSCENE_DIALOG, hint_dialog)) {

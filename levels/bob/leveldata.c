@@ -31,3 +31,5 @@
 #include "levels/bob/shock/model.inc.c"
 #include "levels/bob/kingbully/model.inc.c"
 #include "levels/bob/shard/model.inc.c"
+
+#include "levels/bob/maker2/model.inc.c"

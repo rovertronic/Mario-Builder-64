@@ -84,6 +84,8 @@ extern s8 gDebugLevelSelect;
 extern s8 gShowDebugText;
 #endif
 
+extern struct SPTask        *sCurrentDisplaySPTask;
+
 void set_vblank_handler(s32 index, struct VblankHandler *handler, OSMesgQueue *queue, OSMesg *msg);
 void dispatch_audio_sptask(struct SPTask *spTask);
 void exec_display_list(struct SPTask *spTask);

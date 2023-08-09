@@ -45,3 +45,4 @@
 #include "tvcorpse/geo.inc.c"
 #include "cosmic_spike/geo.inc.c"
 #include "crowbar2/geo.inc.c"
+#include "sb_cube/geo.inc.c"

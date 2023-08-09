@@ -13,7 +13,6 @@
 #endif
 
 
-#include "src/game/texscroll/bob_texscroll.inc.c"
 #include "src/game/texscroll/group0_texscroll.inc.c"
 #include "src/game/texscroll/wf_texscroll.inc.c"
 #include "src/game/texscroll/castle_courtyard_texscroll.inc.c"
@@ -39,9 +38,6 @@
 #include "src/game/texscroll/bits_texscroll.inc.c"
 #include "src/game/texscroll/ttc_texscroll.inc.c"
 void scroll_textures() {
-	if(SCROLL_CONDITION(sSegmentROMTable[0x7] == (uintptr_t)_bob_segment_7SegmentRomStart)) {
-		scroll_textures_bob();
-	}
 
 	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group0_yay0SegmentRomStart)) {
 		scroll_textures_group0();

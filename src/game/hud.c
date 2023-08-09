@@ -35,6 +35,7 @@
 #include "actors/group0.h"
 
 #include "rovent.h"
+#include "cursed_mirror_maker.h"
 
 #include "config.h"
 
@@ -947,11 +948,11 @@ void render_hud(void) {
             gMarioState->toggleHud = FALSE;
         }
 
-        if ((revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
+        if ((cmm_mode == CMM_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
 
 #ifndef DISABLE_LIVES
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
-                render_hud_mario_lives();
+                //render_hud_mario_lives();
             }
 #endif
 
@@ -1091,6 +1092,7 @@ void render_hud(void) {
                     }
                 }
 
+            /*
             if (gMarioState->Options & (1<<OPT_MINIMAP)) {
                 if (gCurrentArea->index == 1) {
                     display_minimap();
@@ -1100,6 +1102,7 @@ void render_hud(void) {
                     }
                 }
             }
+            */
         }
 
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG

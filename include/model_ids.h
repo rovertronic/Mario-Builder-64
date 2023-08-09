@@ -729,7 +729,6 @@
 #define MODEL_MOVIE_7 0xF4
 #define MODEL_SR_SPIKE 0xF3
 #define MODEL_SR_BALL 0xF2
-#define MODEL_SR_BALL_SHADOW 0xF1
 
 //c15
 //FF Fountain
@@ -790,5 +789,8 @@
 #define MODEL_TV_CORPSE 0x120//fuck you, corpse!
 #define MODEL_QUEST 0x121
 #define MODEL_COSMIC_SPIKE 0x122
+#define MODEL_SB 0x123
+#define MODEL_LEV 0x124
+#define MODEL_PODOBOO 0x125
 
 #endif // MODEL_IDS_H

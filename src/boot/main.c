@@ -312,7 +312,7 @@ void check_cache_emulation() {
     *(u8*)(K0_TO_K1(&sCachedValue)) = 0;
     // Read the variable back from dcache, if it's still 1 then cache is emulated correctly.
     // If it's zero, then dcache is not emulated correctly.
-    gCacheEmulated = sCachedValue;
+    gCacheEmulated = TRUE;
     // Restore interrupts
     __osRestoreInt(saved);
 }

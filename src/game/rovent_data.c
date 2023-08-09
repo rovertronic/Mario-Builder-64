@@ -976,8 +976,6 @@ s32 event_quiz_2[] = {
     E_WAIT, 90,
     E_SAVEGAME,
 
-    E_HUNDO,
-
     E_END,
 };
 
@@ -992,7 +990,7 @@ s32 event_statue_rotate[] = {
     E_CAM_FOCUS_TARGET,
 
     E_WAIT, 20,
-    E_TARGET_OBJECT_ACTION, 2,
+    E_TARGET_OBJECT_ACTION, 1,
 
     E_WAIT, 50,
 
@@ -1175,8 +1173,6 @@ s32 event_credits[] = {
     E_DIALOG, DIALOG_CREDITS_23,
     E_WAIT, 150,
     E_DIALOG, DIALOG_CREDITS_24,
-    E_WAIT, 170,
-    E_DIALOG, DIALOG_CREDITS_26, //Patreon List
     E_WAIT, 150,
     E_DIALOG, DIALOG_CREDITS_25,
     E_WAIT, 200,

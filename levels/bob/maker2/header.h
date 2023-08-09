@@ -1,0 +1,17 @@
+extern Lights1 maker2_MakerGrass_lights;
+extern Lights1 maker2_MakerDirt_lights;
+extern Lights1 maker2_MakerVirtuaplex_lights;
+extern u8 maker2_grass_2_rgba16[];
+extern u8 maker2_Dirt_Floor_rgba16[];
+extern u8 maker2_Monotexture_rgba16[];
+extern Vtx maker2_materials_mesh_vtx_cull[8];
+extern Vtx maker2_materials_mesh_vtx_0[4];
+extern Gfx maker2_materials_mesh_tri_0[];
+extern Vtx maker2_materials_mesh_vtx_1[4];
+extern Gfx maker2_materials_mesh_tri_1[];
+extern Vtx maker2_materials_mesh_vtx_2[4];
+extern Gfx maker2_materials_mesh_tri_2[];
+extern Gfx mat_maker2_MakerGrass[];
+extern Gfx mat_maker2_MakerDirt[];
+extern Gfx mat_maker2_MakerVirtuaplex[];
+extern Gfx maker2_materials_mesh[];

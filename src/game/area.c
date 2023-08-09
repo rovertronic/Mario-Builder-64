@@ -30,6 +30,7 @@
 #include "profiling.h"
 #include "puppycamold.h"
 #include "rovent.h"
+#include "cursed_mirror_maker.h"
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -456,6 +457,9 @@ void render_game(void) {
 
         if (sCurrPlayMode == 0) {
             render_revent_textbox();
+            if (cmm_mode == CMM_MODE_MAKE) {
+                draw_cmm_menu();
+            }
         }
 
         if (gMenuOptSelectIndex != 0) {

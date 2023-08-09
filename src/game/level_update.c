@@ -33,6 +33,7 @@
 #include "puppylights.h"
 #include "level_commands.h"
 #include "game/rovent.h"
+#include "cursed_mirror_maker.h"
 
 #include "config.h"
 
@@ -177,7 +178,7 @@ u32 pressed_pause(void) {
     u32 dialogActive = get_dialog_id() >= 0;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
 
-    if ((minigame_real)||(revent_active)) {
+    if ((cmm_mode == CMM_MODE_MAKE)||(minigame_real)||(revent_active)) {
         return FALSE;
     }
 
@@ -602,6 +603,11 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
         //so that mario doesn't become invisible in the light beam
     }
 
+    //reload level if changing mode
+    //if (cmm_mode != cmm_target_mode) {
+        sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
+        //}
+
     sWarpDest.levelNum = destLevel;
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
@@ -767,39 +773,29 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                     play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x0, 0x0, 0x0);
                 }
                 else{
-                    //make death floor work in sign game
-                    if (minigame_real) {
-                        end_minigame();
-                    } else {
-                        mario_stop_riding_and_holding(gMarioState);
 
-                        //what the fuck is this bruhhhh
-                        //fuck sm64 hp
-                        //i have no idea if changing the 8 to a 5 will work, hope it does!
-                        resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
-                        if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
-                            resp_cond = (gMarioState->numBadgePoints > 0);
-                        }
+                    mario_stop_riding_and_holding(gMarioState);
 
-                        if (resp_cond) {
-                            //make mario respawn if he has over a third of his HP
-                                fadeMusic = FALSE;
-                                sSourceWarpNodeId = 0x0A;
-                                gMarioState->NewLevel = TRUE;
-                            } else {
-                            //if he has under, then go gaga and die
-                                sSourceWarpNodeId = WARP_NODE_DEATH;
-                                gMarioState->InsideCourse = TRUE;
-
-                                if (save_file_get_badge_equip() & (1<<BADGE_HARDCORE)) {
-                                    //DELETE SAVE FILE!!!!
-                                    save_file_erase(gCurrSaveFileNum-1);
-                                    sDelayedWarpOp = WARP_OP_GAME_OVER;
-                                }
-                            }
-                        play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
-                        sDelayedWarpTimer = 20;
+                    //what the fuck is this bruhhhh
+                    //fuck sm64 hp
+                    //i have no idea if changing the 8 to a 5 will work, hope it does!
+                    resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
+                    if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+                        resp_cond = (gMarioState->numBadgePoints > 0);
                     }
+
+                    if (resp_cond) {
+                        //make mario respawn if he has over a third of his HP
+                            fadeMusic = FALSE;
+                            sSourceWarpNodeId = 0x0A;
+                            gMarioState->NewLevel = TRUE;
+                        } else {
+                        //if he has under, then go gaga and die
+                            sSourceWarpNodeId = WARP_NODE_DEATH;
+                            gMarioState->InsideCourse = TRUE;
+                        }
+                    play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
+                    sDelayedWarpTimer = 20;
                 }
                 break;
 
@@ -1085,24 +1081,14 @@ s32 play_mode_paused(void) {
         raise_background_noise(1);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
-#ifndef DISABLE_EXIT_COURSE
     } else { // MENU_OPT_EXIT_COURSE
-        if (gDebugLevelSelect) {
-            fade_into_special_warp(WARP_SPECIAL_LEVEL_SELECT, 1);
-        } else {
-            if (save_file_get_progression() == PROG_ON_AGAMEMNON) {
-                //agamemnon pause exit
-                initiate_warp(LEVEL_BITS, 0x01, 0x0A, WARP_FLAGS_NONE);
-            } else {
-                //normal pause exit
-                initiate_warp(EXIT_COURSE_LEVEL, EXIT_COURSE_AREA, EXIT_COURSE_NODE, WARP_FLAGS_NONE);
-            }
-            fade_into_special_warp(WARP_SPECIAL_NONE, 0);
-            gSavedCourseNum = COURSE_NONE;
-        }
 
+        //normal pause exit
+        initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
+        fade_into_special_warp(WARP_SPECIAL_NONE, 0);
+        gSavedCourseNum = COURSE_NONE;
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
-#endif
+        cmm_target_mode = CMM_MODE_MAKE;
     }
 
     return FALSE;
@@ -1232,7 +1218,12 @@ s32 init_level(void) {//
     OSTime first = osGetTime();
 #endif
 
+    if (cmm_mode == CMM_MODE_UNINITIALIZED) {
+        cmm_init();
+    }
+
     //starter variables
+    cmm_mode = cmm_target_mode;
     gMarioState->MaskChase = FALSE;
 
     gMarioState->BossHealth = 0;
@@ -1441,6 +1432,7 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
     sWarpCheckpointActive = FALSE;
     gCurrLevelNum = levelNum;
     gCurrCourseNum = gLevelToCourseNumTable[levelNum - 1];
+	if (gCurrLevelNum == LEVEL_BOB) return 0;
     if (gCurrLevelNum == LEVEL_SA) return 0;
 
     if (gMarioState->InsideCourse) {

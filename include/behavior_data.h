@@ -8,6 +8,7 @@ extern const BehaviorScript bhvTrash[];
 extern const BehaviorScript bhvMess[];
 extern const BehaviorScript bhvDariusSpawner[];
 
+extern const BehaviorScript bhvSB[];
 extern const BehaviorScript bhvAgform[];
 extern const BehaviorScript bhvAgtri[];
 extern const BehaviorScript bhvPhonograph[];

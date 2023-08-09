@@ -71,7 +71,7 @@ void exclamation_box_act_init(void) {
     //if black box and already collected, and NOT post game, then dissapear
     if (o->oBehParams2ndByte == 1) {//is black box
         if (stardata & 0x40) {//already collected
-            if (!save_file_check_progression(PROG_POSTGAME)) {//not post game
+            if (0) {//(!save_file_check_progression(PROG_POSTGAME)) {//not post game //TEMPORARY
                 //delete
                 switch(gCurrLevelNum) {
                     case LEVEL_SL:

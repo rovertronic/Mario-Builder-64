@@ -54,6 +54,7 @@ s8 gLevelToCourseNumTable[] = {
 
 STATIC_ASSERT(ARRAY_COUNT(gLevelToCourseNumTable) == LEVEL_COUNT - 1,
               "change this array if you are adding levels");
+
 #ifdef EEP
 /**
  * Read from EEPROM to a given address.
@@ -61,6 +62,7 @@ STATIC_ASSERT(ARRAY_COUNT(gLevelToCourseNumTable) == LEVEL_COUNT - 1,
  * Try at most 4 times, and return 0 on success. On failure, return the status returned from
  * osEepromLongRead. It also returns 0 if EEPROM isn't loaded correctly in the system.
  */
+
 static s32 read_eeprom_data(void *buffer, s32 size) {
     s32 status = 0;
 
@@ -118,7 +120,7 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
  * Try at most 4 times, and return 0 on success. On failure, return the status returned from
  * nuPiReadSram. It also returns 0 if SRAM isn't loaded correctly in the system.
  */
-static s32 read_eeprom_data(void *buffer, s32 size) {
+s32 read_eeprom_data(void *buffer, s32 size) {
     s32 status = 0;
 
     if (gSramProbe != 0) {
@@ -146,7 +148,7 @@ static s32 read_eeprom_data(void *buffer, s32 size) {
  * Try at most 4 times, and return 0 on success. On failure, return the status returned from
  * nuPiWriteSram. Unlike read_eeprom_data, return 1 if SRAM isn't loaded.
  */
-static s32 write_eeprom_data(void *buffer, s32 size) {
+s32 write_eeprom_data(void *buffer, s32 size) {
     s32 status = 1;
 
     if (gSramProbe != 0) {
@@ -214,7 +216,7 @@ static void save_main_menu_data(void) {
         add_save_block_signature(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData), MENU_DATA_MAGIC);
 
         // Write to EEPROM
-        write_eeprom_data(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
+        //write_eeprom_data(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 
         gMainMenuDataModified = FALSE;
     }
@@ -290,8 +292,8 @@ static void restore_save_file_data(s32 fileIndex, s32 srcSlot) {
           sizeof(gSaveBuffer.files[fileIndex][destSlot]));
 
     // Write destination data to EEPROM
-    write_eeprom_data(&gSaveBuffer.files[fileIndex][destSlot],
-                      sizeof(gSaveBuffer.files[fileIndex][destSlot]));
+    //write_eeprom_data(&gSaveBuffer.files[fileIndex][destSlot],
+    //                  sizeof(gSaveBuffer.files[fileIndex][destSlot]));
 }
 
 void save_file_do_save(s32 fileIndex) {
@@ -307,7 +309,7 @@ void save_file_do_save(s32 fileIndex) {
               sizeof(gSaveBuffer.files[fileIndex][1]));
 
         // Write to EEPROM
-        write_eeprom_data(&gSaveBuffer.files[fileIndex], sizeof(gSaveBuffer.files[fileIndex]));
+        //write_eeprom_data(&gSaveBuffer.files[fileIndex], sizeof(gSaveBuffer.files[fileIndex]));
 
         gSaveFileModified = FALSE;
     }
@@ -325,7 +327,7 @@ void save_file_do_save_force(s32 fileIndex) {
               sizeof(gSaveBuffer.files[fileIndex][1]));
 
         // Write to EEPROM
-        write_eeprom_data(&gSaveBuffer.files[fileIndex], sizeof(gSaveBuffer.files[fileIndex]));
+        //write_eeprom_data(&gSaveBuffer.files[fileIndex], sizeof(gSaveBuffer.files[fileIndex]));
 
         gSaveFileModified = FALSE;
 
@@ -337,7 +339,7 @@ void save_file_erase(s32 fileIndex) {
     bzero(&gSaveBuffer.files[fileIndex][0], sizeof(gSaveBuffer.files[fileIndex][0]));
 
     gSaveFileModified = TRUE;
-    save_file_do_save_force(fileIndex);
+    save_file_do_save(fileIndex);
 }
 
 void save_file_copy(s32 srcFileIndex, s32 destFileIndex) {
@@ -357,7 +359,7 @@ void save_file_load_all(void) {
     gSaveFileModified = FALSE;
 
     bzero(&gSaveBuffer, sizeof(gSaveBuffer));
-    read_eeprom_data(&gSaveBuffer, sizeof(gSaveBuffer));
+    //read_eeprom_data(&gSaveBuffer, sizeof(gSaveBuffer));
 
     // Verify the main menu data and wipe it if invalid.
     validSlots = verify_save_block_signature(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData), MENU_DATA_MAGIC);
@@ -824,12 +826,12 @@ void save_file_one_second() {
     }
 }
 
-u32 save_file_get_time() {
+u16 save_file_get_time() {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
     return (saveFile->PlayTime);
 }
 
-u32 save_file_index_get_time(s8 index) {
+u16 save_file_index_get_time(s8 index) {
     struct SaveFile *saveFile = &gSaveBuffer.files[index][0];
     return (saveFile->PlayTime);
 }
@@ -849,6 +851,7 @@ u8 get_evil_badge_bonus(void) {
 void save_file_get_stats() {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
 
+    /*
     if (save_file_exists(gCurrSaveFileNum - 1)) {
         gMarioState->CostumeID = saveFile->SavedCostume;
         gMarioState->Level = saveFile->UpgradeLevel;
@@ -879,6 +882,20 @@ void save_file_get_stats() {
         save_file_set_costume_unlock( (1<<0) );
         save_file_set_stats();
     }
+    */
+
+    //FIRST TRY STATS
+    gMarioState->numMaxGlobalCoins = 0;
+    gMarioState->numGlobalCoins = 0;
+    gMarioState->numMaxHP = 8;
+    gMarioState->numMaxFP = 8;
+    gMarioState->numMaxBP = 0;
+    gMarioState->CostumeID = 0;
+    gMarioState->Level = 0;
+    gMarioState->numEquippedBadges = 0;
+    gMarioState->Options = 0xFD;
+    save_file_set_costume_unlock( (1<<0) );
+    save_file_set_stats();
 }
 
 s32 save_file_get_cap_pos(UNUSED Vec3s capPos) {

@@ -28,6 +28,7 @@
 #include "config.h"
 #include "puppyprint.h"
 #include "rovent.h"
+#include "cursed_mirror_maker.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -1158,9 +1159,9 @@ void mode_8_directions_camera(struct Camera *c) {
         //stoppedMovingCamera = 0;
         //lastCameraMove = MOVED_RIGHT; 
     }
-    if (gPlayer2Controller->rawStickX) {
-        s8DirModeYawOffset += DEGREES(gPlayer2Controller->rawStickX * 4 / 64);
-        }
+    //if (gPlayer2Controller->rawStickX) {
+    //    s8DirModeYawOffset += DEGREES(gPlayer2Controller->rawStickX * 4 / 64);
+    //    }
     if (gMarioState->MenuToRender == 0) {
         if (gPlayer1Controller->buttonDown & L_JPAD) {
             s8DirModeYawOffset -= DEGREES(2);
@@ -1193,7 +1194,7 @@ void mode_8_directions_camera(struct Camera *c) {
         case LEVEL_CASTLE_COURTYARD:
         case LEVEL_BITFS:
         case LEVEL_BITDW:
-        case LEVEL_BOB:
+        //case LEVEL_BOB:
         case LEVEL_PSS:
         cam_col_level = TRUE;
         break;
@@ -2937,10 +2938,6 @@ void update_lakitu(struct Camera *c) {
             }
         gLakituState.roll += seasick;
 
-        if (!(gMarioState->Options & (1<<OPT_CAMWOB))) {
-            gLakituState.roll = 0;
-        }
-
         if (gMarioState->_2D) {
             gLakituState.roll = 0;
         }
@@ -2983,6 +2980,11 @@ void update_lakitu(struct Camera *c) {
     if (revent_camera_on) {
         vec3f_copy(gLakituState.pos, revent_camera_pos);
         vec3f_copy(gLakituState.focus, revent_camera_foc);
+    }
+
+    if (cmm_mode == CMM_MODE_MAKE) {
+        vec3f_copy(gLakituState.pos, cmm_camera_pos);
+        vec3f_copy(gLakituState.focus, cmm_camera_foc);
     }
 }
 
@@ -3112,8 +3114,6 @@ void update_camera(struct Camera *c) {
             }
         }
     }
-
-    u8 sliding = FALSE;
     // If not in a cutscene, do mode processing
     if (c->cutscene == CUTSCENE_NONE) {
         sYawSpeed = 0x400;
@@ -3158,22 +3158,10 @@ void update_camera(struct Camera *c) {
                     break;
 
                 case CAMERA_MODE_8_DIRECTIONS:
-
-                    if ((gCurrLevelNum==LEVEL_WF)&&(gCurrAreaIndex==2)) {
-                        sliding=TRUE;
-                    }
-                    if ((gCurrLevelNum==LEVEL_CCM)&&(gCurrAreaIndex==2)) {
-                        //sliding=TRUE;
-                    }
-
-                    if (sliding) {
-                        mode_slide_camera(c);
+                    if (gMarioState->_2D) {
+                        cutscene_2D(c);
                     } else {
-                        if (gMarioState->_2D) {
-                            cutscene_2D(c);
-                        } else {
-                            mode_8_directions_camera(c);
-                        }
+                        mode_8_directions_camera(c);
                     }
                     break;
 
@@ -4776,7 +4764,7 @@ void play_sound_if_cam_switched_to_lakitu_or_mario(void) {
  */
 void radial_camera_input(struct Camera *c) {
 
-    if (revent_camera_on) {
+    if (revent_camera_on||(cmm_mode == CMM_MODE_MAKE)) {
         return; //do not control camera during cutscenes. (goku image)
     }
 
@@ -4888,7 +4876,7 @@ void trigger_cutscene_dialog(s32 trigger) {
 void handle_c_button_movement(struct Camera *c) {
     s16 cSideYaw;
 
-    if (revent_camera_on) {
+    if (revent_camera_on||(cmm_mode == CMM_MODE_MAKE)) {
         return; //do not control camera during cutscenes. (goku image)
     }
 

@@ -157,7 +157,6 @@ const LevelScript level_castle_inside_entry[] = {
 		OBJECT(0xF9, 2439, -3, 214, 0, -125, 0, 0x00000000, bhvPostGameHint),
 		OBJECT(0xF9, -3256, -4, 3564, 0, 121, 0, 0x00210000, bhvGhoad),
 		OBJECT(0xF9, -779, 8, 3579, 0, -131, 0, 0x09010000, bhvGhoad),
-		OBJECT(0xF9, 2439, -3, -267, 0, -45, 0, (1 << 16), bhvPostGameHint),
 		OBJECT(MODEL_PHONOGRAPH, -1757, 140, -2381, 0, 0, 0, 0x00000000, bhvPhonograph),
 		OBJECT(MODEL_NONE, 0, 1189, 0, 0, -90, 0, (0x2B << 16), bhvSpinAirborneWarp),
 		OBJECT(MODEL_NONE, -1734, 2023, 0, 0, -90, 0, (0x2C << 16), bhvSpinAirborneWarp),

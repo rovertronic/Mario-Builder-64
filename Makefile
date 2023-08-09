@@ -55,7 +55,7 @@ $(eval $(call validate-option,LIBGCCDIR,trap divbreak nocheck))
 #   eep4k - uses EEPROM 4kbit
 #   eep16k - uses EEPROM 16kbit (There aren't any differences in syntax, but this is provided just in case)
 #   sram - uses SRAM 256Kbit
-SAVETYPE ?= eep4k
+SAVETYPE ?= sram
 $(eval $(call validate-option,SAVETYPE,eep4k eep16k sram))
 ifeq ($(SAVETYPE),eep4k)
   DEFINES += EEP=1 EEP4K=1
@@ -87,7 +87,7 @@ endif
 
 DEBUG_MAP_STACKTRACE_FLAG := -D DEBUG_MAP_STACKTRACE
 
-TARGET := btcm
+TARGET := cmm
 
 
 # GRUCODE - selects which RSP microcode to use.
@@ -222,7 +222,7 @@ ifeq ($(NON_MATCHING),1)
 endif
 
 
-TARGET_STRING := btcm
+TARGET_STRING := cmm
 
 # UNF - whether to use UNFLoader flashcart library
 #   1 - includes code in ROM

@@ -60,4 +60,3 @@
 #include "levels/bitfs/movie7/geo.inc.c"
 #include "levels/bitfs/sr_spike/geo.inc.c"
 #include "levels/bitfs/sr_ball/geo.inc.c"
-#include "levels/bitfs/sr_ball_shadow/geo.inc.c"

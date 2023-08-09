@@ -3,7 +3,63 @@
 
 #include "text_menu_strings.h"
 
-#define TEXT_VERSION _("RELEASE 1.2.1")
+#define TEXT_VERSION _("CMM ALPHA")
+
+//maker text
+#define TXT_LS_COSTUME _("Costume:")
+#define TXT_LS_MUSIC _("Music:")
+#define TXT_LS_ENVFX _("Effect:")
+#define TXT_LS_THEME _("Textures:")
+#define TXT_LS_BG _("Skybox:")
+
+#define TXT_ENVFX_1 _("None")
+#define TXT_ENVFX_2 _("Ashes")
+#define TXT_ENVFX_3 _("Snow")
+#define TXT_ENVFX_4 _("Flowers")
+#define TXT_ENVFX_5 _("Lava Bubbles")
+#define TXT_ENVFX_6 _("Rain")
+
+#define TXT_THEME_1 _("Generic")
+#define TXT_THEME_2 _("Virtuaplex")
+#define TXT_THEME_3 _("Red Hot Reservoir")
+#define TXT_THEME_4 _("Retro")
+
+#define TXT_BG1 _("Ocean Hills")
+#define TXT_BG2 _("Cloudy Sky")
+#define TXT_BG3 _("Firey Sky")
+#define TXT_BG4 _("Green Cave")
+#define TXT_BG5 _("Haunted Forest")
+#define TXT_BG6 _("Ice Mountains")
+#define TXT_BG7 _("Flipped Desert")
+#define TXT_BG8 _("Hushed Haven")
+
+#define TXT_BTN_1 _("Save Level")
+#define TXT_BTN_2 _("Level Settings")
+#define TXT_BTN_3 _("Test")
+#define TXT_BTN_4 _("Terrain")
+#define TXT_BTN_5 _("Brick")
+#define TXT_BTN_6 _("Lava")
+#define TXT_BTN_7 _("Slope")
+#define TXT_BTN_8 _("Troll Tile")
+#define TXT_BTN_9 _("Power Star")
+#define TXT_BTN_10 _("Goomba")
+#define TXT_BTN_11 _("Yellow Coin")
+#define TXT_BTN_12 _("")
+#define TXT_BTN_13 _("Wood")
+#define TXT_BTN_14 _("Stone")
+#define TXT_BTN_15 _("Green Coin")
+#define TXT_BTN_16 _("Slope Corner")
+#define TXT_BTN_17 _("Slope Inner Corner")
+#define TXT_BTN_18 _("Red Coin")
+#define TXT_BTN_19 _("Blue Coin")
+#define TXT_BTN_20 _("Blue Coin Switch")
+#define TXT_BTN_21 _("Red Coin Star")
+#define TXT_BTN_22 _("Note Block")
+#define TXT_BTN_23 _("Cull Marker")
+#define TXT_BTN_24 _("Cloud")
+#define TXT_BTN_25 _("Podoboo")
+#define TXT_BTN_26 _("Rex")
+#define TXT_BTN_27 _("Bully")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
@@ -378,7 +434,7 @@
 #define MAGICCOST _("2\n1\n3")
 
 #define CHEATTEXT _("Infinite HP\nInfinite Mana\nMoon Jump\nAlways have vanetal cap\nAlways have rocket boots\nLow Gravity\nEquip Unlimited Badges\nD-Pad Up Debug")
-#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow Minimap (L)\nShow HUD\nSave Data\nCamera Collision\nCamera Wobble")
+#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow Minimap (L)\nShow HUD\nSave Data\nCamera Collision")
 
 #define TEXT_WARPTOLEVEL _("Press A to warp to this level")
 

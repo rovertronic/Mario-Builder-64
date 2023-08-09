@@ -72,7 +72,6 @@ Vec3f revent_mario_lock_velocity;
 u8 revent_head_move;
 s16 revent_headangle[3];
 u8 revent_handstate;
-s16 revent_health = 0;
 
 u16 revent_index;
 u16 revent_loop_index;
@@ -123,7 +122,6 @@ u8 rtext_choice = 0;
 u8 rtext_choice_amount = 0;
 u8 rtext_choice_index = 0;
 u8 rtext_offset_buffer[4];
-u16 rtext_current_read_dialog = 0;
 
 f32 rtext_opacity = 0.0f;
 
@@ -163,14 +161,14 @@ u16 mg_prices[] = {
 };
 
 u8 mg_minscores[] = {
-8,//enemy arena
-40,//hot rope jump
-25,//hexagon heat
-35,//snakio
-60,//edward survival
-130,//bad apple
-5,//flappy bird
-7,//sign game
+10,
+50,
+45,
+50,
+70,
+150,
+10,
+8,
 };
 //level | area | id
 u8 mg_warps[] = {
@@ -334,9 +332,6 @@ void render_minigame_menu(void) {
                 }
             }
         }
-    }
-    if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-        stop_event();
     }
 }
 
@@ -566,7 +561,7 @@ void render_music_menu() {
 
 
     //control
-    if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON)) {
+    if (gPlayer1Controller->buttonPressed & A_BUTTON) {
         //exit
         stop_event();
     }
@@ -696,7 +691,7 @@ void render_costume_menu() {
     vec3f_copy(&gMarioState->pos,&revent_target_object->oPosX);
 
     //control
-    if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON)) {
+    if (gPlayer1Controller->buttonPressed & A_BUTTON) {
         //exit
         stop_event();
     }
@@ -711,8 +706,6 @@ void read_dialog(s32 dialog_id) {
     u8 **dialogTable = segmented_to_virtual(seg2_dialog_table);
     struct DialogEntry *sdialog = segmented_to_virtual(dialogTable[dialog_id]);
     u8 *sstr = segmented_to_virtual(sdialog->str);
-
-    rtext_current_read_dialog = dialog_id;
 
     i = 0;
     iwrite = 0;
@@ -761,7 +754,6 @@ void run_event(u8 event_tdo) {
         quiz_points = 0;
         revent_music = 0;
         revent_pointer = event_list[event_tdo];
-        revent_health = gMarioState->health;
     }
 }
 
@@ -1157,10 +1149,6 @@ void event_main(void) {
                 start_precredits = TRUE;
                 revent_index++;
             break;
-            case E_HUNDO:
-                gMarioState->gGlobalCoinGain += 100;
-                revent_index++;
-            break;
             case E_END:
                 stop_event();
             break;
@@ -1214,13 +1202,13 @@ void event_main(void) {
                 }
             break;
             case E_DIALOG_WAIT_PRESSA:
-                if ((rtext_done)&&(gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON))) {
+                if ((rtext_done)&&(gPlayer1Controller->buttonPressed & A_BUTTON)) {
                     revent_halt = FALSE;
                     revent_index ++;
                 }
             break;
             case E_DIALOG_AND_PRESSA:
-                if ((rtext_done)&&(gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON))) {
+                if ((rtext_done)&&(gPlayer1Controller->buttonPressed & A_BUTTON)) {
                     revent_halt = FALSE;
                     revent_index += 2;
                 }
@@ -1289,10 +1277,6 @@ void event_main(void) {
         vec3f_copy(&gMarioState->pos,&revent_mario_lock_position);
         vec3f_copy(&gMarioState->vel,&revent_mario_lock_velocity);
     }
-
-    if (revent_active) {
-        gMarioState->health = revent_health;
-    }
 }
 
 u8 letgo1 = TRUE;
@@ -1315,9 +1299,7 @@ void render_revent_textbox(void) {
                     rtext_display[rtext_read_index+1] = DIALOG_CHAR_TERMINATOR;
 
                     if (rtext_read[rtext_read_index] != DIALOG_CHAR_SPACE) {
-                        if (rtext_current_read_dialog != DIALOG_MUSICROOM) {
-                            play_sound(SOUND_OBJ_KOOPA_WALK,gGlobalSoundSource);
-                        }
+                        play_sound(SOUND_OBJ_KOOPA_WALK,gGlobalSoundSource);
                         rtext_dialog_delay = 0;
                     }
                     if (rtext_read[rtext_read_index] == DIALOG_CHAR_COMMA) {

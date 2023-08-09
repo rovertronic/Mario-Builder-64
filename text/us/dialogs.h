@@ -21,10 +21,11 @@ House made by rock.\n\
 House very hard!\n\
 Nomole get in!"))
 
-DEFINE_DIALOG(DIALOG_001, 1, 3, 130-42, 220, _("\
-Welcome to the badge shop!\n\
-Use the analog stick to\n\
-select a badge."))
+DEFINE_DIALOG(DIALOG_001, 1, 4, 130, 220, _("\
+Welcome to the shop!\n\
+Press [B] to buy an item,\n\
+and use the analog stick\n\
+to select an item."))
 
 DEFINE_DIALOG(DIALOG_002, 1, 4, 95, 180, _("\
 I am boss. This place\n\
@@ -297,10 +298,11 @@ Seems like this door is sealed by the Showrunner.\n\
 Maybe visit again after a big event?"))
 
 DEFINE_DIALOG(DIALOG_029, 1, 5, 95, 180, _("\
-Sheriff Mario...\n\
-You've done it!\n\
-You deserve a golden\n\
-belt buckle for that!"))
+To open the door that\n\
+leads to the 『endless』\n\
+stairs, you need 70\n\
+Stars.\n\
+Bwa ha ha!"))
 
 DEFINE_DIALOG(DIALOG_030, 1, 4, 95, 180, _("\
 Ah, a visitor!\n\
@@ -342,14 +344,15 @@ more badges, upgrade\n\
 your BP at the stat\n\
 upgrade station."))
 
-DEFINE_DIALOG(DIALOG_033, 1, 7, 95, 180, _("\
+DEFINE_DIALOG(DIALOG_033, 1, 4, 95, 180, _("\
 You're going to have\n\
 to pay a toll of 10\n\
 coins for me to raise\n\
 this bridge.\n\
 Showrunner's taxes,\n\
 I know...\n\
-Press [A] to pay up!"))
+\n\
+Press [B] to pay up!"))
 
 /*
 DEFINE_DIALOG(DIALOG_034, 1, 4, 95, 180, _("\
@@ -358,6 +361,9 @@ water of the fountain\n\
 will cleanse one's\n\
 woes and sorrows."))
 */
+
+//sorry rovert, i knew you wanted to be a gravis wannabe
+//this just mislead the players into thinking the fountain healed them
 
 //VALVE PLAYTESTER MOMENT:
 //
@@ -418,7 +424,7 @@ around here."))
 
 DEFINE_DIALOG(DIALOG_040, 1, 5, 95, 180, _("\
 Hello young lad!\n\
-Hold [A] to deposit your\n\
+Hold [B] to deposit your\n\
 level coins into your\n\
 castle wallet."))
 
@@ -886,11 +892,8 @@ I implore you to defeat him, once and for\n\
 all -- for the sake of the kingdom.\n\
 -Yours truly, The Showrunner''"))
 
-DEFINE_DIALOG(DIALOG_093, 1, 2, 95, 180, _("\
-Speedrun Shortcut\n\
-\n\
-Do not enter on first\n\
-playthrough."))
+DEFINE_DIALOG(DIALOG_093, 1, 1, 95, 180, _("\
+Speedrun Shortcut"))
 
 //do not add anything to this, used for showrunner start cutscene
 DEFINE_DIALOG(DIALOG_094, 1, 4, 30, 200, _("\
@@ -1090,47 +1093,26 @@ again, select this Star\n\
 from the menu. For now,\n\
 farewell."))
 
-DEFINE_DIALOG(DIALOG_117, 1, 5, 95, 180, _("\
-...Heed, Terran Virus.\n\
-You've broken the covenant\n\
-between the Perennials\n\
-and Agamemnon, correct?\n\
+DEFINE_DIALOG(DIALOG_117, 1, 3, 95, 180, _("\
+Heathen.\n\
+You have destroyed\n\
+this land.\n\
+You are the one from\n\
+Terra?\n\
 \n\
-It means nothing. It was\n\
-an integration treaty\n\
-between the prophet and\n\
-the planet.\n\
-Phagocytosis was voluntary.\n\
-Their drifting bodies\n\
-will be swarmed by seeds,\n\
-and they too will become\n\
-Agamemnon.\n\
+No wonder you're\n\
+here...\n\
 \n\
-...You expected to see\n\
-the prophet of this world,\n\
-yes?\n\
-\n\
-\n\
-She was a PALAMEDES\n\
-candidate. It would be\n\
-inefficient keeping her\n\
-here. The devout are\n\
-venerating her image,\n\
-not her person. As such,\n\
-I, a Terran, have assumed\n\
-guard duty.\n\
-\n\
-\n\
-The dead prophet brought\n\
-many powerful beings to\n\
-Agamemnon and granted them\n\
-cosmic power. This was his\n\
-intention with you.\n\
-But you have interrupted\n\
-the flow of the attention\n\
-from the Perennials. As\n\
-such, you will be removed.\n\
-Your world is Agamemnon."))
+Your prophet failed\n\
+integration. He was\n\
+unfit for his role.\n\
+Well, that'll be\n\
+enough trouble from\n\
+you.\n\
+You're a stain who\n\
+refuses to get wiped\n\
+off.\n\
+That changes now."))
 
 DEFINE_DIALOG(DIALOG_118, 1, 3, 95, 180, _("\
 ...\n\
@@ -1257,63 +1239,39 @@ king out of the ring!"))
 DEFINE_DIALOG(DIALOG_129, 1, 5, 30, 200, _("\
 You need a key in order to open this door. Capiche?"))
 
-DEFINE_DIALOG(DIALOG_130, 2, 6, 95, 180, _("\
-One of the cosmic seeds\n\
-entrusted to the\n\
-Perennials has vanished.\n\
-So closely guarded, and\n\
-it's gone! You're\n\
-responsible for this?\n\
-I am one of the Prolific.\n\
-There remains a dozen of\n\
-us. We descend from sailors\n\
-who once tamed the seas, now\n\
-having to defend ourselves\n\
-from cosmic horrors.\n\
-The Empire is foolish\n\
-indeed thinking they have\n\
-achieved eternity...\n\
-They are stagnant, their\n\
-minds slowly eroded by\n\
-the lunar song.\n\
-We may accelerate this\n\
-process.\n\
+DEFINE_DIALOG(DIALOG_130, 2, 4, 95, 180, _("\
+Mind your own business,\n\
+we don't need no\n\
+strangers bothering us.\n\
+Take a stroll.\n\
+Wait a min. That uh,\n\
+tool you're holding.\n\
+That pipebar. Hey, you\n\
+could be useful to us!\n\
+We need to steal the\n\
+highcane from those\n\
+land fools who love to\n\
+grow it so much.\n\
+Use that pipebar of\n\
+yours and harvest all\n\
+the highcane for us.\n\
 \n\
-\n\
-\n\
-\n\
-You've got a weapon in hand.\n\
-Very good. If you could\n\
-manage to destroy the\n\
-crops on this isle I could\n\
-lend you a cosmic seed I\n\
-obtained here."))
+If you do, we'll let\n\
+you onboard our ships.\n\
+You'll practically need\n\
+it when the tides rise."))
 
 DEFINE_DIALOG(DIALOG_131, 2, 6, 95, 180, _("\
-Large parts of this\n\
-natural pillar have been\n\
-collapsing. As such, it's\n\
-nearly impossible to get\n\
-around.\n\
-\n\
-Not that it matters, though,\n\
-as the Perennials have not\n\
-mined any building materials\n\
-for seemingly millenia.\n\
-\n\
-\n\
-One exception was a while\n\
-ago when a new moon prophet\n\
-arrived at the temple to\n\
-train, then damaged the\n\
-building with his 'le epic\n\
-SHRN starspin move'...\n\
-Point is, take a look around\n\
-to find the best way to\n\
-climb. If you have any\n\
-badges or other supernatural\n\
-abilities, you should also\n\
-try those."))
+The climb to the top is\n\
+quite a treacherous\n\
+journey. Look around and\n\
+size up the situation\n\
+before attempting to\n\
+jump.\n\
+Movement related badges\n\
+can also come in handy\n\
+with situations like\n\
+these."))
 
 DEFINE_DIALOG(DIALOG_132, 1, 5, 95, 180, _("\
 This lava fall is very\n\
@@ -1378,82 +1336,71 @@ secret sometimes under\n\
 some gold doubloons."))
 
 DEFINE_DIALOG(DIALOG_140, 1, 5, 95, 180, _("\
-Ah, Terran. Welcome to\n\
-our archipelago. Once at\n\
-threat of a cataclysmic\n\
-flood, we embraced the\n\
-moon-goddess.\n\
-She restrained the tide\n\
-in exchange for our\n\
-worship. As such, our\n\
-civilization was allowed\n\
-to prosper.\n\
-Now, we Perennials have\n\
-assimilated with Agamemnon,\n\
-and the treacherous tide\n\
-has turned to safe cosmic\n\
-flux.\n\
-Nature itself has been\n\
-upheaved through worship\n\
-and loyalty. All that\n\
-remains to make our Empire\n\
-eternal is to rid of the\n\
-Prolific rebels..."))
-
-DEFINE_DIALOG(DIALOG_141, 1, 5, 95, 180, _("\
-Thanks to Agamemnon, there\n\
-is no real need for food\n\
-anymore. However, highcane\n\
-has been enjoyed by our\n\
-society for 8 million years...\n\
-It is a respectable part of\n\
-our 2 staple dishes.\n\
-And thus, I provide."))
-
-DEFINE_DIALOG(DIALOG_142, 1, 4, 95, 180, _("\
-It seems the moon-diety has\n\
-lashed out on its subjects.\n\
-As such, Hellion Park has\n\
-been utterly flooded.\n\
-A cosmic seed is surely kept\n\
-on the top of this carved\n\
-out blackstone pillar.\n\
+Welcome to our glorious\n\
+empire. We've maintained\n\
+these lands for years\n\
+since the day we\n\
+assimilated with the moon.\n\
+Admire our wonderful\n\
+architecture, and\n\
+everything that we have\n\
+built up.\n\
 \n\
-...Unfortunately, we are\n\
-not creatures built for\n\
-athletics, so you'll have\n\
-to lend us a hand."))
+Just... Be sure to\n\
+ignore any of the foolish\n\
+fools who set sail in the\n\
+dangerous sea. They only\n\
+speak rubbish."))
 
-DEFINE_DIALOG(DIALOG_143, 1, 6, 95, 180, _("\
-Prolific victory is\n\
-assured. The Empire is\n\
-going to experience the\n\
-end of eternity, all\n\
-thanks to you, Terran.\n\
+DEFINE_DIALOG(DIALOG_141, 1, 3, 95, 180, _("\
+Don't you dare lay a\n\
+finger on my crops\n\
+you scoundrel!"))
+
+DEFINE_DIALOG(DIALOG_142, 1, 5, 95, 180, _("\
+Haha! Hey there, it\n\
+seems that every time\n\
+you remove a cosmic\n\
+seed from the empire,\n\
+the tides begin to rise.\n\
+Those land dwelling\n\
+fools have been a\n\
+thorn in our side for\n\
+long enough.\n\
 \n\
-The sailors are invigorated\n\
-by the winds of change you\n\
-brought about. We will\n\
-rebuild civilization in\n\
-this cosmic wasteland.\n\
-I promise.\n\
-Let us bring this empire\n\
-to its final fate!"))
+Maybe this is just\n\
+what we need to get\n\
+the upper hand!\n\
+We can flush them\n\
+right out.\n\
+Hey, I spotted a\n\
+cosmic seed on top\n\
+of this mountain.\n\
+Collect that for us,\n\
+will you?"))
 
-DEFINE_DIALOG(DIALOG_144, 1, 4, 95, 180, _("\
-...Based on the tide,\n\
-thousands living in the\n\
-outer colonies are long\n\
-dead.\n\
-Our citizenry is praying\n\
-to the moon goddess. The\n\
-first and last light of\n\
-the glorious empire.\n\
-This sick syzygy of\n\
-tide and sky will cease,\n\
-and eternity will surely\n\
-resume.\n\
-...Monster."))
+DEFINE_DIALOG(DIALOG_143, 1, 5, 95, 180, _("\
+This is it!\n\
+One final cosmic\n\
+seed to put in the\n\
+last blow to the\n\
+empire.\n\
+These are the final\n\
+hours for the final\n\
+empire. Let us finalize\n\
+this operation!\n\
+Let us sail to victory!"))
+
+DEFINE_DIALOG(DIALOG_144, 1, 3, 95, 180, _("\
+I hope you internalize\n\
+the damage you've done\n\
+to our great society.\n\
+There's nothing we can\n\
+do to stop you now.\n\
+\n\
+Hopefully the guardian\n\
+will take care of your\n\
+pitiful self."))
 
 DEFINE_DIALOG(DIALOG_145, 1, 6, 150, 200, _("\
 You've recovered 50\n\
@@ -2965,8 +2912,8 @@ You fail to see any gray in any circumstances..."))
 
 DEFINE_DIALOG(DIALOG_QUIZ_59_A, 1, 6, 95, 180, _("\
 I am dissapointed you can't grasp the most basic\n\
-form of nuance... Well, maybe you'll understand once you end\n\
-up with a Cosmic Seed wedged into you. Maybe."))
+form of nuance... Well, maybe you'll understand once you end up\n\
+with a Cosmic Seed wedged into you. Maybe."))
 
 DEFINE_DIALOG(DIALOG_QUIZ_58_B, 1, 6, 95, 180, _("\
 Huh. My end goal is art. Entertainment. Always has been.\n\
@@ -3244,10 +3191,6 @@ DEFINE_DIALOG(DIALOG_CREDITS_25, 1, 6, 95, 180, _("\
 Special Thanks:\n\
 YHWH, Family, My 3 Brothers\n\
 Chillyn', RationaLess, SimpleFlips"))
-
-DEFINE_DIALOG(DIALOG_CREDITS_26, 1, 6, 95, 180, _("\
-Patreons as of 5-22-23:\n\
-Henry Kumpel"))
 
 DEFINE_DIALOG(DIALOG_PALAMEDES_1, 1, 6, 95, 180, _("\
 the sustenance of thought is required to synthesize\n\
@@ -3712,16 +3655,3 @@ On your back, I do\n\
 pats!\n\
 ...That one kind of\n\
 sucked, lol."))
-
-DEFINE_DIALOG(DIALOG_WALLET_HELP, 1, 4, 95, 180, _("\
-Looking for wallets?\n\
-There is one wallet inside\n\
-every main course from\n\
-course 1 to course 11.\n\
-If you collect all 12\n\
-wallet upgrades, you\n\
-also get a double income\n\
-boost.\n\
-Combined with the greed\n\
-badge, your net income\n\
-will be quadrupled."))

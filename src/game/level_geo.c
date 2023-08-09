@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "envfx_snow.h"
 #include "level_geo.h"
+#include "cursed_mirror_maker.h"
 
 /**
  * Geo function that generates a displaylist for environment effects such as
@@ -26,7 +27,7 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
                                             // casting to a local struct as necessary.
 
         if (GET_HIGH_U16_OF_32(*params) != gAreaUpdateCounter) {
-            s32 snowMode = GET_LOW_U16_OF_32(*params);
+            s32 snowMode = cmm_envfx_table[cmm_lopt_envfx];//GET_LOW_U16_OF_32(*params);
 
             vec3f_to_vec3s(camTo, gCurGraphNodeCamera->focus);
             vec3f_to_vec3s(camFrom, gCurGraphNodeCamera->pos);

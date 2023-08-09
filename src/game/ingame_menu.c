@@ -1437,8 +1437,7 @@ s16 gCutsceneMsgTimer       =  0;
 s8  gDialogCameraAngleIndex = CAM_SELECTION_MARIO;
 s8  gDialogCourseActNum     =  1;
 
-#define SHOP_OFFSET 158
-#define SHOP_INVERSE_OFFSET -42
+#define SHOP_OFFSET 200
 
 #define DIAG_VAL1  16
 #define DIAG_VAL3 132 // US & EU
@@ -1479,7 +1478,7 @@ void render_dialog_entries(void) {
 
     //toll bridge
     if (gDialogID == 33) {
-        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+        if (gPlayer1Controller->buttonPressed & B_BUTTON) {
             if ((gMarioState->numGlobalCoins >= 10)&&(!gMarioState->TollPaid)) {
                 gMarioState->gGlobalCoinGain -= 10;
                 play_sound(SOUND_GENERAL_COIN_WATER, gGlobalSoundSource);
@@ -1492,7 +1491,7 @@ void render_dialog_entries(void) {
 
     //ATM
     if (gDialogID == 40) {
-        if (gPlayer1Controller->buttonDown & A_BUTTON) {
+        if (gPlayer1Controller->buttonDown & B_BUTTON) {
             if ((gMarioState->numCoins > 0)&&(gMarioState->numMaxGlobalCoins > gMarioState->numGlobalCoins)) {
                 gMarioState->numGlobalCoins ++;
                 gMarioState->numCoins --;
@@ -1529,7 +1528,7 @@ void render_dialog_entries(void) {
         shoptable[1][3] = (gMarioState->Level+1)*50;
         shoptable[1][5] = (gMarioState->Level+1)*50;
 
-        if ((gPlayer1Controller->buttonPressed & A_BUTTON)&&(gMarioState->gGlobalCoinGain == 0)) { //no buying while coins are moving
+        if ((gPlayer1Controller->buttonPressed & B_BUTTON)&&(gMarioState->gGlobalCoinGain == 0)) { //no buying while coins are moving
             if ((gMarioState->numGlobalCoins >= shoptable[shopid][1+(shopselection*2)])
             || (!(save_file_get_flags() & SAVE_FLAG_FREE_BADGE))) { //you can claim your free badge here
                 if (!(save_file_get_badge_unlock() & (1<<shoptable[shopid][(shopselection*2)]) )) {//only buy badge if not already owned
@@ -1540,8 +1539,6 @@ void render_dialog_entries(void) {
                 }
             }
         }
-
-
 
         //RENDER SHOP
         display_icon(&shopgui_Plane_001_mesh, SHOP_OFFSET, 110);
@@ -1558,34 +1555,22 @@ void render_dialog_entries(void) {
 
         if (save_file_get_flags() & SAVE_FLAG_FREE_BADGE) {
             //normal
-            print_text_fmt_int(130+SHOP_INVERSE_OFFSET,34,"$%d",shoptable[shopid][1+(shopselection*2)]);
+            print_text_fmt_int(130,34,"$%d",shoptable[shopid][1+(shopselection*2)]);
         } else {
             //free!
-            print_text_fmt_int(130+SHOP_INVERSE_OFFSET,34,"$%d",0);
+            print_text_fmt_int(130,34,"$%d",0);
         }
 
-        print_text_fmt_int(194+SHOP_INVERSE_OFFSET,34, ",%d", gMarioState->numGlobalCoins);
+        print_text_fmt_int(194,34, ",%d", gMarioState->numGlobalCoins);
 
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
         print_generic_string(get_str_x_pos_from_center(SHOP_OFFSET,badgenames[shoptable[shopid][shopselection*2]],0.0f)-1, 58-1, badgenames[shoptable[shopid][shopselection*2]]);
-        //gDPSetEnvColor(gDisplayListHead++, badgecolors[shoptable[shopid][shopselection*2]][0], badgecolors[shoptable[shopid][shopselection*2]][1], badgecolors[shoptable[shopid][shopselection*2]][2], 255);
-        //^ that looks bad unfortunately
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
         print_generic_string(get_str_x_pos_from_center(SHOP_OFFSET,badgenames[shoptable[shopid][shopselection*2]],0.0f), 58, badgenames[shoptable[shopid][shopselection*2]]);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-
-        //print badge descs
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-        print_generic_string(get_str_x_pos_from_center(160,badgedescs[shoptable[shopid][shopselection*2]],0.0f)-1, 145-1, badgedescs[shoptable[shopid][shopselection*2]]);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        print_generic_string(get_str_x_pos_from_center(160,badgedescs[shoptable[shopid][shopselection*2]],0.0f), 145, badgedescs[shoptable[shopid][shopselection*2]]);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
 
-    u8 in_an_interact_menu = (gDialogID == 1)||(gDialogID == 3)||(gDialogID == 40);
-    u32 button_cond = (gPlayer3Controller->buttonPressed & (A_BUTTON|B_BUTTON));
 
     switch (gDialogBoxState) {
         case DIALOG_STATE_OPENING:
@@ -1612,11 +1597,7 @@ void render_dialog_entries(void) {
         case DIALOG_STATE_VERTICAL:
             gDialogBoxOpenTimer = 0.0f;
 
-            if (in_an_interact_menu) {
-                button_cond = (gPlayer3Controller->buttonPressed & B_BUTTON);
-            }
-
-            if (button_cond) {
+            if (gPlayer3Controller->buttonPressed & A_BUTTON) {
                 if (gLastDialogPageStrPos == -1) {
                     handle_special_dialog_text(gDialogID);
                     gDialogBoxState = DIALOG_STATE_CLOSING;
@@ -2412,9 +2393,9 @@ s32 render_pause_courses_and_castle(void) {
     u8 *changetext;
     u16 prog_thing;
     u16 prog_max;
-    u32 hour = save_file_get_time()/3600;
-    u32 minute = (save_file_get_time()/60)%60;
-    u32 second = save_file_get_time()%60;
+    u16 hour = save_file_get_time()/3600;
+    u16 minute = (save_file_get_time()/60)%60;
+    u16 second = save_file_get_time()%60;
 
     menu_sintimer += 1200;
     sine = sins(menu_sintimer);
@@ -2454,10 +2435,7 @@ s32 render_pause_courses_and_castle(void) {
 
         if ((s32)winpercent >= 100) {
             //At 100% completion, initiate post post game mode
-            if (!save_file_check_progression(PROG_POSTPOST_GAME)) {
-                save_file_set_progression(PROG_POSTPOST_GAME);
-                save_file_do_save(gCurrSaveFileNum - 1);
-            }
+            save_file_set_progression(PROG_POSTPOST_GAME);
         }
 
         if (gCurrCourseNum >= COURSE_MIN
@@ -2497,9 +2475,6 @@ s32 render_pause_courses_and_castle(void) {
                         gMenuMode = MENU_MODE_NONE;
 
                         if (gDialogLineNum == MENU_OPT_EXIT_COURSE) {
-                            //restore hp and mana on course exit
-                            gMarioState->health = 255 + (255*gMarioState->numMaxHP);
-                            gMarioState->numBadgePoints = gMarioState->numMaxFP;
                             index = gDialogLineNum;
                         } else { // MENU_OPT_CONTINUE or MENU_OPT_CAMERA_ANGLE_R
                             index = MENU_OPT_DEFAULT;
@@ -2695,7 +2670,7 @@ s32 render_pause_courses_and_castle(void) {
             gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
             print_text_fmt_int2(30, 100, "COST $%d ^%d", UPGRADE_TABLE[gMarioState->Level+1][0], UPGRADE_TABLE[gMarioState->Level+1][1]);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON)) {
+            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
                     
                     play_sound(SOUND_CUSTOM_PEACH_SOMETHING_SPECIAL, gGlobalSoundSource);
@@ -2729,14 +2704,14 @@ s32 render_pause_courses_and_castle(void) {
             if ((gPlayer1Controller->rawStickY > 60)&&(letgo == FALSE)) {
                 mindex--;
                 if (mindex < 0) {
-                    mindex = 6;
+                    mindex = 5;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
             if ((gPlayer1Controller->rawStickY < -60)&&(letgo == FALSE)) {
                 mindex++;
-                if (mindex > 6) {
+                if (mindex > 5) {
                     mindex = 0;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
@@ -2760,7 +2735,7 @@ s32 render_pause_courses_and_castle(void) {
             print_generic_string(45,166, optiontext);
 
 
-            for (i=0;i<7;i++) {
+            for (i=0;i<6;i++) {
                 changetext = txt_off;
                 if (gMarioState->Options &  (1 << i)) {
                     changetext = txt_on;
@@ -3011,12 +2986,11 @@ void print_hud_course_complete_string(s8 str) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-void print_hud_course_complete_coins(s16 x, s16 y, u8 maincourse) {
+void print_hud_course_complete_coins(s16 x, s16 y) {
     u8 courseCompleteCoinsStr[4];
     u8 hudTextSymCoin[] = { GLYPH_COIN, GLYPH_SPACE };
     u8 hudTextSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 
-    if (maincourse) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
@@ -3027,9 +3001,6 @@ void print_hud_course_complete_coins(s16 x, s16 y, u8 maincourse) {
     print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, courseCompleteCoinsStr);
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
-    } else {
-        print_text_fmt_int2(x, y, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
-    }
 
     if (gCourseCompleteCoins >= gHudDisplay.coins) {
         gCourseCompleteCoinsEqual = TRUE;
@@ -3097,7 +3068,7 @@ void render_course_complete_lvl_info_and_hud_str(void) {
     void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
 
     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
-        print_hud_course_complete_coins(65, 103,TRUE);
+        print_hud_course_complete_coins(65, 103);
         print_text_fmt_int2(150, 121, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
         play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, (1 << (gLastCompletedStarNum - 1)));
 
@@ -3136,13 +3107,13 @@ void render_course_complete_lvl_info_and_hud_str(void) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
         print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
-        print_hud_course_complete_coins(118, 111,FALSE);
+        print_hud_course_complete_coins(118, 111);
         play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
         return;
     } else { // Castle secret stars
         name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
 
-        print_hud_course_complete_coins(118, 130,FALSE);
+        print_hud_course_complete_coins(118, 103);
         play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
     }
 

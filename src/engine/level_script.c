@@ -297,6 +297,8 @@ static void level_cmd_load_yay0(void) {
 }
 
 void level_cmd_fileselect_condition(void) {
+
+    /*
     if (save_file_check_progression(PROG_TRUE_START)) {
         sRegister = LEVEL_CASTLE;
     } else {
@@ -305,6 +307,11 @@ void level_cmd_fileselect_condition(void) {
     if (save_file_get_progression() == PROG_ON_AGAMEMNON) {
         sRegister = LEVEL_BITS;
     }
+    */
+
+
+    sRegister = LEVEL_BOB;
+
     sCurrentCmd = CMD_NEXT;
 }
 

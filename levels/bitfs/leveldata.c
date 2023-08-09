@@ -80,4 +80,3 @@
 #include "levels/bitfs/sr_spike/model.inc.c"
 #include "levels/bitfs/sr_ball/model.inc.c"
 #include "levels/bitfs/sr_fight_sky/model.inc.c"
-#include "levels/bitfs/sr_ball_shadow/model.inc.c"
