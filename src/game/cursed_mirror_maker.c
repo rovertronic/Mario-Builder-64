@@ -90,21 +90,22 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLBOARDED
-    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE},
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE},
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE },
-    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE },
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE },
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE},
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE},
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE},
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE},
-    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE},
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE},
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE},
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE },
+    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE
+    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f},
+    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f},
+    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f},
+    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f},
+    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f},
+    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f},
+    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,1.0f},
+    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f},
+    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f},
+    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f},
+    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f},
+    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f},
+    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f},
+    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f},
+    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f},
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -224,7 +225,7 @@ u8 cmm_toolbox[45] = {
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -237,7 +238,7 @@ u8 txt_btn_6[] = {TXT_BTN_6};u8 txt_btn_7[] = {TXT_BTN_7};u8 txt_btn_8[] = {TXT_
 u8 txt_btn_11[] = {TXT_BTN_11};u8 txt_btn_12[] = {TXT_BTN_12};u8 txt_btn_13[] = {TXT_BTN_13};u8 txt_btn_14[] = {TXT_BTN_14};u8 txt_btn_15[] = {TXT_BTN_15};
 u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = {TXT_BTN_18};u8 txt_btn_19[] = {TXT_BTN_19};u8 txt_btn_20[] = {TXT_BTN_20};
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
-u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};
+u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID      //PLACE MODE //TXT POINTER
@@ -268,8 +269,9 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_podoboo  , OBJECT_TYPE_PODOB ,CMM_PM_OBJ  , &txt_btn_25}, //CMM_BUTTON_PODOBOO
     {&mat_b_btn_rex      , OBJECT_TYPE_REX   ,CMM_PM_OBJ  , &txt_btn_26}, //CMM_BUTTON_REX
     {&mat_b_btn_bully    , OBJECT_TYPE_BULLY ,CMM_PM_OBJ  , &txt_btn_27}, //CMM_BUTTON_BULLY
-    {&mat_b_btn_bobomb   , OBJECT_TYPE_BOMB  ,CMM_PM_OBJ  , &txt_btn_28}, //CMM_BUTTON_BULLY
-    {&mat_b_btn_tree     , OBJECT_TYPE_TREE  ,CMM_PM_OBJ  , &txt_btn_29}, //CMM_BUTTON_BULLY
+    {&mat_b_btn_bobomb   , OBJECT_TYPE_BOMB  ,CMM_PM_OBJ  , &txt_btn_28}, //CMM_BUTTON_BOMB
+    {&mat_b_btn_tree     , OBJECT_TYPE_TREE  ,CMM_PM_OBJ  , &txt_btn_29}, //CMM_BUTTON_TREE
+    {&mat_b_btn_excla    , OBJECT_TYPE_EXCLA ,CMM_PM_OBJ  , &txt_btn_30}, //CMM_BUTTON_EXCLA
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -676,9 +678,10 @@ void generate_object_preview(void) {
         preview_object->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
         preview_object->oPosZ = cmm_object_data[i].z*300.0f;
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
+        obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
             preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
-            }
+        }
     }
 }
 

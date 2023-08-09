@@ -47,6 +47,7 @@ struct cmm_object_type_struct {
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
+    f32 scale;
 };
 enum {
     OBJECT_TYPE_STAR,
@@ -63,6 +64,7 @@ enum {
     OBJECT_TYPE_BULLY,
     OBJECT_TYPE_BOMB,
     OBJECT_TYPE_TREE,
+    OBJECT_TYPE_EXCLA,
 };
 
 struct cmm_ui_button_type {
@@ -123,6 +125,7 @@ enum {
     CMM_BUTTON_BULLY,
     CMM_BUTTON_BOMB,
     CMM_BUTTON_TREE,
+    CMM_BUTTON_EXCLA,
 };
 
 enum {

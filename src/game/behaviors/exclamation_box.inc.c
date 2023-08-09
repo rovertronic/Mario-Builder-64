@@ -51,13 +51,8 @@ void exclamation_box_act_init(void) {
 
     if (o->oBehParams2ndByte < EXCLAMATION_BOX_BP_COINS_1) {
         o->oAnimState = o->oBehParams2ndByte;
-#ifdef UNLOCK_ALL
+
         u8 tangible = TRUE;
-#else
-        u8 tangible = ((save_file_get_flags() & sCapSaveFlags[o->oBehParams2ndByte])
-                    || (GET_BPARAM1(o->oBehParams) != EXCLAMATION_BOX_BP1_NEEDS_SWITCH));
-        //this might honestly be fucked
-#endif
         if (tangible) {
             o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
         } else {
@@ -66,34 +61,6 @@ void exclamation_box_act_init(void) {
     } else {
         o->oAnimState = 4;
         o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
-    }
-
-    //if black box and already collected, and NOT post game, then dissapear
-    if (o->oBehParams2ndByte == 1) {//is black box
-        if (stardata & 0x40) {//already collected
-            if (0) {//(!save_file_check_progression(PROG_POSTGAME)) {//not post game //TEMPORARY
-                //delete
-                switch(gCurrLevelNum) {
-                    case LEVEL_SL:
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvShowrunner);
-                        mark_obj_for_deletion(tempobj);
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvContestant1);
-                        mark_obj_for_deletion(tempobj);
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvContestant2);
-                        mark_obj_for_deletion(tempobj);
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvCurtain);
-                        mark_obj_for_deletion(tempobj);
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvCurtain2);
-                        mark_obj_for_deletion(tempobj);
-                        break;
-                    case LEVEL_BITDW:
-                        tempobj = cur_obj_nearest_object_with_behavior(bhvWarpPipe);
-                        mark_obj_for_deletion(tempobj);
-                        break;
-                }
-                mark_obj_for_deletion(o);
-            }
-        }
     }
 
 }
