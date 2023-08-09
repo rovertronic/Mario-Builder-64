@@ -30,7 +30,7 @@
 #define TXT_BG4 _("Green Cave")
 #define TXT_BG5 _("Haunted Forest")
 #define TXT_BG6 _("Ice Mountains")
-#define TXT_BG7 _("Flipped Desert")
+#define TXT_BG7 _("Desert Pyramids")
 #define TXT_BG8 _("Hushed Haven")
 
 #define TXT_BTN_1 _("Save Level")
