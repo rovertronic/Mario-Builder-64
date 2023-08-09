@@ -128,10 +128,7 @@ u16 cmm_object_count = 0;
 
 Gfx * cmm_mat_pointer = NULL;
 
-//this is fucking stupid but the way i designed my settings structs requires this to exist :grimacing:
-u8 ordered_table[] = {
-    0,1,2,3,4,5,6,7,8,9
-};
+struct Object *cmm_preview_object;
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -687,6 +684,7 @@ void generate_object_preview(void) {
         if (cmm_object_types[cmm_object_data[i].type].anim) {
             preview_object->oAnimations = cmm_object_types[cmm_object_data[i].type].anim;
             super_cum_working(preview_object,0);
+            preview_object->header.gfx.animInfo.animAccel = 0.0f;
         }
     }
 }
@@ -717,12 +715,16 @@ void place_tile(u8 x, u8 y, u8 z) {
 }
 
 void place_object(u8 x, u8 y, u8 z) {
-    cmm_object_data[cmm_object_count].x = x;
-    cmm_object_data[cmm_object_count].y = y;
-    cmm_object_data[cmm_object_count].z = z;
-    cmm_object_data[cmm_object_count].type = cmm_id_selection;
-    cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
-    cmm_object_count++;
+    if (cmm_object_count < 199) {
+        cmm_object_data[cmm_object_count].x = x;
+        cmm_object_data[cmm_object_count].y = y;
+        cmm_object_data[cmm_object_count].z = z;
+        cmm_object_data[cmm_object_count].type = cmm_id_selection;
+        cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
+        cmm_object_count++;
+    } else {
+        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+    }
 }
 
 u8 joystick_direction(void) {
@@ -968,6 +970,7 @@ void sb_loop(void) {
                     o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
                     generate_object_preview();
                     generate_terrain_gfx();
+                    cmm_preview_object = spawn_object(o,MODEL_NONE,bhvPreviewObject);
                 break;
                 case CMM_MODE_PLAY:
                     gMarioState->CostumeID = cmm_lopt_costume;
@@ -1084,6 +1087,24 @@ void sb_loop(void) {
             o->oPosX = cmm_sbx*300.0f; 
             o->oPosY = cmm_sby*300.0f; 
             o->oPosZ = cmm_sbz*300.0f; 
+            if (cmm_place_mode == CMM_PM_OBJ) {
+                vec3f_copy(&cmm_preview_object->oPosX,&o->oPosX);
+                cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset;
+                obj_scale(cmm_preview_object, cmm_object_types[cmm_id_selection].scale);
+                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[cmm_object_types[cmm_id_selection].model_id];
+                cmm_preview_object->oFaceAngleYaw = cmm_rot_selection*0x4000;
+                if (cmm_object_types[cmm_id_selection].billboarded) {
+                    cmm_preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+                } else {
+                    cmm_preview_object->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
+                }
+                if (cmm_object_types[cmm_id_selection].anim) {
+                    cmm_preview_object->oAnimations = cmm_object_types[cmm_id_selection].anim;
+                    super_cum_working(cmm_preview_object,0);
+                }
+            } else {
+                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
+            }
 
             if (!cmm_ui_do_render) {
                 o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;

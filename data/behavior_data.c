@@ -3629,6 +3629,12 @@ const BehaviorScript bhvStaticObject[] = {
     BREAK(),
 };
 
+const BehaviorScript bhvPreviewObject[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    BREAK(),
+};
+
 const BehaviorScript bhvTrash[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
