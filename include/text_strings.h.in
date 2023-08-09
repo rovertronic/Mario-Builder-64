@@ -60,6 +60,8 @@
 #define TXT_BTN_25 _("Podoboo")
 #define TXT_BTN_26 _("Rex")
 #define TXT_BTN_27 _("Bully")
+#define TXT_BTN_28 _("Bobomb")
+#define TXT_BTN_29 _("Tree")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

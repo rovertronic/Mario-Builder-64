@@ -61,6 +61,8 @@ enum {
     OBJECT_TYPE_PODOB,
     OBJECT_TYPE_REX,
     OBJECT_TYPE_BULLY,
+    OBJECT_TYPE_BOMB,
+    OBJECT_TYPE_TREE,
 };
 
 struct cmm_ui_button_type {
@@ -119,6 +121,8 @@ enum {
     CMM_BUTTON_PODOBOO,
     CMM_BUTTON_REX,
     CMM_BUTTON_BULLY,
+    CMM_BUTTON_BOMB,
+    CMM_BUTTON_TREE,
 };
 
 enum {

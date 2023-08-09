@@ -792,5 +792,6 @@
 #define MODEL_SB 0x123
 #define MODEL_LEV 0x124
 #define MODEL_PODOBOO 0x125
+#define MODEL_MAKER_TREE_1 0x126
 
 #endif // MODEL_IDS_H

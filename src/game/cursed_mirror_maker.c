@@ -103,6 +103,8 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE},
     {bhvRex              ,-150.0f   ,0xE1                  ,FALSE},
     {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE},
+    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE},
+    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -221,8 +223,8 @@ u8 cmm_toolbox[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -235,7 +237,7 @@ u8 txt_btn_6[] = {TXT_BTN_6};u8 txt_btn_7[] = {TXT_BTN_7};u8 txt_btn_8[] = {TXT_
 u8 txt_btn_11[] = {TXT_BTN_11};u8 txt_btn_12[] = {TXT_BTN_12};u8 txt_btn_13[] = {TXT_BTN_13};u8 txt_btn_14[] = {TXT_BTN_14};u8 txt_btn_15[] = {TXT_BTN_15};
 u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = {TXT_BTN_18};u8 txt_btn_19[] = {TXT_BTN_19};u8 txt_btn_20[] = {TXT_BTN_20};
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
-u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};
+u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID      //PLACE MODE //TXT POINTER
@@ -266,6 +268,8 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_podoboo  , OBJECT_TYPE_PODOB ,CMM_PM_OBJ  , &txt_btn_25}, //CMM_BUTTON_PODOBOO
     {&mat_b_btn_rex      , OBJECT_TYPE_REX   ,CMM_PM_OBJ  , &txt_btn_26}, //CMM_BUTTON_REX
     {&mat_b_btn_bully    , OBJECT_TYPE_BULLY ,CMM_PM_OBJ  , &txt_btn_27}, //CMM_BUTTON_BULLY
+    {&mat_b_btn_bobomb   , OBJECT_TYPE_BOMB  ,CMM_PM_OBJ  , &txt_btn_28}, //CMM_BUTTON_BULLY
+    {&mat_b_btn_tree     , OBJECT_TYPE_TREE  ,CMM_PM_OBJ  , &txt_btn_29}, //CMM_BUTTON_BULLY
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
