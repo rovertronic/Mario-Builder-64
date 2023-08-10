@@ -600,4 +600,10 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "sb_cube/geo_header.h"
 
+#include "floor_normal/collision_header.h"
+
+#include "floor_lava/collision_header.h"
+
+#include "visualplane/header.h"
+
 #endif

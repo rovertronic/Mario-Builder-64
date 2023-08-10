@@ -1,0 +1,13 @@
+const Collision floor_lava_collision[] = {
+	COL_INIT(),
+	COL_VERTEX_INIT(4),
+	COL_VERTEX(-150, -150, 9450),
+	COL_VERTEX(9450, -150, 9450),
+	COL_VERTEX(9450, -150, -150),
+	COL_VERTEX(-150, -150, -150),
+	COL_TRI_INIT(SURFACE_BURNING, 2),
+	COL_TRI(0, 1, 2),
+	COL_TRI(0, 2, 3),
+	COL_TRI_STOP(),
+	COL_END()
+};

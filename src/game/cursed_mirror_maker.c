@@ -99,7 +99,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f   ,NULL                         },
     {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f   ,NULL                         },
     {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f   ,NULL                         },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,1.0f   ,NULL                         },
+    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,3.0f   ,NULL                         },
     {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f   ,NULL                         },
     {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f   ,NULL                         },
     {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f   ,NULL                         },
@@ -196,12 +196,21 @@ u8 *cmm_bg_string_table[] = {
     txt_bg_8,
 };
 
+//bottom plane strings
+u8 txt_plane_1[] = {TXT_PLANE_1};u8 txt_plane_2[] = {TXT_PLANE_2};u8 txt_plane_3[] = {TXT_PLANE_3};
+u8 *cmm_plane_string_table[] = {
+    txt_plane_1,
+    txt_plane_2,
+    txt_plane_3,
+};
+
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
 u8 cmm_lopt_seq = 0;
 u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
+u8 cmm_lopt_plane = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
@@ -278,6 +287,7 @@ u8 txt_ls_music[] = {TXT_LS_MUSIC};
 u8 txt_ls_envfx[] = {TXT_LS_ENVFX};
 u8 txt_ls_theme[] = {TXT_LS_THEME};
 u8 txt_ls_bg[] = {TXT_LS_BG};
+u8 txt_ls_plane[] = {TXT_LS_PLANE};
 
 struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
@@ -285,6 +295,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
     {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 4},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
+    {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
 };
 
 #define SETTINGS_SIZE sizeof(cmm_settings_buttons)/sizeof(cmm_settings_buttons[0])
@@ -405,6 +416,18 @@ void generate_terrain_gfx(void) {
 
     while (sCurrentDisplaySPTask != NULL) {
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    }
+
+    //BOTTOM PLANE
+    switch (cmm_lopt_plane) {
+        case 1:
+            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_LAVA].material);
+            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
+        break;
+        case 2:
+            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_TERRAIN].material);
+            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
+        break;
     }
 
     //GROWTH ON TOP OF TILES
@@ -642,6 +665,18 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
 void generate_terrain_collision(void) {
     s16 i;
+    //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
+    switch(cmm_lopt_plane) {
+        case 1:
+            o->collisionData = segmented_to_virtual(floor_lava_collision);
+            load_object_static_model();
+        break;
+        case 2:
+            o->collisionData = segmented_to_virtual(floor_normal_collision);
+            load_object_static_model();
+        break;
+    }
+
 
     for (i=0; i<cmm_tile_count; i++) {
         Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
@@ -715,7 +750,7 @@ void place_tile(u8 x, u8 y, u8 z) {
 }
 
 void place_object(u8 x, u8 y, u8 z) {
-    if (cmm_object_count < 199) {
+    if (cmm_object_count < 200) {
         cmm_object_data[cmm_object_count].x = x;
         cmm_object_data[cmm_object_count].y = y;
         cmm_object_data[cmm_object_count].z = z;
@@ -869,6 +904,7 @@ void save_level(u8 index) {
         cmm_save.lvl[index].option[2] = cmm_lopt_envfx;
         cmm_save.lvl[index].option[3] = cmm_lopt_theme;
         cmm_save.lvl[index].option[4] = cmm_lopt_bg;
+        cmm_save.lvl[index].option[5] = cmm_lopt_plane;
 
         //SAVE
         for (i = 0; i < cmm_tile_count; i++) {
@@ -917,6 +953,7 @@ void load_level(u8 index) {
         cmm_lopt_envfx = cmm_save.lvl[index].option[2];
         cmm_lopt_theme = cmm_save.lvl[index].option[3];
         cmm_lopt_bg = cmm_save.lvl[index].option[4];
+        cmm_lopt_plane = cmm_save.lvl[index].option[5];
         change_theme(cmm_lopt_theme,FALSE);
         load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
@@ -974,6 +1011,7 @@ void sb_loop(void) {
                 break;
                 case CMM_MODE_PLAY:
                     gMarioState->CostumeID = cmm_lopt_costume;
+
 
                     generate_terrain_collision();
                     o->oAction = 2;
@@ -1195,6 +1233,9 @@ void sb_loop(void) {
                     break;
                     case 4: //sky box
                         load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+                    break;
+                    case 5://bottom floor
+                        generate_terrain_gfx();
                     break;
                 }
             }

@@ -156,3 +156,6 @@
 #include "bg/model.inc.c"
 
 #include "sb_cube/model.inc.c"
+#include "floor_normal/collision.inc.c"
+#include "floor_lava/collision.inc.c"
+#include "visualplane/model.inc.c"

@@ -11,6 +11,11 @@
 #define TXT_LS_ENVFX _("Effect:")
 #define TXT_LS_THEME _("Textures:")
 #define TXT_LS_BG _("Skybox:")
+#define TXT_LS_PLANE _("Bottom:")
+
+#define TXT_PLANE_1 _("Bottomless")
+#define TXT_PLANE_2 _("Lava Floor")
+#define TXT_PLANE_3 _("Terrain Floor")
 
 #define TXT_ENVFX_1 _("None")
 #define TXT_ENVFX_2 _("Ashes")
