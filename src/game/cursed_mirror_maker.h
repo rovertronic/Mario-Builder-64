@@ -49,6 +49,7 @@ struct cmm_object_type_struct {
     u8 billboarded:1;
     f32 scale;
     struct Animation **anim;
+    s16 param_max;
 };
 enum {
     OBJECT_TYPE_STAR,
@@ -73,6 +74,7 @@ struct cmm_ui_button_type {
     u8 id;
     u8 isTile:1;
     u8 * str;
+    u8 ** param_strings;
 };
 
 struct cmm_settings_button {

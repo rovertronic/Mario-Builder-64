@@ -24,7 +24,8 @@ enum gTimeStopStateFlags {
 /**
  * The maximum number of objects that can be loaded at once.
  */
-#define OBJECT_POOL_CAPACITY 300
+#define OBJECT_POOL_CAPACITY 420
+//must be 420 because the editor can have 400 objects at once when updating
 
 /**
  * Every object is categorized into an object list, which controls the order

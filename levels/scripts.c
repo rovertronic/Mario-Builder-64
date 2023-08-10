@@ -141,6 +141,9 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_DL(MODEL_LEV, cmm_terrain_gfx, LAYER_OPAQUE),
     LOAD_MODEL_FROM_GEO(MODEL_PODOBOO ,podoboo_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_1,bubbly_tree_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_2,spiky_tree_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_3,palm_tree_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_4,snow_tree_geo),
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN_NO_SHADOW,   silver_coin_no_shadow_geo),

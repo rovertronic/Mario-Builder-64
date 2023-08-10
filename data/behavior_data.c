@@ -3673,6 +3673,7 @@ const BehaviorScript bhvFloorTrapInCastle[] = {
     END_LOOP(),
 };
 
+extern const bhv_tree_init();
 const BehaviorScript bhvTree[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     BILLBOARD(),
@@ -3680,6 +3681,7 @@ const BehaviorScript bhvTree[] = {
     SET_INT(oInteractType, INTERACT_POLE),
     SET_HITBOX(/*Radius*/ 80, /*Height*/ 500),
     SET_INT(oIntangibleTimer, 0),
+    CALL_NATIVE(bhv_tree_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_pole_base_loop),
     END_LOOP(),

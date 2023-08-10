@@ -6078,3 +6078,17 @@ void bhv_postgame_hint() {
 
     o->oInteractStatus = 0;
 }
+
+void bhv_tree_init() {
+    switch(o->oBehParams2ndByte) {
+        case 1:
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
+        break;
+        case 2:
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
+        break;
+        case 3:
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
+        break;
+    }
+}

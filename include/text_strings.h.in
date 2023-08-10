@@ -38,6 +38,20 @@
 #define TXT_BG7 _("Desert Pyramids")
 #define TXT_BG8 _("Hushed Haven")
 
+#define TXT_BP_BOX_1 _("(Rocket Boots)")
+#define TXT_BP_BOX_2 _("(Cosmic Seed)")
+#define TXT_BP_BOX_3 _("(Vanetal Cap)")
+#define TXT_BP_BOX_4 _("(Koopa Shell)")
+#define TXT_BP_BOX_5 _("(Green Coin)")
+#define TXT_BP_BOX_6 _("(3 Coins)")
+#define TXT_BP_BOX_7 _("(10 Coins)")
+#define TXT_BP_BOX_8 _("(Invisible)")
+
+#define TXT_BP_TREE_1 _("(Bubbly)")
+#define TXT_BP_TREE_2 _("(Farm)")
+#define TXT_BP_TREE_3 _("(Palm)")
+#define TXT_BP_TREE_4 _("(Snowy)")
+
 #define TXT_BTN_1 _("Save Level")
 #define TXT_BTN_2 _("Level Settings")
 #define TXT_BTN_3 _("Test")

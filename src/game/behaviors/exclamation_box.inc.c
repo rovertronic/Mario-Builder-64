@@ -28,6 +28,7 @@ struct ExclamationBoxContents sExclamationBoxContents[] = {
     { EXCLAMATION_BOX_BP_COINS_1,          0, 0, 0xEF,                   bhvGreenGetsSpawned      },
     { EXCLAMATION_BOX_BP_COINS_3,          0, 0, MODEL_NONE,             bhvThreeCoinsSpawn       },
     { EXCLAMATION_BOX_BP_COINS_10,         0, 0, MODEL_NONE,             bhvTenCoinsSpawn         },
+    { EXCLAMATION_BOX_BP_NULL,             0, 0, MODEL_NONE,             NULL                     },
     { EXCLAMATION_BOX_BP_1UP_WALKING,      0, 0, MODEL_1UP,              bhv1upWalking            },
     { EXCLAMATION_BOX_BP_STAR_1,           0, 0, MODEL_STAR,             bhvSpawnedStar           },
     { EXCLAMATION_BOX_BP_1UP_RUNNING_AWAY, 0, 0, MODEL_1UP,              bhv1upRunningAway        },
@@ -35,8 +36,7 @@ struct ExclamationBoxContents sExclamationBoxContents[] = {
     { EXCLAMATION_BOX_BP_STAR_3,           0, 2, MODEL_STAR,             bhvSpawnedStar           },
     { EXCLAMATION_BOX_BP_STAR_4,           0, 3, MODEL_STAR,             bhvSpawnedStar           },
     { EXCLAMATION_BOX_BP_STAR_5,           0, 4, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_STAR_6,           0, 5, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_NULL,             0, 0, MODEL_NONE,             NULL                     }
+    { EXCLAMATION_BOX_BP_STAR_6,           0, 5, MODEL_STAR,             bhvSpawnedStar           }
 };
 
 void bhv_rotating_exclamation_mark_loop(void) {
