@@ -62,5 +62,6 @@ extern const LevelScript level_main_menu_entry_act_select[];
 #include "levels/menu/mptng/header.h"
 
 #include "levels/menu/pl_scard/header.h"
+#include "levels/menu/rovert_logo/header.h"
 
 #endif
