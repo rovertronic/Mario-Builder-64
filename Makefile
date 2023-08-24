@@ -87,7 +87,7 @@ endif
 
 DEBUG_MAP_STACKTRACE_FLAG := -D DEBUG_MAP_STACKTRACE
 
-TARGET := cmm
+TARGET := mb64
 
 
 # GRUCODE - selects which RSP microcode to use.
@@ -222,7 +222,7 @@ ifeq ($(NON_MATCHING),1)
 endif
 
 
-TARGET_STRING := cmm
+TARGET_STRING := mb64
 
 # UNF - whether to use UNFLoader flashcart library
 #   1 - includes code in ROM

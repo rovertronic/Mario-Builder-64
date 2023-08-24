@@ -3,7 +3,7 @@
 
 #include "text_menu_strings.h"
 
-#define TEXT_VERSION _("CMM ALPHA")
+#define TEXT_VERSION _("MB64 ALPHA")
 
 //maker text
 #define TXT_LS_COSTUME _("Costume:")
