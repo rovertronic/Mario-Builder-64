@@ -449,6 +449,9 @@ void generate_terrain_gfx(void) {
         break;
         case 2:
             gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_TERRAIN].material);
+            if (cmm_lopt_theme == CMM_THEME_GENERIC) {
+                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
+            }
             gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
         break;
     }
@@ -920,7 +923,6 @@ void save_level(u8 index) {
         //bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
         //bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
 
-        cmm_save.version = CMM_VERSION;
         cmm_save.lvl[index].tile_count = cmm_tile_count;
         cmm_save.lvl[index].object_count = cmm_object_count;
 
@@ -966,8 +968,9 @@ void load_level(u8 index) {
         nuPiReadSram(0,&cmm_save, sizeof(cmm_save));
         release_rumble_pak_control();
 
-        if (cmm_save.version != CMM_VERSION) {
-            return;
+        if (cmm_save.check != SAVE_CHECKSUM) {
+            bzero(&cmm_save, sizeof(cmm_save));
+            cmm_save.check = SAVE_CHECKSUM;
         }
 
         cmm_tile_count = cmm_save.lvl[index].tile_count;

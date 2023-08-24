@@ -1,5 +1,8 @@
 #ifndef cursed_mirror_maker_h
 #define cursed_mirror_maker_h
+
+#define SAVE_CHECK 0x020EDD10 // My favorite ROM address! (Refer to: Chips Challenge 64, BUP 64, Shrek Retold 64)
+
 void sb_loop(void);
 void cmm_init();
 void draw_cmm_menu(void);
@@ -155,7 +158,7 @@ struct cmm_level_save {
 
 ALIGNED8 struct cmm_hack_save {
     struct cmm_level_save lvl[4];
-    u8 version;
+    u32 check;
 };
 
 #endif
