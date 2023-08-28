@@ -130,6 +130,7 @@ u16 cmm_object_count = 0;
 Gfx * cmm_mat_pointer = NULL;
 
 struct Object *cmm_preview_object;
+struct Object *cmm_boundary_object[6]; //one for each side
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -622,6 +623,10 @@ void generate_terrain_gfx(void) {
             if ((cmm_target_mode == CMM_MODE_PLAY)&&(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
                 continue;
             }
+            //models will inherit the grass texture if after terrain
+            if (cmm_tile_data[i-1].type == TILE_TYPE_TERRAIN) {
+                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
+            }
 
             //has a model, so just print model
             guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
@@ -968,9 +973,10 @@ void load_level(u8 index) {
         nuPiReadSram(0,&cmm_save, sizeof(cmm_save));
         release_rumble_pak_control();
 
-        if (cmm_save.check != SAVE_CHECKSUM) {
+        if (cmm_save.check != SAVE_CHECK) {
             bzero(&cmm_save, sizeof(cmm_save));
-            cmm_save.check = SAVE_CHECKSUM;
+            cmm_save.check = SAVE_CHECK;
+            return;
         }
 
         cmm_tile_count = cmm_save.lvl[index].tile_count;
@@ -1036,6 +1042,15 @@ void sb_loop(void) {
                     generate_object_preview();
                     generate_terrain_gfx();
                     cmm_preview_object = spawn_object(o,MODEL_NONE,bhvPreviewObject);
+
+                    //init visual tile bounds
+                    for (u8 i=0; i<6; i++) {
+                        cmm_boundary_object[i] = spawn_object(o,MODEL_MAKER_BOUNDARY,bhvPreviewObject);
+                    }
+                    cmm_boundary_object[2]->oFaceAngleRoll = -0x4000;
+                    cmm_boundary_object[3]->oFaceAngleRoll = -0x4000;
+                    cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
+                    cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
                 break;
                 case CMM_MODE_PLAY:
                     gMarioState->CostumeID = cmm_lopt_costume;
@@ -1167,6 +1182,17 @@ void sb_loop(void) {
             o->oPosX = cmm_sbx*300.0f; 
             o->oPosY = cmm_sby*300.0f; 
             o->oPosZ = cmm_sbz*300.0f; 
+
+            for (u8 i=0; i<6; i++) {
+                vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
+            }
+            cmm_boundary_object[0]->oPosY = 0.0f;
+            cmm_boundary_object[1]->oPosY = 300.0f*32.0f;
+            cmm_boundary_object[2]->oPosX = 0.0f;
+            cmm_boundary_object[3]->oPosX = 300.0f*32.0f;
+            cmm_boundary_object[4]->oPosZ = 0.0f;
+            cmm_boundary_object[5]->oPosZ = 300.0f*32.0f;
+
             if (cmm_place_mode == CMM_PM_OBJ) {
                 vec3f_copy(&cmm_preview_object->oPosX,&o->oPosX);
                 cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset;

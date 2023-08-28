@@ -606,4 +606,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "visualplane/header.h"
 
+#include "lev_edge/geo_header.h"
+
 #endif
