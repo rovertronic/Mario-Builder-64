@@ -71,6 +71,7 @@ enum {
     OBJECT_TYPE_BOMB,
     OBJECT_TYPE_TREE,
     OBJECT_TYPE_EXCLA,
+    OBJECT_TYPE_CHUCKYA,
 };
 
 struct cmm_ui_button_type {
@@ -134,6 +135,7 @@ enum {
     CMM_BUTTON_TREE,
     CMM_BUTTON_EXCLA,
     CMM_BUTTON_DSLOPE,
+    CMM_BUTTON_CHUCKYA,
 };
 
 enum {

@@ -566,18 +566,7 @@ Gfx sb_cube_SelectionBox_mesh_layer_4_tri_0[] = {
 	gsSPEndDisplayList(),
 };
 
-Vtx sb_cube_SelectionBox_mesh_layer_1_vtx_cull[8] = {
-	{{{-629, -150, 629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{-629, 150, 629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{-629, 150, -629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{-629, -150, -629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{629, -150, 629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{629, 150, 629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{629, 150, -629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-	{{{629, -150, -629},0, {-16, -16},{0x0, 0x0, 0x0, 0x0}}},
-};
-
-Vtx sb_cube_SelectionBox_mesh_layer_1_vtx_0[48] = {
+Vtx sb_cube_SelectionBox_mesh_layer_4_vtx_1[48] = {
 	{{{-135, 150, 135},0, {867, 253},{0x0, 0x7F, 0x0, 0xFF}}},
 	{{{-135, 150, -135},0, {867, 483},{0x0, 0x7F, 0x0, 0xFF}}},
 	{{{-150, 150, -150},0, {880, 496},{0x0, 0x7F, 0x0, 0xFF}}},
@@ -628,8 +617,8 @@ Vtx sb_cube_SelectionBox_mesh_layer_1_vtx_0[48] = {
 	{{{150, 150, -150},0, {624, 496},{0x7F, 0x0, 0x0, 0xFF}}},
 };
 
-Gfx sb_cube_SelectionBox_mesh_layer_1_tri_0[] = {
-	gsSPVertex(sb_cube_SelectionBox_mesh_layer_1_vtx_0 + 0, 32, 0),
+Gfx sb_cube_SelectionBox_mesh_layer_4_tri_1[] = {
+	gsSPVertex(sb_cube_SelectionBox_mesh_layer_4_vtx_1 + 0, 32, 0),
 	gsSP2Triangles(0, 1, 2, 0, 1, 3, 2, 0),
 	gsSP2Triangles(1, 4, 3, 0, 4, 5, 3, 0),
 	gsSP2Triangles(4, 6, 5, 0, 6, 7, 5, 0),
@@ -646,7 +635,7 @@ Gfx sb_cube_SelectionBox_mesh_layer_1_tri_0[] = {
 	gsSP2Triangles(25, 28, 27, 0, 28, 29, 27, 0),
 	gsSP2Triangles(28, 30, 29, 0, 30, 31, 29, 0),
 	gsSP2Triangles(30, 24, 31, 0, 24, 26, 31, 0),
-	gsSPVertex(sb_cube_SelectionBox_mesh_layer_1_vtx_0 + 32, 16, 0),
+	gsSPVertex(sb_cube_SelectionBox_mesh_layer_4_vtx_1 + 32, 16, 0),
 	gsSP2Triangles(0, 1, 2, 0, 1, 3, 2, 0),
 	gsSP2Triangles(1, 4, 3, 0, 4, 5, 3, 0),
 	gsSP2Triangles(4, 6, 5, 0, 6, 7, 5, 0),
@@ -682,7 +671,7 @@ Gfx mat_revert_sb_cube_grid[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_sb_cube_ZBUFF0_layer1[] = {
+Gfx mat_sb_cube_ZBUFF0_layer4[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1),
 	gsSPGeometryMode(G_ZBUFFER | G_CULL_BACK, 0),
@@ -691,10 +680,10 @@ Gfx mat_sb_cube_ZBUFF0_layer1[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_sb_cube_ZBUFF0_layer1[] = {
+Gfx mat_revert_sb_cube_ZBUFF0_layer4[] = {
 	gsDPPipeSync(),
 	gsSPGeometryMode(0, G_ZBUFFER | G_CULL_BACK),
-	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
+	gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
 	gsSPEndDisplayList(),
 };
 
@@ -706,17 +695,9 @@ Gfx sb_cube_SelectionBox_mesh_layer_4[] = {
 	gsSPDisplayList(mat_sb_cube_grid),
 	gsSPDisplayList(sb_cube_SelectionBox_mesh_layer_4_tri_0),
 	gsSPDisplayList(mat_revert_sb_cube_grid),
-	gsSPEndDisplayList(),
-};
-
-Gfx sb_cube_SelectionBox_mesh_layer_1[] = {
-	gsSPClearGeometryMode(G_LIGHTING),
-	gsSPVertex(sb_cube_SelectionBox_mesh_layer_1_vtx_cull + 0, 8, 0),
-	gsSPSetGeometryMode(G_LIGHTING),
-	gsSPCullDisplayList(0, 7),
-	gsSPDisplayList(mat_sb_cube_ZBUFF0_layer1),
-	gsSPDisplayList(sb_cube_SelectionBox_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_sb_cube_ZBUFF0_layer1),
+	gsSPDisplayList(mat_sb_cube_ZBUFF0_layer4),
+	gsSPDisplayList(sb_cube_SelectionBox_mesh_layer_4_tri_1),
+	gsSPDisplayList(mat_revert_sb_cube_ZBUFF0_layer4),
 	gsSPEndDisplayList(),
 };
 
