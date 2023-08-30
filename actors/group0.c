@@ -160,3 +160,5 @@
 #include "floor_lava/collision.inc.c"
 #include "visualplane/model.inc.c"
 #include "lev_edge/model.inc.c"
+#include "dslope/collision.inc.c"
+#include "dslope/model.inc.c"

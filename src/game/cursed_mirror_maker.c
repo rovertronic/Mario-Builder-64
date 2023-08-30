@@ -89,6 +89,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {NULL                 , &mat_maker_MakerPassthru, NULL                       , FALSE},//TILE_TYPE_TROLL
     {&cull_cull_mesh      , &mat_maker_MakerPassthru, NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL                 , &mat_maker_MakerCloud   , cube_collision_collision   , FALSE},//TILE_TYPE_SNOW
+    {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE},//TILE_TYPE_DSLOPE
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
@@ -255,7 +256,7 @@ s8 cmm_toolbox_index = 0;
 //9x5 = 45 assets
 u8 cmm_toolbox[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
@@ -272,6 +273,7 @@ u8 txt_btn_11[] = {TXT_BTN_11};u8 txt_btn_12[] = {TXT_BTN_12};u8 txt_btn_13[] = 
 u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = {TXT_BTN_18};u8 txt_btn_19[] = {TXT_BTN_19};u8 txt_btn_20[] = {TXT_BTN_20};
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
+u8 txt_btn_31[] = {TXT_BTN_31};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID      //PLACE MODE //TXT POINTER   //PARAM STR
@@ -305,6 +307,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_bobomb   , OBJECT_TYPE_BOMB  ,CMM_PM_OBJ  , &txt_btn_28   , NULL         }, //CMM_BUTTON_BOMB
     {&mat_b_btn_tree     , OBJECT_TYPE_TREE  ,CMM_PM_OBJ  , &txt_btn_29   , txt_bp_tree  }, //CMM_BUTTON_TREE
     {&mat_b_btn_excla    , OBJECT_TYPE_EXCLA ,CMM_PM_OBJ  , &txt_btn_30   , txt_bp_box   }, //CMM_BUTTON_EXCLA
+    {&mat_b_btn_downslope, TILE_TYPE_DSLOPE  ,CMM_PM_TILE , &txt_btn_31   , NULL         }, //CMM_BUTTON_DSLOPE
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};

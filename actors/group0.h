@@ -608,4 +608,8 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "lev_edge/geo_header.h"
 
+#include "dslope/collision_header.h"
+
+#include "dslope/header.h"
+
 #endif

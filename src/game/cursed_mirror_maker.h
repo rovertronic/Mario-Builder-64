@@ -40,6 +40,7 @@ enum {
     TILE_TYPE_TROLL,
     TILE_TYPE_CULL,
     TILE_TYPE_SNOW,
+    TILE_TYPE_DSLOPE,
 };
 
 struct cmm_obj {
@@ -132,6 +133,7 @@ enum {
     CMM_BUTTON_BOMB,
     CMM_BUTTON_TREE,
     CMM_BUTTON_EXCLA,
+    CMM_BUTTON_DSLOPE,
 };
 
 enum {

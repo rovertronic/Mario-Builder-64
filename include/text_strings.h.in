@@ -83,6 +83,7 @@
 #define TXT_BTN_28 _("Bobomb")
 #define TXT_BTN_29 _("Tree")
 #define TXT_BTN_30 _("Item Block")
+#define TXT_BTN_31 _("Flipped Slope")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
