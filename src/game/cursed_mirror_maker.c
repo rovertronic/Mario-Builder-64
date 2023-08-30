@@ -176,12 +176,13 @@ u8 cmm_envfx_table[] = {
 
 //theme strings
 u8 txt_theme_1[] = {TXT_THEME_1};u8 txt_theme_2[] = {TXT_THEME_2};u8 txt_theme_3[] = {TXT_THEME_3};
-u8 txt_theme_4[] = {TXT_THEME_4};
+u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};
 u8 *cmm_theme_string_table[] = {
     &txt_theme_1,
     &txt_theme_2,
     &txt_theme_3,
     &txt_theme_4,
+    &txt_theme_5,
 };
 
 //background strings
@@ -317,7 +318,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
     {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 19},
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
-    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 4},
+    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 5},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
     {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
 };
@@ -370,6 +371,17 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerRetroBlock;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerRetroCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerRetroLava;
+        break;
+        case CMM_THEME_CASTLE:
+            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
+            grass_top_material = &mat_maker_MakerCTile;
+            grass_side_material = NULL;
+            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerCDirt;
+            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerCBrick;
+            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerCStone;
+            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCWood;
+            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
+            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
         break;
     }
 }
@@ -486,47 +498,47 @@ void generate_terrain_gfx(void) {
             if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y+1,cmm_tile_data[i].z)) {
                 //z+
                 if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z+1)) {
-                    guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
-                    mtx_index++;
-                    guRotate(&cmm_terrain_mtx[mtx_index],0.0f,0.0f,1.0f,0.0f);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                    gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &grasstop_grasstop_mesh);
-                    gSPPopMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], G_MTX_MODELVIEW);
-                    mtx_index++;
+                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x0, 0x7F, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x0, 0x7F, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), 1008, -16, 0x0, 0x0, 0x7F, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x0, 0x0, 0x7F, 0xFF);
+
+                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
+                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 1, 2, 0, 0, 2, 3, 0);
+                    vtx_index+=4;
                 }
                 //z-
                 if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z-1)) {
-                    guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
-                    mtx_index++;
-                    guRotate(&cmm_terrain_mtx[mtx_index],180.0f,0.0f,1.0f,0.0f);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                    gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &grasstop_grasstop_mesh);
-                    gSPPopMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], G_MTX_MODELVIEW);
-                    mtx_index++;
+                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), -16, 1008, 0x0, 0x0, 0x80, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x0, 0x0, 0x80, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x0, 0x80, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x0, 0x80, 0xFF);
+
+                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
+                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 2, 1, 0, 0, 3, 2, 0);
+                    vtx_index+=4;
                 }
                 //x+
                 if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x+1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                    guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
-                    mtx_index++;
-                    guRotate(&cmm_terrain_mtx[mtx_index],90.0f,0.0f,1.0f,0.0f);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                    gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &grasstop_grasstop_mesh);
-                    gSPPopMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], G_MTX_MODELVIEW);
-                    mtx_index++;
+                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x7F, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x7F, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x7F, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x7F, 0x0, 0x0, 0xFF);
+
+                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
+                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 1, 2, 0, 0, 2, 3, 0);
+                    vtx_index+=4;
                 }
                 //x-
                 if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x-1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                    guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
-                    mtx_index++;
-                    guRotate(&cmm_terrain_mtx[mtx_index],-90.0f,0.0f,1.0f,0.0f);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                    gSPMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                    gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &grasstop_grasstop_mesh);
-                    gSPPopMatrix(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], G_MTX_MODELVIEW);
-                    mtx_index++;
+                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x80, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x80, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x80, 0x0, 0x0, 0xFF);
+                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x80, 0x0, 0x0, 0xFF);
+
+                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
+                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 2, 1, 0, 0, 3, 2, 0);
+                    vtx_index+=4;
                 }
             }
         }

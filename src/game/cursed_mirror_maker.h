@@ -144,6 +144,7 @@ enum {
     CMM_THEME_VIRTUAPLEX,
     CMM_THEME_RED_HOT_RESERVOIR,
     CMM_THEME_RETRO,
+    CMM_THEME_CASTLE,
 };
 
 struct cmm_level_save {
