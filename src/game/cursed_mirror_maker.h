@@ -4,6 +4,7 @@
 #define SAVE_CHECK 0x020EDD10 // My favorite ROM address! (Refer to: Chips Challenge 64, BUP 64, Shrek Retold 64)
 
 void sb_loop(void);
+void sb_init(void);
 void cmm_init();
 void draw_cmm_menu(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
@@ -72,6 +73,7 @@ enum {
     OBJECT_TYPE_TREE,
     OBJECT_TYPE_EXCLA,
     OBJECT_TYPE_CHUCKYA,
+    OBJECT_TYPE_SPAWN,
 };
 
 struct cmm_ui_button_type {
@@ -136,6 +138,7 @@ enum {
     CMM_BUTTON_EXCLA,
     CMM_BUTTON_DSLOPE,
     CMM_BUTTON_CHUCKYA,
+    CMM_BUTTON_SPAWN,
 };
 
 enum {

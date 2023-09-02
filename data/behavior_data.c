@@ -9269,9 +9269,19 @@ const BehaviorScript bhvSB[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_COLLISION_DATA(cube_collision_collision),
+    CALL_NATIVE(sb_init),
     BEGIN_LOOP(),
         CALL_NATIVE(sb_loop),
     END_LOOP(),
+};
+
+const BehaviorScript bhvSpawn[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_COLLISION_DATA(cube_collision_collision),
+    CALL_NATIVE(load_object_static_model),
+    SET_FLOAT(oDrawingDistance, 30000),
+    BREAK(),
 };
 
 const BehaviorScript bhvTvshop[] = {

@@ -85,6 +85,7 @@
 #define TXT_BTN_30 _("Item Block")
 #define TXT_BTN_31 _("Flipped Slope")
 #define TXT_BTN_32 _("Chuckya")
+#define TXT_BTN_33 _("Spawn Location")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

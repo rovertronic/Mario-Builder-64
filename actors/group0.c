@@ -162,3 +162,5 @@
 #include "lev_edge/model.inc.c"
 #include "dslope/collision.inc.c"
 #include "dslope/model.inc.c"
+#include "spawn/collision.inc.c"
+#include "spawn/model.inc.c"

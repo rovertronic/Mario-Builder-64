@@ -47,3 +47,4 @@
 #include "crowbar2/geo.inc.c"
 #include "sb_cube/geo.inc.c"
 #include "lev_edge/geo.inc.c"
+#include "spawn/geo.inc.c"
