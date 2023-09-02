@@ -604,9 +604,9 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     }
 
     //reload level if changing mode
-    //if (cmm_mode != cmm_target_mode) {
+    if (cmm_mode != cmm_target_mode) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
-        //}
+        }
 
     sWarpDest.levelNum = destLevel;
     sWarpDest.areaIdx = destArea;
@@ -1084,11 +1084,11 @@ s32 play_mode_paused(void) {
     } else { // MENU_OPT_EXIT_COURSE
 
         //normal pause exit
+        cmm_target_mode = CMM_MODE_MAKE;
         initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
         fade_into_special_warp(WARP_SPECIAL_NONE, 0);
         gSavedCourseNum = COURSE_NONE;
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
-        cmm_target_mode = CMM_MODE_MAKE;
     }
 
     return FALSE;
