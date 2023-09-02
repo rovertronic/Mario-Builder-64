@@ -74,6 +74,7 @@ enum {
     OBJECT_TYPE_EXCLA,
     OBJECT_TYPE_CHUCKYA,
     OBJECT_TYPE_SPAWN,
+    OBJECT_TYPE_PHNTSM,
 };
 
 struct cmm_ui_button_type {
@@ -139,6 +140,7 @@ enum {
     CMM_BUTTON_DSLOPE,
     CMM_BUTTON_CHUCKYA,
     CMM_BUTTON_SPAWN,
+    CMM_BUTTON_PHANTASM,
 };
 
 enum {

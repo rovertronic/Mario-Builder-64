@@ -86,6 +86,7 @@
 #define TXT_BTN_31 _("Flipped Slope")
 #define TXT_BTN_32 _("Chuckya")
 #define TXT_BTN_33 _("Spawn Location")
+#define TXT_BTN_34 _("C.Phantasm")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
