@@ -1029,13 +1029,15 @@ void load_level(u8 index) {
 
         for (i = 0; i < cmm_tile_count; i++) {
             bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
-            place_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+            if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+                place_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+            }
             place_terrain_data(cmm_occupy_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
         }
 
         for (i = 0; i < cmm_object_count; i++) {
             bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
-            place_terrain_data(cmm_occupy_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+            place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
         }
 
         update_painting();
