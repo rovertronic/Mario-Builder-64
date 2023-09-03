@@ -7,6 +7,7 @@ void sb_loop(void);
 void sb_init(void);
 void cmm_init();
 void draw_cmm_menu(void);
+void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 extern Gfx cmm_terrain_gfx[10000];
 extern Gfx cmm_terrain_gfx_tdecal[10000];
@@ -75,6 +76,7 @@ enum {
     OBJECT_TYPE_CHUCKYA,
     OBJECT_TYPE_SPAWN,
     OBJECT_TYPE_PHNTSM,
+    OBJECT_TYPE_PIPE,
 };
 
 struct cmm_ui_button_type {
@@ -141,6 +143,7 @@ enum {
     CMM_BUTTON_CHUCKYA,
     CMM_BUTTON_SPAWN,
     CMM_BUTTON_PHANTASM,
+    CMM_BUTTON_PIPE,
 };
 
 enum {

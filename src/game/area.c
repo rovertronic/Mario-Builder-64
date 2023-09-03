@@ -276,6 +276,12 @@ void load_area(s32 index) {
             spawn_objects_from_info(0, gCurrentArea->objectSpawnInfos);
         }
 
+        if (cmm_target_mode == CMM_MODE_PLAY) {
+            //load_mario_area();
+            //generate_objects_to_level();
+            //unload_mario_area();
+        }
+
         load_obj_warp_nodes();
 #ifndef DISABLE_GRAPH_NODE_TYPE_FUNCTIONAL
         geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_LOAD);

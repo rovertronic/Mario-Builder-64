@@ -113,6 +113,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA         ,FALSE  ,2.0f   ,chuckya_seg8_anims_0800C070  , 0      },
     {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0      },
     {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0      },
+    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 3      },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -233,6 +234,13 @@ u8 *txt_bp_tree[] = {
     txt_bp_tree4
 };
 
+u8 txt_bp_pipe1[] = {TXT_BP_PIPE_1};u8 txt_bp_pipe2[] = {TXT_BP_PIPE_2};
+u8 *txt_pipe[] = {
+    txt_bp_pipe1,
+    txt_bp_pipe2,
+    txt_bp_pipe1,
+};
+
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
 u8 cmm_lopt_seq = 0;
@@ -262,7 +270,7 @@ u8 cmm_toolbox[45] = {
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_SPAWN,
+    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_SPAWN,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -276,7 +284,7 @@ u8 txt_btn_11[] = {TXT_BTN_11};u8 txt_btn_12[] = {TXT_BTN_12};u8 txt_btn_13[] = 
 u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = {TXT_BTN_18};u8 txt_btn_19[] = {TXT_BTN_19};u8 txt_btn_20[] = {TXT_BTN_20};
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
-u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};
+u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
@@ -314,6 +322,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_chuckya  , OBJECT_TYPE_CHUCKYA,CMM_PM_OBJ  , &txt_btn_32   , NULL         }, //CMM_BUTTON_CHUCKYA
     {&mat_b_btn_spawn    , OBJECT_TYPE_SPAWN  ,CMM_PM_OBJ  , &txt_btn_33   , NULL         }, //CMM_BUTTON_SPAWN
     {&mat_b_btn_phantasm , OBJECT_TYPE_PHNTSM ,CMM_PM_OBJ  , &txt_btn_34   , NULL         }, //CMM_BUTTON_PHANTASM
+    {&mat_b_btn_pipe     , OBJECT_TYPE_PIPE   ,CMM_PM_OBJ  , &txt_btn_35   , txt_pipe     }, //CMM_BUTTON_PIPE
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -780,13 +789,19 @@ void generate_objects_to_level(void) {
     struct Object *obj;
     u8 i;
     for(i=0;i<cmm_object_count;i++){
+        //obj = create_object(cmm_object_types[cmm_object_data[i].type].behavior);
+        //obj->behavior = cmm_object_types[cmm_object_data[i].type].behavior;
+        //obj->header.gfx.sharedChild = gLoadedGraphNodes[cmm_object_types[cmm_object_data[i].type].model_id];
+
         obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
+
         obj->oPosX = cmm_object_data[i].x*300.0f;
         obj->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
         obj->oPosZ = cmm_object_data[i].z*300.0f;
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
+        obj->oBehParams = o->oBehParams2ndByte << 16;
     }
 }
 
@@ -911,11 +926,12 @@ void delete_tile_action(void) {
                 }
             }
             if (mode==1) {
-                cmm_object_data[i].x    = cmm_object_data[i+1].x;
-                cmm_object_data[i].y    = cmm_object_data[i+1].y;
-                cmm_object_data[i].z    = cmm_object_data[i+1].z;
-                cmm_object_data[i].type = cmm_object_data[i+1].type;
-                cmm_object_data[i].rot  = cmm_object_data[i+1].rot;
+                cmm_object_data[i].x     = cmm_object_data[i+1].x;
+                cmm_object_data[i].y     = cmm_object_data[i+1].y;
+                cmm_object_data[i].z     = cmm_object_data[i+1].z;
+                cmm_object_data[i].type  = cmm_object_data[i+1].type;
+                cmm_object_data[i].rot   = cmm_object_data[i+1].rot;
+                cmm_object_data[i].param = cmm_object_data[i+1].param;
             }
         }
         generate_object_preview();
@@ -1062,11 +1078,18 @@ void sb_init(void) {
         case CMM_MODE_PLAY:
             generate_terrain_collision();
             generate_objects_to_level();
+            load_obj_warp_nodes();
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
                 vec3f_copy(&gMarioState->pos,&spawn_obj->oPosVec);
                 gMarioState->pos[1] += 150.0f;
+
+                struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
+                if (warpobj) {
+                    vec3f_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
+                    warpobj->oPosY += 150.0f;
+                }
             }
 
             gMarioState->CostumeID = cmm_lopt_costume;
