@@ -32,38 +32,58 @@
 #include "rovent.h"
 #include "level_update.h"
 #include "hud.h"
+#include "rendering_graph_node.h"
 
 u8 letgo = FALSE;
 
 f32 _spread;
 
-u32 bicon_table[] = {
-    &b0_Plane_001_mesh,
-    &b1_Plane_001_mesh,
-    &b2_Plane_001_mesh,
-    &b3_Plane_001_mesh,
-    &b4_Plane_001_mesh,
-    &b5_Plane_001_mesh,
-    &b6_Plane_001_mesh,
-    &b7_Plane_001_mesh,
-    &b8_Plane_001_mesh,
-    &b9_Plane_001_mesh,
-    &b10_Plane_001_mesh,
-    &b11_Plane_001_mesh,
-
-    &b12_Plane_mesh,
-    &b13_Plane_mesh,
-    &b14_Plane_mesh,
-    &b15_Plane_mesh,
-    &b16_Plane_mesh,
-    &b17_Plane_mesh,
-    &b18_Plane_mesh,
-    &b19_Plane_mesh,
-    &b20_Plane_mesh,
-    &b21_Plane_mesh,
-    &b22_Plane_mesh,
-    &b23_Plane_mesh
+Gfx *bicon_table[] = {
+    b0_Plane_001_mesh,
+    b1_Plane_001_mesh,
+    b2_Plane_001_mesh,
+    b3_Plane_001_mesh,
+    b4_Plane_001_mesh,
+    b5_Plane_001_mesh,
+    b6_Plane_001_mesh,
+    b7_Plane_001_mesh,
+    b8_Plane_001_mesh,
+    b9_Plane_001_mesh,
+    b10_Plane_001_mesh,
+    b11_Plane_001_mesh,
+    b12_Plane_mesh,
+    b13_Plane_mesh,
+    b14_Plane_mesh,
+    b15_Plane_mesh,
+    b16_Plane_mesh,
+    b17_Plane_mesh,
+    b18_Plane_mesh,
+    b19_Plane_mesh,
+    b20_Plane_mesh,
+    b21_Plane_mesh,
+    b22_Plane_mesh,
+    b23_Plane_mesh
 };
+
+Gfx *geo_badge_material(s32 callContext, struct GraphNode *node, void *context) {
+    Gfx *dlStart, *dlHead;
+    struct Object *obj;
+    struct GraphNodeGenerated *currentGraphNode;
+
+    currentGraphNode = node;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        obj = (struct Object *) gCurGraphNodeObject;
+        currentGraphNode->fnNode.node.flags = (currentGraphNode->fnNode.node.flags & 0xFF) | (LAYER_ALPHA << 8);
+
+        dlHead = alloc_display_list(sizeof(Gfx) * (2));
+        dlStart = dlHead;
+
+        gSPDisplayList(dlHead++,bicon_table[obj->oBehParams2ndByte]);
+        gSPEndDisplayList(dlHead++);
+    }
+    return dlStart;
+}
 
 
 u8 number_text[15];
@@ -2348,6 +2368,7 @@ void build_tabs(void) {
     //MAGIC TAB SCRAPPED
     */
 
+    /*
     if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
         //course
         if (gMarioState->nearVendor > 0) {
@@ -2367,6 +2388,10 @@ void build_tabs(void) {
         if (save_file_check_progression(PROG_POSTPOST_GAME)) {
             add_tab(5);//cheats
         }
+    }  BTCM OG */
+
+    if (save_file_get_badge_equip() != 0) {
+        add_tab(1); //only show badge tab when having badges
     }
 
     add_tab(3);
@@ -2557,11 +2582,10 @@ s32 render_pause_courses_and_castle(void) {
             if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
                 letgo = FALSE;
                 }
-
+    
+            /*
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 if (save_file_get_badge_unlock() & (1<<gMarioState->numBadgeSelect)) {
-
-
                     if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
                         save_file_set_badge_unequip( (1<<gMarioState->numBadgeSelect) );
                         play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
@@ -2594,9 +2618,8 @@ s32 render_pause_courses_and_castle(void) {
                     {
                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                     }
-                }
+            }
 
-            /*
             if (gPlayer1Controller->buttonPressed == Z_TRIG) {
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 save_file_set_badge_unlock( (1<<gMarioState->numBadgeSelect) );
@@ -2608,27 +2631,27 @@ s32 render_pause_courses_and_castle(void) {
             //MysteryBadge_Plane_001_mesh
 
             //print badge capacity
-            print_text_fmt_int2(90, 30, "BP %dQ%d", gMarioState->numEquippedBadges, gMarioState->numMaxBP);
+            //print_text_fmt_int2(90, 30, "BP %dQ%d", gMarioState->numEquippedBadges, gMarioState->numMaxBP);
 
             for (i=0;i<24;i++) {
                 soffset = -40;
                 if (i == gMarioState->numBadgeSelect) {
                     soffset = -40+(sine*4.0f);
-                    }
+                }
 
-                if (save_file_get_badge_unlock() & (1<<i)) {
+                if (save_file_get_badge_equip() & (1<<i)) {
                     display_icon(bicon_table[i], badge_location_x, badge_location_y );
                     }else{
                     display_icon(&MysteryBadge_Plane_001_mesh, badge_location_x, badge_location_y);
                     }
-                if ((save_file_get_badge_equip() & (1<<i))) {
-                    display_icon(&bE_Plane_001_mesh, badge_location_x, badge_location_y);
-                    }
+                //if ((save_file_get_badge_equip() & (1<<i))) {
+                //    display_icon(&bE_Plane_001_mesh, badge_location_x, badge_location_y);
+                //    }
             }
 
 
             //print badge info if badge is unlocked
-            if (save_file_get_badge_unlock() & (1<<gMarioState->numBadgeSelect)) {
+            if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
                 print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f)-1, 125-1-btxoff, badgenames[gMarioState->numBadgeSelect]);
@@ -2638,7 +2661,7 @@ s32 render_pause_courses_and_castle(void) {
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
                 print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f), 108-btxoff, badgedescs[gMarioState->numBadgeSelect]);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                }
+            }
         break;
         case 2://upgradestation
             shade_screen();

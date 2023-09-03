@@ -114,7 +114,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0      },
     {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0      },
     {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 3      },
-    {bhvBadge            ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 23     },
+    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f  ,NULL                         , 23     },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)

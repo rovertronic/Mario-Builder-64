@@ -147,6 +147,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOUNDARY, lev_edge_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPAWN, spawn_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_PIPE, warp_pipe_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BADGE, badge_geo),
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN_NO_SHADOW,   silver_coin_no_shadow_geo),

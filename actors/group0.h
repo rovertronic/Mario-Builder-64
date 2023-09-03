@@ -616,4 +616,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "spawn/geo_header.h"
 
+#include "badge/geo_header.h"
+
 #endif

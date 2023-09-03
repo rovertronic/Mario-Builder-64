@@ -164,3 +164,4 @@
 #include "dslope/model.inc.c"
 #include "spawn/collision.inc.c"
 #include "spawn/model.inc.c"
+#include "badge/model.inc.c"
