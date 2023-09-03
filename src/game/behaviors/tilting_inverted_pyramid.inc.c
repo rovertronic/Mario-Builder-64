@@ -6093,19 +6093,30 @@ void bhv_tree_init() {
     }
 }
 
+//#include "ingame_menu.h"
+
 void bhv_badge(void) {
     switch(o->oAction) {
         case 0:
             o->oFaceAngleYaw += 0x200;
-            if (o->oDistanceToMario < 75.0f) {
+            if (o->oDistanceToMario < 150.0f) {
                 o->oAction++;
                 save_file_set_badge_equip(1 << o->oBehParams2ndByte);
+
+                rtext_insert_pointer[0] = badgenames[o->oBehParams2ndByte];
+                rtext_insert_pointer[1] = badgedescs[o->oBehParams2ndByte];
+
+                o->oHomeY = 1.0f;
+                run_event(EVENT_GET_BADGE);
             }
         break;
         case 1:
-            o->oFaceAngleYaw += 0x400;
-            if (o->oTimer >= 30) {
-                mark_obj_for_deletion(o);
+            o->oAngleVelYaw += 0x70;
+            o->oFaceAngleYaw += o->oAngleVelYaw;
+            cur_obj_scale(o->oHomeY/2.0f);
+            o->oHomeY = o->oHomeY *.98f;
+            if (o->oHomeY < .2f) {
+                obj_mark_for_deletion(o);
             }
         break;
     }

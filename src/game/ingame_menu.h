@@ -156,6 +156,7 @@ extern u16 UPGRADE_TABLE[][4];
 extern u8 *costume_text[];
 extern u8 start_precredits;
 extern u8 *badgenames[];
+extern u8 *badgedescs[];
 
 void create_dl_identity_matrix(void);
 void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z);

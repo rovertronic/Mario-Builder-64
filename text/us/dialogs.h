@@ -3655,3 +3655,7 @@ On your back, I do\n\
 pats!\n\
 ...That one kind of\n\
 sucked, lol."))
+
+DEFINE_DIALOG(DIALOG_GET_BADGE, 1, 4, 95, 180, _("\
+You got the [%]!\n\
+[%]."))
