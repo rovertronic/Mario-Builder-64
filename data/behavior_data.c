@@ -9313,3 +9313,13 @@ const BehaviorScript bhvPostGameHint[] = {
         CALL_NATIVE(bhv_postgame_hint),
     END_LOOP(),
 };
+
+extern void bhv_badge(void);
+const BehaviorScript bhvBadge[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
+    SET_FLOAT(oDrawingDistance,8000.0f),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_badge),
+    END_LOOP(),
+};

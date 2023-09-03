@@ -77,6 +77,7 @@ enum {
     OBJECT_TYPE_SPAWN,
     OBJECT_TYPE_PHNTSM,
     OBJECT_TYPE_PIPE,
+    OBJECT_TYPE_BADGE,
 };
 
 struct cmm_ui_button_type {
@@ -144,6 +145,7 @@ enum {
     CMM_BUTTON_SPAWN,
     CMM_BUTTON_PHANTASM,
     CMM_BUTTON_PIPE,
+    CMM_BUTTON_BADGE,
 };
 
 enum {

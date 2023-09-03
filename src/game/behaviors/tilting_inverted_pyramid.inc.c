@@ -6092,3 +6092,21 @@ void bhv_tree_init() {
         break;
     }
 }
+
+void bhv_badge(void) {
+    switch(o->oAction) {
+        case 0:
+            o->oFaceAngleYaw += 0x200;
+            if (o->oDistanceToMario < 75.0f) {
+                o->oAction++;
+                save_file_set_badge_equip(1 << o->oBehParams2ndByte);
+            }
+        break;
+        case 1:
+            o->oFaceAngleYaw += 0x400;
+            if (o->oTimer >= 30) {
+                mark_obj_for_deletion(o);
+            }
+        break;
+    }
+}
