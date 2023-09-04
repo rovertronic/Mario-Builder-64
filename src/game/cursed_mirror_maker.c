@@ -90,6 +90,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {&cull_cull_mesh      , &mat_maker_MakerPassthru, NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL                 , &mat_maker_MakerCloud   , cube_collision_collision   , FALSE},//TILE_TYPE_SNOW
     {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE},//TILE_TYPE_DSLOPE
+    {&makerwater_mw_mesh  , &mat_maker_MakerPassthru, makerwater_collision       , FALSE},//TILE_TYPE_WATER
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
@@ -113,14 +114,15 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA         ,FALSE  ,2.0f   ,chuckya_seg8_anims_0800C070  , 0      },
     {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0      },
     {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0      },
-    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 3      },
-    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f  ,NULL                         , 23     },
+    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 1      },
+    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f   ,NULL                         , 23     },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
 u32 cmm_occupy_data[32][32] = {0}; //flags (Order, X, Y, Z)
 Gfx cmm_terrain_gfx[10000]; //gfx
 Gfx cmm_terrain_gfx_tdecal[10000]; //transparent decals
+Gfx cmm_terrain_gfx_tp[5000];//transparent
 Mtx cmm_terrain_mtx[5000]; //translations
 Vtx cmm_terrain_vtx[15000];
 
@@ -271,7 +273,7 @@ u8 cmm_toolbox[45] = {
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA, CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_SPAWN,
+    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -286,7 +288,7 @@ u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = 
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
 u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
-u8 txt_btn_36[] = {TXT_BTN_36};
+u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
@@ -326,6 +328,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_phantasm , OBJECT_TYPE_PHNTSM ,CMM_PM_OBJ  , &txt_btn_34   , NULL         }, //CMM_BUTTON_PHANTASM
     {&mat_b_btn_pipe     , OBJECT_TYPE_PIPE   ,CMM_PM_OBJ  , &txt_btn_35   , txt_pipe     }, //CMM_BUTTON_PIPE
     {&mat_b_btn_badge    , OBJECT_TYPE_BADGE  ,CMM_PM_OBJ  , &txt_btn_36   , badgenames   }, //CMM_BUTTON_BADGE
+    {&mat_b_btn_water    , TILE_TYPE_WATER    ,CMM_PM_TILE , &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -467,6 +470,7 @@ s32 handle_wait_vblank(OSMesgQueue *mq) {
 void generate_terrain_gfx(void) {
     u16 gfx_index = 0;
     u16 gfx_tdecal_index = 0;
+    u16 gfx_tp_index = 0;
     u16 mtx_index = 0;
     u16 vtx_index = 0;
     u16 i;
@@ -665,19 +669,29 @@ void generate_terrain_gfx(void) {
             guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
             mtx_index++;
             guRotate(&cmm_terrain_mtx[mtx_index],cmm_tile_data[i].rot*90.0f,0.0f,1.0f,0.0f);
-            gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-            gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].model);
-            gSPPopMatrix(&cmm_terrain_gfx[gfx_index++], G_MTX_MODELVIEW);
+            if (cmm_tile_data[i].type != TILE_TYPE_WATER) {
+                //opaque
+                gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+                gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].model);
+                gSPPopMatrix(&cmm_terrain_gfx[gfx_index++], G_MTX_MODELVIEW);
+            } else {
+                //transparent
+                gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+                gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index++], cmm_tile_types[cmm_tile_data[i].type].model);
+                gSPPopMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], G_MTX_MODELVIEW);
+            }
             mtx_index++;
         }
     }
     
 
-    //END OF BOTH DISPLAY LISTS
+    //END OF ALL 3 DISPLAY LISTS
     gSPEndDisplayList(&cmm_terrain_gfx[gfx_index]);
     gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &mat_revert_maker_MakerGrassSide);
     gSPEndDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index]);
+    gSPEndDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index]);
 
     //print_text_fmt_int(110, 56, "OPAQUE %d", gfx_index);
     //print_text_fmt_int(110, 76, "DECAL %d", gfx_tdecal_index);
@@ -700,6 +714,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tdecal, LAYER_TRANSPARENT_DECAL);
+        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
 
         //this extra append is for the editor tile preview
         if ((cmm_mode == CMM_MODE_MAKE)&&(cmm_place_mode == CMM_PM_TILE)) {

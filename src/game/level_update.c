@@ -597,6 +597,10 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
         sWarpDest.type = WARP_TYPE_SAME_AREA;
     }
 
+    if (destWarpNode == 241) {
+        sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
+    }
+
     if (gCurrLevelNum == LEVEL_BITS) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
         //ensure that every time mario visits this level, it gets reset

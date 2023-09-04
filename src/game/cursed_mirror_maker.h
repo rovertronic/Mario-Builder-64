@@ -43,6 +43,7 @@ enum {
     TILE_TYPE_CULL,
     TILE_TYPE_SNOW,
     TILE_TYPE_DSLOPE,
+    TILE_TYPE_WATER,
 };
 
 struct cmm_obj {
@@ -146,6 +147,7 @@ enum {
     CMM_BUTTON_PHANTASM,
     CMM_BUTTON_PIPE,
     CMM_BUTTON_BADGE,
+    CMM_BUTTON_WATER,
 };
 
 enum {

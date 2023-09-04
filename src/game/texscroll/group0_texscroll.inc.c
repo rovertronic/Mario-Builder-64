@@ -18,6 +18,7 @@
 #include "actors/mario/texscroll.inc.c"
 #include "actors/maker/texscroll.inc.c"
 #include "actors/badge/texscroll.inc.c"
+#include "actors/makerwater/texscroll.inc.c"
 void scroll_textures_group0() {
 	
 	
@@ -50,4 +51,5 @@ void scroll_textures_group0() {
 	scroll_actor_geo_mario();
 	scroll_actor_dl_maker();
 	scroll_actor_geo_badge();
+	scroll_actor_dl_makerwater();
 }

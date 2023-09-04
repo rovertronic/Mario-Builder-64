@@ -6122,3 +6122,14 @@ void bhv_badge(void) {
         break;
     }
 }
+
+void bhv_warp_pipe_init(void) {
+    switch(o->oAction) {
+        case 0:
+            o->oPosY += 200.0f;
+            spawn_object(o,MODEL_NONE,bhvCannon);
+            o->oPosY -= 200.0f;
+            o->oAction++;
+        break;
+    }
+}

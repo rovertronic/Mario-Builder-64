@@ -53,8 +53,8 @@
 #define TXT_BP_TREE_3 _("Palm")
 #define TXT_BP_TREE_4 _("Snowy")
 
-#define TXT_BP_PIPE_1 _("(In Pipe)")
-#define TXT_BP_PIPE_2 _("(Out Pipe)")
+#define TXT_BP_PIPE_1 _("Cannon")
+#define TXT_BP_PIPE_2 _("Level 1")
 
 #define TXT_BTN_1 _("Save Level")
 #define TXT_BTN_2 _("Level Settings")
@@ -92,6 +92,7 @@
 #define TXT_BTN_34 _("C.Phantasm")
 #define TXT_BTN_35 _("Warp Pipe")
 #define TXT_BTN_36 _("Badge")
+#define TXT_BTN_37 _("Water")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
