@@ -29,6 +29,7 @@
 #define TXT_THEME_3 _("Red Hot Reservoir")
 #define TXT_THEME_4 _("Retro")
 #define TXT_THEME_5 _("Castle Inside")
+#define TXT_THEME_6 _("Desert")
 
 #define TXT_BG1 _("Ocean Hills")
 #define TXT_BG2 _("Cloudy Sky")

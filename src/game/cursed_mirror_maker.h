@@ -161,6 +161,7 @@ enum {
     CMM_THEME_RED_HOT_RESERVOIR,
     CMM_THEME_RETRO,
     CMM_THEME_CASTLE,
+    CMM_THEME_DESERT,
 };
 
 struct cmm_level_save {

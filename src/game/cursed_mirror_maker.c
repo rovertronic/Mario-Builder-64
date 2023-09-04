@@ -184,13 +184,14 @@ u8 cmm_envfx_table[] = {
 
 //theme strings
 u8 txt_theme_1[] = {TXT_THEME_1};u8 txt_theme_2[] = {TXT_THEME_2};u8 txt_theme_3[] = {TXT_THEME_3};
-u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};
+u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};u8 txt_theme_6[] = {TXT_THEME_6};
 u8 *cmm_theme_string_table[] = {
     &txt_theme_1,
     &txt_theme_2,
     &txt_theme_3,
     &txt_theme_4,
     &txt_theme_5,
+    &txt_theme_6,
 };
 
 //background strings
@@ -342,7 +343,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
     {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 19},
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
-    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 5},
+    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 6},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
     {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
 };
@@ -405,6 +406,17 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerCStone;
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCWood;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
+            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+        break;
+        case CMM_THEME_DESERT:
+            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
+            grass_top_material = &mat_maker_MakerDGrass;
+            grass_side_material = &mat_maker_MakerDGrassSide;
+            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerDirt;
+            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerDBrick;
+            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerDStone;
+            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerDWood;
+            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerDCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
         break;
     }
@@ -487,7 +499,7 @@ void generate_terrain_gfx(void) {
         break;
         case 2:
             gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_TERRAIN].material);
-            if (cmm_lopt_theme == CMM_THEME_GENERIC) {
+            if (cmm_tile_types[TILE_TYPE_TERRAIN].growth) {
                 gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
             }
             gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
