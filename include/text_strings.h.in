@@ -27,9 +27,10 @@
 #define TXT_THEME_1 _("Generic")
 #define TXT_THEME_2 _("Virtuaplex")
 #define TXT_THEME_3 _("Red Hot Reservoir")
-#define TXT_THEME_4 _("Retro")
+#define TXT_THEME_4 _("Retroland")
 #define TXT_THEME_5 _("Castle Inside")
-#define TXT_THEME_6 _("Desert")
+#define TXT_THEME_6 _("Shifting Sand Land")
+#define TXT_THEME_7 _("Hazy Maze Cave")
 
 #define TXT_BG1 _("Ocean Hills")
 #define TXT_BG2 _("Cloudy Sky")
@@ -94,6 +95,7 @@
 #define TXT_BTN_35 _("Warp Pipe")
 #define TXT_BTN_36 _("Badge")
 #define TXT_BTN_37 _("Water")
+#define TXT_BTN_38 _("Fence")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

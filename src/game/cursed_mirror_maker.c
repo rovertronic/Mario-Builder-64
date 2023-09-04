@@ -77,20 +77,21 @@ s16 cmm_param_selection = 0;
 Gfx * grass_top_material = &mat_maker_MakerGrass;
 Gfx * grass_side_material = &mat_maker_MakerGrassSide;
 struct cmm_tile_type_struct cmm_tile_types[] = {
-    //Model GFX           //F3D Material            //Collision Mesh             //Grass
-    {NULL                 , &mat_maker_MakerDirt    , cube_collision_collision   , TRUE },
-    {NULL                 , &mat_maker_MakerBricks  , cube_collision_collision   , FALSE},
-    {NULL                 , &mat_maker_MakerStone   , cube_collision_collision   , FALSE},
-    {NULL                 , &mat_maker_MakerWood    , cube_collision_collision   , FALSE},
-    {NULL                 , &mat_maker_MakerLava    , lava_collision_collision   , FALSE},
-    {&slope_slope_mesh    , &mat_maker_MakerPassthru, slope_collision_collision  , FALSE},
-    {&corner_corner_mesh  , &mat_maker_MakerPassthru, corner_collision_collision , FALSE},
-    {&icorner_icorner_mesh, &mat_maker_MakerPassthru, icorner_collision_collision, FALSE},
-    {NULL                 , &mat_maker_MakerPassthru, NULL                       , FALSE},//TILE_TYPE_TROLL
-    {&cull_cull_mesh      , &mat_maker_MakerPassthru, NULL                       , FALSE},//TILE_TYPE_CULL
-    {NULL                 , &mat_maker_MakerCloud   , cube_collision_collision   , FALSE},//TILE_TYPE_SNOW
-    {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE},//TILE_TYPE_DSLOPE
-    {&makerwater_mw_mesh  , &mat_maker_MakerPassthru, makerwater_collision       , FALSE},//TILE_TYPE_WATER
+    //Model GFX           //F3D Material            //Collision Mesh             //Grass   //Transparent
+    {NULL                 , &mat_maker_MakerDirt    , cube_collision_collision   , TRUE    , FALSE},
+    {NULL                 , &mat_maker_MakerBricks  , cube_collision_collision   , FALSE   , FALSE},
+    {NULL                 , &mat_maker_MakerStone   , cube_collision_collision   , FALSE   , FALSE},
+    {NULL                 , &mat_maker_MakerWood    , cube_collision_collision   , FALSE   , FALSE},
+    {NULL                 , &mat_maker_MakerLava    , lava_collision_collision   , FALSE   , FALSE},
+    {&slope_slope_mesh    , &mat_maker_MakerPassthru, slope_collision_collision  , FALSE   , FALSE},
+    {&corner_corner_mesh  , &mat_maker_MakerPassthru, corner_collision_collision , FALSE   , FALSE},
+    {&icorner_icorner_mesh, &mat_maker_MakerPassthru, icorner_collision_collision, FALSE   , FALSE},
+    {NULL                 , &mat_maker_MakerPassthru, NULL                       , FALSE   , FALSE},//TILE_TYPE_TROLL
+    {&cull_cull_mesh      , &mat_maker_MakerPassthru, NULL                       , FALSE   , FALSE},//TILE_TYPE_CULL
+    {NULL                 , &mat_maker_MakerCloud   , cube_collision_collision   , FALSE   , FALSE},//TILE_TYPE_SNOW
+    {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE   , FALSE},//TILE_TYPE_DSLOPE
+    {&makerwater_mw_mesh  , &mat_maker_MakerPassthru, makerwater_collision       , FALSE   , TRUE },//TILE_TYPE_WATER
+    {&makerfence_mfv_mesh , &mat_maker_MakerFence   , makerfence_collision       , FALSE   , TRUE },//TILE_TYPE_FENCE
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
@@ -185,6 +186,7 @@ u8 cmm_envfx_table[] = {
 //theme strings
 u8 txt_theme_1[] = {TXT_THEME_1};u8 txt_theme_2[] = {TXT_THEME_2};u8 txt_theme_3[] = {TXT_THEME_3};
 u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};u8 txt_theme_6[] = {TXT_THEME_6};
+u8 txt_theme_7[] = {TXT_THEME_7};
 u8 *cmm_theme_string_table[] = {
     &txt_theme_1,
     &txt_theme_2,
@@ -192,6 +194,7 @@ u8 *cmm_theme_string_table[] = {
     &txt_theme_4,
     &txt_theme_5,
     &txt_theme_6,
+    &txt_theme_7,
 };
 
 //background strings
@@ -270,7 +273,7 @@ u8 cmm_ui_bar[9] = {
 s8 cmm_toolbox_index = 0;
 //9x5 = 45 assets
 u8 cmm_toolbox[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
@@ -289,7 +292,7 @@ u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = 
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
 u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
-u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};
+u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};u8 txt_btn_38[] = {TXT_BTN_38};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
@@ -330,6 +333,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_pipe     , OBJECT_TYPE_PIPE   ,CMM_PM_OBJ  , &txt_btn_35   , txt_pipe     }, //CMM_BUTTON_PIPE
     {&mat_b_btn_badge    , OBJECT_TYPE_BADGE  ,CMM_PM_OBJ  , &txt_btn_36   , badgenames   }, //CMM_BUTTON_BADGE
     {&mat_b_btn_water    , TILE_TYPE_WATER    ,CMM_PM_TILE , &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
+    {&mat_b_btn_fence    , TILE_TYPE_FENCE    ,CMM_PM_TILE , &txt_btn_38   , NULL         }, //CMM_BUTTON_FENCE
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -343,7 +347,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
     {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 19},
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
-    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 6},
+    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 7},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
     {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
 };
@@ -365,6 +369,7 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
         break;
         case CMM_THEME_VIRTUAPLEX:
             cmm_tile_types[TILE_TYPE_TERRAIN].growth = FALSE;
@@ -375,6 +380,7 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCaution;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerScreen;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerVoid;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerVPFence;
         break;
         case CMM_THEME_RED_HOT_RESERVOIR:
             cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
@@ -386,6 +392,7 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
         break;
         case CMM_THEME_RETRO:
             cmm_tile_types[TILE_TYPE_TERRAIN].growth = FALSE;
@@ -396,6 +403,7 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerRetroBlock;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerRetroCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerRetroLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
         break;
         case CMM_THEME_CASTLE:
             cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
@@ -405,8 +413,9 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerCBrick;
             cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerCStone;
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
+            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerCFence;
         break;
         case CMM_THEME_DESERT:
             cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
@@ -418,6 +427,19 @@ void change_theme(u8 theme, u8 suggest) {
             cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerDWood;
             cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerDCloud;
             cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerDFence;
+        break;
+        case CMM_THEME_CAVE:
+            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
+            grass_top_material = &mat_maker_MakerHGrass;
+            grass_side_material = &mat_maker_MakerHGrassSide;
+            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerHDirt;
+            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerHBrick;
+            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerHStone;
+            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
+            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerHCloud;
+            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
+            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerHFence;
         break;
     }
 }
@@ -589,7 +611,12 @@ void generate_terrain_gfx(void) {
     for (i = 0; i < cmm_tile_count; i++) {
         if (cmm_mat_pointer != &cmm_tile_types[cmm_tile_data[i].type].material) {
             cmm_mat_pointer = &cmm_tile_types[cmm_tile_data[i].type].material;
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].material);
+
+            if (!cmm_tile_types[cmm_tile_data[i].type].transparent) {
+                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].material);
+            } else {
+                gSPDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index++], cmm_tile_types[cmm_tile_data[i].type].material);
+            }
         }
 
         if (!cmm_tile_types[cmm_tile_data[i].type].model) {
@@ -681,7 +708,7 @@ void generate_terrain_gfx(void) {
             guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
             mtx_index++;
             guRotate(&cmm_terrain_mtx[mtx_index],cmm_tile_data[i].rot*90.0f,0.0f,1.0f,0.0f);
-            if (cmm_tile_data[i].type != TILE_TYPE_WATER) {
+            if (!cmm_tile_types[cmm_tile_data[i].type].transparent) {
                 //opaque
                 gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
                 gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
@@ -715,7 +742,7 @@ void generate_terrain_gfx(void) {
     cmm_gfx_total = gfx_index;
 };
 
-Gfx preview_gfx[6];
+Gfx preview_gfx[7];
 Mtx preview_mtx[2];
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
@@ -740,6 +767,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
                 gSPMatrix(&preview_gfx[preview_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
                 gSPMatrix(&preview_gfx[preview_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPDisplayList(&preview_gfx[preview_gfx_index++], cmm_tile_types[cmm_id_selection].material);
                 gSPDisplayList(&preview_gfx[preview_gfx_index++], cmm_tile_types[cmm_id_selection].model);
                 gSPPopMatrix(&preview_gfx[preview_gfx_index++], G_MTX_MODELVIEW);
                 preview_mtx_index++;
@@ -747,7 +775,11 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             gSPEndDisplayList(&preview_gfx[preview_gfx_index]);
 
-            geo_append_display_list(preview_gfx, LAYER_OPAQUE);
+            if (!cmm_tile_types[cmm_id_selection].transparent) {
+                geo_append_display_list(preview_gfx, LAYER_OPAQUE);
+            } else {
+                geo_append_display_list(preview_gfx, LAYER_TRANSPARENT);
+            }
         }
 
     }

@@ -622,4 +622,8 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "makerwater/collision_header.h"
 
+#include "makerfence/collision_header.h"
+
+#include "makerfence/header.h"
+
 #endif

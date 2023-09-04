@@ -167,3 +167,5 @@
 #include "badge/model.inc.c"
 #include "makerwater/model.inc.c"
 #include "makerwater/collision.inc.c"
+#include "makerfence/collision.inc.c"
+#include "makerfence/model.inc.c"

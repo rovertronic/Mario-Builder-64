@@ -29,6 +29,7 @@ struct cmm_tile_type_struct {
     Gfx * material;
     u32 * collision_data;
     u8 growth:1;
+    u8 transparent:1;
 };
 enum {
     TILE_TYPE_TERRAIN,
@@ -44,6 +45,7 @@ enum {
     TILE_TYPE_SNOW,
     TILE_TYPE_DSLOPE,
     TILE_TYPE_WATER,
+    TILE_TYPE_FENCE,
 };
 
 struct cmm_obj {
@@ -148,6 +150,7 @@ enum {
     CMM_BUTTON_PIPE,
     CMM_BUTTON_BADGE,
     CMM_BUTTON_WATER,
+    CMM_BUTTON_FENCE,
 };
 
 enum {
@@ -162,6 +165,7 @@ enum {
     CMM_THEME_RETRO,
     CMM_THEME_CASTLE,
     CMM_THEME_DESERT,
+    CMM_THEME_CAVE,
 };
 
 struct cmm_level_save {
