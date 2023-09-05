@@ -28,9 +28,12 @@
 #include "puppyprint.h"
 #include "puppycam2.h"
 #include "debug_box.h"
-#include "vc_check.h"
 #include "vc_ultra.h"
 #include "profiling.h"
+#include "emutest.h"
+
+// Emulators that the Instant Input patch should not be applied to
+#define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
 
 // Gfx handlers
 struct SPTask *gGfxSPTask;
@@ -43,8 +46,6 @@ struct Controller gControllers[MAXCONTROLLERS];
 OSContStatus gControllerStatuses[MAXCONTROLLERS];
 OSContPadEx gControllerPads[MAXCONTROLLERS];
 u8 gControllerBits = 0b0000;
-u8 gIsConsole = TRUE; // Needs to be initialized before audio_reset_session is called
-u8 gCacheEmulated = TRUE;
 u8 gBorderHeight;
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
 u8 gCustomDebugMode;
@@ -402,8 +403,8 @@ void render_init(void) {
 
     // Skip incrementing the initial framebuffer index on emulators so that they display immediately as the Gfx task finishes
     // VC probably emulates osViSwapBuffer accurately so instant patch breaks VC compatibility
-    // Currently, Ares passes the cache emulation test and has issues with single buffering so disable it there as well.
-    if (gIsConsole || gIsVC || gCacheEmulated) {
+    // Currently, Ares and Simple64 have issues with single buffering so disable it there as well.
+    if (gEmulator & INSTANT_INPUT_BLACKLIST) {
         sRenderingFramebuffer++;
     }
     gGlobalTimer++;
@@ -442,7 +443,7 @@ void display_and_vsync(void) {
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #endif
     // Skip swapping buffers on inaccurate emulators other than VC so that they display immediately as the Gfx task finishes
-    if (gIsConsole || gIsVC || gCacheEmulated) {
+    if (gEmulator & INSTANT_INPUT_BLACKLIST) {
         if (++sRenderedFramebuffer == 3) {
             sRenderedFramebuffer = 0;
         }
@@ -646,7 +647,7 @@ void init_controllers(void) {
 #ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.
     // save pak detection?
-    gEepromProbe = gIsVC
+    gEepromProbe = (gEmulator & EMU_WIIVC)
                  ? osEepromProbeVC(&gSIEventMesgQueue)
                  : osEepromProbe  (&gSIEventMesgQueue);
 #endif
@@ -680,9 +681,11 @@ void init_controllers(void) {
 #if (MAX_NUM_PLAYERS >= 2)
     //! Some flashcarts (eg. ED64p) don't let you start a ROM with a GameCube controller in port 1,
     //   so if port 1 is an N64 controller and port 2 is a GC controller, swap them.
-    if (gIsConsole) {
-        if (__osControllerTypes[0] == CONT_TYPE_N64
-         && __osControllerTypes[1] == CONT_TYPE_GCN) {
+    if (gEmulator & EMU_CONSOLE) {
+        if (
+            __osControllerTypes[0] == CONT_TYPE_N64 &&
+            __osControllerTypes[1] == CONT_TYPE_GCN
+        ) {
             struct Controller temp = gControllers[0];
             gControllers[0] = gControllers[1];
             gControllers[1] = temp;
