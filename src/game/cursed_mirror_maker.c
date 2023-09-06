@@ -56,6 +56,10 @@
 #include "src/buffers/framebuffers.h"
 #include "memory.h"
 
+#include "libcart/include/cart.h"
+#include "libcart/ff/ff.h"
+#include "game_init.h"
+
 #define CMM_VERSION 1
 
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
@@ -1011,100 +1015,117 @@ void update_painting() {
     }
 }
 
+//if (gSramProbe != 0) {
+
+TCHAR cmm_file_name[] = {"penis.bin"};
+FIL cmm_file;
+FILINFO cmm_file_info;
+
 void save_level(u8 index) {
     s16 i;
 
-    if (gSramProbe != 0) {
-        bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
-        //bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
-        //bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
+    bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
+    //bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
+    //bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
 
-        cmm_save.lvl[index].tile_count = cmm_tile_count;
-        cmm_save.lvl[index].object_count = cmm_object_count;
+    cmm_save.lvl[index].tile_count = cmm_tile_count;
+    cmm_save.lvl[index].object_count = cmm_object_count;
 
-        cmm_save.lvl[index].option[0] = cmm_lopt_costume;
-        cmm_save.lvl[index].option[1] = cmm_lopt_seq;
-        cmm_save.lvl[index].option[2] = cmm_lopt_envfx;
-        cmm_save.lvl[index].option[3] = cmm_lopt_theme;
-        cmm_save.lvl[index].option[4] = cmm_lopt_bg;
-        cmm_save.lvl[index].option[5] = cmm_lopt_plane;
+    cmm_save.lvl[index].option[0] = cmm_lopt_costume;
+    cmm_save.lvl[index].option[1] = cmm_lopt_seq;
+    cmm_save.lvl[index].option[2] = cmm_lopt_envfx;
+    cmm_save.lvl[index].option[3] = cmm_lopt_theme;
+    cmm_save.lvl[index].option[4] = cmm_lopt_bg;
+    cmm_save.lvl[index].option[5] = cmm_lopt_plane;
 
-        //SAVE
-        for (i = 0; i < cmm_tile_count; i++) {
-            bcopy(&cmm_tile_data[i],&cmm_save.lvl[index].tiles[i],sizeof(cmm_tile_data[i]));
-        }
-
-        for (i = 0; i < cmm_object_count; i++) {
-            bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
-        }
-
-        for (i=0;i<784;i++) {
-            //take a "screenshot" of the level
-            cmm_save.lvl[index].piktcher[i/28][i%28] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/28)*320*8)+((i%28)*11)];
-        }
-
-        update_painting();
-
-        block_until_rumble_pak_free();
-        nuPiWriteSram(0,&cmm_save, sizeof(cmm_save));
-        release_rumble_pak_control();
+    //SAVE
+    for (i = 0; i < cmm_tile_count; i++) {
+        bcopy(&cmm_tile_data[i],&cmm_save.lvl[index].tiles[i],sizeof(cmm_tile_data[i]));
     }
+
+    for (i = 0; i < cmm_object_count; i++) {
+        bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
+    }
+
+    for (i=0;i<784;i++) {
+        //take a "screenshot" of the level
+        cmm_save.lvl[index].piktcher[i/28][i%28] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/28)*320*8)+((i%28)*11)];
+    }
+
+    update_painting();
+
+    //block_until_rumble_pak_free();
+    //nuPiWriteSram(0,&cmm_save, sizeof(cmm_save));
+    //release_rumble_pak_control();
+
+    u32 bytes_written;
+    FRESULT code;
+    code = f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+    f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
+    f_close(&cmm_file);
+
+    print_text_fmt_int(10, 56, "CODE %d",code); 
 }
 
 void load_level(u8 index) {
     s16 i;
 
-    if (gSramProbe != 0) {
-        bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
-        bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
-        bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
+    bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
+    bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
+    bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
 
-        //LOAD
-        block_until_rumble_pak_free();
-        nuPiReadSram(0,&cmm_save, sizeof(cmm_save));
-        release_rumble_pak_control();
+    //LOAD
+    //block_until_rumble_pak_free();
+    //nuPiReadSram(0,&cmm_save, sizeof(cmm_save));
+    //release_rumble_pak_control();
 
-        if (cmm_save.check != SAVE_CHECK) {
-            //First time boot of the game
-            bzero(&cmm_save, sizeof(cmm_save));
-            cmm_save.check = SAVE_CHECK;
-
-            //Place spawn location
-            cmm_save.lvl[0].object_count = 1;
-            cmm_save.lvl[0].objects[0].x = 16;
-            cmm_save.lvl[0].objects[0].z = 16;
-            cmm_save.lvl[0].objects[0].y = 4;
-            cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
-        }
-
-        cmm_tile_count = cmm_save.lvl[index].tile_count;
-        cmm_object_count = cmm_save.lvl[index].object_count;
-
-        cmm_lopt_costume = cmm_save.lvl[index].option[0];
-        cmm_lopt_seq = cmm_save.lvl[index].option[1];
-        cmm_lopt_envfx = cmm_save.lvl[index].option[2];
-        cmm_lopt_theme = cmm_save.lvl[index].option[3];
-        cmm_lopt_bg = cmm_save.lvl[index].option[4];
-        cmm_lopt_plane = cmm_save.lvl[index].option[5];
-        change_theme(cmm_lopt_theme,FALSE);
-        load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
-
-        for (i = 0; i < cmm_tile_count; i++) {
-            bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
-            if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
-                place_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
-            }
-            place_terrain_data(cmm_occupy_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
-        }
-
-        for (i = 0; i < cmm_object_count; i++) {
-            bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
-            place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
-        }
-
-        update_painting();
+    u32 bytes_read;
+    FRESULT code = f_stat(&cmm_file_name,&cmm_file_info);
+    if (code == FR_OK) {
+        f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE);
+        f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
+        f_close(&cmm_file);
     }
-    return;
+
+    if (cmm_save.check != SAVE_CHECK) {
+        //First time boot of the game
+        bzero(&cmm_save, sizeof(cmm_save));
+        cmm_save.check = SAVE_CHECK;
+
+        //Place spawn location
+        cmm_save.lvl[0].object_count = 1;
+        cmm_save.lvl[0].objects[0].x = 16;
+        cmm_save.lvl[0].objects[0].z = 16;
+        cmm_save.lvl[0].objects[0].y = 4;
+        cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
+    }
+
+    cmm_tile_count = cmm_save.lvl[index].tile_count;
+    cmm_object_count = cmm_save.lvl[index].object_count;
+
+    cmm_lopt_costume = cmm_save.lvl[index].option[0];
+    cmm_lopt_seq = cmm_save.lvl[index].option[1];
+    cmm_lopt_envfx = cmm_save.lvl[index].option[2];
+    cmm_lopt_theme = cmm_save.lvl[index].option[3];
+    cmm_lopt_bg = cmm_save.lvl[index].option[4];
+    cmm_lopt_plane = cmm_save.lvl[index].option[5];
+    change_theme(cmm_lopt_theme,FALSE);
+    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+
+    for (i = 0; i < cmm_tile_count; i++) {
+        bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
+        if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+            place_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+        }
+        place_terrain_data(cmm_occupy_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+    }
+
+    for (i = 0; i < cmm_object_count; i++) {
+        bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
+        place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
+    }
+
+    update_painting();
 }
 
 void cmm_init() {
@@ -1169,6 +1190,10 @@ void sb_init(void) {
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,800.0f,0};
     u8 joystick = joystick_direction();
+
+    //if () {
+        print_text_fmt_int(10, 56, &cmm_file_info.fname ,0);
+    //}
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
@@ -1548,6 +1573,8 @@ void draw_cmm_menu(void) {
         gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
         gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+
 
         print_maker_string(15,210,txt_btn_2,FALSE);
 

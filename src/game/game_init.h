@@ -13,6 +13,9 @@
 #define MARIO_ANIMS_POOL_SIZE 0x4000
 #define DEMO_INPUTS_POOL_SIZE 0x800
 
+#include "libcart/include/cart.h"
+#include "libcart/ff/ff.h"
+
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];
     struct SPTask spTask;
@@ -92,5 +95,7 @@ void end_master_display_list(void);
 void render_init(void);
 void select_gfx_pool(void);
 void display_and_vsync(void);
+
+extern FRESULT mount_success;
 
 #endif // GAME_INIT_H

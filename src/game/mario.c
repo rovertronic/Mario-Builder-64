@@ -1854,6 +1854,9 @@ u16 posRecordIndex;
 f32 bad_apple_par = 0.0f;
 
 #include "memory.h"
+#include "libcart/include/cart.h"
+#include "libcart/ff/ff.h"
+#include "game_init.h"
 
 u16 mario_decay;
 s32 execute_mario_action(UNUSED struct Object *obj) {
@@ -1873,6 +1876,10 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     u8 *sus = segmented_to_virtual(&castle_courtyard_dl_output_0_custom_i8_ia8);
     u8 coinrepeats = 1;
     u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
+
+    if (mount_success != FR_OK) {
+       print_text_fmt_int(10, 56, "NO SD CARD",0); 
+    }
 
     if (cmm_mode == CMM_MODE_MAKE) {
         gMarioState->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;

@@ -33,6 +33,9 @@
 #include "profiling.h"
 #include "puppycamold.h"
 
+#include "libcart/include/cart.h"
+#include "libcart/ff/ff.h"
+
 // First 3 controller slots
 struct Controller gControllers[3];
 
@@ -741,6 +744,14 @@ void setup_game_memory(void) {
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
+FATFS fs;
+DIR cmm_dir;
+FRESULT mount_success;
+FRESULT directory_success;
+FILINFO cmm_dir_info;
+
+TCHAR cmm_dir_name[] = {"Mario Builder 64 Levels"};
+
 void thread5_game_loop(UNUSED void *arg) {
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -769,6 +780,33 @@ void thread5_game_loop(UNUSED void *arg) {
     gConfig.widescreen = save_file_get_widescreen_mode();
 #endif
     render_init();
+
+    //init cmm file structure
+    cart_init();
+    mount_success = f_mount(&fs, "", 1);
+    if (mount_success == FR_OK) {
+        //mount is successful
+
+        //create directory if not exist, otherwise open it if it does
+        FRESULT chdir_success = FR_NO_FILE; //init it with something that we won't actually check
+        directory_success = f_stat(&cmm_dir_name,&cmm_dir_info);
+        if (directory_success == FR_NO_FILE) {
+            //does not exist, therefore make
+            f_mkdir(&cmm_dir_name);
+            chdir_success = f_chdir(&cmm_dir_name);
+        }
+        if (directory_success == FR_OK) {
+            chdir_success = f_chdir(&cmm_dir_name);
+        }
+
+        if (chdir_success != FR_OK) {
+            while(TRUE){}
+            //freeze the game if directory changing went wrong
+        }
+
+        //f_opendir(&cmm_dir,CMM_DIR);
+        //f_closedir(&cmm_dir);
+    }
 
     while (TRUE) {
         profiler_frame_setup();

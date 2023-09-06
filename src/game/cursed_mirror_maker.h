@@ -179,7 +179,7 @@ struct cmm_level_save {
 };
 
 ALIGNED8 struct cmm_hack_save {
-    struct cmm_level_save lvl[4];
+    struct cmm_level_save lvl[1];
     u32 check;
 };
 
