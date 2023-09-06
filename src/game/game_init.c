@@ -86,7 +86,7 @@ u16 sRenderingFramebuffer = 0;
 // Goddard Vblank Function Caller
 void (*gGoddardVblankCallback)(void) = NULL;
 
-// Defined controller slots. Anything above MAX_NUM_PLAYERS will be unused.
+// Defined player slots. Anything above MAX_NUM_PLAYERS should not be used.
 struct Controller* const gPlayer1Controller = &gControllers[0];
 struct Controller* const gPlayer2Controller = &gControllers[1];
 struct Controller* const gPlayer3Controller = &gControllers[2];
@@ -577,8 +577,6 @@ void adjust_analog_stick(struct Controller *controller) {
  * Update the controller struct with available inputs if present.
  */
 void read_controller_inputs(s32 threadID) {
-    s32 i;
-
     // If any controllers are plugged in, update the controller information.
     if (gControllerBits) {
         if (threadID == THREAD_5_GAME_LOOP) {
@@ -593,9 +591,10 @@ void read_controller_inputs(s32 threadID) {
     run_demo_inputs();
 #endif
 
-    for (i = 0; i < MAX_NUM_PLAYERS; i++) {
-        struct Controller* controller = &gControllers[i];
+    for (s32 cont = 0; cont < MAX_NUM_PLAYERS; cont++) {
+        struct Controller* controller = &gControllers[cont];
         OSContPadEx* controllerData = controller->controllerData;
+
         // if we're receiving inputs, update the controller struct with the new button info.
         if (controller->controllerData != NULL) {
             // HackerSM64: Swaps Z and L, only on console, and only when playing with a GameCube controller.
@@ -631,18 +630,28 @@ void read_controller_inputs(s32 threadID) {
 }
 
 /**
+ * @brief Links a controller struct to the appropriate status and pad.
+ *
+ * @param[out] controller The controller to link.
+ * @param[in ] port The port to get the data from.
+ */
+static void assign_controller_data_to_port(struct Controller* controller, int port) {
+    controller->statusData = &gControllerStatuses[port];
+    controller->controllerData = &gControllerPads[port];
+    controller->port = port;
+}
+
+/**
  * Initialize the controller structs to point at the OSCont information.
  */
 void init_controllers(void) {
-    struct Controller* controller = NULL;
     int port, cont = 0;
     int lastUsedPort = -1;
 
     // Set controller 1 to point to the set of status/pads for input 1 and
     // init the controllers.
-    gControllers[0].statusData = &gControllerStatuses[0];
-    gControllers[0].controllerData = &gControllerPads[0];
-    osContInit(&gSIEventMesgQueue, &gControllerBits, &gControllerStatuses[0]);
+    assign_controller_data_to_port(&gControllers[0], 0);
+    osContInit(&gSIEventMesgQueue, &gControllerBits, gControllerStatuses);
 
 #ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.
@@ -667,10 +676,7 @@ void init_controllers(void) {
             // into any port in order to play the game. this was probably
             // so if any of the ports didn't work, you can have controllers
             // plugged into any of them and it will work.
-            controller = &gControllers[cont];
-            controller->statusData = &gControllerStatuses[port];
-            controller->controllerData = &gControllerPads[port];
-            controller->port = port;
+            assign_controller_data_to_port(&gControllers[cont], port);
 
             lastUsedPort = port;
 
@@ -683,8 +689,8 @@ void init_controllers(void) {
     //   so if port 1 is an N64 controller and port 2 is a GC controller, swap them.
     if (gEmulator & EMU_CONSOLE) {
         if (
-            __osControllerTypes[0] == CONT_TYPE_N64 &&
-            __osControllerTypes[1] == CONT_TYPE_GCN
+            (__osControllerTypes[0] == CONT_TYPE_N64) &&
+            (__osControllerTypes[1] == CONT_TYPE_GCN)
         ) {
             struct Controller temp = gControllers[0];
             gControllers[0] = gControllers[1];

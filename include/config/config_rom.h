@@ -32,9 +32,9 @@
 #define MAX_NUM_PLAYERS 2
 
 /**
- * Informs supported emulators to default to gamecube controller inputs.
+ * Informs supported emulators to default to GameCube controller inputs.
  */
-// #define USE_GAMECUBE_CONTROLLER
+// #define EMU_DEFAULT_TO_GCN
 
 /**
  * Screen Size Defines.
