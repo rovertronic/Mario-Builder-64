@@ -1658,12 +1658,12 @@ void render_cmm_mm_menu(char * strlist[], u8 ct) {
         create_dl_translation_matrix(MENU_MTX_PUSH, 160, 200-(i*30), 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
         if (cmm_mm_index == i) {
-            gDPSetEnvColor(gDisplayListHead++, 45, 45, 45, 150);
+            gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 150);
         }
         gSPDisplayList(gDisplayListHead++, &mm_btn2_mm_btn_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-        print_maker_string_ascii(120,192-(i*30),strlist[i],FALSE);
+        print_maker_string_ascii(120,192-(i*30),strlist[i],(cmm_mm_index == i));
     }
 }
 
