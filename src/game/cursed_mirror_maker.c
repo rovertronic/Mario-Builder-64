@@ -28,6 +28,7 @@
 #include "levels/bowser_3/header.h"
 #include "levels/castle_inside/header.h"
 #include "levels/hmc/header.h"
+#include "levels/menu/header.h"
 #include "main.h"
 #include "mario.h"
 #include "mario_actions_cutscene.h"
@@ -1017,7 +1018,7 @@ void update_painting() {
 
 //if (gSramProbe != 0) {
 
-TCHAR cmm_file_name[] = {"penis.bin"};
+TCHAR cmm_file_name[] = {"penis dick.bin"};
 FIL cmm_file;
 FILINFO cmm_file_info;
 
@@ -1191,10 +1192,6 @@ void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,800.0f,0};
     u8 joystick = joystick_direction();
 
-    //if () {
-        print_text_fmt_int(10, 56, &cmm_file_info.fname ,0);
-    //}
-
     if (cmm_do_save) {
         cmm_do_save = FALSE;
         save_level(0);
@@ -1283,8 +1280,12 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 switch(cmm_ui_index) {
                     case 8://save data
-                        cmm_do_save = TRUE;
-                        cmm_ui_do_render = FALSE;
+                        if (mount_success == FR_OK) {
+                            cmm_do_save = TRUE;
+                            cmm_ui_do_render = FALSE;
+                        } else {
+                            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                        }
                     break;
                     case 7://settings
                         cmm_menu_state = CMM_MAKE_SETTINGS;
@@ -1468,6 +1469,19 @@ u8 string_runoff(s16 x, u8 * str) {
     return FALSE;
 }
 
+void print_maker_string_ascii(u16 x, u16 y, u8 * str, u8 highlight) {
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+    print_generic_string_ascii(x-1, y-1, str);
+    if (highlight) {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
+    } else {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    }
+    print_generic_string_ascii(x, y, str);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+}
+
 void print_maker_string(u16 x, u16 y, u8 * str, u8 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
@@ -1576,7 +1590,8 @@ void draw_cmm_menu(void) {
 
 
 
-        print_maker_string(15,210,txt_btn_2,FALSE);
+        //print_maker_string(15,210,txt_btn_2,FALSE);
+        print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
 
         for (i=0;i<SETTINGS_SIZE;i++) {
             print_maker_string(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
@@ -1584,4 +1599,129 @@ void draw_cmm_menu(void) {
         }
         break;
     }
+}
+
+char cmm_mm_warning[] = \
+{"WARNING!\n\
+SD card emulation not detected.\n\
+You will still be able to use\n\
+the level editor, but you will\n\
+not be able to save levels or\n\
+download levels from other people.\n\
+\n\
+Press START to dismiss this message."};
+
+char cmm_mm_btn1[] = {"Build"};
+char cmm_mm_btn2[] = {"Play"};
+char cmm_mm_btn3[] = {"Help"};
+char cmm_mm_btn4[] = {"Credits"};
+char * cmm_mm_btn[] = {
+    &cmm_mm_btn1,
+    &cmm_mm_btn2,
+    &cmm_mm_btn3,
+    &cmm_mm_btn4,
+};
+char * cmm_mm_btn_lim[] = {
+    &cmm_mm_btn1,
+    &cmm_mm_btn3,
+    &cmm_mm_btn4,
+};
+
+u8 cmm_mm_state = MM_INIT;
+u8 cmm_mm_main_state = MM_MAIN;
+s8 cmm_mm_index = 0;
+
+void render_cmm_mm_menu(char * strlist[], u8 ct) {
+    for (u8 i=0; i<ct; i++) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        create_dl_translation_matrix(MENU_MTX_PUSH, 160, 200-(i*30), 0);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+        if (cmm_mm_index == i) {
+            gDPSetEnvColor(gDisplayListHead++, 45, 45, 45, 150);
+        }
+        gSPDisplayList(gDisplayListHead++, &mm_btn2_mm_btn_mesh);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+        print_maker_string_ascii(120,192-(i*30),strlist[i],FALSE);
+    }
+}
+
+s32 cmm_main_menu(void) {
+    u8 joystick = joystick_direction();
+    switch(joystick) {
+        case 2:
+            cmm_mm_index++;
+        break;
+        case 4:
+            cmm_mm_index--;
+        break;
+    }
+
+    create_dl_ortho_matrix();
+
+    switch(cmm_mm_state) {
+        case MM_INIT:
+            if (mount_success == FR_OK) {
+                cmm_mm_state = MM_MAIN;
+            } else {
+                cmm_mm_state = MM_NO_SD_CARD;
+                cmm_mm_main_state = MM_MAIN_LIMITED;
+            }
+        break;
+        case MM_NO_SD_CARD:
+            print_maker_string_ascii(20,220,&cmm_mm_warning,FALSE);
+            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                cmm_mm_state = MM_MAIN_LIMITED;
+            }
+        break;
+        case MM_MAIN:
+            cmm_mm_index = (cmm_mm_index+4)%4;
+            render_cmm_mm_menu(&cmm_mm_btn,4);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                switch(cmm_mm_index) {
+                    case 0:
+                        return 1;
+                    break;
+                    case 1:
+
+                    break;
+                    case 2:
+                        cmm_mm_state = MM_HELP;
+                    break;
+                    case 3:
+                        cmm_mm_state = MM_CREDITS;
+                    break;
+                }
+            }
+        break;
+        case MM_MAIN_LIMITED:
+            cmm_mm_index = (cmm_mm_index+3)%3;
+            render_cmm_mm_menu(&cmm_mm_btn_lim,3);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                switch(cmm_mm_index) {
+                    case 0:
+                        return 1;
+                    break;
+                    case 1:
+                        cmm_mm_state = MM_HELP;
+                    break;
+                    case 2:
+                        cmm_mm_state = MM_CREDITS;
+                    break;
+                }
+            }
+        break;
+        case MM_HELP:
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+                cmm_mm_state = cmm_mm_main_state;
+            }
+        break;
+        case MM_CREDITS:
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+                cmm_mm_state = cmm_mm_main_state;
+            }
+        break;
+    }
+
+    return 0;
 }

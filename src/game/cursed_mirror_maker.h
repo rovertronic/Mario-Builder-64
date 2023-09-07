@@ -9,6 +9,7 @@ void cmm_init();
 void draw_cmm_menu(void);
 void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
+s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[10000];
 extern Gfx cmm_terrain_gfx_tdecal[10000];
 extern u8 cmm_mode;
@@ -181,6 +182,15 @@ struct cmm_level_save {
 ALIGNED8 struct cmm_hack_save {
     struct cmm_level_save lvl[1];
     u32 check;
+};
+
+enum {
+    MM_INIT,
+    MM_NO_SD_CARD,
+    MM_MAIN,
+    MM_MAIN_LIMITED,
+    MM_HELP,
+    MM_CREDITS,
 };
 
 #endif

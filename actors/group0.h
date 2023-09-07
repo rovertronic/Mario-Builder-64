@@ -626,4 +626,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "makerfence/header.h"
 
+#include "mm_btn/header.h"
+
 #endif

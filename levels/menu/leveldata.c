@@ -1857,3 +1857,5 @@ const Collision main_menu_seg7_collision[] = {
 #endif
 
 #include "levels/menu/replaced/model.inc.c"
+
+#include "levels/menu/mm_btn2/model.inc.c"

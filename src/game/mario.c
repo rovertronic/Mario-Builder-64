@@ -1877,9 +1877,9 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     u8 coinrepeats = 1;
     u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
 
-    if (mount_success != FR_OK) {
-       print_text_fmt_int(10, 56, "NO SD CARD",0); 
-    }
+    //if (mount_success != FR_OK) {
+       //print_text_fmt_int(10, 56, "NO SD CARD",0); 
+    //}
 
     if (cmm_mode == CMM_MODE_MAKE) {
         gMarioState->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;

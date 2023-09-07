@@ -3,11 +3,6 @@
 
 #include <PR/ultratypes.h>
 
-#define ASCII_TO_DIALOG(asc)                                       \
-    (((asc) >= '0' && (asc) <= '9') ? ((asc) - '0') :              \
-     ((asc) >= 'A' && (asc) <= 'Z') ? ((asc) - 'A' + 0x0A) :       \
-     ((asc) >= 'a' && (asc) <= 'z') ? ((asc) - 'a' + 0x24) : 0x00)
-
 enum MenuMtxPushOp {
     MENU_MTX_NONE,
     MENU_MTX_PUSH,
@@ -134,6 +129,15 @@ enum DialogSpecialChars {
     DIALOG_CHAR_TERMINATOR           = 0xFF
 };
 
+#define ASCII_TO_DIALOG(asc)                                       \
+    (((asc) >= '0' && (asc) <= '9') ? ((asc) - '0') :              \
+     ((asc) >= 'A' && (asc) <= 'Z') ? ((asc) - 'A' + 0x0A) :       \
+     ((asc) == ' ') ? (0x95) :                                      \
+     ((asc) == '.') ? (0x3F) :                                      \
+     ((asc) == '\n') ? (0xFE) :                                   \
+     ((asc) == '!') ? (0xF2) :                                   \
+     ((asc) >= 'a' && (asc) <= 'z') ? ((asc) - 'a' + 0x24) : 0x00)
+
 // gDialogResponse
 enum DialogResponseDefines {
     DIALOG_RESPONSE_NONE,
@@ -163,6 +167,7 @@ void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void create_dl_ortho_matrix(void);
 void create_dl_scale_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void print_generic_string(s16 x, s16 y, const u8 *str);
+void print_generic_string_ascii(s16 x, s16 y, const u8 *str);
 void print_hud_lut_string(s8 hudLUT, s16 x, s16 y, const u8 *str);
 void print_menu_generic_string(s16 x, s16 y, const u8 *str);
 void handle_menu_scrolling(s8 scrollDirection, s8 *currentIndex, s8 minIndex, s8 maxIndex);

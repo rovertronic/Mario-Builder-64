@@ -23,7 +23,7 @@
 #include "text_strings.h"
 #include "game/puppycamold.h"
 #include "actors/group0.h"
-#include "game/ingame_menu.h"
+#include "game/cursed_mirror_maker.h"
 
 #include "eu_translation.h"
 #if MULTILANG
@@ -1856,7 +1856,9 @@ void new_file_select() {
  */
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        new_file_select();
+        if (sSelectedFileNum == 0) {
+            sSelectedFileNum = cmm_main_menu();
+        }
     }
     return NULL;
 }
