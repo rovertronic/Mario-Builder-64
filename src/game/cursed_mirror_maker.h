@@ -191,6 +191,9 @@ enum {
     MM_MAIN_LIMITED,
     MM_HELP,
     MM_CREDITS,
+    MM_PLAY,
+    MM_MAKE,
+    MM_KEYBOARD,
 };
 
 #endif

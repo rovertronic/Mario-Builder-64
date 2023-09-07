@@ -1601,6 +1601,13 @@ void draw_cmm_menu(void) {
     }
 }
 
+char cmm_mm_keyboard[] = {"1234567890abcdefghijklmnopqrstuvwxyz "};
+char cmm_mm_keyboard_caps[] = {"1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ "};
+char cmm_mm_keyboard_input[20];
+u8 cmm_mm_keyboard_input_index = 0;
+#define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
+s8 cmm_mm_keyboard_index = 0;
+
 char cmm_mm_warning[] = \
 {"WARNING!\n\
 SD card emulation not detected.\n\
@@ -1615,16 +1622,30 @@ char cmm_mm_btn1[] = {"Build"};
 char cmm_mm_btn2[] = {"Play"};
 char cmm_mm_btn3[] = {"Help"};
 char cmm_mm_btn4[] = {"Credits"};
-char * cmm_mm_btn[] = {
+char * cmm_mm_btns[] = {
     &cmm_mm_btn1,
     &cmm_mm_btn2,
     &cmm_mm_btn3,
     &cmm_mm_btn4,
 };
-char * cmm_mm_btn_lim[] = {
+char * cmm_mm_btns_lim[] = {
     &cmm_mm_btn1,
     &cmm_mm_btn3,
     &cmm_mm_btn4,
+};
+char cmm_mm_play_btn1[] = {"Play Levels"};
+char cmm_mm_play_btn2[] = {"Play Hacks"};
+char * cmm_mm_play_btns[] = {
+    &cmm_mm_play_btn1,
+    &cmm_mm_play_btn2,
+};
+char cmm_mm_make_btn1[] = {"New Level"};
+char cmm_mm_make_btn2[] = {"Load Level"};
+char cmm_mm_make_btn3[] = {"New Hack"};
+char cmm_mm_make_btn4[] = {"Load Hack"};
+char * cmm_mm_make_btns[] = {
+    &cmm_mm_make_btn1,
+    &cmm_mm_make_btn2,
 };
 
 u8 cmm_mm_state = MM_INIT;
@@ -1661,6 +1682,9 @@ s32 cmm_main_menu(void) {
 
     switch(cmm_mm_state) {
         case MM_INIT:
+            for (u8 i=0;i<sizeof(cmm_mm_keyboard_input);i++){
+                cmm_mm_keyboard_input[i] = NULL;
+            }
             if (mount_success == FR_OK) {
                 cmm_mm_state = MM_MAIN;
             } else {
@@ -1676,14 +1700,14 @@ s32 cmm_main_menu(void) {
         break;
         case MM_MAIN:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(&cmm_mm_btn,4);
+            render_cmm_mm_menu(&cmm_mm_btns,4);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_mm_index) {
                     case 0:
-                        return 1;
+                        cmm_mm_state = MM_MAKE;
                     break;
                     case 1:
-
+                        cmm_mm_state = MM_PLAY;
                     break;
                     case 2:
                         cmm_mm_state = MM_HELP;
@@ -1696,7 +1720,7 @@ s32 cmm_main_menu(void) {
         break;
         case MM_MAIN_LIMITED:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(&cmm_mm_btn_lim,3);
+            render_cmm_mm_menu(&cmm_mm_btns_lim,3);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_mm_index) {
                     case 0:
@@ -1711,6 +1735,32 @@ s32 cmm_main_menu(void) {
                 }
             }
         break;
+        case MM_PLAY:
+            cmm_mm_index = (cmm_mm_index+2)%2;
+            render_cmm_mm_menu(&cmm_mm_play_btns,2);
+
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                cmm_mm_state = cmm_mm_main_state;
+            }
+        break;
+        case MM_MAKE:
+            cmm_mm_index = (cmm_mm_index+2)%2;
+            render_cmm_mm_menu(&cmm_mm_make_btns,2);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                switch(cmm_mm_index) {
+                    case 0:
+                        //make new level
+                        cmm_mm_state = MM_KEYBOARD;
+                    break;
+                    case 1:
+                        //load level
+                    break;
+                }
+            }
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                cmm_mm_state = cmm_mm_main_state;
+            }
+        break;
         case MM_HELP:
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
                 cmm_mm_state = cmm_mm_main_state;
@@ -1719,6 +1769,66 @@ s32 cmm_main_menu(void) {
         case MM_CREDITS:
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
                 cmm_mm_state = cmm_mm_main_state;
+            }
+        break;
+        case MM_KEYBOARD:
+            switch(joystick) {
+                case 1:
+                    cmm_mm_keyboard_index--;
+                break;
+                case 2:
+                    cmm_mm_keyboard_index+=10;
+                break;
+                case 3:
+                    cmm_mm_keyboard_index++;
+                break;
+                case 4:
+                    cmm_mm_keyboard_index-=10;
+                break;
+            }
+            cmm_mm_keyboard_index = (cmm_mm_keyboard_index+KEYBOARD_SIZE)%KEYBOARD_SIZE;
+
+            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+                if (gPlayer1Controller->buttonDown & Z_TRIG) {
+                    //shift
+                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard_caps[cmm_mm_keyboard_index];
+                } else {
+                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard[cmm_mm_keyboard_index];
+                }
+                cmm_mm_keyboard_input_index++;
+            }
+
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                if (cmm_mm_keyboard_input_index > 0) {
+                    cmm_mm_keyboard_input_index--;
+                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = NULL;
+                } else {
+                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                }
+            }
+
+            print_maker_string_ascii(10,220,cmm_mm_keyboard_input,FALSE);
+            for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
+                u16 x = i%10;
+                u16 y = i/10;
+                gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25), 190-(y*25), 0);
+                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+                if (cmm_mm_keyboard_index == i) {
+                    gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 150);
+                }
+                gSPDisplayList(gDisplayListHead++, &mm_btn_sm_mm_btn_sm_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+                char single_char[2];
+                if (gPlayer1Controller->buttonDown & Z_TRIG) {
+                    //shift
+                    single_char[0] = cmm_mm_keyboard_caps[i];
+                } else {
+                    single_char[0] = cmm_mm_keyboard[i];
+                }
+                single_char[1] = NULL;
+                print_maker_string_ascii(37+(x*25),182-(y*25),single_char,(cmm_mm_keyboard_index == i));
             }
         break;
     }
