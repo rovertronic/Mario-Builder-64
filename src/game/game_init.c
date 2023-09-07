@@ -750,6 +750,10 @@ FRESULT mount_success;
 FRESULT directory_success;
 FILINFO cmm_dir_info;
 
+FILINFO cmm_level_entries[20];
+u8 cmm_level_entry_count = 0;
+FRESULT global_code;
+
 TCHAR cmm_dir_name[] = {"Mario Builder 64 Levels"};
 
 void thread5_game_loop(UNUSED void *arg) {
@@ -793,19 +797,27 @@ void thread5_game_loop(UNUSED void *arg) {
         if (directory_success == FR_NO_FILE) {
             //does not exist, therefore make
             f_mkdir(&cmm_dir_name);
+            f_opendir(&cmm_dir,&cmm_dir_name);
             chdir_success = f_chdir(&cmm_dir_name);
         }
         if (directory_success == FR_OK) {
+            f_opendir(&cmm_dir,&cmm_dir_name);
             chdir_success = f_chdir(&cmm_dir_name);
         }
 
         if (chdir_success != FR_OK) {
             while(TRUE){}
             //freeze the game if directory changing went wrong
-        }
+        } else {
+            s8 i = -1;
+            do {
+                i++;
+                f_readdir(&cmm_dir,&cmm_level_entries[i]);
+            } while (cmm_level_entries[i].fname[0] != 0);
 
-        //f_opendir(&cmm_dir,CMM_DIR);
-        //f_closedir(&cmm_dir);
+            cmm_level_entry_count = i;
+            f_closedir(&cmm_dir);
+        }
     }
 
     while (TRUE) {

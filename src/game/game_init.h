@@ -97,5 +97,8 @@ void select_gfx_pool(void);
 void display_and_vsync(void);
 
 extern FRESULT mount_success;
+extern FILINFO cmm_level_entries[20];
+extern FRESULT global_code;
+extern u8 cmm_level_entry_count;
 
 #endif // GAME_INIT_H

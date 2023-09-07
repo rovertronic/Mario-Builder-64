@@ -194,6 +194,11 @@ enum {
     MM_PLAY,
     MM_MAKE,
     MM_KEYBOARD,
+    MM_FILES,
+};
+
+enum {
+    KXM_NEW_LEVEL,
 };
 
 #endif

@@ -59,7 +59,6 @@
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
-#include "game_init.h"
 
 #define CMM_VERSION 1
 
@@ -1018,7 +1017,7 @@ void update_painting() {
 
 //if (gSramProbe != 0) {
 
-TCHAR cmm_file_name[] = {"penis dick.bin"};
+TCHAR cmm_file_name[30];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
@@ -1601,9 +1600,10 @@ void draw_cmm_menu(void) {
     }
 }
 
-char cmm_mm_keyboard[] = {"1234567890abcdefghijklmnopqrstuvwxyz "};
-char cmm_mm_keyboard_caps[] = {"1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ "};
+char cmm_mm_keyboard[] = {"1234567890abcdefghijklmnopqrstuvwxyz!'- "};
+char cmm_mm_keyboard_caps[] = {"1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- "};
 char cmm_mm_keyboard_input[20];
+u8 cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
 u8 cmm_mm_keyboard_input_index = 0;
 #define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
 s8 cmm_mm_keyboard_index = 0;
@@ -1646,6 +1646,14 @@ char cmm_mm_make_btn4[] = {"Load Hack"};
 char * cmm_mm_make_btns[] = {
     &cmm_mm_make_btn1,
     &cmm_mm_make_btn2,
+    &cmm_mm_make_btn3,
+    &cmm_mm_make_btn4,
+};
+char cmm_mm_lmode_btn1[] = {"Vanilla SM64"};
+char cmm_mm_lmode_btn2[] = {"SM64 BTCM"};
+char * cmm_mm_lmode_btns[] = {
+    &cmm_mm_lmode_btn1,
+    &cmm_mm_lmode_btn2,
 };
 
 u8 cmm_mm_state = MM_INIT;
@@ -1744,16 +1752,18 @@ s32 cmm_main_menu(void) {
             }
         break;
         case MM_MAKE:
-            cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(&cmm_mm_make_btns,2);
+            cmm_mm_index = (cmm_mm_index+4)%4;
+            render_cmm_mm_menu(&cmm_mm_make_btns,4);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_mm_index) {
                     case 0:
                         //make new level
+                        cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
                         cmm_mm_state = MM_KEYBOARD;
                     break;
                     case 1:
-                        //load level
+                        //load levels
+                        cmm_mm_state = MM_FILES;
                     break;
                 }
             }
@@ -1807,6 +1817,22 @@ s32 cmm_main_menu(void) {
                 }
             }
 
+            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                switch(cmm_mm_keyboard_exit_mode) {
+                    case KXM_NEW_LEVEL:
+                        bcopy(&cmm_mm_keyboard_input,&cmm_file_name,cmm_mm_keyboard_input_index);
+                        //manually add file extension
+                        cmm_file_name[cmm_mm_keyboard_input_index+0] = '.';
+                        cmm_file_name[cmm_mm_keyboard_input_index+1] = 'm';
+                        cmm_file_name[cmm_mm_keyboard_input_index+2] = 'b';
+                        cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
+                        cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
+                        cmm_file_name[cmm_mm_keyboard_input_index+5] = NULL;
+                        return 1;
+                    break;
+                }
+            }
+
             print_maker_string_ascii(10,220,cmm_mm_keyboard_input,FALSE);
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;
@@ -1829,6 +1855,11 @@ s32 cmm_main_menu(void) {
                 }
                 single_char[1] = NULL;
                 print_maker_string_ascii(37+(x*25),182-(y*25),single_char,(cmm_mm_keyboard_index == i));
+            }
+        break;
+        case MM_FILES:
+            for (u8 i=0; i<cmm_level_entry_count; i++) {
+                print_maker_string_ascii(10,220-(i*20),&cmm_level_entries[i].fname,FALSE);
             }
         break;
     }
