@@ -198,3 +198,4 @@ const GeoLayout geo_menu_act_selector_strings[] = {
 };
 
 #include "levels/menu/replaced/geo.inc.c"
+#include "levels/menu/mbg/geo.inc.c"

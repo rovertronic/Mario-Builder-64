@@ -97,6 +97,8 @@
 #define TXT_BTN_37 _("Water")
 #define TXT_BTN_38 _("Fence")
 
+#define TXT_MM_PAGE _("Page: 0/0")
+
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
 #define NC_CAMY 				_("Camera Y Sensitivity")

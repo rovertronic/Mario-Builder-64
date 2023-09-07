@@ -1,0 +1,14 @@
+extern const GeoLayout mbg_geo[];
+extern Lights1 mbg_f3dlite_material_001_lights;
+extern u8 mbg_crate_rgba16[];
+extern Vtx mbg_Plane_001_mesh_layer_1_vtx_0[804];
+extern Gfx mbg_Plane_001_mesh_layer_1_tri_0[];
+extern Vtx mbg_Plane_001_mesh_layer_1_vtx_1[804];
+extern Gfx mbg_Plane_001_mesh_layer_1_tri_1[];
+extern Vtx mbg_Plane_001_mesh_layer_1_vtx_2[448];
+extern Gfx mbg_Plane_001_mesh_layer_1_tri_2[];
+extern Gfx mat_mbg_makerstripe1[];
+extern Gfx mat_mbg_makerstripe2[];
+extern Gfx mat_mbg_f3dlite_material_001[];
+extern Gfx mbg_Plane_001_mesh_layer_1[];
+extern Gfx mbg_material_revert_render_settings[];

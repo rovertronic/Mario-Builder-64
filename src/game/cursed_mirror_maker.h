@@ -195,6 +195,7 @@ enum {
     MM_MAKE,
     MM_KEYBOARD,
     MM_FILES,
+    MM_MAKE_MODE,
 };
 
 enum {
