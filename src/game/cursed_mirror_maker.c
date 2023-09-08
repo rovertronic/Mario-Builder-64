@@ -1673,6 +1673,7 @@ s8 cmm_mm_index = 0;
 s8 cmm_mm_pages = 0;
 s8 cmm_mm_page = 0;
 s8 cmm_mm_page_entries = 0;
+#define PAGE_SIZE 5
 
 void render_cmm_mm_menu(char * strlist[], u8 ct) {
     for (u8 i=0; i<ct; i++) {
@@ -1911,11 +1912,11 @@ s32 cmm_main_menu(void) {
         case MM_FILES:
             cmm_mm_index = (cmm_mm_index+cmm_level_entry_count)%cmm_level_entry_count;
 
-            cmm_mm_pages = (cmm_level_entry_count/6)+1;
-            cmm_mm_page = cmm_mm_index/6;
-            cmm_mm_page_entries = 6;
+            cmm_mm_pages = (cmm_level_entry_count/PAGE_SIZE);
+            cmm_mm_page = cmm_mm_index/PAGE_SIZE;
+            cmm_mm_page_entries = PAGE_SIZE;
             if (cmm_mm_page == cmm_mm_pages-1) {
-                cmm_mm_page_entries = cmm_level_entry_count-(cmm_mm_page*6);
+                cmm_mm_page_entries = cmm_level_entry_count-(cmm_mm_page*PAGE_SIZE);
             }
 
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
@@ -1931,15 +1932,29 @@ s32 cmm_main_menu(void) {
 
             for (u8 i=0; i<cmm_mm_page_entries; i++) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 210-(i*30), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 210-(i*36), 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-                if (cmm_mm_index-(cmm_mm_page*6) == i) {
+                if (cmm_mm_index-(cmm_mm_page*PAGE_SIZE) == i) {
                     gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 190);
                 }
                 gSPDisplayList(gDisplayListHead++, &mm_btn_lg_mm_btn_lg_mesh);
+
+                //render painting
+                create_dl_translation_matrix(MENU_MTX_PUSH, -108, -2, 0);
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                    gDPPipeSync(gDisplayListHead++);
+                    gDPSetCombineLERP(gDisplayListHead++,ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0, ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0);
+                    gSPGeometryMode(gDisplayListHead++,G_ZBUFFER | G_CULL_BACK, 0);
+                    gSPTexture(gDisplayListHead++,65535, 65535, 0, 0, 1);
+                    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, &cmm_level_entry_piktcher[i+(cmm_mm_page*PAGE_SIZE)]);
+                    gSPDisplayList(gDisplayListHead++, &mptng_mptng_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                //
+
+
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                print_maker_string_ascii(40,200-(i*30),&cmm_level_entries[i+(cmm_mm_page*6)].fname,(cmm_mm_index == i));
+                print_maker_string_ascii(75,200-(i*36),&cmm_level_entries[i+(cmm_mm_page*PAGE_SIZE)].fname,(cmm_mm_index == i));
             }
 
             //render pages
