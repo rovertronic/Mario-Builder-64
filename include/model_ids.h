@@ -800,5 +800,6 @@
 #define MODEL_SPAWN 0x12B
 #define MODEL_MAKER_PIPE 0x12C
 #define MODEL_BADGE 0x12D
+#define MODEL_MARIO2 0x12E
 
 #endif // MODEL_IDS_H

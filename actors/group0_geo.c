@@ -49,3 +49,4 @@
 #include "lev_edge/geo.inc.c"
 #include "spawn/geo.inc.c"
 #include "badge/geo.inc.c"
+#include "mario2/geo.inc.c"

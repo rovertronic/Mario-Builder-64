@@ -628,4 +628,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "mm_btn/header.h"
 
+#include "mario2/geo_header.h"
+
 #endif

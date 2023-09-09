@@ -170,3 +170,4 @@
 #include "makerfence/collision.inc.c"
 #include "makerfence/model.inc.c"
 #include "mm_btn/model.inc.c"
+#include "mario2/model.inc.c"
