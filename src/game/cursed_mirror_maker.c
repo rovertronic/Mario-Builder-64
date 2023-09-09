@@ -1699,6 +1699,18 @@ char * cmm_mm_lmode_btns[] = {
     &cmm_mm_lmode_btn1,
     &cmm_mm_lmode_btn2,
 };
+char cmm_mm_help_btn1[] = {"SD Card Setup"};
+char cmm_mm_help_btn2[] = {"Editor Controls"};
+char cmm_mm_help_btn3[] = {"Version Info"};
+char * cmm_mm_help_btns[] = {
+    &cmm_mm_help_btn1,
+    &cmm_mm_help_btn2,
+    &cmm_mm_help_btn3,
+};
+char cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
+char cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
+char cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
+
 char cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 char cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
 
@@ -1708,6 +1720,7 @@ s8 cmm_mm_index = 0;
 s8 cmm_mm_pages = 0;
 s8 cmm_mm_page = 0;
 s8 cmm_mm_page_entries = 0;
+char * cmm_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
 void render_cmm_mm_menu(char * strlist[], u8 ct) {
@@ -1778,7 +1791,8 @@ s32 cmm_main_menu(void) {
                         cmm_mm_index = 0;
                     break;
                     case 2:
-                        cmm_mm_state = MM_HELP;
+                        cmm_mm_state = MM_HELP_MODE;
+                        cmm_mm_index = 0;
                     break;
                     case 3:
                         cmm_mm_state = MM_CREDITS;
@@ -1871,10 +1885,33 @@ s32 cmm_main_menu(void) {
                 cmm_mm_index = 0;
             }
         break;
+        case MM_HELP_MODE:
+            cmm_mm_index = (cmm_mm_index+3)%3;
+            render_cmm_mm_menu(&cmm_mm_help_btns,3);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                cmm_mm_state = MM_HELP;
+                switch(cmm_mm_index) {
+                    case 0:
+                        cmm_mm_help_ptr = cmm_mm_help_page1;
+                    break;
+                    case 1:
+                        cmm_mm_help_ptr = cmm_mm_help_page2;
+                    break;
+                    case 2:
+                        cmm_mm_help_ptr = cmm_mm_help_page3;
+                    break;
+                }
+            }
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                cmm_mm_state = cmm_mm_main_state;
+                cmm_mm_index = 0;
+            }
+        break;
         case MM_HELP:
             shade_screen();
+            print_maker_string(20,210,cmm_mm_help_ptr,FALSE);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
-                cmm_mm_state = cmm_mm_main_state;
+                cmm_mm_state = MM_HELP_MODE;
                 cmm_mm_index = 0;
             }
         break;

@@ -58,8 +58,8 @@
 #define TXT_BP_PIPE_1 _("Cannon")
 #define TXT_BP_PIPE_2 _("Level 1")
 
-#define TXT_BTN_1 _("Save Level")
-#define TXT_BTN_2 _("Level Settings")
+#define TXT_BTN_1 _("Save")
+#define TXT_BTN_2 _("Settings")
 #define TXT_BTN_3 _("Test")
 #define TXT_BTN_4 _("Terrain")
 #define TXT_BTN_5 _("Brick")
@@ -99,6 +99,10 @@
 
 #define TXT_MM_PAGE _("Page: 0/0")
 #define TXT_MM_KEYBOARD _("[A]: Press Key\n[B]: Backspace\n[Z]: Shift\n[R]: Exit\nSTART: Confirm")
+
+#define TXT_MM_HELP_PAGE_1 _("")
+#define TXT_MM_HELP_PAGE_2 _("Analog Stick: Move cursor horizontally\n[C] Up & Down: Move cursor vertically\n[C] Left & Right: Rotate camera\n[A]: Place object\n[B]: Delete object\n[Z]: Rotate object\nD-Pad: Change object parameters\nL & R: Navigate hotbar\nSTART: Open toolbox")
+#define TXT_MM_HELP_PAGE_3 _("Alpha Build\nDo not redistribute.")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

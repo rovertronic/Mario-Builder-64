@@ -18,6 +18,7 @@
 #include "ingame_menu.h"
 #include "platform_displacement.h"
 #include "rovent.h"
+#include "cursed_mirror_maker.h"
 
 u8 bullet_fuel;
 
@@ -1692,17 +1693,18 @@ s32 act_lava_boost(struct MarioState *m) {
 #endif
             } else {
                 play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
-                set_mario_action(m, ACT_LAVA_BOOST_LAND, 0);
 
-                /*
-                if (m->actionState < ACT_STATE_LAVA_BOOST_SET_LANDING_ACTION && m->vel[1] < 0.0f) {
-                    m->vel[1] = -m->vel[1] * 0.4f;
-                    mario_set_forward_vel(m, m->forwardVel * 0.5f);
-                    m->actionState++;
+                if (cmm_lopt_game == CMM_GAME_VANILLA) {
+                    if (m->actionState < ACT_STATE_LAVA_BOOST_SET_LANDING_ACTION && m->vel[1] < 0.0f) {
+                        m->vel[1] = -m->vel[1] * 0.4f;
+                        mario_set_forward_vel(m, m->forwardVel * 0.5f);
+                        m->actionState++;
+                    } else {
+                        set_mario_action(m, ACT_LAVA_BOOST_LAND, 0);
+                    }
                 } else {
                     set_mario_action(m, ACT_LAVA_BOOST_LAND, 0);
                 }
-                */
             }
             break;
 

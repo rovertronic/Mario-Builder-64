@@ -201,6 +201,7 @@ enum {
     MM_MAIN,
     MM_MAIN_LIMITED,
     MM_HELP,
+    MM_HELP_MODE,
     MM_CREDITS,
     MM_PLAY,
     MM_MAKE,

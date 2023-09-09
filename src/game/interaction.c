@@ -27,6 +27,7 @@
 #include "rovent.h"
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
+#include "cursed_mirror_maker.h"
 
 u8  sDelayInvincTimer;
 s16 sInvulnerable;
@@ -734,14 +735,21 @@ void reset_mario_pitch(struct MarioState *m) {
 
 u8 coinloop = 0;
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
-    if (obj->oDamageOrCoinValue == 3) { //green coin
-        if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
-            m->healCounter += 4 * gMarioState->numMaxHP;//green coins fully heal with badge
-        } else {
-            m->healCounter += 4 * ((f32)(gMarioState->numMaxHP)/2.0f); //green coins heal half hp
+
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        //BTCM COIN HEAL BEHAVIOR
+        if (obj->oDamageOrCoinValue == 3) { //green coin
+            if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
+                m->healCounter += 4 * gMarioState->numMaxHP;//green coins fully heal with badge
+            } else {
+                m->healCounter += 4 * ((f32)(gMarioState->numMaxHP)/2.0f); //green coins heal half hp
+            }
+        } else {//every other coin
+            m->healCounter += 4; //every other coin gives 1 hp back
         }
-    } else {//every other coin
-        m->healCounter += 4; //every other coin gives 1 hp back
+    } else {
+        //VANILLA COIN HEAL BEHAVIOR
+        m->healCounter += (4 * obj->oDamageOrCoinValue);
     }
 
     //give double if using double badge

@@ -612,7 +612,20 @@ void render_hud_power_meter(void) {
     //render_dl_power_meter(shownHealthWedges);
 
     //RENDER COINS
-    
+}
+
+void render_hud_power_meter_vanilla(void) {
+    s16 shownHealthWedges = gHudDisplay.wedges;
+    if (sPowerMeterHUD.animation != POWER_METER_HIDING) handle_power_meter_actions(shownHealthWedges);
+    if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) return;
+    switch (sPowerMeterHUD.animation) {
+        case POWER_METER_EMPHASIZED:    animate_power_meter_emphasized();    break;
+        case POWER_METER_DEEMPHASIZING: animate_power_meter_deemphasizing(); break;
+        case POWER_METER_HIDING:        animate_power_meter_hiding();        break;
+        default:                                                             break;
+    }
+    render_dl_power_meter(shownHealthWedges);
+    sPowerMeterVisibleTimer++;
 }
 
 #ifdef BREATH_METER
@@ -1046,8 +1059,6 @@ void render_hud(void) {
                 render_hud_keys();
             }
 
-            render_hud_power_meter();
-
             if (gMarioState->numAir < 700) {
                 display_air();
                 }
@@ -1070,14 +1081,11 @@ void render_hud(void) {
 #endif
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
-                // render_hud_power_meter();
-#ifdef PUPPYCAM
-                if (!gPuppyCam.enabled) {
-#endif
-                // render_hud_camera_status();
-#ifdef PUPPYCAM
+                if (cmm_lopt_game == CMM_GAME_VANILLA) {
+                    render_hud_power_meter_vanilla();
+                } else {
+                    render_hud_power_meter();
                 }
-#endif
             }
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
