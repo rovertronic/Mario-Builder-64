@@ -60,8 +60,6 @@
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 
-#define CMM_VERSION 1
-
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
@@ -125,17 +123,19 @@ struct cmm_object_type_struct cmm_object_types[] = {
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
 u32 cmm_occupy_data[32][32] = {0}; //flags (Order, X, Y, Z)
-Gfx cmm_terrain_gfx[10000]; //gfx
-Gfx cmm_terrain_gfx_tdecal[10000]; //transparent decals
-Gfx cmm_terrain_gfx_tp[5000];//transparent
+Gfx cmm_terrain_gfx[15000]; //gfx
+Gfx cmm_terrain_gfx_tdecal[8000]; //transparent decals
+Gfx cmm_terrain_gfx_tp[8000];//transparent
 Mtx cmm_terrain_mtx[5000]; //translations
 Vtx cmm_terrain_vtx[15000];
 
 u16 cmm_gfx_total = 0;
 u16 cmm_mtx_total = 0;
 u16 cmm_vtx_total = 0;
+u16 cmm_gfx_tdecal_total = 0;
+u16 cmm_gfx_tp_total = 0;
 
-struct cmm_tile cmm_tile_data[1500];
+struct cmm_tile cmm_tile_data[2000];
 struct cmm_obj cmm_object_data[200];
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
@@ -452,7 +452,7 @@ void change_theme(u8 theme, u8 suggest) {
 s32 tile_sanity_check(void) {
     u8 allow = TRUE;
 
-    if (cmm_tile_count >= 1500) {
+    if (cmm_tile_count >= 2000) {
         allow = FALSE;
     }
     if (cmm_vtx_total >= 9970) {
@@ -462,6 +462,26 @@ s32 tile_sanity_check(void) {
         allow = FALSE;
     }
     if (cmm_gfx_total >= 14970) {
+        allow = FALSE;
+    }
+    if (cmm_gfx_tp_total >= 7970) {
+        allow = FALSE;
+    }
+    if (cmm_gfx_tdecal_total >= 7970) {
+        allow = FALSE;
+    }
+
+    if (!allow) {
+        //error sound
+        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+    }
+    return allow;
+}
+
+s32 object_sanity_check(void) {
+    u8 allow = TRUE;
+
+    if (cmm_object_count >= 200) {
         allow = FALSE;
     }
 
@@ -744,6 +764,8 @@ void generate_terrain_gfx(void) {
     cmm_vtx_total = vtx_index;
     cmm_mtx_total = mtx_index;
     cmm_gfx_total = gfx_index;
+    cmm_gfx_tdecal_total = gfx_tdecal_index;
+    cmm_gfx_tp_total = gfx_tp_index;
 };
 
 Gfx preview_gfx[7];
@@ -940,9 +962,11 @@ void place_thing_action(void) {
                 }
         } else {
             //CMM_PM_OBJECT
-            place_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
-            place_object(cmm_sbx,cmm_sby,cmm_sbz);
-            generate_object_preview();
+            if (object_sanity_check()) {
+                place_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+                place_object(cmm_sbx,cmm_sby,cmm_sbz);
+                generate_object_preview();
+            }
         }
     }
 }
@@ -1040,10 +1064,12 @@ void save_level(u8 index) {
 
     //SAVE
     for (i = 0; i < cmm_tile_count; i++) {
+        //Save tiles
         bcopy(&cmm_tile_data[i],&cmm_save.lvl[index].tiles[i],sizeof(cmm_tile_data[i]));
     }
 
     for (i = 0; i < cmm_object_count; i++) {
+        //Save Objects
         bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
     }
 
@@ -1059,16 +1085,14 @@ void save_level(u8 index) {
     //release_rumble_pak_control();
 
     u32 bytes_written;
-    FRESULT code;
-    code = f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+    f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
     f_close(&cmm_file);
-
-    print_text_fmt_int(10, 56, "CODE %d",code); 
 }
 
 void load_level(u8 index) {
     s16 i;
+    u8 fresh = FALSE;
 
     bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
     bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
@@ -1082,15 +1106,17 @@ void load_level(u8 index) {
     u32 bytes_read;
     FRESULT code = f_stat(&cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
+        //file exists, load it
         f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE);
         f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
         f_close(&cmm_file);
-    }
-
-    if (cmm_save.check != SAVE_CHECK) {
-        //First time boot of the game
+    } else {
+        //Load into a fresh level
+        fresh = TRUE;
         bzero(&cmm_save, sizeof(cmm_save));
-        cmm_save.check = SAVE_CHECK;
+
+        //Set version
+        cmm_save.lvl[0].version = CMM_VERSION;
 
         //Place spawn location
         cmm_save.lvl[0].object_count = 1;
@@ -1125,7 +1151,9 @@ void load_level(u8 index) {
         place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
     }
 
-    update_painting();
+    if (!fresh) {
+        update_painting();
+    }
 }
 
 void cmm_init() {
@@ -1666,6 +1694,7 @@ char * cmm_mm_lmode_btns[] = {
     &cmm_mm_lmode_btn2,
 };
 char cmm_mm_txt_pages[] = {TXT_MM_PAGE};
+char cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
 
 u8 cmm_mm_state = MM_INIT;
 u8 cmm_mm_main_state = MM_MAIN;
@@ -1796,8 +1825,8 @@ s32 cmm_main_menu(void) {
                 switch(cmm_mm_index) {
                     case 0:
                         //make new level
-                        cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
-                        cmm_mm_state = MM_KEYBOARD;
+                        cmm_mm_state = MM_MAKE_MODE;
+                        cmm_mm_index = 0;
                     break;
                     case 1:
                         //load levels
@@ -1816,7 +1845,16 @@ s32 cmm_main_menu(void) {
             }
         break;
         case MM_MAKE_MODE:
-
+            cmm_mm_index = (cmm_mm_index+2)%2;
+            render_cmm_mm_menu(&cmm_mm_lmode_btns,2);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
+                cmm_mm_state = MM_KEYBOARD;
+            }
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                cmm_mm_state = cmm_mm_main_state;
+                cmm_mm_index = 0;
+            }
         break;
         case MM_HELP:
             shade_screen();
@@ -1884,8 +1922,15 @@ s32 cmm_main_menu(void) {
                 }
             }
 
+            if (gPlayer1Controller->buttonPressed & R_TRIG) {
+                cmm_mm_state = cmm_mm_main_state;
+                cmm_mm_index = 0;
+            }
+
             shade_screen();
-            print_maker_string_ascii(10,220,cmm_mm_keyboard_input,FALSE);
+            print_maker_string_ascii(35,210,cmm_mm_keyboard_input,FALSE);
+            print_maker_string(35,80,cmm_mm_txt_keyboard,FALSE);
+
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;
                 u16 y = i/10;
@@ -1912,7 +1957,7 @@ s32 cmm_main_menu(void) {
         case MM_FILES:
             cmm_mm_index = (cmm_mm_index+cmm_level_entry_count)%cmm_level_entry_count;
 
-            cmm_mm_pages = (cmm_level_entry_count/PAGE_SIZE);
+            cmm_mm_pages = (cmm_level_entry_count/PAGE_SIZE)+1;
             cmm_mm_page = cmm_mm_index/PAGE_SIZE;
             cmm_mm_page_entries = PAGE_SIZE;
             if (cmm_mm_page == cmm_mm_pages-1) {

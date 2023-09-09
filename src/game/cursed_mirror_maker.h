@@ -1,7 +1,7 @@
 #ifndef cursed_mirror_maker_h
 #define cursed_mirror_maker_h
 
-#define SAVE_CHECK 0x020EDD10 // My favorite ROM address! (Refer to: Chips Challenge 64, BUP 64, Shrek Retold 64)
+#define CMM_VERSION 1
 
 void sb_loop(void);
 void sb_init(void);
@@ -10,8 +10,8 @@ void draw_cmm_menu(void);
 void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
-extern Gfx cmm_terrain_gfx[10000];
-extern Gfx cmm_terrain_gfx_tdecal[10000];
+extern Gfx cmm_terrain_gfx[15000];
+extern Gfx cmm_terrain_gfx_tdecal[8000];
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -169,10 +169,22 @@ enum {
     CMM_THEME_CAVE,
 };
 
+/*
+IMPORTANT!
+
+u8 version;
+u16 piktcher[28][28];
+
+Should always be the first 2 members of the cmm_level_save struct
+no matter what version.
+*/
+
 struct cmm_level_save {
-    struct cmm_tile tiles[1500];//3*1500 = 4500 bytes
-    struct cmm_obj objects[200];//4*200 = 800 bytes
+    u8 version;
     u16 piktcher[28][28]; //28*28 = 784*2 = 1568 bytes
+
+    struct cmm_tile tiles[2000];//3*1500 = 4500 bytes
+    struct cmm_obj objects[200];//4*200 = 800 bytes
     u8 option[20];//20 bytes
     //6906 bytes per level, ~7000 bytes
     u16 tile_count;
@@ -181,7 +193,6 @@ struct cmm_level_save {
 
 ALIGNED8 struct cmm_hack_save {
     struct cmm_level_save lvl[1];
-    u32 check;
 };
 
 enum {
