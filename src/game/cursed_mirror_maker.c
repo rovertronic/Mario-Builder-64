@@ -259,6 +259,7 @@ u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
 u8 cmm_lopt_plane = 0;
+u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
@@ -1061,6 +1062,7 @@ void save_level(u8 index) {
     cmm_save.lvl[index].option[3] = cmm_lopt_theme;
     cmm_save.lvl[index].option[4] = cmm_lopt_bg;
     cmm_save.lvl[index].option[5] = cmm_lopt_plane;
+    cmm_save.lvl[index].option[19] = cmm_lopt_game;
 
     //SAVE
     for (i = 0; i < cmm_tile_count; i++) {
@@ -1124,6 +1126,8 @@ void load_level(u8 index) {
         cmm_save.lvl[0].objects[0].z = 16;
         cmm_save.lvl[0].objects[0].y = 4;
         cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
+
+        cmm_save.lvl[index].option[19] = cmm_lopt_game;
     }
 
     cmm_tile_count = cmm_save.lvl[index].tile_count;
@@ -1135,6 +1139,8 @@ void load_level(u8 index) {
     cmm_lopt_theme = cmm_save.lvl[index].option[3];
     cmm_lopt_bg = cmm_save.lvl[index].option[4];
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
+    cmm_lopt_game = cmm_save.lvl[index].option[19];
+    //option 20 is level game (btcm)
     change_theme(cmm_lopt_theme,FALSE);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
@@ -1850,6 +1856,15 @@ s32 cmm_main_menu(void) {
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
                 cmm_mm_state = MM_KEYBOARD;
+
+                switch(cmm_mm_index) {
+                    case 0: //vanilla
+                        cmm_lopt_game = 1;
+                    break;
+                    case 1: //btcm
+                        cmm_lopt_game = 0;
+                    break;
+                }
             }
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                 cmm_mm_state = cmm_mm_main_state;

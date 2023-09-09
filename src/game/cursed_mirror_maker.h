@@ -213,4 +213,10 @@ enum {
     KXM_NEW_LEVEL,
 };
 
+extern u8 cmm_lopt_game;
+enum {
+    CMM_GAME_BTCM,
+    CMM_GAME_VANILLA,
+};
+
 #endif
