@@ -9,6 +9,7 @@
 #include "platform_displacement.h"
 #include "types.h"
 #include "sm64.h"
+#include "cursed_mirror_maker.h"
 
 u16 D_8032FEC0 = 0;
 
@@ -215,6 +216,11 @@ static void apply_mario_inertia(void) {
  */
 void apply_mario_platform_displacement(void) {
     struct Object *platform;
+
+	gDoInertia = TRUE;
+	if (cmm_lopt_game == CMM_GAME_VANILLA) {
+		gDoInertia = FALSE;
+	}
 
     platform = gMarioPlatform;
     if (!(gTimeStopState & TIME_STOP_ACTIVE) && gMarioObject != NULL) {

@@ -1,0 +1,10 @@
+extern u8 pl_scard_pl_scard_rgba16[];
+extern Vtx pl_scard_pl_scard_mesh_vtx_0[4];
+extern Gfx pl_scard_pl_scard_mesh_tri_0[];
+extern Vtx pl_scard_pl_scard_mesh_vtx_1[22];
+extern Gfx pl_scard_pl_scard_mesh_tri_1[];
+extern Gfx mat_pl_scard_f3dlite_material_002[];
+extern Gfx mat_revert_pl_scard_f3dlite_material_002[];
+extern Gfx mat_pl_scard_scard[];
+extern Gfx mat_revert_pl_scard_scard[];
+extern Gfx pl_scard_pl_scard_mesh[];

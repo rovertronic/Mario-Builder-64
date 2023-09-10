@@ -1807,6 +1807,7 @@ char * cmm_mm_help_btns[] = {
 char cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 char cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 char cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
+char cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
 
 char cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 char cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
@@ -2007,6 +2008,11 @@ s32 cmm_main_menu(void) {
         case MM_HELP:
             shade_screen();
             print_maker_string(20,210,cmm_mm_help_ptr,FALSE);
+
+            if (cmm_mm_help_ptr == cmm_mm_help_page1) {
+                gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
+            }
+
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
                 cmm_mm_state = MM_HELP_MODE;
                 cmm_mm_index = 0;
@@ -2014,6 +2020,7 @@ s32 cmm_main_menu(void) {
         break;
         case MM_CREDITS:
             shade_screen();
+            print_maker_string(20,210,cmm_mm_credits_page,FALSE);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
                 cmm_mm_state = cmm_mm_main_state;
                 cmm_mm_index = 0;
