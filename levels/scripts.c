@@ -149,6 +149,17 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_SPAWN, spawn_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_PIPE, warp_pipe_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BADGE, badge_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_KINGBOMB_MAKER, king_bobomb_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_WHOMP_MAKER, whomp_geo),
+
+    LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SPINY,                   spiny_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_HEAD,            wiggler_head_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_BODY,            wiggler_body_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BUBBA,                   bubba_geo),
+
+    LOAD_MODEL_FROM_GEO(MODEL_CHILL_BULLY,             chilly_chief_geo),
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN_NO_SHADOW,   silver_coin_no_shadow_geo),
@@ -325,12 +336,6 @@ const LevelScript script_func_global_11[] = {
 };
 
 const LevelScript script_func_global_12[] = {
-    LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_SPINY,                   spiny_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_HEAD,            wiggler_head_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_BODY,            wiggler_body_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_BUBBA,                   bubba_geo),
     RETURN(),
 };
 
@@ -378,7 +383,7 @@ const LevelScript script_func_global_16[] = {
 };
 
 const LevelScript script_func_global_17[] = {
-    LOAD_MODEL_FROM_GEO(MODEL_CHILL_BULLY,             chilly_chief_geo),
+
     LOAD_MODEL_FROM_GEO(MODEL_BIG_CHILL_BULLY,         chilly_chief_big_geo),
     // LOAD_MODEL_FROM_GEO(MODEL_MONEYBAG,                moneybag_geo),
     RETURN(),

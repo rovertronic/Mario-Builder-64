@@ -800,5 +800,6 @@ extern const BehaviorScript bhvPostGameHint[];
 extern const BehaviorScript bhvPreviewObject[];
 extern const BehaviorScript bhvSpawn[];
 extern const BehaviorScript bhvBadge[];
+extern const BehaviorScript bhvBoss[];
 
 #endif // BEHAVIOR_DATA_H

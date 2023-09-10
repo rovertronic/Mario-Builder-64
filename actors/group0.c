@@ -26,6 +26,62 @@
 
 #include "sparkle_animation/model.inc.c"
 
+#include "king_bobomb/model.inc.c"
+#include "king_bobomb/anims/data.inc.c"
+#include "king_bobomb/anims/table.inc.c"
+
+#include "koopa_flag/model.inc.c"
+#include "koopa_flag/anims/data.inc.c"
+#include "koopa_flag/anims/table.inc.c"
+
+#include "poundable_pole/model.inc.c"
+#include "poundable_pole/collision.inc.c"
+
+#include "koopa/model.inc.c"
+#include "koopa/anims/data.inc.c"
+#include "koopa/anims/table.inc.c"
+
+#include "piranha_plant/model.inc.c"
+#include "piranha_plant/anims/data.inc.c"
+#include "piranha_plant/anims/table.inc.c"
+
+#include "whomp/model.inc.c"
+#include "whomp/anims/data.inc.c"
+#include "whomp/anims/table.inc.c"
+#include "whomp/collision.inc.c"
+
+#include "chillychief/model.inc.c"
+#include "chillychief/anims/data.inc.c"
+#include "chillychief/anims/table.inc.c"
+
+#include "chain_ball/model.inc.c"
+
+#include "chain_chomp/model.inc.c"
+#include "chain_chomp/anims/data.inc.c"
+#include "chain_chomp/anims/table.inc.c"
+
+#include "bubba/model.inc.c"
+
+#include "wiggler_body/model.inc.c"
+#include "wiggler_body/anims/data.inc.c"
+#include "wiggler_body/anims/table.inc.c"
+
+#include "wiggler_head/model.inc.c"
+#include "wiggler_head/anims/data.inc.c"
+#include "wiggler_head/anims/table.inc.c"
+
+#include "lakitu_enemy/model.inc.c"
+#include "lakitu_enemy/anims/data.inc.c"
+#include "lakitu_enemy/anims/table.inc.c"
+
+#include "spiny_egg/model.inc.c"
+#include "spiny_egg/anims/data.inc.c"
+#include "spiny_egg/anims/table.inc.c"
+
+#include "spiny/model.inc.c"
+#include "spiny/anims/data.inc.c"
+#include "spiny/anims/table.inc.c"
+
 #ifdef S2DEX_TEXT_ENGINE
 #include "src/s2d_engine/config.h"
 #include FONT_C_FILE

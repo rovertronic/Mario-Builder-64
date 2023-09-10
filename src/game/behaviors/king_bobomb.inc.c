@@ -32,10 +32,9 @@ void king_bobomb_act_inactive(void) { // act 0
 
         if (cur_obj_can_mario_activate_textbox_2(500.0f, 100.0f)) {
             o->oSubAction++;
-            seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
+            //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
         }
-    } else if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
-        DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, DIALOG_017)) {
+    } else if (1) {
         o->oAction = KING_BOBOMB_ACT_ACTIVE;
         o->oFlags |= OBJ_FLAG_HOLDABLE;
     }
@@ -194,8 +193,7 @@ void king_bobomb_act_hit_ground(void) { // act 6
 
 void king_bobomb_act_death(void) { // act 7
     cur_obj_init_animation_with_sound(KING_BOBOMB_ANIM_HIT_GROUND);
-    if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
-        DIALOG_FLAG_TEXT_DEFAULT, CUTSCENE_DIALOG, DIALOG_116)) {
+    if (1) {
         create_sound_spawner(SOUND_OBJ_KING_WHOMP_DEATH);
 
         cur_obj_hide();
@@ -205,7 +203,7 @@ void king_bobomb_act_death(void) { // act 7
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, TINY_DIRT_PARTICLE_ANIM_STATE_YELLOW);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
 
-        cur_obj_spawn_star_at_y_offset(2000.0f, 4500.0f, -4500.0f, 200.0f);
+        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
 
         o->oAction = KING_BOBOMB_ACT_STOP_MUSIC;
     }
@@ -304,8 +302,7 @@ void king_bobomb_act_return_home(void) { // act 5
             break;
 
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_DIALOG:
-            if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
-                DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, DIALOG_128)) {
+            if (1) {
                 o->oAction = KING_BOBOMB_ACT_ACTIVE;
             }
             break;

@@ -97,28 +97,84 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
+void df_badge(struct Object * obj, int param) {
+    obj->oBehParams2ndByte = param;
+}
+
+void df_tree(struct Object * obj, int param) {
+    switch(param) {
+        case 1:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
+        break;
+        case 2:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
+        break;
+        case 3:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
+        break;
+    }
+}
+
+void df_boss(struct Object * obj, int param) {
+    switch(param) {
+        case 1:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WHOMP_MAKER];
+            obj->oAnimations = whomp_seg6_anims_06020A04;
+            super_cum_working(obj,0);
+            obj_scale(obj,2.0f);
+        break;
+        case 3:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WIGGLER_HEAD];
+            obj->oAnimations = wiggler_seg5_anims_0500EC8C;
+            super_cum_working(obj,0);
+            obj_scale(obj,4.0f);
+        break;
+    }
+}
+
+void df_exbox(struct Object * obj, int param) {
+    switch(param) {
+        case 0:
+            obj->oAnimState = 0;
+        break;
+        case 1:
+            obj->oAnimState = 1;
+        break;
+        case 2:
+            obj->oAnimState = 2;
+        break;
+        case 3:
+            obj->oAnimState = 3;
+        break;
+        default:
+            obj->oAnimState = 4;
+        break;
+    }
+}
+
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE  //ANIMATION PTR              //MX BPRM
-    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f   ,NULL                         , 0      },
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0      },
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f   ,NULL                         , 0      },
-    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f   ,NULL                         , 0      },
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f   ,NULL                         , 0      },
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f   ,NULL                         , 0      },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,3.0f   ,NULL                         , 0      },
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f   ,NULL                         , 0      },
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f   ,NULL                         , 0      },
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f   ,NULL                         , 0      },
-    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f   ,Rex_anims                    , 0      },
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f   ,bully_seg5_anims_0500470C    , 0      },
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f   ,bobomb_seg8_anims_0802396C   , 0      },
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f   ,NULL                         , 4      },
-    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f   ,NULL                         , 8      },
-    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA         ,FALSE  ,2.0f   ,chuckya_seg8_anims_0800C070  , 0      },
-    {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0      },
-    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0      },
-    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 1      },
-    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f   ,NULL                         , 23     },
+    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
+    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
+    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,3.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f   ,Rex_anims                    , 0       , NULL       },
+    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
+    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
+    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f   ,NULL                         , 4       , &df_tree   },
+    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f   ,NULL                         , 8       , &df_exbox  },
+    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA         ,FALSE  ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
+    {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
+    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 1       , NULL       },
+    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f   ,NULL                         , 23      , &df_badge  },
+    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER  ,FALSE  ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 4     , &df_boss   },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -193,12 +249,12 @@ u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};u8 txt_theme_
 u8 txt_theme_7[] = {TXT_THEME_7};
 u8 *cmm_theme_string_table[] = {
     &txt_theme_1,
-    &txt_theme_2,
-    &txt_theme_3,
-    &txt_theme_4,
     &txt_theme_5,
     &txt_theme_6,
     &txt_theme_7,
+    &txt_theme_2,
+    &txt_theme_3,
+    &txt_theme_4,
 };
 
 //background strings
@@ -252,6 +308,14 @@ u8 *txt_pipe[] = {
     txt_bp_pipe1,
 };
 
+u8 txt_bp_boss1[] = {TXT_BP_BOSS_1};u8 txt_bp_boss2[] = {TXT_BP_BOSS_2};u8 txt_bp_boss3[] = {TXT_BP_BOSS_3};u8 txt_bp_boss4[] = {TXT_BP_BOSS_4};
+u8 *txt_bp_boss[] = {
+    txt_bp_boss1,
+    txt_bp_boss2,
+    txt_bp_boss3,
+    txt_bp_boss4,
+};
+
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
 u8 cmm_lopt_seq = 0;
@@ -296,7 +360,7 @@ u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
@@ -312,7 +376,7 @@ u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = 
 u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
 u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
-u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};u8 txt_btn_38[] = {TXT_BTN_38};
+u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};u8 txt_btn_38[] = {TXT_BTN_38};u8 txt_btn_39[] = {TXT_BTN_39};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
@@ -354,6 +418,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_badge    , OBJECT_TYPE_BADGE  ,CMM_PM_OBJ  , &txt_btn_36   , badgenames   }, //CMM_BUTTON_BADGE
     {&mat_b_btn_water    , TILE_TYPE_WATER    ,CMM_PM_TILE , &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
     {&mat_b_btn_fence    , TILE_TYPE_FENCE    ,CMM_PM_TILE , &txt_btn_38   , NULL         }, //CMM_BUTTON_FENCE
+    {&mat_b_btn_boss     , OBJECT_TYPE_BOSS   ,CMM_PM_OBJ  , &txt_btn_39   , txt_bp_boss  }, //CMM_BUTTON_BOSS
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -886,6 +951,9 @@ void generate_object_preview(void) {
             super_cum_working(preview_object,0);
             preview_object->header.gfx.animInfo.animAccel = 0.0f;
         }
+        if (cmm_object_types[cmm_object_data[i].type].disp_func) {
+            (cmm_object_types[cmm_object_data[i].type].disp_func)(preview_object,cmm_object_data[i].param);
+        }
     }
 }
 
@@ -1410,6 +1478,9 @@ void sb_loop(void) {
                     cmm_preview_object->oAnimations = cmm_object_types[cmm_id_selection].anim;
                     super_cum_working(cmm_preview_object,0);
                 }
+                if (cmm_object_types[cmm_id_selection].disp_func) {
+                    (cmm_object_types[cmm_id_selection].disp_func)(cmm_preview_object,cmm_param_selection);
+                }
             } else {
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             }
@@ -1458,6 +1529,7 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 //You can not put a blank button into the toolbox
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
+                    cmm_param_selection = 0;
                     cmm_ui_bar[cmm_ui_index] = cmm_toolbox[cmm_toolbox_index];
                 } else {
                     //error sound
@@ -1606,7 +1678,7 @@ void draw_cmm_menu(void) {
             print_maker_string(15,45,cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str,FALSE);
             if (cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings) {
                 print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
-                cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],FALSE);
+                cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
             }
         break;
         case CMM_MAKE_TOOLBOX:

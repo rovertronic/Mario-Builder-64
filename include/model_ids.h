@@ -377,12 +377,6 @@
 #define MODEL_YOSHI                       0x55        // yoshi_geo
 
 // group 11
-#define MODEL_ENEMY_LAKITU                0x54        // enemy_lakitu_geo
-#define MODEL_SPINY_BALL                  0x55        // spiny_ball_geo
-#define MODEL_SPINY                       0x56        // spiny_geo
-#define MODEL_WIGGLER_HEAD                0x57        // wiggler_head_geo
-#define MODEL_WIGGLER_BODY                0x58        // wiggler_body_geo
-#define MODEL_BUBBA                       0x59        // bubba_geo
 
 // referenced in macro presets. Unknown usage.
 #define MODEL_UNKNOWN_54                  0x54
@@ -420,7 +414,6 @@
 #define MODEL_LAKITU                      0x66        // lakitu_geo
 
 // group 16
-#define MODEL_CHILL_BULLY                 0x64        // chilly_chief_geo
 #define MODEL_BIG_CHILL_BULLY             0x65        // chilly_chief_big_geo
 #define MODEL_MONEYBAG                    0x66        // moneybag_geo
 
@@ -801,5 +794,16 @@
 #define MODEL_MAKER_PIPE 0x12C
 #define MODEL_BADGE 0x12D
 #define MODEL_MARIO2 0x12E
+#define MODEL_KINGBOMB_MAKER 0x12F
+#define MODEL_WHOMP_MAKER 0x130
+
+#define MODEL_ENEMY_LAKITU 0x131        // enemy_lakitu_geo
+#define MODEL_SPINY_BALL   0x132        // spiny_ball_geo
+#define MODEL_SPINY        0x133        // spiny_geo
+#define MODEL_WIGGLER_HEAD 0x134        // wiggler_head_geo
+#define MODEL_WIGGLER_BODY 0x135        // wiggler_body_geo
+#define MODEL_BUBBA        0x136        // bubba_geo
+
+#define MODEL_CHILL_BULLY  0x137        // chilly_chief_geo
 
 #endif // MODEL_IDS_H

@@ -3637,6 +3637,14 @@ const BehaviorScript bhvPreviewObject[] = {
     BREAK(),
 };
 
+extern void bhv_boss(void);
+const BehaviorScript bhvBoss[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    CALL_NATIVE(bhv_boss),
+    BREAK(),
+};
+
 const BehaviorScript bhvTrash[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),

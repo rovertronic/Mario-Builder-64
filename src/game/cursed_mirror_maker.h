@@ -60,6 +60,7 @@ struct cmm_object_type_struct {
     f32 scale;
     struct Animation **anim;
     s16 param_max;
+    void (* disp_func)(struct Object *,int);
 };
 enum {
     OBJECT_TYPE_STAR,
@@ -82,6 +83,7 @@ enum {
     OBJECT_TYPE_PHNTSM,
     OBJECT_TYPE_PIPE,
     OBJECT_TYPE_BADGE,
+    OBJECT_TYPE_BOSS,
 };
 
 struct cmm_ui_button_type {
@@ -152,6 +154,7 @@ enum {
     CMM_BUTTON_BADGE,
     CMM_BUTTON_WATER,
     CMM_BUTTON_FENCE,
+    CMM_BUTTON_BOSS,
 };
 
 enum {
@@ -161,12 +164,12 @@ enum {
 
 enum {
     CMM_THEME_GENERIC,
-    CMM_THEME_VIRTUAPLEX,
-    CMM_THEME_RED_HOT_RESERVOIR,
-    CMM_THEME_RETRO,
     CMM_THEME_CASTLE,
     CMM_THEME_DESERT,
     CMM_THEME_CAVE,
+    CMM_THEME_VIRTUAPLEX,
+    CMM_THEME_RED_HOT_RESERVOIR,
+    CMM_THEME_RETRO,
 };
 
 /*

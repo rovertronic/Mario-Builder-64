@@ -16,6 +16,273 @@ extern const Gfx burn_smoke_seg4_sub_dl_model[];
 extern const Gfx burn_smoke_seg4_sub_dl_end[];
 extern const Gfx burn_smoke_seg4_dl[];
 
+// king_bobomb
+extern const GeoLayout king_bobomb_geo[];
+extern const Gfx king_bobomb_seg5_dl_0500A4B8[];
+extern const Gfx king_bobomb_seg5_dl_0500A4F0[];
+extern const Gfx king_bobomb_seg5_dl_0500A5A0[];
+extern const Gfx king_bobomb_seg5_dl_0500A5D8[];
+extern const Gfx king_bobomb_seg5_dl_0500A688[];
+extern const Gfx king_bobomb_seg5_dl_0500A6C0[];
+extern const Gfx king_bobomb_seg5_dl_0500A770[];
+extern const Gfx king_bobomb_seg5_dl_0500A7A8[];
+extern const Gfx king_bobomb_seg5_dl_0500A858[];
+extern const Gfx king_bobomb_seg5_dl_0500A890[];
+extern const Gfx king_bobomb_seg5_dl_0500A940[];
+extern const Gfx king_bobomb_seg5_dl_0500A978[];
+extern const Gfx king_bobomb_seg5_dl_0500ABC0[];
+extern const Gfx king_bobomb_seg5_dl_0500AD08[];
+extern const Gfx king_bobomb_seg5_dl_0500AF20[];
+extern const Gfx king_bobomb_seg5_dl_0500B068[];
+extern const Gfx king_bobomb_seg5_sub_dl_body_left_side[];
+extern const Gfx king_bobomb_seg5_sub_dl_body_right_side[];
+extern const Gfx king_bobomb_seg5_dl_body[];
+extern const Gfx king_bobomb_seg5_dl_eyes[];
+extern const Gfx king_bobomb_seg5_dl_eyes_blink[];
+extern const Gfx king_bobomb_seg5_dl_0500B3C8[];
+extern const Gfx king_bobomb_seg5_dl_0500B418[];
+extern const Gfx king_bobomb_seg5_dl_0500B5F0[];
+extern const Gfx king_bobomb_seg5_dl_0500B6C0[];
+extern const struct Animation *const king_bobomb_seg5_anims_0500FE30[];
+
+// chain_ball
+extern const GeoLayout metallic_ball_geo[];
+extern const Gfx chain_ball_seg6_dl_060212E8[];
+
+// chain_chomp
+extern const GeoLayout chain_chomp_geo[];
+extern const Gfx chain_chomp_seg6_dl_06024000[];
+extern const Gfx chain_chomp_seg6_dl_06024040[];
+extern const Gfx chain_chomp_seg6_dl_06024240[];
+extern const Gfx chain_chomp_seg6_dl_06024700[];
+extern const Gfx chain_chomp_seg6_dl_06024900[];
+extern const Gfx chain_chomp_seg6_dl_06024940[];
+extern const Gfx chain_chomp_seg6_dl_06024AA8[];
+extern const Gfx chain_chomp_seg6_dl_06024B00[];
+extern const Gfx chain_chomp_seg6_dl_06024CF0[];
+extern const Gfx chain_chomp_seg6_dl_06024D60[];
+extern const Gfx chain_chomp_seg6_dl_06024F50[];
+extern const Gfx chain_chomp_seg6_dl_06024FC0[];
+extern const struct Animation *const chain_chomp_seg6_anims_06025178[];
+
+// koopa
+extern const GeoLayout koopa_without_shell_geo[];
+extern const GeoLayout koopa_with_shell_geo[];
+extern const Gfx koopa_seg6_dl_06007658[];
+extern const Gfx koopa_seg6_dl_060076B0[];
+extern const Gfx koopa_seg6_dl_06007850[];
+extern const Gfx koopa_seg6_dl_06007970[];
+extern const Gfx koopa_seg6_dl_06007A60[];
+extern const Gfx koopa_seg6_dl_06007AA0[];
+extern const Gfx koopa_seg6_dl_06007AF8[];
+extern const Gfx koopa_seg6_dl_06007B20[];
+extern const Gfx koopa_seg6_dl_06007FB8[];
+extern const Gfx koopa_seg6_dl_06008050[];
+extern const Gfx koopa_seg6_dl_060080F8[];
+extern const Gfx koopa_seg6_dl_06008250[];
+extern const Gfx koopa_seg6_dl_06008530[];
+extern const Gfx koopa_seg6_dl_060085E8[];
+extern const Gfx koopa_seg6_dl_06008640[];
+extern const Gfx koopa_seg6_dl_060086D0[];
+extern const Gfx koopa_seg6_dl_060089B0[];
+extern const Gfx koopa_seg6_dl_06008A68[];
+extern const Gfx koopa_seg6_dl_06008AC0[];
+extern const Gfx koopa_seg6_dl_06008B50[];
+extern const Gfx koopa_seg6_dl_0600B6E0[];
+extern const Gfx koopa_seg6_dl_0600B838[];
+extern const Gfx koopa_seg6_dl_0600B8B8[];
+extern const Gfx koopa_seg6_dl_0600BA10[];
+extern const Gfx koopa_seg6_dl_0600BA90[];
+extern const Gfx koopa_seg6_dl_0600BC18[];
+extern const Gfx koopa_seg6_dl_0600BC88[];
+extern const Gfx koopa_seg6_dl_0600BE10[];
+extern const Gfx koopa_seg6_dl_0600BE80[];
+extern const Gfx koopa_seg6_dl_0600C240[];
+extern const Gfx koopa_seg6_dl_0600C498[];
+extern const struct Animation *const koopa_seg6_anims_06011364[];
+
+// koopa_flag
+extern const GeoLayout koopa_flag_geo[];
+extern const Gfx koopa_flag_seg6_dl_06000968[];
+extern const Gfx koopa_flag_seg6_dl_06000A08[];
+extern const Gfx koopa_flag_seg6_dl_06000AB8[];
+extern const Gfx koopa_flag_seg6_dl_06000AE8[];
+extern const Gfx koopa_flag_seg6_dl_06000B08[];
+extern const Gfx koopa_flag_seg6_dl_06000BC0[];
+extern const Gfx koopa_flag_seg6_dl_06000BF8[];
+extern const Gfx koopa_flag_seg6_dl_06000CA8[];
+extern const Gfx koopa_flag_seg6_dl_06000CE0[];
+extern const Gfx koopa_flag_seg6_dl_06000D90[];
+extern const Gfx koopa_flag_seg6_dl_06000DB0[];
+extern const Gfx koopa_flag_seg6_dl_06000E20[];
+extern const Gfx koopa_flag_seg6_dl_06000E38[];
+extern const struct Animation *const koopa_flag_seg6_anims_06001028[];
+
+// piranha_plant
+extern const GeoLayout piranha_plant_geo[];
+extern const Gfx piranha_plant_seg6_dl_06015438[];
+extern const Gfx piranha_plant_seg6_dl_06015480[];
+extern const Gfx piranha_plant_seg6_dl_06015530[];
+extern const Gfx piranha_plant_seg6_dl_06015578[];
+extern const Gfx piranha_plant_seg6_dl_06015798[];
+extern const Gfx piranha_plant_seg6_dl_06015850[];
+extern const Gfx piranha_plant_seg6_dl_06015E40[];
+extern const Gfx piranha_plant_seg6_dl_06015EA8[];
+extern const Gfx piranha_plant_seg6_dl_06015F68[];
+extern const Gfx piranha_plant_seg6_dl_06016060[];
+extern const Gfx piranha_plant_seg6_dl_060160B0[];
+extern const Gfx piranha_plant_seg6_dl_06016120[];
+extern const Gfx piranha_plant_seg6_dl_06016750[];
+extern const Gfx piranha_plant_seg6_dl_060167B8[];
+extern const Gfx piranha_plant_seg6_dl_06016890[];
+extern const Gfx piranha_plant_seg6_dl_06016960[];
+extern const Gfx piranha_plant_seg6_dl_060169A8[];
+extern const Gfx piranha_plant_seg6_dl_060169E8[];
+extern const Gfx piranha_plant_seg6_dl_06016A78[];
+extern const Gfx piranha_plant_seg6_dl_06016BA8[];
+extern const Gfx piranha_plant_seg6_dl_06016C10[];
+extern const Gfx piranha_plant_seg6_dl_06016D30[];
+extern const Gfx piranha_plant_seg6_dl_06016D98[];
+extern const Gfx piranha_plant_seg6_dl_06016EB8[];
+extern const Gfx piranha_plant_seg6_dl_06016F20[];
+extern const struct Animation *const piranha_plant_seg6_anims_0601C31C[];
+
+// poundable_pole
+extern const GeoLayout wooden_post_geo[];
+extern const Gfx poundable_pole_seg6_dl_060022F0[];
+extern const Gfx poundable_pole_seg6_dl_06002358[];
+extern const Gfx poundable_pole_seg6_dl_06002410[];
+extern const Collision poundable_pole_collision_wooden_post[];
+
+// whomp
+extern const GeoLayout whomp_geo[];
+extern const Gfx whomp_seg6_dl_0601F4F8[];
+extern const Gfx whomp_seg6_dl_0601F570[];
+extern const Gfx whomp_seg6_dl_0601F5A8[];
+extern const Gfx whomp_seg6_dl_0601F5E0[];
+extern const Gfx whomp_seg6_dl_0601F7F0[];
+extern const Gfx whomp_seg6_dl_0601F880[];
+extern const Gfx whomp_seg6_dl_0601FA58[];
+extern const Gfx whomp_seg6_dl_0601FAE8[];
+extern const Gfx whomp_seg6_dl_0601FB88[];
+extern const Gfx whomp_seg6_dl_0601FBC0[];
+extern const Gfx whomp_seg6_dl_0601FC70[];
+extern const Gfx whomp_seg6_dl_0601FCA8[];
+extern const Gfx whomp_seg6_dl_0601FE10[];
+extern const Gfx whomp_seg6_dl_0601FEA8[];
+extern const Gfx whomp_seg6_dl_0601FFA0[];
+extern const Gfx whomp_seg6_dl_06020038[];
+extern const struct Animation *const whomp_seg6_anims_06020A04[];
+extern const Collision whomp_seg6_collision_06020A0C[];
+
+// chillychief
+extern const Gfx chilly_chief_seg6_dl_06002B30[];
+extern const Gfx chilly_chief_seg6_dl_06002BC8[];
+extern const Gfx chilly_chief_seg6_dl_06002C60[];
+extern const Gfx chilly_chief_seg6_dl_06002D18[];
+extern const Gfx chilly_chief_seg6_dl_06002D50[];
+extern const Gfx chilly_chief_seg6_dl_06002D88[];
+extern const Gfx chilly_chief_seg6_dl_06002E80[];
+extern const Gfx chilly_chief_seg6_dl_06002EB8[];
+extern const Gfx chilly_chief_seg6_dl_06002EF0[];
+extern const Gfx chilly_chief_seg6_dl_06002FC8[];
+extern const Gfx chilly_chief_seg6_dl_06003010[];
+extern const GeoLayout chilly_chief_geo[];
+extern const GeoLayout chilly_chief_big_geo[];
+extern const struct Animation *const chilly_chief_seg6_anims_06003994[];
+
+// bubba
+extern const GeoLayout bubba_geo[];
+extern const Gfx bubba_seg5_dl_05004A40[];
+extern const Gfx bubba_seg5_dl_05004AA8[];
+extern const Gfx bubba_seg5_dl_05004BE8[];
+extern const Gfx bubba_seg5_dl_05004C40[];
+extern const Gfx bubba_seg5_dl_05004D48[];
+extern const Gfx bubba_seg5_dl_05004E80[];
+extern const Gfx bubba_seg5_dl_05005538[];
+extern const Gfx bubba_seg5_dl_050055A0[];
+extern const Gfx bubba_seg5_dl_050056E0[];
+extern const Gfx bubba_seg5_dl_05005738[];
+extern const Gfx bubba_seg5_dl_05005840[];
+extern const Gfx bubba_seg5_dl_05005978[];
+
+// lakitu_enemy
+extern const GeoLayout enemy_lakitu_geo[];
+extern const Gfx lakitu_enemy_seg5_dl_05012760[];
+extern const Gfx lakitu_enemy_seg5_dl_05012890[];
+extern const Gfx lakitu_enemy_seg5_dl_05012910[];
+extern const Gfx lakitu_enemy_seg5_dl_05012EF0[];
+extern const Gfx lakitu_enemy_seg5_dl_05013160[];
+extern const Gfx lakitu_enemy_seg5_dl_05013298[];
+extern const Gfx lakitu_enemy_seg5_dl_050132D8[];
+extern const Gfx lakitu_enemy_seg5_dl_05013320[];
+extern const Gfx lakitu_enemy_seg5_dl_05013350[];
+extern const Gfx lakitu_enemy_seg5_dl_05013378[];
+extern const Gfx lakitu_enemy_seg5_dl_050134A8[];
+extern const Gfx lakitu_enemy_seg5_dl_050136A0[];
+extern const Gfx lakitu_enemy_seg5_dl_05013860[];
+extern const Gfx lakitu_enemy_seg5_dl_050138B0[];
+extern const struct Animation *const lakitu_enemy_seg5_anims_050144D4[];
+
+// spiny
+extern const GeoLayout spiny_geo[];
+extern const Gfx spiny_seg5_dl_05016418[];
+extern const Gfx spiny_seg5_dl_050164E0[];
+extern const Gfx spiny_seg5_dl_050165A8[];
+extern const Gfx spiny_seg5_dl_05016670[];
+extern const Gfx spiny_seg5_dl_05016738[];
+extern const Gfx spiny_seg5_dl_05016A48[];
+extern const struct Animation *const spiny_seg5_anims_05016EAC[];
+
+// spiny_egg
+extern const GeoLayout spiny_ball_geo[];
+extern const Gfx spiny_egg_seg5_dl_050151A8[];
+extern const Gfx spiny_egg_seg5_dl_050151E0[];
+extern const Gfx spiny_egg_seg5_dl_05015218[];
+extern const Gfx spiny_egg_seg5_dl_05015250[];
+extern const Gfx spiny_egg_seg5_dl_05015288[];
+extern const Gfx spiny_egg_seg5_dl_050152C0[];
+extern const Gfx spiny_egg_seg5_dl_050152F8[];
+extern const Gfx spiny_egg_seg5_dl_05015330[];
+extern const Gfx spiny_egg_seg5_dl_05015368[];
+extern const Gfx spiny_egg_seg5_dl_05015740[];
+extern const struct Animation *const spiny_egg_seg5_anims_050157E4[];
+
+// wiggler_body
+extern const Gfx wiggler_seg5_dl_0500BCB8[];
+extern const Gfx wiggler_seg5_dl_0500BE10[];
+extern const Gfx wiggler_seg5_dl_0500BE98[];
+extern const Gfx wiggler_seg5_dl_0500BF20[];
+extern const Gfx wiggler_seg5_dl_0500C078[];
+extern const Gfx wiggler_seg5_dl_0500C100[];
+extern const Gfx wiggler_seg5_dl_0500C208[];
+extern const Gfx wiggler_seg5_dl_0500C240[];
+extern const Gfx wiggler_seg5_dl_0500C278[];
+extern const GeoLayout wiggler_body_geo[];
+extern const struct Animation *const wiggler_seg5_anims_0500C874[];
+
+// wiggler_head
+extern const GeoLayout wiggler_head_geo[];
+extern const Gfx wiggler_seg5_dl_0500DC18[];
+extern const Gfx wiggler_seg5_dl_0500DD70[];
+extern const Gfx wiggler_seg5_dl_0500DDF8[];
+extern const Gfx wiggler_seg5_dl_0500DE80[];
+extern const Gfx wiggler_seg5_dl_0500DFD8[];
+extern const Gfx wiggler_seg5_dl_0500E060[];
+extern const Gfx wiggler_seg5_dl_0500E168[];
+extern const Gfx wiggler_seg5_dl_0500E1A0[];
+extern const Gfx wiggler_seg5_dl_0500E1D8[];
+extern const Gfx wiggler_seg5_dl_0500E2B0[];
+extern const Gfx wiggler_seg5_dl_0500E2F8[];
+extern const Gfx wiggler_seg5_dl_0500E3E8[];
+extern const Gfx wiggler_seg5_dl_0500E430[];
+extern const Gfx wiggler_seg5_dl_0500E4E0[];
+extern const Gfx wiggler_seg5_dl_0500E518[];
+extern const Gfx wiggler_seg5_dl_0500E608[];
+extern const Gfx wiggler_seg5_dl_0500E640[];
+extern const Gfx wiggler_seg5_dl_0500E678[];
+extern const struct Animation *const wiggler_seg5_anims_0500EC8C[];
+
 /*
 //Crowbar
 extern Vtx Crowbar_Crowbar_Mesh_mesh_vtx_0[496];
