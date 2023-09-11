@@ -48,6 +48,7 @@
 #include "puppylights.h"
 #include "game/rovent.h"
 #include "actors/group0.h"
+#include "cursed_mirror_maker.h"
 
 //! TODO: remove static
 

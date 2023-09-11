@@ -15,6 +15,15 @@ static Collision const *sPlatformOnTrackCollisionModels[] = {
     /* PLATFORM_ON_TRACK_TYPE_GRATE     */ bitfs_seg7_collision_platform_on_track,
 };
 
+
+//bullshit trajectory for testing
+Trajectory penistraj[] = {
+    0, 0, 0, 0,
+    1, 0, 500, 0,
+    2, 0, 500, 500,
+    -1,
+};
+
 /**
  * Paths for the different instances of these platforms.
  */
@@ -31,7 +40,7 @@ static Trajectory const *sPlatformOnTrackPaths[] = {
 };
 
 static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos) {
-    if ((ballIndex == 0) || (GET_BPARAM2(o->oBehParams) & PLATFORM_ON_TRACK_BP_SPAWN_BALLS)) {
+    if ((ballIndex == 0) || (1)) {
         struct Waypoint *initialPrevWaypoint = o->oPlatformOnTrackPrevWaypoint;
         struct Waypoint *nextWaypoint = initialPrevWaypoint;
         struct Waypoint *prevWaypoint;
@@ -140,12 +149,16 @@ void bhv_platform_on_track_init(void) {
         s16 pathIndex = (u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_PATH;
         o->oPlatformOnTrackType = ((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_TYPE) >> 4;
 
+        //override platform on track to always be checkerboard
+        o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
+
+
         o->oPlatformOnTrackIsNotSkiLift = o->oPlatformOnTrackType - PLATFORM_ON_TRACK_TYPE_SKI_LIFT;
 
         o->collisionData =
             segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
 
-        o->oPlatformOnTrackStartWaypoint = segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
+        o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list;//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
 
         o->oPlatformOnTrackIsNotHMC = pathIndex - 4;
 
@@ -183,7 +196,7 @@ static void platform_on_track_act_init(void) {
     if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
         // Spawn track balls
         for (i = 1; i < 6; i++) {
-            platform_on_track_update_pos_or_spawn_ball(i, &o->oHomeVec);
+            //platform_on_track_update_pos_or_spawn_ball(i, &o->oHomeVec);
         }
     }
 
@@ -406,6 +419,8 @@ void bhv_platform_on_track_update(void) {
         o->oPosY += o->oPlatformOnTrackOffsetY;
 #endif
     }
+
+    o->oDontInertia = FALSE;
 }
 
 /**

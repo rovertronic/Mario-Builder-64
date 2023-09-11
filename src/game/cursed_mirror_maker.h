@@ -12,6 +12,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[15000];
 extern Gfx cmm_terrain_gfx_tdecal[8000];
+extern u16 cmm_trajectory_list[5][160];
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -57,6 +58,7 @@ struct cmm_object_type_struct {
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
+    u8 use_trajectory:1;
     f32 scale;
     struct Animation **anim;
     s16 param_max;
@@ -84,6 +86,7 @@ enum {
     OBJECT_TYPE_PIPE,
     OBJECT_TYPE_BADGE,
     OBJECT_TYPE_BOSS,
+    OBJECT_TYPE_MPLAT,
 };
 
 struct cmm_ui_button_type {
@@ -113,6 +116,7 @@ enum {
     CMM_MAKE_MAIN,
     CMM_MAKE_TOOLBOX,
     CMM_MAKE_SETTINGS,
+    CMM_MAKE_TRAJECTORY,
 };
 
 enum {
@@ -155,6 +159,7 @@ enum {
     CMM_BUTTON_WATER,
     CMM_BUTTON_FENCE,
     CMM_BUTTON_BOSS,
+    CMM_BUTTON_MPLAT,
 };
 
 enum {

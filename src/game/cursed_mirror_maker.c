@@ -153,28 +153,29 @@ void df_exbox(struct Object * obj, int param) {
 }
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID             //BILLB //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
-    {bhvStar             , 0.0f     ,MODEL_STAR            ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA          ,FALSE  ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN     ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGreenCoin        ,-150.0f   ,0xEF                  ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN        ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN       ,TRUE   ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH,FALSE  ,3.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK       ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO         ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRex              ,-150.0f   ,0xE1                  ,FALSE  ,1.5f   ,Rex_anims                    , 0       , NULL       },
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY           ,FALSE  ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB    ,FALSE  ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1    ,TRUE   ,1.0f   ,NULL                         , 4       , &df_tree   },
-    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX ,FALSE  ,2.0f   ,NULL                         , 8       , &df_exbox  },
-    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA         ,FALSE  ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn            , 0.0f     ,MODEL_SPAWN           ,FALSE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO           ,FALSE  ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE      ,FALSE  ,1.0f   ,NULL                         , 1       , NULL       },
-    {bhvBadge            ,0.0f      ,MODEL_BADGE           ,TRUE   ,5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER  ,FALSE  ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 4     , &df_boss   },
+    //BEHAVIOR           //Y-OFF    //MODEL ID                  //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
+    {bhvStar             , 0.0f     ,MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
+    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGreenCoin        ,-150.0f   ,0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRex              ,-150.0f   ,0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
+    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
+    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
+    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
+    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
+    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
+    {bhvSpawn            , 0.0f     ,MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
+    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
+    {bhvBadge            ,0.0f      ,MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
+    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 4     , &df_boss   },
+    {bhvPlatformOnTrack  ,-150.0f   ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -200,6 +201,10 @@ Gfx * cmm_mat_pointer = NULL;
 
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
+
+u16 cmm_trajectory_list[5][160];
+u16 cmm_trajectory_edit_index = 0;
+
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -341,27 +346,21 @@ u8 cmm_ui_bar[9] = {
 };
 s8 cmm_toolbox_index = 0;
 //9x5 = 45 assets
-u8 cmm_toolbox[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,
-};
+u8 cmm_toolbox[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -419,6 +418,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_water    , TILE_TYPE_WATER    ,CMM_PM_TILE , &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
     {&mat_b_btn_fence    , TILE_TYPE_FENCE    ,CMM_PM_TILE , &txt_btn_38   , NULL         }, //CMM_BUTTON_FENCE
     {&mat_b_btn_boss     , OBJECT_TYPE_BOSS   ,CMM_PM_OBJ  , &txt_btn_39   , txt_bp_boss  }, //CMM_BUTTON_BOSS
+    {&mat_b_btn_boss     , OBJECT_TYPE_MPLAT  ,CMM_PM_OBJ  , &txt_btn_39   , NULL         }, //CMM_BUTTON_MPLAT
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -998,6 +998,12 @@ void place_object(u8 x, u8 y, u8 z) {
         cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
         cmm_object_data[cmm_object_count].param = cmm_param_selection;
         cmm_object_count++;
+
+        if (cmm_object_types[cmm_id_selection].use_trajectory) {
+            cmm_menu_state = CMM_MAKE_TRAJECTORY;
+            o->oAction = 5; //trajectory editor
+            cmm_trajectory_edit_index = 0;
+        }
     } else {
         play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
     }
@@ -1317,6 +1323,7 @@ void sb_init(void) {
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,800.0f,0};
     u8 joystick = joystick_direction();
+    u8 cursor_did_move = FALSE;
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
@@ -1427,6 +1434,10 @@ void sb_loop(void) {
                         place_thing_action();
                     break; 
                 }
+            }
+
+            if (o->oAction != 1) {
+                return;
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
@@ -1587,6 +1598,84 @@ void sb_loop(void) {
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
         break;
+        case 5: //trajectory maker
+            //START MOVE CURSOR
+            
+            if (joystick != 0) {
+                switch(((joystick-1)+cmm_camera_rot_offset)%4) {
+                    case 0:
+                        cmm_sbx++;
+                        cursor_did_move = TRUE;
+                    break;
+                    case 1:
+                        cmm_sbz--;
+                        cursor_did_move = TRUE;
+                    break;
+                    case 2:
+                        cmm_sbx--;
+                        cursor_did_move = TRUE;
+                    break;
+                    case 3:
+                        cmm_sbz++;
+                        cursor_did_move = TRUE;
+                    break;
+                }
+            }
+
+            if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
+                cmm_sby++;
+                cursor_did_move = TRUE;
+            }
+            if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
+                cmm_sby--;
+                cursor_did_move = TRUE;
+            }
+            if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
+                cmm_camera_rot_offset++;
+            }
+            if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
+                cmm_camera_rot_offset--;
+            }
+            cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
+
+            cmm_sbx=(cmm_sbx+32)%32;
+            cmm_sbz=(cmm_sbz+32)%32;
+            cmm_sby=(cmm_sby+32)%32;
+            //END MOVE CURSOR
+
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*300.0f, 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*300.0f, 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*300.0f, 0.2f);
+
+            vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
+            vec3f_add(&cmm_camera_pos,&cam_pos_offset);
+
+            o->oPosX = cmm_sbx*300.0f; 
+            o->oPosY = cmm_sby*300.0f; 
+            o->oPosZ = cmm_sbz*300.0f;
+
+            if (o->oTimer == 0) {
+                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
+                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
+                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
+                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                cmm_trajectory_edit_index++; 
+            } else {
+                if (cursor_did_move) {
+                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
+                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
+                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
+                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                    cmm_trajectory_edit_index++;
+                }
+            }
+
+            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == 39)) {
+                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = -1;
+                o->oAction = 1;
+                cmm_menu_state = CMM_MAKE_MAIN;
+            }
+        break;
     }
 }
 
@@ -1719,23 +1808,25 @@ void draw_cmm_menu(void) {
 
         break;
 
-    case CMM_MAKE_SETTINGS:
-        //PAINTING
-        create_dl_translation_matrix(MENU_MTX_PUSH, 280, 200, 0);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
-        gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+        case CMM_MAKE_SETTINGS:
+            //PAINTING
+            create_dl_translation_matrix(MENU_MTX_PUSH, 280, 200, 0);
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
+            gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
+            //print_maker_string(15,210,txt_btn_2,FALSE);
+            print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
 
+            for (i=0;i<SETTINGS_SIZE;i++) {
+                print_maker_string(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
+                print_maker_string(70,180-(i*16),cmm_settings_buttons[i].nametable[ *cmm_settings_buttons[i].value ],(i==cmm_settings_index));
+            }
+        break;
 
-        //print_maker_string(15,210,txt_btn_2,FALSE);
-        print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
+        case CMM_MAKE_TRAJECTORY:
 
-        for (i=0;i<SETTINGS_SIZE;i++) {
-            print_maker_string(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
-            print_maker_string(70,180-(i*16),cmm_settings_buttons[i].nametable[ *cmm_settings_buttons[i].value ],(i==cmm_settings_index));
-        }
         break;
     }
 }
