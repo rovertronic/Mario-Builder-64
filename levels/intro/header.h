@@ -31,4 +31,12 @@ extern const GeoLayout intro_geo_error_screen[];
 extern const LevelScript level_intro_entry_error_screen[];
 extern Gfx *geo18_display_error_message(u32 run, UNUSED struct GraphNode *sp44, UNUSED u32 sp48);
 
+#include "levels/intro/ts1/header.h"
+
+#include "levels/intro/ts2/header.h"
+
+#include "levels/intro/ts3/header.h"
+
+#include "levels/intro/ts4/header.h"
+
 #endif

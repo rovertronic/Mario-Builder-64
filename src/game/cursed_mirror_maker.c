@@ -1907,7 +1907,8 @@ s32 cmm_main_menu(void) {
                         return 1;
                     break;
                     case 1:
-                        cmm_mm_state = MM_HELP;
+                        cmm_mm_state = MM_HELP_MODE;
+                        cmm_mm_index = 0;
                     break;
                     case 2:
                         cmm_mm_state = MM_CREDITS;

@@ -1,0 +1,12 @@
+extern u8 ts2_checkerboard_ia8[];
+extern u8 ts2_glow_rgba32[];
+extern Vtx ts2_grid_mesh_vtx_cull[8];
+extern Vtx ts2_grid_mesh_vtx_0[9];
+extern Gfx ts2_grid_mesh_tri_0[];
+extern Vtx ts2_grid_mesh_vtx_1[5];
+extern Gfx ts2_grid_mesh_tri_1[];
+extern Gfx mat_ts2_f3dlite_material[];
+extern Gfx mat_revert_ts2_f3dlite_material[];
+extern Gfx mat_ts2_f3dlite_material_018[];
+extern Gfx mat_revert_ts2_f3dlite_material_018[];
+extern Gfx ts2_grid_mesh[];

@@ -1,0 +1,9 @@
+extern u8 ts3_texture__51__ci8[];
+extern u8 ts3_texture__51__pal_rgba16[];
+extern Vtx ts3_eyes_mesh_vtx_cull[8];
+extern Vtx ts3_eyes_mesh_vtx_0[6];
+extern Gfx ts3_eyes_mesh_tri_0[];
+extern Gfx mat_ts3_f3dlite_material_013[];
+extern Gfx mat_revert_ts3_f3dlite_material_013[];
+extern Gfx ts3_eyes_mesh[];
+extern Gfx ts4_MARIO_mesh[];

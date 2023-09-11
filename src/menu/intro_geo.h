@@ -10,6 +10,11 @@
 extern const Gfx mirror_tr_mirror_002_mesh[];
 extern const Gfx mirror_co_mirror_001_mesh[];
 
+extern Gfx ts1_letter_R_mesh[];
+extern Gfx ts2_grid_mesh[];
+extern Gfx ts3_eyes_mesh[];
+extern Gfx ts4_MARIO_mesh[];
+
 enum IntroContexts {
     INTRO_CONTEXT_NORMAL,
     INTRO_CONTEXT_GAME_OVER,

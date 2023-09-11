@@ -93,7 +93,8 @@ Gfx *geo_intro_super_mario_64_logo(s32 callContext, struct GraphNode *node, UNUS
         // gSPDisplayList(dlIter++, &intro_seg7_dl_main_logo);  // draw model
         gDPSetEnvColor(dlIter++, 255, 255, 255, 255);
 
-        gSPDisplayList(dlIter++, &intro_seg7_dl_copyright_trademark); //NEW
+        gSPDisplayList(dlIter++, &ts1_letter_R_mesh); //NEW
+        gSPDisplayList(dlIter++, &ts4_MARIO_mesh); //NEW
 
         gSPPopMatrix(dlIter++, G_MTX_MODELVIEW);
         gSPEndDisplayList(dlIter);
@@ -166,12 +167,12 @@ Gfx *geo_title_screen2(s32 callContext, struct GraphNode *node, UNUSED void *con
         guScale(scaleMat, scaleX, scaleY, scaleZ);
         gSPMatrix(displayListIter++, scaleMat, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
 
-        gDPSetEnvColor(displayListIter++, 255, 255, 255, y);
+        gDPSetEnvColor(displayListIter++, 255, 255, 255, 255);
 
         graphNode->flags = (graphNode->flags & 0xFF) | 0x500;
         gDPSetRenderMode(displayListIter++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
 
-        gSPDisplayList(displayListIter++, &mirror_tr_mirror_002_mesh);
+        gSPDisplayList(displayListIter++, &ts2_grid_mesh);
 
         gSPPopMatrix(displayListIter++, G_MTX_MODELVIEW);
         gSPEndDisplayList(displayListIter);
@@ -244,7 +245,7 @@ Gfx *geo_title_screen3(s32 callContext, struct GraphNode *node, UNUSED void *con
         gDPSetEnvColor(displayListIter++, 255, 255, 255, 255);
         gDPSetRenderMode(displayListIter++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
 
-        gSPDisplayList(displayListIter++, &mirror_co_mirror_001_mesh);
+        gSPDisplayList(displayListIter++, &ts3_eyes_mesh);
 
         gSPPopMatrix(displayListIter++, G_MTX_MODELVIEW);
         gSPEndDisplayList(displayListIter);
