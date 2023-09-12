@@ -177,6 +177,13 @@ enum {
     CMM_THEME_RETRO,
 };
 
+//compressed trajectories
+struct cmm_comptraj {
+    u8 x:5, y:5, z:5;
+    s8 t:7;
+};
+
+
 /*
 IMPORTANT!
 
@@ -193,6 +200,7 @@ struct cmm_level_save {
 
     struct cmm_tile tiles[2000];//3*1500 = 4500 bytes
     struct cmm_obj objects[200];//4*200 = 800 bytes
+    struct cmm_comptraj trajectories[5][40];
     u8 option[20];//20 bytes
     //6906 bytes per level, ~7000 bytes
     u16 tile_count;

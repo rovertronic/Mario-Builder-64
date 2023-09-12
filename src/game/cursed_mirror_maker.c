@@ -175,7 +175,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
     {bhvBadge            ,0.0f      ,MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
     {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 4     , &df_boss   },
-    {bhvPlatformOnTrack  ,-150.0f   ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPlatformOnTrack  ,0.0f      ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
 };
 
 u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
@@ -204,7 +204,9 @@ struct Object *cmm_boundary_object[6]; //one for each side
 
 u16 cmm_trajectory_list[5][160];
 u16 cmm_trajectory_edit_index = 0;
-
+u8 cmm_trajectory_to_edit = 0;
+u8 cmm_trajectories_used = 0; //bitfield
+u8 cmm_txt_recording[] = {TXT_RECORDING};
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -997,13 +999,31 @@ void place_object(u8 x, u8 y, u8 z) {
         cmm_object_data[cmm_object_count].type = cmm_id_selection;
         cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
         cmm_object_data[cmm_object_count].param = cmm_param_selection;
-        cmm_object_count++;
 
         if (cmm_object_types[cmm_id_selection].use_trajectory) {
-            cmm_menu_state = CMM_MAKE_TRAJECTORY;
-            o->oAction = 5; //trajectory editor
-            cmm_trajectory_edit_index = 0;
+            u8 trajectory_found = FALSE;
+            for (u8 i=0;i<5;i++) {
+                if (!((cmm_trajectories_used>>i) & 1)) {
+                    cmm_trajectories_used |= (1 << i);
+                    cmm_trajectory_to_edit = i;
+                    cmm_object_data[cmm_object_count].param = i;
+                    trajectory_found = TRUE;
+                    break;
+                }
+            }
+
+            if (!trajectory_found) {
+                play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                cmm_object_count --;
+                remove_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+            } else {
+                cmm_menu_state = CMM_MAKE_TRAJECTORY;
+                o->oAction = 5; //trajectory editor
+                cmm_trajectory_edit_index = 0;
+            }
         }
+
+        cmm_object_count++;
     } else {
         play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
     }
@@ -1103,6 +1123,11 @@ void delete_tile_action(void) {
                     mode = 1;
                     remove_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
                     cmm_object_count--;
+
+                    if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
+                        //unlink trajectory
+                        cmm_trajectories_used &= ~(1<<cmm_object_data[i].param);
+                    }
                 }
             }
             if (mode==1) {
@@ -1137,6 +1162,7 @@ FILINFO cmm_file_info;
 
 void save_level(u8 index) {
     s16 i;
+    s16 j;
 
     bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
     //bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
@@ -1151,6 +1177,7 @@ void save_level(u8 index) {
     cmm_save.lvl[index].option[3] = cmm_lopt_theme;
     cmm_save.lvl[index].option[4] = cmm_lopt_bg;
     cmm_save.lvl[index].option[5] = cmm_lopt_plane;
+    cmm_save.lvl[index].option[18] = cmm_trajectories_used;
     cmm_save.lvl[index].option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1162,6 +1189,15 @@ void save_level(u8 index) {
     for (i = 0; i < cmm_object_count; i++) {
         //Save Objects
         bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
+    }
+
+    for (i = 0; i < 5; i++) {
+        for (j = 0; j < 40; j++) {
+            cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
+            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/300;
+            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/300;
+            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/300;
+        }
     }
 
     for (i=0;i<784;i++) {
@@ -1183,6 +1219,7 @@ void save_level(u8 index) {
 
 void load_level(u8 index) {
     s16 i;
+    s16 j;
     u8 fresh = FALSE;
 
     bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
@@ -1228,6 +1265,7 @@ void load_level(u8 index) {
     cmm_lopt_theme = cmm_save.lvl[index].option[3];
     cmm_lopt_bg = cmm_save.lvl[index].option[4];
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
+    cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
     //configure toolbox depending on game style
@@ -1254,6 +1292,15 @@ void load_level(u8 index) {
     for (i = 0; i < cmm_object_count; i++) {
         bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
         place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
+    }
+
+    for (i = 0; i < 5; i++) {
+        for (j = 0; j < 40; j++) {
+            cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
+            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*300.0f;
+            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*300.0f;
+            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*300.0f;
+        }
     }
 
     if (!fresh) {
@@ -1655,23 +1702,23 @@ void sb_loop(void) {
             o->oPosZ = cmm_sbz*300.0f;
 
             if (o->oTimer == 0) {
-                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
-                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
-                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
-                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
                 cmm_trajectory_edit_index++; 
             } else {
                 if (cursor_did_move) {
-                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
-                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
-                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
-                    cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
+                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
+                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
+                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
                     cmm_trajectory_edit_index++;
                 }
             }
 
             if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == 39)) {
-                cmm_trajectory_list[0][cmm_trajectory_edit_index*4 + 0] = -1;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
@@ -1826,7 +1873,7 @@ void draw_cmm_menu(void) {
         break;
 
         case CMM_MAKE_TRAJECTORY:
-
+            print_maker_string(20,210,cmm_txt_recording,TRUE);
         break;
     }
 }
@@ -2203,6 +2250,24 @@ s32 cmm_main_menu(void) {
             }
         break;
         case MM_FILES:
+            if (cmm_level_entry_count == 0) {
+                //no levels, do not render anything
+                gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 210, 0);
+                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+                gSPDisplayList(gDisplayListHead++, &mm_btn_lg_mm_btn_lg_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+
+                print_maker_string_ascii(55,200,"No levels currently loaded yet.",TRUE);
+
+                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                    cmm_mm_state = cmm_mm_main_state;
+                    cmm_mm_index = 0;
+                }
+                return;
+            }
+
             cmm_mm_index = (cmm_mm_index+cmm_level_entry_count)%cmm_level_entry_count;
 
             cmm_mm_pages = (cmm_level_entry_count/PAGE_SIZE)+1;
