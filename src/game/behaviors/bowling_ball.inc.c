@@ -54,27 +54,7 @@ void bowling_ball_set_hitbox(void) {
 }
 
 void bowling_ball_set_waypoints(void) {
-    switch (o->oBehParams2ndByte) {
-        case BBALL_BP_STYPE_BOB_UPPER:
-            o->oPathedStartWaypoint = segmented_to_virtual(bob_seg7_metal_ball_path0);
-            break;
-
-        case BBALL_BP_STYPE_TTM:
-            o->oPathedStartWaypoint = segmented_to_virtual(ttm_seg7_trajectory_070170A0);
-            break;
-
-        case BBALL_BP_STYPE_BOB_LOWER:
-            o->oPathedStartWaypoint = segmented_to_virtual(bob_seg7_metal_ball_path1);
-            break;
-
-        case BBALL_BP_STYPE_THI_LARGE:
-            o->oPathedStartWaypoint = (struct Waypoint *) sThiHugeMetalBallTraj;
-            break;
-
-        case BBALL_BP_STYPE_THI_SMALL:
-            o->oPathedStartWaypoint = (struct Waypoint *) sThiTinyMetalBallTraj;
-            break;
-    }
+    o->oPathedStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
 }
 
 void bhv_bowling_ball_roll_loop(void) {
@@ -112,29 +92,31 @@ void bhv_bowling_ball_initialize_loop(void) {
 
     o->oMoveAngleYaw = o->oPathedTargetYaw;
 
-    switch (o->oBehParams2ndByte) {
-        case BBALL_BP_STYPE_BOB_UPPER:
-            o->oForwardVel = 20.0f;
-            break;
+    //switch (o->oBehParams2ndByte) {
+    //    case BBALL_BP_STYPE_BOB_UPPER:
+    //        o->oForwardVel = 20.0f;
+    //        break;
+//
+    //    case BBALL_BP_STYPE_TTM:
+    //        o->oForwardVel = 10.0f;
+    //        break;
+//
+    //    case BBALL_BP_STYPE_BOB_LOWER:
+    //        o->oForwardVel = 20.0f;
+    //        break;
+//
+    //    case BBALL_BP_STYPE_THI_LARGE:
+    //        o->oForwardVel = 25.0f;
+    //        break;
+//
+    //    case BBALL_BP_STYPE_THI_SMALL:
+    //        o->oForwardVel = 10.0f;
+    //        cur_obj_scale(0.3f);
+    //        o->oGraphYOffset = 39.0f;
+    //        break;
+    //}
 
-        case BBALL_BP_STYPE_TTM:
-            o->oForwardVel = 10.0f;
-            break;
-
-        case BBALL_BP_STYPE_BOB_LOWER:
-            o->oForwardVel = 20.0f;
-            break;
-
-        case BBALL_BP_STYPE_THI_LARGE:
-            o->oForwardVel = 25.0f;
-            break;
-
-        case BBALL_BP_STYPE_THI_SMALL:
-            o->oForwardVel = 10.0f;
-            cur_obj_scale(0.3f);
-            o->oGraphYOffset = 39.0f;
-            break;
-    }
+    o->oForwardVel = 18.0f;
 }
 
 void bhv_bowling_ball_loop(void) {
@@ -157,22 +139,10 @@ void bhv_bowling_ball_loop(void) {
 }
 
 void bhv_generic_bowling_ball_spawner_init(void) {
-    switch (o->oBehParams2ndByte) {
-        case BBALL_BP_STYPE_BOB_UPPER:
-            o->oBBallSpawnerMaxSpawnDist = 7000.0f;
-            o->oBBallSpawnerSpawnOdds = 2.0f;
-            break;
 
-        case BBALL_BP_STYPE_TTM:
-            o->oBBallSpawnerMaxSpawnDist = 8000.0f;
-            o->oBBallSpawnerSpawnOdds = 1.0f;
-            break;
-
-        case BBALL_BP_STYPE_BOB_LOWER:
-            o->oBBallSpawnerMaxSpawnDist = 6000.0f;
-            o->oBBallSpawnerSpawnOdds = 2.0f;
-            break;
-    }
+    o->oBBallSpawnerMaxSpawnDist = 9000.0f;
+    o->oBBallSpawnerSpawnOdds = 1.0f;
+    cur_obj_hide();
 }
 
 void bhv_generic_bowling_ball_spawner_loop(void) {

@@ -5,6 +5,8 @@
 
 
 ALIGNED8 const u8 port_ai_1[] = {
+    1
+/*
 #include "actors/amp/output-0_custom.i8.inc.c"
 ,
 #include "actors/amp/output-1_custom.i8.inc.c"
@@ -13126,4 +13128,5 @@ ALIGNED8 const u8 port_ai_1[] = {
 #include "actors/amp/output-6559_custom.i8.inc.c"
 ,
 #include "actors/amp/output-6560_custom.i8.inc.c"
+*/
     };

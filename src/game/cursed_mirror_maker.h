@@ -87,6 +87,7 @@ enum {
     OBJECT_TYPE_BADGE,
     OBJECT_TYPE_BOSS,
     OBJECT_TYPE_MPLAT,
+    OBJECT_TYPE_BBALL,
 };
 
 struct cmm_ui_button_type {
@@ -160,6 +161,7 @@ enum {
     CMM_BUTTON_FENCE,
     CMM_BUTTON_BOSS,
     CMM_BUTTON_MPLAT,
+    CMM_BUTTON_BBALL,
 };
 
 enum {
