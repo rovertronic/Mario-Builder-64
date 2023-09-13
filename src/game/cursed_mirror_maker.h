@@ -12,7 +12,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[15000];
 extern Gfx cmm_terrain_gfx_tdecal[8000];
-extern u16 cmm_trajectory_list[5][160];
+extern Trajectory cmm_trajectory_list[5][160];
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -88,6 +88,7 @@ enum {
     OBJECT_TYPE_BOSS,
     OBJECT_TYPE_MPLAT,
     OBJECT_TYPE_BBALL,
+    OBJECT_TYPE_KTQ,
 };
 
 struct cmm_ui_button_type {
@@ -162,6 +163,7 @@ enum {
     CMM_BUTTON_BOSS,
     CMM_BUTTON_MPLAT,
     CMM_BUTTON_BBALL,
+    CMM_BUTTON_KTQ,
 };
 
 enum {

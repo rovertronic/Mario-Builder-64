@@ -104,6 +104,7 @@
 #define TXT_BTN_39 _("Boss")
 #define TXT_BTN_40 _("CB Platform")
 #define TXT_BTN_41 _("Bowling Ball")
+#define TXT_BTN_42 _("Koopa the Quick")
 
 #define TXT_RECORDING _("Building path in progress.\nPress [A] to build the path.\nPress START to finish.")
 
