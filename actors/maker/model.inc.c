@@ -11539,6 +11539,19 @@ Gfx maker_materials_mesh_tri_46[] = {
 	gsSPEndDisplayList(),
 };
 
+Vtx maker_materials_mesh_vtx_47[4] = {
+	{{{598, 0, 300},0, {-16, 1008},{0x0, 0x7F, 0x0, 0xFF}}},
+	{{{698, 0, 300},0, {1008, 1008},{0x0, 0x7F, 0x0, 0xFF}}},
+	{{{698, 0, 200},0, {1008, -16},{0x0, 0x7F, 0x0, 0xFF}}},
+	{{{598, 0, 200},0, {-16, -16},{0x0, 0x7F, 0x0, 0xFF}}},
+};
+
+Gfx maker_materials_mesh_tri_47[] = {
+	gsSPVertex(maker_materials_mesh_vtx_47 + 0, 4, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSPEndDisplayList(),
+};
+
 Gfx mat_maker_MakerGrass[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
@@ -12335,6 +12348,21 @@ Gfx mat_maker_MakerCCloud[] = {
 	gsSPEndDisplayList(),
 };
 
+Gfx mat_maker_MakerLineMat[] = {
+	gsDPPipeSync(),
+	gsDPSetCombineLERP(0, 0, 0, PRIMITIVE, 0, 0, 0, 1, 0, 0, 0, PRIMITIVE, 0, 0, 0, 1),
+	gsSPGeometryMode(G_CULL_BACK, 0),
+	gsSPTexture(65535, 65535, 0, 0, 1),
+	gsDPSetPrimColor(0, 0, 254, 211, 0, 255),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_revert_maker_MakerLineMat[] = {
+	gsDPPipeSync(),
+	gsSPGeometryMode(0, G_CULL_BACK),
+	gsSPEndDisplayList(),
+};
+
 Gfx maker_materials_mesh[] = {
 	gsSPClearGeometryMode(G_LIGHTING),
 	gsSPVertex(maker_materials_mesh_vtx_cull + 0, 8, 0),
@@ -12441,6 +12469,9 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(maker_materials_mesh_tri_45),
 	gsSPDisplayList(mat_maker_MakerCCloud),
 	gsSPDisplayList(maker_materials_mesh_tri_46),
+	gsSPDisplayList(mat_maker_MakerLineMat),
+	gsSPDisplayList(maker_materials_mesh_tri_47),
+	gsSPDisplayList(mat_revert_maker_MakerLineMat),
 	gsDPPipeSync(),
 	gsSPSetGeometryMode(G_LIGHTING),
 	gsSPClearGeometryMode(G_TEXTURE_GEN),

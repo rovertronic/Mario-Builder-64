@@ -208,6 +208,8 @@ u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
 u8 cmm_trajectories_used = 0; //bitfield
 u8 cmm_txt_recording[] = {TXT_RECORDING};
+Vtx cmm_trajectory_vtx[240];
+Gfx cmm_trajectory_gfx[100]; //gfx
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -604,11 +606,31 @@ s32 handle_wait_vblank(OSMesgQueue *mq) {
     // returns true if it lasts longer than 3 seconds (3 * 1000us * 1000ms)
     OSMesg msg;
     OSTimer timer;
-    osSetTimer(&timer, OS_USEC_TO_CYCLES(3000000), 0, mq, (OSMesg)666);
+    osSetTimer(&timer, OS_USEC_TO_CYCLES(3000000), 0, mq, (OSMesg)(111*3*2));
     osRecvMesg(mq, &msg, OS_MESG_BLOCK);
     osStopTimer(&timer);
 
-    return msg == (OSMesg)666;
+    return msg == (OSMesg)(111*3*2);
+}
+
+void generate_path_gfx(void) {
+    u16 gfx_index = 0;
+    u16 vtx_index = 0;
+
+    gSPDisplayList(&cmm_trajectory_gfx[gfx_index++], mat_maker_MakerLineMat);
+
+    for (u8 i=1;i<cmm_trajectory_edit_index;i++) {
+        make_vertex(cmm_trajectory_vtx, vtx_index+0, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_trajectory_vtx, vtx_index+1, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_trajectory_vtx, vtx_index+2, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_trajectory_vtx, vtx_index+3, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])-20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
+
+        gSPVertex(&cmm_trajectory_gfx[gfx_index++], cmm_trajectory_vtx + vtx_index, 4, 0);
+        gSP2Triangles(&cmm_trajectory_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
+        vtx_index+=4;
+    }
+
+    gSPEndDisplayList(&cmm_trajectory_gfx[gfx_index]);
 }
 
 void generate_terrain_gfx(void) {
@@ -861,11 +883,16 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
     if (callContext == GEO_CONTEXT_CREATE) {
         generate_terrain_gfx();
+        generate_path_gfx();
     }
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tdecal, LAYER_TRANSPARENT_DECAL);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
+
+        if (cmm_menu_state == CMM_MAKE_TRAJECTORY) {
+            geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
+        }
 
         //this extra append is for the editor tile preview
         if ((cmm_mode == CMM_MODE_MAKE)&&(cmm_place_mode == CMM_PM_TILE)) {
@@ -1023,6 +1050,7 @@ void place_object(u8 x, u8 y, u8 z) {
                 cmm_menu_state = CMM_MAKE_TRAJECTORY;
                 o->oAction = 5; //trajectory editor
                 cmm_trajectory_edit_index = 0;
+                generate_path_gfx();
             }
         }
 
@@ -1717,6 +1745,7 @@ void sb_loop(void) {
                     cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
                     cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
                     cmm_trajectory_edit_index++;
+                    generate_path_gfx();
                 }
             }
 
@@ -1724,6 +1753,7 @@ void sb_loop(void) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
+                generate_path_gfx();
             }
         break;
     }
