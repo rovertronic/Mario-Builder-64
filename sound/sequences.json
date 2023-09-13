@@ -53,5 +53,6 @@
     "32_nsmb_castle": ["2C_nsmb_castle"],
 	"33_final_boss": ["0C_extended_bank"],
 	"34_showrunner_boss": ["0C_extended_bank"],
-	"35_bighouse": ["0C_extended_bank"]
+	"35_bighouse": ["0C_extended_bank"],
+	"36_level_koopa_road": ["19"]
 }

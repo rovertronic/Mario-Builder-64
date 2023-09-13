@@ -223,6 +223,17 @@
 #define TEXT_SONG18 _("AGAMEMNON")
 #define TEXT_SONG19 _("Bad Apple!!")
 
+#define TEXT_SONG20 _("SM64 Main Theme")
+#define TEXT_SONG21 _("Slider")
+#define TEXT_SONG22 _("Dire Dire Docks")
+#define TEXT_SONG23 _("Lethal Lava Land")
+#define TEXT_SONG24 _("Snow Mountain")
+#define TEXT_SONG25 _("Haunted House")
+#define TEXT_SONG26 _("Cave Dungeon")
+#define TEXT_SONG27 _("Koopa's Road")
+#define TEXT_SONG28 _("Koopa's Theme")
+#define TEXT_SONG29 _("Ultimate Koopa")
+
 
 /**
  * Global Symbols

@@ -439,7 +439,7 @@ u8 txt_ls_plane[] = {TXT_LS_PLANE};
 
 struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
-    {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 19},
+    {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 29},
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
     {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 7},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},

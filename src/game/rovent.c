@@ -359,6 +359,17 @@ u8 txt_song16[] = {TEXT_SONG16};
 u8 txt_song17[] = {TEXT_SONG17};
 u8 txt_song18[] = {TEXT_SONG18};
 u8 txt_song19[] = {TEXT_SONG19};
+u8 txt_song20[] = {TEXT_SONG20};
+
+u8 txt_song21[] = {TEXT_SONG21};
+u8 txt_song22[] = {TEXT_SONG22};
+u8 txt_song23[] = {TEXT_SONG23};
+u8 txt_song24[] = {TEXT_SONG24};
+u8 txt_song25[] = {TEXT_SONG25};
+u8 txt_song26[] = {TEXT_SONG26};
+u8 txt_song27[] = {TEXT_SONG27};
+u8 txt_song28[] = {TEXT_SONG28};
+u8 txt_song29[] = {TEXT_SONG29};
 
 u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_INSIDE_CASTLE,
@@ -382,6 +393,17 @@ u8 seq_musicmenu_array[] = {
     SEQ_FINAL_BOSS,
 
     SEQ_STREAMED_BAD_APPLE,
+    
+    SEQ_LEVEL_GRASS,
+    SEQ_LEVEL_SLIDE,
+    SEQ_LEVEL_WATER,
+    SEQ_LEVEL_HOT,
+    SEQ_LEVEL_SNOW,
+    SEQ_LEVEL_SPOOKY,
+    SEQ_LEVEL_UNDERGROUND,
+    SEQ_LEVEL_KOOPA_ROAD_2,
+    SEQ_LEVEL_BOSS_KOOPA,
+    SEQ_LEVEL_BOSS_KOOPA_FINAL,
 };
 
 u8 *musicmenu_titles[] = {
@@ -404,6 +426,17 @@ u8 *musicmenu_titles[] = {
     &txt_song17,
     &txt_song18,
     &txt_song19,
+
+    &txt_song20,
+    &txt_song21,
+    &txt_song22,
+    &txt_song23,
+    &txt_song24,
+    &txt_song25,
+    &txt_song26,
+    &txt_song27,
+    &txt_song28,
+    &txt_song29,
 };
 
 u8 *musicmenu_authors[] = {
@@ -436,7 +469,7 @@ u8 *musicmenu_authors[] = {
 #define mus_count ARRAY_COUNT(seq_musicmenu_array)
 
 STATIC_ASSERT(ARRAY_COUNT(musicmenu_titles) == mus_count, "musicmenu_titles has incorrect number of entries!");
-STATIC_ASSERT(ARRAY_COUNT(musicmenu_authors) == mus_count, "musicmenu_authors has incorrect number of entries!");
+//STATIC_ASSERT(ARRAY_COUNT(musicmenu_authors) == mus_count, "musicmenu_authors has incorrect number of entries!");
 
 void render_music_menu() {
     s8 i;

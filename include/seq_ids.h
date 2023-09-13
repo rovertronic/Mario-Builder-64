@@ -67,6 +67,7 @@ enum SeqId {
     SEQ_FINAL_BOSS,                   // 0x33
     SEQ_SHOWRUNNER_BOSS,              // 0x34
     SEQ_BIG_HOUSE,                    // 0x35
+    SEQ_LEVEL_KOOPA_ROAD_2,           // 0x36
 
     SEQ_COUNT
 };
