@@ -6135,16 +6135,18 @@ void bhv_warp_pipe_init(void) {
 }
 
 void bhv_boss(void) {
+    struct Object * baws;
     switch(o->oBehParams2ndByte) {
         case 0:
-            spawn_object(o,MODEL_KINGBOMB_MAKER,bhvKingBobomb);
+            baws = spawn_object(o,MODEL_KINGBOMB_MAKER,bhvKingBobomb);
         break;
         case 1:
-            spawn_object(o,MODEL_WHOMP_MAKER,bhvWhompKingBoss);
+            baws = spawn_object(o,MODEL_WHOMP_MAKER,bhvWhompKingBoss);
         break;
         case 3:
-            spawn_object(o,MODEL_WIGGLER_HEAD,bhvWigglerHead);
+            baws = spawn_object(o,MODEL_WIGGLER_HEAD,bhvWigglerHead);
         break;
     }
+    baws->oBehParams = o->oBehParams;
     mark_obj_for_deletion(o);
 }

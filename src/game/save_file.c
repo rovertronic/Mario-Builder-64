@@ -20,6 +20,7 @@
 #include "ingame_menu.h"
 #include "puppycamold.h"
 #include "game/rovent.h"
+#include "cursed_mirror_maker.h"
 
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 
@@ -709,7 +710,7 @@ u32 save_file_get_badge_equip(void) {
     if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
         return 0;
     }
-    return gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges;
+    return cmm_play_badge_bitfield;
 }
 
 u32 save_file_get_badge_unlock(void) {
@@ -720,22 +721,22 @@ u32 save_file_get_badge_unlock(void) {
 }
 
 void save_file_set_badge_unlock(u32 flags) {
-    gSaveBuffer.files[gCurrSaveFileNum - 1][0].UnlockedBadges |= (flags);
+    cmm_play_badge_bitfield |= (flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_equip(u32 flags) {
-    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges |= (flags);
+    cmm_play_badge_bitfield |= (flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_unequip(u32 flags) {
-    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges &= (~flags);
+    cmm_play_badge_bitfield &= (~flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_unequip_all(void) {
-    gSaveBuffer.files[gCurrSaveFileNum - 1][0].EquippedBadges = 0;
+    cmm_play_badge_bitfield = 0;
     gSaveFileModified = TRUE;
 }
 

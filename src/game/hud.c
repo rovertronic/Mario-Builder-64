@@ -768,9 +768,9 @@ void render_hud_coins(void) {
         print_text_fmt_int(198-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
 
         if (gRedCoinsCollected > 0) {
-            print_text(168-wideoffet3, HUD_TOP_Y-18, "@"); // 'Coin' glyph
-            print_text(184-wideoffet3, HUD_TOP_Y-18, "*"); // 'X' glyph
-            print_text_fmt_int(198-wideoffet3, HUD_TOP_Y-18, "%d", gRedCoinsCollected);
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "@"); // 'Coin' glyph
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y, "*"); // 'X' glyph
+            print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16+14, HUD_TOP_Y, "%d", gRedCoinsCollected);
         }
     }
 
@@ -789,26 +789,24 @@ void render_hud_coins(void) {
  * Renders the amount of stars collected.
  * Disables "X" glyph when Mario has 100 stars or more.
  */
+ s8 minuz[] = {45,0};
 void render_hud_stars(void) {
-    s8 showX = 0;
-    u8 wideoffet1 = 0;
+    u8 current_stars = cmm_play_stars;
+    u8 max_stars = cmm_play_stars_max;
 
-    if (gHudFlash == 1 && gGlobalTimer & 0x08) {
-        return;
+    if (gHudFlash == HUD_FLASH_STARS && gGlobalTimer & 0x8) return;
+    s8 showX = FALSE;//(gHudDisplay.stars < 100);
+
+    if (max_stars < 10) {
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
+        if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int2((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y, "%dQ%d", current_stars, max_stars);
+    } else {
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16)+4, HUD_TOP_Y, minuz, gHudDisplay.stars);
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y+10, "%d", current_stars);
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y-10, "%d", max_stars);
     }
-
-    if (0) {
-        wideoffet1 = 40;
-        }
-
-
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X)+wideoffet1, HUD_TOP_Y, "^"); // 'Star' glyph
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X)+wideoffet1, HUD_TOP_Y-18, "."); // 'Metal Star' glyph
-
-    print_text_fmt_int( 2 + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16)+wideoffet1,
-                       HUD_TOP_Y, "%d", gHudDisplay.stars);
-    print_text_fmt_int( 2 + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16)+wideoffet1,
-                       HUD_TOP_Y-18, "%d", gMarioState->numMetalStars);//
 }
 
 /**

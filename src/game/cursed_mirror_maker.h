@@ -22,6 +22,11 @@ extern u16 painting_rgba16[32][32];
 extern u8 cmm_lopt_envfx;
 extern u8 cmm_envfx_table[];
 
+//play mode stuff
+extern u8 cmm_play_stars;
+extern u8 cmm_play_stars_max;
+extern u32 cmm_play_stars_bitfield;
+extern u32 cmm_play_badge_bitfield;
 
 struct cmm_tile {
     u8 x:5, y:5, z:5, type:5, rot:2;
@@ -48,6 +53,7 @@ enum {
     TILE_TYPE_DSLOPE,
     TILE_TYPE_WATER,
     TILE_TYPE_FENCE,
+    TILE_TYPE_SSLOPE,
 };
 
 struct cmm_obj {
@@ -164,6 +170,7 @@ enum {
     CMM_BUTTON_MPLAT,
     CMM_BUTTON_BBALL,
     CMM_BUTTON_KTQ,
+    CMM_BUTTON_SSLOPE,
 };
 
 enum {

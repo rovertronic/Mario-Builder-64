@@ -897,4 +897,8 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "mario2/geo_header.h"
 
+#include "sslope/collision_header.h"
+
+#include "sslope/header.h"
+
 #endif

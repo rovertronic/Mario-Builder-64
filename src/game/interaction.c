@@ -867,9 +867,11 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
         m->lastStarCollected = (obj->oBehParams >> 24);
         //save_file_collect_star_or_key(m->numCoins, starIndex);
 
+        cmm_play_stars_bitfield |= (1 << starIndex);
+        cmm_play_stars = count_u32_bits(cmm_play_stars_bitfield);
+
         //m->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
         //m->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-        m->numStars++;
 
         //if (m->numStars > 9) {
         //    save_file_set_progression(PROG_10_STARS);

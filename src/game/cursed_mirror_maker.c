@@ -69,6 +69,15 @@ Vec3f cmm_camera_pos = {0.0f};
 Vec3f cmm_camera_foc = {0.0f};
 s16 cmm_camera_angle = 0;
 u8 cmm_camera_rot_offset = 0;
+s8 cmm_camera_zoom_index = 2;
+f32 cmm_camera_zoom_table[][2] = {
+    {900.0f,50.0f},
+    {900.0f,400.0f},
+    {1500.0f,800.0f},
+    {2000.0f,900.0f},
+    {2100.0f,1500.0f},
+};
+f32 cmm_current_camera_zoom[2] = {1500.0f,800.0f};
 
 u8 cmm_place_mode = CMM_PM_TILE;
 
@@ -94,6 +103,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE   , FALSE},//TILE_TYPE_DSLOPE
     {&makerwater_mw_mesh  , &mat_maker_MakerPassthru, makerwater_collision       , FALSE   , TRUE },//TILE_TYPE_WATER
     {&makerfence_mfv_mesh , &mat_maker_MakerFence   , makerfence_collision       , FALSE   , TRUE },//TILE_TYPE_FENCE
+    {&sslope_sslope_mesh  , &mat_maker_MakerPassthru, sslope_collision           , FALSE   , FALSE },//TILE_TYPE_SSLOPE
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 
@@ -174,7 +184,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvPhantasm         ,-150.0f   ,MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
     {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
     {bhvBadge            ,0.0f      ,MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 4     , &df_boss   },
+    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
     {bhvPlatformOnTrack  ,0.0f      ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
     {bhvBobBowlingBallSpawner,0.0f  ,MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
     {bhvKoopa            ,-150.0f   ,MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
@@ -186,7 +196,7 @@ Gfx cmm_terrain_gfx[15000]; //gfx
 Gfx cmm_terrain_gfx_tdecal[8000]; //transparent decals
 Gfx cmm_terrain_gfx_tp[8000];//transparent
 Mtx cmm_terrain_mtx[5000]; //translations
-Vtx cmm_terrain_vtx[15000];
+Vtx cmm_terrain_vtx[25000];
 
 u16 cmm_gfx_total = 0;
 u16 cmm_mtx_total = 0;
@@ -211,6 +221,19 @@ u8 cmm_trajectories_used = 0; //bitfield
 u8 cmm_txt_recording[] = {TXT_RECORDING};
 Vtx cmm_trajectory_vtx[240];
 Gfx cmm_trajectory_gfx[100]; //gfx
+
+//play mode stuff
+u8 cmm_play_stars = 0;
+u8 cmm_play_stars_max = 0;
+u32 cmm_play_stars_bitfield = 0;
+u32 cmm_play_badge_bitfield = 0;
+
+u8 cmm_star_objects[] = {
+    OBJECT_TYPE_STAR,
+    OBJECT_TYPE_RCS,
+    OBJECT_TYPE_BOSS,
+    OBJECT_TYPE_KTQ,
+};
 
 //skybox table
 u8 *cmm_skybox_table[] = {
@@ -356,17 +379,17 @@ u8 cmm_toolbox[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_SSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_LAVA, CMM_BUTTON_WATER,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,
+    /*Obstacles*/ CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_LAVA, CMM_BUTTON_WATER,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_KTQ,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BBALL,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_LAVA,CMM_BUTTON_WATER,CMM_BUTTON_TROLL,CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -382,7 +405,7 @@ u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = 
 u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
 u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
 u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};u8 txt_btn_38[] = {TXT_BTN_38};u8 txt_btn_39[] = {TXT_BTN_39};u8 txt_btn_40[] = {TXT_BTN_40};
-u8 txt_btn_41[] = {TXT_BTN_41};u8 txt_btn_42[] = {TXT_BTN_42};
+u8 txt_btn_41[] = {TXT_BTN_41};u8 txt_btn_42[] = {TXT_BTN_42};u8 txt_btn_43[] = {TXT_BTN_43};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
@@ -428,6 +451,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_checker  , OBJECT_TYPE_MPLAT  ,CMM_PM_OBJ  , &txt_btn_40   , NULL         }, //CMM_BUTTON_MPLAT
     {&mat_b_btn_bball    , OBJECT_TYPE_BBALL  ,CMM_PM_OBJ  , &txt_btn_41   , NULL         }, //CMM_BUTTON_BBALL
     {&mat_b_btn_kuppa    , OBJECT_TYPE_KTQ    ,CMM_PM_OBJ  , &txt_btn_42   , NULL         }, //CMM_BUTTON_KTQ
+    {&mat_b_btn_sideslope, TILE_TYPE_SSLOPE   ,CMM_PM_TILE , &txt_btn_43   , NULL         }, //CMM_BUTTON_SSLOPE
 };
 
 u8 txt_ls_costume[] = {TXT_LS_COSTUME};
@@ -450,6 +474,12 @@ struct cmm_settings_button cmm_settings_buttons[] = {
 
 u8 cmm_settings_index = 0;
 u8 cmm_settings_index_changed = FALSE;
+
+void reset_play_state(void) {
+    cmm_play_stars = 0;
+    cmm_play_stars_bitfield = 0;
+    cmm_play_badge_bitfield = 0;
+}
 
 void change_theme(u8 theme, u8 suggest) {
     switch(theme) {
@@ -545,7 +575,7 @@ s32 tile_sanity_check(void) {
     if (cmm_tile_count >= 2000) {
         allow = FALSE;
     }
-    if (cmm_vtx_total >= 9970) {
+    if (cmm_vtx_total >= 24970) {
         allow = FALSE;
     }
     if (cmm_mtx_total >= 4970) {
@@ -994,6 +1024,7 @@ void generate_object_preview(void) {
 void generate_objects_to_level(void) {
     struct Object *obj;
     u8 i;
+    cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
         //obj = create_object(cmm_object_types[cmm_object_data[i].type].behavior);
         //obj->behavior = cmm_object_types[cmm_object_data[i].type].behavior;
@@ -1007,7 +1038,17 @@ void generate_objects_to_level(void) {
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
-        obj->oBehParams = o->oBehParams2ndByte << 16;
+
+        //assign star ids
+        for (u8 j=0;j<sizeof(cmm_star_objects);j++) {
+            if (cmm_object_data[i].type == cmm_star_objects[j]) {
+                if (cmm_play_stars_max < 32) {
+                    obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
+                    cmm_play_stars_max++;
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -1401,7 +1442,7 @@ void sb_init(void) {
 }
 
 void sb_loop(void) {
-    Vec3f cam_pos_offset = {0.0f,800.0f,0};
+    Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     u8 joystick = joystick_direction();
     u8 cursor_did_move = FALSE;
 
@@ -1412,8 +1453,11 @@ void sb_loop(void) {
     //print_text_fmt_int(180, 200, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
 
     cmm_camera_angle = approach_s16_asymptotic(cmm_camera_angle,cmm_camera_rot_offset*0x4000,4);
-    cam_pos_offset[0] = sins(cmm_camera_angle+0x8000)*1500.0f;
-    cam_pos_offset[2] = coss(cmm_camera_angle+0x8000)*1500.0f;
+    cam_pos_offset[0] = sins(cmm_camera_angle+0x8000)*cmm_current_camera_zoom[0];
+    cam_pos_offset[2] = coss(cmm_camera_angle+0x8000)*cmm_current_camera_zoom[0];
+
+    cmm_current_camera_zoom[0] = lerp(cmm_current_camera_zoom[0], cmm_camera_zoom_table[cmm_camera_zoom_index][0],0.2f);
+    cmm_current_camera_zoom[1] = lerp(cmm_current_camera_zoom[1], cmm_camera_zoom_table[cmm_camera_zoom_index][1],0.2f);
 
     switch(o->oAction) {
         case 0: //init
@@ -1473,12 +1517,23 @@ void sb_loop(void) {
             cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].isTile;
             cmm_ui_index = (cmm_ui_index+9)%9;
 
+            //parameter changing
             if (gPlayer1Controller->buttonPressed & L_JPAD) {
                 cmm_param_selection --;
             }
             if (gPlayer1Controller->buttonPressed & R_JPAD) {
                 cmm_param_selection ++;
             }
+
+            //camera zooming
+            if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                cmm_camera_zoom_index--;
+            }
+            if (gPlayer1Controller->buttonPressed & D_JPAD) {
+                cmm_camera_zoom_index++;
+            }
+            cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
+
             if (cmm_object_types[cmm_id_selection].param_max != 0) {
                 s16 max = cmm_object_types[cmm_id_selection].param_max;
                 cmm_param_selection = (cmm_param_selection+max)%max;
@@ -1506,6 +1561,7 @@ void sb_loop(void) {
                     break;
                     case 6://test
                         cmm_target_mode = CMM_MODE_PLAY;
+                        reset_play_state();
                         level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
                         sSourceWarpNodeId = 0x0A;
                         o->oAction = 2;
@@ -1717,6 +1773,15 @@ void sb_loop(void) {
                 cmm_camera_rot_offset--;
             }
             cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
+
+            //camera zooming
+            if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                cmm_camera_zoom_index--;
+            }
+            if (gPlayer1Controller->buttonPressed & D_JPAD) {
+                cmm_camera_zoom_index++;
+            }
+            cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
             cmm_sbx=(cmm_sbx+32)%32;
             cmm_sbz=(cmm_sbz+32)%32;
