@@ -63,6 +63,13 @@
 #define TXT_BP_BOSS_3 _("Eyerok")
 #define TXT_BP_BOSS_4 _("Wiggler")
 
+#define TXT_MAT_1 _("Grass")
+#define TXT_MAT_2 _("Brick")
+#define TXT_MAT_3 _("Stone")
+#define TXT_MAT_4 _("Wood")
+#define TXT_MAT_5 _("Cloud")
+#define TXT_MAT_6 _("Lava")
+
 #define TXT_BTN_1 _("Save")
 #define TXT_BTN_2 _("Settings")
 #define TXT_BTN_3 _("Test")
