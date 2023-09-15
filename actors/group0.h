@@ -831,29 +831,11 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "crowbar2/geo_header.h"
 
-#include "cube_collision/collision_header.h"
-
 #include "sb/header.h"
 
 #include "top/header.h"
 
 #include "maker/header.h"
-
-#include "grasstop/header.h"
-
-#include "lava_collision/collision_header.h"
-
-#include "slope_collision/collision_header.h"
-
-#include "slope/header.h"
-
-#include "corner_collision/collision_header.h"
-
-#include "corner/header.h"
-
-#include "icorner/header.h"
-
-#include "icorner_collision/collision_header.h"
 
 #include "uibutton/header.h"
 
@@ -870,10 +852,6 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "visualplane/header.h"
 
 #include "lev_edge/geo_header.h"
-
-#include "dslope/collision_header.h"
-
-#include "dslope/header.h"
 
 #include "spawn/collision_header.h"
 
@@ -892,9 +870,5 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "mm_btn/header.h"
 
 #include "mario2/geo_header.h"
-
-#include "sslope/collision_header.h"
-
-#include "sslope/header.h"
 
 #endif

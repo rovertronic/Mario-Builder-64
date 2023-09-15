@@ -210,16 +210,16 @@ struct cmm_terrain_block cmm_terrain_sslope = {
 
 struct cmm_tile_type_struct cmm_tile_types[] = {
     //Model GFX           //F3D Material            //Collision Mesh             //Grass   //Transparent
-    {NULL, &cmm_terrain_fullblock, cube_collision_collision   , FALSE},//TILE_TYPE_BLOCK
-    {NULL, &cmm_terrain_slope,     slope_collision_collision  , FALSE},//TILE_TYPE_SLOPE
-    {NULL, &cmm_terrain_corner,    corner_collision_collision , FALSE},//TILE_TYPE_CORNER
-    {NULL, &cmm_terrain_icorner,  icorner_collision_collision, FALSE},//TILE_TYPE_ICORNER
+    {NULL, &cmm_terrain_fullblock, NULL   , FALSE},//TILE_TYPE_BLOCK
+    {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
+    {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
+    {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
     {NULL, NULL,                   NULL                       , FALSE},//TILE_TYPE_TROLL
     {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
-    {NULL, &cmm_terrain_dslope,    dslope_collision           , FALSE},//TILE_TYPE_DSLOPE
+    {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
     {&makerwater_mw_mesh, NULL,    makerwater_collision       , TRUE },//TILE_TYPE_WATER
     {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
-    {NULL, &cmm_terrain_sslope,    sslope_collision           , FALSE },//TILE_TYPE_SSLOPE
+    {NULL, &cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
 };
 //mat_maker_MakerPassthru just lets the last material bleed into itself
 struct Gfx *cmm_tile_materials[] = {
