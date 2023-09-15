@@ -893,7 +893,7 @@ u16 cmm_vtx_index;
 u16 cmm_gfx_index;
 
 
-void render_transform_vtx(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
+void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
     for (u32 i = 0; i < numVtx; i++) {
         s8 x = oldv[i][0];
         s8 z = oldv[i][2];
@@ -929,7 +929,7 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
     u8 uAxis, vAxis;
 
     s8 newVtx[4][3];
-    render_transform_vtx(newVtx, quad->vtx, 4, rot);
+    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
     render_get_normal_and_uvs(newVtx, quad->uvProjDir, rot, &uAxis, &vAxis, n);
 
     for (u32 i = 0; i < 4; i++) {
@@ -958,7 +958,7 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
     u8 uAxis, vAxis;
 
     s8 newVtx[3][3];
-    render_transform_vtx(newVtx, tri->vtx, 3, rot);
+    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
     render_get_normal_and_uvs(newVtx, tri->uvProjDir, rot, &uAxis, &vAxis, n);
 
     for (u32 i = 0; i < 3; i++) {
@@ -1244,37 +1244,123 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     return NULL;
 }
 
+// Create new static surface
+extern struct Surface *alloc_surface(u32 dynamic);
+extern void add_surface(struct Surface *surface, s32 dynamic);
+void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], TerrainData type) { 
+    struct Surface *surface = alloc_surface(FALSE);
+
+    Vec3f n;
+    find_vector_perpendicular_to_plane(n, v1, v2, v3);
+    if (!vec3f_normalize2(n)) return NULL;
+
+    vec3_copy(surface->vertex1, v1);
+    vec3_copy(surface->vertex2, v2);
+    vec3_copy(surface->vertex3, v3);
+
+    surface->normal.x = n[0];
+    surface->normal.y = n[1];
+    surface->normal.z = n[2];
+
+    surface->originOffset = -vec3_dot(n, v1);
+
+    s16 min,max;
+    min_max_3s(v1[1], v2[1], v3[1], &min, &max);
+    surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);
+    surface->upperY = (max + SURFACE_VERTICAL_BUFFER);
+
+    surface->type = type;
+    add_surface(surface, FALSE);
+};
+
+TerrainData floorVtxs[4][3] = {
+    {-150, -150, 9450},
+    {9450, -150, 9450},
+    {-150, -150, -150},
+    {9450, -150, -150},
+};
+
+extern TerrainData sVertexData[900];
+
+TerrainData colVtxs[4][3];
+
 void generate_terrain_collision(void) {
     s16 i;
+    gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
+    gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
+    gSurfacesAllocated = gNumStaticSurfaces;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
+    TerrainData floorType;
     switch(cmm_lopt_plane) {
         case 1:
-            o->collisionData = segmented_to_virtual(floor_lava_collision);
-            load_object_static_model();
-        break;
         case 2:
-            o->collisionData = segmented_to_virtual(floor_normal_collision);
-            load_object_static_model();
-        break;
+            floorType = (cmm_lopt_plane == 2) ? SURFACE_DEFAULT : SURFACE_BURNING;
+            cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
+            cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
     }
 
 
     for (i=0; i<cmm_tile_count; i++) {
-        Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
-        Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
-        mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
+        struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
+        if (terrain) {
+            floorType = cmm_tile_data[i].mat == TILE_MATERIAL_LAVA ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
+            s8 pos[3];
+            s8 newVtx[4][3];
+            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+            for (u32 j = 0; j < terrain->numQuads; j++) {
+                struct cmm_terrain_quad *quad = &terrain->quads[j];
+                if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
+                    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
+                    for (u32 k = 0; k < 4; k++) {
+                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
+                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
+                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                    }
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
+                }
+            }
+            for (u32 j = 0; j < terrain->numTris; j++) {
+                struct cmm_terrain_tri *tri = &terrain->tris[j];
+                if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
+                    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
+                    for (u32 k = 0; k < 3; k++) {
+                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
+                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
+                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                    }
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                }
+            }
+        } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
+            Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
+            Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
+            mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
-        //this code was written by accident... the collision doesn't generate properly without it though???
-        o->oPosX = (cmm_tile_data[0].x*300.0f);
-        o->oPosY = (cmm_tile_data[0].y*300.0f);
-        o->oPosZ = (cmm_tile_data[0].z*300.0f);
-        o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
+            //this code was written by accident... the collision doesn't generate properly without it though???
+            o->oPosX = (cmm_tile_data[0].x*300.0f);
+            o->oPosY = (cmm_tile_data[0].y*300.0f);
+            o->oPosZ = (cmm_tile_data[0].z*300.0f);
+            o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
+            
+            TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
+            collisionData++;
+            transform_object_vertices(&collisionData, sVertexData);
 
-        if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            o->collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
-            load_object_static_model();
+            // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
+            while (*collisionData != TERRAIN_LOAD_CONTINUE) {
+                load_object_surfaces(&collisionData, sVertexData, FALSE);
+            }
         }
     }
+
+    u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
+    gTotalStaticSurfaceData += surfacePoolData;
+    main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
+
+    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
+    gNumStaticSurfaces = gSurfacesAllocated;
 }
 
 void generate_object_preview(void) {
