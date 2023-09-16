@@ -453,6 +453,9 @@ u8 txt_theme_7[] = {TXT_THEME_RETRO};
 u8 txt_mat_grass[] = {TXT_MAT_GRASS};u8 txt_mat_bricks[] = {TXT_MAT_BRICK};u8 txt_mat_stone[] = {TXT_MAT_STONE};u8 txt_mat_wood[] = {TXT_MAT_WOOD};u8 txt_mat_tiles[] = {TXT_MAT_TILES};u8 txt_mat_lava[] = {TXT_MAT_LAVA};
 u8 txt_mat_sand[] = {TXT_MAT_SAND};u8 txt_mat_snow[] = {TXT_MAT_SNOW};u8 txt_mat_quicksand[] = {TXT_MAT_QUICKSAND};u8 txt_mat_roof[] = {TXT_MAT_ROOF};
 u8 txt_mat_tiles2[] = {TXT_MAT_TILES2};u8 txt_mat_block[] = {TXT_MAT_BLOCK};
+u8 txt_mat_basalt[] = {TXT_MAT_BASALT};u8 txt_mat_pillar[] = {TXT_MAT_PILLAR};u8 txt_mat_mesh[] = {TXT_MAT_MESH};
+u8 txt_mat_mazewall[] = {TXT_MAT_MAZEWALL};u8 txt_mat_mazefloor[] = {TXT_MAT_MAZEFLOOR};u8 txt_mat_light[] = {TXT_MAT_LIGHT};u8 txt_mat_lakegrass[] = {TXT_MAT_LAKEGRASS};
+u8 txt_mat_tileswood[] = {TXT_MAT_TILESWOOD};u8 txt_mat_tilesbricks[] = {TXT_MAT_TILESBRICKS};u8 txt_mat_tilesstone[] = {TXT_MAT_TILESSTONE};u8 txt_mat_carpet[] = {TXT_MAT_CARPET};u8 txt_mat_castlewall[] = {TXT_MAT_CASTLEWALL};u8 txt_mat_basementwall[] = {TXT_MAT_BASEMENTWALL};
 
 u8 *cmm_theme_string_table[NUM_THEMES] = {
     &txt_theme_1,
@@ -470,9 +473,9 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
         {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
         {&mat_maker_MakerBricks, NULL, NULL, &txt_mat_bricks,0},
         {&mat_maker_MakerStone, NULL, &mat_maker_MakerStoneSide, &txt_mat_stone,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
         {&mat_maker_MakerTileBricks, NULL, &mat_maker_MakerTiles, &txt_mat_tiles,0}, // tiles
         {&mat_maker_MakerRoof, NULL, NULL, &txt_mat_roof,0}, // roof
+        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
         {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0}, // sand
         {&mat_maker_MakerSnowDirt, &mat_maker_MakerSnowSide_layer1, &mat_maker_MakerSnow, &txt_mat_snow,0}, // snow
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
@@ -483,9 +486,9 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
         {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0},
         {&mat_maker_MakerDBrick, NULL, NULL, &txt_mat_bricks,0},
         {&mat_maker_MakerDStone, NULL, NULL, &txt_mat_stone,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
         {&mat_maker_MakerDTiles, NULL, NULL, &txt_mat_tiles,0},
         {&mat_maker_MakerDStoneBlock, NULL, NULL, &txt_mat_block,0},
+        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
         {&mat_maker_MakerDBrick, NULL, mat_maker_MakerDWood, &txt_mat_tiles2,0},
         {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
@@ -493,42 +496,42 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     }},
     // LAVA
     {{
-        {&mat_maker_MakerRHRStone, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRBrick, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRBasalt, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRHRStone, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_stone,0},
+        {&mat_maker_MakerRHRBrick, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_bricks,0},
+        {&mat_maker_MakerRHRBasalt, NULL, NULL, &txt_mat_basalt,0},
+        {&mat_maker_MakerRHRTiles, NULL, NULL, &txt_mat_tiles,0},
+        {&mat_maker_MakerRHRPattern, NULL, NULL, &txt_mat_block,0},
         {&mat_maker_MakerRHRWood, NULL, NULL, &txt_mat_wood,0},
-        {&mat_maker_MakerRHRTiles, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRPattern, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerRHRPillar, NULL, &mat_maker_MakerRHRTiles, &txt_mat_lava,0},
-        {&mat_maker_MakerRHRGrate_layer1, NULL, NULL, &txt_mat_grass,1},
+        {&mat_maker_MakerRHRPillar, NULL, &mat_maker_MakerRHRTiles, &txt_mat_pillar,0},
+        {&mat_maker_MakerRHRGrate_layer1, NULL, NULL, &txt_mat_mesh,1},
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0},
     }},
     // CAVE
     {{
         {&mat_maker_MakerHDirt, mat_maker_MakerHGrassSide_layer1, &mat_maker_MakerHGrass, &txt_mat_grass,0},
-        {&mat_maker_MakerHBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerHStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerHCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerHBrick, NULL, NULL, &txt_mat_bricks,0},
+        {&mat_maker_MakerHStone2, NULL, NULL, &txt_mat_stone,0},
+        {&mat_maker_MakerHStone4, NULL, NULL, &txt_mat_mazewall,0},
+        {&mat_maker_MakerHStone, NULL, NULL, &txt_mat_mazefloor,0},
+        {&mat_maker_MakerHCloud, NULL, NULL, &txt_mat_light,0}, // Light
+        {&mat_maker_MakerHStone3, mat_maker_MakerHGrassSide_layer1, &mat_maker_MakerHGrass, &txt_mat_lakegrass,0}, // tiles?
+        {&mat_maker_MakerHFence_layer1, NULL, NULL, &txt_mat_mesh,1}, // Mesh
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0}, // Quicksand
     }},
     // CASTLE
     {{
-        {&mat_maker_MakerCDirt, NULL, &mat_maker_MakerCTile, &txt_mat_grass,0},
-        {&mat_maker_MakerCBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCWood, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerCWood, NULL, &mat_maker_MakerCTile, &txt_mat_tileswood,0}, // hexagons on line
+        {&mat_maker_MakerCBrick, NULL, &mat_maker_MakerCTile, &txt_mat_tilesbricks,0}, // bricks
+        {&mat_maker_MakerCStoneSide, NULL, &mat_maker_MakerCStone, &txt_mat_tilesstone,0}, // hexagons on line
+        {&mat_maker_MakerCWood, NULL, &mat_maker_MakerCCarpet, &txt_mat_carpet,0}, // carpet
+        {&mat_maker_MakerCRoof, NULL, NULL, &txt_mat_roof,0},
+        {&mat_maker_MakerCWall, NULL, NULL, &txt_mat_castlewall,0},
+        {&mat_maker_MakerCPillar, NULL, &mat_maker_MakerCStone, &txt_mat_pillar,0},
+        {&mat_maker_MakerCBasementWall, NULL, NULL, &txt_mat_basementwall,0},
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0},
     }},
     // VIRTUAPLEX
     {{
