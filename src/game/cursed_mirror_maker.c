@@ -456,6 +456,9 @@ u8 txt_mat_tiles2[] = {TXT_MAT_TILES2};u8 txt_mat_block[] = {TXT_MAT_BLOCK};
 u8 txt_mat_basalt[] = {TXT_MAT_BASALT};u8 txt_mat_pillar[] = {TXT_MAT_PILLAR};u8 txt_mat_mesh[] = {TXT_MAT_MESH};
 u8 txt_mat_mazewall[] = {TXT_MAT_MAZEWALL};u8 txt_mat_mazefloor[] = {TXT_MAT_MAZEFLOOR};u8 txt_mat_light[] = {TXT_MAT_LIGHT};u8 txt_mat_lakegrass[] = {TXT_MAT_LAKEGRASS};
 u8 txt_mat_tileswood[] = {TXT_MAT_TILESWOOD};u8 txt_mat_tilesbricks[] = {TXT_MAT_TILESBRICKS};u8 txt_mat_tilesstone[] = {TXT_MAT_TILESSTONE};u8 txt_mat_carpet[] = {TXT_MAT_CARPET};u8 txt_mat_castlewall[] = {TXT_MAT_CASTLEWALL};u8 txt_mat_basementwall[] = {TXT_MAT_BASEMENTWALL};
+u8 txt_mat_bluetiles[] = {TXT_MAT_BLUETILES};u8 txt_mat_rustyblock[] = {TXT_MAT_RUSTYBLOCK};u8 txt_mat_screen[] = {TXT_MAT_SCREEN};u8 txt_mat_hazardstripes[] = {TXT_MAT_HAZARDSTRIPES};u8 txt_mat_snowblock[] = {TXT_MAT_SNOWBLOCK};u8 txt_mat_void[] = {TXT_MAT_VOID};
+
+u8 txt_mat_ground[] = {TXT_MAT_GROUND};u8 txt_mat_rblock[] = {TXT_MAT_RBLOCK};u8 txt_mat_treeplat[] = {TXT_MAT_TREEPLAT};u8 txt_mat_blueground[] = {TXT_MAT_BLUEGROUND};u8 txt_mat_bluebricks[] = {TXT_MAT_BLUEBRICKS};u8 txt_mat_blueblock[] = {TXT_MAT_BLUEBLOCK};u8 txt_mat_whitebrick[] = {TXT_MAT_WHITEBRICK};u8 txt_mat_underwaterground[] = {TXT_MAT_UNDERWATERGROUND};
 
 u8 *cmm_theme_string_table[NUM_THEMES] = {
     &txt_theme_1,
@@ -535,29 +538,29 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     }},
     // VIRTUAPLEX
     {{
-        {&mat_maker_MakerVirtuaplex, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_Maker4Stone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCaution, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerScreen, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerVoid, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerVirtuaplex, NULL, &mat_maker_MakerVirtuaplex, &txt_mat_block,0},
+        {&mat_maker_Maker4Stone, NULL, NULL, &txt_mat_tiles,0},
+        {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0}, // Grass // Grass
+        {&mat_maker_Maker4Stone, NULL, &mat_maker_MakerVTiles, &txt_mat_bluetiles,0}, // Tiles
+        {&mat_maker_MakerVRustyBlock, NULL, NULL, &txt_mat_rustyblock,0},
+        {&mat_maker_MakerScreen, NULL, NULL, &txt_mat_screen,0}, // Screen
+        {&mat_maker_MakerCaution, NULL, NULL, &txt_mat_hazardstripes,0}, // Caution
+        {&mat_maker_MakerVirtuaplex, &mat_maker_MakerSnowSide_layer1, &mat_maker_MakerSnow, &txt_mat_snowblock,0}, // Snow
         {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerVoid, NULL, NULL, &txt_mat_void,0},
     }},
     // RETRO
     {{
-        {&mat_maker_MakerRetroGround, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroBlock, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroLava, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerRetroGround, NULL, &mat_maker_MakerRetroGround, &txt_mat_ground,0},
+        {&mat_maker_MakerRetroBrick, NULL, NULL, &txt_mat_bricks,0},
+        {&mat_maker_MakerRetroTree, &mat_maker_MakerRetroTreeSide_layer1, &mat_maker_MakerRetroTreeTop, &txt_mat_treeplat,0},
+        {&mat_maker_MakerRetroBlock, NULL, NULL, &txt_mat_rblock,0},
+        {&mat_maker_MakerRetroBGround, NULL, NULL, &txt_mat_blueground,0},
+        {&mat_maker_MakerRetroBBrick, NULL, NULL, &txt_mat_bluebricks,0},
+        {&mat_maker_MakerRetroBBlock, NULL, NULL, &txt_mat_blueblock,0},
+        {&mat_maker_MakerRetroWBrick, NULL, NULL, &txt_mat_whitebrick,0},
+        {&mat_maker_MakerRetroLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerRetroUnderwater, NULL, NULL, &txt_mat_underwaterground,0},
     }},
 };
 
@@ -944,7 +947,7 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
             (pos[0]*300)+newVtx[i][0]*150,
             (pos[1]*300)+newVtx[i][1]*150,
             (pos[2]*300)+newVtx[i][2]*150,
-            u * -512 + 500, v * -512 + 500,
+            u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
     gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 4, 0);
@@ -973,7 +976,7 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
             (pos[0]*300)+newVtx[i][0]*150,
             (pos[1]*300)+newVtx[i][1]*150,
             (pos[2]*300)+newVtx[i][2]*150,
-            u * -512 + 500, v * -512 + 500,
+            u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
     gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 3, 0);
