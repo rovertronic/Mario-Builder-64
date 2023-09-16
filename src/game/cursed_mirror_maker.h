@@ -113,13 +113,20 @@ enum {
     TILE_MATERIAL_BRICK,
     TILE_MATERIAL_STONE,
     TILE_MATERIAL_WOOD,
-    TILE_MATERIAL_SNOW,
+    TILE_MATERIAL_TILES,
+    TILE_MATERIAL_EXTRA1,
+    TILE_MATERIAL_EXTRA2,
+    TILE_MATERIAL_EXTRA3,
     TILE_MATERIAL_LAVA,
-    TILE_MATERIAL_COUNT,
+    TILE_MATERIAL_QUICKSAND,
 };
 
 struct cmm_obj {
     u8 param, x:5, y:5, z:5, type:5, rot:2;
+};
+
+struct cmm_grid_obj {
+    u8 type:5, mat:5, rot:2, occupied:1;
 };
 struct cmm_object_type_struct {
     u32 behavior;
@@ -235,14 +242,24 @@ enum {
     CMM_PM_OBJ,
 };
 
-enum {
-    CMM_THEME_GENERIC,
-    CMM_THEME_CASTLE,
-    CMM_THEME_DESERT,
-    CMM_THEME_CAVE,
-    CMM_THEME_VIRTUAPLEX,
-    CMM_THEME_RED_HOT_RESERVOIR,
-    CMM_THEME_RETRO,
+#define NUM_THEMES 7
+#define NUM_MATERIALS_PER_THEME 10
+
+enum cmm_mat_types {
+    MAT_OPAQUE,
+    MAT_CUTOUT,
+    MAT_TRANSPARENT,
+};
+
+struct cmm_material {
+    Gfx *gfx;
+    Gfx *side;
+    Gfx *top;
+    u8 *name;
+    u8 type;
+};
+struct cmm_theme {
+    struct cmm_material mats[NUM_MATERIALS_PER_THEME];
 };
 
 //compressed trajectories
