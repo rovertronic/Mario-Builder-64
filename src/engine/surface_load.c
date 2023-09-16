@@ -70,7 +70,7 @@ static struct SurfaceNode *alloc_surface_node(u32 dynamic) {
  * Allocate the part of the surface pool to contain a surface and
  * initialize the surface.
  */
-static struct Surface *alloc_surface(u32 dynamic) {
+struct Surface *alloc_surface(u32 dynamic) {
     struct Surface **poolEnd = (struct Surface **)(dynamic ? &gDynamicSurfacePoolEnd : &gCurrStaticSurfacePoolEnd);
     
     struct Surface *surface = *poolEnd;
@@ -236,7 +236,7 @@ static s32 upper_cell_index(s32 coord) {
  * @param surface The surface to check
  * @param dynamic Boolean determining whether the surface is static or dynamic
  */
-static void add_surface(struct Surface *surface, s32 dynamic) {
+void add_surface(struct Surface *surface, s32 dynamic) {
     s32 cellZ, cellX;
     s32 minX, maxX, minZ, maxZ;
 
@@ -682,7 +682,7 @@ static void get_optimal_coll_dist(struct Object *obj) {
 }
 #endif
 
-static TerrainData sVertexData[900];
+TerrainData sVertexData[900];
 
 /**
  * Transform an object's vertices, reload them, and render the object.

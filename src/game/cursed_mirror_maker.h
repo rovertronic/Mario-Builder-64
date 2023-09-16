@@ -10,8 +10,7 @@ void draw_cmm_menu(void);
 void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
-extern Gfx cmm_terrain_gfx[15000];
-extern Gfx cmm_terrain_gfx_tdecal[8000];
+extern Gfx cmm_terrain_gfx[23000];
 extern Trajectory cmm_trajectory_list[5][160];
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
@@ -28,36 +27,106 @@ extern u8 cmm_play_stars_max;
 extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
+enum cmm_directions {
+    CMM_DIRECTION_UP,
+    CMM_DIRECTION_DOWN,
+    CMM_DIRECTION_POS_X,
+    CMM_DIRECTION_NEG_X,
+    CMM_DIRECTION_POS_Z,
+    CMM_DIRECTION_NEG_Z,
+
+    CMM_NO_CULLING,
+};
+
+#define CMM_GRID_FLAG_OCCUPIED (1 << 7)
+#define CMM_GRID_MASK_ROT   (0x3 << 5)
+#define CMM_GRID_SHIFT_ROT  (5)
+#define CMM_GRID_MASK_TILETYPE  (0x1F)
+
+enum cmm_culling_shapes {
+    CMM_FACESHAPE_FULL,
+    CMM_FACESHAPE_TOPTRI,
+
+    CMM_FACESHAPE_TRI_1, // make sure irregular shapes can be flipped with ^1
+    CMM_FACESHAPE_TRI_2,
+    CMM_FACESHAPE_DOWNTRI_1,
+    CMM_FACESHAPE_DOWNTRI_2,
+
+    CMM_FACESHAPE_EMPTY,
+};
+
+enum cmm_growth_types {
+    CMM_GROWTH_NONE,
+    CMM_GROWTH_FULL,
+    CMM_GROWTH_NORMAL_SIDE,
+    CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
+    CMM_GROWTH_DIAGONAL_SIDE,
+    CMM_GROWTH_UNCONDITIONAL_SIDE,
+};
+
+struct cmm_terrain_quad {
+    s8 vtx[4][3];
+    u8 uvProjDir;
+    u8 cullDir;
+    u8 faceshape;
+    u8 growthType;
+    s8 (*decaluvs)[3][2];
+};
+struct cmm_terrain_tri {
+    s8 vtx[3][3];
+    u8 uvProjDir;
+    u8 cullDir;
+    u8 faceshape;
+    u8 growthType;
+    s8 (*decaluvs)[3][2];
+};
+struct cmm_terrain_block {
+    u8 numQuads;
+    u8 numTris;
+    struct cmm_terrain_quad * quads;
+    struct cmm_terrain_tri * tris;
+};
+
 struct cmm_tile {
-    u8 x:5, y:5, z:5, type:5, rot:2;
+    u8 x:5, y:5, z:5, type:5, mat:5, rot:2;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
-    Gfx * material;
+    struct cmm_terrain_block *terrain;
     u32 * collision_data;
-    u8 growth:1;
     u8 transparent:1;
 };
 enum {
-    TILE_TYPE_TERRAIN,
-    TILE_TYPE_BRICK,
-    TILE_TYPE_STONE,
-    TILE_TYPE_WOOD,
-    TILE_TYPE_LAVA,
+    TILE_TYPE_BLOCK,
     TILE_TYPE_SLOPE,
     TILE_TYPE_CORNER,
     TILE_TYPE_ICORNER,
     TILE_TYPE_TROLL,
     TILE_TYPE_CULL,
-    TILE_TYPE_SNOW,
     TILE_TYPE_DSLOPE,
     TILE_TYPE_WATER,
     TILE_TYPE_FENCE,
     TILE_TYPE_SSLOPE,
 };
+enum {
+    TILE_MATERIAL_GRASS,
+    TILE_MATERIAL_BRICK,
+    TILE_MATERIAL_STONE,
+    TILE_MATERIAL_WOOD,
+    TILE_MATERIAL_TILES,
+    TILE_MATERIAL_EXTRA1,
+    TILE_MATERIAL_EXTRA2,
+    TILE_MATERIAL_EXTRA3,
+    TILE_MATERIAL_LAVA,
+    TILE_MATERIAL_QUICKSAND,
+};
 
 struct cmm_obj {
     u8 param, x:5, y:5, z:5, type:5, rot:2;
+};
+
+struct cmm_grid_obj {
+    u8 type:5, mat:5, rot:2, occupied:1;
 };
 struct cmm_object_type_struct {
     u32 behavior;
@@ -132,16 +201,12 @@ enum {
     CMM_BUTTON_SETTINGS,
     CMM_BUTTON_PLAY,
     CMM_BUTTON_TERRAIN,
-    CMM_BUTTON_BRICK,
-    CMM_BUTTON_LAVA,
     CMM_BUTTON_SLOPE,
     CMM_BUTTON_TROLL,
     CMM_BUTTON_STAR,
     CMM_BUTTON_GOOMBA,
     CMM_BUTTON_COIN,
     CMM_BUTTON_BLANK,
-    CMM_BUTTON_WOOD,
-    CMM_BUTTON_STONE,
     CMM_BUTTON_GCOIN,
     CMM_BUTTON_CORNER,
     CMM_BUTTON_ICORNER,
@@ -151,7 +216,6 @@ enum {
     CMM_BUTTON_RCS,
     CMM_BUTTON_NOTEBLOCK,
     CMM_BUTTON_CULL,
-    CMM_BUTTON_SNOW,
     CMM_BUTTON_PODOBOO,
     CMM_BUTTON_REX,
     CMM_BUTTON_BULLY,
@@ -178,14 +242,24 @@ enum {
     CMM_PM_OBJ,
 };
 
-enum {
-    CMM_THEME_GENERIC,
-    CMM_THEME_CASTLE,
-    CMM_THEME_DESERT,
-    CMM_THEME_CAVE,
-    CMM_THEME_VIRTUAPLEX,
-    CMM_THEME_RED_HOT_RESERVOIR,
-    CMM_THEME_RETRO,
+#define NUM_THEMES 7
+#define NUM_MATERIALS_PER_THEME 10
+
+enum cmm_mat_types {
+    MAT_OPAQUE,
+    MAT_CUTOUT,
+    MAT_TRANSPARENT,
+};
+
+struct cmm_material {
+    Gfx *gfx;
+    Gfx *side;
+    Gfx *top;
+    u8 *name;
+    u8 type;
+};
+struct cmm_theme {
+    struct cmm_material mats[NUM_MATERIALS_PER_THEME];
 };
 
 //compressed trajectories

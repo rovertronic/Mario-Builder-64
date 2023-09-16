@@ -84,28 +84,141 @@ u8 cmm_place_mode = CMM_PM_TILE;
 s8 cmm_id_selection = 0;
 u8 cmm_rot_selection = 0;
 s16 cmm_param_selection = 0;
+s16 cmm_mat_selection = 0;
 
-Gfx * grass_top_material = &mat_maker_MakerGrass;
-Gfx * grass_side_material = &mat_maker_MakerGrassSide;
+// lookup table for rotating blocks
+u8 cmm_rotated_dirs[4][6] = {
+    {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_POS_X, CMM_DIRECTION_NEG_X, CMM_DIRECTION_POS_Z, CMM_DIRECTION_NEG_Z},
+    {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_NEG_Z, CMM_DIRECTION_POS_Z, CMM_DIRECTION_POS_X, CMM_DIRECTION_NEG_X},
+    {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_NEG_X, CMM_DIRECTION_POS_X, CMM_DIRECTION_NEG_Z, CMM_DIRECTION_POS_Z},
+    {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_POS_Z, CMM_DIRECTION_NEG_Z, CMM_DIRECTION_NEG_X, CMM_DIRECTION_POS_X},
+};
+
+#define ROTATE_DIRECTION(dir, rot) (cmm_rotated_dirs[rot][dir])
+
+struct cmm_terrain_quad cmm_terrain_fullblock_quads[] = {
+    {{{1, 1, 1},  {1, 1, -1},  {-1, 1, 1},  {-1, 1, -1}},  1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{1, 1, 1},  {1, -1, 1},  {1, 1, -1},  {1, -1, -1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{1, 1, 1},  {-1, 1, 1},  {1, -1, 1},  {-1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+};
+struct cmm_terrain_block cmm_terrain_fullblock = {
+    6,
+    0,
+    &cmm_terrain_fullblock_quads,
+    NULL
+};
+
+struct cmm_terrain_quad cmm_terrain_slope_quads[] = {
+    {{{1, -1, 1},  {1, 1, -1},  {-1, -1, 1},  {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+};
+
+s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
+s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
+
+struct cmm_terrain_tri cmm_terrain_slope_tris[] = {
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
+};
+
+struct cmm_terrain_block cmm_terrain_slope = {
+    3,
+    2,
+    &cmm_terrain_slope_quads,
+    &cmm_terrain_slope_tris,
+};
+
+struct cmm_terrain_quad cmm_terrain_corner_quads[] = {
+    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+};
+
+struct cmm_terrain_tri cmm_terrain_corner_tris[] = {
+    {{{-1, -1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{-1, 1, -1}, {1, -1, 1}, {1, -1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
+    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // BACK
+};
+
+struct cmm_terrain_block cmm_terrain_corner = {
+    1,
+    4,
+    &cmm_terrain_corner_quads,
+    &cmm_terrain_corner_tris,
+};
+
+struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
+    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct cmm_terrain_tri cmm_terrain_icorner_tris[] = {
+    {{{-1, 1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{-1, 1, -1}, {1, -1, 1}, {1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // FRONT
+};
+
+struct cmm_terrain_block cmm_terrain_icorner = {
+    3,
+    4,
+    &cmm_terrain_icorner_quads,
+    &cmm_terrain_icorner_tris,
+};
+
+struct cmm_terrain_quad cmm_terrain_dslope_quads[] = {
+    {{{1, 1, 1},  {1, 1, -1},  {-1, 1, 1},  {-1, 1, -1}},  1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{1, 1, 1}, {-1, 1, 1}, {1, -1, -1}, {-1, -1, -1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE, NULL}, // BOTTOM
+};
+
+struct cmm_terrain_tri cmm_terrain_dslope_tris[] = {
+    {{{1, -1, -1}, {1, 1, -1}, {1, 1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNTRI_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, 1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNTRI_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct cmm_terrain_block cmm_terrain_dslope = {
+    3,
+    2,
+    &cmm_terrain_dslope_quads,
+    &cmm_terrain_dslope_tris,
+};
+
+struct cmm_terrain_quad cmm_terrain_sslope_quads[] = {
+    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{1, 1, -1},  {-1, 1, 1},  {1, -1, -1},  {-1, -1, 1}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_DIAGONAL_SIDE, NULL}, // DIAGONAL
+};
+
+struct cmm_terrain_tri cmm_terrain_sslope_tris[] = {
+    {{{-1, 1, 1}, {1, 1, -1}, {-1, 1, -1}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_TOPTRI, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{1, -1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
+};
+
+struct cmm_terrain_block cmm_terrain_sslope = {
+    3,
+    2,
+    &cmm_terrain_sslope_quads,
+    &cmm_terrain_sslope_tris,
+};
+
 struct cmm_tile_type_struct cmm_tile_types[] = {
     //Model GFX           //F3D Material            //Collision Mesh             //Grass   //Transparent
-    {NULL                 , &mat_maker_MakerDirt    , cube_collision_collision   , TRUE    , FALSE},
-    {NULL                 , &mat_maker_MakerBricks  , cube_collision_collision   , FALSE   , FALSE},
-    {NULL                 , &mat_maker_MakerStone   , cube_collision_collision   , FALSE   , FALSE},
-    {NULL                 , &mat_maker_MakerWood    , cube_collision_collision   , FALSE   , FALSE},
-    {NULL                 , &mat_maker_MakerLava    , lava_collision_collision   , FALSE   , FALSE},
-    {&slope_slope_mesh    , &mat_maker_MakerPassthru, slope_collision_collision  , FALSE   , FALSE},
-    {&corner_corner_mesh  , &mat_maker_MakerPassthru, corner_collision_collision , FALSE   , FALSE},
-    {&icorner_icorner_mesh, &mat_maker_MakerPassthru, icorner_collision_collision, FALSE   , FALSE},
-    {NULL                 , &mat_maker_MakerPassthru, NULL                       , FALSE   , FALSE},//TILE_TYPE_TROLL
-    {&cull_cull_mesh      , &mat_maker_MakerPassthru, NULL                       , FALSE   , FALSE},//TILE_TYPE_CULL
-    {NULL                 , &mat_maker_MakerCloud   , cube_collision_collision   , FALSE   , FALSE},//TILE_TYPE_SNOW
-    {&dslope_dslope_mesh  , &mat_maker_MakerPassthru, dslope_collision           , FALSE   , FALSE},//TILE_TYPE_DSLOPE
-    {&makerwater_mw_mesh  , &mat_maker_MakerPassthru, makerwater_collision       , FALSE   , TRUE },//TILE_TYPE_WATER
-    {&makerfence_mfv_mesh , &mat_maker_MakerFence   , makerfence_collision       , FALSE   , TRUE },//TILE_TYPE_FENCE
-    {&sslope_sslope_mesh  , &mat_maker_MakerPassthru, sslope_collision           , FALSE   , FALSE },//TILE_TYPE_SSLOPE
+    {NULL, &cmm_terrain_fullblock, NULL   , FALSE},//TILE_TYPE_BLOCK
+    {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
+    {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
+    {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
+    {NULL, NULL,                   NULL                       , FALSE},//TILE_TYPE_TROLL
+    {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
+    {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
+    {&makerwater_mw_mesh, NULL,    makerwater_collision       , TRUE },//TILE_TYPE_WATER
+    {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
+    {NULL, &cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
 };
-//mat_maker_MakerPassthru just lets the last material bleed into itself
 
 void df_badge(struct Object * obj, int param) {
     obj->oBehParams2ndByte = param;
@@ -190,10 +303,9 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvKoopa            ,-150.0f   ,MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
 };
 
-u32 cmm_terrain_data[32][32] = {0}; //flags (Order, X, Y, Z)
-u32 cmm_occupy_data[32][32] = {0}; //flags (Order, X, Y, Z)
-Gfx cmm_terrain_gfx[15000]; //gfx
-Gfx cmm_terrain_gfx_tdecal[8000]; //transparent decals
+struct cmm_grid_obj cmm_grid_data[32][32][32] = {0};
+
+Gfx cmm_terrain_gfx[23000]; //gfx
 Gfx cmm_terrain_gfx_tp[8000];//transparent
 Mtx cmm_terrain_mtx[5000]; //translations
 Vtx cmm_terrain_vtx[25000];
@@ -201,15 +313,12 @@ Vtx cmm_terrain_vtx[25000];
 u16 cmm_gfx_total = 0;
 u16 cmm_mtx_total = 0;
 u16 cmm_vtx_total = 0;
-u16 cmm_gfx_tdecal_total = 0;
 u16 cmm_gfx_tp_total = 0;
 
 struct cmm_tile cmm_tile_data[2000];
 struct cmm_obj cmm_object_data[200];
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
-
-Gfx * cmm_mat_pointer = NULL;
 
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
@@ -277,20 +386,6 @@ u8 cmm_envfx_table[] = {
     ENVFX_RAIN
 };
 
-//theme strings
-u8 txt_theme_1[] = {TXT_THEME_1};u8 txt_theme_2[] = {TXT_THEME_2};u8 txt_theme_3[] = {TXT_THEME_3};
-u8 txt_theme_4[] = {TXT_THEME_4}; u8 txt_theme_5[] = {TXT_THEME_5};u8 txt_theme_6[] = {TXT_THEME_6};
-u8 txt_theme_7[] = {TXT_THEME_7};
-u8 *cmm_theme_string_table[] = {
-    &txt_theme_1,
-    &txt_theme_5,
-    &txt_theme_6,
-    &txt_theme_7,
-    &txt_theme_2,
-    &txt_theme_3,
-    &txt_theme_4,
-};
-
 //background strings
 u8 txt_bg_1[] = {TXT_BG1}; u8 txt_bg_2[] = {TXT_BG2}; u8 txt_bg_3[] = {TXT_BG3}; u8 txt_bg_4[] = {TXT_BG4};
 u8 txt_bg_5[] = {TXT_BG5}; u8 txt_bg_6[] = {TXT_BG6}; u8 txt_bg_7[] = {TXT_BG7}; u8 txt_bg_8[] = {TXT_BG8};
@@ -350,6 +445,121 @@ u8 *txt_bp_boss[] = {
     txt_bp_boss4,
 };
 
+//theme strings
+u8 txt_theme_1[] = {TXT_THEME_GENERIC};u8 txt_theme_2[] = {TXT_THEME_SAND};u8 txt_theme_3[] = {TXT_THEME_RHR};
+u8 txt_theme_4[] = {TXT_THEME_CAVE}; u8 txt_theme_5[] = {TXT_THEME_CASTLE};u8 txt_theme_6[] = {TXT_THEME_VIRTUAPLEX};
+u8 txt_theme_7[] = {TXT_THEME_RETRO};
+
+u8 txt_mat_grass[] = {TXT_MAT_GRASS};u8 txt_mat_bricks[] = {TXT_MAT_BRICK};u8 txt_mat_stone[] = {TXT_MAT_STONE};u8 txt_mat_wood[] = {TXT_MAT_WOOD};u8 txt_mat_tiles[] = {TXT_MAT_TILES};u8 txt_mat_lava[] = {TXT_MAT_LAVA};
+u8 txt_mat_sand[] = {TXT_MAT_SAND};u8 txt_mat_snow[] = {TXT_MAT_SNOW};u8 txt_mat_quicksand[] = {TXT_MAT_QUICKSAND};u8 txt_mat_roof[] = {TXT_MAT_ROOF};
+u8 txt_mat_tiles2[] = {TXT_MAT_TILES2};u8 txt_mat_block[] = {TXT_MAT_BLOCK};
+
+u8 *cmm_theme_string_table[NUM_THEMES] = {
+    &txt_theme_1,
+    &txt_theme_2,
+    &txt_theme_3,
+    &txt_theme_4,
+    &txt_theme_5,
+    &txt_theme_6,
+    &txt_theme_7,
+};
+
+struct cmm_theme cmm_theme_table[NUM_THEMES] = {
+    // GENERIC
+    {{
+        {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
+        {&mat_maker_MakerBricks, NULL, NULL, &txt_mat_bricks,0},
+        {&mat_maker_MakerStone, NULL, &mat_maker_MakerStoneSide, &txt_mat_stone,0},
+        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
+        {&mat_maker_MakerTileBricks, NULL, &mat_maker_MakerTiles, &txt_mat_tiles,0}, // tiles
+        {&mat_maker_MakerRoof, NULL, NULL, &txt_mat_roof,0}, // roof
+        {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0}, // sand
+        {&mat_maker_MakerSnowDirt, &mat_maker_MakerSnowSide_layer1, &mat_maker_MakerSnow, &txt_mat_snow,0}, // snow
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0}, // quicksand
+    }},
+    // DESERT
+    {{
+        {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0},
+        {&mat_maker_MakerDBrick, NULL, NULL, &txt_mat_bricks,0},
+        {&mat_maker_MakerDStone, NULL, NULL, &txt_mat_stone,0},
+        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
+        {&mat_maker_MakerDTiles, NULL, NULL, &txt_mat_tiles,0},
+        {&mat_maker_MakerDStoneBlock, NULL, NULL, &txt_mat_block,0},
+        {&mat_maker_MakerDBrick, NULL, mat_maker_MakerDWood, &txt_mat_tiles2,0},
+        {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0},
+    }},
+    // LAVA
+    {{
+        {&mat_maker_MakerRHRStone, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
+        {&mat_maker_MakerRHRBrick, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
+        {&mat_maker_MakerRHRBasalt, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRHRWood, NULL, NULL, &txt_mat_wood,0},
+        {&mat_maker_MakerRHRTiles, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRHRPattern, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerRHRPillar, NULL, &mat_maker_MakerRHRTiles, &txt_mat_lava,0},
+        {&mat_maker_MakerRHRGrate_layer1, NULL, NULL, &txt_mat_grass,1},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_lava,0},
+    }},
+    // CAVE
+    {{
+        {&mat_maker_MakerHDirt, mat_maker_MakerHGrassSide_layer1, &mat_maker_MakerHGrass, &txt_mat_grass,0},
+        {&mat_maker_MakerHBrick, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerHStone, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerHCloud, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+    }},
+    // CASTLE
+    {{
+        {&mat_maker_MakerCDirt, NULL, &mat_maker_MakerCTile, &txt_mat_grass,0},
+        {&mat_maker_MakerCBrick, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerCStone, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerCWood, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerCCloud, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+    }},
+    // VIRTUAPLEX
+    {{
+        {&mat_maker_MakerVirtuaplex, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_Maker4Stone, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerStone, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerCaution, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerScreen, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerVoid, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+    }},
+    // RETRO
+    {{
+        {&mat_maker_MakerRetroGround, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRetroBrick, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRetroStone, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRetroBlock, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRetroCloud, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerRetroLava, NULL, NULL, &txt_mat_grass,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
+    }},
+};
+
+#define MATERIAL(id) (cmm_theme_table[cmm_lopt_theme].mats[id])
+
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
 u8 cmm_lopt_seq = 0;
@@ -364,7 +574,7 @@ u8 cmm_menu_state = CMM_MAKE_MAIN;
 s8 cmm_ui_index = 0;
 u8 cmm_ui_bar[9] = {
     CMM_BUTTON_TERRAIN,
-    CMM_BUTTON_BRICK,
+    CMM_BUTTON_FENCE,
     CMM_BUTTON_SLOPE,
     CMM_BUTTON_COIN,
     CMM_BUTTON_GOOMBA,
@@ -378,15 +588,15 @@ s8 cmm_toolbox_index = 0;
 u8 cmm_toolbox[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_SSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_LAVA, CMM_BUTTON_WATER,
+    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE,CMM_BUTTON_SSLOPE,CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_BRICK, CMM_BUTTON_WOOD, CMM_BUTTON_STONE, CMM_BUTTON_SNOW, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_LAVA, CMM_BUTTON_WATER,
+    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Tiles 2  */ CMM_BUTTON_SLOPE,CMM_BUTTON_CORNER,CMM_BUTTON_ICORNER,CMM_BUTTON_DSLOPE, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_KTQ,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BBALL,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
@@ -412,27 +622,22 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_save     , 0                  ,0           , &txt_btn_1    , NULL         }, //CMM_BUTTON_SAVE
     {&mat_b_btn_settings , 0                  ,0           , &txt_btn_2    , NULL         }, //CMM_BUTTON_SETTINGS
     {&mat_b_btn_check    , 0                  ,0           , &txt_btn_3    , NULL         }, //CMM_BUTTON_PLAY
-    {&mat_b_btn_grass    , TILE_TYPE_TERRAIN  ,CMM_PM_TILE , &txt_btn_4    , NULL         }, //CMM_BUTTON_GRASS
-    {&mat_b_btn_brick    , TILE_TYPE_BRICK    ,CMM_PM_TILE , &txt_btn_5    , NULL         }, //CMM_BUTTON_BRICK
-    {&mat_b_btn_lava     , TILE_TYPE_LAVA     ,CMM_PM_TILE , &txt_btn_6    , NULL         }, //CMM_BUTTON_LAVA
+    {&mat_b_btn_grass    , TILE_TYPE_BLOCK    ,CMM_PM_TILE , &txt_btn_4    , NULL         }, //CMM_BUTTON_GRASS
     {&mat_b_btn_slope    , TILE_TYPE_SLOPE    ,CMM_PM_TILE , &txt_btn_7    , NULL         }, //CMM_BUTTON_SLOPE
     {&mat_b_btn_troll    , TILE_TYPE_TROLL    ,CMM_PM_TILE , &txt_btn_8    , NULL         }, //CMM_BUTTON_TROLL
     {&mat_b_btn_star     , OBJECT_TYPE_STAR   ,CMM_PM_OBJ  , &txt_btn_9    , NULL         }, //CMM_BUTTON_STAR
     {&mat_b_btn_goomba   , OBJECT_TYPE_GOOMBA ,CMM_PM_OBJ  , &txt_btn_10   , NULL         }, //CMM_BUTTON_GOOMBA
     {&mat_b_btn_coin     , OBJECT_TYPE_COIN   ,CMM_PM_OBJ  , &txt_btn_11   , NULL         }, //CMM_BUTTON_COIN
-    {&mat_b_btn_blank    , TILE_TYPE_TERRAIN  ,CMM_PM_TILE , &txt_btn_12   , NULL         }, //CMM_BUTTON_BLANK
-    {&mat_b_btn_wood     , TILE_TYPE_WOOD     ,CMM_PM_TILE , &txt_btn_13   , NULL         }, //CMM_BUTTON_WOOD
-    {&mat_b_btn_stone    , TILE_TYPE_STONE    ,CMM_PM_TILE , &txt_btn_14   , NULL         }, //CMM_BUTTON_STONE
-    {&mat_b_btn_greencoin,OBJECT_TYPE_GCOIN   ,CMM_PM_OBJ  , &txt_btn_15   , NULL         }, //CMM_BUTTON_GCOIN
+    {&mat_b_btn_blank    , TILE_TYPE_BLOCK    ,CMM_PM_TILE , &txt_btn_12   , NULL         }, //CMM_BUTTON_BLANK
+    {&mat_b_btn_greencoin, OBJECT_TYPE_GCOIN  ,CMM_PM_OBJ  , &txt_btn_15   , NULL         }, //CMM_BUTTON_GCOIN
     {&mat_b_btn_corner   , TILE_TYPE_CORNER   ,CMM_PM_TILE , &txt_btn_16   , NULL         }, //CMM_BUTTON_CORNER
     {&mat_b_btn_icorner  , TILE_TYPE_ICORNER  ,CMM_PM_TILE , &txt_btn_17   , NULL         }, //CMM_BUTTON_ICORNER
-    {&mat_b_btn_redcoin  ,OBJECT_TYPE_RCOIN   ,CMM_PM_OBJ  , &txt_btn_18   , NULL         }, //CMM_BUTTON_RCOIN
-    {&mat_b_btn_bluecoin ,OBJECT_TYPE_BCOIN   ,CMM_PM_OBJ  , &txt_btn_19   , NULL         }, //CMM_BUTTON_BCOIN
-    {&mat_b_btn_bcs      ,OBJECT_TYPE_BCS     ,CMM_PM_OBJ  , &txt_btn_20   , NULL         }, //CMM_BUTTON_BCS
-    {&mat_b_btn_rcs      ,OBJECT_TYPE_RCS     ,CMM_PM_OBJ  , &txt_btn_21   , NULL         }, //CMM_BUTTON_RCS
-    {&mat_b_btn_noteblock,OBJECT_TYPE_NOTE    ,CMM_PM_OBJ  , &txt_btn_22   , NULL         }, //CMM_BUTTON_NOTEBLOCK
+    {&mat_b_btn_redcoin  , OBJECT_TYPE_RCOIN  ,CMM_PM_OBJ  , &txt_btn_18   , NULL         }, //CMM_BUTTON_RCOIN
+    {&mat_b_btn_bluecoin , OBJECT_TYPE_BCOIN  ,CMM_PM_OBJ  , &txt_btn_19   , NULL         }, //CMM_BUTTON_BCOIN
+    {&mat_b_btn_bcs      , OBJECT_TYPE_BCS    ,CMM_PM_OBJ  , &txt_btn_20   , NULL         }, //CMM_BUTTON_BCS
+    {&mat_b_btn_rcs      , OBJECT_TYPE_RCS    ,CMM_PM_OBJ  , &txt_btn_21   , NULL         }, //CMM_BUTTON_RCS
+    {&mat_b_btn_noteblock, OBJECT_TYPE_NOTE   ,CMM_PM_OBJ  , &txt_btn_22   , NULL         }, //CMM_BUTTON_NOTEBLOCK
     {&mat_b_btn_cull     , TILE_TYPE_CULL     ,CMM_PM_TILE , &txt_btn_23   , NULL         }, //CMM_BUTTON_CULL
-    {&mat_b_btn_snow     , TILE_TYPE_SNOW     ,CMM_PM_TILE , &txt_btn_24   , NULL         }, //CMM_BUTTON_SNOW
     {&mat_b_btn_podoboo  , OBJECT_TYPE_PODOB  ,CMM_PM_OBJ  , &txt_btn_25   , NULL         }, //CMM_BUTTON_PODOBOO
     {&mat_b_btn_rex      , OBJECT_TYPE_REX    ,CMM_PM_OBJ  , &txt_btn_26   , NULL         }, //CMM_BUTTON_REX
     {&mat_b_btn_bully    , OBJECT_TYPE_BULLY  ,CMM_PM_OBJ  , &txt_btn_27   , NULL         }, //CMM_BUTTON_BULLY
@@ -465,7 +670,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
     {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 29},
     {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
-    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, 7},
+    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, NUM_THEMES},
     {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
     {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
 };
@@ -481,93 +686,12 @@ void reset_play_state(void) {
     cmm_play_badge_bitfield = 0;
 }
 
-void change_theme(u8 theme, u8 suggest) {
-    switch(theme) {
-        case CMM_THEME_GENERIC:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
-            grass_top_material = &mat_maker_MakerGrass;
-            grass_side_material = &mat_maker_MakerGrassSide;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerDirt;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerBricks;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
-        break;
-        case CMM_THEME_VIRTUAPLEX:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = FALSE;
-            grass_side_material = NULL;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerVirtuaplex;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_Maker4Stone;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCaution;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerScreen;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerVoid;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerVPFence;
-        break;
-        case CMM_THEME_RED_HOT_RESERVOIR:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
-            grass_top_material = &mat_maker_MakerRHRObsidian;
-            grass_side_material = NULL;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerRHRBrick;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerRHRBasalt;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerRHRGake;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
-        break;
-        case CMM_THEME_RETRO:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = FALSE;
-            grass_side_material = NULL;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerRetroGround;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerRetroBrick;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerRetroStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerRetroBlock;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerRetroCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerRetroLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerFence;
-        break;
-        case CMM_THEME_CASTLE:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
-            grass_top_material = &mat_maker_MakerCTile;
-            grass_side_material = NULL;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerCDirt;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerCBrick;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerCStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerCWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerCCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerCFence;
-        break;
-        case CMM_THEME_DESERT:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
-            grass_top_material = &mat_maker_MakerDGrass;
-            grass_side_material = &mat_maker_MakerDGrassSide;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerDirt;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerDBrick;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerDStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerDWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerDCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerDFence;
-        break;
-        case CMM_THEME_CAVE:
-            cmm_tile_types[TILE_TYPE_TERRAIN].growth = TRUE;
-            grass_top_material = &mat_maker_MakerHGrass;
-            grass_side_material = &mat_maker_MakerHGrassSide;
-            cmm_tile_types[TILE_TYPE_TERRAIN].material = &mat_maker_MakerHDirt;
-            cmm_tile_types[TILE_TYPE_BRICK].material = &mat_maker_MakerHBrick;
-            cmm_tile_types[TILE_TYPE_STONE].material = &mat_maker_MakerHStone;
-            cmm_tile_types[TILE_TYPE_WOOD].material = &mat_maker_MakerWood;
-            cmm_tile_types[TILE_TYPE_SNOW].material = &mat_maker_MakerHCloud;
-            cmm_tile_types[TILE_TYPE_LAVA].material = &mat_maker_MakerLava;
-            cmm_tile_types[TILE_TYPE_FENCE].material = &mat_maker_MakerHFence;
-        break;
-    }
+u32 coords_in_range(s32 x, s32 y, s32 z) {
+    if (x < 0 || x > 31) return FALSE;
+    if (y < 0 || y > 31) return FALSE;
+    if (z < 0 || z > 31) return FALSE;
+    return TRUE;
 }
-
 
 s32 tile_sanity_check(void) {
     u8 allow = TRUE;
@@ -581,13 +705,10 @@ s32 tile_sanity_check(void) {
     if (cmm_mtx_total >= 4970) {
         allow = FALSE;
     }
-    if (cmm_gfx_total >= 14970) {
+    if (cmm_gfx_total >= 22970) {
         allow = FALSE;
     }
     if (cmm_gfx_tp_total >= 7970) {
-        allow = FALSE;
-    }
-    if (cmm_gfx_tdecal_total >= 7970) {
         allow = FALSE;
     }
 
@@ -612,27 +733,124 @@ s32 object_sanity_check(void) {
     return allow;
 }
 
-void place_terrain_data(u32 a[32][32], u8 x, u8 y, u8 z) {
-    a[x][y] |= (1<<z);
+void place_terrain_data(s32 x, s32 y, s32 z, u32 type, u32 rot, u32 mat) {
+    cmm_grid_data[x][y][z].rot = rot;
+    cmm_grid_data[x][y][z].type = type + 1;
+    cmm_grid_data[x][y][z].mat = mat;
 }
 
-void remove_terrain_data(u32 a[32][32], u8 x, u8 y, u8 z) {
-    a[x][y] &= ~(1<<z);
+void remove_terrain_data(s32 x, s32 y, s32 z) {
+    cmm_grid_data[x][y][z].rot = 0;
+    cmm_grid_data[x][y][z].type = 0;
+    cmm_grid_data[x][y][z].mat = 0;
 }
 
-u8 get_terrain_data(u32 a[32][32], s8 x, s8 y, s8 z) {
-    if ((x > 31)||(x < 0)) {
-        return 1;
+u32 get_faceshape(s32 x, s32 y, s32 z, u32 dir) {
+    u8 tileType = cmm_grid_data[x][y][z].type;
+    if (tileType == 0) return CMM_FACESHAPE_EMPTY; // no tile
+
+    u8 rot = cmm_grid_data[x][y][z].rot;
+    dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
+
+    struct cmm_terrain_block *terrain = cmm_tile_types[tileType - 1].terrain;
+    for (u32 i = 0; i < terrain->numQuads; i++) {
+        struct cmm_terrain_quad *quad = &terrain->quads[i];
+        if (quad->cullDir == dir) {
+            return quad->faceshape;
+        }
     }
-    if ((y > 31)||(y < 0)) {
-        return 1;
+    for (u32 i = 0; i < terrain->numTris; i++) {
+        struct cmm_terrain_tri *tri = &terrain->tris[i];
+        if (tri->cullDir == dir) {
+            return tri->faceshape;
+        }
     }
-    if ((z > 31)||(z < 0)) {
-        return 1;
+    return CMM_FACESHAPE_EMPTY;
+}
+
+void place_occupy_data(s32 x, s32 y, s32 z) {
+    cmm_grid_data[x][y][z].occupied = TRUE;
+}
+
+void remove_occupy_data(s32 x, s32 y, s32 z) {
+    cmm_grid_data[x][y][z].occupied = FALSE;
+}
+
+u32 get_occupy_data(s32 x, s32 y, s32 z) {
+    if (!coords_in_range(x, y, z)) return FALSE;
+    return cmm_grid_data[x][y][z].occupied;
+}
+
+s8 cullOffsetLUT[6][3] = {
+    {0, 1, 0},
+    {0, -1, 0},
+    {1, 0, 0},
+    {-1, 0, 0},
+    {0, 0, 1},
+    {0, 0, -1},
+};
+
+u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
+    if (direction == CMM_NO_CULLING) return FALSE;
+    direction = ROTATE_DIRECTION(direction, rot);
+
+    s8 newpos[3];
+    vec3_sum(newpos, pos, cullOffsetLUT[direction]);
+    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return FALSE;
+
+    u8 otherMat = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].mat;
+    if (MATERIAL(otherMat).type != 0) {
+        u8 curMat = cmm_grid_data[pos[0]][pos[1]][pos[2]].mat;
+        if (curMat != otherMat) return FALSE;
     }
 
-    return a[x][y]>>z & 1;
+    u32 otherFaceshape = get_faceshape(
+        newpos[0],
+        newpos[1],
+        newpos[2],
+        direction);
+
+    if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
+    if (otherFaceshape == CMM_FACESHAPE_FULL) return TRUE;
+    if (faceshape == CMM_FACESHAPE_FULL) return FALSE;
+    if (faceshape == CMM_FACESHAPE_TOPTRI) {
+        if (otherFaceshape == CMM_FACESHAPE_TOPTRI) {
+            u8 otherrot = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].rot;
+            return (otherrot == rot);
+        } else return FALSE;
+    }
+    return (faceshape == (otherFaceshape^1));
 }
+
+u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    if (!coords_in_range(pos[0], pos[1]+1, pos[2])) return TRUE;
+    u8 topFaceshape;
+    switch (grassType) {
+        case CMM_GROWTH_UNDERSLOPE:
+            direction = CMM_DIRECTION_POS_Z;
+            // fallthrough
+        case CMM_GROWTH_NORMAL_SIDE:
+            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
+            switch (topFaceshape) {
+                case CMM_FACESHAPE_FULL:
+                case CMM_FACESHAPE_TRI_1:
+                case CMM_FACESHAPE_TRI_2:
+                    return FALSE;
+            }
+            return TRUE;
+        case CMM_GROWTH_UNCONDITIONAL_SIDE:
+            return TRUE;
+        case CMM_GROWTH_DIAGONAL_SIDE:
+            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
+            if (topFaceshape == CMM_FACESHAPE_FULL) return FALSE;
+            if (topFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            u8 otherrot = cmm_grid_data[pos[0]][pos[1]+1][pos[2]].rot;
+            return (otherrot != rot);
+    }
+    return FALSE;
+}
+
 
 s32 handle_wait_vblank(OSMesgQueue *mq) {
     // returns true if it lasts longer than 3 seconds (3 * 1000us * 1000ms)
@@ -665,207 +883,195 @@ void generate_path_gfx(void) {
     gSPEndDisplayList(&cmm_trajectory_gfx[gfx_index]);
 }
 
+Vtx *cmm_curr_vtx;
+Gfx *cmm_curr_gfx;
+u16 cmm_vtx_index;
+u16 cmm_gfx_index;
+
+
+void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
+    for (u32 i = 0; i < numVtx; i++) {
+        s8 x = oldv[i][0];
+        s8 z = oldv[i][2];
+        switch (rot) {
+            case 0: v[i][0] = x; v[i][2] = z; break;
+            case 1: v[i][0] = z; v[i][2] = -x; break;
+            case 2: v[i][0] = -x; v[i][2] = -z; break;
+            case 3: v[i][0] = -z; v[i][2] = x; break;
+        }
+        v[i][1] = oldv[i][1];
+    }
+}
+
+void render_get_normal_and_uvs(s8 v[3][3], u32 uvProjDir, u32 rot, u8 *uAxis, u8 *vAxis, s8 n[3]) {
+    // Find normal
+    Vec3f normal;
+    find_vector_perpendicular_to_plane(normal, v[0], v[1], v[2]);
+    vec3_normalize(normal);
+    n[0] = normal[0] * 0x7F;
+    n[1] = normal[1] * 0x7F;
+    n[2] = normal[2] * 0x7F;
+    // Find UVs
+    if (rot & 1) uvProjDir = 2 - uvProjDir;
+    switch (uvProjDir) {
+        case 0: *uAxis = 2; *vAxis = 1; break;
+        case 1: *uAxis = 2; *vAxis = 0; break;
+        case 2: *uAxis = 0; *vAxis = 1; break;
+    }
+}
+
+void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u32 isDecal) {
+    s8 n[3];
+    u8 uAxis, vAxis;
+
+    s8 newVtx[4][3];
+    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
+    render_get_normal_and_uvs(newVtx, quad->uvProjDir, rot, &uAxis, &vAxis, n);
+
+    for (u32 i = 0; i < 4; i++) {
+        s16 u, v;
+        if (isDecal && quad->decaluvs) {
+            u = (*quad->decaluvs)[i][0];
+            v = (*quad->decaluvs)[i][1];
+        } else {
+            u = newVtx[i][uAxis];
+            v = newVtx[i][vAxis];
+        }
+        make_vertex(cmm_curr_vtx, cmm_vtx_index+i,
+            (pos[0]*300)+newVtx[i][0]*150,
+            (pos[1]*300)+newVtx[i][1]*150,
+            (pos[2]*300)+newVtx[i][2]*150,
+            u * -512 + 500, v * -512 + 500,
+            n[0], n[1], n[2], 0xFF);
+    }
+    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 4, 0);
+    gSP2Triangles(&gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
+    cmm_vtx_index+=4;
+}
+
+void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 isDecal) {
+    s8 n[3];
+    u8 uAxis, vAxis;
+
+    s8 newVtx[3][3];
+    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
+    render_get_normal_and_uvs(newVtx, tri->uvProjDir, rot, &uAxis, &vAxis, n);
+
+    for (u32 i = 0; i < 3; i++) {
+        s16 u, v;
+        if (isDecal && tri->decaluvs) {
+            u = (*tri->decaluvs)[i][0];
+            v = (*tri->decaluvs)[i][1];
+        } else {
+            u = newVtx[i][uAxis];
+            v = newVtx[i][vAxis];
+        }
+        make_vertex(cmm_curr_vtx, cmm_vtx_index+i,
+            (pos[0]*300)+newVtx[i][0]*150,
+            (pos[1]*300)+newVtx[i][1]*150,
+            (pos[2]*300)+newVtx[i][2]*150,
+            u * -512 + 500, v * -512 + 500,
+            n[0], n[1], n[2], 0xFF);
+    }
+    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 3, 0);
+    gSP1Triangle(&gfx[cmm_gfx_index++], 0, 1, 2, 0);
+    cmm_vtx_index+=3;
+}
+
+void render_block_main(s8 pos[3], u32 tileType, u32 mat, u32 rot) {
+    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
+    u8 hasTopside = (MATERIAL(mat).top != NULL);
+    for (u32 j = 0; j < terrain->numQuads; j++) {
+        struct cmm_terrain_quad *quad = &terrain->quads[j];
+        if (!should_cull(pos, quad->cullDir, quad->faceshape, rot)) {
+            if (!hasTopside || (quad->growthType != CMM_GROWTH_FULL)) {
+                render_quad(quad, cmm_curr_gfx, pos, rot, FALSE);
+            }
+        }
+    }
+    for (u32 j = 0; j < terrain->numTris; j++) {
+        struct cmm_terrain_tri *tri = &terrain->tris[j];
+        if (!should_cull(pos, tri->cullDir, tri->faceshape, rot)) {
+            if (!hasTopside || (tri->growthType != CMM_GROWTH_FULL)) {
+                render_tri(tri, cmm_curr_gfx, pos, rot, FALSE);
+            }
+        }
+    }
+}
+
+void render_block_grass_top(s8 pos[3], u32 tileType, u32 rot) {
+    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
+    for (u32 j = 0; j < terrain->numQuads; j++) {
+        struct cmm_terrain_quad *quad = &terrain->quads[j];
+        if (quad->growthType == CMM_GROWTH_FULL) {
+            if (!should_cull(pos, quad->cullDir, quad->faceshape, rot)) {
+                render_quad(quad, cmm_curr_gfx, pos, rot, FALSE);
+            }
+        }
+    }
+    
+    for (u32 j = 0; j < terrain->numTris; j++) {
+        struct cmm_terrain_tri *tri = &terrain->tris[j];
+        if (tri->growthType == CMM_GROWTH_FULL) {
+            if (!should_cull(pos, tri->cullDir, tri->faceshape, rot)) {
+                render_tri(tri, cmm_curr_gfx, pos, rot, FALSE);
+            }
+        }
+    }
+}
+
+void render_block_grass_side(s8 pos[3], u32 tileType, u32 rot) {
+    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
+    for (u32 j = 0; j < terrain->numQuads; j++) {
+        struct cmm_terrain_quad *quad = &terrain->quads[j];
+        if (quad->growthType != CMM_GROWTH_FULL && quad->growthType != CMM_GROWTH_NONE) {
+            if (should_render_grass_side(pos, quad->cullDir, quad->faceshape, rot, quad->growthType)) {
+                render_quad(quad, cmm_curr_gfx, pos, rot, TRUE);
+            }
+        }
+    }
+
+    for (u32 j = 0; j < terrain->numTris; j++) {
+        struct cmm_terrain_tri *tri = &terrain->tris[j];
+        if (tri->growthType != CMM_GROWTH_FULL && tri->growthType != CMM_GROWTH_NONE) {
+            if (should_render_grass_side(pos, tri->cullDir, tri->faceshape, rot, tri->growthType)) {
+                render_tri(tri, cmm_curr_gfx, pos, rot, TRUE);
+            }
+        }
+    }
+}
+
 void generate_terrain_gfx(void) {
-    u16 gfx_index = 0;
     u16 gfx_tdecal_index = 0;
     u16 gfx_tp_index = 0;
     u16 mtx_index = 0;
-    u16 vtx_index = 0;
-    u16 i;
 
     while (sCurrentDisplaySPTask != NULL) {
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
 
+    cmm_curr_gfx = cmm_terrain_gfx;
+    cmm_curr_vtx = cmm_terrain_vtx;
+    cmm_vtx_index = 0;
+    cmm_gfx_index = 0;
+
     //BOTTOM PLANE
     switch (cmm_lopt_plane) {
         case 1:
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_LAVA].material);
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(TILE_MATERIAL_LAVA).gfx);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
         break;
         case 2:
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[TILE_TYPE_TERRAIN].material);
-            if (cmm_tile_types[TILE_TYPE_TERRAIN].growth) {
-                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
-            }
-            gSPDisplayList(&cmm_terrain_gfx[gfx_index++], visualplane_visualplane_mesh);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(TILE_MATERIAL_GRASS).top);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
         break;
     }
 
-    //GROWTH ON TOP OF TILES
-    //top texture
-    gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
-
-    //top faces
-    for (i = 0; i < cmm_tile_count; i++) {
-        if (cmm_tile_types[cmm_tile_data[i].type].growth) {
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y+1,cmm_tile_data[i].z)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                vtx_index+=4;
-            }
-        }
-    }
-
-    if (grass_side_material) {
-        gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], grass_side_material);
-        }
-
-    for (i = 0; i < cmm_tile_count; i++) {
-        if (grass_side_material && cmm_tile_types[cmm_tile_data[i].type].growth) {
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y+1,cmm_tile_data[i].z)) {
-                //z+
-                if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z+1)) {
-                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x0, 0x7F, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x0, 0x7F, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), 1008, -16, 0x0, 0x0, 0x7F, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x0, 0x0, 0x7F, 0xFF);
-
-                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                    vtx_index+=4;
-                }
-                //z-
-                if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z-1)) {
-                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), -16, 1008, 0x0, 0x0, 0x80, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x0, 0x0, 0x80, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x0, 0x80, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x0, 0x80, 0xFF);
-
-                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 2, 1, 0, 0, 3, 2, 0);
-                    vtx_index+=4;
-                }
-                //x+
-                if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x+1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x7F, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x7F, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x7F, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x7F, 0x0, 0x0, 0xFF);
-
-                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                    vtx_index+=4;
-                }
-                //x-
-                if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x-1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x80, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x80, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x80, 0x0, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x80, 0x0, 0x0, 0xFF);
-
-                    gSPVertex(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                    gSP2Triangles(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], 0, 2, 1, 0, 0, 3, 2, 0);
-                    vtx_index+=4;
-                }
-            }
-        }
-    }
-
-    //END GROWTH ON TOP OF TILES
-
-    cmm_mat_pointer = NULL;
-
-    //sides and bottom texture
-    for (i = 0; i < cmm_tile_count; i++) {
-        if (cmm_mat_pointer != &cmm_tile_types[cmm_tile_data[i].type].material) {
-            cmm_mat_pointer = &cmm_tile_types[cmm_tile_data[i].type].material;
-
-            if (!cmm_tile_types[cmm_tile_data[i].type].transparent) {
-                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].material);
-            } else {
-                gSPDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index++], cmm_tile_types[cmm_tile_data[i].type].material);
-            }
-        }
-
-        if (!cmm_tile_types[cmm_tile_data[i].type].model) {
-            //no model, so print a cube
-            //y+ face (only if no growth)
-            if (!cmm_tile_types[cmm_tile_data[i].type].growth) {
-                if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y+1,cmm_tile_data[i].z)) {
-                    make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
-                    make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
-
-                    gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                    gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                    vtx_index+=4;
-                }
-            }
-
-            //y- face
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y-1,cmm_tile_data[i].z)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x80, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x80, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x80, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x80, 0x0, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 2, 1, 0, 0, 3, 2, 0);
-                vtx_index+=4;
-            }
-
-            //z+ face
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z+1)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x0, 0x0, 0x7F, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), 1008, 1008, 0x0, 0x0, 0x7F, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), 1008, -16, 0x0, 0x0, 0x7F, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x0, 0x0, 0x7F, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                vtx_index+=4;
-            }
-
-            //z- face
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z-1)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), -16, 1008, 0x0, 0x0, 0x80, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x0, 0x0, 0x80, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x0, 0x0, 0x80, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), -16, -16, 0x0, 0x0, 0x80, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 2, 1, 0, 0, 3, 2, 0);
-                vtx_index+=4;
-            }
-
-            //x+ face
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x+1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x7F, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x7F, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x7F, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)+150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x7F, 0x0, 0x0, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-                vtx_index+=4;
-            }
-
-            //x- face
-            if (!get_terrain_data(cmm_terrain_data,cmm_tile_data[i].x-1,cmm_tile_data[i].y,cmm_tile_data[i].z)) {
-                make_vertex(cmm_terrain_vtx, vtx_index+0, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)+150), -16, 1008, 0x80, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+1, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)-150), ((cmm_tile_data[i].z*300)-150), 1008, 1008, 0x80, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+2, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)-150), 1008, -16, 0x80, 0x0, 0x0, 0xFF);
-                make_vertex(cmm_terrain_vtx, vtx_index+3, ((cmm_tile_data[i].x*300)-150), ((cmm_tile_data[i].y*300)+150), ((cmm_tile_data[i].z*300)+150), -16, -16, 0x80, 0x0, 0x0, 0xFF);
-
-                gSPVertex(&cmm_terrain_gfx[gfx_index++], cmm_terrain_vtx + vtx_index, 4, 0);
-                gSP2Triangles(&cmm_terrain_gfx[gfx_index++], 0, 2, 1, 0, 0, 3, 2, 0);
-                vtx_index+=4;
-            }
-        } else {
-            //
+    // Tiles with models
+    for (u32 i = 0; i < cmm_tile_count; i++) {
+        if (!cmm_tile_types[cmm_tile_data[i].type].terrain) {
             if ((cmm_target_mode == CMM_MODE_PLAY)&&(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
                 continue;
-            }
-            //models will inherit the grass texture if after terrain
-            if (cmm_tile_data[i-1].type == TILE_TYPE_TERRAIN) {
-                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], grass_top_material);
             }
 
             //has a model, so just print model
@@ -874,10 +1080,10 @@ void generate_terrain_gfx(void) {
             guRotate(&cmm_terrain_mtx[mtx_index],cmm_tile_data[i].rot*90.0f,0.0f,1.0f,0.0f);
             if (!cmm_tile_types[cmm_tile_data[i].type].transparent) {
                 //opaque
-                gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                gSPMatrix(&cmm_terrain_gfx[gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                gSPDisplayList(&cmm_terrain_gfx[gfx_index++], cmm_tile_types[cmm_tile_data[i].type].model);
-                gSPPopMatrix(&cmm_terrain_gfx[gfx_index++], G_MTX_MODELVIEW);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_tile_types[cmm_tile_data[i].type].model);
+                gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
             } else {
                 //transparent
                 gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -888,12 +1094,53 @@ void generate_terrain_gfx(void) {
             mtx_index++;
         }
     }
-    
+
+    for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
+        u8 tileType, rot;
+        s8 pos[3];
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
+        for (u32 i = 0; i < cmm_tile_count; i++) {
+            if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
+
+            tileType = cmm_tile_data[i].type;
+            rot = cmm_tile_data[i].rot;
+            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+            render_block_main(pos, tileType, mat, rot);
+        }
+        // If it was a cutout material, set render mode back to opaque
+        if (MATERIAL(mat).type == 1) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        }
+        if (MATERIAL(mat).side) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).side);
+            for (u32 i = 0; i < cmm_tile_count; i++) {
+                if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
+
+                tileType = cmm_tile_data[i].type;
+                rot = cmm_tile_data[i].rot;
+                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+                render_block_grass_side(pos, tileType, rot);
+            }
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
+        }
+        if (MATERIAL(mat).top) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).top);
+            for (u32 i = 0; i < cmm_tile_count; i++) {
+                if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
+
+                tileType = cmm_tile_data[i].type;
+                rot = cmm_tile_data[i].rot;
+                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+                render_block_grass_top(pos, tileType, rot);
+            }
+        }
+    }
 
     //END OF ALL 3 DISPLAY LISTS
-    gSPEndDisplayList(&cmm_terrain_gfx[gfx_index]);
-    gSPDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index++], &mat_revert_maker_MakerGrassSide);
-    gSPEndDisplayList(&cmm_terrain_gfx_tdecal[gfx_tdecal_index]);
+    gSPEndDisplayList(&cmm_terrain_gfx[cmm_gfx_index]);
     gSPEndDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index]);
 
     //print_text_fmt_int(110, 56, "OPAQUE %d", gfx_index);
@@ -901,15 +1148,15 @@ void generate_terrain_gfx(void) {
     //print_text_fmt_int(110, 96, "TILES %d", cmm_tile_count);
     //print_text_fmt_int(110, 116, "TYPE %d", cmm_tile_data[cmm_tile_count-1].type);
 
-    cmm_vtx_total = vtx_index;
+    cmm_vtx_total = cmm_vtx_index;
     cmm_mtx_total = mtx_index;
-    cmm_gfx_total = gfx_index;
-    cmm_gfx_tdecal_total = gfx_tdecal_index;
+    cmm_gfx_total = cmm_gfx_index;
     cmm_gfx_tp_total = gfx_tp_index;
 };
 
-Gfx preview_gfx[7];
+Gfx preview_gfx[32];
 Mtx preview_mtx[2];
+Vtx preview_vtx[64];
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
 
@@ -919,7 +1166,6 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     }
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
-        geo_append_display_list(cmm_terrain_gfx_tdecal, LAYER_TRANSPARENT_DECAL);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
 
         if (cmm_menu_state == CMM_MAKE_TRAJECTORY) {
@@ -929,27 +1175,44 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
         //this extra append is for the editor tile preview
         if ((cmm_mode == CMM_MODE_MAKE)&&(cmm_place_mode == CMM_PM_TILE)) {
             //generate dl
-            u8 preview_gfx_index = 0;
             u8 preview_mtx_index = 0;
+            cmm_curr_gfx = preview_gfx;
+            cmm_curr_vtx = preview_vtx;
+            cmm_gfx_index = 0;
+            cmm_vtx_index = 0;
 
             if (cmm_tile_types[cmm_id_selection].model) {
                 guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*300, cmm_sby*300, cmm_sbz*300);
                 preview_mtx_index++;
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
-                gSPMatrix(&preview_gfx[preview_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                gSPMatrix(&preview_gfx[preview_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                gSPDisplayList(&preview_gfx[preview_gfx_index++], cmm_tile_types[cmm_id_selection].material);
-                gSPDisplayList(&preview_gfx[preview_gfx_index++], cmm_tile_types[cmm_id_selection].model);
-                gSPPopMatrix(&preview_gfx[preview_gfx_index++], G_MTX_MODELVIEW);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                //gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_param_selection).gfx);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_tile_types[cmm_id_selection].model);
+                gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
                 preview_mtx_index++;
+            } else {
+                s8 pos[3];
+                vec3_set(pos, cmm_sbx, cmm_sby, cmm_sbz);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
+                render_block_main(pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
+                if (MATERIAL(cmm_mat_selection).top) {
+                    if (MATERIAL(cmm_mat_selection).side) {
+                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).side);
+                        render_block_grass_side(pos, cmm_id_selection, cmm_rot_selection);
+                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
+                    }
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).top);
+                    render_block_grass_top(pos, cmm_id_selection, cmm_rot_selection);
+                }
             }
 
-            gSPEndDisplayList(&preview_gfx[preview_gfx_index]);
+            gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
             if (!cmm_tile_types[cmm_id_selection].transparent) {
-                geo_append_display_list(preview_gfx, LAYER_OPAQUE);
+                geo_append_display_list(cmm_curr_gfx, LAYER_OPAQUE);
             } else {
-                geo_append_display_list(preview_gfx, LAYER_TRANSPARENT);
+                geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT);
             }
         }
 
@@ -957,37 +1220,123 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     return NULL;
 }
 
+// Create new static surface
+extern struct Surface *alloc_surface(u32 dynamic);
+extern void add_surface(struct Surface *surface, s32 dynamic);
+void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], TerrainData type) { 
+    struct Surface *surface = alloc_surface(FALSE);
+
+    Vec3f n;
+    find_vector_perpendicular_to_plane(n, v1, v2, v3);
+    if (!vec3f_normalize2(n)) return NULL;
+
+    vec3_copy(surface->vertex1, v1);
+    vec3_copy(surface->vertex2, v2);
+    vec3_copy(surface->vertex3, v3);
+
+    surface->normal.x = n[0];
+    surface->normal.y = n[1];
+    surface->normal.z = n[2];
+
+    surface->originOffset = -vec3_dot(n, v1);
+
+    s16 min,max;
+    min_max_3s(v1[1], v2[1], v3[1], &min, &max);
+    surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);
+    surface->upperY = (max + SURFACE_VERTICAL_BUFFER);
+
+    surface->type = type;
+    add_surface(surface, FALSE);
+};
+
+TerrainData floorVtxs[4][3] = {
+    {-150, -150, 9450},
+    {9450, -150, 9450},
+    {-150, -150, -150},
+    {9450, -150, -150},
+};
+
+extern TerrainData sVertexData[900];
+
+TerrainData colVtxs[4][3];
+
 void generate_terrain_collision(void) {
     s16 i;
+    gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
+    gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
+    gSurfacesAllocated = gNumStaticSurfaces;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
+    TerrainData floorType;
     switch(cmm_lopt_plane) {
         case 1:
-            o->collisionData = segmented_to_virtual(floor_lava_collision);
-            load_object_static_model();
-        break;
         case 2:
-            o->collisionData = segmented_to_virtual(floor_normal_collision);
-            load_object_static_model();
-        break;
+            floorType = (cmm_lopt_plane == 2) ? SURFACE_DEFAULT : SURFACE_BURNING;
+            cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
+            cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
     }
 
 
     for (i=0; i<cmm_tile_count; i++) {
-        Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
-        Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
-        mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
+        struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
+        if (terrain) {
+            floorType = cmm_tile_data[i].mat == TILE_MATERIAL_LAVA ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
+            s8 pos[3];
+            s8 newVtx[4][3];
+            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+            for (u32 j = 0; j < terrain->numQuads; j++) {
+                struct cmm_terrain_quad *quad = &terrain->quads[j];
+                if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
+                    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
+                    for (u32 k = 0; k < 4; k++) {
+                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
+                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
+                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                    }
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
+                }
+            }
+            for (u32 j = 0; j < terrain->numTris; j++) {
+                struct cmm_terrain_tri *tri = &terrain->tris[j];
+                if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
+                    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
+                    for (u32 k = 0; k < 3; k++) {
+                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
+                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
+                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                    }
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                }
+            }
+        } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
+            Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
+            Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
+            mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
-        //this code was written by accident... the collision doesn't generate properly without it though???
-        o->oPosX = (cmm_tile_data[0].x*300.0f);
-        o->oPosY = (cmm_tile_data[0].y*300.0f);
-        o->oPosZ = (cmm_tile_data[0].z*300.0f);
-        o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
+            //this code was written by accident... the collision doesn't generate properly without it though???
+            o->oPosX = (cmm_tile_data[0].x*300.0f);
+            o->oPosY = (cmm_tile_data[0].y*300.0f);
+            o->oPosZ = (cmm_tile_data[0].z*300.0f);
+            o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
+            
+            TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
+            collisionData++;
+            transform_object_vertices(&collisionData, sVertexData);
 
-        if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            o->collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
-            load_object_static_model();
+            // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
+            while (*collisionData != TERRAIN_LOAD_CONTINUE) {
+                load_object_surfaces(&collisionData, sVertexData, FALSE);
+            }
         }
     }
+
+    u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
+    gTotalStaticSurfaceData += surfacePoolData;
+    main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
+
+    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
+    gNumStaticSurfaces = gSurfacesAllocated;
 }
 
 void generate_object_preview(void) {
@@ -1054,12 +1403,13 @@ void generate_objects_to_level(void) {
 
 void place_tile(u8 x, u8 y, u8 z) {
     if ((!cmm_tile_types[cmm_id_selection].model)||(cmm_id_selection == TILE_TYPE_CULL)) {
-        place_terrain_data(cmm_terrain_data,x,y,z);
+        place_terrain_data(x,y,z,cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
     }
     cmm_tile_data[cmm_tile_count].x = x;
     cmm_tile_data[cmm_tile_count].y = y;
     cmm_tile_data[cmm_tile_count].z = z;
     cmm_tile_data[cmm_tile_count].type = cmm_id_selection;
+    cmm_tile_data[cmm_tile_count].mat = cmm_mat_selection;
     cmm_tile_data[cmm_tile_count].rot = cmm_rot_selection;
     cmm_tile_count++;
 }
@@ -1088,7 +1438,7 @@ void place_object(u8 x, u8 y, u8 z) {
             if (!trajectory_found) {
                 play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                 cmm_object_count --;
-                remove_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+                remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
             } else {
                 cmm_menu_state = CMM_MAKE_TRAJECTORY;
                 o->oAction = 5; //trajectory editor
@@ -1136,18 +1486,18 @@ u8 joystick_direction(void) {
 
 void place_thing_action(void) {
     //tiles and objects share occupancy data
-    if (!get_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz)) {
+    if (!get_occupy_data(cmm_sbx,cmm_sby,cmm_sbz)) {
         if (cmm_place_mode == CMM_PM_TILE) {
             //CMM_PM_TILE
             if (tile_sanity_check()) {
-                place_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+                place_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
                 place_tile(cmm_sbx,cmm_sby,cmm_sbz);
                 generate_terrain_gfx();
-                }
+            }
         } else {
             //CMM_PM_OBJECT
             if (object_sanity_check()) {
-                place_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+                place_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
                 place_object(cmm_sbx,cmm_sby,cmm_sbz);
                 generate_object_preview();
             }
@@ -1171,17 +1521,13 @@ void delete_tile_action(void) {
             if ((cmm_tile_data[i].x == cmm_sbx)&&(cmm_tile_data[i].y == cmm_sby)&&(cmm_tile_data[i].z == cmm_sbz)) {
                 mode = 1;
                 found_tile = TRUE;
-                remove_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
-                remove_terrain_data(cmm_terrain_data,cmm_sbx,cmm_sby,cmm_sbz);
+                remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
+                remove_terrain_data(cmm_sbx,cmm_sby,cmm_sbz);
                 cmm_tile_count--;
             }
         }
         if (mode==1) {
-            cmm_tile_data[i].x    = cmm_tile_data[i+1].x;
-            cmm_tile_data[i].y    = cmm_tile_data[i+1].y;
-            cmm_tile_data[i].z    = cmm_tile_data[i+1].z;
-            cmm_tile_data[i].type = cmm_tile_data[i+1].type;
-            cmm_tile_data[i].rot  = cmm_tile_data[i+1].rot;
+            cmm_tile_data[i] = cmm_tile_data[i+1];
         }
     }
 
@@ -1195,7 +1541,7 @@ void delete_tile_action(void) {
             if (mode == 0) {
                 if ((cmm_object_data[i].x == cmm_sbx)&&(cmm_object_data[i].y == cmm_sby)&&(cmm_object_data[i].z == cmm_sbz)) {
                     mode = 1;
-                    remove_terrain_data(cmm_occupy_data,cmm_sbx,cmm_sby,cmm_sbz);
+                    remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
                     cmm_object_count--;
 
                     if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
@@ -1239,8 +1585,7 @@ void save_level(u8 index) {
     s16 j;
 
     bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
-    //bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
-    //bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
+    //bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
     cmm_save.lvl[index].tile_count = cmm_tile_count;
     cmm_save.lvl[index].object_count = cmm_object_count;
@@ -1297,8 +1642,7 @@ void load_level(u8 index) {
     u8 fresh = FALSE;
 
     bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
-    bzero(&cmm_terrain_data, sizeof(cmm_terrain_data));
-    bzero(&cmm_occupy_data, sizeof(cmm_occupy_data));
+    bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
     //LOAD
     //block_until_rumble_pak_free();
@@ -1352,20 +1696,19 @@ void load_level(u8 index) {
         break;
     }
 
-    change_theme(cmm_lopt_theme,FALSE);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
     for (i = 0; i < cmm_tile_count; i++) {
         bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
         if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
-            place_terrain_data(cmm_terrain_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+            place_terrain_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z,cmm_tile_data[i].type,cmm_tile_data[i].rot,cmm_tile_data[i].mat);
         }
-        place_terrain_data(cmm_occupy_data,cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+        place_occupy_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
     }
 
     for (i = 0; i < cmm_object_count; i++) {
         bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
-        place_terrain_data(cmm_occupy_data,cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
+        place_occupy_data(cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
     }
 
     for (i = 0; i < 5; i++) {
@@ -1533,11 +1876,6 @@ void sb_loop(void) {
                 cmm_camera_zoom_index++;
             }
             cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
-
-            if (cmm_object_types[cmm_id_selection].param_max != 0) {
-                s16 max = cmm_object_types[cmm_id_selection].param_max;
-                cmm_param_selection = (cmm_param_selection+max)%max;
-            }
   
 
             if ((gPlayer1Controller->buttonDown & A_BUTTON)&&(joystick > 0)&&(cmm_ui_index<6)) {
@@ -1611,6 +1949,10 @@ void sb_loop(void) {
             cmm_boundary_object[5]->oPosZ = 300.0f*32.0f;
 
             if (cmm_place_mode == CMM_PM_OBJ) {
+                if (cmm_object_types[cmm_id_selection].param_max != 0) {
+                    s16 max = cmm_object_types[cmm_id_selection].param_max;
+                    cmm_param_selection = (cmm_param_selection+max)%max;
+                }
                 vec3f_copy(&cmm_preview_object->oPosX,&o->oPosX);
                 cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset;
                 obj_scale(cmm_preview_object, cmm_object_types[cmm_id_selection].scale);
@@ -1629,6 +1971,15 @@ void sb_loop(void) {
                     (cmm_object_types[cmm_id_selection].disp_func)(cmm_preview_object,cmm_param_selection);
                 }
             } else {
+                if (cmm_tile_types[cmm_id_selection].terrain) {
+                    if (gPlayer1Controller->buttonPressed & L_JPAD) {
+                        cmm_mat_selection --;
+                    }
+                    if (gPlayer1Controller->buttonPressed & R_JPAD) {
+                        cmm_mat_selection ++;
+                    }
+                }
+                cmm_mat_selection = (cmm_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             }
 
@@ -1717,7 +2068,6 @@ void sb_loop(void) {
                 cmm_settings_index_changed = FALSE;
                 switch(cmm_settings_index) {
                     case 3: //theme
-                        change_theme(cmm_lopt_theme,TRUE);
                         generate_terrain_gfx();
                     break;
                     case 4: //sky box
@@ -1915,6 +2265,9 @@ void draw_cmm_menu(void) {
             if (cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings) {
                 print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
+            } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
+                print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
+                cmm_theme_table[cmm_lopt_theme].mats[cmm_mat_selection].name,TRUE);
             }
         break;
         case CMM_MAKE_TOOLBOX:
