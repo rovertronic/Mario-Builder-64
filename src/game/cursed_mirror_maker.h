@@ -95,7 +95,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u8 x:5, y:5, z:5, type:5, mat:5, rot:2;
+    u8 x:5, y:5, z:5, type:5, mat:4, rot:2;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -121,7 +121,7 @@ struct cmm_obj {
 };
 
 struct cmm_grid_obj {
-    u8 type:5, mat:5, rot:2, occupied:1;
+    u8 type:5, mat:4, rot:2, occupied:1;
 };
 struct cmm_object_type_struct {
     u32 behavior;
@@ -248,13 +248,21 @@ enum cmm_mat_types {
 
 struct cmm_material {
     Gfx *gfx;
-    Gfx *side;
-    Gfx *top;
+    u8 type:2;
+};
+
+struct cmm_topmaterial {
+    u8 mat;
+    Gfx *decaltex;
+};
+
+struct cmm_tilemat_def {
+    u8 mat;
+    u8 topmat;
     u8 *name;
-    u8 type;
 };
 struct cmm_theme {
-    u8 mats[NUM_MATERIALS_PER_THEME];
+    struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
 };
 
 //compressed trajectories
