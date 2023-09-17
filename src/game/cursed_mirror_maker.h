@@ -27,6 +27,13 @@ extern u8 cmm_play_stars_max;
 extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
+
+#define CMM_TILE_POOL_SIZE 2000
+#define CMM_GFX_SIZE 23000
+#define CMM_GFX_TP_SIZE 8000
+#define CMM_VTX_SIZE 100000
+
+
 enum cmm_directions {
     CMM_DIRECTION_UP,
     CMM_DIRECTION_DOWN,
@@ -107,18 +114,6 @@ enum {
     TILE_TYPE_WATER,
     TILE_TYPE_FENCE,
     TILE_TYPE_SSLOPE,
-};
-enum {
-    TILE_MATERIAL_GRASS,
-    TILE_MATERIAL_BRICK,
-    TILE_MATERIAL_STONE,
-    TILE_MATERIAL_TILES,
-    TILE_MATERIAL_EXTRA1, // roof
-    TILE_MATERIAL_EXTRA2, // wood
-    TILE_MATERIAL_EXTRA3, // sand
-    TILE_MATERIAL_EXTRA4, // snow
-    TILE_MATERIAL_LAVA,
-    TILE_MATERIAL_QUICKSAND,
 };
 
 struct cmm_obj {
@@ -259,7 +254,7 @@ struct cmm_material {
     u8 type;
 };
 struct cmm_theme {
-    struct cmm_material mats[NUM_MATERIALS_PER_THEME];
+    u8 mats[NUM_MATERIALS_PER_THEME];
 };
 
 //compressed trajectories

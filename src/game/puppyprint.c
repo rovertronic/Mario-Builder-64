@@ -483,6 +483,11 @@ void puppyprint_render_collision(void) {
 
 extern void print_fps(s32 x, s32 y);
 
+extern u32 cmm_gfx_total;
+extern u32 cmm_vtx_total;
+extern u32 cmm_gfx_tp_total;
+extern u16 cmm_tile_count;
+
 u32 profiler_get_cpu_cycles();
 u32 profiler_get_rsp_cycles();
 u32 profiler_get_rdp_cycles();
@@ -490,6 +495,8 @@ u32 profiler_get_rdp_cycles();
 u32 profiler_get_cpu_microseconds();
 u32 profiler_get_rsp_microseconds();
 u32 profiler_get_rdp_microseconds();
+
+#include "cursed_mirror_maker.h"
 
 void print_basic_profiling(void) {
     u32 cpuTime;
@@ -515,6 +522,13 @@ void print_basic_profiling(void) {
             rdpTime, (rdpTime / 333));
 #endif
     print_small_text(16, 28, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
+
+    sprintf(textBytes, "Tiles: %d / %d#GFX: %d / %d#GFX TP: %d / %d#VTX: %d / %d",
+            cmm_tile_count, CMM_TILE_POOL_SIZE,
+            cmm_gfx_total, CMM_GFX_SIZE,
+            cmm_gfx_tp_total, CMM_GFX_TP_SIZE,
+            cmm_vtx_total, CMM_VTX_SIZE);
+    print_small_text(16, 70, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 }
 
 void puppyprint_render_standard(void) {
