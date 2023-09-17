@@ -982,6 +982,7 @@ void remove_terrain_data(s32 x, s32 y, s32 z) {
 u32 get_faceshape(s32 x, s32 y, s32 z, u32 dir) {
     u8 tileType = cmm_grid_data[x][y][z].type;
     if (tileType == 0) return CMM_FACESHAPE_EMPTY; // no tile
+    if (tileType - 1 == TILE_TYPE_CULL) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = cmm_grid_data[x][y][z].rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
@@ -1030,7 +1031,8 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return FALSE;
+    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return TRUE;
+    if (cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].type - 1 == TILE_TYPE_CULL) return TRUE;
 
     u8 otherMat = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].mat;
     if (MATERIAL(otherMat).type != 0) {
@@ -1366,7 +1368,7 @@ void generate_terrain_gfx(void) {
     // Tiles with models
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (!cmm_tile_types[cmm_tile_data[i].type].terrain) {
-            if ((cmm_target_mode == CMM_MODE_PLAY)&&(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+            if (cmm_tile_data[i].type == TILE_TYPE_CULL) {
                 continue;
             }
             Mat4 mtx;
@@ -1697,7 +1699,7 @@ void generate_objects_to_level(void) {
 }
 
 void place_tile(u8 x, u8 y, u8 z) {
-    if ((!cmm_tile_types[cmm_id_selection].model)||(cmm_id_selection == TILE_TYPE_CULL)) {
+    if ((!cmm_tile_types[cmm_id_selection].model) || (cmm_id_selection == TILE_TYPE_CULL)) {
         place_terrain_data(x,y,z,cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
     }
     cmm_tile_data[cmm_tile_count].x = x;
@@ -1995,7 +1997,7 @@ void load_level(u8 index) {
 
     for (i = 0; i < cmm_tile_count; i++) {
         bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
-        if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+        if ((!cmm_tile_types[cmm_tile_data[i].type].model) || cmm_tile_data[i].type == TILE_TYPE_CULL) {
             place_terrain_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z,cmm_tile_data[i].type,cmm_tile_data[i].rot,cmm_tile_data[i].mat);
         }
         place_occupy_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
