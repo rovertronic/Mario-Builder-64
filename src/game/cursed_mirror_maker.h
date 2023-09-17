@@ -68,7 +68,8 @@ enum cmm_growth_types {
     CMM_GROWTH_NORMAL_SIDE,
     CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
     CMM_GROWTH_DIAGONAL_SIDE,
-    CMM_GROWTH_UNCONDITIONAL_SIDE,
+    CMM_GROWTH_SLOPE_SIDE_L,
+    CMM_GROWTH_SLOPE_SIDE_R,
 };
 
 struct cmm_terrain_quad {

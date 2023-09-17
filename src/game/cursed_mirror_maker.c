@@ -111,18 +111,18 @@ struct cmm_terrain_block cmm_terrain_fullblock = {
     NULL
 };
 
+s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
+s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
+
 struct cmm_terrain_quad cmm_terrain_slope_quads[] = {
     {{{1, -1, 1},  {1, 1, -1},  {-1, -1, 1},  {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
     {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
 
-s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
-s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
-
 struct cmm_terrain_tri cmm_terrain_slope_tris[] = {
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
 };
 
 struct cmm_terrain_block cmm_terrain_slope = {
@@ -139,8 +139,8 @@ struct cmm_terrain_quad cmm_terrain_corner_quads[] = {
 struct cmm_terrain_tri cmm_terrain_corner_tris[] = {
     {{{-1, -1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
     {{{-1, 1, -1}, {1, -1, 1}, {1, -1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
-    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // BACK
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
+    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
 
 struct cmm_terrain_block cmm_terrain_corner = {
@@ -159,8 +159,8 @@ struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
 struct cmm_terrain_tri cmm_terrain_icorner_tris[] = {
     {{{-1, 1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
     {{{-1, 1, -1}, {1, -1, 1}, {1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // FRONT
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
 };
 
 struct cmm_terrain_block cmm_terrain_icorner = {
@@ -204,6 +204,24 @@ struct cmm_terrain_block cmm_terrain_sslope = {
     2,
     &cmm_terrain_sslope_quads,
     &cmm_terrain_sslope_tris,
+};
+
+
+// All of this is for the system where slopes can place a decal on the face below them.
+// Very hardcoded, so best not to touch any of these numbers
+s8 slope_decal_below_uvsquad_l[4][2] = {{-1, -1}, {1, 1}, {-1, -3}, {1, -1}};
+s8 slope_decal_below_uvsquad_r[4][2] = {{1, 1}, {-1, -1}, {1, -1}, {-1, -3}};
+s8 slope_decal_below_uvstri_1[3][2] = {{1, 1}, {-1, -1}, {1, -1}};
+s8 slope_decal_below_uvstri_2[3][2] = {{1, 1}, {1, -1}, {-1, -1}};
+
+struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
+    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1},  {-1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
+};
+struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri1 = {
+    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, &slope_decal_below_uvstri_1
+};
+struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
+    {{-1, 1, 1},  {-1, -1, 1}, {1, 1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
 };
 
 struct cmm_tile_type_struct cmm_tile_types[] = {
@@ -766,18 +784,18 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
 };
 
 // Returns full tile definition (struct cmm_tilemat_def)
-#define TILE_MATDEF(mat) (cmm_theme_table[cmm_lopt_theme].mats[tilemat_id])
+#define TILE_MATDEF(matid) (cmm_theme_table[cmm_lopt_theme].mats[matid])
 // Returns main material (struct cmm_material)
-#define MATERIAL(mat) (cmm_mat_table[TILE_MATDEF(tilemat_id).mat])
+#define MATERIAL(matid) (cmm_mat_table[TILE_MATDEF(matid).mat])
 
 // Returns TRUE if given material has a unique top texture
-#define HAS_TOPMAT(mat) (TILE_MATDEF(tilemat_id).topmat != 0)
+#define HAS_TOPMAT(matid) (TILE_MATDEF(matid).topmat != 0)
 // Returns top material's topmat struct (struct cmm_topmaterial)
-#define TOPMAT_DEF(mat) (cmm_topmat_table[TILE_MATDEF(tilemat_id).topmat - 1])
+#define TOPMAT_DEF(matid) (cmm_topmat_table[TILE_MATDEF(matid).topmat - 1])
 // Returns top material (struct cmm_material)
-#define TOPMAT(mat) (cmm_mat_table[TOPMAT_DEF(tilemat_id).mat])
+#define TOPMAT(matid) (cmm_mat_table[TOPMAT_DEF(matid).mat])
 // Returns side decal texture (Gfx *)
-#define SIDETEX(mat) (TOPMAT_DEF(tilemat_id).decaltex)
+#define SIDETEX(matid) (TOPMAT_DEF(matid).decaltex)
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
@@ -1038,29 +1056,95 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
     return (faceshape == (otherFaceshape^1));
 }
 
+u32 *cmm_curr_vtx;
+Gfx *cmm_curr_gfx;
+u16 cmm_gfx_index;
+
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+    s8 belowPos[3];
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(pos[0], pos[1]+1, pos[2])) return TRUE;
-    u8 topFaceshape;
+    u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
             direction = CMM_DIRECTION_POS_Z;
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
-            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
-            switch (topFaceshape) {
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
+            switch (otherFaceshape) {
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
                     return FALSE;
             }
             return TRUE;
-        case CMM_GROWTH_UNCONDITIONAL_SIDE:
-            return TRUE;
+
+        // These types are very tricky.
+        // If the below face is the same material and is the right shape,
+        // an extra decal is printed onto it.
+        case CMM_GROWTH_SLOPE_SIDE_L:
+        case CMM_GROWTH_SLOPE_SIDE_R:
+            // Check if below block is in range
+            vec3_set(belowPos, pos[0], pos[1]-1, pos[2]);
+            if (!coords_in_range(belowPos[0], belowPos[1], belowPos[2])) return TRUE;
+
+            // Check if below block matches material
+            u8 curMat = cmm_grid_data[pos[0]][pos[1]][pos[2]].mat;
+            u8 belowMat = cmm_grid_data[belowPos[0]][belowPos[1]][belowPos[2]].mat;
+            if (curMat != belowMat) return TRUE;
+
+            // Check if below block is right shape and culled
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(belowPos[0], belowPos[1], belowPos[2], ROTATE_DIRECTION(direction, rot)^1);
+            if (should_cull(belowPos, direction, otherFaceshape, rot)) return TRUE;
+            
+            // Calculate effective rotation of face to print. very ugly
+            u8 targetRot;
+            switch (direction) {
+                case CMM_DIRECTION_POS_X:
+                    targetRot = 1;
+                    break;
+                case CMM_DIRECTION_NEG_X:
+                    targetRot = 3;
+                    break;
+                case CMM_DIRECTION_POS_Z:
+                    targetRot = 0;
+                    break;
+                case CMM_DIRECTION_NEG_Z:
+                    targetRot = 2;
+                    break;
+            }
+            targetRot = (targetRot + rot) % 4;
+
+            switch (otherFaceshape) {
+                default:
+                    return TRUE;
+                // Face is full quad
+                case CMM_FACESHAPE_FULL:
+                    // Fill in correct UVs
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_l;
+                    else
+                        cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_r;
+                    
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE;
+                case CMM_FACESHAPE_DOWNTRI_1:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE; 
+                case CMM_FACESHAPE_DOWNTRI_2:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE;
+            }
+            
+
         case CMM_GROWTH_DIAGONAL_SIDE:
-            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
-            if (topFaceshape == CMM_FACESHAPE_FULL) return FALSE;
-            if (topFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
+            if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
+            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
             u8 otherrot = cmm_grid_data[pos[0]][pos[1]+1][pos[2]].rot;
             return (otherrot != rot);
     }
@@ -1098,11 +1182,6 @@ void generate_path_gfx(void) {
 
     gSPEndDisplayList(&cmm_trajectory_gfx[gfx_index]);
 }
-
-u32 *cmm_curr_vtx;
-Gfx *cmm_curr_gfx;
-u16 cmm_gfx_index;
-
 
 void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
     for (u32 i = 0; i < numVtx; i++) {
