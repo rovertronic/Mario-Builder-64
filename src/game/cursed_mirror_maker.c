@@ -230,7 +230,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
     {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
     {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
-    {NULL, NULL,                   NULL                       , FALSE},//TILE_TYPE_TROLL
+    {NULL, &cmm_terrain_fullblock,                   NULL                       , FALSE},//TILE_TYPE_TROLL
     {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
     {&makerwater_mw_mesh, NULL,    makerwater_collision       , TRUE },//TILE_TYPE_WATER
@@ -335,6 +335,7 @@ struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[200];
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
+u16 cmm_building_collision = 0; // 0 = building gfx, 1 = building collision
 
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
@@ -1032,7 +1033,9 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return TRUE;
-    if (cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].type - 1 == TILE_TYPE_CULL) return TRUE;
+    u8 tileType = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].type - 1;
+    if (tileType == TILE_TYPE_CULL) return TRUE;
+    if (cmm_building_collision && tileType == TILE_TYPE_TROLL) return FALSE;
 
     u8 otherMat = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].mat;
     if (MATERIAL(otherMat).type != 0) {
@@ -1349,6 +1352,7 @@ void generate_terrain_gfx(void) {
     cmm_curr_gfx = cmm_terrain_gfx;
     cmm_curr_vtx = cmm_terrain_vtx;
     cmm_gfx_index = 0;
+    cmm_building_collision = 0;
 
     //BOTTOM PLANE
     switch (cmm_lopt_plane) {
@@ -1563,6 +1567,7 @@ void generate_terrain_collision(void) {
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
+    cmm_building_collision = 1;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
     TerrainData floorType;
     switch(cmm_lopt_plane) {
@@ -1577,6 +1582,9 @@ void generate_terrain_collision(void) {
     for (i=0; i<cmm_tile_count; i++) {
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
         if (terrain) {
+            if (cmm_tile_data[i].type == TILE_TYPE_TROLL) {
+                continue;
+            }
             floorType = cmm_tile_data[i].mat == 8 ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
             s8 pos[3];
             s8 newVtx[4][3];
@@ -1628,6 +1636,7 @@ void generate_terrain_collision(void) {
         }
     }
 
+    cmm_building_collision = 0;
     u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
     gTotalStaticSurfaceData += surfacePoolData;
     main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
