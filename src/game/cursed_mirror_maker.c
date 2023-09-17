@@ -765,13 +765,19 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     },
 };
 
-#define TILE_MATDEF(tilemat_id) (cmm_theme_table[cmm_lopt_theme].mats[tilemat_id])
-#define MATERIAL(tilemat_id) (cmm_mat_table[TILE_MATDEF(tilemat_id).mat])
+// Returns full tile definition (struct cmm_tilemat_def)
+#define TILE_MATDEF(mat) (cmm_theme_table[cmm_lopt_theme].mats[tilemat_id])
+// Returns main material (struct cmm_material)
+#define MATERIAL(mat) (cmm_mat_table[TILE_MATDEF(tilemat_id).mat])
 
-#define HAS_TOPMAT(tilemat_id) (TILE_MATDEF(tilemat_id).topmat != 0)
-#define TOPMAT_DEF(tilemat_id) (cmm_topmat_table[TILE_MATDEF(tilemat_id).topmat - 1])
-#define TOPMAT(tilemat_id) (cmm_mat_table[TOPMAT_DEF(tilemat_id).mat])
-#define SIDETEX(tilemat_id) (TOPMAT_DEF(tilemat_id).decaltex)
+// Returns TRUE if given material has a unique top texture
+#define HAS_TOPMAT(mat) (TILE_MATDEF(tilemat_id).topmat != 0)
+// Returns top material's topmat struct (struct cmm_topmaterial)
+#define TOPMAT_DEF(mat) (cmm_topmat_table[TILE_MATDEF(tilemat_id).topmat - 1])
+// Returns top material (struct cmm_material)
+#define TOPMAT(mat) (cmm_mat_table[TOPMAT_DEF(tilemat_id).mat])
+// Returns side decal texture (Gfx *)
+#define SIDETEX(mat) (TOPMAT_DEF(tilemat_id).decaltex)
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;

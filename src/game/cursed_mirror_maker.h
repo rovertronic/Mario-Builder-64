@@ -246,16 +246,19 @@ enum cmm_mat_types {
     MAT_TRANSPARENT,
 };
 
+// Represents a material texture and collision
 struct cmm_material {
     Gfx *gfx;
     u8 type:2;
 };
 
+// Represents a material as a top texture with optional side decal
 struct cmm_topmaterial {
     u8 mat;
     Gfx *decaltex;
 };
 
+// Defines materials of a full block
 struct cmm_tilemat_def {
     u8 mat;
     u8 topmat;
