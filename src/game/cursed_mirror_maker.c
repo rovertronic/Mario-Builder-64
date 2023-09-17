@@ -294,31 +294,31 @@ void df_exbox(struct Object * obj, int param) {
 }
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID                  //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
-    {bhvStar             , 0.0f     ,MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGreenCoin        ,-150.0f   ,0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRex              ,-150.0f   ,0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
-    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
-    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn            , 0.0f     ,MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
-    {bhvBadge            ,0.0f      ,MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
-    {bhvPlatformOnTrack  ,0.0f      ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBobBowlingBallSpawner,0.0f  ,MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvKoopa            ,-150.0f   ,MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
+    //BEHAVIOR                 //Y-OFF      //MODEL ID                 //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
+    {bhvStar,                  TILE_SIZE/2, MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGoomba,                0,           MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
+    {bhvYellowCoin,            0,           MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGreenCoin,             0,           0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRedCoin,               0,           MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenBlueCoin,        0,           MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBlueCoinSwitch,        0,           MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenRedCoinStar,     TILE_SIZE/2, MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvNoteblock,             TILE_SIZE/2, MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPodoboo,               TILE_SIZE/2, MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRex,                   0,           0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
+    {bhvSmallBully,            0,           MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
+    {bhvBobomb,                0,           MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
+    {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
+    {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
+    {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
+    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
+    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
+    {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
+    {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
+    {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvKoopa,                 0,           MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
 };
 
 struct cmm_grid_obj cmm_grid_data[32][32][32] = {0};
@@ -1237,9 +1237,9 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*300)+newVtx[i][0]*150,
-            (pos[1]*300)+newVtx[i][1]*150,
-            (pos[2]*300)+newVtx[i][2]*150,
+            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
+            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
+            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -1266,9 +1266,9 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*300)+newVtx[i][0]*150,
-            (pos[1]*300)+newVtx[i][1]*150,
-            (pos[2]*300)+newVtx[i][2]*150,
+            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
+            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
+            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -1377,7 +1377,7 @@ void generate_terrain_gfx(void) {
             }
             Mat4 mtx;
             Vec3f pos;
-            vec3_set(pos, cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
+            vec3_set(pos, cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE);
             Vec3s rot;
             vec3_set(rot, 0, cmm_tile_data[i].rot*90, 0);
             mtxf_rotate_zxy_and_translate(mtx, pos, rot);
@@ -1483,7 +1483,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_gfx_index = 0;
 
             if (cmm_tile_types[cmm_id_selection].model) {
-                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*300, cmm_sby*300, cmm_sbz*300);
+                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*TILE_SIZE, cmm_sby*TILE_SIZE, cmm_sbz*TILE_SIZE);
                 preview_mtx_index++;
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
                 gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -1594,9 +1594,9 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 4; k++) {
-                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
-                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
-                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                     cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
@@ -1607,22 +1607,22 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 3; k++) {
-                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
-                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
-                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                 }
             }
         } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
+            Vec3f pos = {cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE};
             Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
             mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
             //this code was written by accident... the collision doesn't generate properly without it though???
-            o->oPosX = (cmm_tile_data[0].x*300.0f);
-            o->oPosY = (cmm_tile_data[0].y*300.0f);
-            o->oPosZ = (cmm_tile_data[0].z*300.0f);
+            o->oPosX = (cmm_tile_data[0].x*TILE_SIZE);
+            o->oPosY = (cmm_tile_data[0].y*TILE_SIZE);
+            o->oPosZ = (cmm_tile_data[0].z*TILE_SIZE);
             o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
             
             TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
@@ -1657,9 +1657,9 @@ void generate_object_preview(void) {
 
     for(i=0;i<cmm_object_count;i++){
         preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
-        preview_object->oPosX = cmm_object_data[i].x*300.0f;
-        preview_object->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
-        preview_object->oPosZ = cmm_object_data[i].z*300.0f;
+        preview_object->oPosX = cmm_object_data[i].x*TILE_SIZE;
+        preview_object->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
+        preview_object->oPosZ = cmm_object_data[i].z*TILE_SIZE;
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
@@ -1687,9 +1687,9 @@ void generate_objects_to_level(void) {
 
         obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
 
-        obj->oPosX = cmm_object_data[i].x*300.0f;
-        obj->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
-        obj->oPosZ = cmm_object_data[i].z*300.0f;
+        obj->oPosX = cmm_object_data[i].x*TILE_SIZE;
+        obj->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
+        obj->oPosZ = cmm_object_data[i].z*TILE_SIZE;
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
@@ -1919,9 +1919,9 @@ void save_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/300;
-            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/300;
-            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/300;
+            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/TILE_SIZE;
         }
     }
 
@@ -2020,9 +2020,9 @@ void load_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*300.0f;
-            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*300.0f;
-            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*300.0f;
+            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*TILE_SIZE;
         }
     }
 
@@ -2071,12 +2071,12 @@ void sb_init(void) {
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
                 vec3f_copy(&gMarioState->pos,&spawn_obj->oPosVec);
-                gMarioState->pos[1] += 150.0f;
+                gMarioState->pos[1] += TILE_SIZE/2;
 
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
                 if (warpobj) {
                     vec3f_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
-                    warpobj->oPosY += 150.0f;
+                    warpobj->oPosY += TILE_SIZE/2;
                 }
             }
 
@@ -2233,26 +2233,26 @@ void sb_loop(void) {
                 cmm_rot_selection%=4;
             }
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*300.0f, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*300.0f, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*300.0f, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*300.0f; 
-            o->oPosY = cmm_sby*300.0f; 
-            o->oPosZ = cmm_sbz*300.0f; 
+            o->oPosX = cmm_sbx*TILE_SIZE; 
+            o->oPosY = cmm_sby*TILE_SIZE; 
+            o->oPosZ = cmm_sbz*TILE_SIZE; 
 
             for (u8 i=0; i<6; i++) {
                 vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
             }
             cmm_boundary_object[0]->oPosY = 0.0f;
-            cmm_boundary_object[1]->oPosY = 300.0f*32.0f;
+            cmm_boundary_object[1]->oPosY = TILE_SIZE*32.0f;
             cmm_boundary_object[2]->oPosX = 0.0f;
-            cmm_boundary_object[3]->oPosX = 300.0f*32.0f;
+            cmm_boundary_object[3]->oPosX = TILE_SIZE*32.0f;
             cmm_boundary_object[4]->oPosZ = 0.0f;
-            cmm_boundary_object[5]->oPosZ = 300.0f*32.0f;
+            cmm_boundary_object[5]->oPosZ = TILE_SIZE*32.0f;
 
             if (cmm_place_mode == CMM_PM_OBJ) {
                 if (cmm_object_types[cmm_id_selection].param_max != 0) {
@@ -2444,16 +2444,16 @@ void sb_loop(void) {
             cmm_sby=(cmm_sby+32)%32;
             //END MOVE CURSOR
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*300.0f, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*300.0f, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*300.0f, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*300.0f; 
-            o->oPosY = cmm_sby*300.0f; 
-            o->oPosZ = cmm_sbz*300.0f;
+            o->oPosX = cmm_sbx*TILE_SIZE; 
+            o->oPosY = cmm_sby*TILE_SIZE; 
+            o->oPosZ = cmm_sbz*TILE_SIZE;
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;

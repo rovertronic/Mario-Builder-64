@@ -33,6 +33,8 @@ extern u32 cmm_play_badge_bitfield;
 #define CMM_GFX_TP_SIZE 8000
 #define CMM_VTX_SIZE 100000
 
+#define TILE_SIZE 256
+
 
 enum cmm_directions {
     CMM_DIRECTION_UP,
