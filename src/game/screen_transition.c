@@ -12,6 +12,7 @@
 #include "screen_transition.h"
 #include "segment2.h"
 #include "sm64.h"
+#include "cursed_mirror_maker.h"
 
 u8 sTransitionColorFadeCount[4] = { 0 };
 u16 sTransitionTextureFadeCount[2] = { 0 };
@@ -162,7 +163,8 @@ void *sTextureTransitionID[] = {
     texture_transition_star_half,
     texture_transition_circle_half,
     texture_transition_mario,
-    texture_transition_bowser_half,
+    texture_transition_bowser,
+    texture_transition_showrunner,
 };
 
 s32 render_textured_transition(s8 fadeTimer, s8 transTime, struct WarpTransitionData *transData, s8 texID, s8 transTexType) {
@@ -234,7 +236,11 @@ s32 render_screen_transition(s8 fadeTimer, s8 transType, u8 transTime, struct Wa
             return render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_BOWSER, TRANS_TYPE_CLAMP);
             break;
         case WARP_TRANSITION_FADE_INTO_BOWSER:
-            return render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_BOWSER, TRANS_TYPE_CLAMP);
+            if (cmm_lopt_game == CMM_GAME_BTCM) {
+                return render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_SHOWRUNNER, TRANS_TYPE_CLAMP);
+            } else {
+                return render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_BOWSER, TRANS_TYPE_CLAMP);
+            }
             break;
     }
 
