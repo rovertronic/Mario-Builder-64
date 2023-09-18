@@ -88,7 +88,7 @@ void draw_cmm_menu(void) {
                 print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
             } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
-                print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
+                print_maker_string_ascii(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 TILE_MATDEF(cmm_mat_selection).name,TRUE);
             }
         break;
@@ -142,8 +142,8 @@ void draw_cmm_menu(void) {
             print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
 
             for (i=0;i<SETTINGS_SIZE;i++) {
-                print_maker_string(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
-                print_maker_string(70,180-(i*16),cmm_settings_buttons[i].nametable[ *cmm_settings_buttons[i].value ],(i==cmm_settings_index));
+                print_maker_string_ascii(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
+                print_maker_string_ascii(70,180-(i*16),cmm_settings_buttons[i].nametable[ *cmm_settings_buttons[i].value ],(i==cmm_settings_index));
             }
         break;
 

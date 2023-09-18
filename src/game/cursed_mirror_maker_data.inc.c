@@ -193,70 +193,6 @@ u8 cmm_star_objects[] = {
     OBJECT_TYPE_KTQ,
 };
 
-//skybox table
-u8 *cmm_skybox_table[] = {
-    _water_skybox_yay0SegmentRomStart,
-    _water_skybox_yay0SegmentRomEnd,
-    _cloud_floor_skybox_yay0SegmentRomStart,
-    _cloud_floor_skybox_yay0SegmentRomEnd,
-    _bitfs_skybox_yay0SegmentRomStart,
-    _bitfs_skybox_yay0SegmentRomEnd,
-    _bidw_skybox_yay0SegmentRomStart,
-    _bidw_skybox_yay0SegmentRomEnd,
-    _bbh_skybox_yay0SegmentRomStart,
-    _bbh_skybox_yay0SegmentRomEnd,
-    _ccm_skybox_yay0SegmentRomStart,
-    _ccm_skybox_yay0SegmentRomEnd,
-    _ssl_skybox_yay0SegmentRomStart,
-    _ssl_skybox_yay0SegmentRomEnd,
-    _bits_skybox_yay0SegmentRomStart,
-    _bits_skybox_yay0SegmentRomEnd,
-};
-
-//envfx strings
-u8 txt_envfx_1[] = {TXT_ENVFX_1};u8 txt_envfx_2[] = {TXT_ENVFX_2};u8 txt_envfx_3[] = {TXT_ENVFX_3};
-u8 txt_envfx_4[] = {TXT_ENVFX_4};u8 txt_envfx_5[] = {TXT_ENVFX_5};u8 txt_envfx_6[] = {TXT_ENVFX_6};
-u8 *cmm_envfx_string_table[] = {
-    &txt_envfx_1,
-    &txt_envfx_2,
-    &txt_envfx_3,
-    &txt_envfx_4,
-    &txt_envfx_5,
-    &txt_envfx_6,
-};
-
-//envfx table
-u8 cmm_envfx_table[] = {
-    ENVFX_MODE_NONE,         // no effects
-    ENVFX_SNOW_NORMAL,       // CCM, SL
-    ENVFX_SNOW_BLIZZARD,     // unused
-    ENVFX_FLOWERS,           // unused
-    ENVFX_LAVA_BUBBLES,      // LLL, BitFS, Bowser 2
-    ENVFX_RAIN
-};
-
-//background strings
-u8 txt_bg_1[] = {TXT_BG1}; u8 txt_bg_2[] = {TXT_BG2}; u8 txt_bg_3[] = {TXT_BG3}; u8 txt_bg_4[] = {TXT_BG4};
-u8 txt_bg_5[] = {TXT_BG5}; u8 txt_bg_6[] = {TXT_BG6}; u8 txt_bg_7[] = {TXT_BG7}; u8 txt_bg_8[] = {TXT_BG8};
-u8 *cmm_bg_string_table[] = {
-    txt_bg_1,
-    txt_bg_2,
-    txt_bg_3,
-    txt_bg_4,
-    txt_bg_5,
-    txt_bg_6,
-    txt_bg_7,
-    txt_bg_8,
-};
-
-//bottom plane strings
-u8 txt_plane_1[] = {TXT_PLANE_1};u8 txt_plane_2[] = {TXT_PLANE_2};u8 txt_plane_3[] = {TXT_PLANE_3};
-u8 *cmm_plane_string_table[] = {
-    txt_plane_1,
-    txt_plane_2,
-    txt_plane_3,
-};
-
 //behparam2 strings
 u8 txt_bp_box1[] = {TXT_BP_BOX_1}; u8 txt_bp_box2[] = {TXT_BP_BOX_2}; u8 txt_bp_box3[] = {TXT_BP_BOX_3}; u8 txt_bp_box4[] = {TXT_BP_BOX_4};
 u8 txt_bp_box5[] = {TXT_BP_BOX_5}; u8 txt_bp_box6[] = {TXT_BP_BOX_6}; u8 txt_bp_box7[] = {TXT_BP_BOX_7}; u8 txt_bp_box8[] = {TXT_BP_BOX_8};
@@ -292,31 +228,6 @@ u8 *txt_bp_boss[] = {
     txt_bp_boss2,
     txt_bp_boss3,
     txt_bp_boss4,
-};
-
-//theme strings
-u8 txt_theme_1[] = {TXT_THEME_GENERIC};u8 txt_theme_2[] = {TXT_THEME_SAND};u8 txt_theme_3[] = {TXT_THEME_RHR};
-u8 txt_theme_4[] = {TXT_THEME_CAVE}; u8 txt_theme_5[] = {TXT_THEME_CASTLE};u8 txt_theme_6[] = {TXT_THEME_VIRTUAPLEX};
-u8 txt_theme_7[] = {TXT_THEME_RETRO};
-
-u8 txt_mat_grass[] = {TXT_MAT_GRASS};u8 txt_mat_bricks[] = {TXT_MAT_BRICK};u8 txt_mat_stone[] = {TXT_MAT_STONE};u8 txt_mat_wood[] = {TXT_MAT_WOOD};u8 txt_mat_tiles[] = {TXT_MAT_TILES};u8 txt_mat_lava[] = {TXT_MAT_LAVA};
-u8 txt_mat_sand[] = {TXT_MAT_SAND};u8 txt_mat_snow[] = {TXT_MAT_SNOW};u8 txt_mat_quicksand[] = {TXT_MAT_QUICKSAND};u8 txt_mat_roof[] = {TXT_MAT_ROOF};
-u8 txt_mat_tiles2[] = {TXT_MAT_TILES2};u8 txt_mat_block[] = {TXT_MAT_BLOCK};
-u8 txt_mat_basalt[] = {TXT_MAT_BASALT};u8 txt_mat_pillar[] = {TXT_MAT_PILLAR};u8 txt_mat_mesh[] = {TXT_MAT_MESH};
-u8 txt_mat_mazewall[] = {TXT_MAT_MAZEWALL};u8 txt_mat_mazefloor[] = {TXT_MAT_MAZEFLOOR};u8 txt_mat_light[] = {TXT_MAT_LIGHT};u8 txt_mat_lakegrass[] = {TXT_MAT_LAKEGRASS};
-u8 txt_mat_tileswood[] = {TXT_MAT_TILESWOOD};u8 txt_mat_tilesbricks[] = {TXT_MAT_TILESBRICKS};u8 txt_mat_tilesstone[] = {TXT_MAT_TILESSTONE};u8 txt_mat_carpet[] = {TXT_MAT_CARPET};u8 txt_mat_castlewall[] = {TXT_MAT_CASTLEWALL};u8 txt_mat_basementwall[] = {TXT_MAT_BASEMENTWALL};
-u8 txt_mat_bluetiles[] = {TXT_MAT_BLUETILES};u8 txt_mat_rustyblock[] = {TXT_MAT_RUSTYBLOCK};u8 txt_mat_screen[] = {TXT_MAT_SCREEN};u8 txt_mat_hazardstripes[] = {TXT_MAT_HAZARDSTRIPES};u8 txt_mat_snowblock[] = {TXT_MAT_SNOWBLOCK};u8 txt_mat_void[] = {TXT_MAT_VOID};
-
-u8 txt_mat_ground[] = {TXT_MAT_GROUND};u8 txt_mat_rblock[] = {TXT_MAT_RBLOCK};u8 txt_mat_treeplat[] = {TXT_MAT_TREEPLAT};u8 txt_mat_blueground[] = {TXT_MAT_BLUEGROUND};u8 txt_mat_bluebricks[] = {TXT_MAT_BLUEBRICKS};u8 txt_mat_blueblock[] = {TXT_MAT_BLUEBLOCK};u8 txt_mat_whitebrick[] = {TXT_MAT_WHITEBRICK};u8 txt_mat_underwaterground[] = {TXT_MAT_UNDERWATERGROUND};
-
-u8 *cmm_theme_string_table[NUM_THEMES] = {
-    &txt_theme_1,
-    &txt_theme_2,
-    &txt_theme_3,
-    &txt_theme_4,
-    &txt_theme_5,
-    &txt_theme_6,
-    &txt_theme_7,
 };
 
 enum cmm_materials {
@@ -428,7 +339,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerRHRPattern,      0}, // CMM_MAT_RHR_BLOCK
     {&mat_maker_MakerRHRWood,         0}, // CMM_MAT_RHR_WOOD
     {&mat_maker_MakerRHRPillar,       0}, // CMM_MAT_RHR_PILLAR
-    {&mat_maker_MakerRHRGrate_layer1, 1}, // CMM_MAT_RHR_MESH
+    {&mat_maker_MakerRHRGrate_layer1, 0}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
     {&mat_maker_MakerHGrass,          0}, // CMM_MAT_HMC_GRASS
     {&mat_maker_MakerHDirt,           0}, // CMM_MAT_HMC_DIRT
@@ -438,7 +349,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerHMazefloor,      0}, // CMM_MAT_HMC_MAZEFLOOR
     {&mat_maker_MakerHLight,          0}, // CMM_MAT_HMC_LIGHT
     {&mat_maker_MakerHLakewall,       0}, // CMM_MAT_HMC_LAKEGRASS
-    {&mat_maker_MakerHFence_layer1,   1}, // CMM_MAT_HMC_MESH
+    {&mat_maker_MakerHFence_layer1,   0}, // CMM_MAT_HMC_MESH
     // Castle
     {&mat_maker_MakerCTile,           0}, // CMM_MAT_C_TILES
     {&mat_maker_MakerCWood,           0}, // CMM_MAT_C_WOOD
@@ -508,111 +419,127 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_RETRO_TREETOP, &mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
 };
 
+s8 cmm_terrain_floors_generic[] = {0, 2, 3, 5, 6, 7, 8, 9}; // grass, stone, tiles, wood, sand, snow, lava, quicksand
+s8 cmm_terrain_floors_desert[] = {0, 2, 3, 6, 7, 8, 9}; // sand, stone, tiles, desert tiles, grass, lava, quicksand
+s8 cmm_terrain_floors_lava[] = {0, 2, 3, 8, 9}; // stone, basalt, tiles, lava, quicksand
+s8 cmm_terrain_floors_cave[] = {0, 2, 4, 8, 9}; // grass, stone, maze floor, lava, quicksand
+s8 cmm_terrain_floors_castle[] = {0, 4, 8, 9}; // tiling, carpet, lava, quicksand
+s8 cmm_terrain_floors_virtuaplex[] = {0, 1, 2, 3, 7, 8, 9}; // block, tiling, grass, blue tiling, snowy block, lava, void
+s8 cmm_terrain_floors_retro[] = {0, 4, 8, 9}; // ground, blue ground, lava, underwater tile
+
+
 struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     // GENERIC
     {
         {
-            {CMM_MAT_DIRT,        CMM_TOPMAT_GRASS, &txt_mat_grass},
-            {CMM_MAT_BRICKS,      0,                &txt_mat_bricks},
-            {CMM_MAT_COBBLESTONE, CMM_TOPMAT_STONE, &txt_mat_stone},
-            {CMM_MAT_TILESBRICKS, CMM_TOPMAT_TILES, &txt_mat_tiles},
-            {CMM_MAT_ROOF,        0,                &txt_mat_roof},
-            {CMM_MAT_WOOD,        0,                &txt_mat_wood},
-            {CMM_MAT_SANDDIRT,    CMM_TOPMAT_SAND,  &txt_mat_sand},
-            {CMM_MAT_SNOWDIRT,    CMM_TOPMAT_SNOW,  &txt_mat_snow},
-            {CMM_MAT_LAVA,        0,                &txt_mat_lava},
-            {CMM_MAT_QUICKSAND,   0,                &txt_mat_quicksand},
+            {CMM_MAT_DIRT,        CMM_TOPMAT_GRASS, "Grass"},
+            {CMM_MAT_BRICKS,      0,                "Bricks"},
+            {CMM_MAT_COBBLESTONE, CMM_TOPMAT_STONE, "Stone"},
+            {CMM_MAT_TILESBRICKS, CMM_TOPMAT_TILES, "Tiling"},
+            {CMM_MAT_ROOF,        0,                "Roof"},
+            {CMM_MAT_WOOD,        0,                "Wood"},
+            {CMM_MAT_SANDDIRT,    CMM_TOPMAT_SAND,  "Sand"},
+            {CMM_MAT_SNOWDIRT,    CMM_TOPMAT_SNOW,  "Snow"},
+            {CMM_MAT_LAVA,        0,                "Lava"},
+            {CMM_MAT_QUICKSAND,   0,                "Quicksand"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_generic), cmm_terrain_floors_generic,
     },
     // DESERT
     {
         {
-            {CMM_MAT_SANDDIRT,      CMM_TOPMAT_SAND,          &txt_mat_sand},
-            {CMM_MAT_DESERT_BRICKS, 0,                        &txt_mat_bricks},
-            {CMM_MAT_DESERT_STONE,  0,                        &txt_mat_stone},
-            {CMM_MAT_DESERT_TILES,  0,                        &txt_mat_tiles},
-            {CMM_MAT_DESERT_BLOCK,  0,                        &txt_mat_block},
-            {CMM_MAT_WOOD,          0,                        &txt_mat_wood},
-            {CMM_MAT_DESERT_BRICKS, CMM_TOPMAT_DESERT_TILES2, &txt_mat_tiles2},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,         &txt_mat_grass},
-            {CMM_MAT_LAVA,          0,                        &txt_mat_lava},
-            {CMM_MAT_QUICKSAND,     0,                        &txt_mat_quicksand},
+            {CMM_MAT_SANDDIRT,      CMM_TOPMAT_SAND,          "Sand"},
+            {CMM_MAT_DESERT_BRICKS, 0,                        "Bricks"},
+            {CMM_MAT_DESERT_STONE,  0,                        "Stone"},
+            {CMM_MAT_DESERT_TILES,  0,                        "Tiling"},
+            {CMM_MAT_DESERT_BLOCK,  0,                        "Stone Block"},
+            {CMM_MAT_WOOD,          0,                        "Wood"},
+            {CMM_MAT_DESERT_BRICKS, CMM_TOPMAT_DESERT_TILES2, "Desert Tiling"},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,         "Grass"},
+            {CMM_MAT_LAVA,          0,                        "Lava"},
+            {CMM_MAT_QUICKSAND,     0,                        "Quicksand"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_desert), cmm_terrain_floors_desert,
     },
     // LAVA
     {
         {
-            {CMM_MAT_RHR_STONE,  CMM_TOPMAT_RHR_OBSIDIAN, &txt_mat_stone},
-            {CMM_MAT_RHR_BRICK,  CMM_TOPMAT_RHR_OBSIDIAN, &txt_mat_bricks},
-            {CMM_MAT_RHR_BASALT, 0,                       &txt_mat_basalt},
-            {CMM_MAT_RHR_TILES,  0,                       &txt_mat_tiles},
-            {CMM_MAT_RHR_BLOCK,  0,                       &txt_mat_block},
-            {CMM_MAT_RHR_WOOD,   0,                       &txt_mat_wood},
-            {CMM_MAT_RHR_PILLAR, CMM_TOPMAT_RHR_TILES,    &txt_mat_pillar},
-            {CMM_MAT_RHR_MESH,   0,                       &txt_mat_mesh},
-            {CMM_MAT_LAVA,       0,                       &txt_mat_lava},
-            {CMM_MAT_QUICKSAND,  0,                       &txt_mat_quicksand},
+            {CMM_MAT_RHR_STONE,  CMM_TOPMAT_RHR_OBSIDIAN, "Stone"},
+            {CMM_MAT_RHR_BRICK,  CMM_TOPMAT_RHR_OBSIDIAN, "Bricks"},
+            {CMM_MAT_RHR_BASALT, 0,                       "Basalt"},
+            {CMM_MAT_RHR_TILES,  0,                       "Tiling"},
+            {CMM_MAT_RHR_BLOCK,  0,                       "Stone Block"},
+            {CMM_MAT_RHR_WOOD,   0,                       "Wood"},
+            {CMM_MAT_RHR_PILLAR, CMM_TOPMAT_RHR_TILES,    "Pillar"},
+            {CMM_MAT_RHR_MESH,   0,                       "Mesh"},
+            {CMM_MAT_LAVA,       0,                       "Lava"},
+            {CMM_MAT_QUICKSAND,  0,                       "Quicksand"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_lava), cmm_terrain_floors_lava,
     },
     // CAVE
     {
         {
-            {CMM_MAT_HMC_DIRT,      CMM_TOPMAT_HMC_GRASS, &txt_mat_grass},
-            {CMM_MAT_HMC_BRICK,     0,                    &txt_mat_bricks},
-            {CMM_MAT_HMC_STONE,     0,                    &txt_mat_stone},
-            {CMM_MAT_HMC_MAZEWALL,  0,                    &txt_mat_mazewall},
-            {CMM_MAT_HMC_MAZEFLOOR, 0,                    &txt_mat_mazefloor},
-            {CMM_MAT_HMC_LIGHT,     0,                    &txt_mat_light},
-            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, &txt_mat_lakegrass},
-            {CMM_MAT_HMC_MESH,      0,                    &txt_mat_mesh},
-            {CMM_MAT_LAVA,          0,                    &txt_mat_lava},
-            {CMM_MAT_QUICKSAND,     0,                    &txt_mat_quicksand},
+            {CMM_MAT_HMC_DIRT,      CMM_TOPMAT_HMC_GRASS, "Grass"},
+            {CMM_MAT_HMC_BRICK,     0,                    "Bricks"},
+            {CMM_MAT_HMC_STONE,     0,                    "Stone"},
+            {CMM_MAT_HMC_MAZEWALL,  0,                    "Maze Wall"},
+            {CMM_MAT_HMC_MAZEFLOOR, 0,                    "Maze Floor"},
+            {CMM_MAT_HMC_LIGHT,     0,                    "Light"},
+            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, "Lake Grass"},
+            {CMM_MAT_HMC_MESH,      0,                    "Mesh"},
+            {CMM_MAT_LAVA,          0,                    "Lava"},
+            {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_cave), cmm_terrain_floors_cave,
     },
     // CASTLE
     {
         {
-            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_TILES,  &txt_mat_tileswood},
-            {CMM_MAT_C_BRICK,        CMM_TOPMAT_C_TILES,  &txt_mat_tilesbricks},
-            {CMM_MAT_C_STONESIDE,    CMM_TOPMAT_C_STONE,  &txt_mat_tilesstone},
-            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_CARPET, &txt_mat_carpet},
-            {CMM_MAT_C_ROOF,         0,                   &txt_mat_roof},
-            {CMM_MAT_C_WALL,         0,                   &txt_mat_castlewall},
-            {CMM_MAT_C_PILLAR,       CMM_TOPMAT_C_STONE,  &txt_mat_pillar},
-            {CMM_MAT_C_BASEMENTWALL, 0,                   &txt_mat_basementwall},
-            {CMM_MAT_LAVA,           0,                   &txt_mat_lava},
-            {CMM_MAT_QUICKSAND,      0,                   &txt_mat_quicksand},
+            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_TILES,  "Tiling"},
+            {CMM_MAT_C_BRICK,        CMM_TOPMAT_C_TILES,  "Tiling (Bricks)"},
+            {CMM_MAT_C_STONESIDE,    CMM_TOPMAT_C_STONE,  "Tiling (Stone)"},
+            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_CARPET, "Carpet"},
+            {CMM_MAT_C_ROOF,         0,                   "Roof"},
+            {CMM_MAT_C_WALL,         0,                   "Castle Wall"},
+            {CMM_MAT_C_PILLAR,       CMM_TOPMAT_C_STONE,  "Pillar"},
+            {CMM_MAT_C_BASEMENTWALL, 0,                   "Basement Wall"},
+            {CMM_MAT_LAVA,           0,                   "Lava"},
+            {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_castle), cmm_terrain_floors_castle,
     },
     // VIRTUAPLEX
     {
         {
-            {CMM_MAT_VP_BLOCK,      0,                       &txt_mat_block},
-            {CMM_MAT_VP_TILES,      0,                       &txt_mat_tiles},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        &txt_mat_grass},
-            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, &txt_mat_bluetiles},
-            {CMM_MAT_VP_RUSTYBLOCK, 0,                       &txt_mat_rustyblock},
-            {CMM_MAT_VP_SCREEN,     0,                       &txt_mat_screen},
-            {CMM_MAT_VP_CAUTION,    0,                       &txt_mat_hazardstripes},
-            {CMM_MAT_VP_SNOWBLOCK,  CMM_TOPMAT_SNOW,         &txt_mat_snowblock},
-            {CMM_MAT_LAVA,          0,                       &txt_mat_lava},
-            {CMM_MAT_VP_VOID,       0,                       &txt_mat_void},
+            {CMM_MAT_VP_BLOCK,      0,                       "Block"},
+            {CMM_MAT_VP_TILES,      0,                       "Tiling"},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        "Grass"},
+            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, "Blue Tiling"},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                       "Rusty Block"},
+            {CMM_MAT_VP_SCREEN,     0,                       "Screen"},
+            {CMM_MAT_VP_CAUTION,    0,                       "Hazard Stripes"},
+            {CMM_MAT_VP_SNOWBLOCK,  CMM_TOPMAT_SNOW,         "Snowy Block"},
+            {CMM_MAT_LAVA,          0,                       "Lava"},
+            {CMM_MAT_VP_VOID,       0,                       "Void"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
     },
     // RETRO
     {
         {
-            {CMM_MAT_RETRO_GROUND,           0,                        &txt_mat_ground},
-            {CMM_MAT_RETRO_BRICKS,           0,                        &txt_mat_bricks},
-            {CMM_MAT_RETRO_TREEPLAT,         CMM_TOPMAT_RETRO_TREETOP, &txt_mat_treeplat},
-            {CMM_MAT_RETRO_BLOCK,            0,                        &txt_mat_rblock},
-            {CMM_MAT_RETRO_BLUEGROUND,       0,                        &txt_mat_blueground},
-            {CMM_MAT_RETRO_BLUEBRICKS,       0,                        &txt_mat_bluebricks},
-            {CMM_MAT_RETRO_BLUEBLOCK,        0,                        &txt_mat_blueblock},
-            {CMM_MAT_RETRO_WHITEBRICK,       0,                        &txt_mat_whitebrick},
-            {CMM_MAT_RETRO_LAVA,             0,                        &txt_mat_lava},
-            {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        &txt_mat_underwaterground},
+            {CMM_MAT_RETRO_GROUND,           0,                        "Ground"},
+            {CMM_MAT_RETRO_BRICKS,           0,                        "Bricks"},
+            {CMM_MAT_RETRO_TREEPLAT,         CMM_TOPMAT_RETRO_TREETOP, "Treetop"},
+            {CMM_MAT_RETRO_BLOCK,            0,                        "Block"},
+            {CMM_MAT_RETRO_BLUEGROUND,       0,                        "Blue Ground"},
+            {CMM_MAT_RETRO_BLUEBRICKS,       0,                        "Blue Bricks"},
+            {CMM_MAT_RETRO_BLUEBLOCK,        0,                        "Blue Block"},
+            {CMM_MAT_RETRO_WHITEBRICK,       0,                        "White Bricks"},
+            {CMM_MAT_RETRO_LAVA,             0,                        "Lava"},
+            {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        "Underwater Tile"},
         },
+        ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
     },
 };
 
@@ -712,20 +639,131 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_sideslope, TILE_TYPE_SSLOPE   ,CMM_PM_TILE , &txt_btn_43   , NULL         }, //CMM_BUTTON_SSLOPE
 };
 
-u8 txt_ls_costume[] = {TXT_LS_COSTUME};
-u8 txt_ls_music[] = {TXT_LS_MUSIC};
-u8 txt_ls_envfx[] = {TXT_LS_ENVFX};
-u8 txt_ls_theme[] = {TXT_LS_THEME};
-u8 txt_ls_bg[] = {TXT_LS_BG};
-u8 txt_ls_plane[] = {TXT_LS_PLANE};
 
-struct cmm_settings_button cmm_settings_buttons[] = {
-    {&txt_ls_costume, &cmm_lopt_costume, &costume_text, 15},
-    {&txt_ls_music, &cmm_lopt_seq, &musicmenu_titles, 29},
-    {&txt_ls_envfx, &cmm_lopt_envfx, &cmm_envfx_string_table, 6},
-    {&txt_ls_theme, &cmm_lopt_theme, &cmm_theme_string_table, NUM_THEMES},
-    {&txt_ls_bg, &cmm_lopt_bg, &cmm_bg_string_table, 8},
-    {&txt_ls_plane, &cmm_lopt_plane, &cmm_plane_string_table, 3},
+char *cmm_costume_string_table[] = {
+    "Mario",
+    "Fire Mario",
+    "Glitchy",
+    "Luigi",
+    "Wario",
+    "Disco Mario",
+    "Undead Pirate",
+    "Mocap Mario",
+    "Darius",
+    "Butler Mario",
+    "Retro Mario",
+    "Thwompio",
+    "Builder Mario",
+    "Showrunner",
+    "Cosmic Phantasm",
 };
 
-#define SETTINGS_SIZE sizeof(cmm_settings_buttons)/sizeof(cmm_settings_buttons[0])
+char *cmm_music_string_table[] = {
+    "Cosmic Castle",
+    "The Showrunner",
+    "Red Hot",
+    "Floating Farm",
+    "Jungle Temple",
+    "VR World",
+    "Spooky Pirate",
+    "Cursed Boss",
+    "Road To The Boss",
+    "Urbowser",
+    "Big House",
+    "SMB1 Overworld",
+    "SMB2 Overworld",
+    "SMB3 Fortress",
+    "NSMB Castle",
+    "The Show's Finale",
+    "Parasite Moon",
+    "AGAMEMNON",
+    "Bad Apple!!",
+
+    "SM64 Main Theme",
+    "Slider",
+    "Dire Dire Docks",
+    "Lethal Lava Land",
+    "Snow Mountain",
+    "Haunted House",
+    "Cave Dungeon",
+    "Koopa's Road",
+    "Koopa's Theme",
+    "Ultimate Koopa",
+};
+
+char *cmm_envfx_string_table[] = {
+    "None",
+    "Ashes",
+    "Snow",
+    "Flowers",
+    "Lava Bubbles",
+    "Rain",
+};
+
+//envfx table
+u8 cmm_envfx_table[] = {
+    ENVFX_MODE_NONE,         // no effects
+    ENVFX_SNOW_NORMAL,       // CCM, SL
+    ENVFX_SNOW_BLIZZARD,     // unused
+    ENVFX_FLOWERS,           // unused
+    ENVFX_LAVA_BUBBLES,      // LLL, BitFS, Bowser 2
+    ENVFX_RAIN
+};
+
+char *cmm_theme_string_table[] = {
+    "Generic",
+    "Virtuaplex",
+    "Red Hot Reservoir",
+    "Retroland",
+    "Castle Inside",
+    "Shifting Sand Land",
+    "Hazy Maze Cave",
+};
+
+char *cmm_bg_string_table[] = {
+    "Ocean Hills",
+    "Cloudy Sky",
+    "Firey Sky",
+    "Green Cave",
+    "Haunted Forest",
+    "Ice Mountains",
+    "Desert Pyramids",
+    "Hushed Haven",
+};
+
+//skybox table
+u8 *cmm_skybox_table[] = {
+    _water_skybox_yay0SegmentRomStart,
+    _water_skybox_yay0SegmentRomEnd,
+    _cloud_floor_skybox_yay0SegmentRomStart,
+    _cloud_floor_skybox_yay0SegmentRomEnd,
+    _bitfs_skybox_yay0SegmentRomStart,
+    _bitfs_skybox_yay0SegmentRomEnd,
+    _bidw_skybox_yay0SegmentRomStart,
+    _bidw_skybox_yay0SegmentRomEnd,
+    _bbh_skybox_yay0SegmentRomStart,
+    _bbh_skybox_yay0SegmentRomEnd,
+    _ccm_skybox_yay0SegmentRomStart,
+    _ccm_skybox_yay0SegmentRomEnd,
+    _ssl_skybox_yay0SegmentRomStart,
+    _ssl_skybox_yay0SegmentRomEnd,
+    _bits_skybox_yay0SegmentRomStart,
+    _bits_skybox_yay0SegmentRomEnd,
+};
+
+char *cmm_plane_string_table[] = {
+    "Bottomless",
+    "Lava Floor",
+    "Terrain Floor",
+};
+
+struct cmm_settings_button cmm_settings_buttons[] = {
+    {"Costume:", &cmm_lopt_costume, &cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table)},
+    {"Music:",   &cmm_lopt_seq, &cmm_music_string_table, ARRAY_COUNT(cmm_music_string_table)},
+    {"Effect:",  &cmm_lopt_envfx, &cmm_envfx_string_table, ARRAY_COUNT(cmm_envfx_string_table)},
+    {"Theme:",   &cmm_lopt_theme, &cmm_theme_string_table, ARRAY_COUNT(cmm_theme_string_table)},
+    {"Skybox:",  &cmm_lopt_bg, &cmm_bg_string_table, ARRAY_COUNT(cmm_bg_string_table)},
+    {"Floor:",   &cmm_lopt_plane, &cmm_plane_string_table, ARRAY_COUNT(cmm_plane_string_table)},
+};
+
+#define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_buttons)

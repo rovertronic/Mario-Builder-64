@@ -173,9 +173,9 @@ struct cmm_ui_button_type {
 };
 
 struct cmm_settings_button {
-    u8 * str;
+    char * str;
     u8 * value;
-    u8 ** nametable;
+    char ** nametable;
     u8 size;
 };
 
@@ -265,10 +265,12 @@ struct cmm_topmaterial {
 struct cmm_tilemat_def {
     u8 mat;
     u8 topmat;
-    u8 *name;
+    char *name;
 };
 struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
+    u8 numFloors;
+    s8 *floors;
 };
 
 //compressed trajectories

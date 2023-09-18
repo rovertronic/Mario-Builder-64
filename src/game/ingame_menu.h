@@ -138,6 +138,7 @@ enum DialogSpecialChars {
      ((asc) == '!') ? (0xF2) :                                   \
      ((asc) == '-') ? (0x9F) :                                   \
      ((asc) == '\'') ? (0x3E) :                                   \
+     ((asc) == ':') ? (0xE6) :                                   \
      ((asc) >= 'a' && (asc) <= 'z') ? ((asc) - 'a' + 0x24) : 0x00)
 
 // gDialogResponse
