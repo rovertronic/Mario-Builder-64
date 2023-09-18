@@ -339,7 +339,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerRHRPattern,      0}, // CMM_MAT_RHR_BLOCK
     {&mat_maker_MakerRHRWood,         0}, // CMM_MAT_RHR_WOOD
     {&mat_maker_MakerRHRPillar,       0}, // CMM_MAT_RHR_PILLAR
-    {&mat_maker_MakerRHRGrate_layer1, 0}, // CMM_MAT_RHR_MESH
+    {&mat_maker_MakerRHRGrate_layer1, 1}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
     {&mat_maker_MakerHGrass,          0}, // CMM_MAT_HMC_GRASS
     {&mat_maker_MakerHDirt,           0}, // CMM_MAT_HMC_DIRT
@@ -349,7 +349,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerHMazefloor,      0}, // CMM_MAT_HMC_MAZEFLOOR
     {&mat_maker_MakerHLight,          0}, // CMM_MAT_HMC_LIGHT
     {&mat_maker_MakerHLakewall,       0}, // CMM_MAT_HMC_LAKEGRASS
-    {&mat_maker_MakerHFence_layer1,   0}, // CMM_MAT_HMC_MESH
+    {&mat_maker_MakerHFence_layer1,   1}, // CMM_MAT_HMC_MESH
     // Castle
     {&mat_maker_MakerCTile,           0}, // CMM_MAT_C_TILES
     {&mat_maker_MakerCWood,           0}, // CMM_MAT_C_WOOD
@@ -419,13 +419,13 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_RETRO_TREETOP, &mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
 };
 
-s8 cmm_terrain_floors_generic[] = {0, 2, 3, 5, 6, 7, 8, 9}; // grass, stone, tiles, wood, sand, snow, lava, quicksand
-s8 cmm_terrain_floors_desert[] = {0, 2, 3, 6, 7, 8, 9}; // sand, stone, tiles, desert tiles, grass, lava, quicksand
-s8 cmm_terrain_floors_lava[] = {0, 2, 3, 8, 9}; // stone, basalt, tiles, lava, quicksand
-s8 cmm_terrain_floors_cave[] = {0, 2, 4, 8, 9}; // grass, stone, maze floor, lava, quicksand
-s8 cmm_terrain_floors_castle[] = {0, 4, 8, 9}; // tiling, carpet, lava, quicksand
-s8 cmm_terrain_floors_virtuaplex[] = {0, 1, 2, 3, 7, 8, 9}; // block, tiling, grass, blue tiling, snowy block, lava, void
-s8 cmm_terrain_floors_retro[] = {0, 4, 8, 9}; // ground, blue ground, lava, underwater tile
+s8 cmm_terrain_floors_generic[] = {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
+s8 cmm_terrain_floors_desert[] = {0, 8, 9, 2, 3, 6, 7}; // sand, lava, quicksand, stone, tiles, desert tiles, grass
+s8 cmm_terrain_floors_lava[] = {0, 8, 9, 2, 3}; // stone, lava, quicksand, basalt, tiles
+s8 cmm_terrain_floors_cave[] = {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone, maze floor
+s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
+s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
+s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
 
 struct cmm_theme cmm_theme_table[NUM_THEMES] = {
@@ -695,7 +695,6 @@ char *cmm_envfx_string_table[] = {
     "None",
     "Ashes",
     "Snow",
-    "Flowers",
     "Lava Bubbles",
     "Rain",
 };
@@ -705,19 +704,18 @@ u8 cmm_envfx_table[] = {
     ENVFX_MODE_NONE,         // no effects
     ENVFX_SNOW_NORMAL,       // CCM, SL
     ENVFX_SNOW_BLIZZARD,     // unused
-    ENVFX_FLOWERS,           // unused
     ENVFX_LAVA_BUBBLES,      // LLL, BitFS, Bowser 2
     ENVFX_RAIN
 };
 
 char *cmm_theme_string_table[] = {
     "Generic",
-    "Virtuaplex",
-    "Red Hot Reservoir",
-    "Retroland",
-    "Castle Inside",
     "Shifting Sand Land",
+    "Red Hot Reservoir",
     "Hazy Maze Cave",
+    "Castle Inside",
+    "Virtuaplex",
+    "Retroland",
 };
 
 char *cmm_bg_string_table[] = {
@@ -751,19 +749,13 @@ u8 *cmm_skybox_table[] = {
     _bits_skybox_yay0SegmentRomEnd,
 };
 
-char *cmm_plane_string_table[] = {
-    "Bottomless",
-    "Lava Floor",
-    "Terrain Floor",
-};
-
 struct cmm_settings_button cmm_settings_buttons[] = {
     {"Costume:", &cmm_lopt_costume, &cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table)},
     {"Music:",   &cmm_lopt_seq, &cmm_music_string_table, ARRAY_COUNT(cmm_music_string_table)},
     {"Effect:",  &cmm_lopt_envfx, &cmm_envfx_string_table, ARRAY_COUNT(cmm_envfx_string_table)},
-    {"Theme:",   &cmm_lopt_theme, &cmm_theme_string_table, ARRAY_COUNT(cmm_theme_string_table)},
     {"Skybox:",  &cmm_lopt_bg, &cmm_bg_string_table, ARRAY_COUNT(cmm_bg_string_table)},
-    {"Floor:",   &cmm_lopt_plane, &cmm_plane_string_table, ARRAY_COUNT(cmm_plane_string_table)},
+    {"Theme:",   &cmm_lopt_theme, &cmm_theme_string_table, ARRAY_COUNT(cmm_theme_string_table)},
+    {"Floor:",   &cmm_lopt_plane, NULL, 0}, // Filled in by code
 };
 
 #define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_buttons)

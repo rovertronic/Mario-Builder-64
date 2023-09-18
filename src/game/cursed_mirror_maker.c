@@ -198,9 +198,9 @@ void reset_play_state(void) {
 }
 
 u32 coords_in_range(s32 x, s32 y, s32 z) {
-    if (x < 0 || x > 31) return FALSE;
+    if (x < GRID_MIN_COORD || x > GRID_MAX_COORD - 1) return FALSE;
     if (y < 0 || y > 31) return FALSE;
-    if (z < 0 || z > 31) return FALSE;
+    if (z < GRID_MIN_COORD || z > GRID_MAX_COORD - 1) return FALSE;
     return TRUE;
 }
 
@@ -510,9 +510,9 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
-            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
-            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            GRID_TO_POS(pos[0]) + newVtx[i][0]*TILE_SIZE/2,
+            GRIDY_TO_POS(pos[1])+ newVtx[i][1]*TILE_SIZE/2,
+            GRID_TO_POS(pos[2]) + newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -539,9 +539,9 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
-            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
-            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            GRID_TO_POS(pos[0]) + newVtx[i][0]*TILE_SIZE/2,
+            GRIDY_TO_POS(pos[1])+ newVtx[i][1]*TILE_SIZE/2,
+            GRID_TO_POS(pos[2]) + newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -613,6 +613,16 @@ void render_block_grass_side(s8 pos[3], u32 tileType, u32 rot) {
     }
 }
 
+void render_floor(void) {
+    make_vertex(cmm_curr_vtx, 0,  4096, 0, -4096,  16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, -4096, 0, -4096, -16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2, -4096, 0,  4096, -16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,  4096, 0,  4096,  16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
+    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
+    cmm_curr_vtx += 4 * 4;
+}
+
 void generate_terrain_gfx(void) {
     u16 gfx_tdecal_index = 0;
     u16 gfx_tp_index = 0;
@@ -627,20 +637,19 @@ void generate_terrain_gfx(void) {
     cmm_gfx_index = 0;
     cmm_building_collision = 0;
 
-    //BOTTOM PLANE
-    switch (cmm_lopt_plane) {
-        case 1:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(8).gfx);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
-        break;
-        case 2:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(0).gfx);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
-        break;
-    }
-
     // Align to 16 bytes for vertices
     cmm_curr_vtx = (u32 *)((((u32)cmm_curr_vtx) & ~15) + 16);
+
+    //BOTTOM PLANE
+    if (cmm_lopt_plane != 0) {
+        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+        if (HAS_TOPMAT(planeMat)) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).gfx);
+        } else {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
+        }
+        render_floor();
+    }
 
     // Tiles with models
     /**
@@ -748,7 +757,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_gfx_index = 0;
 
             if (cmm_tile_types[cmm_id_selection].model) {
-                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*TILE_SIZE, cmm_sby*TILE_SIZE, cmm_sbz*TILE_SIZE);
+                guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_sbx), GRIDY_TO_POS(cmm_sby), GRID_TO_POS(cmm_sbz));
                 preview_mtx_index++;
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
                 gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -816,10 +825,10 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3],
 };
 
 TerrainData floorVtxs[4][3] = {
-    {-150, -150, 9450},
-    {9450, -150, 9450},
-    {-150, -150, -150},
-    {9450, -150, -150},
+    {-4096, 0, 4096},
+    {4096, 0, 4096},
+    {-4096, 0, -4096},
+    {4096, 0, -4096},
 };
 
 extern TerrainData sVertexData[900];
@@ -834,15 +843,20 @@ void generate_terrain_collision(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = 1;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
-    TerrainData floorType;
-    switch(cmm_lopt_plane) {
-        case 1:
-        case 2:
-            floorType = (cmm_lopt_plane == 2) ? SURFACE_DEFAULT : SURFACE_BURNING;
-            cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
-            cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
-    }
+    TerrainData floorType, floorY;
 
+    if (cmm_lopt_plane == 0) {
+        floorY = -2500;
+        floorType = SURFACE_DEATH_PLANE;
+    } else {
+        floorY = 0;
+        floorType = SURFACE_DEFAULT;
+    }
+    for (u32 i = 0; i < 4; i++) {
+        floorVtxs[i][1] = floorY;
+    }
+    cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
+    cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
 
     for (i=0; i<cmm_tile_count; i++) {
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
@@ -859,9 +873,9 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 4; k++) {
-                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
-                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
-                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
+                        colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                     cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
@@ -872,22 +886,22 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 3; k++) {
-                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
-                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
-                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
+                        colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                 }
             }
         } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            Vec3f pos = {cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE};
+            Vec3f pos = {GRID_TO_POS(cmm_tile_data[i].x), GRIDY_TO_POS(cmm_tile_data[i].y), GRID_TO_POS(cmm_tile_data[i].z)};
             Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
             mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
             //this code was written by accident... the collision doesn't generate properly without it though???
-            o->oPosX = (cmm_tile_data[0].x*TILE_SIZE);
-            o->oPosY = (cmm_tile_data[0].y*TILE_SIZE);
-            o->oPosZ = (cmm_tile_data[0].z*TILE_SIZE);
+            o->oPosX = GRID_TO_POS(cmm_tile_data[0].x);
+            o->oPosY = GRIDY_TO_POS(cmm_tile_data[0].y);
+            o->oPosZ = GRID_TO_POS(cmm_tile_data[0].z);
             o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
             
             TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
@@ -922,9 +936,9 @@ void generate_object_preview(void) {
 
     for(i=0;i<cmm_object_count;i++){
         preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
-        preview_object->oPosX = cmm_object_data[i].x*TILE_SIZE;
-        preview_object->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
-        preview_object->oPosZ = cmm_object_data[i].z*TILE_SIZE;
+        preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
+        preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
+        preview_object->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
@@ -952,9 +966,9 @@ void generate_objects_to_level(void) {
 
         obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
 
-        obj->oPosX = cmm_object_data[i].x*TILE_SIZE;
-        obj->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
-        obj->oPosZ = cmm_object_data[i].z*TILE_SIZE;
+        obj->oPosX = GRID_TO_POS(cmm_object_data[i].x);
+        obj->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
+        obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
@@ -1204,9 +1218,9 @@ void save_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/TILE_SIZE;
-            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/TILE_SIZE;
-            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
+            cmm_save.lvl[index].trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][(j*4)+2]);
+            cmm_save.lvl[index].trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+3]);
         }
     }
 
@@ -1257,8 +1271,8 @@ void load_level(u8 index) {
 
         //Place spawn location
         cmm_save.lvl[0].object_count = 1;
-        cmm_save.lvl[0].objects[0].x = 16;
-        cmm_save.lvl[0].objects[0].z = 16;
+        cmm_save.lvl[0].objects[0].x = 32;
+        cmm_save.lvl[0].objects[0].z = 32;
         cmm_save.lvl[0].objects[0].y = 4;
         cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
 
@@ -1273,7 +1287,10 @@ void load_level(u8 index) {
     cmm_lopt_envfx = cmm_save.lvl[index].option[2];
     cmm_lopt_theme = cmm_save.lvl[index].option[3];
     cmm_lopt_bg = cmm_save.lvl[index].option[4];
+
+    cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
+
     cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
@@ -1324,9 +1341,9 @@ void load_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*TILE_SIZE;
-            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*TILE_SIZE;
-            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].x);
+            cmm_trajectory_list[i][(j*4)+2] = GRIDY_TO_POS(cmm_save.lvl[index].trajectories[i][j].y);
+            cmm_trajectory_list[i][(j*4)+3] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].z);
         }
     }
 
@@ -1342,9 +1359,9 @@ void cmm_init() {
 void sb_init(void) {
     struct Object *spawn_obj;
 
-    cmm_sbx = 16;
+    cmm_sbx = 32;
     cmm_sby = 4;
-    cmm_sbz = 16;
+    cmm_sbz = 32;
 
     cmm_ui_index = 0;
     vec3f_copy(&cmm_camera_foc,&o->oPosVec);
@@ -1449,8 +1466,8 @@ void sb_loop(void) {
             }
             cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
 
-            cmm_sbx=(cmm_sbx+32)%32;
-            cmm_sbz=(cmm_sbz+32)%32;
+            cmm_sbx = ((cmm_sbx - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_sbz = ((cmm_sbz - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
             cmm_sby=(cmm_sby+32)%32;
             //END MOVE CURSOR
 
@@ -1537,26 +1554,26 @@ void sb_loop(void) {
                 cmm_rot_selection%=4;
             }
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_sbx),  0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_sby), 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_sbz),  0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*TILE_SIZE; 
-            o->oPosY = cmm_sby*TILE_SIZE; 
-            o->oPosZ = cmm_sbz*TILE_SIZE; 
+            o->oPosX = GRID_TO_POS(cmm_sbx); 
+            o->oPosY = GRIDY_TO_POS(cmm_sby); 
+            o->oPosZ = GRID_TO_POS(cmm_sbz); 
 
             for (u8 i=0; i<6; i++) {
                 vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
             }
-            cmm_boundary_object[0]->oPosY = 0.0f;
-            cmm_boundary_object[1]->oPosY = TILE_SIZE*32.0f;
-            cmm_boundary_object[2]->oPosX = 0.0f;
-            cmm_boundary_object[3]->oPosX = TILE_SIZE*32.0f;
-            cmm_boundary_object[4]->oPosZ = 0.0f;
-            cmm_boundary_object[5]->oPosZ = TILE_SIZE*32.0f;
+            cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
+            cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
+            cmm_boundary_object[2]->oPosX = GRID_TO_POS(GRID_MIN_COORD);
+            cmm_boundary_object[3]->oPosX = GRID_TO_POS(GRID_MAX_COORD);
+            cmm_boundary_object[4]->oPosZ = GRID_TO_POS(GRID_MIN_COORD);
+            cmm_boundary_object[5]->oPosZ = GRID_TO_POS(GRID_MAX_COORD);
 
             if (cmm_place_mode == CMM_PM_OBJ) {
                 if (cmm_object_types[cmm_id_selection].param_max != 0) {
@@ -1677,10 +1694,14 @@ void sb_loop(void) {
             if (cmm_settings_index_changed) {
                 cmm_settings_index_changed = FALSE;
                 switch(cmm_settings_index) {
-                    case 3: //theme
+                    case 4: //theme
                         generate_terrain_gfx();
+                        cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+                        if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
+                            cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
+                        }
                     break;
-                    case 4: //sky box
+                    case 3: //sky box
                         load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
                     break;
                     case 5://bottom floor
@@ -1743,21 +1764,21 @@ void sb_loop(void) {
             }
             cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
-            cmm_sbx=(cmm_sbx+32)%32;
-            cmm_sbz=(cmm_sbz+32)%32;
+            cmm_sbx = ((cmm_sbx - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_sbz = ((cmm_sbz - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
             cmm_sby=(cmm_sby+32)%32;
             //END MOVE CURSOR
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_sbx), 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_sby), 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_sbz), 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*TILE_SIZE; 
-            o->oPosY = cmm_sby*TILE_SIZE; 
-            o->oPosZ = cmm_sbz*TILE_SIZE;
+            o->oPosX = GRID_TO_POS(cmm_sbx); 
+            o->oPosY = GRIDY_TO_POS(cmm_sby); 
+            o->oPosZ = GRID_TO_POS(cmm_sbz);
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;

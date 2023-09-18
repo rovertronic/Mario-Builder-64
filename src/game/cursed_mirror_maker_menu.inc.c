@@ -141,9 +141,16 @@ void draw_cmm_menu(void) {
             //print_maker_string(15,210,txt_btn_2,FALSE);
             print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
 
-            for (i=0;i<SETTINGS_SIZE;i++) {
+            for (i=0;i<SETTINGS_SIZE - 1;i++) {
                 print_maker_string_ascii(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
                 print_maker_string_ascii(70,180-(i*16),cmm_settings_buttons[i].nametable[ *cmm_settings_buttons[i].value ],(i==cmm_settings_index));
+            }
+            // Floor option
+            print_maker_string_ascii(15, 180-(i*16), cmm_settings_buttons[i].str, (i==cmm_settings_index));
+            if (cmm_lopt_plane == 0) {
+                print_maker_string_ascii(70, 180-(i*16), "None", (i==cmm_settings_index));
+            } else {
+                print_maker_string_ascii(70, 180-(i*16), TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1]).name, (i==cmm_settings_index));
             }
         break;
 

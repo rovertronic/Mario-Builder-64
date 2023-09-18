@@ -35,6 +35,15 @@ extern u32 cmm_play_badge_bitfield;
 
 #define TILE_SIZE 256
 
+// For making variable size levels later
+#define GRID_MIN_COORD 16
+#define GRID_MAX_COORD 48
+#define GRID_SIZE (GRID_MAX_COORD - GRID_MIN_COORD)
+
+#define GRID_TO_POS(gridx) (gridx * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
+#define GRIDY_TO_POS(gridy) (gridy * TILE_SIZE + TILE_SIZE/2)
+#define POS_TO_GRID(pos) ((pos + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
+#define POS_TO_GRIDY(pos) ((pos - TILE_SIZE/2) / TILE_SIZE)
 
 enum cmm_directions {
     CMM_DIRECTION_UP,
@@ -98,7 +107,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u8 x:5, y:5, z:5, type:5, mat:4, rot:2;
+    u32 x:6, y:5, z:6, type:5, mat:4, rot:2;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -120,12 +129,13 @@ enum {
 };
 
 struct cmm_obj {
-    u8 param, x:5, y:5, z:5, type:5, rot:2;
+    u32 param:8, x:6, y:5, z:6, type:5, rot:2;
 };
 
 struct cmm_grid_obj {
-    u8 type:5, mat:4, rot:2, occupied:1;
+    u16 type:5, mat:4, rot:2, occupied:1;
 };
+
 struct cmm_object_type_struct {
     u32 behavior;
     f32 y_offset;
@@ -275,8 +285,7 @@ struct cmm_theme {
 
 //compressed trajectories
 struct cmm_comptraj {
-    u8 x:5, y:5, z:5;
-    s8 t:7;
+    u32 x:5, y:5, z:5, t:7;
 };
 
 
