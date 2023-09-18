@@ -111,18 +111,18 @@ struct cmm_terrain_block cmm_terrain_fullblock = {
     NULL
 };
 
+s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
+s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
+
 struct cmm_terrain_quad cmm_terrain_slope_quads[] = {
     {{{1, -1, 1},  {1, 1, -1},  {-1, -1, 1},  {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
     {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
 
-s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
-s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
-
 struct cmm_terrain_tri cmm_terrain_slope_tris[] = {
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
 };
 
 struct cmm_terrain_block cmm_terrain_slope = {
@@ -139,8 +139,8 @@ struct cmm_terrain_quad cmm_terrain_corner_quads[] = {
 struct cmm_terrain_tri cmm_terrain_corner_tris[] = {
     {{{-1, -1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
     {{{-1, 1, -1}, {1, -1, 1}, {1, -1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // RIGHT
-    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // BACK
+    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
+    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
 
 struct cmm_terrain_block cmm_terrain_corner = {
@@ -159,8 +159,8 @@ struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
 struct cmm_terrain_tri cmm_terrain_icorner_tris[] = {
     {{{-1, 1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
     {{{-1, 1, -1}, {1, -1, 1}, {1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_UNCONDITIONAL_SIDE, &slope_decal_uvs2}, // FRONT
+    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
 };
 
 struct cmm_terrain_block cmm_terrain_icorner = {
@@ -206,13 +206,31 @@ struct cmm_terrain_block cmm_terrain_sslope = {
     &cmm_terrain_sslope_tris,
 };
 
+
+// All of this is for the system where slopes can place a decal on the face below them.
+// Very hardcoded, so best not to touch any of these numbers
+s8 slope_decal_below_uvsquad_l[4][2] = {{-1, -1}, {1, 1}, {-1, -3}, {1, -1}};
+s8 slope_decal_below_uvsquad_r[4][2] = {{1, 1}, {-1, -1}, {1, -1}, {-1, -3}};
+s8 slope_decal_below_uvstri_1[3][2] = {{1, 1}, {-1, -1}, {1, -1}};
+s8 slope_decal_below_uvstri_2[3][2] = {{1, 1}, {1, -1}, {-1, -1}};
+
+struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
+    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1},  {-1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
+};
+struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri1 = {
+    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, &slope_decal_below_uvstri_1
+};
+struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
+    {{-1, 1, 1},  {-1, -1, 1}, {1, 1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
+};
+
 struct cmm_tile_type_struct cmm_tile_types[] = {
     //Model GFX           //F3D Material            //Collision Mesh             //Grass   //Transparent
     {NULL, &cmm_terrain_fullblock, NULL   , FALSE},//TILE_TYPE_BLOCK
     {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
     {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
     {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
-    {NULL, NULL,                   NULL                       , FALSE},//TILE_TYPE_TROLL
+    {NULL, &cmm_terrain_fullblock,                   NULL                       , FALSE},//TILE_TYPE_TROLL
     {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
     {&makerwater_mw_mesh, NULL,    makerwater_collision       , TRUE },//TILE_TYPE_WATER
@@ -276,49 +294,48 @@ void df_exbox(struct Object * obj, int param) {
 }
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR           //Y-OFF    //MODEL ID                  //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
-    {bhvStar             , 0.0f     ,MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGoomba           ,-150.0f   ,MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
-    {bhvYellowCoin       ,-150.0f   ,MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGreenCoin        ,-150.0f   ,0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRedCoin          ,-150.0f   ,MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenBlueCoin   ,-150.0f   ,MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBlueCoinSwitch   ,-150.0f   ,MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenRedCoinStar, 0.0f     ,MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvNoteblock        , 0.0f     ,MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPodoboo          , 0.0f     ,MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRex              ,-150.0f   ,0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
-    {bhvSmallBully       ,-150.0f   ,MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
-    {bhvBobomb           ,-150.0f   ,MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
-    {bhvTree             ,-150.0f   ,MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
-    {bhvExclamationBox   , 0.0f     ,MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
-    {bhvChuckya          ,-150.0f   ,MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn            , 0.0f     ,MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPhantasm         ,-150.0f   ,MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe         ,-150.0f   ,MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
-    {bhvBadge            ,0.0f      ,MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss             ,-150.0f   ,MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
-    {bhvPlatformOnTrack  ,0.0f      ,MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBobBowlingBallSpawner,0.0f  ,MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvKoopa            ,-150.0f   ,MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
+    //BEHAVIOR                 //Y-OFF      //MODEL ID                 //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
+    {bhvStar,                  TILE_SIZE/2, MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGoomba,                0,           MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
+    {bhvYellowCoin,            0,           MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGreenCoin,             0,           0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRedCoin,               0,           MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenBlueCoin,        0,           MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBlueCoinSwitch,        0,           MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenRedCoinStar,     TILE_SIZE/2, MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvNoteblock,             TILE_SIZE/2, MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPodoboo,               TILE_SIZE/2, MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRex,                   0,           0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
+    {bhvSmallBully,            0,           MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
+    {bhvBobomb,                0,           MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
+    {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
+    {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
+    {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
+    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
+    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
+    {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
+    {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
+    {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvKoopa,                 0,           MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
 };
 
 struct cmm_grid_obj cmm_grid_data[32][32][32] = {0};
 
-Gfx cmm_terrain_gfx[23000]; //gfx
-Gfx cmm_terrain_gfx_tp[8000];//transparent
-Mtx cmm_terrain_mtx[5000]; //translations
-Vtx cmm_terrain_vtx[25000];
+Gfx cmm_terrain_gfx[CMM_GFX_SIZE]; //gfx
+Gfx cmm_terrain_gfx_tp[CMM_GFX_TP_SIZE];//transparent
+u32 cmm_terrain_vtx[CMM_VTX_SIZE];
 
-u16 cmm_gfx_total = 0;
-u16 cmm_mtx_total = 0;
-u16 cmm_vtx_total = 0;
-u16 cmm_gfx_tp_total = 0;
+u32 cmm_gfx_total = 0;
+u32 cmm_vtx_total = 0;
+u32 cmm_gfx_tp_total = 0;
 
-struct cmm_tile cmm_tile_data[2000];
+struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[200];
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
+u16 cmm_building_collision = 0; // 0 = building gfx, 1 = building collision
 
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
@@ -453,6 +470,12 @@ u8 txt_theme_7[] = {TXT_THEME_RETRO};
 u8 txt_mat_grass[] = {TXT_MAT_GRASS};u8 txt_mat_bricks[] = {TXT_MAT_BRICK};u8 txt_mat_stone[] = {TXT_MAT_STONE};u8 txt_mat_wood[] = {TXT_MAT_WOOD};u8 txt_mat_tiles[] = {TXT_MAT_TILES};u8 txt_mat_lava[] = {TXT_MAT_LAVA};
 u8 txt_mat_sand[] = {TXT_MAT_SAND};u8 txt_mat_snow[] = {TXT_MAT_SNOW};u8 txt_mat_quicksand[] = {TXT_MAT_QUICKSAND};u8 txt_mat_roof[] = {TXT_MAT_ROOF};
 u8 txt_mat_tiles2[] = {TXT_MAT_TILES2};u8 txt_mat_block[] = {TXT_MAT_BLOCK};
+u8 txt_mat_basalt[] = {TXT_MAT_BASALT};u8 txt_mat_pillar[] = {TXT_MAT_PILLAR};u8 txt_mat_mesh[] = {TXT_MAT_MESH};
+u8 txt_mat_mazewall[] = {TXT_MAT_MAZEWALL};u8 txt_mat_mazefloor[] = {TXT_MAT_MAZEFLOOR};u8 txt_mat_light[] = {TXT_MAT_LIGHT};u8 txt_mat_lakegrass[] = {TXT_MAT_LAKEGRASS};
+u8 txt_mat_tileswood[] = {TXT_MAT_TILESWOOD};u8 txt_mat_tilesbricks[] = {TXT_MAT_TILESBRICKS};u8 txt_mat_tilesstone[] = {TXT_MAT_TILESSTONE};u8 txt_mat_carpet[] = {TXT_MAT_CARPET};u8 txt_mat_castlewall[] = {TXT_MAT_CASTLEWALL};u8 txt_mat_basementwall[] = {TXT_MAT_BASEMENTWALL};
+u8 txt_mat_bluetiles[] = {TXT_MAT_BLUETILES};u8 txt_mat_rustyblock[] = {TXT_MAT_RUSTYBLOCK};u8 txt_mat_screen[] = {TXT_MAT_SCREEN};u8 txt_mat_hazardstripes[] = {TXT_MAT_HAZARDSTRIPES};u8 txt_mat_snowblock[] = {TXT_MAT_SNOWBLOCK};u8 txt_mat_void[] = {TXT_MAT_VOID};
+
+u8 txt_mat_ground[] = {TXT_MAT_GROUND};u8 txt_mat_rblock[] = {TXT_MAT_RBLOCK};u8 txt_mat_treeplat[] = {TXT_MAT_TREEPLAT};u8 txt_mat_blueground[] = {TXT_MAT_BLUEGROUND};u8 txt_mat_bluebricks[] = {TXT_MAT_BLUEBRICKS};u8 txt_mat_blueblock[] = {TXT_MAT_BLUEBLOCK};u8 txt_mat_whitebrick[] = {TXT_MAT_WHITEBRICK};u8 txt_mat_underwaterground[] = {TXT_MAT_UNDERWATERGROUND};
 
 u8 *cmm_theme_string_table[NUM_THEMES] = {
     &txt_theme_1,
@@ -464,101 +487,316 @@ u8 *cmm_theme_string_table[NUM_THEMES] = {
     &txt_theme_7,
 };
 
-struct cmm_theme cmm_theme_table[NUM_THEMES] = {
-    // GENERIC
-    {{
-        {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
-        {&mat_maker_MakerBricks, NULL, NULL, &txt_mat_bricks,0},
-        {&mat_maker_MakerStone, NULL, &mat_maker_MakerStoneSide, &txt_mat_stone,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
-        {&mat_maker_MakerTileBricks, NULL, &mat_maker_MakerTiles, &txt_mat_tiles,0}, // tiles
-        {&mat_maker_MakerRoof, NULL, NULL, &txt_mat_roof,0}, // roof
-        {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0}, // sand
-        {&mat_maker_MakerSnowDirt, &mat_maker_MakerSnowSide_layer1, &mat_maker_MakerSnow, &txt_mat_snow,0}, // snow
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0}, // quicksand
-    }},
-    // DESERT
-    {{
-        {&mat_maker_MakerSandDirt, &mat_maker_MakerDGrassSide_layer1, &mat_maker_MakerDGrass, &txt_mat_sand,0},
-        {&mat_maker_MakerDBrick, NULL, NULL, &txt_mat_bricks,0},
-        {&mat_maker_MakerDStone, NULL, NULL, &txt_mat_stone,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_wood,0},
-        {&mat_maker_MakerDTiles, NULL, NULL, &txt_mat_tiles,0},
-        {&mat_maker_MakerDStoneBlock, NULL, NULL, &txt_mat_block,0},
-        {&mat_maker_MakerDBrick, NULL, mat_maker_MakerDWood, &txt_mat_tiles2,0},
-        {&mat_maker_MakerDirt, &mat_maker_MakerGrassSide_layer1, &mat_maker_MakerGrass, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_quicksand,0},
-    }},
-    // LAVA
-    {{
-        {&mat_maker_MakerRHRStone, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRBrick, NULL, &mat_maker_MakerRHRObsidian, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRBasalt, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRWood, NULL, NULL, &txt_mat_wood,0},
-        {&mat_maker_MakerRHRTiles, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRHRPattern, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerRHRPillar, NULL, &mat_maker_MakerRHRTiles, &txt_mat_lava,0},
-        {&mat_maker_MakerRHRGrate_layer1, NULL, NULL, &txt_mat_grass,1},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerQuicksand, NULL, NULL, &txt_mat_lava,0},
-    }},
-    // CAVE
-    {{
-        {&mat_maker_MakerHDirt, mat_maker_MakerHGrassSide_layer1, &mat_maker_MakerHGrass, &txt_mat_grass,0},
-        {&mat_maker_MakerHBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerHStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerWood, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerHCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-    }},
-    // CASTLE
-    {{
-        {&mat_maker_MakerCDirt, NULL, &mat_maker_MakerCTile, &txt_mat_grass,0},
-        {&mat_maker_MakerCBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCWood, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-    }},
-    // VIRTUAPLEX
-    {{
-        {&mat_maker_MakerVirtuaplex, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_Maker4Stone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerCaution, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerScreen, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerVoid, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-    }},
-    // RETRO
-    {{
-        {&mat_maker_MakerRetroGround, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroBrick, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroStone, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroBlock, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroCloud, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerRetroLava, NULL, NULL, &txt_mat_grass,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-        {&mat_maker_MakerLava, NULL, NULL, &txt_mat_lava,0},
-    }},
+enum cmm_materials {
+    // Generic
+    CMM_MAT_DIRT,
+    CMM_MAT_GRASS,
+    CMM_MAT_BRICKS,
+    CMM_MAT_STONE,
+    CMM_MAT_COBBLESTONE,
+    CMM_MAT_TILES,
+    CMM_MAT_TILESBRICKS,
+    CMM_MAT_ROOF,
+    CMM_MAT_WOOD,
+    CMM_MAT_SANDDIRT,
+    CMM_MAT_SAND,
+    CMM_MAT_SNOWDIRT,
+    CMM_MAT_SNOW,
+    CMM_MAT_LAVA,
+    CMM_MAT_QUICKSAND,
+    // Desert
+    CMM_MAT_DESERT_BRICKS,
+    CMM_MAT_DESERT_STONE,
+    CMM_MAT_DESERT_TILES,
+    CMM_MAT_DESERT_BLOCK,
+    CMM_MAT_DESERT_TILES2,
+    // Red Hot Reservoir
+    CMM_MAT_RHR_OBSIDIAN,
+    CMM_MAT_RHR_STONE,
+    CMM_MAT_RHR_BRICK,
+    CMM_MAT_RHR_BASALT,
+    CMM_MAT_RHR_TILES,
+    CMM_MAT_RHR_BLOCK,
+    CMM_MAT_RHR_WOOD,
+    CMM_MAT_RHR_PILLAR,
+    CMM_MAT_RHR_MESH,
+    // Hazy Maze Cave
+    CMM_MAT_HMC_GRASS,
+    CMM_MAT_HMC_DIRT,
+    CMM_MAT_HMC_BRICK,
+    CMM_MAT_HMC_STONE,
+    CMM_MAT_HMC_MAZEWALL,
+    CMM_MAT_HMC_MAZEFLOOR,
+    CMM_MAT_HMC_LIGHT,
+    CMM_MAT_HMC_LAKEGRASS,
+    CMM_MAT_HMC_MESH,
+    // Castle
+    CMM_MAT_C_TILES,
+    CMM_MAT_C_WOOD,
+    CMM_MAT_C_BRICK,
+    CMM_MAT_C_STONETOP,
+    CMM_MAT_C_STONESIDE,
+    CMM_MAT_C_CARPET,
+    CMM_MAT_C_ROOF,
+    CMM_MAT_C_WALL,
+    CMM_MAT_C_PILLAR,
+    CMM_MAT_C_BASEMENTWALL,
+    // Virtuaplex
+    CMM_MAT_VP_BLOCK,
+    CMM_MAT_VP_TILES,
+    CMM_MAT_VP_BLUETILES,
+    CMM_MAT_VP_RUSTYBLOCK,
+    CMM_MAT_VP_SCREEN,
+    CMM_MAT_VP_CAUTION,
+    CMM_MAT_VP_SNOWBLOCK,
+    CMM_MAT_VP_VOID,
+    // Retro
+    CMM_MAT_RETRO_GROUND,
+    CMM_MAT_RETRO_BRICKS,
+    CMM_MAT_RETRO_TREETOP,
+    CMM_MAT_RETRO_TREEPLAT,
+    CMM_MAT_RETRO_BLOCK,
+    CMM_MAT_RETRO_BLUEGROUND,
+    CMM_MAT_RETRO_BLUEBRICKS,
+    CMM_MAT_RETRO_BLUEBLOCK,
+    CMM_MAT_RETRO_WHITEBRICK,
+    CMM_MAT_RETRO_LAVA,
+    CMM_MAT_RETRO_UNDERWATERGROUND,
 };
 
-#define MATERIAL(id) (cmm_theme_table[cmm_lopt_theme].mats[id])
+struct cmm_material cmm_mat_table[] = {
+    // Generic
+    {&mat_maker_MakerDirt,            0}, // CMM_MAT_DIRT
+    {&mat_maker_MakerGrass,           0}, // CMM_MAT_GRASS
+    {&mat_maker_MakerBricks,          0}, // CMM_MAT_BRICKS
+    {&mat_maker_MakerStoneSide,       0}, // CMM_MAT_STONE
+    {&mat_maker_MakerStone,           0}, // CMM_MAT_COBBLESTONE
+    {&mat_maker_MakerTiles,           0}, // CMM_MAT_TILES
+    {&mat_maker_MakerTileBricks,      0}, // CMM_MAT_TILESBRICKS
+    {&mat_maker_MakerRoof,            0}, // CMM_MAT_ROOF
+    {&mat_maker_MakerWood,            0}, // CMM_MAT_WOOD
+    {&mat_maker_MakerSandDirt,        0}, // CMM_MAT_SANDDIRT
+    {&mat_maker_MakerSand,            0}, // CMM_MAT_SAND
+    {&mat_maker_MakerSnowDirt,        0}, // CMM_MAT_SNOWDIRT
+    {&mat_maker_MakerSnow,            0}, // CMM_MAT_SNOW
+    {&mat_maker_MakerLava,            0}, // CMM_MAT_LAVA
+    {&mat_maker_MakerQuicksand,       0}, // CMM_MAT_QUICKSAND
+    // Desert
+    {&mat_maker_MakerDBrick,          0}, // CMM_MAT_DESERT_BRICKS
+    {&mat_maker_MakerDStone,          0}, // CMM_MAT_DESERT_STONE
+    {&mat_maker_MakerDTiles,          0}, // CMM_MAT_DESERT_TILES
+    {&mat_maker_MakerDStoneBlock,     0}, // CMM_MAT_DESERT_BLOCK
+    {&mat_maker_MakerDTiles2,         0}, // CMM_MAT_DESERT_TILES2
+    // Red Hot Reservoir
+    {&mat_maker_MakerRHRObsidian,     0}, // CMM_MAT_RHR_OBSIDIAN
+    {&mat_maker_MakerRHRStone,        0}, // CMM_MAT_RHR_STONE
+    {&mat_maker_MakerRHRBrick,        0}, // CMM_MAT_RHR_BRICK
+    {&mat_maker_MakerRHRBasalt,       0}, // CMM_MAT_RHR_BASALT
+    {&mat_maker_MakerRHRTiles,        0}, // CMM_MAT_RHR_TILES
+    {&mat_maker_MakerRHRPattern,      0}, // CMM_MAT_RHR_BLOCK
+    {&mat_maker_MakerRHRWood,         0}, // CMM_MAT_RHR_WOOD
+    {&mat_maker_MakerRHRPillar,       0}, // CMM_MAT_RHR_PILLAR
+    {&mat_maker_MakerRHRGrate_layer1, 1}, // CMM_MAT_RHR_MESH
+    // Hazy Maze Cave
+    {&mat_maker_MakerHGrass,          0}, // CMM_MAT_HMC_GRASS
+    {&mat_maker_MakerHDirt,           0}, // CMM_MAT_HMC_DIRT
+    {&mat_maker_MakerHBrick,          0}, // CMM_MAT_HMC_BRICK
+    {&mat_maker_MakerHStone,          0}, // CMM_MAT_HMC_STONE
+    {&mat_maker_MakerHMazewall,       0}, // CMM_MAT_HMC_MAZEWALL
+    {&mat_maker_MakerHMazefloor,      0}, // CMM_MAT_HMC_MAZEFLOOR
+    {&mat_maker_MakerHLight,          0}, // CMM_MAT_HMC_LIGHT
+    {&mat_maker_MakerHLakewall,       0}, // CMM_MAT_HMC_LAKEGRASS
+    {&mat_maker_MakerHFence_layer1,   1}, // CMM_MAT_HMC_MESH
+    // Castle
+    {&mat_maker_MakerCTile,           0}, // CMM_MAT_C_TILES
+    {&mat_maker_MakerCWood,           0}, // CMM_MAT_C_WOOD
+    {&mat_maker_MakerCBrick,          0}, // CMM_MAT_C_BRICK
+    {&mat_maker_MakerCStone,          0}, // CMM_MAT_C_STONETOP
+    {&mat_maker_MakerCStoneSide,      0}, // CMM_MAT_C_STONESIDE
+    {&mat_maker_MakerCCarpet,         0}, // CMM_MAT_C_CARPET
+    {&mat_maker_MakerCRoof,           0}, // CMM_MAT_C_ROOF
+    {&mat_maker_MakerCWall,           0}, // CMM_MAT_C_WALL
+    {&mat_maker_MakerCPillar,         0}, // CMM_MAT_C_PILLAR
+    {&mat_maker_MakerCBasementWall,   0}, // CMM_MAT_C_BASEMENTWALL
+    // Virtuaplex
+    {&mat_maker_MakerVBlock,          0}, // CMM_MAT_VP_BLOCK
+    {&mat_maker_MakerVTiles,          0}, // CMM_MAT_VP_TILES
+    {&mat_maker_MakerVBlueTiles,      0}, // CMM_MAT_VP_BLUETILES
+    {&mat_maker_MakerVRustyBlock,     0}, // CMM_MAT_VP_RUSTYBLOCK
+    {&mat_maker_MakerScreen,          0}, // CMM_MAT_VP_SCREEN
+    {&mat_maker_MakerCaution,         0}, // CMM_MAT_VP_CAUTION
+    {&mat_maker_MakerVBlock,          0}, // CMM_MAT_VP_SNOWBLOCK
+    {&mat_maker_MakerVoid,            0}, // CMM_MAT_VP_VOID
+    // Retro
+    {&mat_maker_MakerRetroGround,     0}, // CMM_MAT_RETRO_GROUND
+    {&mat_maker_MakerRetroBrick,      0}, // CMM_MAT_RETRO_BRICKS
+    {&mat_maker_MakerRetroTreeTop,    0}, // CMM_MAT_RETRO_TREETOP
+    {&mat_maker_MakerRetroTree,       0}, // CMM_MAT_RETRO_TREEPLAT
+    {&mat_maker_MakerRetroBlock,      0}, // CMM_MAT_RETRO_BLOCK
+    {&mat_maker_MakerRetroBGround,    0}, // CMM_MAT_RETRO_BLUEGROUND
+    {&mat_maker_MakerRetroBBrick,     0}, // CMM_MAT_RETRO_BLUEBRICKS
+    {&mat_maker_MakerRetroBBlock,     0}, // CMM_MAT_RETRO_BLUEBLOCK
+    {&mat_maker_MakerRetroWBrick,     0}, // CMM_MAT_RETRO_WHITEBRICK
+    {&mat_maker_MakerRetroLava,       0}, // CMM_MAT_RETRO_LAVA
+    {&mat_maker_MakerRetroUnderwater, 0}, // CMM_MAT_RETRO_UNDERWATERGROUND
+};
+
+enum cmm_topmaterials {
+    CMM_TOPMAT_NONE,
+    CMM_TOPMAT_GRASS,
+    CMM_TOPMAT_STONE,
+    CMM_TOPMAT_TILES,
+    CMM_TOPMAT_SAND,
+    CMM_TOPMAT_SNOW,
+    CMM_TOPMAT_DESERT_TILES2,
+    CMM_TOPMAT_RHR_OBSIDIAN,
+    CMM_TOPMAT_RHR_TILES,
+    CMM_TOPMAT_HMC_GRASS,
+    CMM_TOPMAT_C_TILES,
+    CMM_TOPMAT_C_STONE,
+    CMM_TOPMAT_C_CARPET,
+    CMM_TOPMAT_VP_BLUETILES,
+    CMM_TOPMAT_RETRO_TREETOP,
+};
+
+struct cmm_topmaterial cmm_topmat_table[] = {
+    {CMM_MAT_GRASS,         &mat_maker_MakerGrassSide_layer1},     // CMM_TOPMAT_GRASS
+    {CMM_MAT_STONE,         NULL},                                 // CMM_TOPMAT_STONE
+    {CMM_MAT_TILES,         NULL},                                 // CMM_TOPMAT_TILES
+    {CMM_MAT_SAND,          &mat_maker_MakerSandSide_layer1},      // CMM_TOPMAT_SAND
+    {CMM_MAT_SNOW,          &mat_maker_MakerSnowSide_layer1},      // CMM_TOPMAT_SNOW
+    {CMM_MAT_DESERT_TILES2, NULL},                                 // CMM_TOPMAT_DESERT_TILES2
+    {CMM_MAT_RHR_OBSIDIAN,  NULL},                                 // CMM_TOPMAT_RHR_OBSIDIAN
+    {CMM_MAT_RHR_TILES,     NULL},                                 // CMM_TOPMAT_RHR_TILES
+    {CMM_MAT_HMC_GRASS,     &mat_maker_MakerHGrassSide_layer1},    // CMM_TOPMAT_HMC_GRASS
+    {CMM_MAT_C_TILES,       NULL},                                 // CMM_TOPMAT_C_TILES
+    {CMM_MAT_C_STONETOP,    NULL},                                 // CMM_TOPMAT_C_STONE
+    {CMM_MAT_C_CARPET,      NULL},                                 // CMM_TOPMAT_C_CARPET
+    {CMM_MAT_VP_BLUETILES,  NULL},                                 // CMM_TOPMAT_VP_BLUETILES
+    {CMM_MAT_RETRO_TREETOP, &mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
+};
+
+struct cmm_theme cmm_theme_table[NUM_THEMES] = {
+    // GENERIC
+    {
+        {
+            {CMM_MAT_DIRT,        CMM_TOPMAT_GRASS, &txt_mat_grass},
+            {CMM_MAT_BRICKS,      0,                &txt_mat_bricks},
+            {CMM_MAT_COBBLESTONE, CMM_TOPMAT_STONE, &txt_mat_stone},
+            {CMM_MAT_TILESBRICKS, CMM_TOPMAT_TILES, &txt_mat_tiles},
+            {CMM_MAT_ROOF,        0,                &txt_mat_roof},
+            {CMM_MAT_WOOD,        0,                &txt_mat_wood},
+            {CMM_MAT_SANDDIRT,    CMM_TOPMAT_SAND,  &txt_mat_sand},
+            {CMM_MAT_SNOWDIRT,    CMM_TOPMAT_SNOW,  &txt_mat_snow},
+            {CMM_MAT_LAVA,        0,                &txt_mat_lava},
+            {CMM_MAT_QUICKSAND,   0,                &txt_mat_quicksand},
+        },
+    },
+    // DESERT
+    {
+        {
+            {CMM_MAT_SANDDIRT,      CMM_TOPMAT_SAND,          &txt_mat_sand},
+            {CMM_MAT_DESERT_BRICKS, 0,                        &txt_mat_bricks},
+            {CMM_MAT_DESERT_STONE,  0,                        &txt_mat_stone},
+            {CMM_MAT_DESERT_TILES,  0,                        &txt_mat_tiles},
+            {CMM_MAT_DESERT_BLOCK,  0,                        &txt_mat_block},
+            {CMM_MAT_WOOD,          0,                        &txt_mat_wood},
+            {CMM_MAT_DESERT_BRICKS, CMM_TOPMAT_DESERT_TILES2, &txt_mat_tiles2},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,         &txt_mat_grass},
+            {CMM_MAT_LAVA,          0,                        &txt_mat_lava},
+            {CMM_MAT_QUICKSAND,     0,                        &txt_mat_quicksand},
+        },
+    },
+    // LAVA
+    {
+        {
+            {CMM_MAT_RHR_STONE,  CMM_TOPMAT_RHR_OBSIDIAN, &txt_mat_stone},
+            {CMM_MAT_RHR_BRICK,  CMM_TOPMAT_RHR_OBSIDIAN, &txt_mat_bricks},
+            {CMM_MAT_RHR_BASALT, 0,                       &txt_mat_basalt},
+            {CMM_MAT_RHR_TILES,  0,                       &txt_mat_tiles},
+            {CMM_MAT_RHR_BLOCK,  0,                       &txt_mat_block},
+            {CMM_MAT_RHR_WOOD,   0,                       &txt_mat_wood},
+            {CMM_MAT_RHR_PILLAR, CMM_TOPMAT_RHR_TILES,    &txt_mat_pillar},
+            {CMM_MAT_RHR_MESH,   0,                       &txt_mat_mesh},
+            {CMM_MAT_LAVA,       0,                       &txt_mat_lava},
+            {CMM_MAT_QUICKSAND,  0,                       &txt_mat_quicksand},
+        },
+    },
+    // CAVE
+    {
+        {
+            {CMM_MAT_HMC_DIRT,      CMM_TOPMAT_HMC_GRASS, &txt_mat_grass},
+            {CMM_MAT_HMC_BRICK,     0,                    &txt_mat_bricks},
+            {CMM_MAT_HMC_STONE,     0,                    &txt_mat_stone},
+            {CMM_MAT_HMC_MAZEWALL,  0,                    &txt_mat_mazewall},
+            {CMM_MAT_HMC_MAZEFLOOR, 0,                    &txt_mat_mazefloor},
+            {CMM_MAT_HMC_LIGHT,     0,                    &txt_mat_light},
+            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, &txt_mat_lakegrass},
+            {CMM_MAT_HMC_MESH,      0,                    &txt_mat_mesh},
+            {CMM_MAT_LAVA,          0,                    &txt_mat_lava},
+            {CMM_MAT_QUICKSAND,     0,                    &txt_mat_quicksand},
+        },
+    },
+    // CASTLE
+    {
+        {
+            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_TILES,  &txt_mat_tileswood},
+            {CMM_MAT_C_BRICK,        CMM_TOPMAT_C_TILES,  &txt_mat_tilesbricks},
+            {CMM_MAT_C_STONESIDE,    CMM_TOPMAT_C_STONE,  &txt_mat_tilesstone},
+            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_CARPET, &txt_mat_carpet},
+            {CMM_MAT_C_ROOF,         0,                   &txt_mat_roof},
+            {CMM_MAT_C_WALL,         0,                   &txt_mat_castlewall},
+            {CMM_MAT_C_PILLAR,       CMM_TOPMAT_C_STONE,  &txt_mat_pillar},
+            {CMM_MAT_C_BASEMENTWALL, 0,                   &txt_mat_basementwall},
+            {CMM_MAT_LAVA,           0,                   &txt_mat_lava},
+            {CMM_MAT_QUICKSAND,      0,                   &txt_mat_quicksand},
+        },
+    },
+    // VIRTUAPLEX
+    {
+        {
+            {CMM_MAT_VP_BLOCK,      0,                       &txt_mat_block},
+            {CMM_MAT_VP_TILES,      0,                       &txt_mat_tiles},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        &txt_mat_grass},
+            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, &txt_mat_bluetiles},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                       &txt_mat_rustyblock},
+            {CMM_MAT_VP_SCREEN,     0,                       &txt_mat_screen},
+            {CMM_MAT_VP_CAUTION,    0,                       &txt_mat_hazardstripes},
+            {CMM_MAT_VP_SNOWBLOCK,  CMM_TOPMAT_SNOW,         &txt_mat_snowblock},
+            {CMM_MAT_LAVA,          0,                       &txt_mat_lava},
+            {CMM_MAT_VP_VOID,       0,                       &txt_mat_void},
+        },
+    },
+    // RETRO
+    {
+        {
+            {CMM_MAT_RETRO_GROUND,           0,                        &txt_mat_ground},
+            {CMM_MAT_RETRO_BRICKS,           0,                        &txt_mat_bricks},
+            {CMM_MAT_RETRO_TREEPLAT,         CMM_TOPMAT_RETRO_TREETOP, &txt_mat_treeplat},
+            {CMM_MAT_RETRO_BLOCK,            0,                        &txt_mat_rblock},
+            {CMM_MAT_RETRO_BLUEGROUND,       0,                        &txt_mat_blueground},
+            {CMM_MAT_RETRO_BLUEBRICKS,       0,                        &txt_mat_bluebricks},
+            {CMM_MAT_RETRO_BLUEBLOCK,        0,                        &txt_mat_blueblock},
+            {CMM_MAT_RETRO_WHITEBRICK,       0,                        &txt_mat_whitebrick},
+            {CMM_MAT_RETRO_LAVA,             0,                        &txt_mat_lava},
+            {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        &txt_mat_underwaterground},
+        },
+    },
+};
+
+// Returns full tile definition (struct cmm_tilemat_def)
+#define TILE_MATDEF(matid) (cmm_theme_table[cmm_lopt_theme].mats[matid])
+// Returns main material (struct cmm_material)
+#define MATERIAL(matid) (cmm_mat_table[TILE_MATDEF(matid).mat])
+
+// Returns TRUE if given material has a unique top texture
+#define HAS_TOPMAT(matid) (TILE_MATDEF(matid).topmat != 0)
+// Returns top material's topmat struct (struct cmm_topmaterial)
+#define TOPMAT_DEF(matid) (cmm_topmat_table[TILE_MATDEF(matid).topmat - 1])
+// Returns top material (struct cmm_material)
+#define TOPMAT(matid) (cmm_mat_table[TOPMAT_DEF(matid).mat])
+// Returns side decal texture (Gfx *)
+#define SIDETEX(matid) (TOPMAT_DEF(matid).decaltex)
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
@@ -696,19 +934,16 @@ u32 coords_in_range(s32 x, s32 y, s32 z) {
 s32 tile_sanity_check(void) {
     u8 allow = TRUE;
 
-    if (cmm_tile_count >= 2000) {
+    if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
         allow = FALSE;
     }
-    if (cmm_vtx_total >= 24970) {
+    if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
         allow = FALSE;
     }
-    if (cmm_mtx_total >= 4970) {
+    if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
         allow = FALSE;
     }
-    if (cmm_gfx_total >= 22970) {
-        allow = FALSE;
-    }
-    if (cmm_gfx_tp_total >= 7970) {
+    if (cmm_gfx_tp_total >= CMM_GFX_TP_SIZE - 30) {
         allow = FALSE;
     }
 
@@ -748,6 +983,7 @@ void remove_terrain_data(s32 x, s32 y, s32 z) {
 u32 get_faceshape(s32 x, s32 y, s32 z, u32 dir) {
     u8 tileType = cmm_grid_data[x][y][z].type;
     if (tileType == 0) return CMM_FACESHAPE_EMPTY; // no tile
+    if (tileType - 1 == TILE_TYPE_CULL) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = cmm_grid_data[x][y][z].rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
@@ -796,7 +1032,10 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return FALSE;
+    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return TRUE;
+    u8 tileType = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].type - 1;
+    if (tileType == TILE_TYPE_CULL) return TRUE;
+    if (cmm_building_collision && tileType == TILE_TYPE_TROLL) return FALSE;
 
     u8 otherMat = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].mat;
     if (MATERIAL(otherMat).type != 0) {
@@ -822,29 +1061,95 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
     return (faceshape == (otherFaceshape^1));
 }
 
+u32 *cmm_curr_vtx;
+Gfx *cmm_curr_gfx;
+u16 cmm_gfx_index;
+
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+    s8 belowPos[3];
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(pos[0], pos[1]+1, pos[2])) return TRUE;
-    u8 topFaceshape;
+    u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
             direction = CMM_DIRECTION_POS_Z;
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
-            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
-            switch (topFaceshape) {
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
+            switch (otherFaceshape) {
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
                     return FALSE;
             }
             return TRUE;
-        case CMM_GROWTH_UNCONDITIONAL_SIDE:
-            return TRUE;
+
+        // These types are very tricky.
+        // If the below face is the same material and is the right shape,
+        // an extra decal is printed onto it.
+        case CMM_GROWTH_SLOPE_SIDE_L:
+        case CMM_GROWTH_SLOPE_SIDE_R:
+            // Check if below block is in range
+            vec3_set(belowPos, pos[0], pos[1]-1, pos[2]);
+            if (!coords_in_range(belowPos[0], belowPos[1], belowPos[2])) return TRUE;
+
+            // Check if below block matches material
+            u8 curMat = cmm_grid_data[pos[0]][pos[1]][pos[2]].mat;
+            u8 belowMat = cmm_grid_data[belowPos[0]][belowPos[1]][belowPos[2]].mat;
+            if (curMat != belowMat) return TRUE;
+
+            // Check if below block is right shape and culled
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(belowPos[0], belowPos[1], belowPos[2], ROTATE_DIRECTION(direction, rot)^1);
+            if (should_cull(belowPos, direction, otherFaceshape, rot)) return TRUE;
+            
+            // Calculate effective rotation of face to print. very ugly
+            u8 targetRot;
+            switch (direction) {
+                case CMM_DIRECTION_POS_X:
+                    targetRot = 1;
+                    break;
+                case CMM_DIRECTION_NEG_X:
+                    targetRot = 3;
+                    break;
+                case CMM_DIRECTION_POS_Z:
+                    targetRot = 0;
+                    break;
+                case CMM_DIRECTION_NEG_Z:
+                    targetRot = 2;
+                    break;
+            }
+            targetRot = (targetRot + rot) % 4;
+
+            switch (otherFaceshape) {
+                default:
+                    return TRUE;
+                // Face is full quad
+                case CMM_FACESHAPE_FULL:
+                    // Fill in correct UVs
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_l;
+                    else
+                        cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_r;
+                    
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE;
+                case CMM_FACESHAPE_DOWNTRI_1:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE; 
+                case CMM_FACESHAPE_DOWNTRI_2:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    return TRUE;
+            }
+            
+
         case CMM_GROWTH_DIAGONAL_SIDE:
-            topFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
-            if (topFaceshape == CMM_FACESHAPE_FULL) return FALSE;
-            if (topFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
+            if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
+            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
             u8 otherrot = cmm_grid_data[pos[0]][pos[1]+1][pos[2]].rot;
             return (otherrot != rot);
     }
@@ -882,12 +1187,6 @@ void generate_path_gfx(void) {
 
     gSPEndDisplayList(&cmm_trajectory_gfx[gfx_index]);
 }
-
-Vtx *cmm_curr_vtx;
-Gfx *cmm_curr_gfx;
-u16 cmm_vtx_index;
-u16 cmm_gfx_index;
-
 
 void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
     for (u32 i = 0; i < numVtx; i++) {
@@ -937,16 +1236,16 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
             u = newVtx[i][uAxis];
             v = newVtx[i][vAxis];
         }
-        make_vertex(cmm_curr_vtx, cmm_vtx_index+i,
-            (pos[0]*300)+newVtx[i][0]*150,
-            (pos[1]*300)+newVtx[i][1]*150,
-            (pos[2]*300)+newVtx[i][2]*150,
-            u * -512 + 500, v * -512 + 500,
+        make_vertex(cmm_curr_vtx, i,
+            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
+            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
+            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
-    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 4, 0);
+    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
     gSP2Triangles(&gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
-    cmm_vtx_index+=4;
+    cmm_curr_vtx += 4 * 4;
 }
 
 void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 isDecal) {
@@ -966,21 +1265,21 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
             u = newVtx[i][uAxis];
             v = newVtx[i][vAxis];
         }
-        make_vertex(cmm_curr_vtx, cmm_vtx_index+i,
-            (pos[0]*300)+newVtx[i][0]*150,
-            (pos[1]*300)+newVtx[i][1]*150,
-            (pos[2]*300)+newVtx[i][2]*150,
-            u * -512 + 500, v * -512 + 500,
+        make_vertex(cmm_curr_vtx, i,
+            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
+            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
+            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
-    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx + cmm_vtx_index, 3, 0);
+    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx, 3, 0);
     gSP1Triangle(&gfx[cmm_gfx_index++], 0, 1, 2, 0);
-    cmm_vtx_index+=3;
+    cmm_curr_vtx += 3 * 4;
 }
 
 void render_block_main(s8 pos[3], u32 tileType, u32 mat, u32 rot) {
     struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
-    u8 hasTopside = (MATERIAL(mat).top != NULL);
+    u8 hasTopside = HAS_TOPMAT(mat);
     for (u32 j = 0; j < terrain->numQuads; j++) {
         struct cmm_terrain_quad *quad = &terrain->quads[j];
         if (!should_cull(pos, quad->cullDir, quad->faceshape, rot)) {
@@ -1052,46 +1351,50 @@ void generate_terrain_gfx(void) {
 
     cmm_curr_gfx = cmm_terrain_gfx;
     cmm_curr_vtx = cmm_terrain_vtx;
-    cmm_vtx_index = 0;
     cmm_gfx_index = 0;
+    cmm_building_collision = 0;
 
     //BOTTOM PLANE
     switch (cmm_lopt_plane) {
         case 1:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(TILE_MATERIAL_LAVA).gfx);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(8).gfx);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
         break;
         case 2:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(TILE_MATERIAL_GRASS).top);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(0).gfx);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
         break;
     }
 
+    // Align to 64 bytes for matrices
+    cmm_curr_vtx = (u32 *)((((u32)cmm_curr_vtx) & ~63) + 64);
+
     // Tiles with models
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (!cmm_tile_types[cmm_tile_data[i].type].terrain) {
-            if ((cmm_target_mode == CMM_MODE_PLAY)&&(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+            if (cmm_tile_data[i].type == TILE_TYPE_CULL) {
                 continue;
             }
+            Mat4 mtx;
+            Vec3f pos;
+            vec3_set(pos, cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE);
+            Vec3s rot;
+            vec3_set(rot, 0, cmm_tile_data[i].rot*90, 0);
+            mtxf_rotate_zxy_and_translate(mtx, pos, rot);
+            guMtxF2L(mtx, cmm_curr_vtx);
 
-            //has a model, so just print model
-            guTranslate(&cmm_terrain_mtx[mtx_index], cmm_tile_data[i].x*300, cmm_tile_data[i].y*300, cmm_tile_data[i].z*300);
-            mtx_index++;
-            guRotate(&cmm_terrain_mtx[mtx_index],cmm_tile_data[i].rot*90.0f,0.0f,1.0f,0.0f);
             if (!cmm_tile_types[cmm_tile_data[i].type].transparent) {
                 //opaque
-                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(cmm_curr_vtx), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_tile_types[cmm_tile_data[i].type].model);
                 gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
             } else {
                 //transparent
-                gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(&cmm_terrain_mtx[mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                gSPMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], VIRTUAL_TO_PHYSICAL(cmm_curr_vtx), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
                 gSPDisplayList(&cmm_terrain_gfx_tp[gfx_tp_index++], cmm_tile_types[cmm_tile_data[i].type].model);
                 gSPPopMatrix(&cmm_terrain_gfx_tp[gfx_tp_index++], G_MTX_MODELVIEW);
             }
-            mtx_index++;
+            cmm_curr_vtx += 16;
         }
     }
 
@@ -1112,21 +1415,21 @@ void generate_terrain_gfx(void) {
         if (MATERIAL(mat).type == 1) {
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         }
-        if (MATERIAL(mat).side) {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).side);
-            for (u32 i = 0; i < cmm_tile_count; i++) {
-                if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
+        if (HAS_TOPMAT(mat)) {
+            if (SIDETEX(mat) != NULL) {
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
+                for (u32 i = 0; i < cmm_tile_count; i++) {
+                    if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
 
-                tileType = cmm_tile_data[i].type;
-                rot = cmm_tile_data[i].rot;
-                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+                    tileType = cmm_tile_data[i].type;
+                    rot = cmm_tile_data[i].rot;
+                    vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                render_block_grass_side(pos, tileType, rot);
+                    render_block_grass_side(pos, tileType, rot);
+                }
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
             }
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
-        }
-        if (MATERIAL(mat).top) {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).top);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx);
             for (u32 i = 0; i < cmm_tile_count; i++) {
                 if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
 
@@ -1148,8 +1451,7 @@ void generate_terrain_gfx(void) {
     //print_text_fmt_int(110, 96, "TILES %d", cmm_tile_count);
     //print_text_fmt_int(110, 116, "TYPE %d", cmm_tile_data[cmm_tile_count-1].type);
 
-    cmm_vtx_total = cmm_vtx_index;
-    cmm_mtx_total = mtx_index;
+    cmm_vtx_total = cmm_curr_vtx - cmm_terrain_vtx;
     cmm_gfx_total = cmm_gfx_index;
     cmm_gfx_tp_total = gfx_tp_index;
 };
@@ -1179,10 +1481,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
-            cmm_vtx_index = 0;
 
             if (cmm_tile_types[cmm_id_selection].model) {
-                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*300, cmm_sby*300, cmm_sbz*300);
+                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*TILE_SIZE, cmm_sby*TILE_SIZE, cmm_sbz*TILE_SIZE);
                 preview_mtx_index++;
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
                 gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -1196,13 +1497,13 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 vec3_set(pos, cmm_sbx, cmm_sby, cmm_sbz);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
                 render_block_main(pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
-                if (MATERIAL(cmm_mat_selection).top) {
-                    if (MATERIAL(cmm_mat_selection).side) {
-                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).side);
+                if (HAS_TOPMAT(cmm_mat_selection)) {
+                    if (SIDETEX(cmm_mat_selection) != NULL) {
+                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
                         render_block_grass_side(pos, cmm_id_selection, cmm_rot_selection);
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
                     }
-                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).top);
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
                     render_block_grass_top(pos, cmm_id_selection, cmm_rot_selection);
                 }
             }
@@ -1266,6 +1567,7 @@ void generate_terrain_collision(void) {
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
+    cmm_building_collision = 1;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
     TerrainData floorType;
     switch(cmm_lopt_plane) {
@@ -1280,7 +1582,10 @@ void generate_terrain_collision(void) {
     for (i=0; i<cmm_tile_count; i++) {
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
         if (terrain) {
-            floorType = cmm_tile_data[i].mat == TILE_MATERIAL_LAVA ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
+            if (cmm_tile_data[i].type == TILE_TYPE_TROLL) {
+                continue;
+            }
+            floorType = cmm_tile_data[i].mat == 8 ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
             s8 pos[3];
             s8 newVtx[4][3];
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -1289,9 +1594,9 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 4; k++) {
-                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
-                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
-                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                     cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
@@ -1302,22 +1607,22 @@ void generate_terrain_collision(void) {
                 if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
                     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 3; k++) {
-                        colVtxs[k][0] = pos[0]*300 + newVtx[k][0]*150;
-                        colVtxs[k][1] = pos[1]*300 + newVtx[k][1]*150;
-                        colVtxs[k][2] = pos[2]*300 + newVtx[k][2]*150;
+                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
                     }
                     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
                 }
             }
         } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            Vec3f pos = {cmm_tile_data[i].x*300.0f, cmm_tile_data[i].y*300.0f, cmm_tile_data[i].z*300.0f};
+            Vec3f pos = {cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE};
             Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
             mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
             //this code was written by accident... the collision doesn't generate properly without it though???
-            o->oPosX = (cmm_tile_data[0].x*300.0f);
-            o->oPosY = (cmm_tile_data[0].y*300.0f);
-            o->oPosZ = (cmm_tile_data[0].z*300.0f);
+            o->oPosX = (cmm_tile_data[0].x*TILE_SIZE);
+            o->oPosY = (cmm_tile_data[0].y*TILE_SIZE);
+            o->oPosZ = (cmm_tile_data[0].z*TILE_SIZE);
             o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
             
             TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
@@ -1331,6 +1636,7 @@ void generate_terrain_collision(void) {
         }
     }
 
+    cmm_building_collision = 0;
     u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
     gTotalStaticSurfaceData += surfacePoolData;
     main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
@@ -1351,9 +1657,9 @@ void generate_object_preview(void) {
 
     for(i=0;i<cmm_object_count;i++){
         preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
-        preview_object->oPosX = cmm_object_data[i].x*300.0f;
-        preview_object->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
-        preview_object->oPosZ = cmm_object_data[i].z*300.0f;
+        preview_object->oPosX = cmm_object_data[i].x*TILE_SIZE;
+        preview_object->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
+        preview_object->oPosZ = cmm_object_data[i].z*TILE_SIZE;
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
@@ -1381,9 +1687,9 @@ void generate_objects_to_level(void) {
 
         obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
 
-        obj->oPosX = cmm_object_data[i].x*300.0f;
-        obj->oPosY = cmm_object_data[i].y*300.0f+cmm_object_types[cmm_object_data[i].type].y_offset;
-        obj->oPosZ = cmm_object_data[i].z*300.0f;
+        obj->oPosX = cmm_object_data[i].x*TILE_SIZE;
+        obj->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
+        obj->oPosZ = cmm_object_data[i].z*TILE_SIZE;
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
@@ -1402,7 +1708,7 @@ void generate_objects_to_level(void) {
 }
 
 void place_tile(u8 x, u8 y, u8 z) {
-    if ((!cmm_tile_types[cmm_id_selection].model)||(cmm_id_selection == TILE_TYPE_CULL)) {
+    if ((!cmm_tile_types[cmm_id_selection].model) || (cmm_id_selection == TILE_TYPE_CULL)) {
         place_terrain_data(x,y,z,cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
     }
     cmm_tile_data[cmm_tile_count].x = x;
@@ -1613,9 +1919,9 @@ void save_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/300;
-            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/300;
-            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/300;
+            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/TILE_SIZE;
         }
     }
 
@@ -1700,7 +2006,7 @@ void load_level(u8 index) {
 
     for (i = 0; i < cmm_tile_count; i++) {
         bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
-        if ((!cmm_tile_types[cmm_tile_data[i].type].model)||(cmm_tile_data[i].type == TILE_TYPE_CULL)) {
+        if ((!cmm_tile_types[cmm_tile_data[i].type].model) || cmm_tile_data[i].type == TILE_TYPE_CULL) {
             place_terrain_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z,cmm_tile_data[i].type,cmm_tile_data[i].rot,cmm_tile_data[i].mat);
         }
         place_occupy_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
@@ -1714,9 +2020,9 @@ void load_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*300.0f;
-            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*300.0f;
-            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*300.0f;
+            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*TILE_SIZE;
         }
     }
 
@@ -1765,12 +2071,12 @@ void sb_init(void) {
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
                 vec3f_copy(&gMarioState->pos,&spawn_obj->oPosVec);
-                gMarioState->pos[1] += 150.0f;
+                gMarioState->pos[1] += TILE_SIZE/2;
 
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
                 if (warpobj) {
                     vec3f_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
-                    warpobj->oPosY += 150.0f;
+                    warpobj->oPosY += TILE_SIZE/2;
                 }
             }
 
@@ -1927,26 +2233,26 @@ void sb_loop(void) {
                 cmm_rot_selection%=4;
             }
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*300.0f, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*300.0f, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*300.0f, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*300.0f; 
-            o->oPosY = cmm_sby*300.0f; 
-            o->oPosZ = cmm_sbz*300.0f; 
+            o->oPosX = cmm_sbx*TILE_SIZE; 
+            o->oPosY = cmm_sby*TILE_SIZE; 
+            o->oPosZ = cmm_sbz*TILE_SIZE; 
 
             for (u8 i=0; i<6; i++) {
                 vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
             }
             cmm_boundary_object[0]->oPosY = 0.0f;
-            cmm_boundary_object[1]->oPosY = 300.0f*32.0f;
+            cmm_boundary_object[1]->oPosY = TILE_SIZE*32.0f;
             cmm_boundary_object[2]->oPosX = 0.0f;
-            cmm_boundary_object[3]->oPosX = 300.0f*32.0f;
+            cmm_boundary_object[3]->oPosX = TILE_SIZE*32.0f;
             cmm_boundary_object[4]->oPosZ = 0.0f;
-            cmm_boundary_object[5]->oPosZ = 300.0f*32.0f;
+            cmm_boundary_object[5]->oPosZ = TILE_SIZE*32.0f;
 
             if (cmm_place_mode == CMM_PM_OBJ) {
                 if (cmm_object_types[cmm_id_selection].param_max != 0) {
@@ -2138,16 +2444,16 @@ void sb_loop(void) {
             cmm_sby=(cmm_sby+32)%32;
             //END MOVE CURSOR
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*300.0f, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*300.0f, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*300.0f, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*300.0f; 
-            o->oPosY = cmm_sby*300.0f; 
-            o->oPosZ = cmm_sbz*300.0f;
+            o->oPosX = cmm_sbx*TILE_SIZE; 
+            o->oPosY = cmm_sby*TILE_SIZE; 
+            o->oPosZ = cmm_sbz*TILE_SIZE;
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
@@ -2267,7 +2573,7 @@ void draw_cmm_menu(void) {
                 cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
             } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
                 print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
-                cmm_theme_table[cmm_lopt_theme].mats[cmm_mat_selection].name,TRUE);
+                TILE_MATDEF(cmm_mat_selection).name,TRUE);
             }
         break;
         case CMM_MAKE_TOOLBOX:

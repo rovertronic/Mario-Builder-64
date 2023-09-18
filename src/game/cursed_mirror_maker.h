@@ -27,6 +27,15 @@ extern u8 cmm_play_stars_max;
 extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
+
+#define CMM_TILE_POOL_SIZE 3000
+#define CMM_GFX_SIZE 23000
+#define CMM_GFX_TP_SIZE 8000
+#define CMM_VTX_SIZE 100000
+
+#define TILE_SIZE 256
+
+
 enum cmm_directions {
     CMM_DIRECTION_UP,
     CMM_DIRECTION_DOWN,
@@ -61,7 +70,8 @@ enum cmm_growth_types {
     CMM_GROWTH_NORMAL_SIDE,
     CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
     CMM_GROWTH_DIAGONAL_SIDE,
-    CMM_GROWTH_UNCONDITIONAL_SIDE,
+    CMM_GROWTH_SLOPE_SIDE_L,
+    CMM_GROWTH_SLOPE_SIDE_R,
 };
 
 struct cmm_terrain_quad {
@@ -88,7 +98,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u8 x:5, y:5, z:5, type:5, mat:5, rot:2;
+    u8 x:5, y:5, z:5, type:5, mat:4, rot:2;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -108,25 +118,13 @@ enum {
     TILE_TYPE_FENCE,
     TILE_TYPE_SSLOPE,
 };
-enum {
-    TILE_MATERIAL_GRASS,
-    TILE_MATERIAL_BRICK,
-    TILE_MATERIAL_STONE,
-    TILE_MATERIAL_WOOD,
-    TILE_MATERIAL_TILES,
-    TILE_MATERIAL_EXTRA1,
-    TILE_MATERIAL_EXTRA2,
-    TILE_MATERIAL_EXTRA3,
-    TILE_MATERIAL_LAVA,
-    TILE_MATERIAL_QUICKSAND,
-};
 
 struct cmm_obj {
     u8 param, x:5, y:5, z:5, type:5, rot:2;
 };
 
 struct cmm_grid_obj {
-    u8 type:5, mat:5, rot:2, occupied:1;
+    u8 type:5, mat:4, rot:2, occupied:1;
 };
 struct cmm_object_type_struct {
     u32 behavior;
@@ -251,15 +249,26 @@ enum cmm_mat_types {
     MAT_TRANSPARENT,
 };
 
+// Represents a material texture and collision
 struct cmm_material {
     Gfx *gfx;
-    Gfx *side;
-    Gfx *top;
+    u8 type:2;
+};
+
+// Represents a material as a top texture with optional side decal
+struct cmm_topmaterial {
+    u8 mat;
+    Gfx *decaltex;
+};
+
+// Defines materials of a full block
+struct cmm_tilemat_def {
+    u8 mat;
+    u8 topmat;
     u8 *name;
-    u8 type;
 };
 struct cmm_theme {
-    struct cmm_material mats[NUM_MATERIALS_PER_THEME];
+    struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
 };
 
 //compressed trajectories
