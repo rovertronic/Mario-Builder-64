@@ -28,7 +28,7 @@ extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
 
-#define CMM_TILE_POOL_SIZE 3000
+#define CMM_TILE_POOL_SIZE 5000
 #define CMM_GFX_SIZE 23000
 #define CMM_GFX_TP_SIZE 8000
 #define CMM_VTX_SIZE 100000
@@ -292,7 +292,7 @@ struct cmm_level_save {
     u8 version;
     u16 piktcher[28][28]; //28*28 = 784*2 = 1568 bytes
 
-    struct cmm_tile tiles[2000];//3*1500 = 4500 bytes
+    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
     struct cmm_obj objects[200];//4*200 = 800 bytes
     struct cmm_comptraj trajectories[5][40];
     u8 option[20];//20 bytes
