@@ -843,20 +843,25 @@ void generate_terrain_collision(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = 1;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
-    TerrainData floorType, floorY;
+    TerrainData floorType, topFloorType, floorY;
 
     if (cmm_lopt_plane == 0) {
         floorY = -2500;
-        floorType = SURFACE_DEATH_PLANE;
+        topFloorType = SURFACE_DEATH_PLANE;
     } else {
         floorY = 0;
-        floorType = SURFACE_DEFAULT;
+        u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+        if (HAS_TOPMAT(mat)) {
+            topFloorType = TOPMAT(mat).col;
+        } else {
+            topFloorType = MATERIAL(mat).col;
+        }
     }
     for (u32 i = 0; i < 4; i++) {
         floorVtxs[i][1] = floorY;
     }
-    cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
-    cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
+    cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], topFloorType);
+    cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], topFloorType);
 
     for (i=0; i<cmm_tile_count; i++) {
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
@@ -864,33 +869,40 @@ void generate_terrain_collision(void) {
             if (cmm_tile_data[i].type == TILE_TYPE_TROLL) {
                 continue;
             }
-            floorType = cmm_tile_data[i].mat == 8 ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
+            floorType = MATERIAL(cmm_tile_data[i].mat).col;
+            if (HAS_TOPMAT(cmm_tile_data[i].mat)) {
+                topFloorType = TOPMAT(cmm_tile_data[i].mat).col;
+            } else {
+                topFloorType = floorType;
+            }
             s8 pos[3];
             s8 newVtx[4][3];
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             for (u32 j = 0; j < terrain->numQuads; j++) {
                 struct cmm_terrain_quad *quad = &terrain->quads[j];
                 if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
+                    TerrainData surfType = (quad->growthType == CMM_GROWTH_FULL) ? topFloorType : floorType;
                     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 4; k++) {
                         colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
                         colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
                         colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
-                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
-                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], surfType);
+                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], surfType);
                 }
             }
             for (u32 j = 0; j < terrain->numTris; j++) {
                 struct cmm_terrain_tri *tri = &terrain->tris[j];
                 if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
+                    TerrainData surfType = (tri->growthType == CMM_GROWTH_FULL) ? topFloorType : floorType;
                     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 3; k++) {
                         colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
                         colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
                         colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
-                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], surfType);
                 }
             }
         } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {

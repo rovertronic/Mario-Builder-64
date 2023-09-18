@@ -291,7 +291,6 @@ enum cmm_materials {
     CMM_MAT_VP_RUSTYBLOCK,
     CMM_MAT_VP_SCREEN,
     CMM_MAT_VP_CAUTION,
-    CMM_MAT_VP_SNOWBLOCK,
     CMM_MAT_VP_VOID,
     // Retro
     CMM_MAT_RETRO_GROUND,
@@ -309,79 +308,78 @@ enum cmm_materials {
 
 struct cmm_material cmm_mat_table[] = {
     // Generic
-    {&mat_maker_MakerDirt,            0}, // CMM_MAT_DIRT
-    {&mat_maker_MakerGrass,           0}, // CMM_MAT_GRASS
-    {&mat_maker_MakerBricks,          0}, // CMM_MAT_BRICKS
-    {&mat_maker_MakerStoneSide,       0}, // CMM_MAT_STONE
-    {&mat_maker_MakerStone,           0}, // CMM_MAT_COBBLESTONE
-    {&mat_maker_MakerTiles,           0}, // CMM_MAT_TILES
-    {&mat_maker_MakerTileBricks,      0}, // CMM_MAT_TILESBRICKS
-    {&mat_maker_MakerRoof,            0}, // CMM_MAT_ROOF
-    {&mat_maker_MakerWood,            0}, // CMM_MAT_WOOD
-    {&mat_maker_MakerSandDirt,        0}, // CMM_MAT_SANDDIRT
-    {&mat_maker_MakerSand,            0}, // CMM_MAT_SAND
-    {&mat_maker_MakerSnowDirt,        0}, // CMM_MAT_SNOWDIRT
-    {&mat_maker_MakerSnow,            0}, // CMM_MAT_SNOW
-    {&mat_maker_MakerLava,            0}, // CMM_MAT_LAVA
-    {&mat_maker_MakerQuicksand,       0}, // CMM_MAT_QUICKSAND
+    {&mat_maker_MakerDirt,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_DIRT
+    {&mat_maker_MakerGrass,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_GRASS
+    {&mat_maker_MakerBricks,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_BRICKS
+    {&mat_maker_MakerStoneSide,  0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_STONE
+    {&mat_maker_MakerStone,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_COBBLESTONE
+    {&mat_maker_MakerTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_TILES
+    {&mat_maker_MakerTileBricks, 0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_TILESBRICKS
+    {&mat_maker_MakerRoof,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_ROOF
+    {&mat_maker_MakerWood,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_WOOD
+    {&mat_maker_MakerSandDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SANDDIRT
+    {&mat_maker_MakerSand,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SAND
+    {&mat_maker_MakerSnowDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SNOWDIRT
+    {&mat_maker_MakerSnow,       0, SURFACE_VERY_SLIPPERY},     // CMM_MAT_SNOW
+    {&mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
+    {&mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
     // Desert
-    {&mat_maker_MakerDBrick,          0}, // CMM_MAT_DESERT_BRICKS
-    {&mat_maker_MakerDStone,          0}, // CMM_MAT_DESERT_STONE
-    {&mat_maker_MakerDTiles,          0}, // CMM_MAT_DESERT_TILES
-    {&mat_maker_MakerDStoneBlock,     0}, // CMM_MAT_DESERT_BLOCK
-    {&mat_maker_MakerDTiles2,         0}, // CMM_MAT_DESERT_TILES2
+    {&mat_maker_MakerDBrick,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_BRICKS
+    {&mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_STONE
+    {&mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES
+    {&mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_BLOCK
+    {&mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES2
     // Red Hot Reservoir
-    {&mat_maker_MakerRHRObsidian,     0}, // CMM_MAT_RHR_OBSIDIAN
-    {&mat_maker_MakerRHRStone,        0}, // CMM_MAT_RHR_STONE
-    {&mat_maker_MakerRHRBrick,        0}, // CMM_MAT_RHR_BRICK
-    {&mat_maker_MakerRHRBasalt,       0}, // CMM_MAT_RHR_BASALT
-    {&mat_maker_MakerRHRTiles,        0}, // CMM_MAT_RHR_TILES
-    {&mat_maker_MakerRHRPattern,      0}, // CMM_MAT_RHR_BLOCK
-    {&mat_maker_MakerRHRWood,         0}, // CMM_MAT_RHR_WOOD
-    {&mat_maker_MakerRHRPillar,       0}, // CMM_MAT_RHR_PILLAR
-    {&mat_maker_MakerRHRGrate_layer1, 1}, // CMM_MAT_RHR_MESH
+    {&mat_maker_MakerRHRObsidian,     0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
+    {&mat_maker_MakerRHRStone,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
+    {&mat_maker_MakerRHRBrick,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BRICK
+    {&mat_maker_MakerRHRBasalt,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BASALT
+    {&mat_maker_MakerRHRTiles,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_TILES
+    {&mat_maker_MakerRHRPattern,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BLOCK
+    {&mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_WOOD
+    {&mat_maker_MakerRHRPillar,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_PILLAR
+    {&mat_maker_MakerRHRGrate_layer1, 1, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
-    {&mat_maker_MakerHGrass,          0}, // CMM_MAT_HMC_GRASS
-    {&mat_maker_MakerHDirt,           0}, // CMM_MAT_HMC_DIRT
-    {&mat_maker_MakerHBrick,          0}, // CMM_MAT_HMC_BRICK
-    {&mat_maker_MakerHStone,          0}, // CMM_MAT_HMC_STONE
-    {&mat_maker_MakerHMazewall,       0}, // CMM_MAT_HMC_MAZEWALL
-    {&mat_maker_MakerHMazefloor,      0}, // CMM_MAT_HMC_MAZEFLOOR
-    {&mat_maker_MakerHLight,          0}, // CMM_MAT_HMC_LIGHT
-    {&mat_maker_MakerHLakewall,       0}, // CMM_MAT_HMC_LAKEGRASS
-    {&mat_maker_MakerHFence_layer1,   1}, // CMM_MAT_HMC_MESH
+    {&mat_maker_MakerHGrass,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_GRASS
+    {&mat_maker_MakerHDirt,           0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
+    {&mat_maker_MakerHBrick,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_BRICK
+    {&mat_maker_MakerHStone,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
+    {&mat_maker_MakerHMazewall,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEWALL
+    {&mat_maker_MakerHMazefloor,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
+    {&mat_maker_MakerHLight,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
+    {&mat_maker_MakerHLakewall,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
+    {&mat_maker_MakerHFence_layer1,   1, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
-    {&mat_maker_MakerCTile,           0}, // CMM_MAT_C_TILES
-    {&mat_maker_MakerCWood,           0}, // CMM_MAT_C_WOOD
-    {&mat_maker_MakerCBrick,          0}, // CMM_MAT_C_BRICK
-    {&mat_maker_MakerCStone,          0}, // CMM_MAT_C_STONETOP
-    {&mat_maker_MakerCStoneSide,      0}, // CMM_MAT_C_STONESIDE
-    {&mat_maker_MakerCCarpet,         0}, // CMM_MAT_C_CARPET
-    {&mat_maker_MakerCRoof,           0}, // CMM_MAT_C_ROOF
-    {&mat_maker_MakerCWall,           0}, // CMM_MAT_C_WALL
-    {&mat_maker_MakerCPillar,         0}, // CMM_MAT_C_PILLAR
-    {&mat_maker_MakerCBasementWall,   0}, // CMM_MAT_C_BASEMENTWALL
+    {&mat_maker_MakerCTile,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
+    {&mat_maker_MakerCWood,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_WOOD
+    {&mat_maker_MakerCBrick,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_BRICK
+    {&mat_maker_MakerCStone,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONETOP
+    {&mat_maker_MakerCStoneSide,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONESIDE
+    {&mat_maker_MakerCCarpet,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_CARPET
+    {&mat_maker_MakerCRoof,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_ROOF
+    {&mat_maker_MakerCWall,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_WALL
+    {&mat_maker_MakerCPillar,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_PILLAR
+    {&mat_maker_MakerCBasementWall,   0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_BASEMENTWALL
     // Virtuaplex
-    {&mat_maker_MakerVBlock,          0}, // CMM_MAT_VP_BLOCK
-    {&mat_maker_MakerVTiles,          0}, // CMM_MAT_VP_TILES
-    {&mat_maker_MakerVBlueTiles,      0}, // CMM_MAT_VP_BLUETILES
-    {&mat_maker_MakerVRustyBlock,     0}, // CMM_MAT_VP_RUSTYBLOCK
-    {&mat_maker_MakerScreen,          0}, // CMM_MAT_VP_SCREEN
-    {&mat_maker_MakerCaution,         0}, // CMM_MAT_VP_CAUTION
-    {&mat_maker_MakerVBlock,          0}, // CMM_MAT_VP_SNOWBLOCK
-    {&mat_maker_MakerVoid,            0}, // CMM_MAT_VP_VOID
+    {&mat_maker_MakerVBlock,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLOCK
+    {&mat_maker_MakerVTiles,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
+    {&mat_maker_MakerVBlueTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
+    {&mat_maker_MakerVRustyBlock,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
+    {&mat_maker_MakerScreen,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_SCREEN
+    {&mat_maker_MakerCaution,         0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_CAUTION
+    {&mat_maker_MakerVoid,            0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
     // Retro
-    {&mat_maker_MakerRetroGround,     0}, // CMM_MAT_RETRO_GROUND
-    {&mat_maker_MakerRetroBrick,      0}, // CMM_MAT_RETRO_BRICKS
-    {&mat_maker_MakerRetroTreeTop,    0}, // CMM_MAT_RETRO_TREETOP
-    {&mat_maker_MakerRetroTree,       0}, // CMM_MAT_RETRO_TREEPLAT
-    {&mat_maker_MakerRetroBlock,      0}, // CMM_MAT_RETRO_BLOCK
-    {&mat_maker_MakerRetroBGround,    0}, // CMM_MAT_RETRO_BLUEGROUND
-    {&mat_maker_MakerRetroBBrick,     0}, // CMM_MAT_RETRO_BLUEBRICKS
-    {&mat_maker_MakerRetroBBlock,     0}, // CMM_MAT_RETRO_BLUEBLOCK
-    {&mat_maker_MakerRetroWBrick,     0}, // CMM_MAT_RETRO_WHITEBRICK
-    {&mat_maker_MakerRetroLava,       0}, // CMM_MAT_RETRO_LAVA
-    {&mat_maker_MakerRetroUnderwater, 0}, // CMM_MAT_RETRO_UNDERWATERGROUND
+    {&mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
+    {&mat_maker_MakerRetroBrick,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BRICKS
+    {&mat_maker_MakerRetroTreeTop,    0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_TREETOP
+    {&mat_maker_MakerRetroTree,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_TREEPLAT
+    {&mat_maker_MakerRetroBlock,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLOCK
+    {&mat_maker_MakerRetroBGround,    0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEGROUND
+    {&mat_maker_MakerRetroBBrick,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEBRICKS
+    {&mat_maker_MakerRetroBBlock,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEBLOCK
+    {&mat_maker_MakerRetroWBrick,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_WHITEBRICK
+    {&mat_maker_MakerRetroLava,       0, SURFACE_BURNING},      // CMM_MAT_RETRO_LAVA
+    {&mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
 };
 
 enum cmm_topmaterials {
@@ -519,7 +517,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_VP_RUSTYBLOCK, 0,                       "Rusty Block"},
             {CMM_MAT_VP_SCREEN,     0,                       "Screen"},
             {CMM_MAT_VP_CAUTION,    0,                       "Hazard Stripes"},
-            {CMM_MAT_VP_SNOWBLOCK,  CMM_TOPMAT_SNOW,         "Snowy Block"},
+            {CMM_MAT_VP_BLOCK,  CMM_TOPMAT_SNOW,         "Snowy Block"},
             {CMM_MAT_LAVA,          0,                       "Lava"},
             {CMM_MAT_VP_VOID,       0,                       "Void"},
         },

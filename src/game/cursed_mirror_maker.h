@@ -263,6 +263,7 @@ enum cmm_mat_types {
 struct cmm_material {
     Gfx *gfx;
     u8 type:2;
+    TerrainData col;
 };
 
 // Represents a material as a top texture with optional side decal
