@@ -849,8 +849,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "sb_cube/geo_header.h"
 
-#include "visualplane/header.h"
-
 #include "lev_edge/geo_header.h"
 
 #include "spawn/collision_header.h"

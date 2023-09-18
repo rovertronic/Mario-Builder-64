@@ -203,7 +203,6 @@
 #include "bg/model.inc.c"
 
 #include "sb_cube/model.inc.c"
-#include "visualplane/model.inc.c"
 #include "lev_edge/model.inc.c"
 #include "spawn/collision.inc.c"
 #include "spawn/model.inc.c"
