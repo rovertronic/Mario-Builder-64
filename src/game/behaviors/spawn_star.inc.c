@@ -14,44 +14,10 @@ static struct ObjectHitbox sCollectStarHitbox = {
 
 void bhv_collect_star_init(void) {
     s8 starId = GET_BPARAM1(o->oBehParams);
-    u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
-    u8 sfair_level = (gCurrCourseNum == COURSE_WDW)||(gCurrCourseNum == COURSE_NONE);
-#ifdef GLOBAL_STAR_IDS
-    u8 currentLevelStarFlags = save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(starId / 7));
-#else
-    u8 currentLevelStarFlags = save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum));
-#endif
 
-    if (((o->oBehParams >> 24 == 6)||(aglevel))&&(!sfair_level)) {
-        //cosmic seed
-#ifdef GLOBAL_STAR_IDS
-        if (currentLevelStarFlags & (1 << (starId % 7)))
-#else
-        if (currentLevelStarFlags & (1 << starId))
-#endif
-        {
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
-            o->oAnimState = 1;
-        } else {
-            o->header.gfx.sharedChild = gLoadedGraphNodes[0xED];
-        }
+    if (cmm_play_stars_bitfield & (1 << starId)) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
     } else {
-        //normal star
-#ifdef GLOBAL_STAR_IDS
-        if (currentLevelStarFlags & (1 << (starId % 7)))
-#else
-        if (currentLevelStarFlags & (1 << starId))
-#endif
-        {
-            if (currentLevelStarFlags & (1 << starId)) {
-                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
-            } else {
-                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
-            }
-        }
-    }
-
-    if (o->oBehParams2ndByte == 2) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
     }
 

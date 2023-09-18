@@ -600,13 +600,9 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     if (m->actionState == ACT_STATE_STAR_DANCE_CUTSCENE) {
         switch (++m->actionTimer) {
             case 1:
-                if (((m->lastStarCollected == 6)||(aglevel))&&(!sfair_level)) {
-                    celebStar = spawn_object(m->marioObj, 0xED, bhvCelebrationStar);
-                }
-                else
-                {
-                    celebStar = spawn_object(m->marioObj, MODEL_STAR, bhvCelebrationStar);
-                }
+
+                celebStar = spawn_object(m->marioObj, MODEL_STAR, bhvCelebrationStar);
+
 #ifdef STAR_DANCE_USES_STARS_MODEL
                 celebStar->header.gfx.sharedChild = m->interactObj->header.gfx.sharedChild;
 #else
@@ -624,19 +620,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                     if (obj_has_model(celebStar, MODEL_BOWSER_KEY)) {
                         play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_COLLECT_KEY), 0);
                     } else {
-                        if (((m->lastStarCollected == 6)||(aglevel))&&(!sfair_level)) {
-
-                            if (gCurrAreaIndex != 0) {
-                                //all other seeds
-                                play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_COSMIC_SEED_COLLECT), 0);
-                            } else {
-                                //only for final boss
-                                play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_VICTORY), 0);
-                            }
-
-                        } else {
-                            play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(0, SEQ_EVENT_CUTSCENE_COLLECT_STAR), 0);
-                        }
+                        play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(0, SEQ_EVENT_CUTSCENE_COLLECT_STAR), 0);
                     }
                 //}
                 break;
