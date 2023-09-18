@@ -172,70 +172,61 @@ void draw_cmm_menu(void) {
     }
 }
 
-char cmm_mm_keyboard[] = {"1234567890abcdefghijklmnopqrstuvwxyz!'- "};
-char cmm_mm_keyboard_caps[] = {"1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- "};
+char cmm_mm_keyboard[] = "1234567890abcdefghijklmnopqrstuvwxyz!'- ";
+char cmm_mm_keyboard_caps[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- ";
 char cmm_mm_keyboard_input[20];
 u8 cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
 u8 cmm_mm_keyboard_input_index = 0;
 #define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
 s8 cmm_mm_keyboard_index = 0;
 
-char cmm_mm_comingsoon[] = {"Coming soon..."};
+char cmm_mm_comingsoon[] = "Coming soon...";
 char cmm_mm_warning[] = \
-{"WARNING!\n\
+"WARNING!\n\
 SD card emulation not detected.\n\
 You will still be able to use\n\
 the level editor, but you will\n\
 not be able to save levels or\n\
 download levels from other people.\n\
 \n\
-Press START to dismiss this message."};
+Press START to dismiss this message.";
 
-char cmm_mm_btn1[] = {"Build"};
-char cmm_mm_btn2[] = {"Play"};
-char cmm_mm_btn3[] = {"Help"};
-char cmm_mm_btn4[] = {"Credits"};
-char * cmm_mm_btns[] = {
-    &cmm_mm_btn1,
-    &cmm_mm_btn2,
-    &cmm_mm_btn3,
-    &cmm_mm_btn4,
+char *cmm_mm_btns[] = {
+    "Build",
+    "Play",
+    "Help",
+    "Credits",
 };
-char * cmm_mm_btns_lim[] = {
-    &cmm_mm_btn1,
-    &cmm_mm_btn3,
-    &cmm_mm_btn4,
+
+char *cmm_mm_btns_lim[] = {
+    "Build",
+    "Help",
+    "Credits",
 };
-char cmm_mm_play_btn1[] = {"Play Levels"};
-char cmm_mm_play_btn2[] = {"Play Hacks"};
-char * cmm_mm_play_btns[] = {
-    &cmm_mm_play_btn1,
-    &cmm_mm_comingsoon, //&cmm_mm_play_btn2,
+
+char *cmm_mm_play_btns[] = {
+    "Play Levels",
+    &cmm_mm_comingsoon, //"Play Hacks"
 };
-char cmm_mm_make_btn1[] = {"New Level"};
-char cmm_mm_make_btn2[] = {"Load Level"};
-char cmm_mm_make_btn3[] = {"New Hack"};
-char cmm_mm_make_btn4[] = {"Load Hack"};
-char * cmm_mm_make_btns[] = {
-    &cmm_mm_make_btn1,
-    &cmm_mm_make_btn2,
-    &cmm_mm_comingsoon, //&cmm_mm_make_btn3,
-    &cmm_mm_comingsoon, //&cmm_mm_make_btn4,
+
+char *cmm_mm_make_btns[] = {
+    "New Level",
+    "Load Level",
+    &cmm_mm_comingsoon, //"New Hack"
+    &cmm_mm_comingsoon, //"Load Hack"
 };
-char cmm_mm_lmode_btn1[] = {"Vanilla SM64"};
-char cmm_mm_lmode_btn2[] = {"SM64 BTCM"};
-char * cmm_mm_lmode_btns[] = {
-    &cmm_mm_lmode_btn1,
-    &cmm_mm_lmode_btn2,
+
+char *cmm_mm_lmode_btns[] = {
+    "Vanilla SM64",
+    "SM64 BTCM",
 };
-char cmm_mm_help_btn1[] = {"SD Card Setup"};
-char cmm_mm_help_btn2[] = {"Editor Controls"};
-char cmm_mm_help_btn3[] = {"Version Info"};
-char * cmm_mm_help_btns[] = {
-    &cmm_mm_help_btn1,
-    &cmm_mm_help_btn2,
-    &cmm_mm_help_btn3,
+
+char *cmm_mm_help_btns[] = {
+    "SD Card Setup",
+    "Editor Controls",
+    "Version Info",
 };
+
 char cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 char cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 char cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
