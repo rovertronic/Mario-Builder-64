@@ -628,6 +628,9 @@ void generate_terrain_gfx(void) {
     u16 gfx_tp_index = 0;
     u16 mtx_index = 0;
 
+    u8 tileType, rot;
+    s8 pos[3];
+
     while (sCurrentDisplaySPTask != NULL) {
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
@@ -639,6 +642,20 @@ void generate_terrain_gfx(void) {
 
     // Align to 16 bytes for vertices
     cmm_curr_vtx = (u32 *)((((u32)cmm_curr_vtx) & ~15) + 16);
+
+    // This does the funny virtuaplex effect
+    for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
+        if (TILE_MATDEF(mat).mat == CMM_MAT_VP_SCREEN) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
+            for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
+                tileType = cmm_tile_data[i].type;
+                rot = cmm_tile_data[i].rot;
+                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+                render_block_main(pos, tileType, mat, rot);
+            }
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        }
+    }
 
     //BOTTOM PLANE
     if (cmm_lopt_plane != 0) {
@@ -682,8 +699,6 @@ void generate_terrain_gfx(void) {
     }**/
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
-        u8 tileType, rot;
-        s8 pos[3];
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
         for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
             tileType = cmm_tile_data[i].type;

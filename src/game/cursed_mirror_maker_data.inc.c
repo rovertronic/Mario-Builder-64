@@ -365,7 +365,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerVTiles,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
     {&mat_maker_MakerVBlueTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
     {&mat_maker_MakerVRustyBlock,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
-    {&mat_maker_MakerScreen,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_SCREEN
+    {&mat_maker_MakerScreen_layer1,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_SCREEN
     {&mat_maker_MakerCaution,         0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_CAUTION
     {&mat_maker_MakerVoid,            0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
     // Retro

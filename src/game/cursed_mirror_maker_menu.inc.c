@@ -7,6 +7,18 @@ u8 string_runoff(s16 x, u8 * str) {
     return FALSE;
 }
 
+extern u8 gDialogCharWidths[256];
+s32 get_string_width_ascii(char *str) {
+    s16 strPos = 0;
+    s16 width = 0;
+
+    while (str[strPos] != 0) {
+        width += gDialogCharWidths[ASCII_TO_DIALOG(str[strPos])];
+        strPos++;
+    }
+    return width;
+}
+
 void print_maker_string_ascii(u16 x, u16 y, u8 * str, u8 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
@@ -241,10 +253,27 @@ s8 cmm_mm_page_entries = 0;
 char * cmm_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
-void render_cmm_mm_menu(char * strlist[], u8 ct) {
+// Position, velocity, acceleration
+f32 cmm_menu_button_vels[5][3] = {0.f};
+f32 cmm_menu_title_vels[3] = {0.f};
+s16 cmm_menu_start_timer = -1;
+s16 cmm_menu_end_timer = -1;
+s8 cmm_menu_going_back = 1;
+
+void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
+    create_dl_scale_matrix(MENU_MTX_PUSH, 2.f, 2.f, 0.f);
+    print_maker_string_ascii(78 - (get_string_width_ascii(title)/2),95 + cmm_menu_title_vels[0]/2,title,0);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    if ((cmm_mm_state == MM_MAIN) || (cmm_mm_state == MM_MAIN_LIMITED)) {
+        print_maker_string_ascii(185, 177 + cmm_menu_title_vels[0], "By Rovertronic", 0);
+    }
+    cmm_menu_title_vels[0] += cmm_menu_title_vels[1];
+    cmm_menu_title_vels[1] += cmm_menu_title_vels[2];
+
     for (u8 i=0; i<ct; i++) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        create_dl_translation_matrix(MENU_MTX_PUSH, 160, 200-(i*30), 0);
+        create_dl_translation_matrix(MENU_MTX_PUSH, cmm_menu_button_vels[i][0] + 160, 150-(i*30), 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 190);
         if (cmm_mm_index == i) {
             gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 190);
@@ -258,9 +287,94 @@ void render_cmm_mm_menu(char * strlist[], u8 ct) {
             grey_add = 2;
         }
 
-        print_maker_string_ascii(120,192-(i*30),strlist[i],(cmm_mm_index == i)+grey_add);
-
+        print_maker_string_ascii(cmm_menu_button_vels[i][0] + 120,142-(i*30),strlist[i],(cmm_mm_index == i)+grey_add);
+        cmm_menu_button_vels[i][0] += cmm_menu_button_vels[i][1];
+        cmm_menu_button_vels[i][1] += cmm_menu_button_vels[i][2];
     }
+}
+
+// len - number of buttons in menu
+// time - how long until actually switching to next menu
+// canBack - able to press B to go to previous menu
+// returns if menu has switched
+u32 cmm_menu_animation_out(u32 len, u32 time, u32 canBack) {
+    if (cmm_menu_end_timer == -1) {
+        if (cmm_menu_start_timer == -1) {
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                cmm_menu_end_timer = 0;
+                cmm_menu_going_back = 1;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            }
+            if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
+                if (canBack) {
+                    cmm_menu_end_timer = 0;
+                    cmm_menu_going_back = -1;
+                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                }
+            }
+        }
+        return FALSE;
+    }
+
+    if (cmm_menu_end_timer < len*2 && cmm_menu_end_timer % 2 == 0) {
+        u8 step = cmm_menu_end_timer/2;
+        u8 index;
+        if (step == 0) {
+            index = cmm_mm_index;
+            cmm_menu_title_vels[1] = 0.f;
+            cmm_menu_title_vels[2] = 2.f;
+        } else {
+            index = (step > cmm_mm_index) ? step : step-1;
+        }
+        cmm_menu_button_vels[index][1] = 20.f * cmm_menu_going_back;
+        cmm_menu_button_vels[index][2] = -6.f * cmm_menu_going_back;
+    }
+
+    if (++cmm_menu_end_timer == time) {
+        cmm_menu_end_timer = -1;
+        for (u32 i=0;i<5;i++) {
+            cmm_menu_button_vels[i][0] = 250.f * cmm_menu_going_back;
+            cmm_menu_button_vels[i][1] = 0.f;
+            cmm_menu_button_vels[i][2] = 0.f;
+        }
+        cmm_menu_title_vels[0] = 50.f;
+        cmm_menu_title_vels[1] = 0.f;
+        cmm_menu_title_vels[2] = 0.f;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+u32 cmm_menu_animation_in(u32 len) {
+    if (cmm_menu_start_timer == -1) return FALSE;
+
+    if (cmm_menu_start_timer == 0) {
+        cmm_menu_title_vels[1] = -14.f;
+        cmm_menu_title_vels[2] = 2.f;
+    }
+    if (cmm_menu_start_timer < len*2 && cmm_menu_start_timer % 2 == 0) {
+        u8 step = cmm_menu_start_timer/2;
+        cmm_menu_button_vels[step][1] = -55.f * cmm_menu_going_back;
+        cmm_menu_button_vels[step][2] = 6.f * cmm_menu_going_back;
+    }
+    cmm_menu_start_timer++;
+    for (u32 i=0;i<len;i++) {
+        if (cmm_menu_button_vels[i][1]*cmm_menu_going_back > 1.f && cmm_menu_button_vels[i][0]*cmm_menu_going_back > 0.f) {
+            cmm_menu_button_vels[i][0] = 0.f;
+            cmm_menu_button_vels[i][1] = 0.f;
+            cmm_menu_button_vels[i][2] = 0.f;
+            if (i == len-1) {
+                cmm_menu_start_timer = -1;
+                return TRUE;
+            }
+        }
+    }
+    if (cmm_menu_title_vels[1] > 1.f && cmm_menu_title_vels[0] > 0.f) {
+        cmm_menu_title_vels[0] = 0.f;
+        cmm_menu_title_vels[1] = 0.f;
+        cmm_menu_title_vels[2] = 0.f;
+    }
+    return FALSE;
 }
 
 s32 cmm_main_menu(void) {
@@ -268,9 +382,11 @@ s32 cmm_main_menu(void) {
     switch(joystick) {
         case 2:
             cmm_mm_index++;
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         break;
         case 4:
             cmm_mm_index--;
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         break;
     }
 
@@ -287,40 +403,40 @@ s32 cmm_main_menu(void) {
                 cmm_mm_state = MM_NO_SD_CARD;
                 cmm_mm_main_state = MM_MAIN_LIMITED;
             }
-        break;
+            break;
         case MM_NO_SD_CARD:
             shade_screen();
             print_maker_string_ascii(20,210,&cmm_mm_warning,FALSE);
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_mm_state = MM_MAIN_LIMITED;
             }
-        break;
+            break;
         case MM_MAIN:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(&cmm_mm_btns,4);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+            render_cmm_mm_menu(&cmm_mm_btns,"Mario Builder 64",4);
+            cmm_menu_animation_in(4);
+            if (cmm_menu_animation_out(4, 22, FALSE)) {
                 switch(cmm_mm_index) {
                     case 0:
                         cmm_mm_state = MM_MAKE;
-                        cmm_mm_index = 0;
-                    break;
+                        break;
                     case 1:
                         cmm_mm_state = MM_PLAY;
-                        cmm_mm_index = 0;
-                    break;
+                        break;
                     case 2:
                         cmm_mm_state = MM_HELP_MODE;
-                        cmm_mm_index = 0;
-                    break;
+                        break;
                     case 3:
                         cmm_mm_state = MM_CREDITS;
-                    break;
+                        break;
                 }
+                cmm_mm_index = 0;
+                cmm_menu_start_timer = 0;
             }
-        break;
+            break;
         case MM_MAIN_LIMITED:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(&cmm_mm_btns_lim,3);
+            render_cmm_mm_menu(&cmm_mm_btns_lim,"Mario Builder 64",3);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_mm_index) {
                     case 0:
@@ -335,97 +451,107 @@ s32 cmm_main_menu(void) {
                     break;
                 }
             }
-        break;
+            break;
         case MM_PLAY:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(&cmm_mm_play_btns,2);
-
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-                switch(cmm_mm_index) {
-                    case 0: //play levels
-                        cmm_mm_state = MM_FILES;
-                        cmm_mm_index = 0;
-                    break;
-                    case 1: //play hacks
-                        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                    break;
+            render_cmm_mm_menu(&cmm_mm_play_btns,"Play Levels",2);
+            cmm_menu_animation_in(2);
+            if (cmm_menu_animation_out(2, 18, TRUE)) {
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = cmm_mm_main_state;
+                    cmm_mm_index = 1;
+                    cmm_menu_start_timer = 0;
+                } else {
+                    switch(cmm_mm_index) {
+                        case 0: //play levels
+                            cmm_mm_state = MM_FILES;
+                            cmm_mm_index = 0;
+                            cmm_menu_start_timer = 0;
+                        break;
+                        case 1: //play hacks
+                            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                        break;
+                    }
                 }
             }
-
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
-            }
-        break;
+            break;
         case MM_MAKE:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(&cmm_mm_make_btns,4);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-                switch(cmm_mm_index) {
-                    case 0:
-                        //make new level
-                        cmm_mm_state = MM_MAKE_MODE;
-                        cmm_mm_index = 0;
-                    break;
-                    case 1:
-                        //load levels
-                        cmm_mm_state = MM_FILES;
-                        cmm_mm_index = 0;
-                    break;
-                    case 2://make new hack
-                    case 3://load hack
-
-                    break;
+            render_cmm_mm_menu(&cmm_mm_make_btns,"Make Levels",4);
+            cmm_menu_animation_in(4);
+            if (cmm_menu_animation_out(4, 22, TRUE)) {
+                cmm_menu_start_timer = 0;
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = cmm_mm_main_state;
+                    cmm_mm_index = 0;
+                } else {
+                    switch(cmm_mm_index) {
+                        case 0:
+                            //make new level
+                            cmm_mm_state = MM_MAKE_MODE;
+                            break;
+                        case 1:
+                            //load levels
+                            cmm_mm_state = MM_FILES;
+                            break;
+                        case 2://make new hack
+                        case 3://load hack
+                            break;
+                    }
+                    cmm_mm_index = 0;
                 }
             }
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
-            }
-        break;
+            break;
         case MM_MAKE_MODE:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(&cmm_mm_lmode_btns,2);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-                cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
-                cmm_mm_state = MM_KEYBOARD;
+            render_cmm_mm_menu(&cmm_mm_lmode_btns,"Choose Mode",2);
+            cmm_menu_animation_in(2);
+            if (cmm_menu_animation_out(2, 18, TRUE)) {
+                cmm_menu_start_timer = 0;
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = MM_MAKE;
+                    cmm_mm_index = 0;
+                } else {
+                    cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
+                    cmm_mm_state = MM_KEYBOARD;
 
-                switch(cmm_mm_index) {
-                    case 0: //vanilla
-                        cmm_lopt_game = 1;
-                    break;
-                    case 1: //btcm
-                        cmm_lopt_game = 0;
-                    break;
+                    switch(cmm_mm_index) {
+                        case 0: //vanilla
+                            cmm_lopt_game = 1;
+                        break;
+                        case 1: //btcm
+                            cmm_lopt_game = 0;
+                        break;
+                    }
+                    cmm_mm_index = 0;
                 }
             }
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
-            }
-        break;
+            break;
         case MM_HELP_MODE:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(&cmm_mm_help_btns,3);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-                cmm_mm_state = MM_HELP;
-                switch(cmm_mm_index) {
-                    case 0:
-                        cmm_mm_help_ptr = cmm_mm_help_page1;
-                    break;
-                    case 1:
-                        cmm_mm_help_ptr = cmm_mm_help_page2;
-                    break;
-                    case 2:
-                        cmm_mm_help_ptr = cmm_mm_help_page3;
-                    break;
+            render_cmm_mm_menu(&cmm_mm_help_btns,"Help",3);
+            cmm_menu_animation_in(3);
+            if (cmm_menu_animation_out(3, 20, TRUE)) {
+                cmm_menu_start_timer = 0;
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = cmm_mm_main_state;
+                    cmm_mm_index = 2;
+                } else {
+                    cmm_mm_state = MM_HELP;
+                    switch(cmm_mm_index) {
+                        case 0:
+                            cmm_mm_help_ptr = cmm_mm_help_page1;
+                        break;
+                        case 1:
+                            cmm_mm_help_ptr = cmm_mm_help_page2;
+                        break;
+                        case 2:
+                            cmm_mm_help_ptr = cmm_mm_help_page3;
+                        break;
+                    }
                 }
             }
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
-            }
-        break;
+            break;
         case MM_HELP:
             shade_screen();
             print_maker_string(20,210,cmm_mm_help_ptr,FALSE);
@@ -438,7 +564,7 @@ s32 cmm_main_menu(void) {
                 cmm_mm_state = MM_HELP_MODE;
                 cmm_mm_index = 0;
             }
-        break;
+            break;
         case MM_CREDITS:
             shade_screen();
             print_maker_string(20,210,cmm_mm_credits_page,FALSE);
@@ -446,7 +572,7 @@ s32 cmm_main_menu(void) {
                 cmm_mm_state = cmm_mm_main_state;
                 cmm_mm_index = 0;
             }
-        break;
+            break;
         case MM_KEYBOARD:
             switch(joystick) {
                 case 1:
@@ -530,7 +656,7 @@ s32 cmm_main_menu(void) {
                 single_char[1] = NULL;
                 print_maker_string_ascii(37+(x*25),182-(y*25),single_char,(cmm_mm_keyboard_index == i));
             }
-        break;
+            break;
         case MM_FILES:
             if (cmm_level_entry_count == 0) {
                 //no levels, do not render anything
@@ -606,7 +732,7 @@ s32 cmm_main_menu(void) {
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
             int_to_str_slash(cmm_mm_page+1, cmm_mm_pages, &cmm_mm_txt_pages[6]);
             print_maker_string(42,12,&cmm_mm_txt_pages,FALSE);
-        break;
+            break;
     }
 
     return 0;
