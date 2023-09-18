@@ -72,7 +72,7 @@ u8 cmm_camera_rot_offset = 0;
 s8 cmm_camera_zoom_index = 2;
 f32 cmm_current_camera_zoom[2] = {1500.0f,800.0f};
 
-u8 cmm_place_mode = CMM_PM_TILE;
+u8 cmm_place_mode = CMM_PM_NONE;
 
 s8 cmm_id_selection = 0;
 u8 cmm_rot_selection = 0;
@@ -1117,7 +1117,7 @@ void place_thing_action(void) {
                 place_tile(cmm_sbx,cmm_sby,cmm_sbz);
                 generate_terrain_gfx();
             }
-        } else {
+        } else if (cmm_place_mode == CMM_PM_OBJ){
             //CMM_PM_OBJECT
             if (object_sanity_check()) {
                 place_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
@@ -1496,7 +1496,7 @@ void sb_loop(void) {
                 cmm_param_selection = 0;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].isTile;
+            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
             cmm_ui_index = (cmm_ui_index+9)%9;
 
             //parameter changing
@@ -1610,6 +1610,9 @@ void sb_loop(void) {
                     (cmm_object_types[cmm_id_selection].disp_func)(cmm_preview_object,cmm_param_selection);
                 }
             } else {
+                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
+            }
+            if (cmm_place_mode == CMM_PM_TILE) {
                 if (cmm_tile_types[cmm_id_selection].terrain) {
                     if (gPlayer1Controller->buttonPressed & L_JPAD) {
                         cmm_mat_selection --;
@@ -1619,7 +1622,6 @@ void sb_loop(void) {
                     }
                 }
                 cmm_mat_selection = (cmm_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
-                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             }
 
             if (!cmm_ui_do_render) {
@@ -1659,7 +1661,7 @@ void sb_loop(void) {
                 cmm_ui_index++;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].isTile;
+            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
             cmm_ui_index = (cmm_ui_index+6)%6;
 
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR

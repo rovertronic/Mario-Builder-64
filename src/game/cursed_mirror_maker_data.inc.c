@@ -597,9 +597,9 @@ u8 txt_btn_41[] = {TXT_BTN_41};u8 txt_btn_42[] = {TXT_BTN_42};u8 txt_btn_43[] = 
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
-    {&mat_b_btn_save     , 0                  ,0           , &txt_btn_1    , NULL         }, //CMM_BUTTON_SAVE
-    {&mat_b_btn_settings , 0                  ,0           , &txt_btn_2    , NULL         }, //CMM_BUTTON_SETTINGS
-    {&mat_b_btn_check    , 0                  ,0           , &txt_btn_3    , NULL         }, //CMM_BUTTON_PLAY
+    {&mat_b_btn_save     , 0                  ,CMM_PM_NONE , &txt_btn_1    , NULL         }, //CMM_BUTTON_SAVE
+    {&mat_b_btn_settings , 0                  ,CMM_PM_NONE , &txt_btn_2    , NULL         }, //CMM_BUTTON_SETTINGS
+    {&mat_b_btn_check    , 0                  ,CMM_PM_NONE , &txt_btn_3    , NULL         }, //CMM_BUTTON_PLAY
     {&mat_b_btn_grass    , TILE_TYPE_BLOCK    ,CMM_PM_TILE , &txt_btn_4    , NULL         }, //CMM_BUTTON_GRASS
     {&mat_b_btn_slope    , TILE_TYPE_SLOPE    ,CMM_PM_TILE , &txt_btn_7    , NULL         }, //CMM_BUTTON_SLOPE
     {&mat_b_btn_troll    , TILE_TYPE_TROLL    ,CMM_PM_TILE , &txt_btn_8    , NULL         }, //CMM_BUTTON_TROLL

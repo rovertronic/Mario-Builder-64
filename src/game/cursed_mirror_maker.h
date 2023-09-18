@@ -177,7 +177,7 @@ enum {
 struct cmm_ui_button_type {
     Gfx * material;
     u8 id;
-    u8 isTile:1;
+    u8 placeMode:2;
     u8 * str;
     u8 ** param_strings;
 };
@@ -246,6 +246,7 @@ enum {
 };
 
 enum {
+    CMM_PM_NONE,
     CMM_PM_TILE,
     CMM_PM_OBJ,
 };
