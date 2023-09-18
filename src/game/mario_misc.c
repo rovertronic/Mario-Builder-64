@@ -31,6 +31,7 @@
 #include "src/engine/surface_load.h"
 #include "spawn_sound.h"
 #include "mario.h"
+#include "cursed_mirror_maker.h"
 
 #include "config.h"
 
@@ -673,6 +674,9 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
                 switchCase->selectedCase =
                     (bodyState->handState < 2) ? bodyState->handState : MARIO_HAND_FISTS;
             }
+        }
+        if ((bodyState->handState == MARIO_HAND_PEACE_SIGN)&&(cmm_lopt_game == CMM_GAME_VANILLA)) {
+            switchCase->selectedCase = 2;
         }
         if (gMarioState->powerup == 1) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_CROWBAR;

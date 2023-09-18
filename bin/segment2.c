@@ -2529,7 +2529,11 @@ const Texture texture_transition_mario[] = {
 #include "textures/segment2/segment2.10458.ia8.inc.c"
 };
 
-const Texture texture_transition_bowser_half[] = {
+const Texture texture_transition_bowser[] = {
+#include "textures/segment2/bowser_transition.ia8.inc.c"
+};
+
+const Texture texture_transition_showrunner[] = {
 #include "textures/segment2/showrunner_transition.ia8.inc.c"
 };
 
