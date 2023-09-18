@@ -176,7 +176,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
     {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
     {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
+    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
     {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
     {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
     {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
