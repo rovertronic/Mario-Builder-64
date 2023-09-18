@@ -199,6 +199,14 @@ void beh_yellow_background_menu_init(void) {
  */
 void beh_yellow_background_menu_loop(void) {
     cur_obj_scale(1.0f);
+    o->oPosX += 1.f;
+    o->oPosY -= 1.f;
+
+    if (o->oPosX > 150) o->oPosX -= 150;
+    if (o->oPosY < -106) {
+        o->oPosY += 106;
+        o->oPosX += 22;
+    }
 }
 
 /**

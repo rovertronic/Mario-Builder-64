@@ -63,7 +63,7 @@
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
-u8 cmm_sbx, cmm_sby, cmm_sbz = 0;
+s8 cmm_cursor_pos[3] = {0};
 
 Vec3f cmm_camera_pos = {0.0f};
 Vec3f cmm_camera_foc = {0.0f};
@@ -72,14 +72,14 @@ u8 cmm_camera_rot_offset = 0;
 s8 cmm_camera_zoom_index = 2;
 f32 cmm_current_camera_zoom[2] = {1500.0f,800.0f};
 
-u8 cmm_place_mode = CMM_PM_TILE;
+u8 cmm_place_mode = CMM_PM_NONE;
 
 s8 cmm_id_selection = 0;
 u8 cmm_rot_selection = 0;
 s16 cmm_param_selection = 0;
 s16 cmm_mat_selection = 0;
 
-struct cmm_grid_obj cmm_grid_data[32][32][32] = {0};
+struct cmm_grid_obj cmm_grid_data[64][32][64] = {0};
 
 Gfx cmm_terrain_gfx[CMM_GFX_SIZE]; //gfx
 Gfx cmm_terrain_gfx_tp[CMM_GFX_TP_SIZE];//transparent
@@ -91,6 +91,7 @@ u32 cmm_gfx_tp_total = 0;
 
 struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[200];
+u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 5] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
 u16 cmm_building_collision = 0; // 0 = building gfx, 1 = building collision
@@ -196,10 +197,10 @@ void reset_play_state(void) {
     cmm_play_badge_bitfield = 0;
 }
 
-u32 coords_in_range(s32 x, s32 y, s32 z) {
-    if (x < 0 || x > 31) return FALSE;
-    if (y < 0 || y > 31) return FALSE;
-    if (z < 0 || z > 31) return FALSE;
+u32 coords_in_range(s8 pos[3]) {
+    if (pos[0] < GRID_MIN_COORD || pos[0] > GRID_MAX_COORD - 1) return FALSE;
+    if (pos[1] < 0 || pos[1] > 31) return FALSE;
+    if (pos[2] < GRID_MIN_COORD || pos[2] > GRID_MAX_COORD - 1) return FALSE;
     return TRUE;
 }
 
@@ -240,27 +241,31 @@ s32 object_sanity_check(void) {
     return allow;
 }
 
-void place_terrain_data(s32 x, s32 y, s32 z, u32 type, u32 rot, u32 mat) {
-    cmm_grid_data[x][y][z].rot = rot;
-    cmm_grid_data[x][y][z].type = type + 1;
-    cmm_grid_data[x][y][z].mat = mat;
+ALWAYS_INLINE void place_terrain_data(s8 pos[3], u32 type, u32 rot, u32 mat) {
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot;
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type + 1;
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat;
 }
 
-void remove_terrain_data(s32 x, s32 y, s32 z) {
-    cmm_grid_data[x][y][z].rot = 0;
-    cmm_grid_data[x][y][z].type = 0;
-    cmm_grid_data[x][y][z].mat = 0;
+ALWAYS_INLINE void remove_terrain_data(s8 pos[3]) {
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;
 }
 
-u32 get_faceshape(s32 x, s32 y, s32 z, u32 dir) {
-    u8 tileType = cmm_grid_data[x][y][z].type;
-    if (tileType == 0) return CMM_FACESHAPE_EMPTY; // no tile
-    if (tileType - 1 == TILE_TYPE_CULL) return CMM_FACESHAPE_EMPTY;
+ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
+    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
+}
 
-    u8 rot = cmm_grid_data[x][y][z].rot;
+u32 get_faceshape(s8 pos[3], u32 dir) {
+    s8 tileType = get_grid_tile(pos)->type - 1;
+    if (tileType == -1) return CMM_FACESHAPE_EMPTY; // no tile
+    if (tileType == TILE_TYPE_CULL) return CMM_FACESHAPE_EMPTY;
+
+    u8 rot = get_grid_tile(pos)->rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
 
-    struct cmm_terrain_block *terrain = cmm_tile_types[tileType - 1].terrain;
+    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
         if (quad->cullDir == dir) {
@@ -276,17 +281,17 @@ u32 get_faceshape(s32 x, s32 y, s32 z, u32 dir) {
     return CMM_FACESHAPE_EMPTY;
 }
 
-void place_occupy_data(s32 x, s32 y, s32 z) {
-    cmm_grid_data[x][y][z].occupied = TRUE;
+ALWAYS_INLINE void place_occupy_data(s8 pos[3]) {
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE;
 }
 
-void remove_occupy_data(s32 x, s32 y, s32 z) {
-    cmm_grid_data[x][y][z].occupied = FALSE;
+ALWAYS_INLINE void remove_occupy_data(s8 pos[3]) {
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE;
 }
 
-u32 get_occupy_data(s32 x, s32 y, s32 z) {
-    if (!coords_in_range(x, y, z)) return FALSE;
-    return cmm_grid_data[x][y][z].occupied;
+ALWAYS_INLINE s32 get_occupy_data(s8 pos[3]) {
+    if (!coords_in_range(pos)) return FALSE;
+    return cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied;
 }
 
 s8 cullOffsetLUT[6][3] = {
@@ -304,29 +309,25 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(newpos[0], newpos[1], newpos[2])) return TRUE;
-    u8 tileType = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].type - 1;
+    if (!coords_in_range(newpos)) return TRUE;
+    u8 tileType = get_grid_tile(newpos)->type - 1;
     if (tileType == TILE_TYPE_CULL) return TRUE;
     if (cmm_building_collision && tileType == TILE_TYPE_TROLL) return FALSE;
 
-    u8 otherMat = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].mat;
+    u8 otherMat = get_grid_tile(newpos)->mat;
     if (MATERIAL(otherMat).type != 0) {
-        u8 curMat = cmm_grid_data[pos[0]][pos[1]][pos[2]].mat;
+        u8 curMat = get_grid_tile(pos)->mat;
         if (curMat != otherMat) return FALSE;
     }
 
-    u32 otherFaceshape = get_faceshape(
-        newpos[0],
-        newpos[1],
-        newpos[2],
-        direction);
+    u32 otherFaceshape = get_faceshape(newpos, direction);
 
     if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (otherFaceshape == CMM_FACESHAPE_FULL) return TRUE;
     if (faceshape == CMM_FACESHAPE_FULL) return FALSE;
     if (faceshape == CMM_FACESHAPE_TOPTRI) {
         if (otherFaceshape == CMM_FACESHAPE_TOPTRI) {
-            u8 otherrot = cmm_grid_data[newpos[0]][newpos[1]][newpos[2]].rot;
+            u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot == rot);
         } else return FALSE;
     }
@@ -338,9 +339,10 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
-    s8 belowPos[3];
+    s8 newpos[3];
+    vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
-    if (!coords_in_range(pos[0], pos[1]+1, pos[2])) return TRUE;
+    if (!coords_in_range(newpos)) return TRUE;
     u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
@@ -348,7 +350,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
             // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], ROTATE_DIRECTION(direction, rot)^1);
+            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
@@ -363,18 +365,18 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         case CMM_GROWTH_SLOPE_SIDE_L:
         case CMM_GROWTH_SLOPE_SIDE_R:
             // Check if below block is in range
-            vec3_set(belowPos, pos[0], pos[1]-1, pos[2]);
-            if (!coords_in_range(belowPos[0], belowPos[1], belowPos[2])) return TRUE;
+            vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
+            if (!coords_in_range(newpos)) return TRUE;
 
             // Check if below block matches material
-            u8 curMat = cmm_grid_data[pos[0]][pos[1]][pos[2]].mat;
-            u8 belowMat = cmm_grid_data[belowPos[0]][belowPos[1]][belowPos[2]].mat;
+            u8 curMat = get_grid_tile(pos)->mat;
+            u8 belowMat = get_grid_tile(newpos)->mat;
             if (curMat != belowMat) return TRUE;
 
             // Check if below block is right shape and culled
             // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(belowPos[0], belowPos[1], belowPos[2], ROTATE_DIRECTION(direction, rot)^1);
-            if (should_cull(belowPos, direction, otherFaceshape, rot)) return TRUE;
+            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
             
             // Calculate effective rotation of face to print. very ugly
             u8 targetRot;
@@ -405,24 +407,24 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                     else
                         cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_r;
                     
-                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot, TRUE);
                     return TRUE;
                 case CMM_FACESHAPE_DOWNTRI_1:
                     if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
-                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, newpos, targetRot, TRUE);
                     return TRUE; 
                 case CMM_FACESHAPE_DOWNTRI_2:
                     if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, belowPos, targetRot, TRUE);
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, newpos, targetRot, TRUE);
                     return TRUE;
             }
             
 
         case CMM_GROWTH_DIAGONAL_SIDE:
-            otherFaceshape = get_faceshape(pos[0], pos[1]+1, pos[2], CMM_DIRECTION_UP);
+            otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
             if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
-            u8 otherrot = cmm_grid_data[pos[0]][pos[1]+1][pos[2]].rot;
+            u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot != rot);
     }
     return FALSE;
@@ -509,9 +511,9 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot, u
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
-            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
-            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            GRID_TO_POS(pos[0]) + newVtx[i][0]*TILE_SIZE/2,
+            GRIDY_TO_POS(pos[1])+ newVtx[i][1]*TILE_SIZE/2,
+            GRID_TO_POS(pos[2]) + newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -538,9 +540,9 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot, u32 
             v = newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, i,
-            (pos[0]*TILE_SIZE)+newVtx[i][0]*TILE_SIZE/2,
-            (pos[1]*TILE_SIZE)+newVtx[i][1]*TILE_SIZE/2,
-            (pos[2]*TILE_SIZE)+newVtx[i][2]*TILE_SIZE/2,
+            GRID_TO_POS(pos[0]) + newVtx[i][0]*TILE_SIZE/2,
+            GRIDY_TO_POS(pos[1])+ newVtx[i][1]*TILE_SIZE/2,
+            GRID_TO_POS(pos[2]) + newVtx[i][2]*TILE_SIZE/2,
             u * -512 + 496, v * -512 + 496,
             n[0], n[1], n[2], 0xFF);
     }
@@ -612,10 +614,23 @@ void render_block_grass_side(s8 pos[3], u32 tileType, u32 rot) {
     }
 }
 
+void render_floor(void) {
+    make_vertex(cmm_curr_vtx, 0,  4096, 0, -4096,  16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, -4096, 0, -4096, -16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2, -4096, 0,  4096, -16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,  4096, 0,  4096,  16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
+    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
+    cmm_curr_vtx += 4 * 4;
+}
+
 void generate_terrain_gfx(void) {
     u16 gfx_tdecal_index = 0;
     u16 gfx_tp_index = 0;
     u16 mtx_index = 0;
+
+    u8 tileType, rot;
+    s8 pos[3];
 
     while (sCurrentDisplaySPTask != NULL) {
         osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
@@ -626,22 +641,36 @@ void generate_terrain_gfx(void) {
     cmm_gfx_index = 0;
     cmm_building_collision = 0;
 
-    //BOTTOM PLANE
-    switch (cmm_lopt_plane) {
-        case 1:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(8).gfx);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
-        break;
-        case 2:
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(0).gfx);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], visualplane_visualplane_mesh);
-        break;
+    // Align to 16 bytes for vertices
+    cmm_curr_vtx = (u32 *)((((u32)cmm_curr_vtx) & ~15) + 16);
+
+    // This does the funny virtuaplex effect
+    for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
+        if (TILE_MATDEF(mat).mat == CMM_MAT_VP_SCREEN) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
+            for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
+                tileType = cmm_tile_data[i].type;
+                rot = cmm_tile_data[i].rot;
+                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+                render_block_main(pos, tileType, mat, rot);
+            }
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        }
     }
 
-    // Align to 64 bytes for matrices
-    cmm_curr_vtx = (u32 *)((((u32)cmm_curr_vtx) & ~63) + 64);
+    //BOTTOM PLANE
+    if (cmm_lopt_plane != 0) {
+        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+        if (HAS_TOPMAT(planeMat)) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).gfx);
+        } else {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
+        }
+        render_floor();
+    }
 
     // Tiles with models
+    /**
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (!cmm_tile_types[cmm_tile_data[i].type].terrain) {
             if (cmm_tile_data[i].type == TILE_TYPE_CULL) {
@@ -668,31 +697,22 @@ void generate_terrain_gfx(void) {
             }
             cmm_curr_vtx += 16;
         }
-    }
+    }**/
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
-        u8 tileType, rot;
-        s8 pos[3];
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
-        for (u32 i = 0; i < cmm_tile_count; i++) {
-            if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
-
+        for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
             tileType = cmm_tile_data[i].type;
             rot = cmm_tile_data[i].rot;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
             render_block_main(pos, tileType, mat, rot);
         }
-        // If it was a cutout material, set render mode back to opaque
-        if (MATERIAL(mat).type == 1) {
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-        }
+        gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         if (HAS_TOPMAT(mat)) {
             if (SIDETEX(mat) != NULL) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
-                for (u32 i = 0; i < cmm_tile_count; i++) {
-                    if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
-
+                for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
                     tileType = cmm_tile_data[i].type;
                     rot = cmm_tile_data[i].rot;
                     vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -702,9 +722,7 @@ void generate_terrain_gfx(void) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx);
-            for (u32 i = 0; i < cmm_tile_count; i++) {
-                if (cmm_tile_data[i].mat != mat || !cmm_tile_types[cmm_tile_data[i].type].terrain) continue;
-
+            for (u32 i = cmm_tile_data_indices[mat]; i < cmm_tile_data_indices[mat+1]; i++) {
                 tileType = cmm_tile_data[i].type;
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -755,7 +773,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_gfx_index = 0;
 
             if (cmm_tile_types[cmm_id_selection].model) {
-                guTranslate(&preview_mtx[preview_mtx_index], cmm_sbx*TILE_SIZE, cmm_sby*TILE_SIZE, cmm_sbz*TILE_SIZE);
+                guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
                 preview_mtx_index++;
                 guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
                 gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -765,18 +783,16 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
                 preview_mtx_index++;
             } else {
-                s8 pos[3];
-                vec3_set(pos, cmm_sbx, cmm_sby, cmm_sbz);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
-                render_block_main(pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
+                render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
                 if (HAS_TOPMAT(cmm_mat_selection)) {
                     if (SIDETEX(cmm_mat_selection) != NULL) {
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
-                        render_block_grass_side(pos, cmm_id_selection, cmm_rot_selection);
+                        render_block_grass_side(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
                     }
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
-                    render_block_grass_top(pos, cmm_id_selection, cmm_rot_selection);
+                    render_block_grass_top(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                 }
             }
 
@@ -823,10 +839,10 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3],
 };
 
 TerrainData floorVtxs[4][3] = {
-    {-150, -150, 9450},
-    {9450, -150, 9450},
-    {-150, -150, -150},
-    {9450, -150, -150},
+    {-4096, 0, 4096},
+    {4096, 0, 4096},
+    {-4096, 0, -4096},
+    {4096, 0, -4096},
 };
 
 extern TerrainData sVertexData[900];
@@ -841,15 +857,25 @@ void generate_terrain_collision(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = 1;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
-    TerrainData floorType;
-    switch(cmm_lopt_plane) {
-        case 1:
-        case 2:
-            floorType = (cmm_lopt_plane == 2) ? SURFACE_DEFAULT : SURFACE_BURNING;
-            cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], floorType);
-            cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], floorType);
-    }
+    TerrainData floorType, topFloorType, floorY;
 
+    if (cmm_lopt_plane == 0) {
+        floorY = -2500;
+        topFloorType = SURFACE_DEATH_PLANE;
+    } else {
+        floorY = 0;
+        u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+        if (HAS_TOPMAT(mat)) {
+            topFloorType = TOPMAT(mat).col;
+        } else {
+            topFloorType = MATERIAL(mat).col;
+        }
+    }
+    for (u32 i = 0; i < 4; i++) {
+        floorVtxs[i][1] = floorY;
+    }
+    cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2], topFloorType);
+    cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], topFloorType);
 
     for (i=0; i<cmm_tile_count; i++) {
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
@@ -857,44 +883,51 @@ void generate_terrain_collision(void) {
             if (cmm_tile_data[i].type == TILE_TYPE_TROLL) {
                 continue;
             }
-            floorType = cmm_tile_data[i].mat == 8 ? SURFACE_BURNING : SURFACE_NOT_SLIPPERY;
+            floorType = MATERIAL(cmm_tile_data[i].mat).col;
+            if (HAS_TOPMAT(cmm_tile_data[i].mat)) {
+                topFloorType = TOPMAT(cmm_tile_data[i].mat).col;
+            } else {
+                topFloorType = floorType;
+            }
             s8 pos[3];
             s8 newVtx[4][3];
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             for (u32 j = 0; j < terrain->numQuads; j++) {
                 struct cmm_terrain_quad *quad = &terrain->quads[j];
                 if (!should_cull(pos, quad->cullDir, quad->faceshape, cmm_tile_data[i].rot)) {
+                    TerrainData surfType = (quad->growthType == CMM_GROWTH_FULL) ? topFloorType : floorType;
                     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 4; k++) {
-                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
-                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
-                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
+                        colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
-                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
-                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], surfType);
+                    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], surfType);
                 }
             }
             for (u32 j = 0; j < terrain->numTris; j++) {
                 struct cmm_terrain_tri *tri = &terrain->tris[j];
                 if (!should_cull(pos, tri->cullDir, tri->faceshape, cmm_tile_data[i].rot)) {
+                    TerrainData surfType = (tri->growthType == CMM_GROWTH_FULL) ? topFloorType : floorType;
                     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, cmm_tile_data[i].rot);
                     for (u32 k = 0; k < 3; k++) {
-                        colVtxs[k][0] = pos[0]*TILE_SIZE + newVtx[k][0]*TILE_SIZE/2;
-                        colVtxs[k][1] = pos[1]*TILE_SIZE + newVtx[k][1]*TILE_SIZE/2;
-                        colVtxs[k][2] = pos[2]*TILE_SIZE + newVtx[k][2]*TILE_SIZE/2;
+                        colVtxs[k][0] = GRID_TO_POS(pos[0])  + newVtx[k][0]*TILE_SIZE/2;
+                        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + newVtx[k][1]*TILE_SIZE/2;
+                        colVtxs[k][2] = GRID_TO_POS(pos[2])  + newVtx[k][2]*TILE_SIZE/2;
                     }
-                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], floorType);
+                    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], surfType);
                 }
             }
         } else if (cmm_tile_types[cmm_tile_data[i].type].collision_data) {
-            Vec3f pos = {cmm_tile_data[i].x*TILE_SIZE, cmm_tile_data[i].y*TILE_SIZE, cmm_tile_data[i].z*TILE_SIZE};
+            Vec3f pos = {GRID_TO_POS(cmm_tile_data[i].x), GRIDY_TO_POS(cmm_tile_data[i].y), GRID_TO_POS(cmm_tile_data[i].z)};
             Vec3s rot = {0,cmm_tile_data[i].rot*0x4000,0};
             mtxf_rotate_zxy_and_translate(o->transform,pos,rot);
 
             //this code was written by accident... the collision doesn't generate properly without it though???
-            o->oPosX = (cmm_tile_data[0].x*TILE_SIZE);
-            o->oPosY = (cmm_tile_data[0].y*TILE_SIZE);
-            o->oPosZ = (cmm_tile_data[0].z*TILE_SIZE);
+            o->oPosX = GRID_TO_POS(cmm_tile_data[0].x);
+            o->oPosY = GRIDY_TO_POS(cmm_tile_data[0].y);
+            o->oPosZ = GRID_TO_POS(cmm_tile_data[0].z);
             o->oFaceAngleYaw = (cmm_tile_data[i].rot*0x4000);
             
             TerrainData *collisionData = segmented_to_virtual(cmm_tile_types[cmm_tile_data[i].type].collision_data);
@@ -929,9 +962,9 @@ void generate_object_preview(void) {
 
     for(i=0;i<cmm_object_count;i++){
         preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
-        preview_object->oPosX = cmm_object_data[i].x*TILE_SIZE;
-        preview_object->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
-        preview_object->oPosZ = cmm_object_data[i].z*TILE_SIZE;
+        preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
+        preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
+        preview_object->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
         if (cmm_object_types[cmm_object_data[i].type].billboarded) {
@@ -959,9 +992,9 @@ void generate_objects_to_level(void) {
 
         obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
 
-        obj->oPosX = cmm_object_data[i].x*TILE_SIZE;
-        obj->oPosY = cmm_object_data[i].y*TILE_SIZE - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
-        obj->oPosZ = cmm_object_data[i].z*TILE_SIZE;
+        obj->oPosX = GRID_TO_POS(cmm_object_data[i].x);
+        obj->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
+        obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
@@ -979,24 +1012,50 @@ void generate_objects_to_level(void) {
     }
 }
 
-void place_tile(u8 x, u8 y, u8 z) {
-    if ((!cmm_tile_types[cmm_id_selection].model) || (cmm_id_selection == TILE_TYPE_CULL)) {
-        place_terrain_data(x,y,z,cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
+u32 get_tiletype_index(u32 type, u32 mat) {
+    if (cmm_tile_types[type].terrain) {
+        return mat;
     }
-    cmm_tile_data[cmm_tile_count].x = x;
-    cmm_tile_data[cmm_tile_count].y = y;
-    cmm_tile_data[cmm_tile_count].z = z;
-    cmm_tile_data[cmm_tile_count].type = cmm_id_selection;
-    cmm_tile_data[cmm_tile_count].mat = cmm_mat_selection;
-    cmm_tile_data[cmm_tile_count].rot = cmm_rot_selection;
+    switch (type) {
+        case TILE_TYPE_FENCE:
+            return NUM_MATERIALS_PER_THEME;
+        case TILE_TYPE_WATER:
+            return NUM_MATERIALS_PER_THEME + 1;
+        case TILE_TYPE_CULL:
+            return NUM_MATERIALS_PER_THEME + 2;
+    }
+    return NUM_MATERIALS_PER_THEME + 3;
+}
+
+void place_tile(s8 pos[3]) {
+    if ((!cmm_tile_types[cmm_id_selection].model) || (cmm_id_selection == TILE_TYPE_CULL)) {
+        place_terrain_data(pos, cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
+    }
+    u32 nextIndex = get_tiletype_index(cmm_id_selection, cmm_mat_selection) + 1;
+    u32 nextTileDataIndex = cmm_tile_data_indices[nextIndex];
+    // Shift all indices forward one
+    for (u32 i = nextIndex; i < ARRAY_COUNT(cmm_tile_data_indices); i++) {
+        cmm_tile_data_indices[i]++;
+    }
+
+    // Shift all data forward one
+    for (u32 i = cmm_tile_count; i > nextTileDataIndex; i--) {
+        cmm_tile_data[i] = cmm_tile_data[i - 1];
+    }
+    cmm_tile_data[nextTileDataIndex].x = pos[0];
+    cmm_tile_data[nextTileDataIndex].y = pos[1];
+    cmm_tile_data[nextTileDataIndex].z = pos[2];
+    cmm_tile_data[nextTileDataIndex].type = cmm_id_selection;
+    cmm_tile_data[nextTileDataIndex].mat = cmm_mat_selection;
+    cmm_tile_data[nextTileDataIndex].rot = cmm_rot_selection;
     cmm_tile_count++;
 }
 
-void place_object(u8 x, u8 y, u8 z) {
+void place_object(s8 pos[3]) {
     if (cmm_object_count < 200) {
-        cmm_object_data[cmm_object_count].x = x;
-        cmm_object_data[cmm_object_count].y = y;
-        cmm_object_data[cmm_object_count].z = z;
+        cmm_object_data[cmm_object_count].x = pos[0];
+        cmm_object_data[cmm_object_count].y = pos[1];
+        cmm_object_data[cmm_object_count].z = pos[2];
         cmm_object_data[cmm_object_count].type = cmm_id_selection;
         cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
         cmm_object_data[cmm_object_count].param = cmm_param_selection;
@@ -1016,7 +1075,7 @@ void place_object(u8 x, u8 y, u8 z) {
             if (!trajectory_found) {
                 play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                 cmm_object_count --;
-                remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
+                remove_occupy_data(cmm_cursor_pos);
             } else {
                 cmm_menu_state = CMM_MAKE_TRAJECTORY;
                 o->oAction = 5; //trajectory editor
@@ -1064,19 +1123,19 @@ u8 joystick_direction(void) {
 
 void place_thing_action(void) {
     //tiles and objects share occupancy data
-    if (!get_occupy_data(cmm_sbx,cmm_sby,cmm_sbz)) {
+    if (!get_occupy_data(cmm_cursor_pos)) {
         if (cmm_place_mode == CMM_PM_TILE) {
             //CMM_PM_TILE
             if (tile_sanity_check()) {
-                place_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
-                place_tile(cmm_sbx,cmm_sby,cmm_sbz);
+                place_occupy_data(cmm_cursor_pos);
+                place_tile(cmm_cursor_pos);
                 generate_terrain_gfx();
             }
-        } else {
+        } else if (cmm_place_mode == CMM_PM_OBJ){
             //CMM_PM_OBJECT
             if (object_sanity_check()) {
-                place_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
-                place_object(cmm_sbx,cmm_sby,cmm_sbz);
+                place_occupy_data(cmm_cursor_pos);
+                place_object(cmm_cursor_pos);
                 generate_object_preview();
             }
         }
@@ -1085,57 +1144,51 @@ void place_thing_action(void) {
 
 //function name is delete tile, it deletes objects too
 void delete_tile_action(void) {
-    u16 i;
     u8 mode = 0;
     u8 found_tile = FALSE;
+    s16 index = -1;
 
     //0 = searching
     //1 = targeting
     //(sport mode reference)
 
-    for (i=0;i<cmm_tile_count;i++) {
+    for (u32 i = 0; i < cmm_tile_count; i++) {
         //search for tile to delete
-        if (mode == 0) {
-            if ((cmm_tile_data[i].x == cmm_sbx)&&(cmm_tile_data[i].y == cmm_sby)&&(cmm_tile_data[i].z == cmm_sbz)) {
-                mode = 1;
-                found_tile = TRUE;
-                remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
-                remove_terrain_data(cmm_sbx,cmm_sby,cmm_sbz);
-                cmm_tile_count--;
-            }
-        }
-        if (mode==1) {
-            cmm_tile_data[i] = cmm_tile_data[i+1];
+        if ((cmm_tile_data[i].x == cmm_cursor_pos[0])&&(cmm_tile_data[i].y == cmm_cursor_pos[1])&&(cmm_tile_data[i].z == cmm_cursor_pos[2])) {
+            index = i;
+            remove_occupy_data(cmm_cursor_pos);
+            remove_terrain_data(cmm_cursor_pos);
+            cmm_tile_count--;
         }
     }
 
-    if (found_tile) {
+    if (index != -1) {
+        u32 nextindex = get_tiletype_index(cmm_tile_data[index].type, cmm_tile_data[index].mat) + 1;
+        for (u32 i = nextindex; i < ARRAY_COUNT(cmm_tile_data_indices); i++) {
+            cmm_tile_data_indices[i]--;
+        }
+        for (u32 i = index; i < cmm_tile_count; i++) {
+            cmm_tile_data[i] = cmm_tile_data[i+1];
+        }
         generate_terrain_gfx();
-    } else {
-        //if there's no terrain here, it's probably an object
-        mode = 0;
-        for (i=0;i<cmm_object_count;i++) {
-            //search for tile to delete
-            if (mode == 0) {
-                if ((cmm_object_data[i].x == cmm_sbx)&&(cmm_object_data[i].y == cmm_sby)&&(cmm_object_data[i].z == cmm_sbz)) {
-                    mode = 1;
-                    remove_occupy_data(cmm_sbx,cmm_sby,cmm_sbz);
-                    cmm_object_count--;
+    }
 
-                    if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
-                        //unlink trajectory
-                        cmm_trajectories_used &= ~(1<<cmm_object_data[i].param);
-                    }
-                }
+    index = -1;
+    for (u32 i=0;i<cmm_object_count;i++) {
+        if ((cmm_object_data[i].x == cmm_cursor_pos[0])&&(cmm_object_data[i].y == cmm_cursor_pos[1])&&(cmm_object_data[i].z == cmm_cursor_pos[2])) {
+            index = i;
+            remove_occupy_data(cmm_cursor_pos);
+            cmm_object_count--;
+
+            if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
+                //unlink trajectory
+                cmm_trajectories_used &= ~(1<<cmm_object_data[i].param);
             }
-            if (mode==1) {
-                cmm_object_data[i].x     = cmm_object_data[i+1].x;
-                cmm_object_data[i].y     = cmm_object_data[i+1].y;
-                cmm_object_data[i].z     = cmm_object_data[i+1].z;
-                cmm_object_data[i].type  = cmm_object_data[i+1].type;
-                cmm_object_data[i].rot   = cmm_object_data[i+1].rot;
-                cmm_object_data[i].param = cmm_object_data[i+1].param;
-            }
+        }
+    }
+    if (index != -1) {
+        for (u32 i = index; i < cmm_object_count; i++) {
+            cmm_object_data[i] = cmm_object_data[i+1];
         }
         generate_object_preview();
     }
@@ -1191,9 +1244,9 @@ void save_level(u8 index) {
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.lvl[index].trajectories[i][j].x = cmm_trajectory_list[i][(j*4)+1]/TILE_SIZE;
-            cmm_save.lvl[index].trajectories[i][j].y = cmm_trajectory_list[i][(j*4)+2]/TILE_SIZE;
-            cmm_save.lvl[index].trajectories[i][j].z = cmm_trajectory_list[i][(j*4)+3]/TILE_SIZE;
+            cmm_save.lvl[index].trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
+            cmm_save.lvl[index].trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][(j*4)+2]);
+            cmm_save.lvl[index].trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+3]);
         }
     }
 
@@ -1244,8 +1297,8 @@ void load_level(u8 index) {
 
         //Place spawn location
         cmm_save.lvl[0].object_count = 1;
-        cmm_save.lvl[0].objects[0].x = 16;
-        cmm_save.lvl[0].objects[0].z = 16;
+        cmm_save.lvl[0].objects[0].x = 32;
+        cmm_save.lvl[0].objects[0].z = 32;
         cmm_save.lvl[0].objects[0].y = 4;
         cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
 
@@ -1260,7 +1313,10 @@ void load_level(u8 index) {
     cmm_lopt_envfx = cmm_save.lvl[index].option[2];
     cmm_lopt_theme = cmm_save.lvl[index].option[3];
     cmm_lopt_bg = cmm_save.lvl[index].option[4];
+
+    cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
+
     cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
@@ -1276,25 +1332,49 @@ void load_level(u8 index) {
 
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
+    u32 oldIndex = 0;
+    cmm_tile_data_indices[0] = 0;
+    // Load tiles and build index list. Assume all tiles are in order
     for (i = 0; i < cmm_tile_count; i++) {
         bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
-        if ((!cmm_tile_types[cmm_tile_data[i].type].model) || cmm_tile_data[i].type == TILE_TYPE_CULL) {
-            place_terrain_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z,cmm_tile_data[i].type,cmm_tile_data[i].rot,cmm_tile_data[i].mat);
+        u32 curIndex = get_tiletype_index(cmm_tile_data[i].type, cmm_tile_data[i].mat);
+
+        if (curIndex != oldIndex) {
+            // These tiles do not exist in the level so fill in the indices
+            for (u32 j = oldIndex + 1; j < curIndex; j++) {
+                cmm_tile_data_indices[j] = cmm_tile_data_indices[oldIndex];
+            }
+            cmm_tile_data_indices[curIndex] = i;
+
+            oldIndex = curIndex;
         }
-        place_occupy_data(cmm_tile_data[i].x,cmm_tile_data[i].y,cmm_tile_data[i].z);
+
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z)
+
+        if ((!cmm_tile_types[cmm_tile_data[i].type].model) || cmm_tile_data[i].type == TILE_TYPE_CULL) {
+            place_terrain_data(pos, cmm_tile_data[i].type, cmm_tile_data[i].rot, cmm_tile_data[i].mat);
+        }
+        place_occupy_data(pos);
+    }
+    // Fill in remaining indices that were unused
+    for (u32 i = oldIndex + 1; i < ARRAY_COUNT(cmm_tile_data_indices); i++) {
+        cmm_tile_data_indices[i] = cmm_tile_count;
     }
 
     for (i = 0; i < cmm_object_count; i++) {
         bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
-        place_occupy_data(cmm_object_data[i].x,cmm_object_data[i].y,cmm_object_data[i].z);
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z)
+        place_occupy_data(pos);
     }
 
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 40; j++) {
             cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = cmm_save.lvl[index].trajectories[i][j].x*TILE_SIZE;
-            cmm_trajectory_list[i][(j*4)+2] = cmm_save.lvl[index].trajectories[i][j].y*TILE_SIZE;
-            cmm_trajectory_list[i][(j*4)+3] = cmm_save.lvl[index].trajectories[i][j].z*TILE_SIZE;
+            cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].x);
+            cmm_trajectory_list[i][(j*4)+2] = GRIDY_TO_POS(cmm_save.lvl[index].trajectories[i][j].y);
+            cmm_trajectory_list[i][(j*4)+3] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].z);
         }
     }
 
@@ -1310,10 +1390,7 @@ void cmm_init() {
 void sb_init(void) {
     struct Object *spawn_obj;
 
-    cmm_sbx = 16;
-    cmm_sby = 4;
-    cmm_sbz = 16;
-
+    vec3_set(cmm_cursor_pos, 32, 4, 32);
     cmm_ui_index = 0;
     vec3f_copy(&cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
@@ -1389,25 +1466,25 @@ void sb_loop(void) {
             if (joystick != 0) {
                 switch(((joystick-1)+cmm_camera_rot_offset)%4) {
                     case 0:
-                        cmm_sbx++;
+                        cmm_cursor_pos[0]++;
                     break;
                     case 1:
-                        cmm_sbz--;
+                        cmm_cursor_pos[2]--;
                     break;
                     case 2:
-                        cmm_sbx--;
+                        cmm_cursor_pos[0]--;
                     break;
                     case 3:
-                        cmm_sbz++;
+                        cmm_cursor_pos[2]++;
                     break;
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
-                cmm_sby++;
+                cmm_cursor_pos[1]++;
             }
             if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
-                cmm_sby--;
+                cmm_cursor_pos[1]--;
             }
             if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
                 cmm_camera_rot_offset++;
@@ -1417,9 +1494,9 @@ void sb_loop(void) {
             }
             cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
 
-            cmm_sbx=(cmm_sbx+32)%32;
-            cmm_sbz=(cmm_sbz+32)%32;
-            cmm_sby=(cmm_sby+32)%32;
+            cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
             //END MOVE CURSOR
 
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -1435,7 +1512,7 @@ void sb_loop(void) {
                 cmm_param_selection = 0;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].isTile;
+            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
             cmm_ui_index = (cmm_ui_index+9)%9;
 
             //parameter changing
@@ -1505,26 +1582,26 @@ void sb_loop(void) {
                 cmm_rot_selection%=4;
             }
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*TILE_SIZE; 
-            o->oPosY = cmm_sby*TILE_SIZE; 
-            o->oPosZ = cmm_sbz*TILE_SIZE; 
+            o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
+            o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
+            o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
 
             for (u8 i=0; i<6; i++) {
                 vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
             }
-            cmm_boundary_object[0]->oPosY = 0.0f;
-            cmm_boundary_object[1]->oPosY = TILE_SIZE*32.0f;
-            cmm_boundary_object[2]->oPosX = 0.0f;
-            cmm_boundary_object[3]->oPosX = TILE_SIZE*32.0f;
-            cmm_boundary_object[4]->oPosZ = 0.0f;
-            cmm_boundary_object[5]->oPosZ = TILE_SIZE*32.0f;
+            cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
+            cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
+            cmm_boundary_object[2]->oPosX = GRID_TO_POS(GRID_MIN_COORD);
+            cmm_boundary_object[3]->oPosX = GRID_TO_POS(GRID_MAX_COORD);
+            cmm_boundary_object[4]->oPosZ = GRID_TO_POS(GRID_MIN_COORD);
+            cmm_boundary_object[5]->oPosZ = GRID_TO_POS(GRID_MAX_COORD);
 
             if (cmm_place_mode == CMM_PM_OBJ) {
                 if (cmm_object_types[cmm_id_selection].param_max != 0) {
@@ -1532,7 +1609,7 @@ void sb_loop(void) {
                     cmm_param_selection = (cmm_param_selection+max)%max;
                 }
                 vec3f_copy(&cmm_preview_object->oPosX,&o->oPosX);
-                cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset;
+                cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset - TILE_SIZE/2;
                 obj_scale(cmm_preview_object, cmm_object_types[cmm_id_selection].scale);
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[cmm_object_types[cmm_id_selection].model_id];
                 cmm_preview_object->oFaceAngleYaw = cmm_rot_selection*0x4000;
@@ -1549,6 +1626,9 @@ void sb_loop(void) {
                     (cmm_object_types[cmm_id_selection].disp_func)(cmm_preview_object,cmm_param_selection);
                 }
             } else {
+                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
+            }
+            if (cmm_place_mode == CMM_PM_TILE) {
                 if (cmm_tile_types[cmm_id_selection].terrain) {
                     if (gPlayer1Controller->buttonPressed & L_JPAD) {
                         cmm_mat_selection --;
@@ -1558,7 +1638,6 @@ void sb_loop(void) {
                     }
                 }
                 cmm_mat_selection = (cmm_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
-                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             }
 
             if (!cmm_ui_do_render) {
@@ -1598,7 +1677,7 @@ void sb_loop(void) {
                 cmm_ui_index++;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].isTile;
+            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
             cmm_ui_index = (cmm_ui_index+6)%6;
 
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
@@ -1645,10 +1724,14 @@ void sb_loop(void) {
             if (cmm_settings_index_changed) {
                 cmm_settings_index_changed = FALSE;
                 switch(cmm_settings_index) {
-                    case 3: //theme
+                    case 4: //theme
                         generate_terrain_gfx();
+                        cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+                        if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
+                            cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
+                        }
                     break;
-                    case 4: //sky box
+                    case 3: //sky box
                         load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
                     break;
                     case 5://bottom floor
@@ -1668,30 +1751,30 @@ void sb_loop(void) {
             if (joystick != 0) {
                 switch(((joystick-1)+cmm_camera_rot_offset)%4) {
                     case 0:
-                        cmm_sbx++;
+                        cmm_cursor_pos[0]++;
                         cursor_did_move = TRUE;
                     break;
                     case 1:
-                        cmm_sbz--;
+                        cmm_cursor_pos[2]--;
                         cursor_did_move = TRUE;
                     break;
                     case 2:
-                        cmm_sbx--;
+                        cmm_cursor_pos[0]--;
                         cursor_did_move = TRUE;
                     break;
                     case 3:
-                        cmm_sbz++;
+                        cmm_cursor_pos[2]++;
                         cursor_did_move = TRUE;
                     break;
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
-                cmm_sby++;
+                cmm_cursor_pos[1]++;
                 cursor_did_move = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
-                cmm_sby--;
+                cmm_cursor_pos[1]--;
                 cursor_did_move = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
@@ -1711,21 +1794,21 @@ void sb_loop(void) {
             }
             cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
-            cmm_sbx=(cmm_sbx+32)%32;
-            cmm_sbz=(cmm_sbz+32)%32;
-            cmm_sby=(cmm_sby+32)%32;
+            cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+            cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
             //END MOVE CURSOR
 
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], cmm_sbx*TILE_SIZE, 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], cmm_sby*TILE_SIZE, 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], cmm_sbz*TILE_SIZE, 0.2f);
+            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]), 0.2f);
+            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]), 0.2f);
 
             vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
             vec3f_add(&cmm_camera_pos,&cam_pos_offset);
 
-            o->oPosX = cmm_sbx*TILE_SIZE; 
-            o->oPosY = cmm_sby*TILE_SIZE; 
-            o->oPosZ = cmm_sbz*TILE_SIZE;
+            o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
+            o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
+            o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]);
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;

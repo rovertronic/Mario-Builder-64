@@ -849,11 +849,7 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "sb_cube/geo_header.h"
 
-#include "visualplane/header.h"
-
 #include "lev_edge/geo_header.h"
-
-#include "spawn/collision_header.h"
 
 #include "spawn/geo_header.h"
 
@@ -870,5 +866,7 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "mm_btn/header.h"
 
 #include "mario2/geo_header.h"
+
+#include "spawn/header.h"
 
 #endif

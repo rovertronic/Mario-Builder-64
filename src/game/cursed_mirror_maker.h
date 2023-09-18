@@ -28,13 +28,22 @@ extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
 
-#define CMM_TILE_POOL_SIZE 3000
+#define CMM_TILE_POOL_SIZE 5000
 #define CMM_GFX_SIZE 23000
 #define CMM_GFX_TP_SIZE 8000
 #define CMM_VTX_SIZE 100000
 
 #define TILE_SIZE 256
 
+// For making variable size levels later
+#define GRID_MIN_COORD 16
+#define GRID_MAX_COORD 48
+#define GRID_SIZE (GRID_MAX_COORD - GRID_MIN_COORD)
+
+#define GRID_TO_POS(gridx) (gridx * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
+#define GRIDY_TO_POS(gridy) (gridy * TILE_SIZE + TILE_SIZE/2)
+#define POS_TO_GRID(pos) ((pos + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
+#define POS_TO_GRIDY(pos) ((pos - TILE_SIZE/2) / TILE_SIZE)
 
 enum cmm_directions {
     CMM_DIRECTION_UP,
@@ -98,7 +107,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u8 x:5, y:5, z:5, type:5, mat:4, rot:2;
+    u32 x:6, y:5, z:6, type:5, mat:4, rot:2;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -120,12 +129,13 @@ enum {
 };
 
 struct cmm_obj {
-    u8 param, x:5, y:5, z:5, type:5, rot:2;
+    u32 param:8, x:6, y:5, z:6, type:5, rot:2;
 };
 
 struct cmm_grid_obj {
-    u8 type:5, mat:4, rot:2, occupied:1;
+    u16 type:5, mat:4, rot:2, occupied:1;
 };
+
 struct cmm_object_type_struct {
     u32 behavior;
     f32 y_offset;
@@ -167,15 +177,15 @@ enum {
 struct cmm_ui_button_type {
     Gfx * material;
     u8 id;
-    u8 isTile:1;
+    u8 placeMode:2;
     u8 * str;
     u8 ** param_strings;
 };
 
 struct cmm_settings_button {
-    u8 * str;
+    char * str;
     u8 * value;
-    u8 ** nametable;
+    char ** nametable;
     u8 size;
 };
 
@@ -236,6 +246,7 @@ enum {
 };
 
 enum {
+    CMM_PM_NONE,
     CMM_PM_TILE,
     CMM_PM_OBJ,
 };
@@ -253,6 +264,7 @@ enum cmm_mat_types {
 struct cmm_material {
     Gfx *gfx;
     u8 type:2;
+    TerrainData col;
 };
 
 // Represents a material as a top texture with optional side decal
@@ -265,16 +277,17 @@ struct cmm_topmaterial {
 struct cmm_tilemat_def {
     u8 mat;
     u8 topmat;
-    u8 *name;
+    char *name;
 };
 struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
+    u8 numFloors;
+    s8 *floors;
 };
 
 //compressed trajectories
 struct cmm_comptraj {
-    u8 x:5, y:5, z:5;
-    s8 t:7;
+    u32 x:5, y:5, z:5, t:7;
 };
 
 
@@ -292,7 +305,7 @@ struct cmm_level_save {
     u8 version;
     u16 piktcher[28][28]; //28*28 = 784*2 = 1568 bytes
 
-    struct cmm_tile tiles[2000];//3*1500 = 4500 bytes
+    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
     struct cmm_obj objects[200];//4*200 = 800 bytes
     struct cmm_comptraj trajectories[5][40];
     u8 option[20];//20 bytes
