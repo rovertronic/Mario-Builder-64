@@ -2,6 +2,12 @@
 #define cursed_mirror_maker_h
 #include "libcart/ff/ff.h"
 
+#define CMM_TILE_POOL_SIZE 5000
+#define CMM_GFX_SIZE 20000
+#define CMM_VTX_SIZE 100000
+
+#define TILE_SIZE 256
+
 #define CMM_VERSION 1
 
 void sb_loop(void);
@@ -11,7 +17,7 @@ void draw_cmm_menu(void);
 void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
-extern Gfx cmm_terrain_gfx[23000];
+extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
 extern Trajectory cmm_trajectory_list[5][160];
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
@@ -29,12 +35,6 @@ extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
 extern TCHAR cmm_file_name[30];
-
-#define CMM_TILE_POOL_SIZE 5000
-#define CMM_GFX_SIZE 20000
-#define CMM_VTX_SIZE 100000
-
-#define TILE_SIZE 256
 
 // For making variable size levels later
 #define GRID_MIN_COORD 16
