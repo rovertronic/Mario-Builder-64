@@ -6,8 +6,8 @@ void scroll_sts_mat_maker_MakerLava() {
 
 void scroll_sts_mat_maker_MakerWater() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerWater);
-	shift_s(mat, 13, PACK_TILESIZE(0, 1));
-	shift_t(mat, 13, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_sts_mat_maker_MakerRetroLava() {

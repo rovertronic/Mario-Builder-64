@@ -52,4 +52,4 @@ void scroll_textures_group0() {
 	scroll_actor_dl_maker();
 	scroll_actor_geo_badge();
 	scroll_actor_geo_mario2();
-	}
+		}

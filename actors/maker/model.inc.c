@@ -18798,7 +18798,6 @@ Gfx mat_maker_MakerStoneSide[] = {
 Gfx mat_maker_MakerWater[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0, 0, 0, 0, PRIMITIVE),
-	gsSPGeometryMode(G_CULL_BACK, 0),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, maker_Water__ci4_pal_rgba16),
@@ -18816,7 +18815,6 @@ Gfx mat_maker_MakerWater[] = {
 
 Gfx mat_revert_maker_MakerWater[] = {
 	gsDPPipeSync(),
-	gsSPGeometryMode(0, G_CULL_BACK),
 	gsDPSetTextureLUT(G_TT_NONE),
 	gsSPEndDisplayList(),
 };
