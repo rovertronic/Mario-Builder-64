@@ -99,11 +99,11 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
         G_RM_AA_TEX_EDGE,                   // LAYER_ALPHA
 
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_DECAL
+        G_RM_AA_TEX_EDGE,                   // LAYER_COIN
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT
         G_RM_AA_XLU_SURF,                   // LAYER_TRANSPARENT_INTER
         G_RM_CLD_SURF,                      // LAYER_CIRCLE_SHADOW
         G_RM_CLD_SURF,                      // LAYER_CIRCLE_SHADOW_TRANSPARENT
-        G_RM_AA_TEX_EDGE,                   // LAYER_COIN
     } },
     { {
         /* z-buffered */
@@ -114,11 +114,11 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
         G_RM_AA_ZB_TEX_EDGE,                // LAYER_ALPHA
 
         G_RM_AA_ZB_XLU_DECAL,               // LAYER_TRANSPARENT_DECAL
+        G_RM_AA_ZB_TEX_EDGE,                // LAYER_COIN
         G_RM_AA_ZB_XLU_SURF,                // LAYER_TRANSPARENT
         G_RM_AA_ZB_XLU_INTER,               // LAYER_TRANSPARENT_INTER
         G_RM_AA_ZB_XLU_DECAL,              // LAYER_CIRCLE_SHADOW
         G_RM_ZB_CLD_SURF,              // LAYER_CIRCLE_SHADOW_TRANSPARENT
-        G_RM_AA_ZB_TEX_EDGE,                // LAYER_COIN
     } } };
 
 /* Rendermode settings for cycle 2 for all 13 layers. */
@@ -130,11 +130,11 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
         G_RM_AA_TEX_EDGE2,                  // LAYER_ALPHA
 
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_DECAL
+        G_RM_AA_TEX_EDGE2,              // LAYER_COIN
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT
         G_RM_AA_XLU_SURF2,                  // LAYER_TRANSPARENT_INTER
         G_RM_CLD_SURF2,                  // LAYER_CIRCLE_SHADOW
         G_RM_CLD_SURF2,                  // LAYER_CIRCLE_SHADOW_TRANSPARENT
-        G_RM_AA_TEX_EDGE2,              // LAYER_COIN
     } },
     { {
         /* z-buffered */
@@ -145,11 +145,11 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
         G_RM_AA_ZB_TEX_EDGE2,               // LAYER_ALPHA
 
         G_RM_AA_ZB_XLU_DECAL2,              // LAYER_TRANSPARENT_DECAL
+        G_RM_AA_ZB_TEX_EDGE2,          // LAYER_COIN
         G_RM_AA_ZB_XLU_SURF2,               // LAYER_TRANSPARENT
         G_RM_AA_ZB_XLU_INTER2,              // LAYER_TRANSPARENT_INTER
         G_RM_AA_ZB_XLU_DECAL2,              // LAYER_CIRCLE_SHADOW
         G_RM_ZB_CLD_SURF2,              // LAYER_CIRCLE_SHADOW_TRANSPARENT
-        G_RM_AA_ZB_TEX_EDGE2,          // LAYER_COIN
     } } };
 
 ALIGNED16 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
