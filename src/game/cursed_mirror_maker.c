@@ -82,12 +82,11 @@ s16 cmm_mat_selection = 0;
 struct cmm_grid_obj cmm_grid_data[64][32][64] = {0};
 
 Gfx cmm_terrain_gfx[CMM_GFX_SIZE]; //gfx
-Gfx cmm_terrain_gfx_tp[CMM_GFX_TP_SIZE];//transparent
+Gfx *cmm_terrain_gfx_tp;
 u32 cmm_terrain_vtx[CMM_VTX_SIZE];
 
 u32 cmm_gfx_total = 0;
 u32 cmm_vtx_total = 0;
-u32 cmm_gfx_tp_total = 0;
 
 struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[200];
@@ -214,9 +213,6 @@ s32 tile_sanity_check(void) {
         allow = FALSE;
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
-        allow = FALSE;
-    }
-    if (cmm_gfx_tp_total >= CMM_GFX_TP_SIZE - 30) {
         allow = FALSE;
     }
 
@@ -792,10 +788,9 @@ void generate_terrain_gfx(void) {
             }
         }
     }
-    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
-    cmm_curr_gfx = cmm_terrain_gfx_tp;
-    cmm_gfx_index = 0;
+    cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerWater);
     // Render water twice. This is so that all interior faces are rendered before all exterior faces,
     // to make the layering a little better.
@@ -821,8 +816,7 @@ void generate_terrain_gfx(void) {
     //print_text_fmt_int(110, 116, "TYPE %d", cmm_tile_data[cmm_tile_count-1].type);
 
     cmm_vtx_total = cmm_curr_vtx - cmm_terrain_vtx;
-    //cmm_gfx_total = cmm_gfx_index;
-    //cmm_gfx_tp_total = gfx_tp_index;
+    cmm_gfx_total = cmm_gfx_index;
 };
 
 Gfx preview_gfx[32];

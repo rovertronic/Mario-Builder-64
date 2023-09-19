@@ -31,8 +31,7 @@ extern u32 cmm_play_badge_bitfield;
 extern TCHAR cmm_file_name[30];
 
 #define CMM_TILE_POOL_SIZE 5000
-#define CMM_GFX_SIZE 23000
-#define CMM_GFX_TP_SIZE 8000
+#define CMM_GFX_SIZE 20000
 #define CMM_VTX_SIZE 100000
 
 #define TILE_SIZE 256
