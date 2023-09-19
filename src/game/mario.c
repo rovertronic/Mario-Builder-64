@@ -520,6 +520,7 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
     s16 terrainType = m->area->terrainType & TERRAIN_MASK;
     s32 ret = SOUND_TERRAIN_DEFAULT << 16;
     s32 floorType;
+    u8 setret = FALSE;
 
     if (m->floor != NULL) {
         floorType = m->floor->type;
@@ -565,9 +566,28 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
                 case SURFACE_NOISE_SLIPPERY:
                     floorSoundType = 5;
                     break;
+
+                case SURFACE_GRASS:
+                    floorSoundType = 4;
+                    terrainType = TERRAIN_GRASS & TERRAIN_MASK;
+                    break;
+                case SURFACE_SAND:
+                    setret = TRUE;
+                    ret = SOUND_TERRAIN_SAND << 16;
+                    break;
+                case SURFACE_SNOW:
+                    setret = TRUE;
+                    ret = SOUND_TERRAIN_SNOW << 16;
+                break;
+                case SURFACE_CREAKWOOD:
+                    setret = TRUE;
+                    ret = SOUND_TERRAIN_SPOOKY << 16;
+                break;
             }
 
-            ret = sTerrainSounds[terrainType][floorSoundType] << 16;
+            if (!setret) {
+                ret = sTerrainSounds[terrainType][floorSoundType] << 16;
+            }
         }
     }
 

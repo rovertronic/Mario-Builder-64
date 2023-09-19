@@ -309,18 +309,18 @@ enum cmm_materials {
 struct cmm_material cmm_mat_table[] = {
     // Generic
     {&mat_maker_MakerDirt,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_DIRT
-    {&mat_maker_MakerGrass,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_GRASS
+    {&mat_maker_MakerGrass,      0, SURFACE_GRASS},             // CMM_MAT_GRASS
     {&mat_maker_MakerBricks,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_BRICKS
     {&mat_maker_MakerStoneSide,  0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_STONE
     {&mat_maker_MakerStone,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_COBBLESTONE
     {&mat_maker_MakerTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_TILES
     {&mat_maker_MakerTileBricks, 0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_TILESBRICKS
     {&mat_maker_MakerRoof,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_ROOF
-    {&mat_maker_MakerWood,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_WOOD
+    {&mat_maker_MakerWood,       0, SURFACE_CREAKWOOD},         // CMM_MAT_WOOD
     {&mat_maker_MakerSandDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SANDDIRT
-    {&mat_maker_MakerSand,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SAND
+    {&mat_maker_MakerSand,       0, SURFACE_SAND},              // CMM_MAT_SAND
     {&mat_maker_MakerSnowDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SNOWDIRT
-    {&mat_maker_MakerSnow,       0, SURFACE_VERY_SLIPPERY},     // CMM_MAT_SNOW
+    {&mat_maker_MakerSnow,       0, SURFACE_SNOW},              // CMM_MAT_SNOW
     {&mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
     {&mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
     // Desert

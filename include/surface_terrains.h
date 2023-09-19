@@ -93,10 +93,10 @@ enum SurfaceTypes {
     SURFACE_NO_CAM_COL_SLIPPERY,        // 0x0079 // Surface with no cam collision flag, slippery with noise (CCM, PSS and TTM slides)
     SURFACE_SWITCH,                     // 0x007A // Surface with no cam collision flag, non-slippery with noise, used by switches and Dorrie
     SURFACE_VANISH_CAP_WALLS,           // 0x007B // Vanish cap walls, pass through them with Vanish Cap
-    SURFACE_007C,                       // 0x007C // Unused
-    SURFACE_007D,                       // 0x007D // Unused
-    SURFACE_007E,                       // 0x007E // Unused
-    SURFACE_007F,                       // 0x007F // Unused
+    SURFACE_GRASS,                      // 0x007C // Unused
+    SURFACE_SNOW,                       // 0x007D // Unused
+    SURFACE_SAND,                       // 0x007E // Unused
+    SURFACE_CREAKWOOD,                  // 0x007F // Unused
     SURFACE_0080,                       // 0x0080 // Unused
     SURFACE_0081,                       // 0x0081 // Unused
     SURFACE_0082,                       // 0x0082 // Unused
