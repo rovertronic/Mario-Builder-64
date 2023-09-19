@@ -409,15 +409,15 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                     else
                         cmm_terrain_slopebelowdecal_quad.decaluvs = slope_decal_below_uvsquad_r;
                     
-                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot, TRUE, FALSE);
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot);
                     return TRUE;
                 case CMM_FACESHAPE_DOWNTRI_1:
                     if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
-                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, newpos, targetRot, TRUE);
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri1, cmm_curr_gfx, newpos, targetRot);
                     return TRUE; 
                 case CMM_FACESHAPE_DOWNTRI_2:
                     if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, newpos, targetRot, TRUE);
+                        render_tri(&cmm_terrain_slopebelowdecal_downtri2, cmm_curr_gfx, newpos, targetRot);
                     return TRUE;
             }
             
@@ -658,6 +658,9 @@ u32 get_water_side_render(s8 pos[3], u32 dir) {
         }
         return 0;
     }
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) {
+        return 0;
+    }
 
     return isFullblock ? 2 : 1;
 }
@@ -708,7 +711,7 @@ void generate_terrain_gfx(void) {
                 tileType = cmm_tile_data[i].type;
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-                //render_block_main(pos, tileType, mat, rot);
+                render_block_main(pos, tileType, mat, rot);
             }
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         }
@@ -810,7 +813,6 @@ void generate_terrain_gfx(void) {
             render_water(pos);
         }
     }
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerWater);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
     //print_text_fmt_int(110, 56, "OPAQUE %d", gfx_index);
@@ -965,36 +967,34 @@ void generate_terrain_collision(void) {
     cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2], topFloorType);
 
     for (i=0; i<cmm_tile_count; i++) {
+        s8 pos[3];
+        s8 newVtx[4][3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+        if (cmm_tile_data[i].waterlogged) {
+            u8 index = is_water_fullblock(pos) ? 1 : 0;
+
+            s8 nextPos[3];
+            vec3_set(nextPos, pos[0], pos[1]+1, pos[2]);
+            // Collision for top
+            if (!get_grid_tile(nextPos)->waterlogged) {
+                struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[index][0];
+                cmm_create_quad(pos, quad->vtx, SURFACE_NEW_WATER);
+            }
+
+            vec3_set(nextPos, pos[0], pos[1]-1, pos[2]);
+            // Collision for bottom
+            if (!get_grid_tile(nextPos)->waterlogged) {
+                struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[0][1];
+                cmm_create_quad(pos, quad->vtx, SURFACE_NEW_WATER_BOTTOM);
+            } 
+        }
         struct cmm_terrain_block *terrain = cmm_tile_types[cmm_tile_data[i].type].terrain;
         if (terrain) {
             // Troll tiles have no collision
             if (cmm_tile_data[i].type == TILE_TYPE_TROLL) {
                 continue;
             }
-
-            s8 pos[3];
-            s8 newVtx[4][3];
-            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-
-            if (cmm_tile_data[i].waterlogged) {
-                u8 index = is_water_fullblock(pos) ? 1 : 0;
-
-                s8 nextPos[3];
-                vec3_set(nextPos, pos[0], pos[1]+1, pos[2]);
-                // Collision for top
-                if (!get_grid_tile(nextPos)->waterlogged) {
-                    struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[index][0];
-                    cmm_create_quad(pos, quad->vtx, SURFACE_NEW_WATER);
-                }
-
-                vec3_set(nextPos, pos[0], pos[1]-1, pos[2]);
-                // Collision for bottom
-                if (!get_grid_tile(nextPos)->waterlogged) {
-                    struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[0][1];
-                    cmm_create_quad(pos, quad->vtx, SURFACE_NEW_WATER_BOTTOM);
-                } 
-            }
-            if (cmm_tile_data[i].type == TILE_TYPE_WATER) continue;
 
             floorType = MATERIAL(cmm_tile_data[i].mat).col;
             if (HAS_TOPMAT(cmm_tile_data[i].mat)) {

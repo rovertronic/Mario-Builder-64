@@ -183,7 +183,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL, &cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
     {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
-    \{NULL, NULL,      NULL, FALSE}, // TILE_TYPE_WATER
+    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_WATER
 };
 
 struct cmm_object_type_struct cmm_object_types[] = {
@@ -364,11 +364,11 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerRHRBasalt,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BASALT
     {&mat_maker_MakerRHRTiles,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_TILES
     {&mat_maker_MakerRHRPattern,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BLOCK
-    {&mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_WOOD
+    {&mat_maker_MakerRHRWood,         0, SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
     {&mat_maker_MakerRHRPillar,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_PILLAR
     {&mat_maker_MakerRHRGrate_layer1, 1, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
-    {&mat_maker_MakerHGrass,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_GRASS
+    {&mat_maker_MakerHGrass,          0, SURFACE_GRASS},            // CMM_MAT_HMC_GRASS
     {&mat_maker_MakerHDirt,           0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
     {&mat_maker_MakerHBrick,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_BRICK
     {&mat_maker_MakerHStone,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
@@ -383,7 +383,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerCBrick,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_BRICK
     {&mat_maker_MakerCStone,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONETOP
     {&mat_maker_MakerCStoneSide,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONESIDE
-    {&mat_maker_MakerCCarpet,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_CARPET
+    {&mat_maker_MakerCCarpet,         0, SURFACE_GRASS},        // CMM_MAT_C_CARPET
     {&mat_maker_MakerCRoof,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_ROOF
     {&mat_maker_MakerCWall,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_WALL
     {&mat_maker_MakerCPillar,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_PILLAR
@@ -399,7 +399,7 @@ struct cmm_material cmm_mat_table[] = {
     // Retro
     {&mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {&mat_maker_MakerRetroBrick,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BRICKS
-    {&mat_maker_MakerRetroTreeTop,    0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_TREETOP
+    {&mat_maker_MakerRetroTreeTop,    0, SURFACE_GRASS},        // CMM_MAT_RETRO_TREETOP
     {&mat_maker_MakerRetroTree,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_TREEPLAT
     {&mat_maker_MakerRetroBlock,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLOCK
     {&mat_maker_MakerRetroBGround,    0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEGROUND
@@ -545,7 +545,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_VP_RUSTYBLOCK, 0,                       "Rusty Block"},
             {CMM_MAT_VP_SCREEN,     0,                       "Screen"},
             {CMM_MAT_VP_CAUTION,    0,                       "Hazard Stripes"},
-            {CMM_MAT_VP_BLOCK,  CMM_TOPMAT_SNOW,         "Snowy Block"},
+            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         "Snowy Block"},
             {CMM_MAT_LAVA,          0,                       "Lava"},
             {CMM_MAT_VP_VOID,       0,                       "Void"},
         },
