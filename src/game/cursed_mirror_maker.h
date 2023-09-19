@@ -245,6 +245,7 @@ enum {
     CMM_BUTTON_BBALL,
     CMM_BUTTON_KTQ,
     CMM_BUTTON_SSLOPE,
+    CMM_BUTTON_SLAB,
 };
 
 enum {

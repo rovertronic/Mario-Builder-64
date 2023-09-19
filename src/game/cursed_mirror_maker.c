@@ -1420,12 +1420,12 @@ void sb_init(void) {
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
                 vec3f_copy(&gMarioState->pos,&spawn_obj->oPosVec);
-                gMarioState->pos[1] += TILE_SIZE/2;
+                gMarioState->pos[1] -= TILE_SIZE/2;
 
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
                 if (warpobj) {
                     vec3f_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
-                    warpobj->oPosY += TILE_SIZE/2;
+                    warpobj->oPosY -= TILE_SIZE/2;
                 }
             }
 

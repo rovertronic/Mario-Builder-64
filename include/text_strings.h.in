@@ -72,6 +72,7 @@
 #define TXT_BTN_41 _("Bowling Ball")
 #define TXT_BTN_42 _("Koopa the Quick")
 #define TXT_BTN_43 _("Side Slope")
+#define TXT_BTN_44 _("Slab")
 
 #define TXT_RECORDING _("Building path in progress.\nPress [A] to build the path.\nPress START to finish.")
 
