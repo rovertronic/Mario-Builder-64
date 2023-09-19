@@ -31,8 +31,7 @@ extern u32 cmm_play_badge_bitfield;
 extern TCHAR cmm_file_name[30];
 
 #define CMM_TILE_POOL_SIZE 5000
-#define CMM_GFX_SIZE 23000
-#define CMM_GFX_TP_SIZE 8000
+#define CMM_GFX_SIZE 20000
 #define CMM_VTX_SIZE 100000
 
 #define TILE_SIZE 256
@@ -109,7 +108,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u32 x:6, y:5, z:6, type:5, mat:4, rot:2;
+    u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -122,12 +121,16 @@ enum {
     TILE_TYPE_SLOPE,
     TILE_TYPE_CORNER,
     TILE_TYPE_ICORNER,
-    TILE_TYPE_TROLL,
-    TILE_TYPE_CULL,
     TILE_TYPE_DSLOPE,
-    TILE_TYPE_WATER,
-    TILE_TYPE_FENCE,
     TILE_TYPE_SSLOPE,
+    TILE_TYPE_SLAB,
+    TILE_TYPE_DSLAB,
+    TILE_TYPE_SSLAB,
+    TILE_TYPE_CULL,
+    TILE_TYPE_TROLL,
+    TILE_TYPE_FENCE,
+
+    TILE_TYPE_WATER, // only blocks that are empty otherwise
 };
 
 struct cmm_obj {
@@ -135,7 +138,7 @@ struct cmm_obj {
 };
 
 struct cmm_grid_obj {
-    u16 type:5, mat:4, rot:2, occupied:1;
+    u16 type:5, mat:4, rot:2, occupied:1, waterlogged:1;
 };
 
 struct cmm_object_type_struct {
@@ -252,6 +255,7 @@ enum {
     CMM_PM_NONE,
     CMM_PM_TILE,
     CMM_PM_OBJ,
+    CMM_PM_WATER,
 };
 
 #define NUM_THEMES 7
