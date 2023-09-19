@@ -33,6 +33,7 @@
 #include "level_update.h"
 #include "hud.h"
 #include "rendering_graph_node.h"
+#include "cursed_mirror_maker.h"
 
 u8 letgo = FALSE;
 
@@ -2045,12 +2046,13 @@ void render_pause_my_score_coins(void) {
 
     u8 strCourseNum[4];
 
-    void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
-    void    **actNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][2]);
+    //void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
+    //void    **actNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][2]);
 
-    u8 courseIndex = COURSE_NUM_TO_INDEX(gCurrCourseNum);
-    u8 starFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+    //u8 courseIndex = COURSE_NUM_TO_INDEX(gCurrCourseNum);
+    //u8 starFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
 
+    /*
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
@@ -2090,6 +2092,11 @@ void render_pause_my_score_coins(void) {
         print_generic_string(SECRET_LVL_NAME_X, 157, &courseName[3]);
     }
 
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    */
+
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    print_generic_string_ascii(SECRET_LVL_NAME_X, 157, cmm_file_name);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 

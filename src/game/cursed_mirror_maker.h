@@ -1,5 +1,6 @@
 #ifndef cursed_mirror_maker_h
 #define cursed_mirror_maker_h
+#include "libcart/ff/ff.h"
 
 #define CMM_VERSION 1
 
@@ -27,6 +28,7 @@ extern u8 cmm_play_stars_max;
 extern u32 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
+extern TCHAR cmm_file_name[30];
 
 #define CMM_TILE_POOL_SIZE 5000
 #define CMM_GFX_SIZE 23000
