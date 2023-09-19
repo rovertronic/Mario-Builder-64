@@ -19,6 +19,8 @@
 #include "platform_displacement.h"
 #include "mario_actions_airborne.h"
 
+#include "cursed_mirror_maker.h"
+
 #include "config.h"
 
 static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
@@ -398,7 +400,7 @@ s32 perform_ground_step(struct MarioState *m) {
         stepResult = GROUND_STEP_HIT_WALL;
     }
 
-    if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND)
+    if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
     {
         stepResult = GROUND_STEP_DEATH;
         m->vel[0] = -2 * m->wall->normal.x;
@@ -757,7 +759,7 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
             break;
         }
 
-        if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND)
+        if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
         {
             stepResult = AIR_STEP_DEATH;
             m->vel[0] = -2 * m->wall->normal.x;
