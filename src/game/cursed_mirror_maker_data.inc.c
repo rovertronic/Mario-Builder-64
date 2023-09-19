@@ -17,12 +17,12 @@ u8 cmm_rotated_dirs[4][6] = {
 #define ROTATE_DIRECTION(dir, rot) (cmm_rotated_dirs[rot][dir])
 
 struct cmm_terrain_quad cmm_terrain_fullblock_quads[] = {
-    {{{1, 1, 1},  {1, 1, -1},  {-1, 1, 1},  {-1, 1, -1}},  1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
-    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
-    {{{1, 1, 1},  {1, -1, 1},  {1, 1, -1},  {1, -1, -1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
-    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
-    {{{1, 1, 1},  {-1, 1, 1},  {1, -1, 1},  {-1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
-    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 16, 16}, {16, 0, 16}, {16, 16, 0}, {16, 0, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 16},  {0, 16, 0},  {0, 0, 16},  {0, 0, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{16, 16, 16}, {0, 16, 16}, {16, 0, 16}, {0, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
 struct cmm_terrain_block cmm_terrain_fullblock = {
     6,
@@ -31,18 +31,18 @@ struct cmm_terrain_block cmm_terrain_fullblock = {
     NULL
 };
 
-s8 slope_decal_uvs1[3][2] = {{-1, -1}, {-1, 1}, {1, 1}};
-s8 slope_decal_uvs2[3][2] = {{-1, 1}, {-1, -1}, {1, 1}};
+s8 slope_decal_uvs1[3][2] = {{0, 0}, {0, 16}, {16, 16}};
+s8 slope_decal_uvs2[3][2] = {{0, 16}, {0, 0}, {16, 16}};
 
 struct cmm_terrain_quad cmm_terrain_slope_quads[] = {
-    {{{1, -1, 1},  {1, 1, -1},  {-1, -1, 1},  {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
-    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
-    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 0, 16}, {16, 16, 0}, {0, 0, 16}, {0, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 16, 0}, {16, 0, 0},  {0, 16, 0}, {0, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
 
 struct cmm_terrain_tri cmm_terrain_slope_tris[] = {
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
+    {{{16, 0, 0}, {16, 16, 0}, {16, 0, 16}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
 };
 
 struct cmm_terrain_block cmm_terrain_slope = {
@@ -53,14 +53,14 @@ struct cmm_terrain_block cmm_terrain_slope = {
 };
 
 struct cmm_terrain_quad cmm_terrain_corner_quads[] = {
-    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 0, 16}, {0, 0, 16}, {16, 0, 0}, {0, 0, 0}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
 };
 
 struct cmm_terrain_tri cmm_terrain_corner_tris[] = {
-    {{{-1, -1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{-1, 1, -1}, {1, -1, 1}, {1, -1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, -1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
-    {{{-1, -1, -1}, {-1, 1, -1}, {1, -1, -1}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
+    {{{0, 0, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0}, {16, 0, 16}, {16, 0, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
+    {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
+    {{{0, 0, 0},  {0, 16, 0},  {16, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
 
 struct cmm_terrain_block cmm_terrain_corner = {
@@ -71,16 +71,16 @@ struct cmm_terrain_block cmm_terrain_corner = {
 };
 
 struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
-    {{{1, -1, 1}, {-1, -1, 1}, {1, -1, -1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
-    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{16, 0, 16}, {0, 0, 16}, {16, 0, 0}, {0, 0, 0}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 16, 0}, {16, 0, 0}, {0, 16, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{0, 16, 16}, {0, 16, 0}, {0, 0, 16}, {0, 0, 0}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
 };
 
 struct cmm_terrain_tri cmm_terrain_icorner_tris[] = {
-    {{{-1, 1, 1}, {1, -1, 1}, {-1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{-1, 1, -1}, {1, -1, 1}, {1, 1, -1}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
-    {{{1, -1, -1}, {1, 1, -1}, {1, -1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
-    {{{-1, 1, 1}, {-1, -1, 1}, {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
+    {{{0, 16, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0},  {16, 0, 16}, {16, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
+    {{{16, 0, 0},  {16, 16, 0}, {16, 0, 16}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{0, 16, 16}, {0, 0, 16},  {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
 };
 
 struct cmm_terrain_block cmm_terrain_icorner = {
@@ -91,14 +91,14 @@ struct cmm_terrain_block cmm_terrain_icorner = {
 };
 
 struct cmm_terrain_quad cmm_terrain_dslope_quads[] = {
-    {{{1, 1, 1},  {1, 1, -1},  {-1, 1, 1},  {-1, 1, -1}},  1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
-    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{1, 1, 1}, {-1, 1, 1}, {1, -1, -1}, {-1, -1, -1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE, NULL}, // BOTTOM
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 16, 16}, {0, 16, 16}, {16, 0, 0},  {0, 0, 0}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE, NULL}, // BOTTOM
 };
 
 struct cmm_terrain_tri cmm_terrain_dslope_tris[] = {
-    {{{1, -1, -1}, {1, 1, -1}, {1, 1, 1}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNTRI_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
-    {{{-1, 1, -1}, {-1, -1, -1}, {-1, 1, 1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNTRI_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{16, 0, 0}, {16, 16, 0}, {16, 16, 16}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNTRI_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 0}, {0, 0, 0},   {0, 16, 16}},   0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNTRI_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
 };
 
 struct cmm_terrain_block cmm_terrain_dslope = {
@@ -109,14 +109,14 @@ struct cmm_terrain_block cmm_terrain_dslope = {
 };
 
 struct cmm_terrain_quad cmm_terrain_sslope_quads[] = {
-    {{{1, 1, -1}, {1, -1, -1}, {-1, 1, -1}, {-1, -1, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{-1, 1, 1}, {-1, 1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
-    {{{1, 1, -1},  {-1, 1, 1},  {1, -1, -1},  {-1, -1, 1}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_DIAGONAL_SIDE, NULL}, // DIAGONAL
+    {{{16, 16, 0}, {16, 0, 0},  {0, 16, 0}, {0, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{0, 16, 16}, {0, 16, 0},  {0, 0, 16}, {0, 0, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{16, 16, 0}, {0, 16, 16}, {16, 0, 0}, {0, 0, 16}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_DIAGONAL_SIDE, NULL}, // DIAGONAL
 };
 
 struct cmm_terrain_tri cmm_terrain_sslope_tris[] = {
-    {{{-1, 1, 1}, {1, 1, -1}, {-1, 1, -1}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_TOPTRI, CMM_GROWTH_FULL, NULL}, // TOP
-    {{{1, -1, -1}, {-1, -1, 1}, {-1, -1, -1}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
+    {{{0, 16, 16}, {16, 16, 0}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_TOPTRI, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 0},  {0, 0, 16},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
 };
 
 struct cmm_terrain_block cmm_terrain_sslope = {
@@ -129,19 +129,29 @@ struct cmm_terrain_block cmm_terrain_sslope = {
 
 // All of this is for the system where slopes can place a decal on the face below them.
 // Very hardcoded, so best not to touch any of these numbers
-s8 slope_decal_below_uvsquad_l[4][2] = {{-1, -1}, {1, 1}, {-1, -3}, {1, -1}};
-s8 slope_decal_below_uvsquad_r[4][2] = {{1, 1}, {-1, -1}, {1, -1}, {-1, -3}};
-s8 slope_decal_below_uvstri_1[3][2] = {{1, 1}, {-1, -1}, {1, -1}};
-s8 slope_decal_below_uvstri_2[3][2] = {{1, 1}, {1, -1}, {-1, -1}};
+s8 slope_decal_below_uvsquad_l[4][2] = {{0, 0}, {16, 16}, {0, -32}, {16, 0}};
+s8 slope_decal_below_uvsquad_r[4][2] = {{16, 16}, {0, 0}, {16, 0}, {0, -32}};
+s8 slope_decal_below_uvstri_1[3][2] = {{16, 16}, {0, 0}, {16, 0}};
+s8 slope_decal_below_uvstri_2[3][2] = {{16, 16}, {16, 0}, {0, 0}};
 
 struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
-    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1},  {-1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
+    {{16, 16, 16}, {0, 16, 16}, {16, 0, 16}, {0, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
 };
 struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri1 = {
-    {{1, 1, 1},  {-1, 1, 1},  {1, -1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, &slope_decal_below_uvstri_1
+    {{16, 16, 16}, {0, 16, 16}, {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, &slope_decal_below_uvstri_1
 };
 struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
-    {{-1, 1, 1},  {-1, -1, 1}, {1, 1, 1}},  2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
+    {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
+};
+
+// Shapes of water tiles
+struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
+    {{{16, 14, 16}, {16, 14, 0}, {0, 14, 16}, {0, 14, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // TOP
+    {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 14, 16}, {16, 0, 16}, {16, 14, 0}, {16, 0, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, 0, NULL}, // LEFT
+    {{{0, 14, 16},  {0, 14, 0},  {0, 0, 16},  {0, 0, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, 0, NULL}, // RIGHT
+    {{{16, 14, 16}, {0, 14, 16}, {16, 0, 16}, {0, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL}, // FRONT
+    {{{16, 14, 0},  {16, 0, 0},  {0, 14, 0},  {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, 0, NULL}, // BACK
 };
 
 struct cmm_tile_type_struct cmm_tile_types[] = {
@@ -150,12 +160,14 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
     {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
     {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
-    {NULL, &cmm_terrain_fullblock,                   NULL                       , FALSE},//TILE_TYPE_TROLL
-    {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
-    {&makerwater_mw_mesh, NULL,    makerwater_collision       , TRUE },//TILE_TYPE_WATER
-    {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
     {NULL, &cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
+    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_SLAB
+    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_DSLAB
+    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_SSLAB
+    {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
+    {NULL, &cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
+    {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
 };
 
 struct cmm_object_type_struct cmm_object_types[] = {
@@ -628,7 +640,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {&mat_b_btn_phantasm , OBJECT_TYPE_PHNTSM ,CMM_PM_OBJ  , &txt_btn_34   , NULL         }, //CMM_BUTTON_PHANTASM
     {&mat_b_btn_pipe     , OBJECT_TYPE_PIPE   ,CMM_PM_OBJ  , &txt_btn_35   , txt_pipe     }, //CMM_BUTTON_PIPE
     {&mat_b_btn_badge    , OBJECT_TYPE_BADGE  ,CMM_PM_OBJ  , &txt_btn_36   , badgenames   }, //CMM_BUTTON_BADGE
-    {&mat_b_btn_water    , TILE_TYPE_WATER    ,CMM_PM_TILE , &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
+    {&mat_b_btn_water    , 0                  ,CMM_PM_WATER, &txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
     {&mat_b_btn_fence    , TILE_TYPE_FENCE    ,CMM_PM_TILE , &txt_btn_38   , NULL         }, //CMM_BUTTON_FENCE
     {&mat_b_btn_boss     , OBJECT_TYPE_BOSS   ,CMM_PM_OBJ  , &txt_btn_39   , txt_bp_boss  }, //CMM_BUTTON_BOSS
     {&mat_b_btn_checker  , OBJECT_TYPE_MPLAT  ,CMM_PM_OBJ  , &txt_btn_40   , NULL         }, //CMM_BUTTON_MPLAT

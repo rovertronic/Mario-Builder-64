@@ -1,5 +1,4 @@
 #include "actors/mario2/texscroll.inc.h"
-#include "actors/makerwater/texscroll.inc.h"
 #include "actors/badge/texscroll.inc.h"
 #include "actors/maker/texscroll.inc.h"
 #include "actors/mario/texscroll.inc.h"

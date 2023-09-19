@@ -109,7 +109,7 @@ struct cmm_terrain_block {
 };
 
 struct cmm_tile {
-    u32 x:6, y:5, z:6, type:5, mat:4, rot:2;
+    u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
 struct cmm_tile_type_struct {
     Gfx * model;
@@ -122,12 +122,16 @@ enum {
     TILE_TYPE_SLOPE,
     TILE_TYPE_CORNER,
     TILE_TYPE_ICORNER,
-    TILE_TYPE_TROLL,
-    TILE_TYPE_CULL,
     TILE_TYPE_DSLOPE,
-    TILE_TYPE_WATER,
-    TILE_TYPE_FENCE,
     TILE_TYPE_SSLOPE,
+    TILE_TYPE_SLAB,
+    TILE_TYPE_DSLAB,
+    TILE_TYPE_SSLAB,
+    TILE_TYPE_CULL,
+    TILE_TYPE_TROLL,
+    TILE_TYPE_FENCE,
+
+    TILE_TYPE_WATER, // only blocks that are empty otherwise
 };
 
 struct cmm_obj {
@@ -135,7 +139,7 @@ struct cmm_obj {
 };
 
 struct cmm_grid_obj {
-    u16 type:5, mat:4, rot:2, occupied:1;
+    u16 type:5, mat:4, rot:2, occupied:1, waterlogged:1;
 };
 
 struct cmm_object_type_struct {
@@ -252,6 +256,7 @@ enum {
     CMM_PM_NONE,
     CMM_PM_TILE,
     CMM_PM_OBJ,
+    CMM_PM_WATER,
 };
 
 #define NUM_THEMES 7

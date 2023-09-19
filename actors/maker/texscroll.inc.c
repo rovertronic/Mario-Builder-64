@@ -4,6 +4,12 @@ void scroll_sts_mat_maker_MakerLava() {
 	shift_t(mat, 7, PACK_TILESIZE(0, 1));
 };
 
+void scroll_sts_mat_maker_MakerWater() {
+	Gfx *mat = segmented_to_virtual(mat_maker_MakerWater);
+	shift_s(mat, 13, PACK_TILESIZE(0, 1));
+	shift_t(mat, 13, PACK_TILESIZE(0, 1));
+};
+
 void scroll_sts_mat_maker_MakerRetroLava() {
 	static int intervalTex0 = 10;
 	static int curInterval0 = 10;
@@ -29,6 +35,7 @@ void scroll_sts_mat_maker_MakerQuicksand() {
 
 void scroll_actor_dl_maker() {
 	scroll_sts_mat_maker_MakerLava();
+	scroll_sts_mat_maker_MakerWater();
 	scroll_sts_mat_maker_MakerRetroLava();
 	scroll_sts_mat_maker_MakerVoid();
 	scroll_sts_mat_maker_MakerQuicksand();

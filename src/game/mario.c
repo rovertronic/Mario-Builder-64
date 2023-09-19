@@ -460,6 +460,9 @@ s32 mario_get_floor_class(struct MarioState *m) {
             case SURFACE_NOT_SLIPPERY:
             case SURFACE_HARD_NOT_SLIPPERY:
             case SURFACE_SWITCH:
+            case SURFACE_GRASS:
+            case SURFACE_SAND:
+            case SURFACE_CREAKWOOD:
                 floorClass = SURFACE_CLASS_NOT_SLIPPERY;
                 break;
 
@@ -477,6 +480,7 @@ s32 mario_get_floor_class(struct MarioState *m) {
             case SURFACE_NOISE_VERY_SLIPPERY_74:
             case SURFACE_NOISE_VERY_SLIPPERY:
             case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
+            case SURFACE_SNOW:
                 floorClass = SURFACE_CLASS_VERY_SLIPPERY;
                 break;
         }
