@@ -363,6 +363,13 @@ void init_mario_after_warp(void) {
             gPlayerSpawnInfos[0].areaIndex = sWarpDest.areaIdx;
             load_mario_area();
         }
+    
+        if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL) {
+            //reset coins & hp when doing a level transition
+            gMarioState->numCoins = 0;
+            gHudDisplay.coins = 0;
+            gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+        }
 
         init_mario();
         set_mario_initial_action(gMarioState, marioSpawnType, sWarpDest.arg);
@@ -597,14 +604,8 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
         sWarpDest.type = WARP_TYPE_SAME_AREA;
     }
 
-    if (destWarpNode == 241) {
+    if (sSourceWarpNodeId == WARP_NODE_DEATH) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
-    }
-
-    if (gCurrLevelNum == LEVEL_BITS) {
-        sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
-        //ensure that every time mario visits this level, it gets reset
-        //so that mario doesn't become invisible in the light beam
     }
 
     //reload level if changing mode
@@ -616,6 +617,7 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = warpFlags;
+
 #if defined(PUPPYCAM) || defined(PUPPYLIGHTS)
     s32 i = 0;
 #endif
@@ -783,7 +785,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                     //what the fuck is this bruhhhh
                     //fuck sm64 hp
                     //i have no idea if changing the 8 to a 5 will work, hope it does!
-                    resp_cond = (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f)));
+                    resp_cond = ( (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f))) && (cmm_lopt_game == CMM_GAME_BTCM) );
                     if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
                         resp_cond = (gMarioState->numBadgePoints > 0);
                     }
