@@ -154,10 +154,19 @@ struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
     {{{16, 14, 0},  {16, 0, 0},  {0, 14, 0},  {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, 0, NULL}, // BACK
 };
 
+struct cmm_terrain_quad cmm_terrain_topwater_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, 0, NULL}, // TOP
+    {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 16, 16}, {16, 14, 16}, {16, 16, 0}, {16, 14, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, 0, NULL}, // LEFT
+    {{{0, 16, 16},  {0, 16, 0},  {0, 14, 16},  {0, 14, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, 0, NULL}, // RIGHT
+    {{{16, 16, 16}, {0, 16, 16}, {16, 14, 16}, {0, 14, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL}, // FRONT
+    {{{16, 16, 0},  {16, 14, 0},  {0, 16, 0},  {0, 14, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, 0, NULL}, // BACK
+};
+
 struct cmm_terrain_quad *cmm_terrain_water_quadlists[] = {
     &cmm_terrain_shallowwater_quads,
     &cmm_terrain_fullblock_quads,
-    &cmm_terrain_shallowwater_quads,
+    &cmm_terrain_topwater_quads,
 };
 
 struct cmm_tile_type_struct cmm_tile_types[] = {
@@ -174,6 +183,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {NULL, &cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
     {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
+    \{NULL, NULL,      NULL, FALSE}, // TILE_TYPE_WATER
 };
 
 struct cmm_object_type_struct cmm_object_types[] = {
