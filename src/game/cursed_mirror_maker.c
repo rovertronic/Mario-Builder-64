@@ -1443,6 +1443,7 @@ void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     u8 joystick = joystick_direction();
     u8 cursor_did_move = FALSE;
+    u8 drag_updown = FALSE;
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
@@ -1482,9 +1483,11 @@ void sb_loop(void) {
 
             if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
                 cmm_cursor_pos[1]++;
+                drag_updown=TRUE;
             }
             if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
                 cmm_cursor_pos[1]--;
+                drag_updown=TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
                 cmm_camera_rot_offset++;
@@ -1498,10 +1501,6 @@ void sb_loop(void) {
             cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
             cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
             //END MOVE CURSOR
-
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                delete_tile_action();
-            }
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_ui_index--;
@@ -1533,8 +1532,20 @@ void sb_loop(void) {
             cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
   
 
-            if ((gPlayer1Controller->buttonDown & A_BUTTON)&&(joystick > 0)&&(cmm_ui_index<6)) {
-                place_thing_action();
+            if (cmm_ui_index<6) {
+                //drag
+                if ((joystick > 0)||(drag_updown)) {
+                    if (gPlayer1Controller->buttonDown & B_BUTTON) {
+                        delete_tile_action();
+                    }
+                    if (gPlayer1Controller->buttonDown & A_BUTTON) {
+                        place_thing_action();
+                    }
+                }
+                //delete
+                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                    delete_tile_action();
+                }
             }
 
             //Single A press
