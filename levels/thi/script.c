@@ -51,7 +51,7 @@ const LevelScript level_thi_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_IDOL_2, idol2_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_IDOL_3, idol3_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_IDOL_4, idol4_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_THI, tvhead_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_THI, tvhead_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_THI_CAGE, thi_cage_geo), 
 
 	/* Fast64 begin persistent block [level commands] */

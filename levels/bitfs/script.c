@@ -49,7 +49,7 @@ const LevelScript level_bitfs_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_MOVIE_5, movie5_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SAW, saw_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_MOVIE_6, movie6_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_BITFS_SPOTLIGHT, spotlight_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_BITFS_SPOTLIGHT, spotlight_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_MOVIE_7, movie7_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_BITFS_PIPE, warp_pipe_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SR_SPIKE, sr_spike_geo), 

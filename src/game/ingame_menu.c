@@ -1554,6 +1554,7 @@ void render_dialog_entries(void) {
     }
 
     //only do shop shit if dialog id is 1
+/**
     if (gDialogID == 1) {
         //SHOP CONTROLS
         if ((gPlayer1Controller->rawStickX > 60)&&(letgo == FALSE)) {
@@ -1622,6 +1623,7 @@ void render_dialog_entries(void) {
         print_generic_string(get_str_x_pos_from_center(SHOP_OFFSET,badgenames[shoptable[shopid][shopselection*2]],0.0f), 58, badgenames[shoptable[shopid][shopselection*2]]);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
+**/
 
 
     switch (gDialogBoxState) {

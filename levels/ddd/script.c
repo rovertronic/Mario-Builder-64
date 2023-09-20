@@ -50,7 +50,7 @@ const LevelScript level_ddd_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_QUEEN, thwompqueen_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_QUEEN_ROCK, queenrock_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_THWOMPGATE, thwompgate_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_BILLMASK_C9, billmask_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_BILLMASK_C9, billmask_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_PIPE_C9, warp_pipe_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_THWOMPGUARD, thwompguard_geo), 
 

@@ -41,8 +41,8 @@ const LevelScript level_ttc_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_HIGHCANE, highcane_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_DENORMA, denormA_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_DENORMB, denormO_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_TTC, tvhead_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_TTC, tvhead_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_TTC, tvhead_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_TTC, tvhead_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_RAFT, raft_geo), 
 
 	/* Fast64 begin persistent block [level commands] */

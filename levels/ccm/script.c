@@ -59,7 +59,7 @@ const LevelScript level_ccm_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_CONV2_CCM, conv2ccm_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_CONV1_CCM, conv1ccm_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_EXECUTIVE, executive_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_CCM, tvhead_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_TVHEAD_CCM, tvhead_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_EXEC_MISSILE, cosmic_missile_geo), 
 
 	/* Fast64 begin persistent block [level commands] */

@@ -729,12 +729,12 @@ void bhv_tennis(void) {
                     o->oInteractStatus = 0;
                     o->oIntangibleTimer = 0;
                     cur_obj_play_sound_2(SOUND_OBJ_MRI_SHOOT);
-                    obj_init_animation_with_sound(showrunner_obj,showrunner_anims,0);//reset
-                    obj_init_animation_with_sound(showrunner_obj,showrunner_anims,4);//block
+                    //obj_init_animation_with_sound(showrunner_obj,showrunner_anims,0);//reset
+                    //obj_init_animation_with_sound(showrunner_obj,showrunner_anims,4);//block
 
                     if (o->oDamageOrCoinValue == tennis_turns[gMarioState->BossHealth]) {
                         showrunner_obj->oAction = 11;
-                        obj_init_animation_with_sound(showrunner_obj,showrunner_anims,5);//shocked
+                        //obj_init_animation_with_sound(showrunner_obj,showrunner_anims,5);//shocked
                         obj_mark_for_deletion(o);
                     }
                 }

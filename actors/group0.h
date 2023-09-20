@@ -633,6 +633,7 @@ extern const Gfx moneybag_seg6_dl_06005980[];
 extern const Gfx moneybag_seg6_dl_060059F0[];
 extern const struct Animation *const moneybag_seg6_anims_06005E5C[];
 
+
 // monty_mole
 extern const GeoLayout monty_mole_geo[];
 extern const Gfx monty_mole_seg5_dl_05003208[];
@@ -673,29 +674,29 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "mario/geo_header.h"
 
-#include "Hammerbro/geo_header.h"
+//#include "Hammerbro/geo_header.h"
 
 
-#include "Hammerbro/anim_header.h"
-#include "hammer/geo_header.h"
+//#include "Hammerbro/anim_header.h"
+//#include "hammer/geo_header.h"
 
-#include "ring/geo_header.h"
+//#include "ring/geo_header.h"
 
-#include "metal_crate/geo_header.h"
+//#include "metal_crate/geo_header.h"
 
-#include "metal_crate/collision_header.h"
+//#include "metal_crate/collision_header.h"
 
 
 #include "evil_mario/anim_header.h"
-#include "chicken/geo_header.h"
+//#include "chicken/geo_header.h"
 
 
-#include "chicken/anim_header.h"
+//#include "chicken/anim_header.h"
 #include "token/geo_header.h"
 
 
-#include "crab_anims/anim_header.h"
-#include "egg/geo_header.h"
+//#include "crab_anims/anim_header.h"
+//#include "egg/geo_header.h"
 
 #include "arrow/header.h"
 
@@ -703,13 +704,13 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "MysteryBadge/header.h"
 
-#include "snakeblock/collision_header.h"
+//#include "snakeblock/collision_header.h"
 
-#include "snakeblock1/geo_header.h"
+//#include "snakeblock1/geo_header.h"
 
-#include "snakeblock2/geo_header.h"
+//#include "snakeblock2/geo_header.h"
 
-#include "snakeblock3/geo_header.h"
+//#include "snakeblock3/geo_header.h"
 
 #include "b0/header.h"
 
@@ -745,11 +746,11 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "Rex/anim_header.h"
 #include "dcoin/geo_header.h"
 
-#include "shopgui/header.h"
+//#include "shopgui/header.h"
 
-#include "shopselect/header.h"
+//#include "shopselect/header.h"
 
-#include "wallet/geo_header.h"
+//#include "wallet/geo_header.h"
 
 #include "noteblock/geo_header.h"
 #include "noteblock/collision_header.h"
@@ -771,14 +772,14 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "bs_bar/header.h"
 
-#include "billmask/geo_header.h"
+//#include "billmask/geo_header.h"
 
 #include "gradibox/header.h"
 
-#include "showrunner/geo_header.h"
+//#include "showrunner/geo_header.h"
 
 
-#include "showrunner/anim_header.h"
+//#include "showrunner/anim_header.h"
 #include "b12/header.h"
 
 #include "b13/header.h"
@@ -795,26 +796,26 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "b17/header.h"
 
-#include "executive_/header.h"
+//#include "executive_/header.h"
 
-#include "spotlight/geo_header.h"
+//#include "spotlight/geo_header.h"
 
-#include "executive_loom_/header.h"
+//#include "executive_loom_/header.h"
 
 
-#include "girl/anim_header.h"
+//#include "girl/anim_header.h"
 #include "b23/header.h"
 
 #include "b20/header.h"
 
 #include "b18/header.h"
 
-#include "tvhead/collision_header.h"
+//#include "tvhead/collision_header.h"
 
-#include "tvhead/geo_header.h"
+//#include "tvhead/geo_header.h"
 
 
-#include "tvhead/anim_header.h"
+//#include "tvhead/anim_header.h"
 #include "b19/header.h"
 
 #include "quest/geo_header.h"
@@ -823,13 +824,13 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "vanetalc/geo_header.h"
 
-#include "ocean_ttc/geo_header.h"
+//#include "ocean_ttc/geo_header.h"
 
-#include "tvcorpse/geo_header.h"
+//#include "tvcorpse/geo_header.h"
 
-#include "cosmic_spike/geo_header.h"
+//#include "cosmic_spike/geo_header.h"
 
-#include "crowbar2/geo_header.h"
+//#include "crowbar2/geo_header.h"
 
 #include "sb/header.h"
 
