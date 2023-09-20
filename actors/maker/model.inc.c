@@ -17915,10 +17915,10 @@ Gfx maker_materials_mesh_tri_13[] = {
 };
 
 Vtx maker_materials_mesh_vtx_14[4] = {
-	{{ {-200, 0, 500}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 500}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 400}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-200, 0, 400}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 500}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 500}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 400}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 400}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_14[] = {
@@ -17928,10 +17928,10 @@ Gfx maker_materials_mesh_tri_14[] = {
 };
 
 Vtx maker_materials_mesh_vtx_15[4] = {
-	{{ {-100, 0, 500}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 500}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 400}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 400}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 500}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 500}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 400}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 400}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_15[] = {
@@ -17941,10 +17941,10 @@ Gfx maker_materials_mesh_tri_15[] = {
 };
 
 Vtx maker_materials_mesh_vtx_16[4] = {
-	{{ {0, 0, 500}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 500}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 400}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {0, 0, 400}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {0, 0, 500}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 500}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 400}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {0, 0, 400}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_16[] = {
@@ -17954,10 +17954,10 @@ Gfx maker_materials_mesh_tri_16[] = {
 };
 
 Vtx maker_materials_mesh_vtx_17[4] = {
-	{{ {-200, 0, 600}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 600}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 500}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-200, 0, 500}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 600}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 600}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 500}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 500}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_17[] = {
@@ -17967,10 +17967,10 @@ Gfx maker_materials_mesh_tri_17[] = {
 };
 
 Vtx maker_materials_mesh_vtx_18[4] = {
-	{{ {-100, 0, 600}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 600}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 500}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 500}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 600}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 600}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 500}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 500}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_18[] = {
@@ -17993,10 +17993,10 @@ Gfx maker_materials_mesh_tri_19[] = {
 };
 
 Vtx maker_materials_mesh_vtx_20[4] = {
-	{{ {0, 0, 600}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 600}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 500}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {0, 0, 500}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {0, 0, 600}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 600}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 500}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {0, 0, 500}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_20[] = {
@@ -18662,10 +18662,10 @@ Gfx maker_materials_mesh_tri_70[] = {
 };
 
 Vtx maker_materials_mesh_vtx_71[4] = {
-	{{ {-200, 0, 700}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 700}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 600}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-200, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 700}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 700}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 600}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-200, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_71[] = {
@@ -18675,10 +18675,10 @@ Gfx maker_materials_mesh_tri_71[] = {
 };
 
 Vtx maker_materials_mesh_vtx_72[4] = {
-	{{ {-100, 0, 700}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 700}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {0, 0, 600}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {-100, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 700}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 700}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {0, 0, 600}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {-100, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_72[] = {
@@ -18688,10 +18688,10 @@ Gfx maker_materials_mesh_tri_72[] = {
 };
 
 Vtx maker_materials_mesh_vtx_73[4] = {
-	{{ {0, 0, 700}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 700}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {100, 0, 600}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {0, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {0, 0, 700}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 700}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {100, 0, 600}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {0, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_73[] = {
@@ -18701,10 +18701,10 @@ Gfx maker_materials_mesh_tri_73[] = {
 };
 
 Vtx maker_materials_mesh_vtx_74[4] = {
-	{{ {100, 0, 700}, 0, {0, 512}, {0, 127, 0, 255} }},
-	{{ {200, 0, 700}, 0, {512, 512}, {0, 127, 0, 255} }},
-	{{ {200, 0, 600}, 0, {512, 0}, {0, 127, 0, 255} }},
-	{{ {100, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {100, 0, 700}, 0, {-16, 496}, {0, 127, 0, 255} }},
+	{{ {200, 0, 700}, 0, {496, 496}, {0, 127, 0, 255} }},
+	{{ {200, 0, 600}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {100, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_74[] = {
@@ -18714,10 +18714,10 @@ Gfx maker_materials_mesh_tri_74[] = {
 };
 
 Vtx maker_materials_mesh_vtx_75[4] = {
-	{{ {200, 0, 700}, 0, {0, 1024}, {0, 127, 0, 255} }},
-	{{ {300, 0, 700}, 0, {1024, 1024}, {0, 127, 0, 255} }},
-	{{ {300, 0, 600}, 0, {1024, 0}, {0, 127, 0, 255} }},
-	{{ {200, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {200, 0, 700}, 0, {-16, 1008}, {0, 127, 0, 255} }},
+	{{ {300, 0, 700}, 0, {1008, 1008}, {0, 127, 0, 255} }},
+	{{ {300, 0, 600}, 0, {1008, -16}, {0, 127, 0, 255} }},
+	{{ {200, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_75[] = {
@@ -18727,10 +18727,10 @@ Gfx maker_materials_mesh_tri_75[] = {
 };
 
 Vtx maker_materials_mesh_vtx_76[4] = {
-	{{ {300, 0, 700}, 0, {0, 256}, {0, 127, 0, 255} }},
-	{{ {400, 0, 700}, 0, {256, 256}, {0, 127, 0, 255} }},
-	{{ {400, 0, 600}, 0, {256, 0}, {0, 127, 0, 255} }},
-	{{ {300, 0, 600}, 0, {0, 0}, {0, 127, 0, 255} }},
+	{{ {300, 0, 700}, 0, {-16, 240}, {0, 127, 0, 255} }},
+	{{ {400, 0, 700}, 0, {240, 240}, {0, 127, 0, 255} }},
+	{{ {400, 0, 600}, 0, {240, -16}, {0, 127, 0, 255} }},
+	{{ {300, 0, 600}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
 Gfx maker_materials_mesh_tri_76[] = {
@@ -18937,7 +18937,6 @@ Gfx mat_maker_MakerRHRBasalt[] = {
 Gfx mat_maker_MakerRetroGround[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_Ground_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -18948,16 +18947,9 @@ Gfx mat_maker_MakerRetroGround[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroGround[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroBlock[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_Block_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -18968,16 +18960,9 @@ Gfx mat_maker_MakerRetroBlock[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroBlock[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroBrick[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_MakerRetroBrick_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -18988,16 +18973,9 @@ Gfx mat_maker_MakerRetroBrick[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroBrick[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroTree[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_RetroTree_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19008,16 +18986,9 @@ Gfx mat_maker_MakerRetroTree[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroTree[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroUnderwater[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_Retrounderwater_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19025,12 +18996,6 @@ Gfx mat_maker_MakerRetroUnderwater[] = {
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
 	gsDPSetTileSize(0, 0, 0, 60, 60),
 	gsSPSetLights1(maker_MakerRetroUnderwater_lights),
-	gsSPEndDisplayList(),
-};
-
-Gfx mat_revert_maker_MakerRetroUnderwater[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
 	gsSPEndDisplayList(),
 };
 
@@ -19050,19 +19015,12 @@ Gfx mat_maker_MakerCaution[] = {
 Gfx mat_maker_MakerRetroLava[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_MakerLava_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
 	gsDPLoadBlock(7, 0, 0, 255, 512),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
 	gsDPSetTileSize(0, 0, 0, 60, 60),
-	gsSPEndDisplayList(),
-};
-
-Gfx mat_revert_maker_MakerRetroLava[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
 	gsSPEndDisplayList(),
 };
 
@@ -19790,7 +19748,6 @@ Gfx mat_maker_MakerVBlueTiles[] = {
 Gfx mat_maker_MakerRetroBGround[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_retroblue1_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19801,16 +19758,9 @@ Gfx mat_maker_MakerRetroBGround[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroBGround[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroBBlock[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_retroblue3_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19821,16 +19771,9 @@ Gfx mat_maker_MakerRetroBBlock[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroBBlock[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroBBrick[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_retroblue2_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19841,16 +19784,9 @@ Gfx mat_maker_MakerRetroBBrick[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroBBrick[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroWBrick[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_retrowhitebrick_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 0),
@@ -19861,16 +19797,9 @@ Gfx mat_maker_MakerRetroWBrick[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerRetroWBrick[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_maker_MakerRetroTreeSide_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, TEXEL0, TEXEL0, 0, SHADE, 0, 0, 0, 0, TEXEL0),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsDPSetRenderMode(GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM) | GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM), AA_EN | Z_CMP | IM_RD | CVG_DST_WRAP | ZMODE_DEC | CVG_X_ALPHA | ALPHA_CVG_SEL),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_RetroTreeOverhang_rgba16),
@@ -19884,7 +19813,6 @@ Gfx mat_maker_MakerRetroTreeSide_layer1[] = {
 
 Gfx mat_revert_maker_MakerRetroTreeSide_layer1[] = {
 	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
 	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPEndDisplayList(),
 };
@@ -19892,7 +19820,6 @@ Gfx mat_revert_maker_MakerRetroTreeSide_layer1[] = {
 Gfx mat_maker_MakerRetroTreeTop[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureFilter(G_TF_POINT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_RetroTreeTop_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, 0),
@@ -19900,12 +19827,6 @@ Gfx mat_maker_MakerRetroTreeTop[] = {
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 2, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, 0),
 	gsDPSetTileSize(0, 0, 0, 28, 28),
 	gsSPSetLights1(maker_MakerRetroTreeTop_lights),
-	gsSPEndDisplayList(),
-};
-
-Gfx mat_revert_maker_MakerRetroTreeTop[] = {
-	gsDPPipeSync(),
-	gsDPSetTextureFilter(G_TF_BILERP),
 	gsSPEndDisplayList(),
 };
 
@@ -19945,24 +19866,18 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(maker_materials_mesh_tri_13),
 	gsSPDisplayList(mat_maker_MakerRetroGround),
 	gsSPDisplayList(maker_materials_mesh_tri_14),
-	gsSPDisplayList(mat_revert_maker_MakerRetroGround),
 	gsSPDisplayList(mat_maker_MakerRetroBlock),
 	gsSPDisplayList(maker_materials_mesh_tri_15),
-	gsSPDisplayList(mat_revert_maker_MakerRetroBlock),
 	gsSPDisplayList(mat_maker_MakerRetroBrick),
 	gsSPDisplayList(maker_materials_mesh_tri_16),
-	gsSPDisplayList(mat_revert_maker_MakerRetroBrick),
 	gsSPDisplayList(mat_maker_MakerRetroTree),
 	gsSPDisplayList(maker_materials_mesh_tri_17),
-	gsSPDisplayList(mat_revert_maker_MakerRetroTree),
 	gsSPDisplayList(mat_maker_MakerRetroUnderwater),
 	gsSPDisplayList(maker_materials_mesh_tri_18),
-	gsSPDisplayList(mat_revert_maker_MakerRetroUnderwater),
 	gsSPDisplayList(mat_maker_MakerCaution),
 	gsSPDisplayList(maker_materials_mesh_tri_19),
 	gsSPDisplayList(mat_maker_MakerRetroLava),
 	gsSPDisplayList(maker_materials_mesh_tri_20),
-	gsSPDisplayList(mat_revert_maker_MakerRetroLava),
 	gsSPDisplayList(mat_maker_MakerVTiles),
 	gsSPDisplayList(maker_materials_mesh_tri_21),
 	gsSPDisplayList(mat_maker_MakerScreen_layer1),
@@ -20076,22 +19991,17 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(maker_materials_mesh_tri_70),
 	gsSPDisplayList(mat_maker_MakerRetroBGround),
 	gsSPDisplayList(maker_materials_mesh_tri_71),
-	gsSPDisplayList(mat_revert_maker_MakerRetroBGround),
 	gsSPDisplayList(mat_maker_MakerRetroBBlock),
 	gsSPDisplayList(maker_materials_mesh_tri_72),
-	gsSPDisplayList(mat_revert_maker_MakerRetroBBlock),
 	gsSPDisplayList(mat_maker_MakerRetroBBrick),
 	gsSPDisplayList(maker_materials_mesh_tri_73),
-	gsSPDisplayList(mat_revert_maker_MakerRetroBBrick),
 	gsSPDisplayList(mat_maker_MakerRetroWBrick),
 	gsSPDisplayList(maker_materials_mesh_tri_74),
-	gsSPDisplayList(mat_revert_maker_MakerRetroWBrick),
 	gsSPDisplayList(mat_maker_MakerRetroTreeSide_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_75),
 	gsSPDisplayList(mat_revert_maker_MakerRetroTreeSide_layer1),
 	gsSPDisplayList(mat_maker_MakerRetroTreeTop),
 	gsSPDisplayList(maker_materials_mesh_tri_76),
-	gsSPDisplayList(mat_revert_maker_MakerRetroTreeTop),
 	gsDPPipeSync(),
 	gsSPSetGeometryMode(G_LIGHTING),
 	gsSPClearGeometryMode(G_TEXTURE_GEN),

@@ -129,8 +129,8 @@ struct cmm_terrain_block cmm_terrain_sslope = {
 
 // All of this is for the system where slopes can place a decal on the face below them.
 // Very hardcoded, so best not to touch any of these numbers
-s8 slope_decal_below_uvsquad_l[4][2] = {{0, 0}, {16, 16}, {0, -32}, {16, 0}};
-s8 slope_decal_below_uvsquad_r[4][2] = {{16, 16}, {0, 0}, {16, 0}, {0, -32}};
+s8 slope_decal_below_uvsquad_l[4][2] = {{0, 0}, {16, 16}, {0, -16}, {16, 0}};
+s8 slope_decal_below_uvsquad_r[4][2] = {{16, 16}, {0, 0}, {16, 0}, {0, -16}};
 s8 slope_decal_below_uvstri_1[3][2] = {{16, 16}, {0, 0}, {16, 0}};
 s8 slope_decal_below_uvstri_2[3][2] = {{16, 16}, {16, 0}, {0, 0}};
 
@@ -373,7 +373,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerRHRPattern,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BLOCK
     {&mat_maker_MakerRHRWood,         0, SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
     {&mat_maker_MakerRHRPillar,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_PILLAR
-    {&mat_maker_MakerRHRGrate_layer1, 1, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
+    {&mat_maker_MakerRHRGrate_layer1, MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
     {&mat_maker_MakerHGrass,          0, SURFACE_GRASS},            // CMM_MAT_HMC_GRASS
     {&mat_maker_MakerHDirt,           0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
@@ -383,7 +383,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerHMazefloor,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
     {&mat_maker_MakerHLight,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
     {&mat_maker_MakerHLakewall,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
-    {&mat_maker_MakerHFence_layer1,   1, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
+    {&mat_maker_MakerHFence_layer1,   MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
     {&mat_maker_MakerCTile,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
     {&mat_maker_MakerCWood,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_WOOD
@@ -400,7 +400,7 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerVTiles,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
     {&mat_maker_MakerVBlueTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
     {&mat_maker_MakerVRustyBlock,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
-    {&mat_maker_MakerScreen_layer1,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_SCREEN
+    {&mat_maker_MakerScreen_layer1,   MAT_VPSCREEN, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_SCREEN
     {&mat_maker_MakerCaution,         0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_CAUTION
     {&mat_maker_MakerVoid,            0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
     // Retro
@@ -460,6 +460,25 @@ s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpe
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
 s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
+enum cmm_fences {
+    CMM_FENCE_NORMAL,
+    CMM_FENCE_DESERT,
+    CMM_FENCE_RHR,
+    CMM_FENCE_HMC,
+    CMM_FENCE_CASTLE,
+    CMM_FENCE_VIRTUAPLEX,
+    CMM_FENCE_RETRO,
+};
+
+Gfx *cmm_fence_texs[] = {
+    &mat_maker_MakerFence_layer1,
+    &mat_maker_MakerDFence_layer1,
+    &mat_maker_MakerRHRGrate_layer1,
+    &mat_maker_MakerHFence_layer1,
+    &mat_maker_MakerCFence_layer1,
+    &mat_maker_MakerVPFence_layer1,
+    &mat_maker_MakerFence_layer1,
+};
 
 struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     // GENERIC
@@ -477,6 +496,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,   0,                "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_generic), cmm_terrain_floors_generic,
+        CMM_FENCE_NORMAL,
     },
     // DESERT
     {
@@ -493,6 +513,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,     0,                        "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_desert), cmm_terrain_floors_desert,
+        CMM_FENCE_DESERT,
     },
     // LAVA
     {
@@ -509,6 +530,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,  0,                       "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_lava), cmm_terrain_floors_lava,
+        CMM_FENCE_RHR,
     },
     // CAVE
     {
@@ -525,6 +547,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_cave), cmm_terrain_floors_cave,
+        CMM_FENCE_HMC,
     },
     // CASTLE
     {
@@ -541,6 +564,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_castle), cmm_terrain_floors_castle,
+        CMM_FENCE_CASTLE,
     },
     // VIRTUAPLEX
     {
@@ -557,6 +581,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_VP_VOID,       0,                       "Void"},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
+        CMM_FENCE_VIRTUAPLEX,
     },
     // RETRO
     {
@@ -573,6 +598,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        "Underwater Tile"},
         },
         ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
+        CMM_FENCE_RETRO,
     },
 };
 
@@ -589,6 +615,9 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
 #define TOPMAT(matid) (cmm_mat_table[TOPMAT_DEF(matid).mat])
 // Returns side decal texture (Gfx *)
 #define SIDETEX(matid) (TOPMAT_DEF(matid).decaltex)
+
+// Returns current fence texture
+#define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
 
 u8 cmm_ui_bar[9] = {
     CMM_BUTTON_TERRAIN,

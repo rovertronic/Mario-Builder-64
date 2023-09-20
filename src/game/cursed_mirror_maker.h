@@ -262,6 +262,7 @@ enum {
 
 enum cmm_mat_types {
     MAT_OPAQUE,
+    MAT_VPSCREEN,
     MAT_CUTOUT,
     MAT_TRANSPARENT,
 };
@@ -289,6 +290,7 @@ struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
     u8 numFloors;
     s8 *floors;
+    u8 fence;
 };
 
 //compressed trajectories

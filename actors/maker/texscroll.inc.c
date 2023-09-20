@@ -16,7 +16,7 @@ void scroll_sts_mat_maker_MakerRetroLava() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerRetroLava);
 
 	if (--curInterval0 <= 0) {
-		shift_s(mat, 8, PACK_TILESIZE(0, 5));
+		shift_s(mat, 7, PACK_TILESIZE(0, 5));
 		curInterval0 = intervalTex0;
 	}
 };

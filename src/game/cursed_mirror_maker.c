@@ -312,7 +312,7 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
     if (cmm_building_collision && tileType == TILE_TYPE_TROLL) return FALSE;
 
     u8 otherMat = get_grid_tile(newpos)->mat;
-    if (MATERIAL(otherMat).type != 0) {
+    if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
         u8 curMat = get_grid_tile(pos)->mat;
         if (curMat != otherMat) return FALSE;
     }
@@ -352,6 +352,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
+                    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
+                        return TRUE;
                     return FALSE;
             }
             return TRUE;
@@ -698,6 +700,13 @@ u32 get_tiletype_index(u32 type, u32 mat) {
     return NUM_MATERIALS_PER_THEME + 3;
 }
 
+
+#define retroland_filter_on() if (cmm_lopt_theme == 6) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
+#define retroland_filter_off() if (cmm_lopt_theme == 6) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
+
+
+
+
 void generate_terrain_gfx(void) {
     u8 tileType, rot;
     s8 pos[3];
@@ -714,6 +723,8 @@ void generate_terrain_gfx(void) {
 
     cmm_rendering_as_decal = FALSE;
     cmm_render_flip_normals = FALSE;
+
+    retroland_filter_on();
 
     // This does the funny virtuaplex effect
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
@@ -746,7 +757,7 @@ void generate_terrain_gfx(void) {
 
     startIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerFence_layer1);
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
     gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK, 0);
     cmm_rendering_as_decal = TRUE;
     for (u32 i = startIndex; i < endIndex; i++) {
@@ -794,9 +805,11 @@ void generate_terrain_gfx(void) {
             }
         }
     }
+    retroland_filter_off();
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
+    retroland_filter_on();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerWater);
     // Render water twice. This is so that all interior faces are rendered before all exterior faces,
     // to make the layering a little better.
@@ -814,6 +827,7 @@ void generate_terrain_gfx(void) {
             render_water(pos);
         }
     }
+    retroland_filter_off();
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
     //print_text_fmt_int(110, 56, "OPAQUE %d", gfx_index);
@@ -852,38 +866,54 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
 
+            retroland_filter_on();
+
             if (cmm_place_mode == CMM_PM_WATER) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerWater);
                 gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
                 render_water(cmm_cursor_pos);
                 gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+                retroland_filter_off();
 
                 geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT);
                 return NULL;
             }
             
             if (cmm_tile_types[cmm_id_selection].terrain) {
+                if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
+                    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
+                    render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
+                    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+                    geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
+
+                    cmm_curr_gfx += cmm_gfx_index;
+                    cmm_gfx_index = 0;
+                }
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
                 render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
                 if (HAS_TOPMAT(cmm_mat_selection)) {
                     if (SIDETEX(cmm_mat_selection) != NULL) {
+                        cmm_rendering_as_decal = TRUE;
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
                         render_block_grass_side(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
+                        cmm_rendering_as_decal = FALSE;
                     }
+                    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
                     render_block_grass_top(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                 }
             } else if (cmm_id_selection == TILE_TYPE_FENCE) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerFence_layer1);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
                 gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK, 0);
                 cmm_rendering_as_decal = TRUE;
                 render_quad(&cmm_terrain_fence_quad, cmm_curr_gfx, cmm_cursor_pos, cmm_rot_selection);
                 cmm_rendering_as_decal = FALSE;
             }
 
-            gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
+            retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
             geo_append_display_list(cmm_curr_gfx, LAYER_OPAQUE);
