@@ -642,19 +642,29 @@ u32 is_water_fullblock(s8 pos[3]) {
 // 2: full (full side)
 // 3: top (thin top at side)
 u32 get_water_side_render(s8 pos[3], u32 dir) {
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0)) return 0;
-    u32 isFullblock = is_water_fullblock(pos);
-
     s8 adjacentPos[3];
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+
+    // Don't OoB cull the top face
+    if (!coords_in_range(adjacentPos) && dir == CMM_DIRECTION_UP) return 1;
+
+    // Apply normal side culling
+    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0)) return 0;
+
+    u32 isFullblock = is_water_fullblock(pos);
     if (get_grid_tile(adjacentPos)->waterlogged) {
+        // Check if this is a full block, next to a non-full block.
+        // If so, use special thin side
         if (dir != CMM_DIRECTION_UP && dir != CMM_DIRECTION_DOWN) {
             if (isFullblock && !is_water_fullblock(adjacentPos)) {
                 return 3;
             }
         }
+        // Full block next to full block so cull
         return 0;
     }
+
+    // Check if the block that's waterlogged has a full face on the same side
     if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) {
         return 0;
     }
