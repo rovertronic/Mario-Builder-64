@@ -477,7 +477,7 @@ Gfx *cmm_fence_texs[] = {
     &mat_maker_MakerHFence_layer1,
     &mat_maker_MakerCFence_layer1,
     &mat_maker_MakerVPFence_layer1,
-    &mat_maker_MakerFence_layer1,
+    &mat_maker_MakerRetroFence_layer1,
 };
 
 struct cmm_theme cmm_theme_table[NUM_THEMES] = {
@@ -618,6 +618,8 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
 
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
+
+#define WATER_TEX() (cmm_lopt_theme == 6 ? &mat_maker_MakerRetroWater : &mat_maker_MakerWater)
 
 u8 cmm_ui_bar[9] = {
     CMM_BUTTON_TERRAIN,

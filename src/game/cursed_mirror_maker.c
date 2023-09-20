@@ -810,7 +810,7 @@ void generate_terrain_gfx(void) {
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerWater);
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
     // Render water twice. This is so that all interior faces are rendered before all exterior faces,
     // to make the layering a little better.
     cmm_render_flip_normals = TRUE;
@@ -869,11 +869,11 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             retroland_filter_on();
 
             if (cmm_place_mode == CMM_PM_WATER) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerWater);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
                 gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
                 render_water(cmm_cursor_pos);
-                gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
                 retroland_filter_off();
+                gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
                 geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT);
                 return NULL;
@@ -909,6 +909,16 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 cmm_rendering_as_decal = TRUE;
                 render_quad(&cmm_terrain_fence_quad, cmm_curr_gfx, cmm_cursor_pos, cmm_rot_selection);
                 cmm_rendering_as_decal = FALSE;
+            } else if (cmm_id_selection == TILE_TYPE_CULL) {
+                guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
+                preview_mtx_index++;
+                guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+                //gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_param_selection).gfx);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &cull_cull_mesh);
+                gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
+                preview_mtx_index++;
             }
 
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
@@ -1188,7 +1198,7 @@ void place_tile(s8 pos[3]) {
         }
     }
 
-    if (cmm_id_selection == TILE_TYPE_BLOCK || cmm_id_selection == TILE_TYPE_TROLL) {
+    if (cmm_id_selection == TILE_TYPE_BLOCK) {
         waterlogged = FALSE;
     }
 
@@ -1214,7 +1224,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if (tileType == TILE_TYPE_BLOCK || tileType == TILE_TYPE_TROLL) {
+        if (tileType == TILE_TYPE_BLOCK) {
             return;
         }
         tile->waterlogged = TRUE;
