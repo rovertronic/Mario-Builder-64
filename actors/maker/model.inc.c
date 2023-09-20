@@ -150,11 +150,11 @@ Lights1 maker_MakerHLight_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerFence_lights = gdSPDefLights1(
+Lights1 maker_MakerFence_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerCFence_lights = gdSPDefLights1(
+Lights1 maker_MakerCFence_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
@@ -162,11 +162,11 @@ Lights1 maker_MakerHFence_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerDFence_lights = gdSPDefLights1(
+Lights1 maker_MakerDFence_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerVPFence_lights = gdSPDefLights1(
+Lights1 maker_MakerVPFence_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
@@ -19346,29 +19346,43 @@ Gfx mat_maker_MakerHLight[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerFence[] = {
+Gfx mat_maker_MakerFence_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0),
+	gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_fence_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 1023, 256),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(maker_MakerFence_lights),
+	gsSPSetLights1(maker_MakerFence_layer1_lights),
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerCFence[] = {
+Gfx mat_revert_maker_MakerFence_layer1[] = {
+	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_maker_MakerCFence_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0),
+	gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_fence_rgba16_copy),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 1023, 256),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(maker_MakerCFence_lights),
+	gsSPSetLights1(maker_MakerCFence_layer1_lights),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_revert_maker_MakerCFence_layer1[] = {
+	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPEndDisplayList(),
 };
 
@@ -19392,29 +19406,43 @@ Gfx mat_revert_maker_MakerHFence_layer1[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerDFence[] = {
+Gfx mat_maker_MakerDFence_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0),
+	gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_fence_rgba16_copy_copy),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 1023, 256),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(maker_MakerDFence_lights),
+	gsSPSetLights1(maker_MakerDFence_layer1_lights),
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerVPFence[] = {
+Gfx mat_revert_maker_MakerDFence_layer1[] = {
+	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_maker_MakerVPFence_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0),
+	gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, maker_makerplexfence_rgba16),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 1023, 256),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(maker_MakerVPFence_lights),
+	gsSPSetLights1(maker_MakerVPFence_layer1_lights),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_revert_maker_MakerVPFence_layer1[] = {
+	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPEndDisplayList(),
 };
 
@@ -19978,17 +20006,21 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(maker_materials_mesh_tri_39),
 	gsSPDisplayList(mat_maker_MakerHLight),
 	gsSPDisplayList(maker_materials_mesh_tri_40),
-	gsSPDisplayList(mat_maker_MakerFence),
+	gsSPDisplayList(mat_maker_MakerFence_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_41),
-	gsSPDisplayList(mat_maker_MakerCFence),
+	gsSPDisplayList(mat_revert_maker_MakerFence_layer1),
+	gsSPDisplayList(mat_maker_MakerCFence_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_42),
+	gsSPDisplayList(mat_revert_maker_MakerCFence_layer1),
 	gsSPDisplayList(mat_maker_MakerHFence_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_43),
 	gsSPDisplayList(mat_revert_maker_MakerHFence_layer1),
-	gsSPDisplayList(mat_maker_MakerDFence),
+	gsSPDisplayList(mat_maker_MakerDFence_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_44),
-	gsSPDisplayList(mat_maker_MakerVPFence),
+	gsSPDisplayList(mat_revert_maker_MakerDFence_layer1),
+	gsSPDisplayList(mat_maker_MakerVPFence_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_45),
+	gsSPDisplayList(mat_revert_maker_MakerVPFence_layer1),
 	gsSPDisplayList(mat_maker_MakerCPillar),
 	gsSPDisplayList(maker_materials_mesh_tri_46),
 	gsSPDisplayList(mat_maker_MakerLineMat),

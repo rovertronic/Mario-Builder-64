@@ -4,7 +4,7 @@
 
 #define CMM_TILE_POOL_SIZE 5000
 #define CMM_GFX_SIZE 20000
-#define CMM_VTX_SIZE 100000
+#define CMM_VTX_SIZE 25000
 
 #define TILE_SIZE 256
 
@@ -111,7 +111,6 @@ struct cmm_tile {
     u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
 struct cmm_tile_type_struct {
-    Gfx * model;
     struct cmm_terrain_block *terrain;
     u32 * collision_data;
     u8 transparent:1;

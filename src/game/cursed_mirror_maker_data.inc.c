@@ -144,6 +144,13 @@ struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
     {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
 };
 
+// Shape of fence
+
+s8 fence_uvs[4][2] = {{32, 16},  {32, 0},  {0, 16},  {0, 0}};
+struct cmm_terrain_quad cmm_terrain_fence_quad = {
+    {{16, 8, 0},  {16, 0, 0},  {0, 8, 0},  {0, 0, 0}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, &fence_uvs, // BACK
+};
+
 // Shapes of water tiles
 struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
     {{{16, 14, 16}, {16, 14, 0}, {0, 14, 16}, {0, 14, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // TOP
@@ -171,19 +178,19 @@ struct cmm_terrain_quad *cmm_terrain_water_quadlists[] = {
 
 struct cmm_tile_type_struct cmm_tile_types[] = {
     //Model GFX           //F3D Material            //Collision Mesh             //Grass   //Transparent
-    {NULL, &cmm_terrain_fullblock, NULL   , FALSE},//TILE_TYPE_BLOCK
-    {NULL, &cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
-    {NULL, &cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
-    {NULL, &cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
-    {NULL, &cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
-    {NULL, &cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
-    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_SLAB
-    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_DSLAB
-    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_SSLAB
-    {&cull_cull_mesh, NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
-    {NULL, &cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
-    {&makerfence_mfv_mesh, NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
-    {NULL, NULL,      NULL, FALSE}, // TILE_TYPE_WATER
+    {&cmm_terrain_fullblock, NULL   , FALSE},//TILE_TYPE_BLOCK
+    {&cmm_terrain_slope,     NULL  , FALSE},//TILE_TYPE_SLOPE
+    {&cmm_terrain_corner,    NULL , FALSE},//TILE_TYPE_CORNER
+    {&cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
+    {&cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
+    {&cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
+    {NULL,      NULL, FALSE}, // TILE_TYPE_SLAB
+    {NULL,      NULL, FALSE}, // TILE_TYPE_DSLAB
+    {NULL,      NULL, FALSE}, // TILE_TYPE_SSLAB
+    {NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
+    {&cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
+    {NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
+    {NULL,      NULL, FALSE}, // TILE_TYPE_WATER
 };
 
 struct cmm_object_type_struct cmm_object_types[] = {
