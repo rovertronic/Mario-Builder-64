@@ -311,6 +311,7 @@ enum cmm_materials {
     CMM_MAT_DESERT_TILES,
     CMM_MAT_DESERT_BLOCK,
     CMM_MAT_DESERT_TILES2,
+    CMM_MAT_DESERT_SLOWSAND,
     // Red Hot Reservoir
     CMM_MAT_RHR_OBSIDIAN,
     CMM_MAT_RHR_STONE,
@@ -382,11 +383,12 @@ struct cmm_material cmm_mat_table[] = {
     {&mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
     {&mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
     // Desert
-    {&mat_maker_MakerDBrick,      0, SURFACE_DEFAULT}, // CMM_MAT_DESERT_BRICKS
+    {&mat_maker_MakerDBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_DESERT_BRICKS
     {&mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_STONE
     {&mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES
     {&mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_BLOCK
     {&mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES2
+    {&mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND},    // CMM_MAT_DESERT_SLOWSAND
     // Red Hot Reservoir
     {&mat_maker_MakerRHRObsidian,     0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
     {&mat_maker_MakerRHRStone,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
@@ -524,16 +526,16 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     // DESERT
     {
         {
-            {CMM_MAT_SANDDIRT,      CMM_TOPMAT_SAND,          "Sand"},
-            {CMM_MAT_DESERT_BRICKS, 0,                        "Bricks"},
-            {CMM_MAT_DESERT_STONE,  0,                        "Stone"},
-            {CMM_MAT_DESERT_TILES,  0,                        "Tiling"},
-            {CMM_MAT_DESERT_BLOCK,  0,                        "Stone Block"},
-            {CMM_MAT_WOOD,          0,                        "Wood"},
-            {CMM_MAT_DESERT_BRICKS, CMM_TOPMAT_DESERT_TILES2, "Desert Tiling"},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,         "Grass"},
-            {CMM_MAT_LAVA,          0,                        "Lava"},
-            {CMM_MAT_QUICKSAND,     0,                        "Quicksand"},
+            {CMM_MAT_SANDDIRT,        CMM_TOPMAT_SAND,          "Sand"},
+            {CMM_MAT_DESERT_BRICKS,   0,                        "Bricks"},
+            {CMM_MAT_DESERT_STONE,    0,                        "Stone"},
+            {CMM_MAT_DESERT_TILES,    0,                        "Tiling"},
+            {CMM_MAT_DESERT_BLOCK,    0,                        "Stone Block"},
+            {CMM_MAT_DESERT_SLOWSAND, 0,                        "Slow Sand"},
+            {CMM_MAT_DESERT_BRICKS,   CMM_TOPMAT_DESERT_TILES2, "Desert Tiling"},
+            {CMM_MAT_DIRT,            CMM_TOPMAT_GRASS,         "Grass"},
+            {CMM_MAT_LAVA,            0,                        "Lava"},
+            {CMM_MAT_QUICKSAND,       0,                        "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_desert), cmm_terrain_floors_desert,
         CMM_FENCE_DESERT,

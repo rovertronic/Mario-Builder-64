@@ -271,7 +271,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
     if (ceilHeight - floorHeight <= HANG_DISTANCE) {
         return HANG_HIT_CEIL_OR_OOB;
     }
-    if (ceil->type != SURFACE_HANGABLE) {
+    if (ceil->type != SURFACE_VANISH_CAP_WALLS) {
         return HANG_LEFT_CEIL;
     }
 
@@ -392,7 +392,7 @@ s32 act_start_hanging(struct MarioState *m) {
     }
 
     // HackerSM64 fix: check if ceil is NULL to prevent crashing
-    if (m->ceil == NULL || m->ceil->type != SURFACE_HANGABLE) {
+    if (m->ceil == NULL || m->ceil->type != SURFACE_VANISH_CAP_WALLS) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 
@@ -428,7 +428,7 @@ s32 act_hanging(struct MarioState *m) {
     }
 
     // HackerSM64 fix: check if ceil is NULL to prevent crashing
-    if (m->ceil == NULL || m->ceil->type != SURFACE_HANGABLE) {
+    if (m->ceil == NULL || m->ceil->type != SURFACE_VANISH_CAP_WALLS) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 
@@ -460,7 +460,7 @@ s32 act_hang_moving(struct MarioState *m) {
     }
 
     // HackerSM64 fix: check if ceil is NULL to prevent crashing
-    if (m->ceil == NULL || m->ceil->type != SURFACE_HANGABLE) {
+    if (m->ceil == NULL || m->ceil->type != SURFACE_VANISH_CAP_WALLS) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 

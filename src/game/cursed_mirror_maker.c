@@ -763,10 +763,10 @@ void render_water(s8 pos[3]) {
 }
 
 void render_floor(void) {
-    make_vertex(cmm_curr_vtx, 0,  4096, 0, -4096,  16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, -4096, 0, -4096, -16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2, -4096, 0,  4096, -16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,  4096, 0,  4096,  16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 0,  4096, 0, -4096, -16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, -4096, 0, -4096,  16384,  16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2, -4096, 0,  4096,  16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,  4096, 0,  4096, -16384, -16384, 0x0, 0x7F, 0x0, 0xFF);
     gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
     gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
     cmm_curr_vtx += 4;
@@ -851,7 +851,6 @@ void process_tiles(void) {
             }
         }
     }
-    cmm_growth_render_type = 0;
 }
 
 void generate_terrain_gfx(void) {
@@ -905,6 +904,7 @@ void generate_terrain_gfx(void) {
     u32 endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
     cmm_use_alt_uvs = TRUE;
+    cmm_growth_render_type = 0;
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);

@@ -18,7 +18,7 @@
 // - Doesn't require holding down the A button.
 // - Precise turning control.
 // - Prevents falling from the edges.
-#define BETTER_HANGING
+//#define BETTER_HANGING
 
 // Change the movement speed when hanging from a ceiling (the vanilla value is 4.0f, has no effect if BETTER_HANGING is enabled).
 #define HANGING_SPEED 12.0f
