@@ -582,7 +582,7 @@ void read_controller_inputs(s32 threadID) {
         if (threadID == THREAD_5_GAME_LOOP) {
             osRecvMesg(&gSIEventMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         }
-        osContGetReadDataEx(&gControllerPads[0]);
+        osContGetReadDataEx(gControllerPads);
 #if ENABLE_RUMBLE
         release_rumble_pak_control();
 #endif
@@ -617,8 +617,8 @@ void read_controller_inputs(s32 threadID) {
             controller->buttonDown = controllerData->button;
             adjust_analog_stick(controller);
         } else { // otherwise, if the controllerData is NULL, 0 out all of the inputs.
-            controller->rawStickX      = 0x0000;
-            controller->rawStickY      = 0x0000;
+            controller->rawStickX      = 0;
+            controller->rawStickY      = 0;
             controller->buttonPressed  = 0x0000;
             controller->buttonReleased = 0x0000;
             controller->buttonDown     = 0x0000;
