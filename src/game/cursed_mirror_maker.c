@@ -557,66 +557,54 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot) {
     cmm_curr_vtx += 3;
 }
 
-void render_block_main(s8 pos[3], u32 tileType, u32 mat, u32 rot) {
-    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
-    u8 hasTopside = HAS_TOPMAT(mat);
-    for (u32 j = 0; j < terrain->numQuads; j++) {
-        struct cmm_terrain_quad *quad = &terrain->quads[j];
-        if (!should_cull(pos, quad->cullDir, quad->faceshape, rot)) {
-            if (!hasTopside || (quad->growthType != CMM_GROWTH_FULL)) {
-                render_quad(quad, cmm_curr_gfx, pos, rot);
-            }
-        }
+u8 cmm_growth_render_type = 0;
+u8 cmm_curr_mat_has_topside = FALSE;
+
+void render_quad_with_growth(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot) {
+    switch (cmm_growth_render_type) {
+        case 0: // regular tex
+            if (cmm_curr_mat_has_topside && (quad->growthType == CMM_GROWTH_FULL)) return;
+            if (should_cull(pos, quad->cullDir, quad->faceshape, rot)) return;
+            break;
+        case 1: // grass top
+            if (quad->growthType != CMM_GROWTH_FULL) return;
+            if (should_cull(pos, quad->cullDir, quad->faceshape, rot)) return;
+            break;
+        case 2: // grass decal
+            if (quad->growthType == CMM_GROWTH_FULL || quad->growthType == CMM_GROWTH_NONE) return;
+            if (!should_render_grass_side(pos, quad->cullDir, quad->faceshape, rot, quad->growthType)) return;
+            break;
     }
-    for (u32 j = 0; j < terrain->numTris; j++) {
-        struct cmm_terrain_tri *tri = &terrain->tris[j];
-        if (!should_cull(pos, tri->cullDir, tri->faceshape, rot)) {
-            if (!hasTopside || (tri->growthType != CMM_GROWTH_FULL)) {
-                render_tri(tri, cmm_curr_gfx, pos, rot);
-            }
-        }
-    }
+    render_quad(quad, cmm_curr_gfx, pos, rot);
 }
 
-void render_block_grass_top(s8 pos[3], u32 tileType, u32 rot) {
-    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
-    for (u32 j = 0; j < terrain->numQuads; j++) {
-        struct cmm_terrain_quad *quad = &terrain->quads[j];
-        if (quad->growthType == CMM_GROWTH_FULL) {
-            if (!should_cull(pos, quad->cullDir, quad->faceshape, rot)) {
-                render_quad(quad, cmm_curr_gfx, pos, rot);
-            }
-        }
+void render_tri_with_growth(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
+    switch (cmm_growth_render_type) {
+        case 0: // regular tex
+            if (cmm_curr_mat_has_topside && (tri->growthType == CMM_GROWTH_FULL)) return;
+            if (should_cull(pos, tri->cullDir, tri->faceshape, rot)) return;
+            break;
+        case 1: // grass top
+            if (tri->growthType != CMM_GROWTH_FULL) return;
+            if (should_cull(pos, tri->cullDir, tri->faceshape, rot)) return;
+            break;
+        case 2: // grass decal
+            if (tri->growthType == CMM_GROWTH_FULL || tri->growthType == CMM_GROWTH_NONE) return;
+            if (!should_render_grass_side(pos, tri->cullDir, tri->faceshape, rot, tri->growthType)) return;
+            break;
     }
-    
-    for (u32 j = 0; j < terrain->numTris; j++) {
-        struct cmm_terrain_tri *tri = &terrain->tris[j];
-        if (tri->growthType == CMM_GROWTH_FULL) {
-            if (!should_cull(pos, tri->cullDir, tri->faceshape, rot)) {
-                render_tri(tri, cmm_curr_gfx, pos, rot);
-            }
-        }
-    }
+    render_tri(tri, cmm_curr_gfx, pos, rot);
 }
 
-void render_block_grass_side(s8 pos[3], u32 tileType, u32 rot) {
+void render_block_main(s8 pos[3], u32 tileType, u32 rot) {
     struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
     for (u32 j = 0; j < terrain->numQuads; j++) {
         struct cmm_terrain_quad *quad = &terrain->quads[j];
-        if (quad->growthType != CMM_GROWTH_FULL && quad->growthType != CMM_GROWTH_NONE) {
-            if (should_render_grass_side(pos, quad->cullDir, quad->faceshape, rot, quad->growthType)) {
-                render_quad(quad, cmm_curr_gfx, pos, rot);
-            }
-        }
+        render_quad_with_growth(pos, quad, rot);
     }
-
     for (u32 j = 0; j < terrain->numTris; j++) {
         struct cmm_terrain_tri *tri = &terrain->tris[j];
-        if (tri->growthType != CMM_GROWTH_FULL && tri->growthType != CMM_GROWTH_NONE) {
-            if (should_render_grass_side(pos, tri->cullDir, tri->faceshape, rot, tri->growthType)) {
-                render_tri(tri, cmm_curr_gfx, pos, rot);
-            }
-        }
+        render_tri_with_growth(pos, tri, rot);
     }
 }
 
@@ -733,6 +721,8 @@ void generate_terrain_gfx(void) {
 
     cmm_rendering_as_decal = FALSE;
     cmm_render_flip_normals = FALSE;
+    cmm_growth_render_type = 0;
+    cmm_curr_mat_has_topside = FALSE;
 
     retroland_filter_on();
 
@@ -746,7 +736,7 @@ void generate_terrain_gfx(void) {
                 tileType = cmm_tile_data[i].type;
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-                render_block_main(pos, tileType, mat, rot);
+                render_block_main(pos, tileType, rot);
             }
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         }
@@ -781,6 +771,8 @@ void generate_terrain_gfx(void) {
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
+        cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
+
         startIndex = cmm_tile_data_indices[mat];
         endIndex = cmm_tile_data_indices[mat+1];
         for (u32 i = startIndex; i < endIndex; i++) {
@@ -788,30 +780,32 @@ void generate_terrain_gfx(void) {
             rot = cmm_tile_data[i].rot;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-            render_block_main(pos, tileType, mat, rot);
+            render_block_main(pos, tileType, rot);
         }
         gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         if (HAS_TOPMAT(mat)) {
             if (SIDETEX(mat) != NULL) {
                 cmm_rendering_as_decal = TRUE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
+                cmm_growth_render_type = 2;
                 for (u32 i = startIndex; i < endIndex; i++) {
                     tileType = cmm_tile_data[i].type;
                     rot = cmm_tile_data[i].rot;
                     vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                    render_block_grass_side(pos, tileType, rot);
+                    render_block_main(pos, tileType, rot);
                 }
                 cmm_rendering_as_decal = FALSE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx);
+            cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
                 tileType = cmm_tile_data[i].type;
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                render_block_grass_top(pos, tileType, rot);
+                render_block_main(pos, tileType, rot);
             }
         }
     }
@@ -890,9 +884,11 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             }
             
             if (cmm_tile_types[cmm_id_selection].terrain) {
+                cmm_growth_render_type = 0;
+
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
-                    render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
+                    render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
                     geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
 
@@ -900,18 +896,23 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     cmm_gfx_index = 0;
                 }
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
-                render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_mat_selection, cmm_rot_selection);
-                if (HAS_TOPMAT(cmm_mat_selection)) {
+                render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
+                cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
+                if (cmm_curr_mat_has_topside) {
                     if (SIDETEX(cmm_mat_selection) != NULL) {
                         cmm_rendering_as_decal = TRUE;
+                        cmm_growth_render_type = 2;
+
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
-                        render_block_grass_side(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
+                        render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
                         cmm_rendering_as_decal = FALSE;
                     }
+                    cmm_growth_render_type = 1;
+
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
-                    render_block_grass_top(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
+                    render_block_main(cmm_cursor_pos, cmm_id_selection, cmm_rot_selection);
                 }
             } else if (cmm_id_selection == TILE_TYPE_FENCE) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
