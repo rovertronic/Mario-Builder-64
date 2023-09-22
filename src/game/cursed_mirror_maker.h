@@ -90,7 +90,7 @@ struct cmm_terrain_quad {
     u8 cullDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*decaluvs)[3][2];
+    s8 (*altuvs)[3][2];
 };
 struct cmm_terrain_tri {
     s8 vtx[3][3];
@@ -98,7 +98,7 @@ struct cmm_terrain_tri {
     u8 cullDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*decaluvs)[3][2];
+    s8 (*altuvs)[3][2];
 };
 struct cmm_terrain_block {
     u8 numQuads;

@@ -17,6 +17,7 @@ void scroll_sts_mat_maker_MakerRetroLava() {
 
 	if (--curInterval0 <= 0) {
 		shift_s(mat, 7, PACK_TILESIZE(0, 5));
+		shift_t(mat, 7, PACK_TILESIZE(0, 5));
 		curInterval0 = intervalTex0;
 	}
 };
@@ -28,6 +29,7 @@ void scroll_sts_mat_maker_MakerRetroWater() {
 
 	if (--curInterval0 <= 0) {
 		shift_s(mat, 7, PACK_TILESIZE(0, 5));
+		shift_t(mat, 7, PACK_TILESIZE(0, 5));
 		curInterval0 = intervalTex0;
 	}
 };

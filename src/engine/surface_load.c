@@ -326,7 +326,7 @@ static s32 surface_has_force(s32 surfaceType) {
  * Returns whether a surface should have the
  * SURFACE_FLAG_NO_CAM_COLLISION flag.
  */
-static s32 surf_has_no_cam_collision(s32 surfaceType) {
+s32 surf_has_no_cam_collision(s32 surfaceType) {
     s32 flags = SURFACE_FLAGS_NONE;
 
     switch (surfaceType) {

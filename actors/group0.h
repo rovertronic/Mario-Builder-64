@@ -856,10 +856,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "badge/geo_header.h"
 
-#include "makerfence/collision_header.h"
-
-#include "makerfence/header.h"
-
 #include "mm_btn/header.h"
 
 #include "mario2/geo_header.h"

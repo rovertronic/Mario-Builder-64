@@ -147,8 +147,31 @@ struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
 // Shape of fence
 
 s8 fence_uvs[4][2] = {{32, 16},  {32, 0},  {0, 16},  {0, 0}};
-struct cmm_terrain_quad cmm_terrain_fence_quad = {
-    {{16, 8, 0},  {16, 0, 0},  {0, 8, 0},  {0, 0, 0}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, &fence_uvs, // BACK
+struct cmm_terrain_quad cmm_terrain_fence_quad[] = {
+    {{{0, 8, 0}, {0, 0, 0}, {16, 8, 0}, {16, 0, 0}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, &fence_uvs}, // FRONT (towards tile)
+    {{{16, 8, 0}, {16, 0, 0}, {0, 8, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, &fence_uvs}, // BACK (away from tile)
+};
+
+struct cmm_terrain_quad cmm_terrain_fence_col_quads[] = {
+    {{{16, 7, 1},  {0, 7, 1},   {16, 0, 1}, {0, 0, 1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
+    {{{16, 7, -1}, {16, 0, -1}, {0, 7, -1}, {0, 0, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // BACK (away from tile)
+
+    {{{16, 8, 0},  {0, 8, 0},   {16, 7, 1}, {0, 7, 1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
+    {{{16, 8, 0},  {16, 7, -1}, {0, 8, 0},  {0, 7, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // BACK (away from tile)
+};
+
+struct cmm_terrain_block cmm_terrain_fence = {
+    2,
+    0,
+    &cmm_terrain_fence_quad,
+    NULL,
+};
+
+struct cmm_terrain_block cmm_terrain_fence_col = {
+    4,
+    0,
+    &cmm_terrain_fence_col_quads,
+    NULL,
 };
 
 // Shapes of water tiles
@@ -189,7 +212,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {NULL,      NULL, FALSE}, // TILE_TYPE_SSLAB
     {NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
     {&cmm_terrain_fullblock, NULL, FALSE},//TILE_TYPE_TROLL
-    {NULL,   makerfence_collision       , TRUE },//TILE_TYPE_FENCE
+    {NULL,   NULL       , TRUE },//TILE_TYPE_FENCE
     {NULL,      NULL, FALSE}, // TILE_TYPE_WATER
 };
 
