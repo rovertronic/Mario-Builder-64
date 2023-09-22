@@ -217,7 +217,7 @@ void osContGetReadDataEx(OSContPadEx* data) {
     int i;
 
     for (i = 0; i < __osMaxControllers; i++, data++) {
-        if (gControllerStatuses[i].type & CONT_CONSOLE_GCN) {
+        if ((gControllerStatuses[i].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_GCN) {
             s32 stick_x, stick_y, c_stick_x, c_stick_y;
             readformatgcn = *(__OSContGCNShortPollFormat*)ptr;
             data->errno = CHNL_ERR(readformatgcn);
@@ -293,7 +293,7 @@ static void __osPackReadData(void) {
     readformatgcn.stick_y = -1;
 
     for (i = 0; i < __osMaxControllers; i++) {
-        if (gControllerStatuses[i].type & CONT_CONSOLE_GCN) {
+        if ((gControllerStatuses[i].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_GCN) {
             readformatgcn.rumble = __osGamecubeRumbleEnabled[i];
             *(__OSContGCNShortPollFormat*)ptr = readformatgcn;
             ptr += sizeof(__OSContGCNShortPollFormat);
@@ -401,7 +401,7 @@ s32 __osMotorAccessEx(OSPfs* pfs, s32 flag) {
         return 5;
     }
 
-    if (gControllerStatuses[pfs->channel].type & CONT_CONSOLE_GCN) {
+    if ((gControllerStatuses[pfs->channel].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_GCN) {
         __osGamecubeRumbleEnabled[pfs->channel] = flag;
         __osContLastCmd = CONT_CMD_END;
     } else {
@@ -472,7 +472,7 @@ s32 osMotorInitEx(OSMesgQueue *mq, OSPfs *pfs, int channel)
     pfs->activebank = 0xFF;
     pfs->status = 0;
 
-    if (gControllerStatuses[pfs->channel].type & CONT_CONSOLE_GCN) {
+    if ((gControllerStatuses[pfs->channel].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_N64) {
         ret = __osPfsSelectBank(pfs, 0xFE);
         
         if (ret == PFS_ERR_NEW_PACK) {
