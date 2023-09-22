@@ -153,7 +153,7 @@ struct cmm_terrain_quad cmm_terrain_fence_quad = {
 
 // Shapes of water tiles
 struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
-    {{{16, 14, 16}, {16, 14, 0}, {0, 14, 16}, {0, 14, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // TOP
+    {{{16, 14, 16}, {16, 14, 0}, {0, 14, 16}, {0, 14, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // TOP
     {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 14, 16}, {16, 0, 16}, {16, 14, 0}, {16, 0, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, 0, NULL}, // LEFT
     {{{0, 14, 16},  {0, 14, 0},  {0, 0, 16},  {0, 0, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, 0, NULL}, // RIGHT
@@ -162,7 +162,7 @@ struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
 };
 
 struct cmm_terrain_quad cmm_terrain_topwater_quads[] = {
-    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, 0, NULL}, // TOP
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, 0, NULL}, // TOP
     {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 16, 16}, {16, 14, 16}, {16, 16, 0}, {16, 14, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_FULL, 0, NULL}, // LEFT
     {{{0, 16, 16},  {0, 16, 0},  {0, 14, 16},  {0, 14, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, 0, NULL}, // RIGHT
