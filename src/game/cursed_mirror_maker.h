@@ -295,7 +295,7 @@ struct cmm_theme {
 
 //compressed trajectories
 struct cmm_comptraj {
-    u32 x:5, y:5, z:5, t:7;
+    u32 x:6, y:5, z:6, t:7;
 };
 
 

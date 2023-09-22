@@ -128,6 +128,10 @@ s8 cmm_toolbox_index = 0;
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
 
+char *cmm_error_message = NULL;
+u16 cmm_error_timer = 0;
+f32 cmm_error_vels[3];
+
 struct cmm_hack_save cmm_save;
 
 u8 cmm_settings_index = 0;
@@ -190,6 +194,19 @@ void df_exbox(struct Object * obj, int param) {
 
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
+void display_error_message(char *message) {
+    if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
+        cmm_error_message = message;
+        cmm_error_timer = 120;
+        cmm_error_vels[0] = 280;
+        cmm_error_vels[1] = 0;
+        cmm_error_vels[2] = 0;
+    } else {
+        if (cmm_error_timer < 90) cmm_error_timer = 90;
+    }
+    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+}
+
 void reset_play_state(void) {
     cmm_play_stars = 0;
     cmm_play_stars_bitfield = 0;
@@ -208,18 +225,17 @@ s32 tile_sanity_check(void) {
 
     if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
         allow = FALSE;
+        display_error_message("Tile limit of 5000 reached.");
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
         allow = FALSE;
+        display_error_message("Vertex limit of 25000 reached.");
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
         allow = FALSE;
+        display_error_message("Graphics pool limit reached.");
     }
 
-    if (!allow) {
-        //error sound
-        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-    }
     return allow;
 }
 
@@ -228,12 +244,9 @@ s32 object_sanity_check(void) {
 
     if (cmm_object_count >= 200) {
         allow = FALSE;
+        display_error_message("Object limit of 200 reached.");
     }
 
-    if (!allow) {
-        //error sound
-        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-    }
     return allow;
 }
 

@@ -36,6 +36,9 @@ void print_maker_string_ascii(u16 x, u16 y, u8 * str, u8 highlight) {
         case 3:
             gDPSetEnvColor(gDisplayListHead++, 150, 150, 0, 255);
         break;
+        case 4:
+            gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, 255);
+        break;
     }
     print_generic_string_ascii(x, y, str);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -102,6 +105,28 @@ void draw_cmm_menu(void) {
             } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
                 print_maker_string_ascii(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 TILE_MATDEF(cmm_mat_selection).name,TRUE);
+            }
+
+            if (cmm_error_timer > 0) {
+                if (cmm_error_timer == 120) {
+                    cmm_error_vels[1] = -15.f;
+                    cmm_error_vels[2] = 2.f;
+                } else if (cmm_error_timer == 30) {
+                    cmm_error_vels[2] = 2.f;
+                }
+                if (cmm_error_timer > 60 && cmm_error_vels[1] > 0) {
+                    cmm_error_vels[1] = 0;
+                    cmm_error_vels[2] = 0;
+                }
+                if (cmm_error_vels[0] > 280) {
+                    cmm_error_vels[1] = 0;
+                    cmm_error_vels[2] = 0;
+                }
+                cmm_error_vels[0] += cmm_error_vels[1];
+                cmm_error_vels[1] += cmm_error_vels[2];
+
+                print_maker_string_ascii(15,cmm_error_vels[0],cmm_error_message,4);
+                cmm_error_timer--;
             }
         break;
         case CMM_MAKE_TOOLBOX:
