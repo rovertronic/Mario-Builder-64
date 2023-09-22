@@ -598,7 +598,7 @@ void read_controller_inputs(s32 threadID) {
         // if we're receiving inputs, update the controller struct with the new button info.
         if (controller->controllerData != NULL) {
             // HackerSM64: Swaps Z and L, only on console, and only when playing with a GameCube controller.
-            if (__osControllerTypes[controller->port] == CONT_TYPE_GCN) {
+            if (controller->statusData->type & CONT_CONSOLE_GCN) {
                 u32 oldButton = controllerData->button;
                 u32 newButton = oldButton & ~(Z_TRIG | L_TRIG);
                 if (oldButton & Z_TRIG) {
@@ -687,15 +687,15 @@ void init_controllers(void) {
 #if (MAX_NUM_PLAYERS >= 2)
     //! Some flashcarts (eg. ED64p) don't let you start a ROM with a GameCube controller in port 1,
     //   so if port 1 is an N64 controller and port 2 is a GC controller, swap them.
-    if (gEmulator & EMU_CONSOLE) {
-        if (
-            (__osControllerTypes[0] == CONT_TYPE_N64) &&
-            (__osControllerTypes[1] == CONT_TYPE_GCN)
-        ) {
-            struct Controller temp = gControllers[0];
-            gControllers[0] = gControllers[1];
-            gControllers[1] = temp;
-        }
+    if (
+        (gEmulator & EMU_CONSOLE) &&
+        ((gControllerBits & 0b11) == 0b11) && // Only swap if the first two ports both have controllers plugged in.
+        ((gControllerStatuses[0].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_N64) && // If the first port's controller is N64.
+        ((gControllerStatuses[1].type & CONT_CONSOLE_MASK) == CONT_CONSOLE_GCN)    // If the second port's controller is GCN.
+    ) {
+        struct Controller temp = gControllers[0];
+        gControllers[0] = gControllers[1];
+        gControllers[1] = temp;
     }
 #endif
 

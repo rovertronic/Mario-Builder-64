@@ -1,5 +1,7 @@
 #include "PR/os_internal.h"
 
+#include "game_init.h"
+
 /////////////////////////////////////////////////
 // Libultra structs and macros (from ultralib) //
 /////////////////////////////////////////////////
@@ -168,7 +170,6 @@ typedef struct
     /* 0xD */ u8 r_trig;
 } __OSContGCNShortPollFormat;
 extern u8 __osContLastCmd;
-u8 __osControllerTypes[MAXCONTROLLERS];
 u8 __osGamecubeRumbleEnabled[MAXCONTROLLERS];
 
 typedef struct
@@ -216,7 +217,7 @@ void osContGetReadDataEx(OSContPadEx* data) {
     int i;
 
     for (i = 0; i < __osMaxControllers; i++, data++) {
-        if (__osControllerTypes[i] == CONT_TYPE_GCN) {
+        if (gControllerStatuses[i].type & CONT_CONSOLE_GCN) {
             s32 stick_x, stick_y, c_stick_x, c_stick_y;
             readformatgcn = *(__OSContGCNShortPollFormat*)ptr;
             data->errno = CHNL_ERR(readformatgcn);
@@ -292,7 +293,7 @@ static void __osPackReadData(void) {
     readformatgcn.stick_y = -1;
 
     for (i = 0; i < __osMaxControllers; i++) {
-        if (__osControllerTypes[i] == CONT_TYPE_GCN) {
+        if (gControllerStatuses[i].type & CONT_CONSOLE_GCN) {
             readformatgcn.rumble = __osGamecubeRumbleEnabled[i];
             *(__OSContGCNShortPollFormat*)ptr = readformatgcn;
             ptr += sizeof(__OSContGCNShortPollFormat);
@@ -376,44 +377,12 @@ extern s32 __osContinitialized;
 extern OSPifRam __osContPifRam;
 extern u8 __osContLastCmd;
 extern u8 __osMaxControllers;
-extern u8 __osControllerTypes[MAXCONTROLLERS];
 extern u8 __osGamecubeRumbleEnabled[MAXCONTROLLERS];
 
 extern OSTimer __osEepromTimer;
 extern OSMesgQueue __osEepromTimerQ;
 extern OSMesg __osEepromTimerMsg;
 
-// Linker script will resolve references to the original function with this one instead
-void __osContGetInitDataEx(u8* pattern, OSContStatus* data) {
-    u8* ptr;
-    __OSContRequesFormat requestHeader;
-    s32 i;
-    u8 bits;
-
-    bits = 0;
-    ptr = (u8*)__osContPifRam.ramarray;
-    for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
-        requestHeader = *(__OSContRequesFormat*)ptr;
-        data->error = CHNL_ERR(requestHeader);
-        if (data->error == 0) {
-            data->type = requestHeader.typel << 8 | requestHeader.typeh;
-            
-            // Check if the input type is a gamecube controller
-            // Some mupen cores seem to send back a controller type of 0xFFFF if the core doesn't initialize the input plugin quickly enough,
-            //   so check for that and set the input type as N64 controller if so.
-            if ((data->type & CONT_GCN) && (s16)data->type != -1) {
-                __osControllerTypes[i] = CONT_TYPE_GCN;
-            } else {
-                __osControllerTypes[i] = CONT_TYPE_N64;
-            }
-
-            data->status = requestHeader.status;
-
-            bits |= 1 << i;
-        }
-    }
-    *pattern = bits;
-}
 
 /////////////
 // motor.c //
@@ -432,7 +401,7 @@ s32 __osMotorAccessEx(OSPfs* pfs, s32 flag) {
         return 5;
     }
 
-    if (__osControllerTypes[pfs->channel] == CONT_TYPE_GCN) {
+    if (gControllerStatuses[pfs->channel].type & CONT_CONSOLE_GCN) {
         __osGamecubeRumbleEnabled[pfs->channel] = flag;
         __osContLastCmd = CONT_CMD_END;
     } else {
@@ -503,7 +472,7 @@ s32 osMotorInitEx(OSMesgQueue *mq, OSPfs *pfs, int channel)
     pfs->activebank = 0xFF;
     pfs->status = 0;
 
-    if (__osControllerTypes[pfs->channel] != CONT_TYPE_GCN) {
+    if (gControllerStatuses[pfs->channel].type & CONT_CONSOLE_GCN) {
         ret = __osPfsSelectBank(pfs, 0xFE);
         
         if (ret == PFS_ERR_NEW_PACK) {
