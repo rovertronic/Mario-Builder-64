@@ -254,7 +254,7 @@ struct cmm_object_type_struct cmm_object_types[] = {
     {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
     {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
     {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 1       , NULL       },
+    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
     {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
     {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
     {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
@@ -267,43 +267,6 @@ u8 cmm_star_objects[] = {
     OBJECT_TYPE_RCS,
     OBJECT_TYPE_BOSS,
     OBJECT_TYPE_KTQ,
-};
-
-//behparam2 strings
-u8 txt_bp_box1[] = {TXT_BP_BOX_1}; u8 txt_bp_box2[] = {TXT_BP_BOX_2}; u8 txt_bp_box3[] = {TXT_BP_BOX_3}; u8 txt_bp_box4[] = {TXT_BP_BOX_4};
-u8 txt_bp_box5[] = {TXT_BP_BOX_5}; u8 txt_bp_box6[] = {TXT_BP_BOX_6}; u8 txt_bp_box7[] = {TXT_BP_BOX_7}; u8 txt_bp_box8[] = {TXT_BP_BOX_8};
-u8 *txt_bp_box[] = {
-    txt_bp_box1,
-    txt_bp_box2,
-    txt_bp_box3,
-    txt_bp_box4,
-    txt_bp_box5,
-    txt_bp_box6,
-    txt_bp_box7,
-    txt_bp_box8
-};
-u8 txt_bp_tree1[] = {TXT_BP_TREE_1}; u8 txt_bp_tree2[] = {TXT_BP_TREE_2};
-u8 txt_bp_tree3[] = {TXT_BP_TREE_3}; u8 txt_bp_tree4[] = {TXT_BP_TREE_4};
-u8 *txt_bp_tree[] = {
-    txt_bp_tree1,
-    txt_bp_tree2,
-    txt_bp_tree3,
-    txt_bp_tree4
-};
-
-u8 txt_bp_pipe1[] = {TXT_BP_PIPE_1};u8 txt_bp_pipe2[] = {TXT_BP_PIPE_2};
-u8 *txt_pipe[] = {
-    txt_bp_pipe1,
-    txt_bp_pipe2,
-    txt_bp_pipe1,
-};
-
-u8 txt_bp_boss1[] = {TXT_BP_BOSS_1};u8 txt_bp_boss2[] = {TXT_BP_BOSS_2};u8 txt_bp_boss3[] = {TXT_BP_BOSS_3};u8 txt_bp_boss4[] = {TXT_BP_BOSS_4};
-u8 *txt_bp_boss[] = {
-    txt_bp_boss1,
-    txt_bp_boss2,
-    txt_bp_boss3,
-    txt_bp_boss4,
 };
 
 enum cmm_materials {
@@ -408,24 +371,24 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES2
     {mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND},    // CMM_MAT_DESERT_SLOWSAND
     // Red Hot Reservoir
-    {mat_maker_MakerRHRObsidian,     0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
-    {mat_maker_MakerRHRStone,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
-    {mat_maker_MakerRHRBrick,        0, SURFACE_DEFAULT},     // CMM_MAT_RHR_BRICK
-    {mat_maker_MakerRHRBasalt,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BASALT
-    {mat_maker_MakerRHRTiles,        0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_TILES
-    {mat_maker_MakerRHRPattern,      0, SURFACE_DEFAULT},     // CMM_MAT_RHR_BLOCK
-    {mat_maker_MakerRHRWood,         0, SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
-    {mat_maker_MakerRHRPillar,       0, SURFACE_DEFAULT},     // CMM_MAT_RHR_PILLAR
+    {mat_maker_MakerRHRObsidian,     0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
+    {mat_maker_MakerRHRStone,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
+    {mat_maker_MakerRHRBrick,        0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_BRICK
+    {mat_maker_MakerRHRBasalt,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BASALT
+    {mat_maker_MakerRHRTiles,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_TILES
+    {mat_maker_MakerRHRPattern,      0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_BLOCK
+    {mat_maker_MakerRHRWood,         0,          SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
+    {mat_maker_MakerRHRPillar,       0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_PILLAR
     {mat_maker_MakerRHRGrate_layer1, MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
     // Hazy Maze Cave
-    {mat_maker_MakerHGrass,          0, SURFACE_GRASS},            // CMM_MAT_HMC_GRASS
-    {mat_maker_MakerHDirt,           0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
-    {mat_maker_MakerHBrick,          0, SURFACE_DEFAULT},     // CMM_MAT_HMC_BRICK
-    {mat_maker_MakerHStone,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
-    {mat_maker_MakerHMazewall,       0, SURFACE_DEFAULT},     // CMM_MAT_HMC_MAZEWALL
-    {mat_maker_MakerHMazefloor,      0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
-    {mat_maker_MakerHLight,          0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
-    {mat_maker_MakerHLakewall,       0, SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
+    {mat_maker_MakerHGrass,          0,          SURFACE_GRASS},            // CMM_MAT_HMC_GRASS
+    {mat_maker_MakerHDirt,           0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
+    {mat_maker_MakerHBrick,          0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_BRICK
+    {mat_maker_MakerHStone,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
+    {mat_maker_MakerHMazewall,       0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_MAZEWALL
+    {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
+    {mat_maker_MakerHLight,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
+    {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
     {mat_maker_MakerHFence_layer1,   MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
     {mat_maker_MakerCTile,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
@@ -439,13 +402,13 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerCPillar,         0, SURFACE_DEFAULT}, // CMM_MAT_C_PILLAR
     {mat_maker_MakerCBasementWall,   0, SURFACE_DEFAULT}, // CMM_MAT_C_BASEMENTWALL
     // Virtuaplex
-    {mat_maker_MakerVBlock,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLOCK
-    {mat_maker_MakerVTiles,          0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
-    {mat_maker_MakerVBlueTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
-    {mat_maker_MakerVRustyBlock,     0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
+    {mat_maker_MakerVBlock,          0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLOCK
+    {mat_maker_MakerVTiles,          0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
+    {mat_maker_MakerVBlueTiles,      0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
+    {mat_maker_MakerVRustyBlock,     0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
     {mat_maker_MakerScreen_layer1,   MAT_VPSCREEN, SURFACE_DEFAULT},      // CMM_MAT_VP_SCREEN
-    {mat_maker_MakerCaution,         0, SURFACE_DEFAULT},      // CMM_MAT_VP_CAUTION
-    {mat_maker_MakerVoid,            0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
+    {mat_maker_MakerCaution,         0,            SURFACE_DEFAULT},      // CMM_MAT_VP_CAUTION
+    {mat_maker_MakerVoid,            0,            SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT}, // CMM_MAT_RETRO_BRICKS
@@ -664,6 +627,49 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
 
 #define WATER_TEX() (cmm_lopt_theme == 6 ? &mat_maker_MakerRetroWater : &mat_maker_MakerWater)
 
+
+enum {
+    CMM_BUTTON_SAVE,
+    CMM_BUTTON_SETTINGS,
+    CMM_BUTTON_PLAY,
+    CMM_BUTTON_TERRAIN,
+    CMM_BUTTON_SLOPE,
+    CMM_BUTTON_TROLL,
+    CMM_BUTTON_STAR,
+    CMM_BUTTON_GOOMBA,
+    CMM_BUTTON_COIN,
+    CMM_BUTTON_BLANK,
+    CMM_BUTTON_GCOIN,
+    CMM_BUTTON_CORNER,
+    CMM_BUTTON_ICORNER,
+    CMM_BUTTON_RCOIN,
+    CMM_BUTTON_BCOIN,
+    CMM_BUTTON_BCS,
+    CMM_BUTTON_RCS,
+    CMM_BUTTON_NOTEBLOCK,
+    CMM_BUTTON_CULL,
+    CMM_BUTTON_PODOBOO,
+    CMM_BUTTON_REX,
+    CMM_BUTTON_BULLY,
+    CMM_BUTTON_BOMB,
+    CMM_BUTTON_TREE,
+    CMM_BUTTON_EXCLA,
+    CMM_BUTTON_DSLOPE,
+    CMM_BUTTON_CHUCKYA,
+    CMM_BUTTON_SPAWN,
+    CMM_BUTTON_PHANTASM,
+    CMM_BUTTON_PIPE,
+    CMM_BUTTON_BADGE,
+    CMM_BUTTON_WATER,
+    CMM_BUTTON_FENCE,
+    CMM_BUTTON_BOSS,
+    CMM_BUTTON_MPLAT,
+    CMM_BUTTON_BBALL,
+    CMM_BUTTON_KTQ,
+    CMM_BUTTON_SSLOPE,
+    CMM_BUTTON_SLAB,
+};
+
 u8 cmm_ui_bar[9] = {
     CMM_BUTTON_TERRAIN,
     CMM_BUTTON_FENCE,
@@ -693,58 +699,100 @@ u8 cmm_toolbox_vanilla[45] = {
     /*Obstacles*/ CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
-//button strings. is there a better way to do this?
-u8 txt_btn_1[] = {TXT_BTN_1};u8 txt_btn_2[] = {TXT_BTN_2};u8 txt_btn_3[] = {TXT_BTN_3};u8 txt_btn_4[] = {TXT_BTN_4};u8 txt_btn_5[] = {TXT_BTN_5};
-u8 txt_btn_6[] = {TXT_BTN_6};u8 txt_btn_7[] = {TXT_BTN_7};u8 txt_btn_8[] = {TXT_BTN_8};u8 txt_btn_9[] = {TXT_BTN_9};u8 txt_btn_10[] = {TXT_BTN_10};
-u8 txt_btn_11[] = {TXT_BTN_11};u8 txt_btn_12[] = {TXT_BTN_12};u8 txt_btn_13[] = {TXT_BTN_13};u8 txt_btn_14[] = {TXT_BTN_14};u8 txt_btn_15[] = {TXT_BTN_15};
-u8 txt_btn_16[] = {TXT_BTN_16};u8 txt_btn_17[] = {TXT_BTN_17};u8 txt_btn_18[] = {TXT_BTN_18};u8 txt_btn_19[] = {TXT_BTN_19};u8 txt_btn_20[] = {TXT_BTN_20};
-u8 txt_btn_21[] = {TXT_BTN_21};u8 txt_btn_22[] = {TXT_BTN_22};u8 txt_btn_23[] = {TXT_BTN_23};u8 txt_btn_24[] = {TXT_BTN_24};u8 txt_btn_25[] = {TXT_BTN_25};
-u8 txt_btn_26[] = {TXT_BTN_26};u8 txt_btn_27[] = {TXT_BTN_27};u8 txt_btn_28[] = {TXT_BTN_28};u8 txt_btn_29[] = {TXT_BTN_29};u8 txt_btn_30[] = {TXT_BTN_30};
-u8 txt_btn_31[] = {TXT_BTN_31};u8 txt_btn_32[] = {TXT_BTN_32};u8 txt_btn_33[] = {TXT_BTN_33};u8 txt_btn_34[] = {TXT_BTN_34};u8 txt_btn_35[] = {TXT_BTN_35};
-u8 txt_btn_36[] = {TXT_BTN_36};u8 txt_btn_37[] = {TXT_BTN_37};u8 txt_btn_38[] = {TXT_BTN_38};u8 txt_btn_39[] = {TXT_BTN_39};u8 txt_btn_40[] = {TXT_BTN_40};
-u8 txt_btn_41[] = {TXT_BTN_41};u8 txt_btn_42[] = {TXT_BTN_42};u8 txt_btn_43[] = {TXT_BTN_43};u8 txt_btn_44[] = {TXT_BTN_44};
+
+//behparam2 strings
+char *txt_bp_box[] = {
+    "Rocket Boots",
+    "Cosmic Seed",
+    "Vanetal Cap",
+    "Koopa Shell",
+    "Green Coin",
+    "3 Coins",
+    "10 Coins",
+    "Invisible"
+};
+
+char *txt_bp_tree[] = {
+    "Bubbly",
+    "Farm",
+    "Palm",
+    "Snowy"
+};
+
+char *txt_bp_boss[] = {
+    "King Bob-Omb",
+    "King Whomp",
+    "Eyerok",
+    "Wiggler",
+};
+
+char *txt_badges[] = {
+    "Lava Boost",
+    "Fall Damage",
+    "Defense",
+    "Double Damage",
+    "Gills",
+    "Fins",
+    "HP Regen",
+    "Mana Regen",
+    "Greed",
+    "Double Time",
+    "Magnet",
+    "Star Radar",
+    "Burn",
+    "Squish",
+    "Feather",
+    "Weight",
+    "Sticky",
+    "Fast Foot",
+    "Heal Plus",
+    "Bottomless",
+    "Boss Slayer",
+    "Brittle Burden",
+    "Withering Burden",
+};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
-    //button texture      //TILE/OBJ ID       //PLACE MODE //TXT POINTER   //PARAM STR
-    {mat_b_btn_save     , 0                  ,CMM_PM_NONE , txt_btn_1    , NULL         }, //CMM_BUTTON_SAVE
-    {mat_b_btn_settings , 0                  ,CMM_PM_NONE , txt_btn_2    , NULL         }, //CMM_BUTTON_SETTINGS
-    {mat_b_btn_check    , 0                  ,CMM_PM_NONE , txt_btn_3    , NULL         }, //CMM_BUTTON_PLAY
-    {mat_b_btn_tile     , TILE_TYPE_BLOCK    ,CMM_PM_TILE , txt_btn_4    , NULL         }, //CMM_BUTTON_GRASS
-    {mat_b_btn_slope    , TILE_TYPE_SLOPE    ,CMM_PM_TILE , txt_btn_7    , NULL         }, //CMM_BUTTON_SLOPE
-    {mat_b_btn_troll    , TILE_TYPE_TROLL    ,CMM_PM_TILE , txt_btn_8    , NULL         }, //CMM_BUTTON_TROLL
-    {mat_b_btn_star     , OBJECT_TYPE_STAR   ,CMM_PM_OBJ  , txt_btn_9    , NULL         }, //CMM_BUTTON_STAR
-    {mat_b_btn_goomba   , OBJECT_TYPE_GOOMBA ,CMM_PM_OBJ  , txt_btn_10   , NULL         }, //CMM_BUTTON_GOOMBA
-    {mat_b_btn_coin     , OBJECT_TYPE_COIN   ,CMM_PM_OBJ  , txt_btn_11   , NULL         }, //CMM_BUTTON_COIN
-    {mat_b_btn_blank    , TILE_TYPE_BLOCK    ,CMM_PM_TILE , txt_btn_12   , NULL         }, //CMM_BUTTON_BLANK
-    {mat_b_btn_greencoin, OBJECT_TYPE_GCOIN  ,CMM_PM_OBJ  , txt_btn_15   , NULL         }, //CMM_BUTTON_GCOIN
-    {mat_b_btn_corner   , TILE_TYPE_CORNER   ,CMM_PM_TILE , txt_btn_16   , NULL         }, //CMM_BUTTON_CORNER
-    {mat_b_btn_icorner  , TILE_TYPE_ICORNER  ,CMM_PM_TILE , txt_btn_17   , NULL         }, //CMM_BUTTON_ICORNER
-    {mat_b_btn_redcoin  , OBJECT_TYPE_RCOIN  ,CMM_PM_OBJ  , txt_btn_18   , NULL         }, //CMM_BUTTON_RCOIN
-    {mat_b_btn_bluecoin , OBJECT_TYPE_BCOIN  ,CMM_PM_OBJ  , txt_btn_19   , NULL         }, //CMM_BUTTON_BCOIN
-    {mat_b_btn_bcs      , OBJECT_TYPE_BCS    ,CMM_PM_OBJ  , txt_btn_20   , NULL         }, //CMM_BUTTON_BCS
-    {mat_b_btn_rcs      , OBJECT_TYPE_RCS    ,CMM_PM_OBJ  , txt_btn_21   , NULL         }, //CMM_BUTTON_RCS
-    {mat_b_btn_noteblock, OBJECT_TYPE_NOTE   ,CMM_PM_OBJ  , txt_btn_22   , NULL         }, //CMM_BUTTON_NOTEBLOCK
-    {mat_b_btn_cull     , TILE_TYPE_CULL     ,CMM_PM_TILE , txt_btn_23   , NULL         }, //CMM_BUTTON_CULL
-    {mat_b_btn_podoboo  , OBJECT_TYPE_PODOB  ,CMM_PM_OBJ  , txt_btn_25   , NULL         }, //CMM_BUTTON_PODOBOO
-    {mat_b_btn_rex      , OBJECT_TYPE_REX    ,CMM_PM_OBJ  , txt_btn_26   , NULL         }, //CMM_BUTTON_REX
-    {mat_b_btn_bully    , OBJECT_TYPE_BULLY  ,CMM_PM_OBJ  , txt_btn_27   , NULL         }, //CMM_BUTTON_BULLY
-    {mat_b_btn_bobomb   , OBJECT_TYPE_BOMB   ,CMM_PM_OBJ  , txt_btn_28   , NULL         }, //CMM_BUTTON_BOMB
-    {mat_b_btn_tree     , OBJECT_TYPE_TREE   ,CMM_PM_OBJ  , txt_btn_29   , txt_bp_tree  }, //CMM_BUTTON_TREE
-    {mat_b_btn_excla    , OBJECT_TYPE_EXCLA  ,CMM_PM_OBJ  , txt_btn_30   , txt_bp_box   }, //CMM_BUTTON_EXCLA
-    {mat_b_btn_downslope, TILE_TYPE_DSLOPE   ,CMM_PM_TILE , txt_btn_31   , NULL         }, //CMM_BUTTON_DSLOPE
-    {mat_b_btn_chuckya  , OBJECT_TYPE_CHUCKYA,CMM_PM_OBJ  , txt_btn_32   , NULL         }, //CMM_BUTTON_CHUCKYA
-    {mat_b_btn_spawn    , OBJECT_TYPE_SPAWN  ,CMM_PM_OBJ  , txt_btn_33   , NULL         }, //CMM_BUTTON_SPAWN
-    {mat_b_btn_phantasm , OBJECT_TYPE_PHNTSM ,CMM_PM_OBJ  , txt_btn_34   , NULL         }, //CMM_BUTTON_PHANTASM
-    {mat_b_btn_pipe     , OBJECT_TYPE_PIPE   ,CMM_PM_OBJ  , txt_btn_35   , txt_pipe     }, //CMM_BUTTON_PIPE
-    {mat_b_btn_badge    , OBJECT_TYPE_BADGE  ,CMM_PM_OBJ  , txt_btn_36   , badgenames   }, //CMM_BUTTON_BADGE
-    {mat_b_btn_water    , 0                  ,CMM_PM_WATER, txt_btn_37   , NULL         }, //CMM_BUTTON_WATER
-    {mat_b_btn_fence    , TILE_TYPE_FENCE    ,CMM_PM_TILE , txt_btn_38   , NULL         }, //CMM_BUTTON_FENCE
-    {mat_b_btn_boss     , OBJECT_TYPE_BOSS   ,CMM_PM_OBJ  , txt_btn_39   , txt_bp_boss  }, //CMM_BUTTON_BOSS
-    {mat_b_btn_checker  , OBJECT_TYPE_MPLAT  ,CMM_PM_OBJ  , txt_btn_40   , NULL         }, //CMM_BUTTON_MPLAT
-    {mat_b_btn_bball    , OBJECT_TYPE_BBALL  ,CMM_PM_OBJ  , txt_btn_41   , NULL         }, //CMM_BUTTON_BBALL
-    {mat_b_btn_kuppa    , OBJECT_TYPE_KTQ    ,CMM_PM_OBJ  , txt_btn_42   , NULL         }, //CMM_BUTTON_KTQ
-    {mat_b_btn_sideslope, TILE_TYPE_SSLOPE   ,CMM_PM_TILE , txt_btn_43   , NULL         }, //CMM_BUTTON_SSLOPE
-    {mat_b_btn_slabtile , TILE_TYPE_SLAB     ,CMM_PM_TILE , txt_btn_44   , NULL         }, //CMM_BUTTON_SLAB
+    //button texture      //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
+    {mat_b_btn_save,      0,                   CMM_PM_NONE,  "Save",               NULL       }, //CMM_BUTTON_SAVE
+    {mat_b_btn_settings,  0,                   CMM_PM_NONE,  "Settings",           NULL       }, //CMM_BUTTON_SETTINGS
+    {mat_b_btn_check,     0,                   CMM_PM_NONE,  "Test",               NULL       }, //CMM_BUTTON_PLAY
+    {mat_b_btn_tile,      TILE_TYPE_BLOCK,     CMM_PM_TILE,  "Terrain",            NULL       }, //CMM_BUTTON_GRASS
+    {mat_b_btn_slope,     TILE_TYPE_SLOPE,     CMM_PM_TILE,  "Slope",              NULL       }, //CMM_BUTTON_SLOPE
+    {mat_b_btn_troll,     TILE_TYPE_TROLL,     CMM_PM_TILE,  "Troll Tile",         NULL       }, //CMM_BUTTON_TROLL
+    {mat_b_btn_star,      OBJECT_TYPE_STAR,    CMM_PM_OBJ,   "Power Star",         NULL       }, //CMM_BUTTON_STAR
+    {mat_b_btn_goomba,    OBJECT_TYPE_GOOMBA,  CMM_PM_OBJ,   "Goomba",             NULL       }, //CMM_BUTTON_GOOMBA
+    {mat_b_btn_coin,      OBJECT_TYPE_COIN,    CMM_PM_OBJ,   "Yellow Coin",        NULL       }, //CMM_BUTTON_COIN
+    {mat_b_btn_blank,     TILE_TYPE_BLOCK,     CMM_PM_TILE,  "",                   NULL       }, //CMM_BUTTON_BLANK
+    {mat_b_btn_greencoin, OBJECT_TYPE_GCOIN,   CMM_PM_OBJ,   "Green Coin",         NULL       }, //CMM_BUTTON_GCOIN
+    {mat_b_btn_corner,    TILE_TYPE_CORNER,    CMM_PM_TILE,  "Slope Corner",       NULL       }, //CMM_BUTTON_CORNER
+    {mat_b_btn_icorner,   TILE_TYPE_ICORNER,   CMM_PM_TILE,  "Slope Inner Corner", NULL       }, //CMM_BUTTON_ICORNER
+    {mat_b_btn_redcoin,   OBJECT_TYPE_RCOIN,   CMM_PM_OBJ,   "Red Coin",           NULL       }, //CMM_BUTTON_RCOIN
+    {mat_b_btn_bluecoin,  OBJECT_TYPE_BCOIN,   CMM_PM_OBJ,   "Blue Coin",          NULL       }, //CMM_BUTTON_BCOIN
+    {mat_b_btn_bcs,       OBJECT_TYPE_BCS,     CMM_PM_OBJ,   "Blue Coin Switch",   NULL       }, //CMM_BUTTON_BCS
+    {mat_b_btn_rcs,       OBJECT_TYPE_RCS,     CMM_PM_OBJ,   "Red Coin Star",      NULL       }, //CMM_BUTTON_RCS
+    {mat_b_btn_noteblock, OBJECT_TYPE_NOTE,    CMM_PM_OBJ,   "Note Block",         NULL       }, //CMM_BUTTON_NOTEBLOCK
+    {mat_b_btn_cull,      TILE_TYPE_CULL,      CMM_PM_TILE,  "Cull Marker",        NULL       }, //CMM_BUTTON_CULL
+    {mat_b_btn_podoboo,   OBJECT_TYPE_PODOB,   CMM_PM_OBJ,   "Podoboo",            NULL       }, //CMM_BUTTON_PODOBOO
+    {mat_b_btn_rex,       OBJECT_TYPE_REX,     CMM_PM_OBJ,   "Rex",                NULL       }, //CMM_BUTTON_REX
+    {mat_b_btn_bully,     OBJECT_TYPE_BULLY,   CMM_PM_OBJ,   "Bully",              NULL       }, //CMM_BUTTON_BULLY
+    {mat_b_btn_bobomb,    OBJECT_TYPE_BOMB,    CMM_PM_OBJ,   "Bob-omb",            NULL       }, //CMM_BUTTON_BOMB
+    {mat_b_btn_tree,      OBJECT_TYPE_TREE,    CMM_PM_OBJ,   "Tree",               txt_bp_tree}, //CMM_BUTTON_TREE
+    {mat_b_btn_excla,     OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_box }, //CMM_BUTTON_EXCLA
+    {mat_b_btn_downslope, TILE_TYPE_DSLOPE,    CMM_PM_TILE,  "Flipped Slope",      NULL       }, //CMM_BUTTON_DSLOPE
+    {mat_b_btn_chuckya,   OBJECT_TYPE_CHUCKYA, CMM_PM_OBJ,   "Chuckya",            NULL       }, //CMM_BUTTON_CHUCKYA
+    {mat_b_btn_spawn,     OBJECT_TYPE_SPAWN,   CMM_PM_OBJ,   "Mario Spawn",        NULL       }, //CMM_BUTTON_SPAWN
+    {mat_b_btn_phantasm,  OBJECT_TYPE_PHNTSM,  CMM_PM_OBJ,   "Cosmic Phantasm",    NULL       }, //CMM_BUTTON_PHANTASM
+    {mat_b_btn_pipe,      OBJECT_TYPE_PIPE,    CMM_PM_OBJ,   "Warp Pipe",          NULL       }, //CMM_BUTTON_PIPE
+    {mat_b_btn_badge,     OBJECT_TYPE_BADGE,   CMM_PM_OBJ,   "Badge",              txt_badges }, //CMM_BUTTON_BADGE
+    {mat_b_btn_water,     0,                   CMM_PM_WATER, "Water",              NULL       }, //CMM_BUTTON_WATER
+    {mat_b_btn_fence,     TILE_TYPE_FENCE,     CMM_PM_TILE,  "Fence",              NULL       }, //CMM_BUTTON_FENCE
+    {mat_b_btn_boss,      OBJECT_TYPE_BOSS,    CMM_PM_OBJ,   "Boss",               txt_bp_boss}, //CMM_BUTTON_BOSS
+    {mat_b_btn_checker,   OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    NULL       }, //CMM_BUTTON_MPLAT
+    {mat_b_btn_bball,     OBJECT_TYPE_BBALL,   CMM_PM_OBJ,   "Bowling Ball",       NULL       }, //CMM_BUTTON_BBALL
+    {mat_b_btn_kuppa,     OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL       }, //CMM_BUTTON_KTQ
+    {mat_b_btn_sideslope, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Sideways Slope",     NULL       }, //CMM_BUTTON_SSLOPE
+    {mat_b_btn_slabtile,  TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL       }, //CMM_BUTTON_SLAB
 };
 
 

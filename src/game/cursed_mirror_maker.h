@@ -36,6 +36,13 @@ extern u32 cmm_play_badge_bitfield;
 
 extern TCHAR cmm_file_name[30];
 
+enum {
+    CMM_PM_NONE,
+    CMM_PM_TILE,
+    CMM_PM_OBJ,
+    CMM_PM_WATER,
+};
+
 // For making variable size levels later
 #define GRID_MIN_COORD 16
 #define GRID_MAX_COORD 48
@@ -152,8 +159,9 @@ struct cmm_object_type_struct {
     f32 scale;
     const struct Animation *const *anim;
     s16 param_max;
-    void (* disp_func)(struct Object *,int);
+    void (*disp_func)(struct Object *,int);
 };
+
 enum {
     OBJECT_TYPE_STAR,
     OBJECT_TYPE_GOOMBA,
@@ -182,17 +190,17 @@ enum {
 };
 
 struct cmm_ui_button_type {
-    Gfx * material;
+    Gfx *material;
     u8 id;
     u8 placeMode:2;
-    u8 * str;
-    u8 ** param_strings;
+    char *str;
+    char **param_strings;
 };
 
 struct cmm_settings_button {
-    char * str;
-    u8 * value;
-    char ** nametable;
+    char *str;
+    u8 *value;
+    char **nametable;
     u8 size;
 };
 
@@ -209,55 +217,6 @@ enum {
     CMM_MAKE_TOOLBOX,
     CMM_MAKE_SETTINGS,
     CMM_MAKE_TRAJECTORY,
-};
-
-enum {
-    CMM_BUTTON_SAVE,
-    CMM_BUTTON_SETTINGS,
-    CMM_BUTTON_PLAY,
-    CMM_BUTTON_TERRAIN,
-    CMM_BUTTON_SLOPE,
-    CMM_BUTTON_TROLL,
-    CMM_BUTTON_STAR,
-    CMM_BUTTON_GOOMBA,
-    CMM_BUTTON_COIN,
-    CMM_BUTTON_BLANK,
-    CMM_BUTTON_GCOIN,
-    CMM_BUTTON_CORNER,
-    CMM_BUTTON_ICORNER,
-    CMM_BUTTON_RCOIN,
-    CMM_BUTTON_BCOIN,
-    CMM_BUTTON_BCS,
-    CMM_BUTTON_RCS,
-    CMM_BUTTON_NOTEBLOCK,
-    CMM_BUTTON_CULL,
-    CMM_BUTTON_PODOBOO,
-    CMM_BUTTON_REX,
-    CMM_BUTTON_BULLY,
-    CMM_BUTTON_BOMB,
-    CMM_BUTTON_TREE,
-    CMM_BUTTON_EXCLA,
-    CMM_BUTTON_DSLOPE,
-    CMM_BUTTON_CHUCKYA,
-    CMM_BUTTON_SPAWN,
-    CMM_BUTTON_PHANTASM,
-    CMM_BUTTON_PIPE,
-    CMM_BUTTON_BADGE,
-    CMM_BUTTON_WATER,
-    CMM_BUTTON_FENCE,
-    CMM_BUTTON_BOSS,
-    CMM_BUTTON_MPLAT,
-    CMM_BUTTON_BBALL,
-    CMM_BUTTON_KTQ,
-    CMM_BUTTON_SSLOPE,
-    CMM_BUTTON_SLAB,
-};
-
-enum {
-    CMM_PM_NONE,
-    CMM_PM_TILE,
-    CMM_PM_OBJ,
-    CMM_PM_WATER,
 };
 
 #define NUM_THEMES 7

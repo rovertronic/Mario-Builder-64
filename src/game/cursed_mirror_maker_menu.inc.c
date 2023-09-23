@@ -1,13 +1,3 @@
-extern s32 get_string_width(u8 *str);
-u8 string_runoff(s16 x, u8 * str) {
-    s16 x1 = get_string_width(str);
-
-    if (x+x1 > 320) {
-        return TRUE;
-    }
-    return FALSE;
-}
-
 extern u8 gDialogCharWidths[256];
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
@@ -18,6 +8,15 @@ s32 get_string_width_ascii(char *str) {
         strPos++;
     }
     return width;
+}
+
+u8 string_runoff(s16 x, char *str) {
+    s16 x1 = get_string_width_ascii(str);
+
+    if (x+x1 > 320) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void print_maker_string_ascii(u16 x, u16 y, char *str, u8 highlight) {
@@ -99,12 +98,12 @@ void draw_cmm_menu(void) {
     //TOOLBOX
     switch (cmm_menu_state) {
         case CMM_MAKE_MAIN:
-            print_maker_string(15,45,cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str,FALSE);
+            print_maker_string_ascii(15,45,cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str,FALSE);
             if (cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings) {
-                print_maker_string(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
+                print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
             } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
-                print_maker_string_ascii(30+get_string_width(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
+                print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 TILE_MATDEF(cmm_mat_selection).name,TRUE);
             }
 
@@ -163,7 +162,7 @@ void draw_cmm_menu(void) {
             gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-            print_maker_string(strx+sro, stry ,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str,TRUE);
+            print_maker_string_ascii(strx+sro, stry ,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str,TRUE);
             }
 
         break;

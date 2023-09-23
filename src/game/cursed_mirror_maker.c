@@ -1133,7 +1133,6 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             geo_append_display_list(cmm_curr_gfx, LAYER_OPAQUE);
         }
-
     }
     return NULL;
 }
