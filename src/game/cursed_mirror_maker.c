@@ -141,6 +141,11 @@ void df_badge(struct Object * obj, int param) {
     obj->oBehParams2ndByte = param;
 }
 
+void df_reds_marker(struct Object * obj, int param) {
+    obj->oFaceAnglePitch = 0x4000;
+    vec3_set(obj->header.gfx.scale, 1.5f, 1.5f, 0.75f);
+}
+
 void df_tree(struct Object * obj, int param) {
     switch(param) {
         case 1:
