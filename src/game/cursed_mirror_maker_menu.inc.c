@@ -102,7 +102,7 @@ void draw_cmm_menu(void) {
             if (cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings) {
                 print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].param_strings[cmm_param_selection],TRUE);
-            } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_types[cmm_id_selection].terrain) {
+            } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_terrains[cmm_id_selection]) {
                 print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].str),45,
                 TILE_MATDEF(cmm_mat_selection).name,TRUE);
             }

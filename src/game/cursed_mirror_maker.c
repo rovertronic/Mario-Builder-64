@@ -293,12 +293,12 @@ ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     s8 tileType = get_grid_tile(pos)->type - 1;
-    if (tileType == -1 || !cmm_tile_types[tileType].terrain) return CMM_FACESHAPE_EMPTY;
+    if (tileType == -1 || !cmm_tile_terrains[tileType]) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = get_grid_tile(pos)->rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
 
-    struct cmm_terrain_block *terrain = cmm_tile_types[tileType].terrain;
+    struct cmm_terrain *terrain = cmm_tile_terrains[tileType];
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
         if (quad->cullDir == dir) {
@@ -749,7 +749,7 @@ void process_tri_with_growth(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
     process_tri(pos, tri, rot);
 }
 
-void process_tile(s8 pos[3], struct cmm_terrain_block *terrain, u32 rot) {
+void process_tile(s8 pos[3], struct cmm_terrain *terrain, u32 rot) {
     for (u32 j = 0; j < terrain->numQuads; j++) {
         struct cmm_terrain_quad *quad = &terrain->quads[j];
         process_quad_with_growth(pos, quad, rot);
@@ -853,7 +853,7 @@ u32 get_tiletype_index(u32 type, u32 mat) {
         case TILE_TYPE_CULL:
             return NUM_MATERIALS_PER_THEME + 2;
         default:
-            if (cmm_tile_types[type].terrain) {
+            if (cmm_tile_terrains[type]) {
                 return mat;
             }
     }
@@ -889,7 +889,7 @@ void process_tiles(void) {
             rot = cmm_tile_data[i].rot;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-            process_tile(pos, cmm_tile_types[tileType].terrain, rot);
+            process_tile(pos, cmm_tile_terrains[tileType], rot);
         }
         
         PROC_RENDER( gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); )
@@ -906,7 +906,7 @@ void process_tiles(void) {
                     rot = cmm_tile_data[i].rot;
                     vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                    process_tile(pos, cmm_tile_types[tileType].terrain, rot);
+                    process_tile(pos, cmm_tile_terrains[tileType], rot);
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -923,7 +923,7 @@ void process_tiles(void) {
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                process_tile(pos, cmm_tile_types[tileType].terrain, rot);
+                process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
         }
 
@@ -959,7 +959,7 @@ void generate_terrain_gfx(void) {
                 tileType = cmm_tile_data[i].type;
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-                process_tile(pos, cmm_tile_types[tileType].terrain, rot);
+                process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
             display_cached_tris();
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
@@ -1053,7 +1053,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
             //generate dl
-            if (cmm_place_mode == CMM_PM_OBJ) return NULL;
+            if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) return NULL;
             u8 preview_mtx_index = 0;
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
@@ -1076,7 +1076,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 return NULL;
             }
 
-            struct cmm_terrain_block *terrain = cmm_tile_types[cmm_id_selection].terrain;
+            struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
             
             if (cmm_id_selection == TILE_TYPE_FENCE) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
@@ -1937,7 +1937,7 @@ void sb_loop(void) {
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             }
             if (cmm_place_mode == CMM_PM_TILE) {
-                if (cmm_tile_types[cmm_id_selection].terrain) {
+                if (cmm_tile_terrains[cmm_id_selection]) {
                     if (gPlayer1Controller->buttonPressed & L_JPAD) {
                         cmm_mat_selection --;
                     }

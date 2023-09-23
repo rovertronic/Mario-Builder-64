@@ -110,7 +110,7 @@ struct cmm_terrain_tri {
     u8 growthType;
     s8 (*altuvs)[3][2];
 };
-struct cmm_terrain_block {
+struct cmm_terrain {
     u8 numQuads;
     u8 numTris;
     struct cmm_terrain_quad * quads;
@@ -120,11 +120,7 @@ struct cmm_terrain_block {
 struct cmm_tile {
     u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
-struct cmm_tile_type_struct {
-    struct cmm_terrain_block *terrain;
-    u32 * collision_data;
-    u8 transparent:1;
-};
+
 enum {
     TILE_TYPE_BLOCK,
     TILE_TYPE_SLOPE,
@@ -203,8 +199,6 @@ struct cmm_settings_button {
     char **nametable;
     u8 size;
 };
-
-//static_assert(sizeof(cmm_tile_type_struct) == 4,"tile is not u32 sized, FIX NOW!")
 
 enum {
     CMM_MODE_PLAY,
