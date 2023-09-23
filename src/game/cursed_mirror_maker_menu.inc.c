@@ -57,6 +57,43 @@ void print_maker_string(u16 x, u16 y, u8 *str, u8 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
+void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
+                                   f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
+    if (isBegin) {
+        vels[0] = beginPos;
+        vels[1] = beginVel;
+        vels[2] = beginAccel;
+    }
+    vels[0] += vels[1];
+    vels[1] += vels[2];
+    // Take note of what sign the beginning velocity was.
+    // If it's the opposite sign of current velocity,
+    // stop animation once it overshoots the target.
+    if (beginVel > 0.f && vels[1] < 0.f) {
+        if (vels[0] < targetPos) {
+            vels[0] = targetPos;
+            vels[1] = 0.f;
+            vels[2] = 0.f;
+        }
+    } else if (beginVel < 0.f && vels[1] > 0.f) {
+        if (vels[0] > targetPos) {
+            vels[0] = targetPos;
+            vels[1] = 0.f;
+            vels[2] = 0.f;
+        }
+    }
+}
+
+void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
+    if (isBegin) {
+        vels[0] = beginPos;
+        vels[1] = beginVel;
+        vels[2] = beginAccel;
+    }
+    vels[0] += vels[1];
+    vels[1] += vels[2];
+}
+
 void draw_cmm_menu(void) {
     u8 i;
     u8 op;
@@ -262,6 +299,7 @@ u8 cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
 
 u8 cmm_mm_state = MM_INIT;
 u8 cmm_mm_main_state = MM_MAIN;
+u8 cmm_mm_files_prev_menu;
 s8 cmm_mm_index = 0;
 s8 cmm_mm_pages = 0;
 s8 cmm_mm_page = 0;
@@ -270,11 +308,30 @@ u8 *cmm_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
 // Position, velocity, acceleration
-f32 cmm_menu_button_vels[5][3] = {0.f};
+f32 cmm_menu_button_vels[10][3] = {0.f};
 f32 cmm_menu_title_vels[3] = {0.f};
 s16 cmm_menu_start_timer = -1;
 s16 cmm_menu_end_timer = -1;
 s8 cmm_menu_going_back = 1;
+
+void cmm_shade_screen(void) {
+
+    // This is a bit weird. It reuses the dialog text box (width 130, height -80),
+    // so scale to at least fit the screen.
+    u8 alpha = 110;
+    if (cmm_menu_start_timer != -1) {
+        u8 time = MIN(cmm_menu_start_timer, 8);
+        alpha = (time * 110) / 8;
+    } else if (cmm_menu_end_timer != -1) {
+        u8 time = MIN(cmm_menu_end_timer, 8);
+        alpha = 110 - ((time * 110) / 8);
+    }
+    create_dl_translation_matrix(MENU_MTX_PUSH, -100.0f, SCREEN_HEIGHT, 0);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.6f, 3.4f, 1.0f);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
+    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
 
 void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     create_dl_scale_matrix(MENU_MTX_PUSH, 2.f, 2.f, 0.f);
@@ -284,8 +341,6 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     if ((cmm_mm_state == MM_MAIN) || (cmm_mm_state == MM_MAIN_LIMITED)) {
         print_maker_string_ascii(185, 177 + cmm_menu_title_vels[0], "By Rovertronic", 0);
     }
-    cmm_menu_title_vels[0] += cmm_menu_title_vels[1];
-    cmm_menu_title_vels[1] += cmm_menu_title_vels[2];
 
     for (u8 i=0; i<ct; i++) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -304,9 +359,33 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
         }
 
         print_maker_string_ascii(cmm_menu_button_vels[i][0] + 120,142-(i*30),strlist[i],(cmm_mm_index == i)+grey_add);
-        cmm_menu_button_vels[i][0] += cmm_menu_button_vels[i][1];
-        cmm_menu_button_vels[i][1] += cmm_menu_button_vels[i][2];
     }
+}
+
+u32 cmm_menu_animation_out_main(s32 len, s32 time, f32 startvel) {
+    animate_menu_generic(cmm_menu_title_vels, 0.f, 0.f, 2.f, cmm_menu_end_timer == 0);
+
+    s8 index = -1;
+    if (cmm_menu_end_timer < len*2 && cmm_menu_end_timer % 2 == 0) {
+        u8 step = cmm_menu_end_timer/2;
+        if (step == 0) {
+            index = cmm_mm_index;
+        } else {
+            index = (step > cmm_mm_index) ? step : step-1;
+        }
+    }
+
+    for (u32 i = 0; i < len; i++) {
+        animate_menu_generic(cmm_menu_button_vels[i], 0.f,
+                            startvel*cmm_menu_going_back, -6.f*cmm_menu_going_back,
+                            i == index);
+    }
+
+    if (++cmm_menu_end_timer == time) {
+        cmm_menu_end_timer = -1;
+        return TRUE;
+    }
+    return FALSE;
 }
 
 // len - number of buttons in menu
@@ -332,63 +411,87 @@ u32 cmm_menu_animation_out(s32 len, s32 time, u32 canBack) {
         return FALSE;
     }
 
-    if (cmm_menu_end_timer < len*2 && cmm_menu_end_timer % 2 == 0) {
-        u8 step = cmm_menu_end_timer/2;
-        u8 index;
-        if (step == 0) {
-            index = cmm_mm_index;
-            cmm_menu_title_vels[1] = 0.f;
-            cmm_menu_title_vels[2] = 2.f;
-        } else {
-            index = (step > cmm_mm_index) ? step : step-1;
+    return cmm_menu_animation_out_main(len, time, 20.f);
+}
+
+u32 cmm_keyboard_animation_out(void) {
+    if (cmm_menu_end_timer == -1) {
+        if (cmm_menu_start_timer == -1) {
+            if (gPlayer1Controller->buttonPressed & (START_BUTTON)) {
+                cmm_menu_end_timer = 30;
+                cmm_menu_going_back = 1;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            }
+            if (gPlayer1Controller->buttonPressed & (R_TRIG)) {
+                cmm_menu_end_timer = 0;
+                cmm_menu_going_back = -1;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            }
         }
-        cmm_menu_button_vels[index][1] = 20.f * cmm_menu_going_back;
-        cmm_menu_button_vels[index][2] = -6.f * cmm_menu_going_back;
+        return FALSE;
     }
 
-    if (++cmm_menu_end_timer == time) {
-        cmm_menu_end_timer = -1;
-        for (u32 i=0;i<5;i++) {
-            cmm_menu_button_vels[i][0] = 250.f * cmm_menu_going_back;
-            cmm_menu_button_vels[i][1] = 0.f;
-            cmm_menu_button_vels[i][2] = 0.f;
+    return cmm_menu_animation_out_main(4, 20, 0.f);
+}
+
+/**
+ *     print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
+
+    if (cmm_mm_help_ptr == cmm_mm_help_page1) {
+        gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
+    }
+*/
+
+u32 cmm_menu_animation_info(void) {
+    if (cmm_menu_start_timer != -1) {
+        animate_menu_overshoot_target(cmm_menu_title_vels, 20.f, -300.f, 45.f, -3.f, cmm_menu_start_timer == 0);
+        cmm_menu_start_timer++;
+
+        if (cmm_menu_start_timer > 10) {
+            cmm_menu_start_timer = -1;
         }
-        cmm_menu_title_vels[0] = 50.f;
-        cmm_menu_title_vels[1] = 0.f;
-        cmm_menu_title_vels[2] = 0.f;
-        return TRUE;
+    } else if (cmm_menu_end_timer == -1) {
+        if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+            cmm_menu_end_timer = 0;
+            cmm_menu_going_back = -1;
+        }
+    } else {
+        animate_menu_generic(cmm_menu_title_vels, 20.f, 0.f, -3.f, cmm_menu_end_timer == 0);
+        if (cmm_menu_end_timer++ == 10) {
+            cmm_menu_end_timer = -1;
+            return TRUE;
+        }
     }
     return FALSE;
 }
 
+#define MENU_ANIM_IN_STARTVEL (cmm_mm_state == MM_KEYBOARD ? -50.f : -55.f)
+
 u32 cmm_menu_animation_in(s32 len) {
     if (cmm_menu_start_timer == -1) return FALSE;
 
-    if (cmm_menu_start_timer == 0) {
-        cmm_menu_title_vels[1] = -14.f;
-        cmm_menu_title_vels[2] = 2.f;
-    }
+    animate_menu_overshoot_target(cmm_menu_title_vels, 0.f, 50.f, -14.f, 2.f, cmm_menu_start_timer == 0);
+
+    s8 step = -1;
     if (cmm_menu_start_timer < len*2 && cmm_menu_start_timer % 2 == 0) {
-        u8 step = cmm_menu_start_timer/2;
-        cmm_menu_button_vels[step][1] = -55.f * cmm_menu_going_back;
-        cmm_menu_button_vels[step][2] = 6.f * cmm_menu_going_back;
+        step = cmm_menu_start_timer/2;
     }
-    cmm_menu_start_timer++;
+
     for (s32 i=0;i<len;i++) {
-        if (cmm_menu_button_vels[i][1]*cmm_menu_going_back > 1.f && cmm_menu_button_vels[i][0]*cmm_menu_going_back > 0.f) {
-            cmm_menu_button_vels[i][0] = 0.f;
+        if (cmm_menu_start_timer == 0) {
+            cmm_menu_button_vels[i][0] = 1000.f;
             cmm_menu_button_vels[i][1] = 0.f;
             cmm_menu_button_vels[i][2] = 0.f;
-            if (i == len-1) {
-                cmm_menu_start_timer = -1;
-                return TRUE;
-            }
         }
+        animate_menu_overshoot_target(cmm_menu_button_vels[i], 0.f, 250.f*cmm_menu_going_back, MENU_ANIM_IN_STARTVEL * cmm_menu_going_back, 6.f * cmm_menu_going_back,
+        i == step);
     }
-    if (cmm_menu_title_vels[1] > 1.f && cmm_menu_title_vels[0] > 0.f) {
-        cmm_menu_title_vels[0] = 0.f;
-        cmm_menu_title_vels[1] = 0.f;
-        cmm_menu_title_vels[2] = 0.f;
+
+    cmm_menu_start_timer++;
+
+    if (cmm_menu_start_timer > len*2 && cmm_menu_button_vels[len-1][2] == 0.f) {
+        cmm_menu_start_timer = -1;
+        return TRUE;
     }
     return FALSE;
 }
@@ -421,7 +524,7 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_NO_SD_CARD:
-            shade_screen();
+            cmm_shade_screen();
             print_maker_string_ascii(20,210,cmm_mm_warning,FALSE);
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_mm_state = MM_MAIN_LIMITED;
@@ -429,8 +532,8 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAIN:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(cmm_mm_btns,"Mario Builder 64",4);
             cmm_menu_animation_in(4);
+            render_cmm_mm_menu(cmm_mm_btns,"Mario Builder 64",4);
             if (cmm_menu_animation_out(4, 22, FALSE)) {
                 switch(cmm_mm_index) {
                     case 0:
@@ -470,8 +573,8 @@ s32 cmm_main_menu(void) {
             break;
         case MM_PLAY:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(cmm_mm_play_btns,"Play Levels",2);
             cmm_menu_animation_in(2);
+            render_cmm_mm_menu(cmm_mm_play_btns,"Play Levels",2);
             if (cmm_menu_animation_out(2, 18, TRUE)) {
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -480,6 +583,7 @@ s32 cmm_main_menu(void) {
                 } else {
                     switch(cmm_mm_index) {
                         case 0: //play levels
+                            cmm_mm_files_prev_menu = MM_PLAY;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_index = 0;
                             cmm_menu_start_timer = 0;
@@ -493,8 +597,8 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAKE:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",4);
             cmm_menu_animation_in(4);
+            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",4);
             if (cmm_menu_animation_out(4, 22, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
@@ -508,6 +612,7 @@ s32 cmm_main_menu(void) {
                             break;
                         case 1:
                             //load levels
+                            cmm_mm_files_prev_menu = MM_MAKE;
                             cmm_mm_state = MM_FILES;
                             break;
                         case 2://make new hack
@@ -520,8 +625,8 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAKE_MODE:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(cmm_mm_lmode_btns,"Choose Mode",2);
             cmm_menu_animation_in(2);
+            render_cmm_mm_menu(cmm_mm_lmode_btns,"Choose Mode",2);
             if (cmm_menu_animation_out(2, 18, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
@@ -545,8 +650,8 @@ s32 cmm_main_menu(void) {
             break;
         case MM_HELP_MODE:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
             cmm_menu_animation_in(3);
+            render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
             if (cmm_menu_animation_out(3, 20, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
@@ -569,27 +674,29 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_HELP:
-            shade_screen();
-            print_maker_string(20,210,cmm_mm_help_ptr,FALSE);
+            cmm_shade_screen();
+            if (cmm_menu_animation_info()) {
+                cmm_menu_start_timer = 0;
+                cmm_mm_state = MM_HELP_MODE;
+                cmm_mm_index = 0;
+            }
+            print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
 
             if (cmm_mm_help_ptr == cmm_mm_help_page1) {
                 gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
             }
-
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
-                cmm_mm_state = MM_HELP_MODE;
-                cmm_mm_index = 0;
-            }
             break;
         case MM_CREDITS:
-            shade_screen();
-            print_maker_string(20,210,cmm_mm_credits_page,FALSE);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+            cmm_shade_screen();
+            if (cmm_menu_animation_info()) {
+                cmm_menu_start_timer = 0;
                 cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
+                cmm_mm_index = 3;
             }
+            print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_credits_page,FALSE);
             break;
         case MM_KEYBOARD:
+            cmm_menu_animation_in(4);
             switch(joystick) {
                 case 1:
                     cmm_mm_keyboard_index--;
@@ -625,36 +732,23 @@ s32 cmm_main_menu(void) {
                 }
             }
 
-            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                switch(cmm_mm_keyboard_exit_mode) {
-                    case KXM_NEW_LEVEL:
-                        bcopy(&cmm_mm_keyboard_input,&cmm_file_name,cmm_mm_keyboard_input_index);
-                        //manually add file extension
-                        cmm_file_name[cmm_mm_keyboard_input_index+0] = '.';
-                        cmm_file_name[cmm_mm_keyboard_input_index+1] = 'm';
-                        cmm_file_name[cmm_mm_keyboard_input_index+2] = 'b';
-                        cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
-                        cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
-                        cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
-                        return 1;
-                    break;
+            if (cmm_keyboard_animation_out()) {
+                cmm_menu_start_timer = 0;
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = MM_MAKE_MODE;
+                    cmm_mm_index = 0;
                 }
             }
 
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
-            }
-
-            shade_screen();
+            cmm_shade_screen();
             print_maker_string_ascii(35,210,cmm_mm_keyboard_input,FALSE);
-            print_maker_string(35,80,cmm_mm_txt_keyboard,FALSE);
+            print_maker_string(35 - cmm_menu_title_vels[0],80,cmm_mm_txt_keyboard,FALSE);
 
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;
                 u16 y = i/10;
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25), 190-(y*25), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25)+cmm_menu_button_vels[y][0], 190-(y*25), 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 if (cmm_mm_keyboard_index == i) {
                     gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 150);
@@ -670,20 +764,37 @@ s32 cmm_main_menu(void) {
                     single_char[0] = cmm_mm_keyboard[i];
                 }
                 single_char[1] = '\0';
-                print_maker_string_ascii(37+(x*25),182-(y*25),single_char,(cmm_mm_keyboard_index == i));
+                print_maker_string_ascii(37+(x*25)+cmm_menu_button_vels[y][0],182-(y*25),single_char,(cmm_mm_keyboard_index == i));
+            }
+
+            if (cmm_menu_end_timer == 30 && cmm_menu_going_back == 1) {
+                switch(cmm_mm_keyboard_exit_mode) {
+                    case KXM_NEW_LEVEL:
+                        bcopy(&cmm_mm_keyboard_input,&cmm_file_name,cmm_mm_keyboard_input_index);
+                        //manually add file extension
+                        cmm_file_name[cmm_mm_keyboard_input_index+0] = '.';
+                        cmm_file_name[cmm_mm_keyboard_input_index+1] = 'm';
+                        cmm_file_name[cmm_mm_keyboard_input_index+2] = 'b';
+                        cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
+                        cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
+                        cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
+                        return 1;
+                    break;
+                }
             }
             break;
         case MM_FILES:
+            cmm_menu_animation_in(5);
             if (cmm_level_entry_count == 0) {
                 //no levels, do not render anything
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 210, 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 160 + cmm_menu_button_vels[0][0], 210, 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gSPDisplayList(gDisplayListHead++, &mm_btn_lg_mm_btn_lg_mesh);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-                print_maker_string_ascii(55,200,"No levels currently loaded yet.",TRUE);
+                print_maker_string_ascii(55 + cmm_menu_button_vels[0][0],200,"No levels currently loaded yet.",TRUE);
 
                 if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -701,20 +812,17 @@ s32 cmm_main_menu(void) {
                 cmm_mm_page_entries = cmm_level_entry_count-(cmm_mm_page*PAGE_SIZE);
             }
 
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-                for (u8 i=0; cmm_level_entries[cmm_mm_index].fname[i] != 0;i++) {
-                    cmm_file_name[i] = cmm_level_entries[cmm_mm_index].fname[i];
+            if (cmm_menu_animation_out(5, 25, TRUE)) {
+                cmm_menu_start_timer = 0;
+                if (cmm_menu_going_back == -1) {
+                    cmm_mm_state = cmm_mm_files_prev_menu;
+                    cmm_mm_index = (cmm_mm_state == MM_PLAY ? 0 : 1);
                 }
-                return 1;
-            }
-            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                cmm_mm_state = cmm_mm_main_state;
-                cmm_mm_index = 0;
             }
 
             for (u8 i=0; i<cmm_mm_page_entries; i++) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 210-(i*36), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 160 + cmm_menu_button_vels[i][0], 210-(i*36), 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 if (cmm_mm_index-(cmm_mm_page*PAGE_SIZE) == i) {
                     gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 190);
@@ -736,18 +844,26 @@ s32 cmm_main_menu(void) {
 
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                print_maker_string_ascii(75,200-(i*36),cmm_level_entries[i+(cmm_mm_page*PAGE_SIZE)].fname,(cmm_mm_index == i));
+                print_maker_string_ascii(75 + cmm_menu_button_vels[i][0],200-(i*36),cmm_level_entries[i+(cmm_mm_page*PAGE_SIZE)].fname,(cmm_mm_index == i));
             }
 
             //render pages
-            create_dl_translation_matrix(MENU_MTX_PUSH, 90, 20, 0);
+            create_dl_translation_matrix(MENU_MTX_PUSH, 90, 20 - cmm_menu_title_vels[0], 0);
             gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             gSPDisplayList(gDisplayListHead++, mm_btn2_mm_btn_mesh);
             gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
             int_to_str_slash(cmm_mm_page+1, cmm_mm_pages, (u8 *)&cmm_mm_txt_pages[6]);
-            print_maker_string(42,12,cmm_mm_txt_pages,FALSE);
+            print_maker_string(42,12 - cmm_menu_title_vels[0],cmm_mm_txt_pages,FALSE);
+
+            if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
+                for (u8 i=0; cmm_level_entries[cmm_mm_index].fname[i] != 0;i++) {
+                    cmm_file_name[i] = cmm_level_entries[cmm_mm_index].fname[i];
+                }
+                return 1;
+            }
+
             break;
     }
 
