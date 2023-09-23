@@ -151,6 +151,10 @@ struct cmm_hack_save cmm_save;
 u8 cmm_settings_index = 0;
 u8 cmm_settings_index_changed = FALSE;
 
+u8 cmm_num_vertices_cached = 0;
+u8 cmm_num_tris_cached = 0;
+u8 cmm_cached_tris[16][3];
+
 void df_badge(struct Object * obj, int param) {
     obj->oBehParams2ndByte = param;
 }
@@ -379,24 +383,59 @@ s32 handle_wait_vblank(OSMesgQueue *mq) {
     return msg == (OSMesg)(111*3*2);
 }
 
-void generate_path_gfx(void) {
-    u16 gfx_index = 0;
-    u16 vtx_index = 0;
+void cache_tri(u8 v1, u8 v2, u8 v3) {
+    cmm_cached_tris[cmm_num_tris_cached][0] = cmm_num_vertices_cached + v1;
+    cmm_cached_tris[cmm_num_tris_cached][1] = cmm_num_vertices_cached + v2;
+    cmm_cached_tris[cmm_num_tris_cached][2] = cmm_num_vertices_cached + v3;
+    cmm_num_tris_cached++;
+}
 
-    gSPDisplayList(&cmm_trajectory_gfx[gfx_index++], mat_maker_MakerLineMat);
+void display_cached_tris(void) {
+    if (cmm_num_vertices_cached == 0) return;
+    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, cmm_num_vertices_cached, 0);
+    u32 i = 0;
+    while (i < cmm_num_tris_cached) {
+        // odd number of triangles and last one left
+        if ((cmm_num_tris_cached - i) == 1) {
+            gSP1Triangle(&cmm_curr_gfx[cmm_gfx_index++], cmm_cached_tris[i][0], cmm_cached_tris[i][1], cmm_cached_tris[i][2], 0);
+            i++;
+        } else {
+            gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], cmm_cached_tris[i][0], cmm_cached_tris[i][1], cmm_cached_tris[i][2], 0, cmm_cached_tris[i+1][0], cmm_cached_tris[i+1][1], cmm_cached_tris[i+1][2], 0);
+            i+=2;
+        }
+    }
+    cmm_curr_vtx += cmm_num_vertices_cached;
+    cmm_num_tris_cached = 0;
+    cmm_num_vertices_cached = 0;
+}
+
+void check_cached_tris(void) {
+    if (cmm_num_vertices_cached > 28) {
+        display_cached_tris();
+    }
+}
+
+void generate_path_gfx(void) {
+    cmm_curr_gfx = cmm_trajectory_gfx;
+    cmm_curr_vtx = cmm_trajectory_vtx;
+    cmm_gfx_index = 0;
+
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat);
 
     for (u8 i=1;i<cmm_trajectory_edit_index;i++) {
-        make_vertex(cmm_trajectory_vtx, vtx_index+0, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_trajectory_vtx, vtx_index+1, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_trajectory_vtx, vtx_index+2, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_trajectory_vtx, vtx_index+3, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])-20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])-20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
 
-        gSPVertex(&cmm_trajectory_gfx[gfx_index++], cmm_trajectory_vtx + vtx_index, 4, 0);
-        gSP2Triangles(&cmm_trajectory_gfx[gfx_index++], 0, 1, 2, 0, 0, 2, 3, 0);
-        vtx_index+=4;
+        cache_tri(0, 1, 2);
+        cache_tri(0, 2, 3);
+        cmm_num_vertices_cached += 4;
+        check_cached_tris();
     }
+    display_cached_tris();
 
-    gSPEndDisplayList(&cmm_trajectory_gfx[gfx_index]);
+    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 }
 
 void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
@@ -430,7 +469,7 @@ void render_get_normal_and_uvs(s8 v[3][3], u32 uvProjDir, u32 rot, u8 *uAxis, u8
     }
 }
 
-void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot) {
+void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
     s8 n[3];
     u8 uAxis, vAxis;
 
@@ -447,23 +486,26 @@ void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot) {
             u = 16 - newVtx[i][uAxis];
             v = 16 - newVtx[i][vAxis];
         }
-        make_vertex(cmm_curr_vtx, i,
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
             u * 64 - 16, v * 64 - 16,
             n[0], n[1], n[2], 0xFF);
     }
-    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
+    
     if (cmm_render_flip_normals) {
-        gSP2Triangles(&gfx[cmm_gfx_index++], 0, 2, 1, 0, 1, 2, 3, 0);
+        cache_tri(0, 2, 1);
+        cache_tri(1, 2, 3);
     } else {
-        gSP2Triangles(&gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
+        cache_tri(0, 1, 2);
+        cache_tri(1, 3, 2);
     }
-    cmm_curr_vtx += 4;
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
 }
 
-void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot) {
+void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
     s8 n[3];
     u8 uAxis, vAxis;
 
@@ -480,16 +522,17 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot) {
             u = 16 - newVtx[i][uAxis];
             v = 16 - newVtx[i][vAxis];
         }
-        make_vertex(cmm_curr_vtx, i,
+        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
             u * 64 - 16, v * 64 - 16,
             n[0], n[1], n[2], 0xFF);
     }
-    gSPVertex(&gfx[cmm_gfx_index++], cmm_curr_vtx, 3, 0);
-    gSP1Triangle(&gfx[cmm_gfx_index++], 0, 1, 2, 0);
-    cmm_curr_vtx += 3;
+
+    cache_tri(0, 1, 2);
+    cmm_num_vertices_cached += 3;
+    check_cached_tris();
 }
 
 // Create new static surface
@@ -557,14 +600,14 @@ void cmm_create_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
 
 void process_quad(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot) {
     if (!cmm_building_collision)
-        render_quad(quad, cmm_curr_gfx, pos, rot);
+        render_quad(quad, pos, rot);
     else
         cmm_create_quad(quad, pos, rot);
 }
 
 void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
     if (!cmm_building_collision)
-        render_tri(tri, cmm_curr_gfx, pos, rot);
+        render_tri(tri, pos, rot);
     else
         cmm_create_tri(tri, pos, rot);
 }
@@ -640,7 +683,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                     else
                         cmm_terrain_slopebelowdecal_quad.altuvs = &slope_decal_below_uvsquad_r;
                     
-                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot);
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, newpos, targetRot);
                     return TRUE;
                 case CMM_FACESHAPE_DOWNTRI_1:
                     if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
@@ -814,6 +857,10 @@ u32 get_tiletype_index(u32 type, u32 mat) {
 #define retroland_filter_on() if (cmm_lopt_theme == 6) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
 #define retroland_filter_off() if (cmm_lopt_theme == 6) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
 
+// For render or collision specific code
+#define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
+#define PROC_RENDER(statement)    if (!cmm_building_collision) { statement; }
+
 void process_tiles(void) {
     u32 startIndex, endIndex;
     u8 tileType, rot;
@@ -821,27 +868,30 @@ void process_tiles(void) {
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
         cmm_growth_render_type = 0;
-        if (cmm_building_collision) {
-            cmm_curr_coltype = MATERIAL(mat).col;
-        } else {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
-        }
+
+        PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
+        PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); )
+
         cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
 
         startIndex = cmm_tile_data_indices[mat];
         endIndex = cmm_tile_data_indices[mat+1];
         for (u32 i = startIndex; i < endIndex; i++) {
             tileType = cmm_tile_data[i].type;
-            if (cmm_building_collision && tileType == TILE_TYPE_TROLL) continue;
+            PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
             rot = cmm_tile_data[i].rot;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
             process_tile(pos, cmm_tile_types[tileType].terrain, rot);
         }
-        if (!cmm_building_collision) gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        
+        PROC_RENDER( gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); )
+        
         if (cmm_curr_mat_has_topside) {
+            // Only runs when rendering
             if (!cmm_building_collision && (SIDETEX(mat) != NULL)) {
                 cmm_use_alt_uvs = TRUE;
+                display_cached_tris();
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
                 cmm_growth_render_type = 2;
                 for (u32 i = startIndex; i < endIndex; i++) {
@@ -854,21 +904,22 @@ void process_tiles(void) {
                 cmm_use_alt_uvs = FALSE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
             }
-            if (cmm_building_collision) {
-                cmm_curr_coltype = TOPMAT(mat).col;
-            } else {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx);
-            }
+
+            PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
+            PROC_RENDER( display_cached_tris(); gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
+
             cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
                 tileType = cmm_tile_data[i].type;
-                if (cmm_building_collision && tileType == TILE_TYPE_TROLL) continue;
+                PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
                 rot = cmm_tile_data[i].rot;
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
                 process_tile(pos, cmm_tile_types[tileType].terrain, rot);
             }
         }
+
+        PROC_RENDER( display_cached_tris(); )
     }
 }
 
@@ -902,6 +953,7 @@ void generate_terrain_gfx(void) {
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
                 process_tile(pos, cmm_tile_types[tileType].terrain, rot);
             }
+            display_cached_tris();
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         }
     }
@@ -929,6 +981,7 @@ void generate_terrain_gfx(void) {
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
         process_tile(pos, &cmm_terrain_fence, cmm_tile_data[i].rot);
     }
+    display_cached_tris();
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     cmm_use_alt_uvs = FALSE;
 
@@ -956,6 +1009,7 @@ void generate_terrain_gfx(void) {
             render_water(pos);
         }
     }
+    display_cached_tris();
     retroland_filter_off();
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
@@ -1006,6 +1060,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
                 gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
                 render_water(cmm_cursor_pos);
+                display_cached_tris();
                 retroland_filter_off();
                 gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
@@ -1024,6 +1079,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
+                    display_cached_tris();
                     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
                     geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
 
@@ -1037,14 +1093,15 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     if (SIDETEX(cmm_mat_selection) != NULL) {
                         cmm_use_alt_uvs = TRUE;
                         cmm_growth_render_type = 2;
+                        display_cached_tris();
 
                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
                         process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
                         cmm_use_alt_uvs = FALSE;
                     }
                     cmm_growth_render_type = 1;
 
+                    display_cached_tris();
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
@@ -1061,6 +1118,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 preview_mtx_index++;
             }
 
+            display_cached_tris();
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
