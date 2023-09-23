@@ -71,6 +71,8 @@ enum cmm_culling_shapes {
     CMM_FACESHAPE_DOWNTRI_1,
     CMM_FACESHAPE_DOWNTRI_2,
 
+    CMM_FACESHAPE_BOTTOMSLAB,
+
     CMM_FACESHAPE_EMPTY,
 };
 
@@ -82,6 +84,7 @@ enum cmm_growth_types {
     CMM_GROWTH_DIAGONAL_SIDE,
     CMM_GROWTH_SLOPE_SIDE_L,
     CMM_GROWTH_SLOPE_SIDE_R,
+    CMM_GROWTH_UNCONDITIONAL,
 };
 
 struct cmm_terrain_quad {

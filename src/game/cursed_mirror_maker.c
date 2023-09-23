@@ -369,6 +369,9 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
             return (otherrot == rot);
         } else return FALSE;
     }
+    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB) {
+        return (otherFaceshape == CMM_FACESHAPE_BOTTOMSLAB);
+    }
     return (faceshape == (otherFaceshape^1));
 }
 
@@ -629,10 +632,14 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
+                case CMM_FACESHAPE_BOTTOMSLAB:
                     if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
                         return TRUE;
                     return FALSE;
             }
+            return TRUE;
+
+        case CMM_GROWTH_UNCONDITIONAL:
             return TRUE;
 
         // These types are very tricky.
@@ -889,9 +896,9 @@ void process_tiles(void) {
         
         if (cmm_curr_mat_has_topside) {
             // Only runs when rendering
+            PROC_RENDER( display_cached_tris(); )
             if (!cmm_building_collision && (SIDETEX(mat) != NULL)) {
                 cmm_use_alt_uvs = TRUE;
-                display_cached_tris();
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
                 cmm_growth_render_type = 2;
                 for (u32 i = startIndex; i < endIndex; i++) {
@@ -901,12 +908,13 @@ void process_tiles(void) {
 
                     process_tile(pos, cmm_tile_types[tileType].terrain, rot);
                 }
+                display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_revert_maker_MakerGrassSide_layer1);
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
-            PROC_RENDER( display_cached_tris(); gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
+            PROC_RENDER(gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
 
             cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {

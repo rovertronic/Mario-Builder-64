@@ -3683,7 +3683,7 @@ const BehaviorScript bhvFloorTrapInCastle[] = {
     END_LOOP(),
 };
 
-extern const bhv_tree_init();
+extern void bhv_tree_init();
 const BehaviorScript bhvTree[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     BILLBOARD(),

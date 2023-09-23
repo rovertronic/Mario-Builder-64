@@ -126,6 +126,24 @@ struct cmm_terrain_block cmm_terrain_sslope = {
     cmm_terrain_sslope_tris,
 };
 
+s8 bottomslab_decal_uvs[4][2] = {{16, 16}, {16, 8}, {0, 16}, {0, 8}};
+
+struct cmm_terrain_quad cmm_terrain_bottomslab_quads[] = {
+    {{{16, 8, 16}, {16, 8, 0}, {0, 8, 16}, {0, 8, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16},  {0, 0, 16},  {16, 0, 0},  {0, 0, 0}},  1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 8, 16}, {16, 0, 16}, {16, 8, 0}, {16, 0, 0}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_BOTTOMSLAB, CMM_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs}, // LEFT
+    {{{0, 8, 0}, {0, 0, 0}, {0, 8, 16}, {0, 0, 16}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_BOTTOMSLAB, CMM_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs}, // RIGHT
+    {{{0, 8, 16}, {0, 0, 16}, {16, 8, 16}, {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_BOTTOMSLAB, CMM_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs}, // FRONT
+    {{{16, 8, 0},  {16, 0, 0},  {0, 8, 0},  {0, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_BOTTOMSLAB, CMM_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs}, // BACK
+};
+
+struct cmm_terrain_block cmm_terrain_bottomslab = {
+    6,
+    0,
+    cmm_terrain_bottomslab_quads,
+    NULL
+};
+
 
 // All of this is for the system where slopes can place a decal on the face below them.
 // Very hardcoded, so best not to touch any of these numbers
@@ -149,15 +167,15 @@ struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
 s8 fence_uvs[4][2] = {{32, 16},  {32, 0},  {0, 16},  {0, 0}};
 struct cmm_terrain_quad cmm_terrain_fence_quad[] = {
     {{{0, 8, 0}, {0, 0, 0}, {16, 8, 0}, {16, 0, 0}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, &fence_uvs}, // FRONT (towards tile)
-    {{{16, 8, 0}, {16, 0, 0}, {0, 8, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, &fence_uvs}, // BACK (away from tile)
+    {{{16, 8, 0}, {16, 0, 0}, {0, 8, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_BOTTOMSLAB, 0, &fence_uvs}, // BACK (away from tile)
 };
 
 struct cmm_terrain_quad cmm_terrain_fence_col_quads[] = {
     {{{16, 7, 1},  {0, 7, 1},   {16, 0, 1}, {0, 0, 1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
-    {{{16, 7, -1}, {16, 0, -1}, {0, 7, -1}, {0, 0, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // BACK (away from tile)
+    {{{16, 7, -1}, {16, 0, -1}, {0, 7, -1}, {0, 0, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_BOTTOMSLAB, 0, NULL}, // BACK (away from tile)
 
     {{{16, 8, 0},  {0, 8, 0},   {16, 7, 1}, {0, 7, 1}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
-    {{{16, 8, 0},  {16, 7, -1}, {0, 8, 0},  {0, 7, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // BACK (away from tile)
+    {{{16, 8, 0},  {16, 7, -1}, {0, 8, 0},  {0, 7, -1}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_BOTTOMSLAB, 0, NULL}, // BACK (away from tile)
 };
 
 struct cmm_terrain_block cmm_terrain_fence = {
@@ -207,7 +225,7 @@ struct cmm_tile_type_struct cmm_tile_types[] = {
     {&cmm_terrain_icorner,  NULL, FALSE},//TILE_TYPE_ICORNER
     {&cmm_terrain_dslope,    NULL           , FALSE},//TILE_TYPE_DSLOPE
     {&cmm_terrain_sslope,    NULL           , FALSE },//TILE_TYPE_SSLOPE
-    {NULL,      NULL, FALSE}, // TILE_TYPE_SLAB
+    {&cmm_terrain_bottomslab,      NULL, FALSE}, // TILE_TYPE_SLAB
     {NULL,      NULL, FALSE}, // TILE_TYPE_DSLAB
     {NULL,      NULL, FALSE}, // TILE_TYPE_SSLAB
     {NULL,        NULL                       , FALSE},//TILE_TYPE_CULL
@@ -726,7 +744,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_bball    , OBJECT_TYPE_BBALL  ,CMM_PM_OBJ  , txt_btn_41   , NULL         }, //CMM_BUTTON_BBALL
     {mat_b_btn_kuppa    , OBJECT_TYPE_KTQ    ,CMM_PM_OBJ  , txt_btn_42   , NULL         }, //CMM_BUTTON_KTQ
     {mat_b_btn_sideslope, TILE_TYPE_SSLOPE   ,CMM_PM_TILE , txt_btn_43   , NULL         }, //CMM_BUTTON_SSLOPE
-    {mat_b_btn_slabtile , TILE_TYPE_SSLOPE   ,CMM_PM_TILE , txt_btn_44   , NULL         }, //CMM_BUTTON_SLAB
+    {mat_b_btn_slabtile , TILE_TYPE_SLAB     ,CMM_PM_TILE , txt_btn_44   , NULL         }, //CMM_BUTTON_SLAB
 };
 
 
