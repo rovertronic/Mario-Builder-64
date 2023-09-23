@@ -90,7 +90,7 @@ struct cmm_terrain_quad {
     u8 cullDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*altuvs)[3][2];
+    s8 (*altuvs)[4][2];
 };
 struct cmm_terrain_tri {
     s8 vtx[3][3];
@@ -141,13 +141,13 @@ struct cmm_grid_obj {
 };
 
 struct cmm_object_type_struct {
-    u32 behavior;
+    const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
     u8 use_trajectory:1;
     f32 scale;
-    struct Animation **anim;
+    const struct Animation *const *anim;
     s16 param_max;
     void (* disp_func)(struct Object *,int);
 };

@@ -1,3 +1,4 @@
+extern s32 get_string_width(u8 *str);
 u8 string_runoff(s16 x, u8 * str) {
     s16 x1 = get_string_width(str);
 
@@ -19,10 +20,10 @@ s32 get_string_width_ascii(char *str) {
     return width;
 }
 
-void print_maker_string_ascii(u16 x, u16 y, u8 * str, u8 highlight) {
+void print_maker_string_ascii(u16 x, u16 y, char *str, u8 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-    print_generic_string_ascii(x-1, y-1, str);
+    print_generic_string_ascii(x-1, y-1, (u8 *)str);
     switch(highlight) {
         case 0:
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
@@ -40,11 +41,11 @@ void print_maker_string_ascii(u16 x, u16 y, u8 * str, u8 highlight) {
             gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, 255);
         break;
     }
-    print_generic_string_ascii(x, y, str);
+    print_generic_string_ascii(x, y, (u8 *)str);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
-void print_maker_string(u16 x, u16 y, u8 * str, u8 highlight) {
+void print_maker_string(u16 x, u16 y, u8 *str, u8 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
     print_generic_string(x-1, y-1, str);
@@ -176,7 +177,7 @@ void draw_cmm_menu(void) {
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
             //print_maker_string(15,210,txt_btn_2,FALSE);
-            print_maker_string_ascii(15,210,&cmm_file_info.fname,FALSE);
+            print_maker_string_ascii(15,210,cmm_file_info.fname,FALSE);
 
             for (i=0;i<SETTINGS_SIZE - 1;i++) {
                 print_maker_string_ascii(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_settings_index));
@@ -231,14 +232,14 @@ char *cmm_mm_btns_lim[] = {
 
 char *cmm_mm_play_btns[] = {
     "Play Levels",
-    &cmm_mm_comingsoon, //"Play Hacks"
+    cmm_mm_comingsoon, //"Play Hacks"
 };
 
 char *cmm_mm_make_btns[] = {
     "New Level",
     "Load Level",
-    &cmm_mm_comingsoon, //"New Hack"
-    &cmm_mm_comingsoon, //"Load Hack"
+    cmm_mm_comingsoon, //"New Hack"
+    cmm_mm_comingsoon, //"Load Hack"
 };
 
 char *cmm_mm_lmode_btns[] = {
@@ -252,13 +253,13 @@ char *cmm_mm_help_btns[] = {
     "Version Info",
 };
 
-char cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
-char cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
-char cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
-char cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
+u8 cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
+u8 cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
+u8 cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
+u8 cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
 
-char cmm_mm_txt_pages[] = {TXT_MM_PAGE};
-char cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
+u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
+u8 cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
 
 u8 cmm_mm_state = MM_INIT;
 u8 cmm_mm_main_state = MM_MAIN;
@@ -266,7 +267,7 @@ s8 cmm_mm_index = 0;
 s8 cmm_mm_pages = 0;
 s8 cmm_mm_page = 0;
 s8 cmm_mm_page_entries = 0;
-char * cmm_mm_help_ptr = NULL;
+u8 *cmm_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
 // Position, velocity, acceleration
@@ -299,7 +300,7 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
         u8 grey_add = 0;
-        if (strlist[i] == &cmm_mm_comingsoon) {
+        if (strlist[i] == cmm_mm_comingsoon) {
             grey_add = 2;
         }
 
@@ -313,7 +314,7 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
 // time - how long until actually switching to next menu
 // canBack - able to press B to go to previous menu
 // returns if menu has switched
-u32 cmm_menu_animation_out(u32 len, u32 time, u32 canBack) {
+u32 cmm_menu_animation_out(s32 len, s32 time, u32 canBack) {
     if (cmm_menu_end_timer == -1) {
         if (cmm_menu_start_timer == -1) {
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
@@ -361,7 +362,7 @@ u32 cmm_menu_animation_out(u32 len, u32 time, u32 canBack) {
     return FALSE;
 }
 
-u32 cmm_menu_animation_in(u32 len) {
+u32 cmm_menu_animation_in(s32 len) {
     if (cmm_menu_start_timer == -1) return FALSE;
 
     if (cmm_menu_start_timer == 0) {
@@ -374,7 +375,7 @@ u32 cmm_menu_animation_in(u32 len) {
         cmm_menu_button_vels[step][2] = 6.f * cmm_menu_going_back;
     }
     cmm_menu_start_timer++;
-    for (u32 i=0;i<len;i++) {
+    for (s32 i=0;i<len;i++) {
         if (cmm_menu_button_vels[i][1]*cmm_menu_going_back > 1.f && cmm_menu_button_vels[i][0]*cmm_menu_going_back > 0.f) {
             cmm_menu_button_vels[i][0] = 0.f;
             cmm_menu_button_vels[i][1] = 0.f;
@@ -411,7 +412,7 @@ s32 cmm_main_menu(void) {
     switch(cmm_mm_state) {
         case MM_INIT:
             for (u8 i=0;i<sizeof(cmm_mm_keyboard_input);i++){
-                cmm_mm_keyboard_input[i] = NULL;
+                cmm_mm_keyboard_input[i] = '\0';
             }
             if (mount_success == FR_OK) {
                 cmm_mm_state = MM_MAIN;
@@ -422,14 +423,14 @@ s32 cmm_main_menu(void) {
             break;
         case MM_NO_SD_CARD:
             shade_screen();
-            print_maker_string_ascii(20,210,&cmm_mm_warning,FALSE);
+            print_maker_string_ascii(20,210,cmm_mm_warning,FALSE);
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_mm_state = MM_MAIN_LIMITED;
             }
             break;
         case MM_MAIN:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(&cmm_mm_btns,"Mario Builder 64",4);
+            render_cmm_mm_menu(cmm_mm_btns,"Mario Builder 64",4);
             cmm_menu_animation_in(4);
             if (cmm_menu_animation_out(4, 22, FALSE)) {
                 switch(cmm_mm_index) {
@@ -452,7 +453,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAIN_LIMITED:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(&cmm_mm_btns_lim,"Mario Builder 64",3);
+            render_cmm_mm_menu(cmm_mm_btns_lim,"Mario Builder 64",3);
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_mm_index) {
                     case 0:
@@ -470,7 +471,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_PLAY:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(&cmm_mm_play_btns,"Play Levels",2);
+            render_cmm_mm_menu(cmm_mm_play_btns,"Play Levels",2);
             cmm_menu_animation_in(2);
             if (cmm_menu_animation_out(2, 18, TRUE)) {
                 if (cmm_menu_going_back == -1) {
@@ -493,7 +494,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAKE:
             cmm_mm_index = (cmm_mm_index+4)%4;
-            render_cmm_mm_menu(&cmm_mm_make_btns,"Make Levels",4);
+            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",4);
             cmm_menu_animation_in(4);
             if (cmm_menu_animation_out(4, 22, TRUE)) {
                 cmm_menu_start_timer = 0;
@@ -520,7 +521,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAKE_MODE:
             cmm_mm_index = (cmm_mm_index+2)%2;
-            render_cmm_mm_menu(&cmm_mm_lmode_btns,"Choose Mode",2);
+            render_cmm_mm_menu(cmm_mm_lmode_btns,"Choose Mode",2);
             cmm_menu_animation_in(2);
             if (cmm_menu_animation_out(2, 18, TRUE)) {
                 cmm_menu_start_timer = 0;
@@ -545,7 +546,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_HELP_MODE:
             cmm_mm_index = (cmm_mm_index+3)%3;
-            render_cmm_mm_menu(&cmm_mm_help_btns,"Help",3);
+            render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
             cmm_menu_animation_in(3);
             if (cmm_menu_animation_out(3, 20, TRUE)) {
                 cmm_menu_start_timer = 0;
@@ -619,7 +620,7 @@ s32 cmm_main_menu(void) {
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                 if (cmm_mm_keyboard_input_index > 0) {
                     cmm_mm_keyboard_input_index--;
-                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = NULL;
+                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = '\0';
                 } else {
                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                 }
@@ -635,7 +636,7 @@ s32 cmm_main_menu(void) {
                         cmm_file_name[cmm_mm_keyboard_input_index+2] = 'b';
                         cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
                         cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
-                        cmm_file_name[cmm_mm_keyboard_input_index+5] = NULL;
+                        cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
                         return 1;
                     break;
                 }
@@ -669,7 +670,7 @@ s32 cmm_main_menu(void) {
                 } else {
                     single_char[0] = cmm_mm_keyboard[i];
                 }
-                single_char[1] = NULL;
+                single_char[1] = '\0';
                 print_maker_string_ascii(37+(x*25),182-(y*25),single_char,(cmm_mm_keyboard_index == i));
             }
             break;
@@ -689,7 +690,7 @@ s32 cmm_main_menu(void) {
                     cmm_mm_state = cmm_mm_main_state;
                     cmm_mm_index = 0;
                 }
-                return;
+                return 0;
             }
 
             cmm_mm_index = (cmm_mm_index+cmm_level_entry_count)%cmm_level_entry_count;
@@ -736,7 +737,7 @@ s32 cmm_main_menu(void) {
 
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                print_maker_string_ascii(75,200-(i*36),&cmm_level_entries[i+(cmm_mm_page*PAGE_SIZE)].fname,(cmm_mm_index == i));
+                print_maker_string_ascii(75,200-(i*36),cmm_level_entries[i+(cmm_mm_page*PAGE_SIZE)].fname,(cmm_mm_index == i));
             }
 
             //render pages
@@ -746,8 +747,8 @@ s32 cmm_main_menu(void) {
             gSPDisplayList(gDisplayListHead++, mm_btn2_mm_btn_mesh);
             gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-            int_to_str_slash(cmm_mm_page+1, cmm_mm_pages, &cmm_mm_txt_pages[6]);
-            print_maker_string(42,12,&cmm_mm_txt_pages,FALSE);
+            int_to_str_slash(cmm_mm_page+1, cmm_mm_pages, (u8 *)&cmm_mm_txt_pages[6]);
+            print_maker_string(42,12,cmm_mm_txt_pages,FALSE);
             break;
     }
 

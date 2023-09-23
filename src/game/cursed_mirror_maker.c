@@ -56,9 +56,12 @@
 #include "level_geo.h"
 #include "src/buffers/framebuffers.h"
 #include "memory.h"
+#include "geo_misc.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
+
+extern void super_cum_working(struct Object *obj, s32 animIndex);
 
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
@@ -106,6 +109,17 @@ u8 cmm_txt_recording[] = {TXT_RECORDING};
 Vtx cmm_trajectory_vtx[240];
 Gfx cmm_trajectory_gfx[100]; //gfx
 
+Vtx *cmm_curr_vtx;
+Gfx *cmm_curr_gfx;
+u16 cmm_gfx_index;
+
+u8 cmm_use_alt_uvs = FALSE;
+u8 cmm_render_flip_normals = FALSE;
+u8 cmm_growth_render_type = 0;
+u8 cmm_curr_mat_has_topside = FALSE;
+
+TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
+
 //play mode stuff
 u8 cmm_play_stars = 0;
 u8 cmm_play_stars_max = 0;
@@ -141,7 +155,7 @@ void df_badge(struct Object * obj, int param) {
     obj->oBehParams2ndByte = param;
 }
 
-void df_reds_marker(struct Object * obj, int param) {
+void df_reds_marker(struct Object * obj, UNUSED int param) {
     obj->oFaceAnglePitch = 0x4000;
     vec3_set(obj->header.gfx.scale, 1.5f, 1.5f, 0.75f);
 }
@@ -164,13 +178,13 @@ void df_boss(struct Object * obj, int param) {
     switch(param) {
         case 1:
             obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WHOMP_MAKER];
-            obj->oAnimations = whomp_seg6_anims_06020A04;
+            obj->oAnimations = (struct Animation **)whomp_seg6_anims_06020A04;
             super_cum_working(obj,0);
             obj_scale(obj,2.0f);
         break;
         case 3:
             obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WIGGLER_HEAD];
-            obj->oAnimations = wiggler_seg5_anims_0500EC8C;
+            obj->oAnimations = (struct Animation **)wiggler_seg5_anims_0500EC8C;
             super_cum_working(obj,0);
             obj_scale(obj,4.0f);
         break;
@@ -354,105 +368,6 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
     return (faceshape == (otherFaceshape^1));
 }
 
-Vtx *cmm_curr_vtx;
-Gfx *cmm_curr_gfx;
-u16 cmm_gfx_index;
-
-u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
-    s8 newpos[3];
-    vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
-    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
-    if (!coords_in_range(newpos)) return TRUE;
-    u8 otherFaceshape;
-    switch (grassType) {
-        case CMM_GROWTH_UNDERSLOPE:
-            direction = CMM_DIRECTION_POS_Z;
-            // fallthrough
-        case CMM_GROWTH_NORMAL_SIDE:
-            // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
-            switch (otherFaceshape) {
-                case CMM_FACESHAPE_FULL:
-                case CMM_FACESHAPE_TRI_1:
-                case CMM_FACESHAPE_TRI_2:
-                    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                        return TRUE;
-                    return FALSE;
-            }
-            return TRUE;
-
-        // These types are very tricky.
-        // If the below face is the same material and is the right shape,
-        // an extra decal is printed onto it.
-        case CMM_GROWTH_SLOPE_SIDE_L:
-        case CMM_GROWTH_SLOPE_SIDE_R:
-            // Check if below block is in range
-            vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
-            if (!coords_in_range(newpos)) return TRUE;
-
-            // Check if below block matches material
-            u8 curMat = get_grid_tile(pos)->mat;
-            u8 belowMat = get_grid_tile(newpos)->mat;
-            if (curMat != belowMat) return TRUE;
-
-            // Check if below block is right shape and culled
-            // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
-            if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
-            
-            // Calculate effective rotation of face to print. very ugly
-            u8 targetRot;
-            switch (direction) {
-                case CMM_DIRECTION_POS_X:
-                    targetRot = 1;
-                    break;
-                case CMM_DIRECTION_NEG_X:
-                    targetRot = 3;
-                    break;
-                case CMM_DIRECTION_POS_Z:
-                    targetRot = 0;
-                    break;
-                case CMM_DIRECTION_NEG_Z:
-                    targetRot = 2;
-                    break;
-            }
-            targetRot = (targetRot + rot) % 4;
-
-            switch (otherFaceshape) {
-                default:
-                    return TRUE;
-                // Face is full quad
-                case CMM_FACESHAPE_FULL:
-                    // Fill in correct UVs
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        cmm_terrain_slopebelowdecal_quad.altuvs = slope_decal_below_uvsquad_l;
-                    else
-                        cmm_terrain_slopebelowdecal_quad.altuvs = slope_decal_below_uvsquad_r;
-                    
-                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot);
-                    return TRUE;
-                case CMM_FACESHAPE_DOWNTRI_1:
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
-                        process_tri(&cmm_terrain_slopebelowdecal_downtri1, newpos, targetRot);
-                    return TRUE; 
-                case CMM_FACESHAPE_DOWNTRI_2:
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        process_tri(&cmm_terrain_slopebelowdecal_downtri2, newpos, targetRot);
-                    return TRUE;
-            }
-            
-
-        case CMM_GROWTH_DIAGONAL_SIDE:
-            otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
-            if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
-            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
-            u8 otherrot = get_grid_tile(newpos)->rot;
-            return (otherrot != rot);
-    }
-    return FALSE;
-}
-
-
 s32 handle_wait_vblank(OSMesgQueue *mq) {
     // returns true if it lasts longer than 3 seconds (3 * 1000us * 1000ms)
     OSMesg msg;
@@ -514,9 +429,6 @@ void render_get_normal_and_uvs(s8 v[3][3], u32 uvProjDir, u32 rot, u8 *uAxis, u8
         case 2: *uAxis = 0; *vAxis = 1; break;
     }
 }
-
-u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_render_flip_normals = FALSE;
 
 void render_quad(struct cmm_terrain_quad *quad, Gfx gfx[], s8 pos[3], u32 rot) {
     s8 n[3];
@@ -580,8 +492,6 @@ void render_tri(struct cmm_terrain_tri *tri, Gfx gfx[], s8 pos[3], u32 rot) {
     cmm_curr_vtx += 3;
 }
 
-TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
-
 // Create new static surface
 extern struct Surface *alloc_surface(u32 dynamic);
 extern void add_surface(struct Surface *surface, s32 dynamic);
@@ -590,7 +500,7 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3])
 
     Vec3f n;
     find_vector_perpendicular_to_plane(n, v1, v2, v3);
-    if (!vec3f_normalize2(n)) return NULL;
+    vec3_normalize(n);
 
     vec3_copy(surface->vertex1, v1);
     vec3_copy(surface->vertex2, v2);
@@ -659,8 +569,99 @@ void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
         cmm_create_tri(tri, pos, rot);
 }
 
-u8 cmm_growth_render_type = 0;
-u8 cmm_curr_mat_has_topside = FALSE;
+u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+    s8 newpos[3];
+    vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
+    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    if (!coords_in_range(newpos)) return TRUE;
+    u8 otherFaceshape;
+    switch (grassType) {
+        case CMM_GROWTH_UNDERSLOPE:
+            direction = CMM_DIRECTION_POS_Z;
+            // fallthrough
+        case CMM_GROWTH_NORMAL_SIDE:
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            switch (otherFaceshape) {
+                case CMM_FACESHAPE_FULL:
+                case CMM_FACESHAPE_TRI_1:
+                case CMM_FACESHAPE_TRI_2:
+                    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
+                        return TRUE;
+                    return FALSE;
+            }
+            return TRUE;
+
+        // These types are very tricky.
+        // If the below face is the same material and is the right shape,
+        // an extra decal is printed onto it.
+        case CMM_GROWTH_SLOPE_SIDE_L:
+        case CMM_GROWTH_SLOPE_SIDE_R:
+            // Check if below block is in range
+            vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
+            if (!coords_in_range(newpos)) return TRUE;
+
+            // Check if below block matches material
+            u8 curMat = get_grid_tile(pos)->mat;
+            u8 belowMat = get_grid_tile(newpos)->mat;
+            if (curMat != belowMat) return TRUE;
+
+            // Check if below block is right shape and culled
+            // Shape of face of above block on same side
+            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
+            
+            // Calculate effective rotation of face to print. very ugly
+            u8 targetRot = 0;
+            switch (direction) {
+                case CMM_DIRECTION_POS_X:
+                    targetRot = 1;
+                    break;
+                case CMM_DIRECTION_NEG_X:
+                    targetRot = 3;
+                    break;
+                //case CMM_DIRECTION_POS_Z:
+                    //targetRot = 0;
+                    //break;
+                case CMM_DIRECTION_NEG_Z:
+                    targetRot = 2;
+                    break;
+            }
+            targetRot = (targetRot + rot) % 4;
+
+            switch (otherFaceshape) {
+                default:
+                    return TRUE;
+                // Face is full quad
+                case CMM_FACESHAPE_FULL:
+                    // Fill in correct UVs
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        cmm_terrain_slopebelowdecal_quad.altuvs = &slope_decal_below_uvsquad_l;
+                    else
+                        cmm_terrain_slopebelowdecal_quad.altuvs = &slope_decal_below_uvsquad_r;
+                    
+                    render_quad(&cmm_terrain_slopebelowdecal_quad, cmm_curr_gfx, newpos, targetRot);
+                    return TRUE;
+                case CMM_FACESHAPE_DOWNTRI_1:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
+                        process_tri(newpos, &cmm_terrain_slopebelowdecal_downtri1, targetRot);
+                    return TRUE; 
+                case CMM_FACESHAPE_DOWNTRI_2:
+                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
+                        process_tri(newpos, &cmm_terrain_slopebelowdecal_downtri2, targetRot);
+                    return TRUE;
+            }
+            
+
+        case CMM_GROWTH_DIAGONAL_SIDE:
+            otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
+            if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
+            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            u8 otherrot = get_grid_tile(newpos)->rot;
+            return (otherrot != rot);
+    }
+    return FALSE;
+}
 
 void process_quad_with_growth(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot) {
     switch (cmm_growth_render_type) {
@@ -971,6 +972,8 @@ Gfx preview_gfx[32];
 Mtx preview_mtx[2];
 Vtx preview_vtx[64];
 
+extern void geo_append_display_list(void *displayList, s32 layer);
+
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
 
     if (callContext == GEO_CONTEXT_CREATE) {
@@ -1077,7 +1080,7 @@ void generate_terrain_collision(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
     //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
-    TerrainData floorType, floorY;
+    TerrainData floorY;
 
     if (cmm_lopt_plane == 0) {
         floorY = -2500;
@@ -1144,7 +1147,7 @@ void generate_object_preview(void) {
             preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
         }
         if (cmm_object_types[cmm_object_data[i].type].anim) {
-            preview_object->oAnimations = cmm_object_types[cmm_object_data[i].type].anim;
+            preview_object->oAnimations = (struct Animation **)cmm_object_types[cmm_object_data[i].type].anim;
             super_cum_working(preview_object,0);
             preview_object->header.gfx.animInfo.animAccel = 0.0f;
         }
@@ -1377,7 +1380,6 @@ void place_thing_action(void) {
 
 //function name is delete tile, it deletes objects too
 void delete_tile_action(s8 pos[3]) {
-    u8 mode = 0;
     s16 index = -1;
 
     //0 = searching
@@ -1495,7 +1497,7 @@ void save_level(u8 index) {
     //release_rumble_pak_control();
 
     u32 bytes_written;
-    f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+    f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
     f_close(&cmm_file);
 }
@@ -1514,10 +1516,10 @@ void load_level(u8 index) {
     //release_rumble_pak_control();
 
     u32 bytes_read;
-    FRESULT code = f_stat(&cmm_file_name,&cmm_file_info);
+    FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
         //file exists, load it
-        f_open(&cmm_file,&cmm_file_name, FA_READ | FA_WRITE);
+        f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
         f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
         f_close(&cmm_file);
     } else {
@@ -1623,7 +1625,7 @@ void sb_init(void) {
 
     vec3_set(cmm_cursor_pos, 32, 4, 32);
     cmm_ui_index = 0;
-    vec3f_copy(&cmm_camera_foc,&o->oPosVec);
+    vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
     switch(cmm_mode) {
@@ -1650,12 +1652,12 @@ void sb_init(void) {
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
-                vec3f_copy(&gMarioState->pos,&spawn_obj->oPosVec);
+                vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
                 if (warpobj) {
-                    vec3f_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
+                    vec3_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
                     warpobj->oPosY -= TILE_SIZE/2;
                 }
             }
@@ -1673,7 +1675,6 @@ void sb_init(void) {
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     u8 joystick = joystick_direction();
-    u8 cursor_did_move = FALSE;
     u8 drag_updown = FALSE;
 
     if (cmm_do_save) {
@@ -1828,15 +1829,15 @@ void sb_loop(void) {
             cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
             cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
-            vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
-            vec3f_add(&cmm_camera_pos,&cam_pos_offset);
+            vec3_copy(cmm_camera_pos,cmm_camera_foc);
+            vec3_add(cmm_camera_pos,cam_pos_offset);
 
             o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
             o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
             o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
 
             for (u8 i=0; i<6; i++) {
-                vec3f_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
+                vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
             }
             cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
             cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
@@ -1850,7 +1851,7 @@ void sb_loop(void) {
                     s16 max = cmm_object_types[cmm_id_selection].param_max;
                     cmm_param_selection = (cmm_param_selection+max)%max;
                 }
-                vec3f_copy(&cmm_preview_object->oPosX,&o->oPosX);
+                vec3_copy(&cmm_preview_object->oPosVec,&o->oPosVec);
                 cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset - TILE_SIZE/2;
                 obj_scale(cmm_preview_object, cmm_object_types[cmm_id_selection].scale);
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[cmm_object_types[cmm_id_selection].model_id];
@@ -1861,7 +1862,7 @@ void sb_loop(void) {
                     cmm_preview_object->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
                 }
                 if (cmm_object_types[cmm_id_selection].anim) {
-                    cmm_preview_object->oAnimations = cmm_object_types[cmm_id_selection].anim;
+                    cmm_preview_object->oAnimations = (struct Animation **)cmm_object_types[cmm_id_selection].anim;
                     super_cum_working(cmm_preview_object,0);
                 }
                 if (cmm_object_types[cmm_id_selection].disp_func) {
@@ -1994,30 +1995,24 @@ void sb_loop(void) {
                 switch(((joystick-1)+cmm_camera_rot_offset)%4) {
                     case 0:
                         cmm_cursor_pos[0]++;
-                        cursor_did_move = TRUE;
                     break;
                     case 1:
                         cmm_cursor_pos[2]--;
-                        cursor_did_move = TRUE;
                     break;
                     case 2:
                         cmm_cursor_pos[0]--;
-                        cursor_did_move = TRUE;
                     break;
                     case 3:
                         cmm_cursor_pos[2]++;
-                        cursor_did_move = TRUE;
                     break;
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
                 cmm_cursor_pos[1]++;
-                cursor_did_move = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
                 cmm_cursor_pos[1]--;
-                cursor_did_move = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
                 cmm_camera_rot_offset++;
@@ -2045,8 +2040,8 @@ void sb_loop(void) {
             cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
             cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]), 0.2f);
 
-            vec3f_copy(&cmm_camera_pos,&cmm_camera_foc);
-            vec3f_add(&cmm_camera_pos,&cam_pos_offset);
+            vec3_copy(cmm_camera_pos,cmm_camera_foc);
+            vec3_add(cmm_camera_pos,cam_pos_offset);
 
             o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
             o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
