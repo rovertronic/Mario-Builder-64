@@ -784,17 +784,21 @@ u32 is_water_fullblock(s8 pos[3]) {
 // 1: normal (low side)
 // 2: full (full side)
 // 3: top (thin top at side)
-u32 get_water_side_render(s8 pos[3], u32 dir) {
+u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     s8 adjacentPos[3];
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
 
     // Don't OoB cull the top face
     if (!coords_in_range(adjacentPos) && dir == CMM_DIRECTION_UP) return 1;
 
+    if (cmm_building_collision) {
+        if (get_grid_tile(adjacentPos)->waterlogged) return 0;
+        return isFullblock ? 2 : 1;
+    }
+
     // Apply normal side culling
     if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0)) return 0;
 
-    u32 isFullblock = is_water_fullblock(pos);
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
         // If so, use special thin side
@@ -816,8 +820,9 @@ u32 get_water_side_render(s8 pos[3], u32 dir) {
 }
 
 void render_water(s8 pos[3]) {
+    u32 isFullblock = is_water_fullblock(pos);
     for (u32 j = 0; j < 6; j++) {
-        u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].cullDir);
+        u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].cullDir, isFullblock);
         if (sideRender != 0) {
             struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[sideRender - 1][j];
             if (cmm_building_collision) {
@@ -1524,6 +1529,7 @@ void save_level(u8 index) {
     cmm_save.lvl[index].option[3] = cmm_lopt_theme;
     cmm_save.lvl[index].option[4] = cmm_lopt_bg;
     cmm_save.lvl[index].option[5] = cmm_lopt_plane;
+    cmm_save.lvl[index].option[18] = cmm_trajectories_used;
     cmm_save.lvl[index].option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1613,6 +1619,7 @@ void load_level(u8 index) {
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
 
+    cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
     //configure toolbox depending on game style
@@ -1805,6 +1812,8 @@ u32 main_cursor_logic(u32 joystick) {
     return cursorMoved;
 }
 
+u8 cmm_upsidedown_tile = FALSE;
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     u8 joystick = joystick_direction();
@@ -1841,6 +1850,17 @@ void sb_loop(void) {
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
             cmm_ui_index = (cmm_ui_index+9)%9;
+
+            if (cmm_upsidedown_tile) {
+                switch (cmm_id_selection) {
+                    case TILE_TYPE_SLOPE:
+                    case TILE_TYPE_DSLOPE:
+                        cmm_id_selection = TILE_TYPE_DSLOPE;
+                        break;
+                    default:
+                        cmm_upsidedown_tile = FALSE;
+                }
+            }
 
             //parameter changing
             if (gPlayer1Controller->buttonPressed & L_JPAD) {
@@ -1899,8 +1919,12 @@ void sb_loop(void) {
             }
 
             if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-                cmm_rot_selection++;
-                cmm_rot_selection%=4;
+                if (gPlayer1Controller->buttonDown & B_BUTTON) {
+                    cmm_upsidedown_tile ^= 1;
+                } else {
+                    cmm_rot_selection++;
+                    cmm_rot_selection%=4;
+                }
             }
 
             if (cmm_place_mode == CMM_PM_OBJ) {

@@ -391,7 +391,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
     {mat_maker_MakerHLight,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
-    {mat_maker_MakerHFence_layer1,   MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
+    {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
     {mat_maker_MakerCTile,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
     {mat_maker_MakerCWood,           0, SURFACE_DEFAULT}, // CMM_MAT_C_WOOD
@@ -480,12 +480,24 @@ enum cmm_fences {
 
 Gfx *cmm_fence_texs[] = {
     mat_maker_MakerFence_layer1,
-    mat_maker_MakerDFence_layer1,
-    mat_maker_MakerRHRGrate_layer1,
+    mat_maker_MakerDMesh_layer1,
+    mat_maker_MakerRHRFence_layer1,
     mat_maker_MakerHFence_layer1,
     mat_maker_MakerCFence_layer1,
     mat_maker_MakerVPFence_layer1,
     mat_maker_MakerRetroFence_layer1,
+};
+
+enum cmm_water {
+    CMM_WATER_DEFAULT,
+    CMM_WATER_GREEN,
+    CMM_WATER_RETRO,
+};
+
+Gfx *cmm_water_texs[] = {
+    mat_maker_MakerWater,
+    mat_maker_MakerGreenWater,
+    mat_maker_MakerRetroWater,
 };
 
 struct cmm_theme cmm_theme_table[NUM_THEMES] = {
@@ -504,7 +516,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,   0,                "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_generic), cmm_terrain_floors_generic,
-        CMM_FENCE_NORMAL,
+        CMM_FENCE_NORMAL, CMM_WATER_DEFAULT
     },
     // DESERT
     {
@@ -521,7 +533,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,       0,                        "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_desert), cmm_terrain_floors_desert,
-        CMM_FENCE_DESERT,
+        CMM_FENCE_DESERT, CMM_WATER_GREEN
     },
     // LAVA
     {
@@ -538,7 +550,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_SERVER_ACID, 0,                       "Server Acid"},
         },
         ARRAY_COUNT(cmm_terrain_floors_lava), cmm_terrain_floors_lava,
-        CMM_FENCE_RHR,
+        CMM_FENCE_RHR, CMM_WATER_DEFAULT
     },
     // CAVE
     {
@@ -555,7 +567,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_cave), cmm_terrain_floors_cave,
-        CMM_FENCE_HMC,
+        CMM_FENCE_HMC, CMM_WATER_GREEN
     },
     // CASTLE
     {
@@ -572,7 +584,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_castle), cmm_terrain_floors_castle,
-        CMM_FENCE_CASTLE,
+        CMM_FENCE_CASTLE, CMM_WATER_DEFAULT
     },
     // VIRTUAPLEX
     {
@@ -589,7 +601,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_VP_VOID,       0,                       "Void"},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
-        CMM_FENCE_VIRTUAPLEX,
+        CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
     },
     // RETRO
     {
@@ -606,7 +618,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        "Underwater Tile"},
         },
         ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
-        CMM_FENCE_RETRO,
+        CMM_FENCE_RETRO, CMM_WATER_RETRO
     },
 };
 
@@ -626,8 +638,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
 
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
-
-#define WATER_TEX() (cmm_lopt_theme == 6 ? &mat_maker_MakerRetroWater : &mat_maker_MakerWater)
+#define WATER_TEX() (cmm_water_texs[cmm_theme_table[cmm_lopt_theme].water])
 
 
 enum {

@@ -362,6 +362,14 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     }
 }
 
+void cmm_menu_reset_all_buttons(f32 pos) {
+    for (u8 i=0;i<ARRAY_COUNT(cmm_menu_button_vels);i++) {
+        cmm_menu_button_vels[i][0] = pos;
+        cmm_menu_button_vels[i][1] = 0.f;
+        cmm_menu_button_vels[i][2] = 0.f;
+    }
+}
+
 u32 cmm_menu_animation_out_main(s32 len, f32 startvel) {
     animate_menu_generic(cmm_menu_title_vels, 0.f, 0.f, 3.f, cmm_menu_end_timer == 0);
 
@@ -399,6 +407,7 @@ u32 cmm_menu_animation_out(s32 len, u32 canBack) {
                 cmm_menu_end_timer = 0;
                 cmm_menu_going_back = 1;
                 cmm_menu_start_timer = -1;
+                cmm_menu_reset_all_buttons(0.f);
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
@@ -406,6 +415,7 @@ u32 cmm_menu_animation_out(s32 len, u32 canBack) {
                     cmm_menu_end_timer = 0;
                     cmm_menu_going_back = -1;
                     cmm_menu_start_timer = -1;
+                    cmm_menu_reset_all_buttons(0.f);
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 }
             }
@@ -479,12 +489,8 @@ u32 cmm_menu_animation_in(s32 len) {
         step = cmm_menu_start_timer/2;
     }
 
+    if (cmm_menu_start_timer == 0) cmm_menu_reset_all_buttons(1000.f);
     for (s32 i=0;i<len;i++) {
-        if (cmm_menu_start_timer == 0) {
-            cmm_menu_button_vels[i][0] = 1000.f;
-            cmm_menu_button_vels[i][1] = 0.f;
-            cmm_menu_button_vels[i][2] = 0.f;
-        }
         animate_menu_overshoot_target(cmm_menu_button_vels[i], 0.f, 250.f*cmm_menu_going_back, MENU_ANIM_IN_STARTVEL * cmm_menu_going_back, 8.f * cmm_menu_going_back,
         i == step);
     }
