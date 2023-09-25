@@ -6,6 +6,9 @@
 #define CMM_GFX_SIZE 20000
 #define CMM_VTX_SIZE 25000
 
+#define CMM_MAX_OBJS 200
+#define CMM_MAX_TRAJECTORIES 5
+
 #define TILE_SIZE 256
 
 #define CMM_VERSION 1
@@ -271,7 +274,7 @@ struct cmm_level_save {
 
     struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
     struct cmm_obj objects[200];//4*200 = 800 bytes
-    struct cmm_comptraj trajectories[5][40];
+    struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][40];
     u8 option[20];//20 bytes
     //6906 bytes per level, ~7000 bytes
     u16 tile_count;

@@ -92,7 +92,7 @@ u32 cmm_gfx_total = 0;
 u32 cmm_vtx_total = 0;
 
 struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
-struct cmm_obj cmm_object_data[200];
+struct cmm_obj cmm_object_data[CMM_MAX_OBJS];
 u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 5] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
@@ -104,7 +104,7 @@ struct Object *cmm_boundary_object[6]; //one for each side
 Trajectory cmm_trajectory_list[5][160];
 u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
-u8 cmm_trajectories_used = 0; //bitfield
+u8 cmm_trajectories_used = 0;
 u8 cmm_txt_recording[] = {TXT_RECORDING};
 Vtx cmm_trajectory_vtx[240];
 Gfx cmm_trajectory_gfx[100]; //gfx
@@ -244,33 +244,36 @@ u32 coords_in_range(s8 pos[3]) {
 }
 
 s32 tile_sanity_check(void) {
-    u8 allow = TRUE;
-
     if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
-        allow = FALSE;
-        display_error_message("Tile limit of 5000 reached.");
+        display_error_message("Tile limit reached (max 5,000)");
+        return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
-        allow = FALSE;
-        display_error_message("Vertex limit of 25000 reached.");
+        display_error_message("Vertex limit reached (max 25,000)");
+        return FALSE;
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
-        allow = FALSE;
         display_error_message("Graphics pool limit reached.");
+        return FALSE;
     }
 
-    return allow;
+    return TRUE;
 }
 
 s32 object_sanity_check(void) {
-    u8 allow = TRUE;
-
-    if (cmm_object_count >= 200) {
-        allow = FALSE;
-        display_error_message("Object limit of 200 reached.");
+    if (cmm_object_count >= CMM_MAX_OBJS) {
+        display_error_message("Object limit reached (max 200)");
+        return FALSE;
     }
 
-    return allow;
+    if (cmm_object_types[cmm_id_selection].use_trajectory) {
+        if (cmm_trajectories_used >= CMM_MAX_TRAJECTORIES) {
+            display_error_message("Trajectory limit reached (max 5)");
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 ALWAYS_INLINE void place_terrain_data(s8 pos[3], u32 type, u32 rot, u32 mat) {
@@ -891,12 +894,12 @@ void process_tiles(void) {
 
             process_tile(pos, cmm_tile_terrains[tileType], rot);
         }
-        
+
+        PROC_RENDER( display_cached_tris(); )
         PROC_RENDER( gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); )
         
         if (cmm_curr_mat_has_topside) {
             // Only runs when rendering
-            PROC_RENDER( display_cached_tris(); )
             if (!cmm_building_collision && (SIDETEX(mat) != NULL)) {
                 cmm_use_alt_uvs = TRUE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
@@ -925,9 +928,8 @@ void process_tiles(void) {
 
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
+            PROC_RENDER( display_cached_tris(); )
         }
-
-        PROC_RENDER( display_cached_tris(); )
     }
 }
 
@@ -1346,42 +1348,25 @@ void place_water(s8 pos[3]) {
 }
 
 void place_object(s8 pos[3]) {
-    if (cmm_object_count < 200) {
-        cmm_object_data[cmm_object_count].x = pos[0];
-        cmm_object_data[cmm_object_count].y = pos[1];
-        cmm_object_data[cmm_object_count].z = pos[2];
-        cmm_object_data[cmm_object_count].type = cmm_id_selection;
-        cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
-        cmm_object_data[cmm_object_count].param = cmm_param_selection;
+    cmm_object_data[cmm_object_count].x = pos[0];
+    cmm_object_data[cmm_object_count].y = pos[1];
+    cmm_object_data[cmm_object_count].z = pos[2];
+    cmm_object_data[cmm_object_count].type = cmm_id_selection;
+    cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
+    cmm_object_data[cmm_object_count].param = cmm_param_selection;
 
-        if (cmm_object_types[cmm_id_selection].use_trajectory) {
-            u8 trajectory_found = FALSE;
-            for (u8 i=0;i<5;i++) {
-                if (!((cmm_trajectories_used>>i) & 1)) {
-                    cmm_trajectories_used |= (1 << i);
-                    cmm_trajectory_to_edit = i;
-                    cmm_object_data[cmm_object_count].param = i;
-                    trajectory_found = TRUE;
-                    break;
-                }
-            }
+    if (cmm_object_types[cmm_id_selection].use_trajectory) {
+        cmm_trajectory_to_edit = cmm_trajectories_used;
+        cmm_object_data[cmm_object_count].param = cmm_trajectories_used;
+        cmm_trajectories_used++;
 
-            if (!trajectory_found) {
-                play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                cmm_object_count --;
-                remove_occupy_data(cmm_cursor_pos);
-            } else {
-                cmm_menu_state = CMM_MAKE_TRAJECTORY;
-                o->oAction = 5; //trajectory editor
-                cmm_trajectory_edit_index = 0;
-                generate_path_gfx();
-            }
-        }
-
-        cmm_object_count++;
-    } else {
-        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+        cmm_menu_state = CMM_MAKE_TRAJECTORY;
+        o->oAction = 5; //trajectory editor
+        cmm_trajectory_edit_index = 0;
+        generate_path_gfx();
     }
+
+    cmm_object_count++;
 }
 
 u8 joystick_direction(void) {
@@ -1443,13 +1428,26 @@ void place_thing_action(void) {
     }
 }
 
+void remove_trajectory(u32 index) {
+    // Scan all objects
+    // If their trajectory index is past the one being deleted, lower it by 1
+    for (u32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_types[cmm_object_data[i].type].use_trajectory) {
+            if (cmm_object_data[i].param > index) {
+                cmm_object_data[i].param--;
+            }
+        }
+    }
+    // Move trajectories back by one
+    for (u32 i = index; i < cmm_trajectories_used - 1; i++) {
+        bcopy(&cmm_trajectory_list[i + 1], &cmm_trajectory_list[i], sizeof(cmm_trajectory_list[i]));
+    }
+    cmm_trajectories_used--;
+}
+
 //function name is delete tile, it deletes objects too
 void delete_tile_action(s8 pos[3]) {
     s16 index = -1;
-
-    //0 = searching
-    //1 = targeting
-    //(sport mode reference)
 
     for (u32 i = 0; i < cmm_tile_count; i++) {
         //search for tile to delete
@@ -1478,12 +1476,11 @@ void delete_tile_action(s8 pos[3]) {
         if ((cmm_object_data[i].x == pos[0])&&(cmm_object_data[i].y == pos[1])&&(cmm_object_data[i].z == pos[2])) {
             index = i;
             remove_occupy_data(pos);
-            cmm_object_count--;
 
             if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
-                //unlink trajectory
-                cmm_trajectories_used &= ~(1<<cmm_object_data[i].param);
+                remove_trajectory(cmm_object_data[i].param);
             }
+            cmm_object_count--;
         }
     }
     if (index != -1) {
@@ -1527,7 +1524,6 @@ void save_level(u8 index) {
     cmm_save.lvl[index].option[3] = cmm_lopt_theme;
     cmm_save.lvl[index].option[4] = cmm_lopt_bg;
     cmm_save.lvl[index].option[5] = cmm_lopt_plane;
-    cmm_save.lvl[index].option[18] = cmm_trajectories_used;
     cmm_save.lvl[index].option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1541,7 +1537,7 @@ void save_level(u8 index) {
         bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < 40; j++) {
             cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
             cmm_save.lvl[index].trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
@@ -1617,7 +1613,6 @@ void load_level(u8 index) {
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
 
-    cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
     //configure toolbox depending on game style
@@ -1667,7 +1662,7 @@ void load_level(u8 index) {
         place_occupy_data(pos);
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < 40; j++) {
             cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
             cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].x);
@@ -1737,10 +1732,83 @@ void sb_init(void) {
     }
 }
 
+u32 main_cursor_logic(u32 joystick) {
+    u8 cursorMoved;
+    if (joystick != 0) {
+        switch(((joystick-1)+cmm_camera_rot_offset)%4) {
+            case 0:
+                cmm_cursor_pos[0]++;
+                cursorMoved = TRUE;
+            break;
+            case 1:
+                cmm_cursor_pos[2]--;
+                cursorMoved = TRUE;
+            break;
+            case 2:
+                cmm_cursor_pos[0]--;
+                cursorMoved = TRUE;
+            break;
+            case 3:
+                cmm_cursor_pos[2]++;
+                cursorMoved = TRUE;
+            break;
+        }
+    }
+
+    if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
+        cmm_cursor_pos[1]++;
+        cursorMoved = TRUE;
+    }
+    if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
+        cmm_cursor_pos[1]--;
+        cursorMoved = TRUE;
+    }
+    if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
+        cmm_camera_rot_offset++;
+    }
+    if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
+        cmm_camera_rot_offset--;
+    }
+    cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
+
+    cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+    cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
+    cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
+
+    //camera zooming
+    if (gPlayer1Controller->buttonPressed & U_JPAD) {
+        cmm_camera_zoom_index--;
+    }
+    if (gPlayer1Controller->buttonPressed & D_JPAD) {
+        cmm_camera_zoom_index++;
+    }
+    cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
+
+    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
+    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
+
+    o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
+    o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
+    o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
+
+    for (u8 i=0; i<6; i++) {
+        vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
+    }
+    cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
+    cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
+    cmm_boundary_object[2]->oPosX = GRID_TO_POS(GRID_MIN_COORD);
+    cmm_boundary_object[3]->oPosX = GRID_TO_POS(GRID_MAX_COORD);
+    cmm_boundary_object[4]->oPosZ = GRID_TO_POS(GRID_MIN_COORD);
+    cmm_boundary_object[5]->oPosZ = GRID_TO_POS(GRID_MAX_COORD);
+
+    return cursorMoved;
+}
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     u8 joystick = joystick_direction();
-    u8 drag_updown = FALSE;
+    u8 cursorMoved = FALSE;
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
@@ -1760,44 +1828,7 @@ void sb_loop(void) {
 
         break;
         case 1: //MAKE MODE MAIN
-            //START MOVE CURSOR
-            if (joystick != 0) {
-                switch(((joystick-1)+cmm_camera_rot_offset)%4) {
-                    case 0:
-                        cmm_cursor_pos[0]++;
-                    break;
-                    case 1:
-                        cmm_cursor_pos[2]--;
-                    break;
-                    case 2:
-                        cmm_cursor_pos[0]--;
-                    break;
-                    case 3:
-                        cmm_cursor_pos[2]++;
-                    break;
-                }
-            }
-
-            if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
-                cmm_cursor_pos[1]++;
-                drag_updown=TRUE;
-            }
-            if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
-                cmm_cursor_pos[1]--;
-                drag_updown=TRUE;
-            }
-            if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
-                cmm_camera_rot_offset++;
-            }
-            if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
-                cmm_camera_rot_offset--;
-            }
-            cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
-
-            cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-            cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-            cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
-            //END MOVE CURSOR
+            cursorMoved = main_cursor_logic(joystick);
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_ui_index--;
@@ -1817,32 +1848,6 @@ void sb_loop(void) {
             }
             if (gPlayer1Controller->buttonPressed & R_JPAD) {
                 cmm_param_selection ++;
-            }
-
-            //camera zooming
-            if (gPlayer1Controller->buttonPressed & U_JPAD) {
-                cmm_camera_zoom_index--;
-            }
-            if (gPlayer1Controller->buttonPressed & D_JPAD) {
-                cmm_camera_zoom_index++;
-            }
-            cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
-  
-
-            if (cmm_ui_index<6) {
-                //drag
-                if ((joystick > 0)||(drag_updown)) {
-                    if (gPlayer1Controller->buttonDown & B_BUTTON) {
-                        delete_tile_action(cmm_cursor_pos);
-                    }
-                    if (gPlayer1Controller->buttonDown & A_BUTTON) {
-                        place_thing_action();
-                    }
-                }
-                //delete
-                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                    delete_tile_action(cmm_cursor_pos);
-                }
             }
 
             //Single A press
@@ -1871,6 +1876,14 @@ void sb_loop(void) {
                         place_thing_action();
                     break; 
                 }
+            } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
+                if (cmm_ui_index < 6) {
+                    place_thing_action();
+                }
+            }
+
+            if (gPlayer1Controller->buttonPressed & B_BUTTON || ((gPlayer1Controller->buttonDown & B_BUTTON) && cursorMoved)) {
+                delete_tile_action(cmm_cursor_pos);
             }
 
             if (o->oAction != 1) {
@@ -1889,27 +1902,6 @@ void sb_loop(void) {
                 cmm_rot_selection++;
                 cmm_rot_selection%=4;
             }
-
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
-
-            vec3_copy(cmm_camera_pos,cmm_camera_foc);
-            vec3_add(cmm_camera_pos,cam_pos_offset);
-
-            o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
-            o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
-            o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
-
-            for (u8 i=0; i<6; i++) {
-                vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
-            }
-            cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
-            cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
-            cmm_boundary_object[2]->oPosX = GRID_TO_POS(GRID_MIN_COORD);
-            cmm_boundary_object[3]->oPosX = GRID_TO_POS(GRID_MAX_COORD);
-            cmm_boundary_object[4]->oPosZ = GRID_TO_POS(GRID_MIN_COORD);
-            cmm_boundary_object[5]->oPosZ = GRID_TO_POS(GRID_MAX_COORD);
 
             if (cmm_place_mode == CMM_PM_OBJ) {
                 if (cmm_object_types[cmm_id_selection].param_max != 0) {
@@ -2054,63 +2046,7 @@ void sb_loop(void) {
             }
         break;
         case 5: //trajectory maker
-            //START MOVE CURSOR
-            
-            if (joystick != 0) {
-                switch(((joystick-1)+cmm_camera_rot_offset)%4) {
-                    case 0:
-                        cmm_cursor_pos[0]++;
-                    break;
-                    case 1:
-                        cmm_cursor_pos[2]--;
-                    break;
-                    case 2:
-                        cmm_cursor_pos[0]--;
-                    break;
-                    case 3:
-                        cmm_cursor_pos[2]++;
-                    break;
-                }
-            }
-
-            if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
-                cmm_cursor_pos[1]++;
-            }
-            if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
-                cmm_cursor_pos[1]--;
-            }
-            if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
-                cmm_camera_rot_offset++;
-            }
-            if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
-                cmm_camera_rot_offset--;
-            }
-            cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
-
-            //camera zooming
-            if (gPlayer1Controller->buttonPressed & U_JPAD) {
-                cmm_camera_zoom_index--;
-            }
-            if (gPlayer1Controller->buttonPressed & D_JPAD) {
-                cmm_camera_zoom_index++;
-            }
-            cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
-
-            cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-            cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-            cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
-            //END MOVE CURSOR
-
-            cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]), 0.2f);
-            cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
-            cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]), 0.2f);
-
-            vec3_copy(cmm_camera_pos,cmm_camera_foc);
-            vec3_add(cmm_camera_pos,cam_pos_offset);
-
-            o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
-            o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
-            o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]);
+            main_cursor_logic(joystick);
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
@@ -2137,6 +2073,9 @@ void sb_loop(void) {
             }
         break;
     }
+
+    vec3_copy(cmm_camera_pos,cmm_camera_foc);
+    vec3_add(cmm_camera_pos,cam_pos_offset);
 }
 
 #include "src/game/cursed_mirror_maker_menu.inc.c"
