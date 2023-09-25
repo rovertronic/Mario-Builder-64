@@ -362,8 +362,8 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     }
 }
 
-u32 cmm_menu_animation_out_main(s32 len, s32 time, f32 startvel) {
-    animate_menu_generic(cmm_menu_title_vels, 0.f, 0.f, 2.f, cmm_menu_end_timer == 0);
+u32 cmm_menu_animation_out_main(s32 len, f32 startvel) {
+    animate_menu_generic(cmm_menu_title_vels, 0.f, 0.f, 3.f, cmm_menu_end_timer == 0);
 
     s8 index = -1;
     if (cmm_menu_end_timer < len*2 && cmm_menu_end_timer % 2 == 0) {
@@ -377,11 +377,11 @@ u32 cmm_menu_animation_out_main(s32 len, s32 time, f32 startvel) {
 
     for (u32 i = 0; i < len; i++) {
         animate_menu_generic(cmm_menu_button_vels[i], 0.f,
-                            startvel*cmm_menu_going_back, -6.f*cmm_menu_going_back,
+                            startvel*cmm_menu_going_back, -8.f*cmm_menu_going_back,
                             i == index);
     }
 
-    if (++cmm_menu_end_timer == time) {
+    if (++cmm_menu_end_timer == 10 + len*2) {
         cmm_menu_end_timer = -1;
         return TRUE;
     }
@@ -392,18 +392,20 @@ u32 cmm_menu_animation_out_main(s32 len, s32 time, f32 startvel) {
 // time - how long until actually switching to next menu
 // canBack - able to press B to go to previous menu
 // returns if menu has switched
-u32 cmm_menu_animation_out(s32 len, s32 time, u32 canBack) {
+u32 cmm_menu_animation_out(s32 len, u32 canBack) {
     if (cmm_menu_end_timer == -1) {
-        if (cmm_menu_start_timer == -1) {
+        if (cmm_menu_start_timer == -1 || cmm_menu_start_timer > 10) {
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 cmm_menu_end_timer = 0;
                 cmm_menu_going_back = 1;
+                cmm_menu_start_timer = -1;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
                 if (canBack) {
                     cmm_menu_end_timer = 0;
                     cmm_menu_going_back = -1;
+                    cmm_menu_start_timer = -1;
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 }
             }
@@ -411,7 +413,7 @@ u32 cmm_menu_animation_out(s32 len, s32 time, u32 canBack) {
         return FALSE;
     }
 
-    return cmm_menu_animation_out_main(len, time, 20.f);
+    return cmm_menu_animation_out_main(len, 23.f);
 }
 
 u32 cmm_keyboard_animation_out(void) {
@@ -431,7 +433,7 @@ u32 cmm_keyboard_animation_out(void) {
         return FALSE;
     }
 
-    return cmm_menu_animation_out_main(4, 20, 0.f);
+    return cmm_menu_animation_out_main(4, 0.f);
 }
 
 /**
@@ -465,12 +467,12 @@ u32 cmm_menu_animation_info(void) {
     return FALSE;
 }
 
-#define MENU_ANIM_IN_STARTVEL (cmm_mm_state == MM_KEYBOARD ? -50.f : -55.f)
+#define MENU_ANIM_IN_STARTVEL (cmm_mm_state == MM_KEYBOARD ? -60.f : -63.f)
 
 u32 cmm_menu_animation_in(s32 len) {
     if (cmm_menu_start_timer == -1) return FALSE;
 
-    animate_menu_overshoot_target(cmm_menu_title_vels, 0.f, 50.f, -14.f, 2.f, cmm_menu_start_timer == 0);
+    animate_menu_overshoot_target(cmm_menu_title_vels, 0.f, 50.f, -16.f, 2.5f, cmm_menu_start_timer == 0);
 
     s8 step = -1;
     if (cmm_menu_start_timer < len*2 && cmm_menu_start_timer % 2 == 0) {
@@ -483,7 +485,7 @@ u32 cmm_menu_animation_in(s32 len) {
             cmm_menu_button_vels[i][1] = 0.f;
             cmm_menu_button_vels[i][2] = 0.f;
         }
-        animate_menu_overshoot_target(cmm_menu_button_vels[i], 0.f, 250.f*cmm_menu_going_back, MENU_ANIM_IN_STARTVEL * cmm_menu_going_back, 6.f * cmm_menu_going_back,
+        animate_menu_overshoot_target(cmm_menu_button_vels[i], 0.f, 250.f*cmm_menu_going_back, MENU_ANIM_IN_STARTVEL * cmm_menu_going_back, 8.f * cmm_menu_going_back,
         i == step);
     }
 
@@ -498,6 +500,10 @@ u32 cmm_menu_animation_in(s32 len) {
 
 s32 cmm_main_menu(void) {
     u8 joystick = joystick_direction();
+
+    if (cmm_menu_end_timer != -1) {
+        joystick = 0;
+    }
     switch(joystick) {
         case 2:
             cmm_mm_index++;
@@ -534,7 +540,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_index = (cmm_mm_index+4)%4;
             cmm_menu_animation_in(4);
             render_cmm_mm_menu(cmm_mm_btns,"Mario Builder 64",4);
-            if (cmm_menu_animation_out(4, 22, FALSE)) {
+            if (cmm_menu_animation_out(4, FALSE)) {
                 switch(cmm_mm_index) {
                     case 0:
                         cmm_mm_state = MM_MAKE;
@@ -575,7 +581,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_index = (cmm_mm_index+2)%2;
             cmm_menu_animation_in(2);
             render_cmm_mm_menu(cmm_mm_play_btns,"Play Levels",2);
-            if (cmm_menu_animation_out(2, 18, TRUE)) {
+            if (cmm_menu_animation_out(2, TRUE)) {
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
                     cmm_mm_index = 1;
@@ -599,7 +605,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_index = (cmm_mm_index+4)%4;
             cmm_menu_animation_in(4);
             render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",4);
-            if (cmm_menu_animation_out(4, 22, TRUE)) {
+            if (cmm_menu_animation_out(4, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -627,7 +633,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_index = (cmm_mm_index+2)%2;
             cmm_menu_animation_in(2);
             render_cmm_mm_menu(cmm_mm_lmode_btns,"Choose Mode",2);
-            if (cmm_menu_animation_out(2, 18, TRUE)) {
+            if (cmm_menu_animation_out(2, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = MM_MAKE;
@@ -652,7 +658,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_index = (cmm_mm_index+3)%3;
             cmm_menu_animation_in(3);
             render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
-            if (cmm_menu_animation_out(3, 20, TRUE)) {
+            if (cmm_menu_animation_out(3, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -700,12 +706,14 @@ s32 cmm_main_menu(void) {
             switch(joystick) {
                 case 1:
                     cmm_mm_keyboard_index--;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
                 case 2:
                     cmm_mm_keyboard_index+=10;
                 break;
                 case 3:
                     cmm_mm_keyboard_index++;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
                 case 4:
                     cmm_mm_keyboard_index-=10;
@@ -812,7 +820,7 @@ s32 cmm_main_menu(void) {
                 cmm_mm_page_entries = cmm_level_entry_count-(cmm_mm_page*PAGE_SIZE);
             }
 
-            if (cmm_menu_animation_out(5, 25, TRUE)) {
+            if (cmm_menu_animation_out(5, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_files_prev_menu;

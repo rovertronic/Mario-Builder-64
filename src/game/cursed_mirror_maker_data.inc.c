@@ -303,6 +303,7 @@ enum cmm_materials {
     CMM_MAT_RHR_WOOD,
     CMM_MAT_RHR_PILLAR,
     CMM_MAT_RHR_MESH,
+    CMM_MAT_SERVER_ACID,
     // Hazy Maze Cave
     CMM_MAT_HMC_GRASS,
     CMM_MAT_HMC_DIRT,
@@ -364,28 +365,29 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
     {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
     // Desert
-    {mat_maker_MakerDBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_DESERT_BRICKS
-    {mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_STONE
-    {mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES
-    {mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_BLOCK
-    {mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_DESERT_TILES2
-    {mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND},    // CMM_MAT_DESERT_SLOWSAND
+    {mat_maker_MakerDBrick,      0, SURFACE_DEFAULT},        // CMM_MAT_DESERT_BRICKS
+    {mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_STONE
+    {mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES
+    {mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_BLOCK
+    {mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES2
+    {mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND}, // CMM_MAT_DESERT_SLOWSAND
     // Red Hot Reservoir
     {mat_maker_MakerRHRObsidian,     0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
     {mat_maker_MakerRHRStone,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
-    {mat_maker_MakerRHRBrick,        0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_BRICK
+    {mat_maker_MakerRHRBrick,        0,          SURFACE_DEFAULT},          // CMM_MAT_RHR_BRICK
     {mat_maker_MakerRHRBasalt,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_BASALT
     {mat_maker_MakerRHRTiles,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_TILES
-    {mat_maker_MakerRHRPattern,      0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_BLOCK
+    {mat_maker_MakerRHRPattern,      0,          SURFACE_DEFAULT},          // CMM_MAT_RHR_BLOCK
     {mat_maker_MakerRHRWood,         0,          SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
-    {mat_maker_MakerRHRPillar,       0,          SURFACE_DEFAULT},     // CMM_MAT_RHR_PILLAR
+    {mat_maker_MakerRHRPillar,       0,          SURFACE_DEFAULT},          // CMM_MAT_RHR_PILLAR
     {mat_maker_MakerRHRGrate_layer1, MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
+    {mat_maker_MakerServerAcid,      0,          SURFACE_BURNING},          // CMM_MAT_SERVER_ACID
     // Hazy Maze Cave
     {mat_maker_MakerHGrass,          0,          SURFACE_GRASS},            // CMM_MAT_HMC_GRASS
     {mat_maker_MakerHDirt,           0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
-    {mat_maker_MakerHBrick,          0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_BRICK
+    {mat_maker_MakerHBrick,          0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_BRICK
     {mat_maker_MakerHStone,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
-    {mat_maker_MakerHMazewall,       0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_MAZEWALL
+    {mat_maker_MakerHMazewall,       0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_MAZEWALL
     {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
     {mat_maker_MakerHLight,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
@@ -524,16 +526,16 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
     // LAVA
     {
         {
-            {CMM_MAT_RHR_STONE,  CMM_TOPMAT_RHR_OBSIDIAN, "Stone"},
-            {CMM_MAT_RHR_BRICK,  CMM_TOPMAT_RHR_OBSIDIAN, "Bricks"},
-            {CMM_MAT_RHR_BASALT, 0,                       "Basalt"},
-            {CMM_MAT_RHR_TILES,  0,                       "Tiling"},
-            {CMM_MAT_RHR_BLOCK,  0,                       "Stone Block"},
-            {CMM_MAT_RHR_WOOD,   0,                       "Wood"},
-            {CMM_MAT_RHR_PILLAR, CMM_TOPMAT_RHR_TILES,    "Pillar"},
-            {CMM_MAT_RHR_MESH,   0,                       "Mesh"},
-            {CMM_MAT_LAVA,       0,                       "Lava"},
-            {CMM_MAT_QUICKSAND,  0,                       "Quicksand"},
+            {CMM_MAT_RHR_STONE,   CMM_TOPMAT_RHR_OBSIDIAN, "Stone"},
+            {CMM_MAT_RHR_BRICK,   CMM_TOPMAT_RHR_OBSIDIAN, "Bricks"},
+            {CMM_MAT_RHR_BASALT,  0,                       "Basalt"},
+            {CMM_MAT_RHR_TILES,   0,                       "Tiling"},
+            {CMM_MAT_RHR_BLOCK,   0,                       "Stone Block"},
+            {CMM_MAT_RHR_WOOD,    0,                       "Wood"},
+            {CMM_MAT_RHR_PILLAR,  CMM_TOPMAT_RHR_TILES,    "Pillar"},
+            {CMM_MAT_RHR_MESH,    0,                       "Mesh"},
+            {CMM_MAT_LAVA,        0,                       "Lava"},
+            {CMM_MAT_SERVER_ACID, 0,                       "Server Acid"},
         },
         ARRAY_COUNT(cmm_terrain_floors_lava), cmm_terrain_floors_lava,
         CMM_FENCE_RHR,
