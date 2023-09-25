@@ -464,6 +464,7 @@ s32 mario_get_floor_class(struct MarioState *m) {
             case SURFACE_SAND:
             case SURFACE_CREAKWOOD:
             case SURFACE_DEEP_QUICKSAND:
+            case SURFACE_VANISH_CAP_WALLS:
                 floorClass = SURFACE_CLASS_NOT_SLIPPERY;
                 break;
 

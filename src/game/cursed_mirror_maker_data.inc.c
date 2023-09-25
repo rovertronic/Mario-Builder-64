@@ -389,7 +389,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerHStone,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
     {mat_maker_MakerHMazewall,       0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_MAZEWALL
     {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
-    {mat_maker_MakerHLight,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LIGHT
+    {mat_maker_MakerHLight,          0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
     {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
