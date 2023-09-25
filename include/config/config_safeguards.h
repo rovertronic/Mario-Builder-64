@@ -11,6 +11,46 @@
 
 
 /*****************
+ * config_audio.h
+ */
+
+#ifndef MAX_SIMULTANEOUS_NOTES_EMULATOR
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 40
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_EMULATOR 20
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_EMULATOR
+
+#ifndef MAX_SIMULTANEOUS_NOTES_CONSOLE
+    #ifdef EXPAND_AUDIO_HEAP
+        #define MAX_SIMULTANEOUS_NOTES_CONSOLE 24
+    #else
+        #define MAX_SIMULTANEOUS_NOTES_CONSOLE 16
+    #endif
+#endif // MAX_SIMULTANEOUS_NOTES_CONSOLE
+
+#if (MAX_SIMULTANEOUS_NOTES_EMULATOR >= MAX_SIMULTANEOUS_NOTES_CONSOLE)
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_EMULATOR
+#else
+    #define MAX_SIMULTANEOUS_NOTES MAX_SIMULTANEOUS_NOTES_CONSOLE
+#endif
+
+// Anything higher than 64 will most likely crash on boot. Even if it doesn't, it's still dangerous.
+#if (MAX_SIMULTANEOUS_NOTES > 64)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 64
+#elif (MAX_SIMULTANEOUS_NOTES < 0)
+    #undef MAX_SIMULTANEOUS_NOTES
+    #define MAX_SIMULTANEOUS_NOTES 0
+#endif
+
+#if defined(BETTER_REVERB) && !(defined(VERSION_US) || defined(VERSION_JP))
+    #undef BETTER_REVERB
+#endif
+
+
+/*****************
  * config_graphics.h
  */
 
@@ -60,7 +100,7 @@
     #define PUPPYPRINT
 
     #undef PUPPYPRINT_DEBUG
-    #define PUPPYPRINT_DEBUG 1
+    #define PUPPYPRINT_DEBUG
 
     #undef VISUAL_DEBUG
     #define VISUAL_DEBUG
@@ -110,10 +150,6 @@
 /*****************
  * config_game.h
  */
-
-#ifdef DISABLE_LIVES
-    #undef SAVE_NUM_LIVES
-#endif // DISABLE_LIVES
 
 #ifndef START_LEVEL
     #define START_LEVEL LEVEL_CASTLE_GROUNDS

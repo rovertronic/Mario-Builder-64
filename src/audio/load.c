@@ -9,8 +9,6 @@
 #include "seqplayer.h"
 #include "game/puppyprint.h"
 
-#define ALIGN16(val) (((val) + 0xF) & ~0xF)
-
 struct SharedDma {
     /*0x0*/ u8 *buffer;       // target, points to pre-allocated buffer
     /*0x4*/ uintptr_t source; // device address
@@ -44,7 +42,7 @@ OSMesgQueue gAudioDmaMesgQueue;
 OSMesg gAudioDmaMesg;
 OSIoMesg gAudioDmaIoMesg;
 
-struct SharedDma sSampleDmas[0x60];
+struct SharedDma sSampleDmas[MAX_SIMULTANEOUS_NOTES * 4];
 u32 gSampleDmaNumListItems; // sh: 0x803503D4
 u32 sSampleDmaListSize1; // sh: 0x803503D8
 
@@ -88,7 +86,7 @@ s16 gTempoInternalToExternal;
 s8 gAudioUpdatesPerFrame;
 #endif
 
-s8 gSoundMode;
+s8 gSoundMode = SOUND_MODE_STEREO;
 
 #if defined(VERSION_EU)
 s8 gAudioUpdatesPerFrame;
@@ -282,11 +280,7 @@ void init_sample_dma_buffers(UNUSED s32 arg0) {
     s32 j;
 #endif
 
-#if defined(VERSION_EU)
-    sDmaBufSize = 0x400;
-#else
-    sDmaBufSize = 144 * 9;
-#endif
+    sDmaBufSize = DMA_BUF_SIZE_0;
 
 #if defined(VERSION_EU)
     for (i = 0; i < gMaxSimultaneousNotes * 3 * gAudioBufferParameters.presetUnk4; i++) {
@@ -325,11 +319,8 @@ out1:
     sSampleDmaReuseQueueHead1 = (u8) gSampleDmaNumListItems;
     sSampleDmaListSize1 = gSampleDmaNumListItems;
 
-#if defined(VERSION_EU)
-    sDmaBufSize = 0x200;
-#else
-    sDmaBufSize = 160 * 9;
-#endif
+    sDmaBufSize = DMA_BUF_SIZE_1;
+
     for (i = 0; i < gMaxSimultaneousNotes; i++) {
         sSampleDmas[gSampleDmaNumListItems].buffer = soundAlloc(&gNotesAndBuffersPool, sDmaBufSize);
         if (sSampleDmas[gSampleDmaNumListItems].buffer == NULL) {
@@ -389,7 +380,7 @@ void patch_sound(UNUSED struct AudioBankSound *sound, UNUSED u8 *memBase, UNUSED
 #if defined(VERSION_EU)
         else if (sample->loaded == 0x80) {
             PATCH(sample->sampleAddr, offsetBase);
-            u8 *mem = soundAlloc(&gNotesAndBuffersPool, sample->sampleSize); // TODO: Memory leak!
+            u8 *mem = soundAlloc(&gNotesAndBuffersPool, sample->sampleSize); // TODO: Memory issue most likely!
             if (mem == NULL) {
                 sample->sampleAddr = patched;
                 sample->loaded = 1;
@@ -864,7 +855,6 @@ void audio_init() {
     gAudioFrameCount = 0;
     gAudioTaskIndex = 0;
     gCurrAiBufferIndex = 0;
-    gSoundMode = 0;
     gAudioTask = NULL;
     gAudioTasks[0].task.t.data_size = 0;
     gAudioTasks[1].task.t.data_size = 0;
@@ -886,7 +876,7 @@ void audio_init() {
     gAudioResetStatus = 1;
     audio_shut_down_and_reset_step();
 #else
-    audio_reset_session(&gAudioSessionPresets[0], 0);
+    audio_reset_session(0);
 #endif
 
     // Not sure about these prints
@@ -926,13 +916,8 @@ void audio_init() {
     alSeqFileNew(gAlTbl, gSoundDataRaw);
 
     // Load bank sets for each sequence
-#ifdef EXPAND_AUDIO_HEAP
-    gAlBankSets = soundAlloc(&gAudioInitPool, 0x400);
-    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, 0x400);
-#else
-    gAlBankSets = soundAlloc(&gAudioInitPool, 0x100);
-    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, 0x100);
-#endif
+    gAlBankSets = soundAlloc(&gAudioInitPool, MAX_NUM_SOUNDBANKS * sizeof(s32));
+    audio_dma_copy_immediate((uintptr_t) gBankSetsData, gAlBankSets, MAX_NUM_SOUNDBANKS * sizeof(s32));
 
     init_sequence_players();
     gAudioLoadLock = AUDIO_LOCK_NOT_LOADING;

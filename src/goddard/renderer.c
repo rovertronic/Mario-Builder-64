@@ -103,8 +103,8 @@ static struct ObjView *D_801BE994; // store if View flag 0x40 set
 u8 EUpad4[0x88];
 #endif
 static OSContStatus D_801BAE60[4];
-static OSContPad sGdContPads[4];    // @ 801BAE70
-static OSContPad sPrevFrameCont[4]; // @ 801BAE88
+static OSContPadEx sGdContPads[4];    // @ 801BAE70
+static OSContPadEx sPrevFrameCont[4]; // @ 801BAE88
 static u8 D_801BAEA0;
 static struct ObjGadget *sTimerGadgets[GD_NUM_TIMERS]; // @ 801BAEA8
 static u32 D_801BAF28;                                 // RAM addr offset?
@@ -329,6 +329,7 @@ static Gfx gd_dl_star_common[] = {
     gsSPVertex(gd_vertex_star, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2),
     gsSPEndDisplayList(),
@@ -516,6 +517,7 @@ static Gfx gd_dl_sparkle[] = {
     gsSPVertex(gd_vertex_sparkle, 4, 0),
     gsSP2Triangles(0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_INTER, G_RM_NOOP2),
     gsSPEndDisplayList(),
@@ -985,7 +987,7 @@ void gd_free(void *ptr) {
 void *gd_allocblock(u32 size) {
     void *block; // 1c
 
-    size = ALIGN(size, 8);
+    size = ALIGN8(size);
     if ((sMemBlockPoolUsed + size) > sMemBlockPoolSize) {
         gd_printf("gd_allocblock(): Failed request: %dk (%d bytes)\n", size / 1024, size);
         gd_printf("gd_allocblock(): Heap usage: %dk (%d bytes) \n", sMemBlockPoolUsed / 1024,
@@ -1003,7 +1005,7 @@ void *gd_allocblock(u32 size) {
 /* 24A318 -> 24A3E8 */
 void *gd_malloc(u32 size, u8 perm) {
     void *ptr; // 1c
-    size = ALIGN(size, 8);
+    size = ALIGN8(size);
     ptr = gd_request_mem(size, perm);
 
     if (ptr == NULL) {
@@ -1285,12 +1287,12 @@ void gd_vblank(void) {
 /**
  * Copies the player1 controller data from p1cont to sGdContPads[0].
  */
-void gd_copy_p1_contpad(OSContPad *p1cont) {
+void gd_copy_p1_contpad(OSContPadEx *p1cont) {
     u32 i;                                    // 24
     u8 *src = (u8 *) p1cont;             // 20
     u8 *dest = (u8 *) &sGdContPads[0]; // 1c
 
-    for (i = 0; i < sizeof(OSContPad); i++) {
+    for (i = 0; i < sizeof(OSContPadEx); i++) {
         dest[i] = src[i];
     }
 
@@ -1469,12 +1471,8 @@ struct GdDisplayList *create_child_gdl(s32 id, struct GdDisplayList *srcDl) {
     newDl = alloc_displaylist(id);
     newDl->parent = srcDl;
     cpy_remaining_gddl(newDl, srcDl);
-//! @bug No return statement, despite return value being used.
-//!      Goddard lucked out that `v0` return from alloc_displaylist()
-//!      is not overwriten, as that pointer is what should be returned
-#ifdef AVOID_UB
+
     return newDl;
-#endif
 }
 
 /* 24B7F8 -> 24BA48; orig name: func_8019D028 */
@@ -2399,8 +2397,8 @@ void start_view_dl(struct ObjView *view) {
 void parse_p1_controller(void) {
     u32 i;
     struct GdControl *gdctrl = &gGdCtrl;
-    OSContPad *currInputs;
-    OSContPad *prevInputs;
+    OSContPadEx *currInputs;
+    OSContPadEx *prevInputs;
 
     // Copy current inputs to previous
     u8 *src = (u8 *) gdctrl;
@@ -2511,7 +2509,7 @@ void parse_p1_controller(void) {
         gdctrl->csrY = sScreenView->parent->upperLeft.y + sScreenView->parent->lowerRight.y - 32.0f;
     }
 
-    for (i = 0; i < sizeof(OSContPad); i++) {
+    for (i = 0; i < sizeof(OSContPadEx); i++) {
         ((u8 *) prevInputs)[i] = ((u8 *) currInputs)[i];
     }
 }
@@ -2759,8 +2757,8 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
                 view->colourBufs[1] = view->colourBufs[0];
             }
 
-            view->colourBufs[0] = (void *) ALIGN((uintptr_t) view->colourBufs[0], 64);
-            view->colourBufs[1] = (void *) ALIGN((uintptr_t) view->colourBufs[1], 64);
+            view->colourBufs[0] = (void *) ALIGN64((uintptr_t) view->colourBufs[0]);
+            view->colourBufs[1] = (void *) ALIGN64((uintptr_t) view->colourBufs[1]);
             stop_memtracker(memtrackerName);
 
             if (view->colourBufs[0] == NULL || view->colourBufs[1] == NULL) {
@@ -2780,7 +2778,7 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
                 if (view->zbuf == NULL) {
                     fatal_printf("Not enough DRAM for Z buffer\n");
                 }
-                view->zbuf = (void *) ALIGN((uintptr_t) view->zbuf, 64);
+                view->zbuf = (void *) ALIGN64((uintptr_t) view->zbuf);
             }
             stop_memtracker(memtrackerName);
         } else {
@@ -2797,27 +2795,20 @@ s32 setup_view_buffers(const char *name, struct ObjView *view, UNUSED s32 ulx, U
         view->parent = D_801A86E0;
     }
 
-//! @bug No actual return, but the return value is used.
-//!      There is no obvious value to return. Since the function
-//!      doesn't use four of its parameters, this function may have
-//!      had a fair amount of its code commented out. In game, the
-//!      returned value is always 0, so the fix returns that value
-#ifdef AVOID_UB
     return 0;
-#endif
 }
 
 /* 252AF8 -> 252BAC; orig name: _InitControllers */
 void gd_init_controllers(void) {
-    OSContPad *p1cont = &sPrevFrameCont[0]; // 1c
+    OSContPadEx *p1cont = &sPrevFrameCont[0]; // 1c
     u32 i;                                  // 18
 
     osCreateMesgQueue(&D_801BE830, D_801BE848, ARRAY_COUNT(D_801BE848));
     osSetEventMesg(OS_EVENT_SI, &D_801BE830, (OSMesg) OS_MESG_SI_COMPLETE);
     osContInit(&D_801BE830, &D_801BAEA0, D_801BAE60);
-    osContStartReadData(&D_801BE830);
+    osContStartReadDataEx(&D_801BE830);
 
-    for (i = 0; i < sizeof(OSContPad); i++) {
+    for (i = 0; i < sizeof(OSContPadEx); i++) {
         ((u8 *) p1cont)[i] = 0;
     }
 }
@@ -2836,10 +2827,7 @@ void stub_renderer_6(UNUSED struct GdObj *obj) {
  * @return  an identifier of the menu just defined
  */
 long defpup(UNUSED const char *menufmt, ...) {
-    //! @bug no return; function was stubbed
-#ifdef AVOID_UB
    return 0;
-#endif
 }
 
 /**

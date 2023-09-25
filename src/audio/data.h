@@ -13,15 +13,57 @@
 
 #define NUMAIBUFFERS 3
 
+#if defined(VERSION_EU)
+#define DMA_BUF_SIZE_0 0x400
+#define DMA_BUF_SIZE_1 0x200
+#else
+#define DMA_BUF_SIZE_0 (144 * 9)
+#define DMA_BUF_SIZE_1 (160 * 9)
+#endif
+
+#ifdef EXPAND_AUDIO_HEAP
+// Vanilla US/JP uses 7; Vanilla EU opts for 10 here effectively, though that one gets generated at runtime and doesn't use this value.
+// Total memory usage is calculated by 24*(2^VOL_RAMPING_EXPONENT) bytes. This is not technically on the heap, but it's memory nonetheless.
+#define VOL_RAMPING_EXPONENT 9
+
+#define PERSISTENT_SEQ_MEM 0x8200
+#define PERSISTENT_BANK_MEM 0xDC00
+#define TEMPORARY_SEQ_MEM 0xE800
+#define TEMPORARY_BANK_MEM 0x5500
+#define MAX_NUM_SOUNDBANKS 0x100
+#define EXT_AUDIO_INIT_POOL_SIZE 0x2000
+#else
+#define VOL_RAMPING_EXPONENT 7
+
+#define PERSISTENT_SEQ_MEM 0x4100
+#define PERSISTENT_BANK_MEM 0x6E00
+#define TEMPORARY_SEQ_MEM 0x7400
+#define TEMPORARY_BANK_MEM 0x2A80
+#define MAX_NUM_SOUNDBANKS 0x40
+#define EXT_AUDIO_INIT_POOL_SIZE 0x0
+#endif
+
+#define SEQ_BANK_MEM (PERSISTENT_SEQ_MEM + PERSISTENT_BANK_MEM + TEMPORARY_SEQ_MEM + TEMPORARY_BANK_MEM)
+
 // constant .data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
 extern struct ReverbSettingsEU sReverbSettings[8];
 #else
-extern struct AudioSessionSettings gAudioSessionPresets[1];
+extern struct AudioSessionSettings gAudioSessionSettings;
 extern struct ReverbSettingsUS gReverbSettings[18];
 #endif
-extern u16 D_80332388[128]; // unused
+#ifdef BETTER_REVERB
+extern u8 gBetterReverbPresetCount;
+extern struct BetterReverbSettings gBetterReverbSettings[];
+#ifdef PUPPYPRINT_DEBUG
+extern struct BetterReverbSettings gDebugBetterReverbSettings[2];
+extern u32 sReverbDelaysArr[][NUM_ALLPASS];
+extern u8 sReverbMultsArr[][NUM_ALLPASS / 3];
+extern u8 gReverbDelaysArrCount;
+extern u8 gReverbMultsArrCount;
+#endif // PUPPYPRINT_DEBUG
+#endif // BETTER_REVERB
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern f32 gPitchBendFrequencyScale[256];
@@ -53,18 +95,22 @@ extern s16 euUnknownData_80301950[64];
 extern struct NoteSubEu gZeroNoteSub;
 extern struct NoteSubEu gDefaultNoteSub;
 #else
+#ifdef ENABLE_STEREO_HEADSET_EFFECTS
 extern u16 gHeadsetPanQuantization[10];
 #endif
+#endif
+#ifdef ENABLE_STEREO_HEADSET_EFFECTS
 extern f32 gHeadsetPanVolume[128];
 extern f32 gStereoPanVolume[128];
+#endif
 extern f32 gDefaultPanVolume[128];
 
-extern f32 gVolRampingLhs136[128];
-extern f32 gVolRampingRhs136[128];
-extern f32 gVolRampingLhs144[128];
-extern f32 gVolRampingRhs144[128];
-extern f32 gVolRampingLhs128[128];
-extern f32 gVolRampingRhs128[128];
+extern f32 gVolRampingLhs136[1 << VOL_RAMPING_EXPONENT];
+extern f32 gVolRampingRhs136[1 << VOL_RAMPING_EXPONENT];
+extern f32 gVolRampingLhs144[1 << VOL_RAMPING_EXPONENT];
+extern f32 gVolRampingRhs144[1 << VOL_RAMPING_EXPONENT];
+extern f32 gVolRampingLhs128[1 << VOL_RAMPING_EXPONENT];
+extern f32 gVolRampingRhs128[1 << VOL_RAMPING_EXPONENT];
 
 // non-constant .data
 extern s16 gTatumsPerBeat;
@@ -108,18 +154,27 @@ extern s16 gAiBufferLengths[NUMAIBUFFERS];
 
 extern u32 gAudioRandom;
 
-#ifdef EXPAND_AUDIO_HEAP
-#if defined(VERSION_US) || defined(VERSION_JP) || defined(VERSION_EU)
-#define EXT_AUDIO_HEAP_SIZE      0x27400
-#define EXT_AUDIO_INIT_POOL_SIZE 0x02000
-#else
-// SH not yet supported for expanded audio heap
-#define EXT_AUDIO_HEAP_SIZE      0x0
-#define EXT_AUDIO_INIT_POOL_SIZE 0x0
-#endif
-#else
-#define EXT_AUDIO_HEAP_SIZE      0x0
-#define EXT_AUDIO_INIT_POOL_SIZE 0x0
+#if defined(VERSION_US) || defined(VERSION_JP)
+#define NOTES_BUFFER_SIZE \
+( \
+    MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 20 * 2 * sizeof(u64)) \
+    + ALIGN16(sizeof(struct Note)) \
+    + (DMA_BUF_SIZE_0 * 3) \
+    + DMA_BUF_SIZE_1 \
+    + ALIGN16(sizeof(struct NoteSynthesisBuffers))) \
+    + (320 * 2 * sizeof(u64)) /* gMaxAudioCmds */ \
+)
+#else // Probably SH incompatible but that's an entirely different headache to save at this point tbh
+#define NOTES_BUFFER_SIZE \
+( \
+    MAX_SIMULTANEOUS_NOTES * ((4 /* updatesPerFrame */ * 0x10 * 2 * sizeof(u64)) \
+    + ALIGN16(sizeof(struct Note)) \
+    + (DMA_BUF_SIZE_0 * 3 * 1 /* presetUnk4 */) \
+    + (DMA_BUF_SIZE_1) \
+    + ALIGN16(sizeof(struct NoteSynthesisBuffers)) \
+    + ALIGN16(4 /* updatesPerFrame */ * sizeof(struct NoteSubEu))) \
+    + ((0x300 + (4 /* numReverbs */ * 0x20)) * 2 * sizeof(u64)) /* gMaxAudioCmds */ \
+)
 #endif
 
 #ifdef VERSION_SH
@@ -148,14 +203,13 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define AUDIO_HEAP_BASE 0x36B00
-#define AUDIO_INIT_POOL_SIZE (0x2C00 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2B00 + (MAX_NUM_SOUNDBANKS * sizeof(s32)) + EXT_AUDIO_INIT_POOL_SIZE)
 #else
-#define AUDIO_HEAP_BASE 0x30750
-#define AUDIO_INIT_POOL_SIZE (0x2500 + EXT_AUDIO_INIT_POOL_SIZE)
+#define AUDIO_INIT_POOL_SIZE (0x2400 + (MAX_NUM_SOUNDBANKS * sizeof(s32)) + EXT_AUDIO_INIT_POOL_SIZE)
 #endif
 
-#define AUDIO_HEAP_SIZE (AUDIO_HEAP_BASE + EXT_AUDIO_HEAP_SIZE + EXT_AUDIO_INIT_POOL_SIZE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
+// TODO: needs validation once EU can compile. EU is very likely incorrect!
+#define AUDIO_HEAP_SIZE (SEQ_BANK_MEM + AUDIO_INIT_POOL_SIZE + NOTES_BUFFER_SIZE + BETTER_REVERB_SIZE + REVERB_WINDOW_HEAP_SIZE)
 
 #ifdef VERSION_SH
 extern u32 D_SH_80315EF0;

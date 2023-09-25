@@ -153,7 +153,7 @@
 #define /*0x17C*/ oOpacity                                      OBJECT_FIELD_S32(0x3D)
 #define /*0x180*/ oDamageOrCoinValue                            OBJECT_FIELD_S32(0x3E)
 #define /*0x184*/ oHealth                                       OBJECT_FIELD_S32(0x3F)
-#define /*0x188*/ oBehParams                                    OBJECT_FIELD_S32(0x40)
+#define /*0x188*/ oBehParams                                    OBJECT_FIELD_U32(0x40)
 #define /*0x18C*/ oPrevAction                                   OBJECT_FIELD_S32(0x41)
 #define /*0x190*/ oInteractionSubtype                           OBJECT_FIELD_U32(0x42)
 #define /*0x194*/ oCollisionDistance                            OBJECT_FIELD_F32(0x43)
@@ -606,7 +606,7 @@
 #define /*0x110*/ oIsFloomba OBJECT_FIELD_S32(0x22)
 
 #ifdef INTRO_FLOOMBAS
-#define /*0x1AC*/ oZoomCounter OBJECT_FIELD_S32(0x49)
+#define /*0x1AC*/ oZoomCounter OBJECT_FIELD_U32(0x49)
 #define /*0x1B0*/ oZoomPosZ    OBJECT_FIELD_F32(0x4A)
 #endif
 #endif
@@ -796,6 +796,9 @@
 #define /*0x0F4*/ oRespawnerModelToRespawn    OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oRespawnerMinSpawnDist      OBJECT_FIELD_F32(0x1C)
 #define /*0x0FC*/ oRespawnerBehaviorToRespawn OBJECT_FIELD_CVPTR(0x1D)
+
+/* Orange Number */
+#define /*0x110*/ oOrangeNumberOffset OBJECT_FIELD_S32(0x22)
 
 /* Openable Grill */
 #define /*0x088*/ oOpenableGrillIsOpen         OBJECT_FIELD_S32(0x00)
@@ -998,6 +1001,7 @@
 /* Hidden Star */
 // Secrets/Red Coins
 #define /*0x0F4*/ oHiddenStarTriggerCounter OBJECT_FIELD_S32(0x1B)
+#define /*0x0F8*/ oHiddenStarTriggerTotal OBJECT_FIELD_S32(0x1C)
 
 /* Sealed Door Star */
 #define /*0x108*/ oUnlockDoorStarState  OBJECT_FIELD_U32(0x20)

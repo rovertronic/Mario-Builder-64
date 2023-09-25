@@ -27,7 +27,9 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
     seqChannel->stopScript = FALSE;
     seqChannel->stopSomething2 = FALSE;
     seqChannel->hasInstrument = FALSE;
+#ifdef ENABLE_STEREO_HEADSET_EFFECTS
     seqChannel->stereoHeadsetEffects = FALSE;
+#endif
     seqChannel->transposition = 0;
     seqChannel->largeNotes = FALSE;
 #if defined(VERSION_EU) || defined(VERSION_SH)
@@ -64,7 +66,7 @@ void sequence_channel_init(struct SequenceChannel *seqChannel) {
 #endif
     seqChannel->vibratoRateTarget = 0x800;
     seqChannel->vibratoRateStart = 0x800;
-    seqChannel->vibratoExtentTarget = 0;
+    seqChannel->vibratoExtentTarget = VIBRATO_DISABLED_VALUE;
     seqChannel->vibratoExtentStart = 0;
     seqChannel->vibratoRateChangeDelay = 0;
     seqChannel->vibratoExtentChangeDelay = 0;
@@ -1620,11 +1622,11 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                     case 0xc5: // chan_dynsetdyntable
                         if (value != -1) {
 #if defined(VERSION_EU) || defined(VERSION_SH)
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value];
                             sp38 = (u16)((seqData[0] << 8) + seqData[1]);
                             seqChannel->dynTable = (void *) (seqPlayer->seqData + sp38);
 #else
-                            sp5A = (u16)((((*seqChannel->dynTable)[value])[0] << 8) + (((*seqChannel->dynTable)[value])[1]));
+                            sp5A = (u16)((((*seqChannel->dynTable)[(u8) value])[0] << 8) + (((*seqChannel->dynTable)[(u8) value])[1]));
                             seqChannel->dynTable = (void *) (seqPlayer->seqData + sp5A);
 #endif
                         }
@@ -1867,7 +1869,12 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 #endif
 
                     case 0xd0: // chan_stereoheadseteffects
+#ifdef ENABLE_STEREO_HEADSET_EFFECTS
                         seqChannel->stereoHeadsetEffects = m64_read_u8(state);
+#else
+                        // NOTE: Vanilla music does not use 0xd0, so this is safe to repurpose entirely when ENABLE_STEREO_HEADSET_EFFECTS is disabled.
+                        m64_read_u8(state);
+#endif
                         break;
 
                     case 0xd1: // chan_setnoteallocationpolicy
@@ -1893,7 +1900,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                                 eu_stubbed_printf_0("Audio:Track: CTBLCALL Macro Level Over Error!\n");
                             }
 #endif
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value];
 #if defined(VERSION_EU) || defined(VERSION_SH)
                             state->stack[state->depth++] = state->pc;
                             sp38 = (u16)((seqData[0] << 8) + seqData[1]);
@@ -1942,7 +1949,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                         break;
 
                     case 0xec:
-                        seqChannel->vibratoExtentTarget = 0;
+                        seqChannel->vibratoExtentTarget = VIBRATO_DISABLED_VALUE;
                         seqChannel->vibratoExtentStart = 0;
                         seqChannel->vibratoExtentChangeDelay = 0;
                         seqChannel->vibratoRateTarget = 0;
@@ -2011,11 +2018,11 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                         break;
 
                     case 0xb5:
-                        seqChannel->unkC8 = *(u16 *) (*seqChannel->dynTable)[value];
+                        seqChannel->unkC8 = *(u16 *) (*seqChannel->dynTable)[(u8) value];
                         break;
 
                     case 0xb6:
-                        value = (*seqChannel->dynTable)[0][value];
+                        value = (*seqChannel->dynTable)[0][(u8) value];
                         break;
 #endif
                 }
@@ -2045,7 +2052,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 
                         case 0x98:
                             if (value != -1 && seq_channel_set_layer(seqChannel, loBits) != -1) {
-                                seqData = (*seqChannel->dynTable)[value];
+                                seqData = (*seqChannel->dynTable)[(u8) value];
                                 sp5A = ((seqData[0] << 8) + seqData[1]);
                                 seqChannel->layers[loBits]->scriptState.pc = seqPlayer->seqData + sp5A;
                             }
@@ -2121,7 +2128,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 
                     case 0xb0: // chan_dynsetlayer
                         if (value != -1 && seq_channel_set_layer(seqChannel, loBits) != -1) {
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value];
                             sp5A = ((seqData[0] << 8) + seqData[1]);
                             seqChannel->layers[loBits]->scriptState.pc = seqPlayer->seqData + sp5A;
                         }
@@ -2491,6 +2498,10 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 #else
                     case 0xdb: // seq_setvol
                         cmd = m64_read_u8(state);
+                        seqPlayer->volumeDefault = FLOAT_CAST(cmd) / 127.0f;
+                        if (seqPlayer->volumeDefault >= 1.0f)
+                            seqPlayer->volumeDefault = 1.0f;
+
                         switch (seqPlayer->state) {
                             case SEQUENCE_PLAYER_STATE_2:
                                 if (seqPlayer->fadeRemainingFrames != 0) {
@@ -2512,8 +2523,13 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 
                     case 0xda: // seq_changevol
                         temp = m64_read_u8(state);
-                        seqPlayer->fadeVolume =
-                            seqPlayer->fadeVolume + (f32)(s8) temp / 127.0f;
+                        seqPlayer->fadeVolume += (f32)(s8) temp / 127.0f;
+                        
+                        seqPlayer->volumeDefault += (f32)(s8) temp / 127.0f;
+                        if (seqPlayer->volumeDefault > 1.0f)
+                            seqPlayer->volumeDefault = 1.0f;
+                        else if (seqPlayer->volumeDefault < 0.0f)
+                            seqPlayer->volumeDefault = 0.0f;
                         break;
 #endif
 
@@ -2673,8 +2689,10 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
 // This runs 240 times per second.
 void process_sequences(UNUSED s32 iterationsRemaining) {
     s32 i;
+
     for (i = 0; i < SEQUENCE_PLAYERS; i++) {
         if (gSequencePlayers[i].enabled == TRUE) {
+
 #if defined(VERSION_EU) || defined(VERSION_SH)
             sequence_player_process_sequence(&gSequencePlayers[i]);
             sequence_player_process_sound(&gSequencePlayers[i]);
@@ -2684,8 +2702,13 @@ void process_sequences(UNUSED s32 iterationsRemaining) {
 #endif
         }
     }
+
 #if defined(VERSION_JP) || defined(VERSION_US)
+    AUDIO_PROFILER_SWITCH(PROFILER_TIME_SUB_AUDIO_SEQUENCES_SCRIPT, PROFILER_TIME_SUB_AUDIO_SEQUENCES_RECLAIM);
     reclaim_notes();
+    AUDIO_PROFILER_SWITCH(PROFILER_TIME_SUB_AUDIO_SEQUENCES_RECLAIM, PROFILER_TIME_SUB_AUDIO_SEQUENCES_PROCESSING);
+#else
+    AUDIO_PROFILER_SWITCH(PROFILER_TIME_SUB_AUDIO_SEQUENCES_SCRIPT, PROFILER_TIME_SUB_AUDIO_SEQUENCES_PROCESSING);
 #endif
     process_notes();
 }
@@ -2705,6 +2728,7 @@ void init_sequence_player(u32 player) {
     seqPlayer->state = 1;
 #else
     seqPlayer->state = SEQUENCE_PLAYER_STATE_0;
+    seqPlayer->volumeDefault = 1.0f;
 #endif
     seqPlayer->fadeRemainingFrames = 0;
 #if defined(VERSION_EU) || defined(VERSION_SH)
