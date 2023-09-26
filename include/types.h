@@ -374,8 +374,6 @@ struct Normal {
 struct Surface {
     /*0x00*/ TerrainData type;
     /*0x02*/ TerrainData force;
-    /*0x04*/ s8 flags;
-    /*0x05*/ RoomData room;
     /*0x06*/ s16 lowerY;
     /*0x08*/ s16 upperY;
     /*0x0A*/ Vec3t vertex1;

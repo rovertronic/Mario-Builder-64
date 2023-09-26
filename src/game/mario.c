@@ -1395,8 +1395,8 @@ void update_mario_geometry_inputs(struct MarioState *m) {
             m->input |= INPUT_ABOVE_SLIDE;
         }
 
-        if ((m->floor->flags & SURFACE_FLAG_DYNAMIC)
-            || (m->ceil && m->ceil->flags & SURFACE_FLAG_DYNAMIC)) {
+        if ((m->floor->object)
+            || (m->ceil && m->ceil->object)) {
             ceilToFloorDist = m->ceilHeight - m->floorHeight;
 
             if ((0.0f <= ceilToFloorDist) && (ceilToFloorDist <= 150.0f)) {

@@ -79,8 +79,6 @@ struct Surface *alloc_surface(u32 dynamic) {
 
     surface->type = SURFACE_DEFAULT;
     surface->force = 0;
-    surface->flags = SURFACE_FLAGS_NONE;
-    surface->room = 0;
     surface->object = NULL;
 
     return surface;
@@ -322,27 +320,18 @@ static s32 surface_has_force(s32 surfaceType) {
 }
 #endif
 
-/**
- * Returns whether a surface should have the
- * SURFACE_FLAG_NO_CAM_COLLISION flag.
- */
-s32 surf_has_no_cam_collision(s32 surfaceType) {
-    s32 flags = SURFACE_FLAGS_NONE;
 
+s32 surf_has_no_cam_collision(s32 surfaceType) {
     switch (surfaceType) {
         case SURFACE_NO_CAM_COLLISION:
         case SURFACE_NO_CAM_COLLISION_77: // Unused
         case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
         case SURFACE_SWITCH:
         case SURFACE_VANISH_CAP_WALLS:
-            flags = SURFACE_FLAG_NO_CAM_COLLISION;
-            break;
+            return TRUE;
 
-        default:
-            break;
     }
-
-    return flags;
+    return FALSE;
 }
 
 /**
@@ -356,7 +345,6 @@ static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s3
 #ifndef ALL_SURFACES_HAVE_FORCE
     s16 hasForce = surface_has_force(surfaceType);
 #endif
-    s32 flags = surf_has_no_cam_collision(surfaceType);
 
     s32 numSurfaces = *(*data)++;
 
@@ -367,9 +355,7 @@ static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s3
 
         surface = read_surface_data(vertexData, data, FALSE);
         if (surface != NULL) {
-            surface->room = room;
             surface->type = surfaceType;
-            surface->flags = flags;
 
 #ifdef ALL_SURFACES_HAVE_FORCE
             surface->force = *(*data + 3);
@@ -623,11 +609,9 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
     TerrainData hasForce = surface_has_force(surfaceType);
 #endif
 
-    s32 flags = surf_has_no_cam_collision(surfaceType) | (dynamic ? SURFACE_FLAG_DYNAMIC : 0);
-
     // The DDD warp is initially loaded at the origin and moved to the proper
     // position in paintings.c and doesn't update its room, so set it here.
-    RoomData room = (o->behavior == segmented_to_virtual(bhvDddWarp)) ? 5 : 0;
+    //RoomData room = (o->behavior == segmented_to_virtual(bhvDddWarp)) ? 5 : 0;
 
     for (i = 0; i < numSurfaces; i++) {
         struct Surface *surface = read_surface_data(vertexData, data, dynamic);
@@ -645,9 +629,6 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
                 surface->force = 0;
             }
 #endif
-
-            surface->flags |= flags;
-            surface->room = room;
             add_surface(surface, dynamic);
         }
 

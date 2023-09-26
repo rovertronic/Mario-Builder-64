@@ -1403,7 +1403,7 @@ s32 anim_spline_poll(Vec3f result) {
  */
 s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface *surface, Vec3f hit_pos, f32 *length) {
     // Ignore certain surface types.
-    if ((surface->type == SURFACE_INTANGIBLE) || (surface->flags & SURFACE_FLAG_NO_CAM_COLLISION)) return FALSE;
+    if ((surface->type == SURFACE_INTANGIBLE) || (surf_has_no_cam_collision(surface->type))) return FALSE;
     // Convert the vertices to Vec3f.
     Vec3f v0, v1, v2;
     vec3s_to_vec3f(v0, surface->vertex1);

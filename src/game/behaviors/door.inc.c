@@ -97,19 +97,19 @@ void bhv_door_init(void) {
     struct Surface *floor;
 
     find_room_floor(x, y, z, &floor);
-    if (floor != NULL) o->oDoorSelfRoom = floor->room;
+    //if (floor != NULL) o->oDoorSelfRoom = floor->room;
 
     x = o->oPosX + sins(o->oMoveAngleYaw) *  200.0f;
     z = o->oPosZ + coss(o->oMoveAngleYaw) *  200.0f;
 
     find_room_floor(x, y, z, &floor);
-    if (floor != NULL) o->oDoorForwardRoom = floor->room;
+    //if (floor != NULL) o->oDoorForwardRoom = floor->room;
 
     x = o->oPosX + sins(o->oMoveAngleYaw) * -200.0f;
     z = o->oPosZ + coss(o->oMoveAngleYaw) * -200.0f;
 
     find_room_floor(x, y, z, &floor);
-    if (floor != NULL) o->oDoorBackwardRoom = floor->room;
+    //if (floor != NULL) o->oDoorBackwardRoom = floor->room;
 
     if (o->oDoorSelfRoom > 0 && o->oDoorSelfRoom < 60) {
         gDoorAdjacentRooms[o->oDoorSelfRoom][0] = o->oDoorForwardRoom;

@@ -176,8 +176,8 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
             } else {
                 floor = gMarioState->floor;
                 if (floor) {
-                    gMarioCurrentRoom = floor->room;
-                    roomCase = floor->room - 1;
+                    gMarioCurrentRoom = 0;
+                    roomCase = -1;
 
                     if (roomCase >= 0) {
                         switchCase->selectedCase = roomCase;
@@ -1022,15 +1022,6 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
 
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
 
-    if (o->oRoom != -1
-        && intendedFloor != NULL
-        && intendedFloor->room != 0
-        && o->oRoom != intendedFloor->room
-        && intendedFloor->room != 18) {
-        // Don't leave native room
-        return;
-    }
-
     if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
         // Don't move into OoB
         o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
@@ -1452,7 +1443,6 @@ static void cur_obj_update_floor(void) {
         }
 
         o->oFloorType = floorType;
-        o->oFloorRoom = floor->room;
     } else {
         o->oFloorType = SURFACE_DEFAULT;
         o->oFloorRoom = 0;
@@ -1944,19 +1934,6 @@ s32 is_item_in_array(s8 item, s8 *array) {
     }
 
     return FALSE;
-}
-
-void bhv_init_room(void) {
-    struct Surface *floor = NULL;
-    if (is_item_in_array(gCurrLevelNum, sLevelsWithRooms)) {
-        find_room_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
-
-        if (floor != NULL) {
-            o->oRoom = floor->room;
-            return;
-        }
-    }
-    o->oRoom = -1;
 }
 
 void cur_obj_enable_rendering_if_mario_in_room(void) {

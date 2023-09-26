@@ -1207,7 +1207,7 @@ void mode_8_directions_camera(struct Camera *c) {
         find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     }
 
-    if (surf && !surf_has_no_cam_collision(surf->type)) {
+    if (surf) {
         f32 thickMul = 35.0f;
         thick[0] = surf->normal.x * thickMul;
         thick[1] = surf->normal.y * thickMul;

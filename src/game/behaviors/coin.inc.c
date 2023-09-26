@@ -89,7 +89,6 @@ void bhv_yellow_coin_init(void) {
 void bhv_green_coin_init(void) {
     cur_obj_set_behavior(bhvYellowCoin);
     obj_set_hitbox(o, &sGreenCoinHitbox);
-    bhv_init_room();
     cur_obj_update_floor_height();
     //if (500.0f < absf(o->oPosY - o->oFloorHeight))
     //    cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
