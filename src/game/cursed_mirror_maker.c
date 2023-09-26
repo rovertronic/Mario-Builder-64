@@ -449,21 +449,42 @@ void generate_path_gfx(void) {
     cmm_curr_vtx = cmm_trajectory_vtx;
     cmm_gfx_index = 0;
 
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat);
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat_layer1);
 
-    for (u8 i=1;i<cmm_trajectory_edit_index;i++) {
-        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), -16, 1008, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+1])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)+3])), 1008, 1008, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), 1008, -16, 0x0, 0x7F, 0x0, 0xFF);
-        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-3])-20), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-2])+0), ((cmm_trajectory_list[cmm_trajectory_to_edit][(i*4)-1])), -16, -16, 0x0, 0x7F, 0x0, 0xFF);
+    if (cmm_trajectory_edit_index > 1) {
+        Trajectory *curr_trajectory = &cmm_trajectory_list[cmm_trajectory_to_edit][0];
 
-        cache_tri(0, 1, 2);
-        cache_tri(0, 2, 3);
-        cmm_num_vertices_cached += 4;
-        check_cached_tris();
+        for (u32 i = 0; i < cmm_trajectory_edit_index - 1; i++) {
+            s16 pos1[3], pos2[3];
+            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
+            vec3_set(pos2, curr_trajectory[(i*4)+5], curr_trajectory[(i*4)+6], curr_trajectory[(i*4)+7]);
+            s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
+            f32 length = sqrtf(sqr(pos2[0] - pos1[0]) + sqr(pos2[1] - pos1[1]) + sqr(pos2[2] - pos1[2]));
+
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + 10*coss(yaw), pos1[1], pos1[2] - 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - 10*coss(yaw), pos1[1], pos1[2] + 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + 10*coss(yaw), pos2[1], pos2[2] - 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - 10*coss(yaw), pos2[1], pos2[2] + 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+
+            cache_tri(0, 1, 2);
+            cache_tri(1, 3, 2);
+            cmm_num_vertices_cached += 4;
+            check_cached_tris();
+
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0], pos1[1] - 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0], pos1[1] + 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0], pos2[1] - 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0], pos2[1] + 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+
+            cache_tri(0, 1, 2);
+            cache_tri(1, 3, 2);
+            cmm_num_vertices_cached += 4;
+            check_cached_tris();
+        }
+        display_cached_tris();
     }
-    display_cached_tris();
 
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_revert_maker_MakerLineMat_layer1);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 }
 
@@ -1096,11 +1117,6 @@ Vtx preview_vtx[64];
 extern void geo_append_display_list(void *displayList, s32 layer);
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
-
-    if (callContext == GEO_CONTEXT_CREATE) {
-        generate_terrain_gfx();
-        generate_path_gfx();
-    }
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
@@ -2190,7 +2206,7 @@ void sb_loop(void) {
                 }
             }
 
-            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == 39)) {
+            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == 40 - 1)) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
