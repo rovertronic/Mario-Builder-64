@@ -155,6 +155,7 @@ struct cmm_object_type_struct {
     u16 model_id;
     u8 billboarded:1;
     u8 use_trajectory:1;
+    u8 is_star:1;
     f32 scale;
     const struct Animation *const *anim;
     s16 param_max;

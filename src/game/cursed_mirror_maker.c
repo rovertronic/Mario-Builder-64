@@ -273,6 +273,29 @@ s32 object_sanity_check(void) {
         }
     }
 
+    if (cmm_object_types[cmm_id_selection].is_star) {
+        // Count stars
+        u8 numStars;
+        for (u32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_types[cmm_object_data[i].type].is_star) {
+                numStars++;
+            }
+        }
+        if (numStars >= 32) {
+            display_error_message("Star limit reached (max 32)");
+            return FALSE;
+        }
+    }
+
+    if (cmm_id_selection == OBJECT_TYPE_RCS) {
+        for (u32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_data[i].type == OBJECT_TYPE_RCS) {
+                display_error_message("Red Coin Star already placed!");
+                return FALSE;
+            }
+        }
+    }
+
     return TRUE;
 }
 
@@ -1248,13 +1271,10 @@ void generate_objects_to_level(void) {
         obj->oBehParams2ndByte = cmm_object_data[i].param;
 
         //assign star ids
-        for (u8 j=0;j<sizeof(cmm_star_objects);j++) {
-            if (cmm_object_data[i].type == cmm_star_objects[j]) {
-                if (cmm_play_stars_max < 32) {
-                    obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
-                    cmm_play_stars_max++;
-                }
-                break;
+        if (cmm_object_types[cmm_object_data[i].type].is_star) {
+            if (cmm_play_stars_max < 32) {
+                obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
+                cmm_play_stars_max++;
             }
         }
     }
@@ -1740,7 +1760,7 @@ void sb_init(void) {
 }
 
 u32 main_cursor_logic(u32 joystick) {
-    u8 cursorMoved;
+    u8 cursorMoved = FALSE;
     if (joystick != 0) {
         switch(((joystick-1)+cmm_camera_rot_offset)%4) {
             case 0:

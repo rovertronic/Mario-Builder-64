@@ -681,6 +681,7 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
+extern u8 cmm_ascii_lut[];
 void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
     s32 strPos = 0;
     u8 lineNum = 1;
@@ -703,8 +704,8 @@ void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
                 lineNum++;
             break;
             default:
-                render_generic_char(ASCII_TO_DIALOG(str[strPos]));
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[ASCII_TO_DIALOG(str[strPos])], 0.0f, 0.0f);
+                render_generic_char(cmm_ascii_lut[str[strPos]]);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[cmm_ascii_lut[str[strPos]]], 0.0f, 0.0f);
             break;
         }
         strPos++;

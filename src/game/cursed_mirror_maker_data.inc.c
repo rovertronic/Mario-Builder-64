@@ -235,38 +235,31 @@ struct cmm_terrain *cmm_tile_terrains[] = {
 };
 
 struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR                 //Y-OFF      //MODEL ID                 //BILLB //TRAJ //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
-    {bhvStar,                  TILE_SIZE/2, MODEL_STAR                 ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGoomba,                0,           MODEL_GOOMBA               ,FALSE  ,FALSE ,1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
-    {bhvYellowCoin,            0,           MODEL_YELLOW_COIN          ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGreenCoin,             0,           0xEF                       ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRedCoin,               0,           MODEL_RED_COIN             ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenBlueCoin,        0,           MODEL_BLUE_COIN            ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBlueCoinSwitch,        0,           MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE ,3.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenRedCoinStar,     60,          MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , &df_reds_marker},
-    {bhvNoteblock,             TILE_SIZE/2, MODEL_NOTEBLOCK            ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPodoboo,               TILE_SIZE/2, MODEL_PODOBOO              ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRex,                   0,           0xE1                       ,FALSE  ,FALSE ,1.5f   ,Rex_anims                    , 0       , NULL       },
-    {bhvSmallBully,            0,           MODEL_BULLY                ,FALSE  ,FALSE ,1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
-    {bhvBobomb,                0,           MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE ,1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
-    {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE ,1.0f   ,NULL                         , 4       , &df_tree   },
-    {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE ,2.0f   ,NULL                         , 8       , &df_exbox  },
-    {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE ,2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,TRUE   ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE ,1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE ,5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE ,1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
-    {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL         ,TRUE   ,TRUE  ,1.0f   ,NULL                         , 0       , NULL       },
-    {bhvKoopa,                 0,           MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE  ,3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
-};
-
-u8 cmm_star_objects[] = {
-    OBJECT_TYPE_STAR,
-    OBJECT_TYPE_RCS,
-    OBJECT_TYPE_BOSS,
-    OBJECT_TYPE_KTQ,
+    //BEHAVIOR                 //Y-OFF      //MODEL ID                 //BILLB //TRAJ //STAR //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
+    {bhvStar,                  TILE_SIZE/2, MODEL_STAR                 ,FALSE  ,FALSE, TRUE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGoomba,                0,           MODEL_GOOMBA               ,FALSE  ,FALSE,FALSE, 1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
+    {bhvYellowCoin,            0,           MODEL_YELLOW_COIN          ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvGreenCoin,             0,           0xEF                       ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRedCoin,               0,           MODEL_RED_COIN             ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenBlueCoin,        0,           MODEL_BLUE_COIN            ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBlueCoinSwitch,        0,           MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE,FALSE, 3.0f   ,NULL                         , 0       , NULL       },
+    {bhvHiddenRedCoinStar,     60,          MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE,TRUE, 1.0f   ,NULL                         , 0       , &df_reds_marker},
+    {bhvNoteblock,             TILE_SIZE/2, MODEL_NOTEBLOCK            ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPodoboo,               TILE_SIZE/2, MODEL_PODOBOO              ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvRex,                   0,           0xE1                       ,FALSE  ,FALSE,FALSE, 1.5f   ,Rex_anims                    , 0       , NULL       },
+    {bhvSmallBully,            0,           MODEL_BULLY                ,FALSE  ,FALSE,FALSE, 1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
+    {bhvBobomb,                0,           MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE,FALSE, 1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
+    {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 4       , &df_tree   },
+    {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE,FALSE, 2.0f   ,NULL                         , 8       , &df_exbox  },
+    {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE,FALSE, 2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
+    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE,FALSE, 1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
+    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE,FALSE, 5.0f   ,NULL                         , 23      , &df_badge  },
+    {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE,TRUE, 1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
+    {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE ,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL         ,TRUE   ,TRUE ,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
+    {bhvKoopa,                 0,           MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE ,TRUE, 3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
 };
 
 enum cmm_materials {
