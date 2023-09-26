@@ -86,7 +86,9 @@ struct cmm_grid_obj cmm_grid_data[64][32][64] = {0};
 
 Gfx cmm_terrain_gfx[CMM_GFX_SIZE]; //gfx
 Gfx *cmm_terrain_gfx_tp;
+Gfx *cmm_trajectory_gfx;
 Vtx cmm_terrain_vtx[CMM_VTX_SIZE];
+Vtx *cmm_trajectory_vtx;
 
 u32 cmm_gfx_total = 0;
 u32 cmm_vtx_total = 0;
@@ -106,8 +108,6 @@ u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
 u8 cmm_trajectories_used = 0;
 u8 cmm_txt_recording[] = {TXT_RECORDING};
-Vtx cmm_trajectory_vtx[240];
-Gfx cmm_trajectory_gfx[100]; //gfx
 
 Vtx *cmm_curr_vtx;
 Gfx *cmm_curr_gfx;
@@ -444,42 +444,53 @@ void check_cached_tris(void) {
     }
 }
 
-void generate_path_gfx(void) {
+void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
+    s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
+    f32 length = sqrtf(sqr(pos2[0] - pos1[0]) + sqr(pos2[1] - pos1[1]) + sqr(pos2[2] - pos1[2]));
+
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + 10*coss(yaw), pos1[1], pos1[2] - 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - 10*coss(yaw), pos1[1], pos1[2] + 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + 10*coss(yaw), pos2[1], pos2[2] - 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - 10*coss(yaw), pos2[1], pos2[2] + 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+
+    cache_tri(0, 1, 2);
+    cache_tri(1, 3, 2);
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
+
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0], pos1[1] - 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0], pos1[1] + 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0], pos2[1] - 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0], pos2[1] + 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+
+    cache_tri(0, 1, 2);
+    cache_tri(1, 3, 2);
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
+}
+
+void generate_trajectory_gfx(void) {
     cmm_curr_gfx = cmm_trajectory_gfx;
     cmm_curr_vtx = cmm_trajectory_vtx;
     cmm_gfx_index = 0;
 
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat_layer1);
 
-    if (cmm_trajectory_edit_index > 1) {
-        Trajectory *curr_trajectory = &cmm_trajectory_list[cmm_trajectory_to_edit][0];
+    for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
+        Trajectory *curr_trajectory = &cmm_trajectory_list[traj][0];
+        u32 i = 0;
+        s16 pos1[3], pos2[3];
 
-        for (u32 i = 0; i < cmm_trajectory_edit_index - 1; i++) {
-            s16 pos1[3], pos2[3];
+        while (curr_trajectory[i*4 + 4] == i+1) {
             vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
             vec3_set(pos2, curr_trajectory[(i*4)+5], curr_trajectory[(i*4)+6], curr_trajectory[(i*4)+7]);
-            s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
-            f32 length = sqrtf(sqr(pos2[0] - pos1[0]) + sqr(pos2[1] - pos1[1]) + sqr(pos2[2] - pos1[2]));
-
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + 10*coss(yaw), pos1[1], pos1[2] - 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - 10*coss(yaw), pos1[1], pos1[2] + 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + 10*coss(yaw), pos2[1], pos2[2] - 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - 10*coss(yaw), pos2[1], pos2[2] + 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
-
-            cache_tri(0, 1, 2);
-            cache_tri(1, 3, 2);
-            cmm_num_vertices_cached += 4;
-            check_cached_tris();
-
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0], pos1[1] - 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0], pos1[1] + 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0], pos2[1] - 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
-            make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0], pos2[1] + 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
-
-            cache_tri(0, 1, 2);
-            cache_tri(1, 3, 2);
-            cmm_num_vertices_cached += 4;
-            check_cached_tris();
+            draw_dotted_line(pos1, pos2);
+            i++;
+        }
+        if (traj == cmm_trajectory_to_edit && cmm_menu_state == CMM_MAKE_TRAJECTORY) {
+            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
+            vec3_set(pos2, GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
+            draw_dotted_line(pos1, pos2);
         }
         display_cached_tris();
     }
@@ -1099,15 +1110,15 @@ void generate_terrain_gfx(void) {
     }
     display_cached_tris();
     retroland_filter_off();
-    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
-    //print_text_fmt_int(110, 56, "OPAQUE %d", gfx_index);
-    //print_text_fmt_int(110, 76, "DECAL %d", gfx_tdecal_index);
-    //print_text_fmt_int(110, 96, "TILES %d", cmm_tile_count);
-    //print_text_fmt_int(110, 116, "TYPE %d", cmm_tile_data[cmm_tile_count-1].type);
+    cmm_trajectory_gfx = &cmm_curr_gfx[cmm_gfx_index];
+    cmm_trajectory_vtx = cmm_curr_vtx;
+
+    generate_trajectory_gfx();
 
     cmm_vtx_total = cmm_curr_vtx - cmm_terrain_vtx;
-    cmm_gfx_total = cmm_gfx_index;
+    cmm_gfx_total = (cmm_curr_gfx + cmm_gfx_index) - cmm_terrain_gfx;
 };
 
 Gfx preview_gfx[32];
@@ -1121,12 +1132,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
 
-        if (cmm_menu_state == CMM_MAKE_TRAJECTORY) {
-            geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
-        }
-
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
+            geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
             //generate dl
             if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) return NULL;
             u8 preview_mtx_index = 0;
@@ -1157,8 +1165,10 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
                 cmm_use_alt_uvs = TRUE;
                 process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
+                display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
             } else if (terrain) {
+                cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
@@ -1169,26 +1179,30 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     cmm_curr_gfx += cmm_gfx_index;
                     cmm_gfx_index = 0;
                 }
+
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
                 process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
+                display_cached_tris();
+
                 if (cmm_curr_mat_has_topside) {
-                    if (SIDETEX(cmm_mat_selection) != NULL) {
+                    Gfx *sidetex = SIDETEX(cmm_mat_selection);
+                    if (sidetex != NULL) {
                         cmm_use_alt_uvs = TRUE;
                         cmm_growth_render_type = 2;
-                        display_cached_tris();
 
-                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(cmm_mat_selection));
+                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                         process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
+                        display_cached_tris();
                         cmm_use_alt_uvs = FALSE;
                     }
                     cmm_growth_render_type = 1;
 
-                    display_cached_tris();
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
+                    display_cached_tris();
                 }
+
             } else if (cmm_id_selection == TILE_TYPE_CULL) {
                 guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
                 preview_mtx_index++;
@@ -1201,7 +1215,6 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 preview_mtx_index++;
             }
 
-            display_cached_tris();
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
@@ -1380,7 +1393,7 @@ void place_tile(s8 pos[3]) {
         waterlogged = FALSE;
     }
     // If placing a cull marker, check that its actually next to a tile
-    if (is_cull_marker_useless(pos)) {
+    if (cmm_id_selection == TILE_TYPE_CULL && is_cull_marker_useless(pos)) {
         return;
     }
 
@@ -1451,7 +1464,6 @@ void place_object(s8 pos[3]) {
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
         o->oAction = 5; //trajectory editor
         cmm_trajectory_edit_index = 0;
-        generate_path_gfx();
     }
 
     cmm_object_count++;
@@ -1530,6 +1542,8 @@ void remove_trajectory(u32 index) {
     for (u32 i = index; i < cmm_trajectories_used - 1; i++) {
         bcopy(&cmm_trajectory_list[i + 1], &cmm_trajectory_list[i], sizeof(cmm_trajectory_list[i]));
     }
+    // Zero out the last one
+    bzero(&cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[cmm_trajectories_used - 1]));
     cmm_trajectories_used--;
 }
 
@@ -1568,6 +1582,7 @@ void delete_tile_action(s8 pos[3]) {
 
             if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
                 remove_trajectory(cmm_object_data[i].param);
+                generate_trajectory_gfx();
             }
             cmm_object_count--;
         }
@@ -1638,7 +1653,6 @@ void save_level(u8 index) {
     cmm_save.lvl[index].option[3] = cmm_lopt_theme;
     cmm_save.lvl[index].option[4] = cmm_lopt_bg;
     cmm_save.lvl[index].option[5] = cmm_lopt_plane;
-    cmm_save.lvl[index].option[18] = cmm_trajectories_used;
     cmm_save.lvl[index].option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1728,7 +1742,6 @@ void load_level(u8 index) {
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.lvl[index].option[5];
 
-    cmm_trajectories_used = cmm_save.lvl[index].option[18];
     cmm_lopt_game = cmm_save.lvl[index].option[19];
 
     //configure toolbox depending on game style
@@ -1776,6 +1789,9 @@ void load_level(u8 index) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z)
         place_occupy_data(pos);
+        if (cmm_object_types[cmm_object_data[i].type].use_trajectory) {
+            cmm_trajectories_used++;
+        }
     }
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
@@ -2187,7 +2203,11 @@ void sb_loop(void) {
             }
         break;
         case 5: //trajectory maker
-            main_cursor_logic(joystick);
+            cursorMoved = main_cursor_logic(joystick);
+
+            if (cursorMoved) {
+                generate_trajectory_gfx();
+            }
 
             if (o->oTimer == 0) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
@@ -2202,7 +2222,7 @@ void sb_loop(void) {
                     cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
                     cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
                     cmm_trajectory_edit_index++;
-                    generate_path_gfx();
+                    generate_trajectory_gfx();
                 }
             }
 
@@ -2210,7 +2230,7 @@ void sb_loop(void) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
-                generate_path_gfx();
+                generate_trajectory_gfx();
             }
         break;
     }
