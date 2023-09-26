@@ -359,6 +359,7 @@ enum cmm_materials {
     CMM_MAT_C_WALL,
     CMM_MAT_C_PILLAR,
     CMM_MAT_C_BASEMENTWALL,
+    CMM_MAT_C_OUTSIDEBRICK,
     // Virtuaplex
     CMM_MAT_VP_BLOCK,
     CMM_MAT_VP_TILES,
@@ -367,6 +368,19 @@ enum cmm_materials {
     CMM_MAT_VP_SCREEN,
     CMM_MAT_VP_CAUTION,
     CMM_MAT_VP_VOID,
+    // Snow
+    // BBH
+    CMM_MAT_BBH_METAL,
+    CMM_MAT_BBH_BRICKS,
+    CMM_MAT_BBH_HAUNTED_PLANKS,
+    CMM_MAT_BBH_WOOD_FLOOR,
+    CMM_MAT_BBH_WOOD_WALL,
+    CMM_MAT_BBH_ROOF,
+    CMM_MAT_BBH_STONE,
+    CMM_MAT_BBH_STONE_PATTERN,
+    CMM_MAT_BBH_PILLAR,
+    CMM_MAT_BBH_WINDOW,
+    // JRB
     // Retro
     CMM_MAT_RETRO_GROUND,
     CMM_MAT_RETRO_BRICKS,
@@ -385,11 +399,11 @@ struct cmm_material cmm_mat_table[] = {
     // Generic
     {mat_maker_MakerDirt,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_DIRT
     {mat_maker_MakerGrass,      0, SURFACE_GRASS},             // CMM_MAT_GRASS
-    {mat_maker_MakerBricks,     0, SURFACE_DEFAULT},      // CMM_MAT_BRICKS
+    {mat_maker_MakerBricks,     0, SURFACE_DEFAULT},           // CMM_MAT_BRICKS
     {mat_maker_MakerStoneSide,  0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_STONE
     {mat_maker_MakerStone,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_COBBLESTONE
     {mat_maker_MakerTiles,      0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_TILES
-    {mat_maker_MakerTileBricks, 0, SURFACE_DEFAULT},      // CMM_MAT_TILESBRICKS
+    {mat_maker_MakerTileBricks, 0, SURFACE_DEFAULT},           // CMM_MAT_TILESBRICKS
     {mat_maker_MakerRoof,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_ROOF
     {mat_maker_MakerWood,       0, SURFACE_CREAKWOOD},         // CMM_MAT_WOOD
     {mat_maker_MakerSandDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SANDDIRT
@@ -423,38 +437,51 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerHStone,          0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_STONE
     {mat_maker_MakerHMazewall,       0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_MAZEWALL
     {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
-    {mat_maker_MakerHLight,          0,          SURFACE_DEFAULT},     // CMM_MAT_HMC_LIGHT
+    {mat_maker_MakerHLight,          0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
     {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
     // Castle
     {mat_maker_MakerCTile,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
-    {mat_maker_MakerCWood,           0, SURFACE_DEFAULT}, // CMM_MAT_C_WOOD
-    {mat_maker_MakerCBrick,          0, SURFACE_DEFAULT}, // CMM_MAT_C_BRICK
+    {mat_maker_MakerCWood,           0, SURFACE_DEFAULT},      // CMM_MAT_C_WOOD
+    {mat_maker_MakerCBrick,          0, SURFACE_DEFAULT},      // CMM_MAT_C_BRICK
     {mat_maker_MakerCStone,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONETOP
-    {mat_maker_MakerCStoneSide,      0, SURFACE_DEFAULT}, // CMM_MAT_C_STONESIDE
+    {mat_maker_MakerCStoneSide,      0, SURFACE_DEFAULT},      // CMM_MAT_C_STONESIDE
     {mat_maker_MakerCCarpet,         0, SURFACE_GRASS},        // CMM_MAT_C_CARPET
     {mat_maker_MakerCRoof,           0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_ROOF
-    {mat_maker_MakerCWall,           0, SURFACE_DEFAULT}, // CMM_MAT_C_WALL
-    {mat_maker_MakerCPillar,         0, SURFACE_DEFAULT}, // CMM_MAT_C_PILLAR
-    {mat_maker_MakerCBasementWall,   0, SURFACE_DEFAULT}, // CMM_MAT_C_BASEMENTWALL
+    {mat_maker_MakerCWall,           0, SURFACE_DEFAULT},      // CMM_MAT_C_WALL
+    {mat_maker_MakerCPillar,         0, SURFACE_DEFAULT},      // CMM_MAT_C_PILLAR
+    {mat_maker_MakerCBasementWall,   0, SURFACE_DEFAULT},      // CMM_MAT_C_BASEMENTWALL
+    {mat_maker_MakerCOutsideBricks,  0, SURFACE_DEFAULT},      // CMM_MAT_C_OUTSIDE_BRICK
     // Virtuaplex
     {mat_maker_MakerVBlock,          0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLOCK
     {mat_maker_MakerVTiles,          0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_TILES
     {mat_maker_MakerVBlueTiles,      0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_BLUETILES
     {mat_maker_MakerVRustyBlock,     0,            SURFACE_NOT_SLIPPERY},      // CMM_MAT_VP_RUSTYBLOCK
-    {mat_maker_MakerScreen_layer1,   MAT_VPSCREEN, SURFACE_DEFAULT},      // CMM_MAT_VP_SCREEN
-    {mat_maker_MakerCaution,         0,            SURFACE_DEFAULT},      // CMM_MAT_VP_CAUTION
+    {mat_maker_MakerScreen_layer1,   MAT_VPSCREEN, SURFACE_DEFAULT},           // CMM_MAT_VP_SCREEN
+    {mat_maker_MakerCaution,         0,            SURFACE_DEFAULT},           // CMM_MAT_VP_CAUTION
     {mat_maker_MakerVoid,            0,            SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_VP_VOID
+    // Snow
+    // BBH
+    {mat_maker_MakerBBHMetal,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_METAL
+    {mat_maker_MakerBBHBricks,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_BRICKS
+    {mat_maker_MakerBBHHauntedPlanks,0, SURFACE_CREAKWOOD},    // CMM_MAT_BBH_HAUNTED_PLANKS
+    {mat_maker_MakerBBHWoodFloor,    0, SURFACE_CREAKWOOD},    // CMM_MAT_BBH_WOOD_FLOOR
+    {mat_maker_MakerBBHWoodWall,     0, SURFACE_CREAKWOOD},    // CMM_MAT_BBH_WOOD_WALL
+    {mat_maker_MakerBBHRoof,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_ROOF
+    {mat_maker_MakerBBHWall,         0, SURFACE_DEFAULT},      // CMM_MAT_BBH_STONE
+    {mat_maker_MakerBBHStonePattern, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_STONE_PATTERN
+    {mat_maker_MakerBBHPillar,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_PILLAR
+    {mat_maker_MakerBBHWindow,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_WINDOW
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
-    {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT}, // CMM_MAT_RETRO_BRICKS
+    {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BRICKS
     {mat_maker_MakerRetroTreeTop,    0, SURFACE_GRASS},        // CMM_MAT_RETRO_TREETOP
-    {mat_maker_MakerRetroTree,       0, SURFACE_DEFAULT}, // CMM_MAT_RETRO_TREEPLAT
+    {mat_maker_MakerRetroTree,       0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_TREEPLAT
     {mat_maker_MakerRetroBlock,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLOCK
     {mat_maker_MakerRetroBGround,    0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEGROUND
-    {mat_maker_MakerRetroBBrick,     0, SURFACE_DEFAULT}, // CMM_MAT_RETRO_BLUEBRICKS
+    {mat_maker_MakerRetroBBrick,     0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BLUEBRICKS
     {mat_maker_MakerRetroBBlock,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_BLUEBLOCK
-    {mat_maker_MakerRetroWBrick,     0, SURFACE_DEFAULT}, // CMM_MAT_RETRO_WHITEBRICK
+    {mat_maker_MakerRetroWBrick,     0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_WHITEBRICK
     {mat_maker_MakerRetroLava,       0, SURFACE_BURNING},      // CMM_MAT_RETRO_LAVA
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
 };
@@ -474,23 +501,31 @@ enum cmm_topmaterials {
     CMM_TOPMAT_C_STONE,
     CMM_TOPMAT_C_CARPET,
     CMM_TOPMAT_VP_BLUETILES,
+    CMM_TOPMAT_BBH_METAL,
+    CMM_TOPMAT_BBH_STONE,
+    CMM_TOPMAT_BBH_WOOD_FLOOR,
+    CMM_TOPMAT_BBH_WOOD_WALL,
     CMM_TOPMAT_RETRO_TREETOP,
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},     // CMM_TOPMAT_GRASS
-    {CMM_MAT_STONE,         NULL},                                 // CMM_TOPMAT_STONE
-    {CMM_MAT_TILES,         NULL},                                 // CMM_TOPMAT_TILES
+    {CMM_MAT_STONE,         NULL},                                // CMM_TOPMAT_STONE
+    {CMM_MAT_TILES,         NULL},                                // CMM_TOPMAT_TILES
     {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},      // CMM_TOPMAT_SAND
     {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},      // CMM_TOPMAT_SNOW
-    {CMM_MAT_DESERT_TILES2, NULL},                                 // CMM_TOPMAT_DESERT_TILES2
-    {CMM_MAT_RHR_OBSIDIAN,  NULL},                                 // CMM_TOPMAT_RHR_OBSIDIAN
-    {CMM_MAT_RHR_TILES,     NULL},                                 // CMM_TOPMAT_RHR_TILES
+    {CMM_MAT_DESERT_TILES2, NULL},                                // CMM_TOPMAT_DESERT_TILES2
+    {CMM_MAT_RHR_OBSIDIAN,  NULL},                                // CMM_TOPMAT_RHR_OBSIDIAN
+    {CMM_MAT_RHR_TILES,     NULL},                                // CMM_TOPMAT_RHR_TILES
     {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},    // CMM_TOPMAT_HMC_GRASS
-    {CMM_MAT_C_TILES,       NULL},                                 // CMM_TOPMAT_C_TILES
-    {CMM_MAT_C_STONETOP,    NULL},                                 // CMM_TOPMAT_C_STONE
-    {CMM_MAT_C_CARPET,      NULL},                                 // CMM_TOPMAT_C_CARPET
-    {CMM_MAT_VP_BLUETILES,  NULL},                                 // CMM_TOPMAT_VP_BLUETILES
+    {CMM_MAT_C_TILES,       NULL},                                // CMM_TOPMAT_C_TILES
+    {CMM_MAT_C_STONETOP,    NULL},                                // CMM_TOPMAT_C_STONE
+    {CMM_MAT_C_CARPET,      NULL},                                // CMM_TOPMAT_C_CARPET
+    {CMM_MAT_VP_BLUETILES,  NULL},                                // CMM_TOPMAT_VP_BLUETILES
+    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_TOPMAT_BBH_METAL
+    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_TOPMAT_BBH_STONE
+    {CMM_MAT_BBH_WOOD_FLOOR,NULL},                                // CMM_TOPMAT_BBH_WOOD_FLOOR
+    {CMM_MAT_BBH_WOOD_WALL, NULL},                                // CMM_TOPMAT_BBH_WOOD_WALL
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
 };
 
@@ -500,6 +535,7 @@ s8 cmm_terrain_floors_lava[] = {0, 8, 9, 2, 3}; // stone, lava, quicksand, basal
 s8 cmm_terrain_floors_cave[] = {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone, maze floor
 s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
+s8 cmm_terrain_floors_bbh[] = {3, 8, 0, 6}; // metal, lava, stone, wood
 s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
 enum cmm_fences {
@@ -509,6 +545,7 @@ enum cmm_fences {
     CMM_FENCE_HMC,
     CMM_FENCE_CASTLE,
     CMM_FENCE_VIRTUAPLEX,
+    CMM_FENCE_BBH,
     CMM_FENCE_RETRO,
 };
 
@@ -519,6 +556,7 @@ Gfx *cmm_fence_texs[] = {
     mat_maker_MakerHFence_layer1,
     mat_maker_MakerCFence_layer1,
     mat_maker_MakerVPFence_layer1,
+    mat_maker_MakerBBHFence_layer1,
     mat_maker_MakerRetroFence_layer1,
 };
 
@@ -534,7 +572,7 @@ Gfx *cmm_water_texs[] = {
     mat_maker_MakerRetroWater,
 };
 
-struct cmm_theme cmm_theme_table[NUM_THEMES] = {
+struct cmm_theme cmm_theme_table[] = {
     // GENERIC
     {
         {
@@ -558,10 +596,10 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_SANDDIRT,        CMM_TOPMAT_SAND,          "Sand"},
             {CMM_MAT_DESERT_BRICKS,   0,                        "Bricks"},
             {CMM_MAT_DESERT_STONE,    0,                        "Stone"},
-            {CMM_MAT_DESERT_TILES,    0,                        "Tiling"},
+            {CMM_MAT_DESERT_TILES,    0,                        "Desert Tiling"},
             {CMM_MAT_DESERT_BLOCK,    0,                        "Stone Block"},
-            {CMM_MAT_DESERT_SLOWSAND, 0,                        "Slow Sand"},
-            {CMM_MAT_DESERT_BRICKS,   CMM_TOPMAT_DESERT_TILES2, "Desert Tiling"},
+            {CMM_MAT_DESERT_SLOWSAND, 0,                        "Slow Quicksand"},
+            {CMM_MAT_DESERT_BRICKS,   CMM_TOPMAT_DESERT_TILES2, "Desert Plating"},
             {CMM_MAT_DIRT,            CMM_TOPMAT_GRASS,         "Grass"},
             {CMM_MAT_LAVA,            0,                        "Lava"},
             {CMM_MAT_QUICKSAND,       0,                        "Quicksand"},
@@ -595,7 +633,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_HMC_MAZEWALL,  0,                    "Maze Wall"},
             {CMM_MAT_HMC_MAZEFLOOR, 0,                    "Maze Floor"},
             {CMM_MAT_HMC_LIGHT,     0,                    "Light"},
-            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, "Lake Grass"},
+            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, "Cave Wall"},
             {CMM_MAT_HMC_MESH,      0,                    "Mesh"},
             {CMM_MAT_LAVA,          0,                    "Lava"},
             {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
@@ -615,7 +653,7 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_C_PILLAR,       CMM_TOPMAT_C_STONE,  "Pillar"},
             {CMM_MAT_C_BASEMENTWALL, 0,                   "Basement Wall"},
             {CMM_MAT_LAVA,           0,                   "Lava"},
-            {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
+            {CMM_MAT_C_OUTSIDEBRICK, 0,                   "Castle Bricks"},
         },
         ARRAY_COUNT(cmm_terrain_floors_castle), cmm_terrain_floors_castle,
         CMM_FENCE_CASTLE, CMM_WATER_DEFAULT
@@ -633,6 +671,57 @@ struct cmm_theme cmm_theme_table[NUM_THEMES] = {
             {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         "Snowy Block"},
             {CMM_MAT_LAVA,          0,                       "Lava"},
             {CMM_MAT_VP_VOID,       0,                       "Void"},
+        },
+        ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
+        CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
+    },
+    // SNOW
+    {
+        {
+            {CMM_MAT_VP_BLOCK,      0,                       ""},
+            {CMM_MAT_VP_TILES,      0,                       ""},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        ""},
+            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, ""},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
+            {CMM_MAT_VP_SCREEN,     0,                       ""},
+            {CMM_MAT_VP_CAUTION,    0,                       ""},
+            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         ""},
+            {CMM_MAT_LAVA,          0,                       ""},
+            {CMM_MAT_VP_VOID,       0,                       ""},
+        },
+        ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
+        CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
+    },
+    // BBH
+    {
+        {
+            {CMM_MAT_BBH_BRICKS,         CMM_TOPMAT_BBH_STONE,      "Stone Floor"},
+            {CMM_MAT_BBH_HAUNTED_PLANKS, 0,                         "Haunted Planks"},
+            {CMM_MAT_BBH_STONE_PATTERN,  CMM_TOPMAT_BBH_WOOD_FLOOR, "Wood Floor"},
+            {CMM_MAT_BBH_BRICKS,         CMM_TOPMAT_BBH_METAL,      "Metal Floor"},
+            {CMM_MAT_BBH_ROOF,           0,                         "Roof"},
+            {CMM_MAT_BBH_WOOD_WALL,      0,                         "Wood"},
+            {CMM_MAT_BBH_STONE,          0,                         "Wall"},
+            {CMM_MAT_BBH_PILLAR,         CMM_TOPMAT_BBH_STONE,      "Pillar"},
+            {CMM_MAT_LAVA,               0,                         "Lava"},
+            {CMM_MAT_BBH_WINDOW,         0,                         "Window"},
+        },
+        ARRAY_COUNT(cmm_terrain_floors_bbh), cmm_terrain_floors_bbh,
+        CMM_FENCE_BBH, CMM_WATER_DEFAULT
+    },
+    // JRB
+    {
+        {
+            {CMM_MAT_VP_BLOCK,      0,                       ""},
+            {CMM_MAT_VP_TILES,      0,                       ""},
+            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        ""},
+            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, ""},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
+            {CMM_MAT_VP_SCREEN,     0,                       ""},
+            {CMM_MAT_VP_CAUTION,    0,                       ""},
+            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         ""},
+            {CMM_MAT_LAVA,          0,                       ""},
+            {CMM_MAT_VP_VOID,       0,                       ""},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
         CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
@@ -916,6 +1005,9 @@ char *cmm_theme_string_table[] = {
     "Hazy Maze Cave",
     "Castle Inside",
     "Virtuaplex",
+    "Snow",
+    "Big Boo's Haunt",
+    "Jolly Roger Bay",
     "Retroland",
 };
 

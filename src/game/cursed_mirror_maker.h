@@ -221,7 +221,6 @@ enum {
     CMM_MAKE_TRAJECTORY,
 };
 
-#define NUM_THEMES 7
 #define NUM_MATERIALS_PER_THEME 10
 
 enum cmm_mat_types {
