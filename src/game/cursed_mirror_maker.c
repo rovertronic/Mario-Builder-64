@@ -874,6 +874,7 @@ void render_floor(void) {
 
 #define FENCE_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME)
 #define WATER_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 1)
+#define CULL_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 2)
 
 u32 get_tiletype_index(u32 type, u32 mat) {
     switch (type) {
@@ -882,7 +883,7 @@ u32 get_tiletype_index(u32 type, u32 mat) {
         case TILE_TYPE_WATER:
             return WATER_TILETYPE_INDEX;
         case TILE_TYPE_CULL:
-            return NUM_MATERIALS_PER_THEME + 2;
+            return CULL_TILETYPE_INDEX;
         default:
             if (cmm_tile_terrains[type]) {
                 return mat;
@@ -1320,6 +1321,20 @@ void place_tile(s8 pos[3]) {
     if (cmm_id_selection == TILE_TYPE_BLOCK) {
         waterlogged = FALSE;
     }
+    // If placing a cull marker, check that its actually next to a tile
+    if (cmm_id_selection == TILE_TYPE_CULL) {
+        for (u8 dir = 0; dir < 6; dir++) {
+            s8 adjacentPos[3];
+            vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+            u8 tileType = get_grid_tile(adjacentPos)->type;
+            if (tileType != 0 && (tileType != TILE_TYPE_CULL + 1)) {
+                goto isValid;
+            }
+        }
+        // If no adjacent tiles, don't place
+        return;
+    }
+    isValid:
 
     place_terrain_data(pos, cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
     get_grid_tile(pos)->waterlogged = waterlogged;
@@ -1493,6 +1508,7 @@ void delete_tile_action(s8 pos[3]) {
         for (u32 i = index; i < cmm_tile_count; i++) {
             cmm_tile_data[i] = cmm_tile_data[i+1];
         }
+        delete_useless_cull_markers();
         generate_terrain_gfx();
     }
 
@@ -1513,6 +1529,37 @@ void delete_tile_action(s8 pos[3]) {
             cmm_object_data[i] = cmm_object_data[i+1];
         }
         generate_object_preview();
+    }
+}
+
+void delete_useless_cull_markers() {
+    for (u32 i = cmm_tile_data_indices[CULL_TILETYPE_INDEX]; i < cmm_tile_data_indices[CULL_TILETYPE_INDEX + 1]; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        for (u8 dir = 0; dir < 6; dir++) {
+            s8 adjacentPos[3];
+            vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+            u8 adjacentType = get_grid_tile(adjacentPos)->type;
+            if ((adjacentType != 0) && (adjacentType != TILE_TYPE_CULL + 1)) {
+                goto hasTile;
+            }
+        }
+        // Useless, delete
+        remove_occupy_data(pos);
+        remove_terrain_data(pos);
+        cmm_tile_count--;
+
+        for (u32 j = CULL_TILETYPE_INDEX + 1; j < ARRAY_COUNT(cmm_tile_data_indices); j++) {
+            cmm_tile_data_indices[j]--;
+        }
+        for (u32 j = i; j < cmm_tile_count; j++) {
+            cmm_tile_data[j] = cmm_tile_data[j+1];
+        }
+
+        i--;
+
+        hasTile:
+        ;
     }
 }
 
