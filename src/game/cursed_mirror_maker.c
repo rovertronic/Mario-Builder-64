@@ -641,6 +641,21 @@ void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
         cmm_create_tri(tri, pos, rot);
 }
 
+u32 render_grass_side_normal(s8 abovePos[3], u32 dir) {
+    u8 otherFaceshape = get_faceshape(abovePos, dir);
+    switch (otherFaceshape) {
+        case CMM_FACESHAPE_TRI_1:
+        case CMM_FACESHAPE_TRI_2:
+        case CMM_FACESHAPE_FULL:
+        case CMM_FACESHAPE_BOTTOMSLAB:
+            if (MATERIAL(get_grid_tile(abovePos)->mat).type >= MAT_CUTOUT)
+                return TRUE;
+            return FALSE;
+    }
+    return TRUE;
+}
+
+
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
     s8 newpos[3];
     vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
@@ -649,22 +664,31 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
-            direction = CMM_DIRECTION_POS_Z;
+        case CMM_GROWTH_UNDERSLOPE_L:
+            direction = grassType == CMM_GROWTH_UNDERSLOPE ? CMM_DIRECTION_POS_Z : CMM_DIRECTION_POS_X;
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
             // Shape of face of above block on same side
+            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
+                return TRUE;
             otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             switch (otherFaceshape) {
-                case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
+                case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_BOTTOMSLAB:
-                    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                        return TRUE;
                     return FALSE;
             }
             return TRUE;
-
+        case CMM_GROWTH_UNDERSLOPE_CORNER:
+        // some very cursed logic here, this is solely for upside-down inside corners
+            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
+                return TRUE;
+            u8 faceshape1 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot)^1);
+            u8 faceshape2 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_X, rot)^1);
+            return !((faceshape1 == CMM_FACESHAPE_FULL || faceshape1 == CMM_FACESHAPE_BOTTOMSLAB)
+                || (faceshape2 == CMM_FACESHAPE_FULL || faceshape2 == CMM_FACESHAPE_BOTTOMSLAB));
+            
         case CMM_GROWTH_UNCONDITIONAL:
             return TRUE;
 
@@ -1328,7 +1352,7 @@ void place_tile(s8 pos[3]) {
             vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
             u8 tileType = get_grid_tile(adjacentPos)->type;
             if (tileType != 0 && (tileType != TILE_TYPE_CULL + 1)) {
-                goto isValid;
+                goto isValid; // HAHAHA! EVIL GOTO!
             }
         }
         // If no adjacent tiles, don't place
@@ -1541,7 +1565,7 @@ void delete_useless_cull_markers() {
             vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
             u8 adjacentType = get_grid_tile(adjacentPos)->type;
             if ((adjacentType != 0) && (adjacentType != TILE_TYPE_CULL + 1)) {
-                goto hasTile;
+                goto hasTile; // I DID IT AGAIN!!!!!
             }
         }
         // Useless, delete
@@ -1923,6 +1947,14 @@ void sb_loop(void) {
                     case TILE_TYPE_SLOPE:
                     case TILE_TYPE_DSLOPE:
                         cmm_id_selection = TILE_TYPE_DSLOPE;
+                        break;
+                    case TILE_TYPE_CORNER:
+                    case TILE_TYPE_DCORNER:
+                        cmm_id_selection = TILE_TYPE_DCORNER;
+                        break;
+                    case TILE_TYPE_ICORNER:
+                    case TILE_TYPE_DICORNER:
+                        cmm_id_selection = TILE_TYPE_DICORNER;
                         break;
                     default:
                         cmm_upsidedown_tile = FALSE;

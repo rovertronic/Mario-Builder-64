@@ -57,8 +57,8 @@ struct cmm_terrain_quad cmm_terrain_corner_quads[] = {
 };
 
 struct cmm_terrain_tri cmm_terrain_corner_tris[] = {
-    {{{0, 0, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{0, 16, 0}, {16, 0, 16}, {16, 0, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
+    {{{0, 0, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0}, {16, 0, 16}, {16, 0, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP-LEFT 
     {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
     {{{0, 0, 0},  {0, 16, 0},  {16, 0, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
@@ -70,6 +70,25 @@ struct cmm_terrain cmm_terrain_corner = {
     cmm_terrain_corner_tris,
 };
 
+struct cmm_terrain_quad cmm_terrain_dcorner_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+};
+
+struct cmm_terrain_tri cmm_terrain_dcorner_tris[] = {
+    {{{16, 16, 16}, {0, 16, 16}, {0, 0, 0}},  2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE, NULL}, // BOTTOM-FRONT
+    {{ {0, 0, 0}, {16, 16, 0}, {16, 16, 16}},  0, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE_L, NULL}, // BOTTOM-LEFT 
+    {{{0, 0, 0},  {0, 16, 16}, {0, 16, 0}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNTRI_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{0, 0, 0}, {0, 16, 0},  {16, 16, 0}},  2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_DOWNTRI_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+};
+
+struct cmm_terrain cmm_terrain_dcorner = {
+    1,
+    4,
+    cmm_terrain_dcorner_quads,
+    cmm_terrain_dcorner_tris,
+};
+
+
 struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
     {{{16, 0, 16}, {0, 0, 16}, {16, 0, 0}, {0, 0, 0}}, 1, CMM_DIRECTION_DOWN, CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 16, 0}, {16, 0, 0}, {0, 16, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
@@ -77,8 +96,8 @@ struct cmm_terrain_quad cmm_terrain_icorner_quads[] = {
 };
 
 struct cmm_terrain_tri cmm_terrain_icorner_tris[] = {
-    {{{0, 16, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{0, 16, 0},  {16, 0, 16}, {16, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
+    {{{0, 16, 16}, {16, 0, 16}, {0, 16, 0}},  1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0},  {16, 0, 16}, {16, 16, 0}}, 1, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP-LEFT
     {{{16, 0, 0},  {16, 16, 0}, {16, 0, 16}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TRI_1, CMM_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
     {{{0, 16, 16}, {0, 0, 16},  {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TRI_2, CMM_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
 };
@@ -88,6 +107,26 @@ struct cmm_terrain cmm_terrain_icorner = {
     4,
     cmm_terrain_icorner_quads,
     cmm_terrain_icorner_tris,
+};
+
+struct cmm_terrain_quad cmm_terrain_dicorner_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, 1, CMM_DIRECTION_UP, CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0}, {16, 0, 0}, {0, 16, 0}, {0, 0, 0}}, 2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{0, 16, 16}, {0, 16, 0}, {0, 0, 16}, {0, 0, 0}}, 0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct cmm_terrain_tri cmm_terrain_dicorner_tris[] = {
+    {{{16, 16, 16}, {0, 0, 16}, {0, 0, 0}},  0, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-FRONT
+    {{{16, 16, 16}, {0, 0, 0}, {16, 0, 0}}, 2, CMM_NO_CULLING, CMM_FACESHAPE_EMPTY, CMM_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-LEFT
+    {{{16, 0, 0}, {16, 16, 0}, {16, 16, 16}}, 0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNTRI_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 16}, {0, 0, 16}, {16, 16, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+};
+
+struct cmm_terrain cmm_terrain_dicorner = {
+    3,
+    4,
+    cmm_terrain_dicorner_quads,
+    cmm_terrain_dicorner_tris,
 };
 
 struct cmm_terrain_quad cmm_terrain_dslope_quads[] = {
@@ -223,6 +262,8 @@ struct cmm_terrain *cmm_tile_terrains[] = {
     &cmm_terrain_slope,      // TILE_TYPE_SLOPE
     &cmm_terrain_corner,     // TILE_TYPE_CORNER
     &cmm_terrain_icorner,    // TILE_TYPE_ICORNER
+    &cmm_terrain_dcorner,    // TILE_TYPE_DCORNER
+    &cmm_terrain_dicorner,   // TILE_TYPE_DICORNER
     &cmm_terrain_dslope,     // TILE_TYPE_DSLOPE
     &cmm_terrain_sslope,     // TILE_TYPE_SSLOPE
     &cmm_terrain_bottomslab, // TILE_TYPE_SLAB
@@ -660,7 +701,6 @@ enum {
     CMM_BUTTON_BOMB,
     CMM_BUTTON_TREE,
     CMM_BUTTON_EXCLA,
-    CMM_BUTTON_DSLOPE,
     CMM_BUTTON_CHUCKYA,
     CMM_BUTTON_SPAWN,
     CMM_BUTTON_PHANTASM,
@@ -691,14 +731,14 @@ u8 cmm_ui_bar[9] = {
 u8 cmm_toolbox[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_DSLOPE, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
+    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_BLANK, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_DSLOPE, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
+    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_BLANK, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_KTQ,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BBALL,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
@@ -785,7 +825,6 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_bobomb,    OBJECT_TYPE_BOMB,    CMM_PM_OBJ,   "Bob-omb",            NULL       }, //CMM_BUTTON_BOMB
     {mat_b_btn_tree,      OBJECT_TYPE_TREE,    CMM_PM_OBJ,   "Tree",               txt_bp_tree}, //CMM_BUTTON_TREE
     {mat_b_btn_excla,     OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_box }, //CMM_BUTTON_EXCLA
-    {mat_b_btn_downslope, TILE_TYPE_DSLOPE,    CMM_PM_TILE,  "Flipped Slope",      NULL       }, //CMM_BUTTON_DSLOPE
     {mat_b_btn_chuckya,   OBJECT_TYPE_CHUCKYA, CMM_PM_OBJ,   "Chuckya",            NULL       }, //CMM_BUTTON_CHUCKYA
     {mat_b_btn_spawn,     OBJECT_TYPE_SPAWN,   CMM_PM_OBJ,   "Mario Spawn",        NULL       }, //CMM_BUTTON_SPAWN
     {mat_b_btn_phantasm,  OBJECT_TYPE_PHNTSM,  CMM_PM_OBJ,   "Cosmic Phantasm",    NULL       }, //CMM_BUTTON_PHANTASM
