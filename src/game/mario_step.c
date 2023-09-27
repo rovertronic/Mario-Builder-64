@@ -29,7 +29,6 @@ struct Surface gWaterSurfacePseudoFloor = {
     SURFACE_VERY_SLIPPERY,      // type
     0x0,                        // force
     -SURFACE_VERTICAL_BUFFER,   // lowerY
-     SURFACE_VERTICAL_BUFFER,   // upperY
     { 0, 0, 0 },                // vertex1
     { 0, 0, 0 },                // vertex2
     { 0, 0, 0 },                // vertex3

@@ -1471,7 +1471,7 @@ void find_surface_on_ray_list(struct SurfaceNode *list, Vec3f orig, Vec3f dir, f
     // Iterate through every surface of the list
     for (; list != NULL; list = list->next) {
         // Reject surface if out of vertical bounds
-        if ((list->surface->lowerY > top) || (list->surface->upperY < bottom)) continue;
+        if ((list->surface->lowerY > top) || (!list->surface->object && (list->surface->lowerY + 256 < bottom))) continue;
         // Check intersection between the ray and this surface
         hit = ray_surface_intersect(orig, dir, dir_length, list->surface, chk_hit_pos, &length);
         if (hit && (length <= *max_length)) {

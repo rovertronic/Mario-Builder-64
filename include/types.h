@@ -375,7 +375,6 @@ struct Surface {
     /*0x00*/ TerrainData type;
     /*0x02*/ TerrainData force;
     /*0x06*/ s16 lowerY;
-    /*0x08*/ s16 upperY;
     /*0x0A*/ Vec3t vertex1;
     /*0x10*/ Vec3t vertex2;
     /*0x16*/ Vec3t vertex3;

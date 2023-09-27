@@ -129,7 +129,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         type        = surf->type;
 
         // Exclude a large number of walls immediately to optimize.
-        if (pos[1] < surf->lowerY || pos[1] > surf->upperY) continue;
+        if (pos[1] < surf->lowerY || (!surf->object && (pos[1] > surf->lowerY + 256))) continue;
 
         // Determine if checking for the camera or not.
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {
@@ -349,7 +349,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         type = surf->type;
 
         // Exclude all ceilings below the point
-        if (y > surf->upperY) continue;
+        if (!surf->object && (y > surf->lowerY + 256)) continue;
 
         // Determine if checking for the camera or not
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {

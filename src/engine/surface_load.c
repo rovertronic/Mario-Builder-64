@@ -136,8 +136,6 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
         sortDir = 0; // insertion order
     }
 
-    //s32 surfacePriority = surface->upperY * sortDir;
-
     struct SurfaceNode *newNode = alloc_surface_node(dynamic);
     newNode->surface = surface;
 
@@ -158,13 +156,11 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
     }
 
     // Loop until we find the appropriate place for the surface in the list.
-    //while (list->next != NULL) {
-    //    priority = list->next->surface->upperY * sortDir;
     if (listIndex == SPATIAL_PARTITION_WATER) {
-        s32 surfacePriority = surface->upperY * sortDir;
+        s32 surfacePriority = surface->lowerY * sortDir;
         s32 priority;
         while (list->next != NULL) {
-            priority = list->next->surface->upperY * sortDir;
+            priority = list->next->surface->lowerY * sortDir;
 
             if (surfacePriority > priority) {
                 break;
@@ -286,7 +282,6 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
 
     min_max_3s(v[0][1], v[1][1], v[2][1], &min, &max);
     surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);
-    surface->upperY = (max + SURFACE_VERTICAL_BUFFER);
 
     return surface;
 }

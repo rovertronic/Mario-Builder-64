@@ -613,7 +613,6 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3])
     s16 min,max;
     min_max_3s(v1[1], v2[1], v3[1], &min, &max);
     surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);
-    surface->upperY = (max + SURFACE_VERTICAL_BUFFER);
 
     surface->type = cmm_curr_coltype;
     add_surface(surface, FALSE);
