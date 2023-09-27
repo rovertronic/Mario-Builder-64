@@ -69,14 +69,14 @@
 #define /*0x0B0*/ oVelY                       OBJECT_FIELD_F32(O_VEL_INDEX + 1)
 #define /*0x0B4*/ oVelZ                       OBJECT_FIELD_F32(O_VEL_INDEX + 2)
 /* Local Position vector */
-#define /*0x0B8*/ O_LOCAL_VEL_INDEX                             0x0C
-#define /*0x0B8*/ O_LOCAL_VEL_X_INDEX                           (O_LOCAL_VEL_INDEX + 0) // 0x0C
-#define /*0x0BC*/ O_LOCAL_VEL_Y_INDEX                           (O_LOCAL_VEL_INDEX + 1) // 0x0D
-#define /*0x0C0*/ O_LOCAL_VEL_Z_INDEX                           (O_LOCAL_VEL_INDEX + 2) // 0x0E
-#define /*0x0B8*/ oLocalVelVec                                  OBJECT_FIELD_F32(O_LOCAL_VEL_INDEX)
-#define /*0x0B8*/ oLeftVel                                      OBJECT_FIELD_F32(O_LOCAL_VEL_X_INDEX)
-#define /*0x0BC*/ oUpVel                                        OBJECT_FIELD_F32(O_LOCAL_VEL_Y_INDEX)
-#define /*0x0C0*/ oForwardVel                                   OBJECT_FIELD_F32(O_LOCAL_VEL_Z_INDEX) // moved
+//#define /*0x0B8*/ O_LOCAL_VEL_INDEX                             0x0C
+//#define /*0x0B8*/ O_LOCAL_VEL_X_INDEX                           (O_LOCAL_VEL_INDEX + 0) // 0x0C
+//#define /*0x0BC*/ O_LOCAL_VEL_Y_INDEX                           (O_LOCAL_VEL_INDEX + 1) // 0x0D
+//#define /*0x0C0*/ O_LOCAL_VEL_Z_INDEX                           (O_LOCAL_VEL_INDEX + 2) // 0x0E
+//#define /*0x0B8*/ oLocalVelVec                                  OBJECT_FIELD_F32(O_LOCAL_VEL_INDEX)
+//#define /*0x0B8*/ oLeftVel                                      OBJECT_FIELD_F32(O_LOCAL_VEL_X_INDEX)
+//#define /*0x0BC*/ oUpVel                                        OBJECT_FIELD_F32(O_LOCAL_VEL_Y_INDEX)
+#define /*0x0C0*/ oForwardVel                                   OBJECT_FIELD_F32(0xC + 2) // moved
 /* Move Angle vector */
 #define /*0x0C4*/ O_MOVE_ANGLE_INDEX                            0x0F
 #define /*0x0C4*/ O_MOVE_ANGLE_PITCH_INDEX                      (O_MOVE_ANGLE_INDEX + 0) // 0x0F

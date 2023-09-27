@@ -301,7 +301,6 @@ struct Object {
         s32 asS32[MAX_OBJECT_FIELDS];
         s16 asS16[MAX_OBJECT_FIELDS][2];
         f32 asF32[MAX_OBJECT_FIELDS];
-#if !IS_64_BIT
         s16 *asS16P[MAX_OBJECT_FIELDS];
         s32 *asS32P[MAX_OBJECT_FIELDS];
         struct Animation **asAnims[MAX_OBJECT_FIELDS];
@@ -311,25 +310,11 @@ struct Object {
         struct Surface *asSurface[MAX_OBJECT_FIELDS];
         void *asVoidPtr[MAX_OBJECT_FIELDS];
         const void *asConstVoidPtr[MAX_OBJECT_FIELDS];
-#endif
     } rawData;
-#if IS_64_BIT
-    union {
-        s16 *asS16P[MAX_OBJECT_FIELDS];
-        s32 *asS32P[MAX_OBJECT_FIELDS];
-        struct Animation **asAnims[MAX_OBJECT_FIELDS];
-        struct Waypoint *asWaypoint[MAX_OBJECT_FIELDS];
-        struct ChainSegment *asChainSegment[MAX_OBJECT_FIELDS];
-        struct Object *asObject[MAX_OBJECT_FIELDS];
-        struct Surface *asSurface[MAX_OBJECT_FIELDS];
-        void *asVoidPtr[MAX_OBJECT_FIELDS];
-        const void *asConstVoidPtr[MAX_OBJECT_FIELDS];
-    } ptrData;
-#endif
     /*0x1C8*/ struct RigidBody *rigidBody;
     /*0x1CC*/ const BehaviorScript *curBhvCommand;
     /*0x1D0*/ u32 bhvStackIndex;
-    /*0x1D4*/ uintptr_t bhvStack[8];
+    /*0x1D4*/ uintptr_t bhvStack[3];
     /*0x1F4*/ s16 bhvDelayTimer;
     /*0x1F6*/ s16 respawnInfoType;
     /*0x1F8*/ f32 hitboxRadius;
@@ -338,7 +323,6 @@ struct Object {
     /*0x204*/ f32 hurtboxHeight;
     /*0x208*/ f32 hitboxDownOffset;
     /*0x20C*/ const BehaviorScript *behavior;
-    /*0x210*/ u32 unused2;
     /*0x214*/ struct Object *platform;
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
