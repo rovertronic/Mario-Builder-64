@@ -78,7 +78,6 @@ struct Surface *alloc_surface(u32 dynamic) {
     gSurfacesAllocated++;
 
     surface->type = SURFACE_DEFAULT;
-    surface->force = 0;
     surface->object = NULL;
 
     return surface;
@@ -349,27 +348,10 @@ static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s3
         if (surface != NULL) {
             surface->type = surfaceType;
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-            surface->force = *(*data + 3);
-#else
-            if (hasForce) {
-                surface->force = *(*data + 3);
-            } else {
-                surface->force = 0;
-            }
-#endif
-
             add_surface(surface, FALSE);
         }
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-        *data += 4;
-#else
         *data += 3;
-        if (hasForce) {
-            (*data)++;
-        }
-#endif
     }
 }
 
@@ -612,27 +594,10 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
             surface->object = o;
             surface->type = surfaceType;
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-            surface->force = *(*data + 3);
-#else
-            if (hasForce) {
-                surface->force = *(*data + 3);
-            } else {
-                surface->force = 0;
-            }
-#endif
             add_surface(surface, dynamic);
         }
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-        *data += 4;
-#else
-        if (hasForce) {
-            *data += 4;
-        } else {
-            *data += 3;
-        }
-#endif
+        *data += 3;
     }
 }
 

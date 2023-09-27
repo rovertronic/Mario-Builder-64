@@ -27,7 +27,6 @@ static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
 
 struct Surface gWaterSurfacePseudoFloor = {
     SURFACE_VERY_SLIPPERY,      // type
-    0x0,                        // force
     -SURFACE_VERTICAL_BUFFER,   // lowerY
     { 0, 0, 0 },                // vertex1
     { 0, 0, 0 },                // vertex2
@@ -200,11 +199,11 @@ u32 mario_update_moving_sand(struct MarioState *m) {
 
     if (floorType == SURFACE_DEEP_MOVING_QUICKSAND || floorType == SURFACE_SHALLOW_MOVING_QUICKSAND
         || floorType == SURFACE_MOVING_QUICKSAND || floorType == SURFACE_INSTANT_MOVING_QUICKSAND) {
-        s16 pushAngle = floor->force << 8;
-        f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
+        //s16 pushAngle = floor->force << 8;
+        //f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
 
-        m->vel[0] += pushSpeed * sins(pushAngle);
-        m->vel[2] += pushSpeed * coss(pushAngle);
+        //m->vel[0] += pushSpeed * sins(pushAngle);
+        //m->vel[2] += pushSpeed * coss(pushAngle);
 
         return TRUE;
     }
@@ -217,24 +216,24 @@ u32 mario_update_windy_ground(struct MarioState *m) {
 
     if (floor->type == SURFACE_HORIZONTAL_WIND) {
         f32 pushSpeed;
-        s16 pushAngle = floor->force << 8;
+        //s16 pushAngle = floor->force << 8;
 
         if (m->action & ACT_FLAG_MOVING) {
-            s16 pushDYaw = m->faceAngle[1] - pushAngle;
+            //s16 pushDYaw = m->faceAngle[1] - pushAngle;
 
             pushSpeed = m->forwardVel > 0.0f ? -m->forwardVel * 0.5f : -8.0f;
 
-            if (pushDYaw > -0x4000 && pushDYaw < 0x4000) {
-                pushSpeed *= -1.0f;
-            }
+            //if (pushDYaw > -0x4000 && pushDYaw < 0x4000) {
+                //pushSpeed *= -1.0f;
+            //}
 
-            pushSpeed *= coss(pushDYaw);
+            //pushSpeed *= coss(pushDYaw);
         } else {
             pushSpeed = 3.2f + (gGlobalTimer % 4);
         }
 
-        m->vel[0] += pushSpeed * sins(pushAngle);
-        m->vel[2] += pushSpeed * coss(pushAngle);
+        //m->vel[0] += pushSpeed * sins(pushAngle);
+        //m->vel[2] += pushSpeed * coss(pushAngle);
 
         return TRUE;
     }
@@ -260,11 +259,11 @@ void apply_conveyor(struct MarioState *m) {
     f32 currentSpeed;
 
     if (m->floor->type == SURFACE_FLOWING_WATER) {
-        currentAngle = m->floor->force << 8;
-        currentSpeed = (f32)(m->floor->force >> 8);
+        //currentAngle = m->floor->force << 8;
+        //currentSpeed = (f32)(m->floor->force >> 8);
 
-        sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
-        sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
+        //sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
+        //sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
         sShouldApplyInertia = TRUE;
         sInertiaFirstFrame = TRUE;
     }

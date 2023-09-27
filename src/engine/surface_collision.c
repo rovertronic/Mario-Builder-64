@@ -579,7 +579,7 @@ f32 find_water_bottom_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s
         if (curBottomHeight < y + 78.0f) {
             if (curBottomHeight > sClosestWaterBottomBelowY) {
                 sClosestWaterBottomBelowY = curBottomHeight;
-                bottomForce = surf->force;
+                //bottomForce = surf->force;
                 setForce = TRUE;
             }
             continue;
@@ -594,7 +594,7 @@ f32 find_water_bottom_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s
 
     //if (gCheckingWaterForMario && setForce) {
         gMarioState->waterBottomHeight = sClosestWaterBottomBelowY;
-        gMarioState->waterBottomParam = bottomForce;
+        //gMarioState->waterBottomParam = bottomForce;
     //}
 
     return sClosestWaterBottomAboveY;
