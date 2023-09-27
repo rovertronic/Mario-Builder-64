@@ -37,10 +37,12 @@ void bhv_edward(void) {
         case 1://normal active
             find_surface_on_ray(&o->oPosX, &o->oVelX, &surf, &hitpos, RAYCAST_FIND_ALL);
             if (surf) {
-                vec3f_sum(&o->oPosX,&o->oPosX,&surf->normal);
+                Vec3f normal;
+                get_surface_normal(normal, surf);
+                vec3f_sum(&o->oPosX,&o->oPosX,normal);
 
-                vec3f_copy(reflect,&surf->normal);
-                int dotMultiplier = 2.0f * vec3f_dot(&o->oVelX,&surf->normal);
+                vec3f_copy(reflect,normal);
+                int dotMultiplier = 2.0f * vec3f_dot(&o->oVelX,normal);
                 reflect[0] *= dotMultiplier;
                 reflect[1] *= dotMultiplier;
                 reflect[2] *= dotMultiplier;

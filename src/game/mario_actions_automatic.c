@@ -331,8 +331,11 @@ s32 update_hang_moving(struct MarioState *m) {
     m->vel[1] = 0.0f;
     m->vel[2] = m->slideVelZ;
 
-    nextPos[0] = m->pos[0] - m->ceil->normal.y * m->vel[0];
-    nextPos[2] = m->pos[2] - m->ceil->normal.y * m->vel[2];
+    Vec3f normal;
+    get_surface_normal(normal, m->ceil);
+
+    nextPos[0] = m->pos[0] - normal[1] * m->vel[0];
+    nextPos[2] = m->pos[2] - normal[1] * m->vel[2];
     nextPos[1] = m->pos[1];
 
     s32 stepResult = perform_hanging_step(m, nextPos);
@@ -565,7 +568,7 @@ s32 act_ledge_grab(struct MarioState *m) {
     if (m->actionTimer < 10) {
         m->actionTimer++;
     }
-    if (m->floor->normal.y < COS25) {
+    if (m->floorNormal[1] < COS25) {
         return let_go_of_ledge(m);
     }
     if (m->input & (INPUT_Z_PRESSED | INPUT_OFF_FLOOR)) {

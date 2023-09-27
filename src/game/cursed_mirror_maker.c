@@ -610,12 +610,6 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3])
     vec3_copy(surface->vertex2, v2);
     vec3_copy(surface->vertex3, v3);
 
-    surface->normal.x = n[0];
-    surface->normal.y = n[1];
-    surface->normal.z = n[2];
-
-    surface->originOffset = -vec3_dot(n, v1);
-
     s16 min,max;
     min_max_3s(v1[1], v2[1], v3[1], &min, &max);
     surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);

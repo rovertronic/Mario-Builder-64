@@ -370,7 +370,7 @@ void body_vs_surface_collision(struct RigidBody *body, struct Surface *tri, stru
     vec3s_to_vec3f(triInfo.vertices[0], tri->vertex1);
     vec3s_to_vec3f(triInfo.vertices[1], tri->vertex2);
     vec3s_to_vec3f(triInfo.vertices[2], tri->vertex3);
-    vec3f_copy(triInfo.normal, &tri->normal.x);
+    get_surface_normal(triInfo.normal, tri);
     if (!is_body_near_tri(body, &triInfo)) return;
     increment_debug_counter(&pNumTrisChecked, 1);
     struct MeshInfo *mesh = body->mesh;

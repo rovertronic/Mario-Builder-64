@@ -282,9 +282,11 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
         nz = 0.0f;
     } else {
         // Read the floor's normals.
-        nx = floor->normal.x;
-        ny = floor->normal.y;
-        nz = floor->normal.z;
+        f32 normal[4];
+        get_surface_normal_oo(normal, floor);
+        nx = normal[0];
+        ny = normal[1];
+        nz = normal[2];
 
         // No shadow if the y-normal is negative (an unexpected result).
         if (ny <= 0.0f) {
@@ -293,7 +295,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
 
         // If the animation changes the shadow position, move its height to the new position.
         if (shifted) {
-            floorHeight = -((x * nx) + (z * nz) + floor->originOffset) / ny;
+            floorHeight = -((x * nx) + (z * nz) + normal[3]) / ny;
         }
     }
 
