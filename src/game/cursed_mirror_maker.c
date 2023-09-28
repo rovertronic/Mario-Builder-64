@@ -103,7 +103,7 @@ u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
 
-Trajectory cmm_trajectory_list[5][160];
+Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH * 4];
 u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
 u8 cmm_trajectories_used = 0;
@@ -146,7 +146,7 @@ char *cmm_error_message = NULL;
 u16 cmm_error_timer = 0;
 f32 cmm_error_vels[3];
 
-struct cmm_hack_save cmm_save;
+struct cmm_level_save cmm_save;
 
 u8 cmm_settings_index = 0;
 u8 cmm_settings_index_changed = FALSE;
@@ -245,7 +245,7 @@ u32 coords_in_range(s8 pos[3]) {
 
 s32 tile_sanity_check(void) {
     if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
-        display_error_message("Tile limit reached (max 5,000)");
+        display_error_message("Tile limit reached (max 10,000)");
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
@@ -262,13 +262,13 @@ s32 tile_sanity_check(void) {
 
 s32 object_sanity_check(void) {
     if (cmm_object_count >= CMM_MAX_OBJS) {
-        display_error_message("Object limit reached (max 200)");
+        display_error_message("Object limit reached (max 500)");
         return FALSE;
     }
 
     if (cmm_object_types[cmm_id_selection].use_trajectory) {
         if (cmm_trajectories_used >= CMM_MAX_TRAJECTORIES) {
-            display_error_message("Trajectory limit reached (max 5)");
+            display_error_message("Trajectory limit reached (max 20)");
             return FALSE;
         }
     }
@@ -601,10 +601,6 @@ extern struct Surface *alloc_surface(u32 dynamic);
 extern void add_surface(struct Surface *surface, s32 dynamic);
 void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3]) { 
     struct Surface *surface = alloc_surface(FALSE);
-
-    Vec3f n;
-    find_vector_perpendicular_to_plane(n, v1, v2, v3);
-    vec3_normalize(n);
 
     vec3_copy(surface->vertex1, v1);
     vec3_copy(surface->vertex2, v2);
@@ -1275,15 +1271,16 @@ void generate_terrain_collision(void) {
 
 void generate_object_preview(void) {
     struct Object *preview_object;
-    u8 i;
+    u32 i;
 
     preview_object = cur_obj_nearest_object_with_behavior(bhvStaticObject);
     while(preview_object) {
-        mark_obj_for_deletion(preview_object);
+        unload_object(preview_object);
         preview_object = cur_obj_nearest_object_with_behavior(bhvStaticObject);
     }
 
     for(i=0;i<cmm_object_count;i++){
+        if (gFreeObjectList.next == NULL) break;
         preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
         preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
         preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
@@ -1306,7 +1303,7 @@ void generate_object_preview(void) {
 
 void generate_objects_to_level(void) {
     struct Object *obj;
-    u8 i;
+    u32 i;
     cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
         //obj = create_object(cmm_object_types[cmm_object_data[i].type].behavior);
@@ -1620,7 +1617,7 @@ void update_painting() {
     u16 *u16_array = segmented_to_virtual(b_LevelPainting_rgba16);
     for (x = 4; x < 28; x++) {
         for (y = 4; y < 28; y++) {
-            u16_array[(y*32)+x] = cmm_save.lvl[0].piktcher[y-4][x-4];
+            u16_array[(y*32)+x] = cmm_save.piktcher[y-4][x-4];
         } 
     }
 }
@@ -1635,43 +1632,43 @@ void save_level(u8 index) {
     s16 i;
     s16 j;
 
-    bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
+    bzero(&cmm_save, sizeof(cmm_save));
     //bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
-    cmm_save.lvl[index].tile_count = cmm_tile_count;
-    cmm_save.lvl[index].object_count = cmm_object_count;
+    cmm_save.tile_count = cmm_tile_count;
+    cmm_save.object_count = cmm_object_count;
 
-    cmm_save.lvl[index].option[0] = cmm_lopt_costume;
-    cmm_save.lvl[index].option[1] = cmm_lopt_seq;
-    cmm_save.lvl[index].option[2] = cmm_lopt_envfx;
-    cmm_save.lvl[index].option[3] = cmm_lopt_theme;
-    cmm_save.lvl[index].option[4] = cmm_lopt_bg;
-    cmm_save.lvl[index].option[5] = cmm_lopt_plane;
-    cmm_save.lvl[index].option[19] = cmm_lopt_game;
+    cmm_save.option[0] = cmm_lopt_costume;
+    cmm_save.option[1] = cmm_lopt_seq;
+    cmm_save.option[2] = cmm_lopt_envfx;
+    cmm_save.option[3] = cmm_lopt_theme;
+    cmm_save.option[4] = cmm_lopt_bg;
+    cmm_save.option[5] = cmm_lopt_plane;
+    cmm_save.option[19] = cmm_lopt_game;
 
     //SAVE
     for (i = 0; i < cmm_tile_count; i++) {
         //Save tiles
-        bcopy(&cmm_tile_data[i],&cmm_save.lvl[index].tiles[i],sizeof(cmm_tile_data[i]));
+        bcopy(&cmm_tile_data[i],&cmm_save.tiles[i],sizeof(cmm_tile_data[i]));
     }
 
     for (i = 0; i < cmm_object_count; i++) {
         //Save Objects
-        bcopy(&cmm_object_data[i],&cmm_save.lvl[index].objects[i],sizeof(cmm_object_data[i]));
+        bcopy(&cmm_object_data[i],&cmm_save.objects[i],sizeof(cmm_object_data[i]));
     }
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
-        for (j = 0; j < 40; j++) {
-            cmm_save.lvl[index].trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.lvl[index].trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
-            cmm_save.lvl[index].trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][(j*4)+2]);
-            cmm_save.lvl[index].trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+3]);
+        for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
+            cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
+            cmm_save.trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
+            cmm_save.trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][(j*4)+2]);
+            cmm_save.trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+3]);
         }
     }
 
     for (i=0;i<784;i++) {
         //take a "screenshot" of the level
-        cmm_save.lvl[index].piktcher[i/28][i%28] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/28)*320*8)+((i%28)*11)];
+        cmm_save.piktcher[i/28][i%28] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/28)*320*8)+((i%28)*11)];
     }
 
     update_painting();
@@ -1691,7 +1688,7 @@ void load_level(u8 index) {
     s16 j;
     u8 fresh = FALSE;
 
-    bzero(&cmm_save.lvl[index], sizeof(cmm_save.lvl[index]));
+    bzero(&cmm_save, sizeof(cmm_save));
     bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
     //LOAD
@@ -1712,31 +1709,31 @@ void load_level(u8 index) {
         bzero(&cmm_save, sizeof(cmm_save));
 
         //Set version
-        cmm_save.lvl[0].version = CMM_VERSION;
+        cmm_save.version = CMM_VERSION;
 
         //Place spawn location
-        cmm_save.lvl[0].object_count = 1;
-        cmm_save.lvl[0].objects[0].x = 32;
-        cmm_save.lvl[0].objects[0].z = 32;
-        cmm_save.lvl[0].objects[0].y = 4;
-        cmm_save.lvl[0].objects[0].type = OBJECT_TYPE_SPAWN;
+        cmm_save.object_count = 1;
+        cmm_save.objects[0].x = 32;
+        cmm_save.objects[0].z = 32;
+        cmm_save.objects[0].y = 4;
+        cmm_save.objects[0].type = OBJECT_TYPE_SPAWN;
 
-        cmm_save.lvl[index].option[19] = cmm_lopt_game;
+        cmm_save.option[19] = cmm_lopt_game;
     }
 
-    cmm_tile_count = cmm_save.lvl[index].tile_count;
-    cmm_object_count = cmm_save.lvl[index].object_count;
+    cmm_tile_count = cmm_save.tile_count;
+    cmm_object_count = cmm_save.object_count;
 
-    cmm_lopt_costume = cmm_save.lvl[index].option[0];
-    cmm_lopt_seq = cmm_save.lvl[index].option[1];
-    cmm_lopt_envfx = cmm_save.lvl[index].option[2];
-    cmm_lopt_theme = cmm_save.lvl[index].option[3];
-    cmm_lopt_bg = cmm_save.lvl[index].option[4];
+    cmm_lopt_costume = cmm_save.option[0];
+    cmm_lopt_seq = cmm_save.option[1];
+    cmm_lopt_envfx = cmm_save.option[2];
+    cmm_lopt_theme = cmm_save.option[3];
+    cmm_lopt_bg = cmm_save.option[4];
 
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
-    cmm_lopt_plane = cmm_save.lvl[index].option[5];
+    cmm_lopt_plane = cmm_save.option[5];
 
-    cmm_lopt_game = cmm_save.lvl[index].option[19];
+    cmm_lopt_game = cmm_save.option[19];
 
     //configure toolbox depending on game style
     switch(cmm_lopt_game) {
@@ -1754,7 +1751,7 @@ void load_level(u8 index) {
     cmm_tile_data_indices[0] = 0;
     // Load tiles and build index list. Assume all tiles are in order
     for (i = 0; i < cmm_tile_count; i++) {
-        bcopy(&cmm_save.lvl[index].tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
+        bcopy(&cmm_save.tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
         u32 curIndex = get_tiletype_index(cmm_tile_data[i].type, cmm_tile_data[i].mat);
 
         if (curIndex != oldIndex) {
@@ -1779,9 +1776,9 @@ void load_level(u8 index) {
     }
 
     for (i = 0; i < cmm_object_count; i++) {
-        bcopy(&cmm_save.lvl[index].objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
+        bcopy(&cmm_save.objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
         s8 pos[3];
-        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z)
+        vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z)
         place_occupy_data(pos);
         if (cmm_object_types[cmm_object_data[i].type].use_trajectory) {
             cmm_trajectories_used++;
@@ -1789,11 +1786,11 @@ void load_level(u8 index) {
     }
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
-        for (j = 0; j < 40; j++) {
-            cmm_trajectory_list[i][(j*4)+0] = cmm_save.lvl[index].trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].x);
-            cmm_trajectory_list[i][(j*4)+2] = GRIDY_TO_POS(cmm_save.lvl[index].trajectories[i][j].y);
-            cmm_trajectory_list[i][(j*4)+3] = GRID_TO_POS(cmm_save.lvl[index].trajectories[i][j].z);
+        for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
+            cmm_trajectory_list[i][(j*4)+0] = cmm_save.trajectories[i][j].t;
+            cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.trajectories[i][j].x);
+            cmm_trajectory_list[i][(j*4)+2] = GRIDY_TO_POS(cmm_save.trajectories[i][j].y);
+            cmm_trajectory_list[i][(j*4)+3] = GRID_TO_POS(cmm_save.trajectories[i][j].z);
         }
     }
 
@@ -2220,7 +2217,7 @@ void sb_loop(void) {
                 }
             }
 
-            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == 40 - 1)) {
+            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == CMM_TRAJECTORY_LENGTH - 1)) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;

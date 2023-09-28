@@ -263,7 +263,6 @@ void add_surface(struct Surface *surface, s32 dynamic) {
  */
 static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **vertexIndices, u32 dynamic) {
     Vec3t v[3];
-    Vec3f n;
     Vec3t offset;
     s16 min, max;
 
@@ -272,10 +271,6 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     vec3s_copy(v[0], (vertexData + offset[0]));
     vec3s_copy(v[1], (vertexData + offset[1]));
     vec3s_copy(v[2], (vertexData + offset[2]));
-
-    find_vector_perpendicular_to_plane(n, v[0], v[1], v[2]);
-
-    if (!vec3f_normalize2(n)) return NULL;
 
     struct Surface *surface = alloc_surface(dynamic);
 

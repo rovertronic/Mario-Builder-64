@@ -2,12 +2,13 @@
 #define cursed_mirror_maker_h
 #include "libcart/ff/ff.h"
 
-#define CMM_TILE_POOL_SIZE 5000
+#define CMM_TILE_POOL_SIZE 10000
 #define CMM_GFX_SIZE 20000
 #define CMM_VTX_SIZE 25000
 
-#define CMM_MAX_OBJS 200
-#define CMM_MAX_TRAJECTORIES 5
+#define CMM_MAX_OBJS 500
+#define CMM_MAX_TRAJECTORIES 20
+#define CMM_TRAJECTORY_LENGTH 40
 
 #define TILE_SIZE 256
 
@@ -21,7 +22,8 @@ void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
-extern Trajectory cmm_trajectory_list[5][160];
+extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH * 4];
+
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -275,19 +277,16 @@ no matter what version.
 
 struct cmm_level_save {
     u8 version;
-    u16 piktcher[28][28]; //28*28 = 784*2 = 1568 bytes
+    u16 piktcher[64][64]; //28*28 = 784*2 = 1568 bytes
 
-    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
-    struct cmm_obj objects[200];//4*200 = 800 bytes
-    struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][40];
     u8 option[20];//20 bytes
     //6906 bytes per level, ~7000 bytes
     u16 tile_count;
     u16 object_count;
-};
 
-ALIGNED8 struct cmm_hack_save {
-    struct cmm_level_save lvl[1];
+    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
+    struct cmm_obj objects[CMM_MAX_OBJS];//4*200 = 800 bytes
+    struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
 };
 
 enum {
