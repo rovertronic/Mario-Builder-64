@@ -131,11 +131,50 @@ void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAcce
     vels[1] += vels[2];
 }
 
-u32 cmm_menu_option_animation(u32 x, u32 y, u32 width, struct cmm_settings_button *btn, u32 highlight) {
-    char *str = btn->nametable[*(btn->value)];
-    print_maker_string_ascii_centered(x, y - 8, str, highlight);
-    print_maker_string_ascii_centered(x - width, y - 8, "<", highlight);
-    print_maker_string_ascii_centered(x + width, y - 8, ">", highlight);
+// First value is timer, second is direction
+s8 cmm_menu_scrolling[3][2] = {0};
+s8 cmm_mm_index = 0;
+
+s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
+    s32 leftX = x - width * 2;
+    s32 rightX = x + width * 2;
+    s32 xOffset = 0;
+    if (cmm_menu_scrolling[i][0] == 0 && cmm_mm_index == i) {
+        if (joystick == 1) {
+            cmm_menu_scrolling[i][0] = 5;
+            cmm_menu_scrolling[i][1] = -1;
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            *(btn[i].value) = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
+        } else if (joystick == 3) {
+            cmm_menu_scrolling[i][0] = 5;
+            cmm_menu_scrolling[i][1] = 1;
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            *(btn[i].value) = (*(btn[i].value) + 1) % btn[i].size;
+        }
+    }
+    if (cmm_menu_scrolling[i][0] > 0) {
+        cmm_menu_scrolling[i][0]--;
+        xOffset = (cmm_menu_scrolling[i][0] * cmm_menu_scrolling[i][1] * width * 2) / 5;
+        leftX += xOffset;
+        rightX += xOffset;
+    }
+    
+    char *str = btn[i].nametable[*(btn[i].value)];
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, x-width+6, 0, x+width-6, SCREEN_HEIGHT);
+    print_maker_string_ascii_centered(x + xOffset, y - 8, str, cmm_mm_index == i);
+    if (leftX > x - width * 2) {
+        u8 prevIndex = (*(btn[i].value) - 1 + btn[i].size) % btn[i].size;
+        char *prevStr = btn[i].nametable[prevIndex];
+        print_maker_string_ascii_centered(leftX, y - 8, prevStr, cmm_mm_index == i);
+    } else if (rightX < x + width * 2) {
+        u8 nextIndex = (*(btn[i].value) + 1) % btn[i].size;
+        char *nextStr = btn[i].nametable[nextIndex];
+        print_maker_string_ascii_centered(rightX, y - 8, nextStr, cmm_mm_index == i);
+    }
+
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    print_maker_string_ascii_centered(x - width, y - 8, "<", cmm_mm_index == i);
+    print_maker_string_ascii_centered(x + width, y - 8, ">", cmm_mm_index == i);
 }
 
 
@@ -340,7 +379,6 @@ u8 cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
 u8 cmm_mm_state = MM_INIT;
 u8 cmm_mm_main_state = MM_MAIN;
 u8 cmm_mm_files_prev_menu;
-s8 cmm_mm_index = 0;
 s8 cmm_mm_pages = 0;
 s8 cmm_mm_page = 0;
 s8 cmm_mm_page_entries = 0;
@@ -705,7 +743,7 @@ s32 cmm_main_menu(void) {
                 y = 150-(i*27);
                 print_maker_string_ascii_centered(x - 60, y, cmm_mode_settings_buttons[i].str,0);
                 render_cmm_mm_button(x + 20, y + 8, cmm_mm_index == i);
-                cmm_menu_option_animation(x + 20, y + 8, 43, &cmm_mode_settings_buttons[i], cmm_mm_index == i);
+                cmm_menu_option_animation(x + 20, y + 8, 43, cmm_mode_settings_buttons, i, joystick);
             }
             x = cmm_menu_button_vels[3][0] + 160;
             y = 150-(4*27);
