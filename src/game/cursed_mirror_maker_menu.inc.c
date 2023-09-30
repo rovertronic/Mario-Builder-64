@@ -158,9 +158,9 @@ s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butto
         leftX += xOffset;
         rightX += xOffset;
     }
-    
+
     char *str = btn[i].nametable[*(btn[i].value)];
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, x-width+6, 0, x+width-6, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, x-width+5, 0, x+width-7, SCREEN_HEIGHT);
     print_maker_string_ascii_centered(x + xOffset, y - 8, str, cmm_mm_index == i);
     if (leftX > x - width * 2) {
         u8 prevIndex = (*(btn[i].value) - 1 + btn[i].size) % btn[i].size;

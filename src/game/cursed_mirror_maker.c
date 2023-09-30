@@ -238,10 +238,13 @@ void reset_play_state(void) {
     cmm_play_badge_bitfield = 0;
 }
 
+u8 cmm_grid_min = 0;
+u8 cmm_grid_size = 64;
+
 u32 coords_in_range(s8 pos[3]) {
-    if (pos[0] < GRID_MIN_COORD || pos[0] > GRID_MAX_COORD - 1) return FALSE;
+    if (pos[0] < cmm_grid_min || pos[0] > cmm_grid_min + cmm_grid_size - 1) return FALSE;
     if (pos[1] < 0 || pos[1] > 31) return FALSE;
-    if (pos[2] < GRID_MIN_COORD || pos[2] > GRID_MAX_COORD - 1) return FALSE;
+    if (pos[2] < cmm_grid_min || pos[2] > cmm_grid_min + cmm_grid_size - 1) return FALSE;
     return TRUE;
 }
 
@@ -617,13 +620,6 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3])
     add_surface(surface, FALSE);
 };
 
-TerrainData floorVtxs[4][3] = {
-    {-4096, 0, 4096},
-    {4096, 0, 4096},
-    {-4096, 0, -4096},
-    {4096, 0, -4096},
-};
-
 extern TerrainData sVertexData[900];
 
 TerrainData colVtxs[4][3];
@@ -915,13 +911,35 @@ void render_water(s8 pos[3]) {
 }
 
 void render_floor(void) {
-    make_vertex(cmm_curr_vtx, 0,  4096, 0, 4096, -16384,  -16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, 4096, 0, -4096,  16384,  -16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2, -4096, 0,  4096,  -16384, 16384, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3, -4096, 0,  -4096, 16384, 16384, 0x0, 0x7F, 0x0, 0xFF);
-    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 4, 0);
+    s16 vertex = 128 * cmm_grid_size;
+    s16 uv = 256 * cmm_grid_size;
+    make_vertex(cmm_curr_vtx, 0, vertex, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, vertex, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2,      0, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,      0, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+
+    make_vertex(cmm_curr_vtx, 4,       0, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 5,       0, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 6, -vertex, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 7, -vertex, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+
+    make_vertex(cmm_curr_vtx, 8,  vertex, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 9,  vertex, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 10,      0, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 11,      0, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+
+    make_vertex(cmm_curr_vtx, 12,       0, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 13,       0, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 14, -vertex, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 15, -vertex, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+
+    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
+
     gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
-    cmm_curr_vtx += 4;
+    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
+    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
+    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    cmm_curr_vtx += 16;
 }
 
 #define FENCE_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME)
@@ -1225,6 +1243,13 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     return NULL;
 }
 
+TerrainData floorVtxs[4][3] = {
+    {-1, 0, 1},
+    {1, 0, 1},
+    {-1, 0, -1},
+    {1, 0, -1},
+};
+
 void generate_terrain_collision(void) {
     s16 i;
     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
@@ -1247,11 +1272,15 @@ void generate_terrain_collision(void) {
             cmm_curr_coltype = MATERIAL(mat).col;
         }
     }
+    TerrainData newVtxs[4][3];
     for (u32 i = 0; i < 4; i++) {
-        floorVtxs[i][1] = floorY;
+        newVtxs[i][1] = floorY;
+        newVtxs[i][0] = floorVtxs[i][0] * cmm_grid_size * 128;
+        newVtxs[i][2] = floorVtxs[i][2] * cmm_grid_size * 128;
+
     }
-    cmm_create_surface(floorVtxs[0], floorVtxs[1], floorVtxs[2]);
-    cmm_create_surface(floorVtxs[1], floorVtxs[3], floorVtxs[2]);
+    cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
+    cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
     process_tiles();
 
@@ -1654,6 +1683,7 @@ void save_level(u8 index) {
     cmm_save.option[3] = cmm_lopt_theme;
     cmm_save.option[4] = cmm_lopt_bg;
     cmm_save.option[5] = cmm_lopt_plane;
+    cmm_save.option[7] = cmm_lopt_size;
     cmm_save.option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1729,6 +1759,7 @@ void load_level(u8 index) {
         cmm_save.objects[0].type = OBJECT_TYPE_SPAWN;
 
         cmm_save.option[19] = cmm_lopt_game;
+        cmm_save.option[7] = cmm_lopt_size;
     }
 
     cmm_tile_count = cmm_save.tile_count;
@@ -1742,6 +1773,19 @@ void load_level(u8 index) {
 
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
+    cmm_lopt_size = cmm_save.option[7];
+
+    switch (cmm_lopt_size) {
+        case 0:
+            cmm_grid_min = 16;
+            cmm_grid_size = 32;
+        case 1:
+            cmm_grid_min = 8;
+            cmm_grid_size = 48;
+        case 2:
+            cmm_grid_min = 0;
+            cmm_grid_size = 64;
+    }
 
     cmm_lopt_game = cmm_save.option[19];
 
@@ -1904,9 +1948,11 @@ u32 main_cursor_logic(u32 joystick) {
     }
     cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
 
-    cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-    cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - GRID_MIN_COORD + GRID_SIZE) % GRID_SIZE) + GRID_MIN_COORD;
-    cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
+    if (cursorMoved) {
+        cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
+        cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
+        cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
+    }
 
     //camera zooming
     if (gPlayer1Controller->buttonPressed & U_JPAD) {
@@ -1930,10 +1976,10 @@ u32 main_cursor_logic(u32 joystick) {
     }
     cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
     cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
-    cmm_boundary_object[2]->oPosX = GRID_TO_POS(GRID_MIN_COORD);
-    cmm_boundary_object[3]->oPosX = GRID_TO_POS(GRID_MAX_COORD);
-    cmm_boundary_object[4]->oPosZ = GRID_TO_POS(GRID_MIN_COORD);
-    cmm_boundary_object[5]->oPosZ = GRID_TO_POS(GRID_MAX_COORD);
+    cmm_boundary_object[2]->oPosX = GRID_TO_POS(cmm_grid_min);
+    cmm_boundary_object[3]->oPosX = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
+    cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
+    cmm_boundary_object[5]->oPosZ = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
 
     return cursorMoved;
 }

@@ -48,11 +48,6 @@ enum {
     CMM_PM_WATER,
 };
 
-// For making variable size levels later
-#define GRID_MIN_COORD 16
-#define GRID_MAX_COORD 48
-#define GRID_SIZE (GRID_MAX_COORD - GRID_MIN_COORD)
-
 #define GRID_TO_POS(gridx) (gridx * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
 #define GRIDY_TO_POS(gridy) (gridy * TILE_SIZE + TILE_SIZE/2)
 #define POS_TO_GRID(pos) ((pos + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
@@ -311,8 +306,8 @@ enum {
 
 extern u8 cmm_lopt_game;
 enum {
-    CMM_GAME_BTCM,
     CMM_GAME_VANILLA,
+    CMM_GAME_BTCM,
 };
 
 #endif
