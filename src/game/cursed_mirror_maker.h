@@ -6,7 +6,7 @@
 #define CMM_GFX_SIZE 20000
 #define CMM_VTX_SIZE 25000
 
-#define CMM_MAX_OBJS 500
+#define CMM_MAX_OBJS 512
 #define CMM_MAX_TRAJECTORIES 20
 #define CMM_TRAJECTORY_LENGTH 40
 
@@ -261,7 +261,8 @@ struct cmm_theme {
 
 //compressed trajectories
 struct cmm_comptraj {
-    u32 x:6, y:5, z:6, t:7;
+    s8 t;
+    u16 x:6, y:5, z:6;
 };
 
 

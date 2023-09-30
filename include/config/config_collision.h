@@ -12,7 +12,7 @@
 //#define AUTO_COLLISION_DISTANCE
 
 // Allows all surfaces types to have force, (doesn't require setting force, just allows it to be optional).
-#define ALL_SURFACES_HAVE_FORCE
+//#define ALL_SURFACES_HAVE_FORCE
 
 // Number of walls that can push Mario at once. Vanilla is 4.
 #define MAX_REFERENCED_WALLS 4

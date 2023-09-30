@@ -1720,7 +1720,7 @@ void obj_translate_xz_random(struct Object *obj, f32 rangeLength) {
 }
 
 static void obj_build_vel_from_transform(struct Object *obj) {
-    Vec3f vel = { 0, obj->oVelY, obj->oForwardVel };
+    Vec3f vel = { 0.f, 0.f, obj->oForwardVel };
 
     linear_mtxf_mul_vec3f(obj->transform, &obj->oVelVec, vel);
 }

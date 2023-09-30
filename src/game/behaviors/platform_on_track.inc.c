@@ -145,28 +145,26 @@ static void platform_on_track_mario_not_on_platform(void) {
  * Init function for bhvPlatformOnTrack.
  */
 void bhv_platform_on_track_init(void) {
-    if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
-        s16 pathIndex = (u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_PATH;
-        o->oPlatformOnTrackType = ((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_TYPE) >> 4;
+    s16 pathIndex = (u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_PATH;
+    o->oPlatformOnTrackType = ((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_TYPE) >> 4;
 
-        //override platform on track to always be checkerboard
-        o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
+    //override platform on track to always be checkerboard
+    o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
 
 
-        o->oPlatformOnTrackIsNotSkiLift = o->oPlatformOnTrackType - PLATFORM_ON_TRACK_TYPE_SKI_LIFT;
+    o->oPlatformOnTrackIsNotSkiLift = o->oPlatformOnTrackType - PLATFORM_ON_TRACK_TYPE_SKI_LIFT;
 
-        o->collisionData =
-            segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
+    o->collisionData =
+        segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
 
-        o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
+    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
 
-        o->oPlatformOnTrackIsNotHMC = pathIndex - 4;
+    o->oPlatformOnTrackIsNotHMC = pathIndex - 4;
 
-        o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
+    o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
 
-        if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CHECKERED) {
-            o->header.gfx.scale[1] = 2.0f;
-        }
+    if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CHECKERED) {
+        o->header.gfx.scale[1] = 2.0f;
     }
 }
 

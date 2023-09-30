@@ -1051,4 +1051,29 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {"Floor:",   &cmm_lopt_plane,   NULL, 0}, // Filled in by code
 };
 
+char *cmm_gamemode_string_table[] = {
+    "Vanilla SM64",
+    "Cursed Mirror",
+};
+
+char *cmm_levelsize_string_table[] = {
+    "Small (32)",
+    "Medium (48)",
+    "Large (64)",
+};
+
+char *cmm_template_string_table[] = {
+    "Grassy",
+    "Desert",
+    "Lava",
+    "Underwater",
+    "Snowy",
+};
+
+struct cmm_settings_button cmm_mode_settings_buttons[] = {
+    {"Mode:", &cmm_lopt_game, cmm_gamemode_string_table, ARRAY_COUNT(cmm_gamemode_string_table)},
+    {"Size:", &cmm_lopt_size, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table)},
+    {"Template:", &cmm_lopt_template, cmm_template_string_table, ARRAY_COUNT(cmm_template_string_table)},
+};
+
 #define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_buttons)

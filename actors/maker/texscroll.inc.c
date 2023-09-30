@@ -1,13 +1,13 @@
 void scroll_sts_mat_maker_MakerLava() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerLava);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_sts_mat_maker_MakerWater() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerWater);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_sts_mat_maker_MakerRetroLava() {
@@ -16,8 +16,8 @@ void scroll_sts_mat_maker_MakerRetroLava() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerRetroLava);
 
 	if (--curInterval0 <= 0) {
-		shift_s(mat, 8, PACK_TILESIZE(0, 5));
-		shift_t(mat, 8, PACK_TILESIZE(0, 5));
+		shift_s(mat, 12, PACK_TILESIZE(0, 5));
+		shift_t(mat, 12, PACK_TILESIZE(0, 5));
 		curInterval0 = intervalTex0;
 	}
 };
@@ -31,8 +31,8 @@ void scroll_sts_mat_maker_MakerVoid() {
 
 void scroll_sts_mat_maker_MakerQuicksand() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerQuicksand);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_sts_mat_maker_MakerRetroWater() {
@@ -41,22 +41,22 @@ void scroll_sts_mat_maker_MakerRetroWater() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerRetroWater);
 
 	if (--curInterval0 <= 0) {
-		shift_s(mat, 8, PACK_TILESIZE(0, 5));
-		shift_t(mat, 8, PACK_TILESIZE(0, 5));
+		shift_s(mat, 12, PACK_TILESIZE(0, 5));
+		shift_t(mat, 12, PACK_TILESIZE(0, 5));
 		curInterval0 = intervalTex0;
 	}
 };
 
 void scroll_sts_mat_maker_MakerServerAcid() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerServerAcid);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_sts_mat_maker_MakerGreenWater() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerGreenWater);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
 void scroll_actor_dl_maker() {

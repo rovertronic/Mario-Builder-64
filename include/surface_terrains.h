@@ -289,11 +289,7 @@ enum TerrainType {
 #define COL_TRI_INIT(surfType, triNum) surfType, triNum
 
 // Collision Tri
-#ifdef ALL_SURFACES_HAVE_FORCE
-#define COL_TRI(v1, v2, v3) v1, v2, v3, 0
-#else
 #define COL_TRI(v1, v2, v3) v1, v2, v3
-#endif
 
 // Collision Tri With Special Params
 #define COL_TRI_SPECIAL(v1, v2, v3, param) v1, v2, v3, param
