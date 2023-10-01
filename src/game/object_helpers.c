@@ -176,8 +176,8 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
             } else {
                 floor = gMarioState->floor;
                 if (floor) {
-                    gMarioCurrentRoom = floor->room;
-                    roomCase = floor->room - 1;
+                    gMarioCurrentRoom = 0;
+                    roomCase = -1;
 
                     if (roomCase >= 0) {
                         switchCase->selectedCase = roomCase;
@@ -1022,19 +1022,17 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
 
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
 
-    if (o->oRoom != -1
-        && intendedFloor != NULL
-        && intendedFloor->room != 0
-        && o->oRoom != intendedFloor->room
-        && intendedFloor->room != 18) {
-        // Don't leave native room
-        return;
-    }
 
     if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
         // Don't move into OoB
         o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
-    } else if (deltaFloorHeight < 5.0f) {
+        return;
+    }
+
+    Vec3f normal;
+    get_surface_normal(normal, intendedFloor);
+    
+    if (deltaFloorHeight < 5.0f) {
         if (!careAboutEdgesAndSteepSlopes) {
             // If we don't care about edges or steep slopes, okay to move
             o->oPosX = intendedX;
@@ -1042,7 +1040,7 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
         } else if (deltaFloorHeight < -50.0f && (o->oMoveFlags & OBJ_MOVE_ON_GROUND)) {
             // Don't walk off an edge
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
-        } else if (intendedFloor->normal.y > steepSlopeNormalY) {
+        } else if (normal[1] > steepSlopeNormalY) {
             // Allow movement onto a slope, provided it's not too steep
             o->oPosX = intendedX;
             o->oPosZ = intendedZ;
@@ -1050,7 +1048,7 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
             // We are likely trying to move onto a steep downward slope
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
         }
-    } else if (intendedFloor->normal.y > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
+    } else if (normal[1] > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
         // Allow movement upward, provided either:
         // - The target floor is flat enough (e.g. walking up stairs)
         // - We are above the target floor (most likely in the air)
@@ -1398,13 +1396,16 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
         f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
         f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
+        Vec3f normal;
+        get_surface_normal(normal, intendedFloor);
+
         if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
             o->oWallAngle = (o->oMoveAngleYaw + 0x8000);
             return TRUE;
-        } else if ((intendedFloor->normal.y < coss((s16)(steepAngleDegrees * (0x10000 / 360))))
+        } else if ((normal[1] < coss((s16)(steepAngleDegrees * (0x10000 / 360))))
                    && (deltaFloorHeight > 0)
                    && (intendedFloorHeight > o->oPosY)) {
-            o->oWallAngle = atan2s(intendedFloor->normal.z, intendedFloor->normal.x);
+            o->oWallAngle = atan2s(normal[2], normal[0]);
             return TRUE;
         } else {
             return FALSE;
@@ -1452,7 +1453,6 @@ static void cur_obj_update_floor(void) {
         }
 
         o->oFloorType = floorType;
-        o->oFloorRoom = floor->room;
     } else {
         o->oFloorType = SURFACE_DEFAULT;
         o->oFloorRoom = 0;
@@ -1720,7 +1720,7 @@ void obj_translate_xz_random(struct Object *obj, f32 rangeLength) {
 }
 
 static void obj_build_vel_from_transform(struct Object *obj) {
-    Vec3f vel = { obj->oLeftVel, obj->oUpVel, obj->oForwardVel };
+    Vec3f vel = { 0.f, 0.f, obj->oForwardVel };
 
     linear_mtxf_mul_vec3f(obj->transform, &obj->oVelVec, vel);
 }
@@ -1944,19 +1944,6 @@ s32 is_item_in_array(s8 item, s8 *array) {
     }
 
     return FALSE;
-}
-
-void bhv_init_room(void) {
-    struct Surface *floor = NULL;
-    if (is_item_in_array(gCurrLevelNum, sLevelsWithRooms)) {
-        find_room_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
-
-        if (floor != NULL) {
-            o->oRoom = floor->room;
-            return;
-        }
-    }
-    o->oRoom = -1;
 }
 
 void cur_obj_enable_rendering_if_mario_in_room(void) {
@@ -2296,7 +2283,7 @@ void cur_obj_align_gfx_with_floor(void) {
     find_floor(position[0], position[1], position[2], &floor);
     if (floor != NULL) {
         Vec3f floorNormal;
-        surface_normal_to_vec3f(floorNormal, floor);
+        get_surface_normal(floorNormal, floor);
 
         mtxf_align_terrain_normal(o->transform, floorNormal, position, o->oFaceAngleYaw);
         o->header.gfx.throwMatrix = &o->transform;

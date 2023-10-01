@@ -301,7 +301,6 @@ struct Object {
         s32 asS32[MAX_OBJECT_FIELDS];
         s16 asS16[MAX_OBJECT_FIELDS][2];
         f32 asF32[MAX_OBJECT_FIELDS];
-#if !IS_64_BIT
         s16 *asS16P[MAX_OBJECT_FIELDS];
         s32 *asS32P[MAX_OBJECT_FIELDS];
         struct Animation **asAnims[MAX_OBJECT_FIELDS];
@@ -311,25 +310,11 @@ struct Object {
         struct Surface *asSurface[MAX_OBJECT_FIELDS];
         void *asVoidPtr[MAX_OBJECT_FIELDS];
         const void *asConstVoidPtr[MAX_OBJECT_FIELDS];
-#endif
     } rawData;
-#if IS_64_BIT
-    union {
-        s16 *asS16P[MAX_OBJECT_FIELDS];
-        s32 *asS32P[MAX_OBJECT_FIELDS];
-        struct Animation **asAnims[MAX_OBJECT_FIELDS];
-        struct Waypoint *asWaypoint[MAX_OBJECT_FIELDS];
-        struct ChainSegment *asChainSegment[MAX_OBJECT_FIELDS];
-        struct Object *asObject[MAX_OBJECT_FIELDS];
-        struct Surface *asSurface[MAX_OBJECT_FIELDS];
-        void *asVoidPtr[MAX_OBJECT_FIELDS];
-        const void *asConstVoidPtr[MAX_OBJECT_FIELDS];
-    } ptrData;
-#endif
     /*0x1C8*/ struct RigidBody *rigidBody;
     /*0x1CC*/ const BehaviorScript *curBhvCommand;
     /*0x1D0*/ u32 bhvStackIndex;
-    /*0x1D4*/ uintptr_t bhvStack[8];
+    /*0x1D4*/ uintptr_t bhvStack[3];
     /*0x1F4*/ s16 bhvDelayTimer;
     /*0x1F6*/ s16 respawnInfoType;
     /*0x1F8*/ f32 hitboxRadius;
@@ -338,7 +323,6 @@ struct Object {
     /*0x204*/ f32 hurtboxHeight;
     /*0x208*/ f32 hitboxDownOffset;
     /*0x20C*/ const BehaviorScript *behavior;
-    /*0x210*/ u32 unused2;
     /*0x214*/ struct Object *platform;
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
@@ -373,16 +357,11 @@ struct Normal {
 
 struct Surface {
     /*0x00*/ TerrainData type;
-    /*0x02*/ TerrainData force;
-    /*0x04*/ s8 flags;
-    /*0x05*/ RoomData room;
     /*0x06*/ s16 lowerY;
     /*0x08*/ s16 upperY;
     /*0x0A*/ Vec3t vertex1;
     /*0x10*/ Vec3t vertex2;
     /*0x16*/ Vec3t vertex3;
-    /*0x1C*/ struct Normal normal;
-    /*0x28*/ f32 originOffset;
     /*0x2C*/ struct Object *object;
 };
 
@@ -440,6 +419,7 @@ struct MarioState {
     /*0x60*/ struct Surface *wall;
     /*0x64*/ struct Surface *ceil;
     /*0x68*/ struct Surface *floor;
+    Vec3f floorNormal;
     /*0x6C*/ f32 ceilHeight;
     /*0x70*/ f32 floorHeight;
     /*0x74*/ s16 floorYaw;

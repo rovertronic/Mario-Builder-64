@@ -247,7 +247,6 @@ void bhv_purple_switch_loop(void);
 void bhv_hidden_object_loop(void);
 void bhv_breakable_box_loop(void);
 void bhv_pushable_loop(void);
-void bhv_init_room(void);
 void bhv_small_water_wave_loop(void);
 void bhv_yellow_coin_init(void);
 void bhv_green_coin_init(void);

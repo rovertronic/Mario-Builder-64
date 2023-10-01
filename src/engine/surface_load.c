@@ -78,9 +78,6 @@ struct Surface *alloc_surface(u32 dynamic) {
     gSurfacesAllocated++;
 
     surface->type = SURFACE_DEFAULT;
-    surface->force = 0;
-    surface->flags = SURFACE_FLAGS_NONE;
-    surface->room = 0;
     surface->object = NULL;
 
     return surface;
@@ -123,11 +120,14 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
     s32 sortDir = 1; // highest to lowest, then insertion order (water and floors)
     s32 listIndex;
 
+    Vec3f normal;
+    get_surface_normal(normal, surface);
+
     if (SURFACE_IS_NEW_WATER(surface->type)) {
         listIndex = SPATIAL_PARTITION_WATER;
-    } else if (surface->normal.y > NORMAL_FLOOR_THRESHOLD) {
+    } else if (normal[1] > NORMAL_FLOOR_THRESHOLD) {
         listIndex = SPATIAL_PARTITION_FLOORS;
-    } else if (surface->normal.y < NORMAL_CEIL_THRESHOLD) {
+    } else if (normal[1] < NORMAL_CEIL_THRESHOLD) {
         listIndex = SPATIAL_PARTITION_CEILS;
         sortDir = -1; // lowest to highest, then insertion order
     } else {
@@ -263,7 +263,6 @@ void add_surface(struct Surface *surface, s32 dynamic) {
  */
 static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **vertexIndices, u32 dynamic) {
     Vec3t v[3];
-    Vec3f n;
     Vec3t offset;
     s16 min, max;
 
@@ -273,21 +272,11 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     vec3s_copy(v[1], (vertexData + offset[1]));
     vec3s_copy(v[2], (vertexData + offset[2]));
 
-    find_vector_perpendicular_to_plane(n, v[0], v[1], v[2]);
-
-    if (!vec3f_normalize2(n)) return NULL;
-
     struct Surface *surface = alloc_surface(dynamic);
 
     vec3s_copy(surface->vertex1, v[0]);
     vec3s_copy(surface->vertex2, v[1]);
     vec3s_copy(surface->vertex3, v[2]);
-
-    surface->normal.x = n[0];
-    surface->normal.y = n[1];
-    surface->normal.z = n[2];
-
-    surface->originOffset = -vec3_dot(n, v[0]);
 
     min_max_3s(v[0][1], v[1][1], v[2][1], &min, &max);
     surface->lowerY = (min - SURFACE_VERTICAL_BUFFER);
@@ -322,27 +311,18 @@ static s32 surface_has_force(s32 surfaceType) {
 }
 #endif
 
-/**
- * Returns whether a surface should have the
- * SURFACE_FLAG_NO_CAM_COLLISION flag.
- */
-static s32 surf_has_no_cam_collision(s32 surfaceType) {
-    s32 flags = SURFACE_FLAGS_NONE;
 
+s32 surf_has_no_cam_collision(s32 surfaceType) {
     switch (surfaceType) {
         case SURFACE_NO_CAM_COLLISION:
         case SURFACE_NO_CAM_COLLISION_77: // Unused
         case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
         case SURFACE_SWITCH:
         case SURFACE_VANISH_CAP_WALLS:
-            flags = SURFACE_FLAG_NO_CAM_COLLISION;
-            break;
+            return TRUE;
 
-        default:
-            break;
     }
-
-    return flags;
+    return FALSE;
 }
 
 /**
@@ -356,7 +336,6 @@ static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s3
 #ifndef ALL_SURFACES_HAVE_FORCE
     s16 hasForce = surface_has_force(surfaceType);
 #endif
-    s32 flags = surf_has_no_cam_collision(surfaceType);
 
     s32 numSurfaces = *(*data)++;
 
@@ -367,31 +346,12 @@ static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s3
 
         surface = read_surface_data(vertexData, data, FALSE);
         if (surface != NULL) {
-            surface->room = room;
             surface->type = surfaceType;
-            surface->flags = flags;
-
-#ifdef ALL_SURFACES_HAVE_FORCE
-            surface->force = *(*data + 3);
-#else
-            if (hasForce) {
-                surface->force = *(*data + 3);
-            } else {
-                surface->force = 0;
-            }
-#endif
 
             add_surface(surface, FALSE);
         }
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-        *data += 4;
-#else
         *data += 3;
-        if (hasForce) {
-            (*data)++;
-        }
-#endif
     }
 }
 
@@ -623,11 +583,9 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
     TerrainData hasForce = surface_has_force(surfaceType);
 #endif
 
-    s32 flags = surf_has_no_cam_collision(surfaceType) | (dynamic ? SURFACE_FLAG_DYNAMIC : 0);
-
     // The DDD warp is initially loaded at the origin and moved to the proper
     // position in paintings.c and doesn't update its room, so set it here.
-    RoomData room = (o->behavior == segmented_to_virtual(bhvDddWarp)) ? 5 : 0;
+    //RoomData room = (o->behavior == segmented_to_virtual(bhvDddWarp)) ? 5 : 0;
 
     for (i = 0; i < numSurfaces; i++) {
         struct Surface *surface = read_surface_data(vertexData, data, dynamic);
@@ -636,30 +594,10 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
             surface->object = o;
             surface->type = surfaceType;
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-            surface->force = *(*data + 3);
-#else
-            if (hasForce) {
-                surface->force = *(*data + 3);
-            } else {
-                surface->force = 0;
-            }
-#endif
-
-            surface->flags |= flags;
-            surface->room = room;
             add_surface(surface, dynamic);
         }
 
-#ifdef ALL_SURFACES_HAVE_FORCE
-        *data += 4;
-#else
-        if (hasForce) {
-            *data += 4;
-        } else {
-            *data += 3;
-        }
-#endif
+        *data += 3;
     }
 }
 

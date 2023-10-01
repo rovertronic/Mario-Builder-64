@@ -52,7 +52,7 @@ const LevelScript level_castle_grounds_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_CURSED_MIRROR, cursedmirror_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_MIRROR_SHARD, mirror_shard_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_TTRAP, t_trap_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_CG_SPOTLIGHT, spotlight_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_CG_SPOTLIGHT, spotlight_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_TUTORIAL_GATE, tutorialgate_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SHRNLING, shrnling1_geo), 
 

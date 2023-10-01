@@ -179,6 +179,7 @@ void bhv_hidden_red_coin_star_init(void) {
     if (gCurrCourseNum != COURSE_JRB) {
         spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
     }
+    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_NONE];
 
     s16 numRedCoinsRemaining = count_objects_with_behavior(bhvRedCoin);
     if (numRedCoinsRemaining == 0) {

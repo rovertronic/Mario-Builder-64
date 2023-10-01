@@ -27,16 +27,11 @@ static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
 
 struct Surface gWaterSurfacePseudoFloor = {
     SURFACE_VERY_SLIPPERY,      // type
-    0x0,                        // force
-    0x0,                        // flags
-     0,                         // room
     -SURFACE_VERTICAL_BUFFER,   // lowerY
      SURFACE_VERTICAL_BUFFER,   // upperY
     { 0, 0, 0 },                // vertex1
     { 0, 0, 0 },                // vertex2
     { 0, 0, 0 },                // vertex3
-    { 0.0f, 1.0f, 0.0f },       // normal
-    0.0f,                       // originOffset
     NULL,                       // object
 };
 
@@ -205,11 +200,11 @@ u32 mario_update_moving_sand(struct MarioState *m) {
 
     if (floorType == SURFACE_DEEP_MOVING_QUICKSAND || floorType == SURFACE_SHALLOW_MOVING_QUICKSAND
         || floorType == SURFACE_MOVING_QUICKSAND || floorType == SURFACE_INSTANT_MOVING_QUICKSAND) {
-        s16 pushAngle = floor->force << 8;
-        f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
+        //s16 pushAngle = floor->force << 8;
+        //f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
 
-        m->vel[0] += pushSpeed * sins(pushAngle);
-        m->vel[2] += pushSpeed * coss(pushAngle);
+        //m->vel[0] += pushSpeed * sins(pushAngle);
+        //m->vel[2] += pushSpeed * coss(pushAngle);
 
         return TRUE;
     }
@@ -222,24 +217,24 @@ u32 mario_update_windy_ground(struct MarioState *m) {
 
     if (floor->type == SURFACE_HORIZONTAL_WIND) {
         f32 pushSpeed;
-        s16 pushAngle = floor->force << 8;
+        //s16 pushAngle = floor->force << 8;
 
         if (m->action & ACT_FLAG_MOVING) {
-            s16 pushDYaw = m->faceAngle[1] - pushAngle;
+            //s16 pushDYaw = m->faceAngle[1] - pushAngle;
 
             pushSpeed = m->forwardVel > 0.0f ? -m->forwardVel * 0.5f : -8.0f;
 
-            if (pushDYaw > -0x4000 && pushDYaw < 0x4000) {
-                pushSpeed *= -1.0f;
-            }
+            //if (pushDYaw > -0x4000 && pushDYaw < 0x4000) {
+                //pushSpeed *= -1.0f;
+            //}
 
-            pushSpeed *= coss(pushDYaw);
+            //pushSpeed *= coss(pushDYaw);
         } else {
             pushSpeed = 3.2f + (gGlobalTimer % 4);
         }
 
-        m->vel[0] += pushSpeed * sins(pushAngle);
-        m->vel[2] += pushSpeed * coss(pushAngle);
+        //m->vel[0] += pushSpeed * sins(pushAngle);
+        //m->vel[2] += pushSpeed * coss(pushAngle);
 
         return TRUE;
     }
@@ -265,11 +260,11 @@ void apply_conveyor(struct MarioState *m) {
     f32 currentSpeed;
 
     if (m->floor->type == SURFACE_FLOWING_WATER) {
-        currentAngle = m->floor->force << 8;
-        currentSpeed = (f32)(m->floor->force >> 8);
+        //currentAngle = m->floor->force << 8;
+        //currentSpeed = (f32)(m->floor->force >> 8);
 
-        sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
-        sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
+        //sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
+        //sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
         sShouldApplyInertia = TRUE;
         sInertiaFirstFrame = TRUE;
     }
@@ -321,7 +316,6 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     if ((m->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel) {
         floorHeight = waterLevel;
         floor = &gWaterSurfacePseudoFloor;
-        floor->originOffset = -floorHeight;
     }
 
     if (nextPos[1] > floorHeight + 100.0f) {
@@ -382,8 +376,8 @@ s32 perform_ground_step(struct MarioState *m) {
     set_mario_wall(m, NULL);
 
     for (i = 0; i < 4; i++) {
-        intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / numSteps);
-        intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / numSteps);
+        intendedPos[0] = m->pos[0] + m->floorNormal[1] * (m->vel[0] / numSteps);
+        intendedPos[2] = m->pos[2] + m->floorNormal[1] * (m->vel[2] / numSteps);
         intendedPos[1] = m->pos[1];
 
         stepResult = perform_ground_quarter_step(m, intendedPos);
@@ -403,9 +397,11 @@ s32 perform_ground_step(struct MarioState *m) {
     if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
     {
         stepResult = GROUND_STEP_DEATH;
-        m->vel[0] = -2 * m->wall->normal.x;
-        m->vel[1] = -2 * m->wall->normal.y;
-        m->vel[2] = -2 * m->wall->normal.z;
+        Vec3f normal;
+        get_surface_normal(normal, m->wall);
+        m->vel[0] = -2 * normal[0];
+        m->vel[1] = -2 * normal[1];
+        m->vel[2] = -2 * normal[2];
         drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 1);
         return stepResult;
     }
@@ -416,7 +412,11 @@ s32 perform_ground_step(struct MarioState *m) {
 }
 
 // Horizontal dot product of surface normal
-#define hdot_surf(surf, vec) (((surf)->normal.x * (vec)[0]) + ((surf)->normal.z * (vec)[2]))
+#define hdot_surf(surf, vec) ({ \
+    Vec3f normal; \
+    get_surface_normal(normal, surf); \
+    ((normal[0] * (vec)[0]) + (normal[2] * (vec)[2])); \
+})
 
 struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall, struct Surface *wall, Vec3f intendedPos, Vec3f nextPos, Vec3f ledgePos, struct Surface **ledgeFloor) {
     struct Surface *returnedWall = wall;
@@ -441,17 +441,23 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
         returnedWall = prevWall;
     }
 
-    ledgePos[0] = nextPos[0] - (wall->normal.x * 60.0f);
-    ledgePos[2] = nextPos[2] - (wall->normal.z * 60.0f);
+    Vec3f normal;
+    get_surface_normal(normal, wall);
+
+    ledgePos[0] = nextPos[0] - (normal[0] * 60.0f);
+    ledgePos[2] = nextPos[2] - (normal[2] * 60.0f);
     ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], ledgeFloor);
 
     if (ledgeFloor == NULL
         || (*ledgeFloor) == NULL
         || ledgePos[1] < nextPos[1] + 100.0f
-#ifdef DONT_LEDGE_GRAB_STEEP_SLOPES
-        || (*ledgeFloor)->normal.y < COS25 // H64 TODO: check if floor is actually slippery
-#endif
     ) {
+        return NULL;
+    }
+
+    Vec3f normal2;
+    get_surface_normal(normal2, *ledgeFloor);
+    if (normal2[1] < COS25) {
         return NULL;
     }
 
@@ -535,7 +541,6 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
     if ((m->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel) {
         floorHeight = waterLevel;
         floor = &gWaterSurfacePseudoFloor;
-        floor->originOffset = -floorHeight;
     }
 
     //! This check uses f32, but findFloor uses short (overflow jumps)
@@ -559,9 +564,9 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
 #ifdef HANGING_FIX
             // Grab ceiling unless they just were grabbing a ceiling
-            if (!(m->prevAction & ACT_FLAG_HANGING) && ceil != NULL && ceil->type == SURFACE_HANGABLE) {
+            if (!(m->prevAction & ACT_FLAG_HANGING) && ceil != NULL && ceil->type == SURFACE_VANISH_CAP_WALLS) {
 #else
-            if ((stepArg & AIR_STEP_CHECK_HANG) && ceil != NULL && ceil->type == SURFACE_HANGABLE) {
+            if ((stepArg & AIR_STEP_CHECK_HANG) && ceil != NULL && ceil->type == SURFACE_VANISH_CAP_WALLS) {
 #endif
                 return AIR_STEP_GRABBED_CEILING;
             }
@@ -762,9 +767,11 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
         if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
         {
             stepResult = AIR_STEP_DEATH;
-            m->vel[0] = -2 * m->wall->normal.x;
-            m->vel[1] = -2 * m->wall->normal.y;
-            m->vel[2] = -2 * m->wall->normal.z;
+            Vec3f normal;
+            get_surface_normal(normal, m->wall);
+            m->vel[0] = -2 * normal[0];
+            m->vel[1] = -2 * normal[1];
+            m->vel[2] = -2 * normal[2];
             drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 1);
             return stepResult;
         }

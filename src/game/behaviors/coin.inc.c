@@ -89,7 +89,6 @@ void bhv_yellow_coin_init(void) {
 void bhv_green_coin_init(void) {
     cur_obj_set_behavior(bhvYellowCoin);
     obj_set_hitbox(o, &sGreenCoinHitbox);
-    bhv_init_room();
     cur_obj_update_floor_height();
     //if (500.0f < absf(o->oPosY - o->oFloorHeight))
     //    cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
@@ -132,6 +131,8 @@ void bhv_coin_loop(void) {
     cur_obj_move_standard(-62);
 
     struct Surface *floor = o->oFloor;
+    Vec3f normal;
+    get_surface_normal(normal, floor);
 
     u8 cosmetic = FALSE;
     u16 lifespan = 400;
@@ -150,7 +151,7 @@ void bhv_coin_loop(void) {
         }
         if (o->oAction == BOUNCING_COIN_ACT_BOUNCING) {
             o->oBounciness = 0;
-            if (floor->normal.y < 0.9f) {
+            if (normal[1] < 0.9f) {
                 s16 targetYaw = SURFACE_YAW(floor);
                 cur_obj_rotate_yaw_toward(targetYaw, 0x400);
             }

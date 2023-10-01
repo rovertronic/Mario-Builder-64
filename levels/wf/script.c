@@ -95,7 +95,7 @@ const LevelScript level_wf_entry[] = {
 	LOAD_MODEL_FROM_GEO(0xFC, horse_cart_geo), 
 	LOAD_MODEL_FROM_GEO(0xFB, horse_cart_w_geo), 
 	LOAD_MODEL_FROM_GEO(0xFA, horse_geo), 
-	LOAD_MODEL_FROM_GEO(0xF9, monty_mole_geo), 
+	//LOAD_MODEL_FROM_GEO(0xF9, monty_mole_geo), 
 	LOAD_MODEL_FROM_GEO(0xF8, mhole_geo), 
 	LOAD_MODEL_FROM_GEO(0xF7, pig_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_TARGET, target_geo), 

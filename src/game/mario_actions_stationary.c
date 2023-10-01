@@ -20,7 +20,7 @@
 
 s32 check_common_idle_cancels(struct MarioState *m) {
     mario_drop_held_object(m);
-    if (m->floor->normal.y < COS73) {
+    if (m->floorNormal[1] < COS73) {
         return mario_push_off_steep_floor(m, ACT_FREEFALL, 0);
     }
 
@@ -61,7 +61,7 @@ s32 check_common_idle_cancels(struct MarioState *m) {
 }
 
 s32 check_common_hold_idle_cancels(struct MarioState *m) {
-    if (m->floor->normal.y < COS73) {
+    if (m->floorNormal[1] < COS73) {
         return mario_push_off_steep_floor(m, ACT_HOLD_FREEFALL, 0);
     }
 
@@ -169,7 +169,7 @@ s32 act_idle(struct MarioState *m) {
                     m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
 #else
                     f32 deltaYOfFloorBehindMario = m->pos[1] - find_floor_height_relative_polar(m, -0x8000, 60.0f);
-                    if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->flags & SURFACE_FLAG_DYNAMIC) {
+                    if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->object) {
                         m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
                     } else {
                         // If Mario hasn't turned his head 10 times yet, stay idle instead of going to sleep.

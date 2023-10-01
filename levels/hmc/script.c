@@ -52,7 +52,7 @@ const LevelScript level_hmc_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_MINECART, minecart_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_BOULDER, wboulder_geo), //MODEL_COBIE
 	LOAD_MODEL_FROM_GEO(MODEL_COBIE, cobie_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_BILLMASK_C6, billmask_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_BILLMASK_C6, billmask_geo), 
 
 	/* Fast64 begin persistent block [level commands] */
 	/* Fast64 end persistent block [level commands] */

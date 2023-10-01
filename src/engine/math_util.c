@@ -143,15 +143,6 @@ void vec3s_to_vec3f(Vec3f dest, const Vec3s src) { vec3_copy_bits(f32, dest, s16
 void vec3i_to_vec3s(Vec3s dest, const Vec3i src) { vec3_copy_bits(s16, dest, s32, src); } // 32 -> 16
 void vec3i_to_vec3f(Vec3f dest, const Vec3i src) { vec3_copy_bits(f32, dest, s32, src); } // 32 -> 32
 
-void surface_normal_to_vec3f(Vec3f dest, struct Surface *surf) {
-    register f32 x = surf->normal.x;
-    register f32 y = surf->normal.y;
-    register f32 z = surf->normal.z;
-    ((f32 *) dest)[0] = x;
-    ((f32 *) dest)[1] = y;
-    ((f32 *) dest)[2] = z;
-}
-
 /// Convert float vector a to a short vector 'dest' by rounding the components to the nearest integer.
 #define vec3_copy_bits_roundf(fmt, dest, src) { \
     register fmt x = roundf(src[0]);            \
@@ -1403,7 +1394,7 @@ s32 anim_spline_poll(Vec3f result) {
  */
 s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface *surface, Vec3f hit_pos, f32 *length) {
     // Ignore certain surface types.
-    if ((surface->type == SURFACE_INTANGIBLE) || (surface->flags & SURFACE_FLAG_NO_CAM_COLLISION)) return FALSE;
+    if ((surface->type == SURFACE_INTANGIBLE) || (surf_has_no_cam_collision(surface->type))) return FALSE;
     // Convert the vertices to Vec3f.
     Vec3f v0, v1, v2;
     vec3s_to_vec3f(v0, surface->vertex1);
@@ -1411,7 +1402,7 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     vec3s_to_vec3f(v2, surface->vertex3);
     // Get surface normal and extend it by RAY_OFFSET.
     Vec3f norm;
-    surface_normal_to_vec3f(norm, surface);
+    get_surface_normal(norm, surface);
     //vec3_mul_val(norm, RAY_OFFSET); STAY OUT!!!!!! YOU BITCH!
     // Move the face forward by RAY_OFFSET.
     vec3f_add(v0, norm);

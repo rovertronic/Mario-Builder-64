@@ -249,12 +249,6 @@ enum SurfaceClass {
     SURFACE_CLASS_NOT_SLIPPERY
 };
 
-enum SurfaceFlags {
-    SURFACE_FLAGS_NONE            = (0 << 0), // 0x0000
-    SURFACE_FLAG_DYNAMIC          = (1 << 0), // 0x0001
-    SURFACE_FLAG_NO_CAM_COLLISION = (1 << 1), // 0x0002
-};
-
 // These are effectively unique "surface" types like those defined higher
 // And they are used as collision commands to load certain functions
 enum TerrainLoadCmd {
@@ -295,11 +289,7 @@ enum TerrainType {
 #define COL_TRI_INIT(surfType, triNum) surfType, triNum
 
 // Collision Tri
-#ifdef ALL_SURFACES_HAVE_FORCE
-#define COL_TRI(v1, v2, v3) v1, v2, v3, 0
-#else
 #define COL_TRI(v1, v2, v3) v1, v2, v3
-#endif
 
 // Collision Tri With Special Params
 #define COL_TRI_SPECIAL(v1, v2, v3, param) v1, v2, v3, param

@@ -775,7 +775,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             case WARP_OP_WARP_FLOOR:
                 if (m->floor->type != SURFACE_DEATH_PLANE) {
                     sDelayedWarpTimer = 20;
-                    sSourceWarpNodeId = m->floor->force;
+                    //sSourceWarpNodeId = m->floor->force;
                     play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x0, 0x0, 0x0);
                 }
                 else{

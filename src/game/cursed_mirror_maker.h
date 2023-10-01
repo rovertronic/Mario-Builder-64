@@ -2,9 +2,13 @@
 #define cursed_mirror_maker_h
 #include "libcart/ff/ff.h"
 
-#define CMM_TILE_POOL_SIZE 5000
+#define CMM_TILE_POOL_SIZE 10000
 #define CMM_GFX_SIZE 20000
-#define CMM_VTX_SIZE 100000
+#define CMM_VTX_SIZE 25000
+
+#define CMM_MAX_OBJS 512
+#define CMM_MAX_TRAJECTORIES 20
+#define CMM_TRAJECTORY_LENGTH 40
 
 #define TILE_SIZE 256
 
@@ -18,7 +22,8 @@ void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
-extern Trajectory cmm_trajectory_list[5][160];
+extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH * 4];
+
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -36,15 +41,17 @@ extern u32 cmm_play_badge_bitfield;
 
 extern TCHAR cmm_file_name[30];
 
-// For making variable size levels later
-#define GRID_MIN_COORD 16
-#define GRID_MAX_COORD 48
-#define GRID_SIZE (GRID_MAX_COORD - GRID_MIN_COORD)
+enum {
+    CMM_PM_NONE,
+    CMM_PM_TILE,
+    CMM_PM_OBJ,
+    CMM_PM_WATER,
+};
 
-#define GRID_TO_POS(gridx) (gridx * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
-#define GRIDY_TO_POS(gridy) (gridy * TILE_SIZE + TILE_SIZE/2)
-#define POS_TO_GRID(pos) ((pos + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
-#define POS_TO_GRIDY(pos) ((pos - TILE_SIZE/2) / TILE_SIZE)
+#define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
+#define GRIDY_TO_POS(gridy) ((gridy) * TILE_SIZE + TILE_SIZE/2)
+#define POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
+#define POS_TO_GRIDY(pos) (((pos) - TILE_SIZE/2) / TILE_SIZE)
 
 enum cmm_directions {
     CMM_DIRECTION_UP,
@@ -71,6 +78,8 @@ enum cmm_culling_shapes {
     CMM_FACESHAPE_DOWNTRI_1,
     CMM_FACESHAPE_DOWNTRI_2,
 
+    CMM_FACESHAPE_BOTTOMSLAB,
+
     CMM_FACESHAPE_EMPTY,
 };
 
@@ -79,9 +88,12 @@ enum cmm_growth_types {
     CMM_GROWTH_FULL,
     CMM_GROWTH_NORMAL_SIDE,
     CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
+    CMM_GROWTH_UNDERSLOPE_L, // act as positive X
+    CMM_GROWTH_UNDERSLOPE_CORNER, // act as both
     CMM_GROWTH_DIAGONAL_SIDE,
     CMM_GROWTH_SLOPE_SIDE_L,
     CMM_GROWTH_SLOPE_SIDE_R,
+    CMM_GROWTH_UNCONDITIONAL,
 };
 
 struct cmm_terrain_quad {
@@ -90,7 +102,7 @@ struct cmm_terrain_quad {
     u8 cullDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*decaluvs)[3][2];
+    s8 (*altuvs)[4][2];
 };
 struct cmm_terrain_tri {
     s8 vtx[3][3];
@@ -98,9 +110,9 @@ struct cmm_terrain_tri {
     u8 cullDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*decaluvs)[3][2];
+    s8 (*altuvs)[3][2];
 };
-struct cmm_terrain_block {
+struct cmm_terrain {
     u8 numQuads;
     u8 numTris;
     struct cmm_terrain_quad * quads;
@@ -110,17 +122,14 @@ struct cmm_terrain_block {
 struct cmm_tile {
     u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
-struct cmm_tile_type_struct {
-    Gfx * model;
-    struct cmm_terrain_block *terrain;
-    u32 * collision_data;
-    u8 transparent:1;
-};
+
 enum {
     TILE_TYPE_BLOCK,
     TILE_TYPE_SLOPE,
     TILE_TYPE_CORNER,
     TILE_TYPE_ICORNER,
+    TILE_TYPE_DCORNER,
+    TILE_TYPE_DICORNER,
     TILE_TYPE_DSLOPE,
     TILE_TYPE_SSLOPE,
     TILE_TYPE_SLAB,
@@ -142,16 +151,18 @@ struct cmm_grid_obj {
 };
 
 struct cmm_object_type_struct {
-    u32 behavior;
+    const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
     u8 use_trajectory:1;
+    u8 is_star:1;
     f32 scale;
-    struct Animation **anim;
+    const struct Animation *const *anim;
     s16 param_max;
-    void (* disp_func)(struct Object *,int);
+    void (*disp_func)(struct Object *,int);
 };
+
 enum {
     OBJECT_TYPE_STAR,
     OBJECT_TYPE_GOOMBA,
@@ -180,21 +191,19 @@ enum {
 };
 
 struct cmm_ui_button_type {
-    Gfx * material;
+    Gfx *material;
     u8 id;
     u8 placeMode:2;
-    u8 * str;
-    u8 ** param_strings;
+    char *str;
+    char **param_strings;
 };
 
 struct cmm_settings_button {
-    char * str;
-    u8 * value;
-    char ** nametable;
+    char *str;
+    u8 *value;
+    char **nametable;
     u8 size;
 };
-
-//static_assert(sizeof(cmm_tile_type_struct) == 4,"tile is not u32 sized, FIX NOW!")
 
 enum {
     CMM_MODE_PLAY,
@@ -209,60 +218,11 @@ enum {
     CMM_MAKE_TRAJECTORY,
 };
 
-enum {
-    CMM_BUTTON_SAVE,
-    CMM_BUTTON_SETTINGS,
-    CMM_BUTTON_PLAY,
-    CMM_BUTTON_TERRAIN,
-    CMM_BUTTON_SLOPE,
-    CMM_BUTTON_TROLL,
-    CMM_BUTTON_STAR,
-    CMM_BUTTON_GOOMBA,
-    CMM_BUTTON_COIN,
-    CMM_BUTTON_BLANK,
-    CMM_BUTTON_GCOIN,
-    CMM_BUTTON_CORNER,
-    CMM_BUTTON_ICORNER,
-    CMM_BUTTON_RCOIN,
-    CMM_BUTTON_BCOIN,
-    CMM_BUTTON_BCS,
-    CMM_BUTTON_RCS,
-    CMM_BUTTON_NOTEBLOCK,
-    CMM_BUTTON_CULL,
-    CMM_BUTTON_PODOBOO,
-    CMM_BUTTON_REX,
-    CMM_BUTTON_BULLY,
-    CMM_BUTTON_BOMB,
-    CMM_BUTTON_TREE,
-    CMM_BUTTON_EXCLA,
-    CMM_BUTTON_DSLOPE,
-    CMM_BUTTON_CHUCKYA,
-    CMM_BUTTON_SPAWN,
-    CMM_BUTTON_PHANTASM,
-    CMM_BUTTON_PIPE,
-    CMM_BUTTON_BADGE,
-    CMM_BUTTON_WATER,
-    CMM_BUTTON_FENCE,
-    CMM_BUTTON_BOSS,
-    CMM_BUTTON_MPLAT,
-    CMM_BUTTON_BBALL,
-    CMM_BUTTON_KTQ,
-    CMM_BUTTON_SSLOPE,
-    CMM_BUTTON_SLAB,
-};
-
-enum {
-    CMM_PM_NONE,
-    CMM_PM_TILE,
-    CMM_PM_OBJ,
-    CMM_PM_WATER,
-};
-
-#define NUM_THEMES 7
 #define NUM_MATERIALS_PER_THEME 10
 
 enum cmm_mat_types {
     MAT_OPAQUE,
+    MAT_VPSCREEN,
     MAT_CUTOUT,
     MAT_TRANSPARENT,
 };
@@ -290,11 +250,14 @@ struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
     u8 numFloors;
     s8 *floors;
+    u8 fence;
+    u8 water;
 };
 
 //compressed trajectories
 struct cmm_comptraj {
-    u32 x:5, y:5, z:5, t:7;
+    s8 t;
+    u16 x:6, y:5, z:6;
 };
 
 
@@ -310,19 +273,16 @@ no matter what version.
 
 struct cmm_level_save {
     u8 version;
-    u16 piktcher[28][28]; //28*28 = 784*2 = 1568 bytes
+    u16 piktcher[64][64]; //28*28 = 784*2 = 1568 bytes
 
-    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
-    struct cmm_obj objects[200];//4*200 = 800 bytes
-    struct cmm_comptraj trajectories[5][40];
     u8 option[20];//20 bytes
     //6906 bytes per level, ~7000 bytes
     u16 tile_count;
     u16 object_count;
-};
 
-ALIGNED8 struct cmm_hack_save {
-    struct cmm_level_save lvl[1];
+    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
+    struct cmm_obj objects[CMM_MAX_OBJS];//4*200 = 800 bytes
+    struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
 };
 
 enum {
@@ -346,8 +306,8 @@ enum {
 
 extern u8 cmm_lopt_game;
 enum {
-    CMM_GAME_BTCM,
     CMM_GAME_VANILLA,
+    CMM_GAME_BTCM,
 };
 
 #endif

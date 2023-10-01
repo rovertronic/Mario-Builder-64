@@ -25,8 +25,8 @@ const GeoLayout bitfs_area_2[] = {
 
 					GEO_ASM(0, geo_moon_move),
 					GEO_TRANSLATE_NODE_WITH_DL(LAYER_FORCE, 0, 0, 0, sr_fight_sky_sky_mesh),
-					GEO_ASM(0, geo_moon_move),
-					GEO_TRANSLATE_NODE_WITH_DL(LAYER_FORCE, 0, 0, 0, executive_loom__circle_mesh),
+					//GEO_ASM(0, geo_moon_move),
+					//GEO_TRANSLATE_NODE_WITH_DL(LAYER_FORCE, 0, 0, 0, executive_loom__circle_mesh),
 
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),

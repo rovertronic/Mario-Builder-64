@@ -21,9 +21,11 @@
      ((zPos) <= -LEVEL_BOUNDARY_MAX) ||     \
      ((zPos) >=  LEVEL_BOUNDARY_MAX))
 
-#define get_surface_height_at_location(xPos, zPos, surf) (-(((xPos) * (surf)->normal.x) + ((zPos) * (surf)->normal.z) + (surf)->originOffset) / (surf)->normal.y)
-
-#define SURFACE_YAW(s) (atan2s(((s)->normal.z), ((s)->normal.x)))
+#define SURFACE_YAW(s) ({ \
+    Vec3f normal; \
+    get_surface_normal(normal, s); \
+    atan2s(normal[2], normal[0]); \
+})
 
 enum RaycastFlags {
     RAYCAST_FIND_FLOOR = (1 << 0),

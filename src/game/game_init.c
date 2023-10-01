@@ -1013,7 +1013,7 @@ FILINFO cmm_dir_info;
 #define MAX_FILES 20
 FILINFO cmm_level_entries[MAX_FILES];
 u16 cmm_level_entry_piktcher[MAX_FILES][32][32];
-struct cmm_hack_save temp_cmm_save;
+struct cmm_level_save temp_cmm_save;
 
 
 u8 cmm_level_entry_count = 0;
@@ -1090,7 +1090,7 @@ void thread5_game_loop(UNUSED void *arg) {
                     bcopy(&painting_base_rgba16,u16_array,2048);
                     for (x = 4; x < 28; x++) {
                         for (y = 4; y < 28; y++) {
-                            u16_array[(y*32)+x] = temp_cmm_save.lvl[0].piktcher[y-4][x-4];
+                            u16_array[(y*32)+x] = temp_cmm_save.piktcher[y-4][x-4];
                         } 
                     }
                 }

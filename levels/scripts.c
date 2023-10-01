@@ -70,28 +70,28 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MARIO2,                  mario2_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),
 
-    LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
+    //LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
     LOAD_MODEL_FROM_GEO(0xEF,                   green_coin_geo),
-    LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
+    //LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
     
-    LOAD_MODEL_FROM_GEO(MODEL_TV_CORPSE, tvcorpse_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_TV_CORPSE, tvcorpse_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_METAL_STAR,                   metalstar_geo),
-    LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
+    //LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
     
-    LOAD_MODEL_FROM_GEO(0xEB,                   ring_geo),
-    LOAD_MODEL_FROM_GEO(0xEA,                   metal_crate_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_SHOWRUNNER,       showrunner_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_ATM,              moneybag_geo),
-    LOAD_MODEL_FROM_GEO(0xE7,                   chicken_geo),
+    //LOAD_MODEL_FROM_GEO(0xEB,                   ring_geo),
+    //LOAD_MODEL_FROM_GEO(0xEA,                   metal_crate_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_SHOWRUNNER,       showrunner_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_ATM,              moneybag_geo),
+    //LOAD_MODEL_FROM_GEO(0xE7,                   chicken_geo),
     LOAD_MODEL_FROM_GEO(0xE6,                   token_geo),
-    LOAD_MODEL_FROM_GEO(0xE5,                   egg_geo),
-    LOAD_MODEL_FROM_GEO(0xE4,                   snakeblock1_geo),
-    LOAD_MODEL_FROM_GEO(0xE3,                   wallet_geo),
+    //LOAD_MODEL_FROM_GEO(0xE5,                   egg_geo),
+    //LOAD_MODEL_FROM_GEO(0xE4,                   snakeblock1_geo),
+    //LOAD_MODEL_FROM_GEO(0xE3,                   wallet_geo),
     LOAD_MODEL_FROM_GEO(MODEL_NOTEBLOCK,        noteblock_geo),
     LOAD_MODEL_FROM_GEO(0xE1,                   rex_geo),
 
-    LOAD_MODEL_FROM_GEO(MODEL_COSMIC_SPIKE, cosmic_spike_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_COSMIC_SPIKE, cosmic_spike_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_SPARKLES,                sparkles_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BUBBLE,                  bubble_geo),
@@ -157,18 +157,18 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_SPINY,                   spiny_geo),
     LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_HEAD,            wiggler_head_geo),
     LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_BODY,            wiggler_body_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_BUBBA,                   bubba_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_BUBBA,                   bubba_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_CHILL_BULLY,             chilly_chief_geo),
 
-    LOAD_MODEL_FROM_GEO(MODEL_PIRANHA_PLANT,           piranha_plant_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_WHOMP,                   whomp_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_PIRANHA_PLANT,           piranha_plant_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_WHOMP,                   whomp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITH_SHELL,        koopa_with_shell_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITHOUT_SHELL,     koopa_without_shell_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_METALLIC_BALL,           metallic_ball_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_CHAIN_CHOMP,             chain_chomp_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_METALLIC_BALL,           metallic_ball_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_CHAIN_CHOMP,             chain_chomp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_FLAG,              koopa_flag_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_WOODEN_POST,             wooden_post_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_WOODEN_POST,             wooden_post_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
@@ -304,8 +304,8 @@ const LevelScript script_func_global_6[] = {
 };
 
 const LevelScript script_func_global_7[] = {
-    LOAD_MODEL_FROM_DL( MODEL_DL_MONTY_MOLE_HOLE,      monty_mole_hole_seg5_dl_05000840, LAYER_TRANSPARENT_DECAL),
-    LOAD_MODEL_FROM_GEO(MODEL_MONTY_MOLE,              monty_mole_geo),
+    // LOAD_MODEL_FROM_DL( MODEL_DL_MONTY_MOLE_HOLE,      monty_mole_hole_seg5_dl_05000840, LAYER_TRANSPARENT_DECAL),
+    //LOAD_MODEL_FROM_GEO(MODEL_MONTY_MOLE,              monty_mole_geo),
     LOAD_MODEL_FROM_GEO(MODEL_UKIKI,                   ukiki_geo),
     LOAD_MODEL_FROM_GEO(MODEL_FWOOSH,                  fwoosh_geo),
     RETURN(),

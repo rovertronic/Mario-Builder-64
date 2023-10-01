@@ -50,7 +50,7 @@ const LevelScript level_sl_entry[] = {
 	LOAD_MODEL_FROM_GEO(MODEL_SS, SS_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_ROBOT, robot_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_SPIKETUBE, spiketube_geo), 
-	LOAD_MODEL_FROM_GEO(MODEL_C10_SPOTLIGHT, spotlight_geo), 
+	//LOAD_MODEL_FROM_GEO(MODEL_C10_SPOTLIGHT, spotlight_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_CURTAIN, curtaincall_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_REGGIE, reggie_geo), 
 	LOAD_MODEL_FROM_GEO(MODEL_CURTAIN_2, curtain2_geo), 

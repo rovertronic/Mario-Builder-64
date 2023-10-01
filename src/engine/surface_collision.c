@@ -30,6 +30,73 @@
     next_step;                                  \
 }
 
+void get_surface_normal_oo(f32 normal[4], struct Surface *surf) {
+    f32 nx, ny, nz;
+    f32 mag;
+
+    register s32 x1, y1, z1;
+    register s32 x2, y2, z2;
+    register s32 x3, y3, z3;
+
+    x1 = surf->vertex1[0];
+    y1 = surf->vertex1[1];
+    z1 = surf->vertex1[2];
+    x2 = surf->vertex2[0];
+    y2 = surf->vertex2[1];
+    z2 = surf->vertex2[2];
+    x3 = surf->vertex3[0];
+    y3 = surf->vertex3[1];
+    z3 = surf->vertex3[2];
+
+    // (v2 - v1) x (v3 - v2)
+    nx = (y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2);
+    ny = (z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2);
+    nz = (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2);
+    mag = sqrtf(nx * nx + ny * ny + nz * nz);
+    mag = (f32)(1.0f / mag);
+    nx *= mag;
+    ny *= mag;
+    nz *= mag;
+
+    normal[0] = nx;
+    normal[1] = ny;
+    normal[2] = nz;
+    normal[3] = -(nx * x1 + ny * y1 + nz * z1);
+}
+
+void get_surface_normal(f32 normal[3], struct Surface *surf) {
+    f32 nx, ny, nz;
+    f32 mag;
+
+    register s32 x1, y1, z1;
+    register s32 x2, y2, z2;
+    register s32 x3, y3, z3;
+
+    x1 = surf->vertex1[0];
+    y1 = surf->vertex1[1];
+    z1 = surf->vertex1[2];
+    x2 = surf->vertex2[0];
+    y2 = surf->vertex2[1];
+    z2 = surf->vertex2[2];
+    x3 = surf->vertex3[0];
+    y3 = surf->vertex3[1];
+    z3 = surf->vertex3[2];
+
+    // (v2 - v1) x (v3 - v2)
+    nx = (y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2);
+    ny = (z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2);
+    nz = (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2);
+    mag = sqrtf(nx * nx + ny * ny + nz * nz);
+    mag = (f32)(1.0f / mag);
+    nx *= mag;
+    ny *= mag;
+    nz *= mag;
+
+    normal[0] = nx;
+    normal[1] = ny;
+    normal[2] = nz;
+}
+
 /**
  * Iterate through the list of walls until all walls are checked and
  * have given their wall push.
@@ -66,7 +133,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
 
         // Determine if checking for the camera or not.
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) continue;
+            if (surf_has_no_cam_collision(surf->type)) continue;
         } else {
             // Ignore camera only surfaces.
             if (type == SURFACE_CAMERA_BOUNDARY) continue;
@@ -80,8 +147,11 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             }
         }
 
+        f32 normal[4];
+        get_surface_normal_oo(normal, surf);
+
         // Dot of normal and pos, + origin offset
-        offset = (surf->normal.x * pos[0]) + (surf->normal.y * pos[1]) + (surf->normal.z * pos[2]) + surf->originOffset;
+        offset = (normal[0] * pos[0]) + (normal[1] * pos[1]) + (normal[2] * pos[2]) + normal[3];
 
         // Exclude surfaces outside of the radius.
         if (offset < -radius || offset > radius) continue;
@@ -106,8 +176,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         w = ((d00 * d21) - (d01 * d20)) * invDenom;
         if (w < 0.0f || w > 1.0f || v + w > 1.0f) goto edge_1_2;
 
-        pos[0] += surf->normal.x * (radius - offset);
-        pos[2] += surf->normal.z * (radius - offset);
+        pos[0] += normal[0] * (radius - offset);
+        pos[2] += normal[2] * (radius - offset);
         goto hasCollision;
 
     edge_1_2:
@@ -127,7 +197,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         pos[0] += (d00 *= invDenom);
         pos[2] += (d01 *= invDenom);
         margin_radius += 0.01f;
-        if ((d00 * surf->normal.x) + (d01 * surf->normal.z) < (corner_threshold * offset)) continue;
+        if ((d00 * normal[0]) + (d01 * normal[2]) < (corner_threshold * offset)) continue;
 
     hasCollision:
         if (data->numWalls < MAX_REFERENCED_WALLS) {
@@ -238,7 +308,7 @@ void add_ceil_margin(s32 *x, s32 *z, Vec3s target1, Vec3s target2, f32 margin) {
 }
 
 static s32 check_within_ceil_triangle_bounds(s32 x, s32 z, struct Surface *surf, f32 margin) {
-    s32 addMargin = surf->type != SURFACE_HANGABLE && !FLT_IS_NONZERO(margin);
+    s32 addMargin = surf->type != SURFACE_VANISH_CAP_WALLS && !FLT_IS_NONZERO(margin);
     Vec3i vx, vz;
     vx[0] = surf->vertex1[0];
     vz[0] = surf->vertex1[2];
@@ -262,6 +332,8 @@ static s32 check_within_ceil_triangle_bounds(s32 x, s32 z, struct Surface *surf,
     return TRUE;
 }
 
+extern f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf);
+
 /**
  * Iterate through the list of ceilings and find the first ceiling over a given point.
  */
@@ -281,7 +353,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
 
         // Determine if checking for the camera or not
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf_has_no_cam_collision(surf->type)) {
                 continue;
             }
         } else if (type == SURFACE_CAMERA_BOUNDARY) {
@@ -293,7 +365,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         if (!check_within_ceil_triangle_bounds(x, z, surf, 1.5f)) continue;
 
         // Find the height of the ceil at the given location
-        height = get_surface_height_at_location(x, z, surf);
+        height = get_floor_height_at_location(x, z, surf);
 
         // Exclude ceilings above the previous lowest ceiling
         if (height > *pheight) continue;
@@ -423,7 +495,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
 
         // Determine if we are checking for the camera or not.
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {
-            if (surf->flags & SURFACE_FLAG_NO_CAM_COLLISION) {
+            if (surf_has_no_cam_collision(surf->type)) {
                 continue;
             }
         } else if (type == SURFACE_CAMERA_BOUNDARY) {
@@ -436,7 +508,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         if (!check_within_floor_triangle_bounds(x, z, surf)) continue;
 
         // Get the height of the floor under the current location.
-        height = get_surface_height_at_location(x, z, surf);
+        height = get_floor_height_at_location(x, z, surf);
 
         // Exclude floors lower than the previous highest floor.
         if (height <= *pheight) continue;
@@ -466,13 +538,17 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
 
 // Generic triangle bounds func
 ALWAYS_INLINE static s32 check_within_bounds_y_norm(s32 x, s32 z, struct Surface *surf) {
-    if (surf->normal.y >= NORMAL_FLOOR_THRESHOLD) return check_within_floor_triangle_bounds(x, z, surf);
+    f32 normal[3];
+    get_surface_normal(normal, surf);
+    if (normal[1] >= NORMAL_FLOOR_THRESHOLD) return check_within_floor_triangle_bounds(x, z, surf);
     return check_within_ceil_triangle_bounds(x, z, surf, 0);
 }
 
 // Find the height of the floor at a given location
-static f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
-    return -(x * surf->normal.x + surf->normal.z * z + surf->originOffset) / surf->normal.y;
+ALWAYS_INLINE f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
+    f32 normal[4];
+    get_surface_normal_oo(normal, surf);
+    return -(x * normal[0] + normal[2] * z + normal[3]) / normal[1];
 }
 
 f32 sClosestWaterBottomAboveY = CELL_HEIGHT_LIMIT;
@@ -503,7 +579,7 @@ f32 find_water_bottom_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s
         if (curBottomHeight < y + 78.0f) {
             if (curBottomHeight > sClosestWaterBottomBelowY) {
                 sClosestWaterBottomBelowY = curBottomHeight;
-                bottomForce = surf->force;
+                //bottomForce = surf->force;
                 setForce = TRUE;
             }
             continue;
@@ -518,7 +594,7 @@ f32 find_water_bottom_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s
 
     //if (gCheckingWaterForMario && setForce) {
         gMarioState->waterBottomHeight = sClosestWaterBottomBelowY;
-        gMarioState->waterBottomParam = bottomForce;
+        //gMarioState->waterBottomParam = bottomForce;
     //}
 
     return sClosestWaterBottomAboveY;
@@ -900,43 +976,3 @@ void debug_surface_list_info(f32 xPos, f32 zPos) {
     gNumCalls.wall = 0;
 }
 #endif
-
-/**
- * An unused function that finds and interacts with any type of surface.
- * Perhaps an original implementation of surfaces before they were more specialized.
- */
-s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32 *px, f32 *py, f32 *pz, f32 radius,
-                                            struct Surface **psurface, f32 *surfaceHeight) {
-    f32 x = *px;
-    f32 y = *py;
-    f32 z = *pz;
-
-    *psurface = NULL;
-
-    if (checkCeil) {
-        *surfaceHeight = find_ceil(x, y, z, psurface);
-    } else {
-        *surfaceHeight = find_floor(x, y, z, psurface);
-    }
-
-    if (*psurface == NULL) return -1;
-
-    f32 nx = (*psurface)->normal.x;
-    f32 ny = (*psurface)->normal.y;
-    f32 nz = (*psurface)->normal.z;
-    f32 oo = (*psurface)->originOffset;
-
-    f32 offset = absf((nx * x) + (ny * y) + (nz * z) + oo);
-
-    // Interesting surface interaction that should be surf type independent.
-    if (offset < radius) {
-        offset = (radius - offset);
-        *px += (nx * offset);
-        *py += (ny * offset);
-        *pz += (nz * offset);
-
-        return 1;
-    }
-
-    return 0;
-}
