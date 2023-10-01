@@ -1427,6 +1427,16 @@ void place_tile(s8 pos[3]) {
         return;
     }
 
+    if (cmm_tile_terrains[cmm_id_selection] != NULL) {
+        TerrainData coltype;
+        if (HAS_TOPMAT(cmm_mat_selection)) {
+            coltype = TOPMAT(cmm_mat_selection).col;
+        } else {
+            coltype = MATERIAL(cmm_mat_selection).col;
+        }
+        play_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype), gGlobalSoundSource);
+    }
+
     place_terrain_data(pos, cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
     get_grid_tile(pos)->waterlogged = waterlogged;
     u32 index = get_tiletype_index(cmm_id_selection, cmm_mat_selection);
