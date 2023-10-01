@@ -1755,11 +1755,32 @@ void load_level(u8 index) {
         cmm_save.object_count = 1;
         cmm_save.objects[0].x = 32;
         cmm_save.objects[0].z = 32;
-        cmm_save.objects[0].y = 4;
+        cmm_save.objects[0].y = cmm_templates[cmm_lopt_template].spawnHeight;
         cmm_save.objects[0].type = OBJECT_TYPE_SPAWN;
 
         cmm_save.option[19] = cmm_lopt_game;
         cmm_save.option[7] = cmm_lopt_size;
+
+        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music;
+        cmm_save.option[2] = cmm_templates[cmm_lopt_template].envfx;
+        cmm_save.option[3] = cmm_templates[cmm_lopt_template].theme;
+        cmm_save.option[4] = cmm_templates[cmm_lopt_template].bg;
+        cmm_save.option[5] = cmm_templates[cmm_lopt_template].plane;
+
+        if (cmm_templates[cmm_lopt_template].platform) {
+            u8 i = 0;
+            for (s8 x = -1; x <= 1; x++) {
+                for (s8 z = -1; z <= 1; z++) {
+                    cmm_save.tiles[i].x = 32+x;
+                    cmm_save.tiles[i].y = 0;
+                    cmm_save.tiles[i].z = 32+z;
+                    cmm_save.tiles[i].type = TILE_TYPE_BLOCK;
+                    cmm_save.tiles[i].mat = 0;
+                    i++;
+                }
+            }
+            cmm_save.tile_count = i;
+        }
     }
 
     cmm_tile_count = cmm_save.tile_count;
@@ -1774,17 +1795,19 @@ void load_level(u8 index) {
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_size = cmm_save.option[7];
-
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
             cmm_grid_size = 32;
+            break;
         case 1:
             cmm_grid_min = 8;
             cmm_grid_size = 48;
+            break;
         case 2:
             cmm_grid_min = 0;
             cmm_grid_size = 64;
+            break;
     }
 
     cmm_lopt_game = cmm_save.option[19];
@@ -1860,7 +1883,7 @@ void cmm_init() {
 void sb_init(void) {
     struct Object *spawn_obj;
 
-    vec3_set(cmm_cursor_pos, 32, 4, 32);
+    vec3_set(cmm_cursor_pos, 32, 0, 32);
     cmm_ui_index = 0;
     vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);

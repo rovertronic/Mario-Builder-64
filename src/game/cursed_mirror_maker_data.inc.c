@@ -1070,6 +1070,25 @@ char *cmm_template_string_table[] = {
     "Snowy",
 };
 
+struct cmm_template {
+    u8 music;
+    u8 envfx;
+    u8 bg;
+    u8 theme;
+    u8 plane;
+
+    u8 spawnHeight;
+    u8 platform;
+};
+
+struct cmm_template cmm_templates[] = {
+    {19, 0, 0, 0, 1,     2, FALSE},   // bob song
+    {22, 0, 6, 1, 1,     2, FALSE},   // SSL song
+    {2,  1, 2, 2, 2,     3, TRUE}, // red hot
+    {21, 0, 0, 8, 1,     2, FALSE}, // DDD
+    {23, 2, 5, 0, 6,     2, FALSE}, // CCM
+};
+
 struct cmm_settings_button cmm_mode_settings_buttons[] = {
     {"Mode:", &cmm_lopt_game, cmm_gamemode_string_table, ARRAY_COUNT(cmm_gamemode_string_table)},
     {"Size:", &cmm_lopt_size, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table)},
