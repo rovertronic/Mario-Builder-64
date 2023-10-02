@@ -184,22 +184,70 @@ struct cmm_terrain cmm_terrain_bottomslab = {
     NULL
 };
 
+struct cmm_terrain_quad cmm_terrain_topslab_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16},  {0, 16, 0}},  1, CMM_DIRECTION_UP,    CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 8, 16},  {0, 8, 16},  {16, 8, 0},   {0, 8, 0}},   1, CMM_NO_CULLING,      CMM_FACESHAPE_EMPTY, 0, NULL}, // BOTTOM
+    {{{16, 16, 16}, {16, 8, 16}, {16, 16, 0},  {16, 8, 0}},  0, CMM_DIRECTION_POS_X, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 0},   {0, 8, 0},   {0, 16, 16},  {0, 8, 16}},  0, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{0, 16, 16},  {0, 8, 16},  {16, 16, 16}, {16, 8, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+    {{{16, 16, 0},  {16, 8, 0},  {0, 16, 0},   {0, 8, 0}},   2, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+};
+
+struct cmm_terrain cmm_terrain_topslab = {
+    6,
+    0,
+    cmm_terrain_topslab_quads,
+    NULL
+};
+
+s8 slope_decal_below_uvsquad_l[4][2] = {{0, 0}, {16, 16}, {0, -16}, {16, 0}};
+s8 slope_decal_below_uvsquad_r[4][2] = {{16, 16}, {0, 0}, {16, 0}, {0, -16}};
+s8 slope_decal_below_uvstri_1_l[3][2] = {{0, 0}, {16, 16}, {0, -16}};
+s8 slope_decal_below_uvstri_1_r[3][2] = {{16, 16}, {0, 0}, {16, 0}};
+s8 slope_decal_below_uvstri_2_l[3][2] = {{16, 16}, {16, 0}, {0, 0}};
+s8 slope_decal_below_uvstri_2_r[3][2] = {{0, 0}, {0, -16}, {16, 16}};
+s8 slope_decal_below_uvsslab_l[4][2] = {{0, 0}, {16, 16}, {0, -8}, {16, 8}};
+s8 slope_decal_below_uvsslab_r[4][2] = {{16, 16}, {0, 0}, {16, 8}, {0, -8}};
 
 // All of this is for the system where slopes can place a decal on the face below them.
 // Very hardcoded, so best not to touch any of these numbers
-s8 slope_decal_below_uvsquad_l[4][2] = {{0, 0}, {16, 16}, {0, -16}, {16, 0}};
-s8 slope_decal_below_uvsquad_r[4][2] = {{16, 16}, {0, 0}, {16, 0}, {0, -16}};
-s8 slope_decal_below_uvstri_1[3][2] = {{16, 16}, {0, 0}, {16, 0}};
-s8 slope_decal_below_uvstri_2[3][2] = {{16, 16}, {16, 0}, {0, 0}};
+void *slope_decal_below_uvs[][2] = {
+    { // Full block
+        &slope_decal_below_uvsquad_l,
+        &slope_decal_below_uvsquad_r,
+    },
+    { // Downtri 1
+        &slope_decal_below_uvstri_1_l,
+        &slope_decal_below_uvstri_1_r,
+    },
+    { // Downtri 2
+        &slope_decal_below_uvstri_2_l,
+        &slope_decal_below_uvstri_2_r,
+    },
+    { // Top slab
+        &slope_decal_below_uvsslab_l,
+        &slope_decal_below_uvsslab_r,
+    }
+};
 
 struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
     {{16, 16, 16}, {0, 16, 16}, {16, 0, 16}, {0, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
 };
 struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri1 = {
-    {{16, 16, 16}, {0, 16, 16}, {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, &slope_decal_below_uvstri_1
+    {{16, 16, 16}, {0, 16, 16}, {16, 0, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_1, 0, NULL
 };
 struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
-    {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, &slope_decal_below_uvstri_2
+    {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNTRI_2, 0, NULL
+};
+struct cmm_terrain_quad cmm_terrain_slopebelowdecal_topslab = {
+    {{16, 16, 16}, {0, 16, 16}, {16, 8, 16}, {0, 8, 16}}, 2, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TOPSLAB, 0, NULL
+};
+
+void *slope_decal_below_surfs[] = {
+    &cmm_terrain_slopebelowdecal_quad,
+    &cmm_terrain_slopebelowdecal_downtri1,
+    &cmm_terrain_slopebelowdecal_downtri2,
+    &cmm_terrain_slopebelowdecal_topslab,
 };
 
 // Shape of fence
@@ -267,7 +315,7 @@ struct cmm_terrain *cmm_tile_terrains[] = {
     &cmm_terrain_dslope,     // TILE_TYPE_DSLOPE
     &cmm_terrain_sslope,     // TILE_TYPE_SSLOPE
     &cmm_terrain_bottomslab, // TILE_TYPE_SLAB
-    NULL,                    // TILE_TYPE_DSLAB
+    &cmm_terrain_topslab,    // TILE_TYPE_DSLAB
     NULL,                    // TILE_TYPE_SSLAB
     NULL,                    //TILE_TYPE_CULL
     &cmm_terrain_fullblock,  //TILE_TYPE_TROLL

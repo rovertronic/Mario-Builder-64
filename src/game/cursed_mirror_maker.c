@@ -367,14 +367,14 @@ s8 cullOffsetLUT[6][3] = {
     {0, 0, -1},
 };
 
-u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
+s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (direction == CMM_NO_CULLING) return FALSE;
     direction = ROTATE_DIRECTION(direction, rot);
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(newpos)) return TRUE;
-    u8 tileType = get_grid_tile(newpos)->type - 1;
+    s32 tileType = get_grid_tile(newpos)->type - 1;
     switch(tileType) {
         case TILE_TYPE_CULL:
             return TRUE;
@@ -383,13 +383,13 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
             break;
     }
 
-    u8 otherMat = get_grid_tile(newpos)->mat;
+    s32 otherMat = get_grid_tile(newpos)->mat;
     if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
-        u8 curMat = get_grid_tile(pos)->mat;
+        s32 curMat = get_grid_tile(pos)->mat;
         if (curMat != otherMat) return FALSE;
     }
 
-    u32 otherFaceshape = get_faceshape(newpos, direction);
+    s32 otherFaceshape = get_faceshape(newpos, direction);
 
     if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (otherFaceshape == CMM_FACESHAPE_FULL) return TRUE;
@@ -400,10 +400,23 @@ u32 should_cull(s8 pos[3], u32 direction, u32 faceshape, u32 rot) {
             return (otherrot == rot);
         } else return FALSE;
     }
-    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB) {
-        return (otherFaceshape == CMM_FACESHAPE_BOTTOMSLAB);
+    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB) {
+        return (otherFaceshape == faceshape);
     }
     return (faceshape == (otherFaceshape^1));
+}
+
+// Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
+s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
+    direction = ROTATE_DIRECTION(direction, rot);
+
+    s8 newpos[3];
+    vec3_sum(newpos, pos, cullOffsetLUT[direction]);
+    //if (!coords_in_range(newpos)) return TRUE;
+
+    s32 otherFaceshape = get_faceshape(newpos, direction);
+    if (otherFaceshape == CMM_FACESHAPE_TOPSLAB) return TRUE;
+    return FALSE;
 }
 
 s32 handle_wait_vblank(OSMesgQueue *mq) {
@@ -691,6 +704,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             // Shape of face of above block on same side
             if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
                 return TRUE;
+            if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
             otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_TRI_1:
@@ -734,6 +748,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             // Shape of face of above block on same side
             otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
+            if (should_cull_topslab_check(newpos, direction, rot)) return TRUE;
             
             // Calculate effective rotation of face to print. very ugly
             u8 targetRot = 0;
@@ -753,30 +768,47 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             }
             targetRot = (targetRot + rot) % 4;
 
+            s32 index;
+            s32 isQuad;
+
             switch (otherFaceshape) {
                 default:
                     return TRUE;
                 // Face is full quad
                 case CMM_FACESHAPE_FULL:
-                    // Fill in correct UVs
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        cmm_terrain_slopebelowdecal_quad.altuvs = &slope_decal_below_uvsquad_l;
-                    else
-                        cmm_terrain_slopebelowdecal_quad.altuvs = &slope_decal_below_uvsquad_r;
-                    
-                    render_quad(&cmm_terrain_slopebelowdecal_quad, newpos, targetRot);
-                    return TRUE;
+                    index = 0;
+                    isQuad = TRUE;
+                    break;
                 case CMM_FACESHAPE_DOWNTRI_1:
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_R)
-                        process_tri(newpos, &cmm_terrain_slopebelowdecal_downtri1, targetRot);
-                    return TRUE; 
+                    index = 1;
+                    isQuad = FALSE;
+                    break;
                 case CMM_FACESHAPE_DOWNTRI_2:
-                    if (grassType == CMM_GROWTH_SLOPE_SIDE_L)
-                        process_tri(newpos, &cmm_terrain_slopebelowdecal_downtri2, targetRot);
-                    return TRUE;
+                    index = 2;
+                    isQuad = FALSE;
+                    break;
+                case CMM_FACESHAPE_TOPSLAB:
+                    index = 3;
+                    isQuad = TRUE;
+                    break;
             }
-            
 
+            s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);
+
+            if (isQuad) {
+                struct cmm_terrain_quad *quad = slope_decal_below_surfs[index];
+                quad->altuvs = slope_decal_below_uvs[index][side];
+                if (quad->altuvs != NULL) {
+                    render_quad(quad, newpos, targetRot);
+                }
+            } else {
+                struct cmm_terrain_tri *tri = slope_decal_below_surfs[index];
+                tri->altuvs = slope_decal_below_uvs[index][side];
+                if (tri->altuvs != NULL) {
+                    render_tri(tri, newpos, targetRot);
+                }
+            }
+            return TRUE;
         case CMM_GROWTH_DIAGONAL_SIDE:
             otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
@@ -2069,6 +2101,10 @@ void sb_loop(void) {
                     case TILE_TYPE_ICORNER:
                     case TILE_TYPE_DICORNER:
                         cmm_id_selection = TILE_TYPE_DICORNER;
+                        break;
+                    case TILE_TYPE_SLAB:
+                    case TILE_TYPE_DSLAB:
+                        cmm_id_selection = TILE_TYPE_DSLAB;
                         break;
                     default:
                         cmm_upsidedown_tile = FALSE;
