@@ -177,6 +177,29 @@ s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butto
     print_maker_string_ascii_centered(x + width, y - 8, ">", cmm_mm_index == i);
 }
 
+void cmm_render_error_message(void) {
+    if (cmm_error_timer > 0) {
+        if (cmm_error_timer == 120) {
+            cmm_error_vels[1] = -15.f;
+            cmm_error_vels[2] = 2.f;
+        } else if (cmm_error_timer == 30) {
+            cmm_error_vels[2] = 2.f;
+        }
+        if (cmm_error_timer > 60 && cmm_error_vels[1] > 0) {
+            cmm_error_vels[1] = 0;
+            cmm_error_vels[2] = 0;
+        }
+        if (cmm_error_vels[0] > 280) {
+            cmm_error_vels[1] = 0;
+            cmm_error_vels[2] = 0;
+        }
+        cmm_error_vels[0] += cmm_error_vels[1];
+        cmm_error_vels[1] += cmm_error_vels[2];
+
+        print_maker_string_ascii(15,cmm_error_vels[0],cmm_error_message,4);
+        cmm_error_timer--;
+    }
+}
 
 void draw_cmm_menu(void) {
     u32 i;
@@ -228,27 +251,7 @@ void draw_cmm_menu(void) {
                 TILE_MATDEF(cmm_mat_selection).name,TRUE);
             }
 
-            if (cmm_error_timer > 0) {
-                if (cmm_error_timer == 120) {
-                    cmm_error_vels[1] = -15.f;
-                    cmm_error_vels[2] = 2.f;
-                } else if (cmm_error_timer == 30) {
-                    cmm_error_vels[2] = 2.f;
-                }
-                if (cmm_error_timer > 60 && cmm_error_vels[1] > 0) {
-                    cmm_error_vels[1] = 0;
-                    cmm_error_vels[2] = 0;
-                }
-                if (cmm_error_vels[0] > 280) {
-                    cmm_error_vels[1] = 0;
-                    cmm_error_vels[2] = 0;
-                }
-                cmm_error_vels[0] += cmm_error_vels[1];
-                cmm_error_vels[1] += cmm_error_vels[2];
-
-                print_maker_string_ascii(15,cmm_error_vels[0],cmm_error_message,4);
-                cmm_error_timer--;
-            }
+            cmm_render_error_message();
         break;
         case CMM_MAKE_TOOLBOX:
         for (i=0; i<sizeof(cmm_toolbox); i++) {
@@ -314,6 +317,7 @@ void draw_cmm_menu(void) {
 
         case CMM_MAKE_TRAJECTORY:
             print_maker_string(20,210,cmm_txt_recording,TRUE);
+            cmm_render_error_message();
         break;
     }
 }

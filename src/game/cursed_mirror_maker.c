@@ -219,7 +219,7 @@ void df_exbox(struct Object * obj, int param) {
 
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
-void display_error_message(char *message) {
+void cmm_show_error_message(char *message) {
     if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
         cmm_error_message = message;
         cmm_error_timer = 120;
@@ -250,15 +250,15 @@ u32 coords_in_range(s8 pos[3]) {
 
 s32 tile_sanity_check(void) {
     if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
-        display_error_message("Tile limit reached (max 10,000)");
+        cmm_show_error_message("Tile limit reached! (max 10,000)");
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
-        display_error_message("Vertex limit reached (max 25,000)");
+        cmm_show_error_message("Vertex limit reached! (max 25,000)");
         return FALSE;
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
-        display_error_message("Graphics pool limit reached.");
+        cmm_show_error_message("Graphics pool is full!");
         return FALSE;
     }
 
@@ -267,13 +267,13 @@ s32 tile_sanity_check(void) {
 
 s32 object_sanity_check(void) {
     if (cmm_object_count >= CMM_MAX_OBJS) {
-        display_error_message("Object limit reached (max 512)");
+        cmm_show_error_message("Object limit reached! (max 512)");
         return FALSE;
     }
 
     if (cmm_object_types[cmm_id_selection].use_trajectory) {
         if (cmm_trajectories_used >= CMM_MAX_TRAJECTORIES) {
-            display_error_message("Trajectory limit reached (max 20)");
+            cmm_show_error_message("Trajectory limit reached! (max 20)");
             return FALSE;
         }
     }
@@ -287,7 +287,7 @@ s32 object_sanity_check(void) {
             }
         }
         if (numStars >= 32) {
-            display_error_message("Star limit reached (max 32)");
+            cmm_show_error_message("Star limit reached! (max 32)");
             return FALSE;
         }
     }
@@ -295,7 +295,7 @@ s32 object_sanity_check(void) {
     if (cmm_id_selection == OBJECT_TYPE_RCS) {
         for (u32 i = 0; i < cmm_object_count; i++) {
             if (cmm_object_data[i].type == OBJECT_TYPE_RCS) {
-                display_error_message("Red Coin Star already placed!");
+                cmm_show_error_message("Red Coin Star already placed!");
                 return FALSE;
             }
         }
@@ -332,13 +332,13 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain = cmm_tile_terrains[tileType];
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
-        if (quad->cullDir == dir) {
+        if (quad->faceDir == dir) {
             return quad->faceshape;
         }
     }
     for (u32 i = 0; i < terrain->numTris; i++) {
         struct cmm_terrain_tri *tri = &terrain->tris[i];
-        if (tri->cullDir == dir) {
+        if (tri->faceDir == dir) {
             return tri->faceshape;
         }
     }
@@ -368,7 +368,7 @@ s8 cullOffsetLUT[6][3] = {
 };
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
-    if (direction == CMM_NO_CULLING) return FALSE;
+    if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     direction = ROTATE_DIRECTION(direction, rot);
 
     s8 newpos[3];
@@ -531,7 +531,7 @@ void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
     }
 }
 
-void render_get_normal_and_uvs(s8 v[3][3], u32 uvProjDir, u32 rot, u8 *uAxis, u8 *vAxis, s8 n[3]) {
+s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 *vAxis, s8 n[3]) {
     // Find normal
     Vec3f normal;
     find_vector_perpendicular_to_plane(normal, v[0], v[1], v[2]);
@@ -540,11 +540,14 @@ void render_get_normal_and_uvs(s8 v[3][3], u32 uvProjDir, u32 rot, u8 *uAxis, u8
     n[1] = normal[1] * 0x7F;
     n[2] = normal[2] * 0x7F;
     // Find UVs
-    if (rot & 1) uvProjDir = 2 - uvProjDir;
-    switch (uvProjDir) {
-        case 0: *uAxis = 2; *vAxis = 1; break;
-        case 1: *uAxis = 2; *vAxis = 0; break;
-        case 2: *uAxis = 0; *vAxis = 1; break;
+    direction = ROTATE_DIRECTION(direction, rot);
+    switch (direction) {
+        case CMM_DIRECTION_NEG_X: *uAxis = 2; *vAxis = 1; return TRUE;
+        case CMM_DIRECTION_POS_X: *uAxis = 2; *vAxis = 1; return FALSE;
+        case CMM_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return TRUE;
+        case CMM_DIRECTION_UP: *uAxis = 2; *vAxis = 0; return FALSE;
+        case CMM_DIRECTION_NEG_Z: *uAxis = 0; *vAxis = 1; return FALSE;
+        case CMM_DIRECTION_POS_Z: *uAxis = 0; *vAxis = 1; return TRUE;
     }
 }
 
@@ -554,7 +557,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
 
     s8 newVtx[4][3];
     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
-    render_get_normal_and_uvs(newVtx, quad->uvProjDir, rot, &uAxis, &vAxis, n);
+    s32 flipU = render_get_normal_and_uvs(newVtx, quad->faceDir, rot, &uAxis, &vAxis, n);
 
     for (u32 i = 0; i < 4; i++) {
         s16 u, v;
@@ -562,7 +565,8 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             u = 16 - (*quad->altuvs)[i][0];
             v = 16 - (*quad->altuvs)[i][1];
         } else {
-            u = 16 - newVtx[i][uAxis];
+            u = newVtx[i][uAxis];
+            if (!flipU) u = 16 - u;
             v = 16 - newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
@@ -590,7 +594,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
 
     s8 newVtx[3][3];
     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
-    render_get_normal_and_uvs(newVtx, tri->uvProjDir, rot, &uAxis, &vAxis, n);
+    s32 flipU = render_get_normal_and_uvs(newVtx, tri->faceDir, rot, &uAxis, &vAxis, n);
 
     for (u32 i = 0; i < 3; i++) {
         s16 u, v;
@@ -598,7 +602,8 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             u = 16 - (*tri->altuvs)[i][0];
             v = 16 - (*tri->altuvs)[i][1];
         } else {
-            u = 16 - newVtx[i][uAxis];
+            u = newVtx[i][uAxis];
+            if (!flipU) u = 16 - u;
             v = 16 - newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
@@ -823,15 +828,15 @@ void process_quad_with_growth(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot)
     switch (cmm_growth_render_type) {
         case 0: // regular tex
             if (cmm_curr_mat_has_topside && (quad->growthType == CMM_GROWTH_FULL)) return;
-            if (should_cull(pos, quad->cullDir, quad->faceshape, rot)) return;
+            if (should_cull(pos, quad->faceDir, quad->faceshape, rot)) return;
             break;
         case 1: // grass top
             if (quad->growthType != CMM_GROWTH_FULL) return;
-            if (should_cull(pos, quad->cullDir, quad->faceshape, rot)) return;
+            if (should_cull(pos, quad->faceDir, quad->faceshape, rot)) return;
             break;
         case 2: // grass decal
             if (quad->growthType == CMM_GROWTH_FULL || quad->growthType == CMM_GROWTH_NONE) return;
-            if (!should_render_grass_side(pos, quad->cullDir, quad->faceshape, rot, quad->growthType)) return;
+            if (!should_render_grass_side(pos, quad->faceDir, quad->faceshape, rot, quad->growthType)) return;
             break;
     }
     process_quad(pos, quad, rot);
@@ -841,15 +846,15 @@ void process_tri_with_growth(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
     switch (cmm_growth_render_type) {
         case 0: // regular tex
             if (cmm_curr_mat_has_topside && (tri->growthType == CMM_GROWTH_FULL)) return;
-            if (should_cull(pos, tri->cullDir, tri->faceshape, rot)) return;
+            if (should_cull(pos, tri->faceDir, tri->faceshape, rot)) return;
             break;
         case 1: // grass top
             if (tri->growthType != CMM_GROWTH_FULL) return;
-            if (should_cull(pos, tri->cullDir, tri->faceshape, rot)) return;
+            if (should_cull(pos, tri->faceDir, tri->faceshape, rot)) return;
             break;
         case 2: // grass decal
             if (tri->growthType == CMM_GROWTH_FULL || tri->growthType == CMM_GROWTH_NONE) return;
-            if (!should_render_grass_side(pos, tri->cullDir, tri->faceshape, rot, tri->growthType)) return;
+            if (!should_render_grass_side(pos, tri->faceDir, tri->faceshape, rot, tri->growthType)) return;
             break;
     }
     process_tri(pos, tri, rot);
@@ -925,13 +930,13 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
 void render_water(s8 pos[3]) {
     u32 isFullblock = is_water_fullblock(pos);
     for (u32 j = 0; j < 6; j++) {
-        u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].cullDir, isFullblock);
+        u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].faceDir, isFullblock);
         if (sideRender != 0) {
             struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[sideRender - 1][j];
             if (cmm_building_collision) {
-                if (quad->cullDir == CMM_DIRECTION_UP) {
+                if (quad->faceDir == CMM_DIRECTION_UP) {
                     cmm_curr_coltype = SURFACE_NEW_WATER;
-                } else if (quad->cullDir == CMM_DIRECTION_DOWN) {
+                } else if (quad->faceDir == CMM_DIRECTION_DOWN) {
                     cmm_curr_coltype = SURFACE_NEW_WATER_BOTTOM;
                 } else {
                     continue;
@@ -1629,6 +1634,7 @@ void delete_tile_action(s8 pos[3]) {
             index = i;
             remove_occupy_data(pos);
             remove_terrain_data(pos);
+            play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
             cmm_tile_count--;
         }
     }
@@ -1651,6 +1657,7 @@ void delete_tile_action(s8 pos[3]) {
         if ((cmm_object_data[i].x == pos[0])&&(cmm_object_data[i].y == pos[1])&&(cmm_object_data[i].z == pos[2])) {
             index = i;
             remove_occupy_data(pos);
+            play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
 
             if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
                 remove_trajectory(cmm_object_data[i].param);
@@ -2326,6 +2333,7 @@ void sb_loop(void) {
             }
 
             if (o->oTimer == 0) {
+                // Initial placement on top of the object
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
@@ -2333,16 +2341,35 @@ void sb_loop(void) {
                 cmm_trajectory_edit_index++; 
             } else {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
-                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
-                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
-                    cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
-                    cmm_trajectory_edit_index++;
-                    generate_trajectory_gfx();
+                    if (cmm_trajectory_edit_index == CMM_TRAJECTORY_LENGTH - 1) {
+                        cmm_show_error_message("Maximum trajectory length reached! (max 50)");
+                    // i fucking hate this, worst code ever. this hopefully won't have floating point inaccuracies
+                    } else if (cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 3] == o->oPosX
+                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 2] == o->oPosY
+                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 1] == o->oPosZ) {
+                        cmm_show_error_message("");
+                    } else {
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                        cmm_trajectory_edit_index++;
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        generate_trajectory_gfx();
+                    }
+                } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                    if (cmm_trajectory_edit_index <= 1) {
+                        cmm_show_error_message("Nothing to delete!");
+                    } else {
+                        cmm_trajectory_edit_index--;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
+                        play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
+                        generate_trajectory_gfx();
+                    }
                 }
             }
 
-            if ((gPlayer1Controller->buttonPressed & START_BUTTON)||(cmm_trajectory_edit_index == CMM_TRAJECTORY_LENGTH - 1)) {
+            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;

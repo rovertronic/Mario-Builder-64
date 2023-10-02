@@ -3571,8 +3571,7 @@ chan_setlayer 0, .layer_1599
 chan_end
 
 .layer_1599:
-layer_note0 36, 0xa, 80, 80
-layer_note0 24, 0xa, 80, 80
+layer_note0 28, 0xa, 80, 80
 layer_end
 
 .sound_general_quiet_pound2:

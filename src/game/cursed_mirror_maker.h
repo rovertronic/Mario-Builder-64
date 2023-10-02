@@ -8,7 +8,7 @@
 
 #define CMM_MAX_OBJS 512
 #define CMM_MAX_TRAJECTORIES 20
-#define CMM_TRAJECTORY_LENGTH 40
+#define CMM_TRAJECTORY_LENGTH 50
 
 #define TILE_SIZE 256
 
@@ -60,8 +60,6 @@ enum cmm_directions {
     CMM_DIRECTION_NEG_X,
     CMM_DIRECTION_POS_Z,
     CMM_DIRECTION_NEG_Z,
-
-    CMM_NO_CULLING,
 };
 
 #define CMM_GRID_FLAG_OCCUPIED (1 << 7)
@@ -99,16 +97,14 @@ enum cmm_growth_types {
 
 struct cmm_terrain_quad {
     s8 vtx[4][3];
-    u8 uvProjDir;
-    u8 cullDir;
+    u8 faceDir;
     u8 faceshape;
     u8 growthType;
     s8 (*altuvs)[4][2];
 };
 struct cmm_terrain_tri {
     s8 vtx[3][3];
-    u8 uvProjDir;
-    u8 cullDir;
+    u8 faceDir;
     u8 faceshape;
     u8 growthType;
     s8 (*altuvs)[3][2];

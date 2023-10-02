@@ -6,7 +6,7 @@
 #define TEXT_VERSION _("MB64 ALPHA")
 
 //maker text
-#define TXT_RECORDING _("Building path in progress.\nPress [A] to build the path.\nPress START to finish.")
+#define TXT_RECORDING _("Building path in progress!\n\n[A]: Place waypoint\n[B]: Undo\nSTART: Confirm")
 
 #define TXT_MM_PAGE _("Page: 0/0")
 #define TXT_MM_KEYBOARD _("[A]: Press Key\n[B]: Backspace\n[Z]: Shift\n[R]: Exit\nSTART: Confirm")
