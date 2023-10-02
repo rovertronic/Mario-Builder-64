@@ -1000,8 +1000,8 @@ u32 get_tiletype_index(u32 type, u32 mat) {
 }
 
 
-#define retroland_filter_on() if (cmm_lopt_theme == 9) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
-#define retroland_filter_off() if (cmm_lopt_theme == 9) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
+#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
+#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1471,7 +1471,21 @@ void place_tile(s8 pos[3]) {
         } else {
             coltype = MATERIAL(cmm_mat_selection).col;
         }
-        play_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype), gGlobalSoundSource);
+        if (coltype == SURFACE_BURNING) {
+            play_sound(SOUND_GENERAL_LOUD_BUBBLE, gGlobalSoundSource);
+        } else {
+            play_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype), gGlobalSoundSource);
+        }
+    } else {
+        switch (cmm_id_selection ) {
+            case TILE_TYPE_FENCE:
+                if (cmm_lopt_theme == CMM_THEME_RHR) {
+                    play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16), gGlobalSoundSource);
+                } else {
+                    play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_SPOOKY << 16), gGlobalSoundSource);
+                }
+                break;
+        }
     }
 
     place_terrain_data(pos, cmm_id_selection, cmm_rot_selection, cmm_mat_selection);
@@ -1499,6 +1513,7 @@ void place_water(s8 pos[3]) {
         if (tileType == TILE_TYPE_BLOCK) {
             return;
         }
+        play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16), gGlobalSoundSource);
         tile->waterlogged = TRUE;
         u32 tileIndex = get_tiletype_index(tileType, tile->mat);
         for (u32 i = cmm_tile_data_indices[tileIndex]; i < cmm_tile_data_indices[tileIndex + 1]; i++) {
@@ -1522,6 +1537,7 @@ void place_water(s8 pos[3]) {
         cmm_tile_data[newtileIndex].rot = 0;
         cmm_tile_data[newtileIndex].waterlogged = TRUE;
         cmm_tile_count++;
+        play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16), gGlobalSoundSource);
     }
 }
 
