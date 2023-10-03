@@ -87,13 +87,13 @@ void bhv_koopa_init(void) {
 
     //navigate trajectory until find -1
     u16 i = 0;
-    while (cmm_trajectory_list[o->oBehParams2ndByte][i] != -1) {
+    while (cmm_trajectory_list[o->oBehParams2ndByte][i][0] != -1) {
         i ++;
     }
     struct Object *koopa_flag = spawn_object(o,MODEL_NONE,bhvKoopaRaceEndpoint);
-    koopa_flag->oPosX = cmm_trajectory_list[o->oBehParams2ndByte][i-3];
-    koopa_flag->oPosY = cmm_trajectory_list[o->oBehParams2ndByte][i-2];
-    koopa_flag->oPosZ = cmm_trajectory_list[o->oBehParams2ndByte][i-1];
+    koopa_flag->oPosX = cmm_trajectory_list[o->oBehParams2ndByte][i-1][1];
+    koopa_flag->oPosY = cmm_trajectory_list[o->oBehParams2ndByte][i-1][2];
+    koopa_flag->oPosZ = cmm_trajectory_list[o->oBehParams2ndByte][i-1][3];
     o->parentObj = koopa_flag;
 
 

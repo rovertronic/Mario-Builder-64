@@ -103,7 +103,7 @@ u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
 struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
 
-Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH * 4];
+Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
 u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
 u8 cmm_trajectories_used = 0;
@@ -505,7 +505,7 @@ void generate_trajectory_gfx(void) {
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat_layer1);
 
     for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
-        Trajectory *curr_trajectory = &cmm_trajectory_list[traj][0];
+        Trajectory *curr_trajectory = cmm_trajectory_list[traj][0];
         u32 i = 0;
         s16 pos1[3], pos2[3];
 
@@ -1643,10 +1643,10 @@ void remove_trajectory(u32 index) {
     }
     // Move trajectories back by one
     for (u32 i = index; i < cmm_trajectories_used - 1; i++) {
-        bcopy(&cmm_trajectory_list[i + 1], &cmm_trajectory_list[i], sizeof(cmm_trajectory_list[i]));
+        bcopy(cmm_trajectory_list[i + 1], cmm_trajectory_list[i], sizeof(cmm_trajectory_list[0]));
     }
     // Zero out the last one
-    bzero(&cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[cmm_trajectories_used - 1]));
+    bzero(cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[0]));
     cmm_trajectories_used--;
 }
 
@@ -1774,10 +1774,10 @@ void save_level(u8 index) {
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
-            cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][(j*4)+0];
-            cmm_save.trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+1]);
-            cmm_save.trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][(j*4)+2]);
-            cmm_save.trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][(j*4)+3]);
+            cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][j][0];
+            cmm_save.trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][j][1]);
+            cmm_save.trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][j][2]);
+            cmm_save.trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][j][3]);
         }
     }
 
@@ -1939,10 +1939,10 @@ void load_level(u8 index) {
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
-            cmm_trajectory_list[i][(j*4)+0] = cmm_save.trajectories[i][j].t;
-            cmm_trajectory_list[i][(j*4)+1] = GRID_TO_POS(cmm_save.trajectories[i][j].x);
-            cmm_trajectory_list[i][(j*4)+2] = GRIDY_TO_POS(cmm_save.trajectories[i][j].y);
-            cmm_trajectory_list[i][(j*4)+3] = GRID_TO_POS(cmm_save.trajectories[i][j].z);
+            cmm_trajectory_list[i][j][0] = cmm_save.trajectories[i][j].t;
+            cmm_trajectory_list[i][j][1] = GRID_TO_POS(cmm_save.trajectories[i][j].x);
+            cmm_trajectory_list[i][j][2] = GRIDY_TO_POS(cmm_save.trajectories[i][j].y);
+            cmm_trajectory_list[i][j][3] = GRID_TO_POS(cmm_save.trajectories[i][j].z);
         }
     }
 
@@ -2354,6 +2354,7 @@ void sb_loop(void) {
             }
         break;
         case 5: //trajectory maker
+            cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
             cursorMoved = main_cursor_logic(joystick);
 
             if (cursorMoved) {
@@ -2362,25 +2363,25 @@ void sb_loop(void) {
 
             if (o->oTimer == 0) {
                 // Initial placement on top of the object
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = cmm_trajectory_edit_index;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
                 cmm_trajectory_edit_index++; 
             } else {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                     if (cmm_trajectory_edit_index == CMM_TRAJECTORY_LENGTH - 1) {
                         cmm_show_error_message("Maximum trajectory length reached! (max 50)");
                     // i fucking hate this, worst code ever. this hopefully won't have floating point inaccuracies
-                    } else if (cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 3] == o->oPosX
-                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 2] == o->oPosY
-                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 - 1] == o->oPosZ) {
+                    } else if (cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index - 1][1] == o->oPosX
+                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index - 1][2] == o->oPosY
+                            && cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index - 1][3] == o->oPosZ) {
                         cmm_show_error_message("");
                     } else {
-                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = cmm_trajectory_edit_index;
-                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 1] = o->oPosX;
-                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
-                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = cmm_trajectory_edit_index;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
                         cmm_trajectory_edit_index++;
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                         generate_trajectory_gfx();
@@ -2390,7 +2391,7 @@ void sb_loop(void) {
                         cmm_show_error_message("Nothing to delete!");
                     } else {
                         cmm_trajectory_edit_index--;
-                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                         play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                         generate_trajectory_gfx();
                     }
@@ -2398,7 +2399,7 @@ void sb_loop(void) {
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
