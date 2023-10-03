@@ -324,7 +324,7 @@ struct cmm_terrain *cmm_tile_terrains[] = {
 
 //BEHAVIOR  //Y-OFF //MODEL ID //BILLB //SCALE  //ANIMATION PTR //DISP.FUNC //SOUND
 struct cmm_object_info cmm_object_type_star = {
-    bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
+    bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 1.0f, NULL, &df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_goomba = {
     bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT,
@@ -345,7 +345,7 @@ struct cmm_object_info cmm_object_type_bluecoinswitch = {
     bhvBlueCoinSwitch, 0, MODEL_BLUE_COIN_SWITCH, FALSE, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH
 };
 struct cmm_object_info cmm_object_type_redcoinstar = {
-    bhvHiddenRedCoinStar, 60, MODEL_TRANSPARENT_STAR, FALSE, 1.0f, NULL, &df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
+    bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 1.0f, NULL, &df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_noteblock = {
     bhvNoteblock, TILE_SIZE/2, MODEL_NOTEBLOCK, FALSE, 1.0f, NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW,
@@ -381,7 +381,7 @@ struct cmm_object_info cmm_object_type_warppipe = {
     bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_badge = {
-    bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 5.0f, NULL, &df_badge, SOUND_GENERAL2_PURPLE_SWITCH,
+    bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 5.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH,
 };
 
 struct cmm_object_info cmm_object_type_bosses[] = {

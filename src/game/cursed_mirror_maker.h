@@ -147,6 +147,13 @@ struct cmm_grid_obj {
     u16 type:5, mat:4, rot:2, occupied:1, waterlogged:1;
 };
 
+enum cmm_df_context {
+    CMM_DF_CONTEXT_INIT,
+    CMM_DF_CONTEXT_MAIN,
+};
+
+typedef void (*DisplayFunc)(s32);
+
 struct cmm_object_info {
     const BehaviorScript *behavior;
     f32 y_offset;
@@ -154,7 +161,7 @@ struct cmm_object_info {
     u8 billboarded:1;
     f32 scale;
     const struct Animation *const *anim;
-    void (*disp_func)(struct Object *,int);
+    DisplayFunc disp_func;
     u32 soundBits;
 };
 

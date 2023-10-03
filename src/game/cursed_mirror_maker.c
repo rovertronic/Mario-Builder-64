@@ -161,50 +161,65 @@ void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
 }
 
-void df_badge(struct Object * obj, int param) {
-    obj->oBehParams2ndByte = param;
+void df_star(UNUSED s32 context) {
+    o->oFaceAngleYaw += 0x800;
 }
 
-void df_reds_marker(struct Object * obj, UNUSED int param) {
-    obj->oFaceAnglePitch = 0x4000;
-    vec3_set(obj->header.gfx.scale, 1.5f, 1.5f, 0.75f);
+void df_reds_marker(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oFaceAnglePitch = 0x4000;
+        vec3_set(o->header.gfx.scale, 1.5f, 1.5f, 0.75f);
+        o->oPosY -= (TILE_SIZE/2 - 60);
+    }
+    o->oFaceAngleYaw += 0x100;
 }
 
-void df_tree(struct Object * obj, int param) {
-    switch(param) {
+void df_tree(s32 context) {
+    if (context != CMM_DF_CONTEXT_INIT) return;
+    switch(o->oBehParams2ndByte) {
         case 1:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
-        break;
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
+            break;
         case 2:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
-        break;
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
+            break;
         case 3:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
-        break;
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
+            break;
     }
 }
 
-void df_exbox(struct Object * obj, int param) {
-    switch(param) {
+void df_exbox(s32 context) {
+    if (context != CMM_DF_CONTEXT_INIT) return;
+    switch(o->oBehParams2ndByte) {
         case 0:
-            obj->oAnimState = 0;
-        break;
+            o->oAnimState = 0;
+            break;
         case 1:
-            obj->oAnimState = 1;
-        break;
+            o->oAnimState = 1;
+            break;
         case 2:
-            obj->oAnimState = 2;
-        break;
+            o->oAnimState = 2;
+            break;
         case 3:
-            obj->oAnimState = 3;
-        break;
+            o->oAnimState = 3;
+            break;
         default:
-            obj->oAnimState = 4;
-        break;
+            o->oAnimState = 4;
+            break;
     }
 }
 
 #include "src/game/cursed_mirror_maker_data.inc.c"
+
+void bhv_preview_object_init(void) {
+    if (!o->oPreviewObjDisplayFunc) return;
+    ((DisplayFunc)o->oPreviewObjDisplayFunc)(CMM_DF_CONTEXT_INIT);
+}
+void bhv_preview_object_loop(void) {
+    if (!o->oPreviewObjDisplayFunc) return;
+    ((DisplayFunc)o->oPreviewObjDisplayFunc)(CMM_DF_CONTEXT_MAIN);
+}
 
 void cmm_show_error_message(char *message) {
     if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
@@ -1332,17 +1347,34 @@ void generate_terrain_collision(void) {
     gNumStaticSurfaces = gSurfacesAllocated;
 }
 
-void generate_object_preview(void) {
-    struct Object *preview_object;
-    u32 i;
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
+    struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
+    preview_object->oPosX = GRID_TO_POS(pos[0]);
+    preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
+    preview_object->oPosZ = GRID_TO_POS(pos[2]);
+    preview_object->oFaceAngleYaw = rot*0x4000;
+    preview_object->oBehParams2ndByte = param;
+    preview_object->oPreviewObjDisplayFunc = info->disp_func;
+    obj_scale(preview_object, info->scale);
+    if (info->billboarded) {
+        preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+    }
+    if (info->anim) {
+        preview_object->oAnimations = (struct Animation **)info->anim;
+        super_cum_working(preview_object,0);
+        preview_object->header.gfx.animInfo.animAccel = 0.0f;
+    }
+    return preview_object;
+}
 
-    preview_object = cur_obj_nearest_object_with_behavior(bhvStaticObject);
-    while(preview_object) {
+void generate_object_preview(void) {
+    struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
+    while (preview_object) {
         unload_object(preview_object);
-        preview_object = cur_obj_nearest_object_with_behavior(bhvStaticObject);
+        preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     }
 
-    for(i=0;i<cmm_object_count;i++){
+    for(u32 i = 0; i < cmm_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
 
@@ -1350,23 +1382,10 @@ void generate_object_preview(void) {
             info = &info[cmm_object_data[i].param];
         }
 
-        preview_object = spawn_object(gMarioObject, info->model_id ,bhvStaticObject);
-        preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
-        preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
-        preview_object->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
-        preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
-        obj_scale(preview_object, info->scale);
-        if (info->billboarded) {
-            preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
-        }
-        if (info->anim) {
-            preview_object->oAnimations = (struct Animation **)info->anim;
-            super_cum_working(preview_object,0);
-            preview_object->header.gfx.animInfo.animAccel = 0.0f;
-        }
-        if (info->disp_func) {
-            (info->disp_func)(preview_object,cmm_object_data[i].param);
-        }
+        s8 pos[3];
+        vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
+
+        spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
     }
 }
 
@@ -1974,11 +1993,10 @@ void sb_init(void) {
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             generate_object_preview();
             generate_terrain_gfx();
-            cmm_preview_object = spawn_object(o,MODEL_NONE,bhvPreviewObject);
 
             //init visual tile bounds
             for (u8 i=0; i<6; i++) {
-                cmm_boundary_object[i] = spawn_object(o,MODEL_MAKER_BOUNDARY,bhvPreviewObject);
+                cmm_boundary_object[i] = spawn_object(o,MODEL_MAKER_BOUNDARY,bhvStaticObject);
             }
             cmm_boundary_object[2]->oFaceAngleRoll = -0x4000;
             cmm_boundary_object[3]->oFaceAngleRoll = -0x4000;
@@ -2087,6 +2105,11 @@ u32 main_cursor_logic(u32 joystick) {
     return cursorMoved;
 }
 
+void delete_preview_object(void) {
+    struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
+    if (previewObj) unload_object(previewObj);
+}
+
 u8 cmm_upsidedown_tile = FALSE;
 
 void sb_loop(void) {
@@ -2113,14 +2136,17 @@ void sb_loop(void) {
         break;
         case 1: //MAKE MODE MAIN
             cursorMoved = main_cursor_logic(joystick);
+            s32 updatePreviewObj = cursorMoved;
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_ui_index--;
                 cmm_param_selection = 0;
+                updatePreviewObj = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_ui_index++;
                 cmm_param_selection = 0;
+                updatePreviewObj = TRUE;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
@@ -2150,11 +2176,15 @@ void sb_loop(void) {
             }
 
             //parameter changing
-            if (gPlayer1Controller->buttonPressed & L_JPAD) {
-                cmm_param_selection --;
-            }
-            if (gPlayer1Controller->buttonPressed & R_JPAD) {
-                cmm_param_selection ++;
+            if (cmm_place_mode != CMM_PM_OBJ || cmm_object_place_types[cmm_id_selection].maxParams != 0) {
+                if (gPlayer1Controller->buttonPressed & L_JPAD) {
+                    cmm_param_selection --;
+                    updatePreviewObj = TRUE;
+                }
+                if (gPlayer1Controller->buttonPressed & R_JPAD) {
+                    cmm_param_selection ++;
+                    updatePreviewObj = TRUE;
+                }
             }
 
             //Single A press
@@ -2220,32 +2250,13 @@ void sb_loop(void) {
                     cmm_param_selection = (cmm_param_selection+max)%max;
                 }
 
-                struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
-
-                if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
-                    info = &info[cmm_param_selection];
-                }
-
-                vec3_copy(&cmm_preview_object->oPosVec,&o->oPosVec);
-                cmm_preview_object->oPosY += info->y_offset - TILE_SIZE/2;
-                obj_scale(cmm_preview_object, info->scale);
-                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[info->model_id];
-                cmm_preview_object->oFaceAngleYaw = cmm_rot_selection*0x4000;
-                if (info->billboarded) {
-                    cmm_preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
-                } else {
-                    cmm_preview_object->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
-                }
-                if (info->anim) {
-                    cmm_preview_object->oAnimations = (struct Animation **)info->anim;
-                    super_cum_working(cmm_preview_object,0);
-                }
-                if (info->disp_func) {
-                    (info->disp_func)(cmm_preview_object,cmm_param_selection);
+                if (updatePreviewObj) {
+                    delete_preview_object();
                 }
             } else {
-                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
+                delete_preview_object();
             }
+
             if (cmm_place_mode == CMM_PM_TILE) {
                 if (cmm_tile_terrains[cmm_id_selection]) {
                     if (gPlayer1Controller->buttonPressed & L_JPAD) {
@@ -2269,6 +2280,7 @@ void sb_loop(void) {
         break;
         case 3: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
+            delete_preview_object();
             if (joystick != 0) {
                 switch((joystick-1)%4) {
                     case 0:
@@ -2364,7 +2376,7 @@ void sb_loop(void) {
             }
         break;
         case 5: //trajectory maker
-            cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
+            delete_preview_object();
             cursorMoved = main_cursor_logic(joystick);
 
             if (cursorMoved) {
@@ -2415,6 +2427,23 @@ void sb_loop(void) {
                 generate_trajectory_gfx();
             }
         break;
+    }
+
+    if (cmm_place_mode == CMM_PM_OBJ) {
+        if (o->oAction == 1 || o->oAction == 3 || o->oAction == 4) {
+            struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
+
+            if (!previewObj) {
+                struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
+                if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
+                    info = &info[cmm_param_selection];
+                }
+
+                s8 pos[3];
+                vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
+                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject);
+            }
+        }
     }
 
     vec3_copy(cmm_camera_pos,cmm_camera_foc);
