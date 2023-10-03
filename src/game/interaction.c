@@ -862,13 +862,19 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 #ifdef GLOBAL_STAR_IDS
         starIndex = (obj->oBehParams >> 24) & 0xFF;
 #else
-        starIndex = (obj->oBehParams >> 24) & 0x1F;
+        starIndex = (obj->oBehParams >> 24) & 0x3F;
 #endif
         m->lastStarCollected = (obj->oBehParams >> 24);
         //save_file_collect_star_or_key(m->numCoins, starIndex);
 
-        cmm_play_stars_bitfield |= (1 << starIndex);
-        cmm_play_stars = count_u32_bits(cmm_play_stars_bitfield);
+        cmm_play_stars_bitfield |= ((u64)1 << starIndex);
+
+        cmm_play_stars = 0;
+        for (u32 i=0;i<64;i++) {
+            if (cmm_play_stars_bitfield & ((u64)1 << i)) {
+                cmm_play_stars++;
+            }
+        }
 
         //m->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
         //m->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);

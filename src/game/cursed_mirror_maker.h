@@ -36,7 +36,7 @@ extern u8 cmm_envfx_table[];
 //play mode stuff
 extern u8 cmm_play_stars;
 extern u8 cmm_play_stars_max;
-extern u32 cmm_play_stars_bitfield;
+extern u64 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
 extern TCHAR cmm_file_name[30];

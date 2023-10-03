@@ -123,7 +123,7 @@ TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
 //play mode stuff
 u8 cmm_play_stars = 0;
 u8 cmm_play_stars_max = 0;
-u32 cmm_play_stars_bitfield = 0;
+u64 cmm_play_stars_bitfield = 0;
 u32 cmm_play_badge_bitfield = 0;
 
 //LEVEL SETTINGS INDEX
@@ -210,6 +210,16 @@ void df_exbox(s32 context) {
     }
 }
 
+void df_koopa(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 7);
+}
+void df_chuckya(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 4);
+}
+void df_kingbomb(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
+}
+
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
 void bhv_preview_object_init(void) {
@@ -225,9 +235,6 @@ void cmm_show_error_message(char *message) {
     if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
         cmm_error_message = message;
         cmm_error_timer = 120;
-        cmm_error_vels[0] = 280;
-        cmm_error_vels[1] = 0;
-        cmm_error_vels[2] = 0;
     } else {
         if (cmm_error_timer < 90) cmm_error_timer = 90;
     }
@@ -288,8 +295,8 @@ s32 object_sanity_check(void) {
                 numStars++;
             }
         }
-        if (numStars >= 32) {
-            cmm_show_error_message("Star limit reached! (max 32)");
+        if (numStars >= 64) {
+            cmm_show_error_message("Star limit reached! (max 64)");
             return FALSE;
         }
     }
@@ -1407,7 +1414,7 @@ void generate_objects_to_level(void) {
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
-            if (cmm_play_stars_max < 32) {
+            if (cmm_play_stars_max < 64) {
                 obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 cmm_play_stars_max++;
             }

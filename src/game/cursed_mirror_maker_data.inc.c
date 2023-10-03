@@ -369,7 +369,7 @@ struct cmm_object_info cmm_object_type_exclamationbox = {
     bhvExclamationBox, TILE_SIZE/2, MODEL_EXCLAMATION_BOX, FALSE, 2.0f, NULL, &df_exbox, SOUND_GENERAL_BREAK_BOX,
 };
 struct cmm_object_info cmm_object_type_chuckya = {
-    bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 2.0f, chuckya_seg8_anims_0800C070, NULL, SOUND_OBJ_CHUCKYA_DEATH,
+    bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 2.0f, chuckya_seg8_anims_0800C070, &df_chuckya, SOUND_OBJ_CHUCKYA_DEATH,
 };
 struct cmm_object_info cmm_object_type_spawn = {
     bhvSpawn, TILE_SIZE/2, MODEL_SPAWN, TRUE, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
@@ -385,7 +385,7 @@ struct cmm_object_info cmm_object_type_badge = {
 };
 
 struct cmm_object_info cmm_object_type_bosses[] = {
-    {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 1.0f, king_bobomb_seg5_anims_0500FE30, NULL, SOUND_OBJ_KING_BOBOMB},
+    {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 1.0f, king_bobomb_seg5_anims_0500FE30, &df_kingbomb, SOUND_OBJ_KING_BOBOMB},
     {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
 };
 
@@ -396,7 +396,7 @@ struct cmm_object_info cmm_object_type_bowlingball = {
     bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_ktq = {
-    bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 3.0f, koopa_seg6_anims_06011364, NULL, SOUND_OBJ_KOOPA_TALK,
+    bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 3.0f, koopa_seg6_anims_06011364, &df_koopa, SOUND_OBJ_KOOPA_TALK,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
