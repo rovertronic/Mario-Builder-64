@@ -184,29 +184,6 @@ void df_tree(struct Object * obj, int param) {
     }
 }
 
-void df_boss(struct Object * obj, int param) {
-    switch(param) {
-        case 0:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_KINGBOMB_MAKER];
-            obj->oAnimations = (struct Animation **)king_bobomb_seg5_anims_0500FE30;
-            super_cum_working(obj,0);
-            obj_scale(obj,1.0f);
-            break;
-        case 1:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WHOMP_MAKER];
-            obj->oAnimations = (struct Animation **)whomp_seg6_anims_06020A04;
-            super_cum_working(obj,0);
-            obj_scale(obj,2.0f);
-            break;
-        case 3:
-            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WIGGLER_HEAD];
-            obj->oAnimations = (struct Animation **)wiggler_seg5_anims_0500EC8C;
-            super_cum_working(obj,0);
-            obj_scale(obj,4.0f);
-            break;
-    }
-}
-
 void df_exbox(struct Object * obj, int param) {
     switch(param) {
         case 0:
@@ -1368,6 +1345,11 @@ void generate_object_preview(void) {
     for(i=0;i<cmm_object_count;i++){
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
+
+        if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
+            info = &info[cmm_object_data[i].param];
+        }
+
         preview_object = spawn_object(gMarioObject, info->model_id ,bhvStaticObject);
         preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
         preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
@@ -1569,7 +1551,12 @@ void place_object(s8 pos[3]) {
     }
 
     cmm_object_count++;
-    play_place_sound(cmm_object_place_types[cmm_id_selection].info->soundBits);
+
+    if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
+        play_place_sound(cmm_object_place_types[cmm_id_selection].info[cmm_param_selection].soundBits);
+    } else {
+        play_place_sound(cmm_object_place_types[cmm_id_selection].info->soundBits);
+    }
 }
 
 u8 joystick_direction(void) {
@@ -2216,6 +2203,11 @@ void sb_loop(void) {
                 }
 
                 struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
+
+                if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
+                    info = &info[cmm_param_selection];
+                }
+
                 vec3_copy(&cmm_preview_object->oPosVec,&o->oPosVec);
                 cmm_preview_object->oPosY += info->y_offset - TILE_SIZE/2;
                 obj_scale(cmm_preview_object, info->scale);

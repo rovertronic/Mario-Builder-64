@@ -383,9 +383,12 @@ struct cmm_object_info cmm_object_type_warppipe = {
 struct cmm_object_info cmm_object_type_badge = {
     bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 5.0f, NULL, &df_badge, SOUND_GENERAL2_PURPLE_SWITCH,
 };
-struct cmm_object_info cmm_object_type_boss = {
-    bhvBoss, 0, 0, FALSE, 1.0f, NULL, &df_boss, SOUND_OBJ_KING_BOBOMB,
+
+struct cmm_object_info cmm_object_type_bosses[] = {
+    {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 1.0f, king_bobomb_seg5_anims_0500FE30, NULL, SOUND_OBJ_KING_BOBOMB},
+    {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
 };
+
 struct cmm_object_info cmm_object_type_platform = {
     bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
 };
@@ -397,30 +400,30 @@ struct cmm_object_info cmm_object_type_ktq = {
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
-    {&cmm_object_type_star, FALSE, TRUE, 0},
-    {&cmm_object_type_goomba, FALSE, FALSE, 0},
-    {&cmm_object_type_yellowcoin, FALSE, FALSE, 0},
-    {&cmm_object_type_greencoin, FALSE, FALSE, 0},
-    {&cmm_object_type_redcoin, FALSE, FALSE, 0},
-    {&cmm_object_type_bluecoin, FALSE, FALSE, 0},
-    {&cmm_object_type_bluecoinswitch, FALSE, FALSE, 0},
-    {&cmm_object_type_redcoinstar, FALSE, TRUE, 0},
-    {&cmm_object_type_noteblock, FALSE, FALSE, 0},
-    {&cmm_object_type_podoboo, FALSE, FALSE, 0},
-    {&cmm_object_type_rex, FALSE, FALSE, 0},
-    {&cmm_object_type_smallbully, FALSE, FALSE, 0},
-    {&cmm_object_type_bobomb, FALSE, FALSE, 0},
-    {&cmm_object_type_tree, FALSE, FALSE, 4},
-    {&cmm_object_type_exclamationbox, FALSE, FALSE, 8},
-    {&cmm_object_type_chuckya, FALSE, FALSE, 0},
-    {&cmm_object_type_spawn, FALSE, FALSE, 0},
-    {&cmm_object_type_phantasm, FALSE, FALSE, 0},
-    {&cmm_object_type_warppipe, FALSE, FALSE, 0},
-    {&cmm_object_type_badge, FALSE, FALSE, 23},
-    {&cmm_object_type_boss, FALSE, TRUE, 2},
-    {&cmm_object_type_platform, TRUE, FALSE, 0},
-    {&cmm_object_type_bowlingball, TRUE, FALSE, 0},
-    {&cmm_object_type_ktq, TRUE, TRUE, 0},
+    {&cmm_object_type_star, FALSE, TRUE, FALSE, 0},
+    {&cmm_object_type_goomba, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_yellowcoin, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_greencoin, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_redcoin, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_bluecoin, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_bluecoinswitch, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_redcoinstar, FALSE, TRUE, FALSE, 0},
+    {&cmm_object_type_noteblock, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_podoboo, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_rex, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_smallbully, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_bobomb, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
+    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 8},
+    {&cmm_object_type_chuckya, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_phantasm, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
+    {&cmm_object_type_bosses, FALSE, TRUE, TRUE, 2},
+    {&cmm_object_type_platform, TRUE, FALSE, FALSE, 0},
+    {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
+    {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
 };
 
 enum cmm_materials {

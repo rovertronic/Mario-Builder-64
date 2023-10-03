@@ -162,6 +162,7 @@ struct cmm_object_place {
     struct cmm_object_info *info; // can be an array
     u8 useTrajectory:1;
     u8 hasStar:1;
+    u8 multipleObjs:1;
     s8 maxParams;
 };
 

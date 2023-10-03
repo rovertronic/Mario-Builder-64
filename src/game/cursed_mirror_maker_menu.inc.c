@@ -330,9 +330,7 @@ SD card emulation not detected.\n\
 You will still be able to use\n\
 the level editor, but you will\n\
 not be able to save levels or\n\
-download levels from other people.\n\
-\n\
-Press START to dismiss this message.";
+download levels from other people.";
 
 char *cmm_mm_btns[] = {
     "Build",
@@ -555,6 +553,7 @@ s32 cmm_mm_anim_info(void) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
             cmm_menu_end_timer = 0;
             cmm_menu_going_back = -1;
+            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
         }
     } else {
         animate_menu_generic(cmm_menu_title_vels, 20.f, 0.f, -3.f, cmm_menu_end_timer == 0);
@@ -622,13 +621,16 @@ s32 cmm_main_menu(void) {
             } else {
                 cmm_mm_state = MM_NO_SD_CARD;
                 cmm_mm_main_state = MM_MAIN_LIMITED;
+                cmm_menu_title_vels[0] = 25.f;
             }
             break;
         case MM_NO_SD_CARD:
             cmm_mm_shade_screen();
-            print_maker_string_ascii(20,210,cmm_mm_warning,FALSE);
-            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+            print_maker_string_ascii(cmm_menu_title_vels[0],210,cmm_mm_warning,FALSE);
+            if (cmm_mm_anim_info()) {
+                cmm_menu_start_timer = 0;
                 cmm_mm_state = MM_MAIN_LIMITED;
+                cmm_mm_index = 0;
             }
             break;
         case MM_MAIN:
@@ -656,20 +658,22 @@ s32 cmm_main_menu(void) {
             break;
         case MM_MAIN_LIMITED:
             cmm_mm_index = (cmm_mm_index+3)%3;
+            cmm_mm_anim_in(3);
             render_cmm_mm_menu(cmm_mm_btns_lim,"Mario Builder 64",3);
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+            if (cmm_mm_generic_anim_out(3, FALSE)) {
                 switch(cmm_mm_index) {
                     case 0:
                         return 1;
-                    break;
+                        break;
                     case 1:
                         cmm_mm_state = MM_HELP_MODE;
-                        cmm_mm_index = 0;
-                    break;
+                        break;
                     case 2:
                         cmm_mm_state = MM_CREDITS;
-                    break;
+                        break;
                 }
+                cmm_mm_index = 0;
+                cmm_menu_start_timer = 0;
             }
             break;
         case MM_PLAY:
