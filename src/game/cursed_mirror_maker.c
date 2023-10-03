@@ -1533,6 +1533,18 @@ void place_water(s8 pos[3]) {
 }
 
 void place_object(s8 pos[3]) {
+    // If spawn, delete old spawn
+    if (cmm_id_selection == OBJECT_TYPE_SPAWN) {
+        for (s32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_data[i].type == OBJECT_TYPE_SPAWN) {
+                s8 pos[3];
+                vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
+                delete_object(pos, i);
+                break;
+            }
+        }
+    }
+
     cmm_object_data[cmm_object_count].x = pos[0];
     cmm_object_data[cmm_object_count].y = pos[1];
     cmm_object_data[cmm_object_count].z = pos[2];
@@ -1665,26 +1677,32 @@ void delete_tile_action(s8 pos[3]) {
         generate_terrain_gfx();
     }
 
-    index = -1;
     for (u32 i=0;i<cmm_object_count;i++) {
         if ((cmm_object_data[i].x == pos[0])&&(cmm_object_data[i].y == pos[1])&&(cmm_object_data[i].z == pos[2])) {
-            index = i;
-            remove_occupy_data(pos);
-            play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
-
-            if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) { 
-                remove_trajectory(cmm_object_data[i].param);
-                generate_trajectory_gfx();
+            if (cmm_object_data[i].type == OBJECT_TYPE_SPAWN) {
+                cmm_show_error_message("Cannot delete spawn point!");
+                break;
             }
-            cmm_object_count--;
+            delete_object(pos, i);
+            play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
+            break;
         }
     }
-    if (index != -1) {
-        for (u32 i = index; i < cmm_object_count; i++) {
-            cmm_object_data[i] = cmm_object_data[i+1];
-        }
-        generate_object_preview();
+}
+
+void delete_object(s8 pos[3], s32 index) {
+    remove_occupy_data(pos);
+
+    if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
+        remove_trajectory(cmm_object_data[index].param);
+        generate_trajectory_gfx();
     }
+
+    cmm_object_count--;
+    for (u32 i = index; i < cmm_object_count; i++) {
+        cmm_object_data[i] = cmm_object_data[i+1];
+    }
+    generate_object_preview();
 }
 
 void delete_useless_cull_markers() {
