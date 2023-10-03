@@ -94,8 +94,7 @@ void print_maker_string(s32 x, s32 y, u8 *str, s32 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
-void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
-                                   f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
+void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
     if (isBegin) {
         vels[0] = beginPos;
         vels[1] = beginVel;
@@ -103,6 +102,11 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
     }
     vels[0] += vels[1];
     vels[1] += vels[2];
+}
+
+void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
+                                   f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
+    animate_menu_generic(vels, beginPos, beginVel, beginAccel, isBegin);
     // Take note of what sign the beginning velocity was.
     // If it's the opposite sign of current velocity,
     // stop animation once it overshoots the target.
@@ -121,14 +125,13 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
     }
 }
 
-void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
-    if (isBegin) {
-        vels[0] = beginPos;
-        vels[1] = beginVel;
-        vels[2] = beginAccel;
+void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
+    animate_menu_generic(vels, beginPos, beginVel, beginAccel, isBegin);
+    
+    if ((beginVel > 0.f && vels[1] < 0.f) || (beginVel < 0.f && vels[1] > 0.f)) {
+        vels[1] = 0.f;
+        vels[2] = 0.f;
     }
-    vels[0] += vels[1];
-    vels[1] += vels[2];
 }
 
 // First value is timer, second is direction
@@ -179,22 +182,12 @@ s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butto
 
 void cmm_render_error_message(void) {
     if (cmm_error_timer > 0) {
-        if (cmm_error_timer == 120) {
-            cmm_error_vels[1] = -15.f;
-            cmm_error_vels[2] = 2.f;
-        } else if (cmm_error_timer == 30) {
-            cmm_error_vels[2] = 2.f;
+
+        if (cmm_error_timer > 60) {
+            animate_menu_ease_in(cmm_error_vels, 280.f, -15.f, 2.f, cmm_error_timer == 120);
+        } else if (cmm_error_timer <= 30) {
+            animate_menu_generic(cmm_error_vels, cmm_error_vels[0], 0.f, 2.f, cmm_error_timer == 30);
         }
-        if (cmm_error_timer > 60 && cmm_error_vels[1] > 0) {
-            cmm_error_vels[1] = 0;
-            cmm_error_vels[2] = 0;
-        }
-        if (cmm_error_vels[0] > 280) {
-            cmm_error_vels[1] = 0;
-            cmm_error_vels[2] = 0;
-        }
-        cmm_error_vels[0] += cmm_error_vels[1];
-        cmm_error_vels[1] += cmm_error_vels[2];
 
         print_maker_string_ascii(15,cmm_error_vels[0],cmm_error_message,4);
         cmm_error_timer--;

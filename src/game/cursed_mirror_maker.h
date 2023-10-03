@@ -147,17 +147,22 @@ struct cmm_grid_obj {
     u16 type:5, mat:4, rot:2, occupied:1, waterlogged:1;
 };
 
-struct cmm_object_type_struct {
+struct cmm_object_info {
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
-    u8 use_trajectory:1;
-    u8 is_star:1;
     f32 scale;
     const struct Animation *const *anim;
-    s16 param_max;
     void (*disp_func)(struct Object *,int);
+    u32 soundBits;
+};
+
+struct cmm_object_place {
+    struct cmm_object_info *info; // can be an array
+    u8 useTrajectory:1;
+    u8 hasStar:1;
+    s8 maxParams;
 };
 
 enum {

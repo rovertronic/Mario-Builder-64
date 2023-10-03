@@ -322,32 +322,105 @@ struct cmm_terrain *cmm_tile_terrains[] = {
     NULL,                    // TILE_TYPE_WATER
 };
 
-struct cmm_object_type_struct cmm_object_types[] = {
-    //BEHAVIOR                 //Y-OFF      //MODEL ID                 //BILLB //TRAJ //STAR //SCALE  //ANIMATION PTR              //MX BPRM   //DISP.FUNC
-    {bhvStar,                  TILE_SIZE/2, MODEL_STAR                 ,FALSE  ,FALSE, TRUE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGoomba,                0,           MODEL_GOOMBA               ,FALSE  ,FALSE,FALSE, 1.5f   ,goomba_seg8_anims_0801DA4C   , 0       , NULL       },
-    {bhvYellowCoin,            0,           MODEL_YELLOW_COIN          ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvGreenCoin,             0,           0xEF                       ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRedCoin,               0,           MODEL_RED_COIN             ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenBlueCoin,        0,           MODEL_BLUE_COIN            ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBlueCoinSwitch,        0,           MODEL_BLUE_COIN_SWITCH     ,FALSE  ,FALSE,FALSE, 3.0f   ,NULL                         , 0       , NULL       },
-    {bhvHiddenRedCoinStar,     60,          MODEL_TRANSPARENT_STAR     ,FALSE  ,FALSE,TRUE, 1.0f   ,NULL                         , 0       , &df_reds_marker},
-    {bhvNoteblock,             TILE_SIZE/2, MODEL_NOTEBLOCK            ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPodoboo,               TILE_SIZE/2, MODEL_PODOBOO              ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvRex,                   0,           0xE1                       ,FALSE  ,FALSE,FALSE, 1.5f   ,Rex_anims                    , 0       , NULL       },
-    {bhvSmallBully,            0,           MODEL_BULLY                ,FALSE  ,FALSE,FALSE, 1.0f   ,bully_seg5_anims_0500470C    , 0       , NULL       },
-    {bhvBobomb,                0,           MODEL_BLACK_BOBOMB         ,FALSE  ,FALSE,FALSE, 1.0f   ,bobomb_seg8_anims_0802396C   , 0       , NULL       },
-    {bhvTree,                  0,           MODEL_MAKER_TREE_1         ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 4       , &df_tree   },
-    {bhvExclamationBox,        TILE_SIZE/2, MODEL_EXCLAMATION_BOX      ,FALSE  ,FALSE,FALSE, 2.0f   ,NULL                         , 8       , &df_exbox  },
-    {bhvChuckya,               0,           MODEL_CHUCKYA              ,FALSE  ,FALSE,FALSE, 2.0f   ,chuckya_seg8_anims_0800C070  , 0       , NULL       },
-    {bhvSpawn,                 TILE_SIZE/2, MODEL_SPAWN                ,TRUE   ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvPhantasm,              0,           MODEL_MARIO                ,FALSE  ,FALSE,FALSE, 1.0f   ,&evil_mario_anims[2]         , 0       , NULL       },
-    {bhvWarpPipe,              0,           MODEL_MAKER_PIPE           ,FALSE  ,FALSE,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBadge,                 TILE_SIZE/2, MODEL_BADGE                ,TRUE   ,FALSE,FALSE, 5.0f   ,NULL                         , 23      , &df_badge  },
-    {bhvBoss,                  0,           MODEL_KINGBOMB_MAKER       ,FALSE  ,FALSE,TRUE, 1.0f   ,king_bobomb_seg5_anims_0500FE30, 2     , &df_boss   },
-    {bhvPlatformOnTrack,       TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM,FALSE  ,TRUE ,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL         ,TRUE   ,TRUE ,FALSE, 1.0f   ,NULL                         , 0       , NULL       },
-    {bhvKoopa,                 0,           MODEL_KOOPA_WITH_SHELL     ,FALSE  ,TRUE ,TRUE, 3.0f   ,koopa_seg6_anims_06011364    , 0       , NULL       },
+//BEHAVIOR  //Y-OFF //MODEL ID //BILLB //SCALE  //ANIMATION PTR //DISP.FUNC //SOUND
+struct cmm_object_info cmm_object_type_star = {
+    bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_goomba = {
+    bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT,
+};
+struct cmm_object_info cmm_object_type_yellowcoin = {
+    bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_greencoin = {
+    bhvGreenCoin, 0, 0xEF, TRUE, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_redcoin = {
+    bhvRedCoin, 0, MODEL_RED_COIN, TRUE, 1.0f, NULL, NULL, SOUND_MENU_COLLECT_RED_COIN,
+};
+struct cmm_object_info cmm_object_type_bluecoin = {
+    bhvHiddenBlueCoin, 0, MODEL_BLUE_COIN, TRUE, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_bluecoinswitch = {
+    bhvBlueCoinSwitch, 0, MODEL_BLUE_COIN_SWITCH, FALSE, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH
+};
+struct cmm_object_info cmm_object_type_redcoinstar = {
+    bhvHiddenRedCoinStar, 60, MODEL_TRANSPARENT_STAR, FALSE, 1.0f, NULL, &df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_noteblock = {
+    bhvNoteblock, TILE_SIZE/2, MODEL_NOTEBLOCK, FALSE, 1.0f, NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW,
+};
+struct cmm_object_info cmm_object_type_podoboo = {
+    bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_rex = {
+    bhvRex, 0, 0xE1, FALSE, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_ALERT,
+};
+struct cmm_object_info cmm_object_type_smallbully = {
+    bhvSmallBully, 0, MODEL_BULLY, FALSE, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED,
+};
+struct cmm_object_info cmm_object_type_bobomb = {
+    bhvBobomb, 0, MODEL_BLACK_BOBOMB, FALSE, 1.0f, bobomb_seg8_anims_0802396C, NULL, SOUND_OBJ_BOBOMB_WALK | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_tree = {
+    bhvTree, 0, MODEL_MAKER_TREE_1, TRUE, 1.0f, NULL, &df_tree, SOUND_ACTION_CLIMB_UP_TREE | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_exclamationbox = {
+    bhvExclamationBox, TILE_SIZE/2, MODEL_EXCLAMATION_BOX, FALSE, 2.0f, NULL, &df_exbox, SOUND_GENERAL_BREAK_BOX,
+};
+struct cmm_object_info cmm_object_type_chuckya = {
+    bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 2.0f, chuckya_seg8_anims_0800C070, NULL, SOUND_OBJ_CHUCKYA_DEATH,
+};
+struct cmm_object_info cmm_object_type_spawn = {
+    bhvSpawn, TILE_SIZE/2, MODEL_SPAWN, TRUE, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
+};
+struct cmm_object_info cmm_object_type_phantasm = {
+    bhvPhantasm, 0, MODEL_MARIO, FALSE, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+};
+struct cmm_object_info cmm_object_type_warppipe = {
+    bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_badge = {
+    bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 5.0f, NULL, &df_badge, SOUND_GENERAL2_PURPLE_SWITCH,
+};
+struct cmm_object_info cmm_object_type_boss = {
+    bhvBoss, 0, 0, FALSE, 1.0f, NULL, &df_boss, SOUND_OBJ_KING_BOBOMB,
+};
+struct cmm_object_info cmm_object_type_platform = {
+    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_bowlingball = {
+    bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,
+};
+struct cmm_object_info cmm_object_type_ktq = {
+    bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 3.0f, koopa_seg6_anims_06011364, NULL, SOUND_OBJ_KOOPA_TALK,
+};
+
+struct cmm_object_place cmm_object_place_types[] = {
+    {&cmm_object_type_star, FALSE, TRUE, 0},
+    {&cmm_object_type_goomba, FALSE, FALSE, 0},
+    {&cmm_object_type_yellowcoin, FALSE, FALSE, 0},
+    {&cmm_object_type_greencoin, FALSE, FALSE, 0},
+    {&cmm_object_type_redcoin, FALSE, FALSE, 0},
+    {&cmm_object_type_bluecoin, FALSE, FALSE, 0},
+    {&cmm_object_type_bluecoinswitch, FALSE, FALSE, 0},
+    {&cmm_object_type_redcoinstar, FALSE, TRUE, 0},
+    {&cmm_object_type_noteblock, FALSE, FALSE, 0},
+    {&cmm_object_type_podoboo, FALSE, FALSE, 0},
+    {&cmm_object_type_rex, FALSE, FALSE, 0},
+    {&cmm_object_type_smallbully, FALSE, FALSE, 0},
+    {&cmm_object_type_bobomb, FALSE, FALSE, 0},
+    {&cmm_object_type_tree, FALSE, FALSE, 4},
+    {&cmm_object_type_exclamationbox, FALSE, FALSE, 8},
+    {&cmm_object_type_chuckya, FALSE, FALSE, 0},
+    {&cmm_object_type_spawn, FALSE, FALSE, 0},
+    {&cmm_object_type_phantasm, FALSE, FALSE, 0},
+    {&cmm_object_type_warppipe, FALSE, FALSE, 0},
+    {&cmm_object_type_badge, FALSE, FALSE, 23},
+    {&cmm_object_type_boss, FALSE, TRUE, 2},
+    {&cmm_object_type_platform, TRUE, FALSE, 0},
+    {&cmm_object_type_bowlingball, TRUE, FALSE, 0},
+    {&cmm_object_type_ktq, TRUE, TRUE, 0},
 };
 
 enum cmm_materials {

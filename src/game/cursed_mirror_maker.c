@@ -157,6 +157,10 @@ u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
 u8 cmm_cached_tris[16][3];
 
+void play_place_sound(u32 soundBits) {
+    play_sound(soundBits, gGlobalSoundSource);
+}
+
 void df_badge(struct Object * obj, int param) {
     obj->oBehParams2ndByte = param;
 }
@@ -182,18 +186,24 @@ void df_tree(struct Object * obj, int param) {
 
 void df_boss(struct Object * obj, int param) {
     switch(param) {
+        case 0:
+            obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_KINGBOMB_MAKER];
+            obj->oAnimations = (struct Animation **)king_bobomb_seg5_anims_0500FE30;
+            super_cum_working(obj,0);
+            obj_scale(obj,1.0f);
+            break;
         case 1:
             obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WHOMP_MAKER];
             obj->oAnimations = (struct Animation **)whomp_seg6_anims_06020A04;
             super_cum_working(obj,0);
             obj_scale(obj,2.0f);
-        break;
+            break;
         case 3:
             obj->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_WIGGLER_HEAD];
             obj->oAnimations = (struct Animation **)wiggler_seg5_anims_0500EC8C;
             super_cum_working(obj,0);
             obj_scale(obj,4.0f);
-        break;
+            break;
     }
 }
 
@@ -271,18 +281,18 @@ s32 object_sanity_check(void) {
         return FALSE;
     }
 
-    if (cmm_object_types[cmm_id_selection].use_trajectory) {
+    if (cmm_object_place_types[cmm_id_selection].useTrajectory) {
         if (cmm_trajectories_used >= CMM_MAX_TRAJECTORIES) {
             cmm_show_error_message("Trajectory limit reached! (max 20)");
             return FALSE;
         }
     }
 
-    if (cmm_object_types[cmm_id_selection].is_star) {
+    if (cmm_object_place_types[cmm_id_selection].hasStar) {
         // Count stars
         u8 numStars;
         for (u32 i = 0; i < cmm_object_count; i++) {
-            if (cmm_object_types[cmm_object_data[i].type].is_star) {
+            if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
                 numStars++;
             }
         }
@@ -1357,22 +1367,23 @@ void generate_object_preview(void) {
 
     for(i=0;i<cmm_object_count;i++){
         if (gFreeObjectList.next == NULL) break;
-        preview_object = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id ,bhvStaticObject);
+        struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
+        preview_object = spawn_object(gMarioObject, info->model_id ,bhvStaticObject);
         preview_object->oPosX = GRID_TO_POS(cmm_object_data[i].x);
-        preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + cmm_object_types[cmm_object_data[i].type].y_offset;
+        preview_object->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
         preview_object->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         preview_object->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
-        obj_scale(preview_object, cmm_object_types[cmm_object_data[i].type].scale);
-        if (cmm_object_types[cmm_object_data[i].type].billboarded) {
+        obj_scale(preview_object, info->scale);
+        if (info->billboarded) {
             preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
         }
-        if (cmm_object_types[cmm_object_data[i].type].anim) {
-            preview_object->oAnimations = (struct Animation **)cmm_object_types[cmm_object_data[i].type].anim;
+        if (info->anim) {
+            preview_object->oAnimations = (struct Animation **)info->anim;
             super_cum_working(preview_object,0);
             preview_object->header.gfx.animInfo.animAccel = 0.0f;
         }
-        if (cmm_object_types[cmm_object_data[i].type].disp_func) {
-            (cmm_object_types[cmm_object_data[i].type].disp_func)(preview_object,cmm_object_data[i].param);
+        if (info->disp_func) {
+            (info->disp_func)(preview_object,cmm_object_data[i].param);
         }
     }
 }
@@ -1382,21 +1393,19 @@ void generate_objects_to_level(void) {
     u32 i;
     cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
-        //obj = create_object(cmm_object_types[cmm_object_data[i].type].behavior);
-        //obj->behavior = cmm_object_types[cmm_object_data[i].type].behavior;
-        //obj->header.gfx.sharedChild = gLoadedGraphNodes[cmm_object_types[cmm_object_data[i].type].model_id];
+        struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
 
-        obj = spawn_object(gMarioObject, cmm_object_types[cmm_object_data[i].type].model_id , cmm_object_types[cmm_object_data[i].type].behavior);
+        obj = spawn_object(gMarioObject, info->model_id, info->behavior);
 
         obj->oPosX = GRID_TO_POS(cmm_object_data[i].x);
-        obj->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 +cmm_object_types[cmm_object_data[i].type].y_offset;
+        obj->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = cmm_object_data[i].param;
 
         //assign star ids
-        if (cmm_object_types[cmm_object_data[i].type].is_star) {
+        if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
             if (cmm_play_stars_max < 32) {
                 obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 cmm_play_stars_max++;
@@ -1472,17 +1481,17 @@ void place_tile(s8 pos[3]) {
             coltype = MATERIAL(cmm_mat_selection).col;
         }
         if (coltype == SURFACE_BURNING) {
-            play_sound(SOUND_GENERAL_LOUD_BUBBLE, gGlobalSoundSource);
+            play_place_sound(SOUND_GENERAL_LOUD_BUBBLE | SOUND_VIBRATO);
         } else {
-            play_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype), gGlobalSoundSource);
+            play_place_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype));
         }
     } else {
         switch (cmm_id_selection ) {
             case TILE_TYPE_FENCE:
                 if (cmm_lopt_theme == CMM_THEME_RHR) {
-                    play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16), gGlobalSoundSource);
+                    play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
                 } else {
-                    play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_SPOOKY << 16), gGlobalSoundSource);
+                    play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_SPOOKY << 16));
                 }
                 break;
         }
@@ -1513,7 +1522,7 @@ void place_water(s8 pos[3]) {
         if (tileType == TILE_TYPE_BLOCK) {
             return;
         }
-        play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16), gGlobalSoundSource);
+        play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
         tile->waterlogged = TRUE;
         u32 tileIndex = get_tiletype_index(tileType, tile->mat);
         for (u32 i = cmm_tile_data_indices[tileIndex]; i < cmm_tile_data_indices[tileIndex + 1]; i++) {
@@ -1537,7 +1546,7 @@ void place_water(s8 pos[3]) {
         cmm_tile_data[newtileIndex].rot = 0;
         cmm_tile_data[newtileIndex].waterlogged = TRUE;
         cmm_tile_count++;
-        play_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16), gGlobalSoundSource);
+        play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
     }
 }
 
@@ -1549,7 +1558,7 @@ void place_object(s8 pos[3]) {
     cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
     cmm_object_data[cmm_object_count].param = cmm_param_selection;
 
-    if (cmm_object_types[cmm_id_selection].use_trajectory) {
+    if (cmm_object_place_types[cmm_id_selection].useTrajectory) {
         cmm_trajectory_to_edit = cmm_trajectories_used;
         cmm_object_data[cmm_object_count].param = cmm_trajectories_used;
         cmm_trajectories_used++;
@@ -1560,6 +1569,7 @@ void place_object(s8 pos[3]) {
     }
 
     cmm_object_count++;
+    play_place_sound(cmm_object_place_types[cmm_id_selection].info->soundBits);
 }
 
 u8 joystick_direction(void) {
@@ -1625,7 +1635,7 @@ void remove_trajectory(u32 index) {
     // Scan all objects
     // If their trajectory index is past the one being deleted, lower it by 1
     for (u32 i = 0; i < cmm_object_count; i++) {
-        if (cmm_object_types[cmm_object_data[i].type].use_trajectory) {
+        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
             if (cmm_object_data[i].param > index) {
                 cmm_object_data[i].param--;
             }
@@ -1650,7 +1660,7 @@ void delete_tile_action(s8 pos[3]) {
             index = i;
             remove_occupy_data(pos);
             remove_terrain_data(pos);
-            play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
+            play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
             cmm_tile_count--;
         }
     }
@@ -1673,9 +1683,9 @@ void delete_tile_action(s8 pos[3]) {
         if ((cmm_object_data[i].x == pos[0])&&(cmm_object_data[i].y == pos[1])&&(cmm_object_data[i].z == pos[2])) {
             index = i;
             remove_occupy_data(pos);
-            play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
+            play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
 
-            if (cmm_object_types[cmm_object_data[i].type].use_trajectory) { 
+            if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) { 
                 remove_trajectory(cmm_object_data[i].param);
                 generate_trajectory_gfx();
             }
@@ -1922,7 +1932,7 @@ void load_level(u8 index) {
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z)
         place_occupy_data(pos);
-        if (cmm_object_types[cmm_object_data[i].type].use_trajectory) {
+        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
             cmm_trajectories_used++;
         }
     }
@@ -2200,26 +2210,28 @@ void sb_loop(void) {
             }
 
             if (cmm_place_mode == CMM_PM_OBJ) {
-                if (cmm_object_types[cmm_id_selection].param_max != 0) {
-                    s16 max = cmm_object_types[cmm_id_selection].param_max;
+                if (cmm_object_place_types[cmm_id_selection].maxParams != 0) {
+                    s16 max = cmm_object_place_types[cmm_id_selection].maxParams;
                     cmm_param_selection = (cmm_param_selection+max)%max;
                 }
+
+                struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
                 vec3_copy(&cmm_preview_object->oPosVec,&o->oPosVec);
-                cmm_preview_object->oPosY += cmm_object_types[cmm_id_selection].y_offset - TILE_SIZE/2;
-                obj_scale(cmm_preview_object, cmm_object_types[cmm_id_selection].scale);
-                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[cmm_object_types[cmm_id_selection].model_id];
+                cmm_preview_object->oPosY += info->y_offset - TILE_SIZE/2;
+                obj_scale(cmm_preview_object, info->scale);
+                cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[info->model_id];
                 cmm_preview_object->oFaceAngleYaw = cmm_rot_selection*0x4000;
-                if (cmm_object_types[cmm_id_selection].billboarded) {
+                if (info->billboarded) {
                     cmm_preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
                 } else {
                     cmm_preview_object->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
                 }
-                if (cmm_object_types[cmm_id_selection].anim) {
-                    cmm_preview_object->oAnimations = (struct Animation **)cmm_object_types[cmm_id_selection].anim;
+                if (info->anim) {
+                    cmm_preview_object->oAnimations = (struct Animation **)info->anim;
                     super_cum_working(cmm_preview_object,0);
                 }
-                if (cmm_object_types[cmm_id_selection].disp_func) {
-                    (cmm_object_types[cmm_id_selection].disp_func)(cmm_preview_object,cmm_param_selection);
+                if (info->disp_func) {
+                    (info->disp_func)(cmm_preview_object,cmm_param_selection);
                 }
             } else {
                 cmm_preview_object->header.gfx.sharedChild =  gLoadedGraphNodes[MODEL_NONE];
@@ -2370,7 +2382,7 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 2] = o->oPosY;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 3] = o->oPosZ;
                         cmm_trajectory_edit_index++;
-                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                         generate_trajectory_gfx();
                     }
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -2379,7 +2391,7 @@ void sb_loop(void) {
                     } else {
                         cmm_trajectory_edit_index--;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index*4 + 0] = -1;
-                        play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, gGlobalSoundSource);
+                        play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                         generate_trajectory_gfx();
                     }
                 }
