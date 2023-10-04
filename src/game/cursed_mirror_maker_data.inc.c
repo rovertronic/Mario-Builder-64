@@ -504,6 +504,9 @@ enum cmm_materials {
     CMM_MAT_BBH_PILLAR,
     CMM_MAT_BBH_WINDOW,
     // JRB
+    CMM_MAT_JRB_SAND,
+    CMM_MAT_JRB_STONE,
+    CMM_MAT_JRB_METAL,
     // Retro
     CMM_MAT_RETRO_GROUND,
     CMM_MAT_RETRO_BRICKS,
@@ -595,6 +598,10 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerBBHStonePattern, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_STONE_PATTERN
     {mat_maker_MakerBBHPillar,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_PILLAR
     {mat_maker_MakerBBHWindow,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_WINDOW
+    // JRB
+    {mat_maker_MakerJRBSand,         0, SURFACE_SAND},         // CMM_MAT_JRB_SAND
+    {mat_maker_MakerJRBStone,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_STONE
+    {mat_maker_MakerJRBMetal,        0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METAL
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BRICKS
@@ -628,6 +635,7 @@ enum cmm_topmaterials {
     CMM_TOPMAT_BBH_STONE,
     CMM_TOPMAT_BBH_WOOD_FLOOR,
     CMM_TOPMAT_BBH_WOOD_WALL,
+    CMM_TOPMAT_JRB_SAND,
     CMM_TOPMAT_RETRO_TREETOP,
 };
 
@@ -649,6 +657,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_TOPMAT_BBH_STONE
     {CMM_MAT_BBH_WOOD_FLOOR,NULL},                                // CMM_TOPMAT_BBH_WOOD_FLOOR
     {CMM_MAT_BBH_WOOD_WALL, NULL},                                // CMM_TOPMAT_BBH_WOOD_WALL
+    {CMM_MAT_JRB_SAND,      NULL},                                // CMM_TOPMAT_JRB_SAND
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
 };
 
@@ -835,8 +844,8 @@ struct cmm_theme cmm_theme_table[] = {
     // JRB
     {
         {
-            {CMM_MAT_VP_BLOCK,      0,                       ""},
-            {CMM_MAT_VP_TILES,      0,                       ""},
+            {CMM_MAT_JRB_STONE,     CMM_TOPMAT_JRB_SAND,     "Sand"},
+            {CMM_MAT_JRB_METAL,     0,                       "Plating"},
             {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        ""},
             {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, ""},
             {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
