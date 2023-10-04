@@ -1009,6 +1009,17 @@ u32 get_tiletype_index(u32 type, u32 mat) {
 }
 
 
+Gfx *get_sidetex(s32 mat) {
+    s32 matid = TILE_MATDEF(mat).topmat;
+    for (s32 i = 0; i < ARRAY_COUNT(cmm_topmat_table); i++) {
+        if (cmm_topmat_table[i].mat == matid) {
+            return cmm_topmat_table[i].decaltex;
+        }
+    }
+    return NULL;
+}
+
+
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
 
@@ -1043,10 +1054,11 @@ void process_tiles(void) {
         PROC_RENDER( display_cached_tris(); gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE); gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); )
         
         if (cmm_curr_mat_has_topside) {
+            Gfx *sidetex = get_sidetex(mat);
             // Only runs when rendering
-            if (!cmm_building_collision && (SIDETEX(mat) != NULL)) {
+            if (!cmm_building_collision && (sidetex)) {
                 cmm_use_alt_uvs = TRUE;
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], SIDETEX(mat));
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                 cmm_growth_render_type = 2;
                 for (u32 i = startIndex; i < endIndex; i++) {
                     tileType = cmm_tile_data[i].type;
@@ -1247,7 +1259,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
 
                 if (cmm_curr_mat_has_topside) {
-                    Gfx *sidetex = SIDETEX(cmm_mat_selection);
+                    Gfx *sidetex = get_sidetex(cmm_mat_selection);
                     if (sidetex != NULL) {
                         cmm_use_alt_uvs = TRUE;
                         cmm_growth_render_type = 2;

@@ -427,6 +427,7 @@ struct cmm_object_place cmm_object_place_types[] = {
 };
 
 enum cmm_materials {
+    CMM_MAT_NONE,
     // Generic
     CMM_MAT_DIRT,
     CMM_MAT_GRASS,
@@ -507,6 +508,12 @@ enum cmm_materials {
     CMM_MAT_JRB_SAND,
     CMM_MAT_JRB_STONE,
     CMM_MAT_JRB_METAL,
+    CMM_MAT_JRB_UNDERWATER,
+    CMM_MAT_JRB_SHIPSIDE,
+    CMM_MAT_JRB_SHIPTOP,
+    CMM_MAT_JRB_WOOD,
+    CMM_MAT_JRB_METALSIDE,
+    CMM_MAT_JRB_WALL,
     // Retro
     CMM_MAT_RETRO_GROUND,
     CMM_MAT_RETRO_BRICKS,
@@ -522,6 +529,7 @@ enum cmm_materials {
 };
 
 struct cmm_material cmm_mat_table[] = {
+    {0,0,0}, // CMM_MAT_NONE
     // Generic
     {mat_maker_MakerDirt,       0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_DIRT
     {mat_maker_MakerGrass,      0, SURFACE_GRASS},             // CMM_MAT_GRASS
@@ -602,6 +610,12 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBSand,         0, SURFACE_SAND},         // CMM_MAT_JRB_SAND
     {mat_maker_MakerJRBStone,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_STONE
     {mat_maker_MakerJRBMetal,        0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METAL
+    {mat_maker_MakerJRBUnderwater,   0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_UNDERWATER
+    {mat_maker_MakerJRBShipSide,     0, SURFACE_CREAKWOOD},    // CMM_MAT_JRB_SHIPSIDE
+    {mat_maker_MakerJRBShipTop,      0, SURFACE_CREAKWOOD},    // CMM_MAT_JRB_SHIPTOP
+    {mat_maker_MakerJRBWood,         0, SURFACE_CREAKWOOD},    // CMM_MAT_JRB_WOOD
+    {mat_maker_MakerJRBMetalSide,    0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METALSIDE
+    {mat_maker_MakerJRBWall,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_WALL
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BRICKS
@@ -616,49 +630,14 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
 };
 
-enum cmm_topmaterials {
-    CMM_TOPMAT_NONE,
-    CMM_TOPMAT_GRASS,
-    CMM_TOPMAT_STONE,
-    CMM_TOPMAT_TILES,
-    CMM_TOPMAT_SAND,
-    CMM_TOPMAT_SNOW,
-    CMM_TOPMAT_DESERT_TILES2,
-    CMM_TOPMAT_RHR_OBSIDIAN,
-    CMM_TOPMAT_RHR_TILES,
-    CMM_TOPMAT_HMC_GRASS,
-    CMM_TOPMAT_C_TILES,
-    CMM_TOPMAT_C_STONE,
-    CMM_TOPMAT_C_CARPET,
-    CMM_TOPMAT_VP_BLUETILES,
-    CMM_TOPMAT_BBH_METAL,
-    CMM_TOPMAT_BBH_STONE,
-    CMM_TOPMAT_BBH_WOOD_FLOOR,
-    CMM_TOPMAT_BBH_WOOD_WALL,
-    CMM_TOPMAT_JRB_SAND,
-    CMM_TOPMAT_RETRO_TREETOP,
-};
-
 struct cmm_topmaterial cmm_topmat_table[] = {
-    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},     // CMM_TOPMAT_GRASS
-    {CMM_MAT_STONE,         NULL},                                // CMM_TOPMAT_STONE
-    {CMM_MAT_TILES,         NULL},                                // CMM_TOPMAT_TILES
-    {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},      // CMM_TOPMAT_SAND
-    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},      // CMM_TOPMAT_SNOW
-    {CMM_MAT_DESERT_TILES2, NULL},                                // CMM_TOPMAT_DESERT_TILES2
-    {CMM_MAT_RHR_OBSIDIAN,  NULL},                                // CMM_TOPMAT_RHR_OBSIDIAN
-    {CMM_MAT_RHR_TILES,     NULL},                                // CMM_TOPMAT_RHR_TILES
-    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},    // CMM_TOPMAT_HMC_GRASS
-    {CMM_MAT_C_TILES,       NULL},                                // CMM_TOPMAT_C_TILES
-    {CMM_MAT_C_STONETOP,    NULL},                                // CMM_TOPMAT_C_STONE
-    {CMM_MAT_C_CARPET,      NULL},                                // CMM_TOPMAT_C_CARPET
-    {CMM_MAT_VP_BLUETILES,  NULL},                                // CMM_TOPMAT_VP_BLUETILES
-    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_TOPMAT_BBH_METAL
-    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_TOPMAT_BBH_STONE
-    {CMM_MAT_BBH_WOOD_FLOOR,NULL},                                // CMM_TOPMAT_BBH_WOOD_FLOOR
-    {CMM_MAT_BBH_WOOD_WALL, NULL},                                // CMM_TOPMAT_BBH_WOOD_WALL
-    {CMM_MAT_JRB_SAND,      NULL},                                // CMM_TOPMAT_JRB_SAND
-    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_TOPMAT_RETRO_TREETOP
+    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},     // CMM_MAT_GRASS
+    {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},      // CMM_MAT_SAND
+    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},      // CMM_MAT_SNOW
+    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},    // CMM_MAT_HMC_GRASS
+    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_METAL
+    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_STONE
+    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_MAT_RETRO_TREETOP
 };
 
 s8 cmm_terrain_floors_generic[] = {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
@@ -708,14 +687,14 @@ struct cmm_theme cmm_theme_table[] = {
     // GENERIC
     {
         {
-            {CMM_MAT_DIRT,        CMM_TOPMAT_GRASS, "Grass"},
+            {CMM_MAT_DIRT,        CMM_MAT_GRASS, "Grass"},
             {CMM_MAT_BRICKS,      0,                "Bricks"},
-            {CMM_MAT_COBBLESTONE, CMM_TOPMAT_STONE, "Stone"},
-            {CMM_MAT_TILESBRICKS, CMM_TOPMAT_TILES, "Tiling"},
+            {CMM_MAT_COBBLESTONE, CMM_MAT_STONE, "Stone"},
+            {CMM_MAT_TILESBRICKS, CMM_MAT_TILES, "Tiling"},
             {CMM_MAT_ROOF,        0,                "Roof"},
             {CMM_MAT_WOOD,        0,                "Wood"},
-            {CMM_MAT_SANDDIRT,    CMM_TOPMAT_SAND,  "Sand"},
-            {CMM_MAT_SNOWDIRT,    CMM_TOPMAT_SNOW,  "Snow"},
+            {CMM_MAT_SANDDIRT,    CMM_MAT_SAND,  "Sand"},
+            {CMM_MAT_SNOWDIRT,    CMM_MAT_SNOW,  "Snow"},
             {CMM_MAT_LAVA,        0,                "Lava"},
             {CMM_MAT_QUICKSAND,   0,                "Quicksand"},
         },
@@ -725,14 +704,14 @@ struct cmm_theme cmm_theme_table[] = {
     // DESERT
     {
         {
-            {CMM_MAT_SANDDIRT,        CMM_TOPMAT_SAND,          "Sand"},
+            {CMM_MAT_SANDDIRT,        CMM_MAT_SAND,          "Sand"},
             {CMM_MAT_DESERT_BRICKS,   0,                        "Bricks"},
             {CMM_MAT_DESERT_STONE,    0,                        "Stone"},
             {CMM_MAT_DESERT_TILES,    0,                        "Desert Tiling"},
             {CMM_MAT_DESERT_BLOCK,    0,                        "Stone Block"},
             {CMM_MAT_DESERT_SLOWSAND, 0,                        "Slow Quicksand"},
-            {CMM_MAT_DESERT_BRICKS,   CMM_TOPMAT_DESERT_TILES2, "Desert Plating"},
-            {CMM_MAT_DIRT,            CMM_TOPMAT_GRASS,         "Grass"},
+            {CMM_MAT_DESERT_BRICKS,   CMM_MAT_DESERT_TILES2, "Desert Plating"},
+            {CMM_MAT_DIRT,            CMM_MAT_GRASS,         "Grass"},
             {CMM_MAT_LAVA,            0,                        "Lava"},
             {CMM_MAT_QUICKSAND,       0,                        "Quicksand"},
         },
@@ -742,13 +721,13 @@ struct cmm_theme cmm_theme_table[] = {
     // LAVA
     {
         {
-            {CMM_MAT_RHR_STONE,   CMM_TOPMAT_RHR_OBSIDIAN, "Stone"},
-            {CMM_MAT_RHR_BRICK,   CMM_TOPMAT_RHR_OBSIDIAN, "Bricks"},
+            {CMM_MAT_RHR_STONE,   CMM_MAT_RHR_OBSIDIAN, "Stone"},
+            {CMM_MAT_RHR_BRICK,   CMM_MAT_RHR_OBSIDIAN, "Bricks"},
             {CMM_MAT_RHR_BASALT,  0,                       "Basalt"},
             {CMM_MAT_RHR_TILES,   0,                       "Tiling"},
             {CMM_MAT_RHR_BLOCK,   0,                       "Stone Block"},
             {CMM_MAT_RHR_WOOD,    0,                       "Wood"},
-            {CMM_MAT_RHR_PILLAR,  CMM_TOPMAT_RHR_TILES,    "Pillar"},
+            {CMM_MAT_RHR_PILLAR,  CMM_MAT_RHR_TILES,    "Pillar"},
             {CMM_MAT_RHR_MESH,    0,                       "Mesh"},
             {CMM_MAT_LAVA,        0,                       "Lava"},
             {CMM_MAT_SERVER_ACID, 0,                       "Server Acid"},
@@ -759,13 +738,13 @@ struct cmm_theme cmm_theme_table[] = {
     // CAVE
     {
         {
-            {CMM_MAT_HMC_DIRT,      CMM_TOPMAT_HMC_GRASS, "Grass"},
+            {CMM_MAT_HMC_DIRT,      CMM_MAT_HMC_GRASS, "Grass"},
             {CMM_MAT_HMC_BRICK,     0,                    "Bricks"},
             {CMM_MAT_HMC_STONE,     0,                    "Stone"},
             {CMM_MAT_HMC_MAZEWALL,  0,                    "Maze Wall"},
             {CMM_MAT_HMC_MAZEFLOOR, 0,                    "Maze Floor"},
             {CMM_MAT_HMC_LIGHT,     0,                    "Light"},
-            {CMM_MAT_HMC_LAKEGRASS, CMM_TOPMAT_HMC_GRASS, "Cave Wall"},
+            {CMM_MAT_HMC_LAKEGRASS, CMM_MAT_HMC_GRASS, "Cave Wall"},
             {CMM_MAT_HMC_MESH,      0,                    "Mesh"},
             {CMM_MAT_LAVA,          0,                    "Lava"},
             {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
@@ -776,13 +755,13 @@ struct cmm_theme cmm_theme_table[] = {
     // CASTLE
     {
         {
-            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_TILES,  "Tiling"},
-            {CMM_MAT_C_BRICK,        CMM_TOPMAT_C_TILES,  "Tiling (Bricks)"},
-            {CMM_MAT_C_STONESIDE,    CMM_TOPMAT_C_STONE,  "Tiling (Stone)"},
-            {CMM_MAT_C_WOOD,         CMM_TOPMAT_C_CARPET, "Carpet"},
+            {CMM_MAT_C_WOOD,         CMM_MAT_C_TILES,  "Tiling"},
+            {CMM_MAT_C_BRICK,        CMM_MAT_C_TILES,  "Tiling (Bricks)"},
+            {CMM_MAT_C_STONESIDE,    CMM_MAT_C_STONETOP,  "Tiling (Stone)"},
+            {CMM_MAT_C_WOOD,         CMM_MAT_C_CARPET, "Carpet"},
             {CMM_MAT_C_ROOF,         0,                   "Roof"},
             {CMM_MAT_C_WALL,         0,                   "Castle Wall"},
-            {CMM_MAT_C_PILLAR,       CMM_TOPMAT_C_STONE,  "Pillar"},
+            {CMM_MAT_C_PILLAR,       CMM_MAT_C_STONETOP,  "Pillar"},
             {CMM_MAT_C_BASEMENTWALL, 0,                   "Basement Wall"},
             {CMM_MAT_LAVA,           0,                   "Lava"},
             {CMM_MAT_C_OUTSIDEBRICK, 0,                   "Castle Bricks"},
@@ -795,12 +774,12 @@ struct cmm_theme cmm_theme_table[] = {
         {
             {CMM_MAT_VP_BLOCK,      0,                       "Block"},
             {CMM_MAT_VP_TILES,      0,                       "Tiling"},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        "Grass"},
-            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, "Blue Tiling"},
+            {CMM_MAT_DIRT,          CMM_MAT_GRASS,        "Grass"},
+            {CMM_MAT_VP_TILES,      CMM_MAT_VP_BLUETILES, "Blue Tiling"},
             {CMM_MAT_VP_RUSTYBLOCK, 0,                       "Rusty Block"},
             {CMM_MAT_VP_SCREEN,     0,                       "Screen"},
             {CMM_MAT_VP_CAUTION,    0,                       "Hazard Stripes"},
-            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         "Snowy Block"},
+            {CMM_MAT_VP_BLOCK,      CMM_MAT_SNOW,         "Snowy Block"},
             {CMM_MAT_LAVA,          0,                       "Lava"},
             {CMM_MAT_VP_VOID,       0,                       "Void"},
         },
@@ -812,12 +791,12 @@ struct cmm_theme cmm_theme_table[] = {
         {
             {CMM_MAT_VP_BLOCK,      0,                       ""},
             {CMM_MAT_VP_TILES,      0,                       ""},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        ""},
-            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, ""},
+            {CMM_MAT_DIRT,          CMM_MAT_GRASS,        ""},
+            {CMM_MAT_VP_TILES,      CMM_MAT_VP_BLUETILES, ""},
             {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
             {CMM_MAT_VP_SCREEN,     0,                       ""},
             {CMM_MAT_VP_CAUTION,    0,                       ""},
-            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         ""},
+            {CMM_MAT_VP_BLOCK,      CMM_MAT_SNOW,         ""},
             {CMM_MAT_LAVA,          0,                       ""},
             {CMM_MAT_VP_VOID,       0,                       ""},
         },
@@ -827,14 +806,14 @@ struct cmm_theme cmm_theme_table[] = {
     // BBH
     {
         {
-            {CMM_MAT_BBH_BRICKS,         CMM_TOPMAT_BBH_STONE,      "Stone Floor"},
+            {CMM_MAT_BBH_BRICKS,         CMM_MAT_BBH_STONE,      "Stone Floor"},
             {CMM_MAT_BBH_HAUNTED_PLANKS, 0,                         "Haunted Planks"},
-            {CMM_MAT_BBH_STONE_PATTERN,  CMM_TOPMAT_BBH_WOOD_FLOOR, "Wood Floor"},
-            {CMM_MAT_BBH_BRICKS,         CMM_TOPMAT_BBH_METAL,      "Metal Floor"},
+            {CMM_MAT_BBH_STONE_PATTERN,  CMM_MAT_BBH_WOOD_FLOOR, "Wood Floor"},
+            {CMM_MAT_BBH_BRICKS,         CMM_MAT_BBH_METAL,      "Metal Floor"},
             {CMM_MAT_BBH_ROOF,           0,                         "Roof"},
             {CMM_MAT_BBH_WOOD_WALL,      0,                         "Wood"},
             {CMM_MAT_BBH_STONE,          0,                         "Wall"},
-            {CMM_MAT_BBH_PILLAR,         CMM_TOPMAT_BBH_STONE,      "Pillar"},
+            {CMM_MAT_BBH_PILLAR,         CMM_MAT_BBH_STONE,      "Pillar"},
             {CMM_MAT_LAVA,               0,                         "Lava"},
             {CMM_MAT_BBH_WINDOW,         0,                         "Window"},
         },
@@ -844,16 +823,16 @@ struct cmm_theme cmm_theme_table[] = {
     // JRB
     {
         {
-            {CMM_MAT_JRB_STONE,     CMM_TOPMAT_JRB_SAND,     "Sand"},
-            {CMM_MAT_JRB_METAL,     0,                       "Plating"},
-            {CMM_MAT_DIRT,          CMM_TOPMAT_GRASS,        ""},
-            {CMM_MAT_VP_TILES,      CMM_TOPMAT_VP_BLUETILES, ""},
-            {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
-            {CMM_MAT_VP_SCREEN,     0,                       ""},
-            {CMM_MAT_VP_CAUTION,    0,                       ""},
-            {CMM_MAT_VP_BLOCK,      CMM_TOPMAT_SNOW,         ""},
-            {CMM_MAT_LAVA,          0,                       ""},
-            {CMM_MAT_VP_VOID,       0,                       ""},
+            {CMM_MAT_JRB_STONE,     CMM_MAT_JRB_SAND,     "Sand"},
+            {CMM_MAT_JRB_METAL,     0,                       "Metal Plating"},
+            {CMM_MAT_JRB_UNDERWATER, 0,                      "Stone"},
+            {CMM_MAT_JRB_STONE,     0,                       "Rocks"},
+            {CMM_MAT_JRB_SHIPSIDE,  CMM_MAT_JRB_SHIPTOP,  "Wood (Ship)"},
+            {CMM_MAT_JRB_METAL,     CMM_MAT_JRB_WOOD,     "Wood (Dock)"},
+            {CMM_MAT_JRB_METALSIDE, CMM_MAT_JRB_METAL,       "Metal"},
+            {CMM_MAT_HMC_MESH,      0,                       "Mesh"},
+            {CMM_MAT_JRB_WALL,      0,                       "Wall"},
+            {CMM_MAT_QUICKSAND,       0,                       "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
         CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
@@ -863,7 +842,7 @@ struct cmm_theme cmm_theme_table[] = {
         {
             {CMM_MAT_RETRO_GROUND,           0,                        "Ground"},
             {CMM_MAT_RETRO_BRICKS,           0,                        "Bricks"},
-            {CMM_MAT_RETRO_TREEPLAT,         CMM_TOPMAT_RETRO_TREETOP, "Treetop"},
+            {CMM_MAT_RETRO_TREEPLAT,         CMM_MAT_RETRO_TREETOP,    "Treetop"},
             {CMM_MAT_RETRO_BLOCK,            0,                        "Block"},
             {CMM_MAT_RETRO_BLUEGROUND,       0,                        "Blue Ground"},
             {CMM_MAT_RETRO_BLUEBRICKS,       0,                        "Blue Bricks"},
@@ -885,11 +864,7 @@ struct cmm_theme cmm_theme_table[] = {
 // Returns TRUE if given material has a unique top texture
 #define HAS_TOPMAT(matid) (TILE_MATDEF(matid).topmat != 0)
 // Returns top material's topmat struct (struct cmm_topmaterial)
-#define TOPMAT_DEF(matid) (cmm_topmat_table[TILE_MATDEF(matid).topmat - 1])
-// Returns top material (struct cmm_material)
-#define TOPMAT(matid) (cmm_mat_table[TOPMAT_DEF(matid).mat])
-// Returns side decal texture (Gfx *)
-#define SIDETEX(matid) (TOPMAT_DEF(matid).decaltex)
+#define TOPMAT(matid) (cmm_mat_table[TILE_MATDEF(matid).topmat])
 
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
