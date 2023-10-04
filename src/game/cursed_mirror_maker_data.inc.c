@@ -647,6 +647,7 @@ s8 cmm_terrain_floors_cave[] = {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone
 s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
 s8 cmm_terrain_floors_bbh[] = {3, 8, 0, 6}; // metal, lava, stone, wood
+s8 cmm_terrain_floors_jrb[] = {0, 2, 9, 6, 5}; // sand, stone, quicksand, metal, wood
 s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
 enum cmm_fences {
@@ -657,6 +658,7 @@ enum cmm_fences {
     CMM_FENCE_CASTLE,
     CMM_FENCE_VIRTUAPLEX,
     CMM_FENCE_BBH,
+    CMM_FENCE_JRB,
     CMM_FENCE_RETRO,
 };
 
@@ -668,6 +670,7 @@ Gfx *cmm_fence_texs[] = {
     mat_maker_MakerCFence_layer1,
     mat_maker_MakerVPFence_layer1,
     mat_maker_MakerBBHFence_layer1,
+    mat_maker_MakerJRBFence_layer1,
     mat_maker_MakerRetroFence_layer1,
 };
 
@@ -828,14 +831,14 @@ struct cmm_theme cmm_theme_table[] = {
             {CMM_MAT_JRB_UNDERWATER, 0,                      "Stone"},
             {CMM_MAT_JRB_STONE,     0,                       "Rocks"},
             {CMM_MAT_JRB_SHIPSIDE,  CMM_MAT_JRB_SHIPTOP,  "Wood (Ship)"},
-            {CMM_MAT_JRB_METAL,     CMM_MAT_JRB_WOOD,     "Wood (Dock)"},
+            {CMM_MAT_JRB_METAL,     CMM_MAT_JRB_WOOD,     "Wood (Docks)"},
             {CMM_MAT_JRB_METALSIDE, CMM_MAT_JRB_METAL,       "Metal"},
             {CMM_MAT_HMC_MESH,      0,                       "Mesh"},
             {CMM_MAT_JRB_WALL,      0,                       "Wall"},
             {CMM_MAT_QUICKSAND,       0,                       "Quicksand"},
         },
-        ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
-        CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
+        ARRAY_COUNT(cmm_terrain_floors_jrb), cmm_terrain_floors_jrb,
+        CMM_FENCE_JRB, CMM_WATER_DEFAULT
     },
     // RETRO
     {

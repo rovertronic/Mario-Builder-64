@@ -663,7 +663,7 @@ s32 cmm_main_menu(void) {
             if (cmm_mm_generic_anim_out(3, FALSE)) {
                 switch(cmm_mm_index) {
                     case 0:
-                        return 1;
+                        cmm_mm_state = MM_MAKE_MODE;
                         break;
                     case 1:
                         cmm_mm_state = MM_HELP_MODE;
@@ -754,15 +754,24 @@ s32 cmm_main_menu(void) {
 
             if (cmm_mm_make_anim_out()) {
                 cmm_menu_start_timer = 0;
-                if (cmm_menu_going_back == -1) {
-                    cmm_mm_state = MM_MAKE;
-                    cmm_mm_index = 0;
+
+                if (cmm_mm_main_state == MM_MAIN_LIMITED) {
+                    if (cmm_menu_going_back == -1) {
+                        cmm_mm_state = MM_MAIN_LIMITED;
+                        cmm_mm_index = 0;
+                    }
                 } else {
-                    cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
-                    cmm_mm_state = MM_KEYBOARD;
-                    cmm_mm_index = 0;
+                    if (cmm_menu_going_back == -1) {
+                        cmm_mm_state = MM_MAKE;
+                        cmm_mm_index = 0;
+                    } else {
+                        cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
+                        cmm_mm_state = MM_KEYBOARD;
+                        cmm_mm_index = 0;
+                    }
                 }
             }
+            if (cmm_mm_main_state == MM_MAIN_LIMITED && cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) return 1;
             break;
         case MM_HELP_MODE:
             cmm_mm_index = (cmm_mm_index+3)%3;
