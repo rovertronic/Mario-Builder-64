@@ -686,6 +686,9 @@ void bhv_enemy_arena_spawner(void);
 void bhv_phono_init(void);
 void bhv_phono_loop(void);
 
+void bhv_preview_object_init(void);
+void bhv_preview_object_loop(void);
+
 extern u8 MouthOpen;
 
 Gfx *geo_move_mario_part_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);

@@ -2682,7 +2682,7 @@ sound_ref .sound_general_volcano_explosion
 sound_ref .sound_general_quiet_bubble2
 sound_ref .sound_general_castle_trap_open
 sound_ref .sound_general_wall_explosion
-sound_ref .sound_general_coin
+sound_ref .sound_general_loud_bubble
 sound_ref .sound_general_coin
 sound_ref .sound_general_coin_water
 sound_ref .sound_general_coin_water
@@ -2931,6 +2931,16 @@ chan_end
 
 .layer_1155:
 layer_note1 39, 0x14, 70
+layer_end
+
+.sound_general_loud_bubble:
+chan_setbank 4
+chan_setinstr 6
+chan_setlayer 0, .layer_loud_bubble
+chan_end
+
+.layer_loud_bubble:
+layer_note1 39, 0x14, 127
 layer_end
 
 .sound_general_volcano_explosion:
@@ -3571,8 +3581,7 @@ chan_setlayer 0, .layer_1599
 chan_end
 
 .layer_1599:
-layer_note0 36, 0xa, 80, 80
-layer_note0 24, 0xa, 80, 80
+layer_note0 28, 0xa, 80, 80
 layer_end
 
 .sound_general_quiet_pound2:

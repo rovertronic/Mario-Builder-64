@@ -798,6 +798,7 @@ extern const BehaviorScript bhvSamplePlatform2[];
 extern const BehaviorScript bhvTvshop[];
 extern const BehaviorScript bhvPostGameHint[];
 extern const BehaviorScript bhvPreviewObject[];
+extern const BehaviorScript bhvCurrPreviewObject[];
 extern const BehaviorScript bhvSpawn[];
 extern const BehaviorScript bhvBadge[];
 extern const BehaviorScript bhvBoss[];

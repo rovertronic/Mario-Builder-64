@@ -8,7 +8,7 @@
 
 #define CMM_MAX_OBJS 512
 #define CMM_MAX_TRAJECTORIES 20
-#define CMM_TRAJECTORY_LENGTH 40
+#define CMM_TRAJECTORY_LENGTH 50
 
 #define TILE_SIZE 256
 
@@ -22,7 +22,7 @@ void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
-extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH * 4];
+extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
 
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
@@ -36,7 +36,7 @@ extern u8 cmm_envfx_table[];
 //play mode stuff
 extern u8 cmm_play_stars;
 extern u8 cmm_play_stars_max;
-extern u32 cmm_play_stars_bitfield;
+extern u64 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
 extern TCHAR cmm_file_name[30];
@@ -60,8 +60,6 @@ enum cmm_directions {
     CMM_DIRECTION_NEG_X,
     CMM_DIRECTION_POS_Z,
     CMM_DIRECTION_NEG_Z,
-
-    CMM_NO_CULLING,
 };
 
 #define CMM_GRID_FLAG_OCCUPIED (1 << 7)
@@ -79,6 +77,7 @@ enum cmm_culling_shapes {
     CMM_FACESHAPE_DOWNTRI_2,
 
     CMM_FACESHAPE_BOTTOMSLAB,
+    CMM_FACESHAPE_TOPSLAB,
 
     CMM_FACESHAPE_EMPTY,
 };
@@ -98,16 +97,14 @@ enum cmm_growth_types {
 
 struct cmm_terrain_quad {
     s8 vtx[4][3];
-    u8 uvProjDir;
-    u8 cullDir;
+    u8 faceDir;
     u8 faceshape;
     u8 growthType;
     s8 (*altuvs)[4][2];
 };
 struct cmm_terrain_tri {
     s8 vtx[3][3];
-    u8 uvProjDir;
-    u8 cullDir;
+    u8 faceDir;
     u8 faceshape;
     u8 growthType;
     s8 (*altuvs)[3][2];
@@ -150,17 +147,30 @@ struct cmm_grid_obj {
     u16 type:5, mat:4, rot:2, occupied:1, waterlogged:1;
 };
 
-struct cmm_object_type_struct {
+enum cmm_df_context {
+    CMM_DF_CONTEXT_INIT,
+    CMM_DF_CONTEXT_MAIN,
+};
+
+typedef void (*DisplayFunc)(s32);
+
+struct cmm_object_info {
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
-    u8 use_trajectory:1;
-    u8 is_star:1;
     f32 scale;
     const struct Animation *const *anim;
-    s16 param_max;
-    void (*disp_func)(struct Object *,int);
+    DisplayFunc disp_func;
+    u32 soundBits;
+};
+
+struct cmm_object_place {
+    struct cmm_object_info *info; // can be an array
+    u8 useTrajectory:1;
+    u8 hasStar:1;
+    u8 multipleObjs:1;
+    s8 maxParams;
 };
 
 enum {

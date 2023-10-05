@@ -179,6 +179,8 @@
 #define /*0x1C4*/ oLightID                                      OBJECT_FIELD_S32(0x50)
 #endif
 
+#define oPreviewObjDisplayFunc OBJECT_FIELD_VPTR(0x1D)
+
 /* Pathed (see obj_follow_path) */
 #define /*0x0FC*/ oPathedStartWaypoint     OBJECT_FIELD_WAYPOINT(0x1D)
 #define /*0x100*/ oPathedPrevWaypoint      OBJECT_FIELD_WAYPOINT(0x1E)
