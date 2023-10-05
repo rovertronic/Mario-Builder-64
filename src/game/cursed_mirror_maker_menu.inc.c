@@ -487,6 +487,18 @@ void cmm_mm_generic_anim_check(s32 len, s32 canBack) {
     }
 }
 
+void cmm_mm_no_files_anim_check(s32 len, s32 canBack) {
+    if (cmm_menu_start_timer == -1 || cmm_menu_start_timer > 10) {
+        if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
+            cmm_menu_end_timer = 0;
+            cmm_menu_going_back = -1;
+            cmm_menu_start_timer = -1;
+            cmm_mm_reset_all_buttons(0.f);
+            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        }
+    }
+}
+
 void cmm_mm_make_anim_check(UNUSED s32 len, UNUSED s32 canBack) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON) && (cmm_mm_index != 3)) return;
     cmm_mm_generic_anim_check(4, TRUE);
@@ -522,6 +534,10 @@ s32 cmm_mm_anim_out(s32 len, s32 canBack, void checkFunc(s32 len, s32 canBack), 
 
 s32 cmm_mm_generic_anim_out(s32 len, s32 canBack) {
     return cmm_mm_anim_out(len, canBack, cmm_mm_generic_anim_check, 23.f);
+}
+
+s32 cmm_mm_no_files_anim_out(void) {
+    return cmm_mm_anim_out(1, TRUE, cmm_mm_no_files_anim_check, 23.f);
 }
 
 s32 cmm_mm_keyboard_anim_out(void) {
@@ -923,10 +939,13 @@ s32 cmm_main_menu(void) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
                 print_maker_string_ascii(55 + cmm_menu_button_vels[0][0],200,"No levels currently loaded yet.",TRUE);
-
-                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                    cmm_mm_state = cmm_mm_main_state;
-                    cmm_mm_index = 0;
+                if (cmm_mm_no_files_anim_out()) {
+                    cmm_menu_start_timer = 0;
+                    if (cmm_menu_going_back == -1) {
+                        cmm_mm_state = cmm_mm_files_prev_menu;
+                        cmm_mm_index = (cmm_mm_state == MM_PLAY ? 0 : 1);
+                        break;
+                    }
                 }
                 return 0;
             }

@@ -514,6 +514,9 @@ enum cmm_materials {
     CMM_MAT_JRB_WOOD,
     CMM_MAT_JRB_METALSIDE,
     CMM_MAT_JRB_WALL,
+    CMM_MAT_JRB_TILETOP,
+    CMM_MAT_JRB_TILESIDE,
+    CMM_MAT_JRB_BRICKS,
     // Retro
     CMM_MAT_RETRO_GROUND,
     CMM_MAT_RETRO_BRICKS,
@@ -616,6 +619,9 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBWood,         0, SURFACE_CREAKWOOD},    // CMM_MAT_JRB_WOOD
     {mat_maker_MakerJRBMetalSide,    0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METALSIDE
     {mat_maker_MakerJRBWall,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_WALL
+    {mat_maker_MakerJRBTileTop,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_TILETOP
+    {mat_maker_MakerJRBTileSide,     0, SURFACE_DEFAULT},      // CMM_MAT_JRB_TILESIDE
+    {mat_maker_MakerJRBBricks,       0, SURFACE_DEFAULT},      // CMM_MAT_JRB_BRICKS 
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BRICKS
@@ -638,6 +644,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_METAL
     {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_STONE
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_MAT_RETRO_TREETOP
+    {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim_layer1},
 };
 
 s8 cmm_terrain_floors_generic[] = {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
@@ -647,7 +654,7 @@ s8 cmm_terrain_floors_cave[] = {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone
 s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
 s8 cmm_terrain_floors_bbh[] = {3, 8, 0, 6}; // metal, lava, stone, wood
-s8 cmm_terrain_floors_jrb[] = {0, 2, 9, 6, 5}; // sand, stone, quicksand, metal, wood
+s8 cmm_terrain_floors_jrb[] = {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
 s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
 enum cmm_fences {
@@ -827,9 +834,9 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_JRB_STONE,     CMM_MAT_JRB_SAND,     "Sand"},
-            {CMM_MAT_JRB_METAL,     0,                       "Metal Plating"},
+            {CMM_MAT_JRB_BRICKS,     0,                       "Bricks"},
             {CMM_MAT_JRB_UNDERWATER, 0,                      "Stone"},
-            {CMM_MAT_JRB_STONE,     0,                       "Rocks"},
+            {CMM_MAT_JRB_TILESIDE,   CMM_MAT_JRB_TILETOP,        "Tiles"},
             {CMM_MAT_JRB_SHIPSIDE,  CMM_MAT_JRB_SHIPTOP,  "Wood (Ship)"},
             {CMM_MAT_JRB_METAL,     CMM_MAT_JRB_WOOD,     "Wood (Docks)"},
             {CMM_MAT_JRB_METALSIDE, CMM_MAT_JRB_METAL,       "Metal"},
