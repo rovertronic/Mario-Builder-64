@@ -714,6 +714,40 @@ void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
+void print_generic_string_ascii_nofileext(s16 x, s16 y, const u8 *str) {
+    //this function uses '.' as a null terminator for printing file names
+    s32 strPos = 0;
+    u8 lineNum = 1;
+
+    s16 colorLoop;
+    ColorRGBA rgbaColors = { 0x00, 0x00, 0x00, 0x00 };
+    u8 customColor = 0;
+    u8 diffTmp     = 0;
+
+    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0.0f);
+
+    while ((str[strPos] != '.')&&(str[strPos] != 0)) {
+        switch(str[strPos]) {
+            case ' ':
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, CHAR_WIDTH_SPACE, 0.0f, 0.0f);
+            break;
+            case '\n':
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                create_dl_translation_matrix(MENU_MTX_PUSH, x, y - (lineNum * MAX_STRING_WIDTH), 0.0f);
+                lineNum++;
+            break;
+            default:
+                render_generic_char(cmm_ascii_lut[str[strPos]]);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[cmm_ascii_lut[str[strPos]]], 0.0f, 0.0f);
+            break;
+        }
+        strPos++;
+    }
+
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
+
 /**
  * Prints a hud string depending of the hud table list defined.
  */
@@ -2099,7 +2133,7 @@ void render_pause_my_score_coins(void) {
     */
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    print_generic_string_ascii(SECRET_LVL_NAME_X, 157, cmm_file_name);
+    print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 157, cmm_file_name);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
