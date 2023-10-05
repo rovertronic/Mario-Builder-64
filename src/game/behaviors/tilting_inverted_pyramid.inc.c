@@ -634,7 +634,7 @@ void loop_lightning(void) {
             o->oPosZ = CLAMP(o->oPosZ, -32768, 32768); // TODO: Make sure random value is between level bounds
             //o->oPosY = 19000.0f;
 
-            f32 waterLevel  = find_water_level(o->oPosX, o->oPosZ);
+            f32 waterLevel  = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
             f32 floorHeight = find_floor_height((f32)o->oPosX, 19000.0f, (f32)o->oPosZ);
 
             if (waterLevel > floorHeight) {

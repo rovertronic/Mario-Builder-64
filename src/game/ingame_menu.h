@@ -157,7 +157,7 @@ extern s32 gDialogVariable;
 extern u16 gDialogTextAlpha;
 extern s16 gCutsceneMsgXOffset;
 extern s16 gCutsceneMsgYOffset;
-extern s8  gRedCoinsCollected;
+extern s16 gRedCoinsCollected;
 extern s16 gMenuMode;
 extern u16 UPGRADE_TABLE[][4];
 extern u8 *costume_text[];

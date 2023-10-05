@@ -93,7 +93,6 @@ static void clear_spatial_partition(SpatialPartitionCell *cells) {
         (*cells)[SPATIAL_PARTITION_FLOORS].next = NULL;
         (*cells)[SPATIAL_PARTITION_CEILS].next = NULL;
         (*cells)[SPATIAL_PARTITION_WALLS].next = NULL;
-        (*cells)[SPATIAL_PARTITION_WATER].next = NULL;
 
         cells++;
     }
@@ -123,9 +122,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
     Vec3f normal;
     get_surface_normal(normal, surface);
 
-    if (SURFACE_IS_NEW_WATER(surface->type)) {
-        listIndex = SPATIAL_PARTITION_WATER;
-    } else if (normal[1] > NORMAL_FLOOR_THRESHOLD) {
+    if (normal[1] > NORMAL_FLOOR_THRESHOLD) {
         listIndex = SPATIAL_PARTITION_FLOORS;
     } else if (normal[1] < NORMAL_CEIL_THRESHOLD) {
         listIndex = SPATIAL_PARTITION_CEILS;
@@ -154,23 +151,6 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
         }
     } else {
         list = &gStaticSurfacePartition[cellZ][cellX][listIndex];
-    }
-
-    // Loop until we find the appropriate place for the surface in the list.
-    //while (list->next != NULL) {
-    //    priority = list->next->surface->upperY * sortDir;
-    if (listIndex == SPATIAL_PARTITION_WATER) {
-        s32 surfacePriority = surface->upperY * sortDir;
-        s32 priority;
-        while (list->next != NULL) {
-            priority = list->next->surface->upperY * sortDir;
-
-            if (surfacePriority > priority) {
-                break;
-            }
-
-            list = list->next;
-        }
     }
 
     newNode->next = list->next;

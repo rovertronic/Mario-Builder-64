@@ -24,8 +24,8 @@ void scroll_sts_mat_maker_MakerRetroLava() {
 
 void scroll_sts_mat_maker_MakerVoid() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerVoid);
-	shift_s(mat, 7, PACK_TILESIZE(0, 1));
-	shift_t(mat, 7, PACK_TILESIZE(0, 1));
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 	shift_t(mat, -1, PACK_TILESIZE(0, 1));
 };
 
