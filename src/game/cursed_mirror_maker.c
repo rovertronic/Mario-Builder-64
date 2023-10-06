@@ -139,7 +139,8 @@ u8 cmm_lopt_template = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
-s8 cmm_ui_index = 0;
+s8 cmm_menu_index = 0;
+s8 cmm_toolbar_index = 0;
 s8 cmm_toolbox_index = 0;
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -149,9 +150,6 @@ u16 cmm_error_timer = 0;
 f32 cmm_error_vels[3];
 
 struct cmm_level_save cmm_save;
-
-u8 cmm_settings_index = 0;
-u8 cmm_settings_index_changed = FALSE;
 
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
@@ -2019,7 +2017,7 @@ void sb_init(void) {
     struct Object *spawn_obj;
 
     vec3_set(cmm_cursor_pos, 32, 0, 32);
-    cmm_ui_index = 0;
+    cmm_toolbar_index = 0;
     vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
@@ -2146,11 +2144,28 @@ void delete_preview_object(void) {
     if (previewObj) unload_object(previewObj);
 }
 
+void reload_theme(s32 index) {
+    generate_terrain_gfx();
+    cmm_settings_buttons[5].size = cmm_theme_table[index].numFloors + 1;
+    if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
+        cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
+    }
+}
+
+void reload_bg(s32 index) {
+    load_segment_decompress_skybox(0xA,cmm_skybox_table[index*2],cmm_skybox_table[index*2+1]);
+}
+
+void reload_floor(s32 index) {
+    generate_terrain_gfx();
+}
+
 u8 cmm_upsidedown_tile = FALSE;
+u8 cmm_joystick;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
-    u8 joystick = joystick_direction();
+    cmm_joystick = joystick_direction();
     u8 cursorMoved = FALSE;
 
     if (cmm_do_save) {
@@ -2171,22 +2186,22 @@ void sb_loop(void) {
 
         break;
         case 1: //MAKE MODE MAIN
-            cursorMoved = main_cursor_logic(joystick);
+            cursorMoved = main_cursor_logic(cmm_joystick);
             s32 updatePreviewObj = cursorMoved;
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                cmm_ui_index--;
+                cmm_toolbar_index--;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_ui_index++;
+                cmm_toolbar_index++;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
             }
-            cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
-            cmm_ui_index = (cmm_ui_index+9)%9;
+            cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
+            cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
+            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
 
             if (cmm_upsidedown_tile) {
                 switch (cmm_id_selection) {
@@ -2225,7 +2240,7 @@ void sb_loop(void) {
 
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                switch(cmm_ui_index) {
+                switch(cmm_toolbar_index) {
                     case 8://save data
                         if (mount_success == FR_OK) {
                             cmm_do_save = TRUE;
@@ -2250,7 +2265,7 @@ void sb_loop(void) {
                     break; 
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_ui_index < 6) {
+                if (cmm_toolbar_index < 6) {
                     place_thing_action();
                 }
             }
@@ -2266,8 +2281,8 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 o->oAction = 3;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
-                if (cmm_ui_index > 5) {
-                    cmm_ui_index = 5;
+                if (cmm_toolbar_index > 5) {
+                    cmm_toolbar_index = 5;
                 }
             }
 
@@ -2317,8 +2332,8 @@ void sb_loop(void) {
         case 3: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
             delete_preview_object();
-            if (joystick != 0) {
-                switch((joystick-1)%4) {
+            if (cmm_joystick != 0) {
+                switch((cmm_joystick-1)%4) {
                     case 0:
                         cmm_toolbox_index--;
                     break;
@@ -2337,21 +2352,21 @@ void sb_loop(void) {
 
             //TOOLBAR CONTROLS
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                cmm_ui_index--;
+                cmm_toolbar_index--;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_ui_index++;
+                cmm_toolbar_index++;
             }
-            cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
-            cmm_ui_index = (cmm_ui_index+6)%6;
+            cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
+            cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
+            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
 
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 //You can not put a blank button into the toolbox
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                     cmm_param_selection = 0;
-                    cmm_ui_bar[cmm_ui_index] = cmm_toolbox[cmm_toolbox_index];
+                    cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
                 } else {
                     //error sound
                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
@@ -2364,48 +2379,6 @@ void sb_loop(void) {
             }
         break;
         case 4: //settings
-            if (joystick != 0) {
-                switch((joystick-1)%4) {
-                    case 0:
-                        (*cmm_settings_buttons[cmm_settings_index].value) += cmm_settings_buttons[cmm_settings_index].size-1;
-                        (*cmm_settings_buttons[cmm_settings_index].value) %= cmm_settings_buttons[cmm_settings_index].size;
-                        cmm_settings_index_changed = TRUE;
-                    break;
-                    case 1:
-                        cmm_settings_index++;
-                    break;
-                    case 2:
-                        (*cmm_settings_buttons[cmm_settings_index].value) ++;
-                        (*cmm_settings_buttons[cmm_settings_index].value) %= cmm_settings_buttons[cmm_settings_index].size;
-                        cmm_settings_index_changed = TRUE;
-                    break;
-                    case 3:
-                        cmm_settings_index+=SETTINGS_SIZE-1;
-                    break;
-                }
-            }
-            cmm_settings_index %= SETTINGS_SIZE;
-
-            //hardcoded settings application
-            if (cmm_settings_index_changed) {
-                cmm_settings_index_changed = FALSE;
-                switch(cmm_settings_index) {
-                    case 4: //theme
-                        generate_terrain_gfx();
-                        cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
-                        if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
-                            cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
-                        }
-                    break;
-                    case 3: //sky box
-                        load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
-                    break;
-                    case 5://bottom floor
-                        generate_terrain_gfx();
-                    break;
-                }
-            }
-
             if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
@@ -2413,7 +2386,7 @@ void sb_loop(void) {
         break;
         case 5: //trajectory maker
             delete_preview_object();
-            cursorMoved = main_cursor_logic(joystick);
+            cursorMoved = main_cursor_logic(cmm_joystick);
 
             if (cursorMoved) {
                 generate_trajectory_gfx();

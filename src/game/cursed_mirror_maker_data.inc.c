@@ -920,7 +920,7 @@ enum {
     CMM_BUTTON_SLAB,
 };
 
-u8 cmm_ui_bar[9] = {
+u8 cmm_toolbar[9] = {
     CMM_BUTTON_TERRAIN,
     CMM_BUTTON_FENCE,
     CMM_BUTTON_SLOPE,
@@ -1170,13 +1170,18 @@ u8 *cmm_skybox_table[] = {
     _bits_skybox_yay0SegmentRomEnd,
 };
 
+extern char *cmm_get_floor_name(s32);
+extern void reload_bg(s32);
+extern void reload_theme(s32);
+extern void reload_floor(s32);
+
 struct cmm_settings_button cmm_settings_buttons[] = {
-    {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table)},
-    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table)},
-    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table)},
-    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table)},
-    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table)},
-    {"Floor:",   &cmm_lopt_plane,   NULL, 0}, // Filled in by code
+    {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
+    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
+    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
+    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table), NULL, reload_theme},
+    {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, reload_floor}, // Filled in by code
 };
 
 char *cmm_gamemode_string_table[] = {
@@ -1218,9 +1223,9 @@ struct cmm_template cmm_templates[] = {
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {
-    {"Mode:", &cmm_lopt_game, cmm_gamemode_string_table, ARRAY_COUNT(cmm_gamemode_string_table)},
-    {"Size:", &cmm_lopt_size, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table)},
-    {"Template:", &cmm_lopt_template, cmm_template_string_table, ARRAY_COUNT(cmm_template_string_table)},
+    {"Mode:", &cmm_lopt_game, cmm_gamemode_string_table, ARRAY_COUNT(cmm_gamemode_string_table), NULL, NULL},
+    {"Size:", &cmm_lopt_size, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table), NULL, NULL},
+    {"Template:", &cmm_lopt_template, cmm_template_string_table, ARRAY_COUNT(cmm_template_string_table), NULL, NULL},
 };
 
 #define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_buttons)
