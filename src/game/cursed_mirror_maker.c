@@ -1352,7 +1352,35 @@ void generate_terrain_collision(void) {
 }
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
-    return FLOOR_LOWER_LIMIT;
+    // Convert world coordinates into grid coordinates
+    s8 pos[3];
+    vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
+
+    // If block contains water, scan upwards, otherwise scan downwards
+    if (get_grid_tile(pos)->waterlogged) {
+        // Find grid Y coordinate of highest water block.
+        // Stop scanning once we hit a non-water block or the top is reached
+        pos[1]++;
+        while (pos[1] < 32 && get_grid_tile(pos)->waterlogged) {
+            pos[1]++;
+        }
+        pos[1]--;
+    } else {
+        // Find grid Y coordinate of lowest non-water block.
+        // Stop scanning once we hit a water block or the bottom is reached
+        pos[1]--;
+        while (pos[1] > -1 && !get_grid_tile(pos)->waterlogged) {
+            pos[1]--;
+        }
+        if (pos[1] == -1) {
+            return FLOOR_LOWER_LIMIT;
+        }
+    }
+
+    if (is_water_fullblock(pos)) {
+        return (pos[1] + 1) * TILE_SIZE;
+    }
+    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
