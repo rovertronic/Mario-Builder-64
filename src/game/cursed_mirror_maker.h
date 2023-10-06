@@ -159,6 +159,7 @@ struct cmm_object_info {
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
+    u8 numCoins:4;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;
@@ -240,7 +241,7 @@ enum cmm_mat_types {
 // Represents a material texture and collision
 struct cmm_material {
     Gfx *gfx;
-    u8 type:2;
+    u8 type;
     TerrainData col;
 };
 
@@ -275,7 +276,7 @@ struct cmm_comptraj {
 IMPORTANT!
 
 u8 version;
-u16 piktcher[28][28];
+u16 piktcher[64][64];
 
 Should always be the first 2 members of the cmm_level_save struct
 no matter what version.
