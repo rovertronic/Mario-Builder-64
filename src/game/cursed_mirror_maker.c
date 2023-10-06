@@ -2144,19 +2144,21 @@ void delete_preview_object(void) {
     if (previewObj) unload_object(previewObj);
 }
 
-void reload_theme(s32 index) {
+void (*cmm_generate_gfx)(void) = NULL;
+
+void reload_theme(void) {
     generate_terrain_gfx();
-    cmm_settings_buttons[5].size = cmm_theme_table[index].numFloors + 1;
-    if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
-        cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
+    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    if (cmm_lopt_plane > cmm_settings_terrain_buttons[2].size - 1) {
+        cmm_lopt_plane = cmm_settings_terrain_buttons[2].size - 1;
     }
 }
 
-void reload_bg(s32 index) {
-    load_segment_decompress_skybox(0xA,cmm_skybox_table[index*2],cmm_skybox_table[index*2+1]);
+void reload_bg(void) {
+    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 }
 
-void reload_floor(s32 index) {
+void reload_floor(void) {
     generate_terrain_gfx();
 }
 
@@ -2180,6 +2182,11 @@ void sb_loop(void) {
 
     cmm_current_camera_zoom[0] = lerp(cmm_current_camera_zoom[0], cmm_camera_zoom_table[cmm_camera_zoom_index][0],0.2f);
     cmm_current_camera_zoom[1] = lerp(cmm_current_camera_zoom[1], cmm_camera_zoom_table[cmm_camera_zoom_index][1],0.2f);
+
+    if (cmm_generate_gfx) {
+        cmm_generate_gfx();
+        cmm_generate_gfx = NULL;
+    }
 
     switch(o->oAction) {
         case 0: //init
@@ -2292,6 +2299,7 @@ void sb_loop(void) {
                 } else {
                     cmm_rot_selection++;
                     cmm_rot_selection%=4;
+                    updatePreviewObj = TRUE;
                 }
             }
 

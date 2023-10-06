@@ -215,7 +215,7 @@ struct cmm_settings_button {
     char **nametable;
     u8 size;
     char *(*nameFunc)(s32);
-    void (*changedFunc)(s32);
+    void (*changedFunc)(void);
 };
 
 enum {

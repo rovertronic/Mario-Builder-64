@@ -149,13 +149,13 @@ s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butto
             cmm_menu_scrolling[i][1] = -1;
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             *(btn[i].value) = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
-            if (btn[i].changedFunc) btn[i].changedFunc(*(btn[i].value));
+            if (btn[i].changedFunc) cmm_generate_gfx = btn[i].changedFunc;
         } else if (joystick == 3) {
             cmm_menu_scrolling[i][0] = 5;
             cmm_menu_scrolling[i][1] = 1;
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             *(btn[i].value) = (*(btn[i].value) + 1) % btn[i].size;
-            if (btn[i].changedFunc) btn[i].changedFunc(*(btn[i].value));
+            if (btn[i].changedFunc) cmm_generate_gfx = btn[i].changedFunc;
         }
     }
     if (cmm_menu_scrolling[i][0] > 0) {
@@ -203,6 +203,38 @@ char *cmm_get_floor_name(s32 index) {
     }
     return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1]).name;
 }
+
+u8 cmm_curr_settings_menu = 0;
+
+void draw_cmm_settings_general(void) {
+    for (u32 i=1;i<4;i++) {
+        print_maker_string_ascii(45,170-(i*16),cmm_settings_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_buttons,i,cmm_joystick);
+    }
+}
+
+void draw_cmm_settings_terrain(void) {
+    for (u32 i=1;i<3;i++) {
+        print_maker_string_ascii(45,170-(i*16),cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_terrain_buttons,i,cmm_joystick);
+    }
+}
+
+void draw_cmm_settings_music(void) {
+    for (u32 i=1;i<2;i++) {
+        print_maker_string_ascii(45,170-(i*16),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_music_buttons,i,cmm_joystick);
+    }
+}
+
+void (*cmm_settings_menus[])(void) = {
+    draw_cmm_settings_general,
+    draw_cmm_settings_terrain,
+    draw_cmm_settings_music,
+};
+u8 cmm_settings_menu_lengths[] = {
+    4,3,2
+};
 
 void draw_cmm_menu(void) {
     u32 i;
@@ -315,12 +347,10 @@ void draw_cmm_menu(void) {
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
             }
-            cmm_menu_index = (cmm_menu_index + SETTINGS_SIZE) % SETTINGS_SIZE;
+            cmm_menu_index = (cmm_menu_index + cmm_settings_menu_lengths[cmm_curr_settings_menu]) % cmm_settings_menu_lengths[cmm_curr_settings_menu];
 
-            for (i=0;i<SETTINGS_SIZE;i++) {
-                print_maker_string_ascii(15,180-(i*16),cmm_settings_buttons[i].str,(i==cmm_menu_index));
-                cmm_menu_option_animation(150,180-(i*16),60,cmm_settings_buttons,i,cmm_joystick);
-            }
+            cmm_menu_option_animation(150,190,40,&cmm_settings_header,0,cmm_joystick);
+            cmm_settings_menus[cmm_curr_settings_menu]();
         break;
 
         case CMM_MAKE_TRAJECTORY:

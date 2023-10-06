@@ -1044,6 +1044,14 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_slabtile,  TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL       }, //CMM_BUTTON_SLAB
 };
 
+char *cmm_settings_menu_table[] = {
+    "General",
+    "Terrain",
+    "Music",
+};
+
+extern u8 cmm_curr_settings_menu;
+struct cmm_settings_button cmm_settings_header = {NULL, &cmm_curr_settings_menu, cmm_settings_menu_table, ARRAY_COUNT(cmm_settings_menu_table), NULL, NULL};
 
 char *cmm_costume_string_table[] = {
     "Mario",
@@ -1171,17 +1179,28 @@ u8 *cmm_skybox_table[] = {
 };
 
 extern char *cmm_get_floor_name(s32);
-extern void reload_bg(s32);
-extern void reload_theme(s32);
-extern void reload_floor(s32);
+extern void reload_bg(void);
+extern void reload_theme(void);
+extern void reload_floor(void);
+
+
 
 struct cmm_settings_button cmm_settings_buttons[] = {
+    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
-    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+};
+
+struct cmm_settings_button cmm_settings_terrain_buttons[] = {
+    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table), NULL, reload_theme},
     {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, reload_floor}, // Filled in by code
+};
+
+struct cmm_settings_button cmm_settings_music_buttons[] = {
+    {NULL, NULL, NULL, 0, NULL, NULL},
+    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
 };
 
 char *cmm_gamemode_string_table[] = {
