@@ -1204,6 +1204,7 @@ u8 *cmm_skybox_table[] = {
 };
 
 extern char *cmm_get_floor_name(s32);
+extern char *cmm_get_coinstar_str(s32);
 extern void reload_bg(void);
 extern void reload_theme(void);
 extern void reload_floor(void);
@@ -1215,6 +1216,7 @@ struct cmm_settings_button cmm_settings_buttons[] = {
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+    {"Coin Star", &cmm_lopt_coinstar, NULL, 11, cmm_get_coinstar_str, NULL},
 };
 
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {

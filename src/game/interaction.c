@@ -734,6 +734,7 @@ void reset_mario_pitch(struct MarioState *m) {
 }
 
 u8 coinloop = 0;
+extern u8 cmm_lopt_coinstar;
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
 
     if (cmm_lopt_game == CMM_GAME_BTCM) {
@@ -765,7 +766,11 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     obj->oInteractStatus = INT_STATUS_INTERACTED;
 
-    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && m->numCoins - obj->oDamageOrCoinValue < 100 && m->numCoins >= 100 && (!gMarioState->hundredSpawned)) {
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) &&
+            cmm_lopt_coinstar != 0 &&
+            m->numCoins - obj->oDamageOrCoinValue < (cmm_lopt_coinstar*20) &&
+            m->numCoins >= (cmm_lopt_coinstar*20) &&
+            (!gMarioState->hundredSpawned)) {
         gMarioState->hundredSpawned = TRUE;
         bhv_spawn_star_no_level_exit(STAR_BP_ACT_6);
     }

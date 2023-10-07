@@ -203,11 +203,19 @@ char *cmm_get_floor_name(s32 index) {
     }
     return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1]).name;
 }
+char coinstarstr[10];
+char *cmm_get_coinstar_str(s32 index) {
+    if (index == 0) {
+        return "Disabled";
+    }
+    sprintf(coinstarstr, "%d Coins", index*20);
+    return coinstarstr;
+}
 
 u8 cmm_curr_settings_menu = 0;
 
 void draw_cmm_settings_general(void) {
-    for (u32 i=1;i<4;i++) {
+    for (u32 i=1;i<5;i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_buttons,i,cmm_joystick);
     }
@@ -233,7 +241,7 @@ void (*cmm_settings_menus[])(void) = {
     draw_cmm_settings_music,
 };
 u8 cmm_settings_menu_lengths[] = {
-    4,3,2
+    5,3,2
 };
 
 void draw_cmm_menu(void) {

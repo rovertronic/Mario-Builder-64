@@ -136,6 +136,7 @@ u8 cmm_lopt_plane = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
 u8 cmm_lopt_template = 0;
+u8 cmm_lopt_coinstar = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
@@ -1829,6 +1830,7 @@ void save_level(u8 index) {
     cmm_save.option[3] = cmm_lopt_theme;
     cmm_save.option[4] = cmm_lopt_bg;
     cmm_save.option[5] = cmm_lopt_plane;
+    cmm_save.option[6] = cmm_lopt_coinstar;
     cmm_save.option[7] = cmm_lopt_size;
     cmm_save.option[19] = cmm_lopt_game;
 
@@ -1940,6 +1942,7 @@ void load_level(u8 index) {
 
     cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
+    cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
     switch (cmm_lopt_size) {
         case 0:
