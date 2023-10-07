@@ -399,10 +399,10 @@ struct cmm_object_info cmm_object_type_ktq = {
     bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 0, 3.0f, koopa_seg6_anims_06011364, &df_koopa, SOUND_OBJ_KOOPA_TALK,
 };
 struct cmm_object_info cmm_object_type_purple_switch = {
-    bhvPurpleSwitchHiddenBoxes, 0, MODEL_PURPLE_SWITCH, FALSE, 2.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH,
+    bhvPurpleSwitchHiddenBoxes, 0, MODEL_PURPLE_SWITCH, FALSE, 0, 2.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH,
 };
 struct cmm_object_info cmm_object_type_corkbox = {
-    bhvHiddenObject, 0, MODEL_BREAKABLE_BOX, FALSE, 1.0f, NULL, NULL, SOUND_GENERAL_BREAK_BOX,
+    bhvHiddenObject, 0, MODEL_BREAKABLE_BOX, FALSE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_BREAK_BOX,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
