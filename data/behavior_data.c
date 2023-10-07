@@ -2002,13 +2002,14 @@ const BehaviorScript bhvFloorSwitchGrills[] = {
     GOTO(bhvFloorSwitchHardcodedModel + 1),
 };
 
+extern void bhv_purple_switch_loop_vanilla(void);
 const BehaviorScript bhvFloorSwitchHardcodedModel[] = {
     BEGIN(OBJ_LIST_SURFACE),
     // Floor switch - common:
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     LOAD_COLLISION_DATA(purple_switch_seg8_collision_0800C7A8),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_purple_switch_loop),
+        CALL_NATIVE(bhv_purple_switch_loop_vanilla),
         CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };

@@ -199,6 +199,8 @@ enum {
     OBJECT_TYPE_MPLAT,
     OBJECT_TYPE_BBALL,
     OBJECT_TYPE_KTQ,
+    OBJECT_TYPE_PRPLSWT,
+    OBJECT_TYPE_CORK,     
 };
 
 struct cmm_ui_button_type {
