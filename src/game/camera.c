@@ -1220,6 +1220,19 @@ void mode_8_directions_camera(struct Camera *c) {
 
         vec3f_copy(c->pos,hitpos);
     }
+
+    if ((gMarioState->Options & (1<<OPT_CAMCOL))&&(cmm_mode == CMM_MODE_PLAY)) {
+        u8 panic=0;//prevent infinite loops
+        find_floor(c->pos[0], c->pos[1], c->pos[2], &surf);
+        while ((!surf)&&(panic<200)) {
+            s16 angle_to_mario = atan2s( c->pos[2] - origin[2] , c->pos[0] - origin[0] );
+            c->pos[0] += sins(angle_to_mario) * -10.0f;
+            c->pos[2] += coss(angle_to_mario) * -10.0f;
+            c->pos[1] += sins(calculate_pitch(origin,c->pos)) * -10.0f;
+            find_floor(c->pos[0], c->pos[1], c->pos[2], &surf);
+            panic++;
+        }
+    }
 }
 
 /**
