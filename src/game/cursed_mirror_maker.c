@@ -1232,6 +1232,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
+                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             } else if (terrain) {
                 cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
@@ -2047,7 +2048,7 @@ void sb_init(void) {
                 vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
-                struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
+                struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
                 if (warpobj) {
                     vec3_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
                     warpobj->oPosY -= TILE_SIZE/2;

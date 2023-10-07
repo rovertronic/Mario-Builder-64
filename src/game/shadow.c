@@ -264,7 +264,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     }
 
     f32 nx, ny, nz;
-    if (waterLevel <= FLOOR_LOWER_LIMIT_MISC) {
+    if (floorHeight <= FLOOR_LOWER_LIMIT_MISC && waterLevel <= FLOOR_LOWER_LIMIT_MISC) {
         // Assume the floor is flat.
         nx = 0.0f;
         ny = 1.0f;
