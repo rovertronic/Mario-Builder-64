@@ -470,23 +470,35 @@ void check_cached_tris(void) {
 }
 
 void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
-    s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
-    f32 length = sqrtf(sqr(pos2[0] - pos1[0]) + sqr(pos2[1] - pos1[1]) + sqr(pos2[2] - pos1[2]));
+    f32 dx2 = sqr(pos2[0] - pos1[0]);
+    f32 dy2 = sqr(pos2[1] - pos1[1]);
+    f32 dz2 = sqr(pos2[2] - pos1[2]);
+    f32 length = sqrtf(dx2 + dy2 + dz2);
 
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + 10*coss(yaw), pos1[1], pos1[2] - 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - 10*coss(yaw), pos1[1], pos1[2] + 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + 10*coss(yaw), pos2[1], pos2[2] - 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - 10*coss(yaw), pos2[1], pos2[2] + 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+    s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
+    s16 pitch = atan2s(sqrtf(dx2 + dz2), pos2[1] - pos1[1]);
+    
+    f32 sy = 10*sins(yaw);
+    f32 cy = 10*coss(yaw);
+    f32 sp = 10*sins(pitch);
+    f32 cp = 10*coss(pitch);
+    f32 spsy = sp*sins(yaw);
+    f32 spcy = sp*coss(yaw);
+
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + cy, pos1[1], pos1[2] - sy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - cy, pos1[1], pos1[2] + sy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + cy, pos2[1], pos2[2] - sy, 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - cy, pos2[1], pos2[2] + sy, 0, length, 0, 0, 0, 0xFF);
 
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
     cmm_num_vertices_cached += 4;
     check_cached_tris();
 
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0], pos1[1] - 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0], pos1[1] + 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0], pos2[1] - 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0], pos2[1] + 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + spsy, pos1[1] - cp, pos1[2] + spcy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - spsy, pos1[1] + cp, pos1[2] - spcy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + spsy, pos2[1] - cp, pos2[2] + spcy, 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - spsy, pos2[1] + cp, pos2[2] - spcy, 0, length, 0, 0, 0, 0xFF);
 
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
