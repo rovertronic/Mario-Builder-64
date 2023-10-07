@@ -1904,6 +1904,14 @@ f32 bad_apple_par = 0.0f;
 #include "libcart/ff/ff.h"
 #include "game_init.h"
 
+u32 star_radar_objects_to_track[] = {
+    bhvStar,
+    bhvHiddenRedCoinStar,
+    bhvKoopa,
+    bhvKingBobomb,
+    bhvWhompKingBoss,
+};
+
 u16 mario_decay;
 s32 execute_mario_action(UNUSED struct Object *obj) {
     s32 inLoop = TRUE;
@@ -1925,6 +1933,19 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     if (cmm_lopt_game == CMM_GAME_VANILLA) {
          gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
+    }
+
+    //this code finds the nearest valid object in array star_radar_objects_to_track[]
+    //objects earlier in the list take priority due to the way this is written...
+    struct Object *nearest_star;
+    gMarioState->StarRadarExist = FALSE;
+    for (int i=0;i<sizeof(star_radar_objects_to_track)/4;i++) { //arthur don't worry i won't use a u8 for i sorry brotha
+        nearest_star = cur_obj_nearest_object_with_behavior(star_radar_objects_to_track[i]);
+        if (nearest_star) {
+            vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
+            gMarioState->StarRadarExist = TRUE;
+            break;
+        }
     }
 
     //if (mount_success != FR_OK) {

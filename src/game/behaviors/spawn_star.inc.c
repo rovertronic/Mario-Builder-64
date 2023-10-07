@@ -30,6 +30,7 @@ void bhv_collect_star_loop(void) {
 
     o->oFaceAngleYaw += 0x800;
 
+    /*
     //STAR RADAR TRACKER
     if ((gDialogCourseActNum-1 == starId)&&(o->oBehParams2ndByte == 0)) {
         gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
@@ -37,6 +38,7 @@ void bhv_collect_star_loop(void) {
         gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
         gMarioState->StarRadarExist = TRUE;
     }
+    */
 
     if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex==4)) {
         o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
@@ -196,6 +198,7 @@ void bhv_hidden_red_coin_star_loop(void) {
     starId = (o->oBehParams >> 24) & 0xFF;
     gRedCoinsCollected = o->oHiddenStarTriggerCounter;
 
+    /*
     //STAR RADAR TRACKER
     if ((gDialogCourseActNum-1 == starId)&&(o->oBehParams2ndByte == 0)) {
         gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
@@ -203,6 +206,7 @@ void bhv_hidden_red_coin_star_loop(void) {
         gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
         gMarioState->StarRadarExist = TRUE;
     }
+    */
 
     switch (o->oAction) {
         case HIDDEN_STAR_ACT_INACTIVE:
