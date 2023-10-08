@@ -1428,6 +1428,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
 
 void generate_object_preview(void) {
     cmm_total_coins = 0;
+    s32 doubleCoins = FALSE;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
         unload_object(preview_object);
@@ -1447,7 +1448,12 @@ void generate_object_preview(void) {
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
         cmm_total_coins += info->numCoins;
+
+        if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
+            doubleCoins = TRUE;
+        }
     }
+    if (doubleCoins) cmm_total_coins *= 2;
     cap_coinstar_amount();
 }
 

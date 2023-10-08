@@ -6097,8 +6097,9 @@ void bhv_badge(void) {
     switch(o->oAction) {
         case 0:
             if ((save_file_get_badge_equip() >> o->oBehParams2ndByte) & 1) {
-                mark_obj_for_deletion(o);
-                return;
+                o->oAction++;
+                o->oHomeY = 1.0f;
+                break;
             }
             if (o->oDistanceToMario < 180.0f) {
                 o->oAction++;
