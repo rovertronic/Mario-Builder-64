@@ -216,8 +216,8 @@ u8 cmm_curr_settings_menu = 0;
 
 void draw_cmm_settings_general(void) {
     for (u32 i=1;i<5;i++) {
-        print_maker_string_ascii(45,170-(i*16),cmm_settings_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_buttons,i,cmm_joystick);
+        print_maker_string_ascii(45,170-(i*16),cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_general_buttons,i,cmm_joystick);
     }
 }
 

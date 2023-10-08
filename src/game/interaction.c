@@ -772,7 +772,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
             m->numCoins >= (cmm_lopt_coinstar*20) &&
             (!gMarioState->hundredSpawned)) {
         gMarioState->hundredSpawned = TRUE;
-        bhv_spawn_star_no_level_exit(STAR_BP_ACT_6);
+        bhv_spawn_star_no_level_exit(0x3F);
     }
 
     if (m->numCoins > 255) {

@@ -138,6 +138,8 @@ u8 cmm_lopt_size = 0;
 u8 cmm_lopt_template = 0;
 u8 cmm_lopt_coinstar = 0;
 
+u16 cmm_total_coins = 0;
+
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
 s8 cmm_menu_index = 0;
@@ -294,8 +296,8 @@ s32 object_sanity_check(void) {
                 numStars++;
             }
         }
-        if (numStars >= 64) {
-            cmm_show_error_message("Star limit reached! (max 64)");
+        if (numStars >= 63) {
+            cmm_show_error_message("Star limit reached! (max 63)");
             return FALSE;
         }
     }
@@ -1395,6 +1397,15 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
+void cap_coinstar_amount(void) {
+    u32 length = MIN(cmm_total_coins / 20, 50);
+    cmm_settings_general_buttons[4].size = length + 1;
+
+    if (cmm_lopt_coinstar > length) {
+        cmm_lopt_coinstar = length;
+    }
+}
+
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
@@ -1416,6 +1427,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
 }
 
 void generate_object_preview(void) {
+    cmm_total_coins = 0;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
         unload_object(preview_object);
@@ -1434,7 +1446,9 @@ void generate_object_preview(void) {
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
+        cmm_total_coins += info->numCoins;
     }
+    cap_coinstar_amount();
 }
 
 void generate_objects_to_level(void) {
@@ -1455,12 +1469,13 @@ void generate_objects_to_level(void) {
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
-            if (cmm_play_stars_max < 64) {
+            if (cmm_play_stars_max < 63) {
                 obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 cmm_play_stars_max++;
             }
         }
     }
+    if (cmm_lopt_coinstar > 0) cmm_play_stars_max++; // 100 coin star
 }
 
 // shift all indices past the given one by 1
@@ -1940,7 +1955,7 @@ void load_level(u8 index) {
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
 
-    cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];

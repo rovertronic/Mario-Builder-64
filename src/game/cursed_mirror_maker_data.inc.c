@@ -1211,12 +1211,12 @@ extern void reload_floor(void);
 
 
 
-struct cmm_settings_button cmm_settings_buttons[] = {
+struct cmm_settings_button cmm_settings_general_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
-    {"Coin Star", &cmm_lopt_coinstar, NULL, 11, cmm_get_coinstar_str, NULL},
+    {"Coin Star", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
 
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
@@ -1274,4 +1274,4 @@ struct cmm_settings_button cmm_mode_settings_buttons[] = {
     {"Template:", &cmm_lopt_template, cmm_template_string_table, ARRAY_COUNT(cmm_template_string_table), NULL, NULL},
 };
 
-#define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_buttons)
+#define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_general_buttons)
