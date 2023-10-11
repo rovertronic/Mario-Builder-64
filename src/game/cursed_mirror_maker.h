@@ -269,6 +269,7 @@ struct cmm_theme {
     u8 numFloors;
     s8 *floors;
     u8 fence;
+    u8 pole;
     u8 water;
 };
 

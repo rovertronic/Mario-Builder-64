@@ -36,7 +36,7 @@ s32 get_string_width_ascii(char *str) {
     s16 width = 0;
 
     while (str[strPos] != 0) {
-        width += gDialogCharWidths[cmm_ascii_lut[str[strPos]]];
+        width += gDialogCharWidths[cmm_ascii_lut[(u8)str[strPos]]];
         strPos++;
     }
     return width;
@@ -139,7 +139,7 @@ s8 cmm_menu_scrolling[6][2] = {0};
 
 #define GET_BUTTON_STR(btn, index) ((btn).nameFunc ? (btn).nameFunc(index) : (btn).nametable[index])
 
-s32 cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
+void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
     s32 leftX = x - width * 2;
     s32 rightX = x + width * 2;
     s32 xOffset = 0;
@@ -222,21 +222,21 @@ char *cmm_get_waterlevel_name(s32 index) {
 u8 cmm_curr_settings_menu = 0;
 
 void draw_cmm_settings_general(void) {
-    for (u32 i=1;i<5;i++) {
+    for (s32 i=1;i<5;i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_general_buttons,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_terrain(void) {
-    for (u32 i=1;i<4;i++) {
+    for (s32 i=1;i<4;i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_terrain_buttons,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_music(void) {
-    for (u32 i=1;i<2;i++) {
+    for (s32 i=1;i<2;i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_music_buttons,i,cmm_joystick);
     }
@@ -252,14 +252,6 @@ u8 cmm_settings_menu_lengths[] = {
 };
 
 void draw_cmm_menu(void) {
-    u32 i;
-    u8 op;
-    u8 yoff;
-    u8 xi;
-    u8 yi;
-
-    u16 strx, stry;
-
     u16 decor_bar_offset = 36;
     if (cmm_menu_state == CMM_MAKE_TOOLBOX || cmm_menu_state == CMM_MAKE_SETTINGS) {
         decor_bar_offset = 235;
@@ -275,9 +267,9 @@ void draw_cmm_menu(void) {
     gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    for (i=0; i<9; i++) {
-        op = 200;
-        yoff = 20;
+    for (s32 i = 0; i < 9; i++) {
+        s32 op = 200;
+        s32 yoff = 20;
         if (i == cmm_toolbar_index) {
             op = 255;
             yoff = 25;
@@ -302,44 +294,43 @@ void draw_cmm_menu(void) {
             }
 
             cmm_render_error_message();
-        break;
+            break;
+
         case CMM_MAKE_TOOLBOX:
-        for (i=0; i<sizeof(cmm_toolbox); i++) {
-            op = 255;
-            yoff = 0;
-            if (i == cmm_toolbox_index) {
-                op = 100;
-                yoff = 0;
-            }
-            xi = i%9;
-            yi = i/9;
-            create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32), 0);
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-            gSPDisplayList(gDisplayListHead++, cmm_ui_buttons[cmm_toolbox[i]].material);//texture
-            gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
-        }
-
-        strx = 54+(cmm_toolbox_index%9)*32;
-        stry = 215-(cmm_toolbox_index/9)*32;
-
-        if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
-            //render selection box
-            s16 sro = 0;
-            if (string_runoff(strx,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str)) {
-                sro = -130;
+            for (s32 i = 0; i < (s32)sizeof(cmm_toolbox); i++) {
+                s32 op = 255;
+                if (i == cmm_toolbox_index) {
+                    op = 100;
+                }
+                s32 xi = i%9;
+                s32 yi = i/9;
+                create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32), 0);
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
+                gSPDisplayList(gDisplayListHead++, cmm_ui_buttons[cmm_toolbox[i]].material);//texture
+                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
             }
 
-            create_dl_translation_matrix(MENU_MTX_PUSH, strx-2+sro, stry+16, 0);
-            create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.7f, 0.2f, 1.0f);
-            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-            gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+            s32 strx = 54+(cmm_toolbox_index%9)*32;
+            s32 stry = 215-(cmm_toolbox_index/9)*32;
 
-            print_maker_string_ascii(strx+sro, stry ,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str,TRUE);
+            if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
+                //render selection box
+                s32 sro = 0;
+                if (string_runoff(strx,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str)) {
+                    sro = -130;
+                }
+
+                create_dl_translation_matrix(MENU_MTX_PUSH, strx-2+sro, stry+16, 0);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.7f, 0.2f, 1.0f);
+                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+                gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+                print_maker_string_ascii(strx+sro, stry ,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str,TRUE);
             }
 
-        break;
+            break;
 
         case CMM_MAKE_SETTINGS:
             //PAINTING
@@ -366,12 +357,12 @@ void draw_cmm_menu(void) {
 
             cmm_menu_option_animation(150,190,40,&cmm_settings_header,0,cmm_joystick);
             cmm_settings_menus[cmm_curr_settings_menu]();
-        break;
+            break;
 
         case CMM_MAKE_TRAJECTORY:
             print_maker_string(20,210,cmm_txt_recording,TRUE);
             cmm_render_error_message();
-        break;
+            break;
     }
 }
 
@@ -506,7 +497,7 @@ void cmm_mm_reset_all_buttons(f32 pos) {
     }
 }
 
-s32 cmm_mm_anim_out_main(s32 len, f32 startvel) {
+void cmm_mm_anim_out_main(s32 len, f32 startvel) {
     animate_menu_generic(cmm_menu_title_vels, 0.f, 0.f, 3.f, cmm_menu_end_timer == 0);
 
     s32 index = -1;
@@ -526,7 +517,7 @@ s32 cmm_mm_anim_out_main(s32 len, f32 startvel) {
     }
 }
 
-void cmm_mm_generic_anim_check(s32 len, s32 canBack) {
+void cmm_mm_generic_anim_check(s32 canBack) {
     if (cmm_menu_start_timer == -1 || cmm_menu_start_timer > 10) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
             cmm_menu_end_timer = 0;
@@ -547,7 +538,7 @@ void cmm_mm_generic_anim_check(s32 len, s32 canBack) {
     }
 }
 
-void cmm_mm_no_files_anim_check(s32 len, s32 canBack) {
+void cmm_mm_no_files_anim_check(UNUSED s32 canBack) {
     if (cmm_menu_start_timer == -1 || cmm_menu_start_timer > 10) {
         if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
             cmm_menu_end_timer = 0;
@@ -559,12 +550,12 @@ void cmm_mm_no_files_anim_check(s32 len, s32 canBack) {
     }
 }
 
-void cmm_mm_make_anim_check(UNUSED s32 len, UNUSED s32 canBack) {
+void cmm_mm_make_anim_check(UNUSED s32 canBack) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON) && (cmm_menu_index != 3)) return;
-    cmm_mm_generic_anim_check(4, TRUE);
+    cmm_mm_generic_anim_check(TRUE);
 }
 
-s32 cmm_mm_keyboard_anim_check(UNUSED s32 len, UNUSED s32 canBack) {
+void cmm_mm_keyboard_anim_check(UNUSED s32 canBack) {
     if (cmm_menu_start_timer == -1) {
         if (gPlayer1Controller->buttonPressed & (START_BUTTON)) {
             cmm_menu_end_timer = 0;
@@ -579,9 +570,9 @@ s32 cmm_mm_keyboard_anim_check(UNUSED s32 len, UNUSED s32 canBack) {
     }
 }
 
-s32 cmm_mm_anim_out(s32 len, s32 canBack, void checkFunc(s32 len, s32 canBack), f32 startVel) {
+s32 cmm_mm_anim_out(s32 len, s32 canBack, void checkFunc(s32 canBack), f32 startVel) {
     if (cmm_menu_end_timer == -1) {
-        checkFunc(len, canBack);
+        checkFunc(canBack);
     } else {
         cmm_mm_anim_out_main(len, startVel);
         if (++cmm_menu_end_timer == 10 + len*2) {
@@ -816,7 +807,7 @@ s32 cmm_main_menu(void) {
             print_maker_string_ascii(78 - (get_string_width_ascii(title)/2),95 + cmm_menu_title_vels[0]/2,title,0);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-            for (u32 i=0; i<3; i++) {
+            for (s32 i=0; i<3; i++) {
                 x = cmm_menu_button_vels[i][0] + 160;
                 y = 150-(i*27);
                 print_maker_string_ascii_centered(x - 60, y, cmm_mode_settings_buttons[i].str,0);
@@ -1010,7 +1001,6 @@ s32 cmm_main_menu(void) {
                 return 0;
             }
 
-            s32 oldIndex = cmm_menu_index;
             cmm_menu_index = (cmm_menu_index+cmm_level_entry_count)%cmm_level_entry_count;
 
             cmm_mm_pages = ((cmm_level_entry_count - 1)/PAGE_SIZE)+1;

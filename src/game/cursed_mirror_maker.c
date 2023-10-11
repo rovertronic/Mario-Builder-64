@@ -290,8 +290,8 @@ s32 object_sanity_check(void) {
 
     if (cmm_object_place_types[cmm_id_selection].hasStar) {
         // Count stars
-        u8 numStars;
-        for (u32 i = 0; i < cmm_object_count; i++) {
+        s32 numStars = 0;
+        for (s32 i = 0; i < cmm_object_count; i++) {
             if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
                 numStars++;
             }
@@ -526,7 +526,7 @@ void generate_trajectory_gfx(void) {
 
     for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
         Trajectory *curr_trajectory = cmm_trajectory_list[traj][0];
-        u32 i = 0;
+        s32 i = 0;
         s16 pos1[3], pos2[3];
 
         while (curr_trajectory[i*4 + 4] == i+1) {
@@ -577,7 +577,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
         case CMM_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return TRUE;
         case CMM_DIRECTION_UP: *uAxis = 2; *vAxis = 0; return FALSE;
         case CMM_DIRECTION_NEG_Z: *uAxis = 0; *vAxis = 1; return FALSE;
-        case CMM_DIRECTION_POS_Z: *uAxis = 0; *vAxis = 1; return TRUE;
+        /*case CMM_DIRECTION_POS_Z:*/ default: *uAxis = 0; *vAxis = 1; return TRUE;
     }
 }
 
@@ -1361,6 +1361,58 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     return NULL;
 }
 
+
+void generate_poles(void) {
+    gPoleArray = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gNumPoles = 0;
+
+    // Iterate over all poles
+    u32 startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+    u32 endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        
+        // If there is a pole below, skip
+        pos[1] -= 1;
+        if (pos[1] >= 0 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            continue;
+        }
+
+        s32 poleLength = 1;
+        // Scan upwards until no more poles or top of grid reached
+        pos[1] += 2;
+        while (pos[1] < 32 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            poleLength++;
+            pos[1]++;
+        }
+
+        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_tile_data[i].x);
+        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_tile_data[i].z);
+        gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
+        gPoleArray[gNumPoles].poleType = 0;
+        gNumPoles++;
+    }
+
+    // Trees
+    for (u32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_data[i].type != OBJECT_TYPE_TREE) {
+            continue;
+        }
+        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
+        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
+        gPoleArray[gNumPoles].height = 500;
+        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param == 2 ? 2 : 1);
+        gNumPoles++;
+    }
+
+    main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
+}
+
+
 TerrainData floorVtxs[4][3] = {
     {-1, 0, 1},
     {1, 0, 1},
@@ -1419,42 +1471,6 @@ void generate_terrain_collision(void) {
     generate_poles();
 }
 
-void generate_poles(void) {
-    gPoleArray = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
-    gNumPoles = 0;
-
-    // Iterate over all poles
-    u32 startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
-    u32 endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
-
-    for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
-        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        
-        // If there is a pole below, skip
-        pos[1] -= 1;
-        if (pos[1] >= 0 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
-            continue;
-        }
-
-        s32 poleLength = 1;
-        // Scan upwards until no more poles or top of grid reached
-        pos[1] += 2;
-        while (pos[1] < 32 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
-            poleLength++;
-            pos[1]++;
-        }
-
-        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_tile_data[i].x);
-        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
-        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_tile_data[i].z);
-        gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
-        gPoleArray[gNumPoles].poleType = 0;
-        gNumPoles++;
-    }
-
-    main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
-}
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - 32);
@@ -1492,7 +1508,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
@@ -1606,6 +1622,7 @@ u32 is_cull_marker_useless(s8 pos[3]) {
     return TRUE;
 }
 
+
 void place_tile(s8 pos[3]) {
     u8 waterlogged = FALSE;
     // Placing tile upon water automatically waterlogs new tile
@@ -1677,6 +1694,7 @@ void place_tile(s8 pos[3]) {
     cmm_tile_count++;
 }
 
+
 void place_water(s8 pos[3]) {
     struct cmm_grid_obj *tile = get_grid_tile(pos);
     s8 tileType = tile->type - 1;
@@ -1714,6 +1732,43 @@ void place_water(s8 pos[3]) {
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
     }
 }
+
+
+void remove_trajectory(u32 index) {
+    // Scan all objects
+    // If their trajectory index is past the one being deleted, lower it by 1
+    for (u32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
+            if (cmm_object_data[i].param > index) {
+                cmm_object_data[i].param--;
+            }
+        }
+    }
+    // Move trajectories back by one
+    for (s32 i = index; i < cmm_trajectories_used - 1; i++) {
+        bcopy(cmm_trajectory_list[i + 1], cmm_trajectory_list[i], sizeof(cmm_trajectory_list[0]));
+    }
+    // Zero out the last one
+    bzero(cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[0]));
+    cmm_trajectories_used--;
+}
+
+
+void delete_object(s8 pos[3], s32 index) {
+    remove_occupy_data(pos);
+
+    if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
+        remove_trajectory(cmm_object_data[index].param);
+        generate_trajectory_gfx();
+    }
+
+    cmm_object_count--;
+    for (u32 i = index; i < cmm_object_count; i++) {
+        cmm_object_data[i] = cmm_object_data[i+1];
+    }
+    generate_object_preview();
+}
+
 
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
@@ -1813,24 +1868,32 @@ void place_thing_action(void) {
     }
 }
 
-void remove_trajectory(u32 index) {
-    // Scan all objects
-    // If their trajectory index is past the one being deleted, lower it by 1
-    for (u32 i = 0; i < cmm_object_count; i++) {
-        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
-            if (cmm_object_data[i].param > index) {
-                cmm_object_data[i].param--;
-            }
+
+void delete_useless_cull_markers() {
+    for (u32 i = cmm_tile_data_indices[CULL_TILETYPE_INDEX]; i < cmm_tile_data_indices[CULL_TILETYPE_INDEX + 1]; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+        if (!is_cull_marker_useless(pos)) {
+            continue;
         }
+
+        // Useless, delete
+        remove_occupy_data(pos);
+        remove_terrain_data(pos);
+        cmm_tile_count--;
+
+        for (u32 j = CULL_TILETYPE_INDEX + 1; j < ARRAY_COUNT(cmm_tile_data_indices); j++) {
+            cmm_tile_data_indices[j]--;
+        }
+        for (u32 j = i; j < cmm_tile_count; j++) {
+            cmm_tile_data[j] = cmm_tile_data[j+1];
+        }
+
+        i--;
     }
-    // Move trajectories back by one
-    for (u32 i = index; i < cmm_trajectories_used - 1; i++) {
-        bcopy(cmm_trajectory_list[i + 1], cmm_trajectory_list[i], sizeof(cmm_trajectory_list[0]));
-    }
-    // Zero out the last one
-    bzero(cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[0]));
-    cmm_trajectories_used--;
 }
+
 
 //function name is delete tile, it deletes objects too
 void delete_tile_action(s8 pos[3]) {
@@ -1873,45 +1936,6 @@ void delete_tile_action(s8 pos[3]) {
     }
 }
 
-void delete_object(s8 pos[3], s32 index) {
-    remove_occupy_data(pos);
-
-    if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
-        remove_trajectory(cmm_object_data[index].param);
-        generate_trajectory_gfx();
-    }
-
-    cmm_object_count--;
-    for (u32 i = index; i < cmm_object_count; i++) {
-        cmm_object_data[i] = cmm_object_data[i+1];
-    }
-    generate_object_preview();
-}
-
-void delete_useless_cull_markers() {
-    for (u32 i = cmm_tile_data_indices[CULL_TILETYPE_INDEX]; i < cmm_tile_data_indices[CULL_TILETYPE_INDEX + 1]; i++) {
-        s8 pos[3];
-        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-
-        if (!is_cull_marker_useless(pos)) {
-            continue;
-        }
-
-        // Useless, delete
-        remove_occupy_data(pos);
-        remove_terrain_data(pos);
-        cmm_tile_count--;
-
-        for (u32 j = CULL_TILETYPE_INDEX + 1; j < ARRAY_COUNT(cmm_tile_data_indices); j++) {
-            cmm_tile_data_indices[j]--;
-        }
-        for (u32 j = i; j < cmm_tile_count; j++) {
-            cmm_tile_data[j] = cmm_tile_data[j+1];
-        }
-
-        i--;
-    }
-}
 
 void update_painting() {
     s16 x;
@@ -1930,7 +1954,7 @@ TCHAR cmm_file_name[30];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
-void save_level(u8 index) {
+void save_level(void) {
     s16 i;
     s16 j;
 
@@ -1988,7 +2012,7 @@ void save_level(u8 index) {
     f_close(&cmm_file);
 }
 
-void load_level(u8 index) {
+void load_level(void) {
     s16 i;
     s16 j;
     u8 fresh = FALSE;
@@ -2144,7 +2168,7 @@ void load_level(u8 index) {
 }
 
 void cmm_init() {
-    load_level(0);
+    load_level();
 }
 
 void sb_init(void) {
@@ -2302,7 +2326,7 @@ void sb_loop(void) {
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
-        save_level(0);
+        save_level();
     }
     //print_text_fmt_int(180, 200, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
 

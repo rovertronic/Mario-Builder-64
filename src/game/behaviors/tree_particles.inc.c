@@ -48,7 +48,7 @@ void bhv_snow_leaf_particle_spawn_init(void) {
     // Whether a tree uses snow particles or not is decided via the model IDs instead of the course number
     struct Object *nearestTree = cur_obj_nearest_object_with_behavior(bhvTree);
     if (nearestTree == NULL) return;
-    isSnow = 0;
+    isSnow = nearestTree->oBehParams2ndByte == 3;
 
     if (isSnow) {
         if (random_float() < 0.5f) {
