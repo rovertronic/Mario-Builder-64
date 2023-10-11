@@ -13,7 +13,7 @@ enum ObjInteractTypes {
     INTERACT_DAMAGE               = /* 0x00000008 */ (1 <<  3),
     INTERACT_COIN                 = /* 0x00000010 */ (1 <<  4),
     INTERACT_CAP                  = /* 0x00000020 */ (1 <<  5),
-    INTERACT_POLE                 = /* 0x00000040 */ (1 <<  6),
+    //INTERACT_POLE                 = /* 0x00000040 */ (1 <<  6),
     INTERACT_KOOPA                = /* 0x00000080 */ (1 <<  7),
     INTERACT_SPINY_WALKING        = /* 0x00000100 */ (1 <<  8),
     INTERACT_BREAKABLE            = /* 0x00000200 */ (1 <<  9),

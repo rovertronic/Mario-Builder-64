@@ -290,8 +290,8 @@ struct cmm_terrain_quad cmm_terrain_pole_quad[] = {
     {{{8, 16, 7}, {8, 0, 7}, {7, 16, 8}, {7, 0, 8}}, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, &pole_uvs3}, // Diagonal 3
     {{{7, 16, 8}, {7, 0, 8}, {8, 16, 9}, {8, 0, 9}}, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_EMPTY, 0, &pole_uvs4}, // Diagonal 4
 
-    {{{8, 16, 9}, {9, 16, 8}, {7, 16, 8}, {8, 16, 7}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // Top
-    {{{8, 0, 9}, {7, 0, 8}, {9, 0, 8}, {8, 0, 7}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, NULL}, // Bottom
+    {{{8, 16, 9}, {9, 16, 8}, {7, 16, 8}, {8, 16, 7}}, CMM_DIRECTION_UP,   CMM_FACESHAPE_POLETOP, 0, NULL}, // Top
+    {{{8, 0, 9},  {7, 0, 8},  {9, 0, 8},  {8, 0, 7}},  CMM_DIRECTION_DOWN, CMM_FACESHAPE_POLETOP, 0, NULL}, // Bottom
 };
 
 struct cmm_terrain cmm_terrain_pole = {

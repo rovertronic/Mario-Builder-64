@@ -57,6 +57,7 @@
 #include "src/buffers/framebuffers.h"
 #include "memory.h"
 #include "geo_misc.h"
+#include "mario_actions_automatic.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
@@ -332,13 +333,18 @@ ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
 }
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
+    struct cmm_terrain *terrain;
     s8 tileType = get_grid_tile(pos)->type - 1;
-    if (tileType == -1 || !cmm_tile_terrains[tileType]) return CMM_FACESHAPE_EMPTY;
+    if (tileType == -1) return CMM_FACESHAPE_EMPTY;
+
+    if (tileType == TILE_TYPE_POLE) terrain = &cmm_terrain_pole;
+    else terrain = cmm_tile_terrains[tileType];
+
+    if (!terrain) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = get_grid_tile(pos)->rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
 
-    struct cmm_terrain *terrain = cmm_tile_terrains[tileType];
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
         if (quad->faceDir == dir) {
@@ -412,7 +418,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
             return (otherrot == rot);
         } else return FALSE;
     }
-    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB) {
+    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB || faceshape == CMM_FACESHAPE_POLETOP) {
         return (otherFaceshape == faceshape);
     }
     return (faceshape == (otherFaceshape^1));
@@ -1363,7 +1369,6 @@ TerrainData floorVtxs[4][3] = {
 };
 
 void generate_terrain_collision(void) {
-    s16 i;
     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
@@ -1397,7 +1402,7 @@ void generate_terrain_collision(void) {
     process_tiles();
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
-    for (i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
+    for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
         process_tile(pos, &cmm_terrain_fence_col, cmm_tile_data[i].rot);
@@ -1410,6 +1415,45 @@ void generate_terrain_collision(void) {
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
+
+    generate_poles();
+}
+
+void generate_poles(void) {
+    gPoleArray = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gNumPoles = 0;
+
+    // Iterate over all poles
+    u32 startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+    u32 endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        
+        // If there is a pole below, skip
+        pos[1] -= 1;
+        if (pos[1] >= 0 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            continue;
+        }
+
+        s32 poleLength = 1;
+        // Scan upwards until no more poles or top of grid reached
+        pos[1] += 2;
+        while (pos[1] < 32 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            poleLength++;
+            pos[1]++;
+        }
+
+        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_tile_data[i].x);
+        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_tile_data[i].z);
+        gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
+        gPoleArray[gNumPoles].poleType = 0;
+        gNumPoles++;
+    }
+
+    main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
 }
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
