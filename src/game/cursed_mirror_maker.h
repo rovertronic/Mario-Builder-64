@@ -135,6 +135,8 @@ enum {
     TILE_TYPE_CULL,
     TILE_TYPE_TROLL,
     TILE_TYPE_FENCE,
+    TILE_TYPE_POLE,
+    TILE_TYPE_BARS,
 
     TILE_TYPE_WATER, // only blocks that are empty otherwise
 };

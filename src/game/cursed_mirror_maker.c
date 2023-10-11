@@ -95,7 +95,7 @@ u32 cmm_vtx_total = 0;
 
 struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[CMM_MAX_OBJS];
-u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 5] = {0};
+u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 10] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
 u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
@@ -137,8 +137,7 @@ u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
 u8 cmm_lopt_template = 0;
 u8 cmm_lopt_coinstar = 0;
-
-u16 cmm_total_coins = 0;
+u8 cmm_lopt_waterlevel = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
@@ -383,7 +382,10 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(newpos)) return TRUE;
+    if (!coords_in_range(newpos)) {
+        if (direction == CMM_DIRECTION_UP) return FALSE;
+        return TRUE;
+    }
     s32 tileType = get_grid_tile(newpos)->type - 1;
     switch(tileType) {
         case TILE_TYPE_CULL:
@@ -960,46 +962,59 @@ void render_water(s8 pos[3]) {
     }
 }
 
-void render_floor(void) {
+void render_floor(s16 y) {
     s16 vertex = 128 * cmm_grid_size;
     s16 uv = 256 * cmm_grid_size;
-    make_vertex(cmm_curr_vtx, 0, vertex, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, vertex, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2,      0, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,      0, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, vertex, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,      0, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 4,       0, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 5,       0, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 6, -vertex, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 7, -vertex, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 5,       0, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 8,  vertex, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 9,  vertex, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 10,      0, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 11,      0, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 10,      0, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 12,       0, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 13,       0, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 14, -vertex, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 15, -vertex, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 12,       0, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
     gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
 
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    if (cmm_render_flip_normals) {
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 2, 1, 0, 1, 2, 3, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 6, 5, 0, 5, 6, 7, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 10, 9, 0, 9, 10, 11, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 14, 13, 0, 13, 14, 15, 0);
+    } else {
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    }
     cmm_curr_vtx += 16;
 }
 
-#define FENCE_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME)
-#define WATER_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 1)
-#define CULL_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 2)
+enum tiletypeIndices {
+    FENCE_TILETYPE_INDEX = NUM_MATERIALS_PER_THEME,
+    POLE_TILETYPE_INDEX,
+    CULL_TILETYPE_INDEX,
+    WATER_TILETYPE_INDEX,
+    END_TILE_INDEX
+};
 
 u32 get_tiletype_index(u32 type, u32 mat) {
     switch (type) {
         case TILE_TYPE_FENCE:
             return FENCE_TILETYPE_INDEX;
+        case TILE_TYPE_POLE:
+            return POLE_TILETYPE_INDEX;
         case TILE_TYPE_WATER:
             return WATER_TILETYPE_INDEX;
         case TILE_TYPE_CULL:
@@ -1009,7 +1024,7 @@ u32 get_tiletype_index(u32 type, u32 mat) {
                 return mat;
             }
     }
-    return NUM_MATERIALS_PER_THEME + 3;
+    return END_TILE_INDEX;
 }
 
 
@@ -1141,17 +1156,33 @@ void generate_terrain_gfx(void) {
         } else {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
         }
-        render_floor();
+        render_floor(0);
         gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     }
 
+    // Special Tiles
+    cmm_growth_render_type = 0;
+    cmm_use_alt_uvs = TRUE;
+    u32 startIndex;
+    u32 endIndex;
+
+    // Poles
+
+    startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        process_tile(pos, &cmm_terrain_pole, cmm_tile_data[i].rot);
+    }
+    display_cached_tris();
+
     // Fences
 
-    u32 startIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX];
-    u32 endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
+    startIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
-    cmm_use_alt_uvs = TRUE;
-    cmm_growth_render_type = 0;
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -1170,8 +1201,12 @@ void generate_terrain_gfx(void) {
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
-    // Render water twice. This is so that all interior faces are rendered before all exterior faces,
-    // to make the layering a little better.
+
+    // Render main water plane, top side
+    if (cmm_lopt_waterlevel != 0) {
+        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+    }
+    // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
@@ -1179,6 +1214,7 @@ void generate_terrain_gfx(void) {
             render_water(pos);
         }
     }
+    // Render water blocks, exteriors
     cmm_render_flip_normals = FALSE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
@@ -1187,6 +1223,12 @@ void generate_terrain_gfx(void) {
         }
     }
     display_cached_tris();
+    cmm_render_flip_normals = TRUE;
+    // Render main water plane, bottom side
+    if (cmm_lopt_waterlevel != 0) {
+        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+    }
+    cmm_render_flip_normals = FALSE;
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
@@ -1241,14 +1283,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
             
-            if (cmm_id_selection == TILE_TYPE_FENCE) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
-                cmm_use_alt_uvs = TRUE;
-                process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
-                display_cached_tris();
-                cmm_use_alt_uvs = FALSE;
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
-            } else if (terrain) {
+            if (terrain) {
                 cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
@@ -1296,6 +1331,18 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &cull_cull_mesh);
                 gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
                 preview_mtx_index++;
+            } else {
+                cmm_use_alt_uvs = TRUE;
+                if (cmm_id_selection == TILE_TYPE_FENCE) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
+                    process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
+                } else if (cmm_id_selection == TILE_TYPE_POLE) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+                    process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
+                }
+                display_cached_tris();
+                cmm_use_alt_uvs = FALSE;
+                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             }
 
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
@@ -1366,6 +1413,10 @@ void generate_terrain_collision(void) {
 }
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - 32);
+    if (y < waterPlaneHeight) {
+        return waterPlaneHeight;
+    }
     // Convert world coordinates into grid coordinates
     s8 pos[3];
     vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
@@ -1387,7 +1438,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
             pos[1]--;
         }
         if (pos[1] == -1) {
-            return FLOOR_LOWER_LIMIT;
+            return waterPlaneHeight;
         }
     }
 
@@ -1395,15 +1446,6 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
         return (pos[1] + 1) * TILE_SIZE;
     }
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
-}
-
-void cap_coinstar_amount(void) {
-    u32 length = MIN(cmm_total_coins / 20, 50);
-    cmm_settings_general_buttons[4].size = length + 1;
-
-    if (cmm_lopt_coinstar > length) {
-        cmm_lopt_coinstar = length;
-    }
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
@@ -1427,7 +1469,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
 }
 
 void generate_object_preview(void) {
-    cmm_total_coins = 0;
+    s32 totalCoins = 0;
     s32 doubleCoins = FALSE;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
@@ -1447,14 +1489,20 @@ void generate_object_preview(void) {
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
-        cmm_total_coins += info->numCoins;
+        totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
     }
-    if (doubleCoins) cmm_total_coins *= 2;
-    cap_coinstar_amount();
+    if (doubleCoins) totalCoins *= 2;
+
+    u32 length = MIN(totalCoins / 20, 50);
+    cmm_settings_general_buttons[4].size = length + 1;
+
+    if (cmm_lopt_coinstar > length) {
+        cmm_lopt_coinstar = length;
+    }
 }
 
 void generate_objects_to_level(void) {
@@ -1563,6 +1611,9 @@ void place_tile(s8 pos[3]) {
                 } else {
                     play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_SPOOKY << 16));
                 }
+                break;
+            case TILE_TYPE_POLE:
+                play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
                 break;
         }
     }
@@ -1853,6 +1904,7 @@ void save_level(u8 index) {
     cmm_save.option[5] = cmm_lopt_plane;
     cmm_save.option[6] = cmm_lopt_coinstar;
     cmm_save.option[7] = cmm_lopt_size;
+    cmm_save.option[8] = cmm_lopt_waterlevel;
     cmm_save.option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1965,6 +2017,7 @@ void load_level(u8 index) {
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
+    cmm_lopt_waterlevel = cmm_save.option[8];
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
@@ -2193,10 +2246,6 @@ void reload_theme(void) {
 
 void reload_bg(void) {
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
-}
-
-void reload_floor(void) {
-    generate_terrain_gfx();
 }
 
 u8 cmm_upsidedown_tile = FALSE;

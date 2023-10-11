@@ -279,6 +279,28 @@ struct cmm_terrain cmm_terrain_fence_col = {
     NULL,
 };
 
+
+s8 pole_uvs1[4][2] = {{16, 0}, {16, 32}, {12, 0}, {12, 32}};
+s8 pole_uvs2[4][2] = {{12, 0}, {12, 32}, {8, 0}, {8, 32}};
+s8 pole_uvs3[4][2] = {{8, 0}, {8, 32}, {4, 0}, {4, 32}};
+s8 pole_uvs4[4][2] = {{4, 0}, {4, 32}, {0, 0}, {0, 32}};
+struct cmm_terrain_quad cmm_terrain_pole_quad[] = {
+    {{{8, 16, 9}, {8, 0, 9}, {9, 16, 8}, {9, 0, 8}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_EMPTY, 0, &pole_uvs1}, // Diagonal 1
+    {{{9, 16, 8}, {9, 0, 8}, {8, 16, 7}, {8, 0, 7}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_EMPTY, 0, &pole_uvs2}, // Diagonal 2
+    {{{8, 16, 7}, {8, 0, 7}, {7, 16, 8}, {7, 0, 8}}, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, &pole_uvs3}, // Diagonal 3
+    {{{7, 16, 8}, {7, 0, 8}, {8, 16, 9}, {8, 0, 9}}, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_EMPTY, 0, &pole_uvs4}, // Diagonal 4
+
+    {{{8, 16, 9}, {9, 16, 8}, {7, 16, 8}, {8, 16, 7}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // Top
+    {{{8, 0, 9}, {7, 0, 8}, {9, 0, 8}, {8, 0, 7}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, NULL}, // Bottom
+};
+
+struct cmm_terrain cmm_terrain_pole = {
+    6,
+    0,
+    cmm_terrain_pole_quad,
+    NULL,
+};
+
 // Shapes of water tiles
 struct cmm_terrain_quad cmm_terrain_shallowwater_quads[] = {
     {{{16, 14, 16}, {16, 14, 0}, {0, 14, 16}, {0, 14, 0}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // TOP
@@ -319,6 +341,8 @@ struct cmm_terrain *cmm_tile_terrains[] = {
     NULL,                    //TILE_TYPE_CULL
     &cmm_terrain_fullblock,  //TILE_TYPE_TROLL
     NULL,                    //TILE_TYPE_FENCE
+    NULL,                    //TILE_TYPE_BARS
+    NULL,                    //TILE_TYPE_POLE
     NULL,                    // TILE_TYPE_WATER
 };
 
@@ -643,25 +667,25 @@ struct cmm_material cmm_mat_table[] = {
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
-    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},     // CMM_MAT_GRASS
-    {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},      // CMM_MAT_SAND
-    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},      // CMM_MAT_SNOW
-    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},    // CMM_MAT_HMC_GRASS
-    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_METAL
-    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},  // CMM_MAT_BBH_STONE
-    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1}, // CMM_MAT_RETRO_TREETOP
+    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},
+    {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},
+    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},
+    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},
+    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},
+    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},
     {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim_layer1},
+    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1},
 };
 
-s8 cmm_terrain_floors_generic[] = {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
-s8 cmm_terrain_floors_desert[] = {0, 8, 9, 2, 3, 6, 7}; // sand, lava, quicksand, stone, tiles, desert tiles, grass
-s8 cmm_terrain_floors_lava[] = {0, 8, 9, 2, 3}; // stone, lava, quicksand, basalt, tiles
-s8 cmm_terrain_floors_cave[] = {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone, maze floor
-s8 cmm_terrain_floors_castle[] = {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
+s8 cmm_terrain_floors_generic[] =    {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
+s8 cmm_terrain_floors_desert[] =     {0, 8, 9, 2, 3, 6, 7}; // sand, lava, quicksand, stone, tiles, desert tiles, grass
+s8 cmm_terrain_floors_lava[] =       {0, 8, 9, 2, 3}; // stone, lava, quicksand, basalt, tiles
+s8 cmm_terrain_floors_cave[] =       {0, 8, 9, 2, 4}; // grass, lava, quicksand, stone, maze floor
+s8 cmm_terrain_floors_castle[] =     {0, 8, 9, 3}; // tiling, lava, quicksand, carpet
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
-s8 cmm_terrain_floors_bbh[] = {3, 8, 0, 6}; // metal, lava, stone, wood
-s8 cmm_terrain_floors_jrb[] = {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
-s8 cmm_terrain_floors_retro[] = {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
+s8 cmm_terrain_floors_bbh[] =        {3, 8, 0, 6}; // metal, lava, stone, wood
+s8 cmm_terrain_floors_jrb[] =        {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
+s8 cmm_terrain_floors_retro[] =      {0, 8, 4, 9}; // ground, lava, blue ground, underwater tile
 
 enum cmm_fences {
     CMM_FENCE_NORMAL,
@@ -704,15 +728,15 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_DIRT,        CMM_MAT_GRASS, "Grass"},
-            {CMM_MAT_BRICKS,      0,                "Bricks"},
+            {CMM_MAT_BRICKS,      0,             "Bricks"},
             {CMM_MAT_COBBLESTONE, CMM_MAT_STONE, "Stone"},
             {CMM_MAT_TILESBRICKS, CMM_MAT_TILES, "Tiling"},
-            {CMM_MAT_ROOF,        0,                "Roof"},
-            {CMM_MAT_WOOD,        0,                "Wood"},
+            {CMM_MAT_ROOF,        0,             "Roof"},
+            {CMM_MAT_WOOD,        0,             "Wood"},
             {CMM_MAT_SANDDIRT,    CMM_MAT_SAND,  "Sand"},
             {CMM_MAT_SNOWDIRT,    CMM_MAT_SNOW,  "Snow"},
-            {CMM_MAT_LAVA,        0,                "Lava"},
-            {CMM_MAT_QUICKSAND,   0,                "Quicksand"},
+            {CMM_MAT_LAVA,        0,             "Lava"},
+            {CMM_MAT_QUICKSAND,   0,             "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_generic), cmm_terrain_floors_generic,
         CMM_FENCE_NORMAL, CMM_WATER_DEFAULT
@@ -721,15 +745,15 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_SANDDIRT,        CMM_MAT_SAND,          "Sand"},
-            {CMM_MAT_DESERT_BRICKS,   0,                        "Bricks"},
-            {CMM_MAT_DESERT_STONE,    0,                        "Stone"},
-            {CMM_MAT_DESERT_TILES,    0,                        "Desert Tiling"},
-            {CMM_MAT_DESERT_BLOCK,    0,                        "Stone Block"},
-            {CMM_MAT_DESERT_SLOWSAND, 0,                        "Slow Quicksand"},
+            {CMM_MAT_DESERT_BRICKS,   0,                     "Bricks"},
+            {CMM_MAT_DESERT_STONE,    0,                     "Stone"},
+            {CMM_MAT_DESERT_TILES,    0,                     "Desert Tiling"},
+            {CMM_MAT_DESERT_BLOCK,    0,                     "Stone Block"},
+            {CMM_MAT_DESERT_SLOWSAND, 0,                     "Slow Quicksand"},
             {CMM_MAT_DESERT_BRICKS,   CMM_MAT_DESERT_TILES2, "Desert Plating"},
             {CMM_MAT_DIRT,            CMM_MAT_GRASS,         "Grass"},
-            {CMM_MAT_LAVA,            0,                        "Lava"},
-            {CMM_MAT_QUICKSAND,       0,                        "Quicksand"},
+            {CMM_MAT_LAVA,            0,                     "Lava"},
+            {CMM_MAT_QUICKSAND,       0,                     "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_desert), cmm_terrain_floors_desert,
         CMM_FENCE_DESERT, CMM_WATER_GREEN
@@ -739,14 +763,14 @@ struct cmm_theme cmm_theme_table[] = {
         {
             {CMM_MAT_RHR_STONE,   CMM_MAT_RHR_OBSIDIAN, "Stone"},
             {CMM_MAT_RHR_BRICK,   CMM_MAT_RHR_OBSIDIAN, "Bricks"},
-            {CMM_MAT_RHR_BASALT,  0,                       "Basalt"},
-            {CMM_MAT_RHR_TILES,   0,                       "Tiling"},
-            {CMM_MAT_RHR_BLOCK,   0,                       "Stone Block"},
-            {CMM_MAT_RHR_WOOD,    0,                       "Wood"},
+            {CMM_MAT_RHR_BASALT,  0,                    "Basalt"},
+            {CMM_MAT_RHR_TILES,   0,                    "Tiling"},
+            {CMM_MAT_RHR_BLOCK,   0,                    "Stone Block"},
+            {CMM_MAT_RHR_WOOD,    0,                    "Wood"},
             {CMM_MAT_RHR_PILLAR,  CMM_MAT_RHR_TILES,    "Pillar"},
-            {CMM_MAT_RHR_MESH,    0,                       "Mesh"},
-            {CMM_MAT_LAVA,        0,                       "Lava"},
-            {CMM_MAT_SERVER_ACID, 0,                       "Server Acid"},
+            {CMM_MAT_RHR_MESH,    0,                    "Mesh"},
+            {CMM_MAT_LAVA,        0,                    "Lava"},
+            {CMM_MAT_SERVER_ACID, 0,                    "Server Acid"},
         },
         ARRAY_COUNT(cmm_terrain_floors_lava), cmm_terrain_floors_lava,
         CMM_FENCE_RHR, CMM_WATER_DEFAULT
@@ -755,15 +779,15 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_HMC_DIRT,      CMM_MAT_HMC_GRASS, "Grass"},
-            {CMM_MAT_HMC_BRICK,     0,                    "Bricks"},
-            {CMM_MAT_HMC_STONE,     0,                    "Stone"},
-            {CMM_MAT_HMC_MAZEWALL,  0,                    "Maze Wall"},
-            {CMM_MAT_HMC_MAZEFLOOR, 0,                    "Maze Floor"},
-            {CMM_MAT_HMC_LIGHT,     0,                    "Light"},
+            {CMM_MAT_HMC_BRICK,     0,                 "Bricks"},
+            {CMM_MAT_HMC_STONE,     0,                 "Stone"},
+            {CMM_MAT_HMC_MAZEWALL,  0,                 "Maze Wall"},
+            {CMM_MAT_HMC_MAZEFLOOR, 0,                 "Maze Floor"},
+            {CMM_MAT_HMC_LIGHT,     0,                 "Light"},
             {CMM_MAT_HMC_LAKEGRASS, CMM_MAT_HMC_GRASS, "Cave Wall"},
-            {CMM_MAT_HMC_MESH,      0,                    "Mesh"},
-            {CMM_MAT_LAVA,          0,                    "Lava"},
-            {CMM_MAT_QUICKSAND,     0,                    "Quicksand"},
+            {CMM_MAT_HMC_MESH,      0,                 "Mesh"},
+            {CMM_MAT_LAVA,          0,                 "Lava"},
+            {CMM_MAT_QUICKSAND,     0,                 "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_cave), cmm_terrain_floors_cave,
         CMM_FENCE_HMC, CMM_WATER_GREEN
@@ -771,16 +795,16 @@ struct cmm_theme cmm_theme_table[] = {
     // CASTLE
     {
         {
-            {CMM_MAT_C_WOOD,         CMM_MAT_TILES,  "Tiling"},
-            {CMM_MAT_C_BRICK,        CMM_MAT_TILES,  "Tiling (Bricks)"},
-            {CMM_MAT_C_STONESIDE,    CMM_MAT_C_STONETOP,  "Tiling (Stone)"},
-            {CMM_MAT_C_WOOD,         CMM_MAT_C_CARPET, "Carpet"},
-            {CMM_MAT_C_ROOF,         0,                   "Roof"},
-            {CMM_MAT_C_WALL,         0,                   "Castle Wall"},
-            {CMM_MAT_C_PILLAR,       CMM_MAT_C_STONETOP,  "Pillar"},
-            {CMM_MAT_C_BASEMENTWALL, 0,                   "Basement Wall"},
-            {CMM_MAT_LAVA,           0,                   "Lava"},
-            {CMM_MAT_C_OUTSIDEBRICK, 0,                   "Castle Bricks"},
+            {CMM_MAT_C_WOOD,         CMM_MAT_TILES,      "Tiling"},
+            {CMM_MAT_C_BRICK,        CMM_MAT_TILES,      "Tiling (Bricks)"},
+            {CMM_MAT_C_STONESIDE,    CMM_MAT_C_STONETOP, "Tiling (Stone)"},
+            {CMM_MAT_C_WOOD,         CMM_MAT_C_CARPET,   "Carpet"},
+            {CMM_MAT_C_ROOF,         0,                  "Roof"},
+            {CMM_MAT_C_WALL,         0,                  "Castle Wall"},
+            {CMM_MAT_C_PILLAR,       CMM_MAT_C_STONETOP, "Pillar"},
+            {CMM_MAT_C_BASEMENTWALL, 0,                  "Basement Wall"},
+            {CMM_MAT_LAVA,           0,                  "Lava"},
+            {CMM_MAT_C_OUTSIDEBRICK, 0,                  "Castle Bricks"},
         },
         ARRAY_COUNT(cmm_terrain_floors_castle), cmm_terrain_floors_castle,
         CMM_FENCE_CASTLE, CMM_WATER_DEFAULT
@@ -788,16 +812,16 @@ struct cmm_theme cmm_theme_table[] = {
     // VIRTUAPLEX
     {
         {
-            {CMM_MAT_VP_BLOCK,      0,                       "Block"},
-            {CMM_MAT_VP_TILES,      0,                       "Tiling"},
+            {CMM_MAT_VP_BLOCK,      0,                    "Block"},
+            {CMM_MAT_VP_TILES,      0,                    "Tiling"},
             {CMM_MAT_DIRT,          CMM_MAT_GRASS,        "Grass"},
             {CMM_MAT_VP_TILES,      CMM_MAT_VP_BLUETILES, "Blue Tiling"},
-            {CMM_MAT_VP_RUSTYBLOCK, 0,                       "Rusty Block"},
-            {CMM_MAT_VP_SCREEN,     0,                       "Screen"},
-            {CMM_MAT_VP_CAUTION,    0,                       "Hazard Stripes"},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                    "Rusty Block"},
+            {CMM_MAT_VP_SCREEN,     0,                    "Screen"},
+            {CMM_MAT_VP_CAUTION,    0,                    "Hazard Stripes"},
             {CMM_MAT_VP_BLOCK,      CMM_MAT_SNOW,         "Snowy Block"},
-            {CMM_MAT_LAVA,          0,                       "Lava"},
-            {CMM_MAT_VP_VOID,       0,                       "Void"},
+            {CMM_MAT_LAVA,          0,                    "Lava"},
+            {CMM_MAT_VP_VOID,       0,                    "Void"},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
         CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
@@ -805,16 +829,16 @@ struct cmm_theme cmm_theme_table[] = {
     // SNOW
     {
         {
-            {CMM_MAT_VP_BLOCK,      0,                       ""},
-            {CMM_MAT_VP_TILES,      0,                       ""},
+            {CMM_MAT_VP_BLOCK,      0,                    ""},
+            {CMM_MAT_VP_TILES,      0,                    ""},
             {CMM_MAT_DIRT,          CMM_MAT_GRASS,        ""},
             {CMM_MAT_VP_TILES,      CMM_MAT_VP_BLUETILES, ""},
-            {CMM_MAT_VP_RUSTYBLOCK, 0,                       ""},
-            {CMM_MAT_VP_SCREEN,     0,                       ""},
-            {CMM_MAT_VP_CAUTION,    0,                       ""},
+            {CMM_MAT_VP_RUSTYBLOCK, 0,                    ""},
+            {CMM_MAT_VP_SCREEN,     0,                    ""},
+            {CMM_MAT_VP_CAUTION,    0,                    ""},
             {CMM_MAT_VP_BLOCK,      CMM_MAT_SNOW,         ""},
-            {CMM_MAT_LAVA,          0,                       ""},
-            {CMM_MAT_VP_VOID,       0,                       ""},
+            {CMM_MAT_LAVA,          0,                    ""},
+            {CMM_MAT_VP_VOID,       0,                    ""},
         },
         ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
         CMM_FENCE_VIRTUAPLEX, CMM_WATER_DEFAULT
@@ -823,15 +847,15 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_BBH_BRICKS,         CMM_MAT_BBH_STONE,      "Stone Floor"},
-            {CMM_MAT_BBH_HAUNTED_PLANKS, 0,                         "Haunted Planks"},
+            {CMM_MAT_BBH_HAUNTED_PLANKS, 0,                      "Haunted Planks"},
             {CMM_MAT_BBH_STONE_PATTERN,  CMM_MAT_BBH_WOOD_FLOOR, "Wood Floor"},
             {CMM_MAT_BBH_BRICKS,         CMM_MAT_BBH_METAL,      "Metal Floor"},
-            {CMM_MAT_BBH_ROOF,           0,                         "Roof"},
-            {CMM_MAT_BBH_WOOD_WALL,      0,                         "Wood"},
-            {CMM_MAT_BBH_STONE,          0,                         "Wall"},
+            {CMM_MAT_BBH_ROOF,           0,                      "Roof"},
+            {CMM_MAT_BBH_WOOD_WALL,      0,                      "Wood"},
+            {CMM_MAT_BBH_STONE,          0,                      "Wall"},
             {CMM_MAT_BBH_PILLAR,         CMM_MAT_BBH_STONE,      "Pillar"},
-            {CMM_MAT_LAVA,               0,                         "Lava"},
-            {CMM_MAT_BBH_WINDOW,         0,                         "Window"},
+            {CMM_MAT_LAVA,               0,                      "Lava"},
+            {CMM_MAT_BBH_WINDOW,         0,                      "Window"},
         },
         ARRAY_COUNT(cmm_terrain_floors_bbh), cmm_terrain_floors_bbh,
         CMM_FENCE_BBH, CMM_WATER_DEFAULT
@@ -839,16 +863,16 @@ struct cmm_theme cmm_theme_table[] = {
     // JRB
     {
         {
-            {CMM_MAT_JRB_STONE,     CMM_MAT_JRB_SAND,     "Sand"},
-            {CMM_MAT_JRB_BRICKS,     0,                       "Bricks"},
-            {CMM_MAT_JRB_UNDERWATER, 0,                      "Stone"},
-            {CMM_MAT_JRB_TILESIDE,   CMM_MAT_JRB_TILETOP,        "Tiles"},
-            {CMM_MAT_JRB_SHIPSIDE,  CMM_MAT_JRB_SHIPTOP,  "Wood (Ship)"},
-            {CMM_MAT_JRB_METAL,     CMM_MAT_JRB_WOOD,     "Wood (Docks)"},
-            {CMM_MAT_JRB_METALSIDE, CMM_MAT_JRB_METAL,       "Metal"},
-            {CMM_MAT_HMC_MESH,      0,                       "Mesh"},
-            {CMM_MAT_JRB_WALL,      0,                       "Wall"},
-            {CMM_MAT_QUICKSAND,       0,                       "Quicksand"},
+            {CMM_MAT_JRB_STONE,      CMM_MAT_JRB_SAND,    "Sand"},
+            {CMM_MAT_JRB_BRICKS,     0,                   "Bricks"},
+            {CMM_MAT_JRB_UNDERWATER, 0,                   "Stone"},
+            {CMM_MAT_JRB_TILESIDE,   CMM_MAT_JRB_TILETOP, "Tiles"},
+            {CMM_MAT_JRB_SHIPSIDE,   CMM_MAT_JRB_SHIPTOP, "Wood (Ship)"},
+            {CMM_MAT_JRB_METAL,      CMM_MAT_JRB_WOOD,    "Wood (Docks)"},
+            {CMM_MAT_JRB_METALSIDE,  CMM_MAT_JRB_METAL,   "Metal"},
+            {CMM_MAT_HMC_MESH,       0,                   "Mesh"},
+            {CMM_MAT_JRB_WALL,       0,                   "Wall"},
+            {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
         },
         ARRAY_COUNT(cmm_terrain_floors_jrb), cmm_terrain_floors_jrb,
         CMM_FENCE_JRB, CMM_WATER_DEFAULT
@@ -856,16 +880,16 @@ struct cmm_theme cmm_theme_table[] = {
     // RETRO
     {
         {
-            {CMM_MAT_RETRO_GROUND,           0,                        "Ground"},
-            {CMM_MAT_RETRO_BRICKS,           0,                        "Bricks"},
-            {CMM_MAT_RETRO_TREEPLAT,         CMM_MAT_RETRO_TREETOP,    "Treetop"},
-            {CMM_MAT_RETRO_BLOCK,            0,                        "Block"},
-            {CMM_MAT_RETRO_BLUEGROUND,       0,                        "Blue Ground"},
-            {CMM_MAT_RETRO_BLUEBRICKS,       0,                        "Blue Bricks"},
-            {CMM_MAT_RETRO_BLUEBLOCK,        0,                        "Blue Block"},
-            {CMM_MAT_RETRO_WHITEBRICK,       0,                        "White Bricks"},
-            {CMM_MAT_RETRO_LAVA,             0,                        "Lava"},
-            {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                        "Underwater Tile"},
+            {CMM_MAT_RETRO_GROUND,           0,                     "Ground"},
+            {CMM_MAT_RETRO_BRICKS,           0,                     "Bricks"},
+            {CMM_MAT_RETRO_TREEPLAT,         CMM_MAT_RETRO_TREETOP, "Treetop"},
+            {CMM_MAT_RETRO_BLOCK,            0,                     "Block"},
+            {CMM_MAT_RETRO_BLUEGROUND,       0,                     "Blue Ground"},
+            {CMM_MAT_RETRO_BLUEBRICKS,       0,                     "Blue Bricks"},
+            {CMM_MAT_RETRO_BLUEBLOCK,        0,                     "Blue Block"},
+            {CMM_MAT_RETRO_WHITEBRICK,       0,                     "White Bricks"},
+            {CMM_MAT_RETRO_LAVA,             0,                     "Lava"},
+            {CMM_MAT_RETRO_UNDERWATERGROUND, 0,                     "Underwater Tile"},
         },
         ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
         CMM_FENCE_RETRO, CMM_WATER_RETRO
@@ -884,6 +908,7 @@ struct cmm_theme cmm_theme_table[] = {
 
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
+#define POLE_TEX()  (mat_maker_MakerStoneSide)
 #define WATER_TEX() (cmm_water_texs[cmm_theme_table[cmm_lopt_theme].water])
 
 
@@ -1066,7 +1091,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_vslab,        OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Sideways Slab",      NULL       }, //CMM_BUTTON_VSLAB
     {mat_b_btn_bars,         OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Bars",               NULL       }, //CMM_BUTTON_BARS
     {mat_b_btn_thwomp,       OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Stone Enemy",        NULL       }, //CMM_BUTTON_ROCKENEMY
-    {mat_b_btn_pole,         OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Pole",               NULL       }, //CMM_BUTTON_POLE
+    {mat_b_btn_pole,         TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
 };
 
 char *cmm_settings_menu_table[] = {
@@ -1205,9 +1230,10 @@ u8 *cmm_skybox_table[] = {
 
 extern char *cmm_get_floor_name(s32);
 extern char *cmm_get_coinstar_str(s32);
+extern char *cmm_get_waterlevel_name(s32);
 extern void reload_bg(void);
 extern void reload_theme(void);
-extern void reload_floor(void);
+extern void generate_terrain_gfx(void);
 
 
 
@@ -1222,7 +1248,8 @@ struct cmm_settings_button cmm_settings_general_buttons[] = {
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
     {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table), NULL, reload_theme},
-    {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, reload_floor}, // Filled in by code
+    {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, generate_terrain_gfx}, // Filled in by code
+    {"Water Level:", &cmm_lopt_waterlevel, NULL,               33,               cmm_get_waterlevel_name, generate_terrain_gfx},
 };
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
