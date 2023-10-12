@@ -230,11 +230,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     s->isDecal = TRUE;
 
     // Check for water under the shadow.
-    struct Surface *waterFloor = NULL;
-    f32 waterLevel = find_water_level_and_floor(x, y, z, &waterFloor);
-
-    // Whether the floor is an environment box rather than an actual surface.
-    s32 isEnvBox = FALSE;
+    f32 waterLevel = cmm_get_water_level(x, y, z);
 
     if (waterLevel > FLOOR_LOWER_LIMIT_MISC
         && y >= waterLevel
@@ -247,13 +243,6 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
 
         // Don't use the decal layer, since water is transparent.
         s->isDecal = FALSE;
-
-        // Check whether the water is an environment box or a water surface.
-        if (waterFloor != NULL) { // Water surfaces:
-            floor = waterFloor;
-        } else { // Environment boxes:
-            isEnvBox = TRUE;
-        }
     } else { // Normal surfaces:
         TerrainData type = floor->type;
         if (type == SURFACE_ICE) {
@@ -275,7 +264,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     }
 
     f32 nx, ny, nz;
-    if (isEnvBox) {
+    if (floorHeight <= FLOOR_LOWER_LIMIT_MISC && waterLevel <= FLOOR_LOWER_LIMIT_MISC) {
         // Assume the floor is flat.
         nx = 0.0f;
         ny = 1.0f;
@@ -300,7 +289,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     }
 
     // No shadow if the floor is lower than expected possible,
-    if (floorHeight < FLOOR_LOWER_LIMIT_MISC) {
+    if (floorHeight <= FLOOR_LOWER_LIMIT_MISC) {
         return NULL;
     }
 

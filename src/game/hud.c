@@ -764,8 +764,12 @@ void render_hud_coins(void) {
 
     if (gMarioState->gCurrMinigame == 0) {
         print_text(168-wideoffet3, HUD_TOP_Y, "$"); // 'Coin' glyph
-        print_text(184-wideoffet3, HUD_TOP_Y, "*"); // 'X' glyph
-        print_text_fmt_int(198-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+        if (gHudDisplay.coins < 1000) {
+            print_text(184-wideoffet3, HUD_TOP_Y, "*"); // 'X' glyph
+            print_text_fmt_int(198-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+        } else {
+            print_text_fmt_int(184-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+        }
 
         if (gRedCoinsCollected > 0) {
             print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "@"); // 'Coin' glyph

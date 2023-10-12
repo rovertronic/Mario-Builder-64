@@ -2,7 +2,7 @@
 const GeoLayout bubbly_tree_geo[] = {
    GEO_CULLING_RADIUS(800),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xA8, 500),
+      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 300),
       GEO_OPEN_NODE(),
    #ifdef OBJ_OPACITY_BY_CAM_DIST
          GEO_ASM(GEO_TRANSPARENCY_MODE_INTER, geo_update_layer_transparency),
@@ -23,7 +23,7 @@ const GeoLayout bubbly_tree_geo[] = {
 const GeoLayout spiky_tree_geo[] = {
    GEO_CULLING_RADIUS(800),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 400),
+      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 300),
       GEO_OPEN_NODE(),
 #ifdef OBJ_OPACITY_BY_CAM_DIST
       GEO_ASM(GEO_TRANSPARENCY_MODE_INTER, geo_update_layer_transparency),
@@ -44,7 +44,7 @@ const GeoLayout spiky_tree_geo[] = {
 const GeoLayout snow_tree_geo[] = {
    GEO_CULLING_RADIUS(800),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 400),
+      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 300),
       GEO_OPEN_NODE(),
 #ifdef OBJ_OPACITY_BY_CAM_DIST
       GEO_ASM(GEO_TRANSPARENCY_MODE_INTER, geo_update_layer_transparency),
@@ -65,7 +65,7 @@ const GeoLayout snow_tree_geo[] = {
 const GeoLayout palm_tree_geo[] = {
    GEO_CULLING_RADIUS(800),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 400),
+      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 300),
       GEO_OPEN_NODE(),
 #ifdef OBJ_OPACITY_BY_CAM_DIST
       GEO_ASM(GEO_TRANSPARENCY_MODE_INTER, geo_update_layer_transparency),

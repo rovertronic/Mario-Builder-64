@@ -57,6 +57,7 @@
 #include "src/buffers/framebuffers.h"
 #include "memory.h"
 #include "geo_misc.h"
+#include "mario_actions_automatic.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
@@ -95,7 +96,7 @@ u32 cmm_vtx_total = 0;
 
 struct cmm_tile cmm_tile_data[CMM_TILE_POOL_SIZE];
 struct cmm_obj cmm_object_data[CMM_MAX_OBJS];
-u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 5] = {0};
+u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 10] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
 u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
@@ -114,6 +115,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
+u8 cmm_uv_scaling = 1;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -136,10 +138,13 @@ u8 cmm_lopt_plane = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
 u8 cmm_lopt_template = 0;
+u8 cmm_lopt_coinstar = 0;
+u8 cmm_lopt_waterlevel = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
-s8 cmm_ui_index = 0;
+s8 cmm_menu_index = 0;
+s8 cmm_toolbar_index = 0;
 s8 cmm_toolbox_index = 0;
 u8 cmm_ui_do_render = TRUE;
 u8 cmm_do_save = FALSE;
@@ -149,9 +154,6 @@ u16 cmm_error_timer = 0;
 f32 cmm_error_vels[3];
 
 struct cmm_level_save cmm_save;
-
-u8 cmm_settings_index = 0;
-u8 cmm_settings_index_changed = FALSE;
 
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
@@ -163,6 +165,13 @@ void play_place_sound(u32 soundBits) {
 
 void df_star(UNUSED s32 context) {
     o->oFaceAngleYaw += 0x800;
+}
+
+void df_heart(UNUSED s32 context) {
+    o->oFaceAngleYaw += 400;
+}
+void df_corkbox(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) o->oAnimState = 1;
 }
 
 void df_reds_marker(s32 context) {
@@ -289,14 +298,14 @@ s32 object_sanity_check(void) {
 
     if (cmm_object_place_types[cmm_id_selection].hasStar) {
         // Count stars
-        u8 numStars;
-        for (u32 i = 0; i < cmm_object_count; i++) {
+        s32 numStars = 0;
+        for (s32 i = 0; i < cmm_object_count; i++) {
             if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
                 numStars++;
             }
         }
-        if (numStars >= 64) {
-            cmm_show_error_message("Star limit reached! (max 64)");
+        if (numStars >= 63) {
+            cmm_show_error_message("Star limit reached! (max 63)");
             return FALSE;
         }
     }
@@ -332,13 +341,18 @@ ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
 }
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
+    struct cmm_terrain *terrain;
     s8 tileType = get_grid_tile(pos)->type - 1;
-    if (tileType == -1 || !cmm_tile_terrains[tileType]) return CMM_FACESHAPE_EMPTY;
+    if (tileType == -1) return CMM_FACESHAPE_EMPTY;
+
+    if (tileType == TILE_TYPE_POLE) terrain = &cmm_terrain_pole;
+    else terrain = cmm_tile_terrains[tileType];
+
+    if (!terrain) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = get_grid_tile(pos)->rot;
     dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
 
-    struct cmm_terrain *terrain = cmm_tile_terrains[tileType];
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
         if (quad->faceDir == dir) {
@@ -382,7 +396,10 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(newpos)) return TRUE;
+    if (!coords_in_range(newpos)) {
+        if (direction == CMM_DIRECTION_UP) return FALSE;
+        return TRUE;
+    }
     s32 tileType = get_grid_tile(newpos)->type - 1;
     switch(tileType) {
         case TILE_TYPE_CULL:
@@ -409,7 +426,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
             return (otherrot == rot);
         } else return FALSE;
     }
-    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB) {
+    if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB || faceshape == CMM_FACESHAPE_POLETOP) {
         return (otherFaceshape == faceshape);
     }
     return (faceshape == (otherFaceshape^1));
@@ -472,23 +489,35 @@ void check_cached_tris(void) {
 }
 
 void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
-    s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
-    f32 length = sqrtf(sqr(pos2[0] - pos1[0]) + sqr(pos2[1] - pos1[1]) + sqr(pos2[2] - pos1[2]));
+    f32 dx2 = sqr(pos2[0] - pos1[0]);
+    f32 dy2 = sqr(pos2[1] - pos1[1]);
+    f32 dz2 = sqr(pos2[2] - pos1[2]);
+    f32 length = sqrtf(dx2 + dy2 + dz2);
 
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + 10*coss(yaw), pos1[1], pos1[2] - 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - 10*coss(yaw), pos1[1], pos1[2] + 10*sins(yaw), 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + 10*coss(yaw), pos2[1], pos2[2] - 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - 10*coss(yaw), pos2[1], pos2[2] + 10*sins(yaw), 0, length, 0, 0, 0, 0xFF);
+    s16 yaw = atan2s(pos2[2] - pos1[2], pos2[0] - pos1[0]);
+    s16 pitch = atan2s(sqrtf(dx2 + dz2), pos2[1] - pos1[1]);
+    
+    f32 sy = 10*sins(yaw);
+    f32 cy = 10*coss(yaw);
+    f32 sp = 10*sins(pitch);
+    f32 cp = 10*coss(pitch);
+    f32 spsy = sp*sins(yaw);
+    f32 spcy = sp*coss(yaw);
+
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + cy, pos1[1], pos1[2] - sy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - cy, pos1[1], pos1[2] + sy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + cy, pos2[1], pos2[2] - sy, 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - cy, pos2[1], pos2[2] + sy, 0, length, 0, 0, 0, 0xFF);
 
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
     cmm_num_vertices_cached += 4;
     check_cached_tris();
 
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0], pos1[1] - 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0], pos1[1] + 10, pos1[2], 0, 0, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0], pos2[1] - 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
-    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0], pos2[1] + 10, pos2[2], 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + spsy, pos1[1] - cp, pos1[2] + spcy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - spsy, pos1[1] + cp, pos1[2] - spcy, 0, 0, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 2, pos2[0] + spsy, pos2[1] - cp, pos2[2] + spcy, 0, length, 0, 0, 0, 0xFF);
+    make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 3, pos2[0] - spsy, pos2[1] + cp, pos2[2] - spcy, 0, length, 0, 0, 0, 0xFF);
 
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
@@ -505,7 +534,7 @@ void generate_trajectory_gfx(void) {
 
     for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
         Trajectory *curr_trajectory = cmm_trajectory_list[traj][0];
-        u32 i = 0;
+        s32 i = 0;
         s16 pos1[3], pos2[3];
 
         while (curr_trajectory[i*4 + 4] == i+1) {
@@ -556,7 +585,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
         case CMM_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return TRUE;
         case CMM_DIRECTION_UP: *uAxis = 2; *vAxis = 0; return FALSE;
         case CMM_DIRECTION_NEG_Z: *uAxis = 0; *vAxis = 1; return FALSE;
-        case CMM_DIRECTION_POS_Z: *uAxis = 0; *vAxis = 1; return TRUE;
+        /*case CMM_DIRECTION_POS_Z:*/ default: *uAxis = 0; *vAxis = 1; return TRUE;
     }
 }
 
@@ -582,7 +611,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * 64 - 16, v * 64 - 16,
+            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -619,7 +648,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * 64 - 16, v * 64 - 16,
+            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -880,6 +909,79 @@ void process_tile(s8 pos[3], struct cmm_terrain *terrain, u32 rot) {
     }
 }
 
+#define BAR_CONNECTED_SIDE(bar) ((bar) & 1)
+#define BAR_CONNECTED_TOP(bar) (((bar) >> 1) & 0x1)
+#define BAR_CONNECTED_BOTTOM(bar) (((bar) >> 2) & 0x1)
+
+void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
+    s8 adjacentPos[3];
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        connections[rot] = 0;
+        s32 dir = ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot);
+        vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+        if (!coords_in_range(adjacentPos)) continue;
+
+        // If adjacent block is a bar, return true
+        if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+            connections[rot] = 1; continue;
+        }
+
+        // Else check its a full block
+        if (get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) connections[rot] = 1;
+    }
+}
+
+void check_bar_connections(s8 pos[3], u8 connections[5]) {
+    check_bar_side_connections(pos, connections);
+    connections[4] = 0;
+    // Check top
+    s8 adjacentPos[3];
+    u8 adjacentConnections[4];
+
+    for (u32 updown = 0; updown < 2; updown++) { // 0 = Up, 1 = Down
+        vec3_sum(adjacentPos, pos, cullOffsetLUT[updown]);
+        if (coords_in_range(adjacentPos)) {
+            if (get_faceshape(adjacentPos, updown) == CMM_FACESHAPE_FULL) {
+                for (u32 rot = 0; rot < 4; rot++) {
+                    connections[rot] |= (1 << (updown+1)); // Apply top flag to all bars
+                }
+                connections[4] |= (1 << (updown + 1));
+            } else if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+                check_bar_side_connections(adjacentPos, adjacentConnections);
+                for (u32 rot = 0; rot < 4; rot++) {
+                    connections[rot] |= adjacentConnections[rot] << (updown+1); // Apply top flag to all bars
+                }
+                connections[4] |= (1 << (updown + 1));
+            }
+        }
+    }
+}
+
+void render_bars(s8 pos[3]) {
+    u8 connections[5];
+    check_bar_connections(pos, connections);
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        u32 leftRot = (rot + 3) % 4;
+        u32 rightRot = (rot + 1) % 4;
+        if (BAR_CONNECTED_SIDE(connections[rot])) {
+            for (u32 j = 0; j < 4; j++) {
+                if (j == 2 && BAR_CONNECTED_TOP(connections[rot])) continue;
+                if (j == 3 && BAR_CONNECTED_BOTTOM(connections[rot])) continue;
+                struct cmm_terrain_quad *quad = &cmm_terrain_bars_connected_quads[j];
+                process_quad(pos, quad, rot);
+            }
+        }
+        if (!BAR_CONNECTED_SIDE(connections[rot]) ||
+            (BAR_CONNECTED_SIDE(connections[leftRot]) && BAR_CONNECTED_SIDE(connections[rightRot]))) {
+            process_quad(pos, cmm_terrain_bars_unconnected_quad, rot);
+        }
+    }
+    if (!BAR_CONNECTED_TOP(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[0], 0);
+    if (!BAR_CONNECTED_BOTTOM(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[1], 0);
+}
+
 // Find if specific tile of water is fullblock or shallow
 u32 is_water_fullblock(s8 pos[3]) {
     s8 abovePos[3];
@@ -942,60 +1044,67 @@ void render_water(s8 pos[3]) {
         u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].faceDir, isFullblock);
         if (sideRender != 0) {
             struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[sideRender - 1][j];
-            if (cmm_building_collision) {
-                if (quad->faceDir == CMM_DIRECTION_UP) {
-                    cmm_curr_coltype = SURFACE_NEW_WATER;
-                } else if (quad->faceDir == CMM_DIRECTION_DOWN) {
-                    cmm_curr_coltype = SURFACE_NEW_WATER_BOTTOM;
-                } else {
-                    continue;
-                }
-            }
             process_quad(pos, quad, 0);
         }
     }
 }
 
-void render_floor(void) {
+void render_floor(s16 y) {
     s16 vertex = 128 * cmm_grid_size;
     s16 uv = 256 * cmm_grid_size;
-    make_vertex(cmm_curr_vtx, 0, vertex, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, vertex, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2,      0, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,      0, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, vertex, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,      0, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 4,       0, 0, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 5,       0, 0,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 6, -vertex, 0, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 7, -vertex, 0,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 5,       0, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 8,  vertex, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 9,  vertex, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 10,      0, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 11,      0, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 10,      0, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 12,       0, 0,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 13,       0, 0, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 14, -vertex, 0,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 15, -vertex, 0, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 12,       0, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
     gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
 
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
-    gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    if (cmm_render_flip_normals) {
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 2, 1, 0, 1, 2, 3, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 6, 5, 0, 5, 6, 7, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 10, 9, 0, 9, 10, 11, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 14, 13, 0, 13, 14, 15, 0);
+    } else {
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
+        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    }
     cmm_curr_vtx += 16;
 }
 
-#define FENCE_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME)
-#define WATER_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 1)
-#define CULL_TILETYPE_INDEX (NUM_MATERIALS_PER_THEME + 2)
+enum tiletypeIndices {
+    FENCE_TILETYPE_INDEX = NUM_MATERIALS_PER_THEME,
+    POLE_TILETYPE_INDEX,
+    BARS_TILETYPE_INDEX,
+    CULL_TILETYPE_INDEX,
+    WATER_TILETYPE_INDEX,
+    END_TILE_INDEX
+};
 
 u32 get_tiletype_index(u32 type, u32 mat) {
     switch (type) {
         case TILE_TYPE_FENCE:
             return FENCE_TILETYPE_INDEX;
+        case TILE_TYPE_POLE:
+            return POLE_TILETYPE_INDEX;
+        case TILE_TYPE_BARS:
+            return BARS_TILETYPE_INDEX;
         case TILE_TYPE_WATER:
             return WATER_TILETYPE_INDEX;
         case TILE_TYPE_CULL:
@@ -1005,7 +1114,7 @@ u32 get_tiletype_index(u32 type, u32 mat) {
                 return mat;
             }
     }
-    return NUM_MATERIALS_PER_THEME + 3;
+    return END_TILE_INDEX;
 }
 
 
@@ -1020,8 +1129,10 @@ Gfx *get_sidetex(s32 mat) {
 }
 
 
-#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT)
-#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP)
+#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
+#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1036,7 +1147,8 @@ void process_tiles(void) {
         cmm_growth_render_type = 0;
 
         PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
-        PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); )
+        PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
+                     cutout_turn_culling_off(mat); )
 
         cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
 
@@ -1051,7 +1163,9 @@ void process_tiles(void) {
             process_tile(pos, cmm_tile_terrains[tileType], rot);
         }
 
-        PROC_RENDER( display_cached_tris(); gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE); gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); )
+        PROC_RENDER( display_cached_tris(); \
+                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); \
+                     cutout_turn_culling_on(mat); )
         
         if (cmm_curr_mat_has_topside) {
             Gfx *sidetex = get_sidetex(mat);
@@ -1069,7 +1183,6 @@ void process_tiles(void) {
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             }
 
@@ -1085,7 +1198,7 @@ void process_tiles(void) {
 
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
-            PROC_RENDER( display_cached_tris(); gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);)
+            PROC_RENDER( display_cached_tris(); )
         }
     }
 }
@@ -1121,7 +1234,6 @@ void generate_terrain_gfx(void) {
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
             display_cached_tris();
-            gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         }
     }
@@ -1134,17 +1246,47 @@ void generate_terrain_gfx(void) {
         } else {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
         }
-        render_floor();
+        render_floor(0);
         gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     }
 
+    // Special Tiles
+    cmm_growth_render_type = 0;
+    cmm_use_alt_uvs = TRUE;
+    u32 startIndex;
+    u32 endIndex;
+
+    // Bars
+    cmm_uv_scaling = 2;
+    startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars(pos);
+    }
+    display_cached_tris();
+    cmm_uv_scaling = 1;
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+
+    // Poles
+
+    startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        process_tile(pos, &cmm_terrain_pole, cmm_tile_data[i].rot);
+    }
+    display_cached_tris();
+
     // Fences
 
-    u32 startIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX];
-    u32 endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
+    startIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
-    cmm_use_alt_uvs = TRUE;
-    cmm_growth_render_type = 0;
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -1152,19 +1294,23 @@ void generate_terrain_gfx(void) {
     }
     display_cached_tris();
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     cmm_use_alt_uvs = FALSE;
 
     process_tiles();
 
     retroland_filter_off();
+    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
-    // Render water twice. This is so that all interior faces are rendered before all exterior faces,
-    // to make the layering a little better.
+
+    // Render main water plane, top side
+    if (cmm_lopt_waterlevel != 0) {
+        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+    }
+    // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
@@ -1172,6 +1318,7 @@ void generate_terrain_gfx(void) {
             render_water(pos);
         }
     }
+    // Render water blocks, exteriors
     cmm_render_flip_normals = FALSE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
@@ -1180,6 +1327,12 @@ void generate_terrain_gfx(void) {
         }
     }
     display_cached_tris();
+    cmm_render_flip_normals = TRUE;
+    // Render main water plane, bottom side
+    if (cmm_lopt_waterlevel != 0) {
+        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+    }
+    cmm_render_flip_normals = FALSE;
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
@@ -1234,19 +1387,12 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
             
-            if (cmm_id_selection == TILE_TYPE_FENCE) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
-                cmm_use_alt_uvs = TRUE;
-                process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
-                display_cached_tris();
-                cmm_use_alt_uvs = FALSE;
-            } else if (terrain) {
+            if (terrain) {
                 cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
                     display_cached_tris();
-                    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
                     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
                     geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
 
@@ -1254,9 +1400,10 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     cmm_gfx_index = 0;
                 }
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
+                cutout_turn_culling_off(cmm_mat_selection);
                 process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
                 display_cached_tris();
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+                cutout_turn_culling_on(cmm_mat_selection);
 
                 if (cmm_curr_mat_has_topside) {
                     Gfx *sidetex = get_sidetex(cmm_mat_selection);
@@ -1271,12 +1418,12 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     }
                     cmm_growth_render_type = 1;
 
-                    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
                     display_cached_tris();
                 }
+                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
 
             } else if (cmm_id_selection == TILE_TYPE_CULL) {
                 guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
@@ -1288,9 +1435,25 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &cull_cull_mesh);
                 gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
                 preview_mtx_index++;
+            } else {
+                cmm_use_alt_uvs = TRUE;
+                if (cmm_id_selection == TILE_TYPE_FENCE) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
+                    process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
+                } else if (cmm_id_selection == TILE_TYPE_POLE) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+                    process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
+                } else if (cmm_id_selection == TILE_TYPE_BARS) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
+                    cmm_uv_scaling = 2;
+                    render_bars(cmm_cursor_pos);
+                    cmm_uv_scaling = 1;
+                }
+                display_cached_tris();
+                cmm_use_alt_uvs = FALSE;
+                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             }
 
-            gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
@@ -1301,6 +1464,58 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
     return NULL;
 }
 
+
+void generate_poles(void) {
+    gPoleArray = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+    gNumPoles = 0;
+
+    // Iterate over all poles
+    u32 startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+    u32 endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        
+        // If there is a pole below, skip
+        pos[1] -= 1;
+        if (pos[1] >= 0 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            continue;
+        }
+
+        s32 poleLength = 1;
+        // Scan upwards until no more poles or top of grid reached
+        pos[1] += 2;
+        while (pos[1] < 32 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+            poleLength++;
+            pos[1]++;
+        }
+
+        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_tile_data[i].x);
+        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_tile_data[i].z);
+        gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
+        gPoleArray[gNumPoles].poleType = 0;
+        gNumPoles++;
+    }
+
+    // Trees
+    for (u32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_data[i].type != OBJECT_TYPE_TREE) {
+            continue;
+        }
+        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
+        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
+        gPoleArray[gNumPoles].height = 500;
+        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param == 2 ? 2 : 1);
+        gNumPoles++;
+    }
+
+    main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
+}
+
+
 TerrainData floorVtxs[4][3] = {
     {-1, 0, 1},
     {1, 0, 1},
@@ -1309,7 +1524,6 @@ TerrainData floorVtxs[4][3] = {
 };
 
 void generate_terrain_collision(void) {
-    s16 i;
     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
@@ -1343,18 +1557,16 @@ void generate_terrain_collision(void) {
     process_tiles();
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
-    for (i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
+    for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
         process_tile(pos, &cmm_terrain_fence_col, cmm_tile_data[i].rot);
     }
-
-    for (i = 0; i < cmm_tile_count; i++) {
-        if (cmm_tile_data[i].waterlogged) {
-            s8 pos[3];
-            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-            render_water(pos);
-        }
+    cmm_curr_coltype = SURFACE_VANISH_CAP_WALLS;
+    for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars(pos);
     }
 
     cmm_building_collision = FALSE;
@@ -1364,9 +1576,48 @@ void generate_terrain_collision(void) {
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
+
+    generate_poles();
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, BehaviorScript script) {
+
+s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - 32);
+    if (y < waterPlaneHeight) {
+        return waterPlaneHeight;
+    }
+    // Convert world coordinates into grid coordinates
+    s8 pos[3];
+    vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
+
+    // If block contains water, scan upwards, otherwise scan downwards
+    if (get_grid_tile(pos)->waterlogged) {
+        // Find grid Y coordinate of highest water block.
+        // Stop scanning once we hit a non-water block or the top is reached
+        pos[1]++;
+        while (pos[1] < 32 && get_grid_tile(pos)->waterlogged) {
+            pos[1]++;
+        }
+        pos[1]--;
+    } else {
+        // Find grid Y coordinate of lowest non-water block.
+        // Stop scanning once we hit a water block or the bottom is reached
+        pos[1]--;
+        while (pos[1] > -1 && !get_grid_tile(pos)->waterlogged) {
+            pos[1]--;
+        }
+        if (pos[1] == -1) {
+            return waterPlaneHeight;
+        }
+    }
+
+    if (is_water_fullblock(pos)) {
+        return (pos[1] + 1) * TILE_SIZE;
+    }
+    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
+}
+
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
@@ -1387,6 +1638,8 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
 }
 
 void generate_object_preview(void) {
+    s32 totalCoins = 0;
+    s32 doubleCoins = FALSE;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
         unload_object(preview_object);
@@ -1405,6 +1658,19 @@ void generate_object_preview(void) {
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
+        totalCoins += info->numCoins;
+
+        if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
+            doubleCoins = TRUE;
+        }
+    }
+    if (doubleCoins) totalCoins *= 2;
+
+    u32 length = MIN(totalCoins / 20, 50);
+    cmm_settings_general_buttons[4].size = length + 1;
+
+    if (cmm_lopt_coinstar > length) {
+        cmm_lopt_coinstar = length;
     }
 }
 
@@ -1426,12 +1692,13 @@ void generate_objects_to_level(void) {
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
-            if (cmm_play_stars_max < 64) {
+            if (cmm_play_stars_max < 63) {
                 obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 cmm_play_stars_max++;
             }
         }
     }
+    if (cmm_lopt_coinstar > 0) cmm_play_stars_max++; // 100 coin star
 }
 
 // shift all indices past the given one by 1
@@ -1463,6 +1730,7 @@ u32 is_cull_marker_useless(s8 pos[3]) {
 
     return TRUE;
 }
+
 
 void place_tile(s8 pos[3]) {
     u8 waterlogged = FALSE;
@@ -1514,6 +1782,9 @@ void place_tile(s8 pos[3]) {
                     play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_SPOOKY << 16));
                 }
                 break;
+            case TILE_TYPE_POLE:
+                play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
+                break;
         }
     }
 
@@ -1531,6 +1802,7 @@ void place_tile(s8 pos[3]) {
     cmm_tile_data[newtileIndex].waterlogged = waterlogged;
     cmm_tile_count++;
 }
+
 
 void place_water(s8 pos[3]) {
     struct cmm_grid_obj *tile = get_grid_tile(pos);
@@ -1569,6 +1841,43 @@ void place_water(s8 pos[3]) {
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
     }
 }
+
+
+void remove_trajectory(u32 index) {
+    // Scan all objects
+    // If their trajectory index is past the one being deleted, lower it by 1
+    for (u32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
+            if (cmm_object_data[i].param > index) {
+                cmm_object_data[i].param--;
+            }
+        }
+    }
+    // Move trajectories back by one
+    for (s32 i = index; i < cmm_trajectories_used - 1; i++) {
+        bcopy(cmm_trajectory_list[i + 1], cmm_trajectory_list[i], sizeof(cmm_trajectory_list[0]));
+    }
+    // Zero out the last one
+    bzero(cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[0]));
+    cmm_trajectories_used--;
+}
+
+
+void delete_object(s8 pos[3], s32 index) {
+    remove_occupy_data(pos);
+
+    if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
+        remove_trajectory(cmm_object_data[index].param);
+        generate_trajectory_gfx();
+    }
+
+    cmm_object_count--;
+    for (u32 i = index; i < cmm_object_count; i++) {
+        cmm_object_data[i] = cmm_object_data[i+1];
+    }
+    generate_object_preview();
+}
+
 
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
@@ -1668,24 +1977,32 @@ void place_thing_action(void) {
     }
 }
 
-void remove_trajectory(u32 index) {
-    // Scan all objects
-    // If their trajectory index is past the one being deleted, lower it by 1
-    for (u32 i = 0; i < cmm_object_count; i++) {
-        if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
-            if (cmm_object_data[i].param > index) {
-                cmm_object_data[i].param--;
-            }
+
+void delete_useless_cull_markers() {
+    for (u32 i = cmm_tile_data_indices[CULL_TILETYPE_INDEX]; i < cmm_tile_data_indices[CULL_TILETYPE_INDEX + 1]; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+        if (!is_cull_marker_useless(pos)) {
+            continue;
         }
+
+        // Useless, delete
+        remove_occupy_data(pos);
+        remove_terrain_data(pos);
+        cmm_tile_count--;
+
+        for (u32 j = CULL_TILETYPE_INDEX + 1; j < ARRAY_COUNT(cmm_tile_data_indices); j++) {
+            cmm_tile_data_indices[j]--;
+        }
+        for (u32 j = i; j < cmm_tile_count; j++) {
+            cmm_tile_data[j] = cmm_tile_data[j+1];
+        }
+
+        i--;
     }
-    // Move trajectories back by one
-    for (u32 i = index; i < cmm_trajectories_used - 1; i++) {
-        bcopy(cmm_trajectory_list[i + 1], cmm_trajectory_list[i], sizeof(cmm_trajectory_list[0]));
-    }
-    // Zero out the last one
-    bzero(cmm_trajectory_list[cmm_trajectories_used - 1], sizeof(cmm_trajectory_list[0]));
-    cmm_trajectories_used--;
 }
+
 
 //function name is delete tile, it deletes objects too
 void delete_tile_action(s8 pos[3]) {
@@ -1728,45 +2045,6 @@ void delete_tile_action(s8 pos[3]) {
     }
 }
 
-void delete_object(s8 pos[3], s32 index) {
-    remove_occupy_data(pos);
-
-    if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
-        remove_trajectory(cmm_object_data[index].param);
-        generate_trajectory_gfx();
-    }
-
-    cmm_object_count--;
-    for (u32 i = index; i < cmm_object_count; i++) {
-        cmm_object_data[i] = cmm_object_data[i+1];
-    }
-    generate_object_preview();
-}
-
-void delete_useless_cull_markers() {
-    for (u32 i = cmm_tile_data_indices[CULL_TILETYPE_INDEX]; i < cmm_tile_data_indices[CULL_TILETYPE_INDEX + 1]; i++) {
-        s8 pos[3];
-        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-
-        if (!is_cull_marker_useless(pos)) {
-            continue;
-        }
-
-        // Useless, delete
-        remove_occupy_data(pos);
-        remove_terrain_data(pos);
-        cmm_tile_count--;
-
-        for (u32 j = CULL_TILETYPE_INDEX + 1; j < ARRAY_COUNT(cmm_tile_data_indices); j++) {
-            cmm_tile_data_indices[j]--;
-        }
-        for (u32 j = i; j < cmm_tile_count; j++) {
-            cmm_tile_data[j] = cmm_tile_data[j+1];
-        }
-
-        i--;
-    }
-}
 
 void update_painting() {
     s16 x;
@@ -1785,7 +2063,7 @@ TCHAR cmm_file_name[30];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
-void save_level(u8 index) {
+void save_level(void) {
     s16 i;
     s16 j;
 
@@ -1801,7 +2079,9 @@ void save_level(u8 index) {
     cmm_save.option[3] = cmm_lopt_theme;
     cmm_save.option[4] = cmm_lopt_bg;
     cmm_save.option[5] = cmm_lopt_plane;
+    cmm_save.option[6] = cmm_lopt_coinstar;
     cmm_save.option[7] = cmm_lopt_size;
+    cmm_save.option[8] = cmm_lopt_waterlevel;
     cmm_save.option[19] = cmm_lopt_game;
 
     //SAVE
@@ -1841,7 +2121,7 @@ void save_level(u8 index) {
     f_close(&cmm_file);
 }
 
-void load_level(u8 index) {
+void load_level(void) {
     s16 i;
     s16 j;
     u8 fresh = FALSE;
@@ -1910,9 +2190,11 @@ void load_level(u8 index) {
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
 
-    cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
+    cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
+    cmm_lopt_waterlevel = cmm_save.option[8];
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
@@ -1995,14 +2277,14 @@ void load_level(u8 index) {
 }
 
 void cmm_init() {
-    load_level(0);
+    load_level();
 }
 
 void sb_init(void) {
     struct Object *spawn_obj;
 
     vec3_set(cmm_cursor_pos, 32, 0, 32);
-    cmm_ui_index = 0;
+    cmm_toolbar_index = 0;
     vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
@@ -2032,7 +2314,7 @@ void sb_init(void) {
                 vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
-                struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvInstantActiveWarp);
+                struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
                 if (warpobj) {
                     vec3_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
                     warpobj->oPosY -= TILE_SIZE/2;
@@ -2129,16 +2411,31 @@ void delete_preview_object(void) {
     if (previewObj) unload_object(previewObj);
 }
 
+void (*cmm_generate_gfx)(void) = NULL;
+
+void reload_theme(void) {
+    generate_terrain_gfx();
+    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    if (cmm_lopt_plane > cmm_settings_terrain_buttons[2].size - 1) {
+        cmm_lopt_plane = cmm_settings_terrain_buttons[2].size - 1;
+    }
+}
+
+void reload_bg(void) {
+    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+}
+
 u8 cmm_upsidedown_tile = FALSE;
+u8 cmm_joystick;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
-    u8 joystick = joystick_direction();
+    cmm_joystick = joystick_direction();
     u8 cursorMoved = FALSE;
 
     if (cmm_do_save) {
         cmm_do_save = FALSE;
-        save_level(0);
+        save_level();
     }
     //print_text_fmt_int(180, 200, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
 
@@ -2149,27 +2446,32 @@ void sb_loop(void) {
     cmm_current_camera_zoom[0] = lerp(cmm_current_camera_zoom[0], cmm_camera_zoom_table[cmm_camera_zoom_index][0],0.2f);
     cmm_current_camera_zoom[1] = lerp(cmm_current_camera_zoom[1], cmm_camera_zoom_table[cmm_camera_zoom_index][1],0.2f);
 
+    if (cmm_generate_gfx) {
+        cmm_generate_gfx();
+        cmm_generate_gfx = NULL;
+    }
+
     switch(o->oAction) {
         case 0: //init
 
         break;
         case 1: //MAKE MODE MAIN
-            cursorMoved = main_cursor_logic(joystick);
+            cursorMoved = main_cursor_logic(cmm_joystick);
             s32 updatePreviewObj = cursorMoved;
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                cmm_ui_index--;
+                cmm_toolbar_index--;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_ui_index++;
+                cmm_toolbar_index++;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
             }
-            cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
-            cmm_ui_index = (cmm_ui_index+9)%9;
+            cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
+            cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
+            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
 
             if (cmm_upsidedown_tile) {
                 switch (cmm_id_selection) {
@@ -2208,7 +2510,7 @@ void sb_loop(void) {
 
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                switch(cmm_ui_index) {
+                switch(cmm_toolbar_index) {
                     case 8://save data
                         if (mount_success == FR_OK) {
                             cmm_do_save = TRUE;
@@ -2233,7 +2535,7 @@ void sb_loop(void) {
                     break; 
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_ui_index < 6) {
+                if (cmm_toolbar_index < 6) {
                     place_thing_action();
                 }
             }
@@ -2249,8 +2551,8 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 o->oAction = 3;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
-                if (cmm_ui_index > 5) {
-                    cmm_ui_index = 5;
+                if (cmm_toolbar_index > 5) {
+                    cmm_toolbar_index = 5;
                 }
             }
 
@@ -2260,6 +2562,7 @@ void sb_loop(void) {
                 } else {
                     cmm_rot_selection++;
                     cmm_rot_selection%=4;
+                    updatePreviewObj = TRUE;
                 }
             }
 
@@ -2300,8 +2603,8 @@ void sb_loop(void) {
         case 3: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
             delete_preview_object();
-            if (joystick != 0) {
-                switch((joystick-1)%4) {
+            if (cmm_joystick != 0) {
+                switch((cmm_joystick-1)%4) {
                     case 0:
                         cmm_toolbox_index--;
                     break;
@@ -2320,21 +2623,21 @@ void sb_loop(void) {
 
             //TOOLBAR CONTROLS
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                cmm_ui_index--;
+                cmm_toolbar_index--;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_ui_index++;
+                cmm_toolbar_index++;
             }
-            cmm_id_selection = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].id;
-            cmm_place_mode = cmm_ui_buttons[cmm_ui_bar[cmm_ui_index]].placeMode;
-            cmm_ui_index = (cmm_ui_index+6)%6;
+            cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
+            cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
+            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
 
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 //You can not put a blank button into the toolbox
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                     cmm_param_selection = 0;
-                    cmm_ui_bar[cmm_ui_index] = cmm_toolbox[cmm_toolbox_index];
+                    cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
                 } else {
                     //error sound
                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
@@ -2347,48 +2650,6 @@ void sb_loop(void) {
             }
         break;
         case 4: //settings
-            if (joystick != 0) {
-                switch((joystick-1)%4) {
-                    case 0:
-                        (*cmm_settings_buttons[cmm_settings_index].value) += cmm_settings_buttons[cmm_settings_index].size-1;
-                        (*cmm_settings_buttons[cmm_settings_index].value) %= cmm_settings_buttons[cmm_settings_index].size;
-                        cmm_settings_index_changed = TRUE;
-                    break;
-                    case 1:
-                        cmm_settings_index++;
-                    break;
-                    case 2:
-                        (*cmm_settings_buttons[cmm_settings_index].value) ++;
-                        (*cmm_settings_buttons[cmm_settings_index].value) %= cmm_settings_buttons[cmm_settings_index].size;
-                        cmm_settings_index_changed = TRUE;
-                    break;
-                    case 3:
-                        cmm_settings_index+=SETTINGS_SIZE-1;
-                    break;
-                }
-            }
-            cmm_settings_index %= SETTINGS_SIZE;
-
-            //hardcoded settings application
-            if (cmm_settings_index_changed) {
-                cmm_settings_index_changed = FALSE;
-                switch(cmm_settings_index) {
-                    case 4: //theme
-                        generate_terrain_gfx();
-                        cmm_settings_buttons[5].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
-                        if (cmm_lopt_plane > cmm_settings_buttons[5].size - 1) {
-                            cmm_lopt_plane = cmm_settings_buttons[5].size - 1;
-                        }
-                    break;
-                    case 3: //sky box
-                        load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
-                    break;
-                    case 5://bottom floor
-                        generate_terrain_gfx();
-                    break;
-                }
-            }
-
             if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
@@ -2396,7 +2657,7 @@ void sb_loop(void) {
         break;
         case 5: //trajectory maker
             delete_preview_object();
-            cursorMoved = main_cursor_logic(joystick);
+            cursorMoved = main_cursor_logic(cmm_joystick);
 
             if (cursorMoved) {
                 generate_trajectory_gfx();

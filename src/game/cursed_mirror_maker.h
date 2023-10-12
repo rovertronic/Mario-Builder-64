@@ -78,6 +78,7 @@ enum cmm_culling_shapes {
 
     CMM_FACESHAPE_BOTTOMSLAB,
     CMM_FACESHAPE_TOPSLAB,
+    CMM_FACESHAPE_POLETOP,
 
     CMM_FACESHAPE_EMPTY,
 };
@@ -135,6 +136,8 @@ enum {
     TILE_TYPE_CULL,
     TILE_TYPE_TROLL,
     TILE_TYPE_FENCE,
+    TILE_TYPE_POLE,
+    TILE_TYPE_BARS,
 
     TILE_TYPE_WATER, // only blocks that are empty otherwise
 };
@@ -159,6 +162,7 @@ struct cmm_object_info {
     f32 y_offset;
     u16 model_id;
     u8 billboarded:1;
+    u8 numCoins:4;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;
@@ -199,7 +203,8 @@ enum {
     OBJECT_TYPE_BBALL,
     OBJECT_TYPE_KTQ,
     OBJECT_TYPE_PRPLSWT,
-    OBJECT_TYPE_CORK,     
+    OBJECT_TYPE_CORK,
+    OBJECT_TYPE_HEART,     
 };
 
 struct cmm_ui_button_type {
@@ -215,6 +220,8 @@ struct cmm_settings_button {
     u8 *value;
     char **nametable;
     u8 size;
+    char *(*nameFunc)(s32);
+    void (*changedFunc)(void);
 };
 
 enum {
@@ -242,7 +249,7 @@ enum cmm_mat_types {
 // Represents a material texture and collision
 struct cmm_material {
     Gfx *gfx;
-    u8 type:2;
+    u8 type;
     TerrainData col;
 };
 
@@ -263,6 +270,8 @@ struct cmm_theme {
     u8 numFloors;
     s8 *floors;
     u8 fence;
+    u8 pole;
+    u8 bars;
     u8 water;
 };
 
@@ -277,7 +286,7 @@ struct cmm_comptraj {
 IMPORTANT!
 
 u8 version;
-u16 piktcher[28][28];
+u16 piktcher[64][64];
 
 Should always be the first 2 members of the cmm_level_save struct
 no matter what version.

@@ -28,6 +28,7 @@
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
 #include "cursed_mirror_maker.h"
+#include "mario_actions_automatic.h"
 
 u8  sDelayInvincTimer;
 s16 sInvulnerable;
@@ -55,7 +56,6 @@ u32 interact_spiny_walking (struct MarioState *m, u32 interactType, struct Objec
 u32 interact_damage        (struct MarioState *m, u32 interactType, struct Object *obj);
 u32 interact_breakable     (struct MarioState *m, u32 interactType, struct Object *obj);
 u32 interact_koopa_shell   (struct MarioState *m, u32 interactType, struct Object *obj);
-u32 interact_pole          (struct MarioState *m, u32 interactType, struct Object *obj);
 u32 interact_hoot          (struct MarioState *m, u32 interactType, struct Object *obj);
 u32 interact_cap           (struct MarioState *m, u32 interactType, struct Object *obj);
 u32 interact_grabbable     (struct MarioState *m, u32 interactType, struct Object *obj);
@@ -89,7 +89,6 @@ static struct InteractionHandler sInteractionHandlers[] = {
     { INTERACT_HIT_FROM_BELOW, interact_hit_from_below },
     { INTERACT_BOUNCE_TOP,     interact_bounce_top },
     { INTERACT_DAMAGE,         interact_damage },
-    { INTERACT_POLE,           interact_pole },
     { INTERACT_HOOT,           interact_hoot },
     { INTERACT_BREAKABLE,      interact_breakable },
     { INTERACT_KOOPA,          interact_bounce_top },
@@ -734,6 +733,7 @@ void reset_mario_pitch(struct MarioState *m) {
 }
 
 u8 coinloop = 0;
+extern u8 cmm_lopt_coinstar;
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
 
     if (cmm_lopt_game == CMM_GAME_BTCM) {
@@ -765,13 +765,13 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     obj->oInteractStatus = INT_STATUS_INTERACTED;
 
-    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && m->numCoins - obj->oDamageOrCoinValue < 100 && m->numCoins >= 100 && (!gMarioState->hundredSpawned)) {
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) &&
+            cmm_lopt_coinstar != 0 &&
+            m->numCoins - obj->oDamageOrCoinValue < (cmm_lopt_coinstar*20) &&
+            m->numCoins >= (cmm_lopt_coinstar*20) &&
+            (!gMarioState->hundredSpawned)) {
         gMarioState->hundredSpawned = TRUE;
-        bhv_spawn_star_no_level_exit(STAR_BP_ACT_6);
-    }
-
-    if (m->numCoins > 255) {
-        m->numCoins = 255;
+        bhv_spawn_star_no_level_exit(0x3F);
     }
 
     return FALSE;
@@ -1539,49 +1539,44 @@ u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struc
     return FALSE;
 }
 
-u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
+u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, s16 poleNum) {
     s32 actionId = m->action & ACT_ID_MASK;
     if (actionId >= ACT_GROUP_AIRBORNE && actionId < (ACT_HOLD_JUMP & ACT_ID_MASK)) {
-        if (!(m->prevAction & ACT_FLAG_ON_POLE) || m->usedObj != obj) {
-#if defined(VERSION_SH) || defined(SHINDOU_POLES)
-            f32 velConv = m->forwardVel; // conserve the velocity.
-            struct Object *marioObj = m->marioObj;
-            u32 lowSpeed;
-#else
+        if (!(m->prevAction & ACT_FLAG_ON_POLE) || gMarioCurrentPole != poleNum) {
             u32 lowSpeed = (m->forwardVel <= 10.0f);
             struct Object *marioObj = m->marioObj;
-#endif
+            gMarioCurrentPole = poleNum;
 
             mario_stop_riding_and_holding(m);
 
-#if defined(VERSION_SH) || defined(SHINDOU_POLES)
-            lowSpeed = (velConv <= 10.0f);
-#endif
-
-            m->interactObj = obj;
-            m->usedObj = obj;
             m->vel[1] = 0.0f;
             m->forwardVel = 0.0f;
 
             // Pole fix
             // If mario is beneath the pole, clamp mario's position to the down-offset of the pole (bottom)
-            marioObj->oMarioPolePos = ((m->pos[1] - obj->oPosY) < 0) ? -obj->hitboxDownOffset : (m->pos[1] - obj->oPosY);
+            marioObj->oMarioPolePos = ((m->pos[1] - curPole.pos[1]) < 0) ? 0 : (m->pos[1] - curPole.pos[1]);
 
             if (lowSpeed) {
                 return set_mario_action(m, ACT_GRAB_POLE_SLOW, 0);
             }
 
-#if defined(VERSION_SH) || defined(SHINDOU_POLES)
-            m->angleVel[1] = (s32)(velConv * 0x100 + 0x1000);
-#else
             m->angleVel[1] = 0x1000;
-#endif
             reset_mario_pitch(m);
-#if ENABLE_RUMBLE
-            queue_rumble_data(5, 80);
-#endif
+
             return set_mario_action(m, ACT_GRAB_POLE_FAST, 0);
         }
+    }
+
+    f32 marioRelX = m->pos[0] - gPoleArray[poleNum].pos[0];
+    f32 marioRelZ = m->pos[2] - gPoleArray[poleNum].pos[2];
+    f32 marioDist = sqr(marioRelX) + sqr(marioRelZ);
+
+    if (marioDist < sqr(70)) {
+        marioDist = (70 - sqrtf(marioDist)) / 70;
+        //! If this function pushes Mario out of bounds, it will trigger Mario's
+        //  oob failsafe
+        m->pos[0] += marioDist * marioRelX;
+        m->pos[2] += marioDist * marioRelZ;
     }
 
     return FALSE;
@@ -1885,6 +1880,19 @@ void mario_process_interactions(struct MarioState *m) {
             }
         }
     }
+
+    // Iterate over poles
+    for (u32 i = 0; i < gNumPoles; i++) {
+        struct Pole *pole = &gPoleArray[i];
+        f32 horizDist = sqrtf(sqr(m->pos[0] - pole->pos[0]) + sqr(m->pos[2] - pole->pos[2]));
+        if (horizDist < (80 + 38)) {
+            if ((m->pos[1] < pole->pos[1] + pole->height) && m->pos[1] + 160.f > pole->pos[1]) {
+                interact_pole(m, 0, i);
+                break;
+            }
+        }
+    }
+    
 
     if (m->invincTimer > 0 && !sDelayInvincTimer) {
         m->invincTimer--;

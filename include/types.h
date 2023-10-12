@@ -530,6 +530,9 @@ struct MarioState {
             u8 EA_ACTIVE;
             u8 EA_WAVES;
 
+            u16 hiddenBoxTimer;
+            u16 blueCoinSwitchTimer; // im so evil
+
     /*0xAC*/ s8 numKeys; // Unused key mechanic
     /*0xAD*/ s8 numLives;
              s16 gGlobalCoinGain;

@@ -2,7 +2,7 @@
 const GeoLayout breakable_box_geo[] = {
    GEO_CULLING_RADIUS(500),
    GEO_OPEN_NODE(),
-      GEO_SHADOW(SHADOW_SQUARE_PERMANENT, 0xA0, 240),
+      GEO_SHADOW(SHADOW_SQUARE_PERMANENT, 0xA0, 308),
       GEO_OPEN_NODE(),
          GEO_SWITCH_CASE(2, geo_switch_anim_state),
          GEO_OPEN_NODE(),

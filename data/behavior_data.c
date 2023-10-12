@@ -474,10 +474,7 @@ const BehaviorScript bhvPurpleParticle[] = {
 const BehaviorScript bhvGiantPole[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 2100),
     SET_HOME(),
-    SET_INT(oIntangibleTimer, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_giant_pole_loop),
     END_LOOP(),
@@ -486,10 +483,7 @@ const BehaviorScript bhvGiantPole[] = {
 const BehaviorScript bhvPoleGrabbing[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 1500),
     CALL_NATIVE(bhv_pole_init),
-    SET_INT(oIntangibleTimer, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_pole_base_loop),
     END_LOOP(),
@@ -1674,9 +1668,6 @@ const BehaviorScript bhvBitfsSinkingCagePlatform[] = {
 const BehaviorScript bhvDddMovingPole[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 710),
-    SET_INT(oIntangibleTimer, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_ddd_moving_pole_loop),
         CALL_NATIVE(bhv_pole_base_loop),
@@ -2016,6 +2007,7 @@ const BehaviorScript bhvFloorSwitchHardcodedModel[] = {
 
 const BehaviorScript bhvFloorSwitchHiddenObjects[] = {
     BEGIN(OBJ_LIST_SURFACE),
+    SET_INT(oBehParams2ndByte, PURPLE_SWITCH_BP_REVEAL_HIDDEN),
     GOTO(bhvFloorSwitchHardcodedModel + 1),
 };
 
@@ -3701,9 +3693,6 @@ const BehaviorScript bhvTree[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     BILLBOARD(),
     OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_OPACITY_FROM_CAMERA_DIST)),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 500),
-    SET_INT(oIntangibleTimer, 0),
     CALL_NATIVE(bhv_tree_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_pole_base_loop),
@@ -3714,9 +3703,6 @@ const BehaviorScript bhvMoveTree[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     //BILLBOARD(),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 600),
-    SET_INT(oIntangibleTimer, 0),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_pole_base_loop),
@@ -5515,7 +5501,6 @@ const BehaviorScript bhv_FadeStar[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO),
     CALL_NATIVE(bhv_collect_star_init),
-    SET_FLOAT(oDrawingDistance, 1100),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_collect_star_loop),
     END_LOOP(),
@@ -5565,6 +5550,7 @@ const BehaviorScript bhvRedCoin[] = {
 const BehaviorScript bhvBowserCourseRedCoinStar[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, (OBJ_FLAG_PERSISTENT_RESPAWN | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    CALL_NATIVE(bhv_bowser_course_red_coin_star_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_bowser_course_red_coin_star_loop),
     END_LOOP(),
@@ -5873,7 +5859,6 @@ const BehaviorScript bhvOrangeNumber[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     BILLBOARD(),
-    SET_HOME(),
     CALL_NATIVE(bhv_orange_number_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_orange_number_loop),
@@ -6049,9 +6034,6 @@ const BehaviorScript bhvKoopaRaceEndpoint[] = {
 
 const BehaviorScript bhvKoopaFlag[] = {
     BEGIN(OBJ_LIST_POLELIKE),
-    SET_INTERACT_TYPE(INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 700),
-    SET_INT(oIntangibleTimer, 0),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, koopa_flag_seg6_anims_06001028),
@@ -7366,9 +7348,6 @@ const BehaviorScript bhv_flimboard[] = {
 
 const BehaviorScript bhvDDDPole[] = {
     BEGIN(OBJ_LIST_POLELIKE),
-    SET_INTERACT_TYPE(INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 800),
-    SET_INT(oIntangibleTimer, 0),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     SET_HOME(),
     CALL_NATIVE(bhv_ddd_pole_init),
@@ -7725,10 +7704,7 @@ const BehaviorScript bhvBanner[] = {
     LOAD_ANIMATIONS(oAnimations, bannera_anims),
     ANIMATE(0),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 550),
     SET_HOME(),
-    SET_INT(oIntangibleTimer, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_giant_pole_loop),
     END_LOOP(),
@@ -8467,9 +8443,6 @@ const BehaviorScript bhvMic[] = {
 const BehaviorScript bhvAlienTree[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    SET_INT(oInteractType, INTERACT_POLE),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 420),
-    SET_INT(oIntangibleTimer, 0),
     LOAD_ANIMATIONS(oAnimations, alientree_anims),
     ANIMATE(0),
     BEGIN_LOOP(),

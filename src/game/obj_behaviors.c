@@ -410,7 +410,7 @@ s16 object_step(void) {
     o->oFloorHeight = floorY;
 
     if (turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1) {
-        waterY = find_water_level(objX + objVelX, objZ + objVelZ);
+        waterY = cmm_get_water_level(objX + objVelX, objY + o->oVelY, objZ + objVelZ);
         if (waterY > objY) {
             calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, objVelX, objVelZ, waterY);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;
@@ -703,6 +703,9 @@ void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ) {
 
     struct Object *orangeNumber = spawn_object_relative(behParam, relX, relY, relZ, o, MODEL_NUMBER, bhvOrangeNumber);
     orangeNumber->oPosY += 25.0f;
+    orangeNumber->oOrangeNumberOffset = relX;
+    orangeNumber->oHomeX = o->oPosX;
+    orangeNumber->oHomeZ = o->oPosZ;
 }
 
 /**
