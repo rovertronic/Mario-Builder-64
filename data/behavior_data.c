@@ -2007,6 +2007,7 @@ const BehaviorScript bhvFloorSwitchHardcodedModel[] = {
 
 const BehaviorScript bhvFloorSwitchHiddenObjects[] = {
     BEGIN(OBJ_LIST_SURFACE),
+    SET_INT(oBehParams2ndByte, PURPLE_SWITCH_BP_REVEAL_HIDDEN),
     GOTO(bhvFloorSwitchHardcodedModel + 1),
 };
 
@@ -5500,7 +5501,6 @@ const BehaviorScript bhv_FadeStar[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO),
     CALL_NATIVE(bhv_collect_star_init),
-    SET_FLOAT(oDrawingDistance, 1100),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_collect_star_loop),
     END_LOOP(),

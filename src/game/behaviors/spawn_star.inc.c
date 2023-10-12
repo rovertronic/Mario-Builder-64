@@ -21,6 +21,7 @@ void bhv_collect_star_init(void) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];
     }
 
+    o->oDrawingDistance = 5000.f;
     obj_set_hitbox(o, &sCollectStarHitbox);
 }
 

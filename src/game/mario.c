@@ -1948,6 +1948,23 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         }
     }
 
+    if (gMarioState->hiddenBoxTimer > 0) {
+        gMarioState->hiddenBoxTimer --;
+        if (gMarioState->hiddenBoxTimer < 40) {
+            play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
+        } else {
+            play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gGlobalSoundSource);
+        }
+    }
+    if (gMarioState->blueCoinSwitchTimer > 0) {
+        gMarioState->blueCoinSwitchTimer --;
+        if (gMarioState->blueCoinSwitchTimer < 40) {
+            play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
+        } else {
+            play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gGlobalSoundSource);
+        }
+    }
+
     //if (mount_success != FR_OK) {
        //print_text_fmt_int(10, 56, "%d", global_code); 
     //}

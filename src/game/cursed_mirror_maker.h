@@ -203,7 +203,8 @@ enum {
     OBJECT_TYPE_BBALL,
     OBJECT_TYPE_KTQ,
     OBJECT_TYPE_PRPLSWT,
-    OBJECT_TYPE_CORK,     
+    OBJECT_TYPE_CORK,
+    OBJECT_TYPE_HEART,     
 };
 
 struct cmm_ui_button_type {
@@ -270,6 +271,7 @@ struct cmm_theme {
     s8 *floors;
     u8 fence;
     u8 pole;
+    u8 bars;
     u8 water;
 };
 

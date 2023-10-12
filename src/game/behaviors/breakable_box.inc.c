@@ -34,11 +34,8 @@ void hidden_breakable_box_actions(void) {
             if (o->oTimer == 0) {
                 breakable_box_init();
             }
-            if (o->oHiddenObjectSwitchObj == NULL) {
-                o->oHiddenObjectSwitchObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchHiddenObjects);
-            }
-            switchObj = o->oHiddenObjectSwitchObj;
-            if ((switchObj != NULL) && (switchObj->oAction == PURPLE_SWITCH_ACT_TICKING)) {
+
+            if (gMarioState->hiddenBoxTimer > 0) {
                 o->oAction = BREAKABLE_BOX_ACT_ACTIVE;
                 cur_obj_enable_rendering();
                 cur_obj_unhide();
@@ -46,7 +43,15 @@ void hidden_breakable_box_actions(void) {
             break;
         case BREAKABLE_BOX_ACT_ACTIVE:
             cur_obj_become_tangible();
-            if (cur_obj_wait_then_blink(360, 20)) o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
+
+            if (gMarioState->hiddenBoxTimer == 0) o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
+            else if (gMarioState->hiddenBoxTimer < 40) {
+                if (gMarioState->hiddenBoxTimer & 1) {
+                    cur_obj_hide();
+                } else {
+                    cur_obj_unhide();
+                }
+            }
             if (cur_obj_was_attacked_or_ground_pounded()) {
                 spawn_mist_particles();
                 spawn_triangle_break_particles(30, MODEL_DIRT_ANIMATION, 3.0f, TINY_DIRT_PARTICLE_ANIM_STATE_YELLOW);
