@@ -242,13 +242,22 @@ void draw_cmm_settings_music(void) {
     }
 }
 
+void draw_cmm_settings_backtomainmenu(void) {
+    if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+        cmm_menu_state = CMM_MAKE_MAIN;
+        cmm_curr_settings_menu = 0;
+        fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+    }
+}
+
 void (*cmm_settings_menus[])(void) = {
     draw_cmm_settings_general,
     draw_cmm_settings_terrain,
     draw_cmm_settings_music,
+    draw_cmm_settings_backtomainmenu,
 };
 u8 cmm_settings_menu_lengths[] = {
-    5,4,2
+    5,4,2,1
 };
 
 void draw_cmm_menu(void) {
@@ -1095,6 +1104,7 @@ s32 cmm_main_menu(void) {
             print_maker_string(42,12 - cmm_menu_title_vels[0],cmm_mm_txt_pages,FALSE);
 
             if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
+                cmm_mode = CMM_MODE_UNINITIALIZED;
                 for (u8 i=0; cmm_level_entries[cmm_menu_index].fname[i] != 0;i++) {
                     cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
                 }

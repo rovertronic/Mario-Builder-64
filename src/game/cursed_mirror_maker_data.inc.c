@@ -1151,6 +1151,7 @@ char *cmm_settings_menu_table[] = {
     "General",
     "Terrain",
     "Music",
+    "Exit",
 };
 
 extern u8 cmm_curr_settings_menu;
@@ -1308,6 +1309,10 @@ struct cmm_settings_button cmm_settings_terrain_buttons[] = {
 struct cmm_settings_button cmm_settings_music_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
     {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
+};
+
+struct cmm_settings_button cmm_settings_backtomainmenu[] = {
+    {NULL, NULL, NULL, 0, NULL, NULL},
 };
 
 char *cmm_gamemode_string_table[] = {
