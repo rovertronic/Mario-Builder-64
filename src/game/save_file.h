@@ -55,10 +55,12 @@ enum SaveFileIndex {
 enum Options {
     OPT_MUSIC,
     OPT_WIDESCREEN,
-    OPT_MINIMAP,
     OPT_HUD,
-    OPT_SAVE,
     OPT_CAMCOL,
+
+    //unused
+    OPT_MINIMAP,
+    OPT_SAVE,
 };
 
 struct MainMenuSaveData {

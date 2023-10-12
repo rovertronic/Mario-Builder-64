@@ -2832,14 +2832,14 @@ s32 render_pause_courses_and_castle(void) {
             if ((gPlayer1Controller->rawStickY > 60)&&(letgo == FALSE)) {
                 mindex--;
                 if (mindex < 0) {
-                    mindex = 5;
+                    mindex = 3;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
             if ((gPlayer1Controller->rawStickY < -60)&&(letgo == FALSE)) {
                 mindex++;
-                if (mindex > 5) {
+                if (mindex > 3) {
                     mindex = 0;
                 }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
@@ -2863,7 +2863,7 @@ s32 render_pause_courses_and_castle(void) {
             print_generic_string(45,166, optiontext);
 
 
-            for (i=0;i<6;i++) {
+            for (i=0;i<4;i++) {
                 changetext = txt_off;
                 if (gMarioState->Options &  (1 << i)) {
                     changetext = txt_on;
