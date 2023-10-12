@@ -2623,16 +2623,23 @@ s32 render_pause_courses_and_castle(void) {
             //CONTROL
             if ((gPlayer1Controller->rawStickX > 60)&&(letgo == FALSE)) {
                 gMarioState->numBadgeSelect ++;
-                gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+                while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+                    gMarioState->numBadgeSelect ++;
+                    gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+                }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
             if ((gPlayer1Controller->rawStickX < -60)&&(letgo == FALSE)) {
                 gMarioState->numBadgeSelect --;
-                gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+                while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+                    gMarioState->numBadgeSelect --;
+                    gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+                }
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
+            /*
             if ((gPlayer1Controller->rawStickY > 60)&&(letgo == FALSE)) {
                 gMarioState->numBadgeSelect -=8;
                 gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
@@ -2645,6 +2652,7 @@ s32 render_pause_courses_and_castle(void) {
                 play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 letgo = TRUE;
                 }
+            */
             if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
                 letgo = FALSE;
                 }
@@ -2699,17 +2707,48 @@ s32 render_pause_courses_and_castle(void) {
             //print badge capacity
             //print_text_fmt_int2(90, 30, "BP %dQ%d", gMarioState->numEquippedBadges, gMarioState->numMaxBP);
 
-            for (i=0;i<24;i++) {
+            s16 badge_x_offset = 0;
+            s16 badge_y_offset = 0;
+            s16 badge_count = count_u32_bits(save_file_get_badge_equip());
+
+            switch(badge_count) {
+                case 1:
+                    badge_x_offset = 17*7;
+                break;
+                case 2:
+                    badge_x_offset = 17*6;
+                break;
+                case 3:
+                    badge_x_offset = 17*5;
+                break;
+                case 4:
+                    badge_x_offset = 17*4;
+                break;
+                case 5:
+                    badge_x_offset = 17*3;
+                break;
+                case 6:
+                    badge_x_offset = 17*2;
+                break;
+                case 7:
+                    badge_x_offset = 17*1;
+                break;
+            }
+            if (badge_count < 9) {
+                badge_y_offset -= 32;
+            }
+
+            i = 0;
+            for (int j=0;j<24;j++) {
                 soffset = -40;
-                if (i == gMarioState->numBadgeSelect) {
+                if (j == gMarioState->numBadgeSelect) {
                     soffset = -40+(sine*4.0f);
                 }
 
-                if (save_file_get_badge_equip() & (1<<i)) {
-                    display_icon(bicon_table[i], badge_location_x, badge_location_y );
-                    }else{
-                    display_icon(&MysteryBadge_Plane_001_mesh, badge_location_x, badge_location_y);
-                    }
+                if (save_file_get_badge_equip() & (1<<j)) {
+                    display_icon(bicon_table[j], badge_location_x+badge_x_offset, badge_location_y + badge_y_offset);
+                    i++;
+                }
                 //if ((save_file_get_badge_equip() & (1<<i))) {
                 //    display_icon(&bE_Plane_001_mesh, badge_location_x, badge_location_y);
                 //    }
