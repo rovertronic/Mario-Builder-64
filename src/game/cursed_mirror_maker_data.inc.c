@@ -284,7 +284,7 @@ s8 pole_uvs1[4][2] = {{16, 0}, {16, 32}, {12, 0}, {12, 32}};
 s8 pole_uvs2[4][2] = {{12, 0}, {12, 32}, {8, 0}, {8, 32}};
 s8 pole_uvs3[4][2] = {{8, 0}, {8, 32}, {4, 0}, {4, 32}};
 s8 pole_uvs4[4][2] = {{4, 0}, {4, 32}, {0, 0}, {0, 32}};
-struct cmm_terrain_quad cmm_terrain_pole_quad[] = {
+struct cmm_terrain_quad cmm_terrain_pole_quads[] = {
     {{{8, 16, 9}, {8, 0, 9}, {9, 16, 8}, {9, 0, 8}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_EMPTY, 0, &pole_uvs1}, // Diagonal 1
     {{{9, 16, 8}, {9, 0, 8}, {8, 16, 7}, {8, 0, 7}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_EMPTY, 0, &pole_uvs2}, // Diagonal 2
     {{{8, 16, 7}, {8, 0, 7}, {7, 16, 8}, {7, 0, 8}}, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_EMPTY, 0, &pole_uvs3}, // Diagonal 3
@@ -297,8 +297,27 @@ struct cmm_terrain_quad cmm_terrain_pole_quad[] = {
 struct cmm_terrain cmm_terrain_pole = {
     6,
     0,
-    cmm_terrain_pole_quad,
+    cmm_terrain_pole_quads,
     NULL,
+};
+
+s8 bar_connected_top_uvs[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
+struct cmm_terrain_quad cmm_terrain_bars_connected_quads[] = {
+    {{{7, 16, 16}, {7, 16, 9}, {7, 0, 16}, {7, 0, 9}}, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_EMPTY, 0, NULL}, // Left
+    {{{9, 16, 9}, {9, 16, 16}, {9, 0, 9}, {9, 0, 16}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_EMPTY, 0, NULL}, // Right
+
+    {{{7, 16, 16}, {9, 16, 16}, {7, 16, 9}, {9, 16, 9}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, &bar_connected_top_uvs}, // Top
+    {{{9, 0, 16}, {7, 0, 16}, {9, 0, 9}, {7, 0, 9}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, &bar_connected_top_uvs}, // Bottom
+};
+
+struct cmm_terrain_quad cmm_terrain_bars_unconnected_quad[] = {
+    {{{9, 16, 9}, {7, 16, 9}, {9, 0, 9}, {7, 0, 9}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // Back
+};
+
+s8 bar_center_uvs[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
+struct cmm_terrain_quad cmm_terrain_bars_center_quads[] = {
+    {{{7, 16, 9}, {9, 16, 9}, {7, 16, 7}, {9, 16, 7}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, &bar_center_uvs},
+    {{{9, 0, 9}, {7, 0, 9}, {9, 0, 7}, {7, 0, 7}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, &bar_center_uvs},
 };
 
 // Shapes of water tiles
@@ -931,6 +950,7 @@ struct cmm_theme cmm_theme_table[] = {
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
 #define POLE_TEX()  (cmm_pole_texs[cmm_theme_table[cmm_lopt_theme].pole])
+#define BARS_TEX() (mat_maker_MakerRHRGrate_layer1)
 #define WATER_TEX() (cmm_water_texs[cmm_theme_table[cmm_lopt_theme].water])
 
 
@@ -1111,7 +1131,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_heart,        OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Heart",              NULL       }, //CMM_BUTTON_HEART
     {mat_b_btn_cformation,   OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Coin Formation",     NULL       }, //CMM_BUTTON_FORMATION
     {mat_b_btn_vslab,        OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Sideways Slab",      NULL       }, //CMM_BUTTON_VSLAB
-    {mat_b_btn_bars,         OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Bars",               NULL       }, //CMM_BUTTON_BARS
+    {mat_b_btn_bars,         TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {mat_b_btn_thwomp,       OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Stone Enemy",        NULL       }, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
 };

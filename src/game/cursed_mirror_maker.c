@@ -115,6 +115,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
+u8 cmm_uv_scaling = 1;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -603,7 +604,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * 64 - 16, v * 64 - 16,
+            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -640,7 +641,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * 64 - 16, v * 64 - 16,
+            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -901,6 +902,79 @@ void process_tile(s8 pos[3], struct cmm_terrain *terrain, u32 rot) {
     }
 }
 
+#define BAR_CONNECTED_SIDE(bar) ((bar) & 1)
+#define BAR_CONNECTED_TOP(bar) (((bar) >> 1) & 0x1)
+#define BAR_CONNECTED_BOTTOM(bar) (((bar) >> 2) & 0x1)
+
+void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
+    s8 adjacentPos[3];
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        connections[rot] = 0;
+        s32 dir = ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot);
+        vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+        if (!coords_in_range(adjacentPos)) continue;
+
+        // If adjacent block is a bar, return true
+        if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+            connections[rot] = 1; continue;
+        }
+
+        // Else check its a full block
+        if (get_faceshape(adjacentPos, dir^1) == CMM_FACESHAPE_FULL) connections[rot] = 1;
+    }
+}
+
+void check_bar_connections(s8 pos[3], u8 connections[5]) {
+    check_bar_side_connections(pos, connections);
+    connections[4] = 0;
+    // Check top
+    s8 adjacentPos[3];
+    u8 adjacentConnections[4];
+
+    for (u32 updown = 0; updown < 2; updown++) { // 0 = Up, 1 = Down
+        vec3_sum(adjacentPos, pos, cullOffsetLUT[updown]);
+        if (coords_in_range(adjacentPos)) {
+            if (get_faceshape(adjacentPos, updown^1) == CMM_FACESHAPE_FULL) {
+                for (u32 rot = 0; rot < 4; rot++) {
+                    connections[rot] |= (1 << (updown+1)); // Apply top flag to all bars
+                }
+                connections[4] |= (1 << (updown + 1));
+            } else if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+                check_bar_side_connections(adjacentPos, adjacentConnections);
+                for (u32 rot = 0; rot < 4; rot++) {
+                    connections[rot] |= adjacentConnections[rot] << (updown+1); // Apply top flag to all bars
+                }
+                connections[4] |= (1 << (updown + 1));
+            }
+        }
+    }
+}
+
+void render_bars(s8 pos[3]) {
+    u8 connections[5];
+    check_bar_connections(pos, connections);
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        u32 leftRot = (rot + 3) % 4;
+        u32 rightRot = (rot + 1) % 4;
+        if (BAR_CONNECTED_SIDE(connections[rot])) {
+            for (u32 j = 0; j < 4; j++) {
+                if (j == 2 && BAR_CONNECTED_TOP(connections[rot])) continue;
+                if (j == 3 && BAR_CONNECTED_BOTTOM(connections[rot])) continue;
+                struct cmm_terrain_quad *quad = &cmm_terrain_bars_connected_quads[j];
+                process_quad(pos, quad, rot);
+            }
+        }
+        if (!BAR_CONNECTED_SIDE(connections[rot]) ||
+            (BAR_CONNECTED_SIDE(connections[leftRot]) && BAR_CONNECTED_SIDE(connections[rightRot]))) {
+            process_quad(pos, cmm_terrain_bars_unconnected_quad, rot);
+        }
+    }
+    if (!BAR_CONNECTED_TOP(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[0], 0);
+    if (!BAR_CONNECTED_BOTTOM(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[1], 0);
+}
+
 // Find if specific tile of water is fullblock or shallow
 u32 is_water_fullblock(s8 pos[3]) {
     s8 abovePos[3];
@@ -1010,6 +1084,7 @@ void render_floor(s16 y) {
 enum tiletypeIndices {
     FENCE_TILETYPE_INDEX = NUM_MATERIALS_PER_THEME,
     POLE_TILETYPE_INDEX,
+    BARS_TILETYPE_INDEX,
     CULL_TILETYPE_INDEX,
     WATER_TILETYPE_INDEX,
     END_TILE_INDEX
@@ -1021,6 +1096,8 @@ u32 get_tiletype_index(u32 type, u32 mat) {
             return FENCE_TILETYPE_INDEX;
         case TILE_TYPE_POLE:
             return POLE_TILETYPE_INDEX;
+        case TILE_TYPE_BARS:
+            return BARS_TILETYPE_INDEX;
         case TILE_TYPE_WATER:
             return WATER_TILETYPE_INDEX;
         case TILE_TYPE_CULL:
@@ -1047,8 +1124,8 @@ Gfx *get_sidetex(s32 mat) {
 
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1171,6 +1248,20 @@ void generate_terrain_gfx(void) {
     cmm_use_alt_uvs = TRUE;
     u32 startIndex;
     u32 endIndex;
+
+    // Bars
+    cmm_uv_scaling = 2;
+    startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
+    endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars(pos);
+    }
+    display_cached_tris();
+    cmm_uv_scaling = 1;
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
 
@@ -1345,6 +1436,11 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 } else if (cmm_id_selection == TILE_TYPE_POLE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
+                } else if (cmm_id_selection == TILE_TYPE_BARS) {
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
+                    cmm_uv_scaling = 2;
+                    render_bars(cmm_cursor_pos);
+                    cmm_uv_scaling = 1;
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1458,6 +1554,12 @@ void generate_terrain_collision(void) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
         process_tile(pos, &cmm_terrain_fence_col, cmm_tile_data[i].rot);
+    }
+    cmm_curr_coltype = SURFACE_VANISH_CAP_WALLS;
+    for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars(pos);
     }
 
     cmm_building_collision = FALSE;
