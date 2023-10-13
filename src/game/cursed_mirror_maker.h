@@ -285,6 +285,7 @@ struct cmm_comptraj {
 /*
 IMPORTANT!
 
+char file_header[9];
 u8 version;
 u16 piktcher[64][64];
 
@@ -293,6 +294,7 @@ no matter what version.
 */
 
 struct cmm_level_save {
+    char file_header[10];
     u8 version;
     u16 piktcher[64][64]; //28*28 = 784*2 = 1568 bytes
 

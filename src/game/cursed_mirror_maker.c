@@ -2063,12 +2063,18 @@ TCHAR cmm_file_name[30];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
+char file_header_string[] = "MB64-v0.0";
+
 void save_level(void) {
     s16 i;
     s16 j;
 
     bzero(&cmm_save, sizeof(cmm_save));
-    //bzero(&cmm_grid_data, sizeof(cmm_grid_data));
+
+    //file header
+    for (i=0;i<10;i++) {
+        cmm_save.file_header[i] = file_header_string[i];
+    }
 
     cmm_save.tile_count = cmm_tile_count;
     cmm_save.object_count = cmm_object_count;
