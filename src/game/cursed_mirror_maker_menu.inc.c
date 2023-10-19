@@ -764,6 +764,7 @@ s32 cmm_main_menu(void) {
                     switch(cmm_menu_index) {
                         case 0: //play levels
                             cmm_mm_files_prev_menu = MM_PLAY;
+                            cmm_level_action = CMM_LA_PLAYING;
                             cmm_mm_state = MM_FILES;
                             cmm_menu_index = 0;
                             cmm_mm_page = 0;
@@ -794,6 +795,8 @@ s32 cmm_main_menu(void) {
                         case 1:
                             //load levels
                             cmm_mm_files_prev_menu = MM_MAKE;
+                            cmm_level_action = CMM_LA_MAKING;
+                            cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
                             break;
@@ -1105,6 +1108,7 @@ s32 cmm_main_menu(void) {
 
             if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
+                reset_play_state();
                 for (u8 i=0; cmm_level_entries[cmm_menu_index].fname[i] != 0;i++) {
                     cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
                 }

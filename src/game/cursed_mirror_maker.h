@@ -18,12 +18,14 @@ void sb_loop(void);
 void sb_init(void);
 void cmm_init();
 void draw_cmm_menu(void);
+void reset_play_state(void);
 void generate_objects_to_level(void);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
 extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
 
+extern u8 cmm_level_action;
 extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
@@ -331,6 +333,11 @@ extern u8 cmm_lopt_game;
 enum {
     CMM_GAME_VANILLA,
     CMM_GAME_BTCM,
+};
+
+enum {
+    CMM_LA_PLAYING,
+    CMM_LA_MAKING,
 };
 
 #endif

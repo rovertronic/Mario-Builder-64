@@ -64,13 +64,15 @@
 
 extern void super_cum_working(struct Object *obj, s32 animIndex);
 
+u8 cmm_level_action = CMM_LA_MAKING;
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
 s8 cmm_cursor_pos[3] = {0};
 
-Vec3f cmm_camera_pos = {0.0f};
-Vec3f cmm_camera_foc = {0.0f};
+Vec3f cmm_camera_pos = {0.0f,0.0f,0.0f};
+Vec3f cmm_camera_foc = {0.0f,0.0f,0.0f};
+Vec3f cmm_last_cursor_pos = {0.0f,0.0f,0.0f};
 s16 cmm_camera_angle = 0;
 u8 cmm_camera_rot_offset = 0;
 s8 cmm_camera_zoom_index = 2;
@@ -2284,6 +2286,8 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
+    generate_terrain_gfx();
+    generate_terrain_collision();
 }
 
 void sb_init(void) {
@@ -2317,7 +2321,11 @@ void sb_init(void) {
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
-                vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
+                if (cmm_level_action == CMM_LA_MAKING) {
+                    vec3f_copy(gMarioState->pos,&cmm_last_cursor_pos);
+                } else {
+                    vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
+                }
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
@@ -2398,6 +2406,8 @@ u32 main_cursor_logic(u32 joystick) {
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
     o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
+
+    vec3f_copy(&cmm_last_cursor_pos,&o->oPosVec);
 
     for (u8 i=0; i<6; i++) {
         vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
