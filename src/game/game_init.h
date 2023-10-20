@@ -96,6 +96,8 @@ void render_init(void);
 void select_gfx_pool(void);
 void display_and_vsync(void);
 
+extern Bool32 gSupportsLibpl;
+
 extern FRESULT mount_success;
 extern FILINFO cmm_level_entries[20];
 extern FRESULT global_code;
