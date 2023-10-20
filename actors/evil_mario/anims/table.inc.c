@@ -20,5 +20,7 @@ const struct Animation *const evil_mario_anims[] = {
 	&evil_mario_anim_gangnam,
 
 	&evil_mario_anim_sm64_anim_002,
+	&evil_mario_anim_mario_regular_idle,
+
 	NULL,
 };

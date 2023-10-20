@@ -208,6 +208,7 @@ enum {
     OBJECT_TYPE_CORK,
     OBJECT_TYPE_HEART,
     OBJECT_TYPE_VEXCLA,
+    OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
 };
 
 struct cmm_ui_button_type {

@@ -980,7 +980,7 @@ struct cmm_object_info cmm_object_type_chuckya = {
     bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 5, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_DEATH,
 };
 struct cmm_object_info cmm_object_type_spawn = {
-    bhvSpawn, TILE_SIZE/2, MODEL_SPAWN, TRUE, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
+    bhvSpawn, 0, MODEL_SPAWN, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
 };
 struct cmm_object_info cmm_object_type_phantasm = {
     bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
@@ -1018,6 +1018,9 @@ struct cmm_object_info cmm_object_type_heart = {
 struct cmm_object_info cmm_object_type_vexclamationbox = {
     bhvExclamationBox, TILE_SIZE/2, MODEL_VEXCLAMATION_BOX, FALSE, 0, 2.0f, NULL, df_vexbox, SOUND_GENERAL_BREAK_BOX,
 };
+struct cmm_object_info cmm_object_type_preview_mario = {
+    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 5, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+};
 
 struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_star, FALSE, TRUE, FALSE, 0},
@@ -1048,6 +1051,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_corkbox, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_vexclamationbox, FALSE, FALSE, FALSE, 7},
+    {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
 };
 
 //behparam2 strings
@@ -1115,7 +1119,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture         //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
     {mat_b_btn_save,         0,                   CMM_PM_NONE,  "Save",               NULL       }, //CMM_BUTTON_SAVE
     {mat_b_btn_settings,     0,                   CMM_PM_NONE,  "Settings",           NULL       }, //CMM_BUTTON_SETTINGS
-    {mat_b_btn_check,        0,                   CMM_PM_NONE,  "Test",               NULL       }, //CMM_BUTTON_PLAY
+    {mat_b_btn_check,        OBJECT_TYPE_SPAWN_PM,CMM_PM_OBJ,   "Test",               NULL       }, //CMM_BUTTON_PLAY
     {mat_b_btn_tile,         TILE_TYPE_BLOCK,     CMM_PM_TILE,  "Terrain",            NULL       }, //CMM_BUTTON_GRASS
     {mat_b_btn_slope,        TILE_TYPE_SLOPE,     CMM_PM_TILE,  "Slope",              NULL       }, //CMM_BUTTON_SLOPE
     {mat_b_btn_troll,        TILE_TYPE_TROLL,     CMM_PM_TILE,  "Troll Tile",         NULL       }, //CMM_BUTTON_TROLL

@@ -2341,7 +2341,10 @@ void sb_init(void) {
             if (spawn_obj) {
                 if (cmm_level_action == CMM_LA_MAKING) {
                     vec3f_copy(gMarioState->pos,&cmm_last_cursor_pos);
+                    set_mario_action(gMarioState,ACT_IDLE,0);
+                    gMarioState->faceAngle[1] = cmm_rot_selection*0x4000;
                 } else {
+                    gMarioState->faceAngle[1] = spawn_obj->oFaceAngleYaw;
                     vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
                 }
                 gMarioState->pos[1] -= TILE_SIZE/2;

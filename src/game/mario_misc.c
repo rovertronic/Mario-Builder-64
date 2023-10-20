@@ -725,6 +725,7 @@ Gfx *geo_mario_hand_foot_scaler(s32 callContext, struct GraphNode *node, UNUSED 
 /**
  * Switch between normal cap, wing cap, vanish cap and metal cap.
  */
+extern s8 cmm_toolbar_index;
 Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
     struct MarioBodyState *bodyState = &gBodyStates[switchCase->numCases];
@@ -735,18 +736,21 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
 
     if (callContext == GEO_CONTEXT_RENDER) {
         switchCase->selectedCase = bodyState->modelState >> 8;
-    }
+        if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
+            switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+            }
 
-    if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
-        switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+        if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+            switchCase->selectedCase = 4;
         }
 
-    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
-        switchCase->selectedCase = 4;
-    }
+        if (gMarioState->CostumeID == 14) { // phat asm
+            switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+        }
 
-    if (gMarioState->CostumeID == 14) { // phat asm
-        switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 6)) {
+            switchCase->selectedCase = bodyState->modelState >> 8;
+        }
     }
 
     return NULL;

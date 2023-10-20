@@ -1,8 +1,12 @@
 extern const GeoLayout spawn_geo[];
-extern Lights1 spawn_CursedMirrorMakerStar_lights;
-extern u8 spawn_mariospawn_rgba16[];
-extern Vtx spawn_Collision_mesh_layer_4_vtx_0[4];
-extern Gfx spawn_Collision_mesh_layer_4_tri_0[];
-extern Gfx mat_spawn_CursedMirrorMakerStar[];
-extern Gfx spawn_Collision_mesh_layer_4[];
+extern Lights1 spawn_red_lights;
+extern u8 spawn_mariospawn_rgba32[];
+extern Vtx spawn_root_mesh_layer_1_vtx_0[9];
+extern Gfx spawn_root_mesh_layer_1_tri_0[];
+extern Vtx spawn_m_mesh_layer_5_vtx_0[4];
+extern Gfx spawn_m_mesh_layer_5_tri_0[];
+extern Gfx mat_spawn_red[];
+extern Gfx mat_spawn_spawnlocation[];
+extern Gfx spawn_root_mesh_layer_1[];
+extern Gfx spawn_m_mesh_layer_5[];
 extern Gfx spawn_material_revert_render_settings[];
