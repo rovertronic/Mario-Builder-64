@@ -97,6 +97,7 @@ void select_gfx_pool(void);
 void display_and_vsync(void);
 
 extern Bool32 gSupportsLibpl;
+extern Bool32 gIsGliden;
 
 extern FRESULT mount_success;
 extern FILINFO cmm_level_entries[20];

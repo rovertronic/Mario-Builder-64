@@ -975,8 +975,6 @@ void render_hud(void) {
                 render_hud_coins();
             }
 
-            //print_text_fmt_int(10, 10, "%d", gMarioState->capTimer);
-
             //i should have programmed a proper quest system lmfao
             if (gMarioState->DeadRexMissionActivate) {
                 print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%02dQ10", gMarioState->DeadRexes);

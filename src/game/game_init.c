@@ -1007,6 +1007,7 @@ void setup_game_memory(void) {
  * Main game loop thread. Runs forever as long as the game continues.
  */
 Bool32 gSupportsLibpl = FALSE;
+Bool32 gIsGliden = FALSE;
 
 FATFS fs;
 DIR cmm_dir;
@@ -1057,6 +1058,8 @@ void thread5_game_loop(UNUSED void *arg) {
     gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
     if (gSupportsLibpl) {
         libpl_create_auto_sd_card(16,255);
+        lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
+        gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_GLIDEN64));
     }
     //init cmm file structure
     cart_init();
