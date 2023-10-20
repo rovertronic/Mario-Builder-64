@@ -1748,48 +1748,87 @@ u64 sCapFlickerFrames = 0b100010001000100010001001001001001001001001001010101010
  * Updates the cap flags mainly based on the cap timer.
  */
 u32 update_and_return_cap_flags(struct MarioState *m) {
-    u32 flags = m->flags;
-    u32 action;
 
-    if (m->flags & (MARIO_VANISH_CAP | MARIO_METAL_CAP) ) {
-        action = m->action;
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        u32 flags = m->flags;
+        u32 action;
 
-        if ((m->capTimer <= 60)
-            || ((action != ACT_READING_AUTOMATIC_DIALOG) && (action != ACT_READING_NPC_DIALOG)
-                && (action != ACT_READING_SIGN) && (action != ACT_IN_CANNON))) {
-            m->capTimer -= 1;
+        if (m->flags & (MARIO_VANISH_CAP | MARIO_METAL_CAP) ) {
+            action = m->action;
+
+            if ((m->capTimer <= 60)
+                || ((action != ACT_READING_AUTOMATIC_DIALOG) && (action != ACT_READING_NPC_DIALOG)
+                    && (action != ACT_READING_SIGN) && (action != ACT_IN_CANNON))) {
+                m->capTimer -= 1;
+            }
+
+            if (m->capTimer == 0) {
+                m->flags &= ~MARIO_SPECIAL_CAPS;
+                if (!(m->flags & MARIO_CAPS)) {
+                    m->flags &= ~MARIO_CAP_ON_HEAD;
+                }
+            }
+
+            // This code flickers the cap through a long binary string, increasing in how
+            // common it flickers near the end.
+            if ((m->capTimer < 64) && ((1ULL << m->capTimer) & sCapFlickerFrames)) {
+                flags &= ~MARIO_SPECIAL_CAPS;
+                if (!(flags & MARIO_CAPS)) {
+                    flags &= ~MARIO_CAP_ON_HEAD;
+                }
+            }
+        } else {//mario is a flier
+
+            if (gMarioState->RFuel < 1) {
+
+                m->flags &= ~(MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP);
+                if ((m->flags & (MARIO_NORMAL_CAP | MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP))
+                    == 0) {
+                    m->flags &= ~MARIO_CAP_ON_HEAD;
+                }
+            }
+
         }
 
-        if (m->capTimer == 0) {
+        return flags;
+    } else {
+        u32 flags = m->flags;
+        u32 action;
 
-            m->flags &= ~MARIO_SPECIAL_CAPS;
-            if (!(m->flags & MARIO_CAPS)) {
-                m->flags &= ~MARIO_CAP_ON_HEAD;
+        if (m->capTimer > 0) {
+            action = m->action;
+
+            if ((m->capTimer <= 60)
+                || ((action != ACT_READING_AUTOMATIC_DIALOG) && (action != ACT_READING_NPC_DIALOG)
+                    && (action != ACT_READING_SIGN) && (action != ACT_IN_CANNON))) {
+                m->capTimer -= 1;
+            }
+
+            if (m->capTimer == 0) {
+                stop_cap_music();
+
+                m->flags &= ~MARIO_SPECIAL_CAPS;
+                if (!(m->flags & MARIO_CAPS)) {
+                    m->flags &= ~MARIO_CAP_ON_HEAD;
+                }
+            }
+
+            if (m->capTimer == 60) {
+                fadeout_cap_music();
+            }
+
+            // This code flickers the cap through a long binary string, increasing in how
+            // common it flickers near the end.
+            if ((m->capTimer < 64) && ((1ULL << m->capTimer) & sCapFlickerFrames)) {
+                flags &= ~MARIO_SPECIAL_CAPS;
+                if (!(flags & MARIO_CAPS)) {
+                    flags &= ~MARIO_CAP_ON_HEAD;
+                }
             }
         }
 
-        // This code flickers the cap through a long binary string, increasing in how
-        // common it flickers near the end.
-        if ((m->capTimer < 64) && ((1ULL << m->capTimer) & sCapFlickerFrames)) {
-            flags &= ~MARIO_SPECIAL_CAPS;
-            if (!(flags & MARIO_CAPS)) {
-                flags &= ~MARIO_CAP_ON_HEAD;
-            }
-        }
-    } else {//mario is a flier
-
-        if (gMarioState->RFuel < 1) {
-
-            m->flags &= ~(MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP);
-            if ((m->flags & (MARIO_NORMAL_CAP | MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP))
-                == 0) {
-                m->flags &= ~MARIO_CAP_ON_HEAD;
-            }
-        }
-
+        return flags;
     }
-
-    return flags;
 }
 
 /**
@@ -1853,7 +1892,7 @@ UNUSED static void debug_update_mario_cap(u16 button, s32 flags, u16 capTimer, u
     // so likely debug behavior rather than unused behavior.
     if ((gPlayer1Controller->buttonDown & Z_TRIG) && (gPlayer1Controller->buttonPressed & button)
         && !(gMarioState->flags & flags)) {
-        gMarioState->flags |= (flags + MARIO_CAP_ON_HEAD);
+    gMarioState->flags |= (flags + MARIO_CAP_ON_HEAD);
 
         if (capTimer > gMarioState->capTimer) {
             gMarioState->capTimer = capTimer;

@@ -226,7 +226,7 @@ enum MarioFlags {
     MARIO_CAPS                = (MARIO_NORMAL_CAP | MARIO_SPECIAL_CAPS),
 };
 
-#define METAL_SOUND_FLAG (MARIO_METAL_CAP | MARIO_WING_CAP)
+#define METAL_SOUND_FLAG (MARIO_METAL_CAP | (MARIO_WING_CAP & (cmm_lopt_game==CMM_GAME_BTCM)) )
 
 #define ACT_ID_MASK                         0x000001FF
 

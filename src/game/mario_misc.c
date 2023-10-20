@@ -496,7 +496,7 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
     Gfx *gfx;
     Gfx *gfxHead = NULL;
     u8 alphaBias;
-    s32 flags = update_and_return_cap_flags(gMarioState);
+    //s32 flags = update_and_return_cap_flags(gMarioState);
 
     if (alpha == 255) {
         SET_GRAPH_NODE_LAYER(node->fnNode.node.flags, LAYER_OPAQUE);
@@ -681,7 +681,7 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
         if (gMarioState->powerup == 1) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_CROWBAR;
         }
-        if ((gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+        if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_WING;
         }
 
@@ -741,7 +741,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
         switchCase->selectedCase = MODEL_STATE_METAL >> 8;
         }
 
-    if ((gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
         switchCase->selectedCase = 4;
     }
 
@@ -766,7 +766,11 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
         switchCase->selectedCase = bodyState->capState & MARIO_HAS_DEFAULT_CAP_OFF;
         while (next != node) {
             if (next->type == GRAPH_NODE_TYPE_TRANSLATION_ROTATION) {
-                COND_BIT((/*bodyState->capState & MARIO_HAS_WING_CAP_ON*/0), next->flags, GRAPH_RENDER_ACTIVE);
+                if (cmm_lopt_game == CMM_GAME_BTCM) {
+                    COND_BIT((0), next->flags, GRAPH_RENDER_ACTIVE);
+                } else {
+                    COND_BIT((bodyState->capState & MARIO_HAS_WING_CAP_ON), next->flags, GRAPH_RENDER_ACTIVE);
+                }
             }
             next = next->next;
         }

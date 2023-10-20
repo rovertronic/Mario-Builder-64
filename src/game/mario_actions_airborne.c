@@ -396,22 +396,24 @@ void update_flying(struct MarioState *m) {
 
     gMarioState->SFuel ++;
 
-    if ((gMarioState->SFuel > 12)&&(gMarioState->RFuel > 0)) {
-        gMarioState->RFuel --;
-        gMarioState->SFuel = 0;
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        if ((gMarioState->SFuel > 12)&&(gMarioState->RFuel > 0)) {
+            gMarioState->RFuel --;
+            gMarioState->SFuel = 0;
+            }
+
+        //FUEL
+        if (gPlayer1Controller->buttonDown & B_BUTTON) {
+
+            gMarioState->SFuel += 4;
+
+            if (m->forwardVel < 70.0f) {
+                m->forwardVel += 3.5f;
+            }//
+            spawn_object(m->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
+            play_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
+            cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
-
-    //FUEL
-    if (gPlayer1Controller->buttonDown & B_BUTTON) {
-
-        gMarioState->SFuel += 4;
-
-        if (m->forwardVel < 70.0f) {
-            m->forwardVel += 3.5f;
-        }//
-        spawn_object(m->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
-        play_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
-        cur_obj_shake_screen(SHAKE_POS_SMALL);
     }
 }
 
@@ -917,7 +919,7 @@ s32 act_dive(struct MarioState *m) {
 
     update_air_without_turn(m);
 
-    if ((m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)) {
+    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)) {
         set_mario_action(m, ACT_FLYING, 0);
     }
 

@@ -1613,36 +1613,79 @@ u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *o
     u16 capMusic = 0;
     u16 capTime = 0;
 
-    if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
-        m->interactObj = obj;
-        obj->oInteractStatus = INT_STATUS_INTERACTED;
 
-        m->flags &= ~MARIO_CAP_ON_HEAD & ~MARIO_CAP_IN_HAND;
-        // m->flags |= capFlag;
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        //BEYOND THE CURSED MIRROR INTERACTION
+        if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
+            m->interactObj = obj;
+            obj->oInteractStatus = INT_STATUS_INTERACTED;
 
-        switch (capFlag) {
-            case MARIO_VANISH_CAP: 
-                m->flags |= (MARIO_METAL_CAP|MARIO_VANISH_CAP);
-                capTime = 1200;
-                if (capTime > m->capTimer) {
-                    m->capTimer = capTime;
-                }
-                break;
-            case MARIO_METAL_CAP:
-                capTime =  600;
-                break;
-            case MARIO_WING_CAP:
-                m->flags |= MARIO_WING_CAP;
-                gMarioState->RFuel = 100;
-                break;
-        }
+            m->flags &= ~MARIO_CAP_ON_HEAD & ~MARIO_CAP_IN_HAND;
+            // m->flags |= capFlag;
 
-        m->flags |= MARIO_CAP_ON_HEAD;
-
-        play_sound(SOUND_MENU_STAR_SOUND, m->marioObj->header.gfx.cameraToObject);
-        play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
+            switch (capFlag) {
+                case MARIO_VANISH_CAP: 
+                    m->flags |= (MARIO_METAL_CAP|MARIO_VANISH_CAP);
+                    capTime = 600;
+                    if (capTime > m->capTimer) {
+                        m->capTimer = capTime;
+                    }
+                    break;
+                case MARIO_METAL_CAP:
+                    capTime =  600;
+                    break;
+                case MARIO_WING_CAP:
+                    m->flags |= MARIO_WING_CAP;
+                    gMarioState->RFuel = 100;
+                    break;
+            }
+            m->flags |= MARIO_CAP_ON_HEAD;
+            play_sound(SOUND_MENU_STAR_SOUND, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
 
         return TRUE;
+        }
+    } else {
+        //VANILLA CAP INTERACTION
+        if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
+            m->interactObj = obj;
+            obj->oInteractStatus = INT_STATUS_INTERACTED;
+
+            m->flags &= ~MARIO_CAP_ON_HEAD & ~MARIO_CAP_IN_HAND;
+            // m->flags |= capFlag;
+
+            switch (capFlag) {
+                case MARIO_VANISH_CAP: 
+                    m->flags |= MARIO_VANISH_CAP;
+                    capTime = 600;
+                    if (capTime > m->capTimer) {
+                        m->capTimer = capTime;
+                    }
+                    play_cap_music(SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP));
+                    break;
+                case MARIO_METAL_CAP:
+                    m->flags |= MARIO_METAL_CAP;
+                    capTime = 600;
+                    if (capTime > m->capTimer) {
+                        m->capTimer = capTime;
+                    }
+                    play_cap_music(SEQUENCE_ARGS(4, SEQ_EVENT_METAL_CAP));
+                    break;
+                case MARIO_WING_CAP:
+                    play_cap_music(SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP));
+                    m->flags |= MARIO_WING_CAP;
+                    capTime = 1200;
+                    if (capTime > m->capTimer) {
+                        m->capTimer = capTime;
+                    }
+                    break;
+            }
+            m->flags |= MARIO_CAP_ON_HEAD;
+            play_sound(SOUND_MENU_STAR_SOUND, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
+
+        return TRUE;
+        }
     }
 
     return FALSE;

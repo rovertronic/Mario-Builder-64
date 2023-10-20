@@ -16,6 +16,7 @@
 #include "rumble_init.h"
 #include "ingame_menu.h"
 #include "save_file.h"
+#include "cursed_mirror_maker.h"
 
 #include "config.h"
 
