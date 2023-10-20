@@ -1056,7 +1056,7 @@ void thread5_game_loop(UNUSED void *arg) {
 
     gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
     if (gSupportsLibpl) {
-        Bool32 didwork = libpl_create_auto_sd_card(16,255);
+        libpl_create_auto_sd_card(16,255);
     }
     //init cmm file structure
     cart_init();
