@@ -112,6 +112,19 @@ extern const Gfx exclamation_box_seg8_dl_080193D8[];
 extern const Gfx exclamation_box_seg8_dl_08019438[];
 extern const Gfx question_box_dl[];
 
+// vanilla exclamation_box
+extern const GeoLayout vexclamation_box_geo[];
+extern const Gfx vexclamation_box_seg8_dl_08018FA8[];
+extern const Gfx vexclamation_box_seg8_dl_08019008[];
+extern const Gfx vexclamation_box_seg8_dl_08019058[];
+extern const Gfx vexclamation_box_seg8_dl_08019220[];
+extern const Gfx vexclamation_box_seg8_dl_08019280[];
+extern const Gfx vexclamation_box_seg8_dl_080192D0[];
+extern const Gfx vexclamation_box_seg8_dl_08019318[];
+extern const Gfx vexclamation_box_seg8_dl_08019378[];
+extern const Gfx vexclamation_box_seg8_dl_080193D8[];
+extern const Gfx vexclamation_box_seg8_dl_08019438[];
+
 // exclamation_box_outline
 extern const GeoLayout exclamation_box_outline_geo[];
 extern const Gfx exclamation_box_outline_seg8_dl_08024EB8[];

@@ -207,16 +207,34 @@ void df_exbox(s32 context) {
             o->oAnimState = 0;
             break;
         case 1:
+            o->oAnimState = 2;
+            break;
+        case 2:
+            o->oAnimState = 3;
+            break;
+        case 3:
+            o->oAnimState = 4;
+            break;
+        default:
+            o->oAnimState = 4;
+            break;
+    }
+}
+
+void df_vexbox(s32 context) {
+    if (context != CMM_DF_CONTEXT_INIT) return;
+    switch(o->oBehParams2ndByte) {
+        case 0:
+            o->oAnimState = 0;
+            break;
+        case 1:
             o->oAnimState = 1;
             break;
         case 2:
             o->oAnimState = 2;
             break;
-        case 3:
-            o->oAnimState = 3;
-            break;
         default:
-            o->oAnimState = 4;
+            o->oAnimState = 3;
             break;
     }
 }

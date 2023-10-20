@@ -46,6 +46,7 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 #include "rovent.h"
+#include "cursed_mirror_maker.h"
 
 #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"

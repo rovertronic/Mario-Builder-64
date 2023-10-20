@@ -79,3 +79,5 @@ UNUSED static const u64 binid_17 = 17;
 
 #include "koopa_shell/model.inc.c"
 UNUSED static const u64 binid_18 = 18;
+
+#include "vanilla_exclamation_box/model.inc.c"

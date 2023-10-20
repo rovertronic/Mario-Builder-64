@@ -1,4 +1,5 @@
 // exclamation_box.inc.c
+//sorry that this file is a convoluted cluster fuck
 
 struct ExclamationBoxContents {
     u8 id;
@@ -6,6 +7,8 @@ struct ExclamationBoxContents {
     u8 behParams;
     ModelID16 model;
     const BehaviorScript *behavior;
+    u8 animState; //not shitcum
+    u8 doRespawn;
 };
 
 struct ObjectHitbox sExclamationBoxHitbox = {
@@ -20,24 +23,41 @@ struct ObjectHitbox sExclamationBoxHitbox = {
     /* hurtboxHeight:     */ 30,
 };
 
-struct ExclamationBoxContents sExclamationBoxContents[] = {
-    { EXCLAMATION_BOX_BP_WING_CAP,         0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap               },
-    { EXCLAMATION_BOX_BP_METAL_CAP,        0, 6, MODEL_NONE,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_VANISH_CAP,       0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap             },
-    { EXCLAMATION_BOX_BP_KOOPA_SHELL,      0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell            },
-    { EXCLAMATION_BOX_BP_COINS_1,          0, 0, 0xEF,                   bhvGreenGetsSpawned      },
-    { EXCLAMATION_BOX_BP_COINS_3,          0, 0, MODEL_NONE,             bhvThreeCoinsSpawn       },
-    { EXCLAMATION_BOX_BP_COINS_10,         0, 0, MODEL_NONE,             bhvTenCoinsSpawn         },
-    { EXCLAMATION_BOX_BP_NULL,             0, 0, MODEL_NONE,             NULL                     },
-    { EXCLAMATION_BOX_BP_1UP_WALKING,      0, 0, MODEL_1UP,              bhv1upWalking            },
-    { EXCLAMATION_BOX_BP_STAR_1,           0, 0, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_1UP_RUNNING_AWAY, 0, 0, MODEL_1UP,              bhv1upRunningAway        },
-    { EXCLAMATION_BOX_BP_STAR_2,           0, 1, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_STAR_3,           0, 2, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_STAR_4,           0, 3, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_STAR_5,           0, 4, MODEL_STAR,             bhvSpawnedStar           },
-    { EXCLAMATION_BOX_BP_STAR_6,           0, 5, MODEL_STAR,             bhvSpawnedStar           }
+struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
+    { 0, 0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE},
+    { 1, 0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE},
+    { 2, 0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE},
+    { 3, 0, 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE},
+    { 4, 0, 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE},
+    { 5, 0, 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,4, FALSE},
 };
+
+struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
+    { 0, 0, 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE},
+    { 1, 0, 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE},
+    { 2, 0, 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE},
+    { 3, 0, 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE},
+    { 4, 0, 0, MODEL_NONE,               bhvOneCoin,         3, FALSE},
+    { 5, 0, 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE},
+    { 6, 0, 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE},
+};
+
+//struct ExclamationBoxContents sExclamationBoxContents_beta[] = {
+    //END
+    //{ EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE},
+//}
+
+struct ExclamationBoxContents *game_style_exclamationbox_contents[] = {
+    &sExclamationBoxContents_vanilla,
+    &sExclamationBoxContents_btcm,
+    //sExclamationBoxContents_beta,
+};
+
+struct ExclamationBoxContents *contents_to_use;
 
 void bhv_rotating_exclamation_mark_loop(void) {
     if (o->parentObj->oAction != EXCLAMATION_BOX_ACT_OUTLINE) {
@@ -46,9 +66,16 @@ void bhv_rotating_exclamation_mark_loop(void) {
 }
 
 void exclamation_box_act_init(void) {
-    u32 stardata = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum-1);
-    struct Object *tempobj;
+    contents_to_use = game_style_exclamationbox_contents[cmm_lopt_game];
 
+    o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
+    o->oAnimState = contents_to_use[o->oBehParams2ndByte].animState;
+
+
+    //u32 stardata = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum-1);
+    //struct Object *tempobj;
+
+    /*
     if (o->oBehParams2ndByte < EXCLAMATION_BOX_BP_COINS_1) {
         o->oAnimState = o->oBehParams2ndByte;
 
@@ -61,8 +88,7 @@ void exclamation_box_act_init(void) {
     } else {
         o->oAnimState = 4;
         o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
-    }
-
+    }*/
 }
 
 void exclamation_box_act_outline(void) {
@@ -121,6 +147,22 @@ void exclamation_box_act_scaling(void) {
 
 void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList, u8 boxType) {
     struct Object *contentsObj = NULL;
+    
+    while (contentsList->id != EXCLAMATION_BOX_BP_NULL) {
+        if (boxType == contentsList->id) {
+            contentsObj = spawn_object(o, contentsList->model, contentsList->behavior);
+            contentsObj->oVelY = 20.0f;
+            contentsObj->oForwardVel = 3.0f;
+            contentsObj->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
+            OR_BPARAM1(o->oBehParams, contentsList->behParams);
+            if (contentsList->model == MODEL_STAR) {
+                o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
+            }
+            break;
+        }
+        contentsList++;
+    }
+
 
     //this doesn't work...
 
@@ -155,6 +197,7 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
     }
     */
 
+    /*
     if (o->oBehParams2ndByte == 1) {
         //metal star event spawner
         switch(gCurrLevelNum) {
@@ -233,29 +276,21 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
     }
     else
     {
-        while (contentsList->id != EXCLAMATION_BOX_BP_NULL) {
-            if (boxType == contentsList->id) {
-                contentsObj = spawn_object(o, contentsList->model, contentsList->behavior);
-                contentsObj->oVelY = 20.0f;
-                contentsObj->oForwardVel = 3.0f;
-                contentsObj->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
-                OR_BPARAM1(o->oBehParams, contentsList->behParams);
-                if (contentsList->model == MODEL_STAR) {
-                    o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
-                }
-                break;
-            }
-            contentsList++;
-        }
     }
+    */
 }
 
 void exclamation_box_act_explode(void) {
-    exclamation_box_spawn_contents(sExclamationBoxContents, o->oBehParams2ndByte);
+    exclamation_box_spawn_contents(contents_to_use, o->oBehParams2ndByte);
     spawn_mist_particles_variable(0, 0, 46.0f);
-    spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
+    } else {
+        spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, 3);
+    }
+
     create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-    if ((o->oBehParams2ndByte < EXCLAMATION_BOX_BP_COINS_1)&&(o->oBehParams2ndByte != 1)&&(gCurrLevelNum!=LEVEL_SSL)) {
+    if (contents_to_use[o->oBehParams2ndByte].doRespawn) {
         o->oAction = EXCLAMATION_BOX_ACT_WAIT_FOR_RESPAWN;
         cur_obj_hide();
     } else {

@@ -896,6 +896,7 @@ enum {
     CMM_BUTTON_BARS,
     CMM_BUTTON_ROCKENEMY,
     CMM_BUTTON_POLE,
+    CMM_BUTTON_VEXCLA,
 };
 
 u8 cmm_toolbar[9] = {
@@ -917,14 +918,14 @@ u8 cmm_toolbox_btcm[45] = {
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_FORMATION,CMM_BUTTON_BADGE,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_REX,CMM_BUTTON_PODOBOO,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_PHANTASM,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_TREE,CMM_BUTTON_EXCLA,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN, CMM_BUTTON_PRPLSW,CMM_BUTTON_CORK, CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_EXCLA,CMM_BUTTON_TREE,CMM_BUTTON_MPLAT,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_SPAWN, CMM_BUTTON_PRPLSW,CMM_BUTTON_CORK, CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_RCS, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_FORMATION,CMM_BUTTON_KTQ,CMM_BUTTON_HEART,
     /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BULLY,CMM_BUTTON_BOMB,CMM_BUTTON_CHUCKYA,CMM_BUTTON_BBALL,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_TREE,CMM_BUTTON_PIPE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_PRPLSW,CMM_BUTTON_CORK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_VEXCLA,CMM_BUTTON_TREE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_PRPLSW,CMM_BUTTON_CORK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
 
@@ -1014,6 +1015,9 @@ struct cmm_object_info cmm_object_type_corkbox = {
 struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
+struct cmm_object_info cmm_object_type_vexclamationbox = {
+    bhvExclamationBox, TILE_SIZE/2, MODEL_VEXCLAMATION_BOX, FALSE, 0, 2.0f, NULL, df_vexbox, SOUND_GENERAL_BREAK_BOX,
+};
 
 struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_star, FALSE, TRUE, FALSE, 0},
@@ -1030,7 +1034,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_smallbully, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_bobomb, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
-    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 8},
+    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 6},
     {&cmm_object_type_chuckya, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_phantasm, FALSE, FALSE, FALSE, 0},
@@ -1043,18 +1047,28 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_purple_switch, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_corkbox, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
+    {&cmm_object_type_vexclamationbox, FALSE, FALSE, FALSE, 7},
 };
 
 //behparam2 strings
 char *txt_bp_box[] = {
     "Rocket Boots",
-    "Cosmic Seed",
     "Vanetal Cap",
     "Koopa Shell",
     "Green Coin",
-    "3 Coins",
-    "10 Coins",
+    "Three Coins",
+    "Ten Coins",
     "Invisible"
+};
+
+char *txt_bp_vbox[] = {
+    "Wing Cap",
+    "Metal Cap",
+    "Vanish Cap",
+    "Koopa Shell",
+    "One Coin",
+    "Three Coins",
+    "Ten Coins",
 };
 
 char *txt_bp_tree[] = {
@@ -1145,6 +1159,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_bars,         TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {mat_b_btn_thwomp,       OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Stone Enemy",        NULL       }, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
+    {mat_b_btn_excla,        OBJECT_TYPE_VEXCLA,  CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
 };
 
 char *cmm_settings_menu_table[] = {

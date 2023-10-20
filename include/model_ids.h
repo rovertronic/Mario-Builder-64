@@ -787,17 +787,13 @@
 #define MODEL_MARIO2 0x12E
 #define MODEL_KINGBOMB_MAKER 0x12F
 #define MODEL_WHOMP_MAKER 0x130
-
 #define MODEL_ENEMY_LAKITU 0x131        // enemy_lakitu_geo
 #define MODEL_SPINY_BALL   0x132        // spiny_ball_geo
 #define MODEL_SPINY        0x133        // spiny_geo
 #define MODEL_WIGGLER_HEAD 0x134        // wiggler_head_geo
 #define MODEL_WIGGLER_BODY 0x135        // wiggler_body_geo
 #define MODEL_BUBBA        0x136        // bubba_geo
-
 #define MODEL_CHILL_BULLY  0x137        // chilly_chief_geo
-
-// group 14
 #define MODEL_PIRANHA_PLANT    0x138        // piranha_plant_geo
 #define MODEL_WHOMP            0x139        // whomp_geo
 #define MODEL_KOOPA_WITH_SHELL 0x13A        // koopa_with_shell_geo
@@ -805,5 +801,8 @@
 #define MODEL_CHAIN_CHOMP      0x13C        // chain_chomp
 #define MODEL_KOOPA_FLAG       0x13D        // koopa_flag_geo
 #define MODEL_WOODEN_POST      0x13E        // wooden_post_geo
+#define MODEL_VEXCLAMATION_BOX 0x13F
+#define MODEL_V_MARIOS_WING_CAP 0x140
+#define MODEL_V_MARIOS_METAL_CAP 0x141
 
 #endif // MODEL_IDS_H

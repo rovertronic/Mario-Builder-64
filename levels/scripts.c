@@ -151,6 +151,8 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_BADGE, badge_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KINGBOMB_MAKER, king_bobomb_geo),
     LOAD_MODEL_FROM_GEO(MODEL_WHOMP_MAKER, whomp_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_V_MARIOS_METAL_CAP,        marios_metal_cap_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_V_MARIOS_WING_CAP,         marios_wing_cap_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
@@ -241,6 +243,7 @@ const LevelScript script_func_global_1[] = {
     LOAD_MODEL_FROM_GEO(MODEL_BREAKABLE_BOX_NO_SHADOW, breakable_box_no_shadow_geo),
     LOAD_MODEL_FROM_GEO(MODEL_EXCLAMATION_BOX_OUTLINE, exclamation_box_outline_geo),
     LOAD_MODEL_FROM_GEO(MODEL_EXCLAMATION_BOX,         exclamation_box_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_VEXCLAMATION_BOX,        vexclamation_box_geo),
     LOAD_MODEL_FROM_GEO(MODEL_GOOMBA,                  goomba_geo),
     LOAD_MODEL_FROM_DL( MODEL_EXCLAMATION_POINT,       exclamation_box_outline_seg8_dl_exclamation_point, LAYER_OCCLUDE_SILHOUETTE_ALPHA),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_SHELL,             koopa_shell_geo),
