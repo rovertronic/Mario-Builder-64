@@ -68,11 +68,10 @@ u8 cmm_level_action = CMM_LA_MAKING;
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
-s8 cmm_cursor_pos[3] = {0};
+s8 cmm_cursor_pos[3] = {32,0,32};
 
 Vec3f cmm_camera_pos = {0.0f,0.0f,0.0f};
 Vec3f cmm_camera_foc = {0.0f,0.0f,0.0f};
-Vec3f cmm_last_cursor_pos = {0.0f,0.0f,0.0f};
 s16 cmm_camera_angle = 0;
 u8 cmm_camera_rot_offset = 0;
 s8 cmm_camera_zoom_index = 2;
@@ -207,16 +206,34 @@ void df_exbox(s32 context) {
             o->oAnimState = 0;
             break;
         case 1:
+            o->oAnimState = 2;
+            break;
+        case 2:
+            o->oAnimState = 3;
+            break;
+        case 3:
+            o->oAnimState = 4;
+            break;
+        default:
+            o->oAnimState = 4;
+            break;
+    }
+}
+
+void df_vexbox(s32 context) {
+    if (context != CMM_DF_CONTEXT_INIT) return;
+    switch(o->oBehParams2ndByte) {
+        case 0:
+            o->oAnimState = 0;
+            break;
+        case 1:
             o->oAnimState = 1;
             break;
         case 2:
             o->oAnimState = 2;
             break;
-        case 3:
-            o->oAnimState = 3;
-            break;
         default:
-            o->oAnimState = 4;
+            o->oAnimState = 3;
             break;
     }
 }
@@ -2289,13 +2306,14 @@ void cmm_init() {
     if (cmm_level_action == CMM_LA_PLAYING) {
         generate_terrain_gfx();
         generate_terrain_collision();
+    } else {
+        vec3_set(cmm_cursor_pos, 32, 0, 32);
     }
 }
 
 void sb_init(void) {
     struct Object *spawn_obj;
 
-    vec3_set(cmm_cursor_pos, 32, 0, 32);
     cmm_toolbar_index = 0;
     vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
@@ -2324,8 +2342,13 @@ void sb_init(void) {
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
                 if (cmm_level_action == CMM_LA_MAKING) {
-                    vec3f_copy(gMarioState->pos,&cmm_last_cursor_pos);
+                    gMarioState->pos[0] = (f32)(GRID_TO_POS(cmm_cursor_pos[0]));
+                    gMarioState->pos[1] = (f32)(GRIDY_TO_POS(cmm_cursor_pos[1]));
+                    gMarioState->pos[2] = (f32)(GRID_TO_POS(cmm_cursor_pos[2]));
+                    set_mario_action(gMarioState,ACT_IDLE,0);
+                    gMarioState->faceAngle[1] = cmm_rot_selection*0x4000;
                 } else {
+                    gMarioState->faceAngle[1] = spawn_obj->oFaceAngleYaw;
                     vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
                 }
                 gMarioState->pos[1] -= TILE_SIZE/2;
@@ -2408,9 +2431,6 @@ u32 main_cursor_logic(u32 joystick) {
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
     o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
-
-    vec3f_copy(&cmm_last_cursor_pos,&o->oPosVec);
-
     for (u8 i=0; i<6; i++) {
         vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
     }

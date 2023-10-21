@@ -37,6 +37,8 @@
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 
+#include "libpl/libpl.h"
+
 u8 painting_base_rgba16[] = {
 	0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 
 	0x40, 0xc1, 0x51, 0x41, 0x40, 0xc1, 0x28, 0x41, 
@@ -1004,6 +1006,9 @@ void setup_game_memory(void) {
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
+Bool32 gSupportsLibpl = FALSE;
+Bool32 gIsGliden = FALSE;
+
 FATFS fs;
 DIR cmm_dir;
 FRESULT mount_success;
@@ -1050,6 +1055,12 @@ void thread5_game_loop(UNUSED void *arg) {
 #endif
     render_init();
 
+    gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
+    if (gSupportsLibpl) {
+        libpl_create_auto_sd_card(16,255);
+        lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
+        gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_GLIDEN64));
+    }
     //init cmm file structure
     cart_init();
     mount_success = f_mount(&fs, "", 1);

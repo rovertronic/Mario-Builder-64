@@ -246,7 +246,8 @@ s32 gDialogVariable;
 u16 gDialogTextAlpha;
 s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
-s16 gRedCoinsCollected;
+s16 gRedCoinsCollected = 0;
+s16 gRedCoinsTotal = 0;
 #if defined(WIDE) && !defined(PUPPYCAM)
 u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
@@ -1967,6 +1968,7 @@ void render_hud_cannon_reticle(void) {
 
 void reset_red_coins_collected(void) {
     gRedCoinsCollected = 0;
+    gRedCoinsTotal = 0;
 }
 
 void change_dialog_camera_angle(void) {
@@ -2075,13 +2077,43 @@ void render_widescreen_setting(void) {
     #define MYSCORE_X         62
 #endif
 
+
+extern u8 cmm_lopt_coinstar;
+#define LEVEL_STAT_X 85+(level_stats_offset*13)
+#define LEVEL_STAT_Y 130
 void render_pause_my_score_coins(void) {
     u8 textCourse[] = { TEXT_COURSE };
     u8 textMyScore[] = { TEXT_MY_SCORE };
     u8 textStar[] = { TEXT_STAR };
     u8 textUnfilledStar[] = { TEXT_UNFILLED_STAR };
 
-    u8 strCourseNum[4];
+    u8 current_stars = cmm_play_stars;
+    u8 max_stars = cmm_play_stars_max;
+
+    print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "^%dQ%d", current_stars, max_stars);
+    level_stats_offset+=5;
+    if (current_stars>9) {
+        level_stats_offset++;
+    }
+    if (max_stars>9) {
+        level_stats_offset++;
+    }
+
+    if (gRedCoinsTotal > 0) {
+        print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "@%dQ%d", gRedCoinsCollected, gRedCoinsTotal);
+        level_stats_offset+=5;
+        if (gRedCoinsTotal>9) {
+            level_stats_offset++;
+        }
+        if (gRedCoinsCollected>9) {
+            level_stats_offset++;
+        }
+    }
+
+    if (cmm_lopt_coinstar>0) {
+        print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "$%dQ%d", gMarioState->numCoins, (cmm_lopt_coinstar*20));
+    }
+
 
     //void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
     //void    **actNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][2]);
@@ -2131,6 +2163,7 @@ void render_pause_my_score_coins(void) {
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     */
+
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 157, cmm_file_name);

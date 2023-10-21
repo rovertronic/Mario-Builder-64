@@ -920,7 +920,7 @@ s32 cmm_main_menu(void) {
             }
             cmm_mm_keyboard_index = (cmm_mm_keyboard_index+KEYBOARD_SIZE)%KEYBOARD_SIZE;
 
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            if ((gPlayer1Controller->buttonPressed & A_BUTTON)&&(cmm_mm_keyboard_input_index < 20)) {
                 if (gPlayer1Controller->buttonDown & Z_TRIG) {
                     //shift
                     cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard_caps[cmm_mm_keyboard_index];

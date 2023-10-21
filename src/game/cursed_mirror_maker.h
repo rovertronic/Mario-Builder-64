@@ -206,7 +206,9 @@ enum {
     OBJECT_TYPE_KTQ,
     OBJECT_TYPE_PRPLSWT,
     OBJECT_TYPE_CORK,
-    OBJECT_TYPE_HEART,     
+    OBJECT_TYPE_HEART,
+    OBJECT_TYPE_VEXCLA,
+    OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
 };
 
 struct cmm_ui_button_type {
@@ -333,6 +335,7 @@ extern u8 cmm_lopt_game;
 enum {
     CMM_GAME_VANILLA,
     CMM_GAME_BTCM,
+    CMM_GAME_BETA,
 };
 
 enum {
