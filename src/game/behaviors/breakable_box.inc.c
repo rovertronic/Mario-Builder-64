@@ -24,7 +24,6 @@ void breakable_box_init(void) {
 }
 
 void hidden_breakable_box_actions(void) {
-    struct Object *switchObj;
     obj_set_hitbox(o, &sBreakableBoxHitbox);
     cur_obj_set_model(MODEL_BREAKABLE_BOX);
     switch (o->oAction) {
@@ -64,8 +63,7 @@ void hidden_breakable_box_actions(void) {
             cur_obj_become_intangible();
             cur_obj_disable_rendering();
             o->oInteractStatus = INT_STATUS_NONE;
-            switchObj = o->oHiddenObjectSwitchObj;
-            if ((switchObj != NULL) && (switchObj->oAction == PURPLE_SWITCH_ACT_IDLE)) {
+            if (gMarioState->hiddenBoxTimer == 0) {
                 o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
             }
             break;

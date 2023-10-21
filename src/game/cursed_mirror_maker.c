@@ -2286,8 +2286,10 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
-    generate_terrain_gfx();
-    generate_terrain_collision();
+    if (cmm_level_action == CMM_LA_PLAYING) {
+        generate_terrain_gfx();
+        generate_terrain_collision();
+    }
 }
 
 void sb_init(void) {
