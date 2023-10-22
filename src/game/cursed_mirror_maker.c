@@ -2131,7 +2131,7 @@ void save_level(void) {
 
     for (i=0;i<4096;i++) {
         //take a "screenshot" of the level
-        cmm_save.piktcher[i/64][i%64] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/64)*3*320) + ((i%64)*4) ]; //((i/64)*320*8)+((i%64)*11)
+        cmm_save.piktcher[i/64][i%64] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/64)*3*320) + ((i%64)*3) + 40 ]; //((i/64)*320*8)+((i%64)*11)
     }
 
     update_painting();
