@@ -1017,7 +1017,7 @@ FILINFO cmm_dir_info;
 
 #define MAX_FILES 20
 FILINFO cmm_level_entries[MAX_FILES];
-u16 cmm_level_entry_piktcher[MAX_FILES][32][32];
+u16 cmm_level_entry_piktcher[MAX_FILES][64][64];
 struct cmm_level_save temp_cmm_save;
 
 
@@ -1098,10 +1098,9 @@ void thread5_game_loop(UNUSED void *arg) {
                     s16 x;
                     s16 y;
                     u16 *u16_array = cmm_level_entry_piktcher[i];
-                    bcopy(&painting_base_rgba16,u16_array,2048);
-                    for (x = 4; x < 28; x++) {
-                        for (y = 4; y < 28; y++) {
-                            u16_array[(y*32)+x] = temp_cmm_save.piktcher[y-4][x-4];
+                    for (x = 0; x < 64; x++) {
+                        for (y = 0; y < 64; y++) {
+                            u16_array[(y*64)+x] = temp_cmm_save.piktcher[y][x];
                         } 
                     }
                 }
