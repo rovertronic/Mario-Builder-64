@@ -2090,6 +2090,8 @@ void render_pause_my_score_coins(void) {
     u8 current_stars = cmm_play_stars;
     u8 max_stars = cmm_play_stars_max;
 
+    s16 level_stats_offset = 0;
+
     print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "^%dQ%d", current_stars, max_stars);
     level_stats_offset+=5;
     if (current_stars>9) {
