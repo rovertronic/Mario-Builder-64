@@ -346,7 +346,7 @@ void draw_cmm_menu(void) {
             create_dl_translation_matrix(MENU_MTX_PUSH, 280, 200, 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
             //gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
-            //gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh);
+            gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
             //print_maker_string(15,210,txt_btn_2,FALSE);

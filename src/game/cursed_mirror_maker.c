@@ -2068,10 +2068,10 @@ void delete_tile_action(s8 pos[3]) {
 void update_painting() {
     s16 x;
     s16 y;
-    u16 *u16_array = segmented_to_virtual(b_LevelPainting_rgba16);
-    for (x = 4; x < 28; x++) {
-        for (y = 4; y < 28; y++) {
-            u16_array[(y*32)+x] = cmm_save.piktcher[y-4][x-4];
+    u16 *u16_array = segmented_to_virtual(bigpainting2_bigger_painting_rgba16);
+    for (x = 0; x < 64; x++) {
+        for (y = 0; y < 64; y++) {
+            u16_array[(y*64)+x] = cmm_save.piktcher[y][x];
         } 
     }
 }
@@ -2133,8 +2133,10 @@ void save_level(void) {
     for (i=0;i<4096;i++) {
         //take a "screenshot" of the level & burn in a painting frame
         if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
-            cmm_save.piktcher[i/64][i%64] = gFramebuffers[(sRenderingFramebuffer+2)%3][ (((i/64)+8)*3*320) + (((i%64)+16)*3) ]; //((i/64)*320*8)+((i%64)*11)
+            //painting
+            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ (((i/64)+8)*3*320) + (((i%64)+16)*3) ] | 1);
         } else {
+            //painting frame
             cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
         }
     }
