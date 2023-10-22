@@ -2077,6 +2077,7 @@ void update_painting() {
 }
 
 //if (gSramProbe != 0) {
+#include "src/game/cursed_mirror_maker_painting_frames.inc.c"
 
 TCHAR cmm_file_name[30];
 FIL cmm_file;
@@ -2130,8 +2131,12 @@ void save_level(void) {
     }
 
     for (i=0;i<4096;i++) {
-        //take a "screenshot" of the level
-        cmm_save.piktcher[i/64][i%64] = gFramebuffers[(sRenderingFramebuffer+2)%3][ ((i/64)*3*320) + ((i%64)*3) + 40 ]; //((i/64)*320*8)+((i%64)*11)
+        //take a "screenshot" of the level & burn in a painting frame
+        if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
+            cmm_save.piktcher[i/64][i%64] = gFramebuffers[(sRenderingFramebuffer+2)%3][ (((i/64)+8)*3*320) + (((i%64)+16)*3) ]; //((i/64)*320*8)+((i%64)*11)
+        } else {
+            cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
+        }
     }
 
     update_painting();
