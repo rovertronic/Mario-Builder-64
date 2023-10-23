@@ -1245,37 +1245,43 @@ char *cmm_costume_string_table[] = {
     "Cosmic Phantasm",
 };
 
-char *cmm_music_string_table[] = {
-    "Cosmic Castle",
-    "The Showrunner",
-    "Red Hot",
-    "Floating Farm",
-    "Jungle Temple",
-    "VR World",
-    "Spooky Pirate",
-    "Cursed Boss",
-    "Road To The Boss",
-    "Urbowser",
-    "Big House",
-    "SMB1 Overworld",
-    "SMB2 Overworld",
-    "SMB3 Fortress",
-    "NSMB Castle",
-    "The Show's Finale",
-    "Parasite Moon",
-    "AGAMEMNON",
-    "Bad Apple!!",
+char *cmm_music_album_string_table[] = {
+    "Super Mario 64 OST",
+    "Beyond the Cursed Mirror OST",
+};
 
-    "SM64 Main Theme",
+char *cmm_music_vanilla_string_table[] = {
+    "Bob-omb Battlefield",
     "Slider",
-    "Dire Dire Docks",
+    "Dire, Dire Docks",
     "Lethal Lava Land",
-    "Snow Mountain",
-    "Haunted House",
-    "Cave Dungeon",
+    "Cool, Cool Mountain",
+    "Big Boo's Haunt",
+    "Hazy Maze Cave",
     "Koopa's Road",
     "Koopa's Theme",
     "Ultimate Koopa",
+};
+
+char *cmm_music_btcm_string_table[] = {
+    "Cosmic Castle",
+    "The Showrunner",
+    "Red-Hot Reservoir",
+    "Lonely Floating Farm",
+    "Jurassic Savanna",
+    "The Phantom Strider",
+    "Virtuaplex",
+    "Immense Residence",
+    "Thwomp Towers",
+    "Cursed Boss",
+    "Road To The Boss",
+    "Urbowser",
+    "The Show's Finale",
+    "Parasite Moon",
+    "AGAMEMNON",
+    "SMB1 Overworld",
+    "SMB2 Overworld",
+    "SMB3 Fortress",
 };
 
 char *cmm_envfx_string_table[] = {
@@ -1359,7 +1365,8 @@ extern void reload_bg(void);
 extern void reload_theme(void);
 extern void generate_terrain_gfx(void);
 
-
+extern void music_category_changed(void);
+extern void song_changed(void);
 
 struct cmm_settings_button cmm_settings_general_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
@@ -1378,7 +1385,14 @@ struct cmm_settings_button cmm_settings_terrain_buttons[] = {
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
-    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
+    {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
+    {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
+};
+
+// These get copied over to the above array
+struct cmm_settings_button cmm_settings_music_albums[] = {
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_vanilla_string_table, ARRAY_COUNT(cmm_music_vanilla_string_table), NULL, song_changed},
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_btcm_string_table, ARRAY_COUNT(cmm_music_btcm_string_table), NULL, song_changed},
 };
 
 struct cmm_settings_button cmm_settings_backtomainmenu[] = {
@@ -1405,7 +1419,7 @@ char *cmm_template_string_table[] = {
 };
 
 struct cmm_template {
-    u8 music;
+    u8 music[2]; // vanilla, btcm
     u8 envfx;
     u8 bg;
     u8 theme;
@@ -1416,11 +1430,11 @@ struct cmm_template {
 };
 
 struct cmm_template cmm_templates[] = {
-    {19, 0, 0, 0, 1,     2, FALSE},   // bob song
-    {22, 0, 6, 1, 1,     2, FALSE},   // SSL song
-    {2,  1, 2, 2, 2,     3, TRUE}, // red hot
-    {21, 0, 0, 8, 1,     2, FALSE}, // DDD
-    {23, 2, 5, 0, 6,     2, FALSE}, // CCM
+    {{0, 13}, 0, 0, 0, 1,     2, FALSE},   // Grassy - BoB, Floating Farm
+    {{3, 14}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Jurassic
+    {{3, 12},  1, 2, 2, 2,     3, TRUE},    // Lava -   LLL, Red-Hot
+    {{2, 10}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Cosmic Castle
+    {{4, 10}, 2, 5, 0, 6,     2, FALSE},   // Snowy -  CCM, Cosmic Castle
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {

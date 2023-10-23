@@ -131,7 +131,11 @@ u32 cmm_play_badge_bitfield = 0;
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
-u8 cmm_lopt_seq = 0;
+
+u8 cmm_lopt_seq = 0; // Song index
+u8 cmm_lopt_seq_album = 0; // Category
+u8 cmm_lopt_seq_song = 0; // Song index within category
+
 u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
@@ -2179,7 +2183,7 @@ void load_level(void) {
         cmm_save.option[19] = cmm_lopt_game;
         cmm_save.option[7] = cmm_lopt_size;
 
-        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music;
+        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
         cmm_save.option[2] = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.option[3] = cmm_templates[cmm_lopt_template].theme;
         cmm_save.option[4] = cmm_templates[cmm_lopt_template].bg;
@@ -2205,7 +2209,10 @@ void load_level(void) {
     cmm_object_count = cmm_save.object_count;
 
     cmm_lopt_costume = cmm_save.option[0];
+
     cmm_lopt_seq = cmm_save.option[1];
+    set_album_and_song_from_seq();
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
     cmm_lopt_envfx = cmm_save.option[2];
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
@@ -2334,6 +2341,8 @@ void sb_init(void) {
             cmm_boundary_object[3]->oFaceAngleRoll = -0x4000;
             cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
+
+            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
         break;
         case CMM_MODE_PLAY:
             generate_terrain_collision();
@@ -2450,7 +2459,7 @@ void delete_preview_object(void) {
     if (previewObj) unload_object(previewObj);
 }
 
-void (*cmm_generate_gfx)(void) = NULL;
+void (*cmm_option_changed_func)(void) = NULL;
 
 void reload_theme(void) {
     generate_terrain_gfx();
@@ -2485,9 +2494,9 @@ void sb_loop(void) {
     cmm_current_camera_zoom[0] = lerp(cmm_current_camera_zoom[0], cmm_camera_zoom_table[cmm_camera_zoom_index][0],0.2f);
     cmm_current_camera_zoom[1] = lerp(cmm_current_camera_zoom[1], cmm_camera_zoom_table[cmm_camera_zoom_index][1],0.2f);
 
-    if (cmm_generate_gfx) {
-        cmm_generate_gfx();
-        cmm_generate_gfx = NULL;
+    if (cmm_option_changed_func) {
+        cmm_option_changed_func();
+        cmm_option_changed_func = NULL;
     }
 
     switch(o->oAction) {

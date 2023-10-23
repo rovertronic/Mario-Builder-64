@@ -340,60 +340,7 @@ u8 txt_jaguar[] = {TEXT_JAGUAR};
 u8 txt_spk[] = {TEXT_SPK};
 u8 txt_nomico[] = {TEXT_NOMICO};
 
-u8 txt_song1[] = {TEXT_SONG1};
-u8 txt_song2[] = {TEXT_SONG2};
-u8 txt_song3[] = {TEXT_SONG3};
-u8 txt_song4[] = {TEXT_SONG4};
-u8 txt_song5[] = {TEXT_SONG5};
-u8 txt_song6[] = {TEXT_SONG6};
-u8 txt_song7[] = {TEXT_SONG7};
-u8 txt_song8[] = {TEXT_SONG8};
-u8 txt_song9[] = {TEXT_SONG9};
-u8 txt_song10[] = {TEXT_SONG10};
-u8 txt_song11[] = {TEXT_SONG11};
-u8 txt_song12[] = {TEXT_SONG12};
-u8 txt_song13[] = {TEXT_SONG13};
-u8 txt_song14[] = {TEXT_SONG14};
-u8 txt_song15[] = {TEXT_SONG15};
-u8 txt_song16[] = {TEXT_SONG16};
-u8 txt_song17[] = {TEXT_SONG17};
-u8 txt_song18[] = {TEXT_SONG18};
-u8 txt_song19[] = {TEXT_SONG19};
-u8 txt_song20[] = {TEXT_SONG20};
-
-u8 txt_song21[] = {TEXT_SONG21};
-u8 txt_song22[] = {TEXT_SONG22};
-u8 txt_song23[] = {TEXT_SONG23};
-u8 txt_song24[] = {TEXT_SONG24};
-u8 txt_song25[] = {TEXT_SONG25};
-u8 txt_song26[] = {TEXT_SONG26};
-u8 txt_song27[] = {TEXT_SONG27};
-u8 txt_song28[] = {TEXT_SONG28};
-u8 txt_song29[] = {TEXT_SONG29};
-
 u8 seq_musicmenu_array[] = {
-    SEQ_LEVEL_INSIDE_CASTLE,
-    SEQ_SHOWRUNNER,
-    SEQ_REDHOT,
-    SEQ_FARM,
-    SEQ_JUNGLE,
-    SEQ_EVENT_CUTSCENE_ENDING,
-    SEQ_PIRATE,
-    SEQ_EVENT_BOSS,
-    SEQ_LEVEL_KOOPA_ROAD,
-    SEQ_COSMIC_SEED_BOSS,
-
-    SEQ_BIG_HOUSE,
-    SEQ_SMB1_OVERWORLD,
-    SEQ_SMB2_OVERWORLD,
-    SEQ_SMB3_CASTLE,
-    SEQ_NSMB_CASTLE,
-    SEQ_SHOWRUNNER_BOSS,
-    SEQ_COSMIC_SEED_LEVEL,
-    SEQ_FINAL_BOSS,
-
-    SEQ_STREAMED_BAD_APPLE,
-    
     SEQ_LEVEL_GRASS,
     SEQ_LEVEL_SLIDE,
     SEQ_LEVEL_WATER,
@@ -404,39 +351,25 @@ u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_KOOPA_ROAD_2,
     SEQ_LEVEL_BOSS_KOOPA,
     SEQ_LEVEL_BOSS_KOOPA_FINAL,
-};
 
-u8 *musicmenu_titles[] = {
-    &txt_song1,
-    &txt_song2,
-    &txt_song3,
-    &txt_song4,
-    &txt_song5,
-    &txt_song6,
-    &txt_song7,
-    &txt_song8,
-    &txt_song9,
-    &txt_song10,
-    &txt_song11,
-    &txt_song12,
-    &txt_song13,
-    &txt_song14,
-    &txt_song15,
-    &txt_song16,
-    &txt_song17,
-    &txt_song18,
-    &txt_song19,
-
-    &txt_song20,
-    &txt_song21,
-    &txt_song22,
-    &txt_song23,
-    &txt_song24,
-    &txt_song25,
-    &txt_song26,
-    &txt_song27,
-    &txt_song28,
-    &txt_song29,
+    SEQ_LEVEL_INSIDE_CASTLE,
+    SEQ_SHOWRUNNER,
+    SEQ_REDHOT,
+    SEQ_FARM,
+    SEQ_JUNGLE,
+    SEQ_PIRATE,
+    SEQ_EVENT_CUTSCENE_ENDING,
+    SEQ_BIG_HOUSE,
+    SEQ_NSMB_CASTLE,
+    SEQ_EVENT_BOSS,
+    SEQ_LEVEL_KOOPA_ROAD,
+    SEQ_COSMIC_SEED_BOSS,
+    SEQ_SHOWRUNNER_BOSS,
+    SEQ_COSMIC_SEED_LEVEL,
+    SEQ_FINAL_BOSS,
+    SEQ_SMB1_OVERWORLD,
+    SEQ_SMB2_OVERWORLD,
+    SEQ_SMB3_CASTLE,
 };
 
 u8 *musicmenu_authors[] = {
@@ -467,8 +400,6 @@ u8 *musicmenu_authors[] = {
 };
 
 #define mus_count ARRAY_COUNT(seq_musicmenu_array)
-
-STATIC_ASSERT(ARRAY_COUNT(musicmenu_titles) == mus_count, "musicmenu_titles has incorrect number of entries!");
 //STATIC_ASSERT(ARRAY_COUNT(musicmenu_authors) == mus_count, "musicmenu_authors has incorrect number of entries!");
 
 void render_music_menu() {
@@ -508,7 +439,7 @@ void render_music_menu() {
         minigame_index = (minigame_index+mus_count)%mus_count;
         if (music_flags & (1<<minigame_index)) {
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(15, seq_musicmenu_array[minigame_index]), 0);
-            rtext_insert_pointer[0] = musicmenu_titles[minigame_index];
+            //rtext_insert_pointer[0] = musicmenu_titles[minigame_index];
             rtext_insert_pointer[1] = musicmenu_authors[minigame_index];
             read_dialog(DIALOG_MUSICROOM);
         }
@@ -520,7 +451,7 @@ void render_music_menu() {
         minigame_index = (minigame_index+mus_count)%mus_count;
         if (music_flags & (1<<minigame_index)) {
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(15, seq_musicmenu_array[minigame_index]), 0);
-            rtext_insert_pointer[0] = musicmenu_titles[minigame_index];
+            //rtext_insert_pointer[0] = musicmenu_titles[minigame_index];
             rtext_insert_pointer[1] = musicmenu_authors[minigame_index];
             read_dialog(DIALOG_MUSICROOM);
         }
@@ -575,9 +506,9 @@ void render_music_menu() {
         if ((i_offset > -1)&&(i_offset <mus_count)) {
             if (music_flags & (1<<i_offset)) {
                     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                    print_generic_string(14,140-(i*16), musicmenu_titles[i_offset]);
+                    //print_generic_string(14,140-(i*16), musicmenu_titles[i_offset]);
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                    print_generic_string(15,141-(i*16), musicmenu_titles[i_offset]);
+                    //print_generic_string(15,141-(i*16), musicmenu_titles[i_offset]);
                 } else {
                     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
                     print_generic_string(14,140-(i*16), &qbuf);

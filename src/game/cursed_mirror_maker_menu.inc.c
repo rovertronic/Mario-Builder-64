@@ -149,13 +149,13 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
             cmm_menu_scrolling[i][1] = -1;
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             *(btn[i].value) = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
-            if (btn[i].changedFunc) cmm_generate_gfx = btn[i].changedFunc;
+            if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
         } else if (joystick == 3) {
             cmm_menu_scrolling[i][0] = 5;
             cmm_menu_scrolling[i][1] = 1;
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             *(btn[i].value) = (*(btn[i].value) + 1) % btn[i].size;
-            if (btn[i].changedFunc) cmm_generate_gfx = btn[i].changedFunc;
+            if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
         }
     }
     if (cmm_menu_scrolling[i][0] > 0) {
@@ -219,26 +219,63 @@ char *cmm_get_waterlevel_name(s32 index) {
     return cmm_temp_name_buffer;
 }
 
+// Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq
+void set_album_and_song_from_seq(void) {
+    u32 song = cmm_lopt_seq;
+    u32 i = 0;
+    do {
+        if (song < cmm_settings_music_albums[i].size) {
+            cmm_lopt_seq_album = i;
+            cmm_lopt_seq_song = song;
+            return;
+        }
+        song -= cmm_settings_music_albums[i].size;
+    } while (++i < sizeof(cmm_music_album_string_table));
+}
+// Set cmm_lopt_seq from cmm_lopt_seq_album and cmm_lopt_seq_song
+void set_seq_from_album_and_song(void) {
+    cmm_lopt_seq = 0;
+    u32 i = 0;
+    do {
+        if (i == cmm_lopt_seq_album) {
+            cmm_lopt_seq += cmm_lopt_seq_song;
+            return;
+        }
+        cmm_lopt_seq += cmm_settings_music_albums[i].size;
+    } while (++i < sizeof(cmm_music_album_string_table));
+}
+
+void music_category_changed(void) {
+    cmm_lopt_seq_song = 0;
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
+    song_changed();
+}
+void song_changed(void) {
+    set_seq_from_album_and_song();
+    stop_background_music(get_current_background_music());
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+}
+
 u8 cmm_curr_settings_menu = 0;
 
 void draw_cmm_settings_general(void) {
-    for (s32 i=1;i<5;i++) {
+    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_general_buttons);i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_general_buttons,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_terrain(void) {
-    for (s32 i=1;i<4;i++) {
+    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
         print_maker_string_ascii(45,170-(i*16),cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_terrain_buttons,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_music(void) {
-    for (s32 i=1;i<2;i++) {
-        print_maker_string_ascii(45,170-(i*16),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190,170-(i*16),60,cmm_settings_music_buttons,i,cmm_joystick);
+    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
+        print_maker_string_ascii(45,170-(i*25),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*25),85,cmm_settings_music_buttons,i,cmm_joystick);
     }
 }
 
@@ -257,7 +294,10 @@ void (*cmm_settings_menus[])(void) = {
     draw_cmm_settings_backtomainmenu,
 };
 u8 cmm_settings_menu_lengths[] = {
-    5,4,2,1
+    ARRAY_COUNT(cmm_settings_general_buttons),
+    ARRAY_COUNT(cmm_settings_terrain_buttons),
+    ARRAY_COUNT(cmm_settings_music_buttons),
+    1,
 };
 
 void draw_cmm_menu(void) {
