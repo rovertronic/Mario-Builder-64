@@ -2126,7 +2126,7 @@ void save_level(void) {
         //take a "screenshot" of the level & burn in a painting frame
         if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
             //painting
-            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ (((i/64)+8)*3*320) + (((i%64)+16)*3) ] | 1);
+            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
         } else {
             //painting frame
             cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
