@@ -1016,7 +1016,7 @@ struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
 struct cmm_object_info cmm_object_type_preview_mario = {
-    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 5, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
 };
 
 enum {

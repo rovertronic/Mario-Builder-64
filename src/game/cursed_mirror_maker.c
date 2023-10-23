@@ -116,7 +116,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 1;
+u8 cmm_uv_scaling = 64;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -453,17 +453,6 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
     return FALSE;
 }
 
-s32 handle_wait_vblank(OSMesgQueue *mq) {
-    // returns true if it lasts longer than 3 seconds (3 * 1000us * 1000ms)
-    OSMesg msg;
-    OSTimer timer;
-    osSetTimer(&timer, OS_USEC_TO_CYCLES(3000000), 0, mq, (OSMesg)(111*3*2));
-    osRecvMesg(mq, &msg, OS_MESG_BLOCK);
-    osStopTimer(&timer);
-
-    return msg == (OSMesg)(111*3*2);
-}
-
 void cache_tri(u8 v1, u8 v2, u8 v3) {
     cmm_cached_tris[cmm_num_tris_cached][0] = cmm_num_vertices_cached + v1;
     cmm_cached_tris[cmm_num_tris_cached][1] = cmm_num_vertices_cached + v2;
@@ -619,7 +608,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -656,7 +645,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -1139,8 +1128,8 @@ Gfx *get_sidetex(s32 mat) {
 
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1265,7 +1254,7 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 2;
+    cmm_uv_scaling = 128;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
@@ -1275,7 +1264,7 @@ void generate_terrain_gfx(void) {
         render_bars(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 1;
+    cmm_uv_scaling = 64;
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1453,9 +1442,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 2;
+                    cmm_uv_scaling = 128;
                     render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 1;
+                    cmm_uv_scaling = 64;
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1598,6 +1587,9 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     s8 pos[3];
     vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
 
+    // Check if out of range
+    if (pos[1] < 0) return waterPlaneHeight;
+    if (pos[1] > 31) pos[1] = 31;
     // If block contains water, scan upwards, otherwise scan downwards
     if (get_grid_tile(pos)->waterlogged) {
         // Find grid Y coordinate of highest water block.
@@ -1668,6 +1660,9 @@ void generate_object_preview(void) {
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
         totalCoins += info->numCoins;
 
+        if (info == &cmm_object_type_exclamationbox) {
+            totalCoins += cmm_exclamation_box_contents[cmm_object_data[i].param].numCoins;
+        }
         if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
             doubleCoins = TRUE;
         }

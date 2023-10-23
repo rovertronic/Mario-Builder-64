@@ -2602,7 +2602,7 @@ void init_mario(void) {
 
     gMarioState->numAir = 700;
     gMarioState->RFuel=0;
-
+/**
     //crimas only!!!
     gMarioState->MessHeld = 0;
     gMarioState->MessNumber = 0;
@@ -2642,7 +2642,7 @@ void init_mario(void) {
         gMarioState->gCurrMinigame = 3;
         gMarioState->EA_WAVES = 0;
         }
-
+**/
 
     gMarioState->SwitchPressed = 0;
 
@@ -2684,6 +2684,7 @@ void init_mario(void) {
     vec3s_to_vec3f(gMarioState->pos, gMarioSpawnInfo->startPos);
     vec3f_copy(gMarioState->prevPos, gMarioState->pos);
     vec3_zero(gMarioState->vel);
+    vec3_set(gMarioState->floorNormal, 0.f, 1.f, 0.f);
     gMarioState->floorHeight =
         find_floor(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], &gMarioState->floor);
 
