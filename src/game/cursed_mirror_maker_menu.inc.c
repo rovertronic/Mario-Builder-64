@@ -302,7 +302,7 @@ u8 cmm_settings_menu_lengths[] = {
 
 void draw_cmm_menu(void) {
     u16 decor_bar_offset = 36;
-    if (cmm_menu_state == CMM_MAKE_TOOLBOX || cmm_menu_state == CMM_MAKE_SETTINGS) {
+    if (cmm_menu_state == CMM_MAKE_SETTINGS) {
         decor_bar_offset = 235;
     }
 
@@ -312,7 +312,7 @@ void draw_cmm_menu(void) {
     }
 
     create_dl_translation_matrix(MENU_MTX_PUSH, 19, decor_bar_offset, 0);
-    gDPSetEnvColor(gDisplayListHead++, 200, 200, 200, 150);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
     gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
