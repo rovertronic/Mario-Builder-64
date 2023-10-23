@@ -862,4 +862,6 @@ extern const struct Animation *const Hammerbro_anims[];
 
 #include "spawn/header.h"
 
+#include "bigpainting2/header.h"
+
 #endif

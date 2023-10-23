@@ -103,6 +103,6 @@ extern FRESULT mount_success;
 extern FILINFO cmm_level_entries[20];
 extern FRESULT global_code;
 extern u8 cmm_level_entry_count;
-extern u16 cmm_level_entry_piktcher[][32][32];
+extern u16 cmm_level_entry_piktcher[][64][64];
 
 #endif // GAME_INIT_H

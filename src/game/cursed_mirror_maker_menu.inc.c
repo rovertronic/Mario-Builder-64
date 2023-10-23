@@ -345,8 +345,8 @@ void draw_cmm_menu(void) {
             //PAINTING
             create_dl_translation_matrix(MENU_MTX_PUSH, 280, 200, 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
-            gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+            //gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
+            gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
             //print_maker_string(15,210,txt_btn_2,FALSE);
@@ -1078,13 +1078,15 @@ s32 cmm_main_menu(void) {
 
                 //render painting
                 create_dl_translation_matrix(MENU_MTX_PUSH, -108, -2, 0);
-                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                    gDPPipeSync(gDisplayListHead++);
-                    gDPSetCombineLERP(gDisplayListHead++,ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0, ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0);
-                    gSPGeometryMode(gDisplayListHead++,G_ZBUFFER | G_CULL_BACK, 0);
-                    gSPTexture(gDisplayListHead++,65535, 65535, 0, 0, 1);
-                    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, &cmm_level_entry_piktcher[startRenderIndex + i]);
-                    gSPDisplayList(gDisplayListHead++, &mptng_mptng_mesh);
+                    //gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                    //gDPPipeSync(gDisplayListHead++);
+                    //gDPSetCombineLERP(gDisplayListHead++,ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0, ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0);
+                    //gSPGeometryMode(gDisplayListHead++,G_ZBUFFER | G_CULL_BACK, 0);
+                    //gSPTexture(gDisplayListHead++,65535, 65535, 0, 0, 1);
+                    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
+                    gDPLoadSync(gDisplayListHead++);
+                    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, &cmm_level_entry_piktcher[startRenderIndex + i]);
+                    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 //
 
