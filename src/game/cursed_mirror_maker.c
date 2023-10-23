@@ -1365,9 +1365,9 @@ void generate_terrain_gfx(void) {
     cmm_gfx_total = (cmm_curr_gfx + cmm_gfx_index) - cmm_terrain_gfx;
 };
 
-Gfx preview_gfx[32];
+Gfx preview_gfx[50];
 Mtx preview_mtx[2];
-Vtx preview_vtx[64];
+Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
@@ -1802,6 +1802,7 @@ void place_tile(s8 pos[3]) {
                 }
                 break;
             case TILE_TYPE_POLE:
+            case TILE_TYPE_BARS:
                 play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
                 break;
         }
