@@ -179,37 +179,18 @@ struct cmm_object_place {
     s8 maxParams;
 };
 
-enum {
-    OBJECT_TYPE_STAR,
-    OBJECT_TYPE_GOOMBA,
-    OBJECT_TYPE_COIN,
-    OBJECT_TYPE_GCOIN,
-    OBJECT_TYPE_RCOIN,
-    OBJECT_TYPE_BCOIN,
-    OBJECT_TYPE_BCS,//BLUE COIN SWITCH (not better call saul)
-    OBJECT_TYPE_RCS,//RED COIN STAR
-    OBJECT_TYPE_NOTE,
-    OBJECT_TYPE_PODOB,
-    OBJECT_TYPE_REX,
-    OBJECT_TYPE_BULLY,
-    OBJECT_TYPE_BOMB,
-    OBJECT_TYPE_TREE,
-    OBJECT_TYPE_EXCLA,
-    OBJECT_TYPE_CHUCKYA,
-    OBJECT_TYPE_SPAWN,
-    OBJECT_TYPE_PHNTSM,
-    OBJECT_TYPE_PIPE,
-    OBJECT_TYPE_BADGE,
-    OBJECT_TYPE_BOSS,
-    OBJECT_TYPE_MPLAT,
-    OBJECT_TYPE_BBALL,
-    OBJECT_TYPE_KTQ,
-    OBJECT_TYPE_PRPLSWT,
-    OBJECT_TYPE_CORK,
-    OBJECT_TYPE_HEART,
-    OBJECT_TYPE_VEXCLA,
-    OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
+struct ExclamationBoxContents {
+    u8 id;
+    u8 unk1;
+    u8 behParams;
+    ModelID16 model;
+    const BehaviorScript *behavior;
+    u8 animState; //not shitcum
+    u8 doRespawn;
+    u8 numCoins;
 };
+
+extern struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
 struct cmm_ui_button_type {
     Gfx *material;
@@ -335,7 +316,6 @@ extern u8 cmm_lopt_game;
 enum {
     CMM_GAME_VANILLA,
     CMM_GAME_BTCM,
-    CMM_GAME_BETA,
 };
 
 enum {

@@ -1,16 +1,6 @@
 // exclamation_box.inc.c
 //sorry that this file is a convoluted cluster fuck
 
-struct ExclamationBoxContents {
-    u8 id;
-    u8 unk1;
-    u8 behParams;
-    ModelID16 model;
-    const BehaviorScript *behavior;
-    u8 animState; //not shitcum
-    u8 doRespawn;
-};
-
 struct ObjectHitbox sExclamationBoxHitbox = {
     /* interactType:      */ INTERACT_BREAKABLE,
     /* downOffset:        */ 5,
@@ -23,42 +13,6 @@ struct ObjectHitbox sExclamationBoxHitbox = {
     /* hurtboxHeight:     */ 30,
 };
 
-struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
-    { 0, 0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE},
-    { 1, 0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE},
-    { 2, 0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE},
-    { 3, 0, 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE},
-    { 4, 0, 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE},
-    { 5, 0, 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE},
-    //END
-    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,4, FALSE},
-};
-
-struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
-    { 0, 0, 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE},
-    { 1, 0, 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE},
-    { 2, 0, 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE},
-    { 3, 0, 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE},
-    { 4, 0, 0, MODEL_NONE,               bhvOneCoin,         3, FALSE},
-    { 5, 0, 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE},
-    { 6, 0, 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE},
-    //END
-    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE},
-};
-
-//struct ExclamationBoxContents sExclamationBoxContents_beta[] = {
-    //END
-    //{ EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE},
-//}
-
-struct ExclamationBoxContents *game_style_exclamationbox_contents[] = {
-    &sExclamationBoxContents_vanilla,
-    &sExclamationBoxContents_btcm,
-    //sExclamationBoxContents_beta,
-};
-
-struct ExclamationBoxContents *contents_to_use;
-
 void bhv_rotating_exclamation_mark_loop(void) {
     if (o->parentObj->oAction != EXCLAMATION_BOX_ACT_OUTLINE) {
         obj_mark_for_deletion(o);
@@ -66,10 +20,13 @@ void bhv_rotating_exclamation_mark_loop(void) {
 }
 
 void exclamation_box_act_init(void) {
-    contents_to_use = game_style_exclamationbox_contents[cmm_lopt_game];
-
     o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
-    o->oAnimState = contents_to_use[o->oBehParams2ndByte].animState;
+
+    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_VEXCLAMATION_BOX];
+    }
+
+    o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
 
 
     //u32 stardata = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum-1);
@@ -281,7 +238,7 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
 }
 
 void exclamation_box_act_explode(void) {
-    exclamation_box_spawn_contents(contents_to_use, o->oBehParams2ndByte);
+    exclamation_box_spawn_contents(cmm_exclamation_box_contents, o->oBehParams2ndByte);
     spawn_mist_particles_variable(0, 0, 46.0f);
     if (cmm_lopt_game == CMM_GAME_BTCM) {
         spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
@@ -290,7 +247,7 @@ void exclamation_box_act_explode(void) {
     }
 
     create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-    if (contents_to_use[o->oBehParams2ndByte].doRespawn) {
+    if (cmm_exclamation_box_contents[o->oBehParams2ndByte].doRespawn) {
         o->oAction = EXCLAMATION_BOX_ACT_WAIT_FOR_RESPAWN;
         cur_obj_hide();
     } else {

@@ -160,6 +160,8 @@ u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
 u8 cmm_cached_tris[16][3];
 
+struct ExclamationBoxContents *cmm_exclamation_box_contents;
+
 void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
 }
@@ -201,23 +203,10 @@ void df_tree(s32 context) {
 
 void df_exbox(s32 context) {
     if (context != CMM_DF_CONTEXT_INIT) return;
-    switch(o->oBehParams2ndByte) {
-        case 0:
-            o->oAnimState = 0;
-            break;
-        case 1:
-            o->oAnimState = 2;
-            break;
-        case 2:
-            o->oAnimState = 3;
-            break;
-        case 3:
-            o->oAnimState = 4;
-            break;
-        default:
-            o->oAnimState = 4;
-            break;
+    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_VEXCLAMATION_BOX];
     }
+    o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
 }
 
 void df_vexbox(s32 context) {
@@ -1805,6 +1794,9 @@ void place_tile(s8 pos[3]) {
             case TILE_TYPE_BARS:
                 play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
                 break;
+            case TILE_TYPE_CULL:
+                play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
+                break;
         }
     }
 
@@ -2244,6 +2236,12 @@ void load_level(void) {
     }
 
     cmm_lopt_game = cmm_save.option[19];
+
+    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+        cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
+    } else {
+        cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
+    }
 
     //configure toolbox depending on game style
     switch(cmm_lopt_game) {

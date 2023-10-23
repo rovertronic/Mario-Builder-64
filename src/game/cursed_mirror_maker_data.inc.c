@@ -1015,11 +1015,39 @@ struct cmm_object_info cmm_object_type_corkbox = {
 struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
-struct cmm_object_info cmm_object_type_vexclamationbox = {
-    bhvExclamationBox, TILE_SIZE/2, MODEL_VEXCLAMATION_BOX, FALSE, 0, 2.0f, NULL, df_vexbox, SOUND_GENERAL_BREAK_BOX,
-};
 struct cmm_object_info cmm_object_type_preview_mario = {
     bhvStaticObject, 0, MODEL_MARIO2, FALSE, 5, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+};
+
+enum {
+    OBJECT_TYPE_STAR,
+    OBJECT_TYPE_GOOMBA,
+    OBJECT_TYPE_COIN,
+    OBJECT_TYPE_GCOIN,
+    OBJECT_TYPE_RCOIN,
+    OBJECT_TYPE_BCOIN,
+    OBJECT_TYPE_BCS,//BLUE COIN SWITCH (not better call saul)
+    OBJECT_TYPE_RCS,//RED COIN STAR
+    OBJECT_TYPE_NOTE,
+    OBJECT_TYPE_PODOB,
+    OBJECT_TYPE_REX,
+    OBJECT_TYPE_BULLY,
+    OBJECT_TYPE_BOMB,
+    OBJECT_TYPE_TREE,
+    OBJECT_TYPE_EXCLA,
+    OBJECT_TYPE_CHUCKYA,
+    OBJECT_TYPE_SPAWN,
+    OBJECT_TYPE_PHNTSM,
+    OBJECT_TYPE_PIPE,
+    OBJECT_TYPE_BADGE,
+    OBJECT_TYPE_BOSS,
+    OBJECT_TYPE_MPLAT,
+    OBJECT_TYPE_BBALL,
+    OBJECT_TYPE_KTQ,
+    OBJECT_TYPE_PRPLSWT,
+    OBJECT_TYPE_CORK,
+    OBJECT_TYPE_HEART,
+    OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1037,7 +1065,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_smallbully, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_bobomb, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
-    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 6},
+    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_chuckya, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_phantasm, FALSE, FALSE, FALSE, 0},
@@ -1050,8 +1078,31 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_purple_switch, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_corkbox, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
-    {&cmm_object_type_vexclamationbox, FALSE, FALSE, FALSE, 7},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
+};
+
+struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
+    { 0, 0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE,  0},
+    { 1, 0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE,  0},
+    { 2, 0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE,  0},
+    { 3, 0, 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE, 3},
+    { 4, 0, 0, MODEL_YELLOW_COIN,      bhvSingleCoinGetsSpawned,  4, FALSE, 1},
+    { 5, 0, 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE, 3},
+    { 6, 0, 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE, 10},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,4, FALSE, 0},
+};
+
+struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
+    { 0, 0, 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE,  0},
+    { 1, 0, 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE,  0},
+    { 2, 0, 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE,  0},
+    { 3, 0, 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE,  0},
+    { 4, 0, 0, MODEL_YELLOW_COIN,        bhvSingleCoinGetsSpawned, 3, FALSE, 1},
+    { 5, 0, 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE, 3},
+    { 6, 0, 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE, 0},
 };
 
 //behparam2 strings
@@ -1060,9 +1111,9 @@ char *txt_bp_box[] = {
     "Vanetal Cap",
     "Koopa Shell",
     "Green Coin",
+    "One Coin",
     "Three Coins",
     "Ten Coins",
-    "Invisible"
 };
 
 char *txt_bp_vbox[] = {
@@ -1163,7 +1214,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_bars,         TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {mat_b_btn_thwomp,       OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Stone Enemy",        NULL       }, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
-    {mat_b_btn_excla,        OBJECT_TYPE_VEXCLA,  CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
+    {mat_b_btn_excla,        OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
 };
 
 char *cmm_settings_menu_table[] = {
