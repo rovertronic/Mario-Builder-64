@@ -354,7 +354,6 @@ u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_INSIDE_CASTLE2,
 
     SEQ_LEVEL_INSIDE_CASTLE,
-    SEQ_SHOWRUNNER,
     SEQ_REDHOT,
     SEQ_FARM,
     SEQ_JUNGLE,

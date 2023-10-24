@@ -1266,7 +1266,6 @@ char *cmm_music_vanilla_string_table[] = {
 
 char *cmm_music_btcm_string_table[] = {
     "Cosmic Castle",
-    "The Showrunner",
     "Red-Hot Reservoir",
     "Lonely Floating Farm",
     "Jurassic Savanna",
