@@ -340,37 +340,7 @@ u8 txt_jaguar[] = {TEXT_JAGUAR};
 u8 txt_spk[] = {TEXT_SPK};
 u8 txt_nomico[] = {TEXT_NOMICO};
 
-u8 seq_musicmenu_array[] = {
-    SEQ_LEVEL_GRASS,
-    SEQ_LEVEL_SLIDE,
-    SEQ_LEVEL_WATER,
-    SEQ_LEVEL_HOT,
-    SEQ_LEVEL_SNOW,
-    SEQ_LEVEL_SPOOKY,
-    SEQ_LEVEL_UNDERGROUND,
-    SEQ_LEVEL_KOOPA_ROAD_2,
-    SEQ_LEVEL_BOSS_KOOPA,
-    SEQ_LEVEL_BOSS_KOOPA_FINAL,
-    SEQ_LEVEL_INSIDE_CASTLE2,
-
-    SEQ_LEVEL_INSIDE_CASTLE,
-    SEQ_REDHOT,
-    SEQ_FARM,
-    SEQ_JUNGLE,
-    SEQ_PIRATE,
-    SEQ_EVENT_CUTSCENE_ENDING,
-    SEQ_BIG_HOUSE,
-    SEQ_NSMB_CASTLE,
-    SEQ_EVENT_BOSS,
-    SEQ_LEVEL_KOOPA_ROAD,
-    SEQ_COSMIC_SEED_BOSS,
-    SEQ_SHOWRUNNER_BOSS,
-    SEQ_COSMIC_SEED_LEVEL,
-    SEQ_FINAL_BOSS,
-    SEQ_SMB1_OVERWORLD,
-    SEQ_SMB2_OVERWORLD,
-    SEQ_SMB3_CASTLE,
-};
+extern u8 seq_musicmenu_array[];
 
 u8 *musicmenu_authors[] = {
     &txt_spk,     // SEQ_LEVEL_INSIDE_CASTLE
@@ -399,7 +369,7 @@ u8 *musicmenu_authors[] = {
     &txt_nomico,    // SEQ_STREAMED_BAD_APPLE
 };
 
-#define mus_count ARRAY_COUNT(seq_musicmenu_array)
+#define mus_count 5//ARRAY_COUNT(seq_musicmenu_array)
 //STATIC_ASSERT(ARRAY_COUNT(musicmenu_authors) == mus_count, "musicmenu_authors has incorrect number of entries!");
 
 void render_music_menu() {

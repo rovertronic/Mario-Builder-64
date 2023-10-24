@@ -274,8 +274,8 @@ void draw_cmm_settings_terrain(void) {
 
 void draw_cmm_settings_music(void) {
     for (s32 i=1;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
-        print_maker_string_ascii(45,170-(i*25),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190,170-(i*25),85,cmm_settings_music_buttons,i,cmm_joystick);
+        print_maker_string_ascii(35,170-(i*25),cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190,170-(i*25),100,cmm_settings_music_buttons,i,cmm_joystick);
     }
 }
 

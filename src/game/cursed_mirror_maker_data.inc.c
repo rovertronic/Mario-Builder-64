@@ -1248,6 +1248,7 @@ char *cmm_costume_string_table[] = {
 char *cmm_music_album_string_table[] = {
     "Super Mario 64 OST",
     "Beyond the Cursed Mirror OST",
+    "ROM Hacks",
 };
 
 char *cmm_music_vanilla_string_table[] = {
@@ -1282,6 +1283,136 @@ char *cmm_music_btcm_string_table[] = {
     "SMB1 Overworld",
     "SMB2 Overworld",
     "SMB3 Fortress",
+};
+
+char *cmm_music_romhack_string_table[] = {
+    "Sky and Sea (Super Mario Sunshine)",
+    "Gusty Garden (Super Mario Galaxy)",
+    "Buoy Base (Super Mario Galaxy)",
+    "Melty Molten (Super Mario Galaxy)",
+    "Purple Comet (Super Mario Galaxy)",
+    "Overworld (New Super Mario Bros.)",
+
+    "Koopa Troopa Beach (Mario Kart 64)",
+    "Frappe Snowland (Mario Kart 64)",
+    "Rainbow Road (Mario Kart 64)",
+    "Bowser's Castle (Mario Kart 64)",
+
+    "Flipside (Super Paper Mario)",
+    "Sammer Kingdom (Super Paper Mario)",
+    "Floro Caverns (Super Paper Mario)",
+    "Riddle Tower (Paper Mario: TTYD)",
+    "Rogueport Sewers (Paper Mario: TTYD)",
+
+    "Mario's Pad (Super Mario RPG)",
+    "Forest Maze (Super Mario RPG)",
+    "Sunken Ship (Super Mario RPG)",
+
+    "Lost Woods (Ocarina of Time)",
+    "Gerudo Valley (Ocarina of Time)",
+    "Stone Tower Temple (Majora's Mask)",
+    "Lake Hylia (Twilight Princess)",
+
+    "Frantic Factory (Donkey Kong 64)",
+    "Hideout Helm (Donkey Kong 64)",
+    "Gloomy Galleon (Donkey Kong 64)",
+
+    "Bubblegloop Swamp (Banjo-Kazooie)",
+    "Gobi's Valley (Banjo-Kazooie)",
+
+    "Sky Tower (Pokemon Mystery Dungeon)",
+    "Black Fortress (Bomberman 64)",
+    "Shiver Star (Kirby 64)",
+    "Behind Yoshi Village (Partners in Time)",
+    "Dangerous Game (Mario Party)",
+    "Forest of Hope (Pikmin)",
+
+    "Super Mario Bros. 3",
+    "Tropical Resort (Sonic Colors)",
+    "Bowser Remix (Super Mario Bros.)",
+    "Athletic (Super Mario World)",
+    "Title (Yoshi's Story)",
+};
+
+
+u8 seq_musicmenu_array[] = {
+    SEQ_LEVEL_GRASS,
+    SEQ_LEVEL_SLIDE,
+    SEQ_LEVEL_WATER,
+    SEQ_LEVEL_HOT,
+    SEQ_LEVEL_SNOW,
+    SEQ_LEVEL_SPOOKY,
+    SEQ_LEVEL_UNDERGROUND,
+    SEQ_LEVEL_KOOPA_ROAD_2,
+    SEQ_LEVEL_BOSS_KOOPA,
+    SEQ_LEVEL_BOSS_KOOPA_FINAL,
+    SEQ_LEVEL_INSIDE_CASTLE2,
+
+    SEQ_LEVEL_INSIDE_CASTLE,
+    SEQ_REDHOT,
+    SEQ_FARM,
+    SEQ_JUNGLE,
+    SEQ_PIRATE,
+    SEQ_EVENT_CUTSCENE_ENDING,
+    SEQ_BIG_HOUSE,
+    SEQ_NSMB_CASTLE,
+    SEQ_EVENT_BOSS,
+    SEQ_LEVEL_KOOPA_ROAD,
+    SEQ_COSMIC_SEED_BOSS,
+    SEQ_SHOWRUNNER_BOSS,
+    SEQ_COSMIC_SEED_LEVEL,
+    SEQ_FINAL_BOSS,
+    SEQ_SMB1_OVERWORLD,
+    SEQ_SMB2_OVERWORLD,
+    SEQ_SMB3_CASTLE,
+
+    SEQ_SMS_SKY_AND_SEA,
+    SEQ_SMG_GUSTY_GARDEN,
+    SEQ_SMG_BUOY_BASE,
+    SEQ_SMG_MELTY_MOLTEN,
+    SEQ_SMG_PURPLE_COMET,
+
+    SEQ_NSMB_OVERWORLD,
+
+    SEQ_KOOPA_BEACH, // mk64 koopa troopa beach
+    SEQ_FRAPPE_SNOWLAND,
+    SEQ_MK64_RAINBOW_ROAD,
+    SEQ_MK64_BOWSERS_CASTLE,
+
+    SEQ_SPM_FLIPSIDE,
+    SEQ_SAMMER_KINGDOM,
+    SEQ_SPM_FLORO_CAVERNS,
+    SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
+    SEQ_TTYD_ROGUEPORT_SEWERS,
+
+    SEQ_SMRPG_MARIOS_PAD,             // 0x46
+    SEQ_FOREST_MAZE,
+    SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
+
+    SEQ_OOT_LOST_WOODS,
+    SEQ_OOT_GERUDO_VALLEY,            // 0x52
+    SEQ_STONE_TOWER_TEMPLE,
+    SEQ_TP_LAKE_HYLIA,                // 0x53
+
+    SEQ_DK64_FRANTIC_FACTORY,
+    SEQ_DK64_HIDEOUT_HELM,
+    SEQ_DK64_GLOOMY_GALLEON,
+
+    SEQ_BK_BUBBLEGLOOP_SWAMP,
+    SEQ_BK_GOBI_VALLEY,
+
+    SEQ_PKMN_SKY_TOWER,
+    SEQ_BM_BLACK_FORTRESS,
+    SEQ_K64_SHIVER_STAR,
+    SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
+    SEQ_MP_DANGEROUS_GAME,
+    SEQ_PIKMIN_FOREST_OF_HOPE,
+
+    SEQ_SMB3,                         // 0x45
+    SEQ_SC_TROPICAL_RESORT,           // 0x49
+    SEQ_SMB_BOWSER_REMIX,             // 0x4B
+    SEQ_SMW_ATHLETIC,                 // 0x4E
+    SEQ_YS_TITLE,                     // 0x51
 };
 
 char *cmm_envfx_string_table[] = {
@@ -1393,6 +1524,7 @@ struct cmm_settings_button cmm_settings_music_buttons[] = {
 struct cmm_settings_button cmm_settings_music_albums[] = {
     {"Song:",  &cmm_lopt_seq_song, cmm_music_vanilla_string_table, ARRAY_COUNT(cmm_music_vanilla_string_table), NULL, song_changed},
     {"Song:",  &cmm_lopt_seq_song, cmm_music_btcm_string_table, ARRAY_COUNT(cmm_music_btcm_string_table), NULL, song_changed},
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_romhack_string_table, ARRAY_COUNT(cmm_music_romhack_string_table), NULL, song_changed},
 };
 
 struct cmm_settings_button cmm_settings_backtomainmenu[] = {

@@ -69,6 +69,48 @@ enum SeqId {
     SEQ_BIG_HOUSE,                    // 0x35
     SEQ_LEVEL_KOOPA_ROAD_2,           // 0x36
 
+    SEQ_BK_BUBBLEGLOOP_SWAMP,         // 0x37
+    SEQ_BK_GOBI_VALLEY,               // 0x38
+    SEQ_BM_BLACK_FORTRESS,            // 0x39
+    SEQ_DK64_FRANTIC_FACTORY,         // 0x3A
+    SEQ_DK64_HIDEOUT_HELM,            // 0x3B
+    SEQ_K64_SHIVER_STAR,              // 0x3C
+    SEQ_KSS_RACE,                     // 0x3D
+    SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,   // 0x3E
+    SEQ_MP_DANGEROUS_GAME,            // 0x3F
+    SEQ_NSMB_OVERWORLD,               // 0x40
+    SEQ_TTYD_EIGHT_KEY_DOMAIN,        // 0x41
+    SEQ_TTYD_ROGUEPORT_SEWERS,        // 0x42
+    SEQ_PIKMIN_FOREST_OF_HOPE,        // 0x43
+    SEQ_PKMN_SKY_TOWER,               // 0x44
+
+    SEQ_SMB3,                         // 0x45
+    SEQ_SMRPG_MARIOS_PAD,             // 0x46
+    SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
+    SEQ_SMG_BUOY_BASE,                // 0x48
+    SEQ_SC_TROPICAL_RESORT,           // 0x49
+    SEQ_OOT_LOST_WOODS,               // 0x4A
+    SEQ_SMB_BOWSER_REMIX,             // 0x4B
+    SEQ_SMG_MELTY_MOLTEN,             // 0x4C
+    SEQ_SMG_GUSTY_GARDEN,             // 0x4D
+    SEQ_SMW_ATHLETIC,                 // 0x4E
+    SEQ_SPM_FLIPSIDE,                 // 0x4F
+    SEQ_SPM_FLORO_CAVERNS,            // 0x50
+    SEQ_YS_TITLE,                     // 0x51
+    SEQ_OOT_GERUDO_VALLEY,            // 0x52
+    SEQ_TP_LAKE_HYLIA,                // 0x53
+
+    SEQ_FRAPPE_SNOWLAND,              // 0x54
+    SEQ_FOREST_MAZE,                  // 0x55
+    SEQ_DK64_GLOOMY_GALLEON,          // 0x56
+    SEQ_MK64_BOWSERS_CASTLE,          // 0x57
+    SEQ_KOOPA_BEACH,                  // 0x58
+    SEQ_MK64_RAINBOW_ROAD,            // 0x59
+    SEQ_SAMMER_KINGDOM,               // 0x5A
+    SEQ_SMG_PURPLE_COMET,             // 0x5B
+    SEQ_SMS_SKY_AND_SEA,              // 0x5C
+    SEQ_STONE_TOWER_TEMPLE,           // 0x5D
+
     SEQ_COUNT
 };
 
