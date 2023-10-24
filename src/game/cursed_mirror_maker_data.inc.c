@@ -1261,6 +1261,7 @@ char *cmm_music_vanilla_string_table[] = {
     "Koopa's Road",
     "Koopa's Theme",
     "Ultimate Koopa",
+    "Inside the Castle Walls",
 };
 
 char *cmm_music_btcm_string_table[] = {
