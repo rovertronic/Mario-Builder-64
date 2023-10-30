@@ -899,6 +899,18 @@ enum {
     CMM_BUTTON_VEXCLA,
 };
 
+u8 cmm_toolbar_defaults[9] = {
+    CMM_BUTTON_TERRAIN,
+    CMM_BUTTON_FENCE,
+    CMM_BUTTON_SLOPE,
+    CMM_BUTTON_COIN,
+    CMM_BUTTON_GOOMBA,
+    CMM_BUTTON_STAR,
+    CMM_BUTTON_PLAY,
+    CMM_BUTTON_SETTINGS,
+    CMM_BUTTON_SAVE,
+};
+
 u8 cmm_toolbar[9] = {
     CMM_BUTTON_TERRAIN,
     CMM_BUTTON_FENCE,
