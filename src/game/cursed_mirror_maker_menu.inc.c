@@ -1111,9 +1111,12 @@ s32 cmm_main_menu(void) {
             if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
                 reset_play_state();
-                for (u8 i=0; cmm_level_entries[cmm_menu_index].fname[i] != 0;i++) {
+                int i = 0;
+                while(cmm_level_entries[cmm_menu_index].fname[i]) {
                     cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
+                    i++;
                 }
+                cmm_file_name[i] = 0; // add null terminator
                 return 1;
             }
 
