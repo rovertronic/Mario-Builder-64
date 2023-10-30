@@ -2315,13 +2315,16 @@ void cmm_init() {
     generate_terrain_gfx();
     generate_terrain_collision();
     vec3_set(cmm_cursor_pos, 32, 0, 32);
+
+    cmm_camera_foc[0] = GRID_TO_POS(32);
+    cmm_camera_foc[1] = 0.0f;
+    cmm_camera_foc[2] = GRID_TO_POS(32);
 }
 
 void sb_init(void) {
     struct Object *spawn_obj;
 
     cmm_toolbar_index = 0;
-    vec3_copy(cmm_camera_foc,&o->oPosVec);
     load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
     switch(cmm_mode) {
