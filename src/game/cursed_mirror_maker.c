@@ -341,6 +341,27 @@ s32 object_sanity_check(void) {
     return TRUE;
 }
 
+struct Object * get_spawn_preview_object() {
+    uintptr_t *behaviorAddr = segmented_to_virtual(bhvPreviewObject);
+    struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
+    struct Object *obj = (struct Object *) listHead->next;
+
+    while (obj != (struct Object *) listHead) {
+        if (obj->behavior == behaviorAddr
+            && obj->activeFlags != ACTIVE_FLAG_DEACTIVATED
+            && obj != o
+        ) {
+            if (obj->header.gfx.sharedChild == gLoadedGraphNodes[MODEL_SPAWN]) {
+                return obj;
+            }
+        }
+
+        obj = (struct Object *) obj->header.next;
+    }
+
+    return NULL;
+}
+
 ALWAYS_INLINE void place_terrain_data(s8 pos[3], u32 type, u32 rot, u32 mat) {
     cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot;
     cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type + 1;
@@ -2440,6 +2461,11 @@ u32 main_cursor_logic(u32 joystick) {
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
     o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
+
+    return cursorMoved;
+}
+
+void update_boundary_wall() {
     for (u8 i=0; i<6; i++) {
         vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
     }
@@ -2450,7 +2476,15 @@ u32 main_cursor_logic(u32 joystick) {
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[5]->oPosZ = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
 
-    return cursorMoved;
+    if (!cmm_ui_do_render) {
+        for (int i=0; i<6; i++) {
+            cmm_boundary_object[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        }
+    } else {
+        for (int i=0; i<6; i++) {
+            cmm_boundary_object[i]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        }
+    }
 }
 
 void delete_preview_object(void) {
@@ -2643,6 +2677,17 @@ void sb_loop(void) {
             } else {
                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             }
+
+            struct Object *spawnobjp = get_spawn_preview_object();
+            if (spawnobjp) {
+                if (!cmm_ui_do_render) {
+                    spawnobjp->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+                } else {
+                    spawnobjp->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+                }  
+            }
+
+            update_boundary_wall();
         break;
         case 2://PLAY MODE
 
@@ -2753,6 +2798,8 @@ void sb_loop(void) {
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
             }
+
+            update_boundary_wall();
         break;
     }
 
