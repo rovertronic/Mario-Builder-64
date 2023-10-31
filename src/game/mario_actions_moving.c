@@ -1256,19 +1256,15 @@ s32 act_riding_shell_ground(struct MarioState *m) {
 
     if (m->IsYoshi) {
         update_yoshi_speed(m);
-    }
-    else
-    {
+    } else {
         update_shell_speed(m);
     }
 
     if (m->IsYoshi) {
         set_mario_animation(m, MARIO_ANIM_SLIDE);
-        }
-        else
-        {
+    } else {
         set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_START_RIDING_SHELL : MARIO_ANIM_RIDING_SHELL);
-        }
+    }
 
     switch (perform_ground_step(m)) {
         case GROUND_STEP_LEFT_GROUND:
@@ -1282,24 +1278,21 @@ s32 act_riding_shell_ground(struct MarioState *m) {
                         m->marioObj->header.gfx.cameraToObject);
                 m->particleFlags |= PARTICLE_VERTICAL_STAR;
                 set_mario_action(m, ACT_BACKWARD_GROUND_KB, 0);
-                }
+            }
             break;
     }
 
     tilt_body_ground_shell(m, startYaw);
 
     if (!m->IsYoshi) {
-            if (m->floor->type == SURFACE_BURNING) {
-                play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
-            } else {
-                play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend,
-                        m->marioObj->header.gfx.cameraToObject);
-            }
+        if (m->floor->type == SURFACE_BURNING) {
+            play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
+        } else {
+            play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend, m->marioObj->header.gfx.cameraToObject);
         }
-        else
-        {
+    } else {
         m->marioObj->header.gfx.pos[1] += 55.0f;
-        }
+    }
 
 
     adjust_sound_for_speed(m);
