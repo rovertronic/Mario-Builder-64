@@ -82,9 +82,13 @@
             "sound_hi": "25_strings_3"
         },
         "inst3": {
-            "release_rate": 208,
-            "envelope": "envelope2",
-            "sound": "37_square_synth"
+            "release_rate": 15,
+            "normal_range_lo": 27,
+            "normal_range_hi": 46,
+            "envelope": "envelope3",
+            "sound_lo": "23_strings_1",
+            "sound": "24_strings_2",
+            "sound_hi": "25_strings_3"
         },
         "inst4": {
             "release_rate": 10,

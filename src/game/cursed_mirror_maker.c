@@ -116,7 +116,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 1;
+u8 cmm_uv_scaling = 64;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -131,7 +131,11 @@ u32 cmm_play_badge_bitfield = 0;
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
-u8 cmm_lopt_seq = 0;
+
+u8 cmm_lopt_seq = 0; // Song index
+u8 cmm_lopt_seq_album = 0; // Category
+u8 cmm_lopt_seq_song = 0; // Song index within category
+
 u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
@@ -159,6 +163,8 @@ struct cmm_level_save cmm_save;
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
 u8 cmm_cached_tris[16][3];
+
+struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
 void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
@@ -201,23 +207,10 @@ void df_tree(s32 context) {
 
 void df_exbox(s32 context) {
     if (context != CMM_DF_CONTEXT_INIT) return;
-    switch(o->oBehParams2ndByte) {
-        case 0:
-            o->oAnimState = 0;
-            break;
-        case 1:
-            o->oAnimState = 2;
-            break;
-        case 2:
-            o->oAnimState = 3;
-            break;
-        case 3:
-            o->oAnimState = 4;
-            break;
-        default:
-            o->oAnimState = 4;
-            break;
+    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_VEXCLAMATION_BOX];
     }
+    o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
 }
 
 void df_vexbox(s32 context) {
@@ -485,17 +478,6 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
     return FALSE;
 }
 
-s32 handle_wait_vblank(OSMesgQueue *mq) {
-    // returns true if it lasts longer than 3 seconds (3 * 1000us * 1000ms)
-    OSMesg msg;
-    OSTimer timer;
-    osSetTimer(&timer, OS_USEC_TO_CYCLES(3000000), 0, mq, (OSMesg)(111*3*2));
-    osRecvMesg(mq, &msg, OS_MESG_BLOCK);
-    osStopTimer(&timer);
-
-    return msg == (OSMesg)(111*3*2);
-}
-
 void cache_tri(u8 v1, u8 v2, u8 v3) {
     cmm_cached_tris[cmm_num_tris_cached][0] = cmm_num_vertices_cached + v1;
     cmm_cached_tris[cmm_num_tris_cached][1] = cmm_num_vertices_cached + v2;
@@ -651,7 +633,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -688,7 +670,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * 64 * cmm_uv_scaling - 16, v * 64 * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -1171,8 +1153,8 @@ Gfx *get_sidetex(s32 mat) {
 
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1297,7 +1279,7 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 2;
+    cmm_uv_scaling = 128;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
@@ -1307,7 +1289,7 @@ void generate_terrain_gfx(void) {
         render_bars(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 1;
+    cmm_uv_scaling = 64;
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1386,9 +1368,9 @@ void generate_terrain_gfx(void) {
     cmm_gfx_total = (cmm_curr_gfx + cmm_gfx_index) - cmm_terrain_gfx;
 };
 
-Gfx preview_gfx[32];
+Gfx preview_gfx[50];
 Mtx preview_mtx[2];
-Vtx preview_vtx[64];
+Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
@@ -1485,9 +1467,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 2;
+                    cmm_uv_scaling = 128;
                     render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 1;
+                    cmm_uv_scaling = 64;
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1630,6 +1612,9 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     s8 pos[3];
     vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
 
+    // Check if out of range
+    if (pos[1] < 0) return waterPlaneHeight;
+    if (pos[1] > 31) pos[1] = 31;
     // If block contains water, scan upwards, otherwise scan downwards
     if (get_grid_tile(pos)->waterlogged) {
         // Find grid Y coordinate of highest water block.
@@ -1700,6 +1685,9 @@ void generate_object_preview(void) {
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
         totalCoins += info->numCoins;
 
+        if (info == &cmm_object_type_exclamationbox) {
+            totalCoins += cmm_exclamation_box_contents[cmm_object_data[i].param].numCoins;
+        }
         if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
@@ -1823,7 +1811,11 @@ void place_tile(s8 pos[3]) {
                 }
                 break;
             case TILE_TYPE_POLE:
+            case TILE_TYPE_BARS:
                 play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_STONE << 16));
+                break;
+            case TILE_TYPE_CULL:
+                play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                 break;
         }
     }
@@ -2155,7 +2147,7 @@ void save_level(void) {
         //take a "screenshot" of the level & burn in a painting frame
         if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
             //painting
-            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ (((i/64)+8)*3*320) + (((i%64)+16)*3) ] | 1);
+            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
         } else {
             //painting frame
             cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
@@ -2212,7 +2204,7 @@ void load_level(void) {
         cmm_save.option[19] = cmm_lopt_game;
         cmm_save.option[7] = cmm_lopt_size;
 
-        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music;
+        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
         cmm_save.option[2] = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.option[3] = cmm_templates[cmm_lopt_template].theme;
         cmm_save.option[4] = cmm_templates[cmm_lopt_template].bg;
@@ -2238,7 +2230,10 @@ void load_level(void) {
     cmm_object_count = cmm_save.object_count;
 
     cmm_lopt_costume = cmm_save.option[0];
+
     cmm_lopt_seq = cmm_save.option[1];
+    set_album_and_song_from_seq();
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
     cmm_lopt_envfx = cmm_save.option[2];
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
@@ -2264,6 +2259,12 @@ void load_level(void) {
     }
 
     cmm_lopt_game = cmm_save.option[19];
+
+    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+        cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
+    } else {
+        cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
+    }
 
     //configure toolbox depending on game style
     switch(cmm_lopt_game) {
@@ -2333,13 +2334,15 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
-    generate_terrain_gfx();
-    generate_terrain_collision();
-    vec3_set(cmm_cursor_pos, 32, 0, 32);
-
-    cmm_camera_foc[0] = GRID_TO_POS(32);
-    cmm_camera_foc[1] = 0.0f;
-    cmm_camera_foc[2] = GRID_TO_POS(32);
+    if (cmm_level_action == CMM_LA_PLAYING) {
+        generate_terrain_gfx();
+        generate_terrain_collision();
+    } else {
+        vec3_set(cmm_cursor_pos, 32, 0, 32);
+        cmm_camera_foc[0] = GRID_TO_POS(32);
+        cmm_camera_foc[1] = 0.0f;
+        cmm_camera_foc[2] = GRID_TO_POS(32);
+    }
 }
 
 void sb_init(void) {
@@ -2363,6 +2366,8 @@ void sb_init(void) {
             cmm_boundary_object[3]->oFaceAngleRoll = -0x4000;
             cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
+
+            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
         break;
         case CMM_MODE_PLAY:
             generate_terrain_collision();
@@ -2492,7 +2497,7 @@ void delete_preview_object(void) {
     if (previewObj) unload_object(previewObj);
 }
 
-void (*cmm_generate_gfx)(void) = NULL;
+void (*cmm_option_changed_func)(void) = NULL;
 
 void reload_theme(void) {
     generate_terrain_gfx();
@@ -2527,9 +2532,9 @@ void sb_loop(void) {
     cmm_current_camera_zoom[0] = lerp(cmm_current_camera_zoom[0], cmm_camera_zoom_table[cmm_camera_zoom_index][0],0.2f);
     cmm_current_camera_zoom[1] = lerp(cmm_current_camera_zoom[1], cmm_camera_zoom_table[cmm_camera_zoom_index][1],0.2f);
 
-    if (cmm_generate_gfx) {
-        cmm_generate_gfx();
-        cmm_generate_gfx = NULL;
+    if (cmm_option_changed_func) {
+        cmm_option_changed_func();
+        cmm_option_changed_func = NULL;
     }
 
     switch(o->oAction) {

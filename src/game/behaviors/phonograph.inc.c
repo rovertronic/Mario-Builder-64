@@ -15,7 +15,7 @@ struct PhonographStream {
 // NOTE: This assumes anything streamed is properly grid-locked to tempo and includes no sorts of tempo changes
 struct PhonographStream streamedParams[] = {
     {
-        .seqId         = SEQ_STREAMED_BAD_APPLE,
+        .seqId         = 0,//SEQ_STREAMED_BAD_APPLE,
         .bankId        = 0x2D,
         .tempo         = 138.0f,
         .sampleRate    = 32000, 
@@ -124,10 +124,10 @@ void phono_update_streamed_track(s32 seqId) {
 void bhv_phono_loop(void) {
     s32 seqId = (u8) get_current_background_music();
     switch (seqId) {
-        case SEQ_STREAMED_BAD_APPLE:
-            phono_update_streamed_track(seqId);
-            global_audio_hit = FALSE;
-            break;
+        //case SEQ_STREAMED_BAD_APPLE:
+            //phono_update_streamed_track(seqId);
+            //global_audio_hit = FALSE;
+            //break;
         default:
             phono_update_normal();
             break;

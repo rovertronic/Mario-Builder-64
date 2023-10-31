@@ -1027,11 +1027,39 @@ struct cmm_object_info cmm_object_type_corkbox = {
 struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
-struct cmm_object_info cmm_object_type_vexclamationbox = {
-    bhvExclamationBox, TILE_SIZE/2, MODEL_VEXCLAMATION_BOX, FALSE, 0, 2.0f, NULL, df_vexbox, SOUND_GENERAL_BREAK_BOX,
-};
 struct cmm_object_info cmm_object_type_preview_mario = {
-    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 5, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+};
+
+enum {
+    OBJECT_TYPE_STAR,
+    OBJECT_TYPE_GOOMBA,
+    OBJECT_TYPE_COIN,
+    OBJECT_TYPE_GCOIN,
+    OBJECT_TYPE_RCOIN,
+    OBJECT_TYPE_BCOIN,
+    OBJECT_TYPE_BCS,//BLUE COIN SWITCH (not better call saul)
+    OBJECT_TYPE_RCS,//RED COIN STAR
+    OBJECT_TYPE_NOTE,
+    OBJECT_TYPE_PODOB,
+    OBJECT_TYPE_REX,
+    OBJECT_TYPE_BULLY,
+    OBJECT_TYPE_BOMB,
+    OBJECT_TYPE_TREE,
+    OBJECT_TYPE_EXCLA,
+    OBJECT_TYPE_CHUCKYA,
+    OBJECT_TYPE_SPAWN,
+    OBJECT_TYPE_PHNTSM,
+    OBJECT_TYPE_PIPE,
+    OBJECT_TYPE_BADGE,
+    OBJECT_TYPE_BOSS,
+    OBJECT_TYPE_MPLAT,
+    OBJECT_TYPE_BBALL,
+    OBJECT_TYPE_KTQ,
+    OBJECT_TYPE_PRPLSWT,
+    OBJECT_TYPE_CORK,
+    OBJECT_TYPE_HEART,
+    OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1049,7 +1077,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_smallbully, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_bobomb, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
-    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 6},
+    {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_chuckya, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_phantasm, FALSE, FALSE, FALSE, 0},
@@ -1062,8 +1090,31 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_purple_switch, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_corkbox, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
-    {&cmm_object_type_vexclamationbox, FALSE, FALSE, FALSE, 7},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
+};
+
+struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
+    { 0, 0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE,  0},
+    { 1, 0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE,  0},
+    { 2, 0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE,  0},
+    { 3, 0, 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE, 3},
+    { 4, 0, 0, MODEL_YELLOW_COIN,      bhvSingleCoinGetsSpawned,  4, FALSE, 1},
+    { 5, 0, 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE, 3},
+    { 6, 0, 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE, 10},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,4, FALSE, 0},
+};
+
+struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
+    { 0, 0, 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE,  0},
+    { 1, 0, 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE,  0},
+    { 2, 0, 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE,  0},
+    { 3, 0, 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE,  0},
+    { 4, 0, 0, MODEL_YELLOW_COIN,        bhvSingleCoinGetsSpawned, 3, FALSE, 1},
+    { 5, 0, 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE, 3},
+    { 6, 0, 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
+    //END
+    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE, 0},
 };
 
 //behparam2 strings
@@ -1072,9 +1123,9 @@ char *txt_bp_box[] = {
     "Vanetal Cap",
     "Koopa Shell",
     "Green Coin",
+    "One Coin",
     "Three Coins",
     "Ten Coins",
-    "Invisible"
 };
 
 char *txt_bp_vbox[] = {
@@ -1175,7 +1226,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_bars,         TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {mat_b_btn_thwomp,       OBJECT_TYPE_CORK,    CMM_PM_OBJ,   "Stone Enemy",        NULL       }, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
-    {mat_b_btn_excla,        OBJECT_TYPE_VEXCLA,  CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
+    {mat_b_btn_excla,        OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
 };
 
 char *cmm_settings_menu_table[] = {
@@ -1206,37 +1257,170 @@ char *cmm_costume_string_table[] = {
     "Cosmic Phantasm",
 };
 
-char *cmm_music_string_table[] = {
-    "Cosmic Castle",
-    "The Showrunner",
-    "Red Hot",
-    "Floating Farm",
-    "Jungle Temple",
-    "VR World",
-    "Spooky Pirate",
-    "Cursed Boss",
-    "Road To The Boss",
-    "Urbowser",
-    "Big House",
-    "SMB1 Overworld",
-    "SMB2 Overworld",
-    "SMB3 Fortress",
-    "NSMB Castle",
-    "The Show's Finale",
-    "Parasite Moon",
-    "AGAMEMNON",
-    "Bad Apple!!",
+char *cmm_music_album_string_table[] = {
+    "Super Mario 64 OST",
+    "Beyond the Cursed Mirror OST",
+    "Miscellaneous ROM Hacks",
+};
 
-    "SM64 Main Theme",
+char *cmm_music_vanilla_string_table[] = {
+    "Bob-omb Battlefield",
     "Slider",
-    "Dire Dire Docks",
+    "Dire, Dire Docks",
     "Lethal Lava Land",
-    "Snow Mountain",
-    "Haunted House",
-    "Cave Dungeon",
+    "Cool, Cool Mountain",
+    "Big Boo's Haunt",
+    "Hazy Maze Cave",
     "Koopa's Road",
     "Koopa's Theme",
     "Ultimate Koopa",
+    "Inside the Castle Walls",
+};
+
+char *cmm_music_btcm_string_table[] = {
+    "Cosmic Castle",
+    "Red-Hot Reservoir",
+    "Lonely Floating Farm",
+    "Jurassic Savanna",
+    "The Phantom Strider",
+    "Virtuaplex",
+    "Immense Residence",
+    "Thwomp Towers",
+    "Cursed Boss",
+    "Road To The Boss",
+    "Urbowser",
+    "The Show's Finale",
+    "Parasite Moon",
+    "AGAMEMNON",
+    "SMB1 Overworld",
+    "SMB2 Overworld",
+    "SMB3 Fortress",
+};
+
+char *cmm_music_romhack_string_table[] = {
+    "Sky and Sea (Super Mario Sunshine)",
+    "Buoy Base (Super Mario Galaxy)",
+    "Purple Comet (Super Mario Galaxy)",
+    "Overworld (New Super Mario Bros.)",
+
+    "Koopa Troopa Beach (Mario Kart 64)",
+    "Frappe Snowland (Mario Kart 64)",
+    "Rainbow Road (Mario Kart 64)",
+    "Bowser's Castle (Mario Kart 64)",
+
+    "Flipside (Super Paper Mario)",
+    "Sammer Kingdom (Super Paper Mario)",
+    "Floro Caverns (Super Paper Mario)",
+    "Riddle Tower (Paper Mario: TTYD)",
+    "Rogueport Sewers (Paper Mario: TTYD)",
+
+    "Mario's Pad (Super Mario RPG)",
+    "Forest Maze (Super Mario RPG)",
+    "Sunken Ship (Super Mario RPG)",
+
+    "Lost Woods (Ocarina of Time)",
+    "Gerudo Valley (Ocarina of Time)",
+    "Stone Tower Temple (Majora's Mask)",
+    "Lake Hylia (Twilight Princess)",
+
+    "Frantic Factory (Donkey Kong 64)",
+    "Hideout Helm (Donkey Kong 64)",
+    "Gloomy Galleon (Donkey Kong 64)",
+
+    "Bubblegloop Swamp (Banjo-Kazooie)",
+    "Gobi's Valley (Banjo-Kazooie)",
+
+    "Sky Tower (Pokemon Mystery Dungeon)",
+    "Black Fortress (Bomberman 64)",
+    "Shiver Star (Kirby 64)",
+    "Behind Yoshi Village (Partners in Time)",
+    "Dangerous Game (Mario Party)",
+    "Forest of Hope (Pikmin)",
+
+    "Super Mario Bros. 3",
+    "Tropical Resort (Sonic Colors)",
+    "Bowser Remix (Super Mario Bros.)",
+    "Athletic (Super Mario World)",
+    "Title (Yoshi's Story)",
+};
+
+
+u8 seq_musicmenu_array[] = {
+    SEQ_LEVEL_GRASS,
+    SEQ_LEVEL_SLIDE,
+    SEQ_LEVEL_WATER,
+    SEQ_LEVEL_HOT,
+    SEQ_LEVEL_SNOW,
+    SEQ_LEVEL_SPOOKY,
+    SEQ_LEVEL_UNDERGROUND,
+    SEQ_LEVEL_KOOPA_ROAD_2,
+    SEQ_LEVEL_BOSS_KOOPA,
+    SEQ_LEVEL_BOSS_KOOPA_FINAL,
+    SEQ_LEVEL_INSIDE_CASTLE2,
+
+    SEQ_LEVEL_INSIDE_CASTLE,
+    SEQ_REDHOT,
+    SEQ_FARM,
+    SEQ_JUNGLE,
+    SEQ_PIRATE,
+    SEQ_EVENT_CUTSCENE_ENDING,
+    SEQ_BIG_HOUSE,
+    SEQ_NSMB_CASTLE,
+    SEQ_EVENT_BOSS,
+    SEQ_LEVEL_KOOPA_ROAD,
+    SEQ_COSMIC_SEED_BOSS,
+    SEQ_SHOWRUNNER_BOSS,
+    SEQ_COSMIC_SEED_LEVEL,
+    SEQ_FINAL_BOSS,
+    SEQ_SMB1_OVERWORLD,
+    SEQ_SMB2_OVERWORLD,
+    SEQ_SMB3_CASTLE,
+
+    SEQ_SMS_SKY_AND_SEA,
+    SEQ_SMG_BUOY_BASE,
+    SEQ_SMG_PURPLE_COMET,
+
+    SEQ_NSMB_OVERWORLD,
+
+    SEQ_KOOPA_BEACH, // mk64 koopa troopa beach
+    SEQ_FRAPPE_SNOWLAND,
+    SEQ_MK64_RAINBOW_ROAD,
+    SEQ_MK64_BOWSERS_CASTLE,
+
+    SEQ_SPM_FLIPSIDE,
+    SEQ_SAMMER_KINGDOM,
+    SEQ_SPM_FLORO_CAVERNS,
+    SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
+    SEQ_TTYD_ROGUEPORT_SEWERS,
+
+    SEQ_SMRPG_MARIOS_PAD,             // 0x46
+    SEQ_FOREST_MAZE,
+    SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
+
+    SEQ_OOT_LOST_WOODS,
+    SEQ_OOT_GERUDO_VALLEY,            // 0x52
+    SEQ_STONE_TOWER_TEMPLE,
+    SEQ_TP_LAKE_HYLIA,                // 0x53
+
+    SEQ_DK64_FRANTIC_FACTORY,
+    SEQ_DK64_HIDEOUT_HELM,
+    SEQ_DK64_GLOOMY_GALLEON,
+
+    SEQ_BK_BUBBLEGLOOP_SWAMP,
+    SEQ_BK_GOBI_VALLEY,
+
+    SEQ_PKMN_SKY_TOWER,
+    SEQ_BM_BLACK_FORTRESS,
+    SEQ_K64_SHIVER_STAR,
+    SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
+    SEQ_MP_DANGEROUS_GAME,
+    SEQ_PIKMIN_FOREST_OF_HOPE,
+
+    SEQ_SMB3,                         // 0x45
+    SEQ_SC_TROPICAL_RESORT,           // 0x49
+    SEQ_SMB_BOWSER_REMIX,             // 0x4B
+    SEQ_SMW_ATHLETIC,                 // 0x4E
+    SEQ_YS_TITLE,                     // 0x51
 };
 
 char *cmm_envfx_string_table[] = {
@@ -1320,7 +1504,8 @@ extern void reload_bg(void);
 extern void reload_theme(void);
 extern void generate_terrain_gfx(void);
 
-
+extern void music_category_changed(void);
+extern void song_changed(void);
 
 struct cmm_settings_button cmm_settings_general_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
@@ -1339,7 +1524,15 @@ struct cmm_settings_button cmm_settings_terrain_buttons[] = {
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
-    {"Music:",   &cmm_lopt_seq,     cmm_music_string_table,   ARRAY_COUNT(cmm_music_string_table), NULL, NULL},
+    {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
+    {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
+};
+
+// These get copied over to the above array
+struct cmm_settings_button cmm_settings_music_albums[] = {
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_vanilla_string_table, ARRAY_COUNT(cmm_music_vanilla_string_table), NULL, song_changed},
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_btcm_string_table, ARRAY_COUNT(cmm_music_btcm_string_table), NULL, song_changed},
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_romhack_string_table, ARRAY_COUNT(cmm_music_romhack_string_table), NULL, song_changed},
 };
 
 struct cmm_settings_button cmm_settings_backtomainmenu[] = {
@@ -1366,7 +1559,7 @@ char *cmm_template_string_table[] = {
 };
 
 struct cmm_template {
-    u8 music;
+    u8 music[2]; // vanilla, btcm
     u8 envfx;
     u8 bg;
     u8 theme;
@@ -1377,11 +1570,11 @@ struct cmm_template {
 };
 
 struct cmm_template cmm_templates[] = {
-    {19, 0, 0, 0, 1,     2, FALSE},   // bob song
-    {22, 0, 6, 1, 1,     2, FALSE},   // SSL song
-    {2,  1, 2, 2, 2,     3, TRUE}, // red hot
-    {21, 0, 0, 8, 1,     2, FALSE}, // DDD
-    {23, 2, 5, 0, 6,     2, FALSE}, // CCM
+    {{0, 13}, 0, 0, 0, 1,     2, FALSE},   // Grassy - BoB, Floating Farm
+    {{3, 14}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Jurassic
+    {{3, 12},  1, 2, 2, 2,     3, TRUE},    // Lava -   LLL, Red-Hot
+    {{2, 10}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Cosmic Castle
+    {{4, 10}, 2, 5, 0, 6,     2, FALSE},   // Snowy -  CCM, Cosmic Castle
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {

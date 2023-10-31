@@ -1159,7 +1159,7 @@ void bhv_bad_apple() {
     if ((o->oDistanceToMario < 600.0f)&&(gMarioState->BadAppleActivate == FALSE)) {
         gMarioState->BadAppleActivate = TRUE; // activate bad apple
         stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_INSIDE_CASTLE));
-        play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_STREAMED_BAD_APPLE), 0);
+        //play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_STREAMED_BAD_APPLE), 0);
         }
     }
 
