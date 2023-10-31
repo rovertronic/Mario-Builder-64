@@ -279,10 +279,13 @@ void draw_cmm_settings_music(void) {
     }
 }
 
+extern u8 cmm_mm_state; //externing a variable in the same file that it's defined in? more likely than you think. how heinous.
 void draw_cmm_settings_backtomainmenu(void) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+        load_level_files_from_sd_card();
         cmm_menu_state = CMM_MAKE_MAIN;
         cmm_curr_settings_menu = 0;
+        cmm_mm_state = MM_FILES;
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
@@ -1151,9 +1154,12 @@ s32 cmm_main_menu(void) {
             if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
                 reset_play_state();
-                for (u8 i=0; cmm_level_entries[cmm_menu_index].fname[i] != 0;i++) {
+                int i = 0;
+                while(cmm_level_entries[cmm_menu_index].fname[i]) {
                     cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
+                    i++;
                 }
+                cmm_file_name[i] = 0; // add null terminator
                 return 1;
             }
 
