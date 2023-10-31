@@ -1248,7 +1248,7 @@ char *cmm_costume_string_table[] = {
 char *cmm_music_album_string_table[] = {
     "Super Mario 64 OST",
     "Beyond the Cursed Mirror OST",
-    "ROM Hacks",
+    "Miscellaneous ROM Hacks",
 };
 
 char *cmm_music_vanilla_string_table[] = {
@@ -1287,9 +1287,7 @@ char *cmm_music_btcm_string_table[] = {
 
 char *cmm_music_romhack_string_table[] = {
     "Sky and Sea (Super Mario Sunshine)",
-    "Gusty Garden (Super Mario Galaxy)",
     "Buoy Base (Super Mario Galaxy)",
-    "Melty Molten (Super Mario Galaxy)",
     "Purple Comet (Super Mario Galaxy)",
     "Overworld (New Super Mario Bros.)",
 
@@ -1367,9 +1365,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMB3_CASTLE,
 
     SEQ_SMS_SKY_AND_SEA,
-    SEQ_SMG_GUSTY_GARDEN,
     SEQ_SMG_BUOY_BASE,
-    SEQ_SMG_MELTY_MOLTEN,
     SEQ_SMG_PURPLE_COMET,
 
     SEQ_NSMB_OVERWORLD,
