@@ -1026,6 +1026,34 @@ FRESULT global_code;
 
 TCHAR cmm_dir_name[] = {"Mario Builder 64 Levels"};
 
+void load_level_files_from_sd_card(void) {
+    f_opendir(&cmm_dir,"");
+    s8 i = -1;
+    do {
+        i++;
+        if (f_readdir(&cmm_dir,&cmm_level_entries[i]) == FR_OK) {
+            u32 bytes_read;
+            FIL read_file;
+            f_open(&read_file,&cmm_level_entries[i].fname, FA_READ);
+            f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
+            f_close(&read_file);
+
+            s16 x;
+            s16 y;
+            u16 *u16_array = cmm_level_entry_piktcher[i];
+            for (x = 0; x < 64; x++) {
+                for (y = 0; y < 64; y++) {
+                    u16_array[(y*64)+x] = temp_cmm_save.piktcher[y][x];
+                } 
+            }
+        }
+
+    } while (cmm_level_entries[i].fname[0] != 0);
+
+    cmm_level_entry_count = i;
+    f_closedir(&cmm_dir);
+}
+
 void thread5_game_loop(UNUSED void *arg) {
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -1077,7 +1105,6 @@ void thread5_game_loop(UNUSED void *arg) {
             chdir_success = f_chdir(&cmm_dir_name);
         }
         if (directory_success == FR_OK) {
-            f_opendir(&cmm_dir,&cmm_dir_name);
             chdir_success = f_chdir(&cmm_dir_name);
         }
 
@@ -1085,30 +1112,7 @@ void thread5_game_loop(UNUSED void *arg) {
             while(TRUE){}
             //freeze the game if directory changing went wrong
         } else {
-            s8 i = -1;
-            do {
-                i++;
-                if (f_readdir(&cmm_dir,&cmm_level_entries[i]) == FR_OK) {
-                    u32 bytes_read;
-                    FIL read_file;
-                    f_open(&read_file,&cmm_level_entries[i].fname, FA_READ);
-                    f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
-                    f_close(&read_file);
-
-                    s16 x;
-                    s16 y;
-                    u16 *u16_array = cmm_level_entry_piktcher[i];
-                    for (x = 0; x < 64; x++) {
-                        for (y = 0; y < 64; y++) {
-                            u16_array[(y*64)+x] = temp_cmm_save.piktcher[y][x];
-                        } 
-                    }
-                }
-
-            } while (cmm_level_entries[i].fname[0] != 0);
-
-            cmm_level_entry_count = i;
-            f_closedir(&cmm_dir);
+            load_level_files_from_sd_card();
         }
     }
 

@@ -105,4 +105,6 @@ extern FRESULT global_code;
 extern u8 cmm_level_entry_count;
 extern u16 cmm_level_entry_piktcher[][64][64];
 
+void load_level_files_from_sd_card(void);
+
 #endif // GAME_INIT_H
