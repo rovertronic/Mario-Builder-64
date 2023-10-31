@@ -605,6 +605,9 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     }
 
     if (sSourceWarpNodeId == WARP_NODE_DEATH) {
+        if (cmm_level_action == CMM_LA_MAKING) {
+            cmm_target_mode = CMM_MODE_MAKE;
+        }
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
     }
 
