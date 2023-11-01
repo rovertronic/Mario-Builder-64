@@ -328,7 +328,13 @@ void draw_cmm_menu(void) {
         }
         create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), yoff, 0);
         gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
-        gSPDisplayList(gDisplayListHead++, cmm_ui_buttons[cmm_toolbar[i]].material);//texture
+
+        Gfx *mat = cmm_ui_buttons[cmm_toolbar[i]].material;
+        if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
+            mat = ((Gfx **)mat)[cmm_param_selection];
+        }
+
+        gSPDisplayList(gDisplayListHead++, mat);//texture
         gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     }
@@ -358,7 +364,13 @@ void draw_cmm_menu(void) {
                 s32 yi = i/9;
                 create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32), 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-                gSPDisplayList(gDisplayListHead++, cmm_ui_buttons[cmm_toolbox[i]].material);//texture
+
+                Gfx *mat = cmm_ui_buttons[cmm_toolbox[i]].material;
+                if (cmm_ui_buttons[cmm_toolbox[i]].multipleBtns) {
+                    mat = ((Gfx **)mat)[0];
+                }
+
+                gSPDisplayList(gDisplayListHead++, mat);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
             }
