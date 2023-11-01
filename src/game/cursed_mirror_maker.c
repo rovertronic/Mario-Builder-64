@@ -322,9 +322,9 @@ s32 object_sanity_check(void) {
         }
     }
 
-    if (cmm_id_selection == OBJECT_TYPE_RCS) {
+    if ((cmm_id_selection == OBJECT_TYPE_STAR) && (cmm_param_selection == 1)) {
         for (u32 i = 0; i < cmm_object_count; i++) {
-            if (cmm_object_data[i].type == OBJECT_TYPE_RCS) {
+            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param == 1)) {
                 cmm_show_error_message("Red Coin Star already placed!");
                 return FALSE;
             }
