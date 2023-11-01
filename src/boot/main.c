@@ -301,6 +301,7 @@ void handle_dp_complete(void) {
     sCurrentDisplaySPTask = NULL;
 }
 extern void crash_screen_init(void);
+extern OSViMode VI;
 
 void check_cache_emulation() {
     // Disable interrupts to ensure that nothing evicts the variable from cache while we're using it.
@@ -343,6 +344,11 @@ void thread3_main(UNUSED void *arg) {
         gBorderHeight = BORDER_HEIGHT_EMULATOR;
         gIsVC = IS_VC();
         check_cache_emulation();
+
+        change_vi(&VI, SCREEN_WIDTH, SCREEN_HEIGHT);
+        osViSetMode(&VI);
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+        osViSetSpecialFeatures(OS_VI_GAMMA_OFF);
     } else {
         gIsConsole = TRUE;
         gBorderHeight = BORDER_HEIGHT_CONSOLE;
