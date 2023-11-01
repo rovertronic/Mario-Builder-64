@@ -480,6 +480,7 @@ static void koopa_unshelled_update(void) {
  * optionally begin the timer.
  */
 s32 obj_begin_race(s32 noTimer) {
+
     if (o->oTimer == 50) {
         cur_obj_play_sound_2(SOUND_GENERAL_RACE_GUN_SHOT);
 
@@ -515,9 +516,12 @@ static void koopa_the_quick_act_wait_before_race(void) {
         //  frame where he can jump, and thus no longer be ready to speak.
         //  (On J, he has two frames and doing this enables time stop - see
         //  cur_obj_update_dialog_with_cutscene for that glitch)
-        o->oAction = KOOPA_THE_QUICK_ACT_SHOW_INIT_TEXT;
-        o->oForwardVel = 0.0f;
-        cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
+        if (mario_ready_to_speak()) {
+            set_mario_npc_dialog(MARIO_DIALOG_LOOK_UP);
+            o->oAction = KOOPA_THE_QUICK_ACT_SHOW_INIT_TEXT;
+            o->oForwardVel = 0.0f;
+            cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
+        }
     }
 }
 
@@ -526,8 +530,9 @@ static void koopa_the_quick_act_wait_before_race(void) {
  * return to the waiting action.
  */
 static void koopa_the_quick_act_show_init_text(void) {
-    s32 response = obj_update_race_proposition_dialog(
-        sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].initText);
+    s32 response = DIALOG_RESPONSE_YES;//obj_update_race_proposition_dialog(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].initText);
+
+
 
     if (response == DIALOG_RESPONSE_YES) {
         gMarioShotFromCannon = FALSE;
@@ -608,7 +613,7 @@ static void koopa_the_quick_act_race(void) {
         } else {
             s32 bowlingBallStatus;
 
-            f32 downhillSteepness = 1.0f + sins((s16)(f32) o->oPathedTargetPitch);
+            f32 downhillSteepness = 1.0f + (sins((s16)(f32) o->oPathedTargetPitch)*.5f);
             cur_obj_rotate_yaw_toward(o->oPathedTargetYaw, (s32)(o->oKoopaAgility * 150.0f));
 
             switch (o->oSubAction) {
@@ -716,40 +721,27 @@ static void koopa_the_quick_act_after_race(void) {
     cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
 
     if (o->parentObj->oKoopaRaceEndpointDialog == 0) {
-        if (cur_obj_can_mario_activate_textbox_2(400.0f, 400.0f)) {
-            stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE));
+        stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE));
+        level_control_timer(TIMER_CONTROL_HIDE);
 
-            // Determine which text to display
-            if (o->parentObj->oKoopaRaceEndpointRaceStatus != KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON) {
-                if (o->parentObj->oKoopaRaceEndpointRaceStatus == KOOPA_RACE_ENDPOINT_STATUS_MARIO_CHEATED) {
-                    // Mario cheated
-                    o->parentObj->oKoopaRaceEndpointRaceStatus = KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON;
-                    o->parentObj->oKoopaRaceEndpointDialog = DIALOG_006;
-                } else {
-                    // Mario won
-                    o->parentObj->oKoopaRaceEndpointDialog =
-                        sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].winText;
-                }
+        // Determine which text to display
+        if (o->parentObj->oKoopaRaceEndpointRaceStatus != KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON) {
+            if (o->parentObj->oKoopaRaceEndpointRaceStatus == KOOPA_RACE_ENDPOINT_STATUS_MARIO_CHEATED) {
+                // Mario cheated
+                o->parentObj->oKoopaRaceEndpointRaceStatus = KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON;
+                o->parentObj->oKoopaRaceEndpointDialog = DIALOG_006;
             } else {
-                // KtQ won
-                o->parentObj->oKoopaRaceEndpointDialog = DIALOG_041;
+                // Mario won
+                o->parentObj->oKoopaRaceEndpointDialog = 1;
+
+                spawn_default_star(o->oPosX+400.0f,o->oPosY+400.0f,o->oPosZ);
             }
-
-            o->oFlags &= ~OBJ_FLAG_ACTIVE_FROM_AFAR;
+        } else {
+            // KtQ won
+            o->parentObj->oKoopaRaceEndpointDialog = DIALOG_041;
         }
-    } else if (o->parentObj->oKoopaRaceEndpointDialog > 0) {
-        s32 dialogResponse = cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP,
-            DIALOG_FLAG_TURN_TO_MARIO, CUTSCENE_DIALOG, o->parentObj->oKoopaRaceEndpointDialog);
-        if (dialogResponse != DIALOG_RESPONSE_NONE) {
-            o->parentObj->oKoopaRaceEndpointDialog = DIALOG_NONE;
-            o->oTimer = 0;
-        }
-    } else if (o->parentObj->oKoopaRaceEndpointRaceStatus != KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON) {
-        spawn_default_star(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[0],
-                           sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[1],
-                           sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].starPos[2]);
 
-        o->parentObj->oKoopaRaceEndpointRaceStatus = KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON;
+        o->oFlags &= ~OBJ_FLAG_ACTIVE_FROM_AFAR;
     }
 }
 
