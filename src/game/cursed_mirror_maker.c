@@ -2388,6 +2388,8 @@ void sb_init(void) {
                 }
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
+                reset_camera(gCurrentArea->camera);
+
                 struct Object *warpobj = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
                 if (warpobj) {
                     vec3_copy(&warpobj->oPosVec,&spawn_obj->oPosVec);
