@@ -1351,7 +1351,7 @@ const BehaviorScript bhvThwomp[] = {
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     DROP_TO_FLOOR(),
     ADD_FLOAT(oPosY, 1),
-    SCALE(/*Unused*/ 0, /*Field*/ 300),
+    SCALE(/*Unused*/ 0, /*Field*/ 150),
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, 4000),
     BEGIN_LOOP(),

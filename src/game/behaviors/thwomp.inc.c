@@ -59,10 +59,6 @@ ObjActionFunc sGrindelThwompActions[] = {
 };
 
 void bhv_grindel_thwomp_loop(void) {
-    if (o->oBehParams2ndByte == 1) {
-        cur_obj_scale(1.5f);
-    }
-
     cur_obj_call_action_function(sGrindelThwompActions);
 }
 

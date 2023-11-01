@@ -1015,6 +1015,10 @@ struct cmm_object_info cmm_object_type_heart = {
 struct cmm_object_info cmm_object_type_preview_mario = {
     bhvStaticObject, 0, MODEL_MARIO2, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
 };
+struct cmm_object_info cmm_object_type_stone[] = {
+    {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
+    {bhvSmallWhomp, 0, MODEL_WHOMP_MAKER, FALSE, 0, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
+};
 
 enum {
     OBJECT_TYPE_STAR,
@@ -1038,6 +1042,7 @@ enum {
     OBJECT_TYPE_KTQ,
     OBJECT_TYPE_TC,
     OBJECT_TYPE_HEART,
+    OBJECT_TYPE_STONE,
     OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
 };
 
@@ -1063,6 +1068,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
     { cmm_object_type_timed_challenge, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
+    { cmm_object_type_stone, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
 };
 
@@ -1252,7 +1258,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_cformation,   0, 0,                   CMM_PM_OBJ,   "Coin Formation",     NULL       }, //CMM_BUTTON_FORMATION
     {mat_b_btn_vslab,        0, 0,                   CMM_PM_OBJ,   "Sideways Slab",      NULL       }, //CMM_BUTTON_VSLAB
     {mat_b_btn_bars,         0, TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
-    {btn_stone_enemies,      1, 0,                   CMM_PM_OBJ,   "Stone Enemy",        txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY
+    {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemy",        txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
     {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
 };

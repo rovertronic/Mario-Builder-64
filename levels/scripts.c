@@ -153,6 +153,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_WHOMP_MAKER, whomp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_V_MARIOS_METAL_CAP,        marios_metal_cap_geo),
     LOAD_MODEL_FROM_GEO(MODEL_V_MARIOS_WING_CAP,         marios_wing_cap_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_THWOMP_MAKER, thwomp_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
@@ -264,12 +265,12 @@ const LevelScript script_func_global_1[] = {
 };
 
 const LevelScript script_func_global_2[] = {
-    LOAD_MODEL_FROM_GEO(MODEL_BULLET_BILL,             bullet_bill_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_YELLOW_SPHERE,           yellow_sphere_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_HOOT,                    hoot_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_YOSHI_EGG,               yoshi_egg_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_THWOMP,                  thwomp_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_HEAVE_HO,                heave_ho_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_BULLET_BILL,             bullet_bill_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_YELLOW_SPHERE,           yellow_sphere_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_HOOT,                    hoot_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_YOSHI_EGG,               yoshi_egg_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_THWOMP,                  thwomp_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_HEAVE_HO,                heave_ho_geo),
     RETURN(),
 };
 

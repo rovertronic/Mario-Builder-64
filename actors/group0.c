@@ -209,3 +209,18 @@
 #include "mm_btn/model.inc.c"
 #include "mario2/model.inc.c"
 #include "bigpainting2/model.inc.c"
+
+#include "yellow_sphere_small/model.inc.c"
+
+#include "hoot/model.inc.c"
+#include "hoot/anims/data.inc.c"
+#include "hoot/anims/table.inc.c"
+
+#include "thwomp/model.inc.c"
+#include "thwomp/collision.inc.c"
+
+#include "bullet_bill/model.inc.c"
+
+#include "heave_ho/model.inc.c"
+#include "heave_ho/anims/data.inc.c"
+#include "heave_ho/anims/table.inc.c"
