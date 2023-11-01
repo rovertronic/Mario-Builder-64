@@ -194,6 +194,7 @@ extern struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
 struct cmm_ui_button_type {
     Gfx *material;
+    u8 multipleBtns;
     u8 id;
     u8 placeMode:2;
     char *str;
