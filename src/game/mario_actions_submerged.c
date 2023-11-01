@@ -775,12 +775,14 @@ static s32 act_water_shell_swimming(struct MarioState *m) {
         return set_mario_action(m, ACT_WATER_THROW, 0);
     }
 
+    /* fuck you! (in jack black voice)
     if (m->actionTimer++ == 240) {
         m->heldObj->oInteractStatus = INT_STATUS_STOP_RIDING;
         m->heldObj = NULL;
         stop_shell_music();
         set_mario_action(m, ACT_FLUTTER_KICK, 0);
     }
+    */
 
     m->forwardVel = approach_f32(m->forwardVel, 30.0f, 2.0f, 1.0f);
 
@@ -1519,6 +1521,28 @@ static s32 act_hold_metal_water_fall_land(struct MarioState *m) {
 static s32 check_common_submerged_cancels(struct MarioState *m) {
     s16 waterHeight = m->waterLevel - 80;
     if (m->pos[1] > waterHeight) {
+
+        if (m->action == ACT_WATER_SHELL_SWIMMING && m->heldObj != NULL) {
+            //exit the water in a generic air shell state
+            if (m->heldObj != NULL) {
+                obj_mark_for_deletion(m->heldObj);
+                m->heldObj = NULL;
+            }
+            set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
+
+            if (m->riddenObj == NULL) {
+                m->interactObj = spawn_object(m->marioObj, MODEL_KOOPA_SHELL, bhvKoopaShell);
+                m->interactObj->oFaceAnglePitch = 0;
+                m->interactObj->oFaceAngleRoll = 0;
+                m->usedObj = m->interactObj;
+                m->riddenObj = m->interactObj;
+                attack_object(m->interactObj, 0x40);
+            }
+
+            return set_mario_action(m, ACT_RIDING_SHELL_FALL, m->actionTimer);
+        }
+
+
         if (waterHeight > m->floorHeight) {
             if (m->pos[1] - waterHeight < 50) {
                 m->pos[1] = waterHeight; // lock mario to top if the falloff isn't big enough
@@ -1526,19 +1550,8 @@ static s32 check_common_submerged_cancels(struct MarioState *m) {
                 // m->pos[1] = m->waterLevel - 80; // Vanilla bug: Downwarp swimming out of waterfalls
                 return transition_submerged_to_airborne(m);
             }
-        } else {
-            //! If you press B to throw the shell, there is a ~5 frame window
-            // where your held object is the shell, but you are not in the
-            // water shell swimming action. This allows you to hold the water
-            // shell on land (used for cloning in DDD).
-            if (m->action == ACT_WATER_SHELL_SWIMMING && m->heldObj != NULL) {
-                m->heldObj->oInteractStatus = INT_STATUS_STOP_RIDING;
-                m->heldObj = NULL;
-                stop_shell_music();
-            }
-
-            return transition_submerged_to_walking(m);
         }
+        return transition_submerged_to_walking(m);
     }
 
     if (m->health < 0x100 && !(m->action & (ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE))) {

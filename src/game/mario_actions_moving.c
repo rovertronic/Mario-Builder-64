@@ -1227,6 +1227,17 @@ s32 act_hold_decelerating(struct MarioState *m) {
 s32 act_riding_shell_ground(struct MarioState *m) {
     s16 startYaw = m->faceAngle[1];
 
+    //this is in place for the transition from water shell to ground shell
+    if (!m->riddenObj) {
+        m->faceAngle[0] = 0;
+        m->faceAngle[2] = 0;
+        m->interactObj = spawn_object(m->marioObj, MODEL_KOOPA_SHELL, bhvKoopaShell);
+        m->usedObj = m->interactObj;
+        m->riddenObj = m->interactObj;
+
+        attack_object(m->interactObj, 0x40);
+    }
+
     m->Yoshi_Flutter = FALSE;
 
     if (m->input & INPUT_A_PRESSED) {
