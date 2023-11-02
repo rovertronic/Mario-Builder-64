@@ -1345,14 +1345,16 @@ const BehaviorScript bhvThwomp2[] = {
     END_LOOP(),
 };
 
+extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvThwomp[] = {
     BEGIN(OBJ_LIST_SURFACE),
     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B7D0),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    SET_HOME(),
     DROP_TO_FLOOR(),
     ADD_FLOAT(oPosY, 1),
+    CALL_NATIVE(bhv_grindel_thwomp_init),
     SCALE(/*Unused*/ 0, /*Field*/ 150),
-    SET_HOME(),
     SET_FLOAT(oDrawingDistance, 4000),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
