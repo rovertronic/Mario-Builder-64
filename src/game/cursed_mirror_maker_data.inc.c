@@ -1215,7 +1215,7 @@ char *txt_stone_enemies[] = {
 
 Gfx *btn_stone_enemies[] = {
     mat_b_btn_thwomp,
-    mat_b_btn_thwomp,
+    mat_b_btn_whomp,
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
