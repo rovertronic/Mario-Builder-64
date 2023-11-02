@@ -331,7 +331,8 @@ void draw_cmm_menu(void) {
 
         Gfx *mat = cmm_ui_buttons[cmm_toolbar[i]].material;
         if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
-            mat = ((Gfx **)mat)[cmm_param_selection];
+            s32 idx = (i == cmm_toolbar_index ? cmm_param_selection : 0);
+            mat = ((Gfx **)mat)[idx];
         }
 
         gSPDisplayList(gDisplayListHead++, mat);//texture
