@@ -1674,21 +1674,23 @@ void generate_object_preview(void) {
     for(u32 i = 0; i < cmm_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
+        s32 param = cmm_object_data[i].param;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
-            info = &info[cmm_object_data[i].param];
+            info = &info[param];
+            param = 0;
         }
 
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
-        spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param, info, bhvPreviewObject);
+        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject);
         totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_exclamationbox) {
-            totalCoins += cmm_exclamation_box_contents[cmm_object_data[i].param].numCoins;
+            totalCoins += cmm_exclamation_box_contents[param].numCoins;
         }
-        if (info == &cmm_object_type_badge && cmm_object_data[i].param == 8) { // Greed badge
+        if (info == &cmm_object_type_badge && param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
     }
@@ -1708,6 +1710,12 @@ void generate_objects_to_level(void) {
     cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
+        s32 param = cmm_object_data[i].param;
+
+        if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
+            info = &info[param];
+            param = 0;
+        }
 
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
 
@@ -1716,7 +1724,7 @@ void generate_objects_to_level(void) {
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
-        obj->oBehParams2ndByte = cmm_object_data[i].param;
+        obj->oBehParams2ndByte = param;
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
