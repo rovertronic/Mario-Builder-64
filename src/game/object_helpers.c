@@ -1396,6 +1396,10 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
         f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
         f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
+        if (!intendedFloor) {
+            return FALSE;
+        }
+
         Vec3f normal;
         get_surface_normal(normal, intendedFloor);
 
