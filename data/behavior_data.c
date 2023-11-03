@@ -428,8 +428,8 @@ const BehaviorScript bhvMrI[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_MOVE_XZ_USING_FVEL | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_HOME(),
-    SPAWN_CHILD(/*Model*/ MODEL_MR_I_IRIS, /*Behavior*/ bhvMrIIris),
-    SET_MODEL(MODEL_MR_I_BODY),
+    SPAWN_CHILD(/*Model*/ MODEL_MAKER_MRI_2, /*Behavior*/ bhvMrIIris),
+    SET_MODEL(MODEL_MAKER_MRI),
     BILLBOARD(),
     //CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
@@ -443,6 +443,15 @@ const BehaviorScript bhvMrIIris[] = {
     //CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_mr_i_iris_loop),
+    END_LOOP(),
+};
+
+extern void bhv_fake_mr_i_iris_loop(void);
+const BehaviorScript bhvFakeMrIIris[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_fake_mr_i_iris_loop),
     END_LOOP(),
 };
 

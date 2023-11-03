@@ -892,6 +892,7 @@ enum {
     CMM_BUTTON_POLE,
     CMM_BUTTON_VEXCLA,
     CMM_BUTTON_FLYING,
+    CMM_BUTTON_HAUNTED,
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -931,7 +932,7 @@ u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_FORMATION,CMM_BUTTON_KTQ,CMM_BUTTON_HEART,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_BLANK,CMM_BUTTON_BBALL,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_BBALL,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_VEXCLA,CMM_BUTTON_TREE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_TC,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
@@ -1024,7 +1025,13 @@ struct cmm_object_info cmm_object_type_stone[] = {
 
 struct cmm_object_info cmm_object_type_flying[] = {
     {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 0, 1.0f, lakitu_enemy_seg5_anims_050144D4, NULL, SOUND_OBJ_EVIL_LAKITU_THROW},
-    {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 0, 1.5f, flyguy_seg8_anims_08011A64, NULL, SOUND_OBJ_KOOPA_FLYGUY_DEATH}
+    {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 0, 1.5f, flyguy_seg8_anims_08011A64, NULL, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
+    {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_SNUFIT_SHOOT},
+};
+
+struct cmm_object_info cmm_object_type_haunted[] = {
+    {bhvBoo, TILE_SIZE/2, MODEL_MAKER_BOO, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_BOO_LAUGH_LONG},
+    {bhvMrI, 0, MODEL_MAKER_MRI, TRUE, 0, 1.0f, NULL, df_mri, SOUND_OBJ_MRI_SHOOT},
 };
 
 enum {
@@ -1052,6 +1059,7 @@ enum {
     OBJECT_TYPE_STONE,
     OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
     OBJECT_TYPE_FLYING,
+    OBJECT_TYPE_HAUNTED,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1078,7 +1086,8 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_stone, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_flying, FALSE, FALSE, TRUE, 2},
+    { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
+    { cmm_object_type_haunted, FALSE, FALSE, TRUE, 2},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1232,11 +1241,23 @@ Gfx *btn_stone_enemies[] = {
 char *txt_flying_enemies[] = {
     "Lakitu",
     "Fly Guy",
+    "Snufit",
 };
 
 Gfx *btn_flying_enemies[] = {
     mat_b_btn_lakitu,
     mat_b_btn_flyguy,
+    mat_b_btn_snufit,
+};
+
+char *txt_haunted_enemies[] = {
+    "Boo",
+    "Mr.I",
+};
+
+Gfx *btn_haunted_enemies[] = {
+    mat_b_btn_boo,
+    mat_b_btn_mri,
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
@@ -1283,6 +1304,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
     {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
     {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Air Enemies",        txt_flying_enemies}, //CMM_BUTTON_FLYING
+    {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Haunted Enemies",    txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
 };
 
 char *cmm_settings_menu_table[] = {

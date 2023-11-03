@@ -226,3 +226,15 @@
 #include "heave_ho/anims/table.inc.c"
 #include "blaster/model.inc.c"
 #include "blaster/collision.inc.c"
+
+#include "mr_i_eyeball/model.inc.c"
+#include "mr_i_iris/model.inc.c"
+
+#include "snufit/model.inc.c"
+
+#include "scuttlebug/model.inc.c"
+#include "scuttlebug/anims/data.inc.c"
+#include "scuttlebug/anims/table.inc.c"
+
+#include "boo/model.inc.c"
+#include "bomb/model.inc.c"

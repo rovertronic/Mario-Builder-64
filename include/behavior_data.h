@@ -803,5 +803,6 @@ extern const BehaviorScript bhvSpawn[];
 extern const BehaviorScript bhvBadge[];
 extern const BehaviorScript bhvBoss[];
 extern const BehaviorScript bhvRealFlyGuy[];
+extern const BehaviorScript bhvFakeMrIIris[];
 
 #endif // BEHAVIOR_DATA_H

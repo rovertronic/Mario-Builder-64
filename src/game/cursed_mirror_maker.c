@@ -240,6 +240,13 @@ void df_chuckya(s32 context) {
 void df_kingbomb(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
 }
+void df_mri(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oGraphYOffset = 100.0f;
+        struct Object *iris = spawn_object(o,MODEL_MAKER_MRI_2,bhvFakeMrIIris);
+    }
+}
+
 
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
@@ -1650,6 +1657,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
     preview_object->oFaceAngleYaw = rot*0x4000;
     preview_object->oBehParams2ndByte = param;
     preview_object->oPreviewObjDisplayFunc = info->disp_func;
+    preview_object->oOpacity = 255;
     obj_scale(preview_object, info->scale);
     if (info->billboarded) {
         preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
