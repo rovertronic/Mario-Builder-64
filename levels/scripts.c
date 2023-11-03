@@ -164,6 +164,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_PLANT, piranha_plant_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_SPINDRIFT,spindrift_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLIZZARD,mr_blizzard_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_HEAVEHO,heave_ho_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),

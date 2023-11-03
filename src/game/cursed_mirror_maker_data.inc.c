@@ -978,6 +978,7 @@ struct cmm_object_info cmm_object_type_mech_enemy[] = {
     {bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 5, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_DEATH},
     {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
     {bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2, FALSE, 1, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
+    {bhvHeaveHo, 0, MODEL_MAKER_HEAVEHO, FALSE, 1, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_TOSSED},
 };
 
 struct cmm_object_info cmm_object_type_tree = {
@@ -1086,7 +1087,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_bluecoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_bluecoinswitch, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_noteblock, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_mech_enemy, FALSE, FALSE, TRUE, 4},
+    { cmm_object_type_mech_enemy, FALSE, FALSE, TRUE, 5},
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
     {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
@@ -1189,6 +1190,7 @@ Gfx *btn_mech_enemies[] = {
     mat_b_btn_chuckya,
     mat_b_btn_bully,
     mat_b_btn_bill,
+    mat_b_btn_heaveho,
 };
 
 char *txt_mech_enemies[] = {
@@ -1196,6 +1198,7 @@ char *txt_mech_enemies[] = {
     "Chuckya",
     "Bully",
     "Bullet Bill",
+    "Heave-Ho",
 };
 
 Gfx *btn_mech_bosses[] = {
