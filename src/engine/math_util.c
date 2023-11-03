@@ -666,6 +666,11 @@ f32 lerp(f32 a, f32 b, f32 f)
     return (a * (1.0 - f)) + (b * f);
 }
 
+f32 smoothstep(f32 edge0, f32 edge1, f32 x) {
+   x = (x - edge0) / (edge1 - edge0);
+   return x * x * (3.0f - 2.0f * x);
+}
+
 void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw) {
     Vec3f lateralDir;
     Vec3f leftDir;

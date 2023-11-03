@@ -2739,9 +2739,11 @@ void sb_loop(void) {
             //TOOLBAR CONTROLS
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_toolbar_index--;
+                cmm_toolbox_transition_btn_render = FALSE;
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
+                cmm_toolbox_transition_btn_render = FALSE;
             }
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
@@ -2752,7 +2754,29 @@ void sb_loop(void) {
                 //You can not put a blank button into the toolbox
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                     cmm_param_selection = 0;
+
+                    cmm_toolbox_transition_btn_render = TRUE;
+                    cmm_toolbox_transition_btn_progress = 0.0f;
+                    cmm_toolbox_transition_btn_ox = 34+((cmm_toolbox_index%9)*32);
+                    cmm_toolbox_transition_btn_oy = 220-((cmm_toolbox_index/9)*32);
+                    cmm_toolbox_transition_btn_x = 34+((cmm_toolbox_index%9)*32);
+                    cmm_toolbox_transition_btn_y = 220-((cmm_toolbox_index/9)*32);
+                    cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
+                    cmm_toolbox_transition_btn_ty = 28.0f;
+                    cmm_toolbox_transition_btn_old_gfx = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].material;
+                    if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multipleBtns) {
+                        cmm_toolbox_transition_btn_old_gfx = ((Gfx **)cmm_toolbox_transition_btn_old_gfx)[0];
+                    }
+
+                    cmm_toolbox_transition_btn_gfx = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].material;
+                    if (cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].multipleBtns) {
+                        s32 idx = (cmm_toolbox_index == cmm_toolbar_index ? cmm_param_selection : 0);
+                        cmm_toolbox_transition_btn_gfx = ((Gfx **)cmm_toolbox_transition_btn_gfx)[0];
+                    }
+
                     cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
+
+                    play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
                 } else {
                     //error sound
                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
@@ -2762,6 +2786,7 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
+                cmm_toolbox_transition_btn_render = FALSE;
             }
         break;
         case 4: //settings

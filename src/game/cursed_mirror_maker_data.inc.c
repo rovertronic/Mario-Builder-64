@@ -919,6 +919,19 @@ u8 cmm_toolbar[9] = {
     CMM_BUTTON_SETTINGS,
     CMM_BUTTON_SAVE,
 };
+f32 cmm_toolbar_y_anim[9] = {
+    0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
+};
+u8 cmm_toolbox_transition_btn_render = FALSE;
+f32 cmm_toolbox_transition_btn_x;
+f32 cmm_toolbox_transition_btn_y;
+f32 cmm_toolbox_transition_btn_ox;
+f32 cmm_toolbox_transition_btn_oy;
+f32 cmm_toolbox_transition_btn_tx;
+f32 cmm_toolbox_transition_btn_ty;
+f32 cmm_toolbox_transition_btn_progress;
+Gfx * cmm_toolbox_transition_btn_gfx;
+Gfx * cmm_toolbox_transition_btn_old_gfx;
 
 u8 cmm_toolbox[45];
 //Different toolboxes for different game styles

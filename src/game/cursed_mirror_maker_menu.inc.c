@@ -304,8 +304,8 @@ u8 cmm_settings_menu_lengths[] = {
 };
 
 void draw_cmm_menu(void) {
-    u16 decor_bar_offset = 36;
-    if (cmm_menu_state == CMM_MAKE_SETTINGS) {
+    s32 decor_bar_offset = 36;
+    if ((cmm_menu_state == CMM_MAKE_SETTINGS)||(cmm_menu_state == CMM_MAKE_TOOLBOX)) {
         decor_bar_offset = 235;
     }
 
@@ -321,10 +321,12 @@ void draw_cmm_menu(void) {
 
     for (s32 i = 0; i < 9; i++) {
         s32 op = 200;
-        s32 yoff = 20;
+        f32 yoff = 20+cmm_toolbar_y_anim[i];
         if (i == cmm_toolbar_index) {
             op = 255;
-            yoff = 25;
+            cmm_toolbar_y_anim[i] = lerp(cmm_toolbar_y_anim[i],8.0f,0.2f);
+        } else {
+            cmm_toolbar_y_anim[i] = lerp(cmm_toolbar_y_anim[i],0.0f,0.15f);
         }
         create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), yoff, 0);
         gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
@@ -333,6 +335,9 @@ void draw_cmm_menu(void) {
         if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
             s32 idx = (i == cmm_toolbar_index ? cmm_param_selection : 0);
             mat = ((Gfx **)mat)[idx];
+        }
+        if ((i == cmm_toolbar_index)&&(cmm_toolbox_transition_btn_render)) {
+            mat = cmm_toolbox_transition_btn_old_gfx;
         }
 
         gSPDisplayList(gDisplayListHead++, mat);//texture
@@ -375,6 +380,21 @@ void draw_cmm_menu(void) {
                 gSPDisplayList(gDisplayListHead++, mat);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
+            }
+
+            if (cmm_toolbox_transition_btn_render) {
+                create_dl_translation_matrix(MENU_MTX_PUSH, cmm_toolbox_transition_btn_x, cmm_toolbox_transition_btn_y, 0);
+                gSPDisplayList(gDisplayListHead++, cmm_toolbox_transition_btn_gfx);//texture
+                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+                cmm_toolbox_transition_btn_x = lerp(cmm_toolbox_transition_btn_ox,cmm_toolbox_transition_btn_tx,smoothstep(0.0,1.0,cmm_toolbox_transition_btn_progress));
+                cmm_toolbox_transition_btn_y = lerp(cmm_toolbox_transition_btn_oy,cmm_toolbox_transition_btn_ty,smoothstep(0.0,1.0,cmm_toolbox_transition_btn_progress));
+
+                cmm_toolbox_transition_btn_progress += 0.08f;
+                if (cmm_toolbox_transition_btn_progress > 1.0f) {
+                    cmm_toolbox_transition_btn_progress = 1.0f;
+                }
             }
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
