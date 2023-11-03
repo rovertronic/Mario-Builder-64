@@ -77,3 +77,5 @@
 #include "scuttlebug/geo.inc.c"
 #include "bomb/geo.inc.c"
 #include "boo/geo.inc.c"
+#include "spindrift/geo.inc.c"
+#include "snowman/geo.inc.c"

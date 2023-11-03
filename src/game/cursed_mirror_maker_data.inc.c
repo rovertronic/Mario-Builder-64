@@ -893,6 +893,7 @@ enum {
     CMM_BUTTON_VEXCLA,
     CMM_BUTTON_FLYING,
     CMM_BUTTON_HAUNTED,
+    CMM_BUTTON_SNOWEN,
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -925,14 +926,14 @@ u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_FORMATION,CMM_BUTTON_BADGE,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_BTCME,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN,CMM_BUTTON_BBALL,CMM_BUTTON_BTCME,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_EXCLA,CMM_BUTTON_TREE,CMM_BUTTON_MPLAT,CMM_BUTTON_NOTEBLOCK,CMM_BUTTON_SPAWN, CMM_BUTTON_TC, CMM_BUTTON_BLANK,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_CULL, CMM_BUTTON_BLANK,
     /*Tiles 2  */ CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_BCS,CMM_BUTTON_FORMATION,CMM_BUTTON_KTQ,CMM_BUTTON_HEART,CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_BBALL,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN,CMM_BUTTON_BBALL,CMM_BUTTON_BOSS,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_VEXCLA,CMM_BUTTON_TREE,CMM_BUTTON_MPLAT,CMM_BUTTON_SPAWN,CMM_BUTTON_TC,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
@@ -1042,6 +1043,11 @@ struct cmm_object_info cmm_object_type_haunted[] = {
     {bhvMrI, 0, MODEL_MAKER_MRI, TRUE, 0, 1.0f, NULL, df_mri, SOUND_OBJ_MRI_SHOOT},
 };
 
+struct cmm_object_info cmm_object_type_snow_enemy[] = {
+    {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_OBJ_DYING_ENEMY1},
+    {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 0, 1.0f, snowman_seg5_anims_0500D118, NULL, SOUND_OBJ_MR_BLIZZARD_ALERT},
+};
+
 enum {
     OBJECT_TYPE_STAR,
     OBJECT_TYPE_GOOMBA,
@@ -1068,6 +1074,7 @@ enum {
     OBJECT_TYPE_SPAWN_PM,//Spawn Preview Mario used for Test Button
     OBJECT_TYPE_FLYING,
     OBJECT_TYPE_HAUNTED,
+    OBJECT_TYPE_SNOWEN,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1096,6 +1103,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 2},
+    {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 2},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1290,6 +1298,16 @@ Gfx *btn_ground_enemies[] = {
     mat_b_btn_kuppa,
 };
 
+char *txt_snow_enemies[] = {
+    "Spindrift",
+    "Mr.Blizzard"
+};
+
+Gfx *btn_snow_enemies[] = {
+    mat_b_btn_spindrift,
+    mat_b_btn_blizzard,
+};
+
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture            //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
     {mat_b_btn_save,         0, 0,                   CMM_PM_NONE,  "Save",               NULL       }, //CMM_BUTTON_SAVE
@@ -1333,8 +1351,9 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemies",        txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
     {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
-    {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Air Enemies",        txt_flying_enemies}, //CMM_BUTTON_FLYING
+    {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Sky Enemies",        txt_flying_enemies}, //CMM_BUTTON_FLYING
     {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Haunted Enemies",    txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
+    {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,    CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies}, //CMM_BUTTON_SNOWEN
 };
 
 char *cmm_settings_menu_table[] = {
