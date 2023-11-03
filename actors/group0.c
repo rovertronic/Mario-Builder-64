@@ -41,9 +41,9 @@
 #include "koopa/anims/data.inc.c"
 #include "koopa/anims/table.inc.c"
 
-//#include "piranha_plant/model.inc.c"
-//#include "piranha_plant/anims/data.inc.c"
-//#include "piranha_plant/anims/table.inc.c"
+#include "piranha_plant/model.inc.c"
+#include "piranha_plant/anims/data.inc.c"
+#include "piranha_plant/anims/table.inc.c"
 
 #include "whomp/model.inc.c"
 #include "whomp/anims/data.inc.c"

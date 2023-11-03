@@ -517,6 +517,33 @@ static void obj_die_if_health_non_positive(void) {
     }
 }
 
+static void obj_die_if_health_non_positive_normal(void) {
+    if (o->oHealth <= 0) {
+        if (o->oDeathSound == 0) {
+            spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
+        } else if (o->oDeathSound > 0) {
+            spawn_mist_particles_with_sound(o->oDeathSound);
+        } else {
+            spawn_mist_particles();
+        }
+
+        if ((s32)o->oNumLootCoins < 0) {
+            spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+        } else {
+            obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+        }
+        // This doesn't do anything
+        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+
+        if (o->oHealth < 0) {
+            cur_obj_hide();
+            cur_obj_become_intangible();
+        } else {
+            obj_mark_for_deletion(o);
+        }
+    }
+}
+
 UNUSED static void obj_unused_die(void) {
     o->oHealth = 0;
     obj_die_if_health_non_positive();

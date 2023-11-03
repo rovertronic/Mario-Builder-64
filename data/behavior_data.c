@@ -2914,7 +2914,7 @@ const BehaviorScript bhvToxBox[] = {
 const BehaviorScript bhvPiranhaPlant[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    //LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
+    LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
     ANIMATE(PIRANHA_PLANT_ANIM_BITE),
     SET_INTERACT_TYPE(INTERACT_DAMAGE),
     SET_HITBOX(/*Radius*/ 100, /*Height*/ 200),
@@ -5577,6 +5577,15 @@ const BehaviorScript bhvHiddenStar[] = {
     END_LOOP(),
 };
 
+extern void bhv_plant_star_loop(void);
+const BehaviorScript bhvPlantStar[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    OR_INT(oFlags, (OBJ_FLAG_PERSISTENT_RESPAWN | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_plant_star_loop),
+    END_LOOP(),
+};
+
 const BehaviorScript bhvHiddenStarTrigger[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
@@ -6199,6 +6208,12 @@ const BehaviorScript bhvGoomba[] = {
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_goomba_update),
     END_LOOP(),
+};
+
+const BehaviorScript bhvBigGoomba[] = {
+    BEGIN(OBJ_LIST_PUSHABLE),
+    SET_INT(oBehParams2ndByte, 1),
+    GOTO(bhvGoomba + 1),
 };
 
 const BehaviorScript bhvRex[] = {
@@ -6926,7 +6941,7 @@ const BehaviorScript bhvFirePiranhaPlant[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     DROP_TO_FLOOR(),
-    //LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
+    LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
     ANIMATE(FIRE_PIRANHA_PLANT_ANIM_SHRINK),
     SET_HOME(),
     HIDE(),
@@ -6934,6 +6949,12 @@ const BehaviorScript bhvFirePiranhaPlant[] = {
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_fire_piranha_plant_update),
     END_LOOP(),
+};
+
+const BehaviorScript bhvFirePiranhaPlantBig[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    SET_INT(oBehParams, 0x00010000),
+    GOTO(bhvFirePiranhaPlant + 1),
 };
 
 const BehaviorScript bhvMovingFlame[] = {

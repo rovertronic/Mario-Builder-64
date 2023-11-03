@@ -336,7 +336,9 @@ void bhv_goomba_update(void) {
             }
         }
 
-        // cur_obj_scale(o->oGoombaScale);
+        if (o->oBehParams2ndByte > 0) {
+            cur_obj_scale(o->oGoombaScale);
+        }
         obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
 #ifdef FLOOMBAS
         if (o->oIsFloomba) {

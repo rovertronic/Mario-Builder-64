@@ -78,3 +78,22 @@ void bhv_bowser_course_red_coin_star_loop(void) {
             break;
     }
 }
+
+void bhv_plant_star_loop(void) {
+    switch (o->oAction) {
+        case 0:
+            cur_obj_hide();
+            if (!cur_obj_nearest_object_with_behavior(bhvFirePiranhaPlantBig)) {
+                o->oAction = 1;
+            }
+            break;
+
+        case 1:
+            if (o->oTimer > 2) {
+                spawn_red_coin_cutscene_star(o->oPosX, o->oPosY, o->oPosZ);
+                spawn_mist_particles();
+                o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+            }
+            break;
+    }
+}
