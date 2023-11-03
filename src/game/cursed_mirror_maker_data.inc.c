@@ -947,9 +947,11 @@ struct cmm_object_info cmm_object_type_star[] = {
 struct cmm_object_info cmm_object_type_goomba[] = {
     {bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT},
     {bhvBigGoomba, 0, MODEL_GOOMBA, FALSE, 1, 3.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT},
+    {bhvTinyGoomba, 0, MODEL_GOOMBA, FALSE, 1, 0.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT},
     {bhvPiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 1.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
     {bhvFirePiranhaPlantBig, 0, MODEL_MAKER_PLANT, FALSE, 1, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
     {bhvFirePiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+    {bhvScaredKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 0, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
 };
 struct cmm_object_info cmm_object_type_yellowcoin = {
     bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
@@ -1070,7 +1072,7 @@ enum {
 
 struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_star, FALSE, TRUE, TRUE, 3},
-    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 5},
+    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 7},
     {&cmm_object_type_yellowcoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_greencoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_redcoin, FALSE, FALSE, FALSE, 0},
@@ -1272,16 +1274,20 @@ Gfx *btn_haunted_enemies[] = {
 char *txt_ground_enemies[] = {
     "Goomba",
     "Big Goomba",
+    "Tiny Goomba",
     "Sleeping Piranha Plant",
     "Big Fire Piranha Plant",
-    "Baby Fire Piranha Plant"
+    "Tiny Fire Piranha Plant",
+    "Scared Koopa",
 };
 Gfx *btn_ground_enemies[] = {
     mat_b_btn_goomba,
     mat_b_btn_goomba,
+    mat_b_btn_goomba,
     mat_b_btn_plant,
     mat_b_btn_plant,
     mat_b_btn_plant,
+    mat_b_btn_kuppa,
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {

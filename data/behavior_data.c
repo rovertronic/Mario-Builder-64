@@ -6029,6 +6029,7 @@ const BehaviorScript bhvYoshi[] = {
 
 const BehaviorScript bhvKoopa[] = {
     BEGIN(OBJ_LIST_PUSHABLE),
+    SET_INT(oBehParams, 0x00000200),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, koopa_seg6_anims_06011364),
@@ -6214,6 +6215,18 @@ const BehaviorScript bhvBigGoomba[] = {
     BEGIN(OBJ_LIST_PUSHABLE),
     SET_INT(oBehParams2ndByte, 1),
     GOTO(bhvGoomba + 1),
+};
+
+const BehaviorScript bhvTinyGoomba[] = {
+    BEGIN(OBJ_LIST_PUSHABLE),
+    SET_INT(oBehParams2ndByte, 2),
+    GOTO(bhvGoomba + 1),
+};
+
+const BehaviorScript bhvScaredKoopa[] = {
+    BEGIN(OBJ_LIST_PUSHABLE),
+    SET_INT(oBehParams, 0x00000100),
+    GOTO(bhvKoopa + 2),
 };
 
 const BehaviorScript bhvRex[] = {

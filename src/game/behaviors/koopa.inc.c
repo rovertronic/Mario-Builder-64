@@ -69,38 +69,33 @@ static struct KoopaTheQuickProperties sKoopaTheQuickProperties[] = {
  * Initialization function.
  */
 void bhv_koopa_init(void) {
-    //if ((o->oKoopaMovementType = o->oBehParams2ndByte) == KOOPA_BP_TINY) {
-    //    // Tiny koopa in THI
-    //    o->oKoopaMovementType = KOOPA_BP_NORMAL;
-    //    o->oKoopaAgility = 1.6f / 3.0f;
-    //    o->oDrawingDistance = 1500.0f;
-    //    cur_obj_scale(0.8f);
-    //    o->oGravity = -6.4f / 3.0f;
-    //} else if (o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE) {
-    //    // Koopa the Quick. Race index is 0 for BoB and 1 for THI
-    //    o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
-    //    o->oKoopaAgility = 4.0f;
-    //    cur_obj_scale(3.0f);
-    //} else {
-    //    o->oKoopaAgility = 1.0f;
-    //}
+    if ((o->oKoopaMovementType = GET_BPARAM3(o->oBehParams)) == KOOPA_BP_TINY) {
+        // Tiny koopa in THI
+        o->oKoopaMovementType = KOOPA_BP_NORMAL;
+        o->oKoopaAgility = 1.6f / 3.0f;
+        o->oDrawingDistance = 1500.0f;
+        cur_obj_scale(0.8f);
+        o->oGravity = -6.4f / 3.0f;
+    } else if (o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE) {
+        // Koopa the Quick. Race index is 0 for BoB and 1 for THI
 
-    //navigate trajectory until find -1
-    u16 i = 0;
-    while (cmm_trajectory_list[o->oBehParams2ndByte][i][0] != -1) {
-        i ++;
+        //navigate trajectory until find -1
+        u16 i = 0;
+        while (cmm_trajectory_list[o->oBehParams2ndByte][i][0] != -1) {
+            i ++;
+        }
+        struct Object *koopa_flag = spawn_object(o,MODEL_NONE,bhvKoopaRaceEndpoint);
+        koopa_flag->oPosX = cmm_trajectory_list[o->oBehParams2ndByte][i-1][1];
+        koopa_flag->oPosY = cmm_trajectory_list[o->oBehParams2ndByte][i-1][2];
+        koopa_flag->oPosZ = cmm_trajectory_list[o->oBehParams2ndByte][i-1][3];
+        o->parentObj = koopa_flag;
+
+        o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
+        o->oKoopaAgility = 4.0f;
+        cur_obj_scale(3.0f);
+    } else {
+        o->oKoopaAgility = 1.0f;
     }
-    struct Object *koopa_flag = spawn_object(o,MODEL_NONE,bhvKoopaRaceEndpoint);
-    koopa_flag->oPosX = cmm_trajectory_list[o->oBehParams2ndByte][i-1][1];
-    koopa_flag->oPosY = cmm_trajectory_list[o->oBehParams2ndByte][i-1][2];
-    koopa_flag->oPosZ = cmm_trajectory_list[o->oBehParams2ndByte][i-1][3];
-    o->parentObj = koopa_flag;
-
-
-
-    o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
-    o->oKoopaAgility = 4.0f;
-    cur_obj_scale(3.0f);
 }
 
 /**
@@ -119,8 +114,6 @@ static void koopa_play_footstep_sound(s8 animFrame1, s8 animFrame2) {
  * running away.
  */
 static s32 koopa_check_run_from_mario(void) {
-    return FALSE;
-    /*
     if (o->oKoopaDistanceToMario < 300.0f
         && abs_angle_diff(o->oKoopaAngleToMario, o->oMoveAngleYaw) < 0x3000) {
         o->oAction = KOOPA_SHELLED_ACT_RUN_FROM_MARIO;
@@ -128,7 +121,6 @@ static s32 koopa_check_run_from_mario(void) {
     }
 
     return FALSE;
-    */
 }
 
 /**
@@ -304,9 +296,6 @@ void shelled_koopa_attack_handler(s32 attackType) {
 static void koopa_shelled_update(void) {
     cur_obj_update_floor_and_walls();
     obj_update_blinking(&o->oKoopaBlinkTimer, 20, 50, 4);
-    o->oIntangibleTimer = 0;
-    o->oInteractStatus = 0;
-    o->oInteractType = INTERACT_IGLOO_BARRIER;
 
     switch (o->oAction) {
         case KOOPA_SHELLED_ACT_STOPPED:
@@ -327,7 +316,6 @@ static void koopa_shelled_update(void) {
             break;
     }
 
-    /*
     if (o->header.gfx.scale[0] > 0.8f) {
         obj_handle_attacks(&sKoopaHitbox, o->oAction, sKoopaShelledAttackHandlers);
     } else {
@@ -337,7 +325,6 @@ static void koopa_shelled_update(void) {
             obj_die_if_health_non_positive();
         }
     }
-    */
 
     cur_obj_move_standard(-78);
 }
@@ -790,10 +777,6 @@ static void koopa_the_quick_update(void) {
 void bhv_koopa_update(void) {
     // PARTIAL_UPDATE
 
-    //for (u8 i=0;i<16;i++) {
-        //print_text_fmt_int(10, 10+(16*i), "%d", cmm_trajectory_list[o->oBehParams2ndByte][i]); 
-    //}
-
     o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
 
     if (o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE) {
@@ -802,10 +785,7 @@ void bhv_koopa_update(void) {
         o->oKoopaDistanceToMario = o->oDistanceToMario;
         o->oKoopaAngleToMario = o->oAngleToMario;
         treat_far_home_as_mario(1000.0f);
-
-        koopa_the_quick_update();
-
-        /*
+        
         switch (o->oKoopaMovementType) {
             case KOOPA_BP_UNSHELLED:
                 koopa_unshelled_update();
@@ -817,7 +797,7 @@ void bhv_koopa_update(void) {
             case KOOPA_BP_KOOPA_THE_QUICK_THI:
                 koopa_the_quick_update();
                 break;
-        }*/
+        }
     } else {
         o->oAnimState = 1;
     }
