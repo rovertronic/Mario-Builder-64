@@ -996,6 +996,7 @@ struct cmm_object_info cmm_object_type_badge = {
 struct cmm_object_info cmm_object_type_bosses[] = {
     {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 0, 1.0f, king_bobomb_seg5_anims_0500FE30, df_kingbomb, SOUND_OBJ_KING_BOBOMB},
     {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
+    {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 3.0f, NULL, NULL, SOUND_OBJ_BOO_LAUGH_LONG},
 };
 
 struct cmm_object_info cmm_object_type_platform = {
@@ -1078,7 +1079,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_btcme, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
-    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 2},
+    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 3},
     {&cmm_object_type_platform, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
@@ -1192,6 +1193,7 @@ Gfx *btn_mech_bosses[] = {
 char *txt_bp_boss[] = {
     "King Bob-Omb",
     "King Whomp",
+    "Big Boo",
     "Eyerok",
     "Wiggler",
 };

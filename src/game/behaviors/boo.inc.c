@@ -198,7 +198,11 @@ static void boo_move_during_hit(s32 roll, f32 fVel) {
     s32 oscillationVel = o->oTimer * 0x800 + 0x800;
 
     o->oForwardVel = fVel;
-    o->oVelY = coss(oscillationVel)*10.0f;
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        o->oVelY = coss(oscillationVel);
+    } else {
+        o->oVelY = coss(oscillationVel)*10.0f;
+    }
     o->oMoveAngleYaw = o->oBooMoveYawDuringHit;
 
     if (roll) {
@@ -510,13 +514,14 @@ static void big_boo_act_0(void) {
         o->oAction = 1;
 
         cur_obj_set_pos_to_home();
+        o->oPosY -= 200.0f;
         o->oMoveAngleYaw = o->oBooInitialMoveYaw;
 
         cur_obj_unhide();
 
         o->oBooTargetOpacity = 255;
         o->oBooBaseScale = 3.0f;
-        o->oHealth = 5;
+        o->oHealth = 3;
 
         cur_obj_scale(3.0f);
         cur_obj_become_tangible();
@@ -601,6 +606,8 @@ static void big_boo_act_3(void) {
 
             obj_set_angle(o, 0, 0, 0);
 
+            spawn_default_star(o->oHomeX,o->oHomeY,o->oHomeZ);
+            /*
             if (o->oBehParams2ndByte == 0) {
                 big_boo_spawn_ghost_hunt_star();
             } else if (o->oBehParams2ndByte == 1) {
@@ -608,6 +615,7 @@ static void big_boo_act_3(void) {
             } else {
                 big_boo_spawn_balcony_star();
             }
+            */
         }
     } else {
         if (o->oTimer == 0) {
