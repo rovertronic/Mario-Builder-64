@@ -802,5 +802,6 @@ extern const BehaviorScript bhvCurrPreviewObject[];
 extern const BehaviorScript bhvSpawn[];
 extern const BehaviorScript bhvBadge[];
 extern const BehaviorScript bhvBoss[];
+extern const BehaviorScript bhvRealFlyGuy[];
 
 #endif // BEHAVIOR_DATA_H

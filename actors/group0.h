@@ -940,4 +940,8 @@ extern const Gfx yellow_sphere_seg5_dl_05000840[];
 extern const Gfx yellow_sphere_seg5_dl_05000888[];
 extern const Gfx yellow_sphere_seg5_dl_050008C8[];
 
+#include "blaster/geo_header.h"
+
+#include "blaster/collision_header.h"
+
 #endif

@@ -811,8 +811,9 @@ const BehaviorScript bhvTower[] = {
 const BehaviorScript bhvBulletBillCannon[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    LOAD_COLLISION_DATA(wf_seg7_collision_bullet_bill_cannon),
+    LOAD_COLLISION_DATA(blaster_collision),
     CALL_NATIVE(load_object_static_model),
+    SPAWN_CHILD(/*Model*/ MODEL_BILL_MAKER, /*Behavior*/ bhvBulletBill),
     BREAK(),
 };
 
@@ -2255,7 +2256,7 @@ const BehaviorScript bhvBulletBill[] = {
     SET_HITBOX_WITH_OFFSET(/*Radius*/ 50, /*Height*/ 50, /*Downwards offset*/ 50),
     SET_INTERACT_TYPE(INTERACT_DAMAGE),
     SET_INT(oDamageOrCoinValue, 2),
-    // SCALE(/*Unused*/ 0, /*Field*/ 40),
+    SCALE(/*Unused*/ 0, /*Field*/ 40),
     SET_INT(oIntangibleTimer, 0),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
     CALL_NATIVE(bhv_bullet_bill_init),
@@ -6089,6 +6090,21 @@ const BehaviorScript bhvFlyGuy[] = {
     //CALL_NATIVE(bhv_init_room),
     SET_INT(oInteractionSubtype, INT_SUBTYPE_TWIRL_BOUNCE),
     // SET_FLOAT(oGraphYOffset, 30),
+    SCALE(/*Unused*/ 0, /*Field*/ 150),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_fly_guy_update),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvRealFlyGuy[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_ANIMATIONS(oAnimations, flyguy_seg8_anims_08011A64),
+    ANIMATE(FLY_GUY_ANIM_FLYING),
+    SET_HOME(),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 1000, /*Buoyancy*/ 600, /*Unused*/ 0, 0),
+    SET_INT(oInteractionSubtype, INT_SUBTYPE_TWIRL_BOUNCE),
+    SET_FLOAT(oGraphYOffset, 30),
     SCALE(/*Unused*/ 0, /*Field*/ 150),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_fly_guy_update),

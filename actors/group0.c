@@ -224,3 +224,5 @@
 #include "heave_ho/model.inc.c"
 #include "heave_ho/anims/data.inc.c"
 #include "heave_ho/anims/table.inc.c"
+#include "blaster/model.inc.c"
+#include "blaster/collision.inc.c"

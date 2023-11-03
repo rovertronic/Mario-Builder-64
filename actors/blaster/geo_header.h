@@ -1,0 +1,17 @@
+extern const GeoLayout blaster_geo[];
+extern Lights1 blaster_bullet2_lights;
+extern Lights1 blaster_bullet1_lights;
+extern u8 blaster_bullet2_ci8[];
+extern u8 blaster_bullet2_pal_rgba16[];
+extern u8 blaster_bullet1_ci8[];
+extern u8 blaster_bullet1_pal_rgba16[];
+extern Vtx blaster_blaster_mesh_layer_1_vtx_0[20];
+extern Gfx blaster_blaster_mesh_layer_1_tri_0[];
+extern Vtx blaster_blaster_mesh_layer_1_vtx_1[4];
+extern Gfx blaster_blaster_mesh_layer_1_tri_1[];
+extern Gfx mat_blaster_bullet2[];
+extern Gfx mat_revert_blaster_bullet2[];
+extern Gfx mat_blaster_bullet1[];
+extern Gfx mat_revert_blaster_bullet1[];
+extern Gfx blaster_blaster_mesh_layer_1[];
+extern Gfx blaster_material_revert_render_settings[];

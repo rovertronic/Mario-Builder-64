@@ -30,7 +30,7 @@ static s16 sFlyGuyJitterAmounts[] = { 0x1000, -0x2000, 0x2000 };
 static void fly_guy_act_idle(void) {
     o->oForwardVel = 0.0f;
 
-    if (approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.02f)) {
+    if (approach_f32_ptr(&o->header.gfx.scale[0], 1.5f, 0.02f)) {
         // If we are >2000 units from home or Mario is <2000 units from us
         if (o->oDistanceToMario >= 25000.0f || o->oDistanceToMario < 2000.0f) {
             // Turn toward home or Mario
@@ -76,7 +76,9 @@ static void fly_guy_act_approach_mario(void) {
                 o->oFlyGuyScaleVel = 0.06f;
             } else {
                 o->oAction = FLY_GUY_ACT_LUNGE;
-                cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_SHORT);
+                if (cmm_lopt_game == CMM_GAME_BTCM) {
+                    cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_SHORT);
+                }
                 o->oFlyGuyLungeTargetPitch = obj_turn_pitch_toward_mario(-200.0f, 0);
 
                 o->oForwardVel = 25.0f * coss(o->oFlyGuyLungeTargetPitch);
