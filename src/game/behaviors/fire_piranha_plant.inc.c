@@ -28,18 +28,14 @@ s32 sNumActiveFirePiranhaPlants;
 s32 sNumKilledFirePiranhaPlants;
 
 void bhv_fire_piranha_plant_init(void) {
-    o->oFirePiranhaPlantNeutralScale = 1.0f;//GET_BPARAM2(o->oBehParams) ? 2.0f : 0.5f;
+    o->oFirePiranhaPlantNeutralScale = GET_BPARAM2(o->oBehParams) ? 2.0f : 0.5f;
     obj_set_hitbox(o, &sFirePiranhaPlantHitbox);
 
     if (GET_BPARAM2(o->oBehParams) != FIRE_PIRANHA_PLANT_BP_NORMAL) {
         o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
         o->oHealth = 1;
 
-        if (GET_BPARAM3(o->oBehParams)) {
-            o->oNumLootCoins = 0;
-        } else {
-            o->oNumLootCoins = 2;
-        }
+        o->oNumLootCoins = 2;
     }
 
     sNumActiveFirePiranhaPlants = sNumKilledFirePiranhaPlants = 0;
@@ -128,16 +124,8 @@ void bhv_fire_piranha_plant_update(void) {
 
     if (obj_check_attacks(&sFirePiranhaPlantHitbox, o->oAction)) {
         if (--o->oHealth < 0) {
-            gMarioState->PirCount --;
             if (o->oFirePiranhaPlantActive) {
                 sNumActiveFirePiranhaPlants--;
-                if (gMarioState->PirCount > 0) {
-                    spawn_orange_number(gMarioState->PirCount, 0, 0, 0);
-                }
-                else
-                {
-                    spawn_default_star(o->oPosX, o->oPosY+100.0f, o->oPosZ);
-                }
             }
         } else {
             cur_obj_init_animation_with_sound(FIRE_PIRANHA_PLANT_ANIM_ATTACKED);

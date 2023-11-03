@@ -339,6 +339,7 @@ void draw_cmm_menu(void) {
         gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     }
+    gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
     //TOOLBOX
     switch (cmm_menu_state) {
@@ -375,6 +376,7 @@ void draw_cmm_menu(void) {
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
             }
+            gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
             s32 strx = 54+(cmm_toolbox_index%9)*32;
             s32 stry = 215-(cmm_toolbox_index/9)*32;

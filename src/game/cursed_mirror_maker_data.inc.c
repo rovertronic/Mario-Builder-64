@@ -1201,11 +1201,13 @@ char *txt_bp_boss[] = {
 char *txt_star_objects[] = {
     "Normal",
     "Red Coins",
+    "Piranha Star",
 };
 
 Gfx *btn_star_objects[] = {
     mat_b_btn_star,
     mat_b_btn_rcs,
+    mat_b_btn_star,
 };
 
 char *txt_timed_objects[] = {
