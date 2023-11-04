@@ -102,7 +102,6 @@ u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
 u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
 
-struct Object *cmm_preview_object;
 struct Object *cmm_boundary_object[6]; //one for each side
 
 Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
@@ -245,6 +244,9 @@ void df_mri(s32 context) {
         o->oGraphYOffset = 100.0f;
         struct Object *iris = spawn_object(o,MODEL_MAKER_MRI_2,bhvFakeMrIIris);
     }
+}
+void df_booser(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
 
@@ -2276,19 +2278,17 @@ void load_level(void) {
 
     cmm_lopt_game = cmm_save.option[19];
 
-    if (cmm_lopt_game == CMM_GAME_VANILLA) {
-        cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-    } else {
-        cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
-    }
-
     //configure toolbox depending on game style
     switch(cmm_lopt_game) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
+            cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
+            cmm_object_type_preview_mario.model_id = MODEL_MARIO;
         break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
+            cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
+            cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
         break;
     }
     //reset toolbar

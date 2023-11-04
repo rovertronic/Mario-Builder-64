@@ -391,7 +391,7 @@ void draw_cmm_menu(void) {
                 cmm_toolbox_transition_btn_x = lerp(cmm_toolbox_transition_btn_ox,cmm_toolbox_transition_btn_tx,smoothstep(0.0,1.0,cmm_toolbox_transition_btn_progress));
                 cmm_toolbox_transition_btn_y = lerp(cmm_toolbox_transition_btn_oy,cmm_toolbox_transition_btn_ty,smoothstep(0.0,1.0,cmm_toolbox_transition_btn_progress));
 
-                cmm_toolbox_transition_btn_progress += 0.08f;
+                cmm_toolbox_transition_btn_progress += 0.12f;
                 if (cmm_toolbox_transition_btn_progress > 1.0f) {
                     cmm_toolbox_transition_btn_progress = 1.0f;
                 }

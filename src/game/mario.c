@@ -2740,6 +2740,7 @@ void init_mario(void) {
     }
 
     gMarioState->heldObj = NULL;
+    /*
     if (gMarioState->heldObjParam2 != 0) {
         switch(gMarioState->heldObjParam2) {
             case 1: //goblet of semen
@@ -2755,6 +2756,7 @@ void init_mario(void) {
         }
         gMarioState->heldObjParam2 = 0;
     }
+    */
 
 
     

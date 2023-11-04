@@ -79,3 +79,7 @@
 #include "boo/geo.inc.c"
 #include "spindrift/geo.inc.c"
 #include "snowman/geo.inc.c"
+#include "bowser_flame/geo.inc.c"
+#include "impact_ring/geo.inc.c"
+#include "bowser/geo.inc.c"
+#include "impact_smoke/geo.inc.c"
