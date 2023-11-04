@@ -117,6 +117,17 @@ enum SeqId {
     SEQ_SMG_BATTLEROCK,               // 0x62
     SEQ_SA_WINDY_HILL,                // 0x63
     SEQ_SPM_OVERTHERE_STAIR,          // 0x64
+    SEQ_SMS_SECRET_COURSE,            // 0x65
+    SEQ_SMS_BIANCO_HILLS,             // 0x66
+    SEQ_SPM_LINELAND_ROAD,            // 0x67
+    SEQ_TTYD_XNAUT_FORTRESS,          // 0x68
+    SEQ_BIS_BUMPSY_PLAINS,            // 0x69
+    SEQ_MP_RAINBOW_CASTLE,            // 0x6A
+    SEQ_SS_SKYLOFT,                   // 0x6B
+    SEQ_SMW_CASTLE,                   // 0x6C
+    SEQ_FIELDOFHOPESANDDREAMS,        // 0x6D
+    SEQ_BK_FREEZEEZY_PEAKS,           // 0x6E
+    SEQ_MKDS_WALUIGI_PINBALL,         // 0x6F
 
     SEQ_COUNT
 };

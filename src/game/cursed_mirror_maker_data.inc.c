@@ -1422,7 +1422,8 @@ char *cmm_costume_string_table[] = {
 char *cmm_music_album_string_table[] = {
     "Super Mario 64 OST",
     "Beyond the Cursed Mirror OST",
-    "Miscellaneous ROM Hacks",
+    "ROM Hack Music Ports",
+    "Retro 2D Mario Music"
 };
 
 char *cmm_music_vanilla_string_table[] = {
@@ -1454,15 +1455,14 @@ char *cmm_music_btcm_string_table[] = {
     "The Show's Finale",
     "Parasite Moon",
     "AGAMEMNON",
-    "SMB1 Overworld",
-    "SMB2 Overworld",
-    "SMB3 Fortress",
 };
 
 char *cmm_music_romhack_string_table[] = {
+    "Bianco Hills (Super Mario Sunshine)",
     "Sky and Sea (Super Mario Sunshine)",
-    "Buoy Base Galaxy (Mario Galaxy)",
+    "Secret Course (Super Mario Sunshine)",
     "Comet Observatory (Mario Galaxy)",
+    "Buoy Base Galaxy (Mario Galaxy)",
     "Battlerock Galaxy (Mario Galaxy)",
     "Ghostly Galaxy (Mario Galaxy)",
     "Purple Comet (Mario Galaxy)",
@@ -1473,6 +1473,7 @@ char *cmm_music_romhack_string_table[] = {
     "Frappe Snowland (Mario Kart 64)",
     "Rainbow Road (Mario Kart 64)",
     "Bowser's Castle (Mario Kart 64)",
+    "Waluigi Pinball (Mario Kart DS)",
 
     "Mario's Pad (Super Mario RPG)",
     "Nimbus Land (Super Mario RPG)",
@@ -1482,12 +1483,16 @@ char *cmm_music_romhack_string_table[] = {
     "Dry Dry Desert (Paper Mario 64)",
     "Riddle Tower (Paper Mario: TTYD)",
     "Rogueport Sewers (Paper Mario: TTYD)",
+    "X-Naut Fortress (Paper Mario: TTYD)",
     "Flipside (Super Paper Mario)",
+    "Lineland Road (Super Paper Mario)",
     "Sammer Kingdom (Super Paper Mario)",
     "Floro Caverns (Super Paper Mario)",
     "Overthere Stair (Super Paper Mario)",
 
+    "Rainbow Castle (Mario Party)",
     "Behind Yoshi Village (Partners in Time)",
+    "Bumpsy Plains (Bowser's Inside Story)",
 
     "Overworld (Yoshi's Island)",
     "Title (Yoshi's Story)",
@@ -1497,13 +1502,15 @@ char *cmm_music_romhack_string_table[] = {
     "Stone Tower Temple (Majora's Mask)",
     "Outset Island (Wind Waker)",
     "Lake Hylia (Twilight Princess)",
+    "Skyloft (Skyward Sword)",
 
     "Frantic Factory (Donkey Kong 64)",
     "Hideout Helm (Donkey Kong 64)",
-    //"Gloomy Galleon (Donkey Kong 64)",
+    "Gloomy Galleon (Donkey Kong 64)",
     "In a Snow-Bound Land (DKC 2)",
 
     "Bubblegloop Swamp (Banjo-Kazooie)",
+    "Freezeezy Peak (Banjo-Kazooie)",
     "Gobi's Valley (Banjo-Kazooie)",
 
     "Green Garden (Bomberman 64)",
@@ -1512,10 +1519,17 @@ char *cmm_music_romhack_string_table[] = {
     "Tropical Resort (Sonic Colors)",
     "Sky Tower (Pokemon Mystery Dungeon)",
     "Band Land (Rayman)",
+    "Field of Hopes and Dreams (Deltarune)",
+};
 
-    "Overworld (Super Mario Bros. 3)",
-    "Bowser Remix (Super Mario Bros.)",
+char *cmm_music_retro_string_table[] = {
+    "Overworld (Super Mario Bros.)",
+    "Castle Mix (Super Mario Bros.)",
+    "Overworld (Super Mario Bros. 2)",
+    "Overworld Mix (Super Mario Bros. 3)",
+    "Fortress (Super Mario Bros. 3)",
     "Athletic (Super Mario World)",
+    "Castle (Super Mario World)",
 };
 
 
@@ -1546,13 +1560,12 @@ u8 seq_musicmenu_array[] = {
     SEQ_SHOWRUNNER_BOSS,
     SEQ_COSMIC_SEED_LEVEL,
     SEQ_FINAL_BOSS,
-    SEQ_SMB1_OVERWORLD,
-    SEQ_SMB2_OVERWORLD,
-    SEQ_SMB3_CASTLE,
 
+    SEQ_SMS_BIANCO_HILLS,
     SEQ_SMS_SKY_AND_SEA,
-    SEQ_SMG_BUOY_BASE,
+    SEQ_SMS_SECRET_COURSE,
     SEQ_SMG_COMET_OBSERVATORY,
+    SEQ_SMG_BUOY_BASE,
     SEQ_SMG_BATTLEROCK,
     SEQ_SMG_GHOSTLY_GALAXY,
     SEQ_SMG_PURPLE_COMET,
@@ -1564,6 +1577,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_FRAPPE_SNOWLAND,
     SEQ_MK64_RAINBOW_ROAD,
     SEQ_MK64_BOWSERS_CASTLE,
+    SEQ_MKDS_WALUIGI_PINBALL,
 
     SEQ_SMRPG_MARIOS_PAD,             // 0x46
     SEQ_SMRPG_NIMBUS_LAND,
@@ -1573,12 +1587,16 @@ u8 seq_musicmenu_array[] = {
     SEQ_PM_DRY_DESERT,
     SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
     SEQ_TTYD_ROGUEPORT_SEWERS,
+    SEQ_TTYD_XNAUT_FORTRESS,
     SEQ_SPM_FLIPSIDE,
+    SEQ_SPM_LINELAND_ROAD,
     SEQ_SAMMER_KINGDOM,
     SEQ_SPM_FLORO_CAVERNS,
     SEQ_SPM_OVERTHERE_STAIR,
 
+    SEQ_MP_RAINBOW_CASTLE,
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
+    SEQ_BIS_BUMPSY_PLAINS,
     SEQ_YI_OVERWORLD,
     SEQ_YS_TITLE,                     // 0x51
 
@@ -1587,13 +1605,15 @@ u8 seq_musicmenu_array[] = {
     SEQ_STONE_TOWER_TEMPLE,
     SEQ_WW_OUTSET_ISLAND,
     SEQ_TP_LAKE_HYLIA,                // 0x53
+    SEQ_SS_SKYLOFT,
 
     SEQ_DK64_FRANTIC_FACTORY,
     SEQ_DK64_HIDEOUT_HELM,
-    //SEQ_DK64_GLOOMY_GALLEON,
+    SEQ_DK64_GLOOMY_GALLEON,
     SEQ_DKC2_SNOWBOUND_LAND,
 
     SEQ_BK_BUBBLEGLOOP_SWAMP,
+    SEQ_BK_FREEZEEZY_PEAKS,
     SEQ_BK_GOBI_VALLEY,
 
     SEQ_BM_GREEN_GARDEN,
@@ -1602,10 +1622,15 @@ u8 seq_musicmenu_array[] = {
     SEQ_SC_TROPICAL_RESORT,           // 0x49
     SEQ_PKMN_SKY_TOWER,
     SEQ_RAYMAN_BAND_LAND,
+    SEQ_FIELDOFHOPESANDDREAMS,
 
-    SEQ_SMB3_OVERWORLD,               // 0x45
+    SEQ_SMB1_OVERWORLD,
     SEQ_SMB_BOWSER_REMIX,             // 0x4B
+    SEQ_SMB2_OVERWORLD,
+    SEQ_SMB3_OVERWORLD,
+    SEQ_SMB3_CASTLE,
     SEQ_SMW_ATHLETIC,                 // 0x4E
+    SEQ_SMW_CASTLE,
 };
 
 char *cmm_envfx_string_table[] = {
@@ -1718,6 +1743,7 @@ struct cmm_settings_button cmm_settings_music_albums[] = {
     {"Song:",  &cmm_lopt_seq_song, cmm_music_vanilla_string_table, ARRAY_COUNT(cmm_music_vanilla_string_table), NULL, song_changed},
     {"Song:",  &cmm_lopt_seq_song, cmm_music_btcm_string_table, ARRAY_COUNT(cmm_music_btcm_string_table), NULL, song_changed},
     {"Song:",  &cmm_lopt_seq_song, cmm_music_romhack_string_table, ARRAY_COUNT(cmm_music_romhack_string_table), NULL, song_changed},
+    {"Song:",  &cmm_lopt_seq_song, cmm_music_retro_string_table, ARRAY_COUNT(cmm_music_retro_string_table), NULL, song_changed},
 };
 
 struct cmm_settings_button cmm_settings_backtomainmenu[] = {
