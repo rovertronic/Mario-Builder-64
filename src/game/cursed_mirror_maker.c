@@ -2569,9 +2569,9 @@ void sb_loop(void) {
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
             }
+            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
-            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
 
             if (cmm_upsidedown_tile) {
                 switch (cmm_id_selection) {
@@ -2741,9 +2741,9 @@ void sb_loop(void) {
                 cmm_toolbar_index++;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
+            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
-            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
 
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
