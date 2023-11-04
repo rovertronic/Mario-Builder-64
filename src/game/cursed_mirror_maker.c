@@ -157,7 +157,7 @@ char *cmm_error_message = NULL;
 u16 cmm_error_timer = 0;
 f32 cmm_error_vels[3];
 
-struct cmm_level_save cmm_save;
+struct cmm_level_save_header cmm_save;
 
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
@@ -2141,17 +2141,6 @@ void save_level(void) {
     cmm_save.option[8] = cmm_lopt_waterlevel;
     cmm_save.option[19] = cmm_lopt_game;
 
-    //SAVE
-    for (i = 0; i < cmm_tile_count; i++) {
-        //Save tiles
-        bcopy(&cmm_tile_data[i],&cmm_save.tiles[i],sizeof(cmm_tile_data[i]));
-    }
-
-    for (i = 0; i < cmm_object_count; i++) {
-        //Save Objects
-        bcopy(&cmm_object_data[i],&cmm_save.objects[i],sizeof(cmm_object_data[i]));
-    }
-
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
             cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][j][0];
@@ -2174,13 +2163,15 @@ void save_level(void) {
 
     update_painting();
 
-    //block_until_rumble_pak_free();
-    //nuPiWriteSram(0,&cmm_save, sizeof(cmm_save));
-    //release_rumble_pak_control();
-
     u32 bytes_written;
     f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+    //write header
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
+    //write tiles
+    f_write(&cmm_file,&cmm_tile_data,(sizeof(cmm_tile_data[0])*cmm_tile_count),&bytes_written);
+    //write objects
+    f_write(&cmm_file,&cmm_object_data,(sizeof(cmm_object_data[0])*cmm_object_count),&bytes_written);
+
     f_close(&cmm_file);
 }
 
@@ -2202,7 +2193,13 @@ void load_level(void) {
     if (code == FR_OK) {
         //file exists, load it
         f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
+        //read header
         f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
+        //read tiles
+        f_read(&cmm_file,&cmm_tile_data,sizeof(cmm_tile_data[0])*cmm_save.tile_count,&bytes_read);
+        //read objects
+        f_read(&cmm_file,&cmm_object_data,sizeof(cmm_object_data[0])*cmm_save.object_count,&bytes_read);
+
         f_close(&cmm_file);
     } else {
         //Load into a fresh level
@@ -2214,10 +2211,10 @@ void load_level(void) {
 
         //Place spawn location
         cmm_save.object_count = 1;
-        cmm_save.objects[0].x = 32;
-        cmm_save.objects[0].z = 32;
-        cmm_save.objects[0].y = cmm_templates[cmm_lopt_template].spawnHeight;
-        cmm_save.objects[0].type = OBJECT_TYPE_SPAWN;
+        cmm_object_data[0].x = 32;
+        cmm_object_data[0].z = 32;
+        cmm_object_data[0].y = cmm_templates[cmm_lopt_template].spawnHeight;
+        cmm_object_data[0].type = OBJECT_TYPE_SPAWN;
 
         cmm_save.option[19] = cmm_lopt_game;
         cmm_save.option[7] = cmm_lopt_size;
@@ -2232,11 +2229,11 @@ void load_level(void) {
             u8 i = 0;
             for (s8 x = -1; x <= 1; x++) {
                 for (s8 z = -1; z <= 1; z++) {
-                    cmm_save.tiles[i].x = 32+x;
-                    cmm_save.tiles[i].y = 0;
-                    cmm_save.tiles[i].z = 32+z;
-                    cmm_save.tiles[i].type = TILE_TYPE_BLOCK;
-                    cmm_save.tiles[i].mat = 0;
+                    cmm_tile_data[i].x = 32+x;
+                    cmm_tile_data[i].y = 0;
+                    cmm_tile_data[i].z = 32+z;
+                    cmm_tile_data[i].type = TILE_TYPE_BLOCK;
+                    cmm_tile_data[i].mat = 0;
                     i++;
                 }
             }
@@ -2300,7 +2297,7 @@ void load_level(void) {
     cmm_tile_data_indices[0] = 0;
     // Load tiles and build index list. Assume all tiles are in order
     for (i = 0; i < cmm_tile_count; i++) {
-        bcopy(&cmm_save.tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
+        //bcopy(&cmm_save.tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
         u32 curIndex = get_tiletype_index(cmm_tile_data[i].type, cmm_tile_data[i].mat);
 
         if (curIndex != oldIndex) {
@@ -2325,7 +2322,7 @@ void load_level(void) {
     }
 
     for (i = 0; i < cmm_object_count; i++) {
-        bcopy(&cmm_save.objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
+        //bcopy(&cmm_save.objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z)
         place_occupy_data(pos);

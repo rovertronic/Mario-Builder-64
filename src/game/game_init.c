@@ -1018,7 +1018,7 @@ FILINFO cmm_dir_info;
 #define MAX_FILES 20
 FILINFO cmm_level_entries[MAX_FILES];
 u16 cmm_level_entry_piktcher[MAX_FILES][64][64];
-struct cmm_level_save temp_cmm_save;
+struct cmm_level_save_header temp_cmm_save;
 
 
 u8 cmm_level_entry_count = 0;

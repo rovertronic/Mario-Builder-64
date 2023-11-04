@@ -271,27 +271,32 @@ struct cmm_comptraj {
 /*
 IMPORTANT!
 
-char file_header[9];
+char file_header[10];
 u8 version;
+char author[31];
 u16 piktcher[64][64];
 
-Should always be the first 2 members of the cmm_level_save struct
+Should always be the first 2 members of the cmm_level_uncompressed_save struct
 no matter what version.
 */
 
-struct cmm_level_save {
+struct cmm_level_save_header {
     char file_header[10];
     u8 version;
-    u16 piktcher[64][64]; //28*28 = 784*2 = 1568 bytes
+    char author[31];
+    u16 piktcher[64][64];
 
-    u8 option[20];//20 bytes
-    //6906 bytes per level, ~7000 bytes
+    u8 option[20];
     u16 tile_count;
     u16 object_count;
-
-    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];//3*1500 = 4500 bytes
-    struct cmm_obj objects[CMM_MAX_OBJS];//4*200 = 800 bytes
+    
     struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
+};
+
+struct cmm_level_uncompressed_save {
+    struct cmm_level_save_header header;
+    struct cmm_tile tiles[CMM_TILE_POOL_SIZE];
+    struct cmm_obj objects[CMM_MAX_OBJS];
 };
 
 enum {
