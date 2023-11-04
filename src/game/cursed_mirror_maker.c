@@ -2278,7 +2278,7 @@ void load_level(void) {
 
     cmm_lopt_game = cmm_save.option[19];
 
-    //configure toolbox depending on game style
+    //init theme specific things
     switch(cmm_lopt_game) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));

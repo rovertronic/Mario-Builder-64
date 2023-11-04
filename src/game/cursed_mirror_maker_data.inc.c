@@ -1114,7 +1114,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_btcme, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
-    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
+    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 4},
     {&cmm_object_type_platform, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
