@@ -1461,8 +1461,12 @@ char *cmm_music_btcm_string_table[] = {
 
 char *cmm_music_romhack_string_table[] = {
     "Sky and Sea (Super Mario Sunshine)",
-    "Buoy Base (Super Mario Galaxy)",
-    "Purple Comet (Super Mario Galaxy)",
+    "Buoy Base Galaxy (Mario Galaxy)",
+    "Comet Observatory (Mario Galaxy)",
+    "Battlerock Galaxy (Mario Galaxy)",
+    "Ghostly Galaxy (Mario Galaxy)",
+    "Purple Comet (Mario Galaxy)",
+    "Honeybloom Galaxy (Mario Galaxy 2)",
     "Overworld (New Super Mario Bros.)",
 
     "Koopa Troopa Beach (Mario Kart 64)",
@@ -1470,40 +1474,48 @@ char *cmm_music_romhack_string_table[] = {
     "Rainbow Road (Mario Kart 64)",
     "Bowser's Castle (Mario Kart 64)",
 
+    "Mario's Pad (Super Mario RPG)",
+    "Nimbus Land (Super Mario RPG)",
+    "Forest Maze (Super Mario RPG)",
+    "Sunken Ship (Super Mario RPG)",
+
+    "Dry Dry Desert (Paper Mario 64)",
+    "Riddle Tower (Paper Mario: TTYD)",
+    "Rogueport Sewers (Paper Mario: TTYD)",
     "Flipside (Super Paper Mario)",
     "Sammer Kingdom (Super Paper Mario)",
     "Floro Caverns (Super Paper Mario)",
-    "Riddle Tower (Paper Mario: TTYD)",
-    "Rogueport Sewers (Paper Mario: TTYD)",
+    "Overthere Stair (Super Paper Mario)",
 
-    "Mario's Pad (Super Mario RPG)",
-    "Forest Maze (Super Mario RPG)",
-    "Sunken Ship (Super Mario RPG)",
+    "Behind Yoshi Village (Partners in Time)",
+
+    "Overworld (Yoshi's Island)",
+    "Title (Yoshi's Story)",
 
     "Lost Woods (Ocarina of Time)",
     "Gerudo Valley (Ocarina of Time)",
     "Stone Tower Temple (Majora's Mask)",
+    "Outset Island (Wind Waker)",
     "Lake Hylia (Twilight Princess)",
 
     "Frantic Factory (Donkey Kong 64)",
     "Hideout Helm (Donkey Kong 64)",
-    "Gloomy Galleon (Donkey Kong 64)",
+    //"Gloomy Galleon (Donkey Kong 64)",
+    "In a Snow-Bound Land (DKC 2)",
 
     "Bubblegloop Swamp (Banjo-Kazooie)",
     "Gobi's Valley (Banjo-Kazooie)",
 
-    "Sky Tower (Pokemon Mystery Dungeon)",
+    "Green Garden (Bomberman 64)",
     "Black Fortress (Bomberman 64)",
-    "Shiver Star (Kirby 64)",
-    "Behind Yoshi Village (Partners in Time)",
-    "Dangerous Game (Mario Party)",
-    "Forest of Hope (Pikmin)",
-
-    "Super Mario Bros. 3",
+    "Windy Hill (Sonic Adventure)",
     "Tropical Resort (Sonic Colors)",
+    "Sky Tower (Pokemon Mystery Dungeon)",
+    "Band Land (Rayman)",
+
+    "Overworld (Super Mario Bros. 3)",
     "Bowser Remix (Super Mario Bros.)",
     "Athletic (Super Mario World)",
-    "Title (Yoshi's Story)",
 };
 
 
@@ -1540,7 +1552,11 @@ u8 seq_musicmenu_array[] = {
 
     SEQ_SMS_SKY_AND_SEA,
     SEQ_SMG_BUOY_BASE,
+    SEQ_SMG_COMET_OBSERVATORY,
+    SEQ_SMG_BATTLEROCK,
+    SEQ_SMG_GHOSTLY_GALAXY,
     SEQ_SMG_PURPLE_COMET,
+    SEQ_SMG2_HONEYBLOOM,
 
     SEQ_NSMB_OVERWORLD,
 
@@ -1549,40 +1565,47 @@ u8 seq_musicmenu_array[] = {
     SEQ_MK64_RAINBOW_ROAD,
     SEQ_MK64_BOWSERS_CASTLE,
 
+    SEQ_SMRPG_MARIOS_PAD,             // 0x46
+    SEQ_SMRPG_NIMBUS_LAND,
+    SEQ_FOREST_MAZE,
+    SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
+
+    SEQ_PM_DRY_DESERT,
+    SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
+    SEQ_TTYD_ROGUEPORT_SEWERS,
     SEQ_SPM_FLIPSIDE,
     SEQ_SAMMER_KINGDOM,
     SEQ_SPM_FLORO_CAVERNS,
-    SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
-    SEQ_TTYD_ROGUEPORT_SEWERS,
+    SEQ_SPM_OVERTHERE_STAIR,
 
-    SEQ_SMRPG_MARIOS_PAD,             // 0x46
-    SEQ_FOREST_MAZE,
-    SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
+    SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
+    SEQ_YI_OVERWORLD,
+    SEQ_YS_TITLE,                     // 0x51
 
     SEQ_OOT_LOST_WOODS,
     SEQ_OOT_GERUDO_VALLEY,            // 0x52
     SEQ_STONE_TOWER_TEMPLE,
+    SEQ_WW_OUTSET_ISLAND,
     SEQ_TP_LAKE_HYLIA,                // 0x53
 
     SEQ_DK64_FRANTIC_FACTORY,
     SEQ_DK64_HIDEOUT_HELM,
-    SEQ_DK64_GLOOMY_GALLEON,
+    //SEQ_DK64_GLOOMY_GALLEON,
+    SEQ_DKC2_SNOWBOUND_LAND,
 
     SEQ_BK_BUBBLEGLOOP_SWAMP,
     SEQ_BK_GOBI_VALLEY,
 
-    SEQ_PKMN_SKY_TOWER,
+    SEQ_BM_GREEN_GARDEN,
     SEQ_BM_BLACK_FORTRESS,
-    SEQ_K64_SHIVER_STAR,
-    SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
-    SEQ_MP_DANGEROUS_GAME,
-    SEQ_PIKMIN_FOREST_OF_HOPE,
-
-    SEQ_SMB3,                         // 0x45
+    SEQ_SA_WINDY_HILL,
     SEQ_SC_TROPICAL_RESORT,           // 0x49
+    SEQ_PKMN_SKY_TOWER,
+    SEQ_RAYMAN_BAND_LAND,
+
+    SEQ_SMB3_OVERWORLD,               // 0x45
     SEQ_SMB_BOWSER_REMIX,             // 0x4B
     SEQ_SMW_ATHLETIC,                 // 0x4E
-    SEQ_YS_TITLE,                     // 0x51
 };
 
 char *cmm_envfx_string_table[] = {
