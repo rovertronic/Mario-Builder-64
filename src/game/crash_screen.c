@@ -11,6 +11,7 @@
 #include "main.h"
 #include "debug.h"
 #include "rumble_init.h"
+#include "cursed_mirror_maker.h"
 
 #include "sm64.h"
 
@@ -18,7 +19,7 @@
 
 enum crashPages {
     PAGE_CONTEXT,
-#if PUPPYPRINT_DEBUG
+#ifdef PUPPYPRINT_DEBUG
     PAGE_LOG,
 #endif
     PAGE_STACKTRACE,
@@ -233,7 +234,7 @@ void draw_crash_context(OSThread *thread, s32 cause) {
 }
 
 
-#if PUPPYPRINT_DEBUG
+#ifdef PUPPYPRINT_DEBUG
 void draw_crash_log(void) {
     s32 i;
     crash_screen_draw_rect(25, 20, 270, 210);
@@ -358,10 +359,11 @@ void draw_crash_screen(OSThread *thread) {
     }
     if (updateBuffer) {
         crash_screen_draw_rect(25, 8, 270, 12);
-        crash_screen_print(30, 10, "Page:%02d                L/Z: Left   R: Right", crashPage);
+        //crash_screen_print(30, 10, "Page:%02d                L/Z: Left   R: Right", crashPage);
+        crash_screen_print(30, 10, "DONT WORRY. SAVE BACKUP CREATED.", crashPage);
         switch (crashPage) {
             case PAGE_CONTEXT:    draw_crash_context(thread, cause); break;
-#if PUPPYPRINT_DEBUG
+#ifdef PUPPYPRINT_DEBUG
             case PAGE_LOG: 		  draw_crash_log(); break;
 #endif
             case PAGE_STACKTRACE: draw_stacktrace(thread, cause); break;
@@ -395,6 +397,8 @@ extern void stop_sounds_in_continuous_banks(void);
 extern void read_controller_inputs(s32 threadID);
 extern struct SequenceQueueItem sBackgroundMusicQueue[6];
 
+char backup_filename[] = {"bak.up.mb64"};
+
 void thread2_crash_screen(UNUSED void *arg) {
     OSMesg mesg;
     OSThread *thread = NULL;
@@ -405,7 +409,7 @@ void thread2_crash_screen(UNUSED void *arg) {
         if (thread == NULL) {
             osRecvMesg(&gCrashScreen.mesgQueue, &mesg, 1);
             thread = get_crashed_thread();
-            //gCrashScreen.framebuffer = (RGBA16 *) [sRenderedFramebuffer];
+            gCrashScreen.framebuffer = (RGBA16 *) gFramebuffers[sRenderedFramebuffer];
             if (thread) {
                 if ((u32) map_data_init != MAP_PARSER_ADDRESS) {
                     map_data_init();
@@ -415,6 +419,7 @@ void thread2_crash_screen(UNUSED void *arg) {
                 stop_background_music(sBackgroundMusicQueue[0].seqId);
                 audio_signal_game_loop_tick();
                 crash_screen_sleep(200);
+
                 play_sound(SOUND_MARIO_WAAAOOOW, gGlobalSoundSource);
                 audio_signal_game_loop_tick();
                 crash_screen_sleep(200);
@@ -429,12 +434,16 @@ void thread2_crash_screen(UNUSED void *arg) {
             }
             read_controller_inputs(THREAD_2_CRASH_SCREEN);
             draw_crash_screen(thread);
+
+            //make a level backup
+            bcopy(&backup_filename,&cmm_file_name,sizeof(backup_filename));
+            save_level();
         }
     }
 }
 
 void crash_screen_init(void) {
-    //gCrashScreen.framebuffer = (RGBA16 *) gFramebuffers[sRenderedFramebuffer];
+    gCrashScreen.framebuffer = (RGBA16 *) gFramebuffers[sRenderedFramebuffer];
     gCrashScreen.width = SCREEN_WIDTH;
     gCrashScreen.height = SCREEN_HEIGHT;
     osCreateMesgQueue(&gCrashScreen.mesgQueue, &gCrashScreen.mesg, 1);
@@ -444,4 +453,3 @@ void crash_screen_init(void) {
                   );
     osStartThread(&gCrashScreen.thread);
 }
-

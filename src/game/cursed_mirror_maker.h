@@ -14,6 +14,7 @@
 
 #define CMM_VERSION 1
 
+void save_level(void);
 void sb_loop(void);
 void sb_init(void);
 void cmm_init();
