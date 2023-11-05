@@ -93,13 +93,6 @@ void bhv_mr_i_iris_loop(void) {
     }
 }
 
-void bhv_fake_mr_i_iris_loop(void) {
-    obj_copy_pos_and_angle(o, o->parentObj);
-    o->oPosX += sins(o->oFaceAngleYaw)*100.0f;
-    o->oPosZ += coss(o->oFaceAngleYaw)*100.0f;
-    o->oPosY += 100.0f;
-}
-
 void mr_i_body_act_spin_death(void) {
     s16 direction = o->oMrISpinDirection < 0 ? 0x1000 : -0x1000;
     f32 scaleModifier = o->oBehParams2ndByte ? 2.0f : 1.0f;

@@ -1049,9 +1049,9 @@ struct cmm_object_info cmm_object_type_stone[] = {
 };
 
 struct cmm_object_info cmm_object_type_flying[] = {
-    {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 0, 1.0f, lakitu_enemy_seg5_anims_050144D4, NULL, SOUND_OBJ_EVIL_LAKITU_THROW},
+    {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 0, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
     {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 0, 1.5f, flyguy_seg8_anims_08011A64, NULL, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
-    {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_SNUFIT_SHOOT},
+    {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 0, 1.0f, NULL, df_snufit, SOUND_OBJ_SNUFIT_SHOOT},
 };
 
 struct cmm_object_info cmm_object_type_haunted[] = {

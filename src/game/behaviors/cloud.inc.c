@@ -30,15 +30,15 @@ static void cloud_act_spawn_parts(void) {
         }
     }
 
-    if (o->oBehParams2ndByte == CLOUD_BP_FWOOSH) {
-        // Spawn fwoosh's face
-        spawn_object_relative(5, 0, 0, 0, o, MODEL_FWOOSH, bhvCloudPart);
-
-        cur_obj_scale(3.0f);
-
-        o->oCloudCenterX = o->oPosX;
-        o->oCloudCenterY = o->oPosY;
-    }
+    //if (o->oBehParams2ndByte == CLOUD_BP_FWOOSH) {
+    //    // Spawn fwoosh's face
+    //    spawn_object_relative(5, 0, 0, 0, o, MODEL_FWOOSH, bhvCloudPart);
+//
+    //    cur_obj_scale(3.0f);
+//
+    //    o->oCloudCenterX = o->oPosX;
+    //    o->oCloudCenterY = o->oPosY;
+    //}
 
     o->oAction = CLOUD_ACT_MAIN;
 }

@@ -242,13 +242,35 @@ void df_kingbomb(s32 context) {
 void df_mri(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oGraphYOffset = 100.0f;
-        struct Object *iris = spawn_object(o,MODEL_MAKER_MRI_2,bhvFakeMrIIris);
+        struct Object * iris = spawn_object(o,MODEL_MAKER_MRI_2, VIRTUAL_TO_PHYSICAL(o->behavior));
+
+        obj_copy_pos_and_angle(iris, o);
+        iris->oPosX += sins(o->oFaceAngleYaw)*100.0f;
+        iris->oPosZ += coss(o->oFaceAngleYaw)*100.0f;
+        iris->oPosY += 100.0f;
     }
 }
 void df_booser(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
+static s8 sCloudPartHeights2[] = { 11, 8, 12, 8, 9, 9 };
+void df_lakitu(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        //for (int i = 0; i < 5; i++) {
+            struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
+            obj_scale(cloudPart,2.0f);
+            cloudPart->oPosY -= 100.0f;
+            //cloudPart->oOpacity
+            //obj_set_billboard(cloudPart);
+            //obj_scale(cloudPart,3.0f);
+        //}
+    }
+}
+
+void df_snufit(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) o->oSnufitBodyScale = 1000.0f;
+}
 
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
@@ -2509,7 +2531,10 @@ void update_boundary_wall() {
 
 void delete_preview_object(void) {
     struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
-    if (previewObj) unload_object(previewObj);
+    while (previewObj) {
+        unload_object(previewObj);
+        previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
+    }
 }
 
 void (*cmm_option_changed_func)(void) = NULL;

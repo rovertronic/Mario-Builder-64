@@ -446,15 +446,6 @@ const BehaviorScript bhvMrIIris[] = {
     END_LOOP(),
 };
 
-extern void bhv_fake_mr_i_iris_loop(void);
-const BehaviorScript bhvFakeMrIIris[] = {
-    BEGIN(OBJ_LIST_DEFAULT),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_fake_mr_i_iris_loop),
-    END_LOOP(),
-};
-
 const BehaviorScript bhvMrIParticle[] = {
     BEGIN(OBJ_LIST_LEVEL),
     BILLBOARD(),
