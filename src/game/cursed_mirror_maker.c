@@ -158,6 +158,8 @@ u16 cmm_error_timer = 0;
 f32 cmm_error_vels[3];
 
 struct cmm_level_save_header cmm_save;
+char cmm_username[31];
+u8 cmm_has_username = FALSE;
 
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
@@ -2149,6 +2151,17 @@ void save_level(void) {
         cmm_save.file_header[i] = file_header_string[i];
     }
 
+    //author
+    if (cmm_has_username) {
+        i = 0;
+        do {
+            cmm_save.author[i] = cmm_username[i];
+            i++;
+        } while (cmm_username[i-1] != '\0');
+    } else {
+        cmm_save.author[0] = '\0';
+    }
+
     cmm_save.tile_count = cmm_tile_count;
     cmm_save.object_count = cmm_object_count;
 
@@ -2185,6 +2198,8 @@ void save_level(void) {
 
     update_painting();
 
+
+    f_chdir(cmm_level_dir_name);
     u32 bytes_written;
     f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     //write header
@@ -2195,6 +2210,8 @@ void save_level(void) {
     f_write(&cmm_file,&cmm_object_data,(sizeof(cmm_object_data[0])*cmm_object_count),&bytes_written);
 
     f_close(&cmm_file);
+
+    f_chdir("..");
 }
 
 void load_level(void) {
@@ -2205,14 +2222,10 @@ void load_level(void) {
     bzero(&cmm_save, sizeof(cmm_save));
     bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
-    //LOAD
-    //block_until_rumble_pak_free();
-    //nuPiReadSram(0,&cmm_save, sizeof(cmm_save));
-    //release_rumble_pak_control();
-
-    u32 bytes_read;
+    f_chdir(cmm_level_dir_name); //chdir exits after the ifelse statement
     FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
+        u32 bytes_read;
         //file exists, load it
         f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
         //read header
@@ -2262,6 +2275,7 @@ void load_level(void) {
             cmm_save.tile_count = i;
         }
     }
+    f_chdir("..");
 
     cmm_tile_count = cmm_save.tile_count;
     cmm_object_count = cmm_save.object_count;

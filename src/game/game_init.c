@@ -1010,7 +1010,6 @@ Bool32 gSupportsLibpl = FALSE;
 Bool32 gIsGliden = FALSE;
 
 FATFS fs;
-DIR cmm_dir;
 FRESULT mount_success;
 FRESULT directory_success;
 FILINFO cmm_dir_info;
@@ -1024,14 +1023,18 @@ struct cmm_level_save_header temp_cmm_save;
 u8 cmm_level_entry_count = 0;
 FRESULT global_code;
 
-TCHAR cmm_dir_name[] = {"Mario Builder 64 Levels"};
+TCHAR cmm_level_dir_name[] = {"Mario Builder 64 Levels"};
+TCHAR cmm_hack_dir_name[] = {"Mario Builder 64 Hacks"};
 
 void load_level_files_from_sd_card(void) {
-    f_opendir(&cmm_dir,"");
+    DIR dir;
+    f_opendir(&dir,&cmm_level_dir_name);
+    f_chdir(cmm_level_dir_name);
+
     s8 i = -1;
     do {
         i++;
-        if (f_readdir(&cmm_dir,&cmm_level_entries[i]) == FR_OK) {
+        if (f_readdir(&dir,&cmm_level_entries[i]) == FR_OK) {
             u32 bytes_read;
             FIL read_file;
             f_open(&read_file,&cmm_level_entries[i].fname, FA_READ);
@@ -1051,7 +1054,9 @@ void load_level_files_from_sd_card(void) {
     } while (cmm_level_entries[i].fname[0] != 0);
 
     cmm_level_entry_count = i;
-    f_closedir(&cmm_dir);
+    f_chdir("..");
+
+    f_closedir(&dir);
 }
 
 void thread5_game_loop(UNUSED void *arg) {
@@ -1095,25 +1100,14 @@ void thread5_game_loop(UNUSED void *arg) {
     if (mount_success == FR_OK) {
         //mount is successful
 
-        //create directory if not exist, otherwise open it if it does
-        FRESULT chdir_success = FR_NO_FILE; //init it with something that we won't actually check
-        directory_success = f_stat(&cmm_dir_name,&cmm_dir_info);
+        //create directory if not exist
+        directory_success = f_stat(&cmm_level_dir_name,&cmm_dir_info);
         if (directory_success == FR_NO_FILE) {
             //does not exist, therefore make
-            f_mkdir(&cmm_dir_name);
-            f_opendir(&cmm_dir,&cmm_dir_name);
-            chdir_success = f_chdir(&cmm_dir_name);
-        }
-        if (directory_success == FR_OK) {
-            chdir_success = f_chdir(&cmm_dir_name);
+            f_mkdir(&cmm_level_dir_name);
         }
 
-        if (chdir_success != FR_OK) {
-            while(TRUE){}
-            //freeze the game if directory changing went wrong
-        } else {
-            load_level_files_from_sd_card();
-        }
+        load_level_files_from_sd_card();
     }
 
     while (TRUE) {

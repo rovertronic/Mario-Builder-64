@@ -1970,6 +1970,8 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     u8 coinrepeats = 1;
     u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
 
+    //print_text_fmt_int(110, 36, cmm_username, 0);
+
     if (cmm_lopt_game == CMM_GAME_VANILLA) {
          gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
     }
@@ -2264,7 +2266,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         gMarioState->ISSAFE = FALSE;
         }
 
-    //print_text_fmt_int(110, 36, "DEBUG %d", gMarioState->MaskChase);
 
 
     //let mario change badges if near pipe

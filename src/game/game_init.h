@@ -104,6 +104,8 @@ extern FILINFO cmm_level_entries[20];
 extern FRESULT global_code;
 extern u8 cmm_level_entry_count;
 extern u16 cmm_level_entry_piktcher[][64][64];
+extern TCHAR cmm_level_dir_name[];
+extern TCHAR cmm_hack_dir_name[];
 
 void load_level_files_from_sd_card(void);
 

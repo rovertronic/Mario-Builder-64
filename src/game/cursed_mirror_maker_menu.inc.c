@@ -453,9 +453,13 @@ void draw_cmm_menu(void) {
     }
 }
 
+char *cmm_mm_keyboard_prompt[] = {
+    "Enter level name:",//KXM_NEW_LEVEL
+    "Enter your author name:",//KXM_AUTHOR
+};
 char cmm_mm_keyboard[] = "1234567890abcdefghijklmnopqrstuvwxyz!'- ";
 char cmm_mm_keyboard_caps[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- ";
-char cmm_mm_keyboard_input[20];
+char cmm_mm_keyboard_input[31];
 u8 cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
 u8 cmm_mm_keyboard_input_index = 0;
 #define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
@@ -645,14 +649,22 @@ void cmm_mm_make_anim_check(UNUSED s32 canBack) {
 void cmm_mm_keyboard_anim_check(UNUSED s32 canBack) {
     if (cmm_menu_start_timer == -1) {
         if (gPlayer1Controller->buttonPressed & (START_BUTTON)) {
-            cmm_menu_end_timer = 0;
-            cmm_menu_going_back = 1;
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            if (cmm_mm_keyboard_input_index > 0) { //ensure that people write _something_
+                cmm_menu_end_timer = 0;
+                cmm_menu_going_back = 1;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            } else {
+                play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+            }
         }
         if (gPlayer1Controller->buttonPressed & (R_TRIG)) {
-            cmm_menu_end_timer = 0;
-            cmm_menu_going_back = -1;
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            if (cmm_mm_keyboard_exit_mode != KXM_AUTHOR) {
+                cmm_menu_end_timer = 0;
+                cmm_menu_going_back = -1;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            } else {
+                play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+            }
         }
     }
 }
@@ -770,8 +782,40 @@ s32 cmm_main_menu(void) {
                 cmm_mm_keyboard_input[i] = '\0';
             }
             if (mount_success == FR_OK) {
-                cmm_mm_state = MM_MAIN;
+                //SD Card success
+                FILINFO fileinfo;
+                FRESULT code = f_stat("mb64_author.txt",&fileinfo);
+                if (code == FR_OK) {
+                    //already have an author, go straight to the main menu
+                    cmm_mm_state = MM_MAIN;
+
+                    //set cmm_username to file contents
+                    FIL author_file;
+                    u32 bytes_read;
+                    f_open(&author_file,"mb64_author.txt", FA_READ | FA_WRITE);
+                    f_read(&author_file,cmm_username,sizeof(cmm_username),&bytes_read);
+                    f_close(&author_file);
+                    cmm_has_username = TRUE;
+                } else {
+                    //no author file detected, prompt user to enter an author name
+                    cmm_mm_keyboard_exit_mode = KXM_AUTHOR;
+                    cmm_mm_state = MM_KEYBOARD;
+                    cmm_mm_keyboard_input_index = 0;
+
+                    //check for rhdc username
+                    if (gSupportsLibpl) {
+                        char * rhdc_username = libpl_get_my_rhdc_username();
+                        if (rhdc_username) {
+                            while ((rhdc_username[cmm_mm_keyboard_input_index] != 0)&&(cmm_mm_keyboard_input_index <= 29)) {
+                                cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = rhdc_username[cmm_mm_keyboard_input_index];
+                                cmm_mm_keyboard_input_index++;
+                            }
+                            cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = '\0';
+                        }
+                    }
+                }
             } else {
+                //SD Card failure, give player warning and limited play
                 cmm_mm_state = MM_NO_SD_CARD;
                 cmm_mm_main_state = MM_MAIN_LIMITED;
                 cmm_menu_title_vels[0] = 25.f;
@@ -925,6 +969,8 @@ s32 cmm_main_menu(void) {
                     } else {
                         cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
                         cmm_mm_state = MM_KEYBOARD;
+                        cmm_mm_keyboard_input_index = 0;
+                        cmm_mm_keyboard_input[0] = '\0';
                         cmm_menu_index = 0;
                     }
                 }
@@ -1006,6 +1052,7 @@ s32 cmm_main_menu(void) {
                     cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard[cmm_mm_keyboard_index];
                 }
                 cmm_mm_keyboard_input_index++;
+                cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = '\0';
             }
 
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -1023,17 +1070,22 @@ s32 cmm_main_menu(void) {
                     cmm_mm_state = MM_MAKE_MODE;
                     cmm_menu_index = 0;
                 }
+                if ((cmm_menu_going_back == 1)&&(cmm_mm_keyboard_exit_mode == KXM_AUTHOR)) {
+                    cmm_mm_state = MM_MAIN;
+                    cmm_menu_index = 0;
+                }
             }
 
             cmm_mm_shade_screen();
-            print_maker_string_ascii(35,210,cmm_mm_keyboard_input,FALSE);
-            print_maker_string(35 - cmm_menu_title_vels[0],80,cmm_mm_txt_keyboard,FALSE);
+            print_maker_string_ascii(35,200+8,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
+            print_maker_string_ascii(35,200-8,cmm_mm_keyboard_input,FALSE);
+            print_maker_string(35 - cmm_menu_title_vels[0],55,cmm_mm_txt_keyboard,FALSE);
 
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;
                 u16 y = i/10;
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25)+cmm_menu_button_vels[y][0], 190-(y*25), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25)+cmm_menu_button_vels[y][0], 170-(y*25), 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 if (cmm_mm_keyboard_index == i) {
                     gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 150);
@@ -1049,7 +1101,7 @@ s32 cmm_main_menu(void) {
                     single_char[0] = cmm_mm_keyboard[i];
                 }
                 single_char[1] = '\0';
-                print_maker_string_ascii(37+(x*25)+cmm_menu_button_vels[y][0],182-(y*25),single_char,(cmm_mm_keyboard_index == i));
+                print_maker_string_ascii(37+(x*25)+cmm_menu_button_vels[y][0],162-(y*25),single_char,(cmm_mm_keyboard_index == i));
             }
 
             if (cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {
@@ -1064,6 +1116,17 @@ s32 cmm_main_menu(void) {
                         cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
                         cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
                         return 1;
+                    break;
+                    case KXM_AUTHOR:
+                        bcopy(&cmm_mm_keyboard_input,&cmm_username,cmm_mm_keyboard_input_index);
+                        cmm_username[cmm_mm_keyboard_input_index+1] = '\0';
+
+                        FIL author_file;
+                        u32 bytes_written;
+                        f_open(&author_file,"mb64_author.txt", FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+                        f_write(&author_file,&cmm_username,cmm_mm_keyboard_input_index,&bytes_written);
+                        f_close(&author_file);
+                        cmm_has_username = TRUE;
                     break;
                 }
             }
@@ -1194,7 +1257,7 @@ s32 cmm_main_menu(void) {
                     cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
                     i++;
                 }
-                cmm_file_name[i] = 0; // add null terminator
+                cmm_file_name[i] = '\0'; // add null terminator
                 return 1;
             }
 

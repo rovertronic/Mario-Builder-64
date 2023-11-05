@@ -42,7 +42,10 @@ extern u8 cmm_play_stars_max;
 extern u64 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 
+extern struct cmm_level_save_header cmm_save;
 extern TCHAR cmm_file_name[30];
+extern char cmm_username[31];
+extern u8 cmm_has_username;
 
 enum {
     CMM_PM_NONE,
@@ -317,6 +320,7 @@ enum {
 
 enum {
     KXM_NEW_LEVEL,
+    KXM_AUTHOR,
 };
 
 extern u8 cmm_lopt_game;
