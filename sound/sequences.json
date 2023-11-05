@@ -88,7 +88,7 @@
 
 	"54_frappe_snowland": ["25"],
 	"55_forest_maze": ["25"],
-	"56_dk64_gloomy_galleon": ["11"],
+	"56_dk64_gloomy_galleon": ["25"],
 	"57_mk64_bowsers_castle": ["19"],
 	"58_koopa_beach": ["11"],
 	"59_mk64_rainbow_road": ["11"],
@@ -102,5 +102,16 @@
 	"61_smrpg_nimbus_land": ["1E"],
 	"62_smg_battlerock": ["25"],
 	"63_sa_windy_hill": ["25"],
-	"64_spm_overthere_stair": ["25"]
+	"64_spm_overthere_stair": ["25"],
+	"65_sms_secret_course": ["11"],
+	"66_sms_bianco_hills": ["25"],
+	"67_spm_lineland_road": ["25"],
+	"68_ttyd_xnaut_fortress": ["25"],
+	"69_bis_bumpsy_plains": ["25"],
+	"6A_mp_rainbow_castle": ["25"],
+	"6B_ss_skyloft": ["25"],
+	"6C_smw_castle": ["25"],
+	"6D_fieldofhopesanddreams": ["25"],
+	"6E_bk_freezeezy_peak": ["1A"],
+	"6F_mkds_waluigi_pinball": ["18"]
 }
