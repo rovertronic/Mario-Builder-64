@@ -100,9 +100,9 @@
 
 //#include "monty_mole_hole/model.inc.c"
 
-//#include "moneybag/model.inc.c"
-//#include "moneybag/anims/data.inc.c"
-//#include "moneybag/anims/table.inc.c"
+#include "moneybag/model.inc.c"
+#include "moneybag/anims/data.inc.c"
+#include "moneybag/anims/table.inc.c"
 
 //#include "bowser/anims/data.inc.c"
 //#include "bowser/anims/table.inc.c"

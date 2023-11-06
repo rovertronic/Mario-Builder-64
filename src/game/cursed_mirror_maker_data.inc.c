@@ -1063,6 +1063,7 @@ struct cmm_object_info cmm_object_type_haunted[] = {
 struct cmm_object_info cmm_object_type_snow_enemy[] = {
     {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_OBJ_DYING_ENEMY1},
     {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 0, 1.0f, snowman_seg5_anims_0500D118, NULL, SOUND_OBJ_MR_BLIZZARD_ALERT},
+    {bhvMoneybagHidden, 0, MODEL_ATM, FALSE, 0, 1.0f, moneybag_seg6_anims_06005E5C, NULL, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
 };
 
 struct cmm_object_info cmm_object_type_obstacle[] = {
@@ -1125,7 +1126,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 2},
-    {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 2},
+    {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_obstacle, FALSE, FALSE, TRUE, 1},
 };
 
@@ -1267,22 +1268,26 @@ char *txt_btcm_objects[] = {
     "Cosmic Phantasm",
     "Rex",
     "Fire Bubble",
+    "Crablet",
 };
 
 Gfx *btn_btcm_objects[] = {
     mat_b_btn_phantasm,
     mat_b_btn_rex,
     mat_b_btn_podoboo,
+    mat_b_btn_crablet,
 };
 
 char *txt_stone_enemies[] = {
     "Thwomp",
     "Whomp",
+    "Grindel",
 };
 
 Gfx *btn_stone_enemies[] = {
     mat_b_btn_thwomp,
     mat_b_btn_whomp,
+    mat_b_btn_grindel,
 };
 
 char *txt_flying_enemies[] = {
@@ -1300,11 +1305,13 @@ Gfx *btn_flying_enemies[] = {
 char *txt_haunted_enemies[] = {
     "Boo",
     "Mr.I",
+    "Scuttlebug",
 };
 
 Gfx *btn_haunted_enemies[] = {
     mat_b_btn_boo,
     mat_b_btn_mri,
+    mat_b_btn_scuttlebug,
 };
 
 char *txt_ground_enemies[] = {
@@ -1328,12 +1335,14 @@ Gfx *btn_ground_enemies[] = {
 
 char *txt_snow_enemies[] = {
     "Spindrift",
-    "Mr.Blizzard"
+    "Mr.Blizzard",
+    "Moneybag",
 };
 
 Gfx *btn_snow_enemies[] = {
     mat_b_btn_spindrift,
     mat_b_btn_blizzard,
+    mat_b_btn_moneybag,
 };
 
 char *txt_obstacles[] = {

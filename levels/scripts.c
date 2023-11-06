@@ -82,7 +82,7 @@ const LevelScript level_main_scripts_entry[] = {
     //LOAD_MODEL_FROM_GEO(0xEB,                   ring_geo),
     //LOAD_MODEL_FROM_GEO(0xEA,                   metal_crate_geo),
     //LOAD_MODEL_FROM_GEO(MODEL_SHOWRUNNER,       showrunner_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_ATM,              moneybag_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_ATM,              moneybag_geo),
     //LOAD_MODEL_FROM_GEO(0xE7,                   chicken_geo),
     LOAD_MODEL_FROM_GEO(0xE6,                   token_geo),
     //LOAD_MODEL_FROM_GEO(0xE5,                   egg_geo),

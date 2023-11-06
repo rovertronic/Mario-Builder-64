@@ -16,7 +16,7 @@
 #include "water_splash/geo.inc.c"
 #include "sparkle_animation/geo.inc.c"
 #include "mario/geo.inc.c"
-//#include "moneybag/geo.inc.c"
+#include "moneybag/geo.inc.c"
 #include "king_bobomb/geo.inc.c"
 #include "koopa_flag/geo.inc.c"
 //#include "poundable_pole/geo.inc.c"
