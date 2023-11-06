@@ -2672,6 +2672,7 @@ const BehaviorScript bhvLllRotatingBlockWithFireBars[] = {
     SET_FLOAT(oCollisionDistance, 4000),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_lll_rotating_block_fire_bars_loop),
+        //CALL_NATIVE(load_object_collision_model), causes a memory leak. RUN!!!
     END_LOOP(),
 };
 

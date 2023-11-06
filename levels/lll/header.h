@@ -95,7 +95,6 @@ extern const Collision lll_seg7_area_1_collision[];
 extern const MacroObject lll_seg7_area_1_macro_objs[];
 extern const Collision lll_seg7_collision_octagonal_moving_platform[];
 extern const Collision lll_seg7_collision_drawbridge[];
-extern const Collision lll_seg7_collision_rotating_fire_bars[];
 extern const Collision lll_seg7_collision_wood_piece[];
 extern const Collision lll_seg7_collision_0701D21C[];
 extern const Collision lll_seg7_collision_rotating_platform[];

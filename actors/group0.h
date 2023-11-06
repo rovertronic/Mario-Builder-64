@@ -1170,5 +1170,6 @@ extern const Gfx impact_smoke_seg6_dl_06062D18[];
 
 extern const GeoLayout lll_geo_000B38[];
 extern const Gfx lll_seg7_dl_07018A30[];
+extern const Collision lll_seg7_collision_rotating_fire_bars[];
 
 #endif
