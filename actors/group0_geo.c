@@ -84,3 +84,4 @@
 #include "bowser/geo.inc.c"
 #include "impact_smoke/geo.inc.c"
 #include "levels/ccm/crab/geo.inc.c"
+#include "levels/lll/rotating_block_fire_bars/geo.inc.c"

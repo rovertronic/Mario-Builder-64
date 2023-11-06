@@ -1168,4 +1168,7 @@ extern const Gfx impact_smoke_seg6_dl_06062D18[];
 
 #include "levels/ccm/crab/geo_header.h"
 
+extern const GeoLayout lll_geo_000B38[];
+extern const Gfx lll_seg7_dl_07018A30[];
+
 #endif

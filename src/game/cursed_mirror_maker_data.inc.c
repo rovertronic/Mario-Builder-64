@@ -1070,6 +1070,7 @@ struct cmm_object_info cmm_object_type_snow_enemy[] = {
 
 struct cmm_object_info cmm_object_type_obstacle[] = {
     {bhvBowserBomb, TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB, FALSE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_BOWSER_BOMB_EXPLOSION},
+    {bhvLllRotatingBlockWithFireBars, 0, MODEL_MAKER_FIREBAR, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
 };
 
 enum {
@@ -1129,7 +1130,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
-    { cmm_object_type_obstacle, FALSE, FALSE, TRUE, 1},
+    { cmm_object_type_obstacle, FALSE, FALSE, TRUE, 2},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1349,10 +1350,12 @@ Gfx *btn_snow_enemies[] = {
 
 char *txt_obstacles[] = {
     "Bowser Bomb",
+    "Fire Spinner",
 };
 
 Gfx *btn_obstacles[] = {
     mat_b_btn_bbomb,
+    mat_b_btn_firebar,
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
