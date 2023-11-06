@@ -168,24 +168,15 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOWSER_BOMB,bowser_bomb_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOWSER,bowser_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CHILL_BULLY,chilly_chief_geo),
-
-    LOAD_MODEL_FROM_GEO(MODEL_ENEMY_LAKITU,            enemy_lakitu_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY,                   spiny_geo),
     LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_HEAD,            wiggler_head_geo),
     LOAD_MODEL_FROM_GEO(MODEL_WIGGLER_BODY,            wiggler_body_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_BUBBA,                   bubba_geo),
-
-    LOAD_MODEL_FROM_GEO(MODEL_CHILL_BULLY,             chilly_chief_geo),
-
-    //LOAD_MODEL_FROM_GEO(MODEL_PIRANHA_PLANT,           piranha_plant_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_WHOMP,                   whomp_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_SCUTTLEBUG,        scuttlebug_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITH_SHELL,        koopa_with_shell_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITHOUT_SHELL,     koopa_without_shell_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_METALLIC_BALL,           metallic_ball_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_CHAIN_CHOMP,             chain_chomp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_FLAG,              koopa_flag_geo),
-    //LOAD_MODEL_FROM_GEO(MODEL_WOODEN_POST,             wooden_post_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_CRABLET,           crab_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),

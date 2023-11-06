@@ -1008,6 +1008,7 @@ struct cmm_object_info cmm_object_type_btcme[] = {
     {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
     {bhvRex, 0, 0xE1, FALSE, 2, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_ALERT},
     {bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN | SOUND_VIBRATO},
+    {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 0, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
 };
 struct cmm_object_info cmm_object_type_warppipe = {
     bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
@@ -1058,6 +1059,7 @@ struct cmm_object_info cmm_object_type_flying[] = {
 struct cmm_object_info cmm_object_type_haunted[] = {
     {bhvBoo, TILE_SIZE/2, MODEL_MAKER_BOO, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_BOO_LAUGH_LONG},
     {bhvMrI, 0, MODEL_MAKER_MRI, TRUE, 0, 1.0f, NULL, df_mri, SOUND_OBJ_MRI_SHOOT},
+    {bhvScuttlebug, 0, MODEL_MAKER_SCUTTLEBUG, FALSE, 0, 1.0f, scuttlebug_seg6_anims_06015064, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
 };
 
 struct cmm_object_info cmm_object_type_snow_enemy[] = {
@@ -1113,7 +1115,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
     {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 3},
+    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 4},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
     { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
@@ -1125,7 +1127,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_stone, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
-    { cmm_object_type_haunted, FALSE, FALSE, TRUE, 2},
+    { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_obstacle, FALSE, FALSE, TRUE, 1},
 };

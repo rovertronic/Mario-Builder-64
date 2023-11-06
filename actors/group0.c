@@ -116,8 +116,8 @@
 //#include "chicken/anims/data.inc.c"
 //#include "chicken/anims/table.inc.c"
 #include "token/model.inc.c"
-//#include "crab_anims/anims/data.inc.c"
-//#include "crab_anims/anims/table.inc.c"
+#include "crab_anims/anims/data.inc.c"
+#include "crab_anims/anims/table.inc.c"
 //#include "egg/model.inc.c"
 #include "arrow/model.inc.c"
 #include "BadgeSelect/model.inc.c"
@@ -254,3 +254,5 @@
 #include "bowser/anims/table.inc.c"
 #include "bowser/flames_data.inc.c"
 #include "impact_smoke/model.inc.c"
+
+#include "levels/ccm/crab/model.inc.c"

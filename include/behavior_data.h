@@ -808,5 +808,6 @@ extern const BehaviorScript bhvBigGoomba[];
 extern const BehaviorScript bhvFirePiranhaPlantBig[];
 extern const BehaviorScript bhvScaredKoopa[];
 extern const BehaviorScript bhvTinyGoomba[];
+extern const BehaviorScript bhvCrablet[];
 
 #endif // BEHAVIOR_DATA_H
