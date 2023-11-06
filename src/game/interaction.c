@@ -1283,14 +1283,17 @@ u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object 
     m->interactObj = obj;
 
     if (interaction & INT_ATTACK_NOT_FROM_BELOW) {
-
+#if ENABLE_RUMBLE
+        queue_rumble_data(5, 80);
+#endif
         push_mario_out_of_object(m, obj, 5.0f);
 
         m->forwardVel = -16.0f;
+        obj->oMoveAngleYaw = m->faceAngle[1];
+        obj->oForwardVel = 3392.0f / obj->hitboxRadius;
 
         attack_object(obj, interaction);
         bounce_back_from_attack(m, interaction);
-
         return TRUE;
     } else if (!sInvulnerable && !(m->flags & MARIO_VANISH_CAP)
              && !(obj->oInteractionSubtype & INT_SUBTYPE_DELAY_INVINCIBILITY)) {
@@ -1303,9 +1306,9 @@ u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object 
 
         push_mario_out_of_object(m, obj, 5.0f);
         drop_and_set_mario_action(m, bully_knock_back_mario(m), 0);
-
-
-
+#if ENABLE_RUMBLE
+        queue_rumble_data(5, 80);
+#endif
         return TRUE;
     }
 

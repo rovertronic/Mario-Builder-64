@@ -274,6 +274,13 @@ void df_snufit(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) o->oSnufitBodyScale = 1000.0f;
 }
 
+extern enum CMM_THEMES cmm_themes;
+void df_bully(s32 context) {
+    if ((context == CMM_DF_CONTEXT_INIT)&&(cmm_lopt_theme == CMM_THEME_SNOW)) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CHILL_BULLY];
+    }
+}
+
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
 void bhv_preview_object_init(void) {
@@ -2559,6 +2566,8 @@ void reload_theme(void) {
     if (cmm_lopt_plane > cmm_settings_terrain_buttons[2].size - 1) {
         cmm_lopt_plane = cmm_settings_terrain_buttons[2].size - 1;
     }
+
+    generate_object_preview();
 }
 
 void reload_bg(void) {

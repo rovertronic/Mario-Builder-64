@@ -990,7 +990,7 @@ struct cmm_object_info cmm_object_type_noteblock = {
 struct cmm_object_info cmm_object_type_mech_enemy[] = {
     {bhvBobomb, 0, MODEL_BLACK_BOBOMB, FALSE, 1, 1.0f, bobomb_seg8_anims_0802396C, NULL, SOUND_OBJ_BOBOMB_WALK | SOUND_VIBRATO},
     {bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 5, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_DEATH},
-    {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
+    {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 1.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
     {bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2, FALSE, 1, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
     {bhvHeaveHo, 0, MODEL_MAKER_HEAVEHO, FALSE, 1, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_TOSSED},
 };
@@ -1020,6 +1020,7 @@ struct cmm_object_info cmm_object_type_bosses[] = {
     {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 0, 1.0f, king_bobomb_seg5_anims_0500FE30, df_kingbomb, SOUND_OBJ_KING_BOBOMB},
     {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
     {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 3.0f, NULL, NULL, SOUND_OBJ_BOO_LAUGH_LONG},
+    {bhvBigBully, 0, MODEL_BULLY, FALSE, 1, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
     {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 1.0f, bowser_seg6_anims_06057690, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 };
 
@@ -1114,7 +1115,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_btcme, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
-    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 4},
+    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
     {&cmm_object_type_platform, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
@@ -1234,6 +1235,7 @@ char *txt_bp_boss[] = {
     "King Bob-Omb",
     "King Whomp",
     "Big Boo",
+    "Big Bully",
     "Bowser",
     "Eyerok",
     "Wiggler",
@@ -1663,18 +1665,9 @@ char *cmm_theme_string_table[] = {
     "Retroland",
 };
 
-enum cmm_themes {
-    CMM_THEME_GENERIC,
-    CMM_THEME_SSL,
-    CMM_THEME_RHR,
-    CMM_THEME_HMC,
-    CMM_THEME_CASTLE,
-    CMM_THEME_VIRTUAPLEX,
-    CMM_THEME_SNOW,
-    CMM_THEME_BBH,
-    CMM_THEME_JRB,
-    CMM_THEME_RETRO,
-};
+//cmm themes moved to cursed_mirror_maker.h to work with object df
+//example: ice bully appears in snow theme
+//impossible to extern enum : (
 
 char *cmm_bg_string_table[] = {
     "Ocean Hills",

@@ -334,4 +334,17 @@ enum {
     CMM_LA_MAKING,
 };
 
+enum cmm_themes {
+    CMM_THEME_GENERIC,
+    CMM_THEME_SSL,
+    CMM_THEME_RHR,
+    CMM_THEME_HMC,
+    CMM_THEME_CASTLE,
+    CMM_THEME_VIRTUAPLEX,
+    CMM_THEME_SNOW,
+    CMM_THEME_BBH,
+    CMM_THEME_JRB,
+    CMM_THEME_RETRO,
+};
+
 #endif
