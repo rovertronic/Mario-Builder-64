@@ -34,6 +34,7 @@ extern Vec3f cmm_camera_foc;
 
 extern u16 painting_rgba16[32][32];
 extern u8 cmm_lopt_envfx;
+extern u8 cmm_lopt_costume;
 extern u8 cmm_envfx_table[];
 
 //play mode stuff

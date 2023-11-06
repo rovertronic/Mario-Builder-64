@@ -2453,8 +2453,6 @@ void sb_init(void) {
                 }
             }
 
-            gMarioState->CostumeID = cmm_lopt_costume;
-
             o->oAction = 2;
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
