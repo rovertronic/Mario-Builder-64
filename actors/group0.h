@@ -1172,4 +1172,9 @@ extern const GeoLayout lll_geo_000B38[];
 extern const Gfx lll_seg7_dl_07018A30[];
 extern const Collision lll_seg7_collision_rotating_fire_bars[];
 
+extern const Collision ssl_seg7_collision_grindel[];
+extern const GeoLayout ssl_geo_000734[];
+extern const Gfx ssl_seg7_dl_070220A8[];
+extern const Gfx ssl_seg7_dl_070221E8[];
+
 #endif

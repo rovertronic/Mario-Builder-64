@@ -1048,6 +1048,7 @@ struct cmm_object_info cmm_object_type_preview_mario = {
 struct cmm_object_info cmm_object_type_stone[] = {
     {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
     {bhvSmallWhomp, 0, MODEL_WHOMP_MAKER, FALSE, 0, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
+    {bhvGrindel, 0, MODEL_MAKER_GRINDEL, FALSE, 0, 1.f, NULL, NULL, SOUND_OBJ_KING_BOBOMB_JUMP},
 };
 
 struct cmm_object_info cmm_object_type_flying[] = {
@@ -1125,7 +1126,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
     { cmm_object_type_timed_challenge, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_stone, FALSE, FALSE, TRUE, 2},
+    { cmm_object_type_stone, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},

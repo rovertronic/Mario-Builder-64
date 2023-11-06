@@ -1319,13 +1319,15 @@ const BehaviorScript bhvLavaSpewer[] = {
     END_LOOP(),
 };
 
+extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvGrindel[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_COLLISION_DATA(ssl_seg7_collision_grindel),
+    SET_HOME(),
     DROP_TO_FLOOR(),
     ADD_FLOAT(oPosY, 1),
-    SET_HOME(),
+    CALL_NATIVE(bhv_grindel_thwomp_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
         CALL_NATIVE(load_object_collision_model),
@@ -1346,7 +1348,6 @@ const BehaviorScript bhvThwomp2[] = {
     END_LOOP(),
 };
 
-extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvThwomp[] = {
     BEGIN(OBJ_LIST_SURFACE),
     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B7D0),
@@ -2668,11 +2669,11 @@ const BehaviorScript bhvSnowBall[] = {
 const BehaviorScript bhvLllRotatingBlockWithFireBars[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    //LOAD_COLLISION_DATA(lll_seg7_collision_rotating_fire_bars),
+    LOAD_COLLISION_DATA(lll_seg7_collision_rotating_fire_bars),
     SET_FLOAT(oCollisionDistance, 4000),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_lll_rotating_block_fire_bars_loop),
-        //CALL_NATIVE(load_object_collision_model), causes a memory leak. RUN!!!
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 

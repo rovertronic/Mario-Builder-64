@@ -259,3 +259,6 @@
 
 #include "levels/lll/rotating_block_fire_bars/collision.inc.c"
 #include "levels/lll/rotating_block_fire_bars/model.inc.c"
+
+#include "levels/ssl/grindel/collision.inc.c"
+#include "levels/ssl/grindel/model.inc.c"
