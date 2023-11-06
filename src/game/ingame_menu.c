@@ -2923,6 +2923,7 @@ s32 render_pause_courses_and_castle(void) {
 
             //do cheats
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+                fade_volume_scale(SEQ_PLAYER_LEVEL, (!(gMarioState->Options & (1<<OPT_MUSIC)))*100 ,10);
                 gMarioState->Options ^= (1 << mindex);
                 save_file_set_stats();
             }
@@ -3493,11 +3494,11 @@ s32 render_menus_and_dialogs(void) {
 
     render_pre_credits();
 
-    if (gMarioState->Options & (1<<OPT_MUSIC)) {
-        fade_volume_scale(SEQ_PLAYER_LEVEL,100,1);
-        }else{
-        fade_volume_scale(SEQ_PLAYER_LEVEL,0,1);
-        }
+    //if (gMarioState->Options & (1<<OPT_MUSIC)) {
+        //fade_volume_scale(SEQ_PLAYER_LEVEL,100,1);
+        //}else{
+        //fade_volume_scale(SEQ_PLAYER_LEVEL,0,1);
+        //}
 
     //screen tint
     if (gCurrentArea->index == 0x04&&gCurrLevelNum==0x05) { //removing screen tint until further notice (exepct for bos)
