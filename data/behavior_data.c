@@ -3751,6 +3751,7 @@ const BehaviorScript bhvSparkleParticleSpawner[] = {
     DEACTIVATE(),
 };
 
+extern bhv_scuttlebug_normal_loop();
 const BehaviorScript bhvScuttlebug[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
@@ -3760,7 +3761,7 @@ const BehaviorScript bhvScuttlebug[] = {
     SET_HOME(),
     //CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_scuttlebug_loop),
+        CALL_NATIVE(bhv_scuttlebug_normal_loop),
     END_LOOP(),
 };
 
