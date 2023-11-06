@@ -2517,10 +2517,6 @@ u32 main_cursor_logic(u32 joystick) {
     }
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
-    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
-    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
-    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
-
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
     o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
@@ -2576,6 +2572,8 @@ void reload_bg(void) {
 
 u8 cmm_upsidedown_tile = FALSE;
 u8 cmm_joystick;
+extern s16 cmm_menu_start_timer;
+extern s16 cmm_menu_end_timer;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
@@ -2669,6 +2667,9 @@ void sb_loop(void) {
                     break;
                     case 7://settings
                         cmm_menu_state = CMM_MAKE_SETTINGS;
+                        cmm_menu_start_timer = 0;
+                        cmm_menu_end_timer = -1;
+                        cmm_menu_index = 0;
                         o->oAction = 4;
                     break;
                     case 6://test
@@ -2834,7 +2835,7 @@ void sb_loop(void) {
             }
         break;
         case 4: //settings
-            if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
+            if (cmm_menu_end_timer == 10) {
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
@@ -2911,6 +2912,10 @@ void sb_loop(void) {
             }
         }
     }
+
+    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
+    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
     vec3_copy(cmm_camera_pos,cmm_camera_foc);
     vec3_add(cmm_camera_pos,cam_pos_offset);

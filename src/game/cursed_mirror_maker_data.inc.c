@@ -1724,7 +1724,7 @@ struct cmm_settings_button cmm_settings_general_buttons[] = {
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
-    {"Coin Star", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
+    {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
 
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
