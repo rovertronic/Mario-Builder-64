@@ -736,12 +736,16 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
 
     if (callContext == GEO_CONTEXT_RENDER) {
         switchCase->selectedCase = bodyState->modelState >> 8;
+
         if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
             }
 
         if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
             switchCase->selectedCase = 4;
+            if (gMarioState->flags & MARIO_VANISH_CAP) {
+                switchCase->selectedCase = bodyState->modelState >> 8;
+            }
         }
 
         if (gMarioState->CostumeID == 14) { // phat asm
