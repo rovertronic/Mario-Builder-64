@@ -1733,6 +1733,13 @@ struct cmm_settings_button cmm_settings_general_buttons[] = {
     {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
 
+struct cmm_settings_button cmm_settings_general_buttons_vanilla[] = {
+    {NULL, NULL, NULL, 0, NULL, NULL},
+    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
+    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+    {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
+};
+
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
     {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table), NULL, reload_theme},
@@ -1744,6 +1751,26 @@ struct cmm_settings_button cmm_settings_music_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
     {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
     {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
+};
+
+u8 cmm_settings_menu_lengths[] = {
+    ARRAY_COUNT(cmm_settings_general_buttons),
+    ARRAY_COUNT(cmm_settings_terrain_buttons),
+    ARRAY_COUNT(cmm_settings_music_buttons),
+    1,
+};
+
+void draw_cmm_settings_general(f32,f32);
+void draw_cmm_settings_general_vanilla(f32,f32);
+void draw_cmm_settings_terrain(f32,f32);
+void draw_cmm_settings_music(f32,f32);
+void draw_cmm_settings_backtomainmenu(f32,f32);
+
+void (*cmm_settings_menus[])(f32, f32) = {
+    draw_cmm_settings_general,
+    draw_cmm_settings_terrain,
+    draw_cmm_settings_music,
+    draw_cmm_settings_backtomainmenu,
 };
 
 // These get copied over to the above array

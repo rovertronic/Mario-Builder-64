@@ -278,6 +278,13 @@ void draw_cmm_settings_general(f32 xoff, f32 yoff) {
     }
 }
 
+void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
+    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_general_buttons_vanilla);i++) {
+        print_maker_string_ascii(45+xoff,170-(i*16)+yoff,cmm_settings_general_buttons_vanilla[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190+xoff,170-(i*16)+yoff,60,cmm_settings_general_buttons_vanilla,i,cmm_joystick);
+    }
+}
+
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
     for (s32 i=1;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
         print_maker_string_ascii(45+xoff,170-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
@@ -302,19 +309,6 @@ void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
-
-void (*cmm_settings_menus[])(f32, f32) = {
-    draw_cmm_settings_general,
-    draw_cmm_settings_terrain,
-    draw_cmm_settings_music,
-    draw_cmm_settings_backtomainmenu,
-};
-u8 cmm_settings_menu_lengths[] = {
-    ARRAY_COUNT(cmm_settings_general_buttons),
-    ARRAY_COUNT(cmm_settings_terrain_buttons),
-    ARRAY_COUNT(cmm_settings_music_buttons),
-    1,
-};
 
 #define SETTINGS_MENU_SCROLL_WIDTH 120
 

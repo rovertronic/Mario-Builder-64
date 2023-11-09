@@ -2323,12 +2323,16 @@ void load_level(void) {
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
             cmm_object_type_preview_mario.model_id = MODEL_MARIO;
-        break;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
+            cmm_settings_menus[0] = draw_cmm_settings_general;
+            break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
             cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
-        break;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
+            cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
+            break;
     }
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
