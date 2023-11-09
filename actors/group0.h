@@ -695,7 +695,7 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "token/geo_header.h"
 
 
-//#include "crab_anims/anim_header.h"
+#include "crab_anims/anim_header.h"
 //#include "egg/geo_header.h"
 
 #include "arrow/header.h"
@@ -1165,5 +1165,16 @@ extern const Gfx impact_smoke_seg6_dl_06062B38[];
 extern const Gfx impact_smoke_seg6_dl_06062BD8[];
 extern const Gfx impact_smoke_seg6_dl_06062C78[];
 extern const Gfx impact_smoke_seg6_dl_06062D18[];
+
+#include "levels/ccm/crab/geo_header.h"
+
+extern const GeoLayout lll_geo_000B38[];
+extern const Gfx lll_seg7_dl_07018A30[];
+extern const Collision lll_seg7_collision_rotating_fire_bars[];
+
+extern const Collision ssl_seg7_collision_grindel[];
+extern const GeoLayout ssl_geo_000734[];
+extern const Gfx ssl_seg7_dl_070220A8[];
+extern const Gfx ssl_seg7_dl_070221E8[];
 
 #endif

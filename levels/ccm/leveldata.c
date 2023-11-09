@@ -49,7 +49,6 @@
 #include "levels/ccm/leveldata.inc.c"
 
 #include "levels/ccm/fan/model.inc.c"
-#include "levels/ccm/crab/model.inc.c"
 #include "levels/ccm/bone_plat/model.inc.c"
 #include "levels/ccm/bone_plat/collision.inc.c"
 #include "levels/ccm/bone_elevator/model.inc.c"

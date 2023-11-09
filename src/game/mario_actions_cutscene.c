@@ -601,7 +601,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     if (m->actionState == ACT_STATE_STAR_DANCE_CUTSCENE) {
         switch (++m->actionTimer) {
             case 1:
-
+                fade_volume_scale(SEQ_PLAYER_LEVEL,0,10);
                 celebStar = spawn_object(m->marioObj, MODEL_STAR, bhvCelebrationStar);
 
 #ifdef STAR_DANCE_USES_STARS_MODEL
@@ -626,7 +626,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                 //}
                 break;
 
-            case 46:
+            case 42:
                 switch(cmm_lopt_game) {
                     case CMM_GAME_BTCM:
                         play_sound(SOUND_MARIO_YAHOO, m->marioObj->header.gfx.cameraToObject);
@@ -677,6 +677,8 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     } else if (m->actionState == ACT_STATE_STAR_DANCE_RETURN && is_anim_at_end(m)) {
         disable_time_stop();
         enable_background_sound();
+        fade_volume_scale(SEQ_PLAYER_LEVEL, 100 ,10);
+
         s32 dialogID = get_star_collection_dialog(m);
         if (dialogID) {
             // look up for dialog

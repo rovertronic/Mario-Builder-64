@@ -26,7 +26,6 @@
 #include "levels/ccm/geo.inc.c"
 
 #include "levels/ccm/fan/geo.inc.c"
-#include "levels/ccm/crab/geo.inc.c"
 #include "levels/ccm/bone_plat/geo.inc.c"
 #include "levels/ccm/bone_elevator/geo.inc.c"
 #include "levels/ccm/bone_train/geo.inc.c"

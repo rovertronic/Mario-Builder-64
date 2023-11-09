@@ -18,7 +18,6 @@
 #include "levels/ssl/pyramid_top/geo.inc.c"
 #include "levels/ssl/tox_box/geo.inc.c"
 #include "levels/ssl/areas/1/geo.inc.c"
-#include "levels/ssl/grindel/geo.inc.c"
 #include "levels/ssl/spindel/geo.inc.c"
 #include "levels/ssl/moving_pyramid_wall/geo.inc.c"
 #include "levels/ssl/pyramid_elevator/geo.inc.c"

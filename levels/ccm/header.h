@@ -63,8 +63,6 @@ extern const LevelScript level_ccm_entry[];
 
 #include "levels/ccm/fan/geo_header.h"
 
-#include "levels/ccm/crab/geo_header.h"
-
 #include "levels/ccm/bone_plat/geo_header.h"
 
 #include "levels/ccm/bone_plat/collision_header.h"

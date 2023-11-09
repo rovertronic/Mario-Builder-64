@@ -2453,7 +2453,6 @@ void sb_init(void) {
                 }
             }
 
-            gMarioState->CostumeID = cmm_lopt_costume;
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
