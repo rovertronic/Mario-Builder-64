@@ -364,6 +364,27 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_TOOLBOX:
+            if (cmm_menu_start_timer != -1) {
+                animate_menu_ease_in(cmm_menu_title_vels, 150.f, -33.f, 4.f, cmm_menu_start_timer == 0);
+                if (cmm_menu_start_timer++ > 10) {
+                    cmm_menu_start_timer = -1;
+                }
+            } else if (cmm_menu_end_timer != -1) {
+                animate_menu_generic(cmm_menu_title_vels, cmm_menu_title_vels[0], 0.f, 4.f, cmm_menu_end_timer == 0);
+                cmm_menu_end_timer++;
+                cmm_joystick = 0;
+            } else {
+                if (gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
+                    cmm_menu_end_timer = 0;
+                }
+            }
+            f32 yOff = cmm_menu_title_vels[0];
+
+            create_dl_translation_matrix(MENU_MTX_PUSH, 19, 235+yOff, 0);
+            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+            gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
             for (s32 i = 0; i < (s32)sizeof(cmm_toolbox); i++) {
                 s32 op = 255;
                 if (i == cmm_toolbox_index) {
@@ -371,7 +392,7 @@ void draw_cmm_menu(void) {
                 }
                 s32 xi = i%9;
                 s32 yi = i/9;
-                create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32) + yOff, 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
                 Gfx *mat = cmm_ui_buttons[cmm_toolbox[i]].material;
@@ -401,7 +422,7 @@ void draw_cmm_menu(void) {
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
             s32 strx = 54+(cmm_toolbox_index%9)*32;
-            s32 stry = 215-(cmm_toolbox_index/9)*32;
+            s32 stry = 215-(cmm_toolbox_index/9)*32+yOff;
 
             if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                 //render selection box
@@ -436,7 +457,7 @@ void draw_cmm_menu(void) {
                     cmm_menu_end_timer = 0;
                 }
             }
-            f32 yOff = cmm_menu_title_vels[0];
+            yOff = cmm_menu_title_vels[0];
 
             create_dl_translation_matrix(MENU_MTX_PUSH, 19, 235+yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);

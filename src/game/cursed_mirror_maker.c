@@ -1986,7 +1986,6 @@ void place_object(s8 pos[3]) {
         cmm_trajectories_used++;
 
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
-        o->oAction = 5; //trajectory editor
         cmm_trajectory_edit_index = 0;
     }
 
@@ -2409,7 +2408,7 @@ void sb_init(void) {
 
     switch(cmm_mode) {
         case CMM_MODE_MAKE:
-            o->oAction = 1;
+            cmm_menu_state = CMM_MAKE_MAIN;
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             generate_object_preview();
             generate_terrain_gfx();
@@ -2426,6 +2425,7 @@ void sb_init(void) {
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
         break;
         case CMM_MODE_PLAY:
+            cmm_menu_state = CMM_MAKE_PLAY;
             generate_terrain_collision();
             generate_objects_to_level();
             load_obj_warp_nodes();
@@ -2454,8 +2454,6 @@ void sb_init(void) {
             }
 
             gMarioState->CostumeID = cmm_lopt_costume;
-
-            o->oAction = 2;
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
@@ -2597,11 +2595,8 @@ void sb_loop(void) {
         cmm_option_changed_func = NULL;
     }
 
-    switch(o->oAction) {
-        case 0: //init
-
-        break;
-        case 1: //MAKE MODE MAIN
+    switch(cmm_menu_state) {
+        case CMM_MAKE_MAIN:
             cursorMoved = main_cursor_logic(cmm_joystick);
             s32 updatePreviewObj = cursorMoved;
 
@@ -2670,14 +2665,12 @@ void sb_loop(void) {
                         cmm_menu_start_timer = 0;
                         cmm_menu_end_timer = -1;
                         cmm_menu_index = 0;
-                        o->oAction = 4;
                     break;
                     case 6://test
                         cmm_target_mode = CMM_MODE_PLAY;
                         reset_play_state();
                         level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
                         sSourceWarpNodeId = 0x0A;
-                        o->oAction = 2;
                     break;
                     default://everything else places
                         place_thing_action();
@@ -2693,12 +2686,10 @@ void sb_loop(void) {
                 delete_tile_action(cmm_cursor_pos);
             }
 
-            if (o->oAction != 1) {
-                return;
-            }
-
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                o->oAction = 3;
+                cmm_menu_start_timer = 0;
+                cmm_menu_end_timer = -1;
+                cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
                 if (cmm_toolbar_index > 5) {
                     cmm_toolbar_index = 5;
@@ -2757,10 +2748,10 @@ void sb_loop(void) {
 
             update_boundary_wall();
         break;
-        case 2://PLAY MODE
+        case CMM_MAKE_PLAY://PLAY MODE
 
         break;
-        case 3: //MAKE MODE TOOLBOX
+        case CMM_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
             delete_preview_object();
             if (cmm_joystick != 0) {
@@ -2828,19 +2819,17 @@ void sb_loop(void) {
                 }
             }
 
-            if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
-                o->oAction = 1;
+            if (cmm_menu_end_timer == 10) {
                 cmm_menu_state = CMM_MAKE_MAIN;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
         break;
-        case 4: //settings
+        case CMM_MAKE_SETTINGS: //settings
             if (cmm_menu_end_timer == 10) {
-                o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
         break;
-        case 5: //trajectory maker
+        case CMM_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();
             cursorMoved = main_cursor_logic(cmm_joystick);
 
@@ -2887,7 +2876,6 @@ void sb_loop(void) {
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
-                o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
             }
@@ -2897,7 +2885,7 @@ void sb_loop(void) {
     }
 
     if (cmm_place_mode == CMM_PM_OBJ) {
-        if (o->oAction == 1 || o->oAction == 3 || o->oAction == 4) {
+        if (cmm_menu_state == CMM_MAKE_MAIN || cmm_menu_state == CMM_MAKE_SETTINGS || cmm_menu_state == CMM_MAKE_TOOLBOX) {
             struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
 
             if (!previewObj) {
