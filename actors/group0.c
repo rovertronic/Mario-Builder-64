@@ -6,8 +6,6 @@
 #include "make_const_nonconst.h"
 
 // Note: This bin does not use bin IDs, unlike the other segmented bins.
-#include "mario/model.inc.c"
-
 #include "bubble/model.inc.c"
 
 #include "walk_smoke/model.inc.c"
@@ -207,7 +205,7 @@
 #include "spawn/model.inc.c"
 #include "badge/model.inc.c"
 #include "mm_btn/model.inc.c"
-#include "mario2/model.inc.c"
+
 #include "bigpainting2/model.inc.c"
 
 #include "yellow_sphere_small/model.inc.c"

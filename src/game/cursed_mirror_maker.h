@@ -48,6 +48,9 @@ extern TCHAR cmm_file_name[30];
 extern char cmm_username[31];
 extern u8 cmm_has_username;
 
+extern void* cmm_theme_segments[][4];
+extern LevelScript * cmm_theme_model_scripts[];
+
 enum {
     CMM_PM_NONE,
     CMM_PM_TILE,

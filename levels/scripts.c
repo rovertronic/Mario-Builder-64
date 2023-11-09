@@ -66,8 +66,6 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_RAW_WITH_CODE( /*seg*/ SEGMENT_COMMON1_GEO,   _common1_geoSegmentRomStart,  _common1_geoSegmentRomEnd, _common1_geoSegmentBssStart, _common1_geoSegmentBssEnd),
     LOAD_RAW_WITH_CODE( /*seg*/ SEGMENT_BEHAVIOR_DATA,    _behaviorSegmentRomStart,     _behaviorSegmentRomEnd,   _behaviorSegmentBssStart,     _behaviorSegmentBssEnd),
     ALLOC_LEVEL_POOL(),
-    LOAD_MODEL_FROM_GEO(MODEL_MARIO,                   mario_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_MARIO2,                  mario2_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),
 
     //LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
@@ -198,6 +196,16 @@ const LevelScript level_main_scripts_entry[] = {
     JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_INTRO_SPLASH_SCREEN, goto_intro_splash_screen),
     JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_LEVEL_SELECT,        goto_debug_level_select),
 };
+
+const LevelScript script_func_cmm_theme_vanilla[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario2_geo),
+    RETURN(),
+};
+const LevelScript script_func_cmm_theme_btcm[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_geo),
+    RETURN(),
+};
+
 
 static const LevelScript goto_intro_splash_screen[] = {
     EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen, _introSegmentBssStart, _introSegmentBssEnd),

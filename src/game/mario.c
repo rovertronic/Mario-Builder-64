@@ -2043,9 +2043,9 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     //print_text_fmt_int(110, 36, cmm_username, 0);
 
-    if (cmm_lopt_game == CMM_GAME_VANILLA) {
-         gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
-    }
+    //if (cmm_lopt_game == CMM_GAME_VANILLA) {
+    //     gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
+    //}
 
     if (cmm_lopt_game == CMM_GAME_BTCM) {
         switch_mario_costume(cmm_lopt_costume);

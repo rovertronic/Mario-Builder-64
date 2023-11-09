@@ -6,6 +6,16 @@ f32 cmm_camera_zoom_table[][2] = {
     {2100.0f,1500.0f},
 };
 
+void* cmm_theme_segments[][4] = {
+    {_group2_yay0SegmentRomStart, _group2_yay0SegmentRomEnd, _group2_geoSegmentRomStart, _group2_geoSegmentRomEnd}, //CMM_GAME_VANILLA
+    {_group14_yay0SegmentRomStart, _group14_yay0SegmentRomEnd, _group14_geoSegmentRomStart, _group14_geoSegmentRomEnd}, //CMM_GAME_BTCM
+};
+LevelScript * cmm_theme_model_scripts[] = {
+    script_func_cmm_theme_vanilla,
+    script_func_cmm_theme_btcm,
+};
+
+
 // lookup table for rotating blocks
 u8 cmm_rotated_dirs[4][6] = {
     {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_POS_X, CMM_DIRECTION_NEG_X, CMM_DIRECTION_POS_Z, CMM_DIRECTION_NEG_Z},

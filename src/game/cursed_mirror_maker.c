@@ -58,6 +58,7 @@
 #include "memory.h"
 #include "geo_misc.h"
 #include "mario_actions_automatic.h"
+#include "levels/scripts.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"

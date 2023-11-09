@@ -76,6 +76,7 @@ enum LevelCommands {
     /*0x41*/ LEVEL_CMD_FILESELECT_CONDITION,
     /*0x42*/ LEVEL_CMD_ADV_DEMO,
     /*0x43*/ LEVEL_CMD_CLEAR_DEMO_PTR,
+    /*0x44*/ LEVEL_CMD_LOAD_CMM,
 };
 
 enum LevelActs {
@@ -462,6 +463,9 @@ enum LevelCommandCreateWhirlpoolCondition {
     
 #define CLEAR_DEMO_PTR() \
     CMD_BBH(LEVEL_CMD_CLEAR_DEMO_PTR, 0x04, 0x0000)
+
+#define LOAD_CMM() \
+    CMD_BBH(LEVEL_CMD_LOAD_CMM, 0x04, 0x0000)
 
 // Presets
 
