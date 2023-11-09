@@ -116,6 +116,7 @@ u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
 u8 cmm_uv_scaling = 64;
+s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -673,7 +674,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -710,7 +711,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -1191,8 +1192,8 @@ Gfx *get_sidetex(s32 mat) {
 }
 
 
-#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
-#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
+#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
+#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
 #define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
 #define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
 

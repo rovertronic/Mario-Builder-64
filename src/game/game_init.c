@@ -1092,7 +1092,7 @@ void thread5_game_loop(UNUSED void *arg) {
     if (gSupportsLibpl) {
         libpl_create_auto_sd_card(16,255);
         lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
-        gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_GLIDEN64));
+        gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_GLIDEN64)||(pluginInfo->plugin_id == LPL_OGRE)||(pluginInfo->plugin_id == LPL_GLIDE64));
     }
     //init cmm file structure
     cart_init();
