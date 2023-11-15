@@ -1258,6 +1258,12 @@ s32 cmm_main_menu(void) {
                     i++;
                 }
                 cmm_file_name[i] = '\0'; // add null terminator
+
+                f_chdir(cmm_level_dir_name);
+                struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_file_name);
+                f_chdir("..");
+                cmm_lopt_game = level_info->option[19];
+
                 return 1;
             }
 
