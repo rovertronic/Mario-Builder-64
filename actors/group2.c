@@ -8,8 +8,6 @@
 #include "sm64.h"
 #include "geo_commands.h"
 
-#include "mario2/model.inc.c"
-
 #include "bully/model.inc.c"
 #include "bully/anims/data.inc.c"
 #include "bully/anims/table.inc.c"

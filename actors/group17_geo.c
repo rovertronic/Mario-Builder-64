@@ -9,3 +9,5 @@
 
 #include "swoop/geo.inc.c"
 #include "dorrie/geo.inc.c"
+
+#include "mario2/geo.inc.c"

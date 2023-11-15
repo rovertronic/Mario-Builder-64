@@ -36,6 +36,7 @@
 #include "rumble_init.h"
 #include "puppycamold.h"
 #include "actors/group0.h"
+#include "actors/group14.h"
 #include "levels/castle_grounds/header.inc.h"
 #include "levels/castle_inside/header.inc.h"
 #include "levels/castle_courtyard/header.inc.h"
@@ -2044,7 +2045,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     //print_text_fmt_int(110, 36, cmm_username, 0);
 
     //if (cmm_lopt_game == CMM_GAME_VANILLA) {
-    //     gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
+         //gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
     //}
 
     if (cmm_lopt_game == CMM_GAME_BTCM) {

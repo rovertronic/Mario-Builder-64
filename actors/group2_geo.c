@@ -8,7 +8,5 @@
 #include "group2.h"
 #include "group0.h"
 
-#include "mario2/geo.inc.c"
-
 #include "bully/geo.inc.c"
 #include "blargg/geo.inc.c"

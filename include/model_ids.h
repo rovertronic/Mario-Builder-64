@@ -784,7 +784,7 @@
 #define MODEL_SPAWN 0x12B
 #define MODEL_MAKER_PIPE 0x12C
 #define MODEL_BADGE 0x12D
-#define MODEL_MARIO2 0x12E
+//#define MODEL_MARIO2 0x12E
 #define MODEL_KINGBOMB_MAKER 0x12F
 #define MODEL_WHOMP_MAKER 0x130
 #define MODEL_ENEMY_LAKITU 0x131        // enemy_lakitu_geo

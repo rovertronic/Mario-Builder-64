@@ -7,7 +7,7 @@ f32 cmm_camera_zoom_table[][2] = {
 };
 
 void* cmm_theme_segments[][4] = {
-    {_group2_yay0SegmentRomStart, _group2_yay0SegmentRomEnd, _group2_geoSegmentRomStart, _group2_geoSegmentRomEnd}, //CMM_GAME_VANILLA
+    {_group17_yay0SegmentRomStart, _group17_yay0SegmentRomEnd, _group17_geoSegmentRomStart, _group17_geoSegmentRomEnd}, //CMM_GAME_VANILLA
     {_group14_yay0SegmentRomStart, _group14_yay0SegmentRomEnd, _group14_geoSegmentRomStart, _group14_geoSegmentRomEnd}, //CMM_GAME_BTCM
 };
 LevelScript * cmm_theme_model_scripts[] = {
@@ -1053,7 +1053,7 @@ struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
 struct cmm_object_info cmm_object_type_preview_mario = {
-    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+    bhvStaticObject, 0, MODEL_MARIO, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
 };
 struct cmm_object_info cmm_object_type_stone[] = {
     {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},

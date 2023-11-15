@@ -2329,7 +2329,7 @@ void load_level(void) {
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
+            //cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
         break;
     }
     //reset toolbar
