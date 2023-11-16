@@ -1953,6 +1953,8 @@ u32 star_radar_objects_to_track[] = {
 };
 
 void switch_mario_costume(u8 CostumeId) {
+    gMarioState->CostumeID = CostumeId;
+
     u8 *Hatcol = segmented_to_virtual(&mario_hat_v4_lights);
     u8 *Pantcol = segmented_to_virtual(&mario_button_v4_lights);
     u8 *Shoecol = segmented_to_virtual(&mario_shoes_v4_lights);
