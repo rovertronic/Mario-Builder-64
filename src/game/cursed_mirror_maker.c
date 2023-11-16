@@ -2472,7 +2472,9 @@ void sb_init(void) {
             cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            }
         break;
         case CMM_MODE_PLAY:
             generate_terrain_collision();
@@ -2505,7 +2507,9 @@ void sb_init(void) {
             o->oAction = 2;
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            }
         break;
     }
 }
