@@ -282,6 +282,55 @@ void df_bully(s32 context) {
     }
 }
 
+extern s16 sCoinArrowPositions[][2];
+void df_coin_formation(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        Vec3i pos = { 0, 0, 0 };
+        s32 spawnCoin    = TRUE;
+        s32 snapToGround = TRUE;
+        u32 index = 0;
+
+        while (spawnCoin && index < 8) {
+            switch (o->oBehParams2ndByte & COIN_FORMATION_BP_SHAPE_MASK) {
+                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_LINE:
+                    pos[2] = 160 * (index - 2);
+                    if (index > 4) spawnCoin = FALSE;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_VERTICAL_LINE:
+                    snapToGround = FALSE;
+                    pos[1] = index << 7;
+                    if (index > 4) spawnCoin = FALSE;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_RING:
+                    pos[0] = sins(index << 13) * 300.0f;
+                    pos[2] = coss(index << 13) * 300.0f;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
+                    snapToGround = FALSE;
+                    pos[0] = coss(index << 13) * 200.0f;
+                    pos[1] = sins(index << 13) * 200.0f + 200.0f;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_ARROW:
+                    pos[0] = sCoinArrowPositions[index][0];
+                    pos[2] = sCoinArrowPositions[index][1];
+                    break;
+
+            }
+
+            if (o->oBehParams2ndByte & COIN_FORMATION_BP_FLYING) {
+                snapToGround = FALSE;
+            }
+
+            if (spawnCoin) {
+                struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
+                newCoin->oCoinSnapToGround = snapToGround;
+                obj_set_billboard(newCoin);
+            }
+            index ++;
+        }
+    }
+}
+
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
 void bhv_preview_object_init(void) {
