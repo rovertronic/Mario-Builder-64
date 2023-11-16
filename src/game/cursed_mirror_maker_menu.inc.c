@@ -1115,6 +1115,8 @@ s32 cmm_main_menu(void) {
                         cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
                         cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
                         cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
+
+                        cmm_mode = CMM_MODE_UNINITIALIZED;
                         return 1;
                     break;
                     case KXM_AUTHOR:

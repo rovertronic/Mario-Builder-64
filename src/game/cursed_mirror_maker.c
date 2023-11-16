@@ -2247,7 +2247,6 @@ void load_level(void) {
     } else {
         //Load into a fresh level
         fresh = TRUE;
-        bzero(&cmm_save, sizeof(cmm_save));
 
         //Set version
         cmm_save.version = CMM_VERSION;
