@@ -29,6 +29,7 @@
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
 #include "game/puppycamold.h"
+#include "game/cursed_mirror_maker.h"
 
 #include "game/game_init.h"
 #include "level_table.h"
@@ -294,6 +295,17 @@ static void level_cmd_load_raw(void) {
 static void level_cmd_load_yay0(void) {
     load_segment_decompress(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8));
     sCurrentCmd = CMD_NEXT;
+}
+
+static void level_cmd_load_cmm(void) {
+    load_segment_decompress(0x06, cmm_theme_segments[cmm_lopt_game][0] , cmm_theme_segments[cmm_lopt_game][1]);
+    load_segment(0x0D, cmm_theme_segments[cmm_lopt_game][2], cmm_theme_segments[cmm_lopt_game][3], MEMORY_POOL_LEFT, NULL, NULL);
+    sCurrentCmd = CMD_NEXT;
+}
+
+static void level_cmd_load_cmm_models(void) {
+    *sStackTop++ = (uintptr_t) NEXT_CMD;
+    sCurrentCmd = segmented_to_virtual(cmm_theme_model_scripts[cmm_lopt_game]);
 }
 
 void level_cmd_fileselect_condition(void) {
@@ -1016,6 +1028,8 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
     /*LEVEL_CMD_ADV_DEMO                    */ level_cmd_adv_demo,
     /*LEVEL_CMD_CLEAR_DEMO_PTR              */ level_cmd_clear_demo_ptr,
+    /*LEVEL_CMD_LOAD_CMM                    */ level_cmd_load_cmm,
+    /*LEVEL_CMD_LOAD_CMM_MODELS             */ level_cmd_load_cmm_models,
 };
 
 

@@ -12,7 +12,7 @@
 /**
  * The relative heights of each cloud part.
  */
-static s8 sCloudPartHeights[] = { 11, 8, 12, 8, 9, 9 };
+s8 sCloudPartHeights[] = { 11, 8, 12, 8, 9, 9 };
 
 /**
  * Spawn the visual parts of the cloud, including fwoosh's face.

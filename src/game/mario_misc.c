@@ -782,6 +782,9 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 6)) {
+            switchCase->selectedCase = 0;
+        }
         //WARIO
         if (gMarioState->CostumeID == 4) {
             switchCase->selectedCase = 3;
@@ -820,10 +823,6 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
         if (gMarioState->powerup == 3) {
             switchCase->selectedCase = 8;
             }
-
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 6)) {
-            switchCase->selectedCase = 0;
-        }
     }
 
     return NULL;

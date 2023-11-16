@@ -6,6 +6,16 @@ f32 cmm_camera_zoom_table[][2] = {
     {2100.0f,1500.0f},
 };
 
+void* cmm_theme_segments[][4] = {
+    {_group17_yay0SegmentRomStart, _group17_yay0SegmentRomEnd, _group17_geoSegmentRomStart, _group17_geoSegmentRomEnd}, //CMM_GAME_VANILLA
+    {_group14_yay0SegmentRomStart, _group14_yay0SegmentRomEnd, _group14_geoSegmentRomStart, _group14_geoSegmentRomEnd}, //CMM_GAME_BTCM
+};
+LevelScript * cmm_theme_model_scripts[] = {
+    script_func_cmm_theme_vanilla,
+    script_func_cmm_theme_btcm,
+};
+
+
 // lookup table for rotating blocks
 u8 cmm_rotated_dirs[4][6] = {
     {CMM_DIRECTION_UP, CMM_DIRECTION_DOWN, CMM_DIRECTION_POS_X, CMM_DIRECTION_NEG_X, CMM_DIRECTION_POS_Z, CMM_DIRECTION_NEG_Z},
@@ -1043,12 +1053,12 @@ struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
 struct cmm_object_info cmm_object_type_preview_mario = {
-    bhvStaticObject, 0, MODEL_MARIO2, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
+    bhvStaticObject, 0, MODEL_MARIO, FALSE, 0, 1.0f, &evil_mario_anims[11], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO
 };
 struct cmm_object_info cmm_object_type_stone[] = {
     {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
     {bhvSmallWhomp, 0, MODEL_WHOMP_MAKER, FALSE, 0, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
-    {bhvGrindel, 0, MODEL_MAKER_GRINDEL, FALSE, 0, 1.f, NULL, NULL, SOUND_OBJ_KING_BOBOMB_JUMP},
+    {bhvGrindel, 0, MODEL_MAKER_GRINDEL, FALSE, 0, 1.f, NULL, df_grindel, SOUND_OBJ_KING_BOBOMB_JUMP},
 };
 
 struct cmm_object_info cmm_object_type_flying[] = {
@@ -1072,6 +1082,10 @@ struct cmm_object_info cmm_object_type_snow_enemy[] = {
 struct cmm_object_info cmm_object_type_obstacle[] = {
     {bhvBowserBomb, TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB, FALSE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_BOWSER_BOMB_EXPLOSION},
     {bhvLllRotatingBlockWithFireBars, 0, MODEL_MAKER_FIREBAR, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
+};
+
+struct cmm_object_info cmm_object_type_coin_formation = {
+    bhvCoinFormation, 0, MODEL_NONE, FALSE, 1, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN | SOUND_VIBRATO,
 };
 
 enum {
@@ -1102,6 +1116,7 @@ enum {
     OBJECT_TYPE_HAUNTED,
     OBJECT_TYPE_SNOWEN,
     OBJECT_TYPE_OBBY,
+    OBJECT_TYPE_COINFORM,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1130,8 +1145,9 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_preview_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
-    {&cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
+    { cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_obstacle, FALSE, FALSE, TRUE, 2},
+    {&cmm_object_type_coin_formation, FALSE, FALSE, FALSE, 5},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1359,6 +1375,14 @@ Gfx *btn_obstacles[] = {
     mat_b_btn_firebar,
 };
 
+char *txt_coin_formation[] = {
+    "Line",
+    "Vertical Line",
+    "Ring",
+    "Vertical Ring",
+    "Arrow",
+};
+
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture            //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
     {mat_b_btn_save,         0, 0,                   CMM_PM_NONE,  "Save",               NULL       }, //CMM_BUTTON_SAVE
@@ -1396,7 +1420,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_slabtile,     0, TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL       }, //CMM_BUTTON_SLAB
     {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects}, //CMM_BUTTON_TC
     {mat_b_btn_heart,        0, OBJECT_TYPE_HEART,   CMM_PM_OBJ,   "Recovery Heart",     NULL       }, //CMM_BUTTON_HEART
-    {mat_b_btn_cformation,   0, 0,                   CMM_PM_OBJ,   "Coin Formation",     NULL       }, //CMM_BUTTON_FORMATION
+    {mat_b_btn_cformation,   0, OBJECT_TYPE_COINFORM,CMM_PM_OBJ,   "Coin Formation",     txt_coin_formation}, //CMM_BUTTON_FORMATION
     {mat_b_btn_vslab,        0, 0,                   CMM_PM_OBJ,   "Sideways Slab",      NULL       }, //CMM_BUTTON_VSLAB
     {mat_b_btn_bars,         0, TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemies",      txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY

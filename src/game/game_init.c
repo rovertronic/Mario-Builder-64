@@ -1026,6 +1026,17 @@ FRESULT global_code;
 TCHAR cmm_level_dir_name[] = {"Mario Builder 64 Levels"};
 TCHAR cmm_hack_dir_name[] = {"Mario Builder 64 Hacks"};
 
+
+struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
+    u32 bytes_read;
+    FIL read_file;
+    f_open(&read_file,filename, FA_READ);
+    f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
+    f_close(&read_file);
+
+    return &temp_cmm_save;
+}
+
 void load_level_files_from_sd_card(void) {
     DIR dir;
     f_opendir(&dir,&cmm_level_dir_name);
@@ -1035,18 +1046,14 @@ void load_level_files_from_sd_card(void) {
     do {
         i++;
         if (f_readdir(&dir,&cmm_level_entries[i]) == FR_OK) {
-            u32 bytes_read;
-            FIL read_file;
-            f_open(&read_file,&cmm_level_entries[i].fname, FA_READ);
-            f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
-            f_close(&read_file);
+            struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_level_entries[i].fname);
 
             s16 x;
             s16 y;
             u16 *u16_array = cmm_level_entry_piktcher[i];
             for (x = 0; x < 64; x++) {
                 for (y = 0; y < 64; y++) {
-                    u16_array[(y*64)+x] = temp_cmm_save.piktcher[y][x];
+                    u16_array[(y*64)+x] = level_info->piktcher[y][x];
                 } 
             }
         }

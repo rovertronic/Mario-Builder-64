@@ -61,8 +61,13 @@ ObjActionFunc sGrindelThwompActions[] = {
     grindel_thwomp_act_on_ground
 };
 
+extern void df_grindel(s32 context);
 void bhv_grindel_thwomp_init(void) {
     o->oHomeY2 = o->oPosY;
+
+    if (cur_obj_has_model(MODEL_MAKER_GRINDEL)) {
+        df_grindel(CMM_DF_CONTEXT_INIT);
+    }
 }
 
 void bhv_grindel_thwomp_loop(void) {

@@ -15,6 +15,7 @@
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
+#include "cursed_mirror_maker.h"
 
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];
@@ -107,6 +108,7 @@ extern u16 cmm_level_entry_piktcher[][64][64];
 extern TCHAR cmm_level_dir_name[];
 extern TCHAR cmm_hack_dir_name[];
 
+struct cmm_level_save_header * get_level_info_from_filename(char * filename);
 void load_level_files_from_sd_card(void);
 
 #endif // GAME_INIT_H

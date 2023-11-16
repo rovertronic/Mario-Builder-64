@@ -58,6 +58,7 @@
 #include "memory.h"
 #include "geo_misc.h"
 #include "mario_actions_automatic.h"
+#include "levels/scripts.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
@@ -257,17 +258,19 @@ void df_booser(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
-static s8 sCloudPartHeights2[] = { 11, 8, 12, 8, 9, 9 };
+extern s8 sCloudPartHeights[];
 void df_lakitu(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
-        //for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
             obj_scale(cloudPart,2.0f);
-            cloudPart->oPosY -= 100.0f;
-            //cloudPart->oOpacity
-            //obj_set_billboard(cloudPart);
-            //obj_scale(cloudPart,3.0f);
-        //}
+            cloudPart->oOpacity = 255;
+            obj_set_billboard(cloudPart);
+            obj_scale(cloudPart,2.0f);
+            cloudPart->oPosY += sCloudPartHeights[i];
+            cloudPart->oPosX += sins(0x3333*i)*40.0f;
+            cloudPart->oPosZ += coss(0x3333*i)*40.0f;
+        }
     }
 }
 
@@ -279,6 +282,62 @@ extern enum CMM_THEMES cmm_themes;
 void df_bully(s32 context) {
     if ((context == CMM_DF_CONTEXT_INIT)&&(cmm_lopt_theme == CMM_THEME_SNOW)) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CHILL_BULLY];
+    }
+}
+
+extern s16 sCoinArrowPositions[][2];
+void df_coin_formation(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        Vec3i pos = { 0, 0, 0 };
+        s32 spawnCoin    = TRUE;
+        s32 snapToGround = TRUE;
+        u32 index = 0;
+
+        while (spawnCoin && index < 8) {
+            switch (o->oBehParams2ndByte & COIN_FORMATION_BP_SHAPE_MASK) {
+                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_LINE:
+                    pos[2] = 160 * (index - 2);
+                    if (index > 4) spawnCoin = FALSE;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_VERTICAL_LINE:
+                    snapToGround = FALSE;
+                    pos[1] = index << 7;
+                    if (index > 4) spawnCoin = FALSE;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_RING:
+                    pos[0] = sins(index << 13) * 300.0f;
+                    pos[2] = coss(index << 13) * 300.0f;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
+                    snapToGround = FALSE;
+                    pos[0] = coss(index << 13) * 200.0f;
+                    pos[1] = sins(index << 13) * 200.0f + 200.0f;
+                    break;
+                case COIN_FORMATION_BP_SHAPE_ARROW:
+                    pos[0] = sCoinArrowPositions[index][0];
+                    pos[2] = sCoinArrowPositions[index][1];
+                    break;
+
+            }
+
+            if (o->oBehParams2ndByte & COIN_FORMATION_BP_FLYING) {
+                snapToGround = FALSE;
+            }
+
+            if (spawnCoin) {
+                struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
+                newCoin->oCoinSnapToGround = snapToGround;
+                obj_set_billboard(newCoin);
+            }
+            index ++;
+        }
+    }
+}
+
+void df_grindel(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oFaceAngleYaw += 0x4000;
+        o->oMoveAngleYaw += 0x4000;
     }
 }
 
@@ -549,6 +608,21 @@ void check_cached_tris(void) {
     if (cmm_num_vertices_cached > 28) {
         display_cached_tris();
     }
+}
+
+void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
+    if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+
+    f32 dx = (cmm_trajectory_list[traj_id][0][1] - cmm_trajectory_list[traj_id][1][1]);
+    f32 dz = (cmm_trajectory_list[traj_id][0][3] - cmm_trajectory_list[traj_id][1][3]);
+    s16 angle_to_trajectory = atan2s(dz, dx) + 0x8000;
+
+    if ( obj_has_model(obj ,MODEL_CHECKERBOARD_PLATFORM) ) {
+        angle_to_trajectory += 0x4000;
+    }
+
+    obj->oFaceAngleYaw = angle_to_trajectory;
+    obj->oMoveAngleYaw = angle_to_trajectory;
 }
 
 void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
@@ -1683,7 +1757,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script) {
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
@@ -1701,6 +1775,9 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
         super_cum_working(preview_object,0);
         preview_object->header.gfx.animInfo.animAccel = 0.0f;
     }
+    if (useTrajectory) {
+        rotate_obj_toward_trajectory_angle(preview_object,param);
+    }
     return preview_object;
 }
 
@@ -1717,6 +1794,7 @@ void generate_object_preview(void) {
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
         s32 param = cmm_object_data[i].param;
+        u8 useTrajectory = cmm_object_place_types[cmm_object_data[i].type].useTrajectory;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
             info = &info[param];
@@ -1726,7 +1804,7 @@ void generate_object_preview(void) {
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
-        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject);
+        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_exclamationbox) {
@@ -2246,7 +2324,6 @@ void load_level(void) {
     } else {
         //Load into a fresh level
         fresh = TRUE;
-        bzero(&cmm_save, sizeof(cmm_save));
 
         //Set version
         cmm_save.version = CMM_VERSION;
@@ -2330,7 +2407,7 @@ void load_level(void) {
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
+            //cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
             cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
             cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
             break;
@@ -2427,7 +2504,9 @@ void sb_init(void) {
             cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            }
         break;
         case CMM_MODE_PLAY:
             cmm_menu_state = CMM_MAKE_PLAY;
@@ -2460,7 +2539,9 @@ void sb_init(void) {
 
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+            }
         break;
     }
 }
@@ -2882,6 +2963,7 @@ void sb_loop(void) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
+                generate_object_preview();
             }
 
             update_boundary_wall();
@@ -2900,7 +2982,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject);
+                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }

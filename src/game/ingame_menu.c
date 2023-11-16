@@ -2923,8 +2923,8 @@ s32 render_pause_courses_and_castle(void) {
 
             //do cheats
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                fade_volume_scale(SEQ_PLAYER_LEVEL, (!(gMarioState->Options & (1<<OPT_MUSIC)))*100 ,10);
                 gMarioState->Options ^= (1 << mindex);
+                fade_volume_scale(SEQ_PLAYER_LEVEL, (gMarioState->Options & (1<<OPT_MUSIC))*100 ,10);
                 save_file_set_stats();
             }
 

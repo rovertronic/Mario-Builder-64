@@ -6,6 +6,8 @@
 #include "types.h"
 #include "make_const_nonconst.h"
 
+#include "mario2/model.inc.c"
+
 #include "swoop/model.inc.c"
 #include "swoop/anims/data.inc.c"
 #include "swoop/anims/table.inc.c"

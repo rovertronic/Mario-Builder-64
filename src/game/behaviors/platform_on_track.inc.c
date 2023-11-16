@@ -158,6 +158,7 @@ void bhv_platform_on_track_init(void) {
         segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
 
     o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
+    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
     o->oPlatformOnTrackIsNotHMC = pathIndex - 4;
 

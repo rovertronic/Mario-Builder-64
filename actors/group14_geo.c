@@ -6,3 +6,6 @@
 
 #include "common1.h"
 #include "group14.h"
+#include "group0.h"
+
+#include "mario/geo.inc.c"

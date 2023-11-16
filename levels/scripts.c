@@ -66,8 +66,6 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_RAW_WITH_CODE( /*seg*/ SEGMENT_COMMON1_GEO,   _common1_geoSegmentRomStart,  _common1_geoSegmentRomEnd, _common1_geoSegmentBssStart, _common1_geoSegmentBssEnd),
     LOAD_RAW_WITH_CODE( /*seg*/ SEGMENT_BEHAVIOR_DATA,    _behaviorSegmentRomStart,     _behaviorSegmentRomEnd,   _behaviorSegmentBssStart,     _behaviorSegmentBssEnd),
     ALLOC_LEVEL_POOL(),
-    LOAD_MODEL_FROM_GEO(MODEL_MARIO,                   mario_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_MARIO2,                  mario2_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),
 
     //LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
@@ -268,6 +266,15 @@ const LevelScript script_func_global_1[] = {
     LOAD_MODEL_FROM_GEO(MODEL_CHUCKYA,                 chuckya_geo),
     LOAD_MODEL_FROM_GEO(MODEL_TRAJECTORY_MARKER_BALL,      bowling_ball_track_geo),
 
+    RETURN(),
+};
+
+const LevelScript script_func_cmm_theme_vanilla[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario2_geo),
+    RETURN(),
+};
+const LevelScript script_func_cmm_theme_btcm[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_geo),
     RETURN(),
 };
 

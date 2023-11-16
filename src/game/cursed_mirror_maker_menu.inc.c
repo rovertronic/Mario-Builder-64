@@ -1179,6 +1179,8 @@ s32 cmm_main_menu(void) {
                         cmm_file_name[cmm_mm_keyboard_input_index+3] = '6';
                         cmm_file_name[cmm_mm_keyboard_input_index+4] = '4';
                         cmm_file_name[cmm_mm_keyboard_input_index+5] = '\0';
+
+                        cmm_mode = CMM_MODE_UNINITIALIZED;
                         return 1;
                     break;
                     case KXM_AUTHOR:
@@ -1322,6 +1324,12 @@ s32 cmm_main_menu(void) {
                     i++;
                 }
                 cmm_file_name[i] = '\0'; // add null terminator
+
+                f_chdir(cmm_level_dir_name);
+                struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_file_name);
+                f_chdir("..");
+                cmm_lopt_game = level_info->option[19];
+
                 return 1;
             }
 
