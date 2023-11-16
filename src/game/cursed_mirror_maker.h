@@ -25,6 +25,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
 extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
+void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
 
 extern u8 cmm_level_action;
 extern u8 cmm_mode;

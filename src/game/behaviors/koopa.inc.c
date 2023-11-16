@@ -90,6 +90,8 @@ void bhv_koopa_init(void) {
         koopa_flag->oPosZ = cmm_trajectory_list[o->oBehParams2ndByte][i-1][3];
         o->parentObj = koopa_flag;
 
+        rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
+
         o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
         o->oKoopaAgility = 4.0f;
         cur_obj_scale(3.0f);

@@ -600,6 +600,21 @@ void check_cached_tris(void) {
     }
 }
 
+void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
+    if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+
+    f32 dx = (cmm_trajectory_list[traj_id][0][1] - cmm_trajectory_list[traj_id][1][1]);
+    f32 dz = (cmm_trajectory_list[traj_id][0][3] - cmm_trajectory_list[traj_id][1][3]);
+    s16 angle_to_trajectory = atan2s(dz, dx) + 0x8000;
+
+    if ( obj_has_model(obj ,MODEL_CHECKERBOARD_PLATFORM) ) {
+        angle_to_trajectory += 0x4000;
+    }
+
+    obj->oFaceAngleYaw = angle_to_trajectory;
+    obj->oMoveAngleYaw = angle_to_trajectory;
+}
+
 void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     f32 dx2 = sqr(pos2[0] - pos1[0]);
     f32 dy2 = sqr(pos2[1] - pos1[1]);
@@ -1732,7 +1747,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script) {
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
@@ -1750,6 +1765,9 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
         super_cum_working(preview_object,0);
         preview_object->header.gfx.animInfo.animAccel = 0.0f;
     }
+    if (useTrajectory) {
+        rotate_obj_toward_trajectory_angle(preview_object,param);
+    }
     return preview_object;
 }
 
@@ -1766,6 +1784,7 @@ void generate_object_preview(void) {
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
         s32 param = cmm_object_data[i].param;
+        u8 useTrajectory = cmm_object_place_types[cmm_object_data[i].type].useTrajectory;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
             info = &info[param];
@@ -1775,7 +1794,7 @@ void generate_object_preview(void) {
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
-        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject);
+        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_exclamationbox) {
@@ -2940,6 +2959,7 @@ void sb_loop(void) {
                 o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
+                generate_object_preview();
             }
 
             update_boundary_wall();
@@ -2958,7 +2978,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject);
+                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }
