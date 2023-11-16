@@ -257,17 +257,19 @@ void df_booser(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
-static s8 sCloudPartHeights2[] = { 11, 8, 12, 8, 9, 9 };
+extern s8 sCloudPartHeights[];
 void df_lakitu(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
-        //for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
             obj_scale(cloudPart,2.0f);
-            cloudPart->oPosY -= 100.0f;
-            //cloudPart->oOpacity
-            //obj_set_billboard(cloudPart);
-            //obj_scale(cloudPart,3.0f);
-        //}
+            cloudPart->oOpacity = 255;
+            obj_set_billboard(cloudPart);
+            obj_scale(cloudPart,2.0f);
+            cloudPart->oPosY += sCloudPartHeights[i];
+            cloudPart->oPosX += sins(0x3333*i)*40.0f;
+            cloudPart->oPosZ += coss(0x3333*i)*40.0f;
+        }
     }
 }
 
