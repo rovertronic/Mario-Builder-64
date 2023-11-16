@@ -331,6 +331,13 @@ void df_coin_formation(s32 context) {
     }
 }
 
+void df_grindel(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oFaceAngleYaw += 0x4000;
+        o->oMoveAngleYaw += 0x4000;
+    }
+}
+
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
 void bhv_preview_object_init(void) {
