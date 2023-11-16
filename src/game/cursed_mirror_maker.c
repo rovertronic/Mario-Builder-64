@@ -553,8 +553,8 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (otherFaceshape == CMM_FACESHAPE_FULL) return TRUE;
     if (faceshape == CMM_FACESHAPE_FULL) return FALSE;
-    if (faceshape == CMM_FACESHAPE_TOPTRI) {
-        if (otherFaceshape == CMM_FACESHAPE_TOPTRI) {
+    if ((faceshape == CMM_FACESHAPE_TOPTRI) || (faceshape == CMM_FACESHAPE_TOPHALF)) {
+        if (otherFaceshape == faceshape) {
             u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot == rot);
         } else return FALSE;
@@ -874,6 +874,9 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(newpos)) return TRUE;
+    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT) {
+        return TRUE;
+    }
     u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
@@ -881,9 +884,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             direction = grassType == CMM_GROWTH_UNDERSLOPE ? CMM_DIRECTION_POS_Z : CMM_DIRECTION_POS_X;
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
+        case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
-            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                return TRUE;
             if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
             otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             switch (otherFaceshape) {
@@ -893,11 +895,12 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_BOTTOMSLAB:
                     return FALSE;
             }
+            if ((grassType == CMM_GROWTH_HALF_SIDE) && (faceshape == otherFaceshape)) {
+                return FALSE;
+            }
             return TRUE;
         case CMM_GROWTH_UNDERSLOPE_CORNER:
-        // some very cursed logic here, this is solely for upside-down inside corners
-            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                return TRUE;
+            ;// some very cursed logic here, this is solely for upside-down inside corners
             u8 faceshape1 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot)^1);
             u8 faceshape2 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_X, rot)^1);
             // this is basically just checking for if a normal slope corner is on top at the right angle
@@ -990,9 +993,10 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             }
             return TRUE;
         case CMM_GROWTH_DIAGONAL_SIDE:
+        case CMM_GROWTH_VSLAB_SIDE:
             otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
-            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            if (otherFaceshape != (grassType == CMM_GROWTH_DIAGONAL_SIDE ? CMM_FACESHAPE_TOPTRI : CMM_FACESHAPE_TOPHALF)) return TRUE;
             u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot != rot);
     }

@@ -80,16 +80,19 @@ enum cmm_directions {
 
 enum cmm_culling_shapes {
     CMM_FACESHAPE_FULL,
-    CMM_FACESHAPE_TOPTRI,
+    CMM_FACESHAPE_POLETOP,
 
     CMM_FACESHAPE_TRI_1, // make sure irregular shapes can be flipped with ^1
     CMM_FACESHAPE_TRI_2,
     CMM_FACESHAPE_DOWNTRI_1,
     CMM_FACESHAPE_DOWNTRI_2,
+    CMM_FACESHAPE_HALFSIDE_1,
+    CMM_FACESHAPE_HALFSIDE_2,
 
     CMM_FACESHAPE_BOTTOMSLAB,
     CMM_FACESHAPE_TOPSLAB,
-    CMM_FACESHAPE_POLETOP,
+    CMM_FACESHAPE_TOPTRI,
+    CMM_FACESHAPE_TOPHALF,
 
     CMM_FACESHAPE_EMPTY,
 };
@@ -98,10 +101,12 @@ enum cmm_growth_types {
     CMM_GROWTH_NONE,
     CMM_GROWTH_FULL,
     CMM_GROWTH_NORMAL_SIDE,
+    CMM_GROWTH_HALF_SIDE, // vertical slabs - either side
     CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
     CMM_GROWTH_UNDERSLOPE_L, // act as positive X
     CMM_GROWTH_UNDERSLOPE_CORNER, // act as both
     CMM_GROWTH_DIAGONAL_SIDE,
+    CMM_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
     CMM_GROWTH_SLOPE_SIDE_L,
     CMM_GROWTH_SLOPE_SIDE_R,
     CMM_GROWTH_UNCONDITIONAL,

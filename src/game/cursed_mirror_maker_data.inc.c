@@ -209,6 +209,21 @@ struct cmm_terrain cmm_terrain_topslab = {
     NULL
 };
 
+struct cmm_terrain_quad cmm_terrain_vslab_quads[] = {
+    {{{16, 16, 8}, {16, 16, 0}, {0, 16, 8},  {0, 16, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_TOPHALF,    CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 8},  {0, 0, 8},   {16, 0, 0},  {0, 0, 0}},  CMM_DIRECTION_DOWN,  CMM_FACESHAPE_TOPHALF,    0, NULL}, // BOTTOM
+    {{{16, 16, 8}, {16, 0, 8},  {16, 16, 0}, {16, 0, 0}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_HALFSIDE_1, CMM_GROWTH_HALF_SIDE,   NULL}, // LEFT
+    {{{0, 16, 8},  {0, 16, 0},  {0, 0, 8},   {0, 0, 0}},  CMM_DIRECTION_NEG_X, CMM_FACESHAPE_HALFSIDE_2, CMM_GROWTH_HALF_SIDE,   NULL}, // RIGHT
+    {{{16, 16, 8}, {0, 16, 8},  {16, 0, 8},  {0, 0, 8}},  CMM_DIRECTION_POS_Z, CMM_FACESHAPE_EMPTY,      CMM_GROWTH_VSLAB_SIDE, NULL}, // FRONT
+    {{{16, 16, 0}, {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL,       CMM_GROWTH_NORMAL_SIDE,   NULL}, // BACK
+};
+struct cmm_terrain cmm_terrain_vslab = {
+    6,
+    0,
+    cmm_terrain_vslab_quads,
+    NULL
+};
+
 s8 slope_decal_below_uvsquad_l[4][2] =  {{0, 0},   {16, 16},  {0, -16}, {16, 0}  };
 s8 slope_decal_below_uvsquad_r[4][2] =  {{0, 16},  {16, 0},   {0, 0},   {16, -16}};
 s8 slope_decal_below_uvstri_1_l[3][2] = {{0, 0},   {16, 16},  {0, -16}           };
@@ -366,7 +381,7 @@ struct cmm_terrain *cmm_tile_terrains[] = {
     &cmm_terrain_sslope,     // TILE_TYPE_SSLOPE
     &cmm_terrain_bottomslab, // TILE_TYPE_SLAB
     &cmm_terrain_topslab,    // TILE_TYPE_DSLAB
-    NULL,                    // TILE_TYPE_SSLAB
+    &cmm_terrain_vslab,      // TILE_TYPE_SSLAB
     NULL,                    //TILE_TYPE_CULL
     &cmm_terrain_fullblock,  //TILE_TYPE_TROLL
     NULL,                    //TILE_TYPE_FENCE
@@ -1421,7 +1436,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects}, //CMM_BUTTON_TC
     {mat_b_btn_heart,        0, OBJECT_TYPE_HEART,   CMM_PM_OBJ,   "Recovery Heart",     NULL       }, //CMM_BUTTON_HEART
     {mat_b_btn_cformation,   0, OBJECT_TYPE_COINFORM,CMM_PM_OBJ,   "Coin Formation",     txt_coin_formation}, //CMM_BUTTON_FORMATION
-    {mat_b_btn_vslab,        0, 0,                   CMM_PM_OBJ,   "Sideways Slab",      NULL       }, //CMM_BUTTON_VSLAB
+    {mat_b_btn_vslab,        0, TILE_TYPE_SSLAB,     CMM_PM_TILE,  "Vertical Slab",      NULL       }, //CMM_BUTTON_VSLAB
     {mat_b_btn_bars,         0, TILE_TYPE_BARS,      CMM_PM_TILE,  "Bars",               NULL       }, //CMM_BUTTON_BARS
     {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemies",      txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY
     {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
