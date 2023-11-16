@@ -117,6 +117,7 @@ u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
 u8 cmm_uv_scaling = 64;
+s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
@@ -552,8 +553,8 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (otherFaceshape == CMM_FACESHAPE_FULL) return TRUE;
     if (faceshape == CMM_FACESHAPE_FULL) return FALSE;
-    if (faceshape == CMM_FACESHAPE_TOPTRI) {
-        if (otherFaceshape == CMM_FACESHAPE_TOPTRI) {
+    if ((faceshape == CMM_FACESHAPE_TOPTRI) || (faceshape == CMM_FACESHAPE_TOPHALF)) {
+        if (otherFaceshape == faceshape) {
             u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot == rot);
         } else return FALSE;
@@ -747,7 +748,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -784,7 +785,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling - 16, v * cmm_uv_scaling - 16,
+            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -873,6 +874,9 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(newpos)) return TRUE;
+    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT) {
+        return TRUE;
+    }
     u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
@@ -880,9 +884,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             direction = grassType == CMM_GROWTH_UNDERSLOPE ? CMM_DIRECTION_POS_Z : CMM_DIRECTION_POS_X;
             // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
+        case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
-            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                return TRUE;
             if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
             otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
             switch (otherFaceshape) {
@@ -892,11 +895,12 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_BOTTOMSLAB:
                     return FALSE;
             }
+            if ((grassType == CMM_GROWTH_HALF_SIDE) && (faceshape == otherFaceshape)) {
+                return FALSE;
+            }
             return TRUE;
         case CMM_GROWTH_UNDERSLOPE_CORNER:
-        // some very cursed logic here, this is solely for upside-down inside corners
-            if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT)
-                return TRUE;
+            ;// some very cursed logic here, this is solely for upside-down inside corners
             u8 faceshape1 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot)^1);
             u8 faceshape2 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_X, rot)^1);
             // this is basically just checking for if a normal slope corner is on top at the right angle
@@ -989,9 +993,10 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             }
             return TRUE;
         case CMM_GROWTH_DIAGONAL_SIDE:
+        case CMM_GROWTH_VSLAB_SIDE:
             otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
-            if (otherFaceshape != CMM_FACESHAPE_TOPTRI) return TRUE;
+            if (otherFaceshape != (grassType == CMM_GROWTH_DIAGONAL_SIDE ? CMM_FACESHAPE_TOPTRI : CMM_FACESHAPE_TOPHALF)) return TRUE;
             u8 otherrot = get_grid_tile(newpos)->rot;
             return (otherrot != rot);
     }
@@ -1265,8 +1270,8 @@ Gfx *get_sidetex(s32 mat) {
 }
 
 
-#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT);
-#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP);
+#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
+#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
 #define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
 #define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
 
@@ -2064,7 +2069,6 @@ void place_object(s8 pos[3]) {
         cmm_trajectories_used++;
 
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
-        o->oAction = 5; //trajectory editor
         cmm_trajectory_edit_index = 0;
     }
 
@@ -2401,12 +2405,16 @@ void load_level(void) {
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
             cmm_object_type_preview_mario.model_id = MODEL_MARIO;
-        break;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
+            cmm_settings_menus[0] = draw_cmm_settings_general;
+            break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
             //cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
-        break;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
+            cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
+            break;
     }
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
@@ -2486,7 +2494,7 @@ void sb_init(void) {
 
     switch(cmm_mode) {
         case CMM_MODE_MAKE:
-            o->oAction = 1;
+            cmm_menu_state = CMM_MAKE_MAIN;
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             generate_object_preview();
             generate_terrain_gfx();
@@ -2505,6 +2513,7 @@ void sb_init(void) {
             }
         break;
         case CMM_MODE_PLAY:
+            cmm_menu_state = CMM_MAKE_PLAY;
             generate_terrain_collision();
             generate_objects_to_level();
             load_obj_warp_nodes();
@@ -2532,7 +2541,6 @@ void sb_init(void) {
                 }
             }
 
-            o->oAction = 2;
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             if (gMarioState->Options & (1<<OPT_MUSIC)) {
@@ -2596,10 +2604,6 @@ u32 main_cursor_logic(u32 joystick) {
     }
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
-    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
-    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
-    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
-
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
     o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
@@ -2655,6 +2659,8 @@ void reload_bg(void) {
 
 u8 cmm_upsidedown_tile = FALSE;
 u8 cmm_joystick;
+extern s16 cmm_menu_start_timer;
+extern s16 cmm_menu_end_timer;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
@@ -2678,11 +2684,8 @@ void sb_loop(void) {
         cmm_option_changed_func = NULL;
     }
 
-    switch(o->oAction) {
-        case 0: //init
-
-        break;
-        case 1: //MAKE MODE MAIN
+    switch(cmm_menu_state) {
+        case CMM_MAKE_MAIN:
             cursorMoved = main_cursor_logic(cmm_joystick);
             s32 updatePreviewObj = cursorMoved;
 
@@ -2748,14 +2751,15 @@ void sb_loop(void) {
                     break;
                     case 7://settings
                         cmm_menu_state = CMM_MAKE_SETTINGS;
-                        o->oAction = 4;
+                        cmm_menu_start_timer = 0;
+                        cmm_menu_end_timer = -1;
+                        cmm_menu_index = 0;
                     break;
                     case 6://test
                         cmm_target_mode = CMM_MODE_PLAY;
                         reset_play_state();
                         level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
                         sSourceWarpNodeId = 0x0A;
-                        o->oAction = 2;
                     break;
                     default://everything else places
                         place_thing_action();
@@ -2771,12 +2775,10 @@ void sb_loop(void) {
                 delete_tile_action(cmm_cursor_pos);
             }
 
-            if (o->oAction != 1) {
-                return;
-            }
-
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                o->oAction = 3;
+                cmm_menu_start_timer = 0;
+                cmm_menu_end_timer = -1;
+                cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
                 if (cmm_toolbar_index > 5) {
                     cmm_toolbar_index = 5;
@@ -2835,10 +2837,10 @@ void sb_loop(void) {
 
             update_boundary_wall();
         break;
-        case 2://PLAY MODE
+        case CMM_MAKE_PLAY://PLAY MODE
 
         break;
-        case 3: //MAKE MODE TOOLBOX
+        case CMM_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
             delete_preview_object();
             if (cmm_joystick != 0) {
@@ -2906,19 +2908,17 @@ void sb_loop(void) {
                 }
             }
 
-            if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
-                o->oAction = 1;
+            if (cmm_menu_end_timer == 10) {
                 cmm_menu_state = CMM_MAKE_MAIN;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
         break;
-        case 4: //settings
-            if (gPlayer1Controller->buttonPressed & (START_BUTTON|B_BUTTON)) {
-                o->oAction = 1;
+        case CMM_MAKE_SETTINGS: //settings
+            if (cmm_menu_end_timer == 10) {
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
         break;
-        case 5: //trajectory maker
+        case CMM_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();
             cursorMoved = main_cursor_logic(cmm_joystick);
 
@@ -2965,7 +2965,6 @@ void sb_loop(void) {
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
-                o->oAction = 1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
                 generate_object_preview();
@@ -2976,7 +2975,7 @@ void sb_loop(void) {
     }
 
     if (cmm_place_mode == CMM_PM_OBJ) {
-        if (o->oAction == 1 || o->oAction == 3 || o->oAction == 4) {
+        if (cmm_menu_state == CMM_MAKE_MAIN || cmm_menu_state == CMM_MAKE_SETTINGS || cmm_menu_state == CMM_MAKE_TOOLBOX) {
             struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
 
             if (!previewObj) {
@@ -2991,6 +2990,10 @@ void sb_loop(void) {
             }
         }
     }
+
+    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
+    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
     vec3_copy(cmm_camera_pos,cmm_camera_foc);
     vec3_add(cmm_camera_pos,cam_pos_offset);
