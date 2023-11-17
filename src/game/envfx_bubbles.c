@@ -219,7 +219,7 @@ void envfx_update_rain(Vec3s centerPos) {
             PARTICLE->isAlive = 1;
             PARTICLE->unusedBubbleVar = 20;
             PARTICLE->xPos = (s32)gLakituState.pos[0]+(random_float() * 5000.0f - 2500.0f);
-            PARTICLE->yPos = (s32)gLakituState.pos[1]+3000.0f+(random_float() * 1000.0f);
+            PARTICLE->yPos = (s32)gLakituState.pos[1]-50.0f+(random_float() * 4000.0f);
             PARTICLE->zPos = (s32)gLakituState.pos[2]+(random_float() * 5000.0f - 2500.0f);
             PARTICLE->bubbleY = find_floor(PARTICLE->xPos, PARTICLE->yPos, PARTICLE->zPos, &surface);
             if (surface == NULL) {
@@ -227,9 +227,13 @@ void envfx_update_rain(Vec3s centerPos) {
             }
         } else {
             PARTICLE->yPos-=(PARTICLE->unusedBubbleVar*2);
-            PARTICLE->unusedBubbleVar += 3;
+            PARTICLE->unusedBubbleVar += 2;
             if (PARTICLE->bubbleY-30 > PARTICLE->yPos) {
-                PARTICLE->isAlive = 0;
+                PARTICLE->xPos = (s32)gLakituState.pos[0]+(random_float() * 5000.0f - 2500.0f);
+                PARTICLE->yPos = (s32)gLakituState.pos[1]+3000;
+                PARTICLE->zPos = (s32)gLakituState.pos[2]+(random_float() * 5000.0f - 2500.0f);
+                PARTICLE->bubbleY = find_floor(PARTICLE->xPos, PARTICLE->yPos, PARTICLE->zPos, &surface);
+                PARTICLE->unusedBubbleVar = 20;
             }
         }
     }
