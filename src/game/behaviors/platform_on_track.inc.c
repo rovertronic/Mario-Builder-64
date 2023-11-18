@@ -39,81 +39,97 @@ static Trajectory const *sPlatformOnTrackPaths[] = {
     rr_seg7_trajectory_0702EEE0,
 };
 
-static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos) {
-    if ((ballIndex == 0) || (1)) {
-        struct Waypoint *initialPrevWaypoint = o->oPlatformOnTrackPrevWaypoint;
-        struct Waypoint *nextWaypoint = initialPrevWaypoint;
-        struct Waypoint *prevWaypoint;
-        f32 amountToMove;
-        Vec3f d;
-        f32 distToNextWaypoint;
+u32 trajectory_get_target_angle(s16 *yaw, struct Waypoint *prevWaypoint, struct Waypoint *targetWaypoint) {
+    // Check if target waypoint is immediately above or below prev waypoint
+    if (targetWaypoint->flags == WAYPOINT_FLAGS_END) return FALSE;
+    while (sqr(targetWaypoint->pos[0] - prevWaypoint->pos[0]) + sqr(targetWaypoint->pos[2] - prevWaypoint->pos[2]) < 100.0f) {
+        prevWaypoint++;
+        targetWaypoint++;
+        if (targetWaypoint->flags == WAYPOINT_FLAGS_END) {
+            return FALSE;
+        }
+    }
+    *yaw = atan2s(targetWaypoint->pos[2] - prevWaypoint->pos[2], targetWaypoint->pos[0] - prevWaypoint->pos[0]);
+    return TRUE;    
+}
 
-        if (ballIndex != 0) {
-            amountToMove = (300.0f * ballIndex);
-        } else {
-            obj_perform_position_op(POS_OP_SAVE_POSITION);
-            o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_NONE;
-            amountToMove = o->oForwardVel;
+static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos) {
+    struct Waypoint *initialPrevWaypoint = o->oPlatformOnTrackPrevWaypoint;
+    struct Waypoint *nextWaypoint = initialPrevWaypoint;
+    struct Waypoint *prevWaypoint;
+    f32 amountToMove;
+    Vec3f d;
+    f32 distToNextWaypoint;
+
+    if (ballIndex != 0) {
+        amountToMove = (256.0f * ballIndex);
+    } else {
+        vec3f_copy(sObjSavedPos, &o->oPosVec);
+        o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_NONE;
+        amountToMove = o->oForwardVel;
+    }
+
+    do {
+        prevWaypoint = nextWaypoint;
+
+        nextWaypoint++;
+        if (nextWaypoint->flags == WAYPOINT_FLAGS_END) {
+            if (ballIndex == 0) {
+                o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_END;
+            }
+
+            if ((GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
+                nextWaypoint = o->oPlatformOnTrackStartWaypoint;
+            } else {
+                return;
+            }
         }
 
-        do {
-            prevWaypoint = nextWaypoint;
+        vec3_diff(d, nextWaypoint->pos, pos);
 
-            nextWaypoint++;
-            if (nextWaypoint->flags == WAYPOINT_FLAGS_END) {
-                if (ballIndex == 0) {
-                    o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_END;
-                }
+        distToNextWaypoint = vec3_mag(d);
 
-                if ((GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
-                    nextWaypoint = o->oPlatformOnTrackStartWaypoint;
-                } else {
-                    return;
-                }
+        // Move directly to the next waypoint, even if it's farther away
+        // than amountToMove
+        amountToMove -= distToNextWaypoint;
+        vec3f_add(pos, d);
+    } while (amountToMove > 0.0f);
+
+    // If we moved farther than amountToMove, move in the opposite direction
+    // No risk of near-zero division: If distToNextWaypoint is close to
+    // zero, then that means we didn't cross a waypoint this frame (since
+    // otherwise distToNextWaypoint would equal the distance between two
+    // waypoints, which should never be that small). But this implies that
+    // amountToMove - distToNextWaypoint <= 0, and amountToMove is at least
+    // 0.1 (from platform on track behavior).
+    distToNextWaypoint = amountToMove / distToNextWaypoint;
+    pos[0] += d[0] * distToNextWaypoint;
+    pos[1] += d[1] * distToNextWaypoint;
+    pos[2] += d[2] * distToNextWaypoint;
+
+    if (ballIndex != 0) {
+        struct Object *trackBall = spawn_object_relative((o->oPlatformOnTrackBaseBallIndex + ballIndex), 0, 0, 0, o,
+                                            MODEL_TRAJECTORY_MARKER_BALL, bhvTrackBall);
+        if (trackBall != NULL) {
+            vec3f_copy(&trackBall->oPosVec, pos);
+        }
+    } else {
+        if (prevWaypoint != initialPrevWaypoint) {
+            if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_NONE) {
+                o->oPlatformOnTrackPrevWaypointFlags = initialPrevWaypoint->flags;
             }
+            o->oPlatformOnTrackPrevWaypoint = prevWaypoint;
+        }
 
-            vec3_diff(d, nextWaypoint->pos, pos);
+        vec3f_copy(&o->oPosVec, pos);
 
-            distToNextWaypoint = vec3_mag(d);
+        vec3f_diff(&o->oVelVec, &o->oPosVec, sObjSavedPos);
 
-            // Move directly to the next waypoint, even if it's farther away
-            // than amountToMove
-            amountToMove -= distToNextWaypoint;
-            vec3f_add(pos, d);
-        } while (amountToMove > 0.0f);
+        o->oPlatformOnTrackPitch = atan2s(sqrtf(sqr(o->oVelX) + sqr(o->oVelZ)), -o->oVelY);
 
-        // If we moved farther than amountToMove, move in the opposite direction
-        // No risk of near-zero division: If distToNextWaypoint is close to
-        // zero, then that means we didn't cross a waypoint this frame (since
-        // otherwise distToNextWaypoint would equal the distance between two
-        // waypoints, which should never be that small). But this implies that
-        // amountToMove - distToNextWaypoint <= 0, and amountToMove is at least
-        // 0.1 (from platform on track behavior).
-        distToNextWaypoint = amountToMove / distToNextWaypoint;
-        pos[0] += d[0] * distToNextWaypoint;
-        pos[1] += d[1] * distToNextWaypoint;
-        pos[2] += d[2] * distToNextWaypoint;
-
-        if (ballIndex != 0) {
-            struct Object *trackBall = spawn_object_relative((o->oPlatformOnTrackBaseBallIndex + ballIndex), 0, 0, 0, o,
-                                              MODEL_TRAJECTORY_MARKER_BALL, bhvTrackBall);
-            if (trackBall != NULL) {
-                vec3f_copy(&trackBall->oPosVec, pos);
-            }
-        } else {
-            if (prevWaypoint != initialPrevWaypoint) {
-                if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_NONE) {
-                    o->oPlatformOnTrackPrevWaypointFlags = initialPrevWaypoint->flags;
-                }
-                o->oPlatformOnTrackPrevWaypoint = prevWaypoint;
-            }
-
-            vec3f_copy(&o->oPosVec, pos);
-
-            obj_perform_position_op(POS_OP_COMPUTE_VELOCITY);
-
-            o->oPlatformOnTrackPitch = atan2s(sqrtf(sqr(o->oVelX) + sqr(o->oVelZ)), -o->oVelY);
-            o->oPlatformOnTrackYaw = atan2s(o->oVelZ, o->oVelX);
+        s16 yaw;
+        if (trajectory_get_target_angle(&yaw, prevWaypoint, nextWaypoint)) {
+            o->oPlatformOnTrackYaw = yaw;
         }
     }
 }
@@ -151,16 +167,11 @@ void bhv_platform_on_track_init(void) {
     //override platform on track to always be checkerboard
     o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
 
-
-    o->oPlatformOnTrackIsNotSkiLift = o->oPlatformOnTrackType - PLATFORM_ON_TRACK_TYPE_SKI_LIFT;
-
     o->collisionData =
         segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
 
     o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
     rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
-
-    o->oPlatformOnTrackIsNotHMC = pathIndex - 4;
 
     o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
 
@@ -188,16 +199,8 @@ static void platform_on_track_act_init(void) {
 
     o->oPlatformOnTrackWasStoodOn = FALSE;
 
-    if (o->oPlatformOnTrackIsNotSkiLift) {
-        o->oFaceAngleRoll = 0;
-    }
-
-    if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
-        // Spawn track balls
-        for (i = 1; i < 6; i++) {
-            //platform_on_track_update_pos_or_spawn_ball(i, &o->oHomeVec);
-        }
-    }
+    o->oFaceAngleRoll = 0;
+    o->oPlatformOnTrackYaw = (s16)(o->oMoveAngleYaw - 0x4000);
 
     o->oAction = PLATFORM_ON_TRACK_ACT_WAIT_FOR_MARIO;
 }
@@ -209,6 +212,11 @@ static void platform_on_track_act_wait_for_mario(void) {
     if (gMarioObject->platform == o) {
         if (o->oTimer > 20) {
             o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
+            o->oForwardVel = 10.0f;
+            for (s32 i = 1; i < 6; i++) {
+                vec3f_copy(&o->oHomeVec, &o->oPosVec);
+                platform_on_track_update_pos_or_spawn_ball(i, &o->oHomeVec);
+            }
         }
     } else {
         if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
@@ -226,11 +234,7 @@ static void platform_on_track_act_wait_for_mario(void) {
 static void platform_on_track_act_move_along_track(void) {
     s16 initialAngle;
 
-    if (!o->oPlatformOnTrackIsNotSkiLift) {
-        cur_obj_play_sound_1(SOUND_ENV_ELEVATOR3);
-    } else if (!o->oPlatformOnTrackIsNotHMC) {
-        cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
-    }
+    cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
 
     // Fall after reaching the last waypoint if desired
     if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END
@@ -238,7 +242,7 @@ static void platform_on_track_act_move_along_track(void) {
         o->oAction = PLATFORM_ON_TRACK_ACT_FALL;
     } else {
         // The ski lift should pause or stop after reaching a special waypoint
-        if (o->oPlatformOnTrackPrevWaypointFlags != WAYPOINT_FLAGS_NONE && !o->oPlatformOnTrackIsNotSkiLift) {
+        if (o->oPlatformOnTrackPrevWaypointFlags != WAYPOINT_FLAGS_NONE) {
             if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END
              || o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_PLATFORM_ON_TRACK_PAUSE) {
                 cur_obj_play_sound_2(SOUND_GENERAL_ELEVATOR_WOBBLE_LOWPRIO);
@@ -251,24 +255,7 @@ static void platform_on_track_act_move_along_track(void) {
                 }
             }
         } else {
-            // The ski lift accelerates, while the others instantly start
-            if (!o->oPlatformOnTrackIsNotSkiLift) {
-                obj_forward_vel_approach(10.0, 0.1f);
-            } else {
-#ifdef CONTROLLABLE_PLATFORM_SPEED
-                f32 targetVel = gMarioObject->platform == o
-                    ? (o->oDistanceToMario * coss(o->oAngleToMario - o->oMoveAngleYaw)) - 10.0f
-                    : 10.0f;
-                if (targetVel < 10.0f) {
-                    targetVel = 10.0f;
-                } else if (targetVel > 16.0f) {
-                    targetVel = 16.0f;
-                }
-                obj_forward_vel_approach(targetVel, 0.1f);
-#else
-                o->oForwardVel = 10.0f;
-#endif
-            }
+            o->oForwardVel = 10.0f;
 
             // Spawn a new track ball if necessary
             if (approach_f32_ptr(&o->oPlatformOnTrackDistMovedSinceLastBall, 300.0f, o->oForwardVel)) {
@@ -392,23 +379,7 @@ void bhv_platform_on_track_update(void) {
             break;
     }
 
-    if (!o->oPlatformOnTrackIsNotSkiLift) {
-        platform_on_track_rock_ski_lift();
-    } else if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CARPET) {
-#ifdef CONTROLLABLE_PLATFORM_SPEED
-        s16 targetRoll; // Visually, this is the platform's pitch, since these platforms technically move sideways
-        if (gMarioObject->platform == o) {
-            if (!o->oPlatformOnTrackWasStoodOn) {
-                o->oPlatformOnTrackOffsetY    = -8.0f;
-                o->oPlatformOnTrackWasStoodOn = TRUE;
-            }
-            targetRoll = o->oDistanceToMario * coss(o->oAngleToMario - o->oMoveAngleYaw) * 0x4;
-        } else {
-            targetRoll = 0x0;
-        }
-        o->oFaceAngleRoll = approach_s32_symmetric(o->oFaceAngleRoll, targetRoll, 0x100);
-#else
-
+    if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CARPET) {
         if (!o->oPlatformOnTrackWasStoodOn && gMarioObject->platform == o) {
             o->oPlatformOnTrackOffsetY = -8.0f;
             o->oPlatformOnTrackWasStoodOn = TRUE;
@@ -416,7 +387,6 @@ void bhv_platform_on_track_update(void) {
 
         approach_f32_ptr(&o->oPlatformOnTrackOffsetY, 0.0f, 0.5f);
         o->oPosY += o->oPlatformOnTrackOffsetY;
-#endif
     }
 
     o->oDontInertia = FALSE;

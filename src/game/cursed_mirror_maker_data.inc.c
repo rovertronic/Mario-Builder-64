@@ -1051,7 +1051,7 @@ struct cmm_object_info cmm_object_type_bosses[] = {
 };
 
 struct cmm_object_info cmm_object_type_platform = {
-    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
+    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_bowlingball = {
     bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,

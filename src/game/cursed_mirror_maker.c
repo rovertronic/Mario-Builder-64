@@ -243,6 +243,10 @@ void df_chuckya(s32 context) {
 void df_kingbomb(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
 }
+void df_checkerboard_elevator(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) o->header.gfx.scale[1] = 2.0f;
+}
+
 void df_mri(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oGraphYOffset = 100.0f;
@@ -290,7 +294,6 @@ void df_coin_formation(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         Vec3i pos = { 0, 0, 0 };
         s32 spawnCoin    = TRUE;
-        s32 snapToGround = TRUE;
         u32 index = 0;
 
         while (spawnCoin && index < 8) {
@@ -300,7 +303,6 @@ void df_coin_formation(s32 context) {
                     if (index > 4) spawnCoin = FALSE;
                     break;
                 case COIN_FORMATION_BP_SHAPE_VERTICAL_LINE:
-                    snapToGround = FALSE;
                     pos[1] = index << 7;
                     if (index > 4) spawnCoin = FALSE;
                     break;
@@ -309,7 +311,6 @@ void df_coin_formation(s32 context) {
                     pos[2] = coss(index << 13) * 300.0f;
                     break;
                 case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
-                    snapToGround = FALSE;
                     pos[0] = coss(index << 13) * 200.0f;
                     pos[1] = sins(index << 13) * 200.0f + 200.0f;
                     break;
@@ -320,13 +321,8 @@ void df_coin_formation(s32 context) {
 
             }
 
-            if (o->oBehParams2ndByte & COIN_FORMATION_BP_FLYING) {
-                snapToGround = FALSE;
-            }
-
             if (spawnCoin) {
                 struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
-                newCoin->oCoinSnapToGround = snapToGround;
                 obj_set_billboard(newCoin);
             }
             index ++;
@@ -613,9 +609,10 @@ void check_cached_tris(void) {
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
     if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
 
-    f32 dx = (cmm_trajectory_list[traj_id][0][1] - cmm_trajectory_list[traj_id][1][1]);
-    f32 dz = (cmm_trajectory_list[traj_id][0][3] - cmm_trajectory_list[traj_id][1][3]);
-    s16 angle_to_trajectory = atan2s(dz, dx) + 0x8000;
+    s16 angle_to_trajectory;
+    if (!trajectory_get_target_angle(&angle_to_trajectory, &cmm_trajectory_list[traj_id][0], &cmm_trajectory_list[traj_id][1])) {
+        return;
+    }
 
     if ( obj_has_model(obj ,MODEL_CHECKERBOARD_PLATFORM) ) {
         angle_to_trajectory += 0x4000;
@@ -2926,9 +2923,9 @@ void sb_loop(void) {
                 generate_trajectory_gfx();
             }
 
-            if (o->oTimer == 0) {
+            if (cmm_trajectory_edit_index == 0) {
                 // Initial placement on top of the object
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = cmm_trajectory_edit_index;
+                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = 0;
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
                 cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
@@ -2951,6 +2948,7 @@ void sb_loop(void) {
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                         generate_trajectory_gfx();
                     }
+                    generate_object_preview();
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                     if (cmm_trajectory_edit_index <= 1) {
                         cmm_show_error_message("Nothing to delete!");
@@ -2959,6 +2957,7 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                         play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                         generate_trajectory_gfx();
+                        generate_object_preview();
                     }
                 }
             }

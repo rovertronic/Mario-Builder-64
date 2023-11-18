@@ -880,8 +880,6 @@
 #define /*0x10C*/ oPlatformOnTrackYaw                    OBJECT_FIELD_S32(0x21)
 #define /*0x110*/ oPlatformOnTrackOffsetY                OBJECT_FIELD_F32(0x22)
 #define /*0x114*/ oPlatformOnTrackDistMovedSinceLastBall OBJECT_FIELD_F32(0x23)
-#define /*0x1AC*/ oPlatformOnTrackIsNotSkiLift           OBJECT_FIELD_S16(0x49, 0)
-#define /*0x1AE*/ oPlatformOnTrackIsNotHMC               OBJECT_FIELD_S16(0x49, 1)
 #define /*0x1B0*/ oPlatformOnTrackType                   OBJECT_FIELD_S16(0x4A, 0)
 #define /*0x1B2*/ oPlatformOnTrackWasStoodOn             OBJECT_FIELD_S16(0x4A, 1)
 
