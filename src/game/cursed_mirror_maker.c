@@ -216,26 +216,29 @@ void df_exbox(s32 context) {
     o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
 }
 
-void df_vexbox(s32 context) {
-    if (context != CMM_DF_CONTEXT_INIT) return;
-    switch(o->oBehParams2ndByte) {
-        case 0:
-            o->oAnimState = 0;
-            break;
-        case 1:
-            o->oAnimState = 1;
-            break;
-        case 2:
-            o->oAnimState = 2;
-            break;
-        default:
-            o->oAnimState = 3;
-            break;
-    }
-}
-
 void df_koopa(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 7);
+    if (context == CMM_DF_CONTEXT_INIT) {
+        super_cum_working(o, 7);
+        if (o->behavior == segmented_to_virtual(bhvPreviewObject) && (o->oBehParams2ndByte == 0)) {
+            // Get trajectory and iterate over it to find the end
+            s32 traj_id = o->oBehParams2ndByte;
+            if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+
+            for (s32 i = 0; i < CMM_TRAJECTORY_LENGTH; i++) {
+                if (cmm_trajectory_list[traj_id][i][0] == -1) {
+                    // Spawn flagpole
+                    struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
+                    flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
+                    super_cum_working(flagpole, 0);
+                    flagpole->oPosX = cmm_trajectory_list[traj_id][i-1][1];
+                    flagpole->oPosY = cmm_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
+                    flagpole->oPosZ = cmm_trajectory_list[traj_id][i-1][3];
+                    break;
+                }
+            }
+
+        }
+    }
 }
 void df_chuckya(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 4);
@@ -418,10 +421,14 @@ s32 object_sanity_check(void) {
         }
     }
 
-    if ((cmm_id_selection == OBJECT_TYPE_STAR) && (cmm_param_selection == 1)) {
+    if ((cmm_id_selection == OBJECT_TYPE_STAR) && ((cmm_param_selection == 1) || (cmm_param_selection == 2))) {
         for (u32 i = 0; i < cmm_object_count; i++) {
-            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param2 == 1)) {
-                cmm_show_error_message("Red Coin Star already placed!");
+            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param2 == cmm_param_selection)) {
+                if (cmm_param_selection == 1) {
+                    cmm_show_error_message("Red Coin Star already placed!");
+                } else {
+                    cmm_show_error_message("Piranha Star already placed!");
+                }
                 return FALSE;
             }
         }
@@ -465,9 +472,10 @@ ALWAYS_INLINE void remove_terrain_data(s8 pos[3]) {
     cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
 }
 
-ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
-    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
-}
+//ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
+//    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
+//}
+#define get_grid_tile(pos) (&(cmm_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain;
@@ -697,9 +705,8 @@ void generate_trajectory_gfx(void) {
             draw_dotted_line(pos1, pos2);
         }
         if (isLoop) {
-            vec3_copy(pos1, pos2);
-            vec3_set(pos2, curr_trajectory[0][1], curr_trajectory[0][2], curr_trajectory[0][3]);
-            draw_dotted_line(pos1, pos2);
+            vec3_set(pos1, curr_trajectory[0][1], curr_trajectory[0][2], curr_trajectory[0][3]);
+            draw_dotted_line(pos2, pos1);
         }
         display_cached_tris();
     }
@@ -1658,15 +1665,28 @@ void generate_poles(void) {
 
     // Trees
     for (u32 i = 0; i < cmm_object_count; i++) {
-        if (cmm_object_data[i].type != OBJECT_TYPE_TREE) {
-            continue;
+        if (cmm_object_data[i].type == OBJECT_TYPE_TREE) {
+            gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
+            gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
+            gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
+            gPoleArray[gNumPoles].height = 500;
+            gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param2 == 2 ? 2 : 1);
+            gNumPoles++;
+        } else if (cmm_object_data[i].type == OBJECT_TYPE_KTQ) {
+            s32 traj_id = cmm_object_data[i].param2;
+            // Scan for end of trajectory and place flag
+            for (u32 j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
+                if (cmm_trajectory_list[traj_id][j][0] == -1) {
+                    gPoleArray[gNumPoles].pos[0] = cmm_trajectory_list[traj_id][j-1][1];
+                    gPoleArray[gNumPoles].pos[1] = cmm_trajectory_list[traj_id][j-1][2] - TILE_SIZE/2;
+                    gPoleArray[gNumPoles].pos[2] = cmm_trajectory_list[traj_id][j-1][3];
+                    gPoleArray[gNumPoles].height = 700;
+                    gPoleArray[gNumPoles].poleType = 0;
+                    gNumPoles++;
+                    break;
+                }
+            }
         }
-        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
-        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
-        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
-        gPoleArray[gNumPoles].height = 500;
-        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param2 == 2 ? 2 : 1);
-        gNumPoles++;
     }
 
     main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
