@@ -18873,7 +18873,6 @@ Gfx mat_maker_MakerLineMat_layer1[] = {
 	gsDPLoadBlock(7, 0, 0, 7, 2048),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 1, 0, G_TX_WRAP | G_TX_NOMIRROR, 2, 0),
 	gsDPSetTileSize(0, 0, 0, 12, 4),
-	gsDPSetPrimColor(0, 0, 255, 212, 0, 255),
 	gsSPEndDisplayList(),
 };
 

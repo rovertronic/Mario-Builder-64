@@ -41,12 +41,19 @@ static Trajectory const *sPlatformOnTrackPaths[] = {
 
 u32 trajectory_get_target_angle(s16 *yaw, struct Waypoint *prevWaypoint, struct Waypoint *targetWaypoint) {
     // Check if target waypoint is immediately above or below prev waypoint
-    if (targetWaypoint->flags == WAYPOINT_FLAGS_END) return FALSE;
+    if ((prevWaypoint->flags == WAYPOINT_FLAGS_END) || (targetWaypoint->flags == WAYPOINT_FLAGS_END)) return FALSE;
     while (sqr(targetWaypoint->pos[0] - prevWaypoint->pos[0]) + sqr(targetWaypoint->pos[2] - prevWaypoint->pos[2]) < 100.0f) {
         prevWaypoint++;
         targetWaypoint++;
-        if (targetWaypoint->flags == WAYPOINT_FLAGS_END) {
+        if (prevWaypoint->flags == WAYPOINT_FLAGS_END) {
             return FALSE;
+        }
+        if (targetWaypoint->flags == WAYPOINT_FLAGS_END) {
+            if (o->oBehParams >> 24 == 1) {
+                targetWaypoint = o->oPlatformOnTrackStartWaypoint;
+            } else {
+                return FALSE;
+            }
         }
     }
     *yaw = atan2s(targetWaypoint->pos[2] - prevWaypoint->pos[2], targetWaypoint->pos[0] - prevWaypoint->pos[0]);
@@ -62,6 +69,9 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos)
     f32 distToNextWaypoint;
 
     if (ballIndex != 0) {
+        if (GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START) {
+            return;
+        }
         amountToMove = (256.0f * ballIndex);
     } else {
         vec3f_copy(sObjSavedPos, &o->oPosVec);
@@ -171,7 +181,7 @@ void bhv_platform_on_track_init(void) {
         segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
 
     o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
-    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
+    if (o->oBehParams >> 24 == 0) rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
     o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
 
@@ -202,7 +212,12 @@ static void platform_on_track_act_init(void) {
     o->oFaceAngleRoll = 0;
     o->oPlatformOnTrackYaw = (s16)(o->oMoveAngleYaw - 0x4000);
 
-    o->oAction = PLATFORM_ON_TRACK_ACT_WAIT_FOR_MARIO;
+    if (o->oBehParams >> 24 == 1) {
+        o->oForwardVel = 15.0f;
+        o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
+    } else {
+        o->oAction = PLATFORM_ON_TRACK_ACT_WAIT_FOR_MARIO;
+    }
 }
 
 /**
@@ -212,7 +227,7 @@ static void platform_on_track_act_wait_for_mario(void) {
     if (gMarioObject->platform == o) {
         if (o->oTimer > 20) {
             o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
-            o->oForwardVel = 10.0f;
+            o->oForwardVel = 15.0f;
             for (s32 i = 1; i < 6; i++) {
                 vec3f_copy(&o->oHomeVec, &o->oPosVec);
                 platform_on_track_update_pos_or_spawn_ball(i, &o->oHomeVec);
@@ -241,46 +256,30 @@ static void platform_on_track_act_move_along_track(void) {
      && !(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
         o->oAction = PLATFORM_ON_TRACK_ACT_FALL;
     } else {
-        // The ski lift should pause or stop after reaching a special waypoint
-        if (o->oPlatformOnTrackPrevWaypointFlags != WAYPOINT_FLAGS_NONE) {
-            if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END
-             || o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_PLATFORM_ON_TRACK_PAUSE) {
-                cur_obj_play_sound_2(SOUND_GENERAL_ELEVATOR_WOBBLE_LOWPRIO);
+        o->oForwardVel = 15.0f;
 
-                o->oForwardVel = 0.0f;
-                if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END) {
-                    o->oAction = PLATFORM_ON_TRACK_ACT_INIT;
-                } else {
-                    o->oAction = PLATFORM_ON_TRACK_ACT_PAUSE_BRIEFLY;
-                }
-            }
-        } else {
-            o->oForwardVel = 10.0f;
+        // Spawn a new track ball if necessary
+        if (approach_f32_ptr(&o->oPlatformOnTrackDistMovedSinceLastBall, 300.0f, o->oForwardVel)) {
+            o->oPlatformOnTrackDistMovedSinceLastBall -= 300.0f;
 
-            // Spawn a new track ball if necessary
-            if (approach_f32_ptr(&o->oPlatformOnTrackDistMovedSinceLastBall, 300.0f, o->oForwardVel)) {
-                o->oPlatformOnTrackDistMovedSinceLastBall -= 300.0f;
+            vec3f_copy(&o->oHomeVec, &o->oPosVec);
+            o->oPlatformOnTrackBaseBallIndex = (u16)(o->oPlatformOnTrackBaseBallIndex + 1);
 
-                vec3f_copy(&o->oHomeVec, &o->oPosVec);
-                o->oPlatformOnTrackBaseBallIndex = (u16)(o->oPlatformOnTrackBaseBallIndex + 1);
-
-                platform_on_track_update_pos_or_spawn_ball(5, &o->oHomeVec);
-            }
+            platform_on_track_update_pos_or_spawn_ball(5, &o->oHomeVec);
         }
 
         platform_on_track_update_pos_or_spawn_ball(0, &o->oPosVec);
 
         o->oMoveAnglePitch = o->oPlatformOnTrackPitch;
         o->oMoveAngleYaw = o->oPlatformOnTrackYaw;
-
         //! Both oAngleVelYaw and oAngleVelRoll aren't reset until the platform
         //  starts moving again, resulting in unexpected platform displacement
         //  after reappearing
 
         // Turn face yaw and compute yaw vel
-        if (!(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_DONT_TURN_YAW)) {
+        if ((GET_BPARAM1(o->oBehParams) == 0)) {
             s16 targetFaceYaw = o->oMoveAngleYaw + 0x4000;
-            s16 yawSpeed = abs_angle_diff(targetFaceYaw, o->oFaceAngleYaw) / 20;
+            s16 yawSpeed = abs_angle_diff(targetFaceYaw, o->oFaceAngleYaw) / 15;
 
             initialAngle = o->oFaceAngleYaw;
             clamp_s16(&yawSpeed, 100, 500);
@@ -301,7 +300,7 @@ static void platform_on_track_act_move_along_track(void) {
         }
     }
 
-    if (gMarioObject->platform != o) {
+    if (gMarioObject->platform != o && !(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
         platform_on_track_mario_not_on_platform();
     } else {
         o->oTimer = 0;
@@ -331,6 +330,14 @@ static void platform_on_track_act_fall(void) {
         o->oTimer = 0;
         o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
     }
+
+    s16 targetFaceYaw = o->oMoveAngleYaw + 0x4000;
+    s16 yawSpeed = abs_angle_diff(targetFaceYaw, o->oFaceAngleYaw) / 15;
+
+    s16 initialAngle = o->oFaceAngleYaw;
+    clamp_s16(&yawSpeed, 100, 500);
+    obj_face_yaw_approach(targetFaceYaw, yawSpeed);
+    o->oAngleVelYaw = (s16) o->oFaceAngleYaw - initialAngle;
 }
 
 /**

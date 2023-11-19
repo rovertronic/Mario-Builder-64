@@ -408,7 +408,7 @@ const Gfx init_rsp[] = {
     // @bug Failing to set the clip ratio will result in warped triangles in F3DEX2
     // without this change: https://jrra.zone/n64/doc/n64man/gsp/gSPClipRatio.htm
 #ifdef F3DEX_GBI_2
-    gsSPClipRatio(FRUSTRATIO_2),
+    gsSPClipRatio(FRUSTRATIO_1),
 #endif
     gsSPEndDisplayList(),
 };

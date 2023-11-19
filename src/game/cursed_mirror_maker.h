@@ -159,7 +159,7 @@ enum {
 };
 
 struct cmm_obj {
-    u32 param:8, x:6, y:5, z:6, type:5, rot:2;
+    u32 param1:1, param2:7, x:6, y:5, z:6, type:5, rot:2;
 };
 
 struct cmm_grid_obj {

@@ -420,7 +420,7 @@ s32 object_sanity_check(void) {
 
     if ((cmm_id_selection == OBJECT_TYPE_STAR) && (cmm_param_selection == 1)) {
         for (u32 i = 0; i < cmm_object_count; i++) {
-            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param == 1)) {
+            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param2 == 1)) {
                 cmm_show_error_message("Red Coin Star already placed!");
                 return FALSE;
             }
@@ -663,23 +663,42 @@ void generate_trajectory_gfx(void) {
     cmm_curr_gfx = cmm_trajectory_gfx;
     cmm_curr_vtx = cmm_trajectory_vtx;
     cmm_gfx_index = 0;
-
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat_layer1);
 
-    for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
-        Trajectory *curr_trajectory = cmm_trajectory_list[traj][0];
-        s32 i = 0;
+    for (s32 traj = 0; traj < cmm_trajectories_used; traj++) {
+        Trajectory (*curr_trajectory)[4] = cmm_trajectory_list[traj];
         s16 pos1[3], pos2[3];
+        s32 isLoop = FALSE;
 
-        while (curr_trajectory[i*4 + 4] == i+1) {
-            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
-            vec3_set(pos2, curr_trajectory[(i*4)+5], curr_trajectory[(i*4)+6], curr_trajectory[(i*4)+7]);
+        // Find object corresponding to this trajectory
+        for (s32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
+                if (cmm_object_data[i].param2 == traj) {
+                    // Check if it loops or not
+                    if (cmm_object_data[i].param1) {
+                        isLoop = TRUE;
+                        gDPSetPrimColor(&cmm_curr_gfx[cmm_gfx_index++], 0, 0, 0, 0, 255, 255);
+                    } else {
+                        gDPSetPrimColor(&cmm_curr_gfx[cmm_gfx_index++], 0, 0, 255, 255, 0, 255);
+                    }
+                    break;
+                }
+            }
+        }
+        s32 i;
+        for (i = 0; curr_trajectory[i+1][0] == i+1; i++) {
+            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
+            vec3_set(pos2, curr_trajectory[i+1][1], curr_trajectory[i+1][2], curr_trajectory[i+1][3]);
             draw_dotted_line(pos1, pos2);
-            i++;
         }
         if (traj == cmm_trajectory_to_edit && cmm_menu_state == CMM_MAKE_TRAJECTORY) {
-            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
+            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
             vec3_set(pos2, GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
+            draw_dotted_line(pos1, pos2);
+        }
+        if (isLoop) {
+            vec3_copy(pos1, pos2);
+            vec3_set(pos2, curr_trajectory[0][1], curr_trajectory[0][2], curr_trajectory[0][3]);
             draw_dotted_line(pos1, pos2);
         }
         display_cached_tris();
@@ -1646,7 +1665,7 @@ void generate_poles(void) {
         gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
         gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
         gPoleArray[gNumPoles].height = 500;
-        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param == 2 ? 2 : 1);
+        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param2 == 2 ? 2 : 1);
         gNumPoles++;
     }
 
@@ -1758,13 +1777,13 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
     preview_object->oPosZ = GRID_TO_POS(pos[2]);
     preview_object->oFaceAngleYaw = rot*0x4000;
-    preview_object->oBehParams2ndByte = param;
+    preview_object->oBehParams2ndByte = param2;
     preview_object->oPreviewObjDisplayFunc = info->disp_func;
     preview_object->oOpacity = 255;
     obj_scale(preview_object, info->scale);
@@ -1776,8 +1795,8 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
         super_cum_working(preview_object,0);
         preview_object->header.gfx.animInfo.animAccel = 0.0f;
     }
-    if (useTrajectory) {
-        rotate_obj_toward_trajectory_angle(preview_object,param);
+    if (useTrajectory && param1 == 0) {
+        rotate_obj_toward_trajectory_angle(preview_object,param2);
     }
     return preview_object;
 }
@@ -1794,7 +1813,7 @@ void generate_object_preview(void) {
     for(u32 i = 0; i < cmm_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
-        s32 param = cmm_object_data[i].param;
+        s32 param = cmm_object_data[i].param2;
         u8 useTrajectory = cmm_object_place_types[cmm_object_data[i].type].useTrajectory;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
@@ -1805,7 +1824,7 @@ void generate_object_preview(void) {
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
-        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject, useTrajectory);
+        spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param1, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_exclamationbox) {
@@ -1831,11 +1850,12 @@ void generate_objects_to_level(void) {
     cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
-        s32 param = cmm_object_data[i].param;
+        s32 param1 = cmm_object_data[i].param1;
+        s32 param2 = cmm_object_data[i].param2;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
-            info = &info[param];
-            param = 0;
+            info = &info[param2];
+            param2 = 0;
         }
 
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
@@ -1845,7 +1865,8 @@ void generate_objects_to_level(void) {
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
-        obj->oBehParams2ndByte = param;
+        obj->oBehParams2ndByte = param2;
+        obj->oBehParams = (param1 << 24) | (param2 << 16);
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
@@ -2009,8 +2030,8 @@ void remove_trajectory(u32 index) {
     // If their trajectory index is past the one being deleted, lower it by 1
     for (u32 i = 0; i < cmm_object_count; i++) {
         if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
-            if (cmm_object_data[i].param > index) {
-                cmm_object_data[i].param--;
+            if (cmm_object_data[i].param2 > index) {
+                cmm_object_data[i].param2--;
             }
         }
     }
@@ -2028,7 +2049,7 @@ void delete_object(s8 pos[3], s32 index) {
     remove_occupy_data(pos);
 
     if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
-        remove_trajectory(cmm_object_data[index].param);
+        remove_trajectory(cmm_object_data[index].param2);
         generate_trajectory_gfx();
     }
 
@@ -2058,15 +2079,18 @@ void place_object(s8 pos[3]) {
     cmm_object_data[cmm_object_count].z = pos[2];
     cmm_object_data[cmm_object_count].type = cmm_id_selection;
     cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
-    cmm_object_data[cmm_object_count].param = cmm_param_selection;
 
     if (cmm_object_place_types[cmm_id_selection].useTrajectory) {
         cmm_trajectory_to_edit = cmm_trajectories_used;
-        cmm_object_data[cmm_object_count].param = cmm_trajectories_used;
+        cmm_object_data[cmm_object_count].param1 = cmm_param_selection;
+        cmm_object_data[cmm_object_count].param2 = cmm_trajectories_used;
         cmm_trajectories_used++;
 
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
+        cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = -1;
         cmm_trajectory_edit_index = 0;
+    } else {
+        cmm_object_data[cmm_object_count].param2 = cmm_param_selection;
     }
 
     cmm_object_count++;
@@ -2925,10 +2949,11 @@ void sb_loop(void) {
 
             if (cmm_trajectory_edit_index == 0) {
                 // Initial placement on top of the object
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = 0;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = 0;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][1] = o->oPosX;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][2] = o->oPosY;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][1][0] = -1;
                 cmm_trajectory_edit_index++; 
             } else {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
@@ -2944,11 +2969,12 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index+1][0] = -1;
                         cmm_trajectory_edit_index++;
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                         generate_trajectory_gfx();
+                        generate_object_preview();
                     }
-                    generate_object_preview();
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                     if (cmm_trajectory_edit_index <= 1) {
                         cmm_show_error_message("Nothing to delete!");
@@ -2963,7 +2989,6 @@ void sb_loop(void) {
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
                 generate_object_preview();
@@ -2985,7 +3010,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
+                spawn_preview_object(pos, cmm_rot_selection, 0, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }
