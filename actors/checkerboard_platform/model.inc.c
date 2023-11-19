@@ -8,7 +8,7 @@ static const Lights1 checkerboard_platform_seg8_lights_0800C828 = gdSPDefLights1
 
 // 0x0800C840
 ALIGNED8 static const Texture checkerboard_platform_seg8_texture_0800C840[] = {
-#include "actors/checkerboard_platform/checkerboard_platform_side.rgba16.inc.c"
+#include "actors/checkerboard_platform/checkerboard_platform_side_custom.rgba16.inc.c"
 };
 
 // 0x0800CC40

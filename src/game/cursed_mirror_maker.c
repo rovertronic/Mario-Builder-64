@@ -174,11 +174,11 @@ void play_place_sound(u32 soundBits) {
 }
 
 void df_star(UNUSED s32 context) {
-    o->oFaceAngleYaw += 0x800;
+    o->oFaceAngleYaw = (s16)(0x800 * gGlobalTimer);
 }
 
 void df_heart(UNUSED s32 context) {
-    o->oFaceAngleYaw += 400;
+    o->oFaceAngleYaw = (s16)(400 * gGlobalTimer);
 }
 void df_corkbox(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) o->oAnimState = 1;
@@ -190,7 +190,7 @@ void df_reds_marker(s32 context) {
         vec3_set(o->header.gfx.scale, 1.5f, 1.5f, 0.75f);
         o->oPosY -= (TILE_SIZE/2 - 60);
     }
-    o->oFaceAngleYaw += 0x100;
+    o->oFaceAngleYaw = (s16)(0x100 * gGlobalTimer);
 }
 
 void df_tree(s32 context) {
@@ -216,26 +216,29 @@ void df_exbox(s32 context) {
     o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
 }
 
-void df_vexbox(s32 context) {
-    if (context != CMM_DF_CONTEXT_INIT) return;
-    switch(o->oBehParams2ndByte) {
-        case 0:
-            o->oAnimState = 0;
-            break;
-        case 1:
-            o->oAnimState = 1;
-            break;
-        case 2:
-            o->oAnimState = 2;
-            break;
-        default:
-            o->oAnimState = 3;
-            break;
-    }
-}
-
 void df_koopa(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 7);
+    if (context == CMM_DF_CONTEXT_INIT) {
+        super_cum_working(o, 7);
+        if (o->behavior == segmented_to_virtual(bhvPreviewObject) && (o->oBehParams2ndByte == 0)) {
+            // Get trajectory and iterate over it to find the end
+            s32 traj_id = o->oBehParams2ndByte;
+            if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+
+            for (s32 i = 0; i < CMM_TRAJECTORY_LENGTH; i++) {
+                if (cmm_trajectory_list[traj_id][i][0] == -1) {
+                    // Spawn flagpole
+                    struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
+                    flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
+                    super_cum_working(flagpole, 0);
+                    flagpole->oPosX = cmm_trajectory_list[traj_id][i-1][1];
+                    flagpole->oPosY = cmm_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
+                    flagpole->oPosZ = cmm_trajectory_list[traj_id][i-1][3];
+                    break;
+                }
+            }
+
+        }
+    }
 }
 void df_chuckya(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 4);
@@ -243,6 +246,10 @@ void df_chuckya(s32 context) {
 void df_kingbomb(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
 }
+void df_checkerboard_elevator(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) o->header.gfx.scale[1] = 2.0f;
+}
+
 void df_mri(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oGraphYOffset = 100.0f;
@@ -290,7 +297,6 @@ void df_coin_formation(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         Vec3i pos = { 0, 0, 0 };
         s32 spawnCoin    = TRUE;
-        s32 snapToGround = TRUE;
         u32 index = 0;
 
         while (spawnCoin && index < 8) {
@@ -300,7 +306,6 @@ void df_coin_formation(s32 context) {
                     if (index > 4) spawnCoin = FALSE;
                     break;
                 case COIN_FORMATION_BP_SHAPE_VERTICAL_LINE:
-                    snapToGround = FALSE;
                     pos[1] = index << 7;
                     if (index > 4) spawnCoin = FALSE;
                     break;
@@ -309,7 +314,6 @@ void df_coin_formation(s32 context) {
                     pos[2] = coss(index << 13) * 300.0f;
                     break;
                 case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
-                    snapToGround = FALSE;
                     pos[0] = coss(index << 13) * 200.0f;
                     pos[1] = sins(index << 13) * 200.0f + 200.0f;
                     break;
@@ -320,13 +324,8 @@ void df_coin_formation(s32 context) {
 
             }
 
-            if (o->oBehParams2ndByte & COIN_FORMATION_BP_FLYING) {
-                snapToGround = FALSE;
-            }
-
             if (spawnCoin) {
                 struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
-                newCoin->oCoinSnapToGround = snapToGround;
                 obj_set_billboard(newCoin);
             }
             index ++;
@@ -422,10 +421,14 @@ s32 object_sanity_check(void) {
         }
     }
 
-    if ((cmm_id_selection == OBJECT_TYPE_STAR) && (cmm_param_selection == 1)) {
+    if ((cmm_id_selection == OBJECT_TYPE_STAR) && ((cmm_param_selection == 1) || (cmm_param_selection == 2))) {
         for (u32 i = 0; i < cmm_object_count; i++) {
-            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param == 1)) {
-                cmm_show_error_message("Red Coin Star already placed!");
+            if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param2 == cmm_param_selection)) {
+                if (cmm_param_selection == 1) {
+                    cmm_show_error_message("Red Coin Star already placed!");
+                } else {
+                    cmm_show_error_message("Piranha Star already placed!");
+                }
                 return FALSE;
             }
         }
@@ -469,9 +472,10 @@ ALWAYS_INLINE void remove_terrain_data(s8 pos[3]) {
     cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
 }
 
-ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
-    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
-}
+//ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
+//    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
+//}
+#define get_grid_tile(pos) (&(cmm_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain;
@@ -613,9 +617,10 @@ void check_cached_tris(void) {
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
     if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
 
-    f32 dx = (cmm_trajectory_list[traj_id][0][1] - cmm_trajectory_list[traj_id][1][1]);
-    f32 dz = (cmm_trajectory_list[traj_id][0][3] - cmm_trajectory_list[traj_id][1][3]);
-    s16 angle_to_trajectory = atan2s(dz, dx) + 0x8000;
+    s16 angle_to_trajectory;
+    if (!trajectory_get_target_angle(&angle_to_trajectory, &cmm_trajectory_list[traj_id][0], &cmm_trajectory_list[traj_id][1])) {
+        return;
+    }
 
     if ( obj_has_model(obj ,MODEL_CHECKERBOARD_PLATFORM) ) {
         angle_to_trajectory += 0x4000;
@@ -666,24 +671,42 @@ void generate_trajectory_gfx(void) {
     cmm_curr_gfx = cmm_trajectory_gfx;
     cmm_curr_vtx = cmm_trajectory_vtx;
     cmm_gfx_index = 0;
-
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat_maker_MakerLineMat_layer1);
 
-    for (u32 traj = 0; traj < cmm_trajectories_used; traj++) {
-        Trajectory *curr_trajectory = cmm_trajectory_list[traj][0];
-        s32 i = 0;
+    for (s32 traj = 0; traj < cmm_trajectories_used; traj++) {
+        Trajectory (*curr_trajectory)[4] = cmm_trajectory_list[traj];
         s16 pos1[3], pos2[3];
+        s32 isLoop = FALSE;
 
-        while (curr_trajectory[i*4 + 4] == i+1) {
-            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
-            vec3_set(pos2, curr_trajectory[(i*4)+5], curr_trajectory[(i*4)+6], curr_trajectory[(i*4)+7]);
+        // Find object corresponding to this trajectory
+        for (s32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
+                if (cmm_object_data[i].param2 == traj) {
+                    // Check if it loops or not
+                    if (cmm_object_data[i].param1) {
+                        isLoop = TRUE;
+                        gDPSetPrimColor(&cmm_curr_gfx[cmm_gfx_index++], 0, 0, 0, 0, 255, 255);
+                    } else {
+                        gDPSetPrimColor(&cmm_curr_gfx[cmm_gfx_index++], 0, 0, 255, 255, 0, 255);
+                    }
+                    break;
+                }
+            }
+        }
+        s32 i;
+        for (i = 0; curr_trajectory[i+1][0] == i+1; i++) {
+            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
+            vec3_set(pos2, curr_trajectory[i+1][1], curr_trajectory[i+1][2], curr_trajectory[i+1][3]);
             draw_dotted_line(pos1, pos2);
-            i++;
         }
         if (traj == cmm_trajectory_to_edit && cmm_menu_state == CMM_MAKE_TRAJECTORY) {
-            vec3_set(pos1, curr_trajectory[(i*4)+1], curr_trajectory[(i*4)+2], curr_trajectory[(i*4)+3]);
+            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
             vec3_set(pos2, GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
             draw_dotted_line(pos1, pos2);
+        }
+        if (isLoop) {
+            vec3_set(pos1, curr_trajectory[0][1], curr_trajectory[0][2], curr_trajectory[0][3]);
+            draw_dotted_line(pos2, pos1);
         }
         display_cached_tris();
     }
@@ -1642,15 +1665,28 @@ void generate_poles(void) {
 
     // Trees
     for (u32 i = 0; i < cmm_object_count; i++) {
-        if (cmm_object_data[i].type != OBJECT_TYPE_TREE) {
-            continue;
+        if (cmm_object_data[i].type == OBJECT_TYPE_TREE) {
+            gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
+            gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
+            gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
+            gPoleArray[gNumPoles].height = 500;
+            gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param2 == 2 ? 2 : 1);
+            gNumPoles++;
+        } else if (cmm_object_data[i].type == OBJECT_TYPE_KTQ) {
+            s32 traj_id = cmm_object_data[i].param2;
+            // Scan for end of trajectory and place flag
+            for (u32 j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
+                if (cmm_trajectory_list[traj_id][j][0] == -1) {
+                    gPoleArray[gNumPoles].pos[0] = cmm_trajectory_list[traj_id][j-1][1];
+                    gPoleArray[gNumPoles].pos[1] = cmm_trajectory_list[traj_id][j-1][2] - TILE_SIZE/2;
+                    gPoleArray[gNumPoles].pos[2] = cmm_trajectory_list[traj_id][j-1][3];
+                    gPoleArray[gNumPoles].height = 700;
+                    gPoleArray[gNumPoles].poleType = 0;
+                    gNumPoles++;
+                    break;
+                }
+            }
         }
-        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
-        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
-        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
-        gPoleArray[gNumPoles].height = 500;
-        gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param == 2 ? 2 : 1);
-        gNumPoles++;
     }
 
     main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
@@ -1761,13 +1797,13 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
 }
 
-struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
+struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
     preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
     preview_object->oPosZ = GRID_TO_POS(pos[2]);
     preview_object->oFaceAngleYaw = rot*0x4000;
-    preview_object->oBehParams2ndByte = param;
+    preview_object->oBehParams2ndByte = param2;
     preview_object->oPreviewObjDisplayFunc = info->disp_func;
     preview_object->oOpacity = 255;
     obj_scale(preview_object, info->scale);
@@ -1779,8 +1815,8 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct cmm_ob
         super_cum_working(preview_object,0);
         preview_object->header.gfx.animInfo.animAccel = 0.0f;
     }
-    if (useTrajectory) {
-        rotate_obj_toward_trajectory_angle(preview_object,param);
+    if (useTrajectory && param1 == 0) {
+        rotate_obj_toward_trajectory_angle(preview_object,param2);
     }
     return preview_object;
 }
@@ -1797,7 +1833,7 @@ void generate_object_preview(void) {
     for(u32 i = 0; i < cmm_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
-        s32 param = cmm_object_data[i].param;
+        s32 param = cmm_object_data[i].param2;
         u8 useTrajectory = cmm_object_place_types[cmm_object_data[i].type].useTrajectory;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
@@ -1808,7 +1844,7 @@ void generate_object_preview(void) {
         s8 pos[3];
         vec3_set(pos, cmm_object_data[i].x, cmm_object_data[i].y, cmm_object_data[i].z);
 
-        spawn_preview_object(pos, cmm_object_data[i].rot, param, info, bhvPreviewObject, useTrajectory);
+        spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param1, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
 
         if (info == &cmm_object_type_exclamationbox) {
@@ -1834,11 +1870,12 @@ void generate_objects_to_level(void) {
     cmm_play_stars_max = 0;
     for(i=0;i<cmm_object_count;i++){
         struct cmm_object_info *info = cmm_object_place_types[cmm_object_data[i].type].info;
-        s32 param = cmm_object_data[i].param;
+        s32 param1 = cmm_object_data[i].param1;
+        s32 param2 = cmm_object_data[i].param2;
 
         if (cmm_object_place_types[cmm_object_data[i].type].multipleObjs) {
-            info = &info[param];
-            param = 0;
+            info = &info[param2];
+            param2 = 0;
         }
 
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
@@ -1848,7 +1885,8 @@ void generate_objects_to_level(void) {
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
-        obj->oBehParams2ndByte = param;
+        obj->oBehParams2ndByte = param2;
+        obj->oBehParams = (param1 << 24) | (param2 << 16);
 
         //assign star ids
         if (cmm_object_place_types[cmm_object_data[i].type].hasStar) {
@@ -2012,8 +2050,8 @@ void remove_trajectory(u32 index) {
     // If their trajectory index is past the one being deleted, lower it by 1
     for (u32 i = 0; i < cmm_object_count; i++) {
         if (cmm_object_place_types[cmm_object_data[i].type].useTrajectory) {
-            if (cmm_object_data[i].param > index) {
-                cmm_object_data[i].param--;
+            if (cmm_object_data[i].param2 > index) {
+                cmm_object_data[i].param2--;
             }
         }
     }
@@ -2031,7 +2069,7 @@ void delete_object(s8 pos[3], s32 index) {
     remove_occupy_data(pos);
 
     if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
-        remove_trajectory(cmm_object_data[index].param);
+        remove_trajectory(cmm_object_data[index].param2);
         generate_trajectory_gfx();
     }
 
@@ -2061,15 +2099,18 @@ void place_object(s8 pos[3]) {
     cmm_object_data[cmm_object_count].z = pos[2];
     cmm_object_data[cmm_object_count].type = cmm_id_selection;
     cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
-    cmm_object_data[cmm_object_count].param = cmm_param_selection;
 
     if (cmm_object_place_types[cmm_id_selection].useTrajectory) {
         cmm_trajectory_to_edit = cmm_trajectories_used;
-        cmm_object_data[cmm_object_count].param = cmm_trajectories_used;
+        cmm_object_data[cmm_object_count].param1 = cmm_param_selection;
+        cmm_object_data[cmm_object_count].param2 = cmm_trajectories_used;
         cmm_trajectories_used++;
 
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
+        cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = -1;
         cmm_trajectory_edit_index = 0;
+    } else {
+        cmm_object_data[cmm_object_count].param2 = cmm_param_selection;
     }
 
     cmm_object_count++;
@@ -2289,7 +2330,7 @@ void save_level(void) {
 
 
     f_chdir(cmm_level_dir_name);
-    u32 bytes_written;
+    UINT bytes_written;
     f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     //write header
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
@@ -2304,8 +2345,8 @@ void save_level(void) {
 }
 
 void load_level(void) {
-    s16 i;
-    s16 j;
+    s32 i;
+    s32 j;
     u8 fresh = FALSE;
 
     bzero(&cmm_save, sizeof(cmm_save));
@@ -2314,7 +2355,7 @@ void load_level(void) {
     f_chdir(cmm_level_dir_name); //chdir exits after the ifelse statement
     FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
-        u32 bytes_read;
+        UINT bytes_read;
         //file exists, load it
         f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
         //read header
@@ -2926,12 +2967,13 @@ void sb_loop(void) {
                 generate_trajectory_gfx();
             }
 
-            if (o->oTimer == 0) {
+            if (cmm_trajectory_edit_index == 0) {
                 // Initial placement on top of the object
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = cmm_trajectory_edit_index;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = 0;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][1] = o->oPosX;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][2] = o->oPosY;
+                cmm_trajectory_list[cmm_trajectory_to_edit][0][3] = o->oPosZ;
+                cmm_trajectory_list[cmm_trajectory_to_edit][1][0] = -1;
                 cmm_trajectory_edit_index++; 
             } else {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
@@ -2947,9 +2989,11 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][1] = o->oPosX;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][2] = o->oPosY;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][3] = o->oPosZ;
+                        cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index+1][0] = -1;
                         cmm_trajectory_edit_index++;
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                         generate_trajectory_gfx();
+                        generate_object_preview();
                     }
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                     if (cmm_trajectory_edit_index <= 1) {
@@ -2959,12 +3003,12 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                         play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                         generate_trajectory_gfx();
+                        generate_object_preview();
                     }
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                 cmm_menu_state = CMM_MAKE_MAIN;
                 generate_trajectory_gfx();
                 generate_object_preview();
@@ -2986,7 +3030,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
+                spawn_preview_object(pos, cmm_rot_selection, 0, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }

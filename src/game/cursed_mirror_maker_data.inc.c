@@ -982,7 +982,7 @@ u8 cmm_toolbox_vanilla[45] = {
 struct cmm_object_info cmm_object_type_star[] = {
     {bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
     {bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-    {bhvPlantStar, TILE_SIZE/2, MODEL_STAR, FALSE, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+    {bhvPlantStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_goomba[] = {
     {bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_ALERT},
@@ -1051,7 +1051,7 @@ struct cmm_object_info cmm_object_type_bosses[] = {
 };
 
 struct cmm_object_info cmm_object_type_platform = {
-    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
+    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_bowlingball = {
     bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,
@@ -1151,7 +1151,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
     { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
-    {&cmm_object_type_platform, TRUE, FALSE, FALSE, 0},
+    {&cmm_object_type_platform, TRUE, FALSE, FALSE, 2},
     {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
     { cmm_object_type_timed_challenge, FALSE, FALSE, TRUE, 2},
@@ -1280,7 +1280,7 @@ char *txt_bp_boss[] = {
 char *txt_star_objects[] = {
     "Normal",
     "Red Coins",
-    "Big Piranha Star",
+    "Huge Piranhas",
 };
 
 Gfx *btn_star_objects[] = {
@@ -1351,12 +1351,12 @@ Gfx *btn_haunted_enemies[] = {
 
 char *txt_ground_enemies[] = {
     "Goomba",
-    "Big Goomba",
+    "Huge Goomba",
     "Tiny Goomba",
-    "Sleeping Piranha Plant",
-    "Big Fire Piranha Plant",
-    "Tiny Fire Piranha Plant",
-    "Scared Koopa",
+    "Piranha Plant",
+    "Huge Piranha Plant",
+    "Tiny Piranha Plant",
+    "Koopa",
 };
 Gfx *btn_ground_enemies[] = {
     mat_b_btn_goomba,
@@ -1398,6 +1398,11 @@ char *txt_coin_formation[] = {
     "Arrow",
 };
 
+char *txt_platforms[] = {
+    "Activated",
+    "Looping",
+};
+
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture            //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
     {mat_b_btn_save,         0, 0,                   CMM_PM_NONE,  "Save",               NULL       }, //CMM_BUTTON_SAVE
@@ -1405,7 +1410,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_check,        0, OBJECT_TYPE_SPAWN_PM,CMM_PM_OBJ,   "Test",               NULL       }, //CMM_BUTTON_PLAY
     {mat_b_btn_tile,         0, TILE_TYPE_BLOCK,     CMM_PM_TILE,  "Terrain",            NULL       }, //CMM_BUTTON_GRASS
     {mat_b_btn_slope,        0, TILE_TYPE_SLOPE,     CMM_PM_TILE,  "Slope",              NULL       }, //CMM_BUTTON_SLOPE
-    {mat_b_btn_troll,        0, TILE_TYPE_TROLL,     CMM_PM_TILE,  "Troll Tile",         NULL       }, //CMM_BUTTON_TROLL
+    {mat_b_btn_troll,        0, TILE_TYPE_TROLL,     CMM_PM_TILE,  "Intangible Tile",         NULL       }, //CMM_BUTTON_TROLL
     {btn_star_objects,       1, OBJECT_TYPE_STAR,    CMM_PM_OBJ,   "Power Star",         txt_star_objects}, //CMM_BUTTON_STAR
     {btn_ground_enemies,     1, OBJECT_TYPE_GOOMBA,  CMM_PM_OBJ,   "Ground Enemies",     txt_ground_enemies}, //CMM_BUTTON_GROUND
     {mat_b_btn_coin,         0, OBJECT_TYPE_COIN,    CMM_PM_OBJ,   "Yellow Coin",        NULL       }, //CMM_BUTTON_COIN
@@ -1428,10 +1433,10 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_water,        0, 0,                   CMM_PM_WATER, "Water",              NULL       }, //CMM_BUTTON_WATER
     {mat_b_btn_fence,        0, TILE_TYPE_FENCE,     CMM_PM_TILE,  "Fence",              NULL       }, //CMM_BUTTON_FENCE
     {btn_mech_bosses,        1, OBJECT_TYPE_BOSS,    CMM_PM_OBJ,   "Bosses",             txt_bp_boss}, //CMM_BUTTON_BOSS
-    {mat_b_btn_checker,      0, OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    NULL       }, //CMM_BUTTON_MPLAT
+    {mat_b_btn_checker,      0, OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    txt_platforms}, //CMM_BUTTON_MPLAT
     {mat_b_btn_bball,        0, OBJECT_TYPE_BBALL,   CMM_PM_OBJ,   "Bowling Ball",       NULL       }, //CMM_BUTTON_BBALL
     {mat_b_btn_kuppa,        0, OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL       }, //CMM_BUTTON_KTQ
-    {mat_b_btn_sideslope,    0, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Sideways Slope",     NULL       }, //CMM_BUTTON_SSLOPE
+    {mat_b_btn_sideslope,    0, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Vertical Slope",     NULL       }, //CMM_BUTTON_SSLOPE
     {mat_b_btn_slabtile,     0, TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL       }, //CMM_BUTTON_SLAB
     {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects}, //CMM_BUTTON_TC
     {mat_b_btn_heart,        0, OBJECT_TYPE_HEART,   CMM_PM_OBJ,   "Recovery Heart",     NULL       }, //CMM_BUTTON_HEART
@@ -1442,7 +1447,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
     {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
     {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Sky Enemies",        txt_flying_enemies}, //CMM_BUTTON_FLYING
-    {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Haunted Enemies",    txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
+    {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Spooky Enemies",    txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
     {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,  CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies}, //CMM_BUTTON_SNOWEN
     {btn_obstacles,          1, OBJECT_TYPE_OBBY,    CMM_PM_OBJ,   "Obstacles",          txt_obstacles}, //CMM_BUTTON_OBBY
 };
