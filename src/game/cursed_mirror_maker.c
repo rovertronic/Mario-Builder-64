@@ -174,11 +174,11 @@ void play_place_sound(u32 soundBits) {
 }
 
 void df_star(UNUSED s32 context) {
-    o->oFaceAngleYaw += 0x800;
+    o->oFaceAngleYaw = (s16)(0x800 * gGlobalTimer);
 }
 
 void df_heart(UNUSED s32 context) {
-    o->oFaceAngleYaw += 400;
+    o->oFaceAngleYaw = (s16)(400 * gGlobalTimer);
 }
 void df_corkbox(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) o->oAnimState = 1;
@@ -190,7 +190,7 @@ void df_reds_marker(s32 context) {
         vec3_set(o->header.gfx.scale, 1.5f, 1.5f, 0.75f);
         o->oPosY -= (TILE_SIZE/2 - 60);
     }
-    o->oFaceAngleYaw += 0x100;
+    o->oFaceAngleYaw = (s16)(0x100 * gGlobalTimer);
 }
 
 void df_tree(s32 context) {
@@ -2310,7 +2310,7 @@ void save_level(void) {
 
 
     f_chdir(cmm_level_dir_name);
-    u32 bytes_written;
+    UINT bytes_written;
     f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     //write header
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
@@ -2325,8 +2325,8 @@ void save_level(void) {
 }
 
 void load_level(void) {
-    s16 i;
-    s16 j;
+    s32 i;
+    s32 j;
     u8 fresh = FALSE;
 
     bzero(&cmm_save, sizeof(cmm_save));
@@ -2335,7 +2335,7 @@ void load_level(void) {
     f_chdir(cmm_level_dir_name); //chdir exits after the ifelse statement
     FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
-        u32 bytes_read;
+        UINT bytes_read;
         //file exists, load it
         f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
         //read header

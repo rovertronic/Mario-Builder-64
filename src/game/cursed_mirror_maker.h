@@ -279,9 +279,10 @@ struct cmm_theme {
 //compressed trajectories
 struct cmm_comptraj {
     s8 t;
-    u16 x:6, y:5, z:6;
+    u8 x;
+    u8 y;
+    u8 z;
 };
-
 
 /*
 IMPORTANT!
@@ -299,13 +300,16 @@ struct cmm_level_save_header {
     char file_header[10];
     u8 version;
     char author[31];
-    u16 piktcher[64][64];
 
     u8 option[20];
     u16 tile_count;
     u16 object_count;
-    
+
+    char pad[30];
+
     struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
+
+    u16 piktcher[64][64];
 };
 
 struct cmm_level_uncompressed_save {
