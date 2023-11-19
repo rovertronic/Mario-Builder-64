@@ -1,0 +1,17 @@
+extern const GeoLayout loopingp_geo[];
+extern Lights1 loopingp_Moveplat2_lights;
+extern Lights1 loopingp_Moveplat1_lights;
+extern u8 loopingp_moveplat2_ci8[];
+extern u8 loopingp_moveplat2_pal_rgba16[];
+extern u8 loopingp_moveplat1_ci8[];
+extern u8 loopingp_moveplat1_pal_rgba16[];
+extern Vtx loopingp_blaster_001_mesh_layer_1_vtx_0[16];
+extern Gfx loopingp_blaster_001_mesh_layer_1_tri_0[];
+extern Vtx loopingp_blaster_001_mesh_layer_1_vtx_1[8];
+extern Gfx loopingp_blaster_001_mesh_layer_1_tri_1[];
+extern Gfx mat_loopingp_Moveplat2[];
+extern Gfx mat_revert_loopingp_Moveplat2[];
+extern Gfx mat_loopingp_Moveplat1[];
+extern Gfx mat_revert_loopingp_Moveplat1[];
+extern Gfx loopingp_blaster_001_mesh_layer_1[];
+extern Gfx loopingp_material_revert_render_settings[];

@@ -215,6 +215,9 @@ static void platform_on_track_act_init(void) {
     if (o->oBehParams >> 24 == 1) {
         o->oForwardVel = 15.0f;
         o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
+        cur_obj_set_model(MODEL_LOOPINGP);
+        o->header.gfx.scale[1] = 1.0f;
+        o->collisionData = segmented_to_virtual(loopingp_collision);
     } else {
         o->oAction = PLATFORM_ON_TRACK_ACT_WAIT_FOR_MARIO;
     }

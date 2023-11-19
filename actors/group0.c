@@ -260,3 +260,5 @@
 
 #include "levels/ssl/grindel/collision.inc.c"
 #include "levels/ssl/grindel/model.inc.c"
+#include "loopingp/model.inc.c"
+#include "loopingp/collision.inc.c"

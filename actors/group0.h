@@ -926,4 +926,8 @@ extern const GeoLayout ssl_geo_000734[];
 extern const Gfx ssl_seg7_dl_070220A8[];
 extern const Gfx ssl_seg7_dl_070221E8[];
 
+#include "loopingp/geo_header.h"
+
+#include "loopingp/collision_header.h"
+
 #endif

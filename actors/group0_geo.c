@@ -84,3 +84,4 @@
 #include "levels/ccm/crab/geo.inc.c"
 #include "levels/lll/rotating_block_fire_bars/geo.inc.c"
 #include "levels/ssl/grindel/geo.inc.c"
+#include "loopingp/geo.inc.c"
