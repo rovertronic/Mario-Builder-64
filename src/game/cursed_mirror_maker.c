@@ -217,29 +217,32 @@ void df_exbox(s32 context) {
 }
 
 void df_koopa(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        super_cum_working(o, 7);
-        if (o->behavior == segmented_to_virtual(bhvPreviewObject) && (o->oBehParams2ndByte == 0)) {
-            // Get trajectory and iterate over it to find the end
-            s32 traj_id = o->oBehParams2ndByte;
-            if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 7);
+}
+void df_ktq(s32 context) {
+    df_koopa(context);
+    if (context != CMM_DF_CONTEXT_INIT) return;
 
-            for (s32 i = 0; i < CMM_TRAJECTORY_LENGTH; i++) {
-                if (cmm_trajectory_list[traj_id][i][0] == -1) {
-                    // Spawn flagpole
-                    struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
-                    flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
-                    super_cum_working(flagpole, 0);
-                    flagpole->oPosX = cmm_trajectory_list[traj_id][i-1][1];
-                    flagpole->oPosY = cmm_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
-                    flagpole->oPosZ = cmm_trajectory_list[traj_id][i-1][3];
-                    break;
-                }
+    if (o->behavior == segmented_to_virtual(bhvPreviewObject)) {
+        // Get trajectory and iterate over it to find the end
+        s32 traj_id = o->oBehParams2ndByte;
+        if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
+
+        for (s32 i = 0; i < CMM_TRAJECTORY_LENGTH; i++) {
+            if (cmm_trajectory_list[traj_id][i][0] == -1) {
+                // Spawn flagpole
+                struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
+                flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
+                super_cum_working(flagpole, 0);
+                flagpole->oPosX = cmm_trajectory_list[traj_id][i-1][1];
+                flagpole->oPosY = cmm_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
+                flagpole->oPosZ = cmm_trajectory_list[traj_id][i-1][3];
+                break;
             }
-
         }
     }
 }
+
 void df_chuckya(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 4);
 }
