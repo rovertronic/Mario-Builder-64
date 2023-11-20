@@ -250,7 +250,15 @@ void df_kingbomb(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
 }
 void df_checkerboard_elevator(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) o->header.gfx.scale[1] = 2.0f;
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->header.gfx.scale[1] = 2.0f;
+        
+        if ((o->oBehParams >> 24) == 1) {
+            cur_obj_set_model(MODEL_LOOPINGP);
+            o->header.gfx.scale[1] = 1.0f;
+        }
+
+    }
 }
 
 void df_mri(s32 context) {
@@ -1807,6 +1815,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, 
     preview_object->oPosZ = GRID_TO_POS(pos[2]);
     preview_object->oFaceAngleYaw = rot*0x4000;
     preview_object->oBehParams2ndByte = param2;
+    preview_object->oBehParams = (param1 << 24) | (param2 << 16);
     preview_object->oPreviewObjDisplayFunc = info->disp_func;
     preview_object->oOpacity = 255;
     obj_scale(preview_object, info->scale);

@@ -177,6 +177,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CRABLET,           crab_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_FIREBAR, lll_geo_000B38),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_GRINDEL ,ssl_geo_000734),
+    LOAD_MODEL_FROM_GEO(MODEL_LOOPINGP, loopingp_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
