@@ -251,13 +251,9 @@ void df_kingbomb(s32 context) {
 }
 void df_checkerboard_elevator(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
-        o->header.gfx.scale[1] = 2.0f;
-        
         if ((o->oBehParams >> 24) == 1) {
             cur_obj_set_model(MODEL_LOOPINGP);
-            o->header.gfx.scale[1] = 1.0f;
         }
-
     }
 }
 
@@ -686,6 +682,7 @@ void generate_trajectory_gfx(void) {
 
     for (s32 traj = 0; traj < cmm_trajectories_used; traj++) {
         Trajectory (*curr_trajectory)[4] = cmm_trajectory_list[traj];
+        if (curr_trajectory[0][0] == -1) continue;
         s16 pos1[3], pos2[3];
         s32 isLoop = FALSE;
 
@@ -1874,6 +1871,8 @@ void generate_object_preview(void) {
     if (cmm_lopt_coinstar > length) {
         cmm_lopt_coinstar = length;
     }
+
+    generate_trajectory_gfx();
 }
 
 void generate_objects_to_level(void) {
@@ -2079,10 +2078,11 @@ void remove_trajectory(u32 index) {
 
 void delete_object(s8 pos[3], s32 index) {
     remove_occupy_data(pos);
+    s32 refreshTrajectories = FALSE;
 
     if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
         remove_trajectory(cmm_object_data[index].param2);
-        generate_trajectory_gfx();
+        refreshTrajectories = TRUE;
     }
 
     cmm_object_count--;
@@ -2549,8 +2549,8 @@ void sb_init(void) {
         case CMM_MODE_MAKE:
             cmm_menu_state = CMM_MAKE_MAIN;
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-            generate_object_preview();
             generate_terrain_gfx();
+            generate_object_preview();
 
             //init visual tile bounds
             for (u8 i=0; i<6; i++) {
@@ -3004,7 +3004,6 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index+1][0] = -1;
                         cmm_trajectory_edit_index++;
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
-                        generate_trajectory_gfx();
                         generate_object_preview();
                     }
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -3014,16 +3013,18 @@ void sb_loop(void) {
                         cmm_trajectory_edit_index--;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                         play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
-                        generate_trajectory_gfx();
                         generate_object_preview();
                     }
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                cmm_menu_state = CMM_MAKE_MAIN;
-                generate_trajectory_gfx();
-                generate_object_preview();
+                if (cmm_trajectory_edit_index == 1) {
+                    cmm_show_error_message("Trajectory is too short!");
+                } else {
+                    cmm_menu_state = CMM_MAKE_MAIN;
+                    generate_object_preview();
+                }
             }
 
             update_boundary_wall();
@@ -3042,7 +3043,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, 0, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
+                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }
