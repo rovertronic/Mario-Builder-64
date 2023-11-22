@@ -1542,6 +1542,7 @@ char *cmm_music_romhack_string_table[] = {
     "Sunken Ship (Super Mario RPG)",
 
     "Dry Dry Desert (Paper Mario 64)",
+    "Forever Forest (Paper Mario 64)",
     "Riddle Tower (Paper Mario: TTYD)",
     "Rogueport Sewers (Paper Mario: TTYD)",
     "X-Naut Fortress (Paper Mario: TTYD)",
@@ -1553,20 +1554,25 @@ char *cmm_music_romhack_string_table[] = {
 
     "Rainbow Castle (Mario Party)",
     "Behind Yoshi Village (Partners in Time)",
+    "Thwomp Caverns (Partners in Time)",
     "Bumpsy Plains (Bowser's Inside Story)",
 
     "Overworld (Yoshi's Island)",
+    "Crystal Caves (Yoshi's Island)",
     "Title (Yoshi's Story)",
 
     "Lost Woods (Ocarina of Time)",
     "Gerudo Valley (Ocarina of Time)",
     "Stone Tower Temple (Majora's Mask)",
+    "Mountain Village (Majora's Mask)",
     "Outset Island (Wind Waker)",
     "Lake Hylia (Twilight Princess)",
+    "Twilight Realm (Twilight Princess)",
     "Skyloft (Skyward Sword)",
 
     "Frantic Factory (Donkey Kong 64)",
     "Hideout Helm (Donkey Kong 64)",
+    "Creepy Castle (Donkey Kong 64)",
     "Gloomy Galleon (Donkey Kong 64)",
     "In a Snow-Bound Land (DKC 2)",
 
@@ -1574,13 +1580,13 @@ char *cmm_music_romhack_string_table[] = {
     "Freezeezy Peak (Banjo-Kazooie)",
     "Gobi's Valley (Banjo-Kazooie)",
 
+    "Factory Inspection (Kirby 64)",
     "Green Garden (Bomberman 64)",
     "Black Fortress (Bomberman 64)",
     "Windy Hill (Sonic Adventure)",
     "Tropical Resort (Sonic Colors)",
     "Sky Tower (Pokemon Mystery Dungeon)",
     "Band Land (Rayman)",
-    "Field of Hopes and Dreams (Deltarune)",
 };
 
 char *cmm_music_retro_string_table[] = {
@@ -1646,6 +1652,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
 
     SEQ_PM_DRY_DESERT,
+    SEQ_PM_FOREVER_FOREST,
     SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
     SEQ_TTYD_ROGUEPORT_SEWERS,
     SEQ_TTYD_XNAUT_FORTRESS,
@@ -1657,19 +1664,24 @@ u8 seq_musicmenu_array[] = {
 
     SEQ_MP_RAINBOW_CASTLE,
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
+    SEQ_PIT_THWOMP_CAVERNS,
     SEQ_BIS_BUMPSY_PLAINS,
     SEQ_YI_OVERWORLD,
+    SEQ_YI_CRYSTAL_CAVES,
     SEQ_YS_TITLE,                     // 0x51
 
     SEQ_OOT_LOST_WOODS,
     SEQ_OOT_GERUDO_VALLEY,            // 0x52
     SEQ_STONE_TOWER_TEMPLE,
+    SEQ_MM_SNOWHEAD,
     SEQ_WW_OUTSET_ISLAND,
     SEQ_TP_LAKE_HYLIA,                // 0x53
+    SEQ_TP_TWILIGHT_REALM,
     SEQ_SS_SKYLOFT,
 
     SEQ_DK64_FRANTIC_FACTORY,
     SEQ_DK64_HIDEOUT_HELM,
+    SEQ_DK_CREEPY_CASTLE,
     SEQ_DK64_GLOOMY_GALLEON,
     SEQ_DKC2_SNOWBOUND_LAND,
 
@@ -1677,13 +1689,13 @@ u8 seq_musicmenu_array[] = {
     SEQ_BK_FREEZEEZY_PEAKS,
     SEQ_BK_GOBI_VALLEY,
 
+    SEQ_K64_FACTORY_INSPECTION,
     SEQ_BM_GREEN_GARDEN,
     SEQ_BM_BLACK_FORTRESS,
     SEQ_SA_WINDY_HILL,
     SEQ_SC_TROPICAL_RESORT,           // 0x49
     SEQ_PKMN_SKY_TOWER,
     SEQ_RAYMAN_BAND_LAND,
-    SEQ_FIELDOFHOPESANDDREAMS,
 
     SEQ_SMB1_OVERWORLD,
     SEQ_SMB_BOWSER_REMIX,             // 0x4B

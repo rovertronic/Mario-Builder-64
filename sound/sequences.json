@@ -111,7 +111,13 @@
 	"6A_mp_rainbow_castle": ["25"],
 	"6B_ss_skyloft": ["25"],
 	"6C_smw_castle": ["25"],
-	"6D_fieldofhopesanddreams": ["25"],
+	"6D_yi_crystal_caves": ["25"],
 	"6E_bk_freezeezy_peak": ["1A"],
-	"6F_mkds_waluigi_pinball": ["18"]
+	"6F_mkds_waluigi_pinball": ["18"],
+	"70_k64_factory_inspection": ["25"],
+	"71_dk_creepy_castle": ["25"],
+	"72_pm_forever_forest": ["25"],
+	"73_pit_thwomp_caverns": ["25"],
+	"74_tp_twilight_realm": ["25"],
+	"75_mm_snowhead": ["25"]
 }
