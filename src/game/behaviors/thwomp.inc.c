@@ -5,7 +5,7 @@ void grindel_thwomp_act_on_ground(void) {
     o->oPosY = o->oHomeY2;
 
     if (o->oTimer == 0) {
-        o->oExtraVariable1 = random_float() * 10.0f + 20.0f;
+        o->oExtraVariable1 = 5.f + 20.0f;
     }
     if (o->oTimer > o->oExtraVariable1) {
         o->oAction = GRINDEL_THWOMP_ACT_RISING;
@@ -37,7 +37,7 @@ void grindel_thwomp_act_land(void) {
 
 void grindel_thwomp_act_floating(void) {
     if (o->oTimer == 0) {
-        o->oExtraVariable1 = random_float() * 30.0f + 10.0f;
+        o->oExtraVariable1 = 15.f + 10.0f;
     }
     if (o->oTimer > o->oExtraVariable1) {
         o->oAction = GRINDEL_THWOMP_ACT_FALLING;
