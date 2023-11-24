@@ -2685,7 +2685,7 @@ sound_ref .sound_general_wall_explosion
 sound_ref .sound_general_loud_bubble
 sound_ref .sound_general_coin
 sound_ref .sound_general_coin_water
-sound_ref .sound_general_coin_water
+sound_ref .sound_general_coin_multi
 sound_ref .sound_general_coin_water
 sound_ref .sound_general_coin_water
 sound_ref .sound_general_short_star
@@ -2715,7 +2715,7 @@ sound_ref .sound_general_platform
 sound_ref .sound_general_bobomb_explosion
 sound_ref .sound_general_bowser_bomb_explosion
 sound_ref .sound_general_coin_spurt
-sound_ref .sound_general_explosion6
+sound_ref .sound_general_box_preview
 sound_ref .chan_13D4
 sound_ref .sound_general_coin
 sound_ref .sound_general_boat_tilt1
@@ -2742,7 +2742,7 @@ sound_ref .sound_general_grindel_spindel_roll
 sound_ref .sound_general_explosion7
 sound_ref .sound_general_shake_coffin
 sound_ref .sound_general_pyramid_top_spin
-sound_ref .sound_general_pyramid_top_explosion
+sound_ref .sound_general_quiet_explosion
 sound_ref .sound_general_race_gun_shot
 sound_ref .sound_general_star_door_open
 sound_ref .sound_general_star_door_close
@@ -3026,6 +3026,23 @@ layer_note1 37, 0x7, 85
 layer_note1 30, 0x5, 40
 layer_note1 42, 0x37, 85
 layer_end
+
+.sound_general_coin_multi:
+chan_setbank 9
+chan_setinstr 3
+chan_setenvelope .envelope_3358
+chan_setvibratoextent 3
+chan_setvibratorate 60
+chan_setval 25
+chan_call .set_reverb
+chan_setlayer 0, .layer_11E4
+chan_setval 6
+chan_call .delay
+chan_setlayer 0, .layer_11E4
+chan_setval 6
+chan_call .delay
+chan_setlayer 0, .layer_11E4
+chan_end
 
 .sound_general_coin_water:
 chan_setbank 9
@@ -3574,6 +3591,19 @@ layer_note1 38, 0x10, 110
 layer_note1 27, 0x64, 110
 layer_end
 
+.sound_general_box_preview:
+chan_setbank 5
+chan_setinstr 7
+chan_setlayer 0, .layer_box_preview
+chan_end
+
+.layer_box_preview:
+layer_somethingon
+layer_portamento 0x85, 39, 255
+layer_note1 36, 0x14, 90
+layer_note1 38, 0x20, 80
+layer_end
+
 .sound_general_door_insert_key:
 chan_setbank 4
 chan_setinstr 9
@@ -3726,32 +3756,25 @@ layer_note1 36, 0xb, 105
 layer_note1 39, 0x31, 116
 layer_end
 
-.sound_general_pyramid_top_explosion:
+.sound_general_quiet_explosion:
 chan_setbank 4
 chan_setinstr 15
-chan_setval 30
-chan_call .set_reverb
-chan_setenvelope .envelope_338C
-chan_setlayer 0, .layer_16A1
-chan_setlayer 1, .layer_16AA
-chan_setlayer 2, .layer_16A6
+chan_setenvelope .envelope_33EC
+chan_setlayer 0, .layer_quiet1
+chan_setlayer 1, .layer_quiet2
 chan_end
 
-.layer_16A1:
-layer_note1 24, 0x12c, 127
+.layer_quiet2:
+layer_note1 15, 0x7f, 70
 layer_end
 
-.layer_16A6:
-layer_delay 0x4
-layer_transpose -12
-
-.layer_16AA:
-layer_note1 46, 0xe, 116
-layer_note1 44, 0xb, 121
-layer_note1 48, 0x12, 101
-layer_note1 41, 0xf, 109
-layer_note1 43, 0xfa, 113
+.layer_quiet1:
+layer_note1 55, 0x6, 65
+layer_note1 43, 0xc, 65
+layer_note1 34, 0x7f, 70
 layer_end
+
+
 
 .sound_general_race_gun_shot:
 chan_setbank 5
@@ -4951,14 +4974,14 @@ sound_ref .sound_obj_baby_penguin_yell
 sound_ref .sound_obj_king_bobomb_jump
 sound_ref .sound_obj_king_whomp_death
 sound_ref .sound_obj_boo_laugh_long
-sound_ref .sound_obj_swoop
+sound_ref .sound_obj_goomba_preview
 sound_ref .sound_obj_eel
 sound_ref .sound_obj_eyerok_show_eye
 sound_ref .sound_obj_mr_blizzard_alert
 sound_ref .sound_obj_snufit_shoot
 sound_ref .sound_obj_skeeter_walk
 sound_ref .sound_obj_walking_water
-sound_ref .sound_general_bird_chirp2
+sound_ref .sound_heaveho_preview
 sound_ref .sound_obj_bird_chirp3
 sound_ref .sound_obj_bird_chirp1
 sound_ref .sound_air_castle_outdoors_ambient
@@ -4998,7 +5021,7 @@ sound_ref .sound_obj_enemy_defeat_shrink
 sound_ref .sound_peach_bake_a_cake
 sound_ref .sound_obj_bowser_defeated
 sound_ref .sound_obj_bowser_spinning
-sound_ref .sound_obj_klepto2
+sound_ref .sound_obj_chuckya_preview
 sound_ref .sound_obj_king_bobomb_talk
 sound_ref .sound_obj_baby_penguin_walk
 sound_ref .sound_obj_bowser_walk
@@ -5649,6 +5672,18 @@ layer_note1 3, 0xf, 85
 layer_transpose 0
 layer_note1 51, 0x1c, 85
 layer_delay 0x19
+layer_end
+
+.sound_obj_goomba_preview:
+chan_setbank 9
+chan_setinstr 3
+chan_setlayer 0, .layer_goomba_preview
+chan_end
+
+.layer_goomba_preview:
+layer_somethingon
+layer_portamento 0x85, 15, 255
+layer_note1 51, 0x1c, 85
 layer_end
 
 .sound_obj_stomped:
@@ -6489,6 +6524,33 @@ layer_end
 layer_transpose 2
 layer_jump .layer_252C
 
+.sound_obj_chuckya_preview:
+chan_setbank 5
+chan_setinstr 5
+chan_setenvelope .envelope_32C4
+chan_setlayer 0, .layer_preview
+chan_end
+
+.layer_preview:
+layer_portamento 0x81, 56, 255
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_note1 44, 0x3, 85
+layer_note1 20, 0x2, 85
+layer_end
+
 .sound_obj_wiggler_talk:
 chan_setbank 7
 chan_setinstr 10
@@ -6730,6 +6792,27 @@ chan_end
 layer_note1 56, 0x4, 62
 layer_note1 32, 0x3, 62
 layer_jump .layer_2A33
+layer_end
+
+.sound_heaveho_preview:
+chan_setbank 5
+chan_setinstr 5
+chan_setlayer 0, .layer_heaveho_preview
+chan_end
+
+.layer_heaveho_preview:
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
+layer_note1 56, 0x4, 62
+layer_note1 32, 0x3, 62
 layer_end
 
 .chan_2A3D:

@@ -173,6 +173,17 @@ void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
 }
 
+void df_follow_parent(s32 context) {
+    Vec3f tmp;
+    s16 ang[3];
+    vec3_set(ang, 0, o->parentObj->oFaceAngleYaw, 0);
+    Mat4 mtx;
+    mtxf_rotate_zxy_and_translate(mtx, &o->oParentRelativePosVec, ang);
+    linear_mtxf_mul_vec3f(mtx, tmp, &o->oParentRelativePosVec);
+    vec3f_sum(&o->oPosVec, &o->parentObj->oPosVec, tmp);
+    o->oFaceAngleYaw = o->parentObj->oFaceAngleYaw;// + o->oAngleVelYaw;
+}
+
 void df_star(UNUSED s32 context) {
     o->oFaceAngleYaw = (s16)(0x800 * gGlobalTimer);
 }
@@ -262,30 +273,78 @@ void df_mri(s32 context) {
         o->oGraphYOffset = 100.0f;
         struct Object * iris = spawn_object(o,MODEL_MAKER_MRI_2, VIRTUAL_TO_PHYSICAL(o->behavior));
 
-        obj_copy_pos_and_angle(iris, o);
-        iris->oPosX += sins(o->oFaceAngleYaw)*100.0f;
-        iris->oPosZ += coss(o->oFaceAngleYaw)*100.0f;
-        iris->oPosY += 100.0f;
+        iris->oParentRelativePosZ = 100.0f;
+        iris->oParentRelativePosX = 0.0f;
+        iris->oParentRelativePosY = 100.0f;
+        iris->oPreviewObjDisplayFunc = (void *)df_follow_parent;
     }
+
+    o->oFaceAngleYaw = (s16)(256 * gGlobalTimer);
 }
 void df_booser(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
+void df_spinner_flame(s32 context) {
+    df_follow_parent(context);
+    if (gGlobalTimer % 2) o->oAnimState++;
+}
+
+void df_fire_spinner(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oAngleVelYaw = o->oFaceAngleYaw;
+        for (s32 y = 0; y < 2; y++) {
+            s16 yaw = (y * 0x8000);
+            f32 xOffset = sins(yaw) * 200.0f;
+            f32 zOffset = coss(yaw) * 200.0f;
+            s32 amt = o->oBehParams2ndByte + 2; // Amount of flames to spawn
+
+            // Use the vanilla default value if the bparam is 0
+            //if (amt == 0) {
+            //    amt = 4;
+            //}
+
+            for (s32 i = 0; i < amt; i++) {
+                struct Object *flameObj = spawn_object(o, MODEL_RED_FLAME, VIRTUAL_TO_PHYSICAL(o->behavior));
+                flameObj->oParentRelativePosX = xOffset;
+                flameObj->oParentRelativePosY = 100.0f;
+                flameObj->oParentRelativePosZ = zOffset;
+                obj_scale(flameObj, 6.0f);
+                xOffset += sins(yaw) * 150.0f;
+                zOffset += coss(yaw) * 150.0f;
+                obj_set_billboard(flameObj);
+                flameObj->oPreviewObjDisplayFunc = (void *)df_spinner_flame;
+            }
+        }
+    }
+    o->oFaceAngleYaw = (s16)(-0x100 * gGlobalTimer) + o->oAngleVelYaw;
+}
+
 extern s8 sCloudPartHeights[];
+s32 obj_y_vel_approach(f32 target, f32 delta);
 void df_lakitu(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
+        o->oHomeY = o->oPosY;
+        o->oVelY = -4.f;
         for (int i = 0; i < 5; i++) {
             struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
             obj_scale(cloudPart,2.0f);
             cloudPart->oOpacity = 255;
             obj_set_billboard(cloudPart);
             obj_scale(cloudPart,2.0f);
-            cloudPart->oPosY += sCloudPartHeights[i];
-            cloudPart->oPosX += sins(0x3333*i)*40.0f;
-            cloudPart->oPosZ += coss(0x3333*i)*40.0f;
+            cloudPart->oParentRelativePosY = sCloudPartHeights[i];
+            cloudPart->oParentRelativePosX = sins(0x3333*i)*40.0f;
+            cloudPart->oParentRelativePosZ = coss(0x3333*i)*40.0f;
+            cloudPart->oPreviewObjDisplayFunc = (void *)df_follow_parent;
         }
     }
+
+    if (o->oPosY < o->oHomeY) {
+        obj_y_vel_approach(4.0f, 0.4f);
+    } else {
+        obj_y_vel_approach(-4.0f, 0.4f);
+    }
+    o->oPosY += o->oVelY;
 }
 
 void df_snufit(s32 context) {
@@ -322,7 +381,7 @@ void df_coin_formation(s32 context) {
                     break;
                 case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
                     pos[0] = coss(index << 13) * 200.0f;
-                    pos[1] = sins(index << 13) * 200.0f + 200.0f;
+                    pos[1] = sins(index << 13) * 200.0f + 256.0f;
                     break;
                 case COIN_FORMATION_BP_SHAPE_ARROW:
                     pos[0] = sCoinArrowPositions[index][0];
@@ -2649,9 +2708,6 @@ u32 main_cursor_logic(u32 joystick) {
     }
 
     //camera zooming
-    if (gPlayer1Controller->buttonPressed & U_JPAD) {
-        cmm_camera_zoom_index--;
-    }
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         cmm_camera_zoom_index++;
     }
@@ -2838,14 +2894,14 @@ void sb_loop(void) {
                 }
             }
 
+            if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                cmm_upsidedown_tile ^= 1;
+            }
+
             if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-                if (gPlayer1Controller->buttonDown & B_BUTTON) {
-                    cmm_upsidedown_tile ^= 1;
-                } else {
-                    cmm_rot_selection++;
-                    cmm_rot_selection%=4;
-                    updatePreviewObj = TRUE;
-                }
+                cmm_rot_selection++;
+                cmm_rot_selection%=4;
+                updatePreviewObj = TRUE;
             }
 
             if (cmm_place_mode == CMM_PM_OBJ) {

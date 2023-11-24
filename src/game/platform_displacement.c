@@ -191,7 +191,7 @@ static void apply_mario_inertia(void) {
 	}
 
 	// On the first frame of leaving the ground, boost Mario's y velocity
-	if (sInertiaFirstFrame) {
+	if (sInertiaFirstFrame && sMarioAmountDisplaced[1] > 0.f) {
 		gMarioState->vel[1] += sMarioAmountDisplaced[1];
 	}
 
@@ -217,11 +217,6 @@ static void apply_mario_inertia(void) {
 void apply_mario_platform_displacement(void) {
     struct Object *platform;
 
-	gDoInertia = TRUE;
-	if (cmm_lopt_game == CMM_GAME_VANILLA) {
-		gDoInertia = FALSE;
-	}
-
     platform = gMarioPlatform;
     if (!(gTimeStopState & TIME_STOP_ACTIVE) && gMarioObject != NULL) {
 		if (platform != NULL) {
@@ -230,7 +225,7 @@ void apply_mario_platform_displacement(void) {
 				sShouldApplyInertia = TRUE;
 				sInertiaFirstFrame = TRUE;
 				}
-		} else if (sShouldApplyInertia && gDoInertia) {
+		} else if (sShouldApplyInertia) {
 			apply_mario_inertia();
 			sInertiaFirstFrame = FALSE;
 		}

@@ -269,7 +269,7 @@ static s32 obj_forward_vel_approach(f32 target, f32 delta) {
     return approach_f32_ptr(&o->oForwardVel, target, delta);
 }
 
-static s32 obj_y_vel_approach(f32 target, f32 delta) {
+s32 obj_y_vel_approach(f32 target, f32 delta) {
     return approach_f32_ptr(&o->oVelY, target, delta);
 }
 
