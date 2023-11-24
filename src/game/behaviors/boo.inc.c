@@ -29,7 +29,7 @@ static void boo_stop(void) {
 
 void bhv_boo_init(void) {
     o->oBooInitialMoveYaw = o->oMoveAngleYaw;
-    o->oDrawingDistance = 10000.f;
+    o->oDrawingDistance = CMM_DRAWDIST_LOW;
 }
 
 static s32 boo_should_be_stopped(void) {
@@ -53,7 +53,7 @@ static s32 boo_should_be_stopped(void) {
 }
 
 static s32 boo_should_be_active(void) {
-    f32 activationRadius = 10000.f;
+    f32 activationRadius = o->oDrawingDistance;
 
     if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo) || cur_obj_has_behavior(bhvMerryGoRoundBoo)) {
         if (gMarioOnMerryGoRound == TRUE) {
@@ -480,7 +480,7 @@ void bhv_boo_loop(void) {
         o->parentObj->oMerryGoRoundBooManagerNumBoosKilled++;
     }
 
-    if (o->oDistanceToMario < 10000.0f) {
+    if (o->oDistanceToMario < o->oDrawingDistance) {
         o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         }
         else
