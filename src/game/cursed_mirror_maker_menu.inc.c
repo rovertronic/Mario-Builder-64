@@ -542,13 +542,31 @@ void draw_cmm_menu(void) {
     }
 
     if (cmm_menu_state != CMM_MAKE_TRAJECTORY) {
-        print_maker_string_ascii(15,45,cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str,FALSE);
+        s32 currentX = 15;
+        print_maker_string_ascii(currentX,45,cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str,FALSE);
+        currentX += get_string_width_ascii(cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str) + 10;
+
+        char *yellowStr = NULL;
         if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].param_strings) {
-            print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str),45,
-            cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].param_strings[cmm_param_selection],TRUE);
+            yellowStr = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].param_strings[cmm_param_selection];
         } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_terrains[cmm_id_selection]) {
-            print_maker_string_ascii(30+get_string_width_ascii(cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str),45,
-            TILE_MATDEF(cmm_mat_selection).name,TRUE);
+            yellowStr = TILE_MATDEF(cmm_mat_selection).name;
+
+            if (get_flipped_tile(cmm_id_selection) != -1) {
+                if (cmm_upsidedown_tile) {
+                    print_maker_string_ascii(currentX,45,"(|)",FALSE);
+                } else {
+                    print_maker_string_ascii(currentX,45,"(^)",FALSE);
+                }
+                currentX += 25;
+            }
+        }
+        if (yellowStr) {
+            currentX += 15;
+            print_maker_string_ascii(currentX,45,"<",TRUE);
+            print_maker_string_ascii(currentX + 20,45,yellowStr,TRUE);
+            currentX += get_string_width_ascii(yellowStr) + 30;
+            print_maker_string_ascii(currentX,45,">",TRUE);
         }
     }
 }

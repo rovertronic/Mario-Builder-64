@@ -2539,6 +2539,25 @@ u8 cmm_joystick;
 extern s16 cmm_menu_start_timer;
 extern s16 cmm_menu_end_timer;
 
+
+s32 get_flipped_tile(s32 tileID) {
+    switch (tileID) {
+        case TILE_TYPE_SLOPE:
+        case TILE_TYPE_DSLOPE:
+            return TILE_TYPE_DSLOPE;
+        case TILE_TYPE_CORNER:
+        case TILE_TYPE_DCORNER:
+            return TILE_TYPE_DCORNER;
+        case TILE_TYPE_ICORNER:
+        case TILE_TYPE_DICORNER:
+            return TILE_TYPE_DICORNER;
+        case TILE_TYPE_SLAB:
+        case TILE_TYPE_DSLAB:
+            return TILE_TYPE_DSLAB;
+    }
+    return -1;
+}
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     cmm_joystick = joystick_direction();
@@ -2581,25 +2600,11 @@ void sb_loop(void) {
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 
             if (cmm_upsidedown_tile) {
-                switch (cmm_id_selection) {
-                    case TILE_TYPE_SLOPE:
-                    case TILE_TYPE_DSLOPE:
-                        cmm_id_selection = TILE_TYPE_DSLOPE;
-                        break;
-                    case TILE_TYPE_CORNER:
-                    case TILE_TYPE_DCORNER:
-                        cmm_id_selection = TILE_TYPE_DCORNER;
-                        break;
-                    case TILE_TYPE_ICORNER:
-                    case TILE_TYPE_DICORNER:
-                        cmm_id_selection = TILE_TYPE_DICORNER;
-                        break;
-                    case TILE_TYPE_SLAB:
-                    case TILE_TYPE_DSLAB:
-                        cmm_id_selection = TILE_TYPE_DSLAB;
-                        break;
-                    default:
-                        cmm_upsidedown_tile = FALSE;
+                s32 flippedTile = get_flipped_tile(cmm_id_selection);
+                if (flippedTile != -1) {
+                    cmm_id_selection = flippedTile;
+                } else {
+                    cmm_upsidedown_tile = FALSE;
                 }
             }
 
