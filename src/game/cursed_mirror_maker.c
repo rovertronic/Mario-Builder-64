@@ -2631,6 +2631,7 @@ void sb_loop(void) {
                         cmm_menu_start_timer = 0;
                         cmm_menu_end_timer = -1;
                         cmm_menu_index = 0;
+                        animate_list_reset();
                     break;
                     case 6://test
                         cmm_target_mode = CMM_MODE_PLAY;
@@ -2657,6 +2658,7 @@ void sb_loop(void) {
                 cmm_menu_end_timer = -1;
                 cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
+                animate_list_reset();
                 if (cmm_toolbar_index > 5) {
                     cmm_toolbar_index = 5;
                 }
@@ -2758,13 +2760,12 @@ void sb_loop(void) {
                     cmm_param_selection = 0;
 
                     cmm_toolbox_transition_btn_render = TRUE;
-                    cmm_toolbox_transition_btn_progress = 0.0f;
-                    cmm_toolbox_transition_btn_ox = 34+((cmm_toolbox_index%9)*32);
-                    cmm_toolbox_transition_btn_oy = 220-((cmm_toolbox_index/9)*32);
+                    // current pos
                     cmm_toolbox_transition_btn_x = 34+((cmm_toolbox_index%9)*32);
                     cmm_toolbox_transition_btn_y = 220-((cmm_toolbox_index/9)*32);
+                    // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
-                    cmm_toolbox_transition_btn_ty = 28.0f;
+                    cmm_toolbox_transition_btn_ty = 25.0f;
                     cmm_toolbox_transition_btn_old_gfx = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].material;
                     if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multipleBtns) {
                         cmm_toolbox_transition_btn_old_gfx = ((Gfx **)cmm_toolbox_transition_btn_old_gfx)[0];

@@ -951,11 +951,8 @@ f32 cmm_toolbar_y_anim[9] = {
 u8 cmm_toolbox_transition_btn_render = FALSE;
 f32 cmm_toolbox_transition_btn_x;
 f32 cmm_toolbox_transition_btn_y;
-f32 cmm_toolbox_transition_btn_ox;
-f32 cmm_toolbox_transition_btn_oy;
 f32 cmm_toolbox_transition_btn_tx;
 f32 cmm_toolbox_transition_btn_ty;
-f32 cmm_toolbox_transition_btn_progress;
 Gfx * cmm_toolbox_transition_btn_gfx;
 Gfx * cmm_toolbox_transition_btn_old_gfx;
 
@@ -1515,10 +1512,12 @@ char *cmm_music_vanilla_string_table[] = {
     "Bob-omb Battlefield",
     "Slider",
     "Dire, Dire Docks",
+    "Dire, Dire Docks (Underwater)",
     "Lethal Lava Land",
     "Cool, Cool Mountain",
     "Big Boo's Haunt",
     "Hazy Maze Cave",
+    "Hazy Maze Cave (Haze)",
     "Koopa's Road",
     "Koopa's Theme",
     "Ultimate Koopa",
@@ -1628,9 +1627,11 @@ u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_GRASS,
     SEQ_LEVEL_SLIDE,
     SEQ_LEVEL_WATER,
+    SEQ_LEVEL_WATER,
     SEQ_LEVEL_HOT,
     SEQ_LEVEL_SNOW,
     SEQ_LEVEL_SPOOKY,
+    SEQ_LEVEL_UNDERGROUND,
     SEQ_LEVEL_UNDERGROUND,
     SEQ_LEVEL_KOOPA_ROAD_2,
     SEQ_LEVEL_BOSS_KOOPA,
@@ -1894,11 +1895,11 @@ struct cmm_template {
 };
 
 struct cmm_template cmm_templates[] = {
-    {{0, 13}, 0, 0, 0, 1,     2, FALSE},   // Grassy - BoB, Floating Farm
-    {{3, 14}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Jurassic
-    {{3, 12},  1, 2, 2, 2,     3, TRUE},    // Lava -   LLL, Red-Hot
-    {{2, 10}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Cosmic Castle
-    {{4, 10}, 2, 5, 0, 6,     2, FALSE},   // Snowy -  CCM, Cosmic Castle
+    {{0, 15}, 0, 0, 0, 1,     2, FALSE},   // Grassy - BoB, Floating Farm
+    {{4, 46}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Dry Dry Desert
+    {{4, 14}, 1, 2, 2, 2,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
+    {{2, 28}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Sky and Sea
+    {{5, 38}, 2, 5, 0, 6,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {

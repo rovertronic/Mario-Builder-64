@@ -1659,6 +1659,7 @@ static void func_8031F96C(u8 player) {
 /**
  * Called from threads: thread4_sound, thread5_game_loop (EU only)
  */
+extern u8 cmm_lopt_seq;
 void process_level_music_dynamics(void) {
     u16 tempBits;
     u8 condIndex;
@@ -1677,91 +1678,15 @@ void process_level_music_dynamics(void) {
         sBackgroundMusicForDynamics = sCurrentBackgroundMusicSeqId;
     }
 
-    if (sBackgroundMusicForDynamics != sLevelDynamics[gCurrLevelNum][0]) {
+    u8 musicDynIndex = 0;
+    if (sBackgroundMusicForDynamics == SEQ_LEVEL_WATER) {
+        musicDynIndex = 0;
+        if ((cmm_lopt_seq == 3) || (gMarioState->action & ACT_FLAG_SWIMMING)) musicDynIndex = 2;
+    } else if (sBackgroundMusicForDynamics == SEQ_LEVEL_UNDERGROUND) {
+        musicDynIndex = 3;
+        if (cmm_lopt_seq == 8) musicDynIndex = 4; // hardcoded
+    } else {
         return;
-    }
-
-    u32 conditionBits = sLevelDynamics[gCurrLevelNum][1] & 0xFF00;
-    u8  musicDynIndex = (u8) sLevelDynamics[gCurrLevelNum][1] & 0xFF;
-    i = 2;
-    while (conditionBits & 0xff00) {
-        j = 0;
-        condIndex = 0;
-        bit = 0x8000;
-        while (j < 8) {
-            if (conditionBits & bit) {
-                conditionValues[condIndex] = sLevelDynamics[gCurrLevelNum][i++];
-                conditionTypes[condIndex] = j;
-                condIndex++;
-            }
-
-            j++;
-            bit = bit >> 1;
-        }
-
-        for (j = 0; j < condIndex; j++) {
-            switch (conditionTypes[j]) {
-                case MARIO_X_GE: {
-                    if (((s16) gMarioStates[0].pos[0]) < conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_Y_GE: {
-                    if (((s16) gMarioStates[0].pos[1]) < conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_Z_GE: {
-                    if (((s16) gMarioStates[0].pos[2]) < conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_X_LT: {
-                    if (((s16) gMarioStates[0].pos[0]) >= conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_Y_LT: {
-                    if (((s16) gMarioStates[0].pos[1]) >= conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_Z_LT: {
-                    if (((s16) gMarioStates[0].pos[2]) >= conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_IS_IN_AREA: {
-                    if (gCurrAreaIndex != conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-                case MARIO_IS_IN_ROOM: {
-                    if (gMarioCurrentRoom != conditionValues[j]) {
-                        j = condIndex + 1;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (j == condIndex) {
-            // The area matches. Break out of the loop.
-            tempBits = 0;
-        } else {
-            tempBits      = sLevelDynamics[gCurrLevelNum][i] & 0xff00;
-            musicDynIndex = sLevelDynamics[gCurrLevelNum][i] & 0xff;
-            i++;
-        }
-
-        conditionBits = tempBits;
     }
 
     if (sCurrentMusicDynamic != musicDynIndex) {
@@ -1775,7 +1700,7 @@ void process_level_music_dynamics(void) {
         }
 
         for (i = 0; i < CHANNELS_MAX; i++) {
-            conditionBits = tempBits;
+            u32 conditionBits = tempBits;
             tempBits = 0;
             if (sMusicDynamics[musicDynIndex].bits1 & conditionBits) {
                 fade_channel_volume_scale(SEQ_PLAYER_LEVEL, i, sMusicDynamics[musicDynIndex].volScale1,

@@ -528,6 +528,8 @@
 #define	G_CC_FADE                   SHADE, 0, ENVIRONMENT, 0, SHADE, 0, ENVIRONMENT, 0
 #define	G_CC_FADEA                  TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0
 
+#define G_CC_ENVIRONMENT            0, 0, 0, ENVIRONMENT, 0, 0, 0, ENVIRONMENT
+
 #define	G_CC_DECALRGB               0, 0, 0, TEXEL0, 0, 0, 0, SHADE
 #define	G_CC_DECALRGBA              0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0
 #define	G_CC_DECALFADE              0, 0, 0, TEXEL0, 0, 0, 0, ENVIRONMENT
