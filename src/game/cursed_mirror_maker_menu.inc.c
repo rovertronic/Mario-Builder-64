@@ -132,6 +132,7 @@ void full_menu_reset() {
     cmm_menu_start_timer = -1;
     cmm_menu_end_timer = -1;
     cmm_menu_going_back = 1;
+    cmm_curr_settings_menu = 0;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -342,8 +343,6 @@ extern u8 cmm_mm_state; //externing a variable in the same file that it's define
 void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
         load_level_files_from_sd_card();
-        cmm_menu_state = CMM_MAKE_MAIN;
-        cmm_curr_settings_menu = 0;
         cmm_mm_state = MM_FILES;
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
