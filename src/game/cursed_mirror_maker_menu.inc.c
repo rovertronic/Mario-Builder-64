@@ -583,7 +583,6 @@ u8 cmm_mm_keyboard_input_index = 0;
 #define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
 s8 cmm_mm_keyboard_index = 0;
 
-char cmm_mm_comingsoon[] = "Coming soon...";
 char cmm_mm_warning[] = \
 "WARNING!\n\
 SD card emulation not detected.\n\
@@ -605,16 +604,16 @@ char *cmm_mm_btns_lim[] = {
     "Credits",
 };
 
+/**
 char *cmm_mm_play_btns[] = {
     "Play Levels",
     cmm_mm_comingsoon, //"Play Hacks"
 };
+**/
 
 char *cmm_mm_make_btns[] = {
     "New Level",
     "Load Level",
-    cmm_mm_comingsoon, //"New Hack"
-    cmm_mm_comingsoon, //"Load Hack"
 };
 
 char *cmm_mm_help_btns[] = {
@@ -681,13 +680,7 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
 
     for (s32 i=0; i<ct; i++) {
         render_cmm_mm_button(cmm_menu_button_vels[i][0] + 160, 150-(i*30), cmm_menu_index == i);
-
-        s32 grey_add = 0;
-        if (strlist[i] == cmm_mm_comingsoon) {
-            grey_add = 2;
-        }
-
-        print_maker_string_ascii_centered(cmm_menu_button_vels[i][0] + 160,142-(i*30),strlist[i],(cmm_menu_index == i)+grey_add);
+        print_maker_string_ascii_centered(cmm_menu_button_vels[i][0] + 160,143-(i*30),strlist[i],cmm_menu_index == i);
     }
 }
 
@@ -952,7 +945,10 @@ s32 cmm_main_menu(void) {
                         cmm_mm_state = MM_MAKE;
                         break;
                     case 1:
-                        cmm_mm_state = MM_PLAY;
+                        cmm_mm_state = MM_FILES;
+                        cmm_mm_files_prev_menu = MM_MAIN;
+                        cmm_mm_page = 0;
+                        cmm_level_action = CMM_LA_PLAYING;
                         break;
                     case 2:
                         cmm_mm_state = MM_HELP_MODE;
@@ -985,6 +981,7 @@ s32 cmm_main_menu(void) {
                 cmm_menu_start_timer = 0;
             }
             break;
+            /**
         case MM_PLAY:
             cmm_menu_index = (cmm_menu_index+2)%2;
             cmm_mm_anim_in(2);
@@ -1011,11 +1008,12 @@ s32 cmm_main_menu(void) {
                 }
             }
             break;
+            **/
         case MM_MAKE:
-            cmm_menu_index = (cmm_menu_index+4)%4;
-            cmm_mm_anim_in(4);
-            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",4);
-            if (cmm_mm_generic_anim_out(4, TRUE)) {
+            cmm_menu_index = (cmm_menu_index+2)%2;
+            cmm_mm_anim_in(2);
+            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",2);
+            if (cmm_mm_generic_anim_out(2, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -1033,9 +1031,6 @@ s32 cmm_main_menu(void) {
                             cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
-                            break;
-                        case 2://make new hack
-                        case 3://load hack
                             break;
                     }
                     cmm_menu_index = 0;
@@ -1260,7 +1255,7 @@ s32 cmm_main_menu(void) {
                     cmm_menu_start_timer = 0;
                     if (cmm_menu_going_back == -1) {
                         cmm_mm_state = cmm_mm_files_prev_menu;
-                        cmm_menu_index = (cmm_mm_state == MM_PLAY ? 0 : 1);
+                        cmm_menu_index = 1;
                         break;
                     }
                 }
@@ -1288,7 +1283,7 @@ s32 cmm_main_menu(void) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_files_prev_menu;
-                    cmm_menu_index = (cmm_mm_state == MM_PLAY ? 0 : 1);
+                    cmm_menu_index = 1;
                     break;
                 }
             }
