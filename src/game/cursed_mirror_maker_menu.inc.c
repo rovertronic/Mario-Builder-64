@@ -219,8 +219,8 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
     
     print_maker_string_ascii_centered(x + xOffset, y, str, cmm_menu_index == i);
     if (leftX > x - width * 2) {
-        u8 prevIndex = (*(btn[i].value) - 1 + btn[i].size) % btn[i].size;
-        char *prevStr = GET_BUTTON_STR(btn[i], prevIndex);;
+        u8 prevIndex = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
+        char *prevStr = GET_BUTTON_STR(btn[i], prevIndex);
         print_maker_string_ascii_centered(leftX, y, prevStr, cmm_menu_index == i);
     } else if (rightX < x + width * 2) {
         u8 nextIndex = (*(btn[i].value) + 1) % btn[i].size;
@@ -249,7 +249,7 @@ char *cmm_get_floor_name(s32 index) {
     if (index == 0) {
         return "None";
     }
-    return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1]).name;
+    return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[index - 1]).name;
 }
 char cmm_temp_name_buffer[12];
 char *cmm_get_coinstar_str(s32 index) {
@@ -643,9 +643,6 @@ u8 *cmm_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
 void cmm_mm_shade_screen(void) {
-
-    // This is a bit weird. It reuses the dialog text box (width 130, height -80),
-    // so scale to at least fit the screen.
     u8 alpha = 110;
     if (cmm_menu_start_timer != -1) {
         u8 time = MIN(cmm_menu_start_timer, 8);
@@ -654,11 +651,10 @@ void cmm_mm_shade_screen(void) {
         u8 time = MIN(cmm_menu_end_timer, 8);
         alpha = 110 - ((time * 110) / 8);
     }
-    create_dl_translation_matrix(MENU_MTX_PUSH, -100.0f, SCREEN_HEIGHT, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.6f, 3.4f, 1.0f);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 void render_cmm_mm_button(f32 x, f32 y, u32 highlighted) {
@@ -1189,15 +1185,15 @@ s32 cmm_main_menu(void) {
 
             cmm_mm_shade_screen();
 
-            f32 inputX = CLAMP(30 - cmm_menu_button_vels[1][0], -160, 320);
+            f32 inputX = CLAMP(30 + cmm_menu_button_vels[1][0], -160, 320);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 100);
             gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
             gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
             gDPFillRectangle(gDisplayListHead++, inputX, (240-185)-16, inputX + 150, (240-185)+3);
 
 
-            print_maker_string_ascii(35 - cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
-            print_maker_string_ascii(35 - cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,FALSE);
+            print_maker_string_ascii(35 + cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
+            print_maker_string_ascii(35 + cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,FALSE);
             print_maker_string_ascii(35,45 - cmm_menu_title_vels[0],cmm_mm_txt_keyboard[cmm_mm_keyboard_exit_mode],FALSE);
 
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {

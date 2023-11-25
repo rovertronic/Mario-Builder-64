@@ -116,7 +116,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 64;
+u8 cmm_uv_scaling = 1;
 s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
@@ -606,7 +606,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
+            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -643,7 +643,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
+            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -1051,25 +1051,28 @@ void render_water(s8 pos[3]) {
 void render_floor(s16 y) {
     s16 vertex = 128 * cmm_grid_size;
     s16 uv = 256 * cmm_grid_size;
-    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, vertex, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,      0, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 5,       0, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    s16 posUv = uv + cmm_uv_offset;
+    s16 negUv = -uv + cmm_uv_offset;
+    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, vertex, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,      0, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 10,      0, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 5,       0, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 12,       0, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 10,      0, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+
+    make_vertex(cmm_curr_vtx, 12,       0, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
     gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
 
@@ -1130,8 +1133,8 @@ Gfx *get_sidetex(s32 mat) {
 
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1256,7 +1259,7 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 128;
+    cmm_uv_scaling = 2;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
@@ -1266,7 +1269,7 @@ void generate_terrain_gfx(void) {
         render_bars(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 64;
+    cmm_uv_scaling = 1;
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1444,9 +1447,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 128;
+                    cmm_uv_scaling = 2;
                     render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 64;
+                    cmm_uv_scaling = 1;
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -2284,14 +2287,12 @@ void load_level(void) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
-            cmm_object_type_preview_mario.model_id = MODEL_MARIO;
             cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
             cmm_settings_menus[0] = draw_cmm_settings_general;
             break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            //cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
             cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
             cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
             break;
@@ -2623,33 +2624,36 @@ void sb_loop(void) {
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 switch(cmm_toolbar_index) {
-                    case 8://save data
-                        if (mount_success == FR_OK) {
-                            cmm_do_save = TRUE;
-                            cmm_ui_do_render = FALSE;
-                        } else {
-                            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                    case 8: // options
+                        switch (cmm_param_selection) {
+                            case 1: // settings menu
+                                cmm_menu_state = CMM_MAKE_SETTINGS;
+                                cmm_menu_start_timer = 0;
+                                cmm_menu_end_timer = -1;
+                                cmm_menu_index = 0;
+                                animate_list_reset();
+                                break;
+                            case 0: // test mode
+                                cmm_target_mode = CMM_MODE_PLAY;
+                                reset_play_state();
+                                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                                sSourceWarpNodeId = 0x0A;
+                                break;
+                            case 2: // save
+                                if (mount_success == FR_OK) {
+                                    cmm_do_save = TRUE;
+                                    cmm_ui_do_render = FALSE;
+                                } else {
+                                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                                }
+                                break;
                         }
-                    break;
-                    case 7://settings
-                        cmm_menu_state = CMM_MAKE_SETTINGS;
-                        cmm_menu_start_timer = 0;
-                        cmm_menu_end_timer = -1;
-                        cmm_menu_index = 0;
-                        animate_list_reset();
-                    break;
-                    case 6://test
-                        cmm_target_mode = CMM_MODE_PLAY;
-                        reset_play_state();
-                        level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                        sSourceWarpNodeId = 0x0A;
-                    break;
-                    default://everything else places
+                        break;
+                    default: //everything else places
                         place_thing_action();
-                    break; 
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_toolbar_index < 6) {
+                if (cmm_toolbar_index != 8) {
                     place_thing_action();
                 }
             }
@@ -2664,8 +2668,8 @@ void sb_loop(void) {
                 cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
                 animate_list_reset();
-                if (cmm_toolbar_index > 5) {
-                    cmm_toolbar_index = 5;
+                if (cmm_toolbar_index == 8) {
+                    cmm_toolbar_index = 7;
                 }
             }
 
@@ -2754,7 +2758,7 @@ void sb_loop(void) {
                 cmm_toolbar_index++;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
-            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
+            cmm_toolbar_index = (cmm_toolbar_index+8)%8;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 
