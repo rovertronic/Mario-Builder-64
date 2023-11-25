@@ -3,7 +3,7 @@ extern u8 gDialogCharWidths[256];
 u8 cmm_ascii_lut[] = {
     0,0,0,0,0,0,0,0, // 0 - 7
     0,0,0xFE,0,0,0,0,0, // 8 - 15
-    0,0,0,0,0,0,0,0, // 16 - 23
+    0x54,0x55,0x57,0x58,0,0,0,0, // 16 - 23
     0,0,0,0,0,0,0,0, // 24 - 31
     0x9E, /* */ 0xF2, /*!*/ 0x00, /*"*/ 0x00, /*#*/
     0x00, /*$*/ 0x00, /*%*/ 0x00, /*&*/ 0x3E, /*'*/
@@ -628,7 +628,11 @@ u8 cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
 u8 cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
 
 u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
-u8 cmm_mm_txt_keyboard[] = {TXT_MM_KEYBOARD};
+
+char *cmm_mm_txt_keyboard[]= {
+    "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
+    "\x10: Press Key         \x11: Backspace\n\x12: Shift              START: Confirm",
+};
 
 u8 cmm_mm_state = MM_INIT;
 u8 cmm_mm_main_state = MM_MAIN;
@@ -646,7 +650,7 @@ void cmm_mm_shade_screen(void) {
     if (cmm_menu_start_timer != -1) {
         u8 time = MIN(cmm_menu_start_timer, 8);
         alpha = (time * 110) / 8;
-    } else if (cmm_menu_end_timer != -1 && !(cmm_mm_state == MM_KEYBOARD && cmm_menu_going_back == 1)) {
+    } else if (cmm_menu_end_timer != -1 && !(cmm_mm_state == MM_KEYBOARD && cmm_mm_keyboard_exit_mode == KXM_NEW_LEVEL && cmm_menu_going_back == 1)) {
         u8 time = MIN(cmm_menu_end_timer, 8);
         alpha = 110 - ((time * 110) / 8);
     }
@@ -795,7 +799,7 @@ s32 cmm_mm_no_files_anim_out(void) {
 }
 
 s32 cmm_mm_keyboard_anim_out(void) {
-    return cmm_mm_anim_out(4, TRUE, cmm_mm_keyboard_anim_check, 0.f);
+    return cmm_mm_anim_out(6, TRUE, cmm_mm_keyboard_anim_check, 0.f);
 }
 
 u32 cmm_mm_make_anim_out(void) {
@@ -1131,7 +1135,7 @@ s32 cmm_main_menu(void) {
             print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_credits_page,FALSE);
             break;
         case MM_KEYBOARD:
-            cmm_mm_anim_in(4);
+            cmm_mm_anim_in(6);
             switch(cmm_joystick) {
                 case 1:
                     cmm_mm_keyboard_index--;
@@ -1179,19 +1183,28 @@ s32 cmm_main_menu(void) {
                 if ((cmm_menu_going_back == 1)&&(cmm_mm_keyboard_exit_mode == KXM_AUTHOR)) {
                     cmm_mm_state = MM_MAIN;
                     cmm_menu_index = 0;
+                    cmm_menu_start_timer = 0;
                 }
             }
 
             cmm_mm_shade_screen();
-            print_maker_string_ascii(35,200+8,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
-            print_maker_string_ascii(35,200-8,cmm_mm_keyboard_input,FALSE);
-            print_maker_string(35 - cmm_menu_title_vels[0],55,cmm_mm_txt_keyboard,FALSE);
+
+            f32 inputX = CLAMP(30 - cmm_menu_button_vels[1][0], -160, 320);
+            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 100);
+            gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+            gDPFillRectangle(gDisplayListHead++, inputX, (240-185)-16, inputX + 150, (240-185)+3);
+
+
+            print_maker_string_ascii(35 - cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
+            print_maker_string_ascii(35 - cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,FALSE);
+            print_maker_string_ascii(35,45 - cmm_menu_title_vels[0],cmm_mm_txt_keyboard[cmm_mm_keyboard_exit_mode],FALSE);
 
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;
                 u16 y = i/10;
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25)+cmm_menu_button_vels[y][0], 170-(y*25), 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, 40+(x*25)+cmm_menu_button_vels[y+2][0], 160-(y*25), 0);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 if (cmm_mm_keyboard_index == i) {
                     gDPSetEnvColor(gDisplayListHead++, 100, 100, 100, 150);
@@ -1207,7 +1220,7 @@ s32 cmm_main_menu(void) {
                     single_char[0] = cmm_mm_keyboard[i];
                 }
                 single_char[1] = '\0';
-                print_maker_string_ascii(37+(x*25)+cmm_menu_button_vels[y][0],162-(y*25),single_char,(cmm_mm_keyboard_index == i));
+                print_maker_string_ascii(37+(x*25)+cmm_menu_button_vels[y+2][0],152-(y*25),single_char,(cmm_mm_keyboard_index == i));
             }
 
             if (cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {

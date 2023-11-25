@@ -9,7 +9,6 @@
 #define TXT_RECORDING _("Building path in progress!\n\n[A]: Place waypoint\n[B]: Undo\nSTART: Confirm")
 
 #define TXT_MM_PAGE _("Page: 0/0")
-#define TXT_MM_KEYBOARD _("[A]: Press Key - [B]: Backspace\n[Z]: Shift - [R]: Exit\nSTART: Confirm")
 
 #define TXT_MM_HELP_PAGE_1 _("This hack supports the following flashcarts for the N64:\n-64Drive\n-EverDrive-64\n-EverDrive-64 X series\n-SummerCart64\n\nHow to play this hack on emulator:\n1) Download PL at https://parallel-launcher.ca/\n2) Set up a virtual SD-Card\n3) Format: FAT 16, Size: 64 MiB")
 
