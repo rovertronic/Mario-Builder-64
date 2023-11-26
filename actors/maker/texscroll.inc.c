@@ -59,6 +59,12 @@ void scroll_sts_mat_maker_MakerGreenWater() {
 	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
+void scroll_sts_mat_maker_MakerBurningIce() {
+	Gfx *mat = segmented_to_virtual(mat_maker_MakerBurningIce);
+	shift_s(mat, 12, PACK_TILESIZE(0, 1));
+	shift_t(mat, 12, PACK_TILESIZE(0, 1));
+};
+
 void scroll_actor_dl_maker() {
 	scroll_sts_mat_maker_MakerLava();
 	scroll_sts_mat_maker_MakerWater();
@@ -68,4 +74,5 @@ void scroll_actor_dl_maker() {
 	scroll_sts_mat_maker_MakerRetroWater();
 	scroll_sts_mat_maker_MakerServerAcid();
 	scroll_sts_mat_maker_MakerGreenWater();
+	scroll_sts_mat_maker_MakerBurningIce();
 }

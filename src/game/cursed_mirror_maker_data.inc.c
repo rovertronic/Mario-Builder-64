@@ -489,6 +489,16 @@ enum cmm_materials {
     CMM_MAT_JRB_WALL,
     CMM_MAT_JRB_TILETOP,
     CMM_MAT_JRB_TILESIDE,
+
+    CMM_MAT_SNOW_ROCK,
+    CMM_MAT_ICE,
+    CMM_MAT_SNOW_ROOF,
+    CMM_MAT_SNOW_BRICKS,
+    CMM_MAT_BURNING_ICE,
+    CMM_MAT_CRYSTAL,
+    CMM_MAT_SNOW_BRICK_TILES,
+    CMM_MAT_SNOW_TILES,
+    CMM_MAT_SNOW_TILE_SIDE,
     // Retro
     CMM_MAT_RETRO_GROUND,
     CMM_MAT_RETRO_BRICKS,
@@ -602,6 +612,16 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBWall,         0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_WALL
     {mat_maker_MakerJRBTileTop,      0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_TILETOP
     {mat_maker_MakerJRBTileSide,     0, SURFACE_DEFAULT},      // CMM_MAT_JRB_TILESIDE
+
+    {mat_maker_MakerSnowRock,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_ROCK
+    {mat_maker_MakerIce,             MAT_TRANSPARENT, SURFACE_VERY_SLIPPERY}, // CMM_MAT_ICE
+    {mat_maker_MakerSnowRoof,        0, SURFACE_VERY_SLIPPERY}, // CMM_MAT_SNOW_ROOF
+    {mat_maker_MakerSnowBricks,      0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_BRICKS
+    {mat_maker_MakerBurningIce,      0, SURFACE_BURNING}, // CMM_MAT_BURNING_ICE
+    {mat_maker_MakerCrystal,         MAT_TRANSPARENT, SURFACE_DEFAULT}, // CMM_MAT_CRYSTAL
+    {mat_maker_MakerSnowBrickTiles,  0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_BRICK_TILES
+    {mat_maker_MakerSnowTiles,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_TILES
+    {mat_maker_MakerSnowTileSide,    0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_TILE_SIDE
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_GROUND
     {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_BRICKS
@@ -625,6 +645,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},
     {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},
     {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim_layer1},
+    {CMM_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim_layer1},
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1},
 };
 
@@ -636,6 +657,7 @@ s8 cmm_terrain_floors_castle[] =     {0, 8, 9, 3}; // tiling, lava, quicksand, c
 s8 cmm_terrain_floors_virtuaplex[] = {0, 8, 9, 1, 2, 3, 7}; // block, lava, void, tiling, grass, blue tiling, snowy block
 s8 cmm_terrain_floors_bbh[] =        {3, 8, 0, 6}; // metal, lava, stone, wood
 s8 cmm_terrain_floors_jrb[] =        {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
+s8 cmm_terrain_floors_snow[] =       {0, 8, 9, 1, 3}; // snow, hazard ice, lava, bricks, tiles
 s8 cmm_terrain_floors_retro[] =      {0, 8, 4, 7, 9}; // ground, lava, blue ground, white bricks, underwater tile
 
 enum cmm_fences {
@@ -647,6 +669,7 @@ enum cmm_fences {
     CMM_FENCE_VIRTUAPLEX,
     CMM_FENCE_BBH,
     CMM_FENCE_JRB,
+    CMM_FENCE_SNOW,
     CMM_FENCE_RETRO,
 };
 
@@ -659,6 +682,7 @@ Gfx *cmm_fence_texs[] = {
     mat_maker_MakerVPFence_layer1,
     mat_maker_MakerBBHFence_layer1,
     mat_maker_MakerJRBFence_layer1,
+    mat_maker_MakerSnowFence_layer1,
     mat_maker_MakerRetroFence_layer1,
 };
 
@@ -799,19 +823,19 @@ struct cmm_theme cmm_theme_table[] = {
     // SNOW
     {
         {
-            {CMM_MAT_VP_BLOCK,      0,                    ""},
-            {CMM_MAT_VP_TILES,      0,                    ""},
-            {CMM_MAT_DIRT,          CMM_MAT_GRASS,        ""},
-            {CMM_MAT_VP_TILES,      CMM_MAT_VP_BLUETILES, ""},
-            {CMM_MAT_VP_RUSTYBLOCK, 0,                    ""},
-            {CMM_MAT_VP_SCREEN,     0,                    ""},
-            {CMM_MAT_VP_CAUTION,    0,                    ""},
-            {CMM_MAT_VP_BLOCK,      CMM_MAT_SNOW,         ""},
-            {CMM_MAT_LAVA,          0,                    ""},
-            {CMM_MAT_VP_VOID,       0,                    ""},
+            {CMM_MAT_SNOWDIRT,       CMM_MAT_SNOW,             "Snow"},
+            {CMM_MAT_SNOW_BRICKS,    CMM_MAT_SNOW_BRICK_TILES, "Bricks"},
+            {CMM_MAT_SNOW_ROCK,      0,                        "Rock"},
+            {CMM_MAT_SNOW_TILE_SIDE, CMM_MAT_SNOW_TILES,       "Tiling"},
+            {CMM_MAT_SNOW_ROOF,      0,                        "Roof"},
+            {CMM_MAT_WOOD,           0,                        "Wood"},
+            {CMM_MAT_CRYSTAL,        0,                        "Crystal"},
+            {CMM_MAT_ICE,            0,                        "Ice"},
+            {CMM_MAT_BURNING_ICE,    0,                        "Hazard Ice"},
+            {CMM_MAT_LAVA,           0,                        "Lava"},
         },
-        ARRAY_COUNT(cmm_terrain_floors_virtuaplex), cmm_terrain_floors_virtuaplex,
-        CMM_FENCE_VIRTUAPLEX, CMM_MAT_VP_CAUTION, CMM_BAR_GENERIC, CMM_WATER_DEFAULT
+        ARRAY_COUNT(cmm_terrain_floors_snow), cmm_terrain_floors_snow,
+        CMM_FENCE_SNOW, CMM_MAT_SNOW_TILE_SIDE, CMM_BAR_GENERIC, CMM_WATER_DEFAULT
     },
     // BBH
     {

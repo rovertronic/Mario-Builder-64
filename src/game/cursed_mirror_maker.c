@@ -1140,7 +1140,7 @@ Gfx *get_sidetex(s32 mat) {
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
 #define PROC_RENDER(statement)    if (!cmm_building_collision) { statement; }
 
-void process_tiles(void) {
+void process_tiles(u32 isTransparent) {
     u32 startIndex, endIndex;
     u8 tileType, rot;
     s8 pos[3];
@@ -1148,9 +1148,12 @@ void process_tiles(void) {
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
         cmm_growth_render_type = 0;
 
+        PROC_RENDER( if (isTransparent ^ (MATERIAL(mat).type == MAT_TRANSPARENT)) continue; \
+                     if (isTransparent) gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2); \
+                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
+                     cutout_turn_culling_off(mat);)
+
         PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
-        PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
-                     cutout_turn_culling_off(mat); )
 
         cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
 
@@ -1166,7 +1169,7 @@ void process_tiles(void) {
         }
 
         PROC_RENDER( display_cached_tris(); \
-                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); \
+                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2); \
                      cutout_turn_culling_on(mat); )
         
         if (cmm_curr_mat_has_topside) {
@@ -1185,7 +1188,7 @@ void process_tiles(void) {
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
@@ -1295,10 +1298,10 @@ void generate_terrain_gfx(void) {
         process_tile(pos, &cmm_terrain_fence, cmm_tile_data[i].rot);
     }
     display_cached_tris();
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
     cmm_use_alt_uvs = FALSE;
 
-    process_tiles();
+    process_tiles(FALSE);
 
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1329,12 +1332,16 @@ void generate_terrain_gfx(void) {
         }
     }
     display_cached_tris();
+
     cmm_render_flip_normals = TRUE;
     // Render main water plane, bottom side
     if (cmm_lopt_waterlevel != 0) {
         render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
     }
     cmm_render_flip_normals = FALSE;
+
+    process_tiles(TRUE);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
@@ -1569,7 +1576,7 @@ void generate_terrain_collision(void) {
     cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
-    process_tiles();
+    process_tiles(TRUE);
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
