@@ -1785,9 +1785,9 @@ char *cmm_theme_string_table[] = {
     "Shifting Sand Land",
     "Red Hot Reservoir",
     "Hazy Maze Cave",
-    "Castle Inside",
+    "Peach's Castle",
     "Virtuaplex",
-    "Snow",
+    "Snowy Palace",
     "Big Boo's Haunt",
     "Jolly Roger Bay",
     "Retroland",
@@ -1933,7 +1933,7 @@ struct cmm_template cmm_templates[] = {
     {{4, 46}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Dry Dry Desert
     {{4, 14}, 1, 2, 2, 2,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
     {{2, 28}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Sky and Sea
-    {{5, 38}, 2, 5, 0, 6,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
+    {{5, 38}, 2, 5, 6, 1,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {
