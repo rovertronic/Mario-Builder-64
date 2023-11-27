@@ -2524,7 +2524,7 @@ void bhv_thwomp_king(void) {
             }
             cur_obj_update_floor_and_walls();
 
-            if (o->oFloor->type == SURFACE_BURNING) {
+            if (SURFACE_IS_BURNING(o->oFloor->type)) {
                 o->oPosX = prevx;
                 o->oPosZ = prevz;
             }

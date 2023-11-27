@@ -938,7 +938,7 @@ void bhv_rbowser(void) {
 
             y = find_floor(o->oPosX, o->oPosY, o->oPosZ, &f);
             if (f != NULL) {
-                if ((y + 1.f > o->oPosY) && (f->type == SURFACE_BURNING)) {
+                if ((y + 1.f > o->oPosY) && (SURFACE_IS_BURNING(f->type))) {
                     stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
                     o->oAction = 6;
                     o->oAnimState = 2;

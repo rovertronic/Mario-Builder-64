@@ -38,7 +38,7 @@ s32 bowser_flame_should_despawn(s32 maxTime) {
     }
 
     // Flames should despawn if they fall off the arena.
-    if (o->oFloorType == SURFACE_BURNING) {
+    if (SURFACE_IS_BURNING(o->oFloorType)) {
         return TRUE;
     }
     if (o->oFloorType == SURFACE_DEATH_PLANE) {

@@ -246,7 +246,7 @@ void spawn_coin_in_formation(s32 index, s32 shape) {
         case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
             snapToGround = FALSE;
             pos[0] = coss(index << 13) * 200.0f;
-            pos[1] = sins(index << 13) * 200.0f + 200.0f;
+            pos[1] = sins(index << 13) * 200.0f + 256.0f;
             break;
         case COIN_FORMATION_BP_SHAPE_ARROW:
             pos[0] = sCoinArrowPositions[index][0];

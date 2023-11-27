@@ -122,6 +122,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos)
                                             MODEL_TRAJECTORY_MARKER_BALL, bhvTrackBall);
         if (trackBall != NULL) {
             vec3f_copy(&trackBall->oPosVec, pos);
+            trackBall->oPosY += 78.f;
         }
     } else {
         if (prevWaypoint != initialPrevWaypoint) {
@@ -184,10 +185,6 @@ void bhv_platform_on_track_init(void) {
     if (o->oBehParams >> 24 == 0) rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
     o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
-
-    if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CHECKERED) {
-        o->header.gfx.scale[1] = 2.0f;
-    }
 }
 
 /**
@@ -210,7 +207,7 @@ static void platform_on_track_act_init(void) {
     o->oPlatformOnTrackWasStoodOn = FALSE;
 
     o->oFaceAngleRoll = 0;
-    o->oPlatformOnTrackYaw = (s16)(o->oMoveAngleYaw - 0x4000);
+    o->oPlatformOnTrackYaw = (s16)(o->oBehParams2ndByte - 0x4000);
 
     if (o->oBehParams >> 24 == 1) {
         o->oForwardVel = 15.0f;
@@ -252,7 +249,7 @@ static void platform_on_track_act_wait_for_mario(void) {
 static void platform_on_track_act_move_along_track(void) {
     s16 initialAngle;
 
-    cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
+    if (!(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
 
     // Fall after reaching the last waypoint if desired
     if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END

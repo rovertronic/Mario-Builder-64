@@ -125,9 +125,15 @@ enum SeqId {
     SEQ_MP_RAINBOW_CASTLE,            // 0x6A
     SEQ_SS_SKYLOFT,                   // 0x6B
     SEQ_SMW_CASTLE,                   // 0x6C
-    SEQ_FIELDOFHOPESANDDREAMS,        // 0x6D
+    SEQ_YI_CRYSTAL_CAVES,             // 0x6D
     SEQ_BK_FREEZEEZY_PEAKS,           // 0x6E
     SEQ_MKDS_WALUIGI_PINBALL,         // 0x6F
+    SEQ_K64_FACTORY_INSPECTION,       // 0x70
+    SEQ_DK_CREEPY_CASTLE,             // 0x71
+    SEQ_PM_FOREVER_FOREST,            // 0x72
+    SEQ_PIT_THWOMP_CAVERNS,           // 0x73
+    SEQ_TP_TWILIGHT_REALM,            // 0x74
+    SEQ_MM_SNOWHEAD,           // 0x75
 
     SEQ_COUNT
 };

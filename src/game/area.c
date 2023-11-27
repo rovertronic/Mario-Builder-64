@@ -463,9 +463,9 @@ void render_game(void) {
 
         if (sCurrPlayMode == 0) {
             render_revent_textbox();
-            if (cmm_mode == CMM_MODE_MAKE) {
-                draw_cmm_menu();
-            }
+        }
+        if (cmm_mode == CMM_MODE_MAKE) {
+            draw_cmm_menu();
         }
 
         if (gMenuOptSelectIndex != 0) {

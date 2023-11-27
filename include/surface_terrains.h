@@ -8,10 +8,10 @@ enum SurfaceTypes {
     SURFACE_NULL = -1,
     SURFACE_DEFAULT,                    // 0x0000 // Environment default
     SURFACE_BURNING,                    // 0x0001 // Lava / Frostbite (in SL), but is used mostly for Lava
-    SURFACE_NEW_WATER,                  // 0x0002 // Custom water surface
+    SURFACE_BURNING_ICE,                // 0x0002 // Custom water surface
     SURFACE_NEW_WATER_BOTTOM,           // 0x0003 // Custom water surface bottom marker
     SURFACE_0004,                       // 0x0004 // Unused, has no function and has parameters
-    SURFACE_HANGABLE,                   // 0x0005 // Ceiling that Mario can climb on
+    SURFACE_HANGABLE_MESH,              // 0x0005 // Ceiling that Mario can climb on and pass through with vanish cap
     SURFACE_0006,                       // 0x0006 // Unused
     SURFACE_0007,                       // 0x0007 // Unused
     SURFACE_0008,                       // 0x0008 // Unused
@@ -97,7 +97,7 @@ enum SurfaceTypes {
     SURFACE_SNOW,                       // 0x007D // Unused
     SURFACE_SAND,                       // 0x007E // Unused
     SURFACE_CREAKWOOD,                  // 0x007F // Unused
-    SURFACE_0080,                       // 0x0080 // Unused
+    SURFACE_CRYSTAL,                    // 0x0080 // Unused
     SURFACE_0081,                       // 0x0081 // Unused
     SURFACE_0082,                       // 0x0082 // Unused
     SURFACE_0083,                       // 0x0083 // Unused
@@ -227,6 +227,12 @@ enum SurfaceTypes {
     SURFACE_TRAPDOOR,                   // 0x00FF // Bowser Left trapdoor, has no action defined
 };
 
+#define SURFACE_NEW_WATER 0
+
+#define SURFACE_IS_BURNING(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_ICE))
+#define SURFACE_IS_VANISH_CAP(cmd) (((cmd) == SURFACE_VANISH_CAP_WALLS) || ((cmd) == SURFACE_HANGABLE_MESH) || ((cmd) == SURFACE_CRYSTAL) || ((cmd) == SURFACE_ICE))
+#define SURFACE_IS_HANGABLE(cmd) (((cmd) == SURFACE_HANGABLE_MESH))
+
 #define SURFACE_IS_NEW_WATER(cmd)               (((cmd) == SURFACE_NEW_WATER) || ((cmd) == SURFACE_NEW_WATER_BOTTOM))
 #define SURFACE_IS_QUICKSAND(cmd)               ((((cmd) >= SURFACE_SHALLOW_QUICKSAND) && ((cmd) <= SURFACE_MOVING_QUICKSAND)) || ((cmd) == SURFACE_INSTANT_MOVING_QUICKSAND))
 #define SURFACE_IS_NOT_HARD(cmd)                (((cmd) != SURFACE_HARD) && !((cmd) >= SURFACE_HARD_SLIPPERY && ((cmd) <= SURFACE_HARD_NOT_SLIPPERY)))
@@ -240,7 +246,7 @@ enum SurfaceTypes {
 #define SURFACE_IS_PAINTING_WARP_RIGHT(cmd)     ((((cmd) - SURFACE_PAINTING_WARP_D5  ) % 3) == 0)
 #define SURFACE_IS_INSTANT_WARP(cmd)            (((cmd) >= SURFACE_INSTANT_WARP_1B) && ((cmd) <= SURFACE_INSTANT_WARP_1E))
 #define SURFACE_IS_WARP(cmd)                    (((cmd) == SURFACE_LOOK_UP_WARP) || ((cmd) == SURFACE_WOBBLING_WARP) || SURFACE_IS_PAINTING_WARP(cmd) || SURFACE_IS_INSTANT_WARP(cmd))
-#define SURFACE_IS_UNSAFE(cmd)                  (((cmd) == SURFACE_BURNING) || SURFACE_IS_QUICKSAND(cmd) || SURFACE_IS_WARP(cmd))
+#define SURFACE_IS_UNSAFE(cmd)                  (SURFACE_IS_BURNING(cmd) || SURFACE_IS_QUICKSAND(cmd) || SURFACE_IS_WARP(cmd))
 
 enum SurfaceClass {
     SURFACE_CLASS_DEFAULT,

@@ -279,7 +279,7 @@ const Collision thi_seg7_area_3_collision[] = {
     COL_TRI(108, 111, 109),
     COL_TRI(108, 112, 111),
     COL_TRI(108, 110, 112),
-    COL_TRI_INIT(SURFACE_HANGABLE, 16),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 16),
     COL_TRI(144, 112, 110),
     COL_TRI(110, 145, 144),
     COL_TRI(110, 109, 145),

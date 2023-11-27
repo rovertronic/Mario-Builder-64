@@ -116,7 +116,7 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 64;
+u8 cmm_uv_scaling = 1;
 s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
@@ -169,185 +169,7 @@ u8 cmm_cached_tris[16][3];
 
 struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
-void play_place_sound(u32 soundBits) {
-    play_sound(soundBits, gGlobalSoundSource);
-}
-
-void df_star(UNUSED s32 context) {
-    o->oFaceAngleYaw = (s16)(0x800 * gGlobalTimer);
-}
-
-void df_heart(UNUSED s32 context) {
-    o->oFaceAngleYaw = (s16)(400 * gGlobalTimer);
-}
-void df_corkbox(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) o->oAnimState = 1;
-}
-
-void df_reds_marker(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        o->oFaceAnglePitch = 0x4000;
-        vec3_set(o->header.gfx.scale, 1.5f, 1.5f, 0.75f);
-        o->oPosY -= (TILE_SIZE/2 - 60);
-    }
-    o->oFaceAngleYaw = (s16)(0x100 * gGlobalTimer);
-}
-
-void df_tree(s32 context) {
-    if (context != CMM_DF_CONTEXT_INIT) return;
-    switch(o->oBehParams2ndByte) {
-        case 1:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
-            break;
-        case 2:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
-            break;
-        case 3:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
-            break;
-    }
-}
-
-void df_exbox(s32 context) {
-    if (context != CMM_DF_CONTEXT_INIT) return;
-    if (cmm_lopt_game == CMM_GAME_VANILLA) {
-        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_VEXCLAMATION_BOX];
-    }
-    o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
-}
-
-void df_koopa(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        super_cum_working(o, 7);
-        if (o->behavior == segmented_to_virtual(bhvPreviewObject) && (o->oBehParams2ndByte == 0)) {
-            // Get trajectory and iterate over it to find the end
-            s32 traj_id = o->oBehParams2ndByte;
-            if ((cmm_trajectory_list[traj_id][0][0] == -1)||(cmm_trajectory_list[traj_id][1][0] == -1)) return;
-
-            for (s32 i = 0; i < CMM_TRAJECTORY_LENGTH; i++) {
-                if (cmm_trajectory_list[traj_id][i][0] == -1) {
-                    // Spawn flagpole
-                    struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
-                    flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
-                    super_cum_working(flagpole, 0);
-                    flagpole->oPosX = cmm_trajectory_list[traj_id][i-1][1];
-                    flagpole->oPosY = cmm_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
-                    flagpole->oPosZ = cmm_trajectory_list[traj_id][i-1][3];
-                    break;
-                }
-            }
-
-        }
-    }
-}
-void df_chuckya(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 4);
-}
-void df_kingbomb(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, 5);
-}
-void df_checkerboard_elevator(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        o->header.gfx.scale[1] = 2.0f;
-        
-        if ((o->oBehParams >> 24) == 1) {
-            cur_obj_set_model(MODEL_LOOPINGP);
-            o->header.gfx.scale[1] = 1.0f;
-        }
-
-    }
-}
-
-void df_mri(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        o->oGraphYOffset = 100.0f;
-        struct Object * iris = spawn_object(o,MODEL_MAKER_MRI_2, VIRTUAL_TO_PHYSICAL(o->behavior));
-
-        obj_copy_pos_and_angle(iris, o);
-        iris->oPosX += sins(o->oFaceAngleYaw)*100.0f;
-        iris->oPosZ += coss(o->oFaceAngleYaw)*100.0f;
-        iris->oPosY += 100.0f;
-    }
-}
-void df_booser(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
-}
-
-extern s8 sCloudPartHeights[];
-void df_lakitu(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        for (int i = 0; i < 5; i++) {
-            struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
-            obj_scale(cloudPart,2.0f);
-            cloudPart->oOpacity = 255;
-            obj_set_billboard(cloudPart);
-            obj_scale(cloudPart,2.0f);
-            cloudPart->oPosY += sCloudPartHeights[i];
-            cloudPart->oPosX += sins(0x3333*i)*40.0f;
-            cloudPart->oPosZ += coss(0x3333*i)*40.0f;
-        }
-    }
-}
-
-void df_snufit(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) o->oSnufitBodyScale = 1000.0f;
-}
-
-extern enum CMM_THEMES cmm_themes;
-void df_bully(s32 context) {
-    if ((context == CMM_DF_CONTEXT_INIT)&&(cmm_lopt_theme == CMM_THEME_SNOW)) {
-        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CHILL_BULLY];
-    }
-}
-
-extern s16 sCoinArrowPositions[][2];
-void df_coin_formation(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        Vec3i pos = { 0, 0, 0 };
-        s32 spawnCoin    = TRUE;
-        u32 index = 0;
-
-        while (spawnCoin && index < 8) {
-            switch (o->oBehParams2ndByte & COIN_FORMATION_BP_SHAPE_MASK) {
-                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_LINE:
-                    pos[2] = 160 * (index - 2);
-                    if (index > 4) spawnCoin = FALSE;
-                    break;
-                case COIN_FORMATION_BP_SHAPE_VERTICAL_LINE:
-                    pos[1] = index << 7;
-                    if (index > 4) spawnCoin = FALSE;
-                    break;
-                case COIN_FORMATION_BP_SHAPE_HORIZONTAL_RING:
-                    pos[0] = sins(index << 13) * 300.0f;
-                    pos[2] = coss(index << 13) * 300.0f;
-                    break;
-                case COIN_FORMATION_BP_SHAPE_VERTICAL_RING:
-                    pos[0] = coss(index << 13) * 200.0f;
-                    pos[1] = sins(index << 13) * 200.0f + 200.0f;
-                    break;
-                case COIN_FORMATION_BP_SHAPE_ARROW:
-                    pos[0] = sCoinArrowPositions[index][0];
-                    pos[2] = sCoinArrowPositions[index][1];
-                    break;
-
-            }
-
-            if (spawnCoin) {
-                struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
-                obj_set_billboard(newCoin);
-            }
-            index ++;
-        }
-    }
-}
-
-void df_grindel(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        o->oFaceAngleYaw += 0x4000;
-        o->oMoveAngleYaw += 0x4000;
-    }
-}
-
+#include "src/game/cursed_mirror_maker_df.inc.c"
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
 void bhv_preview_object_init(void) {
@@ -357,6 +179,10 @@ void bhv_preview_object_init(void) {
 void bhv_preview_object_loop(void) {
     if (!o->oPreviewObjDisplayFunc) return;
     ((DisplayFunc)o->oPreviewObjDisplayFunc)(CMM_DF_CONTEXT_MAIN);
+}
+
+void play_place_sound(u32 soundBits) {
+    play_sound(soundBits, gGlobalSoundSource);
 }
 
 void cmm_show_error_message(char *message) {
@@ -683,6 +509,7 @@ void generate_trajectory_gfx(void) {
 
     for (s32 traj = 0; traj < cmm_trajectories_used; traj++) {
         Trajectory (*curr_trajectory)[4] = cmm_trajectory_list[traj];
+        if (curr_trajectory[0][0] == -1) continue;
         s16 pos1[3], pos2[3];
         s32 isLoop = FALSE;
 
@@ -779,7 +606,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
+            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -816,7 +643,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            u * cmm_uv_scaling + cmm_uv_offset, v * cmm_uv_scaling + cmm_uv_offset,
+            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -1224,25 +1051,28 @@ void render_water(s8 pos[3]) {
 void render_floor(s16 y) {
     s16 vertex = 128 * cmm_grid_size;
     s16 uv = 256 * cmm_grid_size;
-    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, vertex, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,      0, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 5,       0, y,      0,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    s16 posUv = uv + cmm_uv_offset;
+    s16 negUv = -uv + cmm_uv_offset;
+    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 1, vertex, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 3,      0, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 10,      0, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 5,       0, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
-    make_vertex(cmm_curr_vtx, 12,       0, y,       0, -uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex,  uv, -uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, -uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex,  uv,  uv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 10,      0, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+
+    make_vertex(cmm_curr_vtx, 12,       0, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
+    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
 
     gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
 
@@ -1303,14 +1133,14 @@ Gfx *get_sidetex(s32 mat) {
 
 #define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
 #define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 128; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 64; }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
 #define PROC_RENDER(statement)    if (!cmm_building_collision) { statement; }
 
-void process_tiles(void) {
+void process_tiles(u32 isTransparent) {
     u32 startIndex, endIndex;
     u8 tileType, rot;
     s8 pos[3];
@@ -1318,9 +1148,12 @@ void process_tiles(void) {
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
         cmm_growth_render_type = 0;
 
+        PROC_RENDER( if (isTransparent ^ (MATERIAL(mat).type == MAT_TRANSPARENT)) continue; \
+                     if (isTransparent) gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2); \
+                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
+                     cutout_turn_culling_off(mat);)
+
         PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
-        PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
-                     cutout_turn_culling_off(mat); )
 
         cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
 
@@ -1336,7 +1169,7 @@ void process_tiles(void) {
         }
 
         PROC_RENDER( display_cached_tris(); \
-                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); \
+                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2); \
                      cutout_turn_culling_on(mat); )
         
         if (cmm_curr_mat_has_topside) {
@@ -1355,7 +1188,7 @@ void process_tiles(void) {
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
@@ -1429,7 +1262,7 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 128;
+    cmm_uv_scaling = 2;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
@@ -1439,7 +1272,7 @@ void generate_terrain_gfx(void) {
         render_bars(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 64;
+    cmm_uv_scaling = 1;
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1465,10 +1298,10 @@ void generate_terrain_gfx(void) {
         process_tile(pos, &cmm_terrain_fence, cmm_tile_data[i].rot);
     }
     display_cached_tris();
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
     cmm_use_alt_uvs = FALSE;
 
-    process_tiles();
+    process_tiles(FALSE);
 
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1499,12 +1332,16 @@ void generate_terrain_gfx(void) {
         }
     }
     display_cached_tris();
+
     cmm_render_flip_normals = TRUE;
     // Render main water plane, bottom side
     if (cmm_lopt_waterlevel != 0) {
         render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
     }
     cmm_render_flip_normals = FALSE;
+
+    process_tiles(TRUE);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
@@ -1527,7 +1364,7 @@ extern void geo_append_display_list(void *displayList, s32 layer);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
-        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
+        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT_INTER);
 
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
@@ -1553,7 +1390,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
                 gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
-                geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT);
+                geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT_INTER);
                 return NULL;
             }
 
@@ -1617,9 +1454,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 128;
+                    cmm_uv_scaling = 2;
                     render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 64;
+                    cmm_uv_scaling = 1;
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1739,7 +1576,7 @@ void generate_terrain_collision(void) {
     cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
-    process_tiles();
+    process_tiles(TRUE);
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
@@ -1871,6 +1708,8 @@ void generate_object_preview(void) {
     if (cmm_lopt_coinstar > length) {
         cmm_lopt_coinstar = length;
     }
+
+    generate_trajectory_gfx();
 }
 
 void generate_objects_to_level(void) {
@@ -1975,7 +1814,7 @@ void place_tile(s8 pos[3]) {
         } else {
             coltype = MATERIAL(cmm_mat_selection).col;
         }
-        if (coltype == SURFACE_BURNING) {
+        if (SURFACE_IS_BURNING(coltype)) {
             play_place_sound(SOUND_GENERAL_LOUD_BUBBLE | SOUND_VIBRATO);
         } else {
             play_place_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype));
@@ -2076,10 +1915,11 @@ void remove_trajectory(u32 index) {
 
 void delete_object(s8 pos[3], s32 index) {
     remove_occupy_data(pos);
+    s32 refreshTrajectories = FALSE;
 
     if (cmm_object_place_types[cmm_object_data[index].type].useTrajectory) { 
         remove_trajectory(cmm_object_data[index].param2);
-        generate_trajectory_gfx();
+        refreshTrajectories = TRUE;
     }
 
     cmm_object_count--;
@@ -2454,14 +2294,12 @@ void load_level(void) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
-            cmm_object_type_preview_mario.model_id = MODEL_MARIO;
             cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
             cmm_settings_menus[0] = draw_cmm_settings_general;
             break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            //cmm_object_type_preview_mario.model_id = MODEL_MARIO2;
             cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
             cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
             break;
@@ -2546,8 +2384,8 @@ void sb_init(void) {
         case CMM_MODE_MAKE:
             cmm_menu_state = CMM_MAKE_MAIN;
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-            generate_object_preview();
             generate_terrain_gfx();
+            generate_object_preview();
 
             //init visual tile bounds
             for (u8 i=0; i<6; i++) {
@@ -2646,9 +2484,6 @@ u32 main_cursor_logic(u32 joystick) {
     }
 
     //camera zooming
-    if (gPlayer1Controller->buttonPressed & U_JPAD) {
-        cmm_camera_zoom_index--;
-    }
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         cmm_camera_zoom_index++;
     }
@@ -2712,6 +2547,25 @@ u8 cmm_joystick;
 extern s16 cmm_menu_start_timer;
 extern s16 cmm_menu_end_timer;
 
+
+s32 get_flipped_tile(s32 tileID) {
+    switch (tileID) {
+        case TILE_TYPE_SLOPE:
+        case TILE_TYPE_DSLOPE:
+            return TILE_TYPE_DSLOPE;
+        case TILE_TYPE_CORNER:
+        case TILE_TYPE_DCORNER:
+            return TILE_TYPE_DCORNER;
+        case TILE_TYPE_ICORNER:
+        case TILE_TYPE_DICORNER:
+            return TILE_TYPE_DICORNER;
+        case TILE_TYPE_SLAB:
+        case TILE_TYPE_DSLAB:
+            return TILE_TYPE_DSLAB;
+    }
+    return -1;
+}
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     cmm_joystick = joystick_direction();
@@ -2754,25 +2608,11 @@ void sb_loop(void) {
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 
             if (cmm_upsidedown_tile) {
-                switch (cmm_id_selection) {
-                    case TILE_TYPE_SLOPE:
-                    case TILE_TYPE_DSLOPE:
-                        cmm_id_selection = TILE_TYPE_DSLOPE;
-                        break;
-                    case TILE_TYPE_CORNER:
-                    case TILE_TYPE_DCORNER:
-                        cmm_id_selection = TILE_TYPE_DCORNER;
-                        break;
-                    case TILE_TYPE_ICORNER:
-                    case TILE_TYPE_DICORNER:
-                        cmm_id_selection = TILE_TYPE_DICORNER;
-                        break;
-                    case TILE_TYPE_SLAB:
-                    case TILE_TYPE_DSLAB:
-                        cmm_id_selection = TILE_TYPE_DSLAB;
-                        break;
-                    default:
-                        cmm_upsidedown_tile = FALSE;
+                s32 flippedTile = get_flipped_tile(cmm_id_selection);
+                if (flippedTile != -1) {
+                    cmm_id_selection = flippedTile;
+                } else {
+                    cmm_upsidedown_tile = FALSE;
                 }
             }
 
@@ -2791,32 +2631,36 @@ void sb_loop(void) {
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 switch(cmm_toolbar_index) {
-                    case 8://save data
-                        if (mount_success == FR_OK) {
-                            cmm_do_save = TRUE;
-                            cmm_ui_do_render = FALSE;
-                        } else {
-                            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                    case 8: // options
+                        switch (cmm_param_selection) {
+                            case 1: // settings menu
+                                cmm_menu_state = CMM_MAKE_SETTINGS;
+                                cmm_menu_start_timer = 0;
+                                cmm_menu_end_timer = -1;
+                                cmm_menu_index = 0;
+                                animate_list_reset();
+                                break;
+                            case 0: // test mode
+                                cmm_target_mode = CMM_MODE_PLAY;
+                                reset_play_state();
+                                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                                sSourceWarpNodeId = 0x0A;
+                                break;
+                            case 2: // save
+                                if (mount_success == FR_OK) {
+                                    cmm_do_save = TRUE;
+                                    cmm_ui_do_render = FALSE;
+                                } else {
+                                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                                }
+                                break;
                         }
-                    break;
-                    case 7://settings
-                        cmm_menu_state = CMM_MAKE_SETTINGS;
-                        cmm_menu_start_timer = 0;
-                        cmm_menu_end_timer = -1;
-                        cmm_menu_index = 0;
-                    break;
-                    case 6://test
-                        cmm_target_mode = CMM_MODE_PLAY;
-                        reset_play_state();
-                        level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                        sSourceWarpNodeId = 0x0A;
-                    break;
-                    default://everything else places
+                        break;
+                    default: //everything else places
                         place_thing_action();
-                    break; 
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_toolbar_index < 6) {
+                if (cmm_toolbar_index != 8) {
                     place_thing_action();
                 }
             }
@@ -2830,19 +2674,20 @@ void sb_loop(void) {
                 cmm_menu_end_timer = -1;
                 cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
-                if (cmm_toolbar_index > 5) {
-                    cmm_toolbar_index = 5;
+                animate_list_reset();
+                if (cmm_toolbar_index == 8) {
+                    cmm_toolbar_index = 7;
                 }
             }
 
+            if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                cmm_upsidedown_tile ^= 1;
+            }
+
             if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-                if (gPlayer1Controller->buttonDown & B_BUTTON) {
-                    cmm_upsidedown_tile ^= 1;
-                } else {
-                    cmm_rot_selection++;
-                    cmm_rot_selection%=4;
-                    updatePreviewObj = TRUE;
-                }
+                cmm_rot_selection++;
+                cmm_rot_selection%=4;
+                updatePreviewObj = TRUE;
             }
 
             if (cmm_place_mode == CMM_PM_OBJ) {
@@ -2920,7 +2765,7 @@ void sb_loop(void) {
                 cmm_toolbar_index++;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
-            cmm_toolbar_index = (cmm_toolbar_index+6)%6;
+            cmm_toolbar_index = (cmm_toolbar_index+8)%8;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 
@@ -2931,13 +2776,12 @@ void sb_loop(void) {
                     cmm_param_selection = 0;
 
                     cmm_toolbox_transition_btn_render = TRUE;
-                    cmm_toolbox_transition_btn_progress = 0.0f;
-                    cmm_toolbox_transition_btn_ox = 34+((cmm_toolbox_index%9)*32);
-                    cmm_toolbox_transition_btn_oy = 220-((cmm_toolbox_index/9)*32);
+                    // current pos
                     cmm_toolbox_transition_btn_x = 34+((cmm_toolbox_index%9)*32);
                     cmm_toolbox_transition_btn_y = 220-((cmm_toolbox_index/9)*32);
+                    // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
-                    cmm_toolbox_transition_btn_ty = 28.0f;
+                    cmm_toolbox_transition_btn_ty = 25.0f;
                     cmm_toolbox_transition_btn_old_gfx = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].material;
                     if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multipleBtns) {
                         cmm_toolbox_transition_btn_old_gfx = ((Gfx **)cmm_toolbox_transition_btn_old_gfx)[0];
@@ -3001,7 +2845,6 @@ void sb_loop(void) {
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index+1][0] = -1;
                         cmm_trajectory_edit_index++;
                         play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
-                        generate_trajectory_gfx();
                         generate_object_preview();
                     }
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -3011,16 +2854,18 @@ void sb_loop(void) {
                         cmm_trajectory_edit_index--;
                         cmm_trajectory_list[cmm_trajectory_to_edit][cmm_trajectory_edit_index][0] = -1;
                         play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
-                        generate_trajectory_gfx();
                         generate_object_preview();
                     }
                 }
             }
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                cmm_menu_state = CMM_MAKE_MAIN;
-                generate_trajectory_gfx();
-                generate_object_preview();
+                if (cmm_trajectory_edit_index == 1) {
+                    cmm_show_error_message("Trajectory is too short!");
+                } else {
+                    cmm_menu_state = CMM_MAKE_MAIN;
+                    generate_object_preview();
+                }
             }
 
             update_boundary_wall();
@@ -3039,7 +2884,7 @@ void sb_loop(void) {
 
                 s8 pos[3];
                 vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-                spawn_preview_object(pos, cmm_rot_selection, 0, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
+                spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
             }
         }
     }

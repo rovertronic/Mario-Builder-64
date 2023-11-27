@@ -6,9 +6,13 @@
 
 // -- COIN --
 
+#define CMM_DRAWDIST_LOW 5000.f // For high-cost objects, like enemies
+#define CMM_DRAWDIST_MEDIUM 8000.f // For smaller low-cost objects, like coin formations
+#define CMM_DRAWDIST_HIGH 15000.f // For objects vital to the stage, like spinning firebars
+
 // The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.
 // Set this to o->oDrawingDistance for a more reasonable range at the cost of performance.
-#define COIN_FORMATION_DISTANCE 2000.0f
+#define COIN_FORMATION_DISTANCE CMM_DRAWDIST_MEDIUM
 
 // Moving Coins flicker and disappear when they hit lava instead of being instantly deleted.
 //#define COIN_LAVA_FLICKER

@@ -15,12 +15,7 @@ void fire_bar_spawn_flames(s16 yaw) {
     s32 i;
     f32 xOffset = sins(yaw) * 200.0f;
     f32 zOffset = coss(yaw) * 200.0f;
-    s32 amt = o->oBehParams2ndByte; // Amount of flames to spawn
-
-    // Use the vanilla default value if the bparam is 0
-    if (amt == 0) {
-        amt = 4;
-    }
+    s32 amt = o->oBehParams2ndByte + 2; // Amount of flames to spawn
 
     for (i = 0; i < amt; i++) {
         flameObj = spawn_object(o, MODEL_RED_FLAME, bhvLllRotatingHexFlame);
@@ -48,8 +43,6 @@ void fire_bar_act_spawn_flames(void) {
 }
 
 void fire_bar_act_active(void) {
-    o->oAngleVelYaw = -0x100;
-    o->oMoveAngleYaw += o->oAngleVelYaw;
     if (o->oDistanceToMario > o->oDrawingDistance + 200.0f) {
         o->oAction = LLL_FIRE_BAR_ACT_REMOVE_FLAMES;
     }
@@ -67,5 +60,7 @@ ObjActionFunc sRotatingCwFireBarsActions[] = {
 };
 
 void bhv_lll_rotating_block_fire_bars_loop(void) {
+    o->oAngleVelYaw = -0x100;
+    o->oMoveAngleYaw += o->oAngleVelYaw;
     cur_obj_call_action_function(sRotatingCwFireBarsActions);
 }

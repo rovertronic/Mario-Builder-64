@@ -1145,6 +1145,7 @@ s32 play_mode_change_area(void) {
 /**
  * Play the transition and then return to normal play mode.
  */
+extern s16 cmm_menu_start_timer;
 s32 play_mode_change_level(void) {
     if (sTransitionUpdate != NULL) {
         sTransitionUpdate(&sTransitionTimer);
@@ -1154,6 +1155,11 @@ s32 play_mode_change_level(void) {
         gHudDisplay.flags = HUD_DISPLAY_NONE;
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
+        full_menu_reset();
+        if (sSpecialWarpDest == WARP_SPECIAL_MARIO_HEAD_REGULAR) {
+            cmm_menu_start_timer = 0;
+            cmm_mode = CMM_MODE_UNINITIALIZED;
+        }
 
         if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
             return sWarpDest.levelNum;

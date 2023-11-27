@@ -765,7 +765,7 @@ const Collision wmotr_seg7_collision[] = {
     COL_TRI(312, 288, 284),
     COL_TRI(282, 305, 311),
     COL_TRI(282, 311, 284),
-    COL_TRI_INIT(SURFACE_HANGABLE, 38),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 38),
     COL_TRI(507, 530, 491),
     COL_TRI(507, 522, 530),
     COL_TRI(507, 515, 522),

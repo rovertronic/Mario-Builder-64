@@ -111,7 +111,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
     }
     else
     {
-        if (m->action != ACT_TWIRLING && m->floor->type != SURFACE_BURNING) {
+        if (m->action != ACT_TWIRLING && !SURFACE_IS_BURNING(m->floor->type)) {
             if (m->vel[1] < -55.0f) {
                 if (fallHeight > FALL_DAMAGE_HEIGHT_LARGE) {
                     m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 16 : 24;
@@ -1674,7 +1674,7 @@ s32 act_lava_boost(struct MarioState *m) {
 
     switch (perform_air_step(m, 0)) {
         case AIR_STEP_LANDED:
-            if (m->floor->type == SURFACE_BURNING) {
+            if (SURFACE_IS_BURNING(m->floor->type)) {
                 m->actionState = ACT_STATE_LAVA_BOOST_HIT_LAVA;
                 if (!(m->flags & MARIO_METAL_CAP)) {
                     if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
