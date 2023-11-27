@@ -1364,7 +1364,7 @@ extern void geo_append_display_list(void *displayList, s32 layer);
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
-        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
+        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT_INTER);
 
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
@@ -1390,7 +1390,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
                 gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
-                geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT);
+                geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT_INTER);
                 return NULL;
             }
 
@@ -1814,7 +1814,7 @@ void place_tile(s8 pos[3]) {
         } else {
             coltype = MATERIAL(cmm_mat_selection).col;
         }
-        if (coltype == SURFACE_BURNING) {
+        if (SURFACE_IS_BURNING(coltype)) {
             play_place_sound(SOUND_GENERAL_LOUD_BUBBLE | SOUND_VIBRATO);
         } else {
             play_place_sound(SOUND_ACTION_TERRAIN_STEP + get_terrain_sound_addend(coltype));

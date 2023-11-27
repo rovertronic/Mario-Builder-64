@@ -545,14 +545,14 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerSnowDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SNOWDIRT
     {mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
     {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
-    {mat_maker_MakerIronBars_layer1,   MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_IRONBARS
+    {mat_maker_MakerIronBars_layer1,   MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_IRONBARS
     // Desert
     {mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_STONE
     {mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES
     {mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_BLOCK
     {mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES2
     {mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND}, // CMM_MAT_DESERT_SLOWSAND
-    {mat_maker_MakerDMesh_layer1,       MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_DESERT_MESH
+    {mat_maker_MakerDMesh_layer1,       MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_DESERT_MESH
     // Red Hot Reservoir
     {mat_maker_MakerRHRObsidian,     0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
     {mat_maker_MakerRHRStone,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
@@ -561,7 +561,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRHRPattern,      0,          SURFACE_DEFAULT},          // CMM_MAT_RHR_BLOCK
     {mat_maker_MakerRHRWood,         0,          SURFACE_CREAKWOOD},        // CMM_MAT_RHR_WOOD
     {mat_maker_MakerRHRPillar,       0,          SURFACE_DEFAULT},          // CMM_MAT_RHR_PILLAR
-    {mat_maker_MakerRHRMesh_layer1,  MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RHR_MESH
+    {mat_maker_MakerRHRMesh_layer1,  MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_RHR_MESH
     {mat_maker_MakerServerAcid,      0,          SURFACE_BURNING},          // CMM_MAT_SERVER_ACID
     // Hazy Maze Cave
     {mat_maker_MakerHDirt,           0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_DIRT
@@ -570,7 +570,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerHMazefloor,      0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_MAZEFLOOR
     {mat_maker_MakerHLight,          0,          SURFACE_DEFAULT},          // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerHLakewall,       0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_HMC_LAKEGRASS
-    {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_HMC_MESH
+    {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_HMC_MESH
     // Castle
     {mat_maker_MakerCWood,           0, SURFACE_DEFAULT},      // CMM_MAT_C_WOOD
     {mat_maker_MakerCStone,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONETOP
@@ -599,8 +599,8 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerBBHStonePattern, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_STONE_PATTERN
     {mat_maker_MakerBBHPillar,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_PILLAR
     {mat_maker_MakerBBHWindow,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_WINDOW
-    {mat_maker_MakerBBHMesh_layer1,  MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_BBH_MESH
-    {mat_maker_MakerVPMesh_layer1,   MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_VP_MESH
+    {mat_maker_MakerBBHMesh_layer1,  MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_BBH_MESH
+    {mat_maker_MakerVPMesh_layer1,   MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_VP_MESH
     // JRB
     {mat_maker_MakerJRBStone,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_STONE
     {mat_maker_MakerJRBMetal,        0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METAL
@@ -614,11 +614,11 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBTileSide,     0, SURFACE_DEFAULT},      // CMM_MAT_JRB_TILESIDE
 
     {mat_maker_MakerSnowRock,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_ROCK
-    {mat_maker_MakerIce,             MAT_TRANSPARENT, SURFACE_VERY_SLIPPERY}, // CMM_MAT_ICE
+    {mat_maker_MakerIce,             MAT_TRANSPARENT, SURFACE_ICE}, // CMM_MAT_ICE
     {mat_maker_MakerSnowRoof,        0, SURFACE_VERY_SLIPPERY}, // CMM_MAT_SNOW_ROOF
     {mat_maker_MakerSnowBricks,      0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_BRICKS
-    {mat_maker_MakerBurningIce,      0, SURFACE_BURNING}, // CMM_MAT_BURNING_ICE
-    {mat_maker_MakerCrystal,         MAT_TRANSPARENT, SURFACE_DEFAULT}, // CMM_MAT_CRYSTAL
+    {mat_maker_MakerBurningIce,      0, SURFACE_BURNING_ICE}, // CMM_MAT_BURNING_ICE
+    {mat_maker_MakerCrystal,         MAT_TRANSPARENT, SURFACE_CRYSTAL}, // CMM_MAT_CRYSTAL
     {mat_maker_MakerSnowBrickTiles,  0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_BRICK_TILES
     {mat_maker_MakerSnowTiles,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_TILES
     {mat_maker_MakerSnowTileSide,    0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_TILE_SIDE
@@ -634,7 +634,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRetroWBrick,     0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_WHITEBRICK
     {mat_maker_MakerRetroLava,       0, SURFACE_BURNING},      // CMM_MAT_RETRO_LAVA
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
-    {mat_maker_MakerRetroMesh_layer1,MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_RETRO_MESH
+    {mat_maker_MakerRetroMesh_layer1,MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_RETRO_MESH
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {

@@ -1296,7 +1296,7 @@ s32 act_riding_shell_ground(struct MarioState *m) {
     tilt_body_ground_shell(m, startYaw);
 
     if (!m->IsYoshi) {
-        if (m->floor->type == SURFACE_BURNING) {
+        if (SURFACE_IS_BURNING(m->floor->type)) {
             play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
         } else {
             play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend, m->marioObj->header.gfx.cameraToObject);
@@ -1344,7 +1344,7 @@ s32 act_riding_yoshi_ground(struct MarioState *m) {
     }
 
     tilt_body_ground_shell(m, startYaw);
-    if (m->floor->type == SURFACE_BURNING) {
+    if (SURFACE_IS_BURNING(m->floor->type)) {
         play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
     } else {
         play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend,

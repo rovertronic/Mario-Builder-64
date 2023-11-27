@@ -503,7 +503,7 @@ s32 bonk_or_hit_lava_wall(struct MarioState *m, struct WallCollisionData *wallDa
 
     for (i = 0; i < wallData->numWalls; i++) {
         if (wallData->walls[i] != NULL) {
-            if (wallData->walls[i]->type == SURFACE_BURNING) {
+            if (SURFACE_IS_BURNING(wallData->walls[i]->type)) {
                 set_mario_wall(m, wallData->walls[i]);
                 return AIR_STEP_HIT_LAVA_WALL;
             }
@@ -588,9 +588,9 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
 #ifdef HANGING_FIX
             // Grab ceiling unless they just were grabbing a ceiling
-            if (!(m->prevAction & ACT_FLAG_HANGING) && ceil != NULL && ceil->type == SURFACE_VANISH_CAP_WALLS) {
+            if (!(m->prevAction & ACT_FLAG_HANGING) && ceil != NULL && SURFACE_IS_HANGABLE(ceil->type)) {
 #else
-            if ((stepArg & AIR_STEP_CHECK_HANG) && ceil != NULL && ceil->type == SURFACE_VANISH_CAP_WALLS) {
+            if ((stepArg & AIR_STEP_CHECK_HANG) && ceil != NULL && SURFACE_IS_HANGABLE(ceil->type)) {
 #endif
                 return AIR_STEP_GRABBED_CEILING;
             }

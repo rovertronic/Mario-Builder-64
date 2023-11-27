@@ -2151,7 +2151,7 @@ const Collision ssl_seg7_area_2_collision[] = {
     COL_TRI(882, 1078, 1077),
     COL_TRI(474, 586, 473),
     COL_TRI(474, 473, 591),
-    COL_TRI_INIT(SURFACE_HANGABLE, 6),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 6),
     COL_TRI(18, 19, 20),
     COL_TRI(18, 21, 19),
     COL_TRI(21, 22, 23),

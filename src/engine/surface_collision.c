@@ -139,7 +139,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             if (type == SURFACE_CAMERA_BOUNDARY) continue;
 
             // If an object can pass through a vanish cap wall, pass through.
-            if (type == SURFACE_VANISH_CAP_WALLS && o != NULL) {
+            if (SURFACE_IS_VANISH_CAP(type) && o != NULL) {
                 // If an object can pass through a vanish cap wall, pass through.
                 if (o->activeFlags & ACTIVE_FLAG_MOVE_THROUGH_GRATE) continue;
                 // If Mario has a vanish cap, pass through the vanish cap wall.
@@ -308,7 +308,7 @@ void add_ceil_margin(s32 *x, s32 *z, Vec3s target1, Vec3s target2, f32 margin) {
 }
 
 static s32 check_within_ceil_triangle_bounds(s32 x, s32 z, struct Surface *surf, f32 margin) {
-    s32 addMargin = surf->type != SURFACE_VANISH_CAP_WALLS && !FLT_IS_NONZERO(margin);
+    s32 addMargin = !SURFACE_IS_VANISH_CAP(surf->type) && !FLT_IS_NONZERO(margin);
     Vec3i vx, vz;
     vx[0] = surf->vertex1[0];
     vz[0] = surf->vertex1[2];
@@ -374,7 +374,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         if (y > height) continue;
 
         // If an object can pass through a vanish cap wall, pass through.
-        if (surf->type == SURFACE_VANISH_CAP_WALLS) {
+        if (SURFACE_IS_VANISH_CAP(surf->type)) {
             // If Mario has a vanish cap, pass through the vanish cap wall.
             if (gCurrentObject != NULL && gCurrentObject == gMarioObject
                 && (gMarioState->flags & MARIO_VANISH_CAP)) {
@@ -517,7 +517,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
         if (bufferY < height) continue;
 
         // If an object can pass through a vanish cap wall, pass through.
-        if (surf->type == SURFACE_VANISH_CAP_WALLS) {
+        if (SURFACE_IS_VANISH_CAP(surf->type)) {
             // If Mario has a vanish cap, pass through the vanish cap wall.
             if (gCurrentObject != NULL && gCurrentObject == gMarioObject
                 && (gMarioState->flags & MARIO_VANISH_CAP)) {

@@ -829,7 +829,7 @@ const Collision castle_grounds_seg7_collision_level[] = {
     COL_TRI(98, 120, 119),
     COL_TRI(112, 124, 121),
     COL_TRI(142, 39, 22),
-    COL_TRI_INIT(SURFACE_HANGABLE, 6),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 6),
     COL_TRI(222, 263, 343),
     COL_TRI(222, 343, 357),
     COL_TRI(7, 202, 194),

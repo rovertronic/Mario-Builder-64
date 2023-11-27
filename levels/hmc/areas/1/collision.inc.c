@@ -3369,7 +3369,7 @@ const Collision hmc_seg7_collision_level[] = {
     COL_TRI(990, 934, 940),
     COL_TRI(991, 1444, 1456),
     COL_TRI(991, 1446, 1444),
-    COL_TRI_INIT(SURFACE_HANGABLE, 16),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 16),
     COL_TRI(176, 179, 177),
     COL_TRI(167, 168, 169),
     COL_TRI(167, 170, 168),

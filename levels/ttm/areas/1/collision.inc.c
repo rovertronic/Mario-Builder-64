@@ -1639,7 +1639,7 @@ const Collision ttm_seg7_area_1_collision[] = {
     COL_TRI(841, 831, 489),
     COL_TRI(831, 312, 489),
     COL_TRI(841, 837, 831),
-    COL_TRI_INIT(SURFACE_HANGABLE, 4),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 4),
     COL_TRI(805, 806, 807),
     COL_TRI(808, 806, 805),
     COL_TRI(809, 806, 808),

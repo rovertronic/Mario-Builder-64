@@ -1806,7 +1806,7 @@ const Collision bitfs_seg7_collision_level[] = {
     COL_TRI(73, 75, 76),
     COL_TRI(75, 74, 78),
     COL_TRI(76, 75, 78),
-    COL_TRI_INIT(SURFACE_HANGABLE, 6),
+    COL_TRI_INIT(SURFACE_HANGABLE_MESH, 6),
     COL_TRI(545, 549, 127),
     COL_TRI(545, 547, 549),
     COL_TRI(198, 589, 595),
