@@ -21,9 +21,9 @@ void bhv_black_smoke_mario_loop(void) {
     if (o->oTimer == 0) {
         //if (gCurrLevelNum != LEVEL_CCM) { //worst hardcoded bullshit you've seen in your entire life
 
-        if (o->parentObj == gMarioObject) { //that's better
+        //if (o->parentObj == gMarioObject) { //that's better
             cur_obj_set_pos_relative(gMarioObject, 0, 0, -30.0f);
-            }
+        //}
         o->oForwardVel = random_float() * 2 + 0.5f;
         o->oMoveAngleYaw = (gMarioObject->oMoveAngleYaw + 0x7000) + random_float() * 8192.0f;
         o->oVelY = 8.0f;

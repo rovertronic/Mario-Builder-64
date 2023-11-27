@@ -1805,7 +1805,7 @@ char *cmm_bg_string_table[] = {
     "Haunted Forest",
     "Ice Mountains",
     "Desert Pyramids",
-    "Hushed Haven",
+    "Pink Sky",
 };
 
 //skybox table
