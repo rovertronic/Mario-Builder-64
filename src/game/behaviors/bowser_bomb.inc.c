@@ -24,7 +24,7 @@ void bhv_bowser_bomb_loop(void) {
     }
 
     if (o->oInteractStatus & INT_STATUS_HIT_MINE) {
-        spawn_object(o, MODEL_BOWSER_FLAMES, bhvBowserBombExplosion);
+        spawn_object(o, MODEL_MAKER_BFLAMES, bhvBowserBombExplosion);
         create_sound_spawner(SOUND_GENERAL_BOWSER_BOMB_EXPLOSION);
         set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
