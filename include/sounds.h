@@ -485,7 +485,7 @@ enum SoundBank {
 #define SOUND_OBJ_CHUCKYA_PREVIEW                /*            */ SOUND_ARG_LOAD(SOUND_BANK_OBJ,      0x78, 0x40, SOUND_DISCRETE)
 
 #define SOUND_AIR_BOWSER_SPIT_FIRE               /* 0x60000000 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x00, 0x00, 0)
-#define SOUND_AIR_UNK01                          /* 0x60010000 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x01, 0x00, 0) // ?, unused
+#define SOUND_AIR_AMP_PREVIEW                    /* 0x60010000 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x01, 0x80, SOUND_DISCRETE)
 #define SOUND_AIR_LAKITU_FLY                     /* 0x60028000 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x02, 0x80, 0)
 #define SOUND_AIR_LAKITU_FLY_HIGHPRIO            /* 0x6002FF00 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x02, 0xFF, 0)
 #define SOUND_AIR_AMP_BUZZ                       /* 0x60034000 */ SOUND_ARG_LOAD(SOUND_BANK_AIR,      0x03, 0x40, 0)
