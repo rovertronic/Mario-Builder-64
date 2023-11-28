@@ -32,8 +32,6 @@
 #include "spiny_egg/geo.inc.c"
 #include "spiny/geo.inc.c"
 
-//#include "Hammerbro/geo.inc.c"
-//#include "hammer/geo.inc.c"
 //#include "ring/geo.inc.c"
 //#include "metal_crate/geo.inc.c"
 //#include "monty_mole/geo.inc.c"

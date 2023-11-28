@@ -6150,10 +6150,16 @@ const BehaviorScript bhvChicken[] = {
 
 //bhvHammerBro
 
+const BehaviorScript bhvFireBro[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    SET_INT(oBehParams2ndByte, 1),
+    GOTO(bhvHammerBro + 1),
+};
+
 const BehaviorScript bhvHammerBro[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    //LOAD_ANIMATIONS(oAnimations, Hammerbro_anims),
+    LOAD_ANIMATIONS(oAnimations, Hammerbro_anims),
     ANIMATE(0),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 80, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     DROP_TO_FLOOR(),

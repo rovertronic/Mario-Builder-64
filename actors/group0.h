@@ -423,14 +423,6 @@ extern const struct Animation *const bowser_seg6_anims_06057690[];
 // monty_mole_hole
 extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
-extern const struct Animation *const Hammerbro_anims[];
-
-//#include "Hammerbro/geo_header.h"
-
-
-//#include "Hammerbro/anim_header.h"
-//#include "hammer/geo_header.h"
-
 //#include "ring/geo_header.h"
 
 //#include "metal_crate/geo_header.h"

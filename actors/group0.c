@@ -88,10 +88,6 @@
 //#include "Crowbar/model.inc.c"
 //#include "Crowbar/geo.inc.c"
 
-//#include "Hammerbro/model.inc.c"
-//#include "Hammerbro/anims/data.inc.c"
-//#include "Hammerbro/anims/table.inc.c"
-//#include "hammer/model.inc.c"
 //#include "ring/model.inc.c"
 //#include "metal_crate/model.inc.c"
 //#include "metal_crate/collision.inc.c"

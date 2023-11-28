@@ -70,12 +70,10 @@ const LevelScript level_main_scripts_entry[] = {
 
     //LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
     LOAD_MODEL_FROM_GEO(0xEF,                   green_coin_geo),
-    //LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
     
     //LOAD_MODEL_FROM_GEO(MODEL_TV_CORPSE, tvcorpse_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_METAL_STAR,                   metalstar_geo),
-    //LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
     
     //LOAD_MODEL_FROM_GEO(0xEB,                   ring_geo),
     //LOAD_MODEL_FROM_GEO(0xEA,                   metal_crate_geo),
@@ -277,6 +275,8 @@ const LevelScript script_func_cmm_theme_vanilla[] = {
 };
 const LevelScript script_func_cmm_theme_btcm[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_geo),
+    LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
+    LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
     RETURN(),
 };
 

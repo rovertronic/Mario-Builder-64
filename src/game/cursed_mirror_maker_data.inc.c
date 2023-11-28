@@ -1046,10 +1046,12 @@ struct cmm_object_info cmm_object_type_spawn = {
     bhvSpawn, 0, MODEL_SPAWN, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
 };
 struct cmm_object_info cmm_object_type_btcme[] = {
-    {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
     {bhvRex, 0, 0xE1, FALSE, 2, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
     {bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 0, 1.0f, NULL, df_podoboo, SOUND_OBJ_FLAME_BLOWN},
     {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 4, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
+    {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 1.0f, Hammerbro_anims, NULL, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvFireBro, 60.0f, 0xEE, FALSE, 6, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_warppipe = {
     bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
@@ -1169,7 +1171,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
     {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 4},
+    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 6},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
     { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
@@ -1333,17 +1335,21 @@ Gfx *btn_blue_coins[] = {
 };
 
 char *txt_btcm_objects[] = {
-    "Cosmic Phantasm",
     "Rex",
     "Podoboo",
     "Crablet",
+    "Hammer Bro",
+    "Fire Bro",
+    "Cosmic Phantasm",
 };
 
 Gfx *btn_btcm_objects[] = {
-    mat_b_btn_phantasm,
     mat_b_btn_rex,
     mat_b_btn_podoboo,
     mat_b_btn_crablet,
+    mat_b_btn_hammerbro,
+    mat_b_btn_hammerbro,
+    mat_b_btn_phantasm,
 };
 
 char *txt_stone_enemies[] = {
