@@ -307,3 +307,9 @@ void df_grindel(s32 context) {
         o->oMoveAngleYaw += 0x4000;
     }
 }
+
+void df_firebro(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oAnimState = 1;
+    }
+}

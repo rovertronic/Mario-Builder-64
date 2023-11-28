@@ -70,12 +70,10 @@ const LevelScript level_main_scripts_entry[] = {
 
     //LOAD_MODEL_FROM_GEO(0xF0,                   crowbar2_geo),
     LOAD_MODEL_FROM_GEO(0xEF,                   green_coin_geo),
-    //LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
     
     //LOAD_MODEL_FROM_GEO(MODEL_TV_CORPSE, tvcorpse_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_METAL_STAR,                   metalstar_geo),
-    //LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
     
     //LOAD_MODEL_FROM_GEO(0xEB,                   ring_geo),
     //LOAD_MODEL_FROM_GEO(0xEA,                   metal_crate_geo),
@@ -178,6 +176,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_FIREBAR, lll_geo_000B38),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_GRINDEL ,ssl_geo_000734),
     LOAD_MODEL_FROM_GEO(MODEL_LOOPINGP, loopingp_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_BFLAMES, bowser_flames_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
@@ -276,6 +275,8 @@ const LevelScript script_func_cmm_theme_vanilla[] = {
 };
 const LevelScript script_func_cmm_theme_btcm[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_geo),
+    LOAD_MODEL_FROM_GEO(0xEE,                   HammerBroGeo),
+    LOAD_MODEL_FROM_GEO(0xEC,                   hammer_geo),
     RETURN(),
 };
 
@@ -373,7 +374,7 @@ const LevelScript script_func_global_13[] = {
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_BOMB_CHILD_OBJ,   bowser_bomb_geo),
 
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_SMOKE,            bowser_impact_smoke_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_BOWSER_FLAMES,           bowser_flames_geo),
+    //LOAD_MODEL_FROM_GEO(MODEL_BOWSER_FLAMES,           bowser_flames_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_WAVE,             invisible_bowser_accessory_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BOWSER_NO_SHADOW,        bowser_geo_no_shadow),
     RETURN(),

@@ -7,4 +7,8 @@
 #include "make_const_nonconst.h"
 
 #include "mario/model.inc.c"
-//poor group 14 is lonely so it gets a single file that's duplicated : 3
+
+#include "Hammerbro/model.inc.c"
+#include "Hammerbro/anims/data.inc.c"
+#include "Hammerbro/anims/table.inc.c"
+#include "hammer/model.inc.c"

@@ -9,3 +9,6 @@
 #include "group0.h"
 
 #include "mario/geo.inc.c"
+
+#include "Hammerbro/geo.inc.c"
+#include "hammer/geo.inc.c"

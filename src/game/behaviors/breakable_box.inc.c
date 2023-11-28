@@ -1,15 +1,18 @@
 // breakable_box.inc.c
 
+//200 -> 256
+//128% increase
+
 struct ObjectHitbox sBreakableBoxHitbox = {
     /* interactType:      */ INTERACT_BREAKABLE,
     /* downOffset:        */  20,
     /* damageOrCoinValue: */   0,
     /* health:            */   1,
     /* numLootCoins:      */   0,
-    /* radius:            */ 150,
-    /* height:            */ 200,
-    /* hurtboxRadius:     */ 150,
-    /* hurtboxHeight:     */ 200,
+    /* radius:            */ /*150,*/ 192,
+    /* height:            */ /*200,*/ 256,
+    /* hurtboxRadius:     */ /*150,*/ 192,
+    /* hurtboxHeight:     */ /*200,*/ 256,
 };
 
 void breakable_box_init(void) {

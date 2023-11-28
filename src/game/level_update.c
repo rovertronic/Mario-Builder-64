@@ -369,6 +369,7 @@ void init_mario_after_warp(void) {
             gMarioState->numCoins = 0;
             gHudDisplay.coins = 0;
             gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+            gMarioState->numBadgePoints = gMarioState->numMaxFP;
         }
 
         init_mario();
