@@ -65,6 +65,28 @@ void scroll_sts_mat_maker_MakerBurningIce() {
 	shift_t(mat, 12, PACK_TILESIZE(0, 1));
 };
 
+void scroll_sts_mat_maker_MakerMCLava() {
+	static int intervalTex0 = 4;
+	static int curInterval0 = 4;
+	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCLava);
+
+	if (--curInterval0 <= 0) {
+		shift_t(mat, 12, PACK_TILESIZE(0, 64));
+		curInterval0 = intervalTex0;
+	}
+};
+
+void scroll_sts_mat_maker_MakerMCWater() {
+	static int intervalTex0 = 8;
+	static int curInterval0 = 8;
+	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCWater);
+
+	if (--curInterval0 <= 0) {
+		shift_t(mat, 12, PACK_TILESIZE(0, 64));
+		curInterval0 = intervalTex0;
+	}
+};
+
 void scroll_actor_dl_maker() {
 	scroll_sts_mat_maker_MakerLava();
 	scroll_sts_mat_maker_MakerWater();
@@ -75,4 +97,6 @@ void scroll_actor_dl_maker() {
 	scroll_sts_mat_maker_MakerServerAcid();
 	scroll_sts_mat_maker_MakerGreenWater();
 	scroll_sts_mat_maker_MakerBurningIce();
+	scroll_sts_mat_maker_MakerMCLava();
+	scroll_sts_mat_maker_MakerMCWater();
 }

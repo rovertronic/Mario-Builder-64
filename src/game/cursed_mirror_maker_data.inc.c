@@ -513,6 +513,21 @@ enum cmm_materials {
     CMM_MAT_RETRO_LAVA,
     CMM_MAT_RETRO_UNDERWATERGROUND,
     CMM_MAT_RETRO_MESH,
+
+    // Minecraft
+    CMM_MAT_MC_DIRT,
+    CMM_MAT_MC_GRASS,
+    CMM_MAT_MC_COBBLESTONE,
+    CMM_MAT_MC_STONE,
+    CMM_MAT_MC_OAK_LOG_TOP,
+    CMM_MAT_MC_OAK_LOG_SIDE,
+    CMM_MAT_MC_OAK_LEAVES,
+    CMM_MAT_MC_WOOD_PLANKS,
+    CMM_MAT_MC_SAND,
+    CMM_MAT_MC_BRICKS,
+    CMM_MAT_MC_LAVA,
+    CMM_MAT_MC_GLASS,
+    CMM_MAT_MC_IRON_BARS,
 };
 
 struct cmm_material cmm_mat_table[] = {
@@ -637,6 +652,21 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRetroLava,       0, SURFACE_BURNING},      // CMM_MAT_RETRO_LAVA
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
     {mat_maker_MakerRetroMesh_layer1,MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_RETRO_MESH
+
+    // Minecraft
+    {mat_maker_MakerMCDirt,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_MC_DIRT
+    {mat_maker_MakerMCGrassTop,    0, SURFACE_GRASS},        // CMM_MAT_MC_GRASS
+    {mat_maker_MakerMCCobblestone, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_MC_COBBLESTONE
+    {mat_maker_MakerMCStone,       0, SURFACE_DEFAULT},      // CMM_MAT_MC_STONE
+    {mat_maker_MakerMCOakLogTop,   0, SURFACE_CREAKWOOD},    // CMM_MAT_MC_OAK_LOG_TOP
+    {mat_maker_MakerMCOakLogSide,  0, SURFACE_CREAKWOOD},    // CMM_MAT_MC_OAK_LOG_SIDE
+    {mat_maker_MakerMCOakLeaves_layer1,  MAT_CUTOUT, SURFACE_GRASS}, // CMM_MAT_MC_OAK_LEAVES
+    {mat_maker_MakerMCWoodPlanks,  0, SURFACE_CREAKWOOD},    // CMM_MAT_MC_WOOD_PLANKS
+    {mat_maker_MakerMCSand,        0, SURFACE_SAND},         // CMM_MAT_MC_SAND
+    {mat_maker_MakerMCBricks,      0, SURFACE_DEFAULT},      // CMM_MAT_MC_BRICKS
+    {mat_maker_MakerMCLava,        0, SURFACE_BURNING},      // CMM_MAT_MC_LAVA
+    {mat_maker_MakerMCGlass_layer1,  MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_MC_GLASS
+    {mat_maker_MakerMCIronBars_layer1, MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_MC_IRON_BARS
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
@@ -650,6 +680,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim_layer1},
     {CMM_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim_layer1},
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1},
+    {CMM_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge_layer1},
 };
 
 s8 cmm_terrain_floors_generic[] =    {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
@@ -662,6 +693,7 @@ s8 cmm_terrain_floors_bbh[] =        {3, 8, 0, 6}; // metal, lava, stone, wood
 s8 cmm_terrain_floors_jrb[] =        {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
 s8 cmm_terrain_floors_snow[] =       {0, 8, 9, 1, 3}; // snow, hazard ice, lava, bricks, tiles
 s8 cmm_terrain_floors_retro[] =      {0, 8, 4, 7, 9}; // ground, lava, blue ground, white bricks, underwater tile
+s8 cmm_terrain_floors_mc[] =         {0, 8, 2, 5, 6, 7}; // grass, lava, stone, planks, sand, bricks
 
 enum cmm_fences {
     CMM_FENCE_NORMAL,
@@ -674,6 +706,7 @@ enum cmm_fences {
     CMM_FENCE_JRB,
     CMM_FENCE_SNOW,
     CMM_FENCE_RETRO,
+    CMM_FENCE_MC,
 };
 
 Gfx *cmm_fence_texs[] = {
@@ -687,6 +720,7 @@ Gfx *cmm_fence_texs[] = {
     mat_maker_MakerJRBFence_layer1,
     mat_maker_MakerSnowFence_layer1,
     mat_maker_MakerRetroFence_layer1,
+    mat_maker_MakerMCFence_layer1,
 };
 
 enum cmm_bars {
@@ -697,6 +731,7 @@ enum cmm_bars {
     CMM_BAR_BBH,
     CMM_BAR_VP,
     CMM_BAR_RETRO,
+    CMM_BAR_MC,
 };
 u8 cmm_bar_mats[] = {
     CMM_MAT_IRONBARS,
@@ -706,18 +741,21 @@ u8 cmm_bar_mats[] = {
     CMM_MAT_BBH_MESH,
     CMM_MAT_VP_MESH,
     CMM_MAT_RETRO_MESH,
+    CMM_MAT_MC_IRON_BARS,
 };
 
 enum cmm_water {
     CMM_WATER_DEFAULT,
     CMM_WATER_GREEN,
     CMM_WATER_RETRO,
+    CMM_WATER_MC,
 };
 
 Gfx *cmm_water_texs[] = {
     mat_maker_MakerWater,
     mat_maker_MakerGreenWater,
     mat_maker_MakerRetroWater,
+    mat_maker_MakerMCWater,
 };
 
 struct cmm_theme cmm_theme_table[] = {
@@ -890,6 +928,23 @@ struct cmm_theme cmm_theme_table[] = {
         },
         ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
         CMM_FENCE_RETRO, CMM_MAT_RETRO_BRICKS, CMM_BAR_RETRO, CMM_WATER_RETRO
+    },
+    // MINECRAFT
+    {
+        {
+            {CMM_MAT_MC_DIRT,          CMM_MAT_MC_GRASS,       "Grass Block"},
+            {CMM_MAT_MC_COBBLESTONE,   0,                      "Cobblestone"},
+            {CMM_MAT_MC_STONE,         0,                      "Stone"},
+            {CMM_MAT_MC_OAK_LOG_SIDE,  CMM_MAT_MC_OAK_LOG_TOP, "Oak Log"},
+            {CMM_MAT_MC_OAK_LEAVES,    0,                      "Oak Leaves"},
+            {CMM_MAT_MC_WOOD_PLANKS,   0,                      "Oak Planks"},
+            {CMM_MAT_MC_SAND,          0,                      "Sand"},
+            {CMM_MAT_MC_BRICKS,        0,                      "Bricks"},
+            {CMM_MAT_MC_LAVA,          0,                      "Lava"},
+            {CMM_MAT_MC_GLASS,         0,                      "Glass"},
+        },
+        ARRAY_COUNT(cmm_terrain_floors_mc), cmm_terrain_floors_mc,
+        CMM_FENCE_MC, CMM_MAT_MC_OAK_LOG_SIDE, CMM_BAR_MC, CMM_WATER_MC
     },
 };
 
@@ -1794,6 +1849,7 @@ char *cmm_theme_string_table[] = {
     "Big Boo's Haunt",
     "Jolly Roger Bay",
     "Retroland",
+    "Minecraft",
 };
 
 //cmm themes moved to cursed_mirror_maker.h to work with object df
