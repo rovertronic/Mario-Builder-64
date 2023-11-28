@@ -919,7 +919,7 @@ u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actionArg) {
 
         case ACT_LAVA_BOOST:
             m->vel[1] = 84.0f;
-            if (actionArg == 0) {
+            if (!(actionArg & 1)) {
                 m->forwardVel = 0.0f;
             }
             break;

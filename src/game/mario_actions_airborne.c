@@ -82,7 +82,7 @@ s32 lava_boost_on_wall(struct MarioState *m) {
 
     play_sound(SOUND_MARIO_ON_FIRE, m->marioObj->header.gfx.cameraToObject);
     update_mario_sound_and_camera(m);
-    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, 1);
+    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, (m->wall->type == SURFACE_BURNING ? 1 : 3));
 }
 
 s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
@@ -1676,6 +1676,8 @@ s32 act_lava_boost(struct MarioState *m) {
         case AIR_STEP_LANDED:
             if (SURFACE_IS_BURNING(m->floor->type)) {
                 m->actionState = ACT_STATE_LAVA_BOOST_HIT_LAVA;
+                m->actionArg &= ~2;
+                if (m->floor->type != SURFACE_BURNING) m->actionArg |= 2;
                 if (!(m->flags & MARIO_METAL_CAP)) {
                     if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
                         gMarioState->numBadgePoints --;
@@ -1718,7 +1720,7 @@ s32 act_lava_boost(struct MarioState *m) {
     }
 
     set_mario_animation(m, MARIO_ANIM_FIRE_LAVA_BURN);
-    if ((m->area->terrainType & TERRAIN_MASK) != TERRAIN_SNOW && !(m->flags & MARIO_METAL_CAP)
+    if (!(m->flags & MARIO_METAL_CAP) && !(m->actionArg & 2)
         && m->vel[1] > 0.0f) {
         m->particleFlags |= PARTICLE_FIRE;
         if (m->actionState == ACT_STATE_LAVA_BOOST_HIT_LAVA) {
