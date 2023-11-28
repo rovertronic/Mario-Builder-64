@@ -1099,6 +1099,7 @@ struct cmm_object_info cmm_object_type_flying[] = {
     {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 5, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
     {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 2, 1.5f, flyguy_seg8_anims_08011A64, df_flyguy, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
     {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 2, 1.0f, NULL, df_snufit, SOUND_OBJ_SNUFIT_SHOOT},
+    {bhvCirclingAmp, TILE_SIZE/2, MODEL_AMP, FALSE, 0, 1.0f, dAmpAnimsList, NULL, SOUND_MOVING_SHOCKED},
 };
 
 struct cmm_object_info cmm_object_type_haunted[] = {
@@ -1179,7 +1180,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_stone, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_options, FALSE, FALSE, TRUE, 3},
-    { cmm_object_type_flying, FALSE, FALSE, TRUE, 3},
+    { cmm_object_type_flying, FALSE, FALSE, TRUE, 4},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_mine, FALSE, FALSE, FALSE, 0},
@@ -1361,12 +1362,14 @@ char *txt_flying_enemies[] = {
     "Lakitu",
     "Fly Guy",
     "Snufit",
+    "Amp",
 };
 
 Gfx *btn_flying_enemies[] = {
     mat_b_btn_lakitu,
     mat_b_btn_flyguy,
     mat_b_btn_snufit,
+    mat_b_btn_amp,
 };
 
 char *txt_haunted_enemies[] = {
