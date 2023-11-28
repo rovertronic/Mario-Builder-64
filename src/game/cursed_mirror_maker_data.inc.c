@@ -449,6 +449,7 @@ enum cmm_materials {
     CMM_MAT_HMC_MESH,
     // Castle
     CMM_MAT_C_WOOD,
+    CMM_MAT_C_TILES,
     CMM_MAT_C_STONETOP,
     CMM_MAT_C_STONESIDE,
     CMM_MAT_C_CARPET,
@@ -573,6 +574,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerHMesh_layer1,    MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_HMC_MESH
     // Castle
     {mat_maker_MakerCWood,           0, SURFACE_DEFAULT},      // CMM_MAT_C_WOOD
+    {mat_maker_MakerCTiles,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_TILES
     {mat_maker_MakerCStone,          0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_C_STONETOP
     {mat_maker_MakerCStoneSide,      0, SURFACE_DEFAULT},      // CMM_MAT_C_STONESIDE
     {mat_maker_MakerCCarpet,         0, SURFACE_GRASS},        // CMM_MAT_C_CARPET
@@ -641,6 +643,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},
     {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},
     {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},
+    {CMM_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim_layer1},
     {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},
     {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},
     {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},
@@ -789,8 +792,8 @@ struct cmm_theme cmm_theme_table[] = {
     // CASTLE
     {
         {
-            {CMM_MAT_C_WOOD,         CMM_MAT_TILES,      "Tiling"},
-            {CMM_MAT_C_BRICK,        CMM_MAT_TILES,      "Tiling (Bricks)"},
+            {CMM_MAT_C_WOOD,         CMM_MAT_C_TILES,      "Tiling"},
+            {CMM_MAT_C_BRICK,        CMM_MAT_C_TILES,      "Tiling (Bricks)"},
             {CMM_MAT_C_STONESIDE,    CMM_MAT_C_STONETOP, "Tiling (Stone)"},
             {CMM_MAT_C_WOOD,         CMM_MAT_C_CARPET,   "Carpet"},
             {CMM_MAT_C_ROOF,         0,                  "Roof"},
