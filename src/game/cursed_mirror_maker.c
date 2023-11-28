@@ -1604,7 +1604,7 @@ void generate_terrain_collision(void) {
 
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
-    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - 32);
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - (TILE_SIZE / 8));
     if (y < waterPlaneHeight) {
         return waterPlaneHeight;
     }
@@ -1639,7 +1639,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     if (is_water_fullblock(pos)) {
         return (pos[1] + 1) * TILE_SIZE;
     }
-    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
+    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 8);
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {

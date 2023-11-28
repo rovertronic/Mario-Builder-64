@@ -244,6 +244,7 @@ enum cmm_mat_types {
     MAT_OPAQUE,
     MAT_VPSCREEN,
     MAT_CUTOUT,
+    MAT_CUTOUT_NOCULL, // also doesnt have scaled uvs
     MAT_TRANSPARENT,
 };
 

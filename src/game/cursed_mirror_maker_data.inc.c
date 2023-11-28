@@ -526,6 +526,7 @@ enum cmm_materials {
     CMM_MAT_MC_SAND,
     CMM_MAT_MC_BRICKS,
     CMM_MAT_MC_LAVA,
+    CMM_MAT_MC_FLOWING_LAVA,
     CMM_MAT_MC_GLASS,
     CMM_MAT_MC_IRON_BARS,
 };
@@ -665,7 +666,8 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerMCSand,        0, SURFACE_SAND},         // CMM_MAT_MC_SAND
     {mat_maker_MakerMCBricks,      0, SURFACE_DEFAULT},      // CMM_MAT_MC_BRICKS
     {mat_maker_MakerMCLava,        0, SURFACE_BURNING},      // CMM_MAT_MC_LAVA
-    {mat_maker_MakerMCGlass_layer1,  MAT_CUTOUT, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_MC_GLASS
+    {mat_maker_MakerMCFlowingLava, 0, SURFACE_BURNING},      // CMM_MAT_MC_FLOWING_LAVA
+    {mat_maker_MakerMCGlass_layer1,  MAT_CUTOUT_NOCULL, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_MC_GLASS
     {mat_maker_MakerMCIronBars_layer1, MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_MC_IRON_BARS
 };
 
@@ -932,7 +934,7 @@ struct cmm_theme cmm_theme_table[] = {
     // MINECRAFT
     {
         {
-            {CMM_MAT_MC_DIRT,          CMM_MAT_MC_GRASS,       "Grass Block"},
+            {CMM_MAT_MC_DIRT,          CMM_MAT_MC_GRASS,       "Grass"},
             {CMM_MAT_MC_COBBLESTONE,   0,                      "Cobblestone"},
             {CMM_MAT_MC_STONE,         0,                      "Stone"},
             {CMM_MAT_MC_OAK_LOG_SIDE,  CMM_MAT_MC_OAK_LOG_TOP, "Oak Log"},
@@ -940,7 +942,7 @@ struct cmm_theme cmm_theme_table[] = {
             {CMM_MAT_MC_WOOD_PLANKS,   0,                      "Oak Planks"},
             {CMM_MAT_MC_SAND,          0,                      "Sand"},
             {CMM_MAT_MC_BRICKS,        0,                      "Bricks"},
-            {CMM_MAT_MC_LAVA,          0,                      "Lava"},
+            {CMM_MAT_MC_FLOWING_LAVA,  CMM_MAT_MC_LAVA,        "Lava"},
             {CMM_MAT_MC_GLASS,         0,                      "Glass"},
         },
         ARRAY_COUNT(cmm_terrain_floors_mc), cmm_terrain_floors_mc,

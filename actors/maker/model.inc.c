@@ -566,6 +566,10 @@ Lights1 maker_MakerMCWater_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
+Lights1 maker_MakerMCFlowingLava_lights = gdSPDefLights1(
+	0x7F, 0x7F, 0x7F,
+	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
+
 Gfx maker_minecraft_grass_but_colorlerful_png_png_ci8_aligner[] = {gsSPEndDisplayList()};
 u8 maker_minecraft_grass_but_colorlerful_png_png_ci8[] = {
 	0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x02, 0x03, 
@@ -20856,6 +20860,19 @@ Gfx maker_materials_mesh_tri_143[] = {
 	gsSPEndDisplayList(),
 };
 
+Vtx maker_materials_mesh_vtx_144[4] = {
+	{{ {900, 0, 900}, 0, {-16, 8176}, {0, 127, 0, 255} }},
+	{{ {1000, 0, 900}, 0, {496, 8176}, {0, 127, 0, 255} }},
+	{{ {1000, 0, 800}, 0, {496, -16}, {0, 127, 0, 255} }},
+	{{ {900, 0, 800}, 0, {-16, -16}, {0, 127, 0, 255} }},
+};
+
+Gfx maker_materials_mesh_tri_144[] = {
+	gsSPVertex(maker_materials_mesh_vtx_144 + 0, 4, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSPEndDisplayList(),
+};
+
 Gfx mat_maker_MakerGrass[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
@@ -24262,9 +24279,9 @@ Gfx mat_maker_MakerMCGlass_layer1[] = {
 	gsDPLoadTLUTCmd(7, 4),
 	gsDPLoadSync(),
 	gsDPSetTextureImage(G_IM_FMT_CI, G_IM_SIZ_16b, 1, maker_glass_ci4),
-	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_16b, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 2, G_TX_WRAP | G_TX_NOMIRROR, 4, 2),
+	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_16b, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 1, G_TX_WRAP | G_TX_NOMIRROR, 4, 1),
 	gsDPLoadBlock(7, 0, 0, 63, 2048),
-	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_4b, 1, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 2, G_TX_WRAP | G_TX_NOMIRROR, 4, 2),
+	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_4b, 1, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, 1, G_TX_WRAP | G_TX_NOMIRROR, 4, 1),
 	gsDPSetTileSize(0, 0, 0, 60, 60),
 	gsSPSetLights1(maker_MakerMCGlass_layer1_lights),
 	gsSPEndDisplayList(),
@@ -24349,6 +24366,30 @@ Gfx mat_maker_MakerMCWater[] = {
 };
 
 Gfx mat_revert_maker_MakerMCWater[] = {
+	gsDPPipeSync(),
+	gsDPSetTextureLUT(G_TT_NONE),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_maker_MakerMCFlowingLava[] = {
+	gsDPPipeSync(),
+	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 1),
+	gsDPSetTextureLUT(G_TT_RGBA16),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, maker_lava_still_cut_ci4_pal_rgba16),
+	gsDPSetTile(0, 0, 0, 256, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadTLUTCmd(7, 15),
+	gsDPLoadSync(),
+	gsDPSetTextureImage(G_IM_FMT_CI, G_IM_SIZ_16b, 1, maker_lava_still_cut_ci4),
+	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_16b, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 8, 1, G_TX_WRAP | G_TX_NOMIRROR, 4, 1),
+	gsDPLoadBlock(7, 0, 0, 1023, 2048),
+	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_4b, 1, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 8, 1, G_TX_WRAP | G_TX_NOMIRROR, 4, 1),
+	gsDPSetTileSize(0, 0, 0, 60, 1020),
+	gsSPSetLights1(maker_MakerMCFlowingLava_lights),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_revert_maker_MakerMCFlowingLava[] = {
 	gsDPPipeSync(),
 	gsDPSetTextureLUT(G_TT_NONE),
 	gsSPEndDisplayList(),
@@ -24790,6 +24831,9 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(mat_maker_MakerMCWater),
 	gsSPDisplayList(maker_materials_mesh_tri_143),
 	gsSPDisplayList(mat_revert_maker_MakerMCWater),
+	gsSPDisplayList(mat_maker_MakerMCFlowingLava),
+	gsSPDisplayList(maker_materials_mesh_tri_144),
+	gsSPDisplayList(mat_revert_maker_MakerMCFlowingLava),
 	gsDPPipeSync(),
 	gsSPSetGeometryMode(G_LIGHTING),
 	gsSPClearGeometryMode(G_TEXTURE_GEN),
