@@ -1,4 +1,5 @@
 // 0x0F0005D0
+/**
 const GeoLayout breakable_box_geo[] = {
    GEO_CULLING_RADIUS(500),
    GEO_OPEN_NODE(),
@@ -13,6 +14,7 @@ const GeoLayout breakable_box_geo[] = {
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
+**/
 
 // 0x0F000610
 const GeoLayout breakable_box_no_shadow_geo[] = {
