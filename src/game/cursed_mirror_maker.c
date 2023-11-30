@@ -148,6 +148,7 @@ u8 cmm_lopt_size = 0;
 u8 cmm_lopt_template = 0;
 u8 cmm_lopt_coinstar = 0;
 u8 cmm_lopt_waterlevel = 0;
+u8 cmm_lopt_secret = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
@@ -2176,6 +2177,7 @@ void save_level(void) {
     cmm_save.option[6] = cmm_lopt_coinstar;
     cmm_save.option[7] = cmm_lopt_size;
     cmm_save.option[8] = cmm_lopt_waterlevel;
+    cmm_save.option[9] = cmm_lopt_secret;
     cmm_save.option[19] = cmm_lopt_game;
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
@@ -2295,6 +2297,9 @@ void load_level(void) {
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
     cmm_lopt_waterlevel = cmm_save.option[8];
+    cmm_lopt_secret = cmm_save.option[9];
+
+    if (cmm_lopt_secret) cmm_settings_terrain_buttons[1].size = ARRAY_COUNT(cmm_theme_string_table);
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;

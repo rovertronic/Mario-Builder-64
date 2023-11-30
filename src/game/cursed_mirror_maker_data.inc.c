@@ -1923,7 +1923,7 @@ struct cmm_settings_button cmm_settings_general_buttons_vanilla[] = {
 
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
     {NULL, NULL, NULL, 0, NULL, NULL},
-    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table), NULL, reload_theme},
+    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table) - 1, NULL, reload_theme},
     {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, generate_terrain_gfx}, // Filled in by code
     {"Water Level:", &cmm_lopt_waterlevel, NULL,               33,               cmm_get_waterlevel_name, generate_terrain_gfx},
 };

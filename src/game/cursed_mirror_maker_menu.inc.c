@@ -329,6 +329,12 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
         print_maker_string_ascii(45+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,60,cmm_settings_terrain_buttons,i,cmm_joystick);
     }
+
+    if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (L_TRIG | R_TRIG | Z_TRIG) == (L_TRIG | R_TRIG | Z_TRIG))) {
+        cmm_lopt_secret = TRUE;
+        cmm_settings_terrain_buttons[1].size = ARRAY_COUNT(cmm_theme_string_table);
+        play_puzzle_jingle();
+    }
 }
 
 void draw_cmm_settings_music(f32 xoff, f32 yoff) {
