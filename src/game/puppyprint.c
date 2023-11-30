@@ -486,7 +486,7 @@ extern void print_fps(s32 x, s32 y);
 extern u32 cmm_gfx_total;
 extern u32 cmm_vtx_total;
 extern u16 cmm_tile_count;
-extern u16 cmm_object_count;
+extern u16 cmm_object_limit_count;
 
 u32 profiler_get_cpu_cycles();
 u32 profiler_get_rsp_cycles();
@@ -527,7 +527,7 @@ void print_basic_profiling(void) {
             cmm_tile_count, CMM_TILE_POOL_SIZE,
             cmm_gfx_total, CMM_GFX_SIZE,
             cmm_vtx_total, CMM_VTX_SIZE,
-            cmm_object_count, CMM_MAX_OBJS);
+            cmm_object_limit_count, CMM_MAX_OBJS);
     print_small_text(16, 70, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 }
 

@@ -12,7 +12,7 @@
 
 #define TILE_SIZE 256
 
-#define CMM_VERSION 1
+#define CMM_VERSION 0
 
 void save_level(void);
 void sb_loop(void);
@@ -177,8 +177,9 @@ struct cmm_object_info {
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u8 billboarded:1;
-    u8 numCoins:4;
+    u16 billboarded:1;
+    u16 numCoins:4;
+    u16 numExtraObjects:3;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;

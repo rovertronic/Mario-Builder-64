@@ -1058,134 +1058,134 @@ u8 cmm_toolbox_vanilla[45] = {
 
 //BEHAVIOR  //Y-OFF //MODEL ID //BILLB //COINS //SCALE  //ANIMATION PTR //DISP.FUNC //SOUND
 struct cmm_object_info cmm_object_type_star[] = {
-    {bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-    {bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-    {bhvPlantStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+    {bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+    {bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+    {bhvPlantStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_goomba[] = {
-    {bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-    {bhvBigGoomba, 0, MODEL_GOOMBA, FALSE, 5, 3.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-    {bhvTinyGoomba, 0, MODEL_GOOMBA, FALSE, 1, 0.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-    {bhvPiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 5, 1.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
-    {bhvFirePiranhaPlantBig, 0, MODEL_MAKER_PLANT, FALSE, 2, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
-    {bhvFirePiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
-    {bhvScaredKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 5, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
+    {bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1, 0, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+    {bhvBigGoomba, 0, MODEL_GOOMBA, FALSE, 5, 0, 3.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+    {bhvTinyGoomba, 0, MODEL_GOOMBA, FALSE, 1, 0, 0.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+    {bhvPiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 5, 0, 1.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+    {bhvFirePiranhaPlantBig, 0, MODEL_MAKER_PLANT, FALSE, 2, 0, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+    {bhvFirePiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 0, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+    {bhvScaredKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 5, 0, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
 };
 struct cmm_object_info cmm_object_type_yellowcoin = {
-    bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
+    bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_greencoin = {
-    bhvGreenCoin, 0, 0xEF, TRUE, 3, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI,
+    bhvGreenCoin, 0, 0xEF, TRUE, 3, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI,
 };
 struct cmm_object_info cmm_object_type_redcoin = {
-    bhvRedCoin, 0, MODEL_RED_COIN, TRUE, 2, 1.0f, NULL, NULL, SOUND_MENU_COLLECT_RED_COIN,
+    bhvRedCoin, 0, MODEL_RED_COIN, TRUE, 2, 0, 1.0f, NULL, NULL, SOUND_MENU_COLLECT_RED_COIN,
 };
 struct cmm_object_info cmm_object_type_bluecoin[] = {
-    {bhvHiddenBlueCoin, 0, MODEL_BLUE_COIN, TRUE, 5, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI},
-    {bhvBlueCoinSwitch, 0, MODEL_BLUE_COIN_SWITCH, FALSE, 0, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
+    {bhvHiddenBlueCoin, 0, MODEL_BLUE_COIN, TRUE, 5, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI},
+    {bhvBlueCoinSwitch, 0, MODEL_BLUE_COIN_SWITCH, FALSE, 0, 0, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
 };
 struct cmm_object_info cmm_object_type_noteblock = {
-    bhvNoteblock, TILE_SIZE/2, MODEL_NOTEBLOCK, FALSE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW,
+    bhvNoteblock, TILE_SIZE/2, MODEL_NOTEBLOCK, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW,
 };
 
 struct cmm_object_info cmm_object_type_mech_enemy[] = {
-    {bhvBobomb, 0, MODEL_BLACK_BOBOMB, FALSE, 1, 1.0f, bobomb_seg8_anims_0802396C, NULL, SOUND_GENERAL2_QUIET_EXPLOSION},
-    {bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 5, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_PREVIEW},
-    {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 1.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
-    {bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2, FALSE, 0, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
-    {bhvHeaveHo, 0, MODEL_MAKER_HEAVEHO, FALSE, 0, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+    {bhvBobomb, 0, MODEL_BLACK_BOBOMB, FALSE, 1, 0, 1.0f, bobomb_seg8_anims_0802396C, NULL, SOUND_GENERAL2_QUIET_EXPLOSION},
+    {bhvChuckya, 0, MODEL_CHUCKYA, FALSE, 5, 0, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_PREVIEW},
+    {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 0, 1.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
+    {bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2, FALSE, 0, 1, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
+    {bhvHeaveHo, 0, MODEL_MAKER_HEAVEHO, FALSE, 0, 0, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 };
 
 struct cmm_object_info cmm_object_type_tree = {
-    bhvTree, 0, MODEL_MAKER_TREE_1, TRUE, 0, 1.0f, NULL, df_tree, SOUND_ACTION_CLIMB_UP_TREE | SOUND_VIBRATO,
+    bhvTree, 0, MODEL_MAKER_TREE_1, TRUE, 0, 0, 1.0f, NULL, df_tree, SOUND_ACTION_CLIMB_UP_TREE | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_exclamationbox = {
-    bhvExclamationBox, TILE_SIZE/2, MODEL_EXCLAMATION_BOX, FALSE, 0, 2.0f, NULL, df_exbox, SOUND_GENERAL_BOX_PREVIEW,
+    bhvExclamationBox, TILE_SIZE/2, MODEL_EXCLAMATION_BOX, FALSE, 0, 0, 2.0f, NULL, df_exbox, SOUND_GENERAL_BOX_PREVIEW,
 };
 struct cmm_object_info cmm_object_type_spawn = {
-    bhvSpawn, 0, MODEL_SPAWN, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
+    bhvSpawn, 0, MODEL_SPAWN, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
 };
 struct cmm_object_info cmm_object_type_btcme[] = {
-    {bhvRex, 0, 0xE1, FALSE, 2, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-    {bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 0, 1.0f, NULL, df_podoboo, SOUND_OBJ_FLAME_BLOWN},
-    {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 4, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
-    {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 1.0f, Hammerbro_anims, NULL, SOUND_OBJ_KOOPA_DAMAGE},
-    {bhvFireBro, 60.0f, 0xEE, FALSE, 6, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
-    {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
+    {bhvRex, 0, 0xE1, FALSE, 2, 0, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+    {bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 0, 0, 1.0f, NULL, df_podoboo, SOUND_OBJ_FLAME_BLOWN},
+    {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 4, 0, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
+    {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, NULL, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvFireBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_warppipe = {
-    bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 0, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
+    bhvWarpPipe, 0, MODEL_MAKER_PIPE, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_badge = {
-    bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 0, 5.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH,
+    bhvBadge, TILE_SIZE/2, MODEL_BADGE, TRUE, 0, 0, 5.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH,
 };
 
 struct cmm_object_info cmm_object_type_bosses[] = {
-    {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 0, 1.0f, king_bobomb_seg5_anims_0500FE30, df_kingbomb, SOUND_OBJ_KING_BOBOMB_POUNDING1_HIGHPRIO},
-    {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
-    {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
-    {bhvBigBully, 0, MODEL_BULLY, FALSE, 0, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
-    {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 1.0f, bowser_seg6_anims_06057690, df_booser, SOUND_OBJ2_BOWSER_ROAR},
+    {bhvBoss, 0, MODEL_KINGBOMB_MAKER, FALSE, 0, 0, 1.0f, king_bobomb_seg5_anims_0500FE30, df_kingbomb, SOUND_OBJ_KING_BOBOMB_POUNDING1_HIGHPRIO},
+    {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
+    {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
+    {bhvBigBully, 0, MODEL_BULLY, FALSE, 0, 0, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
+    {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 3, 1.0f, bowser_seg6_anims_06057690, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 };
 
 struct cmm_object_info cmm_object_type_platform = {
-    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
+    bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, FALSE, 0, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_bowlingball = {
-    bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,
+    bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO,
 };
 struct cmm_object_info cmm_object_type_ktq = {
-    bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 0, 3.0f, koopa_seg6_anims_06011364, df_ktq, SOUND_OBJ_KOOPA_TALK,
+    bhvKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 0, 1, 3.0f, koopa_seg6_anims_06011364, df_ktq, SOUND_OBJ_KOOPA_TALK,
 };
 struct cmm_object_info cmm_object_type_timed_challenge[] = {
-    {bhvFloorSwitchHiddenObjects, 0, MODEL_PURPLE_SWITCH, FALSE, 0, 1.5f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
-    {bhvHiddenObject, 0, MODEL_BREAKABLE_BOX, FALSE, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL2_SWITCH_TICK_FAST},
+    {bhvFloorSwitchHiddenObjects, 0, MODEL_PURPLE_SWITCH, FALSE, 0, 0, 1.5f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
+    {bhvHiddenObject, 0, MODEL_BREAKABLE_BOX, FALSE, 0, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL2_SWITCH_TICK_FAST},
 };
 
 struct cmm_object_info cmm_object_type_heart = {
-    bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
+    bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
 struct cmm_object_info cmm_object_type_options[] = {
-    {NULL, 0, MODEL_MARIO, FALSE, 0, 1.f, &evil_mario_anims[11], NULL, 0},
-    {NULL, 0, MODEL_NONE,  FALSE, 0, 0.f, NULL,                  NULL, 0},
-    {NULL, 0, MODEL_NONE,  FALSE, 0, 0.f, NULL,                  NULL, 0},
+    {NULL, 0, MODEL_MARIO, FALSE, 0, 0, 1.f, &evil_mario_anims[11], NULL, 0},
+    {NULL, 0, MODEL_NONE,  FALSE, 0, 0, 0.f, NULL,                  NULL, 0},
+    {NULL, 0, MODEL_NONE,  FALSE, 0, 0, 0.f, NULL,                  NULL, 0},
 };
 
 struct cmm_object_info cmm_object_type_stone[] = {
-    {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
-    {bhvSmallWhomp, 0, MODEL_WHOMP_MAKER, FALSE, 10, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
-    {bhvGrindel, 0, MODEL_MAKER_GRINDEL, FALSE, 0, 1.f, NULL, df_grindel, SOUND_OBJ_KING_BOBOMB_JUMP},
+    {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
+    {bhvSmallWhomp, 0, MODEL_WHOMP_MAKER, FALSE, 10, 0, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
+    {bhvGrindel, 0, MODEL_MAKER_GRINDEL, FALSE, 0, 0, 1.f, NULL, df_grindel, SOUND_OBJ_KING_BOBOMB_JUMP},
 };
 
 struct cmm_object_info cmm_object_type_flying[] = {
-    {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 5, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
-    {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 2, 1.5f, flyguy_seg8_anims_08011A64, df_flyguy, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
-    {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 2, 1.0f, NULL, df_snufit, SOUND_OBJ_SNUFIT_SHOOT},
-    {bhvCirclingAmp, TILE_SIZE/2, MODEL_AMP, FALSE, 0, 1.0f, dAmpAnimsList, df_circling_amp, SOUND_AIR_AMP_PREVIEW},
+    {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 5, 5, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
+    {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 2, 0, 1.5f, flyguy_seg8_anims_08011A64, df_flyguy, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
+    {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 2, 0, 1.0f, NULL, df_snufit, SOUND_OBJ_SNUFIT_SHOOT},
+    {bhvCirclingAmp, TILE_SIZE/2, MODEL_AMP, FALSE, 0, 0, 1.0f, dAmpAnimsList, df_circling_amp, SOUND_AIR_AMP_PREVIEW},
 };
 
 struct cmm_object_info cmm_object_type_haunted[] = {
-    {bhvBoo, TILE_SIZE/2, MODEL_MAKER_BOO, FALSE, 1, 1.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
-    {bhvMrI, 0, MODEL_MAKER_MRI, TRUE, 5, 1.0f, NULL, df_mri, SOUND_OBJ_MRI_SHOOT},
-    {bhvScuttlebug, 0, MODEL_MAKER_SCUTTLEBUG, FALSE, 3, 1.0f, scuttlebug_seg6_anims_06015064, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
+    {bhvBoo, TILE_SIZE/2, MODEL_MAKER_BOO, FALSE, 1, 0, 1.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
+    {bhvMrI, 0, MODEL_MAKER_MRI, TRUE, 5, 1, 1.0f, NULL, df_mri, SOUND_OBJ_MRI_SHOOT},
+    {bhvScuttlebug, 0, MODEL_MAKER_SCUTTLEBUG, FALSE, 3, 0, 1.0f, scuttlebug_seg6_anims_06015064, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
 };
 
 struct cmm_object_info cmm_object_type_snow_enemy[] = {
-    {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 3, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_ACTION_TWIRL},
-    {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 3, 1.0f, snowman_seg5_anims_0500D118, df_blizzard, SOUND_OBJ2_SCUTTLEBUG_ALERT},
-    {bhvMoneybagHidden, 0, MODEL_ATM, FALSE, 5, 1.0f, moneybag_seg6_anims_06005E5C, df_moneybag, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
+    {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 3, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_ACTION_TWIRL},
+    {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 3, 0, 1.0f, snowman_seg5_anims_0500D118, df_blizzard, SOUND_OBJ2_SCUTTLEBUG_ALERT},
+    {bhvMoneybagHidden, 0, MODEL_ATM, FALSE, 5, 0, 1.0f, moneybag_seg6_anims_06005E5C, df_moneybag, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
 };
 
 struct cmm_object_info cmm_object_type_mine[] = {
-    bhvBowserBomb, TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB, FALSE, 0, 1.0f, NULL, NULL, SOUND_GENERAL2_QUIET_EXPLOSION,
+    bhvBowserBomb, TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL2_QUIET_EXPLOSION,
 };
 
 struct cmm_object_info cmm_object_type_fire_spinner[] = {
-    bhvLllRotatingBlockWithFireBars, 0, MODEL_MAKER_FIREBAR, FALSE, 0, 1.0f, NULL, df_fire_spinner, SOUND_OBJ_FLAME_BLOWN,
+    bhvLllRotatingBlockWithFireBars, 0, MODEL_MAKER_FIREBAR, FALSE, 0, 0, 1.0f, NULL, df_fire_spinner, SOUND_OBJ_FLAME_BLOWN,
 };
 
 struct cmm_object_info cmm_object_type_coin_formation = {
-    bhvCoinFormation, 0, MODEL_NONE, FALSE, 1, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN_MULTI,
+    bhvCoinFormation, 0, MODEL_NONE, FALSE, 0, 0, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN_MULTI,
 };
 
 enum {

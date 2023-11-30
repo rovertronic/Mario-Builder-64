@@ -102,6 +102,7 @@ struct cmm_obj cmm_object_data[CMM_MAX_OBJS];
 u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 10] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
+u16 cmm_object_limit_count = 0; // Tracks additional objects like in coin formations, flame spinners
 u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
 
 struct Object *cmm_boundary_object[6]; //one for each side
@@ -229,8 +230,16 @@ s32 tile_sanity_check(void) {
     return TRUE;
 }
 
+s32 get_extra_objects(struct cmm_object_info *info) {
+    return info->numExtraObjects;
+}
+
 s32 object_sanity_check(void) {
-    if (cmm_object_count >= CMM_MAX_OBJS) {
+    struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
+    if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
+        info = &info[cmm_param_selection];
+    }
+    if (cmm_object_limit_count + get_extra_objects(info) >= CMM_MAX_OBJS) {
         cmm_show_error_message("Object limit reached! (max 512)");
         return FALSE;
     }
@@ -1671,6 +1680,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, 
 void generate_object_preview(void) {
     s32 totalCoins = 0;
     s32 doubleCoins = FALSE;
+    cmm_object_limit_count = 0;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
         unload_object(preview_object);
@@ -1700,6 +1710,7 @@ void generate_object_preview(void) {
         if (info == &cmm_object_type_badge && param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
+        cmm_object_limit_count += info->numExtraObjects + 1;
     }
     if (doubleCoins) totalCoins *= 2;
 
@@ -2241,8 +2252,8 @@ void load_level(void) {
 
         if (cmm_templates[cmm_lopt_template].platform) {
             u8 i = 0;
-            for (s8 x = -1; x <= 1; x++) {
-                for (s8 z = -1; z <= 1; z++) {
+            for (s32 x = -1; x <= 1; x++) {
+                for (s32 z = -1; z <= 1; z++) {
                     cmm_tile_data[i].x = 32+x;
                     cmm_tile_data[i].y = 0;
                     cmm_tile_data[i].z = 32+z;
