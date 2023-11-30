@@ -230,7 +230,14 @@ s32 tile_sanity_check(void) {
     return TRUE;
 }
 
-s32 get_extra_objects(struct cmm_object_info *info) {
+// Get number of extra objects used by an object
+s32 get_extra_objects(struct cmm_object_info *info, s32 param) {
+    if (info == &cmm_object_type_fire_spinner) {
+        return (param + 2) * 2;
+    }
+    if (info == &cmm_object_type_coin_formation) {
+        return (param <= 1 ? 5 : 8);
+    }
     return info->numExtraObjects;
 }
 
@@ -239,7 +246,7 @@ s32 object_sanity_check(void) {
     if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
         info = &info[cmm_param_selection];
     }
-    if (cmm_object_limit_count + get_extra_objects(info) >= CMM_MAX_OBJS) {
+    if (cmm_object_limit_count + get_extra_objects(info, cmm_param_selection) >= CMM_MAX_OBJS) {
         cmm_show_error_message("Object limit reached! (max 512)");
         return FALSE;
     }
@@ -302,24 +309,23 @@ struct Object * get_spawn_preview_object() {
     return NULL;
 }
 
-ALWAYS_INLINE void place_terrain_data(s8 pos[3], u32 type, u32 rot, u32 mat) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type + 1;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
+#define place_terrain_data(pos, type_, rot_, mat_) {          \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot_;       \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type_ + 1; \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat_;       \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
 }
 
-ALWAYS_INLINE void remove_terrain_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
+#define remove_terrain_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;         \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;        \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
 }
 
-//ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
-//    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
-//}
 #define get_grid_tile(pos) (&(cmm_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
+
+#define rotate_direction(dir, rot) (cmm_rotated_dirs[rot][dir])
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain;
@@ -332,7 +338,7 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     if (!terrain) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = get_grid_tile(pos)->rot;
-    dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
+    dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
 
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
@@ -349,18 +355,15 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     return CMM_FACESHAPE_EMPTY;
 }
 
-ALWAYS_INLINE void place_occupy_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE;
+#define place_occupy_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE; \
 }
 
-ALWAYS_INLINE void remove_occupy_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE;
+#define remove_occupy_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE; \
 }
 
-ALWAYS_INLINE s32 get_occupy_data(s8 pos[3]) {
-    if (!coords_in_range(pos)) return FALSE;
-    return cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied;
-}
+#define get_occupy_data(pos) (coords_in_range(pos) ? get_grid_tile(pos)->occupied : FALSE)
 
 s8 cullOffsetLUT[6][3] = {
     {0, 1, 0},
@@ -373,7 +376,7 @@ s8 cullOffsetLUT[6][3] = {
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
@@ -415,7 +418,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 
 // Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
 s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
@@ -583,7 +586,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
     n[1] = normal[1] * 0x7F;
     n[2] = normal[2] * 0x7F;
     // Find UVs
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
     switch (direction) {
         case CMM_DIRECTION_NEG_X: *uAxis = 2; *vAxis = 1; return TRUE;
         case CMM_DIRECTION_POS_X: *uAxis = 2; *vAxis = 1; return FALSE;
@@ -755,7 +758,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
             if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
@@ -769,8 +772,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             return TRUE;
         case CMM_GROWTH_UNDERSLOPE_CORNER:
             ;// some very cursed logic here, this is solely for upside-down inside corners
-            u8 faceshape1 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot)^1);
-            u8 faceshape2 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_X, rot)^1);
+            u8 faceshape1 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_Z, rot)^1);
+            u8 faceshape2 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_X, rot)^1);
             // this is basically just checking for if a normal slope corner is on top at the right angle
             if (faceshape1 == CMM_FACESHAPE_TRI_1 && faceshape2 == CMM_FACESHAPE_TRI_2)
                 return FALSE;
@@ -797,7 +800,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
 
             // Check if below block is right shape and culled
             // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
             if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
             if (should_cull_topslab_check(newpos, direction, rot)) return TRUE;
             
@@ -927,7 +930,7 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
 
     for (u32 rot = 0; rot < 4; rot++) {
         connections[rot] = 0;
-        s32 dir = ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot);
+        s32 dir = rotate_direction(CMM_DIRECTION_POS_Z, rot);
         vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
         if (!coords_in_range(adjacentPos)) continue;
 
@@ -1703,19 +1706,27 @@ void generate_object_preview(void) {
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param1, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
-
         if (info == &cmm_object_type_exclamationbox) {
             totalCoins += cmm_exclamation_box_contents[param].numCoins;
         }
         if (info == &cmm_object_type_badge && param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
-        cmm_object_limit_count += info->numExtraObjects + 1;
+
+        s32 extraObjs = get_extra_objects(info, param);
+        if (info == &cmm_object_type_coin_formation) {
+            totalCoins += extraObjs;
+        }
+        cmm_object_limit_count += extraObjs + 1;
     }
     if (doubleCoins) totalCoins *= 2;
 
     u32 length = MIN(totalCoins / 20, 50);
-    cmm_settings_general_buttons[4].size = length + 1;
+    if (cmm_lopt_theme == CMM_GAME_BTCM) {
+        cmm_settings_general_buttons[4].size = length + 1;
+    } else {
+        cmm_settings_general_buttons_vanilla[3].size = length + 1;
+    }
 
     if (cmm_lopt_coinstar > length) {
         cmm_lopt_coinstar = length;
