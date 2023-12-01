@@ -816,7 +816,7 @@ s32 cmm_mm_keyboard_anim_out(void) {
     return cmm_mm_anim_out(6, TRUE, cmm_mm_keyboard_anim_check, 0.f);
 }
 
-u32 cmm_mm_make_anim_out(void) {
+s32 cmm_mm_make_anim_out(void) {
     return cmm_mm_anim_out(4, TRUE, cmm_mm_make_anim_check, 23.f);
 }
 
@@ -1058,7 +1058,7 @@ s32 cmm_main_menu(void) {
         case MM_MAKE_MODE:
             cmm_menu_index = (cmm_menu_index+4)%4;
             cmm_mm_anim_in(4);
-            u16 x,y;
+            f32 x,y;
 
             create_dl_scale_matrix(MENU_MTX_PUSH, 2.f, 2.f, 0.f);
 
