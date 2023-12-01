@@ -2708,6 +2708,8 @@ void init_mario(void) {
     }
 
     gMarioState->heldObj = NULL;
+    gMarioState->blueCoinSwitchTimer = 0;
+    gMarioState->hiddenBoxTimer = 0;
     /*
     if (gMarioState->heldObjParam2 != 0) {
         switch(gMarioState->heldObjParam2) {
