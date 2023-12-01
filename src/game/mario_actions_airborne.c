@@ -804,49 +804,7 @@ s32 act_riding_shell_air(struct MarioState *m) {
             break;
     }
 
-    if (m->IsYoshi) {
-
-        m->forwardVel = m->intendedMag*1.25f;
-        m->faceAngle[1] = m->intendedYaw;
-
-        if (m->pos[1] < 0.0f) {
-            mario_stop_riding_object(m);
-            return set_jumping_action(m, ACT_BACKFLIP, 0);
-        }
-
-        if ((m->input & INPUT_A_DOWN)&&(m->vel[1] < -15.0f)) {
-            if (m->Yoshi_Flutter == FALSE) {
-                m->Yoshi_Flutter = TRUE;
-                m->vel[1] = -15.0f;
-                fluttertimer = 10;
-            }
-        }
-
-        if (m->input & INPUT_B_PRESSED) {
-            mario_stop_riding_object(m);
-
-            return set_jumping_action(m, ACT_BACKFLIP, 0);
-
-
-        }
-        
-        if (fluttertimer > 0) {
-            fluttertimer --;
-            m->vel[1] += 8.0f;
-
-            if (fluttertimer%2) {
-                play_sound(SOUND_ACTION_SPIN, m->marioObj->header.gfx.cameraToObject);
-            }
-        }
-    }
-
-    if (m->IsYoshi) {
-        m->marioObj->header.gfx.pos[1] += 100.0f;
-    }
-    else
-    {
-        m->marioObj->header.gfx.pos[1] += 55.0f;
-    }
+    m->marioObj->header.gfx.pos[1] += 55.0f;
     return FALSE;
 }
 
