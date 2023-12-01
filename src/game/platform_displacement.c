@@ -205,7 +205,7 @@ static void apply_mario_inertia(void) {
 
 	// Stop applying inertia once Mario has landed, or when ground pounding
 	if (!(gMarioState->action & ACT_FLAG_AIR) || (gMarioState->action == ACT_GROUND_POUND)) {
-		if (gMarioState->floor->type != SURFACE_FLOWING_WATER) {
+		if (gMarioState->floor && (gMarioState->floor->type != SURFACE_FLOWING_WATER)) {
 			sShouldApplyInertia = FALSE;
 		}
 	}
@@ -224,7 +224,7 @@ void apply_mario_platform_displacement(void) {
 				apply_platform_displacement(&sMarioDisplacementInfo, gMarioState->pos, &gMarioState->faceAngle[1], platform);
 				sShouldApplyInertia = TRUE;
 				sInertiaFirstFrame = TRUE;
-				}
+			}
 		} else if (sShouldApplyInertia) {
 			apply_mario_inertia();
 			sInertiaFirstFrame = FALSE;
