@@ -89,6 +89,12 @@ void bhv_koopa_shell_loop(void) {
             break;
 
         case KOOPA_SHELL_ACT_MARIO_RIDING:
+            if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
+                obj_mark_for_deletion(o);
+                spawn_mist_particles();
+                o->oAction = KOOPA_SHELL_ACT_MARIO_NOT_RIDING;
+                break;
+            }
             //BUGFIX: Shell vanishes when mario jumps on it on an invisible frame
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 
@@ -110,11 +116,6 @@ void bhv_koopa_shell_loop(void) {
 
             o->oFaceAngleYaw = gMarioObject->oMoveAngleYaw;
 
-            if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
-                obj_mark_for_deletion(o);
-                spawn_mist_particles();
-                o->oAction = KOOPA_SHELL_ACT_MARIO_NOT_RIDING;
-            }
             break;
     }
 

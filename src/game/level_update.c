@@ -717,10 +717,10 @@ void initiate_painting_warp(void) {
  */
 s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
     s32 fadeMusic = TRUE;
-    u8 dmg_amount = 0x40;
+    u16 dmg_amount = 0x3FF; // more than 3 segments
     u8 resp_cond = FALSE;
     if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
-        dmg_amount = 0x80;
+        dmg_amount = 0x6FF; // more than 6 segments
     }
 
     if (sDelayedWarpOp == WARP_OP_NONE) {
@@ -786,7 +786,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                     //what the fuck is this bruhhhh
                     //fuck sm64 hp
                     //i have no idea if changing the 8 to a 5 will work, hope it does!
-                    resp_cond = ( (gMarioState->health > (dmg_amount * 5 * ((f32)(gMarioState->numMaxHP)/3.0f))) && (cmm_lopt_game == CMM_GAME_BTCM) );
+                    resp_cond = ((gMarioState->health > dmg_amount) && (cmm_lopt_game == CMM_GAME_BTCM) );
                     if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
                         resp_cond = (gMarioState->numBadgePoints > 0);
                     }
@@ -921,6 +921,7 @@ void initiate_delayed_warp(void) {
                     break;
 
                 default:
+                    mario_stop_riding_and_holding(gMarioState);
                     warpNode = area_get_warp_node(sSourceWarpNodeId);
 
                     initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,

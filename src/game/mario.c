@@ -2698,7 +2698,7 @@ void init_mario(void) {
         if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
             gMarioState->numBadgePoints --;
         } else {
-            gMarioState->hurtCounter += 4 * ((f32)(gMarioState->numMaxHP)/3.0f);
+            gMarioState->hurtCounter += 12;
         }
 
         if (gMarioState->MaskChase) {
