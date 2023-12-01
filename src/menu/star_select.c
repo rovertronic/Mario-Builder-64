@@ -135,16 +135,13 @@ void bhv_act_selector_init(void) {
     s16 i = 0;
     s32 selectorModelIDs[10];
     u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
-    u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
-    u8 sfair_level = (gCurrCourseNum == COURSE_WDW);
+    // u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
+    // u8 sfair_level = (gCurrCourseNum == COURSE_WDW);
 
     sVisibleStars = 0;
     while (i != sObtainedStars) {
         if (stars & (1 << sVisibleStars)) { // Star has been collected
             selectorModelIDs[sVisibleStars] = MODEL_STAR;
-            if (((sVisibleStars==6)||(aglevel))&&(!sfair_level)) {
-                selectorModelIDs[sVisibleStars] = 0xED;
-            }
             i++;
         } else { // Star has not been collected
             selectorModelIDs[sVisibleStars] = MODEL_TRANSPARENT_STAR;
@@ -184,9 +181,6 @@ void bhv_act_selector_init(void) {
                 spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
                                         (((75 + sVisibleStars * -75 + i * 152)*4.0f)/3), 248, -300, 0, 0, 0);
             sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
-            if (((i==6)||(aglevel))&&(!sfair_level)) {
-                sStarSelectorModels[i]->oAnimState = 1;
-            }
         }
     }
     else {
@@ -195,9 +189,6 @@ void bhv_act_selector_init(void) {
                 spawn_object_abs_with_rot(o, 0, selectorModelIDs[i], bhvActSelectorStarType,
                                         (75 + (sVisibleStars * -75) + (i * 152)), 248, -300, 0, 0, 0);
             sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
-            if (((i==6)||(aglevel))&&(!sfair_level)) {
-                sStarSelectorModels[i]->oAnimState = 1;
-            }
         }
     }
 

@@ -29,6 +29,10 @@ extern const Gfx eyerok_seg5_dl_0500CAE8[];
 extern const Gfx eyerok_seg5_dl_0500CB80[];
 extern const Gfx eyerok_seg5_dl_0500CC18[];
 extern const Gfx eyerok_seg5_dl_0500CC30[];
+extern const Collision ssl_seg7_collision_07028274[];
+extern const Collision ssl_seg7_collision_070282F8[];
+extern const Collision ssl_seg7_collision_07028370[];
+extern const Collision ssl_seg7_collision_070284B0[];
 extern const struct Animation *const eyerok_seg5_anims_050116E4[];
 
 // klepto

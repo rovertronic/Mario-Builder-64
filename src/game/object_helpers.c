@@ -31,7 +31,7 @@
 #include "game/rovent.h"
 #include "save_file.h"
 
-static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
+// static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
 

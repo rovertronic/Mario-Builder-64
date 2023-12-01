@@ -1103,67 +1103,67 @@ static s16 obj_turn_pitch_toward_mario_rovert(f32 targetOffsetY, s16 turnAmount)
     return targetPitch;
 }
 
-void bhv_missile_loop(void) {
-    u8 start_thresh = 30;
-    f32 mispeed = 65.0f;
-    if (gCurrLevelNum == LEVEL_RR) {
-        start_thresh = 5;
-        mispeed = 20.0f;
-    }
+// void bhv_missile_loop(void) {
+//     u8 start_thresh = 30;
+//     f32 mispeed = 65.0f;
+//     if (gCurrLevelNum == LEVEL_RR) {
+//         start_thresh = 5;
+//         mispeed = 20.0f;
+//     }
 
 
-    if (revent_active) {
-        spawn_object(o,MODEL_EXPLOSION,bhvExplosion);
-        obj_mark_for_deletion(o);
-        return;
-    }
+//     if (revent_active) {
+//         spawn_object(o,MODEL_EXPLOSION,bhvExplosion);
+//         obj_mark_for_deletion(o);
+//         return;
+//     }
 
-    o->oGravity = 0;
+//     o->oGravity = 0;
 
-    //this code is kind of stinky
-    if(o->oTimer > start_thresh) {
-        obj_turn_toward_object(o, gMarioObject, 16, 0x100);
-        o->oMoveAnglePitch = obj_turn_pitch_toward_mario_rovert(150.0f, 1);
-    }
+//     //this code is kind of stinky
+//     if(o->oTimer > start_thresh) {
+//         obj_turn_toward_object(o, gMarioObject, 16, 0x100);
+//         o->oMoveAnglePitch = obj_turn_pitch_toward_mario_rovert(150.0f, 1);
+//     }
     
-    /*
-    if (o->oDistanceToMario < 2000.0f) {
-        o->oMoveAnglePitch += obj_turn_pitch_toward_mario_rovert(150.0f, 1)/15;
-    } else {
-        o->oMoveAnglePitch = obj_turn_pitch_toward_mario_rovert(150.0f, 1);
-    }
-    */
+//     /*
+//     if (o->oDistanceToMario < 2000.0f) {
+//         o->oMoveAnglePitch += obj_turn_pitch_toward_mario_rovert(150.0f, 1)/15;
+//     } else {
+//         o->oMoveAnglePitch = obj_turn_pitch_toward_mario_rovert(150.0f, 1);
+//     }
+//     */
 
-    if (o->oMoveAnglePitch < 0) {
-        o->oMoveAnglePitch = 0;
-    }
+//     if (o->oMoveAnglePitch < 0) {
+//         o->oMoveAnglePitch = 0;
+//     }
 
-    o->oFaceAnglePitch = -o->oMoveAnglePitch;
-    o->oFaceAngleYaw = o->oMoveAngleYaw+0x7FFF;
+//     o->oFaceAnglePitch = -o->oMoveAnglePitch;
+//     o->oFaceAngleYaw = o->oMoveAngleYaw+0x7FFF;
 
-    o->oForwardVel = mispeed *  coss(o->oMoveAnglePitch);
-    o->oVelY       = mispeed * -sins(o->oMoveAnglePitch);
+//     o->oForwardVel = mispeed *  coss(o->oMoveAnglePitch);
+//     o->oVelY       = mispeed * -sins(o->oMoveAnglePitch);
 
-    o->oPosY += o->oVelY;
+//     o->oPosY += o->oVelY;
 
-    if ((o->oTimer > 100)&&(o->oMoveAnglePitch < 0xD000)) {
-        o->oMoveAnglePitch += 0x100;
-        }
+//     if ((o->oTimer > 100)&&(o->oMoveAnglePitch < 0xD000)) {
+//         o->oMoveAnglePitch += 0x100;
+//         }
 
-    //INIT
-    if (o->oAction == 0) {
-        obj_set_hitbox(o, &sMissileHitbox);
-        o->oAction = 1;
-        }
+//     //INIT
+//     if (o->oAction == 0) {
+//         obj_set_hitbox(o, &sMissileHitbox);
+//         o->oAction = 1;
+//         }
 
-    if ((o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_HIT_WALL))||(o->oTimer > 300)||(o->oMoveFlags & 0x200)||(o->parentObj->oHealth == 0)) {
-        spawn_object(o,MODEL_EXPLOSION,bhvExplosion);
-        obj_mark_for_deletion(o);
-        }
+//     if ((o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_HIT_WALL))||(o->oTimer > 300)||(o->oMoveFlags & 0x200)||(o->parentObj->oHealth == 0)) {
+//         spawn_object(o,MODEL_EXPLOSION,bhvExplosion);
+//         obj_mark_for_deletion(o);
+//         }
 
-    cur_obj_update_floor_and_walls();
-    cur_obj_move_standard(50);
-    }
+//     cur_obj_update_floor_and_walls();
+//     cur_obj_move_standard(50);
+//     }
 
 //
 

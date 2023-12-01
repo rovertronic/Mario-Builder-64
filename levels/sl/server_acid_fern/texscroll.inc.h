@@ -1,2 +1,0 @@
-extern void scroll_sts_mat_server_acid_fern_server_acid_fern_layer4();
-extern void scroll_sl_level_geo_server_acid_fern();

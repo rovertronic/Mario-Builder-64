@@ -476,9 +476,6 @@ enum LevelCommandCreateWhirlpoolCondition {
 #define LOAD_LEVEL_DATA(level) \
     LOAD_YAY0(/*seg*/ SEGMENT_LEVEL_DATA, /*romStart*/ _##level##_segment_7SegmentRomStart, /*romEnd*/ _##level##_segment_7SegmentRomEnd)
 
-#define LOAD_TEXTURE_BIN(textureBin) \
-    LOAD_YAY0_TEXTURE(/*seg*/ SEGMENT_TEXTURE, /*romStart*/ _##textureBin##_yay0SegmentRomStart, /*romEnd*/ _##textureBin##_yay0SegmentRomEnd)
-
 #define LOAD_SKYBOX(skybox) \
     LOAD_YAY0(/*seg*/ SEGMENT_SKYBOX, /*romStart*/ _##skybox##_skybox_yay0SegmentRomStart, /*romEnd*/ _##skybox##_skybox_yay0SegmentRomEnd)
 

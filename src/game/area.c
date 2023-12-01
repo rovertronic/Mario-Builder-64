@@ -253,8 +253,6 @@ void clear_area_graph_nodes(void) {
     }
 }
 
-#include "rigid_body.h"
-
 void load_area(s32 index) {
 
     if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
@@ -263,9 +261,9 @@ void load_area(s32 index) {
         main_pool_pop_state();
         main_pool_push_state();
 
-        for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
-            deallocate_rigid_body(&gRigidBodies[i]);
-        }
+        // for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
+        //     deallocate_rigid_body(&gRigidBodies[i]);
+        // }
 
         if (gCurrentArea->terrainData != NULL) {
             load_area_terrain(index, gCurrentArea->terrainData, gCurrentArea->surfaceRooms,

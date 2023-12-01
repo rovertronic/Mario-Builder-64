@@ -51,7 +51,6 @@
 #include "minigame_menu.h"
 
 #include "actors/group0.h"
-#include "levels/rr/header.h"
 
 //Rovert Simple Cutscene / Event System
 //Designed to make cutscene creation simple and fast
@@ -171,16 +170,16 @@ u8 mg_minscores[] = {
 8,
 };
 //level | area | id
-u8 mg_warps[] = {
-    LEVEL_CCM, 3, 0x0A,//enemy arena
-    LEVEL_HMC, 2, 0x01,//hot rope jump 
-    LEVEL_SL, 2, 0x0A,//hexagon heat
-    LEVEL_CASTLE_COURTYARD, 1, 0x0A,//snakio
-    LEVEL_CASTLE_COURTYARD, 2, 0x0A,//edward survival
-    LEVEL_CASTLE_COURTYARD, 3, 0x0A,//bad apple
-    LEVEL_CASTLE_COURTYARD, 4, 0x0A,//flappy bird
-    LEVEL_SA, 1, 0x0A,
-};
+// u8 mg_warps[] = {
+//     LEVEL_CCM, 3, 0x0A,//enemy arena
+//     LEVEL_HMC, 2, 0x01,//hot rope jump 
+//     LEVEL_SL, 2, 0x0A,//hexagon heat
+//     LEVEL_CASTLE_COURTYARD, 1, 0x0A,//snakio
+//     LEVEL_CASTLE_COURTYARD, 2, 0x0A,//edward survival
+//     LEVEL_CASTLE_COURTYARD, 3, 0x0A,//bad apple
+//     LEVEL_CASTLE_COURTYARD, 4, 0x0A,//flappy bird
+//     LEVEL_SA, 1, 0x0A,
+// };
 
 s8 minigame_index;
 
@@ -205,135 +204,135 @@ void stop_event(void) {
     revent_handstate = 0;
 }
 
-void end_minigame(void) {
-    minigame_transition = TRUE;
-    save_file_do_save(gCurrSaveFileNum - 1);
-    initiate_warp(LEVEL_CASTLE, 3, 0x09, 0);
-    fade_into_special_warp(0, 0);
-}
+// void end_minigame(void) {
+//     minigame_transition = TRUE;
+//     save_file_do_save(gCurrSaveFileNum - 1);
+//     initiate_warp(LEVEL_CASTLE, 3, 0x09, 0);
+//     fade_into_special_warp(0, 0);
+// }
 
-void minigame_transition_func(void) {
-    minigame_transition = FALSE;
-    minigame_real = FALSE;
+// void minigame_transition_func(void) {
+//     minigame_transition = FALSE;
+//     minigame_real = FALSE;
 
-    rtext_insert_pointer[0] = mgt_array[minigame_index];
-    int_to_str(save_file_get_hiscore(minigame_index),&buf1);
-    rtext_insert_pointer[1] = buf1;
-    gMarioState->health = 255 + (255*gMarioState->numMaxHP);
-    gMarioState->numBadgePoints = gMarioState->numMaxFP;
+//     rtext_insert_pointer[0] = mgt_array[minigame_index];
+//     int_to_str(save_file_get_hiscore(minigame_index),&buf1);
+//     rtext_insert_pointer[1] = buf1;
+//     gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+//     gMarioState->numBadgePoints = gMarioState->numMaxFP;
 
-    if (minigame_newscore) {
-        run_event(EVENT_MINIGAME_HI);
-        minigame_newscore = FALSE;
-    }
-}
+//     if (minigame_newscore) {
+//         run_event(EVENT_MINIGAME_HI);
+//         minigame_newscore = FALSE;
+//     }
+// }
 
-void render_minigame_menu(void) {
-    u8 i;
+// void render_minigame_menu(void) {
+//     u8 i;
 
-    if ((gPlayer1Controller->rawStickY > 60)&&(letgo2 == FALSE)) {
-        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-        letgo2 = TRUE;
-        minigame_index --;
-        minigame_index = (minigame_index+9)%9;
-    }
-    if ((gPlayer1Controller->rawStickY < -60)&&(letgo2 == FALSE)) {
-        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-        letgo2 = TRUE;
-        minigame_index ++;
-        minigame_index = (minigame_index+9)%9;
-    }
-    if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
-        letgo2 = FALSE;
-    }
+//     if ((gPlayer1Controller->rawStickY > 60)&&(letgo2 == FALSE)) {
+//         play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+//         letgo2 = TRUE;
+//         minigame_index --;
+//         minigame_index = (minigame_index+9)%9;
+//     }
+//     if ((gPlayer1Controller->rawStickY < -60)&&(letgo2 == FALSE)) {
+//         play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+//         letgo2 = TRUE;
+//         minigame_index ++;
+//         minigame_index = (minigame_index+9)%9;
+//     }
+//     if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
+//         letgo2 = FALSE;
+//     }
 
-    //render back box
-    create_dl_translation_matrix(MENU_MTX_PUSH, 20, 218, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.8f, 1.9f, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     //render back box
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 20, 218, 0);
+//     create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.8f, 1.9f, 1.0f);
+//     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    //render selection box
-    create_dl_translation_matrix(MENU_MTX_PUSH, 22, 216-(16*minigame_index), 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.5f, 0.2f, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sinresult/2);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     //render selection box
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 22, 216-(16*minigame_index), 0);
+//     create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.5f, 0.2f, 1.0f);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sinresult/2);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    //render minigames
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    for (i=0;i<9;i++) {
-        if (i==8) {//this is pretty immoral
-            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-            print_generic_string(74,199-(i*16), mgt_array[i]);
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            print_generic_string(75,200-(i*16), mgt_array[i]);
-        } else {
-            if (save_file_check_minigame(i)) {
-                //own minigame, display highscore
-                int_to_str(save_file_get_hiscore(i),&buf1);
-                int_to_str(mg_minscores[i],&starbuf[1]);
+//     //render minigames
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     for (i=0;i<9;i++) {
+//         if (i==8) {//this is pretty immoral
+//             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//             print_generic_string(74,199-(i*16), mgt_array[i]);
+//             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//             print_generic_string(75,200-(i*16), mgt_array[i]);
+//         } else {
+//             if (save_file_check_minigame(i)) {
+//                 //own minigame, display highscore
+//                 int_to_str(save_file_get_hiscore(i),&buf1);
+//                 int_to_str(mg_minscores[i],&starbuf[1]);
 
-                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                print_generic_string(34,199-(i*16), buf1);
-                print_generic_string(74,199-(i*16), mgt_array[i]);
-                print_generic_string(219,199-(i*16), starbuf);
-                gDPSetEnvColor(gDisplayListHead++, 0, 240, 0, 255);
-                print_generic_string(35,200-(i*16), buf1);
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                print_generic_string(75,200-(i*16), mgt_array[i]);
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
-                if (((save_file_get_flags()) >> 24+i)&1) {
-                    gDPSetEnvColor(gDisplayListHead++, 50, 50, 255, 255);
-                }
-                print_generic_string(220,200-(i*16), starbuf);
-            } else {
-                int_to_str(mg_prices[i],&coinbuf[1]);
+//                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//                 print_generic_string(34,199-(i*16), buf1);
+//                 print_generic_string(74,199-(i*16), mgt_array[i]);
+//                 print_generic_string(219,199-(i*16), starbuf);
+//                 gDPSetEnvColor(gDisplayListHead++, 0, 240, 0, 255);
+//                 print_generic_string(35,200-(i*16), buf1);
+//                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//                 print_generic_string(75,200-(i*16), mgt_array[i]);
+//                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
+//                 if (((save_file_get_flags()) >> 24+i)&1) {
+//                     gDPSetEnvColor(gDisplayListHead++, 50, 50, 255, 255);
+//                 }
+//                 print_generic_string(220,200-(i*16), starbuf);
+//             } else {
+//                 int_to_str(mg_prices[i],&coinbuf[1]);
 
-                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                print_generic_string(34,199-(i*16), coinbuf);
-                print_generic_string(74,199-(i*16), mgt_array[i]);
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
-                print_generic_string(35,200-(i*16), coinbuf);
-                gDPSetEnvColor(gDisplayListHead++, 220, 220, 220, 255);
-                print_generic_string(75,200-(i*16), mgt_array[i]);
-            }
-        }
-    }
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//                 print_generic_string(34,199-(i*16), coinbuf);
+//                 print_generic_string(74,199-(i*16), mgt_array[i]);
+//                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
+//                 print_generic_string(35,200-(i*16), coinbuf);
+//                 gDPSetEnvColor(gDisplayListHead++, 220, 220, 220, 255);
+//                 print_generic_string(75,200-(i*16), mgt_array[i]);
+//             }
+//         }
+//     }
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    //control
-    if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-        if (minigame_index == 8) {
-            //exit
-            stop_event();
-        } else {
-            if (save_file_check_minigame(minigame_index)) {
-                //own minigame so play it
-                minigame_real = TRUE;
-                rtext_opacity = 0;
-                stop_event();
-                initiate_warp(mg_warps[(minigame_index*3)], mg_warps[(minigame_index*3)+1], mg_warps[(minigame_index*3)+2], 0);
-                fade_into_special_warp(0, 0);
-            } else {
-                //if not own minigame, buy it
-                if ((gMarioState->numGlobalCoins >= mg_prices[minigame_index])&&(gMarioState->gGlobalCoinGain == 0)) {
-                    int_to_str(mg_prices[minigame_index],&buf1);
-                    int_to_str(gMarioState->numGlobalCoins,&buf2);
-                    rtext_insert_pointer[0] = mgt_array[minigame_index];
-                    rtext_insert_pointer[1] = &buf1;
-                    rtext_insert_pointer[2] = &buf2;
-                    revent_index ++;
-                    revent_halt = FALSE; 
-                } else {
-                    //can not afford
-                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                }
-            }
-        }
-    }
-}
+//     //control
+//     if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+//         if (minigame_index == 8) {
+//             //exit
+//             stop_event();
+//         } else {
+//             if (save_file_check_minigame(minigame_index)) {
+//                 //own minigame so play it
+//                 minigame_real = TRUE;
+//                 rtext_opacity = 0;
+//                 stop_event();
+//                 initiate_warp(mg_warps[(minigame_index*3)], mg_warps[(minigame_index*3)+1], mg_warps[(minigame_index*3)+2], 0);
+//                 fade_into_special_warp(0, 0);
+//             } else {
+//                 //if not own minigame, buy it
+//                 if ((gMarioState->numGlobalCoins >= mg_prices[minigame_index])&&(gMarioState->gGlobalCoinGain == 0)) {
+//                     int_to_str(mg_prices[minigame_index],&buf1);
+//                     int_to_str(gMarioState->numGlobalCoins,&buf2);
+//                     rtext_insert_pointer[0] = mgt_array[minigame_index];
+//                     rtext_insert_pointer[1] = &buf1;
+//                     rtext_insert_pointer[2] = &buf2;
+//                     revent_index ++;
+//                     revent_halt = FALSE; 
+//                 } else {
+//                     //can not afford
+//                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 u8 txt_thorndust[] = {TEXT_THORNDUST};
 u8 txt_jaguar[] = {TEXT_JAGUAR};
@@ -377,30 +376,30 @@ void render_music_menu() {
     s8 i_offset;
     u32 music_flags = 0x3FF;
     
-    //check unlocked music
-    if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_LLL) > 0) {
-        music_flags |= (1<<10); //Unlock big house
-    }
+    // //check unlocked music
+    // if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_LLL) > 0) {
+    //     music_flags |= (1<<10); //Unlock big house
+    // }
 
-    if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_SSL) > 0) {
-        music_flags |= (1<<11); //Unlock smb1
-        music_flags |= (1<<12); //Unlock smb2
-        music_flags |= (1<<13); //Unlock smb3
-    }
+    // if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_SSL) > 0) {
+    //     music_flags |= (1<<11); //Unlock smb1
+    //     music_flags |= (1<<12); //Unlock smb2
+    //     music_flags |= (1<<13); //Unlock smb3
+    // }
 
-    if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_DDD) > 0) {
-        music_flags |= (1<<14); //Unlock nsmb castle (c9)
-    }
+    // if (save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_DDD) > 0) {
+    //     music_flags |= (1<<14); //Unlock nsmb castle (c9)
+    // }
 
-    if (save_file_check_progression(PROG_POSTGAME)) {
-        music_flags |= (1<<15); //Unlock agamemnon songs
-        music_flags |= (1<<16); //
-        music_flags |= (1<<17); //
-    }
+    // if (save_file_check_progression(PROG_POSTGAME)) {
+    //     music_flags |= (1<<15); //Unlock agamemnon songs
+    //     music_flags |= (1<<16); //
+    //     music_flags |= (1<<17); //
+    // }
 
-    if (save_file_get_hiscore(5) > 0) {
-        music_flags |= (1<<18); //Unlock bad apple
-    }
+    // if (save_file_get_hiscore(5) > 0) {
+    //     music_flags |= (1<<18); //Unlock bad apple
+    // }
 
     if ((gPlayer1Controller->rawStickY > 60)&&(letgo2 == FALSE)) {
         stop_background_music(seq_musicmenu_array[minigame_index]);

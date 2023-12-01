@@ -1715,18 +1715,10 @@ void bhv_bowser_init(void) {
     // Set no transparency opacity
     o->oOpacity = 255;
     o->oBowserTargetOpacity = 255;
-    // Set Bowser B-param depending of the stage
-    if (gCurrLevelNum == LEVEL_BOWSER_2) {
-        level = BOWSER_BP_BITFS;
-    } else if (gCurrLevelNum == LEVEL_BOWSER_3) {
-        level = BOWSER_BP_BITS;
-    } else { // LEVEL_BOWSER_1
-        level = BOWSER_BP_BITDW;
-    }
-    o->oBehParams2ndByte = level;
+    o->oBehParams2ndByte = BOWSER_BP_BITDW;
     // Set health and rainbow light depending of the level
-    o->oBowserRainbowLight = sBowserRainbowLight[level];
-    o->oHealth = 3;//sBowserHealth[level];
+    o->oBowserRainbowLight = sBowserRainbowLight[BOWSER_BP_BITDW];
+    o->oHealth = 3;
     // Start camera event, this event is not defined so maybe
     // the "start arena" cutscene was originally called this way
     cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_INIT);

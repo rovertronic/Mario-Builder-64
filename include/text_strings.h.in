@@ -722,31 +722,31 @@
 #define TEXT_MENU_STARS_DE _("   GEHEIME STERNE")
 #endif // VERSION_EU
 
-#define PRE_CREDITS_1 _("Created By:")
-#define PRE_CREDITS_2 _("Rovert")
+// #define PRE_CREDITS_1 _("Created By:")
+// #define PRE_CREDITS_2 _("Rovert")
 
-#define PRE_CREDITS_3 _("Written By:")
-#define PRE_CREDITS_4 _("RationaLess")
+// #define PRE_CREDITS_3 _("Written By:")
+// #define PRE_CREDITS_4 _("RationaLess")
 
-#define PRE_CREDITS_5 _("Original Soundtrack")
-#define PRE_CREDITS_6 _("Thorndust, SpK")
+// #define PRE_CREDITS_5 _("Original Soundtrack")
+// #define PRE_CREDITS_6 _("Thorndust, SpK")
 
-#define PRE_CREDITS_7 _("Music Ports")
-#define PRE_CREDITS_8 _("ArcticJaguar725")
+// #define PRE_CREDITS_7 _("Music Ports")
+// #define PRE_CREDITS_8 _("ArcticJaguar725")
 
-#define PRE_CREDITS_9 _("Castle Painting Art")
-#define PRE_CREDITS_10 _("BoomerDaCat")
+// #define PRE_CREDITS_9 _("Castle Painting Art")
+// #define PRE_CREDITS_10 _("BoomerDaCat")
 
-#define PRE_CREDITS_11 _("HackerSM64 Port")
-#define PRE_CREDITS_12 _("axollyon")
+// #define PRE_CREDITS_11 _("HackerSM64 Port")
+// #define PRE_CREDITS_12 _("axollyon")
 
-#define PRE_CREDITS_13 _("Badge Art")
-#define PRE_CREDITS_14 _("HeroTechne,Pyro Jay")
+// #define PRE_CREDITS_13 _("Badge Art")
+// #define PRE_CREDITS_14 _("HeroTechne,Pyro Jay")
 
-#define PRE_CREDITS_15 _("Title Screen")
-#define PRE_CREDITS_16 _("Biobak")
+// #define PRE_CREDITS_15 _("Title Screen")
+// #define PRE_CREDITS_16 _("Biobak")
 
-#define PRE_CREDITS_17 _("Major Code Contributions")
-#define PRE_CREDITS_18 _("Arthurtilly")
+// #define PRE_CREDITS_17 _("Major Code Contributions")
+// #define PRE_CREDITS_18 _("Arthurtilly")
 
 #endif // TEXT_STRINGS_H

@@ -59,26 +59,26 @@ YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 # --------------------------------------
 
 # Actor Directories
-KOOPA_DIRS       := koopa_flag poundable_pole koopa piranha_plant whomp chain_ball chain_chomp
+KOOPA_DIRS       := poundable_pole chain_ball chain_chomp
 CAPSWITCH_DIRS   := capswitch springboard
-CHILLYCHIEF_DIRS := chillychief moneybag
+CHILLYCHIEF_DIRS := 
 BULLY_DIRS       := bully blargg motos
-SPINDRIFT_DIRS   := spindrift penguin snowman
-KING_BOBOMB_DIRS := king_bobomb water_bubble
-BOO_DIRS         := bookend book chair small_key mad_piano boo haunted_cage
-MR_I_DIRS        := mr_i_eyeball mr_i_iris swoop snufit dorrie scuttlebug
-HOOT_DIRS        := yellow_sphere_small hoot yoshi_egg thwomp bullet_bill heave_ho
-COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree
-BUBBA_DIRS       := bubba wiggler wiggler_body_part lakitu_enemy spiny_egg spiny
+SPINDRIFT_DIRS   := penguin
+KING_BOBOMB_DIRS := water_bubble
+BOO_DIRS         := bookend book chair small_key mad_piano haunted_cage
+MR_I_DIRS        := swoop dorrie
+HOOT_DIRS        := yellow_sphere_small hoot yoshi_egg
+COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree yoshi
+BUBBA_DIRS       := bubba
 SKEETER_DIRS     := skeeter seaweed water_mine cyan_fish bub water_ring treasure_chest
 KLEPTO_DIRS      := klepto eyerok pokey tornado
 SEA_DIRS         := clam_shell manta sushi unagi whirlpool
-AMP_DIRS         := blue_coin_switch amp cannon_lid cannon_base cannon_barrel chuckya purple_switch checkerboard_platform heart flyguy breakable_box exclamation_box vanilla_exclamation_box goomba bobomb metal_box exclamation_box_outline test_platform koopa_shell
+AMP_DIRS         := blue_coin_switch chuckya amp cannon_lid cannon_base cannon_barrel purple_switch checkerboard_platform heart flyguy breakable_box exclamation_box vanilla_exclamation_box goomba bobomb metal_box exclamation_box_outline test_platform koopa_shell
 MOLE_DIRS        := monty_mole_hole monty_mole smoke ukiki fwoosh
 LAKITU_DIRS      := lakitu_cameraman toad mips boo_castle
-PEACH_DIRS       := bird peach yoshi
-BOWSER_DIRS      := bowser_flame impact_ring yellow_sphere bowser bomb impact_smoke
-MARIO_DIRS       := mario mario2 bubble walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation
+PEACH_DIRS       := bird peach
+BOWSER_DIRS      := yellow_sphere
+MARIO_DIRS       := mario mario2 grindel rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
 
 # Actor Textures
 AMP_CHUCKYA_TEXTURES            := $(foreach dir,$(AMP_DIRS),        $(wildcard actors/$(dir)/*.png))
@@ -157,7 +157,6 @@ $(BUILD_DIR)/levels/%/leveldata.elf: SEGMENT_ADDRESS := 0x07000000
 define level_rules =
     $(1)_SEG7_FILES     := $$(patsubst %.png,%.inc.c,$$(wildcard levels/$(1)/*.png))
     $$(BUILD_DIR)/levels/$(1)/leveldata.o: $$(addprefix $$(BUILD_DIR)/,$$($(1)_SEG7_FILES))
-    $$(BUILD_DIR)/levels/$(1)/leveldata.elf: TEXTURE_BIN := $(2)
 endef
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -172,20 +171,8 @@ endif
 # --------------------------------------
 # Extra Level Rules
 # --------------------------------------
-$(eval $(call level_rules,intro,generic)) # Intro (Super Mario 64 Logo)
-$(eval $(call level_rules,menu,generic)) # Menu (File Select)
-
-# --------------------------------------
-# Cake Texture Rules
-# --------------------------------------
-
-# Ending cake textures are generated in a special way
-$(BUILD_DIR)/levels/ending/cake_eu.inc.c: levels/ending/cake_eu.png
-	$(call print,Splitting:,$<,$@)
-	$(V)$(SKYCONV) --type cake-eu --split $^ $(BUILD_DIR)/levels/ending
-$(BUILD_DIR)/levels/ending/cake.inc.c: levels/ending/cake.png
-	$(call print,Splitting:,$<,$@)
-	$(V)$(SKYCONV) --type cake --split $^ $(BUILD_DIR)/levels/ending
+$(eval $(call level_rules,intro)) # Intro (Super Mario 64 Logo)
+$(eval $(call level_rules,menu)) # Menu (File Select)
 
 # --------------------------------------
 # Texture Bin Rules
@@ -194,54 +181,18 @@ $(BUILD_DIR)/levels/ending/cake.inc.c: levels/ending/cake.png
 # Others
 SEGMENT2_TEXTURES               := $(wildcard $(TEXTURE_DIR)/segment2/*.png)
 TITLE_SCREEN_BG_TEXTURES        := $(wildcard $(TEXTURE_DIR)/title_screen_bg/*.png)
-SPOOKY_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/spooky/*.png)
-GENERIC_TEXTURES                := $(wildcard $(TEXTURE_DIR)/generic/*.png)
-OUTSIDE_TEXTURES                := $(wildcard $(TEXTURE_DIR)/outside/*.png)
-SNOW_TEXTURES                   := $(wildcard $(TEXTURE_DIR)/snow/*.png)
 EFFECT_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/effect/*.png)
-CAVE_TEXTURES                   := $(wildcard $(TEXTURE_DIR)/cave/*.png)
-INSIDE_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/inside/*.png)
-WATER_TEXTURES                  := $(wildcard $(TEXTURE_DIR)/water/*.png)
-FIRE_TEXTURES_TEXTURES          := $(wildcard $(TEXTURE_DIR)/fire/*.png)
-SKY_TEXTURES                    := $(wildcard $(TEXTURE_DIR)/sky/*.png)
-MACHINE_TEXTURES                := $(wildcard $(TEXTURE_DIR)/machine/*.png)
-MOUNTAIN_TEXTURES               := $(wildcard $(TEXTURE_DIR)/mountain/*.png)
-GRASS_TEXTURES                  := $(wildcard $(TEXTURE_DIR)/grass/*.png)
 
 # Texture Files
 $(BUILD_DIR)/bin/segment2.o:        $(SEGMENT2_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/title_screen_bg.o: $(TITLE_SCREEN_BG_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/spooky.o:          $(SPOOKY_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/generic.o:         $(GENERIC_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/outside.o:         $(OUTSIDE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/snow.o:            $(SNOW_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/effect.o:          $(EFFECT_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/cave.o:            $(CAVE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/inside.o:          $(INSIDE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/water.o:           $(WATER_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/fire.o:            $(FIRE_TEXTURES_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/sky.o:             $(SKY_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/machine.o:         $(MACHINE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/mountain.o:        $(MOUNTAIN_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/grass.o:           $(GRASS_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Others
 $(BUILD_DIR)/bin/segment2.elf:           SEGMENT_ADDRESS := 0x02000000
 $(BUILD_DIR)/bin/title_screen_bg.elf:    SEGMENT_ADDRESS := 0x0A000000
 $(BUILD_DIR)/bin/debug_level_select.elf: SEGMENT_ADDRESS := 0x07000000
 $(BUILD_DIR)/bin/effect.elf:             SEGMENT_ADDRESS := 0x0B000000
-$(BUILD_DIR)/bin/spooky.elf:             SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/generic.elf:            SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/outside.elf:            SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/snow.elf:               SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/cave.elf:               SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/inside.elf:             SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/water.elf:              SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/fire.elf:               SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/sky.elf:                SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/machine.elf:            SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/mountain.elf:           SEGMENT_ADDRESS := 0x09000000
-$(BUILD_DIR)/bin/grass.elf:              SEGMENT_ADDRESS := 0x09000000
 # EU segment 19 translations
 $(BUILD_DIR)/bin/eu/translation_de.elf:  SEGMENT_ADDRESS := 0x19000000
 $(BUILD_DIR)/bin/eu/translation_en.elf:  SEGMENT_ADDRESS := 0x19000000
@@ -264,9 +215,6 @@ $(BUILD_DIR)/bin/%_skybox.elf: SEGMENT_ADDRESS := 0x0A000000
 # intro and ipl3 textures are not compressed
 INTRO_RAW_FILES              := $(wildcard $(TEXTURE_DIR)/intro_raw/*.png)
 $(BUILD_DIR)/src/goddard/renderer.o: $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%.inc.c,$(INTRO_RAW_FILES)))
-
-BAD_APPLE_TEXTURE_FILES     := $(wildcard  $(TEXTURE_DIR)/bad_apple/*.png)
-BAD_APPLE_RAW_FILES         := $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%,$(BAD_APPLE_TEXTURE_FILES)))
 
 IPL3_TEXTURE_FILES          := $(wildcard $(TEXTURE_DIR)/ipl3_raw/*.png)
 IPL3_RAW_FILES              := $(addprefix $(BUILD_DIR)/,$(patsubst %.png,%,$(IPL3_TEXTURE_FILES)))

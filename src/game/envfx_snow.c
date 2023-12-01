@@ -473,11 +473,11 @@ Gfx *envfx_update_particles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom
         return NULL;
     }
 
-    if (gCurrLevelNum==LEVEL_LLL) {
-        if ((gCurrActNum!=5)||(gMarioState->NewTimerMode==0)) {
-            return NULL;
-            }
-    }
+    // if (gCurrLevelNum==LEVEL_LLL) {
+    //     if ((gCurrActNum!=5)||(gMarioState->NewTimerMode==0)) {
+    //         return NULL;
+    //         }
+    // }
 
     if (gEnvFxMode != ENVFX_MODE_NONE && gEnvFxMode != mode) {
         mode = ENVFX_MODE_NONE;

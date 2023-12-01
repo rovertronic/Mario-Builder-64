@@ -106,29 +106,29 @@ const char *credits20[] = { "1EXECUTIVE PRODUCER", "HIROSHI YAMAUCHI" };
 
 
 struct CreditsEntry sCreditsSequence[] = {
-    { LEVEL_CASTLE_GROUNDS, 1, 1, -128, { 0, 8000, 0 }, NULL },
-    { LEVEL_BOB, 1, 1, 117, { 713, 3918, -3889 }, credits01 },
-    { LEVEL_WF, 1, 50, 46, { 347, 5376, 326 }, credits02 },
-    { LEVEL_JRB, 1, 18, 22, { 3800, -4840, 2727 }, credits03 },
-    { LEVEL_CCM, 2, 34, 25, { -5464, 6656, -6575 }, credits04 },
-    { LEVEL_BBH, 1, 1, 60, { 257, 1922, 2580 }, credits05 },
-    { LEVEL_HMC, 1, -15, 123, { -6469, 1616, -6054 }, credits06 },
-    { LEVEL_THI, 3, 17, -32, { 508, 1024, 1942 }, credits07 },
-    { LEVEL_LLL, 2, 33, 124, { -73, 82, -1467 }, credits08 },
-    { LEVEL_SSL, 1, 65, 98, { -5906, 1024, -2576 }, credits09 },
-    { LEVEL_DDD, 1, 50, 47, { -4884, -4607, -272 }, credits10 },
-    { LEVEL_SL, 1, 17, -34, { 1925, 3328, 563 }, credits11 },
-    { LEVEL_WDW, 1, 33, 105, { -537, 1850, 1818 }, credits12 },
-    { LEVEL_TTM, 1, 2, -33, { 2613, 313, 1074 }, credits13 },
-    { LEVEL_THI, 1, 51, 54, { -2609, 512, 856 }, credits14 },
-    { LEVEL_TTC, 1, 17, -72, { -1304, -71, -967 }, credits15 },
-    { LEVEL_RR, 1, 33, 64, { 1565, 1024, -148 }, credits16 },
-    { LEVEL_SA, 1, 1, 24, { -1050, -1330, -1559 }, credits17 },
-    { LEVEL_COTMC, 1, 49, -16, { -254, 415, -6045 }, credits18 },
-    { LEVEL_DDD, 2, -111, -64, { 3948, 1185, -104 }, credits19 },
-    { LEVEL_CCM, 1, 33, 31, { 3169, -4607, 5240 }, credits20 },
-    { LEVEL_CASTLE_GROUNDS, 1, 1, -128, { 0, 906, -1200 }, NULL },
-    { LEVEL_NONE, 0, 1, 0, { 0, 0, 0 }, NULL },
+    // { LEVEL_CASTLE_GROUNDS, 1, 1, -128, { 0, 8000, 0 }, NULL },
+    // { LEVEL_BOB, 1, 1, 117, { 713, 3918, -3889 }, credits01 },
+    // { LEVEL_WF, 1, 50, 46, { 347, 5376, 326 }, credits02 },
+    // { LEVEL_JRB, 1, 18, 22, { 3800, -4840, 2727 }, credits03 },
+    // { LEVEL_CCM, 2, 34, 25, { -5464, 6656, -6575 }, credits04 },
+    // { LEVEL_BBH, 1, 1, 60, { 257, 1922, 2580 }, credits05 },
+    // { LEVEL_HMC, 1, -15, 123, { -6469, 1616, -6054 }, credits06 },
+    // { LEVEL_THI, 3, 17, -32, { 508, 1024, 1942 }, credits07 },
+    // { LEVEL_LLL, 2, 33, 124, { -73, 82, -1467 }, credits08 },
+    // { LEVEL_SSL, 1, 65, 98, { -5906, 1024, -2576 }, credits09 },
+    // { LEVEL_DDD, 1, 50, 47, { -4884, -4607, -272 }, credits10 },
+    // { LEVEL_SL, 1, 17, -34, { 1925, 3328, 563 }, credits11 },
+    // { LEVEL_WDW, 1, 33, 105, { -537, 1850, 1818 }, credits12 },
+    // { LEVEL_TTM, 1, 2, -33, { 2613, 313, 1074 }, credits13 },
+    // { LEVEL_THI, 1, 51, 54, { -2609, 512, 856 }, credits14 },
+    // { LEVEL_TTC, 1, 17, -72, { -1304, -71, -967 }, credits15 },
+    // { LEVEL_RR, 1, 33, 64, { 1565, 1024, -148 }, credits16 },
+    // { LEVEL_SA, 1, 1, 24, { -1050, -1330, -1559 }, credits17 },
+    // { LEVEL_COTMC, 1, 49, -16, { -254, 415, -6045 }, credits18 },
+    // { LEVEL_DDD, 2, -111, -64, { 3948, 1185, -104 }, credits19 },
+    // { LEVEL_CCM, 1, 33, 31, { 3169, -4607, 5240 }, credits20 },
+    // { LEVEL_CASTLE_GROUNDS, 1, 1, -128, { 0, 906, -1200 }, NULL },
+    // { LEVEL_NONE, 0, 1, 0, { 0, 0, 0 }, NULL },
 };
 
 struct MarioState gMarioStates[1];
@@ -253,26 +253,26 @@ void init_door_warp(struct SpawnInfo *spawnInfo, u32 warpDestFlags) {
     spawnInfo->startPos[2] += 300.0f * coss(spawnInfo->startAngle[1]);
 }
 
-void set_mario_initial_cap_powerup(struct MarioState *m) {
-    u32 capCourseIndex = gCurrCourseNum - COURSE_CAP_COURSES;
+// void set_mario_initial_cap_powerup(struct MarioState *m) {
+//     u32 capCourseIndex = gCurrCourseNum - COURSE_CAP_COURSES;
 
-    switch (capCourseIndex) {
-        case COURSE_COTMC - COURSE_CAP_COURSES:
-            m->flags |= MARIO_METAL_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = 600;
-            break;
+//     switch (capCourseIndex) {
+//         case COURSE_COTMC - COURSE_CAP_COURSES:
+//             m->flags |= MARIO_METAL_CAP | MARIO_CAP_ON_HEAD;
+//             m->capTimer = 600;
+//             break;
 
-        case COURSE_TOTWC - COURSE_CAP_COURSES:
-            m->flags |= MARIO_WING_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = 1200;
-            break;
+//         case COURSE_TOTWC - COURSE_CAP_COURSES:
+//             m->flags |= MARIO_WING_CAP | MARIO_CAP_ON_HEAD;
+//             m->capTimer = 1200;
+//             break;
 
-        case COURSE_VCUTM - COURSE_CAP_COURSES:
-            m->flags |= MARIO_VANISH_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = 600;
-            break;
-    }
-}
+//         case COURSE_VCUTM - COURSE_CAP_COURSES:
+//             m->flags |= MARIO_VANISH_CAP | MARIO_CAP_ON_HEAD;
+//             m->capTimer = 600;
+//             break;
+//     }
+// }
 
 void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg) {
     switch (spawnType) {
@@ -339,7 +339,7 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
     }
 #endif
 
-    set_mario_initial_cap_powerup(m);
+    // set_mario_initial_cap_powerup(m);
 }
 
 void init_mario_after_warp(void) {
@@ -567,15 +567,15 @@ s16 music_unchanged_through_warp(s16 arg) {
     s16 unchanged = TRUE;
     s16 currBgMusic;
 
-#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
-    if (levelNum == LEVEL_BOB && levelNum == gCurrLevelNum && destArea == gCurrAreaIndex) {
-        currBgMusic = get_current_background_music();
-        if (currBgMusic == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION)
-            || currBgMusic == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP)) {
-            unchanged = FALSE;
-        }
-    } else {
-#endif
+// #ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
+//     if (levelNum == LEVEL_BOB && levelNum == gCurrLevelNum && destArea == gCurrAreaIndex) {
+//         currBgMusic = get_current_background_music();
+//         if (currBgMusic == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP | SEQ_VARIATION)
+//             || currBgMusic == SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP)) {
+//             unchanged = FALSE;
+//         }
+//     } else {
+// #endif
         u16 destParam1 = gAreas[destArea].musicParam;
         u16 destParam2 = gAreas[destArea].musicParam2;
 
@@ -585,9 +585,9 @@ s16 music_unchanged_through_warp(s16 arg) {
         if (get_current_background_music() != destParam2) {
             unchanged = FALSE;
         }
-#ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
-    }
-#endif
+// #ifndef DISABLE_LEVEL_SPECIFIC_CHECKS
+//     }
+// #endif
     return unchanged;
 }
 
@@ -729,27 +729,27 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
         sDelayedWarpOp = warpOp;
 
         switch (warpOp) {
-            case WARP_OP_DEMO_NEXT:
-            case WARP_OP_DEMO_END:
-                sDelayedWarpTimer = 20;
-                sSourceWarpNodeId = WARP_NODE_DEFAULT;
-                gSavedCourseNum = COURSE_NONE;
-                fadeMusic = FALSE;
-                play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                break;
+            // case WARP_OP_DEMO_NEXT:
+            // case WARP_OP_DEMO_END:
+            //     sDelayedWarpTimer = 20;
+            //     sSourceWarpNodeId = WARP_NODE_DEFAULT;
+            //     gSavedCourseNum = COURSE_NONE;
+            //     fadeMusic = FALSE;
+            //     play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
+            //     break;
 
-            case WARP_OP_CREDITS_END:
-                sDelayedWarpTimer = 60;
-                sSourceWarpNodeId = WARP_NODE_DEFAULT;
-                fadeMusic = FALSE;
-                gSavedCourseNum = COURSE_NONE;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                break;
+            // case WARP_OP_CREDITS_END:
+            //     sDelayedWarpTimer = 60;
+            //     sSourceWarpNodeId = WARP_NODE_DEFAULT;
+            //     fadeMusic = FALSE;
+            //     gSavedCourseNum = COURSE_NONE;
+            //     play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
+            //     break;
 
             case WARP_OP_STAR_EXIT:
                 sDelayedWarpTimer = 32;
                 sSourceWarpNodeId = WARP_NODE_DEFAULT;
-                gSavedCourseNum = COURSE_NONE;
+                gSavedCourseNum = 0;
                 gMarioState->InsideCourse = TRUE;
                 play_transition(WARP_TRANSITION_FADE_INTO_MARIO, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
@@ -765,9 +765,9 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                     }
                     sDelayedWarpTimer = 48;
                     sSourceWarpNodeId = WARP_NODE_DEATH;
-                    if (gCurrLevelNum != LEVEL_CASTLE) {
-                        gMarioState->InsideCourse = TRUE;
-                    }
+                    // if (gCurrLevelNum != LEVEL_CASTLE) {
+                    //     gMarioState->InsideCourse = TRUE;
+                    // }
                     play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, 0x30, 0x00, 0x00, 0x00);
                     play_sound(SOUND_MENU_BOWSER_LAUGH, gGlobalSoundSource);
 #ifdef PREVENT_DEATH_LOOP
@@ -1014,15 +1014,15 @@ s32 play_mode_normal(void) {
         save_file_one_second();
     }
     
-    if (gCurrDemoInput != NULL) {
-        print_intro_text();
-        if (gPlayer1Controller->buttonPressed & END_DEMO) {
-            level_trigger_warp(gMarioState, gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
-        } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
-                   && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
-            level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
-        }
-    }
+    // if (gCurrDemoInput != NULL) {
+    //     print_intro_text();
+    //     if (gPlayer1Controller->buttonPressed & END_DEMO) {
+    //         level_trigger_warp(gMarioState, gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
+    //     } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
+    //                && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+    //         level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
+    //     }
+    // }
 
     warp_area();
     check_instant_warp();
@@ -1084,7 +1084,7 @@ s32 play_mode_paused(void) {
             cmm_target_mode = CMM_MODE_MAKE;
             initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
             fade_into_special_warp(WARP_SPECIAL_NONE, 0);
-            gSavedCourseNum = COURSE_NONE;
+            gSavedCourseNum = 0;
             gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         } else {
             fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
@@ -1264,45 +1264,45 @@ s32 init_level(void) {//
     gMarioState->NewLevel = FALSE;
 
     //De-Dither optimization
-    if (gIsConsole) {
-        switch(gCurrLevelNum) {
-            case LEVEL_BBH:
-            case LEVEL_CCM:
-            case LEVEL_TTC:
-            case LEVEL_WDW://star fair is laggy as shit on n64
-            osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
-            osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
-            break;
-            default:
-            osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
-            osViSetSpecialFeatures(OS_VI_DIVOT_ON);
-            break;
-        }
-    }
+    // if (gIsConsole) {
+    //     switch(gCurrLevelNum) {
+    //         case LEVEL_BBH:
+    //         case LEVEL_CCM:
+    //         case LEVEL_TTC:
+    //         case LEVEL_WDW://star fair is laggy as shit on n64
+    //         osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+    //         osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+    //         break;
+    //         default:
+    //         osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+    //         osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    //         break;
+    //     }
+    // }
 
-    if ((gCurrActNum == 5)&&(gCurrLevelNum == LEVEL_LLL)) {
-        gMarioState->NewTimer = 30;
-        gMarioState->NewTimerMode = 1;
-    }
+    // if ((gCurrActNum == 5)&&(gCurrLevelNum == LEVEL_LLL)) {
+    //     gMarioState->NewTimer = 30;
+    //     gMarioState->NewTimerMode = 1;
+    // }
 
     gMarioState->LavaHeat = 3;
-    switch(gCurrLevelNum) {
-        case LEVEL_HMC:
-        case LEVEL_JRB:
-            gMarioState->LavaHeat = 2;
-        break;
-        case LEVEL_SL:
-            gMarioState->LavaHeat = 5;
-        break;
-        case LEVEL_BITFS:
-            gMarioState->LavaHeat = 4;
-        break;
-    }
+    // switch(gCurrLevelNum) {
+    //     case LEVEL_HMC:
+    //     case LEVEL_JRB:
+    //         gMarioState->LavaHeat = 2;
+    //     break;
+    //     case LEVEL_SL:
+    //         gMarioState->LavaHeat = 5;
+    //     break;
+    //     case LEVEL_BITFS:
+    //         gMarioState->LavaHeat = 4;
+    //     break;
+    // }
 
     gMarioState->_2D = FALSE;
-    if (gCurrLevelNum == LEVEL_SSL) {
-        gMarioState->_2D = TRUE;
-    }
+    // if (gCurrLevelNum == LEVEL_SSL) {
+    //     gMarioState->_2D = TRUE;
+    // }
 
     set_play_mode(PLAY_MODE_NORMAL);
 
@@ -1422,8 +1422,8 @@ s32 lvl_init_from_save_file(UNUSED s16 initOrUpdate, s32 levelNum) {
     gNeverEnteredCastle = !save_file_exists(gCurrSaveFileNum - 1);
 #endif
     gCurrLevelNum = levelNum;
-    gCurrCourseNum = COURSE_NONE;
-    gSavedCourseNum = COURSE_NONE;
+    gCurrCourseNum = 0;
+    gSavedCourseNum = 0;
     gCurrCreditsEntry = NULL;
     gSpecialTripleJump = FALSE;
 
@@ -1443,7 +1443,7 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
     gCurrLevelNum = levelNum;
     gCurrCourseNum = gLevelToCourseNumTable[levelNum - 1];
 	if (gCurrLevelNum == LEVEL_BOB) return 0;
-    if (gCurrLevelNum == LEVEL_SA) return 0;
+    // if (gCurrLevelNum == LEVEL_SA) return 0;
 
     if (gMarioState->InsideCourse) {
         gCurrActNum = 2;
@@ -1456,16 +1456,16 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
         return 0;
     }
 
-    if (gCurrDemoInput != NULL || gCurrCreditsEntry != NULL || gCurrCourseNum == COURSE_NONE) {
+    if (gCurrDemoInput != NULL || gCurrCreditsEntry != NULL) {
         return FALSE;
     }
 
-    if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2 && gCurrLevelNum != LEVEL_BOWSER_3) {
+    // if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2 && gCurrLevelNum != LEVEL_BOWSER_3) {
         gMarioState->numCoins = 0;
         gHudDisplay.coins = 0;
         gCurrCourseStarFlags =
             save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
-    }
+    // }
 
     if (gSavedCourseNum != gCurrCourseNum) {
         gSavedCourseNum = gCurrCourseNum;

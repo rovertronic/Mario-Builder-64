@@ -331,11 +331,11 @@ void bobomb_buddy_act_idle(void) {
 
     // vec3f_copy(&o->oBobombBuddyPosCopyVec, &o->oPosVec);
 
-    if (gCurrLevelNum != LEVEL_TTC) {
-        //hard coded horse shit
-        object_step();
-        //the reason for this though is because a lot of npcs in ttc are on top of objects, which unload collision when you walk away from them
-        }
+    // if (gCurrLevelNum != LEVEL_TTC) {
+    //     //hard coded horse shit
+    //     object_step();
+    //     //the reason for this though is because a lot of npcs in ttc are on top of objects, which unload collision when you walk away from them
+    //     }
 
     // if (animFrame == 5 || animFrame == 16) {
     //     cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
@@ -486,11 +486,7 @@ void bobomb_buddy_act_talk(void) {
                 break;
 
             case BOBOMB_BUDDY_ROLE_CANNON:
-                if (gCurrCourseNum == COURSE_BOB) {
-                    bobomb_buddy_cannon_dialog(DIALOG_004, DIALOG_105);
-                } else {
-                    bobomb_buddy_cannon_dialog(DIALOG_047, DIALOG_106);
-                }
+                bobomb_buddy_cannon_dialog(DIALOG_047, DIALOG_106);
                 break;
 
 

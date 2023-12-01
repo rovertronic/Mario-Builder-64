@@ -1,5 +1,7 @@
 // eyerok.inc.c
 
+#include "actors/group5.h"
+
 struct ObjectHitbox sEyerokHitbox = {
     /* interactType:      */ INTERACT_BOUNCE_TOP,
     /* downOffset:        */ 0,

@@ -33,9 +33,6 @@
 #include "rovent.h"
 #include "dialog_ids.h"
 #include "seq_ids.h"
-#include "levels/rr/header.h"
-#include "levels/castle_grounds/header.h"
-#include "levels/ccm/header.h"
 
 s32 event_test[] = {
 
@@ -1463,8 +1460,8 @@ s32 *event_list[] = {
     &event_get_badge,
 };
 
-f32 *spline_list[] = {
-    &rr_frames,
-    &cg_frames,
-    &ccm_frames,
-};
+// f32 *spline_list[] = {
+//     &rr_frames,
+//     &cg_frames,
+//     &ccm_frames,
+// };

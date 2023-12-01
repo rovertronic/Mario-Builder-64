@@ -1906,7 +1906,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     sMainMenuTimer = 0;
     sEraseYesNoHoverState = MENU_ERASE_HOVER_NONE;
     sSoundMode = 0;
-    gCurrLevelNum = LEVEL_UNKNOWN_1;
+    gCurrLevelNum = 0;
     return 0;
 }
 

@@ -703,9 +703,9 @@ $(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o
 # Has to be a static pattern rule for make-4.4 and above to trigger the second
 # expansion.
 .SECONDEXPANSION:
-$(LEVEL_ELF_FILES): $(BUILD_DIR)/levels/%/leveldata.elf: $(BUILD_DIR)/levels/%/leveldata.o $(BUILD_DIR)/bin/$$(TEXTURE_BIN).elf
+$(LEVEL_ELF_FILES): $(BUILD_DIR)/levels/%/leveldata.elf: $(BUILD_DIR)/levels/%/leveldata.o
 	$(call print,Linking ELF file:,$<,$@)
-	$(V)$(LD) -e 0 -Ttext=$(SEGMENT_ADDRESS) -Map $@.map --just-symbols=$(BUILD_DIR)/bin/$(TEXTURE_BIN).elf -o $@ $<
+	$(V)$(LD) -e 0 -Ttext=$(SEGMENT_ADDRESS) -Map $@.map -o $@ $<
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
 	$(call print,Extracting compressible data from:,$<,$@)

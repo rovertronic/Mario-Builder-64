@@ -614,8 +614,6 @@ UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
     return time;
 }
 
-#include "rigid_body.h"
-
 /**
  * Update all objects. This includes script execution, object collision detection,
  * and object surface management.
@@ -636,9 +634,9 @@ void update_objects(UNUSED s32 unused) {
     // If time stop is not active, unload object surfaces
     clear_dynamic_surfaces();
 
-    for (u32 i = 0; i < NUM_RIGID_BODY_STEPS; i++) {
-        do_rigid_body_step();
-    }
+    // for (u32 i = 0; i < NUM_RIGID_BODY_STEPS; i++) {
+    //     do_rigid_body_step();
+    // }
 
     // Update spawners and objects with surfaces
     update_terrain_objects();

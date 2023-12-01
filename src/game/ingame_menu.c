@@ -13,7 +13,6 @@
 #include "gfx_dimensions.h"
 #include "ingame_menu.h"
 #include "level_update.h"
-#include "levels/castle_grounds/header.h"
 #include "memory.h"
 #include "print.h"
 #include "save_file.h"
@@ -1115,10 +1114,10 @@ void create_dialog_inverted_box(s16 dialog) {
     if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogBoxType = DIALOG_TYPE_ZOOM;
-        if (gCurrLevelNum == LEVEL_RR) {
-            gDialogBoxType = DIALOG_TYPE_ROTATE;
-            //more hardcoded bullshit
-        }
+        // if (gCurrLevelNum == LEVEL_RR) {
+        //     gDialogBoxType = DIALOG_TYPE_ROTATE;
+        //     //more hardcoded bullshit
+        // }
     }
 }
 
@@ -1743,9 +1742,9 @@ void render_dialog_entries(void) {
                   ensure_nonnegative(240 + ((dialog->linesPerBox * 80) / DIAG_VAL4) - dialog->width));
 
     _spread = 0.0f;
-    if ((gCurrLevelNum == LEVEL_SSL)&&(gDialogID>49)) {
-        _spread = 2.0f;
-    }
+    // if ((gCurrLevelNum == LEVEL_SSL)&&(gDialogID>49)) {
+    //     _spread = 2.0f;
+    // }
     handle_dialog_text_and_pages(0, dialog, lowerBound);
 
     if (gLastDialogPageStrPos == -1 && gLastDialogResponse == 1) {
@@ -1872,99 +1871,99 @@ void do_cutscene_handler(void) {
 #define STR_X  38
 #define STR_Y 142
 
-// "Dear Mario" message handler
-void print_peach_letter_message(void) {
-#ifdef VERSION_EU
-    void **dialogTable;
-    gInGameLanguage = eu_get_language();
-    switch (gInGameLanguage) {
-        default:
-        case LANGUAGE_ENGLISH: dialogTable = segmented_to_virtual(dialog_table_eu_en); break;
-        case LANGUAGE_FRENCH:  dialogTable = segmented_to_virtual(dialog_table_eu_fr); break;
-        case LANGUAGE_GERMAN:  dialogTable = segmented_to_virtual(dialog_table_eu_de); break;
-    }
-#else
-    void **dialogTable = segmented_to_virtual(seg2_dialog_table);
-#endif
-    struct DialogEntry *dialog = segmented_to_virtual(dialogTable[gDialogID]);
-    u8 *str = segmented_to_virtual(dialog->str);
+// // "Dear Mario" message handler
+// void print_peach_letter_message(void) {
+// #ifdef VERSION_EU
+//     void **dialogTable;
+//     gInGameLanguage = eu_get_language();
+//     switch (gInGameLanguage) {
+//         default:
+//         case LANGUAGE_ENGLISH: dialogTable = segmented_to_virtual(dialog_table_eu_en); break;
+//         case LANGUAGE_FRENCH:  dialogTable = segmented_to_virtual(dialog_table_eu_fr); break;
+//         case LANGUAGE_GERMAN:  dialogTable = segmented_to_virtual(dialog_table_eu_de); break;
+//     }
+// #else
+//     void **dialogTable = segmented_to_virtual(seg2_dialog_table);
+// #endif
+//     struct DialogEntry *dialog = segmented_to_virtual(dialogTable[gDialogID]);
+//     u8 *str = segmented_to_virtual(dialog->str);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 97.0f, 118.0f, 0);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 97.0f, 118.0f, 0);
 
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
-    gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_dl_0700EA58);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 20, 20, 20, gCutsceneMsgFade);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
+//     gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_dl_0700EA58);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 20, 20, 20, gCutsceneMsgFade);
 
-    print_generic_string(STR_X, STR_Y, str);
-#ifdef VERSION_JP
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-#else
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    gDPSetEnvColor(gDisplayListHead++, 200, 80, 120, gCutsceneMsgFade);
-    gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_us_dl_0700F2E8);
-#endif
+//     print_generic_string(STR_X, STR_Y, str);
+// #ifdef VERSION_JP
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+// #else
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     gDPSetEnvColor(gDisplayListHead++, 200, 80, 120, gCutsceneMsgFade);
+//     gSPDisplayList(gDisplayListHead++, castle_grounds_seg7_us_dl_0700F2E8);
+// #endif
 
-    // at the start/end of message, reset the fade.
-    if (gCutsceneMsgTimer == 0) {
-        gCutsceneMsgFade = 0;
-    }
+//     // at the start/end of message, reset the fade.
+//     if (gCutsceneMsgTimer == 0) {
+//         gCutsceneMsgFade = 0;
+//     }
 
-    // we're less than 20 increments, so increase the fade.
-    if (gCutsceneMsgTimer < 20) {
-        gCutsceneMsgFade += 10;
-    }
+//     // we're less than 20 increments, so increase the fade.
+//     if (gCutsceneMsgTimer < 20) {
+//         gCutsceneMsgFade += 10;
+//     }
 
-    // we're after PEACH_MESSAGE_TIMER increments, so decrease the fade.
-    if (gCutsceneMsgTimer > PEACH_MESSAGE_TIMER) {
-        gCutsceneMsgFade -= 10;
-    }
+//     // we're after PEACH_MESSAGE_TIMER increments, so decrease the fade.
+//     if (gCutsceneMsgTimer > PEACH_MESSAGE_TIMER) {
+//         gCutsceneMsgFade -= 10;
+//     }
 
-    // 20 increments after the start of the decrease, we're
-    // back where we are, so reset everything at the end.
-    if (gCutsceneMsgTimer > (PEACH_MESSAGE_TIMER + 20)) {
-        gCutsceneMsgIndex = -1;
-        gCutsceneMsgFade = 0; //! uselessly reset since the next execution will just set it to 0 again.
-        gDialogID = DIALOG_NONE;
-        gCutsceneMsgTimer = 0;
-        return; // return to avoid incrementing the timer
-    }
+//     // 20 increments after the start of the decrease, we're
+//     // back where we are, so reset everything at the end.
+//     if (gCutsceneMsgTimer > (PEACH_MESSAGE_TIMER + 20)) {
+//         gCutsceneMsgIndex = -1;
+//         gCutsceneMsgFade = 0; //! uselessly reset since the next execution will just set it to 0 again.
+//         gDialogID = DIALOG_NONE;
+//         gCutsceneMsgTimer = 0;
+//         return; // return to avoid incrementing the timer
+//     }
 
-    gCutsceneMsgTimer++;
-}
+//     gCutsceneMsgTimer++;
+// }
 
-/**
- * Renders the cannon reticle when Mario is inside a cannon.
- * Formed by four triangles.
- */
-void render_hud_cannon_reticle(void) {
-    create_dl_translation_matrix(MENU_MTX_PUSH, 160.0f, 120.0f, 0);
+// /**
+//  * Renders the cannon reticle when Mario is inside a cannon.
+//  * Formed by four triangles.
+//  */
+// void render_hud_cannon_reticle(void) {
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 160.0f, 120.0f, 0);
 
-    gDPSetEnvColor(gDisplayListHead++, 50, 50, 50, 180);
-    create_dl_translation_matrix(MENU_MTX_PUSH, -20.0f, -8.0f, 0);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     gDPSetEnvColor(gDisplayListHead++, 50, 50, 50, 180);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, -20.0f, -8.0f, 0);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 20.0f, 8.0f, 0);
-    create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 20.0f, 8.0f, 0);
+//     create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 8.0f, -20.0f, 0);
-    create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 8.0f, -20.0f, 0);
+//     create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, -8.0f, 20.0f, 0);
-    create_dl_rotation_matrix(MENU_MTX_NOPUSH, -DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, -8.0f, 20.0f, 0);
+//     create_dl_rotation_matrix(MENU_MTX_NOPUSH, -DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-}
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+// }
 
 void reset_red_coins_collected(void) {
     gRedCoinsCollected = 0;
@@ -2276,15 +2275,15 @@ void render_empty_box(s16 x, s16 y) {
 void highlight_last_course_complete_stars(void) {
     u8 doneCourseIndex;
 
-    if (gLastCompletedCourseNum == COURSE_NONE) {
-        doneCourseIndex = COURSE_NUM_TO_INDEX(COURSE_MIN);
-    } else {
-        doneCourseIndex = COURSE_NUM_TO_INDEX(gLastCompletedCourseNum);
+    // if (gLastCompletedCourseNum == COURSE_NONE) {
+    //     doneCourseIndex = COURSE_NUM_TO_INDEX(COURSE_MIN);
+    // } else {
+    //     doneCourseIndex = COURSE_NUM_TO_INDEX(gLastCompletedCourseNum);
 
-        if (doneCourseIndex >= COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES)) {
-            doneCourseIndex = COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES);
-        }
-    }
+    //     if (doneCourseIndex >= COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES)) {
+    //         doneCourseIndex = COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES);
+    //     }
+    // }
 
     gDialogLineNum = doneCourseIndex;
 }
@@ -2300,25 +2299,25 @@ void print_hud_pause_colorful_str(void) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-u8 MainCourseWarpTable[] = {
-    LEVEL_BOB,
-    LEVEL_WF,
-    LEVEL_JRB,
-    //switched!
-    LEVEL_BBH,
-    LEVEL_CCM,
-    //switched!
-    LEVEL_HMC,
-    LEVEL_LLL,
-    LEVEL_SSL,
-    LEVEL_DDD,
-    LEVEL_SL,
-    LEVEL_WDW,
-    LEVEL_TTM,
-    LEVEL_THI,
-    LEVEL_TTC,
-    LEVEL_RR,
-};
+// u8 MainCourseWarpTable[] = {
+//     LEVEL_BOB,
+//     LEVEL_WF,
+//     LEVEL_JRB,
+//     //switched!
+//     LEVEL_BBH,
+//     LEVEL_CCM,
+//     //switched!
+//     LEVEL_HMC,
+//     LEVEL_LLL,
+//     LEVEL_SSL,
+//     LEVEL_DDD,
+//     LEVEL_SL,
+//     LEVEL_WDW,
+//     LEVEL_TTM,
+//     LEVEL_THI,
+//     LEVEL_TTC,
+//     LEVEL_RR,
+// };
 
 void render_pause_castle_course_stars(s16 x, s16 y, s16 fileIndex, s16 courseIndex) {
     s16 hasStar = 0;
@@ -2412,23 +2411,23 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
         print_generic_string(x + 54, y - 5, strVal);
 
         //only render if not on agamemnon
-        if (save_file_get_progression() != PROG_ON_AGAMEMNON) {
-            //render the "press A to go to level" thing
-            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-            print_generic_string(x-18, y-46, txt_warp);
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-            print_generic_string(x-17, y-45, txt_warp);
+        // if (save_file_get_progression() != PROG_ON_AGAMEMNON) {
+        //     //render the "press A to go to level" thing
+        //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+        //     print_generic_string(x-18, y-46, txt_warp);
+        //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        //     print_generic_string(x-17, y-45, txt_warp);
 
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                level_set_transition(0, 0);
-                play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
-                gMenuMode = -1;
-                gDialogBoxState = DIALOG_STATE_OPENING;
+        //     if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+        //         level_set_transition(0, 0);
+        //         play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+        //         gMenuMode = -1;
+        //         gDialogBoxState = DIALOG_STATE_OPENING;
 
-                initiate_warp(MainCourseWarpTable[gDialogLineNum], 1, 0x0A, 0);
-                fade_into_special_warp(0, 0);
-            }
-        }
+        //         initiate_warp(MainCourseWarpTable[gDialogLineNum], 1, 0x0A, 0);
+        //         fade_into_special_warp(0, 0);
+        //     }
+        // }
     } else { // Castle secret stars
         u8 textStarX[] = { TEXT_STAR_X };
         courseName = segmented_to_virtual(courseNameTbl[COURSE_MAX]);
@@ -3262,29 +3261,29 @@ void render_course_complete_lvl_info_and_hud_str(void) {
         print_generic_string(CRS_NUM_X3, 167, strCourseNum);
 
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) { // Bowser courses
-        name = segmented_to_virtual(courseNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum)]);
+    // } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) { // Bowser courses
+    //     name = segmented_to_virtual(courseNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum)]);
 
-        // Print course name and clear text
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    //     // Print course name and clear text
+    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-        print_generic_string(TXT_NAME_X1, 130, name);
-        print_generic_string(TXT_CLEAR_X1, 130, textClear);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        print_generic_string(TXT_NAME_X2, 132, name);
-        print_generic_string(TXT_CLEAR_X2, 132, textClear);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+    //     print_generic_string(TXT_NAME_X1, 130, name);
+    //     print_generic_string(TXT_CLEAR_X1, 130, textClear);
+    //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+    //     print_generic_string(TXT_NAME_X2, 132, name);
+    //     print_generic_string(TXT_CLEAR_X2, 132, textClear);
+    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-        print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
-        print_hud_course_complete_coins(118, 111);
-        play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
-        return;
-    } else { // Castle secret stars
-        name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
+    //     print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
+    //     print_hud_course_complete_coins(118, 111);
+    //     play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
+    //     return;
+    // } else { // Castle secret stars
+    //     name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
 
-        print_hud_course_complete_coins(118, 103);
-        play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
+    //     print_hud_course_complete_coins(118, 103);
+    //     play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
     }
 
     // Print star glyph
@@ -3395,95 +3394,95 @@ s32 render_course_complete_screen(void) {
 
 u8 intensity;
 
-u8 text_precredits_1[] = {PRE_CREDITS_1};
-u8 text_precredits_2[] = {PRE_CREDITS_2};
-u8 text_precredits_3[] = {PRE_CREDITS_3};
-u8 text_precredits_4[] = {PRE_CREDITS_4};
-u8 text_precredits_5[] = {PRE_CREDITS_5};
-u8 text_precredits_6[] = {PRE_CREDITS_6};
-u8 text_precredits_7[] = {PRE_CREDITS_7};
-u8 text_precredits_8[] = {PRE_CREDITS_8};
-u8 text_precredits_9[] = {PRE_CREDITS_9};
-u8 text_precredits_10[] = {PRE_CREDITS_10};
-u8 text_precredits_11[] = {PRE_CREDITS_11};
-u8 text_precredits_12[] = {PRE_CREDITS_12};
-u8 text_precredits_13[] = {PRE_CREDITS_13};
-u8 text_precredits_14[] = {PRE_CREDITS_14};
-u8 text_precredits_15[] = {PRE_CREDITS_15};
-u8 text_precredits_16[] = {PRE_CREDITS_16};
-u8 text_precredits_17[] = {PRE_CREDITS_17};
-u8 text_precredits_18[] = {PRE_CREDITS_18};
+// u8 text_precredits_1[] = {PRE_CREDITS_1};
+// u8 text_precredits_2[] = {PRE_CREDITS_2};
+// u8 text_precredits_3[] = {PRE_CREDITS_3};
+// u8 text_precredits_4[] = {PRE_CREDITS_4};
+// u8 text_precredits_5[] = {PRE_CREDITS_5};
+// u8 text_precredits_6[] = {PRE_CREDITS_6};
+// u8 text_precredits_7[] = {PRE_CREDITS_7};
+// u8 text_precredits_8[] = {PRE_CREDITS_8};
+// u8 text_precredits_9[] = {PRE_CREDITS_9};
+// u8 text_precredits_10[] = {PRE_CREDITS_10};
+// u8 text_precredits_11[] = {PRE_CREDITS_11};
+// u8 text_precredits_12[] = {PRE_CREDITS_12};
+// u8 text_precredits_13[] = {PRE_CREDITS_13};
+// u8 text_precredits_14[] = {PRE_CREDITS_14};
+// u8 text_precredits_15[] = {PRE_CREDITS_15};
+// u8 text_precredits_16[] = {PRE_CREDITS_16};
+// u8 text_precredits_17[] = {PRE_CREDITS_17};
+// u8 text_precredits_18[] = {PRE_CREDITS_18};
 
 
-u8 *precredits_ptr[] = {
-    &text_precredits_1,
-    &text_precredits_2,
-    &text_precredits_3,
-    &text_precredits_4,
-    &text_precredits_5,
-    &text_precredits_6,
-    &text_precredits_7,
-    &text_precredits_8,
-    &text_precredits_9,
-    &text_precredits_10,
-    &text_precredits_11,
-    &text_precredits_12,
-    &text_precredits_13,
-    &text_precredits_14,
-    &text_precredits_15,
-    &text_precredits_16,
-    &text_precredits_17,
-    &text_precredits_18,
-};
+// u8 *precredits_ptr[] = {
+//     &text_precredits_1,
+//     &text_precredits_2,
+//     &text_precredits_3,
+//     &text_precredits_4,
+//     &text_precredits_5,
+//     &text_precredits_6,
+//     &text_precredits_7,
+//     &text_precredits_8,
+//     &text_precredits_9,
+//     &text_precredits_10,
+//     &text_precredits_11,
+//     &text_precredits_12,
+//     &text_precredits_13,
+//     &text_precredits_14,
+//     &text_precredits_15,
+//     &text_precredits_16,
+//     &text_precredits_17,
+//     &text_precredits_18,
+// };
 
-u8 start_precredits = FALSE;
-u8 precredits_index = 0;
-u16 precredits_timer = 0;
-s16 precredits_alpha = 0;
+// u8 start_precredits = FALSE;
+// u8 precredits_index = 0;
+// u16 precredits_timer = 0;
+// s16 precredits_alpha = 0;
 
-void render_pre_credits() {
-    if (!start_precredits) {
-        precredits_index = 0;
-        precredits_alpha = 0;
-        precredits_timer = 0;
-        return;
-    }
+// void render_pre_credits() {
+//     if (!start_precredits) {
+//         precredits_index = 0;
+//         precredits_alpha = 0;
+//         precredits_timer = 0;
+//         return;
+//     }
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, precredits_alpha);
-
-
-    print_generic_string(get_str_x_pos_from_center(160,precredits_ptr[precredits_index],0), 50, precredits_ptr[precredits_index]);
-
-    create_dl_scale_matrix(MENU_MTX_PUSH, 2.0f, 2.0f, 0.0f);
-        print_generic_string(get_str_x_pos_from_center(80,precredits_ptr[precredits_index+1],0), 10, precredits_ptr[precredits_index+1]);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, precredits_alpha);
 
 
+//     print_generic_string(get_str_x_pos_from_center(160,precredits_ptr[precredits_index],0), 50, precredits_ptr[precredits_index]);
 
-    precredits_timer++;
-    if (precredits_timer < 150) {
-        precredits_alpha += 4;
-        if (precredits_alpha > 255) {
-            precredits_alpha = 255;
-        }
-    } else {
-        precredits_alpha -= 4;
-        if (precredits_alpha < 0) {
-            precredits_alpha = 0;
-            precredits_timer = 0;
-            precredits_index += 2;
+//     create_dl_scale_matrix(MENU_MTX_PUSH, 2.0f, 2.0f, 0.0f);
+//         print_generic_string(get_str_x_pos_from_center(80,precredits_ptr[precredits_index+1],0), 10, precredits_ptr[precredits_index+1]);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-            if (precredits_index >= 18) {
-                start_precredits = FALSE;
-            }
-        }
 
-    }
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    return;
-}
+//     precredits_timer++;
+//     if (precredits_timer < 150) {
+//         precredits_alpha += 4;
+//         if (precredits_alpha > 255) {
+//             precredits_alpha = 255;
+//         }
+//     } else {
+//         precredits_alpha -= 4;
+//         if (precredits_alpha < 0) {
+//             precredits_alpha = 0;
+//             precredits_timer = 0;
+//             precredits_index += 2;
+
+//             if (precredits_index >= 18) {
+//                 start_precredits = FALSE;
+//             }
+//         }
+
+//     }
+
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     return;
+// }
 
 s32 render_menus_and_dialogs(void) {
     s32 mode = MENU_OPT_NONE;
@@ -3492,7 +3491,7 @@ s32 render_menus_and_dialogs(void) {
 
     create_dl_ortho_matrix();
 
-    render_pre_credits();
+    // render_pre_credits();
 
     //if (gMarioState->Options & (1<<OPT_MUSIC)) {
         //fade_volume_scale(SEQ_PLAYER_LEVEL,100,1);
@@ -3501,90 +3500,90 @@ s32 render_menus_and_dialogs(void) {
         //}
 
     //screen tint
-    if (gCurrentArea->index == 0x04&&gCurrLevelNum==0x05) { //removing screen tint until further notice (exepct for bos)
-        create_dl_translation_matrix(MENU_MTX_PUSH, 0, 400, 0);
-        create_dl_scale_matrix(MENU_MTX_NOPUSH, 5.0f, 5.0f, 0.0f);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 0);
-        switch (gCurrLevelNum) {
-            case 0x06:
-            if (gCurrentArea->index == 0x01) {
-                gDPSetEnvColor(gDisplayListHead++, 50, 0, 255, 12);
-                }
-            break;
-            case 0x09:
-            gDPSetEnvColor(gDisplayListHead++, 255, 30, 0, 45);
-            break;
-            case 0x05:
-            gDPSetEnvColor(gDisplayListHead++, 0x2A, 0x89, 0x6B, 20);
-            if (gCurrentArea->index == 0x04) {
-                gDPSetEnvColor(gDisplayListHead++, 12, 6, 0, 100);
-                if (gMarioState->BossHealth == 1) {
-                    gDPSetEnvColor(gDisplayListHead++, 100, 6, 0, 100);
-                    intensity = 0;
-                    }
-                if (gMarioState->BossHealth < 1) {
-                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, intensity);
-                    if (intensity < 250) {
-                        if (sCurrPlayMode == 0) {
-                            intensity ++;
-                            }
-                        }
-                        else
-                        {
-                        gMarioState->pos[0] = 0.0f;
-                        gMarioState->pos[1] = 0.0f;
-                        gMarioState->pos[2] = 0.0f;
+    // if (gCurrentArea->index == 0x04&&gCurrLevelNum==0x05) { //removing screen tint until further notice (exepct for bos)
+    //     create_dl_translation_matrix(MENU_MTX_PUSH, 0, 400, 0);
+    //     create_dl_scale_matrix(MENU_MTX_NOPUSH, 5.0f, 5.0f, 0.0f);
+    //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 0);
+    //     switch (gCurrLevelNum) {
+    //         case 0x06:
+    //         if (gCurrentArea->index == 0x01) {
+    //             gDPSetEnvColor(gDisplayListHead++, 50, 0, 255, 12);
+    //             }
+    //         break;
+    //         case 0x09:
+    //         gDPSetEnvColor(gDisplayListHead++, 255, 30, 0, 45);
+    //         break;
+    //         case 0x05:
+    //         gDPSetEnvColor(gDisplayListHead++, 0x2A, 0x89, 0x6B, 20);
+    //         if (gCurrentArea->index == 0x04) {
+    //             gDPSetEnvColor(gDisplayListHead++, 12, 6, 0, 100);
+    //             if (gMarioState->BossHealth == 1) {
+    //                 gDPSetEnvColor(gDisplayListHead++, 100, 6, 0, 100);
+    //                 intensity = 0;
+    //                 }
+    //             if (gMarioState->BossHealth < 1) {
+    //                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, intensity);
+    //                 if (intensity < 250) {
+    //                     if (sCurrPlayMode == 0) {
+    //                         intensity ++;
+    //                         }
+    //                     }
+    //                     else
+    //                     {
+    //                     gMarioState->pos[0] = 0.0f;
+    //                     gMarioState->pos[1] = 0.0f;
+    //                     gMarioState->pos[2] = 0.0f;
 
-                        gMarioState->marioObj->oPosX = gMarioState->pos[0];
-                        gMarioState->marioObj->oPosY = gMarioState->pos[1];
-                        gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+    //                     gMarioState->marioObj->oPosX = gMarioState->pos[0];
+    //                     gMarioState->marioObj->oPosY = gMarioState->pos[1];
+    //                     gMarioState->marioObj->oPosZ = gMarioState->pos[2];
 
-                        //camangle = gMarioState->area->camera->yaw;
-                        //camcam = gMarioState->area->camera;
-                        //change_area(0x05);
-                        //gMarioState->area->camera->yaw = camangle;
-                        //gMarioState->area->camera = camcam;
+    //                     //camangle = gMarioState->area->camera->yaw;
+    //                     //camcam = gMarioState->area->camera;
+    //                     //change_area(0x05);
+    //                     //gMarioState->area->camera->yaw = camangle;
+    //                     //gMarioState->area->camera = camcam;
 
-                        initiate_warp(LEVEL_CCM, 5, 0x0A, 0);
-                        fade_into_special_warp(0, 0);
-                        }
-                    }
-                }
-            break;
-            }
-        gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-        gDPSetEnvColor(gDisplayListHead++, 255,255,255, 255);
-        }
-    //screen tint
+    //                     initiate_warp(LEVEL_CCM, 5, 0x0A, 0);
+    //                     fade_into_special_warp(0, 0);
+    //                     }
+    //                 }
+    //             }
+    //         break;
+    //         }
+    //     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+    //     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    //     gDPSetEnvColor(gDisplayListHead++, 255,255,255, 255);
+    //     }
+    // //screen tint
 
-    //portal screen tint
-    if (gMarioState->PortalTint > 0.05f) {
-        create_dl_translation_matrix(MENU_MTX_PUSH, 0, 400, 0);
-        create_dl_scale_matrix(MENU_MTX_NOPUSH, 5.0f, 5.0f, 0.0f);
-        gDPSetEnvColor(gDisplayListHead++, 0x77, 0x57, 0x92, (u8)(gMarioState->PortalTint*255.0f));
+    // //portal screen tint
+    // if (gMarioState->PortalTint > 0.05f) {
+    //     create_dl_translation_matrix(MENU_MTX_PUSH, 0, 400, 0);
+    //     create_dl_scale_matrix(MENU_MTX_NOPUSH, 5.0f, 5.0f, 0.0f);
+    //     gDPSetEnvColor(gDisplayListHead++, 0x77, 0x57, 0x92, (u8)(gMarioState->PortalTint*255.0f));
 
-        gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-        gDPSetEnvColor(gDisplayListHead++, 255,255,255,255);
+    //     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+    //     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    //     gDPSetEnvColor(gDisplayListHead++, 255,255,255,255);
 
-        gMarioState->PortalTint *= .96;
-    }
+    //     gMarioState->PortalTint *= .96;
+    // }
 
-    if (gMarioState->MenuToRender == 1) {
-        render_empty_box(160, 183+70);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        print_generic_string(90, 120+70, text1);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-        //print_text_fmt_int(100, 96+70, CostumeNames[gMarioState->CostumeID], 0);
+    // if (gMarioState->MenuToRender == 1) {
+    //     render_empty_box(160, 183+70);
+    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    //     print_generic_string(90, 120+70, text1);
+    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    //     //print_text_fmt_int(100, 96+70, CostumeNames[gMarioState->CostumeID], 0);
 
 
-        gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        print_hud_lut_string(HUD_LUT_GLOBAL, 84, 60, costume_text[gMarioState->CostumeID]);
-        gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
-    }   
+    //     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+    //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    //     print_hud_lut_string(HUD_LUT_GLOBAL, 84, 60, costume_text[gMarioState->CostumeID]);
+    //     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+    // }   
 
 
     gMarioState->GlobalPaused = TRUE;
@@ -3608,10 +3607,10 @@ s32 render_menus_and_dialogs(void) {
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     } else if (gDialogID != DIALOG_NONE) {
         // The Peach "Dear Mario" message needs to be repositioned separately
-        if (gDialogID == DIALOG_020) {
-            print_peach_letter_message();
-            return mode;
-        }
+        // if (gDialogID == DIALOG_020) {
+        //     print_peach_letter_message();
+        //     return mode;
+        // }
 
         render_dialog_entries();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;

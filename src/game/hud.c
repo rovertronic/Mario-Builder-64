@@ -19,19 +19,6 @@
 #include "puppyprint.h"
 #include "puppycamold.h"
 
-#include "levels/bob/header.h"
-#include "levels/wf/header.h"
-#include "levels/ccm/header.h"
-#include "levels/bbh/header.h"
-#include "levels/jrb/header.h"
-#include "levels/lll/header.h"
-#include "levels/hmc/header.h"
-#include "levels/ddd/header.h"
-#include "levels/sl/header.h"
-#include "levels/ttm/header.h"
-#include "levels/thi/header.h"
-#include "levels/ttc/header.h"
-#include "levels/wdw/header.h"
 #include "actors/group0.h"
 
 #include "rovent.h"
@@ -293,77 +280,77 @@ void display_title(void) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 
-void display_minimap(void) {
-    Mtx *mtx;
-    f32 mx;
-    f32 my;
-    u8 wideoffet9 = 0;
+// void display_minimap(void) {
+//     Mtx *mtx;
+//     f32 mx;
+//     f32 my;
+//     u8 wideoffet9 = 0;
 
-    if (0) {
-        wideoffet9 = 40;
-        }
+//     if (0) {
+//         wideoffet9 = 40;
+//         }
 
-    mtx = alloc_display_list(sizeof(*mtx));
+//     mtx = alloc_display_list(sizeof(*mtx));
 
-    if (mtx == NULL) {
-        return;
-    }
+//     if (mtx == NULL) {
+//         return;
+//     }
 
-    mx = ((gMarioState->pos[0]/14834)*64)-wideoffet9;
-    my = (gMarioState->pos[2]/14834)*64;
+//     mx = ((gMarioState->pos[0]/14834)*64)-wideoffet9;
+//     my = (gMarioState->pos[2]/14834)*64;
 
-    guTranslate(mtx, (f32) 268-mx, (f32) 52+my, 0);
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    MapOn = TRUE;
+//     guTranslate(mtx, (f32) 268-mx, (f32) 52+my, 0);
+//     gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+//     MapOn = TRUE;
 
-    gDPSetScissor(gDisplayListHead++,G_SC_NON_INTERLACE, 236+(wideoffet9/4), 156, 300, 220 );
-    switch(gCurrLevelNum) {
-        case LEVEL_BOB:
-            gSPDisplayList(gDisplayListHead++, &Map1_Plane_mesh);
-            break;
-        case LEVEL_WF:
-            gSPDisplayList(gDisplayListHead++, &Map2_Plane_mesh);
-            break;
-        case LEVEL_JRB:
-            gSPDisplayList(gDisplayListHead++, &Map3_Plane_mesh);
-            break;
-        case LEVEL_CCM:
-            gSPDisplayList(gDisplayListHead++, &Map4_Plane_mesh);
-            break;
-        case LEVEL_BBH:
-            gSPDisplayList(gDisplayListHead++, &Map5_Plane_mesh);
-            break;
-        case LEVEL_HMC:
-            gSPDisplayList(gDisplayListHead++, &Map6_Plane_mesh);
-            break;
-        case LEVEL_LLL:
-            gSPDisplayList(gDisplayListHead++, &Map7_Plane_mesh);
-            break;
-        case LEVEL_DDD:
-            gSPDisplayList(gDisplayListHead++, &Map9_Plane_mesh);
-            break;
-        case LEVEL_SL:
-            gSPDisplayList(gDisplayListHead++, &Map10_Plane_mesh);
-            break;
-        case LEVEL_WDW:
-            gSPDisplayList(gDisplayListHead++, &Map11_Plane_mesh);
-            break; 
-        case LEVEL_TTM:
-            gSPDisplayList(gDisplayListHead++, &Map12_Plane_mesh);
-            break;
-        case LEVEL_THI:
-            gSPDisplayList(gDisplayListHead++, &Map13_Plane_mesh);
-            break;
-        case LEVEL_TTC:
-            gSPDisplayList(gDisplayListHead++, &Map14_Plane_mesh);
-            break;
+//     gDPSetScissor(gDisplayListHead++,G_SC_NON_INTERLACE, 236+(wideoffet9/4), 156, 300, 220 );
+//     switch(gCurrLevelNum) {
+//         case LEVEL_BOB:
+//             gSPDisplayList(gDisplayListHead++, &Map1_Plane_mesh);
+//             break;
+//         case LEVEL_WF:
+//             gSPDisplayList(gDisplayListHead++, &Map2_Plane_mesh);
+//             break;
+//         case LEVEL_JRB:
+//             gSPDisplayList(gDisplayListHead++, &Map3_Plane_mesh);
+//             break;
+//         case LEVEL_CCM:
+//             gSPDisplayList(gDisplayListHead++, &Map4_Plane_mesh);
+//             break;
+//         case LEVEL_BBH:
+//             gSPDisplayList(gDisplayListHead++, &Map5_Plane_mesh);
+//             break;
+//         case LEVEL_HMC:
+//             gSPDisplayList(gDisplayListHead++, &Map6_Plane_mesh);
+//             break;
+//         case LEVEL_LLL:
+//             gSPDisplayList(gDisplayListHead++, &Map7_Plane_mesh);
+//             break;
+//         case LEVEL_DDD:
+//             gSPDisplayList(gDisplayListHead++, &Map9_Plane_mesh);
+//             break;
+//         case LEVEL_SL:
+//             gSPDisplayList(gDisplayListHead++, &Map10_Plane_mesh);
+//             break;
+//         case LEVEL_WDW:
+//             gSPDisplayList(gDisplayListHead++, &Map11_Plane_mesh);
+//             break; 
+//         case LEVEL_TTM:
+//             gSPDisplayList(gDisplayListHead++, &Map12_Plane_mesh);
+//             break;
+//         case LEVEL_THI:
+//             gSPDisplayList(gDisplayListHead++, &Map13_Plane_mesh);
+//             break;
+//         case LEVEL_TTC:
+//             gSPDisplayList(gDisplayListHead++, &Map14_Plane_mesh);
+//             break;
 
-        default:
-            MapOn = FALSE;
-        }
-    gSPPopMatrix(gDisplayListHead++, 0);
-}
+//         default:
+//             MapOn = FALSE;
+//         }
+//     gSPPopMatrix(gDisplayListHead++, 0);
+// }
 
 void display_arrow(void) {
     Mtx *mtx;
@@ -782,9 +769,9 @@ void render_hud_coins(void) {
         print_text(168+(i*8), HUD_TOP_Y-18, "$");
         }
 
-    if ((gCurrLevelNum == LEVEL_RR)&&(gCurrAreaIndex==1)) {
-        print_text_fmt_int(168-wideoffet3, HUD_TOP_Y-18, "%dQ3", trial_counter);
-    }
+    // if ((gCurrLevelNum == LEVEL_RR)&&(gCurrAreaIndex==1)) {
+    //     print_text_fmt_int(168-wideoffet3, HUD_TOP_Y-18, "%dQ3", trial_counter);
+    // }
 
 
 }
@@ -952,9 +939,6 @@ void render_hud(void) {
         }
 
         gMarioState->toggleHud = (gMarioState->Options & (1<<OPT_HUD));
-        if (gCurrLevelNum == LEVEL_SA) {
-            gMarioState->toggleHud = FALSE;
-        }
 
         if ((cmm_mode == CMM_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
 
@@ -968,83 +952,83 @@ void render_hud(void) {
                 render_hud_coins();
             }
 
-            //i should have programmed a proper quest system lmfao
-            if (gMarioState->DeadRexMissionActivate) {
-                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%02dQ10", gMarioState->DeadRexes);
-                }
-            if (gMarioState->DeadCowboyMissionActivate) {
-                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->DeadRexes);
-                }
-            if (gMarioState->CheeseMissionActivate) {
-                //this hardcoded bullshit is so fucking awful. if i made cursed mirror again i would make a quest SYSTEM! AUTOMATION! WE LIVE
-                //IN THE AGE OF FUCKING AUTOMATION. AND MY BITCHASS HARD CODED THESE MISSIONS. stupid bitch, fycj you
-                if (gCurrLevelNum == LEVEL_TTC) {
-                    //highcane mission
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ20", gMarioState->CheeseCollection);
-                } else {
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ5", gMarioState->CheeseCollection);
-                }
-            }
-            if (gMarioState->SockMissionActivate) {
-                print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->SockCollection);
-                }
+            // //i should have programmed a proper quest system lmfao
+            // if (gMarioState->DeadRexMissionActivate) {
+            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%02dQ10", gMarioState->DeadRexes);
+            //     }
+            // if (gMarioState->DeadCowboyMissionActivate) {
+            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->DeadRexes);
+            //     }
+            // if (gMarioState->CheeseMissionActivate) {
+            //     //this hardcoded bullshit is so fucking awful. if i made cursed mirror again i would make a quest SYSTEM! AUTOMATION! WE LIVE
+            //     //IN THE AGE OF FUCKING AUTOMATION. AND MY BITCHASS HARD CODED THESE MISSIONS. stupid bitch, fycj you
+            //     if (gCurrLevelNum == LEVEL_TTC) {
+            //         //highcane mission
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ20", gMarioState->CheeseCollection);
+            //     } else {
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ5", gMarioState->CheeseCollection);
+            //     }
+            // }
+            // if (gMarioState->SockMissionActivate) {
+            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->SockCollection);
+            //     }
 
-            switch(gMarioState->gCurrMinigame) {
-                case 1://arena
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "ROUND %d", gMarioState->EA_WAVES);
-                    print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "%dQ%d", gMarioState->EA_LEFT, gMarioState->EA_TOTAL);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-36, "HI %d", save_file_get_hiscore(0));
-                    }
-                break;
-                case 2://hotrope
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(1));
-                    }
-                break;
-                case 3://hexagonheat
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(2));
-                    }
-                break;
-                case 4://snakio
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "LENGTH %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(3));
-                    }
-                break;
-                case 5://edsurv
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "EDWARDS %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(4));
-                    }
-                break;
-                case 6://bapple
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(5));
-                    }
-                break;
-                case 7://flappy bird
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-                    if (minigame_real) {
-                        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(6));
-                    }
-                break;
-            }
+            // switch(gMarioState->gCurrMinigame) {
+            //     case 1://arena
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "ROUND %d", gMarioState->EA_WAVES);
+            //         print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "%dQ%d", gMarioState->EA_LEFT, gMarioState->EA_TOTAL);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-36, "HI %d", save_file_get_hiscore(0));
+            //         }
+            //     break;
+            //     case 2://hotrope
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(1));
+            //         }
+            //     break;
+            //     case 3://hexagonheat
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(2));
+            //         }
+            //     break;
+            //     case 4://snakio
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "LENGTH %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(3));
+            //         }
+            //     break;
+            //     case 5://edsurv
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "EDWARDS %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(4));
+            //         }
+            //     break;
+            //     case 6://bapple
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(5));
+            //         }
+            //     break;
+            //     case 7://flappy bird
+            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
+            //         if (minigame_real) {
+            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(6));
+            //         }
+            //     break;
+            // }
 
-            //Use this later for the star radar badge
-            if (save_file_get_badge_equip() & (1<<11)) {
-                if (gMarioState->StarRadarExist == TRUE) {
-                    gMarioState->StarRadarExist = FALSE;
-                    print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);
+            // //Use this later for the star radar badge
+            // if (save_file_get_badge_equip() & (1<<11)) {
+            //     if (gMarioState->StarRadarExist == TRUE) {
+            //         gMarioState->StarRadarExist = FALSE;
+            //         print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);
 
-                    //print_text_fmt_int(40,40,"%d",gMarioState->ScreenPosX);
-                    //print_text_fmt_int(40,80,"Y %d",gMarioState->ScreenPosY);
-                    }
-                }
+            //         //print_text_fmt_int(40,40,"%d",gMarioState->ScreenPosX);
+            //         //print_text_fmt_int(40,80,"Y %d",gMarioState->ScreenPosY);
+            //         }
+            //     }
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_STAR_COUNT) {
                 render_hud_stars();

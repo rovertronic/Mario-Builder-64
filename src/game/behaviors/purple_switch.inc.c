@@ -132,9 +132,6 @@ void bhv_purple_switch_loop(void) {
 
 void bhv_coin_ring_loop(void) {
     f32 scale = 1.0f;
-    if ((gCurrLevelNum == LEVEL_DDD)||(gCurrLevelNum == LEVEL_WF)) {
-        scale = 2.0f;
-    }
 
     cur_obj_scale(scale);
 
