@@ -1042,84 +1042,84 @@
 //         }
 //     }
 
-// void bhv_podoboo_loop() {
-//     struct Surface *sp24;
-//     struct Object *spobj;
-//     u32 i;
+void bhv_podoboo_loop() {
+    struct Surface *sp24;
+    struct Object *spobj;
+    u32 i;
 
-//     //Home X is where the Podoboo rests in the lava.
-//     //Home Y is the peak of the Podoboo's jump
+    //Home X is where the Podoboo rests in the lava.
+    //Home Y is the peak of the Podoboo's jump
 
-//     switch(o->oAction) {
-//         case 0: //Init
-//         o->oHomeX = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sp24);
-//         o->oAction++;
-//         o->oFaceAngleRoll = 0x7FFF;
-//         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-//         break;
-//         case 1: //Fall into lava
-//         o->oVelY -= 2.0f;
-//         o->oPosY += o->oVelY;
+    switch(o->oAction) {
+        case 0: //Init
+        o->oHomeX = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sp24);
+        o->oAction++;
+        o->oFaceAngleRoll = 0x7FFF;
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        break;
+        case 1: //Fall into lava
+        o->oVelY -= 2.0f;
+        o->oPosY += o->oVelY;
 
-//         //rotate back down
-//         if (o->oFaceAngleRoll < 0x7FFF) {
-//             o->oFaceAngleRoll += 0x0FFF;
-//             }
-//             else
-//             {
-//             o->oFaceAngleRoll = 0x7FFF;
-//             }
+        //rotate back down
+        if (o->oFaceAngleRoll < 0x7FFF) {
+            o->oFaceAngleRoll += 0x0FFF;
+            }
+            else
+            {
+            o->oFaceAngleRoll = 0x7FFF;
+            }
 
-//         if (o->oPosY < o->oHomeX) {
-//             for (i = 0; i < 3; i++) {
-//                 spobj = spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
-//                 spobj->oPosY += 40.0f;
-//                 }
-//             cur_obj_play_sound_2(SOUND_OBJ_DIVING_INTO_WATER);
-//             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-//             o->oAction ++;
-//             o->oTimer = 0;
-//             o->oPosY = o->oHomeX;
-//             o->oVelY = 0;
-//             }
-//         break;
-//         case 2: //Sit idle in lava
-//             cur_obj_become_intangible();
-//             //If mario is too far away, just break
-//             if (o->oDistanceToMario > 2500.0f) {
-//                 o->oTimer = 0;
-//                 }
+        if (o->oPosY < o->oHomeX) {
+            for (i = 0; i < 3; i++) {
+                spobj = spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
+                spobj->oPosY += 40.0f;
+                }
+            cur_obj_play_sound_2(SOUND_OBJ_DIVING_INTO_WATER);
+            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+            o->oAction ++;
+            o->oTimer = 0;
+            o->oPosY = o->oHomeX;
+            o->oVelY = 0;
+            }
+        break;
+        case 2: //Sit idle in lava
+            cur_obj_become_intangible();
+            //If mario is too far away, just break
+            if (o->oDistanceToMario > 2500.0f) {
+                o->oTimer = 0;
+                }
 
-//             if (o->oTimer > 35) {
-//                 spobj = spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
-//                 spobj->oPosY += 40.0f;
-//             }
+            if (o->oTimer > 35) {
+                spobj = spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
+                spobj->oPosY += 40.0f;
+            }
 
-//             if (o->oTimer > 50) {
-//                 //Calculate upward velocity
-//                 o->oHomeZ = o->oPosY;
-//                 while(o->oHomeZ < o->oHomeY) {
-//                     o->oVelY += 1.5;
-//                     o->oHomeZ += o->oVelY;
-//                     }
-//                 //End
-//                 cur_obj_become_tangible();
-//                 o->oAction ++;
-//                 o->oFaceAngleRoll = 0x0;
-//                 cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
-//                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-//                 }
-//         break;
-//         case 3: //New hop out 
-//             o->oPosY += o->oVelY;
-//             o->oVelY -= 2.0f;
+            if (o->oTimer > 50) {
+                //Calculate upward velocity
+                o->oHomeZ = o->oPosY;
+                while(o->oHomeZ < o->oHomeY) {
+                    o->oVelY += 1.5;
+                    o->oHomeZ += o->oVelY;
+                    }
+                //End
+                cur_obj_become_tangible();
+                o->oAction ++;
+                o->oFaceAngleRoll = 0x0;
+                cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
+                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+                }
+        break;
+        case 3: //New hop out 
+            o->oPosY += o->oVelY;
+            o->oVelY -= 2.0f;
 
-//             if (o->oVelY < 0.0f) {
-//                 o->oAction = 1;
-//                 }
-//         break;
-//         }
-//     }
+            if (o->oVelY < 0.0f) {
+                o->oAction = 1;
+                }
+        break;
+        }
+    }
 
 // void bhv_badsign() {
 //         o->oPosZ -= 90.0f;
@@ -1249,22 +1249,22 @@
 //         }
 //     }
 
-// void noteblock_function(void) {
+void noteblock_function(void) {
 
-//     o->oDontFallDamage = TRUE;
+    o->oDontFallDamage = TRUE;
 
-//     o->oPosY = o->oHomeY + (sins(o->oTimer*5000) * o->oVelY);
-//     o->oVelY *= 0.95f;
+    o->oPosY = o->oHomeY + (sins(o->oTimer*5000) * o->oVelY);
+    o->oVelY *= 0.95f;
 
-//     if (cur_obj_is_mario_on_platform()) {
-//             mario_stop_riding_and_holding(gMarioState);
-//             o->oTimer = 0;
-//             o->oVelY = 50.0f;
-//             cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
-//             set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
-//             gMarioStates[0].vel[1] = 95.0f;
-//         }
-//     }
+    if (cur_obj_is_mario_on_platform()) {
+            mario_stop_riding_and_holding(gMarioState);
+            o->oTimer = 0;
+            o->oVelY = 50.0f;
+            cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
+            set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
+            gMarioStates[0].vel[1] = 95.0f;
+        }
+    }
 
 // struct Object *post;
 
@@ -6116,14 +6116,14 @@ void bhv_badge(void) {
 }
 
 void bhv_warp_pipe_init(void) {
-    switch(o->oAction) {
-        case 0:
-            o->oPosY += 200.0f;
-            spawn_object(o,MODEL_NONE,bhvCannon);
-            o->oPosY -= 200.0f;
-            o->oAction++;
-        break;
-    }
+    // switch(o->oAction) {
+    //     case 0:
+    //         o->oPosY += 200.0f;
+    //         spawn_object(o,MODEL_NONE,bhvCannon);
+    //         o->oPosY -= 200.0f;
+    //         o->oAction++;
+    //     break;
+    // }
 }
 
 void bhv_boss(void) {

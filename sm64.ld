@@ -487,6 +487,7 @@ SECTIONS
    BEGIN_SEG(scripts, 0x15000000)
    {
       BUILD_DIR/levels/scripts.o(.data*);
+      BUILD_DIR/levels/scripts.o(.bss*);
    }
    END_SEG(scripts)
 

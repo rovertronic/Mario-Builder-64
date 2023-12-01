@@ -582,6 +582,10 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void) {
     return TRUE;
 }
 
+void obj_set_speed_to_zero(void) {
+    o->oForwardVel = o->oVelY = 0.0f;
+}
+
 static s32 obj_handle_attacks(struct ObjectHitbox *hitbox, s32 attackedMarioAction,
                               u8 *attackHandlers) {
     s32 attackType;

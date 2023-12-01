@@ -101,10 +101,10 @@
 // s16 newcam_active = 0; // basically the thing that governs if newcam is on.
 
 // //OTHER OPTIONS
-// s16 opt_music = TRUE;
-// s16 opt_widescreen = FALSE;
-// s16 opt_minimap = TRUE;
-// s16 opt_showhud = TRUE;
+s16 opt_music = TRUE;
+s16 opt_widescreen = FALSE;
+//s16 opt_minimap = TRUE;
+s16 opt_showhud = TRUE;
 
 // u16 newcam_mode;
 // u16 newcam_intendedmode = 0; // which camera mode the camera's going to try to be in when not forced into another.

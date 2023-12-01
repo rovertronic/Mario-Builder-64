@@ -604,25 +604,25 @@ s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) 
     }
 }
 
-s32 save_file_get_total_golden_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
-    s32 count = 0;
+// s32 save_file_get_total_golden_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+//     s32 count = 0;
 
-    for (; minCourse <= maxCourse; minCourse++) {
-        count += save_file_get_course_star_count_golden(fileIndex, minCourse);
-    }
+//     for (; minCourse <= maxCourse; minCourse++) {
+//         count += save_file_get_course_star_count_golden(fileIndex, minCourse);
+//     }
 
-    // Add castle secret star count.
-    return save_file_get_course_star_count(fileIndex, -1) + count;
-}
+//     // Add castle secret star count.
+//     return save_file_get_course_star_count(fileIndex, -1) + count;
+// }
 
-s32 save_file_get_total_metal_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
-    s32 count = 0;
+// s32 save_file_get_total_metal_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+//     s32 count = 0;
 
-    for (; minCourse <= maxCourse; minCourse++) {
-       count += save_file_get_course_star_count_metal(fileIndex, minCourse);
-    }
-    return count;
-}
+//     for (; minCourse <= maxCourse; minCourse++) {
+//        count += save_file_get_course_star_count_metal(fileIndex, minCourse);
+//     }
+//     return count;
+// }
 
 void save_file_set_flags(u32 flags) {
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);

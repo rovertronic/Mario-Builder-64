@@ -43,23 +43,23 @@ void cap_switch_act_idle_unpressed(void) {
 }
 
 void cap_switch_act_being_pressed(void) {
-    if (o->oTimer < 5) {
-        cur_obj_scale_over_time(SCALE_AXIS_Y, 4, 0.5f, 0.1f);
-        if (o->oTimer == 4) {
-            cur_obj_shake_screen(SHAKE_POS_SMALL);
-            spawn_mist_particles();
-            spawn_triangle_break_particles(60, MODEL_CARTOON_STAR, 0.3f, o->oBehParams2ndByte);
-#if ENABLE_RUMBLE
-            queue_rumble_data(5, 80);
-#endif
-        }
-    } else {
-        run_event(EVENT_SWITCH_1+o->oBehParams2ndByte);
-        if (o->oBehParams2ndByte == 1) {
-            save_file_set_progression(PROG_CORE_DEFEAT);
-        }
-        o->oAction = CAP_SWITCH_ACT_IDLE_PRESSED;
-    }
+//     if (o->oTimer < 5) {
+//         cur_obj_scale_over_time(SCALE_AXIS_Y, 4, 0.5f, 0.1f);
+//         if (o->oTimer == 4) {
+//             cur_obj_shake_screen(SHAKE_POS_SMALL);
+//             spawn_mist_particles();
+//             spawn_triangle_break_particles(60, MODEL_CARTOON_STAR, 0.3f, o->oBehParams2ndByte);
+// #if ENABLE_RUMBLE
+//             queue_rumble_data(5, 80);
+// #endif
+//         }
+//     } else {
+//         run_event(EVENT_SWITCH_1+o->oBehParams2ndByte);
+//         if (o->oBehParams2ndByte == 1) {
+//             save_file_set_progression(PROG_CORE_DEFEAT);
+//         }
+//         o->oAction = CAP_SWITCH_ACT_IDLE_PRESSED;
+//     }
 }
 
 // dead function

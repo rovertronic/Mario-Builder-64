@@ -2853,7 +2853,7 @@ s32 render_pause_courses_and_castle(void) {
 
                     int_to_str(gMarioState->Level,&lvbuf);
                     rtext_insert_pointer[0] = lvbuf;
-                    run_event(EVENT_LVUP);
+                    //run_event(EVENT_LVUP);
                     
                     gMarioState->healCounter = 99;
                     gMarioState->numBadgePoints = gMarioState->numMaxFP;

@@ -594,7 +594,12 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
     if (m->floor != NULL) {
         floorType = m->floor->type;
 
-        ret = SOUND_TERRAIN_WATER << 16;
+        if ((m->floorHeight < (m->waterLevel - 10))) {
+            // Water terrain sound, excluding LLL since it uses water in the volcano.
+            ret = SOUND_TERRAIN_WATER << 16;
+        } else {
+            ret = get_terrain_sound_addend(floorType);
+        }
     }
 
     return ret;
@@ -2517,10 +2522,10 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
             play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
         }
 
-        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
-            spawn_wind_particles(1, 0);
-            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
-        }
+        // if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+        //     spawn_wind_particles(1, 0);
+        //     play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+        // }
 
         play_infinite_stairs_music();
         gMarioState->marioObj->oInteractStatus = INT_STATUS_NONE;
@@ -2670,14 +2675,14 @@ void init_mario(void) {
     vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
     vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
 
-    if (gMarioState->MaskChase) {
-        if (!cur_obj_nearest_object_with_behavior(bhvMask2)) {
-            capObject = spawn_object(gMarioState->marioObj, MODEL_MASK2, bhvMask2);
-            capObject->oAction = 1;
-            capObject->oPosY -= 1000.0f;
-            capObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-        }
-    }
+    // if (gMarioState->MaskChase) {
+    //     if (!cur_obj_nearest_object_with_behavior(bhvMask2)) {
+    //         capObject = spawn_object(gMarioState->marioObj, MODEL_MASK2, bhvMask2);
+    //         capObject->oAction = 1;
+    //         capObject->oPosY -= 1000.0f;
+    //         capObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    //     }
+    // }
 
     Vec3s capPos;
     if (save_file_get_cap_pos(capPos)) {
@@ -2728,8 +2733,8 @@ void init_mario(void) {
 void init_mario_from_save_file(void) {
     save_file_get_stats();
     
-    sSelectedFileNum = FALSE;
-    fs_ms = 0;
+    //sSelectedFileNum = FALSE;
+    //fs_ms = 0;
 
     gMarioState->toggleHud = TRUE;
     gMarioState->playerID = 0;
@@ -2747,8 +2752,8 @@ void init_mario_from_save_file(void) {
 
     gMarioState->numCoins = 0;
     gMarioState->lastStarCollected = 0;
-    gMarioState->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-    gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    // gMarioState->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    // gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     gMarioState->numKeys = 0;
 

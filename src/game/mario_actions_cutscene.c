@@ -890,10 +890,10 @@ s32 act_unlocking_key_door(struct MarioState *m) {
         m->faceAngle[1] += 0x8000;
     }
 
-    if (m->actionTimer == 0) {
-        spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyUnlockDoor, 0);
-        set_mario_animation(m, MARIO_ANIM_UNLOCK_DOOR);
-    }
+    // if (m->actionTimer == 0) {
+    //     spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyUnlockDoor, 0);
+    //     set_mario_animation(m, MARIO_ANIM_UNLOCK_DOOR);
+    // }
 
     switch (m->marioObj->header.gfx.animInfo.animFrame) {
         case 79:
@@ -1223,24 +1223,24 @@ s32 act_exit_land_save_dialog(struct MarioState *m) {
                 */
             }
             break;
-        case ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY:
-            animFrame = set_mario_animation(m, MARIO_ANIM_THROW_CATCH_KEY);
-            switch (animFrame) {
-                case -1:
-                    spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyCourseExit, -0x8000);
-                    //! fallthrough
-                case 67:
-                    play_sound(SOUND_ACTION_KEY_SWISH, m->marioObj->header.gfx.cameraToObject);
-                    //! fallthrough
-                case 83:
-                    play_sound(SOUND_ACTION_PAT_BACK, m->marioObj->header.gfx.cameraToObject);
-                    //! fallthrough
-                case 111:
-                    play_sound(SOUND_ACTION_KEY_UNKNOWN45C, m->marioObj->header.gfx.cameraToObject);
-                    // no break
-            }
-            handle_save_menu(m);
-            break;
+        // case ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY:
+        //     animFrame = set_mario_animation(m, MARIO_ANIM_THROW_CATCH_KEY);
+        //     switch (animFrame) {
+        //         case -1:
+        //             spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyCourseExit, -0x8000);
+        //             //! fallthrough
+        //         case 67:
+        //             play_sound(SOUND_ACTION_KEY_SWISH, m->marioObj->header.gfx.cameraToObject);
+        //             //! fallthrough
+        //         case 83:
+        //             play_sound(SOUND_ACTION_PAT_BACK, m->marioObj->header.gfx.cameraToObject);
+        //             //! fallthrough
+        //         case 111:
+        //             play_sound(SOUND_ACTION_KEY_UNKNOWN45C, m->marioObj->header.gfx.cameraToObject);
+        //             // no break
+        //     }
+        //     handle_save_menu(m);
+        //     break;
         case ACT_STATE_EXIT_LAND_SAVE_DIALOG_NO_CAP:
             animFrame = set_mario_animation(m, MARIO_ANIM_MISSING_CAP);
             if ((animFrame >= 18 && animFrame < 55) || (animFrame >= 112 && animFrame < 134)) {

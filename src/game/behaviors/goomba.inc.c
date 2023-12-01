@@ -383,29 +383,29 @@ void bhv_goomba_update(void) {
             o->oAnimState = 0;
             }
 
-        if (bparam1 == 1) {
+        // if (bparam1 == 1) {
 
-            o->oAnimState = 1;
-            o->oNumLootCoins = -1;
+        //     o->oAnimState = 1;
+        //     o->oNumLootCoins = -1;
 
-            o->oForwardVel = 0;
+        //     o->oForwardVel = 0;
 
 
             
 
-            if (o->oDistanceToMario < 4500.0f) {
-                o->oGoombaTargetYaw = o->oAngleToMario;
-                if (o->oTimer > 100) {
-                    flame = spawn_object(o,MODEL_RED_FLAME,bhvThwompFlame);
-                    flame->oPosY += 70.0f;
-                    flame->oForwardVel = 20.0f;
+        //     if (o->oDistanceToMario < 4500.0f) {
+        //         o->oGoombaTargetYaw = o->oAngleToMario;
+        //         if (o->oTimer > 100) {
+        //             flame = spawn_object(o,MODEL_RED_FLAME,bhvThwompFlame);
+        //             flame->oPosY += 70.0f;
+        //             flame->oForwardVel = 20.0f;
 
-                    cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
-                    o->oTimer = RandomMinMaxU16(0,60);
-                }
+        //             cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
+        //             o->oTimer = RandomMinMaxU16(0,60);
+        //         }
 
-            }
-        }
+        //     }
+        // }
 
         if (obj_handle_attacks(&sGoombaHitbox, GOOMBA_ACT_ATTACKED_MARIO,
                                sGoombaAttackHandlers[o->oGoombaSize & 0x1])

@@ -33,20 +33,12 @@ void bhv_boo_init(void) {
 }
 
 static s32 boo_should_be_stopped(void) {
-    if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo) || cur_obj_has_behavior(bhvMerryGoRoundBoo)) {
-        if (!gMarioOnMerryGoRound) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-    } else {
-        if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
-            return TRUE;
-        }
+    if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
+        return TRUE;
+    }
 
-        if (o->oRoom == 10 && (gTimeStopState & TIME_STOP_MARIO_OPENED_DOOR)) {
-            return TRUE;
-        }
+    if (o->oRoom == 10 && (gTimeStopState & TIME_STOP_MARIO_OPENED_DOOR)) {
+        return TRUE;
     }
 
     return FALSE;
@@ -55,13 +47,7 @@ static s32 boo_should_be_stopped(void) {
 static s32 boo_should_be_active(void) {
     f32 activationRadius = o->oDrawingDistance;
 
-    if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo) || cur_obj_has_behavior(bhvMerryGoRoundBoo)) {
-        if (gMarioOnMerryGoRound == TRUE) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-    } else if (o->oRoom == -1) {
+    if (o->oRoom == -1) {
         if (o->oDistanceToMario < activationRadius) {
             return TRUE;
         }
@@ -475,11 +461,6 @@ void bhv_boo_loop(void) {
     cur_obj_move_standard(78);
     boo_approach_target_opacity_and_update_scale();
 
-    if (obj_has_behavior(o->parentObj, bhvMerryGoRoundBooManager)
-     && o->activeFlags == ACTIVE_FLAG_DEACTIVATED) {
-        o->parentObj->oMerryGoRoundBooManagerNumBoosKilled++;
-    }
-
     if (o->oDistanceToMario < o->oDrawingDistance) {
         o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         }
@@ -540,11 +521,7 @@ static void big_boo_act_1(void) {
     s32 attackStatus = boo_get_attack_status();
 
     // redundant; this check is in boo_should_be_stopped
-    if (cur_obj_has_behavior(bhvMerryGoRoundBigBoo)) {
-        if (!gMarioOnMerryGoRound) {
-            o->oAction = 0;
-        }
-    } else if (boo_should_be_stopped()) {
+    if (boo_should_be_stopped()) {
         o->oAction = 0;
     }
 
@@ -576,12 +553,6 @@ static void big_boo_spawn_merry_go_round_star(void) {
     struct Object *merryGoRound;
 
     spawn_default_star(-1600.0f, -2100.0f, 205.0f);
-
-    merryGoRound = cur_obj_nearest_object_with_behavior(bhvMerryGoRound);
-
-    if (merryGoRound != NULL) {
-        merryGoRound->oMerryGoRoundStopped = TRUE;
-    }
 }
 
 static void big_boo_act_3(void) {
@@ -629,9 +600,9 @@ static void big_boo_act_4(void) {
         if (o->oTimer > 60 && o->oDistanceToMario < 600.0f) {
             obj_set_pos(o,  973, 0, 717);
 
-            spawn_object_relative(0, 0, 0,    0, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
-            spawn_object_relative(1, 0, 0, -200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
-            spawn_object_relative(2, 0, 0,  200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
+            // spawn_object_relative(0, 0, 0,    0, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
+            // spawn_object_relative(1, 0, 0, -200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
+            // spawn_object_relative(2, 0, 0,  200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
 
             obj_mark_for_deletion(o);
         }
@@ -738,175 +709,175 @@ void bhv_boo_with_cage_loop(void) {
     o->oInteractStatus = INT_STATUS_NONE;
 }
 
-void bhv_merry_go_round_boo_manager_loop(void) {
-    switch (o->oAction) {
-        case 0:
-            if (o->oDistanceToMario < 1000.0f) {
-                if (o->oMerryGoRoundBooManagerNumBoosKilled < 5) {
-                    if (o->oMerryGoRoundBooManagerNumBoosSpawned != 5) {
-                        if (o->oMerryGoRoundBooManagerNumBoosSpawned
-                                - o->oMerryGoRoundBooManagerNumBoosKilled < 2) {
-                            spawn_object(o, MODEL_BOO, bhvMerryGoRoundBoo);
-                            o->oMerryGoRoundBooManagerNumBoosSpawned++;
-                        }
-                    }
+// void bhv_merry_go_round_boo_manager_loop(void) {
+//     switch (o->oAction) {
+//         case 0:
+//             if (o->oDistanceToMario < 1000.0f) {
+//                 if (o->oMerryGoRoundBooManagerNumBoosKilled < 5) {
+//                     if (o->oMerryGoRoundBooManagerNumBoosSpawned != 5) {
+//                         if (o->oMerryGoRoundBooManagerNumBoosSpawned
+//                                 - o->oMerryGoRoundBooManagerNumBoosKilled < 2) {
+//                             spawn_object(o, MODEL_BOO, bhvMerryGoRoundBoo);
+//                             o->oMerryGoRoundBooManagerNumBoosSpawned++;
+//                         }
+//                     }
 
-                    o->oAction++;
-                }
+//                     o->oAction++;
+//                 }
 
-                if (o->oMerryGoRoundBooManagerNumBoosKilled >= 5) {
-                    struct Object *boo = spawn_object(o, MODEL_BOO, bhvMerryGoRoundBigBoo);
-                    obj_copy_behavior_params(boo, o);
+//                 if (o->oMerryGoRoundBooManagerNumBoosKilled >= 5) {
+//                     struct Object *boo = spawn_object(o, MODEL_BOO, bhvMerryGoRoundBigBoo);
+//                     obj_copy_behavior_params(boo, o);
 
-                    o->oAction = 2;
+//                     o->oAction = 2;
 
-                    play_puzzle_jingle();
-                }
-            }
+//                     play_puzzle_jingle();
+//                 }
+//             }
 
-            break;
+//             break;
 
-        case 1:
-            if (o->oTimer > 60) {
-                o->oAction = 0;
-            }
+//         case 1:
+//             if (o->oTimer > 60) {
+//                 o->oAction = 0;
+//             }
 
-            break;
+//             break;
 
-        case 2:
-            break;
-    }
-}
+//         case 2:
+//             break;
+//     }
+// }
 
 void obj_set_secondary_camera_focus(void) {
     gSecondCameraFocus = o;
 }
 
-void bhv_animated_texture_loop(void) {
-    cur_obj_set_pos_to_home_with_debug();
-}
+// void bhv_animated_texture_loop(void) {
+//     cur_obj_set_pos_to_home_with_debug();
+// }
 
-void bhv_boo_in_castle_loop(void) {
-    s16 targetAngle;
+// void bhv_boo_in_castle_loop(void) {
+//     s16 targetAngle;
 
-    o->oBooBaseScale = 2.0f;
+//     o->oBooBaseScale = 2.0f;
 
-    if (o->oAction == 0) {
-        cur_obj_hide();
-#ifndef UNLOCK_ALL
-        if (gHudDisplay.stars < SPAWN_CASTLE_BOO_STAR_REQUIREMENT) {
-            obj_mark_for_deletion(o);
-        }
-#endif
-        if (gMarioCurrentRoom == 1) {
-            o->oAction++;
-        }
-    } else if (o->oAction == 1) {
-        cur_obj_unhide();
+//     if (o->oAction == 0) {
+//         cur_obj_hide();
+// #ifndef UNLOCK_ALL
+//         if (gHudDisplay.stars < SPAWN_CASTLE_BOO_STAR_REQUIREMENT) {
+//             obj_mark_for_deletion(o);
+//         }
+// #endif
+//         if (gMarioCurrentRoom == 1) {
+//             o->oAction++;
+//         }
+//     } else if (o->oAction == 1) {
+//         cur_obj_unhide();
 
-        o->oOpacity = 180;
+//         o->oOpacity = 180;
 
-        if (o->oTimer == 0) {
-            cur_obj_scale(o->oBooBaseScale);
-        }
+//         if (o->oTimer == 0) {
+//             cur_obj_scale(o->oBooBaseScale);
+//         }
 
-        if (o->oDistanceToMario < 1000.0f) {
-            o->oAction++;
-            cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_LONG);
-        }
+//         if (o->oDistanceToMario < 1000.0f) {
+//             o->oAction++;
+//             cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_LONG);
+//         }
 
-        o->oForwardVel = 0.0f;
-        targetAngle = o->oAngleToMario;
-    } else {
-        cur_obj_forward_vel_approach_upward(32.0f, 1.0f);
+//         o->oForwardVel = 0.0f;
+//         targetAngle = o->oAngleToMario;
+//     } else {
+//         cur_obj_forward_vel_approach_upward(32.0f, 1.0f);
 
-        o->oHomeX = -1000.0f;
-        o->oHomeZ = -9000.0f;
+//         o->oHomeX = -1000.0f;
+//         o->oHomeZ = -9000.0f;
 
-        targetAngle = cur_obj_angle_to_home();
+//         targetAngle = cur_obj_angle_to_home();
 
-        if (o->oPosZ < -5000.0f) {
-            if (o->oOpacity > 0) {
-                o->oOpacity -= 20;
-            } else {
-                o->oOpacity = 0;
-            }
-        }
+//         if (o->oPosZ < -5000.0f) {
+//             if (o->oOpacity > 0) {
+//                 o->oOpacity -= 20;
+//             } else {
+//                 o->oOpacity = 0;
+//             }
+//         }
 
-        if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
-            o->oAction = 1;
-        }
-    }
+//         if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
+//             o->oAction = 1;
+//         }
+//     }
 
-    o->oVelY = 0.0f;
+//     o->oVelY = 0.0f;
 
-    targetAngle = cur_obj_angle_to_home();
+//     targetAngle = cur_obj_angle_to_home();
 
-    cur_obj_rotate_yaw_toward(targetAngle, 0x5A8);
-    boo_oscillate(TRUE);
-    cur_obj_move_using_fvel_and_gravity();
-}
+//     cur_obj_rotate_yaw_toward(targetAngle, 0x5A8);
+//     boo_oscillate(TRUE);
+//     cur_obj_move_using_fvel_and_gravity();
+// }
 
-static s8 sBbhStairJiggleOffsets[] = {
-    -8, 8, -4, 4
-};
+// static s8 sBbhStairJiggleOffsets[] = {
+//     -8, 8, -4, 4
+// };
 
-s32 jiggle_bbh_stair(s32 index) {
-    if ((index >= 4) || (index < 0)) {
-        return TRUE;
-    }
+// s32 jiggle_bbh_stair(s32 index) {
+//     if ((index >= 4) || (index < 0)) {
+//         return TRUE;
+//     }
 
-    o->oPosY += sBbhStairJiggleOffsets[index];
-    return FALSE;
-}
+//     o->oPosY += sBbhStairJiggleOffsets[index];
+//     return FALSE;
+// }
 
-void bhv_boo_staircase(void) {
-    f32 targetY = 0.0f;
+// void bhv_boo_staircase(void) {
+//     f32 targetY = 0.0f;
 
-    switch (o->oBehParams2ndByte) {
-        case 1:
-            targetY = 0.0f;
-            break;
-        case 0:
-            targetY = -206.0f;
-            break;
-        case 2:
-            targetY = -413.0f;
-            break;
-    }
+//     switch (o->oBehParams2ndByte) {
+//         case 1:
+//             targetY = 0.0f;
+//             break;
+//         case 0:
+//             targetY = -206.0f;
+//             break;
+//         case 2:
+//             targetY = -413.0f;
+//             break;
+//     }
 
-    switch (o->oAction) {
-        case 0:
-            o->oPosY = o->oHomeY - 620.0f;
-            o->oAction++;
-            // fallthrough
-        case 1:
-            o->oPosY += 8.0f;
-            cur_obj_play_sound_1(SOUND_ENV_ELEVATOR2);
+//     switch (o->oAction) {
+//         case 0:
+//             o->oPosY = o->oHomeY - 620.0f;
+//             o->oAction++;
+//             // fallthrough
+//         case 1:
+//             o->oPosY += 8.0f;
+//             cur_obj_play_sound_1(SOUND_ENV_ELEVATOR2);
 
-            if (o->oPosY > targetY) {
-                o->oPosY = targetY;
-                o->oAction++;
-            }
+//             if (o->oPosY > targetY) {
+//                 o->oPosY = targetY;
+//                 o->oAction++;
+//             }
 
-            break;
+//             break;
 
-        case 2:
-            if (o->oTimer == 0) {
-                cur_obj_play_sound_2(SOUND_GENERAL_ELEVATOR_WOBBLE_LOWPRIO);
-            }
+//         case 2:
+//             if (o->oTimer == 0) {
+//                 cur_obj_play_sound_2(SOUND_GENERAL_ELEVATOR_WOBBLE_LOWPRIO);
+//             }
 
-            if (jiggle_bbh_stair(o->oTimer)) {
-                o->oAction++;
-            }
+//             if (jiggle_bbh_stair(o->oTimer)) {
+//                 o->oAction++;
+//             }
 
-            break;
+//             break;
 
-        case 3:
-            if (o->oTimer == 0 && o->oBehParams2ndByte == 1) {
-                play_puzzle_jingle();
-            }
+//         case 3:
+//             if (o->oTimer == 0 && o->oBehParams2ndByte == 1) {
+//                 play_puzzle_jingle();
+//             }
 
-            break;
-    }
-}
+//             break;
+//     }
+// }

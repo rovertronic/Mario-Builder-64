@@ -995,7 +995,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
         if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_2)) {
                 if (!sDisplayingDoorText) {
-                    run_event(EVENT_KEYDOOR);
+                    //run_event(EVENT_KEYDOOR);
                 }
                 sDisplayingDoorText = TRUE;
 
@@ -1009,7 +1009,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_1)) {
                 if (!sDisplayingDoorText) {
                     // Moat door skip was intended confirmed
-                    run_event(EVENT_KEYDOOR);
+                    //run_event(EVENT_KEYDOOR);
                 }
                 sDisplayingDoorText = TRUE;
 
@@ -1093,13 +1093,13 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
             switch(behparam1) {
                 case 0:
-                    run_event(EVENT_STARDOOR);
+                    //run_event(EVENT_STARDOOR);
                 break;
                 case 1:
-                    run_event(EVENT_METALSTARDOOR);
+                    //run_event(EVENT_METALSTARDOOR);
                 break;
                 case 2:
-                    run_event(EVENT_VIRTUAPLEX_DOOR);
+                    //run_event(EVENT_VIRTUAPLEX_DOOR);
                 break;
             }
 

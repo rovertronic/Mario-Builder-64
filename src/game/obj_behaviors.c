@@ -780,7 +780,7 @@ UNUSED s32 debug_sequence_tracker(s16 debugInputSequence[]) {
 #include "behaviors/red_coin.inc.c"
 #include "behaviors/hidden_star.inc.c"
 // #include "behaviors/rolling_log.inc.c"
-// #include "behaviors/mushroom_1up.inc.c"
+#include "behaviors/mushroom_1up.inc.c"
 // #include "behaviors/controllable_platform.inc.c"
 #include "behaviors/breakable_box_small.inc.c"
 // #include "behaviors/snow_mound.inc.c"

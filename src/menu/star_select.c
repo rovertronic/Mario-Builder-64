@@ -32,442 +32,442 @@
  * strings, act values, and star selector model rendering if a star is collected or not.
  */
 
-// Star Selector count models printed in the act selector menu.
-static struct Object *sStarSelectorModels[8];
+// // Star Selector count models printed in the act selector menu.
+// static struct Object *sStarSelectorModels[8];
 
-// The act the course is loaded as, affects whether some objects spawn.
-static s8 sLoadedActNum;
+// // The act the course is loaded as, affects whether some objects spawn.
+// static s8 sLoadedActNum;
 
-// Number of obtained stars, excluding the coin star.
-static u8 sObtainedStars;
+// // Number of obtained stars, excluding the coin star.
+// static u8 sObtainedStars;
 
-// Total number of stars that appear in the act selector menu.
-static s8 sVisibleStars;
+// // Total number of stars that appear in the act selector menu.
+// static s8 sVisibleStars;
 
-// Act selected when the act menu is first opened.
-static u8 sInitSelectedActNum;
+// // Act selected when the act menu is first opened.
+// static u8 sInitSelectedActNum;
 
-// Index value of the act selected in the act menu.
-static s8 sSelectedActIndex = 0;
+// // Index value of the act selected in the act menu.
+// static s8 sSelectedActIndex = 0;
 
-// Index value of the star that is selectable in the act menu.
-// Excluding the next star, it doesn't count other transparent stars.
-static s8 sSelectableStarIndex = 0;
+// // Index value of the star that is selectable in the act menu.
+// // Excluding the next star, it doesn't count other transparent stars.
+// static s8 sSelectableStarIndex = 0;
 
-// Act Selector menu timer that keeps counting until you choose an act.
-static s32 sActSelectorMenuTimer = 0;
+// // Act Selector menu timer that keeps counting until you choose an act.
+// static s32 sActSelectorMenuTimer = 0;
 
-u8 beginanimation = FALSE;
-u8 animationtimer = 0;
+// u8 beginanimation = FALSE;
+// u8 animationtimer = 0;
 
-/**
- * Act Selector Star Type Loop Action
- * Defines a select type for a star in the act selector.
- */
-void bhv_act_selector_star_type_loop(void) {
-    switch (gCurrentObject->oStarSelectorType) {
-        // If a star is not selected, don't rotate or change size
-        case STAR_SELECTOR_NOT_SELECTED:
-            gCurrentObject->oStarSelectorSize -= 0.1f;
-            if (animationtimer < 25) {
-                if (gCurrentObject->oStarSelectorSize < 1.0f) {
-                    gCurrentObject->oStarSelectorSize = 1.0f;
-                }
-            }
-            else
-            {
-                if (gCurrentObject->oStarSelectorSize < 0.0) {
-                    gCurrentObject->oStarSelectorSize = 0.0;
-                }
-            }
-            gCurrentObject->oFaceAngleYaw = 0;
-            break;
-        // If a star is selected, rotate and slightly increase size
-        case STAR_SELECTOR_SELECTED:
-            gCurrentObject->oStarSelectorSize += 0.1f;
-            if (gCurrentObject->oStarSelectorSize > 1.3f) {
-                gCurrentObject->oStarSelectorSize = 1.3f;
-            }
-            gCurrentObject->oFaceAngleYaw += 0x800+(animationtimer*100);
-            break;
-        // If the 100 coin star is selected, rotate
-        case STAR_SELECTOR_100_COINS:
-            gCurrentObject->oFaceAngleYaw += 0x800;
-            break;
-    }
-    // Scale act selector stars depending of the type selected
-    cur_obj_scale(gCurrentObject->oStarSelectorSize);
-    // Unused timer, only referenced here. Probably replaced by sActSelectorMenuTimer
-    gCurrentObject->oStarSelectorTimer++;
-}
+// /**
+//  * Act Selector Star Type Loop Action
+//  * Defines a select type for a star in the act selector.
+//  */
+// void bhv_act_selector_star_type_loop(void) {
+//     switch (gCurrentObject->oStarSelectorType) {
+//         // If a star is not selected, don't rotate or change size
+//         case STAR_SELECTOR_NOT_SELECTED:
+//             gCurrentObject->oStarSelectorSize -= 0.1f;
+//             if (animationtimer < 25) {
+//                 if (gCurrentObject->oStarSelectorSize < 1.0f) {
+//                     gCurrentObject->oStarSelectorSize = 1.0f;
+//                 }
+//             }
+//             else
+//             {
+//                 if (gCurrentObject->oStarSelectorSize < 0.0) {
+//                     gCurrentObject->oStarSelectorSize = 0.0;
+//                 }
+//             }
+//             gCurrentObject->oFaceAngleYaw = 0;
+//             break;
+//         // If a star is selected, rotate and slightly increase size
+//         case STAR_SELECTOR_SELECTED:
+//             gCurrentObject->oStarSelectorSize += 0.1f;
+//             if (gCurrentObject->oStarSelectorSize > 1.3f) {
+//                 gCurrentObject->oStarSelectorSize = 1.3f;
+//             }
+//             gCurrentObject->oFaceAngleYaw += 0x800+(animationtimer*100);
+//             break;
+//         // If the 100 coin star is selected, rotate
+//         case STAR_SELECTOR_100_COINS:
+//             gCurrentObject->oFaceAngleYaw += 0x800;
+//             break;
+//     }
+//     // Scale act selector stars depending of the type selected
+//     cur_obj_scale(gCurrentObject->oStarSelectorSize);
+//     // Unused timer, only referenced here. Probably replaced by sActSelectorMenuTimer
+//     gCurrentObject->oStarSelectorTimer++;
+// }
 
-/**
- * Renders the 100 coin star with an special star selector type.
- */
-void render_100_coin_star(u8 stars) {
-    if (stars & (1 << 7)) {
-        // If the 100 coin star has been collected, create a new star selector next to the coin score.
-    #ifdef WIDE
-        if (gConfig.widescreen) {
-            sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
-                                                            bhvActSelectorStarType, (370 * 4.0f) / 3, 24, -300, 0, 0, 0);
-        } else {
-            sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
-                                                            bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
-        }
-    #else
-        sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
-                                                        bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
-    #endif
+// /**
+//  * Renders the 100 coin star with an special star selector type.
+//  */
+// void render_100_coin_star(u8 stars) {
+//     if (stars & (1 << 7)) {
+//         // If the 100 coin star has been collected, create a new star selector next to the coin score.
+//     #ifdef WIDE
+//         if (gConfig.widescreen) {
+//             sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
+//                                                             bhvActSelectorStarType, (370 * 4.0f) / 3, 24, -300, 0, 0, 0);
+//         } else {
+//             sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
+//                                                             bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
+//         }
+//     #else
+//         sStarSelectorModels[6] = spawn_object_abs_with_rot(o, 0, MODEL_STAR,
+//                                                         bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
+//     #endif
 
-        sStarSelectorModels[6]->oStarSelectorSize = 0.8f;
-        sStarSelectorModels[6]->oStarSelectorType = STAR_SELECTOR_100_COINS;
-    }
-}
+//         sStarSelectorModels[6]->oStarSelectorSize = 0.8f;
+//         sStarSelectorModels[6]->oStarSelectorType = STAR_SELECTOR_100_COINS;
+//     }
+// }
 
-/**
- * Act Selector Init Action
- * Checks how many stars has been obtained in a course, to render
- * the correct star models, the 100 coin star and also handles
- * checks of what star should be next in sInitSelectedActNum.
- */
-void bhv_act_selector_init(void) {
-    s16 i = 0;
-    s32 selectorModelIDs[10];
-    u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
-    // u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
-    // u8 sfair_level = (gCurrCourseNum == COURSE_WDW);
+// /**
+//  * Act Selector Init Action
+//  * Checks how many stars has been obtained in a course, to render
+//  * the correct star models, the 100 coin star and also handles
+//  * checks of what star should be next in sInitSelectedActNum.
+//  */
+// void bhv_act_selector_init(void) {
+//     s16 i = 0;
+//     s32 selectorModelIDs[10];
+//     u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+//     // u8 aglevel = ((gCurrCourseNum>=COURSE_TTM)&&(gCurrCourseNum<=COURSE_RR));
+//     // u8 sfair_level = (gCurrCourseNum == COURSE_WDW);
 
-    sVisibleStars = 0;
-    while (i != sObtainedStars) {
-        if (stars & (1 << sVisibleStars)) { // Star has been collected
-            selectorModelIDs[sVisibleStars] = MODEL_STAR;
-            i++;
-        } else { // Star has not been collected
-            selectorModelIDs[sVisibleStars] = MODEL_TRANSPARENT_STAR;
-            // If this is the first star that has not been collected, set
-            // the default selection to this star.
-            if (sInitSelectedActNum == 0) {
-                sInitSelectedActNum = sVisibleStars + 1;
-                sSelectableStarIndex = sVisibleStars;
-            }
-        }
-        sVisibleStars++;
-    }
+//     sVisibleStars = 0;
+//     while (i != sObtainedStars) {
+//         if (stars & (1 << sVisibleStars)) { // Star has been collected
+//             selectorModelIDs[sVisibleStars] = MODEL_STAR;
+//             i++;
+//         } else { // Star has not been collected
+//             selectorModelIDs[sVisibleStars] = MODEL_TRANSPARENT_STAR;
+//             // If this is the first star that has not been collected, set
+//             // the default selection to this star.
+//             if (sInitSelectedActNum == 0) {
+//                 sInitSelectedActNum = sVisibleStars + 1;
+//                 sSelectableStarIndex = sVisibleStars;
+//             }
+//         }
+//         sVisibleStars++;
+//     }
 
-    // If the stars have been collected in order so far, show the next star.
-    if (sVisibleStars == sObtainedStars && sVisibleStars != 7) {
-        selectorModelIDs[sVisibleStars] = MODEL_TRANSPARENT_STAR;
-        sInitSelectedActNum = sVisibleStars + 1;
-        sSelectableStarIndex = sVisibleStars;
-        sVisibleStars++;
-    }
+//     // If the stars have been collected in order so far, show the next star.
+//     if (sVisibleStars == sObtainedStars && sVisibleStars != 7) {
+//         selectorModelIDs[sVisibleStars] = MODEL_TRANSPARENT_STAR;
+//         sInitSelectedActNum = sVisibleStars + 1;
+//         sSelectableStarIndex = sVisibleStars;
+//         sVisibleStars++;
+//     }
 
-    // If all stars have been collected, set the default selection to the last star.
-    if (sObtainedStars == 7) {
-        sInitSelectedActNum = sVisibleStars;
-    }
+//     // If all stars have been collected, set the default selection to the last star.
+//     if (sObtainedStars == 7) {
+//         sInitSelectedActNum = sVisibleStars;
+//     }
 
-    //! Useless, since sInitSelectedActNum has already been set in this
-    //! scenario by the code that shows the next uncollected star.
-    if (sObtainedStars == 0) {
-        sInitSelectedActNum = 1;
-    }
+//     //! Useless, since sInitSelectedActNum has already been set in this
+//     //! scenario by the code that shows the next uncollected star.
+//     if (sObtainedStars == 0) {
+//         sInitSelectedActNum = 1;
+//     }
 
-    // Render star selector objects
-    if (gMarioState->Options & (1<<OPT_WIDESCREEN)) {
-        for (i = 0; i < sVisibleStars; i++) {
-            sStarSelectorModels[i] =
-                spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
-                                        (((75 + sVisibleStars * -75 + i * 152)*4.0f)/3), 248, -300, 0, 0, 0);
-            sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
-        }
-    }
-    else {
-        for (i = 0; i < sVisibleStars; i++) {
-            sStarSelectorModels[i] =
-                spawn_object_abs_with_rot(o, 0, selectorModelIDs[i], bhvActSelectorStarType,
-                                        (75 + (sVisibleStars * -75) + (i * 152)), 248, -300, 0, 0, 0);
-            sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
-        }
-    }
+//     // Render star selector objects
+//     if (gMarioState->Options & (1<<OPT_WIDESCREEN)) {
+//         for (i = 0; i < sVisibleStars; i++) {
+//             sStarSelectorModels[i] =
+//                 spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
+//                                         (((75 + sVisibleStars * -75 + i * 152)*4.0f)/3), 248, -300, 0, 0, 0);
+//             sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
+//         }
+//     }
+//     else {
+//         for (i = 0; i < sVisibleStars; i++) {
+//             sStarSelectorModels[i] =
+//                 spawn_object_abs_with_rot(o, 0, selectorModelIDs[i], bhvActSelectorStarType,
+//                                         (75 + (sVisibleStars * -75) + (i * 152)), 248, -300, 0, 0, 0);
+//             sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
+//         }
+//     }
 
-    render_100_coin_star(stars);
-}
+//     render_100_coin_star(stars);
+// }
 
-/**
- * Act Selector Loop Action
- * Handles star selector scrolling depending of what stars are
- * selectable, whenever all 6 stars are obtained or not.
- * Also handles 2 star selector types whenever the star is selected
- * or not, the types are defined in bhv_act_selector_star_type_loop.
- */
-void bhv_act_selector_loop(void) {
-    s8 i;
-    u8 starIndexCounter;
-    u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+// /**
+//  * Act Selector Loop Action
+//  * Handles star selector scrolling depending of what stars are
+//  * selectable, whenever all 6 stars are obtained or not.
+//  * Also handles 2 star selector types whenever the star is selected
+//  * or not, the types are defined in bhv_act_selector_star_type_loop.
+//  */
+// void bhv_act_selector_loop(void) {
+//     s8 i;
+//     u8 starIndexCounter;
+//     u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
 
-    if (sObtainedStars != 7) {
-        // Sometimes, stars are not selectable even if they appear on the screen.
-        // This code filters selectable and non-selectable stars.
-        sSelectedActIndex = 0;
-        if (!beginanimation) {
-            handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sObtainedStars);
-        }
-        starIndexCounter = sSelectableStarIndex;
-        for (i = 0; i < sVisibleStars; i++) {
-            // Can the star be selected (is it either already completed or the first non-completed mission)
-            if ((stars & (1 << i)) || i + 1 == sInitSelectedActNum) {
-                if (starIndexCounter == 0) { // We have reached the sSelectableStarIndex-th selectable star.
-                    sSelectedActIndex = i;
-                    break;
-                }
-                starIndexCounter--;
-            }
-        }
-    } else {
-        // If all stars are collected then they are all selectable.
-        if (!beginanimation) {
-            handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sVisibleStars - 1);
-        }
-        sSelectedActIndex = sSelectableStarIndex;
-    }
+//     if (sObtainedStars != 7) {
+//         // Sometimes, stars are not selectable even if they appear on the screen.
+//         // This code filters selectable and non-selectable stars.
+//         sSelectedActIndex = 0;
+//         if (!beginanimation) {
+//             handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sObtainedStars);
+//         }
+//         starIndexCounter = sSelectableStarIndex;
+//         for (i = 0; i < sVisibleStars; i++) {
+//             // Can the star be selected (is it either already completed or the first non-completed mission)
+//             if ((stars & (1 << i)) || i + 1 == sInitSelectedActNum) {
+//                 if (starIndexCounter == 0) { // We have reached the sSelectableStarIndex-th selectable star.
+//                     sSelectedActIndex = i;
+//                     break;
+//                 }
+//                 starIndexCounter--;
+//             }
+//         }
+//     } else {
+//         // If all stars are collected then they are all selectable.
+//         if (!beginanimation) {
+//             handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sVisibleStars - 1);
+//         }
+//         sSelectedActIndex = sSelectableStarIndex;
+//     }
 
-    // Star selector type handler
-    for (i = 0; i < sVisibleStars; i++) {
-        if (sSelectedActIndex == i) {
-            sStarSelectorModels[i]->oStarSelectorType = STAR_SELECTOR_SELECTED;
-        } else {
-            sStarSelectorModels[i]->oStarSelectorType = STAR_SELECTOR_NOT_SELECTED;
-        }
-    }
-}
+//     // Star selector type handler
+//     for (i = 0; i < sVisibleStars; i++) {
+//         if (sSelectedActIndex == i) {
+//             sStarSelectorModels[i]->oStarSelectorType = STAR_SELECTOR_SELECTED;
+//         } else {
+//             sStarSelectorModels[i]->oStarSelectorType = STAR_SELECTOR_NOT_SELECTED;
+//         }
+//     }
+// }
 
-/**
- * Print the course number selected with the wood rgba16 course texture.
- */
-#if MULTILANG
-void print_course_number(s16 language) {
-#else
-void print_course_number(void) {
-#endif
-    u8 courseNum[4];
+// /**
+//  * Print the course number selected with the wood rgba16 course texture.
+//  */
+// #if MULTILANG
+// void print_course_number(s16 language) {
+// #else
+// void print_course_number(void) {
+// #endif
+//     u8 courseNum[4];
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
 
-    // Full wood texture in JP & US, lower part of it on EU
-    gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
+//     // Full wood texture in JP & US, lower part of it on EU
+//     gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
 
-#if MULTILANG
-    // Change upper part of the wood texture depending of the language defined
-    switch (language) {
-        case LANGUAGE_ENGLISH:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_course_upper);
-            break;
-        case LANGUAGE_FRENCH:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_niveau_upper);
-            break;
-        case LANGUAGE_GERMAN:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_kurs_upper);
-            break;
-    }
+// #if MULTILANG
+//     // Change upper part of the wood texture depending of the language defined
+//     switch (language) {
+//         case LANGUAGE_ENGLISH:
+//             gSPDisplayList(gDisplayListHead++, dl_menu_texture_course_upper);
+//             break;
+//         case LANGUAGE_FRENCH:
+//             gSPDisplayList(gDisplayListHead++, dl_menu_texture_niveau_upper);
+//             break;
+//         case LANGUAGE_GERMAN:
+//             gSPDisplayList(gDisplayListHead++, dl_menu_texture_kurs_upper);
+//             break;
+//     }
 
-    gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course_end);
-#endif
+//     gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course_end);
+// #endif
 
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-    int_to_str(gCurrCourseNum, courseNum);
+//     int_to_str(gCurrCourseNum, courseNum);
 
-    if (gCurrCourseNum < 10) { // 1 digit number
-        print_hud_lut_string(HUD_LUT_GLOBAL, 152, 158, courseNum);
-    } else { // 2 digit number
-        print_hud_lut_string(HUD_LUT_GLOBAL, 143, 158, courseNum);
-    }
+//     if (gCurrCourseNum < 10) { // 1 digit number
+//         print_hud_lut_string(HUD_LUT_GLOBAL, 152, 158, courseNum);
+//     } else { // 2 digit number
+//         print_hud_lut_string(HUD_LUT_GLOBAL, 143, 158, courseNum);
+//     }
 
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
-}
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+// }
 
-#define ACT_NAME_X 163
+// #define ACT_NAME_X 163
 
-/**
- * Print act selector strings, some with special checks.
- */
-void print_act_selector_strings(void) {
-#if MULTILANG
-    unsigned char myScore[][10] = { {TEXT_MYSCORE}, {TEXT_MY_SCORE_FR}, {TEXT_MY_SCORE_DE} };
-#else
-    unsigned char myScore[] = { TEXT_MYSCORE };
-#endif
-    unsigned char starNumbers[] = { TEXT_ZERO };
-    unsigned char starM[] = { TEXT_LETTER_M };
+// /**
+//  * Print act selector strings, some with special checks.
+//  */
+// void print_act_selector_strings(void) {
+// #if MULTILANG
+//     unsigned char myScore[][10] = { {TEXT_MYSCORE}, {TEXT_MY_SCORE_FR}, {TEXT_MY_SCORE_DE} };
+// #else
+//     unsigned char myScore[] = { TEXT_MYSCORE };
+// #endif
+//     unsigned char starNumbers[] = { TEXT_ZERO };
+//     unsigned char starM[] = { TEXT_LETTER_M };
 
-#if MULTILANG
-    u8 **levelNameTbl;
-    u8 *currLevelName;
-    u8 **actNameTbl;
-#else
-    u8 **levelNameTbl = segmented_to_virtual(seg2_course_name_table);
-    u8 *currLevelName = segmented_to_virtual(levelNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum)]);
-    u8 **actNameTbl = segmented_to_virtual(seg2_act_name_table);
-#endif
-    u8 *selectedActName;
-#if !MULTILANG
-    s16 lvlNameX;
-    s16 actNameX;
-#endif
-    s8 i;
-#if MULTILANG
-    s16 language = eu_get_language();
-#endif
+// #if MULTILANG
+//     u8 **levelNameTbl;
+//     u8 *currLevelName;
+//     u8 **actNameTbl;
+// #else
+//     u8 **levelNameTbl = segmented_to_virtual(seg2_course_name_table);
+//     u8 *currLevelName = segmented_to_virtual(levelNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum)]);
+//     u8 **actNameTbl = segmented_to_virtual(seg2_act_name_table);
+// #endif
+//     u8 *selectedActName;
+// #if !MULTILANG
+//     s16 lvlNameX;
+//     s16 actNameX;
+// #endif
+//     s8 i;
+// #if MULTILANG
+//     s16 language = eu_get_language();
+// #endif
 
-    create_dl_ortho_matrix();
+//     create_dl_ortho_matrix();
 
-#if MULTILANG
-    switch (language) {
-        default:
-        case LANGUAGE_ENGLISH:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_en);
-            levelNameTbl = segmented_to_virtual(course_name_table_eu_en);
-            break;
-        case LANGUAGE_FRENCH:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_fr);
-            levelNameTbl = segmented_to_virtual(course_name_table_eu_fr);
-            break;
-        case LANGUAGE_GERMAN:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_de);
-            levelNameTbl = segmented_to_virtual(course_name_table_eu_de);
-            break;
-    }
-    currLevelName = segmented_to_virtual(levelNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum)]);
-#endif
+// #if MULTILANG
+//     switch (language) {
+//         default:
+//         case LANGUAGE_ENGLISH:
+//             actNameTbl = segmented_to_virtual(act_name_table_eu_en);
+//             levelNameTbl = segmented_to_virtual(course_name_table_eu_en);
+//             break;
+//         case LANGUAGE_FRENCH:
+//             actNameTbl = segmented_to_virtual(act_name_table_eu_fr);
+//             levelNameTbl = segmented_to_virtual(course_name_table_eu_fr);
+//             break;
+//         case LANGUAGE_GERMAN:
+//             actNameTbl = segmented_to_virtual(act_name_table_eu_de);
+//             levelNameTbl = segmented_to_virtual(course_name_table_eu_de);
+//             break;
+//     }
+//     currLevelName = segmented_to_virtual(levelNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum)]);
+// #endif
 
-    // Print the coin highscore.
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_hud_my_score_coins(1, gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum), 155, 106);
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+//     // Print the coin highscore.
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//     print_hud_my_score_coins(1, gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum), 155, 106);
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-    // Print the "MY SCORE" text if the coin score is more than 0
-    if (save_file_get_course_coin_score(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum)) != 0) {
-#if MULTILANG
-        print_generic_string(95, 118, myScore[language]);
-#else
-        print_generic_string(102, 118, myScore);
-#endif
-    }
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//     // Print the "MY SCORE" text if the coin score is more than 0
+//     if (save_file_get_course_coin_score(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum)) != 0) {
+// #if MULTILANG
+//         print_generic_string(95, 118, myScore[language]);
+// #else
+//         print_generic_string(102, 118, myScore);
+// #endif
+//     }
 
-#if MULTILANG
-    print_generic_string(get_str_x_pos_from_center(160, (currLevelName + 3), 10.0f), 33, currLevelName + 3);
-#else
-    lvlNameX = get_str_x_pos_from_center(160, currLevelName + 3, 10.0f);
-    print_generic_string(lvlNameX, 33, currLevelName + 3);
-#endif
+// #if MULTILANG
+//     print_generic_string(get_str_x_pos_from_center(160, (currLevelName + 3), 10.0f), 33, currLevelName + 3);
+// #else
+//     lvlNameX = get_str_x_pos_from_center(160, currLevelName + 3, 10.0f);
+//     print_generic_string(lvlNameX, 33, currLevelName + 3);
+// #endif
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-#if MULTILANG
-    print_course_number(language);
-#else
-    print_course_number();
-#endif
+// #if MULTILANG
+//     print_course_number(language);
+// #else
+//     print_course_number();
+// #endif
 
-    gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-    // Print the name of the selected act.
-    if (sVisibleStars != 0) {
-        selectedActName = segmented_to_virtual(actNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum) * 7 + sSelectedActIndex]);
+//     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//     // Print the name of the selected act.
+//     if (sVisibleStars != 0) {
+//         selectedActName = segmented_to_virtual(actNameTbl[COURSE_NUM_TO_INDEX(gCurrCourseNum) * 7 + sSelectedActIndex]);
 
-#if MULTILANG
-        print_menu_generic_string(get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f), 81, selectedActName);
-#else
-        actNameX = get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f);
-        print_menu_generic_string(actNameX, 81, selectedActName);
-#endif
-    }
+// #if MULTILANG
+//         print_menu_generic_string(get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f), 81, selectedActName);
+// #else
+//         actNameX = get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f);
+//         print_menu_generic_string(actNameX, 81, selectedActName);
+// #endif
+//     }
 
-    // Print the numbers above each star.
-    for (i = 1; i <= sVisibleStars; i++) {
-        starNumbers[0] = i;
-#if MULTILANG
-        print_menu_generic_string(143 - sVisibleStars * 15 + i * 30, 38, starNumbers);
-#else
-        print_menu_generic_string(139 - sVisibleStars * 17 + i * 34, 38, starNumbers);
-#endif
-    }
+//     // Print the numbers above each star.
+//     for (i = 1; i <= sVisibleStars; i++) {
+//         starNumbers[0] = i;
+// #if MULTILANG
+//         print_menu_generic_string(143 - sVisibleStars * 15 + i * 30, 38, starNumbers);
+// #else
+//         print_menu_generic_string(139 - sVisibleStars * 17 + i * 34, 38, starNumbers);
+// #endif
+//     }
 
-    gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
- }
+//     gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
+//  }
 
-/**
- * Geo function that Print act selector strings.
- */
-Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node, UNUSED void *context) {
-    if (callContext == GEO_CONTEXT_RENDER) {
-        print_act_selector_strings();
-    }
-    return NULL;
-}
+// /**
+//  * Geo function that Print act selector strings.
+//  */
+// Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node, UNUSED void *context) {
+//     if (callContext == GEO_CONTEXT_RENDER) {
+//         print_act_selector_strings();
+//     }
+//     return NULL;
+// }
 
-/**
- * Initiates act selector values before entering a main course.
- * Also load how much stars a course has, without counting the 100 coin star.
- */
-s32 lvl_init_act_selector_values_and_stars(UNUSED s32 arg, UNUSED s32 unused) {
-    u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+// /**
+//  * Initiates act selector values before entering a main course.
+//  * Also load how much stars a course has, without counting the 100 coin star.
+//  */
+// s32 lvl_init_act_selector_values_and_stars(UNUSED s32 arg, UNUSED s32 unused) {
+//     u8 stars = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
 
-    sSelectedActIndex = 0;
-    beginanimation = FALSE;
-    sLoadedActNum = 0;
-    sInitSelectedActNum = 0;
-    sVisibleStars = 0;
-    sActSelectorMenuTimer = 0;
-    sObtainedStars =
-        save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
-    animationtimer = 0;
+//     sSelectedActIndex = 0;
+//     beginanimation = FALSE;
+//     sLoadedActNum = 0;
+//     sInitSelectedActNum = 0;
+//     sVisibleStars = 0;
+//     sActSelectorMenuTimer = 0;
+//     sObtainedStars =
+//         save_file_get_course_star_count(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+//     animationtimer = 0;
 
-    return 0;
-}
+//     return 0;
+// }
 
-/**
- * Loads act selector button actions with selected act value checks.
- * Also updates objects and returns act number selected after is chosen.
- */
-s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused) {
-    if (sActSelectorMenuTimer > 10) {
-        // If any of these buttons are pressed, play sound and go to course act
-        if (((gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON | B_BUTTON | Z_TRIG)))&&(!beginanimation)) {
-            play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
+// /**
+//  * Loads act selector button actions with selected act value checks.
+//  * Also updates objects and returns act number selected after is chosen.
+//  */
+// s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused) {
+//     if (sActSelectorMenuTimer > 10) {
+//         // If any of these buttons are pressed, play sound and go to course act
+//         if (((gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON | B_BUTTON | Z_TRIG)))&&(!beginanimation)) {
+//             play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
 
-            beginanimation = TRUE;
+//             beginanimation = TRUE;
 
-            gDialogCourseActNum = sSelectedActIndex + 1;
-        }
+//             gDialogCourseActNum = sSelectedActIndex + 1;
+//         }
 
-        if (animationtimer > 50) {
-            if (sInitSelectedActNum >= sSelectedActIndex + 1) {
-                sLoadedActNum = sSelectedActIndex + 1;
-            } else {
-                sLoadedActNum = sInitSelectedActNum;
-            }
-            gDialogCourseActNum = sSelectedActIndex + 1;
-        }
-        else
-        {
-            if (beginanimation) {
-                animationtimer += 3;
-            }
-        }
-    }
+//         if (animationtimer > 50) {
+//             if (sInitSelectedActNum >= sSelectedActIndex + 1) {
+//                 sLoadedActNum = sSelectedActIndex + 1;
+//             } else {
+//                 sLoadedActNum = sInitSelectedActNum;
+//             }
+//             gDialogCourseActNum = sSelectedActIndex + 1;
+//         }
+//         else
+//         {
+//             if (beginanimation) {
+//                 animationtimer += 3;
+//             }
+//         }
+//     }
 
-    area_update_objects(); scroll_textures();
-    sActSelectorMenuTimer++;
-    if (sLoadedActNum == 7) {
-        sLoadedActNum = 6;
-    }
-    return sLoadedActNum;
-}
+//     area_update_objects(); scroll_textures();
+//     sActSelectorMenuTimer++;
+//     if (sLoadedActNum == 7) {
+//         sLoadedActNum = 6;
+//     }
+//     return sLoadedActNum;
+// }

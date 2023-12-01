@@ -730,9 +730,9 @@ void bowser_act_big_jump(void) {
             // Spawn shockwave (BitS only) if is not on a platform
             bowser_spawn_shockwave();
             // Tilt platform in BitFS
-            if (o->oBehParams2ndByte == BOWSER_BP_BITFS) {
-                o->oAction = BOWSER_ACT_TILT_LAVA_PLATFORM;
-            }
+            // if (o->oBehParams2ndByte == BOWSER_BP_BITFS) {
+            //     o->oAction = BOWSER_ACT_TILT_LAVA_PLATFORM;
+            // }
         }
     // Set to default action when the animation is over
     } else if (cur_obj_check_if_near_animation_end()) {
@@ -1055,9 +1055,9 @@ void bowser_act_jump_onto_stage(void) {
                     o->oAction = BOWSER_ACT_BIG_JUMP;
                 }
                 // If is on a dynamic floor in BitFS, then tilt platform
-                if (o->oBehParams2ndByte == BOWSER_BP_BITFS) {
-                    o->oAction = BOWSER_ACT_TILT_LAVA_PLATFORM;
-                }
+                // if (o->oBehParams2ndByte == BOWSER_BP_BITFS) {
+                //     o->oAction = BOWSER_ACT_TILT_LAVA_PLATFORM;
+                // }
             }
             // Reset him back on stage if he still didn't landed yet
             // Post-JP made this check as a separate function
@@ -1382,53 +1382,53 @@ struct BowserTiltPlatformInfo sBowsertiltPlatformData[] = {
 
 /**
  * Makes the platform in BitFS tilt from left to right
- */
-void bowser_act_tilt_lava_platform(void) {
-    // Set platform object
-    struct Object *platform = cur_obj_nearest_object_with_behavior(bhvTiltingBowserLavaPlatform);
-    s16 angSpeed;
-    // If there's not platform, return to default action
-    if (platform == NULL) {
-        o->oAction = BOWSER_ACT_DEFAULT;
-    } else {
-        s32 i = 0;
-        s32 isNotTilting = TRUE;
-        // Active platform tilting if the timer is not 0
-        while (sBowsertiltPlatformData[i].time != 0) {
-            // Move if the time values is more than the timer
-            if (o->oTimer < sBowsertiltPlatformData[i].time) {
-                // Set angle speed
-                angSpeed = sBowsertiltPlatformData[i].angSpeed;
-                // Move angle behind Bowser
-                if (sBowsertiltPlatformData[i].flag > 0) {
-                    angSpeed = (sBowsertiltPlatformData[i].time - o->oTimer - 1) * angSpeed;
-                } else { // Move angle in front of Bowser
-                    angSpeed = (o->oTimer - sBowsertiltPlatformData[i - 1].time) * angSpeed;
-                }
-                // Set angle values to the platform
-                bowser_tilt_platform(platform, angSpeed);
-                // Play sound effect
-                if (angSpeed != 0) {
-                    play_sound(SOUND_ENV_MOVING_BIG_PLATFORM, platform->header.gfx.cameraToObject);
-                }
-                isNotTilting = FALSE;
-                break;
-            }
-            i++;
-        }
-        // If Bowser is done tilting, reset platform angles
-        // and set Bowser to default action
-        if (isNotTilting) {
-            o->oAction = BOWSER_ACT_DEFAULT;
-            platform->oAngleVelPitch = 0;
-            platform->oAngleVelRoll = 0;
-            platform->oFaceAnglePitch = 0;
-            platform->oFaceAngleRoll = 0;
-        }
-    }
-    // Extend "idle" animation
-    cur_obj_extend_animation_if_at_end();
-}
+//  */
+// void bowser_act_tilt_lava_platform(void) {
+//     // Set platform object
+//     //struct Object *platform = cur_obj_nearest_object_with_behavior(bhvTiltingBowserLavaPlatform);
+//     s16 angSpeed;
+//     // If there's not platform, return to default action
+//     if (platform == NULL) {
+//         o->oAction = BOWSER_ACT_DEFAULT;
+//     } else {
+//         s32 i = 0;
+//         s32 isNotTilting = TRUE;
+//         // Active platform tilting if the timer is not 0
+//         while (sBowsertiltPlatformData[i].time != 0) {
+//             // Move if the time values is more than the timer
+//             if (o->oTimer < sBowsertiltPlatformData[i].time) {
+//                 // Set angle speed
+//                 angSpeed = sBowsertiltPlatformData[i].angSpeed;
+//                 // Move angle behind Bowser
+//                 if (sBowsertiltPlatformData[i].flag > 0) {
+//                     angSpeed = (sBowsertiltPlatformData[i].time - o->oTimer - 1) * angSpeed;
+//                 } else { // Move angle in front of Bowser
+//                     angSpeed = (o->oTimer - sBowsertiltPlatformData[i - 1].time) * angSpeed;
+//                 }
+//                 // Set angle values to the platform
+//                 bowser_tilt_platform(platform, angSpeed);
+//                 // Play sound effect
+//                 if (angSpeed != 0) {
+//                     play_sound(SOUND_ENV_MOVING_BIG_PLATFORM, platform->header.gfx.cameraToObject);
+//                 }
+//                 isNotTilting = FALSE;
+//                 break;
+//             }
+//             i++;
+//         }
+//         // If Bowser is done tilting, reset platform angles
+//         // and set Bowser to default action
+//         if (isNotTilting) {
+//             o->oAction = BOWSER_ACT_DEFAULT;
+//             platform->oAngleVelPitch = 0;
+//             platform->oAngleVelRoll = 0;
+//             platform->oFaceAnglePitch = 0;
+//             platform->oFaceAngleRoll = 0;
+//         }
+//     }
+//     // Extend "idle" animation
+//     cur_obj_extend_animation_if_at_end();
+// }
 
 /**
  * Check if Bowser is offstage from a large distance or landed on a lethal floor
@@ -1484,7 +1484,7 @@ ObjActionFunc sBowserActions[] = {
     bowser_act_teleport,
     bowser_act_quick_jump,
     bowser_act_idle,
-    bowser_act_tilt_lava_platform,
+    //bowser_act_tilt_lava_platform,
 };
 
 /**

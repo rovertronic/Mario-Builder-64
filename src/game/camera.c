@@ -3522,9 +3522,9 @@ void init_camera(struct Camera *c) {
     vec3f_copy(gLakituState.goalFocus, c->focus);
     vec3f_copy(gLakituState.pos, c->pos);
     vec3f_copy(gLakituState.focus, c->focus);
-    if (c->mode == CAMERA_MODE_FIXED) {
-        set_fixed_cam_axis_sa_lobby(c->mode);
-    }
+    // if (c->mode == CAMERA_MODE_FIXED) {
+    //     set_fixed_cam_axis_sa_lobby(c->mode);
+    // }
     store_lakitu_cam_info_for_c_up(c);
     gLakituState.yaw = calculate_yaw(c->focus, c->pos);
     gLakituState.nextYaw = gLakituState.yaw;
@@ -5520,515 +5520,515 @@ void check_blocking_area_processing(UNUSED const u8 *mode) {
 #endif
 }
 
-void cam_rr_exit_building_side(struct Camera *c) {
-    set_camera_mode_8_directions(c);
-    s8DirModeBaseYaw = DEGREES(90);
-}
-
-void cam_rr_exit_building_top(struct Camera *c) {
-    set_camera_mode_8_directions(c);
-    if (c->pos[1] < 6343.f) {
-        c->pos[1] = 7543.f;
-        gLakituState.goalPos[1] = c->pos[1];
-        gLakituState.curPos[1] = c->pos[1];
-        sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-    }
-}
-
-void cam_rr_enter_building_window(struct Camera *c) {
-    if (c->mode != CAMERA_MODE_FIXED) {
-        set_camera_mode_fixed(c, -2974, 478, -3975);
-    }
-}
-
-void cam_rr_enter_building(struct Camera *c) {
-    if (c->mode != CAMERA_MODE_FIXED) {
-        set_camera_mode_fixed(c, -2953, 798, -3943);
-    }
-    // Prevent the camera from being above the roof
-    if (c->pos[1] > 6043.f) {
-        c->pos[1] = 6043.f;
-    }
-}
-
-void cam_rr_enter_building_side(struct Camera *c) {
-    if (c->mode != CAMERA_MODE_FIXED) {
-        sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-        c->mode = CAMERA_MODE_FIXED;
-    }
-}
-
-/**
- * Fix the camera in place as Mario gets exits out the MC cave into the waterfall.
- */
-void cam_cotmc_exit_waterfall(UNUSED struct Camera *c) {
-    gCameraMovementFlags |= CAM_MOVE_FIX_IN_PLACE;
-}
-
-/**
- * Sets 8 directional mode and blocks the next trigger from processing.
- * Activated when Mario is walking in front of the snowman's head.
- */
-void cam_sl_snowman_head_8dir(struct Camera *c) {
-    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
-    transition_to_camera_mode(c, CAMERA_MODE_8_DIRECTIONS, 60);
-    s8DirModeBaseYaw = 0x1D27;
-}
-
-/**
- * Sets free roam mode in SL, called by a trigger that covers a large area and surrounds the 8 direction
- * trigger.
- */
-void cam_sl_free_roam(struct Camera *c) {
-    transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 60);
-}
-
-/**
- * Warps the camera underneath the floor, used in HMC to move under the elevator platforms
- */
-void move_camera_through_floor_while_descending(struct Camera *c, f32 height) {
-    if ((sMarioGeometry.currFloorHeight < height - 100.f)
-        && (sMarioGeometry.prevFloorHeight > sMarioGeometry.currFloorHeight)) {
-        c->pos[1] = height - 400.f;
-        gLakituState.curPos[1] = height - 400.f;
-        gLakituState.goalPos[1] = height - 400.f;
-    }
-}
-
-void cam_hmc_enter_maze(struct Camera *c) {
-    s16 pitch, yaw;
-    f32 dist;
-
-    if (c->pos[1] > -102.f) {
-        vec3f_get_dist_and_angle(c->focus, gLakituState.goalPos, &dist, &pitch, &yaw);
-        vec3f_set_dist_and_angle(c->focus, gLakituState.goalPos, 300.f, pitch, yaw);
-        gLakituState.goalPos[1] = -800.f;
-        c->pos[1] = gLakituState.goalPos[1];
-        gLakituState.curPos[1] = gLakituState.goalPos[1];
-        sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-    }
-}
-
-void cam_hmc_elevator_black_hole(struct Camera *c) {
-    move_camera_through_floor_while_descending(c, 1536.f);
-}
-
-void cam_hmc_elevator_maze_emergency_exit(struct Camera *c) {
-    move_camera_through_floor_while_descending(c, 2355.f);
-}
-
-void cam_hmc_elevator_lake(struct Camera *c) {
-    move_camera_through_floor_while_descending(c, 1843.f);
-}
-
-void cam_hmc_elevator_maze(struct Camera *c) {
-    move_camera_through_floor_while_descending(c, 1843.f);
-}
-
-/**
- * Starts the "Enter Pyramid Top" cutscene.
- */
-void cam_ssl_enter_pyramid_top(UNUSED struct Camera *c) {
-    start_object_cutscene_without_focus(CUTSCENE_ENTER_PYRAMID_TOP);
-}
-
-/**
- * Change to close mode in the center of the pyramid. Outside this trigger, the default mode is outwards
- * radial.
- */
-void cam_ssl_pyramid_center(struct Camera *c) {
-    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
-    transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
-}
-
-/**
- * Changes the mode back to outward radial in the boss room inside the pyramid.
- */
-void cam_ssl_boss_room(struct Camera *c) {
-    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
-    transition_to_camera_mode(c, CAMERA_MODE_OUTWARD_RADIAL, 90);
-}
-
-/**
- * Moves the camera to through the tunnel by forcing sModeOffsetYaw
- */
-void cam_thi_move_cam_through_tunnel(UNUSED struct Camera *c) {
-    if (sModeOffsetYaw < DEGREES(60)) {
-        sModeOffsetYaw = DEGREES(60);
-    }
-}
-
-/**
- * Aligns the camera to look through the tunnel
- */
-void cam_thi_look_through_tunnel(UNUSED struct Camera *c) {
-    // ~82.5 degrees
-    if (sModeOffsetYaw > 0x3AAA) {
-        sModeOffsetYaw = 0x3AAA;
-    }
-}
-
-/**
- * Unused. Changes the camera to radial mode when Mario is on the tower.
- *
- * @see sCamBOB for bounds.
- */
-void cam_bob_tower(struct Camera *c) {
-    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
-    transition_to_camera_mode(c, CAMERA_MODE_RADIAL, 90);
-}
-
-/**
- * Unused. Changes the camera to free roam mode when Mario is not climbing the tower.
- *
- * This is the only CameraTrigger event that uses the area == -1 feature:
- * If this was used, it would be called by default in BoB.
- *
- * @see sCamBOB
- */
-void cam_bob_default_free_roam(struct Camera *c) {
-    transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-}
-
-/**
- * Starts the pool entrance cutscene if Mario is not exiting the pool.
- * Used in both the castle and HMC.
- */
-void cam_castle_hmc_start_pool_cutscene(struct Camera *c) {
-    if ((sMarioCamState->action != ACT_SPECIAL_DEATH_EXIT)
-        && (sMarioCamState->action != ACT_SPECIAL_EXIT_AIRBORNE)) {
-        start_cutscene(c, CUTSCENE_ENTER_POOL);
-    }
-}
-
-/**
- * Sets the fixed mode pos offset so that the camera faces the doorway when Mario is near the entrance
- * to the castle lobby
- */
-void cam_castle_lobby_entrance(UNUSED struct Camera *c) {
-    vec3f_set(sCastleEntranceOffset, -813.f - sFixedModeBasePosition[0],
-              378.f - sFixedModeBasePosition[1], 1103.f - sFixedModeBasePosition[2]);
-}
-
-/**
- * Make the camera look up the stairs from the 2nd to 3rd floor of the castle
- */
-void cam_castle_look_upstairs(struct Camera *c) {
-    struct Surface *floor;
-    f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
-
-    // If Mario is on the first few steps, fix the camera pos, making it look up
-    if ((sMarioGeometry.currFloorHeight > 1229.f) && (floorHeight < 1229.f)
-        && (sCSideButtonYaw == 0)) {
-        vec3f_set(c->pos, -227.f, 1425.f, 1533.f);
-    }
-}
-
-/**
- * Make the camera look down the stairs towards the basement star door
- */
-void cam_castle_basement_look_downstairs(struct Camera *c) {
-    struct Surface *floor;
-    f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
-
-    // Fix the camera pos, making it look downwards. Only active on the top few steps
-    if ((floorHeight > -110.f) && (sCSideButtonYaw == 0)) {
-        vec3f_set(c->pos, -980.f, 249.f, -1398.f);
-    }
-}
-
-/**
- * Enter the fixed-mode castle lobby. A trigger for this is placed in every entrance so that the camera
- * changes to fixed mode.
- */
-void cam_castle_enter_lobby(struct Camera *c) {
-    if (c->mode != CAMERA_MODE_FIXED) {
-        sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-        set_fixed_cam_axis_sa_lobby(c->mode);
-        c->mode = CAMERA_MODE_FIXED;
-    }
-}
-
-/**
- * Starts spiral stairs mode.
- */
-void cam_castle_enter_spiral_stairs(struct Camera *c) {
-    transition_to_camera_mode(c, CAMERA_MODE_SPIRAL_STAIRS, 20);
-}
-
-/**
- * unused, starts close mode if the camera is in spiral stairs mode.
- * This was replaced with cam_castle_close_mode
- */
-static UNUSED void cam_castle_leave_spiral_stairs(struct Camera *c) {
-    if (c->mode == CAMERA_MODE_SPIRAL_STAIRS) {
-        transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
-    } else {
-        set_camera_mode_close_cam(&c->mode);
-    }
-}
-
-/**
- * The default mode when outside of the lobby and spiral staircase. A trigger for this is placed at
- * every door leaving the lobby and spiral staircase.
- */
-void cam_castle_close_mode(struct Camera *c) {
-    set_camera_mode_close_cam(&c->mode);
-}
-
-/**
- * Functions the same as cam_castle_close_mode, but sets doorStatus so that the camera will enter
- * fixed-mode when Mario leaves the room.
- */
-void cam_castle_leave_lobby_sliding_door(struct Camera *c) {
-    cam_castle_close_mode(c);
-    c->doorStatus = DOOR_ENTER_LOBBY;
-}
-
-/**
- * Just calls cam_castle_enter_lobby
- */
-void cam_castle_enter_lobby_sliding_door(struct Camera *c) {
-    cam_castle_enter_lobby(c);
-}
-
-void cam_bbh_room_6(struct Camera *c) {
-    parallel_tracking_init(c, sBBHLibraryParTrackPath);
-}
-
-void cam_bbh_fall_off_roof(struct Camera *c) {
-    set_camera_mode_close_cam(&c->mode);
-}
-
-void cam_bbh_fall_into_pool(struct Camera *c) {
-    Vec3f dir;
-    set_camera_mode_close_cam(&c->mode);
-    vec3f_set(dir, 0.f, 0.f, 300.f);
-    offset_rotated(gLakituState.goalPos, sMarioCamState->pos, dir, sMarioCamState->faceAngle);
-    gLakituState.goalPos[1] = -2300.f;
-    vec3f_copy(c->pos, gLakituState.goalPos);
-    sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-}
-
-void cam_bbh_room_1(struct Camera *c) {
-    set_camera_mode_fixed(c, 956, 440, 1994);
-}
-
-void cam_bbh_leave_front_door(struct Camera *c) {
-    c->doorStatus = DOOR_LEAVING_SPECIAL;
-    cam_bbh_room_1(c);
-}
-
-void cam_bbh_room_2_lower(struct Camera *c) {
-    set_camera_mode_fixed(c, 2591, 400, 1284);
-}
-
-void cam_bbh_room_4(struct Camera *c) {
-    set_camera_mode_fixed(c, 3529, 340, -1384);
-}
-
-void cam_bbh_room_8(struct Camera *c) {
-    set_camera_mode_fixed(c, -500, 740, -1306);
-}
-
-/**
- * In BBH's room 5's library (the first floor room with the vanish cap/boo painting)
- * set the camera mode to fixed and position to (-2172, 200, 675)
- */
-void cam_bbh_room_5_library(struct Camera *c) {
-    set_camera_mode_fixed(c, -2172, 200, 675);
-}
-
-/**
- * In BBH's room 5 (the first floor room with the vanish cap/boo painting)
- * set the camera mode to to the hidden room's position
- * if coming from the library.
- */
-void cam_bbh_room_5_library_to_hidden_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, -2172, 200, 675) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_5_hidden_to_library_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, -1542, 320, -307) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_5_hidden(struct Camera *c) {
-    c->doorStatus = DOOR_LEAVING_SPECIAL;
-    set_camera_mode_fixed(c, -1542, 320, -307);
-}
-
-void cam_bbh_room_3(struct Camera *c) {
-    set_camera_mode_fixed(c, -1893, 320, 2327);
-}
-
-void cam_bbh_room_7_mr_i(struct Camera *c) {
-    set_camera_mode_fixed(c, 1371, 360, -1302);
-}
-
-void cam_bbh_room_7_mr_i_to_coffins_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, 1371, 360, -1302) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_7_coffins_to_mr_i_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, 2115, 260, -772) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_elevator_room_lower(struct Camera *c) {
-    c->doorStatus = DOOR_LEAVING_SPECIAL;
-    set_camera_mode_close_cam(&c->mode);
-}
-
-void cam_bbh_room_0_back_entrance(struct Camera *c) {
-    set_camera_mode_close_cam(&c->mode);
-}
-
-void cam_bbh_elevator(struct Camera *c) {
-    if (c->mode == CAMERA_MODE_FIXED) {
-        set_camera_mode_close_cam(&c->mode);
-        c->pos[1] = -405.f;
-        gLakituState.goalPos[1] = -405.f;
-    }
-}
-
-void cam_bbh_room_12_upper(struct Camera *c) {
-    c->doorStatus = DOOR_LEAVING_SPECIAL;
-    set_camera_mode_fixed(c, -2932, 296, 4429);
-}
-
-void cam_bbh_enter_front_door(struct Camera *c) {
-    set_camera_mode_close_cam(&c->mode);
-}
-
-void cam_bbh_room_2_library(struct Camera *c) {
-    set_camera_mode_fixed(c, 3493, 440, 617);
-}
-
-void cam_bbh_room_2_library_to_trapdoor_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, 3493, 440, 617) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_2_trapdoor(struct Camera *c) {
-    set_camera_mode_fixed(c, 3502, 440, 1217);
-}
-
-void cam_bbh_room_2_trapdoor_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, 3502, 440, 1217) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_9_attic(struct Camera *c) {
-    set_camera_mode_fixed(c, -670, 460, 372);
-}
-
-void cam_bbh_room_9_attic_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, -670, 460, 372) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_9_mr_i_transition(struct Camera *c) {
-    if (set_camera_mode_fixed(c, 131, 380, -263) == 1) {
-        transition_next_state(c, 20);
-    }
-}
-
-void cam_bbh_room_13_balcony(struct Camera *c) {
-    set_camera_mode_fixed(c, 210, 420, 3109);
-}
-
-void cam_bbh_room_0(struct Camera *c) {
-    c->doorStatus = DOOR_LEAVING_SPECIAL;
-    set_camera_mode_fixed(c, -204, 807, 204);
-}
-
-void cam_ccm_enter_slide_shortcut(UNUSED struct Camera *c) {
-    sStatusFlags |= CAM_FLAG_CCM_SLIDE_SHORTCUT;
-}
-
-void cam_ccm_leave_slide_shortcut(UNUSED struct Camera *c) {
-    sStatusFlags &= ~CAM_FLAG_CCM_SLIDE_SHORTCUT;
-}
-
-/**
- * Apply any modes that are triggered by special floor surface types
- */
-u32 surface_type_modes(struct Camera *c) {
-    u32 modeChanged = 0;
-
-    switch (sMarioGeometry.currFloorType) {
-        case SURFACE_CLOSE_CAMERA:
-            transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
-            modeChanged++;
-            break;
-
-        case SURFACE_CAMERA_FREE_ROAM:
-            transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-            modeChanged++;
-            break;
-
-        case SURFACE_NO_CAM_COL_SLIPPERY:
-            transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
-            modeChanged++;
-            break;
-    }
-    return modeChanged;
-}
-
-/**
- * Set the camera mode to `mode` if Mario is not standing on a special surface
- */
-u32 set_mode_if_not_set_by_surface(struct Camera *c, u8 mode) {
-    u32 modeChanged = surface_type_modes(c);
-
-    if ((modeChanged == 0) && (mode != 0)) {
-        transition_to_camera_mode(c, mode, 90);
-    }
-
-    return modeChanged;
-}
-
-/**
- * Used in THI, check if Mario is standing on any of the special surfaces in that area
- */
-void surface_type_modes_thi(struct Camera *c) {
-    switch (sMarioGeometry.currFloorType) {
-        case SURFACE_CLOSE_CAMERA:
-            if (c->mode != CAMERA_MODE_CLOSE) {
-                transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-            }
-            break;
-
-        case SURFACE_CAMERA_FREE_ROAM:
-            if (c->mode != CAMERA_MODE_CLOSE) {
-                transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-            }
-            break;
-
-        case SURFACE_NO_CAM_COL_SLIPPERY:
-            if (c->mode != CAMERA_MODE_CLOSE) {
-                transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
-            }
-            break;
-
-        case SURFACE_CAMERA_8_DIR:
-            transition_to_camera_mode(c, CAMERA_MODE_8_DIRECTIONS, 90);
-            break;
-
-        default:
-            transition_to_camera_mode(c, CAMERA_MODE_RADIAL, 90);
-    }
-}
+// void cam_rr_exit_building_side(struct Camera *c) {
+//     set_camera_mode_8_directions(c);
+//     s8DirModeBaseYaw = DEGREES(90);
+// }
+
+// void cam_rr_exit_building_top(struct Camera *c) {
+//     set_camera_mode_8_directions(c);
+//     if (c->pos[1] < 6343.f) {
+//         c->pos[1] = 7543.f;
+//         gLakituState.goalPos[1] = c->pos[1];
+//         gLakituState.curPos[1] = c->pos[1];
+//         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
+//     }
+// }
+
+// void cam_rr_enter_building_window(struct Camera *c) {
+//     if (c->mode != CAMERA_MODE_FIXED) {
+//         set_camera_mode_fixed(c, -2974, 478, -3975);
+//     }
+// }
+
+// void cam_rr_enter_building(struct Camera *c) {
+//     if (c->mode != CAMERA_MODE_FIXED) {
+//         set_camera_mode_fixed(c, -2953, 798, -3943);
+//     }
+//     // Prevent the camera from being above the roof
+//     if (c->pos[1] > 6043.f) {
+//         c->pos[1] = 6043.f;
+//     }
+// }
+
+// void cam_rr_enter_building_side(struct Camera *c) {
+//     if (c->mode != CAMERA_MODE_FIXED) {
+//         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
+//         c->mode = CAMERA_MODE_FIXED;
+//     }
+// }
+
+// /**
+//  * Fix the camera in place as Mario gets exits out the MC cave into the waterfall.
+//  */
+// void cam_cotmc_exit_waterfall(UNUSED struct Camera *c) {
+//     gCameraMovementFlags |= CAM_MOVE_FIX_IN_PLACE;
+// }
+
+// /**
+//  * Sets 8 directional mode and blocks the next trigger from processing.
+//  * Activated when Mario is walking in front of the snowman's head.
+//  */
+// void cam_sl_snowman_head_8dir(struct Camera *c) {
+//     sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+//     transition_to_camera_mode(c, CAMERA_MODE_8_DIRECTIONS, 60);
+//     s8DirModeBaseYaw = 0x1D27;
+// }
+
+// /**
+//  * Sets free roam mode in SL, called by a trigger that covers a large area and surrounds the 8 direction
+//  * trigger.
+//  */
+// void cam_sl_free_roam(struct Camera *c) {
+//     transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 60);
+// }
+
+// /**
+//  * Warps the camera underneath the floor, used in HMC to move under the elevator platforms
+//  */
+// void move_camera_through_floor_while_descending(struct Camera *c, f32 height) {
+//     if ((sMarioGeometry.currFloorHeight < height - 100.f)
+//         && (sMarioGeometry.prevFloorHeight > sMarioGeometry.currFloorHeight)) {
+//         c->pos[1] = height - 400.f;
+//         gLakituState.curPos[1] = height - 400.f;
+//         gLakituState.goalPos[1] = height - 400.f;
+//     }
+// }
+
+// void cam_hmc_enter_maze(struct Camera *c) {
+//     s16 pitch, yaw;
+//     f32 dist;
+
+//     if (c->pos[1] > -102.f) {
+//         vec3f_get_dist_and_angle(c->focus, gLakituState.goalPos, &dist, &pitch, &yaw);
+//         vec3f_set_dist_and_angle(c->focus, gLakituState.goalPos, 300.f, pitch, yaw);
+//         gLakituState.goalPos[1] = -800.f;
+//         c->pos[1] = gLakituState.goalPos[1];
+//         gLakituState.curPos[1] = gLakituState.goalPos[1];
+//         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
+//     }
+// }
+
+// void cam_hmc_elevator_black_hole(struct Camera *c) {
+//     move_camera_through_floor_while_descending(c, 1536.f);
+// }
+
+// void cam_hmc_elevator_maze_emergency_exit(struct Camera *c) {
+//     move_camera_through_floor_while_descending(c, 2355.f);
+// }
+
+// void cam_hmc_elevator_lake(struct Camera *c) {
+//     move_camera_through_floor_while_descending(c, 1843.f);
+// }
+
+// void cam_hmc_elevator_maze(struct Camera *c) {
+//     move_camera_through_floor_while_descending(c, 1843.f);
+// }
+
+// /**
+//  * Starts the "Enter Pyramid Top" cutscene.
+//  */
+// void cam_ssl_enter_pyramid_top(UNUSED struct Camera *c) {
+//     start_object_cutscene_without_focus(CUTSCENE_ENTER_PYRAMID_TOP);
+// }
+
+// /**
+//  * Change to close mode in the center of the pyramid. Outside this trigger, the default mode is outwards
+//  * radial.
+//  */
+// void cam_ssl_pyramid_center(struct Camera *c) {
+//     sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+//     transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
+// }
+
+// /**
+//  * Changes the mode back to outward radial in the boss room inside the pyramid.
+//  */
+// void cam_ssl_boss_room(struct Camera *c) {
+//     sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+//     transition_to_camera_mode(c, CAMERA_MODE_OUTWARD_RADIAL, 90);
+// }
+
+// /**
+//  * Moves the camera to through the tunnel by forcing sModeOffsetYaw
+//  */
+// void cam_thi_move_cam_through_tunnel(UNUSED struct Camera *c) {
+//     if (sModeOffsetYaw < DEGREES(60)) {
+//         sModeOffsetYaw = DEGREES(60);
+//     }
+// }
+
+// /**
+//  * Aligns the camera to look through the tunnel
+//  */
+// void cam_thi_look_through_tunnel(UNUSED struct Camera *c) {
+//     // ~82.5 degrees
+//     if (sModeOffsetYaw > 0x3AAA) {
+//         sModeOffsetYaw = 0x3AAA;
+//     }
+// }
+
+// /**
+//  * Unused. Changes the camera to radial mode when Mario is on the tower.
+//  *
+//  * @see sCamBOB for bounds.
+//  */
+// void cam_bob_tower(struct Camera *c) {
+//     sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
+//     transition_to_camera_mode(c, CAMERA_MODE_RADIAL, 90);
+// }
+
+// /**
+//  * Unused. Changes the camera to free roam mode when Mario is not climbing the tower.
+//  *
+//  * This is the only CameraTrigger event that uses the area == -1 feature:
+//  * If this was used, it would be called by default in BoB.
+//  *
+//  * @see sCamBOB
+//  */
+// void cam_bob_default_free_roam(struct Camera *c) {
+//     transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
+// }
+
+// /**
+//  * Starts the pool entrance cutscene if Mario is not exiting the pool.
+//  * Used in both the castle and HMC.
+//  */
+// void cam_castle_hmc_start_pool_cutscene(struct Camera *c) {
+//     if ((sMarioCamState->action != ACT_SPECIAL_DEATH_EXIT)
+//         && (sMarioCamState->action != ACT_SPECIAL_EXIT_AIRBORNE)) {
+//         start_cutscene(c, CUTSCENE_ENTER_POOL);
+//     }
+// }
+
+// /**
+//  * Sets the fixed mode pos offset so that the camera faces the doorway when Mario is near the entrance
+//  * to the castle lobby
+//  */
+// void cam_castle_lobby_entrance(UNUSED struct Camera *c) {
+//     vec3f_set(sCastleEntranceOffset, -813.f - sFixedModeBasePosition[0],
+//               378.f - sFixedModeBasePosition[1], 1103.f - sFixedModeBasePosition[2]);
+// }
+
+// /**
+//  * Make the camera look up the stairs from the 2nd to 3rd floor of the castle
+//  */
+// void cam_castle_look_upstairs(struct Camera *c) {
+//     struct Surface *floor;
+//     f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
+
+//     // If Mario is on the first few steps, fix the camera pos, making it look up
+//     if ((sMarioGeometry.currFloorHeight > 1229.f) && (floorHeight < 1229.f)
+//         && (sCSideButtonYaw == 0)) {
+//         vec3f_set(c->pos, -227.f, 1425.f, 1533.f);
+//     }
+// }
+
+// /**
+//  * Make the camera look down the stairs towards the basement star door
+//  */
+// void cam_castle_basement_look_downstairs(struct Camera *c) {
+//     struct Surface *floor;
+//     f32 floorHeight = find_floor(c->pos[0], c->pos[1], c->pos[2], &floor);
+
+//     // Fix the camera pos, making it look downwards. Only active on the top few steps
+//     if ((floorHeight > -110.f) && (sCSideButtonYaw == 0)) {
+//         vec3f_set(c->pos, -980.f, 249.f, -1398.f);
+//     }
+// }
+
+// /**
+//  * Enter the fixed-mode castle lobby. A trigger for this is placed in every entrance so that the camera
+//  * changes to fixed mode.
+//  */
+// void cam_castle_enter_lobby(struct Camera *c) {
+//     if (c->mode != CAMERA_MODE_FIXED) {
+//         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
+//         set_fixed_cam_axis_sa_lobby(c->mode);
+//         c->mode = CAMERA_MODE_FIXED;
+//     }
+// }
+
+// /**
+//  * Starts spiral stairs mode.
+//  */
+// void cam_castle_enter_spiral_stairs(struct Camera *c) {
+//     transition_to_camera_mode(c, CAMERA_MODE_SPIRAL_STAIRS, 20);
+// }
+
+// /**
+//  * unused, starts close mode if the camera is in spiral stairs mode.
+//  * This was replaced with cam_castle_close_mode
+//  */
+// static UNUSED void cam_castle_leave_spiral_stairs(struct Camera *c) {
+//     if (c->mode == CAMERA_MODE_SPIRAL_STAIRS) {
+//         transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 30);
+//     } else {
+//         set_camera_mode_close_cam(&c->mode);
+//     }
+// }
+
+// /**
+//  * The default mode when outside of the lobby and spiral staircase. A trigger for this is placed at
+//  * every door leaving the lobby and spiral staircase.
+//  */
+// void cam_castle_close_mode(struct Camera *c) {
+//     set_camera_mode_close_cam(&c->mode);
+// }
+
+// /**
+//  * Functions the same as cam_castle_close_mode, but sets doorStatus so that the camera will enter
+//  * fixed-mode when Mario leaves the room.
+//  */
+// void cam_castle_leave_lobby_sliding_door(struct Camera *c) {
+//     cam_castle_close_mode(c);
+//     c->doorStatus = DOOR_ENTER_LOBBY;
+// }
+
+// /**
+//  * Just calls cam_castle_enter_lobby
+//  */
+// void cam_castle_enter_lobby_sliding_door(struct Camera *c) {
+//     cam_castle_enter_lobby(c);
+// }
+
+// void cam_bbh_room_6(struct Camera *c) {
+//     parallel_tracking_init(c, sBBHLibraryParTrackPath);
+// }
+
+// void cam_bbh_fall_off_roof(struct Camera *c) {
+//     set_camera_mode_close_cam(&c->mode);
+// }
+
+// void cam_bbh_fall_into_pool(struct Camera *c) {
+//     Vec3f dir;
+//     set_camera_mode_close_cam(&c->mode);
+//     vec3f_set(dir, 0.f, 0.f, 300.f);
+//     offset_rotated(gLakituState.goalPos, sMarioCamState->pos, dir, sMarioCamState->faceAngle);
+//     gLakituState.goalPos[1] = -2300.f;
+//     vec3f_copy(c->pos, gLakituState.goalPos);
+//     sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
+// }
+
+// void cam_bbh_room_1(struct Camera *c) {
+//     set_camera_mode_fixed(c, 956, 440, 1994);
+// }
+
+// void cam_bbh_leave_front_door(struct Camera *c) {
+//     c->doorStatus = DOOR_LEAVING_SPECIAL;
+//     cam_bbh_room_1(c);
+// }
+
+// void cam_bbh_room_2_lower(struct Camera *c) {
+//     set_camera_mode_fixed(c, 2591, 400, 1284);
+// }
+
+// void cam_bbh_room_4(struct Camera *c) {
+//     set_camera_mode_fixed(c, 3529, 340, -1384);
+// }
+
+// void cam_bbh_room_8(struct Camera *c) {
+//     set_camera_mode_fixed(c, -500, 740, -1306);
+// }
+
+// /**
+//  * In BBH's room 5's library (the first floor room with the vanish cap/boo painting)
+//  * set the camera mode to fixed and position to (-2172, 200, 675)
+//  */
+// void cam_bbh_room_5_library(struct Camera *c) {
+//     set_camera_mode_fixed(c, -2172, 200, 675);
+// }
+
+// /**
+//  * In BBH's room 5 (the first floor room with the vanish cap/boo painting)
+//  * set the camera mode to to the hidden room's position
+//  * if coming from the library.
+//  */
+// void cam_bbh_room_5_library_to_hidden_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, -2172, 200, 675) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_5_hidden_to_library_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, -1542, 320, -307) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_5_hidden(struct Camera *c) {
+//     c->doorStatus = DOOR_LEAVING_SPECIAL;
+//     set_camera_mode_fixed(c, -1542, 320, -307);
+// }
+
+// void cam_bbh_room_3(struct Camera *c) {
+//     set_camera_mode_fixed(c, -1893, 320, 2327);
+// }
+
+// void cam_bbh_room_7_mr_i(struct Camera *c) {
+//     set_camera_mode_fixed(c, 1371, 360, -1302);
+// }
+
+// void cam_bbh_room_7_mr_i_to_coffins_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, 1371, 360, -1302) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_7_coffins_to_mr_i_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, 2115, 260, -772) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_elevator_room_lower(struct Camera *c) {
+//     c->doorStatus = DOOR_LEAVING_SPECIAL;
+//     set_camera_mode_close_cam(&c->mode);
+// }
+
+// void cam_bbh_room_0_back_entrance(struct Camera *c) {
+//     set_camera_mode_close_cam(&c->mode);
+// }
+
+// void cam_bbh_elevator(struct Camera *c) {
+//     if (c->mode == CAMERA_MODE_FIXED) {
+//         set_camera_mode_close_cam(&c->mode);
+//         c->pos[1] = -405.f;
+//         gLakituState.goalPos[1] = -405.f;
+//     }
+// }
+
+// void cam_bbh_room_12_upper(struct Camera *c) {
+//     c->doorStatus = DOOR_LEAVING_SPECIAL;
+//     set_camera_mode_fixed(c, -2932, 296, 4429);
+// }
+
+// void cam_bbh_enter_front_door(struct Camera *c) {
+//     set_camera_mode_close_cam(&c->mode);
+// }
+
+// void cam_bbh_room_2_library(struct Camera *c) {
+//     set_camera_mode_fixed(c, 3493, 440, 617);
+// }
+
+// void cam_bbh_room_2_library_to_trapdoor_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, 3493, 440, 617) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_2_trapdoor(struct Camera *c) {
+//     set_camera_mode_fixed(c, 3502, 440, 1217);
+// }
+
+// void cam_bbh_room_2_trapdoor_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, 3502, 440, 1217) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_9_attic(struct Camera *c) {
+//     set_camera_mode_fixed(c, -670, 460, 372);
+// }
+
+// void cam_bbh_room_9_attic_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, -670, 460, 372) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_9_mr_i_transition(struct Camera *c) {
+//     if (set_camera_mode_fixed(c, 131, 380, -263) == 1) {
+//         transition_next_state(c, 20);
+//     }
+// }
+
+// void cam_bbh_room_13_balcony(struct Camera *c) {
+//     set_camera_mode_fixed(c, 210, 420, 3109);
+// }
+
+// void cam_bbh_room_0(struct Camera *c) {
+//     c->doorStatus = DOOR_LEAVING_SPECIAL;
+//     set_camera_mode_fixed(c, -204, 807, 204);
+// }
+
+// void cam_ccm_enter_slide_shortcut(UNUSED struct Camera *c) {
+//     sStatusFlags |= CAM_FLAG_CCM_SLIDE_SHORTCUT;
+// }
+
+// void cam_ccm_leave_slide_shortcut(UNUSED struct Camera *c) {
+//     sStatusFlags &= ~CAM_FLAG_CCM_SLIDE_SHORTCUT;
+// }
+
+// /**
+//  * Apply any modes that are triggered by special floor surface types
+//  */
+// u32 surface_type_modes(struct Camera *c) {
+//     u32 modeChanged = 0;
+
+//     switch (sMarioGeometry.currFloorType) {
+//         case SURFACE_CLOSE_CAMERA:
+//             transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
+//             modeChanged++;
+//             break;
+
+//         case SURFACE_CAMERA_FREE_ROAM:
+//             transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
+//             modeChanged++;
+//             break;
+
+//         case SURFACE_NO_CAM_COL_SLIPPERY:
+//             transition_to_camera_mode(c, CAMERA_MODE_CLOSE, 90);
+//             modeChanged++;
+//             break;
+//     }
+//     return modeChanged;
+// }
+
+// /**
+//  * Set the camera mode to `mode` if Mario is not standing on a special surface
+//  */
+// u32 set_mode_if_not_set_by_surface(struct Camera *c, u8 mode) {
+//     u32 modeChanged = surface_type_modes(c);
+
+//     if ((modeChanged == 0) && (mode != 0)) {
+//         transition_to_camera_mode(c, mode, 90);
+//     }
+
+//     return modeChanged;
+// }
+
+// /**
+//  * Used in THI, check if Mario is standing on any of the special surfaces in that area
+//  */
+// void surface_type_modes_thi(struct Camera *c) {
+//     switch (sMarioGeometry.currFloorType) {
+//         case SURFACE_CLOSE_CAMERA:
+//             if (c->mode != CAMERA_MODE_CLOSE) {
+//                 transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
+//             }
+//             break;
+
+//         case SURFACE_CAMERA_FREE_ROAM:
+//             if (c->mode != CAMERA_MODE_CLOSE) {
+//                 transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
+//             }
+//             break;
+
+//         case SURFACE_NO_CAM_COL_SLIPPERY:
+//             if (c->mode != CAMERA_MODE_CLOSE) {
+//                 transition_to_camera_mode(c, CAMERA_MODE_FREE_ROAM, 90);
+//             }
+//             break;
+
+//         case SURFACE_CAMERA_8_DIR:
+//             transition_to_camera_mode(c, CAMERA_MODE_8_DIRECTIONS, 90);
+//             break;
+
+//         default:
+//             transition_to_camera_mode(c, CAMERA_MODE_RADIAL, 90);
+//     }
+// }
 
 /**
  * Terminates a list of CameraTriggers.
@@ -6036,98 +6036,98 @@ void surface_type_modes_thi(struct Camera *c) {
 #define NULL_TRIGGER                                                                                    \
     { 0, NULL, 0, 0, 0, 0, 0, 0, 0 }
 
-/**
- * The SL triggers operate camera behavior in front of the snowman who blows air.
- * The first sets a 8 direction mode, while the latter (which encompasses the former)
- * sets free roam mode.
- *
- * This behavior is exploitable, since the ranges assume that Mario must pass through the latter on
- * exit. Using hyperspeed, the earlier area can be directly exited from, keeping the changes it applies.
- */
-struct CameraTrigger sCamSL[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The SL triggers operate camera behavior in front of the snowman who blows air.
+//  * The first sets a 8 direction mode, while the latter (which encompasses the former)
+//  * sets free roam mode.
+//  *
+//  * This behavior is exploitable, since the ranges assume that Mario must pass through the latter on
+//  * exit. Using hyperspeed, the earlier area can be directly exited from, keeping the changes it applies.
+//  */
+// struct CameraTrigger sCamSL[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The THI triggers are specifically for the tunnel near the start of the Huge Island.
- * The first helps the camera from getting stuck on the starting side, the latter aligns with the
- * tunnel. Both sides achieve their effect by editing the camera yaw.
- */
-struct CameraTrigger sCamTHI[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The THI triggers are specifically for the tunnel near the start of the Huge Island.
+//  * The first helps the camera from getting stuck on the starting side, the latter aligns with the
+//  * tunnel. Both sides achieve their effect by editing the camera yaw.
+//  */
+// struct CameraTrigger sCamTHI[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The HMC triggers are mostly for warping the camera below platforms, but the second trigger is used to
- * start the cutscene for entering the CotMC pool.
- */
-struct CameraTrigger sCamHMC[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The HMC triggers are mostly for warping the camera below platforms, but the second trigger is used to
+//  * start the cutscene for entering the CotMC pool.
+//  */
+// struct CameraTrigger sCamHMC[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The SSL triggers are for starting the enter pyramid top cutscene,
- * setting close mode in the middle of the pyramid, and setting the boss fight camera mode to outward
- * radial.
- */
-struct CameraTrigger sCamSSL[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The SSL triggers are for starting the enter pyramid top cutscene,
+//  * setting close mode in the middle of the pyramid, and setting the boss fight camera mode to outward
+//  * radial.
+//  */
+// struct CameraTrigger sCamSSL[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The RR triggers are for changing between fixed and 8 direction mode when entering / leaving the building at
- * the end of the ride.
- */
-struct CameraTrigger sCamRR[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The RR triggers are for changing between fixed and 8 direction mode when entering / leaving the building at
+//  * the end of the ride.
+//  */
+// struct CameraTrigger sCamRR[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * These triggers are unused, but because the first trigger surrounds the BoB tower and activates radial
- * mode (which is called "tower mode" in the patent), it's speculated they belonged to BoB.
- *
- * This table contains the only instance of a CameraTrigger with an area set to -1, and it sets the mode
- * to free_roam when Mario is not walking up the tower.
- */
+// /**
+//  * These triggers are unused, but because the first trigger surrounds the BoB tower and activates radial
+//  * mode (which is called "tower mode" in the patent), it's speculated they belonged to BoB.
+//  *
+//  * This table contains the only instance of a CameraTrigger with an area set to -1, and it sets the mode
+//  * to free_roam when Mario is not walking up the tower.
+//  */
 struct CameraTrigger sCamBOB[] = {
 	NULL_TRIGGER
 };
 
-/**
- * The CotMC trigger is only used to prevent fix Lakitu in place when Mario exits through the waterfall.
- */
-struct CameraTrigger sCamCotMC[] = {
-    { 1, cam_cotmc_exit_waterfall, 0, 1500, 3500, 550, 10000, 1500, 0 },
-    NULL_TRIGGER
-};
+// /**
+//  * The CotMC trigger is only used to prevent fix Lakitu in place when Mario exits through the waterfall.
+//  */
+// struct CameraTrigger sCamCotMC[] = {
+//     { 1, cam_cotmc_exit_waterfall, 0, 1500, 3500, 550, 10000, 1500, 0 },
+//     NULL_TRIGGER
+// };
 
-/**
- * The CCM triggers are used to set the flag that says when Mario is in the slide shortcut.
- */
-struct CameraTrigger sCamCCM[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The CCM triggers are used to set the flag that says when Mario is in the slide shortcut.
+//  */
+// struct CameraTrigger sCamCCM[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The Castle triggers are used to set the camera to fixed mode when entering the lobby, and to set it
- * to close mode when leaving it. They also set the mode to spiral staircase.
- *
- * There are two triggers for looking up and down straight staircases when Mario is at the start,
- * and one trigger that starts the enter pool cutscene when Mario enters HMC.
- */
-struct CameraTrigger sCamCastle[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The Castle triggers are used to set the camera to fixed mode when entering the lobby, and to set it
+//  * to close mode when leaving it. They also set the mode to spiral staircase.
+//  *
+//  * There are two triggers for looking up and down straight staircases when Mario is at the start,
+//  * and one trigger that starts the enter pool cutscene when Mario enters HMC.
+//  */
+// struct CameraTrigger sCamCastle[] = {
+// 	NULL_TRIGGER
+// };
 
-/**
- * The BBH triggers are the most complex, they cause the camera to enter fixed mode for each room,
- * transition between rooms, and enter free roam when outside.
- *
- * The triggers are also responsible for warping the camera below platforms.
- */
-struct CameraTrigger sCamBBH[] = {
-	NULL_TRIGGER
-};
+// /**
+//  * The BBH triggers are the most complex, they cause the camera to enter fixed mode for each room,
+//  * transition between rooms, and enter free roam when outside.
+//  *
+//  * The triggers are also responsible for warping the camera below platforms.
+//  */
+// struct CameraTrigger sCamBBH[] = {
+// 	NULL_TRIGGER
+// };
 
 #define _ NULL
 #define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, cameratable) cameratable,
@@ -6141,51 +6141,51 @@ struct CameraTrigger sCamBBH[] = {
  *
  * Each table is terminated with NULL_TRIGGER
  */
-struct CameraTrigger sCamWF[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamCastleCourtyard[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamCastleGrounds[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamJRB[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamBitDW[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamPSS[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamLLL[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamDDD[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamSA[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamWMOtR[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamWDW[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamBitS[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamTTM[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamBitFS[] = {
-	NULL_TRIGGER
-};
-struct CameraTrigger sCamTTC[] = {
-	NULL_TRIGGER
-};
+// struct CameraTrigger sCamWF[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamCastleCourtyard[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamCastleGrounds[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamJRB[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamBitDW[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamPSS[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamLLL[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamDDD[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamSA[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamWMOtR[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamWDW[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamBitS[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamTTM[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamBitFS[] = {
+// 	NULL_TRIGGER
+// };
+// struct CameraTrigger sCamTTC[] = {
+// 	NULL_TRIGGER
+// };
 struct CameraTrigger *sCameraTriggers[LEVEL_COUNT + 1] = {
     NULL,
     #include "levels/level_defines.h"
@@ -6194,117 +6194,117 @@ struct CameraTrigger *sCameraTriggers[LEVEL_COUNT + 1] = {
 #undef STUB_LEVEL
 #undef DEFINE_LEVEL
 
-struct CutsceneSplinePoint sIntroStartToPipePosition[] = {
-    { 0, 0, { 2122, 8762, 9114 } },  { 0, 0, { 2122, 8762, 9114 } },  { 1, 0, { 2122, 7916, 9114 } },
-    { 1, 0, { 2122, 7916, 9114 } },  { 2, 0, { 957, 5166, 8613 } },   { 3, 0, { 589, 4338, 7727 } },
-    { 4, 0, { 690, 3366, 6267 } },   { 5, 0, { -1600, 2151, 4955 } }, { 6, 0, { -1557, 232, 1283 } },
-    { 7, 0, { -6962, -295, 2729 } }, { 8, 0, { -6979, 131, 3246 } },  { 9, 0, { -6360, -283, 4044 } },
-    { 0, 0, { -5695, -334, 5264 } }, { 1, 0, { -5568, -319, 7933 } }, { 2, 0, { -3848, -200, 6278 } },
-    { 3, 0, { -965, -263, 6092 } },  { 4, 0, { 1607, 2465, 6329 } },  { 5, 0, { 2824, 180, 3548 } },
-    { 6, 0, { 1236, 136, 945 } },    { 0, 0, { 448, 136, 564 } },     { 0, 0, { 448, 136, 564 } },
-    { 0, 0, { 448, 136, 564 } },     { -1, 0, { 448, 136, 564 } }
-};
+// struct CutsceneSplinePoint sIntroStartToPipePosition[] = {
+//     { 0, 0, { 2122, 8762, 9114 } },  { 0, 0, { 2122, 8762, 9114 } },  { 1, 0, { 2122, 7916, 9114 } },
+//     { 1, 0, { 2122, 7916, 9114 } },  { 2, 0, { 957, 5166, 8613 } },   { 3, 0, { 589, 4338, 7727 } },
+//     { 4, 0, { 690, 3366, 6267 } },   { 5, 0, { -1600, 2151, 4955 } }, { 6, 0, { -1557, 232, 1283 } },
+//     { 7, 0, { -6962, -295, 2729 } }, { 8, 0, { -6979, 131, 3246 } },  { 9, 0, { -6360, -283, 4044 } },
+//     { 0, 0, { -5695, -334, 5264 } }, { 1, 0, { -5568, -319, 7933 } }, { 2, 0, { -3848, -200, 6278 } },
+//     { 3, 0, { -965, -263, 6092 } },  { 4, 0, { 1607, 2465, 6329 } },  { 5, 0, { 2824, 180, 3548 } },
+//     { 6, 0, { 1236, 136, 945 } },    { 0, 0, { 448, 136, 564 } },     { 0, 0, { 448, 136, 564 } },
+//     { 0, 0, { 448, 136, 564 } },     { -1, 0, { 448, 136, 564 } }
+// };
 
-struct CutsceneSplinePoint sIntroStartToPipeFocus[] = {
-    { 0, 50, { 1753, 29800, 8999 } }, { 0, 50, { 1753, 29800, 8999 } },
-    { 1, 50, { 1753, 8580, 8999 } },  { 1, 100, { 1753, 8580, 8999 } },
-    { 2, 50, { 520, 5400, 8674 } },   { 3, 50, { 122, 4437, 7875 } },
-    { 4, 50, { 316, 3333, 6538 } },   { 5, 36, { -1526, 2189, 5448 } },
-    { 6, 50, { -1517, 452, 1731 } },  { 7, 50, { -6659, -181, 3109 } },
-    { 8, 17, { -6649, 183, 3618 } },  { 9, 20, { -6009, -214, 4395 } },
-    { 0, 50, { -5258, -175, 5449 } }, { 1, 36, { -5158, -266, 7651 } },
-    { 2, 26, { -3351, -192, 6222 } }, { 3, 25, { -483, -137, 6060 } },
-    { 4, 100, { 1833, 2211, 5962 } }, { 5, 26, { 3022, 207, 3090 } },
-    { 6, 20, { 1250, 197, 449 } },    { 7, 50, { 248, 191, 227 } },
-    { 7, 0, { 48, 191, 227 } },       { 7, 0, { 48, 191, 227 } },
-    { -1, 0, { 48, 191, 227 } }
-};
+// struct CutsceneSplinePoint sIntroStartToPipeFocus[] = {
+//     { 0, 50, { 1753, 29800, 8999 } }, { 0, 50, { 1753, 29800, 8999 } },
+//     { 1, 50, { 1753, 8580, 8999 } },  { 1, 100, { 1753, 8580, 8999 } },
+//     { 2, 50, { 520, 5400, 8674 } },   { 3, 50, { 122, 4437, 7875 } },
+//     { 4, 50, { 316, 3333, 6538 } },   { 5, 36, { -1526, 2189, 5448 } },
+//     { 6, 50, { -1517, 452, 1731 } },  { 7, 50, { -6659, -181, 3109 } },
+//     { 8, 17, { -6649, 183, 3618 } },  { 9, 20, { -6009, -214, 4395 } },
+//     { 0, 50, { -5258, -175, 5449 } }, { 1, 36, { -5158, -266, 7651 } },
+//     { 2, 26, { -3351, -192, 6222 } }, { 3, 25, { -483, -137, 6060 } },
+//     { 4, 100, { 1833, 2211, 5962 } }, { 5, 26, { 3022, 207, 3090 } },
+//     { 6, 20, { 1250, 197, 449 } },    { 7, 50, { 248, 191, 227 } },
+//     { 7, 0, { 48, 191, 227 } },       { 7, 0, { 48, 191, 227 } },
+//     { -1, 0, { 48, 191, 227 } }
+// };
 
-/**
- * Describes the spline the camera follows, starting when the camera jumps to Lakitu and ending after
- * Mario jumps out of the pipe when the first dialog opens.  This table specifically updates the
- * camera's position.
- */
-struct CutsceneSplinePoint sIntroPipeToDialogPosition[] = {
-    { 0, 0, { -785, 625, 4527 } },  { 1, 0, { -785, 625, 4527 } },  { 2, 0, { -1286, 644, 4376 } },
-    { 3, 0, { -1286, 623, 4387 } }, { 4, 0, { -1286, 388, 3963 } }, { 5, 0, { -1286, 358, 4093 } },
-    { 6, 0, { -1386, 354, 4159 } }, { 7, 0, { -1477, 306, 4223 } }, { 8, 0, { -1540, 299, 4378 } },
-    { 9, 0, { -1473, 316, 4574 } }, { 0, 0, { -1328, 485, 5017 } }, { 0, 0, { -1328, 485, 5017 } },
-    { 0, 0, { -1328, 485, 5017 } }, { -1, 0, { -1328, 485, 5017 } }
-};
+// /**
+//  * Describes the spline the camera follows, starting when the camera jumps to Lakitu and ending after
+//  * Mario jumps out of the pipe when the first dialog opens.  This table specifically updates the
+//  * camera's position.
+//  */
+// struct CutsceneSplinePoint sIntroPipeToDialogPosition[] = {
+//     { 0, 0, { -785, 625, 4527 } },  { 1, 0, { -785, 625, 4527 } },  { 2, 0, { -1286, 644, 4376 } },
+//     { 3, 0, { -1286, 623, 4387 } }, { 4, 0, { -1286, 388, 3963 } }, { 5, 0, { -1286, 358, 4093 } },
+//     { 6, 0, { -1386, 354, 4159 } }, { 7, 0, { -1477, 306, 4223 } }, { 8, 0, { -1540, 299, 4378 } },
+//     { 9, 0, { -1473, 316, 4574 } }, { 0, 0, { -1328, 485, 5017 } }, { 0, 0, { -1328, 485, 5017 } },
+//     { 0, 0, { -1328, 485, 5017 } }, { -1, 0, { -1328, 485, 5017 } }
+// };
 
-/**
- * Describes the spline that the camera's focus follows, during the same part of the intro as the above.
- */
-#ifdef VERSION_EU
-struct CutsceneSplinePoint sIntroPipeToDialogFocus[] = {
-    { 0, 25, { -1248, 450, 4596 } }, { 1, 71, { -1258, 485, 4606 } }, { 2, 71, { -1379, 344, 4769 } },
-    { 3, 22, { -1335, 366, 4815 } }, { 4, 23, { -1315, 370, 4450 } }, { 5, 40, { -1322, 333, 4591 } },
-    { 6, 25, { -1185, 329, 4616 } }, { 7, 21, { -1059, 380, 4487 } }, { 8, 14, { -1086, 421, 4206 } },
-    { 9, 21, { -1321, 346, 4098 } }, { 0, 0, { -1328, 385, 4354 } },  { 0, 0, { -1328, 385, 4354 } },
-    { 0, 0, { -1328, 385, 4354 } },  { -1, 0, { -1328, 385, 4354 } }
-};
-#else
-struct CutsceneSplinePoint sIntroPipeToDialogFocus[] = {
-    { 0, 20, { -1248, 450, 4596 } }, { 1, 59, { -1258, 485, 4606 } }, { 2, 59, { -1379, 344, 4769 } },
-    { 3, 20, { -1335, 366, 4815 } }, { 4, 23, { -1315, 370, 4450 } }, { 5, 40, { -1322, 333, 4591 } },
-    { 6, 25, { -1185, 329, 4616 } }, { 7, 21, { -1059, 380, 4487 } }, { 8, 14, { -1086, 421, 4206 } },
-    { 9, 21, { -1321, 346, 4098 } }, { 0, 0, { -1328, 385, 4354 } },  { 0, 0, { -1328, 385, 4354 } },
-    { 0, 0, { -1328, 385, 4354 } },  { -1, 0, { -1328, 385, 4354 } }
-};
-#endif
+// /**
+//  * Describes the spline that the camera's focus follows, during the same part of the intro as the above.
+//  */
+// #ifdef VERSION_EU
+// struct CutsceneSplinePoint sIntroPipeToDialogFocus[] = {
+//     { 0, 25, { -1248, 450, 4596 } }, { 1, 71, { -1258, 485, 4606 } }, { 2, 71, { -1379, 344, 4769 } },
+//     { 3, 22, { -1335, 366, 4815 } }, { 4, 23, { -1315, 370, 4450 } }, { 5, 40, { -1322, 333, 4591 } },
+//     { 6, 25, { -1185, 329, 4616 } }, { 7, 21, { -1059, 380, 4487 } }, { 8, 14, { -1086, 421, 4206 } },
+//     { 9, 21, { -1321, 346, 4098 } }, { 0, 0, { -1328, 385, 4354 } },  { 0, 0, { -1328, 385, 4354 } },
+//     { 0, 0, { -1328, 385, 4354 } },  { -1, 0, { -1328, 385, 4354 } }
+// };
+// #else
+// struct CutsceneSplinePoint sIntroPipeToDialogFocus[] = {
+//     { 0, 20, { -1248, 450, 4596 } }, { 1, 59, { -1258, 485, 4606 } }, { 2, 59, { -1379, 344, 4769 } },
+//     { 3, 20, { -1335, 366, 4815 } }, { 4, 23, { -1315, 370, 4450 } }, { 5, 40, { -1322, 333, 4591 } },
+//     { 6, 25, { -1185, 329, 4616 } }, { 7, 21, { -1059, 380, 4487 } }, { 8, 14, { -1086, 421, 4206 } },
+//     { 9, 21, { -1321, 346, 4098 } }, { 0, 0, { -1328, 385, 4354 } },  { 0, 0, { -1328, 385, 4354 } },
+//     { 0, 0, { -1328, 385, 4354 } },  { -1, 0, { -1328, 385, 4354 } }
+// };
+// #endif
 
-struct CutsceneSplinePoint sEndingFlyToWindowPos[] = {
-    { 0, 0, { -86, 876, 640 } },   { 1, 0, { -86, 876, 610 } },   { 2, 0, { -66, 945, 393 } },
-    { 3, 0, { -80, 976, 272 } },   { 4, 0, { -66, 1306, -36 } },  { 5, 0, { -70, 1869, -149 } },
-    { 6, 0, { -10, 2093, -146 } }, { 7, 0, { -10, 2530, -248 } }, { 8, 0, { -10, 2530, -263 } },
-    { 9, 0, { -10, 2530, -273 } }
-};
+// struct CutsceneSplinePoint sEndingFlyToWindowPos[] = {
+//     { 0, 0, { -86, 876, 640 } },   { 1, 0, { -86, 876, 610 } },   { 2, 0, { -66, 945, 393 } },
+//     { 3, 0, { -80, 976, 272 } },   { 4, 0, { -66, 1306, -36 } },  { 5, 0, { -70, 1869, -149 } },
+//     { 6, 0, { -10, 2093, -146 } }, { 7, 0, { -10, 2530, -248 } }, { 8, 0, { -10, 2530, -263 } },
+//     { 9, 0, { -10, 2530, -273 } }
+// };
 
-struct CutsceneSplinePoint sEndingFlyToWindowFocus[] = {
-    { 0, 50, { -33, 889, -7 } },    { 1, 35, { -33, 889, -7 } },    { 2, 31, { -17, 1070, -193 } },
-    { 3, 25, { -65, 1182, -272 } }, { 4, 20, { -64, 1559, -542 } }, { 5, 25, { -68, 2029, -677 } },
-    { 6, 25, { -9, 2204, -673 } },  { 7, 25, { -8, 2529, -772 } },  { 8, 0, { -8, 2529, -772 } },
-    { 9, 0, { -8, 2529, -772 } },   { -1, 0, { -8, 2529, -772 } }
-};
+// struct CutsceneSplinePoint sEndingFlyToWindowFocus[] = {
+//     { 0, 50, { -33, 889, -7 } },    { 1, 35, { -33, 889, -7 } },    { 2, 31, { -17, 1070, -193 } },
+//     { 3, 25, { -65, 1182, -272 } }, { 4, 20, { -64, 1559, -542 } }, { 5, 25, { -68, 2029, -677 } },
+//     { 6, 25, { -9, 2204, -673 } },  { 7, 25, { -8, 2529, -772 } },  { 8, 0, { -8, 2529, -772 } },
+//     { 9, 0, { -8, 2529, -772 } },   { -1, 0, { -8, 2529, -772 } }
+// };
 
-struct CutsceneSplinePoint sEndingPeachDescentCamPos[] = {
-    { 0, 50, { 1, 120, -1150 } },    { 1, 50, { 1, 120, -1150 } },    { 2, 40, { 118, 121, -1199 } },
-    { 3, 40, { 147, 74, -1306 } },   { 4, 40, { 162, 95, -1416 } },   { 5, 40, { 25, 111, -1555 } },
-    { 6, 40, { -188, 154, -1439 } }, { 7, 40, { -203, 181, -1242 } }, { 8, 40, { 7, 191, -1057 } },
-    { 9, 40, { 262, 273, -1326 } },  { 0, 40, { -4, 272, -1627 } },   { 1, 35, { -331, 206, -1287 } },
-    { 2, 30, { -65, 219, -877 } },   { 3, 25, { 6, 216, -569 } },     { 4, 25, { -8, 157, 40 } },
-    { 5, 25, { -4, 106, 200 } },     { 6, 25, { -6, 72, 574 } },      { 7, 0, { -6, 72, 574 } },
-    { 8, 0, { -6, 72, 574 } },       { -1, 0, { -6, 72, 574 } }
-};
+// struct CutsceneSplinePoint sEndingPeachDescentCamPos[] = {
+//     { 0, 50, { 1, 120, -1150 } },    { 1, 50, { 1, 120, -1150 } },    { 2, 40, { 118, 121, -1199 } },
+//     { 3, 40, { 147, 74, -1306 } },   { 4, 40, { 162, 95, -1416 } },   { 5, 40, { 25, 111, -1555 } },
+//     { 6, 40, { -188, 154, -1439 } }, { 7, 40, { -203, 181, -1242 } }, { 8, 40, { 7, 191, -1057 } },
+//     { 9, 40, { 262, 273, -1326 } },  { 0, 40, { -4, 272, -1627 } },   { 1, 35, { -331, 206, -1287 } },
+//     { 2, 30, { -65, 219, -877 } },   { 3, 25, { 6, 216, -569 } },     { 4, 25, { -8, 157, 40 } },
+//     { 5, 25, { -4, 106, 200 } },     { 6, 25, { -6, 72, 574 } },      { 7, 0, { -6, 72, 574 } },
+//     { 8, 0, { -6, 72, 574 } },       { -1, 0, { -6, 72, 574 } }
+// };
 
-struct CutsceneSplinePoint sEndingMarioToPeachPos[] = {
-    { 0, 0, { -130, 1111, -1815 } }, { 1, 0, { -131, 1052, -1820 } }, { 2, 0, { -271, 1008, -1651 } },
-    { 3, 0, { -439, 1043, -1398 } }, { 4, 0, { -433, 1040, -1120 } }, { 5, 0, { -417, 1040, -1076 } },
-    { 6, 0, { -417, 1040, -1076 } }, { 7, 0, { -417, 1040, -1076 } }, { -1, 0, { -417, 1040, -1076 } }
-};
+// struct CutsceneSplinePoint sEndingMarioToPeachPos[] = {
+//     { 0, 0, { -130, 1111, -1815 } }, { 1, 0, { -131, 1052, -1820 } }, { 2, 0, { -271, 1008, -1651 } },
+//     { 3, 0, { -439, 1043, -1398 } }, { 4, 0, { -433, 1040, -1120 } }, { 5, 0, { -417, 1040, -1076 } },
+//     { 6, 0, { -417, 1040, -1076 } }, { 7, 0, { -417, 1040, -1076 } }, { -1, 0, { -417, 1040, -1076 } }
+// };
 
-struct CutsceneSplinePoint sEndingMarioToPeachFocus[] = {
-    { 0, 50, { -37, 1020, -1332 } }, { 1, 20, { -36, 1012, -1330 } }, { 2, 20, { -24, 1006, -1215 } },
-    { 3, 20, { 28, 1002, -1224 } },  { 4, 24, { 45, 1013, -1262 } },  { 5, 35, { 34, 1000, -1287 } },
-    { 6, 0, { 34, 1000, -1287 } },   { 7, 0, { 34, 1000, -1287 } },   { -1, 0, { 34, 1000, -1287 } }
-};
+// struct CutsceneSplinePoint sEndingMarioToPeachFocus[] = {
+//     { 0, 50, { -37, 1020, -1332 } }, { 1, 20, { -36, 1012, -1330 } }, { 2, 20, { -24, 1006, -1215 } },
+//     { 3, 20, { 28, 1002, -1224 } },  { 4, 24, { 45, 1013, -1262 } },  { 5, 35, { 34, 1000, -1287 } },
+//     { 6, 0, { 34, 1000, -1287 } },   { 7, 0, { 34, 1000, -1287 } },   { -1, 0, { 34, 1000, -1287 } }
+// };
 
-struct CutsceneSplinePoint sEndingLookUpAtCastle[] = {
-    { 0, 50, { 200, 1066, -1414 } }, { 0, 50, { 200, 1066, -1414 } }, { 0, 30, { 198, 1078, -1412 } },
-    { 0, 33, { 15, 1231, -1474 } },  { 0, 39, { -94, 1381, -1368 } }, { 0, 0, { -92, 1374, -1379 } },
-    { 0, 0, { -92, 1374, -1379 } },  { -1, 0, { -92, 1374, -1379 } }
-};
+// struct CutsceneSplinePoint sEndingLookUpAtCastle[] = {
+//     { 0, 50, { 200, 1066, -1414 } }, { 0, 50, { 200, 1066, -1414 } }, { 0, 30, { 198, 1078, -1412 } },
+//     { 0, 33, { 15, 1231, -1474 } },  { 0, 39, { -94, 1381, -1368 } }, { 0, 0, { -92, 1374, -1379 } },
+//     { 0, 0, { -92, 1374, -1379 } },  { -1, 0, { -92, 1374, -1379 } }
+// };
 
-struct CutsceneSplinePoint sEndingLookAtSkyFocus[] = {
-#ifdef VERSION_EU
-    { 0, 50, { 484, 1368, -868 } }, { 0, 72, { 479, 1372, -872 } }, { 0, 50, { 351, 1817, -918 } },
-#else
-    { 0, 50, { 484, 1368, -888 } }, { 0, 72, { 479, 1372, -892 } }, { 0, 50, { 351, 1817, -918 } },
-#endif
-    { 0, 50, { 351, 1922, -598 } }, { 0, 0, { 636, 2027, -415 } },  { 0, 0, { 636, 2027, -415 } },
-    { -1, 0, { 636, 2027, -415 } }
-};
+// struct CutsceneSplinePoint sEndingLookAtSkyFocus[] = {
+// #ifdef VERSION_EU
+//     { 0, 50, { 484, 1368, -868 } }, { 0, 72, { 479, 1372, -872 } }, { 0, 50, { 351, 1817, -918 } },
+// #else
+//     { 0, 50, { 484, 1368, -888 } }, { 0, 72, { 479, 1372, -892 } }, { 0, 50, { 351, 1817, -918 } },
+// #endif
+//     { 0, 50, { 351, 1922, -598 } }, { 0, 0, { 636, 2027, -415 } },  { 0, 0, { 636, 2027, -415 } },
+//     { -1, 0, { 636, 2027, -415 } }
+// };
 
 /**
  * Activates any CameraTriggers that Mario is inside.
@@ -11165,9 +11165,9 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
             case CAM_FOV_DEFAULT:
                 fov_default(marioState);
                 break;
-            case CAM_FOV_BBH:
-                set_fov_bbh(marioState);
-                break;
+            // case CAM_FOV_BBH:
+            //     set_fov_bbh(marioState);
+            //     break;
             case CAM_FOV_APP_45:
                 approach_fov_45(marioState);
                 break;

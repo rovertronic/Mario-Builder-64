@@ -20,13 +20,13 @@ void bhv_purple_switch_loop(void) {
         gMarioState->StarRadarExist = TRUE;
         }
 
-    crate = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
+    // crate = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
 
-    if (crate != NULL) {
-        if (lateral_dist_between_objects(o,crate) < 200.0f) {
-            crateon = TRUE;
-            }
-        }
+    // if (crate != NULL) {
+    //     if (lateral_dist_between_objects(o,crate) < 200.0f) {
+    //         crateon = TRUE;
+    //         }
+    //     }
 
 
     switch (o->oAction) {
