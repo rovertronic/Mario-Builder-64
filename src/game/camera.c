@@ -642,13 +642,6 @@ void calc_y_to_curr_floor(f32 *posOff, f32 posMul, f32 posBound, f32 *focOff, f3
         }
     }
 
-    if (sMarioCamState->action & ACT_FLAG_ON_POLE) {
-        if (sMarioGeometry.currFloorHeight >= gMarioStates[0].usedObj->oPosY && sMarioCamState->pos[1]
-                   < 0.7f * gMarioStates[0].usedObj->hitboxHeight + gMarioStates[0].usedObj->oPosY) {
-            posBound = 1200;
-        }
-    }
-
     *posOff = (floorHeight - sMarioCamState->pos[1]) * posMul;
 
     if (*posOff > posBound) {
