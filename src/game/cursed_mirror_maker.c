@@ -2440,6 +2440,7 @@ void sb_init(void) {
                 } else {
                     gMarioState->faceAngle[1] = spawn_obj->oFaceAngleYaw;
                     vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
+                    set_mario_action(gMarioState,ACT_SPAWN_SPIN_AIRBORNE,0);
                 }
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
