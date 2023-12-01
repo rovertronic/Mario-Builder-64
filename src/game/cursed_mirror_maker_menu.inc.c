@@ -38,6 +38,8 @@ s16 cmm_menu_start_timer = -1;
 s16 cmm_menu_end_timer = -1;
 s8 cmm_menu_going_back = 1;
 
+s8 cmm_mm_selected_level = 0;
+
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
     s16 width = 0;
@@ -126,15 +128,29 @@ void animate_list_update(f32 offsets[], s32 length, s32 selectedIndex) {
     }
 }
 
+// First value is timer, second is direction
+s8 cmm_menu_scrolling[6][2] = {0};
+u8 cmm_global_scissor = 0;
+
 void full_menu_reset() {
     bzero(cmm_menu_button_vels, sizeof(cmm_menu_button_vels));
     bzero(cmm_menu_title_vels, sizeof(cmm_menu_title_vels));
+    bzero(cmm_menu_scrolling, sizeof(cmm_menu_scrolling));
     cmm_menu_start_timer = -1;
     cmm_menu_end_timer = -1;
     cmm_menu_going_back = 1;
     cmm_curr_settings_menu = 0;
+    cmm_global_scissor = 0;
+    cmm_menu_index = 0;
     animate_list_reset();
     animate_toolbar_reset();
+}
+
+// sets some stuff after exiting play mode into the file selector
+void cmm_init_exit_to_files() {
+    cmm_menu_start_timer = 0;
+    cmm_mode = CMM_MODE_UNINITIALIZED;
+    cmm_menu_index = cmm_mm_selected_level;
 }
 
 void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
@@ -176,10 +192,6 @@ void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAcce
         vels[2] = 0.f;
     }
 }
-
-// First value is timer, second is direction
-s8 cmm_menu_scrolling[6][2] = {0};
-u8 cmm_global_scissor = 0;
 
 #define GET_BUTTON_STR(btn, index) ((btn).nameFunc ? (btn).nameFunc(index) : (btn).nametable[index])
 
@@ -1386,6 +1398,7 @@ s32 cmm_main_menu(void) {
                 struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_file_name);
                 f_chdir("..");
                 cmm_lopt_game = level_info->option[19];
+                cmm_mm_selected_level = cmm_menu_index;
 
                 return 1;
             }

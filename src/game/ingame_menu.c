@@ -2569,14 +2569,8 @@ s32 render_pause_courses_and_castle(void) {
             save_file_set_progression(PROG_POSTPOST_GAME);
         }
 
-        if (gCurrCourseNum >= COURSE_MIN
-         && gCurrCourseNum <= COURSE_MAX) {
-            change_dialog_camera_angle();
-            gDialogBoxState = DIALOG_STATE_VERTICAL;
-        } else {
-            highlight_last_course_complete_stars();
-            gDialogBoxState = DIALOG_STATE_HORIZONTAL;
-        }
+        change_dialog_camera_angle();
+        gDialogBoxState = DIALOG_STATE_VERTICAL;
     }
 
     switch(tab) {
