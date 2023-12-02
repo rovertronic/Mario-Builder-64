@@ -1158,7 +1158,6 @@ void process_tiles(u32 isTransparent) {
         cmm_growth_render_type = 0;
 
         PROC_RENDER( if (isTransparent ^ (MATERIAL(mat).type == MAT_TRANSPARENT)) continue; \
-                     if (isTransparent) gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2); \
                      gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
                      cutout_turn_culling_off(mat);)
 
@@ -1719,9 +1718,9 @@ void generate_object_preview(void) {
 
     u32 length = MIN(totalCoins / 20, 50);
     if (cmm_lopt_theme == CMM_GAME_BTCM) {
-        cmm_settings_general_buttons[4].size = length + 1;
+        cmm_settings_general_buttons[GENERAL_COINSTAR_INDEX].size = length + 1;
     } else {
-        cmm_settings_general_buttons_vanilla[3].size = length + 1;
+        cmm_settings_general_buttons_vanilla[GENERALV_COINSTAR_INDEX].size = length + 1;
     }
 
     if (cmm_lopt_coinstar > length) {
@@ -2282,19 +2281,19 @@ void load_level(void) {
 
     cmm_lopt_seq = cmm_save.option[1];
     set_album_and_song_from_seq();
-    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
     cmm_lopt_envfx = cmm_save.option[2];
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
 
-    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
     cmm_lopt_waterlevel = cmm_save.option[8];
     cmm_lopt_secret = cmm_save.option[9];
 
-    if (cmm_lopt_secret) cmm_settings_terrain_buttons[1].size = ARRAY_COUNT(cmm_theme_string_table);
+    if (cmm_lopt_secret) cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
@@ -2510,6 +2509,7 @@ u32 main_cursor_logic(u32 joystick) {
     //camera zooming
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         cmm_camera_zoom_index++;
+        play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
     }
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
@@ -2554,9 +2554,10 @@ void (*cmm_option_changed_func)(void) = NULL;
 
 void reload_theme(void) {
     generate_terrain_gfx();
-    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
-    if (cmm_lopt_plane > cmm_settings_terrain_buttons[2].size - 1) {
-        cmm_lopt_plane = cmm_settings_terrain_buttons[2].size - 1;
+    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
+    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = numFloors + 1;
+    if (cmm_lopt_plane > numFloors) {
+        cmm_lopt_plane = numFloors;
     }
 
     generate_object_preview();
@@ -2621,11 +2622,13 @@ void sb_loop(void) {
                 cmm_toolbar_index--;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbar_index = (cmm_toolbar_index+9)%9;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
@@ -2645,20 +2648,24 @@ void sb_loop(void) {
                 if (gPlayer1Controller->buttonPressed & L_JPAD) {
                     cmm_param_selection --;
                     updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 }
                 if (gPlayer1Controller->buttonPressed & R_JPAD) {
                     cmm_param_selection ++;
                     updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 }
             }
 
             //Single A press
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            if (gPlayer1Controller->buttonPressed & A_BUTTON || 
+                ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index == 8))) {
                 switch(cmm_toolbar_index) {
                     case 8: // options
                         switch (cmm_param_selection) {
                             case 1: // settings menu
                                 cmm_menu_state = CMM_MAKE_SETTINGS;
+                                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                                 cmm_menu_start_timer = 0;
                                 cmm_menu_end_timer = -1;
                                 cmm_menu_index = 0;
@@ -2669,11 +2676,13 @@ void sb_loop(void) {
                                 reset_play_state();
                                 level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
                                 sSourceWarpNodeId = 0x0A;
+                                play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
                                 break;
                             case 2: // save
                                 if (mount_success == FR_OK) {
                                     cmm_do_save = TRUE;
                                     cmm_ui_do_render = FALSE;
+                                    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                                 } else {
                                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                                 }
@@ -2693,18 +2702,17 @@ void sb_loop(void) {
                 delete_tile_action(cmm_cursor_pos);
             }
 
-            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+            if (gPlayer1Controller->buttonPressed & START_BUTTON && (cmm_toolbar_index != 8)) {
                 cmm_menu_start_timer = 0;
                 cmm_menu_end_timer = -1;
                 cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 animate_list_reset();
-                if (cmm_toolbar_index == 8) {
-                    cmm_toolbar_index = 7;
-                }
             }
 
             if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                if (get_flipped_tile(cmm_id_selection) != -1) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
                 cmm_upsidedown_tile ^= 1;
             }
 
@@ -2777,6 +2785,7 @@ void sb_loop(void) {
                         cmm_toolbox_index-=9;
                     break;
                 }
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbox_index = (cmm_toolbox_index+sizeof(cmm_toolbox))%sizeof(cmm_toolbox);
 
@@ -2784,10 +2793,12 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_toolbar_index--;
                 cmm_toolbox_transition_btn_render = FALSE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
                 cmm_toolbox_transition_btn_render = FALSE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbar_index = (cmm_toolbar_index+8)%8;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;

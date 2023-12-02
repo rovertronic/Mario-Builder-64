@@ -630,11 +630,11 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBTileSide,     0, SURFACE_DEFAULT},      // CMM_MAT_JRB_TILESIDE
 
     {mat_maker_MakerSnowRock,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_ROCK
-    {mat_maker_MakerIce,             MAT_TRANSPARENT, SURFACE_ICE}, // CMM_MAT_ICE
+    {mat_maker_MakerIce_layer1,      MAT_TRANSPARENT, SURFACE_ICE}, // CMM_MAT_ICE
     {mat_maker_MakerSnowRoof,        0, SURFACE_VERY_SLIPPERY}, // CMM_MAT_SNOW_ROOF
     {mat_maker_MakerSnowBricks,      0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_BRICKS
     {mat_maker_MakerBurningIce,      0, SURFACE_BURNING_ICE}, // CMM_MAT_BURNING_ICE
-    {mat_maker_MakerCrystal,         MAT_TRANSPARENT, SURFACE_CRYSTAL}, // CMM_MAT_CRYSTAL
+    {mat_maker_MakerCrystal_layer1,  MAT_TRANSPARENT, SURFACE_CRYSTAL}, // CMM_MAT_CRYSTAL
     {mat_maker_MakerSnowBrickTiles,  0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_BRICK_TILES
     {mat_maker_MakerSnowTiles,       0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_SNOW_TILES
     {mat_maker_MakerSnowTileSide,    0, SURFACE_DEFAULT}, // CMM_MAT_SNOW_TILE_SIDE
@@ -1574,16 +1574,6 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 
 };
 
-char *cmm_settings_menu_table[] = {
-    "General",
-    "Terrain",
-    "Music",
-    "Exit",
-};
-
-extern u8 cmm_curr_settings_menu;
-struct cmm_settings_button cmm_settings_header = {NULL, &cmm_curr_settings_menu, cmm_settings_menu_table, ARRAY_COUNT(cmm_settings_menu_table), NULL, NULL};
-
 char *cmm_costume_string_table[] = {
     "Mario",
     "Fire Mario",
@@ -1907,31 +1897,46 @@ extern void music_category_changed(void);
 extern void song_changed(void);
 
 struct cmm_settings_button cmm_settings_general_buttons[] = {
-    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
     {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
+#define GENERAL_COSTUME_INDEX 0
+#define GENERAL_EFFECT_INDEX 1
+#define GENERAL_SKYBOX_INDEX 2
+#define GENERAL_COINSTAR_INDEX 3
 
 struct cmm_settings_button cmm_settings_general_buttons_vanilla[] = {
-    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
     {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
     {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
+#define GENERALV_EFFECT_INDEX 0
+#define GENERALV_SKYBOX_INDEX 1
+#define GENERALV_COINSTAR_INDEX 2
 
 struct cmm_settings_button cmm_settings_terrain_buttons[] = {
-    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table) - 1, NULL, reload_theme},
     {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, generate_terrain_gfx}, // Filled in by code
     {"Water Level:", &cmm_lopt_waterlevel, NULL,               33,               cmm_get_waterlevel_name, generate_terrain_gfx},
 };
+#define TERRAIN_THEME_INDEX 0
+#define TERRAIN_FLOOR_INDEX 1
+#define TERRAIN_WATER_INDEX 2
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
-    {NULL, NULL, NULL, 0, NULL, NULL},
     {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
     {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
+};
+#define MUSIC_ALBUM_INDEX 0
+#define MUSIC_SONG_INDEX 1
+
+char *cmm_settings_menu_names[] = {
+    "General",
+    "Terrain",
+    "Music",
+    "Exit",
 };
 
 u8 cmm_settings_menu_lengths[] = {
@@ -1963,7 +1968,6 @@ struct cmm_settings_button cmm_settings_music_albums[] = {
 };
 
 struct cmm_settings_button cmm_settings_backtomainmenu[] = {
-    {NULL, NULL, NULL, 0, NULL, NULL},
 };
 
 char *cmm_gamemode_string_table[] = {

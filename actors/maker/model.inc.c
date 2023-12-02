@@ -454,7 +454,7 @@ Lights1 maker_MakerSnowRock_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerIce_lights = gdSPDefLights1(
+Lights1 maker_MakerIce_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
@@ -470,7 +470,7 @@ Lights1 maker_MakerBurningIce_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-Lights1 maker_MakerCrystal_lights = gdSPDefLights1(
+Lights1 maker_MakerCrystal_layer1_lights = gdSPDefLights1(
 	0x7F, 0x7F, 0x7F,
 	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
@@ -23680,9 +23680,10 @@ Gfx mat_revert_maker_MakerSnowRock[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerIce[] = {
+Gfx mat_maker_MakerIce_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
+	gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, maker_Material11_ci8_pal_rgba16),
@@ -23695,12 +23696,13 @@ Gfx mat_maker_MakerIce[] = {
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
 	gsDPSetEnvColor(255, 255, 255, 191),
-	gsSPSetLights1(maker_MakerIce_lights),
+	gsSPSetLights1(maker_MakerIce_layer1_lights),
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerIce[] = {
+Gfx mat_revert_maker_MakerIce_layer1[] = {
 	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsDPSetTextureLUT(G_TT_NONE),
 	gsSPEndDisplayList(),
 };
@@ -23777,9 +23779,10 @@ Gfx mat_revert_maker_MakerBurningIce[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_maker_MakerCrystal[] = {
+Gfx mat_maker_MakerCrystal_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
+	gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, maker_d5ab53ed49dbd3a3_ci8_pal_rgba16),
@@ -23792,12 +23795,13 @@ Gfx mat_maker_MakerCrystal[] = {
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
 	gsDPSetEnvColor(255, 255, 255, 217),
-	gsSPSetLights1(maker_MakerCrystal_lights),
+	gsSPSetLights1(maker_MakerCrystal_layer1_lights),
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_maker_MakerCrystal[] = {
+Gfx mat_revert_maker_MakerCrystal_layer1[] = {
 	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsDPSetTextureLUT(G_TT_NONE),
 	gsSPEndDisplayList(),
 };
@@ -24747,9 +24751,9 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(mat_maker_MakerSnowRock),
 	gsSPDisplayList(maker_materials_mesh_tri_115),
 	gsSPDisplayList(mat_revert_maker_MakerSnowRock),
-	gsSPDisplayList(mat_maker_MakerIce),
+	gsSPDisplayList(mat_maker_MakerIce_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_116),
-	gsSPDisplayList(mat_revert_maker_MakerIce),
+	gsSPDisplayList(mat_revert_maker_MakerIce_layer1),
 	gsSPDisplayList(mat_maker_MakerSnowRoof),
 	gsSPDisplayList(maker_materials_mesh_tri_117),
 	gsSPDisplayList(mat_revert_maker_MakerSnowRoof),
@@ -24759,9 +24763,9 @@ Gfx maker_materials_mesh[] = {
 	gsSPDisplayList(mat_maker_MakerBurningIce),
 	gsSPDisplayList(maker_materials_mesh_tri_119),
 	gsSPDisplayList(mat_revert_maker_MakerBurningIce),
-	gsSPDisplayList(mat_maker_MakerCrystal),
+	gsSPDisplayList(mat_maker_MakerCrystal_layer1),
 	gsSPDisplayList(maker_materials_mesh_tri_120),
-	gsSPDisplayList(mat_revert_maker_MakerCrystal),
+	gsSPDisplayList(mat_revert_maker_MakerCrystal_layer1),
 	gsSPDisplayList(mat_maker_MakerSnowBrickTiles),
 	gsSPDisplayList(maker_materials_mesh_tri_121),
 	gsSPDisplayList(mat_revert_maker_MakerSnowBrickTiles),

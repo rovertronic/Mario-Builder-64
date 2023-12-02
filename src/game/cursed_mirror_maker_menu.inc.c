@@ -131,6 +131,7 @@ void animate_list_update(f32 offsets[], s32 length, s32 selectedIndex) {
 // First value is timer, second is direction
 s8 cmm_menu_scrolling[6][2] = {0};
 u8 cmm_global_scissor = 0;
+u8 cmm_curr_settings_menu = 0;
 
 void full_menu_reset() {
     bzero(cmm_menu_button_vels, sizeof(cmm_menu_button_vels));
@@ -153,6 +154,7 @@ void cmm_init_exit_to_files() {
     cmm_menu_index = cmm_mm_selected_level;
 }
 
+// Base generic animation for a menu component using acceleration
 void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
     if (isBegin) {
         vels[0] = beginPos;
@@ -163,6 +165,8 @@ void animate_menu_generic(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAcce
     vels[1] += vels[2];
 }
 
+// This animation goes past its target pos, then comes back
+// and immediately halts when it reaches the target pos again
 void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
                                    f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
     animate_menu_generic(vels, beginPos, beginVel, beginAccel, isBegin);
@@ -184,6 +188,7 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
     }
 }
 
+// Similar to above, but halts once it reaches a standstill
 void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
     animate_menu_generic(vels, beginPos, beginVel, beginAccel, isBegin);
     
@@ -193,54 +198,94 @@ void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAcce
     }
 }
 
-#define GET_BUTTON_STR(btn, index) ((btn).nameFunc ? (btn).nameFunc(index) : (btn).nametable[index])
 
-void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
+// Generic function for handling the animation of a list of strings
+// that can be cycled through in either direction, using a scissor
+// to keep the list centered on the screen.
+
+// X/Y - Position
+// Width - How long the scissor is
+// Prev/Cur/Next - Text strings for handling side options
+// Scroll - Pointer to info array for scrolling
+// Highlight - Display as yellow
+// Dir - 1 for inputting right, -1 for inputting left
+
+// Returns -1 if option was scrolled right, 1 if scrolled left, 0 if not changed
+s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
+                                char *prev, char *cur, char *next,
+                                s8 scroll[2], u32 highlight, u32 dir) {
     s32 leftX = x - width * 2;
     s32 rightX = x + width * 2;
     s32 xOffset = 0;
-    if (cmm_menu_scrolling[i][0] == 0 && cmm_menu_index == i) {
-        if (joystick == 1) {
-            cmm_menu_scrolling[i][0] = 5;
-            cmm_menu_scrolling[i][1] = -1;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            *(btn[i].value) = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
-            if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
-        } else if (joystick == 3) {
-            cmm_menu_scrolling[i][0] = 5;
-            cmm_menu_scrolling[i][1] = 1;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            *(btn[i].value) = (*(btn[i].value) + 1) % btn[i].size;
-            if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
-        }
-    }
-    if (cmm_menu_scrolling[i][0] > 0) {
-        cmm_menu_scrolling[i][0]--;
-        xOffset = (cmm_menu_scrolling[i][0] * cmm_menu_scrolling[i][1] * width * 2) / 5;
+
+    if (scroll[0] > 0) {
+        scroll[0]--;
+        xOffset = (scroll[0] * scroll[1] * width * 2) / 5;
         leftX += xOffset;
         rightX += xOffset;
     }
-
-    print_maker_string_ascii_centered(x - width, y, "<", cmm_menu_index == i);
-    print_maker_string_ascii_centered(x + width, y, ">", cmm_menu_index == i);
-    char *str = GET_BUTTON_STR(btn[i], *(btn[i].value));
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE,
         MAX(               cmm_global_scissor, x-width+5), 0,
         MIN(SCREEN_WIDTH - cmm_global_scissor, x+width-7), SCREEN_HEIGHT);
     
-    print_maker_string_ascii_centered(x + xOffset, y, str, cmm_menu_index == i);
+    print_maker_string_ascii_centered(x + xOffset, y, cur, highlight);
     if (leftX > x - width * 2) {
-        u8 prevIndex = (*(btn[i].value) + btn[i].size - 1) % btn[i].size;
-        char *prevStr = GET_BUTTON_STR(btn[i], prevIndex);
-        print_maker_string_ascii_centered(leftX, y, prevStr, cmm_menu_index == i);
+        print_maker_string_ascii_centered(leftX, y, prev, highlight);
     } else if (rightX < x + width * 2) {
-        u8 nextIndex = (*(btn[i].value) + 1) % btn[i].size;
-        char *nextStr = GET_BUTTON_STR(btn[i], nextIndex);
-        print_maker_string_ascii_centered(rightX, y, nextStr, cmm_menu_index == i);
+        print_maker_string_ascii_centered(rightX, y, next, highlight);
     }
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, 0, SCREEN_WIDTH - cmm_global_scissor, SCREEN_HEIGHT);
+
+    if (scroll[0] == 0) {
+        if (dir == -1) {
+            scroll[0] = 5;
+            scroll[1] = -1;
+            return -1;
+        } else if (dir == 1) {
+            scroll[0] = 5;
+            scroll[1] = 1;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+// More specialised version that handles a list of cmm_settings_buttons
+// and is scrolled with the joystick
+#define GET_BUTTON_STR(btn, index) ((btn).nameFunc ? (btn).nameFunc(index) : (btn).nametable[index])
+
+void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
+    s32 dir = 0;
+    if (cmm_menu_index == i) {
+        if (joystick == 1) dir = -1;
+        if (joystick == 3) dir = 1;
+    }
+    s32 currentVal = *(btn[i].value);
+    s32 btnSize = btn[i].size;
+
+    s32 prevVal = (currentVal + btnSize - 1) % btnSize;
+    s32 nextVal = (currentVal + 1) % btnSize;
+    s32 highlight = cmm_menu_index == i;
+
+    char *cur = GET_BUTTON_STR(btn[i], currentVal);
+    char *prev = GET_BUTTON_STR(btn[i], prevVal);
+    char *next = GET_BUTTON_STR(btn[i], nextVal);
+
+    s32 result = cmm_menu_option_sidescroll(x, y, width,
+                               prev, cur, next,
+                               cmm_menu_scrolling[i], highlight, dir);
+
+    print_maker_string_ascii_centered(x - width, y, "<", highlight);
+    print_maker_string_ascii_centered(x + width, y, ">", highlight);
+
+    if (result) {
+        *(btn[i].value) = (result == 1 ? nextVal : prevVal);
+        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
+    }
 }
 
 void cmm_render_error_message(void) {
@@ -307,7 +352,7 @@ void set_seq_from_album_and_song(void) {
 
 void music_category_changed(void) {
     cmm_lopt_seq_song = 0;
-    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[1], sizeof(struct cmm_settings_button));
     song_changed();
 }
 void song_changed(void) {
@@ -316,44 +361,41 @@ void song_changed(void) {
     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
 }
 
-u8 cmm_curr_settings_menu = 0;
-
-
 void draw_cmm_settings_general(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
-    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_general_buttons);i++) {
-        print_maker_string_ascii( 45 +xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,60,cmm_settings_general_buttons,i,cmm_joystick);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons);i++) {
+        print_maker_string_ascii( 55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_general_buttons,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
-    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_general_buttons_vanilla);i++) {
-        print_maker_string_ascii(45+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,cmm_settings_general_buttons_vanilla[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,60,cmm_settings_general_buttons_vanilla,i,cmm_joystick);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons_vanilla);i++) {
+        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons_vanilla[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_general_buttons_vanilla,i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
-    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
-        print_maker_string_ascii(45+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],170-(i*16)+yoff,60,cmm_settings_terrain_buttons,i,cmm_joystick);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
+        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_terrain_buttons,i,cmm_joystick);
     }
 
     if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (L_TRIG | R_TRIG | Z_TRIG) == (L_TRIG | R_TRIG | Z_TRIG))) {
         cmm_lopt_secret = TRUE;
-        cmm_settings_terrain_buttons[1].size = ARRAY_COUNT(cmm_theme_string_table);
+        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
         play_puzzle_jingle();
     }
 }
 
 void draw_cmm_settings_music(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
-    for (s32 i=1;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
-        print_maker_string_ascii(35+xoff+3*cmm_menu_list_offsets[i],170-(i*25)+yoff,cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],170-(i*25)+yoff,100,cmm_settings_music_buttons,i,cmm_joystick);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
+        print_maker_string_ascii(35+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,100,cmm_settings_music_buttons,i,cmm_joystick);
     }
 }
 
@@ -367,6 +409,7 @@ void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
 }
 
 #define SETTINGS_MENU_SCROLL_WIDTH 120
+#define SETTINGS_MENU_COUNT ARRAY_COUNT(cmm_settings_menus)
 
 void draw_cmm_settings_menu(f32 yoff) {
     cmm_global_scissor = 20;
@@ -375,18 +418,22 @@ void draw_cmm_settings_menu(f32 yoff) {
     s32 leftX = -SETTINGS_MENU_SCROLL_WIDTH * 2;
     s32 rightX = SETTINGS_MENU_SCROLL_WIDTH * 2;
     s32 xOffset = 0;
-    if (cmm_menu_scrolling[0][0] > 0) {
-        xOffset = (cmm_menu_scrolling[0][0] * cmm_menu_scrolling[0][1] * SETTINGS_MENU_SCROLL_WIDTH * 2) / 5;
+
+    if (cmm_menu_scrolling[5][0] > 0) { // Hardcoded to 5 for the top scroll itself
+        xOffset = (cmm_menu_scrolling[5][0] * cmm_menu_scrolling[5][1] * SETTINGS_MENU_SCROLL_WIDTH * 2) / 5;
         leftX += xOffset;
         rightX += xOffset;
     }
+
     if (leftX > -SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        u8 prevIndex = (cmm_curr_settings_menu - 1 + ARRAY_COUNT(cmm_settings_menus)) % ARRAY_COUNT(cmm_settings_menus);
+        u8 prevIndex = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
         cmm_settings_menus[prevIndex](leftX, yoff);
+
     } else if (rightX < SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        u8 nextIndex = (cmm_curr_settings_menu + 1) % ARRAY_COUNT(cmm_settings_menus);
+        u8 nextIndex = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
         cmm_settings_menus[nextIndex](rightX, yoff);
     }
+
     cmm_settings_menus[cmm_curr_settings_menu](xOffset, yoff);
 
     cmm_global_scissor = 0;
@@ -432,6 +479,7 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_TOOLBOX:
+            // In/out animation
             if (cmm_menu_start_timer != -1) {
                 animate_menu_ease_in(cmm_menu_title_vels, 150.f, -33.f, 4.f, cmm_menu_start_timer == 0);
                 if (cmm_menu_start_timer++ > 10) {
@@ -444,6 +492,7 @@ void draw_cmm_menu(void) {
             } else {
                 if (gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
                     cmm_menu_end_timer = 0;
+                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 }
             }
             f32 yOff = cmm_menu_title_vels[0];
@@ -507,6 +556,7 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_SETTINGS:
+            // In/out animation
             if (cmm_menu_start_timer != -1) {
                 animate_menu_ease_in(cmm_menu_title_vels, 150.f, -33.f, 4.f, cmm_menu_start_timer == 0);
                 if (cmm_menu_start_timer++ > 10) {
@@ -519,22 +569,24 @@ void draw_cmm_menu(void) {
             } else {
                 if (gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
                     cmm_menu_end_timer = 0;
+                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 }
             }
             yOff = cmm_menu_title_vels[0];
 
-            create_dl_translation_matrix(MENU_MTX_PUSH, 19, 235+yOff, 0);
+            // Background
+            create_dl_translation_matrix(MENU_MTX_PUSH, 19, 240+yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-            //PAINTING
-            create_dl_translation_matrix(MENU_MTX_PUSH, 280, 200+yOff, 0);
+
+            // Level portrait
+            create_dl_translation_matrix(MENU_MTX_PUSH, 290, 200+yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            //gSPDisplayList(gDisplayListHead++, &mat_b_painting);//texture
             gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-            //print_maker_string(15,210,txt_btn_2,FALSE);
+            // Level name
             print_maker_string_ascii(15,210+yOff,cmm_file_info.fname,FALSE);
 
             switch(cmm_joystick) {
@@ -549,7 +601,35 @@ void draw_cmm_menu(void) {
             }
             cmm_menu_index = (cmm_menu_index + cmm_settings_menu_lengths[cmm_curr_settings_menu]) % cmm_settings_menu_lengths[cmm_curr_settings_menu];
 
-            cmm_menu_option_animation(150,190+yOff,40,&cmm_settings_header,0,cmm_joystick);
+            // Begin rendering top header
+            s32 prevMenu = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
+            s32 nextMenu = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
+            char *cur = cmm_settings_menu_names[cmm_curr_settings_menu];
+            char *prev = cmm_settings_menu_names[prevMenu];
+            char *next = cmm_settings_menu_names[nextMenu];
+
+            // Scroll input
+            s32 dir = 0;
+            if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+            if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+
+            print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
+            print_maker_string_ascii_centered(240, yOff + 185, "R >", FALSE);
+            s32 result = cmm_menu_option_sidescroll(160, 185+yOff, 70,
+                                       prev, cur, next,
+                                       cmm_menu_scrolling[5], FALSE, dir); 
+
+            // Change selected menu if it was switched
+            if (result) {
+                cmm_curr_settings_menu = (result == 1 ? nextMenu : prevMenu);
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            }
+            // Reset index halfway through animation
+            if (cmm_menu_scrolling[5][0] == 2) {
+                cmm_menu_index = 0;
+            }
+
+            // Draw menu + scroll
             draw_cmm_settings_menu(yOff);
             break;
 
