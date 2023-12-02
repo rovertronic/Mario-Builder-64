@@ -752,7 +752,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
         }
 
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 8)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
     }
@@ -782,7 +782,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 8)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
             switchCase->selectedCase = 0;
         }
         //WARIO

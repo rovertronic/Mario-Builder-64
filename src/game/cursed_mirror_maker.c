@@ -150,7 +150,7 @@ u8 cmm_menu_state = CMM_MAKE_MAIN;
 s8 cmm_menu_index = 0;
 s8 cmm_toolbar_index = 0;
 s8 cmm_toolbox_index = 0;
-u8 cmm_ui_do_render = TRUE;
+u8 cmm_prepare_level_screenshot = FALSE;
 u8 cmm_do_save = FALSE;
 
 char *cmm_error_message = NULL;
@@ -2141,7 +2141,7 @@ void save_level(void) {
     s16 i;
     s16 j;
 
-    bzero(&cmm_save, sizeof(cmm_save));
+    //bzero(&cmm_save, sizeof(cmm_save)); // should be safe to not need this right?
 
     //file header
     for (i=0;i<10;i++) {
@@ -2183,18 +2183,22 @@ void save_level(void) {
         }
     }
 
-    for (i=0;i<4096;i++) {
-        //take a "screenshot" of the level & burn in a painting frame
-        if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
-            //painting
-            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
-        } else {
-            //painting frame
-            cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
+    // If in screenshot mode
+    if (cmm_prepare_level_screenshot) {
+        for (i=0;i<4096;i++) {
+            //take a "screenshot" of the level & burn in a painting frame
+            if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
+                //painting
+                cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
+            } else {
+                //painting frame
+                cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
+            }
         }
-    }
 
-    update_painting();
+        update_painting();
+        cmm_prepare_level_screenshot = FALSE;
+    }
 
 
     f_chdir(cmm_level_dir_name);
@@ -2531,7 +2535,7 @@ void update_boundary_wall() {
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[5]->oPosZ = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
 
-    if (!cmm_ui_do_render) {
+    if (cmm_prepare_level_screenshot) {
         for (int i=0; i<6; i++) {
             cmm_boundary_object[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
         }
@@ -2659,11 +2663,21 @@ void sb_loop(void) {
 
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON || 
-                ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index == 8))) {
+                ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index >= 7))) {
                 switch(cmm_toolbar_index) {
+                    case 7: // save and test
+                        if (mount_success == FR_OK) {
+                            cmm_do_save = TRUE;
+                        }
+                        cmm_target_mode = CMM_MODE_PLAY;
+                        reset_play_state();
+                        level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                        sSourceWarpNodeId = 0x0A;
+                        play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
+                        break;
                     case 8: // options
                         switch (cmm_param_selection) {
-                            case 1: // settings menu
+                            case 0: // settings menu
                                 cmm_menu_state = CMM_MAKE_SETTINGS;
                                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                                 cmm_menu_start_timer = 0;
@@ -2671,17 +2685,10 @@ void sb_loop(void) {
                                 cmm_menu_index = 0;
                                 animate_list_reset();
                                 break;
-                            case 0: // test mode
-                                cmm_target_mode = CMM_MODE_PLAY;
-                                reset_play_state();
-                                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                                sSourceWarpNodeId = 0x0A;
-                                play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
-                                break;
-                            case 2: // save
+                            case 1: // save
                                 if (mount_success == FR_OK) {
                                     cmm_do_save = TRUE;
-                                    cmm_ui_do_render = FALSE;
+                                    cmm_prepare_level_screenshot = TRUE;
                                     play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                                 } else {
                                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
@@ -2693,7 +2700,7 @@ void sb_loop(void) {
                         place_thing_action();
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_toolbar_index != 8) {
+                if (cmm_toolbar_index < 7) {
                     place_thing_action();
                 }
             }
@@ -2702,7 +2709,7 @@ void sb_loop(void) {
                 delete_tile_action(cmm_cursor_pos);
             }
 
-            if (gPlayer1Controller->buttonPressed & START_BUTTON && (cmm_toolbar_index != 8)) {
+            if (gPlayer1Controller->buttonPressed & START_BUTTON && (cmm_toolbar_index < 7)) {
                 cmm_menu_start_timer = 0;
                 cmm_menu_end_timer = -1;
                 cmm_menu_index = 0;
@@ -2747,7 +2754,7 @@ void sb_loop(void) {
                 cmm_mat_selection = (cmm_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
             }
 
-            if (!cmm_ui_do_render) {
+            if (cmm_prepare_level_screenshot) {
                 o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
             } else {
                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
@@ -2755,7 +2762,7 @@ void sb_loop(void) {
 
             struct Object *spawnobjp = get_spawn_preview_object();
             if (spawnobjp) {
-                if (!cmm_ui_do_render) {
+                if (cmm_prepare_level_screenshot) {
                     spawnobjp->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                 } else {
                     spawnobjp->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
@@ -2800,7 +2807,7 @@ void sb_loop(void) {
                 cmm_toolbox_transition_btn_render = FALSE;
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
-            cmm_toolbar_index = (cmm_toolbar_index+8)%8;
+            cmm_toolbar_index = (cmm_toolbar_index+7)%7;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 

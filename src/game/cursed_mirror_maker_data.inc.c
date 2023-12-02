@@ -966,6 +966,7 @@ struct cmm_theme cmm_theme_table[] = {
 
 enum {
     CMM_BUTTON_SETTINGS,
+    CMM_BUTTON_TEST,
     CMM_BUTTON_TERRAIN,
     CMM_BUTTON_SLOPE,
     CMM_BUTTON_TROLL,
@@ -1019,7 +1020,7 @@ u8 cmm_toolbar_defaults[9] = {
     CMM_BUTTON_COIN,
     CMM_BUTTON_STAR,
     CMM_BUTTON_GROUND,
-    CMM_BUTTON_MECH,
+    CMM_BUTTON_TEST,
     CMM_BUTTON_SETTINGS,
 };
 
@@ -1143,11 +1144,11 @@ struct cmm_object_info cmm_object_type_timed_challenge[] = {
 struct cmm_object_info cmm_object_type_heart = {
     bhvRecoveryHeart, TILE_SIZE/2, MODEL_HEART, FALSE, 0, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN,
 };
-struct cmm_object_info cmm_object_type_options[] = {
-    {NULL, 0, MODEL_MARIO, FALSE, 0, 0, 1.f, &evil_mario_anims[11], NULL, 0},
-    {NULL, 0, MODEL_NONE,  FALSE, 0, 0, 0.f, NULL,                  NULL, 0},
-    {NULL, 0, MODEL_NONE,  FALSE, 0, 0, 0.f, NULL,                  NULL, 0},
+struct cmm_object_info cmm_object_type_test_mario = {
+    NULL, 0, MODEL_MARIO, FALSE, 0, 0, 1.f, &evil_mario_anims[11], NULL, 0,
 };
+
+struct cmm_object_info cmm_object_type_settings[2] = {0};
 
 struct cmm_object_info cmm_object_type_stone[] = {
     {bhvThwomp, 0, MODEL_THWOMP_MAKER, FALSE, 0, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
@@ -1208,13 +1209,14 @@ enum {
     OBJECT_TYPE_TC,
     OBJECT_TYPE_HEART,
     OBJECT_TYPE_STONE,
-    OBJECT_TYPE_OPTIONS,// Fake type, used for the Options button
+    OBJECT_TYPE_TEST,// Fake type, used for the Test mario preview
     OBJECT_TYPE_FLYING,
     OBJECT_TYPE_HAUNTED,
     OBJECT_TYPE_SNOWEN,
     OBJECT_TYPE_MINE,
     OBJECT_TYPE_FIRE_SPINNER,
     OBJECT_TYPE_COINFORM,
+    OBJECT_TYPE_SETTINGS, // Also fake type
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1239,13 +1241,14 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_timed_challenge, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_heart, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_stone, FALSE, FALSE, TRUE, 3},
-    { cmm_object_type_options, FALSE, FALSE, TRUE, 3},
+    {&cmm_object_type_test_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 4},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
     { cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
     {&cmm_object_type_mine, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_fire_spinner, FALSE, FALSE, FALSE, 9},
     {&cmm_object_type_coin_formation, FALSE, FALSE, FALSE, 5},
+    { cmm_object_type_settings, FALSE, FALSE, TRUE, 2}, // Used only for the length field
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1515,62 +1518,61 @@ char *txt_fire_spinner[] = {
 };
 
 Gfx *btn_settings[] = {
-    mat_b_btn_check,
     mat_b_btn_settings,
     mat_b_btn_save,
 };
 
 char *txt_settings[] = {
-    "Quick Test",
     "Level Settings",
     "Quick Save",
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
     //button texture            //TILE/OBJ ID        //PLACE MODE  //TXT POINTER         //PARAM STR
-    {btn_settings,           1, OBJECT_TYPE_OPTIONS, CMM_PM_OBJ,   "Options",            txt_settings}, //CMM_BUTTON_SETTINGS
-    {mat_b_btn_tile,         0, TILE_TYPE_BLOCK,     CMM_PM_TILE,  "Terrain",            NULL       }, //CMM_BUTTON_GRASS
-    {mat_b_btn_slope,        0, TILE_TYPE_SLOPE,     CMM_PM_TILE,  "Slope",              NULL       }, //CMM_BUTTON_SLOPE
-    {mat_b_btn_troll,        0, TILE_TYPE_TROLL,     CMM_PM_TILE,  "Intangible Tile",         NULL       }, //CMM_BUTTON_TROLL
-    {btn_star_objects,       1, OBJECT_TYPE_STAR,    CMM_PM_OBJ,   "Power Star",         txt_star_objects}, //CMM_BUTTON_STAR
-    {btn_ground_enemies,     1, OBJECT_TYPE_GOOMBA,  CMM_PM_OBJ,   "Ground Enemies",     txt_ground_enemies}, //CMM_BUTTON_GROUND
-    {mat_b_btn_coin,         0, OBJECT_TYPE_COIN,    CMM_PM_OBJ,   "Yellow Coin",        NULL       }, //CMM_BUTTON_COIN
-    {mat_b_btn_blank,        0, TILE_TYPE_BLOCK,     CMM_PM_TILE,  "",                   NULL       }, //CMM_BUTTON_BLANK
-    {mat_b_btn_greencoin,    0, OBJECT_TYPE_GCOIN,   CMM_PM_OBJ,   "Green Coin",         NULL       }, //CMM_BUTTON_GCOIN
-    {mat_b_btn_corner,       0, TILE_TYPE_CORNER,    CMM_PM_TILE,  "Slope Corner",       NULL       }, //CMM_BUTTON_CORNER
-    {mat_b_btn_icorner,      0, TILE_TYPE_ICORNER,   CMM_PM_TILE,  "Slope Inner Corner", NULL       }, //CMM_BUTTON_ICORNER
-    {mat_b_btn_redcoin,      0, OBJECT_TYPE_RCOIN,   CMM_PM_OBJ,   "Red Coin",           NULL       }, //CMM_BUTTON_RCOIN
-    {btn_blue_coins,         1, OBJECT_TYPE_BCOIN,   CMM_PM_OBJ,   "Blue Coin",         txt_blue_coins}, //CMM_BUTTON_BCOIN
-    {mat_b_btn_noteblock,    0, OBJECT_TYPE_NOTE,    CMM_PM_OBJ,   "Note Block",         NULL       }, //CMM_BUTTON_NOTEBLOCK
-    {mat_b_btn_cull,         0, TILE_TYPE_CULL,      CMM_PM_TILE,  "Cull Marker",        NULL       }, //CMM_BUTTON_CULL
-    {btn_mech_enemies,       1, OBJECT_TYPE_MECH,    CMM_PM_OBJ,   "Mechanical Enemies", txt_mech_enemies}, //CMM_BUTTON_MECH
-    {mat_b_btn_tree,         0, OBJECT_TYPE_TREE,    CMM_PM_OBJ,   "Tree",               txt_bp_tree}, //CMM_BUTTON_TREE
-    {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_box }, //CMM_BUTTON_EXCLA
-    {mat_b_btn_spawn,        0, OBJECT_TYPE_SPAWN,   CMM_PM_OBJ,   "Mario Spawn",        NULL       }, //CMM_BUTTON_SPAWN
-    {btn_btcm_objects,       1, OBJECT_TYPE_BTCME,   CMM_PM_OBJ,   "BTCM Enemies",       txt_btcm_objects}, //CMM_BUTTON_BTCME
-    {mat_b_btn_pipe,         0, OBJECT_TYPE_PIPE,    CMM_PM_OBJ,   "Warp Pipe",          NULL       }, //CMM_BUTTON_PIPE
-    {mat_b_btn_badge,        0, OBJECT_TYPE_BADGE,   CMM_PM_OBJ,   "Badge",              txt_badges }, //CMM_BUTTON_BADGE
-    {mat_b_btn_water,        0, 0,                   CMM_PM_WATER, "Water",              NULL       }, //CMM_BUTTON_WATER
-    {mat_b_btn_fence,        0, TILE_TYPE_FENCE,     CMM_PM_TILE,  "Fence",              NULL       }, //CMM_BUTTON_FENCE
-    {btn_mech_bosses,        1, OBJECT_TYPE_BOSS,    CMM_PM_OBJ,   "Bosses",             txt_bp_boss}, //CMM_BUTTON_BOSS
-    {mat_b_btn_checker,      0, OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    txt_platforms}, //CMM_BUTTON_MPLAT
-    {mat_b_btn_bball,        0, OBJECT_TYPE_BBALL,   CMM_PM_OBJ,   "Bowling Ball",       NULL       }, //CMM_BUTTON_BBALL
-    {mat_b_btn_kuppa,        0, OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL       }, //CMM_BUTTON_KTQ
-    {mat_b_btn_sideslope,    0, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Vertical Slope",     NULL       }, //CMM_BUTTON_SSLOPE
-    {mat_b_btn_slabtile,     0, TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL       }, //CMM_BUTTON_SLAB
-    {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects}, //CMM_BUTTON_TC
-    {mat_b_btn_heart,        0, OBJECT_TYPE_HEART,   CMM_PM_OBJ,   "Recovery Heart",     NULL       }, //CMM_BUTTON_HEART
-    {mat_b_btn_cformation,   0, OBJECT_TYPE_COINFORM,CMM_PM_OBJ,   "Coin Formation",     txt_coin_formation}, //CMM_BUTTON_FORMATION
-    {mat_b_btn_vslab,        0, TILE_TYPE_SSLAB,     CMM_PM_TILE,  "Vertical Slab",      NULL       }, //CMM_BUTTON_VSLAB
-    {mat_b_btn_bars,         0, TILE_TYPE_BARS,      CMM_PM_TILE,  "Iron Mesh",               NULL       }, //CMM_BUTTON_BARS
-    {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemies",      txt_stone_enemies}, //CMM_BUTTON_ROCKENEMY
-    {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL       }, //CMM_BUTTON_POLE
-    {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox}, //CMM_BUTTON_VEXCLA
-    {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Flying Enemies",     txt_flying_enemies}, //CMM_BUTTON_FLYING
+    {btn_settings,           1, OBJECT_TYPE_SETTINGS, CMM_PM_OBJ,  "Options",            txt_settings},        //CMM_BUTTON_SETTINGS
+    {mat_b_btn_check,        0, OBJECT_TYPE_TEST,    CMM_PM_OBJ,   "Save & Test",        NULL},                //CMM_BUTTON_TEST
+    {mat_b_btn_tile,         0, TILE_TYPE_BLOCK,     CMM_PM_TILE,  "Terrain",            NULL},                //CMM_BUTTON_GRASS
+    {mat_b_btn_slope,        0, TILE_TYPE_SLOPE,     CMM_PM_TILE,  "Slope",              NULL},                //CMM_BUTTON_SLOPE
+    {mat_b_btn_troll,        0, TILE_TYPE_TROLL,     CMM_PM_TILE,  "Intangible Tile",    NULL},                //CMM_BUTTON_TROLL
+    {btn_star_objects,       1, OBJECT_TYPE_STAR,    CMM_PM_OBJ,   "Power Star",         txt_star_objects},    //CMM_BUTTON_STAR
+    {btn_ground_enemies,     1, OBJECT_TYPE_GOOMBA,  CMM_PM_OBJ,   "Ground Enemies",     txt_ground_enemies},  //CMM_BUTTON_GROUND
+    {mat_b_btn_coin,         0, OBJECT_TYPE_COIN,    CMM_PM_OBJ,   "Yellow Coin",        NULL},                //CMM_BUTTON_COIN
+    {mat_b_btn_blank,        0, TILE_TYPE_BLOCK,     CMM_PM_TILE,  "",                   NULL},                //CMM_BUTTON_BLANK
+    {mat_b_btn_greencoin,    0, OBJECT_TYPE_GCOIN,   CMM_PM_OBJ,   "Green Coin",         NULL},                //CMM_BUTTON_GCOIN
+    {mat_b_btn_corner,       0, TILE_TYPE_CORNER,    CMM_PM_TILE,  "Slope Corner",       NULL},                //CMM_BUTTON_CORNER
+    {mat_b_btn_icorner,      0, TILE_TYPE_ICORNER,   CMM_PM_TILE,  "Slope Inner Corner", NULL},                //CMM_BUTTON_ICORNER
+    {mat_b_btn_redcoin,      0, OBJECT_TYPE_RCOIN,   CMM_PM_OBJ,   "Red Coin",           NULL},                //CMM_BUTTON_RCOIN
+    {btn_blue_coins,         1, OBJECT_TYPE_BCOIN,   CMM_PM_OBJ,   "Blue Coin",          txt_blue_coins},      //CMM_BUTTON_BCOIN
+    {mat_b_btn_noteblock,    0, OBJECT_TYPE_NOTE,    CMM_PM_OBJ,   "Note Block",         NULL},                //CMM_BUTTON_NOTEBLOCK
+    {mat_b_btn_cull,         0, TILE_TYPE_CULL,      CMM_PM_TILE,  "Cull Marker",        NULL},                //CMM_BUTTON_CULL
+    {btn_mech_enemies,       1, OBJECT_TYPE_MECH,    CMM_PM_OBJ,   "Mechanical Enemies", txt_mech_enemies},    //CMM_BUTTON_MECH
+    {mat_b_btn_tree,         0, OBJECT_TYPE_TREE,    CMM_PM_OBJ,   "Tree",               txt_bp_tree},         //CMM_BUTTON_TREE
+    {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_box},          //CMM_BUTTON_EXCLA
+    {mat_b_btn_spawn,        0, OBJECT_TYPE_SPAWN,   CMM_PM_OBJ,   "Mario Spawn",        NULL},                //CMM_BUTTON_SPAWN
+    {btn_btcm_objects,       1, OBJECT_TYPE_BTCME,   CMM_PM_OBJ,   "BTCM Enemies",       txt_btcm_objects},    //CMM_BUTTON_BTCME
+    {mat_b_btn_pipe,         0, OBJECT_TYPE_PIPE,    CMM_PM_OBJ,   "Warp Pipe",          NULL},                //CMM_BUTTON_PIPE
+    {mat_b_btn_badge,        0, OBJECT_TYPE_BADGE,   CMM_PM_OBJ,   "Badge",              txt_badges},          //CMM_BUTTON_BADGE
+    {mat_b_btn_water,        0, 0,                   CMM_PM_WATER, "Water",              NULL},                //CMM_BUTTON_WATER
+    {mat_b_btn_fence,        0, TILE_TYPE_FENCE,     CMM_PM_TILE,  "Fence",              NULL},                //CMM_BUTTON_FENCE
+    {btn_mech_bosses,        1, OBJECT_TYPE_BOSS,    CMM_PM_OBJ,   "Bosses",             txt_bp_boss},         //CMM_BUTTON_BOSS
+    {mat_b_btn_checker,      0, OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    txt_platforms},       //CMM_BUTTON_MPLAT
+    {mat_b_btn_bball,        0, OBJECT_TYPE_BBALL,   CMM_PM_OBJ,   "Bowling Ball",       NULL},                //CMM_BUTTON_BBALL
+    {mat_b_btn_kuppa,        0, OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL},                //CMM_BUTTON_KTQ
+    {mat_b_btn_sideslope,    0, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Vertical Slope",     NULL},                //CMM_BUTTON_SSLOPE
+    {mat_b_btn_slabtile,     0, TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL},                //CMM_BUTTON_SLAB
+    {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects},   //CMM_BUTTON_TC
+    {mat_b_btn_heart,        0, OBJECT_TYPE_HEART,   CMM_PM_OBJ,   "Recovery Heart",     NULL},                //CMM_BUTTON_HEART
+    {mat_b_btn_cformation,   0, OBJECT_TYPE_COINFORM,CMM_PM_OBJ,   "Coin Formation",     txt_coin_formation},  //CMM_BUTTON_FORMATION
+    {mat_b_btn_vslab,        0, TILE_TYPE_SSLAB,     CMM_PM_TILE,  "Vertical Slab",      NULL},                //CMM_BUTTON_VSLAB
+    {mat_b_btn_bars,         0, TILE_TYPE_BARS,      CMM_PM_TILE,  "Iron Mesh",          NULL},                //CMM_BUTTON_BARS
+    {btn_stone_enemies,      1, OBJECT_TYPE_STONE,   CMM_PM_OBJ,   "Stone Enemies",      txt_stone_enemies},   //CMM_BUTTON_ROCKENEMY
+    {mat_b_btn_pole,         0, TILE_TYPE_POLE,      CMM_PM_TILE,  "Pole",               NULL},                //CMM_BUTTON_POLE
+    {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox},         //CMM_BUTTON_VEXCLA
+    {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Flying Enemies",     txt_flying_enemies},  //CMM_BUTTON_FLYING
     {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Spooky Enemies",     txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
-    {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,  CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies}, //CMM_BUTTON_SNOWEN
-    {mat_b_btn_bbomb,        0, OBJECT_TYPE_MINE,    CMM_PM_OBJ,   "Bowser Mine",        NULL}, //CMM_BUTTON_MINE
-    {mat_b_btn_firebar,      0, OBJECT_TYPE_FIRE_SPINNER, CMM_PM_OBJ, "Fire Spinner",    txt_fire_spinner}, //CMM_BUTTON_FIRE_SPINNER
+    {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,  CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies},    //CMM_BUTTON_SNOWEN
+    {mat_b_btn_bbomb,        0, OBJECT_TYPE_MINE,    CMM_PM_OBJ,   "Bowser Mine",        NULL},                //CMM_BUTTON_MINE
+    {mat_b_btn_firebar,      0, OBJECT_TYPE_FIRE_SPINNER, CMM_PM_OBJ, "Fire Spinner",    txt_fire_spinner},    //CMM_BUTTON_FIRE_SPINNER
 
 };
 

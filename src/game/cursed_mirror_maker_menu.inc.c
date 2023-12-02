@@ -441,8 +441,7 @@ void draw_cmm_settings_menu(f32 yoff) {
 }
 
 void draw_cmm_menu(void) {
-    if (!cmm_ui_do_render) {
-        cmm_ui_do_render = TRUE;
+    if (cmm_prepare_level_screenshot) {
         return;
     }
 
