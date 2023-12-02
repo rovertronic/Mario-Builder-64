@@ -145,6 +145,7 @@ void full_menu_reset() {
     cmm_global_scissor = 0;
     cmm_menu_index = 0;
     cmm_tip_timer = 0;
+    cmm_topleft_timer = 0;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -406,7 +407,6 @@ void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
         load_level_files_from_sd_card();
         cmm_mm_state = MM_FILES;
-        cmm_tip_timer = 60;
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
@@ -1132,7 +1132,6 @@ s32 cmm_main_menu(void) {
                             //load levels
                             cmm_mm_files_prev_menu = MM_MAKE;
                             cmm_level_action = CMM_LA_MAKING;
-                            cmm_tip_timer = 60;
                             cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
@@ -1489,6 +1488,8 @@ s32 cmm_main_menu(void) {
                 f_chdir("..");
                 cmm_lopt_game = level_info->option[19];
                 cmm_mm_selected_level = cmm_menu_index;
+                if (cmm_level_action == CMM_LA_MAKING) cmm_tip_timer = 60;
+                else cmm_tip_timer = 0;
 
                 return 1;
             }

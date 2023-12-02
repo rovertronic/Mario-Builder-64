@@ -2020,7 +2020,7 @@ struct cmm_settings_button cmm_mode_settings_buttons[] = {
 
 char *cmm_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
-    "Tip: Use D-Pad | to change the camera's\n   zoom levelwhile building!",
+    "Tip: Use D-Pad | to change the camera's\n   zoom level while building!",
     "Tip: You can place objects or tiles inside\n   water blocks to submerge them!",
     "Tip: The thin Iron Meshes can be used to create walls\n   that require a Vanish Cap to pass through.",
     "Tip: Mesh materials can be used as both\n   hangable ceilings and Vanish Cap walls.",
@@ -2033,8 +2033,8 @@ char *cmm_tips[] = {
     "Tip: If you want to rename your level, simply rename the\n   .mb64 file itself.",
     "Tip: Entering and exiting water from the side with a shell\n   will let you transition between riding and swimming!",
     "Tip: Pressing every C-button while on a certain menu\n   might reward you with a little surprise...",
-    "Tip: Transparent materials such as water, flames or ice can look\n   a little strange when layered together, so watch out."
-
+    "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
+    "Tip: Using the Cursed Mirror gamemode will let you use a bunch of\n   new enemies and collectible badges!",
 // BTCM
     "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
     "Tip: The Star Radar badge will let the player know\n   what direction the nearest star is in.",
