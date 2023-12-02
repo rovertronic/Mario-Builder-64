@@ -1102,7 +1102,7 @@ struct cmm_object_info cmm_object_type_exclamationbox = {
     bhvExclamationBox, TILE_SIZE/2, MODEL_EXCLAMATION_BOX, FALSE, 0, 0, 2.0f, NULL, df_exbox, SOUND_GENERAL_BOX_PREVIEW,
 };
 struct cmm_object_info cmm_object_type_spawn = {
-    bhvSpawn, 0, MODEL_SPAWN, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
+    bhvSpawn, TILE_SIZE/2, MODEL_SPAWN, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_MENU_STAR_SOUND_LETS_A_GO,
 };
 struct cmm_object_info cmm_object_type_btcme[] = {
     {bhvRex, 0, 0xE1, FALSE, 2, 0, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},

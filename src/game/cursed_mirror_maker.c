@@ -2453,6 +2453,8 @@ void sb_init(void) {
         case CMM_MODE_PLAY:
             cmm_menu_state = CMM_MAKE_PLAY;
             generate_terrain_collision();
+            reset_rng();
+            gGlobalTimer = 0;
             generate_objects_to_level();
             load_obj_warp_nodes();
 
