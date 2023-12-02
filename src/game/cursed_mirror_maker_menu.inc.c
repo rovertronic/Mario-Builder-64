@@ -258,7 +258,7 @@ s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
 
 // More specialised version that handles a list of cmm_settings_buttons
 // and is scrolled with the joystick
-#define GET_BUTTON_STR(btn, index) ((btn).nameFunc ? (btn).nameFunc(index) : (btn).nametable[index])
+#define GET_BUTTON_STR(btn, index, buf) ((btn).nameFunc ? (btn).nameFunc(index, buf) : (btn).nametable[index])
 
 void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
     s32 dir = 0;
@@ -273,9 +273,10 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
     s32 nextVal = (currentVal + 1) % btnSize;
     s32 highlight = cmm_menu_index == i;
 
-    char *cur = GET_BUTTON_STR(btn[i], currentVal);
-    char *prev = GET_BUTTON_STR(btn[i], prevVal);
-    char *next = GET_BUTTON_STR(btn[i], nextVal);
+    char charbuffers[3][20];
+    char *cur = GET_BUTTON_STR(btn[i], currentVal, charbuffers[0]);
+    char *prev = GET_BUTTON_STR(btn[i], prevVal, charbuffers[1]);
+    char *next = GET_BUTTON_STR(btn[i], nextVal, charbuffers[2]);
 
     s32 result = cmm_menu_option_sidescroll(x, y, width,
                                prev, cur, next,
@@ -305,26 +306,25 @@ void cmm_render_topleft_text(void) {
     }
 }
 
-char *cmm_get_floor_name(s32 index) {
+char *cmm_get_floor_name(s32 index, UNUSED char *buffer) {
     if (index == 0) {
         return "None";
     }
     return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[index - 1]).name;
 }
-char cmm_temp_name_buffer[12];
-char *cmm_get_coinstar_str(s32 index) {
+char *cmm_get_coinstar_str(s32 index, char *buffer) {
     if (index == 0) {
         return "Disabled";
     }
-    sprintf(cmm_temp_name_buffer, "%d Coins", index*20);
-    return cmm_temp_name_buffer;
+    sprintf(buffer, "%d Coins", index*20);
+    return buffer;
 }
-char *cmm_get_waterlevel_name(s32 index) {
+char *cmm_get_waterlevel_name(s32 index, char *buffer) {
     if (index == 0) {
         return "Disabled";
     }
-    sprintf(cmm_temp_name_buffer, "Y: %d", index);
-    return cmm_temp_name_buffer;
+    sprintf(buffer, "Y: %d", index);
+    return buffer;
 }
 
 // Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq

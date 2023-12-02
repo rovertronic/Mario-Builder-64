@@ -1888,9 +1888,9 @@ u8 *cmm_skybox_table[] = {
     _bits_skybox_yay0SegmentRomEnd,
 };
 
-extern char *cmm_get_floor_name(s32);
-extern char *cmm_get_coinstar_str(s32);
-extern char *cmm_get_waterlevel_name(s32);
+extern char *cmm_get_floor_name(s32, char *);
+extern char *cmm_get_coinstar_str(s32, char *);
+extern char *cmm_get_waterlevel_name(s32, char *);
 extern void reload_bg(void);
 extern void reload_theme(void);
 extern void generate_terrain_gfx(void);

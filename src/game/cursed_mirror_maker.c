@@ -1042,6 +1042,9 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Apply normal side culling
+    // Usually this would fail if next to a mesh, but it will pass if
+    // the current tile is the same material, which in this case will happen
+    // if an entire mesh is waterlogged.
     if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (MATERIAL(get_grid_tile(adjacentPos)->mat).type != MAT_CUTOUT)) return 0;
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
