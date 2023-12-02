@@ -740,9 +740,9 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
         //BTCM COIN HEAL BEHAVIOR
         if (obj->oDamageOrCoinValue == 3) { //green coin
             if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
-                m->healCounter += 4 * gMarioState->numMaxHP;//green coins fully heal with badge
+                m->healCounter += 4 * 8;//green coins fully heal with badge
             } else {
-                m->healCounter += 4 * ((f32)(gMarioState->numMaxHP)/2.0f); //green coins heal half hp
+                m->healCounter += 4 * 4;
             }
         } else {//every other coin
             m->healCounter += 4; //every other coin gives 1 hp back

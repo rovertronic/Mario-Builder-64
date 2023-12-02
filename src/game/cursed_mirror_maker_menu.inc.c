@@ -136,6 +136,7 @@ u8 cmm_curr_settings_menu = 0;
 void full_menu_reset() {
     bzero(cmm_menu_button_vels, sizeof(cmm_menu_button_vels));
     bzero(cmm_menu_title_vels, sizeof(cmm_menu_title_vels));
+    bzero(cmm_topleft_vels, sizeof(cmm_topleft_vels));
     bzero(cmm_menu_scrolling, sizeof(cmm_menu_scrolling));
     cmm_menu_start_timer = -1;
     cmm_menu_end_timer = -1;
@@ -143,6 +144,7 @@ void full_menu_reset() {
     cmm_curr_settings_menu = 0;
     cmm_global_scissor = 0;
     cmm_menu_index = 0;
+    cmm_tip_timer = 0;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -288,17 +290,17 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
     }
 }
 
-void cmm_render_error_message(void) {
-    if (cmm_error_timer > 0) {
+void cmm_render_topleft_text(void) {
+    if (cmm_topleft_timer > 0) {
 
-        if (cmm_error_timer > 60) {
-            animate_menu_ease_in(cmm_error_vels, 280.f, -15.f, 2.f, cmm_error_timer == 120);
-        } else if (cmm_error_timer <= 30) {
-            animate_menu_generic(cmm_error_vels, cmm_error_vels[0], 0.f, 2.f, cmm_error_timer == 30);
+        if (cmm_topleft_timer > 30) {
+            animate_menu_ease_in(cmm_topleft_vels, 280.f, -15.f, 2.f, cmm_topleft_timer == cmm_topleft_max_timer);
+        } else {
+            animate_menu_generic(cmm_topleft_vels, cmm_topleft_vels[0], 0.f, 2.f, cmm_topleft_timer == 30);
         }
 
-        print_maker_string_ascii(15,cmm_error_vels[0],cmm_error_message,4);
-        cmm_error_timer--;
+        print_maker_string_ascii(15,cmm_topleft_vels[0],cmm_topleft_message,cmm_topleft_is_tip ? 0 : 4);
+        cmm_topleft_timer--;
     }
 }
 
@@ -384,7 +386,7 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
         cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_terrain_buttons,i,cmm_joystick);
     }
 
-    if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (L_TRIG | R_TRIG | Z_TRIG) == (L_TRIG | R_TRIG | Z_TRIG))) {
+    if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS) == (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS))) {
         cmm_lopt_secret = TRUE;
         cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
         play_puzzle_jingle();
@@ -404,6 +406,7 @@ void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
         load_level_files_from_sd_card();
         cmm_mm_state = MM_FILES;
+        cmm_tip_timer = 60;
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
@@ -474,7 +477,7 @@ void draw_cmm_menu(void) {
     //TOOLBOX
     switch (cmm_menu_state) {
         case CMM_MAKE_MAIN:
-            cmm_render_error_message();
+            cmm_render_topleft_text();
             break;
 
         case CMM_MAKE_TOOLBOX:
@@ -634,7 +637,7 @@ void draw_cmm_menu(void) {
 
         case CMM_MAKE_TRAJECTORY:
             print_maker_string(20,210,cmm_txt_recording,TRUE);
-            cmm_render_error_message();
+            cmm_render_topleft_text();
             break;
     }
 
@@ -964,6 +967,9 @@ s32 cmm_main_menu(void) {
     if (cmm_menu_end_timer != -1) {
         cmm_joystick = 0;
     }
+    for (s32 i = 0; i < (cmm_joystick+1); i++) {
+        random_u16(); // randomize for the initial tip
+    }
     switch(cmm_joystick) {
         case 2:
             cmm_menu_index++;
@@ -1044,6 +1050,7 @@ s32 cmm_main_menu(void) {
                     case 1:
                         cmm_mm_state = MM_FILES;
                         cmm_mm_files_prev_menu = MM_MAIN;
+                        cmm_tip_timer = 0;
                         cmm_mm_page = 0;
                         cmm_level_action = CMM_LA_PLAYING;
                         break;
@@ -1125,6 +1132,7 @@ s32 cmm_main_menu(void) {
                             //load levels
                             cmm_mm_files_prev_menu = MM_MAKE;
                             cmm_level_action = CMM_LA_MAKING;
+                            cmm_tip_timer = 60;
                             cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
@@ -1179,7 +1187,10 @@ s32 cmm_main_menu(void) {
                     }
                 }
             }
-            if (cmm_mm_main_state == MM_MAIN_LIMITED && cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) return 1;
+            if (cmm_mm_main_state == MM_MAIN_LIMITED && cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {
+                cmm_tip_timer = 60;
+                return 1;
+            }
             break;
         case MM_HELP_MODE:
             cmm_menu_index = (cmm_menu_index+3)%3;

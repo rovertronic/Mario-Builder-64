@@ -2017,3 +2017,30 @@ struct cmm_settings_button cmm_mode_settings_buttons[] = {
 };
 
 #define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_general_buttons)
+
+char *cmm_tips[] = {
+    "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
+    "Tip: Use D-Pad | to change the camera's\n   zoom levelwhile building!",
+    "Tip: You can place objects or tiles inside\n   water blocks to submerge them!",
+    "Tip: The thin Iron Meshes can be used to create walls\n   that require a Vanish Cap to pass through.",
+    "Tip: Mesh materials can be used as both\n   hangable ceilings and Vanish Cap walls.",
+    "Tip: The maximum number of stars you can place is 63,\n   or 64 if the coin star is enabled.",
+    "Tip: Objects such as coin formations or fire spinners\n   can use up the object limit rather quickly.",
+    "Tip: The available items inside an Item Box will change\n   depending on the chosen gamemode.",
+    "Tip: Thwomps and Grindels will use the height they are\n   placed at as the peak of their movement.",
+    "Tip: The Vertical Slope tile is very useful for making\n   smooth, natural terrain!",
+    "Tip: Cull Markers are very useful for lowering your\n   level's complexity!",
+    "Tip: If you want to rename your level, simply rename the\n   .mb64 file itself.",
+    "Tip: Entering and exiting water from the side with a shell\n   will let you transition between riding and swimming!",
+    "Tip: Pressing every C-button while on a certain menu\n   might reward you with a little surprise...",
+    "Tip: Transparent materials such as water, flames or ice can look\n   a little strange when layered together, so watch out."
+
+// BTCM
+    "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
+    "Tip: The Star Radar badge will let the player know\n   what direction the nearest star is in.",
+    "Tip: Badges that the player collects will be kept\n   as permanent collectibles even after death.",
+    "Tip: You can use the Burden badges as a punishment\n   when touched, or an optional challenge!",
+    "Tip: Green Coins heal the player for 4 HP when collected,\n   or fully with the Heal Plus badge.",
+};
+#define NUM_BTCM_TIPS 5
+

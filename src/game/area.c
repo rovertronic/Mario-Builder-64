@@ -352,6 +352,7 @@ void area_update_objects(void) {
  */
 void play_transition(s16 transType, s16 time, Color red, Color green, Color blue) {
 #ifndef L3DEX2_ALONE
+    set_and_reset_transition_fade_timer(0,0);
     gWarpTransition.isActive = TRUE;
     gWarpTransition.type = transType;
     gWarpTransition.time = time;

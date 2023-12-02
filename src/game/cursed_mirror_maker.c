@@ -153,9 +153,11 @@ s8 cmm_toolbox_index = 0;
 u8 cmm_prepare_level_screenshot = FALSE;
 u8 cmm_do_save = FALSE;
 
-char *cmm_error_message = NULL;
-u16 cmm_error_timer = 0;
-f32 cmm_error_vels[3];
+char *cmm_topleft_message = NULL;
+u8 cmm_topleft_is_tip = FALSE;
+u16 cmm_topleft_max_timer = 120;
+u16 cmm_topleft_timer = 0;
+f32 cmm_topleft_vels[3];
 
 struct cmm_level_save_header cmm_save;
 char cmm_username[31];
@@ -164,6 +166,7 @@ u8 cmm_has_username = FALSE;
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
 u8 cmm_cached_tris[16][3];
+s16 cmm_tip_timer = 0;
 
 struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
@@ -183,14 +186,24 @@ void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
 }
 
-void cmm_show_error_message(char *message) {
-    if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
-        cmm_error_message = message;
-        cmm_error_timer = 120;
+void cmm_show_topleft_message(char *message, s32 isTip) {
+    cmm_topleft_is_tip = isTip;
+    cmm_topleft_max_timer = (isTip ? 220 : 120);
+    if ((message != cmm_topleft_message) || (cmm_topleft_timer < 30)) {
+        cmm_topleft_message = message;
+        cmm_topleft_timer = cmm_topleft_max_timer;
     } else {
-        if (cmm_error_timer < 90) cmm_error_timer = 90;
+        if (cmm_topleft_timer < cmm_topleft_max_timer - 30) cmm_topleft_timer = cmm_topleft_max_timer - 30;
     }
+}
+void cmm_show_error_message(char *message) {
+    cmm_show_topleft_message(message, FALSE);
     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+}
+void cmm_show_tip() {
+    s32 count = ARRAY_COUNT(cmm_tips);
+    if (cmm_lopt_game != CMM_GAME_BTCM) count -= NUM_BTCM_TIPS;
+    cmm_show_topleft_message(cmm_tips[(s32)(random_float() * count)], TRUE);
 }
 
 void reset_play_state(void) {
@@ -2615,6 +2628,9 @@ void sb_loop(void) {
     if (cmm_option_changed_func) {
         cmm_option_changed_func();
         cmm_option_changed_func = NULL;
+    }
+    if ((cmm_menu_state != CMM_MAKE_PLAY) && cmm_tip_timer) {
+        if (!(--cmm_tip_timer)) cmm_show_tip();
     }
 
     switch(cmm_menu_state) {
