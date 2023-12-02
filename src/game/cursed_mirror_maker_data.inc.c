@@ -2034,7 +2034,7 @@ char *cmm_tips[] = {
     "Tip: Entering and exiting water from the side with a shell\n   will let you transition between riding and swimming!",
     "Tip: Pressing every C-button while on a certain menu\n   might reward you with a little surprise...",
     "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
-    "Tip: Using the Cursed Mirror gamemode will let you use a bunch of\n   new enemies and collectible badges!",
+    "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch ofnew enemies and collectible badges!",
 // BTCM
     "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
     "Tip: The Star Radar badge will let the player know\n   what direction the nearest star is in.",

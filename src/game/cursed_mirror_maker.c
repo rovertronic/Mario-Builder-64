@@ -1011,11 +1011,16 @@ u32 is_water_fullblock(s8 pos[3]) {
     // Full block if above block is water
     if (get_grid_tile(abovePos)->waterlogged) return TRUE;
     // Full block if waterlogging a block and it has a solid top face
-    if ((get_grid_tile(pos)->type - 1) != TILE_TYPE_WATER) {
-        if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) return TRUE;
+    s32 type = get_grid_tile(pos)->type - 1;
+    if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
+        if ((get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT)) return TRUE;
     }
     // Full block if above block has solid bottom face
-    if (get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) return TRUE;
+    if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
+        // If above block is troll, but current block is also troll, then not full block
+        if ((type == TILE_TYPE_TROLL) && (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_TROLL)) return FALSE;
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -1037,7 +1042,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Apply normal side culling
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0)) return 0;
+    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (MATERIAL(get_grid_tile(adjacentPos)->mat).type != MAT_CUTOUT)) return 0;
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
@@ -1052,7 +1057,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) {
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
         return 0;
     }
 
@@ -1340,6 +1345,8 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
+            if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
+                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1348,6 +1355,8 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = FALSE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
+            if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
+                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1572,7 +1581,6 @@ void generate_terrain_collision(void) {
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
-    //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
     TerrainData floorY;
 
     if (cmm_lopt_plane == 0) {
@@ -1830,7 +1838,7 @@ void place_tile(s8 pos[3]) {
         }
     }
 
-    if (cmm_id_selection == TILE_TYPE_BLOCK) {
+    if ((cmm_id_selection == TILE_TYPE_BLOCK) && (MATERIAL(cmm_mat_selection).type != MAT_CUTOUT)) {
         waterlogged = FALSE;
     }
     // If placing a cull marker, check that its actually next to a tile
@@ -1892,7 +1900,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if (tileType == TILE_TYPE_BLOCK) {
+        if ((tileType == TILE_TYPE_BLOCK) && (MATERIAL(tile->mat).type != MAT_CUTOUT)) {
             return;
         }
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
