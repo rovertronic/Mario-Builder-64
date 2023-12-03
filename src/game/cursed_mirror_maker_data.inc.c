@@ -324,23 +324,21 @@ struct cmm_terrain cmm_terrain_pole = {
     NULL,
 };
 
-s8 bar_connected_top_uvs[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 struct cmm_terrain_quad cmm_terrain_bars_connected_quads[] = {
     {{{7, 16, 16}, {7, 16, 9}, {7, 0, 16}, {7, 0, 9}}, CMM_DIRECTION_NEG_X, CMM_FACESHAPE_EMPTY, 0, NULL}, // Left
     {{{9, 16, 9}, {9, 16, 16}, {9, 0, 9}, {9, 0, 16}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_EMPTY, 0, NULL}, // Right
 
-    {{{7, 16, 16}, {9, 16, 16}, {7, 16, 9}, {9, 16, 9}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, &bar_connected_top_uvs}, // Top
-    {{{9, 0, 16}, {7, 0, 16}, {9, 0, 9}, {7, 0, 9}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, &bar_connected_top_uvs}, // Bottom
+    {{{7, 16, 16}, {9, 16, 16}, {7, 16, 9}, {9, 16, 9}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL}, // Top
+    {{{9, 0, 16}, {7, 0, 16}, {9, 0, 9}, {7, 0, 9}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, NULL}, // Bottom
 };
 
 struct cmm_terrain_quad cmm_terrain_bars_unconnected_quad[] = {
     {{{9, 16, 9}, {7, 16, 9}, {9, 0, 9}, {7, 0, 9}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_EMPTY, 0, NULL}, // Back
 };
 
-s8 bar_center_uvs[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 struct cmm_terrain_quad cmm_terrain_bars_center_quads[] = {
-    {{{7, 16, 9}, {9, 16, 9}, {7, 16, 7}, {9, 16, 7}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, &bar_center_uvs},
-    {{{9, 0, 9}, {7, 0, 9}, {9, 0, 7}, {7, 0, 7}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, &bar_center_uvs},
+    {{{7, 16, 9}, {9, 16, 9}, {7, 16, 7}, {9, 16, 7}}, CMM_DIRECTION_UP, CMM_FACESHAPE_EMPTY, 0, NULL},
+    {{{9, 0, 9}, {7, 0, 9}, {9, 0, 7}, {7, 0, 7}}, CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, 0, NULL},
 };
 
 // Shapes of water tiles
@@ -419,14 +417,12 @@ enum cmm_materials {
     CMM_MAT_SNOWDIRT,
     CMM_MAT_LAVA,
     CMM_MAT_QUICKSAND,
-    CMM_MAT_IRONBARS,
     // Desert
     CMM_MAT_DESERT_STONE,
     CMM_MAT_DESERT_TILES,
     CMM_MAT_DESERT_BLOCK,
     CMM_MAT_DESERT_TILES2,
     CMM_MAT_DESERT_SLOWSAND,
-    CMM_MAT_DESERT_MESH,
     // Red Hot Reservoir
     CMM_MAT_RHR_OBSIDIAN,
     CMM_MAT_RHR_STONE,
@@ -474,9 +470,6 @@ enum cmm_materials {
     CMM_MAT_BBH_STONE_PATTERN,
     CMM_MAT_BBH_PILLAR,
     CMM_MAT_BBH_WINDOW,
-    CMM_MAT_BBH_MESH,
-
-    CMM_MAT_VP_MESH,
     // JRB
     CMM_MAT_JRB_STONE,
     CMM_MAT_JRB_METAL,
@@ -510,7 +503,6 @@ enum cmm_materials {
     CMM_MAT_RETRO_WHITEBRICK,
     CMM_MAT_RETRO_LAVA,
     CMM_MAT_RETRO_UNDERWATERGROUND,
-    CMM_MAT_RETRO_MESH,
 
     // Minecraft
     CMM_MAT_MC_DIRT,
@@ -526,7 +518,6 @@ enum cmm_materials {
     CMM_MAT_MC_LAVA,
     CMM_MAT_MC_FLOWING_LAVA,
     CMM_MAT_MC_GLASS,
-    CMM_MAT_MC_IRON_BARS,
 };
 
 struct cmm_material cmm_mat_table[] = {
@@ -560,14 +551,12 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerSnowDirt,   0, SURFACE_NOT_SLIPPERY},      // CMM_MAT_SNOWDIRT
     {mat_maker_MakerLava,       0, SURFACE_BURNING},           // CMM_MAT_LAVA
     {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND}, // CMM_MAT_QUICKSAND
-    {mat_maker_MakerIronBars_layer1,   MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_IRONBARS
     // Desert
     {mat_maker_MakerDStone,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_STONE
     {mat_maker_MakerDTiles,      0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES
     {mat_maker_MakerDStoneBlock, 0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_BLOCK
     {mat_maker_MakerDTiles2,     0, SURFACE_NOT_SLIPPERY},   // CMM_MAT_DESERT_TILES2
     {mat_maker_MakerSlowsand,    0, SURFACE_DEEP_QUICKSAND}, // CMM_MAT_DESERT_SLOWSAND
-    {mat_maker_MakerDMesh_layer1,       MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_DESERT_MESH
     // Red Hot Reservoir
     {mat_maker_MakerRHRObsidian,     0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_OBSIDIAN
     {mat_maker_MakerRHRStone,        0,          SURFACE_NOT_SLIPPERY},     // CMM_MAT_RHR_STONE
@@ -615,8 +604,6 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerBBHStonePattern, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_BBH_STONE_PATTERN
     {mat_maker_MakerBBHPillar,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_PILLAR
     {mat_maker_MakerBBHWindow,       0, SURFACE_DEFAULT},      // CMM_MAT_BBH_WINDOW
-    {mat_maker_MakerBBHMesh_layer1,  MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_BBH_MESH
-    {mat_maker_MakerVPMesh_layer1,   MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_VP_MESH
     // JRB
     {mat_maker_MakerJRBStone,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_JRB_STONE
     {mat_maker_MakerJRBMetal,        0, SURFACE_DEFAULT},      // CMM_MAT_JRB_METAL
@@ -650,7 +637,6 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRetroWBrick,     0, SURFACE_DEFAULT},      // CMM_MAT_RETRO_WHITEBRICK
     {mat_maker_MakerRetroLava,       0, SURFACE_BURNING},      // CMM_MAT_RETRO_LAVA
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_RETRO_UNDERWATERGROUND
-    {mat_maker_MakerRetroMesh_layer1,MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_RETRO_MESH
 
     // Minecraft
     {mat_maker_MakerMCDirt,        0, SURFACE_NOT_SLIPPERY}, // CMM_MAT_MC_DIRT
@@ -666,7 +652,6 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerMCLava,        0, SURFACE_BURNING},      // CMM_MAT_MC_LAVA
     {mat_maker_MakerMCFlowingLava, 0, SURFACE_BURNING},      // CMM_MAT_MC_FLOWING_LAVA
     {mat_maker_MakerMCGlass_layer1,  MAT_CUTOUT_NOCULL, SURFACE_VANISH_CAP_WALLS}, // CMM_MAT_MC_GLASS
-    {mat_maker_MakerMCIronBars_layer1, MAT_CUTOUT, SURFACE_HANGABLE_MESH}, // CMM_MAT_MC_IRON_BARS
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
@@ -733,15 +718,15 @@ enum cmm_bars {
     CMM_BAR_RETRO,
     CMM_BAR_MC,
 };
-u8 cmm_bar_mats[] = {
-    CMM_MAT_IRONBARS,
-    CMM_MAT_DESERT_MESH,
-    CMM_MAT_RHR_MESH,
-    CMM_MAT_HMC_MESH,
-    CMM_MAT_BBH_MESH,
-    CMM_MAT_VP_MESH,
-    CMM_MAT_RETRO_MESH,
-    CMM_MAT_MC_IRON_BARS,
+Gfx *cmm_bar_texs[][2] = {
+    {mat_maker_MakerIronBars_layer1,   mat_maker_MakerIronBarsTop_layer1},
+    {mat_maker_MakerDMesh_layer1,      mat_maker_MakerDesertMeshTop_layer1},
+    {mat_maker_MakerRHRMesh_layer1,    mat_maker_MakerChainTop_layer1},
+    {mat_maker_MakerHMesh_layer1,      mat_maker_MakerHMCTop_layer1},
+    {mat_maker_MakerBBHMesh_layer1,    mat_maker_MakerHMCTop_layer1},
+    {mat_maker_MakerVPMesh_layer1,     mat_maker_MakerChainTop_layer1},
+    {mat_maker_MakerRetroMesh_layer1,  mat_maker_MakerRetroMeshTop_layer1},
+    {mat_maker_MakerMCIronBars_layer1, mat_maker_MakerMCIronBarsTop_layer1},
 };
 
 enum cmm_water {
@@ -961,7 +946,8 @@ struct cmm_theme cmm_theme_table[] = {
 // Returns current fence texture
 #define FENCE_TEX() (cmm_fence_texs[cmm_theme_table[cmm_lopt_theme].fence])
 #define POLE_TEX()  (cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].gfx)
-#define BARS_TEX() (cmm_mat_table[cmm_bar_mats[cmm_theme_table[cmm_lopt_theme].bars]].gfx)
+#define BARS_TEX() (cmm_bar_texs[cmm_theme_table[cmm_lopt_theme].bars][0])
+#define BARS_TOPTEX() (cmm_bar_texs[cmm_theme_table[cmm_lopt_theme].bars][1])
 #define WATER_TEX() (cmm_water_texs[cmm_theme_table[cmm_lopt_theme].water])
 
 enum {

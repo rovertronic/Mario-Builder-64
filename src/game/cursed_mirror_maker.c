@@ -113,7 +113,6 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 1;
 s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
@@ -628,7 +627,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
+            (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -665,7 +664,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
+            (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -975,11 +974,15 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
+        } else if (adjacentPos[1] == -1) { // Culling for bottom
+            for (u32 rot = 0; rot < 5; rot++) {
+                connections[rot] |= (1 << 2);
+            }
         }
     }
 }
 
-void render_bars(s8 pos[3]) {
+void render_bars_side(s8 pos[3]) {
     u8 connections[5];
     check_bar_connections(pos, connections);
 
@@ -987,16 +990,30 @@ void render_bars(s8 pos[3]) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
         if (BAR_CONNECTED_SIDE(connections[rot])) {
-            for (u32 j = 0; j < 4; j++) {
-                if (j == 2 && BAR_CONNECTED_TOP(connections[rot])) continue;
-                if (j == 3 && BAR_CONNECTED_BOTTOM(connections[rot])) continue;
-                struct cmm_terrain_quad *quad = &cmm_terrain_bars_connected_quads[j];
-                process_quad(pos, quad, rot);
-            }
+            process_quad(pos, &cmm_terrain_bars_connected_quads[0], rot);
+            process_quad(pos, &cmm_terrain_bars_connected_quads[1], rot);
         }
         if (!BAR_CONNECTED_SIDE(connections[rot]) ||
             (BAR_CONNECTED_SIDE(connections[leftRot]) && BAR_CONNECTED_SIDE(connections[rightRot]))) {
             process_quad(pos, cmm_terrain_bars_unconnected_quad, rot);
+        }
+    }
+}
+
+void render_bars_top(s8 pos[3]) {
+    u8 connections[5];
+    check_bar_connections(pos, connections);
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        u32 leftRot = (rot + 3) % 4;
+        u32 rightRot = (rot + 1) % 4;
+        if (BAR_CONNECTED_SIDE(connections[rot])) {
+            if (!BAR_CONNECTED_TOP(connections[rot])) {
+                process_quad(pos, &cmm_terrain_bars_connected_quads[2], rot);
+            }
+            if (!BAR_CONNECTED_BOTTOM(connections[rot])) {
+                process_quad(pos, &cmm_terrain_bars_connected_quads[3], rot);
+            }
         }
     }
     if (!BAR_CONNECTED_TOP(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[0], 0);
@@ -1162,9 +1179,9 @@ Gfx *get_sidetex(s32 mat) {
 
 
 #define retroland_filter_on() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
-#define retroland_filter_off() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
+#define retroland_filter_off() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16); }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1252,6 +1269,7 @@ void generate_terrain_gfx(void) {
 
     cmm_use_alt_uvs = FALSE;
     cmm_render_flip_normals = FALSE;
+    cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
     retroland_filter_on();
 
@@ -1291,17 +1309,24 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 2;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars(pos);
+        render_bars_side(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 1;
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
+    gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars_top(pos);
+    }
+    display_cached_tris();
+    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1487,9 +1512,12 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 2;
-                    render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 1;
+                    render_bars_side(cmm_cursor_pos);
+                    display_cached_tris();
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
+                    gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+                    render_bars_top(cmm_cursor_pos);
+                    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1620,7 +1648,8 @@ void generate_terrain_collision(void) {
     for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars(pos);
+        render_bars_side(pos);
+        render_bars_top(pos);
     }
 
     cmm_building_collision = FALSE;
