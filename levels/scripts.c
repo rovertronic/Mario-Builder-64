@@ -163,6 +163,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_HEAVEHO,heave_ho_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOWSER_BOMB,bowser_bomb_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOWSER,bowser_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_BSHOCKWAVE, invisible_bowser_accessory_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CHILL_BULLY,chilly_chief_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY_BALL,              spiny_ball_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPINY,                   spiny_geo),

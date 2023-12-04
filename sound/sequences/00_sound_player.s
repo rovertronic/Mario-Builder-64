@@ -3993,7 +3993,6 @@ layer_note1 31, 0xe, 100
 layer_note1 32, 0xc, 100
 .layer_181A:
 layer_note1 34, 0xa, 100
-layer_jump .layer_181A
 layer_end
 
 .sound_general_bowser_key:
