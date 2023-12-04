@@ -1924,27 +1924,34 @@ char *cmm_settings_menu_names[] = {
     "General",
     "Terrain",
     "Music",
-    "Exit",
+    "System",
+};
+
+char *cmm_settings_system_buttons[] = {
+    "Save & Quit",
+    "Play Level",
+    "Level Size:",
+    "Apply Size Change (Dangerous!)",
 };
 
 u8 cmm_settings_menu_lengths[] = {
     ARRAY_COUNT(cmm_settings_general_buttons),
     ARRAY_COUNT(cmm_settings_terrain_buttons),
     ARRAY_COUNT(cmm_settings_music_buttons),
-    1,
+    ARRAY_COUNT(cmm_settings_system_buttons),
 };
 
 void draw_cmm_settings_general(f32,f32);
 void draw_cmm_settings_general_vanilla(f32,f32);
 void draw_cmm_settings_terrain(f32,f32);
 void draw_cmm_settings_music(f32,f32);
-void draw_cmm_settings_backtomainmenu(f32,f32);
+void draw_cmm_settings_system(f32,f32);
 
 void (*cmm_settings_menus[])(f32, f32) = {
     draw_cmm_settings_general,
     draw_cmm_settings_terrain,
     draw_cmm_settings_music,
-    draw_cmm_settings_backtomainmenu,
+    draw_cmm_settings_system,
 };
 
 // These get copied over to the above array

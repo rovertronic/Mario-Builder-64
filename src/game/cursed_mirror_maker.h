@@ -347,8 +347,8 @@ enum {
 };
 
 enum {
-    CMM_LA_PLAYING,
-    CMM_LA_MAKING,
+    CMM_LA_PLAY_LEVELS,
+    CMM_LA_BUILD,
 };
 
 enum cmm_themes {

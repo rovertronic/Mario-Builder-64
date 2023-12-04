@@ -606,7 +606,7 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     }
 
     if (sSourceWarpNodeId == WARP_NODE_DEATH) {
-        if (cmm_level_action == CMM_LA_MAKING) {
+        if (cmm_level_action == CMM_LA_BUILD) {
             cmm_target_mode = CMM_MODE_MAKE;
         }
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
@@ -1078,7 +1078,7 @@ s32 play_mode_paused(void) {
     } else { // MENU_OPT_EXIT_COURSE
 
         //normal pause exit
-        if (cmm_level_action == CMM_LA_MAKING) {
+        if (cmm_level_action == CMM_LA_BUILD) {
             cmm_target_mode = CMM_MODE_MAKE;
             initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
             fade_into_special_warp(WARP_SPECIAL_NONE, 0);
@@ -1225,7 +1225,7 @@ s32 init_level(void) {//
     }
 
     //starter variables
-    if (cmm_level_action == CMM_LA_PLAYING) {
+    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
         cmm_target_mode = CMM_MODE_PLAY;
     }
     cmm_mode = cmm_target_mode;

@@ -258,37 +258,36 @@ s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
 
 // More specialised version that handles a list of cmm_settings_buttons
 // and is scrolled with the joystick
-#define GET_BUTTON_STR(btn, index, buf) ((btn).nameFunc ? (btn).nameFunc(index, buf) : (btn).nametable[index])
+#define GET_BUTTON_STR(btn, index, buf) ((btn)->nameFunc ? (btn)->nameFunc(index, buf) : (btn)->nametable[index])
 
 void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_button *btn, s32 i, s32 joystick) {
     s32 dir = 0;
-    if (cmm_menu_index == i) {
+    s32 selected = (i == cmm_menu_index);
+    if (selected) {
         if (joystick == 1) dir = -1;
         if (joystick == 3) dir = 1;
     }
-    s32 currentVal = *(btn[i].value);
-    s32 btnSize = btn[i].size;
+    s32 currentVal = *(btn->value);
 
-    s32 prevVal = (currentVal + btnSize - 1) % btnSize;
-    s32 nextVal = (currentVal + 1) % btnSize;
-    s32 highlight = cmm_menu_index == i;
+    s32 prevVal = (currentVal + btn->size - 1) % btn->size;
+    s32 nextVal = (currentVal + 1) % btn->size;
 
     char charbuffers[3][20];
-    char *cur = GET_BUTTON_STR(btn[i], currentVal, charbuffers[0]);
-    char *prev = GET_BUTTON_STR(btn[i], prevVal, charbuffers[1]);
-    char *next = GET_BUTTON_STR(btn[i], nextVal, charbuffers[2]);
+    char *cur = GET_BUTTON_STR(btn, currentVal, charbuffers[0]);
+    char *prev = GET_BUTTON_STR(btn, prevVal, charbuffers[1]);
+    char *next = GET_BUTTON_STR(btn, nextVal, charbuffers[2]);
 
     s32 result = cmm_menu_option_sidescroll(x, y, width,
                                prev, cur, next,
-                               cmm_menu_scrolling[i], highlight, dir);
+                               cmm_menu_scrolling[i], selected, dir);
 
-    print_maker_string_ascii_centered(x - width, y, "<", highlight);
-    print_maker_string_ascii_centered(x + width, y, ">", highlight);
+    print_maker_string_ascii_centered(x - width, y, "<", selected);
+    print_maker_string_ascii_centered(x + width, y, ">", selected);
 
     if (result) {
-        *(btn[i].value) = (result == 1 ? nextVal : prevVal);
+        *(btn->value) = (result == 1 ? nextVal : prevVal);
         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-        if (btn[i].changedFunc) cmm_option_changed_func = btn[i].changedFunc;
+        if (btn->changedFunc) cmm_option_changed_func = btn->changedFunc;
     }
 }
 
@@ -365,26 +364,26 @@ void song_changed(void) {
 }
 
 void draw_cmm_settings_general(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons), cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons);i++) {
         print_maker_string_ascii( 55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_general_buttons,i,cmm_joystick);
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_general_buttons[i],i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons_vanilla), cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons_vanilla);i++) {
         print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons_vanilla[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_general_buttons_vanilla,i,cmm_joystick);
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_general_buttons_vanilla[i],i,cmm_joystick);
     }
 }
 
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_terrain_buttons), cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
         print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,cmm_settings_terrain_buttons,i,cmm_joystick);
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_terrain_buttons[i],i,cmm_joystick);
     }
 
     if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS) == (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS))) {
@@ -395,23 +394,52 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
 }
 
 void draw_cmm_settings_music(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_menu_index);
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_music_buttons), cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
         print_maker_string_ascii(35+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,100,cmm_settings_music_buttons,i,cmm_joystick);
+        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,100,&cmm_settings_music_buttons[i],i,cmm_joystick);
     }
 }
 
+struct cmm_settings_button cmm_change_size_button = {NULL,  &cmm_newsize, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table), NULL, NULL};
+
 extern u8 cmm_mm_state; //externing a variable in the same file that it's defined in? more likely than you think. how heinous.
-void draw_cmm_settings_backtomainmenu(f32 xoff, f32 yoff) {
-    if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
-        if (mount_success == FR_OK) {
-            load_level_files_from_sd_card();
-            cmm_mm_state = MM_FILES;
-        } else {
-            cmm_mm_state = MM_MAIN_LIMITED;
+void draw_cmm_settings_system(f32 xoff, f32 yoff) {
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_system_buttons), cmm_menu_index);
+    for (s32 i=0;i<2;i++) {
+        print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[i],160-(i*16)+yoff,cmm_settings_system_buttons[i],(i==cmm_menu_index));
+    }
+    
+    // Apply size
+    print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
+    cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
+    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[3],150-(3*16)+yoff,cmm_settings_system_buttons[3],(3==cmm_menu_index ? 1 : 4));
+
+    if ((gPlayer1Controller->buttonPressed & A_BUTTON) && cmm_menu_scrolling[5][0] == 0 && cmm_menu_start_timer == -1) {
+        switch (cmm_menu_index) {
+            case 0: // save and quit
+                if (mount_success == FR_OK) {
+                    save_level();
+                    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+                    load_level_files_from_sd_card();
+                    cmm_mm_state = MM_FILES;
+                } else {
+                    cmm_mm_state = MM_MAIN_LIMITED;
+                }
+                fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+                break;
+            case 1: // play level
+                if (mount_success == FR_OK) {
+                    save_level();
+                }
+                cmm_target_mode = CMM_MODE_PLAY;
+                cmm_level_action = CMM_LA_PLAY_LEVELS;
+                reset_play_state();
+                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                sSourceWarpNodeId = 0x0A;
+                play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
+                break;
         }
-        fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
 
@@ -1056,7 +1084,7 @@ s32 cmm_main_menu(void) {
                         cmm_mm_files_prev_menu = MM_MAIN;
                         cmm_tip_timer = 0;
                         cmm_mm_page = 0;
-                        cmm_level_action = CMM_LA_PLAYING;
+                        cmm_level_action = CMM_LA_PLAY_LEVELS;
                         break;
                     case 2:
                         cmm_mm_state = MM_HELP_MODE;
@@ -1103,7 +1131,7 @@ s32 cmm_main_menu(void) {
                     switch(cmm_menu_index) {
                         case 0: //play levels
                             cmm_mm_files_prev_menu = MM_PLAY;
-                            cmm_level_action = CMM_LA_PLAYING;
+                            cmm_level_action = CMM_LA_PLAY_LEVELS;
                             cmm_mm_state = MM_FILES;
                             cmm_menu_index = 0;
                             cmm_mm_page = 0;
@@ -1135,7 +1163,7 @@ s32 cmm_main_menu(void) {
                         case 1:
                             //load levels
                             cmm_mm_files_prev_menu = MM_MAKE;
-                            cmm_level_action = CMM_LA_MAKING;
+                            cmm_level_action = CMM_LA_BUILD;
                             cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
@@ -1161,7 +1189,7 @@ s32 cmm_main_menu(void) {
                 y = 150-(i*27);
                 print_maker_string_ascii_centered(x - 60, y, cmm_mode_settings_buttons[i].str,0);
                 render_cmm_mm_button(x + 20, y + 8, cmm_menu_index == i);
-                cmm_menu_option_animation(x + 20, y, 43, cmm_mode_settings_buttons, i, cmm_joystick);
+                cmm_menu_option_animation(x + 20, y, 43, &cmm_mode_settings_buttons[i], i, cmm_joystick);
             }
             x = cmm_menu_button_vels[3][0] + 160;
             y = 150-(4*27);
@@ -1492,7 +1520,7 @@ s32 cmm_main_menu(void) {
                 f_chdir("..");
                 cmm_lopt_game = level_info->option[19];
                 cmm_mm_selected_level = cmm_menu_index;
-                if (cmm_level_action == CMM_LA_MAKING) cmm_tip_timer = 60;
+                if (cmm_level_action == CMM_LA_BUILD) cmm_tip_timer = 60;
                 else cmm_tip_timer = 0;
 
                 return 1;

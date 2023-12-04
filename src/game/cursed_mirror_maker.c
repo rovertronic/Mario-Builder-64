@@ -61,7 +61,7 @@
 
 extern void super_cum_working(struct Object *obj, s32 animIndex);
 
-u8 cmm_level_action = CMM_LA_MAKING;
+u8 cmm_level_action = CMM_LA_BUILD;
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
@@ -139,6 +139,7 @@ u8 cmm_lopt_bg = 0;
 u8 cmm_lopt_plane = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
+u8 cmm_newsize = 0; // Used for changing level sizes
 u8 cmm_lopt_template = 0;
 u8 cmm_lopt_coinstar = 0;
 u8 cmm_lopt_waterlevel = 0;
@@ -2350,6 +2351,7 @@ void load_level(void) {
     cmm_lopt_waterlevel = cmm_save.option[8];
     cmm_lopt_secret = cmm_save.option[9];
 
+    cmm_newsize = cmm_lopt_size;
     if (cmm_lopt_secret) cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
     switch (cmm_lopt_size) {
         case 0:
@@ -2442,7 +2444,7 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
-    if (cmm_level_action == CMM_LA_PLAYING) {
+    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
         generate_terrain_gfx();
         generate_terrain_collision();
     } else {
@@ -2489,7 +2491,7 @@ void sb_init(void) {
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
-                if (cmm_level_action == CMM_LA_MAKING) {
+                if (cmm_level_action == CMM_LA_BUILD) {
                     gMarioState->pos[0] = (f32)(GRID_TO_POS(cmm_cursor_pos[0]));
                     gMarioState->pos[1] = (f32)(GRIDY_TO_POS(cmm_cursor_pos[1]));
                     gMarioState->pos[2] = (f32)(GRID_TO_POS(cmm_cursor_pos[2]));
@@ -2725,7 +2727,7 @@ void sb_loop(void) {
                 switch(cmm_toolbar_index) {
                     case 7: // save and test
                         if (mount_success == FR_OK) {
-                            cmm_do_save = TRUE;
+                            save_level();
                         }
                         cmm_target_mode = CMM_MODE_PLAY;
                         reset_play_state();
@@ -2736,6 +2738,7 @@ void sb_loop(void) {
                     case 8: // options
                         switch (cmm_param_selection) {
                             case 0: // settings menu
+                                cmm_newsize = cmm_lopt_size;
                                 cmm_menu_state = CMM_MAKE_SETTINGS;
                                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                                 cmm_menu_start_timer = 0;
