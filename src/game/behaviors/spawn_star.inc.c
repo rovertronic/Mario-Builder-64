@@ -41,9 +41,9 @@ void bhv_collect_star_loop(void) {
     }
     */
 
-    if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex==4)) {
-        o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
-    }
+    // if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex==4)) {
+    //     o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
+    // }
 
     if (o->oBehParams2ndByte > 1) {
         if (o->oDistanceToMario < 300.0f || o->oBehParams2ndByte == 3) {

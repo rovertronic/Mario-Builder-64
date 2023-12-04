@@ -204,9 +204,9 @@
 
 #include "bigpainting2/model.inc.c"
 
-#include "yellow_sphere_small/model.inc.c"
+// #include "yellow_sphere_small/model.inc.c"
 
-#include "hoot/model.inc.c"
+// #include "hoot/model.inc.c"
 #include "hoot/anims/data.inc.c"
 #include "hoot/anims/table.inc.c"
 
@@ -249,12 +249,15 @@
 #include "bowser/flames_data.inc.c"
 #include "impact_smoke/model.inc.c"
 
-#include "levels/ccm/crab/model.inc.c"
+#include "actors/crab/model.inc.c"
 
-#include "levels/lll/rotating_block_fire_bars/collision.inc.c"
-#include "levels/lll/rotating_block_fire_bars/model.inc.c"
+#include "actors/rotating_block_fire_bars/collision.inc.c"
+#include "actors/rotating_block_fire_bars/model.inc.c"
 
-#include "levels/ssl/grindel/collision.inc.c"
-#include "levels/ssl/grindel/model.inc.c"
+#include "actors/grindel/collision.inc.c"
+#include "actors/grindel/model.inc.c"
 #include "loopingp/model.inc.c"
 #include "loopingp/collision.inc.c"
+
+#include "motos/anims/anim.inc.c"
+#include "motos/model.inc.c"

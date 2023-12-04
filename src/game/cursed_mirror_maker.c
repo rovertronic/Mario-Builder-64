@@ -24,10 +24,6 @@
 #include "level_misc_macros.h"
 #include "level_table.h"
 #include "level_update.h"
-#include "levels/bob/header.h"
-#include "levels/bowser_3/header.h"
-#include "levels/castle_inside/header.h"
-#include "levels/hmc/header.h"
 #include "levels/menu/header.h"
 #include "main.h"
 #include "mario.h"
@@ -52,7 +48,6 @@
 #include "cursed_mirror_maker.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
-#include "levels/bob/header.h"
 #include "sram.h"
 #include "level_geo.h"
 #include "src/buffers/framebuffers.h"
@@ -66,7 +61,7 @@
 
 extern void super_cum_working(struct Object *obj, s32 animIndex);
 
-u8 cmm_level_action = CMM_LA_MAKING;
+u8 cmm_level_action = CMM_LA_BUILD;
 u8 cmm_mode = CMM_MODE_UNINITIALIZED;
 u8 cmm_target_mode = CMM_MODE_MAKE;
 u8 cmm_joystick_timer = 0;
@@ -102,6 +97,7 @@ struct cmm_obj cmm_object_data[CMM_MAX_OBJS];
 u16 cmm_tile_data_indices[NUM_MATERIALS_PER_THEME + 10] = {0};
 u16 cmm_tile_count = 0;
 u16 cmm_object_count = 0;
+u16 cmm_object_limit_count = 0; // Tracks additional objects like in coin formations, flame spinners
 u16 cmm_building_collision = FALSE; // 0 = building gfx, 1 = building collision
 
 struct Object *cmm_boundary_object[6]; //one for each side
@@ -117,7 +113,6 @@ Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
 u8 cmm_use_alt_uvs = FALSE;
-u8 cmm_uv_scaling = 1;
 s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
 u8 cmm_growth_render_type = 0;
@@ -144,21 +139,25 @@ u8 cmm_lopt_bg = 0;
 u8 cmm_lopt_plane = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
+u8 cmm_newsize = 0; // Used for changing level sizes
 u8 cmm_lopt_template = 0;
 u8 cmm_lopt_coinstar = 0;
 u8 cmm_lopt_waterlevel = 0;
+u8 cmm_lopt_secret = 0;
 
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
 s8 cmm_menu_index = 0;
 s8 cmm_toolbar_index = 0;
 s8 cmm_toolbox_index = 0;
-u8 cmm_ui_do_render = TRUE;
+u8 cmm_prepare_level_screenshot = FALSE;
 u8 cmm_do_save = FALSE;
 
-char *cmm_error_message = NULL;
-u16 cmm_error_timer = 0;
-f32 cmm_error_vels[3];
+char *cmm_topleft_message = NULL;
+u8 cmm_topleft_is_tip = FALSE;
+u16 cmm_topleft_max_timer = 120;
+u16 cmm_topleft_timer = 0;
+f32 cmm_topleft_vels[3];
 
 struct cmm_level_save_header cmm_save;
 char cmm_username[31];
@@ -167,6 +166,7 @@ u8 cmm_has_username = FALSE;
 u8 cmm_num_vertices_cached = 0;
 u8 cmm_num_tris_cached = 0;
 u8 cmm_cached_tris[16][3];
+s16 cmm_tip_timer = 0;
 
 struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
@@ -186,14 +186,24 @@ void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
 }
 
-void cmm_show_error_message(char *message) {
-    if ((message != cmm_error_message) || (cmm_error_timer < 30)) {
-        cmm_error_message = message;
-        cmm_error_timer = 120;
+void cmm_show_topleft_message(char *message, s32 isTip) {
+    cmm_topleft_is_tip = isTip;
+    cmm_topleft_max_timer = (isTip ? 220 : 120);
+    if ((message != cmm_topleft_message) || (cmm_topleft_timer < 30)) {
+        cmm_topleft_message = message;
+        cmm_topleft_timer = cmm_topleft_max_timer;
     } else {
-        if (cmm_error_timer < 90) cmm_error_timer = 90;
+        if (cmm_topleft_timer < cmm_topleft_max_timer - 30) cmm_topleft_timer = cmm_topleft_max_timer - 30;
     }
+}
+void cmm_show_error_message(char *message) {
+    cmm_show_topleft_message(message, FALSE);
     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+}
+void cmm_show_tip() {
+    s32 count = ARRAY_COUNT(cmm_tips);
+    if (cmm_lopt_game != CMM_GAME_BTCM) count -= NUM_BTCM_TIPS;
+    cmm_show_topleft_message(cmm_tips[(s32)(random_float() * count)], TRUE);
 }
 
 void reset_play_state(void) {
@@ -229,8 +239,23 @@ s32 tile_sanity_check(void) {
     return TRUE;
 }
 
+// Get number of extra objects used by an object
+s32 get_extra_objects(struct cmm_object_info *info, s32 param) {
+    if (info == &cmm_object_type_fire_spinner) {
+        return (param + 2) * 2;
+    }
+    if (info == &cmm_object_type_coin_formation) {
+        return (param <= 1 ? 5 : 8);
+    }
+    return info->numExtraObjects;
+}
+
 s32 object_sanity_check(void) {
-    if (cmm_object_count >= CMM_MAX_OBJS) {
+    struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
+    if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
+        info = &info[cmm_param_selection];
+    }
+    if (cmm_object_limit_count + get_extra_objects(info, cmm_param_selection) >= CMM_MAX_OBJS) {
         cmm_show_error_message("Object limit reached! (max 512)");
         return FALSE;
     }
@@ -293,24 +318,23 @@ struct Object * get_spawn_preview_object() {
     return NULL;
 }
 
-ALWAYS_INLINE void place_terrain_data(s8 pos[3], u32 type, u32 rot, u32 mat) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type + 1;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
+#define place_terrain_data(pos, type_, rot_, mat_) {          \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot_;       \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type_ + 1; \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat_;       \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
 }
 
-ALWAYS_INLINE void remove_terrain_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;
+#define remove_terrain_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;         \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;        \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
 }
 
-//ALWAYS_INLINE struct cmm_grid_obj *get_grid_tile(s8 pos[3]) {
-//    return &cmm_grid_data[pos[0]][pos[1]][pos[2]];
-//}
 #define get_grid_tile(pos) (&(cmm_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
+
+#define rotate_direction(dir, rot) (cmm_rotated_dirs[rot][dir])
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain;
@@ -323,7 +347,7 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     if (!terrain) return CMM_FACESHAPE_EMPTY;
 
     u8 rot = get_grid_tile(pos)->rot;
-    dir = ROTATE_DIRECTION(dir,((4-rot) % 4)) ^ 1;
+    dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
 
     for (u32 i = 0; i < terrain->numQuads; i++) {
         struct cmm_terrain_quad *quad = &terrain->quads[i];
@@ -340,18 +364,15 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     return CMM_FACESHAPE_EMPTY;
 }
 
-ALWAYS_INLINE void place_occupy_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE;
+#define place_occupy_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE; \
 }
 
-ALWAYS_INLINE void remove_occupy_data(s8 pos[3]) {
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE;
+#define remove_occupy_data(pos) { \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE; \
 }
 
-ALWAYS_INLINE s32 get_occupy_data(s8 pos[3]) {
-    if (!coords_in_range(pos)) return FALSE;
-    return cmm_grid_data[pos[0]][pos[1]][pos[2]].occupied;
-}
+#define get_occupy_data(pos) (coords_in_range(pos) ? get_grid_tile(pos)->occupied : FALSE)
 
 s8 cullOffsetLUT[6][3] = {
     {0, 1, 0},
@@ -364,7 +385,7 @@ s8 cullOffsetLUT[6][3] = {
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
@@ -406,7 +427,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 
 // Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
 s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
 
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
@@ -574,7 +595,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
     n[1] = normal[1] * 0x7F;
     n[2] = normal[2] * 0x7F;
     // Find UVs
-    direction = ROTATE_DIRECTION(direction, rot);
+    direction = rotate_direction(direction, rot);
     switch (direction) {
         case CMM_DIRECTION_NEG_X: *uAxis = 2; *vAxis = 1; return TRUE;
         case CMM_DIRECTION_POS_X: *uAxis = 2; *vAxis = 1; return FALSE;
@@ -607,7 +628,7 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
-            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
+            (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
     }
     
@@ -644,7 +665,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
             GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            (u * 64 + cmm_uv_offset) * cmm_uv_scaling, (v * 64 + cmm_uv_offset) * cmm_uv_scaling,
+            (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
     }
 
@@ -746,7 +767,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
             if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
@@ -760,8 +781,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             return TRUE;
         case CMM_GROWTH_UNDERSLOPE_CORNER:
             ;// some very cursed logic here, this is solely for upside-down inside corners
-            u8 faceshape1 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot)^1);
-            u8 faceshape2 = get_faceshape(newpos, ROTATE_DIRECTION(CMM_DIRECTION_POS_X, rot)^1);
+            u8 faceshape1 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_Z, rot)^1);
+            u8 faceshape2 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_X, rot)^1);
             // this is basically just checking for if a normal slope corner is on top at the right angle
             if (faceshape1 == CMM_FACESHAPE_TRI_1 && faceshape2 == CMM_FACESHAPE_TRI_2)
                 return FALSE;
@@ -788,7 +809,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
 
             // Check if below block is right shape and culled
             // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(newpos, ROTATE_DIRECTION(direction, rot)^1);
+            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
             if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
             if (should_cull_topslab_check(newpos, direction, rot)) return TRUE;
             
@@ -918,7 +939,7 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
 
     for (u32 rot = 0; rot < 4; rot++) {
         connections[rot] = 0;
-        s32 dir = ROTATE_DIRECTION(CMM_DIRECTION_POS_Z, rot);
+        s32 dir = rotate_direction(CMM_DIRECTION_POS_Z, rot);
         vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
         if (!coords_in_range(adjacentPos)) continue;
 
@@ -954,11 +975,15 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
+        } else if (adjacentPos[1] == -1) { // Culling for bottom
+            for (u32 rot = 0; rot < 5; rot++) {
+                connections[rot] |= (1 << 2);
+            }
         }
     }
 }
 
-void render_bars(s8 pos[3]) {
+void render_bars_side(s8 pos[3]) {
     u8 connections[5];
     check_bar_connections(pos, connections);
 
@@ -966,16 +991,30 @@ void render_bars(s8 pos[3]) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
         if (BAR_CONNECTED_SIDE(connections[rot])) {
-            for (u32 j = 0; j < 4; j++) {
-                if (j == 2 && BAR_CONNECTED_TOP(connections[rot])) continue;
-                if (j == 3 && BAR_CONNECTED_BOTTOM(connections[rot])) continue;
-                struct cmm_terrain_quad *quad = &cmm_terrain_bars_connected_quads[j];
-                process_quad(pos, quad, rot);
-            }
+            process_quad(pos, &cmm_terrain_bars_connected_quads[0], rot);
+            process_quad(pos, &cmm_terrain_bars_connected_quads[1], rot);
         }
         if (!BAR_CONNECTED_SIDE(connections[rot]) ||
             (BAR_CONNECTED_SIDE(connections[leftRot]) && BAR_CONNECTED_SIDE(connections[rightRot]))) {
             process_quad(pos, cmm_terrain_bars_unconnected_quad, rot);
+        }
+    }
+}
+
+void render_bars_top(s8 pos[3]) {
+    u8 connections[5];
+    check_bar_connections(pos, connections);
+
+    for (u32 rot = 0; rot < 4; rot++) {
+        u32 leftRot = (rot + 3) % 4;
+        u32 rightRot = (rot + 1) % 4;
+        if (BAR_CONNECTED_SIDE(connections[rot])) {
+            if (!BAR_CONNECTED_TOP(connections[rot])) {
+                process_quad(pos, &cmm_terrain_bars_connected_quads[2], rot);
+            }
+            if (!BAR_CONNECTED_BOTTOM(connections[rot])) {
+                process_quad(pos, &cmm_terrain_bars_connected_quads[3], rot);
+            }
         }
     }
     if (!BAR_CONNECTED_TOP(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[0], 0);
@@ -990,11 +1029,16 @@ u32 is_water_fullblock(s8 pos[3]) {
     // Full block if above block is water
     if (get_grid_tile(abovePos)->waterlogged) return TRUE;
     // Full block if waterlogging a block and it has a solid top face
-    if ((get_grid_tile(pos)->type - 1) != TILE_TYPE_WATER) {
-        if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) return TRUE;
+    s32 type = get_grid_tile(pos)->type - 1;
+    if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
+        if ((get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT)) return TRUE;
     }
     // Full block if above block has solid bottom face
-    if (get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) return TRUE;
+    if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
+        // If above block is troll, but current block is also troll, then not full block
+        if ((type == TILE_TYPE_TROLL) && (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_TROLL)) return FALSE;
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -1016,7 +1060,10 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Apply normal side culling
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0)) return 0;
+    // Usually this would fail if next to a mesh, but it will pass if
+    // the current tile is the same material, which in this case will happen
+    // if an entire mesh is waterlogged.
+    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (MATERIAL(get_grid_tile(adjacentPos)->mat).type != MAT_CUTOUT)) return 0;
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
@@ -1031,7 +1078,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) {
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
         return 0;
     }
 
@@ -1132,10 +1179,10 @@ Gfx *get_sidetex(s32 mat) {
 }
 
 
-#define retroland_filter_on() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
-#define retroland_filter_off() if (cmm_lopt_theme == CMM_THEME_RETRO) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = -16; }
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 2; }
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); cmm_uv_scaling = 1; }
+#define retroland_filter_on() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
+#define retroland_filter_off() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16); }
+#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
+#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1150,7 +1197,6 @@ void process_tiles(u32 isTransparent) {
         cmm_growth_render_type = 0;
 
         PROC_RENDER( if (isTransparent ^ (MATERIAL(mat).type == MAT_TRANSPARENT)) continue; \
-                     if (isTransparent) gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2); \
                      gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
                      cutout_turn_culling_off(mat);)
 
@@ -1170,7 +1216,7 @@ void process_tiles(u32 isTransparent) {
         }
 
         PROC_RENDER( display_cached_tris(); \
-                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2); \
+                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); \
                      cutout_turn_culling_on(mat); )
         
         if (cmm_curr_mat_has_topside) {
@@ -1189,7 +1235,7 @@ void process_tiles(u32 isTransparent) {
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
@@ -1224,6 +1270,7 @@ void generate_terrain_gfx(void) {
 
     cmm_use_alt_uvs = FALSE;
     cmm_render_flip_normals = FALSE;
+    cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
     retroland_filter_on();
 
@@ -1263,17 +1310,24 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
-    cmm_uv_scaling = 2;
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars(pos);
+        render_bars_side(pos);
     }
     display_cached_tris();
-    cmm_uv_scaling = 1;
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
+    gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+    for (u32 i = startIndex; i < endIndex; i++) {
+        s8 pos[3];
+        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+        render_bars_top(pos);
+    }
+    display_cached_tris();
+    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     // Poles
@@ -1299,7 +1353,7 @@ void generate_terrain_gfx(void) {
         process_tile(pos, &cmm_terrain_fence, cmm_tile_data[i].rot);
     }
     display_cached_tris();
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_OPA_SURF, G_RM_ZB_OPA_SURF2);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     cmm_use_alt_uvs = FALSE;
 
     process_tiles(FALSE);
@@ -1320,6 +1374,8 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
+            if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
+                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1328,6 +1384,8 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = FALSE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
+            if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
+                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1342,7 +1400,7 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = FALSE;
 
     process_tiles(TRUE);
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
@@ -1455,9 +1513,12 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    cmm_uv_scaling = 2;
-                    render_bars(cmm_cursor_pos);
-                    cmm_uv_scaling = 1;
+                    render_bars_side(cmm_cursor_pos);
+                    display_cached_tris();
+                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
+                    gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+                    render_bars_top(cmm_cursor_pos);
+                    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
                 }
                 display_cached_tris();
                 cmm_use_alt_uvs = FALSE;
@@ -1552,7 +1613,6 @@ void generate_terrain_collision(void) {
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
-    //the first thing to do is to generate the plane... there's only 2 types so it's a hardcoded switchcase
     TerrainData floorY;
 
     if (cmm_lopt_plane == 0) {
@@ -1589,7 +1649,8 @@ void generate_terrain_collision(void) {
     for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars(pos);
+        render_bars_side(pos);
+        render_bars_top(pos);
     }
 
     cmm_building_collision = FALSE;
@@ -1605,7 +1666,7 @@ void generate_terrain_collision(void) {
 
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
-    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - 32);
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - (TILE_SIZE / 8));
     if (y < waterPlaneHeight) {
         return waterPlaneHeight;
     }
@@ -1640,7 +1701,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     if (is_water_fullblock(pos)) {
         return (pos[1] + 1) * TILE_SIZE;
     }
-    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 16);
+    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 8);
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
@@ -1671,6 +1732,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, 
 void generate_object_preview(void) {
     s32 totalCoins = 0;
     s32 doubleCoins = FALSE;
+    cmm_object_limit_count = 0;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
     while (preview_object) {
         unload_object(preview_object);
@@ -1693,18 +1755,27 @@ void generate_object_preview(void) {
 
         spawn_preview_object(pos, cmm_object_data[i].rot, cmm_object_data[i].param1, param, info, bhvPreviewObject, useTrajectory);
         totalCoins += info->numCoins;
-
         if (info == &cmm_object_type_exclamationbox) {
             totalCoins += cmm_exclamation_box_contents[param].numCoins;
         }
         if (info == &cmm_object_type_badge && param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
+
+        s32 extraObjs = get_extra_objects(info, param);
+        if (info == &cmm_object_type_coin_formation) {
+            totalCoins += extraObjs;
+        }
+        cmm_object_limit_count += extraObjs + 1;
     }
     if (doubleCoins) totalCoins *= 2;
 
     u32 length = MIN(totalCoins / 20, 50);
-    cmm_settings_general_buttons[4].size = length + 1;
+    if (cmm_lopt_theme == CMM_GAME_BTCM) {
+        cmm_settings_general_buttons[GENERAL_COINSTAR_INDEX].size = length + 1;
+    } else {
+        cmm_settings_general_buttons_vanilla[GENERALV_COINSTAR_INDEX].size = length + 1;
+    }
 
     if (cmm_lopt_coinstar > length) {
         cmm_lopt_coinstar = length;
@@ -1800,7 +1871,7 @@ void place_tile(s8 pos[3]) {
         }
     }
 
-    if (cmm_id_selection == TILE_TYPE_BLOCK) {
+    if ((cmm_id_selection == TILE_TYPE_BLOCK) && (MATERIAL(cmm_mat_selection).type != MAT_CUTOUT)) {
         waterlogged = FALSE;
     }
     // If placing a cull marker, check that its actually next to a tile
@@ -1862,7 +1933,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if (tileType == TILE_TYPE_BLOCK) {
+        if ((tileType == TILE_TYPE_BLOCK) && (MATERIAL(tile->mat).type != MAT_CUTOUT)) {
             return;
         }
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
@@ -2124,7 +2195,7 @@ void save_level(void) {
     s16 i;
     s16 j;
 
-    bzero(&cmm_save, sizeof(cmm_save));
+    //bzero(&cmm_save, sizeof(cmm_save)); // should be safe to not need this right?
 
     //file header
     for (i=0;i<10;i++) {
@@ -2154,6 +2225,7 @@ void save_level(void) {
     cmm_save.option[6] = cmm_lopt_coinstar;
     cmm_save.option[7] = cmm_lopt_size;
     cmm_save.option[8] = cmm_lopt_waterlevel;
+    cmm_save.option[9] = cmm_lopt_secret;
     cmm_save.option[19] = cmm_lopt_game;
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
@@ -2165,18 +2237,22 @@ void save_level(void) {
         }
     }
 
-    for (i=0;i<4096;i++) {
-        //take a "screenshot" of the level & burn in a painting frame
-        if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
-            //painting
-            cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
-        } else {
-            //painting frame
-            cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
+    // If in screenshot mode
+    if (cmm_prepare_level_screenshot) {
+        for (i=0;i<4096;i++) {
+            //take a "screenshot" of the level & burn in a painting frame
+            if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
+                //painting
+                cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
+            } else {
+                //painting frame
+                cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
+            }
         }
-    }
 
-    update_painting();
+        update_painting();
+        cmm_prepare_level_screenshot = FALSE;
+    }
 
 
     f_chdir(cmm_level_dir_name);
@@ -2241,8 +2317,8 @@ void load_level(void) {
 
         if (cmm_templates[cmm_lopt_template].platform) {
             u8 i = 0;
-            for (s8 x = -1; x <= 1; x++) {
-                for (s8 z = -1; z <= 1; z++) {
+            for (s32 x = -1; x <= 1; x++) {
+                for (s32 z = -1; z <= 1; z++) {
                     cmm_tile_data[i].x = 32+x;
                     cmm_tile_data[i].y = 0;
                     cmm_tile_data[i].z = 32+z;
@@ -2263,16 +2339,20 @@ void load_level(void) {
 
     cmm_lopt_seq = cmm_save.option[1];
     set_album_and_song_from_seq();
-    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[2], sizeof(struct cmm_settings_button));
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
     cmm_lopt_envfx = cmm_save.option[2];
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
 
-    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
+    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
     cmm_lopt_waterlevel = cmm_save.option[8];
+    cmm_lopt_secret = cmm_save.option[9];
+
+    cmm_newsize = cmm_lopt_size;
+    if (cmm_lopt_secret) cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
@@ -2364,7 +2444,7 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
-    if (cmm_level_action == CMM_LA_PLAYING) {
+    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
         generate_terrain_gfx();
         generate_terrain_collision();
     } else {
@@ -2404,12 +2484,14 @@ void sb_init(void) {
         case CMM_MODE_PLAY:
             cmm_menu_state = CMM_MAKE_PLAY;
             generate_terrain_collision();
+            reset_rng();
+            gGlobalTimer = 0;
             generate_objects_to_level();
             load_obj_warp_nodes();
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
-                if (cmm_level_action == CMM_LA_MAKING) {
+                if (cmm_level_action == CMM_LA_BUILD) {
                     gMarioState->pos[0] = (f32)(GRID_TO_POS(cmm_cursor_pos[0]));
                     gMarioState->pos[1] = (f32)(GRIDY_TO_POS(cmm_cursor_pos[1]));
                     gMarioState->pos[2] = (f32)(GRID_TO_POS(cmm_cursor_pos[2]));
@@ -2418,6 +2500,7 @@ void sb_init(void) {
                 } else {
                     gMarioState->faceAngle[1] = spawn_obj->oFaceAngleYaw;
                     vec3_copy(gMarioState->pos,&spawn_obj->oPosVec);
+                    set_mario_action(gMarioState,ACT_SPAWN_SPIN_AIRBORNE,0);
                 }
                 gMarioState->pos[1] -= TILE_SIZE/2;
 
@@ -2487,6 +2570,7 @@ u32 main_cursor_logic(u32 joystick) {
     //camera zooming
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         cmm_camera_zoom_index++;
+        play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
     }
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
@@ -2508,7 +2592,7 @@ void update_boundary_wall() {
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[5]->oPosZ = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
 
-    if (!cmm_ui_do_render) {
+    if (cmm_prepare_level_screenshot) {
         for (int i=0; i<6; i++) {
             cmm_boundary_object[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
         }
@@ -2531,9 +2615,10 @@ void (*cmm_option_changed_func)(void) = NULL;
 
 void reload_theme(void) {
     generate_terrain_gfx();
-    cmm_settings_terrain_buttons[2].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
-    if (cmm_lopt_plane > cmm_settings_terrain_buttons[2].size - 1) {
-        cmm_lopt_plane = cmm_settings_terrain_buttons[2].size - 1;
+    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
+    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = numFloors + 1;
+    if (cmm_lopt_plane > numFloors) {
+        cmm_lopt_plane = numFloors;
     }
 
     generate_object_preview();
@@ -2588,6 +2673,9 @@ void sb_loop(void) {
         cmm_option_changed_func();
         cmm_option_changed_func = NULL;
     }
+    if ((cmm_menu_state != CMM_MAKE_PLAY) && cmm_tip_timer) {
+        if (!(--cmm_tip_timer)) cmm_show_tip();
+    }
 
     switch(cmm_menu_state) {
         case CMM_MAKE_MAIN:
@@ -2598,11 +2686,13 @@ void sb_loop(void) {
                 cmm_toolbar_index--;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
                 cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbar_index = (cmm_toolbar_index+9)%9;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
@@ -2622,35 +2712,45 @@ void sb_loop(void) {
                 if (gPlayer1Controller->buttonPressed & L_JPAD) {
                     cmm_param_selection --;
                     updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 }
                 if (gPlayer1Controller->buttonPressed & R_JPAD) {
                     cmm_param_selection ++;
                     updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 }
             }
 
             //Single A press
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            if (gPlayer1Controller->buttonPressed & A_BUTTON || 
+                ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index >= 7))) {
                 switch(cmm_toolbar_index) {
+                    case 7: // save and test
+                        if (mount_success == FR_OK) {
+                            save_level();
+                        }
+                        cmm_target_mode = CMM_MODE_PLAY;
+                        reset_play_state();
+                        level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                        sSourceWarpNodeId = 0x0A;
+                        play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
+                        break;
                     case 8: // options
                         switch (cmm_param_selection) {
-                            case 1: // settings menu
+                            case 0: // settings menu
+                                cmm_newsize = cmm_lopt_size;
                                 cmm_menu_state = CMM_MAKE_SETTINGS;
+                                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                                 cmm_menu_start_timer = 0;
                                 cmm_menu_end_timer = -1;
                                 cmm_menu_index = 0;
                                 animate_list_reset();
                                 break;
-                            case 0: // test mode
-                                cmm_target_mode = CMM_MODE_PLAY;
-                                reset_play_state();
-                                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                                sSourceWarpNodeId = 0x0A;
-                                break;
-                            case 2: // save
+                            case 1: // save
                                 if (mount_success == FR_OK) {
                                     cmm_do_save = TRUE;
-                                    cmm_ui_do_render = FALSE;
+                                    cmm_prepare_level_screenshot = TRUE;
+                                    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                                 } else {
                                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                                 }
@@ -2661,7 +2761,7 @@ void sb_loop(void) {
                         place_thing_action();
                 }
             } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (cmm_toolbar_index != 8) {
+                if (cmm_toolbar_index < 7) {
                     place_thing_action();
                 }
             }
@@ -2670,18 +2770,17 @@ void sb_loop(void) {
                 delete_tile_action(cmm_cursor_pos);
             }
 
-            if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+            if (gPlayer1Controller->buttonPressed & START_BUTTON && (cmm_toolbar_index < 7)) {
                 cmm_menu_start_timer = 0;
                 cmm_menu_end_timer = -1;
                 cmm_menu_index = 0;
                 cmm_menu_state = CMM_MAKE_TOOLBOX;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 animate_list_reset();
-                if (cmm_toolbar_index == 8) {
-                    cmm_toolbar_index = 7;
-                }
             }
 
             if (gPlayer1Controller->buttonPressed & U_JPAD) {
+                if (get_flipped_tile(cmm_id_selection) != -1) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
                 cmm_upsidedown_tile ^= 1;
             }
 
@@ -2716,7 +2815,7 @@ void sb_loop(void) {
                 cmm_mat_selection = (cmm_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
             }
 
-            if (!cmm_ui_do_render) {
+            if (cmm_prepare_level_screenshot) {
                 o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
             } else {
                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
@@ -2724,7 +2823,7 @@ void sb_loop(void) {
 
             struct Object *spawnobjp = get_spawn_preview_object();
             if (spawnobjp) {
-                if (!cmm_ui_do_render) {
+                if (cmm_prepare_level_screenshot) {
                     spawnobjp->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                 } else {
                     spawnobjp->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
@@ -2754,6 +2853,7 @@ void sb_loop(void) {
                         cmm_toolbox_index-=9;
                     break;
                 }
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbox_index = (cmm_toolbox_index+sizeof(cmm_toolbox))%sizeof(cmm_toolbox);
 
@@ -2761,12 +2861,14 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_toolbar_index--;
                 cmm_toolbox_transition_btn_render = FALSE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
                 cmm_toolbox_transition_btn_render = FALSE;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
-            cmm_toolbar_index = (cmm_toolbar_index+8)%8;
+            cmm_toolbar_index = (cmm_toolbar_index+7)%7;
             cmm_id_selection = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].id;
             cmm_place_mode = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].placeMode;
 

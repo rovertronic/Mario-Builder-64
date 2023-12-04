@@ -3993,7 +3993,6 @@ layer_note1 31, 0xe, 100
 layer_note1 32, 0xc, 100
 .layer_181A:
 layer_note1 34, 0xa, 100
-layer_jump .layer_181A
 layer_end
 
 .sound_general_bowser_key:
@@ -6665,7 +6664,7 @@ layer_end
 
 .channel6_table:
 sound_ref .sound_air_bowser_spit_fire
-sound_ref .chan_29C2
+sound_ref .sound_air_amp_preview
 sound_ref .sound_air_lakitu_fly
 sound_ref .sound_air_amp_buzz
 sound_ref .sound_air_blow_fire
@@ -6752,6 +6751,17 @@ layer_somethingon
 .layer_29FB:
 layer_note1 46, 0xc8, 92
 layer_jump .layer_29FB
+layer_end
+
+.sound_air_amp_preview:
+chan_setbank 3
+chan_setinstr 9
+chan_setlayer 0, .layer_amp_preview
+chan_end
+
+.layer_amp_preview:
+layer_somethingon
+layer_note1 46, 0x30, 92
 layer_end
 
 .sound_air_blow_fire:

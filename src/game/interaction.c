@@ -740,9 +740,9 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
         //BTCM COIN HEAL BEHAVIOR
         if (obj->oDamageOrCoinValue == 3) { //green coin
             if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
-                m->healCounter += 4 * gMarioState->numMaxHP;//green coins fully heal with badge
+                m->healCounter += 4 * 8;//green coins fully heal with badge
             } else {
-                m->healCounter += 4 * ((f32)(gMarioState->numMaxHP)/2.0f); //green coins heal half hp
+                m->healCounter += 4 * 4;
             }
         } else {//every other coin
             m->healCounter += 4; //every other coin gives 1 hp back
@@ -995,7 +995,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
         if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_2)) {
                 if (!sDisplayingDoorText) {
-                    run_event(EVENT_KEYDOOR);
+                    //run_event(EVENT_KEYDOOR);
                 }
                 sDisplayingDoorText = TRUE;
 
@@ -1009,7 +1009,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_1)) {
                 if (!sDisplayingDoorText) {
                     // Moat door skip was intended confirmed
-                    run_event(EVENT_KEYDOOR);
+                    //run_event(EVENT_KEYDOOR);
                 }
                 sDisplayingDoorText = TRUE;
 
@@ -1093,13 +1093,13 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
             switch(behparam1) {
                 case 0:
-                    run_event(EVENT_STARDOOR);
+                    //run_event(EVENT_STARDOOR);
                 break;
                 case 1:
-                    run_event(EVENT_METALSTARDOOR);
+                    //run_event(EVENT_METALSTARDOOR);
                 break;
                 case 2:
-                    run_event(EVENT_VIRTUAPLEX_DOOR);
+                    //run_event(EVENT_VIRTUAPLEX_DOOR);
                 break;
             }
 
@@ -1982,7 +1982,7 @@ void check_lava_boost(struct MarioState *m) {
         }
 
         update_mario_sound_and_camera(m);
-        drop_and_set_mario_action(m, ACT_LAVA_BOOST, 0);
+        drop_and_set_mario_action(m, ACT_LAVA_BOOST, (m->floor->type == SURFACE_BURNING ? 0 : 2));
     }
 }
 

@@ -44,11 +44,11 @@ void bhv_red_coin_init(void) {
 void bhv_red_coin_loop(void) {
     // If Mario interacted with the object...
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-        //for BOARD minigame
-        if (gCurrLevelNum == LEVEL_SA) {
-            gMarioState->EA_WAVES++;
-            save_file_set_hiscore(7,gMarioState->EA_WAVES);
-        }
+        // //for BOARD minigame
+        // if (gCurrLevelNum == LEVEL_SA) {
+        //     gMarioState->EA_WAVES++;
+        //     save_file_set_hiscore(7,gMarioState->EA_WAVES);
+        // }
         // ...and there is a red coin star in the level...
         if (o->parentObj != NULL) {
             // ...increment the star's counter.

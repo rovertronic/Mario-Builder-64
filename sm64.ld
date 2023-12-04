@@ -487,6 +487,7 @@ SECTIONS
    BEGIN_SEG(scripts, 0x15000000)
    {
       BUILD_DIR/levels/scripts.o(.data*);
+      BUILD_DIR/levels/scripts.o(.bss*);
    }
    END_SEG(scripts)
 
@@ -502,18 +503,6 @@ SECTIONS
    YAY0_SEG(bits_skybox,        0x0A000000)
 
    // Texture bins
-   YAY0_SEG(fire,     0x09000000)
-   YAY0_SEG(spooky,   0x09000000)
-   YAY0_SEG(generic,  0x09000000)
-   YAY0_SEG(water,    0x09000000)
-   YAY0_SEG(sky,      0x09000000)
-   YAY0_SEG(snow,     0x09000000)
-   YAY0_SEG(cave,     0x09000000)
-   YAY0_SEG(machine,  0x09000000)
-   YAY0_SEG(mountain, 0x09000000)
-   YAY0_SEG(grass,    0x09000000)
-   YAY0_SEG(outside,  0x09000000)
-   YAY0_SEG(inside,   0x09000000)
    YAY0_SEG(effect,   0x0B000000)
 
 #define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
@@ -533,12 +522,6 @@ SECTIONS
       KEEP(BUILD_DIR/sound/sound_data.o(.data*));
    }
    END_SEG(assets)
-
-   BEGIN_SEG(bad_apple, 0x09000000)
-   {
-      KEEP(BUILD_DIR/data/bad_apple_data.o(.data*));
-   }
-   END_SEG(bad_apple)
 
 #ifdef HVQM
    BEGIN_SEG(capcom, __romPos) SUBALIGN(2)

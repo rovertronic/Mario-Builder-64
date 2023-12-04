@@ -36,7 +36,7 @@ struct WarpCheckpoint gWarpCheckpoint;
 s8 gMainMenuDataModified;
 s8 gSaveFileModified;
 
-u8 gLastCompletedCourseNum = COURSE_NONE;
+u8 gLastCompletedCourseNum = 0;
 u8 gLastCompletedStarNum = 0;
 s8 sUnusedGotGlobalCoinHiScore = FALSE;
 u8 gGotFileCoinHiScore = FALSE;
@@ -471,23 +471,23 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
         }
     }
 
-    switch (gCurrLevelNum) {
-        case LEVEL_BOWSER_1:
-            if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR))) {
-                save_file_set_flags(SAVE_FLAG_HAVE_KEY_1);
-            }
-            break;
+    // switch (gCurrLevelNum) {
+    //     case LEVEL_BOWSER_1:
+    //         if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR))) {
+    //             save_file_set_flags(SAVE_FLAG_HAVE_KEY_1);
+    //         }
+    //         break;
 
-        case LEVEL_BOWSER_2:
-            if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR))) {
-                save_file_set_flags(SAVE_FLAG_HAVE_KEY_2);
-            }
-            break;
+    //     case LEVEL_BOWSER_2:
+    //         if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR))) {
+    //             save_file_set_flags(SAVE_FLAG_HAVE_KEY_2);
+    //         }
+    //         break;
 
-        case LEVEL_BOWSER_3:
-            break;
+    //     case LEVEL_BOWSER_3:
+    //         break;
 
-        default:
+        // default:
 #ifdef GLOBAL_STAR_IDS
             if (!(save_file_get_star_flags(fileIndex, starByte) & starFlag)) {
                 save_file_set_star_flags(fileIndex, starByte, starFlag);
@@ -497,8 +497,8 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
                 save_file_set_star_flags(fileIndex, courseIndex, starFlag);
             }
 #endif
-            break;
-    }
+            // break;
+    // }
 }
 
 s32 save_file_exists(s32 fileIndex) {
@@ -558,42 +558,42 @@ s32 save_file_get_course_star_count(s32 fileIndex, s32 courseIndex) {
     return count;
 }
 
-s32 save_file_get_course_star_count_golden(s32 fileIndex, s32 courseIndex) {
-    s32 i;
-    s32 count = 0;
-    u8 flag = 1;
-    u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
-    u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
-    u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
+// s32 save_file_get_course_star_count_golden(s32 fileIndex, s32 courseIndex) {
+//     s32 i;
+//     s32 count = 0;
+//     u8 flag = 1;
+//     u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+//     // u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
+//     // u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
 
 
-    for (i = 0; i < 8; i++, flag <<= 1) {
-        if (((i != 6)&&(!aglevel))||(sfair_level)) {
-            if (starFlags & flag) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
+//     for (i = 0; i < 8; i++, flag <<= 1) {
+//         if (((i != 6)&&(!aglevel))||(sfair_level)) {
+//             if (starFlags & flag) {
+//                 count++;
+//             }
+//         }
+//     }
+//     return count;
+// }
 
-s32 save_file_get_course_star_count_metal(s32 fileIndex, s32 courseIndex) {
-    s32 i;
-    s32 count = 0;
-    u8 flag = 1;
-    u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
-    u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
-    u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
+// s32 save_file_get_course_star_count_metal(s32 fileIndex, s32 courseIndex) {
+//     s32 i;
+//     s32 count = 0;
+//     u8 flag = 1;
+//     u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+//     u8 aglevel = ((courseIndex >= 11)&&(courseIndex <= 14));
+//     u8 sfair_level = ((courseIndex == 10)||(courseIndex==-1));
 
-    for (i = 0; i < 8; i++, flag <<= 1) {
-        if (((i == 6)||(aglevel))&&(!sfair_level)) {
-            if (starFlags & flag) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
+//     for (i = 0; i < 8; i++, flag <<= 1) {
+//         if (((i == 6)||(aglevel))&&(!sfair_level)) {
+//             if (starFlags & flag) {
+//                 count++;
+//             }
+//         }
+//     }
+//     return count;
+// }
 #endif
 
 s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
@@ -602,30 +602,27 @@ s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) 
     for (; minCourse <= maxCourse; minCourse++) {
         count += save_file_get_course_star_count(fileIndex, minCourse);
     }
-
-    // Add castle secret star count.
-    return save_file_get_course_star_count(fileIndex, COURSE_NUM_TO_INDEX(COURSE_NONE)) + count;
 }
 
-s32 save_file_get_total_golden_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
-    s32 count = 0;
+// s32 save_file_get_total_golden_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+//     s32 count = 0;
 
-    for (; minCourse <= maxCourse; minCourse++) {
-        count += save_file_get_course_star_count_golden(fileIndex, minCourse);
-    }
+//     for (; minCourse <= maxCourse; minCourse++) {
+//         count += save_file_get_course_star_count_golden(fileIndex, minCourse);
+//     }
 
-    // Add castle secret star count.
-    return save_file_get_course_star_count(fileIndex, -1) + count;
-}
+//     // Add castle secret star count.
+//     return save_file_get_course_star_count(fileIndex, -1) + count;
+// }
 
-s32 save_file_get_total_metal_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
-    s32 count = 0;
+// s32 save_file_get_total_metal_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) {
+//     s32 count = 0;
 
-    for (; minCourse <= maxCourse; minCourse++) {
-       count += save_file_get_course_star_count_metal(fileIndex, minCourse);
-    }
-    return count;
-}
+//     for (; minCourse <= maxCourse; minCourse++) {
+//        count += save_file_get_course_star_count_metal(fileIndex, minCourse);
+//     }
+//     return count;
+// }
 
 void save_file_set_flags(u32 flags) {
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);
@@ -752,11 +749,7 @@ u32 save_file_get_star_flags(UNUSED s32 fileIndex, UNUSED s32 courseIndex) {
 u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
     u32 starFlags;
 
-    if (courseIndex == COURSE_NUM_TO_INDEX(COURSE_NONE)) {
-        starFlags = (gSaveBuffer.files[fileIndex][0].flags >> 24);
-    } else {
-        starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex];
-    }
+    starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex];
 
     return starFlags;
 }
@@ -767,11 +760,7 @@ u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
  * If course is COURSE_NONE, add to the bitset of obtained castle secret stars.
  */
 void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, u32 starFlags) {
-    if (courseIndex == COURSE_NUM_TO_INDEX(COURSE_NONE)) {
-        gSaveBuffer.files[fileIndex][0].flags |= STAR_FLAG_TO_SAVE_FLAG(starFlags);
-    } else {
-        gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] |= starFlags;
-    }
+    gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] |= starFlags;
 
     gSaveBuffer.files[fileIndex][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;
@@ -942,46 +931,46 @@ u32 eu_get_language(void) {
 }
 #endif
 
-void disable_warp_checkpoint(void) {
-    // check_warp_checkpoint() checks to see if gWarpCheckpoint.courseNum != COURSE_NONE
-    gWarpCheckpoint.courseNum = COURSE_NONE;
-}
+// void disable_warp_checkpoint(void) {
+//     // check_warp_checkpoint() checks to see if gWarpCheckpoint.courseNum != COURSE_NONE
+//     gWarpCheckpoint.courseNum = 0;
+// }
 
-/**
- * Checks the upper bit of the WarpNode->destLevel byte to see if the
- * game should set a warp checkpoint.
- */
-void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode) {
-    if (warpNode->destLevel & WARP_CHECKPOINT) {
-        // Overwrite the warp checkpoint variables.
-        gWarpCheckpoint.actNum = gCurrActNum;
-        gWarpCheckpoint.courseNum = gCurrCourseNum;
-        gWarpCheckpoint.levelID = warpNode->destLevel & 0x7F;
-        gWarpCheckpoint.areaNum = warpNode->destArea;
-        gWarpCheckpoint.warpNode = warpNode->destNode;
-    }
-}
+// /**
+//  * Checks the upper bit of the WarpNode->destLevel byte to see if the
+//  * game should set a warp checkpoint.
+//  */
+// void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode) {
+//     if (warpNode->destLevel & WARP_CHECKPOINT) {
+//         // Overwrite the warp checkpoint variables.
+//         gWarpCheckpoint.actNum = gCurrActNum;
+//         gWarpCheckpoint.courseNum = gCurrCourseNum;
+//         gWarpCheckpoint.levelID = warpNode->destLevel & 0x7F;
+//         gWarpCheckpoint.areaNum = warpNode->destArea;
+//         gWarpCheckpoint.warpNode = warpNode->destNode;
+//     }
+// }
 
 /**
  * Checks to see if a checkpoint is properly active or not. This will
  * also update the level, area, and destination node of the input WarpNode.
  * returns TRUE if input WarpNode was updated, and FALSE if not.
  */
-s32 check_warp_checkpoint(struct WarpNode *warpNode) {
-    s16 warpCheckpointActive = FALSE;
-    s16 currCourseNum = gLevelToCourseNumTable[(warpNode->destLevel & 0x7F) - 1];
+// s32 check_warp_checkpoint(struct WarpNode *warpNode) {
+//     s16 warpCheckpointActive = FALSE;
+//     s16 currCourseNum = gLevelToCourseNumTable[(warpNode->destLevel & 0x7F) - 1];
 
-    // gSavedCourseNum is only used in this function.
-    if (gWarpCheckpoint.courseNum != COURSE_NONE && gSavedCourseNum == currCourseNum
-        && gWarpCheckpoint.actNum == gCurrActNum) {
-        warpNode->destLevel = gWarpCheckpoint.levelID;
-        warpNode->destArea = gWarpCheckpoint.areaNum;
-        warpNode->destNode = gWarpCheckpoint.warpNode;
-        warpCheckpointActive = TRUE;
-    } else {
-        // Disable the warp checkpoint just in case the other 2 conditions failed?
-        gWarpCheckpoint.courseNum = COURSE_NONE;
-    }
+//     // gSavedCourseNum is only used in this function.
+//     if (gWarpCheckpoint.courseNum != COURSE_NONE && gSavedCourseNum == currCourseNum
+//         && gWarpCheckpoint.actNum == gCurrActNum) {
+//         warpNode->destLevel = gWarpCheckpoint.levelID;
+//         warpNode->destArea = gWarpCheckpoint.areaNum;
+//         warpNode->destNode = gWarpCheckpoint.warpNode;
+//         warpCheckpointActive = TRUE;
+//     } else {
+//         // Disable the warp checkpoint just in case the other 2 conditions failed?
+//         gWarpCheckpoint.courseNum = COURSE_NONE;
+//     }
 
-    return warpCheckpointActive;
-}
+//     return warpCheckpointActive;
+// }

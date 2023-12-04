@@ -7,12 +7,8 @@
 #include "engine/math_util.h"
 #include "game_init.h"
 #include "geo_misc.h"
-#include "levels/castle_inside/header.h"
-#include "levels/hmc/header.h"
-#include "levels/ttm/header.h"
 #include "mario.h"
 #include "memory.h"
-#include "moving_texture.h"
 #include "level_update.h"
 #include "object_list_processor.h"
 #include "paintings.h"
@@ -166,27 +162,27 @@ struct Painting *gRipplingPainting;
  */
 s8 gDddPaintingStatus;
 
-struct Painting *sHmcPaintings[] = {
-    &cotmc_painting,
-    NULL,
-};
+// struct Painting *sHmcPaintings[] = {
+//     &cotmc_painting,
+//     NULL,
+// };
 
-struct Painting *sInsideCastlePaintings[] = {
-    &bob_painting, &ccm_painting, &wf_painting,  &jrb_painting,      &lll_painting,
-    &ssl_painting, &hmc_painting, &ddd_painting, &wdw_painting,      &thi_tiny_painting,
-    &ttm_painting, &ttc_painting, &sl_painting,  &thi_huge_painting, NULL,
-};
+// struct Painting *sInsideCastlePaintings[] = {
+//     &bob_painting, &ccm_painting, &wf_painting,  &jrb_painting,      &lll_painting,
+//     &ssl_painting, &hmc_painting, &ddd_painting, &wdw_painting,      &thi_tiny_painting,
+//     &ttm_painting, &ttc_painting, &sl_painting,  &thi_huge_painting, NULL,
+// };
 
-struct Painting *sTtmPaintings[] = {
-    &ttm_slide_painting,
-    NULL,
-};
+// struct Painting *sTtmPaintings[] = {
+//     &ttm_slide_painting,
+//     NULL,
+// };
 
-struct Painting **sPaintingGroups[] = {
-    sHmcPaintings,
-    sInsideCastlePaintings,
-    sTtmPaintings,
-};
+// struct Painting **sPaintingGroups[] = {
+//     sHmcPaintings,
+//     sInsideCastlePaintings,
+//     sTtmPaintings,
+// };
 
 s16 gPaintingUpdateCounter = 1;
 s16 gLastPaintingUpdateCounter = 0;
@@ -350,7 +346,7 @@ void painting_state(s8 state, struct Painting *painting, struct Painting *painti
     painting->state = state;
     painting->rippleX = painting_ripple_x(painting, xSource);
     painting->rippleY = painting_ripple_y(painting, ySource);
-    gPaintingMarioYEntry = gPaintingMarioYPos;
+    // gPaintingMarioYEntry = gPaintingMarioYPos;
 
     // Because true or false would be too simple...
     if (resetTimer == RESET_TIMER) {
@@ -1100,36 +1096,36 @@ void move_ddd_painting(struct Painting *painting, UNUSED f32 frontPos, f32 backP
     gDddPaintingStatus = (DDD_FLAG_BOWSERS_SUB_BEATEN | DDD_FLAG_BACK);
 }
 #else
-void move_ddd_painting(struct Painting *painting, f32 frontPos, f32 backPos, f32 speed) {
-    // Obtain the DDD star flags
-    u32 dddFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(COURSE_DDD));
-    // Get the other save file flags
-    u32 saveFileFlags = save_file_get_flags();
-    // Find out whether Board Bowser's Sub was collected
-    u32 bowsersSubBeaten = dddFlags & BOARD_BOWSERS_SUB;
-    // Check whether DDD has already moved back
-    u32 dddBack = saveFileFlags & SAVE_FLAG_DDD_MOVED_BACK;
+// void move_ddd_painting(struct Painting *painting, f32 frontPos, f32 backPos, f32 speed) {
+//     // Obtain the DDD star flags
+//     u32 dddFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(COURSE_DDD));
+//     // Get the other save file flags
+//     u32 saveFileFlags = save_file_get_flags();
+//     // Find out whether Board Bowser's Sub was collected
+//     u32 bowsersSubBeaten = dddFlags & BOARD_BOWSERS_SUB;
+//     // Check whether DDD has already moved back
+//     u32 dddBack = saveFileFlags & SAVE_FLAG_DDD_MOVED_BACK;
 
-    if (!bowsersSubBeaten && !dddBack) {
-        // If we haven't collected the star or moved the painting, put the painting at the front
-        painting->posX = frontPos;
-        gDddPaintingStatus = DDD_FLAGS_NONE;
-    } else if (bowsersSubBeaten && !dddBack) {
-        // If we've collected the star but not moved the painting back,
-        // Each frame, move the painting by a certain speed towards the back area.
-        painting->posX += speed;
-        gDddPaintingStatus = DDD_FLAG_BOWSERS_SUB_BEATEN;
-        if (painting->posX >= backPos) {
-            painting->posX = backPos;
-            // Tell the save file that we've moved DDD back.
-            save_file_set_flags(SAVE_FLAG_DDD_MOVED_BACK);
-        }
-    } else if (bowsersSubBeaten && dddBack) {
-        // If the painting has already moved back, place it in the back position.
-        painting->posX = backPos;
-        gDddPaintingStatus = (DDD_FLAG_BOWSERS_SUB_BEATEN | DDD_FLAG_BACK);
-    }
-}
+//     if (!bowsersSubBeaten && !dddBack) {
+//         // If we haven't collected the star or moved the painting, put the painting at the front
+//         painting->posX = frontPos;
+//         gDddPaintingStatus = DDD_FLAGS_NONE;
+//     } else if (bowsersSubBeaten && !dddBack) {
+//         // If we've collected the star but not moved the painting back,
+//         // Each frame, move the painting by a certain speed towards the back area.
+//         painting->posX += speed;
+//         gDddPaintingStatus = DDD_FLAG_BOWSERS_SUB_BEATEN;
+//         if (painting->posX >= backPos) {
+//             painting->posX = backPos;
+//             // Tell the save file that we've moved DDD back.
+//             save_file_set_flags(SAVE_FLAG_DDD_MOVED_BACK);
+//         }
+//     } else if (bowsersSubBeaten && dddBack) {
+//         // If the painting has already moved back, place it in the back position.
+//         painting->posX = backPos;
+//         gDddPaintingStatus = (DDD_FLAG_BOWSERS_SUB_BEATEN | DDD_FLAG_BACK);
+//     }
+// }
 #endif
 
 /**
@@ -1220,7 +1216,7 @@ Gfx *geo_painting_draw(s32 callContext, struct GraphNode *node, UNUSED void *con
     s32 group = (gen->parameter >> 8) & 0xFF;
     s32 id = gen->parameter & 0xFF;
     Gfx *paintingDlist = NULL;
-    struct Painting **paintingGroup = sPaintingGroups[group];
+    struct Painting **paintingGroup = NULL;//sPaintingGroups[group];
     struct Painting *painting = segmented_to_virtual(paintingGroup[id]);
 
     if (callContext != GEO_CONTEXT_RENDER) {

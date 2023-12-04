@@ -12,7 +12,7 @@
 
 #define TILE_SIZE 256
 
-#define CMM_VERSION 1
+#define CMM_VERSION 0
 
 void save_level(void);
 void sb_loop(void);
@@ -177,8 +177,9 @@ struct cmm_object_info {
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u8 billboarded:1;
-    u8 numCoins:4;
+    u16 billboarded:1;
+    u16 numCoins:4;
+    u16 numExtraObjects:3;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;
@@ -220,7 +221,7 @@ struct cmm_settings_button {
     u8 *value;
     char **nametable;
     u8 size;
-    char *(*nameFunc)(s32);
+    char *(*nameFunc)(s32, char *);
     void (*changedFunc)(void);
 };
 
@@ -244,6 +245,7 @@ enum cmm_mat_types {
     MAT_OPAQUE,
     MAT_VPSCREEN,
     MAT_CUTOUT,
+    MAT_CUTOUT_NOCULL, // also doesnt have scaled uvs
     MAT_TRANSPARENT,
 };
 
@@ -345,8 +347,8 @@ enum {
 };
 
 enum {
-    CMM_LA_PLAYING,
-    CMM_LA_MAKING,
+    CMM_LA_PLAY_LEVELS,
+    CMM_LA_BUILD,
 };
 
 enum cmm_themes {
@@ -360,6 +362,7 @@ enum cmm_themes {
     CMM_THEME_BBH,
     CMM_THEME_JRB,
     CMM_THEME_RETRO,
+    CMM_THEME_MC,
 };
 
 #endif

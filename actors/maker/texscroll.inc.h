@@ -7,4 +7,7 @@ extern void scroll_sts_mat_maker_MakerRetroWater();
 extern void scroll_sts_mat_maker_MakerServerAcid();
 extern void scroll_sts_mat_maker_MakerGreenWater();
 extern void scroll_sts_mat_maker_MakerBurningIce();
+extern void scroll_sts_mat_maker_MakerMCLava();
+extern void scroll_sts_mat_maker_MakerMCWater();
+extern void scroll_sts_mat_maker_MakerMCFlowingLava();
 extern void scroll_actor_dl_maker();

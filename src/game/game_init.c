@@ -361,8 +361,8 @@ struct Controller *gPlayer3Controller = &gControllers[2]; // Probably debug only
 
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
-u16 gDemoInputListID = 0;
-struct DemoInput gRecordedDemoInput = { 0 };
+// u16 gDemoInputListID = 0;
+// struct DemoInput gRecordedDemoInput = { 0 };
 
 // Display
 // ----------------------------------------------------------------------------------------------------
@@ -731,91 +731,91 @@ void display_and_vsync(void) {
 
 // this function records distinct inputs over a 255-frame interval to RAM locations and was likely
 // used to record the demo sequences seen in the final game. This function is unused.
-UNUSED static void record_demo(void) {
-    // record the player's button mask and current rawStickX and rawStickY.
-    u8 buttonMask =
-        ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
-        | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
-    s8 rawStickX = gPlayer1Controller->rawStickX;
-    s8 rawStickY = gPlayer1Controller->rawStickY;
+// UNUSED static void record_demo(void) {
+//     // record the player's button mask and current rawStickX and rawStickY.
+//     u8 buttonMask =
+//         ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
+//         | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
+//     s8 rawStickX = gPlayer1Controller->rawStickX;
+//     s8 rawStickY = gPlayer1Controller->rawStickY;
 
-    // If the stick is in deadzone, set its value to 0 to
-    // nullify the effects. We do not record deadzone inputs.
-    if (rawStickX > -8 && rawStickX < 8) {
-        rawStickX = 0;
-    }
+//     // If the stick is in deadzone, set its value to 0 to
+//     // nullify the effects. We do not record deadzone inputs.
+//     if (rawStickX > -8 && rawStickX < 8) {
+//         rawStickX = 0;
+//     }
 
-    if (rawStickY > -8 && rawStickY < 8) {
-        rawStickY = 0;
-    }
+//     if (rawStickY > -8 && rawStickY < 8) {
+//         rawStickY = 0;
+//     }
 
-    // Rrecord the distinct input and timer so long as they are unique.
-    // If the timer hits 0xFF, reset the timer for the next demo input.
-    if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
-        || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
-        gRecordedDemoInput.timer = 0;
-        gRecordedDemoInput.buttonMask = buttonMask;
-        gRecordedDemoInput.rawStickX = rawStickX;
-        gRecordedDemoInput.rawStickY = rawStickY;
-    }
-    gRecordedDemoInput.timer++;
-}
+//     // Rrecord the distinct input and timer so long as they are unique.
+//     // If the timer hits 0xFF, reset the timer for the next demo input.
+//     if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
+//         || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
+//         gRecordedDemoInput.timer = 0;
+//         gRecordedDemoInput.buttonMask = buttonMask;
+//         gRecordedDemoInput.rawStickX = rawStickX;
+//         gRecordedDemoInput.rawStickY = rawStickY;
+//     }
+//     gRecordedDemoInput.timer++;
+// }
 
 /**
  * If a demo sequence exists, this will run the demo input list until it is complete.
- */
-void run_demo_inputs(void) {
-    // Eliminate the unused bits.
-    gControllers[0].controllerData->button &= VALID_BUTTONS;
+//  */
+// void run_demo_inputs(void) {
+//     // Eliminate the unused bits.
+//     gControllers[0].controllerData->button &= VALID_BUTTONS;
 
-    // Check if a demo inputs list exists and if so,
-    // run the active demo input list.
-    if (gCurrDemoInput != NULL) {
-        // Clear player 2's inputs if they exist. Player 2's controller
-        // cannot be used to influence a demo. At some point, Nintendo
-        // may have planned for there to be a demo where 2 players moved
-        // around instead of just one, so clearing player 2's influence from
-        // the demo had to have been necessary to perform this. Co-op mode, perhaps?
-        if (gControllers[1].controllerData != NULL) {
-            gControllers[1].controllerData->stick_x = 0;
-            gControllers[1].controllerData->stick_y = 0;
-            gControllers[1].controllerData->button = 0;
-        }
+//     // Check if a demo inputs list exists and if so,
+//     // run the active demo input list.
+//     if (gCurrDemoInput != NULL) {
+//         // Clear player 2's inputs if they exist. Player 2's controller
+//         // cannot be used to influence a demo. At some point, Nintendo
+//         // may have planned for there to be a demo where 2 players moved
+//         // around instead of just one, so clearing player 2's influence from
+//         // the demo had to have been necessary to perform this. Co-op mode, perhaps?
+//         if (gControllers[1].controllerData != NULL) {
+//             gControllers[1].controllerData->stick_x = 0;
+//             gControllers[1].controllerData->stick_y = 0;
+//             gControllers[1].controllerData->button = 0;
+//         }
 
-        // The timer variable being 0 at the current input means the demo is over.
-        // Set the button to the END_DEMO mask to end the demo.
-        if (gCurrDemoInput->timer == 0) {
-            gControllers[0].controllerData->stick_x = 0;
-            gControllers[0].controllerData->stick_y = 0;
-            gControllers[0].controllerData->button = END_DEMO;
-        } else {
-            // Backup the start button if it is pressed, since we don't want the
-            // demo input to override the mask where start may have been pressed.
-            u16 startPushed = gControllers[0].controllerData->button & START_BUTTON;
+//         // The timer variable being 0 at the current input means the demo is over.
+//         // Set the button to the END_DEMO mask to end the demo.
+//         if (gCurrDemoInput->timer == 0) {
+//             gControllers[0].controllerData->stick_x = 0;
+//             gControllers[0].controllerData->stick_y = 0;
+//             gControllers[0].controllerData->button = END_DEMO;
+//         } else {
+//             // Backup the start button if it is pressed, since we don't want the
+//             // demo input to override the mask where start may have been pressed.
+//             u16 startPushed = gControllers[0].controllerData->button & START_BUTTON;
 
-            // Perform the demo inputs by assigning the current button mask and the stick inputs.
-            gControllers[0].controllerData->stick_x = 0;
-            gControllers[0].controllerData->stick_y = 0;
+//             // Perform the demo inputs by assigning the current button mask and the stick inputs.
+//             gControllers[0].controllerData->stick_x = 0;
+//             gControllers[0].controllerData->stick_y = 0;
 
-            // To assign the demo input, the button information is stored in
-            // an 8-bit mask rather than a 16-bit mask. this is because only
-            // A, B, Z, Start, and the C-Buttons are used in a demo, as bits
-            // in that order. In order to assign the mask, we need to take the
-            // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
-            // match the correct input mask. We then add this to the masked
-            // lower 4 bits to get the correct button mask.
-            gControllers[0].controllerData->button = 0;
+//             // To assign the demo input, the button information is stored in
+//             // an 8-bit mask rather than a 16-bit mask. this is because only
+//             // A, B, Z, Start, and the C-Buttons are used in a demo, as bits
+//             // in that order. In order to assign the mask, we need to take the
+//             // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
+//             // match the correct input mask. We then add this to the masked
+//             // lower 4 bits to get the correct button mask.
+//             gControllers[0].controllerData->button = 0;
 
-            // If start was pushed, put it into the demo sequence being input to end the demo.
-            gControllers[0].controllerData->button |= startPushed;
+//             // If start was pushed, put it into the demo sequence being input to end the demo.
+//             gControllers[0].controllerData->button |= startPushed;
 
-            // Run the current demo input's timer down. if it hits 0, advance the demo input list.
-            if (--gCurrDemoInput->timer == 0) {
-                gCurrDemoInput++;
-            }
-        }
-    }
-}
+//             // Run the current demo input's timer down. if it hits 0, advance the demo input list.
+//             if (--gCurrDemoInput->timer == 0) {
+//                 gCurrDemoInput++;
+//             }
+//         }
+//     }
+// }
 
 /**
  * Take the updated controller struct and calculate the new x, y, and distance floats.

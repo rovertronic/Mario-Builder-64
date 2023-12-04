@@ -37,14 +37,9 @@
 #include "puppycamold.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
-#include "levels/castle_grounds/header.inc.h"
-#include "levels/castle_inside/header.inc.h"
-#include "levels/castle_courtyard/header.inc.h"
-#include "levels/ccm/header.inc.h"
 #include "rovent.h"
 #include "ingame_menu.h"
 #include "cursed_mirror_maker.h"
-#include "levels/castle_grounds/shrnling1/geo_header.h"
 
 #include "src/buffers/framebuffers.h"
 //gFrameBuffer0
@@ -599,7 +594,7 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
     if (m->floor != NULL) {
         floorType = m->floor->type;
 
-        if ((gCurrLevelNum != LEVEL_LLL) && (m->floorHeight < (m->waterLevel - 10))) {
+        if ((m->floorHeight < (m->waterLevel - 10))) {
             // Water terrain sound, excluding LLL since it uses water in the volcano.
             ret = SOUND_TERRAIN_WATER << 16;
         } else {
@@ -919,7 +914,7 @@ u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actionArg) {
 
         case ACT_LAVA_BOOST:
             m->vel[1] = 84.0f;
-            if (actionArg == 0) {
+            if (!(actionArg & 1)) {
                 m->forwardVel = 0.0f;
             }
             break;
@@ -1850,7 +1845,7 @@ void mario_update_hitbox_and_cap_model(struct MarioState *m) {
     //! (Pause buffered hitstun) Since the global timer increments while paused,
     //  this can be paused through to give continual invisibility. This leads to
     //  no interaction with objects.
-    if ((m->invincTimer >= 3) && (gGlobalTimer & 1) && (gCurrLevelNum!=LEVEL_CCM)) {
+    if ((m->invincTimer >= 3) && (gGlobalTimer & 1)) {
         m->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
     }
 
@@ -2035,14 +2030,14 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     s32 inLoop = TRUE;
     struct Object *sp1C;
     struct SpawnParticlesInfo D_8032F270 = { 2, 20, MODEL_MIST, 0, 40, 5, 30, 20, 252, 30, 10.0f, 10.0f };
-    u16 *walltex = segmented_to_virtual(&ccm_dl_Screen_ia8);
+    // u16 *walltex = segmented_to_virtual(&ccm_dl_Screen_ia8);
     u8 timerdelay = 0;
     u16 i;
     u8 x, y;
-    u32 tempAddr = _bad_appleSegmentRomStart;
-    u8 *sus = segmented_to_virtual(&castle_courtyard_dl_output_0_custom_i8_ia8);
+    // u32 tempAddr = _bad_appleSegmentRomStart;
+    // u8 *sus = segmented_to_virtual(&castle_courtyard_dl_output_0_custom_i8_ia8);
     u8 coinrepeats = 1;
-    u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
+    // u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
 
     //print_text_fmt_int(110, 36, cmm_username, 0);
 
@@ -2093,13 +2088,13 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         return ACTIVE_PARTICLE_NONE;
     }
 
-    if ((gCurrLevelNum == LEVEL_CASTLE_GROUNDS)&&(gCurrAreaIndex == 3)) {
-        //I hope the models are loaded before these variables change.
-        //Otherwise. Memory leak!
-        for (i = 0; i<2048; i++) {
-            walltex2[i] = random_u16();
-            }
-    }
+    // if ((gCurrLevelNum == LEVEL_CASTLE_GROUNDS)&&(gCurrAreaIndex == 3)) {
+    //     //I hope the models are loaded before these variables change.
+    //     //Otherwise. Memory leak!
+    //     for (i = 0; i<2048; i++) {
+    //         walltex2[i] = random_u16();
+    //         }
+    // }
 
     //manage global coins
     if (gMarioState->gGlobalCoinGain > 0) {
@@ -2166,17 +2161,17 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         gMarioState->gravMult *= 0.9f;
     }
     //flappy bird is pretty light
-    if ((gCurrLevelNum == LEVEL_CASTLE_COURTYARD)&&(gCurrAreaIndex == 4)) {
-        gMarioState->gravMult *= 0.4f;
-    }
+    // if ((gCurrLevelNum == LEVEL_CASTLE_COURTYARD)&&(gCurrAreaIndex == 4)) {
+    //     gMarioState->gravMult *= 0.4f;
+    // }
     //lower gravity if cheating
     if (gMarioState->Cheats & (1 << 5)) {
         gMarioState->gravMult *= 0.5f;
     }
-    if (gCurrLevelNum == LEVEL_BITS) {
-        //MOON, low gravity
-        gMarioState->gravMult *= 0.17f;
-    }
+    // if (gCurrLevelNum == LEVEL_BITS) {
+    //     //MOON, low gravity
+    //     gMarioState->gravMult *= 0.17f;
+    // }
     //CONFIGURE GRAVITY
 
 
@@ -2223,111 +2218,111 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     // clock boss code
     //its dogshit but im just trying to get thru this lol
-    if (gCurrLevelNum == 0x05) {
-        if (gCurrentArea->index == 0x04) {
-            if (gMarioState->BossHealth < 3) {
-                //static texture
-                for (i = 0; i<512; i++) {
-                    walltex[i] = random_u16();
-                    }
-                }
-            if (gMarioState->BossHealth < 1) {
-                sp1C = spawn_object(o, MODEL_EXPLOSION, bhvExplosionFake);
-                sp1C->oGraphYOffset += 100.0f;
-                sp1C->oPosX += (f32)(RandomMinMaxU16(0,1000))-500.0f;
-                sp1C->oPosY += (f32)(RandomMinMaxU16(0,1000))-500.0f;
-                sp1C->oPosZ += (f32)(RandomMinMaxU16(0,1000))-500.0f;
-                }
-            }
-        }
+    // if (gCurrLevelNum == 0x05) {
+    //     if (gCurrentArea->index == 0x04) {
+    //         if (gMarioState->BossHealth < 3) {
+    //             //static texture
+    //             for (i = 0; i<512; i++) {
+    //                 walltex[i] = random_u16();
+    //                 }
+    //             }
+    //         if (gMarioState->BossHealth < 1) {
+    //             sp1C = spawn_object(o, MODEL_EXPLOSION, bhvExplosionFake);
+    //             sp1C->oGraphYOffset += 100.0f;
+    //             sp1C->oPosX += (f32)(RandomMinMaxU16(0,1000))-500.0f;
+    //             sp1C->oPosY += (f32)(RandomMinMaxU16(0,1000))-500.0f;
+    //             sp1C->oPosZ += (f32)(RandomMinMaxU16(0,1000))-500.0f;
+    //             }
+    //         }
+    //     }
 
-    //minigame code
-    switch (gMarioState->gCurrMinigame) {
-        case 1://boneworks enemy arena
-            if (gMarioState->EA_LEFT < 1) {
-                cur_obj_play_sound_2(SOUND_GENERAL_WATER_LEVEL_TRIG);
-                gMarioState->EA_WAVES ++;
-                if ((gMarioState->EA_WAVES == 6)&&(!minigame_real)) {
-                    sp1C = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStarSpawnCoordinates, o->oPosX, o->oPosY,o->oPosZ, 0, 0, 0);
-                    sp1C->oHomeX = gMarioState->pos[0];
-                    sp1C->oHomeY = gMarioState->pos[1]+200.0f;
-                    sp1C->oHomeZ = gMarioState->pos[2];
-                    sp1C->oBehParams = 0x03000000;
-                    gMarioState->gCurrMinigame = 0;
-                    }
-                    else
-                    {
-                    gMarioState->EA_TOTAL = waveamount[gMarioState->EA_WAVES-1];
-                    gMarioState->EA_LEFT = gMarioState->EA_TOTAL;
-                    gMarioState->EA_ACTIVE = 0;
-                    if (minigame_real) {
-                        save_file_set_hiscore(0,gMarioState->EA_WAVES);
-                        }
-                    }
+    // //minigame code
+    // switch (gMarioState->gCurrMinigame) {
+    //     case 1://boneworks enemy arena
+    //         if (gMarioState->EA_LEFT < 1) {
+    //             cur_obj_play_sound_2(SOUND_GENERAL_WATER_LEVEL_TRIG);
+    //             gMarioState->EA_WAVES ++;
+    //             if ((gMarioState->EA_WAVES == 6)&&(!minigame_real)) {
+    //                 sp1C = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStarSpawnCoordinates, o->oPosX, o->oPosY,o->oPosZ, 0, 0, 0);
+    //                 sp1C->oHomeX = gMarioState->pos[0];
+    //                 sp1C->oHomeY = gMarioState->pos[1]+200.0f;
+    //                 sp1C->oHomeZ = gMarioState->pos[2];
+    //                 sp1C->oBehParams = 0x03000000;
+    //                 gMarioState->gCurrMinigame = 0;
+    //                 }
+    //                 else
+    //                 {
+    //                 gMarioState->EA_TOTAL = waveamount[gMarioState->EA_WAVES-1];
+    //                 gMarioState->EA_LEFT = gMarioState->EA_TOTAL;
+    //                 gMarioState->EA_ACTIVE = 0;
+    //                 if (minigame_real) {
+    //                     save_file_set_hiscore(0,gMarioState->EA_WAVES);
+    //                     }
+    //                 }
 
-                //restore (temporary?)
-                gMarioState->health = 255 + (255*gMarioState->numMaxHP);
-                gMarioState->numBadgePoints = gMarioState->numMaxFP;
-                gMarioState->powerup = 0; //mario cannot have a crowbar because he could softlock by killing eggs
-                }
-        break;
-        case 2://hot jumprope
+    //             //restore (temporary?)
+    //             gMarioState->health = 255 + (255*gMarioState->numMaxHP);
+    //             gMarioState->numBadgePoints = gMarioState->numMaxFP;
+    //             gMarioState->powerup = 0; //mario cannot have a crowbar because he could softlock by killing eggs
+    //             }
+    //     break;
+    //     case 2://hot jumprope
 
-        break;
-        }
+    //     break;
+    //     }
 
-    if (!gMarioState->IntroDid) {
-        //set_mario_action(gMarioState, ACT_READING_AUTOMATIC_DIALOG,35);
-        gMarioState->IntroDid = TRUE;
-        }
+    // if (!gMarioState->IntroDid) {
+    //     //set_mario_action(gMarioState, ACT_READING_AUTOMATIC_DIALOG,35);
+    //     gMarioState->IntroDid = TRUE;
+    //     }
 
-    if (gMarioState->BadAppleActivate) {
-        dma_read(sus,(bapple_frame*1024)+_bad_appleSegmentRomStart,(bapple_frame*1024)+_bad_appleSegmentRomStart+1024);
+    // if (gMarioState->BadAppleActivate) {
+    //     dma_read(sus,(bapple_frame*1024)+_bad_appleSegmentRomStart,(bapple_frame*1024)+_bad_appleSegmentRomStart+1024);
 
-        if (bapple_frame < 6560) {
-            if (gMarioState->gCurrMinigame == 6) {
-                x = (u8)(((gMarioState->pos[0]+1000.0f)/2000.0f)*32.0f);
-                y = (u8)(((gMarioState->pos[2]+1000.0f)/2000.0f)*32.0f);
+    //     if (bapple_frame < 6560) {
+    //         if (gMarioState->gCurrMinigame == 6) {
+    //             x = (u8)(((gMarioState->pos[0]+1000.0f)/2000.0f)*32.0f);
+    //             y = (u8)(((gMarioState->pos[2]+1000.0f)/2000.0f)*32.0f);
 
-                //Mario in air will do nothing.
-                //Mario must be on the ground to gain/lose points.
-                if (gMarioState->pos[1] < 10.0f) {
-                    //Mario MUST stand on white
-                    if (sus[(y*32)+x] > 20) {
-                        bad_apple_par += 1.0f;
-                    }
-                    //Mario standing on black will deplete score
-                    if (sus[(y*32)+x] <= 20) {
-                        spawn_object(gMarioState->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
-                        bad_apple_par -= 1.0f;
-                        if (bad_apple_par < 0.0f) {
-                            bad_apple_par = 0.0f;
-                        }
-                    }
-                }
+    //             //Mario in air will do nothing.
+    //             //Mario must be on the ground to gain/lose points.
+    //             if (gMarioState->pos[1] < 10.0f) {
+    //                 //Mario MUST stand on white
+    //                 if (sus[(y*32)+x] > 20) {
+    //                     bad_apple_par += 1.0f;
+    //                 }
+    //                 //Mario standing on black will deplete score
+    //                 if (sus[(y*32)+x] <= 20) {
+    //                     spawn_object(gMarioState->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
+    //                     bad_apple_par -= 1.0f;
+    //                     if (bad_apple_par < 0.0f) {
+    //                         bad_apple_par = 0.0f;
+    //                     }
+    //                 }
+    //             }
 
-                gMarioState->EA_WAVES = (u8)((bad_apple_par/6560.0f)*255.0f);
-                save_file_set_hiscore(5,gMarioState->EA_WAVES);
-            }
+    //             gMarioState->EA_WAVES = (u8)((bad_apple_par/6560.0f)*255.0f);
+    //             save_file_set_hiscore(5,gMarioState->EA_WAVES);
+    //         }
 
-            bapple_frame++;
-            }
-            else
-            {
-            gMarioState->BadAppleActivate = FALSE;
-            bapple_frame = 0;
-            if (gMarioState->gCurrMinigame == 6) {
-                end_minigame();
-            }
-        }
-    }
+    //         bapple_frame++;
+    //         }
+    //         else
+    //         {
+    //         gMarioState->BadAppleActivate = FALSE;
+    //         bapple_frame = 0;
+    //         if (gMarioState->gCurrMinigame == 6) {
+    //             end_minigame();
+    //         }
+    //     }
+    // }
 
 
-    //this code is dumb lol
-    if ((gCurrDemoInput != NULL)&&(did_started == 0)) {
-        start_cutscene(gCamera,CUTSCENE_CREDITS);
-        did_started = TRUE;
-        }
+    // //this code is dumb lol
+    // if ((gCurrDemoInput != NULL)&&(did_started == 0)) {
+    //     start_cutscene(gCamera,CUTSCENE_CREDITS);
+    //     did_started = TRUE;
+    //     }
 
     //move warp for safe ground
     sp1C = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
@@ -2527,10 +2522,10 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
             play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
         }
 
-        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
-            spawn_wind_particles(1, 0);
-            play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
-        }
+        // if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+        //     spawn_wind_particles(1, 0);
+        //     play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
+        // }
 
         play_infinite_stairs_music();
         gMarioState->marioObj->oInteractStatus = INT_STATUS_NONE;
@@ -2567,50 +2562,11 @@ void init_mario(void) {
     gMarioState->SpotlightTarget = gMarioObject;
     gMarioState->SpotlightTargetYOffset = 0.0f;
 
-    //2d in flappy bird
-    if ((gCurrLevelNum == LEVEL_CASTLE_COURTYARD)&&(gCurrAreaIndex == 4)) {
-        gMarioState->_2D = TRUE;
-    }
-    //2d in trial
-    if (gCurrLevelNum == LEVEL_RR) {
-        gMarioState->_2D = FALSE;
-        if (gCurrAreaIndex == 4) {
-            gMarioState->_2D = TRUE;
-        }
-    }
-
-    gMarioState->isAfterlife = FALSE;
-    if (save_file_get_progression() == PROG_POSTGAME) {
-        gMarioState->isAfterlife = TRUE;
-    }
-
     stop_event();
-    if ((gCurrLevelNum == LEVEL_CASTLE_GROUNDS)&&(save_file_get_progression() == PROG_LETTER_INIT)) {
-        save_file_set_progression(PROG_START);
-        run_event(EVENT_LETTER);
-    }
-    if ((gCurrAreaIndex == 0)&&(gCurrLevelNum == LEVEL_RR)) {
-        run_event(EVENT_AG_INTRO);
-    }
-
-    if (gCurrLevelNum == LEVEL_BITS) {
-        save_file_set_progression(PROG_ON_AGAMEMNON);
-    }
-
-    if (minigame_transition) {
-        minigame_transition_func();
-    }
 
     gMarioState->_2DSecret = FALSE;
     gMarioState->BadAppleActivate = FALSE;
     bapple_frame = 0;
-
-    if (gCurrLevelNum == 0x05) {
-        if (gCurrentArea->index == 0x04) {
-            gMarioState->BossHealth = 3;
-            gMarioState->BossHealthMax = 3;
-            }
-        }
 
     gMarioState->numAir = 700;
     gMarioState->RFuel=0;
@@ -2719,14 +2675,14 @@ void init_mario(void) {
     vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
     vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
 
-    if (gMarioState->MaskChase) {
-        if (!cur_obj_nearest_object_with_behavior(bhvMask2)) {
-            capObject = spawn_object(gMarioState->marioObj, MODEL_MASK2, bhvMask2);
-            capObject->oAction = 1;
-            capObject->oPosY -= 1000.0f;
-            capObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-        }
-    }
+    // if (gMarioState->MaskChase) {
+    //     if (!cur_obj_nearest_object_with_behavior(bhvMask2)) {
+    //         capObject = spawn_object(gMarioState->marioObj, MODEL_MASK2, bhvMask2);
+    //         capObject->oAction = 1;
+    //         capObject->oPosY -= 1000.0f;
+    //         capObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    //     }
+    // }
 
     Vec3s capPos;
     if (save_file_get_cap_pos(capPos)) {
@@ -2742,7 +2698,7 @@ void init_mario(void) {
         if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
             gMarioState->numBadgePoints --;
         } else {
-            gMarioState->hurtCounter += 4 * ((f32)(gMarioState->numMaxHP)/3.0f);
+            gMarioState->hurtCounter += 12;
         }
 
         if (gMarioState->MaskChase) {
@@ -2752,6 +2708,8 @@ void init_mario(void) {
     }
 
     gMarioState->heldObj = NULL;
+    gMarioState->blueCoinSwitchTimer = 0;
+    gMarioState->hiddenBoxTimer = 0;
     /*
     if (gMarioState->heldObjParam2 != 0) {
         switch(gMarioState->heldObjParam2) {
@@ -2777,8 +2735,8 @@ void init_mario(void) {
 void init_mario_from_save_file(void) {
     save_file_get_stats();
     
-    sSelectedFileNum = FALSE;
-    fs_ms = 0;
+    //sSelectedFileNum = FALSE;
+    //fs_ms = 0;
 
     gMarioState->toggleHud = TRUE;
     gMarioState->playerID = 0;
@@ -2796,8 +2754,8 @@ void init_mario_from_save_file(void) {
 
     gMarioState->numCoins = 0;
     gMarioState->lastStarCollected = 0;
-    gMarioState->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-    gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    // gMarioState->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    // gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     gMarioState->numKeys = 0;
 

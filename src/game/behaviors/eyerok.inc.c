@@ -1,5 +1,7 @@
 // eyerok.inc.c
 
+#include "actors/group5.h"
+
 struct ObjectHitbox sEyerokHitbox = {
     /* interactType:      */ INTERACT_BOUNCE_TOP,
     /* downOffset:        */ 0,
@@ -29,15 +31,15 @@ static void eyerok_spawn_hand(s16 side, ModelID32 model, const BehaviorScript *b
     }
 }
 
-static void eyerok_flame_explosion(void) {
-    struct Object *flame;
-    for (u8 i=0;i<8;i++){
-        flame = spawn_object(o,MODEL_BLUE_FLAME,bhvThwompFlame);
-        flame->oPosY += 40.0f;
-        flame->oForwardVel = 30.0f;
-        flame->oMoveAngleYaw = i*0x2000;
-    }
-}
+// static void eyerok_flame_explosion(void) {
+//     struct Object *flame;
+//     for (u8 i=0;i<8;i++){
+//         flame = spawn_object(o,MODEL_BLUE_FLAME,bhvThwompFlame);
+//         flame->oPosY += 40.0f;
+//         flame->oForwardVel = 30.0f;
+//         flame->oMoveAngleYaw = i*0x2000;
+//     }
+// }
 
 static void eyerok_boss_act_sleep(void) {
     if (o->oTimer == 0) {
@@ -51,11 +53,11 @@ static void eyerok_boss_act_sleep(void) {
 
 static void eyerok_boss_act_wake_up(void) {
 
-    struct Object *oceane = cur_obj_nearest_object_with_behavior(bhvOceanTTC);
-    if ((oceane)&&(ocean_rise < 20)) {
-        oceane->oPosY += 4.5f;
-        ocean_rise++;
-    }
+    // struct Object *oceane = cur_obj_nearest_object_with_behavior(bhvOceanTTC);
+    // if ((oceane)&&(ocean_rise < 20)) {
+    //     oceane->oPosY += 4.5f;
+    //     ocean_rise++;
+    // }
 
     if (o->oEyerokBossNumHands == 2) {
         if (o->oTimer > 5) {
@@ -206,7 +208,7 @@ static void eyerok_hand_pound_ground(void) {
     cur_obj_play_sound_2(SOUND_OBJ_POUNDING_LOUD);
     set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);
     spawn_mist_from_global();
-    eyerok_flame_explosion();
+    // eyerok_flame_explosion();
 }
 
 static void eyerok_hand_act_sleep(void) {

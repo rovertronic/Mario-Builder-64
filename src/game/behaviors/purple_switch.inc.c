@@ -20,13 +20,13 @@ void bhv_purple_switch_loop(void) {
         gMarioState->StarRadarExist = TRUE;
         }
 
-    crate = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
+    // crate = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
 
-    if (crate != NULL) {
-        if (lateral_dist_between_objects(o,crate) < 200.0f) {
-            crateon = TRUE;
-            }
-        }
+    // if (crate != NULL) {
+    //     if (lateral_dist_between_objects(o,crate) < 200.0f) {
+    //         crateon = TRUE;
+    //         }
+    //     }
 
 
     switch (o->oAction) {
@@ -132,9 +132,6 @@ void bhv_purple_switch_loop(void) {
 
 void bhv_coin_ring_loop(void) {
     f32 scale = 1.0f;
-    if ((gCurrLevelNum == LEVEL_DDD)||(gCurrLevelNum == LEVEL_WF)) {
-        scale = 2.0f;
-    }
 
     cur_obj_scale(scale);
 

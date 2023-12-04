@@ -19,19 +19,6 @@
 #include "interaction.h"
 #include "level_table.h"
 #include "level_update.h"
-#include "levels/bitdw/header.h"
-#include "levels/bitfs/header.h"
-#include "levels/bits/header.h"
-#include "levels/bob/header.h"
-#include "levels/ccm/header.h"
-#include "levels/hmc/header.h"
-#include "levels/jrb/header.h"
-#include "levels/lll/header.h"
-#include "levels/rr/header.h"
-#include "levels/ssl/header.h"
-#include "levels/thi/header.h"
-#include "levels/ttc/header.h"
-#include "levels/vcutm/header.h"
 #include "mario.h"
 #include "mario_actions_cutscene.h"
 #include "memory.h"
@@ -595,6 +582,10 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void) {
     return TRUE;
 }
 
+void obj_set_speed_to_zero(void) {
+    o->oForwardVel = o->oVelY = 0.0f;
+}
+
 static s32 obj_handle_attacks(struct ObjectHitbox *hitbox, s32 attackedMarioAction,
                               u8 *attackHandlers) {
     s32 attackType;
@@ -807,38 +798,38 @@ static void treat_far_home_as_mario(f32 threshold) {
 #include "behaviors/swoop.inc.c"
 #include "behaviors/fly_guy.inc.c"
 #include "behaviors/goomba.inc.c"
-#include "behaviors/chain_chomp.inc.c" // TODO: chain_chomp_sub_act_lunge documentation
+// #include "behaviors/chain_chomp.inc.c" // TODO: chain_chomp_sub_act_lunge documentation
 #include "behaviors/wiggler.inc.c"     // TODO
 #include "behaviors/spiny.inc.c"
 #include "behaviors/enemy_lakitu.inc.c" // TODO
 #include "behaviors/cloud.inc.c"
-#include "behaviors/camera_lakitu.inc.c" // TODO: 104 label, follow cam documentation
-#include "behaviors/monty_mole.inc.c"    // TODO
+// #include "behaviors/camera_lakitu.inc.c" // TODO: 104 label, follow cam documentation
+// #include "behaviors/monty_mole.inc.c"    // TODO
 #include "behaviors/platform_on_track.inc.c"
-#include "behaviors/seesaw_platform.inc.c"
-#include "behaviors/ferris_wheel.inc.c"
-#include "behaviors/water_bomb.inc.c" // TODO: Shadow position
-#include "behaviors/ttc_rotating_solid.inc.c"
-#include "behaviors/ttc_pendulum.inc.c"
-#include "behaviors/ttc_treadmill.inc.c" // TODO
-#include "behaviors/ttc_moving_bar.inc.c"
-#include "behaviors/ttc_cog.inc.c"
-#include "behaviors/ttc_pit_block.inc.c"
-#include "behaviors/ttc_elevator.inc.c"
-#include "behaviors/ttc_2d_rotator.inc.c"
-#include "behaviors/ttc_spinner.inc.c"
+// #include "behaviors/seesaw_platform.inc.c"
+// #include "behaviors/ferris_wheel.inc.c"
+// #include "behaviors/water_bomb.inc.c" // TODO: Shadow position
+// #include "behaviors/ttc_rotating_solid.inc.c"
+// #include "behaviors/ttc_pendulum.inc.c"
+// #include "behaviors/ttc_treadmill.inc.c" // TODO
+// #include "behaviors/ttc_moving_bar.inc.c"
+// #include "behaviors/ttc_cog.inc.c"
+// #include "behaviors/ttc_pit_block.inc.c"
+// #include "behaviors/ttc_elevator.inc.c"
+// #include "behaviors/ttc_2d_rotator.inc.c"
+// #include "behaviors/ttc_spinner.inc.c"
 #include "behaviors/mr_blizzard.inc.c"
-#include "behaviors/sliding_platform_2.inc.c"
-#include "behaviors/rotating_octagonal_plat.inc.c"
-#include "behaviors/animated_floor_switch.inc.c"
-#include "behaviors/activated_bf_plat.inc.c"
+// #include "behaviors/sliding_platform_2.inc.c"
+// #include "behaviors/rotating_octagonal_plat.inc.c"
+// #include "behaviors/animated_floor_switch.inc.c"
+// #include "behaviors/activated_bf_plat.inc.c"
 #include "behaviors/recovery_heart.inc.c"
-#include "behaviors/water_bomb_cannon.inc.c"
-#include "behaviors/unagi.inc.c"
-#include "behaviors/dorrie.inc.c"
-#include "behaviors/haunted_chair.inc.c"
-#include "behaviors/mad_piano.inc.c"
-#include "behaviors/flying_bookend_switch.inc.c"
+// #include "behaviors/water_bomb_cannon.inc.c"
+// #include "behaviors/unagi.inc.c"
+// #include "behaviors/dorrie.inc.c"
+// #include "behaviors/haunted_chair.inc.c"
+// #include "behaviors/mad_piano.inc.c"
+// #include "behaviors/flying_bookend_switch.inc.c"
 
 /**
  * Used by bowser, fly guy, piranha plant, and fire spitters.
@@ -860,18 +851,18 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
 #include "behaviors/fire_spitter.inc.c"
 #include "behaviors/flame.inc.c"
 #include "behaviors/snufit.inc.c"
-#include "behaviors/horizontal_grindel.inc.c"
+// #include "behaviors/horizontal_grindel.inc.c"
 #include "behaviors/eyerok.inc.c"
-#include "behaviors/klepto.inc.c"
-#include "behaviors/bird.inc.c"
-#include "behaviors/racing_penguin.inc.c"
-#include "behaviors/coffin.inc.c"
-#include "behaviors/clam.inc.c"
+// #include "behaviors/klepto.inc.c"
+// #include "behaviors/bird.inc.c"
+// #include "behaviors/racing_penguin.inc.c"
+// #include "behaviors/coffin.inc.c"
+// #include "behaviors/clam.inc.c"
 #include "behaviors/skeeter.inc.c"
-#include "behaviors/swing_platform.inc.c"
-#include "behaviors/donut_platform.inc.c"
-#include "behaviors/ddd_pole.inc.c"
+// #include "behaviors/swing_platform.inc.c"
+// #include "behaviors/donut_platform.inc.c"
+// #include "behaviors/ddd_pole.inc.c"
 #include "behaviors/reds_star_marker.inc.c"
-#include "behaviors/triplet_butterfly.inc.c"
-#include "behaviors/bubba.inc.c"
-#include "behaviors/worm.inc.c"
+// #include "behaviors/triplet_butterfly.inc.c"
+// #include "behaviors/bubba.inc.c"
+// #include "behaviors/worm.inc.c"

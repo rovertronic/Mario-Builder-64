@@ -838,39 +838,39 @@ static void level_cmd_get_or_set_var(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-int gDemoLevels[7] = {
-    LEVEL_BOB,
-    LEVEL_CCM,
-    LEVEL_WF,
-    LEVEL_BBH,
-    LEVEL_BOB,
-    LEVEL_BOB,
-    LEVEL_BOB,
-};
+// int gDemoLevels[7] = {
+//     LEVEL_BOB,
+//     LEVEL_CCM,
+//     LEVEL_WF,
+//     LEVEL_BBH,
+//     LEVEL_BOB,
+//     LEVEL_BOB,
+//     LEVEL_BOB,
+// };
 
-int gDemoLevelID = 0;
-u16 gDemoInputListIDForIntro = 0;
+// int gDemoLevelID = 0;
+// u16 gDemoInputListIDForIntro = 0;
 
-extern void start_demo(int);
+// extern void start_demo(int);
 
-static void level_cmd_adv_demo(void)
-{
-    if(gDemoLevelID == 6) {
-        sRegister = gDemoLevels[6];
-        gDemoLevelID = 0;
-    } else {
-        sRegister = gDemoLevels[gDemoLevelID++];
-    }
+// static void level_cmd_adv_demo(void)
+// {
+//     if(gDemoLevelID == 6) {
+//         sRegister = gDemoLevels[6];
+//         gDemoLevelID = 0;
+//     } else {
+//         sRegister = gDemoLevels[gDemoLevelID++];
+//     }
 
-    start_demo(0);
-    sCurrentCmd = CMD_NEXT;
-}
+//     start_demo(0);
+//     sCurrentCmd = CMD_NEXT;
+// }
 
-static void level_cmd_clear_demo_ptr(void)
-{
-    gCurrDemoInput = NULL;
-    sCurrentCmd = CMD_NEXT;
-}
+// static void level_cmd_clear_demo_ptr(void)
+// {
+//     gCurrDemoInput = NULL;
+//     sCurrentCmd = CMD_NEXT;
+// }
 
 static void level_cmd_puppyvolume(void) {
 #ifdef PUPPYCAM
@@ -1026,8 +1026,8 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_PUPPYLIGHT_ENVIRONMENT      */ level_cmd_puppylight_environment,
     /*LEVEL_CMD_PUPPYLIGHT_NODE             */ level_cmd_puppylight_node,
     /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
-    /*LEVEL_CMD_ADV_DEMO                    */ level_cmd_adv_demo,
-    /*LEVEL_CMD_CLEAR_DEMO_PTR              */ level_cmd_clear_demo_ptr,
+    // /*LEVEL_CMD_ADV_DEMO                    */ level_cmd_adv_demo,
+    // /*LEVEL_CMD_CLEAR_DEMO_PTR              */ level_cmd_clear_demo_ptr,
     /*LEVEL_CMD_LOAD_CMM                    */ level_cmd_load_cmm,
     /*LEVEL_CMD_LOAD_CMM_MODELS             */ level_cmd_load_cmm_models,
 };

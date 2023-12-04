@@ -245,6 +245,22 @@ void king_bobomb_act_been_thrown(void) { // act 4
     }
 }
 
+s32 arc_to_goal_pos(Vec3f a0, Vec3f a1, f32 yVel, f32 gravity) {
+    f32 dx = a0[0] - a1[0];
+    f32 dz = a0[2] - a1[2];
+    f32 planarDist = sqrtf(sqr(dx) + sqr(dz));
+
+    o->oMoveAngleYaw = atan2s(dz, dx);
+    o->oVelY = yVel;
+    o->oGravity = gravity;
+
+    s32 time = -2.0f / o->oGravity * yVel - 1.0f;
+
+    o->oForwardVel = planarDist / time;
+
+    return time;
+}
+
 void king_bobomb_act_return_home(void) { // act 5
     switch (o->oSubAction) {
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_JUMP:

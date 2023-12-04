@@ -48,6 +48,13 @@ void exclamation_box_act_init(void) {
     }*/
 }
 
+static s32 sCapSaveFlags[] = {
+    SAVE_FLAG_HAVE_WING_CAP,
+    SAVE_FLAG_HAVE_METAL_CAP,
+    SAVE_FLAG_HAVE_VANISH_CAP,
+    SAVE_FLAG_HAVE_YELLOW
+};
+
 void exclamation_box_act_outline(void) {
     cur_obj_become_intangible();
     if (o->oTimer == 0) {

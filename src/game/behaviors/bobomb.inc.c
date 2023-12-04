@@ -294,22 +294,22 @@ void bhv_bobomb_buddy_init(void) {
     o->oInteractionSubtype = INT_SUBTYPE_NPC;
 
     //advice after showrunner first ecounter
-    if ((o->oBehParams2ndByte==169)&&(!(save_file_get_flags() & SAVE_FLAG_TALKED_TO_TOAD))) {
-        save_file_set_progression(PROG_TRUE_START);
-        run_event(EVENT_TOAD_MEET);
-        save_file_set_flags(SAVE_FLAG_TALKED_TO_TOAD);
-    }
+    // if ((o->oBehParams2ndByte==169)&&(!(save_file_get_flags() & SAVE_FLAG_TALKED_TO_TOAD))) {
+    //     save_file_set_progression(PROG_TRUE_START);
+    //     run_event(EVENT_TOAD_MEET);
+    //     save_file_set_flags(SAVE_FLAG_TALKED_TO_TOAD);
+    // }
 
     //make quest indicator if have quest
-    switch(o->oBehParams2ndByte) {
-        case 41:
-        case 42:
-        case 3:
-        case 66:
-        case 130:
-            o->prevObj = spawn_object(o,MODEL_QUEST,bhvQuest);
-        break;
-    }
+    // switch(o->oBehParams2ndByte) {
+    //     case 41:
+    //     case 42:
+    //     case 3:
+    //     case 66:
+    //     case 130:
+    //         o->prevObj = spawn_object(o,MODEL_QUEST,bhvQuest);
+    //     break;
+    // }
 
     //if you killed the showrunner, and DIALOG_169, then change to DIALOG_154
     if (save_file_check_progression(PROG_DEFEAT_SHOWRUNNER)) {
@@ -331,11 +331,11 @@ void bobomb_buddy_act_idle(void) {
 
     // vec3f_copy(&o->oBobombBuddyPosCopyVec, &o->oPosVec);
 
-    if (gCurrLevelNum != LEVEL_TTC) {
-        //hard coded horse shit
-        object_step();
-        //the reason for this though is because a lot of npcs in ttc are on top of objects, which unload collision when you walk away from them
-        }
+    // if (gCurrLevelNum != LEVEL_TTC) {
+    //     //hard coded horse shit
+    //     object_step();
+    //     //the reason for this though is because a lot of npcs in ttc are on top of objects, which unload collision when you walk away from them
+    //     }
 
     // if (animFrame == 5 || animFrame == 16) {
     //     cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
@@ -367,21 +367,21 @@ void bobomb_buddy_cannon_dialog(s16 dialogFirstText, s16 dialogSecondText) {
             buddyText = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogFirstText);
             if (buddyText != DIALOG_RESPONSE_NONE) {
                 save_file_set_cannon_unlocked();
-                cannonClosed = cur_obj_nearest_object_with_behavior(bhvCannonClosed);
-                if (cannonClosed != NULL) {
-                    o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENING;
-                } else {
-                    o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_STOP_TALKING;
-                }
+                // cannonClosed = cur_obj_nearest_object_with_behavior(bhvCannonClosed);
+                // if (cannonClosed != NULL) {
+                //     o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENING;
+                // } else {
+                //     o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_STOP_TALKING;
+                // }
             }
             break;
 
         case BOBOMB_BUDDY_CANNON_OPENING:
-            cannonClosed = cur_obj_nearest_object_with_behavior(bhvCannonClosed);
-            cutscene = cutscene_object(CUTSCENE_PREPARE_CANNON, cannonClosed);
-            if (cutscene == -1) {
-                o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENED;
-            }
+            // cannonClosed = cur_obj_nearest_object_with_behavior(bhvCannonClosed);
+            // cutscene = cutscene_object(CUTSCENE_PREPARE_CANNON, cannonClosed);
+            // if (cutscene == -1) {
+            //     o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENED;
+            // }
             break;
 
         case BOBOMB_BUDDY_CANNON_OPENED:
@@ -486,11 +486,7 @@ void bobomb_buddy_act_talk(void) {
                 break;
 
             case BOBOMB_BUDDY_ROLE_CANNON:
-                if (gCurrCourseNum == COURSE_BOB) {
-                    bobomb_buddy_cannon_dialog(DIALOG_004, DIALOG_105);
-                } else {
-                    bobomb_buddy_cannon_dialog(DIALOG_047, DIALOG_106);
-                }
+                bobomb_buddy_cannon_dialog(DIALOG_047, DIALOG_106);
                 break;
 
 

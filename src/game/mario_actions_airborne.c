@@ -82,7 +82,7 @@ s32 lava_boost_on_wall(struct MarioState *m) {
 
     play_sound(SOUND_MARIO_ON_FIRE, m->marioObj->header.gfx.cameraToObject);
     update_mario_sound_and_camera(m);
-    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, 1);
+    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, (m->wall->type == SURFACE_BURNING ? 1 : 3));
 }
 
 s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
@@ -804,49 +804,7 @@ s32 act_riding_shell_air(struct MarioState *m) {
             break;
     }
 
-    if (m->IsYoshi) {
-
-        m->forwardVel = m->intendedMag*1.25f;
-        m->faceAngle[1] = m->intendedYaw;
-
-        if (m->pos[1] < 0.0f) {
-            mario_stop_riding_object(m);
-            return set_jumping_action(m, ACT_BACKFLIP, 0);
-        }
-
-        if ((m->input & INPUT_A_DOWN)&&(m->vel[1] < -15.0f)) {
-            if (m->Yoshi_Flutter == FALSE) {
-                m->Yoshi_Flutter = TRUE;
-                m->vel[1] = -15.0f;
-                fluttertimer = 10;
-            }
-        }
-
-        if (m->input & INPUT_B_PRESSED) {
-            mario_stop_riding_object(m);
-
-            return set_jumping_action(m, ACT_BACKFLIP, 0);
-
-
-        }
-        
-        if (fluttertimer > 0) {
-            fluttertimer --;
-            m->vel[1] += 8.0f;
-
-            if (fluttertimer%2) {
-                play_sound(SOUND_ACTION_SPIN, m->marioObj->header.gfx.cameraToObject);
-            }
-        }
-    }
-
-    if (m->IsYoshi) {
-        m->marioObj->header.gfx.pos[1] += 100.0f;
-    }
-    else
-    {
-        m->marioObj->header.gfx.pos[1] += 55.0f;
-    }
+    m->marioObj->header.gfx.pos[1] += 55.0f;
     return FALSE;
 }
 
@@ -1676,6 +1634,8 @@ s32 act_lava_boost(struct MarioState *m) {
         case AIR_STEP_LANDED:
             if (SURFACE_IS_BURNING(m->floor->type)) {
                 m->actionState = ACT_STATE_LAVA_BOOST_HIT_LAVA;
+                m->actionArg &= ~2;
+                if (m->floor->type != SURFACE_BURNING) m->actionArg |= 2;
                 if (!(m->flags & MARIO_METAL_CAP)) {
                     if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
                         gMarioState->numBadgePoints --;
@@ -1718,7 +1678,7 @@ s32 act_lava_boost(struct MarioState *m) {
     }
 
     set_mario_animation(m, MARIO_ANIM_FIRE_LAVA_BURN);
-    if ((m->area->terrainType & TERRAIN_MASK) != TERRAIN_SNOW && !(m->flags & MARIO_METAL_CAP)
+    if (!(m->flags & MARIO_METAL_CAP) && !(m->actionArg & 2)
         && m->vel[1] > 0.0f) {
         m->particleFlags |= PARTICLE_FIRE;
         if (m->actionState == ACT_STATE_LAVA_BOOST_HIT_LAVA) {

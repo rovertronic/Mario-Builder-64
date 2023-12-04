@@ -198,6 +198,20 @@ void df_fire_spinner(s32 context) {
     o->oFaceAngleYaw = (s16)(-0x100 * gGlobalTimer) + o->oAngleVelYaw;
 }
 
+void df_circling_amp(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oAnimState = 1;
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
+        o->oAngleVelYaw = o->oFaceAngleYaw;
+    }
+    o->oMoveAngleYaw = (s16)(0x400 * gGlobalTimer) + o->oAngleVelYaw;
+    o->oFaceAngleYaw = o->oMoveAngleYaw + 0x4000;
+
+    o->oPosX = o->oHomeX + sins(o->oMoveAngleYaw) * 200;
+    o->oPosZ = o->oHomeZ + coss(o->oMoveAngleYaw) * 200;
+    o->oPosY = o->oHomeY + coss(gGlobalTimer * 0x8B0) * 30.0f;
+}
+
 extern s8 sCloudPartHeights[];
 s32 obj_y_vel_approach(f32 target, f32 delta);
 void df_lakitu(s32 context) {
@@ -232,9 +246,9 @@ void df_snufit(s32 context) {
         o->oAngleVelYaw = o->oFaceAngleYaw;
     }
 
-    o->oPosX = o->oHomeX + 50.0f * coss(400 * gGlobalTimer);
+    o->oPosX = o->oHomeX + 100.0f * coss(400 * gGlobalTimer);
     o->oPosY = o->oHomeY + 8.0f * coss(4000 * gGlobalTimer);
-    o->oPosZ = o->oHomeZ + 50.0f * sins(400 * gGlobalTimer);
+    o->oPosZ = o->oHomeZ + 100.0f * sins(400 * gGlobalTimer);
     o->oFaceAngleYaw = (s16)(200 * gGlobalTimer) + o->oAngleVelYaw;
 }
 

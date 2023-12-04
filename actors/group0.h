@@ -907,7 +907,7 @@ extern const Gfx impact_smoke_seg6_dl_06062BD8[];
 extern const Gfx impact_smoke_seg6_dl_06062C78[];
 extern const Gfx impact_smoke_seg6_dl_06062D18[];
 
-#include "levels/ccm/crab/geo_header.h"
+#include "actors/crab/geo_header.h"
 
 extern const GeoLayout lll_geo_000B38[];
 extern const Gfx lll_seg7_dl_07018A30[];
@@ -921,5 +921,7 @@ extern const Gfx ssl_seg7_dl_070221E8[];
 #include "loopingp/geo_header.h"
 
 #include "loopingp/collision_header.h"
+
+#include "motos/header.h"
 
 #endif

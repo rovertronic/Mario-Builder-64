@@ -130,7 +130,7 @@ void loop_costume_token(void) {
             gCurrentObject->oTimer = 0;
             rtext_insert_pointer[0] = costume_text[gCurrentObject->oBehParams2ndByte];
             rtext_insert_pointer[1] = costume_effect_text[gCurrentObject->oBehParams2ndByte];
-            run_event(EVENT_COSTUME);
+            //run_event(EVENT_COSTUME);
             }
         }
     if (gCurrentObject->oAction == 2) {
@@ -177,7 +177,7 @@ void bhv_loop_wallet(void) {
 
                 int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer);
                 rtext_insert_pointer[1] = &wallet_text_buffer;
-                run_event(EVENT_WALLET);
+                //run_event(EVENT_WALLET);
                 }
         break;
 
@@ -340,81 +340,81 @@ void mirror_room_change(void) {
         }
 }
 
-void evil_mirrror_mario(void) {
-    struct Animation **animations = gCurrentObject->oAnimations;
+// void evil_mirrror_mario(void) {
+//     struct Animation **animations = gCurrentObject->oAnimations;
 
-    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    if ((gCurrentObject->oDistanceToMario < 500.0f)&&(gCurrentObject->oAction == 0)) {
-        //starting off with shitty code, ending off with shitty code, haha
-        start_precredits = FALSE;
-        if (save_file_check_progression(PROG_MIRROR)) {
-            obj_mark_for_deletion(gCurrentObject);
-            }
-            else {
-            geo_obj_init_animation(&gCurrentObject->header.gfx, &animations[1]);
-            gCurrentObject->oAction = 1;
-            gCurrentObject->oTimer = 0;
-            MetalAppear = TRUE;
-            spawn_mist_particles_variable(0, 0, 100.0f);
-            }
-        }
+//     gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//     if ((gCurrentObject->oDistanceToMario < 500.0f)&&(gCurrentObject->oAction == 0)) {
+//         //starting off with shitty code, ending off with shitty code, haha
+//         start_precredits = FALSE;
+//         if (save_file_check_progression(PROG_MIRROR)) {
+//             obj_mark_for_deletion(gCurrentObject);
+//             }
+//             else {
+//             geo_obj_init_animation(&gCurrentObject->header.gfx, &animations[1]);
+//             gCurrentObject->oAction = 1;
+//             gCurrentObject->oTimer = 0;
+//             MetalAppear = TRUE;
+//             spawn_mist_particles_variable(0, 0, 100.0f);
+//             }
+//         }
 
-    if (gCurrentObject->oAction == 1) {
-        gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-        if ((gCurrentObject->oTimer == 2)||(gCurrentObject->oTimer == 27)||(gCurrentObject->oTimer == 53)) {
-            cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
-            }
-        if ((gCurrentObject->oTimer > 80) && (gCurrentObject->oTimer < 165) && (gCurrentObject->oTimer%5==0)) {
-            cur_obj_play_sound_2(SOUND_ACTION_SIDE_FLIP_UNK);
-            }
-        if (gCurrentObject->oTimer > 209) {
-            //BREAK THE MIRROR
-            save_file_set_progression(PROG_MIRROR);
-                play_sound(SOUND_CUSTOM_PEACH_BAKE_A_CAKE,gCurrentObject->header.gfx.cameraToObject);
-            obj_mark_for_deletion(gCurrentObject);
-            }
-        }
-    }
+//     if (gCurrentObject->oAction == 1) {
+//         gCurrentObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+//         if ((gCurrentObject->oTimer == 2)||(gCurrentObject->oTimer == 27)||(gCurrentObject->oTimer == 53)) {
+//             cur_obj_play_sound_2(SOUND_ACTION_METAL_STEP);
+//             }
+//         if ((gCurrentObject->oTimer > 80) && (gCurrentObject->oTimer < 165) && (gCurrentObject->oTimer%5==0)) {
+//             cur_obj_play_sound_2(SOUND_ACTION_SIDE_FLIP_UNK);
+//             }
+//         if (gCurrentObject->oTimer > 209) {
+//             //BREAK THE MIRROR
+//             save_file_set_progression(PROG_MIRROR);
+//                 play_sound(SOUND_CUSTOM_PEACH_BAKE_A_CAKE,gCurrentObject->header.gfx.cameraToObject);
+//             obj_mark_for_deletion(gCurrentObject);
+//             }
+//         }
+//     }
 
-void bhv_toad_message_init(void) {
-    s32 saveFlags = save_file_get_flags();
-#ifdef UNLOCK_ALL
-    s32 starCount = 999;
-#else
-    s32 starCount = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-#endif
-    s32 dialogId = GET_BPARAM1(o->oBehParams);
-    s32 enoughStars = TRUE;
+// void bhv_toad_message_init(void) {
+//     s32 saveFlags = save_file_get_flags();
+// #ifdef UNLOCK_ALL
+//     s32 starCount = 999;
+// #else
+//     s32 starCount = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+// #endif
+//     s32 dialogId = GET_BPARAM1(o->oBehParams);
+//     s32 enoughStars = TRUE;
 
-    switch (dialogId) {
-        case TOAD_STAR_1_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_1_REQUIREMENT);
-            if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_1) {
-                dialogId = TOAD_STAR_1_DIALOG_AFTER;
-            }
-            break;
-        case TOAD_STAR_2_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_2_REQUIREMENT);
-            if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_2) {
-                dialogId = TOAD_STAR_2_DIALOG_AFTER;
-            }
-            break;
-        case TOAD_STAR_3_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_3_REQUIREMENT);
-            if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_3) {
-                dialogId = TOAD_STAR_3_DIALOG_AFTER;
-            }
-            break;
-    }
-    if (enoughStars) {
-        o->oToadMessageDialogId = dialogId;
-        o->oToadMessageRecentlyTalked = FALSE;
-        o->oToadMessageState = TOAD_MESSAGE_FADED;
-        o->oOpacity = 81;
-    } else {
-        obj_mark_for_deletion(o);
-    }
-}
+//     switch (dialogId) {
+//         case TOAD_STAR_1_DIALOG:
+//             enoughStars = (starCount >= TOAD_STAR_1_REQUIREMENT);
+//             if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_1) {
+//                 dialogId = TOAD_STAR_1_DIALOG_AFTER;
+//             }
+//             break;
+//         case TOAD_STAR_2_DIALOG:
+//             enoughStars = (starCount >= TOAD_STAR_2_REQUIREMENT);
+//             if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_2) {
+//                 dialogId = TOAD_STAR_2_DIALOG_AFTER;
+//             }
+//             break;
+//         case TOAD_STAR_3_DIALOG:
+//             enoughStars = (starCount >= TOAD_STAR_3_REQUIREMENT);
+//             if (saveFlags & SAVE_FLAG_COLLECTED_TOAD_STAR_3) {
+//                 dialogId = TOAD_STAR_3_DIALOG_AFTER;
+//             }
+//             break;
+//     }
+//     if (enoughStars) {
+//         o->oToadMessageDialogId = dialogId;
+//         o->oToadMessageRecentlyTalked = FALSE;
+//         o->oToadMessageState = TOAD_MESSAGE_FADED;
+//         o->oOpacity = 81;
+//     } else {
+//         obj_mark_for_deletion(o);
+//     }
+// }
 
 static void star_door_unlock_spawn_particles(s16 angleOffset) {
     struct Object *sparkleParticle = spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
@@ -512,7 +512,7 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
             gDPSetAlphaCompare(gfx++, G_AC_NONE);
         }
     }
-    alphaBias = min(alpha, newcam_xlu);
+    alphaBias = min(alpha, 255);
     gDPSetEnvColor(gfx++, 255, 255, 255, alphaBias);
     gSPEndDisplayList(gfx);
     return gfxHead;
@@ -752,7 +752,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
         }
 
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 8)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
     }
@@ -782,7 +782,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 8)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
             switchCase->selectedCase = 0;
         }
         //WARIO

@@ -4,18 +4,18 @@
 #include "types.h"
 
 // geo
-extern const GeoLayout geo_menu_mario_save_button[];
-extern const GeoLayout geo_menu_mario_save_button_fade[];
-extern const GeoLayout geo_menu_mario_new_button[];
-extern const GeoLayout geo_menu_mario_new_button_fade[];
-extern const GeoLayout geo_menu_erase_button[];
-extern const GeoLayout geo_menu_copy_button[];
-extern const GeoLayout geo_menu_file_button[];
-extern const GeoLayout geo_menu_score_button[];
-extern const GeoLayout geo_menu_sound_button[];
-extern const GeoLayout geo_menu_generic_button[];
+// extern const GeoLayout geo_menu_mario_save_button[];
+// extern const GeoLayout geo_menu_mario_save_button_fade[];
+// extern const GeoLayout geo_menu_mario_new_button[];
+// extern const GeoLayout geo_menu_mario_new_button_fade[];
+// extern const GeoLayout geo_menu_erase_button[];
+// extern const GeoLayout geo_menu_copy_button[];
+// extern const GeoLayout geo_menu_file_button[];
+// extern const GeoLayout geo_menu_score_button[];
+// extern const GeoLayout geo_menu_sound_button[];
+// extern const GeoLayout geo_menu_generic_button[];
 extern const GeoLayout geo_menu_file_select_strings_and_menu_cursor[];
-extern const GeoLayout geo_menu_act_selector_strings[];
+// extern const GeoLayout geo_menu_act_selector_strings[];
 
 // leveldata
 extern const Gfx dl_menu_mario_save_button_base[];

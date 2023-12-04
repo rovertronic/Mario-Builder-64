@@ -253,8 +253,6 @@ void clear_area_graph_nodes(void) {
     }
 }
 
-#include "rigid_body.h"
-
 void load_area(s32 index) {
 
     if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
@@ -263,9 +261,9 @@ void load_area(s32 index) {
         main_pool_pop_state();
         main_pool_push_state();
 
-        for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
-            deallocate_rigid_body(&gRigidBodies[i]);
-        }
+        // for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
+        //     deallocate_rigid_body(&gRigidBodies[i]);
+        // }
 
         if (gCurrentArea->terrainData != NULL) {
             load_area_terrain(index, gCurrentArea->terrainData, gCurrentArea->surfaceRooms,
@@ -274,12 +272,6 @@ void load_area(s32 index) {
 
         if (gCurrentArea->objectSpawnInfos != NULL) {
             spawn_objects_from_info(0, gCurrentArea->objectSpawnInfos);
-        }
-
-        if (cmm_target_mode == CMM_MODE_PLAY) {
-            //load_mario_area();
-            //generate_objects_to_level();
-            //unload_mario_area();
         }
 
         load_obj_warp_nodes();
@@ -354,6 +346,7 @@ void area_update_objects(void) {
  */
 void play_transition(s16 transType, s16 time, Color red, Color green, Color blue) {
 #ifndef L3DEX2_ALONE
+    set_and_reset_transition_fade_timer(0,0);
     gWarpTransition.isActive = TRUE;
     gWarpTransition.type = transType;
     gWarpTransition.time = time;
@@ -452,7 +445,7 @@ void render_game(void) {
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         do_cutscene_handler();
-        print_displaying_credits_entry();
+        // print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
 

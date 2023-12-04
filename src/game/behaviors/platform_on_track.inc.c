@@ -8,12 +8,12 @@
 /**
  * Collision models for the different types of platforms.
  */
-static Collision const *sPlatformOnTrackCollisionModels[] = {
-    /* PLATFORM_ON_TRACK_TYPE_CARPET    */ rr_seg7_collision_flying_carpet,
-    /* PLATFORM_ON_TRACK_TYPE_SKI_LIFT  */ ccm_seg7_collision_ropeway_lift,
-    /* PLATFORM_ON_TRACK_TYPE_CHECKERED */ checkerboard_platform_seg8_collision_platform,
-    /* PLATFORM_ON_TRACK_TYPE_GRATE     */ bitfs_seg7_collision_platform_on_track,
-};
+// static Collision const *sPlatformOnTrackCollisionModels[] = {
+//     /* PLATFORM_ON_TRACK_TYPE_CARPET    */ rr_seg7_collision_flying_carpet,
+//     /* PLATFORM_ON_TRACK_TYPE_SKI_LIFT  */ ccm_seg7_collision_ropeway_lift,
+//     /* PLATFORM_ON_TRACK_TYPE_CHECKERED */ checkerboard_platform_seg8_collision_platform,
+//     /* PLATFORM_ON_TRACK_TYPE_GRATE     */ bitfs_seg7_collision_platform_on_track,
+// };
 
 
 //bullshit trajectory for testing
@@ -27,17 +27,17 @@ Trajectory penistraj[] = {
 /**
  * Paths for the different instances of these platforms.
  */
-static Trajectory const *sPlatformOnTrackPaths[] = {
-    rr_seg7_trajectory_0702EC3C,
-    rr_seg7_trajectory_0702ECC0,
-    ccm_seg7_trajectory_ropeway_lift,
-    bitfs_seg7_trajectory_070159AC,
-    hmc_seg7_trajectory_checkerboard_platform,
-    lll_seg7_trajectory_0702856C,
-    lll_seg7_trajectory_07028660,
-    rr_seg7_trajectory_0702ED9C,
-    rr_seg7_trajectory_0702EEE0,
-};
+// static Trajectory const *sPlatformOnTrackPaths[] = {
+//     rr_seg7_trajectory_0702EC3C,
+//     rr_seg7_trajectory_0702ECC0,
+//     ccm_seg7_trajectory_ropeway_lift,
+//     bitfs_seg7_trajectory_070159AC,
+//     hmc_seg7_trajectory_checkerboard_platform,
+//     lll_seg7_trajectory_0702856C,
+//     lll_seg7_trajectory_07028660,
+//     rr_seg7_trajectory_0702ED9C,
+//     rr_seg7_trajectory_0702EEE0,
+// };
 
 u32 trajectory_get_target_angle(s16 *yaw, struct Waypoint *prevWaypoint, struct Waypoint *targetWaypoint) {
     // Check if target waypoint is immediately above or below prev waypoint
@@ -178,8 +178,7 @@ void bhv_platform_on_track_init(void) {
     //override platform on track to always be checkerboard
     o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
 
-    o->collisionData =
-        segmented_to_virtual(sPlatformOnTrackCollisionModels[o->oPlatformOnTrackType]);
+    o->collisionData = segmented_to_virtual(checkerboard_platform_seg8_collision_platform);
 
     o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
     if (o->oBehParams >> 24 == 0) rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
