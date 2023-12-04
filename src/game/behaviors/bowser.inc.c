@@ -474,7 +474,7 @@ void bowser_act_walk_to_mario(void) {
     }
 
     cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
-    if (o->oFloor->type != SURFACE_BURNING) vec3_copy(&o->oHomeVec, &o->oPosVec);
+    if (o->oFloor->type != SURFACE_BURNING && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
 
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
@@ -938,7 +938,6 @@ void bowser_set_goal_invisible(void) {
     if (o->oOpacity == 0) {
         o->oForwardVel = 0.0f;
         o->oVelY = 0.0f;
-        o->oPosY = (o->oHomeY - 1000.0f);
     }
 }
 
@@ -974,7 +973,8 @@ void bowser_act_jump_onto_stage(void) {
             cur_obj_init_animation_with_sound(BOWSER_ANIM_JUMP_START);
             if (cur_obj_check_anim_frame(11)) {
                 o->oMoveAngleYaw = o->oBowserAngleToCenter;
-                o->oVelY = 150.0f;
+                o->oVelY = 130.0f;
+                o->oForwardVel = 50.f;
                 o->oBowserTargetOpacity = 255;
                 o->oBowserTimer = 0;
                 o->oSubAction++;
@@ -988,10 +988,17 @@ void bowser_act_jump_onto_stage(void) {
             if (o->oPosY > o->oHomeY) {
                 o->oDragStrength = 0.0f;
                 if (o->oBowserDistToCenter < 750.0f) {
-                    o->oForwardVel = o->oBowserDistToCenter / 5.f;
+                    o->oForwardVel = MIN(o->oBowserDistToCenter / 10.f + 10.f, o->oBowserDistToCenter);
                 } else {
-                    cur_obj_forward_vel_approach_upward(150.0f, 2.0f);
+                    cur_obj_forward_vel_approach_upward(150.0f, 5.0f);
                 }
+                if (ABS((s16)(o->oBowserAngleToCenter - o->oMoveAngleYaw)) > 0x3000) {
+                    o->oForwardVel = 0;
+                } else {
+                    o->oMoveAngleYaw = o->oBowserAngleToCenter;
+                }
+            } else if ((o->oPosY < o->oHomeY - 100.f) && (o->oVelY > 0.f)) {
+                o->oVelY = 130.f;
             }
             // Land on stage
             if (bowser_check_fallen_off_stage()) {
@@ -1580,8 +1587,6 @@ void bhv_bowser_loop(void) {
             bowser_thrown_dropped_update();
             break;
     }
-    // Adjust model to the floor
-    cur_obj_align_gfx_with_floor();
 
     // Adjust opacity (when not dead)
     // Mostly for the teleport action in BitFS
