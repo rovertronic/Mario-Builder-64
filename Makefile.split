@@ -61,12 +61,12 @@ YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 # Actor Directories
 KOOPA_DIRS       := poundable_pole chain_ball chain_chomp
 CAPSWITCH_DIRS   := capswitch springboard
-CHILLYCHIEF_DIRS := 
+CHILLYCHIEF_DIRS := chillychief
 BULLY_DIRS       := bully blargg motos
 SPINDRIFT_DIRS   := penguin
 KING_BOBOMB_DIRS := water_bubble
 BOO_DIRS         := bookend book chair small_key mad_piano haunted_cage
-MR_I_DIRS        := swoop dorrie
+MR_I_DIRS        := swoop dorrie mario2
 HOOT_DIRS        := yellow_sphere_small hoot yoshi_egg
 COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree yoshi
 BUBBA_DIRS       := bubba
@@ -78,7 +78,7 @@ MOLE_DIRS        := monty_mole_hole monty_mole smoke ukiki fwoosh
 LAKITU_DIRS      := lakitu_cameraman toad mips boo_castle
 PEACH_DIRS       := bird peach
 BOWSER_DIRS      := yellow_sphere
-MARIO_DIRS       := mario mario2 grindel rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
+MARIO_DIRS       := mario grindel rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
 
 # Actor Textures
 AMP_CHUCKYA_TEXTURES            := $(foreach dir,$(AMP_DIRS),        $(wildcard actors/$(dir)/*.png))
