@@ -69,6 +69,7 @@ s8 cmm_cursor_pos[3] = {32,0,32};
 
 Vec3f cmm_camera_pos = {0.0f,0.0f,0.0f};
 Vec3f cmm_camera_foc = {0.0f,0.0f,0.0f};
+f32 cmm_camera_fov = 45.0f;
 s16 cmm_camera_angle = 0;
 u8 cmm_camera_rot_offset = 0;
 s8 cmm_camera_zoom_index = 2;
@@ -2251,7 +2252,6 @@ void save_level(void) {
         }
 
         update_painting();
-        cmm_prepare_level_screenshot = FALSE;
     }
 
 
@@ -2652,6 +2652,85 @@ s32 get_flipped_tile(s32 tileID) {
     return -1;
 }
 
+s16 cmm_freecam_pitch;
+s16 cmm_freecam_yaw;
+u8 cmm_freecam_snap = FALSE;
+u8 cmm_freecam_snap_timer = 0;
+
+void freecam_camera_init(void) {
+    f32 unused_dist;
+
+    cmm_prepare_level_screenshot = TRUE;
+    //vec3f_get_dist_and_angle(cmm_camera_pos,cmm_camera_foc,&unused_dist,&cmm_freecam_pitch,&cmm_freecam_yaw);
+
+    cmm_freecam_yaw = 0;
+    cmm_freecam_pitch = 0x4000;
+    cmm_freecam_snap = FALSE;
+    cmm_freecam_snap_timer = 0;
+}
+
+void freecam_camera_main(void) {
+    if (cmm_freecam_snap) {
+        cmm_freecam_snap_timer++;
+        if (cmm_freecam_snap_timer > 30) {
+            cmm_menu_state = CMM_MAKE_MAIN;
+            cmm_camera_fov = 45.0f;
+            cmm_prepare_level_screenshot = FALSE;
+        }
+        return;
+    }
+
+    // camera controls
+    cmm_freecam_yaw += gPlayer1Controller->rawStickX*-4;
+    cmm_freecam_pitch += gPlayer1Controller->rawStickY*-4;
+
+    if (gPlayer1Controller->buttonDown & U_CBUTTONS) {
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 30.0f );
+        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * 30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 30.0f );
+    }
+
+    if (gPlayer1Controller->buttonDown & D_CBUTTONS) {
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -30.0f );
+    }
+
+    if (gPlayer1Controller->buttonDown & R_CBUTTONS) {
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw + 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw + 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+    }
+
+    if (gPlayer1Controller->buttonDown & L_CBUTTONS) {
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw - 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw - 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+    }
+
+    if (gPlayer1Controller->buttonDown & L_TRIG) {
+        cmm_camera_fov -= 1.0f;
+        cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+    }
+
+    if (gPlayer1Controller->buttonDown & R_TRIG) {
+        cmm_camera_fov += 1.0f;
+        cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+    }
+
+    if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+        for (u8 i=0; i<16; i++) {
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        }
+        save_level();
+        cmm_freecam_snap = TRUE;
+    }
+
+    // transform camera
+    cmm_camera_foc[0] = cmm_camera_pos[0] + ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 100.0f );
+    cmm_camera_foc[1] = cmm_camera_pos[1] + ( coss(cmm_freecam_pitch) * 100.0f );
+    cmm_camera_foc[2] = cmm_camera_pos[2] + ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 100.0f );
+}
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,cmm_current_camera_zoom[1],0};
     cmm_joystick = joystick_direction();
@@ -2746,11 +2825,11 @@ void sb_loop(void) {
                                 cmm_menu_index = 0;
                                 animate_list_reset();
                                 break;
-                            case 1: // save
+                            case 1: // screenshot
                                 if (mount_success == FR_OK) {
-                                    cmm_do_save = TRUE;
-                                    cmm_prepare_level_screenshot = TRUE;
-                                    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+                                    freecam_camera_init();
+                                    cmm_menu_state = CMM_MAKE_SCREENSHOT;
+                                    play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
                                 } else {
                                     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                                 }
@@ -2973,6 +3052,9 @@ void sb_loop(void) {
 
             update_boundary_wall();
         break;
+        case CMM_MAKE_SCREENSHOT:
+            freecam_camera_main();
+        break;
     }
 
     if (cmm_place_mode == CMM_PM_OBJ) {
@@ -2992,12 +3074,14 @@ void sb_loop(void) {
         }
     }
 
-    cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
-    cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
-    cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
+    if (cmm_menu_state != CMM_MAKE_SCREENSHOT) {
+        cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
+        cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+        cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
-    vec3_copy(cmm_camera_pos,cmm_camera_foc);
-    vec3_add(cmm_camera_pos,cam_pos_offset);
+        vec3_copy(cmm_camera_pos,cmm_camera_foc);
+        vec3_add(cmm_camera_pos,cam_pos_offset);
+    }
 }
 
 #include "src/game/cursed_mirror_maker_menu.inc.c"

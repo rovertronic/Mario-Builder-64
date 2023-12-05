@@ -32,6 +32,7 @@ extern u8 cmm_mode;
 extern u8 cmm_target_mode;
 extern Vec3f cmm_camera_pos;
 extern Vec3f cmm_camera_foc;
+extern f32 cmm_camera_fov;
 
 extern u16 painting_rgba16[32][32];
 extern u8 cmm_lopt_envfx;
@@ -237,6 +238,7 @@ enum {
     CMM_MAKE_TOOLBOX,
     CMM_MAKE_SETTINGS,
     CMM_MAKE_TRAJECTORY,
+    CMM_MAKE_SCREENSHOT,
 };
 
 #define NUM_MATERIALS_PER_THEME 10

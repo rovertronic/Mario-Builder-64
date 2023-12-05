@@ -1505,12 +1505,12 @@ char *txt_fire_spinner[] = {
 
 Gfx *btn_settings[] = {
     mat_b_btn_settings,
-    mat_b_btn_save,
+    mat_b_btn_camera,
 };
 
 char *txt_settings[] = {
     "Level Settings",
-    "Quick Save",
+    "Take Screenshot",
 };
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {

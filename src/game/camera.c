@@ -2997,6 +2997,7 @@ void update_lakitu(struct Camera *c) {
     if (cmm_mode == CMM_MODE_MAKE) {
         vec3f_copy(gLakituState.pos, cmm_camera_pos);
         vec3f_copy(gLakituState.focus, cmm_camera_foc);
+        sFOVState.fov = cmm_camera_fov;
     }
 }
 
