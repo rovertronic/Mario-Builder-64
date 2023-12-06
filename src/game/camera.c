@@ -1195,17 +1195,23 @@ void mode_8_directions_camera(struct Camera *c) {
     //     break;
     //     }
 
-    //hardcoded no raycast due to edward survival nature
-    if ((cam_col_level)||(!(gMarioState->Options & (1<<OPT_CAMCOL)))) {
-        surf = NULL;
-    } else {
-        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
-    }
+
+    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
+    Vec3f camera_hit_diff;
+    vec3f_diff(camera_hit_diff,origin,hitpos);
+    f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+
+    print_text_fmt_int(110, 36, "%d", hit_to_mario_dist );
 
     if (surf) {
         f32 thickMul = 35.0f;
         f32 normal[3];
         get_surface_normal(normal, surf);
+
+        if (hit_to_mario_dist < 300.0f) {
+            thickMul -= 300.0f-hit_to_mario_dist;
+        }
+
         thick[0] = normal[0] * thickMul;
         thick[1] = normal[1] * thickMul;
         thick[2] = normal[2] * thickMul;
