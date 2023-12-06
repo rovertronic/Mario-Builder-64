@@ -1773,17 +1773,10 @@ u32 update_and_return_cap_flags(struct MarioState *m) {
                     flags &= ~MARIO_CAP_ON_HEAD;
                 }
             }
-        } else {//mario is a flier
+        }
 
-            if (gMarioState->RFuel < 1) {
-
-                m->flags &= ~(MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP);
-                if ((m->flags & (MARIO_NORMAL_CAP | MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP))
-                    == 0) {
-                    m->flags &= ~MARIO_CAP_ON_HEAD;
-                }
-            }
-
+        if (gMarioState->RFuel < 1) {
+            m->flags &= ~(MARIO_WING_CAP);
         }
 
         return flags;

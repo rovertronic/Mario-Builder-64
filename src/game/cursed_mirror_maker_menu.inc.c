@@ -807,7 +807,7 @@ void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     if ((cmm_mm_state == MM_MAIN) || (cmm_mm_state == MM_MAIN_LIMITED)) {
-        print_maker_string_ascii(185, 177 + cmm_menu_title_vels[0], "By Rovertronic", 0);
+        print_maker_string_ascii(115, 177 + cmm_menu_title_vels[0], "By Rovertronic & Arthurtilly", 0);
     }
 
     for (s32 i=0; i<ct; i++) {
