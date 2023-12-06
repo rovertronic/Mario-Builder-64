@@ -1201,8 +1201,6 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_diff(camera_hit_diff,origin,hitpos);
     f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
 
-    print_text_fmt_int(110, 36, "%d", hit_to_mario_dist );
-
     if (surf) {
         f32 thickMul = 35.0f;
         f32 normal[3];
