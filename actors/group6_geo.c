@@ -6,6 +6,7 @@
 
 #include "common1.h"
 #include "group6.h"
+#include "group17.h"
 
 
 #include "ukiki/geo.inc.c"

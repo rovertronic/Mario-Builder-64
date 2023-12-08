@@ -1,5 +1,7 @@
 // bowser.inc.c
 
+#include "actors/group17.h"
+
 /**
  * Behavior for Bowser and it's actions (Tail, Flame, Body)
  */

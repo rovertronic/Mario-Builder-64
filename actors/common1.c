@@ -31,10 +31,10 @@ UNUSED static const u64 binid_4 = 4;
 #include "door/collision.inc.c"
 UNUSED static const u64 binid_5 = 5;
 
-#include "bowser_key/model.inc.c"
-#include "bowser_key/anims/data.inc.c"
-#include "bowser_key/anims/table.inc.c"
-UNUSED static const u64 binid_6 = 6;
+// #include "bowser_key/model.inc.c"
+// #include "bowser_key/anims/data.inc.c"
+// #include "bowser_key/anims/table.inc.c"
+// UNUSED static const u64 binid_6 = 6;
 
 #include "flame/model.inc.c"
 UNUSED static const u64 binid_7 = 7;
@@ -50,11 +50,6 @@ UNUSED static const u64 binid_9 = 9;
 #include "leaves/model.inc.c"
 UNUSED static const u64 binid_10 = 10;
 
-UNUSED static const u64 binid_11 = 11;
-
-#include "mario_cap/model.inc.c"
-UNUSED static const u64 binid_12 = 12;
-
 #include "power_meter/model.inc.c"
 #ifdef BREATH_METER
 #include "breath_meter/model.inc.c"
@@ -63,8 +58,8 @@ UNUSED static const u64 binid_13 = 13;
 
 UNUSED static const u64 binid_14 = 14;
 
-#include "mushroom_1up/model.inc.c"
-UNUSED static const u64 binid_15 = 15;
+// #include "mushroom_1up/model.inc.c"
+// UNUSED static const u64 binid_15 = 15;
 
 #include "star/model.inc.c"
 UNUSED static const u64 binid_16 = 16;
@@ -81,18 +76,17 @@ UNUSED static const u64 binid_19 = 19;
 #include "white_particle/model.inc.c"
 UNUSED static const u64 binid_20 = 20;
 
-#include "wooden_signpost/model.inc.c"
-#include "wooden_signpost/collision.inc.c"
-UNUSED static const u64 binid_21 = 21;
+// #include "wooden_signpost/model.inc.c"
+// #include "wooden_signpost/collision.inc.c"
+// UNUSED static const u64 binid_21 = 21;
 
 #include "tree/model.inc.c"
 UNUSED static const u64 binid_22 = 22;
 
-#include "metalstar/model.inc.c"
-UNUSED static const u64 binid_23 = 23;
+// #include "metalstar/model.inc.c"
+// UNUSED static const u64 binid_23 = 23;
 
-#include "yoshi/model.inc.c"
-#include "yoshi/anims/data.inc.c"
-#include "yoshi/anims/table.inc.c"
-UNUSED static const u64 binid_24 = 24;
-#include "podoboo/model.inc.c"
+// #include "yoshi/model.inc.c"
+// #include "yoshi/anims/data.inc.c"
+// #include "yoshi/anims/table.inc.c"
+// UNUSED static const u64 binid_24 = 24;

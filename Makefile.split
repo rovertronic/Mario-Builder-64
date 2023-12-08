@@ -104,44 +104,14 @@ SPINDRIFT_PENGUIN_TEXTURES      := $(foreach dir,$(SPINDRIFT_DIRS),  $(wildcard 
 
 # Actor dependencies
 $(BUILD_DIR)/actors/group0.o:  $(MARIO_WATER_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group1.o:  $(HOOT_THWOMP_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group2.o:  $(BULLY_BLARGG_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group3.o:  $(BOBOMBS_BUBBLE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group4.o:  $(SEA_CREATURES_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group5.o:  $(KLEPTO_EYEROK_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group6.o:  $(MOLE_UKIKI_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group7.o:  $(SPINDRIFT_PENGUIN_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group8.o:  $(CAPSWITCH_SPRINGBOARD_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group9.o:  $(BOO_BOOKEND_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group10.o: $(PEACH_TOADSTOOL_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group11.o: $(BUBBA_WIGGLER_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group12.o: $(BOWSER_FLAMES_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group13.o: $(SKEETER_FISH_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/actors/group14.o: $(KOOPA_LOG_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group15.o: $(LAKITU_TOAD_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group16.o: $(CHILLYCHIEF_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/actors/group17.o: $(MR_I_SWOOP_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/actors/common0.o: $(AMP_CHUCKYA_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/actors/common1.o: $(COINS_PIPE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Actor Elf Files
 $(BUILD_DIR)/actors/group0.elf:  SEGMENT_ADDRESS := 0x04000000
-$(BUILD_DIR)/actors/group1.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group2.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group3.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group4.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group5.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group6.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group7.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group8.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group9.elf:  SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group10.elf: SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group11.elf: SEGMENT_ADDRESS := 0x05000000
-$(BUILD_DIR)/actors/group12.elf: SEGMENT_ADDRESS := 0x06000000
-$(BUILD_DIR)/actors/group13.elf: SEGMENT_ADDRESS := 0x06000000
 $(BUILD_DIR)/actors/group14.elf: SEGMENT_ADDRESS := 0x06000000
-$(BUILD_DIR)/actors/group15.elf: SEGMENT_ADDRESS := 0x06000000
-$(BUILD_DIR)/actors/group16.elf: SEGMENT_ADDRESS := 0x06000000
 $(BUILD_DIR)/actors/group17.elf: SEGMENT_ADDRESS := 0x06000000
 $(BUILD_DIR)/actors/common0.elf: SEGMENT_ADDRESS := 0x08000000
 $(BUILD_DIR)/actors/common1.elf: SEGMENT_ADDRESS := 0x03000000

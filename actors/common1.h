@@ -13,10 +13,10 @@ extern const Gfx blue_fish_seg3_dl_0301C150[];
 extern const struct Animation *const blue_fish_seg3_anims_0301C2B0[];
 
 // bowser_key
-extern const GeoLayout bowser_key_geo[];
-extern const GeoLayout bowser_key_cutscene_geo[];
-extern const Gfx bowser_key_dl[];
-extern const struct Animation *const bowser_key_seg3_anims_list[];
+// extern const GeoLayout bowser_key_geo[];
+// extern const GeoLayout bowser_key_cutscene_geo[];
+// extern const Gfx bowser_key_dl[];
+// extern const struct Animation *const bowser_key_seg3_anims_list[];
 
 // butterfly
 extern const GeoLayout butterfly_geo[];
@@ -232,36 +232,16 @@ extern const Gfx flame_seg3_dl_0301B5A8[];
 extern const GeoLayout leaves_geo[];
 extern const Gfx leaves_seg3_dl_0301CDE0[];
 
-// mario_cap
-extern const GeoLayout marios_cap_geo[];
-extern const GeoLayout marios_metal_cap_geo[];
-extern const GeoLayout marios_wing_cap_geo[];
-extern const GeoLayout marios_winged_metal_cap_geo[];
-extern const Gfx mario_cap_seg3_dl_03022B30[];
-extern const Gfx mario_cap_seg3_dl_03022B68[];
-extern const Gfx mario_cap_seg3_dl_03022CC8[];
-extern const Gfx mario_cap_seg3_dl_03022D10[];
-extern const Gfx mario_cap_seg3_dl_03022E78[];
-extern const Gfx mario_cap_seg3_dl_03022EA8[];
-extern const Gfx mario_cap_seg3_dl_03022ED8[];
-extern const Gfx mario_cap_seg3_dl_03022F20[];
-extern const Gfx mario_cap_seg3_dl_03022F48[];
-extern const Gfx mario_cap_seg3_dl_03022FF8[];
-extern const Gfx mario_cap_seg3_dl_030230B0[];
-extern const Gfx mario_cap_seg3_dl_03023108[];
-extern const Gfx mario_cap_seg3_dl_03023160[];
-extern const Gfx mario_cap_seg3_dl_03023298[];
-
 // mist
 extern const GeoLayout mist_geo[];
 extern const GeoLayout white_puff_geo[];
 extern const Gfx mist_seg3_dl_03000880[];
 extern const Gfx mist_seg3_dl_03000920[];
 
-// mushroom_1up
-extern const GeoLayout mushroom_1up_geo[];
-extern const Gfx mushroom_1up_seg3_dl_0302A628[];
-extern const Gfx mushroom_1up_seg3_dl_0302A660[];
+// // mushroom_1up
+// extern const GeoLayout mushroom_1up_geo[];
+// extern const Gfx mushroom_1up_seg3_dl_0302A628[];
+// extern const Gfx mushroom_1up_seg3_dl_0302A660[];
 
 // number
 extern const GeoLayout number_geo[];
@@ -293,12 +273,12 @@ extern const Gfx star_seg3_dl_body[];
 extern const Gfx star_seg3_sub_dl_eyes[];
 extern const Gfx star_seg3_dl_eyes[];
 
-// metalstar
-extern const GeoLayout metalstar_geo[];
-extern const Gfx metalstar_seg3_sub_dl_body[];
-extern const Gfx metalstar_seg3_dl_body[];
-extern const Gfx metalstar_seg3_sub_dl_eyes[];
-extern const Gfx metalstar_seg3_dl_eyes[];
+// // metalstar
+// extern const GeoLayout metalstar_geo[];
+// extern const Gfx metalstar_seg3_sub_dl_body[];
+// extern const Gfx metalstar_seg3_dl_body[];
+// extern const Gfx metalstar_seg3_sub_dl_eyes[];
+// extern const Gfx metalstar_seg3_dl_eyes[];
 
 // transparent_star
 extern const GeoLayout transparent_star_geo[];
@@ -333,42 +313,40 @@ extern const Collision warp_pipe_seg3_collision_03009AC8[];
 extern const GeoLayout white_particle_geo[];
 extern const Gfx white_particle_dl[];
 
-// wooden_signpost
-extern const GeoLayout wooden_signpost_geo[];
-extern const Gfx wooden_signpost_seg3_dl_0302D9C8[];
-extern const Gfx wooden_signpost_seg3_dl_0302DA48[];
-extern const Gfx wooden_signpost_seg3_dl_0302DC40[];
-extern const Gfx wooden_signpost_seg3_dl_0302DCD0[];
-extern const Gfx wooden_signpost_seg3_dl_0302DD08[];
-extern const Collision wooden_signpost_seg3_collision_0302DD80[];
+// // wooden_signpost
+// extern const GeoLayout wooden_signpost_geo[];
+// extern const Gfx wooden_signpost_seg3_dl_0302D9C8[];
+// extern const Gfx wooden_signpost_seg3_dl_0302DA48[];
+// extern const Gfx wooden_signpost_seg3_dl_0302DC40[];
+// extern const Gfx wooden_signpost_seg3_dl_0302DCD0[];
+// extern const Gfx wooden_signpost_seg3_dl_0302DD08[];
+// extern const Collision wooden_signpost_seg3_collision_0302DD80[];
 
-// yoshi
-extern const GeoLayout yoshi_geo[];
-extern const Gfx yoshi_seg5_dl_0501D440[];
-extern const Gfx yoshi_seg5_dl_0501D488[];
-extern const Gfx yoshi_seg5_dl_0501D4E0[];
-extern const Gfx yoshi_seg5_dl_0501D8F8[];
-extern const Gfx yoshi_seg5_dl_0501D940[];
-extern const Gfx yoshi_seg5_dl_0501D970[];
-extern const Gfx yoshi_seg5_dl_0501D998[];
-extern const Gfx yoshi_seg5_dl_050212B0[];
-extern const Gfx yoshi_seg5_dl_05021490[];
-extern const Gfx yoshi_seg5_dl_050215D8[];
-extern const Gfx yoshi_seg5_dl_05021678[];
-extern const Gfx yoshi_seg5_dl_05021718[];
-extern const Gfx yoshi_seg5_dl_05021860[];
-extern const Gfx yoshi_seg5_dl_05021900[];
-extern const Gfx yoshi_seg5_dl_050219A0[];
-extern const Gfx yoshi_seg5_dl_05021B90[];
-extern const Gfx yoshi_seg5_dl_05021CD8[];
-extern const Gfx yoshi_seg5_dl_05021E38[];
-extern const Gfx yoshi_seg5_dl_05021F70[];
-extern const Gfx yoshi_seg5_dl_05022160[];
-extern const Gfx yoshi_seg5_dl_050222A8[];
-extern const Gfx yoshi_seg5_dl_05022408[];
-extern const Gfx yoshi_seg5_dl_05022608[];
-extern const struct Animation *const yoshi_seg5_anims_05024100[];
-
-#include "podoboo/geo_header.h"
+// // yoshi
+// extern const GeoLayout yoshi_geo[];
+// extern const Gfx yoshi_seg5_dl_0501D440[];
+// extern const Gfx yoshi_seg5_dl_0501D488[];
+// extern const Gfx yoshi_seg5_dl_0501D4E0[];
+// extern const Gfx yoshi_seg5_dl_0501D8F8[];
+// extern const Gfx yoshi_seg5_dl_0501D940[];
+// extern const Gfx yoshi_seg5_dl_0501D970[];
+// extern const Gfx yoshi_seg5_dl_0501D998[];
+// extern const Gfx yoshi_seg5_dl_050212B0[];
+// extern const Gfx yoshi_seg5_dl_05021490[];
+// extern const Gfx yoshi_seg5_dl_050215D8[];
+// extern const Gfx yoshi_seg5_dl_05021678[];
+// extern const Gfx yoshi_seg5_dl_05021718[];
+// extern const Gfx yoshi_seg5_dl_05021860[];
+// extern const Gfx yoshi_seg5_dl_05021900[];
+// extern const Gfx yoshi_seg5_dl_050219A0[];
+// extern const Gfx yoshi_seg5_dl_05021B90[];
+// extern const Gfx yoshi_seg5_dl_05021CD8[];
+// extern const Gfx yoshi_seg5_dl_05021E38[];
+// extern const Gfx yoshi_seg5_dl_05021F70[];
+// extern const Gfx yoshi_seg5_dl_05022160[];
+// extern const Gfx yoshi_seg5_dl_050222A8[];
+// extern const Gfx yoshi_seg5_dl_05022408[];
+// extern const Gfx yoshi_seg5_dl_05022608[];
+// extern const struct Animation *const yoshi_seg5_anims_05024100[];
 
 #endif

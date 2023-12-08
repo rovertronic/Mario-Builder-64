@@ -28,6 +28,7 @@
 #include "puppycamold.h"
 #include "src/game/mario_misc.h"
 #include "actors/group0.h"
+#include "actors/group14.h"
 #include "rovent.h"
 #include "level_update.h"
 #include "hud.h"

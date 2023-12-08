@@ -2028,17 +2028,17 @@ const BehaviorScript bhvBreakableBox[] = {
 //     BREAK(),
 // };
 
-const BehaviorScript bhvPushableMetalBox[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    LOAD_COLLISION_DATA(metal_box_seg8_collision_08024C28),
-    SET_FLOAT(oCollisionDistance, 500),
-    SET_HOME(),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_pushable_loop),
-        CALL_NATIVE(load_object_collision_model),
-    END_LOOP(),
-};
+// const BehaviorScript bhvPushableMetalBox[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+//     LOAD_COLLISION_DATA(metal_box_seg8_collision_08024C28),
+//     SET_FLOAT(oCollisionDistance, 500),
+//     SET_HOME(),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_pushable_loop),
+//         CALL_NATIVE(load_object_collision_model),
+//     END_LOOP(),
+// };
 
 // const BehaviorScript bhvMetalCrateCol[] = {
 //     BEGIN(OBJ_LIST_SURFACE),
@@ -4579,34 +4579,34 @@ const BehaviorScript bhvBobombBuddyOpensCannon[] = {
 //     END_LOOP(),
 // };
 
-const BehaviorScript bhvMessagePanel[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_COLLISION_DATA(wooden_signpost_seg3_collision_0302DD80),
-    SET_INTERACT_TYPE(INTERACT_TEXT),
-    SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
-    DROP_TO_FLOOR(),
-    SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
-    SET_INT(oWoodenPostTotalMarioAngle, 0),
-    CALL_NATIVE(load_object_static_model),
-    BEGIN_LOOP(),
-        SET_INT(oIntangibleTimer, 0),
-        SET_INT(oInteractStatus, INT_STATUS_NONE),
-    END_LOOP(),
-};
+// const BehaviorScript bhvMessagePanel[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     LOAD_COLLISION_DATA(wooden_signpost_seg3_collision_0302DD80),
+//     SET_INTERACT_TYPE(INTERACT_TEXT),
+//     SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
+//     DROP_TO_FLOOR(),
+//     SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
+//     SET_INT(oWoodenPostTotalMarioAngle, 0),
+//     CALL_NATIVE(load_object_static_model),
+//     BEGIN_LOOP(),
+//         SET_INT(oIntangibleTimer, 0),
+//         SET_INT(oInteractStatus, INT_STATUS_NONE),
+//     END_LOOP(),
+// };
 
-const BehaviorScript bhvSignOnWall[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    SET_INTERACT_TYPE(INTERACT_TEXT),
-    SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
-    SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
-    SET_INT(oWoodenPostTotalMarioAngle, 0),
-    BEGIN_LOOP(),
-        SET_INT(oIntangibleTimer, 0),
-        SET_INT(oInteractStatus, INT_STATUS_NONE),
-    END_LOOP(),
-};
+// const BehaviorScript bhvSignOnWall[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+//     SET_INTERACT_TYPE(INTERACT_TEXT),
+//     SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
+//     SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
+//     SET_INT(oWoodenPostTotalMarioAngle, 0),
+//     BEGIN_LOOP(),
+//         SET_INT(oIntangibleTimer, 0),
+//         SET_INT(oInteractStatus, INT_STATUS_NONE),
+//     END_LOOP(),
+// };
 
 const BehaviorScript bhvHomingAmp[] = {
     BEGIN(OBJ_LIST_GENACTOR),
@@ -6065,18 +6065,18 @@ const BehaviorScript bhvPokeyBodyPart[] = {
     END_LOOP(),
 };
 
-const BehaviorScript bhvSwoop[] = {
-    BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, swoop_seg6_anims_060070D0),
-    SET_HOME(),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ 0, /*Bounciness*/ -50, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
-    //CALL_NATIVE(bhv_init_room),
-    SCALE(/*Unused*/ 0, /*Field*/ 0),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_swoop_update),
-    END_LOOP(),
-};
+// const BehaviorScript bhvSwoop[] = {
+//     BEGIN(OBJ_LIST_GENACTOR),
+//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     LOAD_ANIMATIONS(oAnimations, swoop_seg6_anims_060070D0),
+//     SET_HOME(),
+//     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ 0, /*Bounciness*/ -50, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
+//     //CALL_NATIVE(bhv_init_room),
+//     SCALE(/*Unused*/ 0, /*Field*/ 0),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_swoop_update),
+//     END_LOOP(),
+// };
 
 const BehaviorScript bhvFlyGuy[] = {
     BEGIN(OBJ_LIST_GENACTOR),

@@ -1937,7 +1937,7 @@ void switch_mario_costume(u8 CostumeId) {
     u8 *Hatcol = segmented_to_virtual(&mario_hat_v4_lights);
     u8 *Pantcol = segmented_to_virtual(&mario_button_v4_lights);
     u8 *Shoecol = segmented_to_virtual(&mario_shoes_v4_lights);
-    u8 *Tokencol = segmented_to_virtual(&token_token_lights);
+    // u8 *Tokencol = segmented_to_virtual(&token_token_lights);
 
     //Gamer Mario
     ColorShift += 0x200;
@@ -1964,19 +1964,19 @@ void switch_mario_costume(u8 CostumeId) {
     Hatcol[6] = CostumeData[CostumeId][2]/2;
 
     //TOKEN
-    Tokencol[8] = CostumeData[gMarioState->TokenParam2][0];//Diffuse
-    Tokencol[9] = CostumeData[gMarioState->TokenParam2][1];
-    Tokencol[10] = CostumeData[gMarioState->TokenParam2][2];
-    Tokencol[12] = CostumeData[gMarioState->TokenParam2][0];
-    Tokencol[13] = CostumeData[gMarioState->TokenParam2][1];
-    Tokencol[14] = CostumeData[gMarioState->TokenParam2][2];
+    // Tokencol[8] = CostumeData[gMarioState->TokenParam2][0];//Diffuse
+    // Tokencol[9] = CostumeData[gMarioState->TokenParam2][1];
+    // Tokencol[10] = CostumeData[gMarioState->TokenParam2][2];
+    // Tokencol[12] = CostumeData[gMarioState->TokenParam2][0];
+    // Tokencol[13] = CostumeData[gMarioState->TokenParam2][1];
+    // Tokencol[14] = CostumeData[gMarioState->TokenParam2][2];
 
-    Tokencol[0] = CostumeData[gMarioState->TokenParam2][0]/2;//Ambient
-    Tokencol[1] = CostumeData[gMarioState->TokenParam2][1]/2;
-    Tokencol[2] = CostumeData[gMarioState->TokenParam2][2]/2;
-    Tokencol[4] = CostumeData[gMarioState->TokenParam2][0]/2;
-    Tokencol[5] = CostumeData[gMarioState->TokenParam2][1]/2;
-    Tokencol[6] = CostumeData[gMarioState->TokenParam2][2]/2;
+    // Tokencol[0] = CostumeData[gMarioState->TokenParam2][0]/2;//Ambient
+    // Tokencol[1] = CostumeData[gMarioState->TokenParam2][1]/2;
+    // Tokencol[2] = CostumeData[gMarioState->TokenParam2][2]/2;
+    // Tokencol[4] = CostumeData[gMarioState->TokenParam2][0]/2;
+    // Tokencol[5] = CostumeData[gMarioState->TokenParam2][1]/2;
+    // Tokencol[6] = CostumeData[gMarioState->TokenParam2][2]/2;
 
     //JEANS
     Pantcol[8] = CostumeData[CostumeId][3];//Diffuse

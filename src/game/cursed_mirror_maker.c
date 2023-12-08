@@ -48,6 +48,7 @@
 #include "cursed_mirror_maker.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
+#include "actors/group17.h"
 #include "sram.h"
 #include "level_geo.h"
 #include "src/buffers/framebuffers.h"

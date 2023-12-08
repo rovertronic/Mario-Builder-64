@@ -6,6 +6,7 @@
 
 #include "common1.h"
 #include "group5.h"
+#include "group17.h"
 
 #include "klepto/geo.inc.c"
 #include "eyerok/geo.inc.c"
