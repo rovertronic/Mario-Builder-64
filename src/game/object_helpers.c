@@ -1077,8 +1077,9 @@ static void cur_obj_move_update_underwater_flags(void) {
 
 static void cur_obj_move_update_ground_air_flags(UNUSED f32 gravity, f32 bounciness) {
     o->oMoveFlags &= ~OBJ_MOVE_BOUNCE;
+    f32 floorOffset = ((o->oMoveFlags & (OBJ_MOVE_ON_GROUND | OBJ_MOVE_LANDED) && (o->oVelY < 5.f)) ? 100.f : 0.f);
 
-    if (o->oPosY < o->oFloorHeight) {
+    if (o->oPosY < (o->oFloorHeight + floorOffset)) {
         // On the first frame that we touch the ground, set OBJ_MOVE_LANDED.
         // On subsequent frames, set OBJ_MOVE_ON_GROUND
         if (!(o->oMoveFlags & OBJ_MOVE_ON_GROUND)) {
@@ -1421,23 +1422,35 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
 
 s32 cur_obj_resolve_wall_collisions(void) {
     f32 radius = o->oWallHitboxRadius;
-    if (radius > 0.1f) {
-        struct WallCollisionData collisionData;
-        collisionData.offsetY = 10.0f;
-        collisionData.radius  = radius;
-        collisionData.x = (s16) o->oPosX;
-        collisionData.y = (s16) o->oPosY;
-        collisionData.z = (s16) o->oPosZ;
-        s32 numCollisions = find_wall_collisions(&collisionData);
-        if (numCollisions != 0) {
-            o->oPosX = collisionData.x;
-            o->oPosY = collisionData.y;
-            o->oPosZ = collisionData.z;
-            struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+    s32 wallFound = FALSE;
+    if (radius <= 0.1f) return FALSE;
 
-            o->oWallAngle = SURFACE_YAW(wall);
-            return (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000);
-        }
+    struct WallCollisionData collisionData;
+    collisionData.offsetY = 10.0f;
+    collisionData.radius  = radius;
+    collisionData.x = (s16) o->oPosX;
+    collisionData.y = (s16) o->oPosY;
+    collisionData.z = (s16) o->oPosZ;
+    s32 numCollisions = find_wall_collisions(&collisionData);
+    if (numCollisions != 0) {
+        struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+        o->oWallAngle = SURFACE_YAW(wall);
+        wallFound = TRUE;
+    }
+
+    collisionData.offsetY += collisionData.radius;
+    numCollisions = find_wall_collisions(&collisionData);
+    if (numCollisions != 0) {
+        struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+        o->oWallAngle = SURFACE_YAW(wall);
+        wallFound = TRUE;
+    }
+
+    if (wallFound) {
+        o->oPosX = collisionData.x;
+        o->oPosY = collisionData.y;
+        o->oPosZ = collisionData.z;
+        return (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000);
     }
 
     return FALSE;

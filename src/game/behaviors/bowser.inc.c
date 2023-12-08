@@ -308,10 +308,12 @@ void bowser_bitdw_actions(void) {
                     o->oAction = BOWSER_ACT_BREATH_FIRE;
                 }
             } else { // far away
-                if (rand < 0.5f) {
+                if (rand < 0.4f) {
                     o->oAction = BOWSER_ACT_CHARGE_MARIO;
-                } else {
+                } else if (rand < 0.8f) {
                     o->oAction = BOWSER_ACT_QUICK_JUMP;
+                } else {
+                    o->oAction = BOWSER_ACT_TELEPORT;
                 }
             }
         } else {
@@ -531,11 +533,18 @@ void bowser_act_teleport(void) {
                 o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
                 o->oMoveAngleYaw = o->oAngleToMario; // update angle
             }
+            o->oPosY = gMarioObject->oPosY + 500.f;
+            cur_obj_move_xz_using_fvel_and_yaw();
 
             if (abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) {
-                if (o->oDistanceToMario > 500.0f) {
+                cur_obj_update_floor_height_and_get_floor();
+                if (o->oDistanceToMario > 500.0f || o->oFloorHeight < o->oPosY - 1000.f) {
+                    o->oPosX -= o->oVelX;
+                    o->oPosZ -= o->oVelZ;
                     o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
                     o->oMoveAngleYaw = o->oAngleToMario; // update angle
+                    cur_obj_update_floor_height_and_get_floor();
+                    o->oPosY = o->oFloorHeight;
                     cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
                 }
             }
@@ -957,10 +966,8 @@ void bowser_act_jump_onto_stage(void) {
         case BOWSER_SUB_ACT_JUMP_ON_STAGE_IDLE:
             if (o->oTimer == 0) {
                 o->oFaceAnglePitch = 0;
-                o->oFaceAngleRoll = 0;
             } //? missing else
             o->oFaceAnglePitch += 0x800;
-            o->oFaceAngleRoll += 0x800;
             if (!(o->oFaceAnglePitch & 0xFFFF)) {
                 cur_obj_init_animation(BOWSER_ANIM_FALL_DOWN);
                 o->oSubAction++;
@@ -1267,10 +1274,8 @@ void bowser_act_dead(void) {
         case BOWSER_SUB_ACT_DEAD_OFFSTAGE:
             if (o->oTimer == 0) {
                 o->oFaceAnglePitch = 0;
-                o->oFaceAngleRoll = 0;
             }
             o->oFaceAnglePitch += 0x800;
-            o->oFaceAngleRoll += 0x800;
             o->oBowserTargetOpacity = 0;
             if (!(o->oFaceAnglePitch & 0xFFFF)) {
                 bowser_dead_hide();
@@ -1280,15 +1285,6 @@ void bowser_act_dead(void) {
             }
             break;
     }
-}
-
-/**
- * Sets values for the BitFS platform to tilt
- */
-void bowser_tilt_platform(struct Object *platform, s16 angSpeed) {
-    s16 angle = o->oBowserAngleToCenter + 0x8000;
-    platform->oAngleVelPitch = coss(angle) * angSpeed;
-    platform->oAngleVelRoll = -sins(angle) * angSpeed;
 }
 
 /**
@@ -1465,9 +1461,9 @@ void bowser_reflect_walls(void) {
 void bowser_free_update(void) {
     o->oBowserGrabbedStatus = BOWSER_GRAB_STATUS_NONE;
     // Update positions and actions (default action)
-    cur_obj_update_floor_and_walls();
+    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sBowserActions);
-    cur_obj_move_standard(-78);
+    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_move_standard(-78);
     // Jump on stage if Bowser has fallen off
     if (bowser_check_fallen_off_stage()) {
         if (o->oAction == BOWSER_ACT_DEAD) {
