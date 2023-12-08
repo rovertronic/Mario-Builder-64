@@ -1,1 +1,1 @@
-#include "animation.inc.c"
+#include "normal.inc.c"

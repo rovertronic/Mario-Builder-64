@@ -2,7 +2,6 @@
 
 #include "sm64.h"
 #include "actors/common0.h"
-#include "actors/group11.h"
 #include "actors/group17.h"
 #include "audio/external.h"
 #include "behavior_actions.h"
@@ -852,7 +851,7 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
 #include "behaviors/flame.inc.c"
 #include "behaviors/snufit.inc.c"
 // #include "behaviors/horizontal_grindel.inc.c"
-#include "behaviors/eyerok.inc.c"
+// #include "behaviors/eyerok.inc.c"
 // #include "behaviors/klepto.inc.c"
 // #include "behaviors/bird.inc.c"
 // #include "behaviors/racing_penguin.inc.c"

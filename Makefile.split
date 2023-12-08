@@ -17,22 +17,7 @@ TEXTURE_DIRS := \
 
 ACTOR_GROUPS := \
     group0  \
-    group1  \
-    group2  \
-    group3  \
-    group4  \
-    group5  \
-    group6  \
-    group7  \
-    group8  \
-    group9  \
-    group10 \
-    group11 \
-    group12 \
-    group13 \
     group14 \
-    group15 \
-    group16 \
     group17 \
     common0 \
     common1
@@ -59,48 +44,18 @@ YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 # --------------------------------------
 
 # Actor Directories
-KOOPA_DIRS       := poundable_pole chain_ball chain_chomp
-CAPSWITCH_DIRS   := capswitch springboard
-CHILLYCHIEF_DIRS := chillychief
-BULLY_DIRS       := bully blargg motos
-SPINDRIFT_DIRS   := penguin
-KING_BOBOMB_DIRS := water_bubble
-BOO_DIRS         := bookend book chair small_key mad_piano haunted_cage
-MR_I_DIRS        := swoop dorrie mario2
-HOOT_DIRS        := yellow_sphere_small hoot yoshi_egg
+KOOPA_DIRS       := 
+MR_I_DIRS        := mario2
 COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree yoshi
-BUBBA_DIRS       := bubba
-SKEETER_DIRS     := skeeter seaweed water_mine cyan_fish bub water_ring treasure_chest
-KLEPTO_DIRS      := klepto eyerok pokey tornado
-SEA_DIRS         := clam_shell manta sushi unagi whirlpool
 AMP_DIRS         := blue_coin_switch chuckya amp cannon_lid cannon_base cannon_barrel purple_switch checkerboard_platform heart flyguy breakable_box exclamation_box vanilla_exclamation_box goomba bobomb metal_box exclamation_box_outline test_platform koopa_shell
-MOLE_DIRS        := monty_mole_hole monty_mole smoke ukiki fwoosh
-LAKITU_DIRS      := lakitu_cameraman toad mips boo_castle
-PEACH_DIRS       := bird peach
-BOWSER_DIRS      := yellow_sphere
-MARIO_DIRS       := mario grindel rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
+MARIO_DIRS       := mario grindel bully motos rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
 
 # Actor Textures
 AMP_CHUCKYA_TEXTURES            := $(foreach dir,$(AMP_DIRS),        $(wildcard actors/$(dir)/*.png))
-BOBOMBS_BUBBLE_TEXTURES         := $(foreach dir,$(KING_BOBOMB_DIRS),$(wildcard actors/$(dir)/*.png))
-BOO_BOOKEND_TEXTURES            := $(foreach dir,$(BOO_DIRS),        $(wildcard actors/$(dir)/*.png))
-CAPSWITCH_SPRINGBOARD_TEXTURES  := $(foreach dir,$(CAPSWITCH_DIRS),  $(wildcard actors/$(dir)/*.png))
 COINS_PIPE_TEXTURES             := $(foreach dir,$(COINS_DIRS),      $(wildcard actors/$(dir)/*.png))
-BOWSER_FLAMES_TEXTURES          := $(foreach dir,$(BOWSER_DIRS),     $(wildcard actors/$(dir)/*.png))
-BUBBA_WIGGLER_TEXTURES          := $(foreach dir,$(BUBBA_DIRS),      $(wildcard actors/$(dir)/*.png))
-BULLY_BLARGG_TEXTURES           := $(foreach dir,$(BULLY_DIRS),      $(wildcard actors/$(dir)/*.png))
-CHILLYCHIEF_TEXTURES            := $(foreach dir,$(CHILLYCHIEF_DIRS),$(wildcard actors/$(dir)/*.png))
-HOOT_THWOMP_TEXTURES            := $(foreach dir,$(HOOT_DIRS),       $(wildcard actors/$(dir)/*.png))
 KOOPA_LOG_TEXTURES              := $(foreach dir,$(KOOPA_DIRS),      $(wildcard actors/$(dir)/*.png))
-KLEPTO_EYEROK_TEXTURES          := $(foreach dir,$(KLEPTO_DIRS),     $(wildcard actors/$(dir)/*.png))
-LAKITU_TOAD_TEXTURES            := $(foreach dir,$(LAKITU_DIRS),     $(wildcard actors/$(dir)/*.png))
 MARIO_WATER_TEXTURES            := $(foreach dir,$(MARIO_DIRS),      $(wildcard actors/$(dir)/*.png))
-MOLE_UKIKI_TEXTURES             := $(foreach dir,$(MOLE_DIRS),       $(wildcard actors/$(dir)/*.png))
 MR_I_SWOOP_TEXTURES             := $(foreach dir,$(MR_I_DIRS),       $(wildcard actors/$(dir)/*.png))
-PEACH_TOADSTOOL_TEXTURES        := $(foreach dir,$(PEACH_DIRS),      $(wildcard actors/$(dir)/*.png))
-SEA_CREATURES_TEXTURES          := $(foreach dir,$(SEA_DIRS),        $(wildcard actors/$(dir)/*.png))
-SKEETER_FISH_TEXTURES           := $(foreach dir,$(SKEETER_DIRS),    $(wildcard actors/$(dir)/*.png))
-SPINDRIFT_PENGUIN_TEXTURES      := $(foreach dir,$(SPINDRIFT_DIRS),  $(wildcard actors/$(dir)/*.png))
 
 # Actor dependencies
 $(BUILD_DIR)/actors/group0.o:  $(MARIO_WATER_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)

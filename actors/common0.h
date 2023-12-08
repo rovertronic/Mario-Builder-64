@@ -4,12 +4,8 @@
 #include "types.h"
 
 // amp
-extern const GeoLayout dAmpGeo[];
-extern const Gfx dAmpElectricityDl[];
-extern const Gfx dAmpEyeDl[];
-extern const Gfx dAmpMouthDl[];
-extern const Gfx dAmpBodyDl[];
-extern const struct Animation *const dAmpAnimsList[];
+#include "amp/geo_header.h"
+#include "amp/anim_header.h"
 
 // blue_coin_switch
 extern const GeoLayout blue_coin_switch_geo[];

@@ -2,8 +2,6 @@
 
 #include "types.h"
 #include "actors/common1.h"
-#include "actors/group12.h"
-#include "actors/group13.h"
 #include "actors/group0.h"
 #include "area.h"
 #include "audio/external.h"

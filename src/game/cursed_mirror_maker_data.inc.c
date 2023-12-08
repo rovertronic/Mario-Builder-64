@@ -1146,7 +1146,7 @@ struct cmm_object_info cmm_object_type_flying[] = {
     {bhvEnemyLakitu, TILE_SIZE/2, MODEL_LAKITU_MAKER, FALSE, 5, 5, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
     {bhvRealFlyGuy, TILE_SIZE/2, MODEL_FLYGUY, FALSE, 2, 0, 1.5f, flyguy_seg8_anims_08011A64, df_flyguy, SOUND_OBJ_KOOPA_FLYGUY_DEATH},
     {bhvSnufit, TILE_SIZE/2, MODEL_MAKER_SNUFIT, FALSE, 2, 0, 1.0f, NULL, df_snufit, SOUND_OBJ_SNUFIT_SHOOT},
-    {bhvCirclingAmp, TILE_SIZE/2, MODEL_AMP, FALSE, 0, 0, 1.0f, dAmpAnimsList, df_circling_amp, SOUND_AIR_AMP_PREVIEW},
+    {bhvCirclingAmp, TILE_SIZE/2, MODEL_AMP, FALSE, 0, 0, 1.0f, amp_anims, df_circling_amp, SOUND_AIR_AMP_PREVIEW},
 };
 
 struct cmm_object_info cmm_object_type_haunted[] = {

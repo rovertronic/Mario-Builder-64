@@ -17,22 +17,7 @@
 #include "actors/common0.h"
 #include "actors/common1.h"
 #include "actors/group0.h"
-#include "actors/group1.h"
-#include "actors/group2.h"
-#include "actors/group3.h"
-#include "actors/group4.h"
-#include "actors/group5.h"
-#include "actors/group6.h"
-#include "actors/group7.h"
-#include "actors/group8.h"
-#include "actors/group9.h"
-#include "actors/group10.h"
-#include "actors/group11.h"
-#include "actors/group12.h"
-#include "actors/group13.h"
 #include "actors/group14.h"
-#include "actors/group15.h"
-#include "actors/group16.h"
 #include "actors/group17.h"
 
 #include "make_const_nonconst.h"
@@ -4611,7 +4596,7 @@ const BehaviorScript bhvBobombBuddyOpensCannon[] = {
 const BehaviorScript bhvHomingAmp[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_MOVE_XZ_USING_FVEL | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, dAmpAnimsList),
+    LOAD_ANIMATIONS(oAnimations, amp_anims),
     ANIMATE(AMP_ANIM_DEFAULT),
     SET_FLOAT(oGraphYOffset, 40),
     SET_INT(oIntangibleTimer, 0),
@@ -4624,7 +4609,7 @@ const BehaviorScript bhvHomingAmp[] = {
 const BehaviorScript bhvCirclingAmp[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_MOVE_XZ_USING_FVEL | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, dAmpAnimsList),
+    LOAD_ANIMATIONS(oAnimations, amp_anims),
     ANIMATE(AMP_ANIM_DEFAULT),
     SET_FLOAT(oGraphYOffset, 40),
     SET_INT(oIntangibleTimer, 0),
@@ -7040,27 +7025,27 @@ const BehaviorScript bhvVoidTriangle[] = {
 //     END_LOOP(),
 // };
 
-const BehaviorScript bhvEyerokBoss[] = {
-    BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    SET_HOME(),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_eyerok_boss_loop),
-    END_LOOP(),
-};
+// const BehaviorScript bhvEyerokBoss[] = {
+//     BEGIN(OBJ_LIST_GENACTOR),
+//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     SET_HOME(),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_eyerok_boss_loop),
+//     END_LOOP(),
+// };
 
-const BehaviorScript bhvEyerokHand[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, eyerok_seg5_anims_050116E4),
-    ANIMATE(EYEROK_HAND_ANIM_SLEEPING),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 150, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
-    SET_HOME(),
-    SET_INT(oAnimState, EYEROK_HAND_ANIM_STATE_EYE_CLOSED),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_eyerok_hand_loop),
-    END_LOOP(),
-};
+// const BehaviorScript bhvEyerokHand[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     LOAD_ANIMATIONS(oAnimations, eyerok_seg5_anims_050116E4),
+//     ANIMATE(EYEROK_HAND_ANIM_SLEEPING),
+//     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 150, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+//     SET_HOME(),
+//     SET_INT(oAnimState, EYEROK_HAND_ANIM_STATE_EYE_CLOSED),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_eyerok_hand_loop),
+//     END_LOOP(),
+// };
 
 // const BehaviorScript bhvKlepto[] = {
 //     BEGIN(OBJ_LIST_GENACTOR),
@@ -7147,16 +7132,16 @@ const BehaviorScript bhvEyerokHand[] = {
 //     END_LOOP(),
 // };
 
-const BehaviorScript bhvSkeeter[] = {
-    BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, skeeter_seg6_anims_06007DE0),
-    SET_HOME(),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 180, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 1200, /*Unused*/ 0, 0),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_skeeter_update),
-    END_LOOP(),
-};
+// const BehaviorScript bhvSkeeter[] = {
+//     BEGIN(OBJ_LIST_GENACTOR),
+//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     LOAD_ANIMATIONS(oAnimations, skeeter_seg6_anims_06007DE0),
+//     SET_HOME(),
+//     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 180, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 1200, /*Unused*/ 0, 0),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_skeeter_update),
+//     END_LOOP(),
+// };
 
 // const BehaviorScript bhvBadApple[] = {
 //     BEGIN(OBJ_LIST_GENACTOR),
