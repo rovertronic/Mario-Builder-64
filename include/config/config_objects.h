@@ -10,6 +10,8 @@
 #define CMM_DRAWDIST_MEDIUM 8000.f // For smaller low-cost objects, like coin formations
 #define CMM_DRAWDIST_HIGH 15000.f // For objects vital to the stage, like spinning firebars
 
+#define CMM_BOSS_TRIGGER_DIST 2500.f
+
 // The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.
 // Set this to o->oDrawingDistance for a more reasonable range at the cost of performance.
 #define COIN_FORMATION_DISTANCE CMM_DRAWDIST_MEDIUM

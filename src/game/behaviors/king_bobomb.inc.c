@@ -30,7 +30,7 @@ void king_bobomb_act_inactive(void) { // act 0
         cur_obj_set_pos_to_home();
         o->oHealth = 3;
 
-        if (cur_obj_can_mario_activate_textbox_2(500.0f, 100.0f)) {
+        if (cur_obj_can_mario_activate_textbox_2(CMM_BOSS_TRIGGER_DIST, 100.0f)) {
             o->oSubAction++;
             //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
         }
@@ -216,7 +216,7 @@ void king_bobomb_act_stop_music(void) { // act 8
 }
 
 void king_bobomb_act_been_thrown(void) { // act 4
-    if (o->oPosY - o->oHomeY > -100.0f) { // not thrown off hill
+    if (o->oPosY - o->oHomeY > -200.0f) { // not thrown off hill
         if (o->oMoveFlags & OBJ_MOVE_LANDED) {
             o->oHealth--;
 
@@ -312,7 +312,7 @@ void king_bobomb_act_return_home(void) { // act 5
                 stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
             }
 
-            if (cur_obj_can_mario_activate_textbox_2(500.0f, 100.0f)) {
+            if (cur_obj_can_mario_activate_textbox_2(CMM_BOSS_TRIGGER_DIST, 100.0f)) {
                 o->oSubAction++; // KING_BOBOMB_SUB_ACT_RETURN_HOME_DIALOG
             }
             break;
@@ -364,7 +364,7 @@ void king_bobomb_move(void) {
     cur_obj_call_action_function(sKingBobombActions);
     exec_anim_sound_state(sKingBobombSoundStates);
 
-    if (o->oDistanceToMario < 5000.0f) { //! oDrawingDistance?
+    if (o->oDistanceToMario < CMM_DRAWDIST_HIGH) { //! oDrawingDistance?
         cur_obj_enable_rendering();
     } else {
         cur_obj_disable_rendering();

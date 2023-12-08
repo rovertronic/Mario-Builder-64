@@ -15,10 +15,7 @@ void bowser_tail_anchor_act_default(void) {
     cur_obj_become_tangible();
     cur_obj_scale(1.0f);
 
-    if (bowser->oAction == BOWSER_ACT_TILT_LAVA_PLATFORM) {
-        // Bowser cannot be touched when he tilts BitFS platform
-        bowser->oIntangibleTimer = -1;
-    } else if (obj_check_if_collided_with_object(o, gMarioObject)) {
+    if (obj_check_if_collided_with_object(o, gMarioObject)) {
         // When Mario collides his tail, it now gets
         // intangible so he can grab it through
         bowser->oIntangibleTimer = 0;
@@ -456,8 +453,9 @@ void bowser_reset_fallen_off_stage(void) {
  * Unused, makes Bowser be in idle and after it returns to default action
  */
 void bowser_act_idle(void) {
-    if (cur_obj_init_animation_and_check_if_near_end(BOWSER_ANIM_IDLE)) {
-        o->oAction = BOWSER_ACT_DEFAULT;
+    cur_obj_init_animation(BOWSER_ANIM_IDLE);
+    if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+        o->oAction = BOWSER_ACT_DANCE;
     }
 }
 
@@ -1648,7 +1646,7 @@ void bhv_bowser_init(void) {
     // Start camera event, this event is not defined so maybe
     // the "start arena" cutscene was originally called this way
     cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_INIT);
-    o->oAction = BOWSER_ACT_WALK_TO_MARIO;
+    o->oAction = BOWSER_ACT_IDLE;
     // Set eyes status
     o->oBowserEyesTimer = 0;
     o->oBowserEyesShut = FALSE;
@@ -1692,7 +1690,8 @@ void bowser_open_eye_switch(struct Object *obj, struct GraphNodeSwitchCase *swit
     s16 angleFromMario;
 
     angleFromMario = abs_angle_diff(obj->oMoveAngleYaw, obj->oAngleToMario);
-    eyeCase = switchCase->selectedCase;
+    eyeCase = obj->oBowserEyeState; // switchCase->selectedCase;
+    switchCase->selectedCase = eyeCase;
 
     switch (eyeCase) {
         case BOWSER_EYES_OPEN:
@@ -1797,6 +1796,7 @@ Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4
             bowser_open_eye_switch(obj, switchCase);
         }
 
+        obj->oBowserEyeState = switchCase->selectedCase;
         obj->oBowserEyesTimer++;
     }
 

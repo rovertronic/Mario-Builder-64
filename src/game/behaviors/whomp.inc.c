@@ -24,7 +24,7 @@ void whomp_init(void) {
         gSecondCameraFocus = o;
         cur_obj_scale(2.0f);
         if (o->oSubAction == 0) {
-            if (o->oDistanceToMario < 600.0f) {
+            if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
                 o->oSubAction++;
                 //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
             } else {

@@ -330,7 +330,7 @@
 #define /*0x0F4*/ oBowserStatus          OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oBowserTimer           OBJECT_FIELD_S32(0x1C)
 #define /*0x0FC*/ oBowserDistToCenter    OBJECT_FIELD_F32(0x1D)
-//#define /*0x106*/ oBowserBitsJustJump    OBJECT_FIELD_S16(0x1F, 1)
+#define /*0x106*/ oBowserEyeState        OBJECT_FIELD_S32(0x1F)
 #define /*0x108*/ oBowserRandSplitFloor  OBJECT_FIELD_S16(0x20, 0)
 #define /*0x10A*/ oBowserHeldAnglePitch  OBJECT_FIELD_S16(0x20, 1)
 #define /*0x10D*/ oBowserHeldAngleVelYaw OBJECT_FIELD_S16(0x21, 0)
