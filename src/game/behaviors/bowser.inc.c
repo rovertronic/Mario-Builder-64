@@ -288,6 +288,41 @@ UNUSED static void bowser_debug_actions(void) {
 }
 
 /**
+ * If Bowser is right up against an edge, then teleport.
+ * Otherwise, dash
+ */
+void bowser_check_dash(void) {
+    // Check a point directly in front of Bowser
+    f32 floorHeight = find_floor_height(o->oPosX + 100.0f * sins(o->oMoveAngleYaw),
+                                        o->oPosY,
+                                        o->oPosZ + 100.0f * coss(o->oMoveAngleYaw));
+
+    if (floorHeight < o->oPosY - 100.f) {
+        o->oAction = BOWSER_ACT_TELEPORT;
+    } else {
+        o->oAction = BOWSER_ACT_CHARGE_MARIO;
+    }
+}
+
+/** If Bowser has safe land in front of him, jump
+ * Otherwise, teleport
+ */
+void bowser_check_jump(void) {
+    // Check point 1200 units in front of Bowser
+    struct Surface *floor;
+    find_floor(o->oPosX + 1200.0f * sins(o->oMoveAngleYaw),
+               o->oPosY,
+               o->oPosZ + 1200.0f * coss(o->oMoveAngleYaw),
+               &floor);
+    
+    if (SURFACE_IS_BURNING(floor->type) || (floor->type == SURFACE_DEATH_PLANE)) {
+        o->oAction = BOWSER_ACT_TELEPORT;
+    } else {
+        o->oAction = BOWSER_ACT_QUICK_JUMP;
+    }
+}
+
+/**
  * Set actions (and attacks) for Bowser in "Bowser in the Dark World"
  */
 void bowser_bitdw_actions(void) {
@@ -309,9 +344,9 @@ void bowser_bitdw_actions(void) {
                 }
             } else { // far away
                 if (rand < 0.4f) {
-                    o->oAction = BOWSER_ACT_CHARGE_MARIO;
+                    bowser_check_dash();
                 } else if (rand < 0.8f) {
-                    o->oAction = BOWSER_ACT_QUICK_JUMP;
+                    bowser_check_jump();
                 } else {
                     o->oAction = BOWSER_ACT_TELEPORT;
                 }
@@ -476,7 +511,7 @@ void bowser_act_walk_to_mario(void) {
     }
 
     cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
-    if (o->oFloor->type != SURFACE_BURNING && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
+    if (!(SURFACE_IS_BURNING(o->oFloor->type)) && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
 
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
@@ -513,7 +548,6 @@ void bowser_act_teleport(void) {
         case BOWSER_SUB_ACT_TELEPORT_START:
             cur_obj_become_intangible();
             o->oBowserTargetOpacity = 0;
-            o->oBowserTimer = 30; // set timer value
             // Play sound effect
             if (o->oTimer == 0) {
                 cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
@@ -526,24 +560,20 @@ void bowser_act_teleport(void) {
             break;
 
         case BOWSER_SUB_ACT_TELEPORT_MOVE:
-            // reduce timer and set velocity teleport while at it
-            if (o->oBowserTimer--) {
-                o->oForwardVel = 100.0f;
-            } else {
-                o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
-                o->oMoveAngleYaw = o->oAngleToMario; // update angle
-            }
+            o->oForwardVel = 100.0f;
+
             o->oPosY = gMarioObject->oPosY + 500.f;
+            o->oVelY = 0.f;
             cur_obj_move_xz_using_fvel_and_yaw();
 
             if (abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) {
-                cur_obj_update_floor_height_and_get_floor();
+                o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
                 if (o->oDistanceToMario > 500.0f || o->oFloorHeight < o->oPosY - 1000.f) {
                     o->oPosX -= o->oVelX;
                     o->oPosZ -= o->oVelZ;
                     o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
                     o->oMoveAngleYaw = o->oAngleToMario; // update angle
-                    cur_obj_update_floor_height_and_get_floor();
+                    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
                     o->oPosY = o->oFloorHeight;
                     cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
                 }
@@ -652,11 +682,6 @@ s32 bowser_land(void) {
         cur_obj_init_animation_with_sound(BOWSER_ANIM_JUMP_STOP);
         o->header.gfx.animInfo.animFrame = 0;
         cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_JUMP);
-        // Set status attacks in BitDW since the other levels
-        // have different attacks defined
-        if (o->oDistanceToMario < 1000.0f) {
-            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_STUNNED;
-        }
         return TRUE;
     } else {
         return FALSE;
@@ -722,6 +747,7 @@ void bowser_act_quick_jump(void) {
     } else if (o->oSubAction == 1) {
         if (bowser_land()) {
             o->oSubAction++;
+            bowser_spawn_shockwave();
         }
     } else if (cur_obj_check_if_near_animation_end()) {
         o->oAction = BOWSER_ACT_DEFAULT;

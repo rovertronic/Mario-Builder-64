@@ -440,16 +440,7 @@ void mario_set_forward_vel(struct MarioState *m, f32 forwardVel) {
  * Returns the slipperiness class of Mario's floor.
  */
 s32 mario_get_floor_class(struct MarioState *m) {
-    s32 floorClass;
-
-    // The slide terrain type defaults to slide slipperiness.
-    // This doesn't matter too much since normally the slide terrain
-    // is checked for anyways.
-    if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE) {
-        floorClass = SURFACE_CLASS_VERY_SLIPPERY;
-    } else {
-        floorClass = SURFACE_CLASS_DEFAULT;
-    }
+    s32 floorClass = SURFACE_CLASS_DEFAULT;
 
     if (m->floor != NULL) {
         switch (m->floor->type) {
@@ -460,7 +451,7 @@ s32 mario_get_floor_class(struct MarioState *m) {
             case SURFACE_SAND:
             case SURFACE_CREAKWOOD:
             case SURFACE_DEEP_QUICKSAND:
-            case SURFACE_VANISH_CAP_WALLS:
+            case SURFACE_HANGABLE_MESH:
                 floorClass = SURFACE_CLASS_NOT_SLIPPERY;
                 break;
 
