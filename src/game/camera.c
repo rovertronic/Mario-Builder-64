@@ -1196,7 +1196,7 @@ void mode_8_directions_camera(struct Camera *c) {
     //     }
 
 
-    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_FLOOR | RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
+    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     Vec3f camera_hit_diff;
     vec3f_diff(camera_hit_diff,origin,hitpos);
     f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
