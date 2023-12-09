@@ -318,11 +318,11 @@ static s32 bhv_cmd_end_loop(void) {
 // Usage: CALL_NATIVE(func)
 typedef void (*NativeBhvFunc)(void);
 static s32 bhv_cmd_call_native(void) {
-    NativeBhvFunc behaviorFunc = BHV_CMD_GET_VPTR(1);
+    NativeBhvFunc behaviorFunc = (void *)((gCurBhvCommand[0] & 0xFFFFFF) + 0x80000000);
 
     behaviorFunc();
 
-    gCurBhvCommand += 2;
+    gCurBhvCommand++;
     return BHV_PROC_CONTINUE;
 }
 

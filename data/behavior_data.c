@@ -32,6 +32,7 @@
 #define BC_HH(a, b) (_SHIFTL(a, 16, 16) | _SHIFTL(b, 0, 16))
 #define BC_W(a) ((uintptr_t)(u32)(a))
 #define BC_PTR(a) ((uintptr_t)(a))
+#define BC_BPTR(a, ptr) (_SHIFTL(a, 24, 8)) + ((uintptr_t)(ptr) - 0x80000000)
 
 enum BehaviorCommands {
     /*0x00*/ BHV_CMD_BEGIN,
@@ -146,8 +147,7 @@ enum BehaviorCommands {
 
 // Executes a native game function.
 #define CALL_NATIVE(func) \
-    BC_B(BHV_CMD_CALL_NATIVE), \
-    BC_PTR(func)
+    BC_BPTR(BHV_CMD_CALL_NATIVE, func)
 
 // Adds a float to the specified field.
 #define ADD_FLOAT(field, value) \

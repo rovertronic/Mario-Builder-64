@@ -336,9 +336,6 @@ extern const Gfx monty_mole_seg5_dl_05004CE8[];
 extern const Gfx monty_mole_seg5_dl_05004D30[];
 extern const struct Animation *const monty_mole_seg5_anims_05007248[];
 
-//bowsers animations??
-extern const struct Animation *const bowser_seg6_anims_06057690[];
-
 // monty_mole_hole
 extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
