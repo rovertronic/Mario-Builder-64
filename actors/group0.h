@@ -288,7 +288,6 @@ extern const Gfx water_wave_seg4_dl_04027438[];
 extern const Gfx white_particle_small_dl_begin[];
 extern const Gfx white_particle_small_dl_end[];
 extern const Gfx white_particle_small_dl[];
-extern const Gfx white_particle_small_unused_dl[];
 
 // moneybag
 extern const GeoLayout moneybag_geo_000000[];
@@ -589,11 +588,7 @@ extern const Gfx snufit_seg6_dl_06009B18[];
 extern const Gfx snufit_seg6_dl_06009B68[];
 
 // boo
-extern const GeoLayout boo_geo[];
-extern const Gfx boo_seg5_dl_0500BEE0[];
-extern const Gfx boo_seg5_dl_0500BF48[];
-extern const Gfx boo_seg5_dl_0500BFA0[];
-extern const Gfx boo_seg5_dl_0500C1B0[];
+#include "boo/geo_header.h"
 
 // snowman
 extern const GeoLayout mr_blizzard_hidden_geo[];
