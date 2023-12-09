@@ -60,7 +60,7 @@ UNUSED static const u64 binid_13 = 13;
 #include "bobomb/model.inc.c"
 #include "bobomb/anims/data.inc.c"
 #include "bobomb/anims/table.inc.c"
-UNUSED static const u64 binid_14 = 14;
+#include "bowling_ball/model.inc.c"
 
 /**
 #include "metal_box/model.inc.c"
