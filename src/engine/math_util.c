@@ -4,7 +4,6 @@
 #include "engine/graph_node.h"
 #include "math_util.h"
 #include "surface_collision.h"
-#include "trig_tables.inc.c"
 #include "surface_load.h"
 #include "game/puppyprint.h"
 #include "game/rendering_graph_node.h"
@@ -26,6 +25,132 @@ Vec3i gVec3iZero = {     0,     0,     0 };
 Vec3s gVec3sOne  = {     1,     1,     1 };
 
 static u16 gRandomSeed16;
+
+
+ALIGNED16 f32 CosCoefficients[2] = { -0.0000000011485057369884462f,
+                                           0.00000000000000000021380733869182293f };
+#define quasi_cos_4(x) (1.f + x * x * (CosCoefficients[0] + CosCoefficients[1] * x * x))
+
+f32 coss(s16 int_angle) {
+    s32 shifter = (int_angle ^ (int_angle << 1)) & 0xC000;
+    float cosx = quasi_cos_4((f32) (((int_angle + shifter) << 17) >> 16));
+    
+    if (shifter & 0x4000) {
+        cosx = sqrtf(1.f - cosx * cosx);
+    }
+    if (shifter & 0x8000) {
+        cosx = -cosx;
+    }
+    return cosx;
+}
+
+f32 sins(s16 int_angle) {
+    s32 shifter = (int_angle ^ (int_angle << 1)) & 0xC000;
+    float sinx = quasi_cos_4((f32) (((int_angle + shifter) << 17) >> 16)); // cosx
+    
+    if (!(shifter & 0x4000)) {
+        sinx = sqrtf(1.f - sinx * sinx);
+    }
+    if (int_angle < 0) {
+        sinx = -sinx;
+    }
+    return sinx;
+}
+
+float ALWAYS_INLINE read_float(f32 *location) {
+    return *location;
+}
+
+static ALWAYS_INLINE const s32 rf(float f) {
+    s32 ret;
+    asm("round.w.s %0, %0\n" // Convert to integer (rounding to nearest)
+        "mfc1 %1, %0"        // Move the result from FP to a general-purpose register
+        : "+f"(f), "=r"(ret));
+    return ret;
+}
+
+// if code quality had geneva conventions, this function would break about half of them.
+ALIGNED16 f32 ATANSCOEFFICIENTS[3] = { 10427.782125f, -3411.06669925f, 1552.39225852f };
+ALIGNED32 s16 atan2s(f32 y, f32 x) {
+    // Constants chosen for a minimax approx subject to
+    // continuity constraints around z = 1/2 and z = 1/3.
+    // Results are valid for all magnitudes of (x, y), except for those near the highest possible f32
+    // values. Outputs an off-by-1 error once per 8787 angles. The largest interval to output an
+    // off-by-1 error is 0.000000021943772701325477 radians long.
+    f32 updatedX;
+    f32 result;
+    // 8 instructions and 10 cycles from the first mirroring section below.
+    s32 arctanApprox = 0x2000;
+    if (x + x < -y) {
+        // Rotate f32s to the left 180 degrees.
+        y = -y;
+        x = -x;
+        // Re-rotate s16 to the right 180 degrees.
+        // Note that we have added an extra 0x2000 to all these angles
+        // to account for the later 45 degree rotation.
+        arctanApprox = 0xA000;
+    }
+    // 7 instructions and 9 cycles from this second mirroring section.
+    // Put this temp assignment (a NEG) in the branch delay slot.
+    f32 temp = -y;
+    if (x <= y + y) {
+        goto skip1;
+    }
+    // Rotate f32s to the left 90 degrees.
+    y = x;
+    x = temp;
+    // Re-rotate s16 to the right 90 degrees.
+    arctanApprox += 0x4000;
+skip1:
+    // 6 instructions and 10 cycles from this third mirroring section.
+    updatedX = y - x;
+
+    // Convert above inline ASM into C
+
+    if (x > updatedX) {
+        y = y + x;
+        x = -updatedX;
+    } else {
+        arctanApprox += 0xE000;
+    }
+
+    // It's 1 instruction and 1 cycle to load 0.0.
+    // 2 instructions and 2 cycles to check whether y != 0.0.
+    result = 0.0;
+    // Put this item1 assignment in the branch delay slot.
+    f32 item1 = ATANSCOEFFICIENTS[2];
+    if (y != result) {
+        // Math ops are 4 multiplications, 2 additions, 1 division, and 3 LWC1s.
+        // In total, that's 58 cycles and 10 instructions.
+        result = x / y;
+        f32 z2;
+
+        asm("mul.s %0, %1, %1" : "=f"(z2) : "f"(result));
+        register float item3 asm("f10") = read_float(&ATANSCOEFFICIENTS[0]);
+        // We put result = x / y here to avoid a division (possibly by y==0) in the branch delay slot.
+        // This should trick GCC into putting a LWC1 in the delay slot instead.
+        register float item2 asm("f18") = read_float(&ATANSCOEFFICIENTS[1]);
+        asm("mul.s %0, %0, %2\n" // item1 = item1 * z2
+            "add.s %1, %1, %0\n" // item2 = item2 + item1
+            "mul.s %1, %2, %1"   // item2 = z2 * item2
+            : "+f"(item1), "+f"(item2)
+            : "f"(z2));
+
+        item3 = item3 + item2;
+        result = result * item3;
+        // The above lines implement result = z * (ATANSCOEFFICIENTS[0] + z2 * (ATANSCOEFFICIENTS[1] +
+        // (z2 * ATANSCOEFFICIENTS[2])));
+    }
+    arctanApprox += rf(result);
+    // 2 additional instructions and 6 cycles from converting to an s32.
+    // 1 instruction and 1 cycle to add the rounded result to the angle.
+
+    // Conversion to s16 adds 2 instructions and 2 cycles.
+    // Return instruction is 1 more instruction (no nop at the end) and 1 more cycle.
+    // Total instruction count: 40
+    // Total cycle count: at most 100
+    return (arctanApprox);
+}
 
 u8 count_u16_bits(u16 bitfield) {
     u8 count = 0;
@@ -1190,57 +1315,6 @@ s16 abs_angle_diff(s16 a0, s16 a1) {
     register s16 diff = (a1 - a0);
     if (diff == -0x8000) return 0x7FFF;
     return abss(diff);
-}
-
-/**
- * Helper function for atan2s. Does a look up of the arctangent of y/x assuming
- * the resulting angle is in range [0, 0x2000] (1/8 of a circle).
- */
-static u16 atan2_lookup(f32 y, f32 x) {
-    return x == 0
-        ? 0x0
-        : atans(y / x);
-}
-
-/**
- * Compute the angle from (0, 0) to (x, y) as a s16. Given that terrain is in
- * the xz-plane, this is commonly called with (z, x) to get a yaw angle.
- */
-s16 atan2s(f32 y, f32 x) {
-    u16 ret;
-    if (x >= 0) {
-        if (y >= 0) {
-            if (y >= x) {
-                ret = atan2_lookup(x, y);
-            } else {
-                ret = 0x4000 - atan2_lookup(y, x);
-            }
-        } else {
-            y = -y;
-            if (y < x) {
-                ret = 0x4000 + atan2_lookup(y, x);
-            } else {
-                ret = 0x8000 - atan2_lookup(x, y);
-            }
-        }
-    } else {
-        x = -x;
-        if (y < 0) {
-            y = -y;
-            if (y >= x) {
-                ret = 0x8000 + atan2_lookup(x, y);
-            } else {
-                ret = 0xC000 - atan2_lookup(y, x);
-            }
-        } else {
-            if (y < x) {
-                ret = 0xC000 + atan2_lookup(y, x);
-            } else {
-                ret = -atan2_lookup(x, y);
-            }
-        }
-    }
-    return ret;
 }
 
 /**

@@ -42,14 +42,12 @@ extern Vec3s gVec3sOne;
  * exploits array sizes for range analysis-based optimizations as well).
  * Thus, for non-IDO compilers we use the standard-compliant version.
  */
-extern f32 gSineTable[];
-#define gCosineTable (gSineTable + 0x400)
 
-#define sins(x) gSineTable[  (u16) (x) >> 4]
-#define coss(x) gCosineTable[(u16) (x) >> 4]
+extern f32 sins(s16 angle);
+extern f32 coss(s16 angle);
+
 #define tans(x) (sins(x) / coss(x))
 #define cots(x) (coss(x) / sins(x))
-#define atans(x) gArctanTable[(s32)((((x) * 1024) + 0.5f))] // is this correct? used for atan2_lookup
 
 #define RAD_PER_DEG (M_PI / 180.0f)
 #define DEG_PER_RAD (180.0f / M_PI)

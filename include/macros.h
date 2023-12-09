@@ -59,6 +59,12 @@
 #define ALIGNED16
 #endif
 
+#ifdef __GNUC__
+#define ALIGNED32 __attribute__((aligned(32)))
+#else
+#define ALIGNED32
+#endif
+
 // Align to 16-byte boundary for audio lib requirements
 #ifdef __GNUC__
 #define ALIGNED64 __attribute__((aligned(64)))
