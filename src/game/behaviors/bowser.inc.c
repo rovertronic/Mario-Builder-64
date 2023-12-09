@@ -1242,7 +1242,7 @@ s32 bowser_dead_final_stage_ending(void) {
         if (cur_obj_update_dialog(MARIO_DIALOG_LOOK_UP,
             (DIALOG_FLAG_TEXT_DEFAULT | DIALOG_FLAG_TIME_STOP_ENABLED), dialogID, 0)) {
             // Dialog is done, fade out music and spawn grand star
-            cur_obj_set_model(MODEL_BOWSER_NO_SHADOW);
+            o->oBowserShadow = FALSE;
             seq_player_unlower_volume(SEQ_PLAYER_LEVEL, 60);
             seq_player_fade_out(SEQ_PLAYER_LEVEL, 1);
             bowser_spawn_collectable();
@@ -1652,6 +1652,7 @@ void bhv_bowser_init(void) {
     // Set eyes status
     o->oBowserEyesTimer = 0;
     o->oBowserEyesShut = FALSE;
+    o->oBowserShadow = TRUE;
 }
 
 Gfx *geo_update_body_rot_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
@@ -1806,32 +1807,98 @@ Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4
 }
 
 /**
- * Geo switch that sets Bowser's Rainbow coloring (in BitS)
+ * Handles bowser´s shadow, in vanilla there would be a special seperate geolayout for doing this.
  */
-Gfx *geo_bits_bowser_coloring(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
-    Gfx *gfxHead = NULL;
-
+Gfx *geo_disable_or_enable_bowser_shadow(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
     if (callContext == GEO_CONTEXT_RENDER) {
         struct Object *obj = (struct Object *) gCurGraphNodeObject;
-        struct GraphNodeGenerated *graphNode = (struct GraphNodeGenerated *) node;
+        struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
         if (gCurGraphNodeHeldObject != NULL) {
             obj = gCurGraphNodeHeldObject->objNode;
         }
 
-        // Set layers if object is transparent or not
-        if (obj->oOpacity == 255) {
-            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_OPAQUE);
-        } else {
-            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_TRANSPARENT);
+        if (obj->oBowserShadow == TRUE)
+        {
+            switchCase->selectedCase = 0;
         }
-        Gfx *gfx = gfxHead = alloc_display_list(2 * sizeof(Gfx));
-        // If TRUE, clear lighting to give rainbow color
-        if (obj->oBowserRainbowLight) {
-            gSPClearGeometryMode(gfx++, G_LIGHTING);
+        else{
+            switchCase->selectedCase = 1;
         }
-
-        gSPEndDisplayList(gfx);
     }
 
-    return gfxHead;
+    return NULL;
+}
+
+/**
+ * Handles bowser´s render mode, transparency switch case and his rainbow effect in BITS in one function.
+ */
+Gfx *geo_bowser_transparency_and_rainbow(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeGenerated *graphNode = (struct GraphNodeGenerated *) node;
+
+        obj->oAnimState = 0;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+        s32 objectOpacity = obj->oOpacity;
+        Gfx* gfx = alloc_display_list(5 * sizeof(Gfx));
+        Gfx* gfxHead = gfx;
+
+        // If bowser´s animation state is transparent, 
+        // set the render mode to a non overlaping transparent render mode.
+        // and turn on dither rendering if needed.
+
+        if (objectOpacity == 0xFF) {
+            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_OPAQUE);
+        } 
+        else {
+            obj->oAnimState = 1;
+            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_TRANSPARENT);
+            gDPSetRenderMode(gfxHead++, G_RM_CUSTOM_AA_ZB_XLU_SURF, G_RM_NOOP2)
+
+            if (obj->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA) {
+                gDPSetAlphaCompare(gfxHead++, G_AC_DITHER);
+            }
+        }
+        
+        gDPSetEnvColor(gfxHead++, 255, 255, 255, objectOpacity);
+        // If TRUE, clear lighting to give rainbow color
+        if (obj->oBowserRainbowLight) {
+            gSPClearGeometryMode(gfxHead++, G_LIGHTING);
+        }
+
+        gSPEndDisplayList(gfxHead);
+
+        return gfx;
+    }
+
+    return NULL;
+}
+
+/**
+ * Reverts the render mode used for transparent bowser.
+ */
+Gfx *geo_bowser_revert_rendermode(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+        Gfx* gfx = alloc_display_list(2 * sizeof(Gfx));
+        Gfx* gfxHead = gfx;
+
+        if (obj->oAnimState == 1)
+        {
+            gDPSetRenderMode(gfxHead++, G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2)
+        }
+
+        gSPEndDisplayList(gfxHead);
+
+        return gfx;
+    }
+    return NULL;
 }

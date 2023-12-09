@@ -1110,7 +1110,7 @@ struct cmm_object_info cmm_object_type_bosses[] = {
     {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
     {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
     {bhvBigBully, 0, MODEL_BULLY, FALSE, 0, 0, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
-    {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 3, 1.0f, bowser_seg6_anims_06057690, df_booser, SOUND_OBJ2_BOWSER_ROAR},
+    {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 3, 1.0f, bowser_anims, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 };
 
 struct cmm_object_info cmm_object_type_platform = {

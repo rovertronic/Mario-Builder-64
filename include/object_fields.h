@@ -326,7 +326,8 @@
 #define /*0x0FC*/ oBBallSpawnerPeriodMinus1 OBJECT_FIELD_S32(0x1D)
 
 /* Bowser */
-#define /*0x088*/ oBowserCamAct          OBJECT_FIELD_S32(0x00)
+#define /*0x088*/ oBowserCamAct          OBJECT_FIELD_S16(0x00, 0)
+#define /*0x08A*/ oBowserShadow          OBJECT_FIELD_S16(0x00, 1)
 #define /*0x0F4*/ oBowserStatus          OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oBowserTimer           OBJECT_FIELD_S32(0x1C)
 #define /*0x0FC*/ oBowserDistToCenter    OBJECT_FIELD_F32(0x1D)

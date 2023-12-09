@@ -695,7 +695,9 @@ extern u8 MouthOpen;
 Gfx *geo_move_mario_part_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 
 // Bowser
-Gfx *geo_bits_bowser_coloring(s32 callContext, struct GraphNode *node, UNUSED s32 context);
+Gfx *geo_disable_or_enable_bowser_shadow(s32 callContext, struct GraphNode *node, UNUSED s32 context);
+Gfx *geo_bowser_transparency_and_rainbow(s32 callContext, struct GraphNode *node, UNUSED void *context);
+Gfx *geo_bowser_revert_rendermode(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_update_body_rot_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);
 

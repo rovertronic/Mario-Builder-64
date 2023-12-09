@@ -2259,7 +2259,7 @@ const BehaviorScript bhvBowser[] = {
     SET_HITBOX(/*Radius*/ 400, /*Height*/ 400),
     DROP_TO_FLOOR(),
     SET_HOME(),
-    LOAD_ANIMATIONS(oAnimations, bowser_seg6_anims_06057690),
+    LOAD_ANIMATIONS(oAnimations, bowser_anims),
     SPAWN_CHILD(/*Model*/ MODEL_NONE, /*Behavior*/ bhvBowserBodyAnchor),
     SPAWN_CHILD(/*Model*/ MODEL_BOWSER_BOMB_CHILD_OBJ, /*Behavior*/ bhvBowserFlameSpawn),
     SPAWN_OBJ(/*Model*/ MODEL_NONE, /*Behavior*/ bhvBowserTailAnchor),
