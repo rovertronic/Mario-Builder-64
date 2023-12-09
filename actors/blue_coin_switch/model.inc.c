@@ -1,92 +1,88 @@
-// Blue Coin Switch
+Lights1 blue_coin_switch_sides_lights = gdSPDefLights1(
+	0x7F, 0x7F, 0x7F,
+	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-// 0x08000000
-static const Lights1 blue_coin_switch_seg8_lights_08000000 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
+Lights1 blue_coin_switch_top_lights = gdSPDefLights1(
+	0x7F, 0x7F, 0x7F,
+	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
-// 0x08000018
-ALIGNED8 static const Texture blue_coin_switch_seg8_texture_08000018[] = {
-#include "actors/blue_coin_switch/blue_coin_switch_side.rgba16.inc.c"
+Gfx blue_coin_switch_blue_coin_switch_side_rgba16_aligner[] = {gsSPEndDisplayList()};
+u8 blue_coin_switch_blue_coin_switch_side_rgba16[] = {
+	#include "actors/blue_coin_switch/blue_coin_switch_side.rgba16.inc.c"
 };
 
-// 0x08000418
-ALIGNED8 static const Texture blue_coin_switch_seg8_texture_08000418[] = {
-#include "actors/blue_coin_switch/blue_coin_switch_top.rgba16.inc.c"
+Gfx blue_coin_switch_blue_coin_switch_top_rgba16_aligner[] = {gsSPEndDisplayList()};
+u8 blue_coin_switch_blue_coin_switch_top_rgba16[] = {
+	#include "actors/blue_coin_switch/blue_coin_switch_top.rgba16.inc.c"
 };
 
-// 0x08000C18
-static const Vtx blue_coin_switch_seg8_vertex_08000C18[] = {
-    {{{    26,      0,     26}, 0, {   990,    479}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{    26,     26,     26}, 0, {   990,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   -25,     26,     26}, 0, {     0,      0}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   -25,      0,     26}, 0, {     0,    479}, {0x00, 0x00, 0x7f, 0xff}}},
-    {{{   -25,      0,    -25}, 0, {   990,    479}, {0x00, 0x00, 0x81, 0xff}}},
-    {{{    26,     26,    -25}, 0, {     0,      0}, {0x00, 0x00, 0x81, 0xff}}},
-    {{{    26,      0,    -25}, 0, {     0,    479}, {0x00, 0x00, 0x81, 0xff}}},
-    {{{   -25,     26,    -25}, 0, {   990,      0}, {0x00, 0x00, 0x81, 0xff}}},
-    {{{   -25,      0,     26}, 0, {   990,    479}, {0x81, 0x00, 0x00, 0xff}}},
-    {{{   -25,     26,    -25}, 0, {     0,      0}, {0x81, 0x00, 0x00, 0xff}}},
-    {{{   -25,      0,    -25}, 0, {     0,    479}, {0x81, 0x00, 0x00, 0xff}}},
-    {{{   -25,     26,     26}, 0, {   990,      0}, {0x81, 0x00, 0x00, 0xff}}},
-    {{{    26,      0,    -25}, 0, {   990,    479}, {0x7f, 0x00, 0x00, 0xff}}},
-    {{{    26,     26,    -25}, 0, {   990,      0}, {0x7f, 0x00, 0x00, 0xff}}},
-    {{{    26,     26,     26}, 0, {     0,      0}, {0x7f, 0x00, 0x00, 0xff}}},
-    {{{    26,      0,     26}, 0, {     0,    479}, {0x7f, 0x00, 0x00, 0xff}}},
+Vtx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_0[16] = {
+	{{ {26, 0, 26}, 0, {1008, 496}, {0, 0, 127, 255} }},
+	{{ {26, 26, 26}, 0, {1008, -16}, {0, 0, 127, 255} }},
+	{{ {-25, 26, 26}, 0, {-16, -16}, {0, 0, 127, 255} }},
+	{{ {-25, 0, 26}, 0, {-16, 496}, {0, 0, 127, 255} }},
+	{{ {-25, 0, -25}, 0, {1008, 496}, {0, 0, 129, 255} }},
+	{{ {26, 26, -25}, 0, {-16, -16}, {0, 0, 129, 255} }},
+	{{ {26, 0, -25}, 0, {-16, 496}, {0, 0, 129, 255} }},
+	{{ {-25, 26, -25}, 0, {1008, -16}, {0, 0, 129, 255} }},
+	{{ {-25, 0, 26}, 0, {1008, 496}, {129, 0, 0, 255} }},
+	{{ {-25, 26, -25}, 0, {-16, -16}, {129, 0, 0, 255} }},
+	{{ {-25, 0, -25}, 0, {-16, 496}, {129, 0, 0, 255} }},
+	{{ {-25, 26, 26}, 0, {1008, -16}, {129, 0, 0, 255} }},
+	{{ {26, 0, -25}, 0, {1008, 496}, {127, 0, 0, 255} }},
+	{{ {26, 26, -25}, 0, {1008, -16}, {127, 0, 0, 255} }},
+	{{ {26, 26, 26}, 0, {-16, -16}, {127, 0, 0, 255} }},
+	{{ {26, 0, 26}, 0, {-16, 496}, {127, 0, 0, 255} }},
 };
 
-// 0x08000D18
-static const Vtx blue_coin_switch_seg8_vertex_08000D18[] = {
-    {{{    26,     26,    -25}, 0, {   990,      0}, {0x00, 0x7f, 0x00, 0xff}}},
-    {{{   -25,     26,     26}, 0, {     0,    990}, {0x00, 0x7f, 0x00, 0xff}}},
-    {{{    26,     26,     26}, 0, {   990,    990}, {0x00, 0x7f, 0x00, 0xff}}},
-    {{{   -25,     26,    -25}, 0, {     0,      0}, {0x00, 0x7f, 0x00, 0xff}}},
+Vtx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_1[4] = {
+	{{ {26, 26, -25}, 0, {1008, -16}, {0, 127, 0, 255} }},
+	{{ {-25, 26, 26}, 0, {-16, 1008}, {0, 127, 0, 255} }},
+	{{ {26, 26, 26}, 0, {1008, 1008}, {0, 127, 0, 255} }},
+	{{ {-25, 26, -25}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
-// 0x08000D58 - 0x08000DD0
-const Gfx blue_coin_switch_seg8_dl_08000D58[] = {
-    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, blue_coin_switch_seg8_texture_08000018),
-    gsDPLoadSync(),
-    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&blue_coin_switch_seg8_lights_08000000.l, 1),
-    gsSPLight(&blue_coin_switch_seg8_lights_08000000.a, 2),
-    gsSPVertex(blue_coin_switch_seg8_vertex_08000C18, 16, 0),
-    gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
-    gsSP2Triangles( 4,  5,  6, 0x0,  4,  7,  5, 0x0),
-    gsSP2Triangles( 8,  9, 10, 0x0,  8, 11,  9, 0x0),
-    gsSP2Triangles(12, 13, 14, 0x0, 12, 14, 15, 0x0),
-    gsSPEndDisplayList(),
+
+Gfx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1[] = {
+	gsDPPipeSync(),
+	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
+	gsSPLoadGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH),
+	gsSPSetOtherMode(G_SETOTHERMODE_H, 4, 20, G_AD_NOISE | G_CD_MAGICSQ | G_CK_NONE | G_TC_FILT | G_TF_BILERP | G_TT_NONE | G_TL_TILE | G_TD_CLAMP | G_TP_PERSP | G_CYC_1CYCLE | G_PM_1PRIMITIVE),
+	gsSPSetOtherMode(G_SETOTHERMODE_L, 0, 3, G_AC_NONE | G_ZS_PIXEL),
+	gsSPTexture(65535, 65535, 0, 0, 1),
+	gsSPSetLights1(blue_coin_switch_sides_lights),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, blue_coin_switch_blue_coin_switch_side_rgba16),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(7, 0, 0, 511, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 4, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(0, 0, 0, 124, 60),
+	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_0 + 0, 16, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSP2Triangles(4, 5, 6, 0, 4, 7, 5, 0),
+	gsSP2Triangles(8, 9, 10, 0, 8, 11, 9, 0),
+	gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
+	gsDPPipeSync(),
+	gsSPSetLights1(blue_coin_switch_top_lights),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, blue_coin_switch_blue_coin_switch_top_rgba16),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(7, 0, 0, 1023, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(0, 0, 0, 124, 124),
+	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_1 + 0, 4, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 3, 1, 0),
+	gsDPSetCycleType(G_CYC_1CYCLE),
+	gsDPPipeSync(),
+	gsSPEndDisplayList(),
 };
 
-// 0x08000DD0 - 0x08000E08
-const Gfx blue_coin_switch_seg8_dl_08000DD0[] = {
-    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, blue_coin_switch_seg8_texture_08000418),
-    gsDPLoadSync(),
-    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPVertex(blue_coin_switch_seg8_vertex_08000D18, 4, 0),
-    gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
-    gsSPEndDisplayList(),
+Gfx blue_coin_switch_material_revert_render_settings[] = {
+	gsDPPipeSync(),
+	gsSPSetGeometryMode(G_LIGHTING),
+	gsSPClearGeometryMode(G_TEXTURE_GEN),
+	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 0),
+	gsDPSetEnvColor(255, 255, 255, 255),
+	gsDPSetAlphaCompare(G_AC_NONE),
+	gsSPEndDisplayList(),
 };
 
-// 0x08000E08 - 0x08000E98
-const Gfx blue_coin_switch_seg8_dl_08000E08[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
-    gsSPClearGeometryMode(G_SHADING_SMOOTH),
-    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsDPTileSync(),
-    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 4, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
-    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (16 - 1) << G_TEXTURE_IMAGE_FRAC),
-    gsSPDisplayList(blue_coin_switch_seg8_dl_08000D58),
-    gsDPTileSync(),
-    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
-    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
-    gsSPDisplayList(blue_coin_switch_seg8_dl_08000DD0),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPEndDisplayList(),
-};

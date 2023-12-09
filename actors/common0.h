@@ -8,10 +8,7 @@
 #include "amp/anim_header.h"
 
 // blue_coin_switch
-extern const GeoLayout blue_coin_switch_geo[];
-extern const Gfx blue_coin_switch_seg8_dl_08000D58[];
-extern const Gfx blue_coin_switch_seg8_dl_08000DD0[];
-extern const Gfx blue_coin_switch_seg8_dl_08000E08[];
+#include "blue_coin_switch/geo_header.h"
 extern const Collision blue_coin_switch_seg8_collision_08000E98[];
 
 // bobomb
