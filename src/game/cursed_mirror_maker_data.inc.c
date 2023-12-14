@@ -678,6 +678,7 @@ s8 cmm_terrain_floors_bbh[] =        {3, 8, 0, 6}; // metal, lava, stone, wood
 s8 cmm_terrain_floors_jrb[] =        {0, 2, 9, 3, 5}; // sand, stone, quicksand, tiles, wood
 s8 cmm_terrain_floors_snow[] =       {0, 8, 9, 1, 3}; // snow, hazard ice, lava, bricks, tiles
 s8 cmm_terrain_floors_retro[] =      {0, 8, 4, 7, 9}; // ground, lava, blue ground, white bricks, underwater tile
+s8 cmm_terrain_floors_custom[] =     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 s8 cmm_terrain_floors_mc[] =         {0, 8, 2, 5, 6, 7}; // grass, lava, stone, planks, sand, bricks
 
 enum cmm_fences {
@@ -913,6 +914,23 @@ struct cmm_theme cmm_theme_table[] = {
         },
         ARRAY_COUNT(cmm_terrain_floors_retro), cmm_terrain_floors_retro,
         CMM_FENCE_RETRO, CMM_MAT_RETRO_BRICKS, CMM_BAR_RETRO, CMM_WATER_RETRO
+    },
+    // CUSTOM
+    {
+        {
+            {CMM_MAT_DIRT,        CMM_MAT_GRASS, "Tile 1"},
+            {CMM_MAT_BRICKS,      0,             "Tile 2"},
+            {CMM_MAT_COBBLESTONE, CMM_MAT_STONE, "Tile 3"},
+            {CMM_MAT_TILESBRICKS, CMM_MAT_TILES, "Tile 4"},
+            {CMM_MAT_ROOF,        0,             "Tile 5"},
+            {CMM_MAT_WOOD,        0,             "Tile 6"},
+            {CMM_MAT_SANDDIRT,    CMM_MAT_SAND,  "Tile 7"},
+            {CMM_MAT_SNOWDIRT,    CMM_MAT_SNOW,  "Tile 8"},
+            {CMM_MAT_LAVA,        0,             "Tile 9"},
+            {CMM_MAT_QUICKSAND,   0,             "Tile 10"},
+        },
+        ARRAY_COUNT(cmm_terrain_floors_custom), cmm_terrain_floors_custom,
+        CMM_FENCE_NORMAL, CMM_MAT_STONE, CMM_BAR_GENERIC, CMM_WATER_DEFAULT
     },
     // MINECRAFT
     {
@@ -1836,6 +1854,7 @@ char *cmm_theme_string_table[] = {
     "Big Boo's Haunt",
     "Jolly Roger Bay",
     "Retroland",
+    "Custom",
     "Minecraft",
 };
 

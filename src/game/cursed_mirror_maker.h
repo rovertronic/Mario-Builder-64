@@ -364,6 +364,7 @@ enum cmm_themes {
     CMM_THEME_BBH,
     CMM_THEME_JRB,
     CMM_THEME_RETRO,
+    CMM_THEME_CUSTOM,
     CMM_THEME_MC,
 };
 
