@@ -18,16 +18,17 @@
 #include "game/level_update.h"
 
 // Macros for retrieving arguments from behavior scripts.
-#define BHV_CMD_GET_1ST_U8(index)  (u8)((gCurBhvCommand[index] >> 24) & 0xFF) // unused
-#define BHV_CMD_GET_2ND_U8(index)  (u8)((gCurBhvCommand[index] >> 16) & 0xFF)
-#define BHV_CMD_GET_3RD_U8(index)  (u8)((gCurBhvCommand[index] >> 8) & 0xFF)
-#define BHV_CMD_GET_4TH_U8(index)  (u8)((gCurBhvCommand[index]) & 0xFF)
+#define BHV_CMD_GET_1ST_U8(index)     (u8)((gCurBhvCommand[index] >> 24) & 0xFF) // unused
+#define BHV_CMD_GET_2ND_U8(index)     (u8)((gCurBhvCommand[index] >> 16) & 0xFF)
+#define BHV_CMD_GET_3RD_U8(index)     (u8)((gCurBhvCommand[index] >> 8) & 0xFF)
+#define BHV_CMD_GET_4TH_U8(index)     (u8)((gCurBhvCommand[index]) & 0xFF)
 
-#define BHV_CMD_GET_1ST_S16(index) (s16)(gCurBhvCommand[index] >> 16)
-#define BHV_CMD_GET_2ND_S16(index) (s16)(gCurBhvCommand[index] & 0xFFFF)
+#define BHV_CMD_GET_1ST_S16(index)    (s16)(gCurBhvCommand[index] >> 16)
+#define BHV_CMD_GET_2ND_S16(index)    (s16)(gCurBhvCommand[index] & 0xFFFF)
 
-#define BHV_CMD_GET_U32(index)     (u32)(gCurBhvCommand[index])
-#define BHV_CMD_GET_VPTR(index)    (void *)(gCurBhvCommand[index])
+#define BHV_CMD_GET_U32(index)        (u32)(gCurBhvCommand[index])
+#define BHV_CMD_GET_VPTR(index)       (void *)(gCurBhvCommand[index])
+#define BHV_CMD_GET_VPTR_SMALL(index) (void *)(OS_PHYSICAL_TO_K0(gCurBhvCommand[index] & 0xFFFFFF))
 
 #define BHV_CMD_GET_ADDR_OF_CMD(index) (uintptr_t)(&gCurBhvCommand[index])
 
@@ -317,7 +318,7 @@ static s32 bhv_cmd_end_loop(void) {
 // Usage: CALL_NATIVE(func)
 typedef void (*NativeBhvFunc)(void);
 static s32 bhv_cmd_call_native(void) {
-    NativeBhvFunc behaviorFunc = (void *)((gCurBhvCommand[0] & 0xFFFFFF) + 0x80000000);
+    NativeBhvFunc behaviorFunc = BHV_CMD_GET_VPTR_SMALL(0);
 
     behaviorFunc();
 
@@ -733,11 +734,11 @@ static s32 bhv_cmd_parent_bit_clear(void) {
 // Command 0x37: Spawns a water droplet with the given parameters.
 // Usage: SPAWN_WATER_DROPLET(dropletParams)
 static s32 bhv_cmd_spawn_water_droplet(void) {
-    struct WaterDropletParams *dropletParams = BHV_CMD_GET_VPTR(1);
+    struct WaterDropletParams *dropletParams = BHV_CMD_GET_VPTR_SMALL(0);
 
     spawn_water_droplet(gCurrentObject, dropletParams);
 
-    gCurBhvCommand += 2;
+    gCurBhvCommand++;
     return BHV_PROC_CONTINUE;
 }
 
