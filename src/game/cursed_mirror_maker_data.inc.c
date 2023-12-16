@@ -1716,13 +1716,14 @@ char *cmm_music_romhack_string_table[] = {
     "Ghostly Galaxy (Mario Galaxy)",
     "Purple Comet (Mario Galaxy)",
     "Honeybloom Galaxy (Mario Galaxy 2)",
-    "Overworld (New Super Mario Bros.)",
+    "Desert (New Super Mario Bros.)",
 
     "Koopa Troopa Beach (Mario Kart 64)",
     "Frappe Snowland (Mario Kart 64)",
-    "Rainbow Road (Mario Kart 64)",
     "Bowser's Castle (Mario Kart 64)",
+    "Rainbow Road (Mario Kart 64)",
     "Waluigi Pinball (Mario Kart DS)",
+    "Rainbow Road (Mario Kart 8)",
 
     "Mario's Pad (Super Mario RPG)",
     "Nimbus Land (Super Mario RPG)",
@@ -1742,26 +1743,29 @@ char *cmm_music_romhack_string_table[] = {
 
     "Rainbow Castle (Mario Party)",
     "Behind Yoshi Village (Partners in Time)",
-    "Thwomp Caverns (Partners in Time)",
+    "Gritzy Desert (Partners in Time)",
     "Bumpsy Plains (Bowser's Inside Story)",
 
     "Overworld (Yoshi's Island)",
     "Crystal Caves (Yoshi's Island)",
     "Title (Yoshi's Story)",
 
+    "Kokiri Forest (Ocarina of Time)",
     "Lost Woods (Ocarina of Time)",
     "Gerudo Valley (Ocarina of Time)",
     "Stone Tower Temple (Majora's Mask)",
-    "Mountain Village (Majora's Mask)",
     "Outset Island (Wind Waker)",
     "Lake Hylia (Twilight Princess)",
-    "Twilight Realm (Twilight Princess)",
+    "Gerudo Desert (Twilight Princess)",
     "Skyloft (Skyward Sword)",
 
     "Frantic Factory (Donkey Kong 64)",
     "Hideout Helm (Donkey Kong 64)",
     "Creepy Castle (Donkey Kong 64)",
     "Gloomy Galleon (Donkey Kong 64)",
+    "Fungi Forest (Donkey Kong 64)",
+    "Crystal Caves (Donkey Kong 64)",
+    "Angry Aztec (Donkey Kong 64)",
     "In a Snow-Bound Land (DKC 2)",
 
     "Bubblegloop Swamp (Banjo-Kazooie)",
@@ -1772,8 +1776,8 @@ char *cmm_music_romhack_string_table[] = {
     "Green Garden (Bomberman 64)",
     "Black Fortress (Bomberman 64)",
     "Windy Hill (Sonic Adventure)",
-    "Tropical Resort (Sonic Colors)",
     "Sky Tower (Pokemon Mystery Dungeon)",
+    "Youkai Mountain (Touhou 10)",
     "Band Land (Rayman)",
 };
 
@@ -1827,14 +1831,14 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMG_GHOSTLY_GALAXY,
     SEQ_SMG_PURPLE_COMET,
     SEQ_SMG2_HONEYBLOOM,
-
-    SEQ_NSMB_OVERWORLD,
+    SEQ_NSMB_DESERT,
 
     SEQ_KOOPA_BEACH, // mk64 koopa troopa beach
     SEQ_FRAPPE_SNOWLAND,
-    SEQ_MK64_RAINBOW_ROAD,
     SEQ_MK64_BOWSERS_CASTLE,
+    SEQ_MK64_RAINBOW_ROAD,
     SEQ_MKDS_WALUIGI_PINBALL,
+    SEQ_MK8_RAINBOW_ROAD,
 
     SEQ_SMRPG_MARIOS_PAD,             // 0x46
     SEQ_SMRPG_NIMBUS_LAND,
@@ -1854,25 +1858,28 @@ u8 seq_musicmenu_array[] = {
 
     SEQ_MP_RAINBOW_CASTLE,
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
-    SEQ_PIT_THWOMP_CAVERNS,
+    SEQ_PIT_GRITZY_DESERT,
     SEQ_BIS_BUMPSY_PLAINS,
     SEQ_YI_OVERWORLD,
     SEQ_YI_CRYSTAL_CAVES,
     SEQ_YS_TITLE,                     // 0x51
 
+    SEQ_OOT_KOKIRI_FOREST,
     SEQ_OOT_LOST_WOODS,
     SEQ_OOT_GERUDO_VALLEY,            // 0x52
     SEQ_STONE_TOWER_TEMPLE,
-    SEQ_MM_SNOWHEAD,
     SEQ_WW_OUTSET_ISLAND,
     SEQ_TP_LAKE_HYLIA,                // 0x53
-    SEQ_TP_TWILIGHT_REALM,
+    SEQ_TP_GERUDO_DESERT,
     SEQ_SS_SKYLOFT,
 
     SEQ_DK64_FRANTIC_FACTORY,
     SEQ_DK64_HIDEOUT_HELM,
     SEQ_DK_CREEPY_CASTLE,
     SEQ_DK64_GLOOMY_GALLEON,
+    SEQ_DK64_FUNGI_FOREST,
+    SEQ_DK64_CRYSTAL_CAVES,
+    SEQ_DK64_ANGRY_AZTEC,
     SEQ_DKC2_SNOWBOUND_LAND,
 
     SEQ_BK_BUBBLEGLOOP_SWAMP,
@@ -1883,8 +1890,8 @@ u8 seq_musicmenu_array[] = {
     SEQ_BM_GREEN_GARDEN,
     SEQ_BM_BLACK_FORTRESS,
     SEQ_SA_WINDY_HILL,
-    SEQ_SC_TROPICAL_RESORT,           // 0x49
     SEQ_PKMN_SKY_TOWER,
+    SEQ_TOUHOU_YOUKAI_MOUNTAIN,
     SEQ_RAYMAN_BAND_LAND,
 
     SEQ_SMB1_OVERWORLD,

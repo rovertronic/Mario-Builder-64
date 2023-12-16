@@ -78,7 +78,7 @@ enum SeqId {
     SEQ_PM_DRY_DESERT,                // 0x3D
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,   // 0x3E
     SEQ_YI_OVERWORLD,                 // 0x3F
-    SEQ_NSMB_OVERWORLD,               // 0x40
+    SEQ_DK64_FUNGI_FOREST,            // 0x40
     SEQ_TTYD_EIGHT_KEY_DOMAIN,        // 0x41
     SEQ_TTYD_ROGUEPORT_SEWERS,        // 0x42
     SEQ_SMG2_HONEYBLOOM,              // 0x43
@@ -88,7 +88,7 @@ enum SeqId {
     SEQ_SMRPG_MARIOS_PAD,             // 0x46
     SEQ_SMRPG_SUNKEN_SHIP,            // 0x47
     SEQ_SMG_BUOY_BASE,                // 0x48
-    SEQ_SC_TROPICAL_RESORT,           // 0x49
+    SEQ_DK64_CRYSTAL_CAVES,           // 0x49
     SEQ_OOT_LOST_WOODS,               // 0x4A
     SEQ_SMB_BOWSER_REMIX,             // 0x4B
     SEQ_SMG_COMET_OBSERVATORY,        // 0x4C
@@ -131,9 +131,13 @@ enum SeqId {
     SEQ_K64_FACTORY_INSPECTION,       // 0x70
     SEQ_DK_CREEPY_CASTLE,             // 0x71
     SEQ_PM_FOREVER_FOREST,            // 0x72
-    SEQ_PIT_THWOMP_CAVERNS,           // 0x73
-    SEQ_TP_TWILIGHT_REALM,            // 0x74
-    SEQ_MM_SNOWHEAD,           // 0x75
+    SEQ_MK8_RAINBOW_ROAD,             // 0x73
+    SEQ_TP_GERUDO_DESERT,             // 0x74
+    SEQ_OOT_KOKIRI_FOREST,            // 0x75
+    SEQ_PIT_GRITZY_DESERT,            // 0x76
+    SEQ_DK64_ANGRY_AZTEC,             // 0x77
+    SEQ_NSMB_DESERT,                  // 0x78
+    SEQ_TOUHOU_YOUKAI_MOUNTAIN,       // 0x79
 
     SEQ_COUNT
 };

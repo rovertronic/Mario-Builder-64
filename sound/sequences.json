@@ -65,7 +65,7 @@
 	"3D_pm_dry_desert": ["19"],
 	"3E_mlpit_behind_yoshi_village": ["25"],
 	"3F_yi_overworld": ["11"],
-	"40_nsmb_overworld": ["25"],
+	"40_dk64_fungi_forest": ["25"],
 	"41_ttyd_eight_key_domain": ["25"],
 	"42_ttyd_rogueport_sewers": ["25"],
 	"43_smg2_honeybloom": ["25"],
@@ -74,7 +74,7 @@
 	"46_smrpg_marios_pad": ["25"],
 	"47_smrpg_sunken_ship": ["0E"],
 	"48_smg_buoy_base": ["25"],
-	"49_sc_tropical_resort": ["25"],
+	"49_dk64_crystal_caves": ["25"],
 	"4A_oot_lost_woods": ["25"],
 	"4B_smb_bowser_remix": ["1A"],
 	"4C_smg_comet_observatory": ["25"],
@@ -117,7 +117,11 @@
 	"70_k64_factory_inspection": ["25"],
 	"71_dk_creepy_castle": ["25"],
 	"72_pm_forever_forest": ["25"],
-	"73_pit_thwomp_caverns": ["25"],
-	"74_tp_twilight_realm": ["25"],
-	"75_mm_snowhead": ["25"]
+	"73_mk8_rainbow_road": ["25"],
+	"74_tp_gerudo_desert": ["19"],
+	"75_oot_kokiri_forest": ["25"],
+	"76_pit_gritzy_desert": ["19"],
+	"77_dk64_angry_aztec": ["25"],
+	"78_nsmb_desert": ["19"],
+	"79_touhou_youkai_mountain": ["25"]
 }
