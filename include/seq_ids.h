@@ -1,13 +1,8 @@
 #ifndef SEQ_IDS_H
 #define SEQ_IDS_H
 
-// Sometimes a sequence id is represented as one of the below ids (the base id),
-// optionally OR'd with SEQ_VARIATION.
-#define SEQ_BASE_ID 0x7f
-#define SEQ_VARIATION 0x80
+// Sometimes a sequence id is represented as one of the below ids
 #define SEQUENCE_NONE 0xFF
-
-#define SEQ_MENU_GAME_OVER (SEQ_MENU_TITLE_SCREEN | SEQ_VARIATION)
 
 enum SeqId {
     SEQ_SOUND_PLAYER,                 // 0x00
@@ -40,7 +35,7 @@ enum SeqId {
     SEQ_EVENT_SOLVE_PUZZLE,           // 0x1B
     SEQ_EVENT_TOAD_MESSAGE,           // 0x1C
     SEQ_EVENT_PEACH_MESSAGE,          // 0x1D
-    SEQ_EVENT_CUTSCENE_INTRO,         // 0x1E
+    SEQ_EVENT_POWERUP_SHELL,          // 0x1E
     SEQ_EVENT_CUTSCENE_VICTORY,       // 0x1F
     SEQ_EVENT_CUTSCENE_ENDING,        // 0x20
     SEQ_MENU_FILE_SELECT,             // 0x21

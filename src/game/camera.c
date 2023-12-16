@@ -4703,19 +4703,19 @@ s32 offset_yaw_outward_radial(struct Camera *c, s16 areaYaw) {
     return yaw;
 }
 
-/**
- * Plays the background music that starts while peach reads the intro message.
- */
-void cutscene_intro_peach_play_message_music(void) {
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_PEACH_MESSAGE), 0);
-}
+// /**
+//  * Plays the background music that starts while peach reads the intro message.
+//  */
+// void cutscene_intro_peach_play_message_music(void) {
+//     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_PEACH_MESSAGE), 0);
+// }
 
-/**
- * Plays the music that starts after peach fades and Lakitu appears.
- */
-void cutscene_intro_peach_play_lakitu_flying_music(void) {
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_INTRO), 0);
-}
+// /**
+//  * Plays the music that starts after peach fades and Lakitu appears.
+//  */
+// void cutscene_intro_peach_play_lakitu_flying_music(void) {
+//     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_INTRO), 0);
+// }
 
 void play_camera_buzz_if_cdown(void) {
     if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {

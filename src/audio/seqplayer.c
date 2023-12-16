@@ -2623,27 +2623,12 @@ void sequence_player_process_sequence(struct SequencePlayer *seqPlayer) {
                     case 0x40:
                         break;
                     case 0x50: // seq_subvariation
-#if defined(VERSION_EU) || defined(VERSION_SH)
-                        value -= seqPlayer->seqVariationEu[0];
-#else
-                        value -= seqPlayer->seqVariation;
-#endif
                         break;
                     case 0x60:
                         break;
                     case 0x70: // seq_setvariation
-#if defined(VERSION_EU) || defined(VERSION_SH)
-                        seqPlayer->seqVariationEu[0] = value;
-#else
-                        seqPlayer->seqVariation = value;
-#endif
                         break;
                     case 0x80: // seq_getvariation
-#if defined(VERSION_EU) || defined(VERSION_SH)
-                        value = seqPlayer->seqVariationEu[0];
-#else
-                        value = seqPlayer->seqVariation;
-#endif
                         break;
                     case 0x90: // seq_startchannel
                         u16v = m64_read_s16(state);
@@ -2770,11 +2755,6 @@ void init_sequence_players(void) {
             gSequencePlayers[i].channels[j] = &gSequenceChannelNone;
         }
 
-#if defined(VERSION_EU) || defined(VERSION_SH)
-        gSequencePlayers[i].seqVariationEu[0] = -1;
-#else
-        gSequencePlayers[i].seqVariation = -1;
-#endif
 #ifdef VERSION_SH
         gSequencePlayers[i].muteBehavior = MUTE_BEHAVIOR_STOP_SCRIPT | MUTE_BEHAVIOR_STOP_NOTES | MUTE_BEHAVIOR_SOFTEN;
         gSequencePlayers[i].enabled = FALSE;

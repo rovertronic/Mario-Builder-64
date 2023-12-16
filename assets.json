@@ -904,7 +904,6 @@
 "sound/sequences/us/1B_event_solve_puzzle.m64": [216,{"us":[8169488]}],
 "sound/sequences/us/1C_event_toad_message.m64": [208,{"us":[8169712]}],
 "sound/sequences/us/1D_event_peach_message.m64": [432,{"us":[8169920]}],
-"sound/sequences/us/1E_cutscene_intro.m64": [1764,{"us":[8170352]}],
 "sound/sequences/us/1F_cutscene_victory.m64": [2058,{"us":[8172128]}],
 "sound/sequences/us/20_cutscene_ending.m64": [1882,{"us":[8174192]}],
 "sound/sequences/us/21_menu_file_select.m64": [781,{"us":[8176080]}],

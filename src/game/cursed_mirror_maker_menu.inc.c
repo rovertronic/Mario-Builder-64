@@ -378,13 +378,14 @@ char *cmm_get_custom_mat(s32 index, char *buffer) {
     return cmm_mat_table[cmm_matlist[category] + index].name;
 }
 
-#define CMM_NUM_CUSTOM_TABS 13
+#define CMM_NUM_CUSTOM_TABS 14
 char *cmm_custom_get_menu_name(s32 index) {
     if (index < 10) return cmm_theme_table[CMM_THEME_CUSTOM].mats[index].name;
     switch (index - 10) {
         case 0: return "Poles";
-        case 1: return "Iron Meshes";
-        case 2: return "Water";
+        case 1: return "Fences";
+        case 2: return "Iron Meshes";
+        case 3: return "Water";
     }
 }
 
@@ -506,9 +507,9 @@ void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
 
 s32 terrain_menu_handle_scroll() {
     s32 yOffset = (cmm_custom_theme_menu_open ? CUSTOM_MENU_SCROLL_HEIGHT : 0);
-    if (cmm_menu_scrolling[SCROLL_CUSTOM][0] > 0) { // Hardcoded to 4 for the custom theme scroll
+    if (cmm_menu_scrolling[SCROLL_CUSTOM][0] > 0) {
         cmm_menu_scrolling[SCROLL_CUSTOM][0]--;
-        yOffset += (cmm_menu_scrolling[SCROLL_CUSTOM][0] * cmm_menu_scrolling[SCROLL_CUSTOM][1] * CUSTOM_MENU_SCROLL_HEIGHT) / 5;
+        yOffset += (cmm_menu_scrolling[SCROLL_CUSTOM][0] * cmm_menu_scrolling[SCROLL_CUSTOM][1] * CUSTOM_MENU_SCROLL_HEIGHT) / 8;
     }
     return yOffset;
 }
@@ -670,7 +671,7 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                     // Open custom theme menu
                     cmm_custom_theme_menu_open = TRUE;
-                    cmm_menu_scrolling[SCROLL_CUSTOM][0] = 5;
+                    cmm_menu_scrolling[SCROLL_CUSTOM][0] = 8;
                     cmm_menu_scrolling[SCROLL_CUSTOM][1] = -1;
                     cmm_menu_index = CUSTOM_INDEX_OFFSET;
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
@@ -679,7 +680,7 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
         } else {
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                 cmm_custom_theme_menu_open = FALSE;
-                cmm_menu_scrolling[SCROLL_CUSTOM][0] = 5;
+                cmm_menu_scrolling[SCROLL_CUSTOM][0] = 8;
                 cmm_menu_scrolling[SCROLL_CUSTOM][1] = 1;
                 cmm_menu_index = index;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
@@ -900,20 +901,20 @@ void draw_cmm_menu(void) {
             gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
+            // Level portrait
+            create_dl_translation_matrix(MENU_MTX_PUSH, 290, 210+yOff, 0);
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
             cmm_global_scissor = 15;
             cmm_global_scissor_top = MAX(0, 15 - yOff);
             cmm_global_scissor_bottom = MAX(0, 145 - yOff);
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, cmm_global_scissor_top, SCREEN_WIDTH - cmm_global_scissor, cmm_global_scissor_bottom);
             yOff += terrain_menu_handle_scroll();
 
-            // Level portrait
-            create_dl_translation_matrix(MENU_MTX_PUSH, 290, 200+yOff, 0);
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
-            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
             // Level name
-            print_maker_string_ascii(15,210+yOff,cmm_file_info.fname,FALSE);
+            print_maker_string_ascii_centered(SCREEN_WIDTH/2,210+yOff,cmm_file_info.fname,FALSE);
 
             switch(cmm_joystick) {
                 case 2:

@@ -30,7 +30,7 @@
 	"1B_event_solve_puzzle": ["14_piranha_music_box"],
 	"1C_event_toad_message": ["20"],
 	"1D_event_peach_message": ["1E"],
-	"1E_cutscene_intro": ["1B"],
+	"1E_event_powerup_shell": ["17"],
 	"1F_cutscene_victory": ["1A"],
 	"20_cutscene_ending": ["26"],
 	"21_menu_file_select": ["24"],
