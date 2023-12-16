@@ -256,6 +256,7 @@ struct cmm_material {
     Gfx *gfx;
     u8 type;
     TerrainData col;
+    char *name; // Only used for Custom Theme menu
 };
 
 // Represents a material as a top texture with optional side decal
