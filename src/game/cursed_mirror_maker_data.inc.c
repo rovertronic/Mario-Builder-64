@@ -1716,6 +1716,7 @@ char *cmm_music_romhack_string_table[] = {
     "Ghostly Galaxy (Mario Galaxy)",
     "Purple Comet (Mario Galaxy)",
     "Honeybloom Galaxy (Mario Galaxy 2)",
+    "Piranha Creeper Creek (3D World)",
     "Desert (New Super Mario Bros.)",
 
     "Koopa Troopa Beach (Mario Kart 64)",
@@ -1732,6 +1733,7 @@ char *cmm_music_romhack_string_table[] = {
 
     "Dry Dry Desert (Paper Mario 64)",
     "Forever Forest (Paper Mario 64)",
+    "Petal Meadows (Paper Mario: TTYD)",
     "Riddle Tower (Paper Mario: TTYD)",
     "Rogueport Sewers (Paper Mario: TTYD)",
     "X-Naut Fortress (Paper Mario: TTYD)",
@@ -1741,6 +1743,7 @@ char *cmm_music_romhack_string_table[] = {
     "Floro Caverns (Super Paper Mario)",
     "Overthere Stair (Super Paper Mario)",
 
+    "Yoshi's Tropical Island (Mario Party)",
     "Rainbow Castle (Mario Party)",
     "Behind Yoshi Village (Partners in Time)",
     "Gritzy Desert (Partners in Time)",
@@ -1779,6 +1782,7 @@ char *cmm_music_romhack_string_table[] = {
     "Windy Hill (Sonic Adventure)",
     "Sky Tower (Pokemon Mystery Dungeon)",
     "Youkai Mountain (Touhou 10)",
+    "Forest Temple (Final Fantasy VII)",
     "Band Land (Rayman)",
 };
 
@@ -1791,7 +1795,6 @@ char *cmm_music_retro_string_table[] = {
     "Athletic (Super Mario World)",
     "Castle (Super Mario World)",
 };
-
 
 u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_GRASS,
@@ -1832,6 +1835,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMG_GHOSTLY_GALAXY,
     SEQ_SMG_PURPLE_COMET,
     SEQ_SMG2_HONEYBLOOM,
+    SEQ_PIRANHA_CREEK,
     SEQ_NSMB_DESERT,
 
     SEQ_KOOPA_BEACH, // mk64 koopa troopa beach
@@ -1848,6 +1852,7 @@ u8 seq_musicmenu_array[] = {
 
     SEQ_PM_DRY_DESERT,
     SEQ_PM_FOREVER_FOREST,
+    SEQ_TTYD_PETAL_MEADOWS,
     SEQ_TTYD_EIGHT_KEY_DOMAIN, // riddle tower
     SEQ_TTYD_ROGUEPORT_SEWERS,
     SEQ_TTYD_XNAUT_FORTRESS,
@@ -1857,6 +1862,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_SPM_FLORO_CAVERNS,
     SEQ_SPM_OVERTHERE_STAIR,
 
+    SEQ_MP_YOSHIS_TROPICAL_ISLAND,
     SEQ_MP_RAINBOW_CASTLE,
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
     SEQ_PIT_GRITZY_DESERT,
@@ -1894,6 +1900,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_SA_WINDY_HILL,
     SEQ_PKMN_SKY_TOWER,
     SEQ_TOUHOU_YOUKAI_MOUNTAIN,
+    SEQ_FOREST_TEMPLE,
     SEQ_RAYMAN_BAND_LAND,
 
     SEQ_SMB1_OVERWORLD,

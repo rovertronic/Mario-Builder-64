@@ -134,6 +134,10 @@ enum SeqId {
     SEQ_NSMB_DESERT,                  // 0x78
     SEQ_TOUHOU_YOUKAI_MOUNTAIN,       // 0x79
     SEQ_BIS_DEEP_CASTLE,              // 0x7A
+    SEQ_TTYD_PETAL_MEADOWS,           // 0x7B
+    SEQ_MP_YOSHIS_TROPICAL_ISLAND,    // 0x7C
+    SEQ_PIRANHA_CREEK,                // 0x7D
+    SEQ_FOREST_TEMPLE,                // 0x7E
 
     SEQ_COUNT
 };
