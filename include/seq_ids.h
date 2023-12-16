@@ -138,6 +138,7 @@ enum SeqId {
     SEQ_DK64_ANGRY_AZTEC,             // 0x77
     SEQ_NSMB_DESERT,                  // 0x78
     SEQ_TOUHOU_YOUKAI_MOUNTAIN,       // 0x79
+    SEQ_BIS_DEEP_CASTLE,              // 0x7A
 
     SEQ_COUNT
 };

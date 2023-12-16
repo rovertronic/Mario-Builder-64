@@ -1745,9 +1745,10 @@ char *cmm_music_romhack_string_table[] = {
     "Behind Yoshi Village (Partners in Time)",
     "Gritzy Desert (Partners in Time)",
     "Bumpsy Plains (Bowser's Inside Story)",
+    "Deep Castle (Bowser's Inside Story)",
 
     "Overworld (Yoshi's Island)",
-    "Crystal Caves (Yoshi's Island)",
+    "Underground (Yoshi's Island)",
     "Title (Yoshi's Story)",
 
     "Kokiri Forest (Ocarina of Time)",
@@ -1860,6 +1861,7 @@ u8 seq_musicmenu_array[] = {
     SEQ_MLPIT_BEHIND_YOSHI_VILLAGE,
     SEQ_PIT_GRITZY_DESERT,
     SEQ_BIS_BUMPSY_PLAINS,
+    SEQ_BIS_DEEP_CASTLE,
     SEQ_YI_OVERWORLD,
     SEQ_YI_CRYSTAL_CAVES,
     SEQ_YS_TITLE,                     // 0x51
