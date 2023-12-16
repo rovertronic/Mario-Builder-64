@@ -2084,7 +2084,7 @@ s32 mario_update_star_radar(void) {
     }
 
     if (nearest_star) {
-        vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
+        vec3f_copy(gMarioState->StarRadarLocation,&nearest_star->oPosVec);
         gMarioState->StarRadarExist = TRUE;
     }
 }
@@ -2285,7 +2285,8 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     // }
 
     // Updates once per frame:
-    vec3f_get_dist_and_lateral_dist_and_angle(gMarioState->prevPos, gMarioState->pos, &gMarioState->moveSpeed, &gMarioState->lateralSpeed, &gMarioState->movePitch, &gMarioState->moveYaw);
+    vec3f_get_dist_and_angle(gMarioState->prevPos, gMarioState->pos, &gMarioState->moveSpeed, &gMarioState->movePitch, &gMarioState->moveYaw);
+    vec3f_get_lateral_dist(gMarioState->prevPos, gMarioState->pos, &gMarioState->lateralSpeed);
     vec3f_copy(gMarioState->prevPos, gMarioState->pos);
 
     if (gMarioState->action) {

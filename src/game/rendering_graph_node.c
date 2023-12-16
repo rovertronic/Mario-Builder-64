@@ -614,11 +614,8 @@ void Get_Screen_Coords(void) {
         f32 float1;
         f32 float2;
 
-        // Convert Mario's coordinates into vec3s so they can be used in mtxf_mul_vec3s
-        vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
-
         // Transform Mario's coordinates into view frustrum
-        mtxf_mul_vec3s(gCameraTransform, marioPos3s);
+        linear_mtxf_mul_vec3(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
 
         // Perspective divide
         if (marioPos3s[2] != 0) {
@@ -1267,7 +1264,7 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
     if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
-        vec3_prod_val(translation, node->translation, 0.25f);
+        vec3_scale_dest(translation, node->translation, 0.25f);
 
         mtxf_translate(mat, translation);
         mtxf_copy(gMatStack[gMatStackIndex + 1], *gCurGraphNodeObject->throwMatrix);

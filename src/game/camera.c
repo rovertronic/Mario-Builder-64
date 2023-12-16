@@ -1145,7 +1145,7 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
             if (find_wall_collisions(&hitbox) != 0) {
                 Vec3f norm;
                 get_surface_normal(&norm,hitbox.walls[0]);
-                f32 dot = vec3f_dot(&dirn,norm);
+                f32 dot = vec3f_dot(dirn,norm);
                 if (dot <= -0.3f) {
                     *surf = hitbox.walls[0];
                     // Get distance pushed out from the wall
@@ -3649,7 +3649,7 @@ void evaluate_cubic_spline(f32 u, Vec3f Q, Vec3f spline1, Vec3f spline2, Vec3f s
     register f32 su = sqr(u);
     register f32 hcu = (su * u) / 2.0f;
 
-    B[0] = cube(nu) / 6.0f;
+    B[0] = (nu * nu * nu) / 6.0f;
     B[1] = hcu - su + (2.0f / 3.0f);
     B[2] = -hcu + (su / 2.0f) + (u / 2.0f) + (1.0f / 6.0f);
     B[3] =  hcu / 3.0f;

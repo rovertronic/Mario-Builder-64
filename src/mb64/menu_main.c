@@ -656,8 +656,10 @@ void main_menu_create_level_list(FrameComponent *parent) {
     t->base.prerender = page_number_init_text;
 }
 
-char main_menu_keyboard_input[MAX(MAX_FILE_NAME_SIZE, MAX_USERNAME_SIZE)];
+//MAX(MAX_FILE_NAME_SIZE, MAX_USERNAME_SIZE)
+char main_menu_keyboard_input[MAX_FILE_NAME_SIZE];
 #define KEYBOARD_CONFIRM (!gMenuState.inactive && (gPlayer1Controller->buttonPressed & START_BUTTON) && main_menu_keyboard_input[0] != 0)
+
 void keyboard_start_level(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (KEYBOARD_CONFIRM) {
         int fileExists = level_file_exists(main_menu_keyboard_input);
