@@ -30,7 +30,6 @@
 #include "save_file.h"
 #include "seq_ids.h"
 #include "spawn_sound.h"
-#include "puppylights.h"
 #include "actors/group0.h"
 #include "mb64/main.h"
 #include "mb64/trajectory.h"

@@ -30,7 +30,6 @@
 #include "rumble_init.h"
 #include "puppycam2.h"
 #include "puppyprint.h"
-#include "puppylights.h"
 #include "level_commands.h"
 #include "mb64/main.h"
 #include "mb64/menu.h"
@@ -663,29 +662,14 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = warpFlags;
-
-#if defined(PUPPYCAM) || defined(PUPPYLIGHTS)
-    s32 i = 0;
-#endif
 #ifdef PUPPYCAM
     if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
     {
-        for (i = 0; i < gPuppyVolumeCount; i++)
+        for (s32 i = 0; i < gPuppyVolumeCount; i++)
         {
             mem_pool_free(gPuppyMemoryPool, sPuppyVolumeStack[i]);
         }
         gPuppyVolumeCount = 0;
-    }
-#endif
-#ifdef PUPPYLIGHTS
-    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
-    {
-        for (i = 0; i < gNumLights; i++)
-        {
-            mem_pool_free(gLightsPool, gPuppyLights[i]);
-        }
-        gNumLights = 0;
-        levelAmbient = FALSE;
     }
 #endif
 }
@@ -1029,9 +1013,6 @@ void update_hud_values(void) {
 void basic_update(void) {
     area_update_objects();
     update_hud_values();
-#ifdef PUPPYLIGHTS
-    delete_lights();
-#endif
 
     if (gCurrentArea != NULL) {
         update_camera(gCurrentArea->camera);
@@ -1391,10 +1372,6 @@ s32 init_level(void) {//
     if (gMarioState->action == ACT_INTRO_CUTSCENE) {
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
     }
-
-#ifdef PUPPYLIGHTS
-    puppylights_allocate();
-#endif
 
     append_puppyprint_log("Level loaded in %d" PP_CYCLE_STRING ".", (s32)(PP_CYCLE_CONV(osGetTime() - first)));
     return TRUE;

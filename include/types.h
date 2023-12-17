@@ -258,12 +258,7 @@ struct ObjectNode {
 
 // NOTE: Since ObjectNode is the first member of Object, it is difficult to determine
 // whether some of these pointers point to ObjectNode or Object.
-
-#ifdef PUPPYLIGHTS
-#define MAX_OBJECT_FIELDS 0x51
-#else
 #define MAX_OBJECT_FIELDS 0x50
-#endif
 
 struct Object {
     /*0x000*/ struct ObjectNode header;
@@ -313,9 +308,6 @@ struct Object {
     /*0x25C*/ void *respawnInfo;
               Vec3f oDisplaceVec;
               Vec3f oOldVec;
-#ifdef PUPPYLIGHTS
-    struct PuppyLight puppylight;
-#endif
 };
 
 struct ObjectHitbox {

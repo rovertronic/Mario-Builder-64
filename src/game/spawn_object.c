@@ -12,7 +12,6 @@
 #include "object_list_processor.h"
 #include "spawn_object.h"
 #include "types.h"
-#include "puppylights.h"
 #include "mb64/main.h"
 
 /**
@@ -234,9 +233,6 @@ struct Object *allocate_object(struct ObjectNode *objList) {
 
     vec3_same(obj->header.gfx.pos, -10000.0f);
     obj->header.gfx.throwMatrix = NULL;
-#ifdef PUPPYLIGHTS
-    obj->oLightID = 0xFFFF;
-#endif
 
     return obj;
 }
