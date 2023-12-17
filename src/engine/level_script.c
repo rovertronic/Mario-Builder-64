@@ -5,6 +5,7 @@
 
 #include "sm64.h"
 #include "audio/external.h"
+#include "audio/synthesis.h"
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
 #include "game/area.h"
@@ -28,11 +29,8 @@
 #include "game/puppycam2.h"
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
-#include "game/puppycamold.h"
+#include "game/emutest.h"
 #include "game/cursed_mirror_maker.h"
-
-#include "game/game_init.h"
-#include "level_table.h"
 
 #include "config.h"
 
@@ -343,7 +341,7 @@ static void level_cmd_load_mario_head(void) {
 }
 
 static void level_cmd_load_yay0_texture(void) {
-    load_segment_decompress_heap(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8));
+    load_segment_decompress(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8));
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -381,6 +379,9 @@ void unmap_tlbs(void) {
                     osUnmapTLB(gTlbEntries);
                     gTlbSegments[i]--;
                     gTlbEntries--;
+#ifdef PUPPYPRINT_DEBUG
+                    set_segment_memory_printout(i, 0);
+#endif
                 }
             } else {
                 gTlbEntries -= gTlbSegments[i];
@@ -513,7 +514,7 @@ static void level_cmd_init_mario(void) {
 static void level_cmd_place_object(void) {
     if (
         sCurrAreaIndex != -1
-        && ((CMD_GET(u8, 2) & (1 << (gCurrActNum - 1))) || (CMD_GET(u8, 2) == 0x1F))
+        && (CMD_GET(u8, 2) & (1 << (gCurrActNum - 1)))
     ) {
         ModelID16 model = CMD_GET(u32, 0x18);
         struct SpawnInfo *spawnInfo = alloc_only_pool_alloc(sLevelPool, sizeof(struct SpawnInfo));
@@ -575,12 +576,12 @@ static void level_cmd_create_instant_warp(void) {
 
         warp = gAreas[sCurrAreaIndex].instantWarps + CMD_GET(u8, 2);
 
-        warp[0].id = 1;
+        warp[0].id = SURFACE_INSTANT_WARP_1B + CMD_GET(u8, 2);
         warp[0].area = CMD_GET(u8, 3);
 
-        vec3s_set(warp[0].displacement, CMD_GET(s16, 4),
-                                        CMD_GET(s16, 6),
-                                        CMD_GET(s16, 8));
+        warp[0].displacement[0] = CMD_GET(s32, 4);
+        warp[0].displacement[1] = CMD_GET(s32, 8);
+        warp[0].displacement[2] = CMD_GET(s32, 12);
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -641,22 +642,19 @@ static void level_cmd_3A(void) {
 static void level_cmd_create_whirlpool(void) {
     struct Whirlpool *whirlpool;
     s32 index = CMD_GET(u8, 2);
-    s32 beatBowser2 =
-        (save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) != 0;
 
-    if (CMD_GET(u8, 3) == WHIRLPOOL_COND_ALWAYS
-        || (CMD_GET(u8, 3) == WHIRLPOOL_COND_BOWSER2_NOT_BEATEN   && !beatBowser2)
-        || (CMD_GET(u8, 3) == WHIRLPOOL_COND_BOWSER2_BEATEN       && beatBowser2)
-        || (CMD_GET(u8, 3) == WHIRLPOOL_COND_AT_LEAST_SECOND_STAR && gCurrActNum >= 2)) {
-        if (sCurrAreaIndex != -1 && index < 2) {
-            if ((whirlpool = gAreas[sCurrAreaIndex].whirlpools[index]) == NULL) {
-                whirlpool = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
-                gAreas[sCurrAreaIndex].whirlpools[index] = whirlpool;
-            }
-
-            vec3s_set(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
-            whirlpool->strength = CMD_GET(s16, 10);
+    if (
+        sCurrAreaIndex != -1
+        && index < ARRAY_COUNT(gAreas[sCurrAreaIndex].whirlpools)
+        && (CMD_GET(u8, 3) & (1 << (gCurrActNum - 1)))
+    ) {
+        if ((whirlpool = gAreas[sCurrAreaIndex].whirlpools[index]) == NULL) {
+            whirlpool = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
+            gAreas[sCurrAreaIndex].whirlpools[index] = whirlpool;
         }
+
+        vec3s_set(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
+        whirlpool->strength = CMD_GET(s16, 10);
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -773,18 +771,43 @@ static void level_cmd_show_dialog(void) {
 static void level_cmd_set_music(void) {
     if (sCurrAreaIndex != -1) {
         gAreas[sCurrAreaIndex].musicParam = CMD_GET(s16, 2);
-        gAreas[sCurrAreaIndex].musicParam2 = CMD_GET(s16, 4);
+#ifdef BETTER_REVERB
+        if (gEmulator & EMU_CONSOLE)
+            gAreas[sCurrAreaIndex].betterReverbPreset = CMD_GET(u8, 4);
+        else
+            gAreas[sCurrAreaIndex].betterReverbPreset = CMD_GET(u8, 5);
+#endif
+        gAreas[sCurrAreaIndex].musicParam2 = CMD_GET(s16, 6);
     }
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_set_menu_music(void) {
+#ifdef BETTER_REVERB
+    // Must come before set_background_music()
+    if (gEmulator & EMU_CONSOLE)
+        gBetterReverbPresetValue = CMD_GET(u8, 4);
+    else
+        gBetterReverbPresetValue = CMD_GET(u8, 5);
+#endif
     set_background_music(0, CMD_GET(s16, 2), 0);
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_fadeout_music(void) {
-    fadeout_music(CMD_GET(s16, 2));
+    s16 dur = CMD_GET(s16, 2);
+    if (sCurrAreaIndex != -1 && dur == 0) {
+        // Allow persistent block overrides for SET_BACKGROUND_MUSIC_WITH_REVERB
+        gAreas[sCurrAreaIndex].musicParam = 0x00;
+        gAreas[sCurrAreaIndex].musicParam2 = 0x00;
+#ifdef BETTER_REVERB
+        gAreas[sCurrAreaIndex].betterReverbPreset = 0x00;
+#endif
+    } else {
+        if (dur < 0)
+            dur = 0;
+        fadeout_music(dur);
+    }
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -877,9 +900,7 @@ static void level_cmd_puppyvolume(void) {
     if ((sPuppyVolumeStack[gPuppyVolumeCount] = mem_pool_alloc(gPuppyMemoryPool, sizeof(struct sPuppyVolume))) == NULL) {
         sCurrentCmd = CMD_NEXT;
         gPuppyError |= PUPPY_ERROR_POOL_FULL;
-#if PUPPYPRINT_DEBUG
         append_puppyprint_log("Puppycamera volume allocation failed.");
-#endif
         return;
     }
 
@@ -927,9 +948,7 @@ static void level_cmd_puppylight_node(void) {
 #ifdef PUPPYLIGHTS
     gPuppyLights[gNumLights] = mem_pool_alloc(gLightsPool, sizeof(struct PuppyLight));
     if (gPuppyLights[gNumLights] == NULL) {
-#if PUPPYPRINT_DEBUG
         append_puppyprint_log("Puppylight allocation failed.");
-#endif
         sCurrentCmd = CMD_NEXT;
         return;
     }
@@ -956,6 +975,17 @@ static void level_cmd_puppylight_node(void) {
     gNumLights++;
 
 #endif
+    sCurrentCmd = CMD_NEXT;
+}
+
+static void level_cmd_set_echo(void) {
+    if (sCurrAreaIndex >= 0 && sCurrAreaIndex < AREA_COUNT) {
+        gAreaData[sCurrAreaIndex].useEchoOverride = TRUE;
+        if (gEmulator & EMU_CONSOLE)
+            gAreaData[sCurrAreaIndex].echoOverride = CMD_GET(s8, 2);
+        else
+            gAreaData[sCurrAreaIndex].echoOverride = CMD_GET(s8, 3);
+    }
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -1025,9 +1055,8 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_CHANGE_AREA_SKYBOX          */ level_cmd_change_area_skybox,
     /*LEVEL_CMD_PUPPYLIGHT_ENVIRONMENT      */ level_cmd_puppylight_environment,
     /*LEVEL_CMD_PUPPYLIGHT_NODE             */ level_cmd_puppylight_node,
+    /*LEVEL_CMD_SET_ECHO                    */ level_cmd_set_echo,
     /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
-    // /*LEVEL_CMD_ADV_DEMO                    */ level_cmd_adv_demo,
-    // /*LEVEL_CMD_CLEAR_DEMO_PTR              */ level_cmd_clear_demo_ptr,
     /*LEVEL_CMD_LOAD_CMM                    */ level_cmd_load_cmm,
     /*LEVEL_CMD_LOAD_CMM_MODELS             */ level_cmd_load_cmm_models,
 };

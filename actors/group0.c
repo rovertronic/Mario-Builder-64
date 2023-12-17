@@ -65,7 +65,7 @@
 #include "spiny/anims/table.inc.c"
 
 #ifdef S2DEX_TEXT_ENGINE
-#include "src/s2d_engine/config.h"
+#include "src/s2d_engine/s2d_config.h"
 #include FONT_C_FILE
 #endif
 

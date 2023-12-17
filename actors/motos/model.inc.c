@@ -1,8 +1,3 @@
-#define ShapeColor(r,g,b) gdSPDefLights1(r/4,g/4,b/4,r,g,b,0x28,0x28,0x28)
-
-#define	softspriteON	1
-#define ShapeColor_motos_basedata_A(r,g,b)   ShapeColor(r,g,b)
-
 #define	gsxDPLoadTextureImage(fmt, siz, width, height,		\
 		pal, cms, cmt, masks, maskt, shifts, shiftt)		\
 									\
@@ -86,19 +81,6 @@
 	gsDPSetTileSize(ttdn, 0, 0,														\
 					(((width) -1) << G_TEXTURE_IMAGE_FRAC),							\
 					(((height)-1) << G_TEXTURE_IMAGE_FRAC) )
-
-
-/*-------------------------------------------------------------*/
-/*	light data                                                 */
-/*-------------------------------------------------------------*/
-static Lights1 light_motos_basedata_A[]={
-	ShapeColor_motos_basedata_A(228,131,0),
-	ShapeColor_motos_basedata_A(76,76,98),
-	ShapeColor_motos_basedata_A(13,28,48),
-	ShapeColor_motos_basedata_A(15,54,111),
-	ShapeColor_motos_basedata_A(255,0,0),
-	ShapeColor_motos_basedata_A(255,255,255),
-};
 
 /*-------------------------------------------------------------*/
 /*	texture data                                               */
@@ -1426,8 +1408,8 @@ static Vtx vtx_motos_basedata_A11[]={
     {{{   0, 200,   0},     0,{    0,    0},{   0, 127,   0,   0}}},
 };
 const Gfx RCP_motos_basedata_A0[]={
-	gsSPLight((&light_motos_basedata_A[0].l[0]),1),
-	gsSPLight((&light_motos_basedata_A[0].a),2),
+	gsSPLightColor(LIGHT_1, 0xe48300ff),
+	gsSPLightColor(LIGHT_2, 0x724100ff),
 	gsSPVertex(&vtx_motos_basedata_A0[0],16,0),
 	gsSP1Triangle(0,1,2,0),
 	gsSP1Triangle(3,4,2,0),
@@ -1552,8 +1534,8 @@ const Gfx RCP_motos_basedata_A0[]={
 };
 const Gfx gfx_motos_LhandB_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinC_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_LhandB_0[0], 13, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSP1Triangle( 3, 4, 5, 0),
@@ -1591,8 +1573,8 @@ const Gfx RCP_motos_LhandB[] = {
 
 const Gfx gfx_motos_LhandA_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinD_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_LhandA_0[0],  3, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSPEndDisplayList() 
@@ -1629,8 +1611,8 @@ const Gfx RCP_motos_LhandA[] = {
 };
 
 const Gfx RCP_motos_basedata_A3[]={
-	gsSPLight((&light_motos_basedata_A[0].l[0]),1),
-	gsSPLight((&light_motos_basedata_A[0].a),2),
+	gsSPLightColor(LIGHT_1, 0xe48300ff),
+	gsSPLightColor(LIGHT_2, 0x724100ff),
 	gsSPVertex(&vtx_motos_basedata_A3[0],16,0),
 	gsSP1Triangle(0,1,2,0),
 	gsSP1Triangle(1,0,3,0),
@@ -1755,8 +1737,8 @@ const Gfx RCP_motos_basedata_A3[]={
 };
 const Gfx gfx_motos_RhandA_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinC_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_RhandA_0[0], 13, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSP1Triangle( 3, 4, 5, 0),
@@ -1795,8 +1777,8 @@ const Gfx RCP_motos_RhandA[] = {
 const Gfx gfx_motos_RhandB_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinD_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
 
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 
 	gsSPVertex(&vtx_motos_RhandB_0[0],  3, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
@@ -1836,8 +1818,8 @@ const Gfx RCP_motos_RhandB[] = {
 
 const Gfx gfx_motos_Lfoot_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinD_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_Lfoot[0],  6, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSP1Triangle( 0, 3, 1, 0),
@@ -1891,8 +1873,8 @@ const Gfx RCP_motos_Lfoot[] = {
 	gsSPEndDisplayList() 
 };
 const Gfx RCP_motos_basedata_A7[]={
-	gsSPLight((&light_motos_basedata_A[0].l[0]),1),
-	gsSPLight((&light_motos_basedata_A[0].a),2),
+	gsSPLightColor(LIGHT_1, 0xe48300ff),
+	gsSPLightColor(LIGHT_2, 0x724100ff),
 	gsSPVertex(&vtx_motos_basedata_A7[0],16,0),
 	gsSP1Triangle(0,1,2,0),
 	gsSP1Triangle(3,4,2,0),
@@ -2017,8 +1999,8 @@ const Gfx RCP_motos_basedata_A7[]={
 };
 const Gfx gfx_motos_Rfoot_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinC_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_Rfoot[0], 15, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSP1Triangle( 3, 4, 5, 0),
@@ -2072,8 +2054,8 @@ const Gfx RCP_motos_Rfoot[] = {
 	gsSPEndDisplayList() 
 };
 const Gfx RCP_motos_basedata_A9[]={
-	gsSPLight((&light_motos_basedata_A[0].l[0]),1),
-	gsSPLight((&light_motos_basedata_A[0].a),2),
+	gsSPLightColor(LIGHT_1, 0xe48300ff),
+	gsSPLightColor(LIGHT_2, 0x724100ff),
 	gsSPVertex(&vtx_motos_basedata_A9[0],16,0),
 	gsSP1Triangle(0,1,2,0),
 	gsSP1Triangle(1,0,3,0),
@@ -2198,8 +2180,8 @@ const Gfx RCP_motos_basedata_A9[]={
 };
 const Gfx gfx_motos_head_0[] = {
 	gs_Tani_LoadTextureImage2(motos_skinC_txt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 7),
-	gsSPLight((&light_motos_basedata_A[5].l[0]),1 ),
-	gsSPLight((&light_motos_basedata_A[5].a   ),2 ),
+	gsSPLightColor(LIGHT_1, 0xffffffff),
+	gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPVertex(&vtx_motos_head_0[0], 15, 0), 
 	gsSP1Triangle( 0, 1, 2, 0),
 	gsSP1Triangle( 3, 4, 5, 0),
@@ -2260,8 +2242,8 @@ const Gfx RCP_motos_head[] = {
 };
 
 const Gfx RCP_motos_basedata_A11[]={
-	gsSPLight((&light_motos_basedata_A[2].l[0]),1),
-	gsSPLight((&light_motos_basedata_A[2].a),2),
+    gsSPLightColor(LIGHT_1, 0x0d1c30ff),
+    gsSPLightColor(LIGHT_2, 0x060e18ff),
 	gsSPVertex(&vtx_motos_basedata_A11[0],16,0),
 	gsSP1Triangle(0,1,2,0),
 	gsSP1Triangle(1,0,3,0),

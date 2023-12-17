@@ -34,15 +34,9 @@
  **/
 
 #ifdef BREATH_METER
-// #ifdef DISABLE_LIVES
-// #define HUD_BREATH_METER_X         64
-// #define HUD_BREATH_METER_Y        200
-// #define HUD_BREATH_METER_HIDDEN_Y 300
-// #else
 #define HUD_BREATH_METER_X         40
 #define HUD_BREATH_METER_Y         32
 #define HUD_BREATH_METER_HIDDEN_Y -20
-// #endif
 #endif
 
 // ------------- FPS COUNTER ---------------
@@ -1097,9 +1091,6 @@ void render_hud(void) {
         if (gCustomDebugMode) {
             render_debug_mode();
         }
-#endif
-#ifdef PUPPYPRINT
-        print_set_envcolour(255, 255, 255, 255);
 #endif
     }
 }

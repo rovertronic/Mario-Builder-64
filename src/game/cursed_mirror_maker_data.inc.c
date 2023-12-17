@@ -1324,27 +1324,23 @@ struct cmm_object_place cmm_object_place_types[] = {
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
-    { 0, 0, 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE,  0},
-    { 1, 0, 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE,  0},
-    { 2, 0, 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE,  0},
-    { 3, 0, 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE, 3},
-    { 4, 0, 0, MODEL_YELLOW_COIN,      bhvSingleCoinGetsSpawned,  4, FALSE, 1},
-    { 5, 0, 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE, 3},
-    { 6, 0, 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE, 10},
-    //END
-    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,4, FALSE, 0},
+    { 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE,  0},
+    { 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE,  0},
+    { 0, MODEL_KOOPA_SHELL,      bhvKoopaShell,        3, TRUE,  0},
+    { 0, 0xEF,                   bhvGreenGetsSpawned,  4, FALSE, 3},
+    { 0, MODEL_YELLOW_COIN,      bhvSingleCoinGetsSpawned,  4, FALSE, 1},
+    { 0, MODEL_NONE,             bhvThreeCoinsSpawn,   4, FALSE, 3},
+    { 0, MODEL_NONE,             bhvTenCoinsSpawn,     4, FALSE, 10},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
-    { 0, 0, 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE,  0},
-    { 1, 0, 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE,  0},
-    { 2, 0, 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE,  0},
-    { 3, 0, 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE,  0},
-    { 4, 0, 0, MODEL_YELLOW_COIN,        bhvSingleCoinGetsSpawned, 3, FALSE, 1},
-    { 5, 0, 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE, 3},
-    { 6, 0, 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
-    //END
-    { EXCLAMATION_BOX_BP_NULL, 0, 0,         MODEL_NONE,NULL,3, FALSE, 0},
+    { 0, MODEL_V_MARIOS_WING_CAP,  bhvWingCap,         0, TRUE,  0},
+    { 6, MODEL_V_MARIOS_METAL_CAP, bhvMetalCap,        1, TRUE,  0},
+    { 0, MODEL_MARIOS_CAP,         bhvVanishCap,       2, TRUE,  0},
+    { 0, MODEL_KOOPA_SHELL,        bhvKoopaShell,      3, TRUE,  0},
+    { 0, MODEL_YELLOW_COIN,        bhvSingleCoinGetsSpawned, 3, FALSE, 1},
+    { 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE, 3},
+    { 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
 };
 
 //behparam2 strings

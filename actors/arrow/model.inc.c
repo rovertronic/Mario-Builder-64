@@ -1,6 +1,3 @@
-Lights1 arrow_Indicator_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Vtx arrow_Plane_001_mesh_vtx_cull[8] = {
 	{{{-2, -3, 0},0, {-16, -16},{0x0, 0x0, 0x0, 0xFF}}},
@@ -31,7 +28,8 @@ Gfx mat_arrow_Indicator[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(arrow_Indicator_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 

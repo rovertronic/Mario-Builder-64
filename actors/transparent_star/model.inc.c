@@ -1,15 +1,7 @@
 // Transparent Star
 
 // 0x0302C488
-static const Lights1 transparent_star_seg3_lights_body = gdSPDefLights1(
-    0x03, 0x05, 0x17,
-    0x1e, 0x32, 0xe6, 0x28, 0x28, 0x28
-);
 
-static const Lights1 transparent_star_seg3_lights_black = gdSPDefLights1(
-    0x10, 0x10, 0x10,
-    0x50, 0x50, 0x50, 0x28, 0x28, 0x28
-);
 
 // 0x0302C4A0
 static const Vtx transparent_star_seg3_vertex_body[] = {
@@ -29,8 +21,8 @@ static const Vtx transparent_star_seg3_vertex_body[] = {
 
 // 0x0302C560 - 0x0302C620
 const Gfx transparent_star_seg3_sub_dl_body[] = {
-    gsSPLight(&transparent_star_seg3_lights_body.l, 1),
-    gsSPLight(&transparent_star_seg3_lights_body.a, 2),
+    gsSPLightColor(LIGHT_1, 0x1e32e6ff),
+    gsSPLightColor(LIGHT_2, 0x30517ff),
     gsSPVertex(transparent_star_seg3_vertex_body, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  1,  3,  4, 0x0),
@@ -51,15 +43,15 @@ const Gfx transparent_star_seg3_dl_body[] = {
     gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
     gsDPSetEnvColor(255, 255, 255, 120),
     gsSPDisplayList(transparent_star_seg3_sub_dl_body),
+    gsDPPipeSync(),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPEndDisplayList(),
 };
 
 const Gfx transparent_star_black_dl[] = {
-    gsSPLight(&transparent_star_seg3_lights_black.l, 1),
-    gsSPLight(&transparent_star_seg3_lights_body.a, 2),
-    gsSPVertex(transparent_star_seg3_vertex_body, 12, 0),
+    gsSPLightColor(LIGHT_1, 0x505050ff),
+    gsSPLightColor(LIGHT_2, 0x30517ff),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  1,  3,  4, 0x0),
     gsSP2Triangles( 5,  3,  0, 0x0,  4,  3,  5, 0x0),

@@ -870,11 +870,11 @@ void handle_menu_scrolling(s8 scrollDirection, s8 *currentIndex, s8 minIndex, s8
     u8 index = 0;
 
     if (scrollDirection == MENU_SCROLL_VERTICAL) {
-        if ((gPlayer3Controller->rawStickY >  60) || (gPlayer3Controller->buttonDown & (U_CBUTTONS | U_JPAD))) index++;
-        if ((gPlayer3Controller->rawStickY < -60) || (gPlayer3Controller->buttonDown & (D_CBUTTONS | D_JPAD))) index += 2;
+        if ((gPlayer1Controller->rawStickY >  60) || (gPlayer1Controller->buttonDown & (U_CBUTTONS | U_JPAD))) index++;
+        if ((gPlayer1Controller->rawStickY < -60) || (gPlayer1Controller->buttonDown & (D_CBUTTONS | D_JPAD))) index += 2;
     } else if (scrollDirection == MENU_SCROLL_HORIZONTAL) {
-        if ((gPlayer3Controller->rawStickX >  60) || (gPlayer3Controller->buttonDown & (R_CBUTTONS | R_JPAD))) index += 2;
-        if ((gPlayer3Controller->rawStickX < -60) || (gPlayer3Controller->buttonDown & (L_CBUTTONS | L_JPAD))) index++;
+        if ((gPlayer1Controller->rawStickX >  60) || (gPlayer1Controller->buttonDown & (R_CBUTTONS | R_JPAD))) index += 2;
+        if ((gPlayer1Controller->rawStickX < -60) || (gPlayer1Controller->buttonDown & (L_CBUTTONS | L_JPAD))) index++;
     }
 
     if (((index ^ gMenuHoldKeyIndex) & index) == 2) {
@@ -1687,7 +1687,7 @@ void render_dialog_entries(void) {
         case DIALOG_STATE_VERTICAL:
             gDialogBoxOpenTimer = 0.0f;
 
-            if (gPlayer3Controller->buttonPressed & A_BUTTON) {
+            if (gPlayer3Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
                 if (gLastDialogPageStrPos == -1) {
                     handle_special_dialog_text(gDialogID);
                     gDialogBoxState = DIALOG_STATE_CLOSING;
@@ -1980,14 +1980,14 @@ void change_dialog_camera_angle(void) {
 }
 
 void shade_screen(void) {
+    Gfx* dlHead = gDisplayListHead;
 
-    // This is a bit weird. It reuses the dialog text box (width 130, height -80),
-    // so scale to at least fit the screen.
-    create_dl_translation_matrix(MENU_MTX_PUSH, -100.0f, SCREEN_HEIGHT, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.6f, 3.4f, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 110);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    gSPDisplayList(dlHead++, dl_shade_screen_begin);
+    gDPFillRectangle(dlHead++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), gBorderHeight,
+        (GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1), ((SCREEN_HEIGHT - gBorderHeight) - 1));
+    gSPDisplayList(dlHead++, dl_shade_screen_end);
+
+    gDisplayListHead = dlHead;
 }
 
 void print_animated_red_coin(s16 x, s16 y) {
@@ -2027,8 +2027,36 @@ void render_pause_red_coins(void) {
 
     //i will punish you by deleting your code fuckface.
 
-    for (x = 0; x < gRedCoinsCollected; x++) {
-        print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
+    if (gRedCoinsCollected <= 9) {
+        for (x = 0; x < gRedCoinsCollected; x++) {
+            print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
+        }
+    }
+    else {
+        print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(108), 16);
+        Mtx *mtx;
+
+        mtx = alloc_display_list(sizeof(*mtx));
+        if (mtx == NULL) {
+            return;
+        }
+        guOrtho(mtx, 0.0f, SCREEN_WIDTH, 0.0f, SCREEN_HEIGHT, -10.0f, 10.0f, 1.0f);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+        gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
+
+        s8 redCoinCount = gRedCoinsCollected;
+        if (redCoinCount > 99) {
+            redCoinCount = 99;
+        }
+
+        add_glyph_texture(GLYPH_MULTIPLY);
+        render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(100), 16, 0);
+        add_glyph_texture(char_to_glyph_index((char) (48 + (redCoinCount / 10))));
+        render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(86), 16, 0);
+        add_glyph_texture(char_to_glyph_index((char) (48 + (redCoinCount % 10))));
+        render_textrect(GFX_DIMENSIONS_FROM_RIGHT_EDGE(86), 16, 1);
+
+        gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
     }
 }
 
@@ -2255,6 +2283,7 @@ void render_pause_castle_menu_box(s16 x, s16 y) {
 
     create_dl_translation_matrix(MENU_MTX_PUSH, x + 6, y - 28, 0);
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
+    gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -2594,7 +2623,7 @@ s32 render_pause_courses_and_castle(void) {
                     }
 #endif
 
-                    if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+                    if (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
                         level_set_transition(0, NULL);
                         play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
                         gDialogBoxState = DIALOG_STATE_OPENING;
@@ -3085,7 +3114,7 @@ s32 render_pause_courses_and_castle(void) {
         }
 
         //exit control
-        if (gPlayer3Controller->buttonPressed & START_BUTTON) {
+        if (gPlayer1Controller->buttonPressed & START_BUTTON) {
             level_set_transition(0, 0);
             play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
             gMenuMode = -1;
@@ -3191,11 +3220,11 @@ void print_hud_course_complete_coins(s16 x, s16 y) {
 
             play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gGlobalSoundSource);
 
-#ifndef DISABLE_LIVES
-            // if (gCourseCompleteCoins && ((gCourseCompleteCoins % 50) == 0)) {
-            //     play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
-            //     gMarioState->numLives++;
-            // }
+#ifdef ENABLE_LIVES
+            if (gCourseCompleteCoins && ((gCourseCompleteCoins % 50) == 0)) {
+                play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
+                gMarioState->numLives++;
+            }
 #endif
         }
 
@@ -3360,7 +3389,7 @@ s32 render_course_complete_screen(void) {
             render_course_complete_lvl_info_and_hud_str();
             render_save_confirmation(100, 86, &gDialogLineNum, 20);
 
-            if (gCourseDoneMenuTimer > 110 && (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON))) {
+            if (gCourseDoneMenuTimer > 110 && (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON))) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;

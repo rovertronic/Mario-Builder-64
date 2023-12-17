@@ -1,10 +1,4 @@
-Lights1 bobomb_hat_lights = gdSPDefLights1(
-	0x2C, 0x2C, 0x2C,
-	0xB2, 0xB2, 0xB2, 0x28, 0x28, 0x28);
 
-Lights1 bobomb_feet_lights = gdSPDefLights1(
-	0x3F, 0x26, 0x4,
-	0xFF, 0x99, 0x12, 0x28, 0x28, 0x28);
 
 Gfx bobomb_bob_omb_eyes_rgba16_rgba16_aligner[] = {gsSPEndDisplayList()};
 u8 bobomb_bob_omb_eyes_rgba16_rgba16[] = {
@@ -131,7 +125,8 @@ Gfx bobomb_root_mesh_layer_1[] = {
 	gsSPSetOtherMode(G_SETOTHERMODE_H, 4, 20, G_AD_NOISE | G_CD_MAGICSQ | G_CK_NONE | G_TC_FILT | G_TF_BILERP | G_TT_NONE | G_TL_TILE | G_TD_CLAMP | G_TP_PERSP | G_CYC_1CYCLE | G_PM_1PRIMITIVE),
 	gsSPSetOtherMode(G_SETOTHERMODE_L, 0, 3, G_AC_NONE | G_ZS_PIXEL),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(bobomb_hat_lights),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x2c2c2cff),
 	gsSPVertex(bobomb_root_mesh_layer_1_vtx_0 + 0, 30, 0),
 	gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
 	gsSP2Triangles(6, 7, 8, 0, 6, 9, 7, 0),
@@ -261,7 +256,8 @@ Gfx bobomb_left_foot_mesh_layer_1[] = {
 	gsSPSetOtherMode(G_SETOTHERMODE_H, 4, 20, G_AD_NOISE | G_CD_MAGICSQ | G_CK_NONE | G_TC_FILT | G_TF_BILERP | G_TT_NONE | G_TL_TILE | G_TD_CLAMP | G_TP_PERSP | G_CYC_1CYCLE | G_PM_1PRIMITIVE),
 	gsSPSetOtherMode(G_SETOTHERMODE_L, 0, 3, G_AC_NONE | G_ZS_PIXEL),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(bobomb_feet_lights),
+    gsSPLightColor(LIGHT_1, 0xff9912ff),
+    gsSPLightColor(LIGHT_2, 0x3f2604ff),
 	gsSPVertex(bobomb_left_foot_mesh_layer_1_vtx_0 + 0, 16, 0),
 	gsSP2Triangles(0, 1, 2, 0, 3, 1, 0, 0),
 	gsSP2Triangles(0, 4, 3, 0, 0, 5, 4, 0),

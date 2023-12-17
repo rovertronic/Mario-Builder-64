@@ -38,6 +38,9 @@
 # datadump
 /tools/ddump/*
 
+# python cache in tools/
+/tools/__pycache__/*
+
 # Text editor remnants
 *.swp
 .vscode/*
@@ -304,7 +307,7 @@ actors/mario/mario_eyes_left_unused.rgba16.png
 actors/mario/mario_eyes_right_unused.rgba16.png
 actors/mario/mario_eyes_up_unused.rgba16.png
 actors/mario/mario_logo.rgba16.png
-actors/mario/mario_metal.rgba16.png
+actors/mario2/mario_metal.rgba16.png
 actors/mario/mario_metal_wing_tip_unused.rgba16.png
 actors/mario/mario_metal_wing_unused.rgba16.png
 actors/mario/mario_mustache.rgba16.png

@@ -196,8 +196,6 @@ struct cmm_object_place {
 };
 
 struct ExclamationBoxContents {
-    u8 id;
-    u8 unk1;
     u8 behParams;
     ModelID16 model;
     const BehaviorScript *behavior;

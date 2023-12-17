@@ -1,6 +1,3 @@
-Lights1 BadgeSelect_Indicator_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Vtx BadgeSelect_Plane_mesh_vtx_0[8] = {
 	{{{-12, 12, 0},0, {78, 78},{0x0, 0x0, 0x7F, 0xFF}}},
@@ -31,7 +28,8 @@ Gfx mat_BadgeSelect_Indicator[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(BadgeSelect_Indicator_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 

@@ -1,14 +1,5 @@
-Lights1 crab_CrabletHead_lights = gdSPDefLights1(
-	0x42, 0x3E, 0x39,
-	0x84, 0x7D, 0x72, 0x28, 0x28, 0x28);
 
-Lights1 crab_CrabletBottom_lights = gdSPDefLights1(
-	0xD, 0xC, 0xC,
-	0x1B, 0x19, 0x19, 0x28, 0x28, 0x28);
 
-Lights1 crab_eye_lights = gdSPDefLights1(
-	0x7F, 0x0, 0x0,
-	0xFE, 0x0, 0x0, 0x28, 0x28, 0x28);
 
 Gfx crab_eye_ia8_aligner[] = {gsSPEndDisplayList()};
 u8 crab_eye_ia8[] = {
@@ -953,7 +944,8 @@ Gfx mat_crab_CrabletHead[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(1, 0, ENVIRONMENT, SHADE, 0, 0, 0, ENVIRONMENT, 1, 0, ENVIRONMENT, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(crab_CrabletHead_lights),
+    gsSPLightColor(LIGHT_1, 0x847d72ff),
+    gsSPLightColor(LIGHT_2, 0x423e39ff),
 	gsSPEndDisplayList(),
 };
 
@@ -961,7 +953,8 @@ Gfx mat_crab_CrabletBottom[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(1, 0, ENVIRONMENT, SHADE, 0, 0, 0, ENVIRONMENT, 1, 0, ENVIRONMENT, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(crab_CrabletBottom_lights),
+    gsSPLightColor(LIGHT_1, 0x1b1919ff),
+    gsSPLightColor(LIGHT_2, 0xd0c0cff),
 	gsSPEndDisplayList(),
 };
 
@@ -978,7 +971,8 @@ Gfx mat_crab_eye[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(crab_eye_lights),
+    gsSPLightColor(LIGHT_1, 0xfe0000ff),
+    gsSPLightColor(LIGHT_2, 0x7f0000ff),
 	gsSPEndDisplayList(),
 };
 

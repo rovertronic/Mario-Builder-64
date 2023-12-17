@@ -33,15 +33,20 @@ void bhv_hidden_blue_coin_loop(void) {
                 cur_obj_unhide();
             }
 
+#ifdef BLUE_COIN_SWITCH_PREVIEW
+            if (gMarioObject->platform == blueCoinSwitch) {
+                cur_obj_enable_rendering();
+            } else {
+                cur_obj_disable_rendering();
+            }
+#endif
+
             break;
 
         case HIDDEN_BLUE_COIN_ACT_ACTIVE:
             // Become tangible
             cur_obj_enable_rendering();
             cur_obj_become_tangible();
-#ifdef BLUE_COIN_SWITCH_RETRY
-            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-#endif
 
             // Delete the coin once collected
             if (o->oInteractStatus & INT_STATUS_INTERACTED) {

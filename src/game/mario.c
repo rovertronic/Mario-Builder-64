@@ -34,7 +34,7 @@
 #include "menu/file_select.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "puppycamold.h"
+#include "emutest.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
 #include "rovent.h"
@@ -462,6 +462,7 @@ s32 mario_get_floor_class(struct MarioState *m) {
                 floorClass = SURFACE_CLASS_SLIPPERY;
                 break;
 
+            case SURFACE_SUPER_SLIPPERY:
             case SURFACE_VERY_SLIPPERY:
             case SURFACE_ICE:
             case SURFACE_HARD_VERY_SLIPPERY:
@@ -531,6 +532,7 @@ u32 get_terrain_sound_addend(TerrainData floorType) {
                 floorSoundType = 2;
                 break;
 
+            case SURFACE_SUPER_SLIPPERY:
             case SURFACE_VERY_SLIPPERY:
             case SURFACE_ICE:
             case SURFACE_HARD_VERY_SLIPPERY:
@@ -600,6 +602,10 @@ u32 mario_get_terrain_sound_addend(struct MarioState *m) {
  * Determines if Mario is facing "downhill."
  */
 s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
+    // Forces Mario to do a belly slide rather than a butt slide when on a super slippery floor, no matter his angle, so that the player can't jump.
+    if (m->floor && m->floor->type == SURFACE_SUPER_SLIPPERY)
+        return FALSE;
+
     s16 faceAngleYaw = m->faceAngle[1];
 
     // This is never used in practice, as turnYaw is
@@ -619,7 +625,7 @@ s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
 u32 mario_floor_is_slippery(struct MarioState *m) {
     f32 normY;
 
-    if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE  && m->floorNormal[1] < COS1) {
+    if (((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE  && m->floorNormal[1] < COS1) || (m->floor->type == SURFACE_SUPER_SLIPPERY)) {
         return TRUE;
     }
 
@@ -639,8 +645,8 @@ u32 mario_floor_is_slippery(struct MarioState *m) {
 s32 mario_floor_is_slope(struct MarioState *m) {
     f32 normY;
 
-    if ((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE
-        && m->floorNormal[1] < COS1) {
+    if (((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE
+        && m->floorNormal[1] < COS1) || (m->floor->type == SURFACE_SUPER_SLIPPERY)) {
         return TRUE;
     }
 
@@ -659,6 +665,8 @@ s32 mario_floor_is_slope(struct MarioState *m) {
  */
 s32 mario_floor_is_steep(struct MarioState *m) {
     f32 normY;
+    if (m->floor->type == SURFACE_SUPER_SLIPPERY)
+        return TRUE;
 
 #ifdef JUMP_KICK_FIX
     if (mario_get_floor_class(m) == SURFACE_CLASS_NOT_SLIPPERY) {
@@ -1383,7 +1391,7 @@ void update_mario_geometry_inputs(struct MarioState *m) {
     }
 
     m->ceilHeight = find_mario_ceil(m->pos, m->floorHeight, &m->ceil);
-    gasLevel = find_poison_gas_level(m->pos[0], m->pos[2]);
+    // gasLevel = find_poison_gas_level(m->pos[0], m->pos[2]);
     m->waterLevel = cmm_get_water_level(m->pos[0], m->pos[1], m->pos[2]);
 
     if (m->floor != NULL) {
@@ -1411,9 +1419,9 @@ void update_mario_geometry_inputs(struct MarioState *m) {
             m->input |= INPUT_IN_WATER;
         }
 
-        if (m->pos[1] < (gasLevel - 100.0f)) {
-            m->input |= INPUT_IN_POISON_GAS;
-        }
+        // if (m->pos[1] < (gasLevel - 100.0f)) {
+        //     m->input |= INPUT_IN_POISON_GAS;
+        // }
 
     } else {
         level_trigger_warp(m, WARP_OP_DEATH);
@@ -1934,10 +1942,9 @@ u32 star_radar_objects_to_track[] = {
 void switch_mario_costume(u8 CostumeId) {
     gMarioState->CostumeID = CostumeId;
 
-    u8 *Hatcol = segmented_to_virtual(&mario_hat_v4_lights);
-    u8 *Pantcol = segmented_to_virtual(&mario_button_v4_lights);
-    u8 *Shoecol = segmented_to_virtual(&mario_shoes_v4_lights);
-    // u8 *Tokencol = segmented_to_virtual(&token_token_lights);
+    u8 *Hatcol = segmented_to_virtual(&mat_mario_hat_v4);
+    u8 *Pantcol = segmented_to_virtual(&mat_mario_button_v4);
+    u8 *Shoecol = segmented_to_virtual(&mat_mario_shoes_v4);
 
     //Gamer Mario
     ColorShift += 0x200;
@@ -1949,64 +1956,58 @@ void switch_mario_costume(u8 CostumeId) {
     RainbowMario[5] = (sins(ColorShift - 21845)+1)*127;
 
     //HAT
-    Hatcol[8] = CostumeData[CostumeId][0];//Diffuse
-    Hatcol[9] = CostumeData[CostumeId][1];
-    Hatcol[10] = CostumeData[CostumeId][2];
+    Hatcol += 8; // skip pipesync
+    Hatcol[4] = CostumeData[CostumeId][0];//Diffuse
+    Hatcol[5] = CostumeData[CostumeId][1];
+    Hatcol[6] = CostumeData[CostumeId][2];
     Hatcol[12] = CostumeData[CostumeId][0];
     Hatcol[13] = CostumeData[CostumeId][1];
     Hatcol[14] = CostumeData[CostumeId][2];
 
-    Hatcol[0] = CostumeData[CostumeId][0]/2;//Ambient
-    Hatcol[1] = CostumeData[CostumeId][1]/2;
-    Hatcol[2] = CostumeData[CostumeId][2]/2;
-    Hatcol[4] = CostumeData[CostumeId][0]/2;
+    Hatcol += 16;
+
+    Hatcol[4] = CostumeData[CostumeId][0]/2;//Ambient
     Hatcol[5] = CostumeData[CostumeId][1]/2;
     Hatcol[6] = CostumeData[CostumeId][2]/2;
-
-    //TOKEN
-    // Tokencol[8] = CostumeData[gMarioState->TokenParam2][0];//Diffuse
-    // Tokencol[9] = CostumeData[gMarioState->TokenParam2][1];
-    // Tokencol[10] = CostumeData[gMarioState->TokenParam2][2];
-    // Tokencol[12] = CostumeData[gMarioState->TokenParam2][0];
-    // Tokencol[13] = CostumeData[gMarioState->TokenParam2][1];
-    // Tokencol[14] = CostumeData[gMarioState->TokenParam2][2];
-
-    // Tokencol[0] = CostumeData[gMarioState->TokenParam2][0]/2;//Ambient
-    // Tokencol[1] = CostumeData[gMarioState->TokenParam2][1]/2;
-    // Tokencol[2] = CostumeData[gMarioState->TokenParam2][2]/2;
-    // Tokencol[4] = CostumeData[gMarioState->TokenParam2][0]/2;
-    // Tokencol[5] = CostumeData[gMarioState->TokenParam2][1]/2;
-    // Tokencol[6] = CostumeData[gMarioState->TokenParam2][2]/2;
+    Hatcol[12] = CostumeData[CostumeId][0]/2;
+    Hatcol[13] = CostumeData[CostumeId][1]/2;
+    Hatcol[14] = CostumeData[CostumeId][2]/2;
 
     //JEANS
-    Pantcol[8] = CostumeData[CostumeId][3];//Diffuse
-    Pantcol[9] = CostumeData[CostumeId][4];
-    Pantcol[10] = CostumeData[CostumeId][5];
+    Pantcol += 8; // skip pipesync
+    Pantcol[4] = CostumeData[CostumeId][3];//Diffuse
+    Pantcol[5] = CostumeData[CostumeId][4];
+    Pantcol[6] = CostumeData[CostumeId][5];
     Pantcol[12] = CostumeData[CostumeId][3];
     Pantcol[13] = CostumeData[CostumeId][4];
     Pantcol[14] = CostumeData[CostumeId][5];
 
-    Pantcol[0] = CostumeData[CostumeId][3]/2;//Ambient
-    Pantcol[1] = CostumeData[CostumeId][4]/2;
-    Pantcol[2] = CostumeData[CostumeId][5]/2;
-    Pantcol[4] = CostumeData[CostumeId][3]/2;
+    Pantcol += 16;
+
+    Pantcol[4] = CostumeData[CostumeId][3]/2;//Ambient
     Pantcol[5] = CostumeData[CostumeId][4]/2;
     Pantcol[6] = CostumeData[CostumeId][5]/2;
+    Pantcol[12] = CostumeData[CostumeId][3]/2;
+    Pantcol[13] = CostumeData[CostumeId][4]/2;
+    Pantcol[14] = CostumeData[CostumeId][5]/2;
 
     //SHOES
-    Shoecol[8] = CostumeData[CostumeId][6];//Diffuse
-    Shoecol[9] = CostumeData[CostumeId][7];
-    Shoecol[10] = CostumeData[CostumeId][8];
+    Shoecol += 8; // skip pipesync
+    Shoecol[4] = CostumeData[CostumeId][6];//Diffuse
+    Shoecol[5] = CostumeData[CostumeId][7];
+    Shoecol[6] = CostumeData[CostumeId][8];
     Shoecol[12] = CostumeData[CostumeId][6];
     Shoecol[13] = CostumeData[CostumeId][7];
     Shoecol[14] = CostumeData[CostumeId][8];
 
-    Shoecol[0] = CostumeData[CostumeId][6]/2;//Ambient
-    Shoecol[1] = CostumeData[CostumeId][7]/2;
-    Shoecol[2] = CostumeData[CostumeId][8]/2;
-    Shoecol[4] = CostumeData[CostumeId][6]/2;
+    Shoecol += 16;
+
+    Shoecol[4] = CostumeData[CostumeId][6]/2;//Ambient
     Shoecol[5] = CostumeData[CostumeId][7]/2;
     Shoecol[6] = CostumeData[CostumeId][8]/2;
+    Shoecol[12] = CostumeData[CostumeId][6]/2;
+    Shoecol[13] = CostumeData[CostumeId][7]/2;
+    Shoecol[14] = CostumeData[CostumeId][8]/2;
 }
 
 u16 mario_decay;
@@ -2419,12 +2420,15 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     vec3f_copy(gMarioState->prevPos, gMarioState->pos);
 
     if (gMarioState->action) {
-        if (gMarioState->Cheats & (1 << 7)) {
-            if (gPlayer1Controller->buttonDown & U_JPAD && !(gPlayer1Controller->buttonDown & L_TRIG)) {
-                set_camera_mode(gMarioState->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
-                set_mario_action(gMarioState, ACT_DEBUG_FREE_MOVE, 0);
-            }
+#ifdef ENABLE_DEBUG_FREE_MOVE
+        if (
+            (gMarioState->controller->buttonDown & U_JPAD) &&
+            !(gMarioState->controller->buttonDown & L_TRIG)
+        ) {
+            set_camera_mode(gMarioState->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
+            set_mario_action(gMarioState, ACT_DEBUG_FREE_MOVE, 0);
         }
+#endif
 #ifdef ENABLE_CREDITS_BENCHMARK
         static s32 startedBenchmark = FALSE;
         if (!startedBenchmark) {
@@ -2729,12 +2733,9 @@ void init_mario_from_save_file(void) {
     gMarioState->spawnInfo = &gPlayerSpawnInfos[0];
     gMarioState->statusForCamera = &gPlayerCameraState[0];
     gMarioState->marioBodyState = &gBodyStates[0];
+    gMarioState->controller = &gControllers[0];
     gMarioState->animList = &gMarioAnimsBuf;
-    if (gIsConsole && __osControllerTypes[1] == CONT_TYPE_GCN) {
-        gMarioState->controller = &gControllers[1];
-    } else {
-        gMarioState->controller = &gControllers[0];
-    }
+    gMarioState->controller = &gControllers[0];
 
     gMarioState->numCoins = 0;
     gMarioState->lastStarCollected = 0;
@@ -2742,8 +2743,11 @@ void init_mario_from_save_file(void) {
     // gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     gMarioState->numKeys = 0;
-
-    gMarioState->numLives = DEFAULT_NUM_LIVES;
+#ifdef ENABLE_LIVES
+    gMarioState->numLives = ENABLE_LIVES;
+#else
+    gMarioState->numLives = 0;
+#endif
     gMarioState->health = 255 + (255*gMarioState->numMaxHP);
     gMarioState->numBadgePoints = gMarioState->numMaxFP;
 #ifdef BREATH_METER

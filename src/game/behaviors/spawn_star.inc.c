@@ -13,7 +13,7 @@ static struct ObjectHitbox sCollectStarHitbox = {
 };
 
 void bhv_collect_star_init(void) {
-    s8 starId = GET_BPARAM1(o->oBehParams);
+    u8 starId = GET_BPARAM1(o->oBehParams);
 
     if (cmm_play_stars_bitfield & ((u64)1 << starId)) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];

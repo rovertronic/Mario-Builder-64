@@ -3,6 +3,7 @@
 #include "sm64.h"
 #include "game_init.h"
 #include "main.h"
+#include "audio/external.h"
 #include "engine/math_util.h"
 #include "area.h"
 #include "level_update.h"
@@ -13,6 +14,7 @@
 #include "level_commands.h"
 #include "rumble_init.h"
 #include "config.h"
+#include "emutest.h"
 #ifdef SRAM
 #include "sram.h"
 #endif
@@ -22,10 +24,13 @@
 #include "game/rovent.h"
 #include "cursed_mirror_maker.h"
 
-#define ALIGN4(val) (((val) + 0x3) & ~0x3)
-
+#ifdef UNIQUE_SAVE_DATA
+u16 MENU_DATA_MAGIC = 0x4849;
+u16 SAVE_FILE_MAGIC = 0x4441;
+#else
 #define MENU_DATA_MAGIC 0x4849
 #define SAVE_FILE_MAGIC 0x4441
+#endif
 
 //STATIC_ASSERT(sizeof(struct SaveBuffer) == EEPROM_SIZE, "eeprom buffer size must match");
 
@@ -57,6 +62,8 @@ STATIC_ASSERT(ARRAY_COUNT(gLevelToCourseNumTable) == LEVEL_COUNT - 1,
               "change this array if you are adding levels");
 
 #ifdef EEP
+#include "vc_ultra.h"
+
 /**
  * Read from EEPROM to a given address.
  * The EEPROM address is computed using the offset of the destination address from gSaveBuffer.
@@ -76,7 +83,9 @@ static s32 read_eeprom_data(void *buffer, s32 size) {
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
-            status = osEepromLongRead(&gSIEventMesgQueue, offset, buffer, size);
+            status = (gEmulator & EMU_WIIVC)
+                   ? osEepromLongReadVC(&gSIEventMesgQueue, offset, buffer, size)
+                   : osEepromLongRead  (&gSIEventMesgQueue, offset, buffer, size);
 #if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
@@ -104,7 +113,9 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
-            status = osEepromLongWrite(&gSIEventMesgQueue, offset, buffer, size);
+            status = (gEmulator & EMU_WIIVC)
+                   ? osEepromLongWriteVC(&gSIEventMesgQueue, offset, buffer, size)
+                   : osEepromLongWrite  (&gSIEventMesgQueue, offset, buffer, size);
 #if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
@@ -352,9 +363,27 @@ void save_file_copy(s32 srcFileIndex, s32 destFileIndex) {
     save_file_do_save(destFileIndex);
 }
 
+#ifdef UNIQUE_SAVE_DATA
+// This should only be called once on boot and never again.
+static void calculate_unique_save_magic(void) {
+    u16 checksum = 0;
+
+    for (s32 i = 0; i < 20; i++) {
+        checksum += (u16) INTERNAL_ROM_NAME[i] << (i & 0x07);
+    }
+
+    MENU_DATA_MAGIC += checksum;
+    SAVE_FILE_MAGIC += checksum;
+}
+#endif
+
 void save_file_load_all(void) {
     s32 file;
     s32 validSlots;
+
+#ifdef UNIQUE_SAVE_DATA
+    calculate_unique_save_magic(); // This should only be called once on boot and never again.
+#endif
 
     gMainMenuDataModified = FALSE;
     gSaveFileModified = FALSE;
@@ -794,10 +823,6 @@ void save_file_set_cannon_unlocked(void) {
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= COURSE_FLAG_CANNON_UNLOCKED;
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;
-}
-
-void save_file_set_cap_pos(UNUSED s16 x, UNUSED s16 y, UNUSED s16 z) {
-
 }
 
 void save_file_set_stats() {

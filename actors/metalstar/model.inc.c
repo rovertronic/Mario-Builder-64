@@ -1,10 +1,6 @@
 // metalstar
 
 // 0x0302A6D8
-static const Lights1 metalstar_seg3_lights = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x0302A6F0
 ALIGNED8 static const u8 metalstar_seg3_texture_0302A6F0[] = {
@@ -68,10 +64,6 @@ const Gfx metalstar_seg3_dl_body[] = {
 };
 
 // 0x0302B908
-static const Lights1 metalstar_seg3_lights_2 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x0302B920
 static const Vtx metalstar_seg3_vertex_eyes[] = {

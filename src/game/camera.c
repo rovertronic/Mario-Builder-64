@@ -29,6 +29,7 @@
 #include "puppyprint.h"
 #include "rovent.h"
 #include "cursed_mirror_maker.h"
+#include "profiling.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -2289,12 +2290,12 @@ s16 update_default_camera(struct Camera *c) {
     }
 
     // Make Lakitu fly above the gas
-    gasHeight = find_poison_gas_level(cPos[0], cPos[2]);
-    if (gasHeight != FLOOR_LOWER_LIMIT) {
-        if ((gasHeight += 130.f) > c->pos[1]) {
-            c->pos[1] = gasHeight;
-        }
-    }
+    // gasHeight = find_poison_gas_level(cPos[0], cPos[2]);
+    // if (gasHeight != FLOOR_LOWER_LIMIT) {
+    //     if ((gasHeight += 130.f) > c->pos[1]) {
+    //         c->pos[1] = gasHeight;
+    //     }
+    // }
 
     if (sMarioCamState->action & ACT_FLAG_HANGING || sMarioCamState->action == ACT_RIDING_HOOT) {
         camFloorHeight = sMarioCamState->pos[1] + 400.f;
@@ -3005,63 +3006,12 @@ void update_lakitu(struct Camera *c) {
     }
 }
 
-
-void cutscene_2D(struct Camera *c) {
-    c->pos[0] = _2D_Camera_X+_2D_Camera_Offset_X;
-    c->focus[0] = _2D_Camera_X+_2D_Camera_Offset_X;
-    _2D_Camera_Offset_X = approach_f32_asymptotic(_2D_Camera_Offset_X, _2D_Camera_Offset_Target_X, 0.1f);
-    c->pos[1] = _2D_Camera_Y;
-    c->focus[1] = _2D_Camera_Y;
-    _2D_Camera_Y = approach_f32_asymptotic(_2D_Camera_Y, _2D_Camera_Y_Target, 0.2f);
-
-    //ingenious camera logic
-    if (gMarioState->pos[0] > _2D_Camera_X+100.0f){
-        _2D_Camera_X = gMarioState->pos[0]-100.0f;
-        _2D_Camera_Offset_Target_X = 150.0f;
-    }
-    if (gMarioState->pos[0] < _2D_Camera_X-100.0f){
-        _2D_Camera_X = gMarioState->pos[0]+100.0f;
-        _2D_Camera_Offset_Target_X = -150.0f;
-    }
-
-    if (TrackMario) {
-        _2D_Camera_Y_Target = gMarioState->pos[1];
-    }
-    if (gMarioState->pos[1] > gMarioState->floorHeight+500.0f) {
-        TrackMario = TRUE;
-    }
-    if (gMarioState->floorHeight == gMarioState->pos[1]) {
-        _2D_Camera_Y_Target = gMarioState->pos[1]+100.0f;
-        TrackMario = FALSE;
-    }
-    
-    c->pos[2] = gMarioState->pos[2]+500.0f;
-    c->focus[2] = gMarioState->pos[2];
-
-    if (gPlayer1Controller->buttonPressed & R_TRIG) {
-        gMarioState->_2D_Setting = (gMarioState->_2D_Setting+1)%3;
-        play_sound_rbutton_changed();
-    }
-
-    if (c->pos[1] - (gMarioState->_2D_FOV_PUBLIC*1200.0f) < -550.0f) {
-        c->pos[1] = -550.0f + (gMarioState->_2D_FOV_PUBLIC*1200.0f);
-        c->focus[1] = c->pos[1];
-    }
-    // if ((gCurrentArea->index == 4)&&(gCurrLevelNum != LEVEL_RR)) {
-    //     c->pos[0] = 0.0f;
-    //     c->focus[0] = c->pos[0];
-    // }
-
-    if ((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_CUTSCENE) {
-        //c->cutscene = 0;
-    }
-}
-
 /**
  * The main camera update function.
  * Gets controller input, checks for cutscenes, handles mode changes, and moves the camera
  */
 void update_camera(struct Camera *c) {
+    PROFILER_GET_SNAPSHOT_TYPE(PROFILER_DELTA_COLLISION);
     gCamera = c;
     update_camera_hud_status(c);
     if (c->cutscene == CUTSCENE_NONE
@@ -3175,11 +3125,7 @@ void update_camera(struct Camera *c) {
                     break;
 
                 case CAMERA_MODE_8_DIRECTIONS:
-                    if (gMarioState->_2D) {
-                        cutscene_2D(c);
-                    } else {
-                        mode_8_directions_camera(c);
-                    }
+                    mode_8_directions_camera(c);
                     break;
 
                 case CAMERA_MODE_RADIAL:
@@ -3309,6 +3255,7 @@ void update_camera(struct Camera *c) {
     }
 #endif
     gLakituState.lastFrameAction = sMarioCamState->action;
+    profiler_update(PROFILER_TIME_CAMERA, profiler_get_delta(PROFILER_DELTA_COLLISION) - first);
 }
 
 /**
@@ -4976,6 +4923,9 @@ void start_cutscene(struct Camera *c, u8 cutscene) {
  * @return the victory cutscene to use
  */
 s32 determine_dance_cutscene(UNUSED struct Camera *c) {
+#ifdef NON_STOP_STARS
+    return CUTSCENE_DANCE_DEFAULT;
+#else
     u8 cutscene = CUTSCENE_NONE;
     u8 cutsceneIndex = 0;
     u8 starIndex = (gLastCompletedStarNum - 1) / 2;
@@ -4998,6 +4948,7 @@ s32 determine_dance_cutscene(UNUSED struct Camera *c) {
     }
     cutscene = sDanceCutsceneTable[cutsceneIndex];
     return cutscene;
+#endif
 }
 
 /**
@@ -8452,13 +8403,13 @@ void cutscene_suffocation_fly_away(UNUSED struct Camera *c) {
  */
 void cutscene_suffocation_stay_above_gas(struct Camera *c) {
     cutscene_goto_cvar_pos(c, 400.f, 0x2800, 0x200, 0);
-    f32 gasLevel = find_poison_gas_level(sMarioCamState->pos[0], sMarioCamState->pos[2]);
+    // f32 gasLevel = find_poison_gas_level(sMarioCamState->pos[0], sMarioCamState->pos[2]);
 
-    if (gasLevel != FLOOR_LOWER_LIMIT) {
-        if ((gasLevel += 130.f) > c->pos[1]) {
-            c->pos[1] = gasLevel;
-        }
-    }
+    // if (gasLevel != FLOOR_LOWER_LIMIT) {
+    //     if ((gasLevel += 130.f) > c->pos[1]) {
+    //         c->pos[1] = gasLevel;
+    //     }
+    // }
 }
 
 /**
@@ -11184,7 +11135,9 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
             case CAM_FOV_APP_60:
                 approach_fov_60(marioState);
                 break;
-            //! No default case
+            default:
+                set_fov_45(marioState);
+                break;
         }
     }
 

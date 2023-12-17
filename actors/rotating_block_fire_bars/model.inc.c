@@ -4,10 +4,6 @@ ALIGNED8 static const u8 donkey_dick_texture[] = {
 };
 //electrician reference
 
-static const Lights1 pooplights = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 static const Vtx lll_seg7_vertex_07018708[] = {
     {{{  -165,      0,      0}, 0, {     0,    514}, {0x95, 0x1a, 0xc2, 0xff}}},
@@ -63,8 +59,8 @@ static const Gfx lll_seg7_dl_07018968[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, donkey_dick_texture),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&pooplights.l, 1),
-    gsSPLight(&pooplights.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(lll_seg7_vertex_07018708, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),

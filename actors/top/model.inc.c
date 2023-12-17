@@ -1,6 +1,3 @@
-Lights1 top_TextureTemplate_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Vtx top_topplane_mesh_vtx_0[4] = {
 	{{{-150, 150, 150},0, {-16, 1008},{0x0, 0x7F, 0x0, 0xFF}}},
@@ -19,7 +16,8 @@ Gfx mat_top_TextureTemplate[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(top_TextureTemplate_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
