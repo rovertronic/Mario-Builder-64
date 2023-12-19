@@ -2677,15 +2677,15 @@ void freecam_camera_main(void) {
     cmm_freecam_pitch += gPlayer1Controller->rawStickY*-4;
 
     if (gPlayer1Controller->buttonDown & U_CBUTTONS) {
-        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 30.0f );
-        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * 30.0f );
-        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 30.0f );
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 45.0f );
+        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * 45.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 45.0f );
     }
 
     if (gPlayer1Controller->buttonDown & D_CBUTTONS) {
-        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -30.0f );
-        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * -30.0f );
-        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -45.0f );
+        cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * -45.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * -45.0f );
     }
 
     if (gPlayer1Controller->buttonDown & R_CBUTTONS) {
