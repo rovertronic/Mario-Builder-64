@@ -129,9 +129,14 @@ void animate_list_update(f32 offsets[], s32 length, s32 selectedIndex) {
 }
 
 // First value is timer, second is direction
-s8 cmm_menu_scrolling[6][2] = {0};
+s8 cmm_menu_scrolling[15][2] = {0};
+// Controls saved scissor positions for nested scissoring
 u8 cmm_global_scissor = 0;
-u8 cmm_curr_settings_menu = 0;
+u8 cmm_global_scissor_top = 0;
+u8 cmm_global_scissor_bottom = SCREEN_HEIGHT;
+u8 cmm_curr_settings_menu = 0; // Index of current page in the Settings menu
+u8 cmm_curr_custom_tab = 0; // Index of current tab in Edit Custom Theme menu
+u8 cmm_custom_theme_menu_open = FALSE; // If custom theme menu is currently in use
 
 void full_menu_reset() {
     bzero(cmm_menu_button_vels, sizeof(cmm_menu_button_vels));
@@ -142,10 +147,14 @@ void full_menu_reset() {
     cmm_menu_end_timer = -1;
     cmm_menu_going_back = 1;
     cmm_curr_settings_menu = 0;
+    cmm_curr_custom_tab = 0;
     cmm_global_scissor = 0;
+    cmm_global_scissor_top = 0;
+    cmm_global_scissor_bottom = SCREEN_HEIGHT;
     cmm_menu_index = 0;
     cmm_tip_timer = 0;
     cmm_topleft_timer = 0;
+    cmm_custom_theme_menu_open = FALSE;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -191,16 +200,26 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
     }
 }
 
-// Similar to above, but halts once it reaches a standstill
-void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 beginVel, f32 beginAccel, u32 isBegin) {
-    animate_menu_generic(vels, beginPos, beginVel, beginAccel, isBegin);
-    
-    if ((beginVel > 0.f && vels[1] < 0.f) || (beginVel < 0.f && vels[1] > 0.f)) {
+// Ease-in animation to a target position
+void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 targetPos, f32 multiplier, u32 isBegin) {
+    if (isBegin) {
+        vels[0] = beginPos;
         vels[1] = 0.f;
         vels[2] = 0.f;
     }
-}
+    f32 remainingDist = targetPos - vels[0];
+    vels[0] += remainingDist * multiplier;
 
+    if (remainingDist > 0.f) {
+        if (vels[0] > targetPos-1.f) {
+            vels[0] = targetPos;
+        }
+    } else {
+        if (vels[0] < targetPos+1.f) {
+            vels[0] = targetPos;
+        }
+    }
+}
 
 // Generic function for handling the animation of a list of strings
 // that can be cycled through in either direction, using a scissor
@@ -229,8 +248,8 @@ s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
     }
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE,
-        MAX(               cmm_global_scissor, x-width+5), 0,
-        MIN(SCREEN_WIDTH - cmm_global_scissor, x+width-7), SCREEN_HEIGHT);
+        MAX(               cmm_global_scissor, x-width+5), cmm_global_scissor_top,
+        MIN(SCREEN_WIDTH - cmm_global_scissor, x+width-7), cmm_global_scissor_bottom);
     
     print_maker_string_ascii_centered(x + xOffset, y, cur, highlight);
     if (leftX > x - width * 2) {
@@ -239,7 +258,7 @@ s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
         print_maker_string_ascii_centered(rightX, y, next, highlight);
     }
 
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, 0, SCREEN_WIDTH - cmm_global_scissor, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, cmm_global_scissor_top, SCREEN_WIDTH - cmm_global_scissor, cmm_global_scissor_bottom);
 
     if (scroll[0] == 0) {
         if (dir == -1) {
@@ -291,13 +310,39 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
     }
 }
 
+#define SETTINGS_MENU_SCROLL_WIDTH 120
+typedef void (*cmm_page_display_func)(f32 xPos, f32 yPos);
+
+void cmm_menu_page_animation(f32 yoff,
+                             cmm_page_display_func prevPage, cmm_page_display_func curPage, cmm_page_display_func nextPage,
+                             s8 scroll[2]) {
+    s32 leftX = -SETTINGS_MENU_SCROLL_WIDTH * 2;
+    s32 rightX = SETTINGS_MENU_SCROLL_WIDTH * 2;
+    s32 xOffset = 0;
+
+    if (scroll[0] > 0) {
+        xOffset = (scroll[0] * scroll[1] * SETTINGS_MENU_SCROLL_WIDTH * 2) / 5;
+        leftX += xOffset;
+        rightX += xOffset;
+    }
+
+    if (leftX > -SETTINGS_MENU_SCROLL_WIDTH * 2) {
+        prevPage(leftX, yoff);
+
+    } else if (rightX < SETTINGS_MENU_SCROLL_WIDTH * 2) {
+        nextPage(rightX, yoff);
+    }
+
+    curPage(xOffset, yoff);
+}
+
 void cmm_render_topleft_text(void) {
     if (cmm_topleft_timer > 0) {
 
         if (cmm_topleft_timer > 30) {
-            animate_menu_ease_in(cmm_topleft_vels, 280.f, -15.f, 2.f, cmm_topleft_timer == cmm_topleft_max_timer);
+            animate_menu_ease_in(cmm_topleft_vels, 250.f, 215.f, 0.4f, cmm_topleft_timer == cmm_topleft_max_timer);
         } else {
-            animate_menu_generic(cmm_topleft_vels, cmm_topleft_vels[0], 0.f, 2.f, cmm_topleft_timer == 30);
+            animate_menu_generic(cmm_topleft_vels, 215.f, 0.f, 2.f, cmm_topleft_timer == 30);
         }
 
         print_maker_string_ascii(15,cmm_topleft_vels[0],cmm_topleft_message,cmm_topleft_is_tip ? 0 : 4);
@@ -325,6 +370,24 @@ char *cmm_get_waterlevel_name(s32 index, char *buffer) {
     sprintf(buffer, "Y: %d", index);
     return buffer;
 }
+char *cmm_get_category(s32 index, UNUSED char *buffer) {
+    return cmm_matlist_names[index];
+}
+char *cmm_get_custom_mat(s32 index, char *buffer) {
+    s32 category = *cmm_settings_mat_selector[0].value; // very hacky lmfao
+    return cmm_mat_table[cmm_matlist[category] + index].name;
+}
+
+#define CMM_NUM_CUSTOM_TABS 14
+char *cmm_custom_get_menu_name(s32 index) {
+    if (index < 10) return cmm_theme_table[CMM_THEME_CUSTOM].mats[index].name;
+    switch (index - 10) {
+        case 0: return "Poles";
+        case 1: return "Fences";
+        case 2: return "Iron Meshes";
+        case 3: return "Water";
+    }
+}
 
 // Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq
 void set_album_and_song_from_seq(void) {
@@ -337,7 +400,7 @@ void set_album_and_song_from_seq(void) {
             return;
         }
         song -= cmm_settings_music_albums[i].size;
-    } while (++i < sizeof(cmm_music_album_string_table));
+    } while (++i < ARRAY_COUNT(cmm_music_album_string_table));
 }
 // Set cmm_lopt_seq from cmm_lopt_seq_album and cmm_lopt_seq_song
 void set_seq_from_album_and_song(void) {
@@ -349,19 +412,80 @@ void set_seq_from_album_and_song(void) {
             return;
         }
         cmm_lopt_seq += cmm_settings_music_albums[i].size;
-    } while (++i < sizeof(cmm_music_album_string_table));
+    } while (++i < ARRAY_COUNT(cmm_music_album_string_table));
+}
+
+// Set category and material index from a material enum
+void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
+    u8 i = 1;
+    do {
+        if (mat < cmm_matlist[i]) {
+            *category = i-1;
+            *matIndex = mat - cmm_matlist[i-1];
+            return;
+        }
+    } while (++i < ARRAY_COUNT(cmm_matlist));
 }
 
 void music_category_changed(void) {
     cmm_lopt_seq_song = 0;
-    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[1], sizeof(struct cmm_settings_button));
     song_changed();
+    cmm_set_data_overrides();
 }
 void song_changed(void) {
     set_seq_from_album_and_song();
     stop_background_music(get_current_background_music());
     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
 }
+
+void cmm_set_data_overrides(void) {
+    // Floor options
+    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
+    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = numFloors + 1;
+    if (cmm_lopt_plane > numFloors) {
+        cmm_lopt_plane = numFloors;
+    }
+
+    // Music options
+    set_album_and_song_from_seq();
+    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
+
+    // Secret unlock
+    if (cmm_lopt_secret) {
+        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
+    } else {
+        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table) - 1;
+    }
+
+    // Custom theme
+    if (cmm_lopt_theme == CMM_THEME_CUSTOM) {
+        cmm_settings_menu_lengths[1] = ARRAY_COUNT(cmm_settings_terrain_buttons) + 1; // Terrain menu length for selecting
+    } else {
+        cmm_settings_menu_lengths[1] = ARRAY_COUNT(cmm_settings_terrain_buttons);
+    }
+
+    // Theme-specific data
+    switch(cmm_lopt_game) {
+        case CMM_GAME_BTCM:
+            bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
+            cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
+            cmm_settings_menus[0] = draw_cmm_settings_general;
+            break;
+        case CMM_GAME_VANILLA:
+            bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
+            cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
+            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
+            cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
+            break;
+    }
+}
+
+#define SCROLL_CUSTOM_TABS 12
+#define SCROLL_CUSTOM 13
+#define SCROLL_SETTINGS 14
+#define CMM_SETTINGS_MENU_IS_STILL  ((cmm_menu_scrolling[SCROLL_SETTINGS][0] == 0) && (cmm_menu_start_timer == -1))
+#define CMM_CUSTOM_THEME_CLOSED ((cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) && !cmm_custom_theme_menu_open)
 
 void draw_cmm_settings_general(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons), cmm_menu_index);
@@ -379,17 +503,199 @@ void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
     }
 }
 
+#define CUSTOM_MENU_SCROLL_HEIGHT 105
+
+s32 terrain_menu_handle_scroll() {
+    s32 yOffset = (cmm_custom_theme_menu_open ? CUSTOM_MENU_SCROLL_HEIGHT : 0);
+    if (cmm_menu_scrolling[SCROLL_CUSTOM][0] > 0) {
+        cmm_menu_scrolling[SCROLL_CUSTOM][0]--;
+        yOffset += (cmm_menu_scrolling[SCROLL_CUSTOM][0] * cmm_menu_scrolling[SCROLL_CUSTOM][1] * CUSTOM_MENU_SCROLL_HEIGHT) / 8;
+    }
+    return yOffset;
+}
+
+void prepare_block_draw(f32 xpos, f32 ypos) {
+    u16 perspNorm;
+    Mat4 mtx1, mtx2;
+    Vec3f pos;
+    Vec3s rot;
+
+    gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+
+    Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
+    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 16384, 1.f);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    vec3_set(pos, 0, 0, -1500);
+    vec3_set(rot, 0, (s16)(0x200*gGlobalTimer), 0);
+    mtxf_rotate_zxy_and_translate(mtx1, gVec3fZero, rot);
+    vec3_set(rot, 0x1800, 0, 0);
+    mtxf_rotate_zxy_and_translate(mtx2, pos, rot);
+    mtxf_mul(mtx1, mtx1, mtx2);
+    mtxf_to_mtx(mtx, mtx1);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+
+    cmm_curr_gfx = preview_gfx;
+    cmm_curr_vtx = preview_vtx;
+    cmm_gfx_index = 0;
+    cmm_building_collision = FALSE;
+    cmm_growth_render_type = 0;
+    cmm_render_culling_off = TRUE;
+    cmm_curr_mat_has_topside = FALSE;
+    cmm_use_alt_uvs = FALSE;
+    cmm_render_flip_normals = FALSE;
+}
+
+void finish_block_draw() {
+    cmm_render_culling_off = FALSE;
+    // This code is so fucking disgusting
+    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
+        // Offset all vertices
+        preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
+        preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
+    }
+
+    gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
+
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    create_dl_ortho_matrix();
+}
+
+void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat) {
+    prepare_block_draw(xpos, ypos);
+
+    s8 pos2[3];
+    vec3_set(pos2,32,0,32);
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[mat].gfx);
+    process_tile(pos2, &cmm_terrain_fullblock, 0);
+    display_cached_tris();
+    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+
+    finish_block_draw();
+}
+
+u8 tmpmaterial = 5;
+
+void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
+    u8 tmpCategory;
+    u8 tmpMaterial;
+    get_category_and_mat_from_mat(&tmpCategory, &tmpMaterial, *outputVar);
+    u8 oldCategory = tmpCategory;
+
+    cmm_settings_mat_selector[0].value = &tmpCategory;
+    cmm_settings_mat_selector[1].value = &tmpMaterial;
+    cmm_settings_mat_selector[1].size = cmm_matlist[tmpCategory+1] - cmm_matlist[tmpCategory];
+
+    print_maker_string_ascii(20+3*cmm_menu_list_offsets[startIndex], yPos, "Category:", (startIndex == cmm_menu_index));
+    cmm_menu_option_animation(150+3*cmm_menu_list_offsets[startIndex], yPos, 50, &cmm_settings_mat_selector[0], startIndex, cmm_joystick);
+
+    if (tmpCategory != oldCategory) {
+        tmpMaterial = 0;
+    }
+
+    print_maker_string_ascii(20+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, "Material:", (startIndex+1 == cmm_menu_index));
+    cmm_menu_option_animation(150+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, 50, &cmm_settings_mat_selector[1], startIndex + 1, cmm_joystick);
+
+    *outputVar = cmm_matlist[tmpCategory] + tmpMaterial;
+}
+
+// The amount to offset cmm_menu_index by when in the custom theme menu
+#define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_terrain_buttons) + 1)
+
+void draw_cmm_settings_custom_theme(f32 yoff) {
+    s32 dir = 0;
+    if (cmm_custom_theme_menu_open) {
+        if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+        if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+    }
+
+    s32 prevMenu = (cmm_curr_custom_tab - 1 + CMM_NUM_CUSTOM_TABS) % CMM_NUM_CUSTOM_TABS;
+    s32 nextMenu = (cmm_curr_custom_tab + 1) % CMM_NUM_CUSTOM_TABS;
+    char *cur = cmm_custom_get_menu_name(cmm_curr_custom_tab);
+    char *prev = cmm_custom_get_menu_name(prevMenu);
+    char *next = cmm_custom_get_menu_name(nextMenu);
+    print_maker_string_ascii_centered(80, yoff + 185, "< L", FALSE);
+    print_maker_string_ascii_centered(240, yoff + 185, "R >", FALSE);
+    s32 result = cmm_menu_option_sidescroll(160, 185+yoff, 70,
+                                prev, cur, next,
+                                cmm_menu_scrolling[SCROLL_CUSTOM_TABS], FALSE, dir); 
+
+    // Change selected menu if it was switched
+    if (result) {
+        cmm_curr_custom_tab = (result == 1 ? nextMenu : prevMenu);
+        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    }
+    // Reset index halfway through animation
+    if (cmm_menu_scrolling[SCROLL_CUSTOM_TABS][0] == 2) {
+        cmm_menu_index = CUSTOM_INDEX_OFFSET;
+    }
+
+    custom_theme_draw_mat_selector(160 + yoff, CUSTOM_INDEX_OFFSET, &tmpmaterial);
+    print_maker_string_ascii(55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yoff, "Enable Top Material...", (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
+    custom_theme_draw_mat_selector(112 + yoff, CUSTOM_INDEX_OFFSET+3, &tmpmaterial);
+    custom_theme_draw_block(-100, yoff + 10, tmpmaterial);
+}
+
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_terrain_buttons), cmm_menu_index);
+    s32 oldtheme = cmm_lopt_theme;
+    u8 beginScrollAnim = FALSE;
+
+    if (cmm_custom_theme_menu_open) {
+        cmm_menu_index += CUSTOM_INDEX_OFFSET;
+    }
+
+    animate_list_update(cmm_menu_list_offsets, 10, cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
         print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_terrain_buttons[i],i,cmm_joystick);
     }
 
+    if (cmm_lopt_theme == CMM_THEME_CUSTOM) {
+        animate_menu_ease_in(cmm_menu_button_vels[0], 0.f, 30.f, 0.4f, oldtheme != CMM_THEME_CUSTOM);
+    } else {
+        animate_menu_generic(cmm_menu_button_vels[0], 30.f, 0.f, -2.f, oldtheme == CMM_THEME_CUSTOM);
+    }
+    cmm_set_data_overrides();
+
+    s32 index = ARRAY_COUNT(cmm_settings_terrain_buttons);
+    s32 customThemeY = 120-(index*16) + cmm_menu_button_vels[0][0];
+    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[index],customThemeY + yoff,"Edit Custom Theme...",(index == cmm_menu_index));
+    draw_cmm_settings_custom_theme(yoff - CUSTOM_MENU_SCROLL_HEIGHT);
+
+    if ((cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) && CMM_SETTINGS_MENU_IS_STILL) {
+        if (!cmm_custom_theme_menu_open) {
+            if (cmm_menu_index == index) {
+                if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+                    // Open custom theme menu
+                    cmm_custom_theme_menu_open = TRUE;
+                    cmm_menu_scrolling[SCROLL_CUSTOM][0] = 8;
+                    cmm_menu_scrolling[SCROLL_CUSTOM][1] = -1;
+                    cmm_menu_index = CUSTOM_INDEX_OFFSET;
+                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                }
+            }
+        } else {
+            if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                cmm_custom_theme_menu_open = FALSE;
+                cmm_menu_scrolling[SCROLL_CUSTOM][0] = 8;
+                cmm_menu_scrolling[SCROLL_CUSTOM][1] = 1;
+                cmm_menu_index = index;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            }
+        }
+    }
+
     if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS) == (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS))) {
         cmm_lopt_secret = TRUE;
-        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
+        cmm_set_data_overrides();
         play_puzzle_jingle();
+    }
+
+    if (cmm_custom_theme_menu_open) {
+        cmm_menu_index -= CUSTOM_INDEX_OFFSET;
     }
 }
 
@@ -415,7 +721,7 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
     print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[3],150-(3*16)+yoff,cmm_settings_system_buttons[3],(3==cmm_menu_index ? 1 : 4));
 
-    if ((gPlayer1Controller->buttonPressed & A_BUTTON) && cmm_menu_scrolling[5][0] == 0 && cmm_menu_start_timer == -1) {
+    if ((gPlayer1Controller->buttonPressed & A_BUTTON) && CMM_SETTINGS_MENU_IS_STILL) {
         switch (cmm_menu_index) {
             case 0: // save and quit
                 if (mount_success == FR_OK) {
@@ -443,36 +749,15 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     }
 }
 
-#define SETTINGS_MENU_SCROLL_WIDTH 120
 #define SETTINGS_MENU_COUNT ARRAY_COUNT(cmm_settings_menus)
 
 void draw_cmm_settings_menu(f32 yoff) {
-    cmm_global_scissor = 20;
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, 0, SCREEN_WIDTH - cmm_global_scissor, SCREEN_HEIGHT);
+    u8 prevIndex = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
+    u8 nextIndex = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
 
-    s32 leftX = -SETTINGS_MENU_SCROLL_WIDTH * 2;
-    s32 rightX = SETTINGS_MENU_SCROLL_WIDTH * 2;
-    s32 xOffset = 0;
-
-    if (cmm_menu_scrolling[5][0] > 0) { // Hardcoded to 5 for the top scroll itself
-        xOffset = (cmm_menu_scrolling[5][0] * cmm_menu_scrolling[5][1] * SETTINGS_MENU_SCROLL_WIDTH * 2) / 5;
-        leftX += xOffset;
-        rightX += xOffset;
-    }
-
-    if (leftX > -SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        u8 prevIndex = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
-        cmm_settings_menus[prevIndex](leftX, yoff);
-
-    } else if (rightX < SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        u8 nextIndex = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
-        cmm_settings_menus[nextIndex](rightX, yoff);
-    }
-
-    cmm_settings_menus[cmm_curr_settings_menu](xOffset, yoff);
-
-    cmm_global_scissor = 0;
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    cmm_menu_page_animation(yoff,
+        cmm_settings_menus[prevIndex], cmm_settings_menus[cmm_curr_settings_menu], cmm_settings_menus[nextIndex],
+        cmm_menu_scrolling[SCROLL_SETTINGS]);
 }
 
 void draw_cmm_menu(void) {
@@ -515,12 +800,12 @@ void draw_cmm_menu(void) {
         case CMM_MAKE_TOOLBOX:
             // In/out animation
             if (cmm_menu_start_timer != -1) {
-                animate_menu_ease_in(cmm_menu_title_vels, 150.f, -33.f, 4.f, cmm_menu_start_timer == 0);
+                animate_menu_ease_in(cmm_menu_title_vels, 150.f, -10.f, 0.35f, cmm_menu_start_timer == 0);
                 if (cmm_menu_start_timer++ > 10) {
                     cmm_menu_start_timer = -1;
                 }
             } else if (cmm_menu_end_timer != -1) {
-                animate_menu_generic(cmm_menu_title_vels, cmm_menu_title_vels[0], 0.f, 4.f, cmm_menu_end_timer == 0);
+                animate_menu_generic(cmm_menu_title_vels, -10.f, 0.f, 4.f, cmm_menu_end_timer == 0);
                 cmm_menu_end_timer++;
                 cmm_joystick = 0;
             } else {
@@ -592,16 +877,18 @@ void draw_cmm_menu(void) {
         case CMM_MAKE_SETTINGS:
             // In/out animation
             if (cmm_menu_start_timer != -1) {
-                animate_menu_ease_in(cmm_menu_title_vels, 150.f, -33.f, 4.f, cmm_menu_start_timer == 0);
+                animate_menu_generic(cmm_menu_button_vels[0], 30.f, 0, 0, cmm_lopt_theme == CMM_THEME_CUSTOM); // mega hacky
+                animate_menu_ease_in(cmm_menu_title_vels, 150.f, -10.f, 0.35f, cmm_menu_start_timer == 0);
                 if (cmm_menu_start_timer++ > 10) {
                     cmm_menu_start_timer = -1;
                 }
             } else if (cmm_menu_end_timer != -1) {
-                animate_menu_generic(cmm_menu_title_vels, cmm_menu_title_vels[0], 0.f, 4.f, cmm_menu_end_timer == 0);
+                animate_menu_generic(cmm_menu_title_vels, -10.f, 0.f, 4.f, cmm_menu_end_timer == 0);
                 cmm_menu_end_timer++;
                 cmm_joystick = 0;
             } else {
-                if (gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
+                if ((gPlayer1Controller->buttonPressed & START_BUTTON) ||
+                    ((gPlayer1Controller->buttonPressed & B_BUTTON) && !cmm_custom_theme_menu_open)) {
                     cmm_menu_end_timer = 0;
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 }
@@ -615,13 +902,19 @@ void draw_cmm_menu(void) {
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
             // Level portrait
-            create_dl_translation_matrix(MENU_MTX_PUSH, 290, 200+yOff, 0);
+            create_dl_translation_matrix(MENU_MTX_PUSH, 290, 210+yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
             gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
+            cmm_global_scissor = 15;
+            cmm_global_scissor_top = MAX(0, 15 - yOff);
+            cmm_global_scissor_bottom = MAX(0, 145 - yOff);
+            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, cmm_global_scissor_top, SCREEN_WIDTH - cmm_global_scissor, cmm_global_scissor_bottom);
+            yOff += terrain_menu_handle_scroll();
+
             // Level name
-            print_maker_string_ascii(15,210+yOff,cmm_file_info.fname,FALSE);
+            print_maker_string_ascii_centered(SCREEN_WIDTH/2,210+yOff,cmm_file_info.fname,FALSE);
 
             switch(cmm_joystick) {
                 case 2:
@@ -633,6 +926,7 @@ void draw_cmm_menu(void) {
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
             }
+
             cmm_menu_index = (cmm_menu_index + cmm_settings_menu_lengths[cmm_curr_settings_menu]) % cmm_settings_menu_lengths[cmm_curr_settings_menu];
 
             // Begin rendering top header
@@ -644,14 +938,16 @@ void draw_cmm_menu(void) {
 
             // Scroll input
             s32 dir = 0;
-            if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
-            if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+            if (CMM_CUSTOM_THEME_CLOSED) {
+                if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+                if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+            }
 
             print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
             print_maker_string_ascii_centered(240, yOff + 185, "R >", FALSE);
             s32 result = cmm_menu_option_sidescroll(160, 185+yOff, 70,
                                        prev, cur, next,
-                                       cmm_menu_scrolling[5], FALSE, dir); 
+                                       cmm_menu_scrolling[SCROLL_SETTINGS], FALSE, dir); 
 
             // Change selected menu if it was switched
             if (result) {
@@ -659,12 +955,16 @@ void draw_cmm_menu(void) {
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             // Reset index halfway through animation
-            if (cmm_menu_scrolling[5][0] == 2) {
+            if (cmm_menu_scrolling[SCROLL_SETTINGS][0] == 2) {
                 cmm_menu_index = 0;
             }
 
             // Draw menu + scroll
             draw_cmm_settings_menu(yOff);
+            cmm_global_scissor = 0;
+            cmm_global_scissor_top = 0;
+            cmm_global_scissor_bottom = SCREEN_HEIGHT;
+            gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             break;
 
         case CMM_MAKE_TRAJECTORY:

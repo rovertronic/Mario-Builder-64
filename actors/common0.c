@@ -15,6 +15,7 @@ UNUSED static const u64 binid_0 = 0;
 #include "amp/anims/table.inc.c"
 UNUSED static const u64 binid_1 = 1;
 
+/**
 #include "cannon_lid/model.inc.c"
 #include "cannon_lid/collision.inc.c"
 UNUSED static const u64 binid_2 = 2;
@@ -24,6 +25,7 @@ UNUSED static const u64 binid_3 = 3;
 
 #include "cannon_barrel/model.inc.c"
 UNUSED static const u64 binid_4 = 4;
+**/
 
 #include "chuckya/model.inc.c"
 #include "chuckya/anims/data.inc.c"
@@ -50,11 +52,6 @@ UNUSED static const u64 binid_9 = 9;
 #include "breakable_box/collision.inc.c"
 UNUSED static const u64 binid_10 = 10;
 
-UNUSED static const u64 binid_11 = 11;
-
-#include "exclamation_box/model.inc.c"
-UNUSED static const u64 binid_12 = 12;
-
 #include "goomba/model.inc.c"
 #include "goomba/anims/data.inc.c"
 #include "goomba/anims/table.inc.c"
@@ -63,21 +60,20 @@ UNUSED static const u64 binid_13 = 13;
 #include "bobomb/model.inc.c"
 #include "bobomb/anims/data.inc.c"
 #include "bobomb/anims/table.inc.c"
-UNUSED static const u64 binid_14 = 14;
+#include "bowling_ball/model.inc.c"
 
+/**
 #include "metal_box/model.inc.c"
 #include "metal_box/collision.inc.c"
 UNUSED static const u64 binid_15 = 15;
 
 #include "exclamation_box_outline/model.inc.c"
-#include "exclamation_box_outline/collision.inc.c"
 UNUSED static const u64 binid_16 = 16;
 
 #include "test_platform/model.inc.c"
 #include "test_platform/collision.inc.c"
 UNUSED static const u64 binid_17 = 17;
+**/
+#include "exclamation_box_outline/collision.inc.c"
 
 #include "koopa_shell/model.inc.c"
-UNUSED static const u64 binid_18 = 18;
-
-#include "vanilla_exclamation_box/model.inc.c"

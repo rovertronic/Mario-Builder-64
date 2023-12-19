@@ -42,14 +42,12 @@ extern Vec3s gVec3sOne;
  * exploits array sizes for range analysis-based optimizations as well).
  * Thus, for non-IDO compilers we use the standard-compliant version.
  */
-extern f32 gSineTable[];
-#define gCosineTable (gSineTable + 0x400)
 
-#define sins(x) gSineTable[  (u16) (x) >> 4]
-#define coss(x) gCosineTable[(u16) (x) >> 4]
+extern f32 sins(s16 angle);
+extern f32 coss(s16 angle);
+
 #define tans(x) (sins(x) / coss(x))
 #define cots(x) (coss(x) / sins(x))
-#define atans(x) gArctanTable[(s32)((((x) * 1024) + 0.5f))] // is this correct? used for atan2_lookup
 
 #define RAD_PER_DEG (M_PI / 180.0f)
 #define DEG_PER_RAD (180.0f / M_PI)
@@ -451,27 +449,13 @@ extern f32 gSineTable[];
 
 #define ABS(x)  (((x) > 0) ? (x) : -(x))
 
-/// From Wiseguy
-ALWAYS_INLINE s32 roundf(f32 in) {
-    f32 tmp;
-    s32 out;
-    __asm__("round.w.s %0,%1" : "=f" (tmp) : "f" (in ));
-    __asm__("mfc1      %0,%1" : "=r" (out) : "f" (tmp));
-    return out;
-}
+extern s32 roundf(f32);
 // backwards compatibility
 #define round_float(in) roundf(in)
 
-/// Absolute value
-ALWAYS_INLINE f32 absf(f32 in) {
-    f32 out;
-    __asm__("abs.s %0,%1" : "=f" (out) : "f" (in));
-    return out;
-}
-ALWAYS_INLINE s32 absi(s32 in) {
-    return ABS(in);
-}
-#define abss absi
+#define absf ABS
+#define absi ABS
+#define abss ABS
 
 #define FLT_IS_NONZERO(x) (absf(x) > NEAR_ZERO)
 
@@ -516,7 +500,6 @@ void vec3i_sub (Vec3i dest, const Vec3i a               );
 void vec3s_sub (Vec3s dest, const Vec3s a               );
 f32 vec3f_length(Vec3f a);
 f32 lerp(f32 a, f32 b, f32 f);
-f32 smoothstep(f32 edge0, f32 edge1, f32 x);
 void vec3f_diff(Vec3f dest, const Vec3f a, const Vec3f b);
 void vec3i_diff(Vec3i dest, const Vec3i a, const Vec3i b);
 void vec3s_diff(Vec3s dest, const Vec3s a, const Vec3s b);
@@ -546,7 +529,7 @@ void mtxf_rotate_xyz_and_translate(Mat4 dest, Vec3f trans, Vec3s rot);
 void mtxf_rotate_zxy_and_translate_and_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src);
 void mtxf_rotate_xyz_and_translate_and_mul(Vec3s rot, Vec3f trans, Mat4 dest, Mat4 src);
 void mtxf_billboard(Mat4 dest, Mat4 mtx, Vec3f position, Vec3f scale, s16 angle);
-void mtxf_shadow(Mat4 dest, Mat4 src, Vec3f upDir, Vec3f pos, Vec3f scale, s16 yaw);
+void mtxf_shadow(Mat4 dest, Vec3f upDir, Vec3f pos, Vec3f scale, s16 yaw);
 void mtxf_align_terrain_normal(Mat4 dest, Vec3f upDir, Vec3f pos, s16 yaw);
 void mtxf_align_terrain_triangle(Mat4 mtx, Vec3f pos, s16 yaw, f32 radius);
 void mtxf_mul(Mat4 dest, Mat4 a, Mat4 b);
@@ -563,7 +546,6 @@ void mtxf_rotate_xy(Mtx *mtx, s16 angle);
 void linear_mtxf_mul_vec3f(Mat4 m, Vec3f dst, Vec3f v);
 void linear_mtxf_mul_vec3f_and_translate(Mat4 m, Vec3f dst, Vec3f v);
 void linear_mtxf_transpose_mul_vec3f(Mat4 m, Vec3f dst, Vec3f v);
-void get_pos_from_transform_mtx(Vec3f dest, Mat4 objMtx, Mat4 camMtx);
 
 void vec2f_get_lateral_dist(                   Vec2f from, Vec2f to,            f32 *lateralDist                      );
 void vec3f_get_lateral_dist(                   Vec3f from, Vec3f to,            f32 *lateralDist                      );
@@ -609,8 +591,38 @@ f32 atan2f(f32 a, f32 b);
 void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);
 void anim_spline_init(Vec4s *keyFrames);
 s32  anim_spline_poll(Vec3f result);
-void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
+f32 find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
 u8 count_u16_bits(u16 bitfield);
 u8 count_u32_bits(u32 bitfield);
+
+ALWAYS_INLINE f32 remap(f32 x, f32 fromA, f32 toA, f32 fromB, f32 toB) {
+    return (x - fromA) / (toA - fromA) * (toB - fromB) + fromB;
+}
+
+ALWAYS_INLINE f32 lerpf(f32 from, f32 to, f32 amount) {
+    return (from + (to - from) * amount);
+}
+
+ALWAYS_INLINE f32 to_smoothstop(f32 x) {
+    f32 sq = sqr(1.0f - x);
+    return 1.0f - sq;
+}
+
+// Commonly known as ease-in
+ALWAYS_INLINE f32 smoothstart(f32 from, f32 to, f32 amount) {
+    return lerpf(from, to, sqr(amount));
+}
+
+// Commonly known as ease-out
+ALWAYS_INLINE f32 smoothstop(f32 from, f32 to, f32 amount) {
+    return lerpf(from, to, to_smoothstop(amount));
+}
+
+// Commonly known as ease-in-out
+ALWAYS_INLINE f32 smoothstep(f32 from, f32 to, f32 amount) {
+    amount = sqr(amount) * (3.0f - 2.0f * amount);
+
+    return lerpf(from, to, amount);
+}
 
 #endif // MATH_UTIL_H

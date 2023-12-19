@@ -184,16 +184,24 @@ u8 sInertiaFirstFrame = FALSE;
  * Apply inertia based on Mario's last platform.
  */
 static void apply_mario_inertia(void) {
+#ifdef MARIO_INERTIA_UPWARD
+    // On the first frame of leaving the ground, boost Mario's y velocity
+    if (sInertiaFirstFrame) {
+        if (sMarioAmountDisplaced[1] > 0.0f) {
+            gMarioState->vel[1] += sMarioAmountDisplaced[1];
+        }
+    }
+#endif
 
-	//Remove downward displacement
-	if (sMarioAmountDisplaced[1] < 0.0f) {
-		sMarioAmountDisplaced[1] = 0.0f;
-	}
+#ifdef MARIO_INERTIA_LATERAL
+    // Apply sideways inertia
+    gMarioState->pos[0] += sMarioAmountDisplaced[0];
+    gMarioState->pos[2] += sMarioAmountDisplaced[2];
 
-	// On the first frame of leaving the ground, boost Mario's y velocity
-	if (sInertiaFirstFrame && sMarioAmountDisplaced[1] > 0.f) {
-		gMarioState->vel[1] += sMarioAmountDisplaced[1];
-	}
+    // Drag
+    sMarioAmountDisplaced[0] *= 0.97f;
+    sMarioAmountDisplaced[2] *= 0.97f;
+#endif
 
 	// Apply sideways inertia
 	gMarioState->pos[0] += sMarioAmountDisplaced[0];

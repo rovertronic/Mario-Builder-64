@@ -1,6 +1,3 @@
-Lights1 spotlight_spotlightlight_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Gfx spotlight_rgba16_anonmoose_envmap_silver1_i8_aligner[] = {gsSPEndDisplayList()};
 u8 spotlight_rgba16_anonmoose_envmap_silver1_i8[] = {
@@ -427,7 +424,8 @@ Gfx mat_spotlight_spotlightlight[] = {
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE),
 	gsSPGeometryMode(G_CULL_BACK | G_LIGHTING, 0),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(spotlight_spotlightlight_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 

@@ -55,10 +55,7 @@ enum ObjFlags {
     OBJ_FLAG_OCCLUDE_SILHOUETTE                = (1 << 20), // 0x00100000
     OBJ_FLAG_OPACITY_FROM_CAMERA_DIST          = (1 << 21), // 0x00200000
     OBJ_FLAG_EMIT_LIGHT                        = (1 << 22), // 0x00400000
-
-    // BtCM Custom Flags
-    OBJ_FLAG_EVENT_VISIBLE                     = (1 << 12), // 0x00800000
-
+    OBJ_FLAG_ONLY_PROCESS_INSIDE_ROOM          = (1 << 23), // 0x00800000
     OBJ_FLAG_HITBOX_WAS_SET                    = (1 << 30), // 0x40000000
 };
 
@@ -462,17 +459,12 @@ enum oActionsBowser {
     BOWSER_ACT_BREATH_FIRE,
     BOWSER_ACT_TELEPORT,
     BOWSER_ACT_QUICK_JUMP,
-    BOWSER_ACT_UNUSED_SLOW_WALK,
+    BOWSER_ACT_IDLE,
     BOWSER_ACT_TILT_LAVA_PLATFORM,
 };
-enum oAnimStatesBowser {
-    BOWSER_ANIM_STATE_OPAQUE      = TRANSPARENCY_ANIM_STATE_OPAQUE,
-    BOWSER_ANIM_STATE_TRANSPARENT = TRANSPARENCY_ANIM_STATE_TRANSPARENT,
-    BOWSER_ANIM_STATE_INVISIBLE   = 0x02,
-};
+
 enum animIDsBowser {
     BOWSER_ANIM_STAND_UP,
-    BOWSER_ANIM_STAND_UP_UNUSED, // slightly different
     BOWSER_ANIM_SHAKING,
     BOWSER_ANIM_GRABBED,
     BOWSER_ANIM_BROKEN,          // broken animation
@@ -778,7 +770,6 @@ enum ExclamationBoxContentsList { // oBehParams2ndByte, ExclamationBoxContents->
     EXCLAMATION_BOX_BP_STAR_4,
     EXCLAMATION_BOX_BP_STAR_5,
     EXCLAMATION_BOX_BP_STAR_6,
-    EXCLAMATION_BOX_BP_NULL = 99
 };
 enum oBehParam1stByteExclamationBox {
     EXCLAMATION_BOX_BP1_NEEDS_SWITCH,

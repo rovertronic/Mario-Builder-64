@@ -158,7 +158,7 @@
 #define /*0x17C*/ oOpacity                                      OBJECT_FIELD_S32(0x3D)
 #define /*0x180*/ oDamageOrCoinValue                            OBJECT_FIELD_S32(0x3E)
 #define /*0x184*/ oHealth                                       OBJECT_FIELD_S32(0x3F)
-#define /*0x188*/ oBehParams                                    OBJECT_FIELD_S32(0x40)
+#define /*0x188*/ oBehParams                                    OBJECT_FIELD_U32(0x40)
 #define /*0x18C*/ oPrevAction                                   OBJECT_FIELD_S32(0x41)
 #define /*0x190*/ oInteractionSubtype                           OBJECT_FIELD_U32(0x42)
 #define /*0x194*/ oCollisionDistance                            OBJECT_FIELD_F32(0x43)
@@ -326,11 +326,12 @@
 #define /*0x0FC*/ oBBallSpawnerPeriodMinus1 OBJECT_FIELD_S32(0x1D)
 
 /* Bowser */
-#define /*0x088*/ oBowserCamAct          OBJECT_FIELD_S32(0x00)
+#define /*0x088*/ oBowserCamAct          OBJECT_FIELD_S16(0x00, 0)
+#define /*0x08A*/ oBowserShadow          OBJECT_FIELD_S16(0x00, 1)
 #define /*0x0F4*/ oBowserStatus          OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oBowserTimer           OBJECT_FIELD_S32(0x1C)
 #define /*0x0FC*/ oBowserDistToCenter    OBJECT_FIELD_F32(0x1D)
-//#define /*0x106*/ oBowserBitsJustJump    OBJECT_FIELD_S16(0x1F, 1)
+#define /*0x106*/ oBowserEyeState        OBJECT_FIELD_S32(0x1F)
 #define /*0x108*/ oBowserRandSplitFloor  OBJECT_FIELD_S16(0x20, 0)
 #define /*0x10A*/ oBowserHeldAnglePitch  OBJECT_FIELD_S16(0x20, 1)
 #define /*0x10D*/ oBowserHeldAngleVelYaw OBJECT_FIELD_S16(0x21, 0)
@@ -614,7 +615,7 @@
 #define /*0x110*/ oIsFloomba OBJECT_FIELD_S32(0x22)
 
 #ifdef INTRO_FLOOMBAS
-#define /*0x1AC*/ oZoomCounter OBJECT_FIELD_S32(0x49)
+#define /*0x1AC*/ oZoomCounter OBJECT_FIELD_U32(0x49)
 #define /*0x1B0*/ oZoomPosZ    OBJECT_FIELD_F32(0x4A)
 #endif
 #endif

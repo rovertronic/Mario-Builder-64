@@ -8,14 +8,6 @@ static const Vtx white_particle_small_vertex[] = {
     {{{    -4,      8,      0}, 0, {     0,      0}, {0xff, 0xff, 0xff, 0xff}}},
 };
 
-// 0x04032740
-static const Vtx white_particle_small_unused_vertex[] = {
-    {{{    -4,      0,      0}, 0, {     0,    960}, {0xff, 0x00, 0x00, 0xff}}},
-    {{{     4,      0,      0}, 0, {   960,    960}, {0xff, 0x00, 0x00, 0xff}}},
-    {{{     4,      8,      0}, 0, {   960,      0}, {0xff, 0x00, 0x00, 0xff}}},
-    {{{    -4,      8,      0}, 0, {     0,      0}, {0xff, 0x00, 0x00, 0xff}}},
-};
-
 // 0x04032780
 ALIGNED8 static const Texture white_particle_small_texture[] = {
 #include "actors/white_particle_small/small_snow_particle.rgba16.inc.c"
@@ -45,12 +37,5 @@ const Gfx white_particle_small_dl_end[] = {
 const Gfx white_particle_small_dl[] = {
     gsSPDisplayList(white_particle_small_dl_begin),
     gsSPVertex(white_particle_small_vertex, 4, 0),
-    gsSPBranchList(white_particle_small_dl_end),
-};
-
-// 0x04032A30 - 0x04032A48 # Unused, has different vertex color
-const Gfx white_particle_small_unused_dl[] = {
-    gsSPDisplayList(white_particle_small_dl_begin),
-    gsSPVertex(white_particle_small_unused_vertex, 4, 0),
     gsSPBranchList(white_particle_small_dl_end),
 };

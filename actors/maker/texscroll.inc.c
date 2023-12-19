@@ -93,7 +93,7 @@ void scroll_sts_mat_maker_MakerMCFlowingLava() {
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCFlowingLava);
 
 	if (--curInterval0 <= 0) {
-		shift_t(mat, 12, PACK_TILESIZE(0, 67));
+		shift_t(mat, 12, PACK_TILESIZE(0, 68));
 		curInterval0 = intervalTex0;
 	}
 };

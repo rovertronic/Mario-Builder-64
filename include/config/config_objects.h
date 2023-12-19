@@ -4,75 +4,134 @@
  * SPECIFIC OBJECT SETTINGS *
  ****************************/
 
-// -- COIN --
+/**************
+ * -- COIN --
+ **************/
 
 #define CMM_DRAWDIST_LOW 5000.f // For high-cost objects, like enemies
 #define CMM_DRAWDIST_MEDIUM 8000.f // For smaller low-cost objects, like coin formations
 #define CMM_DRAWDIST_HIGH 15000.f // For objects vital to the stage, like spinning firebars
 
-// The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.
-// Set this to o->oDrawingDistance for a more reasonable range at the cost of performance.
+#define CMM_BOSS_TRIGGER_DIST 2500.f
+
+/**
+ * The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.
+ * Set this to o->oDrawingDistance for a more reasonable range at the cost of performance.
+ */
 #define COIN_FORMATION_DISTANCE CMM_DRAWDIST_MEDIUM
 
-// Moving Coins flicker and disappear when they hit lava instead of being instantly deleted.
-//#define COIN_LAVA_FLICKER
+/**
+ * Moving Coins flicker and disappear when they hit lava instead of being instantly deleted.
+ */
+// #define COIN_LAVA_FLICKER
 
-// Allows for retries on collecting the remaining blue coins from a blue coin switch.
+/**
+ * Allows for retries on collecting the remaining blue coins from a blue coin switch.
+ */
 // #define BLUE_COIN_SWITCH_RETRY
 
-// -- GOOMBA --
+/**
+ * Allow previewing blue coin locations from a blue coin switch when Mario is standing on the blue coin switch.
+ */
+// #define BLUE_COIN_SWITCH_PREVIEW
 
-// Tiny Goombas (from THI) always drop their coin.
+/****************
+ * -- GOOMBA --
+ ****************/
+
+/**
+ * Tiny Goombas (from THI) always drop their coin.
+ */
 // #define TINY_GOOMBA_ALWAYS_DROPS_COIN
 
-// Floombas! These fellas sport custom behaviors (bhvFloomba, bhvFloombaTripletSpawner) and of course the iconic Floomba texture.
-// Also supports macros (macro_floomba, macro_huge_floomba, macro_tiny_floomba, macro_floomba_triplet_spawner, macro_floomba_quintuplet_spawner).
-#define FLOOMBAS
+/**
+ * Floombas! These fellas sport custom behaviors (bhvFloomba, bhvFloombaTripletSpawner) and of course the iconic Floomba texture.
+ * Also supports macros (macro_floomba, macro_huge_floomba, macro_tiny_floomba, macro_floomba_triplet_spawner, macro_floomba_quintuplet_spawner).
+ */
+// #define FLOOMBAS
 
-// -- HOOT --
+/**************
+ * -- HOOT --
+ **************/
 
-// Uses intendedYaw to control Hoot instead of the raw left and right inputs.
+/**
+ * Uses intendedYaw to control Hoot instead of the raw left and right inputs.
+ */
 #define HOOT_YAW_FIX
 
-// Causes leaf particles to occasionally fall from trees which contain Hoot.
+/**
+ * Causes leaf particles to occasionally fall from trees which contain Hoot.
+ */
 #define HOOT_TREE_PARTICLES
 
-// -- MR I --
+/**************
+ * -- MR I --
+ **************/
 
-// Enables Mr I to shoot his particle in any direction.
+/**
+ * Enables Mr I to shoot his particle in any direction.
+ */
 // #define MR_I_PITCH_SHOOTING
 
-// -- WATER RING --
+/********************
+ * -- WATER RING --
+ ********************/
 
-// Fix the water rings in DDD by checking for interaction rather than normals.
+/**
+ * Fix the water rings in DDD by checking for interaction rather than normals.
+ */
 #define FIX_WATER_RINGS
 
-// -- POWER STAR --
+/********************
+ * -- POWER STAR --
+ ********************/
 
-// Collecting a Power Star will fully heal Mario.
+/**
+ * Collecting a Power Star will fully heal Mario.
+ */
 #define POWER_STARS_HEAL
 
-// -- 1-UP MUSHROOM --
+/**********************
+ * -- 1-UP MUSHROOM --
+ **********************/
 
-// Collecting a 1-Up Mushroom will fully heal Mario.
+/**
+ * Collecting a 1-Up Mushroom will fully heal Mario.
+ */
 #define MUSHROOMS_HEAL
 
-// -- PLATFORM ON TRACK --
+/***************************
+ * -- PLATFORM ON TRACK --
+ ***************************/
 
-// Allows the speed of a platform on a track to be controlled by standing near the front or back of it.
+/**
+ * Allows the speed of a platform on a track to be controlled by standing near the front or back of it.
+ */
 // #define CONTROLLABLE_PLATFORM_SPEED
 
-// -- CHAIN CHOMP --
+/*********************
+ * -- CHAIN CHOMP --
+ *********************/
 
-// The number of chain balls the Chain Chomp has. Vanilla is 5.
+/**
+ * The number of chain balls the Chain Chomp has. Vanilla is 5.
+ */
 #define CHAIN_CHOMP_NUM_SEGMENTS 5
 
-// -- POKEY --
+/***************
+ * -- POKEY --
+ ***************/
 
-// The number of parts Pokey has, including the head. Vanilla is 5, max is 30.
+/**
+ * The number of parts Pokey has, including the head. Vanilla is 5, max is 30.
+ */
 #define POKEY_NUM_SEGMENTS       5
 
-// -- WIGGLER --
+/*****************
+ * -- WIGGLER --
+ *****************/
 
-// The number of segments Wiggler has, not including the head. Vanilla is 4.
+/**
+ * The number of segments Wiggler has, not including the head. Vanilla is 4.
+ */
 #define WIGGLER_NUM_SEGMENTS     4

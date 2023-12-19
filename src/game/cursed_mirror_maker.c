@@ -3,9 +3,6 @@
 #include "types.h"
 #include "actors/common0.h"
 #include "actors/common1.h"
-#include "actors/group2.h"
-#include "actors/group12.h"
-#include "actors/group13.h"
 #include "area.h"
 #include "audio/external.h"
 #include "behavior_actions.h"
@@ -48,6 +45,7 @@
 #include "cursed_mirror_maker.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
+#include "actors/group17.h"
 #include "sram.h"
 #include "level_geo.h"
 #include "src/buffers/framebuffers.h"
@@ -116,6 +114,7 @@ u16 cmm_gfx_index;
 u8 cmm_use_alt_uvs = FALSE;
 s8 cmm_uv_offset = -16;
 u8 cmm_render_flip_normals = FALSE;
+u8 cmm_render_culling_off = FALSE;
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
 
@@ -319,14 +318,14 @@ struct Object * get_spawn_preview_object() {
     return NULL;
 }
 
-#define place_terrain_data(pos, type_, rot_, mat_) {          \
+#define place_terrain_data(pos, type_, rot_, mat_) {        \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = rot_;       \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].type = type_ + 1; \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = mat_;       \
-    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
+    cmm_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;  \
 }
 
-#define remove_terrain_data(pos) { \
+#define remove_terrain_data(pos) {                         \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;         \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].type = 0;        \
     cmm_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
@@ -339,6 +338,7 @@ struct Object * get_spawn_preview_object() {
 
 u32 get_faceshape(s8 pos[3], u32 dir) {
     struct cmm_terrain *terrain;
+    if (cmm_render_culling_off) return CMM_FACESHAPE_EMPTY;
     s8 tileType = get_grid_tile(pos)->type - 1;
     if (tileType == -1) return CMM_FACESHAPE_EMPTY;
 
@@ -2338,13 +2338,10 @@ void load_level(void) {
     cmm_lopt_costume = cmm_save.option[0];
 
     cmm_lopt_seq = cmm_save.option[1];
-    set_album_and_song_from_seq();
-    bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
     cmm_lopt_envfx = cmm_save.option[2];
     cmm_lopt_theme = cmm_save.option[3];
     cmm_lopt_bg = cmm_save.option[4];
 
-    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = cmm_theme_table[cmm_lopt_theme].numFloors + 1;
     cmm_lopt_plane = cmm_save.option[5];
     cmm_lopt_coinstar = cmm_save.option[6];
     cmm_lopt_size = cmm_save.option[7];
@@ -2352,7 +2349,6 @@ void load_level(void) {
     cmm_lopt_secret = cmm_save.option[9];
 
     cmm_newsize = cmm_lopt_size;
-    if (cmm_lopt_secret) cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
     switch (cmm_lopt_size) {
         case 0:
             cmm_grid_min = 16;
@@ -2370,25 +2366,10 @@ void load_level(void) {
 
     cmm_lopt_game = cmm_save.option[19];
 
-    //init theme specific things
-    switch(cmm_lopt_game) {
-        case CMM_GAME_BTCM:
-            bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
-            cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
-            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
-            cmm_settings_menus[0] = draw_cmm_settings_general;
-            break;
-        case CMM_GAME_VANILLA:
-            bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
-            cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
-            cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
-            break;
-    }
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
 
-    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
     u32 oldIndex = 0;
     cmm_tile_data_indices[0] = 0;
@@ -2437,6 +2418,9 @@ void load_level(void) {
         }
     }
 
+
+    cmm_set_data_overrides();
+
     if (!fresh) {
         update_painting();
     }
@@ -2444,10 +2428,7 @@ void load_level(void) {
 
 void cmm_init() {
     load_level();
-    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
-        generate_terrain_gfx();
-        generate_terrain_collision();
-    } else {
+    if (cmm_level_action != CMM_LA_PLAY_LEVELS) {
         vec3_set(cmm_cursor_pos, 32, 0, 32);
         cmm_camera_foc[0] = GRID_TO_POS(32);
         cmm_camera_foc[1] = 0.0f;
@@ -2459,13 +2440,13 @@ void sb_init(void) {
     struct Object *spawn_obj;
 
     cmm_toolbar_index = 0;
-    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    generate_terrain_gfx();
 
     switch(cmm_mode) {
         case CMM_MODE_MAKE:
             cmm_menu_state = CMM_MAKE_MAIN;
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-            generate_terrain_gfx();
             generate_object_preview();
 
             //init visual tile bounds
@@ -2615,17 +2596,12 @@ void (*cmm_option_changed_func)(void) = NULL;
 
 void reload_theme(void) {
     generate_terrain_gfx();
-    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
-    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = numFloors + 1;
-    if (cmm_lopt_plane > numFloors) {
-        cmm_lopt_plane = numFloors;
-    }
-
+    cmm_set_data_overrides();
     generate_object_preview();
 }
 
 void reload_bg(void) {
-    load_segment_decompress_skybox(0xA,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 }
 
 u8 cmm_upsidedown_tile = FALSE;

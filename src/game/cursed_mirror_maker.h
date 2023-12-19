@@ -196,8 +196,6 @@ struct cmm_object_place {
 };
 
 struct ExclamationBoxContents {
-    u8 id;
-    u8 unk1;
     u8 behParams;
     ModelID16 model;
     const BehaviorScript *behavior;
@@ -256,6 +254,7 @@ struct cmm_material {
     Gfx *gfx;
     u8 type;
     TerrainData col;
+    char *name; // Only used for Custom Theme menu
 };
 
 // Represents a material as a top texture with optional side decal
@@ -364,6 +363,7 @@ enum cmm_themes {
     CMM_THEME_BBH,
     CMM_THEME_JRB,
     CMM_THEME_RETRO,
+    CMM_THEME_CUSTOM,
     CMM_THEME_MC,
 };
 

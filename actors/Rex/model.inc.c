@@ -1,38 +1,11 @@
-Lights1 Rex_tummy_v4_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
-Lights1 Rex_body_v4_lights = gdSPDefLights1(
-	0x0, 0x0, 0x7F,
-	0x0, 0x0, 0xFE, 0x28, 0x28, 0x28);
 
-Lights1 Rex_horns_v4_lights = gdSPDefLights1(
-	0x73, 0x73, 0x73,
-	0xE7, 0xE7, 0xE7, 0x28, 0x28, 0x28);
 
-Lights1 Rex_redbody_lights = gdSPDefLights1(
-	0x52, 0x13, 0x0,
-	0xA4, 0x26, 0x0, 0x28, 0x28, 0x28);
 
-Lights1 Rex_shoes_v4_lights = gdSPDefLights1(
-	0x7F, 0x16, 0x0,
-	0xFE, 0x2D, 0x0, 0x28, 0x28, 0x28);
 
-Lights1 Rex_soles_v4_lights = gdSPDefLights1(
-	0x7F, 0x2A, 0xA,
-	0xFE, 0x54, 0x14, 0x28, 0x28, 0x28);
 
-Lights1 Rex_wings_v4_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
-Lights1 Rex_teeth_v4_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
-Lights1 Rex_eyes_v4_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Gfx Rex_tum_ci4_aligner[] = {gsSPEndDisplayList()};
 u8 Rex_tum_ci4[] = {
@@ -1447,7 +1420,8 @@ Gfx mat_Rex_tummy_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_4b, 1, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0, G_TX_CLAMP | G_TX_NOMIRROR, 4, 0),
 	gsDPSetTileSize(0, 0, 0, 60, 252),
-	gsSPSetLights1(Rex_tummy_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -1461,7 +1435,8 @@ Gfx mat_Rex_body_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_body_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfeff),
+    gsSPLightColor(LIGHT_2, 0x7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -1469,7 +1444,8 @@ Gfx mat_Rex_horns_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_horns_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xe7e7e7ff),
+    gsSPLightColor(LIGHT_2, 0x737373ff),
 	gsSPEndDisplayList(),
 };
 
@@ -1477,7 +1453,8 @@ Gfx mat_Rex_redbody[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_redbody_lights),
+    gsSPLightColor(LIGHT_1, 0xa42600ff),
+    gsSPLightColor(LIGHT_2, 0x521300ff),
 	gsSPEndDisplayList(),
 };
 
@@ -1507,7 +1484,8 @@ Gfx mat_Rex_shoes_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_shoes_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfe2d00ff),
+    gsSPLightColor(LIGHT_2, 0x7f1600ff),
 	gsSPEndDisplayList(),
 };
 
@@ -1515,7 +1493,8 @@ Gfx mat_Rex_soles_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_soles_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfe5414ff),
+    gsSPLightColor(LIGHT_2, 0x7f2a0aff),
 	gsSPEndDisplayList(),
 };
 
@@ -1539,7 +1518,8 @@ Gfx mat_Rex_wings_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(Rex_wings_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -1555,7 +1535,8 @@ Gfx mat_Rex_teeth_v4[] = {
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPClearGeometryMode(G_CULL_BACK),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(Rex_teeth_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -1577,7 +1558,8 @@ Gfx mat_Rex_eyes_v4[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b, 2, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 4, 0, G_TX_CLAMP | G_TX_NOMIRROR, 4, 0),
 	gsDPSetTileSize(0, 0, 0, 60, 60),
-	gsSPSetLights1(Rex_eyes_v4_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 

@@ -20,6 +20,7 @@
 #include "puppycamold.h"
 
 #include "actors/group0.h"
+#include "actors/group14.h"
 
 #include "rovent.h"
 #include "cursed_mirror_maker.h"
@@ -33,15 +34,9 @@
  **/
 
 #ifdef BREATH_METER
-// #ifdef DISABLE_LIVES
-// #define HUD_BREATH_METER_X         64
-// #define HUD_BREATH_METER_Y        200
-// #define HUD_BREATH_METER_HIDDEN_Y 300
-// #else
 #define HUD_BREATH_METER_X         40
 #define HUD_BREATH_METER_Y         32
 #define HUD_BREATH_METER_HIDDEN_Y -20
-// #endif
 #endif
 
 // ------------- FPS COUNTER ---------------
@@ -138,33 +133,33 @@ void display_rocket_boot(void) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     }
 
-void display_boss(void) {
-    //bubble_seg4_dl_0401DD60
-    Mtx *mtx;
-    Mtx *smtx;
+// void display_boss(void) {
+//     //bubble_seg4_dl_0401DD60
+//     Mtx *mtx;
+//     Mtx *smtx;
     
-    mtx = alloc_display_list(sizeof(*mtx));
+//     mtx = alloc_display_list(sizeof(*mtx));
 
-    if (mtx == NULL) {
-        return;
-    }
+//     if (mtx == NULL) {
+//         return;
+//     }
     
-    //smtx = alloc_display_list(sizeof(*smtx));
+//     //smtx = alloc_display_list(sizeof(*smtx));
 
-    //if (smtx == NULL) {
-    //    return;
-    //}
+//     //if (smtx == NULL) {
+//     //    return;
+//     //}
 
-    guTranslate(mtx, 30.0f, 75.0f, 0);
-    //guScale(smtx, (f32)gMarioState->numAir*.002, (f32) gMarioState->numAir*.002, 0);
+//     guTranslate(mtx, 30.0f, 75.0f, 0);
+//     //guScale(smtx, (f32)gMarioState->numAir*.002, (f32) gMarioState->numAir*.002, 0);
 
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    //gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+//     gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+//     //gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
-    gSPDisplayList(gDisplayListHead++, &bs_hud_Plane_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
+//     gSPDisplayList(gDisplayListHead++, &bs_hud_Plane_mesh);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     }
 
 void display_rocket_boot_bar(void) {
     //bubble_seg4_dl_0401DD60
@@ -199,36 +194,36 @@ void display_rocket_boot_bar(void) {
 f32 bar_visual;
 #define BAR_TARGET (f32)(gMarioState->BossHealth)/(f32)(gMarioState->BossHealthMax)
 
-void display_boss_bar(void) {
-    //bubble_seg4_dl_0401DD60
-    Mtx *mtx;
-    Mtx *smtx;
+// void display_boss_bar(void) {
+//     //bubble_seg4_dl_0401DD60
+//     Mtx *mtx;
+//     Mtx *smtx;
     
-    mtx = alloc_display_list(sizeof(*mtx));
+//     mtx = alloc_display_list(sizeof(*mtx));
 
-    if (mtx == NULL) {
-        return;
-    }
+//     if (mtx == NULL) {
+//         return;
+//     }
     
-    smtx = alloc_display_list(sizeof(*smtx));
+//     smtx = alloc_display_list(sizeof(*smtx));
 
-    if (smtx == NULL) {
-        return;
-    }
+//     if (smtx == NULL) {
+//         return;
+//     }
 
-    guTranslate(mtx, 30.0f, 75.0f, 0);
+//     guTranslate(mtx, 30.0f, 75.0f, 0);
 
-    bar_visual = lerp(bar_visual, BAR_TARGET, 0.1f);
+//     bar_visual = lerp(bar_visual, BAR_TARGET, 0.1f);
 
-    guScale(smtx, (f32)1.0, bar_visual, 0);
+//     guScale(smtx, (f32)1.0, bar_visual, 0);
 
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+//     gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
 
-    gSPDisplayList(gDisplayListHead++, &bs_bar_Plane_001_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
+//     gSPDisplayList(gDisplayListHead++, &bs_bar_Plane_001_mesh);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     }
 
 void display_air(void) {
     //bubble_seg4_dl_0401DD60
@@ -352,36 +347,36 @@ void display_title(void) {
 //     gSPPopMatrix(gDisplayListHead++, 0);
 // }
 
-void display_arrow(void) {
-    Mtx *mtx;
-    Mtx *rmtx;
-    u8 wideoffet11 = 0;
+// void display_arrow(void) {
+//     Mtx *mtx;
+//     Mtx *rmtx;
+//     u8 wideoffet11 = 0;
 
-    if (0) {
-        wideoffet11 = 40;
-        }
+//     if (0) {
+//         wideoffet11 = 40;
+//         }
 
-    mtx = alloc_display_list(sizeof(*mtx));
+//     mtx = alloc_display_list(sizeof(*mtx));
 
-    if (mtx == NULL) {
-        return;
-    }
+//     if (mtx == NULL) {
+//         return;
+//     }
 
-   rmtx = alloc_display_list(sizeof(*rmtx));
+//    rmtx = alloc_display_list(sizeof(*rmtx));
 
-    if (rmtx == NULL) {
-        return;
-    }
+//     if (rmtx == NULL) {
+//         return;
+//     }
 
-    guTranslate(mtx, (f32) 268+wideoffet11, (f32) 52, 0);
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
+//     guTranslate(mtx, (f32) 268+wideoffet11, (f32) 52, 0);
+//     gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
 
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    guRotate(rmtx, gMarioState->faceAngle[1] / 180.0f + 180.0f, 0.0f, 0.0f, 1.0f);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rmtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-    gSPDisplayList(gDisplayListHead++, &arrow_Plane_001_mesh);
-    gSPPopMatrix(gDisplayListHead++, 0);
-}
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+//     guRotate(rmtx, gMarioState->faceAngle[1] / 180.0f + 180.0f, 0.0f, 0.0f, 1.0f);
+//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(rmtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+//     gSPDisplayList(gDisplayListHead++, &arrow_Plane_001_mesh);
+//     gSPPopMatrix(gDisplayListHead++, 0);
+// }
 
 // Power Meter timer that keeps counting when it's visible.
 // Gets reset when the health is filled and stops counting
@@ -1044,8 +1039,8 @@ void render_hud(void) {
                 else
                 {
                 if (gMarioState->BossHealth > 0) {
-                        display_boss();
-                        display_boss_bar();
+                        // display_boss();
+                        // display_boss_bar();
                     } else {//only display rocket boot bar if not fighting boss
                         if (gMarioState->RFuel > 0) {
                             display_rocket_boot();
@@ -1096,9 +1091,6 @@ void render_hud(void) {
         if (gCustomDebugMode) {
             render_debug_mode();
         }
-#endif
-#ifdef PUPPYPRINT
-        print_set_envcolour(255, 255, 255, 255);
 #endif
     }
 }

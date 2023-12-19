@@ -1,14 +1,5 @@
-Lights1 kingbully_f3d_material_001_lights = gdSPDefLights1(
-	0x43, 0x0, 0x1,
-	0x87, 0x0, 0x3, 0x28, 0x28, 0x28);
 
-Lights1 kingbully_metal_sphere_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
-Lights1 kingbully_bulleye_lights = gdSPDefLights1(
-	0x7F, 0x7F, 0x7F,
-	0xFE, 0xFE, 0xFE, 0x28, 0x28, 0x28);
 
 Gfx kingbully_metal_rgba16_aligner[] = {gsSPEndDisplayList()};
 u8 kingbully_metal_rgba16[] = {
@@ -944,7 +935,8 @@ Gfx mat_kingbully_f3d_material_001[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(kingbully_f3d_material_001_lights),
+    gsSPLightColor(LIGHT_1, 0x870003ff),
+    gsSPLightColor(LIGHT_2, 0x430001ff),
 	gsSPEndDisplayList(),
 };
 
@@ -961,7 +953,8 @@ Gfx mat_kingbully_metal_sphere[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 6, 0),
 	gsDPSetTileSize(0, 0, 0, 252, 124),
-	gsSPSetLights1(kingbully_metal_sphere_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -1021,7 +1014,8 @@ Gfx mat_kingbully_bulleye[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_4b, 2, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(kingbully_bulleye_lights),
+    gsSPLightColor(LIGHT_1, 0xfefefeff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 

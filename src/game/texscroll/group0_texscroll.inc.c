@@ -2,10 +2,10 @@
 //#include "actors/hammer/texscroll.inc.c"
 //#include "actors/ring/texscroll.inc.c"
 //#include "actors/chicken/texscroll.inc.c"
-#include "actors/token/texscroll.inc.c"
+// #include "actors/token/texscroll.inc.c"
 //#include "actors/egg/texscroll.inc.c"
-#include "actors/arrow/texscroll.inc.c"
-#include "actors/BadgeSelect/texscroll.inc.c"
+// #include "actors/arrow/texscroll.inc.c"
+// #include "actors/BadgeSelect/texscroll.inc.c"
 //#include "actors/snakeblock2/texscroll.inc.c"
 //#include "actors/snakeblock3/texscroll.inc.c"
 //#include "actors/shopselect/texscroll.inc.c"
@@ -28,13 +28,13 @@ void scroll_textures_group0() {
 	
 	//scroll_actor_geo_chicken();
 
-	scroll_actor_geo_token();
+	// scroll_actor_geo_token();
 
 	//scroll_actor_geo_egg();
 
-	scroll_actor_dl_arrow();
+	// scroll_actor_dl_arrow();
 
-	scroll_actor_dl_BadgeSelect();
+	// scroll_actor_dl_BadgeSelect();
 
 		
 	//scroll_actor_geo_snakeblock2();

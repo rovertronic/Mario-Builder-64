@@ -24,22 +24,7 @@
 DECLARE_ACTOR_SEGMENT(common0)
 DECLARE_ACTOR_SEGMENT(common1)
 DECLARE_ACTOR_SEGMENT(group0)
-DECLARE_ACTOR_SEGMENT(group1)
-DECLARE_ACTOR_SEGMENT(group2)
-DECLARE_ACTOR_SEGMENT(group3)
-DECLARE_ACTOR_SEGMENT(group4)
-DECLARE_ACTOR_SEGMENT(group5)
-DECLARE_ACTOR_SEGMENT(group6)
-DECLARE_ACTOR_SEGMENT(group7)
-DECLARE_ACTOR_SEGMENT(group8)
-DECLARE_ACTOR_SEGMENT(group9)
-DECLARE_ACTOR_SEGMENT(group10)
-DECLARE_ACTOR_SEGMENT(group11)
-DECLARE_ACTOR_SEGMENT(group12)
-DECLARE_ACTOR_SEGMENT(group13)
 DECLARE_ACTOR_SEGMENT(group14)
-DECLARE_ACTOR_SEGMENT(group15)
-DECLARE_ACTOR_SEGMENT(group16)
 DECLARE_ACTOR_SEGMENT(group17)
 
 DECLARE_SEGMENT(entry)
@@ -51,11 +36,18 @@ DECLARE_SEGMENT(goddard)
 DECLARE_SEGMENT(framebuffers)
 DECLARE_SEGMENT(assets)
 extern u8 _goddardSegmentStart[];
+extern u8 _goddardSegmentEnd[];
 extern u8 _engineSegmentStart[];
 extern u8 _engineSegmentBssEnd[];
+extern u8 _mainSegmentStart[];
 extern u8 _mainSegmentEnd[];
 extern u8 _engineSegmentEnd[];
+extern u8 _framebuffersSegmentBssStart[];
 extern u8 _framebuffersSegmentBssEnd[];
+extern u8 _zbufferSegmentBssStart[];
+extern u8 _zbufferSegmentBssEnd[];
+extern u8 _buffersSegmentBssStart[];
+extern u8 _buffersSegmentBssEnd[];
 
 DECLARE_LEVEL_SEGMENT(menu)
 DECLARE_LEVEL_SEGMENT(intro)

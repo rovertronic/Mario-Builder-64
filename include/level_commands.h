@@ -73,8 +73,9 @@ enum LevelCommands {
     /*0x3E*/ LEVEL_CMD_CHANGE_AREA_SKYBOX,
     /*0x3F*/ LEVEL_CMD_PUPPYLIGHT_ENVIRONMENT,
     /*0x40*/ LEVEL_CMD_PUPPYLIGHT_NODE,
-    /*0x41*/ LEVEL_CMD_FILESELECT_CONDITION,
-    /*0x44*/ LEVEL_CMD_LOAD_CMM,
+    /*0x41*/ LEVEL_CMD_SET_ECHO,
+    /*0x42*/ LEVEL_CMD_FILESELECT_CONDITION,
+    /*0x43*/ LEVEL_CMD_LOAD_CMM,
     /*0x44*/ LEVEL_CMD_LOAD_CMM_MODELS,
 };
 
@@ -85,7 +86,7 @@ enum LevelActs {
     ACT_4 = (1 << 3),
     ACT_5 = (1 << 4),
     ACT_6 = (1 << 5),
-    ALL_ACTS = (ACT_1 | ACT_2 | ACT_3 | ACT_4 | ACT_5 | ACT_6)
+    ALL_ACTS = (ACT_1 | ACT_2 | ACT_3 | ACT_4 | ACT_5 | ACT_6),
 };
 
 enum LevelCommandEvalOperation {
@@ -116,13 +117,6 @@ enum LevelCommandVar {
 enum WarpCheckpointFlags {
     WARP_NO_CHECKPOINT = (0 << 0), // 0x00
     WARP_CHECKPOINT    = (1 << 7), // 0x80
-};
-
-enum LevelCommandCreateWhirlpoolCondition {
-    WHIRLPOOL_COND_ALWAYS,
-    WHIRLPOOL_COND_BOWSER2_NOT_BEATEN,
-    WHIRLPOOL_COND_BOWSER2_BEATEN,
-    WHIRLPOOL_COND_AT_LEAST_SECOND_STAR
 };
 
 #ifdef NO_SEGMENTED_MEMORY
@@ -359,7 +353,7 @@ enum LevelCommandCreateWhirlpoolCondition {
     CMD_W(model)
 
 #define OBJECT(model, posX, posY, posZ, angleX, angleY, angleZ, behParam, beh) \
-    OBJECT_WITH_ACTS(model, posX, posY, posZ, angleX, angleY, angleZ, behParam, beh, 0x1F)
+    OBJECT_WITH_ACTS(model, posX, posY, posZ, angleX, angleY, angleZ, behParam, beh, ALL_ACTS)
 
 #define MARIO(model, behArg, beh) \
     CMD_BBH(LEVEL_CMD_INIT_MARIO, 0x0C, model), \
@@ -375,9 +369,10 @@ enum LevelCommandCreateWhirlpoolCondition {
     CMD_BBBB(destArea, destNode, flags, 0x00)
 
 #define INSTANT_WARP(index, destArea, displaceX, displaceY, displaceZ) \
-    CMD_BBBB(LEVEL_CMD_CREATE_INSTANT_WARP, 0x0C, index, destArea), \
-    CMD_HH(displaceX, displaceY), \
-    CMD_HH(displaceZ, 0x0000)
+    CMD_BBBB(LEVEL_CMD_CREATE_INSTANT_WARP, 0x10, index, destArea), \
+    CMD_W(displaceX), \
+    CMD_W(displaceY), \
+    CMD_W(displaceZ)
 
 #define LOAD_AREA(area) \
     CMD_BBBB(LEVEL_CMD_LOAD_AREA, 0x04, area, 0x00)
@@ -424,15 +419,36 @@ enum LevelCommandCreateWhirlpoolCondition {
 #define GAMMA(enabled) \
     CMD_BBBB(LEVEL_CMD_SET_GAMMA, 0x04, enabled, 0x00)
 
-#define SET_BACKGROUND_MUSIC(settingsPreset, seq) \
+#ifdef BETTER_REVERB
+#define SET_BACKGROUND_MUSIC_WITH_REVERB(settingsPreset, seq, reverbPresetConsole, reverbPresetEmulator) \
     CMD_BBH(LEVEL_CMD_SET_MUSIC, 0x08, settingsPreset), \
-    CMD_HH(seq, 0x0000)
+    CMD_BBH(reverbPresetConsole, reverbPresetEmulator, seq)
+
+#define SET_MENU_MUSIC_WITH_REVERB(seq, reverbPresetConsole, reverbPresetEmulator) \
+    CMD_BBH(LEVEL_CMD_SET_MENU_MUSIC, 0x08, seq), \
+    CMD_BBH(reverbPresetConsole, reverbPresetEmulator, 0x0000)
+#else
+// Functionally identical to calling SET_BACKGROUND_MUSIC if BETTER_REVERB is disabled
+#define SET_BACKGROUND_MUSIC_WITH_REVERB(settingsPreset, seq, reverbPresetConsole, reverbPresetEmulator) \
+    CMD_BBH(LEVEL_CMD_SET_MUSIC, 0x08, settingsPreset), \
+    CMD_HH(0x0000, seq)
+
+// Functionally identical to calling SET_MENU_MUSIC if BETTER_REVERB is disabled
+#define SET_MENU_MUSIC_WITH_REVERB(seq, reverbPresetConsole, reverbPresetEmulator) \
+    CMD_BBH(LEVEL_CMD_SET_MENU_MUSIC, 0x04, seq)
+#endif
+
+#define SET_BACKGROUND_MUSIC(settingsPreset, seq) \
+    SET_BACKGROUND_MUSIC_WITH_REVERB(settingsPreset, seq, 0x00, 0x00)
 
 #define SET_MENU_MUSIC(seq) \
-    CMD_BBH(LEVEL_CMD_SET_MENU_MUSIC, 0x04, seq)
+    SET_MENU_MUSIC_WITH_REVERB(seq, 0x00, 0x00)
 
 #define STOP_MUSIC(fadeOutTime) \
     CMD_BBH(LEVEL_CMD_FADEOUT_MUSIC, 0x04, fadeOutTime)
+
+#define SET_ECHO(console, emulator) \
+    CMD_BBBB(LEVEL_CMD_SET_ECHO, 0x04, console, emulator)
 
 #define MACRO_OBJECTS(objList) \
     CMD_BBH(LEVEL_CMD_SET_MACRO_OBJECTS, 0x08, 0x0000), \
@@ -444,8 +460,8 @@ enum LevelCommandCreateWhirlpoolCondition {
     CMD_HH(unk6, unk8), \
     CMD_HH(unk10, 0x0000)
 
-#define WHIRLPOOL(index, condition, posX, posY, posZ, strength) \
-    CMD_BBBB(LEVEL_CMD_CREATE_WHIRLPOOL, 0x0C, index, condition), \
+#define WHIRLPOOL(index, acts, posX, posY, posZ, strength) \
+    CMD_BBBB(LEVEL_CMD_CREATE_WHIRLPOOL, 0x0C, index, acts), \
     CMD_HH(posX, posY), \
     CMD_HH(posZ, strength)
 

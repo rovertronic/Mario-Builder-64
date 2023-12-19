@@ -348,8 +348,6 @@ void mario_blow_off_cap(struct MarioState *m, f32 capSpeed) {
     struct Object *capObject;
 
     if (does_mario_have_normal_cap_on_head(m)) {
-        save_file_set_cap_pos(m->pos[0], m->pos[1], m->pos[2]);
-
         m->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
 
         capObject = spawn_object(m->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
@@ -425,6 +423,8 @@ u32 mario_check_object_grab(struct MarioState *m) {
             if (facingDYaw >= -0x5555 && facingDYaw <= 0x5555) {
                 m->faceAngle[1] = m->interactObj->oMoveAngleYaw;
                 m->usedObj = m->interactObj;
+                m->pos[1] = m->floorHeight;
+                m->vel[1] = 0.0f;
                 result = set_mario_action(m, ACT_PICKING_UP_BOWSER, 0);
             }
         } else {
@@ -765,14 +765,13 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     obj->oInteractStatus = INT_STATUS_INTERACTED;
 
-    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) &&
-            cmm_lopt_coinstar != 0 &&
-            m->numCoins - obj->oDamageOrCoinValue < (cmm_lopt_coinstar*20) &&
-            m->numCoins >= (cmm_lopt_coinstar*20) &&
-            (!gMarioState->hundredSpawned)) {
-        gMarioState->hundredSpawned = TRUE;
-        bhv_spawn_star_no_level_exit(0x3F);
+#ifdef X_COIN_STAR
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum) && X_COIN_STAR != 0 && m->numCoins - obj->oDamageOrCoinValue < X_COIN_STAR
+        && m->numCoins >= X_COIN_STAR && !g100CoinStarSpawned) {
+        bhv_spawn_star_no_level_exit(STAR_BP_ACT_100_COINS);
+        g100CoinStarSpawned = TRUE;
     }
+#endif
 
     return FALSE;
 }
@@ -858,6 +857,8 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
         obj->oInteractStatus = INT_STATUS_INTERACTED;
         m->interactObj       = obj;
         m->usedObj           = obj;
+
+        gStarModelLastCollected = obj_get_model_id(obj);
 
 #ifdef GLOBAL_STAR_IDS
         starIndex = (obj->oBehParams >> 24) & 0xFF;
@@ -1800,11 +1801,14 @@ u32 check_read_sign(struct MarioState *m, struct Object *obj) {
         && abs_angle_diff(mario_obj_angle_to_object(m, obj), m->faceAngle[1]) <= SIGN_RANGE
     ) {
 #ifdef DIALOG_INDICATOR
+        struct Object *orangeNumber;
         if (obj->behavior == segmented_to_virtual(bhvSignOnWall)) {
-            spawn_object_relative(ORANGE_NUMBER_A, 0, 180, 32, obj, MODEL_NUMBER, bhvOrangeNumber);
+            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 180, 32, obj, MODEL_NUMBER, bhvOrangeNumber);
         } else {
-            spawn_object_relative(ORANGE_NUMBER_A, 0, 160,  8, obj, MODEL_NUMBER, bhvOrangeNumber);
+            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 160,  8, obj, MODEL_NUMBER, bhvOrangeNumber);
         }
+        orangeNumber->oHomeX = orangeNumber->oPosX;
+        orangeNumber->oHomeZ = orangeNumber->oPosZ;
 #endif
         if (m->input & READ_MASK) {
 #else
@@ -1835,11 +1839,14 @@ u32 check_npc_talk(struct MarioState *m, struct Object *obj) {
         && abs_angle_diff(mario_obj_angle_to_object(m, obj), m->faceAngle[1]) <= SIGN_RANGE
     ) {
 #ifdef DIALOG_INDICATOR
+        struct Object *orangeNumber;
         if (obj->behavior == segmented_to_virtual(bhvYoshi)) {
-            spawn_object_relative(ORANGE_NUMBER_A, 0, 256, 64, obj, MODEL_NUMBER, bhvOrangeNumber);
+            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 256, 64, obj, MODEL_NUMBER, bhvOrangeNumber);
         } else {
-            spawn_object_relative(ORANGE_NUMBER_A, 0, 160,  0, obj, MODEL_NUMBER, bhvOrangeNumber);
+            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 160,  0, obj, MODEL_NUMBER, bhvOrangeNumber);
         }
+        orangeNumber->oHomeX = orangeNumber->oPosX;
+        orangeNumber->oHomeZ = orangeNumber->oPosZ;
 #endif
         if (m->input & READ_MASK) {
 #else

@@ -1,6 +1,3 @@
-Lights1 spawn_red_lights = gdSPDefLights1(
-	0x7F, 0x0, 0x0,
-	0xFF, 0x0, 0x0, 0x28, 0x28, 0x28);
 
 Gfx spawn_mariospawn_rgba32_aligner[] = {gsSPEndDisplayList()};
 u8 spawn_mariospawn_rgba32[] = {
@@ -557,7 +554,8 @@ Gfx mat_spawn_red[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(spawn_red_lights),
+    gsSPLightColor(LIGHT_1, 0xff0000ff),
+    gsSPLightColor(LIGHT_2, 0x7f0000ff),
 	gsSPEndDisplayList(),
 };
 

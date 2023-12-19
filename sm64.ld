@@ -97,7 +97,7 @@ SECTIONS
    BEGIN_SEG(boot, 0x04000000)
    {
       KEEP(BUILD_DIR/asm/rom_header.o(.text*));
-      KEEP(BUILD_DIR/asm/boot.o(.text*));
+      KEEP(BUILD_DIR/asm/ipl3.o(.text*));
    }
    END_SEG(boot)
 
@@ -147,8 +147,6 @@ SECTIONS
 
 /* hardcoded symbols to satisfy preliminary link for map parser */
 #ifndef DEBUG_MAP_STACKTRACE
-      parse_map               = MAP_PARSER_ADDRESS;
-      find_function_in_stack  = MAP_PARSER_ADDRESS;
       _mapDataSegmentRomStart = 0;
       gMapEntries   = 0;
       gMapEntrySize = 0;
@@ -159,6 +157,13 @@ SECTIONS
    {
       KEEP(BUILD_DIR/asm/entry.o(.text*));
       KEEP(BUILD_DIR/asm/n64_assert.o(.text*));
+#ifdef EEP
+      KEEP(BUILD_DIR/asm/vc_bin.o(.text*));
+#endif
+      KEEP(BUILD_DIR/asm/emux.o(.text*));
+      KEEP(BUILD_DIR/asm/pj64_get_count_factor_asm.o(.text*));
+      KEEP(BUILD_DIR/asm/round.o(.text*));
+      KEEP(BUILD_DIR/asm/fcr31.o(.text*));
 
       BUILD_DIR/src/libpl*.o(.text*);
       BUILD_DIR/src/boot*.o(.text*);
@@ -166,13 +171,9 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.text*);
       BUILD_DIR/src/audio*.o(.text*);
 #ifdef S2DEX_TEXT_ENGINE
-      lib/libs2d_engine.a:*(.text*);
+      BUILD_DIR/src/s2d_engine*.o(.text*);
 #endif
-#if defined(ISVPRINT) || defined(UNF)
-      */libultra_d.a:*.o(.text*);
-#else
-      */libultra_rom.a:*.o(.text*);
-#endif
+      */ULTRALIB.a:*.o(.text*);
       */libnustd.a:*.o(.text*);
       */libgcc.a:*.o(.text*);
       */librtc.a:*.o(.text*);
@@ -185,8 +186,6 @@ SECTIONS
       lib/PR/audio/n_aspMain.o(.text*);
       lib/PR/hvqm/hvqm2sp1.o(.text*);
       _mainSegmentTextEnd = .;
-      /* Overwrite a libultra function with its modified counterpart for GCN controller support */
-      __osContGetInitData = __osContGetInitDataEx;
 
       /* data */
       BUILD_DIR/asm/n64_assert.o(.*data*);
@@ -194,13 +193,9 @@ SECTIONS
       BUILD_DIR/src/boot*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
 #ifdef S2DEX_TEXT_ENGINE
-      lib/libs2d_engine.a:*(.*data*);
+      BUILD_DIR/src/s2d_engine*.o(.*data*);
 #endif
-#if defined(ISVPRINT) || defined(UNF)
-      */libultra_d.a:*.o(.data*);
-#else
-      */libultra_rom.a:*.o(.data*);
-#endif
+      */ULTRALIB.a:*.o(.data*);
       */libhvqm2.a:*.o(.data*);
       BUILD_DIR/src/libcart*.o(.data*);
       */librtc.a:*.o(.data*);
@@ -216,13 +211,9 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
 #ifdef S2DEX_TEXT_ENGINE
-      lib/libs2d_engine.a:*(.rodata*);
+      BUILD_DIR/src/s2d_engine*.o(.rodata*);
 #endif
-#if defined(ISVPRINT) || defined(UNF)
-      */libultra_d.a:*.o(.rodata*);
-#else
-      */libultra_rom.a:*.o(.rodata*);
-#endif
+      */ULTRALIB.a:*.o(.rodata*);
       */libgcc.a:*.o(.rodata*);
       */librtc.a:*.o(.rodata*);
       */libz.a:*.o(.rodata*);
@@ -239,17 +230,11 @@ SECTIONS
       BUILD_DIR/src/usb*.o(.*bss*);
       BUILD_DIR/src/audio*.o(.*bss*);
 #ifdef S2DEX_TEXT_ENGINE
-      lib/libs2d_engine.a:*(.*bss*);
+      BUILD_DIR/src/s2d_engine*.o(.*bss*);
 #endif
-#if defined(ISVPRINT) || defined(UNF)
-      */libultra_d.a:*.o(COMMON);
-      */libultra_d.a:*.o(.scommon);
-      */libultra_d.a:*.o(.*bss*);
-#else
-      */libultra_rom.a:*.o(COMMON);
-      */libultra_rom.a:*.o(.scommon);
-      */libultra_rom.a:*.o(.*bss*);
-#endif
+      */ULTRALIB.a:*.o(COMMON);
+      */ULTRALIB.a:*.o(.scommon);
+      */ULTRALIB.a:*.o(.*bss*);
       */libhvqm2.a:*.o(.bss*);
       BUILD_DIR/src/libcart*.o(.bss*);
       */librtc.a:*.o(.bss*);
@@ -331,23 +316,7 @@ SECTIONS
    /* mario actor group */
    STANDARD_OBJECTS(group0,  0x04000000, 0x17000000)
 
-   /* load the other actor groups */
-   STANDARD_OBJECTS(group1,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group2,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group3,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group4,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group5,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group6,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group7,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group8,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group9,  0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group10, 0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group11, 0x05000000, 0x0C000000)
-   STANDARD_OBJECTS(group12, 0x06000000, 0x0D000000)
-   STANDARD_OBJECTS(group13, 0x06000000, 0x0D000000)
    STANDARD_OBJECTS(group14, 0x06000000, 0x0D000000)
-   STANDARD_OBJECTS(group15, 0x06000000, 0x0D000000)
-   STANDARD_OBJECTS(group16, 0x06000000, 0x0D000000)
    STANDARD_OBJECTS(group17, 0x06000000, 0x0D000000)
 
    /* load the common actor groups */

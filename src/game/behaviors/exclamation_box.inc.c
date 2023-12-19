@@ -2,15 +2,15 @@
 //sorry that this file is a convoluted cluster fuck
 
 struct ObjectHitbox sExclamationBoxHitbox = {
-    /* interactType:      */ INTERACT_BREAKABLE,
-    /* downOffset:        */ 5,
-    /* damageOrCoinValue: */ 0,
-    /* health:            */ 1,
-    /* numLootCoins:      */ 0,
-    /* radius:            */ 40,
-    /* height:            */ 30,
-    /* hurtboxRadius:     */ 40,
-    /* hurtboxHeight:     */ 30,
+    .interactType      = INTERACT_BREAKABLE,
+    .downOffset        = 5,
+    .damageOrCoinValue = 0,
+    .health            = 1,
+    .numLootCoins      = 0,
+    .radius            = 40,
+    .height            = 30,
+    .hurtboxRadius     = 40,
+    .hurtboxHeight     = 30,
 };
 
 void bhv_rotating_exclamation_mark_loop(void) {
@@ -35,13 +35,13 @@ void exclamation_box_act_init(void) {
     /*
     if (o->oBehParams2ndByte < EXCLAMATION_BOX_BP_COINS_1) {
         o->oAnimState = o->oBehParams2ndByte;
-
-        u8 tangible = TRUE;
-        if (tangible) {
-            o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
-        } else {
-            o->oAction = EXCLAMATION_BOX_ACT_OUTLINE;
-        }
+#ifdef UNLOCK_ALL
+        const u8 tangible = TRUE;
+#else
+        const u8 tangible = ((save_file_get_flags() & sCapSaveFlags[o->oBehParams2ndByte])
+                          || (GET_BPARAM1(o->oBehParams) != EXCLAMATION_BOX_BP1_NEEDS_SWITCH));
+#endif
+        o->oAction = tangible ? EXCLAMATION_BOX_ACT_ACTIVE : EXCLAMATION_BOX_ACT_OUTLINE;
     } else {
         o->oAnimState = 4;
         o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
@@ -97,13 +97,15 @@ void exclamation_box_act_scaling(void) {
         o->oVelY = 0.0f;
         o->oGravity = 0.0f;
     }
-    o->oExclamationBoxVerticalScale = (sins(o->oExclamationBoxScaleAngle) + 1.0f) * 0.3f + 0.0f;
-    o->oExclamationBoxHorizontalScale = (-sins(o->oExclamationBoxScaleAngle) + 1.0f) * 0.5f + 1.0f;
-    o->oGraphYOffset = (-sins(o->oExclamationBoxScaleAngle) + 1.0f) * 26.0f;
+    o->oGraphYOffset                  = ((-sins(o->oExclamationBoxScaleAngle) + 1.0f) * 26.0f);
+    o->oExclamationBoxHorizontalScale = ((-sins(o->oExclamationBoxScaleAngle) + 1.0f) *  0.5f) + 1.0f;
+    o->oExclamationBoxVerticalScale   = (( sins(o->oExclamationBoxScaleAngle) + 1.0f) *  0.3f) + 0.0f;
     o->oExclamationBoxScaleAngle += 0x1000;
-    o->header.gfx.scale[0] = o->oExclamationBoxHorizontalScale * 2.0f;
-    o->header.gfx.scale[1] = o->oExclamationBoxVerticalScale   * 2.0f;
-    o->header.gfx.scale[2] = o->oExclamationBoxHorizontalScale * 2.0f;
+    obj_scale_xyz(o,
+        (o->oExclamationBoxHorizontalScale * 2.0f),
+        (o->oExclamationBoxVerticalScale   * 2.0f),
+        (o->oExclamationBoxHorizontalScale * 2.0f)
+    );
     if (o->oTimer == 7) {
         o->oAction = EXCLAMATION_BOX_ACT_EXPLODE;
     }
@@ -112,19 +114,16 @@ void exclamation_box_act_scaling(void) {
 void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList, u8 boxType) {
     struct Object *contentsObj = NULL;
     
-    while (contentsList->id != EXCLAMATION_BOX_BP_NULL) {
-        if (boxType == contentsList->id) {
-            contentsObj = spawn_object(o, contentsList->model, contentsList->behavior);
-            contentsObj->oVelY = 20.0f;
-            contentsObj->oForwardVel = 3.0f;
-            contentsObj->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
-            OR_BPARAM1(o->oBehParams, contentsList->behParams);
-            if (contentsList->model == MODEL_STAR) {
-                o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
-            }
-            break;
+    if (boxType < 7) { // hardcoded
+        struct ExclamationBoxContents *contents = &cmm_exclamation_box_contents[boxType];
+        contentsObj = spawn_object(o, contents->model, contents->behavior);
+        contentsObj->oVelY = 20.0f;
+        contentsObj->oForwardVel = 3.0f;
+        contentsObj->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
+        OR_BPARAM1(o->oBehParams, contents->behParams);
+        if (contents->model == MODEL_STAR) {
+            o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
         }
-        contentsList++;
     }
 
 

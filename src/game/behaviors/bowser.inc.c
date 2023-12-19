@@ -1,5 +1,7 @@
 // bowser.inc.c
 
+#include "actors/group17.h"
+
 /**
  * Behavior for Bowser and it's actions (Tail, Flame, Body)
  */
@@ -15,10 +17,7 @@ void bowser_tail_anchor_act_default(void) {
     cur_obj_become_tangible();
     cur_obj_scale(1.0f);
 
-    if (bowser->oAction == BOWSER_ACT_TILT_LAVA_PLATFORM) {
-        // Bowser cannot be touched when he tilts BitFS platform
-        bowser->oIntangibleTimer = -1;
-    } else if (obj_check_if_collided_with_object(o, gMarioObject)) {
+    if (obj_check_if_collided_with_object(o, gMarioObject)) {
         // When Mario collides his tail, it now gets
         // intangible so he can grab it through
         bowser->oIntangibleTimer = 0;
@@ -288,6 +287,41 @@ UNUSED static void bowser_debug_actions(void) {
 }
 
 /**
+ * If Bowser is right up against an edge, then teleport.
+ * Otherwise, dash
+ */
+void bowser_check_dash(void) {
+    // Check a point directly in front of Bowser
+    f32 floorHeight = find_floor_height(o->oPosX + 100.0f * sins(o->oMoveAngleYaw),
+                                        o->oPosY,
+                                        o->oPosZ + 100.0f * coss(o->oMoveAngleYaw));
+
+    if (floorHeight < o->oPosY - 100.f) {
+        o->oAction = BOWSER_ACT_TELEPORT;
+    } else {
+        o->oAction = BOWSER_ACT_CHARGE_MARIO;
+    }
+}
+
+/** If Bowser has safe land in front of him, jump
+ * Otherwise, teleport
+ */
+void bowser_check_jump(void) {
+    // Check point 1200 units in front of Bowser
+    struct Surface *floor;
+    find_floor(o->oPosX + 1200.0f * sins(o->oMoveAngleYaw),
+               o->oPosY,
+               o->oPosZ + 1200.0f * coss(o->oMoveAngleYaw),
+               &floor);
+    
+    if (SURFACE_IS_BURNING(floor->type) || (floor->type == SURFACE_DEATH_PLANE)) {
+        o->oAction = BOWSER_ACT_TELEPORT;
+    } else {
+        o->oAction = BOWSER_ACT_QUICK_JUMP;
+    }
+}
+
+/**
  * Set actions (and attacks) for Bowser in "Bowser in the Dark World"
  */
 void bowser_bitdw_actions(void) {
@@ -308,10 +342,12 @@ void bowser_bitdw_actions(void) {
                     o->oAction = BOWSER_ACT_BREATH_FIRE;
                 }
             } else { // far away
-                if (rand < 0.5f) {
-                    o->oAction = BOWSER_ACT_CHARGE_MARIO;
+                if (rand < 0.4f) {
+                    bowser_check_dash();
+                } else if (rand < 0.8f) {
+                    bowser_check_jump();
                 } else {
-                    o->oAction = BOWSER_ACT_QUICK_JUMP;
+                    o->oAction = BOWSER_ACT_TELEPORT;
                 }
             }
         } else {
@@ -419,8 +455,9 @@ void bowser_reset_fallen_off_stage(void) {
  * Unused, makes Bowser be in idle and after it returns to default action
  */
 void bowser_act_idle(void) {
-    if (cur_obj_init_animation_and_check_if_near_end(BOWSER_ANIM_IDLE)) {
-        o->oAction = BOWSER_ACT_DEFAULT;
+    cur_obj_init_animation(BOWSER_ANIM_IDLE);
+    if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+        o->oAction = BOWSER_ACT_DANCE;
     }
 }
 
@@ -474,7 +511,7 @@ void bowser_act_walk_to_mario(void) {
     }
 
     cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
-    if (o->oFloor->type != SURFACE_BURNING && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
+    if (!(SURFACE_IS_BURNING(o->oFloor->type)) && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
 
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
@@ -511,7 +548,6 @@ void bowser_act_teleport(void) {
         case BOWSER_SUB_ACT_TELEPORT_START:
             cur_obj_become_intangible();
             o->oBowserTargetOpacity = 0;
-            o->oBowserTimer = 30; // set timer value
             // Play sound effect
             if (o->oTimer == 0) {
                 cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
@@ -524,18 +560,21 @@ void bowser_act_teleport(void) {
             break;
 
         case BOWSER_SUB_ACT_TELEPORT_MOVE:
-            // reduce timer and set velocity teleport while at it
-            if (o->oBowserTimer--) {
-                o->oForwardVel = 100.0f;
-            } else {
-                o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
-                o->oMoveAngleYaw = o->oAngleToMario; // update angle
-            }
+            o->oForwardVel = 100.0f;
+
+            o->oPosY = gMarioObject->oPosY + 500.f;
+            o->oVelY = 0.f;
+            cur_obj_move_xz_using_fvel_and_yaw();
 
             if (abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) {
-                if (o->oDistanceToMario > 500.0f) {
+                o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
+                if (o->oDistanceToMario > 500.0f || o->oFloorHeight < o->oPosY - 1000.f) {
+                    o->oPosX -= o->oVelX;
+                    o->oPosZ -= o->oVelZ;
                     o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
                     o->oMoveAngleYaw = o->oAngleToMario; // update angle
+                    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
+                    o->oPosY = o->oFloorHeight;
                     cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
                 }
             }
@@ -643,11 +682,6 @@ s32 bowser_land(void) {
         cur_obj_init_animation_with_sound(BOWSER_ANIM_JUMP_STOP);
         o->header.gfx.animInfo.animFrame = 0;
         cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_JUMP);
-        // Set status attacks in BitDW since the other levels
-        // have different attacks defined
-        if (o->oDistanceToMario < 1000.0f) {
-            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_STUNNED;
-        }
         return TRUE;
     } else {
         return FALSE;
@@ -713,6 +747,7 @@ void bowser_act_quick_jump(void) {
     } else if (o->oSubAction == 1) {
         if (bowser_land()) {
             o->oSubAction++;
+            bowser_spawn_shockwave();
         }
     } else if (cur_obj_check_if_near_animation_end()) {
         o->oAction = BOWSER_ACT_DEFAULT;
@@ -957,10 +992,8 @@ void bowser_act_jump_onto_stage(void) {
         case BOWSER_SUB_ACT_JUMP_ON_STAGE_IDLE:
             if (o->oTimer == 0) {
                 o->oFaceAnglePitch = 0;
-                o->oFaceAngleRoll = 0;
             } //? missing else
             o->oFaceAnglePitch += 0x800;
-            o->oFaceAngleRoll += 0x800;
             if (!(o->oFaceAnglePitch & 0xFFFF)) {
                 cur_obj_init_animation(BOWSER_ANIM_FALL_DOWN);
                 o->oSubAction++;
@@ -1209,7 +1242,7 @@ s32 bowser_dead_final_stage_ending(void) {
         if (cur_obj_update_dialog(MARIO_DIALOG_LOOK_UP,
             (DIALOG_FLAG_TEXT_DEFAULT | DIALOG_FLAG_TIME_STOP_ENABLED), dialogID, 0)) {
             // Dialog is done, fade out music and spawn grand star
-            cur_obj_set_model(MODEL_BOWSER_NO_SHADOW);
+            o->oBowserShadow = FALSE;
             seq_player_unlower_volume(SEQ_PLAYER_LEVEL, 60);
             seq_player_fade_out(SEQ_PLAYER_LEVEL, 1);
             bowser_spawn_collectable();
@@ -1267,10 +1300,8 @@ void bowser_act_dead(void) {
         case BOWSER_SUB_ACT_DEAD_OFFSTAGE:
             if (o->oTimer == 0) {
                 o->oFaceAnglePitch = 0;
-                o->oFaceAngleRoll = 0;
             }
             o->oFaceAnglePitch += 0x800;
-            o->oFaceAngleRoll += 0x800;
             o->oBowserTargetOpacity = 0;
             if (!(o->oFaceAnglePitch & 0xFFFF)) {
                 bowser_dead_hide();
@@ -1280,15 +1311,6 @@ void bowser_act_dead(void) {
             }
             break;
     }
-}
-
-/**
- * Sets values for the BitFS platform to tilt
- */
-void bowser_tilt_platform(struct Object *platform, s16 angSpeed) {
-    s16 angle = o->oBowserAngleToCenter + 0x8000;
-    platform->oAngleVelPitch = coss(angle) * angSpeed;
-    platform->oAngleVelRoll = -sins(angle) * angSpeed;
 }
 
 /**
@@ -1465,9 +1487,9 @@ void bowser_reflect_walls(void) {
 void bowser_free_update(void) {
     o->oBowserGrabbedStatus = BOWSER_GRAB_STATUS_NONE;
     // Update positions and actions (default action)
-    cur_obj_update_floor_and_walls();
+    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sBowserActions);
-    cur_obj_move_standard(-78);
+    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_move_standard(-78);
     // Jump on stage if Bowser has fallen off
     if (bowser_check_fallen_off_stage()) {
         if (o->oAction == BOWSER_ACT_DEAD) {
@@ -1626,10 +1648,11 @@ void bhv_bowser_init(void) {
     // Start camera event, this event is not defined so maybe
     // the "start arena" cutscene was originally called this way
     cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_INIT);
-    o->oAction = BOWSER_ACT_WALK_TO_MARIO;
+    o->oAction = BOWSER_ACT_IDLE;
     // Set eyes status
     o->oBowserEyesTimer = 0;
     o->oBowserEyesShut = FALSE;
+    o->oBowserShadow = TRUE;
 }
 
 Gfx *geo_update_body_rot_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
@@ -1637,8 +1660,7 @@ Gfx *geo_update_body_rot_from_parent(s32 callContext, UNUSED struct GraphNode *n
         struct Object *obj = (struct Object *) gCurGraphNodeObject;
         Mat4 mtx2;
         if (obj->prevObj != NULL) {
-            create_transformation_from_matrices(mtx2, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(mtx2, obj->prevObj);
+            obj_update_pos_from_parent_transformation(mtx, obj->prevObj);
             obj_set_gfx_pos_from_pos(obj->prevObj);
         }
     }
@@ -1670,7 +1692,8 @@ void bowser_open_eye_switch(struct Object *obj, struct GraphNodeSwitchCase *swit
     s16 angleFromMario;
 
     angleFromMario = abs_angle_diff(obj->oMoveAngleYaw, obj->oAngleToMario);
-    eyeCase = switchCase->selectedCase;
+    eyeCase = obj->oBowserEyeState; // switchCase->selectedCase;
+    switchCase->selectedCase = eyeCase;
 
     switch (eyeCase) {
         case BOWSER_EYES_OPEN:
@@ -1775,6 +1798,7 @@ Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4
             bowser_open_eye_switch(obj, switchCase);
         }
 
+        obj->oBowserEyeState = switchCase->selectedCase;
         obj->oBowserEyesTimer++;
     }
 
@@ -1782,32 +1806,98 @@ Gfx *geo_switch_bowser_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4
 }
 
 /**
- * Geo switch that sets Bowser's Rainbow coloring (in BitS)
+ * Handles bowser´s shadow, in vanilla there would be a special seperate geolayout for doing this.
  */
-Gfx *geo_bits_bowser_coloring(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
-    Gfx *gfxHead = NULL;
-
+Gfx *geo_disable_or_enable_bowser_shadow(s32 callContext, struct GraphNode *node, UNUSED s32 context) {
     if (callContext == GEO_CONTEXT_RENDER) {
         struct Object *obj = (struct Object *) gCurGraphNodeObject;
-        struct GraphNodeGenerated *graphNode = (struct GraphNodeGenerated *) node;
+        struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
         if (gCurGraphNodeHeldObject != NULL) {
             obj = gCurGraphNodeHeldObject->objNode;
         }
 
-        // Set layers if object is transparent or not
-        if (obj->oOpacity == 255) {
-            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_OPAQUE);
-        } else {
-            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_TRANSPARENT);
+        if (obj->oBowserShadow == TRUE)
+        {
+            switchCase->selectedCase = 0;
         }
-        Gfx *gfx = gfxHead = alloc_display_list(2 * sizeof(Gfx));
-        // If TRUE, clear lighting to give rainbow color
-        if (obj->oBowserRainbowLight) {
-            gSPClearGeometryMode(gfx++, G_LIGHTING);
+        else{
+            switchCase->selectedCase = 1;
         }
-
-        gSPEndDisplayList(gfx);
     }
 
-    return gfxHead;
+    return NULL;
+}
+
+/**
+ * Handles bowser´s render mode, transparency switch case and his rainbow effect in BITS in one function.
+ */
+Gfx *geo_bowser_transparency_and_rainbow(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+        struct GraphNodeGenerated *graphNode = (struct GraphNodeGenerated *) node;
+
+        obj->oAnimState = 0;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+        s32 objectOpacity = obj->oOpacity;
+        Gfx* gfx = alloc_display_list(5 * sizeof(Gfx));
+        Gfx* gfxHead = gfx;
+
+        // If bowser´s animation state is transparent, 
+        // set the render mode to a non overlaping transparent render mode.
+        // and turn on dither rendering if needed.
+
+        if (objectOpacity == 0xFF) {
+            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_OPAQUE);
+        } 
+        else {
+            obj->oAnimState = 1;
+            SET_GRAPH_NODE_LAYER(graphNode->fnNode.node.flags, LAYER_TRANSPARENT);
+            gDPSetRenderMode(gfxHead++, G_RM_CUSTOM_AA_ZB_XLU_SURF, G_RM_NOOP2)
+
+            if (obj->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA) {
+                gDPSetAlphaCompare(gfxHead++, G_AC_DITHER);
+            }
+        }
+        
+        gDPSetEnvColor(gfxHead++, 255, 255, 255, objectOpacity);
+        // If TRUE, clear lighting to give rainbow color
+        if (obj->oBowserRainbowLight) {
+            gSPClearGeometryMode(gfxHead++, G_LIGHTING);
+        }
+
+        gSPEndDisplayList(gfxHead);
+
+        return gfx;
+    }
+
+    return NULL;
+}
+
+/**
+ * Reverts the render mode used for transparent bowser.
+ */
+Gfx *geo_bowser_revert_rendermode(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        struct Object *obj = (struct Object *) gCurGraphNodeObject;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+        Gfx* gfx = alloc_display_list(2 * sizeof(Gfx));
+        Gfx* gfxHead = gfx;
+
+        if (obj->oAnimState == 1)
+        {
+            gDPSetRenderMode(gfxHead++, G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2)
+        }
+
+        gSPEndDisplayList(gfxHead);
+
+        return gfx;
+    }
+    return NULL;
 }

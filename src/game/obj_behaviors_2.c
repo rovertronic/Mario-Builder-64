@@ -2,7 +2,6 @@
 
 #include "sm64.h"
 #include "actors/common0.h"
-#include "actors/group11.h"
 #include "actors/group17.h"
 #include "audio/external.h"
 #include "behavior_actions.h"
@@ -795,7 +794,7 @@ static void treat_far_home_as_mario(f32 threshold) {
 
 #include "behaviors/koopa.inc.c" // TODO: Text arg field name
 #include "behaviors/pokey.inc.c"
-#include "behaviors/swoop.inc.c"
+// #include "behaviors/swoop.inc.c"
 #include "behaviors/fly_guy.inc.c"
 #include "behaviors/goomba.inc.c"
 // #include "behaviors/chain_chomp.inc.c" // TODO: chain_chomp_sub_act_lunge documentation
@@ -852,7 +851,7 @@ void obj_spit_fire(s16 relativePosX, s16 relativePosY, s16 relativePosZ, f32 sca
 #include "behaviors/flame.inc.c"
 #include "behaviors/snufit.inc.c"
 // #include "behaviors/horizontal_grindel.inc.c"
-#include "behaviors/eyerok.inc.c"
+// #include "behaviors/eyerok.inc.c"
 // #include "behaviors/klepto.inc.c"
 // #include "behaviors/bird.inc.c"
 // #include "behaviors/racing_penguin.inc.c"

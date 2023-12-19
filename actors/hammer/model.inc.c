@@ -1,10 +1,4 @@
-Lights1 hammer_Handle_lights = gdSPDefLights1(
-	0x7F, 0x5C, 0x1A,
-	0xFE, 0xB9, 0x35, 0x28, 0x28, 0x28);
 
-Lights1 hammer_Hard_lights = gdSPDefLights1(
-	0xC, 0xC, 0xC,
-	0x19, 0x19, 0x19, 0x28, 0x28, 0x28);
 
 Vtx hammer_Cylinder_mesh_vtx_cull[8] = {
 	{{{-34, -41, -54},0, {-16, -16},{0x0, 0x0, 0x0, 0xFF}}},
@@ -87,7 +81,8 @@ Gfx mat_hammer_Handle[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(hammer_Handle_lights),
+    gsSPLightColor(LIGHT_1, 0xfeb935ff),
+    gsSPLightColor(LIGHT_2, 0x7f5c1aff),
 	gsSPEndDisplayList(),
 };
 
@@ -96,7 +91,8 @@ Gfx mat_hammer_Hard[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(hammer_Hard_lights),
+    gsSPLightColor(LIGHT_1, 0x191919ff),
+    gsSPLightColor(LIGHT_2, 0xc0c0cff),
 	gsSPEndDisplayList(),
 };
 

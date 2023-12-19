@@ -203,8 +203,6 @@ void bhv_normal_cap_init(void) {
     o->oFriction = 0.89f;
     o->oBuoyancy = 0.9f;
     o->oOpacity = 255;
-
-    save_file_set_cap_pos(o->oPosX, o->oPosY, o->oPosZ);
 }
 
 void normal_cap_set_save_flags(void) {
@@ -259,10 +257,6 @@ void bhv_normal_cap_loop(void) {
             object_step();
             cap_sink_quicksand();
             break;
-    }
-
-    if ((s32) o->oForwardVel != 0) {
-        save_file_set_cap_pos(o->oPosX, o->oPosY, o->oPosZ);
     }
 
     if (o->activeFlags == ACTIVE_FLAG_DEACTIVATED) {

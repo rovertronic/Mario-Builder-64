@@ -31,8 +31,6 @@
 #include "game/rovent.h"
 #include "save_file.h"
 
-// static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
-
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
 
 void cur_obj_shake(struct Object *obj) {
@@ -45,11 +43,9 @@ void cur_obj_shake(struct Object *obj) {
 
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        Mat4 mtx2;
         struct Object *projObj = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
         if (projObj->prevObj) {
-            create_transformation_from_matrices(mtx2, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(mtx2, projObj->prevObj);
+            obj_update_pos_from_parent_transformation(mtx, projObj->prevObj);
             obj_set_gfx_pos_from_pos(projObj->prevObj);
         }
     }
@@ -91,10 +87,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
             }
 
             objectGraphNode->oAnimState = TRANSPARENCY_ANIM_STATE_TRANSPARENT;
-
-            if (objectOpacity == 0x00 && segmented_to_virtual(bhvBowser) == objectGraphNode->behavior) {
-                objectGraphNode->oAnimState = BOWSER_ANIM_STATE_INVISIBLE;
-            }
 
             if (parameter != GEO_TRANSPARENCY_MODE_NO_DITHER
                 && (objectGraphNode->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA)) {
@@ -158,32 +150,21 @@ Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void 
 }
 
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-    struct Surface *floor;
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+    RoomData room;
 
-    if (callContext == GEO_CONTEXT_RENDER) {
-        if (gMarioObject == NULL) {
-            switchCase->selectedCase = 0;
-        } else {
-            s16 roomCase;
-            if (revent_active) {
-                gMarioCurrentRoom = revent_room;
-                roomCase = revent_room - 1;
+    if (callContext == GEO_CONTEXT_RENDER && gMarioObject != NULL) {
+        room = get_room_at_pos(
+            gMarioObject->oPosX,
+            gMarioObject->oPosY,
+            gMarioObject->oPosZ
+        );
 
-                if (roomCase >= 0) {
-                    switchCase->selectedCase = roomCase;
-                }
-            } else {
-                floor = gMarioState->floor;
-                if (floor) {
-                    gMarioCurrentRoom = 0;
-                    roomCase = -1;
+        print_debug_top_down_objectinfo("areainfo %d", room);
 
-                    if (roomCase >= 0) {
-                        switchCase->selectedCase = roomCase;
-                    }
-                }
-            }
+        if (room > 0) {
+            gMarioCurrentRoom = room;
+            switchCase->selectedCase = (room - 1);
         }
     } else {
         switchCase->selectedCase = 0;
@@ -917,7 +898,7 @@ s32 cur_obj_has_model(ModelID16 modelID) {
 
 // HackerSM64 function
 ModelID32 obj_get_model_id(struct Object *obj) {
-    if (!obj->header.gfx.sharedChild) {
+    if (obj->header.gfx.sharedChild != NULL) {
         for (s32 i = MODEL_NONE; i < MODEL_ID_COUNT; i++) {
             if (obj->header.gfx.sharedChild == gLoadedGraphNodes[i]) {
                 return i;
@@ -1077,8 +1058,9 @@ static void cur_obj_move_update_underwater_flags(void) {
 
 static void cur_obj_move_update_ground_air_flags(UNUSED f32 gravity, f32 bounciness) {
     o->oMoveFlags &= ~OBJ_MOVE_BOUNCE;
+    f32 floorOffset = ((o->oMoveFlags & (OBJ_MOVE_ON_GROUND | OBJ_MOVE_LANDED) && (o->oVelY < 5.f)) ? 100.f : 0.f);
 
-    if (o->oPosY < o->oFloorHeight) {
+    if (o->oPosY < (o->oFloorHeight + floorOffset)) {
         // On the first frame that we touch the ground, set OBJ_MOVE_LANDED.
         // On subsequent frames, set OBJ_MOVE_ON_GROUND
         if (!(o->oMoveFlags & OBJ_MOVE_ON_GROUND)) {
@@ -1421,23 +1403,35 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
 
 s32 cur_obj_resolve_wall_collisions(void) {
     f32 radius = o->oWallHitboxRadius;
-    if (radius > 0.1f) {
-        struct WallCollisionData collisionData;
-        collisionData.offsetY = 10.0f;
-        collisionData.radius  = radius;
-        collisionData.x = (s16) o->oPosX;
-        collisionData.y = (s16) o->oPosY;
-        collisionData.z = (s16) o->oPosZ;
-        s32 numCollisions = find_wall_collisions(&collisionData);
-        if (numCollisions != 0) {
-            o->oPosX = collisionData.x;
-            o->oPosY = collisionData.y;
-            o->oPosZ = collisionData.z;
-            struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+    s32 wallFound = FALSE;
+    if (radius <= 0.1f) return FALSE;
 
-            o->oWallAngle = SURFACE_YAW(wall);
-            return (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000);
-        }
+    struct WallCollisionData collisionData;
+    collisionData.offsetY = 10.0f;
+    collisionData.radius  = radius;
+    collisionData.x = (s16) o->oPosX;
+    collisionData.y = (s16) o->oPosY;
+    collisionData.z = (s16) o->oPosZ;
+    s32 numCollisions = find_wall_collisions(&collisionData);
+    if (numCollisions != 0) {
+        struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+        o->oWallAngle = SURFACE_YAW(wall);
+        wallFound = TRUE;
+    }
+
+    collisionData.offsetY += collisionData.radius;
+    numCollisions = find_wall_collisions(&collisionData);
+    if (numCollisions != 0) {
+        struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+        o->oWallAngle = SURFACE_YAW(wall);
+        wallFound = TRUE;
+    }
+
+    if (wallFound) {
+        o->oPosX = collisionData.x;
+        o->oPosY = collisionData.y;
+        o->oPosZ = collisionData.z;
+        return (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000);
     }
 
     return FALSE;
@@ -1950,25 +1944,36 @@ s32 is_item_in_array(s8 item, s8 *array) {
     return FALSE;
 }
 
-void cur_obj_enable_rendering_if_mario_in_room(void) {
-    if (o->oRoom != -1 && gMarioCurrentRoom != 0) {
-        register s32 marioInRoom = (
-            gMarioCurrentRoom == o->oRoom
-            || gDoorAdjacentRooms[gMarioCurrentRoom][0] == o->oRoom
-            || gDoorAdjacentRooms[gMarioCurrentRoom][1] == o->oRoom
-        );
+// void bhv_init_room(void) {
+//     o->oRoom = get_room_at_pos(o->oPosX, o->oPosY, o->oPosZ);
+// }
 
-        if (marioInRoom) {
-            cur_obj_enable_rendering();
-            o->activeFlags &= ~ACTIVE_FLAG_IN_DIFFERENT_ROOM;
-            gNumRoomedObjectsInMarioRoom++;
-        } else {
-            cur_obj_disable_rendering();
-            o->activeFlags |= ACTIVE_FLAG_IN_DIFFERENT_ROOM;
-            gNumRoomedObjectsNotInMarioRoom++;
-        }
-    }
-}
+// s32 cur_obj_is_mario_in_room(void) {
+//     if (o->oRoom != -1 && gMarioCurrentRoom != 0) {
+//         if (gMarioCurrentRoom == o->oRoom // Object is in Mario's room.
+//             || gDoorAdjacentRooms[gMarioCurrentRoom].forwardRoom  == o->oRoom // Object is in the transition room's forward  room.
+//             || gDoorAdjacentRooms[gMarioCurrentRoom].backwardRoom == o->oRoom // Object is in the transition room's backward room.
+//         ) {
+//             return MARIO_INSIDE_ROOM;
+//         }
+
+//         return MARIO_OUTSIDE_ROOM;
+//     }
+
+//     return MARIO_ROOM_UNDEFINED;
+// }
+
+// void cur_obj_enable_rendering_in_room(void) {
+//     cur_obj_enable_rendering();
+//     o->activeFlags &= ~ACTIVE_FLAG_IN_DIFFERENT_ROOM;
+//     gNumRoomedObjectsInMarioRoom++;
+// }
+
+// void cur_obj_disable_rendering_in_room(void) {
+//     cur_obj_disable_rendering();
+//     o->activeFlags |= ACTIVE_FLAG_IN_DIFFERENT_ROOM;
+//     gNumRoomedObjectsNotInMarioRoom++;
+// }
 
 s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deathSound, s32 noLootCoins) {
     s32 interacted = FALSE;

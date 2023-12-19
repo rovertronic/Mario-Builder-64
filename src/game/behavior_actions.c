@@ -2,8 +2,6 @@
 
 #include "types.h"
 #include "actors/common1.h"
-#include "actors/group12.h"
-#include "actors/group13.h"
 #include "actors/group0.h"
 #include "area.h"
 #include "audio/external.h"
@@ -128,13 +126,11 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
 
 // not sure what this is doing here. not in a behavior file.
 Gfx *geo_move_mario_part_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
-    Mat4 mtx2;
 
     if (callContext == GEO_CONTEXT_RENDER) {
         struct Object *obj = (struct Object *) gCurGraphNodeObject;
         if (obj == gMarioObject && obj->prevObj != NULL) {
-            create_transformation_from_matrices(mtx2, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(mtx2, obj->prevObj);
+            obj_update_pos_from_parent_transformation(mtx, obj->prevObj);
             obj_set_gfx_pos_from_pos(obj->prevObj);
         }
     }
