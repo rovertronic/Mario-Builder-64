@@ -752,7 +752,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
 
-        if (gMarioState->CostumeID == 14) { // phat asm
+        if ((gMarioState->CostumeID == 14) && (!(gMarioState->flags & MARIO_VANISH_CAP))) { // phat asm
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
             if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
                 switchCase->selectedCase = 0;
