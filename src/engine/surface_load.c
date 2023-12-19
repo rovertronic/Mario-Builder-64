@@ -286,8 +286,11 @@ static s32 surface_has_force(s32 surfaceType) {
 }
 #endif
 
-
 s32 surf_has_no_cam_collision(s32 surfaceType) {
+    if (raycast_mode_find_cam_collision) {
+        return FALSE;
+    }
+
     switch (surfaceType) {
         case SURFACE_NO_CAM_COLLISION:
         case SURFACE_NO_CAM_COLLISION_77: // Unused

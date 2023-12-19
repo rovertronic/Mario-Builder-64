@@ -1443,6 +1443,8 @@ s32 anim_spline_poll(Vec3f result) {
  * @param length returns the distance from the starting point to the hit position.
  * @return s32 TRUE if the ray intersects a surface.
  */
+u8 raycast_mode_find_cam_collision = FALSE;
+
 s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface *surface, Vec3f hit_pos, f32 *length) {
     // Ignore certain surface types.
     if ((surface->type == SURFACE_INTANGIBLE) || (surf_has_no_cam_collision(surface->type))) return FALSE;

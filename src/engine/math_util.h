@@ -625,4 +625,6 @@ ALWAYS_INLINE f32 smoothstep(f32 from, f32 to, f32 amount) {
     return lerpf(from, to, amount);
 }
 
+extern u8 raycast_mode_find_cam_collision;
+
 #endif // MATH_UTIL_H
