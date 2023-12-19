@@ -620,7 +620,7 @@ static void koopa_the_quick_act_race(void) {
                     ) {
                         // Move faster if mario has already finished the race or
                         // cheated by shooting from cannon
-                        o->oKoopaAgility = 8.0f;
+                        o->oKoopaAgility = 6.0f;
                     } else if (o->oKoopaTheQuickRaceIndex != KOOPA_THE_QUICK_BOB_INDEX) {
                         o->oKoopaAgility = 6.0f;
                     } else {
@@ -652,7 +652,7 @@ static void koopa_the_quick_act_race(void) {
                             o->oVelY = 40.0f;
                         }
 
-                        o->oGravity = -6.0f;
+                        o->oGravity = -5.0f;
                         o->oSubAction = KOOPA_THE_QUICK_SUB_ACT_JUMP;
                         o->oMoveFlags = OBJ_MOVE_NONE;
 
@@ -721,9 +721,10 @@ static void koopa_the_quick_act_after_race(void) {
                 o->parentObj->oKoopaRaceEndpointDialog = DIALOG_006;
             } else {
                 // Mario won
-                o->parentObj->oKoopaRaceEndpointDialog = 1;
-
-                spawn_default_star(o->oPosX+400.0f,o->oPosY+400.0f,o->oPosZ);
+                if (o->oDistanceToMario < 500.0f) {
+                    o->parentObj->oKoopaRaceEndpointDialog = 1;
+                    spawn_default_star(o->oPosX+(sins(o->oFaceAngleYaw)*400.0f),o->oPosY+400.0f,o->oPosZ+(coss(o->oFaceAngleYaw)*400.0f));
+                }
             }
         } else {
             // KtQ won
