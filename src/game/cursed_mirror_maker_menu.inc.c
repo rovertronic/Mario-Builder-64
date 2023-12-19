@@ -761,35 +761,34 @@ void draw_cmm_settings_menu(f32 yoff) {
 }
 
 void draw_cmm_menu(void) {
-    if (cmm_prepare_level_screenshot) {
-        return;
-    }
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 19, 36, 0);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-    animate_list_update(cmm_menu_toolbar_offsets, ARRAY_COUNT(cmm_menu_toolbar_offsets), cmm_toolbar_index);
-    for (s32 i = 0; i < 9; i++) {
-        s32 op = (cmm_toolbar_index == i ? 255 : 200);
-        create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * cmm_menu_toolbar_offsets[i]), 0);
-        gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
-
-        Gfx *mat = cmm_ui_buttons[cmm_toolbar[i]].material;
-        if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
-            s32 idx = (i == cmm_toolbar_index ? cmm_param_selection : 0);
-            mat = ((Gfx **)mat)[idx];
-        }
-        if ((i == cmm_toolbar_index)&&(cmm_toolbox_transition_btn_render)) {
-            mat = cmm_toolbox_transition_btn_old_gfx;
-        }
-
-        gSPDisplayList(gDisplayListHead++, mat);//texture
-        gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+    if (cmm_menu_state != CMM_MAKE_SCREENSHOT) {
+        create_dl_translation_matrix(MENU_MTX_PUSH, 19, 36, 0);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+        gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+        animate_list_update(cmm_menu_toolbar_offsets, ARRAY_COUNT(cmm_menu_toolbar_offsets), cmm_toolbar_index);
+        for (s32 i = 0; i < 9; i++) {
+            s32 op = (cmm_toolbar_index == i ? 255 : 200);
+            create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * cmm_menu_toolbar_offsets[i]), 0);
+            gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
+
+            Gfx *mat = cmm_ui_buttons[cmm_toolbar[i]].material;
+            if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
+                s32 idx = (i == cmm_toolbar_index ? cmm_param_selection : 0);
+                mat = ((Gfx **)mat)[idx];
+            }
+            if ((i == cmm_toolbar_index)&&(cmm_toolbox_transition_btn_render)) {
+                mat = cmm_toolbox_transition_btn_old_gfx;
+            }
+
+            gSPDisplayList(gDisplayListHead++, mat);//texture
+            gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+        }
+        gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
     }
-    gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
     //TOOLBOX
     switch (cmm_menu_state) {
@@ -971,9 +970,17 @@ void draw_cmm_menu(void) {
             print_maker_string(20,210,cmm_txt_recording,TRUE);
             cmm_render_topleft_text();
             break;
+
+        case CMM_MAKE_SCREENSHOT:
+            if (cmm_prepare_level_screenshot) {
+                return;
+            }
+            print_maker_string(20,210,cmm_txt_freecam,TRUE);
+            cmm_render_topleft_text();
+            break;
     }
 
-    if (cmm_menu_state != CMM_MAKE_TRAJECTORY) {
+    if ((cmm_menu_state != CMM_MAKE_TRAJECTORY)&&(cmm_menu_state != CMM_MAKE_SCREENSHOT)) {
         s32 currentX = 15;
         print_maker_string_ascii(currentX,45,cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str,FALSE);
         currentX += get_string_width_ascii(cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str) + 10;

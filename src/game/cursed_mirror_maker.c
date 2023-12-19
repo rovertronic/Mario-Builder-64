@@ -53,6 +53,7 @@
 #include "geo_misc.h"
 #include "mario_actions_automatic.h"
 #include "levels/scripts.h"
+#include "emutest.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
@@ -66,6 +67,7 @@ u8 cmm_joystick_timer = 0;
 s8 cmm_cursor_pos[3] = {32,0,32};
 
 Vec3f cmm_camera_pos = {0.0f,0.0f,0.0f};
+Vec3f cmm_camera_pos_prev;
 Vec3f cmm_camera_foc = {0.0f,0.0f,0.0f};
 f32 cmm_camera_fov = 45.0f;
 s16 cmm_camera_angle = 0;
@@ -106,6 +108,7 @@ u16 cmm_trajectory_edit_index = 0;
 u8 cmm_trajectory_to_edit = 0;
 u8 cmm_trajectories_used = 0;
 u8 cmm_txt_recording[] = {TXT_RECORDING};
+u8 cmm_txt_freecam[] = {TXT_FREECAM};
 
 Vtx *cmm_curr_vtx;
 Gfx *cmm_curr_gfx;
@@ -2244,7 +2247,11 @@ void save_level(void) {
             //take a "screenshot" of the level & burn in a painting frame
             if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
                 //painting
-                cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderingFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
+                if (gEmulator & INSTANT_INPUT_BLACKLIST) {
+                    cmm_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderedFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
+                } else {
+                    cmm_save.piktcher[i/64][i%64] = (gFramebuffers[0][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
+                }
             } else {
                 //painting frame
                 cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
@@ -2573,7 +2580,7 @@ void update_boundary_wall() {
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[5]->oPosZ = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
 
-    if (cmm_prepare_level_screenshot) {
+    if (cmm_menu_state == CMM_MAKE_SCREENSHOT) {
         for (int i=0; i<6; i++) {
             cmm_boundary_object[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
         }
@@ -2634,13 +2641,14 @@ u8 cmm_freecam_snap = FALSE;
 u8 cmm_freecam_snap_timer = 0;
 
 void freecam_camera_init(void) {
-    f32 unused_dist;
+    vec3f_copy(cmm_camera_pos_prev,cmm_camera_pos);
 
-    cmm_prepare_level_screenshot = TRUE;
-    //vec3f_get_dist_and_angle(cmm_camera_pos,cmm_camera_foc,&unused_dist,&cmm_freecam_pitch,&cmm_freecam_yaw);
+    Vec3f d;
+    vec3_diff(d, cmm_camera_pos, cmm_camera_foc);
+    f32 xz = (sqr(d[0]) + sqr(d[2]));
+    cmm_freecam_pitch = atan2s(sqrtf(xz), d[1]) + 0x4000;
+    cmm_freecam_yaw = atan2s(d[2], d[0]);
 
-    cmm_freecam_yaw = 0;
-    cmm_freecam_pitch = 0x4000;
     cmm_freecam_snap = FALSE;
     cmm_freecam_snap_timer = 0;
 }
@@ -2648,10 +2656,18 @@ void freecam_camera_init(void) {
 void freecam_camera_main(void) {
     if (cmm_freecam_snap) {
         cmm_freecam_snap_timer++;
+        if (cmm_freecam_snap_timer == 3) {
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+            for (u8 i=0; i<16; i++) {
+                osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+            }
+            save_level();
+        }
         if (cmm_freecam_snap_timer > 30) {
             cmm_menu_state = CMM_MAKE_MAIN;
             cmm_camera_fov = 45.0f;
             cmm_prepare_level_screenshot = FALSE;
+            vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
         }
         return;
     }
@@ -2673,13 +2689,13 @@ void freecam_camera_main(void) {
     }
 
     if (gPlayer1Controller->buttonDown & R_CBUTTONS) {
-        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw + 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
-        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw + 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw + 0x4000) * 30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw + 0x4000) * 30.0f );
     }
 
     if (gPlayer1Controller->buttonDown & L_CBUTTONS) {
-        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw - 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
-        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw - 0x4000) * -sins(cmm_freecam_pitch) * -30.0f );
+        cmm_camera_pos[0] += ( sins(cmm_freecam_yaw - 0x4000) * 30.0f );
+        cmm_camera_pos[2] += ( coss(cmm_freecam_yaw - 0x4000) * 30.0f );
     }
 
     if (gPlayer1Controller->buttonDown & L_TRIG) {
@@ -2693,12 +2709,15 @@ void freecam_camera_main(void) {
     }
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-        for (u8 i=0; i<16; i++) {
-        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
-        }
-        save_level();
+        cmm_prepare_level_screenshot = TRUE;
         cmm_freecam_snap = TRUE;
+    }
+
+    if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+        cmm_menu_state = CMM_MAKE_MAIN;
+        cmm_camera_fov = 45.0f;
+        cmm_prepare_level_screenshot = FALSE;
+        vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
     }
 
     // transform camera
@@ -3029,7 +3048,9 @@ void sb_loop(void) {
             update_boundary_wall();
         break;
         case CMM_MAKE_SCREENSHOT:
+            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
             freecam_camera_main();
+            update_boundary_wall();
         break;
     }
 

@@ -83,6 +83,7 @@ extern u8 gMarioAnims[];
 extern u8 gDemoInputs[];
 
 extern u16 sRenderingFramebuffer;
+extern u16 sRenderedFramebuffer;
 extern u32 gGlobalTimer;
 
 void setup_game_memory(void);

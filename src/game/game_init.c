@@ -34,9 +34,6 @@
 #include "emutest.h"
 #include "cursed_mirror_maker.h"
 
-// Emulators that the Instant Input patch should not be applied to
-#define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
-
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 
