@@ -200,3 +200,5 @@
 #include "bully/model.inc.c"
 #include "bully/anims/data.inc.c"
 #include "bully/anims/table.inc.c"
+
+#include "new_cull_marker/model.inc.c"

@@ -72,3 +72,4 @@
 #include "loopingp/geo.inc.c"
 #include "motos/geo.inc.c"
 #include "bully/geo.inc.c"
+#include "new_cull_marker/geo.inc.c"
