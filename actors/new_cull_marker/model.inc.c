@@ -1,10 +1,4 @@
-Lights1 new_cull_marker_red_lights = gdSPDefLights1(
-	0x7F, 0x0, 0x0,
-	0xFF, 0x0, 0x0, 0x28, 0x28, 0x28);
 
-Lights1 new_cull_marker_black_lights = gdSPDefLights1(
-	0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x28, 0x28, 0x28);
 
 Vtx new_cull_marker_Plane_mesh_layer_1_vtx_0[20] = {
 	{{ {0, 20, 0}, 0, {632, 823}, {0, 0, 127, 255} }},
@@ -132,7 +126,8 @@ Gfx mat_new_cull_marker_red[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(new_cull_marker_red_lights),
+    gsSPLightColor(LIGHT_1, 0xff0000ff),
+    gsSPLightColor(LIGHT_2, 0x7f0000ff),
 	gsSPEndDisplayList(),
 };
 
@@ -140,7 +135,8 @@ Gfx mat_new_cull_marker_black[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(new_cull_marker_black_lights),
+    gsSPLightColor(LIGHT_1, 0xff),
+    gsSPLightColor(LIGHT_2, 0xff),
 	gsSPEndDisplayList(),
 };
 

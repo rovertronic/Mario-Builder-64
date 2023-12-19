@@ -2701,11 +2701,19 @@ void freecam_camera_main(void) {
     if (gPlayer1Controller->buttonDown & L_TRIG) {
         cmm_camera_fov -= 1.0f;
         cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+
+        if (cmm_camera_fov < 1.0f) {
+            cmm_camera_fov = 1.0f;
+        }
     }
 
     if (gPlayer1Controller->buttonDown & R_TRIG) {
         cmm_camera_fov += 1.0f;
         cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+
+        if (cmm_camera_fov > 100.0f) {
+            cmm_camera_fov = 100.0f;
+        }
     }
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
