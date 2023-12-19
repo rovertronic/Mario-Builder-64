@@ -739,7 +739,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
 
         if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
-            }
+        }
 
         if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
             switchCase->selectedCase = 4;
@@ -748,12 +748,18 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             }
         }
 
-        if (gMarioState->CostumeID == 14) { // phat asm
-            switchCase->selectedCase = MODEL_STATE_METAL >> 8;
-        }
-
         if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
             switchCase->selectedCase = bodyState->modelState >> 8;
+        }
+
+        if (gMarioState->CostumeID == 14) { // phat asm
+            switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+            if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
+                switchCase->selectedCase = 0;
+            }
+            if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
+                switchCase->selectedCase = MODEL_STATE_METAL >> 8;
+            }
         }
     }
 
