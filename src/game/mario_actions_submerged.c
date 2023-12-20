@@ -1002,7 +1002,10 @@ static s32 act_water_plunge(struct MarioState *m) {
             play_sound(SOUND_MARIO_HAHA_WATER, m->marioObj->header.gfx.cameraToObject);
         }
 
-        m->particleFlags |= PARTICLE_WATER_SPLASH;
+        if ((m->waterLevel - m->pos[1]) < 200.f) {
+            m->particleFlags |= PARTICLE_WATER_SPLASH;
+        }
+
         m->actionState = ACT_STATE_WATER_PLUNGE_SINK;
 #if ENABLE_RUMBLE
         if (m->prevAction & ACT_FLAG_AIR) {
