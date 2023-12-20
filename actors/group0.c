@@ -202,3 +202,4 @@
 #include "bully/anims/table.inc.c"
 
 #include "new_cull_marker/model.inc.c"
+#include "b20/model.inc.c"
