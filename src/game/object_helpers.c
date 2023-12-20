@@ -1466,6 +1466,20 @@ static void cur_obj_update_floor(void) {
     }
 }
 
+void cur_obj_update_ceiling(void) {
+    struct Surface *ceil;
+    f32 ceilHeight = find_ceil(o->oPosX, o->oPosY, o->oPosZ, &ceil);
+
+    if (!ceil) return;
+
+    if (o->oVelY > 0.f) {
+        if ((o->oPosY + o->oVelY + o->hitboxHeight - o->hitboxDownOffset) > ceilHeight) {
+            o->oPosY = ceilHeight - o->hitboxHeight + o->hitboxDownOffset;
+            o->oVelY = 0.f;
+        }
+    }
+}
+
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
     o->oMoveFlags &= ~(OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ABOVE_DEATH_BARRIER);
 
@@ -1491,6 +1505,8 @@ static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegre
         if (cur_obj_detect_steep_floor(steepSlopeDegrees)) {
             o->oMoveFlags |= OBJ_MOVE_HIT_WALL;
         }
+
+        cur_obj_update_ceiling();
     }
 }
 
