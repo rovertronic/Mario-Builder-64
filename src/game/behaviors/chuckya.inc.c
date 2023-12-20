@@ -166,7 +166,7 @@ ObjActionFunc sChuckyaActions[] = {
 void chuckya_move(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sChuckyaActions);
-    cur_obj_move_standard(-30);
+    cur_obj_move_standard(-78);
     if (o->oInteractStatus & INT_STATUS_GRABBED_MARIO) {
         o->oAction = 1;
         o->oCommonAnchorAction = 1;

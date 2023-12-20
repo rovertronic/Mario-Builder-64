@@ -2346,6 +2346,12 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
         struct Object *other = obj->collidedObjs[0];
 
         if (other != gMarioObject) {
+            if (other->oInteractType == INTERACT_GRABBABLE) {
+                if (other->behavior != segmented_to_virtual(bhvBowser) &&
+                    other->behavior != segmented_to_virtual(bhvBobomb)) {
+                    return FALSE;
+                }
+            }
             other->oInteractStatus |= INT_STATUS_TOUCHED_MARIO | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
                                       | INT_STATUS_TOUCHED_BOB_OMB;
             return TRUE;
