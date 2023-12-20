@@ -566,17 +566,17 @@ void bowser_act_teleport(void) {
             o->oVelY = 0.f;
             cur_obj_move_xz_using_fvel_and_yaw();
 
-            if (abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) {
+            o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
+            if ((abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) && // Passed Mario
+                (o->oDistanceToMario > 500.0f || o->oFloorHeight < o->oPosY - 1000.f) // Passed enough, or no longer over a floor
+                || o->oFloorHeight <= -10000.f) { // OoB
+                o->oPosX -= o->oVelX;
+                o->oPosZ -= o->oVelZ;
+                o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
+                o->oMoveAngleYaw = o->oAngleToMario; // update angle
                 o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-                if (o->oDistanceToMario > 500.0f || o->oFloorHeight < o->oPosY - 1000.f) {
-                    o->oPosX -= o->oVelX;
-                    o->oPosZ -= o->oVelZ;
-                    o->oSubAction = BOWSER_SUB_ACT_TELEPORT_STOP;
-                    o->oMoveAngleYaw = o->oAngleToMario; // update angle
-                    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-                    o->oPosY = o->oFloorHeight;
-                    cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
-                }
+                o->oPosY = o->oFloorHeight;
+                cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_TELEPORT);
             }
             break;
 
