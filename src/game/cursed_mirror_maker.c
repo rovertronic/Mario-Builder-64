@@ -1427,7 +1427,6 @@ void generate_terrain_gfx(void) {
 };
 
 Gfx preview_gfx[50];
-Mtx preview_mtx[2];
 Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
@@ -1442,7 +1441,6 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
             //generate dl
             if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) return NULL;
-            u8 preview_mtx_index = 0;
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
@@ -1505,17 +1503,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 }
                 gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
 
-            } else if (cmm_id_selection == TILE_TYPE_CULL) {
-                guTranslate(&preview_mtx[preview_mtx_index], GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
-                preview_mtx_index++;
-                guRotate(&preview_mtx[preview_mtx_index],90.0f*cmm_rot_selection,0.0f,1.0f,0.0f);
-                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index-1]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-                gSPMatrix(&cmm_curr_gfx[cmm_gfx_index++], VIRTUAL_TO_PHYSICAL(&preview_mtx[preview_mtx_index]), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-                //gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_param_selection).gfx);
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &cull_cull_mesh);
-                gSPPopMatrix(&cmm_curr_gfx[cmm_gfx_index++], G_MTX_MODELVIEW);
-                preview_mtx_index++;
-            } else {
+            } else if (cmm_id_selection != TILE_TYPE_CULL) {
                 cmm_use_alt_uvs = TRUE;
                 if (cmm_id_selection == TILE_TYPE_FENCE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
@@ -3071,19 +3059,21 @@ void sb_loop(void) {
         break;
     }
 
-    if (cmm_place_mode == CMM_PM_OBJ) {
-        if (cmm_menu_state == CMM_MAKE_MAIN || cmm_menu_state == CMM_MAKE_SETTINGS || cmm_menu_state == CMM_MAKE_TOOLBOX) {
-            struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
+    if (cmm_menu_state == CMM_MAKE_MAIN || cmm_menu_state == CMM_MAKE_SETTINGS || cmm_menu_state == CMM_MAKE_TOOLBOX) {
+        struct Object *previewObj = cur_obj_nearest_object_with_behavior(bhvCurrPreviewObject);
+        if (!previewObj) {
+            s8 pos[3];
+            vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
 
-            if (!previewObj) {
+            if (cmm_place_mode == CMM_PM_OBJ) {
                 struct cmm_object_info *info = cmm_object_place_types[cmm_id_selection].info;
                 if (cmm_object_place_types[cmm_id_selection].multipleObjs) {
                     info = &info[cmm_param_selection];
                 }
 
-                s8 pos[3];
-                vec3_set(pos, cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
                 spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, cmm_param_selection, info, bhvCurrPreviewObject,FALSE);
+            } else if (cmm_place_mode == CMM_PM_TILE && cmm_id_selection == TILE_TYPE_CULL) {
+                spawn_preview_object(pos, cmm_rot_selection, 0, 0, &cmm_cullmarker_preview, bhvCurrPreviewObject, FALSE);
             }
         }
     }

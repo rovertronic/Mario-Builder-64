@@ -1277,6 +1277,11 @@ struct cmm_object_info cmm_object_type_coin_formation = {
     bhvCoinFormation, 0, MODEL_NONE, FALSE, 0, 0, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN_MULTI,
 };
 
+// Fake entry for cull marker preview
+struct cmm_object_info cmm_cullmarker_preview = {
+    bhvStaticObject, TILE_SIZE/2, MODEL_CULL_MARKER, TRUE, 0, 0, 1.f, NULL, NULL, 0,
+};
+
 enum {
     OBJECT_TYPE_STAR,
     OBJECT_TYPE_GOOMBA,
