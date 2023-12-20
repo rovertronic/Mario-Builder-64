@@ -221,7 +221,7 @@ u32 determine_interaction(struct MarioState *m, struct Object *obj) {
                 interaction = INT_HIT_FROM_ABOVE;
             }
         } else {
-            if (m->pos[1] < obj->oPosY) {
+            if ((m->pos[1] + 100.f) < obj->oPosY) {
                 interaction = INT_HIT_FROM_BELOW;
             }
         }
