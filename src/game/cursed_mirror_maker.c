@@ -858,6 +858,14 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                     index = 3;
                     isQuad = TRUE;
                     break;
+                case CMM_FACESHAPE_HALFSIDE_1:
+                    index = 4;
+                    isQuad = TRUE;
+                    break;
+                case CMM_FACESHAPE_HALFSIDE_2:
+                    index = 5;
+                    isQuad = TRUE;
+                    break;
             }
 
             s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);

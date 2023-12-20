@@ -4,6 +4,18 @@ void bhv_white_puff_smoke_init(void) {
     cur_obj_scale(random_float() * 2 + 2.0);
 }
 
+static struct ObjectHitbox sBulletBillHitbox = {
+    /* interactType:      */ INTERACT_DAMAGE,
+    /* downOffset:        */ 200,
+    /* damageOrCoinValue: */ 2,
+    /* health:            */ 0,
+    /* numLootCoins:      */ 0,
+    /* radius:            */ 200,
+    /* height:            */ 400,
+    /* hurtboxRadius:     */ 0,
+    /* hurtboxHeight:     */ 0,
+};
+
 void bhv_bullet_bill_init(void) {
     o->oBulletBillInitialMoveYaw = o->oMoveAngleYaw;
 }
@@ -65,16 +77,15 @@ void bullet_bill_act_3(void) {
 
 void bullet_bill_act_4(void) {
     if (o->oTimer == 0) {
-        o->oForwardVel = -30.0f;
         cur_obj_become_intangible();
+        cur_obj_hide();
+        struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
+        explosion->oGraphYOffset += 100.0f;
     }
-
-    o->oFaceAnglePitch += 0x1000;
-    o->oFaceAngleRoll += 0x1000;
-    o->oPosY += 20.0f;
 
     if (o->oTimer > 90) {
         o->oAction = 0;
+        cur_obj_unhide();
     }
 }
 
@@ -88,7 +99,8 @@ ObjActionFunc sBulletBillActions[] = {
 
 void bhv_bullet_bill_loop(void) {
     cur_obj_call_action_function(sBulletBillActions);
-    if (cur_obj_check_interacted()) {
+    obj_set_hitbox(o, &sBulletBillHitbox);
+    if (cur_obj_check_interacted() || obj_attack_collided_from_other_object(o)) {
         o->oAction = 4;
     }
 }
