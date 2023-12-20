@@ -1392,7 +1392,7 @@ char *txt_badges[] = {
     "Fast Foot",
     "Heal Plus",
     "Bottomless",
-    "Boss Slayer",
+    "Slow Fall",
     "Brittle Burden",
     "Withering Burden",
 };
