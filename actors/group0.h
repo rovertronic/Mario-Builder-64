@@ -659,4 +659,6 @@ extern const struct Animation *const bully_seg5_anims_0500470C[];
 
 #include "new_cull_marker/geo_header.h"
 
+#include "b20/header.h"
+
 #endif
