@@ -2310,6 +2310,7 @@ void load_level(void) {
     } else {
         //Load into a fresh level
         fresh = TRUE;
+        strcpy(cmm_file_info.fname,cmm_file_name);
 
         //Set version
         cmm_save.version = CMM_VERSION;
