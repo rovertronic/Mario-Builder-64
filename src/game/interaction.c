@@ -1471,6 +1471,8 @@ u32 interact_damage(struct MarioState *m, UNUSED u32 interactType, struct Object
 u32 interact_breakable(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
     u32 interaction = determine_interaction(m, obj);
 
+    if (obj->behavior != segmented_to_virtual(bhvExclamationBox)) interaction &= ~INT_HIT_FROM_BELOW;
+
     if (interaction & INT_ATTACK_NOT_WEAK_FROM_ABOVE) {
         attack_object(obj, interaction);
         bounce_back_from_attack(m, interaction);
