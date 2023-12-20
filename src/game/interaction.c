@@ -216,14 +216,10 @@ u32 determine_interaction(struct MarioState *m, struct Object *obj) {
     // that the interaction not be set prior. This specifically overrides turning a ground
     // pound into just a bounce.
     if ((interaction == INT_NONE) && (action & ACT_FLAG_AIR)) {
-        if (m->vel[1] < 0.0f) {
-            if (m->pos[1] > obj->oPosY) {
-                interaction = INT_HIT_FROM_ABOVE;
-            }
-        } else {
-            if ((m->pos[1] + 100.f) < obj->oPosY) {
-                interaction = INT_HIT_FROM_BELOW;
-            }
+        if ((m->vel[1] < 0.f) && (m->pos[1] > obj->oPosY)) {
+            interaction = INT_HIT_FROM_ABOVE;
+        } else if ((m->vel[1] >= -4.f) && (m->pos[1] + 100.f) < obj->oPosY) {
+            interaction = INT_HIT_FROM_BELOW;
         }
     }
 
