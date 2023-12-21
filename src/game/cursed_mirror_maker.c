@@ -1180,8 +1180,7 @@ u32 get_tiletype_index(u32 type, u32 mat) {
 }
 
 
-Gfx *get_sidetex(s32 mat) {
-    s32 matid = TILE_MATDEF(mat).topmat;
+Gfx *get_sidetex(s32 matid) {
     for (s32 i = 0; i < ARRAY_COUNT(cmm_topmat_table); i++) {
         if (cmm_topmat_table[i].mat == matid) {
             return cmm_topmat_table[i].decaltex;
@@ -1232,7 +1231,7 @@ void process_tiles(u32 isTransparent) {
                      cutout_turn_culling_on(mat); )
         
         if (cmm_curr_mat_has_topside) {
-            Gfx *sidetex = get_sidetex(mat);
+            Gfx *sidetex = get_sidetex(TILE_MATDEF(mat).topmat);
             // Only runs when rendering
             if (!cmm_building_collision && (sidetex)) {
                 cmm_use_alt_uvs = TRUE;
@@ -1431,6 +1430,38 @@ Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
+void render_preview_block(u8 matid, u8 topmatid, s8 pos[3], struct cmm_terrain *terrain, u8 rot) {
+    if (topmatid != CMM_MAT_NONE && topmatid != matid) {
+        cmm_curr_mat_has_topside = TRUE;
+    }
+
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
+    cutout_turn_culling_off(cmm_mat_selection);
+    process_tile(pos, terrain, rot);
+    display_cached_tris();
+    cutout_turn_culling_on(cmm_mat_selection);
+
+    if (cmm_curr_mat_has_topside) {
+        Gfx *sidetex = get_sidetex(topmatid);
+        if (sidetex != NULL) {
+            cmm_use_alt_uvs = TRUE;
+            cmm_growth_render_type = 2;
+
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+            process_tile(pos, terrain, rot);
+            display_cached_tris();
+            cmm_use_alt_uvs = FALSE;
+        }
+        cmm_growth_render_type = 1;
+
+        gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
+        process_tile(pos, terrain, rot);
+        display_cached_tris();
+    }
+    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+}
+
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
@@ -1447,6 +1478,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             cmm_building_collision = FALSE;
             cmm_growth_render_type = 0;
+            cmm_curr_mat_has_topside = FALSE;
 
             retroland_filter_on();
 
@@ -1466,7 +1498,6 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
             
             if (terrain) {
-                cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
                 if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
                     process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
@@ -1477,31 +1508,8 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     cmm_curr_gfx += cmm_gfx_index;
                     cmm_gfx_index = 0;
                 }
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(cmm_mat_selection).gfx);
-                cutout_turn_culling_off(cmm_mat_selection);
-                process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                display_cached_tris();
-                cutout_turn_culling_on(cmm_mat_selection);
-
-                if (cmm_curr_mat_has_topside) {
-                    Gfx *sidetex = get_sidetex(cmm_mat_selection);
-                    if (sidetex != NULL) {
-                        cmm_use_alt_uvs = TRUE;
-                        cmm_growth_render_type = 2;
-
-                        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
-                        process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                        display_cached_tris();
-                        cmm_use_alt_uvs = FALSE;
-                    }
-                    cmm_growth_render_type = 1;
-
-                    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-                    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(cmm_mat_selection).gfx);
-                    process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                    display_cached_tris();
-                }
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+                render_preview_block(TILE_MATDEF(cmm_mat_selection).mat, TILE_MATDEF(cmm_mat_selection).topmat,
+                                     cmm_cursor_pos, terrain, cmm_rot_selection);
 
             } else if (cmm_id_selection != TILE_TYPE_CULL) {
                 cmm_use_alt_uvs = TRUE;

@@ -563,21 +563,22 @@ void finish_block_draw() {
     create_dl_ortho_matrix();
 }
 
-void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat) {
+void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat, u8 topmat) {
     prepare_block_draw(xpos, ypos);
 
-    s8 pos2[3];
-    vec3_set(pos2,32,0,32);
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[mat].gfx);
-    process_tile(pos2, &cmm_terrain_fullblock, 0);
-    display_cached_tris();
-    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+    s8 pos[3];
+    vec3_set(pos,32,0,32);
+
+    render_preview_block(mat, topmat, pos, &cmm_terrain_fullblock, 0);
+
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
     finish_block_draw();
 }
 
 u8 tmpmaterial = 5;
+u8 tmpTopMaterial = 8;
 
 void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory;
@@ -635,8 +636,8 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
 
     custom_theme_draw_mat_selector(160 + yoff, CUSTOM_INDEX_OFFSET, &tmpmaterial);
     print_maker_string_ascii(55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yoff, "Enable Top Material...", (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
-    custom_theme_draw_mat_selector(112 + yoff, CUSTOM_INDEX_OFFSET+3, &tmpmaterial);
-    custom_theme_draw_block(-100, yoff + 10, tmpmaterial);
+    custom_theme_draw_mat_selector(112 + yoff, CUSTOM_INDEX_OFFSET+3, &tmpTopMaterial);
+    custom_theme_draw_block(-100, yoff + 10, tmpmaterial, tmpTopMaterial);
 }
 
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
