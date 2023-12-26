@@ -690,4 +690,12 @@ extern const Gfx skeeter_seg6_dl_06005328[];
 extern const Gfx skeeter_seg6_dl_06005358[];
 extern const struct Animation *const skeeter_seg6_anims_06007DE0[];
 
+#include "gooner/geo_header.h"
+
+#include "gooner/collision_header.h"
+
+#include "spooner/geo_header.h"
+
+#include "spooner/collision_header.h"
+
 #endif

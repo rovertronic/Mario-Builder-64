@@ -1700,9 +1700,11 @@ const BehaviorScript bhvCutOutObject[] = {
 // };
 
 const BehaviorScript bhvFlamethrower[] = {
-    BEGIN(OBJ_LIST_DEFAULT),
+    BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_HOME(),
+    LOAD_COLLISION_DATA(gooner_collision),
+    CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_flamethrower_loop),
     END_LOOP(),
@@ -2631,7 +2633,8 @@ const BehaviorScript bhvSnowBall[] = {
 const BehaviorScript bhvLllRotatingBlockWithFireBars[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_COLLISION_DATA(lll_seg7_collision_rotating_fire_bars),
+    //LOAD_COLLISION_DATA(lll_seg7_collision_rotating_fire_bars),
+    LOAD_COLLISION_DATA(spooner_collision),
     SET_FLOAT(oCollisionDistance, 4000),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_HIGH),
     BEGIN_LOOP(),

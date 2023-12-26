@@ -81,7 +81,7 @@ void bhv_flamethrower_loop(void) {
 
         o->oFlameThowerTimeRemaining = flameTimeRemaining;
 
-        struct Object *flame = spawn_object_relative(o->oBehParams2ndByte, 0, 0, 0, o, model, bhvFlamethrowerFlame);
+        struct Object *flame = spawn_object_relative(o->oBehParams2ndByte, 0, 40, 0, o, model, bhvFlamethrowerFlame);
         flame->oForwardVel = flameVel;
 
         cur_obj_play_sound_1(SOUND_AIR_BLOW_FIRE);

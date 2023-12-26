@@ -74,3 +74,5 @@
 #include "bully/geo.inc.c"
 #include "new_cull_marker/geo.inc.c"
 #include "skeeter/geo.inc.c"
+#include "gooner/geo.inc.c"
+#include "spooner/geo.inc.c"

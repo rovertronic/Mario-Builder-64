@@ -1082,6 +1082,7 @@ enum {
     CMM_BUTTON_SNOWEN,
     CMM_BUTTON_MINE,
     CMM_BUTTON_FIRE_SPINNER,
+    CMM_BUTTON_FIRE,
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1115,14 +1116,14 @@ u8 cmm_toolbox_btcm[45] = {
     /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN,CMM_BUTTON_BTCME,CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT, CMM_BUTTON_TC,CMM_BUTTON_FIRE_SPINNER, CMM_BUTTON_BADGE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT, CMM_BUTTON_TC,CMM_BUTTON_FIRE, CMM_BUTTON_BADGE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
     /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION, CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_VEXCLA,CMM_BUTTON_HEART,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN,CMM_BUTTON_BOSS,CMM_BUTTON_KTQ, CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,CMM_BUTTON_TC, CMM_BUTTON_MINE, CMM_BUTTON_FIRE_SPINNER, CMM_BUTTON_BBALL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,CMM_BUTTON_TC, CMM_BUTTON_MINE, CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
 
@@ -1261,6 +1262,12 @@ struct cmm_object_info cmm_object_type_fire_spinner[] = {
 struct cmm_object_info cmm_object_type_coin_formation = {
     bhvCoinFormation, 0, MODEL_NONE, FALSE, 0, 0, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN_MULTI,
 };
+struct cmm_object_info cmm_object_type_fire[] = {
+    {bhvFlame, 60, MODEL_RED_FLAME, TRUE, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
+    {bhvFlame, 60, MODEL_BLUE_FLAME, TRUE, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
+    {bhvFireSpitter, TILE_SIZE/2, MODEL_BOWLING_BALL, TRUE, 0, 0, 0.2f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
+    {bhvFlamethrower, TILE_SIZE/2, MODEL_MAKER_FLAMETHROWER, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
+};
 
 enum {
     OBJECT_TYPE_STAR,
@@ -1292,6 +1299,7 @@ enum {
     OBJECT_TYPE_FIRE_SPINNER,
     OBJECT_TYPE_COINFORM,
     OBJECT_TYPE_SETTINGS, // Also fake type
+    OBJECT_TYPE_FIRE,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1324,6 +1332,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_fire_spinner, FALSE, FALSE, FALSE, 9},
     {&cmm_object_type_coin_formation, FALSE, FALSE, FALSE, 5},
     { cmm_object_type_settings, FALSE, FALSE, TRUE, 2}, // Used only for the length field
+    { cmm_object_type_fire, FALSE, FALSE, TRUE, 4},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1582,6 +1591,20 @@ char *txt_platforms[] = {
     "Looping",
 };
 
+Gfx *btn_fire[] = {
+    mat_b_btn_fire_red,
+    mat_b_btn_fire_blue,
+    mat_b_btn_firespitter,
+    mat_b_btn_flamethrower,
+};
+
+char *txt_fire[] = {
+    "Red",
+    "Blue",
+    "Spitter",
+    "Thrower",
+};
+
 char *txt_fire_spinner[] = {
     "Length: 2",
     "Length: 3",
@@ -1650,6 +1673,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,  CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies},    //CMM_BUTTON_SNOWEN
     {mat_b_btn_bbomb,        0, OBJECT_TYPE_MINE,    CMM_PM_OBJ,   "Bowser Mine",        NULL},                //CMM_BUTTON_MINE
     {mat_b_btn_firebar,      0, OBJECT_TYPE_FIRE_SPINNER, CMM_PM_OBJ, "Fire Spinner",    txt_fire_spinner},    //CMM_BUTTON_FIRE_SPINNER
+    {btn_fire,               1, OBJECT_TYPE_FIRE,    CMM_PM_OBJ,   "Flame",               txt_fire},            //CMM_BUTTON_FIRE
 
 };
 

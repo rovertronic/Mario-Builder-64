@@ -204,3 +204,7 @@
 #include "skeeter/model.inc.c"
 #include "skeeter/anims/data.inc.c"
 #include "skeeter/anims/table.inc.c"
+#include "gooner/model.inc.c"
+#include "gooner/collision.inc.c"
+#include "spooner/model.inc.c"
+#include "spooner/collision.inc.c"

@@ -1,0 +1,10 @@
+extern const GeoLayout spooner_geo[];
+extern Lights1 spooner_firespinner_lights;
+extern u8 spooner_firespinner_ci8[];
+extern u8 spooner_firespinner_pal_rgba16[];
+extern Vtx spooner_Cylinder_mesh_layer_1_vtx_0[36];
+extern Gfx spooner_Cylinder_mesh_layer_1_tri_0[];
+extern Gfx mat_spooner_firespinner[];
+extern Gfx mat_revert_spooner_firespinner[];
+extern Gfx spooner_Cylinder_mesh_layer_1[];
+extern Gfx spooner_material_revert_render_settings[];
