@@ -686,7 +686,7 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
         }
 
         if (revent_active) {
-            switchCase->selectedCase = revent_handstate;
+            //switchCase->selectedCase = revent_handstate;
         }
     }
 
