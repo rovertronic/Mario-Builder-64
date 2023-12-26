@@ -30,7 +30,12 @@ static s16 sFlyGuyJitterAmounts[] = { 0x1000, -0x2000, 0x2000 };
 static void fly_guy_act_idle(void) {
     o->oForwardVel = 0.0f;
 
-    if (approach_f32_ptr(&o->header.gfx.scale[0], 1.5f, 0.02f)) {
+    f32 target_scale = 1.5f;
+    if (cur_obj_has_behavior(bhvChicken)) {
+        target_scale = 1.0f;
+    }
+
+    if (approach_f32_ptr(&o->header.gfx.scale[0], target_scale, 0.02f)) {
         // If we are >2000 units from home or Mario is <2000 units from us
         if (o->oDistanceToMario >= 25000.0f || o->oDistanceToMario < 2000.0f) {
             // Turn toward home or Mario
@@ -76,7 +81,7 @@ static void fly_guy_act_approach_mario(void) {
                 o->oFlyGuyScaleVel = 0.06f;
             } else {
                 o->oAction = FLY_GUY_ACT_LUNGE;
-                if (cmm_lopt_game == CMM_GAME_BTCM) {
+                if (cur_obj_has_behavior(bhvChicken)) {
                     cur_obj_play_sound_2(SOUND_OBJ_BOO_LAUGH_SHORT);
                 }
                 o->oFlyGuyLungeTargetPitch = obj_turn_pitch_toward_mario(-200.0f, 0);
@@ -160,7 +165,7 @@ static void fly_guy_act_shoot_fire(void) {
                 // clamp_s16(&fireMovePitch, 0x800, 0x3000);
 
                 //o->oMoveAngleYaw = o->oFaceAngleYaw;
-                hammer = spawn_object(o, 0xE5, bhvSnufitBalls);
+                hammer = spawn_object(o, MODEL_MAKER_EGG, bhvSnufitBalls);
                 hammer->oMoveAnglePitch = obj_turn_pitch_toward_mario(0.0f, 0);
             }
         }
@@ -188,6 +193,7 @@ void bhv_fly_guy_update(void) {
         o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
 
         cur_obj_scale(o->header.gfx.scale[0]);
+
         treat_far_home_as_mario(2000.0f);
         cur_obj_update_floor_and_walls();
 

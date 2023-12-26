@@ -58,3 +58,9 @@
 #include "b20/model.inc.c"
 #include "b18/model.inc.c"
 #include "b19/model.inc.c"
+
+#include "chicken/model.inc.c"
+#include "chicken/anims/data.inc.c"
+#include "chicken/anims/table.inc.c"
+
+#include "egg/model.inc.c"

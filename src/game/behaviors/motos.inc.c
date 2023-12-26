@@ -50,7 +50,7 @@ void bhv_motos_wait(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
     
     if (o->oDistanceToMario < 500.f) {
-        cur_obj_play_sound_2(SOUND_MOTOS);
+        //cur_obj_play_sound_2(SOUND_MOTOS);
         o->oAction = MOTOS_ACT_PLAYER_SEARCH;
     }
 }
@@ -105,7 +105,7 @@ void bhv_motos_thrown(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_DOWN_STOP);
     
     if (o->oMoveFlags & OBJ_MOVE_LANDED) {
-
+        /*
         if (save_file_get_badge_equip() & (1<<3)) {
             o->oHealth-=2;
             }
@@ -113,7 +113,7 @@ void bhv_motos_thrown(void) {
             {
             o->oHealth--;
             }
-
+        */
         if (o->oHealth > 0) {
             o->oAction = MOTOS_ACT_RECOVER; // New action: recover (used to go straight back into wait)
             }
@@ -196,6 +196,9 @@ void bhv_motos_main() {
         if ((floorY + 1.f > o->oPosY) && (SURFACE_IS_BURNING(sObjFloor->type))) {
             o->oAction = MOTOS_ACT_DEATH;
         }
+    }
+    if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
+        o->oAction = MOTOS_ACT_DEATH;
     }
 }
 

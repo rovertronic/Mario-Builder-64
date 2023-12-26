@@ -1141,6 +1141,7 @@ struct cmm_object_info cmm_object_type_goomba[] = {
     {bhvFirePiranhaPlantBig, 0, MODEL_MAKER_PLANT, FALSE, 2, 0, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
     {bhvFirePiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 0, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
     {bhvScaredKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 5, 0, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
+    {bhvSkeeter, 0, MODEL_MAKER_SKEETER, FALSE, 3, 0, 1.0f, skeeter_seg6_anims_06007DE0, NULL, SOUND_OBJ_SKEETER_WALK},
 };
 struct cmm_object_info cmm_object_type_yellowcoin = {
     bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
@@ -1165,6 +1166,7 @@ struct cmm_object_info cmm_object_type_mech_enemy[] = {
     {bhvSmallBully, 0, MODEL_BULLY, FALSE, 1, 0, 1.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
     {bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2, FALSE, 0, 1, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
     {bhvHeaveHo, 0, MODEL_MAKER_HEAVEHO, FALSE, 0, 0, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+    {bhvMotos, 0, MODEL_MAKER_MOTOS, FALSE, 5, 0, 2.0f, motos_anime, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 };
 
 struct cmm_object_info cmm_object_type_tree = {
@@ -1182,6 +1184,7 @@ struct cmm_object_info cmm_object_type_btcme[] = {
     {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 4, 0, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
     {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, NULL, SOUND_OBJ_KOOPA_DAMAGE},
     {bhvFireBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvChicken, 0, MODEL_MAKER_CHICKEN, FALSE, 2, 0, 1.0f, chicken_anims, NULL, SOUND_OBJ_BOO_LAUGH_SHORT},
     {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_warppipe = {
@@ -1293,17 +1296,17 @@ enum {
 
 struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_star, FALSE, TRUE, TRUE, 3},
-    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 7},
+    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 8},
     {&cmm_object_type_yellowcoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_greencoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_redcoin, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_bluecoin, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_noteblock, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_mech_enemy, FALSE, FALSE, TRUE, 5},
+    { cmm_object_type_mech_enemy, FALSE, FALSE, TRUE, 6},
     {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
     {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
-    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 6},
+    { cmm_object_type_btcme, FALSE, FALSE, TRUE, 7},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
     { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
@@ -1403,6 +1406,7 @@ Gfx *btn_mech_enemies[] = {
     mat_b_btn_bully,
     mat_b_btn_bill,
     mat_b_btn_heaveho,
+    mat_b_btn_motos,
 };
 
 char *txt_mech_enemies[] = {
@@ -1411,6 +1415,7 @@ char *txt_mech_enemies[] = {
     "Bully",
     "Bullet Bill",
     "Heave-Ho",
+    "Motos",
 };
 
 Gfx *btn_mech_bosses[] = {
@@ -1469,6 +1474,7 @@ char *txt_btcm_objects[] = {
     "Crablet",
     "Hammer Bro",
     "Fire Bro",
+    "Chicken",
     "Cosmic Phantasm",
 };
 
@@ -1478,6 +1484,7 @@ Gfx *btn_btcm_objects[] = {
     mat_b_btn_crablet,
     mat_b_btn_hammerbro,
     mat_b_btn_hammerbro,
+    mat_b_btn_chicken,
     mat_b_btn_phantasm,
 };
 
@@ -1527,6 +1534,7 @@ char *txt_ground_enemies[] = {
     "Huge Piranha Plant",
     "Tiny Piranha Plant",
     "Koopa",
+    "Skeeter",
 };
 Gfx *btn_ground_enemies[] = {
     mat_b_btn_goomba,
@@ -1536,6 +1544,7 @@ Gfx *btn_ground_enemies[] = {
     mat_b_btn_plant,
     mat_b_btn_plant,
     mat_b_btn_kuppa,
+    mat_b_btn_skeeter,
 };
 
 char *txt_snow_enemies[] = {

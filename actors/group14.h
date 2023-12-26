@@ -64,4 +64,9 @@ extern const Gfx question_box_dl[];
 #include "b18/header.h"
 #include "b19/header.h"
 
+#include "chicken/geo_header.h"
+#include "chicken/anim_header.h"
+
+#include "egg/geo_header.h"
+
 #endif

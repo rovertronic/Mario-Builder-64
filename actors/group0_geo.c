@@ -32,7 +32,7 @@
 //#include "ring/geo.inc.c"
 //#include "metal_crate/geo.inc.c"
 //#include "monty_mole/geo.inc.c"
-//#include "chicken/geo.inc.c"
+
 // #include "token/geo.inc.c"
 //#include "egg/geo.inc.c"
 //#include "snakeblock1/geo.inc.c"
@@ -73,3 +73,4 @@
 #include "motos/geo.inc.c"
 #include "bully/geo.inc.c"
 #include "new_cull_marker/geo.inc.c"
+#include "skeeter/geo.inc.c"

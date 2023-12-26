@@ -20,3 +20,7 @@
 
 #include "exclamation_box/geo.inc.c"
 #include "podoboo/geo.inc.c"
+
+#include "chicken/geo.inc.c"
+
+#include "egg/geo.inc.c"
