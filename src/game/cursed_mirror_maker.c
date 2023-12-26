@@ -2272,6 +2272,10 @@ void save_level(void) {
         update_painting();
     }
 
+    if (cmm_save.piktcher[0][0] == 0) { //0 is a transparent pixel in rgba16
+        //use mystery painting if no screenshot has been taken yet
+        bcopy(&mystery_painting_rgba16,&cmm_save.piktcher,sizeof(cmm_save.piktcher));
+    }
 
     f_chdir(cmm_level_dir_name);
     UINT bytes_written;
