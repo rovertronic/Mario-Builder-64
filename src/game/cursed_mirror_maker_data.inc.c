@@ -1428,11 +1428,11 @@ char *txt_mech_enemies[] = {
 };
 
 Gfx *btn_mech_bosses[] = {
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
+    mat_b_btn_boss_kb,
+    mat_b_btn_boss_whomp,
+    mat_b_btn_boss_boo,
+    mat_b_btn_boss_bully,
+    mat_b_btn_boss_bowser,
 };
 
 char *txt_bp_boss[] = {
@@ -1454,7 +1454,7 @@ char *txt_star_objects[] = {
 Gfx *btn_star_objects[] = {
     mat_b_btn_star,
     mat_b_btn_rcs,
-    mat_b_btn_plant,
+    mat_b_btn_plantstar,
 };
 
 char *txt_timed_objects[] = {
@@ -1547,11 +1547,11 @@ char *txt_ground_enemies[] = {
 };
 Gfx *btn_ground_enemies[] = {
     mat_b_btn_goomba,
-    mat_b_btn_goomba,
-    mat_b_btn_goomba,
+    mat_b_btn_goomba_b,
+    mat_b_btn_goomba_s,
     mat_b_btn_plant,
-    mat_b_btn_plant,
-    mat_b_btn_plant,
+    mat_b_btn_plant_b,
+    mat_b_btn_plant_s,
     mat_b_btn_kuppa,
     mat_b_btn_skeeter,
 };
