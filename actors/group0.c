@@ -90,9 +90,7 @@
 //#include "monty_mole/anims/table.inc.c"
 #include "evil_mario/anims/data.inc.c"
 #include "evil_mario/anims/table.inc.c"
-//#include "chicken/model.inc.c"
-//#include "chicken/anims/data.inc.c"
-//#include "chicken/anims/table.inc.c"
+
 // #include "token/model.inc.c"
 //#include "egg/model.inc.c"
 // #include "arrow/model.inc.c"
@@ -203,3 +201,10 @@
 
 #include "new_cull_marker/model.inc.c"
 #include "b20/model.inc.c"
+#include "skeeter/model.inc.c"
+#include "skeeter/anims/data.inc.c"
+#include "skeeter/anims/table.inc.c"
+#include "gooner/model.inc.c"
+#include "gooner/collision.inc.c"
+#include "spooner/model.inc.c"
+#include "spooner/collision.inc.c"

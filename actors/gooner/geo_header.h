@@ -1,0 +1,18 @@
+extern const GeoLayout gooner_geo[];
+extern Lights1 gooner_flamethrower_base_lights;
+extern Lights1 gooner_flamethrower_hole_lights;
+extern u8 gooner_Flamethrower_Rock_ci8[];
+extern u8 gooner_Flamethrower_Rock_pal_rgba16[];
+extern u8 gooner_Flamethrower_Hole_ci8[];
+extern u8 gooner_Flamethrower_Hole_pal_rgba16[];
+extern Vtx gooner_gooner_mesh_layer_1_vtx_0[40];
+extern Gfx gooner_gooner_mesh_layer_1_tri_0[];
+extern Vtx gooner_gooner_mesh_layer_4_vtx_0[4];
+extern Gfx gooner_gooner_mesh_layer_4_tri_0[];
+extern Gfx mat_gooner_flamethrower_base[];
+extern Gfx mat_revert_gooner_flamethrower_base[];
+extern Gfx mat_gooner_flamethrower_hole[];
+extern Gfx mat_revert_gooner_flamethrower_hole[];
+extern Gfx gooner_gooner_mesh_layer_1[];
+extern Gfx gooner_gooner_mesh_layer_4[];
+extern Gfx gooner_material_revert_render_settings[];

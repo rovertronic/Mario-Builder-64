@@ -2248,6 +2248,8 @@ void save_level(void) {
 
     // If in screenshot mode
     if (cmm_prepare_level_screenshot) {
+        u8 screenshot_failure = TRUE;
+
         for (i=0;i<4096;i++) {
             //take a "screenshot" of the level & burn in a painting frame
             if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
@@ -2257,10 +2259,19 @@ void save_level(void) {
                 } else {
                     cmm_save.piktcher[i/64][i%64] = (gFramebuffers[0][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
                 }
+
+                if (cmm_save.piktcher[i/64][i%64] > 1) { //assumes all fb rgba16 values is initialized to 1 or 0
+                    screenshot_failure = FALSE;
+                }
             } else {
                 //painting frame
                 cmm_save.piktcher[i/64][i%64] = ((cmm_painting_frame_1_rgba16[(i*2)]<<8) | cmm_painting_frame_1_rgba16[(i*2)+1]);
             }
+        }
+
+        if (screenshot_failure) {
+            //framebuffer emulation not enabled, use ?
+            bcopy(&mystery_painting_rgba16,&cmm_save.piktcher,sizeof(cmm_save.piktcher));
         }
 
         update_painting();

@@ -141,12 +141,15 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_SCUTTLEBUG,        scuttlebug_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITH_SHELL,        koopa_with_shell_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_WITHOUT_SHELL,     koopa_without_shell_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_MAKER_FIREBAR, lll_geo_000B38),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_FIREBAR, spooner_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_GRINDEL ,ssl_geo_000734),
     LOAD_MODEL_FROM_GEO(MODEL_LOOPINGP, loopingp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY,                   bully_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY_BOSS,              bully_boss_geo),
     LOAD_MODEL_FROM_GEO(MODEL_CULL_MARKER, new_cull_marker_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_MOTOS, RCP_HmsEnemymotos_basedata_A),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_SKEETER, skeeter_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_FLAMETHROWER, gooner_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
@@ -266,6 +269,8 @@ const LevelScript script_func_cmm_theme_btcm[] = {
     LOAD_MODEL_FROM_GEO(MODEL_EXCLAMATION_BOX,         exclamation_box_geo),
     LOAD_MODEL_FROM_GEO(MODEL_PODOBOO ,podoboo_geo),
     LOAD_MODEL_FROM_GEO(0xEF,                   green_coin_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_CHICKEN, chicken_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_EGG, egg_geo),
     RETURN(),
 };
 

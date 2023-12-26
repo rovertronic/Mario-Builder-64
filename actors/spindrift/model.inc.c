@@ -333,6 +333,15 @@ const Gfx spindrift_seg5_dl_050002A0[] = {
 
 // 0x05000328 - 0x050003D8
 const Gfx spindrift_seg5_dl_05000328[] = {
+
+	gsDPPipeSync(),
+	gsSPSetGeometryMode(G_LIGHTING),
+	gsSPClearGeometryMode(G_TEXTURE_GEN),
+	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 0),
+	gsDPSetEnvColor(255, 255, 255, 255),
+	gsDPSetAlphaCompare(G_AC_NONE),
+
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPLightColor(LIGHT_1, 0x3f00ff),
     gsSPLightColor(LIGHT_2, 0xf00ff),

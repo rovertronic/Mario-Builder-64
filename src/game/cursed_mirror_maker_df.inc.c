@@ -327,3 +327,10 @@ void df_firebro(s32 context) {
         o->oAnimState = 1;
     }
 }
+
+void df_flame(s32 context) {
+    if (gGlobalTimer%2==0) {
+        o->oAnimState++;
+        o->oAnimState%=9;
+    }
+}
