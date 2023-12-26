@@ -151,6 +151,7 @@ u8 cmm_lopt_secret = 0;
 //UI
 u8 cmm_menu_state = CMM_MAKE_MAIN;
 s8 cmm_menu_index = 0;
+s8 cmm_menu_index_max = 1;
 s8 cmm_toolbar_index = 0;
 s8 cmm_toolbox_index = 0;
 u8 cmm_prepare_level_screenshot = FALSE;

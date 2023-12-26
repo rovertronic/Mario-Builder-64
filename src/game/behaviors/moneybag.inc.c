@@ -52,6 +52,12 @@ void moneybag_check_mario_collision(void) {
 void moneybag_jump(s16 collisionFlags) {
     s16 animFrame = o->header.gfx.animInfo.animFrame;
 
+    if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) == OBJ_COL_FLAG_GROUNDED) {
+        if (o->oPosY < o->oHomeY - 10.f) {
+            vec3_copy(&o->oHomeVec, &o->oPosVec);
+        }
+    }
+
     switch (o->oMoneybagJumpState) {
         case MONEYBAG_JUMP_PREPARE:
             cur_obj_init_animation(1);
@@ -124,11 +130,7 @@ void moneybag_act_move_around(void) {
 
     if (!is_point_within_radius_of_mario(o->oHomeX, o->oHomeY, o->oHomeZ, 800)
         && ((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED)) {
-        if (o->oPosY < o->oHomeY - 500.f) {
-            vec3_copy(&o->oHomeVec, &o->oPosVec);
-        } else {
-            o->oAction = MONEYBAG_ACT_RETURN_HOME;
-        }
+        o->oAction = MONEYBAG_ACT_RETURN_HOME;
     }
 }
 

@@ -39,6 +39,7 @@ s16 cmm_menu_end_timer = -1;
 s8 cmm_menu_going_back = 1;
 
 s8 cmm_mm_selected_level = 0;
+u8 cmm_greyed_text = FALSE;
 
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
@@ -64,6 +65,7 @@ void print_maker_string_ascii(s32 x, s32 y, char *str, s32 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
     print_generic_string_ascii(x-1, y-1, (u8 *)str);
+    if (cmm_greyed_text) highlight += 2;
     switch(highlight) {
         case 0:
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
@@ -152,9 +154,11 @@ void full_menu_reset() {
     cmm_global_scissor_top = 0;
     cmm_global_scissor_bottom = SCREEN_HEIGHT;
     cmm_menu_index = 0;
+    cmm_menu_index_max = 1;
     cmm_tip_timer = 0;
     cmm_topleft_timer = 0;
     cmm_custom_theme_menu_open = FALSE;
+    cmm_greyed_text = FALSE;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -579,6 +583,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat, u8 topmat) {
 
 u8 tmpmaterial = 5;
 u8 tmpTopMaterial = 8;
+u8 tmpTopmatDisabled = TRUE;
 
 void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory;
@@ -608,9 +613,17 @@ void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
 
 void draw_cmm_settings_custom_theme(f32 yoff) {
     s32 dir = 0;
+    char *topmatText;
     if (cmm_custom_theme_menu_open) {
         if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
         if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+        if (tmpTopmatDisabled) {
+            topmatText = "Enable Top Material...";
+            cmm_menu_index_max = 3;
+        } else {
+            topmatText = "Disable Top Material...";
+            cmm_menu_index_max = 5;
+        }
     }
 
     s32 prevMenu = (cmm_curr_custom_tab - 1 + CMM_NUM_CUSTOM_TABS) % CMM_NUM_CUSTOM_TABS;
@@ -634,10 +647,23 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
         cmm_menu_index = CUSTOM_INDEX_OFFSET;
     }
 
+    // Selector for main material
     custom_theme_draw_mat_selector(160 + yoff, CUSTOM_INDEX_OFFSET, &tmpmaterial);
-    print_maker_string_ascii(55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yoff, "Enable Top Material...", (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
+
+    // Selector for top material
+    print_maker_string_ascii(55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yoff, topmatText, (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
+    cmm_greyed_text = tmpTopmatDisabled;
     custom_theme_draw_mat_selector(112 + yoff, CUSTOM_INDEX_OFFSET+3, &tmpTopMaterial);
-    custom_theme_draw_block(-100, yoff + 10, tmpmaterial, tmpTopMaterial);
+    cmm_greyed_text = FALSE;
+
+    if (cmm_menu_index == CUSTOM_INDEX_OFFSET + 2) { // Enable/disable button
+        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            tmpTopmatDisabled = !tmpTopmatDisabled;
+            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        }
+    }
+    
+    custom_theme_draw_block(-100, yoff + 10, tmpmaterial, (tmpTopmatDisabled ? 0 : tmpTopMaterial));
 }
 
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
@@ -927,7 +953,7 @@ void draw_cmm_menu(void) {
                 break;
             }
 
-            cmm_menu_index = (cmm_menu_index + cmm_settings_menu_lengths[cmm_curr_settings_menu]) % cmm_settings_menu_lengths[cmm_curr_settings_menu];
+            cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
             // Begin rendering top header
             s32 prevMenu = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
@@ -941,6 +967,7 @@ void draw_cmm_menu(void) {
             if (CMM_CUSTOM_THEME_CLOSED) {
                 if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
                 if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+                cmm_menu_index_max = cmm_settings_menu_lengths[cmm_curr_settings_menu];
             }
 
             print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
@@ -1320,6 +1347,7 @@ s32 cmm_main_menu(void) {
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         break;
     }
+    cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
     create_dl_ortho_matrix();
 
@@ -1378,8 +1406,8 @@ s32 cmm_main_menu(void) {
                 cmm_menu_index = 0;
             }
             break;
-        case MM_MAIN:
-            cmm_menu_index = (cmm_menu_index+4)%4;
+        case MM_MAIN:   
+            cmm_menu_index_max = 4;
             cmm_mm_anim_in(4);
             render_cmm_mm_menu(cmm_mm_btns,"Mario Builder 64",4);
             if (cmm_mm_generic_anim_out(4, FALSE)) {
@@ -1406,7 +1434,7 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_MAIN_LIMITED:
-            cmm_menu_index = (cmm_menu_index+3)%3;
+            cmm_menu_index_max = 3;
             cmm_mm_anim_in(3);
             render_cmm_mm_menu(cmm_mm_btns_lim,"Mario Builder 64",3);
             if (cmm_mm_generic_anim_out(3, FALSE)) {
@@ -1427,7 +1455,7 @@ s32 cmm_main_menu(void) {
             break;
             /**
         case MM_PLAY:
-            cmm_menu_index = (cmm_menu_index+2)%2;
+            cmm_menu_index_max = 2;
             cmm_mm_anim_in(2);
             render_cmm_mm_menu(cmm_mm_play_btns,"Play Levels",2);
             if (cmm_mm_generic_anim_out(2, TRUE)) {
@@ -1454,7 +1482,7 @@ s32 cmm_main_menu(void) {
             break;
             **/
         case MM_MAKE:
-            cmm_menu_index = (cmm_menu_index+2)%2;
+            cmm_menu_index_max = 2;
             cmm_mm_anim_in(2);
             render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",2);
             if (cmm_mm_generic_anim_out(2, TRUE)) {
@@ -1482,7 +1510,7 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_MAKE_MODE:
-            cmm_menu_index = (cmm_menu_index+4)%4;
+            cmm_menu_index_max = 3;
             cmm_mm_anim_in(4);
             f32 x,y;
 
@@ -1532,7 +1560,7 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_HELP_MODE:
-            cmm_menu_index = (cmm_menu_index+3)%3;
+            cmm_menu_index_max = 3;
             cmm_mm_anim_in(3);
             render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
             if (cmm_mm_generic_anim_out(3, TRUE)) {
@@ -1718,7 +1746,7 @@ s32 cmm_main_menu(void) {
                 return 0;
             }
 
-            cmm_menu_index = (cmm_menu_index+cmm_level_entry_count)%cmm_level_entry_count;
+            cmm_menu_index_max = cmm_level_entry_count;
 
             cmm_mm_pages = ((cmm_level_entry_count - 1)/PAGE_SIZE)+1;
 
