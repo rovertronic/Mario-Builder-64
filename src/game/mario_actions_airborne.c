@@ -877,7 +877,8 @@ s32 act_dive(struct MarioState *m) {
 
     update_air_without_turn(m);
 
-    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)) {
+    m->actionTimer++;
+    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)&&(m->actionTimer > 12)) {
         set_mario_action(m, ACT_FLYING, 0);
     }
 
