@@ -122,7 +122,7 @@ static const Gfx ssl_seg7_dl_070221B0[] = {
 const Gfx ssl_seg7_dl_070221E8[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE2),
+    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_TEX_EDGE2),
     gsDPSetDepthSource(G_ZS_PIXEL),
     gsDPSetFogColor(0, 0, 0, 255),
     gsSPFogFactor(0x0E49, 0xF2B7), // This isn't gsSPFogPosition since there is no valid min/max pair that corresponds to 0x0E49F2B7
