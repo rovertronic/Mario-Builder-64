@@ -145,7 +145,7 @@ static void pokey_act_uninitialized(void) {
     struct Object *bodyPart;
 
     if (o->oDistanceToMario < o->oDrawingDistance) {
-        ModelID16 partModel = MODEL_POKEY_HEAD;
+        ModelID16 partModel = MODEL_MAKER_POKEY_HEAD;
         s32 i;
 
         for (i = 0; i < POKEY_NUM_SEGMENTS; i++) {
@@ -157,7 +157,7 @@ static void pokey_act_uninitialized(void) {
                 obj_scale(bodyPart, 3.0f);
             }
 
-            partModel = MODEL_POKEY_BODY_PART;
+            partModel = MODEL_MAKER_POKEY_BODY;
         }
 
         o->oPokeyAliveBodyPartFlags = BITMASK(POKEY_NUM_SEGMENTS);
@@ -199,7 +199,7 @@ static void pokey_act_wander(void) {
 
                     struct Object *bodyPart
                         = spawn_object_relative(o->oPokeyNumAliveBodyParts, 0, 0, 0, o,
-                                                MODEL_POKEY_BODY_PART, bhvPokeyBodyPart);
+                                                MODEL_MAKER_POKEY_BODY, bhvPokeyBodyPart);
 
                     if (bodyPart != NULL) {
                         o->oPokeyAliveBodyPartFlags =

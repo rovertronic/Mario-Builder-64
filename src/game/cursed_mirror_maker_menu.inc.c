@@ -1220,12 +1220,21 @@ void cmm_mm_make_anim_check(UNUSED s32 canBack) {
 void cmm_mm_keyboard_anim_check(UNUSED s32 canBack) {
     if (cmm_menu_start_timer == -1) {
         if (gPlayer1Controller->buttonPressed & (START_BUTTON)) {
-            if (cmm_mm_keyboard_input_index > 0) { //ensure that people write _something_
+            u8 file_does_not_exist_already = (!level_file_exists(cmm_mm_keyboard_input));
+            u8 something_is_entered = (cmm_mm_keyboard_input_index > 0);
+
+            if ((something_is_entered)&&(file_does_not_exist_already)) { //ensure that people write _something_
                 cmm_menu_end_timer = 0;
                 cmm_menu_going_back = 1;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
             } else {
                 play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+                if (!something_is_entered) {
+                    cmm_show_error_message("Please enter a name first.");
+                }
+                if (!file_does_not_exist_already) {
+                    cmm_show_error_message("Name is already used!");
+                }
             }
         }
         if (gPlayer1Controller->buttonPressed & (R_TRIG)) {
@@ -1670,6 +1679,8 @@ s32 cmm_main_menu(void) {
             print_maker_string_ascii(35 + cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
             print_maker_string_ascii(35 + cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,FALSE);
             print_maker_string_ascii(35,45 - cmm_menu_title_vels[0],cmm_mm_txt_keyboard[cmm_mm_keyboard_exit_mode],FALSE);
+
+            cmm_render_topleft_text();
 
             for (u8 i=0; i<(sizeof(cmm_mm_keyboard)-1); i++) {
                 u16 x = i%10;

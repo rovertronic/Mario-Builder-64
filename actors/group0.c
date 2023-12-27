@@ -208,3 +208,5 @@
 #include "gooner/collision.inc.c"
 #include "spooner/model.inc.c"
 #include "spooner/collision.inc.c"
+
+#include "pokey/model.inc.c"

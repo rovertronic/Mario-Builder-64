@@ -1161,6 +1161,7 @@ struct cmm_object_info cmm_object_type_goomba[] = {
     {bhvFirePiranhaPlant, 0, MODEL_MAKER_PLANT, FALSE, 1, 0, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
     {bhvScaredKoopa, 0, MODEL_KOOPA_WITH_SHELL, FALSE, 5, 0, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
     {bhvSkeeter, 0, MODEL_MAKER_SKEETER, FALSE, 3, 0, 1.0f, skeeter_seg6_anims_06007DE0, NULL, SOUND_OBJ_SKEETER_WALK},
+    {bhvPokey, 0, MODEL_MAKER_POKEY_HEAD, TRUE, 5, 0, 3.0f, NULL, df_pokey, SOUND_OBJ_POKEY_DEATH},
 };
 struct cmm_object_info cmm_object_type_yellowcoin = {
     bhvYellowCoin, 0, MODEL_YELLOW_COIN, TRUE, 1, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO,
@@ -1327,7 +1328,7 @@ enum {
 
 struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_star, FALSE, TRUE, TRUE, 3},
-    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 8},
+    {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 9},
     {&cmm_object_type_yellowcoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_greencoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_redcoin, FALSE, FALSE, FALSE, 0},
@@ -1451,11 +1452,11 @@ char *txt_mech_enemies[] = {
 };
 
 Gfx *btn_mech_bosses[] = {
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
-    mat_b_btn_boss,
+    mat_b_btn_boss_kb,
+    mat_b_btn_boss_whomp,
+    mat_b_btn_boss_boo,
+    mat_b_btn_boss_bully,
+    mat_b_btn_boss_bowser,
 };
 
 char *txt_bp_boss[] = {
@@ -1477,7 +1478,7 @@ char *txt_star_objects[] = {
 Gfx *btn_star_objects[] = {
     mat_b_btn_star,
     mat_b_btn_rcs,
-    mat_b_btn_plant,
+    mat_b_btn_plantstar,
 };
 
 char *txt_timed_objects[] = {
@@ -1567,16 +1568,18 @@ char *txt_ground_enemies[] = {
     "Tiny Piranha Plant",
     "Koopa",
     "Skeeter",
+    "Pokey",
 };
 Gfx *btn_ground_enemies[] = {
     mat_b_btn_goomba,
-    mat_b_btn_goomba,
-    mat_b_btn_goomba,
+    mat_b_btn_goomba_b,
+    mat_b_btn_goomba_s,
     mat_b_btn_plant,
-    mat_b_btn_plant,
-    mat_b_btn_plant,
+    mat_b_btn_plant_b,
+    mat_b_btn_plant_s,
     mat_b_btn_kuppa,
     mat_b_btn_skeeter,
+    mat_b_btn_pokey,
 };
 
 char *txt_snow_enemies[] = {
