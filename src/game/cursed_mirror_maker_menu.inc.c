@@ -1510,7 +1510,7 @@ s32 cmm_main_menu(void) {
             }
             break;
         case MM_MAKE_MODE:
-            cmm_menu_index_max = 3;
+            cmm_menu_index_max = 4;
             cmm_mm_anim_in(4);
             f32 x,y;
 
