@@ -1039,6 +1039,35 @@ struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
     return &temp_cmm_save;
 }
 
+char filename_with_mb64[31];
+u8 level_file_exists(char * filename) {
+    DIR dir;
+    FRESULT code;
+    FIL read_file;
+    f_opendir(&dir,&cmm_level_dir_name);
+    f_chdir(cmm_level_dir_name);
+
+    u8 fwmb64_index = 0;
+    while(filename[fwmb64_index] != '\0') {
+        filename_with_mb64[fwmb64_index] = filename[fwmb64_index];
+        fwmb64_index++;
+    }
+    filename_with_mb64[fwmb64_index++] = '.';
+    filename_with_mb64[fwmb64_index++] = 'm';
+    filename_with_mb64[fwmb64_index++] = 'b';
+    filename_with_mb64[fwmb64_index++] = '6';
+    filename_with_mb64[fwmb64_index++] = '4';
+    filename_with_mb64[fwmb64_index] = '\0';
+
+    code = f_open(&read_file, filename_with_mb64, FA_READ);
+    f_close(&read_file);
+
+    f_chdir("..");
+    f_closedir(&dir);
+
+    return (code == FR_OK);
+}
+
 void load_level_files_from_sd_card(void) {
     DIR dir;
     f_opendir(&dir,&cmm_level_dir_name);

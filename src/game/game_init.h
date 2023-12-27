@@ -110,5 +110,6 @@ extern TCHAR cmm_hack_dir_name[];
 
 struct cmm_level_save_header * get_level_info_from_filename(char * filename);
 void load_level_files_from_sd_card(void);
+u8 level_file_exists(char * filename);
 
 #endif // GAME_INIT_H
