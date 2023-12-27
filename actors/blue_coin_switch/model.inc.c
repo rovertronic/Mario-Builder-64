@@ -36,6 +36,13 @@ Vtx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_1[4] = {
 	{{ {-25, 26, -25}, 0, {-16, -16}, {0, 127, 0, 255} }},
 };
 
+Vtx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_2[4] = {
+	{{ {26, 0, -25}, 0, {1008, -16}, {0, -127, 0, 255} }},
+	{{ {-25, 0, 26}, 0, {-16, 1008}, {0, -127, 0, 255} }},
+	{{ {26, 0, 26}, 0, {1008, 1008}, {0, -127, 0, 255} }},
+	{{ {-25, 0, -25}, 0, {-16, -16}, {0, -127, 0, 255} }},
+};
+
 
 Gfx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1[] = {
 	gsDPPipeSync(),
@@ -66,6 +73,8 @@ Gfx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1[] = {
 	gsDPSetTileSize(0, 0, 0, 124, 124),
 	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_1 + 0, 4, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 3, 1, 0),
+	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_2 + 0, 4, 0),
+	gsSP2Triangles(0, 2, 1, 0, 0, 1, 3, 0),
 	gsDPSetCycleType(G_CYC_1CYCLE),
 	gsDPPipeSync(),
 	gsSPEndDisplayList(),
