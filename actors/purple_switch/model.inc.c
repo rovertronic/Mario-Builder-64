@@ -40,6 +40,13 @@ static const Vtx purple_switch_seg8_vertex_0800C628[] = {
     {{{   -60,     36,    -60}, 0, {  -159,   -134}, {0x00, 0x7f, 0x00, 0xff}}},
 };
 
+static const Vtx purple_switch_seg8_vertex_bottom[] = {
+    {{{    100,     0,   -100}, 0, {   607,   -134}, {0x00, -127, 0x00, 0xff}}},
+    {{{   -100,     0,    100}, 0, {  -159,   1090}, {0x00, -127, 0x00, 0xff}}},
+    {{{    100,     0,    100}, 0, {   607,   1090}, {0x00, -127, 0x00, 0xff}}},
+    {{{   -100,     0,   -100}, 0, {  -159,   -134}, {0x00, -127, 0x00, 0xff}}},
+};
+
 // 0x0800C668 - 0x0800C6E0
 const Gfx purple_switch_seg8_dl_0800C668[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, purple_switch_seg8_texture_0800C0A8),
@@ -52,6 +59,8 @@ const Gfx purple_switch_seg8_dl_0800C668[] = {
     gsSP2Triangles( 3,  6,  4, 0x0,  7,  8,  9, 0x0),
     gsSP2Triangles( 7, 10,  8, 0x0, 11, 12, 13, 0x0),
     gsSP2Triangles(11, 13, 14, 0x0,  0,  2, 15, 0x0),
+    gsSPVertex(purple_switch_seg8_vertex_bottom, 4, 0),
+    gsSP2Triangles( 0,  2,  1, 0x0,  0,  1,  3, 0x0),
     gsSPEndDisplayList(),
 };
 

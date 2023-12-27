@@ -13,7 +13,7 @@ const Collision purple_switch_seg8_collision_0800C7A8[] = {
     COL_VERTEX(-101, 0, 102),
     COL_VERTEX(102, 0, 102),
 
-    COL_TRI_INIT(SURFACE_SWITCH, 10),
+    COL_TRI_INIT(SURFACE_SWITCH, 12),
     COL_TRI(0, 1, 2),
     COL_TRI(0, 2, 3),
     COL_TRI(4, 1, 0),
@@ -24,6 +24,10 @@ const Collision purple_switch_seg8_collision_0800C7A8[] = {
     COL_TRI(7, 2, 6),
     COL_TRI(5, 0, 3),
     COL_TRI(5, 3, 7),
+
+    COL_TRI(4, 5, 6),
+    COL_TRI(7, 6, 5),
+
     COL_TRI_STOP(),
     COL_END(),
 };
