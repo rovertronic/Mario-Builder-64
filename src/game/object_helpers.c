@@ -1128,6 +1128,11 @@ void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
         } else {
             o->oMoveFlags |= OBJ_MOVE_ENTERED_WATER;
             o->oMoveFlags &= ~OBJ_MOVE_MASK_ON_GROUND;
+            if (o->oWallHitboxRadius < 200.0f) {
+                cur_obj_play_sound_2(SOUND_OBJ_DIVING_INTO_WATER);
+            } else {
+                cur_obj_play_sound_2(SOUND_OBJ_DIVING_IN_WATER);
+            }
         }
     } else {
         o->oMoveFlags &= ~OBJ_MOVE_ENTERED_WATER;
@@ -1140,10 +1145,14 @@ void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
                 o->oPosY = o->oFloorHeight;
                 o->oMoveFlags &= ~OBJ_MOVE_MASK_IN_WATER;
             } else {
-                o->oPosY = waterLevel;
-                o->oVelY = 0.0f;
-                o->oMoveFlags &= ~(OBJ_MOVE_UNDERWATER_OFF_GROUND | OBJ_MOVE_UNDERWATER_ON_GROUND);
-                o->oMoveFlags |= OBJ_MOVE_AT_WATER_SURFACE;
+                if ((o->oPosY - waterLevel) < buoyancy) { // Still at surface
+                    o->oPosY = waterLevel;
+                    o->oVelY = 0.0f;
+                    o->oMoveFlags &= ~(OBJ_MOVE_UNDERWATER_OFF_GROUND | OBJ_MOVE_UNDERWATER_ON_GROUND);
+                    o->oMoveFlags |= OBJ_MOVE_AT_WATER_SURFACE;
+                } else {
+                    o->oMoveFlags &= ~OBJ_MOVE_MASK_IN_WATER;
+                }
             }
         }
     }
@@ -1457,6 +1466,20 @@ static void cur_obj_update_floor(void) {
     }
 }
 
+void cur_obj_update_ceiling(void) {
+    struct Surface *ceil;
+    f32 ceilHeight = find_ceil(o->oPosX, o->oPosY, o->oPosZ, &ceil);
+
+    if (!ceil) return;
+
+    if (o->oVelY > 0.f) {
+        if ((o->oPosY + o->oVelY + o->hitboxHeight - o->hitboxDownOffset) > ceilHeight) {
+            o->oPosY = ceilHeight - o->hitboxHeight + o->hitboxDownOffset;
+            o->oVelY = 0.f;
+        }
+    }
+}
+
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
     o->oMoveFlags &= ~(OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ABOVE_DEATH_BARRIER);
 
@@ -1482,6 +1505,8 @@ static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegre
         if (cur_obj_detect_steep_floor(steepSlopeDegrees)) {
             o->oMoveFlags |= OBJ_MOVE_HIT_WALL;
         }
+
+        cur_obj_update_ceiling();
     }
 }
 
@@ -2321,6 +2346,12 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
         struct Object *other = obj->collidedObjs[0];
 
         if (other != gMarioObject) {
+            if (other->oInteractType == INTERACT_GRABBABLE) {
+                if (other->behavior != segmented_to_virtual(bhvBowser) &&
+                    other->behavior != segmented_to_virtual(bhvBobomb)) {
+                    return FALSE;
+                }
+            }
             other->oInteractStatus |= INT_STATUS_TOUCHED_MARIO | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
                                       | INT_STATUS_TOUCHED_BOB_OMB;
             return TRUE;

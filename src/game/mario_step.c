@@ -686,6 +686,16 @@ u32 should_strengthen_gravity_for_jump_ascent(struct MarioState *m) {
     return FALSE;
 }
 
+void slowfall(struct MarioState *m, f32 vel, f32 terminal) {
+    m->marioBodyState->wingFlutter = TRUE;
+    m->vel[1] += (vel/2.f);
+    if (m->vel[1] < (terminal/2.f)) {
+        if ((m->vel[1] += vel) > (terminal/2.f)) {
+            m->vel[1] = (terminal/2.f);
+        }
+    }
+}
+
 void apply_gravity(struct MarioState *m) {
     f32 grav_mult = m->gravMult;
 
@@ -702,11 +712,21 @@ void apply_gravity(struct MarioState *m) {
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
         }
+
+        if ((save_file_get_badge_equip() & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+            slowfall(m, 2.f, -75.f);
+        }
+
     } else if (m->action == ACT_LAVA_BOOST || m->action == ACT_FALL_AFTER_STAR_GRAB) {
         m->vel[1] -= 3.2f*grav_mult;
         if (m->vel[1] < -65.0f) {
             m->vel[1] = -65.0f;
         }
+
+        if ((save_file_get_badge_equip() & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+            slowfall(m, 3.2f, -65.f);
+        }
+
     } else if (m->action == ACT_GETTING_BLOWN) {
         m->vel[1] -= m->windGravity;
         if (m->vel[1] < -75.0f) {
@@ -719,19 +739,14 @@ void apply_gravity(struct MarioState *m) {
         if (m->vel[1] < -16.0f) {
             m->vel[1] = -16.0f;
         }
-    } else if ((m->flags & MARIO_WING_CAP) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
-        m->marioBodyState->wingFlutter = TRUE;
-
-        m->vel[1] -= 2.0f;
-        if (m->vel[1] < -37.5f) {
-            if ((m->vel[1] += 4.0f) > -37.5f) {
-                m->vel[1] = -37.5f;
-            }
-        }
     } else {
         m->vel[1] -= 4.0f*grav_mult;
         if (m->vel[1] < -75.0f) {
             m->vel[1] = -75.0f;
+        }
+
+        if (((m->flags & MARIO_WING_CAP) || (save_file_get_badge_equip() & (1 << BADGE_SLOWFALL))) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+            slowfall(m, 4.f, -75.f);
         }
     }
 }

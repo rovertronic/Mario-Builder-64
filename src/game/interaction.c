@@ -216,14 +216,10 @@ u32 determine_interaction(struct MarioState *m, struct Object *obj) {
     // that the interaction not be set prior. This specifically overrides turning a ground
     // pound into just a bounce.
     if ((interaction == INT_NONE) && (action & ACT_FLAG_AIR)) {
-        if (m->vel[1] < 0.0f) {
-            if (m->pos[1] > obj->oPosY) {
-                interaction = INT_HIT_FROM_ABOVE;
-            }
-        } else {
-            if (m->pos[1] < obj->oPosY) {
-                interaction = INT_HIT_FROM_BELOW;
-            }
+        if ((m->vel[1] < 0.f) && (m->pos[1] > obj->oPosY)) {
+            interaction = INT_HIT_FROM_ABOVE;
+        } else if ((m->vel[1] >= -4.f) && (m->pos[1] + 100.f) < obj->oPosY) {
+            interaction = INT_HIT_FROM_BELOW;
         }
     }
 
@@ -1470,6 +1466,8 @@ u32 interact_damage(struct MarioState *m, UNUSED u32 interactType, struct Object
 
 u32 interact_breakable(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
     u32 interaction = determine_interaction(m, obj);
+
+    if (obj->behavior != segmented_to_virtual(bhvExclamationBox)) interaction &= ~INT_HIT_FROM_BELOW;
 
     if (interaction & INT_ATTACK_NOT_WEAK_FROM_ABOVE) {
         attack_object(obj, interaction);

@@ -230,6 +230,8 @@ s8 slope_decal_below_uvstri_2_l[3][2] = {{16, 16}, {16, 0},   {0, 0}            
 s8 slope_decal_below_uvstri_2_r[3][2] = {{16, 0},  {16, -16}, {0, 16}            };
 s8 slope_decal_below_uvsslab_l[4][2] =  {{0, 0},   {16, 16},  {0, -8},  {16, 8}  };
 s8 slope_decal_below_uvsslab_r[4][2] =  {{0, 16},  {16, 0},   {0, 8},   {16, -8} };
+s8 slope_decal_below_uvsvslab_l[4][2] = {{8, 8},   {16, 16},  {8, -8}, {16, 0}  };
+s8 slope_decal_below_uvsvslab_r[4][2] = {{0, 16},  {8, 8},    {0, 0},   {8, -8}  };
 
 // All of this is for the system where slopes can place a decal on the face below them.
 // Very hardcoded, so best not to touch any of these numbers
@@ -249,7 +251,15 @@ void *slope_decal_below_uvs[][2] = {
     { // Top slab
         &slope_decal_below_uvsslab_l,
         &slope_decal_below_uvsslab_r,
-    }
+    },
+    { // Vertical slab 1
+        NULL,
+        &slope_decal_below_uvsvslab_r,
+    },
+    { // Vertical slab 2
+        &slope_decal_below_uvsvslab_l,
+        NULL,
+    },
 };
 
 struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
@@ -264,12 +274,20 @@ struct cmm_terrain_tri cmm_terrain_slopebelowdecal_downtri2 = {
 struct cmm_terrain_quad cmm_terrain_slopebelowdecal_topslab = {
     {{16, 16, 16}, {0, 16, 16}, {16, 8, 16}, {0, 8, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TOPSLAB, 0, NULL
 };
+struct cmm_terrain_quad cmm_terrain_slopebelowdecal_vslab_1 = {
+    {{16, 16, 16}, {8, 16, 16}, {16, 0, 16}, {8, 0, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_HALFSIDE_1, 0, NULL
+};
+struct cmm_terrain_quad cmm_terrain_slopebelowdecal_vslab_2 = {
+    {{8, 16, 16}, {0, 16, 16}, {8, 0, 16}, {0, 0, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_HALFSIDE_2, 0, NULL
+};
 
 void *slope_decal_below_surfs[] = {
     &cmm_terrain_slopebelowdecal_quad,
     &cmm_terrain_slopebelowdecal_downtri1,
     &cmm_terrain_slopebelowdecal_downtri2,
     &cmm_terrain_slopebelowdecal_topslab,
+    &cmm_terrain_slopebelowdecal_vslab_1,
+    &cmm_terrain_slopebelowdecal_vslab_2,
 };
 
 // Shape of fence
@@ -1270,6 +1288,11 @@ struct cmm_object_info cmm_object_type_fire[] = {
     {bhvFlamethrower, TILE_SIZE/2, MODEL_MAKER_FLAMETHROWER, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
 };
 
+// Fake entry for cull marker preview
+struct cmm_object_info cmm_cullmarker_preview = {
+    bhvStaticObject, TILE_SIZE/2, MODEL_CULL_MARKER, TRUE, 0, 0, 1.f, NULL, NULL, 0,
+};
+
 enum {
     OBJECT_TYPE_STAR,
     OBJECT_TYPE_GOOMBA,
@@ -1405,7 +1428,7 @@ char *txt_badges[] = {
     "Fast Foot",
     "Heal Plus",
     "Bottomless",
-    "Boss Slayer",
+    "Slow Fall",
     "Brittle Burden",
     "Withering Burden",
 };

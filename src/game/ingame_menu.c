@@ -1544,7 +1544,7 @@ u16 shoptable[12][6] = {
     {BADGE_LAVA,100,BADGE_DEFENSE,100,BADGE_FALL,100},//tutorial shop  //{0,0,0,0,0,0},//executive (HUB 3) shop
     {BADGE_SQUISH,120,BADGE_WEIGHT,50,BADGE_BURN, 180},//floor 1 alternative shop
     {BADGE_BRITTLE,1,BADGE_WITHER,1,BADGE_HARDCORE,1},//burden shop (ALL FOR 1 DOLLAR LOL!)
-    {BADGE_HEAL,300,BADGE_BOTTOMLESS,200,BADGE_SLAYER,50}//starfair final shop
+    {BADGE_HEAL,300,BADGE_BOTTOMLESS,200,BADGE_SLOWFALL,50}//starfair final shop
 };
 
 u8 shopid;

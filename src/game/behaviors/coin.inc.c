@@ -131,8 +131,6 @@ void bhv_coin_loop(void) {
     cur_obj_move_standard(-62);
 
     struct Surface *floor = o->oFloor;
-    Vec3f normal;
-    get_surface_normal(normal, floor);
 
     u8 cosmetic = FALSE;
     u16 lifespan = 400;
@@ -151,6 +149,8 @@ void bhv_coin_loop(void) {
         }
         if (o->oAction == BOUNCING_COIN_ACT_BOUNCING) {
             o->oBounciness = 0;
+            Vec3f normal;
+            get_surface_normal(normal, floor);
             if (normal[1] < 0.9f) {
                 s16 targetYaw = SURFACE_YAW(floor);
                 cur_obj_rotate_yaw_toward(targetYaw, 0x400);

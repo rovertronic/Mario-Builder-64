@@ -146,6 +146,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_LOOPINGP, loopingp_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY,                   bully_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BULLY_BOSS,              bully_boss_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_CULL_MARKER, new_cull_marker_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_MOTOS, RCP_HmsEnemymotos_basedata_A),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_SKEETER, skeeter_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_FLAMETHROWER, gooner_geo),

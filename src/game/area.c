@@ -385,20 +385,20 @@ void play_transition(s16 transType, s16 time, Color red, Color green, Color blue
 
         // HackerSM64: this fixes the pop-in with texture transition, comment out this switch
         // statement if you want to restore the original full radius.
-        switch (transType){
-            case WARP_TRANSITION_TYPE_BOWSER:
-            case WARP_TRANSITION_FADE_INTO_BOWSER:
-                fullRadius *= 4;
-            break;
+        // switch (transType){
+        //     case WARP_TRANSITION_TYPE_BOWSER:
+        //     case WARP_TRANSITION_FADE_INTO_BOWSER:
+        //         fullRadius *= 4;
+        //     break;
 
-            case WARP_TRANSITION_FADE_FROM_MARIO:
-            case WARP_TRANSITION_FADE_INTO_MARIO:
+        //     case WARP_TRANSITION_FADE_FROM_MARIO:
+        //     case WARP_TRANSITION_FADE_INTO_MARIO:
 
-            case WARP_TRANSITION_FADE_FROM_STAR:
-            case WARP_TRANSITION_FADE_INTO_STAR:
-                fullRadius *= 1.5f;
-            break;
-        }
+        //     case WARP_TRANSITION_FADE_FROM_STAR:
+        //     case WARP_TRANSITION_FADE_INTO_STAR:
+        //         fullRadius *= 1.5f;
+        //     break;
+        // }
 
         if (transType & WARP_TRANSITION_FADE_INTO) { // Is the image fading in?
             gWarpTransition.data.startTexRadius = fullRadius;
