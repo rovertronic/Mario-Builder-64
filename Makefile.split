@@ -48,7 +48,7 @@ KOOPA_DIRS       :=
 MR_I_DIRS        := mario2
 COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree yoshi
 AMP_DIRS         := blue_coin_switch chuckya amp cannon_lid cannon_base cannon_barrel purple_switch checkerboard_platform heart flyguy breakable_box exclamation_box vanilla_exclamation_box goomba bobomb metal_box exclamation_box_outline test_platform koopa_shell skeeter
-MARIO_DIRS       := mario grindel bully motos rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
+MARIO_DIRS       := mario grindel bully motos pokey rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
 
 # Actor Textures
 AMP_CHUCKYA_TEXTURES            := $(foreach dir,$(AMP_DIRS),        $(wildcard actors/$(dir)/*.png))

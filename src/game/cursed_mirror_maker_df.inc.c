@@ -334,3 +334,15 @@ void df_flame(s32 context) {
         o->oAnimState%=9;
     }
 }
+
+void df_pokey(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oPosY += 60.0f;
+        for (u8 i=0; i<4; i++) {
+            struct Object *part = spawn_object(o,MODEL_MAKER_POKEY_BODY,VIRTUAL_TO_PHYSICAL(o->behavior));
+            obj_set_billboard(part);
+            obj_scale(part,3.0f);
+            o->oPosY += 120.0f;
+        }
+    }
+}

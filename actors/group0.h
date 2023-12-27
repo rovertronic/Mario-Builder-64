@@ -698,4 +698,14 @@ extern const struct Animation *const skeeter_seg6_anims_06007DE0[];
 
 #include "spooner/collision_header.h"
 
+// pokey
+extern const GeoLayout pokey_head_geo[];
+extern const GeoLayout pokey_body_part_geo[];
+extern const Gfx pokey_seg5_dl_05012750[];
+extern const Gfx pokey_seg5_dl_05012798[];
+extern const Gfx pokey_seg5_dl_050127D8[];
+extern const Gfx pokey_seg5_dl_05012808[];
+extern const Gfx pokey_seg5_dl_05013078[];
+extern const Gfx pokey_seg5_dl_050130B0[];
+
 #endif

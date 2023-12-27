@@ -149,6 +149,8 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_MOTOS, RCP_HmsEnemymotos_basedata_A),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_SKEETER, skeeter_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_FLAMETHROWER, gooner_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_POKEY_HEAD, pokey_head_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_POKEY_BODY, pokey_body_part_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),
