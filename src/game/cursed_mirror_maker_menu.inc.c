@@ -613,7 +613,7 @@ void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
 
 void draw_cmm_settings_custom_theme(f32 yoff) {
     s32 dir = 0;
-    char *topmatText;
+    char *topmatText = "";
     if (cmm_custom_theme_menu_open) {
         if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
         if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
