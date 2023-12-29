@@ -1202,7 +1202,7 @@ struct cmm_object_info cmm_object_type_btcme[] = {
     {bhvRex, 0, 0xE1, FALSE, 2, 0, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
     {bhvPodoboo, TILE_SIZE/2, MODEL_PODOBOO, FALSE, 0, 0, 1.0f, NULL, df_podoboo, SOUND_OBJ_FLAME_BLOWN},
     {bhvCrablet, 0, MODEL_MAKER_CRABLET, FALSE, 4, 0, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
-    {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, NULL, SOUND_OBJ_KOOPA_DAMAGE},
+    {bhvHammerBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, df_hammerbro, SOUND_OBJ_KOOPA_DAMAGE},
     {bhvFireBro, 60.0f, 0xEE, FALSE, 6, 0, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
     {bhvChicken, 0, MODEL_MAKER_CHICKEN, FALSE, 2, 0, 1.0f, chicken_anims, NULL, SOUND_OBJ_BOO_LAUGH_SHORT},
     {bhvPhantasm, 0, MODEL_MARIO, FALSE, 5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},

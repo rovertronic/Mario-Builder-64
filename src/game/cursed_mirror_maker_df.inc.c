@@ -325,6 +325,7 @@ void df_grindel(s32 context) {
 void df_firebro(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oAnimState = 1;
+        o->oFaceAngleYaw += 0x8000;
     }
 }
 
@@ -344,5 +345,11 @@ void df_pokey(s32 context) {
             obj_scale(part,3.0f);
             o->oPosY += 120.0f;
         }
+    }
+}
+
+void df_hammerbro(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oFaceAngleYaw += 0x8000;
     }
 }
