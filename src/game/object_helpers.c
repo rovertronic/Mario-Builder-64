@@ -2013,7 +2013,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-            if (o->oHealth < 2) {
+            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
                 if (o->oNumLootCoins > 0) {
                     gMarioState->DeadRexes ++;
                 }
@@ -2023,13 +2023,11 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
                 gMarioState->EA_ACTIVE --;
                 obj_mark_for_deletion(o);
                 create_sound_spawner(deathSound);
-                }else{
+            } else {
                 o->oDmgFade = 255;
                 if (save_file_get_badge_equip() & (1<<3)) {
                     o->oHealth-=2;
-                }
-                else
-                {
+                } else {
                     o->oHealth--;
                 }
             }
@@ -2346,11 +2344,20 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
         struct Object *other = obj->collidedObjs[0];
 
         if (other != gMarioObject) {
-            if (other->oInteractType == INTERACT_GRABBABLE) {
-                if (other->behavior != segmented_to_virtual(bhvBowser) &&
-                    other->behavior != segmented_to_virtual(bhvBobomb)) {
+            switch (other->oInteractType) {
+                case INTERACT_BULLY:
+                case INTERACT_HIT_FROM_BELOW:
+                case INTERACT_BOUNCE_TOP:
+                case INTERACT_BREAKABLE:
+                    break;
+                case INTERACT_GRABBABLE:
+                    if (other->behavior != segmented_to_virtual(bhvBobomb) &&
+                        other->behavior != segmented_to_virtual(bhvBowser)) {
+                        return FALSE;
+                    }
+                    break;
+                default:
                     return FALSE;
-                }
             }
             other->oInteractStatus |= INT_STATUS_TOUCHED_MARIO | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
                                       | INT_STATUS_TOUCHED_BOB_OMB;
