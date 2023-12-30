@@ -6083,7 +6083,6 @@ void bhv_tree_init() {
         break;
         case 4:
             o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_5];
-            break;
     }
 }
 
