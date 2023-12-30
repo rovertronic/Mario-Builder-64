@@ -41,6 +41,9 @@ void df_tree(s32 context) {
         case 3:
             o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
             break;
+        case 4:
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_5];
+            break;
     }
 }
 

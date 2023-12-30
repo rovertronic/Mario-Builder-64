@@ -1335,7 +1335,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_bluecoin, FALSE, FALSE, TRUE, 2},
     {&cmm_object_type_noteblock, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_mech_enemy, FALSE, FALSE, TRUE, 6},
-    {&cmm_object_type_tree, FALSE, FALSE, FALSE, 4},
+    {&cmm_object_type_tree, FALSE, FALSE, FALSE, 5},
     {&cmm_object_type_exclamationbox, FALSE, FALSE, FALSE, 7}, // only supports same size i think
     {&cmm_object_type_spawn, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_btcme, FALSE, FALSE, TRUE, 7},
@@ -1404,7 +1404,8 @@ char *txt_bp_tree[] = {
     "Bubbly",
     "Farm",
     "Palm",
-    "Snowy"
+    "Snowy",
+    "Dead",
 };
 
 char *txt_badges[] = {
