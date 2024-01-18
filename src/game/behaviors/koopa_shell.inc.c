@@ -71,14 +71,6 @@ void bhv_koopa_shell_loop(void) {
 
     switch (o->oAction) {
         case KOOPA_SHELL_ACT_MARIO_NOT_RIDING:
-
-            if (o->oTimer > 300) {
-                obj_flicker_and_disappear(o, 300);
-                o->oInteractType = INTERACT_NONE;
-                //instead of letting the player ride no object, don't let them ride
-                //if the shell is about to (i cant fucking spell dissapear) byt yeah
-            }
-
             cur_obj_update_floor_and_walls();
             cur_obj_if_hit_wall_bounce_away();
 
