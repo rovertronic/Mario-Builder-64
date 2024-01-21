@@ -645,7 +645,8 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx)
         //get_pos_from_transform_mtx(gMarioState->HeadPosition, *curTransform, gCurGraphNodeCamera->matrixPtr);
 
         if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
-            create_transformation_from_matrices(gMarioState->HeadMatrix, *mtx, gCurGraphNodeCamera->matrixPtr);
+            //create_transformation_from_matrices(gMarioState->HeadMatrix, *mtx, gCurGraphNodeCamera->matrixPtr);
+            mtxf_copy(gMarioState->HeadMatrix,mtx);
         }
 
         

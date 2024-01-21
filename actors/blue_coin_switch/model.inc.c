@@ -10,6 +10,10 @@ u8 blue_coin_switch_blue_coin_switch_top_rgba16[] = {
 	#include "actors/blue_coin_switch/blue_coin_switch_top.rgba16.inc.c"
 };
 
+u8 bcs_bottom_rgba16[] = {
+	#include "actors/blue_coin_switch/BCS_Bottom.rgba16.inc.c"
+};
+
 Vtx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_0[16] = {
 	{{ {26, 0, 26}, 0, {1008, 496}, {0, 0, 127, 255} }},
 	{{ {26, 26, 26}, 0, {1008, -16}, {0, 0, 127, 255} }},
@@ -73,6 +77,14 @@ Gfx blue_coin_switch_Blue_coin_switch_model_mesh_layer_1[] = {
 	gsDPSetTileSize(0, 0, 0, 124, 124),
 	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_1 + 0, 4, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 3, 1, 0),
+
+    gsDPPipeSync(),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, bcs_bottom_rgba16),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(7, 0, 0, 1023, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(0, 0, 0, 124, 124),
+
 	gsSPVertex(blue_coin_switch_Blue_coin_switch_model_mesh_layer_1_vtx_2 + 0, 4, 0),
 	gsSP2Triangles(0, 2, 1, 0, 0, 1, 3, 0),
 	gsDPSetCycleType(G_CYC_1CYCLE),

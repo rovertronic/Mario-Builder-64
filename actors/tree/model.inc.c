@@ -12,6 +12,16 @@ ALIGNED8 static const Texture tree_seg3_texture_bubbly_right_side[] = {
 #include "actors/tree/tree_right_side.rgba16.inc.c"
 };
 
+ALIGNED8 static const Texture tree_seg3_texture_dead_left_side[] = {
+#include "actors/tree/deadl.rgba16.inc.c"
+};
+
+// 0x0302EE28
+ALIGNED8 static const Texture tree_seg3_texture_dead_right_side[] = {
+#include "actors/tree/deadr.rgba16.inc.c"
+};
+
+
 // 0x0302FE28
 static const Vtx tree_seg3_vertex_bubbly_left_side[] = {
     {{{  -356,     -9,      0}, 0, {  -796,   2012}, {0xff, 0xff, 0xff, 0xff}}},
@@ -46,6 +56,25 @@ const Gfx tree_seg3_sub_dl_bubbly_right_side[] = {
     gsSPEndDisplayList(),
 };
 
+const Gfx tree_seg3_sub_dl_dead_left_side[] = {
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, tree_seg3_texture_dead_left_side),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPVertex(tree_seg3_vertex_bubbly_left_side, 3, 0),
+    gsSP1Triangle( 0,  1,  2, 0x0),
+    gsSPEndDisplayList(),
+};
+
+// 0x0302FEB8 - 0x0302FEE8
+const Gfx tree_seg3_sub_dl_dead_right_side[] = {
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, tree_seg3_texture_dead_right_side),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPVertex(tree_seg3_vertex_bubbly_right_side, 3, 0),
+    gsSP1Triangle( 0,  1,  2, 0x0),
+    gsSPEndDisplayList(),
+};
+
 // 0x0302FEE8 - 0x0302FF60
 const Gfx tree_seg3_sub_dl_bubbly[] = {
     gsSPClearGeometryMode(G_LIGHTING),
@@ -56,6 +85,24 @@ const Gfx tree_seg3_sub_dl_bubbly[] = {
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsSPDisplayList(tree_seg3_sub_dl_bubbly_left_side),
     gsSPDisplayList(tree_seg3_sub_dl_bubbly_right_side),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsSPSetGeometryMode(G_LIGHTING),
+    gsSPEndDisplayList(),
+};
+
+const Gfx tree_seg3_dl_dead[] = {
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsSPClearGeometryMode(G_LIGHTING),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 6, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsSPDisplayList(tree_seg3_sub_dl_dead_left_side),
+    gsSPDisplayList(tree_seg3_sub_dl_dead_right_side),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),

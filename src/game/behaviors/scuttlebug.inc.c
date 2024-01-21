@@ -391,9 +391,7 @@ void bhv_hammer_bro_loop(void) {
     }
 
     if (gMarioState->gCurrMinigame == 1) {
-        o->oHomeX = gMarioState->pos[0];
-        o->oHomeY = gMarioState->pos[1];
-        o->oHomeZ = gMarioState->pos[2];
+
 
         if (o->oDistanceToMario > 800.0f) {
             o->oFaceAngleYaw = o->oAngleToMario;
@@ -403,7 +401,6 @@ void bhv_hammer_bro_loop(void) {
             }
         }
 
-    cur_obj_set_hitbox_and_die_if_attacked(&sHammerBroHitbox, SOUND_OBJ_KOOPA_DAMAGE,0);
     o->oFaceAngleYaw = o->oAngleToMario;
 
     //ONLY DO IF ACTIVE
@@ -413,9 +410,7 @@ void bhv_hammer_bro_loop(void) {
         if (o->oAction == 0) {
             obj_set_hitbox(o, &sHammerBroHitbox);
             o->oAction = 1;
-            o->oHomeX = o->oPosX;
-            o->oHomeY = o->oPosY;
-            o->oHomeZ = o->oPosZ;
+
             o->oScuttlebugHasNoLootCoins = 0;
         }
 
@@ -471,7 +466,7 @@ void bhv_hammer_bro_loop(void) {
 
         if (o->oAction == 3) {
 
-            o->oForwardVel = 35.0f;
+            //o->oForwardVel = 35.0f;
 
             if (o->oTimer > 5) {
                 if (o->oMoveFlags & 3) {
@@ -481,15 +476,8 @@ void bhv_hammer_bro_loop(void) {
                     o->oForwardVel = 0.0f;
 
                     if (o->oScuttlebugHasNoLootCoins > 0) {
-                        if (gMarioState->gCurrMinigame == 0) {
-                            o->oPosX = o->oHomeX;
-                            o->oPosY = o->oHomeY;
-                            o->oPosZ = o->oHomeZ;
-                            }
                         o->oScuttlebugHasNoLootCoins = 0;
-                        }
-                        else
-                        {
+                        } else {
                         o->oScuttlebugHasNoLootCoins ++;
                         }
                     }
@@ -498,13 +486,27 @@ void bhv_hammer_bro_loop(void) {
 
         cur_obj_update_floor_and_walls();
         cur_obj_move_standard(-50);
+
+        //TODO: Replace with generic handler
+        if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
+            o->oInteractStatus |= INT_STATUS_WAS_ATTACKED;
+            o->oInteractStatus |= INT_STATUS_INTERACTED;
         }
-        else
-        {
+        f32 floorY = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sObjFloor);
+        if (sObjFloor != NULL) {
+            if ((floorY + 1.f > o->oPosY) && (SURFACE_IS_BURNING(sObjFloor->type))) {
+                o->oInteractStatus |= INT_STATUS_WAS_ATTACKED;
+                o->oInteractStatus |= INT_STATUS_INTERACTED;
+            }
+        }
+
+        cur_obj_set_hitbox_and_die_if_attacked(&sHammerBroHitbox, SOUND_OBJ_KOOPA_DAMAGE,0);
+
+    } else {
         cur_obj_disable_rendering();
         o->oTimer --;
-        }
     }
+}
 
 void bhv_slob_loop(void) {
     //o->oDontInertia = hit ground yet
@@ -532,7 +534,7 @@ void bhv_slob_loop(void) {
 
         if (o->oTimer%40==0) {
             cur_obj_play_sound_2(SOUND_OBJ_WALKING_WATER);
-            o->oForwardVel = 20.0f;
+            //o->oForwardVel = 20.0f;
             o->oVelY = 35.0f;
             o->oParentRelativePosY = 2.0f;
             cur_obj_init_animation_with_sound(1);

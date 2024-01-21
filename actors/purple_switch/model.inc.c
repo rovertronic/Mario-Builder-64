@@ -12,6 +12,10 @@ ALIGNED8 static const Texture purple_switch_seg8_texture_0800C128[] = {
 #include "actors/purple_switch/purple_switch_exclamation_point.rgba16.inc.c"
 };
 
+ALIGNED8 static const Texture purple_switch_bottom[] = {
+#include "actors/purple_switch/PurpleBottom.rgba16.inc.c"
+};
+
 // 0x0800C528
 static const Vtx purple_switch_seg8_vertex_0800C528[] = {
     {{{   102,      0,   -101}, 0, {     0,   -543}, {0x53, 0x5f, 0x00, 0xff}}},
@@ -41,10 +45,10 @@ static const Vtx purple_switch_seg8_vertex_0800C628[] = {
 };
 
 static const Vtx purple_switch_seg8_vertex_bottom[] = {
-    {{{    100,     0,   -100}, 0, {   607,   -134}, {0x00, -127, 0x00, 0xff}}},
-    {{{   -100,     0,    100}, 0, {  -159,   1090}, {0x00, -127, 0x00, 0xff}}},
-    {{{    100,     0,    100}, 0, {   607,   1090}, {0x00, -127, 0x00, 0xff}}},
-    {{{   -100,     0,   -100}, 0, {  -159,   -134}, {0x00, -127, 0x00, 0xff}}},
+    {{{    100,     0,   -100}, 0, {1008, -16}, {0x00, -127, 0x00, 0xff}}},
+    {{{   -100,     0,    100}, 0, {-16, 1008}, {0x00, -127, 0x00, 0xff}}},
+    {{{    100,     0,    100}, 0, {1008, 1008}, {0x00, -127, 0x00, 0xff}}},
+    {{{   -100,     0,   -100}, 0, {-16, -16}, {0x00, -127, 0x00, 0xff}}},
 };
 
 // 0x0800C668 - 0x0800C6E0
@@ -59,6 +63,14 @@ const Gfx purple_switch_seg8_dl_0800C668[] = {
     gsSP2Triangles( 3,  6,  4, 0x0,  7,  8,  9, 0x0),
     gsSP2Triangles( 7, 10,  8, 0x0, 11, 12, 13, 0x0),
     gsSP2Triangles(11, 13, 14, 0x0,  0,  2, 15, 0x0),
+
+    gsDPPipeSync(),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, purple_switch_bottom),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(7, 0, 0, 1023, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(0, 0, 0, 124, 124),
+
     gsSPVertex(purple_switch_seg8_vertex_bottom, 4, 0),
     gsSP2Triangles( 0,  2,  1, 0x0,  0,  1,  3, 0x0),
     gsSPEndDisplayList(),

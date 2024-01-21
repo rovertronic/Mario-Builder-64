@@ -119,6 +119,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_2,spiky_tree_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_3,palm_tree_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_4,snow_tree_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TREE_5,dead_tree_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BOUNDARY, lev_edge_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPAWN, spawn_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_PIPE, warp_pipe_geo),
