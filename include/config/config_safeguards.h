@@ -112,10 +112,10 @@
     #define UNLOCK_ALL
 #endif // COMPLETE_SAVE_FILE
 
-#ifdef MUSIC_PREVIEWING
-    #undef NO_SLEEP
-    #define NO_SLEEP
-#endif // MUSIC_PREVIEWING
+#ifdef DEBUG
+    #undef DEBUG_ASSERTIONS
+    #define DEBUG_ASSERTIONS
+#endif // DEBUG
 
 
 /*****************
