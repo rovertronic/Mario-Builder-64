@@ -6,7 +6,7 @@ void bhv_white_puff_smoke_init(void) {
 
 static struct ObjectHitbox sBulletBillHitbox = {
     /* interactType:      */ INTERACT_DAMAGE,
-    /* downOffset:        */ 200,
+    /* downOffset:        */ 250,
     /* damageOrCoinValue: */ 2,
     /* health:            */ 0,
     /* numLootCoins:      */ 0,
@@ -21,7 +21,8 @@ void bhv_bullet_bill_init(void) {
 }
 
 void bullet_bill_act_0(void) {
-    cur_obj_become_tangible();
+    cur_obj_become_intangible();
+    cur_obj_hide();
     o->oForwardVel = 0.0f;
     o->oMoveAngleYaw = o->oBulletBillInitialMoveYaw;
     o->oFaceAnglePitch = 0;
@@ -34,6 +35,7 @@ void bullet_bill_act_0(void) {
 void bullet_bill_act_1(void) {
     s16 sp1E = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
     if (sp1E < 0x2000 && 400.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f) {
+        cur_obj_unhide();
         o->oAction = 2;
     }
 }
@@ -48,6 +50,9 @@ void bullet_bill_act_2(void) {
             o->oForwardVel = -3.0f;
         }
     } else {
+        if (o->oTimer == 50) {
+            cur_obj_become_tangible();
+        }
         if (o->oTimer > 70) {
             cur_obj_update_floor_and_walls();
         }
@@ -64,9 +69,13 @@ void bullet_bill_act_2(void) {
             cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
 
-        if (o->oTimer > 150 || o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+        if (o->oTimer > 150) {
             o->oAction = 3;
             spawn_mist_particles();
+        }
+
+        if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+            o->oAction = 4;
         }
     }
 }
@@ -79,7 +88,7 @@ void bullet_bill_act_4(void) {
     if (o->oTimer == 0) {
         cur_obj_become_intangible();
         cur_obj_hide();
-        struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
+        struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosionFake);
         explosion->oGraphYOffset += 100.0f;
     }
 

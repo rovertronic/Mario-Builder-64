@@ -455,7 +455,7 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 
 static void obj_die_if_health_non_positive(void) {
     s8 old_loot_coins = o->oNumLootCoins;
-    if (o->oHealth <= 0) {
+    if ((o->oHealth <= 0) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
         if (o->oDeathSound == 0) {
             spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
         } else if (o->oDeathSound > 0) {

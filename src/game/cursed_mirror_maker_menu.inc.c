@@ -314,12 +314,15 @@ void cmm_menu_option_animation(s32 x, s32 y, s32 width, struct cmm_settings_butt
     }
 }
 
-#define SETTINGS_MENU_SCROLL_WIDTH 120
+#define SETTINGS_MENU_SCROLL_WIDTH 140
 typedef void (*cmm_page_display_func)(f32 xPos, f32 yPos);
 
-void cmm_menu_page_animation(f32 yoff,
-                             cmm_page_display_func prevPage, cmm_page_display_func curPage, cmm_page_display_func nextPage,
-                             s8 scroll[2]) {
+void cmm_menu_page_animation(f32 yoff, void pageFunc(u32, f32, f32), s32 index, s32 pageCount, s8 scroll[2]) {
+    s32 prevIndex = index - 1;
+    s32 nextIndex = index + 1;
+    if (prevIndex < 0) prevIndex = pageCount - 1;
+    if (nextIndex >= pageCount) nextIndex = 0;
+
     s32 leftX = -SETTINGS_MENU_SCROLL_WIDTH * 2;
     s32 rightX = SETTINGS_MENU_SCROLL_WIDTH * 2;
     s32 xOffset = 0;
@@ -331,13 +334,13 @@ void cmm_menu_page_animation(f32 yoff,
     }
 
     if (leftX > -SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        prevPage(leftX, yoff);
+        pageFunc(prevIndex, leftX, yoff);
 
     } else if (rightX < SETTINGS_MENU_SCROLL_WIDTH * 2) {
-        nextPage(rightX, yoff);
+        pageFunc(nextIndex, rightX, yoff);
     }
 
-    curPage(xOffset, yoff);
+    pageFunc(index, xOffset, yoff);
 }
 
 void cmm_render_topleft_text(void) {
@@ -540,9 +543,6 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     mtxf_to_mtx(mtx, mtx1);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
 
-    cmm_curr_gfx = preview_gfx;
-    cmm_curr_vtx = preview_vtx;
-    cmm_gfx_index = 0;
     cmm_building_collision = FALSE;
     cmm_growth_render_type = 0;
     cmm_render_culling_off = TRUE;
@@ -553,14 +553,10 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
 
 void finish_block_draw() {
     cmm_render_culling_off = FALSE;
-    // This code is so fucking disgusting
-    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
-        // Offset all vertices
-        preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
-        preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
-    }
 
     gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
+    cmm_curr_gfx += cmm_gfx_index;
+    cmm_gfx_index = 0;
 
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
@@ -576,7 +572,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat, u8 topmat) {
     render_preview_block(mat, topmat, pos, &cmm_terrain_fullblock, 0);
 
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     finish_block_draw();
 }
@@ -585,7 +581,7 @@ u8 tmpmaterial = 5;
 u8 tmpTopMaterial = 8;
 u8 tmpTopmatDisabled = TRUE;
 
-void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
+void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory;
     u8 tmpMaterial;
     get_category_and_mat_from_mat(&tmpCategory, &tmpMaterial, *outputVar);
@@ -595,15 +591,15 @@ void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
     cmm_settings_mat_selector[1].value = &tmpMaterial;
     cmm_settings_mat_selector[1].size = cmm_matlist[tmpCategory+1] - cmm_matlist[tmpCategory];
 
-    print_maker_string_ascii(20+3*cmm_menu_list_offsets[startIndex], yPos, "Category:", (startIndex == cmm_menu_index));
-    cmm_menu_option_animation(150+3*cmm_menu_list_offsets[startIndex], yPos, 50, &cmm_settings_mat_selector[0], startIndex, cmm_joystick);
+    print_maker_string_ascii(xPos+20+3*cmm_menu_list_offsets[startIndex], yPos, "Category:", (startIndex == cmm_menu_index));
+    cmm_menu_option_animation(xPos+150+3*cmm_menu_list_offsets[startIndex], yPos, 50, &cmm_settings_mat_selector[0], startIndex, cmm_joystick);
 
     if (tmpCategory != oldCategory) {
         tmpMaterial = 0;
     }
 
-    print_maker_string_ascii(20+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, "Material:", (startIndex+1 == cmm_menu_index));
-    cmm_menu_option_animation(150+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, 50, &cmm_settings_mat_selector[1], startIndex + 1, cmm_joystick);
+    print_maker_string_ascii(xPos+20+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, "Material:", (startIndex+1 == cmm_menu_index));
+    cmm_menu_option_animation(xPos+150+3*cmm_menu_list_offsets[startIndex+1], yPos - 16, 50, &cmm_settings_mat_selector[1], startIndex + 1, cmm_joystick);
 
     *outputVar = cmm_matlist[tmpCategory] + tmpMaterial;
 }
@@ -611,19 +607,49 @@ void custom_theme_draw_mat_selector(f32 yPos, s32 startIndex, u8 *outputVar) {
 // The amount to offset cmm_menu_index by when in the custom theme menu
 #define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_terrain_buttons) + 1)
 
-void draw_cmm_settings_custom_theme(f32 yoff) {
-    s32 dir = 0;
+void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
+    if (index > 9) return;
+    u32 topmatDisabled = !cmm_curr_custom_theme.topmatsEnabled[index];
     char *topmatText = "";
+
     if (cmm_custom_theme_menu_open) {
-        if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
-        if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
-        if (tmpTopmatDisabled) {
+        if (topmatDisabled) {
             topmatText = "Enable Top Material...";
             cmm_menu_index_max = 3;
         } else {
             topmatText = "Disable Top Material...";
             cmm_menu_index_max = 5;
         }
+    }
+
+    // Selector for main material
+    custom_theme_draw_mat_selector(xPos, 160 + yPos, CUSTOM_INDEX_OFFSET, &cmm_curr_custom_theme.mats[index]);
+
+    // Selector for top material
+    print_maker_string_ascii(xPos+55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yPos, topmatText, (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
+    cmm_greyed_text = topmatDisabled;
+    custom_theme_draw_mat_selector(xPos, 112 + yPos, CUSTOM_INDEX_OFFSET+3, &cmm_curr_custom_theme.topmats[index]);
+    cmm_greyed_text = FALSE;
+
+    if (cmm_menu_index == CUSTOM_INDEX_OFFSET + 2) { // Enable/disable button
+        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            cmm_curr_custom_theme.topmatsEnabled[index] ^= 1;
+        }
+    }
+    
+    u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
+    if (topmatDisabled) renderedTopmat = 0;
+
+    custom_theme_draw_block(-xPos - 100, yPos + 10, cmm_curr_custom_theme.mats[index], renderedTopmat);
+}
+
+void draw_cmm_settings_custom_theme(f32 yoff) {
+    s32 dir = 0;
+
+    if (cmm_custom_theme_menu_open) {
+        if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+        if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
     }
 
     s32 prevMenu = (cmm_curr_custom_tab - 1 + CMM_NUM_CUSTOM_TABS) % CMM_NUM_CUSTOM_TABS;
@@ -647,23 +673,20 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
         cmm_menu_index = CUSTOM_INDEX_OFFSET;
     }
 
-    // Selector for main material
-    custom_theme_draw_mat_selector(160 + yoff, CUSTOM_INDEX_OFFSET, &tmpmaterial);
+    cmm_curr_gfx = preview_gfx;
+    cmm_curr_vtx = preview_vtx;
+    cmm_gfx_index = 0;
 
-    // Selector for top material
-    print_maker_string_ascii(55+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET+2], 128 + yoff, topmatText, (CUSTOM_INDEX_OFFSET+2 == cmm_menu_index));
-    cmm_greyed_text = tmpTopmatDisabled;
-    custom_theme_draw_mat_selector(112 + yoff, CUSTOM_INDEX_OFFSET+3, &tmpTopMaterial);
-    cmm_greyed_text = FALSE;
+    cmm_menu_page_animation(yoff, cmm_custom_theme_block_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
 
-    if (cmm_menu_index == CUSTOM_INDEX_OFFSET + 2) { // Enable/disable button
-        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-            tmpTopmatDisabled = !tmpTopmatDisabled;
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-        }
+    // This code is so fucking disgusting.
+    // Edit all the vertices for the drawn preview blocks here.
+    // Done outside the main block draw to be able to affect multiple blocks at once
+    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
+        // Offset all vertices
+        preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
+        preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
     }
-    
-    custom_theme_draw_block(-100, yoff + 10, tmpmaterial, (tmpTopmatDisabled ? 0 : tmpTopMaterial));
 }
 
 void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
@@ -711,6 +734,8 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
                 cmm_menu_scrolling[SCROLL_CUSTOM][1] = 1;
                 cmm_menu_index = index;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                update_custom_theme();
+                generate_terrain_gfx();
             }
         }
     }
@@ -778,17 +803,15 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
 
 #define SETTINGS_MENU_COUNT ARRAY_COUNT(cmm_settings_menus)
 
-void draw_cmm_settings_menu(f32 yoff) {
-    u8 prevIndex = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
-    u8 nextIndex = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
+void cmm_settings_menu_page(u32 index, f32 xPos, f32 yPos) {
+    cmm_settings_menus[index](xPos, yPos);
+}
 
-    cmm_menu_page_animation(yoff,
-        cmm_settings_menus[prevIndex], cmm_settings_menus[cmm_curr_settings_menu], cmm_settings_menus[nextIndex],
-        cmm_menu_scrolling[SCROLL_SETTINGS]);
+void draw_cmm_settings_menu(f32 yoff) {
+    cmm_menu_page_animation(yoff, cmm_settings_menu_page, cmm_curr_settings_menu, SETTINGS_MENU_COUNT, cmm_menu_scrolling[SCROLL_SETTINGS]);
 }
 
 void draw_cmm_menu(void) {
-
     if (cmm_menu_state != CMM_MAKE_SCREENSHOT) {
         create_dl_translation_matrix(MENU_MTX_PUSH, 19, 36, 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
