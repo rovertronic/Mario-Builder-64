@@ -455,7 +455,7 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 
 static void obj_die_if_health_non_positive(void) {
     s8 old_loot_coins = o->oNumLootCoins;
-    if (o->oHealth <= 0) {
+    if ((o->oHealth <= 0) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
         if (o->oDeathSound == 0) {
             spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
         } else if (o->oDeathSound > 0) {
@@ -487,17 +487,18 @@ static void obj_die_if_health_non_positive(void) {
             obj_mark_for_deletion(o);
         }
     }
-    else
+    else // are you assuming this code will only run for rexes? oof
     {
         o->oAction = 0;
-        o->oInteractStatus &= ~INT_STATUS_INTERACTED;
-        if (save_file_get_badge_equip() & (1<<3)) {
+        if ((save_file_get_badge_equip() & (1<<3)) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
             o->oHealth--;
+            o->oInteractStatus &= ~INT_STATUS_INTERACTED;
             obj_die_if_health_non_positive();
         }
         else
         {
             o->oHealth--;
+            o->oInteractStatus &= ~INT_STATUS_INTERACTED;
         }
         cur_obj_become_tangible();
     }
@@ -536,6 +537,13 @@ UNUSED static void obj_unused_die(void) {
 }
 
 static void obj_set_knockback_action(s32 attackType) {
+    if (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB) {
+        o->oAction = OBJ_ACT_HORIZONTAL_KNOCKBACK;
+        o->oForwardVel = 50.0f;
+        o->oVelY = 30.0f;
+        o->oMoveAngleYaw = obj_angle_to_object(o->collidedObjs[0], o);
+        return;
+    }
     switch (attackType) {
         case ATTACK_KICK_OR_TRIP:
         case ATTACK_FAST_ATTACK:

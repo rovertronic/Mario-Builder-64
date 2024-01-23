@@ -279,6 +279,16 @@ struct cmm_theme {
     u8 water;
 };
 
+struct cmm_custom_theme {
+    u8 mats[NUM_MATERIALS_PER_THEME];
+    u8 topmats[NUM_MATERIALS_PER_THEME];
+    u8 topmatsEnabled[NUM_MATERIALS_PER_THEME];
+    u8 fence;
+    u8 pole;
+    u8 bars;
+    u8 water;
+};
+
 //compressed trajectories
 struct cmm_comptraj {
     s8 t;
@@ -308,11 +318,13 @@ struct cmm_level_save_header {
     u16 tile_count;
     u16 object_count;
 
-    char pad[30];
+    struct cmm_custom_theme custom_theme;
 
     struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
 
     u16 piktcher[64][64];
+
+    u64 pad;
 };
 
 struct cmm_level_uncompressed_save {

@@ -12,7 +12,7 @@
  * uses a hardcoded soft hitbox.
  */
 static struct ObjectHitbox sKoopaHitbox = {
-    /* interactType:      */ INTERACT_KOOPA,
+    /* interactType:      */ INTERACT_BOUNCE_TOP,
     /* downOffset:        */ 0,
     /* damageOrCoinValue: */ 0,
     /* health:            */ 0,

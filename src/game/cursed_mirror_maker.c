@@ -2281,6 +2281,7 @@ void save_level(void) {
         //use mystery painting if no screenshot has been taken yet
         bcopy(&mystery_painting_rgba16,&cmm_save.piktcher,sizeof(cmm_save.piktcher));
     }
+    bcopy(&cmm_curr_custom_theme,&cmm_save.custom_theme,sizeof(struct cmm_custom_theme));
 
     f_chdir(cmm_level_dir_name);
     UINT bytes_written;
@@ -2357,6 +2358,8 @@ void load_level(void) {
             }
             cmm_save.tile_count = i;
         }
+
+        bcopy(&cmm_default_custom,&cmm_save.custom_theme,sizeof(struct cmm_custom_theme));
     }
     f_chdir("..");
 
@@ -2396,6 +2399,10 @@ void load_level(void) {
 
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
+
+    // copy custom theme
+    bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));
+    update_custom_theme();
 
     load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
 
@@ -2621,6 +2628,21 @@ void delete_preview_object(void) {
 }
 
 void (*cmm_option_changed_func)(void) = NULL;
+
+void update_custom_theme(void) {
+    for (u32 i = 0; i < NUM_MATERIALS_PER_THEME; i++) {
+        cmm_theme_table[CMM_THEME_CUSTOM].mats[i].mat = cmm_curr_custom_theme.mats[i];
+        if (cmm_curr_custom_theme.topmatsEnabled[i]) {
+            cmm_theme_table[CMM_THEME_CUSTOM].mats[i].topmat = cmm_curr_custom_theme.topmats[i];
+        } else {
+            cmm_theme_table[CMM_THEME_CUSTOM].mats[i].topmat = 0;
+        }
+    }
+    cmm_theme_table[CMM_THEME_CUSTOM].fence = cmm_curr_custom_theme.fence;
+    cmm_theme_table[CMM_THEME_CUSTOM].pole = cmm_curr_custom_theme.pole;
+    cmm_theme_table[CMM_THEME_CUSTOM].bars = cmm_curr_custom_theme.bars;
+    cmm_theme_table[CMM_THEME_CUSTOM].water = cmm_curr_custom_theme.water;
+}
 
 void reload_theme(void) {
     generate_terrain_gfx();

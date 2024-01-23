@@ -1037,6 +1037,36 @@ struct cmm_theme cmm_theme_table[] = {
     },
 };
 
+struct cmm_custom_theme cmm_default_custom = {
+    {
+        CMM_MAT_DIRT,
+        CMM_MAT_BRICKS,
+        CMM_MAT_COBBLESTONE,
+        CMM_MAT_TILESBRICKS,
+        CMM_MAT_ROOF,
+        CMM_MAT_WOOD,
+        CMM_MAT_SANDDIRT,
+        CMM_MAT_SNOWDIRT,
+        CMM_MAT_LAVA,
+        CMM_MAT_QUICKSAND,
+    },
+    {
+        CMM_MAT_GRASS,
+        CMM_MAT_TILES,
+        CMM_MAT_STONE,
+        CMM_MAT_TILES,
+        CMM_MAT_ROOF,
+        CMM_MAT_WOOD,
+        CMM_MAT_SAND,
+        CMM_MAT_SNOW,
+        CMM_MAT_LAVA,
+        CMM_MAT_QUICKSAND,
+    },
+    {1, 0, 1, 1, 0, 0, 1, 1, 0, 0},
+    CMM_FENCE_NORMAL, CMM_MAT_STONE, CMM_BAR_GENERIC, CMM_WATER_DEFAULT,
+};
+struct cmm_custom_theme cmm_curr_custom_theme;
+
 // Returns full tile definition (struct cmm_tilemat_def)
 #define TILE_MATDEF(matid) (cmm_theme_table[cmm_lopt_theme].mats[matid])
 // Returns main material (struct cmm_material)
