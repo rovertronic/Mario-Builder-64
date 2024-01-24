@@ -114,10 +114,10 @@ Vtx *cmm_curr_vtx;
 Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
-u8 cmm_use_alt_uvs = FALSE;
+u8 cmm_use_alt_uvs = FALSE; // Used for decals and special tile shapes
 s8 cmm_uv_offset = -16;
-u8 cmm_render_flip_normals = FALSE;
-u8 cmm_render_culling_off = FALSE;
+u8 cmm_render_flip_normals = FALSE; // Used for drawing water tiles
+u8 cmm_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
 
@@ -996,10 +996,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
     }
 }
 
-void render_bars_side(s8 pos[3]) {
-    u8 connections[5];
-    check_bar_connections(pos, connections);
-
+void render_bars_side(s8 pos[3], u8 connections[5]) {
     for (u32 rot = 0; rot < 4; rot++) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
@@ -1014,10 +1011,7 @@ void render_bars_side(s8 pos[3]) {
     }
 }
 
-void render_bars_top(s8 pos[3]) {
-    u8 connections[5];
-    check_bar_connections(pos, connections);
-
+void render_bars_top(s8 pos[3], u8 connections[5]) {
     for (u32 rot = 0; rot < 4; rot++) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
@@ -1322,13 +1316,15 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
+    u8 connections[5];
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_side(pos);
+        check_bar_connections(pos, connections);
+        render_bars_side(pos, connections);
     }
     display_cached_tris();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
@@ -1336,7 +1332,8 @@ void generate_terrain_gfx(void) {
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_top(pos);
+        check_bar_connections(pos, connections);
+        render_bars_top(pos, connections);
     }
     display_cached_tris();
     gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
@@ -1460,7 +1457,6 @@ void render_preview_block(u8 matid, u8 topmatid, s8 pos[3], struct cmm_terrain *
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }
-    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
 }
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
@@ -1522,19 +1518,21 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    render_bars_side(cmm_cursor_pos);
+                    u8 connections[5];
+                    check_bar_connections(cmm_cursor_pos, connections);
+                    render_bars_side(cmm_cursor_pos, connections);
                     display_cached_tris();
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
                     gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-                    render_bars_top(cmm_cursor_pos);
-                    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+                    render_bars_top(cmm_cursor_pos, connections);
                 }
                 display_cached_tris();
+                gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
                 cmm_use_alt_uvs = FALSE;
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             }
 
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
@@ -1657,9 +1655,11 @@ void generate_terrain_collision(void) {
     cmm_curr_coltype = SURFACE_VANISH_CAP_WALLS;
     for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
+        u8 connections[5];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_side(pos);
-        render_bars_top(pos);
+        check_bar_connections(pos, connections);
+        render_bars_side(pos, connections);
+        render_bars_top(pos, connections);
     }
 
     cmm_building_collision = FALSE;

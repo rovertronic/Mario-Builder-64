@@ -530,8 +530,18 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
 
     Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
-    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 16384, 1.f);
+    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 4000, 0.005f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    Lights1* curLight = (Lights1*)alloc_display_list(sizeof(Lights1));
+    extern Lights1 *defaultLight;
+    bcopy(&defaultLight, curLight, sizeof(Lights1));
+
+    curLight->l->l.dir[0] = (s8)(globalLightDirection[0]);
+    curLight->l->l.dir[1] = (s8)(globalLightDirection[1]);
+    curLight->l->l.dir[2] = (s8)(globalLightDirection[2]);
+
+    gSPSetLights1(gDisplayListHead++, (*curLight));
 
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
     vec3_set(pos, 0, 0, -1500);
@@ -563,23 +573,48 @@ void finish_block_draw() {
     create_dl_ortho_matrix();
 }
 
-void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat, u8 topmat) {
+void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     prepare_block_draw(xpos, ypos);
 
     s8 pos[3];
     vec3_set(pos,32,0,32);
 
-    render_preview_block(mat, topmat, pos, &cmm_terrain_fullblock, 0);
+    if (index < NUM_MATERIALS_PER_THEME) {
+        u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
+        if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = 0;
+
+        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0);
+    } else {
+        cmm_use_alt_uvs = TRUE;
+        if (index == 10) { // Poles
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].gfx);
+            process_tile(pos, &cmm_terrain_pole, cmm_rot_selection);
+        } else if (index == 11) { // Fence
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_fence_texs[cmm_curr_custom_theme.fence]);
+            process_tile(pos, &cmm_terrain_fence, cmm_rot_selection);
+        } else if (index == 12) { // Iron Mesh
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][0]);
+            u8 connections[5] = {1,0,1,0,1};
+            render_bars_side(pos, connections);
+            display_cached_tris();
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][1]);
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            render_bars_top(pos, connections);
+        } else if (index == 13) { // Water
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_water_texs[cmm_curr_custom_theme.water]);
+            render_water(pos);
+        }
+        display_cached_tris();
+        cmm_use_alt_uvs = FALSE;
+    }
 
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     finish_block_draw();
 }
-
-u8 tmpmaterial = 5;
-u8 tmpTopMaterial = 8;
-u8 tmpTopmatDisabled = TRUE;
 
 void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory;
@@ -608,7 +643,6 @@ void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outp
 #define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_terrain_buttons) + 1)
 
 void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
-    if (index > 9) return;
     u32 topmatDisabled = !cmm_curr_custom_theme.topmatsEnabled[index];
     char *topmatText = "";
 
@@ -637,11 +671,14 @@ void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
             cmm_curr_custom_theme.topmatsEnabled[index] ^= 1;
         }
     }
-    
-    u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
-    if (topmatDisabled) renderedTopmat = 0;
+}
 
-    custom_theme_draw_block(-xPos - 100, yPos + 10, cmm_curr_custom_theme.mats[index], renderedTopmat);
+void cmm_custom_theme_render_page(u32 index, f32 xPos, f32 yPos) {
+    if (index < NUM_MATERIALS_PER_THEME) {
+        cmm_custom_theme_block_page(index, xPos, yPos);
+    }
+
+    custom_theme_draw_block(-xPos - 100, yPos + 10, index);
 }
 
 void draw_cmm_settings_custom_theme(f32 yoff) {
@@ -677,7 +714,7 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     cmm_curr_vtx = preview_vtx;
     cmm_gfx_index = 0;
 
-    cmm_menu_page_animation(yoff, cmm_custom_theme_block_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
+    cmm_menu_page_animation(yoff, cmm_custom_theme_render_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
 
     // This code is so fucking disgusting.
     // Edit all the vertices for the drawn preview blocks here.
