@@ -805,21 +805,21 @@ Gfx *cmm_fence_texs[] = {
 
 enum cmm_bars {
     CMM_BAR_GENERIC,
-    CMM_BAR_DESERT,
     CMM_BAR_RHR,
+    CMM_BAR_VP,
+    CMM_BAR_DESERT,
     CMM_BAR_HMC,
     CMM_BAR_BBH,
-    CMM_BAR_VP,
     CMM_BAR_RETRO,
     CMM_BAR_MC,
 };
 Gfx *cmm_bar_texs[][2] = {
     {mat_maker_MakerIronBars,   mat_maker_MakerIronBarsTop},
-    {mat_maker_MakerDMesh,      mat_maker_MakerDesertMeshTop},
     {mat_maker_MakerRHRMesh,    mat_maker_MakerChainTop},
+    {mat_maker_MakerVPMesh,     mat_maker_MakerChainTop},
+    {mat_maker_MakerDMesh,      mat_maker_MakerDesertMeshTop},
     {mat_maker_MakerHMesh,      mat_maker_MakerHMCTop},
     {mat_maker_MakerBBHMesh,    mat_maker_MakerHMCTop},
-    {mat_maker_MakerVPMesh,     mat_maker_MakerChainTop},
     {mat_maker_MakerRetroMesh,  mat_maker_MakerRetroMeshTop},
     {mat_maker_MakerMCIronBars, mat_maker_MakerMCIronBarsTop},
 };
@@ -2132,8 +2132,40 @@ struct cmm_settings_button cmm_settings_music_buttons[] = {
 #define MUSIC_SONG_INDEX 1
 
 struct cmm_settings_button cmm_settings_mat_selector[] = {
-    {"Category", NULL, NULL, ARRAY_COUNT(cmm_matlist) - 1, cmm_get_category,   NULL},
-    {"Material", NULL, NULL, 0, cmm_get_custom_mat, NULL},
+    {"Category:", NULL, NULL, ARRAY_COUNT(cmm_matlist) - 1, cmm_get_category,   NULL},
+    {"Material:", NULL, NULL, 0, cmm_get_custom_mat, NULL},
+};
+
+char *cmm_fence_names[] = {
+    "Wooden (1)",
+    "Wooden (2)",
+    "Metal",
+    "Netting",
+    "Castle",
+    "Stanchion",
+    "Mansion",
+    "Rope",
+    "Snowy",
+};
+
+char *cmm_bar_names[] = {
+    "Metal (1)",
+    "Metal (2)",
+    "Metal (3)",
+    "Metal (4)",
+    "Red (1)",
+    "Red (2)",
+};
+
+char *cmm_water_names[] = {
+    "Default",
+    "Swampy",
+};
+
+struct cmm_settings_button cmm_settings_other_selectors[] = {
+    {"Fence:", &cmm_curr_custom_theme.fence, cmm_fence_names, ARRAY_COUNT(cmm_fence_names), NULL, NULL},
+    {"Iron Mesh:", &cmm_curr_custom_theme.bars, cmm_bar_names, ARRAY_COUNT(cmm_bar_names), NULL, NULL},
+    {"Water:", &cmm_curr_custom_theme.water, cmm_water_names, ARRAY_COUNT(cmm_water_names), NULL, NULL},
 };
 
 char *cmm_settings_menu_names[] = {

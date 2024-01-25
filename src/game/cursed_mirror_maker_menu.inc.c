@@ -492,7 +492,6 @@ void cmm_set_data_overrides(void) {
 #define SCROLL_CUSTOM 13
 #define SCROLL_SETTINGS 14
 #define CMM_SETTINGS_MENU_IS_STILL  ((cmm_menu_scrolling[SCROLL_SETTINGS][0] == 0) && (cmm_menu_start_timer == -1))
-#define CMM_CUSTOM_THEME_CLOSED ((cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) && !cmm_custom_theme_menu_open)
 
 void draw_cmm_settings_general(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons), cmm_menu_index);
@@ -675,10 +674,27 @@ void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
     }
 }
 
+void cmm_custom_theme_pole_page(f32 xPos, f32 yPos) {
+    if (cmm_custom_theme_menu_open) cmm_menu_index_max = 2;
+    custom_theme_draw_mat_selector(xPos, 150 + yPos, CUSTOM_INDEX_OFFSET, &cmm_curr_custom_theme.pole);
+}
+
+void cmm_custom_theme_other_page(f32 xPos, f32 yPos, u32 otherIndex) {
+    if (cmm_custom_theme_menu_open) cmm_menu_index_max = 1;
+
+    print_maker_string_ascii(xPos+20+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET], yPos + 135, cmm_settings_other_selectors[otherIndex].str, (CUSTOM_INDEX_OFFSET == cmm_menu_index));
+    cmm_menu_option_animation(xPos+150+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET], yPos + 135, 50, &cmm_settings_other_selectors[otherIndex], CUSTOM_INDEX_OFFSET, cmm_joystick);
+}
+
 void cmm_custom_theme_render_page(u32 index, f32 xPos, f32 yPos) {
     if (index < NUM_MATERIALS_PER_THEME) {
         cmm_custom_theme_block_page(index, xPos, yPos);
+    } else if (index == 10) {
+        cmm_custom_theme_pole_page(xPos, yPos);
+    } else {
+        cmm_custom_theme_other_page(xPos, yPos, index - 11);
     }
+
 
     custom_theme_draw_block(-xPos - 100, yPos + 10, index);
 }
@@ -979,6 +995,10 @@ void draw_cmm_menu(void) {
                     ((gPlayer1Controller->buttonPressed & B_BUTTON) && !cmm_custom_theme_menu_open)) {
                     cmm_menu_end_timer = 0;
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                    if (cmm_custom_theme_menu_open) {
+                        update_custom_theme();
+                        generate_terrain_gfx();
+                    }
                 }
             }
             yOff = cmm_menu_title_vels[0];
@@ -1015,8 +1035,6 @@ void draw_cmm_menu(void) {
                 break;
             }
 
-            cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
-
             // Begin rendering top header
             s32 prevMenu = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
             s32 nextMenu = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
@@ -1026,11 +1044,14 @@ void draw_cmm_menu(void) {
 
             // Scroll input
             s32 dir = 0;
-            if (CMM_CUSTOM_THEME_CLOSED) {
-                if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
-                if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+            if (!cmm_custom_theme_menu_open) {
+                if (cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) {
+                    if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+                    if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+                }
                 cmm_menu_index_max = cmm_settings_menu_lengths[cmm_curr_settings_menu];
             }
+            cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
             print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
             print_maker_string_ascii_centered(240, yOff + 185, "R >", FALSE);
