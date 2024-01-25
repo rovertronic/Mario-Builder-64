@@ -703,13 +703,13 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerVoid,       0, SURFACE_INSTANT_QUICKSAND, "Void"},           // CMM_MAT_VP_VOID
 
     // Seethrough
-    {mat_maker_MakerRHRMesh_layer1, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Mesh"},          // CMM_MAT_RHR_MESH
-    {mat_maker_MakerVPMesh_layer1,  MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Mesh"},     // CMM_MAT_VP_MESH
-    {mat_maker_MakerHMesh_layer1,   MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Mesh"},      // CMM_MAT_HMC_MESH
-    {mat_maker_MakerBBHMesh_layer1, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Red Mesh"}, // CMM_MAT_BBH_MESH
-    {mat_maker_MakerIce_layer1,     MAT_TRANSPARENT, SURFACE_ICE,           "Ice"},           // CMM_MAT_ICE
-    {mat_maker_MakerCrystal_layer1, MAT_TRANSPARENT, SURFACE_CRYSTAL,       "Crystal"},       // CMM_MAT_CRYSTAL
-    {mat_maker_MakerScreen_layer1,  MAT_VPSCREEN,    SURFACE_DEFAULT,       "Screen"},        // CMM_MAT_VP_SCREEN
+    {mat_maker_MakerRHRMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Mesh"},          // CMM_MAT_RHR_MESH
+    {mat_maker_MakerVPMesh,  MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Mesh"},     // CMM_MAT_VP_MESH
+    {mat_maker_MakerHMesh,   MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Mesh"},      // CMM_MAT_HMC_MESH
+    {mat_maker_MakerBBHMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Red Mesh"}, // CMM_MAT_BBH_MESH
+    {mat_maker_MakerIce,     MAT_TRANSPARENT, SURFACE_ICE,           "Ice"},           // CMM_MAT_ICE
+    {mat_maker_MakerCrystal, MAT_TRANSPARENT, SURFACE_CRYSTAL,       "Crystal"},       // CMM_MAT_CRYSTAL
+    {mat_maker_MakerScreen,  MAT_DECAL,       SURFACE_DEFAULT,       "Screen"},        // CMM_MAT_VP_SCREEN
 
     // Retro
     {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_RETRO_GROUND
@@ -725,33 +725,41 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_RETRO_UNDERWATERGROUND
 
     // Minecraft
-    {mat_maker_MakerMCDirt,              0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_MC_DIRT
-    {mat_maker_MakerMCGrassTop,          0, SURFACE_GRASS,        NULL}, // CMM_MAT_MC_GRASS
-    {mat_maker_MakerMCCobblestone,       0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_MC_COBBLESTONE
-    {mat_maker_MakerMCStone,             0, SURFACE_DEFAULT,      NULL}, // CMM_MAT_MC_STONE
-    {mat_maker_MakerMCOakLogTop,         0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_OAK_LOG_TOP
-    {mat_maker_MakerMCOakLogSide,        0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_OAK_LOG_SIDE
-    {mat_maker_MakerMCOakLeaves_layer1,  MAT_CUTOUT,        SURFACE_GRASS,            NULL}, // CMM_MAT_MC_OAK_LEAVES
-    {mat_maker_MakerMCWoodPlanks,        0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_WOOD_PLANKS
-    {mat_maker_MakerMCSand,              0, SURFACE_SAND,         NULL}, // CMM_MAT_MC_SAND
-    {mat_maker_MakerMCBricks,            0, SURFACE_DEFAULT,      NULL}, // CMM_MAT_MC_BRICKS
-    {mat_maker_MakerMCLava,              0, SURFACE_BURNING,      NULL}, // CMM_MAT_MC_LAVA
-    {mat_maker_MakerMCFlowingLava,       0, SURFACE_BURNING,      NULL}, // CMM_MAT_MC_FLOWING_LAVA
-    {mat_maker_MakerMCGlass_layer1,      MAT_CUTOUT_NOCULL, SURFACE_VANISH_CAP_WALLS, NULL}, // CMM_MAT_MC_GLASS
+    {mat_maker_MakerMCDirt,        0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_MC_DIRT
+    {mat_maker_MakerMCGrassTop,    0, SURFACE_GRASS,        NULL}, // CMM_MAT_MC_GRASS
+    {mat_maker_MakerMCCobblestone, 0, SURFACE_NOT_SLIPPERY, NULL}, // CMM_MAT_MC_COBBLESTONE
+    {mat_maker_MakerMCStone,       0, SURFACE_DEFAULT,      NULL}, // CMM_MAT_MC_STONE
+    {mat_maker_MakerMCOakLogTop,   0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_OAK_LOG_TOP
+    {mat_maker_MakerMCOakLogSide,  0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_OAK_LOG_SIDE
+    {mat_maker_MakerMCOakLeaves,   MAT_CUTOUT,        SURFACE_GRASS,            NULL}, // CMM_MAT_MC_OAK_LEAVES
+    {mat_maker_MakerMCWoodPlanks,  0, SURFACE_CREAKWOOD,    NULL}, // CMM_MAT_MC_WOOD_PLANKS
+    {mat_maker_MakerMCSand,        0, SURFACE_SAND,         NULL}, // CMM_MAT_MC_SAND
+    {mat_maker_MakerMCBricks,      0, SURFACE_DEFAULT,      NULL}, // CMM_MAT_MC_BRICKS
+    {mat_maker_MakerMCLava,        0, SURFACE_BURNING,      NULL}, // CMM_MAT_MC_LAVA
+    {mat_maker_MakerMCFlowingLava, 0, SURFACE_BURNING,      NULL}, // CMM_MAT_MC_FLOWING_LAVA
+    {mat_maker_MakerMCGlass,       MAT_CUTOUT | MATTYPE_NOCULL, SURFACE_VANISH_CAP_WALLS, NULL}, // CMM_MAT_MC_GLASS
+};
+
+u32 cmm_render_mode_table[] = {
+    /* MAT_OPAQUE */ G_RM_ZB_OPA_SURF | G_RM_ZB_OPA_SURF2,
+    /* MAT_DECAL */  G_RM_TEX_EDGE_DECAL | G_RM_TEX_EDGE_DECAL2,
+    /* MAT_CUTOUT */ G_RM_AA_ZB_TEX_EDGE | G_RM_AA_ZB_TEX_EDGE2,
+    /* MAT_TRANSPARENT */ G_RM_AA_ZB_XLU_SURF | G_RM_AA_ZB_XLU_SURF2,
+
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
-    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide_layer1},
-    {CMM_MAT_SAND,          mat_maker_MakerSandSide_layer1},
-    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide_layer1},
-    {CMM_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim_layer1},
-    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide_layer1},
-    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide_layer1},
-    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide_layer1},
-    {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim_layer1},
-    {CMM_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim_layer1},
-    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide_layer1},
-    {CMM_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge_layer1},
+    {CMM_MAT_GRASS,         mat_maker_MakerGrassSide},
+    {CMM_MAT_SAND,          mat_maker_MakerSandSide},
+    {CMM_MAT_SNOW,          mat_maker_MakerSnowSide},
+    {CMM_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
+    {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
+    {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
+    {CMM_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide},
+    {CMM_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim},
+    {CMM_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim},
+    {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
+    {CMM_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
 };
 
 s8 cmm_terrain_floors_generic[] =    {0, 8, 9, 2, 3, 5, 6, 7}; // grass, lava, quicksand, stone, tiles, wood, sand, snow
@@ -782,17 +790,17 @@ enum cmm_fences {
 };
 
 Gfx *cmm_fence_texs[] = {
-    mat_maker_MakerFence_layer1,
-    mat_maker_MakerDFence_layer1,
-    mat_maker_MakerRHRFence_layer1,
-    mat_maker_MakerHFence_layer1,
-    mat_maker_MakerCFence_layer1,
-    mat_maker_MakerVPFence_layer1,
-    mat_maker_MakerBBHFence_layer1,
-    mat_maker_MakerJRBFence_layer1,
-    mat_maker_MakerSnowFence_layer1,
-    mat_maker_MakerRetroFence_layer1,
-    mat_maker_MakerMCFence_layer1,
+    mat_maker_MakerFence,
+    mat_maker_MakerDFence,
+    mat_maker_MakerRHRFence,
+    mat_maker_MakerHFence,
+    mat_maker_MakerCFence,
+    mat_maker_MakerVPFence,
+    mat_maker_MakerBBHFence,
+    mat_maker_MakerJRBFence,
+    mat_maker_MakerSnowFence,
+    mat_maker_MakerRetroFence,
+    mat_maker_MakerMCFence,
 };
 
 enum cmm_bars {
@@ -806,14 +814,14 @@ enum cmm_bars {
     CMM_BAR_MC,
 };
 Gfx *cmm_bar_texs[][2] = {
-    {mat_maker_MakerIronBars_layer1,   mat_maker_MakerIronBarsTop_layer1},
-    {mat_maker_MakerDMesh_layer1,      mat_maker_MakerDesertMeshTop_layer1},
-    {mat_maker_MakerRHRMesh_layer1,    mat_maker_MakerChainTop_layer1},
-    {mat_maker_MakerHMesh_layer1,      mat_maker_MakerHMCTop_layer1},
-    {mat_maker_MakerBBHMesh_layer1,    mat_maker_MakerHMCTop_layer1},
-    {mat_maker_MakerVPMesh_layer1,     mat_maker_MakerChainTop_layer1},
-    {mat_maker_MakerRetroMesh_layer1,  mat_maker_MakerRetroMeshTop_layer1},
-    {mat_maker_MakerMCIronBars_layer1, mat_maker_MakerMCIronBarsTop_layer1},
+    {mat_maker_MakerIronBars,   mat_maker_MakerIronBarsTop},
+    {mat_maker_MakerDMesh,      mat_maker_MakerDesertMeshTop},
+    {mat_maker_MakerRHRMesh,    mat_maker_MakerChainTop},
+    {mat_maker_MakerHMesh,      mat_maker_MakerHMCTop},
+    {mat_maker_MakerBBHMesh,    mat_maker_MakerHMCTop},
+    {mat_maker_MakerVPMesh,     mat_maker_MakerChainTop},
+    {mat_maker_MakerRetroMesh,  mat_maker_MakerRetroMeshTop},
+    {mat_maker_MakerMCIronBars, mat_maker_MakerMCIronBarsTop},
 };
 
 enum cmm_water {

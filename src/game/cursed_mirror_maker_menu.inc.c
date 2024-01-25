@@ -527,8 +527,6 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     Vec3f pos;
     Vec3s rot;
 
-    gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-
     Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
     guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 4000, 0.005f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -583,25 +581,30 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
         if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = 0;
 
-        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0);
+        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0, TRUE);
     } else {
         cmm_use_alt_uvs = TRUE;
         if (index == 10) { // Poles
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].type, TRUE);
             process_tile(pos, &cmm_terrain_pole, cmm_rot_selection);
         } else if (index == 11) { // Fence
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_fence_texs[cmm_curr_custom_theme.fence]);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
             process_tile(pos, &cmm_terrain_fence, cmm_rot_selection);
         } else if (index == 12) { // Iron Mesh
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][0]);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
             u8 connections[5] = {1,0,1,0,1};
-            render_bars_side(pos, connections);
-            display_cached_tris();
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][1]);
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             render_bars_top(pos, connections);
+            display_cached_tris();
+            gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][0]);
+            render_bars_side(pos, connections);
         } else if (index == 13) { // Water
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_water_texs[cmm_curr_custom_theme.water]);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, TRUE);
             render_water(pos);
         }
         display_cached_tris();
@@ -609,7 +612,6 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     }
 
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
