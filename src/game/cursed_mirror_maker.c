@@ -1184,8 +1184,6 @@ Gfx *get_sidetex(s32 matid) {
 
 #define retroland_filter_on() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
 #define retroland_filter_off() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16); }
-#define cutout_turn_culling_off(mat) if (cmm_mat_table[mat].type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
-#define cutout_turn_culling_on(mat) if (cmm_mat_table[mat].type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
@@ -1212,6 +1210,7 @@ u32 do_process(u8 *targetMatType, u32 processTileRenderMode) {
                 *targetMatType = MAT_SCREEN;
                 return TRUE;
             }
+            return FALSE;
     }
     return TRUE; // PROCESS_TILE_BOTH
 }
@@ -1248,12 +1247,22 @@ void process_tiles(u32 processTileRenderMode) {
         startIndex = cmm_tile_data_indices[mat];
         endIndex = cmm_tile_data_indices[mat+1];
 
-        PROC_RENDER( if (!do_process(&matType, processTileRenderMode)) goto skip_maintex; \
-                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
-                     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE); \
-                     cutout_turn_culling_off(TILE_MATDEF(mat).mat);)
+        // RENDER
+        if (!cmm_building_collision) {
+            if (!do_process(&matType, processTileRenderMode)) {
+                goto skip_maintex;
+            }
 
-        PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+
+            if (matType == MAT_CUTOUT) {
+                gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            }
+        // COLLISION
+        } else {
+            cmm_curr_coltype = MATERIAL(mat).col;
+        }
 
         for (u32 i = startIndex; i < endIndex; i++) {
             tileType = cmm_tile_data[i].type;
@@ -1265,7 +1274,6 @@ void process_tiles(u32 processTileRenderMode) {
         }
 
         PROC_RENDER( display_cached_tris(); \
-                     cutout_turn_culling_on(TILE_MATDEF(mat).mat); \
                      skip_maintex: )
         
         if (cmm_curr_mat_has_topside) {
@@ -1323,7 +1331,8 @@ void process_tiles(u32 processTileRenderMode) {
 
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
-            PROC_RENDER( display_cached_tris(); )
+            PROC_RENDER( display_cached_tris(); \
+                         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); )
         }
     }
 }
@@ -1479,10 +1488,11 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     if (do_process(&matType, processType)) {
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
-        cutout_turn_culling_off(matid);
+        if (matType == MAT_CUTOUT) {
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        }
         process_tile(pos, terrain, rot);
         display_cached_tris();
-        cutout_turn_culling_on(matid);
     }
 
     if (cmm_curr_mat_has_topside) {
@@ -1516,6 +1526,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }
+    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
 }
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
