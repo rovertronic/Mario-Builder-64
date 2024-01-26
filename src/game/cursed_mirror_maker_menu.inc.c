@@ -580,7 +580,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
         if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = 0;
 
-        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0, TRUE);
+        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
     } else {
         cmm_use_alt_uvs = TRUE;
         if (index == 10) { // Poles

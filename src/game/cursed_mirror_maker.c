@@ -1191,7 +1191,32 @@ Gfx *get_sidetex(s32 matid) {
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
 #define PROC_RENDER(statement)    if (!cmm_building_collision) { statement; }
 
-void process_tiles(u32 isTransparent) {
+enum ProcessTileRenderModes {
+    PROCESS_TILE_NORMAL,
+    PROCESS_TILE_TRANSPARENT,
+    PROCESS_TILE_BOTH,
+    PROCESS_TILE_VPLEX,
+};
+
+// Returns true if tile should be processed
+// If in vplex screen processing mode, can also override target mat type in order
+// to render screen
+u32 do_process(u8 *targetMatType, u32 processTileRenderMode) {
+    switch (processTileRenderMode) {
+        case PROCESS_TILE_NORMAL:
+            return (*targetMatType != MAT_TRANSPARENT);
+        case PROCESS_TILE_TRANSPARENT:
+            return (*targetMatType == MAT_TRANSPARENT);
+        case PROCESS_TILE_VPLEX:
+            if (*targetMatType == MAT_DECAL) {
+                *targetMatType = MAT_SCREEN;
+                return TRUE;
+            }
+    }
+    return TRUE; // PROCESS_TILE_BOTH
+}
+
+void process_tiles(u32 processTileRenderMode) {
     u32 startIndex, endIndex;
     u8 tileType, rot;
     s8 pos[3];
@@ -1199,7 +1224,7 @@ void process_tiles(u32 isTransparent) {
     // Poles
     if (!cmm_building_collision) {
         u8 poleMatType = cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].type;
-        if (!(isTransparent ^ (poleMatType == MAT_TRANSPARENT))) {
+        if (do_process(&poleMatType, processTileRenderMode)) {
             cmm_use_alt_uvs = TRUE;
             cmm_growth_render_type = 0;
             startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
@@ -1223,7 +1248,7 @@ void process_tiles(u32 isTransparent) {
         startIndex = cmm_tile_data_indices[mat];
         endIndex = cmm_tile_data_indices[mat+1];
 
-        PROC_RENDER( if (isTransparent ^ (matType == MAT_TRANSPARENT)) goto skip_maintex; \
+        PROC_RENDER( if (!do_process(&matType, processTileRenderMode)) goto skip_maintex; \
                      gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
                      set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE); \
                      cutout_turn_culling_off(TILE_MATDEF(mat).mat);)
@@ -1244,7 +1269,8 @@ void process_tiles(u32 isTransparent) {
                      skip_maintex: )
         
         if (cmm_curr_mat_has_topside) {
-            PROC_RENDER( if (isTransparent ^ (TOPMAT(mat).type == MAT_TRANSPARENT)) continue; )
+            u8 topmatType = TOPMAT(mat).type;
+            PROC_RENDER( if (!do_process(&topmatType, processTileRenderMode)) continue; )
             Gfx *sidetex = get_sidetex(TILE_MATDEF(mat).topmat);
             // Only runs when rendering
             if (!cmm_building_collision && (sidetex)) {
@@ -1286,7 +1312,7 @@ void process_tiles(u32 isTransparent) {
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
             PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); \
-                         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).type, FALSE); )
+                         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topmatType, FALSE); )
 
             cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
@@ -1323,28 +1349,7 @@ void generate_terrain_gfx(void) {
 
     retroland_filter_on();
 
-    // This does the funny virtuaplex effect
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
-    for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
-        cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
-        if (TILE_MATDEF(mat).mat == CMM_MAT_VP_SCREEN) {
-            cmm_growth_render_type = 0;
-        } else if (TILE_MATDEF(mat).topmat == CMM_MAT_VP_SCREEN) {
-            cmm_growth_render_type = 1;
-        } else {
-            continue;
-        }
-
-        u32 startIndex = cmm_tile_data_indices[mat];
-        u32 endIndex = cmm_tile_data_indices[mat+1];
-        for (u32 i = startIndex; i < endIndex; i++) {
-            tileType = cmm_tile_data[i].type;
-            rot = cmm_tile_data[i].rot;
-            vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-            process_tile(pos, cmm_tile_terrains[tileType], rot);
-        }
-    }
-    display_cached_tris();
+    process_tiles(PROCESS_TILE_VPLEX);
 
     //BOTTOM PLANE
     if (cmm_lopt_plane != 0) {
@@ -1401,7 +1406,7 @@ void generate_terrain_gfx(void) {
     }
     display_cached_tris();
 
-    process_tiles(FALSE);
+    process_tiles(PROCESS_TILE_NORMAL);
 
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1446,7 +1451,7 @@ void generate_terrain_gfx(void) {
     }
     cmm_render_flip_normals = FALSE;
 
-    process_tiles(TRUE);
+    process_tiles(PROCESS_TILE_TRANSPARENT);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1466,20 +1471,23 @@ Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
-void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain *terrain, u32 rot, u32 disableZ) {
-    if (topmatid != CMM_MAT_NONE) {
-        cmm_curr_mat_has_topside = TRUE;
-    }
+void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain *terrain, u32 rot, u32 processType, u32 disableZ) {
+    cmm_curr_mat_has_topside = (topmatid != CMM_MAT_NONE);
+
     u8 matType = cmm_mat_table[matid].type;
 
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
-    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
-    cutout_turn_culling_off(matid);
-    process_tile(pos, terrain, rot);
-    display_cached_tris();
-    cutout_turn_culling_on(matid);
+    if (do_process(&matType, processType)) {
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
+        cutout_turn_culling_off(matid);
+        process_tile(pos, terrain, rot);
+        display_cached_tris();
+        cutout_turn_culling_on(matid);
+    }
 
     if (cmm_curr_mat_has_topside) {
+        u8 topMatType = cmm_mat_table[topmatid].type;
+        if (!do_process(&topMatType, processType)) return;
         Gfx *sidetex = get_sidetex(topmatid);
         if (sidetex != NULL) {
             cmm_use_alt_uvs = TRUE;
@@ -1504,7 +1512,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
         cmm_growth_render_type = 1;
 
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].type, disableZ);
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topMatType, disableZ);
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }
@@ -1523,6 +1531,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
+            cmm_growth_render_type = 0;
 
             cmm_building_collision = FALSE;
 
@@ -1542,30 +1551,29 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             }
 
             struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
+            u8 mat = TILE_MATDEF(cmm_mat_selection).mat;
+            u8 topmat = TILE_MATDEF(cmm_mat_selection).topmat;
+            if (cmm_id_selection == TILE_TYPE_POLE) {
+                terrain = &cmm_terrain_pole;
+                mat = cmm_theme_table[cmm_lopt_theme].pole;
+                topmat = CMM_MAT_NONE;
+                cmm_use_alt_uvs = TRUE;
+            }
             
             if (terrain) {
                 // Handle Virtuaplex screen effect
-                cmm_curr_mat_has_topside = HAS_TOPMAT(cmm_mat_selection);
-                if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
-                    cmm_growth_render_type = 0;
-                } else if (TILE_MATDEF(cmm_mat_selection).topmat == CMM_MAT_VP_SCREEN) {
-                    cmm_growth_render_type = 1;
-                } else {
-                    // No effect
-                    goto skip_vp_screen;
-                }
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
-                process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                display_cached_tris();
-                gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
-                geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
+                if (mat == CMM_MAT_VP_SCREEN || topmat == CMM_MAT_VP_SCREEN) {
+                    render_preview_block(mat, topmat, cmm_cursor_pos, terrain, cmm_rot_selection, PROCESS_TILE_VPLEX, FALSE);
 
-                cmm_curr_gfx += cmm_gfx_index;
-                cmm_gfx_index = 0;
-skip_vp_screen:
-                cmm_growth_render_type = 0;
-                render_preview_block(TILE_MATDEF(cmm_mat_selection).mat, TILE_MATDEF(cmm_mat_selection).topmat,
-                                     cmm_cursor_pos, terrain, cmm_rot_selection, FALSE);
+                    gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+                    geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
+
+                    cmm_curr_gfx += cmm_gfx_index;
+                    cmm_gfx_index = 0;
+                    cmm_growth_render_type = 0;
+                }
+
+                render_preview_block(mat, topmat, cmm_cursor_pos, terrain, cmm_rot_selection, PROCESS_TILE_BOTH, FALSE);
 
             } else if (cmm_id_selection != TILE_TYPE_CULL) {
                 cmm_use_alt_uvs = TRUE;
@@ -1706,7 +1714,7 @@ void generate_terrain_collision(void) {
     cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
-    process_tiles(TRUE);
+    process_tiles(0);
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {

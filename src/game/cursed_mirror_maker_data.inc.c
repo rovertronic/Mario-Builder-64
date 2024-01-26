@@ -745,7 +745,7 @@ u32 cmm_render_mode_table[] = {
     /* MAT_DECAL */  G_RM_TEX_EDGE_DECAL | G_RM_TEX_EDGE_DECAL2,
     /* MAT_CUTOUT */ G_RM_AA_ZB_TEX_EDGE | G_RM_AA_ZB_TEX_EDGE2,
     /* MAT_TRANSPARENT */ G_RM_AA_ZB_XLU_SURF | G_RM_AA_ZB_XLU_SURF2,
-
+    /* MAT_SCREEN */ G_RM_VPLEX_SCREEN | G_RM_VPLEX_SCREEN2,
 };
 
 struct cmm_topmaterial cmm_topmat_table[] = {
