@@ -6103,7 +6103,12 @@ void bhv_badge(void) {
                 rtext_insert_pointer[1] = badgedescs[o->oBehParams2ndByte];
 
                 o->oHomeY = 1.0f;
-                run_event(EVENT_GET_BADGE);
+
+                if ((o->oBehParams2ndByte == BADGE_BRITTLE)||(o->oBehParams2ndByte == BADGE_WITHER)) {
+                    run_event(EVENT_GET_BURDEN);
+                } else {
+                    run_event(EVENT_GET_BADGE);
+                }
             }
         break;
         case 1:

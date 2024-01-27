@@ -726,11 +726,23 @@ s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
 }
 
 s32 act_lvup_dance(struct MarioState *m) {
-    m->particleFlags |= PARTICLE_SPARKLES;
-    m->faceAngle[1] = m->area->camera->yaw;
-    set_custom_mario_animation(m,10);
-    stop_and_set_height_to_floor(m);
-    m->marioObj->header.gfx.pos[1] = m->pos[1];
+
+    m->forwardVel = 0.0f;
+    m->vel[0] = 0.0f;
+    m->vel[2] = 0.0f;
+    s32 airStepLanded = (perform_air_step(m, 0) == AIR_STEP_LANDED);
+
+    if (airStepLanded) {
+        m->faceAngle[1] = m->area->camera->yaw;
+        if (m->actionArg == 0) {
+            set_custom_mario_animation(m,10);
+            m->particleFlags |= PARTICLE_SPARKLES;
+        } else {
+            set_mario_animation(m,MARIO_ANIM_REACH_POCKET);
+        }
+        stop_and_set_height_to_floor(m);
+        m->marioObj->header.gfx.pos[1] = m->pos[1];
+    }
     return FALSE;
 }
 
