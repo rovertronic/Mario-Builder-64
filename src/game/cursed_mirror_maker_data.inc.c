@@ -1172,11 +1172,10 @@ enum {
     CMM_BUTTON_VEXCLA,
     CMM_BUTTON_FLYING,
     CMM_BUTTON_HAUNTED,
-    CMM_BUTTON_SNOWEN,
+    CMM_BUTTON_MISC_EN,
     CMM_BUTTON_MINE,
     CMM_BUTTON_FIRE_SPINNER,
     CMM_BUTTON_FIRE,
-    CMM_BUTTON_MISC_EN
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1209,14 +1208,14 @@ u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
     /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN,CMM_BUTTON_BTCME, CMM_BUTTON_MISC_EN,CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN,CMM_BUTTON_BTCME, CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT, CMM_BUTTON_TC,CMM_BUTTON_FIRE, CMM_BUTTON_BADGE, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
     /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION, CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_VEXCLA,CMM_BUTTON_HEART,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_SNOWEN, CMM_BUTTON_MISC_EN, CMM_BUTTON_BOSS, CMM_BUTTON_KTQ,
+    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN, CMM_BUTTON_BOSS, CMM_BUTTON_KTQ, CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,CMM_BUTTON_TC, CMM_BUTTON_MINE, CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 
@@ -1338,12 +1337,6 @@ struct cmm_object_info cmm_object_type_haunted[] = {
     {bhvScuttlebug, 0, MODEL_MAKER_SCUTTLEBUG, FALSE, 3, 0, 1.0f, scuttlebug_seg6_anims_06015064, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
 };
 
-struct cmm_object_info cmm_object_type_snow_enemy[] = {
-    {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 3, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_ACTION_TWIRL},
-    {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 3, 0, 1.0f, snowman_seg5_anims_0500D118, df_blizzard, SOUND_OBJ2_SCUTTLEBUG_ALERT},
-    {bhvMoneybagHidden, 0, MODEL_ATM, FALSE, 5, 0, 1.0f, moneybag_seg6_anims_06005E5C, df_moneybag, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
-};
-
 struct cmm_object_info cmm_object_type_mine[] = {
     bhvBowserBomb, TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB, FALSE, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL2_QUIET_EXPLOSION,
 };
@@ -1363,6 +1356,9 @@ struct cmm_object_info cmm_object_type_fire[] = {
 };
 
 struct cmm_object_info cmm_object_type_misc_enemy[] = {
+    {bhvSpindrift, 0, MODEL_MAKER_SPINDRIFT, FALSE, 3, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_ACTION_TWIRL},
+    {bhvMrBlizzard, 0, MODEL_MAKER_BLIZZARD, FALSE, 3, 0, 1.0f, snowman_seg5_anims_0500D118, df_blizzard, SOUND_OBJ2_SCUTTLEBUG_ALERT},
+    {bhvMoneybagHidden, 0, MODEL_ATM, FALSE, 5, 0, 1.0f, moneybag_seg6_anims_06005E5C, df_moneybag, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
     {bhvSkeeter, 0, MODEL_MAKER_SKEETER, FALSE, 3, 0, 1.0f, skeeter_seg6_anims_06007DE0, NULL, SOUND_OBJ_SKEETER_WALK},
     {bhvPokey, 0, MODEL_MAKER_POKEY_HEAD, TRUE, 5, 0, 3.0f, NULL, df_pokey, SOUND_OBJ_POKEY_DEATH},
 };
@@ -1397,13 +1393,12 @@ enum {
     OBJECT_TYPE_TEST,// Fake type, used for the Test mario preview
     OBJECT_TYPE_FLYING,
     OBJECT_TYPE_HAUNTED,
-    OBJECT_TYPE_SNOWEN,
+    OBJECT_TYPE_MISC_EN,
     OBJECT_TYPE_MINE,
     OBJECT_TYPE_FIRE_SPINNER,
     OBJECT_TYPE_COINFORM,
     OBJECT_TYPE_SETTINGS, // Also fake type
     OBJECT_TYPE_FIRE,
-    OBJECT_TYPE_MISC_EN,
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
@@ -1431,13 +1426,12 @@ struct cmm_object_place cmm_object_place_types[] = {
     {&cmm_object_type_test_mario, FALSE, FALSE, FALSE, 0},
     { cmm_object_type_flying, FALSE, FALSE, TRUE, 4},
     { cmm_object_type_haunted, FALSE, FALSE, TRUE, 3},
-    { cmm_object_type_snow_enemy, FALSE, FALSE, TRUE, 3},
+    {cmm_object_type_misc_enemy, FALSE, FALSE, TRUE, 5},
     {&cmm_object_type_mine, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_fire_spinner, FALSE, FALSE, FALSE, 9},
     {&cmm_object_type_coin_formation, FALSE, FALSE, FALSE, 5},
     { cmm_object_type_settings, FALSE, FALSE, TRUE, 2}, // Used only for the length field
     { cmm_object_type_fire, FALSE, FALSE, TRUE, 4},
-    {cmm_object_type_misc_enemy, FALSE, FALSE, TRUE, 2},
 };
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
@@ -1660,16 +1654,20 @@ Gfx *btn_ground_enemies[] = {
     mat_b_btn_kuppa,
 };
 
-char *txt_snow_enemies[] = {
+char *txt_misc_enemies[] = {
     "Spindrift",
     "Mr.Blizzard",
     "Moneybag",
+    "Skeeter",
+    "Pokey",
 };
 
-Gfx *btn_snow_enemies[] = {
+Gfx *btn_misc_enemies[] = {
     mat_b_btn_spindrift,
     mat_b_btn_blizzard,
     mat_b_btn_moneybag,
+    mat_b_btn_skeeter,
+    mat_b_btn_pokey,
 };
 
 char *txt_obstacles[] = {
@@ -1707,16 +1705,6 @@ char *txt_fire[] = {
     "Blue",
     "Spitter",
     "Thrower",
-};
-
-Gfx *btn_misc_enemies[] = {
-    mat_b_btn_skeeter,
-    mat_b_btn_pokey,
-};
-
-char *txt_misc_enemies[] = {
-    "Skeeter",
-    "Pokey",
 };
 
 char *txt_fire_spinner[] = {
@@ -1784,11 +1772,10 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {mat_b_btn_excla,        0, OBJECT_TYPE_EXCLA,   CMM_PM_OBJ,   "Item Box",           txt_bp_vbox},         //CMM_BUTTON_VEXCLA
     {btn_flying_enemies,     1, OBJECT_TYPE_FLYING,  CMM_PM_OBJ,   "Flying Enemies",     txt_flying_enemies},  //CMM_BUTTON_FLYING
     {btn_haunted_enemies,    1, OBJECT_TYPE_HAUNTED, CMM_PM_OBJ,   "Spooky Enemies",     txt_haunted_enemies}, //CMM_BUTTON_HAUNTED
-    {btn_snow_enemies,       1, OBJECT_TYPE_SNOWEN,  CMM_PM_OBJ,   "Snowy Enemies",      txt_snow_enemies},    //CMM_BUTTON_SNOWEN
+    {btn_misc_enemies,       1, OBJECT_TYPE_MISC_EN, CMM_PM_OBJ,   "Misc. Enemies",      txt_misc_enemies},    //CMM_BUTTON_MISC_EN
     {mat_b_btn_bbomb,        0, OBJECT_TYPE_MINE,    CMM_PM_OBJ,   "Bowser Mine",        NULL},                //CMM_BUTTON_MINE
     {mat_b_btn_firebar,      0, OBJECT_TYPE_FIRE_SPINNER, CMM_PM_OBJ, "Fire Spinner",    txt_fire_spinner},    //CMM_BUTTON_FIRE_SPINNER
     {btn_fire,               1, OBJECT_TYPE_FIRE,    CMM_PM_OBJ,   "Flame",              txt_fire},            //CMM_BUTTON_FIRE
-    {btn_misc_enemies,       1, OBJECT_TYPE_MISC_EN, CMM_PM_OBJ,   "Misc. Enemies",      txt_misc_enemies},    //CMM_BUTTON_MISC_EN
 
 };
 
