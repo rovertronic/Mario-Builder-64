@@ -388,6 +388,22 @@ s8 cullOffsetLUT[6][3] = {
     {0, 0, -1},
 };
 
+// Used for determining if waterlogging makes the water full
+u32 block_top_face_hollow(u32 mat) {
+    return HAS_TOPMAT(mat) ? (TOPMAT(mat).type == MAT_CUTOUT) : (MATERIAL(mat).type == MAT_CUTOUT);
+}
+
+// Used for determining if a block can be waterlogged
+u32 block_is_hollow(u32 mat) {
+    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type == MAT_CUTOUT));
+}
+
+// Used for determining if a block is rendered with backface culling
+// Mostly same as above but also checks for translucent materials
+u32 block_is_seethrough(u32 mat) {
+    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type >= MAT_CUTOUT));
+}
+
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (cmm_render_culling_off) return FALSE;
@@ -409,7 +425,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     }
 
     s32 otherMat = get_grid_tile(newpos)->mat;
-    if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
+    if (block_is_seethrough(otherMat)) {
         s32 curMat = get_grid_tile(pos)->mat;
         if (curMat != otherMat) return FALSE;
     }
@@ -1027,7 +1043,11 @@ u32 is_water_fullblock(s8 pos[3]) {
     // Full block if waterlogging a block and it has a solid top face
     s32 type = get_grid_tile(pos)->type - 1;
     if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
-        if ((get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT)) return TRUE;
+        if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) {
+            if (!block_top_face_hollow(get_grid_tile(pos)->mat)) {
+                return TRUE;
+            }
+        }
     }
     // Full block if above block has solid bottom face
     if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
@@ -1059,7 +1079,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     // Usually this would fail if next to a mesh, but it will pass if
     // the current tile is the same material, which in this case will happen
     // if an entire mesh is waterlogged.
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (MATERIAL(get_grid_tile(adjacentPos)->mat).type != MAT_CUTOUT)) return 0;
+    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (!block_is_hollow(get_grid_tile(adjacentPos)->mat))) return 0;
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
@@ -1074,7 +1094,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && (!block_is_hollow(get_grid_tile(pos)->mat))) {
         return 0;
     }
 
@@ -1256,7 +1276,7 @@ void process_tiles(u32 processTileRenderMode) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
 
-            if (matType == MAT_CUTOUT) {
+            if (block_is_seethrough(mat)) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             }
         // COLLISION
@@ -1436,7 +1456,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
+                !block_is_hollow(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1446,7 +1466,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
+                !block_is_hollow(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1488,7 +1508,9 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     if (do_process(&matType, processType)) {
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
-        if (matType == MAT_CUTOUT) {
+        if (((matType == MAT_CUTOUT) ||
+            (cmm_curr_mat_has_topside && (cmm_mat_table[topmatid].type == MAT_CUTOUT)))
+            && !disableZ) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
         process_tile(pos, terrain, rot);
@@ -1961,8 +1983,10 @@ void place_tile(s8 pos[3]) {
         }
     }
 
-    if ((cmm_id_selection == TILE_TYPE_BLOCK) && (MATERIAL(cmm_mat_selection).type != MAT_CUTOUT)) {
-        waterlogged = FALSE;
+    if (cmm_id_selection == TILE_TYPE_BLOCK) {
+        if (!block_is_hollow(cmm_mat_selection)) {
+            waterlogged = FALSE;
+        }
     }
     // If placing a cull marker, check that its actually next to a tile
     if (cmm_id_selection == TILE_TYPE_CULL && is_cull_marker_useless(pos)) {
@@ -2023,7 +2047,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if ((tileType == TILE_TYPE_BLOCK) && (MATERIAL(tile->mat).type != MAT_CUTOUT)) {
+        if ((tileType == TILE_TYPE_BLOCK) && !block_is_hollow(tile->mat)) {
             return;
         }
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
