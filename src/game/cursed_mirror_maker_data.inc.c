@@ -529,6 +529,7 @@ enum cmm_materials {
     CMM_MAT_BBH_WINDOW,
     CMM_MAT_HMC_LIGHT,
     CMM_MAT_VP_CAUTION,
+    CMM_MAT_PATTERNED_BLOCK,
     CMM_MAT_RR_BLOCKS,
     CMM_MAT_STUDDED_TILE,
     CMM_MAT_TTC_BLOCK,
@@ -554,6 +555,8 @@ enum cmm_materials {
     CMM_MAT_VP_MESH,
     CMM_MAT_HMC_MESH,
     CMM_MAT_BBH_MESH,
+    CMM_MAT_PINK_MESH,
+    CMM_MAT_TTC_MESH,
     CMM_MAT_ICE,
     CMM_MAT_CRYSTAL,
     CMM_MAT_VP_SCREEN,
@@ -723,6 +726,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerBBHWindow, 0, SURFACE_DEFAULT,       "Window"},         // CMM_MAT_BBH_WINDOW
     {mat_maker_MakerHLight,    0, SURFACE_DEFAULT,       "Lantern"},        // CMM_MAT_HMC_LIGHT
     {mat_maker_MakerCaution,   0, SURFACE_DEFAULT,       "Hazard Stripes"}, // CMM_MAT_VP_CAUTION
+    {mat_maker_MakerLauncherTex, 0, SURFACE_DEFAULT,     "Patterned Block"}, // CMM_MAT_PATTERNED_BLOCK
     {mat_maker_MakerRRBlocks,  0, SURFACE_DEFAULT,       "Rainbow Blocks"}, // CMM_MAT_RR_BLOCKS
     {mat_maker_MakerStuddedFloor, 0, SURFACE_NOT_SLIPPERY, "Studded Tile"},   // CMM_MAT_STUDDED_TILE
     {mat_maker_MakerYellowBlock, 0, SURFACE_DEFAULT,     "Yellow Block"},   // CMM_MAT_TTC_BLOCK
@@ -742,8 +746,10 @@ struct cmm_material cmm_mat_table[] = {
     // Seethrough
     {mat_maker_MakerRHRMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Mesh"},          // CMM_MAT_RHR_MESH
     {mat_maker_MakerVPMesh,  MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Mesh"},     // CMM_MAT_VP_MESH
-    {mat_maker_MakerHMesh,   MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Mesh"},      // CMM_MAT_HMC_MESH
-    {mat_maker_MakerBBHMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Red Mesh"}, // CMM_MAT_BBH_MESH
+    {mat_maker_MakerHMesh,   MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Grille"},      // CMM_MAT_HMC_MESH
+    {mat_maker_MakerBBHMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Mesh"}, // CMM_MAT_BBH_MESH
+    {mat_maker_MakerGratePink, MAT_CUTOUT,    SURFACE_HANGABLE_MESH, "Pink Mesh"}, // CMM_MAT_PINK_MESH
+    {mat_maker_MakerTTCGrate, MAT_CUTOUT,     SURFACE_HANGABLE_MESH, "Clock Grille"},    // CMM_MAT_TTC_MESH
     {mat_maker_MakerIce,     MAT_TRANSPARENT, SURFACE_ICE,           "Ice"},           // CMM_MAT_ICE
     {mat_maker_MakerCrystal, MAT_TRANSPARENT, SURFACE_CRYSTAL,       "Crystal"},       // CMM_MAT_CRYSTAL
     {mat_maker_MakerScreen,  MAT_DECAL,       SURFACE_DEFAULT,       "Screen"},        // CMM_MAT_VP_SCREEN
@@ -815,13 +821,16 @@ s8 cmm_terrain_floors_mc[] =         {0, 8, 2, 5, 6, 7}; // grass, lava, stone, 
 
 enum cmm_fences {
     CMM_FENCE_NORMAL,
+    CMM_FENCE_WOOD2,
     CMM_FENCE_DESERT,
+    CMM_FENCE_BARBED,
     CMM_FENCE_RHR,
     CMM_FENCE_HMC,
     CMM_FENCE_CASTLE,
     CMM_FENCE_VIRTUAPLEX,
     CMM_FENCE_BBH,
     CMM_FENCE_JRB,
+    CMM_FENCE_SNOW2,
     CMM_FENCE_SNOW,
     CMM_FENCE_RETRO,
     CMM_FENCE_MC,
@@ -829,13 +838,16 @@ enum cmm_fences {
 
 Gfx *cmm_fence_texs[] = {
     mat_maker_MakerFence,
+    mat_maker_MakerWoodenFence,
     mat_maker_MakerDFence,
+    mat_maker_MakerBarbedWire,
     mat_maker_MakerRHRFence,
     mat_maker_MakerHFence,
     mat_maker_MakerCFence,
     mat_maker_MakerVPFence,
     mat_maker_MakerBBHFence,
     mat_maker_MakerJRBFence,
+    mat_maker_MakerSnowFence2,
     mat_maker_MakerSnowFence,
     mat_maker_MakerRetroFence,
     mat_maker_MakerMCFence,
@@ -845,9 +857,12 @@ enum cmm_bars {
     CMM_BAR_GENERIC,
     CMM_BAR_RHR,
     CMM_BAR_VP,
-    CMM_BAR_DESERT,
     CMM_BAR_HMC,
     CMM_BAR_BBH,
+    CMM_BAR_LLL,
+    CMM_BAR_TTC,
+    CMM_BAR_DESERT,
+    CMM_BAR_BOB,
     CMM_BAR_RETRO,
     CMM_BAR_MC,
 };
@@ -855,9 +870,12 @@ Gfx *cmm_bar_texs[][2] = {
     {mat_maker_MakerIronBars,   mat_maker_MakerIronBarsTop},
     {mat_maker_MakerRHRMesh,    mat_maker_MakerChainTop},
     {mat_maker_MakerVPMesh,     mat_maker_MakerChainTop},
-    {mat_maker_MakerDMesh,      mat_maker_MakerDesertMeshTop},
     {mat_maker_MakerHMesh,      mat_maker_MakerHMCTop},
     {mat_maker_MakerBBHMesh,    mat_maker_MakerHMCTop},
+    {mat_maker_MakerGratePink,  mat_maker_MakerChainTopPink},
+    {mat_maker_MakerTTCGrate,   mat_maker_MakerTTCGrateTop},
+    {mat_maker_MakerDMesh,      mat_maker_MakerDesertMeshTop},
+    {mat_maker_MakerBOBBars,    mat_maker_MakerBOBBarsTop},
     {mat_maker_MakerRetroMesh,  mat_maker_MakerRetroMeshTop},
     {mat_maker_MakerMCIronBars, mat_maker_MakerMCIronBarsTop},
 };
@@ -938,7 +956,7 @@ struct cmm_theme cmm_theme_table[] = {
             {CMM_MAT_HMC_MAZEFLOOR, 0,                 "Maze Floor"},
             {CMM_MAT_HMC_LIGHT,     0,                 "Light"},
             {CMM_MAT_HMC_LAKEGRASS, CMM_MAT_HMC_GRASS, "Cave Wall"},
-            {CMM_MAT_HMC_MESH,      0,                 "Mesh"},
+            {CMM_MAT_HMC_MESH,      0,                 "Grille"},
             {CMM_MAT_LAVA,          0,                 "Lava"},
             {CMM_MAT_QUICKSAND,     0,                 "Quicksand"},
         },
@@ -1023,7 +1041,7 @@ struct cmm_theme cmm_theme_table[] = {
             {CMM_MAT_JRB_SHIPSIDE,   CMM_MAT_JRB_SHIPTOP, "Wood (Ship)"},
             {CMM_MAT_JRB_METAL,      CMM_MAT_JRB_WOOD,    "Wood (Docks)"},
             {CMM_MAT_JRB_METALSIDE,  CMM_MAT_JRB_METAL,   "Metal"},
-            {CMM_MAT_HMC_MESH,       0,                   "Mesh"},
+            {CMM_MAT_HMC_MESH,       0,                   "Grille"},
             {CMM_MAT_JRB_WALL,       0,                   "Wall"},
             {CMM_MAT_QUICKSAND,      0,                   "Quicksand"},
         },
@@ -2164,22 +2182,28 @@ struct cmm_settings_button cmm_settings_mat_selector[] = {
 char *cmm_fence_names[] = {
     "Wooden (1)",
     "Wooden (2)",
+    "Wooden (3)",
+    "Barbed Wire",
     "Metal",
     "Netting",
     "Castle",
     "Stanchion",
     "Mansion",
     "Rope",
-    "Snowy",
+    "Snowy (1)",
+    "Snowy (2)",
 };
 
 char *cmm_bar_names[] = {
-    "Metal (1)",
-    "Metal (2)",
-    "Metal (3)",
-    "Metal (4)",
-    "Red (1)",
-    "Red (2)",
+    "Grille",
+    "Mesh",
+    "Fine Mesh",
+    "Red Grille",
+    "Red Mesh",
+    "Pink Mesh",
+    "Clock Grille",
+    "Desert Grille",
+    "Cage Bars",
 };
 
 char *cmm_water_names[] = {

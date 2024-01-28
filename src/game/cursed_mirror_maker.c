@@ -1748,6 +1748,7 @@ void generate_terrain_collision(void) {
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
     process_tiles(0);
+    cmm_growth_render_type = 0;
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
