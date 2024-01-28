@@ -1405,11 +1405,20 @@
 // };
 
 s32 event_get_badge[] = {
-    E_ACT, ACT_LVUP_DANCE,
+    E_ACT, ACT_LVUP_DANCE, 0,
     E_PUZZLE_JINGLE,
     E_DIALOG_AND_PRESSA, DIALOG_GET_BADGE,
     E_ZOUND, SOUND_MARIO_HERE_WE_GO,
-    E_ACT, ACT_IDLE,
+    E_ACT, ACT_IDLE, 0,
+    E_END,
+};
+
+s32 event_get_burden[] = {
+    E_ACT, ACT_LVUP_DANCE, 1,
+    E_ZOUND, SOUND_OBJ_BOWSER_LAUGH,
+    E_DIALOG_AND_PRESSA, DIALOG_GET_BADGE,
+    E_ZOUND, SOUND_MARIO_MAMA_MIA,
+    E_ACT, ACT_IDLE, 0,
     E_END,
 };
 
@@ -1458,6 +1467,7 @@ s32 *event_list[] = {
 //     &event_costume_select_ag,
 //     &event_lvup,
        &event_get_badge,
+       &event_get_burden,
 };
 
 // f32 *spline_list[] = {

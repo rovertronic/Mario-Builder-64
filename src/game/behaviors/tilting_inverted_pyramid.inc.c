@@ -6096,13 +6096,19 @@ void bhv_badge(void) {
             }
             if (o->oDistanceToMario < 180.0f) {
                 o->oAction++;
+                mario_stop_riding_object(gMarioState);
                 save_file_set_badge_equip(1 << o->oBehParams2ndByte);
 
                 rtext_insert_pointer[0] = badgenames[o->oBehParams2ndByte];
                 rtext_insert_pointer[1] = badgedescs[o->oBehParams2ndByte];
 
                 o->oHomeY = 1.0f;
-                run_event(EVENT_GET_BADGE);
+
+                if ((o->oBehParams2ndByte == BADGE_BRITTLE)||(o->oBehParams2ndByte == BADGE_WITHER)) {
+                    run_event(EVENT_GET_BURDEN);
+                } else {
+                    run_event(EVENT_GET_BADGE);
+                }
             }
         break;
         case 1:

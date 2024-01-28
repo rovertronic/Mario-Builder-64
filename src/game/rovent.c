@@ -775,8 +775,8 @@ void event_main(void) {
                 revent_index += 2;
             break;
             case E_ACT:
-                set_mario_action(gMarioState, arg1,0);
-                revent_index += 2;
+                set_mario_action(gMarioState, arg1, arg2);
+                revent_index += 3;
             break;
             case E_TARGET_OBJECT:
                 gCurrentObject = gMarioObject;

@@ -162,6 +162,7 @@ enum revent_events {
     // EVENT_COSTUME_SELECT_AG,
     // EVENT_LVUP,
     EVENT_GET_BADGE,
+    EVENT_GET_BURDEN,
 };
 
 enum revent_spline_list {
