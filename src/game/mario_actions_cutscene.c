@@ -738,7 +738,7 @@ s32 act_lvup_dance(struct MarioState *m) {
             set_custom_mario_animation(m,10);
             m->particleFlags |= PARTICLE_SPARKLES;
         } else {
-            set_mario_animation(m,MARIO_ANIM_REACH_POCKET);
+            set_mario_animation(m,MARIO_ANIM_DYING_FALL_OVER);
         }
         stop_and_set_height_to_floor(m);
         m->marioObj->header.gfx.pos[1] = m->pos[1];
