@@ -55,7 +55,7 @@
 /**
  * Disables AA (Improves console performance but causes visible seams between unconnected geometry).
  */
-// #define DISABLE_AA
+#define DISABLE_AA
 
 /**
  * Makes the coins ia8 64x64 instead of ia16 32x32. Uses new ia8 textures so that vanilla coins look better.
