@@ -242,12 +242,16 @@ enum {
 #define NUM_MATERIALS_PER_THEME 10
 
 enum cmm_mat_types {
+    // Opaque types (for culling)
     MAT_OPAQUE,
-    MAT_VPSCREEN,
+    MAT_DECAL, // only used for VP screen when used as a block type
+    // Transparent types
     MAT_CUTOUT,
-    MAT_CUTOUT_NOCULL, // also doesnt have scaled uvs
     MAT_TRANSPARENT,
+    // Used for override when processing vplex screens
+    MAT_SCREEN,
 };
+#define MATTYPE_NOCULL 0x80 // Also doesn't have scaled UVs
 
 // Represents a material texture and collision
 struct cmm_material {

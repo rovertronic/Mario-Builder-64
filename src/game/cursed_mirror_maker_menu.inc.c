@@ -492,7 +492,6 @@ void cmm_set_data_overrides(void) {
 #define SCROLL_CUSTOM 13
 #define SCROLL_SETTINGS 14
 #define CMM_SETTINGS_MENU_IS_STILL  ((cmm_menu_scrolling[SCROLL_SETTINGS][0] == 0) && (cmm_menu_start_timer == -1))
-#define CMM_CUSTOM_THEME_CLOSED ((cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) && !cmm_custom_theme_menu_open)
 
 void draw_cmm_settings_general(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons), cmm_menu_index);
@@ -527,11 +526,19 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     Vec3f pos;
     Vec3s rot;
 
-    gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-
     Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
-    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 16384, 1.f);
+    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 4000, 0.005f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    Lights1* curLight = (Lights1*)alloc_display_list(sizeof(Lights1));
+    extern Lights1 *defaultLight;
+    bcopy(&defaultLight, curLight, sizeof(Lights1));
+
+    curLight->l->l.dir[0] = (s8)(globalLightDirection[0]);
+    curLight->l->l.dir[1] = (s8)(globalLightDirection[1]);
+    curLight->l->l.dir[2] = (s8)(globalLightDirection[2]);
+
+    gSPSetLights1(gDisplayListHead++, (*curLight));
 
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
     vec3_set(pos, 0, 0, -1500);
@@ -563,23 +570,52 @@ void finish_block_draw() {
     create_dl_ortho_matrix();
 }
 
-void custom_theme_draw_block(f32 xpos, f32 ypos, u8 mat, u8 topmat) {
+void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     prepare_block_draw(xpos, ypos);
 
     s8 pos[3];
     vec3_set(pos,32,0,32);
 
-    render_preview_block(mat, topmat, pos, &cmm_terrain_fullblock, 0);
+    if (index < NUM_MATERIALS_PER_THEME) {
+        u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
+        if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = 0;
+
+        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
+    } else {
+        cmm_use_alt_uvs = TRUE;
+        if (index == 10) { // Poles
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].type, TRUE);
+            process_tile(pos, &cmm_terrain_pole, cmm_rot_selection);
+        } else if (index == 11) { // Fence
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_fence_texs[cmm_curr_custom_theme.fence]);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
+            process_tile(pos, &cmm_terrain_fence, cmm_rot_selection);
+        } else if (index == 12) { // Iron Mesh
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
+            u8 connections[5] = {1,0,1,0,1};
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][1]);
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            render_bars_top(pos, connections);
+            display_cached_tris();
+            gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][0]);
+            render_bars_side(pos, connections);
+        } else if (index == 13) { // Water
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_water_texs[cmm_curr_custom_theme.water]);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, TRUE);
+            render_water(pos);
+        }
+        display_cached_tris();
+        cmm_use_alt_uvs = FALSE;
+    }
 
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     finish_block_draw();
 }
-
-u8 tmpmaterial = 5;
-u8 tmpTopMaterial = 8;
-u8 tmpTopmatDisabled = TRUE;
 
 void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory;
@@ -608,7 +644,6 @@ void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outp
 #define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_terrain_buttons) + 1)
 
 void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
-    if (index > 9) return;
     u32 topmatDisabled = !cmm_curr_custom_theme.topmatsEnabled[index];
     char *topmatText = "";
 
@@ -637,11 +672,31 @@ void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
             cmm_curr_custom_theme.topmatsEnabled[index] ^= 1;
         }
     }
-    
-    u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
-    if (topmatDisabled) renderedTopmat = 0;
+}
 
-    custom_theme_draw_block(-xPos - 100, yPos + 10, cmm_curr_custom_theme.mats[index], renderedTopmat);
+void cmm_custom_theme_pole_page(f32 xPos, f32 yPos) {
+    if (cmm_custom_theme_menu_open) cmm_menu_index_max = 2;
+    custom_theme_draw_mat_selector(xPos, 150 + yPos, CUSTOM_INDEX_OFFSET, &cmm_curr_custom_theme.pole);
+}
+
+void cmm_custom_theme_other_page(f32 xPos, f32 yPos, u32 otherIndex) {
+    if (cmm_custom_theme_menu_open) cmm_menu_index_max = 1;
+
+    print_maker_string_ascii(xPos+20+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET], yPos + 135, cmm_settings_other_selectors[otherIndex].str, (CUSTOM_INDEX_OFFSET == cmm_menu_index));
+    cmm_menu_option_animation(xPos+150+3*cmm_menu_list_offsets[CUSTOM_INDEX_OFFSET], yPos + 135, 50, &cmm_settings_other_selectors[otherIndex], CUSTOM_INDEX_OFFSET, cmm_joystick);
+}
+
+void cmm_custom_theme_render_page(u32 index, f32 xPos, f32 yPos) {
+    if (index < NUM_MATERIALS_PER_THEME) {
+        cmm_custom_theme_block_page(index, xPos, yPos);
+    } else if (index == 10) {
+        cmm_custom_theme_pole_page(xPos, yPos);
+    } else {
+        cmm_custom_theme_other_page(xPos, yPos, index - 11);
+    }
+
+
+    custom_theme_draw_block(-xPos - 100, yPos + 10, index);
 }
 
 void draw_cmm_settings_custom_theme(f32 yoff) {
@@ -677,7 +732,7 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     cmm_curr_vtx = preview_vtx;
     cmm_gfx_index = 0;
 
-    cmm_menu_page_animation(yoff, cmm_custom_theme_block_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
+    cmm_menu_page_animation(yoff, cmm_custom_theme_render_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
 
     // This code is so fucking disgusting.
     // Edit all the vertices for the drawn preview blocks here.
@@ -940,6 +995,10 @@ void draw_cmm_menu(void) {
                     ((gPlayer1Controller->buttonPressed & B_BUTTON) && !cmm_custom_theme_menu_open)) {
                     cmm_menu_end_timer = 0;
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                    if (cmm_custom_theme_menu_open) {
+                        update_custom_theme();
+                        generate_terrain_gfx();
+                    }
                 }
             }
             yOff = cmm_menu_title_vels[0];
@@ -976,8 +1035,6 @@ void draw_cmm_menu(void) {
                 break;
             }
 
-            cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
-
             // Begin rendering top header
             s32 prevMenu = (cmm_curr_settings_menu - 1 + SETTINGS_MENU_COUNT) % SETTINGS_MENU_COUNT;
             s32 nextMenu = (cmm_curr_settings_menu + 1) % SETTINGS_MENU_COUNT;
@@ -987,11 +1044,14 @@ void draw_cmm_menu(void) {
 
             // Scroll input
             s32 dir = 0;
-            if (CMM_CUSTOM_THEME_CLOSED) {
-                if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
-                if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+            if (!cmm_custom_theme_menu_open) {
+                if (cmm_menu_scrolling[SCROLL_CUSTOM][0] == 0) {
+                    if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
+                    if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
+                }
                 cmm_menu_index_max = cmm_settings_menu_lengths[cmm_curr_settings_menu];
             }
+            cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
             print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
             print_maker_string_ascii_centered(240, yOff + 185, "R >", FALSE);

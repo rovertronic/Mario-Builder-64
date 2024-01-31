@@ -114,10 +114,10 @@ Vtx *cmm_curr_vtx;
 Gfx *cmm_curr_gfx;
 u16 cmm_gfx_index;
 
-u8 cmm_use_alt_uvs = FALSE;
+u8 cmm_use_alt_uvs = FALSE; // Used for decals and special tile shapes
 s8 cmm_uv_offset = -16;
-u8 cmm_render_flip_normals = FALSE;
-u8 cmm_render_culling_off = FALSE;
+u8 cmm_render_flip_normals = FALSE; // Used for drawing water tiles
+u8 cmm_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
 
@@ -388,8 +388,25 @@ s8 cullOffsetLUT[6][3] = {
     {0, 0, -1},
 };
 
+// Used for determining if waterlogging makes the water full
+u32 block_top_face_hollow(u32 mat) {
+    return HAS_TOPMAT(mat) ? (TOPMAT(mat).type == MAT_CUTOUT) : (MATERIAL(mat).type == MAT_CUTOUT);
+}
+
+// Used for determining if a block can be waterlogged
+u32 block_is_hollow(u32 mat) {
+    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type == MAT_CUTOUT));
+}
+
+// Used for determining if a block is rendered with backface culling
+// Mostly same as above but also checks for translucent materials
+u32 block_is_seethrough(u32 mat) {
+    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type >= MAT_CUTOUT));
+}
+
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
+    if (cmm_render_culling_off) return FALSE;
     direction = rotate_direction(direction, rot);
 
     s8 newpos[3];
@@ -408,7 +425,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     }
 
     s32 otherMat = get_grid_tile(newpos)->mat;
-    if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
+    if (block_is_seethrough(otherMat)) {
         s32 curMat = get_grid_tile(pos)->mat;
         if (curMat != otherMat) return FALSE;
     }
@@ -739,29 +756,17 @@ void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
         cmm_create_tri(tri, pos, rot);
 }
 
-u32 render_grass_side_normal(s8 abovePos[3], u32 dir) {
-    u8 otherFaceshape = get_faceshape(abovePos, dir);
-    switch (otherFaceshape) {
-        case CMM_FACESHAPE_TRI_1:
-        case CMM_FACESHAPE_TRI_2:
-        case CMM_FACESHAPE_FULL:
-        case CMM_FACESHAPE_BOTTOMSLAB:
-            if (MATERIAL(get_grid_tile(abovePos)->mat).type >= MAT_CUTOUT)
-                return TRUE;
-            return FALSE;
-    }
-    return TRUE;
-}
-
-
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
     s8 newpos[3];
     vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(newpos)) return TRUE;
-    if (MATERIAL(get_grid_tile(newpos)->mat).type >= MAT_CUTOUT) {
-        return TRUE;
-    }
+
+    u8 aboveBlockMatType = MATERIAL(get_grid_tile(newpos)->mat).type;
+    if (aboveBlockMatType >= MAT_CUTOUT) {
+        u8 curBlockMatType = MATERIAL(get_grid_tile(pos)->mat).type;
+        if (curBlockMatType != aboveBlockMatType) return TRUE;
+    } 
     u8 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
@@ -996,10 +1001,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
     }
 }
 
-void render_bars_side(s8 pos[3]) {
-    u8 connections[5];
-    check_bar_connections(pos, connections);
-
+void render_bars_side(s8 pos[3], u8 connections[5]) {
     for (u32 rot = 0; rot < 4; rot++) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
@@ -1014,10 +1016,7 @@ void render_bars_side(s8 pos[3]) {
     }
 }
 
-void render_bars_top(s8 pos[3]) {
-    u8 connections[5];
-    check_bar_connections(pos, connections);
-
+void render_bars_top(s8 pos[3], u8 connections[5]) {
     for (u32 rot = 0; rot < 4; rot++) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
@@ -1044,7 +1043,11 @@ u32 is_water_fullblock(s8 pos[3]) {
     // Full block if waterlogging a block and it has a solid top face
     s32 type = get_grid_tile(pos)->type - 1;
     if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
-        if ((get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT)) return TRUE;
+        if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) {
+            if (!block_top_face_hollow(get_grid_tile(pos)->mat)) {
+                return TRUE;
+            }
+        }
     }
     // Full block if above block has solid bottom face
     if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
@@ -1076,7 +1079,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     // Usually this would fail if next to a mesh, but it will pass if
     // the current tile is the same material, which in this case will happen
     // if an entire mesh is waterlogged.
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (MATERIAL(get_grid_tile(adjacentPos)->mat).type != MAT_CUTOUT)) return 0;
+    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (!block_is_hollow(get_grid_tile(adjacentPos)->mat))) return 0;
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
@@ -1091,7 +1094,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
 
     // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && MATERIAL(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && (!block_is_hollow(get_grid_tile(pos)->mat))) {
         return 0;
     }
 
@@ -1151,6 +1154,14 @@ void render_floor(s16 y) {
     cmm_curr_vtx += 16;
 }
 
+void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
+    tileType &= ~MATTYPE_NOCULL;
+    u32 rendermode = cmm_render_mode_table[tileType];
+    if (disableZ) rendermode &= ~(Z_UPD | Z_CMP);
+    if (!gIsConsole) rendermode |= AA_EN;
+    gDPSetRenderMode(gfx, rendermode, 0);
+}
+
 enum tiletypeIndices {
     FENCE_TILETYPE_INDEX = NUM_MATERIALS_PER_THEME,
     POLE_TILETYPE_INDEX,
@@ -1193,31 +1204,86 @@ Gfx *get_sidetex(s32 matid) {
 
 #define retroland_filter_on() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_POINT); if (!gIsGliden) {cmm_uv_offset = 0;} }
 #define retroland_filter_off() if ((cmm_lopt_theme == CMM_THEME_RETRO) || (cmm_lopt_theme == CMM_THEME_MC)) { gDPSetTextureFilter(&cmm_curr_gfx[cmm_gfx_index++], G_TF_BILERP); cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16); }
-#define cutout_turn_culling_off(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
-#define cutout_turn_culling_on(mat) if (MATERIAL(mat).type == MAT_CUTOUT) { gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);}
 
 // For render or collision specific code
 #define PROC_COLLISION(statement) if (cmm_building_collision)  { statement; }
 #define PROC_RENDER(statement)    if (!cmm_building_collision) { statement; }
 
-void process_tiles(u32 isTransparent) {
+enum ProcessTileRenderModes {
+    PROCESS_TILE_NORMAL,
+    PROCESS_TILE_TRANSPARENT,
+    PROCESS_TILE_BOTH,
+    PROCESS_TILE_VPLEX,
+};
+
+// Returns true if tile should be processed
+// If in vplex screen processing mode, can also override target mat type in order
+// to render screen
+u32 do_process(u8 *targetMatType, u32 processTileRenderMode) {
+    switch (processTileRenderMode) {
+        case PROCESS_TILE_NORMAL:
+            return (*targetMatType != MAT_TRANSPARENT);
+        case PROCESS_TILE_TRANSPARENT:
+            return (*targetMatType == MAT_TRANSPARENT);
+        case PROCESS_TILE_VPLEX:
+            if (*targetMatType == MAT_DECAL) {
+                *targetMatType = MAT_SCREEN;
+                return TRUE;
+            }
+            return FALSE;
+    }
+    return TRUE; // PROCESS_TILE_BOTH
+}
+
+void process_tiles(u32 processTileRenderMode) {
     u32 startIndex, endIndex;
     u8 tileType, rot;
     s8 pos[3];
 
+    // Poles
+    if (!cmm_building_collision) {
+        u8 poleMatType = cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].type;
+        if (do_process(&poleMatType, processTileRenderMode)) {
+            cmm_use_alt_uvs = TRUE;
+            cmm_growth_render_type = 0;
+            startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
+            endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], poleMatType, FALSE);
+            for (u32 i = startIndex; i < endIndex; i++) {
+                s8 pos[3];
+                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+                process_tile(pos, &cmm_terrain_pole, cmm_tile_data[i].rot);
+            }
+            display_cached_tris();
+        }
+        cmm_use_alt_uvs = FALSE;
+    }
+
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
+        u8 matType = MATERIAL(mat).type;
         cmm_growth_render_type = 0;
-
-        PROC_RENDER( if (isTransparent ^ (MATERIAL(mat).type == MAT_TRANSPARENT)) continue; \
-                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx); \
-                     cutout_turn_culling_off(mat);)
-
-        PROC_COLLISION( cmm_curr_coltype = MATERIAL(mat).col; )
-
         cmm_curr_mat_has_topside = HAS_TOPMAT(mat);
-
         startIndex = cmm_tile_data_indices[mat];
         endIndex = cmm_tile_data_indices[mat+1];
+
+        // RENDER
+        if (!cmm_building_collision) {
+            if (!do_process(&matType, processTileRenderMode)) {
+                goto skip_maintex;
+            }
+
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+
+            if (block_is_seethrough(mat)) {
+                gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+            }
+        // COLLISION
+        } else {
+            cmm_curr_coltype = MATERIAL(mat).col;
+        }
+
         for (u32 i = startIndex; i < endIndex; i++) {
             tileType = cmm_tile_data[i].type;
             PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
@@ -1228,30 +1294,53 @@ void process_tiles(u32 isTransparent) {
         }
 
         PROC_RENDER( display_cached_tris(); \
-                     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2); \
-                     cutout_turn_culling_on(mat); )
+                     skip_maintex: )
         
         if (cmm_curr_mat_has_topside) {
+            u8 topmatType = TOPMAT(mat).type;
+            PROC_RENDER( if (!do_process(&topmatType, processTileRenderMode)) continue; )
             Gfx *sidetex = get_sidetex(TILE_MATDEF(mat).topmat);
             // Only runs when rendering
             if (!cmm_building_collision && (sidetex)) {
                 cmm_use_alt_uvs = TRUE;
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                 cmm_growth_render_type = 2;
-                for (u32 i = startIndex; i < endIndex; i++) {
-                    tileType = cmm_tile_data[i].type;
-                    rot = cmm_tile_data[i].rot;
-                    vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
 
-                    process_tile(pos, cmm_tile_terrains[tileType], rot);
+                // This code is pretty ugly. It renders the side decal in decal mode
+                // for opaque parts of the texture, and in cutout mode for transparent parts.
+                // Luckily this will only double the number of triangles in the rare case
+                // that a custom block with a cutout side texture and a topmat with a side decal
+                // is made (in order to cover both the opaque and alpha parts of the side tex.)
+                // DECAL MODE
+                if (matType != MAT_TRANSPARENT) { // Render in decal mode for cutouts, opaque and screen
+                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+                    for (u32 i = startIndex; i < endIndex; i++) {
+                        tileType = cmm_tile_data[i].type;
+                        rot = cmm_tile_data[i].rot;
+                        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+                        process_tile(pos, cmm_tile_terrains[tileType], rot);
+                    }
+                    display_cached_tris();
                 }
-                display_cached_tris();
+                // OPAQUE MODE
+                if (matType >= MAT_CUTOUT) { // Render in cutout mode for cutouts and transparent
+                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+                    for (u32 i = startIndex; i < endIndex; i++) {
+                        tileType = cmm_tile_data[i].type;
+                        rot = cmm_tile_data[i].rot;
+                        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
+
+                        process_tile(pos, cmm_tile_terrains[tileType], rot);
+                    }
+                    display_cached_tris();
+                }
                 cmm_use_alt_uvs = FALSE;
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
-            PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
+            PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); \
+                         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topmatType, FALSE); )
 
             cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
@@ -1262,7 +1351,8 @@ void process_tiles(u32 isTransparent) {
 
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
-            PROC_RENDER( display_cached_tris(); )
+            PROC_RENDER( display_cached_tris(); \
+                         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); )
         }
     }
 }
@@ -1282,37 +1372,25 @@ void generate_terrain_gfx(void) {
 
     cmm_use_alt_uvs = FALSE;
     cmm_render_flip_normals = FALSE;
+    cmm_curr_mat_has_topside = FALSE;
+    cmm_growth_render_type = 0;
     cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
     retroland_filter_on();
 
-    // This does the funny virtuaplex effect
-    for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
-        if (TILE_MATDEF(mat).mat == CMM_MAT_VP_SCREEN) {
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
-            u32 startIndex = cmm_tile_data_indices[mat];
-            u32 endIndex = cmm_tile_data_indices[mat+1];
-            for (u32 i = startIndex; i < endIndex; i++) {
-                tileType = cmm_tile_data[i].type;
-                rot = cmm_tile_data[i].rot;
-                vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-                process_tile(pos, cmm_tile_terrains[tileType], rot);
-            }
-            display_cached_tris();
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-        }
-    }
+    process_tiles(PROCESS_TILE_VPLEX);
 
     //BOTTOM PLANE
     if (cmm_lopt_plane != 0) {
         u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
         if (HAS_TOPMAT(planeMat)) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).type, FALSE);
         } else {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).type, FALSE);
         }
         render_floor(0);
-        gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     }
 
     // Special Tiles
@@ -1322,13 +1400,16 @@ void generate_terrain_gfx(void) {
     u32 endIndex;
 
     // Bars
+    u8 connections[5];
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
+    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_side(pos);
+        check_bar_connections(pos, connections);
+        render_bars_side(pos, connections);
     }
     display_cached_tris();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
@@ -1336,23 +1417,11 @@ void generate_terrain_gfx(void) {
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_top(pos);
+        check_bar_connections(pos, connections);
+        render_bars_top(pos, connections);
     }
     display_cached_tris();
     gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-
-    // Poles
-
-    startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
-    endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
-    for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
-        vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        process_tile(pos, &cmm_terrain_pole, cmm_tile_data[i].rot);
-    }
-    display_cached_tris();
 
     // Fences
 
@@ -1365,18 +1434,18 @@ void generate_terrain_gfx(void) {
         process_tile(pos, &cmm_terrain_fence, cmm_tile_data[i].rot);
     }
     display_cached_tris();
-    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    cmm_use_alt_uvs = FALSE;
 
-    process_tiles(FALSE);
+    process_tiles(PROCESS_TILE_NORMAL);
 
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
+    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
 
     // Render main water plane, top side
     if (cmm_lopt_waterlevel != 0) {
@@ -1387,7 +1456,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
+                !block_is_hollow(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1397,7 +1466,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                (MATERIAL(cmm_tile_data[i].mat).type != MAT_CUTOUT)) continue;
+                !block_is_hollow(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1411,7 +1480,7 @@ void generate_terrain_gfx(void) {
     }
     cmm_render_flip_normals = FALSE;
 
-    process_tiles(TRUE);
+    process_tiles(PROCESS_TILE_TRANSPARENT);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1431,36 +1500,55 @@ Vtx preview_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
-void render_preview_block(u8 matid, u8 topmatid, s8 pos[3], struct cmm_terrain *terrain, u8 rot) {
-    if (topmatid != CMM_MAT_NONE && topmatid != matid) {
-        cmm_curr_mat_has_topside = TRUE;
+void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain *terrain, u32 rot, u32 processType, u32 disableZ) {
+    cmm_curr_mat_has_topside = (topmatid != CMM_MAT_NONE);
+
+    u8 matType = cmm_mat_table[matid].type;
+
+    if (do_process(&matType, processType)) {
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
+        if (((matType == MAT_CUTOUT) ||
+            (cmm_curr_mat_has_topside && (cmm_mat_table[topmatid].type == MAT_CUTOUT)))
+            && !disableZ) {
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        }
+        process_tile(pos, terrain, rot);
+        display_cached_tris();
     }
 
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
-    cutout_turn_culling_off(cmm_mat_selection);
-    process_tile(pos, terrain, rot);
-    display_cached_tris();
-    cutout_turn_culling_on(cmm_mat_selection);
-
     if (cmm_curr_mat_has_topside) {
+        u8 topMatType = cmm_mat_table[topmatid].type;
+        if (!do_process(&topMatType, processType)) return;
         Gfx *sidetex = get_sidetex(topmatid);
         if (sidetex != NULL) {
             cmm_use_alt_uvs = TRUE;
             cmm_growth_render_type = 2;
-
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
-            process_tile(pos, terrain, rot);
-            display_cached_tris();
+
+            // DECAL MODE
+            if (matType != MAT_TRANSPARENT) { // Render in decal mode for cutouts, opaque and screen
+                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, disableZ);
+                process_tile(pos, terrain, rot);
+                display_cached_tris();
+            }
+            // OPAQUE MODE
+            if (matType >= MAT_CUTOUT) { // Render in cutout mode for cutouts and transparent
+                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, disableZ);
+                process_tile(pos, terrain, rot);
+                display_cached_tris();
+            }
+
             cmm_use_alt_uvs = FALSE;
         }
         cmm_growth_render_type = 1;
 
-        gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topMatType, disableZ);
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }
-    gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
 }
 
 Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
@@ -1476,10 +1564,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
+            cmm_growth_render_type = 0;
 
             cmm_building_collision = FALSE;
-            cmm_growth_render_type = 0;
-            cmm_curr_mat_has_topside = FALSE;
 
             retroland_filter_on();
 
@@ -1497,44 +1584,58 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             }
 
             struct cmm_terrain *terrain = cmm_tile_terrains[cmm_id_selection];
+            u8 mat = TILE_MATDEF(cmm_mat_selection).mat;
+            u8 topmat = TILE_MATDEF(cmm_mat_selection).topmat;
+            if (cmm_id_selection == TILE_TYPE_POLE) {
+                terrain = &cmm_terrain_pole;
+                mat = cmm_theme_table[cmm_lopt_theme].pole;
+                topmat = CMM_MAT_NONE;
+                cmm_use_alt_uvs = TRUE;
+            }
             
             if (terrain) {
-                if (TILE_MATDEF(cmm_mat_selection).mat == CMM_MAT_VP_SCREEN) {
-                    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], GBL_c1(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1) | GBL_c2(G_BL_CLR_MEM, G_BL_0, G_BL_CLR_MEM, G_BL_1), Z_CMP | Z_UPD | IM_RD | CVG_DST_CLAMP | ZMODE_OPA);
-                    process_tile(cmm_cursor_pos, terrain, cmm_rot_selection);
-                    display_cached_tris();
+                // Handle Virtuaplex screen effect
+                if (mat == CMM_MAT_VP_SCREEN || topmat == CMM_MAT_VP_SCREEN) {
+                    render_preview_block(mat, topmat, cmm_cursor_pos, terrain, cmm_rot_selection, PROCESS_TILE_VPLEX, FALSE);
+
                     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
                     geo_append_display_list(cmm_curr_gfx, LAYER_FORCE);
 
                     cmm_curr_gfx += cmm_gfx_index;
                     cmm_gfx_index = 0;
+                    cmm_growth_render_type = 0;
                 }
-                render_preview_block(TILE_MATDEF(cmm_mat_selection).mat, TILE_MATDEF(cmm_mat_selection).topmat,
-                                     cmm_cursor_pos, terrain, cmm_rot_selection);
+
+                render_preview_block(mat, topmat, cmm_cursor_pos, terrain, cmm_rot_selection, PROCESS_TILE_BOTH, FALSE);
 
             } else if (cmm_id_selection != TILE_TYPE_CULL) {
                 cmm_use_alt_uvs = TRUE;
                 if (cmm_id_selection == TILE_TYPE_FENCE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
+                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
                     process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_POLE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
+                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].type, FALSE);
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
+                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
-                    render_bars_side(cmm_cursor_pos);
+                    u8 connections[5];
+                    check_bar_connections(cmm_cursor_pos, connections);
+                    render_bars_side(cmm_cursor_pos, connections);
                     display_cached_tris();
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TOPTEX());
                     gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-                    render_bars_top(cmm_cursor_pos);
-                    gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+                    render_bars_top(cmm_cursor_pos, connections);
                 }
                 display_cached_tris();
+                gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
                 cmm_use_alt_uvs = FALSE;
-                gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             }
 
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
@@ -1646,7 +1747,8 @@ void generate_terrain_collision(void) {
     cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
-    process_tiles(TRUE);
+    process_tiles(0);
+    cmm_growth_render_type = 0;
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
@@ -1657,9 +1759,11 @@ void generate_terrain_collision(void) {
     cmm_curr_coltype = SURFACE_VANISH_CAP_WALLS;
     for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
+        u8 connections[5];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-        render_bars_side(pos);
-        render_bars_top(pos);
+        check_bar_connections(pos, connections);
+        render_bars_side(pos, connections);
+        render_bars_top(pos, connections);
     }
 
     cmm_building_collision = FALSE;
@@ -1880,8 +1984,10 @@ void place_tile(s8 pos[3]) {
         }
     }
 
-    if ((cmm_id_selection == TILE_TYPE_BLOCK) && (MATERIAL(cmm_mat_selection).type != MAT_CUTOUT)) {
-        waterlogged = FALSE;
+    if (cmm_id_selection == TILE_TYPE_BLOCK) {
+        if (!block_is_hollow(cmm_mat_selection)) {
+            waterlogged = FALSE;
+        }
     }
     // If placing a cull marker, check that its actually next to a tile
     if (cmm_id_selection == TILE_TYPE_CULL && is_cull_marker_useless(pos)) {
@@ -1942,7 +2048,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if ((tileType == TILE_TYPE_BLOCK) && (MATERIAL(tile->mat).type != MAT_CUTOUT)) {
+        if ((tileType == TILE_TYPE_BLOCK) && !block_is_hollow(tile->mat)) {
             return;
         }
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
