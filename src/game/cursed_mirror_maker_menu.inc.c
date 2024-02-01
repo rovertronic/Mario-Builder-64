@@ -1124,6 +1124,7 @@ void draw_cmm_menu(void) {
 char *cmm_mm_keyboard_prompt[] = {
     "Enter level name:",//KXM_NEW_LEVEL
     "Enter your author name:",//KXM_AUTHOR
+    "Change author name:",
 };
 char cmm_mm_keyboard[] = "1234567890abcdefghijklmnopqrstuvwxyz!'- ";
 char cmm_mm_keyboard_caps[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- ";
@@ -1164,6 +1165,7 @@ char *cmm_mm_play_btns[] = {
 char *cmm_mm_make_btns[] = {
     "New Level",
     "Load Level",
+    "Change Name",
 };
 
 char *cmm_mm_help_btns[] = {
@@ -1182,6 +1184,7 @@ u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 char *cmm_mm_txt_keyboard[]= {
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              START: Confirm",
+    "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
 };
 
 u8 cmm_mm_state = MM_INIT;
@@ -1574,10 +1577,10 @@ s32 cmm_main_menu(void) {
             break;
             **/
         case MM_MAKE:
-            cmm_menu_index_max = 2;
-            cmm_mm_anim_in(2);
-            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",2);
-            if (cmm_mm_generic_anim_out(2, TRUE)) {
+            cmm_menu_index_max = 3;
+            cmm_mm_anim_in(3);
+            render_cmm_mm_menu(cmm_mm_make_btns,"Make Levels",3);
+            if (cmm_mm_generic_anim_out(3, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -1587,6 +1590,7 @@ s32 cmm_main_menu(void) {
                         case 0:
                             //make new level
                             cmm_mm_state = MM_MAKE_MODE;
+                            cmm_target_mode = CMM_MODE_MAKE;
                             break;
                         case 1:
                             //load levels
@@ -1595,6 +1599,13 @@ s32 cmm_main_menu(void) {
                             cmm_target_mode = CMM_MODE_MAKE;
                             cmm_mm_state = MM_FILES;
                             cmm_mm_page = 0;
+                            break;
+                        case 2:
+                            //change name
+                            cmm_mm_keyboard_exit_mode = KXM_CHANGE_AUTHOR;
+                            cmm_mm_state = MM_KEYBOARD;
+                            cmm_mm_keyboard_input_index = 0;
+                            cmm_mm_keyboard_input[0] = '\0';
                             break;
                     }
                     cmm_menu_index = 0;
@@ -1746,7 +1757,10 @@ s32 cmm_main_menu(void) {
                 if ((cmm_menu_going_back == 1)&&(cmm_mm_keyboard_exit_mode == KXM_AUTHOR)) {
                     cmm_mm_state = MM_MAIN;
                     cmm_menu_index = 0;
-                    cmm_menu_start_timer = 0;
+                }
+                if (cmm_mm_keyboard_exit_mode == KXM_CHANGE_AUTHOR) {
+                    cmm_mm_state = MM_MAKE;
+                    cmm_menu_index = 0;
                 }
             }
 
@@ -1804,6 +1818,7 @@ s32 cmm_main_menu(void) {
                         return 1;
                     break;
                     case KXM_AUTHOR:
+                    case KXM_CHANGE_AUTHOR:
                         bcopy(&cmm_mm_keyboard_input,&cmm_username,cmm_mm_keyboard_input_index);
                         cmm_username[cmm_mm_keyboard_input_index+1] = '\0';
 

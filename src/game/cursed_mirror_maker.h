@@ -355,6 +355,7 @@ enum {
 enum {
     KXM_NEW_LEVEL,
     KXM_AUTHOR,
+    KXM_CHANGE_AUTHOR,
 };
 
 extern u8 cmm_lopt_game;
