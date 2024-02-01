@@ -1113,6 +1113,20 @@ s32 snap_to_45_degrees(s16 angle) {
     return angle;
 }
 
+u16 u16AngleRoundToEighth(u16 angle) {
+    // Calculate the remainder when divided by an eighth
+    u16 remainder = angle % 0x2000;
+
+    // Round to the nearest eighth
+    if (remainder >= 0x1000) {
+        angle += 0x2000 - remainder;
+    } else {
+        angle -= remainder;
+    }
+
+    return angle;
+}
+
 /**
  * A mode that only has 8 camera angles, 45 degrees apart
  */
@@ -1165,7 +1179,7 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset += DEGREES(2);
     }
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
-        s8DirModeYawOffset = 8192*((u16)(s8DirModeYawOffset/8192));
+        s8DirModeYawOffset = u16AngleRoundToEighth(s8DirModeYawOffset);
     }
     if (gPlayer1Controller->buttonPressed & U_JPAD) {
         s8DirModeYawOffset = gMarioState->faceAngle[1];
