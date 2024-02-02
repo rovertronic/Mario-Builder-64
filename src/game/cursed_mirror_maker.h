@@ -337,6 +337,13 @@ struct cmm_level_uncompressed_save {
     struct cmm_obj objects[CMM_MAX_OBJS];
 };
 
+#define SRAM_MAGIC 0x0203DD10 // Rovert's favorite binary ROM Address!
+
+struct cmm_sram_config {
+    char author[31];
+    u32 magic;
+};
+
 enum {
     MM_INIT,
     MM_NO_SD_CARD,

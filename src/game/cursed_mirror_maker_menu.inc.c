@@ -1445,7 +1445,7 @@ s32 cmm_main_menu(void) {
     cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
     create_dl_ortho_matrix();
-
+    
     switch(cmm_mm_state) {
         case MM_INIT:
             full_menu_reset();
@@ -1454,18 +1454,13 @@ s32 cmm_main_menu(void) {
             }
             if (mount_success == FR_OK) {
                 //SD Card success
-                FILINFO fileinfo;
-                FRESULT code = f_stat("mb64_author.txt",&fileinfo);
-                if (code == FR_OK) {
+
+                if (cmm_sram_configuration.author[0] != '\0') {
                     //already have an author, go straight to the main menu
                     cmm_mm_state = MM_MAIN;
 
-                    //set cmm_username to file contents
-                    FIL author_file;
-                    u32 bytes_read;
-                    f_open(&author_file,"mb64_author.txt", FA_READ | FA_WRITE);
-                    f_read(&author_file,cmm_username,sizeof(cmm_username),&bytes_read);
-                    f_close(&author_file);
+                    //set cmm_username to author in sram config
+                    bcopy(&cmm_sram_configuration.author,&cmm_username,sizeof(cmm_username));
                     cmm_has_username = TRUE;
                 } else {
                     //no author file detected, prompt user to enter an author name
@@ -1822,11 +1817,11 @@ s32 cmm_main_menu(void) {
                         bcopy(&cmm_mm_keyboard_input,&cmm_username,cmm_mm_keyboard_input_index);
                         cmm_username[cmm_mm_keyboard_input_index+1] = '\0';
 
-                        FIL author_file;
-                        u32 bytes_written;
-                        f_open(&author_file,"mb64_author.txt", FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
-                        f_write(&author_file,&cmm_username,cmm_mm_keyboard_input_index,&bytes_written);
-                        f_close(&author_file);
+                        bcopy(&cmm_username,&cmm_sram_configuration.author,sizeof(cmm_sram_configuration.author));
+                        if (gSramProbe != 0) {
+                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                        }
+
                         cmm_has_username = TRUE;
                     break;
                 }

@@ -107,6 +107,7 @@ extern u8 cmm_level_entry_count;
 extern u16 cmm_level_entry_piktcher[][64][64];
 extern TCHAR cmm_level_dir_name[];
 extern TCHAR cmm_hack_dir_name[];
+extern struct cmm_sram_config cmm_sram_configuration;
 
 struct cmm_level_save_header * get_level_info_from_filename(char * filename);
 void load_level_files_from_sd_card(void);

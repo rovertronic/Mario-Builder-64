@@ -927,9 +927,6 @@ void init_controllers(void) {
                  ? osEepromProbeVC(&gSIEventMesgQueue)
                  : osEepromProbe  (&gSIEventMesgQueue);
 #endif
-#ifdef SRAM
-    gSramProbe = nuPiInitSram();
-#endif
 
     // Loop over the 4 ports and link the controller structs to the appropriate status and pad.
     for (port = 0; port < MAXCONTROLLERS; port++) {
@@ -1028,6 +1025,7 @@ FRESULT global_code;
 TCHAR cmm_level_dir_name[] = {"Mario Builder 64 Levels"};
 TCHAR cmm_hack_dir_name[] = {"Mario Builder 64 Hacks"};
 
+struct cmm_sram_config cmm_sram_configuration;
 
 struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
     u32 bytes_read;
@@ -1125,6 +1123,16 @@ void thread5_game_loop(UNUSED void *arg) {
     gConfig.widescreen = save_file_get_widescreen_mode();
 #endif
     render_init();
+
+    gSramProbe = nuPiInitSram();
+    if (gSramProbe != 0) {
+        nuPiReadSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+    }
+    if (cmm_sram_configuration.magic != SRAM_MAGIC) {
+        // If the SRAM magic fails, that means it's bzero'd or garbage data.
+        bzero(&cmm_sram_configuration,sizeof(cmm_sram_configuration));
+        cmm_sram_configuration.magic = SRAM_MAGIC;
+    }
 
     gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
     if (gSupportsLibpl) {
