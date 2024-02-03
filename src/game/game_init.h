@@ -93,7 +93,6 @@ void render_init(void);
 void select_gfx_pool(void);
 void display_and_vsync(void);
 
-extern Bool32 gSupportsLibpl;
 extern Bool32 gIsGliden;
 extern Bool32 gIsWidescreen;
 

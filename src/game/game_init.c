@@ -33,7 +33,7 @@
 #include "emutest.h"
 #include "mb64/main.h"
 
-#include "libpl/libpl.h"
+#include "lib/libpl/libpl.h"
 
 u8 painting_base_rgba16[] = {
 	0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 
@@ -1023,7 +1023,6 @@ void setup_game_memory(void) {
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
-Bool32 gSupportsLibpl = FALSE;
 Bool32 gIsGliden = FALSE;
 Bool32 gIsWidescreen = FALSE;
 
@@ -1066,7 +1065,6 @@ void thread5_game_loop(UNUSED void *arg) {
         mb64_sram_configuration.magic = SRAM_MAGIC;
     }
 
-    gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
     if (gSupportsLibpl) {
         libpl_create_auto_sd_card(16,255);
         lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();

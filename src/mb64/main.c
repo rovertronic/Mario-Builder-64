@@ -6,7 +6,7 @@
 #include "boundary.h"
 #include "display_funcs.h"
 
-#include "libpl/libpl-rhdc.h"
+#include "lib/libpl/libpl-rhdc.h"
 
 #include <string.h>
 #include "game/object_list_processor.h"

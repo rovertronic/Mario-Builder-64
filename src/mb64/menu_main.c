@@ -2,8 +2,9 @@
 #include "menu.h"
 
 #include "game/sram.h"
-#include "libpl/libpl.h"
+#include "lib/libpl/libpl.h"
 #include "levels/menu/header.h"
+#include "game/emutest.h"
 #include <string.h>
 
 char *info_credits[] = {
