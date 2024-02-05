@@ -415,12 +415,6 @@ u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
     return (direction != CMM_DIRECTION_DOWN);
 }
 
-// Used for determining if a block is rendered with backface culling
-// Mostly same as above but also checks for translucent materials
-u32 block_is_seethrough(u32 mat) {
-    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type >= MAT_CUTOUT));
-}
-
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (cmm_render_culling_off) return FALSE;
@@ -443,9 +437,15 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     }
 
     s32 otherMat = get_grid_tile(newpos)->mat;
-    if (block_is_seethrough(otherMat)) {
-        s32 curMat = get_grid_tile(pos)->mat;
-        if (curMat != otherMat) return FALSE;
+    s32 curMat = get_grid_tile(pos)->mat;
+    if ((direction != CMM_DIRECTION_DOWN) || !HAS_TOPMAT(otherMat)) {
+        if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
+            if (curMat != otherMat) return FALSE;
+        }
+    } else {
+        if (TOPMAT(otherMat).type >= MAT_CUTOUT) {
+            if (curMat != otherMat) return FALSE;
+        }
     }
 
     s32 otherFaceshape = get_faceshape(newpos, direction);
@@ -639,7 +639,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
     switch (direction) {
         case CMM_DIRECTION_NEG_X: *uAxis = 2; *vAxis = 1; return TRUE;
         case CMM_DIRECTION_POS_X: *uAxis = 2; *vAxis = 1; return FALSE;
-        case CMM_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return TRUE;
+        case CMM_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return FALSE;
         case CMM_DIRECTION_UP: *uAxis = 2; *vAxis = 0; return FALSE;
         case CMM_DIRECTION_NEG_Z: *uAxis = 0; *vAxis = 1; return FALSE;
         /*case CMM_DIRECTION_POS_Z:*/ default: *uAxis = 0; *vAxis = 1; return TRUE;
@@ -1305,7 +1305,7 @@ void process_tiles(u32 processTileRenderMode) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
 
-            if (block_is_seethrough(mat)) {
+            if ((matType == MAT_CUTOUT) || (cmm_curr_mat_has_topside && (TOPMAT(mat).type >= MAT_CUTOUT))) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             }
         // COLLISION
