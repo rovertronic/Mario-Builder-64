@@ -398,6 +398,23 @@ u32 block_is_hollow(u32 mat) {
     return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type == MAT_CUTOUT));
 }
 
+// Used for determining if a water side should be culled.
+// Assumes that the block is hollow
+u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
+    if (!block_is_hollow(mat)) return TRUE;
+    // Full mesh
+    if (MATERIAL(mat).type == MAT_CUTOUT) {
+        if (!HAS_TOPMAT(mat)) { // Full mesh
+            return FALSE;
+        }
+        return ((TOPMAT(mat).type != MAT_CUTOUT) && (direction == CMM_DIRECTION_DOWN));
+    }
+    // Must be a block with solid sides and a hollow top
+    // Check if adjacent block is same material
+    if (mat == adjMat) return FALSE;
+    return (direction != CMM_DIRECTION_DOWN);
+}
+
 // Used for determining if a block is rendered with backface culling
 // Mostly same as above but also checks for translucent materials
 u32 block_is_seethrough(u32 mat) {
@@ -412,6 +429,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(newpos)) {
+        if (cmm_lopt_plane == 0) return FALSE;
         if (direction == CMM_DIRECTION_UP) return FALSE;
         return TRUE;
     }
@@ -993,7 +1011,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
-        } else if (adjacentPos[1] == -1) { // Culling for bottom
+        } else if ((cmm_lopt_plane != 0) && (adjacentPos[1] == -1)) { // Culling for bottom
             for (u32 rot = 0; rot < 5; rot++) {
                 connections[rot] |= (1 << 2);
             }
@@ -1067,19 +1085,34 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     s8 adjacentPos[3];
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
 
-    // Don't OoB cull the top face
-    if (!coords_in_range(adjacentPos) && dir == CMM_DIRECTION_UP) return 1;
+    if (!coords_in_range(adjacentPos)) {
+        if (cmm_lopt_plane == 0) {
+            return isFullblock ? 2 : 1;
+        }
+        // If out of bounds, cull if any other direction
+        // Normal (low side) if OoB is above
+        return (dir == CMM_DIRECTION_UP);
+    }
+    if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_CULL) return 0;
 
     if (cmm_building_collision) {
         if (get_grid_tile(adjacentPos)->waterlogged) return 0;
         return isFullblock ? 2 : 1;
     }
 
+    u32 mat = get_grid_tile(pos)->mat;
+    u32 adjMat = get_grid_tile(adjacentPos)->mat;
+
     // Apply normal side culling
     // Usually this would fail if next to a mesh, but it will pass if
     // the current tile is the same material, which in this case will happen
     // if an entire mesh is waterlogged.
-    if (should_cull(pos, dir, CMM_FACESHAPE_FULL, 0) && (!block_is_hollow(get_grid_tile(adjacentPos)->mat))) return 0;
+    if (get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL && (block_side_is_solid(adjMat, mat, dir))) return 0;
+
+    // Check if the block that's waterlogged has a full face on the same side
+    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && (block_side_is_solid(mat, adjMat, dir^1))) {
+        return 0;
+    }
 
     if (get_grid_tile(adjacentPos)->waterlogged) {
         // Check if this is a full block, next to a non-full block.
@@ -1093,10 +1126,6 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
         return 0;
     }
 
-    // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && (!block_is_hollow(get_grid_tile(pos)->mat))) {
-        return 0;
-    }
 
     return isFullblock ? 2 : 1;
 }
@@ -1158,7 +1187,7 @@ void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
     tileType &= ~MATTYPE_NOCULL;
     u32 rendermode = cmm_render_mode_table[tileType];
     if (disableZ) rendermode &= ~(Z_UPD | Z_CMP);
-    if (!gIsConsole) rendermode |= AA_EN;
+    if (!gIsConsole && (tileType != MAT_TRANSPARENT)) rendermode |= AA_EN;
     gDPSetRenderMode(gfx, rendermode, 0);
 }
 
@@ -1351,19 +1380,15 @@ void process_tiles(u32 processTileRenderMode) {
 
                 process_tile(pos, cmm_tile_terrains[tileType], rot);
             }
-            PROC_RENDER( display_cached_tris(); \
-                         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); )
+            PROC_RENDER( display_cached_tris(); )
         }
+        PROC_RENDER( gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK); )
     }
 }
 
 void generate_terrain_gfx(void) {
     u8 tileType, rot;
     s8 pos[3];
-
-    while (sCurrentDisplaySPTask != NULL) {
-        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
-    }
 
     cmm_curr_gfx = cmm_terrain_gfx;
     cmm_curr_vtx = cmm_terrain_vtx;
