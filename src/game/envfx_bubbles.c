@@ -194,9 +194,9 @@ void envfx_update_lava(Vec3s centerPos) {
         }
     }
 
-    if (((s8)(s32)(random_float() * 16.0f)) == 8) {
-        play_sound(SOUND_GENERAL_QUIET_BUBBLE2, gGlobalSoundSource);
-    }
+    // if (((s8)(s32)(random_float() * 16.0f)) == 8) {
+    //     play_sound(SOUND_GENERAL_QUIET_BUBBLE2, gGlobalSoundSource);
+    // }
 }
 
 #define PARTICLE (gEnvFxBuffer + i)
@@ -422,6 +422,13 @@ s32 envfx_init_bubble(s32 mode) {
 
     gEnvFxMode = mode;
     return TRUE;
+}
+
+u32 envfx_init_lava_bubble() {
+    sBubbleParticleCount = 15;
+    sBubbleParticleMaxCount = 15;
+
+    return sBubbleParticleCount;
 }
 
 /**

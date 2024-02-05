@@ -402,6 +402,7 @@ u32 block_is_hollow(u32 mat) {
 // Assumes that the block is hollow
 u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
     if (!block_is_hollow(mat)) return TRUE;
+    if (mat == adjMat) return FALSE;
     // Full mesh
     if (MATERIAL(mat).type == MAT_CUTOUT) {
         if (!HAS_TOPMAT(mat)) { // Full mesh
@@ -411,7 +412,6 @@ u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
     }
     // Must be a block with solid sides and a hollow top
     // Check if adjacent block is same material
-    if (mat == adjMat) return FALSE;
     return (direction != CMM_DIRECTION_DOWN);
 }
 

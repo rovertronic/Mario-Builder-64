@@ -83,13 +83,19 @@ s32 envfx_init_snow(s32 mode) {
             break;
     }
 
+    u32 numBubbles = envfx_init_lava_bubble();
+
     gEnvFxBuffer = mem_pool_alloc(gEffectsMemoryPool,
-                                  gSnowParticleMaxCount * sizeof(struct EnvFxParticle));
+                                  (gSnowParticleMaxCount + numBubbles) * sizeof(struct EnvFxParticle));
     if (gEnvFxBuffer == NULL) {
         return FALSE;
     }
 
-    bzero(gEnvFxBuffer, gSnowParticleMaxCount * sizeof(struct EnvFxParticle));
+    bzero(gEnvFxBuffer,  (gSnowParticleMaxCount + numBubbles) * sizeof(struct EnvFxParticle));
+
+    for (u32 i = 0; i < numBubbles; i++) {
+        (gEnvFxBuffer + gSnowParticleMaxCount + i)->animFrame = random_float() * 7.0f;
+    }
 
     gEnvFxMode = mode;
     return TRUE;
@@ -391,7 +397,7 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
     vertex2 = gSnowFlakeVertex2;
     vertex3 = gSnowFlakeVertex3;
 
-    gfxStart = (Gfx *) alloc_display_list((gSnowParticleCount * 6 + 3) * sizeof(Gfx));
+    gfxStart = (Gfx *) alloc_display_list((gSnowParticleCount * 6 + 4) * sizeof(Gfx));
     gfx = gfxStart;
 
     if (gfxStart == NULL) {
@@ -457,7 +463,14 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
         gSP1Triangle(gfx++, 12, 13, 14, 0);
     }
 
-    gSPDisplayList(gfx++, &tiny_bubble_dl_0B006AB0) gSPEndDisplayList(gfx++);
+    gSPDisplayList(gfx++, &tiny_bubble_dl_0B006AB0)
+
+    gEnvFxBuffer += gSnowParticleMaxCount;
+    Gfx *gfxBubbles = envfx_update_bubble_particles(ENVFX_LAVA_BUBBLES, marioPos, camFrom, camTo);
+    gEnvFxBuffer -= gSnowParticleMaxCount;
+    
+    gSPDisplayList(gfx++, gfxBubbles);
+    gSPEndDisplayList(gfx++);
 
     return gfxStart;
 }

@@ -520,6 +520,7 @@ static s32 bhv_cmd_drop_to_floor(void) {
     f32 floor = find_floor_height(gCurrentObject->oPosX, gCurrentObject->oPosY + 200.0f, gCurrentObject->oPosZ);
     gCurrentObject->oPosY = floor;
     gCurrentObject->oMoveFlags |= OBJ_MOVE_ON_GROUND;
+    cur_obj_check_danger_floors();
 
     gCurBhvCommand++;
     return BHV_PROC_CONTINUE;

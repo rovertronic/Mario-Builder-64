@@ -1056,6 +1056,19 @@ static void cur_obj_move_update_underwater_flags(void) {
     }
 }
 
+void cur_obj_check_danger_floors() {
+    o->oMoveFlags &= ~(OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ABOVE_DEATH_BARRIER);
+    if (o->oFloor) {
+        u32 floorType = o->oFloor->type;
+        if (SURFACE_IS_BURNING(floorType)) {
+            o->oMoveFlags |= OBJ_MOVE_ABOVE_LAVA;
+        } else if ((floorType == SURFACE_DEATH_PLANE) || (floorType == SURFACE_VERTICAL_WIND)) {
+            //! This maybe misses SURFACE_WARP
+            o->oMoveFlags |= OBJ_MOVE_ABOVE_DEATH_BARRIER;
+        }
+    }
+}
+
 static void cur_obj_move_update_ground_air_flags(UNUSED f32 gravity, f32 bounciness) {
     o->oMoveFlags &= ~OBJ_MOVE_BOUNCE;
     f32 floorOffset = ((o->oMoveFlags & (OBJ_MOVE_ON_GROUND | OBJ_MOVE_LANDED) && (o->oVelY < 5.f)) ? 100.f : 0.f);
@@ -1090,6 +1103,7 @@ static void cur_obj_move_update_ground_air_flags(UNUSED f32 gravity, f32 bouncin
     }
 
     o->oMoveFlags &= ~OBJ_MOVE_MASK_IN_WATER;
+    cur_obj_check_danger_floors();
 }
 
 static f32 cur_obj_move_y_and_get_water_level(f32 gravity, f32 buoyancy) {
@@ -1156,6 +1170,7 @@ void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
             }
         }
     }
+
     COND_BIT((!(o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_AT_WATER_SURFACE | OBJ_MOVE_UNDERWATER_OFF_GROUND))), o->oMoveFlags, OBJ_MOVE_IN_AIR);
 }
 
@@ -1452,13 +1467,6 @@ static void cur_obj_update_floor(void) {
 
     if (floor != NULL) {
         SurfaceType floorType = floor->type;
-        if (SURFACE_IS_BURNING(floorType)) {
-            o->oMoveFlags |= OBJ_MOVE_ABOVE_LAVA;
-        } else if ((floorType == SURFACE_DEATH_PLANE) || (floorType == SURFACE_VERTICAL_WIND)) {
-            //! This maybe misses SURFACE_WARP
-            o->oMoveFlags |= OBJ_MOVE_ABOVE_DEATH_BARRIER;
-        }
-
         o->oFloorType = floorType;
     } else {
         o->oFloorType = SURFACE_DEFAULT;
@@ -1481,8 +1489,6 @@ void cur_obj_update_ceiling(void) {
 }
 
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
-    o->oMoveFlags &= ~(OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ABOVE_DEATH_BARRIER);
-
     if (o->activeFlags & (ACTIVE_FLAG_FAR_AWAY | ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
         cur_obj_update_floor();
         o->oMoveFlags &= ~(OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER);
