@@ -1813,7 +1813,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
 
     // Check if out of range
-    if (pos[1] < 0) return waterPlaneHeight;
+    if (y < 0) return waterPlaneHeight;
     if (pos[1] > 31) pos[1] = 31;
     // If block contains water, scan upwards, otherwise scan downwards
     if (get_grid_tile(pos)->waterlogged) {
