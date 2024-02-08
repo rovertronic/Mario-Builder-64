@@ -2557,7 +2557,7 @@ void load_level(void) {
     bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));
     update_custom_theme();
 
-    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    reload_bg();
 
     u32 oldIndex = 0;
     cmm_tile_data_indices[0] = 0;
@@ -2628,7 +2628,7 @@ void sb_init(void) {
     struct Object *spawn_obj;
 
     cmm_toolbar_index = 0;
-    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    reload_bg();
     generate_terrain_gfx();
 
     switch(cmm_mode) {
@@ -2804,7 +2804,22 @@ void reload_theme(void) {
 }
 
 void reload_bg(void) {
-    load_segment_decompress(SEGMENT_SKYBOX,cmm_skybox_table[cmm_lopt_bg*2],cmm_skybox_table[cmm_lopt_bg*2+1]);
+    void *dest = NULL;
+    void *srcStart = cmm_skybox_table[cmm_lopt_bg*2];
+    void *srcEnd = cmm_skybox_table[cmm_lopt_bg*2+1];
+
+    u32 compSize = ALIGN16(srcEnd - srcStart);
+    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
+
+    // Decompressed size from header (This works for non-mio0 because they also have the size in same place)
+    u32 *size = (u32 *) (compressed + 4);
+
+    if (compressed != NULL) {
+        dma_read(compressed, srcStart, srcEnd);
+        Propack_UnpackM1(compressed, get_segment_base_addr(SEGMENT_SKYBOX));
+        sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
+        main_pool_free(compressed);
+    }
 }
 
 u8 cmm_upsidedown_tile = FALSE;
