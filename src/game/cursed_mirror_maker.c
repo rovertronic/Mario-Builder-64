@@ -999,11 +999,14 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
     for (u32 updown = 0; updown < 2; updown++) { // 0 = Up, 1 = Down
         vec3_sum(adjacentPos, pos, cullOffsetLUT[updown]);
         if (coords_in_range(adjacentPos)) {
-            if (get_faceshape(adjacentPos, updown) == CMM_FACESHAPE_FULL) {
+            u32 faceshape = get_faceshape(adjacentPos, updown);
+            if (faceshape == CMM_FACESHAPE_FULL) {
                 for (u32 rot = 0; rot < 4; rot++) {
                     connections[rot] |= (1 << (updown+1)); // Apply top flag to all bars
                 }
                 connections[4] |= (1 << (updown + 1));
+            } else if (faceshape == CMM_FACESHAPE_TOPHALF) {
+                connections[(get_grid_tile(adjacentPos)->rot + 2) % 4] |= (1 << (updown + 1));
             } else if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
                 check_bar_side_connections(adjacentPos, adjacentConnections);
                 for (u32 rot = 0; rot < 4; rot++) {

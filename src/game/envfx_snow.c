@@ -57,6 +57,8 @@ struct SnowFlakeVertex gSnowFlakeVertex3 = { 5, 5, 0 };
 extern void *tiny_bubble_dl_0B006AB0;
 extern void *tiny_bubble_dl_0B006A50;
 extern void *tiny_bubble_dl_0B006CD8;
+extern void *rain_effect_dl;
+extern void *sand_effect_dl;
 
 /**
  * Initialize snow particles by allocating a buffer for storing their state
@@ -67,19 +69,24 @@ s32 envfx_init_snow(s32 mode) {
         case ENVFX_MODE_NONE:
             return FALSE;
 
-        case ENVFX_SNOW_NORMAL:
+        case ENVFX_ASHES:
             gSnowParticleMaxCount = 50;
             gSnowParticleCount = 20;
             break;
-
-        case ENVFX_SNOW_WATER:
-            gSnowParticleMaxCount = 30;
-            gSnowParticleCount = 30;
+        
+        case ENVFX_SNOW:
+            gSnowParticleMaxCount = 140;
+            gSnowParticleCount = 40;
             break;
 
-        case ENVFX_SNOW_BLIZZARD:
-            gSnowParticleMaxCount = 140;
-            gSnowParticleCount = 140;
+        case ENVFX_SANDSTORM:
+            gSnowParticleMaxCount = 200;
+            gSnowParticleCount = 200;
+            break;
+
+        case ENVFX_RAIN:
+            gSnowParticleMaxCount = 150;
+            gSnowParticleCount = 150;
             break;
     }
 
@@ -112,7 +119,8 @@ void envfx_update_snowflake_count(s32 mode, Vec3s marioPos) {
     f32 waterLevel;
 
     switch (mode) {
-        case ENVFX_SNOW_NORMAL:
+        case ENVFX_ASHES:
+        case ENVFX_SNOW:
             if (gSnowParticleMaxCount > gSnowParticleCount) {
                 if (!(globalTimer & 63)) {
                     gSnowParticleCount += 5;
@@ -120,23 +128,8 @@ void envfx_update_snowflake_count(s32 mode, Vec3s marioPos) {
             }
             break;
 
-        case ENVFX_SNOW_WATER:
-            waterLevel = cmm_get_water_level(marioPos[0], marioPos[1], marioPos[2]);
-
-            gSnowParticleCount =
-                (((s32)((waterLevel - 400.0f - (f32) marioPos[1]) * 0.001f) << 0x10) >> 0x10) * 5;
-
-            if (gSnowParticleCount < 0) {
-                gSnowParticleCount = 0;
-            }
-
-            if (gSnowParticleCount > gSnowParticleMaxCount) {
-                gSnowParticleCount = gSnowParticleMaxCount;
-            }
-
-            break;
-
-        case ENVFX_SNOW_BLIZZARD:
+        case ENVFX_SANDSTORM:
+        case ENVFX_RAIN:
             break;
     }
 }
@@ -213,6 +206,40 @@ s32 envfx_is_snowflake_alive(s32 index, s32 snowCylinderX, s32 snowCylinderY, s3
  * have been done because larger, further away snowflakes are occluded easily
  * by level geometry, wasting many particles.
  */
+void envfx_update_ashes(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ) {
+    s32 i;
+    s32 deltaX = snowCylinderX - gSnowCylinderLastPos[0];
+    s32 deltaY = snowCylinderY - gSnowCylinderLastPos[1];
+    s32 deltaZ = snowCylinderZ - gSnowCylinderLastPos[2];
+
+    for (i = 0; i < gSnowParticleCount; i++) {
+        (gEnvFxBuffer + i)->isAlive =
+            envfx_is_snowflake_alive(i, snowCylinderX, snowCylinderY, snowCylinderZ);
+        if (!(gEnvFxBuffer + i)->isAlive) {
+            f32 xPos, yPos, zPos;
+            struct Surface *ceil = NULL;
+            do {
+                xPos = 400.0f * random_float() - 200.0f + snowCylinderX + (s16)(deltaX * 2);
+                yPos = -400.0f * random_float() + snowCylinderY;
+                zPos = 400.0f * random_float() - 200.0f + snowCylinderZ + (s16)(deltaZ * 2);
+                find_ceil(xPos, yPos, zPos, &ceil);
+            } while (ceil != NULL);
+            (gEnvFxBuffer + i)->xPos = xPos;
+            (gEnvFxBuffer + i)->zPos = zPos;
+            (gEnvFxBuffer + i)->yPos = yPos;
+            (gEnvFxBuffer + i)->isAlive = TRUE;
+        } else {
+            (gEnvFxBuffer + i)->xPos += random_float() * 2 - 1.0f + (s16)(deltaX / 1.2);
+            (gEnvFxBuffer + i)->yPos += 2 -(s16)(deltaY * 0.8);
+            (gEnvFxBuffer + i)->zPos += random_float() * 2 - 1.0f + (s16)(deltaZ / 1.2);
+        }
+    }
+
+    gSnowCylinderLastPos[0] = snowCylinderX;
+    gSnowCylinderLastPos[1] = snowCylinderY;
+    gSnowCylinderLastPos[2] = snowCylinderZ;
+}
+
 void envfx_update_snow_normal(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ) {
     s32 i;
     s32 deltaX = snowCylinderX - gSnowCylinderLastPos[0];
@@ -227,11 +254,11 @@ void envfx_update_snow_normal(s32 snowCylinderX, s32 snowCylinderY, s32 snowCyli
                 400.0f * random_float() - 200.0f + snowCylinderX + (s16)(deltaX * 2);
             (gEnvFxBuffer + i)->zPos =
                 400.0f * random_float() - 200.0f + snowCylinderZ + (s16)(deltaZ * 2);
-            (gEnvFxBuffer + i)->yPos = -400.0f * random_float() + snowCylinderY;
+            (gEnvFxBuffer + i)->yPos = 200.0f * random_float() + snowCylinderY;
             (gEnvFxBuffer + i)->isAlive = TRUE;
         } else {
             (gEnvFxBuffer + i)->xPos += random_float() * 2 - 1.0f + (s16)(deltaX / 1.2);
-            (gEnvFxBuffer + i)->yPos += 2 -(s16)(deltaY * 0.8);
+            (gEnvFxBuffer + i)->yPos -= 2 -(s16)(deltaY * 0.8);
             (gEnvFxBuffer + i)->zPos += random_float() * 2 - 1.0f + (s16)(deltaZ / 1.2);
         }
     }
@@ -247,7 +274,7 @@ void envfx_update_snow_normal(s32 snowCylinderX, s32 snowCylinderY, s32 snowCyli
  * respawn in y-range [-200, 200] instead of [0, 200] relative to snowCylinderY
  * They also fall a bit faster (with vertical speed -5 instead of -2).
  */
-void envfx_update_snow_blizzard(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ) {
+void envfx_update_sandstorm(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ) {
     s32 i;
     s32 deltaX = snowCylinderX - gSnowCylinderLastPos[0];
     s32 deltaY = snowCylinderY - gSnowCylinderLastPos[1];
@@ -265,7 +292,7 @@ void envfx_update_snow_blizzard(s32 snowCylinderX, s32 snowCylinderY, s32 snowCy
             (gEnvFxBuffer + i)->isAlive = TRUE;
         } else {
             (gEnvFxBuffer + i)->xPos += random_float() * 2 - 1.0f + (s16)(deltaX / 1.2) + 20.0f;
-            (gEnvFxBuffer + i)->yPos -= 5 -(s16)(deltaY * 0.8);
+            (gEnvFxBuffer + i)->yPos -= 2 -(s16)(deltaY * 0.8);
             (gEnvFxBuffer + i)->zPos += random_float() * 2 - 1.0f + (s16)(deltaZ / 1.2);
         }
     }
@@ -275,20 +302,30 @@ void envfx_update_snow_blizzard(s32 snowCylinderX, s32 snowCylinderY, s32 snowCy
     gSnowCylinderLastPos[2] = snowCylinderZ;
 }
 
-/*! Unused function. Checks whether a position is laterally within 3000 units
- *  to the point (x: 3380, z: -520). Considering there is an unused blizzard
- *  snow mode, this could have been used to check whether Mario is in a
- *  'blizzard area'. In Cool Cool Mountain and Snowman's Land the area lies
- *  near the starting point and doesn't seem meaningful. Notably, the point is
- *  close to the entrance of SL, so maybe there were plans for an extra hint to
- *  find it. The radius of 3000 units is quite large for that though, covering
- *  more than half of the mirror room.
- */
-UNUSED static s32 is_in_mystery_snow_area(s32 x, UNUSED s32 y, s32 z) {
-    if (sqr(x - 3380) + sqr(z + 520) < sqr(3000)) {
-        return TRUE;
+void envfx_update_rain(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ) {
+    s32 i;
+    s32 deltaX = snowCylinderX - gSnowCylinderLastPos[0];
+    s32 deltaY = snowCylinderY - gSnowCylinderLastPos[1];
+    s32 deltaZ = snowCylinderZ - gSnowCylinderLastPos[2];
+
+    for (i = 0; i < gSnowParticleCount; i++) {
+        (gEnvFxBuffer + i)->isAlive =
+            envfx_is_snowflake_alive(i, snowCylinderX, snowCylinderY, snowCylinderZ);
+        if (!(gEnvFxBuffer + i)->isAlive) {
+            (gEnvFxBuffer + i)->xPos =
+                600.0f * random_float() - 300.0f + snowCylinderX + (s16)(deltaX * 2);
+            (gEnvFxBuffer + i)->zPos =
+                600.0f * random_float() - 300.0f + snowCylinderZ + (s16)(deltaZ * 2);
+            (gEnvFxBuffer + i)->yPos = 400.0f * random_float() - 200.0f + snowCylinderY;
+            (gEnvFxBuffer + i)->isAlive = TRUE;
+        } else {
+            (gEnvFxBuffer + i)->yPos -= 25 -(s16)(deltaY * 0.8);
+        }
     }
-    return FALSE;
+
+    gSnowCylinderLastPos[0] = snowCylinderX;
+    gSnowCylinderLastPos[1] = snowCylinderY;
+    gSnowCylinderLastPos[2] = snowCylinderZ;
 }
 
 /**
@@ -381,6 +418,8 @@ void append_snowflake_vertex_buffer(Gfx *gfx, s32 index, Vec3s vertex1, Vec3s ve
     gSPVertex(gfx, VIRTUAL_TO_PHYSICAL(vertBuf), 15, 0);
 }
 
+extern const u8 *const rain_ptr[];
+
 /**
  * Updates positions of snow particles and returns a pointer to a display list
  * drawing all snowflakes.
@@ -410,9 +449,20 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
     orbit_from_positions(camTo, camFrom, &radius, &pitch, &yaw);
 
     switch (snowMode) {
-        case ENVFX_SNOW_NORMAL:
+        case ENVFX_ASHES:
             // ensure the snow cylinder is no further than 250 units in front
             // of the camera, and no closer than 1 unit.
+            if (radius > 250) {
+                radius -= 250;
+            } else {
+                radius = 1;
+            }
+
+            pos_from_orbit(camTo, snowCylinderPos, radius, pitch, yaw);
+            envfx_update_ashes(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
+            break;
+
+        case ENVFX_SNOW:
             if (radius > 250) {
                 radius -= 250;
             } else {
@@ -423,17 +473,8 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
             envfx_update_snow_normal(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
             break;
 
-        case ENVFX_SNOW_WATER:
-            if (radius > 500) {
-                radius -= 500;
-            } else {
-                radius = 1;
-            }
 
-            pos_from_orbit(camTo, snowCylinderPos, radius, pitch, yaw);
-            envfx_update_snow_water(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
-            break;
-        case ENVFX_SNOW_BLIZZARD:
+        case ENVFX_SANDSTORM:
             if (radius > 250) {
                 radius -= 250;
             } else {
@@ -441,16 +482,29 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
             }
 
             pos_from_orbit(camTo, snowCylinderPos, radius, pitch, yaw);
-            envfx_update_snow_blizzard(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
+            envfx_update_sandstorm(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
+            break;
+        case ENVFX_RAIN:
+            if (radius > 500) {
+                radius -= 500;
+            } else {
+                radius = 1;
+            }
+            pos_from_orbit(camTo, snowCylinderPos, radius, pitch, yaw);
+            envfx_update_rain(snowCylinderPos[0], snowCylinderPos[1], snowCylinderPos[2]);
             break;
     }
 
     rotate_triangle_vertices((s16 *) &vertex1, (s16 *) &vertex2, (s16 *) &vertex3, pitch, yaw);
 
-    if (snowMode == ENVFX_SNOW_BLIZZARD) {
+    if (snowMode == ENVFX_SNOW) {
         gSPDisplayList(gfx++, &tiny_bubble_dl_0B006A50); // snowflake with gray edge
-    } else if (snowMode == ENVFX_SNOW_NORMAL || snowMode == ENVFX_SNOW_WATER) {
+    } else if (snowMode == ENVFX_ASHES) {
         gSPDisplayList(gfx++, &tiny_bubble_dl_0B006CD8); // snowflake with blue edge
+    } else if (snowMode == ENVFX_RAIN) {
+        gSPDisplayList(gfx++, &rain_effect_dl);
+    } else if (snowMode == ENVFX_SANDSTORM) {
+        gSPDisplayList(gfx++, &sand_effect_dl); // sandstorm snowflake
     }
 
     for (i = 0; i < gSnowParticleCount; i += 5) {
@@ -510,16 +564,11 @@ Gfx *envfx_update_particles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom
             envfx_cleanup_snow(gEnvFxBuffer);
             return NULL;
 
-        case ENVFX_SNOW_NORMAL:
-            gfx = envfx_update_snow(1, marioPos, camFrom, camTo);
-            break;
-
-        case ENVFX_SNOW_WATER:
-            gfx = envfx_update_snow(2, marioPos, camFrom, camTo);
-            break;
-
-        case ENVFX_SNOW_BLIZZARD:
-            gfx = envfx_update_snow(3, marioPos, camFrom, camTo);
+        case ENVFX_ASHES:
+        case ENVFX_SNOW:
+        case ENVFX_SANDSTORM:
+        case ENVFX_RAIN:
+            gfx = envfx_update_snow(mode, marioPos, camFrom, camTo);
             break;
 
         default:

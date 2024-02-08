@@ -2066,14 +2066,16 @@ char *cmm_envfx_string_table[] = {
     "Ashes",
     "Snow",
     "Rain",
+    "Sandstorm",
 };
 
 //envfx table
 u8 cmm_envfx_table[] = {
     ENVFX_MODE_NONE,         // no effects
-    ENVFX_SNOW_NORMAL,       // CCM, SL
-    ENVFX_SNOW_BLIZZARD,     // unused
-    ENVFX_RAIN
+    ENVFX_ASHES,       // CCM, SL
+    ENVFX_SNOW,     // unused
+    ENVFX_RAIN,
+    ENVFX_SANDSTORM,
 };
 
 char *cmm_theme_string_table[] = {

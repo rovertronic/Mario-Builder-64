@@ -199,48 +199,6 @@ void envfx_update_lava(Vec3s centerPos) {
     // }
 }
 
-#define PARTICLE (gEnvFxBuffer + i)
-
-//rain
-void envfx_update_rain(Vec3s centerPos) {
-    s32 i;
-    s32 timer = gGlobalTimer;
-    s8 chance;
-    struct Surface *surface;
-    s16 floorY;
-    UNUSED s16 centerX, centerY, centerZ;
-
-    centerX = centerPos[0];
-    centerY = centerPos[1];
-    centerZ = centerPos[2];
-
-    for (i = 0; i < sBubbleParticleMaxCount; i++) {
-        if (PARTICLE->isAlive == 0) {//init
-            PARTICLE->isAlive = 1;
-            PARTICLE->unusedBubbleVar = 20;
-            PARTICLE->xPos = (s32)gLakituState.pos[0]+(random_float() * 5000.0f - 2500.0f);
-            PARTICLE->yPos = (s32)gLakituState.pos[1]-50.0f+(random_float() * 4000.0f);
-            PARTICLE->zPos = (s32)gLakituState.pos[2]+(random_float() * 5000.0f - 2500.0f);
-            PARTICLE->bubbleY = find_floor(PARTICLE->xPos, PARTICLE->yPos, PARTICLE->zPos, &surface);
-            if (surface == NULL) {
-                PARTICLE->isAlive = 0;
-            }
-        } else {
-            PARTICLE->yPos-=(PARTICLE->unusedBubbleVar*2);
-            PARTICLE->unusedBubbleVar += 2;
-            if (PARTICLE->bubbleY-30 > PARTICLE->yPos) {
-                PARTICLE->xPos = (s32)gLakituState.pos[0]+(random_float() * 5000.0f - 2500.0f);
-                PARTICLE->yPos = (s32)gLakituState.pos[1]+3000;
-                PARTICLE->zPos = (s32)gLakituState.pos[2]+(random_float() * 5000.0f - 2500.0f);
-                PARTICLE->bubbleY = find_floor(PARTICLE->xPos, PARTICLE->yPos, PARTICLE->zPos, &surface);
-                PARTICLE->unusedBubbleVar = 20;
-            }
-        }
-    }
-
-}
-
-
 /**
  * Rotate the input x, y and z around the rotation origin of the whirlpool
  * according to the pitch and yaw of the whirlpool.
@@ -389,11 +347,6 @@ s32 envfx_init_bubble(s32 mode) {
             sBubbleParticleMaxCount = 15;
             break;
 
-        case ENVFX_RAIN:
-            sBubbleParticleCount = 200;
-            sBubbleParticleMaxCount = 200;
-            break;
-
         case ENVFX_WHIRLPOOL_BUBBLES:
             sBubbleParticleCount = 60;
             break;
@@ -465,13 +418,6 @@ void envfx_bubbles_update_switch(s32 mode, Vec3s camTo, Vec3s vertex1, Vec3s ver
             vertex2[0] = 0;   vertex2[1] = 60; vertex2[2] = 0;
             vertex3[0] = -40; vertex3[1] = 0;  vertex3[2] = 0;
             break;
-
-        case ENVFX_RAIN:
-            envfx_update_rain(camTo);
-            vertex1[0] = 100;  vertex1[1] = 0;   vertex1[2] = 0;
-            vertex2[0] = 0;    vertex2[1] = 150; vertex2[2] = 0;
-            vertex3[0] = -100; vertex3[1] = 0;   vertex3[2] = 0;
-            break;
     }
 }
 
@@ -532,11 +478,6 @@ void envfx_set_bubble_texture(s32 mode, s16 index) {
         case ENVFX_WHIRLPOOL_BUBBLES:
         case ENVFX_JETSTREAM_BUBBLES:
             imageArr = segmented_to_virtual(&bubble_ptr_0B006848);
-            frame = 0;
-            break;
-
-        case ENVFX_RAIN:
-            imageArr = segmented_to_virtual(&rain_ptr);
             frame = 0;
             break;
 
@@ -639,10 +580,6 @@ Gfx *envfx_update_bubbles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom) 
 
         case ENVFX_JETSTREAM_BUBBLES:
             gfx = envfx_update_bubble_particles(ENVFX_JETSTREAM_BUBBLES, marioPos, camFrom, camTo);
-            break;
-
-        case ENVFX_RAIN:
-            gfx = envfx_update_bubble_particles(ENVFX_RAIN, marioPos, camFrom, camTo);
             break;
 
         default:
