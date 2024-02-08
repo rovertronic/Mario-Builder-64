@@ -61,9 +61,7 @@ enum {
 };
 
 #define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
-#define GRIDY_TO_POS(gridy) ((gridy) * TILE_SIZE + TILE_SIZE/2)
 #define POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
-#define POS_TO_GRIDY(pos) (((pos) - TILE_SIZE/2) / TILE_SIZE)
 
 enum cmm_directions {
     CMM_DIRECTION_UP,

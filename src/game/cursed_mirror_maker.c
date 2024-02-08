@@ -608,7 +608,7 @@ void generate_trajectory_gfx(void) {
         }
         if (traj == cmm_trajectory_to_edit && cmm_menu_state == CMM_MAKE_TRAJECTORY) {
             vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
-            vec3_set(pos2, GRID_TO_POS(cmm_cursor_pos[0]), GRIDY_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
+            vec3_set(pos2, GRID_TO_POS(cmm_cursor_pos[0]), GRID_TO_POS(cmm_cursor_pos[1]), GRID_TO_POS(cmm_cursor_pos[2]));
             draw_dotted_line(pos1, pos2);
         }
         if (isLoop) {
@@ -675,9 +675,9 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
             v = 16 - newVtx[i][vAxis];
         }
         make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
-            GRID_TO_POS(pos[0])  + ((newVtx[i][0] - 8) * 16),
-            GRIDY_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
-            GRID_TO_POS(pos[2])  + ((newVtx[i][2] - 8) * 16),
+            GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
+            GRID_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
+            GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
             (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
     }
@@ -713,7 +713,7 @@ void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
         }
         make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
             GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
-            GRIDY_TO_POS(pos[1])+ ((newVtx[i][1] - 8) * 16),
+            GRID_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
             GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
             (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
             n[0], n[1], n[2], 0xFF);
@@ -751,9 +751,9 @@ void cmm_create_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
     s8 newVtx[4][3];
     cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
     for (u32 k = 0; k < 4; k++) {
-        colVtxs[k][0] = GRID_TO_POS(pos[0])  + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][2] = GRID_TO_POS(pos[2])  + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
+        colVtxs[k][0] = GRID_TO_POS(pos[0]) + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
+        colVtxs[k][1] = GRID_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
+        colVtxs[k][2] = GRID_TO_POS(pos[2]) + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
     }
     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2]);
     cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2]);
@@ -763,9 +763,9 @@ void cmm_create_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
     s8 newVtx[3][3];
     cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
     for (u32 k = 0; k < 3; k++) {
-        colVtxs[k][0] = GRID_TO_POS(pos[0])  + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][1] = GRIDY_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][2] = GRID_TO_POS(pos[2])  + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
+        colVtxs[k][0] = GRID_TO_POS(pos[0]) + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
+        colVtxs[k][1] = GRID_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
+        colVtxs[k][2] = GRID_TO_POS(pos[2]) + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
     }
     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2]);
 }
@@ -1429,7 +1429,7 @@ void generate_terrain_gfx(void) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).type, FALSE);
         }
-        render_floor(0);
+        render_floor(-32*TILE_SIZE);
     }
 
     // Special Tiles
@@ -1488,7 +1488,7 @@ void generate_terrain_gfx(void) {
 
     // Render main water plane, top side
     if (cmm_lopt_waterlevel != 0) {
-        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+        render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
     }
     // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
@@ -1515,7 +1515,7 @@ void generate_terrain_gfx(void) {
     cmm_render_flip_normals = TRUE;
     // Render main water plane, bottom side
     if (cmm_lopt_waterlevel != 0) {
-        render_floor(cmm_lopt_waterlevel * TILE_SIZE - 32);
+        render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
     }
     cmm_render_flip_normals = FALSE;
 
@@ -1714,7 +1714,7 @@ void generate_poles(void) {
         }
 
         gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_tile_data[i].x);
-        gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
+        gPoleArray[gNumPoles].pos[1] = GRID_TO_POS(cmm_tile_data[i].y) - TILE_SIZE/2;
         gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_tile_data[i].z);
         gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
         gPoleArray[gNumPoles].poleType = 0;
@@ -1725,7 +1725,7 @@ void generate_poles(void) {
     for (u32 i = 0; i < cmm_object_count; i++) {
         if (cmm_object_data[i].type == OBJECT_TYPE_TREE) {
             gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(cmm_object_data[i].x);
-            gPoleArray[gNumPoles].pos[1] = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
+            gPoleArray[gNumPoles].pos[1] = GRID_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2;
             gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(cmm_object_data[i].z);
             gPoleArray[gNumPoles].height = 500;
             gPoleArray[gNumPoles].poleType = (cmm_object_data[i].param2 == 2 ? 2 : 1);
@@ -1768,7 +1768,7 @@ void generate_terrain_collision(void) {
     TerrainData floorY;
     TerrainData newVtxs[4][3];
     if (cmm_lopt_plane == 0) {
-        floorY = -2500;
+        floorY = -32*TILE_SIZE- 2500;
         cmm_curr_coltype = SURFACE_DEATH_PLANE;
         for (u32 i = 0; i < 4; i++) {
             newVtxs[i][1] = floorY;
@@ -1776,7 +1776,7 @@ void generate_terrain_collision(void) {
             newVtxs[i][2] = floorVtxs[i][2] * 128 * 128;
         }
     } else {
-        floorY = 0;
+        floorY = -32*TILE_SIZE;
         u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
         if (HAS_TOPMAT(mat)) {
             cmm_curr_coltype = TOPMAT(mat).col;
@@ -1824,13 +1824,13 @@ void generate_terrain_collision(void) {
 
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
-    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_lopt_waterlevel * TILE_SIZE - (TILE_SIZE / 8));
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : (cmm_lopt_waterlevel - 32) * TILE_SIZE - (TILE_SIZE / 8));
     if (y < waterPlaneHeight) {
         return waterPlaneHeight;
     }
     // Convert world coordinates into grid coordinates
     s8 pos[3];
-    vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, y / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
+    vec3_set(pos, (x + 32*TILE_SIZE) / TILE_SIZE, (y + 32*TILE_SIZE) / TILE_SIZE, (z + 32*TILE_SIZE) / TILE_SIZE);
 
     // Check if out of range
     if (y < 0) return waterPlaneHeight;
@@ -1865,7 +1865,7 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {
     struct Object *preview_object = spawn_object(gMarioObject, info->model_id, script);
     preview_object->oPosX = GRID_TO_POS(pos[0]);
-    preview_object->oPosY = GRIDY_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
+    preview_object->oPosY = GRID_TO_POS(pos[1]) - TILE_SIZE/2 + info->y_offset;
     preview_object->oPosZ = GRID_TO_POS(pos[2]);
     preview_object->oFaceAngleYaw = rot*0x4000;
     preview_object->oBehParams2ndByte = param2;
@@ -1959,7 +1959,7 @@ void generate_objects_to_level(void) {
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
 
         obj->oPosX = GRID_TO_POS(cmm_object_data[i].x);
-        obj->oPosY = GRIDY_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
+        obj->oPosY = GRID_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);
         obj->oFaceAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
@@ -2392,7 +2392,7 @@ void save_level(void) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
             cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][j][0];
             cmm_save.trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][j][1]);
-            cmm_save.trajectories[i][j].y = POS_TO_GRIDY(cmm_trajectory_list[i][j][2]);
+            cmm_save.trajectories[i][j].y = POS_TO_GRID(cmm_trajectory_list[i][j][2]);
             cmm_save.trajectories[i][j].z = POS_TO_GRID(cmm_trajectory_list[i][j][3]);
         }
     }
@@ -2599,7 +2599,7 @@ void load_level(void) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
             cmm_trajectory_list[i][j][0] = cmm_save.trajectories[i][j].t;
             cmm_trajectory_list[i][j][1] = GRID_TO_POS(cmm_save.trajectories[i][j].x);
-            cmm_trajectory_list[i][j][2] = GRIDY_TO_POS(cmm_save.trajectories[i][j].y);
+            cmm_trajectory_list[i][j][2] = GRID_TO_POS(cmm_save.trajectories[i][j].y);
             cmm_trajectory_list[i][j][3] = GRID_TO_POS(cmm_save.trajectories[i][j].z);
         }
     }
@@ -2660,7 +2660,7 @@ void sb_init(void) {
             if (spawn_obj) {
                 if (cmm_level_action == CMM_LA_BUILD) {
                     gMarioState->pos[0] = (f32)(GRID_TO_POS(cmm_cursor_pos[0]));
-                    gMarioState->pos[1] = (f32)(GRIDY_TO_POS(cmm_cursor_pos[1]));
+                    gMarioState->pos[1] = (f32)(GRID_TO_POS(cmm_cursor_pos[1]));
                     gMarioState->pos[2] = (f32)(GRID_TO_POS(cmm_cursor_pos[2]));
                     set_mario_action(gMarioState,ACT_IDLE,0);
                     gMarioState->faceAngle[1] = cmm_rot_selection*0x4000;
@@ -2742,7 +2742,7 @@ u32 main_cursor_logic(u32 joystick) {
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 
     o->oPosX = GRID_TO_POS(cmm_cursor_pos[0]); 
-    o->oPosY = GRIDY_TO_POS(cmm_cursor_pos[1]); 
+    o->oPosY = GRID_TO_POS(cmm_cursor_pos[1]); 
     o->oPosZ = GRID_TO_POS(cmm_cursor_pos[2]); 
 
     return cursorMoved;
@@ -2752,8 +2752,8 @@ void update_boundary_wall() {
     for (u8 i=0; i<6; i++) {
         vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
     }
-    cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
-    cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(64);
+    cmm_boundary_object[0]->oPosY = GRID_TO_POS(0);
+    cmm_boundary_object[1]->oPosY = GRID_TO_POS(64);
     cmm_boundary_object[2]->oPosX = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[3]->oPosX = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
@@ -3277,7 +3277,7 @@ void sb_loop(void) {
 
     if (cmm_menu_state != CMM_MAKE_SCREENSHOT) {
         cmm_camera_foc[0] = lerp(cmm_camera_foc[0], GRID_TO_POS(cmm_cursor_pos[0]),  0.2f);
-        cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRIDY_TO_POS(cmm_cursor_pos[1]), 0.2f);
+        cmm_camera_foc[1] = lerp(cmm_camera_foc[1], GRID_TO_POS(cmm_cursor_pos[1]), 0.2f);
         cmm_camera_foc[2] = lerp(cmm_camera_foc[2], GRID_TO_POS(cmm_cursor_pos[2]),  0.2f);
 
         vec3_copy(cmm_camera_pos,cmm_camera_foc);
