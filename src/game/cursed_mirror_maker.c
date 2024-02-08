@@ -1597,7 +1597,9 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
-            geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
+            if (!cmm_prepare_level_screenshot) {
+                geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
+            }
             //generate dl
             if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) return NULL;
             cmm_curr_gfx = preview_gfx;
@@ -2843,6 +2845,7 @@ void freecam_camera_init(void) {
 
     cmm_freecam_snap = FALSE;
     cmm_freecam_snap_timer = 0;
+    cmm_prepare_level_screenshot = TRUE;
 }
 
 void freecam_camera_main(void) {
@@ -2909,7 +2912,6 @@ void freecam_camera_main(void) {
     }
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-        cmm_prepare_level_screenshot = TRUE;
         cmm_freecam_snap = TRUE;
     }
 

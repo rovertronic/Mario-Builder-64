@@ -1083,11 +1083,11 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_SCREENSHOT:
-            if (cmm_prepare_level_screenshot) {
+            if (cmm_freecam_snap) {
                 return;
             }
             print_maker_string(20,210,cmm_txt_freecam,TRUE);
-            cmm_render_topleft_text();
+            //cmm_render_topleft_text();
             break;
     }
 
