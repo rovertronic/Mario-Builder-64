@@ -784,25 +784,119 @@ void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
         cmm_create_tri(tri, pos, rot);
 }
 
-u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
+    // Check if below block is in range
     s8 newpos[3];
-    vec3_set(newpos, pos[0], pos[1]+1, pos[2]);
-    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
     if (!coords_in_range(newpos)) return TRUE;
 
-    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(newpos)->mat, CMM_DIRECTION_UP)) return TRUE;
+    // Check if below block matches material
+    u8 curMat = get_grid_tile(pos)->mat;
+    u8 belowMat = get_grid_tile(newpos)->mat;
+    if (curMat != belowMat) return TRUE;
+
+    // Check if below block is right shape and culled
+    // Shape of face of above block on same side
+    s32 otherFaceshape = get_faceshape(newpos, direction^1);
+    if (should_cull(newpos, direction, otherFaceshape, 0)) return;
+    if (should_cull_topslab_check(newpos, direction, 0)) return;
+    
+    // Calculate effective rotation of face to print. very ugly
+    u8 targetRot = 0;
+    switch (direction) {
+        case CMM_DIRECTION_POS_X:
+            targetRot = 1;
+            break;
+        case CMM_DIRECTION_NEG_X:
+            targetRot = 3;
+            break;
+        //case CMM_DIRECTION_POS_Z:
+            //targetRot = 0;
+            //break;
+        case CMM_DIRECTION_NEG_Z:
+            targetRot = 2;
+            break;
+    }
+
+    s32 index;
+    s32 isQuad;
+
+    switch (otherFaceshape) {
+        default:
+            return;
+        // Face is full quad
+        case CMM_FACESHAPE_FULL:
+            index = 0;
+            isQuad = TRUE;
+            break;
+        case CMM_FACESHAPE_DOWNTRI_1:
+            index = 1;
+            isQuad = FALSE;
+            break;
+        case CMM_FACESHAPE_DOWNTRI_2:
+            index = 2;
+            isQuad = FALSE;
+            break;
+        case CMM_FACESHAPE_TOPSLAB:
+            index = 3;
+            isQuad = TRUE;
+            break;
+        case CMM_FACESHAPE_HALFSIDE_1:
+            index = 4;
+            isQuad = TRUE;
+            break;
+        case CMM_FACESHAPE_HALFSIDE_2:
+            index = 5;
+            isQuad = TRUE;
+            break;
+    }
+
+    s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);
+
+    if (isQuad) {
+        struct cmm_terrain_quad *quad = slope_decal_below_surfs[index];
+        quad->altuvs = slope_decal_below_uvs[index][side];
+        if (quad->altuvs != NULL) {
+            render_quad(quad, newpos, targetRot);
+        }
+    } else {
+        struct cmm_terrain_tri *tri = slope_decal_below_surfs[index];
+        tri->altuvs = slope_decal_below_uvs[index][side];
+        if (tri->altuvs != NULL) {
+            render_tri(tri, newpos, targetRot);
+        }
+    }
+    return;
+}
+
+u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+    s8 abovePos[3];
+    vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
+    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    if (!coords_in_range(abovePos)) return TRUE;
+
+    // Render extra decal for slopes if necessary
+    // The side of the slope itself is unconditional and will always render
+    if (grassType == CMM_GROWTH_SLOPE_SIDE_L || grassType == CMM_GROWTH_SLOPE_SIDE_R) {
+        render_grass_slope_extra_decal(pos, rotate_direction(direction, rot), grassType);
+        return TRUE;
+    }
+
+    // Other sides that don't care about the above block (e.g. bottom slab)
+    if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
+
+    // Render if above tile is empty
+    if (get_grid_tile(abovePos)->type == 0) return TRUE;
+    // Render if above tile is seethrough (some exceptions)
+    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(abovePos)->mat, CMM_DIRECTION_UP)) return TRUE;
 
     s32 otherFaceshape;
     switch (grassType) {
-        case CMM_GROWTH_UNDERSLOPE:
-        case CMM_GROWTH_UNDERSLOPE_L:
-            direction = grassType == CMM_GROWTH_UNDERSLOPE ? CMM_DIRECTION_POS_Z : CMM_DIRECTION_POS_X;
-            // fallthrough
         case CMM_GROWTH_NORMAL_SIDE:
         case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
             if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
-            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
+            otherFaceshape = get_faceshape(abovePos, rotate_direction(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
@@ -816,111 +910,21 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             return TRUE;
         case CMM_GROWTH_UNDERSLOPE_CORNER:
             ;// some very cursed logic here, this is solely for upside-down inside corners
-            u8 faceshape1 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_Z, rot)^1);
-            u8 faceshape2 = get_faceshape(newpos, rotate_direction(CMM_DIRECTION_POS_X, rot)^1);
+            u8 faceshape1 = get_faceshape(abovePos, rotate_direction(CMM_DIRECTION_POS_Z, rot)^1);
+            u8 faceshape2 = get_faceshape(abovePos, rotate_direction(CMM_DIRECTION_POS_X, rot)^1);
             // this is basically just checking for if a normal slope corner is on top at the right angle
             if (faceshape1 == CMM_FACESHAPE_TRI_1 && faceshape2 == CMM_FACESHAPE_TRI_2)
                 return FALSE;
             // don't display if either face on top of the inside corner is full
             return !((faceshape1 == CMM_FACESHAPE_FULL || faceshape1 == CMM_FACESHAPE_BOTTOMSLAB)
                 || (faceshape2 == CMM_FACESHAPE_FULL || faceshape2 == CMM_FACESHAPE_BOTTOMSLAB));
-            
-        case CMM_GROWTH_UNCONDITIONAL:
-            return TRUE;
 
-        // These types are very tricky.
-        // If the below face is the same material and is the right shape,
-        // an extra decal is printed onto it.
-        case CMM_GROWTH_SLOPE_SIDE_L:
-        case CMM_GROWTH_SLOPE_SIDE_R:
-            // Check if below block is in range
-            vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
-            if (!coords_in_range(newpos)) return TRUE;
-
-            // Check if below block matches material
-            u8 curMat = get_grid_tile(pos)->mat;
-            u8 belowMat = get_grid_tile(newpos)->mat;
-            if (curMat != belowMat) return TRUE;
-
-            // Check if below block is right shape and culled
-            // Shape of face of above block on same side
-            otherFaceshape = get_faceshape(newpos, rotate_direction(direction, rot)^1);
-            if (should_cull(newpos, direction, otherFaceshape, rot)) return TRUE;
-            if (should_cull_topslab_check(newpos, direction, rot)) return TRUE;
-            
-            // Calculate effective rotation of face to print. very ugly
-            u8 targetRot = 0;
-            switch (direction) {
-                case CMM_DIRECTION_POS_X:
-                    targetRot = 1;
-                    break;
-                case CMM_DIRECTION_NEG_X:
-                    targetRot = 3;
-                    break;
-                //case CMM_DIRECTION_POS_Z:
-                    //targetRot = 0;
-                    //break;
-                case CMM_DIRECTION_NEG_Z:
-                    targetRot = 2;
-                    break;
-            }
-            targetRot = (targetRot + rot) % 4;
-
-            s32 index;
-            s32 isQuad;
-
-            switch (otherFaceshape) {
-                default:
-                    return TRUE;
-                // Face is full quad
-                case CMM_FACESHAPE_FULL:
-                    index = 0;
-                    isQuad = TRUE;
-                    break;
-                case CMM_FACESHAPE_DOWNTRI_1:
-                    index = 1;
-                    isQuad = FALSE;
-                    break;
-                case CMM_FACESHAPE_DOWNTRI_2:
-                    index = 2;
-                    isQuad = FALSE;
-                    break;
-                case CMM_FACESHAPE_TOPSLAB:
-                    index = 3;
-                    isQuad = TRUE;
-                    break;
-                case CMM_FACESHAPE_HALFSIDE_1:
-                    index = 4;
-                    isQuad = TRUE;
-                    break;
-                case CMM_FACESHAPE_HALFSIDE_2:
-                    index = 5;
-                    isQuad = TRUE;
-                    break;
-            }
-
-            s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);
-
-            if (isQuad) {
-                struct cmm_terrain_quad *quad = slope_decal_below_surfs[index];
-                quad->altuvs = slope_decal_below_uvs[index][side];
-                if (quad->altuvs != NULL) {
-                    render_quad(quad, newpos, targetRot);
-                }
-            } else {
-                struct cmm_terrain_tri *tri = slope_decal_below_surfs[index];
-                tri->altuvs = slope_decal_below_uvs[index][side];
-                if (tri->altuvs != NULL) {
-                    render_tri(tri, newpos, targetRot);
-                }
-            }
-            return TRUE;
         case CMM_GROWTH_DIAGONAL_SIDE:
         case CMM_GROWTH_VSLAB_SIDE:
-            otherFaceshape = get_faceshape(newpos, CMM_DIRECTION_UP);
+            otherFaceshape = get_faceshape(abovePos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
             if (otherFaceshape != (grassType == CMM_GROWTH_DIAGONAL_SIDE ? CMM_FACESHAPE_TOPTRI : CMM_FACESHAPE_TOPHALF)) return TRUE;
-            u8 otherrot = get_grid_tile(newpos)->rot;
+            u8 otherrot = get_grid_tile(abovePos)->rot;
             return (otherrot != rot);
     }
     return FALSE;

@@ -103,9 +103,7 @@ enum cmm_growth_types {
     CMM_GROWTH_FULL,
     CMM_GROWTH_NORMAL_SIDE,
     CMM_GROWTH_HALF_SIDE, // vertical slabs - either side
-    CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
-    CMM_GROWTH_UNDERSLOPE_L, // act as positive X
-    CMM_GROWTH_UNDERSLOPE_CORNER, // act as both
+    CMM_GROWTH_UNDERSLOPE_CORNER, // special check
     CMM_GROWTH_DIAGONAL_SIDE,
     CMM_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
     CMM_GROWTH_SLOPE_SIDE_L,
