@@ -49,7 +49,7 @@ void chuckya_act_0(void) {
             if (cur_obj_lateral_dist_from_mario_to_home() < 2000.0f) {
                 cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
                 if (o->oChuckyaSubActionTimer > 40
-                    || abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < 0x1000) {
+                    || abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < 0x800) {
                     o->oSubAction = 1;
                 }
             } else {
@@ -59,11 +59,9 @@ void chuckya_act_0(void) {
 
         case 1:
             approach_f32_symmetric_bool(&o->oForwardVel, 30.0f, 4.0f);
-            if (abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) {
+            if ((abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) > 0x4000) ||
+                (cur_obj_lateral_dist_to_home() > 2000.0f)) {
                 o->oSubAction = 2;
-            }
-            if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
-                o->oSubAction = 3;
             }
             break;
 
@@ -71,6 +69,9 @@ void chuckya_act_0(void) {
             approach_f32_symmetric_bool(&o->oForwardVel, 0, 4.0f);
             if (o->oChuckyaSubActionTimer > 48) {
                 o->oSubAction = 0;
+                if (cur_obj_lateral_dist_to_home() > 2000.0f) {
+                    o->oSubAction = 3;
+                }
             }
             break;
 
@@ -78,11 +79,14 @@ void chuckya_act_0(void) {
             if (cur_obj_lateral_dist_to_home() < 500.0f) {
                 o->oForwardVel = 0.0f;
             } else {
-                approach_f32_symmetric_bool(&o->oForwardVel, 10.0f, 4.0f);
                 o->oAngleToMario = cur_obj_angle_to_home();
-                cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x800);
+                cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+                if (o->oChuckyaSubActionTimer > 40
+                    || abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario) < 0x1000) {
+                    approach_f32_symmetric_bool(&o->oForwardVel, 30.0f, 4.0f);
+                }
             }
-            if (cur_obj_lateral_dist_from_mario_to_home() < 1900.0f) {
+            if (cur_obj_lateral_dist_to_home() < 500.0f) {
                 o->oSubAction = 0;
             }
             break;

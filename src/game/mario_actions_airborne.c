@@ -408,7 +408,7 @@ void update_flying(struct MarioState *m) {
                 m->forwardVel += 3.5f;
             }//
             spawn_object(m->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
-            play_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
             cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
     }
