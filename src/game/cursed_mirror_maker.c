@@ -1762,11 +1762,17 @@ void generate_terrain_collision(void) {
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
-    TerrainData floorY;
 
+    TerrainData floorY;
+    TerrainData newVtxs[4][3];
     if (cmm_lopt_plane == 0) {
         floorY = -2500;
         cmm_curr_coltype = SURFACE_DEATH_PLANE;
+        for (u32 i = 0; i < 4; i++) {
+            newVtxs[i][1] = floorY;
+            newVtxs[i][0] = floorVtxs[i][0] * 128 * 128;
+            newVtxs[i][2] = floorVtxs[i][2] * 128 * 128;
+        }
     } else {
         floorY = 0;
         u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
@@ -1775,13 +1781,11 @@ void generate_terrain_collision(void) {
         } else {
             cmm_curr_coltype = MATERIAL(mat).col;
         }
-    }
-    TerrainData newVtxs[4][3];
-    for (u32 i = 0; i < 4; i++) {
-        newVtxs[i][1] = floorY;
-        newVtxs[i][0] = floorVtxs[i][0] * cmm_grid_size * 128;
-        newVtxs[i][2] = floorVtxs[i][2] * cmm_grid_size * 128;
-
+        for (u32 i = 0; i < 4; i++) {
+            newVtxs[i][1] = floorY;
+            newVtxs[i][0] = floorVtxs[i][0] * cmm_grid_size * 128;
+            newVtxs[i][2] = floorVtxs[i][2] * cmm_grid_size * 128;
+        }
     }
     cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
     cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);

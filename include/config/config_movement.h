@@ -81,7 +81,7 @@
 /**
  * If A and Z are pressed on the same frame while running, Mario will long jump instead of ground pound.
  */
-#define EASIER_LONG_JUMPS
+// #define EASIER_LONG_JUMPS
 
 /**
  * Enables the ability to hold Z while twirling to descend faster.
@@ -101,7 +101,7 @@
 /**
  * Allows Mario to grab hangable ceilings from any state.
  */
-#define HANGING_FIX
+// #define HANGING_FIX
 
 /**
  * The last frame after hitting a wall that will be considered a firsty when wallkicking.
