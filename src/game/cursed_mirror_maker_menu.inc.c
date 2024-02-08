@@ -574,7 +574,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     prepare_block_draw(xpos, ypos);
 
     s8 pos[3];
-    vec3_set(pos,32,0,32);
+    vec3_set(pos,32,32,32);
 
     if (index < NUM_MATERIALS_PER_THEME) {
         u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
