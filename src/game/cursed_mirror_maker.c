@@ -82,7 +82,7 @@ u8 cmm_rot_selection = 0;
 s16 cmm_param_selection = 0;
 s16 cmm_mat_selection = 0;
 
-struct cmm_grid_obj cmm_grid_data[64][32][64] = {0};
+struct cmm_grid_obj cmm_grid_data[64][64][64] = {0};
 
 Gfx cmm_terrain_gfx[CMM_GFX_SIZE]; //gfx
 Gfx *cmm_terrain_gfx_tp;
@@ -221,7 +221,7 @@ u8 cmm_grid_size = 64;
 
 u32 coords_in_range(s8 pos[3]) {
     if (pos[0] < cmm_grid_min || pos[0] > cmm_grid_min + cmm_grid_size - 1) return FALSE;
-    if (pos[1] < 0 || pos[1] > 31) return FALSE;
+    if (pos[1] < 0 || pos[1] > 63) return FALSE;
     if (pos[2] < cmm_grid_min || pos[2] > cmm_grid_min + cmm_grid_size - 1) return FALSE;
     return TRUE;
 }
@@ -1708,7 +1708,7 @@ void generate_poles(void) {
         s32 poleLength = 1;
         // Scan upwards until no more poles or top of grid reached
         pos[1] += 2;
-        while (pos[1] < 32 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
+        while (pos[1] < 64 && (get_grid_tile(pos)->type - 1 == TILE_TYPE_POLE)) {
             poleLength++;
             pos[1]++;
         }
@@ -1834,13 +1834,13 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
 
     // Check if out of range
     if (y < 0) return waterPlaneHeight;
-    if (pos[1] > 31) pos[1] = 31;
+    if (pos[1] > 63) pos[1] = 63;
     // If block contains water, scan upwards, otherwise scan downwards
     if (get_grid_tile(pos)->waterlogged) {
         // Find grid Y coordinate of highest water block.
         // Stop scanning once we hit a non-water block or the top is reached
         pos[1]++;
-        while (pos[1] < 32 && get_grid_tile(pos)->waterlogged) {
+        while (pos[1] < 64 && get_grid_tile(pos)->waterlogged) {
             pos[1]++;
         }
         pos[1]--;
@@ -2731,7 +2731,7 @@ u32 main_cursor_logic(u32 joystick) {
     if (cursorMoved) {
         cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
         cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
-        cmm_cursor_pos[1]=(cmm_cursor_pos[1]+32)%32;
+        cmm_cursor_pos[1]=(cmm_cursor_pos[1]+64)%64;
     }
 
     //camera zooming
@@ -2753,7 +2753,7 @@ void update_boundary_wall() {
         vec3_copy(&cmm_boundary_object[i]->oPosVec,&o->oPosVec);
     }
     cmm_boundary_object[0]->oPosY = GRIDY_TO_POS(0);
-    cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(32);
+    cmm_boundary_object[1]->oPosY = GRIDY_TO_POS(64);
     cmm_boundary_object[2]->oPosX = GRID_TO_POS(cmm_grid_min);
     cmm_boundary_object[3]->oPosX = GRID_TO_POS(cmm_grid_min + cmm_grid_size);
     cmm_boundary_object[4]->oPosZ = GRID_TO_POS(cmm_grid_min);
