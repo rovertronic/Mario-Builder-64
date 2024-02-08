@@ -142,35 +142,35 @@ void envfx_set_lava_bubble_position(s32 index, Vec3s centerPos) {
     s16 centerY = centerPos[1];
     s16 centerZ = centerPos[2];
 
-    (gEnvFxBuffer + index)->xPos = random_float() * 6000.0f - 3000.0f + centerX;
-    (gEnvFxBuffer + index)->zPos = random_float() * 6000.0f - 3000.0f + centerZ;
 
-    if ((gEnvFxBuffer + index)->xPos > 8000) {
-        (gEnvFxBuffer + index)->xPos = 16000 - (gEnvFxBuffer + index)->xPos;
-    }
-    if ((gEnvFxBuffer + index)->xPos < -8000) {
-        (gEnvFxBuffer + index)->xPos = -16000 - (gEnvFxBuffer + index)->xPos;
-    }
+    // 10 attempts to find a lava floor
+    for (u32 i = 0; i < 10; i++) {
+        (gEnvFxBuffer + index)->xPos = random_float() * 6000.0f - 3000.0f + centerX;
+        (gEnvFxBuffer + index)->zPos = random_float() * 6000.0f - 3000.0f + centerZ;
 
-    if ((gEnvFxBuffer + index)->zPos > 8000) {
-        (gEnvFxBuffer + index)->zPos = 16000 - (gEnvFxBuffer + index)->zPos;
-    }
-    if ((gEnvFxBuffer + index)->zPos < -8000) {
-        (gEnvFxBuffer + index)->zPos = -16000 - (gEnvFxBuffer + index)->zPos;
-    }
+        if ((gEnvFxBuffer + index)->xPos > 8000) {
+            (gEnvFxBuffer + index)->xPos = 16000 - (gEnvFxBuffer + index)->xPos;
+        }
+        if ((gEnvFxBuffer + index)->xPos < -8000) {
+            (gEnvFxBuffer + index)->xPos = -16000 - (gEnvFxBuffer + index)->xPos;
+        }
 
-    floorY =
-        find_floor((gEnvFxBuffer + index)->xPos, centerY + 500, (gEnvFxBuffer + index)->zPos, &surface);
-    if (surface == NULL) {
-        (gEnvFxBuffer + index)->yPos = FLOOR_LOWER_LIMIT_MISC;
-        return;
+        if ((gEnvFxBuffer + index)->zPos > 8000) {
+            (gEnvFxBuffer + index)->zPos = 16000 - (gEnvFxBuffer + index)->zPos;
+        }
+        if ((gEnvFxBuffer + index)->zPos < -8000) {
+            (gEnvFxBuffer + index)->zPos = -16000 - (gEnvFxBuffer + index)->zPos;
+        }
+        floorY =
+            find_floor((gEnvFxBuffer + index)->xPos, centerY + 500, (gEnvFxBuffer + index)->zPos, &surface);
+        if (surface != NULL) {
+            if (surface->type == SURFACE_BURNING_BUBBLES) {
+                (gEnvFxBuffer + index)->yPos = floorY;
+                return;
+            }
+        }
     }
-
-    if (surface->type == SURFACE_BURNING) {
-        (gEnvFxBuffer + index)->yPos = floorY;
-    } else {
-        (gEnvFxBuffer + index)->yPos = FLOOR_LOWER_LIMIT_MISC;
-    }
+    (gEnvFxBuffer + index)->yPos = FLOOR_LOWER_LIMIT_MISC;
 }
 
 /**
@@ -334,7 +334,7 @@ s32 envfx_init_bubble(s32 mode) {
     s32 i;
 
     switch (mode) {
-        case ENVFX_MODE_NONE:
+        case ENVFX_UNINITIALIZED:
             return FALSE;
 
         case ENVFX_FLOWERS:
@@ -343,8 +343,8 @@ s32 envfx_init_bubble(s32 mode) {
             break;
 
         case ENVFX_LAVA_BUBBLES:
-            sBubbleParticleCount = 15;
-            sBubbleParticleMaxCount = 15;
+            sBubbleParticleCount = 10;
+            sBubbleParticleMaxCount = 10;
             break;
 
         case ENVFX_WHIRLPOOL_BUBBLES:
@@ -378,8 +378,8 @@ s32 envfx_init_bubble(s32 mode) {
 }
 
 u32 envfx_init_lava_bubble() {
-    sBubbleParticleCount = 15;
-    sBubbleParticleMaxCount = 15;
+    sBubbleParticleCount = 10;
+    sBubbleParticleMaxCount = 10;
 
     return sBubbleParticleCount;
 }
@@ -555,7 +555,7 @@ void envfx_set_max_bubble_particles(s32 mode) {
 Gfx *envfx_update_bubbles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom) {
     Gfx *gfx;
 
-    if (gEnvFxMode == ENVFX_MODE_NONE && !envfx_init_bubble(mode)) {
+    if (gEnvFxMode == ENVFX_UNINITIALIZED && !envfx_init_bubble(mode)) {
         return NULL;
     }
 

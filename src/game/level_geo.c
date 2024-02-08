@@ -49,7 +49,7 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
         vec3s_copy(camTo, gVec3sZero);
         vec3s_copy(camFrom, gVec3sZero);
         vec3s_copy(marioPos, gVec3sZero);
-        envfx_update_particles(ENVFX_MODE_NONE, marioPos, camTo, camFrom);
+        envfx_update_particles(ENVFX_UNINITIALIZED, marioPos, camTo, camFrom);
     }
 
     return gfx;

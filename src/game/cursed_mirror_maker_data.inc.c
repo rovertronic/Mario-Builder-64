@@ -735,9 +735,9 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerFlowerTop, 0, SURFACE_GRASS,         "Flowers"},        // CMM_MAT_FLOWERS
 
     // Hazards
-    {mat_maker_MakerLava,       0, SURFACE_BURNING,           "Lava"},           // CMM_MAT_LAVA
-    {mat_maker_MakerVanillaLava, 0, SURFACE_BURNING,          "Lava (Old)"},     // CMM_MAT_LAVA_OLD
-    {mat_maker_MakerServerAcid, 0, SURFACE_BURNING,           "Server Acid"},    // CMM_MAT_SERVER_ACID
+    {mat_maker_MakerLava,       0, SURFACE_BURNING_BUBBLES,           "Lava"},           // CMM_MAT_LAVA
+    {mat_maker_MakerVanillaLava, 0, SURFACE_BURNING_BUBBLES,          "Lava (Old)"},     // CMM_MAT_LAVA_OLD
+    {mat_maker_MakerServerAcid, 0, SURFACE_BURNING_ICE,           "Server Acid"},    // CMM_MAT_SERVER_ACID
     {mat_maker_MakerBurningIce, 0, SURFACE_BURNING_ICE,       "Hazard Ice"},     // CMM_MAT_BURNING_ICE
     {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND, "Quicksand"},      // CMM_MAT_QUICKSAND
     {mat_maker_MakerSlowsand,   0, SURFACE_DEEP_QUICKSAND,    "Slow Quicksand"}, // CMM_MAT_DESERT_SLOWSAND
@@ -2071,7 +2071,7 @@ char *cmm_envfx_string_table[] = {
 
 //envfx table
 u8 cmm_envfx_table[] = {
-    ENVFX_MODE_NONE,         // no effects
+    ENVFX_NONE,         // no effects
     ENVFX_ASHES,       // CCM, SL
     ENVFX_SNOW,     // unused
     ENVFX_RAIN,

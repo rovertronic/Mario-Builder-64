@@ -5,7 +5,8 @@
 #include <PR/gbi.h>
 
 enum EnvFxMode {
-    /* 0*/ ENVFX_MODE_NONE,         // no effects
+    /* 0*/ ENVFX_UNINITIALIZED,
+    /* 0*/ ENVFX_NONE,         // no effects
     /* 1*/ ENVFX_ASHES,       // CCM, SL
     /* 2*/ ENVFX_SNOW,
     /* 2*/ ENVFX_SANDSTORM,     // unused

@@ -1987,7 +1987,7 @@ void check_lava_boost(struct MarioState *m) {
         }
 
         update_mario_sound_and_camera(m);
-        drop_and_set_mario_action(m, ACT_LAVA_BOOST, (m->floor->type == SURFACE_BURNING ? 0 : 2));
+        drop_and_set_mario_action(m, ACT_LAVA_BOOST, (SURFACE_IS_BURNING_SMOKE(m->floor->type) ? 0 : 2));
     }
 }
 

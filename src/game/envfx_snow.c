@@ -42,7 +42,7 @@ s16 gSnowParticleCount;
 s16 gSnowParticleMaxCount;
 
 /* DATA */
-s8 gEnvFxMode = ENVFX_MODE_NONE;
+s8 gEnvFxMode = ENVFX_UNINITIALIZED;
 
 /// Template for a snow particle triangle
 Vtx gSnowTempVtx[3] = { { { { -5, 5, 0 }, 0, { 0, 0 }, { 0x7F, 0x7F, 0x7F, 0xFF } } },
@@ -66,8 +66,13 @@ extern void *sand_effect_dl;
  */
 s32 envfx_init_snow(s32 mode) {
     switch (mode) {
-        case ENVFX_MODE_NONE:
+        case ENVFX_UNINITIALIZED:
             return FALSE;
+
+        case ENVFX_NONE:
+            gSnowParticleMaxCount = 0;
+            gSnowParticleCount = 0;
+            break;
 
         case ENVFX_ASHES:
             gSnowParticleMaxCount = 50;
@@ -139,11 +144,11 @@ void envfx_update_snowflake_count(s32 mode, Vec3s marioPos) {
  * to none.
  */
 void envfx_cleanup_snow(void *snowParticleArray) {
-    if (gEnvFxMode != ENVFX_MODE_NONE) {
+    if (gEnvFxMode != ENVFX_UNINITIALIZED) {
         if (snowParticleArray) {
             mem_pool_free(gEffectsMemoryPool, snowParticleArray);
         }
-        gEnvFxMode = ENVFX_MODE_NONE;
+        gEnvFxMode = ENVFX_UNINITIALIZED;
     }
 }
 
@@ -432,6 +437,10 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
     Gfx *gfxStart;
     Gfx *gfx;
 
+    if (snowMode == ENVFX_NONE) {
+        return envfx_update_bubble_particles(ENVFX_LAVA_BUBBLES, marioPos, camFrom, camTo);
+    }
+
     vertex1 = gSnowFlakeVertex1;
     vertex2 = gSnowFlakeVertex2;
     vertex3 = gSnowFlakeVertex3;
@@ -546,24 +555,20 @@ Gfx *envfx_update_particles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom
     //         }
     // }
 
-    if (gEnvFxMode != ENVFX_MODE_NONE && gEnvFxMode != mode) {
-        mode = ENVFX_MODE_NONE;
+    if (gEnvFxMode != ENVFX_UNINITIALIZED && gEnvFxMode != mode) {
+        mode = ENVFX_UNINITIALIZED;
     }
 
-    if (mode >= ENVFX_BUBBLE_START) {
-        gfx = envfx_update_bubbles(mode, marioPos, camTo, camFrom);
-        return gfx;
-    }
-
-    if (gEnvFxMode == ENVFX_MODE_NONE && !envfx_init_snow(mode)) {
+    if (gEnvFxMode == ENVFX_UNINITIALIZED && !envfx_init_snow(mode)) {
         return NULL;
     }
 
     switch (mode) {
-        case ENVFX_MODE_NONE:
+        case ENVFX_UNINITIALIZED:
             envfx_cleanup_snow(gEnvFxBuffer);
             return NULL;
 
+        case ENVFX_NONE:
         case ENVFX_ASHES:
         case ENVFX_SNOW:
         case ENVFX_SANDSTORM:

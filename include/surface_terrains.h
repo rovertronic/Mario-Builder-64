@@ -9,7 +9,7 @@ enum SurfaceTypes {
     SURFACE_DEFAULT,                    // 0x0000 // Environment default
     SURFACE_BURNING,                    // 0x0001 // Lava / Frostbite (in SL), but is used mostly for Lava
     SURFACE_BURNING_ICE,                // 0x0002 // Custom water surface
-    SURFACE_NEW_WATER_BOTTOM,           // 0x0003 // Custom water surface bottom marker
+    SURFACE_BURNING_BUBBLES,            // 0x0003 // Custom water surface bottom marker
     SURFACE_0004,                       // 0x0004 // Unused, has no function and has parameters
     SURFACE_HANGABLE_MESH,              // 0x0005 // Ceiling that Mario can climb on and pass through with vanish cap
     SURFACE_0006,                       // 0x0006 // Unused
@@ -229,7 +229,8 @@ enum SurfaceTypes {
 
 #define SURFACE_NEW_WATER 0
 
-#define SURFACE_IS_BURNING(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_ICE))
+#define SURFACE_IS_BURNING(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_ICE) || ((cmd) == SURFACE_BURNING_BUBBLES))
+#define SURFACE_IS_BURNING_SMOKE(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_BUBBLES))
 #define SURFACE_IS_VANISH_CAP(cmd) (((cmd) == SURFACE_VANISH_CAP_WALLS) || ((cmd) == SURFACE_HANGABLE_MESH) || ((cmd) == SURFACE_CRYSTAL) || ((cmd) == SURFACE_ICE))
 #define SURFACE_IS_HANGABLE(cmd) (((cmd) == SURFACE_HANGABLE_MESH))
 
