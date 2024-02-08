@@ -415,6 +415,27 @@ u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
     return (direction != CMM_DIRECTION_DOWN);
 }
 
+s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
+    s32 curMatType;
+    if ((direction != CMM_DIRECTION_UP) || !HAS_TOPMAT(curMat)) {
+        curMatType = MATERIAL(curMat).type;
+    } else {
+        curMatType = TOPMAT(curMat).type;
+    }
+
+    s32 cond = (curMatType < MAT_CUTOUT) ? 
+            (TOPMAT(otherMat).type < MAT_CUTOUT) : // If opaque side
+            (direction != CMM_DIRECTION_DOWN);     // If transparent side
+    s32 otherMatType;
+    if (!HAS_TOPMAT(otherMat) || cond) {
+        otherMatType = MATERIAL(otherMat).type;
+    } else {
+        otherMatType = TOPMAT(otherMat).type;
+    }
+
+    return ((otherMatType >= MAT_CUTOUT) && (curMat != otherMat));
+}
+
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape == CMM_FACESHAPE_EMPTY) return FALSE;
     if (cmm_render_culling_off) return FALSE;
@@ -436,18 +457,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
             break;
     }
 
-    s32 otherMat = get_grid_tile(newpos)->mat;
-    s32 curMat = get_grid_tile(pos)->mat;
-    if ((direction != CMM_DIRECTION_DOWN) || !HAS_TOPMAT(otherMat)) {
-        if (MATERIAL(otherMat).type >= MAT_CUTOUT) {
-            if (curMat != otherMat) return FALSE;
-        }
-    } else {
-        if (TOPMAT(otherMat).type >= MAT_CUTOUT) {
-            if (curMat != otherMat) return FALSE;
-        }
-    }
-
+    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(newpos)->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(newpos, direction);
 
     if (otherFaceshape == CMM_FACESHAPE_EMPTY) return FALSE;
@@ -780,12 +790,9 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(newpos)) return TRUE;
 
-    u8 aboveBlockMatType = MATERIAL(get_grid_tile(newpos)->mat).type;
-    if (aboveBlockMatType >= MAT_CUTOUT) {
-        u8 curBlockMatType = MATERIAL(get_grid_tile(pos)->mat).type;
-        if (curBlockMatType != aboveBlockMatType) return TRUE;
-    } 
-    u8 otherFaceshape;
+    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(newpos)->mat, CMM_DIRECTION_UP)) return TRUE;
+
+    s32 otherFaceshape;
     switch (grassType) {
         case CMM_GROWTH_UNDERSLOPE:
         case CMM_GROWTH_UNDERSLOPE_L:
