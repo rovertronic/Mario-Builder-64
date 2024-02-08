@@ -758,14 +758,8 @@ s16 look_down_slopes(s16 camYaw) {
 
     if (floor != NULL) {
         if (floor->type != SURFACE_WALL_MISC && floorDY > 0) {
-            Vec3f normal;
-            get_surface_normal(normal, floor);
-            if (normal[2] == 0.f && floorDY < 100.f) {
-                pitch = 0x05B0;
-            } else {
                 // Add the slope's angle of declination to the pitch
-                pitch += atan2s(40.f, floorDY);
-            }
+            pitch += atan2s(40.f, floorDY);
         }
     }
 
@@ -1154,7 +1148,7 @@ void mode_8_directions_camera(struct Camera *c) {
     //     zoomie = 800.0f;
     // }
 
-    radial_camera_input(c);
+    //radial_camera_input(c);
 
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         s8DirModeYawOffset -= DEGREES(45);
@@ -1211,7 +1205,7 @@ void mode_8_directions_camera(struct Camera *c) {
     //     break;
     //     }
 
-
+/***/
     raycast_mode_find_cam_collision = FALSE;
     find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     raycast_mode_find_cam_collision = TRUE;
