@@ -1155,47 +1155,69 @@ void render_water(s8 pos[3]) {
         }
     }
 }
+struct cmm_boundary_quad {
+    s8 vtx[4][3];
+    u8 alpha[4];
+};
+
+struct cmm_boundary_quad floor_boundary[] = {
+    {{{32, 0, 32}, {32, 0, 0}, {0, 0, 32}, {0, 0, 0}}, {0xFF, 0xFF, 0xFF, 0xFF}},
+    {{{0, 0, 32}, {0, 0, 0}, {-32, 0, 32}, {-32, 0, 0}}, {0xFF, 0xFF, 0xFF, 0xFF}},
+    {{{32, 0, 0}, {32, 0, -32}, {0, 0, 0}, {0, 0, -32}}, {0xFF, 0xFF, 0xFF, 0xFF}},
+    {{{0, 0, 0}, {0, 0, -32}, {-32, 0, 0}, {-32, 0, -32}}, {0xFF, 0xFF, 0xFF, 0xFF}},
+};
+
+struct cmm_boundary_quad floor_edge_boundary[] = {
+    {{{48, 0, 32}, {48, 0, 0}, {32, 0, 32}, {32, 0, 0}}, {0x00, 0x00, 0xFF, 0xFF}},
+    {{{48, 0, 32}, {32, 0, 32}, {48, 0, 48}, {32, 0, 48}}, {0x00, 0xFF, 0x00, 0x00}},
+    {{{32, 0, 48}, {32, 0, 32}, {0, 0, 48}, {0, 0, 32}}, {0x00, 0xFF, 0x00, 0xFF}},
+
+    {{{-32, 0, 32}, {-32, 0, 0}, {-48, 0, 32}, {-48, 0, 0}}, {0xFF, 0xFF, 0x00, 0x00}},
+    {{{-32, 0, 48}, {-32, 0, 32}, {-48, 0, 48}, {-48, 0, 32}}, {0x00, 0xFF, 0x00, 0x00}},
+    {{{0, 0, 48}, {0, 0, 32}, {-32, 0, 48}, {-32, 0, 32}}, {0x00, 0xFF, 0x00, 0xFF}},
+
+    {{{48, 0, 0}, {48, 0, -32}, {32, 0, 0}, {32, 0, -32}}, {0x00, 0x00, 0xFF, 0xFF}},
+    {{{48, 0, -32}, {48, 0, -48}, {32, 0, -32}, {32, 0, -48}}, {0x00, 0x00, 0xFF, 0x00}},
+    {{{32, 0, -32}, {32, 0, -48}, {0, 0, -32}, {0, 0, -48}}, {0xFF, 0x00, 0xFF, 0x00}},
+
+    {{{-32, 0, 0}, {-32, 0, -32}, {-48, 0, 0}, {-48, 0, -32}}, {0xFF, 0xFF, 0x00, 0x00}},
+    {{{-32, 0, -48}, {-48, 0, -48}, {-32, 0, -32}, {-48, 0, -32}}, {0x00, 0x00, 0xFF, 0x00}},
+    {{{0, 0, -32}, {0, 0, -48}, {-32, 0, -32}, {-32, 0, -48}}, {0xFF, 0x00, 0xFF, 0x00}},
+};
+
+void render_boundary_quad(struct cmm_boundary_quad *quad, s16 yOff) {
+    s32 lateralScale = 4 * cmm_grid_size;
+    f32 xMid = (quad->vtx[0][0] + quad->vtx[2][0]) / 2;
+    f32 zMid = (quad->vtx[0][2] + quad->vtx[1][2]) / 2;
+    for (u32 i = 0; i < 4; i++) {
+        s16 v = (quad->vtx[i][0] - xMid)*lateralScale*-4 + cmm_uv_offset;
+        s16 u = (quad->vtx[i][2] - zMid)*lateralScale*-4 + cmm_uv_offset;
+        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*lateralScale, quad->vtx[i][1] + yOff, quad->vtx[i][2]*lateralScale,
+            u, v, 0x0, 0x7F, 0x0, quad->alpha[i]);
+    }
+    if (cmm_render_flip_normals) {
+        cache_tri(0, 2, 1);
+        cache_tri(1, 2, 3);
+    } else {
+        cache_tri(0, 1, 2);
+        cache_tri(1, 3, 2);
+    }
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
+}
 
 void render_floor(s16 y) {
-    s16 vertex = 128 * cmm_grid_size;
-    s16 uv = 256 * cmm_grid_size;
-
-    s16 posUv = uv + cmm_uv_offset;
-    s16 negUv = -uv + cmm_uv_offset;
-    make_vertex(cmm_curr_vtx, 0, vertex, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 1, vertex, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 2,      0, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 3,      0, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-
-    make_vertex(cmm_curr_vtx, 4,       0, y, vertex, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 5,       0, y,      0, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 6, -vertex, y, vertex, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 7, -vertex, y,      0, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-
-    make_vertex(cmm_curr_vtx, 8,  vertex, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 9,  vertex, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 10,      0, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 11,      0, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-
-    make_vertex(cmm_curr_vtx, 12,       0, y,       0, negUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 13,       0, y, -vertex, posUv, negUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 14, -vertex, y,       0, negUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-    make_vertex(cmm_curr_vtx, 15, -vertex, y, -vertex, posUv, posUv, 0x0, 0x7F, 0x0, 0xFF);
-
-    gSPVertex(&cmm_curr_gfx[cmm_gfx_index++], cmm_curr_vtx, 16, 0);
-
-    if (cmm_render_flip_normals) {
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 2, 1, 0, 1, 2, 3, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 6, 5, 0, 5, 6, 7, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 10, 9, 0, 9, 10, 11, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 14, 13, 0, 13, 14, 15, 0);
-    } else {
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 0, 1, 2, 0, 1, 3, 2, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 4, 5, 6, 0, 5, 7, 6, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 8, 9, 10, 0, 9, 11, 10, 0);
-        gSP2Triangles(&cmm_curr_gfx[cmm_gfx_index++], 12, 13, 14, 0, 13, 15, 14, 0);
+    for (u32 i = 0; i < 4; i++) {
+        render_boundary_quad(&floor_boundary[i], y);
     }
-    cmm_curr_vtx += 16;
+    display_cached_tris();
+}
+
+void render_floor_edge(s16 y) {
+    for (u32 i = 0; i < 12; i++) {
+        render_boundary_quad(&floor_edge_boundary[i], y);
+    }
+    display_cached_tris();
 }
 
 void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
@@ -1423,13 +1445,14 @@ void generate_terrain_gfx(void) {
     //BOTTOM PLANE
     if (cmm_lopt_planeenabled) {
         u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
+        struct cmm_material *mat;
         if (HAS_TOPMAT(planeMat)) {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).gfx);
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).type, FALSE);
+            mat = &TOPMAT(planeMat);
         } else {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).gfx);
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(planeMat).type, FALSE);
+            mat = &MATERIAL(planeMat);
         }
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], mat->type, FALSE);
         render_floor(-32*TILE_SIZE);
     }
 
@@ -1486,6 +1509,18 @@ void generate_terrain_gfx(void) {
     retroland_filter_on();
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
+
+    if (cmm_lopt_planeenabled) {
+        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
+        struct cmm_material *mat;
+        if (HAS_TOPMAT(planeMat)) {
+            mat = &TOPMAT(planeMat);
+        } else {
+            mat = &MATERIAL(planeMat);
+        }
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
+        render_floor_edge(-32*TILE_SIZE);
+    }
 
     // Render main water plane, top side
     if (cmm_lopt_waterlevel != 0) {
