@@ -314,7 +314,21 @@ struct cmm_level_save_header {
     u8 version;
     char author[31];
 
-    u8 option[20];
+    // Level options
+    u8 costume;
+    u8 seq;
+    u8 envfx;
+    u8 theme;
+    u8 bg;
+    u8 plane;
+    u8 planeenabled;
+    u8 coinstar;
+    u8 size;
+    u8 waterlevel;
+    u8 secret;
+    u8 game;
+
+    u8 padding[20];
     u16 tile_count;
     u16 object_count;
 

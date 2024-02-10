@@ -140,6 +140,7 @@ u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
 u8 cmm_lopt_plane = 0;
+u8 cmm_lopt_planeenabled = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
 u8 cmm_newsize = 0; // Used for changing level sizes
@@ -444,7 +445,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(newpos)) {
-        if (cmm_lopt_plane == 0) return FALSE;
+        if (!cmm_lopt_planeenabled) return FALSE;
         if (direction == CMM_DIRECTION_UP) return FALSE;
         return TRUE;
     }
@@ -1025,7 +1026,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
-        } else if ((cmm_lopt_plane != 0) && (adjacentPos[1] == -1)) { // Culling for bottom
+        } else if (cmm_lopt_planeenabled && (adjacentPos[1] == -1)) { // Culling for bottom
             for (u32 rot = 0; rot < 5; rot++) {
                 connections[rot] |= (1 << 2);
             }
@@ -1100,7 +1101,7 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
 
     if (!coords_in_range(adjacentPos)) {
-        if (cmm_lopt_plane == 0) {
+        if (!cmm_lopt_planeenabled) {
             return isFullblock ? 2 : 1;
         }
         // If out of bounds, cull if any other direction
@@ -1420,8 +1421,8 @@ void generate_terrain_gfx(void) {
     process_tiles(PROCESS_TILE_VPLEX);
 
     //BOTTOM PLANE
-    if (cmm_lopt_plane != 0) {
-        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+    if (cmm_lopt_planeenabled) {
+        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
         if (HAS_TOPMAT(planeMat)) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(planeMat).type, FALSE);
@@ -1767,7 +1768,7 @@ void generate_terrain_collision(void) {
 
     TerrainData floorY;
     TerrainData newVtxs[4][3];
-    if (cmm_lopt_plane == 0) {
+    if (!cmm_lopt_planeenabled) {
         floorY = -32*TILE_SIZE- 2500;
         cmm_curr_coltype = SURFACE_DEATH_PLANE;
         for (u32 i = 0; i < 4; i++) {
@@ -1777,7 +1778,7 @@ void generate_terrain_collision(void) {
         }
     } else {
         floorY = -32*TILE_SIZE;
-        u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane - 1];
+        u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
         if (HAS_TOPMAT(mat)) {
             cmm_curr_coltype = TOPMAT(mat).col;
         } else {
@@ -1932,9 +1933,9 @@ void generate_object_preview(void) {
 
     u32 length = MIN(totalCoins / 20, 50);
     if (cmm_lopt_theme == CMM_GAME_BTCM) {
-        cmm_settings_general_buttons[GENERAL_COINSTAR_INDEX].size = length + 1;
+        cmm_settings_misc_buttons[MISC_COINSTAR_INDEX].size = length + 1;
     } else {
-        cmm_settings_general_buttons_vanilla[GENERALV_COINSTAR_INDEX].size = length + 1;
+        cmm_settings_misc_buttons_vanilla[MISCV_COINSTAR_INDEX].size = length + 1;
     }
 
     if (cmm_lopt_coinstar > length) {
@@ -2378,17 +2379,18 @@ void save_level(void) {
     cmm_save.tile_count = cmm_tile_count;
     cmm_save.object_count = cmm_object_count;
 
-    cmm_save.option[0] = cmm_lopt_costume;
-    cmm_save.option[1] = cmm_lopt_seq;
-    cmm_save.option[2] = cmm_lopt_envfx;
-    cmm_save.option[3] = cmm_lopt_theme;
-    cmm_save.option[4] = cmm_lopt_bg;
-    cmm_save.option[5] = cmm_lopt_plane;
-    cmm_save.option[6] = cmm_lopt_coinstar;
-    cmm_save.option[7] = cmm_lopt_size;
-    cmm_save.option[8] = cmm_lopt_waterlevel;
-    cmm_save.option[9] = cmm_lopt_secret;
-    cmm_save.option[19] = cmm_lopt_game;
+    cmm_save.costume = cmm_lopt_costume;
+    cmm_save.seq = cmm_lopt_seq;
+    cmm_save.envfx = cmm_lopt_envfx;
+    cmm_save.theme = cmm_lopt_theme;
+    cmm_save.bg = cmm_lopt_bg;
+    cmm_save.plane = cmm_lopt_plane;
+    cmm_save.planeenabled = cmm_lopt_planeenabled;
+    cmm_save.coinstar = cmm_lopt_coinstar;
+    cmm_save.size = cmm_lopt_size;
+    cmm_save.waterlevel = cmm_lopt_waterlevel;
+    cmm_save.secret = cmm_lopt_secret;
+    cmm_save.game = cmm_lopt_game;
 
     for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
         for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
@@ -2488,14 +2490,15 @@ void load_level(void) {
         cmm_object_data[0].y = cmm_templates[cmm_lopt_template].spawnHeight;
         cmm_object_data[0].type = OBJECT_TYPE_SPAWN;
 
-        cmm_save.option[19] = cmm_lopt_game;
-        cmm_save.option[7] = cmm_lopt_size;
+        cmm_save.game = cmm_lopt_game;
+        cmm_save.size = cmm_lopt_size;
 
-        cmm_save.option[1] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
-        cmm_save.option[2] = cmm_templates[cmm_lopt_template].envfx;
-        cmm_save.option[3] = cmm_templates[cmm_lopt_template].theme;
-        cmm_save.option[4] = cmm_templates[cmm_lopt_template].bg;
-        cmm_save.option[5] = cmm_templates[cmm_lopt_template].plane;
+        cmm_save.seq = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
+        cmm_save.envfx = cmm_templates[cmm_lopt_template].envfx;
+        cmm_save.theme = cmm_templates[cmm_lopt_template].theme;
+        cmm_save.bg = cmm_templates[cmm_lopt_template].bg;
+        cmm_save.plane = cmm_templates[cmm_lopt_template].plane;
+        cmm_save.planeenabled = TRUE;
 
         if (cmm_templates[cmm_lopt_template].platform) {
             u8 i = 0;
@@ -2519,18 +2522,19 @@ void load_level(void) {
     cmm_tile_count = cmm_save.tile_count;
     cmm_object_count = cmm_save.object_count;
 
-    cmm_lopt_costume = cmm_save.option[0];
+    cmm_lopt_costume = cmm_save.costume;
 
-    cmm_lopt_seq = cmm_save.option[1];
-    cmm_lopt_envfx = cmm_save.option[2];
-    cmm_lopt_theme = cmm_save.option[3];
-    cmm_lopt_bg = cmm_save.option[4];
+    cmm_lopt_seq = cmm_save.seq;
+    cmm_lopt_envfx = cmm_save.envfx;
+    cmm_lopt_theme = cmm_save.theme;
+    cmm_lopt_bg = cmm_save.bg;
 
-    cmm_lopt_plane = cmm_save.option[5];
-    cmm_lopt_coinstar = cmm_save.option[6];
-    cmm_lopt_size = cmm_save.option[7];
-    cmm_lopt_waterlevel = cmm_save.option[8];
-    cmm_lopt_secret = cmm_save.option[9];
+    cmm_lopt_plane = cmm_save.plane;
+    cmm_lopt_planeenabled = cmm_save.planeenabled;
+    cmm_lopt_coinstar = cmm_save.coinstar;
+    cmm_lopt_size = cmm_save.size;
+    cmm_lopt_waterlevel = cmm_save.waterlevel;
+    cmm_lopt_secret = cmm_save.secret;
 
     cmm_newsize = cmm_lopt_size;
     switch (cmm_lopt_size) {
@@ -2548,7 +2552,7 @@ void load_level(void) {
             break;
     }
 
-    cmm_lopt_game = cmm_save.option[19];
+    cmm_lopt_game = cmm_save.game;
 
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));

@@ -2140,34 +2140,41 @@ extern void generate_terrain_gfx(void);
 extern void music_category_changed(void);
 extern void song_changed(void);
 
-struct cmm_settings_button cmm_settings_general_buttons[] = {
+struct cmm_settings_button cmm_settings_misc_buttons[] = {
+    {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
+    {"Water Level:", &cmm_lopt_waterlevel, NULL,               65,               cmm_get_waterlevel_name, generate_terrain_gfx},
     {"Costume:", &cmm_lopt_costume, cmm_costume_string_table, ARRAY_COUNT(cmm_costume_string_table), NULL, NULL},
-    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
-    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
-    {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
 };
-#define GENERAL_COSTUME_INDEX 0
-#define GENERAL_EFFECT_INDEX 1
-#define GENERAL_SKYBOX_INDEX 2
-#define GENERAL_COINSTAR_INDEX 3
 
-struct cmm_settings_button cmm_settings_general_buttons_vanilla[] = {
-    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
-    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+#define MISC_COINSTAR_INDEX 0
+#define MISC_WATER_INDEX 1
+#define MISC_COSTUME_INDEX 2
+
+struct cmm_settings_button cmm_settings_misc_buttons_vanilla[] = {
     {"Coin Star:", &cmm_lopt_coinstar, NULL, 1, cmm_get_coinstar_str, NULL},
-};
-#define GENERALV_EFFECT_INDEX 0
-#define GENERALV_SKYBOX_INDEX 1
-#define GENERALV_COINSTAR_INDEX 2
-
-struct cmm_settings_button cmm_settings_terrain_buttons[] = {
-    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table) - 1, NULL, reload_theme},
-    {"Floor:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, generate_terrain_gfx}, // Filled in by code
     {"Water Level:", &cmm_lopt_waterlevel, NULL,               65,               cmm_get_waterlevel_name, generate_terrain_gfx},
 };
-#define TERRAIN_THEME_INDEX 0
-#define TERRAIN_FLOOR_INDEX 1
-#define TERRAIN_WATER_INDEX 2
+#define MISCV_COINSTAR_INDEX 0
+#define MISCV_WATER_INDEX 1
+
+struct cmm_settings_button cmm_settings_env_buttons[] = {
+    {"Theme:",   &cmm_lopt_theme,   cmm_theme_string_table,   ARRAY_COUNT(cmm_theme_string_table) - 1, NULL, reload_theme},
+    {"Skybox:",  &cmm_lopt_bg,      cmm_bg_string_table,      ARRAY_COUNT(cmm_bg_string_table),    NULL, reload_bg},
+    {"Effect:",  &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
+};
+#define ENV_THEME_INDEX 0
+#define ENV_SKYBOX_INDEX 1
+#define ENV_EFFECT_INDEX 2
+
+struct cmm_settings_button cmm_settings_boundary_buttons[] = {
+    {"Boundary Height:", &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
+    {"Boundary Tile:", &cmm_lopt_envfx,   cmm_envfx_string_table,   ARRAY_COUNT(cmm_envfx_string_table), NULL, NULL},
+    {NULL, NULL,   NULL,   0, NULL, NULL}, // Enable Floor button
+    {"Floor Tile:",   &cmm_lopt_plane,   NULL,                     0,                     cmm_get_floor_name, generate_terrain_gfx}, // Filled in by code
+};
+
+#define BOUNDARY_ENABLE_FLOOR_INDEX 2
+#define BOUNDARY_FLOOR_INDEX 3
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
     {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
@@ -2220,9 +2227,10 @@ struct cmm_settings_button cmm_settings_other_selectors[] = {
 };
 
 char *cmm_settings_menu_names[] = {
-    "General",
-    "Terrain",
+    "Environment",
+    "Level Boundary",
     "Music",
+    "Miscellaneous",
     "System",
 };
 
@@ -2233,25 +2241,35 @@ char *cmm_settings_system_buttons[] = {
     "Apply Size Change (Dangerous!)",
 };
 
-u8 cmm_settings_menu_lengths[] = {
-    ARRAY_COUNT(cmm_settings_general_buttons),
-    ARRAY_COUNT(cmm_settings_terrain_buttons),
-    ARRAY_COUNT(cmm_settings_music_buttons),
-    ARRAY_COUNT(cmm_settings_system_buttons),
-};
 
-void draw_cmm_settings_general(f32,f32);
-void draw_cmm_settings_general_vanilla(f32,f32);
-void draw_cmm_settings_terrain(f32,f32);
+void draw_cmm_settings_misc(f32,f32);
+void draw_cmm_settings_misc_vanilla(f32,f32);
+void draw_cmm_settings_env(f32,f32);
+void draw_cmm_settings_boundary(f32,f32);
 void draw_cmm_settings_music(f32,f32);
 void draw_cmm_settings_system(f32,f32);
 
 void (*cmm_settings_menus[])(f32, f32) = {
-    draw_cmm_settings_general,
-    draw_cmm_settings_terrain,
+    draw_cmm_settings_env,
+    draw_cmm_settings_boundary,
     draw_cmm_settings_music,
+    draw_cmm_settings_misc,
     draw_cmm_settings_system,
 };
+
+u8 cmm_settings_menu_lengths[] = {
+    ARRAY_COUNT(cmm_settings_env_buttons),
+    ARRAY_COUNT(cmm_settings_boundary_buttons),
+    ARRAY_COUNT(cmm_settings_music_buttons),
+    ARRAY_COUNT(cmm_settings_misc_buttons),
+    ARRAY_COUNT(cmm_settings_system_buttons),
+};
+
+#define SETTINGS_ENV_INDEX 0
+#define SETTINGS_BOUNDARY_INDEX 1
+#define SETTINGS_MUSIC_INDEX 2
+#define SETTINGS_MISC_INDEX 3
+#define SETTINGS_SYSTEM_INDEX 4
 
 // These get copied over to the above array
 struct cmm_settings_button cmm_settings_music_albums[] = {
@@ -2295,11 +2313,11 @@ struct cmm_template {
 };
 
 struct cmm_template cmm_templates[] = {
-    {{0, 15}, 0, 0, 0, 1,     2, FALSE},   // Grassy - BoB, Floating Farm
-    {{4, 46}, 0, 6, 1, 1,     2, FALSE},   // Desert - LLL, Dry Dry Desert
-    {{4, 14}, 1, 2, 2, 2,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
-    {{2, 28}, 0, 0, 8, 1,     2, FALSE},   // Water -  DDD, Sky and Sea
-    {{5, 38}, 2, 5, 6, 1,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
+    {{0, 15}, 0, 0, 0, 0,     2, FALSE},   // Grassy - BoB, Floating Farm
+    {{4, 46}, 0, 6, 1, 0,     2, FALSE},   // Desert - LLL, Dry Dry Desert
+    {{4, 14}, 1, 2, 2, 1,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
+    {{2, 28}, 0, 0, 8, 0,     2, FALSE},   // Water -  DDD, Sky and Sea
+    {{5, 38}, 2, 5, 6, 0,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {
@@ -2307,8 +2325,6 @@ struct cmm_settings_button cmm_mode_settings_buttons[] = {
     {"Size:", &cmm_lopt_size, cmm_levelsize_string_table, ARRAY_COUNT(cmm_levelsize_string_table), NULL, NULL},
     {"Template:", &cmm_lopt_template, cmm_template_string_table, ARRAY_COUNT(cmm_template_string_table), NULL, NULL},
 };
-
-#define SETTINGS_SIZE ARRAY_COUNT(cmm_settings_general_buttons)
 
 char *cmm_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
