@@ -132,22 +132,35 @@ void bhv_coin_loop(void) {
     }
 
     if (floor != NULL) {
-        if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
-            o->oAction = BOUNCING_COIN_ACT_BOUNCING;
-        }
-        if (o->oAction == BOUNCING_COIN_ACT_BOUNCING) {
-            o->oBounciness = 0;
-            Vec3f normal;
-            get_surface_normal(normal, floor);
-            if (normal[1] < 0.9f) {
-                s16 targetYaw = SURFACE_YAW(floor);
-                cur_obj_rotate_yaw_toward(targetYaw, 0x400);
-            }
-        }
-    }
+        switch (o->oAction) {
+            case BOUNCING_COIN_ACT_FALLING:
+                if (o->oTimer == 0) {
+                    cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+                }
+                if (o->oMoveFlags & OBJ_MOVE_LANDED) {
+                    o->oAction = BOUNCING_COIN_ACT_BOUNCING;
+                }
+                
+                break;
 
-    if (o->oTimer == 0) {
-        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+            case BOUNCING_COIN_ACT_BOUNCING:
+                o->oBounciness = 0;
+                Vec3f normal;
+                get_surface_normal(normal, floor);
+                if (normal[1] < 0.9f) {
+                    s16 targetYaw = SURFACE_YAW(floor);
+                    cur_obj_rotate_yaw_toward(targetYaw, 0x400);
+                }
+                break;
+
+            case OBJ_ACT_LAVA_DEATH:
+#ifdef COIN_LAVA_FLICKER
+                obj_flicker_and_disappear(o, 0);
+#else
+                obj_mark_for_deletion(o);
+#endif
+                break;
+        }
     }
 
     if (o->oVelY <= 0) {
@@ -155,16 +168,11 @@ void bhv_coin_loop(void) {
     }
 
     if (o->oMoveFlags & OBJ_MOVE_LANDED) {
-#ifdef COIN_LAVA_FLICKER
-        if ((o->oMoveFlags & OBJ_MOVE_ABOVE_DEATH_BARRIER)
-        || ((o->oMoveFlags & OBJ_MOVE_ABOVE_LAVA) && cur_obj_wait_then_blink(0, 20))) {
+        if (o->oMoveFlags & OBJ_MOVE_ABOVE_DEATH_BARRIER) {
             obj_mark_for_deletion(o);
+        } else if (o->oMoveFlags & OBJ_MOVE_ABOVE_LAVA) {
+            o->oAction = OBJ_ACT_LAVA_DEATH;
         }
-#else
-        if (o->oMoveFlags & (OBJ_MOVE_ABOVE_DEATH_BARRIER | OBJ_MOVE_ABOVE_LAVA)) {
-            obj_mark_for_deletion(o);
-        }
-#endif
     }
 
     if (o->oMoveFlags & OBJ_MOVE_BOUNCE) {
