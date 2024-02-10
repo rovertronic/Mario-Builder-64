@@ -1512,7 +1512,6 @@ void generate_terrain_gfx(void) {
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
 
     if (cmm_lopt_planeenabled) {
@@ -1527,6 +1526,7 @@ void generate_terrain_gfx(void) {
         render_floor_edge(-32*TILE_SIZE);
     }
 
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
     // Render main water plane, top side
     if (cmm_lopt_waterlevel != 0) {
         render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);

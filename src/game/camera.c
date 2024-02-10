@@ -1148,7 +1148,7 @@ void mode_8_directions_camera(struct Camera *c) {
     //     zoomie = 800.0f;
     // }
 
-    //radial_camera_input(c);
+    radial_camera_input(c);
 
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         s8DirModeYawOffset -= DEGREES(45);
