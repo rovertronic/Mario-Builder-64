@@ -1253,8 +1253,8 @@ void process_tiles(u32 processTileRenderMode) {
             cmm_growth_render_type = 0;
             startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
             endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], poleMatType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
             for (u32 i = startIndex; i < endIndex; i++) {
                 s8 pos[3];
                 vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -1278,8 +1278,8 @@ void process_tiles(u32 processTileRenderMode) {
                 goto skip_maintex;
             }
 
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
 
             if ((matType == MAT_CUTOUT) || (cmm_curr_mat_has_topside && (TOPMAT(mat).type >= MAT_CUTOUT))) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
@@ -1344,8 +1344,8 @@ void process_tiles(u32 processTileRenderMode) {
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
-            PROC_RENDER( gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); \
-                         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topmatType, FALSE); )
+            PROC_RENDER( set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topmatType, FALSE); \
+                         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
 
             cmm_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
@@ -1416,8 +1416,8 @@ void process_boundary(u32 processRenderMode) {
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32);
         }
     }
@@ -1438,6 +1438,7 @@ void process_boundary(u32 processRenderMode) {
         }
 
         Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+        if (sidetex) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
@@ -1450,9 +1451,11 @@ void process_boundary(u32 processRenderMode) {
             }
 
             if (sidetex) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+                // Render rim of regular material before decal
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1);
                 set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY - 1, topY);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1);
             }
         }
         // Fade if no floor
@@ -1470,12 +1473,12 @@ void process_boundary(u32 processRenderMode) {
         if (do_process(&sidematType, processRenderMode)) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -36, -32);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32);
 
             Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
             if (sidetex) {
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                 set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32);
             }
         }
@@ -1483,7 +1486,7 @@ void process_boundary(u32 processRenderMode) {
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -36);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -33);
         }
         cmm_render_flip_normals = FALSE;
     }
@@ -1546,8 +1549,8 @@ void generate_terrain_gfx(void) {
     u8 connections[5];
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
-    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+    gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
@@ -1652,8 +1655,8 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     u8 matType = cmm_mat_table[matid].type;
 
     if (do_process(&matType, processType)) {
-        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         if (((matType == MAT_CUTOUT) ||
             (cmm_curr_mat_has_topside && (cmm_mat_table[topmatid].type == MAT_CUTOUT)))
             && !disableZ) {
@@ -1689,8 +1692,8 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
         }
         cmm_growth_render_type = 1;
 
-        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topMatType, disableZ);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }
@@ -1857,13 +1860,24 @@ void generate_poles(void) {
     main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
 }
 
-
-TerrainData floorVtxs[4][3] = {
-    {-1, 0, 1},
-    {1, 0, 1},
-    {-1, 0, -1},
-    {1, 0, -1},
-};
+void generate_boundary_collision(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, s16 size, u32 reverse) {
+    TerrainData newVtxs[4][3];
+    s16 yHeight = yTop - yBottom;
+    for (u32 i = 0; i < count; i++) {
+        for (u32 j = 0; j < 4; j++) {
+            newVtxs[j][0] = quadList[i].vtx[j][0]*size*4;
+            newVtxs[j][1] = (quadList[i].vtx[j][1]*yHeight + yBottom)*TILE_SIZE;
+            newVtxs[j][2] = quadList[i].vtx[j][2]*size*4;
+        }
+        if (reverse) {
+            cmm_create_surface(newVtxs[0], newVtxs[2], newVtxs[1]);
+            cmm_create_surface(newVtxs[1], newVtxs[2], newVtxs[3]);
+        } else {
+            cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
+            cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
+        }
+    }
+}
 
 void generate_terrain_collision(void) {
     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
@@ -1872,35 +1886,27 @@ void generate_terrain_collision(void) {
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
 
-    TerrainData floorY;
-    TerrainData newVtxs[4][3];
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_DEATH_PLANE) {
-        floorY = -32*TILE_SIZE- 2500;
         u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) ? cmm_grid_size : 128;
         cmm_curr_coltype = SURFACE_DEATH_PLANE;
-        for (u32 i = 0; i < 4; i++) {
-            newVtxs[i][1] = floorY;
-            newVtxs[i][0] = floorVtxs[i][0] * deathsize * 128;
-            newVtxs[i][2] = floorVtxs[i][2] * deathsize * 128;
-        }
-        cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
-        cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
+        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
     }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
-        floorY = -32*TILE_SIZE;
-        u8 mat = cmm_lopt_boundary_mat;
-        if (HAS_TOPMAT(mat)) {
-            cmm_curr_coltype = TOPMAT(mat).col;
+        if (HAS_TOPMAT(cmm_lopt_boundary_mat)) {
+            cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
         } else {
-            cmm_curr_coltype = MATERIAL(mat).col;
+            cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
         }
-        for (u32 i = 0; i < 4; i++) {
-            newVtxs[i][1] = floorY;
-            newVtxs[i][0] = floorVtxs[i][0] * cmm_grid_size * 128;
-            newVtxs[i][2] = floorVtxs[i][2] * cmm_grid_size * 128;
-        }
-        cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
-        cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
+        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, cmm_grid_size, FALSE);
+    }
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
+        cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
+        s32 bottomY = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
+        s32 topY = cmm_lopt_boundary_height-32;
+        generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, cmm_grid_size, FALSE);
+    } else if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
+        cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
+        generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -32, cmm_grid_size, TRUE);
     }
 
     process_tiles(0);
