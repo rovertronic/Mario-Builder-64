@@ -139,8 +139,9 @@ u8 cmm_lopt_seq_song = 0; // Song index within category
 u8 cmm_lopt_envfx = 0;
 u8 cmm_lopt_theme = 0;
 u8 cmm_lopt_bg = 0;
-u8 cmm_lopt_plane = 0;
-u8 cmm_lopt_planeenabled = 0;
+u8 cmm_lopt_boundary_mat = 0;
+u8 cmm_lopt_boundary = 0;
+u8 cmm_lopt_boundary_height = 0;
 u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
 u8 cmm_lopt_size = 0;
 u8 cmm_newsize = 0; // Used for changing level sizes
@@ -445,9 +446,11 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(newpos)) {
-        if (!cmm_lopt_planeenabled) return FALSE;
         if (direction == CMM_DIRECTION_UP) return FALSE;
-        return TRUE;
+        if (direction == CMM_DIRECTION_DOWN) {
+            return (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) != 0;
+        }
+        return ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height));
     }
     s32 tileType = get_grid_tile(newpos)->type - 1;
     switch(tileType) {
@@ -1026,7 +1029,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
-        } else if (cmm_lopt_planeenabled && (adjacentPos[1] == -1)) { // Culling for bottom
+        } else if ((adjacentPos[1] == -1) && (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) { // Culling for bottom
             for (u32 rot = 0; rot < 5; rot++) {
                 connections[rot] |= (1 << 2);
             }
@@ -1101,12 +1104,12 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
 
     if (!coords_in_range(adjacentPos)) {
-        if (!cmm_lopt_planeenabled) {
-            return isFullblock ? 2 : 1;
+        if (dir == CMM_DIRECTION_UP) return 1;
+        u32 type = isFullblock ? 2 : 1;
+        if (dir == CMM_DIRECTION_DOWN) {
+            return (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? 0 : type;
         }
-        // If out of bounds, cull if any other direction
-        // Normal (low side) if OoB is above
-        return (dir == CMM_DIRECTION_UP);
+        return ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height)) ? 0 : type;
     }
     if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_CULL) return 0;
 
@@ -1375,7 +1378,7 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight) {
         if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
         if (yHeight % 2) v += 512; // offset for odd number of blocks
         u8 alpha = 255;
-        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
+        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32) || ((y <= -40) && (quad->vtx[i][1] == 0))) {
             alpha = 0;
         }
         make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1]*yHeight + y)*TILE_SIZE, quad->vtx[i][2]*cmm_grid_size*4,
@@ -1400,53 +1403,112 @@ void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom,
 }
 
 void process_boundary(u32 processRenderMode) {
-    if (cmm_lopt_planeenabled) {
-        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
-        struct cmm_material *mat, *sidemat;
-        if (HAS_TOPMAT(planeMat)) {
-            mat = &TOPMAT(planeMat);
-        } else {
-            mat = &MATERIAL(planeMat);
-        }
-        sidemat = &MATERIAL(planeMat);
+    u8 planeMat = cmm_lopt_boundary_mat;
+    struct cmm_material *mat, *sidemat;
+    if (HAS_TOPMAT(planeMat)) {
+        mat = &TOPMAT(planeMat);
+    } else {
+        mat = &MATERIAL(planeMat);
+    }
+    sidemat = &MATERIAL(planeMat);
 
-        // Bottom floor
+    // Main floor
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
             render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32);
         }
+    }
 
+    // Inner walls
+    if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
         u8 sidematType = sidemat->type;
-        if (do_process(&sidematType, processRenderMode)) {
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+        u32 renderWalls = TRUE; // Whether to render main solid walls
+        u32 renderFade = FALSE; // Whether to render fade at bottom
+        s32 bottomY = -32;
+        s32 topY = cmm_lopt_boundary_height-32;
+        
+        if (!(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) {
+            renderFade = TRUE;
+            bottomY -= 1; // Make sure decal has a solid face to print on
+        } else {
+            renderWalls = (cmm_lopt_boundary_height > 0);
+        }
+
+        Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+
+        if (renderWalls && do_process(&sidematType, processRenderMode)) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -32, -29);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            if (topY > bottomY + 32) {
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, bottomY + 32);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY + 32, topY);
+            } else {
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY);
+            }
+
+            if (sidetex) {
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY - 1, topY);
+            }
+        }
+        // Fade if no floor
+        if (renderFade && (processRenderMode == PROCESS_TILE_TRANSPARENT)) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
+        }
+    }
+
+    // Outer walls
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
+        u8 sidematType = sidemat->type;
+        cmm_render_flip_normals = TRUE;
+        if (do_process(&sidematType, processRenderMode)) {
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -36, -32);
 
             Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
             if (sidetex) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
                 set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -30, -29);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32);
             }
         }
-        u32 topMatOpaque = TRUE;//(mat->type < MAT_CUTOUT);
+        // Fade at bottom
+        if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -36);
+        }
+        cmm_render_flip_normals = FALSE;
+    }
 
+    // Outer floor
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) {
+        s32 y = -32;
+        if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
+            y = cmm_lopt_boundary_height-32;
+        }
+        u32 topMatOpaque = (mat->type < MAT_CUTOUT);
         if (topMatOpaque && (processRenderMode == PROCESS_TILE_VPLEX)) {
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_SCREEN, FALSE);
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_VPLEX_SCREEN, G_RM_VPLEX_SCREEN2);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), -29, -29);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y);
         }
 
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
             if (topMatOpaque) {
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], AA_EN | G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
             } else {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], AA_EN | G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), -29, -29);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y);
         }
     }
 }
@@ -1812,17 +1874,21 @@ void generate_terrain_collision(void) {
 
     TerrainData floorY;
     TerrainData newVtxs[4][3];
-    if (!cmm_lopt_planeenabled) {
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_DEATH_PLANE) {
         floorY = -32*TILE_SIZE- 2500;
+        u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) ? cmm_grid_size : 128;
         cmm_curr_coltype = SURFACE_DEATH_PLANE;
         for (u32 i = 0; i < 4; i++) {
             newVtxs[i][1] = floorY;
-            newVtxs[i][0] = floorVtxs[i][0] * 128 * 128;
-            newVtxs[i][2] = floorVtxs[i][2] * 128 * 128;
+            newVtxs[i][0] = floorVtxs[i][0] * deathsize * 128;
+            newVtxs[i][2] = floorVtxs[i][2] * deathsize * 128;
         }
-    } else {
+        cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
+        cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
+    }
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         floorY = -32*TILE_SIZE;
-        u8 mat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
+        u8 mat = cmm_lopt_boundary_mat;
         if (HAS_TOPMAT(mat)) {
             cmm_curr_coltype = TOPMAT(mat).col;
         } else {
@@ -1833,9 +1899,9 @@ void generate_terrain_collision(void) {
             newVtxs[i][0] = floorVtxs[i][0] * cmm_grid_size * 128;
             newVtxs[i][2] = floorVtxs[i][2] * cmm_grid_size * 128;
         }
+        cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
+        cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
     }
-    cmm_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
-    cmm_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
 
     process_tiles(0);
     cmm_growth_render_type = 0;
@@ -2428,8 +2494,9 @@ void save_level(void) {
     cmm_save.envfx = cmm_lopt_envfx;
     cmm_save.theme = cmm_lopt_theme;
     cmm_save.bg = cmm_lopt_bg;
-    cmm_save.plane = cmm_lopt_plane;
-    cmm_save.planeenabled = cmm_lopt_planeenabled;
+    cmm_save.boundary_mat = cmm_lopt_boundary_mat;
+    cmm_save.boundary = cmm_lopt_boundary;
+    cmm_save.boundary_height = cmm_lopt_boundary_height;
     cmm_save.coinstar = cmm_lopt_coinstar;
     cmm_save.size = cmm_lopt_size;
     cmm_save.waterlevel = cmm_lopt_waterlevel;
@@ -2541,8 +2608,9 @@ void load_level(void) {
         cmm_save.envfx = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.theme = cmm_templates[cmm_lopt_template].theme;
         cmm_save.bg = cmm_templates[cmm_lopt_template].bg;
-        cmm_save.plane = cmm_templates[cmm_lopt_template].plane;
-        cmm_save.planeenabled = TRUE;
+        cmm_save.boundary_mat = cmm_templates[cmm_lopt_template].plane;
+        cmm_save.boundary = 1;
+        cmm_save.boundary_height = 5;
 
         if (cmm_templates[cmm_lopt_template].platform) {
             u8 i = 0;
@@ -2573,8 +2641,9 @@ void load_level(void) {
     cmm_lopt_theme = cmm_save.theme;
     cmm_lopt_bg = cmm_save.bg;
 
-    cmm_lopt_plane = cmm_save.plane;
-    cmm_lopt_planeenabled = cmm_save.planeenabled;
+    cmm_lopt_boundary_mat = cmm_save.boundary_mat;
+    cmm_lopt_boundary = cmm_save.boundary;
+    cmm_lopt_boundary_height = cmm_save.boundary_height;
     cmm_lopt_coinstar = cmm_save.coinstar;
     cmm_lopt_size = cmm_save.size;
     cmm_lopt_waterlevel = cmm_save.waterlevel;

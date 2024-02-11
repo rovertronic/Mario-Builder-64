@@ -281,8 +281,6 @@ struct cmm_tilemat_def {
 };
 struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
-    u8 numFloors;
-    s8 *floors;
     u8 fence;
     u8 pole;
     u8 bars;
@@ -330,8 +328,9 @@ struct cmm_level_save_header {
     u8 envfx;
     u8 theme;
     u8 bg;
-    u8 plane;
-    u8 planeenabled;
+    u8 boundary_mat;
+    u8 boundary;
+    u8 boundary_height;
     u8 coinstar;
     u8 size;
     u8 waterlevel;

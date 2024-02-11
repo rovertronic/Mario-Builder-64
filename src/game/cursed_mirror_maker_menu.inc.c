@@ -358,7 +358,7 @@ void cmm_render_topleft_text(void) {
 }
 
 char *cmm_get_floor_name(s32 index, UNUSED char *buffer) {
-    return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[index]).name;
+    return TILE_MATDEF(index).name;
 }
 char *cmm_get_coinstar_str(s32 index, char *buffer) {
     if (index == 0) {
@@ -371,6 +371,10 @@ char *cmm_get_waterlevel_name(s32 index, char *buffer) {
     if (index == 0) {
         return "Disabled";
     }
+    sprintf(buffer, "Y: %d", index);
+    return buffer;
+}
+char *cmm_get_boundaryheight_name(s32 index, char *buffer) {
     sprintf(buffer, "Y: %d", index);
     return buffer;
 }
@@ -443,13 +447,6 @@ void song_changed(void) {
 }
 
 void cmm_set_data_overrides(void) {
-    // Floor options
-    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
-    cmm_settings_boundary_buttons[BOUNDARY_FLOOR_INDEX].size = numFloors;
-    if (cmm_lopt_plane > numFloors-1) {
-        cmm_lopt_plane = numFloors-1;
-    }
-
     // Music options
     set_album_and_song_from_seq();
     bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
@@ -508,35 +505,21 @@ void draw_cmm_settings_misc_vanilla(f32 xoff, f32 yoff) {
 
 void draw_cmm_settings_boundary(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_boundary_buttons), cmm_menu_index);
+    u32 numOptions = ARRAY_COUNT(cmm_settings_boundary_buttons);
 
-    for (s32 i=0;i<2;i++) {
-        print_maker_string_ascii( 45 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_boundary_buttons[i].str,(i==cmm_menu_index));
+    if (!(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
+        numOptions -= 1;
+    }
+    cmm_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = numOptions;
+
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_boundary_buttons);i++) {
+        if ((i == BOUNDARY_HEIGHT_INDEX) && (numOptions == ARRAY_COUNT(cmm_settings_boundary_buttons) - 1)) {
+            cmm_greyed_text = TRUE;
+        }
+        print_maker_string_ascii(55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_boundary_buttons[i].str,(i==cmm_menu_index));
         cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_boundary_buttons[i],i,cmm_joystick);
     }
-
-    char *floorText = "";
-    if (cmm_lopt_planeenabled) {
-        cmm_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = 4;
-        floorText = "Disable Floor...";
-    } else {
-        cmm_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = 3;
-        floorText = "Enable Floor...";
-    }
-
-    // Enable Floor toggle
-    print_maker_string_ascii_centered(SCREEN_WIDTH/2+xoff+3*cmm_menu_list_offsets[BOUNDARY_ENABLE_FLOOR_INDEX],115+yoff,floorText,(BOUNDARY_ENABLE_FLOOR_INDEX==cmm_menu_index));
-    cmm_greyed_text = !cmm_lopt_planeenabled;
-    print_maker_string_ascii( 45 +xoff+3*cmm_menu_list_offsets[BOUNDARY_FLOOR_INDEX],115-(1*16)+yoff,cmm_settings_boundary_buttons[BOUNDARY_FLOOR_INDEX].str,(BOUNDARY_FLOOR_INDEX==cmm_menu_index));
-    cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[BOUNDARY_FLOOR_INDEX],115-(1*16)+yoff,60,&cmm_settings_boundary_buttons[BOUNDARY_FLOOR_INDEX],BOUNDARY_FLOOR_INDEX,cmm_joystick);
     cmm_greyed_text = FALSE;
-
-    if (cmm_menu_index == BOUNDARY_ENABLE_FLOOR_INDEX) { // Enable/disable button
-        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-            cmm_lopt_planeenabled ^= 1;
-            generate_terrain_gfx();
-        }
-    }
 }
 
 #define CUSTOM_MENU_SCROLL_HEIGHT 105
