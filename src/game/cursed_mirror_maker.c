@@ -1459,10 +1459,17 @@ void process_boundary(u32 processRenderMode) {
             }
         }
         // Fade if no floor
-        if (renderFade && (processRenderMode == PROCESS_TILE_TRANSPARENT)) {
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
+        if (renderFade) {
+            if (processRenderMode == PROCESS_TILE_NORMAL) {
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
+                render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40);
+            } else if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
+            }
         }
     }
 
@@ -1508,7 +1515,7 @@ void process_boundary(u32 processRenderMode) {
             if (topMatOpaque) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
             } else {
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], AA_EN | G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y);
