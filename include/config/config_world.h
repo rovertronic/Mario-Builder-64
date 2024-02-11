@@ -10,7 +10,7 @@
  *
  * Uncomment this out to specifically set it, otherwise world scale will be based off of your extended bounds mode.
  */
-// #define WORLD_SCALE 1
+#define WORLD_SCALE 2
 
 /**
  *  0: Regular bounds
