@@ -1155,75 +1155,6 @@ void render_water(s8 pos[3]) {
         }
     }
 }
-struct cmm_boundary_quad {
-    s8 vtx[4][3];
-    s8 u[2];
-    s8 v[2];
-    u8 flipUvs;
-};
-
-struct cmm_boundary_quad floor_boundary[] = {
-    {{{32, 0, 32}, {32, 0, 0}, {0, 0, 32}, {0, 0, 0}}, {-16, 16}, {-16, 16}, FALSE},
-    {{{0, 0, 32}, {0, 0, 0}, {-32, 0, 32}, {-32, 0, 0}}, {-16, 16}, {-16, 16}, FALSE},
-    {{{32, 0, 0}, {32, 0, -32}, {0, 0, 0}, {0, 0, -32}}, {-16, 16}, {-16, 16}, FALSE},
-    {{{0, 0, 0}, {0, 0, -32}, {-32, 0, 0}, {-32, 0, -32}}, {-16, 16}, {-16, 16}, FALSE},
-};
-
-struct cmm_boundary_quad floor_edge_boundary[] = {
-    {{{48, 0, 32}, {48, 0, 0}, {32, 0, 32}, {32, 0, 0}}, {-16, 16}, {-8, 8}, FALSE},
-    {{{48, 0, 32}, {32, 0, 32}, {48, 0, 48}, {32, 0, 48}}, {-8, 8}, {8, -8}, TRUE},
-    {{{32, 0, 48}, {32, 0, 32}, {0, 0, 48}, {0, 0, 32}}, {-8, 8}, {-16, 16}, FALSE},
-
-    {{{-32, 0, 32}, {-32, 0, 0}, {-48, 0, 32}, {-48, 0, 0}}, {-16, 16}, {-8, 8}, FALSE},
-    {{{-32, 0, 48}, {-32, 0, 32}, {-48, 0, 48}, {-48, 0, 32}}, {-8, 8}, {-8, 8}, FALSE},
-    {{{0, 0, 48}, {0, 0, 32}, {-32, 0, 48}, {-32, 0, 32}}, {-8, 8}, {-16, 16}, FALSE},
-
-    {{{48, 0, 0}, {48, 0, -32}, {32, 0, 0}, {32, 0, -32}}, {-16, 16}, {-8, 8}, FALSE},
-    {{{48, 0, -32}, {48, 0, -48}, {32, 0, -32}, {32, 0, -48}}, {-8, 8}, {-8, 8}, FALSE},
-    {{{32, 0, -32}, {32, 0, -48}, {0, 0, -32}, {0, 0, -48}}, {-8, 8}, {-16, 16}, FALSE},
-
-    {{{-32, 0, 0}, {-32, 0, -32}, {-48, 0, 0}, {-48, 0, -32}}, {-16, 16}, {-8, 8}, FALSE},
-    {{{-32, 0, -48}, {-48, 0, -48}, {-32, 0, -32}, {-48, 0, -32}}, {-8, 8}, {8, -8}, TRUE},
-    {{{0, 0, -32}, {0, 0, -48}, {-32, 0, -32}, {-32, 0, -48}}, {-8, 8}, {-16, 16}, FALSE},
-};
-
-void render_boundary_quad(struct cmm_boundary_quad *quad, s16 yOff) {
-    s32 lateralScale = 4 * cmm_grid_size;
-    for (u32 i = 0; i < 4; i++) {
-        s16 u = (quad->u[i & 1])*lateralScale*4 + cmm_uv_offset;
-        s16 v = (quad->v[i >> 1])*lateralScale*4 + cmm_uv_offset;
-        if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
-        u8 alpha = 255;
-        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
-            alpha = 0;
-        }
-        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*lateralScale, quad->vtx[i][1] + yOff, quad->vtx[i][2]*lateralScale,
-            u, v, 0x0, 0x7F, 0x0, alpha);
-    }
-    if (cmm_render_flip_normals) {
-        cache_tri(0, 2, 1);
-        cache_tri(1, 2, 3);
-    } else {
-        cache_tri(0, 1, 2);
-        cache_tri(1, 3, 2);
-    }
-    cmm_num_vertices_cached += 4;
-    check_cached_tris();
-}
-
-void render_floor(s16 y) {
-    for (u32 i = 0; i < 4; i++) {
-        render_boundary_quad(&floor_boundary[i], y);
-    }
-    display_cached_tris();
-}
-
-void render_floor_edge(s16 y) {
-    for (u32 i = 0; i < 12; i++) {
-        render_boundary_quad(&floor_edge_boundary[i], y);
-    }
-    display_cached_tris();
-}
 
 void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
     tileType &= ~MATTYPE_NOCULL;
@@ -1428,6 +1359,98 @@ void process_tiles(u32 processTileRenderMode) {
     }
 }
 
+void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight) {
+    // Get normal
+    Vec3f normal;
+    find_vector_perpendicular_to_plane(normal, quad->vtx[0], quad->vtx[1], quad->vtx[2]);
+    vec3_normalize(normal);
+    s8 n[3];
+    n[0] = normal[0]*0x7F; n[1] = normal[1]*0x7F; n[2] = normal[2]*0x7F;
+
+    s32 uScale = quad->uYScale ? (yHeight * 64) : cmm_grid_size*16;
+    s32 vScale = quad->vYScale ? (yHeight * 64) : cmm_grid_size*16;
+    for (u32 i = 0; i < 4; i++) {
+        s16 u = (quad->u[i & 1])*uScale + cmm_uv_offset;
+        s16 v = (quad->v[i >> 1])*vScale + cmm_uv_offset;
+        if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
+        if (yHeight % 2) v += 512; // offset for odd number of blocks
+        u8 alpha = 255;
+        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
+            alpha = 0;
+        }
+        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1]*yHeight + y)*TILE_SIZE, quad->vtx[i][2]*cmm_grid_size*4,
+            u, v, n[0], n[1], n[2], alpha);
+    }
+    if (cmm_render_flip_normals) {
+        cache_tri(0, 2, 1);
+        cache_tri(1, 2, 3);
+    } else {
+        cache_tri(0, 1, 2);
+        cache_tri(1, 3, 2);
+    }
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
+}
+
+void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop) {
+    for (u32 i = 0; i < count; i++) {
+        render_boundary_quad(&quadList[i], yBottom, yTop - yBottom);
+    }
+    display_cached_tris();
+}
+
+void process_boundary(u32 processRenderMode) {
+    if (cmm_lopt_planeenabled) {
+        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
+        struct cmm_material *mat, *sidemat;
+        if (HAS_TOPMAT(planeMat)) {
+            mat = &TOPMAT(planeMat);
+        } else {
+            mat = &MATERIAL(planeMat);
+        }
+        sidemat = &MATERIAL(planeMat);
+
+        // Bottom floor
+        u8 matType = mat->type;
+        if (do_process(&matType, processRenderMode)) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+            render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32);
+        }
+
+        u8 sidematType = sidemat->type;
+        if (do_process(&sidematType, processRenderMode)) {
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -32, -29);
+
+            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+            if (sidetex) {
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -30, -29);
+            }
+        }
+        u32 topMatOpaque = TRUE;//(mat->type < MAT_CUTOUT);
+
+        if (topMatOpaque && (processRenderMode == PROCESS_TILE_VPLEX)) {
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_SCREEN, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), -29, -29);
+        }
+
+        if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+            if (topMatOpaque) {
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], AA_EN | G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
+            } else {
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], AA_EN | G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            }
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), -29, -29);
+        }
+    }
+}
+
 void generate_terrain_gfx(void) {
     u8 tileType, rot;
     s8 pos[3];
@@ -1446,20 +1469,10 @@ void generate_terrain_gfx(void) {
     retroland_filter_on();
 
     process_tiles(PROCESS_TILE_VPLEX);
+    process_boundary(PROCESS_TILE_VPLEX);
 
     //BOTTOM PLANE
-    if (cmm_lopt_planeenabled) {
-        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
-        struct cmm_material *mat;
-        if (HAS_TOPMAT(planeMat)) {
-            mat = &TOPMAT(planeMat);
-        } else {
-            mat = &MATERIAL(planeMat);
-        }
-        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], mat->type, FALSE);
-        render_floor(-32*TILE_SIZE);
-    }
+    process_boundary(PROCESS_TILE_NORMAL);
 
     // Special Tiles
     cmm_growth_render_type = 0;
@@ -1512,25 +1525,16 @@ void generate_terrain_gfx(void) {
 
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
+
+    process_boundary(PROCESS_TILE_TRANSPARENT);
+
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
-
-    if (cmm_lopt_planeenabled) {
-        u8 planeMat = cmm_theme_table[cmm_lopt_theme].floors[cmm_lopt_plane];
-        struct cmm_material *mat;
-        if (HAS_TOPMAT(planeMat)) {
-            mat = &TOPMAT(planeMat);
-        } else {
-            mat = &MATERIAL(planeMat);
-        }
-        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-        render_floor_edge(-32*TILE_SIZE);
-    }
-
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
+
     // Render main water plane, top side
-    if (cmm_lopt_waterlevel != 0) {
-        render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
-    }
+    // if (cmm_lopt_waterlevel != 0) {
+    //     render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
+    // }
     // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
@@ -1555,9 +1559,9 @@ void generate_terrain_gfx(void) {
 
     cmm_render_flip_normals = TRUE;
     // Render main water plane, bottom side
-    if (cmm_lopt_waterlevel != 0) {
-        render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
-    }
+    // if (cmm_lopt_waterlevel != 0) {
+    //     render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
+    // }
     cmm_render_flip_normals = FALSE;
 
     process_tiles(PROCESS_TILE_TRANSPARENT);
@@ -1900,9 +1904,9 @@ s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
     }
 
     if (is_water_fullblock(pos)) {
-        return (pos[1] + 1) * TILE_SIZE;
+        return (pos[1] - 31) * TILE_SIZE;
     }
-    return (pos[1] + 1) * TILE_SIZE - (TILE_SIZE / 8);
+    return (pos[1] - 31) * TILE_SIZE - (TILE_SIZE / 8);
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param1, s32 param2, struct cmm_object_info *info, const BehaviorScript *script, u8 useTrajectory) {

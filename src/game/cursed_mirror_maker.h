@@ -123,6 +123,16 @@ struct cmm_terrain_tri {
     u8 growthType;
     s8 (*altuvs)[3][2];
 };
+
+struct cmm_boundary_quad {
+    s8 vtx[4][3];
+    s8 u[2];
+    s8 v[2];
+    u8 uYScale; // Scale U by Y instead of width
+    u8 vYScale; // Scale V by Y instead of width
+    u8 flipUvs;
+};
+
 struct cmm_terrain {
     u8 numQuads;
     u8 numTris;
