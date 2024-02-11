@@ -613,7 +613,7 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
 
         // With low fovs, coordinate overflow can occur more easily. This slightly reduces precision only while zoomed in.
         f32 scale = node->fov < 28.0f ? remap(MAX(node->fov, 15), 15, 28, 0.5f, 1.0f): 1.0f;
-        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near, node->far, scale);
+        guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near / WORLD_SCALE, node->far, scale);
 
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
