@@ -417,13 +417,14 @@ u32 get_side_class(u32 mat, u32 dir) {
 }
 
 // Used to compare material types and see if any future culling checks can be skipped
+// WARNING! using grid tile ->mat directly will result in mat being 0 if the tile is empty/water
 s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
     s32 curMatClass, otherMatClass;
     if (curMat == otherMat) return FALSE;
     curMatClass = get_side_class(curMat, direction);
     otherMatClass = get_side_class(otherMat, direction^1);
     if (curMatClass == otherMatClass) {
-        return FALSE;
+        return (curMatClass == CLASS_TRANSPARENT);
     } else {
         if ((curMatClass == CLASS_HOLLOW_CUTOUT) || (curMatClass == CLASS_HOLLOW_TRANSPARENT)) {
             if (direction == CMM_DIRECTION_DOWN) {
@@ -435,14 +436,13 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 }
 
 // Used for determining if a water side should be culled.
-// Assumes that the block is hollow
 u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
     s32 mattype = TOPMAT(adjMat).type;
     if (direction != CMM_DIRECTION_DOWN) {
         mattype = MATERIAL(adjMat).type;
     }
     if (mattype == MAT_CUTOUT) return FALSE;
-    if (mat == -1) return TRUE;
+    if (mat == -1) return TRUE; // adjMat should be confirmed to have a full face
     return cutout_skip_culling_check(mat, adjMat, direction);
 }
 
@@ -1135,18 +1135,22 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
 
     s32 mat = get_grid_tile(pos)->mat;
     s32 adjMat = get_grid_tile(adjacentPos)->mat;
-    if (get_grid_tile(pos)->type - 1 == TILE_TYPE_WATER) {
+    if ((get_grid_tile(pos)->type - 1) == TILE_TYPE_WATER) {
         mat = -1;
+    }
+    s32 adjTile = get_grid_tile(adjacentPos)->type - 1;
+    if ((adjTile == TILE_TYPE_WATER) || (adjTile == -1)){
+        adjMat = -1;
     }
 
     // Apply normal side culling
     // Usually this would fail if next to a mesh, but it will pass if
     // the current tile is the same material, which in this case will happen
     // if an entire mesh is waterlogged.
-    if (get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL && (block_side_is_solid(adjMat, mat, dir))) return 0;
+    if ((get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) && block_side_is_solid(adjMat, mat, dir)) return 0;
 
     // Check if the block that's waterlogged has a full face on the same side
-    if (get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL && (block_side_is_solid(mat, adjMat, dir^1))) {
+    if ((get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) && block_side_is_solid(mat, adjMat, dir^1)) {
         return 0;
     }
 
@@ -1380,7 +1384,8 @@ void process_tiles(u32 processTileRenderMode) {
     }
 }
 
-void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight) {
+// Fade: 0 = no fade, 1 = fade at bottom, 2 = fade at top
+void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u32 fade) {
     // Get normal
     Vec3f normal;
     find_vector_perpendicular_to_plane(normal, quad->vtx[0], quad->vtx[1], quad->vtx[2]);
@@ -1396,7 +1401,9 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight) {
         if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
         if (yHeight % 2) v += 512; // offset for odd number of blocks
         u8 alpha = 255;
-        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32) || ((y <= -40) && (quad->vtx[i][1] == 0))) {
+        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
+            alpha = 0;
+        } else if (((fade == 1) && (quad->vtx[i][1] == 0)) || ((fade == 2) && (quad->vtx[i][1] == 1))) {
             alpha = 0;
         }
         make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1]*yHeight + y)*TILE_SIZE, quad->vtx[i][2]*cmm_grid_size*4,
@@ -1413,11 +1420,24 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight) {
     check_cached_tris();
 }
 
-void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop) {
+void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {
     for (u32 i = 0; i < count; i++) {
-        render_boundary_quad(&quadList[i], yBottom, yTop - yBottom);
+        render_boundary_quad(&quadList[i], yBottom, yTop - yBottom, fade);
     }
     display_cached_tris();
+}
+
+void render_boundary_decal_edge(Gfx *sidetex, s32 yBottom, u32 sideMatType) {
+    if (sideMatType != MAT_TRANSPARENT) {
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+        render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), yBottom, yBottom+1, 0);
+    }
+    if (sideMatType >= MAT_CUTOUT) {
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
+        render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), yBottom, yBottom+1, 0);
+    }
 }
 
 void process_boundary(u32 processRenderMode) {
@@ -1426,23 +1446,60 @@ void process_boundary(u32 processRenderMode) {
     mat = &TOPMAT(planeMat);
     sidemat = &MATERIAL(planeMat);
 
+    // Outer walls
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
+        u8 sidematType = sidemat->type;
+        u8 showBackface = ((mat->type >= MAT_CUTOUT) && (sidemat->type <= MAT_CUTOUT)) || (sidemat->type == MAT_CUTOUT);
+        cmm_render_flip_normals = TRUE;
+        if (showBackface) {
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        }
+        if (do_process(&sidematType, processRenderMode)) {
+            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
+
+            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+            if (sidetex) {
+                render_boundary_decal_edge(sidetex, -33, sidematType);
+            }
+        }
+        // Fade at bottom
+        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            if (showBackface) {
+                cmm_render_flip_normals = FALSE;
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -33, 1);
+                cmm_render_flip_normals = TRUE;
+            }
+            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -33, 1);
+        }
+        cmm_render_flip_normals = FALSE;
+    }
+
     // Main floor
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-            render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32);
+            render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, 0);
         }
     }
 
     // Inner walls
     if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
         u8 sidematType = sidemat->type;
+        u8 showBackface = ((mat->type >= MAT_CUTOUT) && (sidemat->type <= MAT_CUTOUT)) || (sidemat->type == MAT_CUTOUT);
         u32 renderWalls = TRUE; // Whether to render main solid walls
         u32 renderFade = FALSE; // Whether to render fade at bottom
         s32 bottomY = -32;
         s32 topY = cmm_lopt_boundary_height-32;
+        if (showBackface) {
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        }
         
         if (!(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) {
             renderFade = TRUE;
@@ -1458,58 +1515,41 @@ void process_boundary(u32 processRenderMode) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             if (topY > bottomY + 32) {
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, bottomY + 32);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY + 32, topY);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, bottomY + 32, 0);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY + 32, topY, 0);
             } else {
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, 0);
             }
 
             if (sidetex) {
                 // Render rim of regular material before decal
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1);
-                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1, 0);
+                render_boundary_decal_edge(sidetex, topY, sidematType);
             }
         }
+        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         // Fade if no floor
         if (renderFade) {
             if (processRenderMode == PROCESS_TILE_NORMAL) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
-                render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40);
-            } else if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
+                render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
+            }
+            if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+repeatBackface:
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 0);
+                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 2);
+                if (showBackface) {
+                    cmm_render_flip_normals = TRUE;
+                    showBackface = FALSE;
+                    goto repeatBackface; // im such an awesome coder
+                }
+                cmm_render_flip_normals = FALSE;
             }
         }
-    }
-
-    // Outer walls
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
-        u8 sidematType = sidemat->type;
-        cmm_render_flip_normals = TRUE;
-        if (do_process(&sidematType, processRenderMode)) {
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32);
-
-            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
-            if (sidetex) {
-                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
-                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32);
-            }
-        }
-        // Fade at bottom
-        if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
-            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
-            render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -33);
-        }
-        cmm_render_flip_normals = FALSE;
     }
 
     // Outer floor
@@ -1522,7 +1562,7 @@ void process_boundary(u32 processRenderMode) {
         if (topMatOpaque && (processRenderMode == PROCESS_TILE_VPLEX)) {
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_VPLEX_SCREEN, G_RM_VPLEX_SCREEN2);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
         }
 
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
@@ -1532,7 +1572,7 @@ void process_boundary(u32 processRenderMode) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
-            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y);
+            render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
         }
     }
 }
