@@ -253,11 +253,11 @@ enum cmm_mat_types {
     MAT_DECAL, // only used for VP screen when used as a block type
     // Transparent types
     MAT_CUTOUT,
+    MAT_CUTOUT_NOCULL,
     MAT_TRANSPARENT,
     // Used for override when processing vplex screens
     MAT_SCREEN,
 };
-#define MATTYPE_NOCULL 0x80 // Also doesn't have scaled UVs
 
 // Represents a material texture and collision
 struct cmm_material {

@@ -390,52 +390,60 @@ s8 cullOffsetLUT[6][3] = {
     {0, 0, -1},
 };
 
-// Used for determining if waterlogging makes the water full
-u32 block_top_face_hollow(u32 mat) {
-    return HAS_TOPMAT(mat) ? (TOPMAT(mat).type == MAT_CUTOUT) : (MATERIAL(mat).type == MAT_CUTOUT);
+#define fullblock_can_be_waterlogged(mat) ((MATERIAL(mat).type == MAT_CUTOUT) || (TOPMAT(mat).type == MAT_CUTOUT))
+
+// Classifications for culling checks.
+// Lower types of faces cull higher types of faces
+enum BlockSideClassifications {
+    CLASS_OPAQUE, // < CUTOUT
+    CLASS_HOLLOW_TRANSPARENT,
+    CLASS_HOLLOW_CUTOUT,
+    CLASS_TRANSPARENT, // > CUTOUT
+    CLASS_CUTOUT, // = CUTOUT
+};
+
+u32 get_side_class(u32 mat, u32 dir) {
+    u32 mattype = TOPMAT(mat).type;
+    if (dir != CMM_DIRECTION_UP) {
+        mattype = MATERIAL(mat).type;
+        if (mattype < MAT_CUTOUT) {
+            if (TOPMAT(mat).type == MAT_CUTOUT) return CLASS_HOLLOW_CUTOUT;
+            if (TOPMAT(mat).type > MAT_CUTOUT) return CLASS_HOLLOW_TRANSPARENT;
+        }
+    }
+    if (mattype < MAT_CUTOUT) return CLASS_OPAQUE;
+    if (mattype == MAT_CUTOUT) return CLASS_CUTOUT;
+    return CLASS_TRANSPARENT;
 }
 
-// Used for determining if a block can be waterlogged
-u32 block_is_hollow(u32 mat) {
-    return (MATERIAL(mat).type == MAT_CUTOUT) || (HAS_TOPMAT(mat) && (TOPMAT(mat).type == MAT_CUTOUT));
+// Used to compare material types and see if any future culling checks can be skipped
+s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
+    s32 curMatClass, otherMatClass;
+    if (curMat == otherMat) return FALSE;
+    curMatClass = get_side_class(curMat, direction);
+    otherMatClass = get_side_class(otherMat, direction^1);
+    if (curMatClass == otherMatClass) {
+        return FALSE;
+    } else {
+        if ((curMatClass == CLASS_HOLLOW_CUTOUT) || (curMatClass == CLASS_HOLLOW_TRANSPARENT)) {
+            if (direction == CMM_DIRECTION_DOWN) {
+                if (get_side_class(otherMat, CMM_DIRECTION_DOWN) == curMatClass) return FALSE;
+            }
+        }
+        return (curMatClass < otherMatClass);
+    }
 }
 
 // Used for determining if a water side should be culled.
 // Assumes that the block is hollow
-u32 block_side_is_solid(u32 mat, u32 adjMat, u32 direction) {
-    if (!block_is_hollow(mat)) return TRUE;
-    if (mat == adjMat) return FALSE;
-    // Full mesh
-    if (MATERIAL(mat).type == MAT_CUTOUT) {
-        if (!HAS_TOPMAT(mat)) { // Full mesh
-            return FALSE;
-        }
-        return ((TOPMAT(mat).type != MAT_CUTOUT) && (direction == CMM_DIRECTION_DOWN));
+u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
+    s32 mattype = TOPMAT(adjMat).type;
+    if (direction != CMM_DIRECTION_DOWN) {
+        mattype = MATERIAL(adjMat).type;
     }
-    // Must be a block with solid sides and a hollow top
-    // Check if adjacent block is same material
-    return (direction != CMM_DIRECTION_DOWN);
-}
-
-s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
-    s32 curMatType;
-    if ((direction != CMM_DIRECTION_UP) || !HAS_TOPMAT(curMat)) {
-        curMatType = MATERIAL(curMat).type;
-    } else {
-        curMatType = TOPMAT(curMat).type;
-    }
-
-    s32 cond = (curMatType < MAT_CUTOUT) ? 
-            (TOPMAT(otherMat).type < MAT_CUTOUT) : // If opaque side
-            (direction != CMM_DIRECTION_DOWN);     // If transparent side
-    s32 otherMatType;
-    if (!HAS_TOPMAT(otherMat) || cond) {
-        otherMatType = MATERIAL(otherMat).type;
-    } else {
-        otherMatType = TOPMAT(otherMat).type;
-    }
-
-    return ((otherMatType >= MAT_CUTOUT) && (curMat != otherMat));
+    if (mattype == MAT_CUTOUT) return FALSE;
+    if (mat == -1) return TRUE;
+    return cutout_skip_culling_check(mat, adjMat, direction);
 }
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
@@ -1080,7 +1088,7 @@ u32 is_water_fullblock(s8 pos[3]) {
     s32 type = get_grid_tile(pos)->type - 1;
     if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
         if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) {
-            if (!block_top_face_hollow(get_grid_tile(pos)->mat)) {
+            if (TOPMAT(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
                 return TRUE;
             }
         }
@@ -1089,6 +1097,13 @@ u32 is_water_fullblock(s8 pos[3]) {
     if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
         // If above block is troll, but current block is also troll, then not full block
         if ((type == TILE_TYPE_TROLL) && (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_TROLL)) return FALSE;
+        // If bottom block is hollow cutout and top block is some kind of cutout then not full block
+        if (type != TILE_TYPE_WATER) {
+            u8 curMat = get_grid_tile(pos)->mat;
+            u8 aboveMat = get_grid_tile(abovePos)->mat;
+            if ((TOPMAT(aboveMat).type == MAT_CUTOUT) && (TOPMAT(curMat).type == MAT_CUTOUT) &&
+                (MATERIAL(curMat).type != MAT_CUTOUT)) return FALSE;
+        }
         return TRUE;
     }
     return FALSE;
@@ -1118,8 +1133,11 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
         return isFullblock ? 2 : 1;
     }
 
-    u32 mat = get_grid_tile(pos)->mat;
-    u32 adjMat = get_grid_tile(adjacentPos)->mat;
+    s32 mat = get_grid_tile(pos)->mat;
+    s32 adjMat = get_grid_tile(adjacentPos)->mat;
+    if (get_grid_tile(pos)->type - 1 == TILE_TYPE_WATER) {
+        mat = -1;
+    }
 
     // Apply normal side culling
     // Usually this would fail if next to a mesh, but it will pass if
@@ -1160,7 +1178,6 @@ void render_water(s8 pos[3]) {
 }
 
 void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
-    tileType &= ~MATTYPE_NOCULL;
     u32 rendermode = cmm_render_mode_table[tileType];
     if (disableZ) rendermode &= ~(Z_UPD | Z_CMP);
     if (!gIsConsole && (tileType != MAT_TRANSPARENT)) rendermode |= AA_EN;
@@ -1281,7 +1298,8 @@ void process_tiles(u32 processTileRenderMode) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
 
-            if ((matType == MAT_CUTOUT) || (cmm_curr_mat_has_topside && (TOPMAT(mat).type >= MAT_CUTOUT))) {
+            // 
+            if ((matType == MAT_CUTOUT) || ((matType < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             }
         // COLLISION
@@ -1405,11 +1423,7 @@ void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom,
 void process_boundary(u32 processRenderMode) {
     u8 planeMat = cmm_lopt_boundary_mat;
     struct cmm_material *mat, *sidemat;
-    if (HAS_TOPMAT(planeMat)) {
-        mat = &TOPMAT(planeMat);
-    } else {
-        mat = &MATERIAL(planeMat);
-    }
+    mat = &TOPMAT(planeMat);
     sidemat = &MATERIAL(planeMat);
 
     // Main floor
@@ -1612,7 +1626,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                !block_is_hollow(cmm_tile_data[i].mat)) continue;
+                !fullblock_can_be_waterlogged(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1622,7 +1636,7 @@ void generate_terrain_gfx(void) {
     for (u32 i = 0; i < cmm_tile_count; i++) {
         if (cmm_tile_data[i].waterlogged) {
             if (((cmm_tile_data[i].type == TILE_TYPE_BLOCK) || (cmm_tile_data[i].type == TILE_TYPE_TROLL)) &&
-                !block_is_hollow(cmm_tile_data[i].mat)) continue;
+                !fullblock_can_be_waterlogged(cmm_tile_data[i].mat)) continue;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
             render_water(pos);
         }
@@ -1657,7 +1671,7 @@ Vtx preview_vtx[100];
 extern void geo_append_display_list(void *displayList, s32 layer);
 
 void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain *terrain, u32 rot, u32 processType, u32 disableZ) {
-    cmm_curr_mat_has_topside = (topmatid != CMM_MAT_NONE);
+    cmm_curr_mat_has_topside = (topmatid != matid);
 
     u8 matType = cmm_mat_table[matid].type;
 
@@ -1665,7 +1679,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         if (((matType == MAT_CUTOUT) ||
-            (cmm_curr_mat_has_topside && (cmm_mat_table[topmatid].type == MAT_CUTOUT)))
+            ((matType < MAT_CUTOUT) && (cmm_mat_table[topmatid].type >= MAT_CUTOUT)))
             && !disableZ) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
@@ -1747,7 +1761,7 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             if (cmm_id_selection == TILE_TYPE_POLE) {
                 terrain = &cmm_terrain_pole;
                 mat = cmm_theme_table[cmm_lopt_theme].pole;
-                topmat = CMM_MAT_NONE;
+                topmat = mat;
                 cmm_use_alt_uvs = TRUE;
             }
             
@@ -1899,11 +1913,7 @@ void generate_terrain_collision(void) {
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
     }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
-        if (HAS_TOPMAT(cmm_lopt_boundary_mat)) {
-            cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
-        } else {
-            cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
-        }
+        cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, cmm_grid_size, FALSE);
     }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
@@ -2156,7 +2166,7 @@ void place_tile(s8 pos[3]) {
     }
 
     if (cmm_id_selection == TILE_TYPE_BLOCK) {
-        if (!block_is_hollow(cmm_mat_selection)) {
+        if (!fullblock_can_be_waterlogged(cmm_mat_selection)) {
             waterlogged = FALSE;
         }
     }
@@ -2166,12 +2176,7 @@ void place_tile(s8 pos[3]) {
     }
 
     if (cmm_tile_terrains[cmm_id_selection] != NULL) {
-        TerrainData coltype;
-        if (HAS_TOPMAT(cmm_mat_selection)) {
-            coltype = TOPMAT(cmm_mat_selection).col;
-        } else {
-            coltype = MATERIAL(cmm_mat_selection).col;
-        }
+        TerrainData coltype = TOPMAT(cmm_mat_selection).col;
         if (SURFACE_IS_BURNING(coltype)) {
             play_place_sound(SOUND_GENERAL_LOUD_BUBBLE | SOUND_VIBRATO);
         } else {
@@ -2219,7 +2224,7 @@ void place_water(s8 pos[3]) {
 
     if (tile->type != 0) {
         // cant waterlog a full block
-        if ((tileType == TILE_TYPE_BLOCK) && !block_is_hollow(tile->mat)) {
+        if ((tileType == TILE_TYPE_BLOCK) && !fullblock_can_be_waterlogged(tile->mat)) {
             return;
         }
         play_place_sound(SOUND_ACTION_TERRAIN_STEP + (SOUND_TERRAIN_WATER << 16));
@@ -2918,7 +2923,7 @@ void update_custom_theme(void) {
         if (cmm_curr_custom_theme.topmatsEnabled[i]) {
             cmm_theme_table[CMM_THEME_CUSTOM].mats[i].topmat = cmm_curr_custom_theme.topmats[i];
         } else {
-            cmm_theme_table[CMM_THEME_CUSTOM].mats[i].topmat = 0;
+            cmm_theme_table[CMM_THEME_CUSTOM].mats[i].topmat = cmm_curr_custom_theme.mats[i];
         }
     }
     cmm_theme_table[CMM_THEME_CUSTOM].fence = cmm_curr_custom_theme.fence;
