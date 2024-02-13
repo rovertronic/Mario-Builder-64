@@ -231,6 +231,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
 
     // Check for water under the shadow.
     f32 waterLevel = cmm_get_water_level(x, y, z);
+    f32 nx, ny, nz;
 
     if (waterLevel > FLOOR_LOWER_LIMIT_MISC
         && y >= waterLevel
@@ -243,6 +244,11 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
 
         // Don't use the decal layer, since water is transparent.
         s->isDecal = FALSE;
+
+        // Assume the floor is flat.
+        nx = 0.0f;
+        ny = 1.0f;
+        nz = 0.0f;
     } else { // Normal surfaces:
         TerrainData type = floor->type;
         if (type == SURFACE_ICE || type == SURFACE_CRYSTAL) {
@@ -261,16 +267,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
             // The flying carpet is transparent.
             s->isDecal = FALSE;
         }
-    }
 
-    f32 nx, ny, nz;
-    if (floorHeight <= FLOOR_LOWER_LIMIT_MISC && waterLevel <= FLOOR_LOWER_LIMIT_MISC) {
-        // Assume the floor is flat.
-        nx = 0.0f;
-        ny = 1.0f;
-        nz = 0.0f;
-    } else {
-        // Read the floor's normals.
         f32 normal[4];
         get_surface_normal_oo(normal, floor);
         nx = normal[0];

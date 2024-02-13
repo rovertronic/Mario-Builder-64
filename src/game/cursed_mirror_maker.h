@@ -61,9 +61,7 @@ enum {
 };
 
 #define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
-#define GRIDY_TO_POS(gridy) ((gridy) * TILE_SIZE + TILE_SIZE/2)
 #define POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
-#define POS_TO_GRIDY(pos) (((pos) - TILE_SIZE/2) / TILE_SIZE)
 
 enum cmm_directions {
     CMM_DIRECTION_UP,
@@ -103,9 +101,7 @@ enum cmm_growth_types {
     CMM_GROWTH_FULL,
     CMM_GROWTH_NORMAL_SIDE,
     CMM_GROWTH_HALF_SIDE, // vertical slabs - either side
-    CMM_GROWTH_UNDERSLOPE, // act as if it was positive Z
-    CMM_GROWTH_UNDERSLOPE_L, // act as positive X
-    CMM_GROWTH_UNDERSLOPE_CORNER, // act as both
+    CMM_GROWTH_UNDERSLOPE_CORNER, // special check
     CMM_GROWTH_DIAGONAL_SIDE,
     CMM_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
     CMM_GROWTH_SLOPE_SIDE_L,
@@ -127,6 +123,16 @@ struct cmm_terrain_tri {
     u8 growthType;
     s8 (*altuvs)[3][2];
 };
+
+struct cmm_boundary_quad {
+    s8 vtx[4][3];
+    s8 u[2];
+    s8 v[2];
+    u8 uYScale; // Scale U by Y instead of width
+    u8 vYScale; // Scale V by Y instead of width
+    u8 flipUvs;
+};
+
 struct cmm_terrain {
     u8 numQuads;
     u8 numTris;
@@ -135,7 +141,7 @@ struct cmm_terrain {
 };
 
 struct cmm_tile {
-    u32 x:6, y:5, z:6, type:5, mat:4, rot:2, waterlogged:1;
+    u32 x:6, y:6, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
 
 enum {
@@ -160,7 +166,7 @@ enum {
 };
 
 struct cmm_obj {
-    u32 param1:1, param2:7, x:6, y:5, z:6, type:5, rot:2;
+    u32 param1:1, param2:7, x:6, y:6, z:6, type:5, rot:2;
 };
 
 struct cmm_grid_obj {
@@ -247,11 +253,11 @@ enum cmm_mat_types {
     MAT_DECAL, // only used for VP screen when used as a block type
     // Transparent types
     MAT_CUTOUT,
+    MAT_CUTOUT_NOCULL,
     MAT_TRANSPARENT,
     // Used for override when processing vplex screens
     MAT_SCREEN,
 };
-#define MATTYPE_NOCULL 0x80 // Also doesn't have scaled UVs
 
 // Represents a material texture and collision
 struct cmm_material {
@@ -275,8 +281,6 @@ struct cmm_tilemat_def {
 };
 struct cmm_theme {
     struct cmm_tilemat_def mats[NUM_MATERIALS_PER_THEME];
-    u8 numFloors;
-    s8 *floors;
     u8 fence;
     u8 pole;
     u8 bars;
@@ -318,7 +322,22 @@ struct cmm_level_save_header {
     u8 version;
     char author[31];
 
-    u8 option[20];
+    // Level options
+    u8 costume;
+    u8 seq;
+    u8 envfx;
+    u8 theme;
+    u8 bg;
+    u8 boundary_mat;
+    u8 boundary;
+    u8 boundary_height;
+    u8 coinstar;
+    u8 size;
+    u8 waterlevel;
+    u8 secret;
+    u8 game;
+
+    u8 padding[20];
     u16 tile_count;
     u16 object_count;
 

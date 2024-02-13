@@ -82,14 +82,14 @@ s32 lava_boost_on_wall(struct MarioState *m) {
 
     play_sound(SOUND_MARIO_ON_FIRE, m->marioObj->header.gfx.cameraToObject);
     update_mario_sound_and_camera(m);
-    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, (m->wall->type == SURFACE_BURNING ? 1 : 3));
+    return drop_and_set_mario_action(m, ACT_LAVA_BOOST, (SURFACE_IS_BURNING_SMOKE(m->wall->type) ? 1 : 3));
 }
 
 s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
 #ifdef NO_FALL_DAMAGE
     return FALSE;
 #endif
-    u8 ignorefalldamage;
+    u8 ignorefalldamage = FALSE;
 
     f32 fallHeight = m->peakHeight - m->pos[1];
 
@@ -101,35 +101,30 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
         return FALSE;
     }
 
-    f32 damageHeight = FALL_DAMAGE_HEIGHT_SMALL;
-
-    //If have fall damage badge, remove bp, otherwise hurt
-    if ((save_file_get_badge_equip() & (1<<1))&&(gMarioState->numBadgePoints > 0)) {
-        if (fallHeight > damageHeight) {
-            gMarioState->numBadgePoints --;
-        }
-    }
-    else
-    {
-        if (m->action != ACT_TWIRLING && !SURFACE_IS_BURNING(m->floor->type)) {
-            if (m->vel[1] < -55.0f) {
-                if (fallHeight > FALL_DAMAGE_HEIGHT_LARGE) {
-                    m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 16 : 24;
-#if ENABLE_RUMBLE
-                    queue_rumble_data(5, 80);
-#endif
-                    set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
-                    play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
-                    return drop_and_set_mario_action(m, hardFallAction, 4);
-                } else if (fallHeight > damageHeight && !mario_floor_is_slippery(m)) {
-                    m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 8 : 12;
-                    m->squishTimer = 30;
-#if ENABLE_RUMBLE
-                    queue_rumble_data(5, 80);
-#endif
-                    set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
-                    play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
+    if (m->action != ACT_TWIRLING && !SURFACE_IS_BURNING(m->floor->type)) {
+        if (m->vel[1] < -55.0f) {
+            if (fallHeight > FALL_DAMAGE_HEIGHT_LARGE) {
+                if ((save_file_get_badge_equip() & (1<<1))&&(gMarioState->numBadgePoints > 0)) {
+                    gMarioState->numBadgePoints --; return FALSE;
                 }
+                m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 16 : 24;
+#if ENABLE_RUMBLE
+                queue_rumble_data(5, 80);
+#endif
+                set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
+                play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
+                return drop_and_set_mario_action(m, hardFallAction, 4);
+            } else if (fallHeight > FALL_DAMAGE_HEIGHT_SMALL && !mario_floor_is_slippery(m)) {
+                if ((save_file_get_badge_equip() & (1<<1))&&(gMarioState->numBadgePoints > 0)) {
+                    gMarioState->numBadgePoints --; return FALSE;
+                }
+                m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 8 : 12;
+                m->squishTimer = 30;
+#if ENABLE_RUMBLE
+                queue_rumble_data(5, 80);
+#endif
+                set_camera_shake_from_hit(SHAKE_FALL_DAMAGE);
+                play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
             }
         }
     }
@@ -156,7 +151,9 @@ s32 should_get_stuck_in_ground(struct MarioState *m) {
 
     if (floor != NULL && (type == SURFACE_SNOW || type == SURFACE_SAND)) {
         if (!(floor->object) && m->peakHeight - m->pos[1] > 1000.0f && m->floorNormal[1] >= COS30) {
-            return TRUE;
+            if (m->vel[1] < -55.0f) {
+                return TRUE;
+            }
         }
     }
 
@@ -411,7 +408,7 @@ void update_flying(struct MarioState *m) {
                 m->forwardVel += 3.5f;
             }//
             spawn_object(m->marioObj, MODEL_RED_FLAME, bhvKoopaShellFlame);
-            play_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_GENERAL_DONUT_PLATFORM_EXPLOSION, m->marioObj->header.gfx.cameraToObject);
             cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
     }
@@ -1636,7 +1633,7 @@ s32 act_lava_boost(struct MarioState *m) {
             if (SURFACE_IS_BURNING(m->floor->type)) {
                 m->actionState = ACT_STATE_LAVA_BOOST_HIT_LAVA;
                 m->actionArg &= ~2;
-                if (m->floor->type != SURFACE_BURNING) m->actionArg |= 2;
+                if (!SURFACE_IS_BURNING_SMOKE(m->floor->type)) m->actionArg |= 2;
                 if (!(m->flags & MARIO_METAL_CAP)) {
                     if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
                         gMarioState->numBadgePoints --;

@@ -758,14 +758,8 @@ s16 look_down_slopes(s16 camYaw) {
 
     if (floor != NULL) {
         if (floor->type != SURFACE_WALL_MISC && floorDY > 0) {
-            Vec3f normal;
-            get_surface_normal(normal, floor);
-            if (normal[2] == 0.f && floorDY < 100.f) {
-                pitch = 0x05B0;
-            } else {
                 // Add the slope's angle of declination to the pitch
-                pitch += atan2s(40.f, floorDY);
-            }
+            pitch += atan2s(40.f, floorDY);
         }
     }
 
@@ -1211,7 +1205,7 @@ void mode_8_directions_camera(struct Camera *c) {
     //     break;
     //     }
 
-
+/***/
     raycast_mode_find_cam_collision = FALSE;
     find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
     raycast_mode_find_cam_collision = TRUE;
@@ -1234,19 +1228,6 @@ void mode_8_directions_camera(struct Camera *c) {
         vec3f_add(hitpos,thick);
 
         vec3f_copy(c->pos,hitpos);
-    }
-
-    if ((gMarioState->Options & (1<<OPT_CAMCOL))&&(cmm_mode == CMM_MODE_PLAY)) {
-        u8 moves=0;//prevent infinite loops
-        s16 angle_to_mario = atan2s( c->pos[2] - origin[2] , c->pos[0] - origin[0] );
-        find_floor(c->pos[0], c->pos[1], c->pos[2], &surf);
-        while ((!surf)&&(moves<80)) {
-            c->pos[0] += sins(angle_to_mario) * -10.0f;
-            c->pos[2] += coss(angle_to_mario) * -10.0f;
-            c->pos[1] += sins(calculate_pitch(origin,c->pos)) * -10.0f;
-            find_floor(c->pos[0], c->pos[1], c->pos[2], &surf);
-            moves++;
-        }
     }
 }
 

@@ -10,7 +10,7 @@
  *
  * Uncomment this out to specifically set it, otherwise world scale will be based off of your extended bounds mode.
  */
-// #define WORLD_SCALE 1
+#define WORLD_SCALE 2
 
 /**
  *  0: Regular bounds
@@ -40,7 +40,7 @@
  **************************************************************************/
 
 #if EXTENDED_BOUNDS_MODE == 0 // 1x, normal cell size
-    #define LEVEL_BOUNDARY_MAX 0x2000L //  8192
+    #define LEVEL_BOUNDARY_MAX 0x4000L //  8192
     #define CELL_SIZE          0x400   //  1024, NUM_CELLS = 16
     #ifndef WORLD_SCALE
         #define WORLD_SCALE 1

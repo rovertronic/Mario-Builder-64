@@ -358,10 +358,7 @@ void cmm_render_topleft_text(void) {
 }
 
 char *cmm_get_floor_name(s32 index, UNUSED char *buffer) {
-    if (index == 0) {
-        return "None";
-    }
-    return TILE_MATDEF(cmm_theme_table[cmm_lopt_theme].floors[index - 1]).name;
+    return TILE_MATDEF(index).name;
 }
 char *cmm_get_coinstar_str(s32 index, char *buffer) {
     if (index == 0) {
@@ -374,6 +371,10 @@ char *cmm_get_waterlevel_name(s32 index, char *buffer) {
     if (index == 0) {
         return "Disabled";
     }
+    sprintf(buffer, "Y: %d", index);
+    return buffer;
+}
+char *cmm_get_boundaryheight_name(s32 index, char *buffer) {
     sprintf(buffer, "Y: %d", index);
     return buffer;
 }
@@ -446,29 +447,22 @@ void song_changed(void) {
 }
 
 void cmm_set_data_overrides(void) {
-    // Floor options
-    s32 numFloors = cmm_theme_table[cmm_lopt_theme].numFloors;
-    cmm_settings_terrain_buttons[TERRAIN_FLOOR_INDEX].size = numFloors + 1;
-    if (cmm_lopt_plane > numFloors) {
-        cmm_lopt_plane = numFloors;
-    }
-
     // Music options
     set_album_and_song_from_seq();
     bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
 
     // Secret unlock
     if (cmm_lopt_secret) {
-        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
+        cmm_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table);
     } else {
-        cmm_settings_terrain_buttons[TERRAIN_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table) - 1;
+        cmm_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(cmm_theme_string_table) - 1;
     }
 
     // Custom theme
     if (cmm_lopt_theme == CMM_THEME_CUSTOM) {
-        cmm_settings_menu_lengths[1] = ARRAY_COUNT(cmm_settings_terrain_buttons) + 1; // Terrain menu length for selecting
+        cmm_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(cmm_settings_env_buttons) + 1; // Terrain menu length for selecting
     } else {
-        cmm_settings_menu_lengths[1] = ARRAY_COUNT(cmm_settings_terrain_buttons);
+        cmm_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(cmm_settings_env_buttons);
     }
 
     // Theme-specific data
@@ -476,14 +470,14 @@ void cmm_set_data_overrides(void) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_btcm;
-            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons); // includes costume
-            cmm_settings_menus[0] = draw_cmm_settings_general;
+            cmm_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(cmm_settings_misc_buttons); // includes costume
+            cmm_settings_menus[SETTINGS_MISC_INDEX] = draw_cmm_settings_misc;
             break;
         case CMM_GAME_VANILLA:
             bcopy(&cmm_toolbox_vanilla,&cmm_toolbox,sizeof(cmm_toolbox));
             cmm_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            cmm_settings_menu_lengths[0] = ARRAY_COUNT(cmm_settings_general_buttons_vanilla); // no costume
-            cmm_settings_menus[0] = draw_cmm_settings_general_vanilla;
+            cmm_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(cmm_settings_misc_buttons_vanilla); // no costume
+            cmm_settings_menus[SETTINGS_MISC_INDEX] = draw_cmm_settings_misc_vanilla;
             break;
     }
 }
@@ -493,25 +487,44 @@ void cmm_set_data_overrides(void) {
 #define SCROLL_SETTINGS 14
 #define CMM_SETTINGS_MENU_IS_STILL  ((cmm_menu_scrolling[SCROLL_SETTINGS][0] == 0) && (cmm_menu_start_timer == -1))
 
-void draw_cmm_settings_general(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons), cmm_menu_index);
-    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons);i++) {
-        print_maker_string_ascii( 55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_general_buttons[i],i,cmm_joystick);
+void draw_cmm_settings_misc(f32 xoff, f32 yoff) {
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_misc_buttons), cmm_menu_index);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_misc_buttons);i++) {
+        print_maker_string_ascii( 55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_misc_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_misc_buttons[i],i,cmm_joystick);
     }
 }
 
-void draw_cmm_settings_general_vanilla(f32 xoff, f32 yoff) {
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_general_buttons_vanilla), cmm_menu_index);
-    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_general_buttons_vanilla);i++) {
-        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_general_buttons_vanilla[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_general_buttons_vanilla[i],i,cmm_joystick);
+void draw_cmm_settings_misc_vanilla(f32 xoff, f32 yoff) {
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_misc_buttons_vanilla), cmm_menu_index);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_misc_buttons_vanilla);i++) {
+        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_misc_buttons_vanilla[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_misc_buttons_vanilla[i],i,cmm_joystick);
     }
+}
+
+void draw_cmm_settings_boundary(f32 xoff, f32 yoff) {
+    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_boundary_buttons), cmm_menu_index);
+    u32 numOptions = ARRAY_COUNT(cmm_settings_boundary_buttons);
+
+    if (!(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
+        numOptions -= 1;
+    }
+    cmm_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = numOptions;
+
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_boundary_buttons);i++) {
+        if ((i == BOUNDARY_HEIGHT_INDEX) && (numOptions == ARRAY_COUNT(cmm_settings_boundary_buttons) - 1)) {
+            cmm_greyed_text = TRUE;
+        }
+        print_maker_string_ascii(55 +xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_boundary_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_boundary_buttons[i],i,cmm_joystick);
+    }
+    cmm_greyed_text = FALSE;
 }
 
 #define CUSTOM_MENU_SCROLL_HEIGHT 105
 
-s32 terrain_menu_handle_scroll() {
+s32 env_menu_handle_scroll() {
     s32 yOffset = (cmm_custom_theme_menu_open ? CUSTOM_MENU_SCROLL_HEIGHT : 0);
     if (cmm_menu_scrolling[SCROLL_CUSTOM][0] > 0) {
         cmm_menu_scrolling[SCROLL_CUSTOM][0]--;
@@ -574,13 +587,14 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     prepare_block_draw(xpos, ypos);
 
     s8 pos[3];
-    vec3_set(pos,32,0,32);
+    vec3_set(pos,32,32,32);
 
     if (index < NUM_MATERIALS_PER_THEME) {
+        u8 renderedMat = cmm_curr_custom_theme.mats[index];
         u8 renderedTopmat = cmm_curr_custom_theme.topmats[index];
-        if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = 0;
+        if (!cmm_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = renderedMat;
 
-        render_preview_block(cmm_curr_custom_theme.mats[index], renderedTopmat, pos, &cmm_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
+        render_preview_block(renderedMat, renderedTopmat, pos, &cmm_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
     } else {
         cmm_use_alt_uvs = TRUE;
         if (index == 10) { // Poles
@@ -641,7 +655,7 @@ void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outp
 }
 
 // The amount to offset cmm_menu_index by when in the custom theme menu
-#define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_terrain_buttons) + 1)
+#define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_env_buttons) + 1)
 
 void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
     u32 topmatDisabled = !cmm_curr_custom_theme.topmatsEnabled[index];
@@ -744,7 +758,7 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     }
 }
 
-void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
+void draw_cmm_settings_env(f32 xoff, f32 yoff) {
     s32 oldtheme = cmm_lopt_theme;
     u8 beginScrollAnim = FALSE;
 
@@ -753,9 +767,9 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
     }
 
     animate_list_update(cmm_menu_list_offsets, 10, cmm_menu_index);
-    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_terrain_buttons);i++) {
-        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_terrain_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_terrain_buttons[i],i,cmm_joystick);
+    for (s32 i=0;i<ARRAY_COUNT(cmm_settings_env_buttons);i++) {
+        print_maker_string_ascii(55+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,cmm_settings_env_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(200+xoff+3*cmm_menu_list_offsets[i],154-(i*16)+yoff,60,&cmm_settings_env_buttons[i],i,cmm_joystick);
     }
 
     if (cmm_lopt_theme == CMM_THEME_CUSTOM) {
@@ -765,7 +779,7 @@ void draw_cmm_settings_terrain(f32 xoff, f32 yoff) {
     }
     cmm_set_data_overrides();
 
-    s32 index = ARRAY_COUNT(cmm_settings_terrain_buttons);
+    s32 index = ARRAY_COUNT(cmm_settings_env_buttons);
     s32 customThemeY = 120-(index*16) + cmm_menu_button_vels[0][0];
     print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[index],customThemeY + yoff,"Edit Custom Theme...",(index == cmm_menu_index));
     draw_cmm_settings_custom_theme(yoff - CUSTOM_MENU_SCROLL_HEIGHT);
@@ -1019,7 +1033,7 @@ void draw_cmm_menu(void) {
             cmm_global_scissor_top = MAX(0, 15 - yOff);
             cmm_global_scissor_bottom = MAX(0, 145 - yOff);
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, cmm_global_scissor_top, SCREEN_WIDTH - cmm_global_scissor, cmm_global_scissor_bottom);
-            yOff += terrain_menu_handle_scroll();
+            yOff += env_menu_handle_scroll();
 
             // Level name
             print_maker_string_ascii_centered(SCREEN_WIDTH/2,210+yOff,cmm_file_info.fname,FALSE);
@@ -1049,7 +1063,7 @@ void draw_cmm_menu(void) {
                     if (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
                     if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
                 }
-                cmm_menu_index_max = cmm_settings_menu_lengths[cmm_curr_settings_menu];
+                cmm_menu_index_max = cmm_settings_menu_lengths[cmm_curr_settings_menu];;
             }
             cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
@@ -1083,11 +1097,11 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_SCREENSHOT:
-            if (cmm_prepare_level_screenshot) {
+            if (cmm_freecam_snap) {
                 return;
             }
             print_maker_string(20,210,cmm_txt_freecam,TRUE);
-            cmm_render_topleft_text();
+            //cmm_render_topleft_text();
             break;
     }
 
@@ -1958,7 +1972,7 @@ s32 cmm_main_menu(void) {
                 f_chdir(cmm_level_dir_name);
                 struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_file_name);
                 f_chdir("..");
-                cmm_lopt_game = level_info->option[19];
+                cmm_lopt_game = level_info->game;
                 cmm_mm_selected_level = cmm_menu_index;
                 if (cmm_level_action == CMM_LA_BUILD) cmm_tip_timer = 60;
                 else cmm_tip_timer = 0;
