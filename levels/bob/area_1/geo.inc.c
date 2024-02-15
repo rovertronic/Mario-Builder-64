@@ -3,7 +3,7 @@
 const GeoLayout bob_area_1_geo[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ASM(0, ccm_append),
+		GEO_ASM(0, cmm_append),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, -92, -67, -1113),
 		GEO_ASM(0, geo_cannon_circle_base),
 	GEO_CLOSE_NODE(),
