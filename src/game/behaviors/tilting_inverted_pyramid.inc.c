@@ -1256,7 +1256,7 @@ void noteblock_function(void) {
     o->oPosY = o->oHomeY + (sins(o->oTimer*5000) * o->oVelY);
     o->oVelY *= 0.95f;
 
-    if (cur_obj_is_mario_on_platform()) {
+    if ((gMarioState->action != ACT_LVUP_DANCE)&&cur_obj_is_mario_on_platform()) {
             mario_stop_riding_and_holding(gMarioState);
             o->oTimer = 0;
             o->oVelY = 50.0f;
@@ -6094,7 +6094,7 @@ void bhv_badge(void) {
                 o->oHomeY = 1.0f;
                 break;
             }
-            if (o->oDistanceToMario < 180.0f) {
+            if ((o->oDistanceToMario < 180.0f)&&(gMarioState->action != ACT_LVUP_DANCE)) {
                 o->oAction++;
                 mario_stop_riding_object(gMarioState);
                 save_file_set_badge_equip(1 << o->oBehParams2ndByte);
@@ -6110,7 +6110,7 @@ void bhv_badge(void) {
                     run_event(EVENT_GET_BADGE);
                 }
             }
-        break;
+            break;
         case 1:
             o->oAngleVelYaw += 0x70;
             o->oFaceAngleYaw += o->oAngleVelYaw;
@@ -6119,7 +6119,7 @@ void bhv_badge(void) {
             if (o->oHomeY < .2f) {
                 obj_mark_for_deletion(o);
             }
-        break;
+            break;
     }
 }
 
