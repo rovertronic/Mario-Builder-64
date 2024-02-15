@@ -1958,6 +1958,9 @@ void generate_terrain_collision(void) {
     }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
         cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
+        if (surf_has_no_cam_collision(cmm_curr_coltype)) {
+            cmm_curr_coltype = SURFACE_DEFAULT;
+        }
         s32 bottomY = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
         s32 topY = cmm_lopt_boundary_height-32;
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, cmm_grid_size, FALSE);

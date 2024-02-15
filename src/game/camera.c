@@ -1167,7 +1167,7 @@ void mode_8_directions_camera(struct Camera *c) {
     sAreaYawChange = sAreaYaw - oldAreaYaw;
     set_camera_height(c, pos[1]);
 
-    raycast_mode_find_cam_collision = FALSE;
+    raycast_mode_camera = TRUE;
 
     // CEILING COLLISION
     // Standard camera raycast check for ceiling collision. No special shenanigans here!
@@ -1228,7 +1228,7 @@ void mode_8_directions_camera(struct Camera *c) {
         }
     }
 
-    raycast_mode_find_cam_collision = TRUE;
+    raycast_mode_camera = FALSE;
 }
 
 /**
