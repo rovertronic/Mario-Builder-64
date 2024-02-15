@@ -1526,11 +1526,6 @@ void process_boundary(u32 processRenderMode) {
         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         // Fade if no floor
         if (renderFade) {
-            if (processRenderMode == PROCESS_TILE_NORMAL) {
-                gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-                gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
-                render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
-            }
             if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
 repeatBackface:
@@ -1538,6 +1533,10 @@ repeatBackface:
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 0);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 2);
+                // Don't render black floor for Haunted Forest and None bgs
+                if ((cmm_lopt_bg != 4) && (cmm_lopt_bg != 9)) {
+                    render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
+                }
                 if (showBackface) {
                     cmm_render_flip_normals = TRUE;
                     showBackface = FALSE;
@@ -2999,6 +2998,8 @@ void reload_bg(void) {
         sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
         main_pool_free(compressed);
     }
+
+    generate_terrain_gfx(); // since some backgrounds affect the boundary
 }
 
 u8 cmm_upsidedown_tile = FALSE;

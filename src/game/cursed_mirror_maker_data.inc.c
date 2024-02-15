@@ -2113,14 +2113,14 @@ char *cmm_theme_string_table[] = {
 char *cmm_bg_string_table[] = {
     "Ocean Hills",
     "Cloudy Sky",
-    "Firey Sky",
+    "Fiery Sky",
     "Green Cave",
-    "Haunted Forest",
+    "Haunted Forest", // 4 - doesn't generate black chasm
     "Ice Mountains",
     "Desert Pyramids",
     "Underwater City",
     "Pink Sky",
-    "None",
+    "None", // 9 - doesn't generate black chasm
 };
 
 #define CMM_BOUNDARY_DEATH_PLANE   (1 << 0) // Has a death barrier - will be shrunk if also has inner walls
