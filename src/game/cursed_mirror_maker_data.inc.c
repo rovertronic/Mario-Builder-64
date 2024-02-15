@@ -1258,7 +1258,6 @@ u8 cmm_toolbox_vanilla[45] = {
 struct cmm_object_info cmm_object_type_star[] = {
     {bhvStar, TILE_SIZE/2, MODEL_STAR, FALSE, 0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
     {bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-    {bhvPlantStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, FALSE, 0, 1, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
 };
 struct cmm_object_info cmm_object_type_goomba[] = {
     {bhvGoomba, 0, MODEL_GOOMBA, FALSE, 1, 0, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
@@ -1435,7 +1434,7 @@ enum {
 };
 
 struct cmm_object_place cmm_object_place_types[] = {
-    { cmm_object_type_star, FALSE, TRUE, TRUE, 3},
+    { cmm_object_type_star, FALSE, TRUE, TRUE, 2},
     {&cmm_object_type_goomba, FALSE, FALSE, TRUE, 7},
     {&cmm_object_type_yellowcoin, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_greencoin, FALSE, FALSE, FALSE, 0},
@@ -1587,7 +1586,6 @@ char *txt_star_objects[] = {
 Gfx *btn_star_objects[] = {
     mat_b_btn_star,
     mat_b_btn_rcs,
-    mat_b_btn_plantstar,
 };
 
 char *txt_timed_objects[] = {
