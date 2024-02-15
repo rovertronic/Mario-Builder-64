@@ -708,4 +708,48 @@ extern const Gfx pokey_seg5_dl_05012808[];
 extern const Gfx pokey_seg5_dl_05013078[];
 extern const Gfx pokey_seg5_dl_050130B0[];
 
+#include "b0/header.h"
+
+#include "b1/header.h"
+
+#include "b2/header.h"
+
+#include "b3/header.h"
+
+#include "b4/header.h"
+
+#include "b5/header.h"
+
+#include "b6/header.h"
+
+#include "b7/header.h"
+
+#include "b8/header.h"
+
+#include "b9/header.h"
+
+#include "b10/header.h"
+
+#include "b11/header.h"
+
+#include "b12/header.h"
+
+#include "b13/header.h"
+
+#include "b15/header.h"
+
+#include "b16/header.h"
+
+#include "b17/header.h"
+
+#include "b18/header.h"
+
+#include "b19/header.h"
+
+#include "b21/header.h"
+
+#include "b22/header.h"
+
+#include "b14/header.h"
+
 #endif

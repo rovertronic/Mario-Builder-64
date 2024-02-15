@@ -134,7 +134,7 @@ u8 b19_b19_ci8[] = {
 
 Gfx b19_b19_ci8_pal_rgba16_aligner[] = {gsSPEndDisplayList()};
 u8 b19_b19_ci8_pal_rgba16[] = {
-	0x00, 0x00, 0x4b, 0x9e, 0x4b, 0x9f, 0x4b, 0x1d, 
+	0x4b, 0x5e, 0x4b, 0x9e, 0x4b, 0x9f, 0x4b, 0x1d, 
 	0x42, 0xd9, 0x3a, 0x97, 0x3a, 0x55, 0x4b, 0x5f, 
 	0x29, 0x8d, 0x18, 0xc7, 0x21, 0x4b, 0x32, 0x53, 
 	0x32, 0x13, 0x21, 0x8d, 0x43, 0x1d, 0x4b, 0x5d, 
@@ -143,15 +143,15 @@ u8 b19_b19_ci8_pal_rgba16[] = {
 	0x19, 0x09, 0x21, 0x8f, 0x2a, 0x11, 
 };
 
-Vtx b19_Plane_mesh_vtx_0[4] = {
+Vtx b19_Plane_001_mesh_vtx_0[4] = {
 	{{{-16, 16, 0},0, {-16, -16},{0x0, 0x0, 0x7F, 0xFF}}},
 	{{{-16, -16, 0},0, {-16, 1008},{0x0, 0x0, 0x7F, 0xFF}}},
 	{{{16, -16, 0},0, {1008, 1008},{0x0, 0x0, 0x7F, 0xFF}}},
 	{{{16, 16, 0},0, {1008, -16},{0x0, 0x0, 0x7F, 0xFF}}},
 };
 
-Gfx b19_Plane_mesh_tri_0[] = {
-	gsSPVertex(b19_Plane_mesh_vtx_0 + 0, 4, 0),
+Gfx b19_Plane_001_mesh_tri_0[] = {
+	gsSPVertex(b19_Plane_001_mesh_vtx_0 + 0, 4, 0),
 	gsSP1Triangle(0, 1, 2, 0),
 	gsSP1Triangle(0, 2, 3, 0),
 	gsSPEndDisplayList(),
@@ -189,9 +189,9 @@ Gfx mat_revert_b19_f3d_material[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx b19_Plane_mesh[] = {
+Gfx b19_Plane_001_mesh[] = {
 	gsSPDisplayList(mat_b19_f3d_material),
-	gsSPDisplayList(b19_Plane_mesh_tri_0),
+	gsSPDisplayList(b19_Plane_001_mesh_tri_0),
 	gsSPDisplayList(mat_revert_b19_f3d_material),
 	gsDPPipeSync(),
 	gsSPSetGeometryMode(G_LIGHTING),
