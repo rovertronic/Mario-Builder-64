@@ -16,5 +16,4 @@
 #include "actors/token/texscroll.inc.h"
 //#include "actors/chicken/texscroll.inc.h"
 //#include "actors/ring/texscroll.inc.h"
-//#include "actors/hammer/texscroll.inc.h"
-extern void scroll_textures_group0();
+//extern void scroll_textures_group0();

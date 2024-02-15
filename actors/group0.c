@@ -233,3 +233,4 @@
 #include "b21/model.inc.c"
 #include "b22/model.inc.c"
 #include "b14/model.inc.c"
+#include "hammer/model.inc.c"

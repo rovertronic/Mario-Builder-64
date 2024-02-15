@@ -1,6 +1,5 @@
 #include "actors/group0.h"
-//#include "actors/hammer/texscroll.inc.c"
-//#include "actors/ring/texscroll.inc.c"
+////#include "actors/ring/texscroll.inc.c"
 //#include "actors/chicken/texscroll.inc.c"
 // #include "actors/token/texscroll.inc.c"
 //#include "actors/egg/texscroll.inc.c"
@@ -21,8 +20,7 @@
 void scroll_textures_group0() {
 	
 	
-	//scroll_actor_geo_hammer();
-
+	//
 	//scroll_actor_geo_ring();
 
 	
