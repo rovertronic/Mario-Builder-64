@@ -1127,51 +1127,31 @@ u16 u16AngleRoundToEighth(u16 angle) {
 void mode_8_directions_camera(struct Camera *c) {
     Vec3f pos;
     s16 oldAreaYaw = sAreaYaw;
-    struct Surface *surf;
+    struct Surface * surf;
     Vec3f camdir;
     Vec3f origin;
     Vec3f thick;
     Vec3f hitpos;
+    Vec3f hitpos_300u;
 
     u8 cam_col_level = FALSE;
-
-    f32 zoomie;
-    zoomie = 400.0f;
-    //thwomp king boss fight
-    // if ((gCurrLevelNum==LEVEL_DDD)&&(gCurrAreaIndex==3)) {
-    //     zoomie = 800.0f;
-    // }
-    // if ((gCurrLevelNum==LEVEL_CCM)&&(gCurrAreaIndex==6)) {
-    //     zoomie = 600.0f;
-    // }
-    // if ((gCurrLevelNum==LEVEL_RR)&&(gCurrAreaIndex==0)) {
-    //     zoomie = 800.0f;
-    // }
 
     radial_camera_input(c);
 
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         s8DirModeYawOffset -= DEGREES(45);
-        //cButtonCounter++;
-        //stoppedMovingCamera = 0;
-        //lastCameraMove = MOVED_LEFT;
-        
     }
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         s8DirModeYawOffset += DEGREES(45);
-        //cButtonCounter++;
-        //stoppedMovingCamera = 0;
-        //lastCameraMove = MOVED_RIGHT; 
     }
-    //if (gPlayer2Controller->rawStickX) {
-    //    s8DirModeYawOffset += DEGREES(gPlayer2Controller->rawStickX * 4 / 64);
-    //    }
+
     if (gPlayer1Controller->buttonDown & L_JPAD) {
         s8DirModeYawOffset -= DEGREES(2);
     }
     if (gPlayer1Controller->buttonDown & R_JPAD) {
         s8DirModeYawOffset += DEGREES(2);
     }
+
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         s8DirModeYawOffset = u16AngleRoundToEighth(s8DirModeYawOffset);
     }
@@ -1179,7 +1159,7 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset = gMarioState->faceAngle[1];
     }
 
-    lakitu_zoom(zoomie, 0x900);
+    lakitu_zoom(400.0f, 0x900);
     c->nextYaw = update_8_directions_camera(c, c->focus, pos);
     c->pos[0] = pos[0];
     c->pos[1] = pos[1];
@@ -1187,48 +1167,68 @@ void mode_8_directions_camera(struct Camera *c) {
     sAreaYawChange = sAreaYaw - oldAreaYaw;
     set_camera_height(c, pos[1]);
 
+    raycast_mode_find_cam_collision = FALSE;
+
+    // CEILING COLLISION
+    // Standard camera raycast check for ceiling collision. No special shenanigans here!
     vec3f_copy(origin,gMarioState->pos);
     origin[1] += 50.0f;
-
-    camdir[0] = c->pos[0] - origin[0];
-    camdir[1] = c->pos[1] - origin[1];
-    camdir[2] = c->pos[2] - origin[2];
-
-    //hardcoded list of levels with 0 camera collision
-    // switch(gCurrLevelNum) {
-    //     case LEVEL_CASTLE_COURTYARD:
-    //     case LEVEL_BITFS:
-    //     case LEVEL_BITDW:
-    //     //case LEVEL_BOB:
-    //     case LEVEL_PSS:
-    //     cam_col_level = TRUE;
-    //     break;
-    //     }
-
-/***/
-    raycast_mode_find_cam_collision = FALSE;
-    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL | RAYCAST_FIND_WALL);
-    raycast_mode_find_cam_collision = TRUE;
-    Vec3f camera_hit_diff;
-    vec3f_diff(camera_hit_diff,origin,hitpos);
-    f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+    vec3f_diff(camdir,c->pos,origin);
+    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
 
     if (surf) {
-        f32 thickMul = 35.0f;
-        f32 normal[3];
-        get_surface_normal(normal, surf);
-
-        if (hit_to_mario_dist < 300.0f) {
-            thickMul -= 300.0f-hit_to_mario_dist;
-        }
-
-        thick[0] = normal[0] * thickMul;
-        thick[1] = normal[1] * thickMul;
-        thick[2] = normal[2] * thickMul;
-        vec3f_add(hitpos,thick);
-
         vec3f_copy(c->pos,hitpos);
     }
+
+    // WALL COLLISION
+    // More complex; does an initial check to disqualify 300 unit high walls. If there are walls taller than 300 units,
+    // then do a standard camera raycast and test for walls. If successful, set the camera position to the wall hit location
+    // and push the camera inward if Mario is close to the wall.
+
+    vec3f_copy(origin,gMarioState->pos);
+    origin[1] += 300.0f;
+    vec3f_diff(camdir,c->pos,origin);
+    find_surface_on_ray(origin, camdir, &surf, &hitpos_300u, RAYCAST_FIND_WALL);
+
+    if (surf) {
+        vec3f_copy(origin,gMarioState->pos);
+        origin[1] += 50.0f;
+        vec3f_diff(camdir,c->pos,origin);
+
+        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+
+        if (!((hitpos_300u[0] == hitpos[0])&&(hitpos_300u[2] == hitpos[2]))) {
+            // The 300+ unit raycast and the 50+ unit raycast do not hit the same wall.
+            // This happens if Mario is standing behind a 300 unit tall wall, and the initial raycast
+            // still hits a wall behind Mario. Without this check, this causes the raycast to
+            // teleport really close behind the 300 unit tall wall. Override the 50+ unit raycast
+            // hit position to be the 300+ unit hit position instead.
+
+            vec3f_copy(hitpos,hitpos_300u);
+        }
+
+        Vec3f camera_hit_diff;
+        vec3f_diff(camera_hit_diff,origin,hitpos);
+        f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+
+        if (surf) {
+            f32 thickMul = 35.0f;
+            f32 normal[3];
+            get_surface_normal(normal, surf);
+
+            if (hit_to_mario_dist < 300.0f) {
+                thickMul -= 300.0f-hit_to_mario_dist;
+            }
+
+            thick[0] = normal[0] * thickMul;
+            thick[1] = normal[1] * thickMul;
+            thick[2] = normal[2] * thickMul;
+            vec3f_add(hitpos,thick);
+            vec3f_copy(c->pos,hitpos);
+        }
+    }
+
+    raycast_mode_find_cam_collision = TRUE;
 }
 
 /**
