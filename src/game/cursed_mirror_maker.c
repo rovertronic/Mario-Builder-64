@@ -1302,8 +1302,8 @@ void process_tiles(u32 processTileRenderMode) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
 
-            // 
-            if ((matType == MAT_CUTOUT) || ((matType < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
+            // Important to not use matType here so that it's still opaque for screens
+            if ((matType == MAT_CUTOUT) || ((MATERIAL(mat).type < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             }
         // COLLISION
@@ -1718,8 +1718,9 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     if (do_process(&matType, processType)) {
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
+        // Important to not use matType here so that it's still opaque for screens
         if (((matType == MAT_CUTOUT) ||
-            ((matType < MAT_CUTOUT) && (cmm_mat_table[topmatid].type >= MAT_CUTOUT)))
+            ((cmm_mat_table[matid].type < MAT_CUTOUT) && (cmm_mat_table[topmatid].type >= MAT_CUTOUT)))
             && !disableZ) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
