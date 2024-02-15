@@ -89,6 +89,7 @@ const LevelScript level_intro_splash_screen[] = {
     // Start animation
     LOAD_AREA(/*area*/ 1),
 
+    SLEEP(/*frames*/ 65),
     SET_MENU_MUSIC(/*seq*/ SEQ_SOUND_PLAYER),
     CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
     //SLEEP(/*frames*/ 75),
