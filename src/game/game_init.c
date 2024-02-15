@@ -1,5 +1,4 @@
 #include <ultra64.h>
-#include <PR/os_internal_reg.h>
 
 #include "sm64.h"
 #include "gfx_dimensions.h"
@@ -38,9 +37,6 @@
 #include "libcart/ff/ff.h"
 
 #include "libpl/libpl.h"
-
-struct Controller gControllers[MAXCONTROLLERS];
-OSContStatus gControllerStatuses[MAXCONTROLLERS];
 
 u8 painting_base_rgba16[] = {
 	0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 
@@ -301,6 +297,9 @@ u8 painting_base_rgba16[] = {
 	0x38, 0x81, 0x18, 0x01, 0x00, 0x01, 0x00, 0x01, 
 };
 
+// Emulators that the Instant Input patch should not be applied to
+#define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
+
 // Gfx handlers
 struct SPTask *gGfxSPTask;
 Gfx *gDisplayListHead;
@@ -308,10 +307,10 @@ u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
 
 // OS Controllers
-OSContStatus gControllerStatuses[4];
-OSContPadEx gControllerPads[4];
-u8 gControllerBits;
-s8 gGamecubeControllerPort = -1; // HackerSM64: This is set to -1 if there's no GC controller, 0 if there's one in the first port and 1 if there's one in the second port.
+struct Controller gControllers[MAXCONTROLLERS];
+OSContStatus gControllerStatuses[MAXCONTROLLERS];
+OSContPadEx gControllerPads[MAXCONTROLLERS];
+u8 gControllerBits = 0b0000;
 u8 gBorderHeight;
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
 u8 gCustomDebugMode;
@@ -360,8 +359,8 @@ struct Controller* const gPlayer4Controller = &gControllers[3];
 
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
-// u16 gDemoInputListID = 0;
-// struct DemoInput gRecordedDemoInput = { 0 };
+u16 gDemoInputListID = 0;
+struct DemoInput gRecordedDemoInput = { 0 };
 
 // Display
 // ----------------------------------------------------------------------------------------------------
@@ -724,83 +723,86 @@ void display_and_vsync(void) {
     gGlobalTimer++;
 }
 
+#if !defined(DISABLE_DEMO) && defined(KEEP_MARIO_HEAD)
 // this function records distinct inputs over a 255-frame interval to RAM locations and was likely
 // used to record the demo sequences seen in the final game. This function is unused.
-// UNUSED static void record_demo(void) {
-//     // record the player's button mask and current rawStickX and rawStickY.
-//     u8 buttonMask =
-//         ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
-//         | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
-//     s8 rawStickX = gPlayer1Controller->rawStickX;
-//     s8 rawStickY = gPlayer1Controller->rawStickY;
+UNUSED static void record_demo(void) {
+    // record the player's button mask and current rawStickX and rawStickY.
+    u8 buttonMask =
+        ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
+        | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
+    s8 rawStickX = gPlayer1Controller->rawStickX;
+    s8 rawStickY = gPlayer1Controller->rawStickY;
 
-//     // If the stick is in deadzone, set its value to 0 to
-//     // nullify the effects. We do not record deadzone inputs.
-//     if (rawStickX > -8 && rawStickX < 8) {
-//         rawStickX = 0;
-//     }
+    // If the stick is in deadzone, set its value to 0 to
+    // nullify the effects. We do not record deadzone inputs.
+    if (rawStickX > -8 && rawStickX < 8) {
+        rawStickX = 0;
+    }
 
-//     if (rawStickY > -8 && rawStickY < 8) {
-//         rawStickY = 0;
-//     }
+    if (rawStickY > -8 && rawStickY < 8) {
+        rawStickY = 0;
+    }
 
-//     // Rrecord the distinct input and timer so long as they are unique.
-//     // If the timer hits 0xFF, reset the timer for the next demo input.
-//     if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
-//         || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
-//         gRecordedDemoInput.timer = 0;
-//         gRecordedDemoInput.buttonMask = buttonMask;
-//         gRecordedDemoInput.rawStickX = rawStickX;
-//         gRecordedDemoInput.rawStickY = rawStickY;
-//     }
-//     gRecordedDemoInput.timer++;
-// }
+    // Rrecord the distinct input and timer so long as they are unique.
+    // If the timer hits 0xFF, reset the timer for the next demo input.
+    if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
+        || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
+        gRecordedDemoInput.timer = 0;
+        gRecordedDemoInput.buttonMask = buttonMask;
+        gRecordedDemoInput.rawStickX = rawStickX;
+        gRecordedDemoInput.rawStickY = rawStickY;
+    }
+    gRecordedDemoInput.timer++;
+}
 
 /**
  * If a demo sequence exists, this will run the demo input list until it is complete.
  */
-// void run_demo_inputs(void) {
-//     // Eliminate the unused bits.
-//     gPlayer1Controller->controllerData->button &= VALID_BUTTONS;
+void run_demo_inputs(void) {
+    // Eliminate the unused bits.
+    gPlayer1Controller->controllerData->button &= VALID_BUTTONS;
 
-//     // Check if a demo inputs list exists and if so,
-//     // run the active demo input list.
-//     if (gCurrDemoInput != NULL) {
-//         // The timer variable being 0 at the current input means the demo is over.
-//         // Set the button to the END_DEMO mask to end the demo.
-//         if (gCurrDemoInput->timer == 0) {
-//             gPlayer1Controller->controllerData->stick_x = 0;
-//             gPlayer1Controller->controllerData->stick_y = 0;
-//             gPlayer1Controller->controllerData->button = END_DEMO;
-//         } else {
-//             // Backup the start button if it is pressed, since we don't want the
-//             // demo input to override the mask where start may have been pressed.
-//             u16 startPushed = (gPlayer1Controller->controllerData->button & START_BUTTON);
+    // Check if a demo inputs list exists and if so,
+    // run the active demo input list.
+    if (gCurrDemoInput != NULL) {
+        // The timer variable being 0 at the current input means the demo is over.
+        // Set the button to the END_DEMO mask to end the demo.
+        if (gCurrDemoInput->timer == 0) {
+            gPlayer1Controller->controllerData->stick_x = 0;
+            gPlayer1Controller->controllerData->stick_y = 0;
+            gPlayer1Controller->controllerData->button = END_DEMO;
+        } else {
+            // Backup the start button if it is pressed, since we don't want the
+            // demo input to override the mask where start may have been pressed.
+            u16 startPushed = (gPlayer1Controller->controllerData->button & START_BUTTON);
 
-//             // Perform the demo inputs by assigning the current button mask and the stick inputs.
-//             gPlayer1Controller->controllerData->stick_x = gCurrDemoInput->rawStickX;
-//             gPlayer1Controller->controllerData->stick_y = gCurrDemoInput->rawStickY;
+            // Perform the demo inputs by assigning the current button mask and the stick inputs.
+            gPlayer1Controller->controllerData->stick_x = gCurrDemoInput->rawStickX;
+            gPlayer1Controller->controllerData->stick_y = gCurrDemoInput->rawStickY;
 
-//             // To assign the demo input, the button information is stored in
-//             // an 8-bit mask rather than a 16-bit mask. this is because only
-//             // A, B, Z, Start, and the C-Buttons are used in a demo, as bits
-//             // in that order. In order to assign the mask, we need to take the
-//             // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
-//             // match the correct input mask. We then add this to the masked
-//             // lower 4 bits to get the correct button mask.
-//             gPlayer1Controller->controllerData->button =
-//                 ((gCurrDemoInput->buttonMask & 0xF0) << 8) + ((gCurrDemoInput->buttonMask & 0xF));
+            // To assign the demo input, the button information is stored in
+            // an 8-bit mask rather than a 16-bit mask. this is because only
+            // A, B, Z, Start, and the C-Buttons are used in a demo, as bits
+            // in that order. In order to assign the mask, we need to take the
+            // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
+            // match the correct input mask. We then add this to the masked
+            // lower 4 bits to get the correct button mask.
+            gPlayer1Controller->controllerData->button =
+                ((gCurrDemoInput->buttonMask & 0xF0) << 8) + ((gCurrDemoInput->buttonMask & 0xF));
 
-//             // If start was pushed, put it into the demo sequence being input to end the demo.
-//             gPlayer1Controller->controllerData->button |= startPushed;
+            // If start was pushed, put it into the demo sequence being input to end the demo.
+            gPlayer1Controller->controllerData->button |= startPushed;
 
-//             // Run the current demo input's timer down. if it hits 0, advance the demo input list.
-//             if (--gCurrDemoInput->timer == 0) {
-//                 gCurrDemoInput++;
-//             }
-//         }
-//     }
-// }
+            // Run the current demo input's timer down. if it hits 0, advance the demo input list.
+            if (--gCurrDemoInput->timer == 0) {
+                gCurrDemoInput++;
+            }
+        }
+    }
+}
+
+#endif
 
 /**
  * Take the updated controller struct and calculate the new x, y, and distance floats.
@@ -926,6 +928,9 @@ void init_controllers(void) {
     gEepromProbe = (gEmulator & EMU_WIIVC)
                  ? osEepromProbeVC(&gSIEventMesgQueue)
                  : osEepromProbe  (&gSIEventMesgQueue);
+#endif
+#ifdef SRAM
+    gSramProbe = nuPiInitSram();
 #endif
 
     // Loop over the 4 ports and link the controller structs to the appropriate status and pad.
@@ -1124,7 +1129,6 @@ void thread5_game_loop(UNUSED void *arg) {
 #endif
     render_init();
 
-    gSramProbe = nuPiInitSram();
     if (gSramProbe != 0) {
         nuPiReadSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
     }
