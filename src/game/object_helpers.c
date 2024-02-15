@@ -2365,8 +2365,9 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
                 default:
                     return FALSE;
             }
-            other->oInteractStatus |= INT_STATUS_TOUCHED_MARIO | INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
-                                      | INT_STATUS_TOUCHED_BOB_OMB;
+            other->oInteractStatus |= INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
+                                      | INT_STATUS_TOUCHED_BOB_OMB + ATTACK_FAST_ATTACK;
+            if (other->behavior == segmented_to_virtual(bhvRex)) other->oHealth = 0; // thanks rovert
             return TRUE;
         }
     }
