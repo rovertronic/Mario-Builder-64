@@ -1,4 +1,10 @@
+Lights1 blaster_bullet2_lights = gdSPDefLights1(
+	0x7F, 0x7F, 0x7F,
+	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
+Lights1 blaster_bullet1_lights = gdSPDefLights1(
+	0x7F, 0x7F, 0x7F,
+	0xFF, 0xFF, 0xFF, 0x28, 0x28, 0x28);
 
 Gfx blaster_bullet2_ci8_aligner[] = {gsSPEndDisplayList()};
 u8 blaster_bullet2_ci8[] = {
@@ -316,14 +322,14 @@ u8 blaster_bullet1_pal_rgba16[] = {
 };
 
 Vtx blaster_blaster_mesh_layer_1_vtx_0[20] = {
-	{{ {-128, -128, 128}, 0, {-16, 1008}, {129, 0, 0, 255} }},
-	{{ {-128, 128, 128}, 0, {-16, -16}, {129, 0, 0, 255} }},
-	{{ {-128, 128, -128}, 0, {1008, -16}, {129, 0, 0, 255} }},
-	{{ {-128, -128, -128}, 0, {1008, 1008}, {129, 0, 0, 255} }},
-	{{ {-128, -128, -128}, 0, {-16, 1008}, {0, 0, 129, 255} }},
-	{{ {-128, 128, -128}, 0, {-16, -16}, {0, 0, 129, 255} }},
-	{{ {128, 128, -128}, 0, {1008, -16}, {0, 0, 129, 255} }},
-	{{ {128, -128, -128}, 0, {1008, 1008}, {0, 0, 129, 255} }},
+	{{ {-128, -128, 128}, 0, {1008, 1008}, {129, 0, 0, 255} }},
+	{{ {-128, 128, 128}, 0, {1008, -16}, {129, 0, 0, 255} }},
+	{{ {-128, 128, -128}, 0, {-16, -16}, {129, 0, 0, 255} }},
+	{{ {-128, -128, -128}, 0, {-16, 1008}, {129, 0, 0, 255} }},
+	{{ {-128, -128, -128}, 0, {1008, 1008}, {0, 0, 129, 255} }},
+	{{ {-128, 128, -128}, 0, {1008, -16}, {0, 0, 129, 255} }},
+	{{ {128, 128, -128}, 0, {-16, -16}, {0, 0, 129, 255} }},
+	{{ {128, -128, -128}, 0, {-16, 1008}, {0, 0, 129, 255} }},
 	{{ {128, -128, -128}, 0, {1008, 1008}, {127, 0, 0, 255} }},
 	{{ {128, 128, -128}, 0, {1008, -16}, {127, 0, 0, 255} }},
 	{{ {128, 128, 128}, 0, {-16, -16}, {127, 0, 0, 255} }},
@@ -367,8 +373,7 @@ Gfx mat_blaster_bullet2[] = {
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
+	gsSPSetLights1(blaster_bullet2_lights),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, blaster_bullet2_pal_rgba16),
 	gsDPSetTile(0, 0, 0, 256, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
 	gsDPLoadTLUTCmd(5, 86),
@@ -391,8 +396,7 @@ Gfx mat_blaster_bullet1[] = {
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
+	gsSPSetLights1(blaster_bullet1_lights),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, blaster_bullet1_pal_rgba16),
 	gsDPSetTile(0, 0, 0, 256, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
 	gsDPLoadTLUTCmd(5, 74),
