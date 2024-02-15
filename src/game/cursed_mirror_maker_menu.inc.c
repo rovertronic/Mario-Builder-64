@@ -1137,6 +1137,7 @@ void draw_cmm_menu(void) {
 
 char *cmm_mm_keyboard_prompt[] = {
     "Enter level name:",//KXM_NEW_LEVEL
+    "Enter placeholder level name:", //KXM_NEW_LEVEL_LIMITED
     "Enter your author name:",//KXM_AUTHOR
     "Change author name:",
 };
@@ -1196,6 +1197,7 @@ u8 cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
 u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 
 char *cmm_mm_txt_keyboard[]= {
+    "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              START: Confirm",
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",
@@ -1652,6 +1654,12 @@ s32 cmm_main_menu(void) {
                     if (cmm_menu_going_back == -1) {
                         cmm_mm_state = MM_MAIN_LIMITED;
                         cmm_menu_index = 0;
+                    } else {
+                        cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL_LIMITED;
+                        cmm_mm_state = MM_KEYBOARD;
+                        cmm_mm_keyboard_input_index = 0;
+                        cmm_mm_keyboard_input[0] = '\0';
+                        cmm_menu_index = 0;
                     }
                 } else {
                     if (cmm_menu_going_back == -1) {
@@ -1666,10 +1674,10 @@ s32 cmm_main_menu(void) {
                     }
                 }
             }
-            if (cmm_mm_main_state == MM_MAIN_LIMITED && cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {
-                cmm_tip_timer = 60;
-                return 1;
-            }
+            //if (cmm_mm_main_state == MM_MAIN_LIMITED && cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {
+            //    cmm_tip_timer = 60;
+            //    return 1;
+            //}
             break;
         case MM_HELP_MODE:
             cmm_menu_index_max = 3;
@@ -1814,6 +1822,7 @@ s32 cmm_main_menu(void) {
             if (cmm_menu_end_timer == 0 && cmm_menu_going_back == 1) {
                 switch(cmm_mm_keyboard_exit_mode) {
                     case KXM_NEW_LEVEL:
+                    case KXM_NEW_LEVEL_LIMITED:
                         bcopy(&cmm_mm_keyboard_input,&cmm_file_name,cmm_mm_keyboard_input_index);
                         //manually add file extension
                         cmm_file_name[cmm_mm_keyboard_input_index+0] = '.';

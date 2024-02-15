@@ -380,6 +380,7 @@ enum {
 
 enum {
     KXM_NEW_LEVEL,
+    KXM_NEW_LEVEL_LIMITED,
     KXM_AUTHOR,
     KXM_CHANGE_AUTHOR,
 };
