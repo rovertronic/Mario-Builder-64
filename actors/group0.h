@@ -752,4 +752,6 @@ extern const Gfx pokey_seg5_dl_050130B0[];
 
 #include "b14/header.h"
 
+#include "hammer/geo_header.h"
+
 #endif
