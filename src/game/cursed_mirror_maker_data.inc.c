@@ -443,6 +443,10 @@ struct cmm_boundary_quad wall_boundary[] = {
     {{{32, 1, -32}, {0, 1, -32}, {32, 0, -32}, {0, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
 };
 
+extern Gfx mat_maker_MakerMCWater[];
+extern Gfx mat_maker_MakerMCLava[];
+extern Gfx mat_maker_MakerMCFlowingLava[];
+
 enum cmm_materials {
     CMM_MAT_NONE,
 
