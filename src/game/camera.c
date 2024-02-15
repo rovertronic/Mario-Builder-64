@@ -6597,6 +6597,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
     }
 
     gCollisionFlags &= ~COLLISION_FLAG_CAMERA;
+    gCurrentObject = gMarioObject; // hack to make vanish cap work
     pg->currFloorHeight = find_floor(sMarioCamState->pos[0],
                                      sMarioCamState->pos[1] + 10.f,
                                      sMarioCamState->pos[2], &pg->currFloor);
@@ -6604,6 +6605,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
                                    sMarioCamState->pos[1] - 10.f,
                                    sMarioCamState->pos[2], &pg->currCeil);
     pg->waterHeight = cmm_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]);
+    gCurrentObject = NULL;
     gCollisionFlags = tempCollisionFlags;
 }
 

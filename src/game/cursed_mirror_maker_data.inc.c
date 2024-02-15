@@ -448,8 +448,6 @@ extern Gfx mat_maker_MakerMCLava[];
 extern Gfx mat_maker_MakerMCFlowingLava[];
 
 enum cmm_materials {
-    CMM_MAT_NONE,
-
     CMM_MATLIST_START,
 
     // Terrain
@@ -662,8 +660,6 @@ char *cmm_matlist_names[] = {
 };
 
 struct cmm_material cmm_mat_table[] = {
-    {0,0,0,""}, // CMM_MAT_NONE
-
     // Terrain
     {mat_maker_MakerGrass,     0, SURFACE_GRASS,        "Grass"},         // CMM_MAT_GRASS
     {mat_maker_MakerVanillaGrass, 0, SURFACE_GRASS,     "Grass (Old)"},   // CMM_MAT_GRASS_OLD
