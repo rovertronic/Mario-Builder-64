@@ -414,6 +414,7 @@ u32 get_side_class(u32 mat, u32 dir) {
 
 // Used to compare material types and see if any future culling checks can be skipped
 // WARNING! using grid tile ->mat directly will result in mat being 0 if the tile is empty/water
+// If this returns FALSE then the material can be culled.
 s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
     s32 curMatClass, otherMatClass;
     if (curMat == otherMat) return FALSE;
@@ -433,13 +434,15 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 
 // Used for determining if a water side should be culled.
 u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
-    s32 mattype = TOPMAT(adjMat).type;
-    if (direction != CMM_DIRECTION_DOWN) {
-        mattype = MATERIAL(adjMat).type;
-    }
-    if (mattype == MAT_CUTOUT) return FALSE;
+    s32 adjMatClass = get_side_class(adjMat, direction^1);
+    if (adjMatClass == CLASS_CUTOUT) return FALSE;
+    if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
+    // Now we know that the side is a hollow cutout
     if (mat == -1) return TRUE; // adjMat should be confirmed to have a full face
-    return cutout_skip_culling_check(mat, adjMat, direction);
+    s32 matClass = get_side_class(mat, direction);
+    return (matClass != CLASS_HOLLOW_CUTOUT);
+    // Will return FALSE if both materials are hollow cutouts but the waterlogged block
+    // isn't a full faceshape. Not a big deal
 }
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
