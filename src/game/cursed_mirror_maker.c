@@ -2983,6 +2983,10 @@ void reload_bg(void) {
     void *srcStart = cmm_skybox_table[cmm_lopt_bg*2];
     void *srcEnd = cmm_skybox_table[cmm_lopt_bg*2+1];
 
+    if (srcStart == NULL) {
+        return;
+    }
+
     u32 compSize = ALIGN16(srcEnd - srcStart);
     u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
 

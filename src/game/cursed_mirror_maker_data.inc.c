@@ -2120,7 +2120,9 @@ char *cmm_bg_string_table[] = {
     "Haunted Forest",
     "Ice Mountains",
     "Desert Pyramids",
+    "Underwater City",
     "Pink Sky",
+    "None",
 };
 
 #define CMM_BOUNDARY_DEATH_PLANE   (1 << 0) // Has a death barrier - will be shrunk if also has inner walls
@@ -2161,8 +2163,12 @@ u8 *cmm_skybox_table[] = {
     _ccm_skybox_yay0SegmentRomEnd,
     _ssl_skybox_yay0SegmentRomStart,
     _ssl_skybox_yay0SegmentRomEnd,
+    _wdw_skybox_yay0SegmentRomStart,
+    _wdw_skybox_yay0SegmentRomEnd,
     _bits_skybox_yay0SegmentRomStart,
     _bits_skybox_yay0SegmentRomEnd,
+    NULL,
+    NULL,
 };
 
 extern char *cmm_get_floor_name(s32, char *);
