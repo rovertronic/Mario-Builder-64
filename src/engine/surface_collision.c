@@ -163,7 +163,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         offset = (normal[0] * pos[0]) + (normal[1] * pos[1]) + (normal[2] * pos[2]) + normal[3];
 
         // Exclude surfaces outside of the radius.
-        if (offset < -radius || offset > radius) continue;
+        if (offset < 0 || offset > radius) continue;
 
         vec3_diff(v0, surf->vertex2, surf->vertex1);
         vec3_diff(v1, surf->vertex3, surf->vertex1);
