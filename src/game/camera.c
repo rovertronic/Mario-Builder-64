@@ -1133,6 +1133,7 @@ void mode_8_directions_camera(struct Camera *c) {
     Vec3f thick;
     Vec3f hitpos;
     Vec3f hitpos_300u;
+    Vec3f camera_looknormal;
 
     u8 cam_col_level = FALSE;
 
@@ -1166,6 +1167,9 @@ void mode_8_directions_camera(struct Camera *c) {
     c->pos[2] = pos[2];
     sAreaYawChange = sAreaYaw - oldAreaYaw;
     set_camera_height(c, pos[1]);
+
+    vec3f_diff(camera_looknormal,c->focus,c->pos);
+    vec3f_normalize(camera_looknormal);
 
     raycast_mode_camera = TRUE;
 
@@ -1213,16 +1217,14 @@ void mode_8_directions_camera(struct Camera *c) {
 
         if (surf) {
             f32 thickMul = 35.0f;
-            f32 normal[3];
-            get_surface_normal(normal, surf);
 
             if (hit_to_mario_dist < 300.0f) {
                 thickMul -= 300.0f-hit_to_mario_dist;
             }
 
-            thick[0] = normal[0] * thickMul;
-            thick[1] = normal[1] * thickMul;
-            thick[2] = normal[2] * thickMul;
+            thick[0] = camera_looknormal[0] * thickMul;
+            thick[1] = camera_looknormal[1] * thickMul;
+            thick[2] = camera_looknormal[2] * thickMul;
             vec3f_add(hitpos,thick);
             vec3f_copy(c->pos,hitpos);
         }
