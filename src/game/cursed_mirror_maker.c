@@ -3114,11 +3114,11 @@ void freecam_camera_main(void) {
     cmm_camera_foc[2] = cmm_camera_pos[2] + ( coss(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 100.0f );
 }
 
-Gfx *get_button_tex(u32 buttonId) {
+Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
     if (cmm_ui_buttons[buttonId].placeMode == CMM_PM_OBJ) {
         u32 id;
         if (cmm_ui_buttons[buttonId].multiObj) {
-            id = cmm_ui_buttons[buttonId].idList[0];
+            id = cmm_ui_buttons[buttonId].idList[objIndex];
         } else {
             id = cmm_ui_buttons[buttonId].id;
         }
@@ -3382,8 +3382,8 @@ void sb_loop(void) {
                     // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
                     cmm_toolbox_transition_btn_ty = 25.0f;
-                    cmm_toolbox_transition_btn_old_gfx = get_button_tex(cmm_toolbar[cmm_toolbar_index]);
-                    cmm_toolbox_transition_btn_gfx = get_button_tex(cmm_toolbox[cmm_toolbox_index]);
+                    cmm_toolbox_transition_btn_old_gfx = get_button_tex(cmm_toolbar[cmm_toolbar_index], 0);
+                    cmm_toolbox_transition_btn_gfx = get_button_tex(cmm_toolbox[cmm_toolbox_index], 0);
 
                     cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
 

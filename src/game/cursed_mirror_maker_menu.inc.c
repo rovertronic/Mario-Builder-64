@@ -908,7 +908,7 @@ void draw_cmm_menu(void) {
             create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * cmm_menu_toolbar_offsets[i]), 0);
             gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
 
-            Gfx *mat = get_button_tex(cmm_toolbar[i]);
+            Gfx *mat = get_button_tex(cmm_toolbar[i], (cmm_toolbar_index == i ? cmm_param_selection : 0));
 
             gSPDisplayList(gDisplayListHead++, mat);//texture
             gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
@@ -958,7 +958,7 @@ void draw_cmm_menu(void) {
                 create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32) + 4*cmm_menu_list_offsets[i] + yOff, 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
-                Gfx *mat = get_button_tex(cmm_toolbox[i]);
+                Gfx *mat = get_button_tex(cmm_toolbox[i], 0);
 
                 gSPDisplayList(gDisplayListHead++, mat);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
