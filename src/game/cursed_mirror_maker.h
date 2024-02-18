@@ -144,29 +144,8 @@ struct cmm_tile {
     u32 x:6, y:6, z:6, type:5, mat:4, rot:2, waterlogged:1;
 };
 
-enum {
-    TILE_TYPE_BLOCK,
-    TILE_TYPE_SLOPE,
-    TILE_TYPE_CORNER,
-    TILE_TYPE_ICORNER,
-    TILE_TYPE_DCORNER,
-    TILE_TYPE_DICORNER,
-    TILE_TYPE_DSLOPE,
-    TILE_TYPE_SSLOPE,
-    TILE_TYPE_SLAB,
-    TILE_TYPE_DSLAB,
-    TILE_TYPE_SSLAB,
-    TILE_TYPE_CULL,
-    TILE_TYPE_TROLL,
-    TILE_TYPE_FENCE,
-    TILE_TYPE_POLE,
-    TILE_TYPE_BARS,
-
-    TILE_TYPE_WATER, // only blocks that are empty otherwise
-};
-
 struct cmm_obj {
-    u32 param1:1, param2:7, x:6, y:6, z:6, type:5, rot:2;
+    u32 param1:1, param2:7, x:6, y:6, z:6, type:8, rot:2;
 };
 
 struct cmm_grid_obj {
@@ -180,25 +159,22 @@ enum cmm_df_context {
 
 typedef void (*DisplayFunc)(s32);
 
+#define OBJ_TYPE_IS_BILLBOARDED (1 << 0)
+#define OBJ_TYPE_TRAJECTORY     (1 << 1)
+#define OBJ_TYPE_HAS_STAR       (1 << 2)
 struct cmm_object_info {
+    char *name;
+    Gfx *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u16 billboarded:1;
+    u16 flags:4;
     u16 numCoins:4;
     u16 numExtraObjects:3;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;
     u32 soundBits;
-};
-
-struct cmm_object_place {
-    struct cmm_object_info *info; // can be an array
-    u8 useTrajectory:1;
-    u8 hasStar:1;
-    u8 multipleObjs:1;
-    s8 maxParams;
 };
 
 struct ExclamationBoxContents {
@@ -213,12 +189,18 @@ struct ExclamationBoxContents {
 extern struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
 struct cmm_ui_button_type {
-    Gfx *material;
-    u8 multipleBtns;
-    u8 id;
-    u8 placeMode:2;
-    char *str;
-    char **param_strings;
+    u32 placeMode:2;
+    u32 multiObj:1;
+    u32 paramCount:8;
+
+    union {
+        u32 id;
+        u8 *idList;
+    };
+    union {
+        char *name;
+        char **names;
+    };
 };
 
 struct cmm_settings_button {
