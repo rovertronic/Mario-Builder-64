@@ -434,6 +434,7 @@ s16 object_step(void) {
 
     // Generate a splash if in water.
     obj_splash((s32) waterY, (s32) o->oPosY);
+    cur_obj_interact_with_noteblock(1);
     return collisionFlags;
 }
 

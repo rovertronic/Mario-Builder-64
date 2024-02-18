@@ -299,6 +299,7 @@ const Gfx wiggler_seg5_dl_0500BE10[] = {
 
 // 0x0500BE98 - 0x0500BF20
 const Gfx wiggler_seg5_dl_0500BE98[] = {
+	gsDPPipeSync(),
     gsSPLightColor(LIGHT_1, 0xe74700ff),
     gsSPLightColor(LIGHT_2, 0x391100ff),
     gsSPVertex(wiggler_seg5_vertex_0500B6A8, 15, 0),

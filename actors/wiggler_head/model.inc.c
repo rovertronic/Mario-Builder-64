@@ -266,6 +266,13 @@ const Gfx wiggler_seg5_dl_0500DD70[] = {
 
 // 0x0500DDF8 - 0x0500DE80
 const Gfx wiggler_seg5_dl_0500DDF8[] = {
+	gsSPSetGeometryMode(G_LIGHTING),
+	gsSPClearGeometryMode(G_TEXTURE_GEN),
+	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsSPTexture(65535, 65535, 0, 0, 0),
+	gsDPSetEnvColor(255, 255, 255, 255),
+	gsDPSetAlphaCompare(G_AC_NONE),
+
     gsSPLightColor(LIGHT_1, 0xe74700ff),
     gsSPLightColor(LIGHT_2, 0x391100ff),
     gsSPVertex(wiggler_seg5_vertex_0500CD08, 15, 0),

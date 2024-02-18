@@ -1190,7 +1190,6 @@ struct cmm_custom_theme cmm_curr_custom_theme;
 #define BARS_TOPTEX() (cmm_bar_texs[cmm_theme_table[cmm_lopt_theme].bars][1])
 #define WATER_TEX() (cmm_water_texs[cmm_theme_table[cmm_lopt_theme].water])
 
-
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
     { 0, MODEL_MARIOS_WING_CAP,  bhvWingCap,           0, TRUE,  0},
     { 0, MODEL_MARIOS_METAL_CAP, bhvVanishCap,         2, TRUE,  0},
@@ -1251,6 +1250,7 @@ enum {
     OBJECT_TYPE_KING_WHOMP,
     OBJECT_TYPE_BIG_BOO,
     OBJECT_TYPE_BIG_BULLY,
+    OBJECT_TYPE_WIGGLER,
     OBJECT_TYPE_BOWSER,
     OBJECT_TYPE_PLATFORM_TRACK,
     OBJECT_TYPE_PLATFORM_LOOPING,
@@ -1325,11 +1325,12 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_KING_WHOMP */    {"King Whomp",              mat_b_btn_boss_whomp,   bhvWhompKingBoss,  0,           MODEL_WHOMP_MAKER,         OBJ_TYPE_HAS_STAR,       0, 0, 2.f,  whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
 /* OBJECT_TYPE_BIG_BOO */       {"Big Boo",                 mat_b_btn_boss_boo,     bhvBalconyBigBoo,  TILE_SIZE,   MODEL_MAKER_BOO,           OBJ_TYPE_HAS_STAR,       0, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
 /* OBJECT_TYPE_BIG_BULLY */     {"Big Bully",               mat_b_btn_boss_bully,   bhvBigBully,       0,           MODEL_BULLY,               OBJ_TYPE_HAS_STAR,       0, 0, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
+/* OBJECT_TYPE_WIGGLER */       {"Wiggler",                 mat_b_btn_boss_wiggler, bhvWigglerHead,    0,           MODEL_WIGGLER_HEAD,        OBJ_TYPE_HAS_STAR,       0, 0, 4.0f, wiggler_seg5_anims_0500EC8C, df_wiggler, SOUND_OBJ_WIGGLER_TALK},
 /* OBJECT_TYPE_BOWSER */        {"Bowser",                  mat_b_btn_boss_bowser,  bhvBowser,         0,           MODEL_MAKER_BOWSER,        OBJ_TYPE_HAS_STAR,       0, 3, 1.0f, bowser_anims, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 /* OBJECT_TYPE_PLATFORM_TRACK */ {"Activated",              mat_b_btn_checker,      bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, OBJ_TYPE_TRAJECTORY,  0, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO},
 /* OBJECT_TYPE_PLATFORM_LOOPING */ {"Looping",              mat_b_btn_checker,      bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, OBJ_TYPE_TRAJECTORY,  0, 0, 1.0f, NULL, df_checkerboard_elevator, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO},
 /* OBJECT_TYPE_BOWLING_BALL */  {"Bowling Ball",            mat_b_btn_bball,        bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, OBJ_TYPE_IS_BILLBOARDED | OBJ_TYPE_TRAJECTORY, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO},
-/* OBJECT_TYPE_KOOPA_THE_QUICK */ {"Koopa the Quick",       mat_b_btn_kuppa,        bhvKoopa,          0,           MODEL_KOOPA_WITH_SHELL,    OBJ_TYPE_TRAJECTORY | OBJ_TYPE_HAS_STAR, 0, 1, 3.0f, koopa_seg6_anims_06011364, df_ktq, SOUND_OBJ_KOOPA_TALK},
+/* OBJECT_TYPE_KOOPA_THE_QUICK */ {"Koopa the Quick",       mat_b_btn_kuppaq,       bhvKoopa,          0,           MODEL_KOOPA_WITH_SHELL,    OBJ_TYPE_TRAJECTORY | OBJ_TYPE_HAS_STAR, 0, 1, 3.0f, koopa_seg6_anims_06011364, df_ktq, SOUND_OBJ_KOOPA_TALK},
 /* OBJECT_TYPE_PURPLE_SWITCH */ {"Purple Switch",           mat_b_btn_purpleswitch, bhvFloorSwitchHiddenObjects, 0, MODEL_PURPLE_SWITCH,       0,                       0, 0, 1.5f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
 /* OBJECT_TYPE_TIMED_BOX */     {"Timed Box",               mat_b_btn_corkbox,      bhvHiddenObject,   0,           MODEL_BREAKABLE_BOX,       0,                       0, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL2_SWITCH_TICK_FAST},
 /* OBJECT_TYPE_RECOVERY_HEART */ {"Recovery Heart",         mat_b_btn_heart,        bhvRecoveryHeart,  TILE_SIZE/2, MODEL_HEART,               0,                       0, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN},
@@ -1475,7 +1476,7 @@ u8 cmm_ground_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYP
 u8 cmm_bluecoin_idlist[] = {OBJECT_TYPE_BLUE_COIN, OBJECT_TYPE_BLUE_COIN_SWITCH};
 u8 cmm_mech_idlist[] = {OBJECT_TYPE_BOBOMB, OBJECT_TYPE_CHUCKYA, OBJECT_TYPE_BULLY, OBJECT_TYPE_BULLET_BILL, OBJECT_TYPE_HEAVE_HO, OBJECT_TYPE_MOTOS};
 u8 cmm_btcm_idlist[] = {OBJECT_TYPE_REX, OBJECT_TYPE_PODOBOO, OBJECT_TYPE_CRABLET, OBJECT_TYPE_HAMMER_BRO, OBJECT_TYPE_FIRE_BRO, OBJECT_TYPE_CHICKEN, OBJECT_TYPE_PHANTASM};
-u8 cmm_bosses_idlist[] = {OBJECT_TYPE_KING_BOBOMB, OBJECT_TYPE_KING_WHOMP, OBJECT_TYPE_BIG_BOO, OBJECT_TYPE_BIG_BULLY, OBJECT_TYPE_BOWSER};
+u8 cmm_bosses_idlist[] = {OBJECT_TYPE_KING_BOBOMB, OBJECT_TYPE_KING_WHOMP, OBJECT_TYPE_BIG_BOO, OBJECT_TYPE_BIG_BULLY, OBJECT_TYPE_WIGGLER, OBJECT_TYPE_BOWSER};
 u8 cmm_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING};
 u8 cmm_timed_idlist[] = {OBJECT_TYPE_PURPLE_SWITCH, OBJECT_TYPE_TIMED_BOX};
 u8 cmm_stone_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_WHOMP, OBJECT_TYPE_GRINDEL};
@@ -1510,7 +1511,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_BADGE */    {CMM_PM_OBJ,  FALSE, 23, OBJECT_TYPE_BADGE,      &txt_badges},
 /* CMM_BUTTON_WATER */    {CMM_PM_WATER,FALSE, 0, TILE_TYPE_WATER,         NULL},
 /* CMM_BUTTON_FENCE */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_FENCE,         NULL},
-/* CMM_BUTTON_BOSS */     {CMM_PM_OBJ,  TRUE,  5, &cmm_bosses_idlist,      "Bosses"},
+/* CMM_BUTTON_BOSS */     {CMM_PM_OBJ,  TRUE,  6, &cmm_bosses_idlist,      "Bosses"},
 /* CMM_BUTTON_MPLAT */    {CMM_PM_OBJ,  TRUE,  2, &cmm_plat_idlist,        "Moving Platform"},
 /* CMM_BUTTON_BBALL */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOWLING_BALL, NULL},
 /* CMM_BUTTON_KTQ */      {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA_THE_QUICK, NULL},
