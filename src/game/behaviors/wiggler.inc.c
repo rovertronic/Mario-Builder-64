@@ -199,19 +199,19 @@ static void wiggler_act_walk(void) {
     o->oWigglerWalkAnimSpeed = 0.06f * o->oForwardVel;
 
     // Update text if necessary
-    if (o->oWigglerTextStatus < WIGGLER_TEXT_STATUS_COMPLETED_DIALOG) {
-        if (o->oWigglerTextStatus == WIGGLER_TEXT_STATUS_AWAIT_DIALOG) {
-            seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
-            o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_SHOWING_DIALOG;
-        }
-
-        // If Mario is positioned below the wiggler, assume he entered through the
-        // lower cave entrance, so don't display text.
-        if (gMarioObject->oPosY < o->oPosY || cur_obj_update_dialog_with_cutscene(
-            MARIO_DIALOG_LOOK_UP, DIALOG_FLAG_NONE, CUTSCENE_DIALOG, DIALOG_150)) {
-            o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_COMPLETED_DIALOG;
-        }
-    } else {
+    //if (o->oWigglerTextStatus < WIGGLER_TEXT_STATUS_COMPLETED_DIALOG) {
+    //    if (o->oWigglerTextStatus == WIGGLER_TEXT_STATUS_AWAIT_DIALOG) {
+    //        seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
+    //        o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_SHOWING_DIALOG;
+    //    }
+//
+    //    // If Mario is positioned below the wiggler, assume he entered through the
+    //    // lower cave entrance, so don't display text.
+    //    //if (gMarioObject->oPosY < o->oPosY) { //|| cur_obj_update_dialog_with_cutscene(
+    //        //MARIO_DIALOG_LOOK_UP, DIALOG_FLAG_NONE, CUTSCENE_DIALOG, DIALOG_150)) {
+    //        o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_COMPLETED_DIALOG;
+    //    //}
+    //} else {
         obj_forward_vel_approach(sWigglerSpeeds[o->oHealth - 1], 1.0f);
 
         if (o->oWigglerWalkAwayFromWallTimer != 0) {
@@ -258,7 +258,7 @@ static void wiggler_act_walk(void) {
             o->oWigglerWalkAwayFromWallTimer = 0;
             o->oWigglerWalkAnimSpeed = 0.0f;
         }
-    }
+    //}
 }
 /**
  * Squish and unsquish, then show text and enter either the walking or shrinking
@@ -280,8 +280,8 @@ static void wiggler_act_jumped_on(void) {
     // defeated) or go back to walking
     if (o->header.gfx.scale[1] >= 4.0f) {
         if (o->oTimer > 30) {
-            if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
-                DIALOG_FLAG_NONE, CUTSCENE_DIALOG, attackText[o->oHealth - 2])) {
+            //if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
+            //    DIALOG_FLAG_NONE, CUTSCENE_DIALOG, attackText[o->oHealth - 2])) {
                 // Because we don't want the wiggler to disappear after being
                 // defeated, we leave its health at 1
                 if (--o->oHealth == 1) {
@@ -297,7 +297,7 @@ static void wiggler_act_jumped_on(void) {
                         o->oVelY = 70.0f;
                     }
                 }
-            }
+            //}
         }
     } else {
         o->oTimer = 0;

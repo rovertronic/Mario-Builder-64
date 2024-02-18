@@ -356,3 +356,17 @@ void df_hammerbro(s32 context) {
         o->oFaceAngleYaw += 0x8000;
     }
 }
+
+void df_wiggler(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        for (u8 i = 1; i < 4; i++) {
+            struct Object *part = spawn_object(o,MODEL_WIGGLER_BODY,VIRTUAL_TO_PHYSICAL(o->behavior));
+            part->oAnimations = wiggler_seg5_anims_0500C874;
+            super_cum_working(part, 0);
+            part->oFaceAngleYaw = o->oFaceAngleYaw;
+            obj_scale(part, 4.0f);
+            part->oPosX -= sins(o->oFaceAngleYaw) * 140.0f * i;
+            part->oPosZ -= coss(o->oFaceAngleYaw) * 140.0f * i;
+        }
+    }
+}

@@ -1324,6 +1324,7 @@ struct cmm_object_info cmm_object_type_bosses[] = {
     {bhvWhompKingBoss, 0, MODEL_WHOMP_MAKER, FALSE, 0, 0, 2.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
     {bhvBalconyBigBoo, TILE_SIZE, MODEL_MAKER_BOO, FALSE, 0, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
     {bhvBigBully, 0, MODEL_BULLY, FALSE, 0, 0, 2.0f, bully_seg5_anims_0500470C, df_bully, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
+    {bhvWigglerHead, 0, MODEL_WIGGLER_HEAD, FALSE, 0, 0, 4.0f, wiggler_seg5_anims_0500EC8C, df_wiggler, SOUND_OBJ_WIGGLER_TALK},
     {bhvBowser, 0, MODEL_MAKER_BOWSER, FALSE, 0, 3, 1.0f, bowser_anims, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 };
 
@@ -1448,7 +1449,7 @@ struct cmm_object_place cmm_object_place_types[] = {
     { cmm_object_type_btcme, FALSE, FALSE, TRUE, 7},
     {&cmm_object_type_warppipe, FALSE, FALSE, FALSE, 0},
     {&cmm_object_type_badge, FALSE, FALSE, FALSE, 23},
-    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 5},
+    { cmm_object_type_bosses, FALSE, TRUE, TRUE, 6},
     {&cmm_object_type_platform, TRUE, FALSE, FALSE, 2},
     {&cmm_object_type_bowlingball, TRUE, FALSE, FALSE, 0},
     {&cmm_object_type_ktq, TRUE, TRUE, FALSE, 0},
@@ -1564,6 +1565,7 @@ Gfx *btn_mech_bosses[] = {
     mat_b_btn_boss_whomp,
     mat_b_btn_boss_boo,
     mat_b_btn_boss_bully,
+    mat_b_btn_boss_wiggler,
     mat_b_btn_boss_bowser,
 };
 
@@ -1572,15 +1574,13 @@ char *txt_bp_boss[] = {
     "King Whomp",
     "Big Boo",
     "Big Bully",
-    "Bowser",
-    "Eyerok",
     "Wiggler",
+    "Bowser",
 };
 
 char *txt_star_objects[] = {
     "Normal",
     "Red Coins",
-    "Huge Piranhas",
 };
 
 Gfx *btn_star_objects[] = {
