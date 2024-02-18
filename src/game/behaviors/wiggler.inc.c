@@ -103,22 +103,30 @@ void bhv_wiggler_body_part_update(void) {
     } else {
         obj_check_attacks(&sWigglerBodyPartHitbox, o->oAction);
     }
+
+    // Make body invisible if parent is invisible
+    if (o->parentObj->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    }
 }
 
 /**
  * Initialize the segment data and spawn the body part objects.
  */
 void wiggler_init_segments(void) {
+    o->oBehParams2ndByte = 4; // Placeholder value until arthur implements object resizing
+
     s32 i;
     struct Object *bodyPart;
-    struct ChainSegment *segments = mem_pool_alloc(gObjectMemoryPool, WIGGLER_NUM_SEGMENTS * sizeof(struct ChainSegment));
+    struct ChainSegment *segments = mem_pool_alloc(gObjectMemoryPool, o->oBehParams2ndByte * sizeof(struct ChainSegment));
+    // Important note: BehParam2ndByte in the segments is for segment ID, but the wiggler head means it's size
 
     if (segments != NULL) {
         // Each segment represents the global position and orientation of each
         // object. Segment 0 represents the wiggler's head, and segment i>0
         // represents body part i.
         o->oWigglerSegments = segments;
-        for (i = 0; i < WIGGLER_NUM_SEGMENTS; i++) {
+        for (i = 0; i < o->oBehParams2ndByte; i++) {
             chain_segment_init(segments + i);
 
             vec3f_copy((segments + i)->pos, &o->oPosVec);
@@ -130,7 +138,7 @@ void wiggler_init_segments(void) {
         o->header.gfx.animInfo.animFrame = -1;
 
         // Spawn each body part
-        for (i = 1; i < WIGGLER_NUM_SEGMENTS; i++) {
+        for (i = 1; i < o->oBehParams2ndByte; i++) {
             bodyPart =
                 spawn_object_relative(i, 0, 0, 0, o, MODEL_WIGGLER_BODY, bhvWigglerBody);
             if (bodyPart != NULL) {
@@ -162,7 +170,7 @@ void wiggler_init_segments(void) {
     s32 i;
     f32 segmentLength = (35.0f * o->header.gfx.scale[0]);
 
-    for (i = 1; i < WIGGLER_NUM_SEGMENTS; i++) {
+    for (i = 1; i < o->oBehParams2ndByte; i++) {
         prevBodyPart = &o->oWigglerSegments[i - 1];
         bodyPart = &o->oWigglerSegments[i];
 
@@ -187,6 +195,12 @@ void wiggler_init_segments(void) {
         dxz = segmentLength * coss(bodyPart->angle[0]);
         bodyPart->pos[0] = prevBodyPart->pos[0] - dxz * sins(bodyPart->angle[1]);
         bodyPart->pos[2] = prevBodyPart->pos[2] - dxz * coss(bodyPart->angle[1]);
+
+        // If wiggler's body part clips through the floor, teleport it to the top
+        f32 floor_height = find_floor_height(bodyPart->pos[0],bodyPart->pos[1]+300.0f,bodyPart->pos[2]);
+        if (floor_height > bodyPart->pos[1]) {
+            bodyPart->pos[1] = floor_height;
+        }
     }
 }
 
@@ -264,6 +278,22 @@ static void wiggler_act_walk(void) {
  * Squish and unsquish, then show text and enter either the walking or shrinking
  * action.
  */
+void wiggler_take_damage(void) {
+    if (--o->oHealth == 1) {
+        o->oAction = WIGGLER_ACT_SHRINK;
+        cur_obj_become_intangible();
+    } else {
+        o->oAction = WIGGLER_ACT_WALK;
+        o->oMoveAngleYaw = o->oFaceAngleYaw;
+
+        if (o->oHealth == 2) {
+            cur_obj_play_sound_2(SOUND_OBJ_WIGGLER_JUMP);
+            o->oForwardVel = 10.0f;
+            o->oVelY = 70.0f;
+        }
+    }
+}
+
 static void wiggler_act_jumped_on(void) {
     // Text to show on first, second, and third attack.
     s32 attackText[3] = { DIALOG_152, DIALOG_168, DIALOG_151 };
@@ -284,19 +314,7 @@ static void wiggler_act_jumped_on(void) {
             //    DIALOG_FLAG_NONE, CUTSCENE_DIALOG, attackText[o->oHealth - 2])) {
                 // Because we don't want the wiggler to disappear after being
                 // defeated, we leave its health at 1
-                if (--o->oHealth == 1) {
-                    o->oAction = WIGGLER_ACT_SHRINK;
-                    cur_obj_become_intangible();
-                } else {
-                    o->oAction = WIGGLER_ACT_WALK;
-                    o->oMoveAngleYaw = o->oFaceAngleYaw;
-
-                    if (o->oHealth == 2) {
-                        cur_obj_play_sound_2(SOUND_OBJ_WIGGLER_JUMP);
-                        o->oForwardVel = 10.0f;
-                        o->oVelY = 70.0f;
-                    }
-                }
+                wiggler_take_damage();
             //}
         }
     } else {
@@ -317,8 +335,13 @@ static void wiggler_act_knockback(void) {
     }
 
     if (obj_forward_vel_approach(0.0f, 1.0f) && o->oFaceAnglePitch == 0) {
-        o->oAction = WIGGLER_ACT_WALK;
-        o->oMoveAngleYaw = o->oFaceAngleYaw;
+        if ((o->numCollidedObjs > 0) && (obj_has_behavior(o->collidedObjs[0],bhvBulletBill))) {
+            cur_obj_play_sound_2(SOUND_OBJ_WIGGLER_ATTACKED);
+            wiggler_take_damage();
+        } else {
+            o->oAction = WIGGLER_ACT_WALK;
+            o->oMoveAngleYaw = o->oFaceAngleYaw;
+        }
     }
 
     obj_check_attacks(&sWigglerHitbox, o->oAction);
@@ -335,7 +358,7 @@ static void wiggler_act_shrink(void) {
 
         // 4 is the default scale, so shrink to 1/4 of regular size
         if (approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.1f)) {
-            spawn_default_star(0.0f, 2048.0f, 0.0f);
+            spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
             o->oAction = WIGGLER_ACT_FALL_THROUGH_FLOOR;
         }
 
@@ -347,18 +370,21 @@ static void wiggler_act_shrink(void) {
  * Fall through floors until y < 1700, then enter the walking action.
  */
 static void wiggler_act_fall_through_floor(void) {
-    if (o->oTimer == 60) {
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
-        o->oWigglerFallThroughFloorsHeight = 1700.0f;
-    } else if (o->oTimer > 60) {
-        if (o->oPosY < o->oWigglerFallThroughFloorsHeight) {
-            o->oAction = WIGGLER_ACT_WALK;
-        } else {
-            o->oFaceAnglePitch = obj_get_pitch_from_vel();
-        }
+    o->oAction = WIGGLER_ACT_WALK;
+    //always just walk when dead
 
-        cur_obj_move_using_fvel_and_gravity();
-    }
+    //if (o->oTimer == 60) {
+    //    stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+    //    o->oWigglerFallThroughFloorsHeight = 1700.0f;
+    //} else if (o->oTimer > 60) {
+    //    if (o->oPosY < o->oWigglerFallThroughFloorsHeight) {
+    //        o->oAction = WIGGLER_ACT_WALK;
+    //    } else {
+    //        o->oFaceAnglePitch = obj_get_pitch_from_vel();
+    //    }
+//
+    //    cur_obj_move_using_fvel_and_gravity();
+    //}
 }
 
 /**
@@ -396,6 +422,25 @@ void bhv_wiggler_update(void) {
             }
 
             cur_obj_update_floor_and_walls();
+
+            // Wiggler surface interactions
+            if (o->oFloor != NULL) {
+                if ((o->oFloorHeight + 1.f > o->oPosY)) {
+                    if ((o->oFloorType == SURFACE_DEATH_PLANE) && (o->oHealth > 1)) {
+                        // Drop star if fell on the death floor
+                        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+                        o->oHealth = 1;
+                        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+                    }
+                    if (SURFACE_IS_BURNING(o->oFloorType)) {
+                        // so hot boner!!
+                        cur_obj_play_sound_2(SOUND_OBJ_WIGGLER_JUMP);
+                        o->oForwardVel = 10.0f;
+                        o->oVelY = 70.0f;
+                    }
+                }
+            }
+
             switch (o->oAction) {
                 case WIGGLER_ACT_WALK:
                     wiggler_act_walk();

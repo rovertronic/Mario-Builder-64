@@ -1562,6 +1562,8 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
         if (negativeSpeed == TRUE) {
             o->oForwardVel = -o->oForwardVel;
         }
+
+        cur_obj_interact_with_noteblock(0);
     }
 }
 
@@ -2477,4 +2479,23 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
     o->oPosY += offsetY + gDebugInfo[DEBUG_PAGE_ENEMYINFO][0];
     spawn_default_star(targetX, targetY, targetZ);
     o->oPosY = objectPosY;
+}
+
+void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
+    struct Surface * floor = o->oFloor;
+    u8 move_condition = (o->oMoveFlags & OBJ_MOVE_LANDED);
+    if (move_standard_or_object_step == 1) {
+        // using object_step instead of move standard
+        floor = sObjFloor;
+        move_condition = (o->oFloorHeight + .1f > o->oPosY);
+    }
+
+    if ((floor != NULL) && (floor->object != NULL) && (move_condition) && obj_has_behavior(floor->object,bhvNoteblock)) {
+        struct Object * noteblock_interacting = floor->object;
+        o->oVelY = 95.0f;
+
+        noteblock_interacting->oTimer = 0;
+        noteblock_interacting->oVelY = 50.0f;
+        cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
+    }
 }

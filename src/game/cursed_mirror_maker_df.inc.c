@@ -359,7 +359,8 @@ void df_hammerbro(s32 context) {
 
 void df_wiggler(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
-        for (u8 i = 1; i < 4; i++) {
+        u8 size = 4; // Placeholder value until arthur implements object resizing
+        for (u8 i = 1; i < size; i++) {
             struct Object *part = spawn_object(o,MODEL_WIGGLER_BODY,VIRTUAL_TO_PHYSICAL(o->behavior));
             part->oAnimations = wiggler_seg5_anims_0500C874;
             super_cum_working(part, 0);
