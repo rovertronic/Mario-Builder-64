@@ -443,9 +443,11 @@ struct cmm_boundary_quad wall_boundary[] = {
     {{{32, 1, -32}, {0, 1, -32}, {32, 0, -32}, {0, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
 };
 
-enum cmm_materials {
-    CMM_MAT_NONE,
+extern Gfx mat_maker_MakerMCWater[];
+extern Gfx mat_maker_MakerMCLava[];
+extern Gfx mat_maker_MakerMCFlowingLava[];
 
+enum cmm_materials {
     CMM_MATLIST_START,
 
     // Terrain
@@ -658,8 +660,6 @@ char *cmm_matlist_names[] = {
 };
 
 struct cmm_material cmm_mat_table[] = {
-    {0,0,0,""}, // CMM_MAT_NONE
-
     // Terrain
     {mat_maker_MakerGrass,     0, SURFACE_GRASS,        "Grass"},         // CMM_MAT_GRASS
     {mat_maker_MakerVanillaGrass, 0, SURFACE_GRASS,     "Grass (Old)"},   // CMM_MAT_GRASS_OLD
@@ -2113,14 +2113,14 @@ char *cmm_theme_string_table[] = {
 char *cmm_bg_string_table[] = {
     "Ocean Hills",
     "Cloudy Sky",
-    "Firey Sky",
+    "Fiery Sky",
     "Green Cave",
-    "Haunted Forest",
+    "Haunted Forest", // 4 - doesn't generate black chasm
     "Ice Mountains",
     "Desert Pyramids",
     "Underwater City",
     "Pink Sky",
-    "None",
+    "None", // 9 - doesn't generate black chasm
 };
 
 #define CMM_BOUNDARY_DEATH_PLANE   (1 << 0) // Has a death barrier - will be shrunk if also has inner walls
@@ -2382,7 +2382,7 @@ char *cmm_tips[] = {
     "Tip: Cull Markers are very useful for lowering your\n   level's complexity!",
     "Tip: If you want to rename your level, simply rename the\n   .mb64 file itself.",
     "Tip: Entering and exiting water from the side with a shell\n   will let you transition between riding and swimming!",
-    "Tip: Pressing every C-button while on a certain menu\n   might reward you with a little surprise...",
+    "Tip: Entering a famous code while on a certain menu\n   might reward you with a little surprise...",
     "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
     "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch of new enemies and collectible badges!",
     "Tip: Remember to use the Take Screenshot button to capture\n   a thumbnail before publishing your level!",

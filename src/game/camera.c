@@ -1171,7 +1171,7 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_diff(camera_looknormal,c->focus,c->pos);
     vec3f_normalize(camera_looknormal);
 
-    raycast_mode_find_cam_collision = FALSE;
+    raycast_mode_camera = TRUE;
 
     // CEILING COLLISION
     // Standard camera raycast check for ceiling collision. No special shenanigans here!
@@ -1230,7 +1230,7 @@ void mode_8_directions_camera(struct Camera *c) {
         }
     }
 
-    raycast_mode_find_cam_collision = TRUE;
+    raycast_mode_camera = FALSE;
 }
 
 /**
@@ -6599,6 +6599,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
     }
 
     gCollisionFlags &= ~COLLISION_FLAG_CAMERA;
+    gCurrentObject = gMarioObject; // hack to make vanish cap work
     pg->currFloorHeight = find_floor(sMarioCamState->pos[0],
                                      sMarioCamState->pos[1] + 10.f,
                                      sMarioCamState->pos[2], &pg->currFloor);
@@ -6606,6 +6607,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
                                    sMarioCamState->pos[1] - 10.f,
                                    sMarioCamState->pos[2], &pg->currCeil);
     pg->waterHeight = cmm_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]);
+    gCurrentObject = NULL;
     gCollisionFlags = tempCollisionFlags;
 }
 

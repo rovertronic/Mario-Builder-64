@@ -41,6 +41,11 @@ s8 cmm_menu_going_back = 1;
 s8 cmm_mm_selected_level = 0;
 u8 cmm_greyed_text = FALSE;
 
+u16 cmm_konami_code[] = {
+    U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD, B_BUTTON, A_BUTTON, START_BUTTON
+};
+u16 cmm_konami_code_cur_index = 0;
+
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
     s16 width = 0;
@@ -157,6 +162,7 @@ void full_menu_reset() {
     cmm_menu_index_max = 1;
     cmm_tip_timer = 0;
     cmm_topleft_timer = 0;
+    cmm_konami_code_cur_index = 0;
     cmm_custom_theme_menu_open = FALSE;
     cmm_greyed_text = FALSE;
     animate_list_reset();
@@ -809,10 +815,19 @@ void draw_cmm_settings_env(f32 xoff, f32 yoff) {
         }
     }
 
-    if (!cmm_lopt_secret && (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS) == (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS))) {
-        cmm_lopt_secret = TRUE;
-        cmm_set_data_overrides();
-        play_puzzle_jingle();
+    if (!cmm_lopt_secret && !cmm_custom_theme_menu_open) {
+        u16 nextButton = cmm_konami_code[cmm_konami_code_cur_index];
+        if (gPlayer1Controller->buttonPressed & nextButton) {
+            cmm_konami_code_cur_index++;
+            if (cmm_konami_code_cur_index == 11) {
+                cmm_konami_code_cur_index = 0;
+                cmm_lopt_secret = TRUE;
+                cmm_set_data_overrides();
+                play_puzzle_jingle();
+            }
+        } else if (gPlayer1Controller->buttonPressed) {
+            cmm_konami_code_cur_index = 0;
+        }
     }
 
     if (cmm_custom_theme_menu_open) {
@@ -1007,11 +1022,13 @@ void draw_cmm_menu(void) {
             } else {
                 if ((gPlayer1Controller->buttonPressed & START_BUTTON) ||
                     ((gPlayer1Controller->buttonPressed & B_BUTTON) && !cmm_custom_theme_menu_open)) {
-                    cmm_menu_end_timer = 0;
-                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-                    if (cmm_custom_theme_menu_open) {
-                        update_custom_theme();
-                        generate_terrain_gfx();
+                    if (!(gPlayer1Controller->buttonPressed & cmm_konami_code[cmm_konami_code_cur_index])) {
+                        cmm_menu_end_timer = 0;
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        if (cmm_custom_theme_menu_open) {
+                            update_custom_theme();
+                            generate_terrain_gfx();
+                        }
                     }
                 }
             }

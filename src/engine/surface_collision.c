@@ -147,9 +147,6 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         if (gCollisionFlags & COLLISION_FLAG_CAMERA) {
             if (surf_has_no_cam_collision(surf->type)) continue;
         } else {
-            // Ignore camera only surfaces.
-            if (type == SURFACE_CAMERA_BOUNDARY) continue;
-
             // If an object can pass through a vanish cap wall, pass through.
             if (SURFACE_IS_VANISH_CAP(type) && o != NULL) {
                 // If an object can pass through a vanish cap wall, pass through.
@@ -166,7 +163,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
         offset = (normal[0] * pos[0]) + (normal[1] * pos[1]) + (normal[2] * pos[2]) + normal[3];
 
         // Exclude surfaces outside of the radius.
-        if (offset < -radius || offset > radius) continue;
+        if (offset < 0 || offset > radius) continue;
 
         vec3_diff(v0, surf->vertex2, surf->vertex1);
         vec3_diff(v1, surf->vertex3, surf->vertex1);
@@ -388,9 +385,6 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
             if (surf_has_no_cam_collision(surf->type)) {
                 continue;
             }
-        } else if (type == SURFACE_CAMERA_BOUNDARY) {
-            // Ignore camera only surfaces
-            continue;
         }
 
         // Check that the point is within the triangle bounds
@@ -534,8 +528,6 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
             if (surf_has_no_cam_collision(surf->type)) {
                 continue;
             }
-        } else if (type == SURFACE_CAMERA_BOUNDARY) {
-            continue; // If we are not checking for the camera, ignore camera only floors.
         }
 
         // Exclude all floors above the point.

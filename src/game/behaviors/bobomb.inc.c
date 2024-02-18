@@ -61,6 +61,7 @@ void bobomb_check_interactions(void) {
     }
 
     if (obj_attack_collided_from_other_object(o)) {
+        cur_obj_become_intangible();
         o->oAction = BOBOMB_ACT_EXPLODE;
     }
 }

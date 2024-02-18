@@ -455,56 +455,7 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 
 static void obj_die_if_health_non_positive(void) {
     s8 old_loot_coins = o->oNumLootCoins;
-    if ((o->oHealth <= 0) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
-        if (o->oDeathSound == 0) {
-            spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
-        } else if (o->oDeathSound > 0) {
-            spawn_mist_particles_with_sound(o->oDeathSound);
-        } else {
-            spawn_mist_particles();
-        }
 
-        if ((s32)o->oNumLootCoins < 0) {
-            spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
-        } else {
-            obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-        }
-        // This doesn't do anything
-        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-
-        if (o->oHealth < 0) {
-            cur_obj_hide();
-            cur_obj_become_intangible();
-        } else {
-            gMarioState->EA_ACTIVE --;
-            gMarioState->EA_LEFT --;
-            if ( old_loot_coins == 2 ) {
-                gMarioState->DeadRexes++;
-            }
-            if ( old_loot_coins == -1 ) {
-                gMarioState->DeadRexes++;
-            }
-            obj_mark_for_deletion(o);
-        }
-    }
-    else // are you assuming this code will only run for rexes? oof
-    {
-        o->oAction = 0;
-        if ((save_file_get_badge_equip() & (1<<3)) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
-            o->oHealth--;
-            o->oInteractStatus &= ~INT_STATUS_INTERACTED;
-            obj_die_if_health_non_positive();
-        }
-        else
-        {
-            o->oHealth--;
-            o->oInteractStatus &= ~INT_STATUS_INTERACTED;
-        }
-        cur_obj_become_tangible();
-    }
-}
-
-static void obj_die_if_health_non_positive_normal(void) {
     if (o->oHealth <= 0) {
         if (o->oDeathSound == 0) {
             spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
@@ -528,6 +479,14 @@ static void obj_die_if_health_non_positive_normal(void) {
         } else {
             obj_mark_for_deletion(o);
         }
+    } else if (o->behavior == segmented_to_virtual(bhvRex)) {
+        o->oAction = 0;
+        o->oHealth--;
+        o->oInteractStatus &= ~INT_STATUS_INTERACTED;
+        if (save_file_get_badge_equip() & (1<<3)) {
+            obj_die_if_health_non_positive();
+        }
+        cur_obj_become_tangible();
     }
 }
 

@@ -134,6 +134,7 @@
 #include "sb/model.inc.c"
 #include "top/model.inc.c"
 #include "maker/model.inc.c"
+#include "maker/minecrafttex.inc.c"
 #include "uibutton/model.inc.c"
 #include "uibutton2/model.inc.c"
 #include "b/model.inc.c"

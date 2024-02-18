@@ -51,7 +51,6 @@ extern Gfx *gDisplayListHead;
 extern u8 *gGfxPoolEnd;
 extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
-extern s8 gGamecubeControllerPort;
 extern u8 gBorderHeight;
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
 extern u8 gCustomDebugMode;
@@ -71,8 +70,8 @@ extern struct Controller* const gPlayer2Controller;
 extern struct Controller* const gPlayer3Controller;
 extern struct Controller* const gPlayer4Controller;
 extern struct DemoInput *gCurrDemoInput;
-// extern u16 gDemoInputListID;
-// extern struct DemoInput gRecordedDemoInput;
+extern u16 gDemoInputListID;
+extern struct DemoInput gRecordedDemoInput;
 
 // this area is the demo input + the header. when the demo is loaded in, there is a header the size
 // of a single word next to the input list. this word is the current ID count.
@@ -83,7 +82,6 @@ extern u8 gMarioAnims[];
 extern u8 gDemoInputs[];
 
 extern u16 sRenderingFramebuffer;
-extern u16 sRenderedFramebuffer;
 extern u32 gGlobalTimer;
 
 void setup_game_memory(void);

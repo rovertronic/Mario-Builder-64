@@ -287,14 +287,10 @@ s32 object_sanity_check(void) {
         }
     }
 
-    if ((cmm_id_selection == OBJECT_TYPE_STAR) && ((cmm_param_selection == 1) || (cmm_param_selection == 2))) {
+    if ((cmm_id_selection == OBJECT_TYPE_STAR) && (cmm_param_selection == 1)) {
         for (u32 i = 0; i < cmm_object_count; i++) {
             if ((cmm_object_data[i].type == OBJECT_TYPE_STAR) && (cmm_object_data[i].param2 == cmm_param_selection)) {
-                if (cmm_param_selection == 1) {
-                    cmm_show_error_message("Red Coin Star already placed!");
-                } else {
-                    cmm_show_error_message("Piranha Star already placed!");
-                }
+                cmm_show_error_message("Red Coin Star already placed!");
                 return FALSE;
             }
         }
@@ -418,6 +414,7 @@ u32 get_side_class(u32 mat, u32 dir) {
 
 // Used to compare material types and see if any future culling checks can be skipped
 // WARNING! using grid tile ->mat directly will result in mat being 0 if the tile is empty/water
+// If this returns FALSE then the material can be culled.
 s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
     s32 curMatClass, otherMatClass;
     if (curMat == otherMat) return FALSE;
@@ -437,13 +434,15 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 
 // Used for determining if a water side should be culled.
 u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
-    s32 mattype = TOPMAT(adjMat).type;
-    if (direction != CMM_DIRECTION_DOWN) {
-        mattype = MATERIAL(adjMat).type;
-    }
-    if (mattype == MAT_CUTOUT) return FALSE;
+    s32 adjMatClass = get_side_class(adjMat, direction^1);
+    if (adjMatClass == CLASS_CUTOUT) return FALSE;
+    if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
+    // Now we know that the side is a hollow cutout
     if (mat == -1) return TRUE; // adjMat should be confirmed to have a full face
-    return cutout_skip_culling_check(mat, adjMat, direction);
+    s32 matClass = get_side_class(mat, direction);
+    return (matClass != CLASS_HOLLOW_CUTOUT);
+    // Will return FALSE if both materials are hollow cutouts but the waterlogged block
+    // isn't a full faceshape. Not a big deal
 }
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
@@ -1302,8 +1301,8 @@ void process_tiles(u32 processTileRenderMode) {
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
 
-            // 
-            if ((matType == MAT_CUTOUT) || ((matType < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
+            // Important to not use matType here so that it's still opaque for screens
+            if ((matType == MAT_CUTOUT) || ((MATERIAL(mat).type < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
                 gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
             }
         // COLLISION
@@ -1530,12 +1529,12 @@ void process_boundary(u32 processRenderMode) {
         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         // Fade if no floor
         if (renderFade) {
-            if (processRenderMode == PROCESS_TILE_NORMAL) {
+            // Black floor to block out skybox
+            if ((processRenderMode == PROCESS_TILE_NORMAL) && (cmm_lopt_bg != 4) && (cmm_lopt_bg != 9)) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
                 render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
-            }
-            if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+            } else if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
 repeatBackface:
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
@@ -1718,8 +1717,9 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     if (do_process(&matType, processType)) {
         set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
+        // Important to not use matType here so that it's still opaque for screens
         if (((matType == MAT_CUTOUT) ||
-            ((matType < MAT_CUTOUT) && (cmm_mat_table[topmatid].type >= MAT_CUTOUT)))
+            ((cmm_mat_table[matid].type < MAT_CUTOUT) && (cmm_mat_table[topmatid].type >= MAT_CUTOUT)))
             && !disableZ) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
@@ -1761,7 +1761,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
 }
 
-Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
+Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT_INTER);
@@ -1846,12 +1846,12 @@ Gfx *ccm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 cmm_use_alt_uvs = FALSE;
             }
 
-            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+            gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_INTER, G_RM_AA_ZB_XLU_INTER2);
             gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             retroland_filter_off();
             gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
-            geo_append_display_list(cmm_curr_gfx, LAYER_OPAQUE);
+            geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT_INTER);
         }
     }
     return NULL;
@@ -1958,6 +1958,9 @@ void generate_terrain_collision(void) {
     }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
         cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
+        if (surf_has_no_cam_collision(cmm_curr_coltype)) {
+            cmm_curr_coltype = SURFACE_DEFAULT;
+        }
         s32 bottomY = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
         s32 topY = cmm_lopt_boundary_height-32;
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, cmm_grid_size, FALSE);
@@ -2522,6 +2525,8 @@ FILINFO cmm_file_info;
 
 char file_header_string[] = "MB64-v0.0";
 
+extern u16 sRenderedFramebuffer;
+#define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
 void save_level(void) {
     s16 i;
     s16 j;
@@ -2999,6 +3004,8 @@ void reload_bg(void) {
         sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
         main_pool_free(compressed);
     }
+
+    generate_terrain_gfx(); // since some backgrounds affect the boundary
 }
 
 u8 cmm_upsidedown_tile = FALSE;

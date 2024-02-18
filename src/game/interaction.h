@@ -92,7 +92,6 @@ enum InteractStatus {
     INT_STATUS_MARIO_DROPPED_BY_OBJ = (1 <<  6), /* 0x00000040 */
     INT_STATUS_MARIO_DROP_FROM_HOOT = (1 <<  7), /* 0x00000080 */
     // Object Interaction Status
-    INT_STATUS_TOUCHED_MARIO        = (1 <<  0), /* 0x00000001 */
     INT_STATUS_GRABBED_MARIO        = (1 << 11), /* 0x00000800 */
     INT_STATUS_ATTACKED_MARIO       = (1 << 13), /* 0x00002000 */
     INT_STATUS_WAS_ATTACKED         = (1 << 14), /* 0x00004000 */

@@ -1701,7 +1701,7 @@ void process_level_music_dynamics(void) {
         return;
     }
 
-    if (sCurrentMusicDynamic != musicDynIndex) {
+    // if (sCurrentMusicDynamic != musicDynIndex) {
         tempBits = 1;
         if (sCurrentMusicDynamic == 0xff) {
             dur1 = 1;
@@ -1726,7 +1726,7 @@ void process_level_music_dynamics(void) {
         }
 
         sCurrentMusicDynamic = musicDynIndex;
-    }
+    // }
 }
 
 UNUSED void unused_8031FED0(u8 player, u32 bits, s8 arg2) {

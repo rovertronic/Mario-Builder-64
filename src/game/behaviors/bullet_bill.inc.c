@@ -110,6 +110,7 @@ void bhv_bullet_bill_loop(void) {
     cur_obj_call_action_function(sBulletBillActions);
     obj_set_hitbox(o, &sBulletBillHitbox);
     if (cur_obj_check_interacted() || obj_attack_collided_from_other_object(o)) {
+        cur_obj_become_intangible();
         o->oAction = 4;
     }
 }
