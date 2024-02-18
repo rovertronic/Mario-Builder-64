@@ -1790,7 +1790,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
     {btn_mech_bosses,        1, OBJECT_TYPE_BOSS,    CMM_PM_OBJ,   "Bosses",             txt_bp_boss},         //CMM_BUTTON_BOSS
     {mat_b_btn_checker,      0, OBJECT_TYPE_MPLAT,   CMM_PM_OBJ,   "Moving Platform",    txt_platforms},       //CMM_BUTTON_MPLAT
     {mat_b_btn_bball,        0, OBJECT_TYPE_BBALL,   CMM_PM_OBJ,   "Bowling Ball",       NULL},                //CMM_BUTTON_BBALL
-    {mat_b_btn_kuppa,        0, OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL},                //CMM_BUTTON_KTQ
+    {mat_b_btn_kuppaq,       0, OBJECT_TYPE_KTQ,     CMM_PM_OBJ,   "Koopa the Quick",    NULL},                //CMM_BUTTON_KTQ
     {mat_b_btn_sideslope,    0, TILE_TYPE_SSLOPE,    CMM_PM_TILE,  "Vertical Slope",     NULL},                //CMM_BUTTON_SSLOPE
     {mat_b_btn_slabtile,     0, TILE_TYPE_SLAB,      CMM_PM_TILE,  "Slab",               NULL},                //CMM_BUTTON_SLAB
     {btn_timed_objects,      1, OBJECT_TYPE_TC,      CMM_PM_OBJ,   "Timed Boxes",        txt_timed_objects},   //CMM_BUTTON_TC
