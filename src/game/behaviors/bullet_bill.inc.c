@@ -53,7 +53,7 @@ void bullet_bill_act_2(void) {
         if (o->oTimer == 50) {
             cur_obj_become_tangible();
         }
-        if (o->oTimer > 70) {
+        if (o->oTimer > 50) {
             cur_obj_update_floor_and_walls();
         }
 
@@ -94,7 +94,6 @@ void bullet_bill_act_4(void) {
 
     if (o->oTimer > 90) {
         o->oAction = 0;
-        cur_obj_unhide();
     }
 }
 
