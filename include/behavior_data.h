@@ -714,6 +714,7 @@ extern const BehaviorScript bhvMontyMole[];
 extern const BehaviorScript bhvMontyMoleHole[];
 extern const BehaviorScript bhvMontyMoleRock[];
 extern const BehaviorScript bhvPlatformOnTrack[];
+extern const BehaviorScript bhvLoopingPlatform[];
 extern const BehaviorScript bhvTrackBall[];
 extern const BehaviorScript bhvSeesawPlatform[];
 extern const BehaviorScript bhvFerrisWheelAxle[];

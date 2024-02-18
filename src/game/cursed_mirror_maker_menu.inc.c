@@ -908,14 +908,7 @@ void draw_cmm_menu(void) {
             create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * cmm_menu_toolbar_offsets[i]), 0);
             gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
 
-            Gfx *mat = cmm_ui_buttons[cmm_toolbar[i]].material;
-            if (cmm_ui_buttons[cmm_toolbar[i]].multipleBtns) {
-                s32 idx = (i == cmm_toolbar_index ? cmm_param_selection : 0);
-                mat = ((Gfx **)mat)[idx];
-            }
-            if ((i == cmm_toolbar_index)&&(cmm_toolbox_transition_btn_render)) {
-                mat = cmm_toolbox_transition_btn_old_gfx;
-            }
+            Gfx *mat = get_button_tex(cmm_toolbar[i], (cmm_toolbar_index == i ? cmm_param_selection : 0));
 
             gSPDisplayList(gDisplayListHead++, mat);//texture
             gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
@@ -965,10 +958,7 @@ void draw_cmm_menu(void) {
                 create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32) + 4*cmm_menu_list_offsets[i] + yOff, 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
-                Gfx *mat = cmm_ui_buttons[cmm_toolbox[i]].material;
-                if (cmm_ui_buttons[cmm_toolbox[i]].multipleBtns) {
-                    mat = ((Gfx **)mat)[0];
-                }
+                Gfx *mat = get_button_tex(cmm_toolbox[i], 0);
 
                 gSPDisplayList(gDisplayListHead++, mat);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
@@ -992,17 +982,18 @@ void draw_cmm_menu(void) {
             s32 stry = 215-(cmm_toolbox_index/9)*32+yOff+4*cmm_menu_list_offsets[cmm_toolbox_index];
 
             if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
+                char *buttonName = get_button_str(cmm_toolbox[cmm_toolbox_index]);
                 //render selection box
-                if (string_runoff(strx,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str)) {
+                if (string_runoff(strx,buttonName)) {
                     strx -= 130;
                 }
 
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-                gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + get_string_width_ascii(cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str) + 5, 240-stry+1);
+                gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + get_string_width_ascii(buttonName) + 5, 240-stry+1);
 
-                print_maker_string_ascii(strx, stry ,cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].str,TRUE);
+                print_maker_string_ascii(strx, stry, buttonName, TRUE);
             }
 
             break;
@@ -1124,13 +1115,20 @@ void draw_cmm_menu(void) {
 
     if ((cmm_menu_state != CMM_MAKE_TRAJECTORY)&&(cmm_menu_state != CMM_MAKE_SCREENSHOT)) {
         s32 currentX = 15;
-        print_maker_string_ascii(currentX,45,cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str,FALSE);
-        currentX += get_string_width_ascii(cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].str) + 10;
+        char *buttonName = get_button_str(cmm_toolbar[cmm_toolbar_index]);
+        print_maker_string_ascii(currentX,45,buttonName,FALSE);
+        currentX += get_string_width_ascii(buttonName) + 10;
 
         char *yellowStr = NULL;
-        if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].param_strings) {
-            yellowStr = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].param_strings[cmm_param_selection];
-        } else if (cmm_place_mode == CMM_PM_TILE && cmm_tile_terrains[cmm_id_selection]) {
+        if (cmm_place_mode == CMM_PM_OBJ) {
+            if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multiObj) {
+                yellowStr = cmm_object_type_list[cmm_id_selection].name;
+            } else {
+                if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].names) {
+                    yellowStr = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].names[cmm_param_selection];
+                }
+            }
+        } else if (cmm_terrain_info_list[cmm_id_selection].terrain) {
             yellowStr = TILE_MATDEF(cmm_mat_selection).name;
 
             if (get_flipped_tile(cmm_id_selection) != -1) {

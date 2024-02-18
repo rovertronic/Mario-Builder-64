@@ -259,13 +259,6 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
             // Set the shadow height to the lava height in specific areas.
             correct_lava_shadow_height(&floorHeight);
 #endif
-        } else if (floor->object != NULL
-                   && floor->object->behavior == segmented_to_virtual(bhvPlatformOnTrack)
-                   && floor->object->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CARPET) {
-            // Raise the shadow 5 units so the shadow doesn't clip into the flying carpet.
-            floorHeight += 5;
-            // The flying carpet is transparent.
-            s->isDecal = FALSE;
         }
 
         f32 normal[4];

@@ -124,10 +124,6 @@ void wing_vanish_cap_act_0(void) {
     s16 collisionFlags = object_step();
     if (collisionFlags & OBJ_COL_FLAG_GROUNDED) {
         cap_check_quicksand();
-        if (o->oVelY != 0.0f) {
-            o->oCapDoScaleVertically = TRUE;
-            o->oVelY = 0.0f;
-        }
     }
 
     if (o->oCapDoScaleVertically) {

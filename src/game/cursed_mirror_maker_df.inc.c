@@ -141,13 +141,6 @@ void df_podoboo(s32 context) {
     }
     cur_obj_scale(((f32)o->oAngleVelYaw) / 100);
 }
-void df_checkerboard_elevator(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        if ((o->oBehParams >> 24) == 1) {
-            cur_obj_set_model(MODEL_LOOPINGP);
-        }
-    }
-}
 
 void df_mri(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {

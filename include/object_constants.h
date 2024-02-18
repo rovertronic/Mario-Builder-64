@@ -1843,17 +1843,9 @@ enum oBehParams2ndBytePlatformOnTrack {
     PLATFORM_ON_TRACK_BP_MASK_TYPE       = 0x70,
     PLATFORM_ON_TRACK_BP_MASK_PATH       = 0x0F,
 };
-enum oBehParams1stBytePlatformOnTrack {
-    PLATFORM_ON_TRACK_BP_RETURN_TO_START = (1 << 0), // 0x1
-    PLATFORM_ON_TRACK_BP_DONT_DISAPPEAR  = (1 << 1), // 0x2
-    PLATFORM_ON_TRACK_BP_DONT_TURN_YAW   = (1 << 2), // 0x4
-    PLATFORM_ON_TRACK_BP_DONT_TURN_ROLL  = (1 << 4), // 0x8
-};
 enum oPlatformOnTrackTypes {
-    PLATFORM_ON_TRACK_TYPE_CARPET,
-    PLATFORM_ON_TRACK_TYPE_SKI_LIFT,
     PLATFORM_ON_TRACK_TYPE_CHECKERED,
-    PLATFORM_ON_TRACK_TYPE_GRATE,
+    PLATFORM_ON_TRACK_TYPE_LOOPING,
 };
 
 /* HMC Controllable Platform */
