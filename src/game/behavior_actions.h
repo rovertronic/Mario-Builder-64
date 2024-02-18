@@ -584,6 +584,7 @@ void bhv_monty_mole_update(void);
 void bhv_monty_mole_hole_update(void);
 void bhv_monty_mole_rock_update(void);
 void bhv_platform_on_track_init(void);
+void bhv_looping_platform_init(void);
 void bhv_platform_on_track_update(void);
 void bhv_track_ball_update(void);
 void bhv_seesaw_platform_init(void);

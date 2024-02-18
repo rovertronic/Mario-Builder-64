@@ -145,7 +145,7 @@ struct cmm_tile {
 };
 
 struct cmm_obj {
-    u32 param1:1, param2:7, x:6, y:6, z:6, type:8, rot:2;
+    u32 bparam:7, x:6, y:6, z:6, type:8, rot:2;
 };
 
 struct cmm_grid_obj {

@@ -69,7 +69,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos)
     f32 distToNextWaypoint;
 
     if (ballIndex != 0) {
-        if (GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START) {
+        if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_LOOPING) {
             return;
         }
         amountToMove = (256.0f * ballIndex);
@@ -88,7 +88,7 @@ static void platform_on_track_update_pos_or_spawn_ball(s32 ballIndex, Vec3f pos)
                 o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_END;
             }
 
-            if ((GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
+            if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_LOOPING) {
                 nextWaypoint = o->oPlatformOnTrackStartWaypoint;
             } else {
                 return;
@@ -159,7 +159,7 @@ static void platform_on_track_reset(void) {
  * begin blinking, and finally reset.
  */
 static void platform_on_track_mario_not_on_platform(void) {
-    if (!(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_DONT_DISAPPEAR)) {
+    if (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING) {
         // Once oTimer reaches 150, blink 40 times
         if (cur_obj_wait_then_blink(150, 40)) {
             platform_on_track_reset();
@@ -172,18 +172,22 @@ static void platform_on_track_mario_not_on_platform(void) {
  * Init function for bhvPlatformOnTrack.
  */
 void bhv_platform_on_track_init(void) {
-    s16 pathIndex = (u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_PATH;
-    o->oPlatformOnTrackType = ((u16)(o->oBehParams >> 16) & PLATFORM_ON_TRACK_BP_MASK_TYPE) >> 4;
-
-    //override platform on track to always be checkerboard
     o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_CHECKERED;
+    o->oGravity = -1.f;
 
     o->collisionData = segmented_to_virtual(checkerboard_platform_seg8_collision_platform);
-
-    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];//segmented_to_virtual(sPlatformOnTrackPaths[pathIndex]);
-    if (o->oBehParams >> 24 == 0) rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
+    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
+    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
     o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
+}
+
+void bhv_looping_platform_init(void) {
+    o->oPlatformOnTrackType = PLATFORM_ON_TRACK_TYPE_LOOPING;
+    o->oGravity = -1.f;
+
+    o->collisionData = segmented_to_virtual(loopingp_collision);
+    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
 }
 
 /**
@@ -208,12 +212,9 @@ static void platform_on_track_act_init(void) {
     o->oFaceAngleRoll = 0;
     o->oPlatformOnTrackYaw = (s16)(o->oBehParams2ndByte - 0x4000);
 
-    if (o->oBehParams >> 24 == 1) {
+    if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_LOOPING) {
         o->oForwardVel = 15.0f;
         o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
-        cur_obj_set_model(MODEL_LOOPINGP);
-        o->header.gfx.scale[1] = 1.0f;
-        o->collisionData = segmented_to_virtual(loopingp_collision);
     } else {
         o->oAction = PLATFORM_ON_TRACK_ACT_WAIT_FOR_MARIO;
     }
@@ -248,11 +249,11 @@ static void platform_on_track_act_wait_for_mario(void) {
 static void platform_on_track_act_move_along_track(void) {
     s16 initialAngle;
 
-    if (!(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
+    if (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING) cur_obj_play_sound_1(SOUND_ENV_ELEVATOR1);
 
     // Fall after reaching the last waypoint if desired
     if (o->oPlatformOnTrackPrevWaypointFlags == WAYPOINT_FLAGS_END
-     && !(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
+     && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING)) {
         o->oAction = PLATFORM_ON_TRACK_ACT_FALL;
     } else {
         o->oForwardVel = 15.0f;
@@ -276,7 +277,7 @@ static void platform_on_track_act_move_along_track(void) {
         //  after reappearing
 
         // Turn face yaw and compute yaw vel
-        if ((GET_BPARAM1(o->oBehParams) == 0)) {
+        if (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING) {
             s16 targetFaceYaw = o->oMoveAngleYaw + 0x4000;
             s16 yawSpeed = abs_angle_diff(targetFaceYaw, o->oFaceAngleYaw) / 15;
 
@@ -285,21 +286,9 @@ static void platform_on_track_act_move_along_track(void) {
             obj_face_yaw_approach(targetFaceYaw, yawSpeed);
             o->oAngleVelYaw = (s16) o->oFaceAngleYaw - initialAngle;
         }
-
-        // Turn face roll and compute roll vel
-        if ((GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_DONT_TURN_ROLL)) {
-            s16 rollSpeed = abs_angle_diff(o->oMoveAnglePitch, o->oFaceAngleRoll) / 20;
-
-            initialAngle = o->oFaceAngleRoll;
-            clamp_s16(&rollSpeed, 100, 500);
-            //! If the platform is moving counterclockwise upward or
-            //  clockwise downward, this will be backward
-            obj_face_roll_approach(o->oMoveAnglePitch, rollSpeed);
-            o->oAngleVelRoll = (s16) o->oFaceAngleRoll - initialAngle;
-        }
     }
 
-    if (gMarioObject->platform != o && !(GET_BPARAM1(o->oBehParams) & PLATFORM_ON_TRACK_BP_RETURN_TO_START)) {
+    if (gMarioObject->platform != o && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING)) {
         platform_on_track_mario_not_on_platform();
     } else {
         o->oTimer = 0;
@@ -383,16 +372,6 @@ void bhv_platform_on_track_update(void) {
         case PLATFORM_ON_TRACK_ACT_FALL:
             platform_on_track_act_fall();
             break;
-    }
-
-    if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_CARPET) {
-        if (!o->oPlatformOnTrackWasStoodOn && gMarioObject->platform == o) {
-            o->oPlatformOnTrackOffsetY = -8.0f;
-            o->oPlatformOnTrackWasStoodOn = TRUE;
-        }
-
-        approach_f32_ptr(&o->oPlatformOnTrackOffsetY, 0.0f, 0.5f);
-        o->oPosY += o->oPlatformOnTrackOffsetY;
     }
 
     o->oDontInertia = FALSE;
