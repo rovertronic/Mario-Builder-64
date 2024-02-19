@@ -79,6 +79,8 @@ void bhv_koopa_init(void) {
     } else if (o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE) {
         // Koopa the Quick. Race index is 0 for BoB and 1 for THI
 
+        o->oQuicksandDepthToDie = 0; // Do not die from quicksand!!
+
         //navigate trajectory until find -1
         u16 i = 0;
         while (cmm_trajectory_list[o->oBehParams2ndByte][i][0] != -1) {

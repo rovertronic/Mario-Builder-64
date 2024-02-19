@@ -405,6 +405,7 @@ void bhv_wiggler_update(void) {
     // PARTIAL_UPDATE
 
     if (o->oAction == WIGGLER_ACT_UNINITIALIZED) {
+        o->oQuicksandDepthToDie = 0;
         wiggler_init_segments();
     } else {
         if (o->oAction == WIGGLER_ACT_FALL_THROUGH_FLOOR) {

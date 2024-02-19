@@ -41,7 +41,7 @@ static u8 sPokeyBodyPartAttackHandlers[] = {
  */
 void bhv_pokey_body_part_update(void) {
     // PARTIAL_UPDATE
-
+    o->oQuicksandDepthToDie = 0;
     if (obj_update_standard_actions(3.0f)) {
         if (o->parentObj->oAction == POKEY_ACT_UNLOAD_PARTS) {
             obj_mark_for_deletion(o);
@@ -144,6 +144,7 @@ void bhv_pokey_body_part_update(void) {
 static void pokey_act_uninitialized(void) {
     struct Object *bodyPart;
 
+    o->oQuicksandDepthToDie = 0;
     if (o->oDistanceToMario < o->oDrawingDistance) {
         ModelID16 partModel = MODEL_MAKER_POKEY_HEAD;
         s32 i;

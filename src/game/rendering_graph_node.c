@@ -1294,12 +1294,14 @@ void geo_process_object(struct Object *node) {
         else{
             if (!noThrowMatrix) {
                 mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], *node->header.gfx.throwMatrix, node->header.gfx.scale);
+                gMatStack[gMatStackIndex + 1][3][1] -= node->oQuicksandDepth*2.0f;
             } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
                 mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
                             node->header.gfx.pos, node->header.gfx.scale, gCurGraphNodeCamera->roll);
             } else {
                 mtxf_rotate_zxy_and_translate(gMatStack[gMatStackIndex + 1], node->header.gfx.pos, node->header.gfx.angle);
                 mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->header.gfx.scale);
+                gMatStack[gMatStackIndex + 1][3][1] -= node->oQuicksandDepth*2.0f;
             }
         }
 

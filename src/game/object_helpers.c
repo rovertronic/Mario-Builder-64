@@ -998,6 +998,11 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
     f32 intendedX = o->oPosX + o->oVelX;
     f32 intendedZ = o->oPosZ + o->oVelZ;
 
+    if (o->oQuicksandDepth > 0) {
+        intendedX = o->oPosX + (o->oVelX*.5f);
+        intendedZ = o->oPosZ + (o->oVelZ*.5f);
+    }
+
     f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
@@ -1563,7 +1568,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
             o->oForwardVel = -o->oForwardVel;
         }
 
-        cur_obj_interact_with_noteblock(0);
+        cur_obj_floor_interactions(0);
     }
 }
 
@@ -2481,16 +2486,55 @@ void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 o
     o->oPosY = objectPosY;
 }
 
-void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
+struct Surface * cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
     struct Surface * floor = o->oFloor;
-    u8 move_condition = (o->oMoveFlags & OBJ_MOVE_LANDED);
-    if (move_standard_or_object_step == 1) {
-        // using object_step instead of move standard
+    u8 move_condition = (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND);
+    if (move_standard_or_object_step) {
+        //using object_step instead of move standard
         floor = sObjFloor;
         move_condition = (o->oFloorHeight + .1f > o->oPosY);
     }
 
-    if ((floor != NULL) && (floor->object != NULL) && (move_condition) && obj_has_behavior(floor->object,bhvNoteblock)) {
+    if ((floor != NULL) && (move_condition)) {
+        return floor;
+    }
+    return NULL;
+}
+
+void arbritrary_death_coin_release(void) {
+    // If toby fox can get away with the entire undertale dialog system being stored in a single switch statement, i can get
+    // away with one teeny hardcoded elseif
+    if (cur_obj_has_behavior(bhvMotos)) {
+        struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+        coin->oForwardVel = 10.0f;
+        coin->oVelY = 20.0f;
+        coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+        coin->oQuicksandDepthToDie = 0;
+
+        // drop mario if he's held
+        if (o->prevObj) {
+            o->prevObj = NULL;
+            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
+            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
+        }
+    } else if (cur_obj_has_behavior(bhvChuckya)) {
+        // drop mario if he's held
+        if (o->prevObj) {
+            o->prevObj = NULL;
+            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
+            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
+        }
+    } else {
+        // default
+        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+    }
+}
+
+void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvNoteblock)) {
         struct Object * noteblock_interacting = floor->object;
         o->oVelY = 95.0f;
 
@@ -2498,4 +2542,63 @@ void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
         noteblock_interacting->oVelY = 50.0f;
         cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
     }
+}
+
+void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvFloorSwitchHiddenObjects)) {
+        struct Object * switch_interacting = floor->object;
+
+        if (switch_interacting->oAction == PURPLE_SWITCH_ACT_IDLE) {
+            switch_interacting->oAction = PURPLE_SWITCH_ACT_PRESSED;
+        }
+    }
+}
+
+void cur_obj_interact_with_quicksand(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && floor->type == SURFACE_INSTANT_QUICKSAND) {
+        // drag is applied in the object step function
+        if (o->oQuicksandDepthToDie != 0) {
+            cur_obj_play_sound_1(SOUND_MOVING_QUICKSAND_DEATH);
+            o->oQuicksandDepth ++;
+            o->oVelY = 0.0f;
+            u8 die_condition = (o->oQuicksandDepth == o->oQuicksandDepthToDie);
+            if (o->oQuicksandDepthToDie == 255) {
+                // Most objects tend to visually be double their hitbox hight
+                // If not, just set quicksanddepthtodie manually
+                die_condition = (o->oQuicksandDepth > o->hitboxHeight);
+            }
+            if (die_condition) {
+                arbritrary_death_coin_release();
+                mark_obj_for_deletion(o);
+            }
+        }
+    } else {
+        if (o->oQuicksandDepth-10<=0) {
+            o->oQuicksandDepth = 0;
+        } else {
+            o->oQuicksandDepth -= 10;
+        }
+        // get out of the quicksand
+    }
+}
+
+void cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && SURFACE_IS_BURNING(floor->type)) {
+        // drag is applied in the object step function
+        arbritrary_death_coin_release();
+        mark_obj_for_deletion(o);
+    }
+}
+
+void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
+    //cur_obj_interact_with_noteblock(move_standard_or_object_step);
+    //cur_obj_interact_with_floor_switch(move_standard_or_object_step);
+    //cur_obj_interact_with_quicksand(move_standard_or_object_step);
+    //cur_obj_interact_with_lava(move_standard_or_object_step); saving this to deal with later
 }

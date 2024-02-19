@@ -20,6 +20,7 @@ void bhv_bobomb_anchor_mario_loop(void) {
 void king_bobomb_act_inactive(void) { // act 0
     o->oForwardVel = 0.0f;
     o->oVelY = 0.0f;
+    o->oQuicksandDepthToDie = 0;
 
     if (o->oSubAction == KING_BOBOMB_SUB_ACT_INACTIVE_INIT) {
         cur_obj_become_intangible();

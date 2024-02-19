@@ -320,6 +320,10 @@ void bhv_goomba_update(void) {
     s32 bparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
     f32 animSpeed;
 
+    if (o->oBehParams2ndByte == 2) {
+        o->oFlags &= ~OBJ_FLAG_ACTIVATES_FLOOR_SWITCH;
+    }
+
     if (gMarioState->gCurrMinigame == 1) {
         o->oHomeX = gMarioState->pos[0];
         o->oHomeY = gMarioState->pos[1];

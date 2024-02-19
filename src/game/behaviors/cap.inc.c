@@ -30,6 +30,7 @@ void cap_despawn(void) {
     }
 }
 
+/*
 void cap_check_quicksand(void) {
     if (sObjFloor == NULL) {
         return;
@@ -102,6 +103,7 @@ void cap_sink_quicksand(void) {
 
     cap_check_quicksand();
 }
+*/
 
 void bhv_wing_cap_init(void) {
     o->oGravity = 1.2f;
@@ -123,7 +125,7 @@ void wing_vanish_cap_act_0(void) {
     o->oFaceAngleYaw += o->oForwardVel * 128.0f;
     s16 collisionFlags = object_step();
     if (collisionFlags & OBJ_COL_FLAG_GROUNDED) {
-        cap_check_quicksand();
+        //cap_check_quicksand();
     }
 
     if (o->oCapDoScaleVertically) {
@@ -145,7 +147,7 @@ void bhv_wing_vanish_cap_loop(void) {
 
         default:
             object_step();
-            cap_sink_quicksand();
+            //cap_sink_quicksand();
             break;
     }
 
@@ -170,7 +172,7 @@ void metal_cap_act_0(void) {
     s16 collisionFlags = object_step();
 
     if (collisionFlags & OBJ_COL_FLAG_GROUNDED) {
-        cap_check_quicksand();
+        //cap_check_quicksand();
     }
 }
 
@@ -182,7 +184,7 @@ void bhv_metal_cap_loop(void) {
 
         default:
             object_step();
-            cap_sink_quicksand();
+            //cap_sink_quicksand();
             break;
     }
 
@@ -229,7 +231,7 @@ void normal_cap_act_0(void) {
     s16 collisionFlags = object_step();
 
     if (collisionFlags & OBJ_COL_FLAG_GROUNDED) {
-        cap_check_quicksand();
+        //cap_check_quicksand();
 
         if (o->oVelY != 0.0f) {
             o->oCapDoScaleVertically = TRUE;
@@ -251,7 +253,7 @@ void bhv_normal_cap_loop(void) {
 
         default:
             object_step();
-            cap_sink_quicksand();
+            //cap_sink_quicksand();
             break;
     }
 

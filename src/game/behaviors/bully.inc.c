@@ -48,6 +48,7 @@ void bhv_big_bully_init(void) {
     o->oFriction = 0.93f;
     o->oBuoyancy = 1.3f;
 
+    o->oQuicksandDepthToDie = 0;
     obj_set_hitbox(o, &sBigBullyHitbox);
 }
 

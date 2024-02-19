@@ -354,8 +354,13 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
  * Updates an objects position from oForwardVel and oMoveAngleYaw.
  */
 void obj_update_pos_vel_xz(void) {
-    o->oPosX += o->oForwardVel * sins(o->oMoveAngleYaw);
-    o->oPosZ += o->oForwardVel * coss(o->oMoveAngleYaw);
+    if (o->oQuicksandDepth > 0) {
+        o->oPosX += o->oForwardVel * sins(o->oMoveAngleYaw) * 0.5f;
+        o->oPosZ += o->oForwardVel * coss(o->oMoveAngleYaw) * 0.5f;
+    } else {
+        o->oPosX += o->oForwardVel * sins(o->oMoveAngleYaw);
+        o->oPosZ += o->oForwardVel * coss(o->oMoveAngleYaw);
+    }
 }
 
 /**
@@ -434,7 +439,7 @@ s16 object_step(void) {
 
     // Generate a splash if in water.
     obj_splash((s32) waterY, (s32) o->oPosY);
-    cur_obj_interact_with_noteblock(1);
+    cur_obj_floor_interactions(1);
     return collisionFlags;
 }
 

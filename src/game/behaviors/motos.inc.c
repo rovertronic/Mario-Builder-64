@@ -46,6 +46,7 @@ void bhv_motos_hand_loop(void) {
 void bhv_motos_wait(void) {
     o->oForwardVel = 0.f;
     o->oVelY = 0.f;
+    o->oQuicksandDepthToDie = 150;
     
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
     
