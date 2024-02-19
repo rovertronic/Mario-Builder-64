@@ -42,6 +42,7 @@ void mr_blizzard_spawn_white_particles(s8 count, s8 offsetY, s8 forwardVelBase, 
  * Mr. Blizzard initialization function.
  */
 void bhv_mr_blizzard_init(void) {
+    o->oQuicksandDepthToDie = 0;
     if (o->oBehParams2ndByte == MR_BLIZZARD_STYPE_JUMPING) {
         // Jumping Mr. Blizzard.
         o->oAction = MR_BLIZZARD_ACT_JUMP;

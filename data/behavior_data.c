@@ -1823,7 +1823,7 @@ const BehaviorScript bhvBetaFishSplashSpawner[] = {
 
 const BehaviorScript bhvSpindrift[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     LOAD_ANIMATIONS(oAnimations, spindrift_seg5_anims_05002D68),
     ANIMATE(SPINDRIFT_ANIM_DEFAULT),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
@@ -3452,7 +3452,7 @@ const BehaviorScript bhvMerryGoRoundBoo[] = {
 const BehaviorScript bhvGhostHuntBoo[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     // Boo - common:
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     SET_INT(oIntangibleTimer, 0),
     SET_HOME(),
     SET_INT(oDamageOrCoinValue, 2),
@@ -6066,7 +6066,7 @@ const BehaviorScript bhvPokeyBodyPart[] = {
 
 const BehaviorScript bhvFlyGuy[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     // LOAD_ANIMATIONS(oAnimations, flyguy_seg8_anims_08011A64),
     // ANIMATE(FLY_GUY_ANIM_FLYING),
     SET_HOME(),
@@ -6082,7 +6082,7 @@ const BehaviorScript bhvFlyGuy[] = {
 
 const BehaviorScript bhvRealFlyGuy[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     LOAD_ANIMATIONS(oAnimations, flyguy_seg8_anims_08011A64),
     ANIMATE(FLY_GUY_ANIM_FLYING),
     SET_HOME(),
@@ -6097,7 +6097,7 @@ const BehaviorScript bhvRealFlyGuy[] = {
 
 const BehaviorScript bhvChicken[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     LOAD_ANIMATIONS(oAnimations, chicken_anims),
     ANIMATE(0),
     SET_HOME(),
@@ -6953,7 +6953,7 @@ const BehaviorScript bhvFirePiranhaPlantBig[] = {
 
 const BehaviorScript bhvMovingFlame[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     BILLBOARD(),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ 0, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     BEGIN_LOOP(),
@@ -6964,7 +6964,7 @@ const BehaviorScript bhvMovingFlame[] = {
 
 const BehaviorScript bhvMovingFlameEmber[] = {
     BEGIN(OBJ_LIST_UNIMPORTANT),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH),
     BILLBOARD(),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 0, /*Gravity*/ 200, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     BEGIN_LOOP(),

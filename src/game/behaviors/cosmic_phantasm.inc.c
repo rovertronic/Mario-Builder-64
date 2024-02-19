@@ -78,6 +78,7 @@ void bhv_cosmic_phantasm(void) {
 
     switch(o->oAction) {
         case 0:
+            o->oQuicksandDepthToDie = 0;
             o->oHealth = 3;
             o->oNumLootCoins = 5;
             if (o->oBehParams2ndByte == 2) {

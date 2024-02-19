@@ -65,6 +65,8 @@ void koopa_shell_spawn_sparkles(f32 a) {
 void bhv_koopa_shell_loop(void) {
     struct Surface *floor;
 
+    o->oQuicksandDepthToDie = 0;
+
     obj_set_hitbox(o, &sKoopaShellHitbox);
     cur_obj_scale(1.0f);
 
@@ -85,6 +87,7 @@ void bhv_koopa_shell_loop(void) {
             break;
 
         case KOOPA_SHELL_ACT_MARIO_RIDING:
+            o->oQuicksandDepth = 0;
             if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
                 obj_mark_for_deletion(o);
                 spawn_mist_particles();

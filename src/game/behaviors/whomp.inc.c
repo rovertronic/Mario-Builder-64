@@ -22,6 +22,8 @@ void whomp_init(void) {
     o->oQuicksandDepthToDie = 254;
 
     if (o->oBehParams2ndByte != 0) {
+        o->oQuicksandDepthToDie = 0;
+        // womp king to fat to sink
         gSecondCameraFocus = o;
         cur_obj_scale(2.0f);
         if (o->oSubAction == 0) {
@@ -31,8 +33,6 @@ void whomp_init(void) {
             } else {
                 cur_obj_set_pos_to_home();
                 o->oHealth = 3;
-                o->oQuicksandDepthToDie = 0;
-                // womp king to fat to sink
             }
         } else if (1) {
             o->oAction = 2;
@@ -284,7 +284,7 @@ void bhv_whomp_loop(void) {
         } else {
             cur_obj_hide_if_mario_far_away_y(1000.0f);
         }
-        if (o->oQuicksandDepth == 0) {
+        if (o->oQuicksandDepth < 20) {
             load_object_collision_model();
         }
     }

@@ -143,6 +143,11 @@ static void goomba_begin_jump(void) {
     o->oAction = GOOMBA_ACT_JUMP;
     o->oForwardVel = 0.0f;
     o->oVelY = 50.0f / 3.0f * o->oGoombaScale;
+
+    if (o->oQuicksandDepth > 0) {
+        // Quicksand will stunt their jumps heavily
+        o->oVelY *= .2f;
+    }
 }
 
 /**

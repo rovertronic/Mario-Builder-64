@@ -283,6 +283,12 @@ void bhv_scuttlebug_loop(void) {
             o->oForwardVel = -10.0f;
             o->oVelY = 30.0f;
             cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
+
+            if (o->oQuicksandDepth > 0) {
+                // Quicksand will stunt their jumps heavily
+                o->oVelY *= .2f;
+            }
+
             o->oSubAction++;
             break;
 
@@ -450,6 +456,10 @@ void bhv_hammer_bro_loop(void) {
                 if (o->oExtraVariable1 < 1) {
                         o->oAction = 3;
                         o->oVelY = 60;
+                        if (o->oQuicksandDepth > 0) {
+                            // Quicksand will stunt their jumps heavily
+                            o->oVelY *= .2f;
+                        }
                         o->oMoveAngleYaw += 0x8000;
                         cur_obj_init_animation_with_sound(3);
                     } else {
@@ -1246,6 +1256,10 @@ void bhv_scuttlebug_normal_loop(void) {
             o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
             o->oForwardVel = -10.0f;
             o->oVelY = 30.0f;
+            if (o->oQuicksandDepth > 0) {
+                // Quicksand will stunt their jumps heavily
+                o->oVelY *= .2f;
+            }
             cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
             o->oSubAction++;
             break;

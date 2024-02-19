@@ -1636,6 +1636,7 @@ void bhv_bowser_loop(void) {
  */
 void bhv_bowser_init(void) {
     s32 level;
+    o->oQuicksandDepthToDie = 0;
     // Set "reaction" value
     // It goes true when Bowser is a non-walking state
     o->oBowserIsReacting = TRUE;

@@ -57,6 +57,7 @@ enum ObjFlags {
     OBJ_FLAG_EMIT_LIGHT                        = (1 << 22), // 0x00400000
     OBJ_FLAG_ONLY_PROCESS_INSIDE_ROOM          = (1 << 23), // 0x00800000
     OBJ_FLAG_ACTIVATES_FLOOR_SWITCH            = (1 << 24), 
+    OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH             = (1 << 25),
     OBJ_FLAG_HITBOX_WAS_SET                    = (1 << 30), // 0x40000000
 };
 

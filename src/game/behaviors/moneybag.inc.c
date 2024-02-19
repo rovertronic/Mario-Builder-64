@@ -25,6 +25,8 @@ static struct ObjectHitbox sMoneybagHiddenHitbox = {
 };
 
 void bhv_moneybag_init(void) {
+    o->oQuicksandDepthToDie = 0;
+    // i dont want moneybags to die because im worried about the coin child object tied to them losing their parent
     o->oGravity = 3.0f;
     o->oFriction = 1.0f;
     o->oBuoyancy = 2.0f;

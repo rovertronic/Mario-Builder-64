@@ -312,6 +312,8 @@ struct Object {
     /*0x1D4*/ uintptr_t bhvStack[3];
     /*0x1F4*/ s16 bhvDelayTimer;
     /*0x1F6*/ s16 respawnInfoType;
+              u8 oQuicksandDepth;
+              u8 oQuicksandDepthToDie; // 0 means wont sink
     /*0x1F8*/ f32 hitboxRadius;
     /*0x1FC*/ f32 hitboxHeight;
     /*0x200*/ f32 hurtboxRadius;
@@ -322,8 +324,6 @@ struct Object {
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
     /*0x25C*/ void *respawnInfo;
-              u8 oQuicksandDepth;
-              u8 oQuicksandDepthToDie; // 0 means wont sink
 #ifdef PUPPYLIGHTS
     struct PuppyLight puppylight;
 #endif

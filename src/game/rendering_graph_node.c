@@ -1104,6 +1104,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
             shadowScale = node->shadowScale * gCurGraphNodeHeldObject->objNode->header.gfx.scale[0];
         } else {
             vec3f_copy(shadowPos, gCurGraphNodeObject->pos);
+            shadowPos[1] -= ((struct Object *)gCurGraphNodeObject)->oQuicksandDepth*2.0f;
             shadowScale = node->shadowScale * gCurGraphNodeObject->scale[0];
         }
 
@@ -1296,8 +1297,11 @@ void geo_process_object(struct Object *node) {
                 mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], *node->header.gfx.throwMatrix, node->header.gfx.scale);
                 gMatStack[gMatStackIndex + 1][3][1] -= node->oQuicksandDepth*2.0f;
             } else if (node->header.gfx.node.flags & GRAPH_RENDER_BILLBOARD) {
+                f32 old = node->header.gfx.pos[1];
+                node->header.gfx.pos[1] -= node->oQuicksandDepth*2.0f;
                 mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex],
                             node->header.gfx.pos, node->header.gfx.scale, gCurGraphNodeCamera->roll);
+                node->header.gfx.pos[1] = old;
             } else {
                 mtxf_rotate_zxy_and_translate(gMatStack[gMatStackIndex + 1], node->header.gfx.pos, node->header.gfx.angle);
                 mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], node->header.gfx.scale);
