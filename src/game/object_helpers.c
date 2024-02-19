@@ -2597,8 +2597,12 @@ void cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
 }
 
 void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
-    //cur_obj_interact_with_noteblock(move_standard_or_object_step);
-    //cur_obj_interact_with_floor_switch(move_standard_or_object_step);
-    //cur_obj_interact_with_quicksand(move_standard_or_object_step);
+    if (cur_obj_has_behavior(bhvSpindrift)) {
+        return; // go fuck yourself spinriff
+    }
+
+    cur_obj_interact_with_noteblock(move_standard_or_object_step);
+    cur_obj_interact_with_floor_switch(move_standard_or_object_step);
+    cur_obj_interact_with_quicksand(move_standard_or_object_step);
     //cur_obj_interact_with_lava(move_standard_or_object_step); saving this to deal with later
 }

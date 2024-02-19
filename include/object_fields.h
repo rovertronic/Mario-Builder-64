@@ -143,7 +143,7 @@
 #define /*0x15C*/ oDistanceToMario                              OBJECT_FIELD_F32(0x35)
 #define /*0x160*/ oAngleToMario                                 OBJECT_FIELD_S32(0x36)
 /* Home Position vector */
-#define /*0x164*/ O_HOME_INDEX                                  0x37f
+#define /*0x164*/ O_HOME_INDEX                                  0x37
 #define /*0x164*/ O_HOME_X_INDEX                                (O_HOME_INDEX + 0) // 0x37
 #define /*0x168*/ O_HOME_Y_INDEX                                (O_HOME_INDEX + 1) // 0x38
 #define /*0x16C*/ O_HOME_Z_INDEX                                (O_HOME_INDEX + 2) // 0x39
