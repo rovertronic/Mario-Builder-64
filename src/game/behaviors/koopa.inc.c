@@ -604,7 +604,7 @@ static void koopa_the_quick_act_race(void) {
         } else {
             s32 bowlingBallStatus;
 
-            f32 downhillSteepness = 1.0f + (sins((s16)(f32) o->oPathedTargetPitch)*.5f);
+            f32 downhillSteepness = 1.0f;
             cur_obj_rotate_yaw_toward(o->oPathedTargetYaw, (s32)(o->oKoopaAgility * 150.0f));
 
             switch (o->oSubAction) {
@@ -622,8 +622,6 @@ static void koopa_the_quick_act_race(void) {
                     ) {
                         // Move faster if mario has already finished the race or
                         // cheated by shooting from cannon
-                        o->oKoopaAgility = 6.0f;
-                    } else if (o->oKoopaTheQuickRaceIndex != KOOPA_THE_QUICK_BOB_INDEX) {
                         o->oKoopaAgility = 6.0f;
                     } else {
                         o->oKoopaAgility = 4.0f;

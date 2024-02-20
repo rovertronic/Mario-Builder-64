@@ -2309,11 +2309,9 @@ void remove_trajectory(u32 index) {
 
 void delete_object(s8 pos[3], s32 index) {
     remove_occupy_data(pos);
-    s32 refreshTrajectories = FALSE;
 
     if (cmm_object_type_list[cmm_object_data[index].type].flags & OBJ_TYPE_TRAJECTORY) { 
         remove_trajectory(cmm_object_data[index].bparam);
-        refreshTrajectories = TRUE;
     }
 
     cmm_object_count--;

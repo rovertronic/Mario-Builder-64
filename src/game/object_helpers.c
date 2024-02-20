@@ -1713,6 +1713,8 @@ s32 cur_obj_follow_path_new(void) {
 
     vec3_diff(prevToNext, targetWaypoint->pos, lastWaypoint->pos);
     vec3_diff(objToNext, targetWaypoint->pos, &o->oPosVec);
+    prevToNext[1] = 0;
+    objToNext[1] = 0;
 
     o->oPathedTargetYaw = atan2s(objToNext[2], objToNext[0]);
     o->oPathedTargetPitch = atan2s(sqrtf(sqr(objToNext[0]) + sqr(objToNext[2])), -objToNext[1]);
