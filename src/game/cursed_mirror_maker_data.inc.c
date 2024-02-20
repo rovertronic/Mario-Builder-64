@@ -426,8 +426,8 @@ struct cmm_terrain_info cmm_terrain_info_list[] = {
     {"Cull Marker", mat_b_btn_cull, NULL},
     {"Intangible Tile", mat_b_btn_troll, &cmm_terrain_fullblock},
     {"Fence", mat_b_btn_fence, NULL},
-    {"Iron Mesh", mat_b_btn_bars, NULL},
     {"Pole", mat_b_btn_pole, NULL},
+    {"Iron Mesh", mat_b_btn_bars, NULL},
     {"Water", mat_b_btn_water, NULL},
 };
 
@@ -1321,7 +1321,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_HAMMER_BRO */    {"Hammer Bro",              mat_b_btn_hammerbro,    bhvHammerBro,      60.0f,       0xEE,                      0,                       6, 0, 1.0f, Hammerbro_anims, df_hammerbro, SOUND_OBJ_KOOPA_DAMAGE},
 /* OBJECT_TYPE_FIRE_BRO */      {"Fire Bro",                mat_b_btn_hammerbro,    bhvFireBro,        60.0f,       0xEE,                      0,                       6, 0, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
 /* OBJECT_TYPE_CHICKEN */       {"Chicken",                 mat_b_btn_chicken,      bhvChicken,        0,           MODEL_MAKER_CHICKEN,       0,                       2, 0, 1.0f, chicken_anims, NULL, SOUND_OBJ_BOO_LAUGH_SHORT},
-/* OBJECT_TYPE_PHANTASM */      {"Cosmic Phantasm",         mat_b_btn_chicken,      bhvPhantasm,       0,           MODEL_MARIO,               0,                       5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
+/* OBJECT_TYPE_PHANTASM */      {"Cosmic Phantasm",         mat_b_btn_phantasm,     bhvPhantasm,       0,           MODEL_MARIO,               0,                       5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
 /* OBJECT_TYPE_WARP_PIPE */     {"Warp Pipe",               mat_b_btn_pipe,         bhvWarpPipe,       0,           MODEL_MAKER_PIPE,          0,                       0, 0, 1.0f, NULL, NULL, SOUND_MENU_ENTER_PIPE | SOUND_VIBRATO},
 /* OBJECT_TYPE_BADGE */         {"Badge",                   mat_b_btn_badge,        bhvBadge,          TILE_SIZE/2, MODEL_BADGE,               OBJ_TYPE_IS_BILLBOARDED, 0, 0, 5.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
 /* OBJECT_TYPE_KING_BOBOMB */   {"King Bob-omb",            mat_b_btn_boss_kb,      bhvBoss,           0,           MODEL_KINGBOMB_MAKER,      OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, king_bobomb_seg5_anims_0500FE30, df_kingbomb, SOUND_OBJ_KING_BOBOMB_POUNDING1_HIGHPRIO},

@@ -171,11 +171,7 @@ void stationary_bobomb_free_loop(void) {
 }
 
 void bobomb_free_loop(void) {
-    if (o->oBehParams2ndByte == BOBOMB_BP_STYPE_GENERIC) {
-        generic_bobomb_free_loop();
-    } else {
-        stationary_bobomb_free_loop();
-    }
+    generic_bobomb_free_loop();
 }
 
 void bobomb_held_loop(void) {
