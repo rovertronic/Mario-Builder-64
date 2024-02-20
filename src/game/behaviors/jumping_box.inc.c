@@ -40,7 +40,7 @@ ObjActionFunc sJumpingBoxActions[] = {
 };
 
 void jumping_box_free_update(void) {
-    cur_obj_scale(0.5f);
+    cur_obj_scale(0.38f);
     obj_set_hitbox(o, &sJumpingBoxHitbox);
     cur_obj_update_floor_and_walls();
     cur_obj_move_standard(78);

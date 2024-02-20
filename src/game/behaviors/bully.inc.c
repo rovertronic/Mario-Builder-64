@@ -40,7 +40,7 @@ void bhv_small_bully_init(void) {
 
 void bhv_big_bully_init(void) {
     df_bully(CMM_DF_CONTEXT_INIT);
-
+    o->oQuicksandDepthToDie = 150;
     cur_obj_init_animation(0);
     vec3f_copy(&o->oHomeVec, &o->oPosVec);
     o->oBehParams2ndByte = BULLY_BP_SIZE_BIG;
@@ -48,7 +48,6 @@ void bhv_big_bully_init(void) {
     o->oFriction = 0.93f;
     o->oBuoyancy = 1.3f;
 
-    o->oQuicksandDepthToDie = 0;
     obj_set_hitbox(o, &sBigBullyHitbox);
 }
 
