@@ -2529,18 +2529,14 @@ void arbritrary_death_coin_release(void) {
         obj_spawn_yellow_coins(o, 1);
     } else if (cur_obj_has_behavior(bhvSmallBully)) {
         obj_spawn_yellow_coins(o, 1);
-    } else if (cur_obj_has_behavior(bhvKoopa)) {
-        struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-        coin->oForwardVel = 10.0f;
-        coin->oVelY = 20.0f;
-        coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
     } else if (cur_obj_has_behavior(bhvScaredKoopa)) {
         struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
         cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
         coin->oForwardVel = 10.0f;
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+    } else if (cur_obj_has_behavior(bhvBreakableBoxSmall)) {
+        obj_spawn_yellow_coins(o, 3);
     } else {
         // default
         obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2573,6 +2569,10 @@ void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
 }
 
 void cur_obj_interact_with_quicksand(u8 move_standard_or_object_step) {
+    if (o->oFlags & OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH) {
+        return;
+    }
+
     struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
 
     if ((floor) && (floor->type == SURFACE_INSTANT_QUICKSAND || floor->type == SURFACE_DEEP_QUICKSAND)) {
@@ -2622,10 +2622,6 @@ void cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
 }
 
 void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
-    if (o->oFlags & OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH) {
-        return;
-    }
-
     cur_obj_interact_with_noteblock(move_standard_or_object_step);
     cur_obj_interact_with_floor_switch(move_standard_or_object_step);
     cur_obj_interact_with_quicksand(move_standard_or_object_step);
