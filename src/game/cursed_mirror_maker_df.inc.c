@@ -364,3 +364,11 @@ void df_wiggler(s32 context) {
         }
     }
 }
+
+void df_timedbox(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TIMEDBOX];
+    }
+    //test to see if you're reading my comit log
+    // hi pookie bear
+}

@@ -1,0 +1,10 @@
+extern const GeoLayout timedbox_geo[];
+extern Lights1 timedbox_cbox_lights;
+extern u8 timedbox__08012290_ci8[];
+extern u8 timedbox__08012290_pal_rgba16[];
+extern Vtx timedbox_hollowbox_mesh_layer_4_vtx_0[24];
+extern Gfx timedbox_hollowbox_mesh_layer_4_tri_0[];
+extern Gfx mat_timedbox_cbox[];
+extern Gfx mat_revert_timedbox_cbox[];
+extern Gfx timedbox_hollowbox_mesh_layer_4[];
+extern Gfx timedbox_material_revert_render_settings[];

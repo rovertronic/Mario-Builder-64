@@ -36,7 +36,7 @@ void bhv_purple_switch_loop(void) {
          */
         case PURPLE_SWITCH_ACT_IDLE:
             cur_obj_set_model(MODEL_PURPLE_SWITCH);
-            cur_obj_scale(1.5f);
+            cur_obj_scale(1.28f);
             if (
                 gMarioObject->platform == o
                 && !(gMarioStates[0].action & MARIO_NO_PURPLE_SWITCH)
@@ -55,7 +55,7 @@ void bhv_purple_switch_loop(void) {
          * Immediately transition to the ticking state.
          */
         case PURPLE_SWITCH_ACT_PRESSED:
-            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 1.5f, 0.2f);
+            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 1.28f, 0.2f);
             if (o->oTimer == 3) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_PURPLE_SWITCH);
                 cur_obj_shake_screen(SHAKE_POS_SMALL);
@@ -106,7 +106,7 @@ void bhv_purple_switch_loop(void) {
          * idle state.
          */
         case PURPLE_SWITCH_ACT_UNPRESSED:
-            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 0.2f, 1.5f);
+            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 0.2f, 1.28f);
             if (o->oTimer == 3) {
                 o->oAction = PURPLE_SWITCH_ACT_IDLE;
             }
@@ -179,7 +179,7 @@ void bhv_purple_switch_loop_vanilla(void) {
          */
         case PURPLE_SWITCH_ACT_IDLE:
             cur_obj_set_model(MODEL_PURPLE_SWITCH);
-            cur_obj_scale(1.5f);
+            cur_obj_scale(1.28f);
             if (
                 gMarioObject->platform == o
                 && !(gMarioStates[0].action & MARIO_NO_PURPLE_SWITCH)
@@ -194,7 +194,7 @@ void bhv_purple_switch_loop_vanilla(void) {
          * Immediately transition to the ticking state.
          */
         case PURPLE_SWITCH_ACT_PRESSED:
-            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 1.5f, 0.2f);
+            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 1.28f, 0.2f);
             if (o->oTimer == 3) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_PURPLE_SWITCH);
                 o->oAction = PURPLE_SWITCH_ACT_TICKING;
@@ -227,7 +227,7 @@ void bhv_purple_switch_loop_vanilla(void) {
          * idle state.
          */
         case PURPLE_SWITCH_ACT_UNPRESSED:
-            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 0.2f, 1.5f);
+            cur_obj_scale_over_time(SCALE_AXIS_Y, 3, 0.2f, 1.28f);
             if (o->oTimer == 3) {
                 o->oAction = PURPLE_SWITCH_ACT_IDLE;
             }
