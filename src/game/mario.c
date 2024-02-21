@@ -437,6 +437,38 @@ void mario_set_forward_vel(struct MarioState *m, f32 forwardVel) {
     m->vel[2] = (f32) m->slideVelZ;
 }
 
+s32 get_floor_class(TerrainData type) {
+    switch (type) {
+        case SURFACE_NOT_SLIPPERY:
+        case SURFACE_HARD_NOT_SLIPPERY:
+        case SURFACE_SWITCH:
+        case SURFACE_GRASS:
+        case SURFACE_SAND:
+        case SURFACE_CREAKWOOD:
+        case SURFACE_DEEP_QUICKSAND:
+        case SURFACE_HANGABLE_MESH:
+            return SURFACE_CLASS_NOT_SLIPPERY;
+
+        case SURFACE_SLIPPERY:
+        case SURFACE_NOISE_SLIPPERY:
+        case SURFACE_HARD_SLIPPERY:
+        case SURFACE_NO_CAM_COL_SLIPPERY:
+            return SURFACE_CLASS_SLIPPERY;
+
+        case SURFACE_SUPER_SLIPPERY:
+        case SURFACE_VERY_SLIPPERY:
+        case SURFACE_ICE:
+        case SURFACE_HARD_VERY_SLIPPERY:
+        case SURFACE_NOISE_VERY_SLIPPERY_73:
+        case SURFACE_NOISE_VERY_SLIPPERY_74:
+        case SURFACE_NOISE_VERY_SLIPPERY:
+        case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
+        case SURFACE_SNOW:
+            return SURFACE_CLASS_VERY_SLIPPERY;
+    }
+    return SURFACE_CLASS_DEFAULT;
+}
+
 /**
  * Returns the slipperiness class of Mario's floor.
  */
@@ -444,37 +476,7 @@ s32 mario_get_floor_class(struct MarioState *m) {
     s32 floorClass = SURFACE_CLASS_DEFAULT;
 
     if (m->floor != NULL) {
-        switch (m->floor->type) {
-            case SURFACE_NOT_SLIPPERY:
-            case SURFACE_HARD_NOT_SLIPPERY:
-            case SURFACE_SWITCH:
-            case SURFACE_GRASS:
-            case SURFACE_SAND:
-            case SURFACE_CREAKWOOD:
-            case SURFACE_DEEP_QUICKSAND:
-            case SURFACE_HANGABLE_MESH:
-                floorClass = SURFACE_CLASS_NOT_SLIPPERY;
-                break;
-
-            case SURFACE_SLIPPERY:
-            case SURFACE_NOISE_SLIPPERY:
-            case SURFACE_HARD_SLIPPERY:
-            case SURFACE_NO_CAM_COL_SLIPPERY:
-                floorClass = SURFACE_CLASS_SLIPPERY;
-                break;
-
-            case SURFACE_SUPER_SLIPPERY:
-            case SURFACE_VERY_SLIPPERY:
-            case SURFACE_ICE:
-            case SURFACE_HARD_VERY_SLIPPERY:
-            case SURFACE_NOISE_VERY_SLIPPERY_73:
-            case SURFACE_NOISE_VERY_SLIPPERY_74:
-            case SURFACE_NOISE_VERY_SLIPPERY:
-            case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
-            case SURFACE_SNOW:
-                floorClass = SURFACE_CLASS_VERY_SLIPPERY;
-                break;
-        }
+        floorClass = get_floor_class(m->floor->type);
     }
 
     // Crawling allows Mario to not slide on certain steeper surfaces.

@@ -16,7 +16,6 @@ enum ObjActiveFlags {
     ACTIVE_FLAG_MOVE_THROUGH_GRATE             = (1 <<  6), // 0x0040
     ACTIVE_FLAG_DITHERED_ALPHA                 = (1 <<  7), // 0x0080
     ACTIVE_FLAG_ALLOCATED                      = (1 <<  8), // 0x0100
-    ACTIVE_FLAG_DESTRUCTIVE_OBJ_DONT_DESTROY   = (1 <<  9), // 0x0200
     ACTIVE_FLAG_IGNORE_ENV_BOXES               = (1 << 10), // 0x0400
 };
 

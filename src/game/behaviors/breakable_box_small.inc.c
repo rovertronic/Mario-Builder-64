@@ -19,7 +19,6 @@ void bhv_breakable_box_small_init(void) {
     cur_obj_scale(0.31f);
     obj_set_hitbox(o, &sBreakableBoxSmallHitbox);
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
-    o->activeFlags |= ACTIVE_FLAG_DESTRUCTIVE_OBJ_DONT_DESTROY;
 }
 
 void small_breakable_box_spawn_dust(void) {
@@ -31,7 +30,9 @@ void small_breakable_box_spawn_dust(void) {
 void small_breakable_box_act_move(void) {
     s16 collisionFlags = object_step();
 
-    obj_attack_collided_from_other_object(o);
+    if (o->oForwardVel > 5.f) {
+        obj_attack_collided_from_other_object(o);
+    }
 
     if (collisionFlags == OBJ_COL_FLAG_GROUNDED) {
         cur_obj_play_sound_2(SOUND_GENERAL_SMALL_BOX_LANDING);
@@ -92,11 +93,8 @@ void breakable_box_small_idle_loop(void) {
 }
 
 void breakable_box_small_get_dropped(void) {
-    cur_obj_become_tangible();
-    cur_obj_enable_rendering();
     cur_obj_get_dropped();
     o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    o->oHeldState = HELD_FREE;
     o->oBreakableBoxSmallReleased = TRUE;
     o->oBreakableBoxSmallFramesSinceReleased = 0;
 }
@@ -112,7 +110,6 @@ void breakable_box_small_get_thrown(void) {
     o->oVelY = 20.0f;
     o->oBreakableBoxSmallReleased = TRUE;
     o->oBreakableBoxSmallFramesSinceReleased = 0;
-    o->activeFlags &= ~ACTIVE_FLAG_DESTRUCTIVE_OBJ_DONT_DESTROY;
 }
 
 void bhv_breakable_box_small_loop(void) {
