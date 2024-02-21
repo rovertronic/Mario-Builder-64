@@ -2592,6 +2592,8 @@ void save_level(void) {
         bcopy(&mystery_painting_rgba16,&cmm_save.piktcher,sizeof(cmm_save.piktcher));
     }
     bcopy(&cmm_curr_custom_theme,&cmm_save.custom_theme,sizeof(struct cmm_custom_theme));
+    bcopy(&cmm_toolbar, &cmm_save.toolbar, sizeof(cmm_save.toolbar));
+    bcopy(&cmm_toolbar_params, &cmm_save.toolbar_params, sizeof(cmm_save.toolbar_params));
 
     f_chdir(cmm_level_dir_name);
     UINT bytes_written;
@@ -2656,6 +2658,9 @@ void load_level(void) {
         cmm_save.boundary = 1;
         cmm_save.boundary_height = 5;
 
+        bcopy(&cmm_toolbar_defaults,&cmm_save.toolbar,sizeof(cmm_save.toolbar));
+        bzero(&cmm_save.toolbar_params,sizeof(cmm_save.toolbar_params));
+
         if (cmm_templates[cmm_lopt_template].platform) {
             u8 i = 0;
             for (s32 x = -1; x <= 1; x++) {
@@ -2711,9 +2716,9 @@ void load_level(void) {
 
     cmm_lopt_game = cmm_save.game;
 
-    //reset toolbar
-    bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
-    bzero(&cmm_toolbar_params,sizeof(cmm_toolbar_params));
+    //copy toolbar
+    bcopy(&cmm_save.toolbar,&cmm_toolbar,sizeof(cmm_toolbar));
+    bcopy(&cmm_save.toolbar_params,&cmm_toolbar_params,sizeof(cmm_toolbar_params));
 
     // copy custom theme
     bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));

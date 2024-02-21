@@ -320,6 +320,9 @@ struct cmm_level_save_header {
     u8 game;
 
     u8 padding[20];
+
+    u8 toolbar[9];
+    u8 toolbar_params[9];
     u16 tile_count;
     u16 object_count;
 
