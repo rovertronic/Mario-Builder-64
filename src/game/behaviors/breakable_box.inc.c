@@ -18,12 +18,13 @@ struct ObjectHitbox sBreakableBoxHitbox = {
 void breakable_box_init(void) {
     o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
-    switch (o->oBehParams2ndByte) {
-        case BREAKABLE_BOX_BP_NO_COINS: o->oNumLootCoins = 0; break;
-        case BREAKABLE_BOX_BP_3_COINS:  o->oNumLootCoins = 3; break;
-        case BREAKABLE_BOX_BP_5_COINS:  o->oNumLootCoins = 5; break;
-        case BREAKABLE_BOX_BP_LARGE:    cur_obj_scale(1.5f);  break;
-    }
+    o->oNumLootCoins = 3;
+    // switch (o->oBehParams2ndByte) {
+    //     case BREAKABLE_BOX_BP_NO_COINS: o->oNumLootCoins = 0; break;
+    //     case BREAKABLE_BOX_BP_3_COINS:  o->oNumLootCoins = 3; break;
+    //     case BREAKABLE_BOX_BP_5_COINS:  o->oNumLootCoins = 5; break;
+    //     case BREAKABLE_BOX_BP_LARGE:    cur_obj_scale(1.5f);  break;
+    // }
 }
 
 void hidden_breakable_box_actions(void) {

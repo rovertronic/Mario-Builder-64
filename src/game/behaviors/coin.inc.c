@@ -112,10 +112,6 @@ void bhv_temp_coin_loop(void) {
 }
 
 void bhv_coin_init(void) {
-    if (gMarioState->gCurrMinigame > 0) {
-        obj_mark_for_deletion(o);
-        }
-
     o->oVelY = random_float() * 10.0f + 30 + o->oCoinBaseYVel;
     o->oForwardVel = random_float() * 10.0f;
     o->oMoveAngleYaw = random_u16();
@@ -132,14 +128,7 @@ void bhv_coin_loop(void) {
 
     struct Surface *floor = o->oFloor;
 
-    u8 cosmetic = FALSE;
-    u16 lifespan = 400;
-    if (o->parentObj == gMarioObject) {
-        cosmetic = TRUE;
-        lifespan = 10;
-    }
-
-    if ((save_file_get_badge_equip() & (1<<10))&&(!cosmetic)) {
+    if ((save_file_get_badge_equip() & (1<<10))) {
         o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
     }
 
@@ -162,7 +151,7 @@ void bhv_coin_loop(void) {
         cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
     }
 
-    if ((o->oVelY < 0) && (!cosmetic)) {
+    if (o->oVelY <= 0) {
         cur_obj_become_tangible();
     }
 
@@ -186,7 +175,7 @@ void bhv_coin_loop(void) {
         o->oCoinBounceTimer++;
     }
 
-    if (cur_obj_wait_then_blink(lifespan, 20)) {
+    if (cur_obj_wait_then_blink(400, 20)) {
         obj_mark_for_deletion(o);
     }
 
