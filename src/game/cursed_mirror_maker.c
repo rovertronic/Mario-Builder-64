@@ -2713,6 +2713,7 @@ void load_level(void) {
 
     //reset toolbar
     bcopy(&cmm_toolbar_defaults,&cmm_toolbar,sizeof(cmm_toolbar_defaults));
+    bzero(&cmm_toolbar_params,sizeof(cmm_toolbar_params));
 
     // copy custom theme
     bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));
@@ -3171,16 +3172,16 @@ void sb_loop(void) {
 
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
                 cmm_toolbar_index--;
-                cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
+            } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
                 cmm_toolbar_index++;
-                cmm_param_selection = 0;
                 updatePreviewObj = TRUE;
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
+
+            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
+            cmm_param_selection = cmm_toolbar_params[cmm_toolbar_index];
 
             if (cmm_place_mode != CMM_PM_OBJ) updatePreviewObj = TRUE;
 
@@ -3190,8 +3191,7 @@ void sb_loop(void) {
                     cmm_param_selection--;
                     updatePreviewObj = TRUE;
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                }
-                if (gPlayer1Controller->buttonPressed & R_JPAD) {
+                } else if (gPlayer1Controller->buttonPressed & R_JPAD) {
                     cmm_param_selection++;
                     updatePreviewObj = TRUE;
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
@@ -3199,10 +3199,10 @@ void sb_loop(void) {
                 if (cmm_place_mode == CMM_PM_OBJ) {
                     u32 max = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].paramCount;
                     cmm_param_selection = (cmm_param_selection+max)%max;
+                    cmm_toolbar_params[cmm_toolbar_index] = cmm_param_selection;
                 }
             }
 
-            cmm_toolbar_index = (cmm_toolbar_index+9)%9;
             curBtn = &cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]];
             if (curBtn->multiObj) {
                 cmm_id_selection = curBtn->idList[cmm_param_selection];
@@ -3367,6 +3367,18 @@ void sb_loop(void) {
             }
             cmm_place_mode = curBtn->placeMode;
 
+            if (cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].multiObj) {
+                u32 selectedParam = cmm_toolbox_params[cmm_toolbox_index];
+                u32 maxParam = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].paramCount;
+                if (gPlayer1Controller->buttonPressed & L_JPAD) {
+                    selectedParam += maxParam - 1;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                } else if (gPlayer1Controller->buttonPressed & R_JPAD) {
+                    selectedParam++;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                }
+                cmm_toolbox_params[cmm_toolbox_index] = (selectedParam % maxParam);
+            }
             //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 //You can not put a blank button into the toolbox
@@ -3380,10 +3392,11 @@ void sb_loop(void) {
                     // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
                     cmm_toolbox_transition_btn_ty = 25.0f;
-                    cmm_toolbox_transition_btn_old_gfx = get_button_tex(cmm_toolbar[cmm_toolbar_index], 0);
-                    cmm_toolbox_transition_btn_gfx = get_button_tex(cmm_toolbox[cmm_toolbox_index], 0);
+                    cmm_toolbox_transition_btn_old_gfx = get_button_tex(cmm_toolbar[cmm_toolbar_index], cmm_toolbar_params[cmm_toolbar_index]);
+                    cmm_toolbox_transition_btn_gfx = get_button_tex(cmm_toolbox[cmm_toolbox_index], cmm_toolbox_params[cmm_toolbox_index]);
 
                     cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
+                    cmm_toolbar_params[cmm_toolbar_index] = cmm_toolbox_params[cmm_toolbox_index];
 
                     play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
                 } else {

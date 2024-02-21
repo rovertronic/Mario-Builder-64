@@ -472,6 +472,7 @@ void cmm_set_data_overrides(void) {
     }
 
     // Theme-specific data
+    bzero(&cmm_toolbox_params, sizeof(cmm_toolbox_params));
     switch(cmm_lopt_game) {
         case CMM_GAME_BTCM:
             bcopy(&cmm_toolbox_btcm,&cmm_toolbox,sizeof(cmm_toolbox));
@@ -908,7 +909,7 @@ void draw_cmm_menu(void) {
             create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * cmm_menu_toolbar_offsets[i]), 0);
             gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
 
-            Gfx *mat = get_button_tex(cmm_toolbar[i], (cmm_toolbar_index == i ? cmm_param_selection : 0));
+            Gfx *mat = get_button_tex(cmm_toolbar[i], cmm_toolbar_params[i]);
 
             gSPDisplayList(gDisplayListHead++, mat);//texture
             gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
@@ -958,7 +959,7 @@ void draw_cmm_menu(void) {
                 create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32) + 4*cmm_menu_list_offsets[i] + yOff, 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
-                Gfx *mat = get_button_tex(cmm_toolbox[i], 0);
+                Gfx *mat = get_button_tex(cmm_toolbox[i], cmm_toolbox_params[i]);
 
                 gSPDisplayList(gDisplayListHead++, mat);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
@@ -982,16 +983,26 @@ void draw_cmm_menu(void) {
             s32 stry = 215-(cmm_toolbox_index/9)*32+yOff+4*cmm_menu_list_offsets[cmm_toolbox_index];
 
             if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
+                u32 isMulti = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].multiObj;
                 char *buttonName = get_button_str(cmm_toolbox[cmm_toolbox_index]);
                 //render selection box
-                if (string_runoff(strx,buttonName)) {
+                if ((cmm_toolbox_index%9) > 5) {
                     strx -= 130;
                 }
+                if (isMulti) stry += 8;
 
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
                 gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + get_string_width_ascii(buttonName) + 5, 240-stry+1);
+
+                if (isMulti) {
+                    char stringBuf[50];
+                    u32 objId = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].idList[cmm_toolbox_params[cmm_toolbox_index]];
+                    sprintf(stringBuf, "< %s >", cmm_object_type_list[objId].name);
+                    gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry+1, strx + get_string_width_ascii(stringBuf) + 5, 240-stry+16);
+                    print_maker_string_ascii(strx, stry-15, stringBuf, TRUE);
+                }
 
                 print_maker_string_ascii(strx, stry, buttonName, TRUE);
             }
@@ -1122,10 +1133,10 @@ void draw_cmm_menu(void) {
         char *yellowStr = NULL;
         if (cmm_place_mode == CMM_PM_OBJ) {
             if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multiObj) {
-                yellowStr = cmm_object_type_list[cmm_id_selection].name;
+                yellowStr = cmm_object_type_list[cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].idList[cmm_toolbar_params[cmm_toolbar_index]]].name;
             } else {
                 if (cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].names) {
-                    yellowStr = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].names[cmm_param_selection];
+                    yellowStr = cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].names[cmm_toolbar_params[cmm_toolbar_index]];
                 }
             }
         } else if (cmm_terrain_info_list[cmm_id_selection].terrain) {

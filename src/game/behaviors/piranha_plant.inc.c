@@ -21,7 +21,7 @@ void piranha_plant_act_idle(void) {
      */
     cur_obj_scale(1.0f);
 
-    if (o->oDistanceToMario < 1200.0f) {
+    if (o->oDistanceToMario < CMM_DRAWDIST_LOW) {
         o->oAction = PIRANHA_PLANT_ACT_SLEEPING;
     }
 }
@@ -310,12 +310,5 @@ ObjActionFunc TablePiranhaPlantActions[] = {
  */
 void bhv_piranha_plant_loop(void) {
     cur_obj_call_action_function(TablePiranhaPlantActions);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-    // In WF, hide all Piranha Plants once high enough up.
-    if (gCurrLevelNum == LEVEL_WF) {
-        COND_BIT((gMarioObject->oPosY > 3400.0f), o->header.gfx.node.flags, GRAPH_RENDER_INVISIBLE);
-    }
-
-#endif
     o->oInteractStatus = INT_STATUS_NONE;
 }

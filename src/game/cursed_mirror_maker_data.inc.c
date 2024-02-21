@@ -1555,6 +1555,7 @@ u8 cmm_toolbar_defaults[9] = {
 };
 
 u8 cmm_toolbar[9];
+u8 cmm_toolbar_params[9];
 f32 cmm_toolbar_y_anim[9] = {
     0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
 };
@@ -1567,6 +1568,7 @@ Gfx * cmm_toolbox_transition_btn_gfx;
 Gfx * cmm_toolbox_transition_btn_old_gfx;
 
 u8 cmm_toolbox[45];
+u8 cmm_toolbox_params[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
