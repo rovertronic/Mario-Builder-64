@@ -77,3 +77,4 @@
 #include "gooner/geo.inc.c"
 #include "spooner/geo.inc.c"
 #include "pokey/geo.inc.c"
+#include "timedbox/geo.inc.c"

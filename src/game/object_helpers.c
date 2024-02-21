@@ -2536,8 +2536,6 @@ void arbritrary_death_coin_release(void) {
         coin->oForwardVel = 10.0f;
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-    } else if (cur_obj_has_behavior(bhvBreakableBoxSmall)) {
-        obj_spawn_yellow_coins(o, 3);
     } else if (cur_obj_has_behavior(bhvBigBully)) {
         spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
     } else {
@@ -2556,6 +2554,12 @@ void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
         noteblock_interacting->oTimer = 0;
         noteblock_interacting->oVelY = 50.0f;
         cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
+
+        if (cur_obj_has_behavior(bhvKoopa)) {
+            o->oSubAction = KOOPA_THE_QUICK_SUB_ACT_JUMP;
+            o->oMoveFlags = OBJ_MOVE_NONE;
+            cur_obj_init_animation_with_sound(KOOPA_ANIM_THE_QUICK_JUMP);
+        }
     }
 }
 

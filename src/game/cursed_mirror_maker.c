@@ -2860,34 +2860,37 @@ void sb_init(void) {
 
 u32 main_cursor_logic(u32 joystick) {
     u8 cursorMoved = FALSE;
-    if (joystick != 0) {
-        switch(((joystick-1)+cmm_camera_rot_offset)%4) {
-            case 0:
-                cmm_cursor_pos[0]++;
-                cursorMoved = TRUE;
-            break;
-            case 1:
-                cmm_cursor_pos[2]--;
-                cursorMoved = TRUE;
-            break;
-            case 2:
-                cmm_cursor_pos[0]--;
-                cursorMoved = TRUE;
-            break;
-            case 3:
-                cmm_cursor_pos[2]++;
-                cursorMoved = TRUE;
-            break;
-        }
-    }
 
-    if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
-        cmm_cursor_pos[1]++;
-        cursorMoved = TRUE;
-    }
-    if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
-        cmm_cursor_pos[1]--;
-        cursorMoved = TRUE;
+    if (sDelayedWarpOp == WARP_OP_NONE) {
+        if (joystick != 0) {
+            switch(((joystick-1)+cmm_camera_rot_offset)%4) {
+                case 0:
+                    cmm_cursor_pos[0]++;
+                    cursorMoved = TRUE;
+                break;
+                case 1:
+                    cmm_cursor_pos[2]--;
+                    cursorMoved = TRUE;
+                break;
+                case 2:
+                    cmm_cursor_pos[0]--;
+                    cursorMoved = TRUE;
+                break;
+                case 3:
+                    cmm_cursor_pos[2]++;
+                    cursorMoved = TRUE;
+                break;
+            }
+        }
+
+        if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
+            cmm_cursor_pos[1]++;
+            cursorMoved = TRUE;
+        }
+        if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
+            cmm_cursor_pos[1]--;
+            cursorMoved = TRUE;
+        }
     }
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         cmm_camera_rot_offset++;
@@ -3175,14 +3178,16 @@ void sb_loop(void) {
             cursorMoved = main_cursor_logic(cmm_joystick);
             s32 updatePreviewObj = cursorMoved;
 
-            if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                cmm_toolbar_index--;
-                updatePreviewObj = TRUE;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                cmm_toolbar_index++;
-                updatePreviewObj = TRUE;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            if (sDelayedWarpOp == WARP_OP_NONE) {
+                if (gPlayer1Controller->buttonPressed & L_TRIG) {
+                    cmm_toolbar_index--;
+                    updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
+                    cmm_toolbar_index++;
+                    updatePreviewObj = TRUE;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                }
             }
 
             cmm_toolbar_index = (cmm_toolbar_index+9)%9;
@@ -3230,14 +3235,16 @@ void sb_loop(void) {
                 ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index >= 7))) {
                 switch(cmm_toolbar_index) {
                     case 7: // save and test
-                        if (mount_success == FR_OK) {
-                            save_level();
+                        if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE) {
+                            if (mount_success == FR_OK) {
+                                save_level();
+                            }
+                            cmm_target_mode = CMM_MODE_PLAY;
+                            reset_play_state();
+                            level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                            sSourceWarpNodeId = 0x0A;
+                            play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
                         }
-                        cmm_target_mode = CMM_MODE_PLAY;
-                        reset_play_state();
-                        level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                        sSourceWarpNodeId = 0x0A;
-                        play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
                         break;
                     case 8: // options
                         switch (cmm_param_selection) {

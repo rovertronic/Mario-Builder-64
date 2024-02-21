@@ -1339,6 +1339,11 @@ void geo_process_object(struct Object *node) {
         gMatStackIndex--;
         gCurrAnimType = ANIM_TYPE_NONE;
         node->header.gfx.throwMatrix = NULL;
+
+        if ((sCurrPlayMode == PLAY_MODE_PAUSED)&&(node->oSubAction == 6)&&(obj_has_behavior(node,bhvCrablet))) {
+            mtxf_copy(node->transform,gMarioState->HeadMatrix);
+            node->header.gfx.throwMatrix = &node->transform;
+        }
     }
 }
 
