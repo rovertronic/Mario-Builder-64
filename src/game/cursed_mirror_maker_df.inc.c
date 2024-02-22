@@ -369,6 +369,11 @@ void df_timedbox(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TIMEDBOX];
     }
-    //test to see if you're reading my comit log
-    // hi pookie bear
+    if (context == CMM_DF_CONTEXT_MAIN) {
+        if (cmm_prepare_level_screenshot) {
+            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        } else {
+            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        }
+    }
 }

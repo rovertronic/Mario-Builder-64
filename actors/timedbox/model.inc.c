@@ -210,6 +210,7 @@ Gfx timedbox_hollowbox_mesh_layer_4_tri_0[] = {
 Gfx mat_timedbox_cbox[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, ENVIRONMENT, 0),
+	gsSPGeometryMode(G_CULL_BACK, 0),
 	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsSPTexture(65535, 65535, 0, 0, 1),
     gsSPLightColor(LIGHT_1, 0xffffffff),
@@ -227,6 +228,7 @@ Gfx mat_timedbox_cbox[] = {
 
 Gfx mat_revert_timedbox_cbox[] = {
 	gsDPPipeSync(),
+	gsSPGeometryMode(0, G_CULL_BACK),
 	gsDPSetTextureLUT(G_TT_NONE),
 	gsSPEndDisplayList(),
 };

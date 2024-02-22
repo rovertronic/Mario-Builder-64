@@ -194,8 +194,6 @@ s8 turn_obj_away_from_steep_floor(struct Surface *objFloor, f32 floorY, f32 objV
 void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ) {
     Vec3f objVisualPosition, surfaceNormals;
 
-    Mat4 *throwMatrix;
-
     // Passes on orienting certain objects that shouldn't be oriented, like boulders.
     if (!sOrientObjWithFloor) {
         return;
@@ -206,17 +204,11 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
         return;
     }
 
-    throwMatrix = alloc_display_list(sizeof(*throwMatrix));
-    // If out of memory, fail to try orienting the object.
-    if (throwMatrix == NULL) {
-        return;
-    }
-
     vec3f_copy_y_off(objVisualPosition, &obj->oPosVec, obj->oGraphYOffset);
     vec3f_set(surfaceNormals, normalX, normalY, normalZ);
 
-    mtxf_align_terrain_normal(*throwMatrix, surfaceNormals, objVisualPosition, obj->oFaceAngleYaw);
-    obj->header.gfx.throwMatrix = throwMatrix;
+    mtxf_align_terrain_normal(*obj->transform, surfaceNormals, objVisualPosition, obj->oFaceAngleYaw);
+    obj->header.gfx.throwMatrix = &obj->transform;
 }
 
 /**

@@ -147,7 +147,7 @@ static void goomba_begin_jump(void) {
     if (o->oQuicksandDepth > 0) {
         // Quicksand will stunt their jumps heavily
         o->oVelY = 0;
-        o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-30,0,255);
+        o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
     }
 }
 
