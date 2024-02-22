@@ -1319,7 +1319,7 @@ void process_tiles(u32 processTileRenderMode) {
             PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
             rot = cmm_tile_data[i].rot;
             vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
-
+            
             process_tile(pos, cmm_terrain_info_list[tileType].terrain, rot);
         }
 
@@ -2730,10 +2730,8 @@ void load_level(void) {
     bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));
     update_custom_theme();
 
-    reload_bg();
-
     u32 oldIndex = 0;
-    cmm_tile_data_indices[0] = 0;
+    bzero(&cmm_tile_data_indices,sizeof(cmm_tile_data_indices));
     // Load tiles and build index list. Assume all tiles are in order
     for (i = 0; i < cmm_tile_count; i++) {
         //bcopy(&cmm_save.tiles[i],&cmm_tile_data[i],sizeof(cmm_tile_data[i]));
@@ -2778,7 +2776,7 @@ void load_level(void) {
             cmm_trajectory_list[i][j][3] = GRID_TO_POS(cmm_save.trajectories[i][j].z);
         }
     }
-
+    
 
     cmm_set_data_overrides();
 
