@@ -265,8 +265,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
     }
 
     //! (Obj Position Crash) If you got an object with height past 2^31, the game would crash.
-    if ((s32) o->oPosY >= (s32) objFloorY && (s32) o->oPosY < (s32) objFloorY + 37) {
-        obj_orient_graph(o, floor_nX, floor_nY, floor_nZ);
+    if ((o->oPosY >= objFloorY) && (o->oPosY < objFloorY + 37)) {
 
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
@@ -323,8 +322,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
         o->oVelY = -o->oVelY;
     }
 
-    if ((s32) o->oPosY >= (s32) floorY && (s32) o->oPosY < (s32) floorY + 37) {
-        obj_orient_graph(o, floor_nX, floor_nY, floor_nZ);
+    if ((o->oPosY >= floorY) && (o->oPosY < floorY + 37)) {
 
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
@@ -429,6 +427,13 @@ s16 object_step(void) {
     cur_obj_update_ceiling();
 
     obj_update_pos_vel_xz();
+
+    if (sObjFloor && (o->oPosY >= floorY) && (o->oPosY < floorY + 37)) {
+        Vec3f normal;
+        get_surface_normal(normal, sObjFloor);
+        obj_orient_graph(o, normal[0], normal[1], normal[2]);
+    }
+
     if ((s32) o->oPosY == (s32) floorY) {
         collisionFlags += OBJ_COL_FLAG_GROUNDED;
     }
@@ -438,7 +443,7 @@ s16 object_step(void) {
     }
 
     // Generate a splash if in water.
-    obj_splash((s32) waterY, (s32) o->oPosY);
+    obj_splash(waterY, o->oPosY);
     cur_obj_floor_interactions(1);
     return collisionFlags;
 }
