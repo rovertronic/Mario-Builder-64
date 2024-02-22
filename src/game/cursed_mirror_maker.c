@@ -997,7 +997,13 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
         connections[rot] = 0;
         s32 dir = rotate_direction(CMM_DIRECTION_POS_Z, rot);
         vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
-        if (!coords_in_range(adjacentPos)) continue;
+        if (!coords_in_range(adjacentPos)) {
+            if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && 
+                adjacentPos[1] < cmm_lopt_boundary_height) {
+                connections[rot] = 1;
+            }
+            continue;
+        }
 
         // If adjacent block is a bar, return true
         if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
