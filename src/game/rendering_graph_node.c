@@ -1286,6 +1286,11 @@ void geo_process_object(struct Object *node) {
         s32 isInvisible = (node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE);
         s32 noThrowMatrix = (node->header.gfx.throwMatrix == NULL);
 
+        Mat4 * temp_throwmatrix;
+        if (!noThrowMatrix) {
+            temp_throwmatrix = node->header.gfx.throwMatrix;
+        }
+
         // If the throw matrix is null and the object is invisible, there is no need
         // to update billboarding, scale, rotation, etc. 
         // This still updates translation since it is needed for sound.
@@ -1338,11 +1343,10 @@ void geo_process_object(struct Object *node) {
 
         gMatStackIndex--;
         gCurrAnimType = ANIM_TYPE_NONE;
-        node->header.gfx.throwMatrix = NULL;
-
-        if ((sCurrPlayMode == PLAY_MODE_PAUSED)&&(node->oSubAction == 6)&&(obj_has_behavior(node,bhvCrablet))) {
-            mtxf_copy(node->transform,gMarioState->HeadMatrix);
-            node->header.gfx.throwMatrix = &node->transform;
+        if (sCurrPlayMode == PLAY_MODE_PAUSED) {
+            node->header.gfx.throwMatrix = temp_throwmatrix;
+        } else {
+            node->header.gfx.throwMatrix = NULL;
         }
     }
 }
