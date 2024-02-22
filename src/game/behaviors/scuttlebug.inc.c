@@ -254,7 +254,7 @@ void bhv_scuttlebug_loop(void) {
                         if (o->oQuicksandDepth > 0) {
                             // Quicksand will stunt their jumps heavily
                             o->oVelY = 0;
-                            o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-30,0,255);
+                            o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
                         }
                     }
                 } else if (o->oScuttlebugIsAtttacking == 1) {
@@ -292,7 +292,7 @@ void bhv_scuttlebug_loop(void) {
             if (o->oQuicksandDepth > 0) {
                 // Quicksand will stunt their jumps heavily
                 o->oVelY = 0;
-                o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-30,0,255);
+                o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
             }
 
             o->oSubAction++;
@@ -376,7 +376,7 @@ void throw_hammer(void) {
             hammer->oMoveAngleYaw = o->oFaceAngleYaw;
             hammer->oVelY = RandomMinMaxU16(30,50);
             hammer->oForwardVel = RandomMinMaxU16(20,50);
-            hammer->oPosY += 20.0f;
+            hammer->oPosY += 20.0f - o->oQuicksandDepth*2.0f;
             hammer->oTimer =0;
             hammer->oFlags |= OBJ_FLAG_ACTIVE_FROM_AFAR;
             cur_obj_play_sound_2(SOUND_OBJ_KOOPA_DAMAGE);
@@ -465,7 +465,7 @@ void bhv_hammer_bro_loop(void) {
                         if (o->oQuicksandDepth > 0) {
                             // Quicksand will stunt their jumps heavily
                             o->oVelY = 0;
-                            o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-30,0,255);
+                            o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
                         }
                         o->oMoveAngleYaw += 0x8000;
                         cur_obj_init_animation_with_sound(3);
@@ -1232,6 +1232,11 @@ void bhv_scuttlebug_normal_loop(void) {
                     if (abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x800) {
                         o->oScuttlebugIsAtttacking = 1;
                         o->oVelY = 20.0f;
+                        if (o->oQuicksandDepth > 0) {
+                            // Quicksand will stunt their jumps heavily
+                            o->oVelY = 0;
+                            o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
+                        }
                         cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
                     }
                 } else if (o->oScuttlebugIsAtttacking == 1) {
@@ -1266,7 +1271,7 @@ void bhv_scuttlebug_normal_loop(void) {
             if (o->oQuicksandDepth > 0) {
                 // Quicksand will stunt their jumps heavily
                 o->oVelY = 0;
-                o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-30,0,255);
+                o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
             }
             cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
             o->oSubAction++;
