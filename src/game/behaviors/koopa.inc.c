@@ -772,6 +772,13 @@ static void koopa_the_quick_update(void) {
 
     cur_obj_push_mario_away_from_cylinder(140.0f, 300.0f);
     cur_obj_move_standard(-78);
+    if (is_obj_interacting_with_noteblock(0)) {
+        if (o->oAction == KOOPA_THE_QUICK_ACT_RACE) {
+            o->oGravity = -5.0f;
+            o->oSubAction = KOOPA_THE_QUICK_SUB_ACT_JUMP;
+            o->oMoveFlags = OBJ_MOVE_NONE;
+        }
+    }
 }
 
 /**

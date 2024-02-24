@@ -18,7 +18,9 @@ void whomp_play_sfx_from_pound_animation(void) {
 
 void whomp_init(void) {
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
-    cur_obj_set_pos_to_home();
+    if (o->oTimer == 0) {
+        cur_obj_set_pos_to_home();
+    }
 
     if (o->oBehParams2ndByte != 0) {
         gSecondCameraFocus = o;

@@ -45,7 +45,6 @@ void bhv_motos_hand_loop(void) {
 
 void bhv_motos_wait(void) {
     o->oForwardVel = 0.f;
-    o->oVelY = 0.f;
     o->oQuicksandDepthToDie = 150;
     
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
@@ -190,6 +189,14 @@ void bhv_motos_main() {
     }
     
     cur_obj_move_standard(-78);
+
+    if (is_obj_interacting_with_noteblock(0)) {
+        o->oAction = MOTOS_ACT_THROWN;
+        if (o->oCommonAnchorAction == 1) {
+            o->oInteractStatus &= (~INT_STATUS_GRABBED_MARIO);
+            o->oCommonAnchorAction = 2;
+        }
+    }
     
     // Added to detect lava death
     floorY = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sObjFloor);

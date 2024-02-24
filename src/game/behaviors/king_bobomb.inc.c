@@ -19,21 +19,27 @@ void bhv_bobomb_anchor_mario_loop(void) {
 
 void king_bobomb_act_inactive(void) { // act 0
     o->oForwardVel = 0.0f;
-    o->oVelY = 0.0f;
     o->oQuicksandDepthToDie = 0;
 
     if (o->oSubAction == KING_BOBOMB_SUB_ACT_INACTIVE_INIT) {
-        cur_obj_become_intangible();
-        gSecondCameraFocus = o;
-        cur_obj_init_animation_with_sound(KING_BOBOMB_ANIM_IDLE);
-        cur_obj_set_pos_to_home();
-        o->oHealth = 3;
+        if (o->oTimer == 0) {
+            o->oHomeX = o->oPosX;
+            o->oHomeZ = o->oPosZ;
+            o->oHomeY = find_floor_height(o->oPosX,o->oPosY,o->oPosZ);
+
+            cur_obj_become_intangible();
+            gSecondCameraFocus = o;
+            cur_obj_init_animation_with_sound(KING_BOBOMB_ANIM_IDLE);
+            o->oHealth = 3;
+
+            cur_obj_move_standard(-78);
+        }
 
         if (cur_obj_can_mario_activate_textbox_2(CMM_BOSS_TRIGGER_DIST, 100.0f)) {
             o->oSubAction++;
             //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
         }
-    } else if (1) {
+    } else {
         o->oAction = KING_BOBOMB_ACT_ACTIVE;
         o->oFlags |= OBJ_FLAG_HOLDABLE;
     }
