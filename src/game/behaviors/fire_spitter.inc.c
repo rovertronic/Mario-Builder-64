@@ -32,7 +32,7 @@ static void fire_spitter_act_spit_fire(void) {
 void bhv_fire_spitter_update(void) {
     cur_obj_scale(o->header.gfx.scale[0]);
     o->oGraphYOffset = 40.0f;
-    cur_obj_update_floor_and_walls();
+    //cur_obj_update_floor_and_walls();
 
     switch (o->oAction) {
         case FIRE_SPITTER_ACT_IDLE:
@@ -43,5 +43,6 @@ void bhv_fire_spitter_update(void) {
             break;
     }
 
-    cur_obj_move_standard(78);
+    //cur_obj_move_standard(78);
+    //why?
 }

@@ -25,8 +25,6 @@ static struct ObjectHitbox sMoneybagHiddenHitbox = {
 };
 
 void bhv_moneybag_init(void) {
-    o->oQuicksandDepthToDie = 0;
-    // i dont want moneybags to die because im worried about the coin child object tied to them losing their parent
     o->oGravity = 3.0f;
     o->oFriction = 1.0f;
     o->oBuoyancy = 2.0f;
@@ -41,6 +39,11 @@ void moneybag_check_mario_collision(void) {
         if (o->oInteractStatus & INT_STATUS_ATTACKED_MARIO) {
             o->oMoveAngleYaw = o->oAngleToMario + 0x8000;
             o->oVelY = 30.0f;
+            if (o->oQuicksandDepth > 0) {
+                // Quicksand will stunt their jumps heavily
+                o->oVelY = 0;
+                o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
+            }
         }
 
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
@@ -66,6 +69,11 @@ void moneybag_jump(s16 collisionFlags) {
             if (animFrame == 5) {
                 o->oForwardVel = 20.0f;
                 o->oVelY = 40.0f;
+                if (o->oQuicksandDepth > 0) {
+                    // Quicksand will stunt their jumps heavily
+                    o->oVelY = 0;
+                    o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
+                }
             }
 
             if (cur_obj_check_if_near_animation_end()) {
@@ -194,6 +202,7 @@ void bhv_moneybag_loop(void) {
                 o->parentObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
                 o->oAction = MONEYBAG_ACT_MOVE_AROUND;
             }
+            object_step();
             break;
 
         case MONEYBAG_ACT_MOVE_AROUND:
@@ -209,6 +218,7 @@ void bhv_moneybag_loop(void) {
 
         case MONEYBAG_ACT_DISAPPEAR:
             moneybag_act_disappear();
+            object_step();
             break;
 
         case MONEYBAG_ACT_DEATH:
@@ -237,4 +247,9 @@ void bhv_moneybag_hidden_loop(void) {
     }
 
     o->oInteractStatus = INT_STATUS_NONE;
+
+    o->oGravity = 3.0f;
+    o->oFriction = 1.0f;
+    o->oBuoyancy = 2.0f;
+    object_step();
 }

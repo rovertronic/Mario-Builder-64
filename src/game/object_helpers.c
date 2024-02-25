@@ -2544,6 +2544,15 @@ void arbritrary_death_coin_release(void) {
     }
 }
 
+s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvNoteblock)) {
+        return TRUE; // adachi true
+    }
+    return FALSE; // lightning gif
+}
+
 void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
     struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
 
@@ -2554,12 +2563,6 @@ void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
         noteblock_interacting->oTimer = 0;
         noteblock_interacting->oVelY = 50.0f;
         cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
-
-        if (cur_obj_has_behavior(bhvKoopa)) {
-            o->oSubAction = KOOPA_THE_QUICK_SUB_ACT_JUMP;
-            o->oMoveFlags = OBJ_MOVE_NONE;
-            cur_obj_init_animation_with_sound(KOOPA_ANIM_THE_QUICK_JUMP);
-        }
     }
 }
 

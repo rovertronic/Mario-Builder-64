@@ -697,6 +697,7 @@ void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
     while (str[strPos] != 0) {
         switch(str[strPos]) {
             case ' ':
+            case '_':
                 create_dl_translation_matrix(MENU_MTX_NOPUSH, CHAR_WIDTH_SPACE, 0.0f, 0.0f);
             break;
             case '\n':
