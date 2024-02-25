@@ -24,9 +24,6 @@ struct ObjectHitbox sPiranhaPlantFireHitbox = {
     /* hurtboxHeight:     */ 20,
 };
 
-s32 sNumActiveFirePiranhaPlants;
-s32 sNumKilledFirePiranhaPlants;
-
 void bhv_fire_piranha_plant_init(void) {
     if (obj_has_behavior(o,bhvFirePiranhaPlantBig)) {
         o->oBehParams = 0x00010000;
@@ -45,8 +42,6 @@ void bhv_fire_piranha_plant_init(void) {
             o->oNumLootCoins = 2;
         }
     }
-
-    sNumActiveFirePiranhaPlants = sNumKilledFirePiranhaPlants = 0;
 }
 
 static void fire_piranha_plant_act_hide(void) {
@@ -63,18 +58,15 @@ static void fire_piranha_plant_act_hide(void) {
         cur_obj_become_intangible();
 
         if (o->oFirePiranhaPlantActive) {
-            sNumActiveFirePiranhaPlants--;
             o->oFirePiranhaPlantActive = FALSE;
 
             if (GET_BPARAM2(o->oBehParams) != FIRE_PIRANHA_PLANT_BP_NORMAL && o->oHealth == 0) {
                 obj_die_if_health_non_positive();
             }
-        } else if (sNumActiveFirePiranhaPlants < 2 && o->oTimer > 100
-                   && o->oDistanceToMario > 100.0f && o->oDistanceToMario < 800.0f) {
+        } else if (o->oTimer > 100 && o->oDistanceToMario > 100.0f && o->oDistanceToMario < 800.0f) {
             cur_obj_play_sound_2(SOUND_OBJ_PIRANHA_PLANT_APPEAR);
 
             o->oFirePiranhaPlantActive = TRUE;
-            sNumActiveFirePiranhaPlants++;
 
             cur_obj_unhide();
             o->oAction = FIRE_PIRANHA_PLANT_ACT_GROW;
@@ -125,11 +117,7 @@ void bhv_fire_piranha_plant_update(void) {
     }
 
     if (obj_check_attacks(&sFirePiranhaPlantHitbox, o->oAction)) {
-        if (--o->oHealth < 0) {
-            if (o->oFirePiranhaPlantActive) {
-                sNumActiveFirePiranhaPlants--;
-            }
-        } else {
+        if (--o->oHealth >= 0) {
             cur_obj_init_animation_with_sound(FIRE_PIRANHA_PLANT_ANIM_ATTACKED);
         }
 
