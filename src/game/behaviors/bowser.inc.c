@@ -314,7 +314,7 @@ void bowser_check_jump(void) {
                o->oPosZ + 1200.0f * coss(o->oMoveAngleYaw),
                &floor);
     
-    if (SURFACE_IS_BURNING(floor->type) || (floor->type == SURFACE_DEATH_PLANE)) {
+    if (!floor || SURFACE_IS_BURNING(floor->type) || (floor->type == SURFACE_DEATH_PLANE)) {
         o->oAction = BOWSER_ACT_TELEPORT;
     } else {
         o->oAction = BOWSER_ACT_QUICK_JUMP;
