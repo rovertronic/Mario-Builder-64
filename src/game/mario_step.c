@@ -511,11 +511,19 @@ s32 bonk_or_hit_lava_wall(struct MarioState *m, struct WallCollisionData *wallDa
                 return AIR_STEP_HIT_LAVA_WALL;
             }
 
+            Vec3f normal;
+            get_surface_normal(normal, wallData->walls[i]);
             // Update wall reference (bonked wall) only if the new wall has a better facing angle
-            wallDYaw = abs_angle_diff(SURFACE_YAW(wallData->walls[i]), m->faceAngle[1]);
+            wallDYaw = abs_angle_diff(atan2s(normal[2], normal[0]), m->faceAngle[1]);
             if (wallDYaw > oldWallDYaw) {
                 oldWallDYaw = wallDYaw;
                 set_mario_wall(m, wallData->walls[i]);
+
+                // Rotate wall normal 90 degrees and calculate dot product of displacement and tangent
+                f32 dot = sMarioAmountDisplaced[0] * normal[2] - sMarioAmountDisplaced[2] * normal[0];
+
+                sMarioAmountDisplaced[0] = normal[2] * dot;
+                sMarioAmountDisplaced[2] = -normal[0] * dot;
 
                 if (wallDYaw > DEGREES(180 - WALL_KICK_DEGREES)) {
                     m->flags |= MARIO_AIR_HIT_WALL;
@@ -807,6 +815,7 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
             || quarterStepResult == AIR_STEP_HIT_LAVA_WALL
             || quarterStepResult == AIR_STEP_SHELL_ENTERED_WATER
         ) {
+            m->vel[1] = 0.0f;
             break;
         }
 
