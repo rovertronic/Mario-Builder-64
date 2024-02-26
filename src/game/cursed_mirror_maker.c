@@ -3506,7 +3506,7 @@ void sb_loop(void) {
 
                 spawn_preview_object(pos, cmm_rot_selection, cmm_param_selection, info, bhvCurrPreviewObject);
             } else if (cmm_place_mode == CMM_PM_TILE && cmm_id_selection == TILE_TYPE_CULL) {
-                //spawn_preview_object(pos, cmm_rot_selection, 0, &cmm_cullmarker_preview, bhvCurrPreviewObject);
+                spawn_preview_object(pos, cmm_rot_selection, 0, &cmm_object_type_list[OBJECT_TYPE_CULL_PREVIEW], bhvCurrPreviewObject);
             }
         }
     }

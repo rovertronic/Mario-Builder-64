@@ -1285,6 +1285,7 @@ enum {
     OBJECT_TYPE_BBOX_SMALL,
     OBJECT_TYPE_BBOX_NORMAL,
     OBJECT_TYPE_BBOX_CRAZY,
+    OBJECT_TYPE_CULL_PREVIEW, // also fake type
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1363,6 +1364,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_BBOX_SMALL*/     {"Throwable",               mat_b_btn_sbox,         bhvBreakableBoxSmall, 0,        MODEL_BREAKABLE_BOX,       0,                       3, 0, 0.31f,NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
 /* OBJECT_TYPE_BBOX_NORMAL*/    {"Breakable",               mat_b_btn_corkbox,      bhvBreakableBox,   0,           MODEL_BREAKABLE_BOX,       0,                       3, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
 /* OBJECT_TYPE_BBOX_CRAZY*/     {"Crazy",                   mat_b_btn_cbox,         bhvJumpingBox,     0,           MODEL_BREAKABLE_BOX,       0,                       5, 0, 0.38f,NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW},
+/* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
 };
 
 //behparam2 strings
