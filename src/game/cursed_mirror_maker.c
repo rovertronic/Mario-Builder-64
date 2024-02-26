@@ -3399,7 +3399,6 @@ void sb_loop(void) {
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                 //You can not put a blank button into the toolbox
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
-                    cmm_param_selection = 0;
 
                     cmm_toolbox_transition_btn_render = TRUE;
                     // current pos
@@ -3412,7 +3411,7 @@ void sb_loop(void) {
                     cmm_toolbox_transition_btn_gfx = get_button_tex(cmm_toolbox[cmm_toolbox_index], cmm_toolbox_params[cmm_toolbox_index]);
 
                     cmm_toolbar[cmm_toolbar_index] = cmm_toolbox[cmm_toolbox_index];
-                    cmm_toolbar_params[cmm_toolbar_index] = cmm_toolbox_params[cmm_toolbox_index];
+                    cmm_toolbar_params[cmm_toolbar_index] = cmm_param_selection = cmm_toolbox_params[cmm_toolbox_index];
 
                     play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
                 } else {
