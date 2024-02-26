@@ -1096,10 +1096,6 @@ s32 mario_execute_stationary_action(struct MarioState *m) {
         return TRUE;
     }
 
-    if (mario_update_quicksand(m, 0.5f)) {
-        return TRUE;
-    }
-
     /* clang-format off */
     switch (m->action) {
         case ACT_IDLE:                    cancel = act_idle(m);                             break;
@@ -1144,6 +1140,10 @@ s32 mario_execute_stationary_action(struct MarioState *m) {
 
     if (!cancel && (m->input & INPUT_IN_WATER)) {
         m->particleFlags |= PARTICLE_IDLE_WATER_WAVE;
+    }
+
+    if (!cancel && mario_update_quicksand(m, 0.5f)) {
+        return TRUE;
     }
 
     return cancel;
