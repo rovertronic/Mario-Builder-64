@@ -2085,49 +2085,49 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     // }
 
     //manage global coins
-    if (gMarioState->gGlobalCoinGain > 0) {
-        if (gMarioState->numGlobalCoins < gMarioState->numMaxGlobalCoins) {
-            gMarioState->numGlobalCoins ++;
-            gMarioState->gGlobalCoinGain --;
-            //save game when complete
-            if (gMarioState->gGlobalCoinGain == 0) {
-                //saving the game while collecting 1-ups is annoying
-                //save_file_set_stats();
-                //save_file_do_save(gCurrSaveFileNum - 1);
-            }
-        } else {
-            gMarioState->gGlobalCoinGain = 0;
-        }
-    }
+    // if (gMarioState->gGlobalCoinGain > 0) {
+    //     if (gMarioState->numGlobalCoins < gMarioState->numMaxGlobalCoins) {
+    //         gMarioState->numGlobalCoins ++;
+    //         gMarioState->gGlobalCoinGain --;
+    //         //save game when complete
+    //         if (gMarioState->gGlobalCoinGain == 0) {
+    //             //saving the game while collecting 1-ups is annoying
+    //             //save_file_set_stats();
+    //             //save_file_do_save(gCurrSaveFileNum - 1);
+    //         }
+    //     } else {
+    //         gMarioState->gGlobalCoinGain = 0;
+    //     }
+    // }
 
-    if (gMarioState->gGlobalCoinGain < -15) {
-        coinrepeats++;
-    }
-    if (gMarioState->gGlobalCoinGain < -100) {
-        coinrepeats++;
-    }//PENIS!!!!
+    // if (gMarioState->gGlobalCoinGain < -15) {
+    //     coinrepeats++;
+    // }
+    // if (gMarioState->gGlobalCoinGain < -100) {
+    //     coinrepeats++;
+    // }//PENIS!!!!
 
-    for (i=0;i<coinrepeats;i++) {
+    // for (i=0;i<coinrepeats;i++) {
 
-        if (gMarioState->gGlobalCoinGain < 0) {
-            if (gMarioState->numGlobalCoins > 0) {
-                gMarioState->numGlobalCoins --;
-                gMarioState->gGlobalCoinGain ++;
-                gMarioObject->oNumLootCoins = 1;
-                if (gMarioState->gGlobalCoinGain >= -10) {
-                    sp1C = spawn_object(gMarioObject, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
-                }
-                //save game when complete
-                if (gMarioState->gGlobalCoinGain == 0) {
-                    save_file_set_stats();
-                    save_file_do_save(gCurrSaveFileNum - 1);
-                }
-            } else {
-                gMarioState->gGlobalCoinGain = 0;
-            }
-        }
+    //     if (gMarioState->gGlobalCoinGain < 0) {
+    //         if (gMarioState->numGlobalCoins > 0) {
+    //             gMarioState->numGlobalCoins --;
+    //             gMarioState->gGlobalCoinGain ++;
+    //             gMarioObject->oNumLootCoins = 1;
+    //             if (gMarioState->gGlobalCoinGain >= -10) {
+    //                 sp1C = spawn_object(gMarioObject, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
+    //             }
+    //             //save game when complete
+    //             if (gMarioState->gGlobalCoinGain == 0) {
+    //                 save_file_set_stats();
+    //                 save_file_do_save(gCurrSaveFileNum - 1);
+    //             }
+    //         } else {
+    //             gMarioState->gGlobalCoinGain = 0;
+    //         }
+    //     }
 
-    }
+    // }
 
     //withering badge
     if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
@@ -2611,13 +2611,13 @@ void init_mario(void) {
 
     gMarioState->invincTimer = 0;
 
-    if (save_file_get_flags()
-        & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
-           | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
-        gMarioState->flags = 0;
-    } else {
+    // if (save_file_get_flags()
+    //     & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
+    //        | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
+    //     gMarioState->flags = 0;
+    // } else {
         gMarioState->flags = (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
-    }
+    // }
 
 
 
@@ -2675,14 +2675,14 @@ void init_mario(void) {
     //     }
     // }
 
-    Vec3s capPos;
-    if (save_file_get_cap_pos(capPos)) {
-        capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
-        vec3s_to_vec3f(&capObject->oPosVec, capPos);
+    // Vec3s capPos;
+    // if (save_file_get_cap_pos(capPos)) {
+    //     capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
+    //     vec3s_to_vec3f(&capObject->oPosVec, capPos);
 
-        capObject->oForwardVel = 0;
-        capObject->oMoveAngleYaw = 0;
-    }
+    //     capObject->oForwardVel = 0;
+    //     capObject->oMoveAngleYaw = 0;
+    // }
 
     if (gMarioState->NewLevel == TRUE) {
         gMarioState->invincTimer = 60;
@@ -2724,7 +2724,13 @@ void init_mario(void) {
 }
 
 void init_mario_from_save_file(void) {
-    save_file_get_stats();
+    gMarioState->numMaxHP = 8;
+    gMarioState->numMaxFP = 8;
+    gMarioState->numMaxBP = 0;
+    gMarioState->CostumeID = 0;
+    gMarioState->Level = 0;
+    gMarioState->numEquippedBadges = 0;
+    gMarioState->Options = 0xFD;
     
     //sSelectedFileNum = FALSE;
     //fs_ms = 0;

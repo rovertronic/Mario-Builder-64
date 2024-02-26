@@ -228,35 +228,35 @@ s32 get_star_collection_dialog(UNUSED struct MarioState *m) {
 }
 
 // save menu handler
-void handle_save_menu(struct MarioState *m) {
-    s32 dialogID;
-    // wait for the menu to show up
-    if (is_anim_past_end(m) && gSaveOptSelectIndex != MENU_OPT_NONE) {
-        // save and continue / save and quit
-        if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_CONTINUE || gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
-            save_file_do_save(gCurrSaveFileNum - 1);
+// void handle_save_menu(struct MarioState *m) {
+//     s32 dialogID;
+//     // wait for the menu to show up
+//     if (is_anim_past_end(m) && gSaveOptSelectIndex != MENU_OPT_NONE) {
+//         // save and continue / save and quit
+//         if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_CONTINUE || gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
+//             save_file_do_save(gCurrSaveFileNum - 1);
 
-            if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
-                fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
-            }
-        }
+//             if (gSaveOptSelectIndex == MENU_OPT_SAVE_AND_QUIT) {
+//                 fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+//             }
+//         }
 
-        // not quitting
-        if (gSaveOptSelectIndex != MENU_OPT_SAVE_AND_QUIT) {
-            disable_time_stop();
-            m->faceAngle[1] += 0x8000;
-            // figure out what dialog to show, if we should
-            dialogID = get_star_collection_dialog(m);
-            if (dialogID) {
-                play_peachs_jingle();
-                // look up for dialog
-                set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, dialogID);
-            } else {
-                set_mario_action(m, ACT_IDLE, 0);
-            }
-        }
-    }
-}
+//         // not quitting
+//         if (gSaveOptSelectIndex != MENU_OPT_SAVE_AND_QUIT) {
+//             disable_time_stop();
+//             m->faceAngle[1] += 0x8000;
+//             // figure out what dialog to show, if we should
+//             dialogID = get_star_collection_dialog(m);
+//             if (dialogID) {
+//                 play_peachs_jingle();
+//                 // look up for dialog
+//                 set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, dialogID);
+//             } else {
+//                 set_mario_action(m, ACT_IDLE, 0);
+//             }
+//         }
+//     }
+// }
 
 /**
  * spawn_obj_at_mario_rel_yaw: Spawns object at Mario with relative yaw.
@@ -664,7 +664,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
         }
     } else if (m->actionState == ACT_STATE_STAR_DANCE_DO_SAVE) {
         // if (gDialogResponse == DIALOG_RESPONSE_YES) {
-            save_file_do_save(gCurrSaveFileNum - 1);
+            // save_file_do_save(gCurrSaveFileNum - 1);
         // }
         m->actionState = ACT_STATE_STAR_DANCE_RETURN;
     } else if (m->actionState == ACT_STATE_STAR_DANCE_RETURN && is_anim_at_end(m)) {
@@ -894,145 +894,145 @@ s32 launch_mario_until_land(struct MarioState *m, s32 endAction, s32 animation, 
 }
 
 s32 act_unlocking_key_door(struct MarioState *m) {
-    m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
+    // m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
 
-    m->pos[0] = m->usedObj->oPosX - coss(m->faceAngle[1]) * 75.0f;
-    m->pos[2] = m->usedObj->oPosZ - sins(m->faceAngle[1]) * 75.0f;
+    // m->pos[0] = m->usedObj->oPosX - coss(m->faceAngle[1]) * 75.0f;
+    // m->pos[2] = m->usedObj->oPosZ - sins(m->faceAngle[1]) * 75.0f;
 
-    if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
-        m->faceAngle[1] += 0x8000;
-    }
-
-    // if (m->actionTimer == 0) {
-    //     spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyUnlockDoor, 0);
-    //     set_mario_animation(m, MARIO_ANIM_UNLOCK_DOOR);
+    // if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
+    //     m->faceAngle[1] += 0x8000;
     // }
 
-    switch (m->marioObj->header.gfx.animInfo.animFrame) {
-        case 79:
-            play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, m->marioObj->header.gfx.cameraToObject);
-            break;
-        case 111:
-            play_sound(SOUND_GENERAL_DOOR_TURN_KEY, m->marioObj->header.gfx.cameraToObject);
-            break;
-    }
+    // // if (m->actionTimer == 0) {
+    // //     spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyUnlockDoor, 0);
+    // //     set_mario_animation(m, MARIO_ANIM_UNLOCK_DOOR);
+    // // }
 
-    update_mario_pos_for_anim(m);
-    stop_and_set_height_to_floor(m);
+    // switch (m->marioObj->header.gfx.animInfo.animFrame) {
+    //     case 79:
+    //         play_sound(SOUND_GENERAL_DOOR_INSERT_KEY, m->marioObj->header.gfx.cameraToObject);
+    //         break;
+    //     case 111:
+    //         play_sound(SOUND_GENERAL_DOOR_TURN_KEY, m->marioObj->header.gfx.cameraToObject);
+    //         break;
+    // }
 
-    if (is_anim_at_end(m)) {
-        if (GET_BPARAM1(m->usedObj->oBehParams) == KEY_DOOR_BP1_UPSTAIRS) {
-            save_file_set_flags(SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR);
-            save_file_clear_flags(SAVE_FLAG_HAVE_KEY_2);
-        } else {
-            save_file_set_flags(SAVE_FLAG_UNLOCKED_BASEMENT_DOOR);
-            save_file_clear_flags(SAVE_FLAG_HAVE_KEY_1);
-        }
-        set_mario_action(m, ACT_WALKING, 0);
-    }
+    // update_mario_pos_for_anim(m);
+    // stop_and_set_height_to_floor(m);
 
-    m->actionTimer++;
+    // if (is_anim_at_end(m)) {
+    //     if (GET_BPARAM1(m->usedObj->oBehParams) == KEY_DOOR_BP1_UPSTAIRS) {
+    //         save_file_set_flags(SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR);
+    //         save_file_clear_flags(SAVE_FLAG_HAVE_KEY_2);
+    //     } else {
+    //         save_file_set_flags(SAVE_FLAG_UNLOCKED_BASEMENT_DOOR);
+    //         save_file_clear_flags(SAVE_FLAG_HAVE_KEY_1);
+    //     }
+    //     set_mario_action(m, ACT_WALKING, 0);
+    // }
+
+    // m->actionTimer++;
     return FALSE;
 }
 
 s32 act_unlocking_star_door(struct MarioState *m) {
-    switch (m->actionState) {
-        case ACT_STATE_UNLOCKING_STAR_DOOR_MOVE_POS:
-            m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
-            if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
-                m->faceAngle[1] += 0x8000;
-            }
-            m->marioObj->oMarioReadingSignDPosX = m->pos[0];
-            m->marioObj->oMarioReadingSignDPosZ = m->pos[2];
-            set_mario_animation(m, MARIO_ANIM_SUMMON_STAR);
-            m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_SUMMON_STAR;
-            break;
-        case ACT_STATE_UNLOCKING_STAR_DOOR_SUMMON_STAR:
-            if (is_anim_at_end(m)) {
-                spawn_object(m->marioObj, MODEL_STAR, bhvUnlockDoorStar);
-                m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_APPROACH_DOOR;
-            }
-            break;
-        case ACT_STATE_UNLOCKING_STAR_DOOR_APPROACH_DOOR:
-            if (m->actionTimer++ == 70) {
-                set_mario_animation(m, MARIO_ANIM_RETURN_STAR_APPROACH_DOOR);
-                m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_IN_DIALOG;
-            }
-            break;
-        case ACT_STATE_UNLOCKING_STAR_DOOR_IN_DIALOG:
-            if (is_anim_at_end(m)) {
-                save_file_set_flags(get_door_save_file_flag(m->usedObj));
-                set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, DIALOG_038);
-            }
-            break;
-    }
+    // switch (m->actionState) {
+    //     case ACT_STATE_UNLOCKING_STAR_DOOR_MOVE_POS:
+    //         m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
+    //         if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
+    //             m->faceAngle[1] += 0x8000;
+    //         }
+    //         m->marioObj->oMarioReadingSignDPosX = m->pos[0];
+    //         m->marioObj->oMarioReadingSignDPosZ = m->pos[2];
+    //         set_mario_animation(m, MARIO_ANIM_SUMMON_STAR);
+    //         m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_SUMMON_STAR;
+    //         break;
+    //     case ACT_STATE_UNLOCKING_STAR_DOOR_SUMMON_STAR:
+    //         if (is_anim_at_end(m)) {
+    //             spawn_object(m->marioObj, MODEL_STAR, bhvUnlockDoorStar);
+    //             m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_APPROACH_DOOR;
+    //         }
+    //         break;
+    //     case ACT_STATE_UNLOCKING_STAR_DOOR_APPROACH_DOOR:
+    //         if (m->actionTimer++ == 70) {
+    //             set_mario_animation(m, MARIO_ANIM_RETURN_STAR_APPROACH_DOOR);
+    //             m->actionState = ACT_STATE_UNLOCKING_STAR_DOOR_IN_DIALOG;
+    //         }
+    //         break;
+    //     case ACT_STATE_UNLOCKING_STAR_DOOR_IN_DIALOG:
+    //         if (is_anim_at_end(m)) {
+    //             save_file_set_flags(get_door_save_file_flag(m->usedObj));
+    //             set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, DIALOG_038);
+    //         }
+    //         break;
+    // }
 
-    m->pos[0] = m->marioObj->oMarioReadingSignDPosX;
-    m->pos[2] = m->marioObj->oMarioReadingSignDPosZ;
+    // m->pos[0] = m->marioObj->oMarioReadingSignDPosX;
+    // m->pos[2] = m->marioObj->oMarioReadingSignDPosZ;
 
-    update_mario_pos_for_anim(m);
-    stop_and_set_height_to_floor(m);
+    // update_mario_pos_for_anim(m);
+    // stop_and_set_height_to_floor(m);
 
     return FALSE;
 }
 
 s32 act_entering_star_door(struct MarioState *m) {
-    f32 targetDX;
-    f32 targetDZ;
-    s16 targetAngle;
+    // f32 targetDX;
+    // f32 targetDZ;
+    // s16 targetAngle;
 
-    if (m->actionTimer++ == 0) {
-        m->interactObj->oInteractStatus = INT_STATUS_DOOR_PULLED;
+    // if (m->actionTimer++ == 0) {
+    //     m->interactObj->oInteractStatus = INT_STATUS_DOOR_PULLED;
 
-        // ~30 degrees / 1/12 rot
-        targetAngle = m->usedObj->oMoveAngleYaw + DEGREES(30);
-        if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
-            targetAngle += 0x5556; // ~120 degrees / 1/3 rot (total 150d / 5/12)
-        }
+    //     // ~30 degrees / 1/12 rot
+    //     targetAngle = m->usedObj->oMoveAngleYaw + DEGREES(30);
+    //     if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
+    //         targetAngle += 0x5556; // ~120 degrees / 1/3 rot (total 150d / 5/12)
+    //     }
 
-        // targetDX and targetDZ are the offsets to add to Mario's position to
-        // have Mario stand 150 units in front of the door
+    //     // targetDX and targetDZ are the offsets to add to Mario's position to
+    //     // have Mario stand 150 units in front of the door
 
-        targetDX = m->usedObj->oPosX + 150.0f * sins(targetAngle) - m->pos[0];
-        targetDZ = m->usedObj->oPosZ + 150.0f * coss(targetAngle) - m->pos[2];
+    //     targetDX = m->usedObj->oPosX + 150.0f * sins(targetAngle) - m->pos[0];
+    //     targetDZ = m->usedObj->oPosZ + 150.0f * coss(targetAngle) - m->pos[2];
 
-        m->marioObj->oMarioReadingSignDPosX = targetDX / 20.0f;
-        m->marioObj->oMarioReadingSignDPosZ = targetDZ / 20.0f;
+    //     m->marioObj->oMarioReadingSignDPosX = targetDX / 20.0f;
+    //     m->marioObj->oMarioReadingSignDPosZ = targetDZ / 20.0f;
 
-        m->faceAngle[1] = atan2s(targetDZ, targetDX);
-    }
+    //     m->faceAngle[1] = atan2s(targetDZ, targetDX);
+    // }
 
-    // set Mario's animation
-    if (m->actionTimer < 15) {
-        set_mario_animation(m, MARIO_ANIM_FIRST_PERSON);
-    }
+    // // set Mario's animation
+    // if (m->actionTimer < 15) {
+    //     set_mario_animation(m, MARIO_ANIM_FIRST_PERSON);
+    // }
 
-    // go through door? for 20 frames
-    else if (m->actionTimer < 35) {
-        m->pos[0] += m->marioObj->oMarioReadingSignDPosX;
-        m->pos[2] += m->marioObj->oMarioReadingSignDPosZ;
+    // // go through door? for 20 frames
+    // else if (m->actionTimer < 35) {
+    //     m->pos[0] += m->marioObj->oMarioReadingSignDPosX;
+    //     m->pos[2] += m->marioObj->oMarioReadingSignDPosZ;
 
-        set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, 0x00028000);
-    }
+    //     set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, 0x00028000);
+    // }
 
-    else {
-        m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
+    // else {
+    //     m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
 
-        if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
-            m->faceAngle[1] += 0x8000;
-        }
+    //     if (m->actionArg & WARP_FLAG_DOOR_FLIP_MARIO) {
+    //         m->faceAngle[1] += 0x8000;
+    //     }
 
-        m->pos[0] += 12.0f * sins(m->faceAngle[1]);
-        m->pos[2] += 12.0f * coss(m->faceAngle[1]);
+    //     m->pos[0] += 12.0f * sins(m->faceAngle[1]);
+    //     m->pos[2] += 12.0f * coss(m->faceAngle[1]);
 
-        set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, 0x00028000);
-    }
+    //     set_mario_anim_with_accel(m, MARIO_ANIM_WALKING, 0x00028000);
+    // }
 
-    stop_and_set_height_to_floor(m);
+    // stop_and_set_height_to_floor(m);
 
-    if (m->actionTimer == 48) {
-        set_mario_action(m, ACT_IDLE, 0);
-    }
+    // if (m->actionTimer == 48) {
+    //     set_mario_action(m, ACT_IDLE, 0);
+    // }
 
     return FALSE;
 }
@@ -1205,95 +1205,95 @@ s32 act_falling_exit_airborne(struct MarioState *m) {
 }
 
 s32 act_exit_land_save_dialog(struct MarioState *m) {
-    s32 animFrame;
-    u16 random_range;
-    stationary_ground_step(m);
-    play_mario_landing_sound_once(m, SOUND_ACTION_TERRAIN_LANDING);
-    switch (m->actionState) {
-        case ACT_STATE_EXIT_LAND_SAVE_DIALOG_DETERMINE_TYPE:
-            set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_GENERAL_LAND
-                                                     : MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
-            if (is_anim_past_end(m)) {
-                /*
-                if (gLastCompletedCourseNum != COURSE_BITDW
-                    && gLastCompletedCourseNum != COURSE_BITFS) {
-                    enable_time_stop();
-                }
-                */
+    // s32 animFrame;
+    // u16 random_range;
+    // stationary_ground_step(m);
+    // play_mario_landing_sound_once(m, SOUND_ACTION_TERRAIN_LANDING);
+    // switch (m->actionState) {
+    //     case ACT_STATE_EXIT_LAND_SAVE_DIALOG_DETERMINE_TYPE:
+    //         set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_GENERAL_LAND
+    //                                                  : MARIO_ANIM_LAND_FROM_SINGLE_JUMP);
+    //         if (is_anim_past_end(m)) {
+    //             /*
+    //             if (gLastCompletedCourseNum != COURSE_BITDW
+    //                 && gLastCompletedCourseNum != COURSE_BITFS) {
+    //                 enable_time_stop();
+    //             }
+    //             */
 
-                set_menu_mode(MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN);
-                gSaveOptSelectIndex = MENU_OPT_NONE;
+    //             set_menu_mode(MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN);
+    //             gSaveOptSelectIndex = MENU_OPT_NONE;
 
-                m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_WITH_CAP; // star exit with cap
-                if (!(m->flags & MARIO_CAP_ON_HEAD)) {
-                    m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_NO_CAP; // star exit without cap
-                }
-                /*
-                if (gLastCompletedCourseNum == COURSE_BITDW
-                 || gLastCompletedCourseNum == COURSE_BITFS) {
-                    m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY; // key exit
-                }
-                */
-            }
-            break;
-        // case ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY:
-        //     animFrame = set_mario_animation(m, MARIO_ANIM_THROW_CATCH_KEY);
-        //     switch (animFrame) {
-        //         case -1:
-        //             spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyCourseExit, -0x8000);
-        //             //! fallthrough
-        //         case 67:
-        //             play_sound(SOUND_ACTION_KEY_SWISH, m->marioObj->header.gfx.cameraToObject);
-        //             //! fallthrough
-        //         case 83:
-        //             play_sound(SOUND_ACTION_PAT_BACK, m->marioObj->header.gfx.cameraToObject);
-        //             //! fallthrough
-        //         case 111:
-        //             play_sound(SOUND_ACTION_KEY_UNKNOWN45C, m->marioObj->header.gfx.cameraToObject);
-        //             // no break
-        //     }
-        //     handle_save_menu(m);
-        //     break;
-        case ACT_STATE_EXIT_LAND_SAVE_DIALOG_NO_CAP:
-            animFrame = set_mario_animation(m, MARIO_ANIM_MISSING_CAP);
-            if ((animFrame >= 18 && animFrame < 55) || (animFrame >= 112 && animFrame < 134)) {
-                m->marioBodyState->handState = MARIO_HAND_OPEN;
-            }
-            if (!(animFrame < 109) && animFrame < 154) {
-                m->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
-            }
+    //             m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_WITH_CAP; // star exit with cap
+    //             if (!(m->flags & MARIO_CAP_ON_HEAD)) {
+    //                 m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_NO_CAP; // star exit without cap
+    //             }
+    //             /*
+    //             if (gLastCompletedCourseNum == COURSE_BITDW
+    //              || gLastCompletedCourseNum == COURSE_BITFS) {
+    //                 m->actionState = ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY; // key exit
+    //             }
+    //             */
+    //         }
+    //         break;
+    //     case ACT_STATE_EXIT_LAND_SAVE_DIALOG_KEY:
+    //         animFrame = set_mario_animation(m, MARIO_ANIM_THROW_CATCH_KEY);
+    //         switch (animFrame) {
+    //             case -1:
+    //                 spawn_obj_at_mario_rel_yaw(m, MODEL_BOWSER_KEY_CUTSCENE, bhvBowserKeyCourseExit, -0x8000);
+    //                 //! fallthrough
+    //             case 67:
+    //                 play_sound(SOUND_ACTION_KEY_SWISH, m->marioObj->header.gfx.cameraToObject);
+    //                 //! fallthrough
+    //             case 83:
+    //                 play_sound(SOUND_ACTION_PAT_BACK, m->marioObj->header.gfx.cameraToObject);
+    //                 //! fallthrough
+    //             case 111:
+    //                 play_sound(SOUND_ACTION_KEY_UNKNOWN45C, m->marioObj->header.gfx.cameraToObject);
+    //                 // no break
+    //         }
+    //         handle_save_menu(m);
+    //         break;
+    //     case ACT_STATE_EXIT_LAND_SAVE_DIALOG_NO_CAP:
+    //         animFrame = set_mario_animation(m, MARIO_ANIM_MISSING_CAP);
+    //         if ((animFrame >= 18 && animFrame < 55) || (animFrame >= 112 && animFrame < 134)) {
+    //             m->marioBodyState->handState = MARIO_HAND_OPEN;
+    //         }
+    //         if (!(animFrame < 109) && animFrame < 154) {
+    //             m->marioBodyState->eyeState = MARIO_EYES_HALF_CLOSED;
+    //         }
 
-            handle_save_menu(m);
-            break;
-        case ACT_STATE_EXIT_LAND_SAVE_DIALOG_WITH_CAP:
-            animFrame = set_mario_animation(m, MARIO_ANIM_STAR_DANCE);
-            switch (animFrame) {
-                case 37:
-                    random_range = RandomMinMaxU16(0,4);
-                    switch (random_range) {
-                        case 0:
-                            play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
-                            break;
-                        case 1:
-                            play_sound(SOUND_MARIO_HOOHOO, m->marioObj->header.gfx.cameraToObject);
-                            break;
-                        case 2:
-                            play_sound(SOUND_MARIO_HAHA, m->marioObj->header.gfx.cameraToObject);
-                            break;
-                        case 3:
-                            play_sound(SOUND_PEACH_MARIO, m->marioObj->header.gfx.cameraToObject);
-                            break;
-                        case 4:
-                            play_sound(SOUND_PEACH_MARIO, m->marioObj->header.gfx.cameraToObject);
-                            break;
-                    }
-                    break;
-            }
-            handle_save_menu(m);
-            break;
-    }
+    //         handle_save_menu(m);
+    //         break;
+    //     case ACT_STATE_EXIT_LAND_SAVE_DIALOG_WITH_CAP:
+    //         animFrame = set_mario_animation(m, MARIO_ANIM_STAR_DANCE);
+    //         switch (animFrame) {
+    //             case 37:
+    //                 random_range = RandomMinMaxU16(0,4);
+    //                 switch (random_range) {
+    //                     case 0:
+    //                         play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
+    //                         break;
+    //                     case 1:
+    //                         play_sound(SOUND_MARIO_HOOHOO, m->marioObj->header.gfx.cameraToObject);
+    //                         break;
+    //                     case 2:
+    //                         play_sound(SOUND_MARIO_HAHA, m->marioObj->header.gfx.cameraToObject);
+    //                         break;
+    //                     case 3:
+    //                         play_sound(SOUND_PEACH_MARIO, m->marioObj->header.gfx.cameraToObject);
+    //                         break;
+    //                     case 4:
+    //                         play_sound(SOUND_PEACH_MARIO, m->marioObj->header.gfx.cameraToObject);
+    //                         break;
+    //                 }
+    //                 break;
+    //         }
+    //         handle_save_menu(m);
+    //         break;
+    // }
 
-    m->marioObj->header.gfx.angle[1] += 0x8000;
+    // m->marioObj->header.gfx.angle[1] += 0x8000;
     return FALSE;
 }
 

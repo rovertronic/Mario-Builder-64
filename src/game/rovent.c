@@ -551,84 +551,84 @@ u8 costume_order[] = {
 
 #define CTM_COUNT 15
 
-void render_costume_menu() {
-    s8 i;
-    s8 i_offset;
-    u16 costume_flags = save_file_get_costume_unlock();
+// void render_costume_menu() {
+//     s8 i;
+//     s8 i_offset;
+//     u16 costume_flags = save_file_get_costume_unlock();
 
-    if ((gPlayer1Controller->rawStickY > 60)&&(letgo2 == FALSE)) {
-        letgo2 = TRUE;
-        minigame_index --;
-        minigame_index = (minigame_index+CTM_COUNT)%CTM_COUNT;
-    }
-    if ((gPlayer1Controller->rawStickY < -60)&&(letgo2 == FALSE)) {
-        letgo2 = TRUE;
-        minigame_index ++;
-        minigame_index = (minigame_index+CTM_COUNT)%CTM_COUNT;
-    }
-    if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
-        letgo2 = FALSE;
-    }
+//     if ((gPlayer1Controller->rawStickY > 60)&&(letgo2 == FALSE)) {
+//         letgo2 = TRUE;
+//         minigame_index --;
+//         minigame_index = (minigame_index+CTM_COUNT)%CTM_COUNT;
+//     }
+//     if ((gPlayer1Controller->rawStickY < -60)&&(letgo2 == FALSE)) {
+//         letgo2 = TRUE;
+//         minigame_index ++;
+//         minigame_index = (minigame_index+CTM_COUNT)%CTM_COUNT;
+//     }
+//     if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
+//         letgo2 = FALSE;
+//     }
 
-    //render main box
-    create_dl_translation_matrix(MENU_MTX_PUSH, 12, 190, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.8f, 1.1f, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     //render main box
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 12, 190, 0);
+//     create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.8f, 1.1f, 1.0f);
+//     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    //render selection box
-    create_dl_translation_matrix(MENU_MTX_PUSH, 12, 158, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.8f, 0.2f, 1.0f);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sinresult/2);
-    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+//     //render selection box
+//     create_dl_translation_matrix(MENU_MTX_PUSH, 12, 158, 0);
+//     create_dl_scale_matrix(MENU_MTX_NOPUSH, 0.8f, 0.2f, 1.0f);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sinresult/2);
+//     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    //render unlocked costumes
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    for (i=-2;i<3;i++) {
-        i_offset = i+minigame_index;
+//     //render unlocked costumes
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     for (i=-2;i<3;i++) {
+//         i_offset = i+minigame_index;
 
-        if ((i_offset > -1)&&(i_offset <CTM_COUNT)) {
-            if (costume_flags & (1<<costume_order[i_offset])) {
-                    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                    print_generic_string(14,140-(i*16), costume_text[costume_order[i_offset]]);
-                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                    print_generic_string(15,141-(i*16), costume_text[costume_order[i_offset]]);
-                } else {
-                    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                    print_generic_string(14,140-(i*16), &qbuf);
-                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                    print_generic_string(15,141-(i*16), &qbuf);
-                }
-            }
-    };
+//         if ((i_offset > -1)&&(i_offset <CTM_COUNT)) {
+//             if (costume_flags & (1<<costume_order[i_offset])) {
+//                     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//                     print_generic_string(14,140-(i*16), costume_text[costume_order[i_offset]]);
+//                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//                     print_generic_string(15,141-(i*16), costume_text[costume_order[i_offset]]);
+//                 } else {
+//                     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//                     print_generic_string(14,140-(i*16), &qbuf);
+//                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//                     print_generic_string(15,141-(i*16), &qbuf);
+//                 }
+//             }
+//     };
 
-    // i really thinkg you should end this dl
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     // i really thinkg you should end this dl
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    if (costume_flags & (1<<costume_order[minigame_index])) {
-        //gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-        //print_generic_string(14,60, costume_effect_text[costume_order[minigame_index]]);
-        //gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        //print_generic_string(15,61, costume_effect_text[costume_order[minigame_index]]);
-        //gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     if (costume_flags & (1<<costume_order[minigame_index])) {
+//         //gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+//         //print_generic_string(14,60, costume_effect_text[costume_order[minigame_index]]);
+//         //gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//         //print_generic_string(15,61, costume_effect_text[costume_order[minigame_index]]);
+//         //gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-        gMarioState->CostumeID = costume_order[minigame_index];
-    }
+//         gMarioState->CostumeID = costume_order[minigame_index];
+//     }
 
-        save_file_set_stats();
+//         save_file_set_stats();
 
-    //mario go speen
-    gMarioState->faceAngle[1] += 0x100;
-    vec3f_copy(&gMarioState->pos,&revent_target_object->oPosX);
+//     //mario go speen
+//     gMarioState->faceAngle[1] += 0x100;
+//     vec3f_copy(&gMarioState->pos,&revent_target_object->oPosX);
 
-    //control
-    if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-        //exit
-        stop_event();
-    }
-}
+//     //control
+//     if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+//         //exit
+//         stop_event();
+//     }
+// }
 
 void read_dialog(s32 dialog_id) {
     u16 i;
@@ -947,15 +947,15 @@ void event_main(void) {
                     revent_index+=3;
                 }
             break;
-            case E_QUIZ_POINT_JUMP:
-                if (quiz_points >= arg1) {
-                    revent_index+=2+arg2;
-                    save_file_set_flags(SAVE_FLAG_HAPPY_SHOWRUNNER);
-                } else {
-                    //failed, continue as normal
-                    revent_index+=3;
-                }
-            break;
+            // case E_QUIZ_POINT_JUMP:
+            //     if (quiz_points >= arg1) {
+            //         revent_index+=2+arg2;
+            //         save_file_set_flags(SAVE_FLAG_HAPPY_SHOWRUNNER);
+            //     } else {
+            //         //failed, continue as normal
+            //         revent_index+=3;
+            //     }
+            // break;
             case E_JUMP:
                 revent_index+=1+arg1;
             break;
@@ -967,22 +967,22 @@ void event_main(void) {
                 revent_stop_enemies = !revent_stop_enemies;
                 revent_index++;
             break;
-            case E_SAVEGAME:
-                save_file_do_save(gCurrSaveFileNum - 1);
-                revent_index++;
-            break;
-            case E_PUT_ON_COSTUME:
-                swap = gMarioState->LastCostumeID;
-                gMarioState->LastCostumeID = gMarioState->CostumeID;
-                gMarioState->CostumeID = swap;
-                save_file_set_stats();
-                revent_index ++;
-            break;
-            case E_MINIGAME_UNLOCK:
-                gMarioState->gGlobalCoinGain = -mg_prices[minigame_index];
-                save_file_unlock_minigame(minigame_index);
-                revent_index+=2;
-            break;
+            // case E_SAVEGAME:
+            //     save_file_do_save(gCurrSaveFileNum - 1);
+            //     revent_index++;
+            // break;
+            // case E_PUT_ON_COSTUME:
+            //     swap = gMarioState->LastCostumeID;
+            //     gMarioState->LastCostumeID = gMarioState->CostumeID;
+            //     gMarioState->CostumeID = swap;
+            //     save_file_set_stats();
+            //     revent_index ++;
+            // break;
+            // case E_MINIGAME_UNLOCK:
+            //     gMarioState->gGlobalCoinGain = -mg_prices[minigame_index];
+            //     save_file_unlock_minigame(minigame_index);
+            //     revent_index+=2;
+            // break;
             case E_MARIO_LOCK:
                 revent_mario_lock = TRUE;
                 vec3f_copy(&revent_mario_lock_position,&gMarioState->pos);
@@ -1070,14 +1070,14 @@ void event_main(void) {
                 sSourceWarpNodeId = arg1;
                 revent_halt = TRUE;
             break;
-            case E_PROGRESS_SET:
-                save_file_set_progression(arg1);
-                revent_index += 2;
-            break;
-            case E_SAVEFLAG_SET:
-                save_file_set_flags(arg1);
-                revent_index += 2;
-            break;
+            // case E_PROGRESS_SET:
+            //     save_file_set_progression(arg1);
+            //     revent_index += 2;
+            // break;
+            // case E_SAVEFLAG_SET:
+            //     save_file_set_flags(arg1);
+            //     revent_index += 2;
+            // break;
             // case E_START_PRECREDITS:
             //     start_precredits = TRUE;
             //     revent_index++;

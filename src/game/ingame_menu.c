@@ -1565,30 +1565,30 @@ void render_dialog_entries(void) {
 
     shopid = gMarioState->ShopID;
 
-    //toll bridge
-    if (gDialogID == 33) {
-        if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-            if ((gMarioState->numGlobalCoins >= 10)&&(!gMarioState->TollPaid)) {
-                gMarioState->gGlobalCoinGain -= 10;
-                play_sound(SOUND_GENERAL_COIN_WATER, gGlobalSoundSource);
-                gMarioState->TollPaid = TRUE;
-                save_file_set_stats();
-                save_file_do_save(gCurrSaveFileNum - 1);
-            }
-        }
-    }
+    // //toll bridge
+    // if (gDialogID == 33) {
+    //     if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+    //         if ((gMarioState->numGlobalCoins >= 10)&&(!gMarioState->TollPaid)) {
+    //             gMarioState->gGlobalCoinGain -= 10;
+    //             play_sound(SOUND_GENERAL_COIN_WATER, gGlobalSoundSource);
+    //             gMarioState->TollPaid = TRUE;
+    //             save_file_set_stats();
+    //             save_file_do_save(gCurrSaveFileNum - 1);
+    //         }
+    //     }
+    // }
 
-    //ATM
-    if (gDialogID == 40) {
-        if (gPlayer1Controller->buttonDown & B_BUTTON) {
-            if ((gMarioState->numCoins > 0)&&(gMarioState->numMaxGlobalCoins > gMarioState->numGlobalCoins)) {
-                gMarioState->numGlobalCoins ++;
-                gMarioState->numCoins --;
-                gHudDisplay.coins = gMarioState->numCoins;
-                play_sound(SOUND_GENERAL_COIN_WATER, gGlobalSoundSource);
-            }
-        }
-    }
+    // //ATM
+    // if (gDialogID == 40) {
+    //     if (gPlayer1Controller->buttonDown & B_BUTTON) {
+    //         if ((gMarioState->numCoins > 0)&&(gMarioState->numMaxGlobalCoins > gMarioState->numGlobalCoins)) {
+    //             gMarioState->numGlobalCoins ++;
+    //             gMarioState->numCoins --;
+    //             gHudDisplay.coins = gMarioState->numCoins;
+    //             play_sound(SOUND_GENERAL_COIN_WATER, gGlobalSoundSource);
+    //         }
+    //     }
+    // }
 
     //only do shop shit if dialog id is 1
 /**
@@ -2351,43 +2351,43 @@ void print_hud_pause_colorful_str(void) {
 // };
 
 void render_pause_castle_course_stars(s16 x, s16 y, s16 fileIndex, s16 courseIndex) {
-    s16 hasStar = 0;
+    // s16 hasStar = 0;
 
-    u8 str[COURSE_STAGES_COUNT * 2];
+    // u8 str[COURSE_STAGES_COUNT * 2];
 
-    u8 textStar[] = { TEXT_STAR };
+    // u8 textStar[] = { TEXT_STAR };
 
-    u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
-    u16 starCount = save_file_get_course_star_count(fileIndex, courseIndex);
+    // u8 starFlags = save_file_get_star_flags(fileIndex, courseIndex);
+    // u16 starCount = save_file_get_course_star_count(fileIndex, courseIndex);
 
-    u16 nextStar = 0;
+    // u16 nextStar = 0;
 
-    if (starFlags & STAR_FLAG_ACT_100_COINS) {
-        starCount--;
-        print_generic_string(x + 89, y - 5, textStar);
-    }
+    // if (starFlags & STAR_FLAG_ACT_100_COINS) {
+    //     starCount--;
+    //     print_generic_string(x + 89, y - 5, textStar);
+    // }
 
-    while (hasStar != starCount) {
-        if (starFlags & (1 << nextStar)) {
-            str[nextStar * 2] = DIALOG_CHAR_STAR_FILLED;
-            hasStar++;
-        } else {
-            str[nextStar * 2] = DIALOG_CHAR_STAR_OPEN;
-        }
+    // while (hasStar != starCount) {
+    //     if (starFlags & (1 << nextStar)) {
+    //         str[nextStar * 2] = DIALOG_CHAR_STAR_FILLED;
+    //         hasStar++;
+    //     } else {
+    //         str[nextStar * 2] = DIALOG_CHAR_STAR_OPEN;
+    //     }
 
-        str[nextStar * 2 + 1] = DIALOG_CHAR_SPACE;
-        nextStar++;
-    }
+    //     str[nextStar * 2 + 1] = DIALOG_CHAR_SPACE;
+    //     nextStar++;
+    // }
 
-    if (starCount == nextStar && starCount != 6) {
-        str[nextStar * 2] = DIALOG_CHAR_STAR_OPEN;
-        str[nextStar * 2 + 1] = DIALOG_CHAR_SPACE;
-        nextStar++;
-    }
+    // if (starCount == nextStar && starCount != 6) {
+    //     str[nextStar * 2] = DIALOG_CHAR_STAR_OPEN;
+    //     str[nextStar * 2 + 1] = DIALOG_CHAR_SPACE;
+    //     nextStar++;
+    // }
 
-    str[nextStar * 2] = DIALOG_CHAR_TERMINATOR;
+    // str[nextStar * 2] = DIALOG_CHAR_TERMINATOR;
 
-    print_generic_string(x + 14, y + 13, str);
+    // print_generic_string(x + 14, y + 13, str);
 }
 
 void render_pause_castle_main_strings(s16 x, s16 y) {
@@ -2460,14 +2460,14 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
         //     }
         // }
     } else { // Castle secret stars
-        u8 textStarX[] = { TEXT_STAR_X };
-        courseName = segmented_to_virtual(courseNameTbl[COURSE_MAX]);
-        print_generic_string(x + 40, y + 13, textStarX);
-        int_to_str(save_file_get_total_star_count(gCurrSaveFileNum - 1,
-                                                  COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES),
-                                                  COURSE_NUM_TO_INDEX(COURSE_MAX)),
-                                                  strVal);
-        print_generic_string(x + 60, y + 13, strVal);
+        // u8 textStarX[] = { TEXT_STAR_X };
+        // courseName = segmented_to_virtual(courseNameTbl[COURSE_MAX]);
+        // print_generic_string(x + 40, y + 13, textStarX);
+        // int_to_str(save_file_get_total_star_count(gCurrSaveFileNum - 1,
+        //                                           COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES),
+        //                                           COURSE_NUM_TO_INDEX(COURSE_MAX)),
+        //                                           strVal);
+        // print_generic_string(x + 60, y + 13, strVal);
     }
 
     print_generic_string(x - 9, y + 30, courseName);
@@ -2555,9 +2555,9 @@ s32 render_pause_courses_and_castle(void) {
     u8 *changetext;
     u16 prog_thing;
     u16 prog_max;
-    u16 hour = save_file_get_time()/3600;
-    u16 minute = (save_file_get_time()/60)%60;
-    u16 second = save_file_get_time()%60;
+    // u16 hour = save_file_get_time()/3600;
+    // u16 minute = (save_file_get_time()/60)%60;
+    // u16 second = save_file_get_time()%60;
 
     menu_sintimer += 1200;
     sine = sins(menu_sintimer);
@@ -2578,27 +2578,27 @@ s32 render_pause_courses_and_castle(void) {
         build_tabs();
         tab = tablist[tab_index];
 
-        progress_table[0] = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-        progress_table[1] = 120;
-        progress_table[2] = count_u16_bits( save_file_get_costume_unlock() );
-        progress_table[3] = 15;
-        progress_table[4] = count_u16_bits(save_file_get_wallet_unlock());
-        progress_table[5] = 12;
-        progress_table[6] = count_u32_bits( save_file_get_badge_unlock() );
-        progress_table[7] = 24;
-        progress_table[8] = gMarioState->Level;
-        progress_table[9] = 8;
-        progress_table[10] = ((save_file_get_flags() & SAVE_FLAG_HAVE_YELLOW)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_VANISH_CAP)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_METAL_CAP)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP)>0);
-        progress_table[11] = 4;
+        // progress_table[0] = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+        // progress_table[1] = 120;
+        // progress_table[2] = count_u16_bits( save_file_get_costume_unlock() );
+        // progress_table[3] = 15;
+        // progress_table[4] = count_u16_bits(save_file_get_wallet_unlock());
+        // progress_table[5] = 12;
+        // progress_table[6] = count_u32_bits( save_file_get_badge_unlock() );
+        // progress_table[7] = 24;
+        // progress_table[8] = gMarioState->Level;
+        // progress_table[9] = 8;
+        // progress_table[10] = ((save_file_get_flags() & SAVE_FLAG_HAVE_YELLOW)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_VANISH_CAP)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_METAL_CAP)>0)+((save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP)>0);
+        // progress_table[11] = 4;
 
-        prog_thing = progress_table[0]+progress_table[2]+progress_table[4]+progress_table[6]+progress_table[8]+progress_table[10];
-        prog_max = progress_table[1]+progress_table[3]+progress_table[5]+progress_table[7]+progress_table[9]+progress_table[11];
-        winpercent = ((f32)prog_thing/(f32)prog_max)*100.0f;
+        // prog_thing = progress_table[0]+progress_table[2]+progress_table[4]+progress_table[6]+progress_table[8]+progress_table[10];
+        // prog_max = progress_table[1]+progress_table[3]+progress_table[5]+progress_table[7]+progress_table[9]+progress_table[11];
+        // winpercent = ((f32)prog_thing/(f32)prog_max)*100.0f;
 
-        if ((s32)winpercent >= 100) {
-            //At 100% completion, initiate post post game mode
-            save_file_set_progression(PROG_POSTPOST_GAME);
-        }
+        // if ((s32)winpercent >= 100) {
+        //     //At 100% completion, initiate post post game mode
+        //     save_file_set_progression(PROG_POSTPOST_GAME);
+        // }
 
         change_dialog_camera_angle();
         gDialogBoxState = DIALOG_STATE_VERTICAL;
@@ -2640,41 +2640,41 @@ s32 render_pause_courses_and_castle(void) {
                     }
                     break;
                 case DIALOG_STATE_HORIZONTAL:
-                    shade_screen();
-                    render_pause_castle_menu_box(160+vpxo, 143+vpyo);
-                    render_pause_castle_main_strings(104+vpxo, 60+vpyo);
+                    // shade_screen();
+                    // render_pause_castle_menu_box(160+vpxo, 143+vpyo);
+                    // render_pause_castle_main_strings(104+vpxo, 60+vpyo);
 
 
-                    //print game progress
-                    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-                        int_to_str_spaces((s32)winpercent,number_text);
-                        string_insert(11,3,number_text,txt_prog1);
-                        print_generic_string(23, 184, txt_prog1);
+                    // //print game progress
+                    // gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+                    //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+                    //     int_to_str_spaces((s32)winpercent,number_text);
+                    //     string_insert(11,3,number_text,txt_prog1);
+                    //     print_generic_string(23, 184, txt_prog1);
 
-                        int_to_str_time(hour,minute,second,&number_text);
-                        print_generic_string(23, 20, number_text);
+                    //     int_to_str_time(hour,minute,second,&number_text);
+                    //     print_generic_string(23, 20, number_text);
 
-                        for (i=0;i<6;i++) {
-                            int_to_str_slash(progress_table[i*2], progress_table[(i*2)+1], number_text);
-                            print_generic_string(84, 169-(i*16), number_text);
-                        }
+                    //     for (i=0;i<6;i++) {
+                    //         int_to_str_slash(progress_table[i*2], progress_table[(i*2)+1], number_text);
+                    //         print_generic_string(84, 169-(i*16), number_text);
+                    //     }
 
-                        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-                        if (save_file_check_progression(PROG_POSTPOST_GAME)) {
-                            gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, gDialogTextAlpha);
-                            }
-                        print_generic_string(24, 185, txt_prog1);
+                    //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+                    //     if (save_file_check_progression(PROG_POSTPOST_GAME)) {
+                    //         gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, gDialogTextAlpha);
+                    //         }
+                    //     print_generic_string(24, 185, txt_prog1);
 
-                        int_to_str_time(hour,minute,second,&number_text);
-                        print_generic_string(24, 21, number_text);
+                    //     int_to_str_time(hour,minute,second,&number_text);
+                    //     print_generic_string(24, 21, number_text);
 
-                        for (i=0;i<6;i++) {
-                            int_to_str_slash(progress_table[i*2], progress_table[(i*2)+1], number_text);
-                            print_generic_string(85, 170-(i*16), number_text);
-                        }
+                    //     for (i=0;i<6;i++) {
+                    //         int_to_str_slash(progress_table[i*2], progress_table[(i*2)+1], number_text);
+                    //         print_generic_string(85, 170-(i*16), number_text);
+                    //     }
 
-                    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+                    // gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
                     break;
             }
 
@@ -2833,64 +2833,64 @@ s32 render_pause_courses_and_castle(void) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
             }
         break;
-        case 2://upgradestation
-            shade_screen();
-            render_hud_power_meter();
-            print_text_fmt_int(25+(gMarioState->numMaxHP*8), 20, "BP %d", gMarioState->numMaxBP);
+        // case 2://upgradestation
+        //     shade_screen();
+        //     render_hud_power_meter();
+        //     print_text_fmt_int(25+(gMarioState->numMaxHP*8), 20, "BP %d", gMarioState->numMaxBP);
 
-            gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        //     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+        //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
             
-            print_generic_string(30,140,upgradetext);
-            if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
-                print_generic_string(30,75,upgradeyes);
-            } else {
-                print_generic_string(30,75,upgradeno);
-            }
+        //     print_generic_string(30,140,upgradetext);
+        //     if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
+        //         print_generic_string(30,75,upgradeyes);
+        //     } else {
+        //         print_generic_string(30,75,upgradeno);
+        //     }
 
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+        //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-            print_generic_string(31,141,upgradetext);
-            if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
-                print_generic_string(31,76,upgradeyes);
-            } else {
-                gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, 255);
-                print_generic_string(31,76,upgradeno);
-            }
+        //     print_generic_string(31,141,upgradetext);
+        //     if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
+        //         gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
+        //         print_generic_string(31,76,upgradeyes);
+        //     } else {
+        //         gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, 255);
+        //         print_generic_string(31,76,upgradeno);
+        //     }
 
-            gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+        //     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-            print_text_fmt_int2(30, 100, "COST $%d ^%d", UPGRADE_TABLE[gMarioState->Level+1][0], UPGRADE_TABLE[gMarioState->Level+1][1]);
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
+        //     print_text_fmt_int2(30, 100, "COST $%d ^%d", UPGRADE_TABLE[gMarioState->Level+1][0], UPGRADE_TABLE[gMarioState->Level+1][1]);
+        //     if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+        //         if ((gMarioState->numGlobalCoins >= UPGRADE_TABLE[gMarioState->Level+1][0])&&(gMarioState->numStars>=UPGRADE_TABLE[gMarioState->Level+1][1])) {
                     
-                    play_sound(SOUND_CUSTOM_PEACH_SOMETHING_SPECIAL, gGlobalSoundSource);
+        //             play_sound(SOUND_CUSTOM_PEACH_SOMETHING_SPECIAL, gGlobalSoundSource);
 
-                    gMarioState->numGlobalCoins -= UPGRADE_TABLE[gMarioState->Level+1][0];
-                    gMarioState->Level++;
-                    gMarioState->numMaxHP = UPGRADE_TABLE[gMarioState->Level][2];
-                    gMarioState->numMaxFP = UPGRADE_TABLE[gMarioState->Level][2];
-                    gMarioState->numMaxBP = UPGRADE_TABLE[gMarioState->Level][3] + get_evil_badge_bonus();
-                    save_file_set_stats();
-                    save_file_do_save(gCurrSaveFileNum - 1);
+        //             gMarioState->numGlobalCoins -= UPGRADE_TABLE[gMarioState->Level+1][0];
+        //             gMarioState->Level++;
+        //             gMarioState->numMaxHP = UPGRADE_TABLE[gMarioState->Level][2];
+        //             gMarioState->numMaxFP = UPGRADE_TABLE[gMarioState->Level][2];
+        //             gMarioState->numMaxBP = UPGRADE_TABLE[gMarioState->Level][3] + get_evil_badge_bonus();
+        //             save_file_set_stats();
+        //             save_file_do_save(gCurrSaveFileNum - 1);
 
-                    int_to_str(gMarioState->Level,&lvbuf);
-                    rtext_insert_pointer[0] = lvbuf;
-                    //run_event(EVENT_LVUP);
+        //             int_to_str(gMarioState->Level,&lvbuf);
+        //             rtext_insert_pointer[0] = lvbuf;
+        //             //run_event(EVENT_LVUP);
                     
-                    gMarioState->healCounter = 99;
-                    gMarioState->numBadgePoints = gMarioState->numMaxFP;
+        //             gMarioState->healCounter = 99;
+        //             gMarioState->numBadgePoints = gMarioState->numMaxFP;
 
-                    level_set_transition(0, 0);
-                    gMenuMode = -1;
-                    gDialogBoxState = DIALOG_STATE_OPENING;
-                    return 1;
-                }
-            }
+        //             level_set_transition(0, 0);
+        //             gMenuMode = -1;
+        //             gDialogBoxState = DIALOG_STATE_OPENING;
+        //             return 1;
+        //         }
+        //     }
 
-        break;
+        // break;
         case 3://options menu
             shade_screen();
 
@@ -2946,11 +2946,11 @@ s32 render_pause_courses_and_castle(void) {
             gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
             //do cheats
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                gMarioState->Options ^= (1 << mindex);
-                fade_volume_scale(SEQ_PLAYER_LEVEL, (gMarioState->Options & (1<<OPT_MUSIC))*100 ,10);
-                save_file_set_stats();
-            }
+            // if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            //     gMarioState->Options ^= (1 << mindex);
+            //     fade_volume_scale(SEQ_PLAYER_LEVEL, (gMarioState->Options & (1<<OPT_MUSIC))*100 ,10);
+            //     save_file_set_stats();
+            // }
 
         break;
         case 4://magic
@@ -3180,60 +3180,60 @@ void print_hud_course_complete_string(s8 str) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
-void print_hud_course_complete_coins(s16 x, s16 y) {
-    u8 courseCompleteCoinsStr[4];
-    u8 hudTextSymCoin[] = { GLYPH_COIN, GLYPH_SPACE };
-    u8 hudTextSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
+// void print_hud_course_complete_coins(s16 x, s16 y) {
+//     u8 courseCompleteCoinsStr[4];
+//     u8 hudTextSymCoin[] = { GLYPH_COIN, GLYPH_SPACE };
+//     u8 hudTextSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-    print_hud_lut_string(HUD_LUT_GLOBAL, x +  0, y, hudTextSymCoin);
-    print_hud_lut_string(HUD_LUT_GLOBAL, x + 16, y, hudTextSymX);
+//     print_hud_lut_string(HUD_LUT_GLOBAL, x +  0, y, hudTextSymCoin);
+//     print_hud_lut_string(HUD_LUT_GLOBAL, x + 16, y, hudTextSymX);
 
-    int_to_str(gCourseCompleteCoins, courseCompleteCoinsStr);
-    print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, courseCompleteCoinsStr);
+//     int_to_str(gCourseCompleteCoins, courseCompleteCoinsStr);
+//     print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, courseCompleteCoinsStr);
 
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
-    if (gCourseCompleteCoins >= gHudDisplay.coins) {
-        gCourseCompleteCoinsEqual = TRUE;
-        gCourseCompleteCoins = gHudDisplay.coins;
+//     if (gCourseCompleteCoins >= gHudDisplay.coins) {
+//         gCourseCompleteCoinsEqual = TRUE;
+//         gCourseCompleteCoins = gHudDisplay.coins;
 
-        if (gGotFileCoinHiScore) {
-            print_hud_course_complete_string(HUD_PRINT_HISCORE);
-        }
-    } else {
-        if ((gCourseDoneMenuTimer & 1) || gHudDisplay.coins > 70) { //above 70 coins is every frame, below 70 coins is every other frame
-            gCourseCompleteCoins++;
+//         if (gGotFileCoinHiScore) {
+//             print_hud_course_complete_string(HUD_PRINT_HISCORE);
+//         }
+//     } else {
+//         if ((gCourseDoneMenuTimer & 1) || gHudDisplay.coins > 70) { //above 70 coins is every frame, below 70 coins is every other frame
+//             gCourseCompleteCoins++;
 
-            if (gMarioState->numGlobalCoins < gMarioState->numMaxGlobalCoins) {
-                gMarioState->numGlobalCoins++;
-                if (count_u16_bits(save_file_get_wallet_unlock()) >= 12) { //If you collect all 12 wallets, you get a bonus.
-                    gMarioState->numGlobalCoins++;
-                    if (gMarioState->numGlobalCoins > gMarioState->numMaxGlobalCoins) {
-                        //slightly redundant clamp, whateverz
-                        gMarioState->numGlobalCoins = gMarioState->numMaxGlobalCoins;
-                    }
-                }
-                save_file_set_stats();
-            }
+//             if (gMarioState->numGlobalCoins < gMarioState->numMaxGlobalCoins) {
+//                 gMarioState->numGlobalCoins++;
+//                 if (count_u16_bits(save_file_get_wallet_unlock()) >= 12) { //If you collect all 12 wallets, you get a bonus.
+//                     gMarioState->numGlobalCoins++;
+//                     if (gMarioState->numGlobalCoins > gMarioState->numMaxGlobalCoins) {
+//                         //slightly redundant clamp, whateverz
+//                         gMarioState->numGlobalCoins = gMarioState->numMaxGlobalCoins;
+//                     }
+//                 }
+//                 save_file_set_stats();
+//             }
 
-            play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gGlobalSoundSource);
+//             play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gGlobalSoundSource);
 
-#ifdef ENABLE_LIVES
-            if (gCourseCompleteCoins && ((gCourseCompleteCoins % 50) == 0)) {
-                play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
-                gMarioState->numLives++;
-            }
-#endif
-        }
+// #ifdef ENABLE_LIVES
+//             if (gCourseCompleteCoins && ((gCourseCompleteCoins % 50) == 0)) {
+//                 play_sound(SOUND_GENERAL_COLLECT_1UP, gGlobalSoundSource);
+//                 gMarioState->numLives++;
+//             }
+// #endif
+//         }
 
-        if ((gHudDisplay.coins == gCourseCompleteCoins) && gGotFileCoinHiScore) {
-            play_sound(SOUND_MENU_HIGH_SCORE, gGlobalSoundSource);
-        }
-    }
-}
+//         if ((gHudDisplay.coins == gCourseCompleteCoins) && gGotFileCoinHiScore) {
+//             play_sound(SOUND_MENU_HIGH_SCORE, gGlobalSoundSource);
+//         }
+//     }
+// }
 
 void play_star_fanfare_and_flash_hud(s32 arg, u8 starNum) {
     if (gHudDisplay.coins == gCourseCompleteCoins && (gCurrCourseStarFlags & starNum) == 0 && gHudFlash == HUD_FLASH_NONE) {
@@ -3249,99 +3249,99 @@ void play_star_fanfare_and_flash_hud(s32 arg, u8 starNum) {
 #define TXT_CLEAR_X1 get_string_width(name) + 81
 #define TXT_CLEAR_X2 TXT_CLEAR_X1 - 2
 
-void render_course_complete_lvl_info_and_hud_str(void) {
-    u8 textCourse[] = { TEXT_COURSE };
-    u8 textClear[] = { TEXT_CLEAR };
-    u8 textSymStar[] = { GLYPH_STAR, GLYPH_SPACE };
+// void render_course_complete_lvl_info_and_hud_str(void) {
+//     u8 textCourse[] = { TEXT_COURSE };
+//     u8 textClear[] = { TEXT_CLEAR };
+//     u8 textSymStar[] = { GLYPH_STAR, GLYPH_SPACE };
 
-    u8 *name;
+//     u8 *name;
 
-    u8 strCourseNum[4];
+//     u8 strCourseNum[4];
 
-    void **actNameTbl    = segmented_to_virtual(languageTable[gInGameLanguage][2]);
-    void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
+//     void **actNameTbl    = segmented_to_virtual(languageTable[gInGameLanguage][2]);
+//     void **courseNameTbl = segmented_to_virtual(languageTable[gInGameLanguage][1]);
 
-    if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
-        print_hud_course_complete_coins(65, 103);
-        print_text_fmt_int2(150, 121, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
-        play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, (1 << (gLastCompletedStarNum - 1)));
+//     if (gLastCompletedCourseNum <= COURSE_STAGES_MAX) { // Main courses
+//         print_hud_course_complete_coins(65, 103);
+//         print_text_fmt_int2(150, 121, ",%dQ%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
+//         play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, (1 << (gLastCompletedStarNum - 1)));
 
-        // if (gLastCompletedStarNum == 7) {
-        //     name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6 + 1]);
-        // } else {
-        name = segmented_to_virtual(actNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum) * 7 + gLastCompletedStarNum - 1]);
-        // }
+//         // if (gLastCompletedStarNum == 7) {
+//         //     name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 6 + 1]);
+//         // } else {
+//         name = segmented_to_virtual(actNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum) * 7 + gLastCompletedStarNum - 1]);
+//         // }
 
-        // Print course number
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//         // Print course number
+//         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-        int_to_str(gLastCompletedCourseNum, strCourseNum);
+//         int_to_str(gLastCompletedCourseNum, strCourseNum);
 
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-        print_generic_string(65, 165, LANGUAGE_ARRAY(textCourse));
-        print_generic_string(CRS_NUM_X2, 165, strCourseNum);
+//         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+//         print_generic_string(65, 165, LANGUAGE_ARRAY(textCourse));
+//         print_generic_string(CRS_NUM_X2, 165, strCourseNum);
 
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        print_generic_string(63, 167, LANGUAGE_ARRAY(textCourse));
-        print_generic_string(CRS_NUM_X3, 167, strCourseNum);
+//         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+//         print_generic_string(63, 167, LANGUAGE_ARRAY(textCourse));
+//         print_generic_string(CRS_NUM_X3, 167, strCourseNum);
 
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    // } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) { // Bowser courses
-    //     name = segmented_to_virtual(courseNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum)]);
+//         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     // } else if (gLastCompletedCourseNum == COURSE_BITDW || gLastCompletedCourseNum == COURSE_BITFS) { // Bowser courses
+//     //     name = segmented_to_virtual(courseNameTbl[COURSE_NUM_TO_INDEX(gLastCompletedCourseNum)]);
 
-    //     // Print course name and clear text
-    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     //     // Print course name and clear text
+//     //     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-    //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-    //     print_generic_string(TXT_NAME_X1, 130, name);
-    //     print_generic_string(TXT_CLEAR_X1, 130, textClear);
-    //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-    //     print_generic_string(TXT_NAME_X2, 132, name);
-    //     print_generic_string(TXT_CLEAR_X2, 132, textClear);
-    //     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+//     //     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+//     //     print_generic_string(TXT_NAME_X1, 130, name);
+//     //     print_generic_string(TXT_CLEAR_X1, 130, textClear);
+//     //     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+//     //     print_generic_string(TXT_NAME_X2, 132, name);
+//     //     print_generic_string(TXT_CLEAR_X2, 132, textClear);
+//     //     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    //     print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
-    //     print_hud_course_complete_coins(118, 111);
-    //     play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
-    //     return;
-    // } else { // Castle secret stars
-    //     name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
+//     //     print_hud_course_complete_string(HUD_PRINT_CONGRATULATIONS);
+//     //     print_hud_course_complete_coins(118, 111);
+//     //     play_star_fanfare_and_flash_hud(HUD_FLASH_KEYS, 0);
+//     //     return;
+//     // } else { // Castle secret stars
+//     //     name = segmented_to_virtual(actNameTbl[COURSE_STAGES_MAX * 7]);
 
-    //     print_hud_course_complete_coins(118, 103);
-    //     play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
-    }
+//     //     print_hud_course_complete_coins(118, 103);
+//     //     play_star_fanfare_and_flash_hud(HUD_FLASH_STARS, 1 << (gLastCompletedStarNum - 1));
+//     }
 
-    // Print star glyph
-    /*
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+//     // Print star glyph
+//     /*
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
 
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-    if (gLastCompletedStarNum == 7) {
-        if (gDialogTextAlpha > 200) {
-            print_text_fmt_int(55,147,".",0);
-        }
-    } else {
-        print_hud_lut_string(HUD_LUT_GLOBAL, 55, 77, textSymStar);
-    }
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+//     if (gLastCompletedStarNum == 7) {
+//         if (gDialogTextAlpha > 200) {
+//             print_text_fmt_int(55,147,".",0);
+//         }
+//     } else {
+//         print_hud_lut_string(HUD_LUT_GLOBAL, 55, 77, textSymStar);
+//     }
 
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
-    */
+//     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+//     */
 
-    //A cheap way to solve the problem of different levels having cosmic seeds, and different levels having regular stars,
-    //is to not render the glyph at all! Kind of lazy, but CBA. Cosmic seed and power star distingishing is so hardcoded
-    //it hurts. curse you artie!!! forcing me to do weird and unusual story progression! (it was worth it)
+//     //A cheap way to solve the problem of different levels having cosmic seeds, and different levels having regular stars,
+//     //is to not render the glyph at all! Kind of lazy, but CBA. Cosmic seed and power star distingishing is so hardcoded
+//     //it hurts. curse you artie!!! forcing me to do weird and unusual story progression! (it was worth it)
 
-    // Print act name and catch text
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+//     // Print act name and catch text
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
-    print_generic_string(76, 145, name);
+//     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDialogTextAlpha);
+//     print_generic_string(76, 145, name);
 
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-    print_generic_string(74, 147, name);
+//     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+//     print_generic_string(74, 147, name);
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-}
+//     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+// }
 
 #define X_VAL9 x
 #define TXT_SAVEOPTIONS_X x + 12
@@ -3373,49 +3373,49 @@ void render_save_confirmation(s16 x, s16 y, s8 *index, s16 yPos) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
-s32 render_course_complete_screen(void) {
-    switch (gDialogBoxState) {
-        case DIALOG_STATE_OPENING:
-            render_course_complete_lvl_info_and_hud_str();
-            if (gCourseDoneMenuTimer > 100 && gCourseCompleteCoinsEqual) {
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-                level_set_transition(-1, NULL);
-                gDialogTextAlpha = 0;
-                gDialogLineNum = MENU_OPT_DEFAULT;
-            }
-            break;
+// s32 render_course_complete_screen(void) {
+//     switch (gDialogBoxState) {
+//         case DIALOG_STATE_OPENING:
+//             render_course_complete_lvl_info_and_hud_str();
+//             if (gCourseDoneMenuTimer > 100 && gCourseCompleteCoinsEqual) {
+//                 gDialogBoxState = DIALOG_STATE_VERTICAL;
+//                 level_set_transition(-1, NULL);
+//                 gDialogTextAlpha = 0;
+//                 gDialogLineNum = MENU_OPT_DEFAULT;
+//             }
+//             break;
 
-        case DIALOG_STATE_VERTICAL:
-            shade_screen();
-            render_course_complete_lvl_info_and_hud_str();
-            render_save_confirmation(100, 86, &gDialogLineNum, 20);
+//         case DIALOG_STATE_VERTICAL:
+//             shade_screen();
+//             render_course_complete_lvl_info_and_hud_str();
+//             render_save_confirmation(100, 86, &gDialogLineNum, 20);
 
-            if (gCourseDoneMenuTimer > 110 && (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON))) {
-                level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
-                gDialogBoxState = DIALOG_STATE_OPENING;
-                gMenuMode = MENU_MODE_NONE;
-                gCourseDoneMenuTimer = 0;
-                gCourseCompleteCoins = 0;
-                gCourseCompleteCoinsEqual = FALSE;
-                gHudFlash = HUD_FLASH_NONE;
+//             if (gCourseDoneMenuTimer > 110 && (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON))) {
+//                 level_set_transition(0, NULL);
+//                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+//                 gDialogBoxState = DIALOG_STATE_OPENING;
+//                 gMenuMode = MENU_MODE_NONE;
+//                 gCourseDoneMenuTimer = 0;
+//                 gCourseCompleteCoins = 0;
+//                 gCourseCompleteCoinsEqual = FALSE;
+//                 gHudFlash = HUD_FLASH_NONE;
 
-                gMarioState->numCoins = 0;
-                gHudDisplay.coins = 0;
+//                 gMarioState->numCoins = 0;
+//                 gHudDisplay.coins = 0;
 
-                return gDialogLineNum;
-            }
-            break;
-    }
+//                 return gDialogLineNum;
+//             }
+//             break;
+//     }
 
-    if (gDialogTextAlpha < 250) {
-        gDialogTextAlpha += 25;
-    }
+//     if (gDialogTextAlpha < 250) {
+//         gDialogTextAlpha += 25;
+//     }
 
-    gCourseDoneMenuTimer++;
+//     gCourseDoneMenuTimer++;
 
-    return MENU_OPT_NONE;
-}
+//     return MENU_OPT_NONE;
+// }
 
 u8 intensity;
 
@@ -3621,12 +3621,12 @@ s32 render_menus_and_dialogs(void) {
             case MENU_MODE_RENDER_PAUSE_SCREEN:
                 mode = render_pause_courses_and_castle();
                 break;
-            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
-                mode = render_course_complete_screen();
-                break;
-            case MENU_MODE_UNUSED_3:
-                mode = render_course_complete_screen();
-                break;
+            // case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+            //     mode = render_course_complete_screen();
+            //     break;
+            // case MENU_MODE_UNUSED_3:
+            //     mode = render_course_complete_screen();
+            //     break;
         }
 
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;

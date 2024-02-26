@@ -183,7 +183,7 @@ s32 write_eeprom_data(void *buffer, s32 size) {
 }
 #endif
 
-
+#if 0
 /**
  * Sum the bytes in data to data + size - 2. The last two bytes are ignored
  * because that is where the checksum is stored.
@@ -999,3 +999,13 @@ u32 eu_get_language(void) {
 
 //     return warpCheckpointActive;
 // }
+
+#endif
+
+u32 save_file_get_badge_equip(void) {
+    return cmm_play_badge_bitfield;
+}
+
+void save_file_set_badge_equip(u32 flags) {
+    cmm_play_badge_bitfield |= (flags);
+}

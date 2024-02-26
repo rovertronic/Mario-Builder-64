@@ -981,58 +981,58 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
 }
 
 u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
-    u32 doorAction = ACT_UNINITIALIZED;
-#ifndef UNLOCK_ALL
-    u32 saveFlags = save_file_get_flags();
-    s16 warpDoorId = (obj->oBehParams >> 24);
-#endif
+//     u32 doorAction = ACT_UNINITIALIZED;
+// #ifndef UNLOCK_ALL
+//     u32 saveFlags = save_file_get_flags();
+//     s16 warpDoorId = (obj->oBehParams >> 24);
+// #endif
 
-    if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-#ifndef UNLOCK_ALL
-        if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
-            if (!(saveFlags & SAVE_FLAG_HAVE_KEY_2)) {
-                if (!sDisplayingDoorText) {
-                    //run_event(EVENT_KEYDOOR);
-                }
-                sDisplayingDoorText = TRUE;
+//     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
+// #ifndef UNLOCK_ALL
+//         if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
+//             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_2)) {
+//                 if (!sDisplayingDoorText) {
+//                     //run_event(EVENT_KEYDOOR);
+//                 }
+//                 sDisplayingDoorText = TRUE;
 
-                return FALSE;
-            }
+//                 return FALSE;
+//             }
 
-            doorAction = ACT_UNLOCKING_KEY_DOOR;
-        }
+//             doorAction = ACT_UNLOCKING_KEY_DOOR;
+//         }
 
-        if (warpDoorId == 2 && !(saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) {
-            if (!(saveFlags & SAVE_FLAG_HAVE_KEY_1)) {
-                if (!sDisplayingDoorText) {
-                    // Moat door skip was intended confirmed
-                    //run_event(EVENT_KEYDOOR);
-                }
-                sDisplayingDoorText = TRUE;
+//         if (warpDoorId == 2 && !(saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) {
+//             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_1)) {
+//                 if (!sDisplayingDoorText) {
+//                     // Moat door skip was intended confirmed
+//                     //run_event(EVENT_KEYDOOR);
+//                 }
+//                 sDisplayingDoorText = TRUE;
 
-                return FALSE;
-            }
+//                 return FALSE;
+//             }
 
-            doorAction = ACT_UNLOCKING_KEY_DOOR;
-        }
-#endif
+//             doorAction = ACT_UNLOCKING_KEY_DOOR;
+//         }
+// #endif
 
-        if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-            u32 actionArg = should_push_or_pull_door(m, obj) + WARP_FLAG_DOOR_IS_WARP;
+//         if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
+//             u32 actionArg = should_push_or_pull_door(m, obj) + WARP_FLAG_DOOR_IS_WARP;
 
-            if (doorAction == 0) {
-                if (actionArg & WARP_FLAG_DOOR_PULLED) {
-                    doorAction = ACT_PULLING_DOOR;
-                } else {
-                    doorAction = ACT_PUSHING_DOOR;
-                }
-            }
+//             if (doorAction == 0) {
+//                 if (actionArg & WARP_FLAG_DOOR_PULLED) {
+//                     doorAction = ACT_PULLING_DOOR;
+//                 } else {
+//                     doorAction = ACT_PUSHING_DOOR;
+//                 }
+//             }
 
-            m->interactObj = obj;
-            m->usedObj = obj;
-            return set_mario_action(m, doorAction, actionArg);
-        }
-    }
+//             m->interactObj = obj;
+//             m->usedObj = obj;
+//             return set_mario_action(m, doorAction, actionArg);
+//         }
+//     }
 
     return FALSE;
 }
@@ -1049,13 +1049,13 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
     s16 behparam1 = o->oBehParams >> 24;
     s16 numStars = gMarioState->numStars;
 
-    if (behparam1 == 1) {
-        numStars = gMarioState->numMetalStars;
-    }
-    if (behparam1 == 2) {
-        numStars = save_file_check_progression(PROG_DEFEAT_BOWSER_1);
-        requiredNumStars = 1;
-    }
+    // if (behparam1 == 1) {
+    //     numStars = gMarioState->numMetalStars;
+    // }
+    // if (behparam1 == 2) {
+    //     numStars = save_file_check_progression(PROG_DEFEAT_BOWSER_1);
+    //     requiredNumStars = 1;
+    // }
 
     #ifdef UNLOCK_ALL
     numStars = 999;

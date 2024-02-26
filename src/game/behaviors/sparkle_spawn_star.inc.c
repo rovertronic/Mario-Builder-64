@@ -29,13 +29,13 @@ void bhv_spawned_star_init(void) {
         o->oBehParams = o->parentObj->oBehParams;
     }
     u8 param = GET_BPARAM1(o->oBehParams);
-#ifdef GLOBAL_STAR_IDS
-    if ((1 << (param % 7)) & save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(param / 7))) {
-#else
-    if ((1 << param) & save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum))) {
-#endif
-        cur_obj_set_model(MODEL_TRANSPARENT_STAR);
-    }
+// #ifdef GLOBAL_STAR_IDS
+//     if ((1 << (param % 7)) & save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(param / 7))) {
+// #else
+//     if ((1 << param) & save_file_get_star_flags((gCurrSaveFileNum - 1), COURSE_NUM_TO_INDEX(gCurrCourseNum))) {
+// #endif
+//         cur_obj_set_model(MODEL_TRANSPARENT_STAR);
+//     }
 
     cur_obj_play_sound_2(SOUND_GENERAL2_STAR_APPEARS);
 }

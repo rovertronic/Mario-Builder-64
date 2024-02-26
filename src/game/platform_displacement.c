@@ -203,14 +203,6 @@ static void apply_mario_inertia(void) {
     sMarioAmountDisplaced[2] *= 0.97f;
 #endif
 
-	// Apply sideways inertia
-	gMarioState->pos[0] += sMarioAmountDisplaced[0];
-	gMarioState->pos[2] += sMarioAmountDisplaced[2];
-
-	// Drag
-	sMarioAmountDisplaced[0] *= 0.97f;
-	sMarioAmountDisplaced[2] *= 0.97f;
-
 	// Stop applying inertia once Mario has landed, or when ground pounding
 	if (!(gMarioState->action & ACT_FLAG_AIR) || (gMarioState->action == ACT_GROUND_POUND)) {
 		if (gMarioState->floor && (gMarioState->floor->type != SURFACE_FLOWING_WATER)) {

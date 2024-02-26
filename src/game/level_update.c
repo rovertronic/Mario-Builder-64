@@ -225,36 +225,36 @@ void fade_into_special_warp(u32 arg, u32 color) {
 }
 
 void load_level_init_text(u32 arg) {
-    s32 gotAchievement;
-    u32 dialogID = gCurrentArea->dialog[arg];
+    // s32 gotAchievement;
+    // u32 dialogID = gCurrentArea->dialog[arg];
 
-    switch (dialogID) {
-        case DIALOG_129:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_VANISH_CAP;
-            break;
+    // switch (dialogID) {
+    //     case DIALOG_129:
+    //         gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_VANISH_CAP;
+    //         break;
 
-        case DIALOG_130:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_METAL_CAP;
-            break;
+    //     case DIALOG_130:
+    //         gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_METAL_CAP;
+    //         break;
 
-        case DIALOG_131:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP;
-            break;
+    //     case DIALOG_131:
+    //         gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP;
+    //         break;
 
-        case (u8)DIALOG_NONE: // 255, cast value to u8 to match (-1)
-            gotAchievement = TRUE;
-            break;
+    //     case (u8)DIALOG_NONE: // 255, cast value to u8 to match (-1)
+    //         gotAchievement = TRUE;
+    //         break;
 
-        default:
-            gotAchievement =
-                save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
-            break;
-    }
+    //     default:
+    //         gotAchievement =
+    //             save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+    //         break;
+    // }
 
-    if (!gotAchievement) {
-        level_set_transition(-1, NULL);
-        create_dialog_box(dialogID);
-    }
+    // if (!gotAchievement) {
+    //     level_set_transition(-1, NULL);
+    //     create_dialog_box(dialogID);
+    // }
 }
 
 void init_door_warp(struct SpawnInfo *spawnInfo, u32 warpDestFlags) {
@@ -930,7 +930,7 @@ void initiate_delayed_warp(void) {
         } else {
             switch (sDelayedWarpOp) {
                 case WARP_OP_GAME_OVER:
-                    save_file_reload();
+                    // save_file_reload();
                     warp_special(WARP_SPECIAL_MARIO_HEAD_DIZZY);
                     break;
 
@@ -1060,11 +1060,11 @@ u8 playtimer = 0;
 s32 play_mode_normal(void) {
     event_main();
 
-    playtimer++;
-    if (playtimer>29) {
-        playtimer = 0;
-        save_file_one_second();
-    }
+    // playtimer++;
+    // if (playtimer>29) {
+    //     playtimer = 0;
+    //     save_file_one_second();
+    // }
     
     // if (gCurrDemoInput != NULL) {
     //     print_intro_text();
@@ -1138,11 +1138,11 @@ s32 play_mode_normal(void) {
 }
 
 s32 play_mode_paused(void) {
-    playtimer++;
-    if (playtimer>29) {
-        playtimer = 0;
-        save_file_one_second();
-    }
+    // playtimer++;
+    // if (playtimer>29) {
+    //     playtimer = 0;
+    //     save_file_one_second();
+    // }
 
     if (gMenuOptSelectIndex == MENU_OPT_NONE) {
         set_menu_mode(MENU_MODE_RENDER_PAUSE_SCREEN);
@@ -1509,7 +1509,7 @@ s32 lvl_init_from_save_file(UNUSED s16 initOrUpdate, s32 levelNum) {
 
     init_mario_from_save_file();
     // disable_warp_checkpoint();
-    save_file_move_cap_to_default_location();
+    // save_file_move_cap_to_default_location();
     select_mario_cam_mode();
     set_yoshi_as_not_dead();
 
@@ -1543,8 +1543,8 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
     // if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2 && gCurrLevelNum != LEVEL_BOWSER_3) {
         gMarioState->numCoins = 0;
         gHudDisplay.coins = 0;
-        gCurrCourseStarFlags =
-            save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
+        // gCurrCourseStarFlags =
+            // save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum));
     // }
 
     if (gSavedCourseNum != gCurrCourseNum) {

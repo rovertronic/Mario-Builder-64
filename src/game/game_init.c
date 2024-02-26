@@ -1112,7 +1112,7 @@ void thread5_game_loop(UNUSED void *arg) {
 #ifdef HVQM
     createHvqmThread();
 #endif
-    save_file_load_all();
+    // save_file_load_all();
 #ifdef PUPPYCAM
     puppycam_boot();
 #endif

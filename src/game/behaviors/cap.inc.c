@@ -204,7 +204,7 @@ void bhv_normal_cap_init(void) {
 }
 
 void normal_cap_set_save_flags(void) {
-    save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+    // save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
 
     // switch (gCurrCourseNum) {
     //     case COURSE_SSL:
@@ -262,7 +262,7 @@ void bhv_normal_cap_loop(void) {
     }
 
     if (cap_set_hitbox() == TRUE) {
-        save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+        // save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
     }
 }
 

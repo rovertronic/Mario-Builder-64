@@ -110,127 +110,127 @@ Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, UNUSED
 }
 #endif
 
-u8 MaxCostumes = 11;
+// u8 MaxCostumes = 11;
 
-void loop_costume_token(void) {
-    gMarioState->TokenParam2 = gCurrentObject->oBehParams2ndByte;
+// void loop_costume_token(void) {
+//     gMarioState->TokenParam2 = gCurrentObject->oBehParams2ndByte;
 
-    if (gCurrentObject->oAction == 0) {
-        if (save_file_get_costume_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
-            obj_mark_for_deletion(gCurrentObject);
-            }
-        gCurrentObject->oAction = 1;
-        }
+//     if (gCurrentObject->oAction == 0) {
+//         if (save_file_get_costume_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
+//             obj_mark_for_deletion(gCurrentObject);
+//             }
+//         gCurrentObject->oAction = 1;
+//         }
 
-    if (gCurrentObject->oAction == 1) {
-        if (gCurrentObject->oDistanceToMario < 150.0f) {
-            save_file_set_costume_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
-            gMarioState->LastCostumeID = gCurrentObject->oBehParams2ndByte;
-            gCurrentObject->oAction = 2;
-            gCurrentObject->oTimer = 0;
-            rtext_insert_pointer[0] = costume_text[gCurrentObject->oBehParams2ndByte];
-            rtext_insert_pointer[1] = costume_effect_text[gCurrentObject->oBehParams2ndByte];
-            //run_event(EVENT_COSTUME);
-            }
-        }
-    if (gCurrentObject->oAction == 2) {
-            gCurrentObject->oMoveAngleYaw += 100;
-            gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
-            cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
-            if (gCurrentObject->oTimer > 30) {
-                obj_mark_for_deletion(gCurrentObject);
-            }
-        }
-    }
+//     if (gCurrentObject->oAction == 1) {
+//         if (gCurrentObject->oDistanceToMario < 150.0f) {
+//             save_file_set_costume_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
+//             gMarioState->LastCostumeID = gCurrentObject->oBehParams2ndByte;
+//             gCurrentObject->oAction = 2;
+//             gCurrentObject->oTimer = 0;
+//             rtext_insert_pointer[0] = costume_text[gCurrentObject->oBehParams2ndByte];
+//             rtext_insert_pointer[1] = costume_effect_text[gCurrentObject->oBehParams2ndByte];
+//             //run_event(EVENT_COSTUME);
+//             }
+//         }
+//     if (gCurrentObject->oAction == 2) {
+//             gCurrentObject->oMoveAngleYaw += 100;
+//             gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
+//             cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
+//             if (gCurrentObject->oTimer > 30) {
+//                 obj_mark_for_deletion(gCurrentObject);
+//             }
+//         }
+//     }
 
-u8 wallet_text_buffer[4];
-u8 wallet_text_buffer2[4];
+// u8 wallet_text_buffer[4];
+// u8 wallet_text_buffer2[4];
 
-void bhv_loop_wallet(void) {
-    switch(gCurrentObject->oAction) {
+// void bhv_loop_wallet(void) {
+//     switch(gCurrentObject->oAction) {
 
-        case 0:
-            if (save_file_get_wallet_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
-                obj_mark_for_deletion(gCurrentObject);
-            } else {
-                gCurrentObject->oAction = 1;
-            }
-        break;
+//         case 0:
+//             if (save_file_get_wallet_unlock() & (1<<gCurrentObject->oBehParams2ndByte)) {
+//                 obj_mark_for_deletion(gCurrentObject);
+//             } else {
+//                 gCurrentObject->oAction = 1;
+//             }
+//         break;
 
-        case 1:
-            gCurrentObject->oFaceAngleYaw = gCurrentObject->oAngleToMario + sins(gCurrentObject->oTimer * 0x400) * 3000;
-            gCurrentObject->oPosY = gCurrentObject->oHomeY + 100.0f + sinf(gCurrentObject->oTimer * 0x400) * 25.0f;
-            spawn_object(gCurrentObject, MODEL_NONE, bhvSparkleSpawn);
+//         case 1:
+//             gCurrentObject->oFaceAngleYaw = gCurrentObject->oAngleToMario + sins(gCurrentObject->oTimer * 0x400) * 3000;
+//             gCurrentObject->oPosY = gCurrentObject->oHomeY + 100.0f + sinf(gCurrentObject->oTimer * 0x400) * 25.0f;
+//             spawn_object(gCurrentObject, MODEL_NONE, bhvSparkleSpawn);
 
-            if (gCurrentObject->oDistanceToMario < 200.0f) {
-                save_file_set_wallet_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
+//             if (gCurrentObject->oDistanceToMario < 200.0f) {
+//                 save_file_set_wallet_unlock( (1<<gCurrentObject->oBehParams2ndByte) );
 
-                int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer2);
-                rtext_insert_pointer[0] = &wallet_text_buffer2;
+//                 int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer2);
+//                 rtext_insert_pointer[0] = &wallet_text_buffer2;
 
-                gMarioState->numMaxGlobalCoins+= 50;
-                gMarioState->gGlobalCoinGain+=50;
+//                 gMarioState->numMaxGlobalCoins+= 50;
+//                 gMarioState->gGlobalCoinGain+=50;
 
-                //gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-                gCurrentObject->oAction = 2;
-                gCurrentObject->oTimer = 0;
+//                 //gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//                 gCurrentObject->oAction = 2;
+//                 gCurrentObject->oTimer = 0;
 
-                int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer);
-                rtext_insert_pointer[1] = &wallet_text_buffer;
-                //run_event(EVENT_WALLET);
-                }
-        break;
+//                 int_to_str(gMarioState->numMaxGlobalCoins,wallet_text_buffer);
+//                 rtext_insert_pointer[1] = &wallet_text_buffer;
+//                 //run_event(EVENT_WALLET);
+//                 }
+//         break;
 
-        case 2:
-            gCurrentObject->oMoveAngleYaw += 100;
-            gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
-            cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
-            if (gCurrentObject->oTimer > 30) {
-                obj_mark_for_deletion(gCurrentObject);
-            }
-        break;
+//         case 2:
+//             gCurrentObject->oMoveAngleYaw += 100;
+//             gCurrentObject->oFaceAngleYaw += gCurrentObject->oMoveAngleYaw;
+//             cur_obj_scale(1.0f-(gCurrentObject->oTimer/30.0f));
+//             if (gCurrentObject->oTimer > 30) {
+//                 obj_mark_for_deletion(gCurrentObject);
+//             }
+//         break;
 
-        }
-    }
+//         }
+//     }
 
-void loop_dressing_room(void) {
-    if (gCurrentObject->oDistanceToMario < 500.0f) {
+// void loop_dressing_room(void) {
+//     if (gCurrentObject->oDistanceToMario < 500.0f) {
 
-        gMarioState->MenuToRender = 1;
+//         gMarioState->MenuToRender = 1;
 
-        //CONTROLS
-        if (gPlayer1Controller->buttonPressed & R_JPAD) {
-            gMarioState->CostumeID ++;
-            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
-                gMarioState->CostumeID ++;
-                if (gMarioState->CostumeID > MaxCostumes) {
-                    gMarioState->CostumeID = 0;
-                    }
-                }
-            }
-        if (gPlayer1Controller->buttonPressed & L_JPAD) {
-            if (gMarioState->CostumeID == 0) {
-                gMarioState->CostumeID = MaxCostumes;
-                }
-                else
-                {
-                gMarioState->CostumeID --;
-                }
-            while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
-                gMarioState->CostumeID --;
-                if (gMarioState->CostumeID < 0) {
-                    gMarioState->CostumeID = MaxCostumes;
-                    }
-                }
-            }
-        //CONTROLS
+//         //CONTROLS
+//         if (gPlayer1Controller->buttonPressed & R_JPAD) {
+//             gMarioState->CostumeID ++;
+//             while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+//                 gMarioState->CostumeID ++;
+//                 if (gMarioState->CostumeID > MaxCostumes) {
+//                     gMarioState->CostumeID = 0;
+//                     }
+//                 }
+//             }
+//         if (gPlayer1Controller->buttonPressed & L_JPAD) {
+//             if (gMarioState->CostumeID == 0) {
+//                 gMarioState->CostumeID = MaxCostumes;
+//                 }
+//                 else
+//                 {
+//                 gMarioState->CostumeID --;
+//                 }
+//             while (!(save_file_get_costume_unlock() & (1<<gMarioState->CostumeID))) {
+//                 gMarioState->CostumeID --;
+//                 if (gMarioState->CostumeID < 0) {
+//                     gMarioState->CostumeID = MaxCostumes;
+//                     }
+//                 }
+//             }
+//         //CONTROLS
 
-        }
-        else
-        {
-        gMarioState->MenuToRender = 0;
-        }
-    }
+//         }
+//         else
+//         {
+//         gMarioState->MenuToRender = 0;
+//         }
+//     }
 
 static void toad_message_faded(void) {
     if (o->oDistanceToMario > 700.0f) {
@@ -313,32 +313,32 @@ void bhv_toad_message_loop(void) {
     }
 }
 
-void mirror_room_change(void) {
+// void mirror_room_change(void) {
 
-    if (gCurrentObject->oBehParams2ndByte == 1) {
-        load_object_collision_model();
-        if (save_file_check_progression(PROG_MIRROR)&&(gCurrentObject->oAction == 0)) {
-            gCurrentObject->oAction = 1;
-            gCurrentObject->oHomeX = 0;
-            gCurrentObject->oHomeZ = 0;
-            gCurrentObject->oTimer = 0;
-            }
-        if (gCurrentObject->oAction == 1) {
-            gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f - gCurrentObject->oHomeX;
-            gCurrentObject->oHomeX += gCurrentObject->oHomeZ;
-            gCurrentObject->oHomeZ ++;
-            if (gCurrentObject->oTimer > 60) {
-                obj_mark_for_deletion(gCurrentObject);
-                }
-            }
-        }
+//     if (gCurrentObject->oBehParams2ndByte == 1) {
+//         load_object_collision_model();
+//         if (save_file_check_progression(PROG_MIRROR)&&(gCurrentObject->oAction == 0)) {
+//             gCurrentObject->oAction = 1;
+//             gCurrentObject->oHomeX = 0;
+//             gCurrentObject->oHomeZ = 0;
+//             gCurrentObject->oTimer = 0;
+//             }
+//         if (gCurrentObject->oAction == 1) {
+//             gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f - gCurrentObject->oHomeX;
+//             gCurrentObject->oHomeX += gCurrentObject->oHomeZ;
+//             gCurrentObject->oHomeZ ++;
+//             if (gCurrentObject->oTimer > 60) {
+//                 obj_mark_for_deletion(gCurrentObject);
+//                 }
+//             }
+//         }
 
-    if (gCurrentObject->oBehParams2ndByte == 0) {
-        if (save_file_check_progression(PROG_MIRROR)) {
-            gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f;
-            }
-        }
-}
+//     if (gCurrentObject->oBehParams2ndByte == 0) {
+//         if (save_file_check_progression(PROG_MIRROR)) {
+//             gCurrentObject->oPosY = gCurrentObject->oHomeY - 1000.0f;
+//             }
+//         }
+// }
 
 // void evil_mirrror_mario(void) {
 //     struct Animation **animations = gCurrentObject->oAnimations;

@@ -166,7 +166,6 @@ void full_menu_reset() {
     cmm_custom_theme_menu_open = FALSE;
     cmm_greyed_text = FALSE;
     cmm_lopt_template = 0;
-    cmm_lopt_game = CMM_GAME_VANILLA;
     cmm_lopt_size = 0;
     animate_list_reset();
     animate_toolbar_reset();
