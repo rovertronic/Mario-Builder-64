@@ -142,7 +142,7 @@ u8 cmm_lopt_bg = 0;
 u8 cmm_lopt_boundary_mat = 0;
 u8 cmm_lopt_boundary = 0;
 u8 cmm_lopt_boundary_height = 0;
-u8 cmm_lopt_game = 0;//0 = BTCM, 1 = VANILLA
+u8 cmm_lopt_game = CMM_GAME_VANILLA;
 u8 cmm_lopt_size = 0;
 u8 cmm_newsize = 0; // Used for changing level sizes
 u8 cmm_lopt_template = 0;
