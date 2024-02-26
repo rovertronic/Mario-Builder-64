@@ -1627,6 +1627,7 @@ s32 cmm_main_menu(void) {
                         case 0:
                             //make new level
                             cmm_mm_state = MM_MAKE_MODE;
+                            cmm_level_action = CMM_LA_BUILD;
                             cmm_target_mode = CMM_MODE_MAKE;
                             break;
                         case 1:
