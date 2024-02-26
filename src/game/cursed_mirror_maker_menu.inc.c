@@ -165,8 +165,6 @@ void full_menu_reset() {
     cmm_konami_code_cur_index = 0;
     cmm_custom_theme_menu_open = FALSE;
     cmm_greyed_text = FALSE;
-    cmm_lopt_template = 0;
-    cmm_lopt_size = 0;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -176,6 +174,9 @@ void cmm_init_exit_to_files() {
     cmm_menu_start_timer = 0;
     cmm_mode = CMM_MODE_UNINITIALIZED;
     cmm_menu_index = cmm_mm_selected_level;
+    cmm_lopt_template = 0;
+    cmm_lopt_size = 0;
+    cmm_lopt_game = CMM_GAME_VANILLA;
 }
 
 // Base generic animation for a menu component using acceleration
