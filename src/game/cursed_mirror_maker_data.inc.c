@@ -498,7 +498,6 @@ enum cmm_materials {
     CMM_MAT_STONE = CMM_MATLIST_TERRAIN_END,
     CMM_MAT_HMC_STONE,
     CMM_MAT_HMC_MAZEFLOOR,
-    CMM_MAT_HMC_MAZEWALL,
     CMM_MAT_HMC_LAKEGRASS,
     CMM_MAT_TTM_FLOOR,
     CMM_MAT_TTM_ROCK,
@@ -543,6 +542,7 @@ enum cmm_materials {
     CMM_MAT_SNOW_TILES,
     CMM_MAT_JRB_TILETOP,
     CMM_MAT_JRB_TILESIDE,
+    CMM_MAT_HMC_TILES,
     CMM_MAT_RHR_TILES,
     CMM_MAT_VP_TILES,
     CMM_MAT_C_STONETOP,
@@ -555,6 +555,7 @@ enum cmm_materials {
     CMM_MAT_VP_BLOCK,
     CMM_MAT_BBH_STONE,
     CMM_MAT_BBH_STONE_PATTERN,
+    CMM_MAT_HMC_SLAB,
     CMM_MAT_RHR_BLOCK,
     CMM_MAT_C_STONESIDE,
     CMM_MAT_C_PILLAR,
@@ -705,7 +706,6 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerStoneSide,     0, SURFACE_NOT_SLIPPERY, "White Stone"},     // CMM_MAT_STONE
     {mat_maker_MakerHStone,        0, SURFACE_NOT_SLIPPERY, "Cave Stone"},      // CMM_MAT_HMC_STONE
     {mat_maker_MakerHMazefloor,    0, SURFACE_NOT_SLIPPERY, "Beige Stone"},     // CMM_MAT_HMC_MAZEFLOOR
-    {mat_maker_MakerHMazewall,     0, SURFACE_NOT_SLIPPERY, "Green Stone"},     // CMM_MAT_HMC_MAZEWALL
     {mat_maker_MakerHLakewall,     0, SURFACE_NOT_SLIPPERY, "Cave Wall"},       // CMM_MAT_HMC_LAKEGRASS
     {mat_maker_MakerMountainFloor, 0, SURFACE_NOT_SLIPPERY, "Mountain Rock (1)"},   // CMM_MAT_TTM_FLOOR
     {mat_maker_MakerMountainRock,  0, SURFACE_NOT_SLIPPERY, "Mountain Rock (2)"},   // CMM_MAT_TTM_ROCK
@@ -723,20 +723,20 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerCastleCobble,  0, SURFACE_NOT_SLIPPERY, "Cobblestone (5)"}, // CMM_MAT_CASTLE_STONE
 
     // Bricks
-    {mat_maker_MakerBricks,         0, SURFACE_DEFAULT,      "Stone Bricks"},   // CMM_MAT_BRICKS
-    {mat_maker_MakerDBrick,         0, SURFACE_DEFAULT,      "Desert Bricks"},  // CMM_MAT_DESERT_BRICKS
-    {mat_maker_MakerRHRBrick,       0, SURFACE_NOT_SLIPPERY, "Burnt Bricks"},   // CMM_MAT_RHR_BRICK
-    {mat_maker_MakerHBrick,         0, SURFACE_DEFAULT,      "Cave Bricks"},    // CMM_MAT_HMC_BRICK
-    {mat_maker_MakerLightBrownBricks, 0, SURFACE_DEFAULT,    "Fortress Bricks"}, // CMM_MAT_LIGHTBROWN_BRICK
-    {mat_maker_MakerBrownBricks,    0, SURFACE_DEFAULT,      "Brown Bricks (1)"},  // CMM_MAT_WDW_BRICK
-    {mat_maker_MakerTTMBricks,      0, SURFACE_DEFAULT,      "Brown Bricks (2)"},   // CMM_MAT_TTM_BRICK
-    {mat_maker_MakerCBrick,         0, SURFACE_NOT_SLIPPERY, "Castle Bricks"},  // CMM_MAT_C_BRICK
-    {mat_maker_MakerBBHBricks,      0, SURFACE_NOT_SLIPPERY, "Red Bricks"},     // CMM_MAT_BBH_BRICKS
-    {mat_maker_MakerCOutsideBricks, 0, SURFACE_DEFAULT,      "White Bricks (1)"},  // CMM_MAT_C_OUTSIDE_BRICK
-    {mat_maker_MakerSnowBricks,     0, SURFACE_DEFAULT,      "White Bricks (2)"},   // CMM_MAT_SNOW_BRICKS
-    {mat_maker_MakerJRBBricks,      0, SURFACE_DEFAULT,      "Ocean Bricks"},   // CMM_MAT_JRB_BRICKS 
-    {mat_maker_MakerSnowTileSide,   0, SURFACE_DEFAULT,      "Blue Bricks"},    // CMM_MAT_SNOW_TILE_SIDE
-    {mat_maker_MakerTileBricks,     0, SURFACE_NOT_SLIPPERY, "Mixed Bricks"},   // CMM_MAT_TILESBRICKS
+    {mat_maker_MakerBricks,         0, SURFACE_DEFAULT,      "Stone Bricks"},     // CMM_MAT_BRICKS
+    {mat_maker_MakerDBrick,         0, SURFACE_DEFAULT,      "Desert Bricks"},    // CMM_MAT_DESERT_BRICKS
+    {mat_maker_MakerRHRBrick,       0, SURFACE_NOT_SLIPPERY, "Burnt Bricks"},     // CMM_MAT_RHR_BRICK
+    {mat_maker_MakerHBrick,         0, SURFACE_DEFAULT,      "Cave Bricks"},      // CMM_MAT_HMC_BRICK
+    {mat_maker_MakerLightBrownBricks, 0, SURFACE_DEFAULT,    "Fortress Bricks"},  // CMM_MAT_LIGHTBROWN_BRICK
+    {mat_maker_MakerBrownBricks,    0, SURFACE_DEFAULT,      "Brown Bricks (1)"}, // CMM_MAT_WDW_BRICK
+    {mat_maker_MakerTTMBricks,      0, SURFACE_DEFAULT,      "Brown Bricks (2)"}, // CMM_MAT_TTM_BRICK
+    {mat_maker_MakerCBrick,         0, SURFACE_NOT_SLIPPERY, "Castle Bricks"},    // CMM_MAT_C_BRICK
+    {mat_maker_MakerBBHBricks,      0, SURFACE_NOT_SLIPPERY, "Red Bricks"},       // CMM_MAT_BBH_BRICKS
+    {mat_maker_MakerCOutsideBricks, 0, SURFACE_DEFAULT,      "White Bricks (1)"}, // CMM_MAT_C_OUTSIDE_BRICK
+    {mat_maker_MakerSnowBricks,     0, SURFACE_DEFAULT,      "White Bricks (2)"}, // CMM_MAT_SNOW_BRICKS
+    {mat_maker_MakerJRBBricks,      0, SURFACE_DEFAULT,      "Ocean Bricks"},     // CMM_MAT_JRB_BRICKS 
+    {mat_maker_MakerSnowTileSide,   0, SURFACE_DEFAULT,      "Blue Bricks"},      // CMM_MAT_SNOW_TILE_SIDE
+    {mat_maker_MakerTileBricks,     0, SURFACE_NOT_SLIPPERY, "Mixed Bricks"},     // CMM_MAT_TILESBRICKS
 
     // Tiling
     {mat_maker_MakerTiles,          0, SURFACE_NOT_SLIPPERY, "Checkered Tiling"}, // CMM_MAT_TILES
@@ -746,8 +746,9 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerSnowTiles,      0, SURFACE_NOT_SLIPPERY, "Blue Tiling (2)"},  // CMM_MAT_SNOW_TILES
     {mat_maker_MakerJRBTileTop,     0, SURFACE_NOT_SLIPPERY, "Ocean Tiling (1)"}, // CMM_MAT_JRB_TILETOP
     {mat_maker_MakerJRBTileSide,    0, SURFACE_NOT_SLIPPERY, "Ocean Tiling (2)"}, // CMM_MAT_JRB_TILESIDE
-    {mat_maker_MakerRHRTiles,       0, SURFACE_NOT_SLIPPERY, "Black Tiling"},     // CMM_MAT_RHR_TILES
-    {mat_maker_MakerVTiles,         0, SURFACE_NOT_SLIPPERY, "Grey Tiling"},      // CMM_MAT_VP_TILES
+    {mat_maker_MakerHTileTop,       0, SURFACE_NOT_SLIPPERY, "Black Tiling"},     // CMM_MAT_HMC_TILES
+    {mat_maker_MakerRHRTiles,       0, SURFACE_NOT_SLIPPERY, "Black Squares"},    // CMM_MAT_RHR_TILES
+    {mat_maker_MakerVTiles,         0, SURFACE_NOT_SLIPPERY, "Grey Squares"},     // CMM_MAT_VP_TILES
     {mat_maker_MakerCStone,         0, SURFACE_NOT_SLIPPERY, "Hex Tiling"},       // CMM_MAT_C_STONETOP
     {mat_maker_MakerSnowBrickTiles, 0, SURFACE_NOT_SLIPPERY, "Diamond Tiling"},   // CMM_MAT_SNOW_BRICK_TILES
 
@@ -756,6 +757,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerVBlock,          0, SURFACE_NOT_SLIPPERY, "Smooth Block"},   // CMM_MAT_VP_BLOCK
     {mat_maker_MakerBBHWall,         0, SURFACE_DEFAULT,      "Mansion Wall"},   // CMM_MAT_BBH_STONE
     {mat_maker_MakerBBHStonePattern, 0, SURFACE_NOT_SLIPPERY, "Chiseled Wall"},  // CMM_MAT_BBH_STONE_PATTERN
+    {mat_maker_MakerHTileSide,       0, SURFACE_NOT_SLIPPERY, "Black Slabs"},    // CMM_MAT_HMC_SLAB
     {mat_maker_MakerRHRPattern,      0, SURFACE_DEFAULT,      "Chiseled Block"}, // CMM_MAT_RHR_BLOCK
     {mat_maker_MakerCStoneSide,      0, SURFACE_DEFAULT,      "Stone Slab"},     // CMM_MAT_C_STONESIDE
     {mat_maker_MakerCPillar,         0, SURFACE_DEFAULT,      "Castle Pillar"},  // CMM_MAT_C_PILLAR
@@ -773,7 +775,7 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerBBHHauntedPlanks,0, SURFACE_CREAKWOOD, "Spooky Planks"}, // CMM_MAT_BBH_HAUNTED_PLANKS
     {mat_maker_MakerBBHRoof,         0, SURFACE_CREAKWOOD, "Mansion Roof"},  // CMM_MAT_BBH_ROOF
     {mat_maker_MakerSolidWood,       0, SURFACE_NOT_SLIPPERY, "Wood"},       // CMM_MAT_SOLID_WOOD
-    {mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY, "Burnt Wood"},    // CMM_MAT_RHR_WOOD
+    {mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY, "Burnt Wood"}, // CMM_MAT_RHR_WOOD
 
     // Metal
     {mat_maker_MakerBBHMetal,        0, SURFACE_NOT_SLIPPERY, "Metal Flooring"},   // CMM_MAT_BBH_METAL
@@ -1001,12 +1003,12 @@ struct cmm_theme cmm_theme_table[] = {
     {
         {
             {CMM_MAT_HMC_DIRT,      CMM_MAT_HMC_GRASS,     "Grass"},
-            {CMM_MAT_HMC_BRICK,     CMM_MAT_HMC_BRICK,     "Bricks"},
+            {CMM_MAT_HMC_BRICK,     CMM_MAT_HMC_MAZEFLOOR, "Bricks"},
             {CMM_MAT_HMC_STONE,     CMM_MAT_HMC_STONE,     "Stone"},
-            {CMM_MAT_HMC_MAZEWALL,  CMM_MAT_HMC_MAZEWALL,  "Maze Wall"},
-            {CMM_MAT_HMC_MAZEFLOOR, CMM_MAT_HMC_MAZEFLOOR, "Maze Floor"},
-            {CMM_MAT_HMC_LIGHT,     CMM_MAT_HMC_LIGHT,     "Light"},
+            {CMM_MAT_HMC_SLAB,      CMM_MAT_HMC_TILES,     "Tiling"},
+            {CMM_MAT_HMC_BRICK,     CMM_MAT_HMC_GRASS,     "Grassy Bricks"},
             {CMM_MAT_HMC_LAKEGRASS, CMM_MAT_HMC_GRASS,     "Cave Wall"},
+            {CMM_MAT_HMC_LIGHT,     CMM_MAT_HMC_LIGHT,     "Light"},
             {CMM_MAT_HMC_MESH,      CMM_MAT_HMC_MESH,      "Grille"},
             {CMM_MAT_LAVA,          CMM_MAT_LAVA,          "Lava"},
             {CMM_MAT_QUICKSAND,     CMM_MAT_QUICKSAND,     "Quicksand"},
