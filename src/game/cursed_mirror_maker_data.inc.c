@@ -248,6 +248,27 @@ struct cmm_terrain cmm_terrain_ugentle = {
     cmm_terrain_ugentle_tris,
 };
 
+struct cmm_terrain_poly cmm_terrain_dugentle_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_FULL, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 8, 16}, {0, 8, 16}, {16, 0, 0},  {0, 0, 0}},  CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, CMM_GROWTH_NONE, NULL}, // BOTTOM
+    {{{0, 16, 16},  {0, 8, 16},  {16, 16, 16}, {16, 8, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+    {{{16, 16, 16}, {16, 8, 16}, {16, 16, 0},  {16, 8, 0}},  CMM_DIRECTION_POS_X, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 0},   {0, 8, 0},   {0, 16, 16},  {0, 8, 16}},  CMM_DIRECTION_NEG_X, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct cmm_terrain_poly cmm_terrain_dugentle_tris[] = {
+    {{{16, 0, 0}, {16, 8, 0}, {16, 8, 16}},  CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNUPPERGENTLE_1, CMM_GROWTH_NONE, NULL}, // LEFT
+    {{{0, 8, 0}, {0, 0, 0},   {0, 8, 16}},   CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNUPPERGENTLE_2, CMM_GROWTH_NONE, NULL}, // RIGHT
+};
+
+struct cmm_terrain cmm_terrain_dugentle = {
+    6,
+    2,
+    cmm_terrain_dugentle_quads,
+    cmm_terrain_dugentle_tris,
+};
+
 struct cmm_terrain_poly cmm_terrain_lgentle_quads[] = {
     {{{16, 0, 16}, {16, 8, 0}, {0, 0, 16}, {0, 8, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
     {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  CMM_DIRECTION_DOWN,  CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
@@ -390,19 +411,24 @@ struct cmm_terrain_poly *cmm_terrain_water_quadlists[] = {
 };
 
 enum {
-    TILE_TYPE_BLOCK,
+    // Flippable tiles
     TILE_TYPE_SLOPE,
-    TILE_TYPE_CORNER,
-    TILE_TYPE_ICORNER,
-    TILE_TYPE_DCORNER,
-    TILE_TYPE_DICORNER,
     TILE_TYPE_DSLOPE,
-    TILE_TYPE_SSLOPE,
     TILE_TYPE_SLAB,
     TILE_TYPE_DSLAB,
-    TILE_TYPE_SSLAB,
+    TILE_TYPE_CORNER,
+    TILE_TYPE_DCORNER,
+    TILE_TYPE_ICORNER,
+    TILE_TYPE_DICORNER,
     TILE_TYPE_UGENTLE,
+    TILE_TYPE_DUGENTLE,
     TILE_TYPE_LGENTLE,
+    TILE_TYPE_DLGENTLE,
+
+    TILE_END_OF_FLIPPABLE,
+    TILE_TYPE_BLOCK = TILE_END_OF_FLIPPABLE,
+    TILE_TYPE_SSLOPE,
+    TILE_TYPE_SSLAB,
     TILE_TYPE_CULL,
     TILE_TYPE_TROLL,
     TILE_TYPE_FENCE,
@@ -419,19 +445,22 @@ struct cmm_terrain_info {
 };
 
 struct cmm_terrain_info cmm_terrain_info_list[] = {
-    {"Tile", mat_b_btn_tile, &cmm_terrain_fullblock},
     {"Slope", mat_b_btn_slope, &cmm_terrain_slope},
-    {"Outer Corner", mat_b_btn_corner, &cmm_terrain_corner},
-    {"Inner Corner", mat_b_btn_icorner, &cmm_terrain_icorner},
-    {"", mat_b_btn_corner, &cmm_terrain_dcorner},
-    {"", mat_b_btn_icorner, &cmm_terrain_dicorner},
     {"", mat_b_btn_slope, &cmm_terrain_dslope},
-    {"Vertical Slope", mat_b_btn_sideslope, &cmm_terrain_sslope},
     {"Slab", mat_b_btn_slabtile, &cmm_terrain_bottomslab},
     {"", mat_b_btn_slabtile, &cmm_terrain_topslab},
-    {"Vertical Slab", mat_b_btn_vslab, &cmm_terrain_vslab},
+    {"Outer Corner", mat_b_btn_corner, &cmm_terrain_corner},
+    {"", mat_b_btn_corner, &cmm_terrain_dcorner},
+    {"Inner Corner", mat_b_btn_icorner, &cmm_terrain_icorner},
+    {"", mat_b_btn_icorner, &cmm_terrain_dicorner},
     {"Upper Gentle Slope", mat_b_btn_slope, &cmm_terrain_ugentle},
+    {"", mat_b_btn_slope, &cmm_terrain_dugentle},
     {"Lower Gentle Slope", mat_b_btn_slope, &cmm_terrain_lgentle},
+    {"", mat_b_btn_slope, &cmm_terrain_lgentle},
+
+    {"Tile", mat_b_btn_tile, &cmm_terrain_fullblock},
+    {"Vertical Slope", mat_b_btn_sideslope, &cmm_terrain_sslope},
+    {"Vertical Slab", mat_b_btn_vslab, &cmm_terrain_vslab},
     {"Cull Marker", mat_b_btn_cull, NULL},
     {"Intangible Tile", mat_b_btn_troll, &cmm_terrain_fullblock},
     {"Fence", mat_b_btn_fence, NULL},

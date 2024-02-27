@@ -490,15 +490,13 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 }
 
 // Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
-s32 should_cull_topslab_check(s8 pos[3], s32 direction, s32 rot) {
-    direction = rotate_direction(direction, rot);
-
+s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     s8 newpos[3];
     vec3_sum(newpos, pos, cullOffsetLUT[direction]);
     //if (!coords_in_range(newpos)) return TRUE;
 
     s32 otherFaceshape = get_faceshape(newpos, direction);
-    if (otherFaceshape == CMM_FACESHAPE_TOPSLAB) return TRUE;
+    if ((otherFaceshape >= CMM_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= CMM_FACESHAPE_TOPSLAB)) return TRUE;
     return FALSE;
 }
 
@@ -758,23 +756,23 @@ void grass_slope_extra_decal_uvs(s8 newUVs[][2], s8 vtx[][3], s32 side, s32 scal
     }
 }
 
-u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
+void render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
     // Check if below block is in range
     s8 newpos[3];
     s8 newUVs[4][2];
     vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
-    if (!coords_in_range(newpos)) return TRUE;
+    if (!coords_in_range(newpos)) return;
 
     // Check if below block matches material
     u8 curMat = get_grid_tile(pos)->mat;
     u8 belowMat = get_grid_tile(newpos)->mat;
-    if (curMat != belowMat) return TRUE;
+    if (curMat != belowMat) return;
 
     // Check if below block is right shape and culled
     // Shape of face of above block on same side
     s32 otherFaceshape = get_faceshape(newpos, direction^1);
     if (should_cull(newpos, direction, otherFaceshape, 0)) return;
-    if (should_cull_topslab_check(newpos, direction, 0)) return;
+    if (should_cull_topslab_check(newpos, direction)) return;
     
     // Calculate effective rotation of face to print. very ugly
     u8 targetRot = 0;
@@ -809,6 +807,8 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
         case CMM_FACESHAPE_DOWNTRI_2:
             index = 2; cmm_curr_poly_vert_count = 3;
             break;
+        case CMM_FACESHAPE_DOWNUPPERGENTLE_1:
+        case CMM_FACESHAPE_DOWNUPPERGENTLE_2:
         case CMM_FACESHAPE_TOPSLAB:
             index = 3; cmm_curr_poly_vert_count = 4;
             break;
@@ -856,6 +856,10 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     // Other sides that don't care about the above block (e.g. bottom slab)
     if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
 
+    if ((grassType == CMM_GROWTH_HALF_SIDE) || (grassType == CMM_GROWTH_NORMAL_SIDE)) {
+        if (should_cull_topslab_check(pos, rotate_direction(direction, rot))) return FALSE;
+    }
+
     // Render if above tile is empty
     if (get_grid_tile(abovePos)->type == 0) return TRUE;
     // Render if above tile is seethrough (some exceptions)
@@ -866,7 +870,6 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         case CMM_GROWTH_NORMAL_SIDE:
         case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
-            if (should_cull_topslab_check(pos, direction, rot)) return FALSE;
             otherFaceshape = get_faceshape(abovePos, rotate_direction(direction, rot)^1);
             switch (otherFaceshape) {
                 case CMM_FACESHAPE_TRI_1:
@@ -2960,25 +2963,6 @@ u8 cmm_joystick;
 extern s16 cmm_menu_start_timer;
 extern s16 cmm_menu_end_timer;
 
-
-s32 get_flipped_tile(s32 tileID) {
-    switch (tileID) {
-        case TILE_TYPE_SLOPE:
-        case TILE_TYPE_DSLOPE:
-            return TILE_TYPE_DSLOPE;
-        case TILE_TYPE_CORNER:
-        case TILE_TYPE_DCORNER:
-            return TILE_TYPE_DCORNER;
-        case TILE_TYPE_ICORNER:
-        case TILE_TYPE_DICORNER:
-            return TILE_TYPE_DICORNER;
-        case TILE_TYPE_SLAB:
-        case TILE_TYPE_DSLAB:
-            return TILE_TYPE_DSLAB;
-    }
-    return -1;
-}
-
 s16 cmm_freecam_pitch;
 s16 cmm_freecam_yaw;
 u8 cmm_freecam_snap = FALSE;
@@ -3179,9 +3163,8 @@ void sb_loop(void) {
             cmm_place_mode = curBtn->placeMode;
 
             if (cmm_upsidedown_tile) {
-                s32 flippedTile = get_flipped_tile(cmm_id_selection);
-                if (flippedTile != -1) {
-                    cmm_id_selection = flippedTile;
+                if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
+                    cmm_id_selection = (cmm_id_selection & ~1) | 1;
                 } else {
                     cmm_upsidedown_tile = FALSE;
                 }
@@ -3248,7 +3231,7 @@ void sb_loop(void) {
             }
 
             if (gPlayer1Controller->buttonPressed & U_JPAD) {
-                if (get_flipped_tile(cmm_id_selection) != -1) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
+                if (cmm_id_selection < TILE_END_OF_FLIPPABLE) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
                 cmm_upsidedown_tile ^= 1;
             }
 

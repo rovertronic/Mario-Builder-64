@@ -1145,7 +1145,7 @@ void draw_cmm_menu(void) {
         } else if (cmm_terrain_info_list[cmm_id_selection].terrain) {
             yellowStr = TILE_MATDEF(cmm_mat_selection).name;
 
-            if (get_flipped_tile(cmm_id_selection) != -1) {
+            if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
                 if (cmm_upsidedown_tile) {
                     print_maker_string_ascii(currentX,45,"(|)",FALSE);
                 } else {
