@@ -793,9 +793,18 @@ void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
         cmm_create_tri(tri, pos, rot);
 }
 
+void grass_slope_extra_decal_uvs(s8 newUVs[][2], s8 vtx[][3], s32 side, s32 count) {
+    for (s32 i = 0; i < count; i++) {
+        newUVs[i][0] = 16 - vtx[i][0];
+        s32 upFactor = (side == 0 ? vtx[i][0] : 16 - vtx[i][0]);
+        newUVs[i][1] = vtx[i][1] - upFactor;
+    }
+}
+
 u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
     // Check if below block is in range
     s8 newpos[3];
+    s8 newUVs[4][2];
     vec3_set(newpos, pos[0], pos[1]-1, pos[2]);
     if (!coords_in_range(newpos)) return TRUE;
 
@@ -835,28 +844,24 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
             return;
         // Face is full quad
         case CMM_FACESHAPE_FULL:
-            index = 0;
-            isQuad = TRUE;
+            index = 0; isQuad = TRUE;
             break;
         case CMM_FACESHAPE_DOWNTRI_1:
-            index = 1;
-            isQuad = FALSE;
+            index = 1; isQuad = FALSE;
             break;
         case CMM_FACESHAPE_DOWNTRI_2:
-            index = 2;
-            isQuad = FALSE;
+            index = 2; isQuad = FALSE;
             break;
         case CMM_FACESHAPE_TOPSLAB:
-            index = 3;
-            isQuad = TRUE;
+            index = 3; isQuad = TRUE;
             break;
         case CMM_FACESHAPE_HALFSIDE_1:
-            index = 4;
-            isQuad = TRUE;
+            if (grassType == CMM_GROWTH_SLOPE_SIDE_L) return;
+            index = 4; isQuad = TRUE;
             break;
         case CMM_FACESHAPE_HALFSIDE_2:
-            index = 5;
-            isQuad = TRUE;
+            if (grassType == CMM_GROWTH_SLOPE_SIDE_R) return;
+            index = 5; isQuad = TRUE;
             break;
     }
 
@@ -864,16 +869,14 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
 
     if (isQuad) {
         struct cmm_terrain_quad *quad = slope_decal_below_surfs[index];
-        quad->altuvs = slope_decal_below_uvs[index][side];
-        if (quad->altuvs != NULL) {
-            render_quad(quad, newpos, targetRot);
-        }
+        grass_slope_extra_decal_uvs(newUVs, quad->vtx, side, 4);
+        quad->altuvs = newUVs;
+        render_quad(quad, newpos, targetRot);
     } else {
         struct cmm_terrain_tri *tri = slope_decal_below_surfs[index];
-        tri->altuvs = slope_decal_below_uvs[index][side];
-        if (tri->altuvs != NULL) {
-            render_tri(tri, newpos, targetRot);
-        }
+        grass_slope_extra_decal_uvs(newUVs, tri->vtx, side, 3);
+        tri->altuvs = newUVs;
+        render_tri(tri, newpos, targetRot);
     }
     return;
 }

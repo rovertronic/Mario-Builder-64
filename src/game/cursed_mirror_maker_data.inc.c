@@ -222,45 +222,6 @@ struct cmm_terrain cmm_terrain_vslab = {
     NULL
 };
 
-s8 slope_decal_below_uvsquad_l[4][2] =  {{16, 16}, {16, 0},   {0, 0},  {0, -16}  };
-s8 slope_decal_below_uvsquad_r[4][2] =  {{16, 0},  {16, -16}, {0, 16}, {0, 0},   };
-s8 slope_decal_below_uvstri_1_l[3][2] = {{0, 0},   {16, 16},  {0, -16}           };
-s8 slope_decal_below_uvstri_1_r[3][2] = {{0, 16},  {16, 0},   {0, 0}             };
-s8 slope_decal_below_uvstri_2_l[3][2] = {{16, 16}, {16, 0},   {0, 0}             };
-s8 slope_decal_below_uvstri_2_r[3][2] = {{16, 0},  {16, -16}, {0, 16}            };
-s8 slope_decal_below_uvsslab_l[4][2] =  {{16, 16}, {16, 8},   {0, 0},  {0, -8}   };
-s8 slope_decal_below_uvsslab_r[4][2] =  {{16, 0},  {16, -8},  {0, 16}, {0, 8}    };
-s8 slope_decal_below_uvsvslab_l[4][2] = {{16, 16}, {16, 0},   {8, 8},  {8, -8}   };
-s8 slope_decal_below_uvsvslab_r[4][2] = {{8, 8},   {8, -8},   {0, 16}, {0, 0}    };
-
-// All of this is for the system where slopes can place a decal on the face below them.
-// Very hardcoded, so best not to touch any of these numbers
-void *slope_decal_below_uvs[][2] = {
-    { // Full block
-        &slope_decal_below_uvsquad_l,
-        &slope_decal_below_uvsquad_r,
-    },
-    { // Downtri 1
-        &slope_decal_below_uvstri_1_l,
-        &slope_decal_below_uvstri_1_r,
-    },
-    { // Downtri 2
-        &slope_decal_below_uvstri_2_l,
-        &slope_decal_below_uvstri_2_r,
-    },
-    { // Top slab
-        &slope_decal_below_uvsslab_l,
-        &slope_decal_below_uvsslab_r,
-    },
-    { // Vertical slab 1
-        NULL,
-        &slope_decal_below_uvsvslab_r,
-    },
-    { // Vertical slab 2
-        &slope_decal_below_uvsvslab_l,
-        NULL,
-    },
-};
 
 struct cmm_terrain_quad cmm_terrain_slopebelowdecal_quad = {
     {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}, {16, 0, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
