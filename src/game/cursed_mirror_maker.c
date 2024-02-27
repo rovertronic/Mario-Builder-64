@@ -907,6 +907,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             otherFaceshape = get_faceshape(abovePos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
             if (otherFaceshape != (grassType == CMM_GROWTH_DIAGONAL_SIDE ? CMM_FACESHAPE_TOPTRI : CMM_FACESHAPE_TOPHALF)) return TRUE;
+            if (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_SCORNER) return TRUE;
             u8 otherrot = get_grid_tile(abovePos)->rot;
             return (otherrot != rot);
     }
