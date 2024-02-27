@@ -351,16 +351,16 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     u8 rot = get_grid_tile(pos)->rot;
     dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
 
-    for (u32 i = 0; i < terrain->numQuads; i++) {
-        struct cmm_terrain_poly *quad = &terrain->quads[i];
-        if (quad->faceDir == dir) {
-            return quad->faceshape;
-        }
-    }
     for (u32 i = 0; i < terrain->numTris; i++) {
         struct cmm_terrain_poly *tri = &terrain->tris[i];
         if (tri->faceDir == dir) {
             return tri->faceshape;
+        }
+    }
+    for (u32 i = 0; i < terrain->numQuads; i++) {
+        struct cmm_terrain_poly *quad = &terrain->quads[i];
+        if (quad->faceDir == dir) {
+            return quad->faceshape;
         }
     }
     return CMM_FACESHAPE_EMPTY;
@@ -480,9 +480,13 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
         } else return FALSE;
     }
     if (faceshape == CMM_FACESHAPE_BOTTOMSLAB || faceshape == CMM_FACESHAPE_TOPSLAB || faceshape == CMM_FACESHAPE_POLETOP) {
-        return (otherFaceshape == faceshape);
+        if (otherFaceshape == faceshape) return TRUE;
     }
-    return (faceshape == (otherFaceshape^1));
+    if (faceshape == (otherFaceshape^1)) return TRUE;
+    // Slab priority lists
+    if (((faceshape & 0x10) && (otherFaceshape & 0x10)) ||
+        ((faceshape & 0x20) && (otherFaceshape & 0x20))) return (faceshape > otherFaceshape);
+    return FALSE;
 }
 
 // Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
@@ -692,12 +696,13 @@ void render_poly(struct cmm_terrain_poly *poly, s8 pos[3], u32 rot) {
             n[0], n[1], n[2], 0xFF);
     }
     
+    u32 isQuad = (cmm_curr_poly_vert_count == 4);
     if (cmm_render_flip_normals) {
         cache_tri(0, 2, 1);
-        if (cmm_curr_poly_vert_count == 4) cache_tri(1, 2, 3);
+        if (isQuad) cache_tri(1, 2, 3);
     } else {
         cache_tri(0, 1, 2);
-        if (cmm_curr_poly_vert_count == 4) cache_tri(1, 3, 2);
+        if (isQuad) cache_tri(1, 3, 2);
     }
     cmm_num_vertices_cached += cmm_curr_poly_vert_count;
     check_cached_tris();
@@ -828,6 +833,12 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
     return;
 }
 
+// Determines if the faceshape as a solid bottom edge and two vertical edges on either side
+u32 faceshape_has_full_bottom(u32 faceshape) {
+    return (faceshape == CMM_FACESHAPE_FULL) ||
+        (faceshape >= CMM_FACESHAPE_UPPERGENTLE_1 && faceshape <= CMM_FACESHAPE_BOTTOMSLAB);
+}
+
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
     s8 abovePos[3];
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
@@ -860,6 +871,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_TRI_1:
                 case CMM_FACESHAPE_TRI_2:
                 case CMM_FACESHAPE_FULL:
+                case CMM_FACESHAPE_UPPERGENTLE_1:
+                case CMM_FACESHAPE_UPPERGENTLE_2:
                 case CMM_FACESHAPE_BOTTOMSLAB:
                     return FALSE;
             }
@@ -875,8 +888,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             if (faceshape1 == CMM_FACESHAPE_TRI_1 && faceshape2 == CMM_FACESHAPE_TRI_2)
                 return FALSE;
             // don't display if either face on top of the inside corner is full
-            return !((faceshape1 == CMM_FACESHAPE_FULL || faceshape1 == CMM_FACESHAPE_BOTTOMSLAB)
-                || (faceshape2 == CMM_FACESHAPE_FULL || faceshape2 == CMM_FACESHAPE_BOTTOMSLAB));
+            return !(faceshape_has_full_bottom(faceshape1) || faceshape_has_full_bottom(faceshape2));
 
         case CMM_GROWTH_DIAGONAL_SIDE:
         case CMM_GROWTH_VSLAB_SIDE:
