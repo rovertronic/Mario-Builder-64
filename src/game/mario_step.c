@@ -278,6 +278,7 @@ s32 stationary_ground_step(struct MarioState *m) {
     u32 stepResult = GROUND_STEP_NONE;
 
     mario_set_forward_vel(m, 0.0f);
+    m->vel[1] = 0.0f;
 
     u32 takeStep = (mario_update_moving_sand(m) | mario_update_windy_ground(m));
     if (takeStep) {
@@ -815,7 +816,6 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
             || quarterStepResult == AIR_STEP_HIT_LAVA_WALL
             || quarterStepResult == AIR_STEP_SHELL_ENTERED_WATER
         ) {
-            m->vel[1] = 0.0f;
             break;
         }
 
