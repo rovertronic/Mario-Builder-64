@@ -120,6 +120,7 @@ u8 cmm_render_flip_normals = FALSE; // Used for drawing water tiles
 u8 cmm_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
+u8 cmm_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
 
 TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
 
@@ -351,13 +352,13 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
 
     for (u32 i = 0; i < terrain->numQuads; i++) {
-        struct cmm_terrain_quad *quad = &terrain->quads[i];
+        struct cmm_terrain_poly *quad = &terrain->quads[i];
         if (quad->faceDir == dir) {
             return quad->faceshape;
         }
     }
     for (u32 i = 0; i < terrain->numTris; i++) {
-        struct cmm_terrain_tri *tri = &terrain->tris[i];
+        struct cmm_terrain_poly *tri = &terrain->tris[i];
         if (tri->faceDir == dir) {
             return tri->faceshape;
         }
@@ -631,8 +632,8 @@ void generate_trajectory_gfx(void) {
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 }
 
-void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 numVtx, u32 rot) {
-    for (u32 i = 0; i < numVtx; i++) {
+void cmm_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot) {
+    for (u32 i = 0; i < cmm_curr_poly_vert_count; i++) {
         s8 x = oldv[i][0];
         s8 z = oldv[i][2];
         switch (rot) {
@@ -665,19 +666,19 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
     }
 }
 
-void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
+void render_poly(struct cmm_terrain_poly *poly, s8 pos[3], u32 rot) {
     s8 n[3];
     u8 uAxis, vAxis;
 
     s8 newVtx[4][3];
-    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
-    s32 flipU = render_get_normal_and_uvs(newVtx, quad->faceDir, rot, &uAxis, &vAxis, n);
+    cmm_transform_vtx_with_rot(newVtx, poly->vtx, rot);
+    s32 flipU = render_get_normal_and_uvs(newVtx, poly->faceDir, rot, &uAxis, &vAxis, n);
 
-    for (u32 i = 0; i < 4; i++) {
+    for (u32 i = 0; i < cmm_curr_poly_vert_count; i++) {
         s16 u, v;
-        if (cmm_use_alt_uvs && quad->altuvs) {
-            u = 16 - (*quad->altuvs)[i][0];
-            v = 16 - (*quad->altuvs)[i][1];
+        if (cmm_use_alt_uvs && poly->altuvs) {
+            u = 16 - (*poly->altuvs)[i][0];
+            v = 16 - (*poly->altuvs)[i][1];
         } else {
             u = newVtx[i][uAxis];
             if (!flipU) u = 16 - u;
@@ -693,43 +694,12 @@ void render_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
     
     if (cmm_render_flip_normals) {
         cache_tri(0, 2, 1);
-        cache_tri(1, 2, 3);
+        if (cmm_curr_poly_vert_count == 4) cache_tri(1, 2, 3);
     } else {
         cache_tri(0, 1, 2);
-        cache_tri(1, 3, 2);
+        if (cmm_curr_poly_vert_count == 4) cache_tri(1, 3, 2);
     }
-    cmm_num_vertices_cached += 4;
-    check_cached_tris();
-}
-
-void render_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
-    s8 n[3];
-    u8 uAxis, vAxis;
-
-    s8 newVtx[3][3];
-    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
-    s32 flipU = render_get_normal_and_uvs(newVtx, tri->faceDir, rot, &uAxis, &vAxis, n);
-
-    for (u32 i = 0; i < 3; i++) {
-        s16 u, v;
-        if (cmm_use_alt_uvs && tri->altuvs) {
-            u = 16 - (*tri->altuvs)[i][0];
-            v = 16 - (*tri->altuvs)[i][1];
-        } else {
-            u = newVtx[i][uAxis];
-            if (!flipU) u = 16 - u;
-            v = 16 - newVtx[i][vAxis];
-        }
-        make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + i,
-            GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
-            GRID_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
-            GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
-            (u * 64 + cmm_uv_offset), (v * 64 + cmm_uv_offset),
-            n[0], n[1], n[2], 0xFF);
-    }
-
-    cache_tri(0, 1, 2);
-    cmm_num_vertices_cached += 3;
+    cmm_num_vertices_cached += cmm_curr_poly_vert_count;
     check_cached_tris();
 }
 
@@ -752,45 +722,27 @@ void cmm_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3])
     add_surface(surface, FALSE);
 };
 
-extern TerrainData sVertexData[900];
-
 TerrainData colVtxs[4][3];
 
-void cmm_create_quad(struct cmm_terrain_quad *quad, s8 pos[3], u32 rot) {
+void cmm_create_poly(struct cmm_terrain_poly *poly, s8 pos[3], u32 rot) {
     s8 newVtx[4][3];
-    cmm_transform_vtx_with_rot(newVtx, quad->vtx, 4, rot);
-    for (u32 k = 0; k < 4; k++) {
+    cmm_transform_vtx_with_rot(newVtx, poly->vtx, rot);
+    for (u32 k = 0; k < cmm_curr_poly_vert_count; k++) {
         colVtxs[k][0] = GRID_TO_POS(pos[0]) + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
         colVtxs[k][1] = GRID_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
         colVtxs[k][2] = GRID_TO_POS(pos[2]) + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
     }
     cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2]);
-    cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2]);
-}
-
-void cmm_create_tri(struct cmm_terrain_tri *tri, s8 pos[3], u32 rot) {
-    s8 newVtx[3][3];
-    cmm_transform_vtx_with_rot(newVtx, tri->vtx, 3, rot);
-    for (u32 k = 0; k < 3; k++) {
-        colVtxs[k][0] = GRID_TO_POS(pos[0]) + ((newVtx[k][0] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][1] = GRID_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
-        colVtxs[k][2] = GRID_TO_POS(pos[2]) + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
+    if (cmm_curr_poly_vert_count == 4) {
+        cmm_create_surface(colVtxs[1], colVtxs[3], colVtxs[2]);
     }
-    cmm_create_surface(colVtxs[0], colVtxs[1], colVtxs[2]);
 }
 
-void process_quad(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot) {
+void process_poly(s8 pos[3], struct cmm_terrain_poly *quad, u32 rot) {
     if (!cmm_building_collision)
-        render_quad(quad, pos, rot);
+        render_poly(quad, pos, rot);
     else
-        cmm_create_quad(quad, pos, rot);
-}
-
-void process_tri(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
-    if (!cmm_building_collision)
-        render_tri(tri, pos, rot);
-    else
-        cmm_create_tri(tri, pos, rot);
+        cmm_create_poly(quad, pos, rot);
 }
 
 void grass_slope_extra_decal_uvs(s8 newUVs[][2], s8 vtx[][3], s32 side, s32 count) {
@@ -837,47 +789,42 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
     }
 
     s32 index;
-    s32 isQuad;
+    s32 oldVerts = cmm_curr_poly_vert_count;
 
     switch (otherFaceshape) {
         default:
             return;
         // Face is full quad
         case CMM_FACESHAPE_FULL:
-            index = 0; isQuad = TRUE;
+            index = 0; cmm_curr_poly_vert_count = 4;
             break;
         case CMM_FACESHAPE_DOWNTRI_1:
-            index = 1; isQuad = FALSE;
+            index = 1; cmm_curr_poly_vert_count = 3;
             break;
         case CMM_FACESHAPE_DOWNTRI_2:
-            index = 2; isQuad = FALSE;
+            index = 2; cmm_curr_poly_vert_count = 3;
             break;
         case CMM_FACESHAPE_TOPSLAB:
-            index = 3; isQuad = TRUE;
+            index = 3; cmm_curr_poly_vert_count = 4;
             break;
         case CMM_FACESHAPE_HALFSIDE_1:
             if (grassType == CMM_GROWTH_SLOPE_SIDE_L) return;
-            index = 4; isQuad = TRUE;
+            index = 4; cmm_curr_poly_vert_count = 4;
             break;
         case CMM_FACESHAPE_HALFSIDE_2:
             if (grassType == CMM_GROWTH_SLOPE_SIDE_R) return;
-            index = 5; isQuad = TRUE;
+            index = 5; cmm_curr_poly_vert_count = 4;
             break;
     }
 
     s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);
 
-    if (isQuad) {
-        struct cmm_terrain_quad *quad = slope_decal_below_surfs[index];
-        grass_slope_extra_decal_uvs(newUVs, quad->vtx, side, 4);
-        quad->altuvs = newUVs;
-        render_quad(quad, newpos, targetRot);
-    } else {
-        struct cmm_terrain_tri *tri = slope_decal_below_surfs[index];
-        grass_slope_extra_decal_uvs(newUVs, tri->vtx, side, 3);
-        tri->altuvs = newUVs;
-        render_tri(tri, newpos, targetRot);
-    }
+    struct cmm_terrain_poly *poly = slope_decal_below_surfs[index];
+    grass_slope_extra_decal_uvs(newUVs, poly->vtx, side, cmm_curr_poly_vert_count);
+    poly->altuvs = newUVs;
+    render_poly(poly, newpos, targetRot);
+    cmm_curr_poly_vert_count = oldVerts;
+
     return;
 }
 
@@ -942,50 +889,34 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     return FALSE;
 }
 
-void process_quad_with_growth(s8 pos[3], struct cmm_terrain_quad *quad, u32 rot) {
+void process_poly_with_growth(s8 pos[3], struct cmm_terrain_poly *poly, u32 rot) {
     switch (cmm_growth_render_type) {
         case 0: // regular tex
-            if (cmm_curr_mat_has_topside && (quad->growthType == CMM_GROWTH_FULL)) return;
-            if (should_cull(pos, quad->faceDir, quad->faceshape, rot)) return;
+            if (cmm_curr_mat_has_topside && (poly->growthType == CMM_GROWTH_FULL)) return;
+            if (should_cull(pos, poly->faceDir, poly->faceshape, rot)) return;
             break;
         case 1: // grass top
-            if (quad->growthType != CMM_GROWTH_FULL) return;
-            if (should_cull(pos, quad->faceDir, quad->faceshape, rot)) return;
+            if (poly->growthType != CMM_GROWTH_FULL) return;
+            if (should_cull(pos, poly->faceDir, poly->faceshape, rot)) return;
             break;
         case 2: // grass decal
-            if (quad->growthType == CMM_GROWTH_FULL || quad->growthType == CMM_GROWTH_NONE) return;
-            if (!should_render_grass_side(pos, quad->faceDir, quad->faceshape, rot, quad->growthType)) return;
+            if (poly->growthType == CMM_GROWTH_FULL || poly->growthType == CMM_GROWTH_NONE) return;
+            if (!should_render_grass_side(pos, poly->faceDir, poly->faceshape, rot, poly->growthType)) return;
             break;
     }
-    process_quad(pos, quad, rot);
-}
-
-void process_tri_with_growth(s8 pos[3], struct cmm_terrain_tri *tri, u32 rot) {
-    switch (cmm_growth_render_type) {
-        case 0: // regular tex
-            if (cmm_curr_mat_has_topside && (tri->growthType == CMM_GROWTH_FULL)) return;
-            if (should_cull(pos, tri->faceDir, tri->faceshape, rot)) return;
-            break;
-        case 1: // grass top
-            if (tri->growthType != CMM_GROWTH_FULL) return;
-            if (should_cull(pos, tri->faceDir, tri->faceshape, rot)) return;
-            break;
-        case 2: // grass decal
-            if (tri->growthType == CMM_GROWTH_FULL || tri->growthType == CMM_GROWTH_NONE) return;
-            if (!should_render_grass_side(pos, tri->faceDir, tri->faceshape, rot, tri->growthType)) return;
-            break;
-    }
-    process_tri(pos, tri, rot);
+    process_poly(pos, poly, rot);
 }
 
 void process_tile(s8 pos[3], struct cmm_terrain *terrain, u32 rot) {
+    cmm_curr_poly_vert_count = 4;
     for (u32 j = 0; j < terrain->numQuads; j++) {
-        struct cmm_terrain_quad *quad = &terrain->quads[j];
-        process_quad_with_growth(pos, quad, rot);
+        struct cmm_terrain_poly *quad = &terrain->quads[j];
+        process_poly_with_growth(pos, quad, rot);
     }
+    cmm_curr_poly_vert_count = 3;
     for (u32 j = 0; j < terrain->numTris; j++) {
-        struct cmm_terrain_tri *tri = &terrain->tris[j];
-        process_tri_with_growth(pos, tri, rot);
+        struct cmm_terrain_poly *tri = &terrain->tris[j];
+        process_poly_with_growth(pos, tri, rot);
     }
 }
 
@@ -1056,12 +987,12 @@ void render_bars_side(s8 pos[3], u8 connections[5]) {
         u32 leftRot = (rot + 3) % 4;
         u32 rightRot = (rot + 1) % 4;
         if (BAR_CONNECTED_SIDE(connections[rot])) {
-            process_quad(pos, &cmm_terrain_bars_connected_quads[0], rot);
-            process_quad(pos, &cmm_terrain_bars_connected_quads[1], rot);
+            process_poly(pos, &cmm_terrain_bars_connected_quads[0], rot);
+            process_poly(pos, &cmm_terrain_bars_connected_quads[1], rot);
         }
         if (!BAR_CONNECTED_SIDE(connections[rot]) ||
             (BAR_CONNECTED_SIDE(connections[leftRot]) && BAR_CONNECTED_SIDE(connections[rightRot]))) {
-            process_quad(pos, cmm_terrain_bars_unconnected_quad, rot);
+            process_poly(pos, cmm_terrain_bars_unconnected_quad, rot);
         }
     }
 }
@@ -1072,15 +1003,15 @@ void render_bars_top(s8 pos[3], u8 connections[5]) {
         u32 rightRot = (rot + 1) % 4;
         if (BAR_CONNECTED_SIDE(connections[rot])) {
             if (!BAR_CONNECTED_TOP(connections[rot])) {
-                process_quad(pos, &cmm_terrain_bars_connected_quads[2], rot);
+                process_poly(pos, &cmm_terrain_bars_connected_quads[2], rot);
             }
             if (!BAR_CONNECTED_BOTTOM(connections[rot])) {
-                process_quad(pos, &cmm_terrain_bars_connected_quads[3], rot);
+                process_poly(pos, &cmm_terrain_bars_connected_quads[3], rot);
             }
         }
     }
-    if (!BAR_CONNECTED_TOP(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[0], 0);
-    if (!BAR_CONNECTED_BOTTOM(connections[4])) process_quad(pos, &cmm_terrain_bars_center_quads[1], 0);
+    if (!BAR_CONNECTED_TOP(connections[4])) process_poly(pos, &cmm_terrain_bars_center_quads[0], 0);
+    if (!BAR_CONNECTED_BOTTOM(connections[4])) process_poly(pos, &cmm_terrain_bars_center_quads[1], 0);
 }
 
 // Find if specific tile of water is fullblock or shallow
@@ -1181,8 +1112,8 @@ void render_water(s8 pos[3]) {
     for (u32 j = 0; j < 6; j++) {
         u8 sideRender = get_water_side_render(pos, cmm_terrain_fullblock_quads[j].faceDir, isFullblock);
         if (sideRender != 0) {
-            struct cmm_terrain_quad *quad = &cmm_terrain_water_quadlists[sideRender - 1][j];
-            process_quad(pos, quad, 0);
+            struct cmm_terrain_poly *poly = &cmm_terrain_water_quadlists[sideRender - 1][j];
+            process_poly(pos, poly, 0);
         }
     }
 }
@@ -1601,6 +1532,7 @@ void generate_terrain_gfx(void) {
     retroland_filter_on();
 
     process_tiles(PROCESS_TILE_VPLEX);
+    cmm_curr_poly_vert_count = 4;
     process_boundary(PROCESS_TILE_VPLEX);
 
     //BOTTOM PLANE
@@ -1658,6 +1590,7 @@ void generate_terrain_gfx(void) {
     cmm_terrain_gfx_tp = &cmm_curr_gfx[cmm_gfx_index];
     retroland_filter_on();
 
+    cmm_curr_poly_vert_count = 4;
     process_boundary(PROCESS_TILE_TRANSPARENT);
 
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
@@ -1953,6 +1886,7 @@ void generate_terrain_collision(void) {
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
     cmm_building_collision = TRUE;
+    cmm_curr_poly_vert_count = 4;
 
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_DEATH_PLANE) {
         u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) ? cmm_grid_size : 128;
@@ -1978,6 +1912,7 @@ void generate_terrain_collision(void) {
 
     process_tiles(0);
     cmm_growth_render_type = 0;
+    cmm_curr_poly_vert_count = 4;
 
     cmm_curr_coltype = SURFACE_NO_CAM_COLLISION;
     for (u32 i = cmm_tile_data_indices[FENCE_TILETYPE_INDEX]; i < cmm_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {

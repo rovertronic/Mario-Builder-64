@@ -109,19 +109,12 @@ enum cmm_growth_types {
     CMM_GROWTH_UNCONDITIONAL,
 };
 
-struct cmm_terrain_quad {
+struct cmm_terrain_poly {
     s8 vtx[4][3];
     u8 faceDir;
     u8 faceshape;
     u8 growthType;
     s8 (*altuvs)[4][2];
-};
-struct cmm_terrain_tri {
-    s8 vtx[3][3];
-    u8 faceDir;
-    u8 faceshape;
-    u8 growthType;
-    s8 (*altuvs)[3][2];
 };
 
 struct cmm_boundary_quad {
@@ -136,8 +129,8 @@ struct cmm_boundary_quad {
 struct cmm_terrain {
     u8 numQuads;
     u8 numTris;
-    struct cmm_terrain_quad * quads;
-    struct cmm_terrain_tri * tris;
+    struct cmm_terrain_poly * quads;
+    struct cmm_terrain_poly * tris;
 };
 
 struct cmm_tile {
