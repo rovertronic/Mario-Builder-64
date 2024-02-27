@@ -6072,19 +6072,7 @@ void noteblock_function(void) {
 // }
 
 void bhv_tree_init() {
-    switch(o->oBehParams2ndByte) {
-        case 1:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_2];
-        break;
-        case 2:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_3];
-        break;
-        case 3:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_4];
-        break;
-        case 4:
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_5];
-    }
+    df_tree(CMM_DF_CONTEXT_INIT);
 }
 
 void bhv_badge(void) {

@@ -1392,9 +1392,10 @@ char *txt_bp_vbox[] = {
 
 char *txt_bp_tree[] = {
     "Bubbly",
-    "Farm",
     "Palm",
+    "Spiky",
     "Snowy",
+    "Farm",
     "Dead",
 };
 
@@ -1515,7 +1516,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_NOTEBLOCK */{CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_NOTEBLOCK,   NULL},
 /* CMM_BUTTON_CULL */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_CULL,          NULL},
 /* CMM_BUTTON_MECH */     {CMM_PM_OBJ,  TRUE,  6, &cmm_mech_idlist,        "Mechanical Enemies"},
-/* CMM_BUTTON_TREE */     {CMM_PM_OBJ,  FALSE, 5, OBJECT_TYPE_TREE,        &txt_bp_tree},
+/* CMM_BUTTON_TREE */     {CMM_PM_OBJ,  FALSE, 6, OBJECT_TYPE_TREE,        &txt_bp_tree},
 /* CMM_BUTTON_EXCLA */    {CMM_PM_OBJ,  FALSE, 7, OBJECT_TYPE_EXCL_BOX,    &txt_bp_box},
 /* CMM_BUTTON_SPAWN */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MARIO_SPAWN, NULL},
 /* CMM_BUTTON_BTCME */    {CMM_PM_OBJ,  TRUE,  7, &cmm_btcm_idlist,        "BTCM Enemies"},

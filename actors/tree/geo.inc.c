@@ -20,6 +20,18 @@ const GeoLayout bubbly_tree_geo[] = {
 };
 
 // 0x16001000
+const GeoLayout farm_tree_geo[] = {
+   GEO_CULLING_RADIUS(800),
+   GEO_OPEN_NODE(),
+      GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x88, 300),
+      GEO_OPEN_NODE(),
+         GEO_DISPLAY_LIST(LAYER_ALPHA, tree_seg3_dl_spiky),
+      GEO_CLOSE_NODE(),
+   GEO_CLOSE_NODE(),
+   GEO_END(),
+};
+
+// 0x16001000
 const GeoLayout spiky_tree_geo[] = {
    GEO_CULLING_RADIUS(800),
    GEO_OPEN_NODE(),
@@ -30,7 +42,7 @@ const GeoLayout spiky_tree_geo[] = {
       GEO_SWITCH_CASE(2, geo_switch_anim_state),
       GEO_OPEN_NODE(),
 #endif
-         GEO_DISPLAY_LIST(LAYER_ALPHA, tree_seg3_dl_spiky),
+         GEO_DISPLAY_LIST(LAYER_ALPHA, tree_seg3_dl_spiky_real),
 #ifdef OBJ_OPACITY_BY_CAM_DIST
          GEO_DISPLAY_LIST(LAYER_TRANSPARENT_INTER, tree_seg3_dl_spiky_transparent),
       GEO_CLOSE_NODE(),

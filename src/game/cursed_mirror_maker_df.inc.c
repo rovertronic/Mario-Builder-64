@@ -44,6 +44,9 @@ void df_tree(s32 context) {
         case 4:
             o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_5];
             break;
+        case 5:
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TREE_6];
+            break;
     }
 }
 
@@ -321,7 +324,6 @@ void df_grindel(s32 context) {
 void df_firebro(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oAnimState = 1;
-        o->oFaceAngleYaw += 0x8000;
     }
 }
 
@@ -345,9 +347,7 @@ void df_pokey(s32 context) {
 }
 
 void df_hammerbro(s32 context) {
-    if (context == CMM_DF_CONTEXT_INIT) {
-        o->oFaceAngleYaw += 0x8000;
-    }
+    // stub, will leave it here if i need it again ever
 }
 
 void df_wiggler(s32 context) {

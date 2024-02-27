@@ -40,7 +40,6 @@ void bhv_tree_snow_or_leaf_loop(void) {
 
 void bhv_snow_leaf_particle_spawn_init(void) {
     struct Object *obj; // Either snow or leaf
-    s32 isSnow;
     f32 scale;
 
     gMarioObject->oActiveParticleFlags &= ~ACTIVE_PARTICLE_LEAF;
@@ -48,28 +47,30 @@ void bhv_snow_leaf_particle_spawn_init(void) {
     // Whether a tree uses snow particles or not is decided via the model IDs instead of the course number
     struct Object *nearestTree = cur_obj_nearest_object_with_behavior(bhvTree);
     if (nearestTree == NULL) return;
-    isSnow = nearestTree->oBehParams2ndByte == 3;
+    s32 treeParam = nearestTree->oBehParams2ndByte;
 
-    if (isSnow) {
-        if (random_float() < 0.5f) {
-            obj = spawn_object(o, MODEL_WHITE_PARTICLE_DL, bhvTreeSnow);
-            scale = random_float();
-            obj_scale(obj, scale);
-            obj->oMoveAngleYaw = random_u16();
-            obj->oForwardVel = random_float() * 5.0f;
-            obj->oVelY = random_float() * 15.0f;
-        }
-    } else {
-        if (random_float() < 0.3f) {
-            obj = spawn_object(o, MODEL_LEAVES, bhvTreeLeaf);
-            scale = random_float() * 3.0f;
-            obj_scale(obj, scale);
-            obj->oMoveAngleYaw = random_u16();
-            obj->oForwardVel = random_float() * 5.0f + 5.0f;
-            obj->oVelY = random_float() * 15.0f;
-            obj->oFaceAnglePitch = random_u16();
-            obj->oFaceAngleRoll = random_u16();
-            obj->oFaceAngleYaw = random_u16();
+    if (treeParam != 5) { // ded
+        if (treeParam == 3) { // snow
+            if (random_float() < 0.5f) {
+                obj = spawn_object(o, MODEL_WHITE_PARTICLE_DL, bhvTreeSnow);
+                scale = random_float();
+                obj_scale(obj, scale);
+                obj->oMoveAngleYaw = random_u16();
+                obj->oForwardVel = random_float() * 5.0f;
+                obj->oVelY = random_float() * 15.0f;
+            }
+        } else {
+            if (random_float() < 0.3f) {
+                obj = spawn_object(o, MODEL_LEAVES, bhvTreeLeaf);
+                scale = random_float() * 3.0f;
+                obj_scale(obj, scale);
+                obj->oMoveAngleYaw = random_u16();
+                obj->oForwardVel = random_float() * 5.0f + 5.0f;
+                obj->oVelY = random_float() * 15.0f;
+                obj->oFaceAnglePitch = random_u16();
+                obj->oFaceAngleRoll = random_u16();
+                obj->oFaceAngleYaw = random_u16();
+            }
         }
     }
 }
