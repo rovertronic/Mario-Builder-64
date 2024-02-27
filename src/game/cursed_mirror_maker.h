@@ -119,6 +119,7 @@ enum cmm_growth_types {
     CMM_GROWTH_UNDERSLOPE_CORNER, // special check
     CMM_GROWTH_DIAGONAL_SIDE,
     CMM_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
+    CMM_GROWTH_DLGENTLE_UNDER, // special check
     CMM_GROWTH_UNCONDITIONAL,
 
     // Anything beyond this is a slope decal type

@@ -315,10 +315,12 @@ struct cmm_terrain cmm_terrain_lgentle = {
     cmm_terrain_lgentle_tris,
 };
 
+s8 dlgentle_decal_uvs[4][2] = {{0, 16}, {16, 16}, {0, 8}, {16, 8}};
+
 struct cmm_terrain_poly cmm_terrain_dlgentle_quads[] = {
     {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
     {{{16, 16, 0},  {16, 8, 0},  {0, 16, 0},   {0, 8, 0}}, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{16, 16, 16}, {0, 16, 16}, {16, 8, 0},  {0, 8, 0}},  CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, CMM_GROWTH_NONE, NULL}, // BOTTOM
+    {{{16, 16, 16}, {0, 16, 16}, {16, 8, 0},  {0, 8, 0}},  CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, CMM_GROWTH_DLGENTLE_UNDER, dlgentle_decal_uvs}, // BOTTOM
 };
 
 struct cmm_terrain_poly cmm_terrain_dlgentle_tris[] = {

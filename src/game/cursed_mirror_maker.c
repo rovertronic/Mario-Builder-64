@@ -862,8 +862,10 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     // Other sides that don't care about the above block (e.g. bottom slab)
     if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
 
-    if ((grassType == CMM_GROWTH_HALF_SIDE) || (grassType == CMM_GROWTH_NORMAL_SIDE)) {
-        if (should_cull_topslab_check(pos, rotate_direction(direction, rot))) return FALSE;
+    if (faceshape != CMM_FACESHAPE_EMPTY) {
+        if ((grassType == CMM_GROWTH_HALF_SIDE) || (grassType == CMM_GROWTH_NORMAL_SIDE)) {
+            if (should_cull_topslab_check(pos, rotate_direction(direction, rot))) return FALSE;
+        }
     }
 
     // Render if above tile is empty
@@ -873,6 +875,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
 
     s32 otherFaceshape;
     switch (grassType) {
+        case CMM_GROWTH_DLGENTLE_UNDER:
+            direction = CMM_DIRECTION_POS_Z;
         case CMM_GROWTH_NORMAL_SIDE:
         case CMM_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
