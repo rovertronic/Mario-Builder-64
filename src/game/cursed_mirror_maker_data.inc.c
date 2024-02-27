@@ -287,6 +287,24 @@ struct cmm_terrain cmm_terrain_lgentle = {
     cmm_terrain_lgentle_tris,
 };
 
+struct cmm_terrain_poly cmm_terrain_dlgentle_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_FULL, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 8, 0},  {0, 16, 0},   {0, 8, 0}}, CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_TOPSLAB, CMM_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 16, 16}, {0, 16, 16}, {16, 8, 0},  {0, 8, 0}},  CMM_DIRECTION_DOWN, CMM_FACESHAPE_EMPTY, CMM_GROWTH_NONE, NULL}, // BOTTOM
+};
+
+struct cmm_terrain_poly cmm_terrain_dlgentle_tris[] = {
+    {{{16, 8, 0}, {16, 16, 0}, {16, 16, 16}},  CMM_DIRECTION_POS_X, CMM_FACESHAPE_DOWNLOWERGENTLE_1, CMM_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 0}, {0, 8, 0},   {0, 16, 16}},   CMM_DIRECTION_NEG_X, CMM_FACESHAPE_DOWNLOWERGENTLE_2, CMM_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct cmm_terrain cmm_terrain_dlgentle = {
+    3,
+    2,
+    cmm_terrain_dlgentle_quads,
+    cmm_terrain_dlgentle_tris,
+};
+
 
 struct cmm_terrain_poly cmm_terrain_slopebelowdecal_quad = {
     {{0, 16, 16}, {0, 0, 16}, {16, 16, 16}, {16, 0, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_FULL, 0, NULL
@@ -306,6 +324,12 @@ struct cmm_terrain_poly cmm_terrain_slopebelowdecal_vslab_1 = {
 struct cmm_terrain_poly cmm_terrain_slopebelowdecal_vslab_2 = {
     {{0, 16, 16}, {0, 0, 16}, {8, 16, 16}, {8, 0, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_HALFSIDE_2, 0, NULL
 };
+struct cmm_terrain_poly cmm_terrain_slopebelowdecal_downlowergentle1 = {
+    {{16, 16, 16}, {0, 16, 16}, {16, 8, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNLOWERGENTLE_1, 0, NULL
+};
+struct cmm_terrain_poly cmm_terrain_slopebelowdecal_downlowergentle2 = {
+    {{0, 16, 16}, {0, 8, 16}, {16, 16, 16}}, CMM_DIRECTION_POS_Z, CMM_FACESHAPE_DOWNLOWERGENTLE_2, 0, NULL
+};
 
 void *slope_decal_below_surfs[] = {
     &cmm_terrain_slopebelowdecal_quad,
@@ -314,6 +338,8 @@ void *slope_decal_below_surfs[] = {
     &cmm_terrain_slopebelowdecal_topslab,
     &cmm_terrain_slopebelowdecal_vslab_1,
     &cmm_terrain_slopebelowdecal_vslab_2,
+    &cmm_terrain_slopebelowdecal_downlowergentle1,
+    &cmm_terrain_slopebelowdecal_downlowergentle2,
 };
 
 // Shape of fence
@@ -456,7 +482,7 @@ struct cmm_terrain_info cmm_terrain_info_list[] = {
     {"Upper Gentle Slope", mat_b_btn_slope, &cmm_terrain_ugentle},
     {"", mat_b_btn_slope, &cmm_terrain_dugentle},
     {"Lower Gentle Slope", mat_b_btn_slope, &cmm_terrain_lgentle},
-    {"", mat_b_btn_slope, &cmm_terrain_lgentle},
+    {"", mat_b_btn_slope, &cmm_terrain_dlgentle},
 
     {"Tile", mat_b_btn_tile, &cmm_terrain_fullblock},
     {"Vertical Slope", mat_b_btn_sideslope, &cmm_terrain_sslope},

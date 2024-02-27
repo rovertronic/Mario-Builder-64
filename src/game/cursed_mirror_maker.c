@@ -820,6 +820,12 @@ void render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
             if (grassType == CMM_GROWTH_SLOPE_SIDE_R) return;
             index = 5; cmm_curr_poly_vert_count = 4;
             break;
+        case CMM_FACESHAPE_DOWNLOWERGENTLE_1:
+            index = 6; cmm_curr_poly_vert_count = 3;
+            break;
+        case CMM_FACESHAPE_DOWNLOWERGENTLE_2:
+            index = 7; cmm_curr_poly_vert_count = 3;
+            break;
     }
 
     s32 side = grassType & 1;
@@ -3231,7 +3237,9 @@ void sb_loop(void) {
             }
 
             if (gPlayer1Controller->buttonPressed & U_JPAD) {
-                if (cmm_id_selection < TILE_END_OF_FLIPPABLE) play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
+                if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
+                    play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
+                }
                 cmm_upsidedown_tile ^= 1;
             }
 
