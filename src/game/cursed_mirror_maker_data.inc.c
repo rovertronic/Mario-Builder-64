@@ -222,8 +222,8 @@ struct cmm_terrain cmm_terrain_vslab = {
     NULL
 };
 
-s8 ugentle_decal_tri_uvs1[3][2] = {{0, 8}, {0, 16}, {16, 16}};
-s8 ugentle_decal_tri_uvs2[3][2] = {{16, 16}, {16, 8}, {0, 16}};
+s8 gentle_decal_tri_uvs1[3][2] = {{0, 8}, {0, 16}, {16, 16}};
+s8 gentle_decal_tri_uvs2[3][2] = {{16, 16}, {16, 8}, {0, 16}};
 s8 ugentle_decal_quad_uvs1[4][2] = {{16, 16}, {16, 8}, {0, 8}, {0, 0}};
 s8 ugentle_decal_quad_uvs2[4][2] = {{16, 8}, {16, 0}, {0, 16}, {0, 8}};
 
@@ -237,8 +237,8 @@ struct cmm_terrain_poly cmm_terrain_ugentle_quads[] = {
 };
 
 struct cmm_terrain_poly cmm_terrain_ugentle_tris[] = {
-    {{{16, 8, 0}, {16, 16, 0}, {16, 8, 16}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_UPPERGENTLE_1, CMM_GROWTH_UNCONDITIONAL, &ugentle_decal_tri_uvs1}, // LEFT
-    {{{0, 16, 0}, {0, 8, 0},   {0, 8, 16}},  CMM_DIRECTION_NEG_X, CMM_FACESHAPE_UPPERGENTLE_2, CMM_GROWTH_UNCONDITIONAL, &ugentle_decal_tri_uvs2}, // RIGHT
+    {{{16, 8, 0}, {16, 16, 0}, {16, 8, 16}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_UPPERGENTLE_1, CMM_GROWTH_UNCONDITIONAL, &gentle_decal_tri_uvs1}, // LEFT
+    {{{0, 16, 0}, {0, 8, 0},   {0, 8, 16}},  CMM_DIRECTION_NEG_X, CMM_FACESHAPE_UPPERGENTLE_2, CMM_GROWTH_UNCONDITIONAL, &gentle_decal_tri_uvs2}, // RIGHT
 };
 
 struct cmm_terrain cmm_terrain_ugentle = {
@@ -246,6 +246,24 @@ struct cmm_terrain cmm_terrain_ugentle = {
     2,
     cmm_terrain_ugentle_quads,
     cmm_terrain_ugentle_tris,
+};
+
+struct cmm_terrain_poly cmm_terrain_lgentle_quads[] = {
+    {{{16, 0, 16}, {16, 8, 0}, {0, 0, 16}, {0, 8, 0}}, CMM_DIRECTION_UP,    CMM_FACESHAPE_EMPTY, CMM_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  CMM_DIRECTION_DOWN,  CMM_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 8, 0},  {16, 0, 0},  {0, 8, 0},   {0, 0, 0}},   CMM_DIRECTION_NEG_Z, CMM_FACESHAPE_BOTTOMSLAB, CMM_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs1}, // BACK
+};
+
+struct cmm_terrain_poly cmm_terrain_lgentle_tris[] = {
+    {{{16, 0, 0}, {16, 8, 0}, {16, 0, 16}}, CMM_DIRECTION_POS_X, CMM_FACESHAPE_LOWERGENTLE_1, CMM_GROWTH_GENTLE_SIDE_L, &gentle_decal_tri_uvs1}, // LEFT
+    {{{0, 8, 0}, {0, 0, 0},   {0, 0, 16}},  CMM_DIRECTION_NEG_X, CMM_FACESHAPE_LOWERGENTLE_2, CMM_GROWTH_GENTLE_SIDE_R, &gentle_decal_tri_uvs2}, // RIGHT
+};
+
+struct cmm_terrain cmm_terrain_lgentle = {
+    3,
+    2,
+    cmm_terrain_lgentle_quads,
+    cmm_terrain_lgentle_tris,
 };
 
 
@@ -384,6 +402,7 @@ enum {
     TILE_TYPE_DSLAB,
     TILE_TYPE_SSLAB,
     TILE_TYPE_UGENTLE,
+    TILE_TYPE_LGENTLE,
     TILE_TYPE_CULL,
     TILE_TYPE_TROLL,
     TILE_TYPE_FENCE,
@@ -412,6 +431,7 @@ struct cmm_terrain_info cmm_terrain_info_list[] = {
     {"", mat_b_btn_slabtile, &cmm_terrain_topslab},
     {"Vertical Slab", mat_b_btn_vslab, &cmm_terrain_vslab},
     {"Upper Gentle Slope", mat_b_btn_slope, &cmm_terrain_ugentle},
+    {"Lower Gentle Slope", mat_b_btn_slope, &cmm_terrain_lgentle},
     {"Cull Marker", mat_b_btn_cull, NULL},
     {"Intangible Tile", mat_b_btn_troll, &cmm_terrain_fullblock},
     {"Fence", mat_b_btn_fence, NULL},
@@ -1459,6 +1479,7 @@ enum {
     CMM_BUTTON_FORMATION,
     CMM_BUTTON_VSLAB,
     CMM_BUTTON_UGENTLE,
+    CMM_BUTTON_LGENTLE,
     CMM_BUTTON_BARS,
     CMM_BUTTON_ROCKENEMY,
     CMM_BUTTON_POLE,
@@ -1525,6 +1546,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_FORMATION */{CMM_PM_OBJ,  FALSE, 5, OBJECT_TYPE_COIN_FORMATION, &txt_coin_formation},
 /* CMM_BUTTON_VSLAB */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SSLAB,         NULL},
 /* CMM_BUTTON_UGENTLE */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_UGENTLE,       NULL},
+/* CMM_BUTTON_LGENTLE */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_LGENTLE,       NULL},
 /* CMM_BUTTON_BARS */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_BARS,          NULL},
 /* CMM_BUTTON_ROCKENEMY */{CMM_PM_OBJ,  TRUE,  3, &cmm_stone_idlist,       "Stone Enemies"},
 /* CMM_BUTTON_POLE */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_POLE,          NULL},
@@ -1568,14 +1590,14 @@ u8 cmm_toolbox_params[45];
 //Different toolboxes for different game styles
 u8 cmm_toolbox_btcm[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
-    /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_UGENTLE,
+    /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_LGENTLE, CMM_BUTTON_UGENTLE,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN,CMM_BUTTON_BTCME, CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT, CMM_BUTTON_TC,CMM_BUTTON_FIRE, CMM_BUTTON_BADGE, CMM_BUTTON_BOX, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
 };
 u8 cmm_toolbox_vanilla[45] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
-    /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK, CMM_BUTTON_UGENTLE,
+    /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BLANK, CMM_BUTTON_LGENTLE, CMM_BUTTON_UGENTLE,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION, CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_VEXCLA,CMM_BUTTON_HEART,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
     /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN, CMM_BUTTON_BOSS, CMM_BUTTON_KTQ, CMM_BUTTON_BLANK,
     /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,CMM_BUTTON_TC, CMM_BUTTON_MINE, CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, CMM_BUTTON_BOX, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,

@@ -750,11 +750,11 @@ void process_poly(s8 pos[3], struct cmm_terrain_poly *quad, u32 rot) {
         cmm_create_poly(quad, pos, rot);
 }
 
-void grass_slope_extra_decal_uvs(s8 newUVs[][2], s8 vtx[][3], s32 side, s32 count) {
+void grass_slope_extra_decal_uvs(s8 newUVs[][2], s8 vtx[][3], s32 side, s32 scalefactor, s32 count) {
     for (s32 i = 0; i < count; i++) {
         newUVs[i][0] = 16 - vtx[i][0];
         s32 upFactor = (side == 0 ? vtx[i][0] : 16 - vtx[i][0]);
-        newUVs[i][1] = vtx[i][1] - upFactor;
+        newUVs[i][1] = vtx[i][1] - ((upFactor*scalefactor) >> 1); // multiply by scalefactor/2
     }
 }
 
@@ -822,10 +822,11 @@ u32 render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
             break;
     }
 
-    s32 side = (grassType == CMM_GROWTH_SLOPE_SIDE_L ? 0 : 1);
+    s32 side = grassType & 1;
+    s32 scalefactor = (grassType & 2) ? 1 : 2;
 
     struct cmm_terrain_poly *poly = slope_decal_below_surfs[index];
-    grass_slope_extra_decal_uvs(newUVs, poly->vtx, side, cmm_curr_poly_vert_count);
+    grass_slope_extra_decal_uvs(newUVs, poly->vtx, side, scalefactor, cmm_curr_poly_vert_count);
     poly->altuvs = newUVs;
     render_poly(poly, newpos, targetRot);
     cmm_curr_poly_vert_count = oldVerts;
@@ -847,7 +848,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
 
     // Render extra decal for slopes if necessary
     // The side of the slope itself is unconditional and will always render
-    if (grassType == CMM_GROWTH_SLOPE_SIDE_L || grassType == CMM_GROWTH_SLOPE_SIDE_R) {
+    if (grassType >= CMM_GROWTH_EXTRADECAL_START) {
         render_grass_slope_extra_decal(pos, rotate_direction(direction, rot), grassType);
         return TRUE;
     }
@@ -873,6 +874,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
                 case CMM_FACESHAPE_FULL:
                 case CMM_FACESHAPE_UPPERGENTLE_1:
                 case CMM_FACESHAPE_UPPERGENTLE_2:
+                case CMM_FACESHAPE_LOWERGENTLE_1:
+                case CMM_FACESHAPE_LOWERGENTLE_2:
                 case CMM_FACESHAPE_BOTTOMSLAB:
                     return FALSE;
             }
