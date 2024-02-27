@@ -794,7 +794,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)||obj_has_behavior(gCurGraphNodeObject,bhvPreviewObject)) {
             switchCase->selectedCase = 0;
         }
         //WARIO
@@ -815,7 +815,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             switchCase->selectedCase = 6;
             }
 
-        if (gMarioState->CostumeID == 10) { // retro dario gaming XDDD
+        if (gMarioState->CostumeID == 10) { // retro mario XDDD
             switchCase->selectedCase = 7;
             }
         if (gMarioState->CostumeID == 11) { // thwompio
