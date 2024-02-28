@@ -2695,6 +2695,12 @@ void load_level(void) {
 
     // copy custom theme
     bcopy(&cmm_save.custom_theme,&cmm_curr_custom_theme,sizeof(struct cmm_custom_theme));
+
+    // for (u32 i = 0; i < NUM_MATERIALS_PER_THEME; i++) {
+    //     cmm_curr_custom_theme.mats[i] = random_float() * CMM_MATLIST_END;
+    //     cmm_curr_custom_theme.topmats[i] = random_float() * CMM_MATLIST_END;
+    //     cmm_curr_custom_theme.topmatsEnabled[i] = 1;
+    // }
     update_custom_theme();
 
     u32 oldIndex = 0;

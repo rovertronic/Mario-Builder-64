@@ -607,6 +607,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         render_preview_block(renderedMat, renderedTopmat, pos, &cmm_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
     } else {
         cmm_use_alt_uvs = TRUE;
+        cmm_curr_poly_vert_count = 4;
         if (index == 10) { // Poles
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].gfx);
             set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].type, TRUE);
