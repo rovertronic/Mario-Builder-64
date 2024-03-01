@@ -205,7 +205,7 @@ void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ)
     vec3f_copy_y_off(objVisualPosition, &obj->oPosVec, obj->oGraphYOffset);
     vec3f_set(surfaceNormals, normalX, normalY, normalZ);
 
-    mtxf_align_terrain_normal(*obj->transform, surfaceNormals, objVisualPosition, obj->oFaceAngleYaw);
+    mtxf_align_terrain_normal(obj->transform, surfaceNormals, objVisualPosition, obj->oFaceAngleYaw);
     obj->header.gfx.throwMatrix = &obj->transform;
 }
 
@@ -259,9 +259,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
         }
     }
 
-    //! (Obj Position Crash) If you got an object with height past 2^31, the game would crash.
     if ((o->oPosY >= objFloorY) && (o->oPosY < objFloorY + 37)) {
-
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
         f32 vel = ((nxz) / (nxz + sqr(floor_nY))) * o->oGravity * 2;
@@ -320,7 +318,6 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
     }
 
     if ((o->oPosY >= floorY) && (o->oPosY < floorY + 37)) {
-
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
         f32 velm = (nxz / (nxz + sqr(floor_nY))) * netYAccel * 2;
