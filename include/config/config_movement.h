@@ -104,11 +104,6 @@
 // #define HANGING_FIX
 
 /**
- * The last frame after hitting a wall that will be considered a firsty when wallkicking.
- */
-#define FIRSTY_LAST_FRAME 1
-
-/**
  * The maximum angle the player can wall kick, in degrees. 0..90. To allow 45 degree wall kicks, you must supply `46` to allow 45 and under.
  */
 #define WALL_KICK_DEGREES 46
@@ -139,7 +134,7 @@
  * be interrupted with text
  * Uncomment this to fix this bug, and frustrate speedrunners
  */
-// #define BUGFIX_DIALOG_TIME_STOP
+#define BUGFIX_DIALOG_TIME_STOP
 
 /**
  * Enables Platform Displacement 2, an upgrade to the physics involving moving platforms and how Mario interacts with them.
