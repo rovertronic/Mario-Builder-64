@@ -17,6 +17,7 @@ void bhv_bobomb_init(void) {
     o->oFriction = 0.8f;
     o->oBuoyancy = 1.3f;
     o->oInteractionSubtype = INT_SUBTYPE_KICKABLE;
+    o->oQuicksandDepthToDie = 55;
 }
 
 void bobomb_spawn_coin(void) {

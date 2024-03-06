@@ -39,7 +39,7 @@ void chuckya_act_0(void) {
 
     if (o->oTimer == 0) {
         o->oChuckyaSubActionTimer = 0;
-        o->oQuicksandDepthToDie = 180;
+        o->oQuicksandDepthToDie = 160;
     }
 
     o->oAngleToMario = obj_angle_to_object(o, gMarioObject);

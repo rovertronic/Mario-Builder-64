@@ -2538,6 +2538,8 @@ void arbritrary_death_coin_release(void) {
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
     } else if (cur_obj_has_behavior(bhvBigBully)) {
         spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+    } else if (cur_obj_has_behavior(bhvMoneybag)||cur_obj_has_behavior(bhvMoneybagHidden)) {
+        obj_spawn_yellow_coins(o, 3);
     } else {
         // default
         obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
