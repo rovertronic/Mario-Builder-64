@@ -52,6 +52,11 @@ s32 mario_is_far_below_object(f32 min) {
 void king_bobomb_act_active(void) { // act 2
     cur_obj_become_tangible();
 
+    if (o->oMoveFlags & OBJ_MOVE_IN_AIR) {
+        o->oAction = 9;
+        return;
+    }
+
     if (o->oPosY - o->oHomeY < -100.0f) { // Thrown off hill
         o->oAction = KING_BOBOMB_ACT_RETURN_HOME;
         cur_obj_become_intangible();
@@ -216,7 +221,8 @@ void king_bobomb_act_death(void) { // act 7
 
 void king_bobomb_act_stop_music(void) { // act 8
     if (o->oTimer == 60) {
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        //stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        mark_obj_for_deletion(o); //stop phantom triggering noteblock
     }
 }
 
@@ -330,6 +336,26 @@ void king_bobomb_act_return_home(void) { // act 5
     }
 }
 
+void king_bobomb_airborne(void) { // act 9
+    if (o->oForwardVel < 1.0f) {
+        o->oForwardVel = 1.0f;
+    }
+    o->oInteractType = INTERACT_DAMAGE;
+    if (o->oTimer == 0) {
+        cur_obj_play_sound_2(SOUND_OBJ_KING_BOBOMB_JUMP);
+        o->oVelY = 60.0f;
+    } else {
+        if (o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND)) {
+            o->oMoveFlags = 0;
+            o->oVelY = 0.0f;
+            o->oAction = 2;
+            o->oInteractType = INTERACT_GRABBABLE;
+        }
+    }
+    o->oKingBobombIsJumping = FALSE;
+    cur_obj_init_animation_and_extend_if_at_end(KING_BOBOMB_ANIM_JUMP);
+}
+
 ObjActionFunc sKingBobombActions[] = {
     king_bobomb_act_inactive,
     king_bobomb_act_activate,
@@ -340,6 +366,7 @@ ObjActionFunc sKingBobombActions[] = {
     king_bobomb_act_hit_ground,
     king_bobomb_act_death,
     king_bobomb_act_stop_music,
+    king_bobomb_airborne,
 };
 
 struct SoundState sKingBobombSoundStates[] = {
@@ -365,6 +392,14 @@ void king_bobomb_move(void) {
     } else {
         cur_obj_move_using_fvel_and_gravity();
     }
+
+    //if (is_obj_interacting_with_noteblock(0)) {
+    //    if (o->oAction == KING_BOBOMB_ACT_ACTIVE || o->oAction == KING_BOBOMB_ACT_) {
+    //        o->oVelY = 60.0f;
+    //        o->oAction = 9;
+    //        cur_obj_move_standard(-78);
+    //    }
+    //}
 
     cur_obj_call_action_function(sKingBobombActions);
     exec_anim_sound_state(sKingBobombSoundStates);
