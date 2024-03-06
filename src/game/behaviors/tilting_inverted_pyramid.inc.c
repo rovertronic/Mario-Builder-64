@@ -1256,7 +1256,7 @@ void noteblock_function(void) {
     o->oPosY = o->oHomeY + (sins(o->oTimer*5000) * o->oVelY);
     o->oVelY *= 0.95f;
 
-    if ((gMarioState->action != ACT_LVUP_DANCE)&&(gMarioState->health > 0x100)&&cur_obj_is_mario_on_platform()) {
+    if ((gMarioState->action != ACT_LVUP_DANCE)&&(gMarioState->action != ACT_STAR_DANCE_NO_EXIT)&&(gMarioState->health > 0x100)&&cur_obj_is_mario_on_platform()) {
             mario_stop_riding_and_holding(gMarioState);
             o->oTimer = 0;
             o->oVelY = 50.0f;

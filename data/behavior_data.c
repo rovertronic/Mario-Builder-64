@@ -3801,11 +3801,14 @@ const BehaviorScript bhvScuttlebugSpawn[] = {
     END_LOOP(),
 };
 
+extern void whomp_real_init(void);
 const BehaviorScript bhvWhompKingBoss[] = {
     BEGIN(OBJ_LIST_SURFACE),
     SET_FLOAT(oDrawingDistance, 10000),
     SET_INT(oBehParams2ndByte, WHOMP_BP_KING),
     SET_INT(oHealth, 3),
+    SET_HOME(),
+    CALL_NATIVE(whomp_real_init),
     GOTO(bhvSmallWhomp + 1 + 1),
 };
 

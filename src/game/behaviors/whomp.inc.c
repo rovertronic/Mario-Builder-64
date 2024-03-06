@@ -16,11 +16,12 @@ void whomp_play_sfx_from_pound_animation(void) {
     }
 }
 
+void whomp_real_init(void) {
+    cur_obj_set_pos_to_home();
+}
+
 void whomp_init(void) {
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
-    if (o->oTimer == 0) {
-        cur_obj_set_pos_to_home();
-    }
 
     if (o->oBehParams2ndByte != 0) {
         gSecondCameraFocus = o;
@@ -30,8 +31,8 @@ void whomp_init(void) {
                 o->oSubAction++;
                 //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
             } else {
-                cur_obj_set_pos_to_home();
-                o->oHealth = 3;
+                //cur_obj_set_pos_to_home();
+                //o->oHealth = 3;
             }
         } else if (1) {
             o->oAction = 2;
@@ -74,7 +75,7 @@ void whomp_patrol(void) {
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
     o->oForwardVel = 3.0f;
 
-    if (distWalked > patrolDist) {
+    if ((distWalked > patrolDist)||(o->oMoveFlags & (OBJ_MOVE_HIT_WALL | OBJ_MOVE_HIT_EDGE))) {
         o->oAction = 7;
     } else if (marioAngle < 0x2000) {
         if (o->oDistanceToMario < 1500.0f) {
@@ -274,6 +275,7 @@ ObjActionFunc sWhompActions[] = {
 };
 
 void bhv_whomp_loop(void) {
+    o->oWallHitboxRadius = 60.0f;
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sWhompActions);
     cur_obj_move_standard(-20);
