@@ -461,6 +461,18 @@ void bowser_act_idle(void) {
     }
 }
 
+void bowser_act_airborne(void) {
+    cur_obj_init_animation(BOWSER_ANIM_GRABBED);
+    cur_obj_extend_animation_if_at_end();
+    o->oMoveAngleYaw += 0x600;
+
+    if ((o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND)) && o->oTimer > 10 && !is_obj_interacting_with_noteblock(0)) {
+        o->oAction = BOWSER_ACT_DEFAULT;
+        cur_obj_play_sound_2(SOUND_OBJ_BOWSER_WALK);
+        o->oVelY = 0.0f;
+    }
+}
+
 /**
  * Default Bowser act that doesn't last very long
  */
@@ -1438,6 +1450,7 @@ ObjActionFunc sBowserActions[] = {
     bowser_act_teleport,
     bowser_act_quick_jump,
     bowser_act_idle,
+    bowser_act_airborne,
     //bowser_act_tilt_lava_platform,
 };
 
@@ -1490,6 +1503,12 @@ void bowser_free_update(void) {
     if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(sBowserActions);
     if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_move_standard(-78);
+
+    if (cur_obj_interact_with_noteblock(0)&&o->oHealth>0) {
+        o->oVelY = 50.0f;
+        o->oAction = BOWSER_ACT_AIRBORNE;
+    }
+
     // Jump on stage if Bowser has fallen off
     if (bowser_check_fallen_off_stage()) {
         if (o->oAction == BOWSER_ACT_DEAD) {
