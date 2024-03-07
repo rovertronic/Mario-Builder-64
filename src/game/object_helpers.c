@@ -957,12 +957,12 @@ void obj_become_tangible(struct Object *obj) {
 
 void cur_obj_update_floor_height(void) {
     struct Surface *floor;
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), o->oPosZ, &floor);
 }
 
 struct Surface *cur_obj_update_floor_height_and_get_floor(void) {
     struct Surface *floor;
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &floor);
+    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), o->oPosZ, &floor);
     return floor;
 }
 
@@ -1436,20 +1436,13 @@ s32 cur_obj_resolve_wall_collisions(void) {
     if (radius <= 0.1f) return FALSE;
 
     struct WallCollisionData collisionData;
-    collisionData.offsetY = 10.0f;
     collisionData.radius  = radius;
     collisionData.x = (s16) o->oPosX;
     collisionData.y = (s16) o->oPosY;
     collisionData.z = (s16) o->oPosZ;
-    s32 numCollisions = find_wall_collisions(&collisionData);
-    if (numCollisions != 0) {
-        struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
-        o->oWallAngle = SURFACE_YAW(wall);
-        wallFound = TRUE;
-    }
+    collisionData.offsetY = collisionData.radius + 1.f;
 
-    collisionData.offsetY += collisionData.radius;
-    numCollisions = find_wall_collisions(&collisionData);
+    s32 numCollisions = find_wall_collisions(&collisionData);
     if (numCollisions != 0) {
         struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
         o->oWallAngle = SURFACE_YAW(wall);

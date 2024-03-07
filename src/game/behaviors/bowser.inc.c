@@ -1465,7 +1465,6 @@ struct SoundState sBowserSoundStates[] = {
     { 0, 0, 0, NO_SOUND },
     { 0, 0, 0, NO_SOUND },
     { 0, 0, 0, NO_SOUND },
-    { 0, 0, 0, NO_SOUND },
     { 1, 0, -1, SOUND_OBJ_BOWSER_WALK },
     { 1, 0, -1, SOUND_OBJ2_BOWSER_ROAR },
     { 1, 0, -1, SOUND_OBJ2_BOWSER_ROAR },
