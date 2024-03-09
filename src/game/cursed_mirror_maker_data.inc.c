@@ -2024,18 +2024,17 @@ char *cmm_bg_string_table[] = {
     "None", // 9 - doesn't generate black chasm
 };
 
-#define CMM_BOUNDARY_DEATH_PLANE   (1 << 0) // Has a death barrier - will be shrunk if also has inner walls
-#define CMM_BOUNDARY_INNER_FLOOR   (1 << 1) // Has the main floor
-#define CMM_BOUNDARY_OUTER_FLOOR   (1 << 2) // Has the fading outer floor
-#define CMM_BOUNDARY_INNER_WALLS   (1 << 3) // Has the inner walls going up to boundary height - has fading part if death plane
-#define CMM_BOUNDARY_OUTER_WALLS   (1 << 4) // Has fading outer walls extending downwards
+#define CMM_BOUNDARY_INNER_FLOOR   (1 << 0) // Has the main floor
+#define CMM_BOUNDARY_OUTER_FLOOR   (1 << 1) // Has the fading outer floor
+#define CMM_BOUNDARY_INNER_WALLS   (1 << 2) // Has the inner walls going up to boundary height - has fading part if death plane
+#define CMM_BOUNDARY_OUTER_WALLS   (1 << 3) // Has fading outer walls extending downwards
 
 u8 cmm_boundary_table[] = {
-    CMM_BOUNDARY_DEATH_PLANE, // Void
+    0, // Void
     CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_FLOOR, // Plain
     CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_FLOOR | CMM_BOUNDARY_INNER_WALLS, // Valley
-    CMM_BOUNDARY_DEATH_PLANE | CMM_BOUNDARY_OUTER_FLOOR | CMM_BOUNDARY_INNER_WALLS, // Chasm
-    CMM_BOUNDARY_DEATH_PLANE | CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_WALLS, // Plateau
+    CMM_BOUNDARY_OUTER_FLOOR | CMM_BOUNDARY_INNER_WALLS, // Chasm
+    CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_WALLS, // Plateau
 };
 
 char *cmm_bound_string_table[] = {

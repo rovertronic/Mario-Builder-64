@@ -50,11 +50,18 @@ void bullet_bill_act_2(void) {
             o->oForwardVel = -3.0f;
         }
     } else {
-        if (o->oTimer == 50) {
+        if (o->oTimer == 60) {
             cur_obj_become_tangible();
         }
-        if (o->oTimer > 50) {
+        if (o->oTimer > 60) {
+            // cursed code. pretend the bullet bill is close to the floor
+            // when doing collision checks
+            o->oPosY -= 127.f; // to ground
+            o->hitboxDownOffset -= 127.f;
             cur_obj_update_floor_and_walls();
+            if (o->oPosY < o->oFloorHeight) o->oMoveFlags |= OBJ_MOVE_ON_GROUND;
+            o->oPosY += 127.f; // to original
+            o->hitboxDownOffset += 127.f;
         }
 
         spawn_object(o, MODEL_SMOKE, bhvWhitePuffSmoke);
@@ -74,7 +81,7 @@ void bullet_bill_act_2(void) {
             spawn_mist_particles();
         }
 
-        if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+        if (o->oMoveFlags & (OBJ_MOVE_HIT_WALL | OBJ_MOVE_ON_GROUND)) {
             o->oAction = 4;
         }
     }

@@ -1917,11 +1917,10 @@ void generate_terrain_collision(void) {
     cmm_building_collision = TRUE;
     cmm_curr_poly_vert_count = 4;
 
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_DEATH_PLANE) {
-        u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) ? cmm_grid_size : 128;
-        cmm_curr_coltype = SURFACE_DEATH_PLANE;
-        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
-    }
+    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : 128;
+    cmm_curr_coltype = SURFACE_DEATH_PLANE;
+    generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
+
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, cmm_grid_size, FALSE);

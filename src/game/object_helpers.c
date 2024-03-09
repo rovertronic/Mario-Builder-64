@@ -1003,7 +1003,7 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
         intendedZ = o->oPosZ + (o->oVelZ*.5f);
     }
 
-    f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
+    f32 intendedFloorHeight = find_floor(intendedX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
@@ -1449,6 +1449,16 @@ s32 cur_obj_resolve_wall_collisions(void) {
         wallFound = TRUE;
     }
 
+    if (radius > 100.f) { // extra check for chonky boys
+        collisionData.offsetY += 100.f;
+        numCollisions = find_wall_collisions(&collisionData);
+        if (numCollisions != 0) {
+            struct Surface *wall = collisionData.walls[collisionData.numWalls - 1];
+            o->oWallAngle = SURFACE_YAW(wall);
+            wallFound = TRUE;
+        }
+    }
+
     if (wallFound) {
         o->oPosX = collisionData.x;
         o->oPosY = collisionData.y;
@@ -1478,10 +1488,15 @@ void cur_obj_update_ceiling(void) {
 
     if (!ceil) return;
 
-    if (o->oVelY > 0.f) {
+    if (o->oVelY >= 0.f) {
         if ((o->oPosY + o->oVelY + o->hitboxHeight - o->hitboxDownOffset) > ceilHeight) {
-            o->oPosY = ceilHeight - o->hitboxHeight + o->hitboxDownOffset;
+            f32 targetYPos = ceilHeight - o->hitboxHeight + o->hitboxDownOffset;
+            if (targetYPos > o->oFloorHeight) { // dont move into a floor
+                o->oPosY = targetYPos;
+            }
+            o->oMoveFlags |= OBJ_MOVE_HIT_WALL;
             o->oVelY = 0.f;
+            o->oForwardVel = 0.f;
         }
     }
 }

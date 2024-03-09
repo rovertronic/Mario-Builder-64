@@ -890,6 +890,10 @@ void bowser_act_charge_mario(void) {
                         o->oSubAction = BOWSER_SUB_ACT_CHARGE_SLIP;
                     }
                 }
+                // Slip if hit a wall
+                if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+                    o->oSubAction = BOWSER_SUB_ACT_CHARGE_SLIP;
+                }
             }
             // Rotate to Mario
             cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
@@ -1499,9 +1503,11 @@ void bowser_reflect_walls(void) {
 void bowser_free_update(void) {
     o->oBowserGrabbedStatus = BOWSER_GRAB_STATUS_NONE;
     // Update positions and actions (default action)
-    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_update_floor_and_walls();
+    if (o->oAction != BOWSER_ACT_TELEPORT) {
+        cur_obj_update_floor_and_walls();
+        cur_obj_move_standard(-78);
+    }
     cur_obj_call_action_function(sBowserActions);
-    if (o->oAction != BOWSER_ACT_TELEPORT) cur_obj_move_standard(-78);
 
     if (cur_obj_interact_with_noteblock(0)&&o->oHealth>0) {
         o->oVelY = 50.0f;
