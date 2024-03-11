@@ -97,6 +97,11 @@ void print_maker_string_ascii_centered(s32 x, s32 y, char *str, s32 highlight) {
     print_maker_string_ascii(x - x1/2, y, str, highlight);
 }
 
+void print_generic_string_ascii_centered(s32 x, s32 y, char *str) {
+    s32 x1 = get_string_width_ascii(str);
+    print_generic_string_ascii(x - x1/2, y, str);
+}
+
 void print_maker_string(s32 x, s32 y, u8 *str, s32 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
@@ -2064,43 +2069,55 @@ s32 draw_cmm_pause_menu(void) {
     }
     cmm_menu_index = (cmm_menu_index + button_count) % button_count;
 
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+
     //print title and author
     char stringBuf[50];
     if (cmm_save.author[0] != 0) {
 
         create_dl_translation_matrix(MENU_MTX_PUSH, 160, 0, 0);
         create_dl_scale_matrix(MENU_MTX_PUSH, 1.5f, 1.5f, 0.f);
-        print_maker_string_ascii_centered(0,134,cmm_file_name,0);
+        print_generic_string_ascii_centered(0,134,cmm_file_name);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
         sprintf(stringBuf,"%s%s","By: ",cmm_save.author);
-        print_maker_string_ascii_centered(160,184,stringBuf,0);
+        print_generic_string_ascii_centered(160,184,stringBuf);
     } else {
-        print_maker_string_ascii_centered(160,192,cmm_file_name,0);
+        print_generic_string_ascii_centered(160,192,cmm_file_name);
     }
 
-    animate_list_update(cmm_menu_list_offsets, button_count, cmm_menu_index);
-    s32 xoff = 0;
-    s32 yoff = 0;
+    //animate_list_update(cmm_menu_list_offsets, button_count, cmm_menu_index);
     cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_rte_text;
     if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
         cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
     }
-
+    s32 xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
+    s32 yoff = 0;
     for (s32 i=0;i<4;i++) {
         if (i==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
             continue;
         }
-        print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[i],120+yoff,cmm_pause_menu_buttons_main[i],(i==cmm_menu_index));
+        print_generic_string_ascii(160-xoff  ,120+yoff,cmm_pause_menu_buttons_main[i]);
         yoff-=16;
     }
+
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+
+    // Print selector triangle
+    create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 120-(cmm_menu_index*16), 0);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     // print level collectibles
     // generate string
     sprintf(stringBuf,"^%dQ%d",cmm_play_stars, cmm_play_stars_max);
+    print_text_centered(160,160, stringBuf);
+
     if (gRedCoinsTotal > 0) {
-        sprintf(stringBuf,"%s @%dQ%d", stringBuf, gRedCoinsCollected, gRedCoinsTotal);
+        //sprintf(stringBuf,"%s @%dQ%d", stringBuf, gRedCoinsCollected, gRedCoinsTotal);
+        sprintf(stringBuf,"@%dQ%d", gRedCoinsCollected, gRedCoinsTotal);
     }
     if (cmm_lopt_coinstar > 0) {
         sprintf(stringBuf,"%s $%dQ%d", stringBuf, gMarioState->numCoins, (cmm_lopt_coinstar*20));
