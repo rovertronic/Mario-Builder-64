@@ -687,7 +687,7 @@ s32 bowser_set_anim_jump(void) {
  * Returns TRUE when Bowser lands
  */
 s32 bowser_land(void) {
-    if (o->oMoveFlags & OBJ_MOVE_LANDED) {
+    if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
         o->oForwardVel = 0.0f;
         o->oVelY = 0.0f;
         spawn_mist_particles_variable(0, 0, 60.0f);
