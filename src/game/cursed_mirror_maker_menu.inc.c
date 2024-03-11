@@ -2025,3 +2025,98 @@ s32 cmm_main_menu(void) {
 
     return 0;
 }
+
+
+// Pause menu during play
+char cmm_pause_menu_rte_text[] = "Return to Editor";
+char cmm_pause_menu_ec_text[] = "Exit Level";
+
+char * cmm_pause_menu_buttons_main[] = {
+    "Continue",
+    "Options",
+    "Badges",
+    NULL,
+};
+
+void cmm_init_pause_menu(void) {
+    cmm_menu_index = 0;
+}
+
+s32 draw_cmm_pause_menu(void) {
+    u8 button_count = 4;
+
+    cmm_joystick = joystick_direction();
+    switch(cmm_joystick) {
+        case 2:
+            cmm_menu_index++;
+            if (cmm_menu_index==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
+                cmm_menu_index++;
+            }
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        break;
+        case 4:
+            cmm_menu_index--;
+            if (cmm_menu_index==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
+                cmm_menu_index--;
+            }
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        break;
+    }
+    cmm_menu_index = (cmm_menu_index + button_count) % button_count;
+
+    //print title and author
+    char stringBuf[50];
+    if (cmm_save.author[0] != 0) {
+
+        create_dl_translation_matrix(MENU_MTX_PUSH, 160, 0, 0);
+        create_dl_scale_matrix(MENU_MTX_PUSH, 1.5f, 1.5f, 0.f);
+        print_maker_string_ascii_centered(0,134,cmm_file_name,0);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+        sprintf(stringBuf,"%s%s","By: ",cmm_save.author);
+        print_maker_string_ascii_centered(160,184,stringBuf,0);
+    } else {
+        print_maker_string_ascii_centered(160,192,cmm_file_name,0);
+    }
+
+    animate_list_update(cmm_menu_list_offsets, button_count, cmm_menu_index);
+    s32 xoff = 0;
+    s32 yoff = 0;
+    cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_rte_text;
+    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
+        cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
+    }
+
+    for (s32 i=0;i<4;i++) {
+        if (i==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
+            continue;
+        }
+        print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[i],120+yoff,cmm_pause_menu_buttons_main[i],(i==cmm_menu_index));
+        yoff-=16;
+    }
+
+    // print level collectibles
+    // generate string
+    sprintf(stringBuf,"^%dQ%d",cmm_play_stars, cmm_play_stars_max);
+    if (gRedCoinsTotal > 0) {
+        sprintf(stringBuf,"%s @%dQ%d", stringBuf, gRedCoinsCollected, gRedCoinsTotal);
+    }
+    if (cmm_lopt_coinstar > 0) {
+        sprintf(stringBuf,"%s $%dQ%d", stringBuf, gMarioState->numCoins, (cmm_lopt_coinstar*20));
+    }
+    print_text_centered(160,10, stringBuf);
+
+
+    if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+        switch(cmm_menu_index) {
+            case 0:
+                return 1;
+            break;
+            case 3:
+                return 2;
+            break;
+        }
+    }
+    return 0;
+}

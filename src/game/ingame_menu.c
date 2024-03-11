@@ -2547,6 +2547,31 @@ f32 winpercent;
 u8 lvbuf[4];
 
 s32 render_pause_courses_and_castle(void) {
+
+    if (gDialogBoxState == DIALOG_STATE_OPENING) {
+        cmm_init_pause_menu();
+        level_set_transition(-1, NULL);
+        play_sound(SOUND_MENU_PAUSE_OPEN, gGlobalSoundSource);
+        gDialogBoxState = DIALOG_STATE_VERTICAL;
+    }
+
+    shade_screen();
+    s32 decision = draw_cmm_pause_menu();
+    switch(decision) {
+        case 1:
+            level_set_transition(0, NULL);
+            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+            gDialogBoxState = DIALOG_STATE_OPENING;
+            gMenuMode = MENU_MODE_NONE;
+            return MENU_OPT_CONTINUE;
+        break;
+        case 2:
+            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+            gMenuMode = MENU_MODE_NONE;
+            return MENU_OPT_EXIT_COURSE;
+        break;
+    }
+    return MENU_OPT_NONE;
     s16 index;
     s8 soffset;
     u16 i;
