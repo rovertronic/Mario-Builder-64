@@ -2050,6 +2050,15 @@ char * cmm_pause_menu_buttons_main[] = {
     NULL,
 };
 
+//#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow HUD\nCamera Collision")
+char * cmm_pause_menu_buttons_options[] = {
+    "Play Music",
+    "Widescreen Mode",
+    "Show HUD",
+    "Camera Collision",
+    "Return",
+};
+
 void cmm_init_pause_menu(void) {
     cmm_menu_index = 0;
     cmm_pause_menu_state = 0;
@@ -2058,54 +2067,15 @@ void cmm_init_pause_menu(void) {
 s32 draw_cmm_pause_menu(void) {
     u8 returnval = 0;
     s16 badge_count = count_u32_bits(save_file_get_badge_equip());
+    s32 xoff;
+    s32 yoff;
+    char stringBuf[50];
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
     switch(cmm_pause_menu_state) {
         case 0: // main pause menu
-            cmm_joystick = joystick_direction();
-            switch(cmm_joystick) {
-                case 2:
-                    cmm_menu_index++;
-                    if (cmm_menu_index==2&&badge_count==0) {
-                        cmm_menu_index++;
-                    }
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                break;
-                case 4:
-                    cmm_menu_index--;
-                    if (cmm_menu_index==2&&badge_count==0) {
-                        cmm_menu_index--;
-                    }
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                break;
-            }
-            cmm_menu_index = (cmm_menu_index + 4) % 4;
-
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
-                switch(cmm_menu_index) {
-                    case 0: // continue
-                        returnval = 1;
-                    break;
-                    case 1: // options
-                        cmm_pause_menu_state = 1;
-                    break;
-                    case 2: // badges (btcm only)
-                        cmm_pause_menu_state = 2;
-                        //make sure the first unlocked badge is selected
-                        gMarioState->numBadgeSelect = 0;
-                        while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
-                            gMarioState->numBadgeSelect++;
-                        }
-                    break;
-                    case 3: // leave
-                        returnval = 2;
-                    break;
-                }
-            }
-
             //print title and author
-            char stringBuf[50];
             if (cmm_save.author[0] != 0) {
 
                 create_dl_translation_matrix(MENU_MTX_PUSH, 160, 0, 0);
@@ -2124,8 +2094,8 @@ s32 draw_cmm_pause_menu(void) {
             if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
                 cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
             }
-            s32 xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
-            s32 yoff = 0;
+            xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
+            yoff = 0;
             for (s32 i=0;i<4;i++) {
                 if (i==2&&badge_count==0) {
                     continue;
@@ -2158,7 +2128,105 @@ s32 draw_cmm_pause_menu(void) {
             if (cmm_lopt_coinstar > 0) {
                 sprintf(stringBuf,"%s $%dQ%d", stringBuf, gMarioState->numCoins, (cmm_lopt_coinstar*20));
             }
-            print_text_centered(160,10, stringBuf);
+            if ((gRedCoinsTotal > 0)||(cmm_lopt_coinstar > 0)) {
+                print_text_centered(160,10, stringBuf);
+            }
+
+            cmm_joystick = joystick_direction();
+            switch(cmm_joystick) {
+                case 2:
+                    cmm_menu_index++;
+                    if (cmm_menu_index==2&&badge_count==0) {
+                        cmm_menu_index++;
+                    }
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    break;
+                case 4:
+                    cmm_menu_index--;
+                    if (cmm_menu_index==2&&badge_count==0) {
+                        cmm_menu_index--;
+                    }
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    break;
+            }
+            cmm_menu_index = (cmm_menu_index + 4) % 4;
+
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+                switch(cmm_menu_index) {
+                    case 0: // continue
+                        returnval = 1;
+                        break;
+                    case 1: // options
+                        cmm_pause_menu_state = 1;
+                        cmm_menu_index = 0;
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        break;
+                    case 2: // badges (btcm only)
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        cmm_pause_menu_state = 2;
+                        //make sure the first unlocked badge is selected
+                        gMarioState->numBadgeSelect = 0;
+                        while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+                            gMarioState->numBadgeSelect++;
+                        }
+                        break;
+                    case 3: // leave
+                        returnval = 2;
+                        break;
+                }
+            }
+            break;
+
+        case 1: //options
+            xoff = (get_string_width_ascii(cmm_pause_menu_buttons_options[3])/2);
+            for (s32 i=0;i<5;i++) {
+                if (i!=4) {
+                    char * onoroff_string = ": OFF";
+                    if (cmm_sram_configuration.option_flags & (1<<i)) {
+                        onoroff_string = ": ON";
+                    }
+                    sprintf(stringBuf,"%s%s",cmm_pause_menu_buttons_options[i],onoroff_string);
+                    print_generic_string_ascii(160-xoff ,160-(i*16),stringBuf);
+                } else {
+                    print_generic_string_ascii(160-xoff ,160-(i*16),cmm_pause_menu_buttons_options[i]);
+                }
+            }
+
+            create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 160-(cmm_menu_index*16), 0);
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+            cmm_joystick = joystick_direction();
+            switch(cmm_joystick) {
+                case 2:
+                    cmm_menu_index++;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    break;
+                case 4:
+                    cmm_menu_index--;
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    break;
+            }
+            cmm_menu_index = (cmm_menu_index + 5) % 5;
+
+            if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
+                cmm_pause_menu_state = 0;
+                cmm_menu_index = 0;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                switch(cmm_menu_index) {
+                    case 4:
+                        cmm_pause_menu_state = 0;
+                        cmm_menu_index = 0;
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        break;
+                    default:
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                        cmm_sram_configuration.option_flags ^= (1<<cmm_menu_index);
+                        break;
+                }
+            }
             break;
 
         case 2: //badge view

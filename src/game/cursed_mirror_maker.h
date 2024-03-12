@@ -363,6 +363,7 @@ struct cmm_level_uncompressed_save {
 
 struct cmm_sram_config {
     char author[31];
+    u8 option_flags;
     u32 magic;
 };
 

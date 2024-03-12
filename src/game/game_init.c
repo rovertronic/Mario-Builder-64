@@ -1135,6 +1135,7 @@ void thread5_game_loop(UNUSED void *arg) {
     if (cmm_sram_configuration.magic != SRAM_MAGIC) {
         // If the SRAM magic fails, that means it's bzero'd or garbage data.
         bzero(&cmm_sram_configuration,sizeof(cmm_sram_configuration));
+        cmm_sram_configuration.option_flags = 0xD;
         cmm_sram_configuration.magic = SRAM_MAGIC;
     }
 
