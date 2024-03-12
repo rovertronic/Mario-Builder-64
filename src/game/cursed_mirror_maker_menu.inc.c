@@ -2214,11 +2214,17 @@ s32 draw_cmm_pause_menu(void) {
                 cmm_pause_menu_state = 0;
                 cmm_menu_index = 0;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                if (gSramProbe != 0) {
+                    nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                }
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_menu_index) {
                     case 4:
                         cmm_pause_menu_state = 0;
                         cmm_menu_index = 0;
+                        if (gSramProbe != 0) {
+                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                        }
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     default:
