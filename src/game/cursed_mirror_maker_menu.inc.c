@@ -102,6 +102,12 @@ void print_generic_string_ascii_centered(s32 x, s32 y, char *str) {
     print_generic_string_ascii(x - x1/2, y, str);
 }
 
+char fileextsample[] = ".mb64"; //slightly cursed
+void print_generic_string_ascii_centered_nofileext(s32 x, s32 y, char *str) {
+    s32 x1 = get_string_width_ascii(str) - get_string_width_ascii(fileextsample);
+    print_generic_string_ascii_nofileext(x - x1/2, y, str);
+}
+
 void print_maker_string(s32 x, s32 y, u8 *str, s32 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
@@ -2033,8 +2039,9 @@ s32 cmm_main_menu(void) {
 
 
 // Pause menu during play
+u8 cmm_pause_menu_state = 0;
 char cmm_pause_menu_rte_text[] = "Return to Editor";
-char cmm_pause_menu_ec_text[] = "Exit Level";
+char cmm_pause_menu_ec_text[] = "Exit Course";
 
 char * cmm_pause_menu_buttons_main[] = {
     "Continue",
@@ -2045,95 +2052,122 @@ char * cmm_pause_menu_buttons_main[] = {
 
 void cmm_init_pause_menu(void) {
     cmm_menu_index = 0;
+    cmm_pause_menu_state = 0;
 }
 
 s32 draw_cmm_pause_menu(void) {
-    u8 button_count = 4;
-
-    cmm_joystick = joystick_direction();
-    switch(cmm_joystick) {
-        case 2:
-            cmm_menu_index++;
-            if (cmm_menu_index==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
-                cmm_menu_index++;
-            }
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-        break;
-        case 4:
-            cmm_menu_index--;
-            if (cmm_menu_index==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
-                cmm_menu_index--;
-            }
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-        break;
-    }
-    cmm_menu_index = (cmm_menu_index + button_count) % button_count;
+    u8 returnval = 0;
+    s16 badge_count = count_u32_bits(save_file_get_badge_equip());
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
-    //print title and author
-    char stringBuf[50];
-    if (cmm_save.author[0] != 0) {
+    switch(cmm_pause_menu_state) {
+        case 0: // main pause menu
+            cmm_joystick = joystick_direction();
+            switch(cmm_joystick) {
+                case 2:
+                    cmm_menu_index++;
+                    if (cmm_menu_index==2&&badge_count==0) {
+                        cmm_menu_index++;
+                    }
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                break;
+                case 4:
+                    cmm_menu_index--;
+                    if (cmm_menu_index==2&&badge_count==0) {
+                        cmm_menu_index--;
+                    }
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                break;
+            }
+            cmm_menu_index = (cmm_menu_index + 4) % 4;
 
-        create_dl_translation_matrix(MENU_MTX_PUSH, 160, 0, 0);
-        create_dl_scale_matrix(MENU_MTX_PUSH, 1.5f, 1.5f, 0.f);
-        print_generic_string_ascii_centered(0,134,cmm_file_name);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+                switch(cmm_menu_index) {
+                    case 0: // continue
+                        returnval = 1;
+                    break;
+                    case 1: // options
+                        cmm_pause_menu_state = 1;
+                    break;
+                    case 2: // badges (btcm only)
+                        cmm_pause_menu_state = 2;
+                        //make sure the first unlocked badge is selected
+                        gMarioState->numBadgeSelect = 0;
+                        while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+                            gMarioState->numBadgeSelect++;
+                        }
+                    break;
+                    case 3: // leave
+                        returnval = 2;
+                    break;
+                }
+            }
 
-        sprintf(stringBuf,"%s%s","By: ",cmm_save.author);
-        print_generic_string_ascii_centered(160,184,stringBuf);
-    } else {
-        print_generic_string_ascii_centered(160,192,cmm_file_name);
-    }
+            //print title and author
+            char stringBuf[50];
+            if (cmm_save.author[0] != 0) {
 
-    //animate_list_update(cmm_menu_list_offsets, button_count, cmm_menu_index);
-    cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_rte_text;
-    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
-        cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
-    }
-    s32 xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
-    s32 yoff = 0;
-    for (s32 i=0;i<4;i++) {
-        if (i==2&&cmm_lopt_game!=CMM_GAME_BTCM) {
-            continue;
-        }
-        print_generic_string_ascii(160-xoff  ,120+yoff,cmm_pause_menu_buttons_main[i]);
-        yoff-=16;
-    }
+                create_dl_translation_matrix(MENU_MTX_PUSH, 160, 0, 0);
+                create_dl_scale_matrix(MENU_MTX_PUSH, 1.5f, 1.5f, 0.f);
+                print_generic_string_ascii_centered_nofileext(0,134,cmm_file_name);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+                sprintf(stringBuf,"%s%s","By: ",cmm_save.author);
+                print_generic_string_ascii_centered(160,184,stringBuf);
+            } else {
+                print_generic_string_ascii_centered(160,192,cmm_file_name);
+            }
 
-    // Print selector triangle
-    create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 120-(cmm_menu_index*16), 0);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+            cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_rte_text;
+            if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
+                cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
+            }
+            s32 xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
+            s32 yoff = 0;
+            for (s32 i=0;i<4;i++) {
+                if (i==2&&badge_count==0) {
+                    continue;
+                }
+                print_generic_string_ascii(160-xoff  ,120+yoff,cmm_pause_menu_buttons_main[i]);
+                yoff-=16;
+            }
 
-    // print level collectibles
-    // generate string
-    sprintf(stringBuf,"^%dQ%d",cmm_play_stars, cmm_play_stars_max);
-    print_text_centered(160,160, stringBuf);
+            gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    if (gRedCoinsTotal > 0) {
-        //sprintf(stringBuf,"%s @%dQ%d", stringBuf, gRedCoinsCollected, gRedCoinsTotal);
-        sprintf(stringBuf,"@%dQ%d", gRedCoinsCollected, gRedCoinsTotal);
-    }
-    if (cmm_lopt_coinstar > 0) {
-        sprintf(stringBuf,"%s $%dQ%d", stringBuf, gMarioState->numCoins, (cmm_lopt_coinstar*20));
-    }
-    print_text_centered(160,10, stringBuf);
+            // Print selector triangle
+            if ((badge_count==0)&&(cmm_menu_index == 3)) {
+                create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 120-(2*16), 0);
+            } else {
+                create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 120-(cmm_menu_index*16), 0);
+            }
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
+            // print level collectibles
+            // generate string
+            sprintf(stringBuf,"^%dQ%d",cmm_play_stars, cmm_play_stars_max);
+            print_text_centered(160,160, stringBuf);
 
-    if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
-        switch(cmm_menu_index) {
-            case 0:
-                return 1;
+            if (gRedCoinsTotal > 0) {
+                //sprintf(stringBuf,"%s @%dQ%d", stringBuf, gRedCoinsCollected, gRedCoinsTotal);
+                sprintf(stringBuf,"@%dQ%d", gRedCoinsCollected, gRedCoinsTotal);
+            }
+            if (cmm_lopt_coinstar > 0) {
+                sprintf(stringBuf,"%s $%dQ%d", stringBuf, gMarioState->numCoins, (cmm_lopt_coinstar*20));
+            }
+            print_text_centered(160,10, stringBuf);
             break;
-            case 3:
-                return 2;
+
+        case 2: //badge view
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+                cmm_pause_menu_state = 0;
+            }
+            draw_cmm_pause_badges();
             break;
-        }
     }
-    return 0;
+
+    return returnval;
 }
