@@ -2789,7 +2789,7 @@ void sb_init(void) {
             cmm_boundary_object[4]->oFaceAnglePitch = 0x4000;
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
-            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+            if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
                 play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
             }
         break;
@@ -2827,7 +2827,7 @@ void sb_init(void) {
 
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
-            if (gMarioState->Options & (1<<OPT_MUSIC)) {
+            if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
                 play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
             }
         break;
