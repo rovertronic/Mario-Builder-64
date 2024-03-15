@@ -978,6 +978,7 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_GRASS,         mat_maker_MakerGrassSide},
     {CMM_MAT_SAND,          mat_maker_MakerSandSide},
     {CMM_MAT_SNOW,          mat_maker_MakerSnowSide},
+    {CMM_MAT_TILES,         mat_maker_MakerTileEdge},
     {CMM_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
     {CMM_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
     {CMM_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
