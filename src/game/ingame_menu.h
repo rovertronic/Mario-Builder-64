@@ -196,6 +196,7 @@ void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);
 s32 render_menus_and_dialogs(void);
 void shade_screen(void);
+void draw_cmm_pause_badges(void);
 
 void int_to_str_time(s32 num, s32 num2, s32 num3, u8 *dst);
 void int_to_str_slash(s32 num, s32 num2, u8 *dst);

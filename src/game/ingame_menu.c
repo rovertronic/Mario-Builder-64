@@ -35,6 +35,10 @@
 #include "rendering_graph_node.h"
 #include "cursed_mirror_maker.h"
 
+s8 tab_index = 0;
+u16 menu_sintimer = 0;
+s8 mindex = 0;
+
 u8 letgo = FALSE;
 
 f32 _spread;
@@ -2480,11 +2484,100 @@ s32 gCourseDoneMenuTimer = 0;
 s32 gCourseCompleteCoins = 0;
 s8 gHudFlash = HUD_FLASH_NONE;
 
-s8 tab_index = 0;
-u16 menu_sintimer = 0;
-s8 mindex = 0;
-
+#define badge_location_x 42+((i%8)*34)
+#define badge_location_y (224+soffset)-((i/8)*34)
 #define btxoff 50
+
+void draw_cmm_pause_badges(void) {
+    s16 index;
+    s8 soffset;
+    u16 i;
+    f32 sine = sins(menu_sintimer);
+    s8 tab;
+    menu_sintimer += 1200;
+
+    //CONTROL
+    if ((gPlayer1Controller->rawStickX > 60)&&(letgo == FALSE)) {
+        gMarioState->numBadgeSelect ++;
+        while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+            gMarioState->numBadgeSelect ++;
+            gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+        }
+        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+        letgo = TRUE;
+        }
+    if ((gPlayer1Controller->rawStickX < -60)&&(letgo == FALSE)) {
+        gMarioState->numBadgeSelect --;
+        while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
+            gMarioState->numBadgeSelect --;
+            gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
+        }
+        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+        letgo = TRUE;
+        }
+    if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
+        letgo = FALSE;
+        }
+
+    s16 badge_x_offset = 0;
+    s16 badge_y_offset = 0;
+    s16 badge_count = count_u32_bits(save_file_get_badge_equip());
+
+    switch(badge_count) {
+        case 1:
+            badge_x_offset = 17*7;
+        break;
+        case 2:
+            badge_x_offset = 17*6;
+        break;
+        case 3:
+            badge_x_offset = 17*5;
+        break;
+        case 4:
+            badge_x_offset = 17*4;
+        break;
+        case 5:
+            badge_x_offset = 17*3;
+        break;
+        case 6:
+            badge_x_offset = 17*2;
+        break;
+        case 7:
+            badge_x_offset = 17*1;
+        break;
+    }
+    if (badge_count < 9) {
+        badge_y_offset -= 32;
+    }
+
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+
+    i = 0;
+    for (int j=0;j<24;j++) {
+        soffset = -40;
+        if (j == gMarioState->numBadgeSelect) {
+            soffset = -40+(sine*4.0f);
+        }
+        if (save_file_get_badge_equip() & (1<<j)) {
+            display_icon(bicon_table[j], badge_location_x+badge_x_offset, badge_location_y + badge_y_offset);
+            i++;
+        }
+    }
+
+    //print badge info if badge is unlocked
+    if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+        print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f)-1, 125-1-btxoff, badgenames[gMarioState->numBadgeSelect]);
+        print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f)-1, 108-1-btxoff, badgedescs[gMarioState->numBadgeSelect]);
+        gDPSetEnvColor(gDisplayListHead++, badgecolors[gMarioState->numBadgeSelect][0], badgecolors[gMarioState->numBadgeSelect][1], badgecolors[gMarioState->numBadgeSelect][2], 255);
+        print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f), 125-btxoff, badgenames[gMarioState->numBadgeSelect]);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+        print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f), 108-btxoff, badgedescs[gMarioState->numBadgeSelect]);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    }
+}
 
 void add_tab(u8 tab_to_add) {
     if (tablist_count < 5) {
@@ -2539,14 +2632,35 @@ void build_tabs(void) {
 #define vpyo 72
 f32 winpercent;
 
-
-#define badge_location_x 42+((i%8)*34)
-#define badge_location_y (224+soffset)-((i/8)*34)
-
 //for level up message.
 u8 lvbuf[4];
 
 s32 render_pause_courses_and_castle(void) {
+
+    if (gDialogBoxState == DIALOG_STATE_OPENING) {
+        cmm_init_pause_menu();
+        level_set_transition(-1, NULL);
+        play_sound(SOUND_MENU_PAUSE_OPEN, gGlobalSoundSource);
+        gDialogBoxState = DIALOG_STATE_VERTICAL;
+    }
+
+    shade_screen();
+    s32 decision = draw_cmm_pause_menu();
+    switch(decision) {
+        case 1:
+            level_set_transition(0, NULL);
+            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+            gDialogBoxState = DIALOG_STATE_OPENING;
+            gMenuMode = MENU_MODE_NONE;
+            return MENU_OPT_CONTINUE;
+        break;
+        case 2:
+            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+            gMenuMode = MENU_MODE_NONE;
+            return MENU_OPT_EXIT_COURSE;
+        break;
+    }
+    return MENU_OPT_NONE;
     s16 index;
     s8 soffset;
     u16 i;
@@ -2684,154 +2798,6 @@ s32 render_pause_courses_and_castle(void) {
             break;
         case 1:
             shade_screen();
-
-            //CONTROL
-            if ((gPlayer1Controller->rawStickX > 60)&&(letgo == FALSE)) {
-                gMarioState->numBadgeSelect ++;
-                while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
-                    gMarioState->numBadgeSelect ++;
-                    gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
-                }
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-                letgo = TRUE;
-                }
-            if ((gPlayer1Controller->rawStickX < -60)&&(letgo == FALSE)) {
-                gMarioState->numBadgeSelect --;
-                while (!(save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect))) {
-                    gMarioState->numBadgeSelect --;
-                    gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
-                }
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-                letgo = TRUE;
-                }
-            /*
-            if ((gPlayer1Controller->rawStickY > 60)&&(letgo == FALSE)) {
-                gMarioState->numBadgeSelect -=8;
-                gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-                letgo = TRUE;
-                }
-            if ((gPlayer1Controller->rawStickY < -60)&&(letgo == FALSE)) {
-                gMarioState->numBadgeSelect +=8;
-                gMarioState->numBadgeSelect = (24+gMarioState->numBadgeSelect)%24;
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-                letgo = TRUE;
-                }
-            */
-            if ((gPlayer1Controller->rawStickX > -60)&&(gPlayer1Controller->rawStickX < 60)&&(gPlayer1Controller->rawStickY > -60)&&(gPlayer1Controller->rawStickY < 60)) {
-                letgo = FALSE;
-                }
-    
-            /*
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                if (save_file_get_badge_unlock() & (1<<gMarioState->numBadgeSelect)) {
-                    if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
-                        save_file_set_badge_unequip( (1<<gMarioState->numBadgeSelect) );
-                        play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
-                        gMarioState->numEquippedBadges --;
-                        gMarioState->numMaxBP = UPGRADE_TABLE[gMarioState->Level][3] + get_evil_badge_bonus();
-
-
-                        if (!(gMarioState->Cheats & (1 << 6))) {
-                            if (gMarioState->numEquippedBadges > gMarioState->numMaxBP) {
-                                //badge overflow! unequip all badges.
-                                gMarioState->numEquippedBadges = 0;
-                                save_file_set_badge_unequip_all();
-                            }
-                        }
-                    }else{//not equppied, therefore equip
-                        if ((gMarioState->numEquippedBadges < gMarioState->numMaxBP)||(gMarioState->Cheats & (1 << 6))) {
-                            save_file_set_badge_equip( (1<<gMarioState->numBadgeSelect) );
-                            play_sound(SOUND_MENU_MESSAGE_APPEAR, gGlobalSoundSource);
-                            gMarioState->numEquippedBadges ++;
-
-                            gMarioState->numMaxBP = UPGRADE_TABLE[gMarioState->Level][3] + get_evil_badge_bonus();
-                            }
-                            else
-                            {
-                            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                            }
-                        }
-                    }
-                    else
-                    {
-                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                    }
-            }
-
-            if (gPlayer1Controller->buttonPressed == Z_TRIG) {
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-                save_file_set_badge_unlock( (1<<gMarioState->numBadgeSelect) );
-                }
-            */
-
-            //print_text_fmt_int(20, 56, "%d" , (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)));
-
-            //MysteryBadge_Plane_001_mesh
-
-            //print badge capacity
-            //print_text_fmt_int2(90, 30, "BP %dQ%d", gMarioState->numEquippedBadges, gMarioState->numMaxBP);
-
-            s16 badge_x_offset = 0;
-            s16 badge_y_offset = 0;
-            s16 badge_count = count_u32_bits(save_file_get_badge_equip());
-
-            switch(badge_count) {
-                case 1:
-                    badge_x_offset = 17*7;
-                break;
-                case 2:
-                    badge_x_offset = 17*6;
-                break;
-                case 3:
-                    badge_x_offset = 17*5;
-                break;
-                case 4:
-                    badge_x_offset = 17*4;
-                break;
-                case 5:
-                    badge_x_offset = 17*3;
-                break;
-                case 6:
-                    badge_x_offset = 17*2;
-                break;
-                case 7:
-                    badge_x_offset = 17*1;
-                break;
-            }
-            if (badge_count < 9) {
-                badge_y_offset -= 32;
-            }
-
-            i = 0;
-            for (int j=0;j<24;j++) {
-                soffset = -40;
-                if (j == gMarioState->numBadgeSelect) {
-                    soffset = -40+(sine*4.0f);
-                }
-
-                if (save_file_get_badge_equip() & (1<<j)) {
-                    display_icon(bicon_table[j], badge_location_x+badge_x_offset, badge_location_y + badge_y_offset);
-                    i++;
-                }
-                //if ((save_file_get_badge_equip() & (1<<i))) {
-                //    display_icon(&bE_Plane_001_mesh, badge_location_x, badge_location_y);
-                //    }
-            }
-
-
-            //print badge info if badge is unlocked
-            if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
-                gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-                print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f)-1, 125-1-btxoff, badgenames[gMarioState->numBadgeSelect]);
-                print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f)-1, 108-1-btxoff, badgedescs[gMarioState->numBadgeSelect]);
-                gDPSetEnvColor(gDisplayListHead++, badgecolors[gMarioState->numBadgeSelect][0], badgecolors[gMarioState->numBadgeSelect][1], badgecolors[gMarioState->numBadgeSelect][2], 255);
-                print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f), 125-btxoff, badgenames[gMarioState->numBadgeSelect]);
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f), 108-btxoff, badgedescs[gMarioState->numBadgeSelect]);
-                gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-            }
         break;
         // case 2://upgradestation
         //     shade_screen();

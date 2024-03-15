@@ -26,6 +26,8 @@ s32 cmm_main_menu(void);
 extern Gfx cmm_terrain_gfx[CMM_GFX_SIZE];
 extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH][4];
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
+s32 draw_cmm_pause_menu(void);
+void cmm_init_pause_menu(void);
 
 extern u8 cmm_level_action;
 extern u8 cmm_mode;
@@ -361,6 +363,7 @@ struct cmm_level_uncompressed_save {
 
 struct cmm_sram_config {
     char author[31];
+    u8 option_flags;
     u32 magic;
 };
 

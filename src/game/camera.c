@@ -1171,66 +1171,68 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_diff(camera_looknormal,c->focus,c->pos);
     vec3f_normalize(camera_looknormal);
 
-    raycast_mode_camera = TRUE;
+    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
+        raycast_mode_camera = TRUE;
 
-    // CEILING COLLISION
-    // Standard camera raycast check for ceiling collision. No special shenanigans here!
-    vec3f_copy(origin,gMarioState->pos);
-    origin[1] += 50.0f;
-    vec3f_diff(camdir,c->pos,origin);
-    find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
-
-    if (surf) {
-        vec3f_copy(c->pos,hitpos);
-    }
-
-    // WALL COLLISION
-    // More complex; does an initial check to disqualify 300 unit high walls. If there are walls taller than 300 units,
-    // then do a standard camera raycast and test for walls. If successful, set the camera position to the wall hit location
-    // and push the camera inward if Mario is close to the wall.
-
-    vec3f_copy(origin,gMarioState->pos);
-    origin[1] += 300.0f;
-    vec3f_diff(camdir,c->pos,origin);
-    find_surface_on_ray(origin, camdir, &surf, &hitpos_300u, RAYCAST_FIND_WALL);
-
-    if (surf) {
+        // CEILING COLLISION
+        // Standard camera raycast check for ceiling collision. No special shenanigans here!
         vec3f_copy(origin,gMarioState->pos);
         origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
-
-        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
-
-        if (!((hitpos_300u[0] == hitpos[0])&&(hitpos_300u[2] == hitpos[2]))) {
-            // The 300+ unit raycast and the 50+ unit raycast do not hit the same wall.
-            // This happens if Mario is standing behind a 300 unit tall wall, and the initial raycast
-            // still hits a wall behind Mario. Without this check, this causes the raycast to
-            // teleport really close behind the 300 unit tall wall. Override the 50+ unit raycast
-            // hit position to be the 300+ unit hit position instead.
-
-            vec3f_copy(hitpos,hitpos_300u);
-        }
-
-        Vec3f camera_hit_diff;
-        vec3f_diff(camera_hit_diff,origin,hitpos);
-        f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
 
         if (surf) {
-            f32 thickMul = 35.0f;
-
-            if (hit_to_mario_dist < 300.0f) {
-                thickMul -= 300.0f-hit_to_mario_dist;
-            }
-
-            thick[0] = camera_looknormal[0] * thickMul;
-            thick[1] = camera_looknormal[1] * thickMul;
-            thick[2] = camera_looknormal[2] * thickMul;
-            vec3f_add(hitpos,thick);
             vec3f_copy(c->pos,hitpos);
         }
-    }
 
-    raycast_mode_camera = FALSE;
+        // WALL COLLISION
+        // More complex; does an initial check to disqualify 300 unit high walls. If there are walls taller than 300 units,
+        // then do a standard camera raycast and test for walls. If successful, set the camera position to the wall hit location
+        // and push the camera inward if Mario is close to the wall.
+
+        vec3f_copy(origin,gMarioState->pos);
+        origin[1] += 300.0f;
+        vec3f_diff(camdir,c->pos,origin);
+        find_surface_on_ray(origin, camdir, &surf, &hitpos_300u, RAYCAST_FIND_WALL);
+
+        if (surf) {
+            vec3f_copy(origin,gMarioState->pos);
+            origin[1] += 50.0f;
+            vec3f_diff(camdir,c->pos,origin);
+
+            find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+
+            if (!((hitpos_300u[0] == hitpos[0])&&(hitpos_300u[2] == hitpos[2]))) {
+                // The 300+ unit raycast and the 50+ unit raycast do not hit the same wall.
+                // This happens if Mario is standing behind a 300 unit tall wall, and the initial raycast
+                // still hits a wall behind Mario. Without this check, this causes the raycast to
+                // teleport really close behind the 300 unit tall wall. Override the 50+ unit raycast
+                // hit position to be the 300+ unit hit position instead.
+
+                vec3f_copy(hitpos,hitpos_300u);
+            }
+
+            Vec3f camera_hit_diff;
+            vec3f_diff(camera_hit_diff,origin,hitpos);
+            f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+
+            if (surf) {
+                f32 thickMul = 35.0f;
+
+                if (hit_to_mario_dist < 300.0f) {
+                    thickMul -= 300.0f-hit_to_mario_dist;
+                }
+
+                thick[0] = camera_looknormal[0] * thickMul;
+                thick[1] = camera_looknormal[1] * thickMul;
+                thick[2] = camera_looknormal[2] * thickMul;
+                vec3f_add(hitpos,thick);
+                vec3f_copy(c->pos,hitpos);
+            }
+        }
+
+        raycast_mode_camera = FALSE;
+    }
 }
 
 /**

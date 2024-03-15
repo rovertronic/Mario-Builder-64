@@ -933,7 +933,7 @@ void render_hud(void) {
         display_title();
         }
 
-        gMarioState->toggleHud = (gMarioState->Options & (1<<OPT_HUD));
+        gMarioState->toggleHud = (cmm_sram_configuration.option_flags & (1<<OPT_HUD));
 
         if ((cmm_mode == CMM_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
 
@@ -1066,6 +1066,7 @@ void render_hud(void) {
                 render_hud_timer();
             }
 
+            /*
             if (gMarioState->NewTimer > 0) {
                 if (!(gMarioState->Options & (1<<OPT_MINIMAP))) {
                     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),20, "j %d", gMarioState->NewTimer);
@@ -1073,6 +1074,7 @@ void render_hud(void) {
                     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),90, "j %d", gMarioState->NewTimer);
                     }
                 }
+            */
 
             /*
             if (gMarioState->Options & (1<<OPT_MINIMAP)) {
