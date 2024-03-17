@@ -578,7 +578,12 @@ enum cmm_materials {
     // Terrain
     CMM_MAT_GRASS = CMM_MATLIST_START,
     CMM_MAT_GRASS_OLD,
+    CMM_MAT_CARTOON_GRASS,
+    CMM_MAT_DARK_GRASS,
     CMM_MAT_HMC_GRASS,
+    CMM_MAT_ORANGE_GRASS,
+    CMM_MAT_RED_GRASS,
+    CMM_MAT_PURPLE_GRASS,
     CMM_MAT_SAND,
     CMM_MAT_JRB_SAND,
     CMM_MAT_SNOW,
@@ -586,9 +591,14 @@ enum cmm_materials {
 
     CMM_MAT_DIRT,
     CMM_MAT_SANDDIRT,
+    CMM_MAT_LIGHTDIRT,
     CMM_MAT_HMC_DIRT,
+    CMM_MAT_ROCKY_DIRT,
     CMM_MAT_DIRT_OLD,
+    CMM_MAT_WAVY_DIRT,
+    CMM_MAT_WAVY_DIRT_BLUE,
     CMM_MAT_SNOWDIRT,
+    CMM_MAT_PURPLE_DIRT,
     CMM_MAT_HMC_LAKEGRASS,
 
     CMM_MATLIST_TERRAIN_END,
@@ -797,16 +807,26 @@ struct cmm_material cmm_mat_table[] = {
     // Terrain
     {mat_maker_MakerGrass,        0, SURFACE_GRASS,        "Grass"},       // CMM_MAT_GRASS
     {mat_maker_MakerVanillaGrass, 0, SURFACE_GRASS,        "Grass (Old)"}, // CMM_MAT_GRASS_OLD
+    {mat_maker_MakerCartoonGrass, 0, SURFACE_GRASS,        "Smooth Grass"},// CMM_MAT_CARTOON_GRASS
+    {mat_maker_MakerDarkGrass,    0, SURFACE_GRASS,        "Dark Grass"},  // CMM_MAT_DARK_GRASS
     {mat_maker_MakerHGrass,       0, SURFACE_GRASS,        "Cave Grass"},  // CMM_MAT_HMC_GRASS
+    {mat_maker_MakerOrangeGrass,  0, SURFACE_GRASS,        "Orange Grass"},// CMM_MAT_ORANGE_GRASS
+    {mat_maker_MakerRedGrass,     0, SURFACE_GRASS,        "Red Grass"},   // CMM_MAT_RED_GRASS
+    {mat_maker_MakerPurpleGrass,  0, SURFACE_GRASS,        "Purple Grass"},// CMM_MAT_PURPLE_GRASS
     {mat_maker_MakerSand,         0, SURFACE_SAND,         "Sand"},        // CMM_MAT_SAND
     {mat_maker_MakerJRBSand,      0, SURFACE_SAND,         "Ocean Sand"},  // CMM_MAT_JRB_SAND
     {mat_maker_MakerSnow,         0, SURFACE_SNOW,         "Snow"},        // CMM_MAT_SNOW
     {mat_maker_MakerVanillaSnow,  0, SURFACE_SNOW,         "Snow (Old)"},  // CMM_MAT_SNOW_OLD
     {mat_maker_MakerDirt,         0, SURFACE_NOT_SLIPPERY, "Dirt"},        // CMM_MAT_DIRT
     {mat_maker_MakerSandDirt,     0, SURFACE_NOT_SLIPPERY, "Sandy Dirt"},  // CMM_MAT_SANDDIRT
+    {mat_maker_MakerLightDirt,    0, SURFACE_NOT_SLIPPERY, "Light Dirt"},  // CMM_MAT_LIGHTDIRT
     {mat_maker_MakerHDirt,        0, SURFACE_NOT_SLIPPERY, "Cave Dirt"},   // CMM_MAT_HMC_DIRT
+    {mat_maker_MakerRockyDirt,    0, SURFACE_NOT_SLIPPERY, "Rocky Dirt"},  // CMM_MAT_ROCKY_DIRT
     {mat_maker_MakerVanillaDirt,  0, SURFACE_NOT_SLIPPERY,  "Dirt (Old)"}, // CMM_MAT_DIRT_OLD
+    {mat_maker_MakerWavyDirt,     0, SURFACE_NOT_SLIPPERY, "Wavy Dirt"},   // CMM_MAT_WAVY_DIRT
+    {mat_maker_MakerWavyDirtBlue, 0, SURFACE_NOT_SLIPPERY, "Wavy Dirt (Blue)"}, // CMM_MAT_WAVY_DIRT_BLUE
     {mat_maker_MakerSnowDirt,     0, SURFACE_NOT_SLIPPERY, "Snowy Dirt"},  // CMM_MAT_SNOWDIRT
+    {mat_maker_MakerPurpleDirt,   0, SURFACE_NOT_SLIPPERY, "Purple Dirt"}, // CMM_MAT_PURPLE_DIRT
     {mat_maker_MakerHLakewall,    0, SURFACE_NOT_SLIPPERY, "Clay"},        // CMM_MAT_HMC_LAKEGRASS
 
     // Stone
@@ -989,6 +1009,11 @@ struct cmm_topmaterial cmm_topmat_table[] = {
     {CMM_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
     {CMM_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
     {CMM_MAT_LAVA_ROCKS,    mat_maker_MakerLavaRockEdge},
+    {CMM_MAT_DARK_GRASS,    mat_maker_MakerDarkGrassSide},
+    {CMM_MAT_CARTOON_GRASS, mat_maker_MakerCartoonGrassSide},
+    {CMM_MAT_ORANGE_GRASS,  mat_maker_MakerOrangeGrassSide},
+    {CMM_MAT_RED_GRASS,     mat_maker_MakerRedGrassSide},
+    {CMM_MAT_PURPLE_GRASS,  mat_maker_MakerPurpleGrassSide},
 };
 
 enum cmm_fences {
