@@ -974,7 +974,9 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
         }
 
         // Else check its a full block
-        if (get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) connections[rot] = 1;
+        if ((get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) || (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_CULL)) {
+            connections[rot] = 1;
+        }
     }
 }
 
@@ -989,7 +991,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
         vec3_sum(adjacentPos, pos, cullOffsetLUT[updown]);
         if (coords_in_range(adjacentPos)) {
             u32 faceshape = get_faceshape(adjacentPos, updown);
-            if (faceshape == CMM_FACESHAPE_FULL) {
+            if ((faceshape == CMM_FACESHAPE_FULL) || ((get_grid_tile(adjacentPos)->type - 1) == TILE_TYPE_CULL)) {
                 for (u32 rot = 0; rot < 4; rot++) {
                     connections[rot] |= (1 << (updown+1)); // Apply top flag to all bars
                 }
