@@ -7,6 +7,7 @@
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "platform_displacement.h"
+#include "game_init.h"
 #include "types.h"
 #include "sm64.h"
 #include "cursed_mirror_maker.h"
@@ -60,6 +61,9 @@ void update_mario_platform(void) {
             if (floor != NULL && floor->object != NULL) {
                 gMarioPlatform = floor->object;
                 gMarioObject->platform = floor->object;
+				if ((floor->object != sMarioDisplacementInfo.prevPlatform) || (gGlobalTimer != sMarioDisplacementInfo.prevTimer)) {
+					update_platform_displacement_info(&sMarioDisplacementInfo, gMarioState->pos, gMarioState->faceAngle[1], floor->object);
+				}
             } else {
                 gMarioPlatform = NULL;
                 gMarioObject->platform = NULL;
@@ -88,12 +92,10 @@ void set_mario_pos(f32 x, f32 y, f32 z) {
 
 struct PlatformDisplacementInfo sMarioDisplacementInfo;
 Vec3f sMarioAmountDisplaced;
-extern s32 gGlobalTimer;
-
 
 /**
-+ * Upscale or downscale a vector by another vector.
-+ */
+ * Upscale or downscale a vector by another vector.
+ */
 static void scale_vec3f(Vec3f dst, Vec3f src, Vec3f scale, u32 doInverted) {
 	if (doInverted) {
 		dst[0] = src[0] / scale[0];
@@ -107,11 +109,34 @@ static void scale_vec3f(Vec3f dst, Vec3f src, Vec3f scale, u32 doInverted) {
 }
 
 /**
+ * Set the values in the platform displacement struct for use next frame
+ */
+void update_platform_displacement_info(struct PlatformDisplacementInfo *displaceInfo, Vec3f pos, s16 yaw, struct Object *platform) {
+	Vec3f scaledPos, yawVec, localPos;
+	vec3f_copy(localPos, pos);
+	vec3f_sub(localPos, (*platform->header.gfx.throwMatrix)[3]);
+	linear_mtxf_transpose_mul_vec3f(*platform->header.gfx.throwMatrix, scaledPos, localPos);
+	scale_vec3f(displaceInfo->prevTransformedPos, scaledPos, platform->header.gfx.scale, TRUE);
+
+	// Update info for next frame
+	// Update position
+	vec3f_copy(displaceInfo->prevPos, pos);
+
+	// Set yaw info
+	vec3f_set(yawVec, sins(yaw), 0, coss(yaw));
+	linear_mtxf_transpose_mul_vec3f(*platform->header.gfx.throwMatrix, displaceInfo->prevTransformedYawVec, yawVec);
+	displaceInfo->prevYaw = yaw;
+
+	// Update platform and timer
+	displaceInfo->prevPlatform = platform;
+	displaceInfo->prevTimer = gGlobalTimer;
+}
+
+/**
  * Apply one frame of platform displacement to Mario or an object using the given
  * platform.
  */
 void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, Vec3f pos, s16 *yaw, struct Object *platform) {
-	Vec3f platformPos;
 	Vec3f posDifference;
 	Vec3f yawVec;
 	Vec3f scaledPos;
@@ -120,8 +145,6 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 
 	// Avoid a crash if the platform unloaded its collision while stood on
 	if (platform->header.gfx.throwMatrix == NULL) return;
-
-	vec3f_copy(platformPos, (*platform->header.gfx.throwMatrix)[3]);
 
 	// Determine how far Mario moved on his own since last frame
 	vec3f_copy(posDifference, pos);
@@ -135,45 +158,22 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 		// Add on how much Mario moved in the previous frame
 		vec3f_add(pos, posDifference);
 
+		vec3f_add(pos, (*platform->header.gfx.throwMatrix)[3]);
 		// Calculate new yaw
 		linear_mtxf_mul_vec3f(*platform->header.gfx.throwMatrix, yawVec, displaceInfo->prevTransformedYawVec);
 		*yaw = atan2s(yawVec[2], yawVec[0]) + yawDifference;
-	} else {
-		// First frame of standing on the platform, don't calculate a new position
-		vec3f_sub(pos, platformPos);
 	}
 
-	// Transform from world positions to relative positions for use next frame
-	linear_mtxf_transpose_mul_vec3f(*platform->header.gfx.throwMatrix, scaledPos, pos);
-	scale_vec3f(displaceInfo->prevTransformedPos, scaledPos, platform->header.gfx.scale, TRUE);
-	vec3f_add(pos, platformPos);
+	Vec3f oldPos;
+	vec3f_copy(oldPos, displaceInfo->prevPos);
+	update_platform_displacement_info(displaceInfo, pos, *yaw, platform);
 
 	// If the object is Mario, set inertia
 	if (pos == gMarioState->pos) {
 		vec3f_copy(sMarioAmountDisplaced, pos);
-		vec3f_sub(sMarioAmountDisplaced, displaceInfo->prevPos);
+		vec3f_sub(sMarioAmountDisplaced, oldPos);
 		vec3f_sub(sMarioAmountDisplaced, posDifference);
-
-		// Make sure inertia isn't set on the first frame otherwise the previous value isn't cleared
-		if ((platform != displaceInfo->prevPlatform) || (gGlobalTimer != displaceInfo->prevTimer + 1)) {
-			if (gMarioState->floor->type != SURFACE_FLOWING_WATER) {
-				vec3f_set(sMarioAmountDisplaced, 0.f, 0.f, 0.f);
-			}
-		}
 	}
-
-	// Update info for next frame
-	// Update position
-	vec3f_copy(displaceInfo->prevPos, pos);
-
-	// Set yaw info
-	vec3f_set(yawVec, sins(*yaw), 0, coss(*yaw));
-	linear_mtxf_transpose_mul_vec3f(*platform->header.gfx.throwMatrix, displaceInfo->prevTransformedYawVec, yawVec);
-	displaceInfo->prevYaw = *yaw;
-
-	// Update platform and timer
-	displaceInfo->prevPlatform = platform;
-	displaceInfo->prevTimer = gGlobalTimer;
 }
 
 u8 gDoInertia = TRUE;
