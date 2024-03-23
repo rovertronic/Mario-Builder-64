@@ -2040,20 +2040,17 @@ s32 cmm_main_menu(void) {
 
 // Pause menu during play
 u8 cmm_pause_menu_state = 0;
-char cmm_pause_menu_rte_text[] = "Return to Editor";
-char cmm_pause_menu_ec_text[] = "Exit Course";
 
 char * cmm_pause_menu_buttons_main[] = {
     "Continue",
+    "Exit Level",
     "Options",
     "Badges",
-    NULL,
 };
 
 //#define OPTIONTEXT _("Play Music\nWidescreen Mode\nShow HUD\nCamera Collision")
 char * cmm_pause_menu_buttons_options[] = {
     "Play Music",
-    "Widescreen Mode",
     "Show HUD",
     "Camera Collision",
     "Return",
@@ -2090,14 +2087,10 @@ s32 draw_cmm_pause_menu(void) {
                 print_generic_string_ascii_centered(160,192,cmm_file_name);
             }
 
-            cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_rte_text;
-            if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
-                cmm_pause_menu_buttons_main[3] = &cmm_pause_menu_ec_text;
-            }
             xoff = (get_string_width_ascii(cmm_pause_menu_buttons_main[3])/2);
             yoff = 0;
             for (s32 i=0;i<4;i++) {
-                if (i==2&&badge_count==0) {
+                if (i==3&&badge_count==0) {
                     continue;
                 }
                 print_generic_string_ascii(160-xoff  ,120+yoff,cmm_pause_menu_buttons_main[i]);
@@ -2136,14 +2129,14 @@ s32 draw_cmm_pause_menu(void) {
             switch(cmm_joystick) {
                 case 2:
                     cmm_menu_index++;
-                    if (cmm_menu_index==2&&badge_count==0) {
+                    if (cmm_menu_index==3&&badge_count==0) {
                         cmm_menu_index++;
                     }
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                     break;
                 case 4:
                     cmm_menu_index--;
-                    if (cmm_menu_index==2&&badge_count==0) {
+                    if (cmm_menu_index==3&&badge_count==0) {
                         cmm_menu_index--;
                     }
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
@@ -2156,12 +2149,15 @@ s32 draw_cmm_pause_menu(void) {
                     case 0: // continue
                         returnval = 1;
                         break;
-                    case 1: // options
+                    case 1: // leave
+                        returnval = 2;
+                        break;
+                    case 2: // options
                         cmm_pause_menu_state = 1;
-                        cmm_menu_index = 0;
+                        cmm_menu_index = 3;
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
-                    case 2: // badges (btcm only)
+                    case 3: // badges (btcm only)
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         cmm_pause_menu_state = 2;
                         //make sure the first unlocked badge is selected
@@ -2170,17 +2166,14 @@ s32 draw_cmm_pause_menu(void) {
                             gMarioState->numBadgeSelect++;
                         }
                         break;
-                    case 3: // leave
-                        returnval = 2;
-                        break;
                 }
             }
             break;
 
         case 1: //options
-            xoff = (get_string_width_ascii(cmm_pause_menu_buttons_options[3])/2);
-            for (s32 i=0;i<5;i++) {
-                if (i!=4) {
+            xoff = (get_string_width_ascii(cmm_pause_menu_buttons_options[2])/2);
+            for (s32 i=0;i<4;i++) {
+                if (i!=3) {
                     char * onoroff_string = ": OFF";
                     if (cmm_sram_configuration.option_flags & (1<<i)) {
                         onoroff_string = ": ON";
@@ -2208,7 +2201,7 @@ s32 draw_cmm_pause_menu(void) {
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                     break;
             }
-            cmm_menu_index = (cmm_menu_index + 5) % 5;
+            cmm_menu_index = (cmm_menu_index + 4) % 4;
 
             if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
                 cmm_pause_menu_state = 0;
@@ -2219,7 +2212,7 @@ s32 draw_cmm_pause_menu(void) {
                 }
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_menu_index) {
-                    case 4:
+                    case 3:
                         cmm_pause_menu_state = 0;
                         cmm_menu_index = 0;
                         if (gSramProbe != 0) {

@@ -597,9 +597,6 @@ void geo_process_perspective(struct GraphNodePerspective *node) {
         Mtx *mtx = alloc_display_list(sizeof(*mtx));
         
         sAspectRatio = 4.0f / 3.0f;
-        if (cmm_sram_configuration.option_flags & (1<<OPT_WIDESCREEN)) {
-            sAspectRatio = 16.0f / 10.0f;
-        }
 
         f32 vHalfFov = ( ((node->fov * 4096.f) + 8192.f) ) / 45.f;
 
