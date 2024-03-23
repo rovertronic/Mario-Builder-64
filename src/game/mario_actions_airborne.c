@@ -19,6 +19,7 @@
 #include "platform_displacement.h"
 #include "rovent.h"
 #include "cursed_mirror_maker.h"
+#include "engine/surface_collision.h"
 
 u8 bullet_fuel;
 
@@ -724,13 +725,23 @@ s32 act_wall_stick(struct MarioState *m) {
         return set_mario_action(m, ACT_WALL_KICK_AIR, 0);
     }
 
-    find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, 0xFFFFFFFF);
+    find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, RAYCAST_FIND_ALL);
     if (surf == NULL) {
-        return set_mario_action(m, ACT_FREEFALL, 0);
+        m->pos[1] += 150.0f;
+        find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, RAYCAST_FIND_ALL);
+        m->pos[1] -= 150.0f;
+
+        if (surf == NULL) {
+            return set_mario_action(m, ACT_FREEFALL, 0);
+        } else {
+            if (surf->object != NULL) {
+                apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
+            }    
+        }
     } else {
         if (surf->object != NULL) {
-            apply_platform_displacement(&sMarioDisplacementInfo, gMarioState->pos, &gMarioState->faceAngle[1], surf->object);
-            }
+            apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
+        }
     }
 
     m->vel[0] = 0.0f;
