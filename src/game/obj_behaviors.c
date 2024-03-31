@@ -400,6 +400,8 @@ s16 object_step(void) {
 
     s16 collisionFlags = 0;
 
+    obj_add_self_to_physics_list();
+
     // Find any wall collisions, receive the push, and set the flag.
     if (obj_find_wall(objX + objVelX, objY, objZ + objVelZ, objVelX, objVelZ) == 0) {
         collisionFlags += OBJ_COL_FLAG_HIT_WALL;
