@@ -285,6 +285,7 @@ struct Object {
     /*0x000*/ struct ObjectNode header;
     /*0x068*/ struct Object *parentObj;
     /*0x06C*/ struct Object *prevObj;
+              struct Object *nextPhysicsObj;
     /*0x070*/ u32 collidedObjInteractTypes;
     /*0x074*/ s16 activeFlags;
     /*0x076*/ s16 numCollidedObjs;
@@ -314,6 +315,7 @@ struct Object {
     /*0x1F6*/ s16 respawnInfoType;
               u8 oQuicksandDepth;
               u8 oQuicksandDepthToDie; // 0 means wont sink
+              u8 oHasPhysics; // Don't get mad. Need this because when objects get deleted, their flags get wiped.
     /*0x1F8*/ f32 hitboxRadius;
     /*0x1FC*/ f32 hitboxHeight;
     /*0x200*/ f32 hurtboxRadius;

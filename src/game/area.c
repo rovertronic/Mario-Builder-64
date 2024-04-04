@@ -265,6 +265,9 @@ void load_area(s32 index) {
         main_pool_pop_state();
         main_pool_push_state();
 
+        physics_object_list_head = NULL;
+        physics_object_list_tail = NULL;
+
         // for (u32 i = 0; i < MAX_RIGID_BODIES; i++) {
         //     deallocate_rigid_body(&gRigidBodies[i]);
         // }

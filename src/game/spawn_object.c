@@ -88,6 +88,38 @@ void clear_object_lists(struct ObjectNode *objLists) {
     }
 }
 
+void remove_object_from_physics_list(struct Object *obj) {
+    if (obj->oHasPhysics) {
+        // Check if it's the head
+        if (physics_object_list_head != NULL && physics_object_list_head == obj) {
+            physics_object_list_head = obj->nextPhysicsObj;
+
+            if (physics_object_list_head == NULL) {
+                physics_object_list_tail = NULL;
+            }
+        } else {
+            // Not the head, so search for self in list.
+            struct Object * objsearch = physics_object_list_head;
+            struct Object * prevsearch = NULL;
+
+            // Search, only need the previous object in list
+            while (objsearch != obj) {
+                prevsearch = objsearch;
+                objsearch = objsearch->nextPhysicsObj;
+            }
+            // At this point, objsearch should be aligned with obj and prevsearch should be the previous item in the list
+            
+            // Remove object from physics list
+            prevsearch->nextPhysicsObj = obj->nextPhysicsObj;
+
+            // Update tail if needed
+            if (physics_object_list_tail == obj) {
+                physics_object_list_tail = prevsearch;
+            }
+        }
+    }
+}
+
 /**
  * Free the given object.
  */
@@ -95,6 +127,8 @@ void unload_object(struct Object *obj) {
     obj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     obj->prevObj = NULL;
     obj->oFloor = NULL;
+
+    remove_object_from_physics_list(obj);
 
     obj->header.gfx.throwMatrix = NULL;
     stop_sounds_from_source(obj->header.gfx.cameraToObject);
@@ -145,6 +179,8 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->activeFlags = ACTIVE_FLAG_ACTIVE | ACTIVE_FLAG_ALLOCATED;
     obj->parentObj = obj;
     obj->prevObj = NULL;
+    obj->nextPhysicsObj = NULL;
+    obj->oHasPhysics = FALSE;
     obj->collidedObjInteractTypes = 0;
     obj->numCollidedObjs = 0;
 

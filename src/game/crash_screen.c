@@ -359,8 +359,7 @@ void draw_crash_screen(OSThread *thread) {
     }
     if (updateBuffer) {
         crash_screen_draw_rect(25, 8, 270, 12);
-        //crash_screen_print(30, 10, "Page:%02d                L/Z: Left   R: Right", crashPage);
-        crash_screen_print(30, 10, "DONT WORRY. SAVE BACKUP CREATED.", crashPage);
+        crash_screen_print(30, 10, "Page:%02d                L/Z: Left   R: Right", crashPage);
         switch (crashPage) {
             case PAGE_CONTEXT:    draw_crash_context(thread, cause); break;
 #ifdef PUPPYPRINT_DEBUG

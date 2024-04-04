@@ -927,6 +927,7 @@ void obj_mark_for_deletion(struct Object *obj) {
 #ifdef PUPPYLIGHTS
     obj_disable_light(obj);
 #endif
+
     //! This clears all activeFlags. Since some of these flags disable behavior,
     //  setting it to 0 could potentially enable unexpected behavior. After an
     //  object is marked for deletion, it still updates on that frame (I think),
@@ -1541,6 +1542,8 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     f32 steepSlopeNormalY;
     s32 careAboutEdgesAndSteepSlopes = FALSE;
     s32 negativeSpeed = FALSE;
+
+    obj_add_self_to_physics_list();
 
     //! Because some objects allow these active flags to be set but don't
     //  avoid updating when they are, we end up with "partial" updates, where
@@ -2647,3 +2650,36 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_quicksand(move_standard_or_object_step);
     //cur_obj_interact_with_lava(move_standard_or_object_step); saving this to deal with later
 }
+
+struct Object * physics_object_list_head = NULL;
+struct Object * physics_object_list_tail = NULL;
+
+s32 obj_with_physics_is_near(void) {
+    if (physics_object_list_head == NULL) {return FALSE;}
+
+    struct Object * obj = physics_object_list_head;
+    while (obj != NULL) {
+        f32 sqrLateralDist;
+        vec3f_get_lateral_dist_squared(&o->oPosVec, &obj->oPosVec, &sqrLateralDist);
+        if (sqrLateralDist < sqr(o->oCollisionDistance)) {
+            return TRUE;
+        }
+        obj = obj->nextPhysicsObj;
+    }
+
+    return FALSE;
+}
+
+void obj_add_self_to_physics_list(void) {
+    if (!o->oHasPhysics) {
+        o->oHasPhysics = TRUE;
+        if (physics_object_list_head) {
+            physics_object_list_tail->nextPhysicsObj = o;
+            physics_object_list_tail = o;
+        } else {
+            physics_object_list_head = o;
+            physics_object_list_tail = o;
+        }
+    }
+}
+

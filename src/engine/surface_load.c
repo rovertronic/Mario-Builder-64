@@ -623,10 +623,11 @@ void load_object_collision_model(void) {
         o->oDrawingDistance = o->oCollisionDistance;
     }
     
-    s32 inColRadius = (
+    s32 inColRadius = ((
            (sqrLateralDist < sqr(o->oCollisionDistance))
         && (verticalMarioDiff > 0 || verticalMarioDiff > -o->oCollisionDistance)
         && (verticalMarioDiff < 0 || verticalMarioDiff < o->oCollisionDistance + 2000.f)
+        ) || obj_with_physics_is_near()
     );
 
     // Update if no Time Stop, in range, and in the current room.
