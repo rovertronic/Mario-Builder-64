@@ -467,8 +467,9 @@ struct cmm_terrain_poly *cmm_terrain_water_quadlists[] = {
 };
 
 enum {
+    TILE_TYPE_EMPTY,
     // Flippable tiles
-    TILE_TYPE_SLOPE,
+    TILE_TYPE_SLOPE = 2,
     TILE_TYPE_DSLOPE,
     TILE_TYPE_SLAB,
     TILE_TYPE_DSLAB,
@@ -503,20 +504,22 @@ struct cmm_terrain_info {
 };
 
 struct cmm_terrain_info cmm_terrain_info_list[] = {
+    {NULL, NULL, NULL},
+    {NULL, NULL, NULL},
     {"Slope", mat_b_btn_slope, &cmm_terrain_slope},
-    {"", mat_b_btn_slope, &cmm_terrain_dslope},
+    {NULL, mat_b_btn_slope, &cmm_terrain_dslope},
     {"Slab", mat_b_btn_slabtile, &cmm_terrain_bottomslab},
-    {"", mat_b_btn_slabtile, &cmm_terrain_topslab},
+    {NULL, mat_b_btn_slabtile, &cmm_terrain_topslab},
     {"Outer Corner", mat_b_btn_corner, &cmm_terrain_corner},
-    {"", mat_b_btn_corner, &cmm_terrain_dcorner},
+    {NULL, mat_b_btn_corner, &cmm_terrain_dcorner},
     {"Inner Corner", mat_b_btn_icorner, &cmm_terrain_icorner},
-    {"", mat_b_btn_icorner, &cmm_terrain_dicorner},
+    {NULL, mat_b_btn_icorner, &cmm_terrain_dicorner},
     {"Sloped Corner", mat_b_btn_triangle, &cmm_terrain_scorner},
-    {"", mat_b_btn_corner, &cmm_terrain_dscorner},
+    {NULL, mat_b_btn_corner, &cmm_terrain_dscorner},
     {"Upper Gentle Slope", mat_b_btn_ugs, &cmm_terrain_ugentle},
-    {"", mat_b_btn_slope, &cmm_terrain_dugentle},
+    {NULL, mat_b_btn_slope, &cmm_terrain_dugentle},
     {"Lower Gentle Slope", mat_b_btn_lgs, &cmm_terrain_lgentle},
-    {"", mat_b_btn_slope, &cmm_terrain_dlgentle},
+    {NULL, mat_b_btn_slope, &cmm_terrain_dlgentle},
 
     {"Tile", mat_b_btn_tile, &cmm_terrain_fullblock},
     {"Vertical Slope", mat_b_btn_sideslope, &cmm_terrain_sslope},
