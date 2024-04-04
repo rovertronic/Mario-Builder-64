@@ -24,10 +24,7 @@ static struct ObjectHitbox sBigBullyHitbox = {
     /* hurtboxHeight:     */ 225,
 };
 
-extern void df_bully(s32 context);
 void bhv_small_bully_init(void) {
-    df_bully(CMM_DF_CONTEXT_INIT);
-
     o->oQuicksandDepthToDie = 55;
 
     cur_obj_init_animation(0);
@@ -41,7 +38,6 @@ void bhv_small_bully_init(void) {
 }
 
 void bhv_big_bully_init(void) {
-    df_bully(CMM_DF_CONTEXT_INIT);
     o->oQuicksandDepthToDie = 150;
     cur_obj_init_animation(0);
     vec3f_copy(&o->oHomeVec, &o->oPosVec);

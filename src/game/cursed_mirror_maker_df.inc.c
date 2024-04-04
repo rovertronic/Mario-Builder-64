@@ -251,13 +251,6 @@ void df_snufit(s32 context) {
     o->oFaceAngleYaw = (s16)(200 * gGlobalTimer) + o->oAngleVelYaw;
 }
 
-extern enum CMM_THEMES cmm_themes;
-void df_bully(s32 context) {
-    if ((context == CMM_DF_CONTEXT_INIT)&&(cmm_lopt_theme == CMM_THEME_SNOW)) {
-        o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CHILL_BULLY];
-    }
-}
-
 void df_flyguy(s32 context) {
     o->oAngleVelYaw++;
     o->oPosY += coss(0x400 * o->oAngleVelYaw) * 1.5f;
