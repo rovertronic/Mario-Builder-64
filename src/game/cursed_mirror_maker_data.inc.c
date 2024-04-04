@@ -1435,20 +1435,20 @@ enum {
 struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_SETTINGS */      {"Level Settings",          mat_b_btn_settings},
 /* OBJECT_TYPE_SCREENSHOT */    {"Take Screenshot",         mat_b_btn_camera},
-/* OBJECT_TYPE_STAR */          {"Star",                    mat_b_btn_star,         bhvStar,           TILE_SIZE/2, MODEL_STAR,                OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-/* OBJECT_TYPE_RED_COIN_STAR */ {"Red Coin Star",           mat_b_btn_rcs,          bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, OBJ_TYPE_HAS_STAR,       0, 1, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
-/* OBJECT_TYPE_GOOMBA */        {"Goomba",                  mat_b_btn_goomba,       bhvGoomba,         0,           MODEL_GOOMBA,              0,                       1, 0, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-/* OBJECT_TYPE_BIG_GOOMBA */    {"Huge Goomba",             mat_b_btn_goomba_b,     bhvBigGoomba,      0,           MODEL_GOOMBA,              0,                       5, 0, 3.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-/* OBJECT_TYPE_TINY_GOOMBA */   {"Tiny Goomba",             mat_b_btn_goomba_s,     bhvTinyGoomba,     0,           MODEL_GOOMBA,              0,                       1, 0, 0.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
-/* OBJECT_TYPE_PIRANHA_PLANT */ {"Piranha Plant",           mat_b_btn_plant,        bhvPiranhaPlant,   0,           MODEL_MAKER_PLANT,         0,                       5, 0, 1.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
-/* OBJECT_TYPE_BIG_PIRANHA_PLANT */ {"Huge Piranha Plant",  mat_b_btn_plant_b,      bhvFirePiranhaPlantBig, 0,      MODEL_MAKER_PLANT,         0,                       2, 0, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
-/* OBJECT_TYPE_TINY_PIRANHA_PLANT */ {"Tiny Piranha Plant", mat_b_btn_plant_s,      bhvFirePiranhaPlant, 0,         MODEL_MAKER_PLANT,         0,                       1, 0, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+/* OBJECT_TYPE_STAR */          {"Normal",                    mat_b_btn_star,         bhvStar,           TILE_SIZE/2, MODEL_STAR,                OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+/* OBJECT_TYPE_RED_COIN_STAR */ {"Red Coins",           mat_b_btn_rcs,          bhvHiddenRedCoinStar, TILE_SIZE/2, MODEL_TRANSPARENT_STAR, OBJ_TYPE_HAS_STAR,       0, 1, 1.0f, NULL, df_reds_marker, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
+/* OBJECT_TYPE_GOOMBA */        {"Normal",                  mat_b_btn_goomba,       bhvGoomba,         0,           MODEL_GOOMBA,              0,                       1, 0, 1.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+/* OBJECT_TYPE_BIG_GOOMBA */    {"Huge",                    mat_b_btn_goomba_b,     bhvBigGoomba,      0,           MODEL_GOOMBA,              0,                       5, 0, 3.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+/* OBJECT_TYPE_TINY_GOOMBA */   {"Tiny",                    mat_b_btn_goomba_s,     bhvTinyGoomba,     0,           MODEL_GOOMBA,              0,                       1, 0, 0.5f, goomba_seg8_anims_0801DA4C, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
+/* OBJECT_TYPE_PIRANHA_PLANT */ {"Normal",                  mat_b_btn_plant,        bhvPiranhaPlant,   0,           MODEL_MAKER_PLANT,         0,                       5, 0, 1.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+/* OBJECT_TYPE_BIG_PIRANHA_PLANT */  {"Huge",               mat_b_btn_plant_b,      bhvFirePiranhaPlantBig, 0,      MODEL_MAKER_PLANT,         0,                       2, 0, 2.0f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
+/* OBJECT_TYPE_TINY_PIRANHA_PLANT */ {"Tiny",               mat_b_btn_plant_s,      bhvFirePiranhaPlant, 0,         MODEL_MAKER_PLANT,         0,                       1, 0, 0.5f, piranha_plant_seg6_anims_0601C31C, NULL, SOUND_OBJ2_PIRANHA_PLANT_BITE},
 /* OBJECT_TYPE_KOOPA */         {"Koopa",                   mat_b_btn_kuppa,        bhvScaredKoopa,    0,           MODEL_KOOPA_WITH_SHELL,    0,                       5, 0, 1.5f, koopa_seg6_anims_06011364, df_koopa, SOUND_OBJ_KOOPA_TALK},
 /* OBJECT_TYPE_COIN */          {"Yellow Coin",             mat_b_btn_coin,         bhvYellowCoin,     0,           MODEL_YELLOW_COIN,         OBJ_TYPE_IS_BILLBOARDED, 1, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN | SOUND_VIBRATO},
 /* OBJECT_TYPE_GREEN_COIN */    {"Green Coin",              mat_b_btn_greencoin,    bhvGreenCoin,      0,           0xEF,                      OBJ_TYPE_IS_BILLBOARDED, 3, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI},
 /* OBJECT_TYPE_RED_COIN */      {"Red Coin",                mat_b_btn_redcoin,      bhvRedCoin,        0,           MODEL_RED_COIN,            OBJ_TYPE_IS_BILLBOARDED, 2, 0, 1.0f, NULL, NULL, SOUND_MENU_COLLECT_RED_COIN},
-/* OBJECT_TYPE_BLUE_COIN */     {"Blue Coin",               mat_b_btn_bluecoin,     bhvHiddenBlueCoin, 0,           MODEL_BLUE_COIN,           OBJ_TYPE_IS_BILLBOARDED, 5, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI},
-/* OBJECT_TYPE_BLUE_COIN_SWITCH */ {"Blue Coin Switch",     mat_b_btn_bcs,          bhvBlueCoinSwitch, 0,           MODEL_BLUE_COIN_SWITCH,    0,                       0, 0, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
+/* OBJECT_TYPE_BLUE_COIN */     {"Coin",                    mat_b_btn_bluecoin,     bhvHiddenBlueCoin, 0,           MODEL_BLUE_COIN,           OBJ_TYPE_IS_BILLBOARDED, 5, 0, 1.0f, NULL, NULL, SOUND_GENERAL_COIN_MULTI},
+/* OBJECT_TYPE_BLUE_COIN_SWITCH */ {"Switch",               mat_b_btn_bcs,          bhvBlueCoinSwitch, 0,           MODEL_BLUE_COIN_SWITCH,    0,                       0, 0, 3.0f, NULL, NULL, SOUND_GENERAL2_PURPLE_SWITCH},
 /* OBJECT_TYPE_NOTEBLOCK */     {"Noteblock",               mat_b_btn_noteblock,    bhvNoteblock,      TILE_SIZE/2, MODEL_NOTEBLOCK,           0,                       0, 0, 1.28f,NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW},
 /* OBJECT_TYPE_BOBOMB */        {"Bob-omb",                 mat_b_btn_bobomb,       bhvBobomb,         0,           MODEL_BLACK_BOBOMB,        0,                       1, 0, 1.0f, bobomb_anims, NULL, SOUND_GENERAL2_QUIET_EXPLOSION},
 /* OBJECT_TYPE_CHUCKYA */       {"Chuckya",                 mat_b_btn_chuckya,      bhvChuckya,        0,           MODEL_CHUCKYA,             0,                       5, 0, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_PREVIEW},
@@ -1462,7 +1462,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_REX */           {"Rex",                     mat_b_btn_rex,          bhvRex,            0,           0xE1,                      0,                       2, 0, 1.5f, Rex_anims, NULL, SOUND_OBJ_GOOMBA_PREVIEW},
 /* OBJECT_TYPE_PODOBOO */       {"Podoboo",                 mat_b_btn_podoboo,      bhvPodoboo,        TILE_SIZE/2, MODEL_PODOBOO,             0,                       0, 0, 1.0f, NULL, df_podoboo, SOUND_OBJ_FLAME_BLOWN},
 /* OBJECT_TYPE_CRABLET */       {"Crablet",                 mat_b_btn_crablet,      bhvCrablet,        0,           MODEL_MAKER_CRABLET,       0,                       4, 0, 1.0f, crab_anims_anims, NULL, SOUND_OBJ2_SCUTTLEBUG_ALERT},
-/* OBJECT_TYPE_HAMMER_BRO */    {"Hammer Bro",              mat_b_btn_hammerbro,    bhvHammerBro,      60.0f,       0xEE,                      0,                       6, 0, 1.0f, Hammerbro_anims, df_hammerbro, SOUND_OBJ_KOOPA_DAMAGE},
+/* OBJECT_TYPE_HAMMER_BRO */    {"Normal",                  mat_b_btn_hammerbro,    bhvHammerBro,      60.0f,       0xEE,                      0,                       6, 0, 1.0f, Hammerbro_anims, df_hammerbro, SOUND_OBJ_KOOPA_DAMAGE},
 /* OBJECT_TYPE_FIRE_BRO */      {"Fire Bro",                mat_b_btn_firebro,      bhvFireBro,        60.0f,       0xEE,                      0,                       6, 0, 1.0f, Hammerbro_anims, df_firebro, SOUND_OBJ_KOOPA_DAMAGE},
 /* OBJECT_TYPE_CHICKEN */       {"Chicken",                 mat_b_btn_chicken,      bhvChicken,        0,           MODEL_MAKER_CHICKEN,       0,                       2, 0, 1.0f, chicken_anims, NULL, SOUND_OBJ_BOO_LAUGH_SHORT},
 /* OBJECT_TYPE_PHANTASM */      {"Cosmic Phantasm",         mat_b_btn_phantasm,     bhvPhantasm,       0,           MODEL_MARIO,               0,                       5, 0, 1.0f, &evil_mario_anims[2], NULL, SOUND_ACTION_METAL_STEP | SOUND_VIBRATO},
@@ -1482,7 +1482,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_TIMED_BOX */     {"Timed Box",               mat_b_btn_tbox,         bhvHiddenObject,   0,           MODEL_BREAKABLE_BOX,       0,                       0, 0, 1.0f, NULL, df_timedbox, SOUND_GENERAL2_SWITCH_TICK_FAST},
 /* OBJECT_TYPE_RECOVERY_HEART */ {"Recovery Heart",         mat_b_btn_heart,        bhvRecoveryHeart,  TILE_SIZE/2, MODEL_HEART,               0,                       0, 0, 1.0f, NULL, df_heart, SOUND_GENERAL_HEART_SPIN},
 /* OBJECT_TYPE_TEST_MARIO */    {"Save & Test",             mat_b_btn_check,        NULL,              0,           MODEL_MARIO,               0,                       0, 0, 1.f,  &evil_mario_anims[11], NULL, 0},
-/* OBJECT_TYPE_THWOMP */        {"Thwomp",                  mat_b_btn_thwomp,       bhvThwomp,         0,           MODEL_THWOMP_MAKER,        0,                       0, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
+/* OBJECT_TYPE_THWOMP */        {"Normal",                  mat_b_btn_thwomp,       bhvThwomp,         0,           MODEL_THWOMP_MAKER,        0,                       0, 0, 1.5f, NULL, NULL, SOUND_OBJ_THWOMP},
 /* OBJECT_TYPE_WHOMP */         {"Whomp",                   mat_b_btn_whomp,        bhvSmallWhomp,     0,           MODEL_WHOMP_MAKER,         0,                       10, 0, 1.f, whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
 /* OBJECT_TYPE_GRINDEL */       {"Grindel",                 mat_b_btn_grindel,      bhvGrindel,        0,           MODEL_MAKER_GRINDEL,       0,                       0, 0, 1.f,  NULL, df_grindel, SOUND_OBJ_KING_BOBOMB_JUMP},
 /* OBJECT_TYPE_LAKITU */        {"Lakitu",                  mat_b_btn_lakitu,       bhvEnemyLakitu,    TILE_SIZE/2, MODEL_LAKITU_MAKER,        0,                       5, 5, 1.0f, lakitu_enemy_seg5_anims_050144D4, df_lakitu, SOUND_OBJ_EVIL_LAKITU_THROW},
@@ -1495,8 +1495,8 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_BOWSER_BOMB */   {"Bowser Bomb",             mat_b_btn_bbomb,        bhvBowserBomb,     TILE_SIZE/2, MODEL_MAKER_BOWSER_BOMB,   0,                       0, 0, 1.0f, NULL, NULL, SOUND_GENERAL2_QUIET_EXPLOSION},
 /* OBJECT_TYPE_FIRE_SPINNER */  {"Fire Spinner",            mat_b_btn_firebar,      bhvLllRotatingBlockWithFireBars, 0, MODEL_MAKER_FIREBAR,   0,                       0, 0, 1.0f, NULL, df_fire_spinner, SOUND_OBJ_FLAME_BLOWN},
 /* OBJECT_TYPE_COIN_FORMATION */ {"Coin Formation",         mat_b_btn_cformation,   bhvCoinFormation,  0,           MODEL_NONE,                0,                       0, 0, 1.0f, NULL, df_coin_formation, SOUND_GENERAL_COIN_MULTI},
-/* OBJECT_TYPE_RED_FLAME */     {"Red Flame",               mat_b_btn_fire_red,     bhvFlame,          60,          MODEL_RED_FLAME,           OBJ_TYPE_IS_BILLBOARDED, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
-/* OBJECT_TYPE_BLUE_FLAME */    {"Blue Flame",              mat_b_btn_fire_blue,    bhvFlame,          60,          MODEL_BLUE_FLAME,          OBJ_TYPE_IS_BILLBOARDED, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
+/* OBJECT_TYPE_RED_FLAME */     {"Red",                     mat_b_btn_fire_red,     bhvFlame,          60,          MODEL_RED_FLAME,           OBJ_TYPE_IS_BILLBOARDED, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
+/* OBJECT_TYPE_BLUE_FLAME */    {"Blue",                    mat_b_btn_fire_blue,    bhvFlame,          60,          MODEL_BLUE_FLAME,          OBJ_TYPE_IS_BILLBOARDED, 0, 0, 7.0f, NULL, df_flame, SOUND_OBJ_FLAME_BLOWN},
 /* OBJECT_TYPE_FIRE_SPITTER */  {"Fire Spitter",            mat_b_btn_firespitter,  bhvFireSpitter,    TILE_SIZE/2, MODEL_BOWLING_BALL,        OBJ_TYPE_IS_BILLBOARDED, 0, 0, 0.2f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
 /* OBJECT_TYPE_FLAMETHROWER */  {"Flamethrower",            mat_b_btn_flamethrower, bhvFlamethrower,   TILE_SIZE/2, MODEL_MAKER_FLAMETHROWER,  0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_FLAME_BLOWN},
 /* OBJECT_TYPE_SPINDRIFT */     {"Spindrift",               mat_b_btn_spindrift,    bhvSpindrift,      0,           MODEL_MAKER_SPINDRIFT,     0,                       3, 0, 1.0f, spindrift_seg5_anims_05002D68, NULL, SOUND_ACTION_TWIRL},
@@ -1504,9 +1504,9 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_MONEYBAG */      {"Moneybag",                mat_b_btn_moneybag,     bhvMoneybagHidden, 0,           MODEL_ATM,                 0,                       5, 0, 1.0f, moneybag_seg6_anims_06005E5C, df_moneybag, SOUND_GENERAL_MONEYBAG_BOING_LOWPRIO},
 /* OBJECT_TYPE_SKEETER */       {"Skeeter",                 mat_b_btn_skeeter,      bhvSkeeter,        0,           MODEL_MAKER_SKEETER,       0,                       3, 0, 1.0f, skeeter_seg6_anims_06007DE0, NULL, SOUND_OBJ_SKEETER_WALK},
 /* OBJECT_TYPE_POKEY */         {"Pokey",                   mat_b_btn_pokey,        bhvPokey,          0,           MODEL_MAKER_POKEY_HEAD,    OBJ_TYPE_IS_BILLBOARDED, 5, 0, 3.0f, NULL, df_pokey, SOUND_OBJ_POKEY_DEATH},
-/* OBJECT_TYPE_BBOX_SMALL*/     {"Throwable",               mat_b_btn_sbox,         bhvBreakableBoxSmall, 0,        MODEL_BREAKABLE_BOX,       0,                       3, 0, 0.31f,NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
-/* OBJECT_TYPE_BBOX_NORMAL*/    {"Breakable",               mat_b_btn_corkbox,      bhvBreakableBox,   0,           MODEL_BREAKABLE_BOX,       0,                       3, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
-/* OBJECT_TYPE_BBOX_CRAZY*/     {"Crazy",                   mat_b_btn_cbox,         bhvJumpingBox,     0,           MODEL_BREAKABLE_BOX,       0,                       5, 0, 0.38f,NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW},
+/* OBJECT_TYPE_BBOX_SMALL*/     {"Throwable Box",           mat_b_btn_sbox,         bhvBreakableBoxSmall, 0,        MODEL_BREAKABLE_BOX,       0,                       3, 0, 0.31f,NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
+/* OBJECT_TYPE_BBOX_NORMAL*/    {"Breakable Box",           mat_b_btn_corkbox,      bhvBreakableBox,   0,           MODEL_BREAKABLE_BOX,       0,                       3, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
+/* OBJECT_TYPE_BBOX_CRAZY*/     {"Crazy Box",               mat_b_btn_cbox,         bhvJumpingBox,     0,           MODEL_BREAKABLE_BOX,       0,                       5, 0, 0.38f,NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
 };
 
@@ -1581,7 +1581,9 @@ enum {
     CMM_BUTTON_SLOPE,
     CMM_BUTTON_TROLL,
     CMM_BUTTON_STAR,
-    CMM_BUTTON_GROUND,
+    CMM_BUTTON_GOOMBA,
+    CMM_BUTTON_PIRANHA,
+    CMM_BUTTON_KOOPA,
     CMM_BUTTON_COIN,
     CMM_BUTTON_BLANK,
     CMM_BUTTON_GCOIN,
@@ -1591,11 +1593,21 @@ enum {
     CMM_BUTTON_BCOIN,
     CMM_BUTTON_NOTEBLOCK,
     CMM_BUTTON_CULL,
-    CMM_BUTTON_MECH,
+    CMM_BUTTON_BOBOMB,
+    CMM_BUTTON_CHUCKYA,
+    CMM_BUTTON_BULLY,
+    CMM_BUTTON_BULLET,
+    CMM_BUTTON_HEAVEHO,
+    CMM_BUTTON_MOTOS,
     CMM_BUTTON_TREE,
     CMM_BUTTON_EXCLA,
     CMM_BUTTON_SPAWN,
-    CMM_BUTTON_BTCME,
+    CMM_BUTTON_REX,
+    CMM_BUTTON_PODOBOO,
+    CMM_BUTTON_CRABLET,
+    CMM_BUTTON_HAMMER_BRO,
+    CMM_BUTTON_CHICKEN,
+    CMM_BUTTON_PHANTASM,
     CMM_BUTTON_PIPE,
     CMM_BUTTON_BADGE,
     CMM_BUTTON_WATER,
@@ -1606,7 +1618,8 @@ enum {
     CMM_BUTTON_KTQ,
     CMM_BUTTON_SSLOPE,
     CMM_BUTTON_SLAB,
-    CMM_BUTTON_TC,
+    CMM_BUTTON_PURPLE_SWITCH,
+    CMM_BUTTON_TIMED_BOX,
     CMM_BUTTON_HEART,
     CMM_BUTTON_FORMATION,
     CMM_BUTTON_VSLAB,
@@ -1614,33 +1627,42 @@ enum {
     CMM_BUTTON_UGENTLE,
     CMM_BUTTON_LGENTLE,
     CMM_BUTTON_BARS,
-    CMM_BUTTON_ROCKENEMY,
+    CMM_BUTTON_THWOMP,
+    CMM_BUTTON_WHOMP,
     CMM_BUTTON_POLE,
     CMM_BUTTON_VEXCLA,
-    CMM_BUTTON_FLYING,
-    CMM_BUTTON_HAUNTED,
-    CMM_BUTTON_MISC_EN,
+    CMM_BUTTON_LAKITU,
+    CMM_BUTTON_FLYGUY,
+    CMM_BUTTON_SNUFIT,
+    CMM_BUTTON_AMP,
+    CMM_BUTTON_BOO,
+    CMM_BUTTON_MR_I,
+    CMM_BUTTON_SCUTTLEBUG,
+    CMM_BUTTON_SPINDRIFT,
+    CMM_BUTTON_BLIZZARD,
+    CMM_BUTTON_MONEYBAG,
+    CMM_BUTTON_SKEETER,
+    CMM_BUTTON_POKEY,
     CMM_BUTTON_MINE,
-    CMM_BUTTON_FIRE_SPINNER,
     CMM_BUTTON_FIRE,
-    CMM_BUTTON_BOX,
+    CMM_BUTTON_FLAMETHROWER,
+    CMM_BUTTON_FIRE_SPITTER,
+    CMM_BUTTON_FIRE_SPINNER,
+    CMM_BUTTON_BREAKABLE,
+    CMM_BUTTON_THROWABLE,
+    CMM_BUTTON_CRAZY,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
 u8 cmm_star_idlist[] = {OBJECT_TYPE_STAR, OBJECT_TYPE_RED_COIN_STAR};
-u8 cmm_ground_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYPE_TINY_GOOMBA, OBJECT_TYPE_PIRANHA_PLANT, OBJECT_TYPE_BIG_PIRANHA_PLANT, OBJECT_TYPE_TINY_PIRANHA_PLANT, OBJECT_TYPE_KOOPA};
+u8 cmm_goomba_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYPE_TINY_GOOMBA};
+u8 cmm_piranha_idlist[] = {OBJECT_TYPE_PIRANHA_PLANT, OBJECT_TYPE_BIG_PIRANHA_PLANT, OBJECT_TYPE_TINY_PIRANHA_PLANT};
 u8 cmm_bluecoin_idlist[] = {OBJECT_TYPE_BLUE_COIN, OBJECT_TYPE_BLUE_COIN_SWITCH};
-u8 cmm_mech_idlist[] = {OBJECT_TYPE_BOBOMB, OBJECT_TYPE_CHUCKYA, OBJECT_TYPE_BULLY, OBJECT_TYPE_BULLET_BILL, OBJECT_TYPE_HEAVE_HO, OBJECT_TYPE_MOTOS};
-u8 cmm_btcm_idlist[] = {OBJECT_TYPE_REX, OBJECT_TYPE_PODOBOO, OBJECT_TYPE_CRABLET, OBJECT_TYPE_HAMMER_BRO, OBJECT_TYPE_FIRE_BRO, OBJECT_TYPE_CHICKEN, OBJECT_TYPE_PHANTASM};
+u8 cmm_hammer_idlist[] = {OBJECT_TYPE_HAMMER_BRO, OBJECT_TYPE_FIRE_BRO};
 u8 cmm_bosses_idlist[] = {OBJECT_TYPE_KING_BOBOMB, OBJECT_TYPE_KING_WHOMP, OBJECT_TYPE_BIG_BOO, OBJECT_TYPE_BIG_BULLY, OBJECT_TYPE_WIGGLER, OBJECT_TYPE_BOWSER};
 u8 cmm_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING};
-u8 cmm_timed_idlist[] = {OBJECT_TYPE_PURPLE_SWITCH, OBJECT_TYPE_TIMED_BOX};
-u8 cmm_stone_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_WHOMP, OBJECT_TYPE_GRINDEL};
-u8 cmm_flying_idlist[] = {OBJECT_TYPE_LAKITU, OBJECT_TYPE_FLY_GUY, OBJECT_TYPE_SNUFIT, OBJECT_TYPE_AMP};
-u8 cmm_haunted_idlist[] = {OBJECT_TYPE_BOO, OBJECT_TYPE_MR_I, OBJECT_TYPE_SCUTTLEBUG};
-u8 cmm_misc_idlist[] = {OBJECT_TYPE_SPINDRIFT, OBJECT_TYPE_MR_BLIZZARD, OBJECT_TYPE_MONEYBAG, OBJECT_TYPE_SKEETER, OBJECT_TYPE_POKEY};
-u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME, OBJECT_TYPE_FIRE_SPITTER, OBJECT_TYPE_FLAMETHROWER};
-u8 cmm_box_idlist[] = {OBJECT_TYPE_BBOX_NORMAL, OBJECT_TYPE_BBOX_SMALL, OBJECT_TYPE_BBOX_CRAZY};
+u8 cmm_thwomp_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_GRINDEL};
+u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_SETTINGS */ {CMM_PM_OBJ,  TRUE,  2, &cmm_settings_idlist,    "Options"},
@@ -1649,21 +1671,33 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_SLOPE */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SLOPE,         NULL},
 /* CMM_BUTTON_TROLL */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_TROLL,         "Intangible Tile"},
 /* CMM_BUTTON_STAR */     {CMM_PM_OBJ,  TRUE,  2, &cmm_star_idlist,        "Power Star"},
-/* CMM_BUTTON_GROUND */   {CMM_PM_OBJ,  TRUE,  7, &cmm_ground_idlist,      "Ground Enemies"},
+/* CMM_BUTTON_GOOMBA */   {CMM_PM_OBJ,  TRUE,  3, &cmm_goomba_idlist,      "Goomba"},
+/* CMM_BUTTON_PIRANHA */  {CMM_PM_OBJ,  TRUE,  3, &cmm_piranha_idlist,     "Piranha Plant"},
+/* CMM_BUTTON_KOOPA */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA,       NULL},
 /* CMM_BUTTON_COIN */     {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_COIN,        NULL},
 /* CMM_BUTTON_BLANK */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_BLOCK,         NULL},
 /* CMM_BUTTON_GCOIN */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_GREEN_COIN,  NULL},
 /* CMM_BUTTON_CORNER */   {CMM_PM_TILE, FALSE, 0, TILE_TYPE_CORNER,        NULL},
 /* CMM_BUTTON_ICORNER */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_ICORNER,       NULL},
 /* CMM_BUTTON_RCOIN */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_RED_COIN,    NULL},
-/* CMM_BUTTON_BCOIN */    {CMM_PM_OBJ,  TRUE,  2, &cmm_bluecoin_idlist,    "Blue Coin"},
+/* CMM_BUTTON_BCOIN */    {CMM_PM_OBJ,  TRUE,  2, &cmm_bluecoin_idlist,    "Blue Coins"},
 /* CMM_BUTTON_NOTEBLOCK */{CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_NOTEBLOCK,   NULL},
 /* CMM_BUTTON_CULL */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_CULL,          NULL},
-/* CMM_BUTTON_MECH */     {CMM_PM_OBJ,  TRUE,  6, &cmm_mech_idlist,        "Mechanical Enemies"},
+/* CMM_BUTTON_BOBOMB */   {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOBOMB,      NULL},
+/* CMM_BUTTON_CHUCKYA */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CHUCKYA,     NULL},
+/* CMM_BUTTON_BULLY */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BULLY,       NULL},
+/* CMM_BUTTON_BULLET */   {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BULLET_BILL, NULL},
+/* CMM_BUTTON_HEAVEHO */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_HEAVE_HO,    NULL},
+/* CMM_BUTTON_MOTOS */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MOTOS,       NULL},
 /* CMM_BUTTON_TREE */     {CMM_PM_OBJ,  FALSE, 6, OBJECT_TYPE_TREE,        &txt_bp_tree},
 /* CMM_BUTTON_EXCLA */    {CMM_PM_OBJ,  FALSE, 7, OBJECT_TYPE_EXCL_BOX,    &txt_bp_box},
 /* CMM_BUTTON_SPAWN */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MARIO_SPAWN, NULL},
-/* CMM_BUTTON_BTCME */    {CMM_PM_OBJ,  TRUE,  7, &cmm_btcm_idlist,        "BTCM Enemies"},
+/* CMM_BUTTON_REX */      {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_REX,         NULL},
+/* CMM_BUTTON_PODOBOO */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_PODOBOO,     NULL},
+/* CMM_BUTTON_CRABLET */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CRABLET,     NULL},
+/* CMM_BUTTON_HAMMER_BRO */{CMM_PM_OBJ, TRUE,  2, &cmm_hammer_idlist,      "Hammer Bro"},
+/* CMM_BUTTON_CHICKEN */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CHICKEN,     NULL},
+/* CMM_BUTTON_PHANTASM */ {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_PHANTASM,    NULL},
 /* CMM_BUTTON_PIPE */     {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_WARP_PIPE,   NULL},
 /* CMM_BUTTON_BADGE */    {CMM_PM_OBJ,  FALSE, 23, OBJECT_TYPE_BADGE,      &txt_badges},
 /* CMM_BUTTON_WATER */    {CMM_PM_WATER,FALSE, 0, TILE_TYPE_WATER,         NULL},
@@ -1674,7 +1708,8 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_KTQ */      {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA_THE_QUICK, NULL},
 /* CMM_BUTTON_SSLOPE */   {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SSLOPE,        NULL},
 /* CMM_BUTTON_SLAB */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SLAB,          NULL},
-/* CMM_BUTTON_TC */       {CMM_PM_OBJ,  TRUE,  2, &cmm_timed_idlist,       "Timed Boxes"},
+/* CMM_BUTTON_PURPLE_SWITCH */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_PURPLE_SWITCH, NULL},
+/* CMM_BUTTON_TIMED_BOX */ {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_TIMED_BOX,   NULL},
 /* CMM_BUTTON_HEART */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_RECOVERY_HEART, NULL},
 /* CMM_BUTTON_FORMATION */{CMM_PM_OBJ,  FALSE, 5, OBJECT_TYPE_COIN_FORMATION, &txt_coin_formation},
 /* CMM_BUTTON_VSLAB */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SSLAB,         NULL},
@@ -1682,16 +1717,30 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_UGENTLE */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_UGENTLE,       NULL},
 /* CMM_BUTTON_LGENTLE */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_LGENTLE,       NULL},
 /* CMM_BUTTON_BARS */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_BARS,          NULL},
-/* CMM_BUTTON_ROCKENEMY */{CMM_PM_OBJ,  TRUE,  3, &cmm_stone_idlist,       "Stone Enemies"},
+/* CMM_BUTTON_THWOMP */   {CMM_PM_OBJ,  TRUE,  2, &cmm_thwomp_idlist,      "Thwomp"},
+/* CMM_BUTTON_WHOMP */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_WHOMP,       NULL},
 /* CMM_BUTTON_POLE */     {CMM_PM_TILE, FALSE, 0, TILE_TYPE_POLE,          NULL},
 /* CMM_BUTTON_VEXCLA */   {CMM_PM_OBJ,  FALSE, 7, OBJECT_TYPE_EXCL_BOX,    &txt_bp_vbox},
-/* CMM_BUTTON_FLYING */   {CMM_PM_OBJ,  TRUE,  4, &cmm_flying_idlist,      "Flying Enemies"},
-/* CMM_BUTTON_HAUNTED */  {CMM_PM_OBJ,  TRUE,  3, &cmm_haunted_idlist,     "Spooky Enemies"},
-/* CMM_BUTTON_MISC_EN */  {CMM_PM_OBJ,  TRUE,  5, &cmm_misc_idlist,        "Misc. Enemies"},
+/* CMM_BUTTON_LAKITU */   {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_LAKITU,      NULL},
+/* CMM_BUTTON_FLYGUY */   {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_FLY_GUY,     NULL},
+/* CMM_BUTTON_SNUFIT */   {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SNUFIT,      NULL},
+/* CMM_BUTTON_AMP */      {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_AMP,         NULL},
+/* CMM_BUTTON_BOO */      {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOO,         NULL},
+/* CMM_BUTTON_MR_I */     {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MR_I,        NULL},
+/* CMM_BUTTON_SCUTTLEBUG */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SCUTTLEBUG,  NULL},
+/* CMM_BUTTON_SPINDRIFT */{CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SPINDRIFT,   NULL},
+/* CMM_BUTTON_BLIZZARD */ {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MR_BLIZZARD, NULL},
+/* CMM_BUTTON_MONEYBAG */ {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MONEYBAG,    NULL},
+/* CMM_BUTTON_SKEETER */  {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SKEETER,     NULL},
+/* CMM_BUTTON_POKEY */    {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_POKEY,       NULL},
 /* CMM_BUTTON_MINE */     {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOWSER_BOMB, NULL},
+/* CMM_BUTTON_FIRE */     {CMM_PM_OBJ,  TRUE,  2, &cmm_flame_idlist,       "Flame"},
+/* CMM_BUTTON_FLAMETHROWER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FLAMETHROWER, NULL},
+/* CMM_BUTTON_FIRE_SPITTER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FIRE_SPITTER, NULL},
 /* CMM_BUTTON_FIRE_SPINNER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FIRE_SPINNER, NULL},
-/* CMM_BUTTON_FIRE */     {CMM_PM_OBJ,  TRUE,  4, &cmm_flame_idlist,       "Flame"},
-/* CMM_BUTTON_BOX */      {CMM_PM_OBJ,  TRUE,  3, &cmm_box_idlist,       "Corkboxes"},
+/* CMM_BUTTON_BREAKABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_NORMAL, NULL},
+/* CMM_BUTTON_THROWABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_SMALL, NULL},
+/* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1701,7 +1750,7 @@ u8 cmm_toolbar_defaults[9] = {
     CMM_BUTTON_TREE,
     CMM_BUTTON_COIN,
     CMM_BUTTON_STAR,
-    CMM_BUTTON_GROUND,
+    CMM_BUTTON_GOOMBA,
     CMM_BUTTON_TEST,
     CMM_BUTTON_SETTINGS,
 };
@@ -1719,22 +1768,60 @@ f32 cmm_toolbox_transition_btn_ty;
 Gfx * cmm_toolbox_transition_btn_gfx;
 Gfx * cmm_toolbox_transition_btn_old_gfx;
 
-u8 cmm_toolbox[45];
-u8 cmm_toolbox_params[45];
+// went a bit Define Crazy over here, im just quirky like that
+#define TOOLBOX_PAGE_WIDTH 9
+#define TOOLBOX_NUM_PAGES 2
+
+#define TOOLBOX_WIDTH (TOOLBOX_PAGE_WIDTH * TOOLBOX_NUM_PAGES)
+#define TOOLBOX_HEIGHT 5
+
+// gap between the pages
+#define TOOLBOX_PAGE_OFFSET 30
+#define TOOLBOX_SIZE (TOOLBOX_WIDTH * TOOLBOX_HEIGHT)
+
+// X offset based on scroll
+#define TOOLBOX_OFFSET_MIN 34
+#define TOOLBOX_OFFSET_MAX ((TOOLBOX_OFFSET_MIN - (32*TOOLBOX_PAGE_WIDTH)) - TOOLBOX_PAGE_OFFSET)
+
+s32 cmm_toolbox_x_offset = TOOLBOX_OFFSET_MIN;
+
+// macros to get position of a certain toolbox position
+#define GET_TOOLBOX_X(i) (cmm_toolbox_x_offset + (((i) % TOOLBOX_WIDTH)*32) + ((i) % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH ? TOOLBOX_PAGE_OFFSET : 0))
+#define GET_TOOLBOX_Y(i) (220 - (((i) / TOOLBOX_WIDTH)*32))
+
+u8 cmm_toolbox[TOOLBOX_SIZE];
+u8 cmm_toolbox_params[TOOLBOX_SIZE];
 //Different toolboxes for different game styles
-u8 cmm_toolbox_btcm[45] = {
-    /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
-    /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_SCORNER, CMM_BUTTON_LGENTLE, CMM_BUTTON_UGENTLE,
-    /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION,CMM_BUTTON_GCOIN,CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN,CMM_BUTTON_BTCME, CMM_BUTTON_BLANK,CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT, CMM_BUTTON_TC,CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, CMM_BUTTON_BADGE, CMM_BUTTON_BOX, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+#define _ CMM_BUTTON_BLANK
+u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
+
+    CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_SCORNER, _,
+    CMM_BUTTON_GOOMBA, CMM_BUTTON_BOBOMB, CMM_BUTTON_CHUCKYA, CMM_BUTTON_KOOPA, CMM_BUTTON_LAKITU, CMM_BUTTON_FLYGUY, CMM_BUTTON_SNUFIT, CMM_BUTTON_THWOMP, CMM_BUTTON_WHOMP,
+
+    CMM_BUTTON_LGENTLE, CMM_BUTTON_UGENTLE, CMM_BUTTON_TROLL, CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_CULL,
+    CMM_BUTTON_BULLY, CMM_BUTTON_MOTOS, CMM_BUTTON_HEAVEHO, CMM_BUTTON_BULLET, CMM_BUTTON_AMP, CMM_BUTTON_PIRANHA, CMM_BUTTON_BOO,CMM_BUTTON_MR_I,CMM_BUTTON_SCUTTLEBUG,
+
+    CMM_BUTTON_STAR, CMM_BUTTON_COIN, CMM_BUTTON_FORMATION, CMM_BUTTON_GCOIN, CMM_BUTTON_RCOIN, CMM_BUTTON_BCOIN, CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BADGE,
+    CMM_BUTTON_SPINDRIFT,CMM_BUTTON_BLIZZARD,CMM_BUTTON_MONEYBAG,CMM_BUTTON_SKEETER, CMM_BUTTON_POKEY, CMM_BUTTON_REX, CMM_BUTTON_HAMMER_BRO, CMM_BUTTON_PODOBOO, CMM_BUTTON_PHANTASM,
+
+    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, _, _, _, _, _,
+    CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET,
+
+    CMM_BUTTON_NOTEBLOCK, _, _, _, _, _, _, _, _,
+    CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, _, _, _, _, _, _,
 };
-u8 cmm_toolbox_vanilla[45] = {
+u8 cmm_toolbox_vanilla[TOOLBOX_SIZE] = {
     /*Tiles    */ CMM_BUTTON_TERRAIN, CMM_BUTTON_SLAB, CMM_BUTTON_SLOPE, CMM_BUTTON_CORNER, CMM_BUTTON_ICORNER, CMM_BUTTON_VSLAB, CMM_BUTTON_SSLOPE, CMM_BUTTON_TROLL, CMM_BUTTON_CULL,
     /*Tiles 2  */ CMM_BUTTON_WATER, CMM_BUTTON_FENCE, CMM_BUTTON_BARS, CMM_BUTTON_POLE, CMM_BUTTON_TREE, CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_SCORNER, CMM_BUTTON_LGENTLE, CMM_BUTTON_UGENTLE,
     /*Items    */ CMM_BUTTON_STAR, CMM_BUTTON_COIN,CMM_BUTTON_FORMATION, CMM_BUTTON_RCOIN,CMM_BUTTON_BCOIN,CMM_BUTTON_VEXCLA,CMM_BUTTON_HEART,CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
-    /*Enemies  */ CMM_BUTTON_GROUND,CMM_BUTTON_MECH,CMM_BUTTON_FLYING,CMM_BUTTON_HAUNTED,CMM_BUTTON_ROCKENEMY,CMM_BUTTON_MISC_EN, CMM_BUTTON_BOSS, CMM_BUTTON_KTQ, CMM_BUTTON_BLANK,
-    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,CMM_BUTTON_TC, CMM_BUTTON_MINE, CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, CMM_BUTTON_BOX, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+    /*Enemies  */ CMM_BUTTON_GOOMBA,CMM_BUTTON_BOBOMB,_,_,_,_, CMM_BUTTON_BOSS, CMM_BUTTON_KTQ, CMM_BUTTON_BLANK,
+    /*Obstacles*/ CMM_BUTTON_SPAWN,CMM_BUTTON_MPLAT,_, CMM_BUTTON_MINE, CMM_BUTTON_FIRE, CMM_BUTTON_BBALL, _, CMM_BUTTON_BLANK, CMM_BUTTON_BLANK,
+
+    _, _, _, _, _, _, _, _, _,
+    _, _, _, _, _, _, _, _, _,
+    _, _, _, _, _, _, _, _, _,
+    _, _, _, _, _, _, _, _, _,
+    _, _, _, _, _, _, _, _, _,
 };
 
 char *cmm_costume_string_table[] = {

@@ -122,7 +122,7 @@ void print_maker_string(s32 x, s32 y, u8 *str, s32 highlight) {
 }
 
 f32 cmm_menu_toolbar_offsets[9];
-f32 cmm_menu_list_offsets[45];
+f32 cmm_menu_list_offsets[90];
 
 void animate_list_offset_reset(f32 offsets[], s32 length) {
     for (s32 i = 0; i < length; i++) {
@@ -969,9 +969,7 @@ void draw_cmm_menu(void) {
                 if (i == cmm_toolbox_index) {
                     op = 100;
                 }
-                s32 xi = i%9;
-                s32 yi = i/9;
-                create_dl_translation_matrix(MENU_MTX_PUSH, 34+(xi*32), 220-(yi*32) + 4*cmm_menu_list_offsets[i] + yOff, 0);
+                create_dl_translation_matrix(MENU_MTX_PUSH, GET_TOOLBOX_X(i), GET_TOOLBOX_Y(i) + 4*cmm_menu_list_offsets[i] + yOff, 0);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
                 Gfx *mat = get_button_tex(cmm_toolbox[i], cmm_toolbox_params[i]);
@@ -994,16 +992,16 @@ void draw_cmm_menu(void) {
             }
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
-            s32 strx = 54+(cmm_toolbox_index%9)*32;
-            s32 stry = 215-(cmm_toolbox_index/9)*32+yOff+4*cmm_menu_list_offsets[cmm_toolbox_index];
+            s32 strx = GET_TOOLBOX_X(cmm_toolbox_index) + 20;
+            s32 stry = GET_TOOLBOX_Y(cmm_toolbox_index) - 5 + yOff + 4*cmm_menu_list_offsets[cmm_toolbox_index];
 
             if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                 u32 isMulti = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].multiObj;
                 char *buttonName = get_button_str(cmm_toolbox[cmm_toolbox_index]);
                 //render selection box
-                if ((cmm_toolbox_index%9) > 5) {
-                    strx -= 130;
-                }
+                // if ((cmm_toolbox_index%9) > 5) {
+                //     strx -= 130;
+                // }
                 if (isMulti) stry += 8;
 
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);

@@ -849,6 +849,9 @@ u32 faceshape_has_full_bottom(u32 faceshape) {
 u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
     s8 abovePos[3];
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
+    struct cmm_grid_obj *tile = get_grid_tile(pos);
+    struct cmm_grid_obj *aboveTile = get_grid_tile(abovePos);
+
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (!coords_in_range(abovePos)) return TRUE;
 
@@ -869,9 +872,9 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     }
 
     // Render if above tile is empty
-    if (get_grid_tile(abovePos)->type == 0) return TRUE;
+    if (aboveTile->type == 0) return TRUE;
     // Render if above tile is seethrough (some exceptions)
-    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(abovePos)->mat, CMM_DIRECTION_UP)) return TRUE;
+    if (cutout_skip_culling_check(tile->mat, aboveTile->mat, CMM_DIRECTION_UP)) return TRUE;
 
     s32 otherFaceshape;
     switch (grassType) {
@@ -911,8 +914,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
             otherFaceshape = get_faceshape(abovePos, CMM_DIRECTION_UP);
             if (otherFaceshape == CMM_FACESHAPE_FULL) return FALSE;
             if (otherFaceshape != (grassType == CMM_GROWTH_DIAGONAL_SIDE ? CMM_FACESHAPE_TOPTRI : CMM_FACESHAPE_TOPHALF)) return TRUE;
-            if (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_SCORNER) return TRUE;
-            u8 otherrot = get_grid_tile(abovePos)->rot;
+            if (aboveTile->type - 1 == TILE_TYPE_SCORNER) return TRUE;
+            u8 otherrot = aboveTile->rot;
             return (otherrot != rot);
     }
     return FALSE;
@@ -960,6 +963,8 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
         connections[rot] = 0;
         s32 dir = rotate_direction(CMM_DIRECTION_POS_Z, rot);
         vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+        struct cmm_grid_obj *adjTile = get_grid_tile(adjacentPos);
+
         if (!coords_in_range(adjacentPos)) {
             if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && 
                 adjacentPos[1] < cmm_lopt_boundary_height) {
@@ -969,12 +974,12 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
         }
 
         // If adjacent block is a bar, return true
-        if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+        if (adjTile->type - 1 == TILE_TYPE_BARS) {
             connections[rot] = 1; continue;
         }
 
         // Else check its a full block
-        if ((get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) || (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_CULL)) {
+        if ((get_faceshape(adjacentPos, dir) == CMM_FACESHAPE_FULL) || (adjTile->type - 1 == TILE_TYPE_CULL)) {
             connections[rot] = 1;
         }
     }
@@ -989,16 +994,18 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
 
     for (u32 updown = 0; updown < 2; updown++) { // 0 = Up, 1 = Down
         vec3_sum(adjacentPos, pos, cullOffsetLUT[updown]);
+        struct cmm_grid_obj *adjTile = get_grid_tile(adjacentPos);
+
         if (coords_in_range(adjacentPos)) {
             u32 faceshape = get_faceshape(adjacentPos, updown);
-            if ((faceshape == CMM_FACESHAPE_FULL) || ((get_grid_tile(adjacentPos)->type - 1) == TILE_TYPE_CULL)) {
+            if ((faceshape == CMM_FACESHAPE_FULL) || ((adjTile->type - 1) == TILE_TYPE_CULL)) {
                 for (u32 rot = 0; rot < 4; rot++) {
                     connections[rot] |= (1 << (updown+1)); // Apply top flag to all bars
                 }
                 connections[4] |= (1 << (updown + 1));
             } else if (faceshape == CMM_FACESHAPE_TOPHALF) {
-                connections[(get_grid_tile(adjacentPos)->rot + 2) % 4] |= (1 << (updown + 1));
-            } else if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_BARS) {
+                connections[(adjTile->rot + 2) % 4] |= (1 << (updown + 1));
+            } else if (adjTile->type - 1 == TILE_TYPE_BARS) {
                 check_bar_side_connections(adjacentPos, adjacentConnections);
                 for (u32 rot = 0; rot < 4; rot++) {
                     connections[rot] |= adjacentConnections[rot] << (updown+1); // Apply top flag to all bars
@@ -1051,24 +1058,19 @@ u32 is_water_fullblock(s8 pos[3]) {
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
     if (!coords_in_range(abovePos)) return FALSE;
     // Full block if above block is water
-    if (get_grid_tile(abovePos)->waterlogged) return TRUE;
-    // Full block if waterlogging a block and it has a solid top face
-    s32 type = get_grid_tile(pos)->type - 1;
-    if ((type != TILE_TYPE_WATER) && (type != TILE_TYPE_TROLL)) {
-        if (get_faceshape(pos, CMM_DIRECTION_DOWN) == CMM_FACESHAPE_FULL) {
-            if (TOPMAT(get_grid_tile(pos)->mat).type != MAT_CUTOUT) {
-                return TRUE;
-            }
-        }
-    }
+    struct cmm_grid_obj *aboveTile = get_grid_tile(abovePos);
+    struct cmm_grid_obj *tile = get_grid_tile(pos);
+    if (aboveTile->waterlogged) return TRUE;
+
+    s32 type = tile->type - 1;
     // Full block if above block has solid bottom face
-    if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(get_grid_tile(abovePos)->mat).type != MAT_CUTOUT)) {
+    if ((get_faceshape(abovePos, CMM_DIRECTION_UP) == CMM_FACESHAPE_FULL) && (MATERIAL(aboveTile->mat).type != MAT_CUTOUT)) {
         // If above block is troll, but current block is also troll, then not full block
-        if ((type == TILE_TYPE_TROLL) && (get_grid_tile(abovePos)->type - 1 == TILE_TYPE_TROLL)) return FALSE;
+        if ((type == TILE_TYPE_TROLL) && (aboveTile->type - 1 == TILE_TYPE_TROLL)) return FALSE;
         // If bottom block is hollow cutout and top block is some kind of cutout then not full block
         if (type != TILE_TYPE_WATER) {
-            u8 curMat = get_grid_tile(pos)->mat;
-            u8 aboveMat = get_grid_tile(abovePos)->mat;
+            u8 curMat = tile->mat;
+            u8 aboveMat = aboveTile->mat;
             if ((TOPMAT(aboveMat).type == MAT_CUTOUT) && (TOPMAT(curMat).type == MAT_CUTOUT) &&
                 (MATERIAL(curMat).type != MAT_CUTOUT)) return FALSE;
         }
@@ -1085,6 +1087,7 @@ u32 is_water_fullblock(s8 pos[3]) {
 u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     s8 adjacentPos[3];
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+    struct cmm_grid_obj *adjTile = get_grid_tile(adjacentPos);
 
     if (!coords_in_range(adjacentPos)) {
         if (dir == CMM_DIRECTION_UP) return 1;
@@ -1094,20 +1097,21 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
         }
         return ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height)) ? 0 : type;
     }
-    if (get_grid_tile(adjacentPos)->type - 1 == TILE_TYPE_CULL) return 0;
+    if (adjTile->type - 1 == TILE_TYPE_CULL) return 0;
 
     if (cmm_building_collision) {
-        if (get_grid_tile(adjacentPos)->waterlogged) return 0;
+        if (adjTile->waterlogged) return 0;
         return isFullblock ? 2 : 1;
     }
 
-    s32 mat = get_grid_tile(pos)->mat;
-    s32 adjMat = get_grid_tile(adjacentPos)->mat;
-    if ((get_grid_tile(pos)->type - 1) == TILE_TYPE_WATER) {
+    struct cmm_grid_obj *tile = get_grid_tile(pos);
+
+    s32 mat = tile->mat;
+    s32 adjMat = adjTile->mat;
+    if ((tile->type - 1) == TILE_TYPE_WATER) {
         mat = -1;
     }
-    s32 adjTile = get_grid_tile(adjacentPos)->type - 1;
-    if ((adjTile == TILE_TYPE_WATER) || (adjTile == -1)){
+    if (((adjTile->type - 1) == TILE_TYPE_WATER) || (adjTile->type == 0)){
         adjMat = -1;
     }
 
@@ -1119,10 +1123,13 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
 
     // Check if the block that's waterlogged has a full face on the same side
     if ((get_faceshape(pos, dir^1) == CMM_FACESHAPE_FULL) && block_side_is_solid(mat, adjMat, dir^1)) {
+        if (!isFullblock && (dir == CMM_DIRECTION_UP)) {
+            return 1;
+        }
         return 0;
     }
 
-    if (get_grid_tile(adjacentPos)->waterlogged) {
+    if (adjTile->waterlogged) {
         // Check if this is a full block, next to a non-full block.
         // If so, use special thin side
         if (dir != CMM_DIRECTION_UP && dir != CMM_DIRECTION_DOWN) {
@@ -1756,6 +1763,7 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
             if (cmm_place_mode == CMM_PM_WATER) {
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
                 gSPGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], 0, G_CULL_BACK);
+                cmm_curr_poly_vert_count = 4;
                 render_water(cmm_cursor_pos);
                 display_cached_tris();
                 retroland_filter_off();
@@ -3307,18 +3315,28 @@ void sb_loop(void) {
                         cmm_toolbox_index--;
                     break;
                     case 1:
-                        cmm_toolbox_index+=9;
+                        cmm_toolbox_index+=TOOLBOX_WIDTH;
                     break;
                     case 2:
                         cmm_toolbox_index++;
                     break;
                     case 3:
-                        cmm_toolbox_index-=9;
+                        cmm_toolbox_index-=TOOLBOX_WIDTH;
                     break;
                 }
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
             cmm_toolbox_index = (cmm_toolbox_index+sizeof(cmm_toolbox))%sizeof(cmm_toolbox);
+
+            if (cmm_toolbox_index % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH) {
+                if (cmm_toolbox_x_offset > TOOLBOX_OFFSET_MAX) {
+                    cmm_toolbox_x_offset = MAX(TOOLBOX_OFFSET_MAX,cmm_toolbox_x_offset-60);
+                }
+            } else {
+                if (cmm_toolbox_x_offset < TOOLBOX_OFFSET_MIN) {
+                    cmm_toolbox_x_offset = MIN(TOOLBOX_OFFSET_MIN,cmm_toolbox_x_offset+60);
+                }
+            }
 
             //TOOLBAR CONTROLS
             if (gPlayer1Controller->buttonPressed & L_TRIG) {
@@ -3359,8 +3377,8 @@ void sb_loop(void) {
 
                     cmm_toolbox_transition_btn_render = TRUE;
                     // current pos
-                    cmm_toolbox_transition_btn_x = 34+((cmm_toolbox_index%9)*32);
-                    cmm_toolbox_transition_btn_y = 220-((cmm_toolbox_index/9)*32);
+                    cmm_toolbox_transition_btn_x = GET_TOOLBOX_X(cmm_toolbox_index);
+                    cmm_toolbox_transition_btn_y = GET_TOOLBOX_Y(cmm_toolbox_index);
                     // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
                     cmm_toolbox_transition_btn_ty = 25.0f;

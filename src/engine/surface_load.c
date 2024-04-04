@@ -566,7 +566,7 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
         struct Surface *surface = read_surface_data(vertexData, data, dynamic);
 
         if (surface != NULL) {
-            surface->object = o;
+            if (dynamic) surface->object = o;
             surface->type = surfaceType;
 
             add_surface(surface, dynamic);
