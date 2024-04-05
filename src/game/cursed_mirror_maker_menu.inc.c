@@ -993,30 +993,37 @@ void draw_cmm_menu(void) {
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
             s32 strx = GET_TOOLBOX_X(cmm_toolbox_index) + 20;
+            s32 lowerstrx = strx;
             s32 stry = GET_TOOLBOX_Y(cmm_toolbox_index) - 5 + yOff + 4*cmm_menu_list_offsets[cmm_toolbox_index];
 
             if (cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
                 u32 isMulti = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].multiObj;
                 char *buttonName = get_button_str(cmm_toolbox[cmm_toolbox_index]);
-                //render selection box
-                // if ((cmm_toolbox_index%9) > 5) {
-                //     strx -= 130;
-                // }
+                char stringBuf[50];
                 if (isMulti) stry += 8;
+
+                s32 strLen = get_string_width_ascii(buttonName);
+                s32 lowerStrLen = 0;
+
+                if (isMulti) {
+                    u32 objId = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].idList[cmm_toolbox_params[cmm_toolbox_index]];
+                    sprintf(stringBuf, "< %s >", cmm_object_type_list[objId].name);
+                    lowerStrLen = get_string_width_ascii(stringBuf);
+                }
+
+                if ((lowerstrx + lowerStrLen > SCREEN_WIDTH - 5) || (strx + strLen > SCREEN_WIDTH - 5)) {
+                    lowerstrx -= lowerStrLen+45;
+                    strx -= strLen+45;
+                }
 
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-                gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + get_string_width_ascii(buttonName) + 5, 240-stry+1);
-
+                gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + strLen + 5, 240-stry+1);
                 if (isMulti) {
-                    char stringBuf[50];
-                    u32 objId = cmm_ui_buttons[cmm_toolbox[cmm_toolbox_index]].idList[cmm_toolbox_params[cmm_toolbox_index]];
-                    sprintf(stringBuf, "< %s >", cmm_object_type_list[objId].name);
-                    gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry+1, strx + get_string_width_ascii(stringBuf) + 5, 240-stry+16);
-                    print_maker_string_ascii(strx, stry-15, stringBuf, TRUE);
+                    gDPFillRectangle(gDisplayListHead++, lowerstrx-5, 240-stry+1, lowerstrx + lowerStrLen + 5, 240-stry+16);
+                    print_maker_string_ascii(lowerstrx, stry-15, stringBuf, TRUE);
                 }
-
                 print_maker_string_ascii(strx, stry, buttonName, TRUE);
             }
 
