@@ -388,32 +388,34 @@ void obj_splash(s32 waterY, s32 objY) {
  * Returns flags for certain interactions.
  */
 s16 object_step(void) {
-    f32 objX = o->oPosX;
-    f32 objY = o->oPosY;
-    f32 objZ = o->oPosZ;
-
     f32 floorY;
     f32 waterY = FLOOR_LOWER_LIMIT_MISC;
-
-    f32 objVelX = o->oForwardVel * sins(o->oMoveAngleYaw);
-    f32 objVelZ = o->oForwardVel * coss(o->oMoveAngleYaw);
 
     s16 collisionFlags = 0;
 
     obj_add_self_to_physics_list();
 
+    obj_update_pos_vel_xz();
+
+    f32 objX = o->oPosX;
+    f32 objY = o->oPosY;
+    f32 objZ = o->oPosZ;
+
+    f32 objVelX = o->oForwardVel * sins(o->oMoveAngleYaw);
+    f32 objVelZ = o->oForwardVel * coss(o->oMoveAngleYaw);
+
     // Find any wall collisions, receive the push, and set the flag.
-    if (obj_find_wall(objX + objVelX, objY, objZ + objVelZ, objVelX, objVelZ) == 0) {
+    if (obj_find_wall(objX, objY, objZ, objVelX, objVelZ) == 0) {
         collisionFlags += OBJ_COL_FLAG_HIT_WALL;
     }
 
-    floorY = find_floor(objX + objVelX, objY, objZ + objVelZ, &sObjFloor);
+    floorY = find_floor(objX, objY, objZ, &sObjFloor);
 
     o->oFloor       = sObjFloor;
     o->oFloorHeight = floorY;
 
     if (turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1) {
-        waterY = cmm_get_water_level(objX + objVelX, objY + o->oVelY, objZ + objVelZ);
+        waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
             calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, objVelX, objVelZ, waterY);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;
@@ -427,8 +429,6 @@ s16 object_step(void) {
     }
 
     cur_obj_update_ceiling();
-
-    obj_update_pos_vel_xz();
 
     if (sObjFloor && (o->oPosY >= floorY) && (o->oPosY < floorY + 37)) {
         Vec3f normal;
