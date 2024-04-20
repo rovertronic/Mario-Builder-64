@@ -90,9 +90,9 @@ static void clear_spatial_partition(SpatialPartitionCell *cells) {
     register s32 i = sqr(NUM_CELLS);
 
     while (i--) {
-        (*cells)[SPATIAL_PARTITION_FLOORS].next = NULL;
-        (*cells)[SPATIAL_PARTITION_CEILS].next = NULL;
-        (*cells)[SPATIAL_PARTITION_WALLS].next = NULL;
+        (*cells)[SPATIAL_PARTITION_FLOORS] = NULL;
+        (*cells)[SPATIAL_PARTITION_CEILS] = NULL;
+        (*cells)[SPATIAL_PARTITION_WALLS] = NULL;
 
         cells++;
     }
@@ -503,7 +503,7 @@ void clear_dynamic_surfaces(void) {
             clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
         } else {
             for (u32 i = 0; i < sNumCellsUsed; i++) {
-                gDynamicSurfacePartition[sCellsUsed[i].z][sCellsUsed[i].x][sCellsUsed[i].partition].next = NULL;
+                gDynamicSurfacePartition[sCellsUsed[i].z][sCellsUsed[i].x][sCellsUsed[i].partition] = NULL;
             }
         }
         sNumCellsUsed = 0;
