@@ -46,7 +46,7 @@ enum ObjFlags {
     OBJ_FLAG_SIMPLE_WALL_CHECKS                = (1 << 12), // 0x00001000 - no extra 2nd check and does wall check lower down
     OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO            = (1 << 13), // 0x00002000
     OBJ_FLAG_PERSISTENT_RESPAWN                = (1 << 14), // 0x00004000
-    OBJ_FLAG_VELOCITY_PLATFORM                 = (1 << 15), // 0x00008000
+    OBJ_FLAG_NO_AUTO_DISPLACEMENT              = (1 << 15), // 0x00008000
     OBJ_FLAG_EXACT_TILE_SIZE                   = (1 << 16), // 0x00010000 - surface object is EXACTLY one tile in size, optimize collision loads, collision distance represents height                     = (1 << 18), // 0x00040000
     OBJ_FLAG_SILHOUETTE                        = (1 << 19), // 0x00080000
     OBJ_FLAG_OCCLUDE_SILHOUETTE                = (1 << 20), // 0x00100000
