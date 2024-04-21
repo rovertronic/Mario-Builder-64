@@ -864,7 +864,7 @@ void mb64_init() {
     }
 }
 
-#include "rnc.h"
+#include "boot/slidec.h"
 void reload_bg(void) {
     void *srcStart = mb64_skybox_table[mb64_lopt_bg*2];
     void *srcEnd = mb64_skybox_table[mb64_lopt_bg*2+1];
@@ -878,7 +878,7 @@ void reload_bg(void) {
 
     if (compressed != NULL) {
         dma_read(compressed, srcStart, srcEnd);
-        Propack_UnpackM1(compressed, get_segment_base_addr(SEGMENT_SKYBOX));
+        slidstart(compressed, get_segment_base_addr(SEGMENT_SKYBOX));
         sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
         main_pool_free(compressed);
     }
