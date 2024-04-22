@@ -25,6 +25,15 @@ SpatialPartitionCell gStaticSurfacePartition[NUM_CELLS][NUM_CELLS];
 SpatialPartitionCell gDynamicSurfacePartition[NUM_CELLS][NUM_CELLS];
 SpatialPartitionCell gBlockSurfaces;
 
+struct CellCoords {
+    u8 z;
+    u8 x;
+    u8 partition;
+};
+struct CellCoords sCellsUsed[NUM_CELLS];
+u16 sNumCellsUsed;
+u8 sClearAllCells;
+
 /**
  * Pools of data that can contain either surface nodes or surfaces.
  * The static surface pool is resized to be exactly the amount of memory needed for the level geometry.
@@ -112,6 +121,16 @@ void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface
 
     if (type == 1) {
         list = &gDynamicSurfacePartition[cellZ][cellX][listIndex];
+        if (sNumCellsUsed >= sizeof(sCellsUsed) / sizeof(struct CellCoords)) {
+            sClearAllCells = TRUE;
+        } else {
+            if (*list == NULL) {
+                sCellsUsed[sNumCellsUsed].z = cellZ;
+                sCellsUsed[sNumCellsUsed].x = cellX;
+                sCellsUsed[sNumCellsUsed].partition = listIndex;
+                sNumCellsUsed++;
+            }
+        }
     } else if (type == 0) {
         list = &gStaticSurfacePartition[cellZ][cellX][listIndex];
     } else {
@@ -361,7 +380,15 @@ void clear_dynamic_surfaces(void) {
 
         gMainSurfacesAllocated = gNumStaticSurfaces;
         gMainSurfaceNodesAllocated = gNumStaticSurfaceNodes;
-        clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
+        if (sClearAllCells) {
+            clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
+        } else {
+            for (u32 i = 0; i < sNumCellsUsed; i++) {
+                gDynamicSurfacePartition[sCellsUsed[i].z][sCellsUsed[i].x][sCellsUsed[i].partition] = NULL;
+            }
+        }
+        sNumCellsUsed = 0;
+        sClearAllCells = FALSE;
     }
     profiler_collision_update(first);
 }
