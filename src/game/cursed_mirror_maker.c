@@ -124,6 +124,11 @@ u8 cmm_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
 
 TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
 
+// dialog edit stuff
+struct cmm_obj * cmm_dialog_edit_ptr = NULL;
+s8 cmm_dialog_subject_index = 0;
+s8 cmm_dialog_topic_index = 0;
+
 //play mode stuff
 u8 cmm_play_stars = 0;
 u8 cmm_play_stars_max = 0;
@@ -2333,6 +2338,10 @@ void place_object(s8 pos[3]) {
         cmm_menu_state = CMM_MAKE_TRAJECTORY;
         cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = -1;
         cmm_trajectory_edit_index = 0;
+    } else if (cmm_object_type_list[cmm_id_selection].flags & OBJ_TYPE_HAS_DIALOG) {
+        cmm_menu_state = CMM_MAKE_SELECT_DIALOG;
+        cmm_object_data[cmm_object_count].bparam = 0;
+        cmm_dialog_edit_ptr = &cmm_object_data[cmm_object_count];
     } else if (!cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multiObj) {
         cmm_object_data[cmm_object_count].bparam = cmm_param_selection;
     }
@@ -3303,10 +3312,10 @@ void sb_loop(void) {
             }
 
             update_boundary_wall();
-        break;
+            break;
         case CMM_MAKE_PLAY://PLAY MODE
 
-        break;
+            break;
         case CMM_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
             delete_preview_object();
@@ -3400,12 +3409,12 @@ void sb_loop(void) {
                 cmm_menu_state = CMM_MAKE_MAIN;
                 cmm_toolbox_transition_btn_render = FALSE;
             }
-        break;
+            break;
         case CMM_MAKE_SETTINGS: //settings
             if (cmm_menu_end_timer == 10) {
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
-        break;
+            break;
         case CMM_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();
             cursorMoved = main_cursor_logic(cmm_joystick);
@@ -3463,12 +3472,41 @@ void sb_loop(void) {
             }
 
             update_boundary_wall();
-        break;
+            break;
         case CMM_MAKE_SCREENSHOT:
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
             freecam_camera_main();
             update_boundary_wall();
-        break;
+            break;
+        case CMM_MAKE_SELECT_DIALOG:
+            if (cmm_joystick != 0) {
+                switch((cmm_joystick-1)%4) {
+                    case 0:
+                        cmm_dialog_topic_index --;
+                    break;
+                    case 1:
+                        cmm_dialog_subject_index++;
+                        cmm_dialog_topic_index = 0;
+                    break;
+                    case 2:
+                        cmm_dialog_topic_index ++;
+                    break;
+                    case 3:
+                        cmm_dialog_topic_index = 0;
+                        cmm_dialog_subject_index--;
+                    break;
+                }
+
+                cmm_dialog_subject_index = (NUM_DIALOG_SUBJECT_COUNT + cmm_dialog_subject_index) % NUM_DIALOG_SUBJECT_COUNT;
+                cmm_dialog_topic_index = (cmm_dialog_subjects[cmm_dialog_subject_index].topic_list_size + cmm_dialog_topic_index) % cmm_dialog_subjects[cmm_dialog_subject_index].topic_list_size;
+                cmm_dialog_edit_ptr->bparam = cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].dialog_id;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            }
+
+            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+                cmm_menu_state = CMM_MAKE_MAIN;
+            }
+            break;
     }
 
     if (cmm_menu_state == CMM_MAKE_MAIN || cmm_menu_state == CMM_MAKE_SETTINGS || cmm_menu_state == CMM_MAKE_TOOLBOX) {

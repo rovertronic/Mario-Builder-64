@@ -318,13 +318,13 @@ extern const GeoLayout white_particle_geo[];
 extern const Gfx white_particle_dl[];
 
 // // wooden_signpost
-// extern const GeoLayout wooden_signpost_geo[];
-// extern const Gfx wooden_signpost_seg3_dl_0302D9C8[];
-// extern const Gfx wooden_signpost_seg3_dl_0302DA48[];
-// extern const Gfx wooden_signpost_seg3_dl_0302DC40[];
-// extern const Gfx wooden_signpost_seg3_dl_0302DCD0[];
-// extern const Gfx wooden_signpost_seg3_dl_0302DD08[];
-// extern const Collision wooden_signpost_seg3_collision_0302DD80[];
+extern const GeoLayout wooden_signpost_geo[];
+extern const Gfx wooden_signpost_seg3_dl_0302D9C8[];
+extern const Gfx wooden_signpost_seg3_dl_0302DA48[];
+extern const Gfx wooden_signpost_seg3_dl_0302DC40[];
+extern const Gfx wooden_signpost_seg3_dl_0302DCD0[];
+extern const Gfx wooden_signpost_seg3_dl_0302DD08[];
+extern const Collision wooden_signpost_seg3_collision_0302DD80[];
 
 // // yoshi
 // extern const GeoLayout yoshi_geo[];

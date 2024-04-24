@@ -4313,22 +4313,22 @@ const BehaviorScript bhvBobombFuseSmoke[] = {
     END_LOOP(),
 };
 
-// const BehaviorScript bhvBobombBuddy[] = {
-//     BEGIN(OBJ_LIST_GENACTOR),
-//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     SET_INT(oBobombBuddyRole, 0),
-//     LOAD_ANIMATIONS(oAnimations, bobomb_anims),
-//     SET_INTERACT_TYPE(INTERACT_TEXT),
-//     DROP_TO_FLOOR(),
-//     SET_HITBOX(/*Radius*/ 100, /*Height*/ 60),
-//     ANIMATE(BOBOMB_ANIM_WALKING),
-//     SET_HOME(),
-//     CALL_NATIVE(bhv_bobomb_buddy_init),
-//     BEGIN_LOOP(),
-//         SET_INT(oIntangibleTimer, 0),
-//         CALL_NATIVE(bhv_bobomb_buddy_loop),
-//     END_LOOP(),
-// };
+const BehaviorScript bhvBobombBuddy[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    SET_INT(oBobombBuddyRole, 0),
+    LOAD_ANIMATIONS(oAnimations, bobomb_anims),
+    SET_INTERACT_TYPE(INTERACT_TEXT),
+    DROP_TO_FLOOR(),
+    SET_HITBOX(/*Radius*/ 100, /*Height*/ 60),
+    ANIMATE(BOBOMB_ANIM_WALKING),
+    SET_HOME(),
+    CALL_NATIVE(bhv_bobomb_buddy_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_bobomb_buddy_loop),
+    END_LOOP(),
+};
 
 // const BehaviorScript bhvGhoad[] = {
 //     BEGIN(OBJ_LIST_GENACTOR),
@@ -4568,22 +4568,22 @@ const BehaviorScript bhvBobombFuseSmoke[] = {
 //     END_LOOP(),
 // };
 
-// const BehaviorScript bhvMessagePanel[] = {
-//     BEGIN(OBJ_LIST_SURFACE),
-//     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     LOAD_COLLISION_DATA(wooden_signpost_seg3_collision_0302DD80),
-//     SET_INTERACT_TYPE(INTERACT_TEXT),
-//     SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
-//     DROP_TO_FLOOR(),
-//     SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
-//     SET_INT(oWoodenPostTotalMarioAngle, 0),
-//     CALL_NATIVE(bhv_init_room),
-//     CALL_NATIVE(load_object_static_model),
-//     BEGIN_LOOP(),
-//         SET_INT(oIntangibleTimer, 0),
-//         SET_INT(oInteractStatus, INT_STATUS_NONE),
-//     END_LOOP(),
-// };
+const BehaviorScript bhvMessagePanel[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_COLLISION_DATA(wooden_signpost_seg3_collision_0302DD80),
+    SET_INTERACT_TYPE(INTERACT_TEXT),
+    SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
+    //DROP_TO_FLOOR(),
+    SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
+    SET_INT(oWoodenPostTotalMarioAngle, 0),
+    //CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(load_object_static_model),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        SET_INT(oInteractStatus, INT_STATUS_NONE),
+    END_LOOP(),
+};
 
 // const BehaviorScript bhvSignOnWall[] = {
 //     BEGIN(OBJ_LIST_SURFACE),
