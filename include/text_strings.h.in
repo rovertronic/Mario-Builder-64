@@ -18,7 +18,7 @@
 
 #define TXT_MM_HELP_PAGE_3 _("Alpha Build\nDo not redistribute.")
 
-#define TXT_MM_CREDITS_PAGE _("Mario Builder 64 by Rovertronic, 2023\n\nThank you to my Patreons:\nHenry Kumpel, ZT, Pizza Brian, tydaze\nSubscribe to Arthurtilly on YouTube\n\nSD card support: Devwizard, Falcobuster\nHackerSM64: HackerN64 Team\nTitle screen model: Biobak\nBTCM OST: Thorndust, SpK, ArcticJaguar725\n\nTing-Thing: Original Mario Builder")
+#define TXT_MM_CREDITS_PAGE _("Mario Builder 64 by Rovertronic, 2023\n\nThank you to my Patreons:\nHenry Kumpel, ZT, Pizza Brian, tydaze\n\n\nSD card support: Devwizard, Falcobuster\nHackerSM64: HackerN64 Team\nTitle screen model: Biobak\nBTCM OST: Thorndust, SpK, ArcticJaguar725\n\nTing-Thing: Original Mario Builder")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")
