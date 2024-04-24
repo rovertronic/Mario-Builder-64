@@ -217,31 +217,24 @@ to never directly land\n\
 on top of the quicksand."))
 
 DEFINE_DIALOG(DIALOG_019, 1, 4, 95, 180, _("\
-You made it up,\n\
-swashbuckler.\n\
-The Shadow Strider\n\
-has cursed our poor\n\
-craft for as long\n\
-as we boos've\n\
-known.\n\
-\n\
-If you dare, unbind\n\
-the curse and defeat\n\
-the black spot once\n\
-and for all!"))
+Help! Big Bully is causing\n\
+trouble for us. Can you help\n\
+us to defeat it?"))
 
-DEFINE_DIALOG(DIALOG_020, 1, 6, 95, 150, _("\
-Welcome to the minigame zone!\n\
-Purchase or play minigames here, and\n\
-view highscores."))
+DEFINE_DIALOG(DIALOG_020, 1, 4, 95, 180, _("\
+Help! Chief Chilly is causing\n\
+trouble for us. Can you help\n\
+us to defeat him?"))
 
-DEFINE_DIALOG(DIALOG_021, 1, 5, 95, 180, _("\
-Purchase [%] for [%]$?\n\
-(You currently have [%]$)"))
+DEFINE_DIALOG(DIALOG_021, 1, 4, 95, 180, _("\
+Help! Wiggler is causing\n\
+trouble for us. Can you help\n\
+us to defeat them?"))
 
-DEFINE_DIALOG(DIALOG_022, 1, 2, 95, 180, _("\
-This door requires the power of [%] golden\n\
-stars to open. You need [%] more."))
+DEFINE_DIALOG(DIALOG_022, 1, 4, 95, 180, _("\
+Help! Bowser is causing\n\
+trouble for us. Can you help\n\
+us to defeat him?"))
 
 DEFINE_DIALOG(DIALOG_023, 1, 3, 95, 180, _("\
 You have successfully purchased [%]!"))

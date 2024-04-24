@@ -45,22 +45,10 @@ void bhv_collect_star_loop(void) {
     //     o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
     // }
 
-    if (o->oBehParams2ndByte > 1) {
-        if (o->oDistanceToMario < 300.0f || o->oBehParams2ndByte == 3) {
-            if (o->oBehParams2ndByte == 2) {
-                spawn_object(o,MODEL_STAR,bhvFlyGuy);
-                o->oBehParams2ndByte = 3;
-            } else {
-                mark_obj_for_deletion(o);
-            }
-        }
-    }
-    else
-    {
-        if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-            obj_mark_for_deletion(o);
-            o->oInteractStatus = INT_STATUS_NONE;
-        }
+
+    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+        obj_mark_for_deletion(o);
+        o->oInteractStatus = INT_STATUS_NONE;
     }
 }
 

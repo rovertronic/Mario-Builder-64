@@ -2446,6 +2446,10 @@ struct cmm_dialog_topic cmm_dialog_topics_trouble[] = {
     {"King Bob-omb",DIALOG_000},
     {"King Whomp",DIALOG_001},
     {"Big Boo",DIALOG_016},
+    {"Big Bully",DIALOG_019},
+    {"Chief Chilly",DIALOG_020},
+    {"Wiggler",DIALOG_021},
+    {"Bowser",DIALOG_022},
 };
 
 struct cmm_dialog_topic cmm_dialog_topics_tricks[] = {
@@ -2456,7 +2460,7 @@ struct cmm_dialog_topic cmm_dialog_topics_tricks[] = {
 
 struct cmm_dialog_subject cmm_dialog_subjects[] = {
     {"Greetings",&cmm_dialog_topics_greetings, 4},
-    {"Trouble",&cmm_dialog_topics_trouble, 3},
+    {"Trouble",&cmm_dialog_topics_trouble, 7},
     {"Tricks",&cmm_dialog_topics_tricks, 3}
 };
 #define NUM_DIALOG_SUBJECT_COUNT 3
