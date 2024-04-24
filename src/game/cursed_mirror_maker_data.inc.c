@@ -1433,6 +1433,9 @@ enum {
     OBJECT_TYPE_BBOX_SMALL,
     OBJECT_TYPE_BBOX_NORMAL,
     OBJECT_TYPE_BBOX_CRAZY,
+    OBJECT_TYPE_DIAMOND,
+    OBJECT_TYPE_SIGN,
+    OBJECT_TYPE_BUDDY,
     OBJECT_TYPE_CULL_PREVIEW, // also fake type
 };
 
@@ -1458,7 +1461,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_BOBOMB */        {"Bob-omb",                 mat_b_btn_bobomb,       bhvBobomb,         0,           MODEL_BLACK_BOBOMB,        0,                       1, 0, 1.0f, bobomb_anims, NULL, SOUND_GENERAL2_QUIET_EXPLOSION},
 /* OBJECT_TYPE_CHUCKYA */       {"Chuckya",                 mat_b_btn_chuckya,      bhvChuckya,        0,           MODEL_CHUCKYA,             0,                       5, 0, 2.0f, chuckya_seg8_anims_0800C070, df_chuckya, SOUND_OBJ_CHUCKYA_PREVIEW},
 /* OBJECT_TYPE_BULLY */         {"Bully",                   mat_b_btn_bully,        bhvSmallBully,     0,           MODEL_BULLY,               0,                       1, 0, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
-/* OBJECT_TYPE_CHILL_BULLY */   {"Chill Bully",             mat_b_btn_bully,        bhvSmallBully,     0,           MODEL_CHILL_BULLY,         0,                       1, 0, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
+/* OBJECT_TYPE_CHILL_BULLY */   {"Chill Bully",             mat_b_btn_chillbully,   bhvSmallBully,     0,           MODEL_CHILL_BULLY,         0,                       1, 0, 1.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_SMALL_BULLY_ATTACKED},
 /* OBJECT_TYPE_BULLET_BILL */   {"Bullet Bill",             mat_b_btn_bill,         bhvBulletBillCannon, TILE_SIZE/2, MODEL_BILL_MAKER_2,      0,                       0, 1, 1.0f, NULL, NULL, SOUND_OBJ_POUNDING_CANNON},
 /* OBJECT_TYPE_HEAVE_HO */      {"Heave-Ho",                mat_b_btn_heaveho,      bhvHeaveHo,        0,           MODEL_MAKER_HEAVEHO,       0,                       0, 0, 2.0f, heave_ho_seg5_anims_0501534C, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 /* OBJECT_TYPE_MOTOS */         {"Motos",                   mat_b_btn_motos,        bhvMotos,          0,           MODEL_MAKER_MOTOS,         0,                       5, 0, 2.0f, motos_anime, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
@@ -1478,7 +1481,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_KING_WHOMP */    {"King Whomp",              mat_b_btn_boss_whomp,   bhvWhompKingBoss,  0,           MODEL_WHOMP_MAKER,         OBJ_TYPE_HAS_STAR,       0, 0, 2.f,  whomp_seg6_anims_06020A04, NULL, SOUND_OBJ_WHOMP},
 /* OBJECT_TYPE_BIG_BOO */       {"Big Boo",                 mat_b_btn_boss_boo,     bhvBalconyBigBoo,  TILE_SIZE,   MODEL_MAKER_BOO,           OBJ_TYPE_HAS_STAR,       0, 0, 3.0f, NULL, df_boo, SOUND_OBJ_BOO_LAUGH_LONG},
 /* OBJECT_TYPE_BIG_BULLY */     {"Big Bully",               mat_b_btn_boss_bully,   bhvBigBully,       0,           MODEL_BULLY,               OBJ_TYPE_HAS_STAR,       0, 0, 2.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
-/* OBJECT_TYPE_BIG_CHILL_BULLY */ {"Big Chill Bully",               mat_b_btn_boss_bully,   bhvBigBully,       0,           MODEL_CHILL_BULLY,         OBJ_TYPE_HAS_STAR,       0, 0, 2.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
+/* OBJECT_TYPE_BIG_CHILL_BULLY */ {"Big Chill Bully",       mat_b_btn_boss_chillbully,bhvBigBully,     0,           MODEL_CHILL_BULLY,         OBJ_TYPE_HAS_STAR,       0, 0, 2.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
 /* OBJECT_TYPE_WIGGLER */       {"Wiggler",                 mat_b_btn_boss_wiggler, bhvWigglerHead,    0,           MODEL_WIGGLER_HEAD,        OBJ_TYPE_HAS_STAR,       0, 0, 4.0f, wiggler_seg5_anims_0500EC8C, df_wiggler, SOUND_OBJ_WIGGLER_TALK},
 /* OBJECT_TYPE_BOWSER */        {"Bowser",                  mat_b_btn_boss_bowser,  bhvBowser,         0,           MODEL_MAKER_BOWSER,        OBJ_TYPE_HAS_STAR,       0, 3, 1.0f, bowser_anims, df_booser, SOUND_OBJ2_BOWSER_ROAR},
 /* OBJECT_TYPE_PLATFORM_TRACK */ {"Activated",              mat_b_btn_checker,      bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, OBJ_TYPE_TRAJECTORY,  0, 0, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO},
@@ -1514,6 +1517,9 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_BBOX_SMALL*/     {"Throwable Box",           mat_b_btn_sbox,         bhvBreakableBoxSmall, 0,        MODEL_BREAKABLE_BOX,       0,                       3, 0, 0.31f,NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
 /* OBJECT_TYPE_BBOX_NORMAL*/    {"Breakable Box",           mat_b_btn_corkbox,      bhvBreakableBox,   0,           MODEL_BREAKABLE_BOX,       0,                       3, 0, 1.0f, NULL, df_corkbox, SOUND_GENERAL_BOX_PREVIEW},
 /* OBJECT_TYPE_BBOX_CRAZY*/     {"Crazy Box",               mat_b_btn_cbox,         bhvJumpingBox,     0,           MODEL_BREAKABLE_BOX,       0,                       5, 0, 0.38f,NULL, NULL, SOUND_GENERAL_CRAZY_BOX_BOING_SLOW},
+/* OBJECT_TYPE_DIAMOND*/        {"Water Diamond",           mat_b_btn_water_diamond,bhvWaterLevelDiamond,0,         MODEL_MAKER_DIAMOND,       0,                       0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_WATER_LEVEL_TRIG},
+/* OBJECT_TYPE_SIGN */          {"Bill Board",              mat_b_btn_sign,         bhvMessagePanel,   0,           MODEL_WOODEN_SIGNPOST,     OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, NULL, NULL, SOUND_ACTION_READ_SIGN},
+/* OBJECT_TYPE_BUDDY */         {"Bob-omb Buddy",           mat_b_btn_buddy,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
 };
 
@@ -1660,6 +1666,8 @@ enum {
     CMM_BUTTON_BREAKABLE,
     CMM_BUTTON_THROWABLE,
     CMM_BUTTON_CRAZY,
+    CMM_BUTTON_DIAMOND,
+    CMM_BUTTON_NPC,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1674,6 +1682,7 @@ u8 cmm_boo_idlist[] = {OBJECT_TYPE_BOO, OBJECT_TYPE_BIG_BOO};
 u8 cmm_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING};
 u8 cmm_thwomp_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_GRINDEL};
 u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
+u8 cmm_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_SETTINGS */ {CMM_PM_OBJ,  TRUE,  2, &cmm_settings_idlist,    "Options"},
@@ -1754,6 +1763,8 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_BREAKABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_NORMAL, NULL},
 /* CMM_BUTTON_THROWABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_SMALL, NULL},
 /* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},
+/* CMM_BUTTON_DIAMOND */ {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
+/* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 2, cmm_npc_idlist, "NPC"},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1816,7 +1827,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_STAR, CMM_BUTTON_COIN, CMM_BUTTON_FORMATION, CMM_BUTTON_GCOIN, CMM_BUTTON_RCOIN, CMM_BUTTON_BCOIN, CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BADGE,
     CMM_BUTTON_SPINDRIFT,CMM_BUTTON_BLIZZARD,CMM_BUTTON_MONEYBAG,CMM_BUTTON_SKEETER, CMM_BUTTON_POKEY, CMM_BUTTON_REX, CMM_BUTTON_HAMMER_BRO, CMM_BUTTON_PODOBOO, CMM_BUTTON_PHANTASM,
 
-    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, _, _, _, _, _,
+    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_DIAMOND, CMM_BUTTON_NPC, _, _, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET,
 
     CMM_BUTTON_NOTEBLOCK, _, _, _, _, _, _, _, _,
@@ -1833,7 +1844,7 @@ u8 cmm_toolbox_vanilla[TOOLBOX_SIZE] = {
     CMM_BUTTON_STAR, CMM_BUTTON_COIN, CMM_BUTTON_FORMATION, CMM_BUTTON_RCOIN, CMM_BUTTON_BCOIN, CMM_BUTTON_VEXCLA, CMM_BUTTON_HEART, CMM_BUTTON_KTQ, _,
     CMM_BUTTON_SPINDRIFT,CMM_BUTTON_BLIZZARD,CMM_BUTTON_MONEYBAG,CMM_BUTTON_SKEETER, CMM_BUTTON_POKEY, CMM_BUTTON_KING_BOBOMB, CMM_BUTTON_WIGGLER, CMM_BUTTON_BOWSER, _,
 
-    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, _, _, _, _, _,
+    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_DIAMOND, CMM_BUTTON_NPC, _, _, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, CMM_BUTTON_BBALL, _, _, _, _,
 
     CMM_BUTTON_NOTEBLOCK, _, _, _, _, _, _, _, _,
@@ -2424,3 +2435,28 @@ char *cmm_tips[] = {
 };
 #define NUM_BTCM_TIPS 5
 
+struct cmm_dialog_topic cmm_dialog_topics_greetings[] = {
+    {"Hello",DIALOG_004},
+    {"Going",DIALOG_006},
+    {"Sup",DIALOG_007},
+    {"Howdy",DIALOG_008},
+};
+
+struct cmm_dialog_topic cmm_dialog_topics_trouble[] = {
+    {"King Bob-omb",DIALOG_000},
+    {"King Whomp",DIALOG_001},
+    {"Big Boo",DIALOG_016},
+};
+
+struct cmm_dialog_topic cmm_dialog_topics_tricks[] = {
+    {"Triple Jump Kick",DIALOG_002},
+    {"BLJ",DIALOG_003},
+    {"QSLG",DIALOG_018}
+};
+
+struct cmm_dialog_subject cmm_dialog_subjects[] = {
+    {"Greetings",&cmm_dialog_topics_greetings, 4},
+    {"Trouble",&cmm_dialog_topics_trouble, 3},
+    {"Tricks",&cmm_dialog_topics_tricks, 3}
+};
+#define NUM_DIALOG_SUBJECT_COUNT 3

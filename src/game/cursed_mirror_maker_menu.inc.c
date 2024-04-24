@@ -1142,6 +1142,19 @@ void draw_cmm_menu(void) {
             print_maker_string(20,210,cmm_txt_freecam,TRUE);
             //cmm_render_topleft_text();
             break;
+
+        case CMM_MAKE_SELECT_DIALOG:
+            if (TRUE) { //4 my compiler
+                char stringBuf[50];
+                sprintf(stringBuf,"^ Subject: %s |", cmm_dialog_subjects[cmm_dialog_subject_index].name);
+                print_maker_string_ascii_centered(160,210,stringBuf,FALSE);
+                sprintf(stringBuf,"< Topic: %s >",cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].name);
+                print_maker_string_ascii_centered(160,190,stringBuf,FALSE);
+
+                render_dialog_entry_preview(cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].dialog_id);
+            }
+            break;
+
     }
 
     if ((cmm_menu_state != CMM_MAKE_TRAJECTORY)&&(cmm_menu_state != CMM_MAKE_SCREENSHOT)) {

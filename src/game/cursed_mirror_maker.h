@@ -180,6 +180,7 @@ typedef void (*DisplayFunc)(s32);
 #define OBJ_TYPE_IS_BILLBOARDED (1 << 0)
 #define OBJ_TYPE_TRAJECTORY     (1 << 1)
 #define OBJ_TYPE_HAS_STAR       (1 << 2)
+#define OBJ_TYPE_HAS_DIALOG     (1 << 3)
 struct cmm_object_info {
     char *name;
     Gfx *btn;
@@ -243,6 +244,7 @@ enum {
     CMM_MAKE_SETTINGS,
     CMM_MAKE_TRAJECTORY,
     CMM_MAKE_SCREENSHOT,
+    CMM_MAKE_SELECT_DIALOG,
 };
 
 #define NUM_MATERIALS_PER_THEME 10
@@ -413,6 +415,17 @@ enum cmm_themes {
     CMM_THEME_RETRO,
     CMM_THEME_CUSTOM,
     CMM_THEME_MC,
+};
+
+struct cmm_dialog_topic {
+    char * name;
+    u8 dialog_id;
+};
+
+struct cmm_dialog_subject {
+    char * name;
+    struct cmm_dialog_topic * topic_list;
+    u8 topic_list_size;
 };
 
 #endif

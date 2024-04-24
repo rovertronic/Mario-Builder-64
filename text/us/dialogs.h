@@ -17,51 +17,42 @@
 #endif
 
 DEFINE_DIALOG(DIALOG_000, 1, 4, 95, 180, _("\
-House made by rock.\n\
-House very hard!\n\
-Nomole get in!"))
+Help! King Bob-Omb is causing\n\
+trouble for us. Can you help\n\
+us to defeat him?"))
 
-DEFINE_DIALOG(DIALOG_001, 1, 4, 130, 220, _("\
-Welcome to the shop!\n\
-Press [B] to buy an item,\n\
-and use the analog stick\n\
-to select an item."))
+DEFINE_DIALOG(DIALOG_001, 1, 4, 95, 180, _("\
+Help! King Whomp is causing\n\
+trouble for us. Can you help\n\
+us to defeat him?"))
 
 DEFINE_DIALOG(DIALOG_002, 1, 4, 95, 180, _("\
-I am boss. This place\n\
-nice. Lookings up\n\
-good. Homes feel good.\n\
+To get past this jump, you\n\
+need to do a triple jump\n\
+kick.\n\
 \n\
-You welcome stay.\n\
-Any day!"))
+To do this, do a jump\n\
+kick, a double jump, and\n\
+finally a triple jump.\n\
+\n\
+You'll gain extra height\n\
+when doing this jump."))
 
 DEFINE_DIALOG(DIALOG_003, 1, 4, 95, 180, _("\
-Hello. Welcome to\n\
-home. Moleman tribe\n\
-welcome you.\n\
+To get past this jump, you\n\
+need to do a backwards\n\
+long jump.\n\
 \n\
-Us have problem.\n\
-You help us?\n\
-Dinos bad. Cause\n\
-problem!\n\
-Chickens too!\n\
-Chicken egg\n\
-the huts!\n\
-\n\
-Get rid dinos.\n\
-Get rid chickens.\n\
-We give shiny\n\
-rock if do."))
+First, initiate a long\n\
+jump. Hold [Z] and move\n\
+backwards. When you hit\n\
+the ceiling, mash [A] as\n\
+fast as possible, and you\n\
+will gain an immense\n\
+amount of backwards speed."))
 
-DEFINE_DIALOG(DIALOG_004, 1, 4, 95, 180, _("\
-Yargh! Me most\n\
-valuable treasure\n\
-be lost at sea.\n\
-\n\
-Help a matey\n\
-out and find\n\
-er for yer\n\
-ol captain?"))
+DEFINE_DIALOG(DIALOG_004, 1, 1, 95, 180, _("\
+Hello there!"))
 
 DEFINE_DIALOG(DIALOG_005, 1, 3, 30, 180, _("\
 Hey, Mario! Is it true\n\
@@ -83,40 +74,14 @@ Ready....\n\
 \n\
 //Go!////Don't Go"))
 
-DEFINE_DIALOG(DIALOG_006, 1, 4, 95, 180, _("\
-This ol' Goblet\n\
-be me greatest\n\
-treasure!\n\
-\n\
-How may ye\n\
-repay a fine\n\
-sailor such as\n\
-you?\n\
-Arg, a shiny\n\
-star it be\n\
-then. May your\n\
-future voyages\n\
-treat ye well."))
+DEFINE_DIALOG(DIALOG_006, 1, 1, 95, 180, _("\
+How's it going?"))
 
-DEFINE_DIALOG(DIALOG_007, 1, 4, 95, 180, _("\
-Scram! I already\n\
-gave ye star, now\n\
-leave this ol'\n\
-captain alone."))
+DEFINE_DIALOG(DIALOG_007, 1, 1, 95, 180, _("\
+What's up?"))
 
-DEFINE_DIALOG(DIALOG_008, 1, 4, 95, 180, _("\
-Me climb big rock.\n\
-Me was happy, now\n\
-me stuck.\n\
-\n\
-You. Learn me climb\n\
-down!\n\
-\n\
-\n\
-No climb down?\n\
-Yes jump down!\n\
-Jump and kick?\n\
-Me sees!"))
+DEFINE_DIALOG(DIALOG_008, 1, 1, 95, 180, _("\
+Howdy!"))
 
 DEFINE_DIALOG(DIALOG_009, 1, 5, 30, 200, _("\
 Long time, no see! Wow,\n\
@@ -204,13 +169,9 @@ Would you like to Save?\n\
 //Yes////No"))
 
 DEFINE_DIALOG(DIALOG_016, 1, 4, 95, 180, _("\
-Ol man's not\n\
-feeling good.\n\
-Matey locked 'imself\n\
-in the office, yeah?\n\
-Key's in the basement.\n\
-Just thought I'd let\n\
-'chu know, matey."))
+Help! The Big Boo is causing\n\
+trouble for us. Can you help\n\
+us to defeat it?"))
 
 DEFINE_DIALOG(DIALOG_017, 1, 4, 30, 200, _("\
 I'm the Big Bob-omb, lord\n\
@@ -239,14 +200,21 @@ this royal turf? I think\n\
 that you cannot!"))
 
 DEFINE_DIALOG(DIALOG_018, 1, 4, 95, 180, _("\
-Oi matey! Welcome\n\
-abord our craft!\n\
-Nasty 'ol foreign\n\
-boos crawling\n\
-all about the craft,\n\
-sorry, you gonna\n\
-need to teach 'ose\n\
-scurvey dogs a lesson."))
+To get past this quicksand,\n\
+you'll need to do a trick\n\
+called a ''Quicksand Ledge\n\
+Grab.''\n\
+First, grab the side of\n\
+the quicksand block. Then,\n\
+press ^. Right before\n\
+Mario finishes climbing up,\n\
+press [A] to jump and hold\n\
+the direction you want to\n\
+move.\n\
+\n\
+Be extra careful\n\
+to never directly land\n\
+on top of the quicksand."))
 
 DEFINE_DIALOG(DIALOG_019, 1, 4, 95, 180, _("\
 You made it up,\n\

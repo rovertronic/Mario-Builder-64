@@ -22,7 +22,7 @@
 #include "dirt/geo.inc.c"
 #include "transparent_star/geo.inc.c"
 #include "white_particle/geo.inc.c"
-// #include "wooden_signpost/geo.inc.c"
+#include "wooden_signpost/geo.inc.c"
 #include "tree/geo.inc.c"
 // #include "metalstar/geo.inc.c"
 // #include "yoshi/geo.inc.c"

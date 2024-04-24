@@ -1693,7 +1693,7 @@ void render_dialog_entries(void) {
         case DIALOG_STATE_VERTICAL:
             gDialogBoxOpenTimer = 0.0f;
 
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
                 if (gLastDialogPageStrPos == -1) {
                     handle_special_dialog_text(gDialogID);
                     gDialogBoxState = DIALOG_STATE_CLOSING;
@@ -1748,10 +1748,6 @@ void render_dialog_entries(void) {
                   SCREEN_WIDTH,
                   ensure_nonnegative(240 + ((dialog->linesPerBox * 80) / DIAG_VAL4) - dialog->width));
 
-    _spread = 0.0f;
-    // if ((gCurrLevelNum == LEVEL_SSL)&&(gDialogID>49)) {
-    //     _spread = 2.0f;
-    // }
     handle_dialog_text_and_pages(0, dialog, lowerBound);
 
     if (gLastDialogPageStrPos == -1 && gLastDialogResponse == 1) {
@@ -1761,6 +1757,23 @@ void render_dialog_entries(void) {
     if (gLastDialogPageStrPos != -1 && gDialogBoxState == DIALOG_STATE_VERTICAL) {
         render_dialog_triangle_next(dialog->linesPerBox);
     }
+}
+
+void render_dialog_entry_preview(u8 dialog_id) {
+    void **dialogTable = segmented_to_virtual(languageTable[gInGameLanguage][0]);
+    struct DialogEntry *dialog = segmented_to_virtual(dialogTable[dialog_id]);
+    gDialogBoxScale = 1.0f;
+
+    render_dialog_box_type(dialog, dialog->linesPerBox);
+
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE,
+                  // Horizontal scissoring isn't really required and can potentially mess up widescreen enhancements.
+                  0,
+                  ensure_nonnegative(DIAG_VAL2 - dialog->width),
+                  SCREEN_WIDTH,
+                  ensure_nonnegative(240 + ((dialog->linesPerBox * 80) / DIAG_VAL4) - dialog->width));
+
+    handle_dialog_text_and_pages(0, dialog, 1);
 }
 
 // Calls a gMenuMode value defined by render_menus_and_dialogs cases

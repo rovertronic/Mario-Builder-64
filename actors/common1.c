@@ -76,8 +76,8 @@ UNUSED static const u64 binid_19 = 19;
 #include "white_particle/model.inc.c"
 UNUSED static const u64 binid_20 = 20;
 
-// #include "wooden_signpost/model.inc.c"
-// #include "wooden_signpost/collision.inc.c"
+#include "wooden_signpost/model.inc.c"
+#include "wooden_signpost/collision.inc.c"
 // UNUSED static const u64 binid_21 = 21;
 
 #include "tree/model.inc.c"
