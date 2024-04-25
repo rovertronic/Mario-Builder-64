@@ -135,6 +135,7 @@ u8 cmm_play_stars_max = 0;
 u64 cmm_play_stars_bitfield = 0;
 u32 cmm_play_badge_bitfield = 0;
 u8 cmm_play_onoff = FALSE;
+s16 cmm_play_s16_water_level = 0;
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
@@ -224,6 +225,7 @@ void reset_play_state(void) {
     cmm_play_stars_bitfield = 0;
     cmm_play_badge_bitfield = 0;
     cmm_play_onoff = FALSE;
+    cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
 }
 
 u8 cmm_grid_min = 0;
@@ -1404,9 +1406,52 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u3
     check_cached_tris();
 }
 
+// Uses sm64 units instead of mb64 tiles
+void render_boundary_quad_precise(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u32 fade) {
+    // Get normal
+    Vec3f normal;
+    find_vector_perpendicular_to_plane(normal, quad->vtx[0], quad->vtx[1], quad->vtx[2]);
+    vec3_normalize(normal);
+    s8 n[3];
+    n[0] = normal[0]*0x7F; n[1] = normal[1]*0x7F; n[2] = normal[2]*0x7F;
+
+    s32 uScale = quad->uYScale ? (yHeight * 64) : cmm_grid_size*16;
+    s32 vScale = quad->vYScale ? (yHeight * 64) : cmm_grid_size*16;
+    for (u32 i = 0; i < 4; i++) {
+        s16 u = (quad->u[i & 1])*uScale + cmm_uv_offset;
+        s16 v = (quad->v[i >> 1])*vScale + cmm_uv_offset;
+        if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
+        if (yHeight % 2) v += 512; // offset for odd number of blocks
+        u8 alpha = 255;
+        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
+            alpha = 0;
+        } else if (((fade == 1) && (quad->vtx[i][1] == 0)) || ((fade == 2) && (quad->vtx[i][1] == 1))) {
+            alpha = 0;
+        }
+        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1] + y), quad->vtx[i][2]*cmm_grid_size*4,
+            u, v, n[0], n[1], n[2], alpha);
+    }
+    if (cmm_render_flip_normals) {
+        cache_tri(0, 2, 1);
+        cache_tri(1, 2, 3);
+    } else {
+        cache_tri(0, 1, 2);
+        cache_tri(1, 3, 2);
+    }
+    cmm_num_vertices_cached += 4;
+    check_cached_tris();
+}
+
 void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {
     for (u32 i = 0; i < count; i++) {
         render_boundary_quad(&quadList[i], yBottom, yTop - yBottom, fade);
+    }
+    display_cached_tris();
+}
+
+void render_boundary_precise(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {
+    for (u32 i = 0; i < count; i++) {
+        render_boundary_quad_precise(&quadList[i], yBottom, yTop - yBottom, fade);
     }
     display_cached_tris();
 }
@@ -1644,9 +1689,14 @@ void generate_terrain_gfx(void) {
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
 
     // Render main water plane, top side
-    // if (cmm_lopt_waterlevel != 0) {
-    //     render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
-    // }
+    if (cmm_lopt_waterlevel != 0) {
+        cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
+        gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
+        render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
+        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+    }
+
     // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
     for (u32 i = 0; i < cmm_tile_count; i++) {
@@ -1669,12 +1719,12 @@ void generate_terrain_gfx(void) {
     }
     display_cached_tris();
 
-    cmm_render_flip_normals = TRUE;
+    //cmm_render_flip_normals = TRUE;
     // Render main water plane, bottom side
     // if (cmm_lopt_waterlevel != 0) {
     //     render_floor((cmm_lopt_waterlevel - 32) * TILE_SIZE - 32);
     // }
-    cmm_render_flip_normals = FALSE;
+    //cmm_render_flip_normals = FALSE;
 
     process_tiles(PROCESS_TILE_TRANSPARENT);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
@@ -1991,7 +2041,8 @@ void generate_terrain_collision(void) {
 
 
 s32 cmm_get_water_level(s32 x, s32 y, s32 z) {
-    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : (cmm_lopt_waterlevel - 32) * TILE_SIZE - (TILE_SIZE / 8));
+    //(cmm_lopt_waterlevel - 32) * TILE_SIZE - (TILE_SIZE / 8)
+    s32 waterPlaneHeight = (cmm_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : cmm_play_s16_water_level);
     if (y < waterPlaneHeight) {
         return waterPlaneHeight;
     }
