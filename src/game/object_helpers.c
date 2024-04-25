@@ -2589,6 +2589,14 @@ void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
             switch_interacting->oAction = PURPLE_SWITCH_ACT_PRESSED;
         }
     }
+
+    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvOnOffButton)) {
+        struct Object * switch_interacting = floor->object;
+
+        if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
+            cmm_play_onoff = switch_interacting->oBehParams2ndByte;
+        }
+    }
 }
 
 void cur_obj_interact_with_quicksand(u8 move_standard_or_object_step) {

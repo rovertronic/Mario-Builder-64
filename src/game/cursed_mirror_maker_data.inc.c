@@ -1436,6 +1436,8 @@ enum {
     OBJECT_TYPE_DIAMOND,
     OBJECT_TYPE_SIGN,
     OBJECT_TYPE_BUDDY,
+    OBJECT_TYPE_BUTTON,
+    OBJECT_TYPE_ON_OFF_BLOCK,
     OBJECT_TYPE_CULL_PREVIEW, // also fake type
 };
 
@@ -1520,6 +1522,8 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_DIAMOND*/        {"Water Diamond",           mat_b_btn_water_diamond,bhvWaterLevelDiamond,0,         MODEL_MAKER_DIAMOND,       0,                       0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_WATER_LEVEL_TRIG},
 /* OBJECT_TYPE_SIGN */          {"Bill Board",              mat_b_btn_sign,         bhvMessagePanel,   0,           MODEL_WOODEN_SIGNPOST,     OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, NULL, NULL, SOUND_ACTION_READ_SIGN},
 /* OBJECT_TYPE_BUDDY */         {"Bob-omb Buddy",           mat_b_btn_buddy,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_BUTTON */        {"On-Off Button",           mat_b_btn_button,       bhvOnOffButton,    0,           MODEL_MAKER_BUTTON,        0,                       0, 0, 1.0f, NULL, df_button, SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE},
+/* OBJECT_TYPE_ON_OFF_BLOCK */  {"On-Off Block",            mat_b_btn_block,        bhvOnOffBlock,     0,           MODEL_MAKER_BLOCK_1,       0,                       0, 0, 1.0f, NULL, df_block, SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
 };
 
@@ -1585,6 +1589,11 @@ char *txt_coin_formation[] = {
     "Ring",
     "Vertical Ring",
     "Arrow",
+};
+
+char *txt_onoff[] = {
+    "Red",
+    "Blue"
 };
 
 enum {
@@ -1668,6 +1677,8 @@ enum {
     CMM_BUTTON_CRAZY,
     CMM_BUTTON_DIAMOND,
     CMM_BUTTON_NPC,
+    CMM_BUTTON_BUTTON,
+    CMM_BUTTON_BLOCK,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1765,6 +1776,8 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},
 /* CMM_BUTTON_DIAMOND */ {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
 /* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 2, cmm_npc_idlist, "NPC"},
+/* CMM_BUTTON_BUTTON */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, &txt_onoff},
+/* CMM_BUTTON_BLOCK */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1830,7 +1843,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_DIAMOND, CMM_BUTTON_NPC, _, _, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET,
 
-    CMM_BUTTON_NOTEBLOCK, _, _, _, _, _, _, _, _,
+    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
     CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, _, _, _, _, _, _,
 };
 
@@ -1847,7 +1860,7 @@ u8 cmm_toolbox_vanilla[TOOLBOX_SIZE] = {
     CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_DIAMOND, CMM_BUTTON_NPC, _, _, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, CMM_BUTTON_BBALL, _, _, _, _,
 
-    CMM_BUTTON_NOTEBLOCK, _, _, _, _, _, _, _, _,
+    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
     CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, CMM_BUTTON_MINE, _, _, _, _, _,
 };
 

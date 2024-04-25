@@ -134,6 +134,7 @@ u8 cmm_play_stars = 0;
 u8 cmm_play_stars_max = 0;
 u64 cmm_play_stars_bitfield = 0;
 u32 cmm_play_badge_bitfield = 0;
+u8 cmm_play_onoff = FALSE;
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
@@ -222,6 +223,7 @@ void reset_play_state(void) {
     cmm_play_stars = 0;
     cmm_play_stars_bitfield = 0;
     cmm_play_badge_bitfield = 0;
+    cmm_play_onoff = FALSE;
 }
 
 u8 cmm_grid_min = 0;

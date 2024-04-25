@@ -1,0 +1,17 @@
+extern const GeoLayout onoffbutton_000_switch_opt1[];
+extern const GeoLayout onoffbutton_geo[];
+extern Lights1 onoffbutton_redswitch_lights;
+extern Lights1 onoffbutton_blueswitch_lights;
+extern u8 onoffbutton_redswitch_ci8[];
+extern u8 onoffbutton_redswitch_pal_rgba16[];
+extern u8 onoffbutton_blueswitch_ci8[];
+extern u8 onoffbutton_blueswitch_pal_rgba16[];
+extern Vtx onoffbutton_000_displaylist_mesh_layer_1_vtx_0[26];
+extern Gfx onoffbutton_000_displaylist_mesh_layer_1_tri_0[];
+extern Gfx mat_onoffbutton_redswitch[];
+extern Gfx mat_revert_onoffbutton_redswitch[];
+extern Gfx mat_onoffbutton_blueswitch[];
+extern Gfx mat_revert_onoffbutton_blueswitch[];
+extern Gfx onoffbutton_000_displaylist_mesh_layer_1[];
+extern Gfx onoffbutton_000_displaylist_mesh_layer_1_mat_override_blueswitch_0[];
+extern Gfx onoffbutton_material_revert_render_settings[];

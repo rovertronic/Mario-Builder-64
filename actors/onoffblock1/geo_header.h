@@ -1,0 +1,10 @@
+extern const GeoLayout onoffblock1_geo[];
+extern Lights1 onoffblock1_redblock_lights;
+extern u8 onoffblock1_redbox_ci8[];
+extern u8 onoffblock1_redbox_pal_rgba16[];
+extern Vtx onoffblock1_sm64_mesh_mesh_layer_1_vtx_0[124];
+extern Gfx onoffblock1_sm64_mesh_mesh_layer_1_tri_0[];
+extern Gfx mat_onoffblock1_redblock[];
+extern Gfx mat_revert_onoffblock1_redblock[];
+extern Gfx onoffblock1_sm64_mesh_mesh_layer_1[];
+extern Gfx onoffblock1_material_revert_render_settings[];

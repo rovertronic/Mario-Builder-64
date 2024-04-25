@@ -370,3 +370,19 @@ void df_timedbox(s32 context) {
         }
     }
 }
+
+void df_button(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oAnimState = o->oBehParams2ndByte;
+    }
+}
+
+void df_block(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        if (o->oBehParams2ndByte == 0) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_2];
+        } else {
+            spawn_object(o,MODEL_MAKER_BLOCK_3,VIRTUAL_TO_PHYSICAL(o->behavior));
+        }
+    }
+}

@@ -78,3 +78,8 @@
 #include "spooner/geo.inc.c"
 #include "pokey/geo.inc.c"
 #include "timedbox/geo.inc.c"
+#include "onoffswitch/geo.inc.c"
+#include "onoffblock1/geo.inc.c"
+#include "onoffblock2/geo.inc.c"
+#include "onoffblock3/geo.inc.c"
+#include "onoffbutton/geo.inc.c"

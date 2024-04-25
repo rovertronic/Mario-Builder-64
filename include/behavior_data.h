@@ -811,5 +811,7 @@ extern const BehaviorScript bhvScaredKoopa[];
 extern const BehaviorScript bhvTinyGoomba[];
 extern const BehaviorScript bhvCrablet[];
 extern const BehaviorScript bhvFireBro[];
+extern const BehaviorScript bhvOnOffButton[];
+extern const BehaviorScript bhvOnOffBlock[];
 
 #endif // BEHAVIOR_DATA_H

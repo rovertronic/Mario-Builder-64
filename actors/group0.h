@@ -756,4 +756,18 @@ extern const Gfx pokey_seg5_dl_050130B0[];
 
 #include "timedbox/geo_header.h"
 
+#include "onoffswitch/geo_header.h"
+
+#include "onoffblock1/geo_header.h"
+
+#include "onoffblock2/geo_header.h"
+
+#include "onoffblock3/geo_header.h"
+
+#include "onoffbutton/collision_header.h"
+
+#include "onoffblock/collision_header.h"
+
+#include "onoffbutton/geo_header.h"
+
 #endif
