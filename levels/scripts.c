@@ -159,6 +159,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_1, onoffblock1_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_2, onoffblock2_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_3, onoffblock3_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_DIAMOND, wdw_geo_0005C0),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),

@@ -242,3 +242,4 @@
 #include "onoffbutton/collision.inc.c"
 #include "onoffblock/collision.inc.c"
 #include "onoffbutton/model.inc.c"
+#include "water_level_diamond/model.inc.c"

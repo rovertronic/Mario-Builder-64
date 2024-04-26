@@ -708,6 +708,9 @@ extern const Gfx pokey_seg5_dl_05012808[];
 extern const Gfx pokey_seg5_dl_05013078[];
 extern const Gfx pokey_seg5_dl_050130B0[];
 
+extern const GeoLayout wdw_geo_0005C0[];
+extern const Gfx wdw_seg7_dl_070131B8[];
+
 #include "b0/header.h"
 
 #include "b1/header.h"

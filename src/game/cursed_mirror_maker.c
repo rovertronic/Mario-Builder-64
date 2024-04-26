@@ -226,6 +226,7 @@ void reset_play_state(void) {
     cmm_play_badge_bitfield = 0;
     cmm_play_onoff = FALSE;
     cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
+    gWDWWaterLevelChanging = FALSE;
 }
 
 u8 cmm_grid_min = 0;
@@ -1688,14 +1689,7 @@ void generate_terrain_gfx(void) {
     set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
 
-    // Render main water plane, top side
-    if (cmm_lopt_waterlevel != 0) {
-        cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
-        gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-        render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
-        render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
-        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-    }
+    cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE); // Update water plane height
 
     // Render water blocks, interiors
     cmm_render_flip_normals = TRUE;
@@ -1743,6 +1737,8 @@ void generate_terrain_gfx(void) {
 
 Gfx preview_gfx[50];
 Vtx preview_vtx[100];
+Gfx water_gfx[50];
+Vtx water_vtx[100];
 
 extern void geo_append_display_list(void *displayList, s32 layer);
 
@@ -1798,6 +1794,28 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
 }
 
+void render_water_plane(void) {
+    if (cmm_lopt_waterlevel != 0) {
+        cmm_curr_vtx = water_vtx;
+        cmm_curr_gfx = water_gfx;
+        cmm_gfx_index = 0;
+
+        retroland_filter_on();
+        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
+        gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
+        gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
+        render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
+        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_INTER, G_RM_AA_ZB_XLU_INTER2);
+        gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+        retroland_filter_off();
+        gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
+
+        geo_append_display_list(water_gfx, LAYER_TRANSPARENT_INTER);
+    }
+}
+
 Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
@@ -1809,7 +1827,7 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 geo_append_display_list(cmm_trajectory_gfx, LAYER_OPAQUE);
             }
             //generate dl
-            if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) return NULL;
+            if (cmm_place_mode == CMM_PM_OBJ || cmm_place_mode == CMM_PM_NONE) {render_water_plane(); return NULL;}
             cmm_curr_gfx = preview_gfx;
             cmm_curr_vtx = preview_vtx;
             cmm_gfx_index = 0;
@@ -1892,6 +1910,8 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
 
             geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT_INTER);
         }
+
+        render_water_plane();
     }
     return NULL;
 }
