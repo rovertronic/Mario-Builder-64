@@ -6149,7 +6149,7 @@ void bhv_onoffswitch(void) {
         case 1: // switch up
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 1.0f ,0.1f);
             if (gMarioObject->platform == o) {
-                cur_obj_play_sound_2(SOUND_OBJ2_BOWSER_PUZZLE_PIECE_MOVE);
+                cur_obj_play_sound_2(SOUND_GENERAL_DOOR_TURN_KEY);
                 cmm_play_onoff = o->oBehParams2ndByte;
             }
             if (o->oBehParams2ndByte == 0) {
@@ -6209,6 +6209,37 @@ void bhv_onoffblock(void) {
             }
             o->prevObj->oFaceAngleYaw += 0x100;
             o->prevObj->oPosY = o->oPosY + sins(o->oTimer*0x200) * 4.0f;
+            break;
+    }
+}
+
+void bhv_woodplat(void) {
+    f32 waterLevel = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+
+    switch(o->oAction) {
+        case 0:
+            o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
+            o->oAction = 1;
+            break;
+        case 1:
+            if (waterLevel < o->oPosY) {
+                // Air Behavior
+                o->oGravity = -4.0f;
+            } else {
+                // Underwater Behavior
+                if (ABS(o->oVelY) > 4.0f) {
+                    o->oVelY *= 0.95f;
+                }
+                o->oGravity = -1.0f;
+                if (waterLevel-50.0f > o->oPosY) {
+                    o->oVelY += 2.0f;
+                }
+            }
+            cur_obj_update_floor_and_walls();
+            cur_obj_move_standard(-20);
+            vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
+
+
             break;
     }
 }

@@ -600,7 +600,12 @@ static TerrainData sVertexData[600];
 /**
  * Transform an object's vertices, reload them, and render the object.
  */
+extern u8 collision_load_total;
 void load_object_collision_model(void) {
+    if (collision_load_total >= 40) {
+        return;
+    }
+
     PUPPYPRINT_GET_SNAPSHOT();
     TerrainData *collisionData = o->collisionData;
 
@@ -636,6 +641,7 @@ void load_object_collision_model(void) {
         && inColRadius
         && !(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)
     ) {
+        collision_load_total++;
         collisionData++;
         transform_object_vertices(&collisionData, sVertexData);
 

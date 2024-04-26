@@ -841,5 +841,6 @@
 #define MODEL_MAKER_BLOCK_1 0x164 //Shell
 #define MODEL_MAKER_BLOCK_2 0x165 //Solid
 #define MODEL_MAKER_BLOCK_3 0x166 //Excla
+#define MODEL_MAKER_WOODPLAT 0x167
 
 #endif // MODEL_IDS_H

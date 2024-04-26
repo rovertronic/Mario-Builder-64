@@ -636,6 +636,7 @@ void clear_dynamic_surface_references(void) {
  * Update all objects. This includes script execution, object collision detection,
  * and object surface management.
  */
+u8 collision_load_total = 0;
 void update_objects(UNUSED s32 unused) {
 
     gTimeStopState &= ~TIME_STOP_MARIO_OPENED_DOOR;
@@ -657,6 +658,7 @@ void update_objects(UNUSED s32 unused) {
     // }
 
     // Update spawners and objects with surfaces
+    collision_load_total = 0;
     update_terrain_objects();
 
     // If Mario was touching a moving platform at the end of last frame, apply

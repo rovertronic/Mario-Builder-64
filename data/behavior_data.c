@@ -9387,3 +9387,25 @@ const BehaviorScript bhvOnOffBlock[] = {
         CALL_NATIVE(bhv_onoffblock),
     END_LOOP(),
 };
+
+extern void bhv_woodplat(void);
+const BehaviorScript bhvWoodPlatCol[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_COLLISION_DATA(woodplat_collision),
+    SET_FLOAT(oDrawingDistance, 4000),
+    SET_FLOAT(oCollisionDistance, 500),
+    BEGIN_LOOP(),
+        CALL_NATIVE(load_object_collision_model),
+    END_LOOP(),
+};
+const BehaviorScript bhvWoodPlat[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_LONG(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH)),
+    SET_FLOAT(oDrawingDistance, 4000),
+    SET_FLOAT(oCollisionDistance, 500),
+    SET_HOME(),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_woodplat),
+    END_LOOP(),
+};

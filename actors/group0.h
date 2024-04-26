@@ -773,4 +773,8 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "onoffbutton/geo_header.h"
 
+#include "woodplat/collision_header.h"
+
+#include "woodplat/geo_header.h"
+
 #endif
