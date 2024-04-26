@@ -2652,10 +2652,21 @@ void cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
     }
 }
 
+void cur_obj_interact_with_moving_platform(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && (floor->object != NULL)) {
+        o->oPosX += floor->object->oDisplaceVec[0];
+        o->oPosY += floor->object->oDisplaceVec[1];
+        o->oPosZ += floor->object->oDisplaceVec[2];
+    }
+}
+
 void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_noteblock(move_standard_or_object_step);
     cur_obj_interact_with_floor_switch(move_standard_or_object_step);
     cur_obj_interact_with_quicksand(move_standard_or_object_step);
+    cur_obj_interact_with_moving_platform(move_standard_or_object_step);
     //cur_obj_interact_with_lava(move_standard_or_object_step); saving this to deal with later
 }
 

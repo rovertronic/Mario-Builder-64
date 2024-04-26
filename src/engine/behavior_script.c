@@ -826,6 +826,7 @@ void cur_obj_update(void) {
     f32 distanceFromMario;
     BhvCommandProc bhvCmdProc;
     s32 bhvProcResult;
+
     // s32 hasAnimation = (gCurrentObject->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
 
     // s32 inRoom = cur_obj_is_mario_in_room();
@@ -966,6 +967,8 @@ void cur_obj_update(void) {
         }
     }
 
+    vec3f_diff(&o->oDisplaceVec, &o->oPosVec, &o->oOldVec);
+    vec3f_copy(&o->oOldVec,&o->oPosVec);
     // if ( revent_active ) {
     //     if (objFlags & OBJ_FLAG_EVENT_VISIBLE) {
     //         gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
