@@ -450,7 +450,12 @@ void render_dl_power_meter(s16 numHealthWedges) {
         return;
     }
 
-    guTranslate(mtx, (f32) sPowerMeterHUD.x, (f32) sPowerMeterHUD.y, 0);
+    f32 power_meter_x_offset = 0.0f;
+    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+        power_meter_x_offset = 148.0f;
+    }
+
+    guTranslate(mtx, (f32) sPowerMeterHUD.x + power_meter_x_offset, (f32) sPowerMeterHUD.y, 0);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),
               G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -737,20 +742,23 @@ void render_debug_mode(void) {
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    u8 wideoffet3 = 0;
-    u8 i;
+    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-21, "$"); // 'Coin' glyph
+        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y-21, "*"); // 'X' glyph
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+32, HUD_TOP_Y-21, "%d", gHudDisplay.coins);
 
-    if (0) {
-        wideoffet3 = 22;
+        if (gRedCoinsCollected > 0) {
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-42, "@"); // 'Coin' glyph
+            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y-42, "*"); // 'X' glyph
+            print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+32, HUD_TOP_Y-42, "%d", gRedCoinsCollected);
         }
-
-    if (gMarioState->gCurrMinigame == 0) {
-        print_text(168-wideoffet3, HUD_TOP_Y, "$"); // 'Coin' glyph
+    } else {
+        print_text(168, HUD_TOP_Y, "$"); // 'Coin' glyph
         if (gHudDisplay.coins < 1000) {
-            print_text(184-wideoffet3, HUD_TOP_Y, "*"); // 'X' glyph
-            print_text_fmt_int(198-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+            print_text(184, HUD_TOP_Y, "*"); // 'X' glyph
+            print_text_fmt_int(198, HUD_TOP_Y, "%d", gHudDisplay.coins);
         } else {
-            print_text_fmt_int(184-wideoffet3, HUD_TOP_Y, "%d", gHudDisplay.coins);
+            print_text_fmt_int(184, HUD_TOP_Y, "%d", gHudDisplay.coins);
         }
 
         if (gRedCoinsCollected > 0) {
@@ -759,16 +767,6 @@ void render_hud_coins(void) {
             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16+14, HUD_TOP_Y, "%d", gRedCoinsCollected);
         }
     }
-
-    for (i = 0; i < gMarioState->YoshiCoins; i++) {
-        print_text(168+(i*8), HUD_TOP_Y-18, "$");
-        }
-
-    // if ((gCurrLevelNum == LEVEL_RR)&&(gCurrAreaIndex==1)) {
-    //     print_text_fmt_int(168-wideoffet3, HUD_TOP_Y-18, "%dQ3", trial_counter);
-    // }
-
-
 }
 
 /**
@@ -783,9 +781,15 @@ void render_hud_stars(void) {
     if (gHudFlash == HUD_FLASH_STARS && gGlobalTimer & 0x8) return;
     s8 showX = 1;//(gHudDisplay.stars < 100);
 
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
-    if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y, "%d", current_stars);
+    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "^"); // 'Star' glyph
+        if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16), HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16, HUD_TOP_Y, "%d", current_stars);
+    } else {
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
+        if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y, "%d", current_stars);
+    }
 }
 
 /**
@@ -1060,6 +1064,7 @@ void render_hud(void) {
                 } else {
                     render_hud_power_meter();
                 }
+                render_hud_camera_status();
             }
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {

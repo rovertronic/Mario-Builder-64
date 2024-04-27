@@ -3023,11 +3023,11 @@ void update_camera(struct Camera *c) {
         && gCurrentArea->camera->mode != CAMERA_MODE_INSIDE_CANNON) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
         if (cam_select_alt_mode(CAM_SELECTION_NONE) == CAM_SELECTION_MARIO) {
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
+            if ((gPlayer1Controller->buttonPressed & R_TRIG)&&(cmm_mode == CMM_MODE_PLAY)) {
                 if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
-                    // set_cam_angle(CAM_ANGLE_MARIO);
+                     set_cam_angle(CAM_ANGLE_MARIO);
                 } else {
-                    // set_cam_angle(CAM_ANGLE_LAKITU);
+                     set_cam_angle(CAM_ANGLE_LAKITU);
                 }
             }
         }

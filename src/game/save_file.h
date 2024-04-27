@@ -56,6 +56,7 @@ enum Options {
     OPT_MUSIC,
     OPT_HUD,
     OPT_CAMCOL,
+    OPT_HUDLAYOUT,
 
     //unused
     OPT_MINIMAP,
