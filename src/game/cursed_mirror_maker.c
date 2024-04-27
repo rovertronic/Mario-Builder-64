@@ -2416,7 +2416,11 @@ void place_object(s8 pos[3]) {
         cmm_object_data[cmm_object_count].bparam = 0;
         cmm_dialog_edit_ptr = &cmm_object_data[cmm_object_count];
     } else if (!cmm_ui_buttons[cmm_toolbar[cmm_toolbar_index]].multiObj) {
+        // BehParam2 Object
         cmm_object_data[cmm_object_count].bparam = cmm_param_selection;
+    } else {
+        // Multi Object
+        cmm_object_data[cmm_object_count].bparam = 0;
     }
 
     cmm_object_count++;
