@@ -1052,6 +1052,7 @@ void basic_update(void) {
     }
 }
 
+extern s8 cmm_menu_index;
 extern void print_intro_text2(void);
 int gPressedStart = 0;
 
@@ -1125,6 +1126,7 @@ s32 play_mode_normal(void) {
         } else if (sTransitionTimer != 0) {
             set_play_mode(PLAY_MODE_CHANGE_AREA);
         } else if (pressed_pause()) {
+            cmm_menu_index = 0;
             lower_background_noise(1);
 #if ENABLE_RUMBLE
             cancel_rumble();

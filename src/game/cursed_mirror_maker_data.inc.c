@@ -2336,8 +2336,8 @@ char *cmm_settings_menu_names[] = {
 char *cmm_settings_system_buttons[] = {
     "Save & Quit",
     "Play Level",
-    "Level Size:",
-    "Apply Size Change (Dangerous!)",
+    //"Level Size:",
+    //"Apply Size Change (Dangerous!)",
 };
 
 

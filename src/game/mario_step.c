@@ -657,23 +657,20 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 }
 
 void apply_twirl_gravity(struct MarioState *m) {
-#ifdef Z_TWIRL
-    f32 Zmodifier = m->input & INPUT_Z_DOWN ? 4.0f : 1.0f;
-#endif
+
+    f32 Zmodifier = 1.0f;
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        Zmodifier = m->input & INPUT_Z_DOWN ? 4.0f : 1.0f;
+    }
     f32 heaviness = 1.0f;
 
     if (m->angleVel[1] > 1024) {
         heaviness = 1024.0f / m->angleVel[1];
     }
 
-#ifdef Z_TWIRL
     f32 terminalVelocity = -75.0f * heaviness * Zmodifier;
     m->vel[1] -= 4.0f * heaviness * Zmodifier;
-#else
-    f32 terminalVelocity = -75.0f * heaviness;
 
-    m->vel[1] -= 4.0f * heaviness;
-#endif
     if (m->vel[1] < terminalVelocity) {
         m->vel[1] = terminalVelocity;
     }

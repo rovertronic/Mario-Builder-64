@@ -7,6 +7,12 @@ void bhv_explosion_init(void) {
     set_environmental_camera_shake(SHAKE_ENV_EXPLOSION);
 
     o->oOpacity = 255;
+
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
+        o->oDamageOrCoinValue = 4;
+    } else {
+        o->oDamageOrCoinValue = 2;
+    }
 }
 
 void bhv_explosion_loop(void) {

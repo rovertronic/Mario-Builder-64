@@ -2165,7 +2165,7 @@ void generate_object_preview(void) {
     if (doubleCoins) totalCoins *= 2;
 
     u32 length = MIN(totalCoins / 20, 50);
-    if (cmm_lopt_theme == CMM_GAME_BTCM) {
+    if (cmm_lopt_game == CMM_GAME_BTCM) {
         cmm_settings_misc_buttons[MISC_COINSTAR_INDEX].size = length + 1;
     } else {
         cmm_settings_misc_buttons_vanilla[MISCV_COINSTAR_INDEX].size = length + 1;

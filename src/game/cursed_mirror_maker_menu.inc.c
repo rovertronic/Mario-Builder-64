@@ -869,9 +869,9 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     }
     
     // Apply size
-    print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
-    cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
-    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[3],150-(3*16)+yoff,cmm_settings_system_buttons[3],(3==cmm_menu_index ? 1 : 4));
+    //print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
+    //cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
+    //print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[3],150-(3*16)+yoff,cmm_settings_system_buttons[3],(3==cmm_menu_index ? 1 : 4));
 
     if ((gPlayer1Controller->buttonPressed & A_BUTTON) && CMM_SETTINGS_MENU_IS_STILL) {
         switch (cmm_menu_index) {
