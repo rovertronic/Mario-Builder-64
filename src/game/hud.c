@@ -783,8 +783,8 @@ void render_hud_stars(void) {
 
     if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "^"); // 'Star' glyph
-        if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16), HUD_TOP_Y, "*"); // 'X' glyph
-        print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16, HUD_TOP_Y, "%d", current_stars);
+        print_text((GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16), HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 32, HUD_TOP_Y, "%d", current_stars);
     } else {
         print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
         if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph

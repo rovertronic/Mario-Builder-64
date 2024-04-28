@@ -2173,7 +2173,7 @@ s32 draw_cmm_pause_menu(void) {
                         break;
                     case 2: // options
                         cmm_pause_menu_state = 1;
-                        cmm_menu_index = 3;
+                        cmm_menu_index = 4;
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     case 3: // badges (btcm only)
