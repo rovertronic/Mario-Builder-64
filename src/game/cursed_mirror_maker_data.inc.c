@@ -1703,7 +1703,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_TEST */     {CMM_PM_OBJ,  FALSE, 0, OBJECT_TYPE_TEST_MARIO,  NULL},
 /* CMM_BUTTON_TERRAIN */  {CMM_PM_TILE, FALSE, 0, TILE_TYPE_BLOCK,         NULL},
 /* CMM_BUTTON_SLOPE */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_SLOPE,         NULL},
-/* CMM_BUTTON_TROLL */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_TROLL,         "Intangible Tile"},
+/* CMM_BUTTON_TROLL */    {CMM_PM_TILE, FALSE, 0, TILE_TYPE_TROLL,         NULL},
 /* CMM_BUTTON_STAR */     {CMM_PM_OBJ,  TRUE,  2, &cmm_star_idlist,        "Power Star"},
 /* CMM_BUTTON_GOOMBA */   {CMM_PM_OBJ,  TRUE,  3, &cmm_goomba_idlist,      "Goomba"},
 /* CMM_BUTTON_PIRANHA */  {CMM_PM_OBJ,  TRUE,  3, &cmm_piranha_idlist,     "Piranha Plant"},
