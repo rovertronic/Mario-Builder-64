@@ -2038,6 +2038,7 @@ void generate_terrain_collision(void) {
         vec3_set(pos, cmm_tile_data[i].x, cmm_tile_data[i].y, cmm_tile_data[i].z);
         process_tile(pos, &cmm_terrain_fence_col, cmm_tile_data[i].rot);
     }
+    cmm_curr_poly_vert_count = 4;
     cmm_curr_coltype = SURFACE_VANISH_CAP_WALLS;
     for (u32 i = cmm_tile_data_indices[BARS_TILETYPE_INDEX]; i < cmm_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
         s8 pos[3];
