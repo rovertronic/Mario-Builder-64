@@ -777,4 +777,6 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "woodplat/geo_header.h"
 
+#include "rfbox/geo_header.h"
+
 #endif

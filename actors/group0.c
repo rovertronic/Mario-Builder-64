@@ -245,3 +245,4 @@
 #include "water_level_diamond/model.inc.c"
 #include "woodplat/collision.inc.c"
 #include "woodplat/model.inc.c"
+#include "rfbox/model.inc.c"

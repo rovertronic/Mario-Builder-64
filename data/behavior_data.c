@@ -1993,7 +1993,6 @@ const BehaviorScript bhvBreakableBox[] = {
     OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_DONT_CALC_COLL_DIST)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision),
     SET_FLOAT(oCollisionDistance, 1000),
-    //CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_breakable_box_loop),
         CALL_NATIVE(load_object_collision_model),
@@ -9408,4 +9407,16 @@ const BehaviorScript bhvWoodPlat[] = {
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_woodplat),
     END_LOOP(),
+};
+extern void bhv_breakable_box_rf_loop(void);
+const BehaviorScript bhvBreakableBoxRF[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_DONT_CALC_COLL_DIST)),
+    LOAD_COLLISION_DATA(breakable_box_seg8_collision),
+    SET_FLOAT(oCollisionDistance, 1000),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_breakable_box_rf_loop),
+        CALL_NATIVE(load_object_collision_model),
+    END_LOOP(),
+    BREAK(),
 };

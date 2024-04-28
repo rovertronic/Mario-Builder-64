@@ -15,6 +15,18 @@ struct ObjectHitbox sBreakableBoxHitbox = {
     /* hurtboxHeight:     */ /*200,*/ 256,
 };
 
+struct ObjectHitbox sBreakableBoxRfHitbox = {
+    /* interactType:      */ INTERACT_BREAKABLE,
+    /* downOffset:        */  20,
+    /* damageOrCoinValue: */   0,
+    /* health:            */   1,
+    /* numLootCoins:      */   0,
+    /* radius:            */ /*150,*/ 192,
+    /* height:            */ /*200,*/ 300,
+    /* hurtboxRadius:     */ /*150,*/ 192,
+    /* hurtboxHeight:     */ /*200,*/ 300,
+};
+
 void breakable_box_init(void) {
     o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
@@ -80,10 +92,40 @@ void bhv_hidden_object_loop(void) {
 
 void bhv_breakable_box_loop(void) {
     obj_set_hitbox(o, &sBreakableBoxHitbox);
-    // cur_obj_set_model(MODEL_BREAKABLE_BOX);
     if (o->oTimer == 0) breakable_box_init();
     if (cur_obj_was_attacked_or_ground_pounded()) {
         obj_explode_and_spawn_coins(46.0f, COIN_TYPE_YELLOW);
         create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
     }
+}
+
+s32 cur_obj_was_attacked_not_by_mario(void) {
+    s32 attacked = FALSE;
+
+    if ((o->oInteractStatus & INT_STATUS_INTERACTED)
+        && (o->oInteractStatus & INT_STATUS_WAS_ATTACKED)
+        && (gMarioState->interactObj != o)) {
+        attacked = TRUE;
+    }
+
+    return attacked;
+}
+
+void bhv_breakable_box_rf_loop(void) {
+    obj_set_hitbox(o, &sBreakableBoxRfHitbox);
+    if (o->oTimer == 0) {
+        breakable_box_init();
+        o->oNumLootCoins = 0;
+    }
+    if (cur_obj_was_attacked_not_by_mario()) {
+        obj_explode_and_spawn_coins(46.0f, COIN_TYPE_YELLOW);
+        create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+    } else if (cur_obj_was_attacked_or_ground_pounded()) {
+        if (o->oTimer > 15) {
+            create_sound_spawner(SOUND_ACTION_SNUFFIT_BULLET_HIT_METAL);
+            o->oTimer = 1;
+        }
+    }
+
+    o->oInteractStatus = INT_STATUS_NONE;
 }

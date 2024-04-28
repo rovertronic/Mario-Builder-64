@@ -815,5 +815,6 @@ extern const BehaviorScript bhvOnOffButton[];
 extern const BehaviorScript bhvOnOffBlock[];
 extern const BehaviorScript bhvWoodPlat[];
 extern const BehaviorScript bhvWoodPlatCol[];
+extern const BehaviorScript bhvBreakableBoxRF[];
 
 #endif // BEHAVIOR_DATA_H
