@@ -1244,11 +1244,19 @@ struct cmm_credits_entry cmm_credits[] = {
     {"Title Screen Model",1},
     {"Biobak",0},
     {"",0},
-    {"More Objects Patch Models",1},
-    {"BroDute",0},
-    {"",0},
-    {"More Objects Patch Creator",1},
-    {"Kaze Emanuar",0},
+    {"Music Ports",1},
+    {"sm64pie",0},
+    {"DobieMeltfire",0},
+    {"Warwiio",0},
+    {"ShrooboidBrat",0},
+    {"mosky2000",0},
+    {"MrGreenThunder",0},
+    {"EDark",0},
+    {"cpuHacka101",0},
+    {"VanessaWolfe2015",0},
+    {"PablosCorner",0},
+    {"Skelux",0},
+    {"Toasterketchup",0},
     {"",0},
     {"Beyond the Cursed Mirror OST",1},
     {"Thorndust",0},
@@ -1259,14 +1267,45 @@ struct cmm_credits_entry cmm_credits[] = {
     {"HeroTechne",0},
     {"Pyro Jay",0},
     {"",0},
+    {"More Objects Patch Models",1},
+    {"BroDute",0},
+    {"",0},
+    {"More Objects Patch Creator",1},
+    {"Kaze Emanuar",0},
+    {"",0},
     {"Mario Builder 64 Inspiration",1},
     {"Ting Thing",0},
 };
+
+f32 clamp2(f32 x) {
+  f32 lowerlimit = 0.0f;
+  f32 upperlimit = 1.0f;
+  if (x < lowerlimit) return lowerlimit;
+  if (x > upperlimit) return upperlimit;
+  return x;
+}
+
+f32 smoothstep2(f32 edge0, f32 edge1, f32 x) {
+   // Scale, and clamp x to 0..1 range
+   x = clamp2((x - edge0) / (edge1 - edge0));
+
+   return x * x * (3.0f - 2.0f * x);
+}
 
 s32 credits_y_offset = 0;
 void print_maker_credits(void) {
     s32 credits_entries = (sizeof(cmm_credits)/8);
     s32 lower_limit = (credits_entries*16) - 160;
+
+    u8 base_alpha = 255;
+    if (cmm_menu_start_timer != -1) {
+        u8 time = MIN(cmm_menu_start_timer, 8);
+        base_alpha = (time * 255) / 8;
+    } else if (cmm_menu_end_timer != -1 && !(cmm_mm_state == MM_KEYBOARD && cmm_menu_going_back == 1)) {
+        u8 time = MIN(cmm_menu_end_timer, 8);
+        base_alpha = 255 - ((time * 255) / 8);
+    }
+
     credits_y_offset -= (gPlayer1Controller->rawStickY/10.0f);
     if (credits_y_offset <= 0) {
         credits_y_offset = 0;
@@ -1275,16 +1314,24 @@ void print_maker_credits(void) {
         credits_y_offset = lower_limit;
     }
     if (credits_y_offset != lower_limit) {
-        print_maker_string_ascii_centered(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",0);
+        print_maker_string_ascii_centered_alpha(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",0,base_alpha);
     }
     if (credits_y_offset != 0) {
-        print_maker_string_ascii_centered(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",0);
+        print_maker_string_ascii_centered_alpha(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",0,base_alpha);
     }
 
     for (int i=0; i<credits_entries; i++) {
+        u8 alpha = base_alpha;
         s32 ypos = credits_y_offset+200-(16*i);
-        if ((ypos < 230)&&(ypos >10)) {
-            print_maker_string_ascii_centered(160,ypos, cmm_credits[i].text, cmm_credits[i].color);
+        if ((ypos < 220)&&(ypos >10)) {
+            if (ypos > 200) {
+                alpha = ((base_alpha/255.0f)*smoothstep2(220.0f,200.0f,ypos))*255.0f;
+            }
+            if (ypos < 30) {
+                alpha = ((base_alpha/255.0f)*smoothstep2(10.0f,30.0f,ypos))*255.0f;
+            }
+
+            print_maker_string_ascii_centered_alpha(160,ypos, cmm_credits[i].text, cmm_credits[i].color, alpha);
         }
     }
 }
@@ -1689,6 +1736,7 @@ s32 cmm_main_menu(void) {
                         cmm_mm_state = MM_HELP_MODE;
                         break;
                     case 3:
+                        credits_y_offset = 0;
                         cmm_mm_state = MM_CREDITS;
                         break;
                 }

@@ -33,7 +33,7 @@
 	"1E_event_powerup_shell": ["17"],
 	"1F_cutscene_victory": ["1A"],
 	"20_cutscene_ending": ["26"],
-	"21_menu_file_select": ["24"],
+	"21_menu_file_select": ["0C_extended_bank"],
 	"22_cutscene_lakitu": {"ifdef": ["VERSION_US", "VERSION_EU"], "banks": ["1B"]},
 	"23_level_inside_castle": ["0E"],
 	"24_custom_bonearena": ["28_streamed_audio"],
