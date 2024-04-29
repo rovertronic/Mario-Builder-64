@@ -99,6 +99,7 @@ extern Bool32 gSupportsLibpl;
 extern Bool32 gIsGliden;
 
 #define MAX_FILES 251
+extern u8 cmm_level_entry_version[MAX_FILES];
 extern FRESULT mount_success;
 extern FRESULT global_code;
 extern u8 cmm_level_entry_count;

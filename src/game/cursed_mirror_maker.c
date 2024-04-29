@@ -1848,6 +1848,8 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
                 geo_append_display_list(cmm_curr_gfx, LAYER_TRANSPARENT_INTER);
+
+                render_water_plane();
                 return NULL;
             }
 

@@ -1246,6 +1246,7 @@ struct cmm_credits_entry cmm_credits[] = {
     {"",0},
     {"Music Ports",1},
     {"sm64pie",0},
+    {"ArcticJaguar725",0},
     {"DobieMeltfire",0},
     {"Warwiio",0},
     {"ShrooboidBrat",0},
@@ -1261,7 +1262,6 @@ struct cmm_credits_entry cmm_credits[] = {
     {"Beyond the Cursed Mirror OST",1},
     {"Thorndust",0},
     {"SpK",0},
-    {"ArcticJaguar725",0},
     {"",0},
     {"Beyond the Cursed Mirror Badge Art",1},
     {"HeroTechne",0},
@@ -1272,6 +1272,9 @@ struct cmm_credits_entry cmm_credits[] = {
     {"",0},
     {"More Objects Patch Creator",1},
     {"Kaze Emanuar",0},
+    {"",0},
+    {"Dead Tree Texture",1},
+    {"Thodds",0},
     {"",0},
     {"Mario Builder 64 Inspiration",1},
     {"Ting Thing",0},
@@ -2164,7 +2167,13 @@ s32 cmm_main_menu(void) {
 
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
+
+                if (CMM_VERSION < cmm_level_entry_version[i]) {
+                    print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),"Created in future version, update to play.",4);
+                } else {
+                    print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
+                }
+
             }
 
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -2179,7 +2188,7 @@ s32 cmm_main_menu(void) {
             int_to_str_slash(cmm_mm_page+1, cmm_mm_pages, (u8 *)&cmm_mm_txt_pages[6]);
             print_maker_string(42,12 - cmm_menu_title_vels[0],cmm_mm_txt_pages,FALSE);
 
-            if (cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
+            if (cmm_level_entry_version[cmm_menu_index] <= CMM_VERSION && cmm_menu_end_timer == 1 && cmm_menu_going_back == 1) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
                 reset_play_state();
                 int i = 0;

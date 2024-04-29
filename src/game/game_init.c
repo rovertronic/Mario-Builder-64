@@ -1069,6 +1069,7 @@ u8 level_file_exists(char * filename) {
     return (code == FR_OK);
 }
 
+u8 cmm_level_entry_version[MAX_FILES];
 void load_level_files_from_sd_card(void) {
     DIR dir;
     f_opendir(&dir,&cmm_level_dir_name);
@@ -1091,6 +1092,7 @@ void load_level_files_from_sd_card(void) {
                     (*u16_array)[i][y][x] = level_info->piktcher[y][x];
                 } 
             }
+            cmm_level_entry_version[i] = level_info->version;
         }
 
     } while ((level_entries_ptr[i].fname[0] != 0) && (i<MAX_FILES-1));

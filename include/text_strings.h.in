@@ -12,7 +12,7 @@
 
 #define TXT_MM_PAGE _("Page: 0/0")
 
-#define TXT_MM_HELP_PAGE_1 _("This hack supports the following flashcarts for the N64:\n-64Drive\n-EverDrive-64\n-EverDrive-64 X series\n-SummerCart64\n\nHow to play this hack on emulator:\n1) Download PL at https://parallel-launcher.ca/\n2) Set up a virtual SD-Card\n3) Format: FAT 16, Size: 64 MiB")
+#define TXT_MM_HELP_PAGE_1 _("This hack supports the following flashcarts for the N64:\n-64Drive\n-EverDrive-64\n-EverDrive-64 X series\n-SummerCart64\n\nHow to play this hack on emulator:\n1) Download PL at https://parallel-launcher.ca/\n2) Set up a virtual SD-Card\n3) Format: FAT 16, Size: 255 MiB")
 
 #define TXT_MM_HELP_PAGE_2 _("Analog Stick: Move cursor horizontally\n[C] ^ / |: Move cursor vertically\n[C] < / >: Rotate camera\nD-Pad |: Change camera zoom\n\n[A]: Place object/tile\n[B]: Delete object/tile\n[Z]: Rotate object/tile\nD-Pad < / >: Change object parameters\nD-Pad ^: Flip tile vertically\n\nL/R: Navigate hotbar\nSTART: Open toolbox")
 
