@@ -1982,6 +1982,11 @@ Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct Grap
     return NULL;
 }
 
+s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
+    //when entering menu, load levels from sd card
+    load_level_files_from_sd_card();
+}
+
 // /**
 //  * Initiates file select values after Mario Screen.
 //  * Relocates cursor position of the last save if the game goes back to the Mario Screen

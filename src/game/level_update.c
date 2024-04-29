@@ -1052,7 +1052,7 @@ void basic_update(void) {
     }
 }
 
-extern s8 cmm_menu_index;
+extern s16 cmm_menu_index;
 extern void print_intro_text2(void);
 int gPressedStart = 0;
 

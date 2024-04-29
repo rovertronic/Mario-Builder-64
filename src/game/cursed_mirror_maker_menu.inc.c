@@ -879,7 +879,6 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
                 if (mount_success == FR_OK) {
                     save_level();
                     play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
-                    load_level_files_from_sd_card();
                     cmm_mm_state = MM_FILES;
                 } else {
                     cmm_mm_state = MM_MAIN_LIMITED;
@@ -1912,6 +1911,10 @@ s32 cmm_main_menu(void) {
             break;
         case MM_FILES:
             cmm_mm_anim_in(5);
+
+            FILINFO * level_entries_ptr = segmented_to_virtual(cmm_level_entries);
+            u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(cmm_level_entry_piktcher);
+
             if (cmm_level_entry_count == 0) {
                 //no levels, do not render anything
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -2005,7 +2008,7 @@ s32 cmm_main_menu(void) {
                     //gSPTexture(gDisplayListHead++,65535, 65535, 0, 0, 1);
                     gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
                     gDPLoadSync(gDisplayListHead++);
-                    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, &cmm_level_entry_piktcher[startRenderIndex + i]);
+                    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[startRenderIndex + i]);
                     gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 //
@@ -2013,7 +2016,7 @@ s32 cmm_main_menu(void) {
 
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-                print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),cmm_level_entries[startRenderIndex + i].fname,(selectedIndex == renderIndex));
+                print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
             }
 
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -2032,8 +2035,8 @@ s32 cmm_main_menu(void) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
                 reset_play_state();
                 int i = 0;
-                while(cmm_level_entries[cmm_menu_index].fname[i]) {
-                    cmm_file_name[i] = cmm_level_entries[cmm_menu_index].fname[i];
+                while(level_entries_ptr[cmm_menu_index].fname[i]) {
+                    cmm_file_name[i] = level_entries_ptr[cmm_menu_index].fname[i];
                     i++;
                 }
                 cmm_file_name[i] = '\0'; // add null terminator

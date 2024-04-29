@@ -4,6 +4,9 @@
 #include "macros.h"
 #include "surface_terrains.h"
 #include "types.h"
+#include "libcart/include/cart.h"
+#include "libcart/ff/ff.h"
+#include "src/game/game_init.h"
 
 #ifdef VERSION_EU
 #include "text_strings.h"
@@ -1862,3 +1865,6 @@ const Collision main_menu_seg7_collision[] = {
 //#include "levels/menu/rovert_logo/model.inc.c"
 
 #include "levels/menu/bigpainting/model.inc.c"
+
+FILINFO cmm_level_entries[MAX_FILES] = {0};
+u16 cmm_level_entry_piktcher[MAX_FILES][64][64] = {0};

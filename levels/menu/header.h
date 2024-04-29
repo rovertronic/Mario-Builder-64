@@ -2,6 +2,7 @@
 #define MENU_HEADER_H
 
 #include "types.h"
+#include "src/game/game_init.h"
 
 // geo
 // extern const GeoLayout geo_menu_mario_save_button[];
@@ -65,5 +66,9 @@ extern const LevelScript level_main_menu_entry_act_select[];
 #include "levels/menu/rovert_logo/header.h"
 
 #include "levels/menu/bigpainting/header.h"
+
+extern FILINFO cmm_level_entries[MAX_FILES];
+extern u16 cmm_level_entry_piktcher[MAX_FILES][64][64];
+
 
 #endif

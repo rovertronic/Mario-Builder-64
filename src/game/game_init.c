@@ -37,6 +37,7 @@
 #include "libcart/ff/ff.h"
 
 #include "libpl/libpl.h"
+#include "levels/menu/header.h"
 
 u8 painting_base_rgba16[] = {
 	0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 
@@ -1018,9 +1019,6 @@ FRESULT mount_success;
 FRESULT directory_success;
 FILINFO cmm_dir_info;
 
-#define MAX_FILES 20
-FILINFO cmm_level_entries[MAX_FILES];
-u16 cmm_level_entry_piktcher[MAX_FILES][64][64];
 struct cmm_level_save_header temp_cmm_save;
 
 
@@ -1076,23 +1074,26 @@ void load_level_files_from_sd_card(void) {
     f_opendir(&dir,&cmm_level_dir_name);
     f_chdir(cmm_level_dir_name);
 
-    s8 i = -1;
+    // LEVEL ENTRIES ARE LOADED IN FILE SELECT
+    FILINFO * level_entries_ptr = segmented_to_virtual(cmm_level_entries);
+    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(cmm_level_entry_piktcher);
+
+    s16 i = -1;
     do {
         i++;
-        if (f_readdir(&dir,&cmm_level_entries[i]) == FR_OK) {
-            struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_level_entries[i].fname);
+        if (f_readdir(&dir,&level_entries_ptr[i]) == FR_OK) {
+            struct cmm_level_save_header * level_info = get_level_info_from_filename(&level_entries_ptr[i].fname);
 
             s16 x;
             s16 y;
-            u16 *u16_array = cmm_level_entry_piktcher[i];
             for (x = 0; x < 64; x++) {
                 for (y = 0; y < 64; y++) {
-                    u16_array[(y*64)+x] = level_info->piktcher[y][x];
+                    (*u16_array)[i][y][x] = level_info->piktcher[y][x];
                 } 
             }
         }
 
-    } while (cmm_level_entries[i].fname[0] != 0);
+    } while ((level_entries_ptr[i].fname[0] != 0) && (i<MAX_FILES-1));
 
     cmm_level_entry_count = i;
     f_chdir("..");
@@ -1157,8 +1158,7 @@ void thread5_game_loop(UNUSED void *arg) {
             //does not exist, therefore make
             f_mkdir(&cmm_level_dir_name);
         }
-
-        load_level_files_from_sd_card();
+        
     }
 
     while (TRUE) {
