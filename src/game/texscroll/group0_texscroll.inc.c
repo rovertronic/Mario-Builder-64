@@ -1,4 +1,5 @@
 #include "actors/group0.h"
+#include "actors/group14.h"
 ////#include "actors/ring/texscroll.inc.c"
 //#include "actors/chicken/texscroll.inc.c"
 // #include "actors/token/texscroll.inc.c"
@@ -17,6 +18,11 @@
 #include "actors/mario/texscroll.inc.c"
 #include "actors/maker/texscroll.inc.c"
 #include "actors/badge/texscroll.inc.c"
+#include "actors/showrunner/texscroll.inc.c"
+void scroll_textures_group14() {
+	scroll_actor_geo_showrunner();
+}
+
 void scroll_textures_group0() {
 	
 	
@@ -48,4 +54,4 @@ void scroll_textures_group0() {
 	scroll_actor_geo_mario();
 	scroll_actor_dl_maker();
 	scroll_actor_geo_badge();
-	}
+}

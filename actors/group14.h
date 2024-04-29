@@ -69,4 +69,7 @@ extern const Gfx question_box_dl[];
 
 #include "egg/geo_header.h"
 
+#include "showrunner/geo_header.h"
+#include "showrunner/anim_header.h"
+
 #endif

@@ -388,10 +388,6 @@ extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
 #include "gradibox/header.h"
 
-//#include "showrunner/geo_header.h"
-
-
-//#include "showrunner/anim_header.h"
 
 //#include "executive_/header.h"
 

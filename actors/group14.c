@@ -64,3 +64,7 @@
 #include "chicken/anims/table.inc.c"
 
 #include "egg/model.inc.c"
+
+#include "showrunner/model.inc.c"
+#include "showrunner/anims/data.inc.c"
+#include "showrunner/anims/table.inc.c"

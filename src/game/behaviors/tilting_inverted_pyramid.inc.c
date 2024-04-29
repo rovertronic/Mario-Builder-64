@@ -2753,35 +2753,30 @@ void noteblock_function(void) {
 //     }
 // }
 
-// void bhv_thwomp_king_flame(void) {
-//     u8 exp_date = 200;
-//     if (o->oForwardVel > 4.0f) {
-//         exp_date = 100;
-//     }
-//     if (o->oForwardVel > 16.0f) {
-//         exp_date = 35;
-//     }
-//     o->oPosX += sins(o->oMoveAngleYaw)*o->oForwardVel;
-//     o->oPosZ += coss(o->oMoveAngleYaw)*o->oForwardVel;
-
-//     switch(o->oAction) {
-//         case 0: //exist
-//             if (o->oTimer > exp_date) {
-//                 o->oAction = 1;//delete
-//             }
-//         break;
-//         case 1://delete
-//             cur_obj_scale(7.0f-(7.0f*(o->oTimer/30.0f)));
-//             if (o->oTimer>30) {
-//                 obj_mark_for_deletion(o);
-//             }
-//         break;
-//     }
-
-//     if (gCurrLevelNum == LEVEL_BITDW) {
-//         o->oPosY = lava_crate_height+650.0f;
-//     }
-// }
+void bhv_thwomp_king_flame(void) {
+    u8 exp_date = 200;
+    if (o->oForwardVel > 4.0f) {
+        exp_date = 100;
+    }
+    if (o->oForwardVel > 16.0f) {
+        exp_date = 35;
+    }
+    o->oPosX += sins(o->oMoveAngleYaw)*o->oForwardVel;
+    o->oPosZ += coss(o->oMoveAngleYaw)*o->oForwardVel;
+    switch(o->oAction) {
+        case 0: //exist
+            if (o->oTimer > exp_date) {
+                o->oAction = 1;//delete
+            }
+        break;
+        case 1://delete
+            cur_obj_scale(7.0f-(7.0f*(o->oTimer/30.0f)));
+            if (o->oTimer>30) {
+                obj_mark_for_deletion(o);
+            }
+        break;
+    }
+}
 
 // void bhv_weak_platform(void) {
 //     //only for queen fight, king fight controls the platform behavior
@@ -3725,6 +3720,10 @@ void noteblock_function(void) {
 //         }
 //     }
 // }
+
+void bhv_Showrunner(void) {
+    showrunner_battle_function();
+}
 
 // u8 tv_head_showrunner_fire = FALSE;
 // void bhv_Showrunner(void) {
@@ -4958,24 +4957,17 @@ void noteblock_function(void) {
 //     }
 // }
 
-// void tv_head_projectile(void) {
-//     if (gCurrLevelNum == LEVEL_CCM) {
-//         o->oDamageOrCoinValue = 2;
-//     }
-
-//     cur_obj_update_floor_and_walls();
-
-//     o->oFaceAngleRoll += 0x400;
-
-//     o->oForwardVel = 35.0f;
-//     o->oPosX += sins(o->oMoveAngleYaw)*o->oForwardVel;
-//     o->oPosZ += coss(o->oMoveAngleYaw)*o->oForwardVel;
-//     o->oPosY += -sins(o->oMoveAnglePitch)*o->oForwardVel;
-
-//     if ((o->oTimer > 110)||(o->oMoveFlags & OBJ_MOVE_HIT_WALL)) {
-//         mark_obj_for_deletion(o);
-//     }
-// }
+void tv_head_projectile(void) {
+    cur_obj_update_floor_and_walls();
+    o->oFaceAngleRoll += 0x400;
+    o->oForwardVel = 35.0f;
+    o->oPosX += sins(o->oMoveAngleYaw)*o->oForwardVel;
+    o->oPosZ += coss(o->oMoveAngleYaw)*o->oForwardVel;
+    o->oPosY += -sins(o->oMoveAnglePitch)*o->oForwardVel;
+    if ((o->oTimer > 110)||(o->oMoveFlags & OBJ_MOVE_HIT_WALL)) {
+        mark_obj_for_deletion(o);
+    }
+}
 
 // void bhv_thi_cage_init(void) {
 //     o->prevObj = spawn_object(o,0xED,bhvStaticObject);

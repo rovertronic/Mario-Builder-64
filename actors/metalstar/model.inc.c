@@ -30,8 +30,8 @@ static const Vtx metalstar_seg3_vertex_body[] = {
 
 // 0x0302B7B0 - 0x0302B870
 const Gfx metalstar_seg3_sub_dl_body[] = {
-    gsSPLight(&star_seg3_lights.l, 1),
-    gsSPLight(&star_seg3_lights.a, 2),
+    //gsSPLight(&star_seg3_lights.l, 1),
+    //gsSPLight(&star_seg3_lights.a, 2),
     gsSPVertex(star_seg3_vertex_body, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  1,  3,  4, 0x0),
@@ -84,8 +84,8 @@ const Gfx metalstar_seg3_sub_dl_eyes[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, metalstar_seg3_texture_0302AEF0),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&star_seg3_lights.l, 1),
-    gsSPLight(&star_seg3_lights.a, 2),
+    //gsSPLight(&star_seg3_lights.l, 1),
+    //gsSPLight(&star_seg3_lights.a, 2),
     gsSPVertex(star_seg3_vertex_eyes, 10, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  7,  8,  9, 0x0),

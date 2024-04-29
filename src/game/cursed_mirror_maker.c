@@ -305,6 +305,19 @@ s32 object_sanity_check(void) {
         }
     }
 
+    if (cmm_id_selection == OBJECT_TYPE_SHOWRUNNER) {
+        s32 numRunners = 0;
+        for (u32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_data[i].type == OBJECT_TYPE_SHOWRUNNER) {
+                numRunners++;
+            }
+            if (numRunners >= 3) {
+                cmm_show_error_message("Showrunner limit reached! (max 3)");
+                return FALSE;
+            }
+        }
+    }
+
     return TRUE;
 }
 

@@ -158,9 +158,12 @@ void king_whomp_on_ground(void) {
         if (cur_obj_is_mario_ground_pounding_platform()) {
             Vec3f pos;
             o->oHealth--;
+            if (save_file_get_badge_equip() & (1 << BADGE_DAMAGE)) {
+                o->oHealth--;
+            }
             cur_obj_play_sound_2(SOUND_OBJ2_WHOMP_SOUND_SHORT);
             cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
-            if (o->oHealth == 0) {
+            if (o->oHealth < 1) {
                 o->oAction = 8;
             } else {
                 vec3f_copy(pos, &o->oPosVec);

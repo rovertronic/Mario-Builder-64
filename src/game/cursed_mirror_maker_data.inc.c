@@ -1441,6 +1441,7 @@ enum {
     OBJECT_TYPE_WOODPLAT,
     OBJECT_TYPE_RFBOX,
     OBJECT_TYPE_CULL_PREVIEW, // also fake type
+    OBJECT_TYPE_SHOWRUNNER,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1529,6 +1530,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_WOODPLAT */      {"Wooden Platform",         mat_b_btn_woodplat,     bhvWoodPlat,       0,           MODEL_MAKER_WOODPLAT,      0,                       0, 1, 1.0f, NULL, NULL, SOUND_GENERAL_POUND_WOOD_POST},
 /* OBJECT_TYPE_RFBOX */         {"Reinforced Box",          mat_b_btn_rfbox,        bhvBreakableBoxRF, 0,           MODEL_MAKER_RFBOX,         0,                       0, 0, 1.0f, NULL, NULL, SOUND_ACTION_METAL_BONK},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
+/* OBJECT_TYPE_SHOWRUNNER */    {"Showrunner",              mat_b_btn_showrunner,   bhvShowrunner,     0,           MODEL_MAKER_SHOWRUNNER,    OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, showrunner_anims, NULL, SOUND_OBJ_MRI_SHOOT},
 };
 
 //behparam2 strings
@@ -1685,6 +1687,7 @@ enum {
     CMM_BUTTON_BLOCK,
     CMM_BUTTON_WOODPLAT,
     CMM_BUTTON_RFBOX,
+    CMM_BUTTON_SHOWRUN,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1786,6 +1789,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_BLOCK */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
 /* CMM_BUTTON_WOODPLAT */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_WOODPLAT, NULL},
 /* CMM_BUTTON_RFBOX */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
+/* CMM_BUTTON_SHOWRUN */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1849,7 +1853,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_SPINDRIFT,CMM_BUTTON_BLIZZARD,CMM_BUTTON_MONEYBAG,CMM_BUTTON_SKEETER, CMM_BUTTON_POKEY, CMM_BUTTON_REX, CMM_BUTTON_HAMMER_BRO, CMM_BUTTON_PODOBOO, CMM_BUTTON_PHANTASM,
 
     CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_RFBOX, CMM_BUTTON_DIAMOND, CMM_BUTTON_WOODPLAT, CMM_BUTTON_NPC, _,
-    CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET,
+    CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET, CMM_BUTTON_SHOWRUN,
 
     CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
     CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, _, _, _, _, _, _,

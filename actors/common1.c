@@ -83,7 +83,7 @@ UNUSED static const u64 binid_20 = 20;
 #include "tree/model.inc.c"
 UNUSED static const u64 binid_22 = 22;
 
-// #include "metalstar/model.inc.c"
+#include "metalstar/model.inc.c"
 // UNUSED static const u64 binid_23 = 23;
 
 // #include "yoshi/model.inc.c"

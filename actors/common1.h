@@ -274,11 +274,11 @@ extern const Gfx star_seg3_sub_dl_eyes[];
 extern const Gfx star_seg3_dl_eyes[];
 
 // // metalstar
-// extern const GeoLayout metalstar_geo[];
-// extern const Gfx metalstar_seg3_sub_dl_body[];
-// extern const Gfx metalstar_seg3_dl_body[];
-// extern const Gfx metalstar_seg3_sub_dl_eyes[];
-// extern const Gfx metalstar_seg3_dl_eyes[];
+extern const GeoLayout metalstar_geo[];
+extern const Gfx metalstar_seg3_sub_dl_body[];
+extern const Gfx metalstar_seg3_dl_body[];
+extern const Gfx metalstar_seg3_sub_dl_eyes[];
+extern const Gfx metalstar_seg3_dl_eyes[];
 
 // transparent_star
 extern const GeoLayout transparent_star_geo[];

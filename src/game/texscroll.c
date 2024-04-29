@@ -163,6 +163,10 @@ void scroll_textures() {
 	// 	scroll_textures_ttc();
 	// }
 
+	if(SCROLL_CONDITION(sSegmentROMTable[0x6] == (uintptr_t)_group14_yay0SegmentRomStart)) {
+		scroll_textures_group14();
+	}
+
 	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group0_yay0SegmentRomStart)) {
 		scroll_textures_group0();
 	}
