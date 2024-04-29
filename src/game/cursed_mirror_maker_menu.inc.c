@@ -92,6 +92,37 @@ void print_maker_string_ascii(s32 x, s32 y, char *str, s32 highlight) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
+void print_maker_string_ascii_alpha(s32 x, s32 y, char *str, s32 highlight, s32 alpha) {
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
+    print_generic_string_ascii(x-1, y-1, (u8 *)str);
+    if (cmm_greyed_text) highlight += 2;
+    switch(highlight) {
+        case 0:
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, alpha);
+        break;
+        case 1:
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, alpha);
+        break;
+        case 2:
+            gDPSetEnvColor(gDisplayListHead++, 150, 150, 150, alpha);
+        break;
+        case 3:
+            gDPSetEnvColor(gDisplayListHead++, 150, 150, 0, alpha);
+        break;
+        case 4:
+            gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, alpha);
+        break;
+    }
+    print_generic_string_ascii(x, y, (u8 *)str);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+}
+
+void print_maker_string_ascii_centered_alpha(s32 x, s32 y, char *str, s32 highlight, s32 alpha) {
+    s32 x1 = get_string_width_ascii(str);
+    print_maker_string_ascii_alpha(x - x1/2, y, str, highlight, alpha);
+}
+
 void print_maker_string_ascii_centered(s32 x, s32 y, char *str, s32 highlight) {
     s32 x1 = get_string_width_ascii(str);
     print_maker_string_ascii(x - x1/2, y, str, highlight);
@@ -1193,6 +1224,71 @@ void draw_cmm_menu(void) {
     }
 }
 
+struct cmm_credits_entry {
+    char * text;
+    u32 color;
+};
+
+struct cmm_credits_entry cmm_credits[] = {
+    {"Mario Builder 64",1},
+    {"By Rovertronic",0},
+    {"2024",0},
+    {"",0},
+    {"Tile System, Code Refactors, Textures",1},
+    {"Arthurtilly",0},
+    {"",0},
+    {"SD Card Support",1},
+    {"Falcobuster",0},
+    {"Devwizard",0},
+    {"",0},
+    {"Title Screen Model",1},
+    {"Biobak",0},
+    {"",0},
+    {"More Objects Patch Models",1},
+    {"BroDute",0},
+    {"",0},
+    {"More Objects Patch Creator",1},
+    {"Kaze Emanuar",0},
+    {"",0},
+    {"Beyond the Cursed Mirror OST",1},
+    {"Thorndust",0},
+    {"SpK",0},
+    {"ArcticJaguar725",0},
+    {"",0},
+    {"Beyond the Cursed Mirror Badge Art",1},
+    {"HeroTechne",0},
+    {"Pyro Jay",0},
+    {"",0},
+    {"Mario Builder 64 Inspiration",1},
+    {"Ting Thing",0},
+};
+
+s32 credits_y_offset = 0;
+void print_maker_credits(void) {
+    s32 credits_entries = (sizeof(cmm_credits)/8);
+    s32 lower_limit = (credits_entries*16) - 160;
+    credits_y_offset -= (gPlayer1Controller->rawStickY/10.0f);
+    if (credits_y_offset <= 0) {
+        credits_y_offset = 0;
+    }
+    if (credits_y_offset >= lower_limit) {
+        credits_y_offset = lower_limit;
+    }
+    if (credits_y_offset != lower_limit) {
+        print_maker_string_ascii_centered(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",0);
+    }
+    if (credits_y_offset != 0) {
+        print_maker_string_ascii_centered(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",0);
+    }
+
+    for (int i=0; i<credits_entries; i++) {
+        s32 ypos = credits_y_offset+200-(16*i);
+        if ((ypos < 230)&&(ypos >10)) {
+            print_maker_string_ascii_centered(160,ypos, cmm_credits[i].text, cmm_credits[i].color);
+        }
+    }
+}
+
 char *cmm_mm_keyboard_prompt[] = {
     "Enter level name:",//KXM_NEW_LEVEL
     "Enter placeholder level name:", //KXM_NEW_LEVEL_LIMITED
@@ -1506,17 +1602,20 @@ s32 cmm_main_menu(void) {
     for (s32 i = 0; i < (cmm_joystick+1); i++) {
         random_u16(); // randomize for the initial tip
     }
-    switch(cmm_joystick) {
-        case 2:
-            cmm_menu_index++;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-        break;
-        case 4:
-            cmm_menu_index--;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-        break;
+
+    if (cmm_mm_state != MM_CREDITS) {
+        switch(cmm_joystick) {
+            case 2:
+                cmm_menu_index++;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            break;
+            case 4:
+                cmm_menu_index--;
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            break;
+        }
+        cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
     }
-    cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
     create_dl_ortho_matrix();
     
@@ -1782,7 +1881,8 @@ s32 cmm_main_menu(void) {
                 cmm_mm_state = cmm_mm_main_state;
                 cmm_menu_index = 3;
             }
-            print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_credits_page,FALSE);
+            print_maker_credits();
+            //print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_credits_page,FALSE);
             break;
         case MM_KEYBOARD:
             cmm_mm_anim_in(6);
