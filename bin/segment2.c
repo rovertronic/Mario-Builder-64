@@ -2354,6 +2354,7 @@ static const Vtx vertex_billboard_num[] = {
 // 0x0200EFF0 - 0x0200F038
 const Gfx dl_billboard_num_begin[] = {
     gsDPPipeSync(),
+    gsDPSetTextureFilter(G_TF_POINT),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTextureFilter(G_TF_POINT),
