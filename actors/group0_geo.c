@@ -85,3 +85,4 @@
 #include "water_level_diamond/geo.inc.c"
 #include "woodplat/geo.inc.c"
 #include "rfbox/geo.inc.c"
+#include "fatplat/geo.inc.c"

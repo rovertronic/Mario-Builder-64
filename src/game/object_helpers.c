@@ -2657,7 +2657,9 @@ void cur_obj_interact_with_moving_platform(u8 move_standard_or_object_step) {
 
     if ((floor) && (floor->object != NULL)) {
         o->oPosX += floor->object->oDisplaceVec[0];
-        o->oPosY += floor->object->oDisplaceVec[1];
+        //if (floor->object->oDisplaceVec[1] < 0.0f) {
+            //o->oPosY += floor->object->oDisplaceVec[1];
+        //}
         o->oPosZ += floor->object->oDisplaceVec[2];
     }
 }
@@ -2678,6 +2680,7 @@ s32 obj_with_physics_is_near(void) {
 
     struct Object * obj = physics_object_list_head;
     while (obj != NULL) {
+        if (obj == o || obj == o->prevObj) {obj = obj->nextPhysicsObj; continue;}
         f32 sqrLateralDist;
         vec3f_get_lateral_dist_squared(&o->oPosVec, &obj->oPosVec, &sqrLateralDist);
         if (sqrLateralDist < sqr(o->oCollisionDistance)) {

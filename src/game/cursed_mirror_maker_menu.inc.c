@@ -992,6 +992,7 @@ void draw_cmm_menu(void) {
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
             animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_menu_list_offsets), cmm_toolbox_index);
 
             for (s32 i = 0; i < (s32)sizeof(cmm_toolbox); i++) {
@@ -1021,6 +1022,13 @@ void draw_cmm_menu(void) {
                 cmm_toolbox_transition_btn_y = approach_f32_asymptotic(cmm_toolbox_transition_btn_y, cmm_toolbox_transition_btn_ty, multiplier);
             }
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
+
+            if (cmm_toolbox_x_offset == TOOLBOX_OFFSET_MIN) {
+                print_maker_string_ascii(310 + sins(gGlobalTimer*0x300)*2.5f, 147+yOff, ">", 0);
+            }
+            if (cmm_toolbox_x_offset == TOOLBOX_OFFSET_MAX) {
+                print_maker_string_ascii(7 - sins(gGlobalTimer*0x300)*2.5f, 147+yOff, "<", 0);
+            }
 
             s32 strx = GET_TOOLBOX_X(cmm_toolbox_index) + 20;
             s32 lowerstrx = strx;

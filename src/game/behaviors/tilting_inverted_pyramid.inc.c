@@ -6210,7 +6210,12 @@ void bhv_woodplat(void) {
 
     switch(o->oAction) {
         case 0:
-            o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
+            if (o->oBehParams2ndByte == 1) {
+                o->prevObj = spawn_object(o,MODEL_NONE,bhvFatPlatCol);
+                o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
+            } else {
+                o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
+            }
             o->prevObj->prevObj = o;
             o->oWallHitboxRadius = 49.0f;
             o->oAction = 1;

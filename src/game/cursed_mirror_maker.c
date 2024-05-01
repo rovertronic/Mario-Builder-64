@@ -224,9 +224,6 @@ void reset_play_state(void) {
     cmm_play_stars = 0;
     cmm_play_stars_bitfield = 0;
     cmm_play_badge_bitfield = 0;
-    cmm_play_onoff = FALSE;
-    cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
-    gWDWWaterLevelChanging = FALSE;
 }
 
 u8 cmm_grid_min = 0;
@@ -2203,7 +2200,6 @@ void generate_objects_to_level(void) {
         s32 param = cmm_object_data[i].bparam;
 
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
-
         obj->oPosX = GRID_TO_POS(cmm_object_data[i].x);
         obj->oPosY = GRID_TO_POS(cmm_object_data[i].y) - TILE_SIZE/2 + info->y_offset;
         obj->oPosZ = GRID_TO_POS(cmm_object_data[i].z);

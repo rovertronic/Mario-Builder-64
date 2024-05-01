@@ -1527,7 +1527,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_BUDDY */         {"Bob-omb Buddy",           mat_b_btn_buddy,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 /* OBJECT_TYPE_BUTTON */        {"On-Off Button",           mat_b_btn_button,       bhvOnOffButton,    0,           MODEL_MAKER_BUTTON,        0,                       0, 0, 1.0f, NULL, df_button, SOUND_GENERAL_DOOR_TURN_KEY},
 /* OBJECT_TYPE_ON_OFF_BLOCK */  {"On-Off Block",            mat_b_btn_block,        bhvOnOffBlock,     0,           MODEL_MAKER_BLOCK_1,       0,                       0, 1, 1.0f, NULL, df_block, SOUND_GENERAL_DOOR_TURN_KEY},
-/* OBJECT_TYPE_WOODPLAT */      {"Wooden Platform",         mat_b_btn_woodplat,     bhvWoodPlat,       0,           MODEL_MAKER_WOODPLAT,      0,                       0, 1, 1.0f, NULL, NULL, SOUND_GENERAL_POUND_WOOD_POST},
+/* OBJECT_TYPE_WOODPLAT */      {"Wooden Platform",         mat_b_btn_woodplat,     bhvWoodPlat,       0,           MODEL_MAKER_WOODPLAT,      0,                       0, 1, 1.0f, NULL, df_woodplat, SOUND_GENERAL_POUND_WOOD_POST},
 /* OBJECT_TYPE_RFBOX */         {"Reinforced Box",          mat_b_btn_rfbox,        bhvBreakableBoxRF, 0,           MODEL_MAKER_RFBOX,         0,                       0, 0, 1.0f, NULL, NULL, SOUND_ACTION_METAL_BONK},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
 /* OBJECT_TYPE_SHOWRUNNER */    {"Showrunner",              mat_b_btn_showrunner,   bhvShowrunner,     0,           MODEL_MAKER_SHOWRUNNER,    OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, showrunner_anims, NULL, SOUND_OBJ_MRI_SHOOT},
@@ -1600,6 +1600,11 @@ char *txt_coin_formation[] = {
 char *txt_onoff[] = {
     "Red",
     "Blue"
+};
+
+char *txt_woodplat[] = {
+    "Normal",
+    "Thick"
 };
 
 enum {
@@ -1787,7 +1792,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 2, cmm_npc_idlist, "NPC"},
 /* CMM_BUTTON_BUTTON */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, &txt_onoff},
 /* CMM_BUTTON_BLOCK */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
-/* CMM_BUTTON_WOODPLAT */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_WOODPLAT, NULL},
+/* CMM_BUTTON_WOODPLAT */{CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_WOODPLAT, &txt_woodplat},
 /* CMM_BUTTON_RFBOX */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
 /* CMM_BUTTON_SHOWRUN */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
 };

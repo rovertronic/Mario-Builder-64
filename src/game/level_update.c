@@ -355,6 +355,7 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
     // set_mario_initial_cap_powerup(m);
 }
 
+extern u8 cmm_lopt_waterlevel;
 void init_mario_after_warp(void) {
     struct ObjectWarpNode *spawnNode = area_get_warp_node(sWarpDest.nodeId);
     u32 marioSpawnType = get_mario_spawn_type(spawnNode->object);
@@ -383,6 +384,10 @@ void init_mario_after_warp(void) {
             gHudDisplay.coins = 0;
             gMarioState->health = 255 + (255*gMarioState->numMaxHP);
             gMarioState->numBadgePoints = gMarioState->numMaxFP;
+            // & water level
+            cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
+            gWDWWaterLevelChanging = FALSE;
+            cmm_play_onoff = FALSE;
         }
 
         init_mario();

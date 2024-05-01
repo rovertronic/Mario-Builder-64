@@ -386,3 +386,11 @@ void df_block(s32 context) {
         }
     }
 }
+
+void df_woodplat(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        if (o->oBehParams2ndByte == 1) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
+        }
+    }
+}

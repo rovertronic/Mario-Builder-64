@@ -775,4 +775,8 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "rfbox/geo_header.h"
 
+#include "fatplat/geo_header.h"
+
+#include "fatplat/collision_header.h"
+
 #endif

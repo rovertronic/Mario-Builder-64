@@ -243,3 +243,5 @@
 #include "woodplat/collision.inc.c"
 #include "woodplat/model.inc.c"
 #include "rfbox/model.inc.c"
+#include "fatplat/model.inc.c"
+#include "fatplat/collision.inc.c"

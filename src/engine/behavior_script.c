@@ -967,7 +967,9 @@ void cur_obj_update(void) {
         }
     }
 
-    vec3f_diff(&o->oDisplaceVec, &o->oPosVec, &o->oOldVec);
+    if (o->oOldVec[1] > -29000.0f) {
+        vec3f_diff(&o->oDisplaceVec, &o->oPosVec, &o->oOldVec);
+    }
     vec3f_copy(&o->oOldVec,&o->oPosVec);
     // if ( revent_active ) {
     //     if (objFlags & OBJ_FLAG_EVENT_VISIBLE) {
