@@ -922,7 +922,6 @@ void sb_init(void) {
             reset_rng();
             gGlobalTimer = 0;
             generate_objects_to_level();
-            load_obj_warp_nodes();
 
             spawn_obj = cur_obj_nearest_object_with_behavior(bhvSpawn);
             if (spawn_obj) {
