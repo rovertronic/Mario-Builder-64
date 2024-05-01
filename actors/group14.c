@@ -68,3 +68,7 @@
 #include "showrunner/model.inc.c"
 #include "showrunner/anims/data.inc.c"
 #include "showrunner/anims/table.inc.c"
+
+#include "srball_1/model.inc.c"
+#include "srball_2/model.inc.c"
+#include "srspike/model.inc.c"

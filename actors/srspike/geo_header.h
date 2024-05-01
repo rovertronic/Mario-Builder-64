@@ -1,0 +1,11 @@
+extern const GeoLayout srspike_geo[];
+extern Lights1 srspike_Stone_001_lights;
+extern u8 srspike_Concrete_ci4[];
+extern u8 srspike_Concrete_pal_rgba16[];
+extern Vtx srspike_Cone_mesh_layer_1_vtx_cull[8];
+extern Vtx srspike_Cone_mesh_layer_1_vtx_0[9];
+extern Gfx srspike_Cone_mesh_layer_1_tri_0[];
+extern Gfx mat_srspike_Stone_001[];
+extern Gfx mat_revert_srspike_Stone_001[];
+extern Gfx srspike_Cone_mesh_layer_1[];
+extern Gfx srspike_material_revert_render_settings[];

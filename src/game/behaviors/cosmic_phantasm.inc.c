@@ -310,11 +310,13 @@ void showrunner_battle_function(void) {
     switch(o->oAction) {
         case 0://init
             o->oAction=1;
+            o->oQuicksandDepthToDie = 0;
         break;
         case 1://init
-            o->oQuicksandDepthToDie = 0;
-            o->oHealth = 3;
-            o->oAction = 2;
+            if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+                o->oHealth = 3;
+                o->oAction = 2;
+            }
         break;
         case 2://back away
             if (o->oTimer == 1) {
@@ -656,7 +658,7 @@ u8 tennis_turns[] = {
 #include "actors/group14.h"
 void bhv_tennis(void) {
     o->oOpacity = 255;
-    spawn_object(o,MODEL_SR_BALL,bhvTennis2);
+    spawn_object(o,MODEL_MAKER_SHOWRUNNER_BALL_2,bhvTennis2);
 
     switch(o->oAction) {
         case 0:

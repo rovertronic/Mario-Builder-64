@@ -72,4 +72,10 @@ extern const Gfx question_box_dl[];
 #include "showrunner/geo_header.h"
 #include "showrunner/anim_header.h"
 
+#include "srball_1/geo_header.h"
+
+#include "srball_2/geo_header.h"
+
+#include "srspike/geo_header.h"
+
 #endif

@@ -26,3 +26,6 @@
 #include "egg/geo.inc.c"
 
 #include "showrunner/geo.inc.c"
+#include "srball_1/geo.inc.c"
+#include "srball_2/geo.inc.c"
+#include "srspike/geo.inc.c"
