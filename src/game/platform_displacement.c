@@ -31,6 +31,10 @@ void update_mario_platform(void) {
     f32 floorHeight;
     u32 awayFromFloor;
 
+	if (gTimeStopState & TIME_STOP_ACTIVE) {
+		return;
+	}
+
     if (gMarioObject == NULL) {
         return;
     }
