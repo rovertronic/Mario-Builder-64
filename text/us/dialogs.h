@@ -39,9 +39,9 @@ You'll gain extra height\n\
 when doing this jump."))
 
 DEFINE_DIALOG(DIALOG_003, 1, 4, 95, 180, _("\
-To get past this jump, you\n\
-need to do a backwards\n\
-long jump.\n\
+To get past this jump, you'll\n\
+need to do a trick called a\n\
+''Backwards Long Jump.''\n\
 \n\
 First, initiate a long\n\
 jump. Hold [Z] and move\n\
@@ -265,55 +265,21 @@ stairs, you need 70\n\
 Stars.\n\
 Bwa ha ha!"))
 
-DEFINE_DIALOG(DIALOG_030, 1, 4, 95, 180, _("\
-Ah, a visitor!\n\
-Welcome to my SUPER\n\
-SECRET SHOP!\n\
-\n\
-The deals here are\n\
-OUT. OF. THIS. WORLD!!!\n\
-You won't find badges\n\
-any cheaper!\n\
-Talk to me again\n\
-to browse my\n\
-inventory."))
+DEFINE_DIALOG(DIALOG_030, 1, 2, 95, 180, _("\
+You'll need the vanish cap\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_031, 1, 5, 30, 200, _("\
-No way! You beat me...\n\
-again!! And I just spent\n\
-my entire savings on\n\
-these new Koopa\n\
-Mach 1 Sprint shoes!\n\
-Here, I guess I have to\n\
-hand over this Star to\n\
-the winner of the race.\n\
-Congrats, Mario!"))
+DEFINE_DIALOG(DIALOG_031, 1, 2, 95, 180, _("\
+You'll need the wing cap\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_032, 1, 4, 95, 180, _("\
-Once you purchase a\n\
-badge, press the start\n\
-button to open the menu.\n\
-\n\
-After that, press left\n\
-and right to select a\n\
-badge, then press [B] to\n\
-equip that badge.\n\
-You can only equip as\n\
-many badges as you have\n\
-BP. If you want to equip\n\
-more badges, upgrade\n\
-your BP at the stat\n\
-upgrade station."))
+DEFINE_DIALOG(DIALOG_032, 1, 2, 95, 180, _("\
+You'll need the metal cap\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_033, 1, 4, 95, 180, _("\
-You're going to have\n\
-to pay a toll of 10\n\
-coins for me to raise\n\
-this bridge.\n\
-Showrunner's taxes,\n\
-I know...\n\
-\n\
-Press [B] to pay up!"))
+DEFINE_DIALOG(DIALOG_033, 1, 2, 95, 180, _("\
+You'll need a koopa shell\n\
+to get through here."))
 
 /*
 DEFINE_DIALOG(DIALOG_034, 1, 4, 95, 180, _("\
@@ -326,176 +292,88 @@ woes and sorrows."))
 //sorry rovert, i knew you wanted to be a gravis wannabe
 //this just mislead the players into thinking the fountain healed them
 
-//VALVE PLAYTESTER MOMENT:
-//
-DEFINE_DIALOG(DIALOG_034, 1, 1, 95, 180, _("\
-Bowser's Secret Shortcut"))
+DEFINE_DIALOG(DIALOG_034, 1, 2, 95, 180, _("\
+You'll need a corkbox\n\
+to get through here."))
 
 
-DEFINE_DIALOG(DIALOG_035, 1, 4, 95, 180, _("\
-Prehistoric Research\n\
-Room"))
+DEFINE_DIALOG(DIALOG_035, 1, 2, 95, 180, _("\
+You'll need rocket boots\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_036, 1, 4, 95, 180, _("\
-Most bullies here are\n\
-always looking to\n\
-kick yo face in.\n\
-\n\
-I'm just here to\n\
-make a pretty dime,\n\
-you hear me?\n\
-\n\
-You'll need to be\n\
-protected from the\n\
-heat, and I have\n\
-just the thing!"))
+DEFINE_DIALOG(DIALOG_036, 1, 2, 95, 180, _("\
+You'll need to be vanetal\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_037, 1, 5, 95, 180, _("\
-The Yellow Box contains\n\
-the Koopa Shell. You can\n\
-use it to surf on the\n\
-firey planes without\n\
-getting burned.\n\
-To solidify the box,\n\
-one must find the\n\
-yellow switch. The\n\
-location of the switch\n\
-is well hidden.\n\
-However, I will give\n\
-you a hint:\n\
-Ground pound one of the four\n\
-containers of information\n\
-in the room with a two."))
+DEFINE_DIALOG(DIALOG_037, 1, 2, 95, 180, _("\
+You'll need a bullet-bill\n\
+mask to get through here."))
 
-DEFINE_DIALOG(DIALOG_038, 1, 4, 95, 180, _("\
-So many dubious looking\n\
-stars. Many of them are\n\
-fraudulent! Which star is\n\
-the real deal?"))
+DEFINE_DIALOG(DIALOG_038, 1, 2, 95, 180, _("\
+You'll need a pipebar\n\
+to get through here."))
 
-DEFINE_DIALOG(DIALOG_039, 1, 5, 95, 180, _("\
-Go for a wild ride on\n\
-the zipline! Before you\n\
-can ride though, you'll\n\
-need to find an object\n\
-to slide down with.\n\
-A pipebar would do,\n\
-if you could find one\n\
-around here."))
+DEFINE_DIALOG(DIALOG_039, 1, 1, 95, 180, _("\
+Hmm..."))
 
-DEFINE_DIALOG(DIALOG_040, 1, 5, 95, 180, _("\
-Hello young lad!\n\
-Hold [B] to deposit your\n\
-level coins into your\n\
-castle wallet."))
+DEFINE_DIALOG(DIALOG_040, 1, 1, 95, 180, _("\
+What is this?"))
 
-DEFINE_DIALOG(DIALOG_041, 1, 6, 95, 180, _("\
-hiii oomfie, welcome to\n\
-the club! now like, we'd\n\
-give you a totally valid\n\
-greeting, but, we kind\n\
-have a totally not cool\n\
-problem...\n\
-you see, the lame home\n\
-owner took our food\n\
-and put it above deadly\n\
-mouse killing traps...\n\
-\n\
-\n\
-you can join the oomfie\n\
-club if you help get all\n\
-the cheese! we'll even\n\
-help get the rest of the\n\
-doors in the house open\n\
-for you hun."))
+DEFINE_DIALOG(DIALOG_041, 1, 1, 95, 180, _("\
+What?"))
 
-DEFINE_DIALOG(DIALOG_042, 1, 4, 95, 180, _("\
-heyyy oomfie!!!\n\
-the owner left their\n\
-nasty socks all over\n\
-the ground...\n\
-get those nastyy\n\
-sockos consolidated\n\
-into the laundry bin...\n\
-\n\
-we can't enjoy our\n\
-cheese and mario in peace\n\
-if we're always smelling\n\
-those stanky socks..."))
+DEFINE_DIALOG(DIALOG_042, 1, 1, 95, 180, _("\
+Peculiar..."))
 
-DEFINE_DIALOG(DIALOG_043, 1, 5, 95, 180, _("\
-hun, the house is\n\
-still burning down.\n\
-you should like, turn\n\
-off the oven or something"))
+DEFINE_DIALOG(DIALOG_043, 1, 3, 95, 180, _("\
+You'll have to think\n\
+outside the box to solve\n\
+this puzzle."))
 
-DEFINE_DIALOG(DIALOG_044, 1, 5, 95, 180, _("\
-yass the house is\n\
-saved thanks to\n\
-you oomfie!"))
+DEFINE_DIALOG(DIALOG_044, 1, 1, 95, 180, _("\
+Which way?"))
 
-DEFINE_DIALOG(DIALOG_045, 1, 5, 95, 180, _("\
-heyyy bestie! i found\n\
-some onion rings!\n\
-you should like... jump\n\
-through them for fun\n\
-or something..."))
+DEFINE_DIALOG(DIALOG_045, 1, 2, 95, 180, _("\
+Warning!\n\
+Bottomless pit ahead."))
 
-DEFINE_DIALOG(DIALOG_046, 1, 7, 95, 180, _("\
-hii bestie!\n\
-thank you for getting\n\
-that cheese for us!\n\
-we can like, totally\n\
-chill now. the rest\n\
-of the home has opened\n\
-up for your exploration."))
+DEFINE_DIALOG(DIALOG_046, 1, 2, 95, 180, _("\
+Warning!\n\
+Dangerous lava ahead."))
 
 DEFINE_DIALOG(DIALOG_047, 1, 2, 95, 180, _("\
-Hi! I'll prepare the\n\
-cannon for you!"))
+Warning!\n\
+Dangerous quicksand ahead."))
 
-DEFINE_DIALOG(DIALOG_048, 1, 3, 95, 180, _("\
-ohhh bestie!\n\
-we have terrible tea\n\
-to spill...\n\
-the house is kind of...\n\
-burning down for some\n\
-reason!\n\
-figure out the source\n\
-of the fire... and\n\
-quick!\n\
-we don't have all the\n\
-time in the world hun,\n\
-get going!"))
+DEFINE_DIALOG(DIALOG_048, 1, 2, 95, 180, _("\
+Warning!\n\
+Hostile enemies ahead."))
 
-DEFINE_DIALOG(DIALOG_049, 1, 4, 95, 180, _("\
-bestie...\n\
-beware of the scary\n\
-basement... it's just\n\
-a mancave, but the beast\n\
-that lurks inside?\n\
-the oomfie club can't\n\
-get near here without\n\
-huuuugggee risk, hun"))
+DEFINE_DIALOG(DIALOG_049, 1, 2, 95, 180, _("\
+Warning!\n\
+Trolling ahead."))
 
-DEFINE_DIALOG(DIALOG_050, 1, 4, 95, 180, _("\
-Hello! \n\
-Welcome   to\n\
-retro   kingdom .\n\
-\n\
-There   are   many\n\
-platforms   to\n\
-jump   on   in\n\
-this   land !\n\
-Press   [R]   to\n\
-zoom   out   the\n\
-camera!"))
+DEFINE_DIALOG(DIALOG_050, 1, 2, 95, 180, _("\
+Warning!\n\
+Void leakage ahead."))
 
 DEFINE_DIALOG(DIALOG_051, 1, 4, 95, 180, _("\
-Beware   of\n\
-pipe   maze !\n\
-Many   dangerous\n\
-piranha   plants !"))
+To get past this gate, you\n\
+need to do a trick called\n\
+a ''Bomb Clip.''\n\
+\n\
+First, grab a bob-omb. Then,\n\
+throw it while moving forward.\n\
+Catch it right before it\n\
+explodes, and it'll be\n\
+huge in your hands. It'll\n\
+push you backwards toward\n\
+the gate, and if you did\n\
+it right, you'll clip in.\n\
+If you fail, you can walk\n\
+away and come back to cause\n\
+it to respawn so you can\n\
+try again."))
 
 DEFINE_DIALOG(DIALOG_052, 1, 4, 95, 180, _("\
 The   view   here\n\

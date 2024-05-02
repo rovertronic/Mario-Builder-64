@@ -2398,7 +2398,7 @@ void delete_object(s8 pos[3], s32 index) {
     generate_object_preview();
 }
 
-
+extern s8 gDialogBoxType;
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
     if (cmm_id_selection == OBJECT_TYPE_MARIO_SPAWN) {
@@ -2427,6 +2427,7 @@ void place_object(s8 pos[3]) {
         cmm_trajectory_list[cmm_trajectory_to_edit][0][0] = -1;
         cmm_trajectory_edit_index = 0;
     } else if (cmm_object_type_list[cmm_id_selection].flags & OBJ_TYPE_HAS_DIALOG) {
+        gDialogBoxType = 0;
         cmm_menu_state = CMM_MAKE_SELECT_DIALOG;
         cmm_object_data[cmm_object_count].bparam = 0;
         cmm_dialog_edit_ptr = &cmm_object_data[cmm_object_count];
@@ -3597,11 +3598,11 @@ void sb_loop(void) {
 
                 cmm_dialog_subject_index = (NUM_DIALOG_SUBJECT_COUNT + cmm_dialog_subject_index) % NUM_DIALOG_SUBJECT_COUNT;
                 cmm_dialog_topic_index = (cmm_dialog_subjects[cmm_dialog_subject_index].topic_list_size + cmm_dialog_topic_index) % cmm_dialog_subjects[cmm_dialog_subject_index].topic_list_size;
-                cmm_dialog_edit_ptr->bparam = cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].dialog_id;
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
 
             if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+                cmm_dialog_edit_ptr->bparam = cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].dialog_id;
                 cmm_menu_state = CMM_MAKE_MAIN;
             }
             break;

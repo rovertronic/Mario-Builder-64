@@ -2500,12 +2500,47 @@ struct cmm_dialog_topic cmm_dialog_topics_trouble[] = {
 struct cmm_dialog_topic cmm_dialog_topics_tricks[] = {
     {"Triple Jump Kick",DIALOG_002},
     {"BLJ",DIALOG_003},
-    {"QSLG",DIALOG_018}
+    {"QSLG",DIALOG_018},
+    {"Bomb Clip",DIALOG_051},
+};
+
+struct cmm_dialog_topic cmm_dialog_topics_keys[] = {
+    {"Vanish Cap",DIALOG_030},
+    {"Wing Cap",DIALOG_031},
+    {"Metal Cap",DIALOG_032},
+    {"Koopa Shell",DIALOG_033},
+    {"Corkbox",DIALOG_034},
+    {"Rocket Boots",DIALOG_035},
+    {"Vanetal",DIALOG_036},
+    {"Pipebar",DIALOG_038},
+    {"B.Bill Mask",DIALOG_037},
+};
+
+struct cmm_dialog_topic cmm_dialog_topics_mystery[] = {
+    {"Hmm",DIALOG_039},
+    {"This",DIALOG_040},
+    {"What",DIALOG_041},
+    {"Peculiar",DIALOG_042},
+    {"Box",DIALOG_043},
+    {"Way",DIALOG_044},
+};
+
+struct cmm_dialog_topic cmm_dialog_topics_warning[] = {
+    {"Pit",DIALOG_045},
+    {"Lava",DIALOG_046},
+    {"Quicksand",DIALOG_047},
+    {"Enemies",DIALOG_048},
+    {"Trolling",DIALOG_049},
+    {"Void",DIALOG_050},
 };
 
 struct cmm_dialog_subject cmm_dialog_subjects[] = {
     {"Greetings",&cmm_dialog_topics_greetings, 4},
     {"Trouble",&cmm_dialog_topics_trouble, 7},
-    {"Tricks",&cmm_dialog_topics_tricks, 3}
+    {"Warning",&cmm_dialog_topics_warning,6},
+    {"Keys",&cmm_dialog_topics_keys, 9},
+    {"Mystery",&cmm_dialog_topics_mystery, 6},
+    {"Tricks",&cmm_dialog_topics_tricks, 4},
 };
-#define NUM_DIALOG_SUBJECT_COUNT 3
+
+#define NUM_DIALOG_SUBJECT_COUNT 6
