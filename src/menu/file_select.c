@@ -24,6 +24,7 @@
 #include "game/puppycamold.h"
 #include "actors/group0.h"
 #include "game/cursed_mirror_maker.h"
+#include "seq_ids.h"
 
 #include "eu_translation.h"
 #if MULTILANG
@@ -1985,6 +1986,10 @@ Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct Grap
 s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     //when entering menu, load levels from sd card
     load_level_files_from_sd_card();
+
+    if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
+        play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_MENU_FILE_SELECT), 0);
+    }
 }
 
 // /**
