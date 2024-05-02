@@ -165,7 +165,13 @@ struct cmm_tile {
 };
 
 struct cmm_obj {
-    u32 bparam:7, x:6, y:6, z:6, type:8, rot:2;
+    u8 bparam;
+    u8 x;
+    u8 y;
+    u8 z;
+    u8 type;
+    u8 rot;
+    u8 pad[2];
 };
 
 struct cmm_grid_obj {
@@ -317,7 +323,7 @@ u8 version;
 char author[31];
 u16 piktcher[64][64];
 
-Should always be the first 2 members of the cmm_level_uncompressed_save struct
+Should always be the first 2 members of the cmm_level_save_header struct
 no matter what version.
 */
 
@@ -325,6 +331,7 @@ struct cmm_level_save_header {
     char file_header[10];
     u8 version;
     char author[31];
+    u16 piktcher[64][64];
 
     // Level options
     u8 costume;
@@ -341,8 +348,6 @@ struct cmm_level_save_header {
     u8 secret;
     u8 game;
 
-    u8 padding[20];
-
     u8 toolbar[9];
     u8 toolbar_params[9];
     u16 tile_count;
@@ -351,8 +356,6 @@ struct cmm_level_save_header {
     struct cmm_custom_theme custom_theme;
 
     struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];
-
-    u16 piktcher[64][64];
 
     u64 pad;
 };
