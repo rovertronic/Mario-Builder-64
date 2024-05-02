@@ -449,8 +449,8 @@ char *cmm_custom_get_menu_name(s32 index) {
 }
 
 // Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq
-void set_album_and_song_from_seq(void) {
-    u32 song = cmm_lopt_seq;
+void set_album_and_song_from_seq(u8 index) {
+    u32 song = cmm_lopt_seq[index];
     u32 i = 0;
     do {
         if (song < cmm_settings_music_albums[i].size) {
@@ -462,15 +462,15 @@ void set_album_and_song_from_seq(void) {
     } while (++i < ARRAY_COUNT(cmm_music_album_string_table));
 }
 // Set cmm_lopt_seq from cmm_lopt_seq_album and cmm_lopt_seq_song
-void set_seq_from_album_and_song(void) {
-    cmm_lopt_seq = 0;
+void set_seq_from_album_and_song(u8 index) {
+    cmm_lopt_seq[index] = 0;
     u32 i = 0;
     do {
         if (i == cmm_lopt_seq_album) {
-            cmm_lopt_seq += cmm_lopt_seq_song;
+            cmm_lopt_seq[index] += cmm_lopt_seq_song;
             return;
         }
-        cmm_lopt_seq += cmm_settings_music_albums[i].size;
+        cmm_lopt_seq[index] += cmm_settings_music_albums[i].size;
     } while (++i < ARRAY_COUNT(cmm_music_album_string_table));
 }
 
@@ -486,20 +486,25 @@ void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
     } while (++i < ARRAY_COUNT(cmm_matlist));
 }
 
+void music_type_changed(void) {
+    cmm_set_data_overrides();
+    stop_background_music(get_current_background_music());
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[cmm_lopt_seq_seqtype]]), 0);
+}
 void music_category_changed(void) {
     cmm_lopt_seq_song = 0;
     song_changed();
     cmm_set_data_overrides();
 }
 void song_changed(void) {
-    set_seq_from_album_and_song();
+    set_seq_from_album_and_song(cmm_lopt_seq_seqtype);
     stop_background_music(get_current_background_music());
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[cmm_lopt_seq_seqtype]]), 0);
 }
 
 void cmm_set_data_overrides(void) {
     // Music options
-    set_album_and_song_from_seq();
+    set_album_and_song_from_seq(cmm_lopt_seq_seqtype);
     bcopy(&cmm_settings_music_albums[cmm_lopt_seq_album], &cmm_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct cmm_settings_button));
 
     // Secret unlock
@@ -885,8 +890,8 @@ void draw_cmm_settings_env(f32 xoff, f32 yoff) {
 void draw_cmm_settings_music(f32 xoff, f32 yoff) {
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_music_buttons), cmm_menu_index);
     for (s32 i=0;i<ARRAY_COUNT(cmm_settings_music_buttons);i++) {
-        print_maker_string_ascii(35+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
-        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],154-(i*25)+yoff,100,&cmm_settings_music_buttons[i],i,cmm_joystick);
+        print_maker_string_ascii(35+xoff+3*cmm_menu_list_offsets[i],154-(i*20)+yoff,cmm_settings_music_buttons[i].str,(i==cmm_menu_index));
+        cmm_menu_option_animation(190+xoff+3*cmm_menu_list_offsets[i],154-(i*20)+yoff,100,&cmm_settings_music_buttons[i],i,cmm_joystick);
     }
 }
 

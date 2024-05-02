@@ -40,6 +40,7 @@ void king_bobomb_act_inactive(void) { // act 0
             //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
         }
     } else {
+        play_cmm_extra_music(2);
         o->oAction = KING_BOBOMB_ACT_ACTIVE;
         o->oFlags |= OBJ_FLAG_HOLDABLE;
     }
@@ -93,7 +94,7 @@ void king_bobomb_act_active(void) { // act 2
 
     if (mario_is_far_below_object(1200.0f)) {
         o->oAction = KING_BOBOMB_ACT_INACTIVE;
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        stop_cmm_extra_music(2);
     }
 }
 
@@ -153,13 +154,14 @@ void king_bobomb_act_activate(void) { // act 1
 
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x200);
 
-    if (o->oDistanceToMario < 2500.0f) {
+    if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+        play_cmm_extra_music(2);
         o->oAction = KING_BOBOMB_ACT_ACTIVE;
     }
 
     if (mario_is_far_below_object(1200.0f)) {
         o->oAction = KING_BOBOMB_ACT_INACTIVE;
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        stop_cmm_extra_music(2);
     }
 }
 
@@ -221,7 +223,7 @@ void king_bobomb_act_death(void) { // act 7
 
 void king_bobomb_act_stop_music(void) { // act 8
     if (o->oTimer == 60) {
-        //stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        stop_cmm_extra_music(2);
         mark_obj_for_deletion(o); //stop phantom triggering noteblock
     }
 }
@@ -320,7 +322,7 @@ void king_bobomb_act_return_home(void) { // act 5
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_WAIT_FOR_DIALOG:
             if (mario_is_far_below_object(1200.0f)) {
                 o->oAction = KING_BOBOMB_ACT_INACTIVE;
-                stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+                stop_cmm_extra_music(2);
             }
 
             if (cur_obj_can_mario_activate_textbox_2(CMM_BOSS_TRIGGER_DIST, 100.0f)) {

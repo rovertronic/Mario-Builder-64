@@ -140,7 +140,8 @@ s16 cmm_play_s16_water_level = 0;
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
 
-u8 cmm_lopt_seq = 0; // Song index
+u8 cmm_lopt_seq[5] = {0,0,0,0,0}; // Song index
+u8 cmm_lopt_seq_seqtype = 0; // Level Music, Race Music, Boss Music 
 u8 cmm_lopt_seq_album = 0; // Category
 u8 cmm_lopt_seq_song = 0; // Song index within category
 
@@ -2618,7 +2619,9 @@ void save_level(void) {
     cmm_save.object_count = cmm_object_count;
 
     cmm_save.costume = cmm_lopt_costume;
-    cmm_save.seq = cmm_lopt_seq;
+    cmm_save.seq[0] = cmm_lopt_seq[0];
+    cmm_save.seq[1] = cmm_lopt_seq[1];
+    cmm_save.seq[2] = cmm_lopt_seq[2];
     cmm_save.envfx = cmm_lopt_envfx;
     cmm_save.theme = cmm_lopt_theme;
     cmm_save.bg = cmm_lopt_bg;
@@ -2734,7 +2737,9 @@ void load_level(void) {
         cmm_save.game = cmm_lopt_game;
         cmm_save.size = cmm_lopt_size;
 
-        cmm_save.seq = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
+        cmm_save.seq[0] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
+        cmm_save.seq[1] = 1;
+        cmm_save.seq[2] = 10;
         cmm_save.envfx = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.theme = cmm_templates[cmm_lopt_template].theme;
         cmm_save.bg = cmm_templates[cmm_lopt_template].bg;
@@ -2769,7 +2774,9 @@ void load_level(void) {
 
     cmm_lopt_costume = cmm_save.costume;
 
-    cmm_lopt_seq = cmm_save.seq;
+    cmm_lopt_seq[0] = cmm_save.seq[0];
+    cmm_lopt_seq[1] = cmm_save.seq[1];
+    cmm_lopt_seq[2] = cmm_save.seq[2];
     cmm_lopt_envfx = cmm_save.envfx;
     cmm_lopt_theme = cmm_save.theme;
     cmm_lopt_bg = cmm_save.bg;
@@ -2902,7 +2909,7 @@ void sb_init(void) {
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[0]]), 0);
             }
         break;
         case CMM_MODE_PLAY:
@@ -2940,7 +2947,7 @@ void sb_init(void) {
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq]), 0);
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[0]]), 0);
             }
         break;
     }
@@ -3623,6 +3630,18 @@ void sb_loop(void) {
 
         vec3_copy(cmm_camera_pos,cmm_camera_foc);
         vec3_add(cmm_camera_pos,cam_pos_offset);
+    }
+}
+
+void play_cmm_extra_music(u8 index) {
+    if ((seq_musicmenu_array[cmm_lopt_seq[index]] != seq_musicmenu_array[cmm_lopt_seq[0]]) && (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC))) {
+        play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[index]]), 0);
+    }
+}
+
+void stop_cmm_extra_music(u8 index) {
+    if ((seq_musicmenu_array[cmm_lopt_seq[index]] != seq_musicmenu_array[cmm_lopt_seq[0]]) && (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC))) {
+        stop_background_music(SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[index]]));
     }
 }
 

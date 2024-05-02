@@ -28,6 +28,8 @@ extern Trajectory cmm_trajectory_list[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGT
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
 s32 draw_cmm_pause_menu(void);
 void cmm_init_pause_menu(void);
+void play_cmm_extra_music(u8 index);
+void stop_cmm_extra_music(u8 index);
 
 extern u8 cmm_level_action;
 extern u8 cmm_mode;
@@ -335,7 +337,7 @@ struct cmm_level_save_header {
 
     // Level options
     u8 costume;
-    u8 seq;
+    u8 seq[5];
     u8 envfx;
     u8 theme;
     u8 bg;

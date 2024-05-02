@@ -1899,6 +1899,12 @@ char *cmm_costume_string_table[] = {
     "Cosmic Phantasm",
 };
 
+char *cmm_music_type_string_table[] = {
+    "Level",
+    "Koopa Race",
+    "Bossfight",
+};
+
 char *cmm_music_album_string_table[] = {
     "Super Mario 64 OST",
     "Beyond the Cursed Mirror OST",
@@ -2249,6 +2255,7 @@ extern void reload_bg(void);
 extern void reload_theme(void);
 extern void generate_terrain_gfx(void);
 
+extern void music_type_changed(void);
 extern void music_category_changed(void);
 extern void song_changed(void);
 
@@ -2289,11 +2296,12 @@ struct cmm_settings_button cmm_settings_boundary_buttons[] = {
 #define BOUNDARY_HEIGHT_INDEX 2
 
 struct cmm_settings_button cmm_settings_music_buttons[] = {
+    {"Type:", &cmm_lopt_seq_seqtype, cmm_music_type_string_table, ARRAY_COUNT(cmm_music_type_string_table), NULL, music_type_changed},
     {"Album:",   &cmm_lopt_seq_album,  cmm_music_album_string_table,  ARRAY_COUNT(cmm_music_album_string_table), NULL, music_category_changed},
     {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
 };
-#define MUSIC_ALBUM_INDEX 0
-#define MUSIC_SONG_INDEX 1
+#define MUSIC_ALBUM_INDEX 1
+#define MUSIC_SONG_INDEX 2
 
 struct cmm_settings_button cmm_settings_mat_selector[] = {
     {"Category:", NULL, NULL, ARRAY_COUNT(cmm_matlist) - 1, cmm_get_category,   NULL},

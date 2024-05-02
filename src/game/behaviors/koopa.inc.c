@@ -7,6 +7,8 @@
  * flag.
  */
 
+extern u8 cmm_lopt_seq[5];
+
 /**
  * Hitbox for koopa - this is used for every form except Koopa the Quick, which
  * uses a hardcoded soft hitbox.
@@ -476,7 +478,7 @@ s32 obj_begin_race(s32 noTimer) {
         cur_obj_play_sound_2(SOUND_GENERAL_RACE_GUN_SHOT);
 
         if (!noTimer) {
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
+            play_cmm_extra_music(1);
 
             level_control_timer(TIMER_CONTROL_SHOW);
             level_control_timer(TIMER_CONTROL_START);
@@ -710,7 +712,7 @@ static void koopa_the_quick_act_after_race(void) {
     cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
 
     if (o->parentObj->oKoopaRaceEndpointDialog == 0) {
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE));
+        stop_cmm_extra_music(1);
         level_control_timer(TIMER_CONTROL_HIDE);
 
         // Determine which text to display
