@@ -595,7 +595,8 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
     cmm_num_vertices_cached += 4;
-    check_cached_tris();
+    //check_cached_tris();
+    display_cached_tris();
 
     make_vertex(cmm_curr_vtx, cmm_num_vertices_cached,     pos1[0] + spsy, pos1[1] - cp, pos1[2] + spcy, 0, 0, 0, 0, 0, 0xFF);
     make_vertex(cmm_curr_vtx, cmm_num_vertices_cached + 1, pos1[0] - spsy, pos1[1] + cp, pos1[2] - spcy, 0, 0, 0, 0, 0, 0xFF);
@@ -605,7 +606,8 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     cache_tri(0, 1, 2);
     cache_tri(1, 3, 2);
     cmm_num_vertices_cached += 4;
-    check_cached_tris();
+    //check_cached_tris();
+    display_cached_tris();
 }
 
 void generate_trajectory_gfx(void) {
