@@ -588,6 +588,8 @@ void bhv_item_bubble_loop() {
 
     }
 
+//2024 rovert here, if you're reviewing my resume and stumble upon this code, no you didn't : )
+
 // u8 shitcum_animstate_table[] = {0,0,0,0,0,0,1,1,2,2,3,3,3,3,3,3,2,2,1,1};
 // //im eating fucking doritos right now
 // // im such a sfucking labzy slob

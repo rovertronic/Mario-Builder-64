@@ -6240,3 +6240,11 @@ void bhv_woodplat(void) {
             break;
     }
 }
+
+void bhv_crush_handler(void) {
+    obj_attack_collided_from_other_object(o);
+    if (o->oTimer > 30) {
+        mark_obj_for_deletion(o);
+    }
+    o->oInteractStatus = INT_NONE;
+}

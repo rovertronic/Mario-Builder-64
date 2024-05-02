@@ -2318,6 +2318,7 @@ s32 draw_cmm_pause_menu(void) {
             switch(cmm_joystick) {
                 case 2:
                     cmm_menu_index++;
+                    cmm_menu_index = (cmm_menu_index + 4) % 4;
                     if (cmm_menu_index==3&&badge_count==0) {
                         cmm_menu_index++;
                     }
@@ -2325,6 +2326,7 @@ s32 draw_cmm_pause_menu(void) {
                     break;
                 case 4:
                     cmm_menu_index--;
+                    cmm_menu_index = (cmm_menu_index + 4) % 4;
                     if (cmm_menu_index==3&&badge_count==0) {
                         cmm_menu_index--;
                     }
