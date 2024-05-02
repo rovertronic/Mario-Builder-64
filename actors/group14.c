@@ -72,3 +72,5 @@
 #include "srball_1/model.inc.c"
 #include "srball_2/model.inc.c"
 #include "srspike/model.inc.c"
+#include "crowbar3/model.inc.c"
+#include "billmask2/model.inc.c"

@@ -5651,6 +5651,12 @@ const BehaviorScript bhvHiddenStarTrigger[] = {
 //     END_LOOP(),
 // };
 
+const BehaviorScript bhvBMask[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    SET_INT(oBehParams2ndByte, 2),
+    GOTO(bhvCrowbarPower + 1),
+};
+
 const BehaviorScript bhvCrowbarPower[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO ),

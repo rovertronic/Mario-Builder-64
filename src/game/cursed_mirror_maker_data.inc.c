@@ -1442,6 +1442,8 @@ enum {
     OBJECT_TYPE_RFBOX,
     OBJECT_TYPE_CULL_PREVIEW, // also fake type
     OBJECT_TYPE_SHOWRUNNER,
+    OBJECT_TYPE_CROWBAR,
+    OBJECT_TYPE_MASK,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1530,7 +1532,9 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_WOODPLAT */      {"Wooden Platform",         mat_b_btn_woodplat,     bhvWoodPlat,       0,           MODEL_MAKER_WOODPLAT,      0,                       0, 1, 1.0f, NULL, df_woodplat, SOUND_GENERAL_POUND_WOOD_POST},
 /* OBJECT_TYPE_RFBOX */         {"Reinforced Box",          mat_b_btn_rfbox,        bhvBreakableBoxRF, 0,           MODEL_MAKER_RFBOX,         0,                       0, 0, 1.0f, NULL, NULL, SOUND_ACTION_METAL_BONK},
 /* OBJECT_TYPE_CULL_PREVIEW */  {"",                        mat_b_btn_cull,         bhvStaticObject,   TILE_SIZE/2, MODEL_CULL_MARKER,         OBJ_TYPE_IS_BILLBOARDED, 0, 0, 1.f,  NULL, NULL, 0},
-/* OBJECT_TYPE_SHOWRUNNER */    {"Showrunner",              mat_b_btn_showrunner,   bhvShowrunner,     0,           MODEL_MAKER_SHOWRUNNER,    OBJ_TYPE_HAS_STAR,       0, 0, 1.0f, showrunner_anims, NULL, SOUND_OBJ_MRI_SHOOT},
+/* OBJECT_TYPE_SHOWRUNNER */    {"Showrunner",              mat_b_btn_showrunner,   bhvShowrunner,     0,           MODEL_MAKER_SHOWRUNNER,    OBJ_TYPE_HAS_STAR,       0, 60, 1.0f,showrunner_anims, NULL, SOUND_OBJ_MRI_SHOOT},
+/* OBJECT_TYPE_CROWBAR */       {"Crowbar",                 mat_b_btn_pipebar,      bhvCrowbarPower,   0,           MODEL_MAKER_CROWBAR,       0,                       0, 0, 1.0f, NULL, df_power, SOUND_MENU_EXIT_PIPE},
+/* OBJECT_TYPE_MASK    */       {"Bullet Bill Mask",        mat_b_btn_mask,         bhvBMask,          0,           MODEL_MAKER_MASK,          0,                       0, 0, 1.0f, NULL, df_power, SOUND_MENU_EXIT_PIPE},
 };
 
 //behparam2 strings
@@ -1693,6 +1697,7 @@ enum {
     CMM_BUTTON_WOODPLAT,
     CMM_BUTTON_RFBOX,
     CMM_BUTTON_SHOWRUN,
+    CMM_BUTTON_POWER,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1708,6 +1713,7 @@ u8 cmm_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING
 u8 cmm_thwomp_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_GRINDEL};
 u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
 u8 cmm_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY};
+u8 cmm_power_idlist[] = {OBJECT_TYPE_CROWBAR, OBJECT_TYPE_MASK};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_SETTINGS */ {CMM_PM_OBJ,  TRUE,  2, &cmm_settings_idlist,    "Options"},
@@ -1788,13 +1794,14 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_BREAKABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_NORMAL, NULL},
 /* CMM_BUTTON_THROWABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_SMALL, NULL},
 /* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},
-/* CMM_BUTTON_DIAMOND */ {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
+/* CMM_BUTTON_DIAMOND */  {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
 /* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 2, cmm_npc_idlist, "NPC"},
-/* CMM_BUTTON_BUTTON */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, &txt_onoff},
-/* CMM_BUTTON_BLOCK */  {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
-/* CMM_BUTTON_WOODPLAT */{CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_WOODPLAT, &txt_woodplat},
-/* CMM_BUTTON_RFBOX */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
-/* CMM_BUTTON_SHOWRUN */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
+/* CMM_BUTTON_BUTTON */   {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, &txt_onoff},
+/* CMM_BUTTON_BLOCK */    {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
+/* CMM_BUTTON_WOODPLAT */ {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_WOODPLAT, &txt_woodplat},
+/* CMM_BUTTON_RFBOX */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
+/* CMM_BUTTON_SHOWRUN */  {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
+/* CMM_BUTTON_POWER */    {CMM_PM_OBJ, TRUE, 2, cmm_power_idlist, "Powerup"},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1861,7 +1868,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET, CMM_BUTTON_SHOWRUN,
 
     CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
-    CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, _, _, _, _, _, _,
+    CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, CMM_BUTTON_POWER, _, _, _, _, _,
 };
 
 u8 cmm_toolbox_vanilla[TOOLBOX_SIZE] = {

@@ -394,3 +394,12 @@ void df_woodplat(s32 context) {
         }
     }
 }
+
+void df_power(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) {
+        o->oPosY += 40.0f;
+        o->oFaceAnglePitch = 0x1A00;
+    } else {
+        o->oFaceAngleYaw = 1000 * gGlobalTimer;
+    }
+}

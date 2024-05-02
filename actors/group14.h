@@ -78,4 +78,8 @@ extern const Gfx question_box_dl[];
 
 #include "srspike/geo_header.h"
 
+#include "crowbar3/geo_header.h"
+
+#include "billmask2/geo_header.h"
+
 #endif

@@ -33,7 +33,7 @@ void bullet_bill_fly(struct MarioState *m) {
             m->forwardVel += 4.0f;
             }
         smoke = spawn_object(m->marioObj, MODEL_SMOKE, bhvWhitePuffSmoke);
-        smoke->oPosY += 100.0f;
+        smoke->oPosY = m->marioObj->header.gfx.pos[1] + 100.0f;
     }
 }
 
@@ -786,6 +786,8 @@ u8 fluttertimer;
 s32 act_riding_shell_air(struct MarioState *m) {
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, 0);
 
+    bullet_bill_fly(m);
+
     if (m->IsYoshi) {
         set_mario_animation(m, MARIO_ANIM_SLIDE);
     }
@@ -800,6 +802,7 @@ s32 act_riding_shell_air(struct MarioState *m) {
         case AIR_STEP_LANDED:
             fluttertimer = 0;
             m->vel[1] = 0;
+            bullet_fuel = 60;
             set_mario_action(m, ACT_RIDING_SHELL_GROUND, 1);
             break;
 

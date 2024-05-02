@@ -2470,7 +2470,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
                     case ACT_DOUBLE_JUMP:
                     case ACT_WALL_KICK_AIR:
                         play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gMarioState->marioObj->header.gfx.cameraToObject);
-                        sp1C = spawn_object(o, 0xF0, bhvCrowbarThrow);
+                        sp1C = spawn_object(o, MODEL_MAKER_CROWBAR, bhvCrowbarThrow);
                         sp1C->oForwardVel = 50.0f;
                         sp1C->oPosY += 50.0f;
                         sp1C->oFriction = 1.0f;

@@ -817,5 +817,6 @@ extern const BehaviorScript bhvWoodPlat[];
 extern const BehaviorScript bhvWoodPlatCol[];
 extern const BehaviorScript bhvBreakableBoxRF[];
 extern const BehaviorScript bhvFatPlatCol[];
+extern const BehaviorScript bhvBMask[];
 
 #endif // BEHAVIOR_DATA_H

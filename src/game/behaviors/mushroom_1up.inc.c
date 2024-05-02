@@ -357,6 +357,11 @@ void bhv_crowbar_power_loop() {
             if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
                 play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource);
                 gMarioState->powerup = power;
+
+                gMarioState->flags &= ~MARIO_METAL_CAP;
+                gMarioState->flags &= ~MARIO_VANISH_CAP;
+                gMarioState->flags &= ~MARIO_WING_CAP;
+                gMarioState->RFuel = 0;
             }
         }
         else

@@ -1621,6 +1621,12 @@ u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *o
     if (cmm_lopt_game == CMM_GAME_BTCM) {
         //BEYOND THE CURSED MIRROR INTERACTION
         if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
+            gMarioState->powerup = 0;
+            struct Object * sp1C = cur_obj_nearest_object_with_behavior(bhvCrowbarThrow);
+            if (sp1C) {
+                mark_obj_for_deletion(sp1C);
+            }
+
             m->interactObj = obj;
             obj->oInteractStatus = INT_STATUS_INTERACTED;
 

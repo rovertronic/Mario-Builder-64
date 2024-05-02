@@ -29,3 +29,5 @@
 #include "srball_1/geo.inc.c"
 #include "srball_2/geo.inc.c"
 #include "srspike/geo.inc.c"
+#include "crowbar3/geo.inc.c"
+#include "billmask2/geo.inc.c"

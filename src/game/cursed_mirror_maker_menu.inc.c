@@ -2347,6 +2347,7 @@ s32 draw_cmm_pause_menu(void) {
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     case 3: // badges (btcm only)
+                        if (badge_count == 0) break; // Prevent an infinite loop if this somehow gets selected when hidden
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         cmm_pause_menu_state = 2;
                         //make sure the first unlocked badge is selected

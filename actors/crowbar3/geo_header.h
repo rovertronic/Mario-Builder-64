@@ -1,0 +1,18 @@
+extern const GeoLayout crowbar3_geo[];
+extern Lights1 crowbar3_Pipe2_001_lights;
+extern Lights1 crowbar3_Pipe1_001_lights;
+extern u8 crowbar3_Pipe_ci8[];
+extern u8 crowbar3_Pipe_pal_rgba16[];
+extern u8 crowbar3_Pipe2_ci8[];
+extern u8 crowbar3_Pipe2_pal_rgba16[];
+extern Vtx crowbar3_Cylinder_mesh_layer_1_vtx_cull[8];
+extern Vtx crowbar3_Cylinder_mesh_layer_1_vtx_0[88];
+extern Gfx crowbar3_Cylinder_mesh_layer_1_tri_0[];
+extern Vtx crowbar3_Cylinder_mesh_layer_1_vtx_1[10];
+extern Gfx crowbar3_Cylinder_mesh_layer_1_tri_1[];
+extern Gfx mat_crowbar3_Pipe2_001[];
+extern Gfx mat_revert_crowbar3_Pipe2_001[];
+extern Gfx mat_crowbar3_Pipe1_001[];
+extern Gfx mat_revert_crowbar3_Pipe1_001[];
+extern Gfx crowbar3_Cylinder_mesh_layer_1[];
+extern Gfx crowbar3_material_revert_render_settings[];
