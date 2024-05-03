@@ -193,6 +193,10 @@ void bhv_scuttlebug_loop(void) {
 
     cur_obj_update_floor_and_walls();
 
+    if (is_cur_obj_interact_with_lava(0)) {
+        o->oInteractStatus = (INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED);
+    }
+
     if (o->oSubAction != 0
         && cur_obj_set_hitbox_and_die_if_attacked(hitbox_to_use, SOUND_OBJ_DYING_ENEMY1, o->oScuttlebugHasNoLootCoins)) {
         o->oSubAction = 3;
@@ -1200,6 +1204,10 @@ struct ObjectHitbox sScuttlebugNormalHitbox = {
 
 void bhv_scuttlebug_normal_loop(void) {
     cur_obj_update_floor_and_walls();
+
+    if (is_cur_obj_interact_with_lava(0)) {
+        o->oInteractStatus = (INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED);
+    }
 
     if (o->oSubAction != 0
         && cur_obj_set_hitbox_and_die_if_attacked(&sScuttlebugNormalHitbox, SOUND_OBJ_DYING_ENEMY1, o->oScuttlebugHasNoLootCoins)) {

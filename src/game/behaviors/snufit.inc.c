@@ -198,8 +198,8 @@ void bhv_snufit_balls_loop(void) {
             //! situation that does not trigger those flags (Water?). If found,
             //! this would be a route to hang the game via too many snufit bullets.
             o->oDeathSound = -1;
-            gMarioState->EA_ACTIVE ++;
-            gMarioState->EA_LEFT ++;
+            //gMarioState->EA_ACTIVE ++;
+            //gMarioState->EA_LEFT ++;
             obj_die_if_health_non_positive();
         }
 

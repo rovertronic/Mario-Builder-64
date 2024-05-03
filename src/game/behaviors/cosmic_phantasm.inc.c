@@ -52,11 +52,10 @@ void bhv_cosmic_phantasm(void) {
     vec3f_copy(&previous,&o->oPosVec); //record position before moving step
 
     cur_obj_update_floor_and_walls();
-    if (gMarioState->gCurrMinigame == 0) {
-        cur_obj_move_standard(-78);
-    }else{
-        o->oHomeY = -5000.0f;
-        cur_obj_move_standard(78);
+    cur_obj_move_standard(-78);
+
+    if (is_cur_obj_interact_with_lava(0)) {
+        spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
     }
 
     f32 kept_new_y = o->oPosY; //keeping the new y position, a little scuffed
@@ -142,8 +141,8 @@ void bhv_cosmic_phantasm(void) {
 
             if (o->oTimer == 30) {//die if killed
                 if (o->oHealth < 1) {
-                    gMarioState->EA_ACTIVE --;
-                    gMarioState->EA_LEFT --;
+                    //gMarioState->EA_ACTIVE --;
+                    //gMarioState->EA_LEFT --;
 
                     obj_spawn_loot_yellow_coins(o, 5, 20.0f);
                     spawn_mist_particles_variable(0, 0, 100.0f);
@@ -302,6 +301,9 @@ void showrunner_battle_function(void) {
     struct Surface *ptr;
     cur_obj_update_floor_and_walls();
     cur_obj_move_standard(-30);
+    if (is_cur_obj_interact_with_lava(0)) {
+        spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
+    }
     cur_obj_set_hitbox_radius_and_height(300.0f, 800.0f);
     cur_obj_set_hurtbox_radius_and_height(300.0f, 800.0f);
     o->oInteractType = INTERACT_DAMAGE;

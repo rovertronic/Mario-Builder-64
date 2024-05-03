@@ -198,5 +198,11 @@ void bhv_chuckya_loop(void) {
 
     o->oInteractStatus = INT_STATUS_NONE;
 
+    if (is_cur_obj_interact_with_lava(0)) {
+        obj_mark_for_deletion(o);
+        obj_spawn_loot_yellow_coins(o, 5, 20.0f);
+        spawn_mist_particles_with_sound(SOUND_OBJ_CHUCKYA_DEATH);
+    }
+
     print_debug_bottom_up("md %d", o->oAction);
 }

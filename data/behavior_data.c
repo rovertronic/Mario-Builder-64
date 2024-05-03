@@ -6132,7 +6132,7 @@ const BehaviorScript bhvHammerBro[] = {
     LOAD_ANIMATIONS(oAnimations, Hammerbro_anims),
     ANIMATE(0),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 80, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
-    DROP_TO_FLOOR(),
+    //DROP_TO_FLOOR(),
     SET_FLOAT(oGraphYOffset, 60),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_hammer_bro_loop),

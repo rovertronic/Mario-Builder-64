@@ -431,6 +431,10 @@ void bhv_king_bobomb_loop(void) {
             break;
     }
 
+    if (is_cur_obj_interact_with_lava(0) && o->oAction <= KING_BOBOMB_ACT_DEATH) {
+        o->oAction = KING_BOBOMB_ACT_DEATH;
+    }
+
     o->oInteractStatus = INT_STATUS_NONE;
     curr_obj_random_blink(&o->oKingBobombBlinkTimer);
 }

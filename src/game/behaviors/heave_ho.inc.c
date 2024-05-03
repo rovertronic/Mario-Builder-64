@@ -158,5 +158,10 @@ void bhv_heave_ho_loop(void) {
             break;
     }
 
+    if (is_cur_obj_interact_with_lava(0)) {
+        obj_mark_for_deletion(o);
+        spawn_mist_particles_with_sound(SOUND_OBJ_CHUCKYA_DEATH);
+    }
+
     o->oInteractStatus = INT_STATUS_NONE;
 }

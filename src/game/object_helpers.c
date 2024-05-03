@@ -2045,8 +2045,8 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
                 }
                 spawn_mist_particles();
                 obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-                gMarioState->EA_LEFT --;
-                gMarioState->EA_ACTIVE --;
+                //gMarioState->EA_LEFT --;
+                //gMarioState->EA_ACTIVE --;
                 obj_mark_for_deletion(o);
                 create_sound_spawner(deathSound);
             } else {
@@ -2650,6 +2650,16 @@ void cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
         arbritrary_death_coin_release();
         mark_obj_for_deletion(o);
     }
+}
+
+s32 is_cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && SURFACE_IS_BURNING(floor->type)) {
+        // drag is applied in the object step function
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void cur_obj_interact_with_moving_platform(u8 move_standard_or_object_step) {

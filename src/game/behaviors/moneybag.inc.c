@@ -35,6 +35,10 @@ void bhv_moneybag_init(void) {
 void moneybag_check_mario_collision(void) {
     obj_set_hitbox(o, &sMoneybagHitbox);
 
+    if (is_cur_obj_interact_with_lava(1)) {
+        o->oInteractStatus = (INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED);
+    }
+
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_ATTACKED_MARIO) {
             o->oMoveAngleYaw = o->oAngleToMario + 0x8000;

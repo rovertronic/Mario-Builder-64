@@ -241,18 +241,16 @@ void whomp_on_ground_general(void) {
 
 void whomp_die(void) {
     if (o->oBehParams2ndByte != 0) {
-        if (1) {
-            obj_set_angle(o, 0, 0, 0);
-            cur_obj_hide();
-            cur_obj_become_intangible();
-            spawn_mist_particles_variable(0, 0, 200.0f);
-            spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
-            cur_obj_shake_screen(SHAKE_POS_SMALL);
-            o->oPosY += 100.0f;
-            spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
-            cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
-            o->oAction = 9;
-        }
+        obj_set_angle(o, 0, 0, 0);
+        cur_obj_hide();
+        cur_obj_become_intangible();
+        spawn_mist_particles_variable(0, 0, 200.0f);
+        spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
+        cur_obj_shake_screen(SHAKE_POS_SMALL);
+        o->oPosY += 100.0f;
+        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+        cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
+        o->oAction = 9;
     } else {
         spawn_mist_particles_variable(0, 0, 100.0f);
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
@@ -292,5 +290,9 @@ void bhv_whomp_loop(void) {
             cur_obj_hide_if_mario_far_away_y(1000.0f);
         }
         load_object_collision_model();
+    }
+
+    if (is_cur_obj_interact_with_lava(0) && o->oAction <= 8) {
+        o->oAction = 8;
     }
 }
