@@ -1543,8 +1543,8 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_TOAD */          {"Toad",                    mat_b_btn_toad,         bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 /* OBJECT_TYPE_TUXIE */         {"Tuxie",                   mat_b_btn_tuxie,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 /* OBJECT_TYPE_UKIKI */         {"Ukiki",                   mat_b_btn_ukiki,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
-/* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
-/* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvMoleman,        65,          MODEL_MAKER_MOLEMAN,       OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, moleman3_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvCobie,          0,           MODEL_MAKER_COBIE,          OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f,cobie2_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 };
 
 //behparam2 strings
@@ -1619,6 +1619,14 @@ char *txt_onoff[] = {
 char *txt_woodplat[] = {
     "Normal",
     "Thick"
+};
+
+char *txt_fire_spinner[] = {
+    "Length: 2",
+    "Length: 3",
+    "Length: 4",
+    "Length: 5",
+    "Length: 6",
 };
 
 enum {
@@ -1802,7 +1810,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_FIRE */     {CMM_PM_OBJ,  TRUE,  2, &cmm_flame_idlist,       "Flame"},
 /* CMM_BUTTON_FLAMETHROWER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FLAMETHROWER, NULL},
 /* CMM_BUTTON_FIRE_SPITTER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FIRE_SPITTER, NULL},
-/* CMM_BUTTON_FIRE_SPINNER */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_FIRE_SPINNER, NULL},
+/* CMM_BUTTON_FIRE_SPINNER */{CMM_PM_OBJ, FALSE, 5, OBJECT_TYPE_FIRE_SPINNER, &txt_fire_spinner},
 /* CMM_BUTTON_BREAKABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_NORMAL, NULL},
 /* CMM_BUTTON_THROWABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_SMALL, NULL},
 /* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},

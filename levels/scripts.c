@@ -289,6 +289,8 @@ const LevelScript script_func_cmm_theme_btcm[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_SHOWRUNNER_SPIKE,  srspike_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CROWBAR, crowbar3_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_MASK, billmask2_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_MOLEMAN, moleman3_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_COBIE, cobie2_geo),
     RETURN(),
 };
 

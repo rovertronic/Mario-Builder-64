@@ -4398,24 +4398,24 @@ const BehaviorScript bhvBobombBuddy[] = {
 //     END_LOOP(),
 // };
 
-// const BehaviorScript bhvMoleman[] = {
-//     BEGIN(OBJ_LIST_GENACTOR),
-//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     LOAD_ANIMATIONS(oAnimations, moleman_anims),
-//     SET_INTERACT_TYPE(INTERACT_TEXT),
-//     DROP_TO_FLOOR(),
-//     SET_FLOAT(oGraphYOffset, 65),
-//     SET_HITBOX(/*Radius*/ 100, /*Height*/ 60),
-//     ANIMATE(0),
-//     SET_INT(oBobombBuddyRole, 0),
-//     SET_HOME(),
-//     SET_FLOAT(oDrawingDistance,4000.0f),
-//     CALL_NATIVE(bhv_bobomb_buddy_init),
-//     BEGIN_LOOP(),
-//         SET_INT(oIntangibleTimer, 0),
-//         CALL_NATIVE(bhv_bobomb_buddy_loop),
-//     END_LOOP(),
-// };
+const BehaviorScript bhvMoleman[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_ANIMATIONS(oAnimations, moleman3_anims),
+    SET_INTERACT_TYPE(INTERACT_TEXT),
+    DROP_TO_FLOOR(),
+    SET_FLOAT(oGraphYOffset, 65),
+    SET_HITBOX(/*Radius*/ 100, /*Height*/ 60),
+    ANIMATE(0),
+    SET_INT(oBobombBuddyRole, 0),
+    SET_HOME(),
+    SET_FLOAT(oDrawingDistance,4000.0f),
+    CALL_NATIVE(bhv_bobomb_buddy_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_bobomb_buddy_loop),
+    END_LOOP(),
+};
 
 // const BehaviorScript bhvMoleman2[] = {
 //     BEGIN(OBJ_LIST_GENACTOR),
@@ -4472,25 +4472,25 @@ const BehaviorScript bhvBobombBuddy[] = {
 //     END_LOOP(),
 // };
 
-// const BehaviorScript bhvCobie[] = {
-//     BEGIN(OBJ_LIST_GENACTOR),
-//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     LOAD_ANIMATIONS(oAnimations, cobie_anims),
-//     SET_INTERACT_TYPE(INTERACT_TEXT),
-//     DROP_TO_FLOOR(),
-//     //SET_FLOAT(oGraphYOffset, -60),
-//     SET_HITBOX(/*Radius*/ 130, /*Height*/ 60),
-//     ANIMATE(0),
-//     SET_INT(oBobombBuddyRole, 0),
-//     SET_HOME(),
-//     SET_FLOAT(oDrawingDistance,4000.0f),
-//     CALL_NATIVE(bhv_bobomb_buddy_init),
-//     BEGIN_LOOP(),
-//         SET_INT(oIntangibleTimer, 0),
-//         CALL_NATIVE(bhv_bobomb_buddy_loop),
-//         SET_INT(oAnimState, 0),
-//     END_LOOP(),
-// };
+const BehaviorScript bhvCobie[] = {
+    BEGIN(OBJ_LIST_GENACTOR),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_HOLDABLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    LOAD_ANIMATIONS(oAnimations, cobie2_anims),
+    SET_INTERACT_TYPE(INTERACT_TEXT),
+    DROP_TO_FLOOR(),
+    //SET_FLOAT(oGraphYOffset, -60),
+    SET_HITBOX(/*Radius*/ 130, /*Height*/ 60),
+    ANIMATE(0),
+    SET_INT(oBobombBuddyRole, 0),
+    SET_HOME(),
+    SET_FLOAT(oDrawingDistance,4000.0f),
+    CALL_NATIVE(bhv_bobomb_buddy_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_bobomb_buddy_loop),
+        SET_INT(oAnimState, 0),
+    END_LOOP(),
+};
 
 // const BehaviorScript bhvCobie2[] = {
 //     BEGIN(OBJ_LIST_GENACTOR),

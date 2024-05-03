@@ -82,4 +82,12 @@ extern const Gfx question_box_dl[];
 
 #include "billmask2/geo_header.h"
 
+#include "moleman3/geo_header.h"
+
+
+#include "moleman3/anim_header.h"
+#include "cobie2/geo_header.h"
+
+
+#include "cobie2/anim_header.h"
 #endif

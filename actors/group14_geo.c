@@ -31,3 +31,5 @@
 #include "srspike/geo.inc.c"
 #include "crowbar3/geo.inc.c"
 #include "billmask2/geo.inc.c"
+#include "moleman3/geo.inc.c"
+#include "cobie2/geo.inc.c"
