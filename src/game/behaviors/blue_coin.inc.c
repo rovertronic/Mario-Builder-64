@@ -37,13 +37,6 @@ void bhv_hidden_blue_coin_loop(void) {
             // Become tangible
             cur_obj_enable_rendering();
 
-            // Delete the coin once collected
-            if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-                spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
-                cur_obj_drop_imbued_object(0);
-                obj_mark_for_deletion(o);
-            }
-
             if (gMarioState->blueCoinSwitchTimer == 0) {
                 o->oAction = HIDDEN_BLUE_COIN_ACT_INACTIVE;
             } else if (gMarioState->blueCoinSwitchTimer < 40) {
@@ -53,6 +46,13 @@ void bhv_hidden_blue_coin_loop(void) {
             }
 
             break;
+    }
+
+    // Delete the coin once collected
+    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+        spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
+        cur_obj_drop_imbued_object(0);
+        obj_mark_for_deletion(o);
     }
 
     o->oInteractStatus = INT_STATUS_NONE;
