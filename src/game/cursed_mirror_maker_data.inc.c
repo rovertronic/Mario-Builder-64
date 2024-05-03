@@ -1444,6 +1444,11 @@ enum {
     OBJECT_TYPE_SHOWRUNNER,
     OBJECT_TYPE_CROWBAR,
     OBJECT_TYPE_MASK,
+    OBJECT_TYPE_TOAD,
+    OBJECT_TYPE_TUXIE,
+    OBJECT_TYPE_UKIKI,
+    OBJECT_TYPE_MOLEMAN,
+    OBJECT_TYPE_COBIE,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1535,6 +1540,11 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_SHOWRUNNER */    {"Showrunner",              mat_b_btn_showrunner,   bhvShowrunner,     0,           MODEL_MAKER_SHOWRUNNER,    OBJ_TYPE_HAS_STAR,       0, 60, 1.0f,showrunner_anims, NULL, SOUND_OBJ_MRI_SHOOT},
 /* OBJECT_TYPE_CROWBAR */       {"Crowbar",                 mat_b_btn_pipebar,      bhvCrowbarPower,   0,           MODEL_MAKER_CROWBAR,       0,                       0, 0, 1.0f, NULL, df_power, SOUND_MENU_EXIT_PIPE},
 /* OBJECT_TYPE_MASK    */       {"Bullet Bill Mask",        mat_b_btn_mask,         bhvBMask,          0,           MODEL_MAKER_MASK,          0,                       0, 0, 1.0f, NULL, df_power, SOUND_MENU_EXIT_PIPE},
+/* OBJECT_TYPE_TOAD */          {"Toad",                    mat_b_btn_toad,         bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_TUXIE */         {"Tuxie",                   mat_b_btn_tuxie,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_UKIKI */         {"Ukiki",                   mat_b_btn_ukiki,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
+/* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvBobombBuddy,    0,           MODEL_BOBOMB_BUDDY,        OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, bobomb_anims, NULL, SOUND_OBJ_BOBOMB_BUDDY_TALK},
 };
 
 //behparam2 strings
@@ -1692,6 +1702,7 @@ enum {
     CMM_BUTTON_CRAZY,
     CMM_BUTTON_DIAMOND,
     CMM_BUTTON_NPC,
+    CMM_BUTTON_NPCCM,
     CMM_BUTTON_BUTTON,
     CMM_BUTTON_BLOCK,
     CMM_BUTTON_WOODPLAT,
@@ -1712,7 +1723,8 @@ u8 cmm_boo_idlist[] = {OBJECT_TYPE_BOO, OBJECT_TYPE_BIG_BOO};
 u8 cmm_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING};
 u8 cmm_thwomp_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_GRINDEL};
 u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
-u8 cmm_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY};
+u8 cmm_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_TOAD, OBJECT_TYPE_TUXIE, OBJECT_TYPE_UKIKI};
+u8 cmm_npccm_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_MOLEMAN, OBJECT_TYPE_COBIE};
 u8 cmm_power_idlist[] = {OBJECT_TYPE_CROWBAR, OBJECT_TYPE_MASK};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
@@ -1795,7 +1807,8 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_THROWABLE */{CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_SMALL, NULL},
 /* CMM_BUTTON_CRAZY */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_CRAZY, NULL},
 /* CMM_BUTTON_DIAMOND */  {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
-/* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 2, cmm_npc_idlist, "NPC"},
+/* CMM_BUTTON_NPC */      {CMM_PM_OBJ, TRUE, 5, cmm_npc_idlist, "NPC"},
+/* CMM_BUTTON_NPCCM */    {CMM_PM_OBJ, TRUE, 4, cmm_npccm_idlist, "NPC"},
 /* CMM_BUTTON_BUTTON */   {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, &txt_onoff},
 /* CMM_BUTTON_BLOCK */    {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, &txt_onoff},
 /* CMM_BUTTON_WOODPLAT */ {CMM_PM_OBJ, FALSE, 2, OBJECT_TYPE_WOODPLAT, &txt_woodplat},
@@ -1864,7 +1877,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_STAR, CMM_BUTTON_COIN, CMM_BUTTON_FORMATION, CMM_BUTTON_GCOIN, CMM_BUTTON_RCOIN, CMM_BUTTON_BCOIN, CMM_BUTTON_EXCLA, CMM_BUTTON_HEART, CMM_BUTTON_BADGE,
     CMM_BUTTON_SPINDRIFT,CMM_BUTTON_BLIZZARD,CMM_BUTTON_MONEYBAG,CMM_BUTTON_SKEETER, CMM_BUTTON_POKEY, CMM_BUTTON_REX, CMM_BUTTON_HAMMER_BRO, CMM_BUTTON_PODOBOO, CMM_BUTTON_PHANTASM,
 
-    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_RFBOX, CMM_BUTTON_DIAMOND, CMM_BUTTON_WOODPLAT, CMM_BUTTON_NPC, _,
+    CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_RFBOX, CMM_BUTTON_DIAMOND, CMM_BUTTON_WOODPLAT, CMM_BUTTON_NPCCM, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET, CMM_BUTTON_SHOWRUN,
 
     CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
