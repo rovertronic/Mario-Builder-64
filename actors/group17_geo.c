@@ -23,3 +23,6 @@
 #include "mario_cap/geo.inc.c"
 #include "vanilla_exclamation_box/geo.inc.c"
 #include "koopa_flag/geo.inc.c"
+#include "toad/geo.inc.c"
+#include "penguin/geo.inc.c"
+#include "ukiki/geo.inc.c"

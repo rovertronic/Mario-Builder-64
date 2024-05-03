@@ -6,7 +6,7 @@
 #include "game/segment2.h"
 #include "game/save_file.h"
 #include "puppycamold.h"
-#include "include/text_strings.h"
+//#include "include/text_strings.h"
 #include "engine/surface_collision.h"
 
 // /**

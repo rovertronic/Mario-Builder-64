@@ -341,4 +341,88 @@ extern const Gfx mario_metal_cap_wings_transparent[];
 
 #include "mario2/geo_header.h"
 
+// toad
+extern const GeoLayout toad_geo_000114[];
+extern const GeoLayout toad_geo_00027C[];
+extern const GeoLayout toad_geo[];
+extern const Gfx toad_seg6_dl_06007300[];
+extern const Gfx toad_seg6_dl_06007498[];
+extern const Gfx toad_seg6_dl_060076C0[];
+extern const Gfx toad_seg6_dl_06007710[];
+extern const Gfx toad_seg6_us_dl_06007788[];
+extern const Gfx toad_seg6_dl_06007960[];
+extern const Gfx toad_seg6_dl_06007A48[];
+extern const Gfx toad_seg6_us_dl_06007B00[];
+extern const Gfx toad_seg6_dl_06007D10[];
+extern const Gfx toad_seg6_dl_06007EB0[];
+extern const Gfx toad_seg6_dl_060080C0[];
+extern const Gfx toad_seg6_dl_060081F8[];
+extern const Gfx toad_seg6_dl_060083E8[];
+extern const Gfx toad_seg6_dl_06008520[];
+extern const Gfx toad_seg6_us_dl_06008608[];
+extern const Gfx toad_seg6_dl_06008748[];
+extern const Gfx toad_seg6_dl_06008890[];
+extern const Gfx toad_seg6_dl_06008A90[];
+extern const Gfx toad_seg6_dl_06008BD8[];
+extern const struct Animation *const toad_seg6_anims_0600FB58[];
+
+// penguin
+extern const GeoLayout penguin_geo[];
+extern const Gfx penguin_seg5_sub_dl_eyes_model[];
+extern const Gfx penguin_seg5_sub_dl_beak_model[];
+extern const Gfx penguin_seg5_sub_dl_head_model[];
+extern const Gfx penguin_seg5_sub_dl_head_begin[];
+extern const Gfx penguin_seg5_dl_head[];
+extern const Gfx penguin_seg5_dl_head_eyes_open[];
+extern const Gfx penguin_seg5_dl_head_eyes_half_closed[];
+extern const Gfx penguin_seg5_dl_head_eyes_closed[];
+extern const Gfx penguin_seg5_dl_head_eyes_angry[];
+extern const Gfx penguin_seg5_dl_head_eyes_sad[];
+extern const Gfx penguin_seg5_dl_05007198[];
+extern const Gfx penguin_seg5_dl_050071E8[];
+extern const Gfx penguin_seg5_dl_05007238[];
+extern const Gfx penguin_seg5_dl_050072C8[];
+extern const Gfx penguin_seg5_dl_05007358[];
+extern const Gfx penguin_seg5_dl_05007540[];
+extern const struct Animation *const penguin_seg5_anims_05008B74[];
+extern const Collision penguin_seg5_collision_05008B88[];
+
+extern const GeoLayout ukiki_geo[];
+extern const Gfx ukiki_seg5_dl_0500B040[];
+extern const Gfx ukiki_seg5_dl_0500B1D8[];
+extern const Gfx ukiki_seg5_dl_0500B278[];
+extern const Gfx ukiki_seg5_dl_0500B2B8[];
+extern const Gfx ukiki_seg5_dl_0500B2E8[];
+extern const Gfx ukiki_seg5_dl_0500B310[];
+extern const Gfx ukiki_seg5_dl_0500B660[];
+extern const Gfx ukiki_seg5_dl_0500B7E8[];
+extern const Gfx ukiki_seg5_dl_0500B820[];
+extern const Gfx ukiki_seg5_dl_0500B920[];
+extern const Gfx ukiki_seg5_dl_0500B988[];
+extern const Gfx ukiki_seg5_dl_0500BA90[];
+extern const Gfx ukiki_seg5_dl_0500BB28[];
+extern const Gfx ukiki_seg5_dl_0500BC10[];
+extern const Gfx ukiki_seg5_dl_0500BC78[];
+extern const Gfx ukiki_seg5_dl_0500BDA0[];
+extern const Gfx ukiki_seg5_dl_0500BE38[];
+extern const Gfx ukiki_seg5_dl_0500BF60[];
+extern const Gfx ukiki_seg5_dl_0500BFF8[];
+extern const Gfx ukiki_seg5_dl_0500C120[];
+extern const Gfx ukiki_seg5_dl_0500C1B8[];
+extern const Gfx ukiki_seg5_dl_0500C2D0[];
+extern const Gfx ukiki_seg5_dl_0500C368[];
+extern const Gfx ukiki_seg5_dl_0500C490[];
+extern const Gfx ukiki_seg5_dl_0500C528[];
+extern const Gfx ukiki_seg5_dl_0500C650[];
+extern const Gfx ukiki_seg5_dl_0500C6E8[];
+extern const Gfx ukiki_seg5_dl_0500C800[];
+extern const Gfx ukiki_seg5_dl_0500C898[];
+extern const Gfx ukiki_seg5_dl_0500C9B0[];
+extern const Gfx ukiki_seg5_dl_0500CA48[];
+extern const Gfx ukiki_seg5_dl_0500CF68[];
+extern const Gfx ukiki_seg5_dl_0500CFF0[];
+extern const Gfx ukiki_seg5_dl_0500D078[];
+extern const Gfx ukiki_seg5_dl_0500D108[];
+extern const struct Animation *const ukiki_seg5_anims_05015784[];
+
 #endif

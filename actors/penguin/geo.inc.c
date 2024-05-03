@@ -1,4 +1,5 @@
 // 0x0C000104
+
 const GeoLayout penguin_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_9_VERTS, 0x96, 60),
    GEO_OPEN_NODE(),
@@ -24,7 +25,7 @@ const GeoLayout penguin_geo[] = {
             GEO_CLOSE_NODE(),
             GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 111, -19, NULL),
             GEO_OPEN_NODE(),
-               //GEO_SWITCH_CASE(5, geo_switch_tuxie_mother_eyes),
+               GEO_SWITCH_CASE(5, geo_switch_tuxie_mother_eyes),
                GEO_OPEN_NODE(),
                   GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_head_eyes_open),
                   GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, penguin_seg5_dl_head_eyes_half_closed),

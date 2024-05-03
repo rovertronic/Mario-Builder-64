@@ -47,3 +47,13 @@ UNUSED static const u64 binid_2 = 2;
 #include "dorrie/collision.inc.c"
 UNUSED static const u64 binid_4 = 4;
 **/
+
+#include "toad/model.inc.c"
+#include "toad/anims/data.inc.c"
+#include "toad/anims/table.inc.c"
+#include "penguin/model.inc.c"
+#include "penguin/anims/data.inc.c"
+#include "penguin/anims/table.inc.c"
+#include "ukiki/model.inc.c"
+#include "ukiki/anims/data.inc.c"
+#include "ukiki/anims/table.inc.c"

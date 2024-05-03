@@ -267,6 +267,9 @@ const LevelScript script_func_cmm_theme_vanilla[] = {
     LOAD_MODEL_FROM_GEO(MODEL_V_MARIOS_WING_CAP,         marios_wing_cap_geo),
     LOAD_MODEL_FROM_GEO(MODEL_VEXCLAMATION_BOX,        vexclamation_box_geo),
     LOAD_MODEL_FROM_GEO(MODEL_KOOPA_FLAG,              koopa_flag_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TOAD,              toad_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_TUXIE,             penguin_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_UKIKI, ukiki_geo),
     RETURN(),
 };
 const LevelScript script_func_cmm_theme_btcm[] = {

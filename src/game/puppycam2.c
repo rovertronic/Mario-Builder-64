@@ -13,7 +13,7 @@
 #include "print.h"
 #include "engine/surface_collision.h"
 #include "engine/surface_load.h"
-#include "include/text_strings.h"
+//#include "include/text_strings.h"
 #include "segment2.h"
 #include "ingame_menu.h"
 #include "memory.h"

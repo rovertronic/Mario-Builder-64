@@ -403,3 +403,11 @@ void df_power(s32 context) {
         o->oFaceAngleYaw = 1000 * gGlobalTimer;
     }
 }
+
+void df_toad(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, TOAD_ANIM_WEST_WAVING_BOTH_ARMS);
+} 
+
+void df_ukiki(s32 context) {
+    if (context == CMM_DF_CONTEXT_INIT) super_cum_working(o, UKIKI_ANIM_SCREECH);
+} 
