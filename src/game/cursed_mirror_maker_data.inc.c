@@ -1546,7 +1546,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_UKIKI */         {"Ukiki",                   mat_b_btn_ukiki,        bhvMakerUkiki,     0,           MODEL_MAKER_UKIKI,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, ukiki_seg5_anims_05015784, df_ukiki, SOUND_OBJ_UKIKI_CHATTER_SHORT},
 /* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvMoleman,        65,          MODEL_MAKER_MOLEMAN,       OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, moleman3_anims, NULL, SOUND_ACTION_READ_SIGN},
 /* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvCobie,          0,           MODEL_MAKER_COBIE,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, cobie2_anims, NULL, SOUND_ACTION_READ_SIGN},
-/* OBJECT_TYPE_CONVEYOR */      {"Conveyor",                mat_b_btn_bill,         bhvConveyor,       0,           MODEL_MAKER_CONVEYOR,      0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+/* OBJECT_TYPE_CONVEYOR */      {"Conveyor",                mat_b_btn_conveyor,     bhvConveyor,       0,           MODEL_MAKER_CONVEYOR,      0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 };
 
 //behparam2 strings

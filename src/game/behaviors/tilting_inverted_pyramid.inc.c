@@ -6217,7 +6217,7 @@ void bhv_woodplat(void) {
                 o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
             }
             o->prevObj->prevObj = o;
-            o->oWallHitboxRadius = 49.0f;
+            o->oWallHitboxRadius = 140.0f;
             o->oAction = 1;
             break;
         case 1:

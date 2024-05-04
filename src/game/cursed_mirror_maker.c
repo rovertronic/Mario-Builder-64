@@ -243,7 +243,7 @@ s32 tile_sanity_check(void) {
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
-        cmm_show_error_message("Vertex limit reached! (max 25,000)");
+        cmm_show_error_message("Vertex limit reached! (max 30,000)");
         return FALSE;
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
