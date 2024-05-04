@@ -1825,14 +1825,14 @@ void render_water_plane(void) {
         retroland_filter_off();
         gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index]);
 
-        geo_append_display_list(water_gfx, LAYER_TRANSPARENT_INTER);
+        geo_append_display_list(water_gfx, LAYER_TRANSPARENT);
     }
 }
 
 Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
-        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT_INTER);
+        geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
 
         //this extra append is for the editor tile preview
         if (cmm_mode == CMM_MODE_MAKE) {
