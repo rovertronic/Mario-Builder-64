@@ -1449,6 +1449,7 @@ enum {
     OBJECT_TYPE_UKIKI,
     OBJECT_TYPE_MOLEMAN,
     OBJECT_TYPE_COBIE,
+    OBJECT_TYPE_CONVEYOR,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1545,6 +1546,7 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_UKIKI */         {"Ukiki",                   mat_b_btn_ukiki,        bhvMakerUkiki,     0,           MODEL_MAKER_UKIKI,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, ukiki_seg5_anims_05015784, df_ukiki, SOUND_OBJ_UKIKI_CHATTER_SHORT},
 /* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvMoleman,        65,          MODEL_MAKER_MOLEMAN,       OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, moleman3_anims, NULL, SOUND_ACTION_READ_SIGN},
 /* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvCobie,          0,           MODEL_MAKER_COBIE,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, cobie2_anims, NULL, SOUND_ACTION_READ_SIGN},
+/* OBJECT_TYPE_CONVEYOR */      {"Conveyor",                mat_b_btn_bill,         bhvConveyor,       0,           MODEL_MAKER_CONVEYOR,      0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 };
 
 //behparam2 strings
@@ -1717,6 +1719,7 @@ enum {
     CMM_BUTTON_RFBOX,
     CMM_BUTTON_SHOWRUN,
     CMM_BUTTON_POWER,
+    CMM_BUTTON_CONVEYOR,
 };
 
 u8 cmm_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1823,6 +1826,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_RFBOX */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
 /* CMM_BUTTON_SHOWRUN */  {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
 /* CMM_BUTTON_POWER */    {CMM_PM_OBJ, TRUE, 2, cmm_power_idlist, "Powerup"},
+/* CMM_BUTTON_CONVEYOR */ {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_CONVEYOR, NULL},
 };
 
 u8 cmm_toolbar_defaults[9] = {
@@ -1888,7 +1892,7 @@ u8 cmm_toolbox_btcm[TOOLBOX_SIZE] = {
     CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_RFBOX, CMM_BUTTON_DIAMOND, CMM_BUTTON_WOODPLAT, CMM_BUTTON_NPCCM, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, _, _, CMM_BUTTON_CHICKEN, CMM_BUTTON_CRABLET, CMM_BUTTON_SHOWRUN,
 
-    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
+    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, CMM_BUTTON_CONVEYOR, _, _, _, _, _,
     CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, CMM_BUTTON_POWER, _, _, _, _, _,
 };
 
@@ -1905,7 +1909,7 @@ u8 cmm_toolbox_vanilla[TOOLBOX_SIZE] = {
     CMM_BUTTON_MPLAT, CMM_BUTTON_PURPLE_SWITCH, CMM_BUTTON_TIMED_BOX, CMM_BUTTON_BREAKABLE, CMM_BUTTON_RFBOX, CMM_BUTTON_DIAMOND, CMM_BUTTON_WOODPLAT, CMM_BUTTON_NPC, _,
     CMM_BUTTON_FIRE, CMM_BUTTON_FLAMETHROWER, CMM_BUTTON_FIRE_SPITTER, CMM_BUTTON_FIRE_SPINNER, CMM_BUTTON_BBALL, _, _, _, _,
 
-    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, _, _, _, _, _, _,
+    CMM_BUTTON_NOTEBLOCK, CMM_BUTTON_BUTTON, CMM_BUTTON_BLOCK, CMM_BUTTON_CONVEYOR, _, _, _, _, _,
     CMM_BUTTON_SPAWN, CMM_BUTTON_THROWABLE, CMM_BUTTON_CRAZY, CMM_BUTTON_MINE, _, _, _, _, _,
 };
 

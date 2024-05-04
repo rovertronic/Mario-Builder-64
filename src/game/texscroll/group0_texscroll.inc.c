@@ -23,6 +23,7 @@ void scroll_textures_group14() {
 	scroll_actor_geo_showrunner();
 }
 
+#include "actors/conveyor/texscroll.inc.c"
 void scroll_textures_group0() {
 	
 	
@@ -54,4 +55,5 @@ void scroll_textures_group0() {
 	scroll_actor_geo_mario();
 	scroll_actor_dl_maker();
 	scroll_actor_geo_badge();
+	scroll_actor_geo_conveyor();
 }

@@ -71,6 +71,11 @@ void update_mario_platform(void) {
             } else {
                 gMarioPlatform = NULL;
                 gMarioObject->platform = NULL;
+
+				if (floor->object2 != NULL) {
+					gMarioPlatform = floor->object2;
+					gMarioObject->platform = floor->object2;
+				}
             }
             break;
     }

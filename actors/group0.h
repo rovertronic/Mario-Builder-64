@@ -779,4 +779,8 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "fatplat/collision_header.h"
 
+#include "conveyor/collision_header.h"
+
+#include "conveyor/geo_header.h"
+
 #endif

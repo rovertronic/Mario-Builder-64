@@ -357,13 +357,14 @@ struct Normal {
 };
 
 struct Surface {
-    /*0x00*/ TerrainData type;
-    /*0x06*/ s16 lowerY;
-    /*0x08*/ s16 upperY;
-    /*0x0A*/ Vec3t vertex1;
-    /*0x10*/ Vec3t vertex2;
-    /*0x16*/ Vec3t vertex3;
-    /*0x2C*/ struct Object *object;
+    TerrainData type;
+    s16 lowerY;
+    s16 upperY;
+    Vec3t vertex1;
+    Vec3t vertex2;
+    Vec3t vertex3;
+    struct Object *object;
+    struct Object *object2;
 };
 
 #define PUNCH_STATE_TIMER_MASK          0b00111111

@@ -822,5 +822,6 @@ extern const BehaviorScript bhvCrushHandler[];
 extern const BehaviorScript bhvMakerToad[];
 extern const BehaviorScript bhvMakerTuxie[];
 extern const BehaviorScript bhvMakerUkiki[];
+extern const BehaviorScript bhvConveyor[];
 
 #endif // BEHAVIOR_DATA_H

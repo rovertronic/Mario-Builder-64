@@ -7491,9 +7491,9 @@ const BehaviorScript bhvNoteblock[] = {
     SET_FLOAT(oCollisionDistance, 1000),
     SET_HOME(),
     SCALE(0,128),
+    CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(noteblock_function),
-        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
@@ -9495,4 +9495,12 @@ const BehaviorScript bhvMakerUkiki[] = {
         SET_INT(oIntangibleTimer, 0),
         CALL_NATIVE(bhv_bobomb_buddy_loop),
     END_LOOP(),
+};
+
+const BehaviorScript bhvConveyor[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    LOAD_COLLISION_DATA(conveyor_collision),
+    CALL_NATIVE(load_object_static_model),
+    BREAK(),
 };

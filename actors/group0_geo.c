@@ -86,3 +86,4 @@
 #include "woodplat/geo.inc.c"
 #include "rfbox/geo.inc.c"
 #include "fatplat/geo.inc.c"
+#include "conveyor/geo.inc.c"

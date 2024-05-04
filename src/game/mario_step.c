@@ -259,17 +259,15 @@ void stop_and_set_height_to_floor(struct MarioState *m) {
 }
 
 void apply_conveyor(struct MarioState *m) {
-    s16 currentAngle;
-    f32 currentSpeed;
 
-    if (m->floor->type == SURFACE_FLOWING_WATER) {
-        //currentAngle = m->floor->force << 8;
-        //currentSpeed = (f32)(m->floor->force >> 8);
+    if (m->floor->type == SURFACE_CONVEYOR) {
+        s16 currentAngle = m->floor->object2->oFaceAngleYaw;
+        f32 currentSpeed = 10.76f;
 
-        //sMarioAmountDisplaced[0] = currentSpeed * sins(currentAngle);
-        //sMarioAmountDisplaced[2] = currentSpeed * coss(currentAngle);
-        sShouldApplyInertia = TRUE;
-        sInertiaFirstFrame = TRUE;
+        gMarioState->pos[0] += currentSpeed * sins(currentAngle);
+        gMarioState->pos[2] += currentSpeed * coss(currentAngle);
+        //sShouldApplyInertia = TRUE;
+        //sInertiaFirstFrame = TRUE;
     }
 }
 

@@ -79,6 +79,7 @@ struct Surface *alloc_surface(u32 dynamic) {
 
     surface->type = SURFACE_DEFAULT;
     surface->object = NULL;
+    surface->object2 = NULL;
 
     return surface;
 }
@@ -567,6 +568,7 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
 
         if (surface != NULL) {
             if (dynamic) surface->object = o;
+            surface->object2 = o;
             surface->type = surfaceType;
 
             add_surface(surface, dynamic);

@@ -2560,7 +2560,7 @@ void arbritrary_death_coin_release(void) {
 s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step) {
     struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
 
-    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvNoteblock)) {
+    if ((floor) && (floor->object2 != NULL) && obj_has_behavior(floor->object2,bhvNoteblock)) {
         return TRUE; // adachi true
     }
     return FALSE; // lightning gif
@@ -2569,8 +2569,8 @@ s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step) {
 void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
     struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
 
-    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvNoteblock)) {
-        struct Object * noteblock_interacting = floor->object;
+    if ((floor) && (floor->object2 != NULL) && obj_has_behavior(floor->object2,bhvNoteblock)) {
+        struct Object * noteblock_interacting = floor->object2;
         o->oVelY = 95.0f;
 
         noteblock_interacting->oTimer = 0;
@@ -2674,12 +2674,22 @@ void cur_obj_interact_with_moving_platform(u8 move_standard_or_object_step) {
     }
 }
 
+void cur_obj_interact_with_conveyor(u8 move_standard_or_object_step) {
+    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
+
+    if ((floor) && (floor->object2 != NULL) && obj_has_behavior(floor->object2,bhvConveyor)) {
+        struct Object * conveyor_interacting = floor->object2;
+        o->oPosX += sins(conveyor_interacting->oFaceAngleYaw) * 10.76f;
+        o->oPosZ += coss(conveyor_interacting->oFaceAngleYaw) * 10.76f;
+    }
+}
+
 void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_noteblock(move_standard_or_object_step);
     cur_obj_interact_with_floor_switch(move_standard_or_object_step);
     cur_obj_interact_with_quicksand(move_standard_or_object_step);
     cur_obj_interact_with_moving_platform(move_standard_or_object_step);
-    //cur_obj_interact_with_lava(move_standard_or_object_step); saving this to deal with later
+    cur_obj_interact_with_conveyor(move_standard_or_object_step);
 }
 
 struct Object * physics_object_list_head = NULL;
