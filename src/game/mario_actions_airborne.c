@@ -736,11 +736,27 @@ s32 act_wall_stick(struct MarioState *m) {
         } else {
             if (surf->object != NULL) {
                 apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
-            }    
+            }
+            if (surf->type == SURFACE_CONVEYOR) {
+                s16 angle = abs_angle_diff(obj_angle_to_object(surf->object2,m->marioObj),surf->object2->oFaceAngleYaw);
+                if (angle > 0x4000) {
+                    m->pos[1] += 10.76f;
+                } else {
+                    m->pos[1] -= 10.76f;
+                }
+            }
         }
     } else {
         if (surf->object != NULL) {
             apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
+        }
+        if (surf->type == SURFACE_CONVEYOR) {
+            s16 angle = abs_angle_diff(obj_angle_to_object(surf->object2,m->marioObj),surf->object2->oFaceAngleYaw);
+            if (angle > 0x4000) {
+                m->pos[1] += 10.76f;
+            } else {
+                m->pos[1] -= 10.76f;
+            }
         }
     }
 

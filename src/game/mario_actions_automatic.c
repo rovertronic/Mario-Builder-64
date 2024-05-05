@@ -617,6 +617,8 @@ s32 act_ledge_grab(struct MarioState *m) {
     stop_and_set_height_to_floor(m);
     set_mario_animation(m, MARIO_ANIM_IDLE_ON_LEDGE);
 
+    apply_conveyor(m);
+
     return FALSE;
 }
 
