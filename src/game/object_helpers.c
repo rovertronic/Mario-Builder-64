@@ -2708,6 +2708,15 @@ void cur_obj_interact_with_conveyor(u8 move_standard_or_object_step) {
         struct Object * conveyor_interacting = floor->object2;
         o->oPosX += sins(conveyor_interacting->oFaceAngleYaw) * 10.76f;
         o->oPosZ += coss(conveyor_interacting->oFaceAngleYaw) * 10.76f;
+
+        // cursed implementation to get boxes to interact nicely on conveyor belts
+        if (cur_obj_has_behavior(bhvWoodPlat)) {
+            struct Object * woodplat_neighbor = cur_obj_nearest_object_with_behavior(bhvWoodPlat);
+            if (woodplat_neighbor && woodplat_neighbor->oFloor && woodplat_neighbor->oFloor->type == SURFACE_CONVEYOR && dist_between_objects(o,woodplat_neighbor) < 265.0f) {
+                o->oPosX -= sins(conveyor_interacting->oFaceAngleYaw) * 10.76f;
+                o->oPosZ -= coss(conveyor_interacting->oFaceAngleYaw) * 10.76f;
+            }
+        }
     }
 }
 
