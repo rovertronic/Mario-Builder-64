@@ -455,6 +455,20 @@ CameraTransition sModeTransitions[] = {
 extern u8 sDanceCutsceneIndexTable[][4];
 extern u8 sZoomOutAreaMasks[];
 
+u16 u16AngleRoundToEighth(u16 angle) {
+    // Calculate the remainder when divided by an eighth
+    u16 remainder = angle % 0x2000;
+
+    // Round to the nearest eighth
+    if (remainder >= 0x1000) {
+        angle += 0x2000 - remainder;
+    } else {
+        angle -= remainder;
+    }
+
+    return angle;
+}
+
 /**
  * Starts a camera shake triggered by an interaction
  */
@@ -1107,20 +1121,6 @@ s32 snap_to_45_degrees(s16 angle) {
     return angle;
 }
 
-u16 u16AngleRoundToEighth(u16 angle) {
-    // Calculate the remainder when divided by an eighth
-    u16 remainder = angle % 0x2000;
-
-    // Round to the nearest eighth
-    if (remainder >= 0x1000) {
-        angle += 0x2000 - remainder;
-    } else {
-        angle -= remainder;
-    }
-
-    return angle;
-}
-
 /**
  * A mode that only has 8 camera angles, 45 degrees apart
  */
@@ -1132,7 +1132,6 @@ void mode_8_directions_camera(struct Camera *c) {
     Vec3f origin;
     Vec3f thick;
     Vec3f hitpos;
-    Vec3f hitpos_300u;
     Vec3f camera_looknormal;
 
     u8 cam_col_level = FALSE;
@@ -1191,45 +1190,29 @@ void mode_8_directions_camera(struct Camera *c) {
         // and push the camera inward if Mario is close to the wall.
 
         vec3f_copy(origin,gMarioState->pos);
-        origin[1] += 300.0f;
+        origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
-        find_surface_on_ray(origin, camdir, &surf, &hitpos_300u, RAYCAST_FIND_WALL);
+
+        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+
+        Vec3f camera_hit_diff;
+        vec3f_diff(camera_hit_diff,origin,hitpos);
+        f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
 
         if (surf) {
-            vec3f_copy(origin,gMarioState->pos);
-            origin[1] += 50.0f;
-            vec3f_diff(camdir,c->pos,origin);
+            f32 thickMul = 35.0f;
 
-            find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
-
-            if (!((hitpos_300u[0] == hitpos[0])&&(hitpos_300u[2] == hitpos[2]))) {
-                // The 300+ unit raycast and the 50+ unit raycast do not hit the same wall.
-                // This happens if Mario is standing behind a 300 unit tall wall, and the initial raycast
-                // still hits a wall behind Mario. Without this check, this causes the raycast to
-                // teleport really close behind the 300 unit tall wall. Override the 50+ unit raycast
-                // hit position to be the 300+ unit hit position instead.
-
-                vec3f_copy(hitpos,hitpos_300u);
+            if (hit_to_mario_dist < 300.0f) {
+                thickMul -= 300.0f-hit_to_mario_dist;
             }
 
-            Vec3f camera_hit_diff;
-            vec3f_diff(camera_hit_diff,origin,hitpos);
-            f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
-
-            if (surf) {
-                f32 thickMul = 35.0f;
-
-                if (hit_to_mario_dist < 300.0f) {
-                    thickMul -= 300.0f-hit_to_mario_dist;
-                }
-
-                thick[0] = camera_looknormal[0] * thickMul;
-                thick[1] = camera_looknormal[1] * thickMul;
-                thick[2] = camera_looknormal[2] * thickMul;
-                vec3f_add(hitpos,thick);
-                vec3f_copy(c->pos,hitpos);
-            }
+            thick[0] = camera_looknormal[0] * thickMul;
+            thick[1] = camera_looknormal[1] * thickMul;
+            thick[2] = camera_looknormal[2] * thickMul;
+            vec3f_add(hitpos,thick);
+            vec3f_copy(c->pos,hitpos);
         }
+        
 
         raycast_mode_camera = FALSE;
     }
@@ -2830,12 +2813,12 @@ void set_camera_mode(struct Camera *c, s16 mode, s16 frames) {
         vec3f_copy(end->pos, c->pos);
         vec3f_sub(end->pos, sMarioCamState->pos);
 
-#ifndef ENABLE_VANILLA_CAM_PROCESSING
+//#ifndef ENABLE_VANILLA_CAM_PROCESSING
         if (mode == CAMERA_MODE_8_DIRECTIONS) {
             // Helps transition from any camera mode to 8dir
             s8DirModeYawOffset = snap_to_45_degrees(c->yaw);
         }
-#endif
+//#endif
 
         sAreaYaw = sModeTransitions[sModeInfo.newMode](c, end->focus, end->pos);
 
@@ -3028,6 +3011,7 @@ void update_camera(struct Camera *c) {
                      set_cam_angle(CAM_ANGLE_MARIO);
                 } else {
                      set_cam_angle(CAM_ANGLE_LAKITU);
+                     s8DirModeYawOffset = snap_to_45_degrees(c->yaw);
                 }
             }
         }
@@ -3292,8 +3276,8 @@ void reset_camera(struct Camera *c) {
     sZeroZoomDist = 0.f;
     sBehindMarioSoundTimer = 0;
     sCSideButtonYaw = 0;
-    s8DirModeBaseYaw = 8192*((u16)(gMarioState->faceAngle[1]/8192))+0x8000;
-    s8DirModeYawOffset = 0;
+    s8DirModeBaseYaw = 0;
+    s8DirModeYawOffset = 8192*((u16)(gMarioState->faceAngle[1]/8192))+0x8000;
     c->doorStatus = DOOR_DEFAULT;
     sMarioCamState->headRotation[0] = 0;
     sMarioCamState->headRotation[1] = 0;
@@ -5071,7 +5055,7 @@ u8 get_cutscene_from_mario_status(struct Camera *c) {
                 cutscene = determine_dance_cutscene(c);
                 break;
             case ACT_STAR_DANCE_WATER:
-                cutscene = determine_dance_cutscene(c);
+                cutscene = CUTSCENE_DANCE_DEFAULT;
                 break;
             case ACT_STAR_DANCE_NO_EXIT:
                 cutscene = CUTSCENE_DANCE_DEFAULT;
