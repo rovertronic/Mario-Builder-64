@@ -14,7 +14,7 @@
 /**
  * The size of the dynamic surface pool, in bytes.
  */
-#define DYNAMIC_SURFACE_POOL_SIZE 0xC000
+#define DYNAMIC_SURFACE_POOL_SIZE 0x18000
 
 struct SurfaceNode {
     struct SurfaceNode *next;

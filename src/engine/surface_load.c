@@ -604,7 +604,7 @@ static TerrainData sVertexData[600];
  */
 extern u8 collision_load_total;
 void load_object_collision_model(void) {
-    if (collision_load_total >= 40) {
+    if (collision_load_total >= 80) {
         return;
     }
 
@@ -644,6 +644,10 @@ void load_object_collision_model(void) {
         && !(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)
     ) {
         collision_load_total++;
+        if (cur_obj_has_behavior(bhvOnOffButton)) {
+            collision_load_total += 2;
+        }
+
         collisionData++;
         transform_object_vertices(&collisionData, sVertexData);
 
