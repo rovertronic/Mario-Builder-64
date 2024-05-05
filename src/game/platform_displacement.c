@@ -75,6 +75,7 @@ void update_mario_platform(void) {
 				if (floor->object2 != NULL) {
 					gMarioPlatform = floor->object2;
 					gMarioObject->platform = floor->object2;
+					sMarioAmountDisplaced[1] = 0.0f;
 				}
             }
             break;
