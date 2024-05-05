@@ -242,11 +242,11 @@ s32 tile_sanity_check(void) {
         cmm_show_error_message("Tile limit reached! (max 10,000)");
         return FALSE;
     }
-    if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
+    if (cmm_vtx_total >= CMM_VTX_SIZE - 100) {
         cmm_show_error_message("Vertex limit reached! (max 30,000)");
         return FALSE;
     }
-    if (cmm_gfx_total >= CMM_GFX_SIZE - 30) {
+    if (cmm_gfx_total >= CMM_GFX_SIZE - 100) {
         cmm_show_error_message("Graphics pool is full!");
         return FALSE;
     }
@@ -1746,6 +1746,10 @@ void generate_terrain_gfx(void) {
 
     cmm_vtx_total = cmm_curr_vtx - cmm_terrain_vtx;
     cmm_gfx_total = (cmm_curr_gfx + cmm_gfx_index) - cmm_terrain_gfx;
+
+    if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
+        cmm_show_error_message("Create any more verts from deletion and you're cooked.");
+    }
 };
 
 Gfx preview_gfx[50];
