@@ -36,6 +36,7 @@ void whomp_init(void) {
             }
         } else if (1) {
             o->oAction = 2;
+            play_cmm_extra_music(2);
         }
     } else if (o->oDistanceToMario < 500.0f) {
         o->oAction = 1;
@@ -112,7 +113,7 @@ void king_whomp_chase(void) {
 
     if (mario_is_far_below_object(1000.0f)) {
         o->oAction = 0;
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        stop_cmm_extra_music(2);
     }
 }
 
@@ -248,7 +249,7 @@ void whomp_die(void) {
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         o->oPosY += 100.0f;
-        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+        cur_obj_drop_imbued_object(400.0f);
         cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
         o->oAction = 9;
     } else {
@@ -262,7 +263,7 @@ void whomp_die(void) {
 
 void king_whomp_stop_music(void) {
     if (o->oTimer == 60) {
-        stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
+        stop_cmm_extra_music(2);
     }
 }
 

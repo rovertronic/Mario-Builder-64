@@ -667,6 +667,7 @@ static s32 bhv_cmd_load_collision_data(void) {
 // Usage: SET_HOME()
 static s32 bhv_cmd_set_home(void) {
     vec3f_copy(&o->oHomeVec, &o->oPosVec);
+    vec3f_copy(&o->oImbueVec, &o->oPosVec);
 
     gCurBhvCommand++;
     return BHV_PROC_CONTINUE;

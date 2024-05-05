@@ -1,0 +1,15 @@
+extern const GeoLayout imbue_geo[];
+extern Vtx imbue_Plane_003_mesh_layer_7_vtx_0[89];
+extern Gfx imbue_Plane_003_mesh_layer_7_tri_0[];
+extern Vtx imbue_Plane_003_mesh_layer_7_vtx_1[8];
+extern Gfx imbue_Plane_003_mesh_layer_7_tri_1[];
+extern Vtx imbue_Plane_003_mesh_layer_7_vtx_2[56];
+extern Gfx imbue_Plane_003_mesh_layer_7_tri_2[];
+extern Gfx mat_imbue_noz_red[];
+extern Gfx mat_revert_imbue_noz_red[];
+extern Gfx mat_imbue_noz_white[];
+extern Gfx mat_revert_imbue_noz_white[];
+extern Gfx mat_imbue_noz_black[];
+extern Gfx mat_revert_imbue_noz_black[];
+extern Gfx imbue_Plane_003_mesh_layer_7[];
+extern Gfx imbue_material_revert_render_settings[];

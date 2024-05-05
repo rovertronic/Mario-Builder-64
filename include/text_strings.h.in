@@ -339,7 +339,7 @@
 #define BADGE1D  _("Reduces lava damage by 2 at the cost of 1 Mana")
 #define BADGE2D  _("Fall Damage is negated at the cost of 1 Mana")
 #define BADGE3D  _("Damage to you is absorbed by Mana")
-#define BADGE4D  _("Enemies take 2x damage from you")
+#define BADGE4D  _("Enemies and bosses take 2x damage from you")
 #define BADGE5D  _("Lets you breathe underwater")
 #define BADGE6D  _("Lets you swim faster underwater")
 #define BADGE7D  _("Slowly regenerates HP at cost of Mana")

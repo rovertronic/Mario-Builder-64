@@ -87,3 +87,5 @@
 #include "rfbox/geo.inc.c"
 #include "fatplat/geo.inc.c"
 #include "conveyor/geo.inc.c"
+#include "imbue/geo.inc.c"
+#include "imbues/geo.inc.c"

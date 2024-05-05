@@ -783,4 +783,8 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "conveyor/geo_header.h"
 
+#include "imbue/geo_header.h"
+
+#include "imbues/geo_header.h"
+
 #endif

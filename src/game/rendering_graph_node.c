@@ -728,7 +728,7 @@ void Get_Screen_Coords(void) {
         vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
 
         // Transform Mario's coordinates into view frustrum
-        mtxf_mul_vec3s(gMatStack[gMatStackIndex], marioPos3s);
+        mtxf_mul_vec3s(gCameraTransform, marioPos3s);
 
         // Perspective divide
         if (marioPos3s[2] != 0) {
@@ -750,6 +750,7 @@ void Get_Screen_Coords(void) {
 
         gMarioState->ScreenPosX = screenX;
         gMarioState->ScreenPosY = screenY;
+
     }
 
 static void make_roll_matrix(Mtx *mtx, s16 angle) {
@@ -801,6 +802,7 @@ void geo_process_camera(struct GraphNodeCamera *node) {
 
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
+        Get_Screen_Coords();
     }
     make_roll_matrix(rollMtx, node->rollScreen);
 

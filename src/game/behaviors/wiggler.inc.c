@@ -358,7 +358,7 @@ static void wiggler_act_shrink(void) {
 
         // 4 is the default scale, so shrink to 1/4 of regular size
         if (approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.1f)) {
-            spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+            cur_obj_drop_imbued_object(400.0f);
             o->oAction = WIGGLER_ACT_FALL_THROUGH_FLOOR;
         }
 
@@ -429,7 +429,7 @@ void bhv_wiggler_update(void) {
                 if ((o->oFloorHeight + 1.f > o->oPosY)) {
                     if ((o->oFloorType == SURFACE_DEATH_PLANE) && (o->oHealth > 1)) {
                         // Drop star if fell on the death floor
-                        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+                        cur_obj_drop_imbued_object(400.0f);
                         o->oHealth = 1;
                         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                     }

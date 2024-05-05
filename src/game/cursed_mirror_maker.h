@@ -173,7 +173,8 @@ struct cmm_obj {
     u8 z;
     u8 type;
     u8 rot;
-    u8 pad[2];
+    u8 imbue;
+    u8 pad;
 };
 
 struct cmm_grid_obj {
@@ -191,13 +192,14 @@ typedef void (*DisplayFunc)(s32);
 #define OBJ_TYPE_TRAJECTORY     (1 << 1)
 #define OBJ_TYPE_HAS_STAR       (1 << 2)
 #define OBJ_TYPE_HAS_DIALOG     (1 << 3)
+#define OBJ_TYPE_IMBUABLE       (1 << 4)
 struct cmm_object_info {
     char *name;
     Gfx *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u16 flags:4;
+    u16 flags:5;
     u16 numCoins:4;
     u16 numExtraObjects:3;
     f32 scale;
@@ -433,6 +435,17 @@ struct cmm_dialog_subject {
     char * name;
     struct cmm_dialog_topic * topic_list;
     u8 topic_list_size;
+};
+
+enum imbue {
+    IMBUE_NONE,
+    IMBUE_STAR,
+    IMBUE_ONE_COIN,
+    IMBUE_FIVE_COINS,
+    IMBUE_EIGHT_COINS,
+    IMBUE_BLUE_COIN,
+    IMBUE_RED_SWITCH,
+    IMBUE_BLUE_SWITCH,
 };
 
 #endif

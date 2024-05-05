@@ -188,6 +188,19 @@ struct ExclamationBoxContents *cmm_exclamation_box_contents;
 #include "src/game/cursed_mirror_maker_df.inc.c"
 #include "src/game/cursed_mirror_maker_data.inc.c"
 
+s32 cmm_count_stars(void) {
+    s32 numStars = 0;
+    for (s32 i = 0; i < cmm_object_count; i++) {
+        if (cmm_object_type_list[cmm_object_data[i].type].flags & OBJ_TYPE_HAS_STAR) {
+            numStars++;
+        }
+        if (cmm_object_data[i].imbue == IMBUE_STAR) {
+            numStars++;
+        }
+    }
+    return numStars;
+}
+
 void bhv_preview_object_init(void) {
     if (!o->oPreviewObjDisplayFunc) return;
     ((DisplayFunc)o->oPreviewObjDisplayFunc)(CMM_DF_CONTEXT_INIT);
@@ -282,12 +295,7 @@ s32 object_sanity_check(void) {
 
     if (info->flags & OBJ_TYPE_HAS_STAR) {
         // Count stars
-        s32 numStars = 0;
-        for (s32 i = 0; i < cmm_object_count; i++) {
-            if (cmm_object_type_list[cmm_object_data[i].type].flags & OBJ_TYPE_HAS_STAR) {
-                numStars++;
-            }
-        }
+        s32 numStars = cmm_count_stars();
         if (numStars >= 63) {
             cmm_show_error_message("Star limit reached! (max 63)");
             return FALSE;
@@ -2180,6 +2188,20 @@ void generate_object_preview(void) {
         if (cmm_object_data[i].type == OBJECT_TYPE_COIN_FORMATION) {
             totalCoins += extraObjs;
         }
+
+        if ((cmm_object_data[i].imbue != IMBUE_NONE)&&(!cmm_prepare_level_screenshot)) {
+            u16 imbue_marker_model = MODEL_MAKER_IMBUE;
+            if (cmm_object_data[i].imbue == IMBUE_STAR) {
+                imbue_marker_model = MODEL_MAKER_IMBUE_STAR;
+            }
+            struct Object * imbue_marker = spawn_object(o,imbue_marker_model,bhvPreviewObject);
+            imbue_marker->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+            imbue_marker->oPosX = GRID_TO_POS(pos[0]);
+            imbue_marker->oPosY = GRID_TO_POS(pos[1]);
+            imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
+            cmm_object_limit_count ++;
+        }
+
         cmm_object_limit_count += extraObjs + 1;
     }
     if (doubleCoins) totalCoins *= 2;
@@ -2214,9 +2236,10 @@ void generate_objects_to_level(void) {
         obj->oMoveAngleYaw = cmm_object_data[i].rot*0x4000;
         obj->oBehParams2ndByte = param;
         obj->oBehParams = (param << 16);
+        obj->oImbue = cmm_object_data[i].imbue;
 
         //assign star ids
-        if (info->flags & OBJ_TYPE_HAS_STAR) {
+        if ((info->flags & OBJ_TYPE_HAS_STAR)||(cmm_object_data[i].imbue == IMBUE_STAR)) {
             if (cmm_play_stars_max < 63) {
                 obj->oBehParams = ((cmm_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 cmm_play_stars_max++;
@@ -2421,6 +2444,7 @@ void place_object(s8 pos[3]) {
     cmm_object_data[cmm_object_count].z = pos[2];
     cmm_object_data[cmm_object_count].type = cmm_id_selection;
     cmm_object_data[cmm_object_count].rot = cmm_rot_selection;
+    cmm_object_data[cmm_object_count].imbue = IMBUE_NONE;
 
     if (cmm_object_type_list[cmm_id_selection].flags & OBJ_TYPE_TRAJECTORY) {
         cmm_trajectory_to_edit = cmm_trajectories_used;
@@ -2479,6 +2503,44 @@ u8 joystick_direction(void) {
     return 0;
 }
 
+void imbue_action(void) {
+    if (cmm_place_mode == CMM_PM_OBJ) {
+        for (u32 i=0;i<cmm_object_count;i++) {
+            if ((cmm_object_type_list[cmm_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(cmm_object_data[i].x == cmm_cursor_pos[0])&&(cmm_object_data[i].y == cmm_cursor_pos[1])&&(cmm_object_data[i].z == cmm_cursor_pos[2])&&(cmm_object_data[i].imbue == IMBUE_NONE)) {
+                u8 imbue_success = FALSE;
+
+                switch(cmm_id_selection) {
+                    case OBJECT_TYPE_STAR:
+                        cmm_object_data[i].imbue = IMBUE_STAR;
+                        imbue_success = TRUE;
+                        break;
+                    case OBJECT_TYPE_BLUE_COIN:
+                        cmm_object_data[i].imbue = IMBUE_BLUE_COIN;
+                        imbue_success = TRUE;
+                        break;
+                    case OBJECT_TYPE_COIN:
+                        cmm_object_data[i].imbue = IMBUE_ONE_COIN;
+                        imbue_success = TRUE;
+                        break;
+                    case OBJECT_TYPE_BUTTON:
+                        cmm_object_data[i].imbue = IMBUE_RED_SWITCH;
+                        if (cmm_param_selection == 1) {
+                            cmm_object_data[i].imbue = IMBUE_BLUE_SWITCH;
+                        }
+                        imbue_success = TRUE;
+                        break;
+                }
+
+                if (imbue_success) {
+                    play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
+                    generate_object_preview();
+                }
+                break;
+            }
+        }
+    }
+}
+
 void place_thing_action(void) {
      if (cmm_place_mode == CMM_PM_WATER) {
         if (tile_sanity_check()) {
@@ -2504,6 +2566,8 @@ void place_thing_action(void) {
                 generate_object_preview();
             }
         }
+    } else {
+        imbue_action();
     }
 }
 
@@ -3137,6 +3201,7 @@ void freecam_camera_main(void) {
             cmm_camera_fov = 45.0f;
             cmm_prepare_level_screenshot = FALSE;
             vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
+            generate_object_preview();
         }
         return;
     }
@@ -3194,6 +3259,7 @@ void freecam_camera_main(void) {
         cmm_camera_fov = 45.0f;
         cmm_prepare_level_screenshot = FALSE;
         vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
+        generate_object_preview();
     }
 
     // transform camera
@@ -3340,6 +3406,7 @@ void sb_loop(void) {
                             case 1: // screenshot
                                 if (mount_success == FR_OK) {
                                     freecam_camera_init();
+                                    generate_object_preview();
                                     cmm_menu_state = CMM_MAKE_SCREENSHOT;
                                     play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
                                 } else {

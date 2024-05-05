@@ -457,6 +457,7 @@ void bowser_reset_fallen_off_stage(void) {
 void bowser_act_idle(void) {
     cur_obj_init_animation(BOWSER_ANIM_IDLE);
     if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+        play_cmm_extra_music(2);
         o->oAction = BOWSER_ACT_DANCE;
     }
 }
@@ -1130,7 +1131,8 @@ void bowser_act_dance(void) {
  * Spawns a Key in BitDW/BitFS or Grand Star in BitS
  */
 void bowser_spawn_collectable(void) {
-    spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+    stop_cmm_extra_music(2);
+    cur_obj_drop_imbued_object(400.0f);
     cur_obj_play_sound_2(SOUND_GENERAL2_BOWSER_KEY);
 }
 

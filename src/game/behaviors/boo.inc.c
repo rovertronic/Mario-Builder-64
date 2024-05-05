@@ -559,9 +559,12 @@ static void big_boo_spawn_merry_go_round_star(void) {
 static void big_boo_act_3(void) {
     if (o->oTimer == 0) {
         o->oHealth--;
+        if (save_file_get_badge_equip() & (1 << BADGE_DAMAGE)) {
+            o->oHealth--;
+        }
     }
 
-    if (o->oHealth == 0) {
+    if (o->oHealth <= 0) {
         if (boo_update_during_death()) {
             cur_obj_disable();
 
@@ -569,7 +572,7 @@ static void big_boo_act_3(void) {
 
             obj_set_angle(o, 0, 0, 0);
 
-            spawn_default_star(o->oHomeX,o->oHomeY,o->oHomeZ);
+            cur_obj_drop_imbued_object(0.0f);
             /*
             if (o->oBehParams2ndByte == 0) {
                 big_boo_spawn_ghost_hunt_star();

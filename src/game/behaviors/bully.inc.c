@@ -200,7 +200,7 @@ void bully_act_level_death(void) {
             bully_spawn_coin();
         } else {
             spawn_mist_particles();
-            spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+            cur_obj_drop_imbued_object(400.0f);
 
             /*
             if (o->oBullySubtype == BULLY_STYPE_CHILL) {

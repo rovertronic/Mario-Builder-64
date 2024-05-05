@@ -1937,9 +1937,15 @@ f32 bad_apple_par = 0.0f;
 u32 star_radar_objects_to_track[] = {
     bhvStar,
     bhvHiddenRedCoinStar,
-    bhvKoopa,
-    bhvKingBobomb,
+};
+
+u32 star_radar_objects_to_track_with_imbue[] = {
     bhvWhompKingBoss,
+    bhvBalconyBigBoo,
+    bhvBigBully,
+    bhvShowrunner,
+    bhvBreakableBox,
+    bhvBreakableBoxRF,
 };
 
 void switch_mario_costume(u8 CostumeId) {
@@ -2041,8 +2047,17 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     //objects earlier in the list take priority due to the way this is written...
     struct Object *nearest_star;
     gMarioState->StarRadarExist = FALSE;
-    for (int i=0;i<sizeof(star_radar_objects_to_track)/4;i++) { //arthur don't worry i won't use a u8 for i sorry brotha
+    for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track);i++) { //arthur don't worry i won't use a u8 for i sorry brotha
         nearest_star = cur_obj_nearest_object_with_behavior(star_radar_objects_to_track[i]);
+        if (nearest_star) {
+            vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
+            gMarioState->StarRadarExist = TRUE;
+            break;
+        }
+    }
+    f32 scrapdist;
+    for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track_with_imbue);i++) {
+        nearest_star = cur_obj_nearest_object_with_behavior_and_star_imbue(star_radar_objects_to_track_with_imbue[i],&scrapdist);
         if (nearest_star) {
             vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
             gMarioState->StarRadarExist = TRUE;

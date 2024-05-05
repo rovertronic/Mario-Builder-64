@@ -316,6 +316,7 @@ struct Object {
               u8 oQuicksandDepth;
               u8 oQuicksandDepthToDie; // 0 means wont sink
               u8 oHasPhysics; // Don't get mad. Need this because when objects get deleted, their flags get wiped.
+              u8 oImbue; // Hey, look at that. 4 bytes like an f32, very convenient!
     /*0x1F8*/ f32 hitboxRadius;
     /*0x1FC*/ f32 hitboxHeight;
     /*0x200*/ f32 hurtboxRadius;
@@ -328,6 +329,7 @@ struct Object {
     /*0x25C*/ void *respawnInfo;
               Vec3f oDisplaceVec;
               Vec3f oOldVec;
+              Vec3f oImbueVec;
 #ifdef PUPPYLIGHTS
     struct PuppyLight puppylight;
 #endif

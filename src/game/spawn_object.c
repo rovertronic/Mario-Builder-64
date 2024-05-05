@@ -13,6 +13,7 @@
 #include "spawn_object.h"
 #include "types.h"
 #include "puppylights.h"
+#include "cursed_mirror_maker.h"
 
 /**
  * Attempt to allocate an object from freeList (singly linked) and append it
@@ -185,6 +186,7 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->numCollidedObjs = 0;
     vec3f_set(obj->oDisplaceVec,0.0f,0.0f,0.0f);
     vec3f_set(obj->oOldVec,0.0f,-30000.0f,0.0f);
+    vec3f_set(obj->oImbueVec,0.0f,0.0f,0.0f);
 
 #if IS_64_BIT
     for (i = 0; i < MAX_OBJECT_FIELDS; i++) {
@@ -228,6 +230,8 @@ struct Object *allocate_object(struct ObjectNode *objList) {
 
     obj->oQuicksandDepth = 0;
     obj->oQuicksandDepthToDie = 255;
+
+    obj->oImbue = IMBUE_NONE;
 
 #ifdef OBJECTS_REJ
     obj->header.gfx.ucode = GRAPH_NODE_UCODE_REJ;

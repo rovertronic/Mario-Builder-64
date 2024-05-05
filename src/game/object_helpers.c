@@ -669,6 +669,33 @@ struct Object *cur_obj_find_nearest_object_with_behavior(const BehaviorScript *b
     return closestObj;
 }
 
+struct Object *cur_obj_nearest_object_with_behavior_and_star_imbue(const BehaviorScript *behavior, f32 *dist) {
+    uintptr_t *behaviorAddr = segmented_to_virtual(behavior);
+    struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
+    struct Object *obj = (struct Object *) listHead->next;
+    struct Object *closestObj = NULL;
+    f32 minDist = 0x20000;
+
+    while (obj != (struct Object *) listHead) {
+        if (obj->behavior == behaviorAddr
+            && obj->activeFlags != ACTIVE_FLAG_DEACTIVATED
+            && obj != o
+            && obj->oImbue == IMBUE_STAR
+        ) {
+            f32 objDist = dist_between_objects(o, obj);
+            if (objDist < minDist) {
+                closestObj = obj;
+                minDist = objDist;
+            }
+        }
+
+        obj = (struct Object *) obj->header.next;
+    }
+
+    *dist = minDist;
+    return closestObj;
+}
+
 struct Object *find_unimportant_object(void) {
     struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_UNIMPORTANT];
     struct ObjectNode *obj = listHead->next;
@@ -2548,7 +2575,7 @@ void arbritrary_death_coin_release(void) {
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
     } else if (cur_obj_has_behavior(bhvBigBully)) {
-        spawn_default_star(o->oHomeX,o->oHomeY+400.0f,o->oHomeZ);
+        cur_obj_drop_imbued_object(400.0f);
     } else if (cur_obj_has_behavior(bhvMoneybag)||cur_obj_has_behavior(bhvMoneybagHidden)) {
         obj_spawn_yellow_coins(o, 3);
     } else {
@@ -2691,6 +2718,57 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_moving_platform(move_standard_or_object_step);
     cur_obj_interact_with_conveyor(move_standard_or_object_step);
 }
+
+void cur_obj_drop_imbued_object(f32 y_offset) {
+    Vec3f oldpos;
+    struct Object * dropobj;
+    switch(o->oImbue) {
+        case IMBUE_STAR:
+            spawn_default_star(o->oImbueVec[0],o->oImbueVec[1]+y_offset,o->oImbueVec[2]);
+            break;
+        case IMBUE_BLUE_COIN:
+            vec3f_copy(oldpos,&o->oPosVec);
+            vec3f_copy(&o->oPosVec,&o->oImbueVec);
+            o->oPosY += y_offset;
+            spawn_mist_particles();
+            cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+            struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            coin->oForwardVel = 10.0f;
+            coin->oVelY = 20.0f;
+            coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+            vec3f_copy(&o->oPosVec,oldpos);
+            break;
+        case IMBUE_ONE_COIN:
+            vec3f_copy(oldpos,&o->oPosVec);
+            vec3f_copy(&o->oPosVec,&o->oImbueVec);
+            o->oPosY += y_offset;
+            spawn_mist_particles();
+            obj_spawn_yellow_coins(o, 1);
+            vec3f_copy(&o->oPosVec,oldpos);
+            break;
+        case IMBUE_RED_SWITCH:
+            vec3f_copy(oldpos,&o->oPosVec);
+            vec3f_copy(&o->oPosVec,&o->oImbueVec);
+            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
+            spawn_mist_particles();
+            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
+            dropobj->oMoveAngleYaw = 0;
+            vec3f_copy(&o->oPosVec,oldpos);
+            break;
+        case IMBUE_BLUE_SWITCH:
+            vec3f_copy(oldpos,&o->oPosVec);
+            vec3f_copy(&o->oPosVec,&o->oImbueVec);
+            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
+            spawn_mist_particles();
+            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
+            dropobj->oBehParams2ndByte = 1;
+            dropobj->oMoveAngleYaw = 0;
+            vec3f_copy(&o->oPosVec,oldpos);
+            break;
+    }
+    o->oImbue = IMBUE_NONE;
+}
+
 
 struct Object * physics_object_list_head = NULL;
 struct Object * physics_object_list_tail = NULL;

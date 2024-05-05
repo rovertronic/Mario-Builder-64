@@ -313,6 +313,7 @@ void showrunner_battle_function(void) {
         case 0://init
             o->oAction=1;
             o->oQuicksandDepthToDie = 0;
+            showrunner_using_spike_attack = NULL;
         break;
         case 1://init
             if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
@@ -450,7 +451,7 @@ void showrunner_battle_function(void) {
             }
         break;
         case 14://drop items
-            spawn_default_star(o->oPosX,o->oPosY+400.0f,o->oPosZ);
+            cur_obj_drop_imbued_object(400.0f);
             o->oAction = 15;
             o->header.gfx.scale[0] = 1.0f;
         break;

@@ -247,3 +247,5 @@
 #include "fatplat/collision.inc.c"
 #include "conveyor/collision.inc.c"
 #include "conveyor/model.inc.c"
+#include "imbue/model.inc.c"
+#include "imbues/model.inc.c"
