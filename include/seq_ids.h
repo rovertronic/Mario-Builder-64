@@ -138,6 +138,7 @@ enum SeqId {
     SEQ_MP_YOSHIS_TROPICAL_ISLAND,    // 0x7C
     SEQ_PIRANHA_CREEK,                // 0x7D
     SEQ_FOREST_TEMPLE,                // 0x7E
+    SEQ_VANILLA_BOSS,                 // 0x7F
 
     SEQ_COUNT
 };
