@@ -525,7 +525,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     s8 adjPos[3];
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
-    //if (!coords_in_range(adjPos)) return TRUE;
+    if (!coords_in_range(adjPos)) return TRUE;
 
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= CMM_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= CMM_FACESHAPE_TOPSLAB)) return TRUE;
