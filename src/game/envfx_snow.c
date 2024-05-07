@@ -223,12 +223,14 @@ void envfx_update_ashes(s32 snowCylinderX, s32 snowCylinderY, s32 snowCylinderZ)
         if (!(gEnvFxBuffer + i)->isAlive) {
             f32 xPos, yPos, zPos;
             struct Surface *ceil = NULL;
+            int tries = 0;
             do {
                 xPos = 400.0f * random_float() - 200.0f + snowCylinderX + (s16)(deltaX * 2);
                 yPos = -400.0f * random_float() + snowCylinderY;
                 zPos = 400.0f * random_float() - 200.0f + snowCylinderZ + (s16)(deltaZ * 2);
                 find_ceil(xPos, yPos, zPos, &ceil);
-            } while (ceil != NULL);
+                tries ++;
+            } while (ceil != NULL && tries < 10); //don't try to hard or you'll get stuck
             (gEnvFxBuffer + i)->xPos = xPos;
             (gEnvFxBuffer + i)->zPos = zPos;
             (gEnvFxBuffer + i)->yPos = yPos;

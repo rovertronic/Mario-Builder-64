@@ -771,6 +771,9 @@ void cmm_custom_theme_render_page(u32 index, f32 xPos, f32 yPos) {
     custom_theme_draw_block(-xPos - 100, yPos + 10, index);
 }
 
+
+Gfx * custom_preview_gfx;
+Vtx * custom_preview_vtx;
 void draw_cmm_settings_custom_theme(f32 yoff) {
     s32 dir = 0;
 
@@ -800,8 +803,11 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
         cmm_menu_index = CUSTOM_INDEX_OFFSET;
     }
 
-    cmm_curr_gfx = preview_gfx;
-    cmm_curr_vtx = preview_vtx;
+    custom_preview_gfx = (Gfx*)alloc_display_list(50*sizeof(Gfx));
+    custom_preview_vtx = (Vtx*)alloc_display_list(100*sizeof(Vtx));
+
+    cmm_curr_gfx = custom_preview_gfx;
+    cmm_curr_vtx = custom_preview_vtx;
     cmm_gfx_index = 0;
 
     cmm_menu_page_animation(yoff, cmm_custom_theme_render_page, cmm_curr_custom_tab, CMM_NUM_CUSTOM_TABS, cmm_menu_scrolling[SCROLL_CUSTOM_TABS]);
@@ -809,11 +815,11 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     // This code is so fucking disgusting.
     // Edit all the vertices for the drawn preview blocks here.
     // Done outside the main block draw to be able to affect multiple blocks at once
-    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
+    //for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
         // Offset all vertices
-        preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
-        preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
-    }
+        //custom_preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
+        //custom_preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
+    //}
 }
 
 void draw_cmm_settings_env(f32 xoff, f32 yoff) {
@@ -1246,6 +1252,9 @@ struct cmm_credits_entry cmm_credits[] = {
     {"Mario Builder 64",1},
     {"By Rovertronic",0},
     {"2024",0},
+    {"",0},
+    {"Tile Systems, Code Refactor, Textures",1},
+    {"Arthurtilly",0},
     {"",0},
     {"HackerSM64",1},
     {"HackerN64 Team",0},

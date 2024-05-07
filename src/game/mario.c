@@ -2734,7 +2734,7 @@ void init_mario(void) {
     }
     */
 
-
+    vec3f_set(gMarioState->StarRadarLocation,0.0f,0.0f,0.0f);
     
 }
 

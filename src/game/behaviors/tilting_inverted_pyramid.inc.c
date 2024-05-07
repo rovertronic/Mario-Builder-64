@@ -6237,6 +6237,7 @@ void bhv_woodplat(void) {
             }
             cur_obj_update_floor_and_walls();
             cur_obj_move_standard(-20);
+            o->oGraphYOffset = o->prevObj->oPosY-o->oPosY;
             vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
             break;
     }

@@ -2308,6 +2308,7 @@ void place_tile(s8 pos[3]) {
     }
     // If placing a cull marker, check that its actually next to a tile
     if (cmm_id_selection == TILE_TYPE_CULL && is_cull_marker_useless(pos)) {
+        remove_occupy_data(pos);
         return;
     }
 
