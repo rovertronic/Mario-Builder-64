@@ -6003,7 +6003,7 @@ const BehaviorScript bhvOrangeNumber[] = {
 
 const BehaviorScript bhvKoopa[] = {
     BEGIN(OBJ_LIST_PUSHABLE),
-    SET_INT(oBehParams, 0x00000200),
+    OR_LONG(oBehParams, 0x00000200), // FUCK YOU PAST ROVERT!!!! If I had a time machine i'd fucking get you. You will feel my wrath. I will take pleasure in your suffering. (he used SET_INT)
     OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH)),
     //DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, koopa_seg6_anims_06011364),

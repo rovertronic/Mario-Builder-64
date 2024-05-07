@@ -49,7 +49,7 @@ u32 trajectory_get_target_angle(s16 *yaw, struct Waypoint *prevWaypoint, struct 
             return FALSE;
         }
         if (targetWaypoint->flags == WAYPOINT_FLAGS_END) {
-            if (o->oBehParams >> 24 == 1) {
+            if (o->oPlatformOnTrackType == PLATFORM_ON_TRACK_TYPE_LOOPING) {
                 targetWaypoint = o->oPlatformOnTrackStartWaypoint;
             } else {
                 return FALSE;
