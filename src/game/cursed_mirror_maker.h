@@ -4,7 +4,7 @@
 
 #define CMM_TILE_POOL_SIZE 10000
 #define CMM_GFX_SIZE 20000
-#define CMM_VTX_SIZE 30000
+#define CMM_VTX_SIZE 40000
 
 #define CMM_MAX_OBJS 512
 #define CMM_MAX_TRAJECTORIES 20
@@ -376,6 +376,7 @@ struct cmm_sram_config {
     char author[31];
     u8 option_flags;
     u32 magic;
+    u64 pad;
 };
 
 enum {

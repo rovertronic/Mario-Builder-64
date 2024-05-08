@@ -6,9 +6,9 @@ u8 cmm_ascii_lut[] = {
     0x54,0x55,0x57,0x58,0,0,0,0, // 16 - 23
     0,0,0,0,0,0,0,0, // 24 - 31
     0x9E, /* */ 0xF2, /*!*/ 0x00, /*"*/ 0x00, /*#*/
-    0x00, /*$*/ 0x00, /*%*/ 0xE5, /*&*/ 0x3E, /*'*/
+    0x00, /*$*/ 0x71, /*%*/ 0xE5, /*&*/ 0x3E, /*'*/
     0xE1, /*(*/ 0xE3, /*)*/ 0x00, /***/ 0x00, /*+*/
-    0x6F, /*,*/ 0x9F, /*-*/ 0x3F, /*.*/ 0x00, /*/*/
+    0x6F, /*,*/ 0x9F, /*-*/ 0x3F, /*.*/ 0x70, /*/*/
     0x00, /*0*/ 0x01, /*1*/ 0x02, /*2*/ 0x03, /*3*/
     0x04, /*4*/ 0x05, /*5*/ 0x06, /*6*/ 0x07, /*7*/
     0x08, /*8*/ 0x09, /*9*/ 0xE6, /*:*/ 0x00, /*;*/
@@ -628,10 +628,15 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     cmm_render_flip_normals = FALSE;
 }
 
+Gfx * custom_preview_gfx;
+Vtx * custom_preview_vtx;
+
 void finish_block_draw() {
     cmm_render_culling_off = FALSE;
 
-    gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
+    if (!gIsConsole) {
+        gSPDisplayList(gDisplayListHead++, custom_preview_gfx);
+    }
     cmm_curr_gfx += cmm_gfx_index;
     cmm_gfx_index = 0;
 
@@ -771,9 +776,6 @@ void cmm_custom_theme_render_page(u32 index, f32 xPos, f32 yPos) {
     custom_theme_draw_block(-xPos - 100, yPos + 10, index);
 }
 
-
-Gfx * custom_preview_gfx;
-Vtx * custom_preview_vtx;
 void draw_cmm_settings_custom_theme(f32 yoff) {
     s32 dir = 0;
 
@@ -815,11 +817,11 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     // This code is so fucking disgusting.
     // Edit all the vertices for the drawn preview blocks here.
     // Done outside the main block draw to be able to affect multiple blocks at once
-    //for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
+    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
         // Offset all vertices
-        //custom_preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
-        //custom_preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
-    //}
+        custom_preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
+        custom_preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
+    }
 }
 
 void draw_cmm_settings_env(f32 xoff, f32 yoff) {
@@ -905,11 +907,16 @@ struct cmm_settings_button cmm_change_size_button = {NULL,  &cmm_newsize, cmm_le
 
 extern u8 cmm_mm_state; //externing a variable in the same file that it's defined in? more likely than you think. how heinous.
 void draw_cmm_settings_system(f32 xoff, f32 yoff) {
+    char strbuf[50];
     animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_system_buttons), cmm_menu_index);
     for (s32 i=0;i<2;i++) {
         print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[i],160-(i*16)+yoff,cmm_settings_system_buttons[i],(i==cmm_menu_index));
     }
     
+    int vtx_perc = ((f32)cmm_vtx_total/(f32)CMM_VTX_SIZE)*100.0f;
+    int tile_perc = ((f32)cmm_tile_count/10000.0f)*100.0f;
+    sprintf(strbuf,"Verts: %d%% Tiles: %d%%",vtx_perc,tile_perc);
+    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[0], 100+yoff,strbuf,0);
     // Apply size
     //print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
     //cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
@@ -1941,6 +1948,7 @@ s32 cmm_main_menu(void) {
             print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
 
             if (cmm_mm_help_ptr == cmm_mm_help_page1) {
+                gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
                 gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
             }
             break;
@@ -2071,7 +2079,7 @@ s32 cmm_main_menu(void) {
 
                         bcopy(&cmm_username,&cmm_sram_configuration.author,sizeof(cmm_sram_configuration.author));
                         if (gSramProbe != 0) {
-                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN8(sizeof(cmm_sram_configuration)));
                         }
 
                         cmm_has_username = TRUE;
@@ -2415,7 +2423,7 @@ s32 draw_cmm_pause_menu(void) {
                 cmm_menu_index = 0;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 if (gSramProbe != 0) {
-                    nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                    nuPiWriteSram(0, &cmm_sram_configuration, ALIGN8(sizeof(cmm_sram_configuration)));
                 }
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_menu_index) {
@@ -2423,7 +2431,7 @@ s32 draw_cmm_pause_menu(void) {
                         cmm_pause_menu_state = 0;
                         cmm_menu_index = 0;
                         if (gSramProbe != 0) {
-                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+                            nuPiWriteSram(0, &cmm_sram_configuration, ALIGN8(sizeof(cmm_sram_configuration)));
                         }
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;

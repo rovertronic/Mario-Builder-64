@@ -317,6 +317,7 @@ void showrunner_battle_function(void) {
         break;
         case 1://init
             if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+                play_cmm_extra_music(2);
                 o->oHealth = 3;
                 o->oAction = 2;
             }
@@ -452,6 +453,7 @@ void showrunner_battle_function(void) {
         break;
         case 14://drop items
             cur_obj_drop_imbued_object(400.0f);
+            stop_cmm_extra_music(2);
             o->oAction = 15;
             o->header.gfx.scale[0] = 1.0f;
         break;

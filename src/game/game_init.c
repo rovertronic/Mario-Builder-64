@@ -1133,7 +1133,7 @@ void thread5_game_loop(UNUSED void *arg) {
     render_init();
 
     if (gSramProbe != 0) {
-        nuPiReadSram(0, &cmm_sram_configuration, ALIGN4(sizeof(cmm_sram_configuration)));
+        nuPiReadSram(0, &cmm_sram_configuration, ALIGN8(sizeof(cmm_sram_configuration)));
     }
     if (cmm_sram_configuration.magic != SRAM_MAGIC) {
         // If the SRAM magic fails, that means it's bzero'd or garbage data.

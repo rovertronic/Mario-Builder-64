@@ -256,7 +256,7 @@ s32 tile_sanity_check(void) {
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 100) {
-        cmm_show_error_message("Vertex limit reached! (max 30,000)");
+        cmm_show_error_message("Vertex limit reached! (max 40,000)");
         return FALSE;
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 100) {
@@ -319,6 +319,19 @@ s32 object_sanity_check(void) {
             }
             if (numRunners >= 3) {
                 cmm_show_error_message("Showrunner limit reached! (max 3)");
+                return FALSE;
+            }
+        }
+    }
+
+    if (cmm_id_selection == OBJECT_TYPE_PHANTASM) {
+        s32 num = 0;
+        for (u32 i = 0; i < cmm_object_count; i++) {
+            if (cmm_object_data[i].type == OBJECT_TYPE_PHANTASM) {
+                num++;
+            }
+            if (num >= 12) {
+                cmm_show_error_message("Cosmic Phantasm limit reached! (max 12)");
                 return FALSE;
             }
         }
@@ -525,7 +538,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     s8 adjPos[3];
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
-    if (!coords_in_range(adjPos)) return TRUE;
+    if (!coords_in_range(adjPos)) return FALSE;
 
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= CMM_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= CMM_FACESHAPE_TOPSLAB)) return TRUE;
