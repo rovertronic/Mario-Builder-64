@@ -634,9 +634,8 @@ Vtx * custom_preview_vtx;
 void finish_block_draw() {
     cmm_render_culling_off = FALSE;
 
-    if (!gIsConsole) {
-        gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
-    }
+    gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
+    
     cmm_curr_gfx += cmm_gfx_index;
     cmm_gfx_index = 0;
 
@@ -687,6 +686,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         cmm_use_alt_uvs = FALSE;
     }
 
+    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);

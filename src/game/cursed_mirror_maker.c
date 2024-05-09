@@ -1206,6 +1206,7 @@ void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
     u32 rendermode = cmm_render_mode_table[tileType];
     if (disableZ) rendermode &= ~(Z_UPD | Z_CMP);
     if (!gIsConsole && (tileType != MAT_TRANSPARENT)) rendermode |= AA_EN;
+    gDPPipeSync(gfx);
     gDPSetRenderMode(gfx, rendermode, 0);
 }
 
