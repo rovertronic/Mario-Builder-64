@@ -421,6 +421,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 
             //mr beast: batching coins breaks the game!
             if (currLayer == LAYER_COIN) {
+                gDPLoadSync(gDisplayListHead++);
                 switch((gGlobalTimer/2)%4) {
                     case 0:
                         gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_front);

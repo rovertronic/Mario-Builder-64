@@ -60,6 +60,9 @@ void bhv_motos_player_search(void) {
     o->oForwardVel = 5.f; // Sped up (was 2.f)
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 800); // Sped up (was 300)
 
+    if (cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY) {
+        o->oAction = MOTOS_ACT_DEATH;
+    }
 }
 
 void bhv_motos_player_carry(void) {
@@ -156,6 +159,12 @@ void bhv_motos_death(void) {
         coin->oVelY = 100.0f;
         coin->oPosY = o->oPosY + 310.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+
+        if (o->prevObj) {
+            o->prevObj = NULL;
+            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
+            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
+        }
     }
 }
 

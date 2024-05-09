@@ -3384,7 +3384,7 @@ void sb_loop(void) {
             cmm_place_mode = curBtn->placeMode;
 
             if (cmm_upsidedown_tile) {
-                if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
+                if ((cmm_id_selection < TILE_END_OF_FLIPPABLE)&&(cmm_place_mode == CMM_PM_TILE)) {
                     cmm_id_selection = (cmm_id_selection & ~1) | 1;
                 } else {
                     cmm_upsidedown_tile = FALSE;
@@ -3452,7 +3452,7 @@ void sb_loop(void) {
                 animate_list_reset();
             }
 
-            if (gPlayer1Controller->buttonPressed & U_JPAD) {
+            if ((gPlayer1Controller->buttonPressed & U_JPAD)&&(cmm_place_mode == CMM_PM_TILE)) {
                 if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
                     play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
                 }
