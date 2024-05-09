@@ -635,7 +635,7 @@ void finish_block_draw() {
     cmm_render_culling_off = FALSE;
 
     if (!gIsConsole) {
-        gSPDisplayList(gDisplayListHead++, custom_preview_gfx);
+        gSPDisplayList(gDisplayListHead++, cmm_curr_gfx);
     }
     cmm_curr_gfx += cmm_gfx_index;
     cmm_gfx_index = 0;
