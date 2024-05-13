@@ -16,9 +16,7 @@
 
 #define TXT_MM_HELP_PAGE_2 _("Analog Stick: Move cursor horizontally\n[C] ^ / |: Move cursor vertically\n[C] < / >: Rotate camera\nD-Pad |: Change camera zoom\n\n[A]: Place object/tile\n[B]: Delete object/tile\n[Z]: Rotate object/tile\nD-Pad < / >: Change object parameters\nD-Pad ^: Flip tile vertically\n\nL/R: Navigate hotbar\nSTART: Open toolbox")
 
-#define TXT_MM_HELP_PAGE_3 _("Beta 1.0.3\nDo not redistribute.")
-
-#define TXT_MM_CREDITS_PAGE _("Mario Builder 64 by Rovertronic, 2023\n\nThank you to my Patreons:\nHenry Kumpel, ZT, Pizza Brian, tydaze\n\n\nSD card support: Devwizard, Falcobuster\nHackerSM64: HackerN64 Team\nTitle screen model: Biobak\nBTCM OST: Thorndust, SpK, ArcticJaguar725\n\nTing-Thing: Original Mario Builder")
+#define TXT_MM_HELP_PAGE_3 _("Beta 1.0.4\nDo not redistribute.")
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

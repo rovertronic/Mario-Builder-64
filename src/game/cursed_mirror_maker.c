@@ -238,6 +238,11 @@ void reset_play_state(void) {
     cmm_play_stars = 0;
     cmm_play_stars_bitfield = 0;
     cmm_play_badge_bitfield = 0;
+
+    // & water level
+    cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
+    gWDWWaterLevelChanging = FALSE;
+    cmm_play_onoff = FALSE;
 }
 
 u8 cmm_grid_min = 0;
@@ -2689,14 +2694,12 @@ void save_level(void) {
     }
 
     //author
-    if (cmm_has_username) {
+    if ((cmm_has_username)&&(cmm_save.author[0] == '\0')) {
         i = 0;
         do {
             cmm_save.author[i] = cmm_username[i];
             i++;
         } while (cmm_username[i-1] != '\0');
-    } else {
-        cmm_save.author[0] = '\0';
     }
 
     cmm_save.tile_count = cmm_tile_count;
@@ -3225,6 +3228,13 @@ void freecam_camera_main(void) {
     cmm_freecam_yaw += gPlayer1Controller->rawStickX*-4;
     cmm_freecam_pitch += gPlayer1Controller->rawStickY*-4;
 
+    if (cmm_freecam_pitch < 0x100) {
+        cmm_freecam_pitch = 0x100;
+    }
+    if (cmm_freecam_pitch > 0x7000) {
+        cmm_freecam_pitch = 0x7000;
+    }
+
     if (gPlayer1Controller->buttonDown & U_CBUTTONS) {
         cmm_camera_pos[0] += ( sins(cmm_freecam_yaw) * -sins(cmm_freecam_pitch) * 45.0f );
         cmm_camera_pos[1] += ( coss(cmm_freecam_pitch) * 45.0f );
@@ -3396,6 +3406,10 @@ void sb_loop(void) {
                 ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index >= 7))) {
                 switch(cmm_toolbar_index) {
                     case 7: // save and test
+                        if (get_occupy_data(cmm_cursor_pos)) {
+                            cmm_show_error_message("Cannot start test inside another tile or object!");
+                            break;
+                        }
                         if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE) {
                             if (mount_success == FR_OK) {
                                 save_level();

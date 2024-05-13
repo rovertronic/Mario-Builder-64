@@ -727,6 +727,11 @@ s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
 
 s32 act_lvup_dance(struct MarioState *m) {
 
+    if (cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY) {
+        set_mario_animation(m,MARIO_ANIM_WATER_STAR_DANCE);
+        return FALSE;
+    }
+
     m->forwardVel = 0.0f;
     m->vel[0] = 0.0f;
     m->vel[2] = 0.0f;

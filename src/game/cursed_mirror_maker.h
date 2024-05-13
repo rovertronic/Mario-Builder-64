@@ -410,6 +410,7 @@ enum {
 enum {
     CMM_LA_PLAY_LEVELS,
     CMM_LA_BUILD,
+    CMM_LA_TEST_LEVEL,
 };
 
 enum cmm_themes {

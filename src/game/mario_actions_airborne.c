@@ -21,7 +21,7 @@
 #include "cursed_mirror_maker.h"
 #include "engine/surface_collision.h"
 
-u8 bullet_fuel;
+u8 bullet_fuel = 0;
 
 void bullet_bill_fly(struct MarioState *m) {
     struct Object *smoke;
@@ -31,7 +31,7 @@ void bullet_bill_fly(struct MarioState *m) {
         m->vel[1] = 0.0f;
         if (m->forwardVel < 40.0f) {
             m->forwardVel += 4.0f;
-            }
+        }
         smoke = spawn_object(m->marioObj, MODEL_SMOKE, bhvWhitePuffSmoke);
         smoke->oPosY = m->marioObj->header.gfx.pos[1] + 100.0f;
     }

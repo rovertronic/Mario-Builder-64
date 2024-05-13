@@ -255,6 +255,7 @@ void bhv_bully_loop(void) {
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
+            cur_obj_drop_imbued_object(400.0f);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
@@ -356,6 +357,7 @@ void bhv_big_bully_with_minions_loop(void) {
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
+            cur_obj_drop_imbued_object(400.0f);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }

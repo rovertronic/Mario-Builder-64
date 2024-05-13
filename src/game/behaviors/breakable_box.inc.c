@@ -129,7 +129,12 @@ void bhv_breakable_box_rf_loop(void) {
         if (o->oTimer > 15) {
             create_sound_spawner(SOUND_ACTION_SNUFFIT_BULLET_HIT_METAL);
             o->oTimer = 1;
+            o->oIntangibleTimer = 0;
         }
+    }
+
+    if (gMarioState->interactObj == o) {
+        gMarioState->interactObj = NULL;
     }
 
     o->oInteractStatus = INT_STATUS_NONE;

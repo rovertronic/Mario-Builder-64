@@ -908,7 +908,7 @@ struct cmm_settings_button cmm_change_size_button = {NULL,  &cmm_newsize, cmm_le
 extern u8 cmm_mm_state; //externing a variable in the same file that it's defined in? more likely than you think. how heinous.
 void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     char strbuf[50];
-    animate_list_update(cmm_menu_list_offsets, ARRAY_COUNT(cmm_settings_system_buttons), cmm_menu_index);
+    animate_list_update(cmm_menu_list_offsets, 3, cmm_menu_index);
     for (s32 i=0;i<2;i++) {
         print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[i],160-(i*16)+yoff,cmm_settings_system_buttons[i],(i==cmm_menu_index));
     }
@@ -916,7 +916,7 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     int vtx_perc = ((f32)cmm_vtx_total/(f32)CMM_VTX_SIZE)*100.0f;
     int tile_perc = ((f32)cmm_tile_count/10000.0f)*100.0f;
     sprintf(strbuf,"Verts: %d%% Tiles: %d%%",vtx_perc,tile_perc);
-    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[0], 100+yoff,strbuf,0);
+    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[2], 100+yoff,strbuf,0);
     // Apply size
     //print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
     //cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
@@ -939,7 +939,7 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
                     save_level();
                 }
                 cmm_target_mode = CMM_MODE_PLAY;
-                cmm_level_action = CMM_LA_PLAY_LEVELS;
+                cmm_level_action = CMM_LA_TEST_LEVEL;
                 reset_play_state();
                 level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
                 sSourceWarpNodeId = 0x0A;
@@ -1304,6 +1304,7 @@ struct cmm_credits_entry cmm_credits[] = {
     {"",0},
     {"Mario Builder 64 Inspiration",1},
     {"Ting Thing",0},
+    {"Hello Fangaming",0},
 };
 
 f32 clamp2(f32 x) {
@@ -1422,7 +1423,6 @@ char *cmm_mm_help_btns[] = {
 u8 cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 u8 cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 u8 cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
-u8 cmm_mm_credits_page[] = {TXT_MM_CREDITS_PAGE};
 
 u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 

@@ -1160,12 +1160,13 @@ s32 play_mode_paused(void) {
     } else { // MENU_OPT_EXIT_COURSE
 
         //normal pause exit
-        if (cmm_level_action == CMM_LA_BUILD) {
+        if (cmm_level_action != CMM_LA_PLAY_LEVELS) {
             cmm_target_mode = CMM_MODE_MAKE;
             initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
             fade_into_special_warp(WARP_SPECIAL_NONE, 0);
             gSavedCourseNum = 0;
             gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
+            cmm_level_action = CMM_LA_BUILD;
         } else {
             fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
         }
@@ -1307,7 +1308,7 @@ s32 init_level(void) {//
     }
 
     //starter variables
-    if (cmm_level_action == CMM_LA_PLAY_LEVELS) {
+    if ((cmm_level_action == CMM_LA_PLAY_LEVELS)||(cmm_level_action == CMM_LA_TEST_LEVEL)) {
         cmm_target_mode = CMM_MODE_PLAY;
     }
     cmm_mode = cmm_target_mode;

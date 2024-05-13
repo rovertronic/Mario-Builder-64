@@ -343,10 +343,15 @@
 //     }
 // }
 
+extern u8 bullet_fuel;
 void bhv_crowbar_power_loop() {
         struct Object *sp1C;
         u8 power = o->oBehParams2ndByte+1;
         sp1C = cur_obj_nearest_object_with_behavior(bhvCrowbarThrow);
+
+        if (power == 3) {
+            sp1C = NULL;
+        }
 
         if (gMarioState->powerup != power && sp1C == NULL) {
             spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
@@ -357,6 +362,7 @@ void bhv_crowbar_power_loop() {
             if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
                 play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource);
                 gMarioState->powerup = power;
+                bullet_fuel = 60;
 
                 gMarioState->flags &= ~MARIO_METAL_CAP;
                 gMarioState->flags &= ~MARIO_VANISH_CAP;

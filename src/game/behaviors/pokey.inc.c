@@ -47,7 +47,7 @@ void bhv_pokey_body_part_update(void) {
             obj_mark_for_deletion(o);
         } else {
             cur_obj_update_floor_and_walls();
-            if (o->oFloor->type == SURFACE_INSTANT_QUICKSAND) {
+            if (o->oFloor && o->oFloor->type == SURFACE_INSTANT_QUICKSAND) {
                 o->oFloor = NULL;
                 o->oFloorHeight = -99999.0f;
             }

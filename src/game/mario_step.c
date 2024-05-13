@@ -445,6 +445,7 @@ s32 perform_ground_step(struct MarioState *m) {
 
 struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall, struct Surface *wall, Vec3f intendedPos, Vec3f nextPos, Vec3f ledgePos, struct Surface **ledgeFloor) {
     struct Surface *returnedWall = wall;
+
     if (m->vel[1] > 0.0f || wall == NULL) {
         return NULL;
     }
@@ -472,6 +473,12 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
     ledgePos[0] = nextPos[0] - (normal[0] * 60.0f);
     ledgePos[2] = nextPos[2] - (normal[2] * 60.0f);
     ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], ledgeFloor);
+
+    struct Surface *ceil;
+    f32 ceilheight = find_mario_ceil(ledgePos, ledgePos[1]-30.0f, &ceil);
+    if ((ceil)&&(ABS(ceilheight-ledgePos[1]) < 10.0f)) {
+        return NULL;
+    }
 
     if (ledgeFloor == NULL
         || (*ledgeFloor) == NULL
