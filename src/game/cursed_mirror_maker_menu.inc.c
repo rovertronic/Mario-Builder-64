@@ -661,14 +661,14 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         cmm_curr_poly_vert_count = 4;
         if (index == 10) { // Poles
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].gfx);
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_curr_custom_theme.pole].type, TRUE);
+            set_render_mode( cmm_mat_table[cmm_curr_custom_theme.pole].type, TRUE);
             process_tile(pos, &cmm_terrain_pole, cmm_rot_selection);
         } else if (index == 11) { // Fence
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_fence_texs[cmm_curr_custom_theme.fence]);
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
+            set_render_mode( MAT_CUTOUT, TRUE);
             process_tile(pos, &cmm_terrain_fence, cmm_rot_selection);
         } else if (index == 12) { // Iron Mesh
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, TRUE);
+            set_render_mode( MAT_CUTOUT, TRUE);
             u8 connections[5] = {1,0,1,0,1};
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_bar_texs[cmm_curr_custom_theme.bars][1]);
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
@@ -679,7 +679,7 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
             render_bars_side(pos, connections);
         } else if (index == 13) { // Water
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_water_texs[cmm_curr_custom_theme.water]);
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, TRUE);
+            set_render_mode( MAT_TRANSPARENT, TRUE);
             render_water(pos);
         }
         display_cached_tris();
@@ -1072,6 +1072,7 @@ void draw_cmm_menu(void) {
                     strx -= strLen+45;
                 }
 
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
@@ -1450,6 +1451,7 @@ void cmm_mm_shade_screen(void) {
         u8 time = MIN(cmm_menu_end_timer, 8);
         alpha = 110 - ((time * 110) / 8);
     }
+    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
@@ -1948,6 +1950,7 @@ s32 cmm_main_menu(void) {
             print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
 
             if (cmm_mm_help_ptr == cmm_mm_help_page1) {
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
                 gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
             }
@@ -2021,6 +2024,7 @@ s32 cmm_main_menu(void) {
             cmm_mm_shade_screen();
 
             f32 inputX = CLAMP(30 + cmm_menu_button_vels[1][0], -160, 320);
+            gDPPipeSync(gDisplayListHead++);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 100);
             gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
             gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);

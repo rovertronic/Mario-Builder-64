@@ -1207,12 +1207,12 @@ void render_water(s8 pos[3]) {
     }
 }
 
-void set_render_mode(Gfx* gfx, u32 tileType, u32 disableZ) {
+void set_render_mode(u32 tileType, u32 disableZ) {
     u32 rendermode = cmm_render_mode_table[tileType];
     if (disableZ) rendermode &= ~(Z_UPD | Z_CMP);
     if (!gIsConsole && (tileType != MAT_TRANSPARENT)) rendermode |= AA_EN;
-    gDPPipeSync(gfx);
-    gDPSetRenderMode(gfx, rendermode, 0);
+    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
+    gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], rendermode, 0);
 }
 
 enum tiletypeIndices {
@@ -1301,7 +1301,7 @@ void process_tiles(u32 processTileRenderMode) {
             cmm_growth_render_type = 0;
             startIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX];
             endIndex = cmm_tile_data_indices[POLE_TILETYPE_INDEX+1];
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], poleMatType, FALSE);
+            set_render_mode( poleMatType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
             for (u32 i = startIndex; i < endIndex; i++) {
                 s8 pos[3];
@@ -1326,7 +1326,7 @@ void process_tiles(u32 processTileRenderMode) {
                 goto skip_maintex;
             }
 
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+            set_render_mode( matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], MATERIAL(mat).gfx);
 
             // Important to not use matType here so that it's still opaque for screens
@@ -1367,7 +1367,7 @@ void process_tiles(u32 processTileRenderMode) {
                 // is made (in order to cover both the opaque and alpha parts of the side tex.)
                 // DECAL MODE
                 if (matType != MAT_TRANSPARENT) { // Render in decal mode for cutouts, opaque and screen
-                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+                    set_render_mode( MAT_DECAL, FALSE);
                     for (u32 i = startIndex; i < endIndex; i++) {
                         tileType = cmm_tile_data[i].type;
                         rot = cmm_tile_data[i].rot;
@@ -1379,7 +1379,7 @@ void process_tiles(u32 processTileRenderMode) {
                 }
                 // OPAQUE MODE
                 if (matType >= MAT_CUTOUT) { // Render in cutout mode for cutouts and transparent
-                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+                    set_render_mode( MAT_CUTOUT, FALSE);
                     for (u32 i = startIndex; i < endIndex; i++) {
                         tileType = cmm_tile_data[i].type;
                         rot = cmm_tile_data[i].rot;
@@ -1393,7 +1393,7 @@ void process_tiles(u32 processTileRenderMode) {
             }
 
             PROC_COLLISION( cmm_curr_coltype = TOPMAT(mat).col; )
-            PROC_RENDER( set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topmatType, FALSE); \
+            PROC_RENDER( set_render_mode( topmatType, FALSE); \
                          gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], TOPMAT(mat).gfx); )
 
             cmm_growth_render_type = 1;
@@ -1499,12 +1499,12 @@ void render_boundary_precise(struct cmm_boundary_quad *quadList, u32 count, s16 
 
 void render_boundary_decal_edge(Gfx *sidetex, s32 yBottom, u32 sideMatType) {
     if (sideMatType != MAT_TRANSPARENT) {
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, FALSE);
+        set_render_mode( MAT_DECAL, FALSE);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
         render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), yBottom, yBottom+1, 0);
     }
     if (sideMatType >= MAT_CUTOUT) {
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+        set_render_mode( MAT_CUTOUT, FALSE);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidetex);
         render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), yBottom, yBottom+1, 0);
     }
@@ -1525,7 +1525,7 @@ void process_boundary(u32 processRenderMode) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
         if (do_process(&sidematType, processRenderMode)) {
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
+            set_render_mode( sidematType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
 
@@ -1537,6 +1537,7 @@ void process_boundary(u32 processRenderMode) {
         // Fade at bottom
         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+            gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             if (showBackface) {
@@ -1553,7 +1554,7 @@ void process_boundary(u32 processRenderMode) {
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, FALSE);
+            set_render_mode( matType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, 0);
         }
@@ -1582,7 +1583,7 @@ void process_boundary(u32 processRenderMode) {
         if (sidetex) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
-            set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], sidematType, FALSE);
+            set_render_mode( sidematType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             if (topY > bottomY + 32) {
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, bottomY + 32, 0);
@@ -1602,10 +1603,12 @@ void process_boundary(u32 processRenderMode) {
         if (renderFade) {
             // Black floor to block out skybox
             if ((processRenderMode == PROCESS_TILE_NORMAL) && (cmm_lopt_bg != 4) && (cmm_lopt_bg != 9)) {
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], &mat_maker_MakerBlack);
                 render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
             } else if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
 repeatBackface:
                 gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
@@ -1630,6 +1633,7 @@ repeatBackface:
         }
         u32 topMatOpaque = (mat->type < MAT_CUTOUT);
         if (topMatOpaque && (processRenderMode == PROCESS_TILE_VPLEX)) {
+            gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_VPLEX_SCREEN, G_RM_VPLEX_SCREEN2);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
@@ -1637,8 +1641,10 @@ repeatBackface:
 
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
             if (topMatOpaque) {
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL2);
             } else {
+                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
                 gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             }
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
@@ -1662,6 +1668,15 @@ void generate_terrain_gfx(void) {
     cmm_growth_render_type = 0;
     cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
+    // A little bit of free performance for N64
+    if ((gIsConsole)&&(cmm_vtx_total > 5000)) {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    } else {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+    }
+
     retroland_filter_on();
 
     process_tiles(PROCESS_TILE_VPLEX);
@@ -1681,7 +1696,7 @@ void generate_terrain_gfx(void) {
     u8 connections[5];
     startIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX];
     endIndex = cmm_tile_data_indices[BARS_TILETYPE_INDEX+1];
-    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+    set_render_mode( MAT_CUTOUT, FALSE);
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
@@ -1717,6 +1732,7 @@ void generate_terrain_gfx(void) {
 
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
+    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gSPEndDisplayList(&cmm_curr_gfx[cmm_gfx_index++]);
 
@@ -1726,7 +1742,7 @@ void generate_terrain_gfx(void) {
     cmm_curr_poly_vert_count = 4;
     process_boundary(PROCESS_TILE_TRANSPARENT);
 
-    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
+    set_render_mode( MAT_TRANSPARENT, FALSE);
     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
 
     cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE); // Update water plane height
@@ -1761,6 +1777,7 @@ void generate_terrain_gfx(void) {
     //cmm_render_flip_normals = FALSE;
 
     process_tiles(PROCESS_TILE_TRANSPARENT);
+    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
     gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
     retroland_filter_off();
     gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
@@ -1792,7 +1809,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
     u8 matType = cmm_mat_table[matid].type;
 
     if (do_process(&matType, processType)) {
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], matType, disableZ);
+        set_render_mode( matType, disableZ);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[matid].gfx);
         // Important to not use matType here so that it's still opaque for screens
         if (((matType == MAT_CUTOUT) ||
@@ -1815,13 +1832,13 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
 
             // DECAL MODE
             if (matType != MAT_TRANSPARENT) { // Render in decal mode for cutouts, opaque and screen
-                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_DECAL, disableZ);
+                set_render_mode( MAT_DECAL, disableZ);
                 process_tile(pos, terrain, rot);
                 display_cached_tris();
             }
             // OPAQUE MODE
             if (matType >= MAT_CUTOUT) { // Render in cutout mode for cutouts and transparent
-                set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, disableZ);
+                set_render_mode( MAT_CUTOUT, disableZ);
                 process_tile(pos, terrain, rot);
                 display_cached_tris();
             }
@@ -1830,7 +1847,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct cmm_terrain
         }
         cmm_growth_render_type = 1;
 
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], topMatType, disableZ);
+        set_render_mode( topMatType, disableZ);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[topmatid].gfx);
         process_tile(pos, terrain, rot);
         display_cached_tris();
@@ -1845,12 +1862,13 @@ void render_water_plane(void) {
         cmm_gfx_index = 0;
 
         retroland_filter_on();
-        set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_TRANSPARENT, FALSE);
+        set_render_mode( MAT_TRANSPARENT, FALSE);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
         gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
         render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
         gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_INTER, G_RM_AA_ZB_XLU_INTER2);
         gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
         retroland_filter_off();
@@ -1927,14 +1945,14 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 cmm_curr_poly_vert_count = 4;
                 if (cmm_id_selection == TILE_TYPE_FENCE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], FENCE_TEX());
-                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+                    set_render_mode( MAT_CUTOUT, FALSE);
                     process_tile(cmm_cursor_pos, &cmm_terrain_fence, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_POLE) {
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], POLE_TEX());
-                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].type, FALSE);
+                    set_render_mode( cmm_mat_table[cmm_theme_table[cmm_lopt_theme].pole].type, FALSE);
                     process_tile(cmm_cursor_pos, &cmm_terrain_pole, cmm_rot_selection);
                 } else if (cmm_id_selection == TILE_TYPE_BARS) {
-                    set_render_mode(&cmm_curr_gfx[cmm_gfx_index++], MAT_CUTOUT, FALSE);
+                    set_render_mode( MAT_CUTOUT, FALSE);
                     gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], BARS_TEX());
                     u8 connections[5];
                     check_bar_connections(cmm_cursor_pos, connections);
@@ -1949,6 +1967,7 @@ Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx)
                 cmm_use_alt_uvs = FALSE;
             }
 
+            gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
             gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_INTER, G_RM_AA_ZB_XLU_INTER2);
             gDPSetTextureLUT(&cmm_curr_gfx[cmm_gfx_index++], G_TT_NONE);
             retroland_filter_off();
