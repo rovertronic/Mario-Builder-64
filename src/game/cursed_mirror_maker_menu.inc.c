@@ -1072,7 +1072,7 @@ void draw_cmm_menu(void) {
                     strx -= strLen+45;
                 }
 
-                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
+                gDPPipeSync(gDisplayListHead++);
                 gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
@@ -1419,11 +1419,13 @@ char *cmm_mm_help_btns[] = {
     "SD Card Setup",
     "Editor Controls",
     "Version Info",
+    "Share Levels",
 };
 
 u8 cmm_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 u8 cmm_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 u8 cmm_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
+u8 cmm_mm_help_page4[] = {TXT_MM_HELP_PAGE_4};
 
 u8 cmm_mm_txt_pages[] = {TXT_MM_PAGE};
 
@@ -1451,7 +1453,7 @@ void cmm_mm_shade_screen(void) {
         u8 time = MIN(cmm_menu_end_timer, 8);
         alpha = 110 - ((time * 110) / 8);
     }
-    gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
+    gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
@@ -1917,10 +1919,10 @@ s32 cmm_main_menu(void) {
             //}
             break;
         case MM_HELP_MODE:
-            cmm_menu_index_max = 3;
-            cmm_mm_anim_in(3);
-            render_cmm_mm_menu(cmm_mm_help_btns,"Help",3);
-            if (cmm_mm_generic_anim_out(3, TRUE)) {
+            cmm_menu_index_max = 4;
+            cmm_mm_anim_in(4);
+            render_cmm_mm_menu(cmm_mm_help_btns,"Help",4);
+            if (cmm_mm_generic_anim_out(4, TRUE)) {
                 cmm_menu_start_timer = 0;
                 if (cmm_menu_going_back == -1) {
                     cmm_mm_state = cmm_mm_main_state;
@@ -1937,6 +1939,9 @@ s32 cmm_main_menu(void) {
                         case 2:
                             cmm_mm_help_ptr = cmm_mm_help_page3;
                         break;
+                        case 3:
+                            cmm_mm_help_ptr = cmm_mm_help_page4;
+                        break;
                     }
                 }
             }
@@ -1950,7 +1955,7 @@ s32 cmm_main_menu(void) {
             print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
 
             if (cmm_mm_help_ptr == cmm_mm_help_page1) {
-                gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
+                gDPPipeSync(gDisplayListHead++);
                 gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
                 gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
             }
