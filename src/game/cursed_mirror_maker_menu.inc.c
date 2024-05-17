@@ -1599,6 +1599,10 @@ void cmm_mm_keyboard_anim_check(UNUSED s32 canBack) {
             u8 file_does_not_exist_already = (!level_file_exists(cmm_mm_keyboard_input));
             u8 something_is_entered = (cmm_mm_keyboard_input_index > 0);
 
+            if (cmm_mm_keyboard_exit_mode != KXM_NEW_LEVEL) {
+                file_does_not_exist_already = TRUE;
+            }
+
             if ((something_is_entered)&&(file_does_not_exist_already)) { //ensure that people write _something_
                 cmm_menu_end_timer = 0;
                 cmm_menu_going_back = 1;
