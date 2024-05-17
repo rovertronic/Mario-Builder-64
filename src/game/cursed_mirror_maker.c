@@ -1668,15 +1668,6 @@ void generate_terrain_gfx(void) {
     cmm_growth_render_type = 0;
     cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
-    // A little bit of free performance for N64
-    if ((gIsConsole)&&(cmm_vtx_total > 5000)) {
-        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
-        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
-    } else {
-        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
-        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
-    }
-
     retroland_filter_on();
 
     process_tiles(PROCESS_TILE_VPLEX);
@@ -1790,6 +1781,15 @@ void generate_terrain_gfx(void) {
 
     cmm_vtx_total = cmm_curr_vtx - cmm_terrain_vtx;
     cmm_gfx_total = (cmm_curr_gfx + cmm_gfx_index) - cmm_terrain_gfx;
+
+    // A little bit of free performance for N64
+    if ((gIsConsole)&&(cmm_vtx_total > 5000)) {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+    } else {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    }
 
     if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
         cmm_show_error_message("Create any more verts from deletion and you're cooked.");
