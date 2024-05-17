@@ -46,6 +46,21 @@ u16 cmm_konami_code[] = {
 };
 u16 cmm_konami_code_cur_index = 0;
 
+f32 clamp2(f32 x) {
+  f32 lowerlimit = 0.0f;
+  f32 upperlimit = 1.0f;
+  if (x < lowerlimit) return lowerlimit;
+  if (x > upperlimit) return upperlimit;
+  return x;
+}
+
+f32 smoothstep2(f32 edge0, f32 edge1, f32 x) {
+   // Scale, and clamp x to 0..1 range
+   x = clamp2((x - edge0) / (edge1 - edge0));
+
+   return x * x * (3.0f - 2.0f * x);
+}
+
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
     s16 width = 0;
@@ -1029,15 +1044,28 @@ void draw_cmm_menu(void) {
             }
 
             if (cmm_toolbox_transition_btn_render) {
-                create_dl_translation_matrix(MENU_MTX_PUSH, cmm_toolbox_transition_btn_x, cmm_toolbox_transition_btn_y, 0);
+                //f32 dist = sqrtf(sqr(cmm_toolbox_transition_btn_tx - cmm_toolbox_transition_btn_x) + sqr(cmm_toolbox_transition_btn_ty - cmm_toolbox_transition_btn_y));
+                //f32 multiplier = MAX(0.5f - (dist * 0.01f), 0.2f);
+                //cmm_toolbox_transition_btn_x = approach_f32_asymptotic(cmm_toolbox_transition_btn_x, cmm_toolbox_transition_btn_tx, multiplier);
+                //cmm_toolbox_transition_btn_y = approach_f32_asymptotic(cmm_toolbox_transition_btn_y, cmm_toolbox_transition_btn_ty, multiplier);
+
+                create_dl_translation_matrix(MENU_MTX_PUSH, cmm_toolbox_transition_btn_tx, cmm_toolbox_transition_btn_ty, 0);
+                gSPDisplayList(gDisplayListHead++, cmm_toolbox_transition_btn_old_gfx);//old texture
+                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+                f32 x = smoothstep(cmm_toolbox_transition_btn_x,cmm_toolbox_transition_btn_tx,cmm_toolbox_transition_progress);
+                f32 y = smoothstep(cmm_toolbox_transition_btn_y,cmm_toolbox_transition_btn_ty,cmm_toolbox_transition_progress);
+
+                create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
                 gSPDisplayList(gDisplayListHead++, cmm_toolbox_transition_btn_gfx);//texture
                 gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-                f32 dist = sqrtf(sqr(cmm_toolbox_transition_btn_tx - cmm_toolbox_transition_btn_x) + sqr(cmm_toolbox_transition_btn_ty - cmm_toolbox_transition_btn_y));
-                f32 multiplier = MAX(0.5f - (dist * 0.01f), 0.2f);
-                cmm_toolbox_transition_btn_x = approach_f32_asymptotic(cmm_toolbox_transition_btn_x, cmm_toolbox_transition_btn_tx, multiplier);
-                cmm_toolbox_transition_btn_y = approach_f32_asymptotic(cmm_toolbox_transition_btn_y, cmm_toolbox_transition_btn_ty, multiplier);
+                cmm_toolbox_transition_progress += 0.08f;
+                if (cmm_toolbox_transition_progress > 1.0f) {
+                    cmm_toolbox_transition_progress = 1.0f;
+                }
             }
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
@@ -1268,30 +1296,30 @@ struct cmm_credits_entry cmm_credits[] = {
     {"HackerN64 Team",0},
     {"",0},
     {"SD Card Support",1},
-    {"Falcobuster",0},
     {"Devwizard",0},
+    {"Falcobuster",0},
     {"",0},
     {"Title Screen Model",1},
     {"Biobak",0},
     {"",0},
     {"Music Ports",1},
-    {"sm64pie",0},
     {"ArcticJaguar725",0},
+    {"cpuHacka101",0},
     {"DobieMeltfire",0},
-    {"Warwiio",0},
-    {"ShrooboidBrat",0},
+    {"EDark",0},
     {"mosky2000",0},
     {"MrGreenThunder",0},
-    {"EDark",0},
-    {"cpuHacka101",0},
-    {"VanessaWolfe2015",0},
     {"PablosCorner",0},
+    {"ShrooboidBrat",0},
     {"Skelux",0},
+    {"sm64pie",0},
     {"Toasterketchup",0},
+    {"Warwiio",0},
+    {"VanessaWolfe2015",0},
     {"",0},
     {"Beyond the Cursed Mirror OST",1},
-    {"Thorndust",0},
     {"SpK",0},
+    {"Thorndust",0},
     {"",0},
     {"Beyond the Cursed Mirror Badge Art",1},
     {"HeroTechne",0},
@@ -1303,25 +1331,37 @@ struct cmm_credits_entry cmm_credits[] = {
     {"Dead Tree Texture",1},
     {"Thodds",0},
     {"",0},
+    {"Beta Testers",1},
+    {"Arceveti",0},
+    {"CaptainTheo86",0},
+    {"CowQuack",0},
+    {"Dao-Kha",0},
+    {"DisturbingNose",0},
+    {"FrostyZako",0},
+    {"Gmd",0},
+    {"hacker2077",0},
+    {"Haffey",0},
+    {"Kaze Emanuar",0},
+    {"KeyBlader",0},
+    {"KirbySuper",0},
+    {"RationaLess",0},
+    {"SpK",0},
+    {"Vortoxium",0},
+    {"",0},
+    {"Rovertronic Patreons",1},
+    {"Blob Jelly",0},
+    {"Disturbing Nose",0},
+    {"Haffey",0},
+    {"Henry Kumpel",0},
+    {"Pizza Brian",0},
+    {"Popeto",0},
+    {"Qacher Gigdu",0},
+    {"TOFU",0},
+    {"ZT",0},
+    {"",0},
     {"Mario Builder 64 Inspiration",1},
     {"Ting Thing",0},
-    {"Hello Fangaming",0},
 };
-
-f32 clamp2(f32 x) {
-  f32 lowerlimit = 0.0f;
-  f32 upperlimit = 1.0f;
-  if (x < lowerlimit) return lowerlimit;
-  if (x > upperlimit) return upperlimit;
-  return x;
-}
-
-f32 smoothstep2(f32 edge0, f32 edge1, f32 x) {
-   // Scale, and clamp x to 0..1 range
-   x = clamp2((x - edge0) / (edge1 - edge0));
-
-   return x * x * (3.0f - 2.0f * x);
-}
 
 s32 credits_y_offset = 0;
 void print_maker_credits(void) {
@@ -1683,7 +1723,7 @@ s32 cmm_main_menu(void) {
         random_u16(); // randomize for the initial tip
     }
 
-    if (cmm_mm_state != MM_CREDITS) {
+    if ((cmm_mm_state != MM_CREDITS)&&(cmm_mm_state != MM_HELP)) {
         switch(cmm_joystick) {
             case 2:
                 cmm_menu_index++;
@@ -1954,11 +1994,13 @@ s32 cmm_main_menu(void) {
             }
             print_maker_string(cmm_menu_title_vels[0],210,cmm_mm_help_ptr,FALSE);
 
+            /*
             if (cmm_mm_help_ptr == cmm_mm_help_page1) {
                 gDPPipeSync(gDisplayListHead++);
                 gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
                 gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
             }
+            */
             break;
         case MM_CREDITS:
             cmm_mm_shade_screen();
@@ -2254,6 +2296,7 @@ s32 cmm_main_menu(void) {
 
 // Pause menu during play
 u8 cmm_pause_menu_state = 0;
+u8 cmm_elta = FALSE;
 
 char * cmm_pause_menu_buttons_main[] = {
     "Continue",
@@ -2409,6 +2452,10 @@ s32 draw_cmm_pause_menu(void) {
                 }
             }
 
+            if (cmm_elta) {
+                print_generic_string_ascii(245-xoff ,160,"(Exit level to apply)");
+            }
+
             create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 160-(cmm_menu_index*16), 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
             gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
@@ -2437,6 +2484,7 @@ s32 draw_cmm_pause_menu(void) {
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_menu_index) {
                     case 4:
+                        cmm_elta = FALSE;
                         cmm_pause_menu_state = 0;
                         cmm_menu_index = 0;
                         if (gSramProbe != 0) {
@@ -2445,6 +2493,9 @@ s32 draw_cmm_pause_menu(void) {
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     default:
+                        if (cmm_menu_index == 0) {
+                            cmm_elta = TRUE;
+                        }
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         cmm_sram_configuration.option_flags ^= (1<<cmm_menu_index);
                         break;

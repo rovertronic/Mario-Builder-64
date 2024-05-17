@@ -1853,6 +1853,7 @@ f32 cmm_toolbox_transition_btn_tx;
 f32 cmm_toolbox_transition_btn_ty;
 Gfx * cmm_toolbox_transition_btn_gfx;
 Gfx * cmm_toolbox_transition_btn_old_gfx;
+f32 cmm_toolbox_transition_progress;
 
 // went a bit Define Crazy over here, im just quirky like that
 #define TOOLBOX_PAGE_WIDTH 9

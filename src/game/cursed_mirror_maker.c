@@ -2697,7 +2697,7 @@ TCHAR cmm_file_name[30];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
-char file_header_string[] = "MB64-v0.0";
+char file_header_string[] = "MB64-v1.0";
 
 extern u16 sRenderedFramebuffer;
 #define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
@@ -3059,6 +3059,7 @@ void sb_init(void) {
     }
 }
 
+u8 c_button_timer = 0;
 u32 main_cursor_logic(u32 joystick) {
     u8 cursorMoved = FALSE;
 
@@ -3084,11 +3085,16 @@ u32 main_cursor_logic(u32 joystick) {
             }
         }
 
-        if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
+        c_button_timer ++;
+        if (!(gPlayer1Controller->buttonDown & (U_CBUTTONS|D_CBUTTONS))) {
+            c_button_timer = 0;
+        }
+
+        if ((gPlayer1Controller->buttonDown & U_CBUTTONS)&&(c_button_timer%5 == 1)) {
             cmm_cursor_pos[1]++;
             cursorMoved = TRUE;
         }
-        if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
+        if ((gPlayer1Controller->buttonDown & D_CBUTTONS)&&(c_button_timer%5 == 1)) {
             cmm_cursor_pos[1]--;
             cursorMoved = TRUE;
         }
@@ -3420,12 +3426,25 @@ void sb_loop(void) {
                 }
             }
 
+            u8 at_spawn_point = FALSE;
+
             //Single A press
             if (gPlayer1Controller->buttonPressed & A_BUTTON || 
                 ((gPlayer1Controller->buttonPressed & START_BUTTON) && (cmm_toolbar_index >= 7))) {
                 switch(cmm_toolbar_index) {
                     case 7: // save and test
-                        if (get_occupy_data(cmm_cursor_pos)) {
+
+                        for (u32 i=0;i<cmm_object_count;i++) {
+                            if ((cmm_object_data[i].x == cmm_cursor_pos[0])&&(cmm_object_data[i].y == cmm_cursor_pos[1])&&(cmm_object_data[i].z == cmm_cursor_pos[2])) {
+                                if (cmm_object_data[i].type == OBJECT_TYPE_MARIO_SPAWN) {
+                                    at_spawn_point = TRUE;
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+
+                        if (get_occupy_data(cmm_cursor_pos) && !at_spawn_point) {
                             cmm_show_error_message("Cannot start test inside another tile or object!");
                             break;
                         }
@@ -3604,9 +3623,10 @@ void sb_loop(void) {
                 if ( cmm_toolbox[cmm_toolbox_index] != CMM_BUTTON_BLANK) {
 
                     cmm_toolbox_transition_btn_render = TRUE;
+                    cmm_toolbox_transition_progress = 0.0f;
                     // current pos
                     cmm_toolbox_transition_btn_x = GET_TOOLBOX_X(cmm_toolbox_index);
-                    cmm_toolbox_transition_btn_y = GET_TOOLBOX_Y(cmm_toolbox_index);
+                    cmm_toolbox_transition_btn_y = GET_TOOLBOX_Y(cmm_toolbox_index)-5;
                     // target pos
                     cmm_toolbox_transition_btn_tx = 34.0f+(cmm_toolbar_index*32.0f);
                     cmm_toolbox_transition_btn_ty = 25.0f;
