@@ -1332,7 +1332,7 @@ struct cmm_credits_entry cmm_credits[] = {
     {"Thodds",0},
     {"",0},
     {"Rex Model",1},
-    {"YoshiMilkman",0},
+    {"Yoshi Milkman",0},
     {"",0},
     {"Beta Testers",1},
     {"Arceveti",0},
