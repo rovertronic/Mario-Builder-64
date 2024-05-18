@@ -1,4 +1,7 @@
-# ![](https://i.imgur.com/CeOukzk.gif) HackerSM64 ![](https://i.imgur.com/s0LUbTo.gif)
+# Mario Builder 64
+Mario Builder 64 is a Super Mario 64 ROM hack that allows you to create custom levels in-game. Mario Builder 64 was built on top of the source code of the major hack **SM64: Beyond the Cursed Mirror.** Level editor specific code can be found in `cursed_mirror_maker.c` and its counterparts.
+
+# HackerSM64
 
 **AFTER CLONING THE REPO, CHECK OUT THE `include/config` FOLDER BEFORE ANYTHING ELSE! THERE'S A LOT OF STUFF IN THIS REPO THAT CAN BE TOGGLED THERE.**
 
