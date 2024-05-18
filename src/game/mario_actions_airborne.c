@@ -94,8 +94,8 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
 
     f32 fallHeight = m->peakHeight - m->pos[1];
 
-    if (gMarioState->floor->object != NULL) {
-        ignorefalldamage = gMarioState->floor->object->oDontFallDamage;
+    if (gMarioState->floor->object2 != NULL) {
+        ignorefalldamage = gMarioState->floor->object2->oDontFallDamage;
     }
 
     if (ignorefalldamage == TRUE) {

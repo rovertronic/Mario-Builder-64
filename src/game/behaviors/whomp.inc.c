@@ -111,7 +111,7 @@ void king_whomp_chase(void) {
 
     whomp_play_sfx_from_pound_animation();
 
-    if (mario_is_far_below_object(1000.0f)) {
+    if (o->oDistanceToMario > CMM_BOSS_TRIGGER_DIST+50.0f) {
         o->oAction = 0;
         stop_cmm_extra_music(2);
     }
