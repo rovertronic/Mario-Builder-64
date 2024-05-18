@@ -1878,8 +1878,14 @@ void render_water_plane(void) {
     }
 }
 
+u8 cmm_append_frameone_bandaid_fix = FALSE; // N64-Only RCP Lockup 1 found day before release. This seems to fix it. May God be with me, Amen.
 Gfx *cmm_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
+        if (!cmm_append_frameone_bandaid_fix) {
+            cmm_append_frameone_bandaid_fix = TRUE;
+            return NULL;
+        }
+
         geo_append_display_list(cmm_terrain_gfx, LAYER_OPAQUE);
         geo_append_display_list(cmm_terrain_gfx_tp, LAYER_TRANSPARENT);
 

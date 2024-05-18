@@ -1297,6 +1297,8 @@ s32 update_level(void) {
     return changeLevel;
 }
 
+extern u8 cmm_append_frameone_bandaid_fix;
+
 s32 init_level(void) {//
     s32 fadeFromColor = FALSE;
 #ifdef PUPPYPRINT_DEBUG
@@ -1306,6 +1308,8 @@ s32 init_level(void) {//
     if (cmm_mode == CMM_MODE_UNINITIALIZED) {
         cmm_init();
     }
+
+    cmm_append_frameone_bandaid_fix = FALSE;
 
     //starter variables
     if ((cmm_level_action == CMM_LA_PLAY_LEVELS)||(cmm_level_action == CMM_LA_TEST_LEVEL)) {
