@@ -12,7 +12,7 @@
 
 #define TILE_SIZE 256
 
-#define CMM_VERSION 0
+#define CMM_VERSION 1
 
 void save_level(void);
 void sb_loop(void);
