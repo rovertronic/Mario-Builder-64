@@ -3252,6 +3252,7 @@ void freecam_camera_main(void) {
             cmm_prepare_level_screenshot = FALSE;
             vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
             generate_object_preview();
+            cmm_freecam_help = TRUE;
         }
         return;
     }
