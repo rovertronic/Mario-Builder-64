@@ -8,7 +8,7 @@
 //maker text
 #define TXT_RECORDING _("Building path in progress!\n\n[A]: Place waypoint\n[B]: Undo\nSTART: Confirm")
 
-#define TXT_FREECAM _("Analog Stick: Look around\n[C] ^ / |: Move forward / backward\n[C] < / >: Move sideways\nL / [R]: Zoom\nSTART: Take screenshot\n[B]: Exit")
+#define TXT_FREECAM _("Analog Stick: Look around\n[C] ^ / |: Move forward / backward\n[C] < / >: Move sideways\nL / [R]: Zoom\n[Z]: Toggle Help\nSTART: Take screenshot\n[B]: Exit")
 
 #define TXT_MM_PAGE _("Page: 0/0")
 
