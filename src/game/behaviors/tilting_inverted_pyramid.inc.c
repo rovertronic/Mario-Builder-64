@@ -6168,6 +6168,9 @@ void bhv_onoffswitch(void) {
                     o->oAction = 1;
                 }
             }
+
+            // @todo
+            // Load collision in action state 2 when compatibility calls for it
             break;
     }
 }
