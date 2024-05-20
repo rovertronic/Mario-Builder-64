@@ -6153,6 +6153,9 @@ void bhv_onoffswitch(void) {
                     o->oAction = 2;
                 }
             }
+
+            // Only load collision when in action state 1
+            load_object_collision_model();
             break;
         case 2: // switch down
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 0.1f ,0.1f);

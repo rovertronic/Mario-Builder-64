@@ -9374,7 +9374,7 @@ const BehaviorScript bhvOnOffButton[] = {
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_onoffswitch),
-        CALL_NATIVE(load_object_collision_model),
+        //CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
