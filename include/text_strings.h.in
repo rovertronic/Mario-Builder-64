@@ -16,7 +16,7 @@
 
 #define TXT_MM_HELP_PAGE_2 _("Analog Stick: Move cursor horizontally\n[C] ^ / |: Move cursor vertically\n[C] < / >: Rotate camera\nD-Pad |: Change camera zoom\n\n[A]: Place object/tile\n[B]: Delete object/tile\n[Z]: Rotate object/tile\nD-Pad < / >: Change object parameters\nD-Pad ^: Flip tile vertically\n\nL/R: Navigate hotbar\nSTART: Open toolbox")
 
-#define TXT_MM_HELP_PAGE_3 _("1.1.0 Release (Built on -)\n-Fixed 100 coin star having a bad ID\n-Text in screenshot mode can be hidden\n-Removed Grindel.exe")
+#define TXT_MM_HELP_PAGE_3 _("1.1.0 Release (Built on -)\n-Fixed 100 coin star having a bad ID\n-Text in screenshot mode can be hidden\n-Improved quicksand texture\nFixed BTCM template songs\n-Removed Grindel.exe")
 
 #define TXT_MM_HELP_PAGE_4 _("You can upload your .mb64 files online\nat these locations:\n\nLevel Share Square:\nhttps://levelsharesquare.com/levels\n\nRovertronic Roundtable:\nhttps://discord.gg/X7vvvKu")
 

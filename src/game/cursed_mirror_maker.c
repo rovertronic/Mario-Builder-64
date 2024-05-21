@@ -2852,6 +2852,9 @@ void load_level(void) {
         cmm_save.seq[0] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
         cmm_save.seq[1] = 1;
         cmm_save.seq[2] = 10;
+        if (cmm_lopt_game == CMM_GAME_BTCM) {
+            cmm_save.seq[2] = 22;
+        }
         cmm_save.envfx = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.theme = cmm_templates[cmm_lopt_template].theme;
         cmm_save.bg = cmm_templates[cmm_lopt_template].bg;

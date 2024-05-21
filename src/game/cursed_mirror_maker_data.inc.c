@@ -2468,11 +2468,11 @@ struct cmm_template {
 };
 
 struct cmm_template cmm_templates[] = {
-    {{0, 15}, 0, 0, 0, 0,     2, FALSE},   // Grassy - BoB, Floating Farm
-    {{4, 46}, 0, 6, 1, 0,     2, FALSE},   // Desert - LLL, Dry Dry Desert
-    {{4, 14}, 1, 2, 2, 8,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
-    {{2, 28}, 0, 0, 8, 0,     2, FALSE},   // Water -  DDD, Sky and Sea
-    {{5, 38}, 2, 5, 6, 0,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
+    {{0, 16}, 0, 0, 0, 0,     2, FALSE},   // Grassy - BoB, Floating Farm
+    {{4, 49}, 0, 6, 1, 0,     2, FALSE},   // Desert - LLL, Dry Dry Desert
+    {{4, 15}, 1, 2, 2, 8,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
+    {{2, 29}, 0, 0, 8, 0,     2, FALSE},   // Water -  DDD, Sky and Sea
+    {{5, 39}, 2, 5, 6, 0,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
 };
 
 struct cmm_settings_button cmm_mode_settings_buttons[] = {
