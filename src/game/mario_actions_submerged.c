@@ -1554,6 +1554,10 @@ static s32 check_common_submerged_cancels(struct MarioState *m) {
                 return transition_submerged_to_airborne(m);
             }
         }
+        // if in air after swimming out of side/bottom
+        if (m->pos[1] > m->floorHeight + 10) {
+            return transition_submerged_to_airborne(m);
+        } 
         return transition_submerged_to_walking(m);
     }
 
