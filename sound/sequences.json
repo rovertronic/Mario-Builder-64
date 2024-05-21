@@ -43,7 +43,7 @@
 	"28_redhot": ["19"],
     "29_custom_rain_outside": ["28_streamed_audio"],
     "2A_custom_rain_inside": ["28_streamed_audio"],
-    "2B_showrunner": ["17"],
+    "2B_showrunner": ["2E"],
     "2C_cutscene_cosmic_seed": ["25"],
     "2D_cosmic_seed_level": ["0C_extended_bank"],
     "2E_cosmic_seed_boss": ["0C_extended_bank"],
