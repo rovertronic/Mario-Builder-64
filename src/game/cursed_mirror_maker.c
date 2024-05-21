@@ -141,6 +141,8 @@ s16 cmm_play_s16_water_level = 0;
 u8 cmm_lopt_costume = 0;
 
 u8 cmm_lopt_seq[5] = {0,0,0,0,0}; // Song index
+u8 cmm_lopt_album[3] = {-1,-1,-1}; // Album index
+
 u8 cmm_lopt_seq_seqtype = 0; // Level Music, Race Music, Boss Music 
 u8 cmm_lopt_seq_album = 0; // Category
 u8 cmm_lopt_seq_song = 0; // Song index within category
@@ -2734,6 +2736,9 @@ void save_level(void) {
     cmm_save.seq[0] = cmm_lopt_seq[0];
     cmm_save.seq[1] = cmm_lopt_seq[1];
     cmm_save.seq[2] = cmm_lopt_seq[2];
+    cmm_save.album[0] = cmm_lopt_album[0];
+    cmm_save.album[1] = cmm_lopt_album[1];
+    cmm_save.album[2] = cmm_lopt_album[2];
     cmm_save.envfx = cmm_lopt_envfx;
     cmm_save.theme = cmm_lopt_theme;
     cmm_save.bg = cmm_lopt_bg;
@@ -2852,6 +2857,9 @@ void load_level(void) {
         cmm_save.seq[0] = cmm_templates[cmm_lopt_template].music[cmm_lopt_game];
         cmm_save.seq[1] = 1;
         cmm_save.seq[2] = 10;
+        cmm_save.album[0] = 0;
+        cmm_save.album[1] = 0;
+        cmm_save.album[2] = 0;
         if (cmm_lopt_game == CMM_GAME_BTCM) {
             cmm_save.seq[2] = 22;
         }
@@ -2892,6 +2900,9 @@ void load_level(void) {
     cmm_lopt_seq[0] = cmm_save.seq[0];
     cmm_lopt_seq[1] = cmm_save.seq[1];
     cmm_lopt_seq[2] = cmm_save.seq[2];
+    cmm_lopt_album[0] = cmm_save.album[0];
+    cmm_lopt_album[1] = cmm_save.album[1];
+    cmm_lopt_album[2] = cmm_save.album[2];
     cmm_lopt_envfx = cmm_save.envfx;
     cmm_lopt_theme = cmm_save.theme;
     cmm_lopt_bg = cmm_save.bg;
@@ -3024,7 +3035,7 @@ void sb_init(void) {
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[0]]), 0);
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 0);
             }
         break;
         case CMM_MODE_PLAY:
@@ -3062,7 +3073,7 @@ void sb_init(void) {
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[0]]), 0);
+                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 0);
             }
         break;
     }

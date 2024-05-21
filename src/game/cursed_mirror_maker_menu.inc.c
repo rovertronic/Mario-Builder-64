@@ -463,8 +463,18 @@ char *cmm_custom_get_menu_name(s32 index) {
     }
 }
 
-// Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq
+// Set cmm_lopt_seq_album and cmm_lopt_seq_song based on cmm_lopt_seq and cmm_lopt_album
 void set_album_and_song_from_seq(u8 index) {
+    // New v1.1.0 code    
+    if (cmm_save.version >= 2) {
+        u32 song = cmm_lopt_seq[index];
+        u32 album = cmm_lopt_album[index];
+        cmm_lopt_seq_song = song;
+        cmm_lopt_seq_album = album;
+        return;
+    }
+
+    // Original v1.0.0 code
     u32 song = cmm_lopt_seq[index];
     u32 i = 0;
     do {
@@ -478,6 +488,15 @@ void set_album_and_song_from_seq(u8 index) {
 }
 // Set cmm_lopt_seq from cmm_lopt_seq_album and cmm_lopt_seq_song
 void set_seq_from_album_and_song(u8 index) {
+    // New v1.1.0 code
+    if (cmm_save.version >= 2) {
+        cmm_lopt_seq[index] = cmm_lopt_seq_song;
+        cmm_lopt_album[index] = cmm_lopt_seq_album;
+        return;
+    }
+
+
+    // Original v1.0.0 code, with compat fixes
     cmm_lopt_seq[index] = 0;
     u32 i = 0;
     do {
@@ -501,10 +520,19 @@ void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
     } while (++i < ARRAY_COUNT(cmm_matlist));
 }
 
+u8 get_seq(u8 album, u8 id) {
+    switch (album) {
+        case 0:         return seq_album_vanilla[id];
+        case 1:         return seq_album_btcm[id];
+        case 2:         return seq_album_hacks[id];
+        case 3:         return seq_album_retro[id];
+        default:        return seq_musicmenu_array[id];
+    }
+}
 void music_type_changed(void) {
     cmm_set_data_overrides();
     stop_background_music(get_current_background_music());
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[cmm_lopt_seq_seqtype]]), 0);
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
 }
 void music_category_changed(void) {
     cmm_lopt_seq_song = 0;
@@ -514,7 +542,7 @@ void music_category_changed(void) {
 void song_changed(void) {
     set_seq_from_album_and_song(cmm_lopt_seq_seqtype);
     stop_background_music(get_current_background_music());
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[cmm_lopt_seq[cmm_lopt_seq_seqtype]]), 0);
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
 }
 
 void cmm_set_data_overrides(void) {

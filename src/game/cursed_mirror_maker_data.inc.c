@@ -2070,7 +2070,9 @@ char *cmm_music_retro_string_table[] = {
     "Castle (Super Mario World)",
 };
 
-// Legacy music array for v1.0.0
+/*
+    Legacy music contents for v1.0.0 levels
+*/ 
 u8 seq_musicmenu_array[] = {
     SEQ_LEVEL_GRASS,
     SEQ_LEVEL_SLIDE,
@@ -2186,6 +2188,11 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMB3_CASTLE,
     SEQ_SMW_ATHLETIC,                 // 0x4E
     SEQ_SMW_CASTLE,
+};
+
+// Array of sizes
+u8 seq_legacy_sizes[] = {
+
 };
 
 /*
@@ -2424,6 +2431,7 @@ extern void reload_bg(void);
 extern void reload_theme(void);
 extern void generate_terrain_gfx(void);
 
+extern u8 get_seq(u8 album, u8 id);
 extern void music_type_changed(void);
 extern void music_category_changed(void);
 extern void song_changed(void);

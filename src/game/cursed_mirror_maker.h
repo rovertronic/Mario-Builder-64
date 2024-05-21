@@ -340,6 +340,7 @@ struct cmm_level_save_header {
     // Level options
     u8 costume;
     u8 seq[5];
+    u8 album[3];
     u8 envfx;
     u8 theme;
     u8 bg;
