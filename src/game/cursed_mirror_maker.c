@@ -2814,6 +2814,13 @@ void save_level(void) {
     f_chdir("..");
 }
 
+// Offset from current save header size
+UINT size_offset[] = {
+    3,          // nil
+    3,          // 1.0.0
+    0,          // 1.1.0 (current)
+};
+
 void load_level(void) {
     s32 i;
     s32 j;
@@ -2826,12 +2833,18 @@ void load_level(void) {
     FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
         UINT bytes_read;
+        u8 version;
+
         //file exists, load it
         f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
-        //read header
-        f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
+        // Seek, read file version, rewind
+        f_lseek(&cmm_file, 0xA); // 0xA ends up being version identifier byte
+        f_read(&cmm_file, &version, (UINT)0x1, &bytes_read);
+        f_rewind(&cmm_file);
+        // Obtained file version, now set size accordingly and read header
+        f_read(&cmm_file,&cmm_save,sizeof(cmm_save)-(UINT)size_offset[version],&bytes_read);
         //read tiles
-        f_read(&cmm_file,&cmm_tile_data,sizeof(cmm_tile_data[0])*cmm_save.tile_count,&bytes_read);
+        f_read(&cmm_file,&cmm_tile_data,(sizeof(cmm_tile_data[0]))*cmm_save.tile_count,&bytes_read);
         //read objects
         f_read(&cmm_file,&cmm_object_data,sizeof(cmm_object_data[0])*cmm_save.object_count,&bytes_read);
 
@@ -2861,7 +2874,8 @@ void load_level(void) {
         cmm_save.album[1] = 0;
         cmm_save.album[2] = 0;
         if (cmm_lopt_game == CMM_GAME_BTCM) {
-            cmm_save.seq[2] = 22;
+            cmm_save.album[2] = 1;
+            cmm_save.seq[2] = 8;
         }
         cmm_save.envfx = cmm_templates[cmm_lopt_template].envfx;
         cmm_save.theme = cmm_templates[cmm_lopt_template].theme;
@@ -2900,9 +2914,26 @@ void load_level(void) {
     cmm_lopt_seq[0] = cmm_save.seq[0];
     cmm_lopt_seq[1] = cmm_save.seq[1];
     cmm_lopt_seq[2] = cmm_save.seq[2];
-    cmm_lopt_album[0] = cmm_save.album[0];
-    cmm_lopt_album[1] = cmm_save.album[1];
-    cmm_lopt_album[2] = cmm_save.album[2];
+
+    // Normal loading in v1.1.0 or greater
+    if (cmm_save.version >= 2) {
+        cmm_lopt_album[0] = cmm_save.album[0];
+        cmm_lopt_album[1] = cmm_save.album[1];
+        cmm_lopt_album[2] = cmm_save.album[2];
+    
+    // Otherwise convert
+    } else {
+        for (u8 seq = 0; seq < 3; seq++) {
+            u8 album = 0, new_seq = cmm_lopt_seq[seq];
+            do {
+                if (new_seq < cmm_settings_music_albums[album].size) break;
+                new_seq -= cmm_settings_music_albums[album].size;
+            } while(album++ < ARRAY_COUNT(cmm_music_album_string_table));
+            cmm_lopt_album[seq] = album;
+            cmm_lopt_seq[seq] = new_seq;
+        }
+    }
+    
     cmm_lopt_envfx = cmm_save.envfx;
     cmm_lopt_theme = cmm_save.theme;
     cmm_lopt_bg = cmm_save.bg;
@@ -3035,7 +3066,11 @@ void sb_init(void) {
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 0);
+                /*play_music(
+                    SEQ_PLAYER_LEVEL, 
+                    SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 
+                    0
+                );*/
             }
         break;
         case CMM_MODE_PLAY:
@@ -3073,7 +3108,11 @@ void sb_init(void) {
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 0);
+                /*play_music(
+                    SEQ_PLAYER_LEVEL, 
+                    SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 
+                    0
+                );*/
             }
         break;
     }
