@@ -3219,6 +3219,7 @@ extern s16 cmm_menu_end_timer;
 s16 cmm_freecam_pitch;
 s16 cmm_freecam_yaw;
 u8 cmm_freecam_snap = FALSE;
+u8 cmm_freecam_help = TRUE;
 u8 cmm_freecam_snap_timer = 0;
 
 void freecam_camera_init(void) {
@@ -3251,6 +3252,7 @@ void freecam_camera_main(void) {
             cmm_prepare_level_screenshot = FALSE;
             vec3f_copy(cmm_camera_pos,cmm_camera_pos_prev);
             generate_object_preview();
+            cmm_freecam_help = TRUE;
         }
         return;
     }
@@ -3304,6 +3306,10 @@ void freecam_camera_main(void) {
         if (cmm_camera_fov > 100.0f) {
             cmm_camera_fov = 100.0f;
         }
+    }
+
+    if (gPlayer1Controller->buttonPressed & Z_TRIG) {
+        cmm_freecam_help = !cmm_freecam_help;
     }
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {

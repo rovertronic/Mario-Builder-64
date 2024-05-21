@@ -1221,7 +1221,7 @@ void draw_cmm_menu(void) {
             break;
 
         case CMM_MAKE_SCREENSHOT:
-            if (cmm_freecam_snap) {
+            if (cmm_freecam_snap || !cmm_freecam_help) {
                 return;
             }
             print_maker_string(20,210,cmm_txt_freecam,TRUE);
