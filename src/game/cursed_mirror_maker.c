@@ -1529,7 +1529,7 @@ void process_boundary(u32 processRenderMode) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
 
-            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+            Gfx *sidetex = HAS_TOPMAT(planeMat) && get_sidetex(TILE_MATDEF(planeMat).topmat);
             if (sidetex) {
                 render_boundary_decal_edge(sidetex, -33, sidematType);
             }
@@ -1579,7 +1579,7 @@ void process_boundary(u32 processRenderMode) {
             renderWalls = (cmm_lopt_boundary_height > 0);
         }
 
-        Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+        Gfx *sidetex = HAS_TOPMAT(planeMat) && get_sidetex(TILE_MATDEF(planeMat).topmat);
         if (sidetex) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
