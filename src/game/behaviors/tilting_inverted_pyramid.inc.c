@@ -6215,7 +6215,7 @@ void bhv_woodplat(void) {
                 o->hitboxHeight = 256.f;
             } else {
                 o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
-                o->hitboxHeight = 128.f;
+                o->hitboxHeight = 96.f;
             }
             o->prevObj->prevObj = o;
             o->oAction = 1;
