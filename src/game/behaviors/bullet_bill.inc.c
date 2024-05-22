@@ -50,10 +50,12 @@ void bullet_bill_act_2(void) {
             o->oForwardVel = -3.0f;
         }
     } else {
-        if (o->oTimer == 51) {
+        if (o->oTimer == 50) {
             cur_obj_become_tangible();
+            cur_obj_play_sound_2(SOUND_OBJ_POUNDING_CANNON);
+            cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
-        if (o->oTimer > 51) {
+        if (o->oTimer >= 50) {
             // cursed code. pretend the bullet bill is close to the floor
             // when doing collision checks
             o->oPosY -= 127.f; // to ground
@@ -69,11 +71,6 @@ void bullet_bill_act_2(void) {
 
         if (o->oDistanceToMario > 300.0f) {
             cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x100);
-        }
-
-        if (o->oTimer == 50) {
-            cur_obj_play_sound_2(SOUND_OBJ_POUNDING_CANNON);
-            cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
 
         if (o->oTimer > 150) {

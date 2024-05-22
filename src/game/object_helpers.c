@@ -30,6 +30,7 @@
 #include "puppycamold.h"
 #include "game/rovent.h"
 #include "save_file.h"
+#include "audio/external.h"
 
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
 
@@ -1535,6 +1536,7 @@ void cur_obj_update_ceiling(void) {
 }
 
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
+    obj_add_self_to_physics_list();
     if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
         cur_obj_update_floor();
         o->oMoveFlags &= ~(OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER);
@@ -2630,6 +2632,7 @@ void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
 
         if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
             cmm_play_onoff = switch_interacting->oBehParams2ndByte;
+            play_sound(SOUND_GENERAL2_BUTTON_PRESS, gGlobalSoundSource);
         }
     }
 }
