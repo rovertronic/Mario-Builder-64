@@ -596,7 +596,7 @@ static TerrainData sVertexData[600];
  */
 extern u8 collision_load_total;
 void load_object_collision_model(void) {
-    if (collision_load_total >= 80) {
+    if (collision_load_total >= 100) {
         return;
     }
 

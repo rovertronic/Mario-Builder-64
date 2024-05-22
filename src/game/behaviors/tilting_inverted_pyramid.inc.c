@@ -6287,7 +6287,7 @@ void bhv_woodplat_col_init(void) {
         o->oWoodPlatColHeight += (curPlat->oBehParams2ndByte == 1 ? 256.f : 96.f);
         curPlat = curPlat->oWoodPlatAbovePlatform;
     } while (curPlat);
-    o->oCollisionDistance = MAX(o->oWoodPlatColHeight - 1500.f, 0.f) + 300.f;
+    o->oCollisionDistance = MAX(o->oWoodPlatColHeight - 500.f, 0.f) + 300.f;
 
     o->header.gfx.scale[1] = o->oWoodPlatColHeight / 100.f;
 }
