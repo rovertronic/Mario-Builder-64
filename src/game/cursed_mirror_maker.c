@@ -2964,6 +2964,7 @@ void load_level(void) {
         cmm_tile_data_indices[i] = cmm_tile_count;
     }
 
+    cmm_trajectories_used = 0;
     for (i = 0; i < cmm_object_count; i++) {
         //bcopy(&cmm_save.objects[i],&cmm_object_data[i],sizeof(cmm_object_data[i]));
         s8 pos[3];
