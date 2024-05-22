@@ -175,7 +175,7 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
  */
 static s32 lower_cell_index(s32 coord) {
     // Move from range [-LEVEL_BOUNDARY_MAX, LEVEL_BOUNDARY_MAX) to [0, 2 * LEVEL_BOUNDARY_MAX)
-    coord += LEVEL_BOUNDARY_MAX;
+    coord += LEVEL_BOUNDARY_MAX + 1;
 
     // [0, NUM_CELLS)
     s32 index = coord / CELL_SIZE;
@@ -190,7 +190,7 @@ static s32 lower_cell_index(s32 coord) {
  */
 static s32 upper_cell_index(s32 coord) {
     // Move from range [-LEVEL_BOUNDARY_MAX, LEVEL_BOUNDARY_MAX) to [0, 2 * LEVEL_BOUNDARY_MAX)
-    coord += LEVEL_BOUNDARY_MAX;
+    coord += LEVEL_BOUNDARY_MAX - 1;
 
     // [0, NUM_CELLS)
     s32 index = coord / CELL_SIZE;
@@ -213,9 +213,9 @@ void add_surface(struct Surface *surface, s32 dynamic) {
     min_max_3i(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2], &minZ, &maxZ);
 
     s32 minCellX = lower_cell_index(minX);
-    s32 maxCellX = upper_cell_index(maxX);
+    s32 maxCellX = MAX(upper_cell_index(maxX), minCellX);
     s32 minCellZ = lower_cell_index(minZ);
-    s32 maxCellZ = upper_cell_index(maxZ);
+    s32 maxCellZ = MAX(upper_cell_index(maxZ), minCellZ);
 
     for (cellZ = minCellZ; cellZ <= maxCellZ; cellZ++) {
         for (cellX = minCellX; cellX <= maxCellX; cellX++) {
