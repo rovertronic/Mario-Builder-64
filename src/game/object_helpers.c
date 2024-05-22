@@ -985,12 +985,14 @@ void obj_become_tangible(struct Object *obj) {
 
 void cur_obj_update_floor_height(void) {
     struct Surface *floor;
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), o->oPosZ, &floor);
+    f32 floorBuffer = (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
+    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + floorBuffer, o->oPosZ, &floor);
 }
 
 struct Surface *cur_obj_update_floor_height_and_get_floor(void) {
     struct Surface *floor;
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), o->oPosZ, &floor);
+    f32 floorBuffer = (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
+    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + floorBuffer, o->oPosZ, &floor);
     return floor;
 }
 
@@ -1031,7 +1033,9 @@ static void cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlo
         intendedZ = o->oPosZ + (o->oVelZ*.5f);
     }
 
-    f32 intendedFloorHeight = find_floor(intendedX, o->oPosY + MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0), intendedZ, &intendedFloor);
+    f32 floorBuffer = (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? FIND_FLOOR_BUFFER : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
+
+    f32 intendedFloorHeight = find_floor(intendedX, o->oPosY + floorBuffer, intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
