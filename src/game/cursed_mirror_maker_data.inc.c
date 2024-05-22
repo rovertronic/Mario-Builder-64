@@ -2499,7 +2499,8 @@ char *cmm_tips[] = {
     "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
     "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch of new enemies and collectible badges!",
     "Tip: Remember to use the Take Screenshot button to capture\n   a thumbnail before publishing your level!",
-    "Tip: You can place some objects inside of\n   other objects as loot.",
+    "Tip: You can place stars and switches inside of\n   bosses or other objects as loot.",
+    "Tip: Placing Wooden Platforms on top of each other\n   will cause them to combine into one object.",
 // BTCM
     "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
     "Tip: The Star Radar badge will let the player know\n   what direction the nearest star is in.",

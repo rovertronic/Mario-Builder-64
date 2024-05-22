@@ -6202,6 +6202,26 @@ void bhv_onoffblock(void) {
     }
 }
 
+void bhv_woodplat_check_above(void) {
+    // Check if there is a wooden platform immediately above this one
+    // Fake the Y position
+    o->oPosY += 256.f;
+    struct Object *platform = cur_obj_nearest_object_with_behavior(bhvWoodPlat);
+    if (!platform) {
+        o->oPosY -= 256.f;
+        return;
+    }
+    f32 dist = dist_between_objects(o, platform);
+    o->oPosY -= 256.f;
+
+    if (dist < 5.f) {
+        o->oWoodPlatAbovePlatform = platform;
+        platform->oWoodPlatIsStacked = TRUE;
+        return;
+    }
+    return;
+}
+
 void bhv_woodplat(void) {
     f32 waterLevel = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 
@@ -6213,6 +6233,8 @@ void bhv_woodplat(void) {
                 o->prevObj = spawn_object(o,MODEL_NONE,bhvFatPlatCol);
                 o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
                 o->hitboxHeight = 256.f;
+
+                bhv_woodplat_check_above();
             } else {
                 o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
                 o->hitboxHeight = 96.f;
@@ -6221,6 +6243,10 @@ void bhv_woodplat(void) {
             o->oAction = 1;
             break;
         case 1:
+            if (o->oWoodPlatIsStacked) {
+                o->oAction = 2;
+                break;
+            }
             if (waterLevel < o->oPosY) {
                 // Air Behavior
                 o->oGravity = -4.0f;
@@ -6236,8 +6262,18 @@ void bhv_woodplat(void) {
             }
             cur_obj_update_floor_and_walls();
             cur_obj_move_standard(-20);
+
             o->oGraphYOffset = o->prevObj->oPosY-o->oPosY;
             vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
+            
+            struct Object *curPlat = o;
+            while (curPlat->oWoodPlatAbovePlatform) {
+                vec3f_copy(&curPlat->oWoodPlatAbovePlatform->oPosVec,&curPlat->oPosVec);
+                curPlat = curPlat->oWoodPlatAbovePlatform;
+                curPlat->oPosY += 256.f;
+                curPlat->oGraphYOffset = curPlat->prevObj->oPosY-curPlat->oPosY;
+                vec3f_copy(&curPlat->prevObj->oPosVec,&curPlat->oPosVec);
+            }
             break;
     }
 }
