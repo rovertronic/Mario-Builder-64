@@ -623,12 +623,6 @@ void load_object_collision_model(void) {
     }
 #endif
 */
-
-    // If the object collision is supposed to be loaded more than the
-    // drawing distance, extend the drawing range.
-    if (o->oCollisionDistance > o->oDrawingDistance) {
-        o->oDrawingDistance = o->oCollisionDistance;
-    }
     
     s32 inColRadius = ((
            (sqrLateralDist < sqr(o->oCollisionDistance))
@@ -665,7 +659,7 @@ void load_object_collision_model(void) {
         marioDist = dist_between_objects(o, gMarioObject);
     }
 
-    COND_BIT((marioDist < o->oDrawingDistance), o->header.gfx.node.flags, GRAPH_RENDER_ACTIVE);
+    //COND_BIT((marioDist < o->oDrawingDistance), o->header.gfx.node.flags, GRAPH_RENDER_ACTIVE);
     profiler_collision_update(first);
 }
 

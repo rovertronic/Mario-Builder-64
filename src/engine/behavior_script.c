@@ -838,7 +838,7 @@ void cur_obj_update(void) {
     // }
 
     // Calculate the distance from the object to Mario.
-    if (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) {
+    if ((objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) || (o->oDrawingDistance > 0.f)) {
         o->oDistanceToMario = dist_between_objects(o, gMarioObject);
         distanceFromMario = o->oDistanceToMario;
     } else {
@@ -951,13 +951,10 @@ void cur_obj_update(void) {
     //         o->activeFlags |= ACTIVE_FLAG_FAR_AWAY;
     //     }
     // }
-    if (
-        o->collisionData == NULL
-        &&  (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO)
-        && !(objFlags & OBJ_FLAG_ACTIVE_FROM_AFAR)
-    ) {
+    if (((objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) || (o->oDrawingDistance > 0.f))
+        && !(objFlags & OBJ_FLAG_ACTIVE_FROM_AFAR)) {
         // If the object has a render distance, check if it should be shown.
-        if (distanceFromMario > o->oDrawingDistance) {
+        if ((distanceFromMario > o->oDrawingDistance) && (o->oDrawingDistance > 0.f)) {
             // Out of render distance, hide the object.
             o->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
             o->activeFlags |= ACTIVE_FLAG_FAR_AWAY;

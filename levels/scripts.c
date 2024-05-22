@@ -157,7 +157,6 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BUTTON, onoffswitch_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_1, onoffblock1_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_2, onoffblock2_geo),
-    LOAD_MODEL_FROM_GEO(MODEL_MAKER_BLOCK_3, onoffblock3_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_DIAMOND, wdw_geo_0005C0),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_WOODPLAT, woodplat_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_RFBOX, rfbox_geo),

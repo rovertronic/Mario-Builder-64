@@ -235,7 +235,6 @@
 #include "onoffswitch/model.inc.c"
 #include "onoffblock1/model.inc.c"
 #include "onoffblock2/model.inc.c"
-#include "onoffblock3/model.inc.c"
 #include "onoffbutton/collision.inc.c"
 #include "onoffblock/collision.inc.c"
 #include "onoffbutton/model.inc.c"

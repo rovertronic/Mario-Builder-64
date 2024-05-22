@@ -761,8 +761,6 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "onoffblock2/geo_header.h"
 
-#include "onoffblock3/geo_header.h"
-
 #include "onoffbutton/collision_header.h"
 
 #include "onoffblock/collision_header.h"

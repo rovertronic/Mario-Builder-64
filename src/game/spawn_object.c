@@ -215,8 +215,8 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->oDamageOrCoinValue = 0;
     obj->oHealth = 2048;
 
-    obj->oCollisionDistance = 1000.0f;
-    obj->oDrawingDistance = 4000.0f;
+    obj->oCollisionDistance = 300.0f;
+    obj->oDrawingDistance = 0.0f;
 
     mtxf_identity(obj->transform);
 
