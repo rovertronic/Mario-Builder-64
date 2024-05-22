@@ -1529,8 +1529,8 @@ void process_boundary(u32 processRenderMode) {
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
             render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
 
-            Gfx *sidetex = HAS_TOPMAT(planeMat) && get_sidetex(TILE_MATDEF(planeMat).topmat);
-            if (sidetex) {
+            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+            if (sidetex && HAS_TOPMAT(planeMat)) {
                 render_boundary_decal_edge(sidetex, -33, sidematType);
             }
         }
@@ -1579,8 +1579,8 @@ void process_boundary(u32 processRenderMode) {
             renderWalls = (cmm_lopt_boundary_height > 0);
         }
 
-        Gfx *sidetex = HAS_TOPMAT(planeMat) && get_sidetex(TILE_MATDEF(planeMat).topmat);
-        if (sidetex) topY -= 1;
+        Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+        if (sidetex && HAS_TOPMAT(planeMat)) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
             set_render_mode( sidematType, FALSE);
@@ -1592,7 +1592,7 @@ void process_boundary(u32 processRenderMode) {
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, 0);
             }
 
-            if (sidetex) {
+            if (sidetex && HAS_TOPMAT(planeMat)) {
                 // Render rim of regular material before decal
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1, 0);
                 render_boundary_decal_edge(sidetex, topY, sidematType);
