@@ -504,7 +504,7 @@ u8 get_seq(u8 album, u8 id) {
 void music_type_changed(void) {
     cmm_set_data_overrides();
     stop_background_music(get_current_background_music());
-    //play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
 }
 void music_category_changed(void) {
     cmm_lopt_seq_song = 0;
@@ -514,7 +514,7 @@ void music_category_changed(void) {
 void song_changed(void) {
     set_seq_from_album_and_song(cmm_lopt_seq_seqtype);
     stop_background_music(get_current_background_music());
-    //play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[cmm_lopt_seq_seqtype], cmm_lopt_seq[cmm_lopt_seq_seqtype])), 0);
 }
 
 void cmm_set_data_overrides(void) {

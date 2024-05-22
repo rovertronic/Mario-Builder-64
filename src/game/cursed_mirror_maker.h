@@ -340,7 +340,9 @@ struct cmm_level_save_header {
     // Level options
     u8 costume;
     u8 seq[5];
+    // New data
     u8 album[3];
+    // End new data
     u8 envfx;
     u8 theme;
     u8 bg;
@@ -357,7 +359,7 @@ struct cmm_level_save_header {
     u8 toolbar_params[9];
     u16 tile_count;
     u16 object_count;
-
+    
     struct cmm_custom_theme custom_theme;
 
     struct cmm_comptraj trajectories[CMM_MAX_TRAJECTORIES][CMM_TRAJECTORY_LENGTH];

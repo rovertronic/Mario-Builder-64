@@ -2828,7 +2828,7 @@ void load_level(void) {
 
     bzero(&cmm_save, sizeof(cmm_save));
     bzero(&cmm_grid_data, sizeof(cmm_grid_data));
-
+    
     f_chdir(cmm_level_dir_name); //chdir exits after the ifelse statement
     FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
     if (code == FR_OK) {
@@ -2841,8 +2841,19 @@ void load_level(void) {
         f_lseek(&cmm_file, 0xA); // 0xA ends up being version identifier byte
         f_read(&cmm_file, &version, (UINT)0x1, &bytes_read);
         f_rewind(&cmm_file);
+
         // Obtained file version, now set size accordingly and read header
         f_read(&cmm_file,&cmm_save,sizeof(cmm_save)-(UINT)size_offset[version],&bytes_read);
+    
+        // @bug
+        // Loading v1.0.0 levels is broken, I assume its because the header struct itself has shifted,
+        // meaning that anything after the new "album" field will be written with improper data leading
+        // to a crash. I am very rusty with I/O, and I do not trust myself with any further tinkering.
+        // I have done most of the heavy lifting regarding the music refactor, it just needs compatibility.
+
+        // The version number is now prematurely obtained, so you can probably use that for parity
+        // edge cases. Good luck! 
+
         //read tiles
         f_read(&cmm_file,&cmm_tile_data,(sizeof(cmm_tile_data[0]))*cmm_save.tile_count,&bytes_read);
         //read objects
@@ -3066,11 +3077,11 @@ void sb_init(void) {
             cmm_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                /*play_music(
+                play_music(
                     SEQ_PLAYER_LEVEL, 
                     SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 
                     0
-                );*/
+                );
             }
         break;
         case CMM_MODE_PLAY:
@@ -3108,11 +3119,11 @@ void sb_init(void) {
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
             if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                /*play_music(
+                play_music(
                     SEQ_PLAYER_LEVEL, 
                     SEQUENCE_ARGS(4, get_seq(cmm_lopt_album[0], cmm_lopt_seq[0])), 
                     0
-                );*/
+                );
             }
         break;
     }
