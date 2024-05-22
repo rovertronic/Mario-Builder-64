@@ -40,8 +40,8 @@
  **************************************************************************/
 
 #if EXTENDED_BOUNDS_MODE == 0 // 1x, normal cell size
-    #define LEVEL_BOUNDARY_MAX 0x4000L //  8192
-    #define CELL_SIZE          0x400   //  1024, NUM_CELLS = 16
+    #define LEVEL_BOUNDARY_MAX 0x2000L //  8192
+    #define CELL_SIZE          0x100   //  1024, NUM_CELLS = 16
     #ifndef WORLD_SCALE
         #define WORLD_SCALE 1
     #endif
@@ -67,6 +67,9 @@
 
 STATIC_ASSERT(((EXTENDED_BOUNDS_MODE >= 0) && (EXTENDED_BOUNDS_MODE <= 3)), "You must set a valid extended bounds mode!");
 
+
+#define TRUE_LEVEL_BOUNDARY 0x4000L // cells dont extend this far
+
 /**
  * The amount of cells in each axis in an area.
  */
@@ -75,4 +78,4 @@ STATIC_ASSERT(((EXTENDED_BOUNDS_MODE >= 0) && (EXTENDED_BOUNDS_MODE <= 3)), "You
 /**
  * Use this to convert game units to cell coordinates.
  */
-#define GET_CELL_COORD(p)   ((((s32)(p) + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & (NUM_CELLS - 1))
+#define GET_CELL_COORD(p)   ((CLAMP(((s32)(p) + LEVEL_BOUNDARY_MAX), 1, LEVEL_BOUNDARY_MAX*2-1) / CELL_SIZE) & (NUM_CELLS - 1))

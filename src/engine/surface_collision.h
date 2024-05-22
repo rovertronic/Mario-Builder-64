@@ -16,10 +16,10 @@
 #define FLOOR_LOWER_LIMIT_MISC      (FLOOR_LOWER_LIMIT + 1000)
 
 #define is_outside_level_bounds(xPos, zPos) \
-    (((xPos) <= -LEVEL_BOUNDARY_MAX) ||     \
-     ((xPos) >=  LEVEL_BOUNDARY_MAX) ||     \
-     ((zPos) <= -LEVEL_BOUNDARY_MAX) ||     \
-     ((zPos) >=  LEVEL_BOUNDARY_MAX))
+    (((xPos) <= -TRUE_LEVEL_BOUNDARY) ||     \
+     ((xPos) >=  TRUE_LEVEL_BOUNDARY) ||     \
+     ((zPos) <= -TRUE_LEVEL_BOUNDARY) ||     \
+     ((zPos) >=  TRUE_LEVEL_BOUNDARY))
 
 #define SURFACE_YAW(s) ({ \
     Vec3f normal; \

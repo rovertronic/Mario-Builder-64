@@ -2078,7 +2078,7 @@ void generate_terrain_collision(void) {
     cmm_building_collision = TRUE;
     cmm_curr_poly_vert_count = 4;
 
-    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : 128;
+    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : 80;
     cmm_curr_coltype = SURFACE_DEATH_PLANE;
     generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
 
