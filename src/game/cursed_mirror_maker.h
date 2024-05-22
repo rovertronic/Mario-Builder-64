@@ -3,8 +3,8 @@
 #include "libcart/ff/ff.h"
 
 #define CMM_TILE_POOL_SIZE 10000
-#define CMM_GFX_SIZE 20000
-#define CMM_VTX_SIZE 40000
+#define CMM_GFX_SIZE 15000
+#define CMM_VTX_SIZE 50000
 
 #define CMM_MAX_OBJS 512
 #define CMM_MAX_TRAJECTORIES 20
