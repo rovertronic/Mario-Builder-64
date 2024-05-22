@@ -1469,6 +1469,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
     collisionData.y = (s16) o->oPosY;
     collisionData.z = (s16) o->oPosZ;
     collisionData.offsetY = collisionData.radius + 1.f;
+    if (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) collisionData.offsetY = 10.f;
 
     s32 numCollisions = find_wall_collisions(&collisionData);
     if (numCollisions != 0) {
@@ -1477,7 +1478,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
         wallFound = TRUE;
     }
 
-    if (radius > 100.f) { // extra check for chonky boys
+    if ((!o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) && (radius > 100.f)) { // extra check for chonky boys
         collisionData.offsetY += 100.f;
         numCollisions = find_wall_collisions(&collisionData);
         if (numCollisions != 0) {
