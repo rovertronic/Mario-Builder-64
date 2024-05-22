@@ -1658,7 +1658,7 @@ s32 act_squished(struct MarioState *m) {
 
             m->squishTimer = 0xFF;
 
-            if (spaceUnderCeil >= 10.1f) {
+            if (spaceUnderCeil >= 40.1f) {
                 // Mario becomes a pancake
                 squishAmount = spaceUnderCeil / 160.0f;
                 vec3f_set(m->marioObj->header.gfx.scale, 2.0f - squishAmount, squishAmount,
