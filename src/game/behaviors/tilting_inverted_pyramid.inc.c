@@ -6230,22 +6230,23 @@ void bhv_woodplat(void) {
             o->oWallHitboxRadius = 128.0f;
             o->hitboxDownOffset = 0.f;
             if (o->oBehParams2ndByte == 1) {
-                o->prevObj = spawn_object(o,MODEL_NONE,bhvFatPlatCol);
                 o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
                 o->hitboxHeight = 256.f;
 
                 bhv_woodplat_check_above();
             } else {
-                o->prevObj = spawn_object(o,MODEL_NONE,bhvWoodPlatCol);
                 o->hitboxHeight = 96.f;
             }
-            o->prevObj->prevObj = o;
             o->oAction = 1;
             break;
         case 1:
             if (o->oWoodPlatIsStacked) {
                 o->oAction = 2;
                 break;
+            } else if (o->oTimer == 0) {
+                o->prevObj = spawn_object(o, MODEL_NONE, bhvWoodPlatCol);
+                o->prevObj->prevObj = o;
+                vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
             }
             if (waterLevel < o->oPosY) {
                 // Air Behavior
@@ -6263,20 +6264,32 @@ void bhv_woodplat(void) {
             cur_obj_update_floor_and_walls();
             cur_obj_move_standard(-20);
 
-            o->oGraphYOffset = o->prevObj->oPosY-o->oPosY;
+            Vec3f oldPos;
+            vec3f_copy(oldPos, &o->prevObj->oPosVec);
             vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
-            vec3f_copy_y_off(&o->header.gfx.pos,&o->oPosVec,o->oGraphYOffset);
+            vec3f_copy(&o->header.gfx.pos,oldPos);
             
             struct Object *curPlat = o;
             while (curPlat->oWoodPlatAbovePlatform) {
-                vec3f_copy(&curPlat->oWoodPlatAbovePlatform->oPosVec,&curPlat->oPosVec);
+                vec3f_copy(&curPlat->oWoodPlatAbovePlatform->oPosVec,&curPlat->header.gfx.pos);
                 curPlat = curPlat->oWoodPlatAbovePlatform;
                 curPlat->oPosY += 256.f;
-                vec3f_copy(&curPlat->prevObj->oPosVec,&curPlat->oPosVec);
-                vec3f_copy_y_off(&curPlat->header.gfx.pos,&curPlat->oPosVec,o->oGraphYOffset);
+                vec3f_copy(&curPlat->header.gfx.pos,&curPlat->oPosVec);
             }
             break;
     }
+}
+
+void bhv_woodplat_col_init(void) {
+    o->oWoodPlatColHeight = 0.f;
+    struct Object *curPlat = o->prevObj;
+    do {
+        o->oWoodPlatColHeight += (curPlat->oBehParams2ndByte == 1 ? 256.f : 96.f);
+        curPlat = curPlat->oWoodPlatAbovePlatform;
+    } while (curPlat);
+    o->oCollisionDistance = MAX(o->oWoodPlatColHeight - 1500.f, 0.f) + 300.f;
+
+    o->header.gfx.scale[1] = o->oWoodPlatColHeight / 100.f;
 }
 
 void bhv_crush_handler(void) {

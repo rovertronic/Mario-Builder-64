@@ -618,8 +618,8 @@ void load_object_collision_model(void) {
     
     s32 inColRadius = ((
            (sqrLateralDist < sqr(o->oCollisionDistance))
-        && (verticalMarioDiff > 0 || verticalMarioDiff > -o->oCollisionDistance)
-        && (verticalMarioDiff < 0 || verticalMarioDiff < o->oCollisionDistance + 2000.f)
+        && (verticalMarioDiff > -o->oCollisionDistance)
+        && (verticalMarioDiff < o->oCollisionDistance + 1000.f)
         ) || obj_with_physics_is_near()
     );
 

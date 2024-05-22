@@ -243,7 +243,6 @@
 #include "woodplat/model.inc.c"
 #include "rfbox/model.inc.c"
 #include "fatplat/model.inc.c"
-#include "fatplat/collision.inc.c"
 #include "conveyor/collision.inc.c"
 #include "conveyor/model.inc.c"
 #include "imbue/model.inc.c"

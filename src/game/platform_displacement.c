@@ -145,6 +145,18 @@ void update_platform_displacement_info(struct PlatformDisplacementInfo *displace
 	displaceInfo->prevTimer = gGlobalTimer;
 }
 
+void apply_conveyor_displacement() {
+	s16 currentAngle = gMarioState->floor->object->oFaceAngleYaw;
+	f32 currentSpeed = 10.76f;
+
+	f32 xVel = currentSpeed * sins(currentAngle);
+	f32 zVel = currentSpeed * coss(currentAngle);
+	gMarioState->pos[0] += xVel;
+	gMarioState->pos[2] += zVel;
+	vec3f_set(sMarioAmountDisplaced, xVel, 0.0f, zVel);
+}
+
+
 /**
  * Apply one frame of platform displacement to Mario or an object using the given
  * platform.
@@ -157,7 +169,13 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 	s16 yawDifference = *yaw - displaceInfo->prevYaw;
 
 	// Avoid a crash if the platform unloaded its collision while stood on
-	if (platform->header.gfx.throwMatrix == NULL) return;
+	if (platform->header.gfx.throwMatrix == NULL) {
+		vec3f_set(sMarioAmountDisplaced,0,0,0);
+		if (gMarioState->floor->type == SURFACE_CONVEYOR) {
+			apply_conveyor_displacement();
+		}
+		return;
+	}
 
 	// Determine how far Mario moved on his own since last frame
 	vec3f_copy(posDifference, pos);

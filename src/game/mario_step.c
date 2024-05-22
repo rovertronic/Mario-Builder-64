@@ -258,19 +258,6 @@ void stop_and_set_height_to_floor(struct MarioState *m) {
     vec3s_set(marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
 }
 
-void apply_conveyor(struct MarioState *m) {
-
-    if (m->floor->type == SURFACE_CONVEYOR) {
-        s16 currentAngle = m->floor->object->oFaceAngleYaw;
-        f32 currentSpeed = 10.76f;
-
-        gMarioState->pos[0] += currentSpeed * sins(currentAngle);
-        gMarioState->pos[2] += currentSpeed * coss(currentAngle);
-        //sShouldApplyInertia = TRUE;
-        //sInertiaFirstFrame = TRUE;
-    }
-}
-
 s32 stationary_ground_step(struct MarioState *m) {
     struct Object *marioObj = m->marioObj;
     u32 stepResult = GROUND_STEP_NONE;
@@ -290,8 +277,6 @@ s32 stationary_ground_step(struct MarioState *m) {
         vec3f_copy(marioObj->header.gfx.pos, m->pos);
         vec3s_set(marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
     }
-
-    apply_conveyor(m);
 
     return stepResult;
 }
@@ -430,8 +415,6 @@ s32 perform_ground_step(struct MarioState *m) {
         drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 1);
         return stepResult;
     }
-
-    apply_conveyor(m);
 
     return stepResult;
 }

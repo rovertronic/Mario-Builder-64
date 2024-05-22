@@ -1525,9 +1525,9 @@ void cur_obj_update_ceiling(void) {
 
     if (o->oVelY >= 0.f) {
         if ((o->oPosY + o->oVelY + o->hitboxHeight - o->hitboxDownOffset) > ceilHeight) {
-            // ugly code to avoid ceiling checks on the stacked platform above
+            // ugly code to avoid self ceiling checks on wood platforms
             if (o->behavior == segmented_to_virtual(bhvWoodPlat)) {
-                if (o->oWoodPlatAbovePlatform && (ceil->object == o->oWoodPlatAbovePlatform->prevObj)) {
+                if (ceil->object == o->prevObj) {
                     return;
                 }
             }
