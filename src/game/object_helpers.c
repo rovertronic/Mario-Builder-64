@@ -2625,7 +2625,7 @@ void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
     if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvOnOffButton)) {
         struct Object * switch_interacting = floor->object;
 
-        if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
+        if ((switch_interacting->oAction == 1)&&(switch_interacting->header.gfx.scale[1] > 0.99f)) {
             cmm_play_onoff = switch_interacting->oBehParams2ndByte;
         }
     }
