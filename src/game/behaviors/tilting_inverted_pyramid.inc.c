@@ -6265,14 +6265,15 @@ void bhv_woodplat(void) {
 
             o->oGraphYOffset = o->prevObj->oPosY-o->oPosY;
             vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
+            vec3f_copy_y_off(&o->header.gfx.pos,&o->oPosVec,o->oGraphYOffset);
             
             struct Object *curPlat = o;
             while (curPlat->oWoodPlatAbovePlatform) {
                 vec3f_copy(&curPlat->oWoodPlatAbovePlatform->oPosVec,&curPlat->oPosVec);
                 curPlat = curPlat->oWoodPlatAbovePlatform;
                 curPlat->oPosY += 256.f;
-                curPlat->oGraphYOffset = curPlat->prevObj->oPosY-curPlat->oPosY;
                 vec3f_copy(&curPlat->prevObj->oPosVec,&curPlat->oPosVec);
+                vec3f_copy_y_off(&curPlat->header.gfx.pos,&curPlat->oPosVec,o->oGraphYOffset);
             }
             break;
     }
