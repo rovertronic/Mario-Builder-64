@@ -25,7 +25,6 @@ void bhv_hidden_blue_coin_loop(void) {
             if (gMarioState->onbluecoinswitch) {
                 cur_obj_unhide();
                 cur_obj_enable_rendering();
-                cur_obj_become_tangible();
             }
 
             if (gMarioState->blueCoinSwitchTimer > 0) {
