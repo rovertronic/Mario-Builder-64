@@ -149,6 +149,16 @@ void apply_conveyor_displacement() {
 	s16 currentAngle = gMarioState->floor->object->oFaceAngleYaw;
 	f32 currentSpeed = 10.76f;
 
+	if (((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_MOVING) || ((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_STATIONARY)) {
+		f32 perpendicularDistance = (gMarioState->pos[0] - gMarioState->floor->object->oPosX) * coss(currentAngle) - (gMarioState->pos[2] - gMarioState->floor->object->oPosZ) * sins(currentAngle);
+		// If too close to edge, tilt angle a little
+		if (perpendicularDistance < -105.0f) {
+			currentAngle += 0x2000;
+		} else if (perpendicularDistance > 105.0f) {
+			currentAngle -= 0x2000;
+		}
+	}
+
 	f32 xVel = currentSpeed * sins(currentAngle);
 	f32 zVel = currentSpeed * coss(currentAngle);
 	gMarioState->pos[0] += xVel;
