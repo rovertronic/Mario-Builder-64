@@ -50,10 +50,10 @@ void bullet_bill_act_2(void) {
             o->oForwardVel = -3.0f;
         }
     } else {
-        if (o->oTimer == 60) {
+        if (o->oTimer == 51) {
             cur_obj_become_tangible();
         }
-        if (o->oTimer > 60) {
+        if (o->oTimer > 51) {
             // cursed code. pretend the bullet bill is close to the floor
             // when doing collision checks
             o->oPosY -= 127.f; // to ground
