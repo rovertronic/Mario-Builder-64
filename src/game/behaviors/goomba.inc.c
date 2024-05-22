@@ -339,7 +339,6 @@ void bhv_goomba_update(void) {
             o->oFaceAngleYaw = o->oAngleToMario;
             o->oMoveAngleYaw = o->oAngleToMario;
             o->oForwardVel = 15.0f;
-            o->oDrawingDistance = 9000.0f;
             }
         }
 

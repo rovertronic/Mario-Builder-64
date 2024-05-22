@@ -1535,7 +1535,7 @@ void cur_obj_update_ceiling(void) {
 }
 
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
-    if (o->activeFlags & (ACTIVE_FLAG_FAR_AWAY | ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
+    if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
         cur_obj_update_floor();
         o->oMoveFlags &= ~(OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER);
 
@@ -1611,6 +1611,9 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
             o->oForwardVel = -o->oForwardVel;
         }
 
+        cur_obj_floor_interactions(0);
+    } else {
+        cur_obj_move_y(gravity, bounciness, buoyancy);
         cur_obj_floor_interactions(0);
     }
 }

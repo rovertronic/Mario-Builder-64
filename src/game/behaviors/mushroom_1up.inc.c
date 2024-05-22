@@ -345,36 +345,36 @@
 
 extern u8 bullet_fuel;
 void bhv_crowbar_power_loop() {
-        struct Object *sp1C;
-        u8 power = o->oBehParams2ndByte+1;
-        sp1C = cur_obj_nearest_object_with_behavior(bhvCrowbarThrow);
+    struct Object *sp1C;
+    u8 power = o->oBehParams2ndByte+1;
+    sp1C = cur_obj_nearest_object_with_behavior(bhvCrowbarThrow);
 
-        if (power == 3) {
-            sp1C = NULL;
-        }
+    if (power == 3) {
+        sp1C = NULL;
+    }
 
-        if (gMarioState->powerup != power && sp1C == NULL) {
-            spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
-            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-            o->oFaceAngleYaw += 1000;
-            o->oFaceAnglePitch = 0x1A00;
-        
-            if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
-                play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource);
-                gMarioState->powerup = power;
-                bullet_fuel = 60;
+    if (gMarioState->powerup != power && sp1C == NULL && !(o->activeFlags & ACTIVE_FLAG_FAR_AWAY)) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        o->oFaceAngleYaw += 1000;
+        o->oFaceAnglePitch = 0x1A00;
+    
+        if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
+            play_sound(SOUND_MENU_EXIT_PIPE, gGlobalSoundSource);
+            gMarioState->powerup = power;
+            bullet_fuel = 60;
 
-                gMarioState->flags &= ~MARIO_METAL_CAP;
-                gMarioState->flags &= ~MARIO_VANISH_CAP;
-                gMarioState->flags &= ~MARIO_WING_CAP;
-                gMarioState->RFuel = 0;
-            }
-        }
-        else
-        {
-        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+            gMarioState->flags &= ~MARIO_METAL_CAP;
+            gMarioState->flags &= ~MARIO_VANISH_CAP;
+            gMarioState->flags &= ~MARIO_WING_CAP;
+            gMarioState->RFuel = 0;
         }
     }
+    else
+    {
+    o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    }
+}
 
 void bhv_crowbar_attack_loop() {
         s16 sp1E = object_step_without_floor_orient();

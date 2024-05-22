@@ -198,8 +198,6 @@ void bhv_blue_coin_sliding_loop(void) {
             if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500)) {
                 o->oAction = MOV_BCOIN_ACT_MOVING;
             }
-
-            set_object_visibility(o, 3000);
             break;
 
         case MOV_BCOIN_ACT_MOVING:
@@ -208,7 +206,6 @@ void bhv_blue_coin_sliding_loop(void) {
 
         case MOV_BCOIN_ACT_SLOWING_DOWN:
             blue_coin_sliding_slow_down();
-            set_object_visibility(o, 3000);
             break;
 
         case MOV_BCOIN_ACT_STOPPED:
@@ -265,7 +262,6 @@ void bhv_blue_coin_jumping_loop(void) {
 
         case MOV_BCOIN_ACT_SLOWING_DOWN:
             blue_coin_sliding_slow_down();
-            set_object_visibility(o, 3000);
             break;
 
         case MOV_BCOIN_ACT_STOPPED:

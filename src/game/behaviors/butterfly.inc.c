@@ -104,6 +104,4 @@ void bhv_butterfly_loop(void) {
             butterfly_act_return_home();
             break;
     }
-
-    set_object_visibility(o, 3000);
 }

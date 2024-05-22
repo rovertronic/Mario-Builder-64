@@ -246,5 +246,4 @@ void bhv_motos_loop(void) {
     }
     
     o->oInteractStatus = 0; // Added because it doesnt work without this, cmon Nintendo
-    set_object_visibility(o, 8000); // Increased from 2000
 }

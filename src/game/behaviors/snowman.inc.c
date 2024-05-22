@@ -148,7 +148,6 @@ void bhv_snowmans_bottom_loop(void) {
     }
 
     set_rolling_sphere_hitbox();
-    set_object_visibility(o, 8000);
     cur_obj_scale(o->oSnowmansBottomScale);
     o->oGraphYOffset = o->oSnowmansBottomScale * 180.0f;
 }

@@ -395,6 +395,36 @@ s16 object_step(void) {
 
     obj_add_self_to_physics_list();
 
+    // truncated version if far away
+    if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
+        f32 objX = o->oPosX;
+        f32 objY = o->oPosY;
+        f32 objZ = o->oPosZ;
+
+        floorY = find_floor(objX, objY, objZ, &sObjFloor);
+
+        o->oFloor       = sObjFloor;
+        o->oFloorHeight = floorY;
+
+        waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);
+        if (waterY > objY) {
+            calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, 0, 0, waterY);
+            collisionFlags += OBJ_COL_FLAG_UNDERWATER;
+        } else {
+            calc_new_obj_vel_and_pos_y(sObjFloor, floorY, 0, 0);
+        }
+
+        if ((s32) o->oPosY == (s32) floorY) {
+            collisionFlags += OBJ_COL_FLAG_GROUNDED;
+        }
+
+        if ((s32) o->oVelY == 0) {
+            collisionFlags += OBJ_COL_FLAG_NO_Y_VEL;
+        }
+        cur_obj_floor_interactions(1);
+        return collisionFlags;
+    }
+
     obj_update_pos_vel_xz();
 
     f32 objX = o->oPosX;
@@ -493,17 +523,6 @@ s32 is_point_close_to_object(struct Object *obj, f32 x, f32 y, f32 z, s32 dist) 
     f32 dz = z - obj->oPosZ;
 
     return sqr(dx) + sqr(dy) + sqr(dz) < (f32)sqr(dist);
-}
-
-/**
- * Sets an object as visible if within a certain distance of Mario's graphical position.
- */
-void set_object_visibility(struct Object *obj, s32 dist) {
-    COND_BIT(
-        !is_point_within_radius_of_mario(obj->oPosX, obj->oPosY, obj->oPosZ, dist),
-        obj->header.gfx.node.flags,
-        GRAPH_RENDER_INVISIBLE
-    );
 }
 
 /**

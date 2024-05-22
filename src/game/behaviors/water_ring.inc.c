@@ -127,7 +127,6 @@ void water_ring_act_not_collected(void) {
 
     o->oPosY += 10.0f;
     o->oFaceAngleYaw += 0x100;
-    set_object_visibility(o, 5000);
 
     if (ringSpawner->oWaterRingSpawnerRingsCollected == 4
         && o->oWaterRingIndex == ringSpawner->oWaterRingMgrLastRingCollected + 1) {
@@ -216,7 +215,6 @@ void manta_water_ring_act_not_collected(void) {
 
     water_ring_check_collection(avgScale, ringManager);
     water_ring_set_scale(avgScale);
-    set_object_visibility(o, 5000);
 
     if (ringSpawner->oWaterRingSpawnerRingsCollected == 4
         && o->oWaterRingIndex == ringManager->oWaterRingMgrLastRingCollected + 1) {

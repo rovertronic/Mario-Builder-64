@@ -30,8 +30,6 @@ void bhv_bowser_bomb_loop(void) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 
-    set_object_visibility(o, 6000);
-
     if (o->oBehParams2ndByte == 1) {
         o->oHomeY = bbomb_floating_platform_find_home_y();
         o->oPosY = o->oHomeY + sins(o->oTimer * 0x800) * 10.0f;

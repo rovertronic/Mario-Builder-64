@@ -214,8 +214,6 @@ void hoot_awake_loop(void) {
         o->oAction = 0;
         o->oTimer = 0;
     }
-
-    set_object_visibility(o, 2000);
 }
 
 void bhv_hoot_loop(void) {

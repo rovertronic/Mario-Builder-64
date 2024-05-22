@@ -187,7 +187,6 @@ void bhv_scuttlebug_loop(void) {
             o->oFaceAngleYaw = o->oAngleToMario;
             o->oMoveAngleYaw = o->oAngleToMario;
             o->oForwardVel = 15.0f;
-            o->oDrawingDistance = 9000.0f;
             }
         }
 
@@ -413,14 +412,13 @@ void bhv_hammer_bro_loop(void) {
             o->oFaceAngleYaw = o->oAngleToMario;
             o->oMoveAngleYaw = o->oAngleToMario;
             o->oForwardVel = 15.0f;
-            o->oDrawingDistance = 9000.0f;
             }
         }
 
     o->oFaceAngleYaw = o->oAngleToMario;
 
     //ONLY DO IF ACTIVE
-    if ((o->oDistanceToMario < 3000.0f)||(o->oFlags & OBJ_FLAG_ACTIVE_FROM_AFAR)) {
+    if (!(o->activeFlags & ACTIVE_FLAG_FAR_AWAY)) {
         cur_obj_enable_rendering();
         //INIT
         if (o->oAction == 0) {

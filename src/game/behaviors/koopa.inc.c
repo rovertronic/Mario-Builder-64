@@ -75,7 +75,6 @@ void bhv_koopa_init(void) {
         // Tiny koopa in THI
         o->oKoopaMovementType = KOOPA_BP_NORMAL;
         o->oKoopaAgility = 1.6f / 3.0f;
-        o->oDrawingDistance = 1500.0f;
         cur_obj_scale(0.8f);
         o->oGravity = -6.4f / 3.0f;
     } else if (o->oKoopaMovementType >= KOOPA_BP_KOOPA_THE_QUICK_BASE) {
@@ -98,6 +97,7 @@ void bhv_koopa_init(void) {
 
         o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
         o->oKoopaAgility = 4.0f;
+        o->oDrawingDistance = CMM_DRAWDIST_MEDIUM;
         cur_obj_scale(3.0f);
     } else {
         o->oKoopaAgility = 1.0f;

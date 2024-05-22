@@ -36,7 +36,7 @@ void bobomb_act_explode(void) {
         explosion->oGraphYOffset += 100.0f;
 
         bobomb_spawn_coin();
-        create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, 3000);
+        create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
 
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
@@ -121,13 +121,13 @@ void generic_bobomb_free_loop(void) {
 
         case OBJ_ACT_LAVA_DEATH:
             if (obj_lava_death()) {
-                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, 3000);
+                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
             }
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, 3000);
+            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
             break;
     }
 
@@ -154,13 +154,13 @@ void stationary_bobomb_free_loop(void) {
 
         case OBJ_ACT_LAVA_DEATH:
             if (obj_lava_death()) {
-                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, 3000);
+                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
             }
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, 3000);
+            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
             break;
     }
 
@@ -238,7 +238,7 @@ void curr_obj_random_blink(s32 *blinkTimer) {
 void bhv_bobomb_loop(void) {
     s8 dustPeriodMinus1;
 
-    if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 4000)) {
+    if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, o->oDrawingDistance)) {
         switch (o->oHeldState) {
             case HELD_FREE:
                 bobomb_free_loop();
@@ -397,7 +397,6 @@ void bobomb_buddy_actions(void) {
             bobomb_buddy_act_talk();
             break;
     }
-    set_object_visibility(o, 3000);
 }
 
 void bhv_bobomb_buddy_loop(void) {

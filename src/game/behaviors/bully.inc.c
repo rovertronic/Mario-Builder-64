@@ -259,8 +259,6 @@ void bhv_bully_loop(void) {
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
-
-    set_object_visibility(o, 3000);
 }
 
 void big_bully_spawn_minion(s32 x, s32 y, s32 z, s16 yaw) {

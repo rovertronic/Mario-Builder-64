@@ -30,7 +30,6 @@ static void boo_stop(void) {
 void bhv_boo_init(void) {
     o->oQuicksandDepthToDie = 0;
     o->oBooInitialMoveYaw = o->oMoveAngleYaw;
-    o->oDrawingDistance = CMM_DRAWDIST_LOW;
 }
 
 static s32 boo_should_be_stopped(void) {
