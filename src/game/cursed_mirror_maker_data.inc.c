@@ -1450,6 +1450,8 @@ enum {
     OBJECT_TYPE_MOLEMAN,
     OBJECT_TYPE_COBIE,
     OBJECT_TYPE_CONVEYOR,
+    OBJECT_TYPE_CONVEYOR_HALF,
+    OBJECT_TYPE_CONVEYOR_SLOPE,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1546,7 +1548,9 @@ struct cmm_object_info cmm_object_type_list[] = {
 /* OBJECT_TYPE_UKIKI */         {"Ukiki",                   mat_b_btn_ukiki,        bhvMakerUkiki,     0,           MODEL_MAKER_UKIKI,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, ukiki_seg5_anims_05015784, df_ukiki, SOUND_OBJ_UKIKI_CHATTER_SHORT},
 /* OBJECT_TYPE_MOLEMAN */       {"Moleman",                 mat_b_btn_moleman,      bhvMoleman,        65,          MODEL_MAKER_MOLEMAN,       OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, moleman3_anims, NULL, SOUND_ACTION_READ_SIGN},
 /* OBJECT_TYPE_COBIE */         {"Cobie",                   mat_b_btn_cobie,        bhvCobie,          0,           MODEL_MAKER_COBIE,         OBJ_TYPE_HAS_DIALOG,     0, 0, 1.0f, cobie2_anims, NULL, SOUND_ACTION_READ_SIGN},
-/* OBJECT_TYPE_CONVEYOR */      {"Conveyor",                mat_b_btn_conveyor,     bhvConveyor,       0,           MODEL_MAKER_CONVEYOR,      0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+/* OBJECT_TYPE_CONVEYOR */      {"Thick",                   mat_b_btn_conveyor,     bhvConveyor,       0,           MODEL_MAKER_CONVEYOR,      0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+/* OBJECT_TYPE_CONVEYOR_HALF */ {"Thin",                    mat_b_btn_conveyor,     bhvConveyorHalf,   0,           MODEL_MAKER_CONVEYOR_HALF, 0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
+/* OBJECT_TYPE_CONVEYOR_SLOPE */{"Sloped",                  mat_b_btn_conveyor,     bhvConveyorSlope,  0,           MODEL_MAKER_CONVEYOR_SLOPE,0,                       0, 0, 1.0f, NULL, NULL, SOUND_OBJ_HEAVEHO_PREVIEW},
 };
 
 //behparam2 strings
@@ -1737,6 +1741,7 @@ u8 cmm_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
 u8 cmm_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_TOAD, OBJECT_TYPE_TUXIE, OBJECT_TYPE_UKIKI};
 u8 cmm_npccm_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_MOLEMAN, OBJECT_TYPE_COBIE};
 u8 cmm_power_idlist[] = {OBJECT_TYPE_CROWBAR, OBJECT_TYPE_MASK};
+u8 cmm_conveyor_idlist[] = {OBJECT_TYPE_CONVEYOR_HALF, OBJECT_TYPE_CONVEYOR, OBJECT_TYPE_CONVEYOR_SLOPE};
 
 struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_SETTINGS */ {CMM_PM_OBJ,  TRUE,  2, &cmm_settings_idlist,    "Options"},
@@ -1826,7 +1831,7 @@ struct cmm_ui_button_type cmm_ui_buttons[] = {
 /* CMM_BUTTON_RFBOX */    {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
 /* CMM_BUTTON_SHOWRUN */  {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
 /* CMM_BUTTON_POWER */    {CMM_PM_OBJ, TRUE, 2, cmm_power_idlist, "Powerup"},
-/* CMM_BUTTON_CONVEYOR */ {CMM_PM_OBJ, FALSE, 0, OBJECT_TYPE_CONVEYOR, NULL},
+/* CMM_BUTTON_CONVEYOR */ {CMM_PM_OBJ, TRUE, 3, cmm_conveyor_idlist, "Conveyor"},
 };
 
 u8 cmm_toolbar_defaults[9] = {

@@ -266,8 +266,8 @@ u8 conveyor_conveyor_top_ci8[] = {
 	
 };
 
-Gfx conveyor_conveyor_top_pal_rgba16_aligner[] = {gsSPEndDisplayList()};
-u8 conveyor_conveyor_top_pal_rgba16[] = {
+Gfx conveyor_conveyor_top_ci8_pal_rgba16_aligner[] = {gsSPEndDisplayList()};
+u8 conveyor_conveyor_top_ci8_pal_rgba16[] = {
 	0x6b, 0x5b, 0x52, 0x95, 0x18, 0xc7, 0xff, 0xff, 
 	0xff, 0x63, 0xfe, 0x21, 0x92, 0x4b, 0x00, 0x01, 
 	0xff, 0xf5, 0xfe, 0xd3, 0xfe, 0x8f, 0xfe, 0x4f, 
@@ -283,7 +283,7 @@ u8 conveyor_conveyor_top_pal_rgba16[] = {
 	0x90, 0xc1, 0x48, 0x01, 
 };
 
-Vtx conveyor_blaster_007_mesh_layer_1_vtx_0[8] = {
+Vtx conveyor_conveyor_full_mesh_layer_1_vtx_0[8] = {
 	{{ {-128, 0, 128}, 0, {1008, 1008}, {129, 0, 0, 255} }},
 	{{ {-128, 256, 128}, 0, {1008, -16}, {129, 0, 0, 255} }},
 	{{ {-128, 256, -128}, 0, {-16, -16}, {129, 0, 0, 255} }},
@@ -294,14 +294,14 @@ Vtx conveyor_blaster_007_mesh_layer_1_vtx_0[8] = {
 	{{ {128, 0, 128}, 0, {-16, 1008}, {127, 0, 0, 255} }},
 };
 
-Gfx conveyor_blaster_007_mesh_layer_1_tri_0[] = {
-	gsSPVertex(conveyor_blaster_007_mesh_layer_1_vtx_0 + 0, 8, 0),
+Gfx conveyor_conveyor_full_mesh_layer_1_tri_0[] = {
+	gsSPVertex(conveyor_conveyor_full_mesh_layer_1_vtx_0 + 0, 8, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
 	gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
 	gsSPEndDisplayList(),
 };
 
-Vtx conveyor_blaster_007_mesh_layer_1_vtx_1[16] = {
+Vtx conveyor_conveyor_full_mesh_layer_1_vtx_1[16] = {
 	{{ {-128, 0, -128}, 0, {2032, -16}, {0, 0, 129, 255} }},
 	{{ {-128, 256, -128}, 0, {-1040, -16}, {0, 0, 129, 255} }},
 	{{ {128, 256, -128}, 0, {-1040, 1008}, {0, 0, 129, 255} }},
@@ -320,8 +320,8 @@ Vtx conveyor_blaster_007_mesh_layer_1_vtx_1[16] = {
 	{{ {128, 256, 128}, 0, {-1040, 1008}, {0, 127, 0, 255} }},
 };
 
-Gfx conveyor_blaster_007_mesh_layer_1_tri_1[] = {
-	gsSPVertex(conveyor_blaster_007_mesh_layer_1_vtx_1 + 0, 16, 0),
+Gfx conveyor_conveyor_full_mesh_layer_1_tri_1[] = {
+	gsSPVertex(conveyor_conveyor_full_mesh_layer_1_vtx_1 + 0, 16, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
 	gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
 	gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
@@ -334,31 +334,32 @@ Gfx mat_conveyor_conveyor_side[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsDPSetTextureImage(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 1, conveyor_conveyor_side_i8),
-	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 511, 512),
 	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
 Gfx mat_conveyor_conveyor_top[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT),
-	gsDPSetTextureLUT(G_TT_RGBA16),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-    gsSPLightColor(LIGHT_1, 0xffffffff),
-    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
-	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, conveyor_conveyor_top_pal_rgba16),
-	gsDPSetTile(0, 0, 0, 256, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
-	gsDPLoadTLUTCmd(5, 49),
+	gsDPSetTextureLUT(G_TT_RGBA16),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, conveyor_conveyor_top_ci8_pal_rgba16),
+	gsDPSetTile(0, 0, 0, 256, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadTLUTCmd(7, 49),
+	gsDPLoadSync(),
 	gsDPSetTextureImage(G_IM_FMT_CI, G_IM_SIZ_8b_LOAD_BLOCK, 1, conveyor_conveyor_top_ci8),
-	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPLoadBlock(7, 0, 0, 511, 512),
 	gsDPSetTile(G_IM_FMT_CI, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
 	gsSPEndDisplayList(),
 };
 
@@ -368,11 +369,11 @@ Gfx mat_revert_conveyor_conveyor_top[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx conveyor_blaster_007_mesh_layer_1[] = {
+Gfx conveyor_conveyor_full_mesh_layer_1[] = {
 	gsSPDisplayList(mat_conveyor_conveyor_side),
-	gsSPDisplayList(conveyor_blaster_007_mesh_layer_1_tri_0),
+	gsSPDisplayList(conveyor_conveyor_full_mesh_layer_1_tri_0),
 	gsSPDisplayList(mat_conveyor_conveyor_top),
-	gsSPDisplayList(conveyor_blaster_007_mesh_layer_1_tri_1),
+	gsSPDisplayList(conveyor_conveyor_full_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_conveyor_conveyor_top),
 	gsSPEndDisplayList(),
 };

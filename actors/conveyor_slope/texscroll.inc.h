@@ -1,0 +1,2 @@
+extern void scroll_conveyor_slope_conveyor_sloped_mesh_layer_1_vtx_0();
+extern void scroll_actor_geo_conveyor_slope();

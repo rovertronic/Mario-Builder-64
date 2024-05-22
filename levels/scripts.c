@@ -162,6 +162,8 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_RFBOX, rfbox_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_FATPLAT, fatplat_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CONVEYOR, conveyor_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_CONVEYOR_HALF, conveyor_half_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_CONVEYOR_SLOPE, conveyor_slope_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE, imbue_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE_STAR, imbues_geo),
 

@@ -1,0 +1,15 @@
+extern const GeoLayout conveyor_slope_geo[];
+extern Lights1 conveyor_slope_conveyor_top_lights;
+extern Lights1 conveyor_slope_conveyor_side_lights;
+extern u8 conveyor_slope_conveyor_top_ci8[];
+extern u8 conveyor_slope_conveyor_top_ci8_pal_rgba16[];
+extern u8 conveyor_slope_conveyor_side_i8[];
+extern Vtx conveyor_slope_conveyor_sloped_mesh_layer_1_vtx_0[16];
+extern Gfx conveyor_slope_conveyor_sloped_mesh_layer_1_tri_0[];
+extern Vtx conveyor_slope_conveyor_sloped_mesh_layer_1_vtx_1[8];
+extern Gfx conveyor_slope_conveyor_sloped_mesh_layer_1_tri_1[];
+extern Gfx mat_conveyor_slope_conveyor_top[];
+extern Gfx mat_revert_conveyor_slope_conveyor_top[];
+extern Gfx mat_conveyor_slope_conveyor_side[];
+extern Gfx conveyor_slope_conveyor_sloped_mesh_layer_1[];
+extern Gfx conveyor_slope_material_revert_render_settings[];

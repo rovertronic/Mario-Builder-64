@@ -88,3 +88,5 @@
 #include "conveyor/geo.inc.c"
 #include "imbue/geo.inc.c"
 #include "imbues/geo.inc.c"
+#include "conveyor_half/geo.inc.c"
+#include "conveyor_slope/geo.inc.c"

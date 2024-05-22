@@ -130,7 +130,7 @@ s8 obj_find_wall(f32 objNewX, f32 objY, f32 objNewZ, f32 objVelX, f32 objVelZ) {
     hitbox.x = objNewX;
     hitbox.y = objY;
     hitbox.z = objNewZ;
-    hitbox.offsetY = o->hitboxHeight / 2;
+    hitbox.offsetY = o->hitboxRadius + 1.f;
     hitbox.radius = o->hitboxRadius;
 
     if (find_wall_collisions(&hitbox) != 0) {
@@ -225,6 +225,9 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
                 *objFriction = 0.9999f;
             } else if (class == SURFACE_CLASS_SLIPPERY) {
                 *objFriction = 0.99f;
+            } else if (o->oFloor->type == SURFACE_CONVEYOR) {
+                *objFriction = 0.f;
+            
             }
         }
     }

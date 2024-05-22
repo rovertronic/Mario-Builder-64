@@ -447,6 +447,7 @@ s32 get_floor_class(TerrainData type) {
         case SURFACE_CREAKWOOD:
         case SURFACE_DEEP_QUICKSAND:
         case SURFACE_HANGABLE_MESH:
+        case SURFACE_CONVEYOR:
             return SURFACE_CLASS_NOT_SLIPPERY;
 
         case SURFACE_SLIPPERY:

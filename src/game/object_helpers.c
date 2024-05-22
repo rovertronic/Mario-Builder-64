@@ -2747,15 +2747,15 @@ void cur_obj_interact_with_moving_platform(void) {
 }
 
 void cur_obj_interact_with_conveyor(void) {
-    if ((sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvConveyor)) {
+    if (sInteractFloor->type == SURFACE_CONVEYOR) {
         struct Object * conveyor_interacting = sInteractFloor->object;
 
         s16 currentAngle = conveyor_interacting->oFaceAngleYaw;
         f32 perpendicularDistance = (o->oPosX - conveyor_interacting->oPosX) * coss(currentAngle) - (o->oPosZ - conveyor_interacting->oPosZ) * sins(currentAngle);
 		// If too close to edge, tilt angle a little
-		if (perpendicularDistance < -105.0f) {
+		if (perpendicularDistance < -80.0f) {
 			currentAngle += 0x2000;
-		} else if (perpendicularDistance > 105.0f) {
+		} else if (perpendicularDistance > 80.0f) {
 			currentAngle -= 0x2000;
 		}
         o->oPosX += sins(currentAngle) * 10.76f;

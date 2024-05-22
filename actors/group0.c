@@ -247,3 +247,7 @@
 #include "conveyor/model.inc.c"
 #include "imbue/model.inc.c"
 #include "imbues/model.inc.c"
+#include "conveyor_half/model.inc.c"
+#include "conveyor_half/collision.inc.c"
+#include "conveyor_slope/model.inc.c"
+#include "conveyor_slope/collision.inc.c"

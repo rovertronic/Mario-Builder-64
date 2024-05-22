@@ -9566,3 +9566,19 @@ const BehaviorScript bhvConveyor[] = {
     CALL_NATIVE(load_object_static_model),
     BREAK(),
 };
+
+const BehaviorScript bhvConveyorHalf[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    LOAD_COLLISION_DATA(conveyor_half_collision),
+    CALL_NATIVE(load_object_static_model),
+    BREAK(),
+};
+
+const BehaviorScript bhvConveyorSlope[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    LOAD_COLLISION_DATA(conveyor_slope_collision),
+    CALL_NATIVE(load_object_static_model),
+    BREAK(),
+};
