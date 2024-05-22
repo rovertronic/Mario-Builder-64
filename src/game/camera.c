@@ -4679,7 +4679,9 @@ void play_sound_cbutton_down(void) {
 }
 
 void play_sound_cbutton_side(void) {
-    play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
+    if (cmm_mode == CMM_MODE_PLAY) {
+        play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
+    }
 }
 
 void play_sound_button_change_blocked(void) {
