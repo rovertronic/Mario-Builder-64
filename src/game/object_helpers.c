@@ -2602,6 +2602,8 @@ void arbritrary_death_coin_release(void) {
     }
 }
 
+struct Surface *sInteractFloor;
+
 s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step) {
     struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
 
@@ -2611,11 +2613,9 @@ s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step) {
     return FALSE; // lightning gif
 }
 
-void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
-    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
-
-    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvNoteblock)) {
-        struct Object * noteblock_interacting = floor->object;
+void cur_obj_interact_with_noteblock(void) {
+    if ((sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvNoteblock)) {
+        struct Object * noteblock_interacting = sInteractFloor->object;
         o->oVelY = 95.0f;
 
         noteblock_interacting->oTimer = 0;
@@ -2624,19 +2624,17 @@ void cur_obj_interact_with_noteblock(u8 move_standard_or_object_step) {
     }
 }
 
-void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
-    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
-
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvFloorSwitchHiddenObjects)) {
-        struct Object * switch_interacting = floor->object;
+void cur_obj_interact_with_floor_switch(void) {
+    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvFloorSwitchHiddenObjects)) {
+        struct Object * switch_interacting = sInteractFloor->object;
 
         if (switch_interacting->oAction == PURPLE_SWITCH_ACT_IDLE) {
             switch_interacting->oAction = PURPLE_SWITCH_ACT_PRESSED;
         }
     }
 
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvOnOffButton)) {
-        struct Object * switch_interacting = floor->object;
+    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvOnOffButton)) {
+        struct Object * switch_interacting = sInteractFloor->object;
 
         if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
             cmm_play_onoff = switch_interacting->oBehParams2ndByte;
@@ -2645,14 +2643,12 @@ void cur_obj_interact_with_floor_switch(u8 move_standard_or_object_step) {
     }
 }
 
-void cur_obj_interact_with_quicksand(u8 move_standard_or_object_step) {
+void cur_obj_interact_with_quicksand(void) {
     if (o->oFlags & OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH) {
         return;
     }
 
-    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
-
-    if ((floor) && (floor->type == SURFACE_INSTANT_QUICKSAND || floor->type == SURFACE_DEEP_QUICKSAND)) {
+    if ((sInteractFloor->type == SURFACE_INSTANT_QUICKSAND || sInteractFloor->type == SURFACE_DEEP_QUICKSAND)) {
         // drag is applied in the object step function
         if (o->oQuicksandDepthToDie != 0) {
             //cur_obj_play_sound_1(SOUND_MOVING_QUICKSAND_DEATH);
@@ -2675,7 +2671,7 @@ void cur_obj_interact_with_quicksand(u8 move_standard_or_object_step) {
             }
         }
 
-        if ((floor->type == SURFACE_DEEP_QUICKSAND)&&(o->oQuicksandDepth > 15)) {
+        if ((sInteractFloor->type == SURFACE_DEEP_QUICKSAND)&&(o->oQuicksandDepth > 15)) {
             o->oQuicksandDepth=15;
         }
     } else {
@@ -2708,34 +2704,35 @@ s32 is_cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
     return FALSE;
 }
 
-void cur_obj_interact_with_moving_platform(u8 move_standard_or_object_step) {
-    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
-
-    if ((floor) && (floor->object != NULL)) {
-        o->oPosX += floor->object->oDisplaceVec[0];
+void cur_obj_interact_with_moving_platform(void) {
+    if ((sInteractFloor->object != NULL)) {
+        o->oPosX += sInteractFloor->object->oDisplaceVec[0];
         //if (floor->object->oDisplaceVec[1] < 0.0f) {
             //o->oPosY += floor->object->oDisplaceVec[1];
         //}
-        o->oPosZ += floor->object->oDisplaceVec[2];
+        o->oPosZ += sInteractFloor->object->oDisplaceVec[2];
     }
 }
 
-void cur_obj_interact_with_conveyor(u8 move_standard_or_object_step) {
-    struct Surface * floor = cur_obj_get_interact_floor(move_standard_or_object_step);
-
-    if ((floor) && (floor->object != NULL) && obj_has_behavior(floor->object,bhvConveyor)) {
-        struct Object * conveyor_interacting = floor->object;
+void cur_obj_interact_with_conveyor(void) {
+    if ((sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvConveyor)) {
+        struct Object * conveyor_interacting = sInteractFloor->object;
         o->oPosX += sins(conveyor_interacting->oFaceAngleYaw) * 10.76f;
         o->oPosZ += coss(conveyor_interacting->oFaceAngleYaw) * 10.76f;
     }
 }
 
 void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
-    cur_obj_interact_with_noteblock(move_standard_or_object_step);
-    cur_obj_interact_with_floor_switch(move_standard_or_object_step);
-    cur_obj_interact_with_quicksand(move_standard_or_object_step);
-    cur_obj_interact_with_moving_platform(move_standard_or_object_step);
-    cur_obj_interact_with_conveyor(move_standard_or_object_step);
+    sInteractFloor = cur_obj_get_interact_floor(move_standard_or_object_step);
+    if (!sInteractFloor) {
+        return;
+    }
+
+    cur_obj_interact_with_noteblock();
+    cur_obj_interact_with_floor_switch();
+    cur_obj_interact_with_quicksand();
+    cur_obj_interact_with_moving_platform();
+    cur_obj_interact_with_conveyor();
 }
 
 void cur_obj_drop_imbued_object(f32 y_offset) {
