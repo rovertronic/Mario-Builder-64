@@ -319,8 +319,7 @@ enum BehaviorCommands {
     BC_B(BHV_CMD_SET_OBJ_PHYSICS), \
     BC_HH(wallHitboxRadius, gravity), \
     BC_HH(bounciness, dragStrength), \
-    BC_HH(friction, buoyancy), \
-    BC_HH(unused1, unused2)
+    BC_HH(friction, buoyancy)
 
 // Sets the object's interaction subtype. Unused.
 #define SET_INTERACT_SUBTYPE(subtype) \
@@ -2882,7 +2881,7 @@ const BehaviorScript bhvKoopaShellFlame[] = {
 
 const BehaviorScript bhvPiranhaPlant[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
     ANIMATE(PIRANHA_PLANT_ANIM_BITE),
     SET_INTERACT_TYPE(INTERACT_BOUNCE_TOP),
@@ -2892,6 +2891,7 @@ const BehaviorScript bhvPiranhaPlant[] = {
     SET_INT(oDamageOrCoinValue, 3),
     SET_INT(oNumLootCoins,      5),
     DROP_TO_FLOOR(),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 70, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SPAWN_CHILD(/*Model*/ MODEL_BUBBLE, /*Behavior*/ bhvPiranhaPlantBubble),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
     SET_HOME(),
@@ -6782,7 +6782,7 @@ const BehaviorScript bhvMrBlizzard[] = {
     ANIMATE(MR_BLIZZARD_ANIM_SPAWN_SNOWBALL),
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     CALL_NATIVE(bhv_mr_blizzard_init),
     SET_FLOAT(oMrBlizzardScale, 1),
     BEGIN_LOOP(),
@@ -7006,6 +7006,7 @@ const BehaviorScript bhvFirePiranhaPlant[] = {
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     ANIMATE(FIRE_PIRANHA_PLANT_ANIM_SHRINK),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
     SET_HOME(),
@@ -7018,8 +7019,9 @@ const BehaviorScript bhvFirePiranhaPlant[] = {
 
 const BehaviorScript bhvFirePiranhaPlantBig[] = {
     BEGIN(OBJ_LIST_GENACTOR),
+    OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_INT(oBehParams, 0x00010000),
-    GOTO(bhvFirePiranhaPlant + 1),
+    GOTO(bhvFirePiranhaPlant + 1 + 1),
 };
 
 const BehaviorScript bhvMovingFlame[] = {

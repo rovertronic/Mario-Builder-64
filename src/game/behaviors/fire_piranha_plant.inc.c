@@ -27,6 +27,7 @@ struct ObjectHitbox sPiranhaPlantFireHitbox = {
 void bhv_fire_piranha_plant_init(void) {
     if (obj_has_behavior(o,bhvFirePiranhaPlantBig)) {
         o->oBehParams = 0x00010000;
+        o->oWallHitboxRadius = 100.0f;
     }
 
     o->oFirePiranhaPlantNeutralScale = GET_BPARAM2(o->oBehParams) ? 2.0f : 0.5f;
@@ -126,5 +127,10 @@ void bhv_fire_piranha_plant_update(void) {
         o->oFirePiranhaPlantDeathSpinVel = 8000.0f;
 
         cur_obj_become_intangible();
+    }
+
+    if (!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE)) {
+        cur_obj_update_floor_and_walls();
+        cur_obj_move_standard(78);
     }
 }

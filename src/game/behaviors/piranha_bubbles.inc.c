@@ -29,6 +29,7 @@ void bhv_piranha_plant_waking_bubbles_loop(void) {
  */
 void bhv_piranha_plant_bubble_loop(void) {
     struct Object *parent = o->parentObj; // the Piranha Plant
+    parent->prevObj = o;
     f32 scale = 0;
     s32 i;
     s32 animFrame = parent->header.gfx.animInfo.animFrame;

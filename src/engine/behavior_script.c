@@ -714,10 +714,7 @@ static s32 bhv_cmd_set_obj_physics(void) {
     gCurrentObject->oFriction = BHV_CMD_GET_1ST_S16(3) / 100.0f;
     gCurrentObject->oBuoyancy = BHV_CMD_GET_2ND_S16(3) / 100.0f;
 
-    UNUSED f32 unused1 = BHV_CMD_GET_1ST_S16(4) / 100.0f;
-    UNUSED f32 unused2 = BHV_CMD_GET_2ND_S16(4) / 100.0f;
-
-    gCurBhvCommand += 5;
+    gCurBhvCommand += 4;
     return BHV_PROC_CONTINUE;
 }
 

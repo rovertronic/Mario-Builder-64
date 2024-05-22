@@ -168,49 +168,55 @@ void piranha_plant_act_shrink_and_die(void) {
         o->oPiranhaPlantScale = o->oPiranhaPlantScale - 0.04f;
     } else {
         o->oPiranhaPlantScale = 0.0f;
-        cur_obj_spawn_loot_blue_coin();
-        o->oAction = PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN;
+        if (!(GET_BPARAM3(o->oBehParams) & RESPAWN_INFO_TYPE_NORMAL)) {
+            cur_obj_spawn_loot_blue_coin();
+        }
+        SET_FULL_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
+        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, CMM_DRAWDIST_LOW);
+
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 
     cur_obj_scale(o->oPiranhaPlantScale);
 
-    piranha_plant_reset_when_far(); // see this function's comment
+    //piranha_plant_reset_when_far(); // see this function's comment
 }
 
-/**
- * Wait for Mario to move far away, then respawn the Piranha Plant.
- */
-void piranha_plant_act_wait_to_respawn(void) {
-    if (o->oDistanceToMario > 1200.0f) {
-        o->oAction = PIRANHA_PLANT_ACT_RESPAWN;
-    }
-}
+// /**
+//  * Wait for Mario to move far away, then respawn the Piranha Plant.
+//  */
+// void piranha_plant_act_wait_to_respawn(void) {
+//     if (o->oDistanceToMario > 1200.0f) {
+//         o->oAction = PIRANHA_PLANT_ACT_RESPAWN;
+//     }
+// }
 
-/**
- * Set the Piranha Plant to the sleeping animation and unshrink it. When fully-
- * grown, set it to the idle state.
- */
-void piranha_plant_act_respawn(void) {
-    cur_obj_init_animation_with_sound(PIRANHA_PLANT_ANIM_SLEEPING);
-    if (o->oTimer == 0) {
-        o->oPiranhaPlantScale = 0.3f;
-    }
+// /**
+//  * Set the Piranha Plant to the sleeping animation and unshrink it. When fully-
+//  * grown, set it to the idle state.
+//  */
+// void piranha_plant_act_respawn(void) {
+//     cur_obj_init_animation_with_sound(PIRANHA_PLANT_ANIM_SLEEPING);
+//     if (o->oTimer == 0) {
+//         o->oPiranhaPlantScale = 0.3f;
+//     }
 
-    /**
-     * This state only occurs after PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN, which
-     * in turn only occurs after PIRANHA_PLANT_ACT_SHRINK_AND_DIE. The latter
-     * sets the Piranha Plant's scale to 0, therefore the Piranha Plant will
-     * grow from the ground unconditionally when in this state.
-     */
-    if (o->oPiranhaPlantScale < 1.0f) {
-        // Grow by 0.02f per frame.
-        o->oPiranhaPlantScale += 0.02f;
-    } else {
-        o->oPiranhaPlantScale = 1.0f;
-        o->oAction = PIRANHA_PLANT_ACT_IDLE;
-    }
-    cur_obj_scale(o->oPiranhaPlantScale);
-}
+//     /**
+//      * This state only occurs after PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN, which
+//      * in turn only occurs after PIRANHA_PLANT_ACT_SHRINK_AND_DIE. The latter
+//      * sets the Piranha Plant's scale to 0, therefore the Piranha Plant will
+//      * grow from the ground unconditionally when in this state.
+//      */
+//     if (o->oPiranhaPlantScale < 1.0f) {
+//         // Grow by 0.02f per frame.
+//         o->oPiranhaPlantScale += 0.02f;
+//     } else {
+//         o->oPiranhaPlantScale = 1.0f;
+//         o->oAction = PIRANHA_PLANT_ACT_IDLE;
+//     }
+//     cur_obj_scale(o->oPiranhaPlantScale);
+// }
 
 /**
  * The frames of the Piranha Plant's biting animation on which to play a bite
@@ -301,14 +307,16 @@ ObjActionFunc TablePiranhaPlantActions[] = {
     piranha_plant_act_stopped_biting,  // PIRANHA_PLANT_ACT_STOPPED_BITING,
     piranha_plant_attacked,            // PIRANHA_PLANT_ATTACKED,
     piranha_plant_act_shrink_and_die,  // PIRANHA_PLANT_ACT_SHRINK_AND_DIE,
-    piranha_plant_act_wait_to_respawn, // PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN,
-    piranha_plant_act_respawn,         // PIRANHA_PLANT_ACT_RESPAWN
+    //piranha_plant_act_wait_to_respawn, // PIRANHA_PLANT_ACT_WAIT_TO_RESPAWN,
+    //piranha_plant_act_respawn,         // PIRANHA_PLANT_ACT_RESPAWN
 };
 
 /**
  * Main loop for bhvPiranhaPlant.
  */
 void bhv_piranha_plant_loop(void) {
+    cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(TablePiranhaPlantActions);
+    cur_obj_move_standard(78);
     o->oInteractStatus = INT_STATUS_NONE;
 }
