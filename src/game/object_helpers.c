@@ -763,6 +763,38 @@ struct Object *cur_obj_find_nearby_held_actor(const BehaviorScript *behavior, f3
     return foundObj;
 }
 
+s32 count_imbued_red_coins(s32 objectList) {
+    struct ObjectNode *listHead = &gObjectLists[objectList];
+    struct ObjectNode *obj = listHead->next;
+    s32 count = 0;
+
+    while (obj != listHead) {
+        if (((struct Object *) obj)->oImbue == IMBUE_RED_COIN) {
+            count++;
+        }
+        obj = obj->next;
+    }
+
+    return count;
+}
+
+s32 count_red_coins(void) {
+    struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_LEVEL]; // red coin list
+    struct ObjectNode *obj = listHead->next;
+    s32 count = 0;
+
+    while (obj != listHead) {
+        if (((struct Object *) obj)->behavior == segmented_to_virtual(bhvRedCoin)) {
+            count++;
+        }
+        obj = obj->next;
+    }
+    
+    count += count_imbued_red_coins(OBJ_LIST_GENACTOR);
+    count += count_imbued_red_coins(OBJ_LIST_SURFACE);
+    return count;
+}
+
 static void cur_obj_reset_timer_and_subaction(void) {
     o->oTimer = 0;
     o->oSubAction = 0;
@@ -2738,50 +2770,45 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
 void cur_obj_drop_imbued_object(f32 y_offset) {
     Vec3f oldpos;
     struct Object * dropobj;
+    if (o->oImbue == IMBUE_NONE) return;
+    if (o->oImbue == IMBUE_STAR) {
+        spawn_default_star(o->oImbueVec[0],o->oImbueVec[1]+y_offset,o->oImbueVec[2]);
+        return;
+    }
+
+    vec3f_copy(oldpos,&o->oPosVec);
+    vec3f_copy(&o->oPosVec,&o->oImbueVec);
+    spawn_mist_particles();
     switch(o->oImbue) {
-        case IMBUE_STAR:
-            spawn_default_star(o->oImbueVec[0],o->oImbueVec[1]+y_offset,o->oImbueVec[2]);
-            break;
         case IMBUE_BLUE_COIN:
-            vec3f_copy(oldpos,&o->oPosVec);
-            vec3f_copy(&o->oPosVec,&o->oImbueVec);
             o->oPosY += y_offset;
-            spawn_mist_particles();
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-            struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-            coin->oForwardVel = 10.0f;
-            coin->oVelY = 20.0f;
-            coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-            vec3f_copy(&o->oPosVec,oldpos);
+            dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            dropobj->oForwardVel = 10.0f;
+            dropobj->oVelY = 20.0f;
+            dropobj->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
             break;
         case IMBUE_ONE_COIN:
-            vec3f_copy(oldpos,&o->oPosVec);
-            vec3f_copy(&o->oPosVec,&o->oImbueVec);
             o->oPosY += y_offset;
-            spawn_mist_particles();
             obj_spawn_yellow_coins(o, 1);
-            vec3f_copy(&o->oPosVec,oldpos);
             break;
         case IMBUE_RED_SWITCH:
-            vec3f_copy(oldpos,&o->oPosVec);
-            vec3f_copy(&o->oPosVec,&o->oImbueVec);
             o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
-            spawn_mist_particles();
             dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
             dropobj->oMoveAngleYaw = 0;
-            vec3f_copy(&o->oPosVec,oldpos);
             break;
         case IMBUE_BLUE_SWITCH:
-            vec3f_copy(oldpos,&o->oPosVec);
-            vec3f_copy(&o->oPosVec,&o->oImbueVec);
             o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
-            spawn_mist_particles();
             dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
             dropobj->oBehParams2ndByte = 1;
             dropobj->oMoveAngleYaw = 0;
-            vec3f_copy(&o->oPosVec,oldpos);
+            break;
+        case IMBUE_RED_COIN:
+            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
+            dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
             break;
     }
+    vec3f_copy(&o->oPosVec,oldpos);
     o->oImbue = IMBUE_NONE;
 }
 

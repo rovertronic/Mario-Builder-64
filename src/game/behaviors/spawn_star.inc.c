@@ -180,7 +180,7 @@ void bhv_hidden_red_coin_star_init(void) {
         }
     }
     else {
-        gRedCoinsTotal = count_objects_with_behavior(bhvRedCoin);
+        gRedCoinsTotal = count_red_coins();
         if (gRedCoinsTotal == 0) {
             starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
             starObj->oBehParams = o->oBehParams;

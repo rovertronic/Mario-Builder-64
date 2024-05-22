@@ -53,7 +53,7 @@ void bhv_bowser_course_red_coin_star_init(void) {
         o->oHiddenStarTriggerCounter = gRedCoinsCollected;
     }
     else {
-        gRedCoinsTotal = count_objects_with_behavior(bhvRedCoin);
+        gRedCoinsTotal = count_red_coins();
         o->oHiddenStarTriggerTotal = gRedCoinsTotal + gRedCoinsCollected;
         o->oHiddenStarTriggerCounter = o->oHiddenStarTriggerTotal - gRedCoinsTotal;
     }

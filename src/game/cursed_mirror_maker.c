@@ -2567,6 +2567,10 @@ void imbue_action(void) {
                         cmm_object_data[i].imbue = IMBUE_ONE_COIN;
                         imbue_success = TRUE;
                         break;
+                    case OBJECT_TYPE_RED_COIN:
+                        cmm_object_data[i].imbue = IMBUE_RED_COIN;
+                        imbue_success = TRUE;
+                        break;
                     case OBJECT_TYPE_BUTTON:
                         cmm_object_data[i].imbue = IMBUE_RED_SWITCH;
                         if (cmm_param_selection == 1) {

@@ -448,6 +448,7 @@ enum imbue {
     IMBUE_BLUE_COIN,
     IMBUE_RED_SWITCH,
     IMBUE_BLUE_SWITCH,
+    IMBUE_RED_COIN,
 };
 
 #endif
