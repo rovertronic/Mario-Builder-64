@@ -261,7 +261,7 @@ void stop_and_set_height_to_floor(struct MarioState *m) {
 void apply_conveyor(struct MarioState *m) {
 
     if (m->floor->type == SURFACE_CONVEYOR) {
-        s16 currentAngle = m->floor->object2->oFaceAngleYaw;
+        s16 currentAngle = m->floor->object->oFaceAngleYaw;
         f32 currentSpeed = 10.76f;
 
         gMarioState->pos[0] += currentSpeed * sins(currentAngle);

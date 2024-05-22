@@ -72,9 +72,9 @@ void update_mario_platform(void) {
                 gMarioPlatform = NULL;
                 gMarioObject->platform = NULL;
 
-				if (floor->object2 != NULL) {
-					gMarioPlatform = floor->object2;
-					gMarioObject->platform = floor->object2;
+				if (floor->object != NULL) {
+					gMarioPlatform = floor->object;
+					gMarioObject->platform = floor->object;
 					sMarioAmountDisplaced[1] = 0.0f;
 				}
             }
@@ -123,6 +123,9 @@ static void scale_vec3f(Vec3f dst, Vec3f src, Vec3f scale, u32 doInverted) {
  */
 void update_platform_displacement_info(struct PlatformDisplacementInfo *displaceInfo, Vec3f pos, s16 yaw, struct Object *platform) {
 	Vec3f scaledPos, yawVec, localPos;
+
+	if (platform->header.gfx.throwMatrix == NULL) return;
+	
 	vec3f_copy(localPos, pos);
 	vec3f_sub(localPos, (*platform->header.gfx.throwMatrix)[3]);
 	linear_mtxf_transpose_mul_vec3f(*platform->header.gfx.throwMatrix, scaledPos, localPos);

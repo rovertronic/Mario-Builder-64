@@ -366,7 +366,6 @@ struct Surface {
     Vec3t vertex2;
     Vec3t vertex3;
     struct Object *object;
-    struct Object *object2;
 };
 
 #define PUNCH_STATE_TIMER_MASK          0b00111111

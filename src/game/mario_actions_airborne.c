@@ -94,8 +94,8 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
 
     f32 fallHeight = m->peakHeight - m->pos[1];
 
-    if (gMarioState->floor->object2 != NULL) {
-        ignorefalldamage = gMarioState->floor->object2->oDontFallDamage;
+    if (gMarioState->floor->object != NULL) {
+        ignorefalldamage = gMarioState->floor->object->oDontFallDamage;
     }
 
     if (ignorefalldamage == TRUE) {
@@ -738,7 +738,7 @@ s32 act_wall_stick(struct MarioState *m) {
                 apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
             }
             if (surf->type == SURFACE_CONVEYOR) {
-                s16 angle = abs_angle_diff(obj_angle_to_object(surf->object2,m->marioObj),surf->object2->oFaceAngleYaw);
+                s16 angle = abs_angle_diff(obj_angle_to_object(surf->object,m->marioObj),surf->object->oFaceAngleYaw);
                 if (angle > 0x4000) {
                     m->pos[1] += 10.76f;
                 } else {
@@ -751,7 +751,7 @@ s32 act_wall_stick(struct MarioState *m) {
             apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
         }
         if (surf->type == SURFACE_CONVEYOR) {
-            s16 angle = abs_angle_diff(obj_angle_to_object(surf->object2,m->marioObj),surf->object2->oFaceAngleYaw);
+            s16 angle = abs_angle_diff(obj_angle_to_object(surf->object,m->marioObj),surf->object->oFaceAngleYaw);
             if (angle > 0x4000) {
                 m->pos[1] += 10.76f;
             } else {
