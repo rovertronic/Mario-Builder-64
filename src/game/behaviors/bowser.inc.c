@@ -1441,7 +1441,7 @@ struct BowserTiltPlatformInfo sBowsertiltPlatformData[] = {
  */
 s32 bowser_check_fallen_off_stage(void) {
     if (!((o->oAction == BOWSER_ACT_JUMP_ONTO_STAGE) && (o->oSubAction != BOWSER_SUB_ACT_JUMP_ON_STAGE_LAND))) {
-        if ((o->oMoveFlags & OBJ_MOVE_LANDED) || (o->oMoveFlags & OBJ_MOVE_ON_GROUND)) {
+        if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             // Check for Dark World - Sky
             if (o->oFloorType == SURFACE_DEATH_PLANE) {
                 return TRUE;

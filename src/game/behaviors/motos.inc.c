@@ -103,29 +103,8 @@ void bhv_motos_thrown(void) {
     struct Object *coin;
     cur_obj_init_animation_with_sound(MOTOS_ANIM_DOWN_STOP);
     
-    if (o->oMoveFlags & OBJ_MOVE_LANDED) {
-        /*
-        if (save_file_get_badge_equip() & (1<<3)) {
-            o->oHealth-=2;
-            }
-            else
-            {
-            o->oHealth--;
-            }
-        */
-        if (o->oHealth > 0) {
-            o->oAction = MOTOS_ACT_RECOVER; // New action: recover (used to go straight back into wait)
-            }
-            else
-            {
-            obj_mark_for_deletion(o);
-
-            coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-            cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-            coin->oForwardVel = 10.0f;
-            coin->oVelY = 20.0f;
-            coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-            }
+    if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
+        o->oAction = MOTOS_ACT_RECOVER; // New action: recover (used to go straight back into wait)
     }
 }
 

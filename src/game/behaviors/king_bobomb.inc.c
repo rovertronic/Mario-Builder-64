@@ -33,7 +33,7 @@ void king_bobomb_act_inactive(void) { // act 0
             cur_obj_move_standard(-78);
         }
 
-        if (cur_obj_can_mario_activate_textbox_2(CMM_BOSS_TRIGGER_DIST, 100.0f)) {
+        if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
             o->oSubAction++;
             //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
         }
@@ -223,7 +223,7 @@ void king_bobomb_act_stop_music(void) { // act 8
 
 void king_bobomb_act_been_thrown(void) { // act 4
     if (o->oFloorType != SURFACE_DEATH_PLANE) { // not thrown off hill
-        if (o->oMoveFlags & OBJ_MOVE_LANDED) {
+        if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             o->oHealth--;
 
             o->oForwardVel = 0.0f;
@@ -234,7 +234,7 @@ void king_bobomb_act_been_thrown(void) { // act 4
             o->oAction = o->oHealth ? KING_BOBOMB_ACT_HIT_GROUND : KING_BOBOMB_ACT_DEATH;
         }
     } else if (o->oSubAction == KING_BOBOMB_SUB_ACT_THROWN_FALL) {
-        if (o->oMoveFlags & OBJ_MOVE_LANDED) {
+        if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             o->oForwardVel = 0.0f;
             o->oVelY = 0.0f;
 
