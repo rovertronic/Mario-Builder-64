@@ -1522,6 +1522,7 @@ u32 interact_koopa_shell(struct MarioState *m, UNUSED u32 interactType, struct O
 u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
     if ((!(m->action & (ACT_FLAG_AIR | ACT_FLAG_INVULNERABLE | ACT_FLAG_ATTACKING)) || !sInvulnerable)
         && (obj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO)) {
+        if (m->action & ACT_FLAG_SWIMMING) return FALSE;
         if (object_facing_mario(m, obj, DEGREES(60))) {
             mario_stop_riding_and_holding(m);
             obj->oInteractStatus = INT_STATUS_INTERACTED | INT_STATUS_GRABBED_MARIO;

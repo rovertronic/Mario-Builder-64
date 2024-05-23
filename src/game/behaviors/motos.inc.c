@@ -59,10 +59,6 @@ void bhv_motos_player_search(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WALK);
     o->oForwardVel = 5.f; // Sped up (was 2.f)
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 800); // Sped up (was 300)
-
-    if (cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY) {
-        o->oAction = MOTOS_ACT_DEATH;
-    }
 }
 
 void bhv_motos_player_carry(void) {
@@ -213,9 +209,6 @@ void bhv_motos_main() {
         if ((floorY + 1.f > o->oPosY) && (SURFACE_IS_BURNING(sObjFloor->type))) {
             o->oAction = MOTOS_ACT_DEATH;
         }
-    }
-    if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
-        o->oAction = MOTOS_ACT_DEATH;
     }
 }
 

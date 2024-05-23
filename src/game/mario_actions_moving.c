@@ -888,6 +888,10 @@ s32 act_hold_walking(struct MarioState *m) {
         return set_mario_action(m, ACT_CRAZY_BOX_BOUNCE, 0);
     }
 
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
+    }
+
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_WALKING, 0);
     }
@@ -949,6 +953,7 @@ s32 act_hold_heavy_walking(struct MarioState *m) {
     if (m->input & INPUT_IDLE) {
         return set_mario_action(m, ACT_HOLD_HEAVY_IDLE, 0);
     }
+    m->marioBodyState->grabPos = GRAB_POS_HEAVY_OBJ;
 
     m->intendedMag *= 0.1f;
 
@@ -1164,6 +1169,10 @@ s32 act_hold_decelerating(struct MarioState *m) {
 
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_WALKING, 0);
+    }
+
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
     }
 
     if (should_begin_sliding(m)) {
@@ -1561,6 +1570,10 @@ s32 act_hold_butt_slide(struct MarioState *m) {
         return drop_and_set_mario_action(m, ACT_BUTT_SLIDE, 0);
     }
 
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
+    }
+
     s32 cancel = common_slide_action_with_jump(m, ACT_HOLD_BUTT_SLIDE_STOP, ACT_HOLD_JUMP, ACT_HOLD_BUTT_SLIDE_AIR,
                                                MARIO_ANIM_SLIDING_ON_BOTTOM_WITH_LIGHT_OBJ);
     tilt_body_butt_slide(m);
@@ -1660,6 +1673,10 @@ s32 act_stomach_slide(struct MarioState *m) {
 s32 act_hold_stomach_slide(struct MarioState *m) {
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_STOMACH_SLIDE, 0);
+    }
+
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
     }
 
     return stomach_slide_action(m, ACT_DIVE_PICKING_UP, ACT_HOLD_FREEFALL, MARIO_ANIM_SLIDE_DIVE);
@@ -1926,6 +1943,10 @@ s32 act_hold_jump_land(struct MarioState *m) {
         return drop_and_set_mario_action(m, ACT_JUMP_LAND_STOP, 0);
     }
 
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
+    }
+
     if (common_landing_cancels(m, &sHoldJumpLandAction, set_jumping_action)) {
         return TRUE;
     }
@@ -1937,6 +1958,10 @@ s32 act_hold_jump_land(struct MarioState *m) {
 s32 act_hold_freefall_land(struct MarioState *m) {
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_FREEFALL_LAND_STOP, 0);
+    }
+
+    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
+        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
     }
 
     if (common_landing_cancels(m, &sHoldFreefallLandAction, set_jumping_action)) {

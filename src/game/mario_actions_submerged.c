@@ -799,6 +799,7 @@ static s32 check_water_grab(struct MarioState *m) {
     // you can use water grab to pick up heave ho.
     if (m->marioObj->collidedObjInteractTypes & INTERACT_GRABBABLE) {
         struct Object *object = mario_get_collided_object(m, INTERACT_GRABBABLE);
+        if (object->oInteractionSubtype & INT_SUBTYPE_NOT_GRABBABLE) return FALSE;
         f32 dx = object->oPosX - m->pos[0];
         f32 dz = object->oPosZ - m->pos[2];
         s16 dAngleToObject = atan2s(dz, dx) - m->faceAngle[1];
@@ -1553,12 +1554,13 @@ static s32 check_common_submerged_cancels(struct MarioState *m) {
                 // m->pos[1] = m->waterLevel - 80; // Vanilla bug: Downwarp swimming out of waterfalls
                 return transition_submerged_to_airborne(m);
             }
+        } else {
+            // if in air after swimming out of side/bottom
+            if (m->pos[1] > m->floorHeight + 10) {
+                return transition_submerged_to_airborne(m);
+            } 
+            return transition_submerged_to_walking(m);
         }
-        // if in air after swimming out of side/bottom
-        if (m->pos[1] > m->floorHeight + 10) {
-            return transition_submerged_to_airborne(m);
-        } 
-        return transition_submerged_to_walking(m);
     }
 
     if (m->health < 0x100 && !(m->action & (ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE))) {
