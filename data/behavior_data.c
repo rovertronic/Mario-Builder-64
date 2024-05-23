@@ -6776,13 +6776,13 @@ const BehaviorScript bhvTrackBall[] = {
 
 const BehaviorScript bhvMrBlizzard[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
+    OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, snowman_seg5_anims_0500D118),
     ANIMATE(MR_BLIZZARD_ANIM_SPAWN_SNOWBALL),
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 70, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     CALL_NATIVE(bhv_mr_blizzard_init),
     SET_FLOAT(oMrBlizzardScale, 1),
     BEGIN_LOOP(),

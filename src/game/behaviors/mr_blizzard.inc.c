@@ -240,18 +240,11 @@ static void mr_blizzard_act_death(void) {
                 if (!GET_BPARAM3(o->oBehParams)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
                     set_object_respawn_info_bits(o, RESPAWN_INFO_TYPE_NORMAL);
+                    SET_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
                 }
+                create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, CMM_DRAWDIST_LOW);
+                o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             }
-        }
-        // Reset Mr. Blizzard if Mario leaves its radius.
-        else if (o->oDistanceToMario > 1000.0f) {
-            cur_obj_init_animation_with_sound(1);
-
-            o->oAction = MR_BLIZZARD_ACT_SPAWN_SNOWBALL;
-            o->oMrBlizzardScale = 1.0f;
-            o->oMrBlizzardGraphYOffset = -200.0f;
-            o->oFaceAngleRoll = 0;
-            o->oMrBlizzardDizziness = o->oMrBlizzardChangeInDizziness = 0.0f;
         }
     }
 }
@@ -336,8 +329,6 @@ static void mr_blizzard_act_jump(void) {
  * Mr. Blizzard update function.
  */
 void bhv_mr_blizzard_update(void) {
-    cur_obj_update_floor_and_walls();
-
     // Behavior loop
     switch (o->oAction) {
         case MR_BLIZZARD_ACT_SPAWN_SNOWBALL:
@@ -366,6 +357,11 @@ void bhv_mr_blizzard_update(void) {
             break;
     }
 
+    if (!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE)) {
+        cur_obj_update_floor_and_walls();
+        cur_obj_move_standard(78);
+    }
+
     // Set roll angle equal to dizziness, making Mr. Blizzard
     // slowly fall over.
     o->oFaceAngleRoll = o->oMrBlizzardDizziness;
@@ -374,7 +370,6 @@ void bhv_mr_blizzard_update(void) {
                        - 40.0f * (1.0f - o->oMrBlizzardScale);
 
     cur_obj_scale(o->oMrBlizzardScale);
-    cur_obj_move_standard(78);
     obj_check_attacks(&sMrBlizzardHitbox, o->oAction);
 }
 
