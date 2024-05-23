@@ -193,13 +193,14 @@ typedef void (*DisplayFunc)(s32);
 #define OBJ_TYPE_HAS_STAR       (1 << 2)
 #define OBJ_TYPE_HAS_DIALOG     (1 << 3)
 #define OBJ_TYPE_IMBUABLE       (1 << 4)
+#define OBJ_TYPE_IMBUABLE_COINS (1 << 5)
 struct cmm_object_info {
     char *name;
     Gfx *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u16 flags:5;
+    u16 flags:6;
     u16 numCoins:4;
     u16 numExtraObjects:3;
     f32 scale;

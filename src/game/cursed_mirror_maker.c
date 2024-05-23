@@ -2561,12 +2561,16 @@ void imbue_action(void) {
                         imbue_success = TRUE;
                         break;
                     case OBJECT_TYPE_BLUE_COIN:
-                        cmm_object_data[i].imbue = IMBUE_BLUE_COIN;
-                        imbue_success = TRUE;
+                        if (cmm_object_type_list[cmm_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                            cmm_object_data[i].imbue = IMBUE_BLUE_COIN;
+                            imbue_success = TRUE;
+                        }
                         break;
                     case OBJECT_TYPE_COIN:
-                        cmm_object_data[i].imbue = IMBUE_THREE_COINS;
-                        imbue_success = TRUE;
+                        if (cmm_object_type_list[cmm_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                            cmm_object_data[i].imbue = IMBUE_THREE_COINS;
+                            imbue_success = TRUE;
+                        }
                         break;
                     case OBJECT_TYPE_RED_COIN:
                         cmm_object_data[i].imbue = IMBUE_RED_COIN;
