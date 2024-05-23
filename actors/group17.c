@@ -22,15 +22,6 @@
 #include "king_bobomb/anims/data.inc.c"
 #include "king_bobomb/anims/table.inc.c"
 
-#include "bowser_flame/model.inc.c"
-#include "impact_ring/model.inc.c"
-#include "bowser/model.inc.c"
-#include "bowser/anims/data.inc.c"
-#include "bowser/anims/table.inc.c"
-#include "bowser/flames_data.inc.c"
-#include "impact_smoke/model.inc.c"
-#include "bomb/model.inc.c"
-
 #include "wiggler_body/model.inc.c"
 #include "wiggler_body/anims/data.inc.c"
 #include "wiggler_body/anims/table.inc.c"
@@ -44,6 +35,15 @@
 #include "koopa_flag/model.inc.c"
 #include "koopa_flag/anims/data.inc.c"
 #include "koopa_flag/anims/table.inc.c"
+
+#include "bowser/flames_data.inc.c"
+#include "impact_smoke/model.inc.c"
+#include "bomb/model.inc.c"
+#include "bowser_flame/model.inc.c"
+#include "impact_ring/model.inc.c"
+#include "bowser/model.inc.c"
+#include "bowser/anims/data.inc.c"
+#include "bowser/anims/table.inc.c"
 
 /**
 #include "swoop/model.inc.c"
