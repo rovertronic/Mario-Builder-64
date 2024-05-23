@@ -1257,12 +1257,27 @@ void noteblock_function(void) {
     o->oVelY *= 0.95f;
 
     if ((gMarioState->action != ACT_LVUP_DANCE)&&(gMarioState->action != ACT_STAR_DANCE_NO_EXIT)&&(gMarioState->health > 0x100)&&cur_obj_is_mario_on_platform()) {
-            mario_stop_riding_and_holding(gMarioState);
+            // mario_stop_riding_and_holding(gMarioState);
             o->oTimer = 0;
             o->oVelY = 50.0f;
             cur_obj_play_sound_2(SOUND_GENERAL_CRAZY_BOX_BOING_SLOW);
-            set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
-            gMarioStates[0].vel[1] = 95.0f;
+
+            if (gMarioState->heldObj != NULL) {
+                if (gMarioState->heldObj->behavior == segmented_to_virtual(bhvJumpingBox)) {
+                    set_mario_action(gMarioState, ACT_CRAZY_BOX_BOUNCE, 2);
+                } else if (gMarioState->heldObj->behavior == segmented_to_virtual(bhvBreakableBoxSmall)) {
+                    set_mario_action(gMarioState, ACT_HOLD_JUMP, 0);
+                } else {
+                    mario_stop_riding_and_holding(gMarioState);
+                    set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
+                }
+            } else if (gMarioState->riddenObj != NULL) {
+                set_mario_action(gMarioState, ACT_RIDING_SHELL_JUMP, 0);
+            } else {
+                set_mario_action(gMarioState, ACT_DOUBLE_JUMP, 0);
+            }
+
+            gMarioState->vel[1] = 95.0f;
             gMarioState->squishTimer = 0;
         }
     }
