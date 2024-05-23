@@ -454,6 +454,7 @@ s32 get_floor_class(TerrainData type) {
         case SURFACE_NOISE_SLIPPERY:
         case SURFACE_HARD_SLIPPERY:
         case SURFACE_NO_CAM_COL_SLIPPERY:
+        case SURFACE_SNOW:
             return SURFACE_CLASS_SLIPPERY;
 
         case SURFACE_SUPER_SLIPPERY:
@@ -464,7 +465,6 @@ s32 get_floor_class(TerrainData type) {
         case SURFACE_NOISE_VERY_SLIPPERY_74:
         case SURFACE_NOISE_VERY_SLIPPERY:
         case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
-        case SURFACE_SNOW:
             return SURFACE_CLASS_VERY_SLIPPERY;
     }
     return SURFACE_CLASS_DEFAULT;
