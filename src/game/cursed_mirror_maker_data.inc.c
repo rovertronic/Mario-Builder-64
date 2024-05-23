@@ -2579,3 +2579,15 @@ struct cmm_dialog_subject cmm_dialog_subjects[] = {
 };
 
 #define NUM_DIALOG_SUBJECT_COUNT 6
+
+u8 imbue_coin_amounts[] = {
+    /* IMBUE_NONE */ 0,
+    /* IMBUE_STAR */ 0,
+    /* IMBUE_THREE_COINS */ 3,
+    /* IMBUE_FIVE_COINS */ 5,
+    /* IMBUE_EIGHT_COINS */ 8,
+    /* IMBUE_BLUE_COIN */ 5,
+    /* IMBUE_RED_SWITCH */ 0,
+    /* IMBUE_BLUE_SWITCH */ 0,
+    /* IMBUE_RED_COIN */ 2,
+};

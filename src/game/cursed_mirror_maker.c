@@ -2244,6 +2244,7 @@ void generate_object_preview(void) {
             imbue_marker->oPosY = GRID_TO_POS(pos[1]);
             imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
             cmm_object_limit_count ++;
+            totalCoins += imbue_coin_amounts[cmm_object_data[i].imbue];
         }
 
         cmm_object_limit_count += extraObjs + 1;
