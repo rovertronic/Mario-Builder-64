@@ -187,41 +187,41 @@ const GeoLayout green_coin_no_shadow_geo[] = {
    GEO_END(),
 };
 
-const GeoLayout pink_coin_geo[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
-   GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(8, geo_switch_anim_state),
-      GEO_OPEN_NODE(),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_0),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_90),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5_r),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45_r),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5_r),
-      GEO_CLOSE_NODE(),
-   GEO_CLOSE_NODE(),
-   GEO_END(),
-};
+// const GeoLayout pink_coin_geo[] = {
+//    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
+//    GEO_OPEN_NODE(),
+//       GEO_SWITCH_CASE(8, geo_switch_anim_state),
+//       GEO_OPEN_NODE(),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_0),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_90),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5_r),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45_r),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5_r),
+//       GEO_CLOSE_NODE(),
+//    GEO_CLOSE_NODE(),
+//    GEO_END(),
+// };
 
-const GeoLayout pink_coin_no_shadow_geo[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
-   GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(8, geo_switch_anim_state),
-      GEO_OPEN_NODE(),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_0),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_90),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5_r),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45_r),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5_r),
-      GEO_CLOSE_NODE(),
-   GEO_CLOSE_NODE(),
-   GEO_END(),
-};
+// const GeoLayout pink_coin_no_shadow_geo[] = {
+//    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
+//    GEO_OPEN_NODE(),
+//       GEO_SWITCH_CASE(8, geo_switch_anim_state),
+//       GEO_OPEN_NODE(),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_0),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_90),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_67_5_r),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_45_r),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_22_5_r),
+//       GEO_CLOSE_NODE(),
+//    GEO_CLOSE_NODE(),
+//    GEO_END(),
+// };
 
 #else
 // 0x1600013C
@@ -374,23 +374,23 @@ const GeoLayout green_coin_no_shadow_geo[] = {
    GEO_END(),
 };
 
-const GeoLayout pink_coin_geo[] = {
-   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
-   GEO_OPEN_NODE(),
-      GEO_SWITCH_CASE(8, geo_switch_anim_state),
-      GEO_OPEN_NODE(),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_front),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_front),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_right),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_right),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_side),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_side),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_left),
-         GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_left),
-      GEO_CLOSE_NODE(),
-   GEO_CLOSE_NODE(),
-   GEO_END(),
-};
+// const GeoLayout pink_coin_geo[] = {
+//    GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0xB4, 50),
+//    GEO_OPEN_NODE(),
+//       GEO_SWITCH_CASE(8, geo_switch_anim_state),
+//       GEO_OPEN_NODE(),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_front),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_front),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_right),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_right),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_side),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_side),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_left),
+//          GEO_DISPLAY_LIST(LAYER_COIN, coin_seg3_dl_pink_tilt_left),
+//       GEO_CLOSE_NODE(),
+//    GEO_CLOSE_NODE(),
+//    GEO_END(),
+// };
 /*
 const GeoLayout green_coin_no_shadow_geo[] = {
    GEO_NODE_START(),

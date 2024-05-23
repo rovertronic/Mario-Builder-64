@@ -76,8 +76,8 @@ s16 gCurrLevelNum = LEVEL_MIN;
 */
 
 const BehaviorScript *sWarpBhvSpawnTable[] = {
-    bhvDoorWarp,                                           bhvExitPodiumWarp,          bhvWarp,
-    bhvWarpPipe,                bhvFadingWarp,             bhvInstantActiveWarp,       bhvAirborneWarp,
+    bhvExitPodiumWarp,                                     bhvExitPodiumWarp,          bhvWarp,
+    bhvExitPodiumWarp,          bhvFadingWarp,             bhvInstantActiveWarp,       bhvAirborneWarp,
     bhvHardAirKnockBackWarp,    bhvSpinAirborneCircleWarp, bhvDeathWarp,               bhvSpinAirborneWarp,
     bhvFlyingWarp,              bhvSwimmingWarp,           bhvPaintingStarCollectWarp, bhvPaintingDeathWarp,
     bhvAirborneStarCollectWarp, bhvAirborneDeathWarp,      bhvLaunchStarCollectWarp,   bhvLaunchDeathWarp,

@@ -1374,14 +1374,14 @@ enum oBehParams1stByteSlidingPlatform { // collisionDataIndex
 
 /* Toad */
 enum animIDsToad {
-    TOAD_ANIM_WEST_WAVE_THEN_TURN, // 1 frame
-    TOAD_ANIM_WEST_WALKING,
-    TOAD_ANIM_EAST_NOD_THEN_TURN,  // 1 frame
-    TOAD_ANIM_EAST_WALKING,
-    TOAD_ANIM_WEST_STANDING,
-    TOAD_ANIM_EAST_STANDING,
+    // TOAD_ANIM_WEST_WAVE_THEN_TURN, // 1 frame
+    // TOAD_ANIM_WEST_WALKING,
+    // TOAD_ANIM_EAST_NOD_THEN_TURN,  // 1 frame
+    // TOAD_ANIM_EAST_WALKING,
+    // TOAD_ANIM_WEST_STANDING,
+    // TOAD_ANIM_EAST_STANDING,
     TOAD_ANIM_WEST_WAVING_BOTH_ARMS,
-    TOAD_ANIM_EAST_WAVING_ONE_ARM,
+    // TOAD_ANIM_EAST_WAVING_ONE_ARM,
 };
 
 /* Intro Peach */
@@ -1755,19 +1755,19 @@ enum animIDsSwoop {
     #define UKIKI_TEXT_DO_NOT_LET_GO                        0x6
     #define UKIKI_TEXT_STEAL_CAP                            0x7
     /* Animations */
-    #define UKIKI_ANIM_RUN                                  0x0
-    #define UKIKI_ANIM_UNUSED_WALK                          0x1
-    #define UKIKI_ANIM_UNUSED_APOSE                         0x2
-    #define UKIKI_ANIM_UNUSED_DEATH                         0x3
-    #define UKIKI_ANIM_SCREECH                              0x4
-    #define UKIKI_ANIM_JUMP_CLAP                            0x5
-    #define UKIKI_ANIM_UNUSED_HOP                           0x6
-    #define UKIKI_ANIM_LAND                                 0x7
-    #define UKIKI_ANIM_JUMP                                 0x8
-    #define UKIKI_ANIM_ITCH                                 0x9
-    #define UKIKI_ANIM_HANDSTAND                            0xA
-    #define UKIKI_ANIM_TURN                                 0xB
-    #define UKIKI_ANIM_HELD                                 0xC
+    // #define UKIKI_ANIM_RUN                                  0x0
+    // #define UKIKI_ANIM_UNUSED_WALK                          0x1
+    // #define UKIKI_ANIM_UNUSED_APOSE                         0x2
+    // #define UKIKI_ANIM_UNUSED_DEATH                         0x3
+    #define UKIKI_ANIM_SCREECH                              0x0
+    // #define UKIKI_ANIM_JUMP_CLAP                            0x5
+    // #define UKIKI_ANIM_UNUSED_HOP                           0x6
+    // #define UKIKI_ANIM_LAND                                 0x7
+    // #define UKIKI_ANIM_JUMP                                 0x8
+    // #define UKIKI_ANIM_ITCH                                 0x9
+    // #define UKIKI_ANIM_HANDSTAND                            0xA
+    // #define UKIKI_ANIM_TURN                                 0xB
+    // #define UKIKI_ANIM_HELD                                 0xC
     /* oAnimState */
     #define UKIKI_ANIM_STATE_DEFAULT                        0x0
     #define UKIKI_ANIM_STATE_EYE_CLOSED                     0x1
@@ -1954,9 +1954,9 @@ enum oAnimStatesPenguin { // geo_switch_tuxie_mother_eyes
 };
 enum AnimIDsPenguin { // Animations
     PENGUIN_ANIM_WALK,
-    PENGUIN_ANIM_DIVE_SLIDE,
-    PENGUIN_ANIM_STAND_UP,
-    PENGUIN_ANIM_IDLE
+    // PENGUIN_ANIM_DIVE_SLIDE,
+    // PENGUIN_ANIM_STAND_UP,
+    // PENGUIN_ANIM_IDLE
 };
 
 /* Racing Penguin */

@@ -900,20 +900,20 @@ const BehaviorScript bhvWarp[] = {
     END_LOOP(),
 };
 
-extern void bhv_warp_pipe_init(void);
-const BehaviorScript bhvWarpPipe[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    //SET_INT(oInteractType, INTERACT_WARP),
-    LOAD_COLLISION_DATA(warp_pipe_seg3_collision_03009AC8),
-    //SET_INT(oIntangibleTimer, 0),
-    //SET_HITBOX(/*Radius*/ 70, /*Height*/ 50),
-    CALL_NATIVE(load_object_static_model),
-    CALL_NATIVE(bhv_warp_pipe_init),
-    BEGIN_LOOP(),
-        //CALL_NATIVE(bhv_warp_loop),
-    END_LOOP(),
-};
+// extern void bhv_warp_pipe_init(void);
+// const BehaviorScript bhvWarpPipe[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     //SET_INT(oInteractType, INTERACT_WARP),
+//     LOAD_COLLISION_DATA(warp_pipe_seg3_collision_03009AC8),
+//     //SET_INT(oIntangibleTimer, 0),
+//     //SET_HITBOX(/*Radius*/ 70, /*Height*/ 50),
+//     CALL_NATIVE(load_object_static_model),
+//     CALL_NATIVE(bhv_warp_pipe_init),
+//     BEGIN_LOOP(),
+//         //CALL_NATIVE(bhv_warp_loop),
+//     END_LOOP(),
+// };
 
 const BehaviorScript bhvWhitePuffExplosion[] = {
     BEGIN(OBJ_LIST_UNIMPORTANT),
@@ -1249,29 +1249,29 @@ const BehaviorScript bhvTriangleParticleSpawner[] = {
     DEACTIVATE(),
 };
 
-const BehaviorScript bhvDoorWarp[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    SET_INT(oInteractType, INTERACT_WARP_DOOR),
-    GOTO(bhvDoor + 1 + 1),
-};
+// const BehaviorScript bhvDoorWarp[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     SET_INT(oInteractType, INTERACT_WARP_DOOR),
+//     GOTO(bhvDoor + 1 + 1),
+// };
 
-const BehaviorScript bhvDoor[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    SET_INT(oInteractType, INTERACT_DOOR),
-    // Door - common:
-    OR_INT(oFlags, (OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    LOAD_ANIMATIONS(oAnimations, door_seg3_anims_030156C0),
-    ANIMATE(DOOR_ANIM_CLOSED),
-    LOAD_COLLISION_DATA(door_seg3_collision_door),
-    SET_HITBOX(/*Radius*/ 80, /*Height*/ 100),
-    SET_INT(oIntangibleTimer, 0),
-    SET_FLOAT(oCollisionDistance, 300),
-    SET_HOME(),
-    CALL_NATIVE(bhv_door_init),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_door_loop),
-    END_LOOP(),
-};
+// const BehaviorScript bhvDoor[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     SET_INT(oInteractType, INTERACT_DOOR),
+//     // Door - common:
+//     OR_INT(oFlags, (OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     LOAD_ANIMATIONS(oAnimations, door_seg3_anims_030156C0),
+//     ANIMATE(DOOR_ANIM_CLOSED),
+//     LOAD_COLLISION_DATA(door_seg3_collision_door),
+//     SET_HITBOX(/*Radius*/ 80, /*Height*/ 100),
+//     SET_INT(oIntangibleTimer, 0),
+//     SET_FLOAT(oCollisionDistance, 300),
+//     SET_HOME(),
+//     CALL_NATIVE(bhv_door_init),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_door_loop),
+//     END_LOOP(),
+// };
 
 // const BehaviorScript bhvLavaSpewer[] = {
 //     BEGIN(OBJ_LIST_SURFACE),

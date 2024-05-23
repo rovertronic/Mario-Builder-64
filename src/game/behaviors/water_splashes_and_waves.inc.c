@@ -23,15 +23,15 @@ struct WaterDropletParams gShallowWaterSplashDropletParams = {
 };
 
 // The fish particle easter egg from Mario jumping in shallow water.
-struct WaterDropletParams sWaterDropletFishParams = {
-    /* Flags */ WATER_DROPLET_FLAG_RAND_ANGLE | WATER_DROPLET_FLAG_SET_Y_TO_WATER_LEVEL,
-    /* Model */ MODEL_FISH,
-    /* Behavior */ bhvWaterDroplet,
-    /* Unused (flag-specific) */ 0, 0,
-    /* Random fvel offset, scale */ 2.0f, 3.0f,
-    /* Random yvel offset, scale */ 20.0f, 20.0f,
-    /* Random size offset, scale */ 1.0f, 0.0f
-};
+// struct WaterDropletParams sWaterDropletFishParams = {
+//     /* Flags */ WATER_DROPLET_FLAG_RAND_ANGLE | WATER_DROPLET_FLAG_SET_Y_TO_WATER_LEVEL,
+//     /* Model */ MODEL_FISH,
+//     /* Behavior */ bhvWaterDroplet,
+//     /* Unused (flag-specific) */ 0, 0,
+//     /* Random fvel offset, scale */ 2.0f, 3.0f,
+//     /* Random yvel offset, scale */ 20.0f, 20.0f,
+//     /* Random size offset, scale */ 1.0f, 0.0f
+// };
 
 // Water droplets from Mario running in shallow water.
 struct WaterDropletParams gShallowWaterWaveDropletParams = {
@@ -63,11 +63,11 @@ void bhv_water_droplet_loop(void) {
     f32 waterLevel = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 
     if (o->oTimer == 0) {
-        if (cur_obj_has_model(MODEL_FISH)) {
-            o->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
-        } else {
+        // if (cur_obj_has_model(MODEL_FISH)) {
+        //     o->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
+        // } else {
             o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
-        }
+        // }
         o->oFaceAngleYaw = random_u16();
     }
     // Apply gravity
@@ -109,10 +109,10 @@ void bhv_bubble_splash_init(void) {
 
 void bhv_shallow_water_splash_init(void) {
     // Have a 1 in 256 chance to spawn the fish particle easter egg.
-    if ((random_u16() & 0xFF) <= 0) { // Strange
-        struct Object *fishObj = spawn_water_droplet(o, &sWaterDropletFishParams);
-        obj_init_animation_with_sound(fishObj, blue_fish_seg3_anims_0301C2B0, 0);
-    }
+    // if ((random_u16() & 0xFF) <= 0) { // Strange
+    //     struct Object *fishObj = spawn_water_droplet(o, &sWaterDropletFishParams);
+    //     obj_init_animation_with_sound(fishObj, blue_fish_seg3_anims_0301C2B0, 0);
+    // }
 }
 
 void bhv_wave_trail_shrink(void) {

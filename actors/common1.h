@@ -4,13 +4,13 @@
 #include "types.h"
 
 // blue_fish
-extern const GeoLayout fish_shadow_geo[];
-extern const GeoLayout fish_geo[];
-extern const Gfx blue_fish_seg3_dl_0301BEC0[];
-extern const Gfx blue_fish_seg3_dl_0301BFB8[];
-extern const Gfx blue_fish_seg3_dl_0301C0A8[];
-extern const Gfx blue_fish_seg3_dl_0301C150[];
-extern const struct Animation *const blue_fish_seg3_anims_0301C2B0[];
+// extern const GeoLayout fish_shadow_geo[];
+// extern const GeoLayout fish_geo[];
+// extern const Gfx blue_fish_seg3_dl_0301BEC0[];
+// extern const Gfx blue_fish_seg3_dl_0301BFB8[];
+// extern const Gfx blue_fish_seg3_dl_0301C0A8[];
+// extern const Gfx blue_fish_seg3_dl_0301C150[];
+// extern const struct Animation *const blue_fish_seg3_anims_0301C2B0[];
 
 // bowser_key
 // extern const GeoLayout bowser_key_geo[];
@@ -19,10 +19,10 @@ extern const struct Animation *const blue_fish_seg3_anims_0301C2B0[];
 // extern const struct Animation *const bowser_key_seg3_anims_list[];
 
 // butterfly
-extern const GeoLayout butterfly_geo[];
-extern const Gfx butterfly_seg3_dl_03005408[];
-extern const Gfx butterfly_seg3_dl_030054A0[];
-extern const struct Animation *const butterfly_seg3_anims_030056B0[];
+// extern const GeoLayout butterfly_geo[];
+// extern const Gfx butterfly_seg3_dl_03005408[];
+// extern const Gfx butterfly_seg3_dl_030054A0[];
+// extern const struct Animation *const butterfly_seg3_anims_030056B0[];
 
 // coin
 extern const Gfx coin_dl_start1[];
@@ -43,8 +43,8 @@ extern const GeoLayout red_coin_geo[];
 extern const GeoLayout red_coin_no_shadow_geo[];
 extern const GeoLayout green_coin_geo[];
 extern const GeoLayout green_coin_no_shadow_geo[];
-extern const GeoLayout pink_coin_geo[];
-extern const GeoLayout pink_coin_no_shadow_geo[];
+// extern const GeoLayout pink_coin_geo[];
+// extern const GeoLayout pink_coin_no_shadow_geo[];
 #ifdef IA8_30FPS_COINS
 extern const GeoLayout silver_coin_geo[];
 extern const GeoLayout silver_coin_no_shadow_geo[];
@@ -122,10 +122,10 @@ extern const Gfx coin_seg3_dl_green_front[];
 extern const Gfx coin_seg3_dl_green_tilt_right[];
 extern const Gfx coin_seg3_dl_green_side[];
 extern const Gfx coin_seg3_dl_green_tilt_left[];
-extern const Gfx coin_seg3_dl_pink_front[];
-extern const Gfx coin_seg3_dl_pink_tilt_right[];
-extern const Gfx coin_seg3_dl_pink_side[];
-extern const Gfx coin_seg3_dl_pink_tilt_left[];
+// extern const Gfx coin_seg3_dl_pink_front[];
+// extern const Gfx coin_seg3_dl_pink_tilt_right[];
+// extern const Gfx coin_seg3_dl_pink_side[];
+// extern const Gfx coin_seg3_dl_pink_tilt_left[];
 #endif
 
 // dirt
@@ -146,53 +146,53 @@ extern const Gfx dirt_seg3_dl_tiny_particle_yellow[];
 extern const Gfx dirt_seg3_dl_tiny_particle_billboard[];
 
 // door
-extern const GeoLayout castle_door_geo[];
-extern const GeoLayout cabin_door_geo[];
-extern const GeoLayout wooden_door_geo[];
-extern const GeoLayout wooden_door2_geo[];
-extern const GeoLayout metal_door_geo[];
-extern const GeoLayout hazy_maze_door_geo[];
-extern const GeoLayout haunted_door_geo[];
-extern const GeoLayout castle_door_0_star_geo[];
-extern const GeoLayout castle_door_1_star_geo[];
-extern const GeoLayout castle_door_3_stars_geo[];
-extern const GeoLayout key_door_geo[];
-extern const Gfx door_seg3_sub_dl_polished_wooden_door_near[];
-extern const Gfx door_seg3_sub_dl_polished_wooden_door_handle_1[];
-extern const Gfx door_seg3_sub_dl_polished_wooden_door_handle_2[];
-extern const Gfx door_seg3_dl_polished_wooden_door_near[];
-extern const Gfx door_seg3_dl_cabin_door_near[];
-extern const Gfx door_seg3_sub_dl_polished_wooden_door_far[];
-extern const Gfx door_seg3_dl_polished_wooden_door_far[];
-extern const Gfx door_seg3_dl_cabin_door_far[];
-extern const Gfx door_seg3_vertex_star_sign_begin[];
-extern const Gfx door_seg3_vertex_star_sign_end[];
-extern const Gfx door_seg3_dl_zero_star_near[];
-extern const Gfx door_seg3_dl_zero_star_far[];
-extern const Gfx door_seg3_dl_one_star_near[];
-extern const Gfx door_seg3_dl_one_star_far[];
-extern const Gfx door_seg3_dl_three_stars_near[];
-extern const Gfx door_seg3_dl_three_stars_far[];
-extern const Gfx door_seg3_dl_key_door[];
-extern const Gfx door_seg3_sub_dl_themed_handle_near[];
-extern const Gfx door_seg3_sub_dl_themed_door_sides[];
-extern const Gfx door_seg3_sub_dl_themed_door[];
-extern const Gfx door_seg3_sub_dl_themed_door_begin[];
-extern const Gfx door_seg3_dl_rough_wooden_door_near[];
-extern const Gfx door_seg3_dl_rough_wooden_door2_near[];
-extern const Gfx door_seg3_dl_metal_door_near[];
-extern const Gfx door_seg3_dl_cave_door_near[];
-extern const Gfx door_seg3_dl_haunted_door_near[];
-extern const Gfx door_seg3_sub_dl_themed_door_far[];
-extern const Gfx door_seg3_sub_dl_themed_handle_far[];
-extern const Gfx door_seg3_sub_dl_themed_door_far_begin[];
-extern const Gfx door_seg3_dl_rough_wooden_door_far[];
-extern const Gfx door_seg3_dl_rough_wooden_door2_far[];
-extern const Gfx door_seg3_dl_metal_door_far[];
-extern const Gfx door_seg3_dl_cave_door_far[];
-extern const Gfx door_seg3_dl_haunted_door_far[];
-extern const struct Animation *const door_seg3_anims_030156C0[];
-extern const Collision door_seg3_collision_door[];
+// extern const GeoLayout castle_door_geo[];
+// extern const GeoLayout cabin_door_geo[];
+// extern const GeoLayout wooden_door_geo[];
+// extern const GeoLayout wooden_door2_geo[];
+// extern const GeoLayout metal_door_geo[];
+// extern const GeoLayout hazy_maze_door_geo[];
+// extern const GeoLayout haunted_door_geo[];
+// extern const GeoLayout castle_door_0_star_geo[];
+// extern const GeoLayout castle_door_1_star_geo[];
+// extern const GeoLayout castle_door_3_stars_geo[];
+// extern const GeoLayout key_door_geo[];
+// extern const Gfx door_seg3_sub_dl_polished_wooden_door_near[];
+// extern const Gfx door_seg3_sub_dl_polished_wooden_door_handle_1[];
+// extern const Gfx door_seg3_sub_dl_polished_wooden_door_handle_2[];
+// extern const Gfx door_seg3_dl_polished_wooden_door_near[];
+// extern const Gfx door_seg3_dl_cabin_door_near[];
+// extern const Gfx door_seg3_sub_dl_polished_wooden_door_far[];
+// extern const Gfx door_seg3_dl_polished_wooden_door_far[];
+// extern const Gfx door_seg3_dl_cabin_door_far[];
+// extern const Gfx door_seg3_vertex_star_sign_begin[];
+// extern const Gfx door_seg3_vertex_star_sign_end[];
+// extern const Gfx door_seg3_dl_zero_star_near[];
+// extern const Gfx door_seg3_dl_zero_star_far[];
+// extern const Gfx door_seg3_dl_one_star_near[];
+// extern const Gfx door_seg3_dl_one_star_far[];
+// extern const Gfx door_seg3_dl_three_stars_near[];
+// extern const Gfx door_seg3_dl_three_stars_far[];
+// extern const Gfx door_seg3_dl_key_door[];
+// extern const Gfx door_seg3_sub_dl_themed_handle_near[];
+// extern const Gfx door_seg3_sub_dl_themed_door_sides[];
+// extern const Gfx door_seg3_sub_dl_themed_door[];
+// extern const Gfx door_seg3_sub_dl_themed_door_begin[];
+// extern const Gfx door_seg3_dl_rough_wooden_door_near[];
+// extern const Gfx door_seg3_dl_rough_wooden_door2_near[];
+// extern const Gfx door_seg3_dl_metal_door_near[];
+// extern const Gfx door_seg3_dl_cave_door_near[];
+// extern const Gfx door_seg3_dl_haunted_door_near[];
+// extern const Gfx door_seg3_sub_dl_themed_door_far[];
+// extern const Gfx door_seg3_sub_dl_themed_handle_far[];
+// extern const Gfx door_seg3_sub_dl_themed_door_far_begin[];
+// extern const Gfx door_seg3_dl_rough_wooden_door_far[];
+// extern const Gfx door_seg3_dl_rough_wooden_door2_far[];
+// extern const Gfx door_seg3_dl_metal_door_far[];
+// extern const Gfx door_seg3_dl_cave_door_far[];
+// extern const Gfx door_seg3_dl_haunted_door_far[];
+// extern const struct Animation *const door_seg3_anims_030156C0[];
+// extern const Collision door_seg3_collision_door[];
 
 // explosion
 extern const GeoLayout explosion_geo[];
@@ -273,7 +273,7 @@ extern const Gfx star_seg3_dl_body[];
 extern const Gfx star_seg3_sub_dl_eyes[];
 extern const Gfx star_seg3_dl_eyes[];
 
-// // metalstar
+// metalstar
 extern const GeoLayout metalstar_geo[];
 extern const Gfx metalstar_seg3_sub_dl_body[];
 extern const Gfx metalstar_seg3_dl_body[];
@@ -305,13 +305,13 @@ extern const Gfx tree_seg3_dl_dead[];
 extern const Gfx tree_seg3_dl_spiky_real[];
 
 // warp_pipe
-extern const GeoLayout warp_pipe_geo[];
-extern const Gfx warp_pipe_seg3_dl_03008E40[];
-extern const Gfx warp_pipe_seg3_dl_03008F98[];
-extern const Gfx warp_pipe_seg3_dl_03009968[];
-extern const Gfx warp_pipe_seg3_dl_03009A20[];
-extern const Gfx warp_pipe_seg3_dl_03009A50[];
-extern const Collision warp_pipe_seg3_collision_03009AC8[];
+// extern const GeoLayout warp_pipe_geo[];
+// extern const Gfx warp_pipe_seg3_dl_03008E40[];
+// extern const Gfx warp_pipe_seg3_dl_03008F98[];
+// extern const Gfx warp_pipe_seg3_dl_03009968[];
+// extern const Gfx warp_pipe_seg3_dl_03009A20[];
+// extern const Gfx warp_pipe_seg3_dl_03009A50[];
+// extern const Collision warp_pipe_seg3_collision_03009AC8[];
 
 // white_particle
 extern const GeoLayout white_particle_geo[];

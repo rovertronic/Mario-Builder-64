@@ -2346,13 +2346,13 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
 
     //let mario change badges if near pipe
-    struct Object *pipe;
-    pipe = cur_obj_nearest_object_with_behavior(bhvWarpPipe);
-    if (pipe) {
-        if (lateral_dist_between_objects(gMarioObject,pipe) < 800.0f) {
-            gMarioState->nearVendor = 20;
-        }
-    }
+    // struct Object *pipe;
+    // pipe = cur_obj_nearest_object_with_behavior(bhvWarpPipe);
+    // if (pipe) {
+    //     if (lateral_dist_between_objects(gMarioObject,pipe) < 800.0f) {
+    //         gMarioState->nearVendor = 20;
+    //     }
+    // }
 
 
     if ((uintptr_t) gDynamicSurfacePoolEnd >= (uintptr_t) gDynamicSurfacePool + DYNAMIC_SURFACE_POOL_SIZE) {
