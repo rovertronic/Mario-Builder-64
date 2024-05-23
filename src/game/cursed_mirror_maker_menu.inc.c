@@ -2283,9 +2283,7 @@ s32 cmm_main_menu(void) {
                 }
                 cmm_file_name[i] = '\0'; // add null terminator
 
-                f_chdir(cmm_level_dir_name);
-                struct cmm_level_save_header * level_info = get_level_info_from_filename(&cmm_file_name);
-                f_chdir("..");
+                struct cmm_level_save_header * level_info = get_level_info_from_filename(cmm_file_name);
                 cmm_lopt_game = level_info->game;
                 cmm_mm_selected_level = cmm_menu_index;
                 if (cmm_level_action == CMM_LA_BUILD) cmm_tip_timer = 60;
