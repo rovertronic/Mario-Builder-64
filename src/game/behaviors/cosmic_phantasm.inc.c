@@ -332,7 +332,7 @@ void showrunner_battle_function(void) {
             if (o->oTimer > 1) {
                 o->oForwardVel *= .94f;
                 if (o->oForwardVel > -5.0f) {
-                    spike_attacks_left = 4;
+                    spike_attacks_left = 2;
                     o->oAction = 3;//first attack are spikes
                     o->oForwardVel = 0.0f;
                 }
@@ -392,7 +392,7 @@ void showrunner_battle_function(void) {
                 cur_obj_init_animation_with_sound(0);//reset
                 cur_obj_init_animation_with_sound(3);//wind_up
                 //no cosmic phantasms allowed during tennis
-                clear_costmic_phantasms();
+                // clear_costmic_phantasms();
             }
             o->oForwardVel = 10.0f;
             if (o->oTimer % 30 == 0) {
@@ -431,7 +431,7 @@ void showrunner_battle_function(void) {
                         cur_obj_init_animation_with_sound(6);//hurt
                     } else {
                         o->oAction = 13;
-                        clear_costmic_phantasms();
+                        // clear_costmic_phantasms();
                         cur_obj_init_animation_with_sound(7);//dead
                     }
                 }
@@ -468,7 +468,7 @@ void showrunner_battle_function(void) {
                 o->header.gfx.scale[0] -= 0.01f;
                 cur_obj_scale(o->header.gfx.scale[0]);
                 if (o->header.gfx.scale[0] < 0.1f) {
-                    o->oNumLootCoins = 50.0f;
+                    o->oNumLootCoins = 50;
                     obj_spawn_loot_yellow_coins(o, 50, 20.0f);
                     spawn_mist_particles_variable(0, 0, 100.0f);
                     obj_mark_for_deletion(o);
@@ -477,7 +477,7 @@ void showrunner_battle_function(void) {
         break;
         case 16: //ballerina attack
             cur_obj_init_animation_with_sound(9);//ballerina attack
-            o->oDamageOrCoinValue = 8;
+            o->oDamageOrCoinValue = 3;
             if (o->oTimer == 0) { //init
                 o->oForwardVel = 0.0f;
                 o->oAngleVelYaw = 0;
@@ -508,12 +508,6 @@ void showrunner_battle_function(void) {
                         obj_attack->oMoveAngleYaw = random_u16();
                         obj_attack->oMoveAnglePitch = 0;
                     }
-                    if ((o->oTimer % 2 == 0)&&(o->oTimer>400)&&(o->oHealth==2)) { //not to overwhelm the player in the final phase
-                        obj_attack = spawn_object(o,MODEL_MAKER_SHOWRUNNER_STAR,bhvCosmicProjectile);
-                        obj_attack->oPosY = o->oPosY+(random_float()*500.0f);
-                        obj_attack->oMoveAngleYaw = random_u16();
-                        obj_attack->oMoveAnglePitch = 0;
-                    }
                 }
                 switch(o->oSubAction) {
                     case 0:
@@ -522,7 +516,7 @@ void showrunner_battle_function(void) {
                         if (o->oForwardVel < 20.0f) {
                             o->oForwardVel += 0.05f;
                         }
-                        if (o->oTimer == 600) {
+                        if (o->oTimer == 400) {
                             o->oSubAction = 1;
                             o->oTimer = 31;
                         }
@@ -585,7 +579,7 @@ void showrunner_battle_function(void) {
                 }
             }
             if (o->oTimer > 60) {
-                spike_attacks_left = 2;
+                spike_attacks_left = 1;
                 o->oAction = 3;
             }
         break;
@@ -658,7 +652,7 @@ void bhv_sr_spike(void) {
 }
 
 u8 tennis_turns[] = {
-    0,12,6,3,
+    0,8,5,3,
 };//table for how much vollying until showrunner gives in. also reverse order
 #include "actors/group14.h"
 void bhv_tennis(void) {

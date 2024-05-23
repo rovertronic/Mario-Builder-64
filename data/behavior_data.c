@@ -8216,11 +8216,11 @@ const BehaviorScript bhvFireBroBall[] = {
 
 const BehaviorScript bhvShowrunner[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO|OBJ_FLAG_COMPUTE_DIST_TO_MARIO|OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE|OBJ_FLAG_PERSISTENT_RESPAWN)),
+    OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO|OBJ_FLAG_COMPUTE_DIST_TO_MARIO|OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE|OBJ_FLAG_PERSISTENT_RESPAWN)),
     LOAD_ANIMATIONS(oAnimations, showrunner_anims),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_HIGH),
     ANIMATE(0),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 200, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_Showrunner),
@@ -8691,7 +8691,7 @@ extern void bhv_sr_spike(void);
 const BehaviorScript bhvSrSpike[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE|OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO)),
-    SET_INT(oDamageOrCoinValue, 3),
+    SET_INT(oDamageOrCoinValue, 2),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_MEDIUM),
     SET_HITBOX(/*Radius*/ 100, /*Height*/ 350),
     SET_INTERACT_TYPE(INTERACT_DAMAGE),
@@ -8902,7 +8902,7 @@ void tv_head_projectile(void);
 const BehaviorScript bhvCosmicProjectile[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)),
-    SET_INT(oDamageOrCoinValue, 4),
+    SET_INT(oDamageOrCoinValue, 2),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 40, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_MEDIUM),
     SET_HITBOX(/*Radius*/ 70, /*Height*/ 50),
