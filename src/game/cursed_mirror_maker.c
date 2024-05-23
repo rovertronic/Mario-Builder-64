@@ -257,7 +257,7 @@ u32 coords_in_range(s8 pos[3]) {
 
 s32 tile_sanity_check(void) {
     if (cmm_tile_count >= CMM_TILE_POOL_SIZE) {
-        cmm_show_error_message("Tile limit reached! (max 10,000)");
+        cmm_show_error_message("Tile limit reached! (max 15,000)");
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 100) {

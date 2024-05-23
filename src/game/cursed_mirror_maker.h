@@ -2,7 +2,7 @@
 #define cursed_mirror_maker_h
 #include "libcart/ff/ff.h"
 
-#define CMM_TILE_POOL_SIZE 10000
+#define CMM_TILE_POOL_SIZE 15000
 #define CMM_GFX_SIZE 15000
 #define CMM_VTX_SIZE 50000
 
