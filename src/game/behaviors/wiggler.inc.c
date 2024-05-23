@@ -359,7 +359,7 @@ static void wiggler_act_shrink(void) {
 
         // 4 is the default scale, so shrink to 1/4 of regular size
         if (approach_f32_ptr(&o->header.gfx.scale[0], 1.0f, 0.1f)) {
-            cur_obj_drop_imbued_object(400.0f);
+            cur_obj_drop_imbued_object(400);
             o->oAction = WIGGLER_ACT_FALL_THROUGH_FLOOR;
         }
 
@@ -427,7 +427,7 @@ void bhv_wiggler_update(void) {
             // Wiggler surface interactions
             if (o->oFloor != NULL) {
                 if ((o->oFloorHeight + 1.f > o->oPosY)) {
-                    if ((o->oHealth > 1) && cur_obj_die_if_on_death_barrier()) {
+                    if ((o->oHealth > 1) && cur_obj_die_if_on_death_barrier(400)) {
                         o->oHealth = 1;
                         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                     }

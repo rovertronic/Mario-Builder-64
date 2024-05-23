@@ -139,27 +139,27 @@ u32 mario_update_quicksand(struct MarioState *m, f32 sinkingSpeed) {
         }
 
         switch (m->floor->type) {
-            case SURFACE_SHALLOW_QUICKSAND:
-                if ((m->quicksandDepth += sinkingSpeed) >= 10.0f) {
-                    m->quicksandDepth = 10.0f;
-                }
-                break;
+            // case SURFACE_SHALLOW_QUICKSAND:
+            //     if ((m->quicksandDepth += sinkingSpeed) >= 10.0f) {
+            //         m->quicksandDepth = 10.0f;
+            //     }
+            //     break;
 
-            case SURFACE_SHALLOW_MOVING_QUICKSAND:
-                if ((m->quicksandDepth += sinkingSpeed) >= 25.0f) {
-                    m->quicksandDepth = 25.0f;
-                }
-                break;
+            // case SURFACE_SHALLOW_MOVING_QUICKSAND:
+            //     if ((m->quicksandDepth += sinkingSpeed) >= 25.0f) {
+            //         m->quicksandDepth = 25.0f;
+            //     }
+            //     break;
 
-            case SURFACE_QUICKSAND:
-            case SURFACE_MOVING_QUICKSAND:
-                if ((m->quicksandDepth += sinkingSpeed) >= 60.0f) {
-                    m->quicksandDepth = 60.0f;
-                }
-                break;
+            // case SURFACE_QUICKSAND:
+            // case SURFACE_MOVING_QUICKSAND:
+            //     if ((m->quicksandDepth += sinkingSpeed) >= 60.0f) {
+            //         m->quicksandDepth = 60.0f;
+            //     }
+            //     break;
 
             case SURFACE_DEEP_QUICKSAND:
-            case SURFACE_DEEP_MOVING_QUICKSAND:
+            // case SURFACE_DEEP_MOVING_QUICKSAND:
                 if ((m->quicksandDepth += sinkingSpeed) >= 160.0f) {
                     update_mario_sound_and_camera(m);
                     return drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 0);
@@ -167,7 +167,7 @@ u32 mario_update_quicksand(struct MarioState *m, f32 sinkingSpeed) {
                 break;
 
             case SURFACE_INSTANT_QUICKSAND:
-            case SURFACE_INSTANT_MOVING_QUICKSAND:
+            // case SURFACE_INSTANT_MOVING_QUICKSAND:
                 update_mario_sound_and_camera(m);
                 return drop_and_set_mario_action(m, ACT_QUICKSAND_DEATH, 0);
                 break;
@@ -199,16 +199,16 @@ u32 mario_update_moving_sand(struct MarioState *m) {
     struct Surface *floor = m->floor;
     s32 floorType = floor->type;
 
-    if (floorType == SURFACE_DEEP_MOVING_QUICKSAND || floorType == SURFACE_SHALLOW_MOVING_QUICKSAND
-        || floorType == SURFACE_MOVING_QUICKSAND || floorType == SURFACE_INSTANT_MOVING_QUICKSAND) {
-        //s16 pushAngle = floor->force << 8;
-        //f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
+    // if (floorType == SURFACE_DEEP_MOVING_QUICKSAND || floorType == SURFACE_SHALLOW_MOVING_QUICKSAND
+    //     || floorType == SURFACE_MOVING_QUICKSAND || floorType == SURFACE_INSTANT_MOVING_QUICKSAND) {
+    //     //s16 pushAngle = floor->force << 8;
+    //     //f32 pushSpeed = sMovingSandSpeeds[floor->force >> 8];
 
-        //m->vel[0] += pushSpeed * sins(pushAngle);
-        //m->vel[2] += pushSpeed * coss(pushAngle);
+    //     //m->vel[0] += pushSpeed * sins(pushAngle);
+    //     //m->vel[2] += pushSpeed * coss(pushAngle);
 
-        return TRUE;
-    }
+    //     return TRUE;
+    // }
 
     return FALSE;
 }

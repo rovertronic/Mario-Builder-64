@@ -17,11 +17,12 @@ void whomp_play_sfx_from_pound_animation(void) {
 }
 
 void whomp_real_init(void) {
-    cur_obj_set_pos_to_home();
+
 }
 
 void whomp_init(void) {
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
+    cur_obj_set_home_if_safe();
 
     if (o->oBehParams2ndByte != 0) {
         gSecondCameraFocus = o;
@@ -30,9 +31,6 @@ void whomp_init(void) {
             if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
                 o->oSubAction++;
                 //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
-            } else {
-                //cur_obj_set_pos_to_home();
-                //o->oHealth = 3;
             }
         } else if (1) {
             o->oAction = 2;
@@ -92,6 +90,7 @@ void whomp_patrol(void) {
 }
 
 void king_whomp_chase(void) {
+    cur_obj_set_home_if_safe();
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
     o->oForwardVel = 3.0f;
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
@@ -249,7 +248,7 @@ void whomp_die(void) {
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         o->oPosY += 100.0f;
-        cur_obj_drop_imbued_object(400.0f);
+        cur_obj_drop_imbued_object(400);
         cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
         o->oAction = 9;
     } else {
@@ -282,6 +281,10 @@ ObjActionFunc sWhompActions[] = {
 void bhv_whomp_loop(void) {
     o->oWallHitboxRadius = 60.0f;
     cur_obj_update_floor_and_walls();
+    if (cur_obj_die_if_on_death_barrier(400)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
     cur_obj_call_action_function(sWhompActions);
     cur_obj_move_standard(-20);
     if (o->oAction != 9) {

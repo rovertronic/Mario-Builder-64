@@ -408,6 +408,7 @@ s16 object_step(void) {
 
         o->oFloor       = sObjFloor;
         o->oFloorHeight = floorY;
+        o->oFloorType   = sObjFloor->type;
 
         waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
@@ -446,6 +447,7 @@ s16 object_step(void) {
 
     o->oFloor       = sObjFloor;
     o->oFloorHeight = floorY;
+    o->oFloorType   = sObjFloor->type;
 
     if (turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1) {
         waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);

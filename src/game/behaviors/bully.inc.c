@@ -162,6 +162,7 @@ void bully_play_stomping_sound(void) {
 
 void bully_step(void) {
     s16 collisionFlags = object_step();
+    cur_obj_set_home_if_safe();
 
     bully_backup_check(collisionFlags);
     bully_play_stomping_sound();
@@ -194,7 +195,7 @@ void bully_act_level_death(void) {
             bully_spawn_coin();
         } else {
             spawn_mist_particles();
-            cur_obj_drop_imbued_object(400.0f);
+            cur_obj_drop_imbued_object(400);
 
             /*
             if (o->oBullySubtype == BULLY_STYPE_CHILL) {
@@ -250,7 +251,7 @@ void bhv_bully_loop(void) {
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
-            cur_obj_drop_imbued_object(400.0f);
+            cur_obj_drop_imbued_object(400);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
@@ -351,7 +352,7 @@ void bhv_big_bully_with_minions_loop(void) {
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
-            cur_obj_drop_imbued_object(400.0f);
+            cur_obj_drop_imbued_object(400);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }

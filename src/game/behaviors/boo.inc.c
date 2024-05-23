@@ -316,11 +316,7 @@ static void boo_chase_mario(f32 minDY, s16 yawIncrement, f32 mul) {
     if (boo_vanish_or_appear()) {
         o->oInteractType = INTERACT_BOUNCE_TOP;
 
-        if (cur_obj_lateral_dist_from_mario_to_home() > 1500.0f) {
-            targetYaw = cur_obj_angle_to_home();
-        } else {
-            targetYaw = o->oAngleToMario;
-        }
+        targetYaw = o->oAngleToMario;
 
         cur_obj_rotate_yaw_toward(targetYaw, yawIncrement);
         o->oVelY = 0.0f;
@@ -350,7 +346,6 @@ static void boo_act_0(void) {
         o->oRoom = 10;
     }
 
-    cur_obj_set_pos_to_home();
     o->oMoveAngleYaw = o->oBooInitialMoveYaw;
     boo_stop();
 
@@ -485,7 +480,6 @@ static void big_boo_act_0(void) {
     if (boo_should_be_active() && o->oBigBooNumMinionBoosKilled >= gDebugInfo[DEBUG_PAGE_ENEMYINFO][0] + 5) {
         o->oAction = 1;
 
-        cur_obj_set_pos_to_home();
         o->oPosY -= 200.0f;
         o->oMoveAngleYaw = o->oBooInitialMoveYaw;
 
@@ -571,7 +565,7 @@ static void big_boo_act_3(void) {
 
             obj_set_angle(o, 0, 0, 0);
 
-            cur_obj_drop_imbued_object(0.0f);
+            cur_obj_drop_imbued_object(0);
             /*
             if (o->oBehParams2ndByte == 0) {
                 big_boo_spawn_ghost_hunt_star();
@@ -630,6 +624,11 @@ void bhv_big_boo_loop(void) {
     o->oGraphYOffset = o->oBooBaseScale * 60.0f;
 
     cur_obj_update_floor_and_walls();
+
+    if (!SURFACE_IS_UNSAFE(o->oFloorType) && !o->oFloor->object) {
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
+    }
+
     cur_obj_call_action_function(sBooGivingStarActions);
     cur_obj_move_standard(78);
 

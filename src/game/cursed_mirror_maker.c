@@ -2564,7 +2564,7 @@ void imbue_action(void) {
                         imbue_success = TRUE;
                         break;
                     case OBJECT_TYPE_COIN:
-                        cmm_object_data[i].imbue = IMBUE_ONE_COIN;
+                        cmm_object_data[i].imbue = IMBUE_THREE_COINS;
                         imbue_success = TRUE;
                         break;
                     case OBJECT_TYPE_RED_COIN:

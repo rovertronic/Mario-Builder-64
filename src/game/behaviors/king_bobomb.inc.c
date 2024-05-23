@@ -208,7 +208,7 @@ void king_bobomb_act_death(void) { // act 7
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, TINY_DIRT_PARTICLE_ANIM_STATE_YELLOW);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
 
-        cur_obj_drop_imbued_object(400.0f);
+        cur_obj_drop_imbued_object(400);
 
         o->oAction = KING_BOBOMB_ACT_STOP_MUSIC;
     }
@@ -297,7 +297,7 @@ void king_bobomb_act_return_home(void) { // act 5
                 o->oSubAction++; // KING_BOBOMB_SUB_ACT_RETURN_HOME_LANDING_END
             }
 
-            if (cur_obj_die_if_on_death_barrier()) {
+            if (cur_obj_die_if_on_death_barrier(400)) {
                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             }
             break;

@@ -2594,7 +2594,7 @@ void arbritrary_death_coin_release(void) {
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
     } else if (cur_obj_has_behavior(bhvBigBully)) {
-        cur_obj_drop_imbued_object(400.0f);
+        cur_obj_drop_imbued_object(400);
     } else if (cur_obj_has_behavior(bhvMoneybag)||cur_obj_has_behavior(bhvMoneybagHidden)) {
         obj_spawn_yellow_coins(o, 3);
     } else {
@@ -2748,23 +2748,29 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
 void cur_obj_set_home_if_safe(void) {
     if (!o->oFloor) return;
     if (o->oFloorHeight < o->oPosY - 10.f) return;
-    if (o->oFloorType == SURFACE_DEATH_PLANE) return;
-    if (SURFACE_IS_BURNING(o->oFloorType)) return;
-    if (SURFACE_IS_QUICKSAND(o->oFloorType)) return;
+    if (SURFACE_IS_UNSAFE(o->oFloorType)) return;
+    if (o->oFloor->object != NULL) return;
 
     vec3f_copy(&o->oHomeVec,&o->oPosVec);
 }
 
-s32 cur_obj_die_if_on_death_barrier(void) {
+s32 cur_obj_die_if_on_death_barrier(s32 offset) {
     if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
-        cur_obj_drop_imbued_object(400.f);
+        cur_obj_drop_imbued_object(offset);
         return TRUE;
     }
     return FALSE;
 }
 
-void cur_obj_drop_imbued_object(f32 y_offset) {
-    Vec3f oldpos;
+void spawn_mist_at_obj(struct Object *obj) {
+    Vec3f oldPos;
+    vec3f_copy(oldPos, &o->oPosVec);
+    vec3f_copy(&o->oPosVec, &obj->oPosVec);
+    spawn_mist_particles();
+    vec3f_copy(&o->oPosVec, oldPos);
+}
+
+void cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object * dropobj;
     if (o->oImbue == IMBUE_NONE) return;
     if (o->oImbue == IMBUE_STAR) {
@@ -2772,39 +2778,33 @@ void cur_obj_drop_imbued_object(f32 y_offset) {
         return;
     }
 
-    vec3f_copy(oldpos,&o->oPosVec);
-    vec3f_copy(&o->oPosVec,&o->oImbueVec);
-    spawn_mist_particles();
     switch(o->oImbue) {
         case IMBUE_BLUE_COIN:
-            o->oPosY += y_offset;
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
             dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            vec3f_copy(&dropobj->oPosVec,&o->oPosVec);
             dropobj->oForwardVel = 10.0f;
             dropobj->oVelY = 20.0f;
             dropobj->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
             break;
-        case IMBUE_ONE_COIN:
-            o->oPosY += y_offset;
-            obj_spawn_yellow_coins(o, 1);
+        case IMBUE_THREE_COINS:
+            obj_spawn_yellow_coins(o, 3);
             break;
         case IMBUE_RED_SWITCH:
-            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
-            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
-            dropobj->oMoveAngleYaw = 0;
-            break;
         case IMBUE_BLUE_SWITCH:
-            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
             dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
-            dropobj->oBehParams2ndByte = 1;
+            if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
+            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            dropobj->oPosY = find_floor_height(dropobj->oPosX,dropobj->oPosY+10.f,dropobj->oPosZ);
             dropobj->oMoveAngleYaw = 0;
+            spawn_mist_at_obj(dropobj);
             break;
         case IMBUE_RED_COIN:
-            o->oPosY = find_floor_height(o->oPosX,o->oPosY+y_offset,o->oPosZ);
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
+            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            spawn_mist_at_obj(dropobj);
             break;
     }
-    vec3f_copy(&o->oPosVec,oldpos);
     o->oImbue = IMBUE_NONE;
 }
 

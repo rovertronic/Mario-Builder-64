@@ -39,13 +39,13 @@ enum SurfaceTypes {
     SURFACE_INSTANT_WARP_1E,            // 0x001E // Instant warp to another area, used to warp between areas in DDD, SSL and TTM
     SURFACE_001F,                       // 0x001F // Unused
     SURFACE_0020,                       // 0x0020 // Unused
-    SURFACE_SHALLOW_QUICKSAND,          // 0x0021 // Shallow Quicksand (depth of 10 units)
+    // SURFACE_SHALLOW_QUICKSAND,          // 0x0021 // Shallow Quicksand (depth of 10 units)
     SURFACE_DEEP_QUICKSAND,             // 0x0022 // Quicksand (lethal, slow, depth of 160 units)
     SURFACE_INSTANT_QUICKSAND,          // 0x0023 // Quicksand (lethal, instant)
-    SURFACE_DEEP_MOVING_QUICKSAND,      // 0x0024 // Moving quicksand (flowing, depth of 160 units)
-    SURFACE_SHALLOW_MOVING_QUICKSAND,   // 0x0025 // Moving quicksand (flowing, depth of 25 units)
-    SURFACE_QUICKSAND,                  // 0x0026 // Moving quicksand (60 units)
-    SURFACE_MOVING_QUICKSAND,           // 0x0027 // Moving quicksand (flowing, depth of 60 units)
+    // SURFACE_DEEP_MOVING_QUICKSAND,      // 0x0024 // Moving quicksand (flowing, depth of 160 units)
+    // SURFACE_SHALLOW_MOVING_QUICKSAND,   // 0x0025 // Moving quicksand (flowing, depth of 25 units)
+    // SURFACE_QUICKSAND,                  // 0x0026 // Moving quicksand (60 units)
+    // SURFACE_MOVING_QUICKSAND,           // 0x0027 // Moving quicksand (flowing, depth of 60 units)
     SURFACE_WALL_MISC,                  // 0x0028 // Used for some walls, Cannon to adjust the camera, and some objects like Warp Pipe
     SURFACE_NOISE_DEFAULT,              // 0x0029 // Default floor with noise
     SURFACE_NOISE_SLIPPERY,             // 0x002A // Slippery floor with noise
@@ -239,7 +239,7 @@ enum SurfaceTypes {
 #define INSTANT_WARP_INDEX_STOP   0x04 // Less than Surface 0x1F
 
 #define SURFACE_IS_NEW_WATER(cmd)               (((cmd) == SURFACE_NEW_WATER) || ((cmd) == SURFACE_NEW_WATER_BOTTOM))
-#define SURFACE_IS_QUICKSAND(cmd)               ((((cmd) >= SURFACE_SHALLOW_QUICKSAND) && ((cmd) <= SURFACE_MOVING_QUICKSAND)) || ((cmd) == SURFACE_INSTANT_MOVING_QUICKSAND))
+#define SURFACE_IS_QUICKSAND(cmd)               (((cmd) == SURFACE_DEEP_QUICKSAND) || ((cmd) == SURFACE_INSTANT_QUICKSAND))
 #define SURFACE_IS_NOT_HARD(cmd)                (((cmd) != SURFACE_HARD) && !((cmd) >= SURFACE_HARD_SLIPPERY && ((cmd) <= SURFACE_HARD_NOT_SLIPPERY)))
 #define SURFACE_IS_PAINTING_WOBBLE(cmd)         (((cmd) >= SURFACE_PAINTING_WOBBLE_A6) && ((cmd) <= SURFACE_PAINTING_WOBBLE_D2))
 #define SURFACE_IS_PAINTING_WOBBLE_LEFT(cmd)    ((((cmd) - SURFACE_PAINTING_WOBBLE_A6) % 3) == 0)
@@ -251,7 +251,7 @@ enum SurfaceTypes {
 #define SURFACE_IS_PAINTING_WARP_RIGHT(cmd)     ((((cmd) - SURFACE_PAINTING_WARP_D5  ) % 3) == 0)
 #define SURFACE_IS_INSTANT_WARP(cmd)            (((cmd) >= SURFACE_INSTANT_WARP_1B) && ((cmd) < SURFACE_INSTANT_WARP_1B + INSTANT_WARP_INDEX_STOP))
 #define SURFACE_IS_WARP(cmd)                    (((cmd) == SURFACE_LOOK_UP_WARP) || ((cmd) == SURFACE_WOBBLING_WARP) || SURFACE_IS_PAINTING_WARP(cmd) || SURFACE_IS_INSTANT_WARP(cmd))
-#define SURFACE_IS_UNSAFE(cmd)                  (SURFACE_IS_BURNING(cmd) || SURFACE_IS_QUICKSAND(cmd) || SURFACE_IS_WARP(cmd))
+#define SURFACE_IS_UNSAFE(cmd)                  (SURFACE_IS_BURNING(cmd) || ((cmd) == SURFACE_INSTANT_QUICKSAND) || ((cmd) == SURFACE_DEATH_PLANE))
 
 enum SurfaceClass {
     SURFACE_CLASS_DEFAULT,

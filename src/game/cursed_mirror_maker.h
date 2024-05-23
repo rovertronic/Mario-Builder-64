@@ -442,7 +442,7 @@ struct cmm_dialog_subject {
 enum imbue {
     IMBUE_NONE,
     IMBUE_STAR,
-    IMBUE_ONE_COIN,
+    IMBUE_THREE_COINS,
     IMBUE_FIVE_COINS,
     IMBUE_EIGHT_COINS,
     IMBUE_BLUE_COIN,

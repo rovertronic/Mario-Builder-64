@@ -304,6 +304,11 @@ void showrunner_battle_function(void) {
     o->oInteractType = INTERACT_DAMAGE;
     cur_obj_become_tangible();
     o->oDamageOrCoinValue = 0;
+    cur_obj_set_home_if_safe();
+    if (cur_obj_die_if_on_death_barrier(400)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
     switch(o->oAction) {
         case 0://init
             o->oAction=1;
@@ -359,7 +364,7 @@ void showrunner_battle_function(void) {
                     obj_attack->oPosX = spike_attack[0];
                     obj_attack->oPosY = spike_attack[1];
                     obj_attack->oPosZ = spike_attack[2];
-                    obj_attack->oPosY = find_floor(obj_attack->oPosX, obj_attack->oPosY, obj_attack->oPosZ, &ptr);
+                    obj_attack->oPosY = find_floor(obj_attack->oPosX, obj_attack->oPosY+500.f, obj_attack->oPosZ, &ptr);
                     obj_attack->oPosY -= 400.0f;
                     obj_attack->oHomeY = obj_attack->oPosY;
                     if (ptr && ptr->type == SURFACE_DEATH_PLANE) {
@@ -447,7 +452,7 @@ void showrunner_battle_function(void) {
             }
         break;
         case 14://drop items
-            cur_obj_drop_imbued_object(400.0f);
+            cur_obj_drop_imbued_object(400);
             stop_cmm_extra_music(2);
             o->oAction = 15;
             o->header.gfx.scale[0] = 1.0f;
@@ -524,11 +529,7 @@ void showrunner_battle_function(void) {
                         }
                         break;
                     case 2:
-                        o->oMoveAngleYaw = cur_obj_angle_to_home();
-                        o->oForwardVel = 50.0f;
-                        if (cur_obj_lateral_dist_to_home() < 60.0f) {
-                            o->oForwardVel = 0.0f;
-                        }
+                        o->oForwardVel = 0.0f;
                     
                         if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
                             //summon flurry of flames when landing
@@ -556,15 +557,7 @@ void showrunner_battle_function(void) {
         break;
         case 17://let out cosmic phantasms
             o->oForwardVel = 0.0f;
-            o->oMoveAngleYaw = cur_obj_angle_to_home();
-            if (cur_obj_lateral_dist_to_home() > 60.0f) {
-                o->oForwardVel = 50.0f;
-                o->oTimer = 0;
-            }
-            if (o->oTimer == 30) {
-                //spawn them
-                cur_obj_init_animation_with_sound(10);
-            }
+
             if (o->oTimer == 45) {
                 for (u8 i=0;i<32;i++){
                     struct Object * flame = spawn_object(o,MODEL_BLUE_FLAME,bhvThwompFlame);
@@ -631,7 +624,6 @@ void bhv_sr_spike(void) {
             o->oPosY += 20.0f;
             if (o->oPosY > o->oHomeY+400.0f) {
                 o->oPosY = o->oHomeY+400.0f;
-                o->oAction = 2;
                 o->oAction = 3;
             }
         break;

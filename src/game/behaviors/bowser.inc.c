@@ -547,6 +547,8 @@ void bowser_act_walk_to_mario(void) {
         turnSpeed = 0x200;
     }
 
+    cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
+
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
         // Start walking
@@ -1073,7 +1075,7 @@ void bowser_act_jump_onto_stage(void) {
             }
             // Land on stage
             if (bowser_check_fallen_off_stage()) {
-                cur_obj_drop_imbued_object(400.0f);
+                cur_obj_drop_imbued_object(400);
                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
                 return;
             } else if (bowser_land()) {
@@ -1128,7 +1130,7 @@ void bowser_act_dance(void) {
  */
 void bowser_spawn_collectable(void) {
     stop_cmm_extra_music(2);
-    cur_obj_drop_imbued_object(400.0f);
+    cur_obj_drop_imbued_object(400);
     cur_obj_play_sound_2(SOUND_GENERAL2_BOWSER_KEY);
 }
 
