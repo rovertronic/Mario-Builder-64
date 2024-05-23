@@ -2072,37 +2072,6 @@ s32 is_item_in_array(s8 item, s8 *array) {
     return FALSE;
 }
 
-// void bhv_init_room(void) {
-//     o->oRoom = get_room_at_pos(o->oPosX, o->oPosY, o->oPosZ);
-// }
-
-// s32 cur_obj_is_mario_in_room(void) {
-//     if (o->oRoom != -1 && gMarioCurrentRoom != 0) {
-//         if (gMarioCurrentRoom == o->oRoom // Object is in Mario's room.
-//             || gDoorAdjacentRooms[gMarioCurrentRoom].forwardRoom  == o->oRoom // Object is in the transition room's forward  room.
-//             || gDoorAdjacentRooms[gMarioCurrentRoom].backwardRoom == o->oRoom // Object is in the transition room's backward room.
-//         ) {
-//             return MARIO_INSIDE_ROOM;
-//         }
-
-//         return MARIO_OUTSIDE_ROOM;
-//     }
-
-//     return MARIO_ROOM_UNDEFINED;
-// }
-
-// void cur_obj_enable_rendering_in_room(void) {
-//     cur_obj_enable_rendering();
-//     o->activeFlags &= ~ACTIVE_FLAG_IN_DIFFERENT_ROOM;
-//     gNumRoomedObjectsInMarioRoom++;
-// }
-
-// void cur_obj_disable_rendering_in_room(void) {
-//     cur_obj_disable_rendering();
-//     o->activeFlags |= ACTIVE_FLAG_IN_DIFFERENT_ROOM;
-//     gNumRoomedObjectsNotInMarioRoom++;
-// }
-
 s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deathSound, s32 noLootCoins) {
     s32 interacted = FALSE;
 
@@ -2776,12 +2745,30 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_conveyor();
 }
 
+void cur_obj_set_home_if_safe(void) {
+    if (!o->oFloor) return;
+    if (o->oFloorHeight < o->oPosY - 10.f) return;
+    if (o->oFloorType == SURFACE_DEATH_PLANE) return;
+    if (SURFACE_IS_BURNING(o->oFloorType)) return;
+    if (SURFACE_IS_QUICKSAND(o->oFloorType)) return;
+
+    vec3f_copy(&o->oHomeVec,&o->oPosVec);
+}
+
+s32 cur_obj_die_if_on_death_barrier(void) {
+    if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
+        cur_obj_drop_imbued_object(400.f);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 void cur_obj_drop_imbued_object(f32 y_offset) {
     Vec3f oldpos;
     struct Object * dropobj;
     if (o->oImbue == IMBUE_NONE) return;
     if (o->oImbue == IMBUE_STAR) {
-        spawn_default_star(o->oImbueVec[0],o->oImbueVec[1]+y_offset,o->oImbueVec[2]);
+        spawn_default_star(o->oHomeX,o->oHomeY+y_offset,o->oHomeZ);
         return;
     }
 

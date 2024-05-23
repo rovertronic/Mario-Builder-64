@@ -137,8 +137,6 @@ static void skeeter_act_walk(void) {
 
 void bhv_skeeter_update(void) {
     o->oDeathSound = SOUND_OBJ_SNUFIT_SKEETER_DEATH;
-    treat_far_home_as_mario(1000.0f);
-
     cur_obj_update_floor_and_walls();
 
     switch (o->oAction) {

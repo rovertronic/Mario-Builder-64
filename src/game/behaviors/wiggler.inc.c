@@ -210,6 +210,7 @@ void wiggler_init_segments(void) {
  * If attacked by mario, enter either the jumped on or knockback action.
  */
 static void wiggler_act_walk(void) {
+    cur_obj_set_home_if_safe();
     o->oWigglerWalkAnimSpeed = 0.06f * o->oForwardVel;
 
     // Update text if necessary
@@ -232,7 +233,6 @@ static void wiggler_act_walk(void) {
             o->oWigglerWalkAwayFromWallTimer--;
         } else {
             if (o->oDistanceToMario >= 25000.0f) {
-                // If >1200 away from home, turn to home
                 o->oWigglerTargetYaw = o->oAngleToMario;
             }
 
@@ -351,6 +351,7 @@ static void wiggler_act_knockback(void) {
  * Shrink, then spawn the star and enter the fall through floor action.
  */
 static void wiggler_act_shrink(void) {
+    cur_obj_set_home_if_safe();
     if (o->oTimer >= 20) {
         if (o->oTimer == 20) {
             cur_obj_play_sound_2(SOUND_OBJ_ENEMY_DEFEAT_SHRINK);
@@ -411,7 +412,6 @@ void bhv_wiggler_update(void) {
         if (o->oAction == WIGGLER_ACT_FALL_THROUGH_FLOOR) {
             wiggler_act_fall_through_floor();
         } else {
-            treat_far_home_as_mario(1200.0f);
 
             // Walking animation and sound
             cur_obj_init_animation_with_accel_and_sound(0, o->oWigglerWalkAnimSpeed);
@@ -427,9 +427,7 @@ void bhv_wiggler_update(void) {
             // Wiggler surface interactions
             if (o->oFloor != NULL) {
                 if ((o->oFloorHeight + 1.f > o->oPosY)) {
-                    if ((o->oFloorType == SURFACE_DEATH_PLANE) && (o->oHealth > 1)) {
-                        // Drop star if fell on the death floor
-                        cur_obj_drop_imbued_object(400.0f);
+                    if ((o->oHealth > 1) && cur_obj_die_if_on_death_barrier()) {
                         o->oHealth = 1;
                         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                     }

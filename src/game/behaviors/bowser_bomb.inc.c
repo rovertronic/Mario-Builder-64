@@ -29,23 +29,6 @@ void bhv_bowser_bomb_loop(void) {
         set_camera_shake_from_point(SHAKE_POS_LARGE, o->oPosX, o->oPosY, o->oPosZ);
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
-
-    if (o->oBehParams2ndByte == 1) {
-        o->oHomeY = bbomb_floating_platform_find_home_y();
-        o->oPosY = o->oHomeY + sins(o->oTimer * 0x800) * 10.0f;
-
-        //CHASE MARIO CUZ UR EVIL
-            if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
-                o->oAngleToMario = cur_obj_angle_to_home();
-                o->oForwardVel = 5.0f;
-            } else {
-                o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
-                o->oForwardVel = 20.0f;
-                }
-
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
-            
-        }
 }
 
 void bhv_bowser_bomb_explosion_loop(void) {

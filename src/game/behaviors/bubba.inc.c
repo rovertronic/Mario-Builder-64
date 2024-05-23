@@ -14,7 +14,6 @@ static struct ObjectHitbox sBubbaHitbox = {
 
 void bubba_act_idle(void) {
     f32 lateralDistToHome = cur_obj_lateral_dist_to_home();
-    treat_far_home_as_mario(2000.0f);
     o->oAnimState = 0;
 
     o->oBubbaTargetPitch = obj_get_pitch_to_home(lateralDistToHome);
@@ -45,8 +44,6 @@ void bubba_act_idle(void) {
 }
 
 void bubba_act_attack(void) {
-    treat_far_home_as_mario(2500.0f);
-
     if (o->oDistanceToMario > 2500.0f) {
         o->oAction = 0;
     } else if (o->oBubbaLungeTimer != 0) {

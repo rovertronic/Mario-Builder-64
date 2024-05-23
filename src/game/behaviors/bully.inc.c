@@ -28,7 +28,6 @@ void bhv_small_bully_init(void) {
     o->oQuicksandDepthToDie = 55;
 
     cur_obj_init_animation(0);
-    vec3f_copy(&o->oHomeVec, &o->oPosVec);
     o->oBehParams2ndByte = BULLY_BP_SIZE_SMALL;
     o->oGravity = 4.0f;
     o->oFriction = 0.91f;
@@ -40,7 +39,6 @@ void bhv_small_bully_init(void) {
 void bhv_big_bully_init(void) {
     o->oQuicksandDepthToDie = 150;
     cur_obj_init_animation(0);
-    vec3f_copy(&o->oHomeVec, &o->oPosVec);
     o->oBehParams2ndByte = BULLY_BP_SIZE_BIG;
     o->oGravity = 5.0f;
     o->oFriction = 0.93f;
@@ -66,10 +64,6 @@ void bully_check_mario_collision(void) {
 }
 
 void bully_act_chase_mario(void) {
-    f32 homeX = o->oHomeX;
-    f32 posY = o->oPosY;
-    f32 homeZ = o->oHomeZ;
-
     if (o->oTimer < 10) {
         o->oForwardVel = 3.0f;
         obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_YAW_INDEX, 0x1000);
@@ -85,7 +79,7 @@ void bully_act_chase_mario(void) {
         }
     }
 
-    if (!is_point_within_radius_of_mario(homeX, posY, homeZ, 1000)) {
+    if (o->oDistanceToMario > 1000.f) {
         o->oAction = BULLY_ACT_PATROL;
         cur_obj_init_animation(0);
     }
@@ -226,8 +220,9 @@ void bhv_bully_loop(void) {
     switch (o->oAction) {
         case BULLY_ACT_PATROL:
             o->oForwardVel = 5.0f;
+            o->oMoveAngleYaw += 320;
 
-            if (obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 800) == TRUE) {
+            if (o->oDistanceToMario < 800.f) {
                 o->oAction = BULLY_ACT_CHASE_MARIO;
                 cur_obj_init_animation(1);
             }
@@ -296,8 +291,9 @@ void bhv_big_bully_with_minions_loop(void) {
     switch (o->oAction) {
         case BULLY_ACT_PATROL:
             o->oForwardVel = 5.0f;
+            o->oMoveAngleYaw += 320;
 
-            if (obj_return_home_if_safe(o, o->oHomeX, o->oPosY, o->oHomeZ, 1000) == TRUE) {
+            if (o->oDistanceToMario < 1000.f) {
                 o->oAction = BULLY_ACT_CHASE_MARIO;
                 cur_obj_init_animation(1);
             }

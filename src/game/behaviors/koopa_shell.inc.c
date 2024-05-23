@@ -118,73 +118,73 @@ void bhv_koopa_shell_loop(void) {
     o->oInteractStatus = INT_STATUS_NONE;
 }
 
-void bhv_yoshi_ride_loop(void) {
-    struct Surface *sp34;
-    s16 sp24 = o->header.gfx.animInfo.animFrame;
+// void bhv_yoshi_ride_loop(void) {
+//     struct Surface *sp34;
+//     s16 sp24 = o->header.gfx.animInfo.animFrame;
 
-    obj_set_hitbox(o, &sKoopaShellHitbox);
-    cur_obj_scale(1.0f);
-    switch (o->oAction) {
-        case 0:
-            cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
+//     obj_set_hitbox(o, &sKoopaShellHitbox);
+//     cur_obj_scale(1.0f);
+//     switch (o->oAction) {
+//         case 0:
+//             cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
 
-            gMarioState->IsYoshi = FALSE;
+//             gMarioState->IsYoshi = FALSE;
 
-            cur_obj_update_floor_and_walls();
-            cur_obj_if_hit_wall_bounce_away();
-            if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-                o->oAction++;
-                play_sound(SOUND_GENERAL_YOSHI_TALK, gMarioState->marioObj->header.gfx.cameraToObject);
-                }
-            cur_obj_move_standard(-20);
+//             cur_obj_update_floor_and_walls();
+//             cur_obj_if_hit_wall_bounce_away();
+//             if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+//                 o->oAction++;
+//                 play_sound(SOUND_GENERAL_YOSHI_TALK, gMarioState->marioObj->header.gfx.cameraToObject);
+//                 }
+//             cur_obj_move_standard(-20);
 
-            if (o->oDistanceToMario < 3000.0f) {
-                o->oTimer = 0;
-                }
+//             if (o->oDistanceToMario < 3000.0f) {
+//                 o->oTimer = 0;
+//                 }
 
-            if (o->oTimer > 300) {
-                o->oPosX = o->oHomeX;
-                o->oPosY = o->oHomeY;
-                o->oPosZ = o->oHomeZ;
-                }
+//             if (o->oTimer > 300) {
+//                 o->oPosX = o->oHomeX;
+//                 o->oPosY = o->oHomeY;
+//                 o->oPosZ = o->oHomeZ;
+//                 }
 
-            break;
-        case 1:
-            obj_copy_pos(o, gMarioObject);
-            sp34 = cur_obj_update_floor_height_and_get_floor();
-            o->oFaceAngleYaw = gMarioObject->oMoveAngleYaw;
+//             break;
+//         case 1:
+//             obj_copy_pos(o, gMarioObject);
+//             sp34 = cur_obj_update_floor_height_and_get_floor();
+//             o->oFaceAngleYaw = gMarioObject->oMoveAngleYaw;
 
-            if ((gMarioState->YoshiCoins > 4)&&(o->oBehParams2ndByte == 0)) {
-                spawn_default_star(o->oPosX, o->oPosY+400.0f, o->oPosZ);
-                o->oBehParams2ndByte = 1;
-                }
+//             if ((gMarioState->YoshiCoins > 4)&&(o->oBehParams2ndByte == 0)) {
+//                 spawn_default_star(o->oPosX, o->oPosY+400.0f, o->oPosZ);
+//                 o->oBehParams2ndByte = 1;
+//                 }
 
-            gMarioState->IsYoshi = TRUE;
-            o->oTimer = 0;
-            o->oVelY = 0;
+//             gMarioState->IsYoshi = TRUE;
+//             o->oTimer = 0;
+//             o->oVelY = 0;
 
-            if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
-                spawn_mist_particles();
-                o->oAction = 0;
-            }
+//             if (o->oInteractStatus & INT_STATUS_STOP_RIDING) {
+//                 spawn_mist_particles();
+//                 o->oAction = 0;
+//             }
 
-            if (gMarioState->forwardVel < 1.0f) {
-                cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
-                }
-                else
-                {
-                if ((sp24 == 0 || sp24 == 15)&&((o->oPosY - o->oFloorHeight) < 10.0f)) {
-                    cur_obj_play_sound_2(SOUND_GENERAL_YOSHI_WALK);
-                    }
+//             if (gMarioState->forwardVel < 1.0f) {
+//                 cur_obj_init_animation_with_accel_and_sound(0, 0.0f);
+//                 }
+//                 else
+//                 {
+//                 if ((sp24 == 0 || sp24 == 15)&&((o->oPosY - o->oFloorHeight) < 10.0f)) {
+//                     cur_obj_play_sound_2(SOUND_GENERAL_YOSHI_WALK);
+//                     }
 
-                cur_obj_init_animation_with_accel_and_sound(1, gMarioState->forwardVel/12.0f);
-                }
+//                 cur_obj_init_animation_with_accel_and_sound(1, gMarioState->forwardVel/12.0f);
+//                 }
 
-            if (gMarioState->Yoshi_Flutter == TRUE) {
-                cur_obj_init_animation_with_accel_and_sound(1, 5.0f);
-                }
+//             if (gMarioState->Yoshi_Flutter == TRUE) {
+//                 cur_obj_init_animation_with_accel_and_sound(1, 5.0f);
+//                 }
 
-            break;
-    }
-    o->oInteractStatus = 0;
-}
+//             break;
+//     }
+//     o->oInteractStatus = 0;
+// }

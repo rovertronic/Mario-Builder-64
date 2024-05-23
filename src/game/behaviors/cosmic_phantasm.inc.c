@@ -50,6 +50,7 @@ void bhv_cosmic_phantasm(void) {
 
     Vec3f previous;
     vec3f_copy(&previous,&o->oPosVec); //record position before moving step
+    f32 old_floor_height = find_floor(o->oPosX, o->oPosY, o->oPosZ, &ptr);
 
     cur_obj_update_floor_and_walls();
     cur_obj_move_standard(-78);
@@ -62,18 +63,12 @@ void bhv_cosmic_phantasm(void) {
 
     f32 current_floor_height = find_floor(o->oPosX, o->oPosY, o->oPosZ, &ptr);
 
-    if (current_floor_height < o->oHomeY-100.0f) {
+    if (current_floor_height < old_floor_height-100.0f) {
         vec3f_copy(&o->oPosVec,&previous);//Prevent him from going off the ledge
         o->oPosY = kept_new_y;//this is a little cringe, but who cares
     }
 
-
     o->oGravity = -4.0f;
-
-    if (o->oBehParams2ndByte == 2) {
-        //param 2 means that they always persue mario
-        vec3f_copy(&o->oHomeX,&gMarioState->pos[0]);
-    }
 
     switch(o->oAction) {
         case 0:

@@ -193,8 +193,6 @@ void bhv_fly_guy_update(void) {
         o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
 
         cur_obj_scale(o->header.gfx.scale[0]);
-
-        treat_far_home_as_mario(2000.0f);
         cur_obj_update_floor_and_walls();
 
         if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
@@ -221,18 +219,6 @@ void bhv_fly_guy_update(void) {
                 fly_guy_act_shoot_fire();
                 break;
         }
-
-        if (gMarioState->gCurrMinigame == 1) {
-            o->oHomeX = gMarioState->pos[0];
-            o->oHomeY = gMarioState->pos[1];
-            o->oHomeZ = gMarioState->pos[2];
-
-            if (o->oDistanceToMario > 800.0f) {
-                o->oFaceAngleYaw = o->oAngleToMario;
-                o->oMoveAngleYaw = o->oAngleToMario;
-                o->oForwardVel = 15.0f;
-                }
-            }
 
         cur_obj_move_standard(78);
         obj_check_attacks(&sFlyGuyHitbox, o->oAction);

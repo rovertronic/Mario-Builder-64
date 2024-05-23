@@ -167,8 +167,6 @@ static void mark_goomba_as_dead(void) {
  * chase him.
  */
 static void goomba_act_walk(void) {
-    treat_far_home_as_mario(1000.0f);
-
     obj_forward_vel_approach(o->oGoombaRelativeSpeed * o->oGoombaScale, 0.4f);
 
     // If walking fast enough, play footstep sounds
@@ -329,18 +327,6 @@ void bhv_goomba_update(void) {
     if (o->oBehParams2ndByte == 2) {
         o->oFlags &= ~OBJ_FLAG_ACTIVATES_FLOOR_SWITCH;
     }
-
-    if (gMarioState->gCurrMinigame == 1) {
-        o->oHomeX = gMarioState->pos[0];
-        o->oHomeY = gMarioState->pos[1];
-        o->oHomeZ = gMarioState->pos[2];
-
-        if (o->oDistanceToMario > 800.0f) {
-            o->oFaceAngleYaw = o->oAngleToMario;
-            o->oMoveAngleYaw = o->oAngleToMario;
-            o->oForwardVel = 15.0f;
-            }
-        }
 
     if (obj_update_standard_actions(o->oGoombaScale)) {
         // If this goomba has a spawner and mario moved away from the spawner, unload

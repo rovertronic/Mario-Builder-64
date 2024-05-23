@@ -205,7 +205,6 @@ static void pokey_act_wander(void) {
         o->oAction = POKEY_ACT_UNLOAD_PARTS;
         o->oForwardVel = 0.0f;
     } else {
-        treat_far_home_as_mario(1000.0f);
         cur_obj_update_floor_and_walls();
 
         if (o->oPokeyHeadWasKilled) {

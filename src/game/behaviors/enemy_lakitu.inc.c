@@ -188,8 +188,6 @@ static void enemy_lakitu_act_main(void) {
 void bhv_enemy_lakitu_update(void) {
     // PARTIAL_UPDATE
 
-    treat_far_home_as_mario(2000.0f);
-
     switch (o->oAction) {
         case ENEMY_LAKITU_ACT_UNINITIALIZED:
             enemy_lakitu_act_uninitialized();

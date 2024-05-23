@@ -325,6 +325,7 @@ void bowser_check_jump(void) {
  * Set actions (and attacks) for Bowser in "Bowser in the Dark World"
  */
 void bowser_bitdw_actions(void) {
+    cur_obj_set_home_if_safe();
     // Generate random float
     f32 rand = random_float();
     // Set attacks when Bowser Reacts
@@ -545,9 +546,6 @@ void bowser_act_walk_to_mario(void) {
     } else { // 1 health
         turnSpeed = 0x200;
     }
-
-    cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
-    if (!(SURFACE_IS_BURNING(o->oFloor->type)) && o->oFloor->type != SURFACE_DEATH_PLANE) vec3_copy(&o->oHomeVec, &o->oPosVec);
 
     if (o->oSubAction == 0) {
         o->oBowserTimer = 0;
@@ -1075,11 +1073,9 @@ void bowser_act_jump_onto_stage(void) {
             }
             // Land on stage
             if (bowser_check_fallen_off_stage()) {
-                o->oPosX = o->oHomeX;
-                o->oPosZ = o->oHomeZ;
-                o->oPosY = o->oHomeY + 2000.0f;
-                o->oVelY = 0.0f;
-                o->oForwardVel = 0.0f;
+                cur_obj_drop_imbued_object(400.0f);
+                o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                return;
             } else if (bowser_land()) {
                 o->oDragStrength = 10.0f;
                 o->oSubAction++;
@@ -1305,6 +1301,7 @@ s32 bowser_dead_final_stage_ending(void) {
  * This action is divided in subaction functions
  */
 void bowser_act_dead(void) {
+    cur_obj_set_home_if_safe();
 
     switch (o->oSubAction) {
         case BOWSER_SUB_ACT_DEAD_FLY_BACK:
@@ -1588,7 +1585,6 @@ void bowser_held_update(void) {
     o->oBowserHeldAnglePitch = gMarioObject->oMoveAnglePitch;
     o->oBowserHeldAngleVelYaw = gMarioObject->oAngleVelYaw;
     o->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
-    vec3_copy(&o->oHomeVec, &gMarioObject->oPosVec);
 }
 
 /**

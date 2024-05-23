@@ -796,7 +796,6 @@ void bhv_koopa_update(void) {
     } else if (obj_update_standard_actions(o->oKoopaAgility * 1.5f)) {
         o->oKoopaDistanceToMario = o->oDistanceToMario;
         o->oKoopaAngleToMario = o->oAngleToMario;
-        treat_far_home_as_mario(1000.0f);
         
         switch (o->oKoopaMovementType) {
             case KOOPA_BP_UNSHELLED:

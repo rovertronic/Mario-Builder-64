@@ -71,8 +71,8 @@ void bobomb_act_patrol(void) {
     o->oForwardVel = 5.0f;
 
     s16 collisionFlags = object_step();
-    if (obj_return_home_if_safe(o, o->oHomeX, o->oHomeY, o->oHomeZ, 400)
-     && obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)) {
+    o->oMoveAngleYaw += 320;
+    if ((o->oDistanceToMario < 400.f) && obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)) {
         o->oBobombFuseLit = TRUE;
         o->oAction = BOBOMB_ACT_CHASE_MARIO;
     }

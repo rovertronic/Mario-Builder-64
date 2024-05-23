@@ -529,23 +529,6 @@ s32 is_point_close_to_object(struct Object *obj, f32 x, f32 y, f32 z, s32 dist) 
 }
 
 /**
- * Turns an object towards home if Mario is not near to it.
- */
-s32 obj_return_home_if_safe(struct Object *obj, f32 homeX, f32 y, f32 homeZ, s32 dist) {
-    f32 homeDistX = homeX - obj->oPosX;
-    f32 homeDistZ = homeZ - obj->oPosZ;
-    s16 angleTowardsHome = atan2s(homeDistZ, homeDistX);
-
-    if (is_point_within_radius_of_mario(homeX, y, homeZ, dist)) {
-        return TRUE;
-    } else {
-        obj->oMoveAngleYaw = approach_s16_symmetric(obj->oMoveAngleYaw, angleTowardsHome, 320);
-    }
-
-    return FALSE;
-}
-
-/**
  * Randomly displaces an objects home if RNG says to, and turns the object towards its home.
  */
 void obj_return_and_displace_home(struct Object *obj, f32 homeX, UNUSED f32 homeY, f32 homeZ, s32 baseDisp) {

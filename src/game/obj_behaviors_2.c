@@ -716,44 +716,6 @@ static s32 obj_move_for_one_second(s32 endAction) {
     return FALSE;
 }
 
-/**
- * If we are far from home (> threshold away), then set oAngleToMario to the
- * angle to home and oDistanceToMario to 25000.
- * If we are close to home, but Mario is far from us (> threshold away), then
- * keep oAngleToMario the same and set oDistanceToMario to 20000.
- * If we are close to both home and Mario, then keep both oAngleToMario and
- * oDistanceToMario the same.
- *
- * The point of this function is to avoid having to write extra code to get
- * the object to return to home. When Mario is far away and the object is far
- * from home, it could theoretically re-use the "approach Mario" logic to approach
- * its home instead.
- * However, most objects that use this function handle the far-from-home case
- * separately anyway.
- * This function causes seemingly erroneous behavior in some objects that try to
- * attack Mario (e.g. fly guy shooting fire or lunging), especially when combined
- * with partial updates.
- */
-static void treat_far_home_as_mario(f32 threshold) {
-    Vec3f d;
-    vec3f_diff(d, &o->oHomeVec, &o->oPosVec);
-
-    if (vec3_sumsq(d) > sqr(threshold)) {
-        o->oAngleToMario = atan2s(d[2], d[0]);
-        o->oDistanceToMario = 25000.0f;
-    } else {
-        if (!gMarioObject) {
-            o->oDistanceToMario = 20000.0f;
-            return;
-        }
-
-        vec3f_diff(d, &o->oHomeVec, &gMarioObject->oPosVec);
-        if (vec3_sumsq(d) > sqr(threshold)) {
-            o->oDistanceToMario = 20000.0f;
-        }
-    }
-}
-
 #include "behaviors/koopa.inc.c" // TODO: Text arg field name
 #include "behaviors/pokey.inc.c"
 // #include "behaviors/swoop.inc.c"
