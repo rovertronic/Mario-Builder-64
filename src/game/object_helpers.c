@@ -2785,7 +2785,8 @@ void cur_obj_drop_imbued_object(s32 y_offset) {
             vec3f_copy(&dropobj->oPosVec,&o->oPosVec);
             dropobj->oForwardVel = 10.0f;
             dropobj->oVelY = 20.0f;
-            dropobj->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+            s16 angle = obj_angle_to_object(o, gMarioObject);
+            dropobj->oMoveAngleYaw = angle + random_float() * 1024.0f;
             break;
         case IMBUE_THREE_COINS:
             obj_spawn_yellow_coins(o, 3);

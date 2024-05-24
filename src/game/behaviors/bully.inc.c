@@ -183,7 +183,7 @@ void bully_spawn_coin(void) {
     coin->oForwardVel = 10.0f;
     coin->oVelY = 100.0f;
     coin->oPosY = o->oPosY + 310.0f;
-    coin->oMoveAngleYaw = (f32)(o->oBullyMarioCollisionAngle + 0x8000) + random_float() * 1024.0f;
+    coin->oMoveAngleYaw = o->oAngleToMario + (random_float() * 1024.0f);
 }
 
 void bully_act_level_death(void) {

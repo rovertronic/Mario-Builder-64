@@ -102,6 +102,7 @@ void bhv_motos_carry_run(void) {
 void bhv_motos_thrown(void) {
     struct Object *coin;
     cur_obj_init_animation_with_sound(MOTOS_ANIM_DOWN_STOP);
+    cur_obj_extend_animation_if_at_end();
     
     if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
         o->oAction = MOTOS_ACT_RECOVER; // New action: recover (used to go straight back into wait)
@@ -133,7 +134,7 @@ void bhv_motos_death(void) {
         coin->oForwardVel = 10.0f;
         coin->oVelY = 100.0f;
         coin->oPosY = o->oPosY + 310.0f;
-        coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
+        coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
 
         if (o->prevObj) {
             o->prevObj = NULL;
