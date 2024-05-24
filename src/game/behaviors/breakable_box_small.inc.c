@@ -60,6 +60,16 @@ void small_breakable_box_act_move(void) {
     obj_check_floor_death(collisionFlags, sObjFloor);
 }
 
+void breakable_box_small_respawn(void) {
+    struct Object *newbox = spawn_object(o->parentObj, MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall);
+    newbox->oPosX = o->oHomeX;
+    newbox->oPosY = o->oHomeY;
+    newbox->oPosZ = o->oHomeZ;
+    newbox->oMoveAngleYaw = 0;
+    spawn_mist_at_obj(newbox);
+    o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+}
+
 void breakable_box_small_released_loop(void) {
     o->oBreakableBoxSmallFramesSinceReleased++;
 
@@ -70,8 +80,7 @@ void breakable_box_small_released_loop(void) {
 
     // Despawn, and create a corkbox respawner
     if (o->oBreakableBoxSmallFramesSinceReleased > 900) {
-        create_respawner(MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall, CMM_DRAWDIST_LOW);
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        breakable_box_small_respawn();
     }
 }
 
@@ -86,9 +95,8 @@ void breakable_box_small_idle_loop(void) {
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
-            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BREAKABLE_BOX, bhvBreakableBoxSmall, CMM_DRAWDIST_LOW);
-            break;
+            breakable_box_small_respawn();
+            return;
     }
 
     if (o->oBreakableBoxSmallReleased == TRUE) {
@@ -109,7 +117,6 @@ void breakable_box_small_get_thrown(void) {
     cur_obj_enable_rendering();
     o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
     o->oHeldState = HELD_FREE;
-    o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
     o->oForwardVel = 40.0f;
     o->oVelY = 20.0f;
     o->oBreakableBoxSmallReleased = TRUE;
