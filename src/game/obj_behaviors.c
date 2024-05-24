@@ -221,13 +221,8 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
         *objFriction = o->oFriction;
         if (o->oFloor) {
             s32 class = get_floor_class(o->oFloor->type);
-            if (class == SURFACE_CLASS_VERY_SLIPPERY) {
-                *objFriction = 0.9999f;
-            } else if (class == SURFACE_CLASS_SLIPPERY) {
-                *objFriction = 0.99f;
-            } else if (o->oFloor->type == SURFACE_CONVEYOR) {
+            if (o->oFloor->type == SURFACE_CONVEYOR) {
                 *objFriction = 0.f;
-            
             }
         }
     }

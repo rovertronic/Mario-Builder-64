@@ -30,6 +30,10 @@ void small_breakable_box_spawn_dust(void) {
 void small_breakable_box_act_move(void) {
     s16 collisionFlags = object_step();
 
+    s32 class = get_floor_class(o->oFloorType);
+    if (class == SURFACE_CLASS_VERY_SLIPPERY) o->oFriction = 0.999f;
+    else o->oFriction = 0.99f;
+
     if (o->oForwardVel > 5.f) {
         obj_attack_collided_from_other_object(o);
     }
