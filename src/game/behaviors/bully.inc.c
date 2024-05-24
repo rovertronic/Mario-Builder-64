@@ -32,6 +32,7 @@ void bhv_small_bully_init(void) {
     o->oGravity = 4.0f;
     o->oFriction = 0.91f;
     o->oBuoyancy = 1.3f;
+    o->oWallHitboxRadius = 50.f;
 
     obj_set_hitbox(o, &sSmallBullyHitbox);
 }
@@ -43,6 +44,7 @@ void bhv_big_bully_init(void) {
     o->oGravity = 5.0f;
     o->oFriction = 0.93f;
     o->oBuoyancy = 1.3f;
+    o->oWallHitboxRadius = 100.f;
 
     obj_set_hitbox(o, &sBigBullyHitbox);
 }
@@ -59,7 +61,6 @@ void bully_check_mario_collision(void) {
         o->oAction = BULLY_ACT_KNOCKBACK;
         o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
         cur_obj_init_animation(3);
-        o->oBullyMarioCollisionAngle = o->oMoveAngleYaw;
     }
 }
 
@@ -118,7 +119,7 @@ void bully_act_back_up(void) {
     //  conditions are activated. However because its angle is set to its facing angle,
     //  it will walk forward instead of backing up.
 
-    if (o->oTimer == 15) {
+    if (o->oTimer >= 15) {
         o->oMoveAngleYaw = o->oFaceAngleYaw;
         o->oFlags |= OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
         o->oAction = BULLY_ACT_PATROL;
@@ -126,7 +127,7 @@ void bully_act_back_up(void) {
 }
 
 void bully_backup_check(s16 collisionFlags) {
-    if (!(collisionFlags & OBJ_COL_FLAG_NO_Y_VEL) && o->oAction != BULLY_ACT_KNOCKBACK) {
+    if (!(collisionFlags & OBJ_COL_FLAG_NO_Y_VEL) && o->oAction != BULLY_ACT_KNOCKBACK && !o->oBullyInMidair) {
         o->oPosX = o->oBullyPrevX;
         o->oPosZ = o->oBullyPrevZ;
         o->oAction = BULLY_ACT_BACK_UP;
@@ -161,6 +162,7 @@ void bully_play_stomping_sound(void) {
 }
 
 void bully_step(void) {
+    bully_check_mario_collision();
     s16 collisionFlags = object_step();
     cur_obj_set_home_if_safe();
 
@@ -222,12 +224,7 @@ void bully_act_level_death(void) {
 
 void bhv_bully_loop(void) {
     vec3f_copy(&o->oBullyPrevVec, &o->oPosVec);
-
-    //! Because this function runs no matter what, Mario is able to interrupt the bully's
-    //  death action by colliding with it. Since the bully hitbox is tall enough to collide
-    //  with Mario even when it is under a lava floor, this can get the bully stuck OOB
-    //  if there is nothing under the lava floor.
-    bully_check_mario_collision();
+    o->oBullyInMidair = (o->oPosY > o->oFloorHeight + 4.f);
 
     switch (o->oAction) {
         case BULLY_ACT_PATROL:
