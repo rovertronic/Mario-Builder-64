@@ -2803,9 +2803,10 @@ void save_level(void) {
     bcopy(&cmm_toolbar, &cmm_save.toolbar, sizeof(cmm_save.toolbar));
     bcopy(&cmm_toolbar_params, &cmm_save.toolbar_params, sizeof(cmm_save.toolbar_params));
 
-    f_chdir(cmm_level_dir_name);
+    TCHAR path[256];
+    create_level_file_path(path, cmm_file_name, NULL);
     UINT bytes_written;
-    f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
+    f_open(&cmm_file,path, FA_READ | FA_WRITE | FA_CREATE_ALWAYS);
     //write header
     f_write(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_written);
     //write tiles
@@ -2814,8 +2815,6 @@ void save_level(void) {
     f_write(&cmm_file,&cmm_object_data,(sizeof(cmm_object_data[0])*cmm_object_count),&bytes_written);
 
     f_close(&cmm_file);
-
-    f_chdir("..");
 }
 
 void load_level(void) {
@@ -2826,12 +2825,13 @@ void load_level(void) {
     bzero(&cmm_save, sizeof(cmm_save));
     bzero(&cmm_grid_data, sizeof(cmm_grid_data));
 
-    f_chdir(cmm_level_dir_name); //chdir exits after the ifelse statement
-    FRESULT code = f_stat(cmm_file_name,&cmm_file_info);
+    TCHAR path[256];
+    create_level_file_path(path, cmm_file_name, NULL);
+    FRESULT code = f_stat(path,&cmm_file_info);
     if (code == FR_OK) {
         UINT bytes_read;
         //file exists, load it
-        f_open(&cmm_file,cmm_file_name, FA_READ | FA_WRITE);
+        f_open(&cmm_file,path, FA_READ | FA_WRITE);
         //read header
         f_read(&cmm_file,&cmm_save,sizeof(cmm_save),&bytes_read);
         //read tiles
@@ -2891,7 +2891,6 @@ void load_level(void) {
 
         bcopy(&cmm_default_custom,&cmm_save.custom_theme,sizeof(struct cmm_custom_theme));
     }
-    f_chdir("..");
 
     cmm_tile_count = cmm_save.tile_count;
     cmm_object_count = cmm_save.object_count;

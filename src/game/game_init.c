@@ -1025,15 +1025,37 @@ struct cmm_level_save_header temp_cmm_save;
 u8 cmm_level_entry_count = 0;
 FRESULT global_code;
 
-TCHAR cmm_level_dir_name[] = {"Mario Builder 64 Levels"};
-TCHAR cmm_hack_dir_name[] = {"Mario Builder 64 Hacks"};
+TCHAR *cmm_level_dir_name = "/Mario Builder 64 Levels";
+TCHAR *cmm_hack_dir_name = "/Mario Builder 64 Hacks";
 
 struct cmm_sram_config cmm_sram_configuration;
+
+void create_level_file_path(TCHAR *buffer, TCHAR *filename, TCHAR *suffix) {
+    TCHAR *s;
+    s = cmm_level_dir_name;
+    while (*s) {
+        *buffer++ = *s++;
+    }
+    *buffer++ = '/';
+    s = filename;
+    while (*s) {
+        *buffer++ = *s++;
+    }
+    if (suffix) {
+        s = suffix;
+        while (*s) {
+            *buffer++ = *s++;
+        }
+    }
+    *buffer++ = '\0';
+}
 
 struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
     u32 bytes_read;
     FIL read_file;
-    f_open(&read_file,filename, FA_READ);
+    TCHAR path[256];
+    create_level_file_path(path, filename, NULL);
+    f_open(&read_file,path, FA_READ);
     f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
     f_close(&read_file);
 
@@ -1042,38 +1064,16 @@ struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
 
 char filename_with_mb64[31];
 u8 level_file_exists(char * filename) {
-    DIR dir;
-    FRESULT code;
-    FIL read_file;
-    f_opendir(&dir,&cmm_level_dir_name);
-    f_chdir(cmm_level_dir_name);
-
-    u8 fwmb64_index = 0;
-    while(filename[fwmb64_index] != '\0') {
-        filename_with_mb64[fwmb64_index] = filename[fwmb64_index];
-        fwmb64_index++;
-    }
-    filename_with_mb64[fwmb64_index++] = '.';
-    filename_with_mb64[fwmb64_index++] = 'm';
-    filename_with_mb64[fwmb64_index++] = 'b';
-    filename_with_mb64[fwmb64_index++] = '6';
-    filename_with_mb64[fwmb64_index++] = '4';
-    filename_with_mb64[fwmb64_index] = '\0';
-
-    code = f_open(&read_file, filename_with_mb64, FA_READ);
-    f_close(&read_file);
-
-    f_chdir("..");
-    f_closedir(&dir);
-
-    return (code == FR_OK);
+    FILINFO fno;
+    TCHAR path[256];
+    create_level_file_path(path, filename, ".mb64");
+    return (f_stat(path, &fno) == FR_OK);
 }
 
 u8 cmm_level_entry_version[MAX_FILES];
 void load_level_files_from_sd_card(void) {
     DIR dir;
-    f_opendir(&dir,&cmm_level_dir_name);
-    f_chdir(cmm_level_dir_name);
+    f_opendir(&dir,cmm_level_dir_name);
 
     // LEVEL ENTRIES ARE LOADED IN FILE SELECT
     FILINFO * level_entries_ptr = segmented_to_virtual(cmm_level_entries);
@@ -1082,8 +1082,8 @@ void load_level_files_from_sd_card(void) {
     s16 i = -1;
     do {
         i++;
-        if (f_readdir(&dir,&level_entries_ptr[i]) == FR_OK) {
-            struct cmm_level_save_header * level_info = get_level_info_from_filename(&level_entries_ptr[i].fname);
+        if ((f_readdir(&dir,&level_entries_ptr[i]) == FR_OK) && (level_entries_ptr[i].fname[0] != 0)) {
+            struct cmm_level_save_header * level_info = get_level_info_from_filename(level_entries_ptr[i].fname);
 
             s16 x;
             s16 y;
@@ -1098,7 +1098,6 @@ void load_level_files_from_sd_card(void) {
     } while ((level_entries_ptr[i].fname[0] != 0) && (i<MAX_FILES-1));
 
     cmm_level_entry_count = i;
-    f_chdir("..");
 
     f_closedir(&dir);
 }
@@ -1155,10 +1154,10 @@ void thread5_game_loop(UNUSED void *arg) {
         //mount is successful
 
         //create directory if not exist
-        directory_success = f_stat(&cmm_level_dir_name,&cmm_dir_info);
+        directory_success = f_stat(cmm_level_dir_name,&cmm_dir_info);
         if (directory_success == FR_NO_FILE) {
             //does not exist, therefore make
-            f_mkdir(&cmm_level_dir_name);
+            f_mkdir(cmm_level_dir_name);
         }
         
     }
