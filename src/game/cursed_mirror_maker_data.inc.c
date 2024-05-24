@@ -912,8 +912,8 @@ struct cmm_material cmm_mat_table[] = {
     {mat_maker_MakerJRBShipTop,      0, SURFACE_CREAKWOOD,    "Ship Decking"},  // CMM_MAT_JRB_SHIPTOP
     {mat_maker_MakerBBHHauntedPlanks,0, SURFACE_CREAKWOOD,    "Spooky Planks"}, // CMM_MAT_BBH_HAUNTED_PLANKS
     {mat_maker_MakerBBHRoof,         0, SURFACE_CREAKWOOD,    "Mansion Roof"},  // CMM_MAT_BBH_ROOF
-    {mat_maker_MakerSolidWood,       0, SURFACE_NOT_SLIPPERY, "Wood (Old)"},    // CMM_MAT_SOLID_WOOD
-    {mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY, "Scorched Wood"}, // CMM_MAT_RHR_WOOD
+    {mat_maker_MakerSolidWood,       0, SURFACE_CREAKWOOD,    "Wood (Old)"},    // CMM_MAT_SOLID_WOOD
+    {mat_maker_MakerRHRWood,         0, SURFACE_CREAKWOOD,    "Scorched Wood"}, // CMM_MAT_RHR_WOOD
 
     // Metal
     {mat_maker_MakerBBHMetal,        0, SURFACE_NOT_SLIPPERY, "Metal Flooring"},   // CMM_MAT_BBH_METAL

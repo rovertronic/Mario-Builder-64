@@ -426,10 +426,6 @@ s32 act_hold_idle(struct MarioState *m) {
         return set_mario_action(m, ACT_CRAZY_BOX_BOUNCE, 0);
     }
 
-    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
-        return set_mario_action(m, ACT_HOLD_HEAVY_IDLE, 0);
-    }
-
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_IDLE, 0);
     }
@@ -650,10 +646,6 @@ s32 act_butt_slide_stop(struct MarioState *m) {
 s32 act_hold_butt_slide_stop(struct MarioState *m) {
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_IDLE, 0);
-    }
-
-    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
-        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
     }
 
     if (m->input & INPUT_STOMPED) {
@@ -943,10 +935,6 @@ s32 act_hold_jump_land_stop(struct MarioState *m) {
         return drop_and_set_mario_action(m, ACT_IDLE, 0);
     }
 
-    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
-        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
-    }
-
     if (m->input & INPUT_STOMPED) {
         return drop_and_set_mario_action(m, ACT_SHOCKWAVE_BOUNCE, 0);
     }
@@ -966,10 +954,6 @@ s32 act_hold_jump_land_stop(struct MarioState *m) {
 s32 act_hold_freefall_land_stop(struct MarioState *m) {
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROP_OBJECT) {
         return drop_and_set_mario_action(m, ACT_IDLE, 0);
-    }
-
-    if (m->heldObj->oInteractionSubtype & INT_SUBTYPE_GRABS_MARIO) {
-        return set_mario_action(m, ACT_HOLD_HEAVY_WALKING, 0);
     }
 
     if (m->input & INPUT_STOMPED) {
