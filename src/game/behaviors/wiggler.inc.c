@@ -52,7 +52,7 @@ static u8 sWigglerAttackHandlers[] = {
 /**
  * Target speed while walking when wiggler has health 1, 2, 3, and 4.
  */
-static f32 sWigglerSpeeds[] = { 2.0f, 40.0f, 30.0f, 16.0f };
+static f32 sWigglerSpeeds[] = { 8.0f, 40.0f, 30.0f, 16.0f };
 
 /**
  * Update function for bhvWigglerBody.
