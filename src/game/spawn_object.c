@@ -186,7 +186,6 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->numCollidedObjs = 0;
     vec3f_set(obj->oDisplaceVec,0.0f,0.0f,0.0f);
     vec3f_set(obj->oOldVec,0.0f,-30000.0f,0.0f);
-    vec3f_set(obj->oImbueVec,0.0f,0.0f,0.0f);
 
 #if IS_64_BIT
     for (i = 0; i < MAX_OBJECT_FIELDS; i++) {

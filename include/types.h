@@ -329,7 +329,6 @@ struct Object {
     /*0x25C*/ void *respawnInfo;
               Vec3f oDisplaceVec;
               Vec3f oOldVec;
-              Vec3f oImbueVec;
 #ifdef PUPPYLIGHTS
     struct PuppyLight puppylight;
 #endif

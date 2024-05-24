@@ -2774,7 +2774,9 @@ void cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object * dropobj;
     if (o->oImbue == IMBUE_NONE) return;
     if (o->oImbue == IMBUE_STAR) {
-        spawn_default_star(o->oHomeX,o->oHomeY+y_offset,o->oHomeZ);
+        struct Surface *ptr;
+        f32 ceilY = find_ceil(o->oHomeX,o->oHomeY,o->oHomeZ,&ptr);
+        spawn_default_star(o->oHomeX,MIN(o->oHomeY+y_offset, ceilY - 75.f),o->oHomeZ);
         return;
     }
 
@@ -2792,13 +2794,18 @@ void cur_obj_drop_imbued_object(s32 y_offset) {
             obj_spawn_yellow_coins(o, 3);
             break;
         case IMBUE_RED_SWITCH:
-        case IMBUE_BLUE_SWITCH:
-            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
-            if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
-            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
-            dropobj->oPosY = find_floor_height(dropobj->oPosX,dropobj->oPosY+10.f,dropobj->oPosZ);
-            dropobj->oMoveAngleYaw = 0;
-            spawn_mist_at_obj(dropobj);
+        case IMBUE_BLUE_SWITCH:;
+            struct Surface *floor;
+            f32 floorY = find_floor(o->oHomeX,o->oHomeY+10.f,o->oHomeZ,&floor);
+            // Abort spawn if over death barrier
+            if (floor && floor->type != SURFACE_DEATH_PLANE) {
+                dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
+                if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
+                vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+                dropobj->oPosY = floorY;
+                dropobj->oMoveAngleYaw = 0;
+                spawn_mist_at_obj(dropobj);
+            }
             break;
         case IMBUE_RED_COIN:
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
