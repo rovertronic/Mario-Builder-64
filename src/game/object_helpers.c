@@ -2706,16 +2706,9 @@ s32 is_cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
 }
 
 void cur_obj_interact_with_moving_platform(void) {
-    if ((sInteractFloor->object != NULL)) {
-        o->oPosX += sInteractFloor->object->oDisplaceVec[0];
-        //if (floor->object->oDisplaceVec[1] < 0.0f) {
-            //o->oPosY += floor->object->oDisplaceVec[1];
-        //}
-        o->oPosZ += sInteractFloor->object->oDisplaceVec[2];
-    }
-}
+    o->oPosX += sInteractFloor->object->oDisplaceVec[0];
+    o->oPosZ += sInteractFloor->object->oDisplaceVec[2];
 
-void cur_obj_interact_with_conveyor(void) {
     if (sInteractFloor->type == SURFACE_CONVEYOR) {
         struct Object * conveyor_interacting = sInteractFloor->object;
 
@@ -2738,11 +2731,11 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
         return;
     }
 
+    cur_obj_interact_with_quicksand();
+    if (sInteractFloor->object == NULL) return;
     cur_obj_interact_with_noteblock();
     cur_obj_interact_with_floor_switch();
-    cur_obj_interact_with_quicksand();
     cur_obj_interact_with_moving_platform();
-    cur_obj_interact_with_conveyor();
 }
 
 void cur_obj_set_home_if_safe(void) {

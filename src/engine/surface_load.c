@@ -683,5 +683,6 @@ void load_object_static_model(void) {
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
+    o->collisionData = NULL;
     profiler_collision_update(first);
 }

@@ -11,6 +11,7 @@
 #include "types.h"
 #include "sm64.h"
 #include "cursed_mirror_maker.h"
+#include "behavior_data.h"
 
 u16 D_8032FEC0 = 0;
 
@@ -161,9 +162,13 @@ void apply_conveyor_displacement() {
 
 	f32 xVel = currentSpeed * sins(currentAngle);
 	f32 zVel = currentSpeed * coss(currentAngle);
+
 	gMarioState->pos[0] += xVel;
 	gMarioState->pos[2] += zVel;
-	vec3f_set(sMarioAmountDisplaced, xVel, 0.0f, zVel);
+	vec3f_set(sMarioAmountDisplaced, xVel, 0.f, zVel);
+	if (gMarioState->floor->object->behavior == segmented_to_virtual(bhvConveyorSlope)) {
+		gMarioState->forwardVel = MAX(-15.f, gMarioState->forwardVel); // bljs are far too easy otherwise
+	}
 }
 
 

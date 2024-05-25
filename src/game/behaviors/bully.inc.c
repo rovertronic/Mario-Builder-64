@@ -59,6 +59,7 @@ void bully_check_mario_collision(void) {
 
         o->oInteractStatus &= ~INT_STATUS_INTERACTED;
         o->oAction = BULLY_ACT_KNOCKBACK;
+        o->oBullyKBTimerAndMinionKOCounter = 0;
         o->oFlags &= ~OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
         cur_obj_init_animation(3);
     }
@@ -162,7 +163,6 @@ void bully_play_stomping_sound(void) {
 }
 
 void bully_step(void) {
-    bully_check_mario_collision();
     s16 collisionFlags = object_step();
     cur_obj_set_home_if_safe();
 
@@ -227,6 +227,7 @@ void bhv_bully_loop(void) {
     vec3f_copy(&o->oBullyPrevVec, &o->oPosVec);
     o->oBullyInMidair = (o->oPosY > o->oFloorHeight + 4.f);
 
+    if (o->oAction < OBJ_ACT_LAVA_DEATH) bully_check_mario_collision();
     switch (o->oAction) {
         case BULLY_ACT_PATROL:
             o->oForwardVel = 5.0f;

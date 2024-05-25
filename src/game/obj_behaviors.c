@@ -219,9 +219,8 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
         *objFriction = 0;
     } else {
         *objFriction = o->oFriction;
-        if (o->oFloor) {
-            s32 class = get_floor_class(o->oFloor->type);
-            if (o->oFloor->type == SURFACE_CONVEYOR) {
+        if (o->oFloor && o->oFloor->object) {
+            if (o->oFloor->object->behavior == segmented_to_virtual(bhvConveyorSlope)) {
                 *objFriction = 0.f;
             }
         }
