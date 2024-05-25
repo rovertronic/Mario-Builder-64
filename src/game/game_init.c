@@ -1082,7 +1082,16 @@ void load_level_files_from_sd_card(void) {
     s16 i = -1;
     do {
         i++;
-        if ((f_readdir(&dir,&level_entries_ptr[i]) == FR_OK) && (level_entries_ptr[i].fname[0] != 0)) {
+        if ((f_readdir(&dir,&level_entries_ptr[i]) == FR_OK)) {
+            if (level_entries_ptr[i].fname[0] == 0) {
+                // Reached end of directory
+                continue;
+            }
+            if (strlen(level_entries_ptr[i].fname) > MAX_FILE_NAME_SIZE - 1) {
+                // Too long level name, skip
+                i--;
+                continue;
+            }
             struct cmm_level_save_header * level_info = get_level_info_from_filename(level_entries_ptr[i].fname);
 
             s16 x;

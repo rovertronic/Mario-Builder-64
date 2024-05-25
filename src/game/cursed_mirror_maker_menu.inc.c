@@ -1418,11 +1418,12 @@ char *cmm_mm_keyboard_prompt[] = {
 };
 char cmm_mm_keyboard[] = "1234567890abcdefghijklmnopqrstuvwxyz!'- ";
 char cmm_mm_keyboard_caps[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!'- ";
-char cmm_mm_keyboard_input[31];
+char cmm_mm_keyboard_input[MAX_FILE_NAME_SIZE];
 u8 cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
 u8 cmm_mm_keyboard_input_index = 0;
 #define KEYBOARD_SIZE (sizeof(cmm_mm_keyboard)-1)
 s8 cmm_mm_keyboard_index = 0;
+s8 cmm_mm_keyboard_max_input_length = 0;
 
 char cmm_mm_warning[] = \
 "WARNING!\n\
@@ -1765,6 +1766,7 @@ s32 cmm_main_menu(void) {
                 } else {
                     //no author file detected, prompt user to enter an author name
                     cmm_mm_keyboard_exit_mode = KXM_AUTHOR;
+                    cmm_mm_keyboard_max_input_length = MAX_USERNAME_SIZE - 1;
                     cmm_mm_state = MM_KEYBOARD;
                     cmm_mm_keyboard_input_index = 0;
 
@@ -1772,7 +1774,7 @@ s32 cmm_main_menu(void) {
                     if (gSupportsLibpl) {
                         char * rhdc_username = libpl_get_my_rhdc_username();
                         if (rhdc_username) {
-                            while ((rhdc_username[cmm_mm_keyboard_input_index] != 0)&&(cmm_mm_keyboard_input_index <= 29)) {
+                            while ((rhdc_username[cmm_mm_keyboard_input_index] != 0)&&(cmm_mm_keyboard_input_index < MAX_USERNAME_SIZE - 1)) {
                                 cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = rhdc_username[cmm_mm_keyboard_input_index];
                                 cmm_mm_keyboard_input_index++;
                             }
@@ -1900,6 +1902,7 @@ s32 cmm_main_menu(void) {
                         case 2:
                             //change name
                             cmm_mm_keyboard_exit_mode = KXM_CHANGE_AUTHOR;
+                            cmm_mm_keyboard_max_input_length = MAX_USERNAME_SIZE - 1;
                             cmm_mm_state = MM_KEYBOARD;
                             cmm_mm_keyboard_input_index = 0;
                             cmm_mm_keyboard_input[0] = '\0';
@@ -1942,6 +1945,7 @@ s32 cmm_main_menu(void) {
                         cmm_menu_index = 0;
                     } else {
                         cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL_LIMITED;
+                        cmm_mm_keyboard_max_input_length = MAX_FILE_NAME_SIZE - 6;
                         cmm_mm_state = MM_KEYBOARD;
                         cmm_mm_keyboard_input_index = 0;
                         cmm_mm_keyboard_input[0] = '\0';
@@ -1953,6 +1957,7 @@ s32 cmm_main_menu(void) {
                         cmm_menu_index = 0;
                     } else {
                         cmm_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
+                        cmm_mm_keyboard_max_input_length = MAX_FILE_NAME_SIZE - 6;
                         cmm_mm_state = MM_KEYBOARD;
                         cmm_mm_keyboard_input_index = 0;
                         cmm_mm_keyboard_input[0] = '\0';
@@ -2039,15 +2044,19 @@ s32 cmm_main_menu(void) {
             }
             cmm_mm_keyboard_index = (cmm_mm_keyboard_index+KEYBOARD_SIZE)%KEYBOARD_SIZE;
 
-            if ((gPlayer1Controller->buttonPressed & A_BUTTON)&&(cmm_mm_keyboard_input_index < 20)) {
-                if (gPlayer1Controller->buttonDown & Z_TRIG) {
-                    //shift
-                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard_caps[cmm_mm_keyboard_index];
+            if (gPlayer1Controller->buttonPressed & A_BUTTON) { // extension
+                if (cmm_mm_keyboard_input_index >= cmm_mm_keyboard_max_input_length) {
+                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
                 } else {
-                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard[cmm_mm_keyboard_index];
+                    if (gPlayer1Controller->buttonDown & Z_TRIG) {
+                        //shift
+                        cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard_caps[cmm_mm_keyboard_index];
+                    } else {
+                        cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = cmm_mm_keyboard[cmm_mm_keyboard_index];
+                    }
+                    cmm_mm_keyboard_input_index++;
+                    cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = '\0';
                 }
-                cmm_mm_keyboard_input_index++;
-                cmm_mm_keyboard_input[cmm_mm_keyboard_input_index] = '\0';
             }
 
             if (gPlayer1Controller->buttonPressed & B_BUTTON) {
@@ -2077,12 +2086,12 @@ s32 cmm_main_menu(void) {
 
             cmm_mm_shade_screen();
 
-            f32 inputX = CLAMP(30 + cmm_menu_button_vels[1][0], -160, 320);
+            f32 inputX = CLAMP(30 + cmm_menu_button_vels[1][0], -320, 320);
             gDPPipeSync(gDisplayListHead++);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 100);
             gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
             gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-            gDPFillRectangle(gDisplayListHead++, inputX, (240-185)-16, inputX + 150, (240-185)+3);
+            gDPFillRectangle(gDisplayListHead++, MAX(inputX, 0), (240-185)-16, inputX + 250, (240-185)+3);
 
 
             print_maker_string_ascii(35 + cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
@@ -2132,8 +2141,7 @@ s32 cmm_main_menu(void) {
                     break;
                     case KXM_AUTHOR:
                     case KXM_CHANGE_AUTHOR:
-                        bcopy(&cmm_mm_keyboard_input,&cmm_username,cmm_mm_keyboard_input_index);
-                        cmm_username[cmm_mm_keyboard_input_index+1] = '\0';
+                        strncpy(&cmm_username,&cmm_mm_keyboard_input,MAX_USERNAME_SIZE);
 
                         bcopy(&cmm_username,&cmm_sram_configuration.author,sizeof(cmm_sram_configuration.author));
                         if (gSramProbe != 0) {
@@ -2277,7 +2285,7 @@ s32 cmm_main_menu(void) {
                 cmm_mode = CMM_MODE_UNINITIALIZED;
                 reset_play_state();
                 int i = 0;
-                while(level_entries_ptr[cmm_menu_index].fname[i]) {
+                while(level_entries_ptr[cmm_menu_index].fname[i] && (i < MAX_FILE_NAME_SIZE - 1)) {
                     cmm_file_name[i] = level_entries_ptr[cmm_menu_index].fname[i];
                     i++;
                 }

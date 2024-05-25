@@ -13,6 +13,8 @@
 #define TILE_SIZE 256
 
 #define CMM_VERSION 1
+#define MAX_FILE_NAME_SIZE 41
+#define MAX_USERNAME_SIZE 31
 
 void save_level(void);
 void sb_loop(void);
@@ -52,8 +54,8 @@ extern u8 cmm_play_onoff;
 extern s16 cmm_play_s16_water_level;
 
 extern struct cmm_level_save_header cmm_save;
-extern TCHAR cmm_file_name[30];
-extern char cmm_username[31];
+extern TCHAR cmm_file_name[MAX_FILE_NAME_SIZE];
+extern char cmm_username[MAX_USERNAME_SIZE];
 extern u8 cmm_has_username;
 
 extern void* cmm_theme_segments[][4];
@@ -335,7 +337,7 @@ no matter what version.
 struct cmm_level_save_header {
     char file_header[10];
     u8 version;
-    char author[31];
+    char author[MAX_USERNAME_SIZE];
     u16 piktcher[64][64];
 
     // Level options
@@ -374,7 +376,7 @@ struct cmm_level_uncompressed_save {
 #define SRAM_MAGIC 0x0203DD10 // Rovert's favorite binary ROM Address!
 
 struct cmm_sram_config {
-    char author[31];
+    char author[MAX_USERNAME_SIZE];
     u8 option_flags;
     u32 magic;
     u64 pad;

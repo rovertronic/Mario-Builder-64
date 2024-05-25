@@ -175,7 +175,7 @@ u16 cmm_topleft_timer = 0;
 f32 cmm_topleft_vels[3];
 
 struct cmm_level_save_header cmm_save;
-char cmm_username[31];
+char cmm_username[MAX_USERNAME_SIZE];
 u8 cmm_has_username = FALSE;
 
 u8 cmm_num_vertices_cached = 0;
@@ -2708,7 +2708,7 @@ void update_painting() {
 //if (gSramProbe != 0) {
 #include "src/game/cursed_mirror_maker_painting_frames.inc.c"
 
-TCHAR cmm_file_name[30];
+TCHAR cmm_file_name[MAX_FILE_NAME_SIZE];
 FIL cmm_file;
 FILINFO cmm_file_info;
 
@@ -2723,17 +2723,11 @@ void save_level(void) {
     //bzero(&cmm_save, sizeof(cmm_save)); // should be safe to not need this right?
 
     //file header
-    for (i=0;i<10;i++) {
-        cmm_save.file_header[i] = file_header_string[i];
-    }
+    strncpy(cmm_save.file_header, file_header_string, 10);
 
     //author
-    if ((cmm_has_username)&&(cmm_save.author[0] == '\0')) {
-        i = 0;
-        do {
-            cmm_save.author[i] = cmm_username[i];
-            i++;
-        } while (cmm_username[i-1] != '\0');
+    if ((cmm_has_username) && (cmm_save.author[0] == '\0')) {
+        strncpy(cmm_save.author, cmm_username, MAX_USERNAME_SIZE);
     }
 
     cmm_save.tile_count = cmm_tile_count;
@@ -2843,7 +2837,7 @@ void load_level(void) {
     } else {
         //Load into a fresh level
         fresh = TRUE;
-        strcpy(cmm_file_info.fname,cmm_file_name);
+        strncpy(cmm_file_info.fname,cmm_file_name,MAX_FILE_NAME_SIZE);
 
         //Set version
         cmm_save.version = CMM_VERSION;
@@ -2892,6 +2886,7 @@ void load_level(void) {
         bcopy(&cmm_default_custom,&cmm_save.custom_theme,sizeof(struct cmm_custom_theme));
     }
 
+    cmm_save.author[MAX_USERNAME_SIZE - 1] = '\0'; // memory leak prevention
     cmm_tile_count = cmm_save.tile_count;
     cmm_object_count = cmm_save.object_count;
 
