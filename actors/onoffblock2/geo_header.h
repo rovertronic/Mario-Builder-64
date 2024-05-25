@@ -6,7 +6,7 @@ extern u8 onoffblock2_redbox_ci8[];
 extern u8 onoffblock2_redbox_ci8_pal_rgba16[];
 extern u8 onoffblock2_bluebox_ci8[];
 extern u8 onoffblock2_bluebox_ci8_pal_rgba16[];
-extern Vtx onoffblock2_000_displaylist_mesh_layer_1_vtx_0[18];
+extern Vtx onoffblock2_000_displaylist_mesh_layer_1_vtx_0[24];
 extern Gfx onoffblock2_000_displaylist_mesh_layer_1_tri_0[];
 extern Gfx mat_onoffblock2_redblock[];
 extern Gfx mat_revert_onoffblock2_redblock[];
