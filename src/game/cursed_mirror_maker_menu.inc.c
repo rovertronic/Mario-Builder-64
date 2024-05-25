@@ -423,6 +423,21 @@ void cmm_render_topleft_text(void) {
     }
 }
 
+f32 cmm_coord_vels[3] = {0.f};
+void cmm_render_coord_display(void) {
+    if (cmm_tip_timer != 0) {
+        cmm_coord_vels[0] = 250.f;
+        cmm_coord_vels[1] = 0.f;
+        cmm_coord_vels[2] = 0.f;
+        return;
+    }
+    animate_menu_ease_in(cmm_coord_vels, 255.f, 215.f, 0.4f, (cmm_topleft_is_tip && cmm_topleft_timer != 0));
+
+    char buf[20];
+    sprintf(buf, "%d, %d, %d", cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
+    print_maker_string_ascii(255, cmm_coord_vels[0], buf, 0);
+}
+
 char *cmm_get_floor_name(s32 index, UNUSED char *buffer) {
     return TILE_MATDEF(index).name;
 }
@@ -1000,6 +1015,7 @@ void draw_cmm_menu(void) {
     switch (cmm_menu_state) {
         case CMM_MAKE_MAIN:
             cmm_render_topleft_text();
+            cmm_render_coord_display();
             break;
 
         case CMM_MAKE_TOOLBOX:
@@ -1218,6 +1234,7 @@ void draw_cmm_menu(void) {
         case CMM_MAKE_TRAJECTORY:
             print_maker_string(20,210,cmm_txt_recording,TRUE);
             cmm_render_topleft_text();
+            cmm_render_coord_display();
             break;
 
         case CMM_MAKE_SCREENSHOT:
