@@ -30,6 +30,7 @@
 #include "rovent.h"
 #include "cursed_mirror_maker.h"
 #include "profiling.h"
+#include "mario_actions_automatic.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -2293,14 +2294,16 @@ s16 update_default_camera(struct Camera *c) {
         vec3f_copy(c->focus, sMarioCamState->pos);
     }
 
+    
     if (sMarioCamState->action & ACT_FLAG_ON_POLE) {
-        camFloorHeight = gMarioStates[0].usedObj->oPosY + 125.f;
+        camFloorHeight = curPole.pos[1] + 125.f;
         if (sMarioCamState->pos[1] - 100.f > camFloorHeight) {
             camFloorHeight = sMarioCamState->pos[1] - 100.f;
         }
         ceilHeight = CELL_HEIGHT_LIMIT;
         vec3f_copy(c->focus, sMarioCamState->pos);
     }
+    
     if (camFloorHeight != FLOOR_LOWER_LIMIT) {
         camFloorHeight += posHeight;
         approach_camera_height(c, camFloorHeight, 20.f);

@@ -594,7 +594,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     if (m->actionState == ACT_STATE_STAR_DANCE_CUTSCENE) {
         switch (++m->actionTimer) {
             case 1:
-                fade_volume_scale(SEQ_PLAYER_LEVEL,0,10);
+                // fade_volume_scale(SEQ_PLAYER_LEVEL,0,10);
                 celebStar = spawn_object(m->marioObj, MODEL_STAR, bhvCelebrationStar);
 
 #ifdef STAR_DANCE_USES_STARS_MODEL
@@ -605,18 +605,18 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                 }
 #endif
                 disable_background_sound();
-                //! TODO: Is this check necessary? Both seem to do the exact same thing.
-                //if (m->actionArg & 1) {
-                //    // No exit
-                //    play_course_clear(obj_has_model(celebStar, MODEL_BOWSER_KEY));
-                //} else {
+
+                if (m->actionArg & 1) {
+                   // No exit
+                   play_course_clear(obj_has_model(celebStar, MODEL_BOWSER_KEY));
+                } else {
                     // Exit
                     if (obj_has_model(celebStar, MODEL_BOWSER_KEY)) {
                         play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(15, SEQ_EVENT_CUTSCENE_COLLECT_KEY), 0);
                     } else {
                         play_music(SEQ_PLAYER_ENV, SEQUENCE_ARGS(0, SEQ_EVENT_CUTSCENE_COLLECT_STAR), 0);
                     }
-                //}
+                }
                 break;
 
             case 42:
@@ -670,7 +670,7 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     } else if (m->actionState == ACT_STATE_STAR_DANCE_RETURN && is_anim_at_end(m)) {
         disable_time_stop();
         enable_background_sound();
-        fade_volume_scale(SEQ_PLAYER_LEVEL, 100 ,10);
+        // fade_volume_scale(SEQ_PLAYER_LEVEL, 100 ,10);
 
         s32 dialogID = get_star_collection_dialog(m);
         if (dialogID) {
