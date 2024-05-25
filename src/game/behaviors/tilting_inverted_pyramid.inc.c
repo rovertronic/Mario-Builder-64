@@ -6217,6 +6217,15 @@ void bhv_onoffblock(void) {
     }
 }
 
+f32 woodplat_get_stack_height(struct Object *basePlat) {
+    f32 stackHeight = 0.f;
+    do {
+        stackHeight += (basePlat->oBehParams2ndByte == 1 ? 256.f : 96.f);
+        basePlat = basePlat->oWoodPlatAbovePlatform;
+    } while (basePlat);
+    return stackHeight;
+}
+
 void bhv_woodplat_check_above(void) {
     // Check if there is a wooden platform immediately above this one
     // Fake the Y position
@@ -6246,11 +6255,7 @@ void bhv_woodplat(void) {
             o->hitboxDownOffset = 0.f;
             if (o->oBehParams2ndByte == 1) {
                 o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
-                o->hitboxHeight = 256.f;
-
                 bhv_woodplat_check_above();
-            } else {
-                o->hitboxHeight = 96.f;
             }
             o->oAction = 1;
             break;
@@ -6262,6 +6267,7 @@ void bhv_woodplat(void) {
                 o->prevObj = spawn_object(o, MODEL_NONE, bhvWoodPlatCol);
                 o->prevObj->prevObj = o;
                 vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
+                o->hitboxHeight = woodplat_get_stack_height(o);
             }
             if (waterLevel < o->oPosY) {
                 // Air Behavior
@@ -6296,15 +6302,11 @@ void bhv_woodplat(void) {
 }
 
 void bhv_woodplat_col_init(void) {
-    o->oWoodPlatColHeight = 0.f;
     struct Object *curPlat = o->prevObj;
-    do {
-        o->oWoodPlatColHeight += (curPlat->oBehParams2ndByte == 1 ? 256.f : 96.f);
-        curPlat = curPlat->oWoodPlatAbovePlatform;
-    } while (curPlat);
-    o->oCollisionDistance = MAX(o->oWoodPlatColHeight - 500.f, 0.f) + 300.f;
+    f32 height = woodplat_get_stack_height(o->prevObj);
+    o->oCollisionDistance = MAX(height - 500.f, 0.f) + 300.f;
 
-    o->header.gfx.scale[1] = o->oWoodPlatColHeight / 100.f;
+    o->header.gfx.scale[1] = height / 100.f;
 }
 
 void bhv_crush_handler(void) {
