@@ -384,7 +384,7 @@ void df_block(s32 context) {
     if (context == CMM_DF_CONTEXT_INIT) {
         o->oAnimState = o->oBehParams2ndByte;
         if (o->oBehParams2ndByte == 1) {
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_1];
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
         }
     }
 }

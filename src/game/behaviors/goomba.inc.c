@@ -66,43 +66,43 @@ static u8 sGoombaAttackHandlers[][6] = {
 /**
  * Update function for goomba triplet spawner.
  */
-void bhv_goomba_triplet_spawner_update(void) {
-    s16 goombaFlag;
-    s32 angle;
+// void bhv_goomba_triplet_spawner_update(void) {
+//     s16 goombaFlag;
+//     s32 angle;
 
-    // If mario is close enough and the goombas aren't currently loaded, then
-    // spawn them
-    if (o->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
-        if (o->oDistanceToMario < 3000.0f) {
-            // The spawner is capable of spawning more than 3 goombas, but this
-            // is not used in the game
-            s32 dAngle =
-                0x10000
-                / (((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_EXTRA_GOOMBAS_MASK) >> 2) + 3);
+//     // If mario is close enough and the goombas aren't currently loaded, then
+//     // spawn them
+//     if (o->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
+//         if (o->oDistanceToMario < 3000.0f) {
+//             // The spawner is capable of spawning more than 3 goombas, but this
+//             // is not used in the game
+//             s32 dAngle =
+//                 0x10000
+//                 / (((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_EXTRA_GOOMBAS_MASK) >> 2) + 3);
 
-            for (angle = 0, goombaFlag = 1 << 8; angle < 0xFFFF; angle += dAngle, goombaFlag <<= 1) {
-                // Only spawn goombas which haven't been killed yet
-                if (!(o->oBehParams & goombaFlag)) {
-                    s16 dx = 500.0f * coss(angle);
-                    s16 dz = 500.0f * sins(angle);
-#ifdef FLOOMBAS
-                    spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6),
-                                          dx, 0, dz, o, MODEL_GOOMBA, (o->oIsFloomba ? bhvFloomba : bhvGoomba));
-#else
-                    spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6),
-                                          dx, 0, dz, o, MODEL_GOOMBA, bhvGoomba);
-#endif
-                }
-            }
+//             for (angle = 0, goombaFlag = 1 << 8; angle < 0xFFFF; angle += dAngle, goombaFlag <<= 1) {
+//                 // Only spawn goombas which haven't been killed yet
+//                 if (!(o->oBehParams & goombaFlag)) {
+//                     s16 dx = 500.0f * coss(angle);
+//                     s16 dz = 500.0f * sins(angle);
+// #ifdef FLOOMBAS
+//                     spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6),
+//                                           dx, 0, dz, o, MODEL_GOOMBA, (o->oIsFloomba ? bhvFloomba : bhvGoomba));
+// #else
+//                     spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK) | (goombaFlag >> 6),
+//                                           dx, 0, dz, o, MODEL_GOOMBA, bhvGoomba);
+// #endif
+//                 }
+//             }
 
-            o->oAction++;
-        }
-    } else if (o->oDistanceToMario > 4000.0f) {
-        // If mario is too far away, enter the unloaded action. The goombas
-        // will detect this and unload themselves
-        o->oAction = GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED;
-    }
-}
+//             o->oAction++;
+//         }
+//     } else if (o->oDistanceToMario > 4000.0f) {
+//         // If mario is too far away, enter the unloaded action. The goombas
+//         // will detect this and unload themselves
+//         o->oAction = GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED;
+//     }
+// }
 
 /**
  * Initialization function for goomba.
@@ -330,11 +330,11 @@ void bhv_goomba_update(void) {
 
     if (obj_update_standard_actions(o->oGoombaScale)) {
         // If this goomba has a spawner and mario moved away from the spawner, unload
-        if (o->parentObj->behavior == bhvGoombaTripletSpawner) {
-            if (o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
-                obj_mark_for_deletion(o);
-            }
-        }
+        // if (o->parentObj->behavior == bhvGoombaTripletSpawner) {
+        //     if (o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
+        //         obj_mark_for_deletion(o);
+        //     }
+        // }
 
         if (o->oBehParams2ndByte > 0) {
             cur_obj_scale(o->oGoombaScale);

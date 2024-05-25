@@ -6200,17 +6200,17 @@ void bhv_onoffblock(void) {
         case 1: //loop
             if (o->oBehParams2ndByte == 0) {
                 if (cmm_play_onoff) {
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_1];
+                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
                 } else {
                     load_object_collision_model();
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_2];
+                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
                 }
             } else {
                 if (cmm_play_onoff) {
                     load_object_collision_model();
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_2];
+                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
                 } else {
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_1];
+                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
                 }
             }
             break;
