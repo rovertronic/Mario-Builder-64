@@ -190,6 +190,7 @@ void bully_spawn_coin(void) {
 
 // offset home a little bit so stuff doesnt spawn on the very edge
 void bully_adjust_imbued_drop_location(void) {
+    if (o->oImbue == IMBUE_STAR) return;
     s16 angle = atan2s(o->oHomeZ - o->oPosZ, o->oHomeX - o->oPosX);
     o->oHomeX += 70.0f * sins(angle);
     o->oHomeZ += 70.0f * coss(angle);

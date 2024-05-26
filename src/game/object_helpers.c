@@ -2743,6 +2743,7 @@ void cur_obj_set_home_if_safe(void) {
     if (o->oFloorHeight < o->oPosY - 10.f) return;
     if (SURFACE_IS_UNSAFE(o->oFloorType)) return;
     if (o->oFloor->object != NULL) return;
+    if (o->oImbue == IMBUE_STAR) return;
 
     vec3f_copy(&o->oHomeVec,&o->oPosVec);
 }

@@ -6158,7 +6158,7 @@ void bhv_onoffswitch(void) {
             break;
         case 1: // switch up
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 1.0f ,0.1f);
-            if (gMarioObject->platform == o) {
+            if (gMarioObject->platform == o && !(gMarioState->action & MARIO_NO_PURPLE_SWITCH)) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_BUTTON_PRESS);
                 cmm_play_onoff = o->oBehParams2ndByte;
             }

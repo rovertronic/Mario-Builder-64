@@ -803,20 +803,12 @@ s32 act_riding_shell_air(struct MarioState *m) {
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, 0);
 
     bullet_bill_fly(m);
-
-    if (m->IsYoshi) {
-        set_mario_animation(m, MARIO_ANIM_SLIDE);
-    }
-    else
-    {
-        set_mario_animation(m, MARIO_ANIM_JUMP_RIDING_SHELL);
-    }
+    set_mario_animation(m, MARIO_ANIM_JUMP_RIDING_SHELL);
 
     update_air_without_turn(m);
 
     switch (perform_air_step(m, 0)) {
         case AIR_STEP_LANDED:
-            fluttertimer = 0;
             m->vel[1] = 0;
             bullet_fuel = 60;
             set_mario_action(m, ACT_RIDING_SHELL_GROUND, 1);
@@ -2178,24 +2170,6 @@ s32 act_special_triple_jump(struct MarioState *m) {
 }
 
 s32 check_common_airborne_cancels(struct MarioState *m) {
-    if (m->action & ACT_FLAG_RIDING_SHELL) {
-        if (m->pos[1] < m->waterLevel - 100) {
-            if (m->riddenObj != NULL) {
-                m->riddenObj->oInteractStatus = INT_STATUS_STOP_RIDING;
-                m->riddenObj = NULL;
-            }
-
-            m->usedObj = spawn_object(m->marioObj, MODEL_KOOPA_SHELL, bhvKoopaShellUnderwater);
-            m->usedObj->oFlags |= OBJ_FLAG_HOLDABLE;
-            mario_grab_used_object(m);
-            m->marioBodyState->grabPos = GRAB_POS_LIGHT_OBJ;
-            //m->pos[0] = nextPos[0];
-            //m->pos[1] = MIN(m->pos[1], waterLevel - 120);
-            //m->pos[2] = nextPos[2];
-            return set_mario_action(m, ACT_WATER_SHELL_SWIMMING, (u32)(s32)m->forwardVel);
-        }
-    }
-
     if (m->pos[1] < m->waterLevel - 100) {
         return set_water_plunge_action(m);
     }

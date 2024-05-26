@@ -375,17 +375,6 @@ void update_shell_speed(struct MarioState *m) {
     apply_slope_accel(m);
 }
 
-void update_yoshi_speed(struct MarioState *m) {
-    // f32 maxTargetSpeed; // unused
-    // f32 targetSpeed;    // unused
-
-    m->forwardVel = m->intendedMag*1.25f;;
-
-    m->faceAngle[1] = m->intendedYaw; //- approach_s32((s16)(m->intendedYaw - m->faceAngle[1]), 0, 0x800, 0x800);
-
-    apply_slope_accel(m);
-}
-
 s32 apply_slope_decel(struct MarioState *m, f32 decelCoef) {
     f32 decel;
     s32 stopped = FALSE;
@@ -1240,82 +1229,6 @@ s32 act_riding_shell_ground(struct MarioState *m) {
         attack_object(m->interactObj, 0x40);
     }
 
-    m->Yoshi_Flutter = FALSE;
-
-    if (m->input & INPUT_A_PRESSED) {
-        if (m->IsYoshi == FALSE) {
-            return set_mario_action(m, ACT_RIDING_SHELL_JUMP, 0);
-        }
-        else
-        {
-            m->vel[1] = 50.0f;
-            return set_mario_action(m, ACT_RIDING_SHELL_FALL, 0);
-        }
-    }
-
-    if (m->input & INPUT_Z_PRESSED) {
-        mario_stop_riding_object(m);
-        if (m->forwardVel < 24.0f) {
-            mario_set_forward_vel(m, 24.0f);
-        }
-
-        return set_mario_action(m, ACT_CROUCH_SLIDE, 0);
-    }
-
-    if ((m->floorHeight < m->waterLevel)&&(m->IsYoshi)) {
-        mario_stop_riding_object(m);
-        return set_mario_action(m, ACT_CROUCH_SLIDE, 0);
-    }
-
-    if (m->IsYoshi) {
-        update_yoshi_speed(m);
-    } else {
-        update_shell_speed(m);
-    }
-
-    if (m->IsYoshi) {
-        set_mario_animation(m, MARIO_ANIM_SLIDE);
-    } else {
-        set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_START_RIDING_SHELL : MARIO_ANIM_RIDING_SHELL);
-    }
-
-    switch (perform_ground_step(m)) {
-        case GROUND_STEP_LEFT_GROUND:
-            set_mario_action(m, ACT_RIDING_SHELL_FALL, 0);
-            break;
-
-        case GROUND_STEP_HIT_WALL:
-            if (m->IsYoshi == FALSE) {
-                mario_stop_riding_object(m);
-                play_sound(m->flags & METAL_SOUND_FLAG ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
-                        m->marioObj->header.gfx.cameraToObject);
-                m->particleFlags |= PARTICLE_VERTICAL_STAR;
-                set_mario_action(m, ACT_BACKWARD_GROUND_KB, 0);
-            }
-            break;
-    }
-
-    tilt_body_ground_shell(m, startYaw);
-
-    if (!m->IsYoshi) {
-        if (SURFACE_IS_BURNING(m->floor->type)) {
-            play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
-        } else {
-            play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend, m->marioObj->header.gfx.cameraToObject);
-        }
-    } else {
-        m->marioObj->header.gfx.pos[1] += 55.0f;
-    }
-
-
-    adjust_sound_for_speed(m);
-    reset_rumble_timers_slip();
-    return FALSE;
-}
-
-s32 act_riding_yoshi_ground(struct MarioState *m) {
-    /*06*/ s16 startYaw = m->faceAngle[1];
-
     if (m->input & INPUT_A_PRESSED) {
         return set_mario_action(m, ACT_RIDING_SHELL_JUMP, 0);
     }
@@ -1325,10 +1238,11 @@ s32 act_riding_yoshi_ground(struct MarioState *m) {
         if (m->forwardVel < 24.0f) {
             mario_set_forward_vel(m, 24.0f);
         }
-        return set_mario_action(m, ACT_BACKFLIP, 0);
+
+        return set_mario_action(m, ACT_CROUCH_SLIDE, 0);
     }
 
-    update_yoshi_speed(m);
+    update_shell_speed(m);
     set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_START_RIDING_SHELL : MARIO_ANIM_RIDING_SHELL);
 
     switch (perform_ground_step(m)) {
@@ -1338,25 +1252,23 @@ s32 act_riding_yoshi_ground(struct MarioState *m) {
 
         case GROUND_STEP_HIT_WALL:
             mario_stop_riding_object(m);
-            play_sound(m->flags & MARIO_METAL_CAP ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
-                       m->marioObj->header.gfx.cameraToObject);
+            play_sound(m->flags & METAL_SOUND_FLAG ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
+                    m->marioObj->header.gfx.cameraToObject);
             m->particleFlags |= PARTICLE_VERTICAL_STAR;
             set_mario_action(m, ACT_BACKWARD_GROUND_KB, 0);
             break;
     }
 
     tilt_body_ground_shell(m, startYaw);
+
     if (SURFACE_IS_BURNING(m->floor->type)) {
         play_sound(SOUND_MOVING_RIDING_SHELL_LAVA, m->marioObj->header.gfx.cameraToObject);
     } else {
-        play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend,
-                   m->marioObj->header.gfx.cameraToObject);
+        play_sound(SOUND_MOVING_TERRAIN_RIDING_SHELL + m->terrainSoundAddend, m->marioObj->header.gfx.cameraToObject);
     }
 
     adjust_sound_for_speed(m);
-#if ENABLE_RUMBLE
     reset_rumble_timers_slip();
-#endif
     return FALSE;
 }
 
@@ -2097,7 +2009,6 @@ s32 mario_execute_moving_action(struct MarioState *m) {
         case ACT_FINISH_TURNING_AROUND:    cancel = act_finish_turning_around(m);    break;
         case ACT_BRAKING:                  cancel = act_braking(m);                  break;
         case ACT_RIDING_SHELL_GROUND:      cancel = act_riding_shell_ground(m);      break;
-        case 255:                          cancel = act_riding_yoshi_ground(m);      break;
         case ACT_CRAWLING:                 cancel = act_crawling(m);                 break;
         case ACT_BURNING_GROUND:           cancel = act_burning_ground(m);           break;
         case ACT_DECELERATING:             cancel = act_decelerating(m);             break;
