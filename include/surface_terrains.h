@@ -232,7 +232,7 @@ enum SurfaceTypes {
 #define SURFACE_IS_BURNING(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_ICE) || ((cmd) == SURFACE_BURNING_BUBBLES))
 #define SURFACE_IS_BURNING_SMOKE(cmd) (((cmd) == SURFACE_BURNING) || ((cmd) == SURFACE_BURNING_BUBBLES))
 #define SURFACE_IS_VANISH_CAP(cmd) (((cmd) == SURFACE_VANISH_CAP_WALLS) || ((cmd) == SURFACE_HANGABLE_MESH) || ((cmd) == SURFACE_CRYSTAL) || ((cmd) == SURFACE_ICE))
-#define SURFACE_IS_HANGABLE(cmd) (((cmd) == SURFACE_HANGABLE_MESH))
+#define SURFACE_IS_HANGABLE(cmd) (((cmd) == SURFACE_HANGABLE_MESH) || ((cmd) == SURFACE_CONVEYOR))
 
 // From Surface 0x1B to 0x1E
 #define INSTANT_WARP_INDEX_START  0x00 // Equal and greater than Surface 0x1B
