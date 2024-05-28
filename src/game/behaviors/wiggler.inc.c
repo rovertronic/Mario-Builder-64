@@ -242,7 +242,7 @@ static void wiggler_act_walk(void) {
                 //  the wiggler to walk straight - past his usual radius
                 o->oWigglerWalkAwayFromWallTimer = random_linear_offset(30, 30);
             } else {
-                if (o->oHealth < 4) {
+                if (o->oHealth < 4 && o->oHealth > 1) {
                     o->oWigglerTargetYaw = o->oAngleToMario;
                 } else if (o->oWigglerTimeUntilRandomTurn != 0) {
                     o->oWigglerTimeUntilRandomTurn--;
