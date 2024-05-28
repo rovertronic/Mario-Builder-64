@@ -117,20 +117,32 @@ s32 cur_obj_was_attacked_not_by_mario(void) {
 
 void bhv_breakable_box_rf_loop(void) {
     obj_set_hitbox(o, &sBreakableBoxRfHitbox);
+    // doesnt update gfx pos automatically, so that the "shake" can be done without affecting position/collision
+    vec3_copy(o->header.gfx.pos, &o->oPosVec);
+    vec3_copy(o->header.gfx.angle, &o->oFaceAngleVec);
     if (o->oTimer == 0) {
         breakable_box_init();
         o->oNumLootCoins = 0;
+        o->oTimer = 15;
     }
     if (cur_obj_was_attacked_not_by_mario()) {
         obj_explode_and_spawn_coins(46.0f, COIN_TYPE_YELLOW);
-        create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
+        create_sound_spawner(SOUND_OBJ_POUNDING_LOUD);
         cur_obj_drop_imbued_object(128);
     } else if (cur_obj_was_attacked_or_ground_pounded()) {
         if (o->oTimer > 15) {
-            create_sound_spawner(SOUND_ACTION_SNUFFIT_BULLET_HIT_METAL);
+            create_sound_spawner(SOUND_OBJ_BULLY_METAL);
             o->oTimer = 1;
-            o->oIntangibleTimer = 0;
+            o->oIntangibleTimer = -1;
         }
+    }
+
+    if (o->oTimer < 10) {
+        o->header.gfx.pos[0] += random_float() * 6.f - 3.f;
+        o->header.gfx.pos[1] += random_float() * 6.f - 3.f;
+        o->header.gfx.pos[2] += random_float() * 6.f - 3.f;
+    } else {
+        o->oIntangibleTimer = 0;
     }
 
     if (gMarioState->interactObj == o) {
