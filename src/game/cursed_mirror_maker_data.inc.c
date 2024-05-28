@@ -2244,6 +2244,7 @@ char *cmm_bg_string_table[] = {
 #define CMM_BOUNDARY_OUTER_FLOOR   (1 << 1) // Has the fading outer floor
 #define CMM_BOUNDARY_INNER_WALLS   (1 << 2) // Has the inner walls going up to boundary height - has fading part if death plane
 #define CMM_BOUNDARY_OUTER_WALLS   (1 << 3) // Has fading outer walls extending downwards
+#define CMM_BOUNDARY_CEILING       (1 << 4) // Ceiling above the level
 
 u8 cmm_boundary_table[] = {
     0, // Void
@@ -2251,7 +2252,10 @@ u8 cmm_boundary_table[] = {
     CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_FLOOR | CMM_BOUNDARY_INNER_WALLS, // Valley
     CMM_BOUNDARY_OUTER_FLOOR | CMM_BOUNDARY_INNER_WALLS, // Chasm
     CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_OUTER_WALLS, // Plateau
+    CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_INNER_WALLS | CMM_BOUNDARY_CEILING, // Interior
 };
+
+#define AT_CEILING(y) ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) && ((y) == cmm_lopt_boundary_height-1))
 
 char *cmm_bound_string_table[] = {
     "Void",
@@ -2259,6 +2263,7 @@ char *cmm_bound_string_table[] = {
     "Valley",
     "Chasm",
     "Plateau",
+    "Interior",
 };
 
 //skybox table

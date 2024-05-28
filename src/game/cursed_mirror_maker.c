@@ -502,6 +502,9 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 
     s8 adjPos[3];
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
+
+    if (AT_CEILING(pos[1]) && (direction == CMM_DIRECTION_UP)) return TRUE;
+
     if (!coords_in_range(adjPos)) {
         if (direction == CMM_DIRECTION_UP) return FALSE;
         if (direction == CMM_DIRECTION_DOWN) {
@@ -907,6 +910,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     struct cmm_grid_obj *aboveTile = get_grid_tile(abovePos);
 
     if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    if (AT_CEILING(pos[1])) return FALSE;
     if (!coords_in_range(abovePos)) return TRUE;
 
     // Render extra decal for slopes if necessary
@@ -1066,10 +1070,16 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
                 }
                 connections[4] |= (1 << (updown + 1));
             }
-        } else if ((adjacentPos[1] == -1) && (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) { // Culling for bottom
-            for (u32 rot = 0; rot < 5; rot++) {
-                connections[rot] |= (1 << 2);
-            }
+        }
+    }
+    if ((pos[1] == 0) && (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) { // Culling for bottom
+        for (u32 rot = 0; rot < 5; rot++) {
+            connections[rot] |= (1 << 2);
+        }
+    }
+    if (AT_CEILING(pos[1])) { // Culling for top
+        for (u32 rot = 0; rot < 5; rot++) {
+            connections[rot] |= (1 << 1);
         }
     }
 }
@@ -1109,6 +1119,9 @@ void render_bars_top(s8 pos[3], u8 connections[5]) {
 // Find if specific tile of water is fullblock or shallow
 u32 is_water_fullblock(s8 pos[3]) {
     s8 abovePos[3];
+    if (AT_CEILING(pos[1])) {
+        if (MATERIAL(cmm_lopt_boundary_mat).type != MAT_CUTOUT) return TRUE;
+    }
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
     if (!coords_in_range(abovePos)) return FALSE;
     // Full block if above block is water
@@ -1140,6 +1153,9 @@ u32 is_water_fullblock(s8 pos[3]) {
 u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     s8 adjacentPos[3];
     vec3_sum(adjacentPos, pos, cullOffsetLUT[dir]);
+    if (AT_CEILING(pos[1])) {
+        if ((dir == CMM_DIRECTION_UP) && (MATERIAL(cmm_lopt_boundary_mat).type != MAT_CUTOUT)) return 0;
+    }
     struct cmm_grid_obj *adjTile = get_grid_tile(adjacentPos);
 
     if (!coords_in_range(adjacentPos)) {
@@ -1420,7 +1436,10 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u3
     find_vector_perpendicular_to_plane(normal, quad->vtx[0], quad->vtx[1], quad->vtx[2]);
     vec3_normalize(normal);
     s8 n[3];
-    n[0] = normal[0]*0x7F; n[1] = normal[1]*0x7F; n[2] = normal[2]*0x7F;
+    s32 normalMult = (cmm_render_flip_normals ? -0x7F : 0x7F);
+    n[0] = normal[0]*normalMult;
+    n[1] = normal[1]*normalMult;
+    n[2] = normal[2]*normalMult;
 
     s32 uScale = quad->uYScale ? (yHeight * 64) : cmm_grid_size*16;
     s32 vScale = quad->vYScale ? (yHeight * 64) : cmm_grid_size*16;
@@ -1435,7 +1454,7 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u3
         } else if (((fade == 1) && (quad->vtx[i][1] == 0)) || ((fade == 2) && (quad->vtx[i][1] == 1))) {
             alpha = 0;
         }
-        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1]*yHeight + y)*TILE_SIZE, quad->vtx[i][2]*cmm_grid_size*4,
+        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1]*yHeight*TILE_SIZE + y), quad->vtx[i][2]*cmm_grid_size*4,
             u, v, n[0], n[1], n[2], alpha);
     }
     if (cmm_render_flip_normals) {
@@ -1449,52 +1468,18 @@ void render_boundary_quad(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u3
     check_cached_tris();
 }
 
-// Uses sm64 units instead of mb64 tiles
-void render_boundary_quad_precise(struct cmm_boundary_quad *quad, s16 y, s16 yHeight, u32 fade) {
-    // Get normal
-    Vec3f normal;
-    find_vector_perpendicular_to_plane(normal, quad->vtx[0], quad->vtx[1], quad->vtx[2]);
-    vec3_normalize(normal);
-    s8 n[3];
-    n[0] = normal[0]*0x7F; n[1] = normal[1]*0x7F; n[2] = normal[2]*0x7F;
-
-    s32 uScale = quad->uYScale ? (yHeight * 64) : cmm_grid_size*16;
-    s32 vScale = quad->vYScale ? (yHeight * 64) : cmm_grid_size*16;
-    for (u32 i = 0; i < 4; i++) {
-        s16 u = (quad->u[i & 1])*uScale + cmm_uv_offset;
-        s16 v = (quad->v[i >> 1])*vScale + cmm_uv_offset;
-        if (quad->flipUvs) { s16 tmp = u; u = v; v = tmp;}
-        if (yHeight % 2) v += 512; // offset for odd number of blocks
-        u8 alpha = 255;
-        if ((ABS(quad->vtx[i][0]) > 32) || (ABS(quad->vtx[i][2]) > 32)) {
-            alpha = 0;
-        } else if (((fade == 1) && (quad->vtx[i][1] == 0)) || ((fade == 2) && (quad->vtx[i][1] == 1))) {
-            alpha = 0;
-        }
-        make_vertex(cmm_curr_vtx, i+cmm_num_vertices_cached, quad->vtx[i][0]*cmm_grid_size*4, (quad->vtx[i][1] + y), quad->vtx[i][2]*cmm_grid_size*4,
-            u, v, n[0], n[1], n[2], alpha);
-    }
-    if (cmm_render_flip_normals) {
-        cache_tri(0, 2, 1);
-        cache_tri(1, 2, 3);
-    } else {
-        cache_tri(0, 1, 2);
-        cache_tri(1, 3, 2);
-    }
-    cmm_num_vertices_cached += 4;
-    check_cached_tris();
-}
-
+// Takes a bottom and top in number of blocks
 void render_boundary(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {
     for (u32 i = 0; i < count; i++) {
-        render_boundary_quad(&quadList[i], yBottom, yTop - yBottom, fade);
+        render_boundary_quad(&quadList[i], yBottom * TILE_SIZE, yTop - yBottom, fade);
     }
     display_cached_tris();
 }
 
-void render_boundary_precise(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {
+// Takes a height in SM64 units, no verticality
+void render_boundary_precise(struct cmm_boundary_quad *quadList, u32 count, s16 yBottom, u32 fade) {
     for (u32 i = 0; i < count; i++) {
-        render_boundary_quad_precise(&quadList[i], yBottom, yTop - yBottom, fade);
+        render_boundary_quad(&quadList[i], yBottom, 0, fade);
     }
     display_cached_tris();
 }
@@ -1518,17 +1503,20 @@ void process_boundary(u32 processRenderMode) {
     mat = &TOPMAT(planeMat);
     sidemat = &MATERIAL(planeMat);
 
-    // Outer walls
+    // Outer walls (Plateau)
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
         u8 sidematType = sidemat->type;
         u8 showBackface = ((mat->type >= MAT_CUTOUT) && (sidemat->type <= MAT_CUTOUT)) || (sidemat->type == MAT_CUTOUT);
         cmm_render_flip_normals = TRUE;
-        if (showBackface) {
-            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-        }
+
         if (do_process(&sidematType, processRenderMode)) {
             set_render_mode( sidematType, FALSE);
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            if (showBackface) {
+                cmm_render_flip_normals = FALSE;
+                render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
+                cmm_render_flip_normals = TRUE;
+            }
             render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
 
             Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
@@ -1565,7 +1553,7 @@ void process_boundary(u32 processRenderMode) {
     // Inner walls
     if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
         u8 sidematType = sidemat->type;
-        u8 showBackface = ((mat->type >= MAT_CUTOUT) && (sidemat->type <= MAT_CUTOUT)) || (sidemat->type == MAT_CUTOUT);
+        u8 showBackface = (sidemat->type == MAT_CUTOUT);
         u32 renderWalls = TRUE; // Whether to render main solid walls
         u32 renderFade = FALSE; // Whether to render fade at bottom
         s32 bottomY = -32;
@@ -1582,7 +1570,8 @@ void process_boundary(u32 processRenderMode) {
         }
 
         Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
-        if (sidetex && HAS_TOPMAT(planeMat)) topY -= 1;
+        u32 renderTopDecal = sidetex && HAS_TOPMAT(planeMat) && !(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING);
+        if (renderTopDecal) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
             set_render_mode( sidematType, FALSE);
@@ -1594,7 +1583,7 @@ void process_boundary(u32 processRenderMode) {
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, 0);
             }
 
-            if (sidetex && HAS_TOPMAT(planeMat)) {
+            if (renderTopDecal) {
                 // Render rim of regular material before decal
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), topY, topY + 1, 0);
                 render_boundary_decal_edge(sidetex, topY, sidematType);
@@ -1652,6 +1641,24 @@ repeatBackface:
             gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], mat->gfx);
             render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
         }
+    }
+
+    // Ceiling
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) {
+        u8 sidematType = sidemat->type;
+        u8 showBackface = (sidemat->type == MAT_CUTOUT);
+        if (showBackface) {
+            gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
+        }
+        s32 y = cmm_lopt_boundary_height-32;
+        if (do_process(&sidematType, processRenderMode)) {
+            cmm_render_flip_normals = TRUE;
+            set_render_mode( sidematType, FALSE);
+            gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], sidemat->gfx);
+            render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), y, y, 0);
+            cmm_render_flip_normals = FALSE;
+        }
+        gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
     }
 }
 
@@ -1869,8 +1876,8 @@ void render_water_plane(void) {
         set_render_mode( MAT_TRANSPARENT, FALSE);
         gSPDisplayList(&cmm_curr_gfx[cmm_gfx_index++], WATER_TEX());
         gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
-        render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
-        render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, cmm_play_s16_water_level, 0);
+        render_boundary_precise(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_play_s16_water_level, 0);
+        render_boundary_precise(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), cmm_play_s16_water_level, 0);
         gSPSetGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         gDPPipeSync(&cmm_curr_gfx[cmm_gfx_index++]);
         gDPSetRenderMode(&cmm_curr_gfx[cmm_gfx_index++], G_RM_AA_ZB_XLU_INTER, G_RM_AA_ZB_XLU_INTER2);
@@ -2082,7 +2089,7 @@ void generate_terrain_collision(void) {
     cmm_building_collision = TRUE;
     cmm_curr_poly_vert_count = 4;
 
-    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : 80;
+    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : (cmm_grid_size + 16);
     cmm_curr_coltype = SURFACE_DEATH_PLANE;
     generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
 
@@ -2090,17 +2097,19 @@ void generate_terrain_collision(void) {
         cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, cmm_grid_size, FALSE);
     }
+    cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
+    if (MATERIAL(cmm_lopt_boundary_mat).type == MAT_TRANSPARENT) {
+        cmm_curr_coltype = SURFACE_DEFAULT;
+    }
     if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
-        cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
-        if (surf_has_no_cam_collision(cmm_curr_coltype)) {
-            cmm_curr_coltype = SURFACE_DEFAULT;
-        }
         s32 bottomY = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
         s32 topY = cmm_lopt_boundary_height-32;
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, cmm_grid_size, FALSE);
     } else if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
-        cmm_curr_coltype = MATERIAL(cmm_lopt_boundary_mat).col;
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -32, cmm_grid_size, TRUE);
+    }
+    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) {
+        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_lopt_boundary_height-32, cmm_lopt_boundary_height-32, cmm_grid_size, TRUE);
     }
 
     process_tiles(0);
