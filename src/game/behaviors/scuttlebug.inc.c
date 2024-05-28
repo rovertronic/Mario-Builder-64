@@ -375,7 +375,7 @@ void throw_hammer(void) {
 
     if (gMarioState->pos[1] > o->oPosY - 200.0f) { //do not throw hammers if mario is far below
         if (o->oAnimState == 0) {//hammer
-            hammer = spawn_object(o, 0xEC, bhvHammer);
+            hammer = spawn_object(o, MODEL_HAMMER, bhvHammer);
             hammer->oMoveAngleYaw = o->oFaceAngleYaw;
             hammer->oVelY = RandomMinMaxU16(30,50);
             hammer->oForwardVel = RandomMinMaxU16(20,50);
