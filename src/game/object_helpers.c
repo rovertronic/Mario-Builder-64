@@ -570,18 +570,8 @@ void obj_init_animation_with_sound(struct Object *obj, const struct Animation * 
     obj->oSoundStateID = animIndex;
 }
 
-void cur_obj_enable_rendering_and_become_tangible(struct Object *obj) {
-    obj->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
-    obj->oIntangibleTimer = 0;
-}
-
 void cur_obj_enable_rendering(void) {
     o->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
-}
-
-void cur_obj_disable_rendering_and_become_intangible(struct Object *obj) {
-    obj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
-    obj->oIntangibleTimer = -1;
 }
 
 void cur_obj_disable_rendering(void) {

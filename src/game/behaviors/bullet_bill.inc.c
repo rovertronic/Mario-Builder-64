@@ -17,11 +17,12 @@ static struct ObjectHitbox sBulletBillHitbox = {
 };
 
 void bhv_bullet_bill_init(void) {
+    o->oIntangibleTimer = -1;
     o->oBulletBillInitialMoveYaw = o->oMoveAngleYaw;
 }
 
 void bullet_bill_act_0(void) {
-    cur_obj_become_intangible();
+    o->oIntangibleTimer = -1;
     cur_obj_hide();
     o->oForwardVel = 0.0f;
     o->oMoveAngleYaw = o->oBulletBillInitialMoveYaw;
@@ -33,6 +34,7 @@ void bullet_bill_act_0(void) {
 }
 
 void bullet_bill_act_1(void) {
+    o->oIntangibleTimer = -1;
     s16 sp1E = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
     if (sp1E < 0x2000 && 400.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f) {
         cur_obj_unhide();
