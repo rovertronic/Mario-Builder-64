@@ -3096,7 +3096,33 @@ void sb_init(void) {
     }
 }
 
+// Keep cursor in bounds
+s32 snap_cursor(void) {
+    s32 gridmax = cmm_grid_min + cmm_grid_size - 1;
+    s32 gridymax = (cmm_curr_boundary & CMM_BOUNDARY_CEILING) ? cmm_lopt_boundary_height-1 : 63;
+    if (cmm_cursor_pos[0] < cmm_grid_min) {cmm_cursor_pos[0] = cmm_grid_min; return TRUE;}
+    if (cmm_cursor_pos[0] > gridmax) {cmm_cursor_pos[0] = gridmax; return TRUE;}
+    if (cmm_cursor_pos[2] < cmm_grid_min) {cmm_cursor_pos[2] = cmm_grid_min; return TRUE;}
+    if (cmm_cursor_pos[2] > gridmax) {cmm_cursor_pos[2] = gridmax; return TRUE;}
+    if (cmm_cursor_pos[1] < 0) {cmm_cursor_pos[1] = 0; return TRUE;}
+    if (cmm_cursor_pos[1] > gridymax) {cmm_cursor_pos[1] = gridymax; return TRUE;}
+    return FALSE;
+}
+
+// Wrap cursor to other side of level if out of bounds
+s32 wrap_cursor(void) {
+    s32 gridmax = cmm_grid_min + cmm_grid_size - 1;
+    s32 gridymax = (cmm_curr_boundary & CMM_BOUNDARY_CEILING) ? cmm_lopt_boundary_height-1 : 63;
+    if (cmm_cursor_pos[0] < cmm_grid_min) {cmm_cursor_pos[0] = gridmax; return TRUE;}
+    if (cmm_cursor_pos[0] > gridmax) {cmm_cursor_pos[0] = cmm_grid_min; return TRUE;}
+    if (cmm_cursor_pos[2] < cmm_grid_min) {cmm_cursor_pos[2] = gridmax; return TRUE;}
+    if (cmm_cursor_pos[2] > gridmax) {cmm_cursor_pos[2] = cmm_grid_min; return TRUE;}
+    if (cmm_cursor_pos[1] < 0) {cmm_cursor_pos[1] = gridymax; return TRUE;}
+    if (cmm_cursor_pos[1] > gridymax) {cmm_cursor_pos[1] = 0; return TRUE;}
+}
+
 u8 c_button_timer = 0;
+u8 cursor_wrap = FALSE;
 u32 main_cursor_logic(u32 joystick) {
     u8 cursorMoved = FALSE;
 
@@ -3145,9 +3171,12 @@ u32 main_cursor_logic(u32 joystick) {
     cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
 
     if (cursorMoved) {
-        cmm_cursor_pos[0] = ((cmm_cursor_pos[0] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
-        cmm_cursor_pos[2] = ((cmm_cursor_pos[2] - cmm_grid_min + cmm_grid_size) % cmm_grid_size) + cmm_grid_min;
-        cmm_cursor_pos[1]=(cmm_cursor_pos[1]+64)%64;
+        if (!cursor_wrap) {
+           if (snap_cursor()) cursor_wrap = TRUE;
+        } else {
+            wrap_cursor();
+            cursor_wrap = FALSE;
+        }
     }
 
     //camera zooming
