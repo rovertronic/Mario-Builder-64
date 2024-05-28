@@ -121,6 +121,7 @@ u8 cmm_render_culling_off = FALSE; // Used for drawing preview blocks in custom 
 u8 cmm_growth_render_type = 0;
 u8 cmm_curr_mat_has_topside = FALSE;
 u8 cmm_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
+u8 cmm_curr_boundary = 0;
 
 TerrainData cmm_curr_coltype = SURFACE_DEFAULT;
 
@@ -508,9 +509,9 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (!coords_in_range(adjPos)) {
         if (direction == CMM_DIRECTION_UP) return FALSE;
         if (direction == CMM_DIRECTION_DOWN) {
-            return (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) != 0;
+            return (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) != 0;
         }
-        return ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height));
+        return ((cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height));
     }
     struct cmm_grid_obj *adjTile = get_grid_tile(adjPos);
     s32 tileType = adjTile->type;
@@ -1024,7 +1025,7 @@ void check_bar_side_connections(s8 pos[3], u8 connections[4]) {
         struct cmm_grid_obj *adjTile = get_grid_tile(adjacentPos);
 
         if (!coords_in_range(adjacentPos)) {
-            if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && 
+            if ((cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS) && 
                 adjacentPos[1] < cmm_lopt_boundary_height) {
                 connections[rot] = 1;
             }
@@ -1072,7 +1073,7 @@ void check_bar_connections(s8 pos[3], u8 connections[5]) {
             }
         }
     }
-    if ((pos[1] == 0) && (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) { // Culling for bottom
+    if ((pos[1] == 0) && (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR)) { // Culling for bottom
         for (u32 rot = 0; rot < 5; rot++) {
             connections[rot] |= (1 << 2);
         }
@@ -1162,9 +1163,9 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
         if (dir == CMM_DIRECTION_UP) return 1;
         u32 type = isFullblock ? 2 : 1;
         if (dir == CMM_DIRECTION_DOWN) {
-            return (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? 0 : type;
+            return (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) ? 0 : type;
         }
-        return ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height)) ? 0 : type;
+        return ((cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS) && (pos[1] < cmm_lopt_boundary_height)) ? 0 : type;
     }
     if (adjTile->type == TILE_TYPE_CULL) return 0;
 
@@ -1504,7 +1505,7 @@ void process_boundary(u32 processRenderMode) {
     sidemat = &MATERIAL(planeMat);
 
     // Outer walls (Plateau)
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_OUTER_WALLS) {
         u8 sidematType = sidemat->type;
         u8 showBackface = ((mat->type >= MAT_CUTOUT) && (sidemat->type <= MAT_CUTOUT)) || (sidemat->type == MAT_CUTOUT);
         cmm_render_flip_normals = TRUE;
@@ -1541,7 +1542,7 @@ void process_boundary(u32 processRenderMode) {
     }
 
     // Main floor
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
             set_render_mode( matType, FALSE);
@@ -1551,7 +1552,7 @@ void process_boundary(u32 processRenderMode) {
     }
 
     // Inner walls
-    if ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS)) {
+    if ((cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS)) {
         u8 sidematType = sidemat->type;
         u8 showBackface = (sidemat->type == MAT_CUTOUT);
         u32 renderWalls = TRUE; // Whether to render main solid walls
@@ -1562,7 +1563,7 @@ void process_boundary(u32 processRenderMode) {
             gSPClearGeometryMode(&cmm_curr_gfx[cmm_gfx_index++], G_CULL_BACK);
         }
         
-        if (!(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR)) {
+        if (!(cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR)) {
             renderFade = TRUE;
             bottomY -= 1; // Make sure decal has a solid face to print on
         } else {
@@ -1570,7 +1571,7 @@ void process_boundary(u32 processRenderMode) {
         }
 
         Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
-        u32 renderTopDecal = sidetex && HAS_TOPMAT(planeMat) && !(cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING);
+        u32 renderTopDecal = sidetex && HAS_TOPMAT(planeMat) && !(cmm_curr_boundary & CMM_BOUNDARY_CEILING);
         if (renderTopDecal) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
@@ -1617,9 +1618,9 @@ repeatBackface:
     }
 
     // Outer floor
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_OUTER_FLOOR) {
         s32 y = -32;
-        if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
+        if (cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS) {
             y = cmm_lopt_boundary_height-32;
         }
         u32 topMatOpaque = (mat->type < MAT_CUTOUT);
@@ -1644,7 +1645,7 @@ repeatBackface:
     }
 
     // Ceiling
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_CEILING) {
         u8 sidematType = sidemat->type;
         u8 showBackface = (sidemat->type == MAT_CUTOUT);
         if (showBackface) {
@@ -1678,6 +1679,15 @@ void generate_terrain_gfx(void) {
     cmm_uv_offset = (cmm_lopt_theme == CMM_THEME_MC ? -32 : -16);
 
     retroland_filter_on();
+
+    cmm_curr_boundary = cmm_boundary_table[cmm_lopt_boundary];
+    if (cmm_lopt_boundary_height == 0) {
+        cmm_curr_boundary &= ~CMM_BOUNDARY_CEILING;
+        cmm_curr_boundary &= ~CMM_BOUNDARY_INNER_WALLS;
+    }
+    if ((cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) && !(cmm_curr_boundary & (CMM_BOUNDARY_INNER_WALLS | CMM_BOUNDARY_OUTER_WALLS))) {
+        cmm_curr_boundary |= CMM_BOUNDARY_OUTER_FLOOR;
+    }
 
     process_tiles(PROCESS_TILE_VPLEX);
     cmm_curr_poly_vert_count = 4;
@@ -2089,11 +2099,11 @@ void generate_terrain_collision(void) {
     cmm_building_collision = TRUE;
     cmm_curr_poly_vert_count = 4;
 
-    u32 deathsize = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : (cmm_grid_size + 16);
+    u32 deathsize = (cmm_curr_boundary & CMM_BOUNDARY_OUTER_FLOOR) ? cmm_grid_size : (cmm_grid_size + 16);
     cmm_curr_coltype = SURFACE_DEATH_PLANE;
     generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
 
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) {
         cmm_curr_coltype = TOPMAT(cmm_lopt_boundary_mat).col;
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, cmm_grid_size, FALSE);
     }
@@ -2101,14 +2111,14 @@ void generate_terrain_collision(void) {
     if (MATERIAL(cmm_lopt_boundary_mat).type == MAT_TRANSPARENT) {
         cmm_curr_coltype = SURFACE_DEFAULT;
     }
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_WALLS) {
-        s32 bottomY = (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
+    if (cmm_curr_boundary & CMM_BOUNDARY_INNER_WALLS) {
+        s32 bottomY = (cmm_curr_boundary & CMM_BOUNDARY_INNER_FLOOR) ? -32 : -40;
         s32 topY = cmm_lopt_boundary_height-32;
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, cmm_grid_size, FALSE);
-    } else if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_OUTER_WALLS) {
+    } else if (cmm_curr_boundary & CMM_BOUNDARY_OUTER_WALLS) {
         generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -32, cmm_grid_size, TRUE);
     }
-    if (cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) {
+    if (cmm_curr_boundary & CMM_BOUNDARY_CEILING) {
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), cmm_lopt_boundary_height-32, cmm_lopt_boundary_height-32, cmm_grid_size, TRUE);
     }
 

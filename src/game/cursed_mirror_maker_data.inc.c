@@ -2255,7 +2255,7 @@ u8 cmm_boundary_table[] = {
     CMM_BOUNDARY_INNER_FLOOR | CMM_BOUNDARY_INNER_WALLS | CMM_BOUNDARY_CEILING, // Interior
 };
 
-#define AT_CEILING(y) ((cmm_boundary_table[cmm_lopt_boundary] & CMM_BOUNDARY_CEILING) && ((y) == cmm_lopt_boundary_height-1))
+#define AT_CEILING(y) ((cmm_curr_boundary & CMM_BOUNDARY_CEILING) && ((y) == cmm_lopt_boundary_height-1))
 
 char *cmm_bound_string_table[] = {
     "Void",
