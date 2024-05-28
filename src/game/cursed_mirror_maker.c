@@ -261,8 +261,10 @@ s32 tile_sanity_check(void) {
         return FALSE;
     }
     if (cmm_vtx_total >= CMM_VTX_SIZE - 100) {
-        cmm_show_error_message("Vertex limit reached! (max 50,000)");
-        return FALSE;
+        if (cmm_id_selection != TILE_TYPE_CULL) {
+            cmm_show_error_message("Vertex limit reached! (max 50,000)");
+            return FALSE;
+        }
     }
     if (cmm_gfx_total >= CMM_GFX_SIZE - 100) {
         cmm_show_error_message("Graphics pool is full!");
@@ -1791,8 +1793,10 @@ void generate_terrain_gfx(void) {
         osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     }
 
-    if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
-        cmm_show_error_message("Create any more verts from deletion and you're cooked.");
+    if (cmm_vtx_total >= CMM_VTX_SIZE) {
+        cmm_show_error_message("CRITICAL WARNING: Vertex limit exceeded.");
+    } else if (cmm_vtx_total >= CMM_VTX_SIZE - 30) {
+        cmm_show_error_message("WARNING: Vertex limit is about to overflow.\nCreate any more vertices and you're cooked.");
     }
 };
 
@@ -2717,10 +2721,11 @@ char file_header_string[] = "MB64-v1.0";
 extern u16 sRenderedFramebuffer;
 #define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
 void save_level(void) {
-    s16 i;
-    s16 j;
-
     //bzero(&cmm_save, sizeof(cmm_save)); // should be safe to not need this right?
+    if (cmm_vtx_total >= CMM_VTX_SIZE) {
+        cmm_show_error_message("Save Failed - Vertex limit exceeded.");
+        return;
+    }
 
     //file header
     strncpy(cmm_save.file_header, file_header_string, 10);
@@ -2749,8 +2754,8 @@ void save_level(void) {
     cmm_save.secret = cmm_lopt_secret;
     cmm_save.game = cmm_lopt_game;
 
-    for (i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
-        for (j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
+    for (s32 i = 0; i < CMM_MAX_TRAJECTORIES; i++) {
+        for (s32 j = 0; j < CMM_TRAJECTORY_LENGTH; j++) {
             cmm_save.trajectories[i][j].t = cmm_trajectory_list[i][j][0];
             cmm_save.trajectories[i][j].x = POS_TO_GRID(cmm_trajectory_list[i][j][1]);
             cmm_save.trajectories[i][j].y = POS_TO_GRID(cmm_trajectory_list[i][j][2]);
@@ -2762,7 +2767,7 @@ void save_level(void) {
     if (cmm_prepare_level_screenshot) {
         u8 screenshot_failure = TRUE;
 
-        for (i=0;i<4096;i++) {
+        for (s32 i=0;i<4096;i++) {
             //take a "screenshot" of the level & burn in a painting frame
             if (cmm_painting_frame_1_rgba16[(i*2)+1]==0x00) {
                 //painting
