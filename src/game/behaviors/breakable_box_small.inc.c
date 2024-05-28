@@ -52,9 +52,16 @@ void small_breakable_box_act_move(void) {
     if ((collisionFlags & OBJ_COL_FLAG_HIT_WALL) && (ABS(o->oForwardVel) > 1.0f)) {
         spawn_mist_particles();
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 0.7f, 3);
-        obj_spawn_yellow_coins(o, 3);
+        if (!GET_BPARAM3(o->oBehParams)) {
+            obj_spawn_yellow_coins(o, 3);
+        }
         create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        o->oBreakableBoxSmallReleased = TRUE;
+        o->oBreakableBoxSmallFramesSinceReleased = 900 - (5 * 30); // respawn after 5 seconds
+        o->oIntangibleTimer = -1;
+        o->oAction = 1; // empty action
+        SET_BPARAM3(o->oBehParams, 1);
     }
 
     obj_check_floor_death(collisionFlags, sObjFloor);
@@ -66,6 +73,7 @@ void breakable_box_small_respawn(void) {
     newbox->oPosY = o->oHomeY;
     newbox->oPosZ = o->oHomeZ;
     newbox->oMoveAngleYaw = 0;
+    newbox->oBehParams = o->oBehParams;
     spawn_mist_at_obj(newbox);
     o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 }
@@ -74,7 +82,7 @@ void breakable_box_small_released_loop(void) {
     o->oBreakableBoxSmallFramesSinceReleased++;
 
     // Begin flashing
-    if (o->oBreakableBoxSmallFramesSinceReleased > 810) {
+    if (o->oBreakableBoxSmallFramesSinceReleased > 810 && o->oAction == 0) {
         COND_BIT((o->oBreakableBoxSmallFramesSinceReleased & 0x1), o->header.gfx.node.flags, GRAPH_RENDER_INVISIBLE);
     }
 
@@ -91,7 +99,9 @@ void breakable_box_small_idle_loop(void) {
             break;
 
         case OBJ_ACT_LAVA_DEATH:
-            obj_lava_death();
+            if (obj_lava_death()) {
+                breakable_box_small_respawn();
+            }
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
