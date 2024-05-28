@@ -30,6 +30,7 @@
 #include "puppycamold.h"
 #include "game/rovent.h"
 #include "save_file.h"
+#include "platform_displacement.h"
 #include "audio/external.h"
 
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
@@ -1932,7 +1933,7 @@ s32 cur_obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks) {
 }
 
 s32 cur_obj_is_mario_ground_pounding_platform(void) {
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         if (gMarioStates[0].action == ACT_GROUND_POUND_LAND) {
             return TRUE;
         }
@@ -2026,7 +2027,7 @@ void cur_obj_set_pos_to_home_with_debug(void) {
 }
 
 s32 cur_obj_is_mario_on_platform(void) {
-    return gMarioObject->platform == o;
+    return gMarioPlatform == o;
 }
 
 s32 cur_obj_shake_y_until(s32 cycles, s32 amount) {

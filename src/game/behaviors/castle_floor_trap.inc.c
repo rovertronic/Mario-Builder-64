@@ -1,7 +1,7 @@
 // castle_floor_trap.inc.c
 
 void bhv_floor_trap_in_castle_loop(void) {
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         o->parentObj->oInteractStatus |= INT_STATUS_TRAP_TURN;
     }
     o->oFaceAngleRoll = o->parentObj->oFaceAngleRoll;

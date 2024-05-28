@@ -15,7 +15,7 @@ f32 floating_platform_find_home_y(void) {
 }
 
 void floating_platform_act_move_to_home(void) {
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         f32 dx = gMarioObject->header.gfx.pos[0] - o->oPosX;
         f32 dz = gMarioObject->header.gfx.pos[2] - o->oPosZ;
         f32 cy = coss(-o->oMoveAngleYaw);

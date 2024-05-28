@@ -198,7 +198,7 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     }
 #endif
 
-    obj->rigidBody = NULL;
+    // obj->rigidBody = NULL;
     obj->bhvStackIndex = 0;
     obj->bhvDelayTimer = 0;
 
@@ -208,7 +208,7 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->hurtboxHeight = 0.0f;
     obj->hitboxDownOffset = 0.0f;
 
-    obj->platform = NULL;
+    // obj->platform = NULL;
     obj->collisionData = NULL;
     obj->oIntangibleTimer = -1;
     obj->oDamageOrCoinValue = 0;

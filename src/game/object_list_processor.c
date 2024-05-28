@@ -458,7 +458,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     gWDWWaterLevelChanging = FALSE;
     gMarioOnMerryGoRound = FALSE;
 
-    clear_mario_platform();
+    gMarioPlatform = NULL;
 
     if (gCurrAreaIndex == 2) {
         gCCMEnteredSlide |= 1;
@@ -483,7 +483,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
             object->oBehParams2ndByte = GET_BPARAM2(spawnInfo->behaviorArg);
 
             object->behavior = script;
-            object->rigidBody = NULL;
+            // object->rigidBody = NULL;
 
             // Record death/collection in the SpawnInfo
             object->respawnInfoType = RESPAWN_INFO_TYPE_NORMAL;

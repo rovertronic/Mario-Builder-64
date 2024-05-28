@@ -13,7 +13,7 @@ void bhv_bbh_tilting_trap_platform_loop(void) {
     // if statement, while immediately setting it over here.
     // This was done so that Mario leaving or getting on the platform
     // resets oTimer to 0.
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         o->oAction = BBH_TILTING_TRAP_PLATFORM_ACT_MARIO_ON;
     } else {
         o->oAction = BBH_TILTING_TRAP_PLATFORM_ACT_MARIO_OFF;

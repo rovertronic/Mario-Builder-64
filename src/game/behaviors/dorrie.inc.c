@@ -31,7 +31,7 @@ void dorrie_act_move(void) {
         o->oForwardVel = 0.0f;
         o->oDorrieYawVel = 0;
     } else {
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             targetYaw = gMarioObject->oFaceAngleYaw;
             targetSpeed = 10;
         } else {
@@ -63,7 +63,7 @@ void dorrie_act_lower_head(void) {
     if (cur_obj_init_anim_check_frame(DORRIE_ANIM_LOWER_HEAD, 35)) {
         cur_obj_reverse_animation();
 
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             if (o->oDorrieOffsetY == -17.0f && o->oDorrieForwardDistToMario > 780.0f
                 && set_mario_npc_dialog(MARIO_DIALOG_LOOK_UP) == MARIO_DIALOG_STATUS_START) {
                 dorrie_begin_head_raise(TRUE);
@@ -118,7 +118,7 @@ void bhv_dorrie_update(void) {
 
         o->oDorrieGroundPounded = cur_obj_is_mario_ground_pounding_platform();
 
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             maxOffsetY = -17.0f;
             if (o->oDorrieOffsetY >= 0.0f) {
                 if (o->oDorrieGroundPounded) {

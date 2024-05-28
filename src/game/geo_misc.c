@@ -140,7 +140,7 @@
 //         gSPEndDisplayList(displayListHead);
 
 //         curGraphNodeObject = (struct Object *) gCurGraphNodeObject;
-//         if (gMarioObject->platform == curGraphNodeObject) {
+//         if (gMarioPlatform == curGraphNodeObject) {
 //             gFlyingCarpetState = FLYING_CARPET_MOVING_WITH_MARIO;
 //         } else if (curGraphNodeObject->oForwardVel != 0.0f) {
 //             gFlyingCarpetState = FLYING_CARPET_MOVING_WITHOUT_MARIO;

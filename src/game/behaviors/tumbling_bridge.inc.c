@@ -18,7 +18,7 @@ struct TumblingBridgeParams sTumblingBridgeParams[] = {
 void bhv_tumbling_bridge_platform_loop(void) {
     switch (o->oAction) {
         case 0:
-            if (gMarioObject->platform == o) {
+            if (gMarioPlatform == o) {
                 o->oAction++;
                 o->oTumblingBridgeRollAccel = random_sign() * 0x80;
             }

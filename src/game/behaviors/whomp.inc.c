@@ -195,7 +195,7 @@ void king_whomp_on_ground(void) {
 
 void whomp_on_ground(void) {
     if (o->oSubAction == 0) {
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             if (cur_obj_is_mario_ground_pounding_platform()) {
                 o->oNumLootCoins = 5;
                 obj_spawn_loot_yellow_coins(o, 5, 20.0f);

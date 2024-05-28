@@ -9490,7 +9490,7 @@ const BehaviorScript bhvWoodPlat[] = {
 extern void bhv_breakable_box_rf_loop(void);
 const BehaviorScript bhvBreakableBoxRF[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_LONG(oFlags, (OBJ_FLAG_DONT_CALC_COLL_DIST)),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_DONT_CALC_COLL_DIST)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision),
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),

@@ -38,7 +38,7 @@ void bhv_purple_switch_loop(void) {
             cur_obj_set_model(MODEL_PURPLE_SWITCH);
             cur_obj_scale(1.28f);
             if (
-                gMarioObject->platform == o
+                gMarioPlatform == o
                 && !(gMarioStates[0].action & MARIO_NO_PURPLE_SWITCH)
                 && lateral_dist_between_objects(o, gMarioObject) < 127.5f
             ) {
@@ -181,7 +181,7 @@ void bhv_purple_switch_loop_vanilla(void) {
             cur_obj_set_model(MODEL_PURPLE_SWITCH);
             cur_obj_scale(1.28f);
             if (
-                gMarioObject->platform == o
+                gMarioPlatform == o
                 && !(gMarioStates[0].action & MARIO_NO_PURPLE_SWITCH)
                 && lateral_dist_between_objects(o, gMarioObject) < 127.5f
             ) {
@@ -212,7 +212,7 @@ void bhv_purple_switch_loop_vanilla(void) {
          */
         case PURPLE_SWITCH_ACT_TICKING:
             if (o->oBehParams2ndByte != 0) {
-                if (o->oBehParams2ndByte == 1 && gMarioObject->platform != o) {
+                if (o->oBehParams2ndByte == 1 && gMarioPlatform != o) {
                     o->oAction++;
                 } else {
                     if (o->oTimer > time) {

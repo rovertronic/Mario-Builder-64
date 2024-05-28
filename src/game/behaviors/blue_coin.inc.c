@@ -33,7 +33,7 @@ void bhv_hidden_blue_coin_loop(void) {
             }
 
 #ifdef BLUE_COIN_SWITCH_PREVIEW
-            if (gMarioObject->platform == blueCoinSwitch) {
+            if (gMarioPlatform == blueCoinSwitch) {
                 cur_obj_enable_rendering();
             } else {
                 cur_obj_disable_rendering();
@@ -78,13 +78,13 @@ void bhv_blue_coin_switch_loop(void) {
 
     u32 time = (save_file_get_badge_equip() & (1<<9)) ? 480 : 240;
 
-    if (gMarioObject->platform == NULL) gMarioState->onbluecoinswitch = FALSE;
+    if (gMarioPlatform == NULL) gMarioState->onbluecoinswitch = FALSE;
 
     switch (o->oAction) {
         case BLUE_COIN_SWITCH_ACT_IDLE:
             // If Mario is on the switch and has ground-pounded,
             // recede and get ready to start ticking.
-            if (gMarioObject->platform == o) {
+            if (gMarioPlatform == o) {
                 gMarioState->onbluecoinswitch = TRUE;
                 if (gMarioStates[0].action == ACT_GROUND_POUND_LAND) {
                     // Set to BLUE_COIN_SWITCH_ACT_RECEDING

@@ -139,7 +139,7 @@ void bhv_pushable_loop(void) {
 //         cur_obj_compute_vel_xz();
 //         object_step_without_floor_orient();
 
-//         if (gMarioObject->platform == o) {
+//         if (gMarioPlatform == o) {
 
 //             if (o->oAction == 1) {
 //                 super_cum_working(myhorse,1);

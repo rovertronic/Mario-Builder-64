@@ -27,7 +27,7 @@ void bhv_pyramid_elevator_loop(void) {
          * transition to the starting state.
          */
         case PYRAMID_ELEVATOR_IDLE:
-            if (gMarioObject->platform == o) {
+            if (gMarioPlatform == o) {
                 o->oAction = PYRAMID_ELEVATOR_START_MOVING;
             }
             break;

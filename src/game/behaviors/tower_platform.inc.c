@@ -9,7 +9,7 @@ void bhv_wf_solid_tower_platform_loop(void) {
 void bhv_wf_elevator_tower_platform_loop(void) {
     switch (o->oAction) {
         case 0:
-            if (gMarioObject->platform == o) {
+            if (gMarioPlatform == o) {
                 o->oAction++;
             }
             break;

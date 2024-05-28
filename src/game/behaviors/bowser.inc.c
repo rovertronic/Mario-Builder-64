@@ -1546,7 +1546,7 @@ void bowser_free_update(void) {
         }
     }
 
-    if (SURFACE_IS_BURNING(o->oFloorType) && o->oFloorHeight + 10.0f > o->oPosY && o->platform == NULL) {
+    if (SURFACE_IS_BURNING(o->oFloorType) && o->oFloorHeight + 10.0f > o->oPosY) {
         o->oAction = BOWSER_ACT_LAVA_DEATH;
     }
 

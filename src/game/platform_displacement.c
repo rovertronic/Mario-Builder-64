@@ -59,23 +59,19 @@ void update_mario_platform(void) {
     switch (awayFromFloor) {
         case 1:
             gMarioPlatform = NULL;
-            gMarioObject->platform = NULL;
             break;
 
         case 0:
             if (floor != NULL && floor->object != NULL) {
                 gMarioPlatform = floor->object;
-                gMarioObject->platform = floor->object;
 				if ((floor->object != sMarioDisplacementInfo.prevPlatform) || (gGlobalTimer != sMarioDisplacementInfo.prevTimer)) {
 					update_platform_displacement_info(&sMarioDisplacementInfo, gMarioState->pos, gMarioState->faceAngle[1], floor->object);
 				}
             } else {
                 gMarioPlatform = NULL;
-                gMarioObject->platform = NULL;
 
 				if (floor->object != NULL) {
 					gMarioPlatform = floor->object;
-					gMarioObject->platform = floor->object;
 					sMarioAmountDisplaced[1] = 0.0f;
 				}
             }
@@ -261,13 +257,10 @@ static void apply_mario_inertia(void) {
  * If Mario's platform is not null, apply platform displacement.
  */
 void apply_mario_platform_displacement(void) {
-    struct Object *platform;
-
-    platform = gMarioPlatform;
     if (!(gTimeStopState & TIME_STOP_ACTIVE) && gMarioObject != NULL) {
-		if (platform != NULL) {
-			if (!platform->oDontInertia) {
-				apply_platform_displacement(&sMarioDisplacementInfo, gMarioState->pos, &gMarioState->faceAngle[1], platform);
+		if (gMarioPlatform != NULL) {
+			if (!gMarioPlatform->oDontInertia) {
+				apply_platform_displacement(&sMarioDisplacementInfo, gMarioState->pos, &gMarioState->faceAngle[1], gMarioPlatform);
 				sShouldApplyInertia = TRUE;
 				sInertiaFirstFrame = TRUE;
 			}
@@ -278,12 +271,3 @@ void apply_mario_platform_displacement(void) {
 
     }
 }
-
-#ifndef VERSION_JP
-/**
- * Set Mario's platform to NULL.
- */
-void clear_mario_platform(void) {
-    gMarioPlatform = NULL;
-}
-#endif

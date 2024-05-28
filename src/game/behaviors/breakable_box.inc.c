@@ -104,22 +104,22 @@ void bhv_breakable_box_loop(void) {
 }
 
 s32 cur_obj_was_attacked_not_by_mario(void) {
-    s32 attacked = FALSE;
-
     if ((o->oInteractStatus & INT_STATUS_INTERACTED)
         && (o->oInteractStatus & INT_STATUS_WAS_ATTACKED)
         && (gMarioState->interactObj != o)) {
-        attacked = TRUE;
+        if (o->collidedObjs[0]->behavior == segmented_to_virtual(bhvBreakableBoxSmall)) {
+            return FALSE;
+        }
+        return TRUE;
     }
 
-    return attacked;
+    return FALSE;
 }
 
 void bhv_breakable_box_rf_loop(void) {
     obj_set_hitbox(o, &sBreakableBoxRfHitbox);
-    // doesnt update gfx pos automatically, so that the "shake" can be done without affecting position/collision
-    vec3_copy(o->header.gfx.pos, &o->oPosVec);
-    vec3_copy(o->header.gfx.angle, &o->oFaceAngleVec);
+    o->oDontInertia = TRUE;
+
     if (o->oTimer == 0) {
         breakable_box_init();
         o->oNumLootCoins = 0;
@@ -137,10 +137,11 @@ void bhv_breakable_box_rf_loop(void) {
         }
     }
 
+    vec3_copy(&o->oPosVec, &o->oHomeVec);
     if (o->oTimer < 10) {
-        o->header.gfx.pos[0] += random_float() * 6.f - 3.f;
-        o->header.gfx.pos[1] += random_float() * 6.f - 3.f;
-        o->header.gfx.pos[2] += random_float() * 6.f - 3.f;
+        o->oPosX += random_float() * 6.f - 3.f;
+        o->oPosY += random_float() * 6.f - 3.f;
+        o->oPosZ += random_float() * 6.f - 3.f;
     } else {
         o->oIntangibleTimer = 0;
     }

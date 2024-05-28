@@ -38,7 +38,7 @@
 // #endif
 //     Vec3f targetNormal;
 //     Mat4 *transform = &o->transform;
-//     s32 marioOnPlatform = (gMarioObject->platform == o);
+//     s32 marioOnPlatform = (gMarioPlatform == o);
 
 //     if (marioOnPlatform) {
 // #ifndef PLATFORM_DISPLACEMENT_2
@@ -142,7 +142,7 @@
 //     o->oDontInertia = TRUE;
 
 //         if (o->oAction == 0) {
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 1;
 //                 o->oTimer = 0;
 //                 }
@@ -213,7 +213,7 @@
 //             }
 
 //         if (o->oAction == 0) {
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 1;
 //                 }
 //             }
@@ -259,7 +259,7 @@
 //     o->oDontInertia = TRUE;
 
 //         if (o->oAction == 0) {
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 1;
 //                 play_sound(SOUND_GENERAL_OPEN_CHEST, o->header.gfx.cameraToObject);
 //                 }
@@ -293,7 +293,7 @@
 //             o->oAction = 1;
 //             }
 //         if (o->oAction == 1) {
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 2;
 //                 }
 //             }
@@ -304,7 +304,7 @@
 //                 o->oPosY = o->oHomeY;
 //                 o->oVelY = 0;
 //                 }
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oTimer = 0;
 //                 }
 //             if (o->oTimer > 60) {
@@ -449,7 +449,7 @@
 //             o->header.gfx.sharedChild = gLoadedGraphNodes[0xE4];
 //             o->oAnimState = 2;
 
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 time_off_snakeblock = 0;
 
 //                 o->header.gfx.scale[0] = 1;
@@ -2026,7 +2026,7 @@ void noteblock_function(void) {
 //         break;
 //         case 1://wait for mario
 //             load_object_collision_model();
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 2;
 //             }
 //         break;
@@ -2109,7 +2109,7 @@ void noteblock_function(void) {
 //         break;
 //         case 2://wait for mario
 //             if (o->oTimer > 60) {
-//                 if (gMarioObject->platform == o) {
+//                 if (gMarioPlatform == o) {
 //                     o->oAction = 1;
 //                     o->oTimer = 0;
 //                 }
@@ -2312,7 +2312,7 @@ void noteblock_function(void) {
 
 // void bhv_thwompform(void) {
 //     o->oAnimState = 0;
-//     if (gMarioObject->platform == o) {
+//     if (gMarioPlatform == o) {
 //         o->oAnimState = 1;
 //         o->oVelY = lerp(o->oVelY,-40.0f,0.1f);
 //     } else {
@@ -3050,7 +3050,7 @@ void bhv_thwomp_king_flame(void) {
 //             }
 //         break;
 //         case 1:
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 2;
 //                 run_event(event);
 //             }
@@ -3060,7 +3060,7 @@ void bhv_thwomp_king_flame(void) {
 //             }
 //         break;
 //         case 2:
-//             if (gMarioObject->platform != o) {
+//             if (gMarioPlatform != o) {
 //                 o->oAction = 1;
 //             }
 //             if (o->oHomeY-20.0f < o->oPosY) {
@@ -3240,7 +3240,7 @@ void bhv_thwomp_king_flame(void) {
 //             }
 //         break;
 //         case 4://platforms wait underlava
-//             if ((o->oTimer > 30)&&(gMarioObject->platform != NULL)) {
+//             if ((o->oTimer > 30)&&(gMarioPlatform != NULL)) {
 //                 o->oAction = 5;
 //             }
 //         break;
@@ -3292,7 +3292,7 @@ void bhv_thwomp_king_flame(void) {
 
 //     switch(o->oBehParams2ndByte) {
 //         case 0://starting tube
-//             if ((o->oAction == 0)&&(gMarioObject->platform == o)) {
+//             if ((o->oAction == 0)&&(gMarioPlatform == o)) {
 //                 gMarioState->usedObj = o;
 //                 level_trigger_warp(gMarioState, WARP_OP_TELEPORT);
 //                 o->oAction = 1;
@@ -3568,7 +3568,7 @@ void bhv_thwomp_king_flame(void) {
 //     struct Object *rock_delete;
 //     switch(o->oAction) {
 //         case 0:
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 1;
 //                 if (o->oBehParams2ndByte == 2) {
 
@@ -4277,7 +4277,7 @@ void bhv_Showrunner(void) {
 //                 fcart[i]->oPosZ = o->oPosZ + coss(-o->oFaceAnglePitch+(i*0x2000))*4500.0f;
 //                 fcart[i]->oPosY = o->oPosY + sins(-o->oFaceAnglePitch+(i*0x2000))*4500.0f;
 
-//                 if (gMarioObject->platform == fcart[i]) {
+//                 if (gMarioPlatform == fcart[i]) {
 //                     target_angle_speed = 0x60;
 //                 }
 //             }
@@ -4731,7 +4731,7 @@ void bhv_Showrunner(void) {
 // void bhv_rr_pyramid(void) {
 //     switch(o->oAction) {
 //         case 0:
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oAction = 1;
 //             }
 //         break;
@@ -4744,7 +4744,7 @@ void bhv_Showrunner(void) {
 //                 o->oFaceAnglePitch = 0x7FFF;
 //             }
 
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 o->oTimer = 0;
 //             }
 //             if (o->oTimer > 400) {
@@ -4758,7 +4758,7 @@ void bhv_Showrunner(void) {
 // void bhv_spinseed(void) {
 //     struct Object *staticobj;
 
-//     if (gMarioObject->platform == o) {
+//     if (gMarioPlatform == o) {
 //         o->oAngleVelYaw += 0x10;
 //         if (o->oAngleVelYaw > 0x200) {
 //             o->oAngleVelYaw = 0x200;
@@ -4777,7 +4777,7 @@ void bhv_Showrunner(void) {
 //         if (o->oBehParams2ndByte == 1) {
 //             switch(o->oAction) {
 //                 case 0:
-//                     if (gMarioObject->platform == o) {
+//                     if (gMarioPlatform == o) {
 //                         o->oAction = 1;
 //                         staticobj->oAction = 1;
 //                     }
@@ -4882,7 +4882,7 @@ void bhv_Showrunner(void) {
 //                 }
 //             }
 
-//             if (gMarioObject->platform == o) {
+//             if (gMarioPlatform == o) {
 //                 sin_speed = 0x1500;
 //             }
 
@@ -6158,7 +6158,7 @@ void bhv_onoffswitch(void) {
             break;
         case 1: // switch up
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 1.0f ,0.1f);
-            if (gMarioObject->platform == o && !(gMarioState->action & MARIO_NO_PURPLE_SWITCH)) {
+            if (gMarioPlatform == o && !(gMarioState->action & MARIO_NO_PURPLE_SWITCH)) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_BUTTON_PRESS);
                 cmm_play_onoff = o->oBehParams2ndByte;
             }

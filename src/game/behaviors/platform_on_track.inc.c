@@ -224,7 +224,7 @@ static void platform_on_track_act_init(void) {
  * Wait for mario to stand on the platform for 20 frames, then begin moving.
  */
 static void platform_on_track_act_wait_for_mario(void) {
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         if (o->oTimer > 20) {
             o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
             o->oForwardVel = 15.0f;
@@ -288,7 +288,7 @@ static void platform_on_track_act_move_along_track(void) {
         }
     }
 
-    if (gMarioObject->platform != o && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING)) {
+    if (gMarioPlatform != o && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING)) {
         platform_on_track_mario_not_on_platform();
     } else {
         o->oTimer = 0;
@@ -312,7 +312,7 @@ static void platform_on_track_act_pause_briefly(void) {
 static void platform_on_track_act_fall(void) {
     cur_obj_move_using_vel_and_gravity();
 
-    if (gMarioObject->platform != o) {
+    if (gMarioPlatform != o) {
         platform_on_track_mario_not_on_platform();
     } else {
         o->oTimer = 0;
@@ -337,7 +337,7 @@ static void platform_on_track_rock_ski_lift(void) {
     o->oFaceAngleRoll += (s32) o->oPlatformOnTrackSkiLiftRollVel;
 
     // Tilt away from the moving direction and toward mario
-    if (gMarioObject->platform == o) {
+    if (gMarioPlatform == o) {
         targetRoll = o->oForwardVel * sins(o->oMoveAngleYaw) * -50.0f
                      + (s32)(o->oDistanceToMario * sins(o->oAngleToMario - o->oFaceAngleYaw) * -4.0f);
     }

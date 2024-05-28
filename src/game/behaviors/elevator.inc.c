@@ -18,7 +18,7 @@ void elevator_starting_shake(void) {
 void elevator_act_0(void) {
     o->oVelY = 0;
     if (o->oElevatorType == 2) {
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             if (o->oPosY > o->oElevatorMidY) {
                 o->oAction = 2;
             } else {
@@ -27,12 +27,12 @@ void elevator_act_0(void) {
         }
     } else if (gMarioObject->oPosY > o->oElevatorMidY || o->oElevatorType == 1) {
         o->oPosY = o->oElevatorMaxY;
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             o->oAction = 2;
         }
     } else {
         o->oPosY = o->oElevatorMinY;
-        if (gMarioObject->platform == o) {
+        if (gMarioPlatform == o) {
             o->oAction = 1;
         }
     }

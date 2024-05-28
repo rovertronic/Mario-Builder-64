@@ -40,6 +40,7 @@
 #include "rovent.h"
 #include "ingame_menu.h"
 #include "cursed_mirror_maker.h"
+#include "platform_displacement.h"
 
 #include "src/buffers/framebuffers.h"
 //gFrameBuffer0
@@ -2579,7 +2580,7 @@ void init_mario(void) {
 
     mario_decay = 0;
 
-    gMarioObject->platform = NULL;
+    gMarioPlatform = NULL;
 
     gMarioState->onbluecoinswitch = FALSE;
     gMarioState->nearVendor = 0;

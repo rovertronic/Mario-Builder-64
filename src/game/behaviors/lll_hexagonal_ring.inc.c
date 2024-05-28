@@ -20,7 +20,7 @@ void hexagonal_ring_spawn_flames(void) {
 void bhv_lll_rotating_hexagonal_ring_loop(void) {
     switch (o->oAction) {
         case 0:
-            if (gMarioObject->platform == o) {
+            if (gMarioPlatform == o) {
                 o->oAction++;
             }
 
@@ -36,7 +36,7 @@ void bhv_lll_rotating_hexagonal_ring_loop(void) {
             break;
 
         case 2:
-            if (gMarioObject->platform != o) {
+            if (gMarioPlatform != o) {
                 o->oAction++;
             }
 
