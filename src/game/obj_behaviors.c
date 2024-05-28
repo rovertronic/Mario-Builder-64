@@ -325,6 +325,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
         f32 velm = (nxz / (nxz + sqr(floor_nY))) * netYAccel * 2;
+        if (o->oFloor->type == SURFACE_SWITCH) velm = 0.f; // hack to make switches not impede movement
         objVelX += floor_nX * velm;
         objVelZ += floor_nZ * velm;
     }
