@@ -401,6 +401,9 @@ s16 object_step(void) {
         f32 objZ = o->oPosZ;
 
         floorY = find_floor(objX, objY, objZ, &sObjFloor);
+        if (!sObjFloor) {
+            return OBJ_COL_FLAG_HIT_WALL;
+        }
 
         o->oFloor       = sObjFloor;
         o->oFloorHeight = floorY;
@@ -440,6 +443,12 @@ s16 object_step(void) {
     }
 
     floorY = find_floor(objX, objY, objZ, &sObjFloor);
+    if (!sObjFloor) {
+        o->oPosX -= objVelX;
+        o->oPosZ -= objVelZ;
+        o->oForwardVel = 0;
+        return OBJ_COL_FLAG_HIT_WALL;
+    }
 
     o->oFloor       = sObjFloor;
     o->oFloorHeight = floorY;
