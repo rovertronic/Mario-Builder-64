@@ -2236,7 +2236,7 @@ const BehaviorScript bhvBulletBill[] = {
     SCALE(/*Unused*/ 0, /*Field*/ 40),
     SET_INT(oIntangibleTimer, 0),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 105, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ 0, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
     CALL_NATIVE(bhv_bullet_bill_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_bullet_bill_loop),

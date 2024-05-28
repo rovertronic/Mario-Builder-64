@@ -55,7 +55,10 @@ void bullet_bill_act_2(void) {
             cur_obj_play_sound_2(SOUND_OBJ_POUNDING_CANNON);
             cur_obj_shake_screen(SHAKE_POS_SMALL);
         }
-        if (o->oTimer >= 50) {
+        spawn_object(o, MODEL_SMOKE, bhvWhitePuffSmoke);
+        o->oForwardVel = 30.0f;
+
+        if (o->oTimer >= 51) {
             // cursed code. pretend the bullet bill is close to the floor
             // when doing collision checks
             o->oPosY -= 127.f; // to ground
@@ -65,9 +68,6 @@ void bullet_bill_act_2(void) {
             o->oPosY += 127.f; // to original
             o->hitboxDownOffset += 127.f;
         }
-
-        spawn_object(o, MODEL_SMOKE, bhvWhitePuffSmoke);
-        o->oForwardVel = 30.0f;
 
         if (o->oDistanceToMario > 300.0f) {
             cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x100);
