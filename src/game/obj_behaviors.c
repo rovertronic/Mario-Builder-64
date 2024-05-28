@@ -177,7 +177,7 @@ s8 turn_obj_away_from_steep_floor(struct Surface *objFloor, f32 floorY, f32 objV
     floor_nZ = normal[2];
 
     // If the floor is steep and we are below it (i.e. walking into it), turn away from the floor.
-    if (floor_nY < 0.5f && floorY > o->oPosY) {
+    if (floor_nY < 0.5f && floorY > o->oPosY && o->oFloor->type != SURFACE_SWITCH) {
         objVelXCopy = objVelX;
         objVelZCopy = objVelZ;
         turn_obj_away_from_surface(objVelXCopy, objVelZCopy, floor_nX, floor_nY, floor_nZ, &objYawX, &objYawZ);
@@ -267,6 +267,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
         // Adds horizontal component of gravity for horizontal speed.
         f32 nxz = sqr(floor_nX) + sqr(floor_nZ);
         f32 vel = ((nxz) / (nxz + sqr(floor_nY))) * o->oGravity * 2;
+        if (o->oFloor->type == SURFACE_SWITCH) vel = 0.f; // hack to make switches not impede movement
         objVelX += floor_nX * vel;
         objVelZ += floor_nZ * vel;
 

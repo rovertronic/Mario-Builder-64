@@ -68,6 +68,9 @@ void bhv_bowling_ball_roll_loop(void) {
     if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
+    if (o->oForwardVel < 18.0f) {
+        o->oForwardVel = 18.0f;
+    }
 
     bowling_ball_set_hitbox();
 
