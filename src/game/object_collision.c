@@ -43,7 +43,7 @@ s32 detect_object_hitbox_overlap(struct Object *a, struct Object *b) {
         if (a->oInteractType == INTERACT_CRUSH) {
             b->collidedObjs[b->numCollidedObjs] = a;
             b->numCollidedObjs++;
-            obj_attacked_by_object(b);
+            obj_attacked_by_object(b, ATTACK_GROUND_POUND_OR_TWIRL);
             return TRUE;
         }
             

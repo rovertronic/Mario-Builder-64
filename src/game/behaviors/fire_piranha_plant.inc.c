@@ -129,8 +129,8 @@ void bhv_fire_piranha_plant_update(void) {
         cur_obj_become_intangible();
     }
 
-    if (!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE)) {
-        cur_obj_update_floor_and_walls();
-        cur_obj_move_standard(78);
-    }
+    COND_BIT(!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE), o->oFlags, OBJ_FLAG_ACTIVATES_FLOOR_SWITCH);
+
+    cur_obj_update_floor_and_walls();
+    cur_obj_move_standard(78);
 }

@@ -42,22 +42,9 @@ void mr_blizzard_spawn_white_particles(s8 count, s8 offsetY, s8 forwardVelBase, 
  * Mr. Blizzard initialization function.
  */
 void bhv_mr_blizzard_init(void) {
-    if (o->oBehParams2ndByte == MR_BLIZZARD_STYPE_JUMPING) {
-        // Jumping Mr. Blizzard.
-        o->oAction = MR_BLIZZARD_ACT_JUMP;
-        o->oMrBlizzardGraphYOffset = 24.0f;
-        o->oMrBlizzardTargetMoveYaw = o->oMoveAngleYaw;
-    } else {
-        // Cap wearing Mr. Blizzard from SL.
-        // if ((o->oBehParams2ndByte != MR_BLIZZARD_STYPE_NO_CAP)
-        //     && (save_file_get_flags() & SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
-        //     o->oAnimState = 1;
-        // }
-
-        // Mr. Blizzard starts under the floor holding nothing.
-        o->oMrBlizzardGraphYOffset = -200.0f;
-        o->oMrBlizzardHeldObj = NULL;
-    }
+    o->oMrBlizzardGraphYOffset = -200.0f;
+    o->oMrBlizzardHeldObj = NULL;
+    cur_obj_hide();
 }
 
 /**
@@ -357,10 +344,10 @@ void bhv_mr_blizzard_update(void) {
             break;
     }
 
-    if (!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE)) {
-        cur_obj_update_floor_and_walls();
-        cur_obj_move_standard(78);
-    }
+    COND_BIT(!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE), o->oFlags, OBJ_FLAG_ACTIVATES_FLOOR_SWITCH);
+
+    cur_obj_update_floor_and_walls();
+    cur_obj_move_standard(78);
 
     // Set roll angle equal to dizziness, making Mr. Blizzard
     // slowly fall over.
@@ -442,6 +429,10 @@ static void mr_blizzard_snowball_act_2(void) {
  * Snowball behavior loop.
  */
 void bhv_mr_blizzard_snowball(void) {
+    o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    if (o->parentObj->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    }
     switch (o->oAction) {
         case 0:
             mr_blizzard_snowball_act_0();

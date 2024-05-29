@@ -2403,7 +2403,7 @@ void cur_obj_shake_screen(s32 shake) {
     set_camera_shake_from_point(shake, o->oPosX, o->oPosY, o->oPosZ);
 }
 
-s32 obj_attacked_by_object(struct Object *obj) {
+s32 obj_attacked_by_object(struct Object *obj, s32 attackType) {
     if (obj == gMarioObject) return FALSE;
     switch (obj->oInteractType) {
         case INTERACT_BULLY:
@@ -2421,7 +2421,7 @@ s32 obj_attacked_by_object(struct Object *obj) {
             return FALSE;
     }
     obj->oInteractStatus |= INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
-                         | INT_STATUS_ATTACKED_BY_OBJECT + ATTACK_FAST_ATTACK;
+                         | INT_STATUS_ATTACKED_BY_OBJECT + attackType;
     return TRUE;
 }
 
@@ -2430,7 +2430,7 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
     for (s32 i = 0; i < obj->numCollidedObjs; i++) {
         struct Object *other = obj->collidedObjs[i];
 
-        if (obj_attacked_by_object(other)) {
+        if (obj_attacked_by_object(other, ATTACK_FAST_ATTACK)) {
             ret = TRUE;
         }
     }
