@@ -913,9 +913,8 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     struct cmm_grid_obj *tile = get_grid_tile(pos);
     struct cmm_grid_obj *aboveTile = get_grid_tile(abovePos);
 
-    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
-    if (AT_CEILING(pos[1])) return FALSE;
-    if (!coords_in_range(abovePos)) return TRUE;
+    // Other sides that don't care about the above block (e.g. bottom slab)
+    if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
 
     // Render extra decal for slopes if necessary
     // The side of the slope itself is unconditional and will always render
@@ -924,8 +923,9 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         return TRUE;
     }
 
-    // Other sides that don't care about the above block (e.g. bottom slab)
-    if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
+    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
+    if (AT_CEILING(pos[1])) return FALSE;
+    if (!coords_in_range(abovePos)) return TRUE;
 
     if (faceshape != CMM_FACESHAPE_EMPTY) {
         if ((grassType == CMM_GROWTH_HALF_SIDE) || (grassType == CMM_GROWTH_NORMAL_SIDE)) {
