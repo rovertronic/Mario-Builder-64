@@ -137,6 +137,7 @@ u64 cmm_play_stars_bitfield = 0;
 u32 cmm_play_badge_bitfield = 0;
 u8 cmm_play_onoff = FALSE;
 s16 cmm_play_s16_water_level = 0;
+u32 cmm_play_speedrun_timer = 0;
 
 //LEVEL SETTINGS INDEX
 u8 cmm_lopt_costume = 0;
@@ -244,6 +245,8 @@ void reset_play_state(void) {
     cmm_play_s16_water_level = -8220+(cmm_lopt_waterlevel*TILE_SIZE);
     gWDWWaterLevelChanging = FALSE;
     cmm_play_onoff = FALSE;
+
+    cmm_play_speedrun_timer = 0;
 }
 
 u8 cmm_grid_min = 0;
@@ -3121,6 +3124,8 @@ s32 wrap_cursor(void) {
     if (cmm_cursor_pos[1] > gridymax) {cmm_cursor_pos[1] = 0; return TRUE;}
 }
 
+extern void play_sound_cbutton_side(void);
+
 u8 c_button_timer = 0;
 u8 cursor_wrap = FALSE;
 u32 main_cursor_logic(u32 joystick) {
@@ -3164,9 +3169,15 @@ u32 main_cursor_logic(u32 joystick) {
     }
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         cmm_camera_rot_offset++;
+        if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
+        }
     }
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         cmm_camera_rot_offset--;
+        if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
+        }
     }
     cmm_camera_rot_offset = (cmm_camera_rot_offset % 4)+4;
 
@@ -3182,7 +3193,9 @@ u32 main_cursor_logic(u32 joystick) {
     //camera zooming
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         cmm_camera_zoom_index++;
-        play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
+        if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+        }
     }
     cmm_camera_zoom_index = (cmm_camera_zoom_index+5)%5;
 

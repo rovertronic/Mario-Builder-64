@@ -52,6 +52,7 @@ extern u64 cmm_play_stars_bitfield;
 extern u32 cmm_play_badge_bitfield;
 extern u8 cmm_play_onoff;
 extern s16 cmm_play_s16_water_level;
+extern u32 cmm_play_speedrun_timer;
 
 extern struct cmm_level_save_header cmm_save;
 extern TCHAR cmm_file_name[MAX_FILE_NAME_SIZE];

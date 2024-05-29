@@ -4674,15 +4674,19 @@ void play_camera_buzz_if_c_sideways(void) {
 }
 
 void play_sound_cbutton_up(void) {
-    play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gGlobalSoundSource);
+    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+        play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gGlobalSoundSource);
+    }
 }
 
 void play_sound_cbutton_down(void) {
-    play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, gGlobalSoundSource);
+    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+        play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, gGlobalSoundSource);
+    }
 }
 
 void play_sound_cbutton_side(void) {
-    if (cmm_mode == CMM_MODE_PLAY) {
+    if ((cmm_mode == CMM_MODE_PLAY) && (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND))) {
         play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
     }
 }

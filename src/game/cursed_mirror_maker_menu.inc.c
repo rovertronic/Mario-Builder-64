@@ -2329,6 +2329,8 @@ char * cmm_pause_menu_buttons_options[] = {
     "Show HUD",
     "Lakitu Collision",
     "HUD Layout",
+    "Camera Sounds",
+    "Speedrun Timer",
     "Return",
 };
 
@@ -2336,6 +2338,9 @@ void cmm_init_pause_menu(void) {
     cmm_menu_index = 0;
     cmm_pause_menu_state = 0;
 }
+
+#define RETURN_OPTION_INDEX 6
+#define RETURN_OPTION_INDEXP1 (RETURN_OPTION_INDEX+1)
 
 s32 draw_cmm_pause_menu(void) {
     u8 returnval = 0;
@@ -2432,7 +2437,7 @@ s32 draw_cmm_pause_menu(void) {
                         break;
                     case 2: // options
                         cmm_pause_menu_state = 1;
-                        cmm_menu_index = 4;
+                        cmm_menu_index = RETURN_OPTION_INDEX;
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     case 3: // badges (btcm only)
@@ -2451,23 +2456,22 @@ s32 draw_cmm_pause_menu(void) {
 
         case 1: //options
             xoff = (get_string_width_ascii(cmm_pause_menu_buttons_options[2])/2);
-            for (s32 i=0;i<5;i++) {
-                if (i!=4) {
-                    char * onoroff_string = ": OFF";
-                    if (i==3) {
-                        onoroff_string = ": Vanilla";
-                    }
-                    if (cmm_sram_configuration.option_flags & (1<<i)) {
-                        onoroff_string = ": ON";
-                        if (i==3) {
-                            onoroff_string = ": Modern";
-                        }
-                    }
-                    sprintf(stringBuf,"%s%s",cmm_pause_menu_buttons_options[i],onoroff_string);
-                    print_generic_string_ascii(160-xoff ,160-(i*16),stringBuf);
-                } else {
-                    print_generic_string_ascii(160-xoff ,160-(i*16),cmm_pause_menu_buttons_options[i]);
+            for (s32 i=0;i<RETURN_OPTION_INDEXP1;i++) {
+                char * onoroff_string = ": OFF";
+                if (i==3) {
+                    onoroff_string = ": Vanilla";
                 }
+                if (cmm_sram_configuration.option_flags & (1<<i)) {
+                    onoroff_string = ": ON";
+                    if (i==3) {
+                        onoroff_string = ": Modern";
+                    }
+                }
+                if (i==RETURN_OPTION_INDEX) {
+                    onoroff_string="";
+                }
+                sprintf(stringBuf,"%s%s",cmm_pause_menu_buttons_options[i],onoroff_string);
+                print_generic_string_ascii(160-xoff ,160-(i*16),stringBuf);
             }
 
             if (cmm_elta) {
@@ -2490,7 +2494,7 @@ s32 draw_cmm_pause_menu(void) {
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                     break;
             }
-            cmm_menu_index = (cmm_menu_index + 5) % 5;
+            cmm_menu_index = (cmm_menu_index + RETURN_OPTION_INDEXP1) % RETURN_OPTION_INDEXP1;
 
             if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
                 cmm_pause_menu_state = 0;
@@ -2501,7 +2505,7 @@ s32 draw_cmm_pause_menu(void) {
                 }
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
                 switch(cmm_menu_index) {
-                    case 4:
+                    case RETURN_OPTION_INDEX:
                         cmm_elta = FALSE;
                         cmm_pause_menu_state = 0;
                         cmm_menu_index = 0;

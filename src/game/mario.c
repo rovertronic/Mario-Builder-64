@@ -2164,6 +2164,11 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     // }
 
+    // Run the speedrun timer every frame while he's active
+    if (cmm_play_stars != cmm_play_stars_max) {
+        cmm_play_speedrun_timer++;
+    }
+
     //withering badge
     if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
         mario_decay++;
@@ -2201,11 +2206,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     posRecordIndex ++;
     vec3f_copy(gMarioState->posDelay, posRecord[posRecordIndex%60]);
     vec3f_copy(posRecord[posRecordIndex%60], gMarioState->pos);
-
-    //toggle minimap
-    if (gPlayer1Controller->buttonPressed & L_TRIG) {
-        gMarioState->Options ^= (1<<OPT_MINIMAP);
-    }
 
     //cheats
     if (gMarioState->Cheats & (1 << 2)) {//moon jump with A
