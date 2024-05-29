@@ -220,7 +220,7 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
     } else {
         *objFriction = o->oFriction;
         if (o->oFloor && o->oFloor->object) {
-            if (o->oFloor->object->behavior == segmented_to_virtual(bhvConveyorSlope)) {
+            if (obj_has_model(o->oFloor->object, MODEL_MAKER_CONVEYOR_SLOPE)) {
                 *objFriction = 0.f;
             }
         }

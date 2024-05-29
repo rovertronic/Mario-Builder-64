@@ -2838,6 +2838,8 @@ void save_level(void) {
     f_close(&mb64_file);
 }
 
+#include "mb64_compatibility.inc.c"
+
 void load_level(void) {
     s32 i;
     s32 j;
@@ -2911,6 +2913,11 @@ void load_level(void) {
         }
 
         bcopy(&mb64_default_custom,&mb64_save.custom_theme,sizeof(struct mb64_custom_theme));
+    }
+
+    if (mb64_save.version < MB64_VERSION) {
+        append_puppyprint_log("Performing upgrade from version %d", mb64_save.version);
+        mb64_perform_file_upgrade(&mb64_save, &mb64_tile_data, &mb64_object_data);
     }
 
     mb64_save.author[MAX_USERNAME_SIZE - 1] = '\0'; // memory leak prevention

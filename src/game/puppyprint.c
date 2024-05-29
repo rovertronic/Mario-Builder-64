@@ -517,11 +517,12 @@ void print_basic_profiling(void) {
             rdpTime, (rdpTime / 333));
     print_small_text_light(16, 22, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 
-    sprintf(textBytes, "Tiles: %d / %d\nGFX: %d / %d\nVTX: %d / %d\nObjects: %d / %d",
+    sprintf(textBytes, "Tiles: %d / %d\nGFX: %d / %d\nVTX: %d / %d\nObjects: %d / %d\nVersion: %d",
             mb64_tile_count, MB64_TILE_POOL_SIZE,
             mb64_gfx_total, MB64_GFX_SIZE,
             mb64_vtx_total, MB64_VTX_SIZE,
-            mb64_object_limit_count, MB64_MAX_OBJS);
+            mb64_object_limit_count, MB64_MAX_OBJS,
+            mb64_save.version);
     print_small_text(16, 80, textBytes, PRINT_TEXT_ALIGN_LEFT, PRINT_ALL, FONT_OUTLINE);
 }
 

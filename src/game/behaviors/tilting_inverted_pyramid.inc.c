@@ -6315,3 +6315,19 @@ void bhv_crush_handler(void) {
     }
     o->oInteractStatus = INT_NONE;
 }
+
+extern const Collision conveyor_collision[];
+extern const Collision conveyor_half_collision[];
+extern const Collision conveyor_slope_collision[];
+void bhv_conveyor_init(void) {
+    if (o->oBehParams2ndByte == 1) {
+        cur_obj_set_model(MODEL_MAKER_CONVEYOR);
+        o->collisionData = segmented_to_virtual(conveyor_collision);
+    } else if (o->oBehParams2ndByte == 2) {
+        cur_obj_set_model(MODEL_MAKER_CONVEYOR_SLOPE);
+        o->collisionData = segmented_to_virtual(conveyor_slope_collision);
+    } else {
+        o->collisionData = segmented_to_virtual(conveyor_half_collision);
+    }
+    load_object_static_model();
+}

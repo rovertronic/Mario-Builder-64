@@ -412,4 +412,14 @@ void df_toad(s32 context) {
 
 void df_ukiki(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, UKIKI_ANIM_SCREECH);
-} 
+}
+
+void df_conveyor(s32 context) {
+    if (context == MB64_DF_CONTEXT_INIT) {
+        if (o->oBehParams2ndByte == 1) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CONVEYOR];
+        } else if (o->oBehParams2ndByte == 2) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CONVEYOR_SLOPE];
+        }
+    }
+}

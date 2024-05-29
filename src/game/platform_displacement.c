@@ -162,7 +162,7 @@ void apply_conveyor_displacement() {
 	gMarioState->pos[0] += xVel;
 	gMarioState->pos[2] += zVel;
 	vec3f_set(sMarioAmountDisplaced, xVel, 0.f, zVel);
-	if (gMarioState->floor->object->behavior == segmented_to_virtual(bhvConveyorSlope)) {
+	if (obj_has_model(gMarioState->floor->object, MODEL_MAKER_CONVEYOR_SLOPE)) {
 		gMarioState->forwardVel = MAX(-15.f, gMarioState->forwardVel); // bljs are far too easy otherwise
 	}
 }

@@ -368,12 +368,6 @@ struct mb64_level_save_header {
     u64 pad;
 };
 
-struct mb64_level_uncompressed_save {
-    struct mb64_level_save_header header;
-    struct mb64_tile tiles[MB64_TILE_POOL_SIZE];
-    struct mb64_obj objects[MB64_MAX_OBJS];
-};
-
 #define SRAM_MAGIC 0x0203DD10 // Rovert's favorite binary ROM Address!
 
 struct mb64_sram_config {
