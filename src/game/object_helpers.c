@@ -783,6 +783,7 @@ s32 count_red_coins(void) {
     
     count += count_imbued_red_coins(OBJ_LIST_GENACTOR);
     count += count_imbued_red_coins(OBJ_LIST_SURFACE);
+    count += count_imbued_red_coins(OBJ_LIST_POLELIKE);
     return count;
 }
 
@@ -2076,7 +2077,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
+            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
                 if (o->oNumLootCoins > 0) {
                     gMarioState->DeadRexes ++;
                 }
@@ -2402,29 +2403,34 @@ void cur_obj_shake_screen(s32 shake) {
     set_camera_shake_from_point(shake, o->oPosX, o->oPosY, o->oPosZ);
 }
 
+s32 obj_attacked_by_object(struct Object *obj) {
+    if (obj == gMarioObject) return FALSE;
+    switch (obj->oInteractType) {
+        case INTERACT_BULLY:
+        case INTERACT_HIT_FROM_BELOW:
+        case INTERACT_BOUNCE_TOP:
+        case INTERACT_BREAKABLE:
+            break;
+        case INTERACT_GRABBABLE:
+            if (obj->behavior != segmented_to_virtual(bhvBobomb) &&
+                obj->behavior != segmented_to_virtual(bhvBowser)) {
+                return FALSE;
+            }
+            break;
+        default:
+            return FALSE;
+    }
+    obj->oInteractStatus |= INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
+                         | INT_STATUS_ATTACKED_BY_OBJECT + ATTACK_FAST_ATTACK;
+    return TRUE;
+}
+
 s32 obj_attack_collided_from_other_object(struct Object *obj) {
     s32 ret = FALSE;
     for (s32 i = 0; i < obj->numCollidedObjs; i++) {
         struct Object *other = obj->collidedObjs[i];
 
-        if (other != gMarioObject) {
-            switch (other->oInteractType) {
-                case INTERACT_BULLY:
-                case INTERACT_HIT_FROM_BELOW:
-                case INTERACT_BOUNCE_TOP:
-                case INTERACT_BREAKABLE:
-                    break;
-                case INTERACT_GRABBABLE:
-                    if (other->behavior != segmented_to_virtual(bhvBobomb) &&
-                        other->behavior != segmented_to_virtual(bhvBowser)) {
-                        continue;
-                    }
-                    break;
-                default:
-                    continue;
-            }
-            other->oInteractStatus |= INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
-                                      | INT_STATUS_TOUCHED_BOB_OMB + ATTACK_FAST_ATTACK;
+        if (obj_attacked_by_object(other)) {
             ret = TRUE;
         }
     }

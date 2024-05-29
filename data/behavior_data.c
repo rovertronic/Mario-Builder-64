@@ -1288,15 +1288,12 @@ const BehaviorScript bhvTriangleParticleSpawner[] = {
 
 extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvGrindel[] = {
-    BEGIN(OBJ_LIST_SURFACE),
+    BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_COLLISION_DATA(ssl_seg7_collision_grindel),
     SET_HOME(),
-    CALL_NATIVE(obj_add_self_to_physics_list),
-    DELAY(1),
-    DROP_TO_FLOOR(),
+    SET_INT(oAction, 1),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_HIGH),
-    ADD_FLOAT(oPosY, 1),
     CALL_NATIVE(bhv_grindel_thwomp_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
@@ -1319,14 +1316,11 @@ const BehaviorScript bhvGrindel[] = {
 // };
 
 const BehaviorScript bhvThwomp[] = {
-    BEGIN(OBJ_LIST_SURFACE),
+    BEGIN(OBJ_LIST_POLELIKE),
     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B7D0),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_HOME(),
-    CALL_NATIVE(obj_add_self_to_physics_list),
-    DELAY(1),
-    DROP_TO_FLOOR(),
-    ADD_FLOAT(oPosY, 1),
+    SET_INT(oAction, 1),
     CALL_NATIVE(bhv_grindel_thwomp_init),
     SCALE(/*Unused*/ 0, /*Field*/ 150),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_HIGH),
@@ -2893,9 +2887,6 @@ const BehaviorScript bhvPiranhaPlant[] = {
     SET_INT(oIntangibleTimer,   0),
     SET_INT(oDamageOrCoinValue, 3),
     SET_INT(oNumLootCoins,      5),
-    CALL_NATIVE(obj_add_self_to_physics_list),
-    DELAY(1),
-    DROP_TO_FLOOR(),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 70, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SPAWN_CHILD(/*Model*/ MODEL_BUBBLE, /*Behavior*/ bhvPiranhaPlantBubble),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
@@ -3831,7 +3822,7 @@ const BehaviorScript bhvScuttlebugSpawn[] = {
 
 extern void whomp_real_init(void);
 const BehaviorScript bhvWhompKingBoss[] = {
-    BEGIN(OBJ_LIST_SURFACE),
+    BEGIN(OBJ_LIST_POLELIKE),
     SET_INT(oBehParams2ndByte, WHOMP_BP_KING),
     SET_INT(oHealth, 3),
     SET_HOME(),
@@ -3841,7 +3832,7 @@ const BehaviorScript bhvWhompKingBoss[] = {
 };
 
 const BehaviorScript bhvSmallWhomp[] = {
-    BEGIN(OBJ_LIST_SURFACE),
+    BEGIN(OBJ_LIST_POLELIKE),
     SET_INT(oNumLootCoins, 5),
     SET_FLOAT(oDrawingDistance, CMM_DRAWDIST_LOW),
     // Whomp - common:
@@ -6778,9 +6769,6 @@ const BehaviorScript bhvTrackBall[] = {
 const BehaviorScript bhvMrBlizzard[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
-    CALL_NATIVE(obj_add_self_to_physics_list),
-    DELAY(1),
-    DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, snowman_seg5_anims_0500D118),
     ANIMATE(MR_BLIZZARD_ANIM_SPAWN_SNOWBALL),
     SET_HOME(),
@@ -7007,9 +6995,6 @@ const BehaviorScript bhvRecoveryHeart[] = {
 const BehaviorScript bhvFirePiranhaPlant[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    CALL_NATIVE(obj_add_self_to_physics_list),
-    DELAY(1),
-    DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, piranha_plant_seg6_anims_0601C31C),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     ANIMATE(FIRE_PIRANHA_PLANT_ANIM_SHRINK),
@@ -9503,7 +9488,7 @@ extern void bhv_crush_handler(void);
 const BehaviorScript bhvCrushHandler[] = {
     BEGIN(OBJ_LIST_DESTRUCTIVE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO),
-    SET_INTERACT_TYPE(INTERACT_NONE),
+    SET_INTERACT_TYPE(INTERACT_CRUSH),
     SET_HITBOX(/*Radius*/ 200, /*Height*/ 160),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),

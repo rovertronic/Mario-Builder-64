@@ -20,7 +20,7 @@ void opened_cannon_act_idle(void) { // act 0
         cur_obj_become_tangible();
         cur_obj_enable_rendering();
         if (o->oInteractStatus & INT_STATUS_INTERACTED
-         && (!(o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB))) { // bob-omb explodes when it gets into a cannon
+         && (!(o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT))) { // bob-omb explodes when it gets into a cannon
             o->oAction = 4;
             o->oCannonIsActive = TRUE;
             o->oCannonTimeSinceActivated = 1;

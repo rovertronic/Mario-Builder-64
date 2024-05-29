@@ -15,18 +15,6 @@ struct ObjectHitbox sBreakableBoxHitbox = {
     /* hurtboxHeight:     */ /*200,*/ 256,
 };
 
-struct ObjectHitbox sBreakableBoxRfHitbox = {
-    /* interactType:      */ INTERACT_BREAKABLE,
-    /* downOffset:        */  20,
-    /* damageOrCoinValue: */   0,
-    /* health:            */   1,
-    /* numLootCoins:      */   0,
-    /* radius:            */ /*150,*/ 192,
-    /* height:            */ /*200,*/ 300,
-    /* hurtboxRadius:     */ /*150,*/ 192,
-    /* hurtboxHeight:     */ /*200,*/ 300,
-};
-
 void breakable_box_init(void) {
     o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
@@ -117,7 +105,7 @@ s32 cur_obj_was_attacked_not_by_mario(void) {
 }
 
 void bhv_breakable_box_rf_loop(void) {
-    obj_set_hitbox(o, &sBreakableBoxRfHitbox);
+    obj_set_hitbox(o, &sBreakableBoxHitbox);
     o->oDontInertia = TRUE;
 
     if (o->oTimer == 0) {

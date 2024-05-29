@@ -304,7 +304,7 @@ static void floomba_act_startup(void) {
  * mario.
  */
 void huge_goomba_weakly_attacked(void) {
-    if (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB) {
+    if (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) {
         o->oNumLootCoins = -1;
         obj_die_if_health_non_positive();
         return;

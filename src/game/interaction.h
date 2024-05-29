@@ -13,7 +13,7 @@ enum ObjInteractTypes {
     INTERACT_DAMAGE               = /* 0x00000008 */ (1 <<  3),
     INTERACT_COIN                 = /* 0x00000010 */ (1 <<  4),
     INTERACT_CAP                  = /* 0x00000020 */ (1 <<  5),
-    //INTERACT_POLE                 = /* 0x00000040 */ (1 <<  6),
+    INTERACT_CRUSH                = /* 0x00000040 */ (1 <<  6),
     INTERACT_KOOPA                = /* 0x00000080 */ (1 <<  7),
     INTERACT_SPINY_WALKING        = /* 0x00000100 */ (1 <<  8),
     INTERACT_BREAKABLE            = /* 0x00000200 */ (1 <<  9),
@@ -103,7 +103,7 @@ enum InteractStatus {
     INT_STATUS_TRAP_TURN            = (1 << 20), /* 0x00100000 */
     INT_STATUS_HIT_MINE             = (1 << 21), /* 0x00200000 */
     INT_STATUS_STOP_RIDING          = (1 << 22), /* 0x00400000 */
-    INT_STATUS_TOUCHED_BOB_OMB      = (1 << 23), /* 0x00800000 */
+    INT_STATUS_ATTACKED_BY_OBJECT   = (1 << 23), /* 0x00800000 */
 
     INT_STATUS_ATTACK_MASK          =               0x000000FF
 };

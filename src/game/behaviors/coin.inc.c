@@ -51,7 +51,7 @@ s16 cock_hard_resevoir[][2] = { {-200, 0} , {200, 0}, {0, 200}, {0, -200} , {-10
 
 s32 bhv_coin_sparkles_init(void) {
     if (o->oInteractStatus & INT_STATUS_INTERACTED
-        && !(o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
+        && !(o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
         spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
         obj_mark_for_deletion(o);
         return TRUE;

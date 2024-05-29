@@ -2,34 +2,38 @@
 #define oHomeY2 oHomeX
 
 void grindel_thwomp_act_on_ground(void) {
-    o->oPosY = o->oHomeY2;
-
-    if (o->oTimer == 0) {
-        o->oExtraVariable1 = 5.f + 20.0f;
+    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
+        o->oPosY = o->oFloorHeight;
     }
-    if (o->oTimer > o->oExtraVariable1) {
+
+    if (o->oTimer > 25) {
         o->oAction = GRINDEL_THWOMP_ACT_RISING;
     }
 }
 
 void grindel_thwomp_act_falling(void) {
     o->prevObj->oTimer = 0;
-    vec3_copy(&o->prevObj->oPosVec, &o->oPosVec);
-    o->prevObj->oPosY -= 100.f;
+    o->prevObj->oPosY = o->oPosY - 50.f;
     if (o->oVelY > -80.0f) { //terminal velocity
         o->oVelY += -4.0f;
     }
     o->oPosY += o->oVelY;
-    if (o->oPosY < o->oHomeY2) {
-        o->oPosY = o->oHomeY2;
+    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    if (o->oPosY < o->oFloorHeight) {
+        o->oPosY = o->oFloorHeight;
         o->oVelY = 0.0f;
         o->oAction = GRINDEL_THWOMP_ACT_LAND;
     }
 }
 
 void grindel_thwomp_act_land(void) {
-    o->oPosY = o->oHomeY2;
-    if (o->oTimer == 0 && o->oDistanceToMario < 1500.0f) {
+    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
+        o->oPosY = o->oFloorHeight;
+    }
+    o->prevObj->oPosY = o->oPosY - 50.f;
+    if (o->oTimer == 0 && o->oDistanceToMario < 3000.0f) {
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         cur_obj_play_sound_2(SOUND_OBJ_THWOMP);
     }
@@ -39,10 +43,7 @@ void grindel_thwomp_act_land(void) {
 }
 
 void grindel_thwomp_act_floating(void) {
-    if (o->oTimer == 0) {
-        o->oExtraVariable1 = 15.f + 10.0f;
-    }
-    if (o->oTimer > o->oExtraVariable1) {
+    if (o->oTimer > 25) {
         o->oAction = GRINDEL_THWOMP_ACT_FALLING;
         o->prevObj = spawn_object(o,MODEL_NONE,bhvCrushHandler);
     }
@@ -66,8 +67,7 @@ ObjActionFunc sGrindelThwompActions[] = {
 };
 
 void bhv_grindel_thwomp_init(void) {
-    o->oHomeY2 = o->oPosY;
-
+    obj_add_self_to_physics_list();
     if (cur_obj_has_model(MODEL_MAKER_GRINDEL)) {
         o->oFaceAngleYaw += 0x4000;
         o->oMoveAngleYaw += 0x4000;

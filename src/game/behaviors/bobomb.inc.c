@@ -54,7 +54,7 @@ void bobomb_check_interactions(void) {
             o->oAction = BOBOMB_ACT_LAUNCHED;
         }
 
-        if (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB) {
+        if (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) {
             o->oAction = BOBOMB_ACT_EXPLODE;
         }
 

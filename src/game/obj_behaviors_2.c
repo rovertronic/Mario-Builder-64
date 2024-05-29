@@ -496,7 +496,7 @@ UNUSED static void obj_unused_die(void) {
 }
 
 static void obj_set_knockback_action(s32 attackType) {
-    if (o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB) {
+    if (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) {
         o->oAction = OBJ_ACT_HORIZONTAL_KNOCKBACK;
         o->oForwardVel = 50.0f;
         o->oVelY = 30.0f;

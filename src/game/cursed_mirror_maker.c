@@ -912,6 +912,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
     struct cmm_grid_obj *tile = get_grid_tile(pos);
     struct cmm_grid_obj *aboveTile = get_grid_tile(abovePos);
+    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
 
     // Other sides that don't care about the above block (e.g. bottom slab)
     if (grassType == CMM_GROWTH_UNCONDITIONAL) return TRUE;
@@ -923,7 +924,6 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         return TRUE;
     }
 
-    if (should_cull(pos, direction, faceshape, rot)) return FALSE;
     if (AT_CEILING(pos[1])) return FALSE;
     if (!coords_in_range(abovePos)) return TRUE;
 
