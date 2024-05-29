@@ -81,66 +81,28 @@ u8 string_runoff(s32 x, char *str) {
     return FALSE;
 }
 
-void print_maker_string_ascii(s32 x, s32 y, char *str, s32 highlight) {
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-    print_generic_string_ascii(x-1, y-1, (u8 *)str);
-    if (cmm_greyed_text) highlight += 2;
-    switch(highlight) {
-        case 0:
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        break;
-        case 1:
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, 255);
-        break;
-        case 2:
-            gDPSetEnvColor(gDisplayListHead++, 150, 150, 150, 255);
-        break;
-        case 3:
-            gDPSetEnvColor(gDisplayListHead++, 150, 150, 0, 255);
-        break;
-        case 4:
-            gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, 255);
-        break;
-    }
-    print_generic_string_ascii(x, y, (u8 *)str);
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-}
-
-void print_maker_string_ascii_alpha(s32 x, s32 y, char *str, s32 highlight, s32 alpha) {
+void print_maker_string_ascii_alpha(s32 x, s32 y, char *str, s32 color, s32 alpha) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
     print_generic_string_ascii(x-1, y-1, (u8 *)str);
-    if (cmm_greyed_text) highlight += 2;
-    switch(highlight) {
-        case 0:
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, alpha);
-        break;
-        case 1:
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 0, alpha);
-        break;
-        case 2:
-            gDPSetEnvColor(gDisplayListHead++, 150, 150, 150, alpha);
-        break;
-        case 3:
-            gDPSetEnvColor(gDisplayListHead++, 150, 150, 0, alpha);
-        break;
-        case 4:
-            gDPSetEnvColor(gDisplayListHead++, 255, 0, 0, alpha);
-        break;
-    }
+    if (cmm_greyed_text) color += 2;
+    gDPSetEnvColor(gDisplayListHead++, cmm_text_colors[color][0], cmm_text_colors[color][1], cmm_text_colors[color][2], alpha);
     print_generic_string_ascii(x, y, (u8 *)str);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
-void print_maker_string_ascii_centered_alpha(s32 x, s32 y, char *str, s32 highlight, s32 alpha) {
-    s32 x1 = get_string_width_ascii(str);
-    print_maker_string_ascii_alpha(x - x1/2, y, str, highlight, alpha);
+void print_maker_string_ascii(s32 x, s32 y, char *str, s32 color) {
+    print_maker_string_ascii_alpha(x, y, str, color, 255);
 }
 
-void print_maker_string_ascii_centered(s32 x, s32 y, char *str, s32 highlight) {
+void print_maker_string_ascii_centered_alpha(s32 x, s32 y, char *str, s32 color, s32 alpha) {
     s32 x1 = get_string_width_ascii(str);
-    print_maker_string_ascii(x - x1/2, y, str, highlight);
+    print_maker_string_ascii_alpha(x - x1/2, y, str, color, alpha);
+}
+
+void print_maker_string_ascii_centered(s32 x, s32 y, char *str, s32 color) {
+    s32 x1 = get_string_width_ascii(str);
+    print_maker_string_ascii_alpha(x - x1/2, y, str, color, 255);
 }
 
 void print_generic_string_ascii_centered(s32 x, s32 y, char *str) {
@@ -305,7 +267,7 @@ void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 targetPos, f32 multipli
 // Returns -1 if option was scrolled right, 1 if scrolled left, 0 if not changed
 s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
                                 char *prev, char *cur, char *next,
-                                s8 scroll[2], u32 highlight, u32 dir) {
+                                s8 scroll[2], u32 color, u32 dir) {
     s32 leftX = x - width * 2;
     s32 rightX = x + width * 2;
     s32 xOffset = 0;
@@ -321,11 +283,11 @@ s32 cmm_menu_option_sidescroll(s32 x, s32 y, s32 width,
         MAX(               cmm_global_scissor, x-width+5), cmm_global_scissor_top,
         MIN(SCREEN_WIDTH - cmm_global_scissor, x+width-7), cmm_global_scissor_bottom);
     
-    print_maker_string_ascii_centered(x + xOffset, y, cur, highlight);
+    print_maker_string_ascii_centered(x + xOffset, y, cur, color);
     if (leftX > x - width * 2) {
-        print_maker_string_ascii_centered(leftX, y, prev, highlight);
+        print_maker_string_ascii_centered(leftX, y, prev, color);
     } else if (rightX < x + width * 2) {
-        print_maker_string_ascii_centered(rightX, y, next, highlight);
+        print_maker_string_ascii_centered(rightX, y, next, color);
     }
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, cmm_global_scissor, cmm_global_scissor_top, SCREEN_WIDTH - cmm_global_scissor, cmm_global_scissor_bottom);
@@ -418,7 +380,7 @@ void cmm_render_topleft_text(void) {
             animate_menu_generic(cmm_topleft_vels, 215.f, 0.f, 2.f, cmm_topleft_timer == 30);
         }
 
-        print_maker_string_ascii(15,cmm_topleft_vels[0],cmm_topleft_message,cmm_topleft_is_tip ? 0 : 4);
+        print_maker_string_ascii(15,cmm_topleft_vels[0],cmm_topleft_message,cmm_topleft_is_tip ? CMM_TEXT_WHITE : CMM_TEXT_RED);
         cmm_topleft_timer--;
     }
 }
@@ -435,7 +397,7 @@ void cmm_render_coord_display(void) {
 
     char buf[20];
     sprintf(buf, "%d, %d, %d", cmm_cursor_pos[0], cmm_cursor_pos[1], cmm_cursor_pos[2]);
-    print_maker_string_ascii(255, cmm_coord_vels[0], buf, 0);
+    print_maker_string_ascii(255, cmm_coord_vels[0], buf, CMM_TEXT_WHITE);
 }
 
 char *cmm_get_floor_name(s32 index, UNUSED char *buffer) {
@@ -750,6 +712,21 @@ void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outp
 // The amount to offset cmm_menu_index by when in the custom theme menu
 #define CUSTOM_INDEX_OFFSET (ARRAY_COUNT(cmm_settings_env_buttons) + 1)
 
+char *cmm_slipperiness_strs[] = {
+    /* SURFACE_CLASS_DEFAULT */        "(Smooth)",
+    /* SURFACE_CLASS_VERY_SLIPPERY */  "(Slippery)",
+    /* SURFACE_CLASS_SLIPPERY */       "(Slippery)",
+    /* SURFACE_CLASS_NOT_SLIPPERY */   "(Walkable)",
+    /* Hazard */                       "(Hazardous)",
+};
+u8 cmm_slipperiness_clrs[] = {
+    CMM_TEXT_YELLOW,
+    CMM_TEXT_LIGHTBLUE,
+    CMM_TEXT_LIGHTBLUE,
+    CMM_TEXT_WHITE,
+    CMM_TEXT_RED,
+};
+
 void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
     u32 topmatDisabled = !cmm_curr_custom_theme.topmatsEnabled[index];
     char *topmatText = "";
@@ -779,6 +756,19 @@ void cmm_custom_theme_block_page(u32 index, f32 xPos, f32 yPos) {
             cmm_curr_custom_theme.topmatsEnabled[index] ^= 1;
         }
     }
+
+    // Print material info
+    s32 col;
+    if (cmm_curr_custom_theme.topmatsEnabled[index]) {
+        col = cmm_mat_table[cmm_curr_custom_theme.topmats[index]].col;
+    } else {
+        col = cmm_mat_table[cmm_curr_custom_theme.mats[index]].col;
+    }
+    s32 class;
+    if (SURFACE_IS_BURNING(col) || SURFACE_IS_QUICKSAND(col)) class = 4;
+    else class = get_floor_class(col);
+
+    print_maker_string_ascii_centered_alpha(xPos + 260, yPos + 100, cmm_slipperiness_strs[class], cmm_slipperiness_clrs[class], 150);
 }
 
 void cmm_custom_theme_pole_page(f32 xPos, f32 yPos) {
@@ -819,8 +809,8 @@ void draw_cmm_settings_custom_theme(f32 yoff) {
     char *cur = cmm_custom_get_menu_name(cmm_curr_custom_tab);
     char *prev = cmm_custom_get_menu_name(prevMenu);
     char *next = cmm_custom_get_menu_name(nextMenu);
-    print_maker_string_ascii_centered(80, yoff + 185, "< L", FALSE);
-    print_maker_string_ascii_centered(240, yoff + 185, "R >", FALSE);
+    print_maker_string_ascii_centered(80, yoff + 185, "< L", CMM_TEXT_WHITE);
+    print_maker_string_ascii_centered(240, yoff + 185, "R >", CMM_TEXT_WHITE);
     s32 result = cmm_menu_option_sidescroll(160, 185+yoff, 70,
                                 prev, cur, next,
                                 cmm_menu_scrolling[SCROLL_CUSTOM_TABS], FALSE, dir); 
@@ -946,11 +936,7 @@ void draw_cmm_settings_system(f32 xoff, f32 yoff) {
     int vtx_perc = ((f32)cmm_vtx_total/(f32)CMM_VTX_SIZE)*100.0f;
     int tile_perc = ((f32)cmm_tile_count/10000.0f)*100.0f;
     sprintf(strbuf,"Verts: %d%% Tiles: %d%%",vtx_perc,tile_perc);
-    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[2], 100+yoff,strbuf,0);
-    // Apply size
-    //print_maker_string_ascii(70+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,cmm_settings_system_buttons[2],(2==cmm_menu_index));
-    //cmm_menu_option_animation(210+xoff+3*cmm_menu_list_offsets[2],150-(2*16)+yoff,40,&cmm_change_size_button,2,cmm_joystick);
-    //print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[3],150-(3*16)+yoff,cmm_settings_system_buttons[3],(3==cmm_menu_index ? 1 : 4));
+    print_maker_string_ascii_centered(160+xoff+3*cmm_menu_list_offsets[2], 100+yoff,strbuf,CMM_TEXT_WHITE);
 
     if ((gPlayer1Controller->buttonPressed & A_BUTTON) && CMM_SETTINGS_MENU_IS_STILL) {
         switch (cmm_menu_index) {
@@ -1086,10 +1072,10 @@ void draw_cmm_menu(void) {
             gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
 
             if (cmm_toolbox_x_offset == TOOLBOX_OFFSET_MIN) {
-                print_maker_string_ascii(310 + sins(gGlobalTimer*0x300)*2.5f, 147+yOff, ">", 0);
+                print_maker_string_ascii(310 + sins(gGlobalTimer*0x300)*2.5f, 147+yOff, ">", CMM_TEXT_WHITE);
             }
             if (cmm_toolbox_x_offset == TOOLBOX_OFFSET_MAX) {
-                print_maker_string_ascii(7 - sins(gGlobalTimer*0x300)*2.5f, 147+yOff, "<", 0);
+                print_maker_string_ascii(7 - sins(gGlobalTimer*0x300)*2.5f, 147+yOff, "<", CMM_TEXT_WHITE);
             }
 
             s32 strx = GET_TOOLBOX_X(cmm_toolbox_index) + 20;
@@ -1123,9 +1109,9 @@ void draw_cmm_menu(void) {
                 gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + strLen + 5, 240-stry+1);
                 if (isMulti) {
                     gDPFillRectangle(gDisplayListHead++, lowerstrx-5, 240-stry+1, lowerstrx + lowerStrLen + 5, 240-stry+16);
-                    print_maker_string_ascii(lowerstrx, stry-15, stringBuf, TRUE);
+                    print_maker_string_ascii(lowerstrx, stry-15, stringBuf, CMM_TEXT_YELLOW);
                 }
-                print_maker_string_ascii(strx, stry, buttonName, TRUE);
+                print_maker_string_ascii(strx, stry, buttonName, CMM_TEXT_YELLOW);
             }
 
             break;
@@ -1176,7 +1162,7 @@ void draw_cmm_menu(void) {
             yOff += env_menu_handle_scroll();
 
             // Level name
-            print_maker_string_ascii_centered(SCREEN_WIDTH/2,210+yOff,cmm_file_info.fname,FALSE);
+            print_maker_string_ascii_centered(SCREEN_WIDTH/2,210+yOff,cmm_file_info.fname,CMM_TEXT_WHITE);
 
             switch(cmm_joystick) {
                 case 2:
@@ -1207,8 +1193,8 @@ void draw_cmm_menu(void) {
             }
             cmm_menu_index = (cmm_menu_index + cmm_menu_index_max) % cmm_menu_index_max;
 
-            print_maker_string_ascii_centered(80, yOff + 185, "< L", FALSE);
-            print_maker_string_ascii_centered(240, yOff + 185, "R >", FALSE);
+            print_maker_string_ascii_centered(80, yOff + 185, "< L", CMM_TEXT_WHITE);
+            print_maker_string_ascii_centered(240, yOff + 185, "R >", CMM_TEXT_WHITE);
             s32 result = cmm_menu_option_sidescroll(160, 185+yOff, 70,
                                        prev, cur, next,
                                        cmm_menu_scrolling[SCROLL_SETTINGS], FALSE, dir); 
@@ -1249,9 +1235,9 @@ void draw_cmm_menu(void) {
             if (TRUE) { //4 my compiler
                 char stringBuf[50];
                 sprintf(stringBuf,"^ Subject: %s |", cmm_dialog_subjects[cmm_dialog_subject_index].name);
-                print_maker_string_ascii_centered(160,210,stringBuf,FALSE);
+                print_maker_string_ascii_centered(160,210,stringBuf,CMM_TEXT_WHITE);
                 sprintf(stringBuf,"< Topic: %s >",cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].name);
-                print_maker_string_ascii_centered(160,190,stringBuf,FALSE);
+                print_maker_string_ascii_centered(160,190,stringBuf,CMM_TEXT_WHITE);
 
                 render_dialog_entry_preview(cmm_dialog_subjects[cmm_dialog_subject_index].topic_list[cmm_dialog_topic_index].dialog_id);
             }
@@ -1262,7 +1248,7 @@ void draw_cmm_menu(void) {
     if ((cmm_menu_state != CMM_MAKE_TRAJECTORY)&&(cmm_menu_state != CMM_MAKE_SCREENSHOT)) {
         s32 currentX = 15;
         char *buttonName = get_button_str(cmm_toolbar[cmm_toolbar_index]);
-        print_maker_string_ascii(currentX,45,buttonName,FALSE);
+        print_maker_string_ascii(currentX,45,buttonName,CMM_TEXT_WHITE);
         currentX += get_string_width_ascii(buttonName) + 10;
 
         char *yellowStr = NULL;
@@ -1279,19 +1265,19 @@ void draw_cmm_menu(void) {
 
             if (cmm_id_selection < TILE_END_OF_FLIPPABLE) {
                 if (cmm_upsidedown_tile) {
-                    print_maker_string_ascii(currentX,45,"(|)",FALSE);
+                    print_maker_string_ascii(currentX,45,"(|)",CMM_TEXT_WHITE);
                 } else {
-                    print_maker_string_ascii(currentX,45,"(^)",FALSE);
+                    print_maker_string_ascii(currentX,45,"(^)",CMM_TEXT_WHITE);
                 }
                 currentX += 25;
             }
         }
         if (yellowStr) {
             currentX += 15;
-            print_maker_string_ascii(currentX,45,"<",TRUE);
-            print_maker_string_ascii(currentX + 20,45,yellowStr,TRUE);
+            print_maker_string_ascii(currentX,45,"<",CMM_TEXT_YELLOW);
+            print_maker_string_ascii(currentX + 20,45,yellowStr,CMM_TEXT_YELLOW);
             currentX += get_string_width_ascii(yellowStr) + 30;
-            print_maker_string_ascii(currentX,45,">",TRUE);
+            print_maker_string_ascii(currentX,45,">",CMM_TEXT_YELLOW);
         }
     }
 }
@@ -1393,10 +1379,10 @@ void print_maker_credits(void) {
         credits_y_offset = lower_limit;
     }
     if (credits_y_offset != lower_limit) {
-        print_maker_string_ascii_centered_alpha(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",0,base_alpha);
+        print_maker_string_ascii_centered_alpha(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",CMM_TEXT_WHITE,base_alpha);
     }
     if (credits_y_offset != 0) {
-        print_maker_string_ascii_centered_alpha(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",0,base_alpha);
+        print_maker_string_ascii_centered_alpha(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",CMM_TEXT_WHITE,base_alpha);
     }
 
     for (int i=0; i<credits_entries; i++) {
@@ -1523,11 +1509,11 @@ void render_cmm_mm_button(f32 x, f32 y, u32 highlighted) {
 
 void render_cmm_mm_menu(char * strlist[], char *title, u8 ct) {
     create_dl_scale_matrix(MENU_MTX_PUSH, 2.f, 2.f, 0.f);
-    print_maker_string_ascii(80 - (get_string_width_ascii(title)/2),95 + cmm_menu_title_vels[0]/2,title,0);
+    print_maker_string_ascii(80 - (get_string_width_ascii(title)/2),95 + cmm_menu_title_vels[0]/2,title,CMM_TEXT_WHITE);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     if ((cmm_mm_state == MM_MAIN) || (cmm_mm_state == MM_MAIN_LIMITED)) {
-       print_maker_string_ascii(115, 177 + cmm_menu_title_vels[0], "By: Rovertronic & Arthurtilly", 0);
+       print_maker_string_ascii(115, 177 + cmm_menu_title_vels[0], "By: Rovertronic & Arthurtilly", CMM_TEXT_WHITE);
     }
 
     for (s32 i=0; i<ct; i++) {
@@ -1796,7 +1782,7 @@ s32 cmm_main_menu(void) {
             break;
         case MM_NO_SD_CARD:
             cmm_mm_shade_screen();
-            print_maker_string_ascii(cmm_menu_title_vels[0],210,cmm_mm_warning,FALSE);
+            print_maker_string_ascii(cmm_menu_title_vels[0],210,cmm_mm_warning,CMM_TEXT_WHITE);
             if (cmm_mm_anim_info()) {
                 cmm_menu_start_timer = 0;
                 cmm_mm_state = MM_MAIN_LIMITED;
@@ -1931,7 +1917,7 @@ s32 cmm_main_menu(void) {
             for (s32 i=0; i<3; i++) {
                 x = cmm_menu_button_vels[i][0] + 160;
                 y = 150-(i*27);
-                print_maker_string_ascii_centered(x - 60, y, cmm_mode_settings_buttons[i].str,0);
+                print_maker_string_ascii_centered(x - 60, y, cmm_mode_settings_buttons[i].str,CMM_TEXT_WHITE);
                 render_cmm_mm_button(x + 20, y + 8, cmm_menu_index == i);
                 cmm_menu_option_animation(x + 20, y, 43, &cmm_mode_settings_buttons[i], i, cmm_joystick);
             }
@@ -2099,9 +2085,9 @@ s32 cmm_main_menu(void) {
             gDPFillRectangle(gDisplayListHead++, MAX(inputX, 0), (240-185)-16, inputX + 250, (240-185)+3);
 
 
-            print_maker_string_ascii(35 + cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],FALSE);
-            print_maker_string_ascii(35 + cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,FALSE);
-            print_maker_string_ascii(35,45 - cmm_menu_title_vels[0],cmm_mm_txt_keyboard[cmm_mm_keyboard_exit_mode],FALSE);
+            print_maker_string_ascii(35 + cmm_menu_button_vels[0][0],208,cmm_mm_keyboard_prompt[cmm_mm_keyboard_exit_mode],CMM_TEXT_WHITE);
+            print_maker_string_ascii(35 + cmm_menu_button_vels[1][0],185,cmm_mm_keyboard_input,CMM_TEXT_WHITE);
+            print_maker_string_ascii(35,45 - cmm_menu_title_vels[0],cmm_mm_txt_keyboard[cmm_mm_keyboard_exit_mode],CMM_TEXT_WHITE);
 
             cmm_render_topleft_text();
 
@@ -2173,7 +2159,7 @@ s32 cmm_main_menu(void) {
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-                print_maker_string_ascii(55 + cmm_menu_button_vels[0][0],200,"No levels currently loaded yet.",TRUE);
+                print_maker_string_ascii(55 + cmm_menu_button_vels[0][0],200,"No levels currently loaded yet.",CMM_TEXT_YELLOW);
                 if (cmm_mm_no_files_anim_out()) {
                     cmm_menu_start_timer = 0;
                     if (cmm_menu_going_back == -1) {
@@ -2267,7 +2253,7 @@ s32 cmm_main_menu(void) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
                 if (CMM_VERSION < cmm_level_entry_version[i]) {
-                    print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),"Created in future version, update to play.",4);
+                    print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),"Created in future version, update to play.",CMM_TEXT_RED);
                 } else {
                     print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
                 }
