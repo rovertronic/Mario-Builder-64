@@ -163,7 +163,7 @@ void print_mapinfo(void) {
            + ((s32) gCurrentObject->oPosZ + 0x2000) / 1024 * 16;
 
     bgY = find_floor(gCurrentObject->oPosX, gCurrentObject->oPosY, gCurrentObject->oPosZ, &pfloor);
-    water = cmm_get_water_level(gCurrentObject->oPosX, gCurrentObject->oPosY, gCurrentObject->oPosZ);
+    water = mb64_get_water_level(gCurrentObject->oPosX, gCurrentObject->oPosY, gCurrentObject->oPosZ);
 
     print_debug_top_down_normal("mapinfo", 0);
 #ifndef VERSION_EU

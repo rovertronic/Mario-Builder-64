@@ -176,7 +176,7 @@ void bhv_platform_on_track_init(void) {
     o->oGravity = -1.f;
 
     o->collisionData = segmented_to_virtual(checkerboard_platform_seg8_collision_platform);
-    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
+    o->oPlatformOnTrackStartWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
     rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
     o->oBehParams2ndByte = o->oMoveAngleYaw; // TODO: Weird?
@@ -187,7 +187,7 @@ void bhv_looping_platform_init(void) {
     o->oGravity = -1.f;
 
     o->collisionData = segmented_to_virtual(loopingp_collision);
-    o->oPlatformOnTrackStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
+    o->oPlatformOnTrackStartWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
 }
 
 /**

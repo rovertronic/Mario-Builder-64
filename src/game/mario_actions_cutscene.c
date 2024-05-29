@@ -620,14 +620,14 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                 break;
 
             case 42:
-                switch(cmm_lopt_game) {
-                    case CMM_GAME_BTCM:
+                switch(mb64_lopt_game) {
+                    case MB64_GAME_BTCM:
                         play_sound(SOUND_MARIO_YAHOO, m->marioObj->header.gfx.cameraToObject);
                     break;
-                    case CMM_GAME_VANILLA:
+                    case MB64_GAME_VANILLA:
                         play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
                     break;
-                    //case CMM_GAME_BETA:
+                    //case MB64_GAME_BETA:
                         //play_sound(SOUND_MARIO_BETA_YEAH, m->marioObj->header.gfx.cameraToObject);
                     //break;
                 }
@@ -727,7 +727,7 @@ s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
 
 s32 act_lvup_dance(struct MarioState *m) {
 
-    if (cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY) {
+    if (mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY) {
         set_mario_animation(m,MARIO_ANIM_WATER_STAR_DANCE);
         return FALSE;
     }

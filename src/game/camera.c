@@ -653,7 +653,7 @@ void calc_y_to_curr_floor(f32 *posOff, f32 posMul, f32 posBound, f32 *focOff, f3
 
     if (!(sMarioCamState->action & ACT_FLAG_METAL_WATER)) {
         //! @bug this should use sMarioGeometry.waterHeight
-        if (floorHeight < (waterHeight = cmm_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]))) {
+        if (floorHeight < (waterHeight = mb64_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]))) {
             floorHeight = waterHeight;
         }
     }
@@ -1173,7 +1173,7 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_diff(camera_looknormal,c->focus,c->pos);
     vec3f_normalize(camera_looknormal);
 
-    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
         raycast_mode_camera = TRUE;
 
         // CEILING COLLISION
@@ -1890,7 +1890,7 @@ s32 mode_behind_mario(struct Camera *c) {
     }
     */
     approach_camera_height(c, newPos[1], 50.f);
-    waterHeight = cmm_get_water_level(c->pos[0], c->pos[1], c->pos[2]) + 100.f;
+    waterHeight = mb64_get_water_level(c->pos[0], c->pos[1], c->pos[2]) + 100.f;
     if (c->pos[1] <= waterHeight) {
         gCameraMovementFlags |= CAM_MOVE_SUBMERGED;
     } else {
@@ -2226,7 +2226,7 @@ s16 update_default_camera(struct Camera *c) {
     }
 
     // If there's water below the camera, decide whether to keep the camera above the water surface
-    waterHeight = cmm_get_water_level(cPos[0], cPos[1], cPos[2]);
+    waterHeight = mb64_get_water_level(cPos[0], cPos[1], cPos[2]);
     if (waterHeight != FLOOR_LOWER_LIMIT) {
         waterHeight += 125.f;
         distFromWater = waterHeight - marioFloorHeight;
@@ -2989,10 +2989,10 @@ void update_lakitu(struct Camera *c) {
         vec3f_copy(gLakituState.focus, revent_camera_foc);
     }
 
-    if (cmm_mode == CMM_MODE_MAKE) {
-        vec3f_copy(gLakituState.pos, cmm_camera_pos);
-        vec3f_copy(gLakituState.focus, cmm_camera_foc);
-        sFOVState.fov = cmm_camera_fov;
+    if (mb64_mode == MB64_MODE_MAKE) {
+        vec3f_copy(gLakituState.pos, mb64_camera_pos);
+        vec3f_copy(gLakituState.focus, mb64_camera_foc);
+        sFOVState.fov = mb64_camera_fov;
     }
 }
 
@@ -3011,7 +3011,7 @@ void update_camera(struct Camera *c) {
         && gCurrentArea->camera->mode != CAMERA_MODE_INSIDE_CANNON) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
         if (cam_select_alt_mode(CAM_SELECTION_NONE) == CAM_SELECTION_MARIO) {
-            if ((gPlayer1Controller->buttonPressed & R_TRIG)&&(cmm_mode == CMM_MODE_PLAY)) {
+            if ((gPlayer1Controller->buttonPressed & R_TRIG)&&(mb64_mode == MB64_MODE_PLAY)) {
                 if (set_cam_angle(0) == CAM_ANGLE_LAKITU) {
                      set_cam_angle(CAM_ANGLE_MARIO);
                 } else {
@@ -4674,19 +4674,19 @@ void play_camera_buzz_if_c_sideways(void) {
 }
 
 void play_sound_cbutton_up(void) {
-    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
         play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gGlobalSoundSource);
     }
 }
 
 void play_sound_cbutton_down(void) {
-    if (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
         play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, gGlobalSoundSource);
     }
 }
 
 void play_sound_cbutton_side(void) {
-    if ((cmm_mode == CMM_MODE_PLAY) && (cmm_sram_configuration.option_flags & (1<<OPT_CAMSOUND))) {
+    if ((mb64_mode == MB64_MODE_PLAY) && (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND))) {
         play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
     }
 }
@@ -4714,7 +4714,7 @@ void play_sound_if_cam_switched_to_lakitu_or_mario(void) {
  */
 void radial_camera_input(struct Camera *c) {
 
-    if (revent_camera_on||(cmm_mode == CMM_MODE_MAKE)) {
+    if (revent_camera_on||(mb64_mode == MB64_MODE_MAKE)) {
         return; //do not control camera during cutscenes. (goku image)
     }
 
@@ -4826,7 +4826,7 @@ void trigger_cutscene_dialog(s32 trigger) {
 void handle_c_button_movement(struct Camera *c) {
     s16 cSideYaw;
 
-    if (revent_camera_on||(cmm_mode == CMM_MODE_MAKE)) {
+    if (revent_camera_on||(mb64_mode == MB64_MODE_MAKE)) {
         return; //do not control camera during cutscenes. (goku image)
     }
 
@@ -6603,7 +6603,7 @@ void find_mario_floor_and_ceil(struct PlayerGeometry *pg) {
     pg->currCeilHeight = find_ceil(sMarioCamState->pos[0],
                                    sMarioCamState->pos[1] - 10.f,
                                    sMarioCamState->pos[2], &pg->currCeil);
-    pg->waterHeight = cmm_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]);
+    pg->waterHeight = mb64_get_water_level(sMarioCamState->pos[0], sMarioCamState->pos[1], sMarioCamState->pos[2]);
     gCurrentObject = NULL;
     gCollisionFlags = tempCollisionFlags;
 }

@@ -409,7 +409,7 @@ s16 object_step(void) {
         o->oFloorHeight = floorY;
         o->oFloorType   = sObjFloor->type;
 
-        waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);
+        waterY = mb64_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
             calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, 0, 0, waterY);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;
@@ -455,7 +455,7 @@ s16 object_step(void) {
     o->oFloorType   = sObjFloor->type;
 
     if (turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1) {
-        waterY = cmm_get_water_level(objX, objY + o->oVelY, objZ);
+        waterY = mb64_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
             calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, objVelX, objVelZ, waterY);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;

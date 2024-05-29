@@ -686,7 +686,7 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
-extern u8 cmm_ascii_lut[];
+extern u8 mb64_ascii_lut[];
 void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
     s32 strPos = 0;
     u8 lineNum = 1;
@@ -710,8 +710,8 @@ void print_generic_string_ascii(s16 x, s16 y, const u8 *str) {
                 lineNum++;
             break;
             default:
-                render_generic_char(cmm_ascii_lut[str[strPos]]);
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[cmm_ascii_lut[str[strPos]]], 0.0f, 0.0f);
+                render_generic_char(mb64_ascii_lut[str[strPos]]);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[mb64_ascii_lut[str[strPos]]], 0.0f, 0.0f);
             break;
         }
         strPos++;
@@ -744,8 +744,8 @@ void print_generic_string_ascii_nofileext(s16 x, s16 y, const u8 *str) {
                 lineNum++;
             break;
             default:
-                render_generic_char(cmm_ascii_lut[str[strPos]]);
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[cmm_ascii_lut[str[strPos]]], 0.0f, 0.0f);
+                render_generic_char(mb64_ascii_lut[str[strPos]]);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, gDialogCharWidths[mb64_ascii_lut[str[strPos]]], 0.0f, 0.0f);
             break;
         }
         strPos++;
@@ -2125,7 +2125,7 @@ void render_widescreen_setting(void) {
 #endif
 
 
-extern u8 cmm_lopt_coinstar;
+extern u8 mb64_lopt_coinstar;
 #define LEVEL_STAT_X 85+(level_stats_offset*13)
 #define LEVEL_STAT_Y 130
 void render_pause_my_score_coins(void) {
@@ -2134,8 +2134,8 @@ void render_pause_my_score_coins(void) {
     u8 textStar[] = { TEXT_STAR };
     u8 textUnfilledStar[] = { TEXT_UNFILLED_STAR };
 
-    u8 current_stars = cmm_play_stars;
-    u8 max_stars = cmm_play_stars_max;
+    u8 current_stars = mb64_play_stars;
+    u8 max_stars = mb64_play_stars_max;
 
     s16 level_stats_offset = 0;
 
@@ -2159,8 +2159,8 @@ void render_pause_my_score_coins(void) {
         }
     }
 
-    if (cmm_lopt_coinstar>0) {
-        print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "$%dQ%d", gMarioState->numCoins, (cmm_lopt_coinstar*20));
+    if (mb64_lopt_coinstar>0) {
+        print_text_fmt_int2(LEVEL_STAT_X, LEVEL_STAT_Y, "$%dQ%d", gMarioState->numCoins, (mb64_lopt_coinstar*20));
     }
 
 
@@ -2215,12 +2215,12 @@ void render_pause_my_score_coins(void) {
 
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    if (cmm_save.author[0] != 0) {
-        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 160+8, cmm_file_name);
+    if (mb64_save.author[0] != 0) {
+        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 160+8, mb64_file_name);
         print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 160-8, "By:");
-        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X+18, 160-8, cmm_save.author);
+        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X+18, 160-8, mb64_save.author);
     } else {
-        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 157, cmm_file_name);
+        print_generic_string_ascii_nofileext(SECRET_LVL_NAME_X, 157, mb64_file_name);
     }
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
@@ -2502,7 +2502,7 @@ s8 gHudFlash = HUD_FLASH_NONE;
 #define badge_location_y (224+soffset)-((i/8)*34)
 #define btxoff 50
 
-void draw_cmm_pause_badges(void) {
+void draw_mb64_pause_badges(void) {
     s16 index;
     s8 soffset;
     u16 i;
@@ -2652,14 +2652,14 @@ u8 lvbuf[4];
 s32 render_pause_courses_and_castle(void) {
 
     if (gDialogBoxState == DIALOG_STATE_OPENING) {
-        cmm_init_pause_menu();
+        mb64_init_pause_menu();
         level_set_transition(-1, NULL);
         play_sound(SOUND_MENU_PAUSE_OPEN, gGlobalSoundSource);
         gDialogBoxState = DIALOG_STATE_VERTICAL;
     }
 
     shade_screen();
-    s32 decision = draw_cmm_pause_menu();
+    s32 decision = draw_mb64_pause_menu();
     switch(decision) {
         case 1:
             level_set_transition(0, NULL);

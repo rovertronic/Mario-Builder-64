@@ -229,7 +229,7 @@ static void mr_blizzard_act_death(void) {
                     set_object_respawn_info_bits(o, RESPAWN_INFO_TYPE_NORMAL);
                     SET_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
                 }
-                create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, CMM_DRAWDIST_LOW);
+                create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, MB64_DRAWDIST_LOW);
                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             }
         }

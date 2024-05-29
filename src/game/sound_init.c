@@ -280,7 +280,7 @@ void play_cutscene_music(u16 seqArgs) {
  * Called from threads: thread5_game_loop
  */
 void play_shell_music(void) {
-    if (!(cmm_sram_configuration.option_flags & (1<<OPT_MUSIC))) return;
+    if (!(mb64_sram_configuration.option_flags & (1<<OPT_MUSIC))) return;
     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP_SHELL), 0);
     sCurrentShellMusic = SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP_SHELL);
 }
@@ -305,7 +305,7 @@ extern void stop_cap_music(void);
 #endif
 
 void play_cap_music(u16 seqArgs) {
-    if (!(cmm_sram_configuration.option_flags & (1<<OPT_MUSIC))) return;
+    if (!(mb64_sram_configuration.option_flags & (1<<OPT_MUSIC))) return;
 #ifdef PERSISTENT_CAP_MUSIC
     if (sDoResetMusic) {
         sDoResetMusic = FALSE;

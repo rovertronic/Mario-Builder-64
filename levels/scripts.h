@@ -25,7 +25,7 @@ extern const LevelScript script_func_global_16[];
 extern const LevelScript script_func_global_17[];
 extern const LevelScript script_func_global_18[];
 
-extern const LevelScript script_func_cmm_theme_vanilla[];
-extern const LevelScript script_func_cmm_theme_btcm[];
+extern const LevelScript script_func_mb64_theme_vanilla[];
+extern const LevelScript script_func_mb64_theme_btcm[];
 
 #endif

@@ -676,13 +676,13 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
                     (bodyState->handState < 2) ? bodyState->handState : MARIO_HAND_FISTS;
             }
         }
-        if ((bodyState->handState == MARIO_HAND_PEACE_SIGN)&&(cmm_lopt_game == CMM_GAME_VANILLA)) {
+        if ((bodyState->handState == MARIO_HAND_PEACE_SIGN)&&(mb64_lopt_game == MB64_GAME_VANILLA)) {
             switchCase->selectedCase = 2;
         }
         if (gMarioState->powerup == 1) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_CROWBAR;
         }
-        if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+        if ((mb64_lopt_game == MB64_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_WING;
         }
 
@@ -731,7 +731,7 @@ Gfx *geo_mario_hand_foot_scaler(s32 callContext, struct GraphNode *node, UNUSED 
 /**
  * Switch between normal cap, wing cap, vanish cap and metal cap.
  */
-extern s8 cmm_toolbar_index;
+extern s8 mb64_toolbar_index;
 Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
     struct MarioBodyState *bodyState = &gBodyStates[switchCase->numCases];
@@ -747,14 +747,14 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             switchCase->selectedCase = MODEL_STATE_METAL >> 8;
         }
 
-        if ((cmm_lopt_game == CMM_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
+        if ((mb64_lopt_game == MB64_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)&&(gCurGraphNodeObject == &gMarioObject->header.gfx)) {
             switchCase->selectedCase = 4;
             if (gMarioState->flags & MARIO_VANISH_CAP) {
                 switchCase->selectedCase = bodyState->modelState >> 8;
             }
         }
 
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(mb64_toolbar_index == 7)) {
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
 
@@ -763,7 +763,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             if ((gCurGraphNodeObject != &gMarioObject->header.gfx)&&(gCurGraphNodeObject != &gMirrorMario)) {
                 switchCase->selectedCase = 0;
             }
-            if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(cmm_toolbar_index == 7)) {
+            if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(mb64_toolbar_index == 7)) {
                 switchCase->selectedCase = MODEL_STATE_METAL >> 8;
             }
         }
@@ -786,7 +786,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
         switchCase->selectedCase = bodyState->capState & MARIO_HAS_DEFAULT_CAP_OFF;
         while (next != node) {
             if (next->type == GRAPH_NODE_TYPE_TRANSLATION_ROTATION) {
-                if (cmm_lopt_game == CMM_GAME_BTCM) {
+                if (mb64_lopt_game == MB64_GAME_BTCM) {
                     COND_BIT((0), next->flags, GRAPH_RENDER_ACTIVE);
                 } else {
                     COND_BIT((bodyState->capState & MARIO_HAS_WING_CAP_ON), next->flags, GRAPH_RENDER_ACTIVE);

@@ -1,7 +1,7 @@
 // sushi.inc.c
 
 void bhv_sushi_shark_loop(void) {
-    f32 waterLevel = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+    f32 waterLevel = mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 
     o->oPosX = o->oHomeX + sins(o->oSushiSharkAngleFromHome) * 1700.0f;
     o->oPosZ = o->oHomeZ + coss(o->oSushiSharkAngleFromHome) * 1700.0f;

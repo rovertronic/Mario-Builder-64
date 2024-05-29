@@ -21,7 +21,7 @@ void piranha_plant_act_idle(void) {
      */
     cur_obj_scale(1.0f);
 
-    if (o->oDistanceToMario < CMM_DRAWDIST_LOW) {
+    if (o->oDistanceToMario < MB64_DRAWDIST_LOW) {
         o->oAction = PIRANHA_PLANT_ACT_SLEEPING;
     }
 }
@@ -172,7 +172,7 @@ void piranha_plant_act_shrink_and_die(void) {
             cur_obj_spawn_loot_blue_coin();
         }
         SET_FULL_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
-        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, CMM_DRAWDIST_LOW);
+        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, MB64_DRAWDIST_LOW);
 
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;

@@ -1978,7 +1978,7 @@ void beh_yellow_background_menu_loop(void) {
  */
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        sSelectedFileNum = cmm_main_menu();
+        sSelectedFileNum = mb64_main_menu();
     }
     return NULL;
 }
@@ -1987,7 +1987,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     //when entering menu, load levels from sd card
     load_level_files_from_sd_card();
 
-    if (cmm_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
         play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_MENU_FILE_SELECT), 0);
     }
 }

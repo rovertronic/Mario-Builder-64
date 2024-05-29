@@ -1415,7 +1415,7 @@ void update_mario_geometry_inputs(struct MarioState *m) {
 
     m->ceilHeight = find_mario_ceil(m->pos, m->floorHeight, &m->ceil);
     // gasLevel = find_poison_gas_level(m->pos[0], m->pos[2]);
-    m->waterLevel = cmm_get_water_level(m->pos[0], m->pos[1] + 80.f, m->pos[2]);
+    m->waterLevel = mb64_get_water_level(m->pos[0], m->pos[1] + 80.f, m->pos[2]);
 
     if (m->floor != NULL) {
         m->floorYaw = atan2s(m->floorNormal[2], m->floorNormal[0]);
@@ -1616,7 +1616,7 @@ void update_mario_health(struct MarioState *m) {
             */
         }
 
-        if (cmm_lopt_game == CMM_GAME_BTCM) {
+        if (mb64_lopt_game == MB64_GAME_BTCM) {
             //AIR: BTCM Behavior
             //air doesn't exist if you have gills
             if (!(save_file_get_badge_equip() & (1<<4))) {
@@ -1767,7 +1767,7 @@ u64 sCapFlickerFrames = 0b100010001000100010001001001001001001001001001010101010
  */
 u32 update_and_return_cap_flags(struct MarioState *m) {
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         u32 flags = m->flags;
         u32 action;
 
@@ -2053,14 +2053,14 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     u8 coinrepeats = 1;
     // u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
 
-    //print_text_fmt_int(110, 36, cmm_username, 0);
+    //print_text_fmt_int(110, 36, mb64_username, 0);
 
-    //if (cmm_lopt_game == CMM_GAME_VANILLA) {
+    //if (mb64_lopt_game == MB64_GAME_VANILLA) {
          //gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
     //}
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
-        switch_mario_costume(cmm_lopt_costume);
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
+        switch_mario_costume(mb64_lopt_costume);
     }
 
     //this code finds the nearest valid object in array star_radar_objects_to_track[]
@@ -2106,7 +2106,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
        //print_text_fmt_int(10, 56, "%d", global_code); 
     //}
 
-    if (cmm_mode == CMM_MODE_MAKE) {
+    if (mb64_mode == MB64_MODE_MAKE) {
         gMarioState->marioObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
         return ACTIVE_PARTICLE_NONE;
     }
@@ -2165,8 +2165,8 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     // }
 
     // Run the speedrun timer every frame while he's active
-    if (cmm_play_stars != cmm_play_stars_max) {
-        cmm_play_speedrun_timer++;
+    if (mb64_play_stars != mb64_play_stars_max) {
+        mb64_play_speedrun_timer++;
     }
 
     //withering badge
@@ -2668,7 +2668,7 @@ void init_mario(void) {
     gMarioState->riddenObj = NULL;
     gMarioState->usedObj = NULL;
 
-    gMarioState->waterLevel = cmm_get_water_level(gMarioSpawnInfo->startPos[0], gMarioSpawnInfo->startPos[1], gMarioSpawnInfo->startPos[2]);
+    gMarioState->waterLevel = mb64_get_water_level(gMarioSpawnInfo->startPos[0], gMarioSpawnInfo->startPos[1], gMarioSpawnInfo->startPos[2]);
 
     gMarioState->area = gCurrentArea;
     gMarioState->marioObj = gMarioObject;

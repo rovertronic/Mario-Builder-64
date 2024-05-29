@@ -8,17 +8,17 @@
  * -- COIN --
  **************/
 
-#define CMM_DRAWDIST_LOW 3500.f // For high-cost objects, like enemies
-#define CMM_DRAWDIST_MEDIUM 7000.f // For smaller low-cost objects, like NPCs
-#define CMM_DRAWDIST_HIGH 12000.f // For objects vital to the stage, like spinning firebars
+#define MB64_DRAWDIST_LOW 3500.f // For high-cost objects, like enemies
+#define MB64_DRAWDIST_MEDIUM 7000.f // For smaller low-cost objects, like NPCs
+#define MB64_DRAWDIST_HIGH 12000.f // For objects vital to the stage, like spinning firebars
 
-#define CMM_BOSS_TRIGGER_DIST 2000.f
+#define MB64_BOSS_TRIGGER_DIST 2000.f
 
 /**
  * The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.
  * Set this to o->oDrawingDistance for a more reasonable range at the cost of performance.
  */
-#define COIN_FORMATION_DISTANCE CMM_DRAWDIST_LOW
+#define COIN_FORMATION_DISTANCE MB64_DRAWDIST_LOW
 
 /**
  * Moving Coins flicker and disappear when they hit lava instead of being instantly deleted.

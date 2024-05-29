@@ -435,7 +435,7 @@ void thread2_crash_screen(UNUSED void *arg) {
             draw_crash_screen(thread);
 
             //make a level backup
-            //bcopy(&backup_filename,&cmm_file_name,sizeof(backup_filename));
+            //bcopy(&backup_filename,&mb64_file_name,sizeof(backup_filename));
             //save_level();
         }
     }

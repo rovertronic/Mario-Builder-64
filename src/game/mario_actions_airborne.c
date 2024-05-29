@@ -394,7 +394,7 @@ void update_flying(struct MarioState *m) {
 
     gMarioState->SFuel ++;
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         if ((gMarioState->SFuel > 12)&&(gMarioState->RFuel > 0)) {
             gMarioState->RFuel --;
             gMarioState->SFuel = 0;
@@ -831,7 +831,7 @@ s32 act_twirling(struct MarioState *m) {
     s16 startTwirlYaw = m->twirlYaw;
     s16 yawVelTarget;
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         if (m->input & INPUT_Z_DOWN) {
             yawVelTarget = 0x2800;
         }
@@ -897,7 +897,7 @@ s32 act_dive(struct MarioState *m) {
     update_air_without_turn(m);
 
     m->actionTimer++;
-    if ((cmm_lopt_game == CMM_GAME_BTCM)&&(m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)&&(m->actionTimer > 12)) {
+    if ((mb64_lopt_game == MB64_GAME_BTCM)&&(m->flags & MARIO_WING_CAP)&&(m->faceAngle[0] < -0x443)&&(m->actionTimer > 12)) {
         set_mario_action(m, ACT_FLYING, 0);
     }
 
@@ -1674,7 +1674,7 @@ s32 act_lava_boost(struct MarioState *m) {
             } else {
                 play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 
-                if (cmm_lopt_game == CMM_GAME_VANILLA) {
+                if (mb64_lopt_game == MB64_GAME_VANILLA) {
                     if (m->actionState < ACT_STATE_LAVA_BOOST_SET_LANDING_ACTION && m->vel[1] < 0.0f) {
                         m->vel[1] = -m->vel[1] * 0.4f;
                         mario_set_forward_vel(m, m->forwardVel * 0.5f);

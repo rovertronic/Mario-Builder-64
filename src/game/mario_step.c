@@ -295,7 +295,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     f32 ceilHeight = find_mario_ceil(nextPos, floorHeight, &ceil);
 
-    f32 waterLevel = cmm_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
+    f32 waterLevel = mb64_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
 
     if (floor == NULL) {
         return GROUND_STEP_HIT_WALL_STOP_QSTEPS;
@@ -404,7 +404,7 @@ s32 perform_ground_step(struct MarioState *m) {
         stepResult = GROUND_STEP_HIT_WALL;
     }
 
-    if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
+    if (stepResult == GROUND_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && mb64_lopt_game == MB64_GAME_BTCM)
     {
         stepResult = GROUND_STEP_DEATH;
         Vec3f normal;
@@ -542,7 +542,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
     f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
     f32 ceilHeight = find_mario_ceil(nextPos, floorHeight, &ceil);
 
-    f32 waterLevel = cmm_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
+    f32 waterLevel = mb64_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
 
     if ((upperWall.numWalls>0)||(lowerWall.numWalls>0)) {
         bullet_fuel = 60;
@@ -647,7 +647,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 void apply_twirl_gravity(struct MarioState *m) {
 
     f32 Zmodifier = 1.0f;
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         Zmodifier = m->input & INPUT_Z_DOWN ? 4.0f : 1.0f;
     }
     f32 heaviness = 1.0f;
@@ -804,7 +804,7 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
             break;
         }
 
-        if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && cmm_lopt_game == CMM_GAME_BTCM)
+        if (quarterStepResult == AIR_STEP_HIT_WALL && m->wall && m->wall->type == SURFACE_INSTANT_QUICKSAND && mb64_lopt_game == MB64_GAME_BTCM)
         {
             stepResult = AIR_STEP_DEATH;
             Vec3f normal;

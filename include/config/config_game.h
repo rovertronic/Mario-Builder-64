@@ -33,7 +33,7 @@
 /**
  * Number of coins to spawn the "100 coin" star. If you remove the define altogether, then there won't be a 100 coin star at all.
  */
-#define X_COIN_STAR (cmm_lopt_coinstar*20)
+#define X_COIN_STAR (mb64_lopt_coinstar*20)
 
 /**
  * Stars don't kick you out of the level (does not play nicely with vanilla).

@@ -37,7 +37,7 @@ void bhv_spawned_star_init(void) {
 //         cur_obj_set_model(MODEL_TRANSPARENT_STAR);
 //     }
 
-    if (cmm_play_stars_bitfield & ((u64)1 << param)) {
+    if (mb64_play_stars_bitfield & ((u64)1 << param)) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_TRANSPARENT_STAR];
     } else {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_STAR];

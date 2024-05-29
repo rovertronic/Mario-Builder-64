@@ -28,13 +28,13 @@ void whomp_init(void) {
         gSecondCameraFocus = o;
         cur_obj_scale(2.0f);
         if (o->oSubAction == 0) {
-            if (o->oDistanceToMario < CMM_BOSS_TRIGGER_DIST) {
+            if (o->oDistanceToMario < MB64_BOSS_TRIGGER_DIST) {
                 o->oSubAction++;
                 //seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
             }
         } else if (1) {
             o->oAction = 2;
-            play_cmm_extra_music(2);
+            play_mb64_extra_music(2);
         }
     } else if (o->oDistanceToMario < 500.0f) {
         o->oAction = 1;
@@ -110,9 +110,9 @@ void king_whomp_chase(void) {
 
     whomp_play_sfx_from_pound_animation();
 
-    if (o->oDistanceToMario > CMM_BOSS_TRIGGER_DIST+50.0f) {
+    if (o->oDistanceToMario > MB64_BOSS_TRIGGER_DIST+50.0f) {
         o->oAction = 0;
-        stop_cmm_extra_music(2);
+        stop_mb64_extra_music(2);
     }
 }
 
@@ -265,7 +265,7 @@ void whomp_die(void) {
 
 void king_whomp_stop_music(void) {
     if (o->oTimer == 60) {
-        stop_cmm_extra_music(2);
+        stop_mb64_extra_music(2);
     }
 }
 

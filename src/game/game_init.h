@@ -99,16 +99,16 @@ extern Bool32 gSupportsLibpl;
 extern Bool32 gIsGliden;
 
 #define MAX_FILES 251
-extern u8 cmm_level_entry_version[MAX_FILES];
+extern u8 mb64_level_entry_version[MAX_FILES];
 extern FRESULT mount_success;
 extern FRESULT global_code;
-extern u8 cmm_level_entry_count;
-extern TCHAR *cmm_level_dir_name;
-extern TCHAR *cmm_hack_dir_name;
-extern struct cmm_sram_config cmm_sram_configuration;
+extern u8 mb64_level_entry_count;
+extern TCHAR *mb64_level_dir_name;
+extern TCHAR *mb64_hack_dir_name;
+extern struct mb64_sram_config mb64_sram_configuration;
 
 void create_level_file_path(TCHAR * buffer, TCHAR * filename, TCHAR * suffix);
-struct cmm_level_save_header * get_level_info_from_filename(char * filename);
+struct mb64_level_save_header * get_level_info_from_filename(char * filename);
 void load_level_files_from_sd_card(void);
 u8 level_file_exists(char * filename);
 

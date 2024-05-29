@@ -1671,7 +1671,7 @@ static void func_8031F96C(u8 player) {
 /**
  * Called from threads: thread4_sound, thread5_game_loop (EU only)
  */
-extern u8 cmm_lopt_seq[5];
+extern u8 mb64_lopt_seq[5];
 void process_level_music_dynamics(void) {
     u16 tempBits;
     u8 condIndex;
@@ -1693,10 +1693,10 @@ void process_level_music_dynamics(void) {
     u8 musicDynIndex = 0;
     if (sBackgroundMusicForDynamics == SEQ_LEVEL_WATER) {
         musicDynIndex = 0;
-        if ((cmm_lopt_seq[0] == 3) || (gMarioState->action & ACT_FLAG_SWIMMING)) musicDynIndex = 2;
+        if ((mb64_lopt_seq[0] == 3) || (gMarioState->action & ACT_FLAG_SWIMMING)) musicDynIndex = 2;
     } else if (sBackgroundMusicForDynamics == SEQ_LEVEL_UNDERGROUND) {
         musicDynIndex = 3;
-        if (cmm_lopt_seq[0] == 8) musicDynIndex = 4; // hardcoded
+        if (mb64_lopt_seq[0] == 8) musicDynIndex = 4; // hardcoded
     } else {
         return;
     }

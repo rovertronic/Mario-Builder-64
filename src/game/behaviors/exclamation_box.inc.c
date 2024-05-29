@@ -22,11 +22,11 @@ void bhv_rotating_exclamation_mark_loop(void) {
 void exclamation_box_act_init(void) {
     o->oAction = EXCLAMATION_BOX_ACT_ACTIVE;
 
-    if (cmm_lopt_game == CMM_GAME_VANILLA) {
+    if (mb64_lopt_game == MB64_GAME_VANILLA) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_VEXCLAMATION_BOX];
     }
 
-    o->oAnimState = cmm_exclamation_box_contents[o->oBehParams2ndByte].animState;
+    o->oAnimState = mb64_exclamation_box_contents[o->oBehParams2ndByte].animState;
 
 
     //u32 stardata = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum-1);
@@ -115,7 +115,7 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
     struct Object *contentsObj = NULL;
     
     if (boxType < 7) { // hardcoded
-        struct ExclamationBoxContents *contents = &cmm_exclamation_box_contents[boxType];
+        struct ExclamationBoxContents *contents = &mb64_exclamation_box_contents[boxType];
         contentsObj = spawn_object(o, contents->model, contents->behavior);
         contentsObj->oVelY = 20.0f;
         contentsObj->oForwardVel = 3.0f;
@@ -244,16 +244,16 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
 }
 
 void exclamation_box_act_explode(void) {
-    exclamation_box_spawn_contents(cmm_exclamation_box_contents, o->oBehParams2ndByte);
+    exclamation_box_spawn_contents(mb64_exclamation_box_contents, o->oBehParams2ndByte);
     spawn_mist_particles_variable(0, 0, 46.0f);
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         spawn_triangle_break_particles(10, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
     } else {
         spawn_triangle_break_particles(10, MODEL_CARTOON_STAR, 0.3f, 3);
     }
 
     create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-    if (cmm_exclamation_box_contents[o->oBehParams2ndByte].doRespawn) {
+    if (mb64_exclamation_box_contents[o->oBehParams2ndByte].doRespawn) {
         o->oAction = EXCLAMATION_BOX_ACT_WAIT_FOR_RESPAWN;
         cur_obj_hide();
     } else {

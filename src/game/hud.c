@@ -451,7 +451,7 @@ void render_dl_power_meter(s16 numHealthWedges) {
     }
 
     f32 power_meter_x_offset = 0.0f;
-    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         power_meter_x_offset = 148.0f;
     }
 
@@ -742,7 +742,7 @@ void render_debug_mode(void) {
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-21, "$"); // 'Coin' glyph
         print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y-21, "*"); // 'X' glyph
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+32, HUD_TOP_Y-21, "%d", gHudDisplay.coins);
@@ -775,13 +775,13 @@ void render_hud_coins(void) {
  */
  s8 minuz[] = {45,0};
 void render_hud_stars(void) {
-    u8 current_stars = cmm_play_stars;
-    u8 max_stars = cmm_play_stars_max;
+    u8 current_stars = mb64_play_stars;
+    u8 max_stars = mb64_play_stars_max;
 
     if (gHudFlash == HUD_FLASH_STARS && gGlobalTimer & 0x8) return;
     s8 showX = 1;//(gHudDisplay.stars < 100);
 
-    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "^"); // 'Star' glyph
         print_text((GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16), HUD_TOP_Y, "*"); // 'X' glyph
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 32, HUD_TOP_Y, "%d", current_stars);
@@ -811,8 +811,8 @@ void render_hud_keys(void) {
 void render_hud_timer(void) {
     Texture *(*hudLUT)[58] = segmented_to_virtual(&main_hud_lut);
     u16 timerValFrames = gHudDisplay.timer;
-    if (cmm_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER)) {
-        timerValFrames = cmm_play_speedrun_timer;
+    if (mb64_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER)) {
+        timerValFrames = mb64_play_speedrun_timer;
     }
 
     u16 timerMins = timerValFrames / (30 * 60);
@@ -838,7 +838,7 @@ void render_hud_timer(void) {
 #else
 */
 
-    if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
+    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         //modern
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+HUD_TIMER_MODERN_OFFSET+minxoffset, HUD_TOP_Y, "%0d", timerMins);
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%02d", timerSecs);
@@ -964,9 +964,9 @@ void render_hud(void) {
         display_title();
         }
 
-        gMarioState->toggleHud = (cmm_sram_configuration.option_flags & (1<<OPT_HUD));
+        gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
 
-        if ((cmm_mode == CMM_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
+        if ((mb64_mode == MB64_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
 
 #ifndef DISABLE_LIVES
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
@@ -1086,7 +1086,7 @@ void render_hud(void) {
 #endif
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
-                if (cmm_lopt_game == CMM_GAME_VANILLA) {
+                if (mb64_lopt_game == MB64_GAME_VANILLA) {
                     render_hud_power_meter_vanilla();
                 } else {
                     render_hud_power_meter();
@@ -1094,7 +1094,7 @@ void render_hud(void) {
                 render_hud_camera_status();
             }
 
-            if ((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER)||(cmm_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER))) {
+            if ((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER)||(mb64_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER))) {
                 render_hud_timer();
             }
 

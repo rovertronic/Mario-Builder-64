@@ -54,7 +54,7 @@ void bowling_ball_set_hitbox(void) {
 }
 
 void bowling_ball_set_waypoints(void) {
-    o->oPathedStartWaypoint = cmm_trajectory_list[o->oBehParams2ndByte];
+    o->oPathedStartWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
 }
 
 void bhv_bowling_ball_roll_loop(void) {
@@ -79,7 +79,7 @@ void bhv_bowling_ball_roll_loop(void) {
         o->oTimer = 0;
     }
 
-    if ((followStatus == PATH_REACHED_END)||(cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY)||(o->oTimer > 60)) {
+    if ((followStatus == PATH_REACHED_END)||(mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY)||(o->oTimer > 60)) {
         if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 7000)) {
             spawn_mist_particles();
             spawn_mist_particles_variable(0, 0, 92.0f);

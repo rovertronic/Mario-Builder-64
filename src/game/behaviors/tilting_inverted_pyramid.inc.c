@@ -625,7 +625,7 @@
 //             o->oPosZ = CLAMP(o->oPosZ, -32768, 32768); // TODO: Make sure random value is between level bounds
 //             //o->oPosY = 19000.0f;
 
-//             f32 waterLevel  = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+//             f32 waterLevel  = mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 //             f32 floorHeight = find_floor_height((f32)o->oPosX, 19000.0f, (f32)o->oPosZ);
 
 //             if (waterLevel > floorHeight) {
@@ -6079,7 +6079,7 @@ void tv_head_projectile(void) {
 // }
 
 void bhv_tree_init() {
-    df_tree(CMM_DF_CONTEXT_INIT);
+    df_tree(MB64_DF_CONTEXT_INIT);
 }
 
 void bhv_badge(void) {
@@ -6160,14 +6160,14 @@ void bhv_onoffswitch(void) {
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 1.0f ,0.1f);
             if (gMarioPlatform == o && !(gMarioState->action & MARIO_NO_PURPLE_SWITCH)) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_BUTTON_PRESS);
-                cmm_play_onoff = o->oBehParams2ndByte;
+                mb64_play_onoff = o->oBehParams2ndByte;
             }
             if (o->oBehParams2ndByte == 0) {
-                if (!cmm_play_onoff) {
+                if (!mb64_play_onoff) {
                     o->oAction = 2;
                 }
             } else { // Blue
-                if (cmm_play_onoff) {
+                if (mb64_play_onoff) {
                     o->oAction = 2;
                 }
             }
@@ -6175,11 +6175,11 @@ void bhv_onoffswitch(void) {
         case 2: // switch down
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 0.1f ,0.1f);
             if (o->oBehParams2ndByte == 0) {
-                if (cmm_play_onoff) {
+                if (mb64_play_onoff) {
                     o->oAction = 1;
                 }
             } else { // Blue
-                if (!cmm_play_onoff) {
+                if (!mb64_play_onoff) {
                     o->oAction = 1;
                 }
             }
@@ -6199,14 +6199,14 @@ void bhv_onoffblock(void) {
             break;
         case 1: //loop
             if (o->oBehParams2ndByte == 0) {
-                if (cmm_play_onoff) {
+                if (mb64_play_onoff) {
                     o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
                 } else {
                     load_object_collision_model();
                     o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
                 }
             } else {
-                if (cmm_play_onoff) {
+                if (mb64_play_onoff) {
                     load_object_collision_model();
                     o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
                 } else {
@@ -6247,7 +6247,7 @@ void bhv_woodplat_check_above(void) {
 }
 
 void bhv_woodplat(void) {
-    f32 waterLevel = cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+    f32 waterLevel = mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 
     switch(o->oAction) {
         case 0:

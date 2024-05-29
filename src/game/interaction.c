@@ -729,10 +729,10 @@ void reset_mario_pitch(struct MarioState *m) {
 }
 
 u8 coinloop = 0;
-extern u8 cmm_lopt_coinstar;
+extern u8 mb64_lopt_coinstar;
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         //BTCM COIN HEAL BEHAVIOR
         if (obj->oDamageOrCoinValue == 3) { //green coin
             if (save_file_get_badge_equip() & (1<<BADGE_HEAL)) {
@@ -864,12 +864,12 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
         m->lastStarCollected = (obj->oBehParams >> 24);
         //save_file_collect_star_or_key(m->numCoins, starIndex);
 
-        cmm_play_stars_bitfield |= ((u64)1 << starIndex);
+        mb64_play_stars_bitfield |= ((u64)1 << starIndex);
 
-        cmm_play_stars = 0;
+        mb64_play_stars = 0;
         for (u32 i=0;i<64;i++) {
-            if (cmm_play_stars_bitfield & ((u64)1 << i)) {
-                cmm_play_stars++;
+            if (mb64_play_stars_bitfield & ((u64)1 << i)) {
+                mb64_play_stars++;
             }
         }
 
@@ -1503,7 +1503,7 @@ u32 interact_koopa_shell(struct MarioState *m, UNUSED u32 interactType, struct O
 
             attack_object(obj, interaction);
             update_mario_sound_and_camera(m);
-            if (cmm_lopt_game != CMM_GAME_BTCM) {
+            if (mb64_lopt_game != MB64_GAME_BTCM) {
                 play_shell_music();
             }
             mario_drop_held_object(m);
@@ -1619,7 +1619,7 @@ u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *o
     u16 capTime = 0;
 
 
-    if (cmm_lopt_game == CMM_GAME_BTCM) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
         //BEYOND THE CURSED MIRROR INTERACTION
         if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
             gMarioState->powerup = 0;

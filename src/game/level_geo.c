@@ -27,7 +27,7 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
                                             // casting to a local struct as necessary.
 
         if (GET_HIGH_U16_OF_32(*params) != gAreaUpdateCounter) {
-            s32 snowMode = cmm_envfx_table[cmm_lopt_envfx];//GET_LOW_U16_OF_32(*params);
+            s32 snowMode = mb64_envfx_table[mb64_lopt_envfx];//GET_LOW_U16_OF_32(*params);
 
             vec3f_to_vec3s(camTo, gCurGraphNodeCamera->focus);
             vec3f_to_vec3s(camFrom, gCurGraphNodeCamera->pos);
@@ -59,8 +59,8 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
  * Geo function that generates a displaylist for the skybox. Can be assigned
  * as the function of a GraphNodeBackground.
  */
-extern u8 * cmm_skybox_table[];
-extern u8 cmm_lopt_bg;
+extern u8 * mb64_skybox_table[];
+extern u8 mb64_lopt_bg;
 Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
     Gfx *gfx = NULL;
     struct GraphNodeBackground *backgroundNode = (struct GraphNodeBackground *) node;
@@ -69,7 +69,7 @@ Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) 
         backgroundNode->unused = 0;
 #ifndef L3DEX2_ALONE
     } else if (callContext == GEO_CONTEXT_RENDER) {
-        if (cmm_skybox_table[cmm_lopt_bg*2] == NULL) {
+        if (mb64_skybox_table[mb64_lopt_bg*2] == NULL) {
             return NULL;
         }
         struct GraphNodeCamera *camNode = (struct GraphNodeCamera *) gCurGraphNodeRoot->views[0];

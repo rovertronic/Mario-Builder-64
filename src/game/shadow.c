@@ -230,7 +230,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     s->isDecal = TRUE;
 
     // Check for water under the shadow.
-    f32 waterLevel = cmm_get_water_level(x, y, z);
+    f32 waterLevel = mb64_get_water_level(x, y, z);
     f32 nx, ny, nz;
 
     if (waterLevel > FLOOR_LOWER_LIMIT_MISC

@@ -1866,6 +1866,6 @@ const Collision main_menu_seg7_collision[] = {
 
 #include "levels/menu/bigpainting/model.inc.c"
 
-FILINFO cmm_level_entries[MAX_FILES] = {0};
+FILINFO mb64_level_entries[MAX_FILES] = {0};
 
-u16 cmm_level_entry_piktcher[MAX_FILES][64][64] = {0};
+u16 mb64_level_entry_piktcher[MAX_FILES][64][64] = {0};

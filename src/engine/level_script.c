@@ -295,15 +295,15 @@ static void level_cmd_load_yay0(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_load_cmm(void) {
-    load_segment_decompress(0x06, cmm_theme_segments[cmm_lopt_game][0] , cmm_theme_segments[cmm_lopt_game][1]);
-    load_segment(0x0D, cmm_theme_segments[cmm_lopt_game][2], cmm_theme_segments[cmm_lopt_game][3], MEMORY_POOL_LEFT, NULL, NULL);
+static void level_cmd_load_mb64(void) {
+    load_segment_decompress(0x06, mb64_theme_segments[mb64_lopt_game][0] , mb64_theme_segments[mb64_lopt_game][1]);
+    load_segment(0x0D, mb64_theme_segments[mb64_lopt_game][2], mb64_theme_segments[mb64_lopt_game][3], MEMORY_POOL_LEFT, NULL, NULL);
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_load_cmm_models(void) {
+static void level_cmd_load_mb64_models(void) {
     *sStackTop++ = (uintptr_t) NEXT_CMD;
-    sCurrentCmd = segmented_to_virtual(cmm_theme_model_scripts[cmm_lopt_game]);
+    sCurrentCmd = segmented_to_virtual(mb64_theme_model_scripts[mb64_lopt_game]);
 }
 
 void level_cmd_fileselect_condition(void) {
@@ -1057,8 +1057,8 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_PUPPYLIGHT_NODE             */ level_cmd_puppylight_node,
     /*LEVEL_CMD_SET_ECHO                    */ level_cmd_set_echo,
     /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
-    /*LEVEL_CMD_LOAD_CMM                    */ level_cmd_load_cmm,
-    /*LEVEL_CMD_LOAD_CMM_MODELS             */ level_cmd_load_cmm_models,
+    /*LEVEL_CMD_LOAD_MB64                   */ level_cmd_load_mb64,
+    /*LEVEL_CMD_LOAD_MB64_MODELS            */ level_cmd_load_mb64_models,
 };
 
 

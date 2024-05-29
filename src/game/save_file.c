@@ -736,7 +736,7 @@ u32 save_file_get_badge_equip(void) {
     if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
         return 0;
     }
-    return cmm_play_badge_bitfield;
+    return mb64_play_badge_bitfield;
 }
 
 u32 save_file_get_badge_unlock(void) {
@@ -747,22 +747,22 @@ u32 save_file_get_badge_unlock(void) {
 }
 
 void save_file_set_badge_unlock(u32 flags) {
-    cmm_play_badge_bitfield |= (flags);
+    mb64_play_badge_bitfield |= (flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_equip(u32 flags) {
-    cmm_play_badge_bitfield |= (flags);
+    mb64_play_badge_bitfield |= (flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_unequip(u32 flags) {
-    cmm_play_badge_bitfield &= (~flags);
+    mb64_play_badge_bitfield &= (~flags);
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_badge_unequip_all(void) {
-    cmm_play_badge_bitfield = 0;
+    mb64_play_badge_bitfield = 0;
     gSaveFileModified = TRUE;
 }
 
@@ -1003,9 +1003,9 @@ u32 eu_get_language(void) {
 #endif
 
 u32 save_file_get_badge_equip(void) {
-    return cmm_play_badge_bitfield;
+    return mb64_play_badge_bitfield;
 }
 
 void save_file_set_badge_equip(u32 flags) {
-    cmm_play_badge_bitfield |= (flags);
+    mb64_play_badge_bitfield |= (flags);
 }

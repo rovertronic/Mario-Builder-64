@@ -36,7 +36,7 @@ void bobomb_act_explode(void) {
         explosion->oGraphYOffset += 100.0f;
 
         bobomb_spawn_coin();
-        create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
+        create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, MB64_DRAWDIST_LOW);
 
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
@@ -121,13 +121,13 @@ void generic_bobomb_free_loop(void) {
 
         case OBJ_ACT_LAVA_DEATH:
             if (obj_lava_death()) {
-                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
+                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, MB64_DRAWDIST_LOW);
             }
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
+            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, MB64_DRAWDIST_LOW);
             break;
     }
 
@@ -154,13 +154,13 @@ void stationary_bobomb_free_loop(void) {
 
         case OBJ_ACT_LAVA_DEATH:
             if (obj_lava_death()) {
-                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
+                create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, MB64_DRAWDIST_LOW);
             }
             break;
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, CMM_DRAWDIST_LOW);
+            create_respawner(MODEL_BLACK_BOBOMB, bhvBobomb, MB64_DRAWDIST_LOW);
             break;
     }
 

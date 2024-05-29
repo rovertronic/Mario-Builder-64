@@ -393,7 +393,7 @@ struct Object *spawn_water_droplet(struct Object *parent, struct WaterDropletPar
     }
 
     if (params->flags & WATER_DROPLET_FLAG_SET_Y_TO_WATER_LEVEL) {
-        newObj->oPosY = cmm_get_water_level(newObj->oPosX, newObj->oPosY, newObj->oPosZ);
+        newObj->oPosY = mb64_get_water_level(newObj->oPosX, newObj->oPosY, newObj->oPosZ);
     }
 
     if (params->flags & WATER_DROPLET_FLAG_RAND_OFFSET_XZ) {
@@ -1179,7 +1179,7 @@ static f32 cur_obj_move_y_and_get_water_level(f32 gravity, f32 buoyancy) {
         return FLOOR_LOWER_LIMIT;
     }
 
-    return cmm_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+    return mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
 }
 
 void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
@@ -2636,7 +2636,7 @@ void cur_obj_interact_with_floor_switch(void) {
         struct Object * switch_interacting = sInteractFloor->object;
 
         if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
-            cmm_play_onoff = switch_interacting->oBehParams2ndByte;
+            mb64_play_onoff = switch_interacting->oBehParams2ndByte;
             play_sound(SOUND_GENERAL2_BUTTON_PRESS, gGlobalSoundSource);
         }
     }

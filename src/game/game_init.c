@@ -1017,22 +1017,22 @@ Bool32 gIsGliden = FALSE;
 FATFS fs;
 FRESULT mount_success;
 FRESULT directory_success;
-FILINFO cmm_dir_info;
+FILINFO mb64_dir_info;
 
-struct cmm_level_save_header temp_cmm_save;
+struct mb64_level_save_header temp_mb64_save;
 
 
-u8 cmm_level_entry_count = 0;
+u8 mb64_level_entry_count = 0;
 FRESULT global_code;
 
-TCHAR *cmm_level_dir_name = "/Mario Builder 64 Levels";
-TCHAR *cmm_hack_dir_name = "/Mario Builder 64 Hacks";
+TCHAR *mb64_level_dir_name = "/Mario Builder 64 Levels";
+TCHAR *mb64_hack_dir_name = "/Mario Builder 64 Hacks";
 
-struct cmm_sram_config cmm_sram_configuration;
+struct mb64_sram_config mb64_sram_configuration;
 
 void create_level_file_path(TCHAR *buffer, TCHAR *filename, TCHAR *suffix) {
     TCHAR *s;
-    s = cmm_level_dir_name;
+    s = mb64_level_dir_name;
     while (*s) {
         *buffer++ = *s++;
     }
@@ -1050,16 +1050,16 @@ void create_level_file_path(TCHAR *buffer, TCHAR *filename, TCHAR *suffix) {
     *buffer++ = '\0';
 }
 
-struct cmm_level_save_header * get_level_info_from_filename(char * filename) {
+struct mb64_level_save_header * get_level_info_from_filename(char * filename) {
     u32 bytes_read;
     FIL read_file;
     TCHAR path[256];
     create_level_file_path(path, filename, NULL);
     f_open(&read_file,path, FA_READ);
-    f_read(&read_file,&temp_cmm_save,sizeof(temp_cmm_save),&bytes_read);
+    f_read(&read_file,&temp_mb64_save,sizeof(temp_mb64_save),&bytes_read);
     f_close(&read_file);
 
-    return &temp_cmm_save;
+    return &temp_mb64_save;
 }
 
 char filename_with_mb64[31];
@@ -1070,14 +1070,14 @@ u8 level_file_exists(char * filename) {
     return (f_stat(path, &fno) == FR_OK);
 }
 
-u8 cmm_level_entry_version[MAX_FILES];
+u8 mb64_level_entry_version[MAX_FILES];
 void load_level_files_from_sd_card(void) {
     DIR dir;
-    f_opendir(&dir,cmm_level_dir_name);
+    f_opendir(&dir,mb64_level_dir_name);
 
     // LEVEL ENTRIES ARE LOADED IN FILE SELECT
-    FILINFO * level_entries_ptr = segmented_to_virtual(cmm_level_entries);
-    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(cmm_level_entry_piktcher);
+    FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
+    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_piktcher);
 
     s16 i = -1;
     do {
@@ -1092,7 +1092,7 @@ void load_level_files_from_sd_card(void) {
                 i--;
                 continue;
             }
-            struct cmm_level_save_header * level_info = get_level_info_from_filename(level_entries_ptr[i].fname);
+            struct mb64_level_save_header * level_info = get_level_info_from_filename(level_entries_ptr[i].fname);
 
             s16 x;
             s16 y;
@@ -1101,12 +1101,12 @@ void load_level_files_from_sd_card(void) {
                     (*u16_array)[i][y][x] = level_info->piktcher[y][x];
                 } 
             }
-            cmm_level_entry_version[i] = level_info->version;
+            mb64_level_entry_version[i] = level_info->version;
         }
 
     } while ((level_entries_ptr[i].fname[0] != 0) && (i<MAX_FILES-1));
 
-    cmm_level_entry_count = i;
+    mb64_level_entry_count = i;
 
     f_closedir(&dir);
 }
@@ -1141,13 +1141,13 @@ void thread5_game_loop(UNUSED void *arg) {
     render_init();
 
     if (gSramProbe != 0) {
-        nuPiReadSram(0, &cmm_sram_configuration, ALIGN8(sizeof(cmm_sram_configuration)));
+        nuPiReadSram(0, &mb64_sram_configuration, ALIGN8(sizeof(mb64_sram_configuration)));
     }
-    if (cmm_sram_configuration.magic != SRAM_MAGIC) {
+    if (mb64_sram_configuration.magic != SRAM_MAGIC) {
         // If the SRAM magic fails, that means it's bzero'd or garbage data.
-        bzero(&cmm_sram_configuration,sizeof(cmm_sram_configuration));
-        cmm_sram_configuration.option_flags = ((OPT_MUSIC<<1)|(OPT_HUD<<1)|(OPT_CAMCOL<<1)|(OPT_CAMSOUND<<1));
-        cmm_sram_configuration.magic = SRAM_MAGIC;
+        bzero(&mb64_sram_configuration,sizeof(mb64_sram_configuration));
+        mb64_sram_configuration.option_flags = ((OPT_MUSIC<<1)|(OPT_HUD<<1)|(OPT_CAMCOL<<1)|(OPT_CAMSOUND<<1));
+        mb64_sram_configuration.magic = SRAM_MAGIC;
     }
 
     gSupportsLibpl = libpl_is_supported( LPL_ABI_VERSION_CURRENT );
@@ -1156,17 +1156,17 @@ void thread5_game_loop(UNUSED void *arg) {
         lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
         gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_OGRE)||(pluginInfo->plugin_id == LPL_GLIDE64));
     }
-    //init cmm file structure
+    //init mb64 file structure
     cart_init();
     mount_success = f_mount(&fs, "", 1);
     if (mount_success == FR_OK) {
         //mount is successful
 
         //create directory if not exist
-        directory_success = f_stat(cmm_level_dir_name,&cmm_dir_info);
+        directory_success = f_stat(mb64_level_dir_name,&mb64_dir_info);
         if (directory_success == FR_NO_FILE) {
             //does not exist, therefore make
-            f_mkdir(cmm_level_dir_name);
+            f_mkdir(mb64_level_dir_name);
         }
         
     }
