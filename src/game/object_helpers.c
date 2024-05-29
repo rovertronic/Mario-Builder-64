@@ -2403,8 +2403,9 @@ void cur_obj_shake_screen(s32 shake) {
 }
 
 s32 obj_attack_collided_from_other_object(struct Object *obj) {
-    if (obj->numCollidedObjs != 0) {
-        struct Object *other = obj->collidedObjs[0];
+    s32 ret = FALSE;
+    for (s32 i = 0; i < obj->numCollidedObjs; i++) {
+        struct Object *other = obj->collidedObjs[i];
 
         if (other != gMarioObject) {
             switch (other->oInteractType) {
@@ -2416,19 +2417,19 @@ s32 obj_attack_collided_from_other_object(struct Object *obj) {
                 case INTERACT_GRABBABLE:
                     if (other->behavior != segmented_to_virtual(bhvBobomb) &&
                         other->behavior != segmented_to_virtual(bhvBowser)) {
-                        return FALSE;
+                        continue;
                     }
                     break;
                 default:
-                    return FALSE;
+                    continue;
             }
             other->oInteractStatus |= INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED
                                       | INT_STATUS_TOUCHED_BOB_OMB + ATTACK_FAST_ATTACK;
-            return TRUE;
+            ret = TRUE;
         }
     }
 
-    return FALSE;
+    return ret;
 }
 
 s32 cur_obj_was_attacked_or_ground_pounded(void) {
