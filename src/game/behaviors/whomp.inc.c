@@ -143,8 +143,11 @@ void whomp_jump(void) {
 void whomp_land(void) {
     if (o->oSubAction == 0 && o->oMoveFlags & OBJ_MOVE_LANDED) {
         struct Object * crushobj = spawn_object(o,MODEL_NONE,bhvCrushHandler);
+        crushobj->hitboxRadius = 150.f;
+        crushobj->hitboxHeight = 100.f;
         crushobj->oPosX += sins(o->oFaceAngleYaw)*150.0f;
         crushobj->oPosZ += coss(o->oFaceAngleYaw)*150.0f;
+        crushobj->oPosY -= 50.f;
         cur_obj_play_sound_2(SOUND_OBJ_WHOMP);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         o->oVelY = 0.0f;

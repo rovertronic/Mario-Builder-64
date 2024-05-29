@@ -51,7 +51,7 @@ void small_breakable_box_act_move(void) {
 
     if ((collisionFlags & OBJ_COL_FLAG_HIT_WALL) && (ABS(o->oForwardVel) > 1.0f)) {
         spawn_mist_particles();
-        spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 0.7f, 3);
+        spawn_triangle_break_particles(10, MODEL_DIRT_ANIMATION, 0.7f, 3);
         if (!GET_BPARAM3(o->oBehParams)) {
             obj_spawn_yellow_coins(o, 3);
         }

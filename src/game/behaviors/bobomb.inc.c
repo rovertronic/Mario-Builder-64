@@ -2,12 +2,12 @@
 
 static struct ObjectHitbox sBobombHitbox = {
     /* interactType:      */ INTERACT_GRABBABLE,
-    /* downOffset:        */ 0,
+    /* downOffset:        */ 20,
     /* damageOrCoinValue: */ 0,
     /* health:            */ 0,
     /* numLootCoins:      */ 0,
     /* radius:            */ 65,
-    /* height:            */ 113,
+    /* height:            */ 133,
     /* hurtboxRadius:     */ 0,
     /* hurtboxHeight:     */ 0,
 };

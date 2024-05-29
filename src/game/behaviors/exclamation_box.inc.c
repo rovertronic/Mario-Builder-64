@@ -247,9 +247,9 @@ void exclamation_box_act_explode(void) {
     exclamation_box_spawn_contents(cmm_exclamation_box_contents, o->oBehParams2ndByte);
     spawn_mist_particles_variable(0, 0, 46.0f);
     if (cmm_lopt_game == CMM_GAME_BTCM) {
-        spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
+        spawn_triangle_break_particles(10, MODEL_CARTOON_STAR, 0.3f, o->oAnimState);
     } else {
-        spawn_triangle_break_particles(20, MODEL_CARTOON_STAR, 0.3f, 3);
+        spawn_triangle_break_particles(10, MODEL_CARTOON_STAR, 0.3f, 3);
     }
 
     create_sound_spawner(SOUND_GENERAL_BREAK_BOX);

@@ -9489,7 +9489,6 @@ const BehaviorScript bhvCrushHandler[] = {
     BEGIN(OBJ_LIST_DESTRUCTIVE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO),
     SET_INTERACT_TYPE(INTERACT_CRUSH),
-    SET_HITBOX(/*Radius*/ 200, /*Height*/ 160),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),
         CALL_NATIVE(bhv_crush_handler),

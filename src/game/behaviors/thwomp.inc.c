@@ -46,6 +46,8 @@ void grindel_thwomp_act_floating(void) {
     if (o->oTimer > 25) {
         o->oAction = GRINDEL_THWOMP_ACT_FALLING;
         o->prevObj = spawn_object(o,MODEL_NONE,bhvCrushHandler);
+        o->prevObj->hitboxRadius = 200.f;
+        o->prevObj->hitboxHeight = 100.f;
     }
 }
 
