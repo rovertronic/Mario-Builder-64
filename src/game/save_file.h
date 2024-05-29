@@ -57,10 +57,8 @@ enum Options {
     OPT_HUD,
     OPT_CAMCOL,
     OPT_HUDLAYOUT,
-
-    //unused
-    OPT_MINIMAP,
-    OPT_SAVE,
+    OPT_CAMSOUND,
+    OPT_SPEEDRUNTIMER,
 };
 
 struct MainMenuSaveData {

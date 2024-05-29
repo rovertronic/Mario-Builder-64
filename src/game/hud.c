@@ -811,10 +811,23 @@ void render_hud_keys(void) {
 void render_hud_timer(void) {
     Texture *(*hudLUT)[58] = segmented_to_virtual(&main_hud_lut);
     u16 timerValFrames = gHudDisplay.timer;
+    if (cmm_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER)) {
+        timerValFrames = cmm_play_speedrun_timer;
+    }
+
     u16 timerMins = timerValFrames / (30 * 60);
     u16 timerSecs = (timerValFrames - (timerMins * 1800)) / 30;
     u16 timerFracSecs = ((timerValFrames - (timerMins * 1800) - (timerSecs * 30)) & 0xFFFF) / 3;
 
+    s8 minxoffset = 0;
+    if (timerMins > 9) {
+        minxoffset = -14;
+    }
+    if (timerMins > 99) {
+        timerMins = 99;
+        timerSecs = 0;
+        timerFracSecs = 0;
+    }
 /*
 #if MULTILANG
     switch (eu_get_language()) {
@@ -827,7 +840,7 @@ void render_hud_timer(void) {
 
     if (cmm_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
         //modern
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%0d", timerMins);
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+HUD_TIMER_MODERN_OFFSET+minxoffset, HUD_TOP_Y, "%0d", timerMins);
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%02d", timerSecs);
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%d", timerFracSecs);
 
@@ -835,9 +848,9 @@ void render_hud_timer(void) {
         render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(46)+HUD_TIMER_MODERN_OFFSET, 8, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
         gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
     } else {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185, "TIME");
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150)+minxoffset, 185, "TIME");
 
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91), 185, "%0d", timerMins);
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+minxoffset, 185, "%0d", timerMins);
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71), 185, "%02d", timerSecs);
         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37), 185, "%d", timerFracSecs);
 
@@ -1081,7 +1094,7 @@ void render_hud(void) {
                 render_hud_camera_status();
             }
 
-            if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
+            if ((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER)||(cmm_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER))) {
                 render_hud_timer();
             }
 
