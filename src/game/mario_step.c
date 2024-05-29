@@ -20,7 +20,7 @@
 #include "platform_displacement.h"
 #include "mario_actions_airborne.h"
 
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 #include "config.h"
 

@@ -34,7 +34,7 @@
 #include "puppylights.h"
 #include "level_commands.h"
 #include "game/rovent.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 #include "config.h"
 

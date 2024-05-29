@@ -1,5 +1,5 @@
-#ifndef cursed_mirror_maker_h
-#define cursed_mirror_maker_h
+#ifndef mb64_h
+#define mb64_h
 #include "libcart/ff/ff.h"
 
 #define CMM_TILE_POOL_SIZE 15000

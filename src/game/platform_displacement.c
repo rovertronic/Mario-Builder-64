@@ -10,7 +10,7 @@
 #include "game_init.h"
 #include "types.h"
 #include "sm64.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 #include "behavior_data.h"
 
 u16 D_8032FEC0 = 0;

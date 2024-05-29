@@ -33,7 +33,7 @@
 #include "level_update.h"
 #include "hud.h"
 #include "rendering_graph_node.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 s8 tab_index = 0;
 u16 menu_sintimer = 0;

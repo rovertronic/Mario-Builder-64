@@ -30,7 +30,7 @@
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
 #include "game/emutest.h"
-#include "game/cursed_mirror_maker.h"
+#include "game/mb64.h"
 
 #include "config.h"
 

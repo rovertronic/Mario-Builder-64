@@ -15,7 +15,7 @@
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];

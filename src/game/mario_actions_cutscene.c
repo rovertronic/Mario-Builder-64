@@ -28,7 +28,7 @@
 #include "rumble_init.h"
 #include "rovent.h"
 #include "actors/group0.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 // static struct Object *sIntroWarpPipeObj;
 // static struct Object *sEndPeachObj;

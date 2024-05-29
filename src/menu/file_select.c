@@ -23,7 +23,7 @@
 #include "text_strings.h"
 #include "game/puppycamold.h"
 #include "actors/group0.h"
-#include "game/cursed_mirror_maker.h"
+#include "game/mb64.h"
 #include "seq_ids.h"
 
 #include "eu_translation.h"

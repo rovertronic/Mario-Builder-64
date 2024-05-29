@@ -13,7 +13,7 @@
 #include "spawn_object.h"
 #include "types.h"
 #include "puppylights.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 /**
  * Attempt to allocate an object from freeList (singly linked) and append it

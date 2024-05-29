@@ -22,7 +22,7 @@
 #include "ingame_menu.h"
 #include "puppycamold.h"
 #include "game/rovent.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 #ifdef UNIQUE_SAVE_DATA
 u16 MENU_DATA_MAGIC = 0x4849;

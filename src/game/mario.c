@@ -39,7 +39,7 @@
 #include "actors/group14.h"
 #include "rovent.h"
 #include "ingame_menu.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 #include "platform_displacement.h"
 
 #include "src/buffers/framebuffers.h"

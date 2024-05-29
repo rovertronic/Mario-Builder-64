@@ -42,7 +42,7 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 #include "rovent.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
 #include "actors/group17.h"
@@ -187,8 +187,8 @@ s16 cmm_tip_timer = 0;
 
 struct ExclamationBoxContents *cmm_exclamation_box_contents;
 
-#include "src/game/cursed_mirror_maker_df.inc.c"
-#include "src/game/cursed_mirror_maker_data.inc.c"
+#include "src/game/mb64_display_funcs.inc.c"
+#include "src/game/mb64_data.inc.c"
 
 s32 cmm_count_stars(void) {
     s32 numStars = 0;
@@ -2732,7 +2732,7 @@ void update_painting() {
 }
 
 //if (gSramProbe != 0) {
-#include "src/game/cursed_mirror_maker_painting_frames.inc.c"
+#include "src/game/mb64_painting_frames.inc.c"
 
 TCHAR cmm_file_name[MAX_FILE_NAME_SIZE];
 FIL cmm_file;
@@ -3870,4 +3870,4 @@ void stop_cmm_extra_music(u8 index) {
     }
 }
 
-#include "src/game/cursed_mirror_maker_menu.inc.c"
+#include "src/game/mb64_menu.inc.c"

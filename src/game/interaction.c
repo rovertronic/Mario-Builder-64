@@ -27,7 +27,7 @@
 #include "rovent.h"
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 #include "mario_actions_automatic.h"
 
 u8  sDelayInvincTimer;

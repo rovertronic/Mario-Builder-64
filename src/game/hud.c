@@ -23,7 +23,7 @@
 #include "actors/group14.h"
 
 #include "rovent.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 #include "config.h"
 

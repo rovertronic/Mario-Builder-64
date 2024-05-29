@@ -31,7 +31,7 @@
 #include "vc_ultra.h"
 #include "profiling.h"
 #include "emutest.h"
-#include "cursed_mirror_maker.h"
+#include "mb64.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"

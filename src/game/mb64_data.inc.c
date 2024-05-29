@@ -2223,7 +2223,7 @@ char *cmm_theme_string_table[] = {
     "Minecraft",
 };
 
-//cmm themes moved to cursed_mirror_maker.h to work with object df
+//cmm themes moved to mb64.h to work with object df
 //example: ice bully appears in snow theme
 //impossible to extern enum : (
 
