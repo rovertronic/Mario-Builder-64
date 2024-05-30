@@ -2391,25 +2391,18 @@ s32 draw_mb64_pause_menu(void) {
             }
 
             mb64_joystick = joystick_direction();
+            s32 oldindex = mb64_menu_index;
             switch(mb64_joystick) {
                 case 2:
-                    mb64_menu_index++;
-                    mb64_menu_index = (mb64_menu_index + 4) % 4;
-                    if (mb64_menu_index==3&&badge_count==0) {
-                        mb64_menu_index++;
-                    }
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    mb64_menu_index = MIN(mb64_menu_index + 1, (badge_count==0 ? 2 : 3));
                     break;
                 case 4:
-                    mb64_menu_index--;
-                    mb64_menu_index = (mb64_menu_index + 4) % 4;
-                    if (mb64_menu_index==3&&badge_count==0) {
-                        mb64_menu_index--;
-                    }
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                    mb64_menu_index = MAX(mb64_menu_index - 1, 0);
                     break;
             }
-            mb64_menu_index = (mb64_menu_index + 4) % 4;
+            if (oldindex != mb64_menu_index) {
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            }
 
             if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
                 switch(mb64_menu_index) {
@@ -2488,6 +2481,9 @@ s32 draw_mb64_pause_menu(void) {
                     nuPiWriteSram(0, &mb64_sram_configuration, ALIGN8(sizeof(mb64_sram_configuration)));
                 }
             } else if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                    mb64_menu_index = RETURN_OPTION_INDEX;
+                }
                 switch(mb64_menu_index) {
                     case RETURN_OPTION_INDEX:
                         mb64_elta = FALSE;
