@@ -444,4 +444,13 @@ enum imbue {
     IMBUE_RED_COIN,
 };
 
+extern s32 mb64_min_coord;
+extern s32 mb64_max_coord;
+#define MB64_BOUNDARY_INNER_FLOOR   (1 << 0) // Has the main floor
+#define MB64_BOUNDARY_OUTER_FLOOR   (1 << 1) // Has the fading outer floor
+#define MB64_BOUNDARY_INNER_WALLS   (1 << 2) // Has the inner walls going up to boundary height - has fading part if death plane
+#define MB64_BOUNDARY_OUTER_WALLS   (1 << 3) // Has fading outer walls extending downwards
+#define MB64_BOUNDARY_CEILING       (1 << 4) // Ceiling above the level
+
+
 #endif

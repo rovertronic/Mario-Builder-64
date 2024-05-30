@@ -67,9 +67,6 @@
 
 STATIC_ASSERT(((EXTENDED_BOUNDS_MODE >= 0) && (EXTENDED_BOUNDS_MODE <= 3)), "You must set a valid extended bounds mode!");
 
-
-#define TRUE_LEVEL_BOUNDARY 0x4000L // cells dont extend this far
-
 /**
  * The amount of cells in each axis in an area.
  */

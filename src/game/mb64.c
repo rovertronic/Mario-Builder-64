@@ -156,7 +156,6 @@ u8 mb64_lopt_boundary = 0;
 u8 mb64_lopt_boundary_height = 0;
 u8 mb64_lopt_game = MB64_GAME_VANILLA;
 u8 mb64_lopt_size = 0;
-u8 mb64_newsize = 0; // Used for changing level sizes
 u8 mb64_lopt_template = 0;
 u8 mb64_lopt_coinstar = 0;
 u8 mb64_lopt_waterlevel = 0;
@@ -252,6 +251,8 @@ void reset_play_state(void) {
 
 u8 mb64_grid_min = 0;
 u8 mb64_grid_size = 64;
+s32 mb64_min_coord;
+s32 mb64_max_coord;
 
 u32 coords_in_range(s8 pos[3]) {
     if (pos[0] < mb64_grid_min || pos[0] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
@@ -1687,6 +1688,7 @@ void generate_terrain_gfx(void) {
 
     retroland_filter_on();
 
+    // Recalculate level boundary
     mb64_curr_boundary = mb64_boundary_table[mb64_lopt_boundary];
     if (mb64_lopt_boundary_height == 0) {
         mb64_curr_boundary &= ~MB64_BOUNDARY_CEILING;
@@ -1694,6 +1696,12 @@ void generate_terrain_gfx(void) {
     }
     if ((mb64_curr_boundary & MB64_BOUNDARY_INNER_FLOOR) && !(mb64_curr_boundary & (MB64_BOUNDARY_INNER_WALLS | MB64_BOUNDARY_OUTER_WALLS))) {
         mb64_curr_boundary |= MB64_BOUNDARY_OUTER_FLOOR;
+    }
+    mb64_min_coord = (mb64_grid_min - 32) * TILE_SIZE;
+    mb64_max_coord = (mb64_grid_min + mb64_grid_size - 32) * TILE_SIZE;
+    if (!(mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR)) {
+        mb64_min_coord -= 8*TILE_SIZE;
+        mb64_max_coord += 8*TILE_SIZE;
     }
 
     process_tiles(PROCESS_TILE_VPLEX);
@@ -2938,7 +2946,6 @@ void load_level(void) {
     mb64_lopt_waterlevel = mb64_save.waterlevel;
     mb64_lopt_secret = mb64_save.secret;
 
-    mb64_newsize = mb64_lopt_size;
     switch (mb64_lopt_size) {
         case 0:
             mb64_grid_min = 16;
@@ -3549,7 +3556,6 @@ void sb_loop(void) {
                     case 8: // options
                         switch (mb64_param_selection) {
                             case 0: // settings menu
-                                mb64_newsize = mb64_lopt_size;
                                 mb64_menu_state = MB64_MAKE_SETTINGS;
                                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                                 mb64_menu_start_timer = 0;

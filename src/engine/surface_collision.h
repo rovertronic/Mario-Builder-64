@@ -4,6 +4,7 @@
 #include <PR/ultratypes.h>
 
 #include "types.h"
+#include "game/mb64.h"
 
 #include "config/config_world.h"
 
@@ -16,10 +17,10 @@
 #define FLOOR_LOWER_LIMIT_MISC      (FLOOR_LOWER_LIMIT + 1000)
 
 #define is_outside_level_bounds(xPos, zPos) \
-    (((xPos) <= -TRUE_LEVEL_BOUNDARY) ||     \
-     ((xPos) >=  TRUE_LEVEL_BOUNDARY) ||     \
-     ((zPos) <= -TRUE_LEVEL_BOUNDARY) ||     \
-     ((zPos) >=  TRUE_LEVEL_BOUNDARY))
+    (((xPos) <= mb64_min_coord) ||     \
+     ((xPos) >= mb64_max_coord) ||     \
+     ((zPos) <= mb64_min_coord) ||     \
+     ((zPos) >= mb64_max_coord))
 
 #define SURFACE_YAW(s) ({ \
     Vec3f normal; \

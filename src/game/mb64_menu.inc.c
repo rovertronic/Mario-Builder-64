@@ -923,8 +923,6 @@ void draw_mb64_settings_music(f32 xoff, f32 yoff) {
     }
 }
 
-struct mb64_settings_button mb64_change_size_button = {NULL,  &mb64_newsize, mb64_levelsize_string_table, ARRAY_COUNT(mb64_levelsize_string_table), NULL, NULL};
-
 extern u8 mb64_mm_state; //externing a variable in the same file that it's defined in? more likely than you think. how heinous.
 void draw_mb64_settings_system(f32 xoff, f32 yoff) {
     char strbuf[50];
