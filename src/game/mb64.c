@@ -54,6 +54,7 @@
 #include "mario_actions_automatic.h"
 #include "levels/scripts.h"
 #include "emutest.h"
+#include "puppyprint.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
@@ -421,15 +422,18 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     return MB64_FACESHAPE_EMPTY;
 }
 
-#define place_occupy_data(pos) { \
-    mb64_grid_data[pos[0]][pos[1]][pos[2]].occupied = TRUE; \
+u32 tile_is_occupied(s8 pos[3]) {
+    u32 type = get_grid_tile(pos)->type;
+    if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) return TRUE;
+    // iterate over objects
+    for (u32 i = 0; i < mb64_object_count; i++) {
+        struct mb64_obj *obj = &mb64_object_data[i];
+        if (obj->x == pos[0] && obj->y == pos[1] && obj->z == pos[2]) {
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
-
-#define remove_occupy_data(pos) { \
-    mb64_grid_data[pos[0]][pos[1]][pos[2]].occupied = FALSE; \
-}
-
-#define get_occupy_data(pos) (coords_in_range(pos) ? get_grid_tile(pos)->occupied : FALSE)
 
 s8 cullOffsetLUT[6][3] = {
     {0, 1, 0},
@@ -2379,7 +2383,6 @@ void place_tile(s8 pos[3]) {
     }
     // If placing a cull marker, check that its actually next to a tile
     if (mb64_id_selection == TILE_TYPE_CULL && is_cull_marker_useless(pos)) {
-        remove_occupy_data(pos);
         return;
     }
 
@@ -2484,8 +2487,6 @@ void remove_trajectory(u32 index) {
 
 
 void delete_object(s8 pos[3], s32 index) {
-    remove_occupy_data(pos);
-
     if (mb64_object_type_list[mb64_object_data[index].type].flags & OBJ_TYPE_TRAJECTORY) { 
         remove_trajectory(mb64_object_data[index].bparam);
     }
@@ -2630,18 +2631,16 @@ void place_thing_action(void) {
         return;
     }
     //tiles and objects share occupancy data
-    if (!get_occupy_data(mb64_cursor_pos)) {
+    if (!tile_is_occupied(mb64_cursor_pos)) {
         if (mb64_place_mode == MB64_PM_TILE) {
             //MB64_PM_TILE
             if (tile_sanity_check()) {
-                place_occupy_data(mb64_cursor_pos);
                 place_tile(mb64_cursor_pos);
                 generate_terrain_gfx();
             }
         } else if (mb64_place_mode == MB64_PM_OBJ){
             //MB64_PM_OBJECT
             if (object_sanity_check()) {
-                place_occupy_data(mb64_cursor_pos);
                 place_object(mb64_cursor_pos);
                 generate_object_preview();
             }
@@ -2662,7 +2661,6 @@ void delete_useless_cull_markers() {
         }
 
         // Useless, delete
-        remove_occupy_data(pos);
         remove_terrain_data(pos);
         mb64_tile_count--;
 
@@ -2686,7 +2684,6 @@ void delete_tile_action(s8 pos[3]) {
         //search for tile to delete
         if ((mb64_tile_data[i].x == pos[0])&&(mb64_tile_data[i].y == pos[1])&&(mb64_tile_data[i].z == pos[2])) {
             index = i;
-            remove_occupy_data(pos);
             remove_terrain_data(pos);
             play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
             mb64_tile_count--;
@@ -2994,7 +2991,6 @@ void load_level(void) {
 
         place_terrain_data(pos, mb64_tile_data[i].type, mb64_tile_data[i].rot, mb64_tile_data[i].mat);
         get_grid_tile(pos)->waterlogged = mb64_tile_data[i].waterlogged;
-        if (mb64_tile_data[i].type != TILE_TYPE_WATER) place_occupy_data(pos);
     }
     // Fill in remaining indices that were unused
     for (u32 i = oldIndex + 1; i < ARRAY_COUNT(mb64_tile_data_indices); i++) {
@@ -3006,7 +3002,6 @@ void load_level(void) {
         //bcopy(&mb64_save.objects[i],&mb64_object_data[i],sizeof(mb64_object_data[i]));
         s8 pos[3];
         vec3_set(pos, mb64_object_data[i].x, mb64_object_data[i].y, mb64_object_data[i].z)
-        place_occupy_data(pos);
         if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_TRAJECTORY) {
             mb64_trajectories_used++;
         }
@@ -3536,7 +3531,7 @@ void sb_loop(void) {
                             }
                         }
 
-                        if (get_occupy_data(mb64_cursor_pos) && !at_spawn_point) {
+                        if (tile_is_occupied(mb64_cursor_pos) && !at_spawn_point) {
                             mb64_show_error_message("Cannot start test inside another tile or object!");
                             break;
                         }
