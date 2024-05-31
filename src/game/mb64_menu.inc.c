@@ -2404,7 +2404,10 @@ s32 draw_mb64_pause_menu(void) {
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
             }
 
-            if (gPlayer1Controller->buttonPressed & (A_BUTTON|B_BUTTON|START_BUTTON)) {
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON|START_BUTTON)) {
+                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                    mb64_menu_index = 0;
+                }
                 switch(mb64_menu_index) {
                     case 0: // continue
                         returnval = 1;
