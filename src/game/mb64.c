@@ -2743,7 +2743,7 @@ TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
 FIL mb64_file;
 FILINFO mb64_file_info;
 
-char file_header_string[] = "MB64-v1.0";
+char file_header_string[] = "MB64-v1.1";
 
 extern u16 sRenderedFramebuffer;
 #define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)

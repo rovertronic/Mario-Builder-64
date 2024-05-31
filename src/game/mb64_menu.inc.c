@@ -1569,16 +1569,15 @@ void mb64_mm_generic_anim_check(s32 canBack) {
     }
 }
 
-void mb64_mm_no_files_anim_check(UNUSED s32 canBack) {
-    if (mb64_menu_start_timer == -1 || mb64_menu_start_timer > 10) {
-        if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
-            mb64_menu_end_timer = 0;
-            mb64_menu_going_back = -1;
-            mb64_menu_start_timer = -1;
-            mb64_mm_reset_all_buttons(0.f);
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+void mb64_mm_files_anim_check(s32 canBack) {
+    if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
+        if (mb64_level_entry_count == 0) return;
+        if (mb64_level_entry_version[mb64_menu_index] > MB64_VERSION) {
+            play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+            return;
         }
     }
+    mb64_mm_generic_anim_check(canBack);
 }
 
 void mb64_mm_make_anim_check(UNUSED s32 canBack) {
@@ -1639,8 +1638,8 @@ s32 mb64_mm_generic_anim_out(s32 len, s32 canBack) {
     return mb64_mm_anim_out(len, canBack, mb64_mm_generic_anim_check, 23.f);
 }
 
-s32 mb64_mm_no_files_anim_out(void) {
-    return mb64_mm_anim_out(1, TRUE, mb64_mm_no_files_anim_check, 23.f);
+s32 mb64_mm_files_anim_out(void) {
+    return mb64_mm_anim_out(5, TRUE, mb64_mm_files_anim_check, 23.f);
 }
 
 s32 mb64_mm_keyboard_anim_out(void) {
@@ -2158,7 +2157,7 @@ s32 mb64_main_menu(void) {
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
                 print_maker_string_ascii(55 + mb64_menu_button_vels[0][0],200,"No levels currently loaded yet.",MB64_TEXT_YELLOW);
-                if (mb64_mm_no_files_anim_out()) {
+                if (mb64_mm_files_anim_out()) {
                     mb64_menu_start_timer = 0;
                     if (mb64_menu_going_back == -1) {
                         mb64_mm_state = mb64_mm_files_prev_menu;
@@ -2186,7 +2185,7 @@ s32 mb64_main_menu(void) {
 
             s32 tempindex = mb64_menu_index;
             mb64_menu_index -= mb64_mm_page*PAGE_SIZE; // horrible code to fix animation
-            if (mb64_mm_generic_anim_out(5, TRUE)) {
+            if (mb64_mm_files_anim_out()) {
                 mb64_menu_start_timer = 0;
                 if (mb64_menu_going_back == -1) {
                     mb64_mm_state = mb64_mm_files_prev_menu;
@@ -2250,7 +2249,7 @@ s32 mb64_main_menu(void) {
                 gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-                if (MB64_VERSION < mb64_level_entry_version[i]) {
+                if (MB64_VERSION < mb64_level_entry_version[startRenderIndex + i]) {
                     print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),"Created in future version, update to play.",MB64_TEXT_RED);
                 } else {
                     print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
@@ -2270,7 +2269,7 @@ s32 mb64_main_menu(void) {
             int_to_str_slash(mb64_mm_page+1, mb64_mm_pages, (u8 *)&mb64_mm_txt_pages[6]);
             print_maker_string(42,12 - mb64_menu_title_vels[0],mb64_mm_txt_pages,FALSE);
 
-            if (mb64_level_entry_version[mb64_menu_index] <= MB64_VERSION && mb64_menu_end_timer == 1 && mb64_menu_going_back == 1) {
+            if (mb64_menu_end_timer == 1 && mb64_menu_going_back == 1) {
                 mb64_mode = MB64_MODE_UNINITIALIZED;
                 reset_play_state();
                 int i = 0;

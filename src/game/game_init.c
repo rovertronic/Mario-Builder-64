@@ -1088,8 +1088,14 @@ void load_level_files_from_sd_card(void) {
                 // Reached end of directory
                 continue;
             }
-            if (strlen(level_entries_ptr[i].fname) > MAX_FILE_NAME_SIZE - 1) {
+            s32 filenamelen = strlen(level_entries_ptr[i].fname);
+            if (filenamelen > MAX_FILE_NAME_SIZE - 1) {
                 // Too long level name, skip
+                i--;
+                continue;
+            }
+            if ((filenamelen > 5) && (strcmp(level_entries_ptr[i].fname + (filenamelen - 5), ".mb64"))) {
+                // File is not an .mb64 file
                 i--;
                 continue;
             }
