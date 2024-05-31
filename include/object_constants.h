@@ -991,10 +991,11 @@ enum oBehParam1stByteStarAct { // BPARAM1
     #define SPAWN_STAR_ARC_CUTSCENE_BP_DEFAULT_STAR         0x0
     #define SPAWN_STAR_ARC_CUTSCENE_BP_HIDDEN_STAR          0x1
     /* oAction */
-    #define SPAWN_STAR_ARC_CUTSCENE_ACT_START               0x0
-    #define SPAWN_STAR_ARC_CUTSCENE_ACT_GO_TO_HOME          0x1
-    #define SPAWN_STAR_ARC_CUTSCENE_ACT_BOUNCE              0x2
-    #define SPAWN_STAR_ARC_CUTSCENE_ACT_END                 0x3
+    #define SPAWN_STAR_WAIT_FOR_CUTSCENE                    0x0
+    #define SPAWN_STAR_ARC_CUTSCENE_ACT_START               0x1
+    #define SPAWN_STAR_ARC_CUTSCENE_ACT_GO_TO_HOME          0x2
+    #define SPAWN_STAR_ARC_CUTSCENE_ACT_BOUNCE              0x3
+    #define SPAWN_STAR_ARC_CUTSCENE_ACT_END                 0x4
 
 /* Celebration Star */
     /* oAction */
