@@ -1690,12 +1690,14 @@ void generate_terrain_gfx(void) {
 
     // Recalculate level boundary
     mb64_curr_boundary = mb64_boundary_table[mb64_lopt_boundary];
-    if (mb64_lopt_boundary_height == 0) {
-        mb64_curr_boundary &= ~MB64_BOUNDARY_CEILING;
-        mb64_curr_boundary &= ~MB64_BOUNDARY_INNER_WALLS;
-    }
-    if ((mb64_curr_boundary & MB64_BOUNDARY_INNER_FLOOR) && !(mb64_curr_boundary & (MB64_BOUNDARY_INNER_WALLS | MB64_BOUNDARY_OUTER_WALLS))) {
-        mb64_curr_boundary |= MB64_BOUNDARY_OUTER_FLOOR;
+    if (mb64_curr_boundary & MB64_BOUNDARY_INNER_FLOOR) {
+        if (mb64_lopt_boundary_height == 0) {
+            mb64_curr_boundary &= ~MB64_BOUNDARY_CEILING;
+            mb64_curr_boundary &= ~MB64_BOUNDARY_INNER_WALLS;
+        }
+        if (!(mb64_curr_boundary & (MB64_BOUNDARY_INNER_WALLS | MB64_BOUNDARY_OUTER_WALLS))) {
+            mb64_curr_boundary |= MB64_BOUNDARY_OUTER_FLOOR;
+        }
     }
     mb64_min_coord = (mb64_grid_min - 32) * TILE_SIZE;
     mb64_max_coord = (mb64_grid_min + mb64_grid_size - 32) * TILE_SIZE;
