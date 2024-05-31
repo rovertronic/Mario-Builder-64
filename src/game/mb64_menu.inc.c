@@ -178,7 +178,7 @@ void full_menu_reset() {
     mb64_global_scissor_top = 0;
     mb64_global_scissor_bottom = SCREEN_HEIGHT;
     mb64_menu_index = 0;
-    mb64_menu_index_max = 1;
+    mb64_menu_index_max = 256;
     mb64_tip_timer = 0;
     mb64_topleft_timer = 0;
     mb64_konami_code_cur_index = 0;

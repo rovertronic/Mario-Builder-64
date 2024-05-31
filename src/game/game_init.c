@@ -1013,6 +1013,7 @@ void setup_game_memory(void) {
  */
 Bool32 gSupportsLibpl = FALSE;
 Bool32 gIsGliden = FALSE;
+Bool32 gIsWidescreen = FALSE;
 
 FATFS fs;
 FRESULT mount_success;

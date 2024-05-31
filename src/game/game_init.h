@@ -97,6 +97,7 @@ void display_and_vsync(void);
 
 extern Bool32 gSupportsLibpl;
 extern Bool32 gIsGliden;
+extern Bool32 gIsWidescreen;
 
 #define MAX_FILES 251
 extern u8 mb64_level_entry_version[MAX_FILES];
