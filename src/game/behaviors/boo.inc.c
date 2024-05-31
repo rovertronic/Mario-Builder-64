@@ -198,6 +198,7 @@ static void boo_reset_after_hit(void) {
     o->oMoveAngleYaw = o->oBooMoveYawBeforeHit;
     o->oFlags |= OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;
     o->oInteractStatus = INT_STATUS_NONE;
+    o->oFaceAngleRoll = 0;
 }
 
 // called iff boo/big boo/cage boo is in action 2, which only occurs if it was non-attack-ly interacted with/bounced on?
@@ -625,7 +626,7 @@ void bhv_big_boo_loop(void) {
 
     cur_obj_update_floor_and_walls();
 
-    if (!SURFACE_IS_UNSAFE(o->oFloorType) && !o->oFloor->object) {
+    if (!SURFACE_IS_UNSAFE(o->oFloorType) && !o->oFloor->object && (o->oImbue != IMBUE_STAR)) {
         vec3f_copy(&o->oHomeVec, &o->oPosVec);
     }
 
