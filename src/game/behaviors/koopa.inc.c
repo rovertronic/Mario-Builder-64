@@ -725,7 +725,7 @@ static void koopa_the_quick_act_after_race(void) {
                 // Mario won
                 if (o->oDistanceToMario < 500.0f) {
                     o->parentObj->oKoopaRaceEndpointDialog = 1;
-                    spawn_default_star(o->oPosX+(sins(o->oFaceAngleYaw)*400.0f),o->oPosY+400.0f,o->oPosZ+(coss(o->oFaceAngleYaw)*400.0f));
+                    spawn_default_star(o->oPosX+(sins(o->oFaceAngleYaw)*200.0f),o->oPosY+400.0f,o->oPosZ+(coss(o->oFaceAngleYaw)*200.0f));
                 }
             }
         } else {
