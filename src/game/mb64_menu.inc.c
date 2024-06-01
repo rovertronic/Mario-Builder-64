@@ -279,9 +279,15 @@ s32 mb64_menu_option_sidescroll(s32 x, s32 y, s32 width,
         rightX += xOffset;
     }
 
+    f32 scissorLeft = x-width+5;
+    f32 scissorRight = x+width-7;
+    if (gIsWidescreen) {
+        scissorLeft = scissorLeft * 0.75f + 40.f;
+        scissorRight = scissorRight * 0.75f + 40.f;
+    }
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE,
-        MAX(               mb64_global_scissor, x-width+5), mb64_global_scissor_top,
-        MIN(SCREEN_WIDTH - mb64_global_scissor, x+width-7), mb64_global_scissor_bottom);
+        MAX(               mb64_global_scissor, scissorLeft), mb64_global_scissor_top,
+        MIN(SCREEN_WIDTH - mb64_global_scissor, scissorRight), mb64_global_scissor_bottom);
     
     print_maker_string_ascii_centered(x + xOffset, y, cur, color);
     if (leftX > x - width * 2) {
@@ -1153,7 +1159,7 @@ void draw_mb64_menu(void) {
             gSPDisplayList(gDisplayListHead++, &bigpainting2_bigpainting2_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-            mb64_global_scissor = 15;
+            mb64_global_scissor = (gIsWidescreen ? 51 : 15); // widescreen adjust: (x*3/4 + 40)
             mb64_global_scissor_top = MAX(0, 15 - yOff);
             mb64_global_scissor_bottom = MAX(0, 145 - yOff);
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, mb64_global_scissor, mb64_global_scissor_top, SCREEN_WIDTH - mb64_global_scissor, mb64_global_scissor_bottom);

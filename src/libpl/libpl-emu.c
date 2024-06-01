@@ -17,7 +17,9 @@ struct lpl_abi_requirements {
 static const struct lpl_abi_requirements sAbiReqs[] = {
 	{ { 2, 13, 0 }, { 0, 0, 0 } },  // LPL_ABI_VERSION_2
 	{ { 2, 13, 0 }, { 6, 20, 0 } }, // LPL_ABI_VERSION_3
-	{ { 2, 14, 0 }, { 6, 22, 0 } }  // LPL_ABI_VERSION_4
+	{ { 2, 14, 3 }, { 6, 22, 0 } },  // LPL_ABI_VERSION_4
+	{ { 2, 15, 0 }, { 6, 22, 0 } },  // LPL_ABI_VERSION_5
+	{ { 2, 16, 0 }, { 6, 22, 0 } }  // LPL_ABI_VERSION_6
 };
 
 bool32_t libpl_is_supported( int minimumAbiVersion ) {

@@ -41,11 +41,21 @@ extern "C" {
  * @def LPL_ACCURATE_DEPTH_COMPARE
  * @details Indicates that the plugin is currently handling depth comparisons accurately (ie. decals will work properly)
  * 
+ * @def LPL_RSP_EMULATION
+ * @details Indicates that accurate LLE RSP emulation is being used
+ * @since LPL_ABI_VERSION_5
+ * 
+ * @def LPL_WIDESCREEN_VIEWPORT
+ * @details Indicates that the widescreen viewport hack is being used (GLideN64/OGRE)
+ * @since LPL_ABI_VERSION_6
+ * 
  * @}
  */
 #define LPL_UPSCALING              0x0001
 #define LPL_FRAMEBUFFER_EMULATION  0x0002
 #define LPL_ACCURATE_DEPTH_COMPARE 0x0004
+#define LPL_RSP_EMULATION          0x0008
+#define LPL_WIDESCREEN_VIEWPORT    0x0010
 
 /*! cheat status flags */
 typedef enum {
@@ -73,7 +83,9 @@ typedef struct {
 #define LPL_ABI_VERSION_2   2 /*!< revised prototype (2023-08-1) */
 #define LPL_ABI_VERSION_3   3 /*!< first advertised public release (2023-08-1) */
 #define LPL_ABI_VERSION_4   4 /*!< SD card update (2023-10-03) */
-#define LPL_ABI_VERSION_CURRENT LPL_ABI_VERSION_4 /*!< the latest version */
+#define LPL_ABI_VERSION_5   5 /*!< LLE RSP check (2024-02-16) */
+#define LPL_ABI_VERSION_6   6 /*!< Widescreen viewport check (2024-03-05) */
+#define LPL_ABI_VERSION_CURRENT LPL_ABI_VERSION_6 /*!< the latest version */
 
 /*! Checks if the emulator supports libpl
  * 
