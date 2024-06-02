@@ -407,7 +407,7 @@ void bhv_crowbar_attack_loop() {
             //         }
             //     }
             //KILL ENEMIES
-            obj_attack_collided_from_other_object(o);
+            obj_attack_collided_from_other_object(o, ATTACK_FAST_ATTACK);
 
             if (o->oTimer > 5) {
                 cur_obj_become_tangible();

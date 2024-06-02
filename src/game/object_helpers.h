@@ -273,7 +273,7 @@ s32 cur_obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cuts
 void cur_obj_align_gfx_with_floor(void);
 s32 mario_is_within_rectangle(s16 minX, s16 maxX, s16 minZ, s16 maxZ);
 void cur_obj_shake_screen(s32 shake);
-s32 obj_attack_collided_from_other_object(struct Object *obj);
+s32 obj_attack_collided_from_other_object(struct Object *obj, s32 attackType);
 s32 cur_obj_was_attacked_or_ground_pounded(void);
 void obj_copy_behavior_params(struct Object *dst, struct Object *src);
 void cur_obj_init_animation_and_anim_frame(s32 animIndex, s32 animFrame);

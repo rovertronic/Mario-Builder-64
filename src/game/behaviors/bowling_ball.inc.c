@@ -72,6 +72,7 @@ void bhv_bowling_ball_roll_loop(void) {
         o->oForwardVel = 18.0f;
     }
 
+    obj_attack_collided_from_other_object(o, ATTACK_GROUND_POUND_OR_TWIRL);
     bowling_ball_set_hitbox();
 
     // If the Bowling Ball is stuck on a wall for more than 2 second, delete early

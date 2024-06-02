@@ -5213,7 +5213,7 @@ const BehaviorScript bhvFreeBowlingBall[] = {
 };
 
 const BehaviorScript bhvBowlingBall[] = {
-    BEGIN(OBJ_LIST_GENACTOR),
+    BEGIN(OBJ_LIST_DESTRUCTIVE),
     OR_LONG(oFlags, OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH),
     BILLBOARD(),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_MEDIUM),

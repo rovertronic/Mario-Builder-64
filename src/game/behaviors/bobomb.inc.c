@@ -61,7 +61,7 @@ void bobomb_check_interactions(void) {
         o->oInteractStatus = INT_STATUS_NONE;
     }
 
-    if (obj_attack_collided_from_other_object(o)) {
+    if (obj_attack_collided_from_other_object(o, ATTACK_FAST_ATTACK)) {
         cur_obj_become_intangible();
         o->oAction = BOBOMB_ACT_EXPLODE;
     }

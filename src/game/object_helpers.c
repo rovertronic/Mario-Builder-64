@@ -2425,12 +2425,12 @@ s32 obj_attacked_by_object(struct Object *obj, s32 attackType) {
     return TRUE;
 }
 
-s32 obj_attack_collided_from_other_object(struct Object *obj) {
+s32 obj_attack_collided_from_other_object(struct Object *obj, s32 attackType) {
     s32 ret = FALSE;
     for (s32 i = 0; i < obj->numCollidedObjs; i++) {
         struct Object *other = obj->collidedObjs[i];
 
-        if (obj_attacked_by_object(other, ATTACK_FAST_ATTACK)) {
+        if (obj_attacked_by_object(other, attackType)) {
             ret = TRUE;
         }
     }

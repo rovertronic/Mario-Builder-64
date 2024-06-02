@@ -35,7 +35,7 @@ void small_breakable_box_act_move(void) {
     else o->oFriction = 0.99f;
 
     if (o->oForwardVel > 5.f) {
-        obj_attack_collided_from_other_object(o);
+        obj_attack_collided_from_other_object(o, ATTACK_FAST_ATTACK);
     }
 
     if (collisionFlags == OBJ_COL_FLAG_GROUNDED) {
