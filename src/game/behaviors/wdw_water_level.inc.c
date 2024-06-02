@@ -22,7 +22,7 @@ void bhv_water_level_diamond_loop(void) {
     switch(o->oAction) {
         case 0:
             o->oAngleVelYaw = 0;
-            if (mb64_play_s16_water_level != (s32)(o->oPosY - 28.0f)) {
+            if (mb64_play_s16_water_level != (s32)(o->oPosY - 32.0f)) {
                 if (!gWDWWaterLevelChanging && obj_check_if_collided_with_object(o, gMarioObject)) {
                     o->oAction++; // WATER_LEVEL_DIAMOND_ACT_CHANGE_WATER_LEVEL
                     gWDWWaterLevelChanging = TRUE;
@@ -32,14 +32,14 @@ void bhv_water_level_diamond_loop(void) {
         
         case 1:
             o->oAngleVelYaw = 0x800;
-            mb64_play_s16_water_level = (s32) approach_f32_symmetric((f32) mb64_play_s16_water_level, o->oPosY - 28.0f, 10.0f);
+            mb64_play_s16_water_level = (s32) approach_f32_symmetric((f32) mb64_play_s16_water_level, o->oPosY - 32.0f, 10.0f);
             if (o->oTimer == 0) {
                 cur_obj_play_sound_2(SOUND_GENERAL_WATER_LEVEL_TRIG);
             } else {
                 cur_obj_play_sound_1(SOUND_ENV_WATER_DRAIN);
             }
 
-            if (mb64_play_s16_water_level == (s32)(o->oPosY - 28.0f)) {
+            if (mb64_play_s16_water_level == (s32)(o->oPosY - 32.0f)) {
                 o->oAction = 0;
                 gWDWWaterLevelChanging = FALSE;
             }

@@ -242,7 +242,7 @@ void reset_play_state(void) {
     mb64_play_badge_bitfield = 0;
 
     // & water level
-    mb64_play_s16_water_level = -8220+(mb64_lopt_waterlevel*TILE_SIZE);
+    mb64_play_s16_water_level = -8224+(mb64_lopt_waterlevel*TILE_SIZE);
     gWDWWaterLevelChanging = FALSE;
     mb64_play_onoff = FALSE;
 
@@ -1772,7 +1772,7 @@ void generate_terrain_gfx(void) {
     set_render_mode( MAT_TRANSPARENT, FALSE);
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], WATER_TEX());
 
-    mb64_play_s16_water_level = -8220+(mb64_lopt_waterlevel*TILE_SIZE); // Update water plane height
+    mb64_play_s16_water_level = -8224+(mb64_lopt_waterlevel*TILE_SIZE); // Update water plane height
 
     // Render water blocks, interiors
     mb64_render_flip_normals = TRUE;

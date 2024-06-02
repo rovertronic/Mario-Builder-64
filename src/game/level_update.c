@@ -385,7 +385,7 @@ void init_mario_after_warp(void) {
             gMarioState->health = 255 + (255*gMarioState->numMaxHP);
             gMarioState->numBadgePoints = gMarioState->numMaxFP;
             // & water level
-            mb64_play_s16_water_level = -8220+(mb64_lopt_waterlevel*TILE_SIZE);
+            mb64_play_s16_water_level = -8224+(mb64_lopt_waterlevel*TILE_SIZE);
             gWDWWaterLevelChanging = FALSE;
             mb64_play_onoff = FALSE;
         }
