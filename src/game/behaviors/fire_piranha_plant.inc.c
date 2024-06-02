@@ -30,6 +30,7 @@ void bhv_fire_piranha_plant_init(void) {
         o->oWallHitboxRadius = 100.0f;
     }
 
+    o->oQuicksandDepthToDie = 0;
     o->oFirePiranhaPlantNeutralScale = GET_BPARAM2(o->oBehParams) ? 2.0f : 0.5f;
     obj_set_hitbox(o, &sFirePiranhaPlantHitbox);
 

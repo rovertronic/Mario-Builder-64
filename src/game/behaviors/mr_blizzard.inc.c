@@ -44,6 +44,7 @@ void mr_blizzard_spawn_white_particles(s8 count, s8 offsetY, s8 forwardVelBase, 
 void bhv_mr_blizzard_init(void) {
     o->oMrBlizzardGraphYOffset = -200.0f;
     o->oMrBlizzardHeldObj = NULL;
+    o->oQuicksandDepthToDie = 0;
     cur_obj_hide();
 }
 

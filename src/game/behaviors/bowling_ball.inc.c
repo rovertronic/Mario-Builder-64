@@ -2,12 +2,12 @@
 
 static struct ObjectHitbox sBowlingBallHitbox = {
     /* interactType:      */ INTERACT_DAMAGE,
-    /* downOffset:        */ 0,
+    /* downOffset:        */ 20,
     /* damageOrCoinValue: */ 2,
     /* health:            */ 0,
     /* numLootCoins:      */ 0,
     /* radius:            */ 100,
-    /* height:            */ 150,
+    /* height:            */ 170,
     /* hurtboxRadius:     */ 0,
     /* hurtboxHeight:     */ 0,
 };
@@ -75,12 +75,7 @@ void bhv_bowling_ball_roll_loop(void) {
     obj_attack_collided_from_other_object(o, ATTACK_GROUND_POUND_OR_TWIRL);
     bowling_ball_set_hitbox();
 
-    // If the Bowling Ball is stuck on a wall for more than 2 second, delete early
-    if (!(collisionFlags & OBJ_COL_FLAG_HIT_WALL)) {
-        o->oTimer = 0;
-    }
-
-    if ((followStatus == PATH_REACHED_END)||(mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ) > o->oPosY)||(o->oTimer > 60)) {
+    if ((followStatus == PATH_REACHED_END)||(collisionFlags & OBJ_COL_FLAG_HIT_WALL)) {
         if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 7000)) {
             spawn_mist_particles();
             spawn_mist_particles_variable(0, 0, 92.0f);

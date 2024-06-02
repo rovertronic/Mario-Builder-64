@@ -11,6 +11,7 @@
  * directly to the sleeping state.
  */
 void piranha_plant_act_idle(void) {
+    o->oQuicksandDepthToDie = 0;
     cur_obj_become_intangible();
     cur_obj_init_animation_with_sound(PIRANHA_PLANT_ANIM_SLEEPING);
 
