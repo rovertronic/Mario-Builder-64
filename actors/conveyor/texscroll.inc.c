@@ -1,11 +1,11 @@
-void scroll_conveyor_conveyor_full_mesh_layer_1_vtx_1() {
+void scroll_conveyor_000_displaylist_mesh_layer_1_vtx_1() {
 	int i = 0;
 	int count = 16;
 	int width = 32 * 0x20;
 
 	static int currentX = 0;
 	int deltaX;
-	Vtx *vertices = segmented_to_virtual(conveyor_conveyor_full_mesh_layer_1_vtx_1);
+	Vtx *vertices = segmented_to_virtual(conveyor_000_displaylist_mesh_layer_1_vtx_1);
 
 	deltaX = (int)(4.0 * 0x20) % width;
 
@@ -20,5 +20,5 @@ void scroll_conveyor_conveyor_full_mesh_layer_1_vtx_1() {
 }
 
 void scroll_actor_geo_conveyor() {
-	scroll_conveyor_conveyor_full_mesh_layer_1_vtx_1();
+	scroll_conveyor_000_displaylist_mesh_layer_1_vtx_1();
 }

@@ -1,3 +1,4 @@
+#include "actors/conveyor_dslope/texscroll.inc.h"
 #include "actors/conveyor/texscroll.inc.h"
 #include "actors/conveyor_half/texscroll.inc.h"
 #include "actors/conveyor_slope/texscroll.inc.h"

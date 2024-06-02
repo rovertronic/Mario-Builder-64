@@ -90,3 +90,4 @@
 #include "imbues/geo.inc.c"
 #include "conveyor_half/geo.inc.c"
 #include "conveyor_slope/geo.inc.c"
+#include "conveyor_dslope/geo.inc.c"

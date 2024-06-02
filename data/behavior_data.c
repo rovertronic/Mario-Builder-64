@@ -9551,9 +9551,12 @@ const BehaviorScript bhvMakerUkiki[] = {
 };
 
 void bhv_conveyor_init(void);
+void bhv_conveyor_loop(void);
 const BehaviorScript bhvConveyor[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     CALL_NATIVE(bhv_conveyor_init),
-    BREAK(),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_conveyor_loop),
+    END_LOOP(),
 };

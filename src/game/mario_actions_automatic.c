@@ -279,9 +279,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
         f32 zVel = currentSpeed * coss(currentAngle);
         nextPos[0] += xVel;
         nextPos[2] += zVel;
-        if (obj_has_model(m->ceil->object, MODEL_MAKER_CONVEYOR_SLOPE)) {
-            nextPos[1] += currentSpeed;
-        }
+        nextPos[1] += currentSpeed * m->ceil->object->oExtraVariable1;
     }
 
     f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);

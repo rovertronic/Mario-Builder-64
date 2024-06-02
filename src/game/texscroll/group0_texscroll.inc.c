@@ -26,6 +26,7 @@ void scroll_textures_group14() {
 #include "actors/conveyor_slope/texscroll.inc.c"
 #include "actors/conveyor_half/texscroll.inc.c"
 #include "actors/conveyor/texscroll.inc.c"
+#include "actors/conveyor_dslope/texscroll.inc.c"
 void scroll_textures_group0() {
 	
 	
@@ -60,4 +61,5 @@ void scroll_textures_group0() {
 		scroll_actor_geo_conveyor_slope();
 	scroll_actor_geo_conveyor_half();
 	scroll_actor_geo_conveyor();
+	scroll_actor_geo_conveyor_dslope();
 }

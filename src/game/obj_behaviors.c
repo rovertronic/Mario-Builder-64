@@ -220,7 +220,7 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
     } else {
         *objFriction = o->oFriction;
         if (o->oFloor && o->oFloor->object) {
-            if (obj_has_model(o->oFloor->object, MODEL_MAKER_CONVEYOR_SLOPE)) {
+            if (obj_has_behavior(o->oFloor->object, bhvConveyor) && o->oFloor->object->oExtraVariable1 != 0) {
                 *objFriction = 0.f;
             }
         }

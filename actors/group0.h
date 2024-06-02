@@ -791,4 +791,8 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "conveyor_slope/collision_header.h"
 
+#include "conveyor_dslope/geo_header.h"
+
+#include "conveyor_dslope/collision_header.h"
+
 #endif

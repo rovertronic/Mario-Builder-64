@@ -416,10 +416,14 @@ void df_ukiki(s32 context) {
 
 void df_conveyor(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
-        if (o->oBehParams2ndByte == 1) {
+        s32 shape = o->oBehParams2ndByte & 0x3;
+        if (shape == 1) {
             o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CONVEYOR];
-        } else if (o->oBehParams2ndByte == 2) {
+        } else if (shape == 2) {
             o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CONVEYOR_SLOPE];
+        } else if (shape == 3) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_CONVEYOR_DSLOPE];
         }
+        o->oAnimState = (o->oBehParams2ndByte >> 2);
     }
 }
