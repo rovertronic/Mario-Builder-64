@@ -90,16 +90,13 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
 #ifdef NO_FALL_DAMAGE
     return FALSE;
 #endif
-    u8 ignorefalldamage = FALSE;
 
     f32 fallHeight = m->peakHeight - m->pos[1];
 
     if (gMarioState->floor->object != NULL) {
-        ignorefalldamage = gMarioState->floor->object->oDontFallDamage;
-    }
-
-    if (ignorefalldamage == TRUE) {
-        return FALSE;
+        if (obj_has_behavior(gMarioState->floor->object, bhvNoteblock)) {
+            return FALSE;
+        }
     }
 
     if (m->action != ACT_TWIRLING && !SURFACE_IS_BURNING(m->floor->type)) {

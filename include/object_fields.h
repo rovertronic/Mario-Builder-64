@@ -105,7 +105,6 @@
 
 #define /*0x0F4*/ oDontInertia                                  OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oExtraVariable1                               OBJECT_FIELD_S32(0x1C)
-#define /*0x0FC*/ oDontFallDamage                               OBJECT_FIELD_S32(0x1D)
 
 // 0x0F4-0x110 (0x1B-0x22) are object specific and defined below the common fields.
 /* Angle Velocity vector */

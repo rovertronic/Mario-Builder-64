@@ -1250,9 +1250,6 @@ void bhv_podoboo_loop() {
 //     }
 
 void noteblock_function(void) {
-
-    o->oDontFallDamage = TRUE;
-
     o->oPosY = o->oHomeY + (sins(o->oTimer*5000) * o->oVelY);
     o->oVelY *= 0.95f;
 
@@ -6283,6 +6280,17 @@ void bhv_woodplat(void) {
                 }
             }
             cur_obj_update_floor_and_walls();
+
+            // This code is very hacky. Use higher wall checks when on an
+            // upwards sloped conveyor in order to not get stuck on the wall of
+            // the conveyor above.
+            if (o->oFloor->type == SURFACE_CONVEYOR &&
+                o->oFloor->object->oExtraVariable1 > 0 &&
+                o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
+                o->oFlags &= ~OBJ_FLAG_SIMPLE_WALL_CHECKS;
+            } else {
+                o->oFlags |= OBJ_FLAG_SIMPLE_WALL_CHECKS;
+            }
             cur_obj_move_standard(-20);
 
             Vec3f oldPos;
