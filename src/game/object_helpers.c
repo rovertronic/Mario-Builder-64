@@ -1010,13 +1010,13 @@ void obj_become_tangible(struct Object *obj) {
 
 void cur_obj_update_floor_height(void) {
     struct Surface *floor;
-    f32 floorBuffer = (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
+    f32 floorBuffer = 0.f;//(o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
     o->oFloorHeight = find_floor(o->oPosX, o->oPosY + floorBuffer, o->oPosZ, &floor);
 }
 
 struct Surface *cur_obj_update_floor_height_and_get_floor(void) {
     struct Surface *floor;
-    f32 floorBuffer = (o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
+    f32 floorBuffer = 0.f;//(o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) ? 0.f : MAX(o->oWallHitboxRadius-FIND_FLOOR_BUFFER, 0);
     o->oFloorHeight = find_floor(o->oPosX, o->oPosY + floorBuffer, o->oPosZ, &floor);
     return floor;
 }
@@ -1507,7 +1507,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
         wallFound = TRUE;
     }
 
-    if ((!o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) && (radius > 100.f)) { // extra check for chonky boys
+    if (!(o->oFlags & OBJ_FLAG_SIMPLE_WALL_CHECKS) && (radius > 100.f)) { // extra check for chonky boys
         collisionData.offsetY += 100.f;
         numCollisions = find_wall_collisions(&collisionData);
         if (numCollisions != 0) {
