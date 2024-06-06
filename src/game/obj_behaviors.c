@@ -230,7 +230,7 @@ void calc_obj_friction(f32 *objFriction, f32 floor_nY) {
 /**
  * Updates an objects speed for gravity and updates Y position.
  */
-void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 objVelX, f32 objVelZ) {
+void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 objVelX, f32 objVelZ, f32 floorOffset) {
     Vec3f normal;
     get_surface_normal(normal, objFloor);
     f32 floor_nX = normal[0];
@@ -250,7 +250,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
     o->oPosY += o->oVelY;
 
     // Snap the object up to the floor.
-    if (o->oPosY < objFloorY) {
+    if (o->oPosY < (objFloorY + floorOffset)) {
         o->oPosY = objFloorY;
 
         // Bounces an object if the ground is hit fast enough.
@@ -283,7 +283,7 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
     }
 }
 
-void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY, f32 objVelX, f32 objVelZ, f32 waterY) {
+void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY, f32 objVelX, f32 objVelZ, f32 waterY, f32 floorOffset) {
     Vec3f normal;
     get_surface_normal(normal, objFloor);
     f32 floor_nX = normal[0];
@@ -304,7 +304,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
     o->oPosY += o->oVelY;
 
     // Snap the object up to the floor.
-    if (o->oPosY < floorY) {
+    if (o->oPosY < (floorY + floorOffset)) {
         o->oPosY = floorY;
 
         // Bounces an object if the ground is hit fast enough.
@@ -394,6 +394,12 @@ s16 object_step(void) {
 
     obj_add_self_to_physics_list();
 
+    // stay grounded on downwards slopes
+    f32 floorOffset =  0.f;
+    if ((s32)o->oPosY == (s32)o->oFloorHeight) {
+        if (o->oVelY < 5.f) floorOffset = 100.f;
+    }
+
     // truncated version if far away
     if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
         f32 objX = o->oPosX;
@@ -411,10 +417,10 @@ s16 object_step(void) {
 
         waterY = mb64_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
-            calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, 0, 0, waterY);
+            calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, 0, 0, waterY, floorOffset);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;
         } else {
-            calc_new_obj_vel_and_pos_y(sObjFloor, floorY, 0, 0);
+            calc_new_obj_vel_and_pos_y(sObjFloor, floorY, 0, 0, floorOffset);
         }
 
         if ((s32) o->oPosY == (s32) floorY) {
@@ -457,10 +463,10 @@ s16 object_step(void) {
     if (turn_obj_away_from_steep_floor(sObjFloor, floorY, objVelX, objVelZ) == 1) {
         waterY = mb64_get_water_level(objX, objY + o->oVelY, objZ);
         if (waterY > objY) {
-            calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, objVelX, objVelZ, waterY);
+            calc_new_obj_vel_and_pos_y_underwater(sObjFloor, floorY, objVelX, objVelZ, waterY, floorOffset);
             collisionFlags += OBJ_COL_FLAG_UNDERWATER;
         } else {
-            calc_new_obj_vel_and_pos_y(sObjFloor, floorY, objVelX, objVelZ);
+            calc_new_obj_vel_and_pos_y(sObjFloor, floorY, objVelX, objVelZ, floorOffset);
         }
     } else {
         // Treat any awkward floors similar to a wall.

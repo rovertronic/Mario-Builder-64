@@ -6285,7 +6285,7 @@ void bhv_woodplat(void) {
             // upwards sloped conveyor in order to not get stuck on the wall of
             // the conveyor above.
             if (o->oFloor->type == SURFACE_CONVEYOR &&
-                o->oFloor->object->oExtraVariable1 > 0 &&
+                o->oFloor->object->oExtraVariable1 != 0 &&
                 o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
                 o->oFlags &= ~OBJ_FLAG_SIMPLE_WALL_CHECKS;
             } else {

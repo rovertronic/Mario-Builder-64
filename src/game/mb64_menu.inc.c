@@ -1578,7 +1578,7 @@ void mb64_mm_generic_anim_check(s32 canBack) {
 void mb64_mm_files_anim_check(s32 canBack) {
     if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
         if (mb64_level_entry_count == 0) return;
-        if (mb64_level_entry_version[mb64_menu_index] > MB64_VERSION) {
+        if (mb64_level_entry_version[mb64_mm_page * PAGE_SIZE+mb64_menu_index] > MB64_VERSION) {
             play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
             return;
         }
