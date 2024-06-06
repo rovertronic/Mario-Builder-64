@@ -938,9 +938,15 @@ void draw_mb64_settings_system(f32 xoff, f32 yoff) {
     }
     
     int vtx_perc = ((f32)mb64_vtx_total/(f32)MB64_VTX_SIZE)*100.0f;
-    int tile_perc = ((f32)mb64_tile_count/10000.0f)*100.0f;
-    sprintf(strbuf,"Verts: %d%% Tiles: %d%%",vtx_perc,tile_perc);
-    print_maker_string_ascii_centered(160+xoff+3*mb64_menu_list_offsets[2], 100+yoff,strbuf,MB64_TEXT_WHITE);
+    int tile_perc = ((f32)mb64_tile_count/(f32)MB64_TILE_POOL_SIZE)*100.0f;
+    int obj_perc = ((f32)mb64_object_limit_count/(f32)MB64_MAX_OBJS)*100.0f;
+    sprintf(strbuf,"Vertices: %d/50k (%d%%)",mb64_vtx_total, vtx_perc);
+    print_maker_string_ascii(20+xoff+3*mb64_menu_list_offsets[2], 110+yoff,strbuf,MB64_TEXT_WHITE);
+    sprintf(strbuf,"Tiles:    %d/15k (%d%%)",mb64_tile_count, tile_perc);
+    print_maker_string_ascii(20+xoff+3*mb64_menu_list_offsets[2], 95+yoff,strbuf,MB64_TEXT_WHITE);
+
+    sprintf(strbuf,"Objs:  %d/512 (%d%%)",mb64_object_limit_count, obj_perc);
+    print_maker_string_ascii(305+xoff+3*mb64_menu_list_offsets[2]-get_string_width_ascii(strbuf), 95+yoff,strbuf,MB64_TEXT_WHITE);
 
     if ((gPlayer1Controller->buttonPressed & A_BUTTON) && MB64_SETTINGS_MENU_IS_STILL) {
         switch (mb64_menu_index) {

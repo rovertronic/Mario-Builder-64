@@ -354,7 +354,7 @@
 #define BADGE16D _("Increases gravity by 30[$]")
 #define BADGE17D _("Lets you stick to walls")
 #define BADGE18D _("You run twice as fast")
-#define BADGE19D _("Green coins heal full HP instead of 1/2 HP")
+#define BADGE19D _("All coins heal double the HP")
 #define BADGE20D _("Uses 1 Mana instead of 1/3 HP when falling off the level")
 #define BADGE21D _("Hold [A] while falling to slow your fall")
 #define BADGE22D _("You take double damage")
