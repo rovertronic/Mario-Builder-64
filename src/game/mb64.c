@@ -449,7 +449,6 @@ u32 can_place(s8 pos[3], u32 occupyFlags) {
             if (objFlags & occupyFlags) return FALSE;
         }
     }
-    print_text_fmt_int(20,60,"%d",occupyFlags);
     return TRUE;
 }
 
