@@ -374,18 +374,12 @@ void df_timedbox(s32 context) {
 void df_button(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oAnimState = o->oBehParams2ndByte;
-        if (o->oBehParams2ndByte == 0) {
-            o->header.gfx.scale[1] = 0.1f;
-        }
     }
 }
 
 void df_block(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oAnimState = o->oBehParams2ndByte;
-        if (o->oBehParams2ndByte == 1) {
-            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
-        }
     }
 }
 

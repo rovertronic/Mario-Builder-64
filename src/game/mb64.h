@@ -192,13 +192,19 @@ typedef void (*DisplayFunc)(s32);
 #define OBJ_TYPE_HAS_DIALOG     (1 << 3)
 #define OBJ_TYPE_IMBUABLE       (1 << 4)
 #define OBJ_TYPE_IMBUABLE_COINS (1 << 5)
+
+#define OBJ_OCCUPY_OUTER        (1 << 0)
+#define OBJ_OCCUPY_INNER        (1 << 1)
+
+#define OBJ_OCCUPY_FULL        (OBJ_OCCUPY_OUTER | OBJ_OCCUPY_INNER)
 struct mb64_object_info {
     char *name;
     Gfx *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
-    u16 flags:6;
+    u8 flags;
+    u16 occupy:2;
     u16 numCoins:4;
     u16 numExtraObjects:3;
     f32 scale;

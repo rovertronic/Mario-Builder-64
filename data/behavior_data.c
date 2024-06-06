@@ -7553,7 +7553,7 @@ const BehaviorScript bhvNoteblock[] = {
     LOAD_COLLISION_DATA(noteblock_collision),
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
-    SCALE(0,128),
+    SCALE(0,127),
     CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(noteblock_function),

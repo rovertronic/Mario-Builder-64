@@ -423,17 +423,51 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     return MB64_FACESHAPE_EMPTY;
 }
 
-u32 tile_is_occupied(s8 pos[3]) {
+u32 get_tile_occupy_flags(u32 type) {
+    if (type == TILE_TYPE_POLE) return OBJ_OCCUPY_INNER;
+    if (type == TILE_TYPE_FENCE) return OBJ_OCCUPY_OUTER;
+    if (type == TILE_TYPE_CULL) return 0;
+    return OBJ_OCCUPY_FULL;
+}
+
+u32 can_place(s8 pos[3], u32 occupyFlags) {
+    // Tile Check
     u32 type = get_grid_tile(pos)->type;
-    if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) return TRUE;
-    // iterate over objects
+    if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) {
+        u32 tileFlags = get_tile_occupy_flags(type);
+        if (tileFlags & occupyFlags) return FALSE;
+    }
+    // Object Check
     for (u32 i = 0; i < mb64_object_count; i++) {
         struct mb64_obj *obj = &mb64_object_data[i];
         if (obj->x == pos[0] && obj->y == pos[1] && obj->z == pos[2]) {
-            return TRUE;
+            u32 objFlags = mb64_object_type_list[obj->type].occupy;
+            if (obj->type == OBJECT_TYPE_COIN_FORMATION) { // ring override
+                if (obj->bparam == 2) objFlags = OBJ_OCCUPY_OUTER;
+            }
+            
+            if (objFlags & occupyFlags) return FALSE;
         }
     }
-    return FALSE;
+    print_text_fmt_int(20,60,"%d",occupyFlags);
+    return TRUE;
+}
+
+u32 can_place_tile(s8 pos[3]) {
+    // Tiles can never stack, even if one is outer and one is inner
+    u32 type = get_grid_tile(pos)->type;
+    if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) return FALSE;
+
+    u32 flags = get_tile_occupy_flags(mb64_id_selection);
+    return can_place(pos, flags);
+}
+
+u32 can_place_object(s8 pos[3]) {
+    u32 flags = mb64_object_type_list[mb64_id_selection].occupy;
+    if (mb64_id_selection == OBJECT_TYPE_COIN_FORMATION) {
+        if (mb64_param_selection == 2) flags = OBJ_OCCUPY_OUTER;
+    }
+    return can_place(pos, flags);
 }
 
 s8 cullOffsetLUT[6][3] = {
@@ -2640,23 +2674,23 @@ void place_thing_action(void) {
         }
         return;
     }
-    //tiles and objects share occupancy data
-    if (!tile_is_occupied(mb64_cursor_pos)) {
-        if (mb64_place_mode == MB64_PM_TILE) {
-            //MB64_PM_TILE
-            if (tile_sanity_check()) {
-                place_tile(mb64_cursor_pos);
-                generate_terrain_gfx();
-            }
-        } else if (mb64_place_mode == MB64_PM_OBJ){
-            //MB64_PM_OBJECT
+
+    if (mb64_place_mode == MB64_PM_TILE) {
+        //MB64_PM_TILE
+        if (can_place_tile(mb64_cursor_pos) && tile_sanity_check()) {
+            place_tile(mb64_cursor_pos);
+            generate_terrain_gfx();
+        }
+    } else if (mb64_place_mode == MB64_PM_OBJ){
+        //MB64_PM_OBJECT
+        if (can_place_object(mb64_cursor_pos)) {
             if (object_sanity_check()) {
                 place_object(mb64_cursor_pos);
                 generate_object_preview();
             }
+        } else {
+            imbue_action();
         }
-    } else {
-        imbue_action();
     }
 }
 
@@ -2720,8 +2754,8 @@ void delete_tile_action(s8 pos[3]) {
                 break;
             }
             delete_object(pos, i);
+            i--;
             play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
-            break;
         }
     }
 }
@@ -3540,7 +3574,7 @@ void sb_loop(void) {
                             }
                         }
 
-                        if (tile_is_occupied(mb64_cursor_pos) && !at_spawn_point) {
+                        if (!can_place(mb64_cursor_pos, OBJ_OCCUPY_INNER) && !at_spawn_point) {
                             mb64_show_error_message("Cannot start test inside another tile or object!");
                             break;
                         }
