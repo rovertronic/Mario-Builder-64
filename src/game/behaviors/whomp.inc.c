@@ -141,7 +141,7 @@ void whomp_jump(void) {
 }
 
 void whomp_land(void) {
-    if (o->oSubAction == 0 && o->oMoveFlags & OBJ_MOVE_LANDED) {
+    if (o->oSubAction == 0 && (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)) {
         struct Object * crushobj = spawn_object(o,MODEL_NONE,bhvCrushHandler);
         crushobj->hitboxRadius = 150.f;
         crushobj->hitboxHeight = 100.f;
@@ -152,9 +152,6 @@ void whomp_land(void) {
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         o->oVelY = 0.0f;
         o->oSubAction++;
-    }
-
-    if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
         o->oAction = 6;
     }
 }

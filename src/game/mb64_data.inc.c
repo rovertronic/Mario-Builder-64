@@ -946,7 +946,7 @@ struct mb64_material mb64_mat_table[] = {
     {mat_maker_MakerBurningIce, 0, SURFACE_BURNING_ICE,       "Hazard Ice"},     // MB64_MAT_BURNING_ICE
     {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND, "Quicksand"},      // MB64_MAT_QUICKSAND
     {mat_maker_MakerSlowsand,   0, SURFACE_DEEP_QUICKSAND,    "Slow Quicksand"}, // MB64_MAT_DESERT_SLOWSAND
-    {mat_maker_MakerVoid,       0, SURFACE_INSTANT_QUICKSAND, "Void"},           // MB64_MAT_VP_VOID
+    {mat_maker_MakerVoid,       0, SURFACE_INSTANT_QUICKSAND, "Cosmic Void"},           // MB64_MAT_VP_VOID
 
     // Seethrough
     {mat_maker_MakerRHRMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Mesh"},         // MB64_MAT_RHR_MESH
@@ -1187,7 +1187,7 @@ struct mb64_theme mb64_theme_table[] = {
             {MB64_MAT_VP_CAUTION,    MB64_MAT_VP_CAUTION,    "Hazard Stripes"},
             {MB64_MAT_VP_BLOCK,      MB64_MAT_SNOW,          "Snowy Block"},
             {MB64_MAT_LAVA,          MB64_MAT_LAVA,          "Lava"},
-            {MB64_MAT_VP_VOID,       MB64_MAT_VP_VOID,       "Void"},
+            {MB64_MAT_VP_VOID,       MB64_MAT_VP_VOID,       "Cosmic Void"},
         },
         MB64_FENCE_VIRTUAPLEX, MB64_MAT_VP_CAUTION, MB64_BAR_VP, MB64_WATER_DEFAULT
     },
