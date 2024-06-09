@@ -204,9 +204,9 @@ struct mb64_object_info {
     f32 y_offset;
     u16 model_id;
     u8 flags;
-    u16 occupy:2;
-    u16 numCoins:4;
-    u16 numExtraObjects:3;
+    u8 occupy;
+    u8 numCoins;
+    u8 numExtraObjects;
     f32 scale;
     const struct Animation *const *anim;
     DisplayFunc disp_func;

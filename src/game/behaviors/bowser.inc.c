@@ -1075,7 +1075,7 @@ void bowser_act_jump_onto_stage(void) {
             }
             // Land on stage
             if (bowser_check_fallen_off_stage()) {
-                cur_obj_drop_imbued_object(400);
+                cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
                 return;
             } else if (bowser_land()) {
@@ -1130,7 +1130,7 @@ void bowser_act_dance(void) {
  */
 void bowser_spawn_collectable(void) {
     stop_mb64_extra_music(2);
-    cur_obj_drop_imbued_object(400);
+    cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
     cur_obj_play_sound_2(SOUND_GENERAL2_BOWSER_KEY);
 }
 

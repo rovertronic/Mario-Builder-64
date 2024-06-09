@@ -1321,5 +1321,5 @@ void bhv_scuttlebug_normal_loop(void) {
     }
 
     cur_obj_move_standard(-50);
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }

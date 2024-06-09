@@ -150,7 +150,7 @@ void bhv_heave_ho_loop(void) {
         obj_mark_for_deletion(o);
         spawn_mist_particles_with_sound(SOUND_OBJ_CHUCKYA_DEATH);
     }
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 
     o->oInteractStatus = INT_STATUS_NONE;
 }

@@ -248,7 +248,7 @@ void whomp_die(void) {
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         o->oPosY += 100.0f;
-        cur_obj_drop_imbued_object(400);
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
         cur_obj_play_sound_2(SOUND_OBJ_KING_WHOMP_DEATH);
         o->oAction = 9;
     } else {
@@ -295,5 +295,5 @@ void bhv_whomp_loop(void) {
     if (is_cur_obj_interact_with_lava(0) && o->oAction <= 8) {
         o->oAction = 8;
     }
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }

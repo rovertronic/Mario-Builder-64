@@ -305,7 +305,7 @@ void showrunner_battle_function(void) {
     o->oInteractType = INTERACT_DAMAGE;
     cur_obj_become_tangible();
     o->oDamageOrCoinValue = 0;
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
     switch(o->oAction) {
         case 0://init
             o->oAction=1;
@@ -449,7 +449,7 @@ void showrunner_battle_function(void) {
             }
         break;
         case 14://drop items
-            cur_obj_drop_imbued_object(400);
+            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
             stop_mb64_extra_music(2);
             o->oAction = 15;
             o->header.gfx.scale[0] = 1.0f;

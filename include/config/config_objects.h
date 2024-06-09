@@ -13,6 +13,7 @@
 #define MB64_DRAWDIST_HIGH 12000.f // For objects vital to the stage, like spinning firebars
 
 #define MB64_BOSS_TRIGGER_DIST 2000.f
+#define MB64_STAR_HEIGHT 384
 
 /**
  * The distance from Mario at which coin formations spawn their coins. Vanilla is 2000.0f.

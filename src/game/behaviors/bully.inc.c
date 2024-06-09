@@ -208,14 +208,14 @@ void bully_act_level_death(void) {
             }
             if (o->oImbue != IMBUE_NONE) {
                 bully_adjust_imbued_drop_location();
-                cur_obj_drop_imbued_object(400);
+                cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
             } else {
                 bully_spawn_coin();
             }
         } else {
             spawn_mist_particles();
             bully_adjust_imbued_drop_location();
-            cur_obj_drop_imbued_object(400);
+            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
 
             /*
             if (o->oBullySubtype == BULLY_STYPE_CHILL) {
@@ -268,7 +268,7 @@ void bhv_bully_loop(void) {
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             bully_adjust_imbued_drop_location();
-            cur_obj_drop_imbued_object(400);
+            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
@@ -370,7 +370,7 @@ void bhv_big_bully_with_minions_loop(void) {
 
         case OBJ_ACT_DEATH_PLANE_DEATH:
             bully_adjust_imbued_drop_location();
-            cur_obj_drop_imbued_object(400);
+            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }

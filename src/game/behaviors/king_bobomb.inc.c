@@ -32,7 +32,7 @@ void king_bobomb_act_inactive(void) { // act 0
 
             cur_obj_move_standard(-78);
         }
-        cur_obj_die_if_on_death_barrier(400);
+        cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 
         if (o->oDistanceToMario < MB64_BOSS_TRIGGER_DIST) {
             o->oSubAction++;
@@ -209,7 +209,7 @@ void king_bobomb_act_death(void) { // act 7
         spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, TINY_DIRT_PARTICLE_ANIM_STATE_YELLOW);
         cur_obj_shake_screen(SHAKE_POS_SMALL);
 
-        cur_obj_drop_imbued_object(400);
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
 
         o->oAction = KING_BOBOMB_ACT_STOP_MUSIC;
     }
@@ -298,7 +298,7 @@ void king_bobomb_act_return_home(void) { // act 5
                 o->oSubAction++; // KING_BOBOMB_SUB_ACT_RETURN_HOME_LANDING_END
             }
 
-            cur_obj_die_if_on_death_barrier(400);
+            cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
             break;
 
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_LANDING_END:

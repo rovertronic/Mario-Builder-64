@@ -360,7 +360,7 @@ void bhv_mr_blizzard_update(void) {
     cur_obj_scale(o->oMrBlizzardScale);
     obj_check_attacks(&sMrBlizzardHitbox, o->oAction);
 
-    if (cur_obj_die_if_on_death_barrier(400)) {
+    if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
         create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, MB64_DRAWDIST_LOW);
     }
 }

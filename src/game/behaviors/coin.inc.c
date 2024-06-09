@@ -300,6 +300,16 @@ void coin_inside_boo_act_carried(void) {
 
     obj_copy_pos(o, parent);
 
+    if (parent->oImbue == IMBUE_STAR) {
+        o->oFaceAngleYaw += 0x800;
+        o->oPosY += 30.f;
+    } else {
+        o->oFaceAngleYaw = parent->oFaceAngleYaw;
+    }
+    if (o->parentObj->behavior == segmented_to_virtual(bhvBalconyBigBoo)) {
+        o->oPosY += 150.f;
+    }
+
     if (parent->oBooDeathStatus == BOO_DEATH_STATUS_DYING) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
@@ -310,7 +320,40 @@ ObjActionFunc sCoinInsideBooActions[] = {
     //coin_inside_boo_act_dropped
 };
 
+struct boo_imbue_preview_data {
+    s16 model;
+    u8 billboarded;
+    f32 scale;
+};
+
+struct boo_imbue_preview_data boo_imbue_models[] = {
+    /* IMBUE_NONE */ {MODEL_NONE, FALSE, 1.f},
+    /* IMBUE_STAR */ {MODEL_STAR, FALSE, 0.6f},
+    /* IMBUE_THREE_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
+    /* IMBUE_FIVE_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
+    /* IMBUE_EIGHT_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
+    /* IMBUE_BLUE_COIN */ {MODEL_BLUE_COIN_NO_SHADOW, TRUE, 0.7f},
+    /* IMBUE_RED_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
+    /* IMBUE_BLUE_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
+    /* IMBUE_RED_COIN */ {MODEL_RED_COIN_NO_SHADOW, TRUE, 1.f},
+};
+
+void bhv_coin_inside_boo_init(void) {
+    s32 imbue = o->parentObj->oImbue;
+    cur_obj_set_model(boo_imbue_models[imbue].model);
+    if (boo_imbue_models[imbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+    cur_obj_scale(boo_imbue_models[imbue].scale);
+
+    if (imbue == IMBUE_BLUE_SWITCH) {
+        o->oAnimState = 1;
+    }
+}
+
 void bhv_coin_inside_boo_loop(void) {
+    s32 imbue = o->parentObj->oImbue;
+    if ((imbue != IMBUE_RED_SWITCH) && (imbue != IMBUE_BLUE_SWITCH)) {
+        o->oAnimState += 1;
+    }
     cur_obj_call_action_function(sCoinInsideBooActions);
 }
 

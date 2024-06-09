@@ -153,7 +153,7 @@ void bhv_skeeter_update(void) {
 
     obj_check_attacks(&sSkeeterHitbox, o->oAction);
     cur_obj_move_standard(-78);
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
 void bhv_skeeter_wave_update(void) {

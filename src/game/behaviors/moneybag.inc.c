@@ -146,7 +146,7 @@ void moneybag_act_move_around(void) {
         && ((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED)) {
         o->oAction = MONEYBAG_ACT_RETURN_HOME;
     }
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
 void moneybag_act_return_home(void) {
@@ -257,5 +257,5 @@ void bhv_moneybag_hidden_loop(void) {
     o->oFriction = 1.0f;
     o->oBuoyancy = 2.0f;
     object_step();
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }

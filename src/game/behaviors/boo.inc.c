@@ -394,11 +394,11 @@ static void boo_act_2(void) {
 
 static void boo_act_3(void) {
     if (o->oTimer == 0) {
-        if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(128);
+        if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-128);
     }
     if (boo_update_during_death()) {
         obj_mark_for_deletion(o);
-        cur_obj_drop_imbued_object(128);
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-128);
     }
 }
 
@@ -537,7 +537,7 @@ static void big_boo_act_3(void) {
 
     if (o->oHealth <= 0) {
         if (o->oTimer == 0) {
-            if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(0);
+            if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-256);
         }
         if (boo_update_during_death()) {
             cur_obj_disable();
@@ -546,7 +546,7 @@ static void big_boo_act_3(void) {
 
             obj_set_angle(o, 0, 0, 0);
 
-            cur_obj_drop_imbued_object(0);
+            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-256);
         }
     } else {
         if (o->oTimer == 0) {

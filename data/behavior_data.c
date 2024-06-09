@@ -967,11 +967,10 @@ const BehaviorScript bhvCoinInsideBoo[] = {
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ -70, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
-    BILLBOARD(),
     //CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_coin_inside_boo_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_coin_inside_boo_loop),
-        ADD_INT(oAnimState, 1),
     END_LOOP(),
 };
 
@@ -3439,6 +3438,7 @@ const BehaviorScript bhvGhostHuntBigBoo[] = {
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_MEDIUM),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ 0, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     //CALL_NATIVE(bhv_init_room),
+    SPAWN_CHILD(/*Model*/ MODEL_YELLOW_COIN, /*Behavior*/ bhvCoinInsideBoo),
     CALL_NATIVE(bhv_boo_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_big_boo_loop),

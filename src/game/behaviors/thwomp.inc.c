@@ -41,7 +41,7 @@ void grindel_thwomp_act_land(void) {
         o->oAction = GRINDEL_THWOMP_ACT_ON_GROUND;
     }
     o->oFloorType = o->oFloor->type;
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
 void grindel_thwomp_act_floating(void) {

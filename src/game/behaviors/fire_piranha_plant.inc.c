@@ -134,5 +134,5 @@ void bhv_fire_piranha_plant_update(void) {
 
     cur_obj_update_floor_and_walls();
     cur_obj_move_standard(78);
-    cur_obj_die_if_on_death_barrier(400);
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }

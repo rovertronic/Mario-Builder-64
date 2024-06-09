@@ -101,6 +101,7 @@ u16 mb64_tile_count = 0;
 u16 mb64_object_count = 0;
 u16 mb64_object_limit_count = 0; // Tracks additional objects like in coin formations, flame spinners
 u16 mb64_building_collision = FALSE; // 0 = building gfx, 1 = building collision
+u16 mb64_total_coin_count = 0;
 
 struct Object *mb64_boundary_object[6]; //one for each side
 
@@ -319,32 +320,6 @@ s32 object_sanity_check(void) {
         for (u32 i = 0; i < mb64_object_count; i++) {
             if (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) {
                 mb64_show_error_message("Red Coin Star already placed!");
-                return FALSE;
-            }
-        }
-    }
-
-    if (mb64_id_selection == OBJECT_TYPE_SHOWRUNNER) {
-        s32 numRunners = 0;
-        for (u32 i = 0; i < mb64_object_count; i++) {
-            if (mb64_object_data[i].type == OBJECT_TYPE_SHOWRUNNER) {
-                numRunners++;
-            }
-            if (numRunners >= 3) {
-                mb64_show_error_message("Showrunner limit reached! (max 3)");
-                return FALSE;
-            }
-        }
-    }
-
-    if (mb64_id_selection == OBJECT_TYPE_PHANTASM) {
-        s32 num = 0;
-        for (u32 i = 0; i < mb64_object_count; i++) {
-            if (mb64_object_data[i].type == OBJECT_TYPE_PHANTASM) {
-                num++;
-            }
-            if (num >= 12) {
-                mb64_show_error_message("Cosmic Phantasm limit reached! (max 12)");
                 return FALSE;
             }
         }
@@ -2276,6 +2251,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct mb64_o
 
 void generate_object_preview(void) {
     s32 totalCoins = 0;
+    s32 curExtraCoins = 0;
     s32 doubleCoins = FALSE;
     mb64_object_limit_count = 0;
     struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
@@ -2291,11 +2267,12 @@ void generate_object_preview(void) {
 
         s8 pos[3];
         vec3_set(pos, mb64_object_data[i].x, mb64_object_data[i].y, mb64_object_data[i].z);
+        curExtraCoins = 0;
 
         spawn_preview_object(pos, mb64_object_data[i].rot, param, info, bhvPreviewObject);
-        totalCoins += info->numCoins;
+        curExtraCoins += info->numCoins;
         if (mb64_object_data[i].type == OBJECT_TYPE_EXCL_BOX) {
-            totalCoins += mb64_exclamation_box_contents[param].numCoins;
+            curExtraCoins += mb64_exclamation_box_contents[param].numCoins;
         }
         if (mb64_object_data[i].type == OBJECT_TYPE_BADGE && param == 8) { // Greed badge
             doubleCoins = TRUE;
@@ -2303,7 +2280,7 @@ void generate_object_preview(void) {
 
         s32 extraObjs = get_extra_objects(mb64_object_data[i].type, param);
         if (mb64_object_data[i].type == OBJECT_TYPE_COIN_FORMATION) {
-            totalCoins += extraObjs;
+            curExtraCoins += extraObjs;
         }
 
         if ((mb64_object_data[i].imbue != IMBUE_NONE)&&(!mb64_prepare_level_screenshot)) {
@@ -2317,10 +2294,17 @@ void generate_object_preview(void) {
             imbue_marker->oPosY = GRID_TO_POS(pos[1]);
             imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
             mb64_object_limit_count ++;
-            totalCoins += imbue_coin_amounts[mb64_object_data[i].imbue];
+            curExtraCoins = imbue_coin_amounts[mb64_object_data[i].imbue]; // replaces coin count
+            if ((mb64_object_data[i].type == OBJECT_TYPE_BOO || mb64_object_data[i].type == OBJECT_TYPE_BIG_BOO)
+             && mb64_object_data[i].imbue == IMBUE_THREE_COINS) {
+                curExtraCoins = 1; // boos only drop 1 coin
+            } else if (mb64_id_selection == OBJECT_TYPE_SHOWRUNNER) {
+                curExtraCoins += info->numCoins; // showrunner always drops coins
+            }
         }
 
         mb64_object_limit_count += extraObjs + 1;
+        totalCoins += curExtraCoins;
     }
     if (doubleCoins) totalCoins *= 2;
 
@@ -2334,6 +2318,7 @@ void generate_object_preview(void) {
     if (mb64_lopt_coinstar > length) {
         mb64_lopt_coinstar = length;
     }
+    mb64_total_coin_count = totalCoins;
 
     generate_trajectory_gfx();
 }
@@ -2620,47 +2605,46 @@ u8 joystick_direction(void) {
 }
 
 void imbue_action(void) {
-    if (mb64_place_mode == MB64_PM_OBJ) {
-        for (u32 i=0;i<mb64_object_count;i++) {
-            if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])&&(mb64_object_data[i].imbue == IMBUE_NONE)) {
-                u8 imbue_success = FALSE;
+    for (u32 i=0;i<mb64_object_count;i++) {
+        if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])&&(mb64_object_data[i].imbue == IMBUE_NONE)) {
+            u8 imbue_success = FALSE;
 
-                switch(mb64_id_selection) {
-                    case OBJECT_TYPE_STAR:
-                        mb64_object_data[i].imbue = IMBUE_STAR;
+            switch(mb64_id_selection) {
+                case OBJECT_TYPE_STAR:
+                    mb64_object_data[i].imbue = IMBUE_STAR;
+                    imbue_success = TRUE;
+                    break;
+                case OBJECT_TYPE_BLUE_COIN:
+                    if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                        mb64_object_data[i].imbue = IMBUE_BLUE_COIN;
                         imbue_success = TRUE;
-                        break;
-                    case OBJECT_TYPE_BLUE_COIN:
-                        if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
-                            mb64_object_data[i].imbue = IMBUE_BLUE_COIN;
-                            imbue_success = TRUE;
-                        }
-                        break;
-                    case OBJECT_TYPE_COIN:
-                        if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
-                            mb64_object_data[i].imbue = IMBUE_THREE_COINS;
-                            imbue_success = TRUE;
-                        }
-                        break;
-                    case OBJECT_TYPE_RED_COIN:
-                        mb64_object_data[i].imbue = IMBUE_RED_COIN;
+                    }
+                    break;
+                case OBJECT_TYPE_COIN:
+                case OBJECT_TYPE_COIN_FORMATION:
+                    if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                        mb64_object_data[i].imbue = IMBUE_THREE_COINS;
                         imbue_success = TRUE;
-                        break;
-                    case OBJECT_TYPE_BUTTON:
-                        mb64_object_data[i].imbue = IMBUE_RED_SWITCH;
-                        if (mb64_param_selection == 1) {
-                            mb64_object_data[i].imbue = IMBUE_BLUE_SWITCH;
-                        }
-                        imbue_success = TRUE;
-                        break;
-                }
-
-                if (imbue_success) {
-                    play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
-                    generate_object_preview();
-                }
-                break;
+                    }
+                    break;
+                case OBJECT_TYPE_RED_COIN:
+                    mb64_object_data[i].imbue = IMBUE_RED_COIN;
+                    imbue_success = TRUE;
+                    break;
+                case OBJECT_TYPE_BUTTON:
+                    mb64_object_data[i].imbue = IMBUE_RED_SWITCH;
+                    if (mb64_param_selection == 1) {
+                        mb64_object_data[i].imbue = IMBUE_BLUE_SWITCH;
+                    }
+                    imbue_success = TRUE;
+                    break;
             }
+
+            if (imbue_success) {
+                play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
+                generate_object_preview();
+            }
+            break;
         }
     }
 }

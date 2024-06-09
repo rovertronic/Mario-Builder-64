@@ -6292,7 +6292,7 @@ void bhv_woodplat(void) {
             }
             cur_obj_move_standard(-20);
 
-            if (cur_obj_die_if_on_death_barrier(400)) {
+            if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
                 struct Object *curPlat = o;
                 do {
                     curPlat->activeFlags = ACTIVE_FLAG_DEACTIVATED;

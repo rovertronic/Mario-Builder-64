@@ -2560,7 +2560,7 @@ struct Surface * cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
 
 void arbritrary_death_coin_release(void) {
     if (o->oImbue != IMBUE_NONE) {
-        cur_obj_drop_imbued_object(400);
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
         return;
     }
     // If toby fox can get away with the entire undertale dialog system being stored in a single switch statement, i can get
@@ -2759,6 +2759,20 @@ s32 cur_obj_die_if_on_death_barrier(s32 offset) {
     return FALSE;
 }
 
+void boo_coin_drop(void) {
+    struct Object *coin = NULL;
+    if (o->oImbue == IMBUE_THREE_COINS) {
+        coin = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+    } else if (o->oImbue == IMBUE_BLUE_COIN) {
+        coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+    } else {
+        return;
+    }
+    coin->oVelY = 35.f;
+    coin->oForwardVel = 0.f;
+    o->oImbue = IMBUE_NONE;
+}
+
 void spawn_mist_at_obj(struct Object *obj) {
     Vec3f oldPos;
     vec3f_copy(oldPos, &o->oPosVec);
@@ -2770,6 +2784,9 @@ void spawn_mist_at_obj(struct Object *obj) {
 void cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object * dropobj;
     if (o->oImbue == IMBUE_NONE) return;
+    if (cur_obj_has_behavior(bhvBoo) || cur_obj_has_behavior(bhvBalconyBigBoo)) {
+        boo_coin_drop();
+    }
     if (o->oImbue == IMBUE_STAR) {
         struct Surface *ptr;
         f32 ceilY = find_ceil(o->oHomeX,o->oHomeY,o->oHomeZ,&ptr);
@@ -2809,6 +2826,10 @@ void cur_obj_drop_imbued_object(s32 y_offset) {
             vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
             spawn_mist_at_obj(dropobj);
             break;
+    }
+    if (dropobj) {
+        dropobj->oFaceAnglePitch = 0;
+        dropobj->oFaceAngleRoll = 0;
     }
     o->oImbue = IMBUE_NONE;
 }
