@@ -784,6 +784,7 @@ s32 count_red_coins(void) {
     count += count_imbued_red_coins(OBJ_LIST_GENACTOR);
     count += count_imbued_red_coins(OBJ_LIST_SURFACE);
     count += count_imbued_red_coins(OBJ_LIST_POLELIKE);
+    count += count_imbued_red_coins(OBJ_LIST_PUSHABLE);
     return count;
 }
 
@@ -2558,6 +2559,10 @@ struct Surface * cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
 }
 
 void arbritrary_death_coin_release(void) {
+    if (o->oImbue != IMBUE_NONE) {
+        cur_obj_drop_imbued_object(400);
+        return;
+    }
     // If toby fox can get away with the entire undertale dialog system being stored in a single switch statement, i can get
     // away with one teeny hardcoded elseif
     if (cur_obj_has_behavior(bhvMotos)) {
@@ -2591,8 +2596,6 @@ void arbritrary_death_coin_release(void) {
         coin->oForwardVel = 10.0f;
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-    } else if (cur_obj_has_behavior(bhvBigBully)) {
-        cur_obj_drop_imbued_object(400);
     } else if (cur_obj_has_behavior(bhvMoneybag)||cur_obj_has_behavior(bhvMoneybagHidden)) {
         obj_spawn_yellow_coins(o, 3);
     } else {

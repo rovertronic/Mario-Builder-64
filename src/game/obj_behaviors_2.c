@@ -465,13 +465,15 @@ static void obj_die_if_health_non_positive(void) {
             spawn_mist_particles();
         }
 
-        if ((s32)o->oNumLootCoins < 0) {
-            spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+        if (o->oImbue != IMBUE_NONE) {
+            cur_obj_drop_imbued_object(400);
         } else {
-            obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+            if ((s32)o->oNumLootCoins < 0) {
+                spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+            } else {
+                obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+            }
         }
-        // This doesn't do anything
-        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
 
         if (o->oHealth < 0) {
             cur_obj_hide();

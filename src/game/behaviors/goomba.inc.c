@@ -173,12 +173,6 @@ static void goomba_act_walk(void) {
     if (o->oGoombaTurningAwayFromWall) {
         o->oGoombaTurningAwayFromWall = obj_resolve_collisions_and_turn(o->oGoombaTargetYaw, 0x200);
     } else {
-        // If far from home, walk toward home.
-        if (o->oDistanceToMario >= 25000.0f) {
-            o->oGoombaTargetYaw = o->oAngleToMario;
-            o->oGoombaWalkTimer = random_linear_offset(20, 30);
-        }
-
         if (!(o->oGoombaTurningAwayFromWall =
                   obj_bounce_off_walls_edges_objects(&o->oGoombaTargetYaw))) {
             if (o->oDistanceToMario < 500.0f) {
@@ -350,6 +344,7 @@ void bhv_goomba_update(void) {
                                && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO);
 
         cur_obj_move_standard(-78);
+        cur_obj_set_home_if_safe();
         cur_obj_die_if_on_death_barrier(400);
     } else {
         o->oAnimState = GOOMBA_ANIM_STATE_EYES_CLOSED;
