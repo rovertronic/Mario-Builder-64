@@ -61,26 +61,6 @@ static s32 boo_should_be_active(void) {
     return FALSE;
 }
 
-void bhv_courtyard_boo_triplet_init(void) {
-    s32 i;
-#ifndef UNLOCK_ALL
-    if (gHudDisplay.stars < SPAWN_CASTLE_BOO_STAR_REQUIREMENT) {
-        obj_mark_for_deletion(o);
-    } else
-#endif
-    {
-        for (i = 0; i < 3; i++) {
-            struct Object *boo = spawn_object_relative( BOO_BP_NORMAL,
-                sCourtyardBooTripletPositions[i][0],
-                sCourtyardBooTripletPositions[i][1],
-                sCourtyardBooTripletPositions[i][2],
-                o, MODEL_BOO, bhvGhostHuntBoo );
-            OR_BPARAM1(boo->oBehParams, COIN_INSIDE_BOO_BP_YELLOW_COIN);
-            boo->oMoveAngleYaw = random_u16();
-        }
-    }
-}
-
 static void boo_approach_target_opacity_and_update_scale(void) {
     f32 scale;
 
@@ -413,9 +393,12 @@ static void boo_act_2(void) {
 }
 
 static void boo_act_3(void) {
+    if (o->oTimer == 0) {
+        if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(128);
+    }
     if (boo_update_during_death()) {
-            obj_mark_for_deletion(o);
-
+        obj_mark_for_deletion(o);
+        cur_obj_drop_imbued_object(128);
     }
 }
 
@@ -449,10 +432,18 @@ static ObjActionFunc sBooActions[] = {
     boo_act_5,
 };
 
+void bhv_boo_update_home(f32 yOffset) {
+    if (!SURFACE_IS_UNSAFE(o->oFloorType) && !o->oFloor->object && (o->oPosY - o->oFloorHeight < yOffset) && (o->oImbue != IMBUE_STAR)) {
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
+        o->oHomeY = o->oFloorHeight;
+    }
+}
+
 void bhv_boo_loop(void) {
     // PARTIAL_UPDATE
 
     cur_obj_update_floor_and_walls();
+    bhv_boo_update_home(150.f);
     cur_obj_call_action_function(sBooActions);
     cur_obj_move_standard(78);
     boo_approach_target_opacity_and_update_scale();
@@ -536,20 +527,6 @@ static void big_boo_act_2(void) {
     }
 }
 
-static void big_boo_spawn_ghost_hunt_star(void) {
-    spawn_default_star(980.0f, 1100.0f, 250.0f);
-}
-
-static void big_boo_spawn_balcony_star(void) {
-    spawn_default_star(700.0f, 3200.0f, 1900.0f);
-}
-
-static void big_boo_spawn_merry_go_round_star(void) {
-    struct Object *merryGoRound;
-
-    spawn_default_star(-1600.0f, -2100.0f, 205.0f);
-}
-
 static void big_boo_act_3(void) {
     if (o->oTimer == 0) {
         o->oHealth--;
@@ -559,6 +536,9 @@ static void big_boo_act_3(void) {
     }
 
     if (o->oHealth <= 0) {
+        if (o->oTimer == 0) {
+            if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(0);
+        }
         if (boo_update_during_death()) {
             cur_obj_disable();
 
@@ -567,15 +547,6 @@ static void big_boo_act_3(void) {
             obj_set_angle(o, 0, 0, 0);
 
             cur_obj_drop_imbued_object(0);
-            /*
-            if (o->oBehParams2ndByte == 0) {
-                big_boo_spawn_ghost_hunt_star();
-            } else if (o->oBehParams2ndByte == 1) {
-                big_boo_spawn_merry_go_round_star();
-            } else {
-                big_boo_spawn_balcony_star();
-            }
-            */
         }
     } else {
         if (o->oTimer == 0) {
@@ -591,22 +562,7 @@ static void big_boo_act_3(void) {
 
 static void big_boo_act_4(void) {
     boo_stop();
-
-    if (o->oBehParams2ndByte == 0) {
-        obj_set_pos(o, 973, 0, 626);
-
-        if (o->oTimer > 60 && o->oDistanceToMario < 600.0f) {
-            obj_set_pos(o,  973, 0, 717);
-
-            // spawn_object_relative(0, 0, 0,    0, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
-            // spawn_object_relative(1, 0, 0, -200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
-            // spawn_object_relative(2, 0, 0,  200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooStaircase);
-
-            obj_mark_for_deletion(o);
-        }
-    } else {
-        obj_mark_for_deletion(o);
-    }
+    obj_mark_for_deletion(o);
 }
 
 static ObjActionFunc sBooGivingStarActions[] = {
@@ -625,93 +581,14 @@ void bhv_big_boo_loop(void) {
     o->oGraphYOffset = o->oBooBaseScale * 60.0f;
 
     cur_obj_update_floor_and_walls();
-
-    if (!SURFACE_IS_UNSAFE(o->oFloorType) && !o->oFloor->object && (o->oImbue != IMBUE_STAR)) {
-        vec3f_copy(&o->oHomeVec, &o->oPosVec);
-    }
-
+    bhv_boo_update_home(300.f);
     cur_obj_call_action_function(sBooGivingStarActions);
     cur_obj_move_standard(78);
 
-    boo_approach_target_opacity_and_update_scale();
-    o->oInteractStatus = INT_STATUS_NONE;
-}
-
-static void boo_with_cage_act_0(void) {
-    o->oBooParentBigBoo = NULL;
-    o->oBooTargetOpacity = 255;
-    o->oBooBaseScale = 2.0f;
-
-    cur_obj_scale(2.0f);
-    cur_obj_become_tangible();
-
-    if (boo_should_be_active()) {
-        o->oAction = 1;
-    }
-}
-
-static void boo_with_cage_act_1(void) {
-    s32 attackStatus;
-
-    boo_chase_mario(100.0f, 512, 0.5f);
-
-    attackStatus = boo_get_attack_status();
-
-    if (boo_should_be_stopped()) {
-        o->oAction = 0;
-    }
-
-    if (attackStatus == BOO_BOUNCED_ON) {
-        o->oAction = 2;
-    }
-
-    if (attackStatus == BOO_ATTACKED) {
-        o->oAction = 3;
-    }
-}
-
-static void boo_with_cage_act_2(void) {
-    if (boo_update_after_bounced_on(20.0f)) {
-        o->oAction = 1;
-    }
-}
-
-static void boo_with_cage_act_3(void) {
-    if (boo_update_during_death()) {
-        obj_mark_for_deletion(o);
-    }
-}
-
-void bhv_boo_with_cage_init(void) {
-#ifndef UNLOCK_ALL
-    if (gHudDisplay.stars < SPAWN_CASTLE_BOO_STAR_REQUIREMENT) {
-        obj_mark_for_deletion(o);
-    } else
-#endif
-    {
-        struct Object *cage = spawn_object(o, MODEL_HAUNTED_CAGE, bhvBooCage);
-        cage->oBehParams = o->oBehParams;
-    }
-}
-
-static ObjActionFunc sBooWithCageActions[] = {
-    boo_with_cage_act_0,
-    boo_with_cage_act_1,
-    boo_with_cage_act_2,
-    boo_with_cage_act_3,
-};
-
-void bhv_boo_with_cage_loop(void) {
-    //PARTIAL_UPDATE
-
-    cur_obj_update_floor_and_walls();
-    cur_obj_call_action_function(sBooWithCageActions);
-    cur_obj_move_standard(78);
 
     boo_approach_target_opacity_and_update_scale();
     o->oInteractStatus = INT_STATUS_NONE;
 }
-
 
 void obj_set_secondary_camera_focus(void) {
     gSecondCameraFocus = o;

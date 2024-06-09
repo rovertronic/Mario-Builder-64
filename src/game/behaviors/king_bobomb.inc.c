@@ -359,8 +359,8 @@ struct SoundState sKingBobombSoundStates[] = {
 
 void king_bobomb_move(void) {
     cur_obj_update_floor_and_walls();
-    cur_obj_move_standard(-78);
     cur_obj_set_home_if_safe();
+    cur_obj_move_standard(-78);
 
     //if (is_obj_interacting_with_noteblock(0)) {
     //    if (o->oAction == KING_BOBOMB_ACT_ACTIVE || o->oAction == KING_BOBOMB_ACT_) {

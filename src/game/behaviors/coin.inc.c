@@ -291,31 +291,6 @@ void bhv_coin_formation_loop(void) {
     set_object_respawn_info_bits(o, o->oCoinRespawnBits & RESPAWN_INFO_DONT_RESPAWN);
 }
 
-void coin_inside_boo_act_dropped(void) {
-    cur_obj_update_floor_and_walls();
-    cur_obj_if_hit_wall_bounce_away();
-
-    if (o->oMoveFlags & OBJ_MOVE_BOUNCE) {
-        cur_obj_play_sound_2(SOUND_GENERAL_COIN_DROP);
-    }
-
-    if (o->oTimer > 90 || o->oMoveFlags & OBJ_MOVE_LANDED) {
-        obj_set_hitbox(o, &sYellowCoinHitbox);
-        cur_obj_become_tangible();
-        cur_obj_set_behavior(bhvYellowCoin);
-    }
-
-    cur_obj_move_standard(-30);
-    bhv_coin_sparkles_init();
-
-    if (cur_obj_has_model(MODEL_BLUE_COIN)) {
-        o->oDamageOrCoinValue = 5;
-    }
-
-    if (cur_obj_wait_then_blink(400, 20)) {
-        obj_mark_for_deletion(o);
-    }
-}
 
 void coin_inside_boo_act_carried(void) {
     struct Object *parent = o->parentObj;
@@ -326,17 +301,13 @@ void coin_inside_boo_act_carried(void) {
     obj_copy_pos(o, parent);
 
     if (parent->oBooDeathStatus == BOO_DEATH_STATUS_DYING) {
-        o->oAction = COIN_INSIDE_BOO_ACT_DROPPED;
-        s16 marioMoveYaw = gMarioObject->oMoveAngleYaw;
-        o->oVelX = sins(marioMoveYaw) * 3.0f;
-        o->oVelZ = coss(marioMoveYaw) * 3.0f;
-        o->oVelY = 35.0f;
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 }
 
 ObjActionFunc sCoinInsideBooActions[] = {
     coin_inside_boo_act_carried,
-    coin_inside_boo_act_dropped
+    //coin_inside_boo_act_dropped
 };
 
 void bhv_coin_inside_boo_loop(void) {

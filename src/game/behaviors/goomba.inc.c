@@ -343,8 +343,8 @@ void bhv_goomba_update(void) {
                                sGoombaAttackHandlers[o->oGoombaSize & 0x1])
                                && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO);
 
-        cur_obj_move_standard(-78);
         cur_obj_set_home_if_safe();
+        cur_obj_move_standard(-78);
         cur_obj_die_if_on_death_barrier(400);
     } else {
         o->oAnimState = GOOMBA_ANIM_STATE_EYES_CLOSED;

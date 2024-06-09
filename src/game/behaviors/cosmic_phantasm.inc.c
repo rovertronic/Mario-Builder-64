@@ -295,6 +295,7 @@ void showrunner_battle_function(void) {
     struct Object *obj_attack;
     struct Surface *ptr;
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     cur_obj_move_standard(-30);
     if (is_cur_obj_interact_with_lava(0)) {
         spawn_object(o, MODEL_RED_FLAME, bhvKoopaShellFlame);
@@ -304,7 +305,6 @@ void showrunner_battle_function(void) {
     o->oInteractType = INTERACT_DAMAGE;
     cur_obj_become_tangible();
     o->oDamageOrCoinValue = 0;
-    cur_obj_set_home_if_safe();
     cur_obj_die_if_on_death_barrier(400);
     switch(o->oAction) {
         case 0://init

@@ -3445,13 +3445,6 @@ const BehaviorScript bhvGhostHuntBigBoo[] = {
     END_LOOP(),
 };
 
-const BehaviorScript bhvCourtyardBooTriplet[] = {
-    BEGIN(OBJ_LIST_DEFAULT),
-    DISABLE_RENDERING(),
-    CALL_NATIVE(bhv_courtyard_boo_triplet_init),
-    DEACTIVATE(),
-};
-
 const BehaviorScript bhvBoo[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     SET_INT(oBehParams2ndByte, BOO_BP_NORMAL),

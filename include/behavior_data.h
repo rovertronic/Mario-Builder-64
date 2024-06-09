@@ -484,7 +484,6 @@ extern const BehaviorScript bhvBooWithCage[];
 extern const BehaviorScript bhvBalconyBigBoo[];
 extern const BehaviorScript bhvMerryGoRoundBigBoo[];
 extern const BehaviorScript bhvGhostHuntBigBoo[];
-extern const BehaviorScript bhvCourtyardBooTriplet[];
 extern const BehaviorScript bhvBoo[];
 extern const BehaviorScript bhvMerryGoRoundBoo[];
 extern const BehaviorScript bhvGhostHuntBoo[];
