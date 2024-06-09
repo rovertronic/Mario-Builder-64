@@ -6152,6 +6152,13 @@ void bhv_onoffswitch(void) {
         case 0: // init
             o->oAnimState = o->oBehParams2ndByte;
             o->oAction = 1;
+            if ((o->oAnimState == 0) && (!mb64_play_onoff)) {
+                o->header.gfx.scale[1] = 0.1f;
+                o->oAction = 2;
+            } else if ((o->oAnimState != 0) && (mb64_play_onoff)) {
+                o->header.gfx.scale[1] = 0.1f;
+                o->oAction = 2;
+            }
             break;
         case 1: // switch up
             o->header.gfx.scale[1] = approach_f32_symmetric(o->header.gfx.scale[1], 1.0f ,0.1f);
@@ -6159,14 +6166,10 @@ void bhv_onoffswitch(void) {
                 cur_obj_play_sound_2(SOUND_GENERAL2_BUTTON_PRESS);
                 mb64_play_onoff = o->oBehParams2ndByte;
             }
-            if (o->oBehParams2ndByte == 0) {
-                if (!mb64_play_onoff) {
-                    o->oAction = 2;
-                }
-            } else { // Blue
-                if (mb64_play_onoff) {
-                    o->oAction = 2;
-                }
+            if ((o->oAnimState == 0) && (!mb64_play_onoff)) {
+                o->oAction = 2;
+            } else if ((o->oAnimState != 0) && (mb64_play_onoff)) {
+                o->oAction = 2;
             }
             break;
         case 2: // switch down
@@ -6184,33 +6187,29 @@ void bhv_onoffswitch(void) {
     }
 }
 
+void bhv_onoffblock_init(void) {
+    if (o->oBehParams2ndByte == 0) {
+        o->oAnimState = 0;
+    } else {
+        o->oAnimState = 1;
+    }
+}
+
 void bhv_onoffblock(void) {
-    switch(o->oAction){
-        case 0: //init
-            if (o->oBehParams2ndByte == 0) {
-                o->oAnimState = 0;
-            } else {
-                o->oAnimState = 1;
-            }
-            o->oAction = 1;
-            break;
-        case 1: //loop
-            if (o->oBehParams2ndByte == 0) {
-                if (mb64_play_onoff) {
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
-                } else {
-                    load_object_collision_model();
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
-                }
-            } else {
-                if (mb64_play_onoff) {
-                    load_object_collision_model();
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
-                } else {
-                    o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
-                }
-            }
-            break;
+    if (o->oBehParams2ndByte == 0) {
+        if (mb64_play_onoff) {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
+        } else {
+            load_object_collision_model();
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
+        }
+    } else {
+        if (mb64_play_onoff) {
+            load_object_collision_model();
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_ON];
+        } else {
+            o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_BLOCK_OFF];
+        }
     }
 }
 
@@ -6292,6 +6291,14 @@ void bhv_woodplat(void) {
                 o->oFlags |= OBJ_FLAG_SIMPLE_WALL_CHECKS;
             }
             cur_obj_move_standard(-20);
+
+            if (cur_obj_die_if_on_death_barrier(400)) {
+                struct Object *curPlat = o;
+                do {
+                    curPlat->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                    curPlat = curPlat->oWoodPlatAbovePlatform;
+                } while (curPlat);
+            }
 
             Vec3f oldPos;
             vec3f_copy(oldPos, &o->prevObj->oPosVec);

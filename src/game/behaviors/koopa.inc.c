@@ -95,7 +95,6 @@ void bhv_koopa_init(void) {
 
         rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
 
-        o->oKoopaTheQuickRaceIndex = o->oKoopaMovementType - KOOPA_BP_KOOPA_THE_QUICK_BASE;
         o->oKoopaAgility = 4.0f;
         o->oDrawingDistance = MB64_DRAWDIST_MEDIUM;
         cur_obj_scale(3.0f);
@@ -332,6 +331,7 @@ static void koopa_shelled_update(void) {
         }
     }
 
+    cur_obj_die_if_on_death_barrier(400);
     cur_obj_move_standard(-78);
 }
 
@@ -465,6 +465,7 @@ static void koopa_unshelled_update(void) {
     }
 
     obj_handle_attacks(&sKoopaHitbox, o->oAction, sKoopaUnshelledAttackHandlers);
+    cur_obj_die_if_on_death_barrier(400);
     cur_obj_move_standard(-78);
 }
 
@@ -523,9 +524,7 @@ static void koopa_the_quick_act_wait_before_race(void) {
  * return to the waiting action.
  */
 static void koopa_the_quick_act_show_init_text(void) {
-    s32 response = DIALOG_RESPONSE_YES;//obj_update_race_proposition_dialog(sKoopaTheQuickProperties[o->oKoopaTheQuickRaceIndex].initText);
-
-
+    s32 response = DIALOG_RESPONSE_YES;
 
     if (response == DIALOG_RESPONSE_YES) {
         gMarioShotFromCannon = FALSE;
@@ -717,24 +716,34 @@ static void koopa_the_quick_act_after_race(void) {
 
         // Determine which text to display
         if (o->parentObj->oKoopaRaceEndpointRaceStatus != KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON) {
-            if (o->parentObj->oKoopaRaceEndpointRaceStatus == KOOPA_RACE_ENDPOINT_STATUS_MARIO_CHEATED) {
-                // Mario cheated
-                o->parentObj->oKoopaRaceEndpointRaceStatus = KOOPA_RACE_ENDPOINT_STATUS_KOOPA_WON;
-                o->parentObj->oKoopaRaceEndpointDialog = DIALOG_006;
-            } else {
-                // Mario won
-                if (o->oDistanceToMario < 500.0f) {
-                    o->parentObj->oKoopaRaceEndpointDialog = 1;
-                    spawn_default_star(o->oPosX+(sins(o->oFaceAngleYaw)*200.0f),o->oPosY+400.0f,o->oPosZ+(coss(o->oFaceAngleYaw)*200.0f));
-                }
+            // Mario won
+            if (o->oDistanceToMario < 500.0f) {
+                o->parentObj->oKoopaRaceEndpointDialog = 1;
+                spawn_default_star(o->oPosX+(sins(o->oFaceAngleYaw)*200.0f),o->oPosY+400.0f,o->oPosZ+(coss(o->oFaceAngleYaw)*200.0f));
             }
         } else {
             // KtQ won
-            o->parentObj->oKoopaRaceEndpointDialog = DIALOG_041;
+            if (o->oDistanceToMario < 500.0f) {
+                spawn_mist_particles();
+                koopa_the_quick_reset();
+            }
         }
 
         o->oFlags &= ~OBJ_FLAG_ACTIVE_FROM_AFAR;
     }
+}
+
+void koopa_the_quick_reset(void) {
+    vec3_copy(&o->oPosVec, &o->oHomeVec);
+    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
+    o->oPathedStartWaypoint = o->oPathedPrevWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
+    o->oAction = KOOPA_THE_QUICK_ACT_WAIT_BEFORE_RACE;
+    cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
+    spawn_mist_particles();
+
+    o->parentObj->oKoopaRaceEndpointRaceBegun = FALSE;
+    o->parentObj->oKoopaRaceEndpointRaceEnded = FALSE;
+    o->parentObj->oKoopaRaceEndpointKoopaFinished = FALSE;
 }
 
 /**
@@ -774,6 +783,11 @@ static void koopa_the_quick_update(void) {
 
     cur_obj_push_mario_away_from_cylinder(140.0f, 300.0f);
     cur_obj_move_standard(-78);
+    if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
+        stop_mb64_extra_music(1);
+        level_control_timer(TIMER_CONTROL_HIDE);
+        koopa_the_quick_reset();
+    }
     if (is_obj_interacting_with_noteblock(0)) {
         if (o->oAction == KOOPA_THE_QUICK_ACT_RACE) {
             o->oGravity = -5.0f;

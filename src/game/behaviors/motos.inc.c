@@ -190,6 +190,7 @@ void bhv_motos_main() {
             o->oAction = MOTOS_ACT_DEATH;
         }
     }
+    cur_obj_die_if_on_death_barrier(400);
 }
 
 void bhv_motos_loop(void) {

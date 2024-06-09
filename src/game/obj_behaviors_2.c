@@ -535,7 +535,7 @@ static s32 obj_die_if_above_lava_and_health_non_positive(void) {
             return FALSE;
         }
     // Check lava
-    } else if (!((o->oMoveFlags & OBJ_MOVE_ABOVE_LAVA)&&(o->oMoveFlags & (OBJ_MOVE_ON_GROUND|OBJ_MOVE_BOUNCE))) ) {
+    } else if (!((o->oMoveFlags & (OBJ_MOVE_ABOVE_LAVA))&&(o->oMoveFlags & (OBJ_MOVE_ON_GROUND|OBJ_MOVE_BOUNCE))) ) {
         return FALSE;
     }
 

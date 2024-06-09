@@ -281,10 +281,6 @@ ObjActionFunc sWhompActions[] = {
 void bhv_whomp_loop(void) {
     o->oWallHitboxRadius = 60.0f;
     cur_obj_update_floor_and_walls();
-    if (cur_obj_die_if_on_death_barrier(400)) {
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-        return;
-    }
     cur_obj_call_action_function(sWhompActions);
     cur_obj_move_standard(-20);
     if (o->oAction != 9) {
@@ -299,4 +295,5 @@ void bhv_whomp_loop(void) {
     if (is_cur_obj_interact_with_lava(0) && o->oAction <= 8) {
         o->oAction = 8;
     }
+    cur_obj_die_if_on_death_barrier(400);
 }

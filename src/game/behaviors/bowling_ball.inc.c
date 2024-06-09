@@ -87,6 +87,7 @@ void bhv_bowling_ball_roll_loop(void) {
     if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) && (o->oVelY > 5.0f)) {
         cur_obj_play_sound_2(SOUND_GENERAL_QUIET_POUND1_LOWPRIO);
     }
+    cur_obj_die_if_on_death_barrier(0);
 }
 
 void bhv_bowling_ball_initialize_loop(void) {
@@ -95,31 +96,6 @@ void bhv_bowling_ball_initialize_loop(void) {
     cur_obj_follow_path();
 
     o->oMoveAngleYaw = o->oPathedTargetYaw;
-
-    //switch (o->oBehParams2ndByte) {
-    //    case BBALL_BP_STYPE_BOB_UPPER:
-    //        o->oForwardVel = 20.0f;
-    //        break;
-//
-    //    case BBALL_BP_STYPE_TTM:
-    //        o->oForwardVel = 10.0f;
-    //        break;
-//
-    //    case BBALL_BP_STYPE_BOB_LOWER:
-    //        o->oForwardVel = 20.0f;
-    //        break;
-//
-    //    case BBALL_BP_STYPE_THI_LARGE:
-    //        o->oForwardVel = 25.0f;
-    //        break;
-//
-    //    case BBALL_BP_STYPE_THI_SMALL:
-    //        o->oForwardVel = 10.0f;
-    //        cur_obj_scale(0.3f);
-    //        o->oGraphYOffset = 39.0f;
-    //        break;
-    //}
-
     o->oForwardVel = 18.0f;
 }
 

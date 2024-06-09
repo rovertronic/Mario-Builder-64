@@ -45,6 +45,7 @@ void jumping_box_free_update(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_move_standard(78);
     cur_obj_call_action_function(sJumpingBoxActions);
+    cur_obj_die_if_on_death_barrier(0);
 }
 
 void bhv_jumping_box_loop(void) {

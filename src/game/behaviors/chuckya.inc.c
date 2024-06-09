@@ -177,6 +177,7 @@ void chuckya_move(void) {
         o->oCommonAnchorAction = 1;
         cur_obj_play_sound_2(SOUND_OBJ_GRAB_MARIO);
     }
+    cur_obj_die_if_on_death_barrier(400);
 }
 
 void bhv_chuckya_loop(void) {

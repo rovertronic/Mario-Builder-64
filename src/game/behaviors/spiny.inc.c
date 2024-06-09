@@ -107,6 +107,7 @@ static void spiny_act_walk(void) {
         } else {
             o->oInteractType = INTERACT_SPINY_WALKING;
         }
+        cur_obj_die_if_on_death_barrier(400);
     }
 }
 

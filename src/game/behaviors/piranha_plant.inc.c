@@ -319,5 +319,9 @@ void bhv_piranha_plant_loop(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_call_action_function(TablePiranhaPlantActions);
     cur_obj_move_standard(78);
+    if (cur_obj_die_if_on_death_barrier(400)) {
+        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, MB64_DRAWDIST_LOW);
+        o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
     o->oInteractStatus = INT_STATUS_NONE;
 }

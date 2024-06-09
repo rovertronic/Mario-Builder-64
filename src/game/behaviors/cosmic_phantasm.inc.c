@@ -305,10 +305,7 @@ void showrunner_battle_function(void) {
     cur_obj_become_tangible();
     o->oDamageOrCoinValue = 0;
     cur_obj_set_home_if_safe();
-    if (cur_obj_die_if_on_death_barrier(400)) {
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-        return;
-    }
+    cur_obj_die_if_on_death_barrier(400);
     switch(o->oAction) {
         case 0://init
             o->oAction=1;

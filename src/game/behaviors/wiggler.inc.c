@@ -427,8 +427,9 @@ void bhv_wiggler_update(void) {
             // Wiggler surface interactions
             if (o->oFloor != NULL) {
                 if ((o->oFloorHeight + 1.f > o->oPosY)) {
-                    if ((o->oHealth > 1) && cur_obj_die_if_on_death_barrier(400)) {
+                    if ((o->oHealth > 1) && (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f)) {
                         o->oHealth = 1;
+                        cur_obj_drop_imbued_object(400.f);
                         o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
                     }
                     if (SURFACE_IS_BURNING(o->oFloorType)) {

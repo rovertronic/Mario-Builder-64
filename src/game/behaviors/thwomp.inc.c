@@ -28,7 +28,7 @@ void grindel_thwomp_act_falling(void) {
 }
 
 void grindel_thwomp_act_land(void) {
-    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    o->oFloorHeight = find_floor(o->oPosX, o->oPosY+30.f, o->oPosZ, &o->oFloor);
     if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
         o->oPosY = o->oFloorHeight;
     }
@@ -40,6 +40,8 @@ void grindel_thwomp_act_land(void) {
     if (o->oTimer >= 10) {
         o->oAction = GRINDEL_THWOMP_ACT_ON_GROUND;
     }
+    o->oFloorType = o->oFloor->type;
+    cur_obj_die_if_on_death_barrier(400);
 }
 
 void grindel_thwomp_act_floating(void) {

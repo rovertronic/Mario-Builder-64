@@ -1617,7 +1617,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     //  This allows numerous glitches and is typically referred to as
     //  deactivation (though this term has a different meaning in the code).
     //  Objects that do this will be marked with //PARTIAL_UPDATE.
-    if (!(o->activeFlags & (ACTIVE_FLAG_FAR_AWAY | ACTIVE_FLAG_IN_DIFFERENT_ROOM))) {
+    if (!(o->activeFlags & ACTIVE_FLAG_FAR_AWAY)) {
         if (steepSlopeAngleDegrees < 0) {
             careAboutEdgesAndSteepSlopes = TRUE;
             steepSlopeAngleDegrees = -steepSlopeAngleDegrees;
@@ -2704,6 +2704,7 @@ s32 is_cur_obj_interact_with_lava(u8 move_standard_or_object_step) {
 }
 
 void cur_obj_interact_with_moving_platform(void) {
+    if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) return;
     o->oPosX += sInteractFloor->object->oDisplaceVec[0];
     o->oPosZ += sInteractFloor->object->oDisplaceVec[2];
 
@@ -2749,6 +2750,7 @@ void cur_obj_set_home_if_safe(void) {
 s32 cur_obj_die_if_on_death_barrier(s32 offset) {
     if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
         cur_obj_drop_imbued_object(offset);
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         return TRUE;
     }
     return FALSE;

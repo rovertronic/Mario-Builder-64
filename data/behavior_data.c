@@ -9440,6 +9440,7 @@ const BehaviorScript bhvOnOffButton[] = {
     END_LOOP(),
 };
 
+extern void bhv_onoffblock_init(void);
 extern void bhv_onoffblock(void);
 const BehaviorScript bhvOnOffBlock[] = {
     BEGIN(OBJ_LIST_SURFACE),
@@ -9447,6 +9448,7 @@ const BehaviorScript bhvOnOffBlock[] = {
     LOAD_COLLISION_DATA(onoffblock_collision),
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
+    CALL_NATIVE(bhv_onoffblock_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_onoffblock),
     END_LOOP(),

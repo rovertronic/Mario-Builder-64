@@ -659,10 +659,11 @@ s32 act_ledge_climb_fast(struct MarioState *m) {
 }
 
 s32 act_grabbed(struct MarioState *m) {
+    m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
+    vec3f_copy_y_off(m->pos, &m->usedObj->oPosVec, 100.0f);
     if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_THROWN_BY_OBJ) {
         s32 thrown = (m->marioObj->oInteractStatus & INT_STATUS_MARIO_DROPPED_BY_OBJ) == 0;
 
-        m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
         vec3f_copy(m->pos, m->marioObj->header.gfx.pos);
 #if ENABLE_RUMBLE
         queue_rumble_data(5, 60);

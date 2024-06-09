@@ -152,17 +152,6 @@ static void goomba_begin_jump(void) {
 }
 
 /**
- * If spawned by a triplet spawner, mark the flag in the spawner to indicate that
- * this goomba died. This prevents it from spawning again when mario leaves and
- * comes back.
- */
-static void mark_goomba_as_dead(void) {
-    if (o->parentObj != o) {
-        set_object_respawn_info_bits(o->parentObj,(o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) >> 2);o->parentObj->oBehParams =o->parentObj->oBehParams | (o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) << 6;
-    }
-}
-
-/**
  * Walk around randomly occasionally jumping. If mario comes within range,
  * chase him.
  */
@@ -232,10 +221,7 @@ static void goomba_act_walk(void) {
  */
 static void goomba_act_attacked_mario(void) {
     if (o->oGoombaSize == GOOMBA_SIZE_TINY) {
-        mark_goomba_as_dead();
-#ifndef TINY_GOOMBA_ALWAYS_DROPS_COIN
         o->oNumLootCoins = 0;
-#endif
         obj_die_if_health_non_positive();
     } else {
         //! This can happen even when the goomba is already in the air. It's
@@ -318,9 +304,6 @@ void huge_goomba_weakly_attacked(void) {
 void bhv_goomba_update(void) {
     // PARTIAL_UPDATE
     struct Object *flame;
-    // f32 flameVel; // all unused
-    // s32 sp34;
-    // s32 model;
     s32 bparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
     f32 animSpeed;
 
@@ -329,32 +312,16 @@ void bhv_goomba_update(void) {
     }
 
     if (obj_update_standard_actions(o->oGoombaScale)) {
-        // If this goomba has a spawner and mario moved away from the spawner, unload
-        // if (o->parentObj->behavior == bhvGoombaTripletSpawner) {
-        //     if (o->parentObj->oAction == GOOMBA_TRIPLET_SPAWNER_ACT_UNLOADED) {
-        //         obj_mark_for_deletion(o);
-        //     }
-        // }
-
         if (o->oBehParams2ndByte > 0) {
             cur_obj_scale(o->oGoombaScale);
         }
         obj_update_blinking(&o->oGoombaBlinkTimer, 30, 50, 5);
-#ifdef FLOOMBAS
-        if (o->oIsFloomba) {
-            o->oAnimState += FLOOMBA_ANIM_STATE_EYES_OPEN;
-        }
-#endif
         cur_obj_update_floor_and_walls();
 
         if (o->oGoombaScale == 0.0f || (animSpeed = (o->oForwardVel / o->oGoombaScale * 0.4f)) < 1.0f) {
             animSpeed = 1.0f;
         }
-#if defined(FLOOMBAS) && defined(INTRO_FLOOMBAS)
-        if (o->oAction == FLOOMBA_ACT_STARTUP) {
-            animSpeed = (GET_BPARAM1(o->oBehParams) / 16.0f);
-        }
-#endif
+
         cur_obj_init_animation_with_accel_and_sound(GOOMBA_ANIM_DEFAULT, animSpeed);
 
         switch (o->oAction) {
@@ -367,11 +334,6 @@ void bhv_goomba_update(void) {
             case GOOMBA_ACT_JUMP:
                 goomba_act_jump();
                 break;
-#if defined(FLOOMBAS) && defined(INTRO_FLOOMBAS)
-            case FLOOMBA_ACT_STARTUP:
-                floomba_act_startup();
-                break;
-#endif
         }
 
         if (o->oHealth == 1) {
@@ -381,48 +343,14 @@ void bhv_goomba_update(void) {
 
         if (o->oNumLootCoins == 2) {
             o->oAnimState = 0;
-            }
+        }
 
-        // if (bparam1 == 1) {
-
-        //     o->oAnimState = 1;
-        //     o->oNumLootCoins = -1;
-
-        //     o->oForwardVel = 0;
-
-
-            
-
-        //     if (o->oDistanceToMario < 4500.0f) {
-        //         o->oGoombaTargetYaw = o->oAngleToMario;
-        //         if (o->oTimer > 100) {
-        //             flame = spawn_object(o,MODEL_RED_FLAME,bhvThwompFlame);
-        //             flame->oPosY += 70.0f;
-        //             flame->oForwardVel = 20.0f;
-
-        //             cur_obj_play_sound_2(SOUND_OBJ_FLAME_BLOWN);
-        //             o->oTimer = RandomMinMaxU16(0,60);
-        //         }
-
-        //     }
-        // }
-
-        if (obj_handle_attacks(&sGoombaHitbox, GOOMBA_ACT_ATTACKED_MARIO,
+        obj_handle_attacks(&sGoombaHitbox, GOOMBA_ACT_ATTACKED_MARIO,
                                sGoombaAttackHandlers[o->oGoombaSize & 0x1])
-                               && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO)) {
-            mark_goomba_as_dead();
-        }
-        if (gMarioState->_2D) {
-            o->oPosZ = 0.0f;
-        }
+                               && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO);
 
-        if (gMarioState->gCurrMinigame == 0) {
-            cur_obj_move_standard(-78);
-        }
-        else
-        {
-            cur_obj_move_standard(78);
-        }
+        cur_obj_move_standard(-78);
+        cur_obj_die_if_on_death_barrier(400);
     } else {
         o->oAnimState = GOOMBA_ANIM_STATE_EYES_CLOSED;
 #ifdef FLOOMBAS

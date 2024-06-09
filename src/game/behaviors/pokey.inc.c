@@ -287,6 +287,21 @@ static void pokey_act_wander(void) {
         }
 
         cur_obj_move_standard(-78);
+
+        if (cur_obj_die_if_on_death_barrier(400)) {
+            // Unload everything
+            struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(segmented_to_virtual(bhvPokeyBodyPart))];
+            struct Object *obj = (struct Object *) listHead->next;
+
+            while (obj != (struct Object *) listHead) {
+                if (obj->behavior == segmented_to_virtual(bhvPokeyBodyPart)
+                    && obj->parentObj == o) {
+                        obj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                }
+                obj = (struct Object *) obj->header.next;
+            }
+        }
+
     }
 }
 
