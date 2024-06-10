@@ -30,6 +30,7 @@ static void boo_stop(void) {
 void bhv_boo_init(void) {
     o->oQuicksandDepthToDie = 0;
     o->oBooInitialMoveYaw = o->oMoveAngleYaw;
+    if (o->oImbue != IMBUE_NONE) spawn_object(o, MODEL_NONE, bhvCoinInsideBoo);
 }
 
 static s32 boo_should_be_stopped(void) {
