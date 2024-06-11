@@ -184,11 +184,6 @@ static void koopa_shelled_act_walk(void) {
     if (o->oKoopaTurningAwayFromWall) {
         o->oKoopaTurningAwayFromWall = obj_resolve_collisions_and_turn(o->oKoopaTargetYaw, 0x200);
     } else {
-        // If far from home, then begin turning toward home
-        if (o->oDistanceToMario >= 25000.0f) {
-            o->oKoopaTargetYaw = o->oAngleToMario;
-        }
-
         o->oKoopaTurningAwayFromWall = obj_bounce_off_walls_edges_objects(&o->oKoopaTargetYaw);
         cur_obj_rotate_yaw_toward(o->oKoopaTargetYaw, 0x200);
     }
@@ -215,12 +210,6 @@ static void koopa_shelled_act_walk(void) {
 static void koopa_shelled_act_run_from_mario(void) {
     cur_obj_init_animation_with_sound(KOOPA_ANIM_SHELLED_RUN_AWAY);
     koopa_play_footstep_sound(0, 11);
-
-    // If far from home, run toward it
-    if (o->oDistanceToMario >= 25000.0f) {
-        o->oAngleToMario += 0x8000;
-        o->oDistanceToMario = 0.0f;
-    }
 
     if (o->oTimer > 30 && o->oDistanceToMario > 800.0f) {
         if (obj_forward_vel_approach(0.0f, 1.0f)) {
@@ -300,6 +289,7 @@ void shelled_koopa_attack_handler(s32 attackType) {
  */
 static void koopa_shelled_update(void) {
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     obj_update_blinking(&o->oKoopaBlinkTimer, 20, 50, 4);
 
     switch (o->oAction) {
@@ -351,15 +341,9 @@ static void koopa_unshelled_act_run(void) {
     if (o->oKoopaTurningAwayFromWall) {
         o->oKoopaTurningAwayFromWall = obj_resolve_collisions_and_turn(o->oKoopaTargetYaw, 0x600);
     } else {
-        // If far from home, then turn toward home
-        if (o->oDistanceToMario >= 25000.0f) {
-            o->oKoopaTargetYaw = o->oAngleToMario;
-        }
-
         // If shell exists, then turn toward shell
         shell = cur_obj_find_nearest_object_with_behavior(bhvKoopaShell, &distToShell);
         if (shell != NULL) {
-            //! This overrides turning toward home
             o->oKoopaTargetYaw = obj_angle_to_object(o, shell);
         } else if (!(o->oKoopaTurningAwayFromWall =
                          obj_bounce_off_walls_edges_objects(&o->oKoopaTargetYaw))) {
@@ -449,6 +433,7 @@ static void koopa_unshelled_act_dive(void) {
  */
 static void koopa_unshelled_update(void) {
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     obj_update_blinking(&o->oKoopaBlinkTimer, 10, 15, 3);
 
     switch (o->oAction) {
@@ -459,9 +444,6 @@ static void koopa_unshelled_update(void) {
         case KOOPA_UNSHELLED_ACT_LYING:
             koopa_unshelled_act_dive();
             break;
-        // case KOOPA_UNSHELLED_ACT_UNUSED3:
-        //     cur_obj_init_anim_extend(KOOPA_ANIM_SHELLED_UNUSED3);
-        //     break;
     }
 
     obj_handle_attacks(&sKoopaHitbox, o->oAction, sKoopaUnshelledAttackHandlers);
