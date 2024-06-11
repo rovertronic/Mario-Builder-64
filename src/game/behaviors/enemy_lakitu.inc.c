@@ -153,6 +153,9 @@ static void enemy_lakitu_act_main(void) {
     cur_obj_play_sound_1(SOUND_AIR_LAKITU_FLY);
 
     cur_obj_update_floor_and_walls();
+    if (o->oImbue != IMBUE_STAR) {
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
+    }
 
     enemy_lakitu_update_speed_and_angle();
     if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {

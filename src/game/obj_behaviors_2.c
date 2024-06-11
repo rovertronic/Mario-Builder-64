@@ -455,6 +455,16 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 
 static void obj_die_if_health_non_positive(void) {
     s8 old_loot_coins = o->oNumLootCoins;
+    s32 starheight = MB64_STAR_HEIGHT;
+    if (o->oImbue == IMBUE_STAR) {
+        if (cur_obj_has_behavior(bhvRealFlyGuy)
+         || cur_obj_has_behavior(bhvEnemyLakitu)) {
+            starheight = 0;
+         } else if (cur_obj_has_behavior(bhvSnufit)) {
+            starheight = MB64_STAR_HEIGHT - 128;
+         }
+        
+    }
 
     if (o->oHealth <= 0) {
         if (o->oDeathSound == 0) {
@@ -465,7 +475,7 @@ static void obj_die_if_health_non_positive(void) {
             spawn_mist_particles();
         }
 
-        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+        if (!cur_obj_drop_imbued_object(starheight)) {
             if ((s32)o->oNumLootCoins < 0) {
                 spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
             } else {

@@ -83,6 +83,12 @@ void snufit_act_idle(void) {
         }
     } else {
         o->oSnufitCircularPeriod += 400;
+        o->oPosY += 2.0f * sins(10 * o->oSnufitCircularPeriod);
+
+        o->oSnufitBodyScalePeriod
+            = approach_s16_symmetric(o->oSnufitBodyScalePeriod, -0x8000, 3000);
+        o->oSnufitBodyBaseScale
+            = approach_s16_symmetric(o->oSnufitBodyBaseScale, 167, 20);
     }
 }
 
@@ -106,63 +112,67 @@ void snufit_act_shoot(void) {
     }
 }
 
+void bhv_snufit_init(void) {
+    o->oSnufitCenterX = o->oPosX;
+    o->oSnufitCenterZ = o->oPosZ;
+}
+
 /**
  * Primary loop behavior for snufit. Controls some generic movement
  * and the action brain of the object.
  */
 void bhv_snufit_loop(void) {
-    // Only update if Mario is in the current room.
-    if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
-        o->oDeathSound = SOUND_OBJ_SNUFIT_SKEETER_DEATH;
-
-        // Face Mario if he is within range.
-        if (o->oDistanceToMario < 800.0f) {
-            obj_turn_pitch_toward_mario(120.0f, 2000);
-
-            if ((s16) o->oMoveAnglePitch > 0x2000) {
-                o->oMoveAnglePitch = 0x2000;
-            } else if ((s16) o->oMoveAnglePitch < -0x2000) {
-                o->oMoveAnglePitch = -0x2000;
-            }
-
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 2000);
-        } else {
-            obj_move_pitch_approach(0, 0x200);
-            o->oMoveAngleYaw += 200;
-        }
-
-        o->oFaceAnglePitch = o->oMoveAnglePitch;
-
-        switch (o->oAction) {
-            case SNUFIT_ACT_IDLE:
-                snufit_act_idle();
-                break;
-            case SNUFIT_ACT_SHOOT:
-                snufit_act_shoot();
-                break;
-        }
-
-        // Snufit orbits in a circular motion depending on an internal timer
-        // and vertically off the global timer. The vertical position can be
-        // manipulated using pauses since it uses the global timer.
-        o->oPosX = o->oHomeX + 100.0f * coss(o->oSnufitCircularPeriod);
-        o->oPosY = o->oHomeY + 8.0f * coss(4000 * gGlobalTimer);
-        o->oPosZ = o->oHomeZ + 100.0f * sins(o->oSnufitCircularPeriod);
-
-        o->oSnufitBodyScale
-            = (s16)(o->oSnufitBodyBaseScale + 666
-            + o->oSnufitBodyBaseScale * coss(o->oSnufitBodyScalePeriod));
-
-        if (o->oSnufitBodyScale > 1000) {
-            o->oSnufitScale = (o->oSnufitBodyScale - 1000) / 1000.0f + 1.0f;
-            o->oSnufitBodyScale = 1000;
-        } else {
-            o->oSnufitScale = 1.0f;
-        }
-
-        cur_obj_scale(o->oSnufitScale);
-        obj_check_attacks(&sSnufitHitbox, o->oAction);
+    if (o->oImbue != IMBUE_STAR) {
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
     }
+    o->oDeathSound = SOUND_OBJ_SNUFIT_SKEETER_DEATH;
+
+    // Face Mario if he is within range.
+    if (o->oDistanceToMario < 800.0f) {
+        obj_turn_pitch_toward_mario(120.0f, 2000);
+
+        if ((s16) o->oMoveAnglePitch > 0x2000) {
+            o->oMoveAnglePitch = 0x2000;
+        } else if ((s16) o->oMoveAnglePitch < -0x2000) {
+            o->oMoveAnglePitch = -0x2000;
+        }
+
+        cur_obj_rotate_yaw_toward(o->oAngleToMario, 2000);
+    } else {
+        obj_move_pitch_approach(0, 0x200);
+        o->oMoveAngleYaw += 200;
+    }
+
+    o->oFaceAnglePitch = o->oMoveAnglePitch;
+
+    switch (o->oAction) {
+        case SNUFIT_ACT_IDLE:
+            snufit_act_idle();
+            break;
+        case SNUFIT_ACT_SHOOT:
+            snufit_act_shoot();
+            break;
+    }
+
+    // Snufit orbits in a circular motion depending on an internal timer
+    // and vertically off the global timer. The vertical position can be
+    // manipulated using pauses since it uses the global timer.
+    o->oPosX = o->oSnufitCenterX + 100.0f * coss(o->oSnufitCircularPeriod);
+    o->oPosZ = o->oSnufitCenterZ + 100.0f * sins(o->oSnufitCircularPeriod);
+
+    o->oSnufitBodyScale
+        = (s16)(o->oSnufitBodyBaseScale + 666
+        + o->oSnufitBodyBaseScale * coss(o->oSnufitBodyScalePeriod));
+
+    if (o->oSnufitBodyScale > 1000) {
+        o->oSnufitScale = (o->oSnufitBodyScale - 1000) / 1000.0f + 1.0f;
+        o->oSnufitBodyScale = 1000;
+    } else {
+        o->oSnufitScale = 1.0f;
+    }
+
+    cur_obj_scale(o->oSnufitScale);
+    obj_check_attacks(&sSnufitHitbox, o->oAction);
 }
 
 /**

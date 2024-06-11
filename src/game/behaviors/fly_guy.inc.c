@@ -24,8 +24,8 @@ static struct ObjectHitbox sFlyGuyHitbox = {
 static s16 sFlyGuyJitterAmounts[] = { 0x1000, -0x2000, 0x2000 };
 
 /**
- * Return to regular size. When mario is close enough or home is far enough,
- * turn toward mario/home and enter the approach mario action.
+ * Return to regular size. When mario is close enough,
+ * turn toward mario and enter the approach mario action.
  */
 static void fly_guy_act_idle(void) {
     o->oForwardVel = 0.0f;
@@ -36,9 +36,9 @@ static void fly_guy_act_idle(void) {
     }
 
     if (approach_f32_ptr(&o->header.gfx.scale[0], target_scale, 0.02f)) {
-        // If we are >2000 units from home or Mario is <2000 units from us
-        if (o->oDistanceToMario >= 25000.0f || o->oDistanceToMario < 2000.0f) {
-            // Turn toward home or Mario
+        // If Mario is <2000 units from us
+        if (o->oDistanceToMario < 2000.0f) {
+            // Turn toward Mario
             obj_face_yaw_approach(o->oAngleToMario, 0x300);
 
             if (cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x300)) {
@@ -59,15 +59,15 @@ static void fly_guy_act_idle(void) {
 }
 
 /**
- * Turn toward mario or home, and when positioned nicely, either lunge or shoot
+ * Turn toward mario, and when positioned nicely, either lunge or shoot
  * fire. If mario is far away, stop and return to the idle action.
  */
 static void fly_guy_act_approach_mario(void) {
-    // If we are >2000 units from home or Mario is <2000 units from us
-    if (o->oDistanceToMario >= 25000.0f || o->oDistanceToMario < 2000.0f) {
+    // If Mario is <2000 units from us
+    if (o->oDistanceToMario < 2000.0f) {
         obj_forward_vel_approach(10.0f, 0.5f);
 
-        // Turn toward home or Mario
+        // Turn toward Mario
         obj_face_yaw_approach(o->oAngleToMario, 0x400);
         cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
 
@@ -182,45 +182,40 @@ static void fly_guy_act_shoot_fire(void) {
  * Update function for fly guy.
  */
 void bhv_fly_guy_update(void) {
-    // PARTIAL_UPDATE (appears in non-roomed levels)
-
-    if (revent_active) {
-        o->oTimer --;
-        return;
+    if (o->oImbue != IMBUE_STAR) {
+        vec3f_copy(&o->oHomeVec, &o->oPosVec);
     }
 
-    if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {
-        o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
+    o->oDeathSound = SOUND_OBJ_KOOPA_FLYGUY_DEATH;
 
-        cur_obj_scale(o->header.gfx.scale[0]);
-        cur_obj_update_floor_and_walls();
+    cur_obj_scale(o->header.gfx.scale[0]);
+    cur_obj_update_floor_and_walls();
 
-        if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
-            o->oMoveAngleYaw = cur_obj_reflect_move_angle_off_wall();
-        } else if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
-            o->oVelY = 6.0f;
-        }
-
-        // Oscillate up and down
-        o->oFlyGuyOscTimer++;
-        o->oPosY += coss(0x400 * o->oFlyGuyOscTimer) * 1.5f;
-
-        switch (o->oAction) {
-            case FLY_GUY_ACT_IDLE:
-                fly_guy_act_idle();
-                break;
-            case FLY_GUY_ACT_APPROACH_MARIO:
-                fly_guy_act_approach_mario();
-                break;
-            case FLY_GUY_ACT_LUNGE:
-                fly_guy_act_lunge();
-                break;
-            case FLY_GUY_ACT_SHOOT_FIRE:
-                fly_guy_act_shoot_fire();
-                break;
-        }
-
-        cur_obj_move_standard(78);
-        obj_check_attacks(&sFlyGuyHitbox, o->oAction);
+    if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+        o->oMoveAngleYaw = cur_obj_reflect_move_angle_off_wall();
+    } else if (o->oMoveFlags & OBJ_MOVE_MASK_IN_WATER) {
+        o->oVelY = 6.0f;
     }
+
+    // Oscillate up and down
+    o->oFlyGuyOscTimer++;
+    o->oPosY += coss(0x400 * o->oFlyGuyOscTimer) * 1.5f;
+
+    switch (o->oAction) {
+        case FLY_GUY_ACT_IDLE:
+            fly_guy_act_idle();
+            break;
+        case FLY_GUY_ACT_APPROACH_MARIO:
+            fly_guy_act_approach_mario();
+            break;
+        case FLY_GUY_ACT_LUNGE:
+            fly_guy_act_lunge();
+            break;
+        case FLY_GUY_ACT_SHOOT_FIRE:
+            fly_guy_act_shoot_fire();
+            break;
+    }
+
+    cur_obj_move_standard(78);
+    obj_check_attacks(&sFlyGuyHitbox, o->oAction);
 }

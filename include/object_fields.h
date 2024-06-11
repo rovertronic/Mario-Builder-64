@@ -981,11 +981,12 @@
 /* Snufit */
 #define /*0x0F4*/ oSnufitRecoil          OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oSnufitScale           OBJECT_FIELD_F32(0x1C)
-// 0x1D
-#define /*0x100*/ oSnufitCircularPeriod  OBJECT_FIELD_S32(0x1E)
-#define /*0x104*/ oSnufitBodyScalePeriod OBJECT_FIELD_S32(0x1F)
-#define /*0x108*/ oSnufitBodyBaseScale   OBJECT_FIELD_S32(0x20)
-#define /*0x10C*/ oSnufitBullets         OBJECT_FIELD_S32(0x21)
+#define /*0x0FC*/ oSnufitCircularPeriod  OBJECT_FIELD_S32(0x1D)
+#define /*0x100*/ oSnufitBodyScalePeriod OBJECT_FIELD_S32(0x1E)
+#define /*0x104*/ oSnufitBodyBaseScale   OBJECT_FIELD_S32(0x1F)
+#define /*0x108*/ oSnufitBullets         OBJECT_FIELD_S32(0x20)
+#define /*0x10C*/ oSnufitCenterX         OBJECT_FIELD_F32(0x21)
+#define /*0x110*/ oSnufitCenterZ         OBJECT_FIELD_F32(0x22)
 #define /*0x1AC*/ oSnufitBodyScale       OBJECT_FIELD_S16(0x49, 0)
 
 /* Spindel */

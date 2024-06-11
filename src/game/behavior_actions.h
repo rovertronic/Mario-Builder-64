@@ -642,6 +642,7 @@ void bhv_fire_piranha_plant_update(void);
 void bhv_moving_flame_loop(void);
 void bhv_moving_flame_particle_loop(void);
 void bhv_fire_spitter_update(void);
+void bhv_snufit_init(void);
 void bhv_snufit_loop(void);
 void bhv_snufit_balls_loop(void);
 void bhv_horizontal_grindel_init(void);

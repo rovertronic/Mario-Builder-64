@@ -7049,6 +7049,7 @@ const BehaviorScript bhvSnufit[] = {
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ 0, /*Bounciness*/ -50, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 0, /*Unused*/ 0, 0),
     //CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_snufit_init),
     BEGIN_LOOP(),
         SET_INT(oSnufitRecoil, 0),
         CALL_NATIVE(bhv_snufit_loop),
