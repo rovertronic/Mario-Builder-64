@@ -2214,6 +2214,9 @@ s32 mb64_get_water_level(s32 x, s32 y, s32 z) {
     if (pos[1] > 63) {
         pos[1] = 63;
     }
+    if (y < -32*TILE_SIZE) {
+        return waterPlaneHeight;
+    }
     if (!coords_in_range(pos)) return waterPlaneHeight;
     // If block contains water, scan upwards, otherwise scan downwards
     if (get_grid_tile(pos)->waterlogged) {
