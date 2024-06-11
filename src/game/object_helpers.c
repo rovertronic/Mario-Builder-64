@@ -2565,8 +2565,7 @@ void arbritrary_death_coin_release(void) {
         return;
     }
 
-    if (o->oImbue != IMBUE_NONE) {
-        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
+    if (cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
         return;
     }
     // If toby fox can get away with the entire undertale dialog system being stored in a single switch statement, i can get
@@ -2744,6 +2743,18 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_moving_platform();
 }
 
+// less strict version for an object that has just been thrown (chuckya/bobomb)
+void cur_obj_set_home_if_safe_thrown(void) {
+    cur_obj_update_floor();
+
+    if (!o->oFloor) return;
+    if (o->oFloorHeight < o->oPosY - 10.f) return;
+    if (o->oFloorType == SURFACE_DEATH_PLANE) return;
+    if (o->oImbue == IMBUE_STAR) return;
+
+    vec3_copy(&o->oHomeVec, &o->oPosVec);
+}
+
 void cur_obj_set_home_if_safe(void) {
     if (!o->oFloor) return;
     if (o->oFloorHeight < o->oPosY - 10.f) return;
@@ -2785,18 +2796,18 @@ void spawn_mist_at_obj(struct Object *obj) {
     vec3f_copy(&o->oPosVec, oldPos);
 }
 
-void cur_obj_drop_imbued_object(s32 y_offset) {
+s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
-    if (o->oImbue == IMBUE_NONE) return;
+    if (o->oImbue == IMBUE_NONE) return FALSE;
     if (cur_obj_has_behavior(bhvBoo) || cur_obj_has_behavior(bhvBalconyBigBoo)) {
         boo_coin_drop();
-        return;
+        return TRUE;
     }
     if (o->oImbue == IMBUE_STAR) {
         struct Surface *ptr;
         f32 ceilY = find_ceil(o->oHomeX,o->oHomeY,o->oHomeZ,&ptr);
         spawn_default_star(o->oHomeX,MIN(o->oHomeY+y_offset, ceilY - 75.f),o->oHomeZ);
-        return;
+        return TRUE;
     }
 
     switch(o->oImbue) {
@@ -2837,6 +2848,7 @@ void cur_obj_drop_imbued_object(s32 y_offset) {
         dropobj->oFaceAngleRoll = 0;
     }
     o->oImbue = IMBUE_NONE;
+    return TRUE;
 }
 
 

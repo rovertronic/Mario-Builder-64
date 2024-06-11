@@ -23,9 +23,7 @@ void bhv_bobomb_init(void) {
 
 void bobomb_spawn_coin(s32 lava) {
     if (!(GET_BPARAM3(o->oBehParams) & RESPAWN_INFO_TYPE_NORMAL)) {
-        if (o->oImbue != IMBUE_NONE) {
-            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
-        } else {
+        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
             if (lava) {
                 bully_spawn_coin();
             } else {
@@ -37,21 +35,11 @@ void bobomb_spawn_coin(s32 lava) {
     }
 }
 
-void bobomb_explode_set_home(void) {
-    if (!o->oFloor) return;
-    if (o->oFloorHeight < o->oPosY - 10.f) return;
-    if (o->oFloorType == SURFACE_DEATH_PLANE) return;
-    if (o->oImbue == IMBUE_STAR) return;
-
-    vec3_copy(&o->oHomeVec, &o->oPosVec);
-}
-
 void bobomb_act_explode(void) {
     if (o->oTimer < 5) {
         cur_obj_scale(1.0f + ((f32) o->oTimer / 5.0f));
     } else {
-        cur_obj_update_floor();
-        bobomb_explode_set_home();
+        cur_obj_set_home_if_safe_thrown();
 
         struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
         explosion->oGraphYOffset += 100.0f;

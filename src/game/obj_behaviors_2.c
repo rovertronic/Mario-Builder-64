@@ -465,9 +465,7 @@ static void obj_die_if_health_non_positive(void) {
             spawn_mist_particles();
         }
 
-        if (o->oImbue != IMBUE_NONE) {
-            cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
-        } else {
+        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
             if ((s32)o->oNumLootCoins < 0) {
                 spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
             } else {

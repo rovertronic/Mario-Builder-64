@@ -209,7 +209,7 @@ void cur_obj_set_pos_via_transform(void);
 void cur_obj_spawn_particles(struct SpawnParticlesInfo *info);
 s32 cur_obj_reflect_move_angle_off_wall(void);
 s32 is_cur_obj_interact_with_lava(u8 move_standard_or_object_step);
-void cur_obj_drop_imbued_object(s32 y_offset);
+s32 cur_obj_drop_imbued_object(s32 y_offset);
 struct Object *cur_obj_nearest_object_with_behavior_and_star_imbue(const BehaviorScript *behavior, f32 *dist);
 
 #define WAYPOINT_FLAGS_END -1
