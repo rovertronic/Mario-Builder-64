@@ -129,12 +129,14 @@ void bhv_motos_death(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
     // Taken from bully code to handle death
     if (obj_lava_death()) {
-        struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-        coin->oForwardVel = 10.0f;
-        coin->oVelY = 100.0f;
-        coin->oPosY = o->oPosY + 310.0f;
-        coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
+        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+            struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+            coin->oForwardVel = 10.0f;
+            coin->oVelY = 100.0f;
+            coin->oPosY = o->oPosY + 310.0f;
+            coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
+        }
 
         if (o->prevObj) {
             o->prevObj = NULL;
@@ -148,6 +150,7 @@ void bhv_motos_main() {
     f32 floorY;
 
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
 
     switch (o->oAction) {
         case MOTOS_ACT_WAIT:
@@ -211,6 +214,7 @@ void bhv_motos_loop(void) {
                 bhv_motos_main();
             break;
         case HELD_HELD:
+            cur_obj_set_home_if_safe_held();
             cur_obj_unrender_set_action_and_anim(MOTOS_ANIM_WALK, MOTOS_ACT_WAIT);
             break;
         case HELD_THROWN:

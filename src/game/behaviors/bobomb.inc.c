@@ -39,7 +39,7 @@ void bobomb_act_explode(void) {
     if (o->oTimer < 5) {
         cur_obj_scale(1.0f + ((f32) o->oTimer / 5.0f));
     } else {
-        cur_obj_set_home_if_safe_thrown();
+        cur_obj_set_home_if_safe_landed();
 
         struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
         explosion->oGraphYOffset += 100.0f;
@@ -158,6 +158,7 @@ void bobomb_held_loop(void) {
     o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
     cur_obj_init_animation(BOBOMB_ANIM_HELD);
     cur_obj_set_pos_relative(gMarioObject, 0.0f, 60.0f, 100.0f);
+    cur_obj_set_home_if_safe_held();
 
     o->oBobombFuseLit = TRUE;
     if (o->oBobombFuseTimer > 150) {

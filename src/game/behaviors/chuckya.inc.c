@@ -142,7 +142,7 @@ void chuckya_die(void) {
 
 void chuckya_act_2(void) {
     if (o->oMoveFlags & (OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER | OBJ_MOVE_LANDED)) {
-        cur_obj_set_home_if_safe_thrown();
+        cur_obj_set_home_if_safe_landed();
         chuckya_die();
     }
 }
@@ -176,6 +176,7 @@ void bhv_chuckya_loop(void) {
             chuckya_move();
             break;
         case HELD_HELD:
+            cur_obj_set_home_if_safe_held();
             cur_obj_unrender_set_action_and_anim(2, 0);
             break;
         case HELD_THROWN:

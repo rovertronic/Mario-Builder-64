@@ -2743,8 +2743,16 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
     cur_obj_interact_with_moving_platform();
 }
 
+void cur_obj_set_home_if_safe_held(void) {
+    // Check if Mario is grounded
+    if (gMarioState->action & ACT_FLAG_AIR) return;
+    if (o->oImbue == IMBUE_STAR) return;
+
+    vec3_copy(&o->oHomeVec, gMarioState->pos);
+}
+
 // less strict version for an object that has just been thrown (chuckya/bobomb)
-void cur_obj_set_home_if_safe_thrown(void) {
+void cur_obj_set_home_if_safe_landed(void) {
     cur_obj_update_floor();
 
     if (!o->oFloor) return;
