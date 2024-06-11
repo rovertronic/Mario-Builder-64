@@ -315,6 +315,7 @@ void bhv_koopa_shell_loop(void);
 void bhv_koopa_shell_flame_loop(void);
 void bhv_tox_box_loop(void);
 s32 mario_moving_fast_enough_to_make_piranha_plant_bite(void);
+void bhv_piranha_plant_init(void);
 void bhv_piranha_plant_loop(void);
 void bhv_lll_bowser_puzzle_piece_loop(void);
 void bhv_lll_bowser_puzzle_loop(void);

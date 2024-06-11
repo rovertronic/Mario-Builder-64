@@ -1528,7 +1528,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
     return FALSE;
 }
 
-static void cur_obj_update_floor(void) {
+void cur_obj_update_floor(void) {
     struct Surface *floor = cur_obj_update_floor_height_and_get_floor();
     o->oFloor = floor;
 
@@ -2559,6 +2559,12 @@ struct Surface * cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
 }
 
 void arbritrary_death_coin_release(void) {
+    if (cur_obj_has_behavior(bhvBobomb)) {
+        bobomb_spawn_coin(FALSE);
+        cur_obj_trigger_respawner();
+        return;
+    }
+
     if (o->oImbue != IMBUE_NONE) {
         cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
         return;
@@ -2586,8 +2592,6 @@ void arbritrary_death_coin_release(void) {
             gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
             obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
         }
-    } else if (cur_obj_has_behavior(bhvBobomb)) {
-        obj_spawn_yellow_coins(o, 1);
     } else if (cur_obj_has_behavior(bhvSmallBully)) {
         obj_spawn_yellow_coins(o, 1);
     } else if (cur_obj_has_behavior(bhvScaredKoopa)) {

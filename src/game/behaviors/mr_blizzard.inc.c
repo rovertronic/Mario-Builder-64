@@ -45,6 +45,7 @@ void bhv_mr_blizzard_init(void) {
     o->oMrBlizzardGraphYOffset = -200.0f;
     o->oMrBlizzardHeldObj = NULL;
     o->oQuicksandDepthToDie = 0;
+    create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, MB64_RESPAWN_DIST);
     cur_obj_hide();
 }
 
@@ -230,7 +231,7 @@ static void mr_blizzard_act_death(void) {
                     set_object_respawn_info_bits(o, RESPAWN_INFO_TYPE_NORMAL);
                     SET_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
                 }
-                create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, MB64_DRAWDIST_LOW);
+                cur_obj_trigger_respawner();
                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             }
         }
@@ -361,7 +362,7 @@ void bhv_mr_blizzard_update(void) {
     obj_check_attacks(&sMrBlizzardHitbox, o->oAction);
 
     if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
-        create_respawner(MODEL_MAKER_BLIZZARD, bhvMrBlizzard, MB64_DRAWDIST_LOW);
+        cur_obj_trigger_respawner();
     }
 }
 

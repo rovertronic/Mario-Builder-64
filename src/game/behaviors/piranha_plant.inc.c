@@ -173,7 +173,7 @@ void piranha_plant_act_shrink_and_die(void) {
             cur_obj_spawn_loot_blue_coin();
         }
         SET_FULL_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
-        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, MB64_DRAWDIST_LOW);
+        cur_obj_trigger_respawner();
 
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
@@ -312,6 +312,10 @@ ObjActionFunc TablePiranhaPlantActions[] = {
     //piranha_plant_act_respawn,         // PIRANHA_PLANT_ACT_RESPAWN
 };
 
+void bhv_piranha_plant_init(void) {
+    create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, MB64_RESPAWN_DIST);
+}
+
 /**
  * Main loop for bhvPiranhaPlant.
  */
@@ -320,7 +324,7 @@ void bhv_piranha_plant_loop(void) {
     cur_obj_call_action_function(TablePiranhaPlantActions);
     cur_obj_move_standard(78);
     if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
-        create_respawner(MODEL_MAKER_PLANT, bhvPiranhaPlant, MB64_DRAWDIST_LOW);
+        cur_obj_trigger_respawner();
         o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
     o->oInteractStatus = INT_STATUS_NONE;

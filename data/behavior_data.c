@@ -2890,6 +2890,7 @@ const BehaviorScript bhvPiranhaPlant[] = {
     SPAWN_CHILD(/*Model*/ MODEL_BUBBLE, /*Behavior*/ bhvPiranhaPlantBubble),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     SET_HOME(),
+    CALL_NATIVE(bhv_piranha_plant_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_piranha_plant_loop),
     END_LOOP(),
