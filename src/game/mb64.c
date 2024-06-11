@@ -119,6 +119,7 @@ u16 mb64_gfx_index;
 u8 mb64_use_alt_uvs = FALSE; // Used for decals and special tile shapes
 s8 mb64_uv_offset = -16;
 u8 mb64_render_flip_normals = FALSE; // Used for drawing water tiles
+u8 mb64_render_vertical = FALSE; // Used for prioritizing vertical UVs over horizontal ones
 u8 mb64_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
 u8 mb64_growth_render_type = 0;
 u8 mb64_curr_mat_has_topside = FALSE;
@@ -513,7 +514,7 @@ u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
 }
 
 s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
-    if (faceshape == MB64_FACESHAPE_EMPTY) return FALSE;
+    if (faceshape & MB64_FACESHAPE_EMPTY) return FALSE;
     if (mb64_render_culling_off) return FALSE;
     direction = rotate_direction(direction, rot);
 
@@ -542,7 +543,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (cutout_skip_culling_check(get_grid_tile(pos)->mat, adjTile->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
 
-    if (otherFaceshape == MB64_FACESHAPE_EMPTY) return FALSE;
+    if (otherFaceshape & MB64_FACESHAPE_EMPTY) return FALSE;
     if (otherFaceshape == MB64_FACESHAPE_FULL) return TRUE;
     if (faceshape == MB64_FACESHAPE_FULL) return FALSE;
     if ((faceshape == MB64_FACESHAPE_TOPTRI) || (faceshape == MB64_FACESHAPE_TOPHALF)) {
@@ -735,7 +736,7 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
     switch (direction) {
         case MB64_DIRECTION_NEG_X: *uAxis = 2; *vAxis = 1; return TRUE;
         case MB64_DIRECTION_POS_X: *uAxis = 2; *vAxis = 1; return FALSE;
-        case MB64_DIRECTION_DOWN: *uAxis = 2; *vAxis = 0; return FALSE;
+        case MB64_DIRECTION_DOWN: // fallthrough
         case MB64_DIRECTION_UP: *uAxis = 2; *vAxis = 0; return FALSE;
         case MB64_DIRECTION_NEG_Z: *uAxis = 0; *vAxis = 1; return FALSE;
         /*case MB64_DIRECTION_POS_Z:*/ default: *uAxis = 0; *vAxis = 1; return TRUE;
@@ -748,11 +749,20 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
 
     s8 newVtx[4][3];
     mb64_transform_vtx_with_rot(newVtx, poly->vtx, rot);
-    s32 flipU = render_get_normal_and_uvs(newVtx, poly->faceDir, rot, &uAxis, &vAxis, n);
+    s32 facedir = poly->faceDir;
+    s32 useAltUVs = mb64_use_alt_uvs;
+    if (mb64_render_vertical && (poly->faceshape > MB64_FACESHAPE_EMPTY)) {
+        facedir = (poly->faceshape - MB64_FACESHAPE_EMPTY) + 1;
+        // The four fixed UV shapes are 0x41 through 0x44
+        // This maps them to 2 through 5 (the four lateral directions)
+        // 0x40 is mapped to Down which results in no rotation
+        useAltUVs = TRUE; // should not coincide with a decal UV
+    }
+    s32 flipU = render_get_normal_and_uvs(newVtx, facedir, rot, &uAxis, &vAxis, n);
 
     for (u32 i = 0; i < mb64_curr_poly_vert_count; i++) {
         s16 u, v;
-        if (mb64_use_alt_uvs && poly->altuvs) {
+        if (useAltUVs && poly->altuvs) {
             u = 16 - (*poly->altuvs)[i][0];
             v = 16 - (*poly->altuvs)[i][1];
         } else {
@@ -940,7 +950,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     if (AT_CEILING(pos[1])) return FALSE;
     if (!coords_in_range(abovePos)) return TRUE;
 
-    if (faceshape != MB64_FACESHAPE_EMPTY) {
+    if (!(faceshape & MB64_FACESHAPE_EMPTY)) {
         if ((grassType == MB64_GROWTH_HALF_SIDE) || (grassType == MB64_GROWTH_NORMAL_SIDE)) {
             if (should_cull_topslab_check(pos, rotate_direction(direction, rot))) return FALSE;
         }
@@ -951,10 +961,12 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
     // Render if above tile is seethrough (some exceptions)
     if (cutout_skip_culling_check(tile->mat, aboveTile->mat, MB64_DIRECTION_UP)) return TRUE;
 
+    if (faceshape > MB64_FACESHAPE_EMPTY) {
+        direction = (faceshape - MB64_FACESHAPE_EMPTY) + 1;
+    }
+
     s32 otherFaceshape;
     switch (grassType) {
-        case MB64_GROWTH_DLGENTLE_UNDER:
-            direction = MB64_DIRECTION_POS_Z;
         case MB64_GROWTH_NORMAL_SIDE:
         case MB64_GROWTH_HALF_SIDE:
             // Shape of face of above block on same side
@@ -1346,6 +1358,7 @@ void process_tiles(u32 processTileRenderMode) {
             display_cached_tris();
         }
         mb64_use_alt_uvs = FALSE;
+        mb64_render_vertical = FALSE;
     }
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
@@ -1363,6 +1376,7 @@ void process_tiles(u32 processTileRenderMode) {
 
             set_render_mode( matType, FALSE);
             gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], MATERIAL(mat).gfx);
+            mb64_render_vertical = MATERIAL(mat).vertical;
 
             // Important to not use matType here so that it's still opaque for screens
             if ((matType == MAT_CUTOUT) || ((MATERIAL(mat).type < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
@@ -1382,8 +1396,8 @@ void process_tiles(u32 processTileRenderMode) {
             process_tile(pos, mb64_terrain_info_list[tileType].terrain, rot);
         }
 
-        PROC_RENDER( display_cached_tris(); \
-                     skip_maintex: )
+        PROC_RENDER( display_cached_tris(); )
+skip_maintex:
         
         if (mb64_curr_mat_has_topside) {
             u8 topmatType = TOPMAT(mat).type;
@@ -1392,6 +1406,7 @@ void process_tiles(u32 processTileRenderMode) {
             // Only runs when rendering
             if (!mb64_building_collision && (sidetex)) {
                 mb64_use_alt_uvs = TRUE;
+                mb64_render_vertical = TRUE;
                 gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidetex);
                 mb64_growth_render_type = 2;
 
@@ -1429,7 +1444,8 @@ void process_tiles(u32 processTileRenderMode) {
 
             PROC_COLLISION( mb64_curr_coltype = TOPMAT(mat).col; )
             PROC_RENDER( set_render_mode( topmatType, FALSE); \
-                         gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TOPMAT(mat).gfx); )
+                         gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TOPMAT(mat).gfx); \
+                         mb64_render_vertical = TOPMAT(mat).vertical;)
 
             mb64_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
@@ -1690,6 +1706,7 @@ void generate_terrain_gfx(void) {
 
     mb64_use_alt_uvs = FALSE;
     mb64_render_flip_normals = FALSE;
+    mb64_render_vertical = FALSE;
     mb64_curr_mat_has_topside = FALSE;
     mb64_growth_render_type = 0;
     mb64_uv_offset = (mb64_lopt_theme == MB64_THEME_MC ? -32 : -16);
@@ -1857,6 +1874,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64_terrai
     if (do_process(&matType, processType)) {
         set_render_mode( matType, disableZ);
         gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[matid].gfx);
+        mb64_render_vertical = mb64_mat_table[matid].vertical;
         // Important to not use matType here so that it's still opaque for screens
         if (((matType == MAT_CUTOUT) ||
             ((mb64_mat_table[matid].type < MAT_CUTOUT) && (mb64_mat_table[topmatid].type >= MAT_CUTOUT)))
@@ -1873,6 +1891,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64_terrai
         Gfx *sidetex = get_sidetex(topmatid);
         if (sidetex != NULL) {
             mb64_use_alt_uvs = TRUE;
+            mb64_render_vertical = TRUE;
             mb64_growth_render_type = 2;
             gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidetex);
 
@@ -1895,6 +1914,7 @@ void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64_terrai
 
         set_render_mode( topMatType, disableZ);
         gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[topmatid].gfx);
+        mb64_render_vertical = mb64_mat_table[topmatid].vertical;
         process_tile(pos, terrain, rot);
         display_cached_tris();
     }

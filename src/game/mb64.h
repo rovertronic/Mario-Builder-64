@@ -94,7 +94,6 @@ enum mb64_culling_shapes {
 
     MB64_FACESHAPE_TOPTRI,
     MB64_FACESHAPE_TOPHALF,
-    MB64_FACESHAPE_EMPTY,
 
     // & 0x10: Bottom slab priority list
     MB64_FACESHAPE_BOTTOMSLAB_PRI = 0x10,
@@ -113,6 +112,14 @@ enum mb64_culling_shapes {
     // 0x23 empty
     MB64_FACESHAPE_DOWNLOWERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI + 4,
     MB64_FACESHAPE_DOWNLOWERGENTLE_2,
+
+    // & 0x40: Empty faces
+    MB64_FACESHAPE_EMPTY = 0x40,
+    // Rotate UVs for certain textures
+    MB64_FACESHAPE_EMPTY_0,
+    MB64_FACESHAPE_EMPTY_1,
+    MB64_FACESHAPE_EMPTY_2,
+    MB64_FACESHAPE_EMPTY_3,
 };
 
 enum mb64_growth_types {
@@ -123,7 +130,6 @@ enum mb64_growth_types {
     MB64_GROWTH_UNDERSLOPE_CORNER, // special check
     MB64_GROWTH_DIAGONAL_SIDE,
     MB64_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
-    MB64_GROWTH_DLGENTLE_UNDER, // special check
     MB64_GROWTH_UNCONDITIONAL,
 
     // Anything beyond this is a slope decal type
@@ -282,6 +288,7 @@ enum mb64_mat_types {
 struct mb64_material {
     Gfx *gfx;
     u8 type;
+    u8 vertical;
     TerrainData col;
     char *name; // Only used for Custom Theme menu
 };

@@ -43,7 +43,7 @@ s8 slope_decal_uvs1[3][2] = {{0, 0}, {0, 16}, {16, 16}};
 s8 slope_decal_uvs2[3][2] = {{16, 16}, {16, 0}, {0, 16}};
 
 struct mb64_terrain_poly mb64_terrain_slope_quads[] = {
-    {{{16, 0, 16}, {16, 16, 0}, {0, 0, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16}, {16, 16, 0}, {0, 0, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, NULL}, // TOP
     {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  MB64_DIRECTION_DOWN,  MB64_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 16, 0}, {16, 0, 0},  {0, 16, 0}, {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
@@ -60,13 +60,31 @@ struct mb64_terrain mb64_terrain_slope = {
     mb64_terrain_slope_tris,
 };
 
+struct mb64_terrain_poly mb64_terrain_dslope_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 16, 16}, {0, 16, 16}, {16, 0, 0},  {0, 0, 0}},  MB64_DIRECTION_DOWN,  MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM
+};
+
+struct mb64_terrain_poly mb64_terrain_dslope_tris[] = {
+    {{{16, 0, 0}, {16, 16, 0}, {16, 16, 16}},  MB64_DIRECTION_POS_X, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 0}, {0, 0, 0},   {0, 16, 16}},   MB64_DIRECTION_NEG_X, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct mb64_terrain mb64_terrain_dslope = {
+    3,
+    2,
+    mb64_terrain_dslope_quads,
+    mb64_terrain_dslope_tris,
+};
+
 struct mb64_terrain_poly mb64_terrain_corner_quads[] = {
     {{{16, 0, 16}, {0, 0, 16}, {16, 0, 0}, {0, 0, 0}}, MB64_DIRECTION_DOWN, MB64_FACESHAPE_FULL, 0, NULL}, // BOTTOM
 };
 
 struct mb64_terrain_poly mb64_terrain_corner_tris[] = {
-    {{{0, 0, 16}, {16, 0, 16}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{0, 16, 0}, {16, 0, 16}, {16, 0, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP-LEFT 
+    {{{0, 0, 16}, {16, 0, 16}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0}, {16, 0, 16}, {16, 0, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_0, MB64_GROWTH_FULL, NULL}, // TOP-LEFT 
     {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}},  MB64_DIRECTION_NEG_X, MB64_FACESHAPE_TRI_2, MB64_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
     {{{0, 0, 0},  {0, 16, 0},  {16, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_TRI_1, MB64_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
@@ -83,8 +101,8 @@ struct mb64_terrain_poly mb64_terrain_dcorner_quads[] = {
 };
 
 struct mb64_terrain_poly mb64_terrain_dcorner_tris[] = {
-    {{{16, 16, 16}, {0, 16, 16}, {0, 0, 0}},    MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM-FRONT
-    {{{0, 0, 0},    {16, 16, 0}, {16, 16, 16}}, MB64_DIRECTION_POS_X, MB64_FACESHAPE_EMPTY, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM-LEFT 
+    {{{16, 16, 16}, {0, 16, 16}, {0, 0, 0}},    MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM-FRONT
+    {{{0, 0, 0},    {16, 16, 0}, {16, 16, 16}}, MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_0, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM-LEFT 
     {{{0, 0, 0},    {0, 16, 16}, {0, 16, 0}},   MB64_DIRECTION_NEG_X, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
     {{{0, 0, 0},    {0, 16, 0},  {16, 16, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
@@ -104,8 +122,8 @@ struct mb64_terrain_poly mb64_terrain_icorner_quads[] = {
 };
 
 struct mb64_terrain_poly mb64_terrain_icorner_tris[] = {
-    {{{0, 16, 16}, {16, 0, 16}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP-FRONT
-    {{{0, 16, 0},  {16, 0, 16}, {16, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP-LEFT
+    {{{0, 16, 16}, {16, 0, 16}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_0, MB64_GROWTH_FULL, NULL}, // TOP-FRONT
+    {{{0, 16, 0},  {16, 0, 16}, {16, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, NULL}, // TOP-LEFT
     {{{16, 0, 0},  {16, 16, 0}, {16, 0, 16}}, MB64_DIRECTION_POS_X, MB64_FACESHAPE_TRI_1, MB64_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
     {{{0, 16, 16}, {0, 0, 16},  {16, 0, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_TRI_2, MB64_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
 };
@@ -126,8 +144,8 @@ struct mb64_terrain_poly mb64_terrain_dicorner_quads[] = {
 struct mb64_terrain_poly mb64_terrain_dicorner_tris[] = {
     {{{16, 0, 0},   {16, 16, 0}, {16, 16, 16}}, MB64_DIRECTION_POS_X, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // LEFT
     {{{0, 16, 16},  {0, 0, 16},  {16, 16, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // FRONT
-    {{{16, 16, 16}, {0, 0, 16},  {0, 0, 0}},    MB64_DIRECTION_POS_X, MB64_FACESHAPE_EMPTY, MB64_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-FRONT
-    {{{16, 16, 16}, {0, 0, 0},   {16, 0, 0}},   MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, MB64_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-LEFT
+    {{{16, 16, 16}, {0, 0, 16},  {0, 0, 0}},    MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_0, MB64_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-FRONT
+    {{{16, 16, 16}, {0, 0, 0},   {16, 0, 0}},   MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_UNDERSLOPE_CORNER, NULL}, // BOTTOM-LEFT
 };
 
 struct mb64_terrain mb64_terrain_dicorner = {
@@ -135,24 +153,6 @@ struct mb64_terrain mb64_terrain_dicorner = {
     4,
     mb64_terrain_dicorner_quads,
     mb64_terrain_dicorner_tris,
-};
-
-struct mb64_terrain_poly mb64_terrain_dslope_quads[] = {
-    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
-    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{16, 16, 16}, {0, 16, 16}, {16, 0, 0},  {0, 0, 0}},  MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, MB64_GROWTH_NORMAL_SIDE, NULL}, // BOTTOM
-};
-
-struct mb64_terrain_poly mb64_terrain_dslope_tris[] = {
-    {{{16, 0, 0}, {16, 16, 0}, {16, 16, 16}},  MB64_DIRECTION_POS_X, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // LEFT
-    {{{0, 16, 0}, {0, 0, 0},   {0, 16, 16}},   MB64_DIRECTION_NEG_X, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
-};
-
-struct mb64_terrain mb64_terrain_dslope = {
-    3,
-    2,
-    mb64_terrain_dslope_quads,
-    mb64_terrain_dslope_tris,
 };
 
 struct mb64_terrain_poly mb64_terrain_sslope_quads[] = {
@@ -173,11 +173,13 @@ struct mb64_terrain mb64_terrain_sslope = {
     mb64_terrain_sslope_tris,
 };
 
+s8 scorner_slope_tri_uvs[3][2] = {{16, 0}, {0, 0}, {8, 16}};
+
 struct mb64_terrain_poly mb64_terrain_scorner_tris[] = {
-    {{{0, 0, 16}, {16, 0, 0}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP
-    {{{16, 0, 0},  {0, 0, 16},  {0, 0, 0}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
-    {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}},  MB64_DIRECTION_NEG_X, MB64_FACESHAPE_TRI_2, MB64_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
-    {{{0, 0, 0},  {0, 16, 0},  {16, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_TRI_1, MB64_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
+    {{{0, 0, 16}, {16, 0, 0}, {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, &scorner_slope_tri_uvs}, // TOP
+    {{{16, 0, 0},  {0, 0, 16},  {0, 0, 0}}, MB64_DIRECTION_DOWN, MB64_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
+    {{{0, 16, 0}, {0, 0, 0},   {0, 0, 16}}, MB64_DIRECTION_NEG_X, MB64_FACESHAPE_TRI_2, MB64_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // RIGHT
+    {{{0, 0, 0},  {0, 16, 0},  {16, 0, 0}}, MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_TRI_1, MB64_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // BACK
 };
 
 struct mb64_terrain mb64_terrain_scorner = {
@@ -187,11 +189,13 @@ struct mb64_terrain mb64_terrain_scorner = {
     mb64_terrain_scorner_tris,
 };
 
+s8 dscorner_slope_tri_uvs[3][2] = {{0, 16}, {16, 16}, {8, 0}};
+
 struct mb64_terrain_poly mb64_terrain_dscorner_tris[] = {
-    {{{16, 16, 0}, {0, 16, 16}, {0, 0, 0}},    MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, MB64_GROWTH_DIAGONAL_SIDE, NULL}, // BOTTOM
-    {{{0, 16, 16}, {16, 16, 0}, {0, 16, 0}}, MB64_DIRECTION_UP,   MB64_FACESHAPE_TOPTRI, MB64_GROWTH_FULL, NULL}, // TOP
-    {{{0, 0, 0},    {0, 16, 16}, {0, 16, 0}},   MB64_DIRECTION_NEG_X, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
-    {{{0, 0, 0},    {0, 16, 0},  {16, 16, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 16, 0}, {0, 16, 16}, {0, 0, 0}},    MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_DIAGONAL_SIDE, &dscorner_slope_tri_uvs}, // BOTTOM
+    {{{0, 16, 16}, {16, 16, 0}, {0, 16, 0}},   MB64_DIRECTION_UP,   MB64_FACESHAPE_TOPTRI, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{0, 0, 0},    {0, 16, 16}, {0, 16, 0}},  MB64_DIRECTION_NEG_X, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+    {{{0, 0, 0},    {0, 16, 0},  {16, 16, 0}}, MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
 };
 
 struct mb64_terrain mb64_terrain_dscorner = {
@@ -250,13 +254,15 @@ struct mb64_terrain mb64_terrain_vslab = {
     NULL
 };
 
+s8 gentle_slope_uvs[4][2] = {{0, 0}, {0, 16}, {16, 0}, {16, 16}};
+
 s8 gentle_decal_tri_uvs1[3][2] = {{0, 8}, {0, 16}, {16, 16}};
 s8 gentle_decal_tri_uvs2[3][2] = {{16, 16}, {16, 8}, {0, 16}};
 s8 ugentle_decal_quad_uvs1[4][2] = {{16, 16}, {16, 8}, {0, 8}, {0, 0}};
 s8 ugentle_decal_quad_uvs2[4][2] = {{16, 8}, {16, 0}, {0, 16}, {0, 8}};
 
 struct mb64_terrain_poly mb64_terrain_ugentle_quads[] = {
-    {{{16, 8, 16}, {16, 16, 0}, {0, 8, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 8, 16}, {16, 16, 0}, {0, 8, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, &gentle_slope_uvs}, // TOP
     {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  MB64_DIRECTION_DOWN,  MB64_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 16, 0}, {16, 0, 0},  {0, 16, 0}, {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
     {{{0, 8, 16},  {0, 0, 16},  {16, 8, 16}, {16, 0, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_BOTTOMSLAB, MB64_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs1}, // FRONT
@@ -277,9 +283,9 @@ struct mb64_terrain mb64_terrain_ugentle = {
 };
 
 struct mb64_terrain_poly mb64_terrain_dugentle_quads[] = {
-    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
-    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{16, 8, 16}, {0, 8, 16}, {16, 0, 0},  {0, 0, 0}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY, MB64_GROWTH_NONE, NULL}, // BOTTOM
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16},  {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},   {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{16, 0, 0},   {16, 8, 16}, {0, 0, 0},    {0, 8, 16}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_NONE, &gentle_slope_uvs}, // BOTTOM
     {{{0, 16, 16},  {0, 8, 16},  {16, 16, 16}, {16, 8, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_TOPSLAB, MB64_GROWTH_NORMAL_SIDE, NULL}, // FRONT
     {{{16, 16, 16}, {16, 8, 16}, {16, 16, 0},  {16, 8, 0}},  MB64_DIRECTION_POS_X, MB64_FACESHAPE_TOPSLAB, MB64_GROWTH_NORMAL_SIDE, NULL}, // LEFT
     {{{0, 16, 0},   {0, 8, 0},   {0, 16, 16},  {0, 8, 16}},  MB64_DIRECTION_NEG_X, MB64_FACESHAPE_TOPSLAB, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
@@ -298,7 +304,7 @@ struct mb64_terrain mb64_terrain_dugentle = {
 };
 
 struct mb64_terrain_poly mb64_terrain_lgentle_quads[] = {
-    {{{16, 0, 16}, {16, 8, 0}, {0, 0, 16}, {0, 8, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 0, 16}, {16, 8, 0}, {0, 0, 16}, {0, 8, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, &gentle_slope_uvs}, // TOP
     {{{16, 0, 16}, {0, 0, 16},  {16, 0, 0}, {0, 0, 0}},  MB64_DIRECTION_DOWN,  MB64_FACESHAPE_FULL, 0, NULL}, // BOTTOM
     {{{16, 8, 0},  {16, 0, 0},  {0, 8, 0},   {0, 0, 0}},   MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_BOTTOMSLAB, MB64_GROWTH_UNCONDITIONAL, &bottomslab_decal_uvs1}, // BACK
 };
@@ -320,7 +326,7 @@ s8 dlgentle_decal_uvs[4][2] = {{0, 16}, {16, 16}, {0, 8}, {16, 8}};
 struct mb64_terrain_poly mb64_terrain_dlgentle_quads[] = {
     {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
     {{{16, 16, 0},  {16, 8, 0},  {0, 16, 0},   {0, 8, 0}}, MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_TOPSLAB, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
-    {{{16, 16, 16}, {0, 16, 16}, {16, 8, 0},  {0, 8, 0}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY, MB64_GROWTH_DLGENTLE_UNDER, dlgentle_decal_uvs}, // BOTTOM
+    {{{16, 8, 0},   {16, 16, 16}, {0, 8, 0},    {0, 16, 16}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_NORMAL_SIDE, &gentle_slope_uvs}, // BOTTOM
 };
 
 struct mb64_terrain_poly mb64_terrain_dlgentle_tris[] = {
@@ -808,184 +814,184 @@ char *mb64_matlist_names[] = {
 
 struct mb64_material mb64_mat_table[] = {
     // Terrain
-    {mat_maker_MakerGrass,        0, SURFACE_GRASS,        "Grass"},       // MB64_MAT_GRASS
-    {mat_maker_MakerVanillaGrass, 0, SURFACE_GRASS,        "Grass (Old)"}, // MB64_MAT_GRASS_OLD
-    {mat_maker_MakerCartoonGrass, 0, SURFACE_GRASS,        "Smooth Grass"},// MB64_MAT_CARTOON_GRASS
-    {mat_maker_MakerDarkGrass,    0, SURFACE_GRASS,        "Dark Grass"},  // MB64_MAT_DARK_GRASS
-    {mat_maker_MakerHGrass,       0, SURFACE_GRASS,        "Cave Grass"},  // MB64_MAT_HMC_GRASS
-    {mat_maker_MakerOrangeGrass,  0, SURFACE_GRASS,        "Orange Grass"},// MB64_MAT_ORANGE_GRASS
-    {mat_maker_MakerRedGrass,     0, SURFACE_GRASS,        "Red Grass"},   // MB64_MAT_RED_GRASS
-    {mat_maker_MakerPurpleGrass,  0, SURFACE_GRASS,        "Purple Grass"},// MB64_MAT_PURPLE_GRASS
-    {mat_maker_MakerSand,         0, SURFACE_SAND,         "Sand"},        // MB64_MAT_SAND
-    {mat_maker_MakerJRBSand,      0, SURFACE_SAND,         "Ocean Sand"},  // MB64_MAT_JRB_SAND
-    {mat_maker_MakerSnow,         0, SURFACE_SNOW,         "Snow"},        // MB64_MAT_SNOW
-    {mat_maker_MakerVanillaSnow,  0, SURFACE_SNOW,         "Snow (Old)"},  // MB64_MAT_SNOW_OLD
-    {mat_maker_MakerDirt,         0, SURFACE_NOT_SLIPPERY, "Dirt"},        // MB64_MAT_DIRT
-    {mat_maker_MakerSandDirt,     0, SURFACE_NOT_SLIPPERY, "Sandy Dirt"},  // MB64_MAT_SANDDIRT
-    {mat_maker_MakerLightDirt,    0, SURFACE_NOT_SLIPPERY, "Light Dirt"},  // MB64_MAT_LIGHTDIRT
-    {mat_maker_MakerHDirt,        0, SURFACE_NOT_SLIPPERY, "Cave Dirt"},   // MB64_MAT_HMC_DIRT
-    {mat_maker_MakerRockyDirt,    0, SURFACE_NOT_SLIPPERY, "Rocky Dirt"},  // MB64_MAT_ROCKY_DIRT
-    {mat_maker_MakerVanillaDirt,  0, SURFACE_NOT_SLIPPERY,  "Dirt (Old)"}, // MB64_MAT_DIRT_OLD
-    {mat_maker_MakerWavyDirt,     0, SURFACE_NOT_SLIPPERY, "Wavy Dirt"},   // MB64_MAT_WAVY_DIRT
-    {mat_maker_MakerWavyDirtBlue, 0, SURFACE_NOT_SLIPPERY, "Wavy Dirt (Blue)"}, // MB64_MAT_WAVY_DIRT_BLUE
-    {mat_maker_MakerSnowDirt,     0, SURFACE_NOT_SLIPPERY, "Snowy Dirt"},  // MB64_MAT_SNOWDIRT
-    {mat_maker_MakerPurpleDirt,   0, SURFACE_NOT_SLIPPERY, "Purple Dirt"}, // MB64_MAT_PURPLE_DIRT
-    {mat_maker_MakerHLakewall,    0, SURFACE_NOT_SLIPPERY, "Clay"},        // MB64_MAT_HMC_LAKEGRASS
+    {mat_maker_MakerGrass,        MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Grass"},       // MB64_MAT_GRASS
+    {mat_maker_MakerVanillaGrass, MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Grass (Old)"}, // MB64_MAT_GRASS_OLD
+    {mat_maker_MakerCartoonGrass, MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Smooth Grass"},// MB64_MAT_CARTOON_GRASS
+    {mat_maker_MakerDarkGrass,    MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Dark Grass"},  // MB64_MAT_DARK_GRASS
+    {mat_maker_MakerHGrass,       MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Cave Grass"},  // MB64_MAT_HMC_GRASS
+    {mat_maker_MakerOrangeGrass,  MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Orange Grass"},// MB64_MAT_ORANGE_GRASS
+    {mat_maker_MakerRedGrass,     MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Red Grass"},   // MB64_MAT_RED_GRASS
+    {mat_maker_MakerPurpleGrass,  MAT_OPAQUE, FALSE, SURFACE_GRASS,        "Purple Grass"},// MB64_MAT_PURPLE_GRASS
+    {mat_maker_MakerSand,         MAT_OPAQUE, FALSE, SURFACE_SAND,         "Sand"},        // MB64_MAT_SAND
+    {mat_maker_MakerJRBSand,      MAT_OPAQUE, FALSE, SURFACE_SAND,         "Ocean Sand"},  // MB64_MAT_JRB_SAND
+    {mat_maker_MakerSnow,         MAT_OPAQUE, FALSE, SURFACE_SNOW,         "Snow"},        // MB64_MAT_SNOW
+    {mat_maker_MakerVanillaSnow,  MAT_OPAQUE, FALSE, SURFACE_SNOW,         "Snow (Old)"},  // MB64_MAT_SNOW_OLD
+    {mat_maker_MakerDirt,         MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Dirt"},        // MB64_MAT_DIRT
+    {mat_maker_MakerSandDirt,     MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Sandy Dirt"},  // MB64_MAT_SANDDIRT
+    {mat_maker_MakerLightDirt,    MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Light Dirt"},  // MB64_MAT_LIGHTDIRT
+    {mat_maker_MakerHDirt,        MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Cave Dirt"},   // MB64_MAT_HMC_DIRT
+    {mat_maker_MakerRockyDirt,    MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Rocky Dirt"},  // MB64_MAT_ROCKY_DIRT
+    {mat_maker_MakerVanillaDirt,  MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY,  "Dirt (Old)"}, // MB64_MAT_DIRT_OLD
+    {mat_maker_MakerWavyDirt,     MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Wavy Dirt"},   // MB64_MAT_WAVY_DIRT
+    {mat_maker_MakerWavyDirtBlue, MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Wavy Dirt (Blue)"}, // MB64_MAT_WAVY_DIRT_BLUE
+    {mat_maker_MakerSnowDirt,     MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Snowy Dirt"},  // MB64_MAT_SNOWDIRT
+    {mat_maker_MakerPurpleDirt,   MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Purple Dirt"}, // MB64_MAT_PURPLE_DIRT
+    {mat_maker_MakerHLakewall,    MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Clay"},        // MB64_MAT_HMC_LAKEGRASS
 
     // Stone
-    {mat_maker_MakerStoneSide,     0, SURFACE_DEFAULT,      "White Stone"},     // MB64_MAT_STONE
-    {mat_maker_MakerHStone,        0, SURFACE_NOT_SLIPPERY, "Cave Stone"},      // MB64_MAT_HMC_STONE
-    {mat_maker_MakerHMazefloor,    0, SURFACE_DEFAULT,      "Beige Stone"},     // MB64_MAT_HMC_MAZEFLOOR
-    {mat_maker_MakerCCMWall,       0, SURFACE_NOT_SLIPPERY, "Green Stone"},     // MB64_MAT_CCM_ROCK
-    {mat_maker_MakerMountainFloor, 0, SURFACE_NOT_SLIPPERY, "Mountain Stone"},  // MB64_MAT_TTM_FLOOR
-    {mat_maker_MakerMountainRock,  0, SURFACE_NOT_SLIPPERY, "Mountain Rock"},   // MB64_MAT_TTM_ROCK
-    {mat_maker_MakerStone,         0, SURFACE_NOT_SLIPPERY, "White Rock"},      // MB64_MAT_COBBLESTONE
-    {mat_maker_MakerJRBWall,       0, SURFACE_NOT_SLIPPERY, "Green Rock"},      // MB64_MAT_JRB_WALL
-    {mat_maker_MakerBlackStone,    0, SURFACE_DEFAULT,      "Black Rock"},      // MB64_MAT_GABBRO
-    {mat_maker_MakerRHRStone,      0, SURFACE_NOT_SLIPPERY, "Scorched Rock"},   // MB64_MAT_RHR_STONE
-    {mat_maker_MakerLavaRock,      0, SURFACE_NOT_SLIPPERY, "Volcanic Rocks"},  // MB64_MAT_LAVA_ROCKS
-    {mat_maker_MakerVolcanicRock,  0, SURFACE_DEFAULT,      "Volcanic Wall"},   // MB64_MAT_VOLCANO_WALL
-    {mat_maker_MakerRHRBasalt,     0, SURFACE_NOT_SLIPPERY, "Basalt"},          // MB64_MAT_RHR_BASALT
-    {mat_maker_MakerObsidian,      0, SURFACE_NOT_SLIPPERY, "Obsidian"},        // MB64_MAT_OBSIDIAN
-    {mat_maker_MakerCastleCobble,  0, SURFACE_NOT_SLIPPERY, "Plum Concrete"},   // MB64_MAT_CASTLE_STONE
-    {mat_maker_MakerJRBUnderwater, 0, SURFACE_NOT_SLIPPERY, "Ocean Floor"},     // MB64_MAT_JRB_UNDERWATER
-    {mat_maker_MakerSnowRock,      0, SURFACE_DEFAULT,      "Snowy Rock"},      // MB64_MAT_SNOW_ROCK
-    {mat_maker_MakerIcyRock,       0, SURFACE_VERY_SLIPPERY, "Icy Rock"},       // MB64_MAT_ICY_ROCK
-    {mat_maker_MakerDStone,        0, SURFACE_NOT_SLIPPERY, "Cobblestone (1)"}, // MB64_MAT_DESERT_STONE
-    {mat_maker_MakerRHRObsidian,   0, SURFACE_NOT_SLIPPERY, "Cobblestone (2)"}, // MB64_MAT_RHR_OBSIDIAN
-    {mat_maker_MakerJRBStone,      0, SURFACE_NOT_SLIPPERY, "Cobblestone (3)"}, // MB64_MAT_JRB_STONE
+    {mat_maker_MakerStoneSide,     MAT_OPAQUE, FALSE, SURFACE_DEFAULT,      "White Stone"},     // MB64_MAT_STONE
+    {mat_maker_MakerHStone,        MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Cave Stone"},      // MB64_MAT_HMC_STONE
+    {mat_maker_MakerHMazefloor,    MAT_OPAQUE, FALSE, SURFACE_DEFAULT,      "Beige Stone"},     // MB64_MAT_HMC_MAZEFLOOR
+    {mat_maker_MakerCCMWall,       MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Green Stone"},     // MB64_MAT_CCM_ROCK
+    {mat_maker_MakerMountainFloor, MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Mountain Stone"},  // MB64_MAT_TTM_FLOOR
+    {mat_maker_MakerMountainRock,  MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Mountain Rock"},   // MB64_MAT_TTM_ROCK
+    {mat_maker_MakerStone,         MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "White Rock"},      // MB64_MAT_COBBLESTONE
+    {mat_maker_MakerJRBWall,       MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Green Rock"},      // MB64_MAT_JRB_WALL
+    {mat_maker_MakerBlackStone,    MAT_OPAQUE, FALSE, SURFACE_DEFAULT,      "Black Rock"},      // MB64_MAT_GABBRO
+    {mat_maker_MakerRHRStone,      MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Scorched Rock"},   // MB64_MAT_RHR_STONE
+    {mat_maker_MakerLavaRock,      MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Volcanic Rocks"},  // MB64_MAT_LAVA_ROCKS
+    {mat_maker_MakerVolcanicRock,  MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Volcanic Wall"},   // MB64_MAT_VOLCANO_WALL
+    {mat_maker_MakerRHRBasalt,     MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Basalt"},          // MB64_MAT_RHR_BASALT
+    {mat_maker_MakerObsidian,      MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Obsidian"},        // MB64_MAT_OBSIDIAN
+    {mat_maker_MakerCastleCobble,  MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Plum Concrete"},   // MB64_MAT_CASTLE_STONE
+    {mat_maker_MakerJRBUnderwater, MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Ocean Floor"},     // MB64_MAT_JRB_UNDERWATER
+    {mat_maker_MakerSnowRock,      MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Snowy Rock"},      // MB64_MAT_SNOW_ROCK
+    {mat_maker_MakerIcyRock,       MAT_OPAQUE, TRUE,  SURFACE_VERY_SLIPPERY, "Icy Rock"},       // MB64_MAT_ICY_ROCK
+    {mat_maker_MakerDStone,        MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Cobblestone (1)"}, // MB64_MAT_DESERT_STONE
+    {mat_maker_MakerRHRObsidian,   MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Cobblestone (2)"}, // MB64_MAT_RHR_OBSIDIAN
+    {mat_maker_MakerJRBStone,      MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Cobblestone (3)"}, // MB64_MAT_JRB_STONE
 
     // Bricks
-    {mat_maker_MakerBricks,         0, SURFACE_DEFAULT,      "Stone Bricks"},     // MB64_MAT_BRICKS
-    {mat_maker_MakerDBrick,         0, SURFACE_DEFAULT,      "Desert Bricks"},    // MB64_MAT_DESERT_BRICKS
-    {mat_maker_MakerRHRBrick,       0, SURFACE_NOT_SLIPPERY, "Scorched Bricks"},  // MB64_MAT_RHR_BRICK
-    {mat_maker_MakerHBrick,         0, SURFACE_DEFAULT,      "Cave Bricks"},      // MB64_MAT_HMC_BRICK
-    {mat_maker_MakerLightBrownBricks, 0, SURFACE_DEFAULT,    "Fortress Bricks"},  // MB64_MAT_LIGHTBROWN_BRICK
-    {mat_maker_MakerBrownBricks,    0, SURFACE_DEFAULT,      "Brown Bricks (1)"}, // MB64_MAT_WDW_BRICK
-    {mat_maker_MakerTTMBricks,      0, SURFACE_DEFAULT,      "Brown Bricks (2)"}, // MB64_MAT_TTM_BRICK
-    {mat_maker_MakerCBrick,         0, SURFACE_NOT_SLIPPERY, "Castle Bricks"},    // MB64_MAT_C_BRICK
-    {mat_maker_MakerBBHBricks,      0, SURFACE_NOT_SLIPPERY, "Red Bricks (1)"},   // MB64_MAT_BBH_BRICKS
-    {mat_maker_MakerRoofBricks,     0, SURFACE_DEFAULT,      "Red Bricks (2)"},   // MB64_MAT_ROOF_BRICKS
-    {mat_maker_MakerCOutsideBricks, 0, SURFACE_DEFAULT,      "White Bricks (1)"}, // MB64_MAT_C_OUTSIDE_BRICK
-    {mat_maker_MakerSnowBricks,     0, SURFACE_DEFAULT,      "White Bricks (2)"}, // MB64_MAT_SNOW_BRICKS
-    {mat_maker_MakerJRBBricks,      0, SURFACE_DEFAULT,      "Ocean Bricks"},     // MB64_MAT_JRB_BRICKS 
-    {mat_maker_MakerSnowTileSide,   0, SURFACE_DEFAULT,      "Blue Bricks"},      // MB64_MAT_SNOW_TILE_SIDE
-    {mat_maker_MakerTileBricks,     0, SURFACE_NOT_SLIPPERY, "Mixed Bricks"},     // MB64_MAT_TILESBRICKS
+    {mat_maker_MakerBricks,           MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Stone Bricks"},     // MB64_MAT_BRICKS
+    {mat_maker_MakerDBrick,           MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Desert Bricks"},    // MB64_MAT_DESERT_BRICKS
+    {mat_maker_MakerRHRBrick,         MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Scorched Bricks"},  // MB64_MAT_RHR_BRICK
+    {mat_maker_MakerHBrick,           MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Cave Bricks"},      // MB64_MAT_HMC_BRICK
+    {mat_maker_MakerLightBrownBricks, MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,    "Fortress Bricks"},  // MB64_MAT_LIGHTBROWN_BRICK
+    {mat_maker_MakerBrownBricks,      MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Brown Bricks (1)"}, // MB64_MAT_WDW_BRICK
+    {mat_maker_MakerTTMBricks,        MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Brown Bricks (2)"}, // MB64_MAT_TTM_BRICK
+    {mat_maker_MakerCBrick,           MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Castle Bricks"},    // MB64_MAT_C_BRICK
+    {mat_maker_MakerBBHBricks,        MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Red Bricks (1)"},   // MB64_MAT_BBH_BRICKS
+    {mat_maker_MakerRoofBricks,       MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Red Bricks (2)"},   // MB64_MAT_ROOF_BRICKS
+    {mat_maker_MakerCOutsideBricks,   MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "White Bricks (1)"}, // MB64_MAT_C_OUTSIDE_BRICK
+    {mat_maker_MakerSnowBricks,       MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "White Bricks (2)"}, // MB64_MAT_SNOW_BRICKS
+    {mat_maker_MakerJRBBricks,        MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Ocean Bricks"},     // MB64_MAT_JRB_BRICKS 
+    {mat_maker_MakerSnowTileSide,     MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Blue Bricks"},      // MB64_MAT_SNOW_TILE_SIDE
+    {mat_maker_MakerTileBricks,       MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Mixed Bricks"},     // MB64_MAT_TILESBRICKS
 
     // Tiling
-    {mat_maker_MakerTiles,          0, SURFACE_NOT_SLIPPERY, "Checkered Tiling"}, // MB64_MAT_TILES
-    {mat_maker_MakerCTiles,         0, SURFACE_NOT_SLIPPERY, "Castle Tiling"},    // MB64_MAT_C_TILES
-    {mat_maker_MakerDTiles,         0, SURFACE_NOT_SLIPPERY, "Desert Tiling"},    // MB64_MAT_DESERT_TILES
-    {mat_maker_MakerVBlueTiles,     0, SURFACE_NOT_SLIPPERY, "Blue Tiling (1)"},  // MB64_MAT_VP_BLUETILES
-    {mat_maker_MakerSnowTiles,      0, SURFACE_NOT_SLIPPERY, "Blue Tiling (2)"},  // MB64_MAT_SNOW_TILES
-    {mat_maker_MakerJRBTileTop,     0, SURFACE_NOT_SLIPPERY, "Ocean Tiling (1)"}, // MB64_MAT_JRB_TILETOP
-    {mat_maker_MakerJRBTileSide,    0, SURFACE_DEFAULT,      "Ocean Tiling (2)"}, // MB64_MAT_JRB_TILESIDE
-    {mat_maker_MakerHTileTop,       0, SURFACE_NOT_SLIPPERY, "Dark Tiling"},     // MB64_MAT_HMC_TILES
-    {mat_maker_MakerGraniteTiles,   0, SURFACE_NOT_SLIPPERY, "Granite Tiling"},   // MB64_MAT_GRANITE_TILES
-    {mat_maker_MakerRHRTiles,       0, SURFACE_DEFAULT,      "Black Tiling"},    // MB64_MAT_RHR_TILES
-    {mat_maker_MakerVTiles,         0, SURFACE_DEFAULT,      "Grey Tiling"},     // MB64_MAT_VP_TILES
-    {mat_maker_MakerDiamondPattern, 0, SURFACE_NOT_SLIPPERY, "Diamond Pattern"},  // MB64_MAT_DIAMOND_PATTERN
-    {mat_maker_MakerCStone,         0, SURFACE_NOT_SLIPPERY, "Hex Tiling"},       // MB64_MAT_C_STONETOP
-    {mat_maker_MakerSnowBrickTiles, 0, SURFACE_DEFAULT,      "Diamond Tiling"},   // MB64_MAT_SNOW_BRICK_TILES
+    {mat_maker_MakerTiles,          MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Checkered Tiling"}, // MB64_MAT_TILES
+    {mat_maker_MakerCTiles,         MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Castle Tiling"},    // MB64_MAT_C_TILES
+    {mat_maker_MakerDTiles,         MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Desert Tiling"},    // MB64_MAT_DESERT_TILES
+    {mat_maker_MakerVBlueTiles,     MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Blue Tiling (1)"},  // MB64_MAT_VP_BLUETILES
+    {mat_maker_MakerSnowTiles,      MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Blue Tiling (2)"},  // MB64_MAT_SNOW_TILES
+    {mat_maker_MakerJRBTileTop,     MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Ocean Tiling (1)"}, // MB64_MAT_JRB_TILETOP
+    {mat_maker_MakerJRBTileSide,    MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Ocean Tiling (2)"}, // MB64_MAT_JRB_TILESIDE
+    {mat_maker_MakerHTileTop,       MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Dark Tiling"},     // MB64_MAT_HMC_TILES
+    {mat_maker_MakerGraniteTiles,   MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Granite Tiling"},   // MB64_MAT_GRANITE_TILES
+    {mat_maker_MakerRHRTiles,       MAT_OPAQUE, FALSE, SURFACE_DEFAULT,      "Black Tiling"},    // MB64_MAT_RHR_TILES
+    {mat_maker_MakerVTiles,         MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Grey Tiling"},     // MB64_MAT_VP_TILES
+    {mat_maker_MakerDiamondPattern, MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Diamond Pattern"},  // MB64_MAT_DIAMOND_PATTERN
+    {mat_maker_MakerCStone,         MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Hex Tiling"},       // MB64_MAT_C_STONETOP
+    {mat_maker_MakerSnowBrickTiles, MAT_OPAQUE, FALSE, SURFACE_DEFAULT,      "Diamond Tiling"},   // MB64_MAT_SNOW_BRICK_TILES
 
     // Cut Stone
-    {mat_maker_MakerDStoneBlock,     0, SURFACE_NOT_SLIPPERY, "Block"},           // MB64_MAT_DESERT_BLOCK
-    {mat_maker_MakerVBlock,          0, SURFACE_DEFAULT,      "Smooth Block"},    // MB64_MAT_VP_BLOCK
-    {mat_maker_MakerBBHWall,         0, SURFACE_DEFAULT,      "Mansion Wall"},    // MB64_MAT_BBH_STONE
-    {mat_maker_MakerBBHStonePattern, 0, SURFACE_DEFAULT,      "Chiseled Wall"},   // MB64_MAT_BBH_STONE_PATTERN
-    {mat_maker_MakerLauncherTex,     0, SURFACE_DEFAULT,      "Patterned Block"}, // MB64_MAT_PATTERNED_BLOCK
-    {mat_maker_MakerHTileSide,       0, SURFACE_DEFAULT,      "Black Slabs"},     // MB64_MAT_HMC_SLAB
-    {mat_maker_MakerRHRPattern,      0, SURFACE_NOT_SLIPPERY, "Chiseled Block"},  // MB64_MAT_RHR_BLOCK
-    {mat_maker_MakerGraniteBlock,    0, SURFACE_NOT_SLIPPERY, "Granite Block"},   // MB64_MAT_GRANITE_BLOCK
-    {mat_maker_MakerCStoneSide,      0, SURFACE_DEFAULT,      "Stone Slab"},      // MB64_MAT_C_STONESIDE
-    {mat_maker_MakerCPillar,         0, SURFACE_DEFAULT,      "Castle Pillar"},   // MB64_MAT_C_PILLAR
-    {mat_maker_MakerBBHPillar,       0, SURFACE_DEFAULT,      "Mansion Pillar"},  // MB64_MAT_BBH_PILLAR
-    {mat_maker_MakerRHRPillar,       0, SURFACE_DEFAULT,      "Scorched Pillar"}, // MB64_MAT_RHR_PILLAR
+    {mat_maker_MakerDStoneBlock,     MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, "Block"},           // MB64_MAT_DESERT_BLOCK
+    {mat_maker_MakerVBlock,          MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Smooth Block"},    // MB64_MAT_VP_BLOCK
+    {mat_maker_MakerBBHWall,         MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Mansion Wall"},    // MB64_MAT_BBH_STONE
+    {mat_maker_MakerBBHStonePattern, MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Chiseled Wall"},   // MB64_MAT_BBH_STONE_PATTERN
+    {mat_maker_MakerLauncherTex,     MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Patterned Block"}, // MB64_MAT_PATTERNED_BLOCK
+    {mat_maker_MakerHTileSide,       MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Black Slabs"},     // MB64_MAT_HMC_SLAB
+    {mat_maker_MakerRHRPattern,      MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, "Chiseled Block"},  // MB64_MAT_RHR_BLOCK
+    {mat_maker_MakerGraniteBlock,    MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, "Granite Block"},   // MB64_MAT_GRANITE_BLOCK
+    {mat_maker_MakerCStoneSide,      MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Stone Slab"},      // MB64_MAT_C_STONESIDE
+    {mat_maker_MakerCPillar,         MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Castle Pillar"},   // MB64_MAT_C_PILLAR
+    {mat_maker_MakerBBHPillar,       MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Mansion Pillar"},  // MB64_MAT_BBH_PILLAR
+    {mat_maker_MakerRHRPillar,       MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      "Scorched Pillar"}, // MB64_MAT_RHR_PILLAR
 
     // Wood
-    {mat_maker_MakerWood,            0, SURFACE_CREAKWOOD,    "Planks (1)"},    // MB64_MAT_WOOD
-    {mat_maker_MakerBBHWoodWall,     0, SURFACE_CREAKWOOD,    "Planks (2)"},    // MB64_MAT_BBH_WOOD_WALL
-    {mat_maker_MakerBBHWoodFloor,    0, SURFACE_CREAKWOOD,    "Dark Planks"},   // MB64_MAT_BBH_WOOD_FLOOR
-    {mat_maker_MakerCWood,           0, SURFACE_CREAKWOOD,    "Castle Planks"}, // MB64_MAT_C_WOOD
-    {mat_maker_MakerJRBWood,         0, SURFACE_CREAKWOOD,    "Docks"},         // MB64_MAT_JRB_WOOD
-    {mat_maker_MakerJRBShipSide,     0, SURFACE_CREAKWOOD,    "Ship Planks"},   // MB64_MAT_JRB_SHIPSIDE
-    {mat_maker_MakerJRBShipTop,      0, SURFACE_CREAKWOOD,    "Ship Decking"},  // MB64_MAT_JRB_SHIPTOP
-    {mat_maker_MakerBBHHauntedPlanks,0, SURFACE_CREAKWOOD,    "Spooky Planks"}, // MB64_MAT_BBH_HAUNTED_PLANKS
-    {mat_maker_MakerBBHRoof,         0, SURFACE_CREAKWOOD,    "Mansion Roof"},  // MB64_MAT_BBH_ROOF
-    {mat_maker_MakerSolidWood,       0, SURFACE_NOT_SLIPPERY, "Wood (Old)"},    // MB64_MAT_SOLID_WOOD
-    {mat_maker_MakerRHRWood,         0, SURFACE_NOT_SLIPPERY, "Scorched Wood"}, // MB64_MAT_RHR_WOOD
+    {mat_maker_MakerWood,             MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Planks (1)"},    // MB64_MAT_WOOD
+    {mat_maker_MakerBBHWoodWall,      MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Planks (2)"},    // MB64_MAT_BBH_WOOD_WALL
+    {mat_maker_MakerBBHWoodFloor,     MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Dark Planks"},   // MB64_MAT_BBH_WOOD_FLOOR
+    {mat_maker_MakerCWood,            MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Castle Planks"}, // MB64_MAT_C_WOOD
+    {mat_maker_MakerJRBWood,          MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Docks"},         // MB64_MAT_JRB_WOOD
+    {mat_maker_MakerJRBShipSide,      MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Ship Planks"},   // MB64_MAT_JRB_SHIPSIDE
+    {mat_maker_MakerJRBShipTop,       MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Ship Decking"},  // MB64_MAT_JRB_SHIPTOP
+    {mat_maker_MakerBBHHauntedPlanks, MAT_OPAQUE, TRUE,  SURFACE_CREAKWOOD,    "Spooky Planks"}, // MB64_MAT_BBH_HAUNTED_PLANKS
+    {mat_maker_MakerBBHRoof,          MAT_OPAQUE, FALSE, SURFACE_CREAKWOOD,    "Mansion Roof"},  // MB64_MAT_BBH_ROOF
+    {mat_maker_MakerSolidWood,        MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Wood (Old)"},    // MB64_MAT_SOLID_WOOD
+    {mat_maker_MakerRHRWood,          MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY, "Scorched Wood"}, // MB64_MAT_RHR_WOOD
 
     // Metal
-    {mat_maker_MakerBBHMetal,        0, SURFACE_NOT_SLIPPERY, "Metal Flooring"},   // MB64_MAT_BBH_METAL
-    {mat_maker_MakerJRBMetalSide,    0, SURFACE_DEFAULT,      "Metal Sheet"},      // MB64_MAT_JRB_METALSIDE
-    {mat_maker_MakerJRBMetal,        0, SURFACE_DEFAULT,      "Metal Plating"},    // MB64_MAT_JRB_METAL
-    {mat_maker_MakerCBasementWall,   0, SURFACE_DEFAULT,      "Basement Plating"}, // MB64_MAT_C_BASEMENTWALL
-    {mat_maker_MakerDTiles2,         0, SURFACE_DEFAULT,      "Desert Plating"},   // MB64_MAT_DESERT_TILES2
-    {mat_maker_MakerVRustyBlock,     0, SURFACE_DEFAULT,      "Rusted Block"},     // MB64_MAT_VP_RUSTYBLOCK
+    {mat_maker_MakerBBHMetal,        MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Metal Flooring"},   // MB64_MAT_BBH_METAL
+    {mat_maker_MakerJRBMetalSide,    MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Metal Sheet"},      // MB64_MAT_JRB_METALSIDE
+    {mat_maker_MakerJRBMetal,        MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Metal Plating"},    // MB64_MAT_JRB_METAL
+    {mat_maker_MakerCBasementWall,   MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Basement Plating"}, // MB64_MAT_C_BASEMENTWALL
+    {mat_maker_MakerDTiles2,         MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Desert Plating"},   // MB64_MAT_DESERT_TILES2
+    {mat_maker_MakerVRustyBlock,     MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,      "Rusted Block"},     // MB64_MAT_VP_RUSTYBLOCK
 
     // Other
-    {mat_maker_MakerCCarpet,   0, SURFACE_GRASS,         "Carpet"},         // MB64_MAT_C_CARPET
-    {mat_maker_MakerCWall,     0, SURFACE_DEFAULT,       "Castle Wall"},    // MB64_MAT_C_WALL
-    {mat_maker_MakerRoof,      0, SURFACE_NOT_SLIPPERY,  "Roof"},           // MB64_MAT_ROOF
-    {mat_maker_MakerCRoof,     0, SURFACE_NOT_SLIPPERY,  "Castle Roof"},    // MB64_MAT_C_ROOF
-    {mat_maker_MakerSnowRoof,  0, SURFACE_VERY_SLIPPERY, "Blue Roof"},      // MB64_MAT_SNOW_ROOF
-    {mat_maker_MakerBBHWindow, 0, SURFACE_DEFAULT,       "Window"},         // MB64_MAT_BBH_WINDOW
-    {mat_maker_MakerHLight,    0, SURFACE_DEFAULT,       "Lantern"},        // MB64_MAT_HMC_LIGHT
-    {mat_maker_MakerCaution,   0, SURFACE_DEFAULT,       "Hazard Stripes"}, // MB64_MAT_VP_CAUTION
-    {mat_maker_MakerRRBlocks,  0, SURFACE_DEFAULT,       "Rainbow Blocks"},  // MB64_MAT_RR_BLOCKS
-    {mat_maker_MakerStuddedFloor, 0, SURFACE_NOT_SLIPPERY, "Studded Tile"},  // MB64_MAT_STUDDED_TILE
-    {mat_maker_MakerYellowBlock, 0, SURFACE_DEFAULT,     "Yellow Block"},   // MB64_MAT_TTC_BLOCK
-    {mat_maker_MakerTTCSide,   0, SURFACE_DEFAULT,       "Clock Platform"}, // MB64_MAT_TTC_SIDE
-    {mat_maker_MakerTTCWall,   0, SURFACE_DEFAULT,       "Clock Exterior"}, // MB64_MAT_TTC_WALL
-    {mat_maker_MakerFlowerTop, 0, SURFACE_GRASS,         "Flowers"},        // MB64_MAT_FLOWERS
+    {mat_maker_MakerCCarpet,      MAT_OPAQUE, FALSE, SURFACE_GRASS,         "Carpet"},         // MB64_MAT_C_CARPET
+    {mat_maker_MakerCWall,        MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Castle Wall"},    // MB64_MAT_C_WALL
+    {mat_maker_MakerRoof,         MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY,  "Roof"},           // MB64_MAT_ROOF
+    {mat_maker_MakerCRoof,        MAT_OPAQUE, TRUE,  SURFACE_NOT_SLIPPERY,  "Castle Roof"},    // MB64_MAT_C_ROOF
+    {mat_maker_MakerSnowRoof,     MAT_OPAQUE, TRUE,  SURFACE_VERY_SLIPPERY, "Blue Roof"},      // MB64_MAT_SNOW_ROOF
+    {mat_maker_MakerBBHWindow,    MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Window"},         // MB64_MAT_BBH_WINDOW
+    {mat_maker_MakerHLight,       MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Lantern"},        // MB64_MAT_HMC_LIGHT
+    {mat_maker_MakerCaution,      MAT_OPAQUE, FALSE, SURFACE_DEFAULT,       "Hazard Stripes"}, // MB64_MAT_VP_CAUTION
+    {mat_maker_MakerRRBlocks,     MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Rainbow Blocks"},  // MB64_MAT_RR_BLOCKS
+    {mat_maker_MakerStuddedFloor, MAT_OPAQUE, FALSE, SURFACE_NOT_SLIPPERY, "Studded Tile"},  // MB64_MAT_STUDDED_TILE
+    {mat_maker_MakerYellowBlock,  MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,     "Yellow Block"},   // MB64_MAT_TTC_BLOCK
+    {mat_maker_MakerTTCSide,      MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Clock Platform"}, // MB64_MAT_TTC_SIDE
+    {mat_maker_MakerTTCWall,      MAT_OPAQUE, TRUE,  SURFACE_DEFAULT,       "Clock Exterior"}, // MB64_MAT_TTC_WALL
+    {mat_maker_MakerFlowerTop,    MAT_OPAQUE, FALSE, SURFACE_GRASS,         "Flowers"},        // MB64_MAT_FLOWERS
 
     // Hazards
-    {mat_maker_MakerLava,       0, SURFACE_BURNING_BUBBLES,   "Lava"},           // MB64_MAT_LAVA
-    {mat_maker_MakerVanillaLava, 0, SURFACE_BURNING_BUBBLES,  "Lava (Old)"},     // MB64_MAT_LAVA_OLD
-    {mat_maker_MakerServerAcid, 0, SURFACE_BURNING_ICE,       "Server Acid"},    // MB64_MAT_SERVER_ACID
-    {mat_maker_MakerBurningIce, 0, SURFACE_BURNING_ICE,       "Hazard Ice"},     // MB64_MAT_BURNING_ICE
-    {mat_maker_MakerQuicksand,  0, SURFACE_INSTANT_QUICKSAND, "Quicksand"},      // MB64_MAT_QUICKSAND
-    {mat_maker_MakerSlowsand,   0, SURFACE_DEEP_QUICKSAND,    "Slow Quicksand"}, // MB64_MAT_DESERT_SLOWSAND
-    {mat_maker_MakerVoid,       0, SURFACE_INSTANT_QUICKSAND, "Cosmic Void"},           // MB64_MAT_VP_VOID
+    {mat_maker_MakerLava,        MAT_OPAQUE, TRUE,  SURFACE_BURNING_BUBBLES,   "Lava"},           // MB64_MAT_LAVA
+    {mat_maker_MakerVanillaLava, MAT_OPAQUE, TRUE,  SURFACE_BURNING_BUBBLES,  "Lava (Old)"},     // MB64_MAT_LAVA_OLD
+    {mat_maker_MakerServerAcid,  MAT_OPAQUE, TRUE,  SURFACE_BURNING_ICE,       "Server Acid"},    // MB64_MAT_SERVER_ACID
+    {mat_maker_MakerBurningIce,  MAT_OPAQUE, TRUE,  SURFACE_BURNING_ICE,       "Hazard Ice"},     // MB64_MAT_BURNING_ICE
+    {mat_maker_MakerQuicksand,   MAT_OPAQUE, TRUE,  SURFACE_INSTANT_QUICKSAND, "Quicksand"},      // MB64_MAT_QUICKSAND
+    {mat_maker_MakerSlowsand,    MAT_OPAQUE, FALSE, SURFACE_DEEP_QUICKSAND,    "Slow Quicksand"}, // MB64_MAT_DESERT_SLOWSAND
+    {mat_maker_MakerVoid,        MAT_OPAQUE, TRUE,  SURFACE_INSTANT_QUICKSAND, "Cosmic Void"},           // MB64_MAT_VP_VOID
 
     // Seethrough
-    {mat_maker_MakerRHRMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Mesh"},         // MB64_MAT_RHR_MESH
-    {mat_maker_MakerVPMesh,  MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Fine Mesh"},    // MB64_MAT_VP_MESH
-    {mat_maker_MakerHMesh,   MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Grille"},   // MB64_MAT_HMC_MESH
-    {mat_maker_MakerBBHMesh, MAT_CUTOUT,      SURFACE_HANGABLE_MESH, "Red Mesh"},     // MB64_MAT_BBH_MESH
-    {mat_maker_MakerGratePink, MAT_CUTOUT,    SURFACE_HANGABLE_MESH, "Pink Mesh"},    // MB64_MAT_PINK_MESH
-    {mat_maker_MakerTTCGrate, MAT_CUTOUT,     SURFACE_HANGABLE_MESH, "Clock Grille"}, // MB64_MAT_TTC_MESH
-    {mat_maker_MakerIce,     MAT_TRANSPARENT, SURFACE_ICE,           "Ice"},          // MB64_MAT_ICE
-    {mat_maker_MakerCrystal, MAT_TRANSPARENT, SURFACE_CRYSTAL,       "Crystal"},      // MB64_MAT_CRYSTAL
-    {mat_maker_MakerScreen,  MAT_DECAL,       SURFACE_DEFAULT,       "Screen"},       // MB64_MAT_VP_SCREEN
+    {mat_maker_MakerRHRMesh, MAT_CUTOUT,      TRUE,  SURFACE_HANGABLE_MESH, "Mesh"},         // MB64_MAT_RHR_MESH
+    {mat_maker_MakerVPMesh,  MAT_CUTOUT,      TRUE,  SURFACE_HANGABLE_MESH, "Fine Mesh"},    // MB64_MAT_VP_MESH
+    {mat_maker_MakerHMesh,   MAT_CUTOUT,      TRUE,  SURFACE_HANGABLE_MESH, "Red Grille"},   // MB64_MAT_HMC_MESH
+    {mat_maker_MakerBBHMesh, MAT_CUTOUT,      TRUE,  SURFACE_HANGABLE_MESH, "Red Mesh"},     // MB64_MAT_BBH_MESH
+    {mat_maker_MakerGratePink, MAT_CUTOUT,    TRUE,  SURFACE_HANGABLE_MESH, "Pink Mesh"},    // MB64_MAT_PINK_MESH
+    {mat_maker_MakerTTCGrate, MAT_CUTOUT,     TRUE,  SURFACE_HANGABLE_MESH, "Clock Grille"}, // MB64_MAT_TTC_MESH
+    {mat_maker_MakerIce,     MAT_TRANSPARENT, FALSE, SURFACE_ICE,           "Ice"},          // MB64_MAT_ICE
+    {mat_maker_MakerCrystal, MAT_TRANSPARENT, FALSE, SURFACE_CRYSTAL,       "Crystal"},      // MB64_MAT_CRYSTAL
+    {mat_maker_MakerScreen,  MAT_DECAL,       TRUE,  SURFACE_DEFAULT,       "Screen"},       // MB64_MAT_VP_SCREEN
 
     // Retro
-    {mat_maker_MakerRetroGround,     0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_GROUND
-    {mat_maker_MakerRetroBrick,      0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_BRICKS
-    {mat_maker_MakerRetroTreeTop,    0, SURFACE_GRASS,        NULL}, // MB64_MAT_RETRO_TREETOP
-    {mat_maker_MakerRetroTree,       0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_TREEPLAT
-    {mat_maker_MakerRetroBlock,      0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLOCK
-    {mat_maker_MakerRetroBGround,    0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLUEGROUND
-    {mat_maker_MakerRetroBBrick,     0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_BLUEBRICKS
-    {mat_maker_MakerRetroBBlock,     0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLUEBLOCK
-    {mat_maker_MakerRetroWBrick,     0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_WHITEBRICK
-    {mat_maker_MakerRetroLava,       0, SURFACE_BURNING,      NULL}, // MB64_MAT_RETRO_LAVA
-    {mat_maker_MakerRetroUnderwater, 0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_UNDERWATERGROUND
+    {mat_maker_MakerRetroGround,     MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_GROUND
+    {mat_maker_MakerRetroBrick,      MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_BRICKS
+    {mat_maker_MakerRetroTreeTop,    MAT_OPAQUE, TRUE, SURFACE_GRASS,        NULL}, // MB64_MAT_RETRO_TREETOP
+    {mat_maker_MakerRetroTree,       MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_TREEPLAT
+    {mat_maker_MakerRetroBlock,      MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLOCK
+    {mat_maker_MakerRetroBGround,    MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLUEGROUND
+    {mat_maker_MakerRetroBBrick,     MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_BLUEBRICKS
+    {mat_maker_MakerRetroBBlock,     MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_BLUEBLOCK
+    {mat_maker_MakerRetroWBrick,     MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_RETRO_WHITEBRICK
+    {mat_maker_MakerRetroLava,       MAT_OPAQUE, TRUE, SURFACE_BURNING,      NULL}, // MB64_MAT_RETRO_LAVA
+    {mat_maker_MakerRetroUnderwater, MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_RETRO_UNDERWATERGROUND
 
     // Minecraft
-    {mat_maker_MakerMCDirt,        0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_MC_DIRT
-    {mat_maker_MakerMCGrassTop,    0, SURFACE_GRASS,        NULL}, // MB64_MAT_MC_GRASS
-    {mat_maker_MakerMCCobblestone, 0, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_MC_COBBLESTONE
-    {mat_maker_MakerMCStone,       0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_MC_STONE
-    {mat_maker_MakerMCOakLogTop,   0, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_OAK_LOG_TOP
-    {mat_maker_MakerMCOakLogSide,  0, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_OAK_LOG_SIDE
-    {mat_maker_MakerMCOakLeaves,   MAT_CUTOUT,        SURFACE_GRASS,            NULL}, // MB64_MAT_MC_OAK_LEAVES
-    {mat_maker_MakerMCWoodPlanks,  0, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_WOOD_PLANKS
-    {mat_maker_MakerMCSand,        0, SURFACE_SAND,         NULL}, // MB64_MAT_MC_SAND
-    {mat_maker_MakerMCBricks,      0, SURFACE_DEFAULT,      NULL}, // MB64_MAT_MC_BRICKS
-    {mat_maker_MakerMCLava,        0, SURFACE_BURNING,      NULL}, // MB64_MAT_MC_LAVA
-    {mat_maker_MakerMCFlowingLava, 0, SURFACE_BURNING,      NULL}, // MB64_MAT_MC_FLOWING_LAVA
-    {mat_maker_MakerMCGlass,       MAT_CUTOUT_NOCULL, SURFACE_VANISH_CAP_WALLS, NULL}, // MB64_MAT_MC_GLASS
+    {mat_maker_MakerMCDirt,        MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_MC_DIRT
+    {mat_maker_MakerMCGrassTop,    MAT_OPAQUE, TRUE, SURFACE_GRASS,        NULL}, // MB64_MAT_MC_GRASS
+    {mat_maker_MakerMCCobblestone, MAT_OPAQUE, TRUE, SURFACE_NOT_SLIPPERY, NULL}, // MB64_MAT_MC_COBBLESTONE
+    {mat_maker_MakerMCStone,       MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_MC_STONE
+    {mat_maker_MakerMCOakLogTop,   MAT_OPAQUE, TRUE, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_OAK_LOG_TOP
+    {mat_maker_MakerMCOakLogSide,  MAT_OPAQUE, TRUE, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_OAK_LOG_SIDE
+    {mat_maker_MakerMCOakLeaves,   MAT_CUTOUT, TRUE, SURFACE_GRASS,        NULL}, // MB64_MAT_MC_OAK_LEAVES
+    {mat_maker_MakerMCWoodPlanks,  MAT_OPAQUE, TRUE, SURFACE_CREAKWOOD,    NULL}, // MB64_MAT_MC_WOOD_PLANKS
+    {mat_maker_MakerMCSand,        MAT_OPAQUE, TRUE, SURFACE_SAND,         NULL}, // MB64_MAT_MC_SAND
+    {mat_maker_MakerMCBricks,      MAT_OPAQUE, TRUE, SURFACE_DEFAULT,      NULL}, // MB64_MAT_MC_BRICKS
+    {mat_maker_MakerMCLava,        MAT_OPAQUE, TRUE, SURFACE_BURNING,      NULL}, // MB64_MAT_MC_LAVA
+    {mat_maker_MakerMCFlowingLava, MAT_OPAQUE, TRUE, SURFACE_BURNING,      NULL}, // MB64_MAT_MC_FLOWING_LAVA
+    {mat_maker_MakerMCGlass,       MAT_CUTOUT_NOCULL, TRUE, SURFACE_VANISH_CAP_WALLS, NULL}, // MB64_MAT_MC_GLASS
 };
 
 u32 mb64_render_mode_table[] = {
