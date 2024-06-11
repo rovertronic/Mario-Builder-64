@@ -2782,10 +2782,11 @@ void spawn_mist_at_obj(struct Object *obj) {
 }
 
 void cur_obj_drop_imbued_object(s32 y_offset) {
-    struct Object * dropobj;
+    struct Object *dropobj = NULL;
     if (o->oImbue == IMBUE_NONE) return;
     if (cur_obj_has_behavior(bhvBoo) || cur_obj_has_behavior(bhvBalconyBigBoo)) {
         boo_coin_drop();
+        return;
     }
     if (o->oImbue == IMBUE_STAR) {
         struct Surface *ptr;

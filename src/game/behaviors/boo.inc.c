@@ -398,8 +398,8 @@ static void boo_act_3(void) {
         if (o->oImbue != IMBUE_STAR) cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-128);
     }
     if (boo_update_during_death()) {
-        obj_mark_for_deletion(o);
         cur_obj_drop_imbued_object(MB64_STAR_HEIGHT-128);
+        obj_mark_for_deletion(o);
     }
 }
 
