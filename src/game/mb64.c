@@ -2631,8 +2631,9 @@ u8 joystick_direction(void) {
 
 void imbue_action(void) {
     for (u32 i=0;i<mb64_object_count;i++) {
-        if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])&&(mb64_object_data[i].imbue == IMBUE_NONE)) {
+        if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
             u8 imbue_success = FALSE;
+            u8 oldImbue = mb64_object_data[i].imbue;
 
             switch(mb64_id_selection) {
                 case OBJECT_TYPE_STAR:
@@ -2665,7 +2666,7 @@ void imbue_action(void) {
                     break;
             }
 
-            if (imbue_success) {
+            if (imbue_success && (oldImbue != mb64_object_data[i].imbue)) {
                 play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
                 generate_object_preview();
             }

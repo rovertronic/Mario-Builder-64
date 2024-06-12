@@ -785,6 +785,7 @@ s32 count_red_coins(void) {
     count += count_imbued_red_coins(OBJ_LIST_SURFACE);
     count += count_imbued_red_coins(OBJ_LIST_POLELIKE);
     count += count_imbued_red_coins(OBJ_LIST_PUSHABLE);
+    count += count_imbued_red_coins(OBJ_LIST_DESTRUCTIVE);
     return count;
 }
 
