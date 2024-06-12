@@ -158,6 +158,7 @@ void moneybag_act_return_home(void) {
         o->oMoneybagJumpState = MONEYBAG_JUMP_LANDING;
     } else if (o->oMoneybagJumpState == MONEYBAG_JUMP_WALK_HOME) {
         o->prevObj = spawn_object(o, MODEL_YELLOW_COIN, bhvMoneybagHidden);
+        o->prevObj->oBehParams = o->oBehParams;
         o->prevObj->oImbue = o->oImbue;
         o->prevObj->prevObj = o;
         cur_obj_play_sound_2(SOUND_ACTION_TELEPORT);
@@ -237,6 +238,8 @@ void bhv_moneybag_hidden_init(void) {
     }
     // Set star height
     if (!o->prevObj && o->oImbue == IMBUE_STAR) o->oGraphYOffset = 128.f;
+
+    if (o->prevObj) vec3_copy(&o->oHomeVec, &o->prevObj->oHomeVec);
 }
 
 void bhv_moneybag_hidden_loop(void) {
@@ -247,6 +250,7 @@ void bhv_moneybag_hidden_loop(void) {
             if (o->oDistanceToMario < 400.f) {
                 o->prevObj = spawn_object(o, MODEL_MONEYBAG, bhvMoneybag);
                 o->prevObj->oImbue = o->oImbue;
+                o->prevObj->oBehParams = o->oBehParams;
                 vec3_copy(&o->prevObj->oHomeVec, &o->oHomeVec);
                 cur_obj_play_sound_2(SOUND_ACTION_TELEPORT);
                 o->oAction = FAKE_MONEYBAG_COIN_ACT_TRANSFORM;
@@ -256,8 +260,6 @@ void bhv_moneybag_hidden_loop(void) {
         case FAKE_MONEYBAG_COIN_ACT_TRANSFORM:
             break;
     }
-
-    if (o->prevObj) vec3_copy(&o->oHomeVec, &o->prevObj->oHomeVec);
 
     if (o->oImbue == IMBUE_STAR) {
         o->oFaceAngleYaw += 0x800;

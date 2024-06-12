@@ -271,8 +271,8 @@ void calc_new_obj_vel_and_pos_y(struct Surface *objFloor, f32 objFloorY, f32 obj
         objVelX += floor_nX * vel;
         objVelZ += floor_nZ * vel;
 
-        if (objVelX < 0.01f && objVelX > -0.01f) objVelX = 0;
-        if (objVelZ < -0.01f && objVelZ > -0.01f) objVelZ = 0;
+        if (objVelX < 0.1f && objVelX > -0.1f) objVelX = 0;
+        if (objVelZ < 0.1f && objVelZ > -0.1f) objVelZ = 0;
 
         if (objVelX != 0 || objVelZ != 0) {
             o->oMoveAngleYaw = atan2s(objVelZ, objVelX);
@@ -330,10 +330,10 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
         objVelZ += floor_nZ * velm;
     }
 
-    if (objVelX < NEAR_ZERO && objVelX > -NEAR_ZERO) objVelX = 0;
-    if (objVelZ < NEAR_ZERO && objVelZ > -NEAR_ZERO) objVelZ = 0;
+    if (objVelX < 0.1f && objVelX > -0.1f) objVelX = 0;
+    if (objVelZ < 0.1f && objVelZ > -0.1f) objVelZ = 0;
 
-    if (o->oVelY < NEAR_ZERO && o->oVelY > -NEAR_ZERO) {
+    if (o->oVelY < 0.1f && o->oVelY > -0.1f) {
         o->oVelY = 0;
     }
 
