@@ -156,6 +156,7 @@ void moneybag_act_return_home(void);
 void moneybag_act_disappear(void);
 void moneybag_act_death(void);
 void bhv_moneybag_loop(void);
+void bhv_moneybag_hidden_init(void);
 void bhv_moneybag_hidden_loop(void);
 void bhv_bowling_ball_init(void);
 void bowling_ball_set_hitbox(void);

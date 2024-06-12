@@ -773,6 +773,8 @@
 /* Moneybag */
 #define /*0x0F4*/ oMoneybagJumpState OBJECT_FIELD_S32(0x1B)
 
+#define /*0x0F4*/ oMoneybagHiddenScale OBJECT_FIELD_F32(0x1B)
+
 /* Monty Mole */
 #define /*0x0F4*/ oMontyMoleCurrentHole           OBJECT_FIELD_OBJ(0x1B)
 #define /*0x0F8*/ oMontyMoleHeightRelativeToFloor OBJECT_FIELD_F32(0x1C)

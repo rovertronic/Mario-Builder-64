@@ -2083,7 +2083,9 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
                     gMarioState->DeadRexes ++;
                 }
                 spawn_mist_particles();
-                obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+                if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+                    obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+                }
                 //gMarioState->EA_LEFT --;
                 //gMarioState->EA_ACTIVE --;
                 obj_mark_for_deletion(o);
@@ -2599,8 +2601,6 @@ void arbritrary_death_coin_release(void) {
         coin->oForwardVel = 10.0f;
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-    } else if (cur_obj_has_behavior(bhvMoneybag)||cur_obj_has_behavior(bhvMoneybagHidden)) {
-        obj_spawn_yellow_coins(o, 3);
     } else {
         // default
         obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2786,10 +2786,8 @@ void boo_coin_drop(void) {
     struct Object *coin = NULL;
     if (o->oImbue == IMBUE_THREE_COINS) {
         coin = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
-    } else if (o->oImbue == IMBUE_BLUE_COIN) {
-        coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
     } else {
-        return;
+        coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
     }
     coin->oVelY = 35.f;
     coin->oForwardVel = 0.f;
@@ -2807,9 +2805,15 @@ void spawn_mist_at_obj(struct Object *obj) {
 s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
     if (o->oImbue == IMBUE_NONE) return FALSE;
-    if (cur_obj_has_behavior(bhvBoo) || cur_obj_has_behavior(bhvBalconyBigBoo)) {
-        boo_coin_drop();
-        return TRUE;
+
+    if (o->oImbue == IMBUE_THREE_COINS || o->oImbue == IMBUE_BLUE_COIN) {
+        if (cur_obj_has_behavior(bhvBoo)
+         || cur_obj_has_behavior(bhvBalconyBigBoo)
+         || cur_obj_has_behavior(bhvMoneybag)
+         || cur_obj_has_behavior(bhvMoneybagHidden)) {
+            boo_coin_drop();
+            return TRUE;
+        }
     }
     if (o->oImbue == IMBUE_STAR) {
         struct Surface *ptr;

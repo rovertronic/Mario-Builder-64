@@ -4201,7 +4201,6 @@ const BehaviorScript bhvYellowBackgroundInMenu[] = {
 
 const BehaviorScript bhvMovingYellowCoin[] = {
     BEGIN(OBJ_LIST_LEVEL),
-    CALL_NATIVE(bhv_moving_yellow_coin_init),
     // Moving coin general
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     BILLBOARD(),
@@ -4238,7 +4237,7 @@ const BehaviorScript bhvBlueCoinMotos[] = {
     BEGIN(OBJ_LIST_LEVEL),
     CALL_NATIVE(bhv_moving_blue_coin_init),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    GOTO(bhvMovingYellowCoin + 1 + 2),
+    GOTO(bhvMovingYellowCoin + 1),
 };
 
 const BehaviorScript bhvMovingBlueCoin[] = {
@@ -5156,10 +5155,8 @@ const BehaviorScript bhvStarKeyCollectionPuffSpawner[] = {
 
 const BehaviorScript bhvMoneybag[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_ANIMATIONS(oAnimations, moneybag_seg6_anims_06005E5C),
-    DROP_TO_FLOOR(),
-    SET_HOME(),
     SET_INT(oIntangibleTimer, -1),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     CALL_NATIVE(bhv_moneybag_init),
@@ -5169,16 +5166,16 @@ const BehaviorScript bhvMoneybag[] = {
 };
 
 const BehaviorScript bhvMoneybagHidden[] = {
-    BEGIN(OBJ_LIST_LEVEL),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    SET_FLOAT(oGraphYOffset, 27),
-    BILLBOARD(),
+    BEGIN(OBJ_LIST_GENACTOR),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
     SET_HITBOX(/*Radius*/ 110, /*Height*/ 100),
     SET_INT(oIntangibleTimer, 0),
+    SET_FLOAT(oMoneybagHiddenScale, 1),
+    SET_HOME(),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     SET_INT(oAnimState, OBJ_ANIM_STATE_INIT_ANIM),
+    CALL_NATIVE(bhv_moneybag_hidden_init),
     BEGIN_LOOP(),
-        ADD_INT(oAnimState, 1),
         CALL_NATIVE(bhv_moneybag_hidden_loop),
     END_LOOP(),
 };

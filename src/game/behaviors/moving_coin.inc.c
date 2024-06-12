@@ -68,7 +68,7 @@ void bhv_moving_yellow_coin_loop(void) {
         case MOV_YCOIN_ACT_IDLE:
             coin_step(&collisionFlags);
 
-            if (o->oTimer < 10) {
+            if (o->oTimer < 20) {
                 cur_obj_become_intangible();
             } else {
                 cur_obj_become_tangible();

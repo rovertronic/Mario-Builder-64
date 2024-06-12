@@ -2285,7 +2285,8 @@ void generate_object_preview(void) {
 
     for(u32 i = 0; i < mb64_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
-        struct mb64_object_info *info = &mb64_object_type_list[mb64_object_data[i].type];
+        s32 curType = mb64_object_data[i].type;
+        struct mb64_object_info *info = &mb64_object_type_list[curType];
         s32 param = mb64_object_data[i].bparam;
 
         s8 pos[3];
@@ -2294,21 +2295,22 @@ void generate_object_preview(void) {
 
         spawn_preview_object(pos, mb64_object_data[i].rot, param, info, bhvPreviewObject);
         curExtraCoins += info->numCoins;
-        if (mb64_object_data[i].type == OBJECT_TYPE_EXCL_BOX) {
+        if (curType == OBJECT_TYPE_EXCL_BOX) {
             curExtraCoins += mb64_exclamation_box_contents[param].numCoins;
         }
-        if (mb64_object_data[i].type == OBJECT_TYPE_BADGE && param == 8) { // Greed badge
+        if (curType == OBJECT_TYPE_BADGE && param == 8) { // Greed badge
             doubleCoins = TRUE;
         }
 
-        s32 extraObjs = get_extra_objects(mb64_object_data[i].type, param);
-        if (mb64_object_data[i].type == OBJECT_TYPE_COIN_FORMATION) {
+        s32 extraObjs = get_extra_objects(curType, param);
+        if (curType == OBJECT_TYPE_COIN_FORMATION) {
             curExtraCoins += extraObjs;
         }
 
-        if ((mb64_object_data[i].imbue != IMBUE_NONE)&&(!mb64_prepare_level_screenshot)) {
+        s32 curImbue = mb64_object_data[i].imbue;
+        if ((curImbue != IMBUE_NONE)&&(!mb64_prepare_level_screenshot)) {
             u16 imbue_marker_model = MODEL_MAKER_IMBUE;
-            if (mb64_object_data[i].imbue == IMBUE_STAR) {
+            if (curImbue == IMBUE_STAR) {
                 imbue_marker_model = MODEL_MAKER_IMBUE_STAR;
             }
             struct Object * imbue_marker = spawn_object(o,imbue_marker_model,bhvPreviewObject);
@@ -2317,11 +2319,11 @@ void generate_object_preview(void) {
             imbue_marker->oPosY = GRID_TO_POS(pos[1]);
             imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
             mb64_object_limit_count ++;
-            curExtraCoins = imbue_coin_amounts[mb64_object_data[i].imbue]; // replaces coin count
-            if ((mb64_object_data[i].type == OBJECT_TYPE_BOO || mb64_object_data[i].type == OBJECT_TYPE_BIG_BOO)
-             && mb64_object_data[i].imbue == IMBUE_THREE_COINS) {
+            curExtraCoins = imbue_coin_amounts[curImbue]; // replaces coin count
+            if ((curType == OBJECT_TYPE_BOO || curType == OBJECT_TYPE_BIG_BOO || curType == OBJECT_TYPE_MONEYBAG)
+             && curImbue == IMBUE_THREE_COINS) {
                 curExtraCoins = 1; // boos only drop 1 coin
-            } else if (mb64_id_selection == OBJECT_TYPE_SHOWRUNNER) {
+            } else if (curType == OBJECT_TYPE_SHOWRUNNER) {
                 curExtraCoins += info->numCoins; // showrunner always drops coins
             }
         }

@@ -450,6 +450,7 @@ void bhv_wf_sliding_platform_init(void);
 void bhv_wf_sliding_platform_loop(void);
 void bhv_moneybag_init(void);
 void bhv_moneybag_loop(void);
+void bhv_moneybag_hidden_init(void);
 void bhv_moneybag_hidden_loop(void);
 void bhv_bob_pit_bowling_ball_init(void);
 void bhv_bob_pit_bowling_ball_loop(void);

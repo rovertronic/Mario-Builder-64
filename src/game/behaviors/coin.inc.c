@@ -320,29 +320,23 @@ ObjActionFunc sCoinInsideBooActions[] = {
     //coin_inside_boo_act_dropped
 };
 
-struct boo_imbue_preview_data {
-    s16 model;
-    u8 billboarded;
-    f32 scale;
-};
-
-struct boo_imbue_preview_data boo_imbue_models[] = {
+struct imbue_model imbue_model_data[] = {
     /* IMBUE_NONE */ {MODEL_NONE, FALSE, 1.f},
     /* IMBUE_STAR */ {MODEL_STAR, FALSE, 0.6f},
-    /* IMBUE_THREE_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
-    /* IMBUE_FIVE_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
-    /* IMBUE_EIGHT_COINS */ {MODEL_YELLOW_COIN_NO_SHADOW, TRUE, 1.f},
-    /* IMBUE_BLUE_COIN */ {MODEL_BLUE_COIN_NO_SHADOW, TRUE, 0.7f},
+    /* IMBUE_THREE_COINS */ {MODEL_YELLOW_COIN, TRUE, 1.f},
+    /* IMBUE_FIVE_COINS */ {MODEL_YELLOW_COIN, TRUE, 1.f},
+    /* IMBUE_EIGHT_COINS */ {MODEL_YELLOW_COIN, TRUE, 1.f},
+    /* IMBUE_BLUE_COIN */ {MODEL_BLUE_COIN, TRUE, 0.7f},
     /* IMBUE_RED_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
     /* IMBUE_BLUE_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
-    /* IMBUE_RED_COIN */ {MODEL_RED_COIN_NO_SHADOW, TRUE, 1.f},
+    /* IMBUE_RED_COIN */ {MODEL_RED_COIN, TRUE, 1.f},
 };
 
 void bhv_coin_inside_boo_init(void) {
     s32 imbue = o->parentObj->oImbue;
-    cur_obj_set_model(boo_imbue_models[imbue].model);
-    if (boo_imbue_models[imbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
-    cur_obj_scale(boo_imbue_models[imbue].scale);
+    cur_obj_set_model(imbue_model_data[imbue].model);
+    if (imbue_model_data[imbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+    cur_obj_scale(imbue_model_data[imbue].scale);
 
     if (imbue == IMBUE_BLUE_SWITCH) {
         o->oAnimState = 1;

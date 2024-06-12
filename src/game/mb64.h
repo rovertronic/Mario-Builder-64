@@ -457,6 +457,12 @@ enum imbue {
     IMBUE_RED_COIN,
 };
 
+struct imbue_model {
+    s16 model;
+    u8 billboarded;
+    f32 scale;
+};
+
 extern s32 mb64_min_coord;
 extern s32 mb64_max_coord;
 #define MB64_BOUNDARY_INNER_FLOOR   (1 << 0) // Has the main floor
