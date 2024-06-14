@@ -2320,10 +2320,7 @@ void generate_object_preview(void) {
             imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
             mb64_object_limit_count ++;
             curExtraCoins = imbue_coin_amounts[curImbue]; // replaces coin count
-            if ((curType == OBJECT_TYPE_BOO || curType == OBJECT_TYPE_BIG_BOO || curType == OBJECT_TYPE_MONEYBAG)
-             && curImbue == IMBUE_THREE_COINS) {
-                curExtraCoins = 1; // boos only drop 1 coin
-            } else if (curType == OBJECT_TYPE_SHOWRUNNER) {
+            if (curType == OBJECT_TYPE_SHOWRUNNER) {
                 curExtraCoins += info->numCoins; // showrunner always drops coins
             }
         }
@@ -2631,7 +2628,8 @@ u8 joystick_direction(void) {
 
 void imbue_action(void) {
     for (u32 i=0;i<mb64_object_count;i++) {
-        if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
+        s32 objType = mb64_object_data[i].type;
+        if ((mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
             u8 imbue_success = FALSE;
             u8 oldImbue = mb64_object_data[i].imbue;
 
@@ -2641,15 +2639,21 @@ void imbue_action(void) {
                     imbue_success = TRUE;
                     break;
                 case OBJECT_TYPE_BLUE_COIN:
-                    if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                    if (mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE_COINS) {
                         mb64_object_data[i].imbue = IMBUE_BLUE_COIN;
                         imbue_success = TRUE;
                     }
                     break;
                 case OBJECT_TYPE_COIN:
                 case OBJECT_TYPE_COIN_FORMATION:
-                    if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_IMBUABLE_COINS) {
-                        mb64_object_data[i].imbue = IMBUE_THREE_COINS;
+                    if (mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE_COINS) {
+                        if ((objType == OBJECT_TYPE_BIG_BOO) ||
+                            (objType == OBJECT_TYPE_MONEYBAG) ||
+                            (objType == OBJECT_TYPE_BOO)) {
+                            mb64_object_data[i].imbue = IMBUE_ONE_COIN;
+                        } else {
+                            mb64_object_data[i].imbue = IMBUE_THREE_COINS;
+                        }
                         imbue_success = TRUE;
                     }
                     break;

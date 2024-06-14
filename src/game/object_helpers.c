@@ -2782,18 +2782,6 @@ s32 cur_obj_die_if_on_death_barrier(s32 offset) {
     return FALSE;
 }
 
-void boo_coin_drop(void) {
-    struct Object *coin = NULL;
-    if (o->oImbue == IMBUE_THREE_COINS) {
-        coin = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
-    } else {
-        coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-    }
-    coin->oVelY = 35.f;
-    coin->oForwardVel = 0.f;
-    o->oImbue = IMBUE_NONE;
-}
-
 void spawn_mist_at_obj(struct Object *obj) {
     Vec3f oldPos;
     vec3f_copy(oldPos, &o->oPosVec);
@@ -2806,15 +2794,6 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
     if (o->oImbue == IMBUE_NONE) return FALSE;
 
-    if (o->oImbue == IMBUE_THREE_COINS || o->oImbue == IMBUE_BLUE_COIN) {
-        if (cur_obj_has_behavior(bhvBoo)
-         || cur_obj_has_behavior(bhvBalconyBigBoo)
-         || cur_obj_has_behavior(bhvMoneybag)
-         || cur_obj_has_behavior(bhvMoneybagHidden)) {
-            boo_coin_drop();
-            return TRUE;
-        }
-    }
     if (o->oImbue == IMBUE_STAR) {
         struct Surface *ptr;
         f32 ceilY = find_ceil(o->oHomeX,o->oHomeY,o->oHomeZ,&ptr);
@@ -2824,13 +2803,17 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
 
     switch(o->oImbue) {
         case IMBUE_BLUE_COIN:
+        case IMBUE_ONE_COIN:
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-            dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            if (o->oImbue == IMBUE_ONE_COIN) {
+                dropobj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+            } else {
+                dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            }
             vec3f_copy(&dropobj->oPosVec,&o->oPosVec);
-            dropobj->oForwardVel = 10.0f;
-            dropobj->oVelY = 20.0f;
-            s16 angle = obj_angle_to_object(o, gMarioObject);
-            dropobj->oMoveAngleYaw = angle + random_float() * 1024.0f;
+            dropobj->oForwardVel = 3.f;
+            dropobj->oVelY = 30.f;
+            dropobj->oMoveAngleYaw = random_u16();
             break;
         case IMBUE_THREE_COINS:
             obj_spawn_yellow_coins(o, 3);

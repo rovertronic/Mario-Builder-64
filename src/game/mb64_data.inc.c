@@ -2613,7 +2613,7 @@ u8 imbue_coin_amounts[] = {
     /* IMBUE_NONE */ 0,
     /* IMBUE_STAR */ 0,
     /* IMBUE_THREE_COINS */ 3,
-    /* IMBUE_FIVE_COINS */ 5,
+    /* IMBUE_ONE_COIN */ 1,
     /* IMBUE_EIGHT_COINS */ 8,
     /* IMBUE_BLUE_COIN */ 5,
     /* IMBUE_RED_SWITCH */ 0,
