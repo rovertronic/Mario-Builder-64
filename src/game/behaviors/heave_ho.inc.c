@@ -42,7 +42,11 @@ void heave_ho_act_1(void) {
 
     while (TRUE) {
         if (sHeaveHoTimings[i][0] == -1) {
-            o->oAction = 2;
+            if (o->oDistanceToMario < 2500.f) {
+                o->oAction = 2;
+            } else {
+                o->oTimer = 0;
+            }
             break;
         }
 
@@ -56,10 +60,6 @@ void heave_ho_act_1(void) {
 }
 
 void heave_ho_act_2(void) {
-    if (cur_obj_lateral_dist_from_mario_to_home() > 1000.0f) {
-        o->oAngleToMario = cur_obj_angle_to_home();
-    }
-
     if (o->oTimer > 150) {
         o->oHeaveHoTimedSpeed = (302 - o->oTimer) / 152.0f;
         if (o->oHeaveHoTimedSpeed < 0.1f) {
@@ -95,10 +95,15 @@ void heave_ho_act_3(void) {
 }
 
 void heave_ho_act_0(void) {
-    cur_obj_set_pos_to_home();
-        cur_obj_become_tangible();
-        cur_obj_unhide();
-        o->oAction = 1;
+    cur_obj_become_tangible();
+    cur_obj_unhide();
+    o->oAction = 1;
+}
+
+void heave_ho_lava_death(void) {
+    if (obj_lava_death()) {
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
+    }
 }
 
 ObjActionFunc sHeaveHoActions[] = {
@@ -109,9 +114,19 @@ ObjActionFunc sHeaveHoActions[] = {
 };
 
 void heave_ho_move(void) {
-    cur_obj_update_floor_and_walls();
-    cur_obj_call_action_function(sHeaveHoActions);
-    cur_obj_move_standard(-78);
+    if (o->oAction != OBJ_ACT_LAVA_DEATH) {
+        cur_obj_update_floor_and_walls();
+        cur_obj_set_home_if_safe();
+        cur_obj_call_action_function(sHeaveHoActions);
+        cur_obj_move_standard(-78);
+    } else {
+        heave_ho_lava_death();
+    }
+
+    if (is_cur_obj_interact_with_lava(0)) {
+        o->oAction = OBJ_ACT_LAVA_DEATH;
+        cur_obj_become_intangible();
+    }
 
     if (o->oForwardVel > 3.0f) {
         cur_obj_play_sound_1(SOUND_AIR_HEAVEHO_MOVE);
@@ -146,10 +161,6 @@ void bhv_heave_ho_loop(void) {
             break;
     }
 
-    if (is_cur_obj_interact_with_lava(0)) {
-        obj_mark_for_deletion(o);
-        spawn_mist_particles_with_sound(SOUND_OBJ_CHUCKYA_DEATH);
-    }
     cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 
     o->oInteractStatus = INT_STATUS_NONE;
