@@ -53,7 +53,7 @@ void bhv_motos_wait(void) {
     
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
     
-    if (o->oDistanceToMario < 500.f) {
+    if (o->oDistanceToMario < 1000.f) {
         //cur_obj_play_sound_2(SOUND_MOTOS);
         o->oAction = MOTOS_ACT_PLAYER_SEARCH;
     }
@@ -63,6 +63,9 @@ void bhv_motos_player_search(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WALK);
     o->oForwardVel = 5.f; // Sped up (was 2.f)
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 800); // Sped up (was 300)
+    if (o->oDistanceToMario > 1500.f) {
+        o->oAction = MOTOS_ACT_WAIT;
+    }
 }
 
 void bhv_motos_player_carry(void) {

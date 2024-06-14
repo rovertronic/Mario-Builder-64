@@ -33,35 +33,6 @@ void bhv_boo_init(void) {
     if (o->oImbue != IMBUE_NONE) spawn_object(o, MODEL_NONE, bhvCoinInsideBoo);
 }
 
-static s32 boo_should_be_stopped(void) {
-    if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
-        return TRUE;
-    }
-
-    if (o->oRoom == 10 && (gTimeStopState & TIME_STOP_MARIO_OPENED_DOOR)) {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-static s32 boo_should_be_active(void) {
-    f32 activationRadius = o->oDrawingDistance;
-
-    if (o->oRoom == -1) {
-        if (o->oDistanceToMario < activationRadius) {
-            return TRUE;
-        }
-    } else if (!boo_should_be_stopped()) {
-        if (o->oDistanceToMario < activationRadius
-            && (o->oRoom == gMarioCurrentRoom || gMarioCurrentRoom == 0)) {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
 static void boo_approach_target_opacity_and_update_scale(void) {
     f32 scale;
 
@@ -292,7 +263,7 @@ static s32 boo_get_attack_status(void) {
 }
 
 // boo idle/chasing movement?
-static void boo_chase_mario(f32 minDY, s16 yawIncrement, f32 mul) {
+static void boo_chase_mario(s16 yawIncrement, f32 mul) {
     s16 targetYaw;
 
     if (boo_vanish_or_appear()) {
@@ -300,21 +271,24 @@ static void boo_chase_mario(f32 minDY, s16 yawIncrement, f32 mul) {
 
         targetYaw = o->oAngleToMario;
 
-        cur_obj_rotate_yaw_toward(targetYaw, yawIncrement);
-        o->oVelY = 0.0f;
+        if (o->oDistanceToMario < 2000.f) {
+            cur_obj_rotate_yaw_toward(targetYaw, yawIncrement);
+            o->oVelY = 0.0f;
 
-        if (!mario_is_in_air_action()) {
-            f32 dy = o->oPosY - gMarioObject->oPosY;
-            if ((minDY < dy) && (dy < 500.0f)) {
-                o->oVelY = increment_velocity_toward_range(o->oPosY, gMarioObject->oPosY + 50.0f, 10.0f, 2.0f);
+            if (!mario_is_in_air_action()) {
+                f32 dy = o->oPosY - (gMarioObject->oPosY + 100.f);
+                if ((ABS(dy) > 40.0f)) {
+                    o->oVelY = increment_velocity_toward_range(o->oPosY, gMarioObject->oPosY + 100.f, 10.0f, 2.0f);
+                }
             }
+
+            cur_obj_set_vel_from_mario_vel(10.0f - o->oBooNegatedAggressiveness, mul);
+        } else {
+            o->oForwardVel = 0.0f;
+            o->oVelY = 0.0f;
         }
 
-        cur_obj_set_vel_from_mario_vel(10.0f - o->oBooNegatedAggressiveness, mul);
-
-        if (o->oForwardVel != 0.0f) {
-            boo_oscillate(FALSE);
-        }
+        boo_oscillate(FALSE);
     } else {
         o->oInteractType = 0;
         boo_stop();
@@ -331,19 +305,9 @@ static void boo_act_0(void) {
     o->oMoveAngleYaw = o->oBooInitialMoveYaw;
     boo_stop();
 
-    o->oBooParentBigBoo = cur_obj_nearest_object_with_behavior(bhvGhostHuntBigBoo);
     o->oBooBaseScale = 1.0f;
     o->oBooTargetOpacity = 255;
-
-    if (boo_should_be_active()) {
-        // Condition is met if the object is bhvBalconyBigBoo or bhvMerryGoRoundBoo
-        if (o->oBehParams2ndByte == 2) {
-            o->oBooParentBigBoo = NULL;
-            o->oAction = 5;
-        } else {
-            o->oAction = 1;
-        }
-    }
+    o->oAction = 1;
 }
 
 static void boo_act_5(void) {
@@ -366,13 +330,9 @@ static void boo_act_1(void) {
         o->oBooTurningSpeed = (s32)(random_float() * 128.0f);
     }
 
-    boo_chase_mario(-100.0f, o->oBooTurningSpeed + 0x180, 0.5f);
+    boo_chase_mario(o->oBooTurningSpeed + 0x180, 0.5f);
 
     attackStatus = boo_get_attack_status();
-
-    if (boo_should_be_stopped()) {
-        o->oAction = 0;
-    }
 
     if (attackStatus == BOO_BOUNCED_ON) {
         o->oAction = 2;
@@ -469,26 +429,19 @@ static void big_boo_act_0(void) {
     }
 
     o->oBooParentBigBoo = NULL;
+    o->oAction = 1;
 
-    if (boo_should_be_active() && o->oBigBooNumMinionBoosKilled >= gDebugInfo[DEBUG_PAGE_ENEMYINFO][0] + 5) {
-        o->oAction = 1;
+    o->oPosY -= 200.0f;
+    o->oMoveAngleYaw = o->oBooInitialMoveYaw;
 
-        o->oPosY -= 200.0f;
-        o->oMoveAngleYaw = o->oBooInitialMoveYaw;
+    cur_obj_unhide();
 
-        cur_obj_unhide();
+    o->oBooTargetOpacity = 255;
+    o->oBooBaseScale = 3.0f;
+    o->oHealth = 3;
 
-        o->oBooTargetOpacity = 255;
-        o->oBooBaseScale = 3.0f;
-        o->oHealth = 3;
-
-        cur_obj_scale(3.0f);
-        cur_obj_become_tangible();
-    } else {
-        cur_obj_hide();
-        cur_obj_become_intangible();
-        boo_stop();
-    }
+    cur_obj_scale(3.0f);
+    cur_obj_become_tangible();
 }
 
 static void big_boo_act_1(void) {
@@ -503,14 +456,9 @@ static void big_boo_act_1(void) {
         yawIncrement = 0x300; mul = 0.8f;
     }
 
-    boo_chase_mario(-100.0f, yawIncrement, mul);
+    boo_chase_mario(yawIncrement, mul);
 
     s32 attackStatus = boo_get_attack_status();
-
-    // redundant; this check is in boo_should_be_stopped
-    if (boo_should_be_stopped()) {
-        o->oAction = 0;
-    }
 
     if (attackStatus == BOO_BOUNCED_ON) {
         o->oAction = 2;
