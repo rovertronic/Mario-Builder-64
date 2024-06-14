@@ -102,6 +102,18 @@ void heave_ho_act_0(void) {
 
 void heave_ho_lava_death(void) {
     if (obj_lava_death()) {
+        if (o->oImbue == IMBUE_ONE_COIN) {
+            bully_spawn_coin();
+            o->oImbue = IMBUE_NONE;
+        } else if (o->oImbue == IMBUE_BLUE_COIN) {
+            struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+            coin->oForwardVel = 10.0f;
+            coin->oVelY = 100.0f;
+            coin->oPosY = o->oPosY + 310.0f;
+            coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
+            o->oImbue = IMBUE_NONE;
+        }
         cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
     }
 }
