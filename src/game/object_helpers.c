@@ -1538,7 +1538,6 @@ void cur_obj_update_floor(void) {
         o->oFloorType = floorType;
     } else {
         o->oFloorType = SURFACE_DEFAULT;
-        o->oFloorRoom = 0;
     }
 }
 

@@ -46,10 +46,9 @@ void bhv_pokey_body_part_update(void) {
         if (o->parentObj->oAction == POKEY_ACT_UNLOAD_PARTS) {
             obj_mark_for_deletion(o);
         } else {
-            cur_obj_update_floor_and_walls();
-            if (o->oFloor && o->oFloor->type == SURFACE_INSTANT_QUICKSAND) {
-                o->oFloor = NULL;
-                o->oFloorHeight = -99999.0f;
+            cur_obj_update_floor();
+            if (SURFACE_IS_BURNING(o->oFloorType) && (o->oPosY < o->oFloorHeight + 5.f)) {
+                o->oMoveFlags = OBJ_MOVE_ABOVE_LAVA | OBJ_MOVE_ON_GROUND;
             }
 
             obj_update_blinking(&o->oPokeyBodyPartBlinkTimer, 30, 60, 4);
@@ -101,7 +100,7 @@ void bhv_pokey_body_part_update(void) {
             }
 
             // Only the head has loot coins
-            if (o->oBehParams2ndByte == POKEY_PART_BP_HEAD) {
+            if ((o->oBehParams2ndByte == POKEY_PART_BP_HEAD) && (o->parentObj->oImbue == IMBUE_NONE)) {
                 o->oNumLootCoins = -1;
             } else {
                 o->oNumLootCoins = 0;
@@ -114,7 +113,7 @@ void bhv_pokey_body_part_update(void) {
                 o->parentObj->oQuicksandDepth = 0;
                 o->parentObj->oPokeyNumAliveBodyParts--;
                 o->parentObj->oPokeyAliveBodyPartFlags = o->parentObj->oPokeyAliveBodyPartFlags & ((1 << o->oBehParams2ndByte) ^ ~0);
-                if (o->oBehParams2ndByte == POKEY_PART_BP_HEAD) {
+                if ((o->oBehParams2ndByte == POKEY_PART_BP_HEAD) && (o->parentObj->oImbue == IMBUE_NONE)) {
                     struct Object * coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
                     cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
                     coin->oForwardVel = 10.0f;
@@ -129,9 +128,6 @@ void bhv_pokey_body_part_update(void) {
                 o->parentObj->oPokeyNumAliveBodyParts--;
                 if (o->oBehParams2ndByte == POKEY_PART_BP_HEAD) {
                     o->parentObj->oPokeyHeadWasKilled = TRUE;
-                    // Last minute change to blue coins - not sure why they didn't
-                    // just set it to -1 above
-                    o->oNumLootCoins = -1;
                 }
 
                 o->parentObj->oPokeyAliveBodyPartFlags =
@@ -149,8 +145,8 @@ void bhv_pokey_body_part_update(void) {
                 // death delay will be 0
                 o->oPokeyBodyPartDeathDelayAfterHeadKilled = (o->oBehParams2ndByte << 2) + 20;
             }
-
-            cur_obj_move_standard(-78);
+            o->oVelY -= 4.f;
+            o->oPosY += o->oVelY;
         }
     } else {
         o->oAnimState = 1;
@@ -201,11 +197,13 @@ static void pokey_act_wander(void) {
 
     if (o->oPokeyNumAliveBodyParts == POKEY_PART_BP_HEAD) {
         obj_mark_for_deletion(o);
+        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
     } else if (o->oDistanceToMario > o->oDrawingDistance + 500.0f) {
         o->oAction = POKEY_ACT_UNLOAD_PARTS;
         o->oForwardVel = 0.0f;
     } else {
         cur_obj_update_floor_and_walls();
+        cur_obj_set_home_if_safe();
 
         if (o->oPokeyHeadWasKilled) {
             o->oForwardVel = 0.0f;
@@ -301,7 +299,6 @@ static void pokey_act_wander(void) {
                 obj = (struct Object *) obj->header.next;
             }
         }
-
     }
 }
 
@@ -312,7 +309,6 @@ static void pokey_act_wander(void) {
  */
 static void pokey_act_unload_parts(void) {
     o->oAction = POKEY_ACT_UNINITIALIZED;
-    cur_obj_set_pos_to_home();
 }
 
 /**
