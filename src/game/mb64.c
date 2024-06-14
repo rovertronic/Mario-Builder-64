@@ -2648,7 +2648,8 @@ void imbue_action(void) {
                 case OBJECT_TYPE_COIN_FORMATION:
                     if (mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE_COINS) {
                         if ((objType == OBJECT_TYPE_BBOX_NORMAL) ||
-                            (objType == OBJECT_TYPE_RFBOX)) {
+                            (objType == OBJECT_TYPE_RFBOX) ||
+                            (objType == OBJECT_TYPE_MONEYBAG)) {
                             mb64_object_data[i].imbue = IMBUE_THREE_COINS;
                         } else {
                             mb64_object_data[i].imbue = IMBUE_ONE_COIN;
