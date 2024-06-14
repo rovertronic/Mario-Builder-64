@@ -2560,6 +2560,14 @@ struct Surface * cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
     return NULL;
 }
 
+void obj_drop_mario(void) {
+    o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
+    if (o->prevObj) {
+        o->prevObj = NULL;
+        gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
+    }
+}
+
 void arbritrary_death_coin_release(void) {
     if (cur_obj_has_behavior(bhvBobomb)) {
         bobomb_spawn_coin(FALSE);
@@ -2578,21 +2586,10 @@ void arbritrary_death_coin_release(void) {
         coin->oForwardVel = 10.0f;
         coin->oVelY = 20.0f;
         coin->oMoveAngleYaw = (f32)(o->oFaceAngleYaw + 0x8000) + random_float() * 1024.0f;
-
-        // drop mario if he's held
-        if (o->prevObj) {
-            o->prevObj = NULL;
-            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
-            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
-        }
+        obj_drop_mario();
     } else if (cur_obj_has_behavior(bhvChuckya)) {
-        // drop mario if he's held
-        if (o->prevObj) {
-            o->prevObj = NULL;
-            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
-            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
-            obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
-        }
+        obj_drop_mario();
+        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
     } else if (cur_obj_has_behavior(bhvSmallBully)) {
         obj_spawn_yellow_coins(o, 1);
     } else if (cur_obj_has_behavior(bhvScaredKoopa)) {

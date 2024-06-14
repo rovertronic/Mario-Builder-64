@@ -298,7 +298,9 @@ void king_bobomb_act_return_home(void) { // act 5
                 o->oSubAction++; // KING_BOBOMB_SUB_ACT_RETURN_HOME_LANDING_END
             }
 
-            cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
+            if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
+                obj_drop_mario();
+            }
             break;
 
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_LANDING_END:

@@ -41,6 +41,10 @@ void bhv_motos_hand_loop(void) {
     // Also vert speed increased from 0 to 50
     if (o->oCommonAnchorAction == 1)
         vec3f_copy(gMarioState->pos, gMarioObject->header.gfx.pos); // Added to fix camera
+
+    if (o->parentObj->oAction == MOTOS_ACT_DEATH) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
 }
 
 void bhv_motos_wait(void) {
@@ -127,6 +131,7 @@ void bhv_motos_recover(void) {
 
 void bhv_motos_death(void) {
     cur_obj_init_animation_with_sound(MOTOS_ANIM_WAIT);
+    obj_drop_mario();
     // Taken from bully code to handle death
     if (obj_lava_death()) {
         if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
@@ -193,7 +198,9 @@ void bhv_motos_main() {
             o->oAction = MOTOS_ACT_DEATH;
         }
     }
-    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
+    if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
+        obj_drop_mario();
+    }
 }
 
 void bhv_motos_loop(void) {
