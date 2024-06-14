@@ -165,6 +165,12 @@ void apply_conveyor_displacement() {
 	if (gMarioState->floor->object->oExtraVariable1 > 0) {
 		gMarioState->forwardVel = MAX(-15.f, gMarioState->forwardVel); // bljs are far too easy otherwise
 	}
+
+	// Check if left floor
+	f32 floorHeight = find_floor_height(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2]);
+	if ((floorHeight < gMarioState->pos[1] - 5.f) && (abs_angle_diff(gMarioState->faceAngle[1], currentAngle) > 0x4000)) {
+		gMarioState->forwardVel = MIN(5.f, gMarioState->forwardVel);
+	} 
 }
 
 

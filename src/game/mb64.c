@@ -2635,6 +2635,12 @@ void imbue_action(void) {
 
             switch(mb64_id_selection) {
                 case OBJECT_TYPE_STAR:
+                    s32 numStars = mb64_count_stars();
+                    if (numStars >= 63) {
+                        mb64_show_error_message("Star limit reached! (max 63)");
+                        imbue_success = FALSE;
+                        break;
+                    }
                     mb64_object_data[i].imbue = IMBUE_STAR;
                     imbue_success = TRUE;
                     break;
