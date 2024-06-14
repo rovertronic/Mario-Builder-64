@@ -170,7 +170,9 @@ void piranha_plant_act_shrink_and_die(void) {
     } else {
         o->oPiranhaPlantScale = 0.0f;
         if (!(GET_BPARAM3(o->oBehParams) & RESPAWN_INFO_TYPE_NORMAL)) {
-            cur_obj_spawn_loot_blue_coin();
+            if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+                cur_obj_spawn_loot_blue_coin();
+            }
         }
         SET_FULL_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
         cur_obj_trigger_respawner();
@@ -321,9 +323,11 @@ void bhv_piranha_plant_init(void) {
  */
 void bhv_piranha_plant_loop(void) {
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     cur_obj_call_action_function(TablePiranhaPlantActions);
     cur_obj_move_standard(78);
-    if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
+    if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         cur_obj_trigger_respawner();
         o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }

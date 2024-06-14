@@ -12,7 +12,7 @@ void bhv_respawner_loop(void) {
 }
 
 void create_respawner(ModelID32 model, const BehaviorScript *behToSpawn, s32 minSpawnDist) {
-    struct Object *respawner = spawn_object_abs_with_rot(o, 0, MODEL_NONE, bhvRespawner, o->oHomeX, o->oHomeY, o->oHomeZ, 0, 0, 0);
+    struct Object *respawner = spawn_object(o, MODEL_NONE, bhvRespawner);
     respawner->oRespawnerModelToRespawn = model;
     respawner->oRespawnerMinSpawnDist = minSpawnDist;
     respawner->oRespawnerBehaviorToRespawn = behToSpawn;
@@ -30,6 +30,7 @@ void cur_obj_trigger_respawner() {
             obj->oAction = 1;
             obj->oBehParams = o->oBehParams;
             obj->oImbue = o->oImbue;
+            break;
         }
 
         obj = (struct Object *) obj->header.next;

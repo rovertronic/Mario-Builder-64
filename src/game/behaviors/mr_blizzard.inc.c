@@ -227,7 +227,9 @@ static void mr_blizzard_act_death(void) {
             if ((o->oMrBlizzardScale -= 0.03f) <= 0.0f) {
                 o->oMrBlizzardScale = 0.0f;
                 if (!GET_BPARAM3(o->oBehParams)) {
-                    obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+                    if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+                        obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+                    }
                     set_object_respawn_info_bits(o, RESPAWN_INFO_TYPE_NORMAL);
                     SET_BPARAM3(o->oBehParams, RESPAWN_INFO_TYPE_NORMAL);
                 }
@@ -276,42 +278,7 @@ static void mr_blizzard_act_burrow(void) {
  * Jumping Mr. Blizzard handler function.
  */
 static void mr_blizzard_act_jump(void) {
-    if (o->oMrBlizzardTimer != 0) {
-        cur_obj_rotate_yaw_toward(o->oMrBlizzardTargetMoveYaw, 3400);
 
-        if (--o->oMrBlizzardTimer == 0) {
-            cur_obj_play_sound_2(SOUND_OBJ_MR_BLIZZARD_ALERT);
-
-            // If Mr. Blizzard is more than 700 units from its home, change its target yaw
-            // by 180 degrees, jump in the air, set distance from home to 0.
-            if (o->oMrBlizzardDistFromHome > 700) {
-                o->oMrBlizzardTargetMoveYaw += 0x8000;
-                o->oVelY = 25.0f;
-                o->oMrBlizzardTimer = 30;
-                o->oMrBlizzardDistFromHome = 0;
-            }
-            // Jump forward.
-            else {
-                o->oForwardVel = 10.0f;
-                o->oVelY = 50.0f;
-                o->oMoveFlags = OBJ_MOVE_NONE;
-            }
-        }
-    } else if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
-        // When Mr. Blizzard lands, play the landing sound, stop Mr. Blizzard, and
-        // set its timer to 15. If Mr. Blizzard's DistFromHome is not 0,
-        // set DistFromHome to its current distance from its home.
-        // Otherwise, set DistFromHome to 700.
-        cur_obj_play_sound_2(SOUND_OBJ_SNOW_SAND1);
-        if (o->oMrBlizzardDistFromHome != 0) {
-            o->oMrBlizzardDistFromHome = (s32) cur_obj_lateral_dist_to_home();
-        } else {
-            o->oMrBlizzardDistFromHome = 700;
-        }
-
-        o->oForwardVel = 0.0f;
-        o->oMrBlizzardTimer = 15;
-    }
 }
 
 /**
@@ -349,6 +316,7 @@ void bhv_mr_blizzard_update(void) {
     COND_BIT(!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE), o->oFlags, OBJ_FLAG_ACTIVATES_FLOOR_SWITCH);
 
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     cur_obj_move_standard(78);
 
     // Set roll angle equal to dizziness, making Mr. Blizzard
@@ -361,7 +329,8 @@ void bhv_mr_blizzard_update(void) {
     cur_obj_scale(o->oMrBlizzardScale);
     obj_check_attacks(&sMrBlizzardHitbox, o->oAction);
 
-    if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
+    if (o->oFloorType == SURFACE_DEATH_PLANE && o->oPosY < o->oFloorHeight + 100.f) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         cur_obj_trigger_respawner();
     }
 }

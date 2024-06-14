@@ -133,6 +133,7 @@ void bhv_fire_piranha_plant_update(void) {
     COND_BIT(!(o->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE), o->oFlags, OBJ_FLAG_ACTIVATES_FLOOR_SWITCH);
 
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     cur_obj_move_standard(78);
     cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
