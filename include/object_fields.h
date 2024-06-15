@@ -1277,6 +1277,15 @@
 #define /*0x0F4*/ oWoodPlatAbovePlatform OBJECT_FIELD_OBJ(0x1C)
 #define /*0x0F8*/ oWoodPlatIsStacked     OBJECT_FIELD_S32(0x1D)
 
+/* Showrunner */
+#define /*0x0F4*/ oShowrunnerSpikeAttacksLeft OBJECT_FIELD_S32(0x1B)
+#define /*0x0F8*/ oShowrunnerSpikeClose       OBJECT_FIELD_S16(0x1C, 0)
+#define /*0x0FA*/ oShowrunnerSpikeLockedAngle OBJECT_FIELD_S16(0x1C, 1)
+#define /*0x0FC*/ oShowrunnerTennisBool       OBJECT_FIELD_S32(0x1D)
+#define /*0x100*/ oShowrunnerSpikeX           OBJECT_FIELD_F32(0x1E)
+#define /*0x104*/ oShowrunnerSpikeY           OBJECT_FIELD_F32(0x1F)
+#define /*0x108*/ oShowrunnerSpikeZ           OBJECT_FIELD_F32(0x20)
+
 /*Custom general defines:
 
 For general s32 ints, use o->oF4, oF8, oFC, o100, o104, o108, o10C, and o110

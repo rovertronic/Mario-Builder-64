@@ -8202,7 +8202,7 @@ const BehaviorScript bhvShowrunner[] = {
     LOAD_ANIMATIONS(oAnimations, showrunner_anims),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
     ANIMATE(0),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 200, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 150, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_Showrunner),

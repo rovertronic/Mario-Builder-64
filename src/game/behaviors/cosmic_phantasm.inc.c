@@ -284,13 +284,6 @@ void bhv_cosmic_phantasm(void) {
 //     o->oIntangibleTimer = 0;
 // }
 
-Vec3f spike_attack;
-u8 spike_attacks_left = 4;
-f32 spike_close = FALSE;
-s16 spike_locked_angle = 0;
-u8 tennis_bool = 0;//0 = attack mario, 1 = attack showrunner
-struct Object * showrunner_using_spike_attack = NULL;
-
 void showrunner_battle_function(void) {
     struct Object *obj_attack;
     struct Surface *ptr;
@@ -310,7 +303,6 @@ void showrunner_battle_function(void) {
         case 0://init
             o->oAction=1;
             o->oQuicksandDepthToDie = 0;
-            showrunner_using_spike_attack = NULL;
         break;
         case 1://init
             if (o->oDistanceToMario < MB64_BOSS_TRIGGER_DIST) {
@@ -329,7 +321,7 @@ void showrunner_battle_function(void) {
             if (o->oTimer > 1) {
                 o->oForwardVel *= .94f;
                 if (o->oForwardVel > -5.0f) {
-                    spike_attacks_left = 2;
+                    o->oShowrunnerSpikeAttacksLeft = 2;
                     o->oAction = 3;//first attack are spikes
                     o->oForwardVel = 0.0f;
                 }
@@ -337,30 +329,22 @@ void showrunner_battle_function(void) {
         break;
         case 3://spike attack
             o->oFaceAngleYaw = o->oAngleToMario;
-            if (showrunner_using_spike_attack == NULL) {
-                // freed up, can take my turn
-                showrunner_using_spike_attack = o;
-            }
-            if (showrunner_using_spike_attack != o) {
-                o->oTimer = 0;
-                cur_obj_init_animation_with_sound(0);
-            }
             if (o->oTimer == 1) {//init
-                spike_attack[0] = o->oPosX;
-                spike_attack[1] = o->oPosY;
-                spike_attack[2] = o->oPosZ;
-                spike_attack[0] += sins(o->oAngleToMario) * 400.0f;
-                spike_attack[2] += coss(o->oAngleToMario) * 400.0f;
+                o->oShowrunnerSpikeX = o->oPosX;
+                o->oShowrunnerSpikeY = o->oPosY;
+                o->oShowrunnerSpikeZ = o->oPosZ;
+                o->oShowrunnerSpikeX += sins(o->oAngleToMario) * 400.0f;
+                o->oShowrunnerSpikeZ += coss(o->oAngleToMario) * 400.0f;
                 cur_obj_init_animation_with_sound(0);//reset
                 cur_obj_init_animation_with_sound(1);//spike
-                spike_close = FALSE;
+                o->oShowrunnerSpikeClose = FALSE;
             }
             if ((o->oTimer >= 20) && (o->oTimer < 90)) { //loop
                 if (o->oTimer % 5 == 0) {
                     obj_attack = spawn_object(o, MODEL_MAKER_SHOWRUNNER_SPIKE, bhvSrSpike);
-                    obj_attack->oPosX = spike_attack[0];
-                    obj_attack->oPosY = spike_attack[1];
-                    obj_attack->oPosZ = spike_attack[2];
+                    obj_attack->oPosX = o->oShowrunnerSpikeX;
+                    obj_attack->oPosY = o->oShowrunnerSpikeY;
+                    obj_attack->oPosZ = o->oShowrunnerSpikeZ;
                     obj_attack->oPosY = find_floor(obj_attack->oPosX, obj_attack->oPosY+500.f, obj_attack->oPosZ, &ptr);
                     obj_attack->oPosY -= 400.0f;
                     obj_attack->oHomeY = obj_attack->oPosY;
@@ -370,16 +354,15 @@ void showrunner_battle_function(void) {
                 }
             }
             if (o->oTimer > 110) {
-                if (spike_attacks_left > 0) {
+                if (o->oShowrunnerSpikeAttacksLeft > 0) {
                     o->oTimer = 0;
-                    spike_attacks_left--;
+                    o->oShowrunnerSpikeAttacksLeft--;
                 } else {
-                    showrunner_using_spike_attack = NULL;
                     if (o->oHealth == 1) {
                         o->oAction = 16;
                     } else {
                         o->oAction = 10;
-                        tennis_bool = 0;
+                        o->oShowrunnerTennisBool = FALSE;
                     }
                 }
             }
@@ -399,15 +382,12 @@ void showrunner_battle_function(void) {
                 o->oAngleVelYaw = cur_obj_angle_to_home();
             }
             o->oMoveAngleYaw = approach_s16_asymptotic(o->oMoveAngleYaw,o->oAngleVelYaw,4);
-            if (o->oTimer > 60) {
-                obj_attack = cur_obj_nearest_object_with_behavior(bhvTennis);
-                if (obj_attack == NULL) {
-                    cur_obj_init_animation_with_sound(0);//reset
-                    cur_obj_init_animation_with_sound(4);//block
-                    cur_obj_play_sound_2(SOUND_OBJ_MRI_SHOOT);
-                    obj_attack = spawn_object(o,MODEL_MAKER_SHOWRUNNER_BALL,bhvTennis);
-                    obj_attack->oPosY += 500.0f;
-                }
+            if (o->oTimer == 60) {
+                cur_obj_init_animation_with_sound(0);//reset
+                cur_obj_init_animation_with_sound(4);//block
+                cur_obj_play_sound_2(SOUND_OBJ_MRI_SHOOT);
+                obj_attack = spawn_object(o,MODEL_MAKER_SHOWRUNNER_BALL,bhvTennis);
+                obj_attack->oPosY += 500.0f;
             }
         break;
         case 11://stunned
@@ -546,7 +526,7 @@ void showrunner_battle_function(void) {
                         o->oAngleVelYaw = (s16)((f32)o->oAngleVelYaw*.9f);
                         if (o->oTimer > 120) {
                             o->oAction = 10;
-                            tennis_bool = 0;
+                            o->oShowrunnerTennisBool = FALSE;
                         }
                         break;
                 }
@@ -564,7 +544,7 @@ void showrunner_battle_function(void) {
                 }
             }
             if (o->oTimer > 60) {
-                spike_attacks_left = 1;
+                o->oShowrunnerSpikeAttacksLeft = 1;
                 o->oAction = 3;
             }
         break;
@@ -592,18 +572,18 @@ void bhv_sr_spike(void) {
     switch(o->oAction) {
         case 0://init
             if (o->oTimer == 1) {
-                if (spike_close == FALSE) {
+                if (!o->parentObj->oShowrunnerSpikeClose) {
                     if (lateral_dist_between_objects(o,gMarioObject) < 300.0f) {
-                        spike_close = TRUE;
-                        spike_locked_angle = o->oAngleToMario;
+                        o->parentObj->oShowrunnerSpikeClose = TRUE;
+                        o->parentObj->oShowrunnerSpikeLockedAngle = o->oAngleToMario;
                     }
                 }
-                if (spike_close) {
-                    spike_attack[0] += sins(spike_locked_angle) * 350.0f;
-                    spike_attack[2] += coss(spike_locked_angle) * 350.0;
+                if (o->parentObj->oShowrunnerSpikeClose) {
+                    o->parentObj->oShowrunnerSpikeX += sins(o->parentObj->oShowrunnerSpikeLockedAngle) * 350.0f;
+                    o->parentObj->oShowrunnerSpikeZ += coss(o->parentObj->oShowrunnerSpikeLockedAngle) * 350.0;
                 } else {
-                    spike_attack[0] += sins(o->oAngleToMario) * 350.0f;
-                    spike_attack[2] += coss(o->oAngleToMario) * 350.0f;
+                    o->parentObj->oShowrunnerSpikeX += sins(o->oAngleToMario) * 350.0f;
+                    o->parentObj->oShowrunnerSpikeZ += coss(o->oAngleToMario) * 350.0f;
                 }
                 o->oAction = 1;
                 }
@@ -657,13 +637,13 @@ void bhv_tennis(void) {
             o->oInteractType = INTERACT_BOUNCE_TOP;
 
 
-            if (tennis_bool == 0) {
+            if (!o->parentObj->oShowrunnerTennisBool) {
                 o->oMoveAngleYaw = obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_YAW_INDEX, 200);
                 o->oMoveAnglePitch = obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_PITCH_INDEX, 200);
 
                 if (o->oInteractStatus & INT_STATUS_INTERACTED) {
                     if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-                        tennis_bool = 1;
+                        o->parentObj->oShowrunnerTennisBool = TRUE;
                     } else {
                         o->parentObj->oTimer = 0;
                         obj_mark_for_deletion(o);
@@ -677,7 +657,7 @@ void bhv_tennis(void) {
                 o->parentObj->oPosY -= 500.0f;
 
                 if (lateral_dist_between_objects(o,o->parentObj) < 400.0f) {
-                    tennis_bool = 0;
+                    o->parentObj->oShowrunnerTennisBool = FALSE;
                     o->oForwardVel += 10.0f;
                     o->oDamageOrCoinValue ++;
                     o->oInteractStatus = 0;
