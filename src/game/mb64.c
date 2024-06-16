@@ -2312,6 +2312,9 @@ void generate_object_preview(void) {
             u16 imbue_marker_model = MODEL_MAKER_IMBUE;
             if (curImbue == IMBUE_STAR) {
                 imbue_marker_model = MODEL_MAKER_IMBUE_STAR;
+            } else if ((curImbue >= IMBUE_THREE_COINS && curImbue <= IMBUE_BLUE_COIN) ||
+                        (curImbue == IMBUE_RED_COIN)) {
+                imbue_marker_model = MODEL_MAKER_IMBUE_COIN;
             }
             struct Object * imbue_marker = spawn_object(o,imbue_marker_model,bhvPreviewObject);
             imbue_marker->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;

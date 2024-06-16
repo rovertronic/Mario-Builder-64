@@ -1,0 +1,15 @@
+extern const GeoLayout imbuec_geo[];
+extern Vtx imbuec_imbue_star_001_mesh_layer_7_vtx_0[24];
+extern Gfx imbuec_imbue_star_001_mesh_layer_7_tri_0[];
+extern Vtx imbuec_imbue_star_001_mesh_layer_7_vtx_1[53];
+extern Gfx imbuec_imbue_star_001_mesh_layer_7_tri_1[];
+extern Vtx imbuec_imbue_star_001_mesh_layer_7_vtx_2[39];
+extern Gfx imbuec_imbue_star_001_mesh_layer_7_tri_2[];
+extern Gfx mat_imbuec_noz_black[];
+extern Gfx mat_revert_imbuec_noz_black[];
+extern Gfx mat_imbuec_noz_red[];
+extern Gfx mat_revert_imbuec_noz_red[];
+extern Gfx mat_imbuec_noz_white[];
+extern Gfx mat_revert_imbuec_noz_white[];
+extern Gfx imbuec_imbue_star_001_mesh_layer_7[];
+extern Gfx imbuec_material_revert_render_settings[];

@@ -253,3 +253,4 @@
 #include "conveyor_slope/collision.inc.c"
 #include "conveyor_dslope/model.inc.c"
 #include "conveyor_dslope/collision.inc.c"
+#include "imbuec/model.inc.c"
