@@ -53,6 +53,7 @@ void bhv_cosmic_phantasm(void) {
     f32 old_floor_height = find_floor(o->oPosX, o->oPosY, o->oPosZ, &ptr);
 
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
     cur_obj_move_standard(-78);
 
     if (is_cur_obj_interact_with_lava(0)) {
@@ -60,14 +61,6 @@ void bhv_cosmic_phantasm(void) {
     }
 
     f32 kept_new_y = o->oPosY; //keeping the new y position, a little scuffed
-
-    f32 current_floor_height = find_floor(o->oPosX, o->oPosY, o->oPosZ, &ptr);
-
-    if (current_floor_height < old_floor_height-100.0f) {
-        vec3f_copy(&o->oPosVec,&previous);//Prevent him from going off the ledge
-        o->oPosY = kept_new_y;//this is a little cringe, but who cares
-    }
-
     o->oGravity = -4.0f;
 
     switch(o->oAction) {
@@ -92,13 +85,12 @@ void bhv_cosmic_phantasm(void) {
                 o->oAngleVelYaw = random_u16();
                 cur_obj_init_animation_with_sound(3);//walk
             }
-            if (obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)&&
-            (o->oDistanceToMario < 1000.0f)) {
-                o->oAction = 4;
+            if ((obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)&&
+            (o->oDistanceToMario < 1000.0f)) || (o->oDistanceToMario < 400.f)) {
+                o->oAction = (random_u16()%2) ? 4 : 6;
+                o->oSubAction = 0;
                 cur_obj_init_animation_with_sound(5);//spin
-                if (o->oBehParams2ndByte == 1) { //only ground attacks
-                    o->oAction = 6;
-                }
+
             }
             check_phantasm_attack();
         break;
@@ -120,13 +112,11 @@ void bhv_cosmic_phantasm(void) {
                 o->oTimer = random_u16()%60;
                 cur_obj_init_animation_with_sound(2);//walk
             }
-            if (obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)&&
-            (o->oDistanceToMario < 1000.0f)) {
-                o->oAction = 4;
+            if ((obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000)&&
+            (o->oDistanceToMario < 1000.0f)) || (o->oDistanceToMario < 400.f)) {
+                o->oAction = (random_u16()%2) ? 4 : 6;
+                o->oSubAction = 0;
                 cur_obj_init_animation_with_sound(5);//spin
-                if (o->oBehParams2ndByte == 1) { //only ground attacks
-                    o->oAction = 6;
-                }
             }
             check_phantasm_attack();
         break;
@@ -139,7 +129,9 @@ void bhv_cosmic_phantasm(void) {
                     //gMarioState->EA_ACTIVE --;
                     //gMarioState->EA_LEFT --;
 
-                    obj_spawn_loot_yellow_coins(o, 5, 20.0f);
+                    if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+                        obj_spawn_loot_yellow_coins(o, 5, 20.0f);
+                    }
                     spawn_mist_particles_variable(0, 0, 100.0f);
                     obj_mark_for_deletion(o);
                 }
@@ -160,7 +152,7 @@ void bhv_cosmic_phantasm(void) {
             }
 
             if (o->oTimer > 60) {
-                o->oAction = 5+(random_u16()%2);
+                o->oAction = 5;
                 o->oSubAction = 0;
                 cur_obj_play_sound_2(SOUND_OBJ_MRI_SHOOT);
             }
@@ -212,18 +204,13 @@ void bhv_cosmic_phantasm(void) {
         case 6://throw fireballs
             switch(o->oSubAction) {
                 case 0:
+                    o->oForwardVel = 0.f;
                     if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
-                        o->oSubAction = 1;
+                        o->oSubAction = 2;
                         cur_obj_init_animation_with_sound(7);
                         o->oVelY = 0.0f;
                     }
-                break;
-                case 1:
-                    if (o->oTimer > 30) {
-                        o->oSubAction = 2;
-                        o->oTimer = 0;
-                    }
-                break;
+                    break;
                 case 2:
                     //throw fire
                     o->oForwardVel = 0.0f;
@@ -261,6 +248,16 @@ void bhv_cosmic_phantasm(void) {
             }
         break;
     }
+
+    f32 current_floor_height = find_floor(o->oPosX, o->oPosY, o->oPosZ, &ptr);
+
+    if (current_floor_height < old_floor_height-300.0f) {
+        vec3f_copy(&o->oPosVec,&previous);//Prevent him from going off the ledge
+        o->oPosY = kept_new_y;//this is a little cringe, but who cares
+        o->oForwardVel = 0.f;
+    }
+
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
 // void bhv_paparazzi(void) {

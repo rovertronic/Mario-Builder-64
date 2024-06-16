@@ -3727,7 +3727,7 @@ const BehaviorScript bhvSparkleParticleSpawner[] = {
 extern bhv_scuttlebug_normal_loop();
 const BehaviorScript bhvScuttlebug[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH)),
     LOAD_ANIMATIONS(oAnimations, scuttlebug_seg6_anims_06015064),
     ANIMATE(SCUTTLEBUG_ANIM_JUMP),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 80, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
@@ -3741,7 +3741,7 @@ const BehaviorScript bhvScuttlebug[] = {
 
 const BehaviorScript bhvCrablet[] = {
     BEGIN(OBJ_LIST_GENACTOR),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_ANIMATIONS(oAnimations, crab_anims_anims),
     ANIMATE(SCUTTLEBUG_ANIM_JUMP),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
@@ -3805,13 +3805,13 @@ const BehaviorScript bhvCrabletSpawned[] = {
 //     END_LOOP(),
 // };
 
-const BehaviorScript bhvScuttlebugSpawn[] = {
-    BEGIN(OBJ_LIST_SPAWNER),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_scuttlebug_spawn_loop),
-    END_LOOP(),
-};
+// const BehaviorScript bhvScuttlebugSpawn[] = {
+//     BEGIN(OBJ_LIST_SPAWNER),
+//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_scuttlebug_spawn_loop),
+//     END_LOOP(),
+// };
 
 extern void whomp_real_init(void);
 const BehaviorScript bhvWhompKingBoss[] = {
@@ -6147,7 +6147,6 @@ const BehaviorScript bhvChicken[] = {
     //CALL_NATIVE(bhv_init_room),
     SET_INT(oBehParams2ndByte, 1),
     SET_INT(oInteractionSubtype, INT_SUBTYPE_TWIRL_BOUNCE),
-    SCALE(/*Unused*/ 0, /*Field*/ 100),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_fly_guy_update),
     END_LOOP(),
@@ -6169,6 +6168,7 @@ const BehaviorScript bhvHammerBro[] = {
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 80, /*Gravity*/ -400, /*Bounciness*/ 0, /*Drag strength*/ 0, /*Friction*/ 0, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
 //     DROP_TO_FLOOR(),
+    SET_HOME(),
     SET_FLOAT(oGraphYOffset, 60),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_hammer_bro_loop),
@@ -8606,7 +8606,7 @@ const BehaviorScript bhvPhantasm[] = {
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
     ANIMATE(2),//2 idle - 3 walk
     SET_HITBOX(/*Radius*/ 80, /*Height*/ 100),
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 30, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 50, /*Gravity*/ -400, /*Bounciness*/ -50, /*Drag strength*/ 1000, /*Friction*/ 1000, /*Buoyancy*/ 200, /*Unused*/ 0, 0),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_cosmic_phantasm),

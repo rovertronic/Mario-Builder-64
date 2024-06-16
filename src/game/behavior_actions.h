@@ -15,7 +15,7 @@ s32 check_if_moving_over_floor(f32 maxDist, f32 offset);
 s32 arc_to_goal_pos(Vec3f a0, Vec3f a1, f32 yVel, f32 gravity);
 void tox_box_move(f32 forwardVel, f32 a1, s16 deltaPitch, s16 deltaRoll);
 void play_penguin_walking_sound(s32 walk);
-s32 update_angle_from_move_flags(s32 *angle);
+s32 update_angle_from_move_flags(s16 *angle);
 void cur_obj_spawn_strong_wind_particles(s32 windSpread, f32 scale, f32 relPosX, f32 relPosY, f32 relPosZ);
 //
 //crimas only//

@@ -1,28 +1,28 @@
 // scuttlebug.inc.c
 
-struct ObjectHitbox sSlobHitbox = {
-    /* interactType: */ INTERACT_BOUNCE_TOP,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 2,
-    /* health: */ 3,
-    /* numLootCoins: */ 3,
-    /* radius: */ 130,
-    /* height: */ 70,
-    /* hurtboxRadius: */ 90,
-    /* hurtboxHeight: */ 60,
-};
+// struct ObjectHitbox sSlobHitbox = {
+//     /* interactType: */ INTERACT_BOUNCE_TOP,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 2,
+//     /* health: */ 3,
+//     /* numLootCoins: */ 3,
+//     /* radius: */ 130,
+//     /* height: */ 70,
+//     /* hurtboxRadius: */ 90,
+//     /* hurtboxHeight: */ 60,
+// };
 
-struct ObjectHitbox sRexBossHitbox = {
-    /* interactType: */ INTERACT_BOUNCE_TOP,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 25,
-    /* numLootCoins: */ 20,
-    /* radius: */ 130,
-    /* height: */ 70,
-    /* hurtboxRadius: */ 90,
-    /* hurtboxHeight: */ 60,
-};
+// struct ObjectHitbox sRexBossHitbox = {
+//     /* interactType: */ INTERACT_BOUNCE_TOP,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 25,
+//     /* numLootCoins: */ 20,
+//     /* radius: */ 130,
+//     /* height: */ 70,
+//     /* hurtboxRadius: */ 90,
+//     /* hurtboxHeight: */ 60,
+// };
 
 struct ObjectHitbox sScuttlebugHitbox = {
     /* interactType:      */ INTERACT_BOUNCE_TOP,
@@ -36,17 +36,17 @@ struct ObjectHitbox sScuttlebugHitbox = {
     /* hurtboxHeight:     */ 60,
 };
 
-struct ObjectHitbox sScuttlebugSpawnedHitbox = {
-    /* interactType: */ INTERACT_BOUNCE_TOP,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 1,
-    /* health: */ 2,
-    /* numLootCoins: */ 0,
-    /* radius: */ 130,
-    /* height: */ 70,
-    /* hurtboxRadius: */ 90,
-    /* hurtboxHeight: */ 60,
-};
+// struct ObjectHitbox sScuttlebugSpawnedHitbox = {
+//     /* interactType: */ INTERACT_BOUNCE_TOP,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 1,
+//     /* health: */ 2,
+//     /* numLootCoins: */ 0,
+//     /* radius: */ 130,
+//     /* height: */ 70,
+//     /* hurtboxRadius: */ 90,
+//     /* hurtboxHeight: */ 60,
+// };
 
 struct ObjectHitbox sHammerBroHitbox = {
     /* interactType: */ INTERACT_BOUNCE_TOP,
@@ -72,97 +72,97 @@ struct ObjectHitbox sHammerHitbox = {
     /* hurtboxHeight: */ 40,
 };
 
-struct ObjectHitbox sCactusHitbox = {
-    /* interactType: */ INTERACT_DAMAGE,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 1,
-    /* numLootCoins: */ 7,
-    /* radius: */ 20,
-    /* height: */ 20,
-    /* hurtboxRadius: */ 20,
-    /* hurtboxHeight: */ 20,
-};
+// struct ObjectHitbox sCactusHitbox = {
+//     /* interactType: */ INTERACT_DAMAGE,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 7,
+//     /* radius: */ 20,
+//     /* height: */ 20,
+//     /* hurtboxRadius: */ 20,
+//     /* hurtboxHeight: */ 20,
+// };
 
-struct ObjectHitbox sMaskHitbox = {
-    /* interactType: */ INTERACT_MR_BLIZZARD,
-    /* downOffset: */ 32,
-    /* damageOrCoinValue: */ 4,
-    /* health: */ 1,
-    /* numLootCoins: */ 7,
-    /* radius: */ 75,
-    /* height: */ 75,
-    /* hurtboxRadius: */ 75,
-    /* hurtboxHeight: */ 75,
-};
+// struct ObjectHitbox sMaskHitbox = {
+//     /* interactType: */ INTERACT_MR_BLIZZARD,
+//     /* downOffset: */ 32,
+//     /* damageOrCoinValue: */ 4,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 7,
+//     /* radius: */ 75,
+//     /* height: */ 75,
+//     /* hurtboxRadius: */ 75,
+//     /* hurtboxHeight: */ 75,
+// };
 
-struct ObjectHitbox sTrapHitbox = {
-    /* interactType: */ INTERACT_DAMAGE,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 6,
-    /* health: */ 1,
-    /* numLootCoins: */ 7,
-    /* radius: */ 100,
-    /* height: */ 40,
-    /* hurtboxRadius: */ 150,
-    /* hurtboxHeight: */ 60,
-};
+// struct ObjectHitbox sTrapHitbox = {
+//     /* interactType: */ INTERACT_DAMAGE,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 6,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 7,
+//     /* radius: */ 100,
+//     /* height: */ 40,
+//     /* hurtboxRadius: */ 150,
+//     /* hurtboxHeight: */ 60,
+// };
 
-struct ObjectHitbox sRetroPlantHitbox = {
-    /* interactType: */ INTERACT_DAMAGE,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 1,
-    /* numLootCoins: */ 7,
-    /* radius: */ 75,
-    /* height: */ 150,
-    /* hurtboxRadius: */ 75,
-    /* hurtboxHeight: */ 300,
-};
+// struct ObjectHitbox sRetroPlantHitbox = {
+//     /* interactType: */ INTERACT_DAMAGE,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 7,
+//     /* radius: */ 75,
+//     /* height: */ 150,
+//     /* hurtboxRadius: */ 75,
+//     /* hurtboxHeight: */ 300,
+// };
 
-struct ObjectHitbox sBillHitbox = {
-    /* interactType: */ INTERACT_BOUNCE_TOP,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 1,
-    /* numLootCoins: */ 0,
-    /* radius: */ 70,
-    /* height: */ 85,
-    /* hurtboxRadius: */ 75,
-    /* hurtboxHeight: */ 35,
-};
+// struct ObjectHitbox sBillHitbox = {
+//     /* interactType: */ INTERACT_BOUNCE_TOP,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 0,
+//     /* radius: */ 70,
+//     /* height: */ 85,
+//     /* hurtboxRadius: */ 75,
+//     /* hurtboxHeight: */ 35,
+// };
 
-struct ObjectHitbox sLadybugHitbox = {
-    /* interactType: */ INTERACT_BOUNCE_TOP,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 1,
-    /* numLootCoins: */ 5,
-    /* radius: */ 70,
-    /* height: */ 95,
-    /* hurtboxRadius: */ 75,
-    /* hurtboxHeight: */ 45,
-};
+// struct ObjectHitbox sLadybugHitbox = {
+//     /* interactType: */ INTERACT_BOUNCE_TOP,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 5,
+//     /* radius: */ 70,
+//     /* height: */ 95,
+//     /* hurtboxRadius: */ 75,
+//     /* hurtboxHeight: */ 45,
+// };
 
-struct ObjectHitbox sRBowserHitbox = {
-    /* interactType: */ INTERACT_DAMAGE,
-    /* downOffset: */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health: */ 1,
-    /* numLootCoins: */ 0,
-    /* radius: */ 130,
-    /* height: */ 130,
-    /* hurtboxRadius: */ 130,
-    /* hurtboxHeight: */ 130,
-};
+// struct ObjectHitbox sRBowserHitbox = {
+//     /* interactType: */ INTERACT_DAMAGE,
+//     /* downOffset: */ 0,
+//     /* damageOrCoinValue: */ 3,
+//     /* health: */ 1,
+//     /* numLootCoins: */ 0,
+//     /* radius: */ 130,
+//     /* height: */ 130,
+//     /* hurtboxRadius: */ 130,
+//     /* hurtboxHeight: */ 130,
+// };
 
-s32 update_angle_from_move_flags(s32 *angle) {
+s32 update_angle_from_move_flags(s16 *angle) {
     if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
         *angle = o->oWallAngle;
         return 1;
     } else if (o->oMoveFlags & OBJ_MOVE_HIT_EDGE) {
         *angle = o->oMoveAngleYaw + 0x8000;
-        return -1;
+        return 1;
     }
     return 0;
 }
@@ -175,6 +175,7 @@ void bhv_scuttlebug_loop(void) {
 
     hitbox_to_use = &sScuttlebugHitbox;
     cur_obj_update_floor_and_walls();
+    cur_obj_set_home_if_safe();
 
     if (is_cur_obj_interact_with_lava(0)) {
         o->oInteractStatus = (INT_STATUS_WAS_ATTACKED | INT_STATUS_INTERACTED);
@@ -219,19 +220,18 @@ void bhv_scuttlebug_loop(void) {
         case 0:
             if (o->oMoveFlags & OBJ_MOVE_LANDED) {
                 cur_obj_play_sound_2(SOUND_OBJ_GOOMBA_ALERT);
-            }
-            if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
+            } else if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
                 o->oSubAction++;
             }
             break;
 
         case 1:
             o->oForwardVel = 5.0f;
-            if (o->oScuttlebugIsAtttacking == 0) {
+            if (!o->oScuttlebugIsAtttacking) {
                 o->oScuttlebugTimer = 0;
-                o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
-                if (abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x800) {
-                    o->oScuttlebugIsAtttacking = 1;
+                o->oAngleToMario;
+                if ((abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x2000) && (o->oDistanceToMario < 1000.0f)) {
+                    o->oScuttlebugIsAtttacking = TRUE;
                     o->oVelY = 50.0f;
                     cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
                     if (o->oQuicksandDepth > 0) {
@@ -240,25 +240,27 @@ void bhv_scuttlebug_loop(void) {
                         o->oQuicksandDepth = CLAMP(o->oQuicksandDepth-15,0,255);
                     }
                 }
-            } else if (o->oScuttlebugIsAtttacking == 1) {
+                o->oMoveAngleYaw += 0x200;
+                o->oScuttlebugTargetAngle = o->oMoveAngleYaw;
+                if (update_angle_from_move_flags(&o->oScuttlebugTargetAngle)) {
+                    o->oSubAction = 2;
+                }
+            } else {
                 o->oForwardVel = 30.0f;
                 o->oScuttlebugTimer++;
                 if (o->oScuttlebugTimer > 50) {
                     o->oScuttlebugIsAtttacking = FALSE;
                 }
+                cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
             }
-            if (update_angle_from_move_flags(&o->oAngleToMario)) {
-                o->oSubAction = 2;
-            }
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
             break;
 
         case 2:
             o->oForwardVel = 5.0f;
-            if ((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario) {
+            if ((s16) o->oMoveAngleYaw == (s16) o->oScuttlebugTargetAngle) {
                 o->oSubAction = 1;
             }
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+            cur_obj_rotate_yaw_toward(o->oScuttlebugTargetAngle, 0x400);
             break;
 
         case 3:
@@ -316,28 +318,7 @@ void bhv_scuttlebug_loop(void) {
     }
 
     cur_obj_move_standard(-50);
-
-    if (revent_stop_enemies) {
-        vec3f_copy(&o->oPosX,&original_pos);
-    }
-}
-
-void bhv_scuttlebug_spawn_loop(void) {
-    if (o->oAction == 0) {
-        if (o->oTimer > 30 && 500.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f) {
-            struct Object *scuttlebug;
-            cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
-            scuttlebug = spawn_object(o, MODEL_SCUTTLEBUG, bhvScuttlebug);
-            scuttlebug->oScuttlebugHasNoLootCoins = o->oScuttlebugSpawnerSpawnWithNoLootCoins;
-            scuttlebug->oForwardVel = 30.0f;
-            scuttlebug->oVelY = 80.0f;
-            o->oAction++;
-            o->oScuttlebugHasNoLootCoins = 1;
-        }
-    } else if (o->oScuttlebugSpawnerIsDeactivated != 0) {
-        o->oScuttlebugSpawnerIsDeactivated = 0;
-        o->oAction = 0;
-    }
+    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
 u16 RandomMinMaxU16(u16 min, u16 max) {
@@ -379,16 +360,6 @@ void bhv_hammer_bro_loop(void) {
     if (o->oBehParams2ndByte == 1) {
         o->oAnimState = 1;
     }
-
-    if (gMarioState->gCurrMinigame == 1) {
-
-
-        if (o->oDistanceToMario > 800.0f) {
-            o->oFaceAngleYaw = o->oAngleToMario;
-            o->oMoveAngleYaw = o->oAngleToMario;
-            o->oForwardVel = 15.0f;
-            }
-        }
 
     o->oFaceAngleYaw = o->oAngleToMario;
 
@@ -479,6 +450,7 @@ void bhv_hammer_bro_loop(void) {
             }
 
         cur_obj_update_floor_and_walls();
+        cur_obj_set_home_if_safe();
         cur_obj_move_standard(-50);
 
         //TODO: Replace with generic handler
@@ -495,61 +467,12 @@ void bhv_hammer_bro_loop(void) {
         }
 
         cur_obj_set_hitbox_and_die_if_attacked(&sHammerBroHitbox, SOUND_OBJ_KOOPA_DAMAGE,0);
-
+        cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
     } else {
         cur_obj_disable_rendering();
         o->oTimer --;
     }
 }
-
-void bhv_slob_loop(void) {
-    //o->oDontInertia = hit ground yet
-    switch(o->oAction) {
-        case 0:
-        o->oForwardVel = 0;
-        o->oParentRelativePosY = 0;
-        o->oDontInertia = FALSE;
-        if (o->oDistanceToMario < 1200.0f) {
-            o->oAction = 1;
-            }
-        break;
-        case 1:
-        if (!o->oDontInertia) {
-            o->oMoveAngleYaw = approach_s16_asymptotic(o->oMoveAngleYaw,o->oAngleToMario,4);
-            }
-
-        if ((o->oMoveFlags & 1)&&(o->oDontInertia)) {
-            o->oForwardVel = 0;
-            o->oParentRelativePosY = -0.5f;
-            cur_obj_init_animation_with_sound(0);
-            cur_obj_play_sound_2(SOUND_OBJ_WALKING_WATER);
-            o->oDontInertia = FALSE;
-            }
-
-        if (o->oTimer%40==0) {
-            cur_obj_play_sound_2(SOUND_OBJ_WALKING_WATER);
-            //o->oForwardVel = 20.0f;
-            o->oVelY = 35.0f;
-            o->oParentRelativePosY = 2.0f;
-            cur_obj_init_animation_with_sound(1);
-            o->oDontInertia = TRUE;
-            }
-        
-
-        if (o->oDistanceToMario > 1300.0f) {
-            cur_obj_init_animation_with_sound(0);
-            o->oAction = 0;
-            }
-        break;
-        }
-
-    o->oParentRelativePosY /= 1.25;
-    vec3f_set(o->header.gfx.scale,1.0f,1.0f+o->oParentRelativePosY,1.0f);
-
-    cur_obj_set_hitbox_and_die_if_attacked(&sSlobHitbox, SOUND_GENERAL_SPLATTERING,0);
-    cur_obj_update_floor_and_walls();
-    cur_obj_move_standard(-50);
-    }
 
 void bhv_hammer_loop(void) {
 
@@ -638,11 +561,10 @@ void bhv_scuttlebug_normal_loop(void) {
 
         case 1:
             o->oForwardVel = 5.0f;
-            if (o->oScuttlebugIsAtttacking == 0) {
+            if (!o->oScuttlebugIsAtttacking) {
                 o->oScuttlebugTimer = 0;
-                o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
-                if (abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x800) {
-                    o->oScuttlebugIsAtttacking = 1;
+                if ((abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw) < 0x2000) && (o->oDistanceToMario < 1000.0f)) {
+                    o->oScuttlebugIsAtttacking = TRUE;
                     o->oVelY = 20.0f;
                     if (o->oQuicksandDepth > 0) {
                         // Quicksand will stunt their jumps heavily
@@ -651,25 +573,27 @@ void bhv_scuttlebug_normal_loop(void) {
                     }
                     cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
                 }
-            } else if (o->oScuttlebugIsAtttacking == 1) {
+                o->oMoveAngleYaw += 0x200;
+                o->oScuttlebugTargetAngle = o->oMoveAngleYaw;
+                if (update_angle_from_move_flags(&o->oScuttlebugTargetAngle)) {
+                    o->oSubAction = 2;
+                }
+            } else {
                 o->oForwardVel = 15.0f;
                 o->oScuttlebugTimer++;
                 if (o->oScuttlebugTimer > 50) {
                     o->oScuttlebugIsAtttacking = FALSE;
                 }
+                cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
             }
-            if (update_angle_from_move_flags(&o->oAngleToMario)) {
-                o->oSubAction = 2;
-            }
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
             break;
 
         case 2:
             o->oForwardVel = 5.0f;
-            if ((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario) {
+            if ((s16) o->oMoveAngleYaw == (s16) o->oScuttlebugTargetAngle) {
                 o->oSubAction = 1;
             }
-            cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+            cur_obj_rotate_yaw_toward(o->oScuttlebugTargetAngle, 0x400);
             break;
 
         case 3:

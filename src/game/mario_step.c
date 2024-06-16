@@ -428,8 +428,6 @@ s32 perform_ground_step(struct MarioState *m) {
 })
 
 struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall, struct Surface *wall, Vec3f intendedPos, Vec3f nextPos, Vec3f ledgePos, struct Surface **ledgeFloor) {
-    struct Surface *returnedWall = wall;
-
     if (m->vel[1] > 0.0f || wall == NULL) {
         return NULL;
     }
@@ -440,7 +438,7 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
 
     // Return the already grabbed wall if Mario is moving into it more than the newly tested wall.
     if (hdot_surf(prevWall, m->vel) < hdot_surf(wall, m->vel)) {
-        return prevWall;
+        wall = prevWall;
     }
 
     // Only ledge grab if the wall displaced Mario in the opposite direction of his velocity.
@@ -448,7 +446,7 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
     if (
         ((nextPos[0] - intendedPos[0]) * m->vel[0]) + ((nextPos[2] - intendedPos[2]) * m->vel[2]) > 0.0f
     ) {
-        return prevWall;
+        wall = prevWall;
     }
 
     Vec3f normal;
@@ -477,7 +475,7 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
         return NULL;
     }
 
-    return returnedWall;
+    return wall;
 }
 
 #undef hdot_surf

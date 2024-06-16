@@ -934,6 +934,7 @@
 #define /*0x0F4*/ oScuttlebugHasNoLootCoins OBJECT_FIELD_S32(0x1B)
 #define /*0x0F8*/ oScuttlebugIsAtttacking   OBJECT_FIELD_S32(0x1C)
 #define /*0x0FC*/ oScuttlebugTimer          OBJECT_FIELD_S32(0x1D)
+#define /*0x100*/ oScuttlebugTargetAngle    OBJECT_FIELD_S16(0x1E, 0)
 
 /* Scuttlebug Spawner */
 #define /*0x088*/ oScuttlebugSpawnerIsDeactivated        OBJECT_FIELD_S32(0x00)
