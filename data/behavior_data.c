@@ -2003,8 +2003,8 @@ const BehaviorScript bhvBreakableBox[] = {
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_breakable_box_loop),
         CALL_NATIVE(load_object_collision_model),
+        CALL_NATIVE(bhv_breakable_box_loop),
     END_LOOP(),
     BREAK(),
 };
@@ -9472,8 +9472,8 @@ const BehaviorScript bhvBreakableBoxRF[] = {
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_breakable_box_rf_loop),
         CALL_NATIVE(load_object_collision_model),
+        CALL_NATIVE(bhv_breakable_box_rf_loop),
     END_LOOP(),
     BREAK(),
 };
