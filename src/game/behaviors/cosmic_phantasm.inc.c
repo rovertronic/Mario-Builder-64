@@ -104,9 +104,6 @@ void bhv_cosmic_phantasm(void) {
             if (o->oTimer % 20 == 0) {
                 o->oAngleVelYaw = random_u16();
             }
-            if (cur_obj_lateral_dist_to_home() > 500.0f) {
-                o->oAngleVelYaw = cur_obj_angle_to_home();
-            }
             if (o->oTimer > 100) {//idle after a bit
                 o->oAction = 1;
                 o->oTimer = random_u16()%60;
@@ -374,9 +371,6 @@ void showrunner_battle_function(void) {
             o->oForwardVel = 10.0f;
             if (o->oTimer % 30 == 0) {
                 o->oAngleVelYaw = random_u16();
-            }
-            if (cur_obj_lateral_dist_to_home() > 1800.0f) {
-                o->oAngleVelYaw = cur_obj_angle_to_home();
             }
             o->oMoveAngleYaw = approach_s16_asymptotic(o->oMoveAngleYaw,o->oAngleVelYaw,4);
             if (o->oTimer == 60) {
