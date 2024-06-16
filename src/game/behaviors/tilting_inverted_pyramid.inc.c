@@ -6270,12 +6270,15 @@ void bhv_woodplat(void) {
                 o->oGravity = -4.0f;
             } else {
                 // Underwater Behavior
-                if (ABS(o->oVelY) > 4.0f) {
-                    o->oVelY *= 0.95f;
+                o->oVelY *= 0.9f;
+                if (waterLevel > o->oPosY) {
+                    o->oGravity = CLAMP((waterLevel - 64.f - o->oPosY) * 0.1f, -2.0f, 2.0f);
                 }
-                o->oGravity = -1.0f;
-                if (waterLevel-50.0f > o->oPosY) {
-                    o->oVelY += 2.0f;
+                if (gMarioPlatform == o->prevObj) {
+                    o->oVelY -= 1.f;
+                    if (gMarioState->action == ACT_GROUND_POUND_LAND) {
+                        o->oVelY -= 2.f;
+                    }
                 }
             }
             cur_obj_update_floor_and_walls();

@@ -2724,6 +2724,10 @@ void cur_obj_interact_with_moving_platform(void) {
 		}
         o->oPosX += sins(currentAngle) * 10.76f;
         o->oPosZ += coss(currentAngle) * 10.76f;
+    } else if (sInteractFloor->object->behavior == segmented_to_virtual(bhvWoodPlatCol)) {
+        if (o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) {
+            sInteractFloor->object->prevObj->oVelY -= 1.f;
+        }
     }
 }
 
