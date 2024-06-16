@@ -6060,7 +6060,6 @@ const BehaviorScript bhvKoopaRaceEndpoint[] = {
 const BehaviorScript bhvKoopaFlag[] = {
     BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    DROP_TO_FLOOR(),
     LOAD_ANIMATIONS(oAnimations, koopa_flag_seg6_anims_06001028),
     ANIMATE(KOOPA_FLAG_ANIM_WAVE),
     BEGIN_LOOP(),

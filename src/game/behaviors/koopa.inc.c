@@ -89,7 +89,7 @@ void bhv_koopa_init(void) {
         }
         struct Object *koopa_flag = spawn_object(o,MODEL_NONE,bhvKoopaRaceEndpoint);
         koopa_flag->oPosX = mb64_trajectory_list[o->oBehParams2ndByte][i-1][1];
-        koopa_flag->oPosY = mb64_trajectory_list[o->oBehParams2ndByte][i-1][2];
+        koopa_flag->oPosY = mb64_trajectory_list[o->oBehParams2ndByte][i-1][2] - TILE_SIZE/2;
         koopa_flag->oPosZ = mb64_trajectory_list[o->oBehParams2ndByte][i-1][3];
         o->parentObj = koopa_flag;
 
