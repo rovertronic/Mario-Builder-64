@@ -2870,6 +2870,7 @@ void save_level(void) {
 
         if (screenshot_failure) {
             //framebuffer emulation not enabled, use ?
+            mb64_show_error_message("Screenshot failed.\nMake sure framebuffer emulation (FBE) is enabled.");
             bcopy(&mystery_painting_rgba16,&mb64_save.piktcher,sizeof(mb64_save.piktcher));
         }
 
