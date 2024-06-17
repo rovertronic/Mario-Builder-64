@@ -2239,10 +2239,13 @@ s32 mb64_get_water_level(s32 x, s32 y, s32 z) {
         }
     }
 
+    s32 waterBlockHeight;
     if (is_water_fullblock(pos)) {
-        return (pos[1] - 31) * TILE_SIZE;
+        waterBlockHeight = (pos[1] - 31) * TILE_SIZE;
+    } else {
+        waterBlockHeight = (pos[1] - 31) * TILE_SIZE - (TILE_SIZE / 8);
     }
-    return (pos[1] - 31) * TILE_SIZE - (TILE_SIZE / 8);
+    return MAX(waterBlockHeight, waterPlaneHeight);
 }
 
 struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct mb64_object_info *info, const BehaviorScript *script) {
