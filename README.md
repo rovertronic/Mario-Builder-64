@@ -3,7 +3,7 @@ Mario Builder 64 is a Super Mario 64 ROM hack that allows you to create custom l
 
 When building from a freshly cloned repo, the baserom extractor will overwrite a lot of assets. To fix this, simply discard all the extra changes that appear in your source control tab.
 
-# HackerSM64
+# [HackerSM64](https://github.com/HackerN64/HackerSM64)
 
 **AFTER CLONING THE REPO, CHECK OUT THE `include/config` FOLDER BEFORE ANYTHING ELSE! THERE'S A LOT OF STUFF IN THIS REPO THAT CAN BE TOGGLED THERE.**
 
