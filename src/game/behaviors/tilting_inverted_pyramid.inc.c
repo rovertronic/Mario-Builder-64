@@ -6247,7 +6247,7 @@ void bhv_woodplat(void) {
 
     switch(o->oAction) {
         case 0:
-            o->oWallHitboxRadius = 128.0f;
+            o->oWallHitboxRadius = 127.8f; // VERY EXACT, needs to be less than 127.9 for the .1 wall buffer lmfao
             o->hitboxDownOffset = 0.f;
             if (o->oBehParams2ndByte == 1) {
                 o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_FATPLAT];
@@ -6322,7 +6322,7 @@ void bhv_woodplat(void) {
 void bhv_woodplat_col_init(void) {
     struct Object *curPlat = o->prevObj;
     f32 height = woodplat_get_stack_height(o->prevObj);
-    o->oCollisionDistance = MAX(height - 500.f, 0.f) + 300.f;
+    o->oCollisionDistance = height;
 
     o->header.gfx.scale[1] = height / 100.f;
 }
