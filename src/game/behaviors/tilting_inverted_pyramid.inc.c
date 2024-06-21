@@ -6243,7 +6243,7 @@ void bhv_woodplat_check_above(void) {
 }
 
 void bhv_woodplat(void) {
-    f32 waterLevel = mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
+    f32 waterLevel = mb64_get_water_level(o->oPosX, o->oPosY+80.f, o->oPosZ);
 
     switch(o->oAction) {
         case 0:
