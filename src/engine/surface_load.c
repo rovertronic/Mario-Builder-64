@@ -570,25 +570,6 @@ void load_object_surfaces(TerrainData **data, TerrainData *vertexData, u32 dynam
     }
 }
 
-#ifdef AUTO_COLLISION_DISTANCE
-static void get_optimal_coll_dist(struct Object *obj) {
-    register f32 thisVertDist, maxDist = 0.0f;
-    Vec3f v;
-    TerrainData *collisionData = o->collisionData;
-    obj->oFlags |= OBJ_FLAG_DONT_CALC_COLL_DIST;
-    collisionData++;
-    register u32 vertsLeft = *(collisionData)++;
-    while (vertsLeft) {
-        vec3_prod(v, collisionData, obj->header.gfx.scale);
-        thisVertDist = vec3_sumsq(v);
-        if (thisVertDist > maxDist) maxDist = thisVertDist;
-        collisionData += 3;
-        vertsLeft--;
-    }
-    obj->oCollisionDistance = (sqrtf(maxDist) + 100.0f);
-}
-#endif
-
 static TerrainData sVertexData[600];
 
 /**
@@ -602,26 +583,8 @@ void load_object_collision_model(void) {
 
     PUPPYPRINT_GET_SNAPSHOT();
     TerrainData *collisionData = o->collisionData;
-
-    f32 sqrLateralDist;
-    vec3f_get_lateral_dist_squared(&o->oPosVec, &gMarioObject->oPosVec, &sqrLateralDist);
-
-    f32 verticalMarioDiff = gMarioObject->oPosY - o->oPosY;
-
-/*
-#ifdef AUTO_COLLISION_DISTANCE
-    if (!(o->oFlags & OBJ_FLAG_DONT_CALC_COLL_DIST)) {
-        get_optimal_coll_dist(o);
-    }
-#endif
-*/
     
-    s32 inColRadius = ((
-           (sqrLateralDist < sqr(o->oCollisionDistance))
-        && (verticalMarioDiff > -o->oCollisionDistance)
-        && (verticalMarioDiff < o->oCollisionDistance + 1000.f)
-        ) || obj_with_physics_is_near()
-    );
+    s32 inColRadius = cur_obj_should_load_collision();
 
     // Update if no Time Stop, in range, and in the current room.
     if (

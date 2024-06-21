@@ -2851,15 +2851,48 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
 struct Object * physics_object_list_head = NULL;
 struct Object * physics_object_list_tail = NULL;
 
-s32 obj_with_physics_is_near(void) {
-    if (physics_object_list_head == NULL) {return FALSE;}
+s32 cur_obj_collision_check_cylinder(Vec3f pos, f32 shadowOffset, f32 radius, f32 height) {
+    f32 lateralDist = sqrtf(sqr(o->oPosX - pos[0]) + sqr(o->oPosZ - pos[2])) - radius;
+    f32 verticalDist = pos[1] - o->oPosY;
 
+    return ((lateralDist < o->oCollisionDistance) &&
+        (verticalDist > (-o->oCollisionDistance - height)) &&
+        (verticalDist < (o->oCollisionDistance + shadowOffset)));
+}
+
+// More optimized version of above functions for objects that are exactly one tile in size
+// and don't rotate.
+// oCollisionDistance now represents height of the object.
+
+s32 cur_obj_collision_check_tile(Vec3f pos, f32 shadowOffset, f32 radius, f32 height) {
+    f32 xDist = ABS(o->oPosX - pos[0]) - radius - 0.1f;
+    f32 zDist = ABS(o->oPosZ - pos[2]) - radius - 0.1f;
+    f32 yDist = pos[1] - o->oPosY;
+
+    return ((xDist < 128.0f) &&
+            (zDist < 128.0f) &&
+            (yDist > (-height - 128.f)) && // the reason for this is tall wooden platforms
+            (yDist < o->oCollisionDistance + shadowOffset));
+}
+
+s32 cur_obj_should_load_collision(void) {
+    s32 (*collision_check_func)(Vec3f, f32, f32, f32);
+
+    if (o->oFlags & OBJ_FLAG_EXACT_TILE_SIZE) {
+        collision_check_func = cur_obj_collision_check_tile;
+    } else {
+        collision_check_func = cur_obj_collision_check_cylinder;
+    }
+
+    if (collision_check_func(&gMarioObject->oPosVec, 1000.0f, 50.f, 160.f)) {
+        return TRUE;
+    }
+
+    if (physics_object_list_head == NULL) {return FALSE;}
     struct Object * obj = physics_object_list_head;
     while (obj != NULL) {
         if (obj == o || obj == o->prevObj) {obj = obj->nextPhysicsObj; continue;}
-        f32 sqrLateralDist;
-        vec3f_get_lateral_dist_squared(&o->oPosVec, &obj->oPosVec, &sqrLateralDist);
-        if (sqrLateralDist < sqr(o->oCollisionDistance)) {
+        if (collision_check_func(&obj->oPosVec, 256.0f, obj->oWallHitboxRadius, obj->hitboxHeight)) {
             return TRUE;
         }
         obj = obj->nextPhysicsObj;
