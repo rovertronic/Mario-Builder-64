@@ -423,3 +423,9 @@ void df_conveyor(s32 context) {
         o->oAnimState = (o->oBehParams2ndByte >> 2);
     }
 }
+
+void df_timedblock(s32 context) {
+    if (context == MB64_DF_CONTEXT_INIT) {
+        o->oAnimState = 2;
+    }
+}

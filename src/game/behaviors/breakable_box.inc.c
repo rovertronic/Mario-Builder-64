@@ -16,7 +16,6 @@ struct ObjectHitbox sBreakableBoxHitbox = {
 };
 
 void breakable_box_init(void) {
-    o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
     o->oNumLootCoins = 3;
     // switch (o->oBehParams2ndByte) {
@@ -27,7 +26,7 @@ void breakable_box_init(void) {
     // }
 }
 
-void hidden_breakable_box_actions(void) {
+void bhv_hidden_object_loop(void) {
     obj_set_hitbox(o, &sBreakableBoxHitbox);
     cur_obj_set_model(MODEL_BREAKABLE_BOX);
     switch (o->oAction) {
@@ -74,8 +73,30 @@ void hidden_breakable_box_actions(void) {
     }
 }
 
-void bhv_hidden_object_loop(void) {
-    hidden_breakable_box_actions();
+void bhv_timedblock(void) {
+    switch (o->oAction) {
+        case BREAKABLE_BOX_ACT_HIDDEN: // not actually hidden
+            if (o->oTimer == 0) {
+                cur_obj_set_model(MODEL_MAKER_BLOCK_ON);
+            }
+
+            if (gMarioState->hiddenBoxTimer > 0) {
+                cur_obj_set_model(MODEL_MAKER_BLOCK_OFF);
+                o->oAction = BREAKABLE_BOX_ACT_ACTIVE;
+            }
+            load_object_collision_model();
+            break;
+        case BREAKABLE_BOX_ACT_ACTIVE:
+            if (gMarioState->hiddenBoxTimer == 0) o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
+            else if (gMarioState->hiddenBoxTimer < 40) {
+                if (gMarioState->hiddenBoxTimer & 1) {
+                    cur_obj_set_model(MODEL_MAKER_BLOCK_ON);
+                } else {
+                    cur_obj_set_model(MODEL_MAKER_BLOCK_OFF);
+                }
+            }
+            break;
+    }
 }
 
 void bhv_breakable_box_loop(void) {

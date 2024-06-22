@@ -9435,15 +9435,28 @@ const BehaviorScript bhvOnOffButton[] = {
 
 extern void bhv_onoffblock_init(void);
 extern void bhv_onoffblock(void);
+extern void bhv_timedblock(void);
 const BehaviorScript bhvOnOffBlock[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_LONG(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(onoffblock_collision),
     SET_FLOAT(oCollisionDistance, 128),
     SET_HOME(),
     CALL_NATIVE(bhv_onoffblock_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_onoffblock),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvTimedBlock[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
+    LOAD_COLLISION_DATA(onoffblock_collision),
+    SET_FLOAT(oCollisionDistance, 128),
+    SET_INT(oAnimState, 2),
+    SET_HOME(),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_timedblock),
     END_LOOP(),
 };
 

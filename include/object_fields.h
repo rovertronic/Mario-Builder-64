@@ -630,9 +630,6 @@
 #define /*0x088*/ oHeaveHoThrowState OBJECT_FIELD_S32(0x00)
 #define /*0x0F4*/ oHeaveHoTimedSpeed OBJECT_FIELD_F32(0x1B)
 
-/* Hidden Object */
-#define /*0x0F4*/ oHiddenObjectSwitchObj OBJECT_FIELD_OBJ(0x1B)
-
 /* Hoot */
 #define /*0x0F4*/ oHootAvailability     OBJECT_FIELD_S32(0x1B)
 #define /*0x110*/ oHootMarioReleaseTime OBJECT_FIELD_S32(0x22)
