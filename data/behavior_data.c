@@ -3611,11 +3611,12 @@ const BehaviorScript bhvPreviewObject[] = {
 
 const BehaviorScript bhvCurrPreviewObject[] = {
     BEGIN(OBJ_LIST_DEFAULT),
-    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    CALL_NATIVE(bhv_preview_object_init),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_preview_object_loop),
-    END_LOOP(),
+    GOTO(bhvPreviewObject + 1),
+};
+
+const BehaviorScript bhvPersistentPreviewObject[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    GOTO(bhvPreviewObject + 1),
 };
 
 extern void bhv_boss(void);

@@ -2554,6 +2554,32 @@ void delete_object(s8 pos[3], s32 index) {
     generate_object_preview();
 }
 
+void should_spawn_place_number(s8 pos[3]) {
+    if (mb64_id_selection == OBJECT_TYPE_RED_COIN) {
+        s32 redCoinCount = 0;
+        s32 hasRedCoinStar = FALSE;
+        for (s32 i = 0; i < mb64_object_count; i++) {
+            if (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) {
+                hasRedCoinStar = TRUE;
+            } else if ((mb64_object_data[i].type == OBJECT_TYPE_RED_COIN) ||
+                       (mb64_object_data[i].imbue == IMBUE_RED_COIN)) {
+                redCoinCount++;
+            }
+        }
+        if (hasRedCoinStar) df_spawn_number(pos, redCoinCount);
+    } else if ((mb64_id_selection == OBJECT_TYPE_STAR) || (mb64_id_selection == OBJECT_TYPE_RED_COIN_STAR)) {
+        s32 starCount = 0;
+        for (s32 i = 0; i < mb64_object_count; i++) {
+            if ((mb64_object_data[i].type == OBJECT_TYPE_STAR) ||
+                (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) ||
+                (mb64_object_data[i].imbue == IMBUE_STAR)){
+                starCount++;
+            }
+        }
+        df_spawn_number(pos, starCount);
+    }
+}
+
 extern s8 gDialogBoxType;
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
@@ -2599,6 +2625,7 @@ void place_object(s8 pos[3]) {
     mb64_object_count++;
 
     play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
+    should_spawn_place_number(pos);
 }
 
 u8 joystick_direction(void) {
@@ -2648,6 +2675,7 @@ void imbue_action(void) {
                         break;
                     }
                     mb64_object_data[i].imbue = IMBUE_STAR;
+                    should_spawn_place_number(mb64_cursor_pos);
                     imbue_success = TRUE;
                     break;
                 case OBJECT_TYPE_BLUE_COIN:
@@ -2672,6 +2700,7 @@ void imbue_action(void) {
                 case OBJECT_TYPE_RED_COIN:
                     mb64_object_data[i].imbue = IMBUE_RED_COIN;
                     imbue_success = TRUE;
+                    should_spawn_place_number(mb64_cursor_pos);
                     break;
                 case OBJECT_TYPE_BUTTON:
                     mb64_object_data[i].imbue = IMBUE_RED_SWITCH;

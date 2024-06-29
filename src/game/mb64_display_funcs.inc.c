@@ -9,6 +9,60 @@ void df_follow_parent(s32 context) {
     o->oFaceAngleYaw = o->parentObj->oFaceAngleYaw;// + o->oAngleVelYaw;
 }
 
+void df_orange_number(s32 context) {
+    if (context == MB64_DF_CONTEXT_INIT) {
+        o->oHomeX = o->oPosX;
+        o->oHomeZ = o->oPosZ;
+        o->oVelY = 26.0f;
+    } else {
+        o->oPosY += o->oVelY;
+        o->oVelY -= 2.0f;
+
+        if (o->oVelY < -21.0f) {
+            o->oVelY = 14.0f;
+        }
+
+        s32 offsetX, offsetZ;
+        offsetX = o->oHomeY * sins(mb64_camera_angle - 0x4000);
+        offsetZ = o->oHomeY * coss(mb64_camera_angle - 0x4000);
+
+        o->oPosX = o->oHomeX + offsetX;
+        o->oPosZ = o->oHomeZ + offsetZ;
+
+        if (o->oTimer == 35) {
+            struct Object *sparkleObj = spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
+            sparkleObj->oPosY -= 30.0f;
+            obj_mark_for_deletion(o);
+        }
+    }
+}
+
+void df_spawn_number_object(s8 pos[3], f32 posOffset, s32 digit) {
+    struct Object *preview_object = spawn_object(gMarioObject, MODEL_NUMBER, bhvPersistentPreviewObject);
+    preview_object->oPosX = GRID_TO_POS(pos[0]);
+    preview_object->oPosY = GRID_TO_POS(pos[1]) + 25.f;
+    preview_object->oPosZ = GRID_TO_POS(pos[2]);
+    preview_object->oHomeY = posOffset; // lol
+    preview_object->oAnimState = digit;
+    preview_object->oPreviewObjDisplayFunc = df_orange_number;
+    preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+}
+
+void df_spawn_number(s8 pos[3], s32 number) {
+    if (number > 99) {
+        df_spawn_number_object(pos, 56.f, number % 10);
+        df_spawn_number_object(pos, 0.f, (number / 10) % 10);
+        df_spawn_number_object(pos, -56.f, number / 100);
+    }
+    else if (number >= 10) {
+        df_spawn_number_object(pos, 28.f, number % 10);
+        df_spawn_number_object(pos, -28.f, number / 10);
+    }
+    else {
+        df_spawn_number_object(pos, 0.f, number);
+    }
+}
+
 void df_star(UNUSED s32 context) {
     o->oFaceAngleYaw = (s16)(0x800 * gGlobalTimer);
 }
