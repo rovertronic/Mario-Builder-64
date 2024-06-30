@@ -7548,6 +7548,7 @@ const BehaviorScript bhvNoteblock[] = {
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
     SCALE(0,127),
+    DELAY(1),
     CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(noteblock_function),
@@ -9461,7 +9462,8 @@ const BehaviorScript bhvTimedBlock[] = {
     END_LOOP(),
 };
 
-extern void bhv_woodplat(void);
+extern void bhv_woodplat_init(void);
+extern void bhv_woodplat_loop(void);
 extern void bhv_woodplat_col_init(void);
 const BehaviorScript bhvWoodPlatCol[] = {
     BEGIN(OBJ_LIST_SURFACE),
@@ -9476,8 +9478,9 @@ const BehaviorScript bhvWoodPlat[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     OR_LONG(oFlags, (OBJ_FLAG_SIMPLE_WALL_CHECKS | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     SET_HOME(),
+    CALL_NATIVE(bhv_woodplat_init),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_woodplat),
+        CALL_NATIVE(bhv_woodplat_loop),
     END_LOOP(),
 };
 extern void bhv_breakable_box_rf_loop(void);
