@@ -2627,21 +2627,21 @@ void cur_obj_interact_with_noteblock(void) {
 }
 
 void cur_obj_interact_with_floor_switch(void) {
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvFloorSwitchHiddenObjects)) {
-        struct Object * switch_interacting = sInteractFloor->object;
-
-        if (switch_interacting->oAction == PURPLE_SWITCH_ACT_IDLE) {
-            switch_interacting->oAction = PURPLE_SWITCH_ACT_PRESSED;
+    if (!(o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) || (sInteractFloor->object == NULL)) return;
+    
+    struct Object *platform = sInteractFloor->object;
+    
+    if (obj_has_behavior(platform, bhvFloorSwitchHiddenObjects)) {
+        if (platform->oAction == PURPLE_SWITCH_ACT_IDLE) {
+            platform->oAction = PURPLE_SWITCH_ACT_PRESSED;
         }
-    }
-
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvOnOffButton)) {
-        struct Object * switch_interacting = sInteractFloor->object;
-
-        if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
-            mb64_play_onoff = switch_interacting->oBehParams2ndByte;
+    } else if (obj_has_behavior(platform, bhvOnOffButton)) {
+        if ((platform->oAction == 1) && (platform->oTimer > 30)) {
+            mb64_play_onoff = platform->oBehParams2ndByte;
             play_sound(SOUND_GENERAL2_BUTTON_PRESS, gGlobalSoundSource);
         }
+    } else if (obj_has_behavior(platform, bhvPlatformOnTrack)) {
+        platform->oPlatformOnTrackWasStoodOn = TRUE;
     }
 }
 

@@ -224,7 +224,7 @@ static void platform_on_track_act_init(void) {
  * Wait for mario to stand on the platform for 20 frames, then begin moving.
  */
 static void platform_on_track_act_wait_for_mario(void) {
-    if (gMarioPlatform == o) {
+    if ((gMarioPlatform == o) || o->oPlatformOnTrackWasStoodOn) {
         if (o->oTimer > 20) {
             o->oAction = PLATFORM_ON_TRACK_ACT_MOVE_ALONG_TRACK;
             o->oForwardVel = 15.0f;
@@ -234,10 +234,6 @@ static void platform_on_track_act_wait_for_mario(void) {
             }
         }
     } else {
-        if (o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM) {
-            platform_on_track_reset();
-        }
-
         o->oTimer = 0;
     }
 }
@@ -288,7 +284,7 @@ static void platform_on_track_act_move_along_track(void) {
         }
     }
 
-    if (gMarioPlatform != o && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING)) {
+    if (gMarioPlatform != o && (o->oPlatformOnTrackType != PLATFORM_ON_TRACK_TYPE_LOOPING) && (!o->oPlatformOnTrackWasStoodOn)) {
         platform_on_track_mario_not_on_platform();
     } else {
         o->oTimer = 0;
@@ -374,7 +370,7 @@ void bhv_platform_on_track_update(void) {
             break;
     }
 
-    o->oDontInertia = FALSE;
+    o->oPlatformOnTrackWasStoodOn = FALSE;
 }
 
 /**
