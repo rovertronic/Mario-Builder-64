@@ -1288,8 +1288,8 @@ const BehaviorScript bhvTriangleParticleSpawner[] = {
 
 extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvGrindel[] = {
-    BEGIN(OBJ_LIST_POLELIKE),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)),
     LOAD_COLLISION_DATA(ssl_seg7_collision_grindel),
     SET_HOME(),
     SET_INT(oAction, 1),
@@ -1297,35 +1297,27 @@ const BehaviorScript bhvGrindel[] = {
     CALL_NATIVE(bhv_grindel_thwomp_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
-        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
-// const BehaviorScript bhvThwomp2[] = {
-//     BEGIN(OBJ_LIST_SURFACE),
-//     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B92C),
-//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     ADD_FLOAT(oPosY, 1),
-//     SET_HOME(),
-//     SCALE(/*Unused*/ 0, /*Field*/ 300),
-//     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
-//     BEGIN_LOOP(),
-//         CALL_NATIVE(bhv_grindel_thwomp_loop),
-//         CALL_NATIVE(load_object_collision_model),
-//     END_LOOP(),
-// };
-
 const BehaviorScript bhvThwomp[] = {
-    BEGIN(OBJ_LIST_POLELIKE),
+    BEGIN(OBJ_LIST_DEFAULT),
     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B7D0),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)),
     SET_HOME(),
     SET_INT(oAction, 1),
-    CALL_NATIVE(bhv_grindel_thwomp_init),
     SCALE(/*Unused*/ 0, /*Field*/ 150),
+    CALL_NATIVE(bhv_grindel_thwomp_init),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvGrindelThwompCol[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    SET_FLOAT(oCollisionDistance, 500),
+    BEGIN_LOOP(),
         CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
@@ -9467,7 +9459,7 @@ extern void bhv_woodplat_loop(void);
 extern void bhv_woodplat_col_init(void);
 const BehaviorScript bhvWoodPlatCol[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_LONG(oFlags, (OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
+    OR_LONG(oFlags, (OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(woodplat_collision),
     CALL_NATIVE(bhv_woodplat_col_init),
     BEGIN_LOOP(),

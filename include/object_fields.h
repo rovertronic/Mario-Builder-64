@@ -1047,7 +1047,8 @@
 #define /*0x100*/ oSwoopTargetRoll    OBJECT_FIELD_S32(O_SWOOP_TARGET_ROLL_INDEX) // unused
 
 /* Thwomp */
-#define /*0x0F4*/ oThwompRandomTimer OBJECT_FIELD_S32(0x1B)
+#define /*0x0F4*/ oThwompRandomTimer  OBJECT_FIELD_S32(0x1B)
+#define /*0x0F8*/ oThwompCrushHandler OBJECT_FIELD_OBJ(0x1C)
 
 /* Tilting Platform */
 #define /*0x0F4*/ O_TILTING_PYRAMID_NORMAL_INDEX   0x1B
