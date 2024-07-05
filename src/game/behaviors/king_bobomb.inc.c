@@ -83,12 +83,11 @@ void king_bobomb_act_active(void) { // act 2
 
     if (cur_obj_check_grabbed_mario()) {
         o->oAction = KING_BOBOMB_ACT_GRABBED_MARIO;
+    } else if (o->oDistanceToMario > MB64_BOSS_DETRIGGER_DIST) {
+        o->oAction = KING_BOBOMB_ACT_INACTIVE;
+        stop_mb64_extra_music(2);
+        o->oKingBobombShouldStomp = 0;
     }
-
-    // if (mario_is_far_below_object(1200.0f)) {
-    //     o->oAction = KING_BOBOMB_ACT_INACTIVE;
-    //     stop_mb64_extra_music(2);
-    // }
 }
 
 void king_bobomb_act_grabbed_mario(void) { // act 3

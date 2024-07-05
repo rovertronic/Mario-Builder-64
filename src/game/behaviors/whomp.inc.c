@@ -95,10 +95,8 @@ void king_whomp_chase(void) {
     if (o->oTimer > 30) {
         s16 marioAngle = abs_angle_diff(o->oAngleToMario, o->oMoveAngleYaw);
         if (marioAngle < 0x2000) {
-            if (o->oDistanceToMario < 1500.0f) {
-                o->oForwardVel = 9.0f;
-                cur_obj_init_animation_with_accel_and_sound(0, 3.0f);
-            }
+            o->oForwardVel = 9.0f;
+            cur_obj_init_animation_with_accel_and_sound(0, 3.0f);
             if (o->oDistanceToMario < 300.0f) {
                 o->oAction = 3;
             }
@@ -107,8 +105,9 @@ void king_whomp_chase(void) {
 
     whomp_play_sfx_from_pound_animation();
 
-    if (o->oDistanceToMario > MB64_BOSS_TRIGGER_DIST+50.0f) {
+    if (o->oDistanceToMario > MB64_BOSS_DETRIGGER_DIST) {
         o->oAction = 0;
+        o->oForwardVel = 0.f;
         stop_mb64_extra_music(2);
     }
 }
