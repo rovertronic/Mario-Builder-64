@@ -1316,7 +1316,7 @@ const BehaviorScript bhvThwomp[] = {
 
 const BehaviorScript bhvGrindelThwompCol[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    SET_FLOAT(oCollisionDistance, 500),
+    SET_FLOAT(oCollisionDistance, 800),
     BEGIN_LOOP(),
         CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
