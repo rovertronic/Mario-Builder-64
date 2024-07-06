@@ -986,7 +986,7 @@ void bowser_act_thrown(void) {
         cur_obj_init_animation_with_sound(BOWSER_ANIM_SHAKING);
         bowser_bounce_effects(&o->oBowserTimer);
         // Reset speed when he moves on ground
-        if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
+        if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             o->oForwardVel = 0.0f;
             o->oSubAction++; // stops this current subaction
         }
@@ -1156,7 +1156,7 @@ void bowser_dead_bounce(void) {
     if (o->oMoveFlags & OBJ_MOVE_LANDED) {
         cur_obj_play_sound_2(SOUND_OBJ_BOWSER_WALK);
     }
-    if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
+    if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
         o->oForwardVel = 0.0f;
         o->oSubAction++; // BOWSER_SUB_ACT_DEAD_WAIT
     }

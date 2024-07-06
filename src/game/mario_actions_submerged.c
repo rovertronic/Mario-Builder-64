@@ -800,6 +800,7 @@ static s32 check_water_grab(struct MarioState *m) {
     if (m->marioObj->collidedObjInteractTypes & INTERACT_GRABBABLE) {
         struct Object *object = mario_get_collided_object(m, INTERACT_GRABBABLE);
         if (object->oInteractionSubtype & INT_SUBTYPE_NOT_GRABBABLE) return FALSE;
+        if (object->behavior == segmented_to_virtual(bhvBowser)) return FALSE;
         f32 dx = object->oPosX - m->pos[0];
         f32 dz = object->oPosZ - m->pos[2];
         s16 dAngleToObject = atan2s(dz, dx) - m->faceAngle[1];
