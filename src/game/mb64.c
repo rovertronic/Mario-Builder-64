@@ -400,10 +400,17 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
 }
 
 u32 get_tile_occupy_flags(u32 type) {
-    if (type == TILE_TYPE_POLE) return OBJ_OCCUPY_INNER;
-    if (type == TILE_TYPE_FENCE) return OBJ_OCCUPY_OUTER;
-    if (type == TILE_TYPE_CULL) return 0;
-    return OBJ_OCCUPY_FULL;
+    switch (type) {
+        case TILE_TYPE_POLE:
+            return OBJ_OCCUPY_INNER;
+        case TILE_TYPE_FENCE:
+        case TILE_TYPE_TROLL:
+            return OBJ_OCCUPY_OUTER;
+        case TILE_TYPE_CULL:
+            return 0;
+        default:
+            return OBJ_OCCUPY_FULL;
+    }
 }
 
 u32 can_place(s8 pos[3], u32 occupyFlags) {
