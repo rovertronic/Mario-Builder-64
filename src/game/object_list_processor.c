@@ -575,6 +575,7 @@ void update_non_terrain_objects(void) {
         gObjectCounter += update_objects_in_list(&gObjectLists[listIndex]);
         if (listIndex == OBJ_LIST_PLAYER) {
             profiler_update(PROFILER_TIME_MARIO, profiler_get_delta(PROFILER_DELTA_COLLISION) - first);
+            if (gTimeStopState & TIME_STOP_ACTIVE) gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         }
         i++;
     }
