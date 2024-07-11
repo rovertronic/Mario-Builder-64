@@ -168,7 +168,32 @@ s32 update_angle_from_move_flags(s16 *angle) {
 }
 
 void bhv_scuttlebug_loop(void) {
-    Vec3f crabDisplacement, crabNewDisplacement;
+    if (o->oSubAction >= 6) {
+        if ((gMarioState->action & ACT_FLAG_ATTACKING) || (o->oSubAction == 7)) {
+            spawn_mist_particles();
+            if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+                obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
+            }
+            obj_mark_for_deletion(o);
+            gMarioState->faceCrablet = NULL;
+            play_sound(SOUND_OBJ_DYING_ENEMY1, o->header.gfx.cameraToObject);
+            return;
+        }
+        vec3_copy(&o->oPosVec, gMarioState->pos);
+        o->oPosX += 60.f * sins(gMarioState->faceAngle[1]);
+        o->oPosY += 100.f;
+        o->oPosZ += 60.f * coss(gMarioState->faceAngle[1]);
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        cur_obj_set_home_if_safe_held();
+
+        o->oVelY = 0.0f;
+        if (o->oTimer > 20) {
+            gMarioState->hurtCounter ++;
+            o->oTimer = 0;
+        }
+        return;
+    }
+
     struct ObjectHitbox *hitbox_to_use;
     Vec3f original_pos;
     vec3f_copy(original_pos,&o->oPosX);
@@ -190,33 +215,7 @@ void bhv_scuttlebug_loop(void) {
         o->oScuttlebugIsAtttacking = 0;
     }
 
-    //fuck mario's head
-    if ((o->oDistanceToMario < 200.0f)&&(o->oPosY-30.0f>gMarioState->pos[1])) {
-        o->oSubAction = 6;
-    }
-
-    vec3f_set(o->header.gfx.scale,1.0f,1.0f,1.0f);
     switch (o->oSubAction) {
-        case 6:
-            mtxf_copy(o->transform,gMarioState->HeadMatrix);
-            o->header.gfx.throwMatrix = &o->transform;
-
-            vec3f_set(crabDisplacement, 150.f, -40.f, 10.0f); // local displacement of the crab
-            linear_mtxf_mul_vec3f(o->transform, crabNewDisplacement, crabDisplacement); // rotate it with mario's head
-            vec3f_add(o->transform[3], crabNewDisplacement); // add position
-            vec3f_copy(&o->oPosX,o->transform[3]); // copy crab position to object
-            vec3f_set(o->header.gfx.scale,3.5f,3.5f,3.5f);
-
-            o->oVelY = 0.0f;
-            //o->oMoveAngleYaw = gMarioState->faceAngle[1];
-            if (o->oTimer > 20) {
-                gMarioState->hurtCounter ++;
-                if (gMarioState->CostumeID != 7) {
-                    gMarioState->hurtCounter ++;
-                }
-                o->oTimer = 0;
-            }
-        break;
         case 0:
             if (o->oMoveFlags & OBJ_MOVE_LANDED) {
                 cur_obj_play_sound_2(SOUND_OBJ_GOOMBA_ALERT);
@@ -298,23 +297,18 @@ void bhv_scuttlebug_loop(void) {
             break;
     }
 
+    //fuck mario's head
+    if ((o->oDistanceToMario < 200.0f)&&(o->oPosY-30.0f>gMarioState->pos[1])&&(!gMarioState->faceCrablet)) {
+        o->oSubAction = 6;
+        gMarioState->faceCrablet = o;
+    }
+
     f32 animSpeed = o->oForwardVel < 10.0f ? 1.0f : 3.0f;
 
     cur_obj_init_animation_with_accel_and_sound(0, animSpeed);
 
     if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
         set_obj_anim_with_accel_and_sound(1, 23, SOUND_OBJ2_SCUTTLEBUG_WALK);
-    }
-
-    if (o->parentObj != o) {
-        if (obj_is_hidden(o)) {
-                //gMarioState->EA_ACTIVE --;
-                //gMarioState->EA_LEFT --;
-            obj_mark_for_deletion(o);
-        }
-        if (o->activeFlags == ACTIVE_FLAG_DEACTIVATED) {
-            o->parentObj->oScuttlebugSpawnerIsDeactivated = 1;
-        }
     }
 
     cur_obj_move_standard(-50);

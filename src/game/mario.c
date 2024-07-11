@@ -2387,47 +2387,6 @@ void init_mario(void) {
 
     gMarioState->numAir = 700;
     gMarioState->RFuel=0;
-/**
-    //crimas only!!!
-    gMarioState->MessHeld = 0;
-    gMarioState->MessNumber = 0;
-    //crimas only!!
-
-    gMarioState->gCurrMinigame = 0;
-    gMarioState->EA_WAVES = 0;
-    //arena
-    if ((gCurrLevelNum == LEVEL_CCM)&&(gCurrAreaIndex == 3)) {
-        gMarioState->gCurrMinigame = 1;
-        gMarioState->EA_WAVES = 0;
-        gMarioState->EA_TOTAL = 0;
-        gMarioState->EA_LEFT = 0;
-        gMarioState->EA_ACTIVE = 0;
-        }
-    //minigame things
-    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
-        gMarioState->EA_WAVES = 0;
-        if (gCurrAreaIndex == 2) {
-            gMarioState->gCurrMinigame = 5;
-        }
-        if (gCurrAreaIndex == 1) {
-            gMarioState->gCurrMinigame = 4;
-        }
-        if (gCurrAreaIndex == 3) {
-            gMarioState->gCurrMinigame = 6;
-            gMarioState->BadAppleActivate = TRUE;
-            bad_apple_par = 0.0f;
-            bapple_frame = 0;
-        }
-        if (gCurrAreaIndex == 4) {
-            gMarioState->gCurrMinigame = 7;
-        }
-    }
-    //hexagon heat
-    if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex == 2)) {
-        gMarioState->gCurrMinigame = 3;
-        gMarioState->EA_WAVES = 0;
-        }
-**/
 
     gMarioState->SwitchPressed = 0;
 
@@ -2510,7 +2469,7 @@ void init_mario(void) {
     //     capObject->oMoveAngleYaw = 0;
     // }
 
-    if (gMarioState->NewLevel == TRUE) {
+    if (gMarioState->NewLevel) {
         gMarioState->invincTimer = 60;
         if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
             gMarioState->numBadgePoints --;
@@ -2521,8 +2480,12 @@ void init_mario(void) {
         if (gMarioState->MaskChase) {
             gMarioState->hurtCounter += 999;
         }
+        if (gMarioState->faceCrablet) {
+            gMarioState->faceCrablet->oSubAction = 7;
+        }
         gMarioState->NewLevel = FALSE;
     }
+    gMarioState->faceCrablet = NULL;
 
     gMarioState->heldObj = NULL;
     gMarioState->blueCoinSwitchTimer = 0;

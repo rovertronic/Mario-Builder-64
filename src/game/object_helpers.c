@@ -2079,9 +2079,6 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
             if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
-                if (o->oNumLootCoins > 0) {
-                    gMarioState->DeadRexes ++;
-                }
                 spawn_mist_particles();
                 if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2747,6 +2744,7 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
 void cur_obj_set_home_if_safe_held(void) {
     // Check if Mario is grounded
     if (gMarioState->action & ACT_FLAG_AIR) return;
+    if (gMarioState->floor->type == SURFACE_DEATH_PLANE) return;
     if (o->oImbue == IMBUE_STAR) return;
 
     vec3_copy(&o->oHomeVec, gMarioState->pos);
