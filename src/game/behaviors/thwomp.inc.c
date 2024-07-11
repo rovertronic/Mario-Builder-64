@@ -73,7 +73,7 @@ ObjActionFunc sGrindelThwompActions[] = {
 };
 
 void bhv_grindel_thwomp_init(void) {
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
     if (cur_obj_has_model(MODEL_MAKER_GRINDEL)) {
         o->oFaceAngleYaw += 0x4000;
         o->oMoveAngleYaw += 0x4000;

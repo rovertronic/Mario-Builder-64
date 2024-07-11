@@ -1569,7 +1569,7 @@ void cur_obj_update_ceiling(void) {
 }
 
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
     if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
         cur_obj_update_floor();
         o->oMoveFlags &= ~(OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER);
@@ -1610,7 +1610,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     s32 careAboutEdgesAndSteepSlopes = FALSE;
     s32 negativeSpeed = FALSE;
 
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
 
     //! Because some objects allow these active flags to be set but don't
     //  avoid updating when they are, we end up with "partial" updates, where
@@ -2819,17 +2819,14 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
             break;
         case IMBUE_RED_SWITCH:
         case IMBUE_BLUE_SWITCH:;
-            struct Surface *floor;
-            f32 floorY = find_floor(o->oHomeX,o->oHomeY+10.f,o->oHomeZ,&floor);
-            // Abort spawn if over death barrier
-            if (floor && floor->type != SURFACE_DEATH_PLANE) {
-                dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
-                if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
-                vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
-                dropobj->oPosY = floorY;
-                dropobj->oMoveAngleYaw = 0;
-                spawn_mist_at_obj(dropobj);
-            }
+            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
+            if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
+            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            add_obj_to_physics_list(dropobj);
+            dropobj->oExtraVariable1 = 1;
+            dropobj->oMoveAngleYaw = 0;
+            dropobj->oVelY = 0.f;
+            spawn_mist_at_obj(dropobj);
             break;
         case IMBUE_RED_COIN:
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
@@ -2899,15 +2896,15 @@ s32 cur_obj_should_load_collision(void) {
     return FALSE;
 }
 
-void obj_add_self_to_physics_list(void) {
-    if (!o->oHasPhysics) {
-        o->oHasPhysics = TRUE;
+void add_obj_to_physics_list(struct Object *obj) {
+    if (!obj->oHasPhysics) {
+        obj->oHasPhysics = TRUE;
         if (physics_object_list_head) {
-            physics_object_list_tail->nextPhysicsObj = o;
-            physics_object_list_tail = o;
+            physics_object_list_tail->nextPhysicsObj = obj;
+            physics_object_list_tail = obj;
         } else {
-            physics_object_list_head = o;
-            physics_object_list_tail = o;
+            physics_object_list_head = obj;
+            physics_object_list_tail = obj;
         }
     }
 }

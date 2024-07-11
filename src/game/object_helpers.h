@@ -289,7 +289,7 @@ void cur_obj_spawn_loot_blue_coin(void);
 void cur_obj_floor_interactions(u8 move_standard_or_object_step);
 s32 is_obj_interacting_with_noteblock(u8 move_standard_or_object_step);
 s32 cur_obj_should_load_collision(void);
-void obj_add_self_to_physics_list(void);
+void add_obj_to_physics_list(struct Object *obj);
 
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY);
 

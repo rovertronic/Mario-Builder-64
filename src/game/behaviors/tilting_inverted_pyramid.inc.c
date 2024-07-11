@@ -6144,9 +6144,26 @@ void bhv_boss(void) {
     mark_obj_for_deletion(o);
 }
 
+void bhv_onoffswitch_falling(void) {
+    o->oVelY -= 4.f;
+    o->oPosY += o->oVelY;
+
+    f32 floorHeight = find_floor(o->oPosX, o->oPosY+50.f, o->oPosZ, &o->oFloor);
+    if (o->oPosY < floorHeight) {
+        o->oPosY = floorHeight;
+        o->oVelY = 0.f;
+        o->oExtraVariable1 = 0;
+        remove_object_from_physics_list(o);
+        if (o->oFloor->type == SURFACE_DEATH_PLANE) o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
+}
+
 void bhv_onoffswitch(void) {
     if (o->header.gfx.scale[1] > 0.11f) {
         load_object_collision_model();
+    }
+    if (o->oExtraVariable1) {
+        bhv_onoffswitch_falling();
     }
     switch(o->oAction) {
         case 0: // init
