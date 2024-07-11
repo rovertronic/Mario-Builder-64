@@ -2171,17 +2171,18 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     //move warp for safe ground
     sp1C = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
 
-    if (gMarioState->ISSAFE) {
-        if (sp1C != NULL) {
-            //if ((!(gMarioState->floor->type == SURFACE_DEATH_PLANE))&&(!(gMarioState->floor->type == SURFACE_HARD_VERY_SLIPPERY))
-            //..&&(gMarioState->input & INPUT_OFF_FLOOR)&&(gMarioState->floor->object == NULL)&&((gMarioState->area->terrainType & TERRAIN_MASK) != TERRAIN_SLIDE)) {
-                sp1C->oPosX = gMarioState->pos[0];
-                sp1C->oPosY = gMarioState->floorHeight;
-                sp1C->oPosZ = gMarioState->pos[2];
-                //}
-            }
-        gMarioState->ISSAFE = FALSE;
+    if (sp1C != NULL) {
+        if (gMarioState->floor &&
+        (gMarioState->action & (ACT_FLAG_MOVING | ACT_FLAG_STATIONARY)) &&
+        !SURFACE_IS_UNSAFE(gMarioState->floor->type) &&
+        (gMarioState->floor->object == NULL) &&
+        !mario_floor_is_slippery(gMarioState)) {
+
+            sp1C->oPosX = gMarioState->pos[0];
+            sp1C->oPosY = gMarioState->floorHeight;
+            sp1C->oPosZ = gMarioState->pos[2];
         }
+    }
 
     if ((uintptr_t) gDynamicSurfacePoolEnd >= (uintptr_t) gDynamicSurfacePool + DYNAMIC_SURFACE_POOL_SIZE) {
         print_text_fmt_int(10, 56, "OUT OF POOL SPACE 0*%08x", (uintptr_t) gDynamicSurfacePoolEnd - (uintptr_t) gDynamicSurfacePool);

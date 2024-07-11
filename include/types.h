@@ -565,8 +565,6 @@ struct MarioState {
 
             u8 MaskChase;
 
-            u8 InsideCourse;
-
             u8 LavaHeat;
 
             u8 Cheats;

@@ -791,7 +791,6 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 sDelayedWarpTimer = 32;
                 sSourceWarpNodeId = WARP_NODE_DEFAULT;
                 gSavedCourseNum = 0;
-                gMarioState->InsideCourse = TRUE;
                 play_transition(WARP_TRANSITION_FADE_INTO_MARIO, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
 
@@ -811,36 +810,23 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 break;
 
             case WARP_OP_WARP_FLOOR:
-                sSourceWarpNodeId = WARP_NODE_WARP_FLOOR;
-                if (area_get_warp_node(sSourceWarpNodeId) == NULL) {
-#ifdef ENABLE_LIVES
-                    if (m->numLives == 0) {
-                        sDelayedWarpOp = WARP_OP_GAME_OVER;
-                    } else {
-                        sSourceWarpNodeId = WARP_NODE_DEATH;
-                    }
-#else
-                    sSourceWarpNodeId = WARP_NODE_DEATH;
-#endif                 
-                } else {
-                    //what the fuck is this bruhhhh
-                    //fuck sm64 hp
-                    //i have no idea if changing the 8 to a 5 will work, hope it does!
-                    resp_cond = ((gMarioState->health > dmg_amount) && (mb64_lopt_game == MB64_GAME_BTCM) );
-                    if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
-                        resp_cond = (gMarioState->numBadgePoints > 0);
-                    }
 
-                    if (resp_cond) {
-                        //make mario respawn if he has over a third of his HP
-                        fadeMusic = FALSE;
-                        sSourceWarpNodeId = 0x0A;
-                        gMarioState->NewLevel = TRUE;
-                    } else {
-                        //if he has under, then go gaga and die
-                        sSourceWarpNodeId = WARP_NODE_DEATH;
-                        gMarioState->InsideCourse = TRUE;
-                    }
+                //what the fuck is this bruhhhh
+                //fuck sm64 hp
+                //i have no idea if changing the 8 to a 5 will work, hope it does!
+                resp_cond = ((gMarioState->health > dmg_amount) && (mb64_lopt_game == MB64_GAME_BTCM) );
+                if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+                    resp_cond = (gMarioState->numBadgePoints > 0);
+                }
+
+                if (resp_cond) {
+                    //make mario respawn if he has over a third of his HP
+                    fadeMusic = FALSE;
+                    sSourceWarpNodeId = 0x0A;
+                    gMarioState->NewLevel = TRUE;
+                } else {
+                    //if he has under, then go gaga and die
+                    sSourceWarpNodeId = WARP_NODE_DEATH;
                 }
 
                 play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
@@ -1536,17 +1522,6 @@ s32 lvl_set_current_level(UNUSED s16 initOrUpdate, s32 levelNum) {
     gCurrCourseNum = gLevelToCourseNumTable[levelNum - 1];
 	if (gCurrLevelNum == LEVEL_BOB) return 0;
     // if (gCurrLevelNum == LEVEL_SA) return 0;
-
-    if (gMarioState->InsideCourse) {
-        gCurrActNum = 2;
-        gMarioState->InsideCourse = FALSE;
-        return 0;
-    }
-    //return 0; //Star Select Disable
-
-    if (minigame_real) {
-        return 0;
-    }
 
     if (gCurrDemoInput != NULL || gCurrCreditsEntry != NULL) {
         return FALSE;
