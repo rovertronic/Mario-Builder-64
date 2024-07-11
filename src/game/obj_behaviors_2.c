@@ -466,7 +466,7 @@ static void obj_die_if_health_non_positive(void) {
         
     }
 
-    if (o->oHealth <= 0) {
+    if ((o->oHealth <= 0) || (save_file_get_badge_equip() & (1<<3))) {
         if (o->oDeathSound == 0) {
             spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
         } else if (o->oDeathSound > 0) {
@@ -493,9 +493,6 @@ static void obj_die_if_health_non_positive(void) {
         o->oAction = 0;
         o->oHealth--;
         o->oInteractStatus &= ~INT_STATUS_INTERACTED;
-        if (save_file_get_badge_equip() & (1<<3)) {
-            obj_die_if_health_non_positive();
-        }
         cur_obj_become_tangible();
     }
 }

@@ -1591,7 +1591,7 @@ char *txt_badges[] = {
     "Lava Boost",
     "Fall Damage",
     "Defense",
-    "Double Damage",
+    "One Hit",
     "Gills",
     "Fins",
     "HP Regen",

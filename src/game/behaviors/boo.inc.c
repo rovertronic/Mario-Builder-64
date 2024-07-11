@@ -480,7 +480,7 @@ static void big_boo_act_3(void) {
     if (o->oTimer == 0) {
         o->oHealth--;
         if (save_file_get_badge_equip() & (1 << BADGE_DAMAGE)) {
-            o->oHealth--;
+            o->oHealth = 0;
         }
     }
 

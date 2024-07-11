@@ -2078,7 +2078,8 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
+            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) ||
+                (save_file_get_badge_equip() & (1<<3))) {
                 spawn_mist_particles();
                 if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2089,11 +2090,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
                 create_sound_spawner(deathSound);
             } else {
                 o->oDmgFade = 255;
-                if (save_file_get_badge_equip() & (1<<3)) {
-                    o->oHealth-=2;
-                } else {
-                    o->oHealth--;
-                }
+                o->oHealth--;
             }
         } else {
             interacted = TRUE;
