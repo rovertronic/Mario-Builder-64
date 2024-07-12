@@ -2786,6 +2786,29 @@ void spawn_mist_at_obj(struct Object *obj) {
     vec3f_copy(&o->oPosVec, oldPos);
 }
 
+s32 cur_obj_drop_imbued_object_lava(s32 y_offset) {
+    if (o->oImbue == IMBUE_ONE_COIN) {
+        bully_spawn_coin();
+        o->oImbue = IMBUE_NONE;
+        return TRUE;
+    } else if ((o->oImbue == IMBUE_BLUE_COIN) || (o->oImbue == IMBUE_GREEN_COIN)) {
+        struct Object *coin;
+        if (o->oImbue == IMBUE_BLUE_COIN) {
+            coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+        } else {
+            coin = spawn_object(o, MODEL_GREEN_COIN, bhvGreenGetsSpawned);
+        }
+        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+        coin->oForwardVel = 10.0f;
+        coin->oVelY = 100.0f;
+        coin->oPosY = o->oPosY + 310.0f;
+        coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
+        o->oImbue = IMBUE_NONE;
+        return TRUE;
+    }
+    return cur_obj_drop_imbued_object(y_offset);
+}
+
 s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
     if (o->oImbue == IMBUE_NONE) return FALSE;
@@ -2800,11 +2823,14 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
     switch(o->oImbue) {
         case IMBUE_BLUE_COIN:
         case IMBUE_ONE_COIN:
+        case IMBUE_GREEN_COIN:
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
             if (o->oImbue == IMBUE_ONE_COIN) {
                 dropobj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
-            } else {
+            } else if (o->oImbue == IMBUE_BLUE_COIN) {
                 dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            } else {
+                dropobj = spawn_object(o, MODEL_GREEN_COIN, bhvGreenGetsSpawned);
             }
             vec3f_copy(&dropobj->oPosVec,&o->oPosVec);
             dropobj->oForwardVel = 3.f;

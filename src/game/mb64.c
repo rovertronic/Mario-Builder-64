@@ -575,6 +575,7 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(adjPos)) return FALSE;
 
+    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(adjPos)->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= MB64_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= MB64_FACESHAPE_TOPSLAB)) return TRUE;
     return FALSE;
@@ -2705,6 +2706,10 @@ void imbue_action(void) {
                     break;
                 case OBJECT_TYPE_RED_COIN:
                     mb64_object_data[i].imbue = IMBUE_RED_COIN;
+                    imbue_success = TRUE;
+                    break;
+                case OBJECT_TYPE_GREEN_COIN:
+                    mb64_object_data[i].imbue = IMBUE_GREEN_COIN;
                     imbue_success = TRUE;
                     break;
                 case OBJECT_TYPE_BUTTON:

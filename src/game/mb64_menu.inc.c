@@ -1397,7 +1397,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"", 0},
     {"- All enemies can now be given objects to drop on death", 0},
     {"- Objects can be placed inside ! Boxes", 0},
-    {"- Red Coins can now be placed inside enemies/bosses/boxes", 0},
+    {"- Can now place Red Coins and Green Coins inside objects", 0},
     {"- Dropped objects appear at the object's last safe location", 0},
     {"- Boxes with yellow coins now drop 3 coins instead of 1", 0},
     {"- Boos and Moneybags now show the item they will drop", 0},

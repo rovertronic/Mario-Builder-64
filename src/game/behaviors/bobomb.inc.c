@@ -23,10 +23,12 @@ void bhv_bobomb_init(void) {
 
 void bobomb_spawn_coin(s32 lava) {
     if (!(GET_BPARAM3(o->oBehParams) & RESPAWN_INFO_TYPE_NORMAL)) {
-        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
-            if (lava) {
+        if (lava) {
+            if (!cur_obj_drop_imbued_object_lava(MB64_STAR_HEIGHT)) {
                 bully_spawn_coin();
-            } else {
+            }
+        } else {
+            if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                 obj_spawn_yellow_coins(o, 1);
             }
         }
