@@ -114,6 +114,12 @@ void exclamation_box_act_scaling(void) {
 void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList, u8 boxType) {
     struct Object *contentsObj = NULL;
     
+    if (o->oImbue != IMBUE_NONE) {
+        o->oPosY += 60.f;
+        cur_obj_drop_imbued_object(0);
+        return;
+    }
+
     if (boxType < 7) { // hardcoded
         struct ExclamationBoxContents *contents = &mb64_exclamation_box_contents[boxType];
         contentsObj = spawn_object(o, contents->model, contents->behavior);
@@ -125,122 +131,6 @@ void exclamation_box_spawn_contents(struct ExclamationBoxContents *contentsList,
             o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
         }
     }
-
-
-    //this doesn't work...
-
-    /*
-    u32 bparam2u32 = o->oBehParams2ndByte;
-    u32 id_u32 = 7;
-
-    //This prevents the star from spawning with the wrong model id
-    switch(o->oBehParams2ndByte) {
-        case 1: //cosmic box
-            id_u32 = 7;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_1:
-            id_u32 = 0;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_2:
-            id_u32 = 1;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_3:
-            id_u32 = 2;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_4:
-            id_u32 = 3;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_5:
-            id_u32 = 4;
-        break;
-        case EXCLAMATION_BOX_BP_STAR_6:
-            id_u32 = 5;
-        break;
-        o->oBehParams = (bparam2u32 << 16) | (id_u32 << 24);
-    }
-    */
-
-    /*
-    if (o->oBehParams2ndByte == 1) {
-        //metal star event spawner
-        switch(gCurrLevelNum) {
-            case LEVEL_BITDW:
-                contentsObj = spawn_object(o, MODEL_DARKBOWSER, bhvBowser);
-                contentsObj->oPosX = -1683; 
-                contentsObj->oHomeY = 1339;
-                contentsObj->oPosZ = 13179;
-                contentsObj->oPosY = o->oHomeY + 2000.0f;
-                contentsObj->oBehParams2ndByte = 1;
-            break;
-
-            case LEVEL_BOB: //bully king
-                contentsObj = spawn_object(o, 0xFC, bhvBigBully);
-                contentsObj->oBehParams = 0x06000000;
-                //stop_background_music(SEQUENCE_ARGS(4, SEQ_EVENT_BOSS));
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_BOSS), 0);
-                gMarioState->BossHealth = 30;
-                gMarioState->BossHealthMax = 30;
-            break;
-            case LEVEL_WF: //metal hog warp
-                contentsObj = spawn_object(o, MODEL_NONE, bhvInstantWarp);
-                contentsObj->oBehParams = 0x00020000;
-                contentsObj->oPosY -= 400.0f;
-            break;
-            case LEVEL_JRB: //WORM
-                //stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_HOT));
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_BOSS), 0);
-                contentsObj = spawn_object(o, 0xF8, bhvPodeHead);
-                contentsObj->oPosY -= 1000.0f;
-                contentsObj->oBehParams = 0x06000000;
-                run_event(EVENT_PODE_INTRO);
-            break;
-            case LEVEL_CCM://core
-                o->oBehParams = 0x06000000;
-                contentsObj = spawn_object(o, 0xED, bhvSpawnedStar);
-                contentsObj->oVelY = 20.0f;
-                contentsObj->oForwardVel = 3.0f;
-                contentsObj->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
-                contentsObj->oBehParams = 0x06000000;
-            break;
-            case LEVEL_BBH://giant evil ghost ship
-                contentsObj = spawn_object(o, 0xF1, bhvVoidShip);
-                contentsObj->oBehParams = 0x06000000;
-                contentsObj->oDrawingDistance = 32000.0f;
-                contentsObj->oPosY = 4500.0f;
-                contentsObj->oPosZ = 10000.0f;
-                //stop_background_music(SEQUENCE_ARGS(4, SEQ_LEVEL_HOT));
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_EVENT_BOSS), 0);
-                gMarioState->BossHealth = 5;
-                gMarioState->BossHealthMax = 5;
-
-                run_event(EVENT_SHIP_INTRO);
-            break;
-            case LEVEL_HMC: //evil train
-                contentsObj = spawn_object(o, MODEL_NONE, bhvInstantWarp);
-                contentsObj->oBehParams = 0x00010000;
-            break;
-            case LEVEL_LLL: //evil vaccum
-                contentsObj = spawn_object(o, MODEL_NONE, bhvInstantWarp);
-                contentsObj->oBehParams = 0x00020000;
-                contentsObj->oPosY -= 400.0f;
-            break;
-            case LEVEL_SSL: //evil pixel bowser (unused)
-                contentsObj = spawn_object(o, MODEL_NONE, bhvRetroPipe);
-                contentsObj->oBehParams = 0x00010000;
-            break;
-            case LEVEL_DDD: //thwomp queen
-                contentsObj = spawn_object(o, MODEL_NONE, bhvInstantWarp);
-                contentsObj->oBehParams = 0x00010000;
-            break;
-            case LEVEL_SL: //
-                run_event(EVENT_QUIZ);
-            break;
-        }
-    }
-    else
-    {
-    }
-    */
 }
 
 void exclamation_box_act_explode(void) {

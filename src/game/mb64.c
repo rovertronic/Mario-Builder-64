@@ -2717,6 +2717,10 @@ void imbue_action(void) {
             }
 
             if (imbue_success && (oldImbue != mb64_object_data[i].imbue)) {
+                if (objType == OBJECT_TYPE_EXCL_BOX && mb64_object_data[i].bparam <= 3) {
+                    mb64_object_data[i].bparam = 4;
+                }
+
                 play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
                 generate_object_preview();
                 should_spawn_place_number(mb64_cursor_pos);
