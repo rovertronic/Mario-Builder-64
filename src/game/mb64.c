@@ -3275,15 +3275,9 @@ u32 main_cursor_logic(u32 joystick) {
     }
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         mb64_camera_rot_offset++;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
-        }
     }
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         mb64_camera_rot_offset--;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
-        }
     }
     mb64_camera_rot_offset = (mb64_camera_rot_offset % 4)+4;
 
@@ -3299,9 +3293,6 @@ u32 main_cursor_logic(u32 joystick) {
     //camera zooming
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         mb64_camera_zoom_index++;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-        }
     }
     mb64_camera_zoom_index = (mb64_camera_zoom_index+5)%5;
 

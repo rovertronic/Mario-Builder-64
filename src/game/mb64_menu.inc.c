@@ -2407,7 +2407,6 @@ char * mb64_pause_menu_buttons_options[] = {
     "Show HUD",
     "Lakitu Collision",
     "HUD Layout",
-    "Camera Sounds",
     "Speedrun Timer",
     "Return",
 };
@@ -2417,8 +2416,7 @@ void mb64_init_pause_menu(void) {
     mb64_pause_menu_state = 0;
 }
 
-#define RETURN_OPTION_INDEX 6
-#define RETURN_OPTION_INDEXP1 (RETURN_OPTION_INDEX+1)
+#define RETURN_OPTION_INDEX ARRAY_COUNT(mb64_pause_menu_buttons_options)-1
 
 s32 draw_mb64_pause_menu(void) {
     u8 returnval = 0;
@@ -2527,7 +2525,7 @@ s32 draw_mb64_pause_menu(void) {
 
         case 1: //options
             xoff = (get_string_width_ascii(mb64_pause_menu_buttons_options[2])/2);
-            for (s32 i=0;i<RETURN_OPTION_INDEXP1;i++) {
+            for (s32 i=0;i<ARRAY_COUNT(mb64_pause_menu_buttons_options);i++) {
                 char * onoroff_string = ": OFF";
                 if (i==3) {
                     onoroff_string = ": Vanilla";
@@ -2565,7 +2563,8 @@ s32 draw_mb64_pause_menu(void) {
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                     break;
             }
-            mb64_menu_index = (mb64_menu_index + RETURN_OPTION_INDEXP1) % RETURN_OPTION_INDEXP1;
+            u32 numMenuOptions = ARRAY_COUNT(mb64_pause_menu_buttons_options);
+            mb64_menu_index = (mb64_menu_index + numMenuOptions) % numMenuOptions;
 
             if (gPlayer1Controller->buttonPressed & (B_BUTTON)) {
                 mb64_pause_menu_state = 0;
