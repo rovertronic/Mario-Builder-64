@@ -1326,6 +1326,8 @@ struct mb64_credits_entry mb64_credits[] = {
     {"BroDute",0},
     {"Thodds",0},
     {"Yoshi Milkman",0},
+    {"Dan GPTV",0},
+    {"Lilaa3",0},
     {"",0},
     {"GitHub Contributors",1},
     {"aglab2",0},
@@ -1342,19 +1344,8 @@ struct mb64_credits_entry mb64_credits[] = {
     {"Pyro Jay",0},
     {"",0},
     {"Music Ports",1},
-    {"ArcticJaguar725",0},
-    {"cpuHacka101",0},
-    {"DobieMeltfire",0},
-    {"EDark",0},
-    {"mosky2000",0},
-    {"MrGreenThunder",0},
-    {"PablosCorner",0},
-    {"ShrooboidBrat",0},
-    {"Skelux",0},
-    {"sm64pie",0},
-    {"Toasterketchup",0},
-    {"Warwiio",0},
-    {"VanessaWolfe2015",0},
+    {"SMWCentral",0},
+    {"SM64 Editor",0},
     {"",0},
     {"Beta Testers",1},
     {"Arceveti",0},
@@ -1372,14 +1363,105 @@ struct mb64_credits_entry mb64_credits[] = {
     {"RationaLess",0},
     {"SpK",0},
     {"Vortoxium",0},
-    {"",0},
-    {"Mario Builder 64 Inspiration",1},
-    {"Ting Thing",0},
+    {NULL, 0},
 };
 
+struct mb64_credits_entry mb64_v1_1_changelog[] = {
+    {"Mario Builder 64 - v1.1 Changelog",1},
+    {"",0},
+    {"", 0},
+    {"Major Changes", 1},
+    {"", 0},
+    {"- Increased vertex limit from 40,000 to 50,000", 0},
+    {"- Increased tile limit from 10,000 to 15,000", 0},
+    {"- New boundary type: Interior"},
+    {"- New object: Inverted Timed Box"},
+    {"- Ability to place multiple objects/tiles in the same spot", 0},
+    {"- Wooden Platforms form a stack when placed vertically", 0},
+    {"- Objects can now trigger Activated Moving Platforms", 0},
+    {"- Bowling Balls can now destroy boxes and kill enemies", 0},
+    {"- Custom Theme menu now shows slipperiness of current tile", 0},
+    {"- Display the current number of placed objects in the", 0},
+    {"    editor when placing Stars or Red Coins", 0},
+    {"- Koopa the Quick respawns after losing the race", 0},
+    {"", 0},
+    {"Conveyors", 1},
+    {"", 0},
+    {"- Added thin and sloped conveyors"},
+    {"- Added red/blue on-off conveyors"},
+    {"- The underside of conveyors are now hangable"},
+    {"- Improved conveyor physics"},
+    {"", 0},
+    {"Imbuing System", 1},
+    {"", 0},
+    {"- All enemies can now be given objects to drop on death", 0},
+    {"- Red Coins can now be placed inside enemies/bosses/boxes", 0},
+    {"- Dropped objects appear at the object's last safe location", 0},
+    {"- Boxes with yellow coins now drop 3 coins instead of 1", 0},
+    {"- Boos and Moneybags now show the item they will drop", 0},
+    {"", 0},
+    {"Minor Tweaks", 1},
+    {"", 0},
+    {"- Heavily improved Thwomp physics and interactions", 0},
+    {"- Physics given to Mr. Blizzard and Piranha Plants", 0},
+    {"- AI and physics improvements for all enemies", 0},
+    {"- Added the Bowling Ball to the BTCM gamemode", 0},
+    {"- Throwable Boxes respawn after being broken", 0},
+    {"- Throwable Boxes can no longer break Reinforced Boxes", 0},
+    {"- Using a Noteblock no longer forces you to drop objects", 0},
+    {"    or stop riding a shell", 0},
+    {"- Nerfed the Showrunner", 0},
+    {"- Bowser no longer instantly dies to lava", 0},
+    {"- Buffed Heal Plus badge to apply to all coins", 0},
+    {"- Buffed/renamed Double Damage badge to One Hit badge", 0},
+    {"- Improved cursor wrapping around the sides of the level", 0},
+    {"- Added a speedrun timer option", 0},
+    {"- Ability to hide help text in screenshot mode", 0},
+    {"- Improved vertex/tile/object limit display", 0},
+    {"- Better warnings for vertex limit and having FBE disabled", 0},
+    {"", 0},
+    {"Improved Visuals", 1},
+    {"", 0},
+    {"- Better texture mapping for slopes", 0},
+    {"- Better object models for Wooden Platform, On-Off Block,", 0},
+    {"    On-Off Switch, Reinforced Box", 0},
+    {"- Improved textures: Quicksand, Cosmic Void, Rocky Dirt,", 0},
+    {"    Green Rock, Ocean Floor, Scorched Pillar, Hazard Stripes",0},
+    {"", 0},
+    {"Bug Fixes", 1},
+    {"", 0},
+    {"- Fixed BTCM void respawn mechanic not working", 0},
+    {"- As a result, fixed Bottomless badge having no effect", 0},
+    {"- Fixed incorrect star IDs with 8 or more stars", 0},
+    {"- Fixed infinite coin exploit from Blue Coin previews", 0},
+    {"- Fixed trajectory data not resetting between levels", 0},
+    {"- Fixed crash when climbing poles with Mario cam", 0},
+    {"- Fixed wooden platforms not squishing Mario", 0},
+    {"- Fixed softlock on top of fences at the level boundary", 0},
+    {"- Fixed lava bubbles appearing far below the level", 0},
+    {"- Fixed glitchy bully physics in midair and on snow/ice", 0},
+    {"- Countless minor physics and AI fixes", 0},
+    {"- Fixed bug allowing unlimited stars to be placed", 0},
+    {"- Fixed failure to load levels on some flashcarts", 0},
+    {"- Fixed string overflow glitches in file and author names", 0},
+    {"- Fixed bad handling of invalid level files", 0},
+    {"- Levels will not corrupt if vertex limit exceeded", 0},
+    {"- Fixed broken menus with widescreen viewport hack enabled",0},
+    {"- Fixed BTCM templates selecting the wrong music tracks", 0},
+    {NULL, 0},
+};
+
+void *mb64_mm_page_data = NULL;
 s32 credits_y_offset = 0;
 void print_maker_credits(void) {
-    s32 credits_entries = (sizeof(mb64_credits)/8);
+    struct mb64_credits_entry *credits = mb64_mm_page_data;
+    u32 leftalign = (mb64_mm_page_data != mb64_credits);
+    
+    s32 credits_entries = 0;
+    while (credits[credits_entries].text != NULL) {
+        credits_entries++;
+    }
+
     s32 lower_limit = (credits_entries*16) - 160;
 
     u8 base_alpha = 255;
@@ -1415,8 +1497,11 @@ void print_maker_credits(void) {
             if (ypos < 30) {
                 alpha = ((base_alpha/255.0f)*smoothstep2(10.0f,30.0f,ypos))*255.0f;
             }
-
-            print_maker_string_ascii_centered_alpha(160,ypos, mb64_credits[i].text, mb64_credits[i].color, alpha);
+            if (leftalign && credits[i].color == 0) {
+                print_maker_string_ascii_alpha(15,ypos, credits[i].text, credits[i].color, alpha);
+            } else {
+                print_maker_string_ascii_centered_alpha(160,ypos, credits[i].text, credits[i].color, alpha);
+            }
         }
     }
 }
@@ -1473,14 +1558,13 @@ char *mb64_mm_make_btns[] = {
 char *mb64_mm_help_btns[] = {
     "SD Card Setup",
     "Editor Controls",
-    "Version Info",
     "Share Levels",
+    "Changelog",
 };
 
 u8 mb64_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 u8 mb64_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 u8 mb64_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
-u8 mb64_mm_help_page4[] = {TXT_MM_HELP_PAGE_4};
 
 u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
 
@@ -1496,7 +1580,6 @@ u8 mb64_mm_main_state = MM_MAIN;
 u8 mb64_mm_files_prev_menu;
 s8 mb64_mm_pages = 0;
 s8 mb64_mm_page = 0;
-u8 *mb64_mm_help_ptr = NULL;
 #define PAGE_SIZE 5
 
 void mb64_mm_shade_screen(void) {
@@ -1672,14 +1755,6 @@ s32 mb64_mm_make_anim_out(void) {
     return mb64_mm_anim_out(4, TRUE, mb64_mm_make_anim_check, 23.f);
 }
 
-/**
- *     print_maker_string(mb64_menu_title_vels[0],210,mb64_mm_help_ptr,FALSE);
-
-    if (mb64_mm_help_ptr == mb64_mm_help_page1) {
-        gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
-    }
-*/
-
 s32 mb64_mm_anim_info(void) {
     if (mb64_menu_start_timer != -1) {
         animate_menu_overshoot_target(mb64_menu_title_vels, 20.f, -300.f, 55.f, -5.f, mb64_menu_start_timer == 0);
@@ -1830,6 +1905,7 @@ s32 mb64_main_menu(void) {
                     case 3:
                         credits_y_offset = 0;
                         mb64_mm_state = MM_CREDITS;
+                        mb64_mm_page_data = mb64_credits;
                         break;
                 }
                 mb64_menu_index = 0;
@@ -1850,6 +1926,7 @@ s32 mb64_main_menu(void) {
                         break;
                     case 2:
                         mb64_mm_state = MM_CREDITS;
+                        mb64_mm_page_data = mb64_credits;
                         break;
                 }
                 mb64_menu_index = 0;
@@ -1993,17 +2070,17 @@ s32 mb64_main_menu(void) {
                     mb64_mm_state = MM_HELP;
                     switch(mb64_menu_index) {
                         case 0:
-                            mb64_mm_help_ptr = mb64_mm_help_page1;
-                        break;
+                            mb64_mm_page_data = mb64_mm_help_page1;
+                            break;
                         case 1:
-                            mb64_mm_help_ptr = mb64_mm_help_page2;
-                        break;
+                            mb64_mm_page_data = mb64_mm_help_page2;
+                            break;
                         case 2:
-                            mb64_mm_help_ptr = mb64_mm_help_page3;
-                        break;
+                            mb64_mm_page_data = mb64_mm_help_page3;
+                            break;
                         case 3:
-                            mb64_mm_help_ptr = mb64_mm_help_page4;
-                        break;
+                            mb64_mm_state = MM_CREDITS;
+                            mb64_mm_page_data = mb64_v1_1_changelog;
                     }
                 }
             }
@@ -2014,25 +2091,21 @@ s32 mb64_main_menu(void) {
                 mb64_menu_start_timer = 0;
                 mb64_mm_state = MM_HELP_MODE;
             }
-            print_maker_string(mb64_menu_title_vels[0],210,mb64_mm_help_ptr,FALSE);
-
-            /*
-            if (mb64_mm_help_ptr == mb64_mm_help_page1) {
-                gDPPipeSync(gDisplayListHead++);
-                gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-                gSPDisplayList(gDisplayListHead++, &pl_scard_pl_scard_mesh);
-            }
-            */
+            print_maker_string(mb64_menu_title_vels[0],210,mb64_mm_page_data,FALSE);
             break;
         case MM_CREDITS:
             mb64_mm_shade_screen();
             if (mb64_mm_anim_info()) {
                 mb64_menu_start_timer = 0;
-                mb64_mm_state = mb64_mm_main_state;
-                mb64_menu_index = 3;
+                if (mb64_mm_page_data == mb64_credits) {
+                    mb64_mm_state = mb64_mm_main_state;
+                    mb64_menu_index = 3;
+                } else {
+                    mb64_mm_state = MM_HELP_MODE;
+                    mb64_menu_index = 3;
+                }
             }
             print_maker_credits();
-            //print_maker_string(mb64_menu_title_vels[0],210,mb64_mm_credits_page,FALSE);
             break;
         case MM_KEYBOARD:
             mb64_mm_anim_in(6);
