@@ -627,9 +627,6 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                     case MB64_GAME_VANILLA:
                         play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);
                     break;
-                    //case MB64_GAME_BETA:
-                        //play_sound(SOUND_MARIO_BETA_YEAH, m->marioObj->header.gfx.cameraToObject);
-                    //break;
                 }
                 break;
 
@@ -643,30 +640,22 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                 //        m->actionState = ACT_STATE_STAR_DANCE_DO_SAVE;
                 //    }
                 //}
+                gDialogResponse = DIALOG_RESPONSE_NONE;
+                if (mb64_play_stars == mb64_play_stars_max) {
+                    enable_time_stop();
+                    create_dialog_box_with_response(DIALOG_013);
+                } else {
+                    gDialogResponse = DIALOG_RESPONSE_NO;
+                }
                 m->actionState = ACT_STATE_STAR_DANCE_DO_SAVE;
                 break;
-
-            case 120:
-                //if (m->lastStarCollected == 6) { //cosmic seed
-                //    if ((m->actionArg & 1) == 0) {
-                //        level_trigger_warp(m, WARP_OP_STAR_EXIT);
-                //    } else {
-                //        //enable_time_stop();
-                //        //create_dialog_box_with_response(gLastCompletedStarNum == 7 ? DIALOG_013 : DIALOG_014);
-                //        m->actionState = 1;
-
-                //        if (final_star) {
-                //            run_event(EVENT_CREDITS);
-                //        }
-                //    }
-                //}
-            break;
         }
     } else if (m->actionState == ACT_STATE_STAR_DANCE_DO_SAVE) {
-        // if (gDialogResponse == DIALOG_RESPONSE_YES) {
-            // save_file_do_save(gCurrSaveFileNum - 1);
-        // }
-        m->actionState = ACT_STATE_STAR_DANCE_RETURN;
+        if (gDialogResponse == DIALOG_RESPONSE_YES) {
+            exit_level();
+        } else if (gDialogResponse == DIALOG_RESPONSE_NO) {
+            m->actionState = ACT_STATE_STAR_DANCE_RETURN;
+        }
     } else if (m->actionState == ACT_STATE_STAR_DANCE_RETURN && is_anim_at_end(m)) {
         disable_time_stop();
         enable_background_sound();

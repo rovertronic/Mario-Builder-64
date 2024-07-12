@@ -1131,6 +1131,19 @@ s32 play_mode_normal(void) {
     return FALSE;
 }
 
+void exit_level(void) {
+    if (mb64_level_action != MB64_LA_PLAY_LEVELS) {
+        mb64_target_mode = MB64_MODE_MAKE;
+        initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
+        fade_into_special_warp(WARP_SPECIAL_NONE, 0);
+        gSavedCourseNum = 0;
+        gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
+        mb64_level_action = MB64_LA_BUILD;
+    } else {
+        fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+    }
+}
+
 s32 play_mode_paused(void) {
     // playtimer++;
     // if (playtimer>29) {
@@ -1145,18 +1158,7 @@ s32 play_mode_paused(void) {
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
     } else { // MENU_OPT_EXIT_COURSE
-
-        //normal pause exit
-        if (mb64_level_action != MB64_LA_PLAY_LEVELS) {
-            mb64_target_mode = MB64_MODE_MAKE;
-            initiate_warp(LEVEL_BOB, 0x01, 0x0A, WARP_FLAGS_NONE);
-            fade_into_special_warp(WARP_SPECIAL_NONE, 0);
-            gSavedCourseNum = 0;
-            gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
-            mb64_level_action = MB64_LA_BUILD;
-        } else {
-            fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
-        }
+        exit_level();
     }
 
     return FALSE;
