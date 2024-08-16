@@ -270,15 +270,15 @@
 #define TEXT_CHAR_CHANGE _("Change Costume with DPad")
 
 
-#define MINIGAME1 _("ARENA SURVIVAL")
-#define MINIGAME2 _("HOT ROPE JUMP")
-#define MINIGAME3 _("HEXAGON HEAT")
-#define MINIGAME4 _("SNAKIO")
-#define MINIGAME5 _("EDWARD SURVIVAL")
-#define MINIGAME6 _("BAD APPLE DODGE")
-#define MINIGAME7 _("FLAPPY MARIO")
-#define MINIGAME8 _("SIGN GAME")
-#define MINIGAMEE _("Exit Minigame Zone")
+// #define MINIGAME1 _("ARENA SURVIVAL")
+// #define MINIGAME2 _("HOT ROPE JUMP")
+// #define MINIGAME3 _("HEXAGON HEAT")
+// #define MINIGAME4 _("SNAKIO")
+// #define MINIGAME5 _("EDWARD SURVIVAL")
+// #define MINIGAME6 _("BAD APPLE DODGE")
+// #define MINIGAME7 _("FLAPPY MARIO")
+// #define MINIGAME8 _("SIGN GAME")
+// #define MINIGAMEE _("Exit Minigame Zone")
 
 #define MUSIC_TEXT _("Lobby\nShowrunner\nRed Hot\nFloating Farm\nJungle Temple\nVR World\nSpooky Pirate\nBoss")
 

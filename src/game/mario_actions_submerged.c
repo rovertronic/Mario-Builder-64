@@ -24,7 +24,7 @@
 
 static s16 sWasAtSurface = FALSE;
 static s16 sSwimStrength = MIN_SWIM_STRENGTH;
-static s16 sWaterCurrentSpeeds[] = { 28, 12, 8, 4 };
+// static s16 sWaterCurrentSpeeds[] = { 28, 12, 8, 4 };
 
 static s16 sBobTimer;
 static s16 sBobIncrement;

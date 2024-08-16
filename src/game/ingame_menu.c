@@ -191,9 +191,9 @@ u8 tablist[] = {0,0,0,0,0};
 u8 tablist_count = 0;
 u16 progress_table[12];
 
-u8 upgradetext[] = {TEXT_UPGRADE};
-u8 upgradeyes[] = {TEXT_UPGRADE_YES};
-u8 upgradeno[] = {TEXT_UPGRADE_NO};
+// u8 upgradetext[] = {TEXT_UPGRADE};
+// u8 upgradeyes[] = {TEXT_UPGRADE_YES};
+// u8 upgradeno[] = {TEXT_UPGRADE_NO};
 
 u8 badgecolors[24][3] = {
     {255,0x00,0x00},

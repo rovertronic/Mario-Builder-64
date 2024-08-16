@@ -588,7 +588,7 @@ s32 act_debug_free_move(struct MarioState *m) {
 
 void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     // u8 random_range; // unused
-    u8 final_star = FALSE;
+    // u8 final_star = FALSE;
     struct Object *celebStar = NULL;
 
     if (m->actionState == ACT_STATE_STAR_DANCE_CUTSCENE) {
@@ -898,7 +898,7 @@ s32 launch_mario_until_land(struct MarioState *m, s32 endAction, s32 animation, 
     return airStepLanded;
 }
 
-s32 act_unlocking_key_door(struct MarioState *m) {
+// s32 act_unlocking_key_door(struct MarioState *m) {
     // m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
 
     // m->pos[0] = m->usedObj->oPosX - coss(m->faceAngle[1]) * 75.0f;
@@ -937,8 +937,8 @@ s32 act_unlocking_key_door(struct MarioState *m) {
     // }
 
     // m->actionTimer++;
-    return FALSE;
-}
+//     return FALSE;
+// }
 
 s32 act_unlocking_star_door(struct MarioState *m) {
     // switch (m->actionState) {
@@ -1815,11 +1815,11 @@ s32 act_feet_stuck_in_ground(struct MarioState *m) {
  * Resets action state and action timer, adds 1 to the action arg (responsible
  * for keeping track of what step of the cutscene Mario is in.)
  */
-static void advance_cutscene_step(struct MarioState *m) {
-    m->actionState = 0;
-    m->actionTimer = 0;
-    m->actionArg++;
-}
+// static void advance_cutscene_step(struct MarioState *m) {
+//     m->actionState = 0;
+//     m->actionTimer = 0;
+//     m->actionArg++;
+// }
 
 // static void intro_cutscene_hide_hud_and_mario(struct MarioState *m) {
 //     gHudDisplay.flags = HUD_DISPLAY_NONE;
@@ -2820,7 +2820,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_SPECIAL_EXIT_AIRBORNE:      cancel = act_special_exit_airborne(m);      break;
         case ACT_SPECIAL_DEATH_EXIT:         cancel = act_special_death_exit(m);         break;
         case ACT_FALLING_EXIT_AIRBORNE:      cancel = act_falling_exit_airborne(m);      break;
-        case ACT_UNLOCKING_KEY_DOOR:         cancel = act_unlocking_key_door(m);         break;
+        // case ACT_UNLOCKING_KEY_DOOR:         cancel = act_unlocking_key_door(m);         break;
         case ACT_UNLOCKING_STAR_DOOR:        cancel = act_unlocking_star_door(m);        break;
         case ACT_ENTERING_STAR_DOOR:         cancel = act_entering_star_door(m);         break;
         case ACT_SPAWN_NO_SPIN_AIRBORNE:     cancel = act_spawn_no_spin_airborne(m);     break;
