@@ -1134,7 +1134,7 @@ void mode_8_directions_camera(struct Camera *c) {
     Vec3f hitpos;
     Vec3f camera_looknormal;
 
-    u8 cam_col_level = FALSE;
+    // u8 cam_col_level = FALSE;
 
     radial_camera_input(c);
 
@@ -1863,7 +1863,7 @@ s32 mode_behind_mario(struct Camera *c) {
     struct Surface *floor;
     Vec3f newPos;
     f32 waterHeight;
-    f32 floorHeight;
+    // f32 floorHeight;
     f32 distCamToFocus;
     s16 camPitch;
     s16 camYaw;
@@ -4590,7 +4590,7 @@ void shake_camera_roll(s16 *roll) {
 s32 offset_yaw_outward_radial(struct Camera *c, s16 areaYaw) {
     s16 yawGoal = DEGREES(60);
     s16 yaw = sModeOffsetYaw;
-    Vec3f areaCenter;
+    // Vec3f areaCenter;
     s16 dYaw;
     // switch (gCurrLevelArea) {
     //     case AREA_TTC:
@@ -4915,7 +4915,7 @@ s32 determine_dance_cutscene(UNUSED struct Camera *c) {
     u8 cutscene = CUTSCENE_NONE;
     u8 cutsceneIndex = 0;
     u8 starIndex = (gLastCompletedStarNum - 1) / 2;
-    u8 courseNum = gCurrCourseNum;
+    // u8 courseNum = gCurrCourseNum;
 
     if (starIndex > 3) {
         starIndex = 0;
@@ -6745,12 +6745,12 @@ s16 cutscene_common_set_dialog_state(s32 state) {
 //     gCutsceneTimer = cutscene_common_set_dialog_state(MARIO_DIALOG_LOOK_DOWN);
 // }
 
-/**
- * Cause Mario to enter the normal dialog state.
- */
-static void cutscene_mario_dialog(UNUSED struct Camera *c) {
-    gCutsceneTimer = cutscene_common_set_dialog_state(MARIO_DIALOG_LOOK_FRONT);
-}
+// /**
+//  * Cause Mario to enter the normal dialog state.
+//  */
+// static void cutscene_mario_dialog(UNUSED struct Camera *c) {
+//     gCutsceneTimer = cutscene_common_set_dialog_state(MARIO_DIALOG_LOOK_FRONT);
+// }
 
 // /// Unused SSL cutscene?
 // static UNUSED void unused_cutscene_mario_dialog_looking_up(UNUSED struct Camera *c) {

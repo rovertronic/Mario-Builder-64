@@ -16,7 +16,7 @@ extern u8 revent_handstate;
 extern u16 revent_tempo;
 extern s16 revent_headangle[3];
 
-extern u8 mg_minscores[];
+// extern u8 mg_minscores[];
 
 extern u8 *costume_effect_text[];
 

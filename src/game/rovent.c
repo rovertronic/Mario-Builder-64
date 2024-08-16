@@ -138,37 +138,37 @@ u8 music_text[] = {MUSIC_TEXT};
 
 
 
-u8 mg1[] = {MINIGAME1};
-u8 mg2[] = {MINIGAME2};
-u8 mg3[] = {MINIGAME3};
-u8 mg4[] = {MINIGAME4};
-u8 mg5[] = {MINIGAME5};
-u8 mg6[] = {MINIGAME6};
-u8 mg7[] = {MINIGAME7};
-u8 mg8[] = {MINIGAME8};
-u8 mge[] = {MINIGAMEE};
-u8 *mgt_array[] = {&mg1,&mg2,&mg3,&mg4,&mg5,&mg6,&mg7,&mg8,&mge};
-u16 mg_prices[] = {
-100,
-50,
-50,
-200,
-100,
-50,
-150,
-500,
-};
+// u8 mg1[] = {MINIGAME1};
+// u8 mg2[] = {MINIGAME2};
+// u8 mg3[] = {MINIGAME3};
+// u8 mg4[] = {MINIGAME4};
+// u8 mg5[] = {MINIGAME5};
+// u8 mg6[] = {MINIGAME6};
+// u8 mg7[] = {MINIGAME7};
+// u8 mg8[] = {MINIGAME8};
+// u8 mge[] = {MINIGAMEE};
+// u8 *mgt_array[] = {&mg1,&mg2,&mg3,&mg4,&mg5,&mg6,&mg7,&mg8,&mge};
+// u16 mg_prices[] = {
+// 100,
+// 50,
+// 50,
+// 200,
+// 100,
+// 50,
+// 150,
+// 500,
+// };
 
-u8 mg_minscores[] = {
-10,
-50,
-45,
-50,
-70,
-150,
-10,
-8,
-};
+// u8 mg_minscores[] = {
+// 10,
+// 50,
+// 45,
+// 50,
+// 70,
+// 150,
+// 10,
+// 8,
+// };
 //level | area | id
 // u8 mg_warps[] = {
 //     LEVEL_CCM, 3, 0x0A,//enemy arena

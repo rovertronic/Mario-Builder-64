@@ -795,7 +795,7 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
     u32 noExit = (obj->oInteractionSubtype & INT_SUBTYPE_NO_EXIT) != 0;
 #endif // !NON_STOP_STARS
     u32 grandStar = (obj->oInteractionSubtype & INT_SUBTYPE_GRAND_STAR) != 0;
-    u8 final_star = FALSE;
+    // u8 final_star = FALSE;
     noExit = TRUE;
 
     //if ((gCurrAreaIndex == 0)&&(gCurrLevelNum == LEVEL_RR)) {
