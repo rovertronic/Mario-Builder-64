@@ -1416,6 +1416,8 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Bowser no longer instantly dies to lava", 0},
     {"- Buffed Heal Plus badge to apply to all coins", 0},
     {"- Buffed/renamed Double Damage badge to One Hit badge", 0},
+    {"- Star Radar consistently always shows the closest star", 0},
+    {"- Star Radar shows red coins if all stars are collected", 0},
     {"- Ability to hide help text in screenshot mode", 0},
     {"- Added a speedrun timer option", 0},
     {"- Improved vertex/tile/object limit display", 0},
