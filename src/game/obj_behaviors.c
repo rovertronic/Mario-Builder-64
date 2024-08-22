@@ -392,7 +392,7 @@ s16 object_step(void) {
 
     s16 collisionFlags = 0;
 
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
 
     // stay grounded on downwards slopes
     f32 floorOffset =  0.f;

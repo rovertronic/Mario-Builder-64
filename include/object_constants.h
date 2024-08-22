@@ -47,7 +47,7 @@ enum ObjFlags {
     OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO            = (1 << 13), // 0x00002000
     OBJ_FLAG_PERSISTENT_RESPAWN                = (1 << 14), // 0x00004000
     OBJ_FLAG_VELOCITY_PLATFORM                 = (1 << 15), // 0x00008000
-    OBJ_FLAG_DONT_CALC_COLL_DIST               = (1 << 16), // 0x00010000
+    OBJ_FLAG_EXACT_TILE_SIZE                   = (1 << 16), // 0x00010000 - surface object is EXACTLY one tile in size, optimize collision loads, collision distance represents height
     OBJ_FLAG_UCODE_SMALL                       = (1 << 17), // 0x00020000
     OBJ_FLAG_UCODE_LARGE                       = (1 << 18), // 0x00040000
     OBJ_FLAG_SILHOUETTE                        = (1 << 19), // 0x00080000

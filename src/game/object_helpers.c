@@ -1588,7 +1588,7 @@ void cur_obj_update_ceiling(void) {
 }
 
 static void cur_obj_update_floor_and_resolve_wall_collisions(s16 steepSlopeDegrees) {
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
     if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) {
         cur_obj_update_floor();
         o->oMoveFlags &= ~(OBJ_MOVE_HIT_WALL | OBJ_MOVE_MASK_IN_WATER);
@@ -1629,7 +1629,7 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     s32 careAboutEdgesAndSteepSlopes = FALSE;
     s32 negativeSpeed = FALSE;
 
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
 
     //! Because some objects allow these active flags to be set but don't
     //  avoid updating when they are, we end up with "partial" updates, where
@@ -2097,10 +2097,8 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
-            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
-                if (o->oNumLootCoins > 0) {
-                    gMarioState->DeadRexes ++;
-                }
+            if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) ||
+                (save_file_get_badge_equip() & (1<<3))) {
                 spawn_mist_particles();
                 if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2111,11 +2109,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
                 create_sound_spawner(deathSound);
             } else {
                 o->oDmgFade = 255;
-                if (save_file_get_badge_equip() & (1<<3)) {
-                    o->oHealth-=2;
-                } else {
-                    o->oHealth--;
-                }
+                o->oHealth--;
             }
         } else {
             interacted = TRUE;
@@ -2646,21 +2640,21 @@ void cur_obj_interact_with_noteblock(void) {
 }
 
 void cur_obj_interact_with_floor_switch(void) {
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvFloorSwitchHiddenObjects)) {
-        struct Object * switch_interacting = sInteractFloor->object;
-
-        if (switch_interacting->oAction == PURPLE_SWITCH_ACT_IDLE) {
-            switch_interacting->oAction = PURPLE_SWITCH_ACT_PRESSED;
+    if (!(o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) || (sInteractFloor->object == NULL)) return;
+    
+    struct Object *platform = sInteractFloor->object;
+    
+    if (obj_has_behavior(platform, bhvFloorSwitchHiddenObjects)) {
+        if (platform->oAction == PURPLE_SWITCH_ACT_IDLE) {
+            platform->oAction = PURPLE_SWITCH_ACT_PRESSED;
         }
-    }
-
-    if ((o->oFlags & OBJ_FLAG_ACTIVATES_FLOOR_SWITCH) && (sInteractFloor->object != NULL) && obj_has_behavior(sInteractFloor->object,bhvOnOffButton)) {
-        struct Object * switch_interacting = sInteractFloor->object;
-
-        if ((switch_interacting->oAction == 1)&&(switch_interacting->oTimer > 30)) {
-            mb64_play_onoff = switch_interacting->oBehParams2ndByte;
+    } else if (obj_has_behavior(platform, bhvOnOffButton)) {
+        if ((platform->oAction == 1) && (platform->oTimer > 30)) {
+            mb64_play_onoff = platform->oBehParams2ndByte;
             play_sound(SOUND_GENERAL2_BUTTON_PRESS, gGlobalSoundSource);
         }
+    } else if (obj_has_behavior(platform, bhvPlatformOnTrack)) {
+        platform->oPlatformOnTrackWasStoodOn = TRUE;
     }
 }
 
@@ -2766,6 +2760,7 @@ void cur_obj_floor_interactions(u8 move_standard_or_object_step) {
 void cur_obj_set_home_if_safe_held(void) {
     // Check if Mario is grounded
     if (gMarioState->action & ACT_FLAG_AIR) return;
+    if (gMarioState->floor->type == SURFACE_DEATH_PLANE) return;
     if (o->oImbue == IMBUE_STAR) return;
 
     vec3_copy(&o->oHomeVec, gMarioState->pos);
@@ -2810,6 +2805,29 @@ void spawn_mist_at_obj(struct Object *obj) {
     vec3f_copy(&o->oPosVec, oldPos);
 }
 
+s32 cur_obj_drop_imbued_object_lava(s32 y_offset) {
+    if (o->oImbue == IMBUE_ONE_COIN) {
+        bully_spawn_coin();
+        o->oImbue = IMBUE_NONE;
+        return TRUE;
+    } else if ((o->oImbue == IMBUE_BLUE_COIN) || (o->oImbue == IMBUE_GREEN_COIN)) {
+        struct Object *coin;
+        if (o->oImbue == IMBUE_BLUE_COIN) {
+            coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+        } else {
+            coin = spawn_object(o, MODEL_GREEN_COIN, bhvGreenGetsSpawned);
+        }
+        cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
+        coin->oForwardVel = 10.0f;
+        coin->oVelY = 100.0f;
+        coin->oPosY = o->oPosY + 310.0f;
+        coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
+        o->oImbue = IMBUE_NONE;
+        return TRUE;
+    }
+    return cur_obj_drop_imbued_object(y_offset);
+}
+
 s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
     if (o->oImbue == IMBUE_NONE) return FALSE;
@@ -2824,11 +2842,14 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
     switch(o->oImbue) {
         case IMBUE_BLUE_COIN:
         case IMBUE_ONE_COIN:
+        case IMBUE_GREEN_COIN:
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
             if (o->oImbue == IMBUE_ONE_COIN) {
                 dropobj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
-            } else {
+            } else if (o->oImbue == IMBUE_BLUE_COIN) {
                 dropobj = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
+            } else {
+                dropobj = spawn_object(o, MODEL_GREEN_COIN, bhvGreenGetsSpawned);
             }
             vec3f_copy(&dropobj->oPosVec,&o->oPosVec);
             dropobj->oForwardVel = 3.f;
@@ -2840,17 +2861,14 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
             break;
         case IMBUE_RED_SWITCH:
         case IMBUE_BLUE_SWITCH:;
-            struct Surface *floor;
-            f32 floorY = find_floor(o->oHomeX,o->oHomeY+10.f,o->oHomeZ,&floor);
-            // Abort spawn if over death barrier
-            if (floor && floor->type != SURFACE_DEATH_PLANE) {
-                dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
-                if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
-                vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
-                dropobj->oPosY = floorY;
-                dropobj->oMoveAngleYaw = 0;
-                spawn_mist_at_obj(dropobj);
-            }
+            dropobj = spawn_object(o,MODEL_MAKER_BUTTON,bhvOnOffButton);
+            if (o->oImbue == IMBUE_BLUE_SWITCH) dropobj->oBehParams2ndByte = 1;
+            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            add_obj_to_physics_list(dropobj);
+            dropobj->oExtraVariable1 = 1;
+            dropobj->oMoveAngleYaw = 0;
+            dropobj->oVelY = 0.f;
+            spawn_mist_at_obj(dropobj);
             break;
         case IMBUE_RED_COIN:
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
@@ -2870,15 +2888,48 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
 struct Object * physics_object_list_head = NULL;
 struct Object * physics_object_list_tail = NULL;
 
-s32 obj_with_physics_is_near(void) {
-    if (physics_object_list_head == NULL) {return FALSE;}
+s32 cur_obj_collision_check_cylinder(Vec3f pos, f32 shadowOffset, f32 radius, f32 height) {
+    f32 lateralDist = sqrtf(sqr(o->oPosX - pos[0]) + sqr(o->oPosZ - pos[2])) - radius;
+    f32 verticalDist = pos[1] - o->oPosY;
 
+    return ((lateralDist < o->oCollisionDistance) &&
+        (verticalDist > (-o->oCollisionDistance - height)) &&
+        (verticalDist < (o->oCollisionDistance + shadowOffset)));
+}
+
+// More optimized version of above functions for objects that are exactly one tile in size
+// and don't rotate.
+// oCollisionDistance now represents height of the object.
+
+s32 cur_obj_collision_check_tile(Vec3f pos, f32 shadowOffset, f32 radius, f32 height) {
+    f32 xDist = ABS(o->oPosX - pos[0]) - radius - 0.1f;
+    f32 zDist = ABS(o->oPosZ - pos[2]) - radius - 0.1f;
+    f32 yDist = pos[1] - o->oPosY;
+
+    return ((xDist < 128.0f) &&
+            (zDist < 128.0f) &&
+            (yDist > (-height - 128.f)) && // the reason for this is tall wooden platforms
+            (yDist < o->oCollisionDistance + shadowOffset));
+}
+
+s32 cur_obj_should_load_collision(void) {
+    s32 (*collision_check_func)(Vec3f, f32, f32, f32);
+
+    if (o->oFlags & OBJ_FLAG_EXACT_TILE_SIZE) {
+        collision_check_func = cur_obj_collision_check_tile;
+    } else {
+        collision_check_func = cur_obj_collision_check_cylinder;
+    }
+
+    if (collision_check_func(&gMarioObject->oPosVec, 1000.0f, 50.f, 160.f)) {
+        return TRUE;
+    }
+
+    if (physics_object_list_head == NULL) {return FALSE;}
     struct Object * obj = physics_object_list_head;
     while (obj != NULL) {
         if (obj == o || obj == o->prevObj) {obj = obj->nextPhysicsObj; continue;}
-        f32 sqrLateralDist;
-        vec3f_get_lateral_dist_squared(&o->oPosVec, &obj->oPosVec, &sqrLateralDist);
-        if (sqrLateralDist < sqr(o->oCollisionDistance)) {
+        if (collision_check_func(&obj->oPosVec, 256.0f, obj->oWallHitboxRadius, obj->hitboxHeight)) {
             return TRUE;
         }
         obj = obj->nextPhysicsObj;
@@ -2887,15 +2938,15 @@ s32 obj_with_physics_is_near(void) {
     return FALSE;
 }
 
-void obj_add_self_to_physics_list(void) {
-    if (!o->oHasPhysics) {
-        o->oHasPhysics = TRUE;
+void add_obj_to_physics_list(struct Object *obj) {
+    if (!obj->oHasPhysics) {
+        obj->oHasPhysics = TRUE;
         if (physics_object_list_head) {
-            physics_object_list_tail->nextPhysicsObj = o;
-            physics_object_list_tail = o;
+            physics_object_list_tail->nextPhysicsObj = obj;
+            physics_object_list_tail = obj;
         } else {
-            physics_object_list_head = o;
-            physics_object_list_tail = o;
+            physics_object_list_head = obj;
+            physics_object_list_tail = obj;
         }
     }
 }

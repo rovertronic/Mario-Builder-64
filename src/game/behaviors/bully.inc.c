@@ -207,7 +207,7 @@ void bully_act_level_death(void) {
                 o->parentObj->oBullyKBTimerAndMinionKOCounter++;
             }
             bully_adjust_imbued_drop_location();
-            if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+            if (!cur_obj_drop_imbued_object_lava(MB64_STAR_HEIGHT)) {
                 bully_spawn_coin();
             }
         } else {

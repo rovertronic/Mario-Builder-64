@@ -451,13 +451,12 @@ struct MarioState {
             u8 _2D;
             u8 _2D_Setting;
 
+            struct Object *faceCrablet;
             //crimas only!
             u8 MessHeld;
             u8 MessNumber;
             u8 IntroDid;
             //crimas only!
-
-            Mat4 HeadMatrix;
 
              u16 numGlobalCoins;
              u16 numMaxGlobalCoins;
@@ -564,8 +563,6 @@ struct MarioState {
             f32 _2D_FOV_PUBLIC;
 
             u8 MaskChase;
-
-            u8 InsideCourse;
 
             u8 LavaHeat;
 

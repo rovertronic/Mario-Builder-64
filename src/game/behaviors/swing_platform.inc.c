@@ -13,7 +13,4 @@ void bhv_swing_platform_update(void) {
 
     o->oVelY += o->oVelX;
     o->oFaceAngleRoll = o->oVelY;
-    //o->oAngleVelRoll = o->oFaceAngleRoll - startRoll;
-
-    o->oDontInertia = FALSE;
 }

@@ -1718,7 +1718,9 @@ void render_dialog_entries(void) {
         case DIALOG_STATE_CLOSING:
             if (gDialogBoxOpenTimer == 20.0f) {
                 level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
+                if (gDialogID != DIALOG_013) { // exit level after all stars dialog
+                    play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
+                }
 
                 gDialogResponse = gDialogLineNum;
             }

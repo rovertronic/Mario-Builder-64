@@ -20,7 +20,7 @@ void check_phantasm_attack(void) {
             o->oFaceAngleYaw = o->oMoveAngleYaw;
 
             if (save_file_get_badge_equip() & (1 << BADGE_DAMAGE)) {
-                o->oHealth -= 2;
+                o->oHealth = 0;
             } else {
                 o->oHealth --;
             }
@@ -35,7 +35,7 @@ void phantasm_invincible(void) {
     cur_obj_set_hitbox_radius_and_height(100.0f, 100.0f);
     cur_obj_set_hurtbox_radius_and_height(150.0f, 120.0f);
 
-    o->oDamageOrCoinValue = 4;
+    o->oDamageOrCoinValue = 3;
 
     cur_obj_become_tangible();
     o->oInteractType = INTERACT_DAMAGE;
@@ -392,7 +392,7 @@ void showrunner_battle_function(void) {
                 if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
                     o->oHealth--;
                     if (save_file_get_badge_equip() & (1 << BADGE_DAMAGE)) {
-                        o->oHealth--;
+                        o->oHealth = 0;
                     }
                     if (o->oHealth > 0) {
                         o->oAction = 12;

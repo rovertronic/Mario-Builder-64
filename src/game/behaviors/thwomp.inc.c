@@ -13,8 +13,8 @@ void grindel_thwomp_act_on_ground(void) {
 }
 
 void grindel_thwomp_act_falling(void) {
-    o->prevObj->oTimer = 0;
-    o->prevObj->oPosY = o->oPosY - 50.f;
+    o->oThwompCrushHandler->oTimer = 0;
+    o->oThwompCrushHandler->oPosY = o->oPosY - 50.f;
     if (o->oVelY > -80.0f) { //terminal velocity
         o->oVelY += -4.0f;
     }
@@ -32,7 +32,7 @@ void grindel_thwomp_act_land(void) {
     if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
         o->oPosY = o->oFloorHeight;
     }
-    o->prevObj->oPosY = o->oPosY - 50.f;
+    o->oThwompCrushHandler->oPosY = o->oPosY - 50.f;
     if (o->oTimer == 0 && o->oDistanceToMario < 3000.0f) {
         cur_obj_shake_screen(SHAKE_POS_SMALL);
         cur_obj_play_sound_2(SOUND_OBJ_THWOMP);
@@ -41,15 +41,17 @@ void grindel_thwomp_act_land(void) {
         o->oAction = GRINDEL_THWOMP_ACT_ON_GROUND;
     }
     o->oFloorType = o->oFloor->type;
-    cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
+    if (cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT)) {
+        o->prevObj->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
 }
 
 void grindel_thwomp_act_floating(void) {
     if (o->oTimer > 25) {
         o->oAction = GRINDEL_THWOMP_ACT_FALLING;
-        o->prevObj = spawn_object(o,MODEL_NONE,bhvCrushHandler);
-        o->prevObj->hitboxRadius = 200.f;
-        o->prevObj->hitboxHeight = 100.f;
+        o->oThwompCrushHandler = spawn_object(o,MODEL_NONE,bhvCrushHandler);
+        o->oThwompCrushHandler->hitboxRadius = 200.f;
+        o->oThwompCrushHandler->hitboxHeight = 100.f;
     }
 }
 
@@ -71,15 +73,24 @@ ObjActionFunc sGrindelThwompActions[] = {
 };
 
 void bhv_grindel_thwomp_init(void) {
-    obj_add_self_to_physics_list();
+    add_obj_to_physics_list(o);
     if (cur_obj_has_model(MODEL_MAKER_GRINDEL)) {
         o->oFaceAngleYaw += 0x4000;
         o->oMoveAngleYaw += 0x4000;
     }
+    o->prevObj = spawn_object(o, MODEL_NONE, bhvGrindelThwompCol);
+    o->prevObj->collisionData = o->collisionData;
+    vec3_copy(o->prevObj->header.gfx.scale, o->header.gfx.scale);
+    o->header.gfx.angle[1] = o->oFaceAngleYaw;
 }
 
 void bhv_grindel_thwomp_loop(void) {
     cur_obj_call_action_function(sGrindelThwompActions);
+
+    Vec3f oldPos;
+    vec3f_copy(oldPos, &o->prevObj->oPosVec);
+    vec3f_copy(&o->prevObj->oPosVec,&o->oPosVec);
+    vec3f_copy(&o->header.gfx.pos,oldPos);
 }
 
 // void bhv_lava_spewer_loop(void) {

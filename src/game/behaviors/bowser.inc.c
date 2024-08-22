@@ -475,29 +475,6 @@ void bowser_act_airborne(void) {
     }
 }
 
-void bowser_act_lava_death(void) {
-    if (o->oSubAction != BOWSER_SUB_ACT_DEAD_DEFAULT_END_OVER) {
-        cur_obj_init_animation(BOWSER_ANIM_LAY_DOWN);
-        cur_obj_extend_animation_if_at_end();
-        o->oPosY -= 4.0f;
-        if (o->oTimer == 0) {
-            cur_obj_play_sound_2(SOUND_OBJ_BOWSER_DEFEATED);
-        } else {
-            if ((o->oTimer > 50) && (o->oTimer % 8 == 0)) {
-                cur_obj_play_sound_2(SOUND_OBJ_BULLY_EXPLODE_LAVA);
-            }
-        }
-        if (o->oTimer > 120) {
-            bowser_dead_hide();
-            spawn_triangle_break_particles(20, MODEL_YELLOW_COIN, 1.0f, 0);
-            bowser_spawn_collectable();
-            o->oAction = BOWSER_ACT_DEAD;
-            o->oSubAction = BOWSER_SUB_ACT_DEAD_DEFAULT_END_OVER;
-        }
-    }
-}
-
-
 /**
  * Default Bowser act that doesn't last very long
  */
@@ -986,7 +963,7 @@ void bowser_act_thrown(void) {
         cur_obj_init_animation_with_sound(BOWSER_ANIM_SHAKING);
         bowser_bounce_effects(&o->oBowserTimer);
         // Reset speed when he moves on ground
-        if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
+        if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             o->oForwardVel = 0.0f;
             o->oSubAction++; // stops this current subaction
         }
@@ -1156,7 +1133,7 @@ void bowser_dead_bounce(void) {
     if (o->oMoveFlags & OBJ_MOVE_LANDED) {
         cur_obj_play_sound_2(SOUND_OBJ_BOWSER_WALK);
     }
-    if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
+    if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
         o->oForwardVel = 0.0f;
         o->oSubAction++; // BOWSER_SUB_ACT_DEAD_WAIT
     }
@@ -1443,7 +1420,7 @@ s32 bowser_check_fallen_off_stage(void) {
     if (!((o->oAction == BOWSER_ACT_JUMP_ONTO_STAGE) && (o->oSubAction != BOWSER_SUB_ACT_JUMP_ON_STAGE_LAND))) {
         if (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND) {
             // Check for Dark World - Sky
-            if (o->oFloorType == SURFACE_DEATH_PLANE) {
+            if (o->oFloorType == SURFACE_DEATH_PLANE || SURFACE_IS_BURNING(o->oFloorType)) {
                 return TRUE;
             }
         }
@@ -1475,7 +1452,6 @@ ObjActionFunc sBowserActions[] = {
     bowser_act_quick_jump,
     bowser_act_idle,
     bowser_act_airborne,
-    bowser_act_lava_death,
     //bowser_act_tilt_lava_platform,
 };
 
@@ -1524,7 +1500,7 @@ void bowser_reflect_walls(void) {
 void bowser_free_update(void) {
     o->oBowserGrabbedStatus = BOWSER_GRAB_STATUS_NONE;
     // Update positions and actions (default action)
-    if ((o->oAction != BOWSER_ACT_TELEPORT)&&(o->oAction != BOWSER_ACT_LAVA_DEATH)) {
+    if (o->oAction != BOWSER_ACT_TELEPORT) {
         cur_obj_update_floor_and_walls();
         cur_obj_move_standard(-78);
     }
@@ -1544,10 +1520,6 @@ void bowser_free_update(void) {
         } else {
             o->oAction = BOWSER_ACT_JUMP_ONTO_STAGE;
         }
-    }
-
-    if (SURFACE_IS_BURNING(o->oFloorType) && o->oFloorHeight + 10.0f > o->oPosY) {
-        o->oAction = BOWSER_ACT_LAVA_DEATH;
     }
 
     // Sound states for Bowser Animations

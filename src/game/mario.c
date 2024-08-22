@@ -2179,17 +2179,18 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     //move warp for safe ground
     sp1C = cur_obj_nearest_object_with_behavior(bhvSpinAirborneWarp);
 
-    if (gMarioState->ISSAFE) {
-        if (sp1C != NULL) {
-            //if ((!(gMarioState->floor->type == SURFACE_DEATH_PLANE))&&(!(gMarioState->floor->type == SURFACE_HARD_VERY_SLIPPERY))
-            //..&&(gMarioState->input & INPUT_OFF_FLOOR)&&(gMarioState->floor->object == NULL)&&((gMarioState->area->terrainType & TERRAIN_MASK) != TERRAIN_SLIDE)) {
-                sp1C->oPosX = gMarioState->pos[0];
-                sp1C->oPosY = gMarioState->floorHeight;
-                sp1C->oPosZ = gMarioState->pos[2];
-                //}
-            }
-        gMarioState->ISSAFE = FALSE;
+    if (sp1C != NULL) {
+        if (gMarioState->floor &&
+        (gMarioState->action & (ACT_FLAG_MOVING | ACT_FLAG_STATIONARY)) &&
+        !SURFACE_IS_UNSAFE(gMarioState->floor->type) &&
+        (gMarioState->floor->object == NULL) &&
+        !mario_floor_is_slippery(gMarioState)) {
+
+            sp1C->oPosX = gMarioState->pos[0];
+            sp1C->oPosY = gMarioState->floorHeight;
+            sp1C->oPosZ = gMarioState->pos[2];
         }
+    }
 
     if ((uintptr_t) gDynamicSurfacePoolEnd >= (uintptr_t) gDynamicSurfacePool + DYNAMIC_SURFACE_POOL_SIZE) {
         print_text_fmt_int(10, 56, "OUT OF POOL SPACE 0*%08x", (uintptr_t) gDynamicSurfacePoolEnd - (uintptr_t) gDynamicSurfacePool);
@@ -2394,47 +2395,6 @@ void init_mario(void) {
 
     gMarioState->numAir = 700;
     gMarioState->RFuel=0;
-/**
-    //crimas only!!!
-    gMarioState->MessHeld = 0;
-    gMarioState->MessNumber = 0;
-    //crimas only!!
-
-    gMarioState->gCurrMinigame = 0;
-    gMarioState->EA_WAVES = 0;
-    //arena
-    if ((gCurrLevelNum == LEVEL_CCM)&&(gCurrAreaIndex == 3)) {
-        gMarioState->gCurrMinigame = 1;
-        gMarioState->EA_WAVES = 0;
-        gMarioState->EA_TOTAL = 0;
-        gMarioState->EA_LEFT = 0;
-        gMarioState->EA_ACTIVE = 0;
-        }
-    //minigame things
-    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
-        gMarioState->EA_WAVES = 0;
-        if (gCurrAreaIndex == 2) {
-            gMarioState->gCurrMinigame = 5;
-        }
-        if (gCurrAreaIndex == 1) {
-            gMarioState->gCurrMinigame = 4;
-        }
-        if (gCurrAreaIndex == 3) {
-            gMarioState->gCurrMinigame = 6;
-            gMarioState->BadAppleActivate = TRUE;
-            bad_apple_par = 0.0f;
-            bapple_frame = 0;
-        }
-        if (gCurrAreaIndex == 4) {
-            gMarioState->gCurrMinigame = 7;
-        }
-    }
-    //hexagon heat
-    if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex == 2)) {
-        gMarioState->gCurrMinigame = 3;
-        gMarioState->EA_WAVES = 0;
-        }
-**/
 
     gMarioState->SwitchPressed = 0;
 
@@ -2517,7 +2477,7 @@ void init_mario(void) {
     //     capObject->oMoveAngleYaw = 0;
     // }
 
-    if (gMarioState->NewLevel == TRUE) {
+    if (gMarioState->NewLevel) {
         gMarioState->invincTimer = 60;
         if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
             gMarioState->numBadgePoints --;
@@ -2528,8 +2488,12 @@ void init_mario(void) {
         if (gMarioState->MaskChase) {
             gMarioState->hurtCounter += 999;
         }
+        if (gMarioState->faceCrablet) {
+            gMarioState->faceCrablet->oSubAction = 7;
+        }
         gMarioState->NewLevel = FALSE;
     }
+    gMarioState->faceCrablet = NULL;
 
     gMarioState->heldObj = NULL;
     gMarioState->blueCoinSwitchTimer = 0;

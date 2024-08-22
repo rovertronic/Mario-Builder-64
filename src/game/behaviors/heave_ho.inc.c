@@ -100,24 +100,6 @@ void heave_ho_act_0(void) {
     o->oAction = 1;
 }
 
-void heave_ho_lava_death(void) {
-    if (obj_lava_death()) {
-        if (o->oImbue == IMBUE_ONE_COIN) {
-            bully_spawn_coin();
-            o->oImbue = IMBUE_NONE;
-        } else if (o->oImbue == IMBUE_BLUE_COIN) {
-            struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
-            cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
-            coin->oForwardVel = 10.0f;
-            coin->oVelY = 100.0f;
-            coin->oPosY = o->oPosY + 310.0f;
-            coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
-            o->oImbue = IMBUE_NONE;
-        }
-        cur_obj_drop_imbued_object(MB64_STAR_HEIGHT);
-    }
-}
-
 ObjActionFunc sHeaveHoActions[] = {
     heave_ho_act_0,
     heave_ho_act_1,
@@ -132,7 +114,9 @@ void heave_ho_move(void) {
         cur_obj_call_action_function(sHeaveHoActions);
         cur_obj_move_standard(-78);
     } else {
-        heave_ho_lava_death();
+        if (obj_lava_death()) {
+            cur_obj_drop_imbued_object_lava(MB64_STAR_HEIGHT);
+        }
     }
 
     if (is_cur_obj_interact_with_lava(0)) {

@@ -137,7 +137,7 @@ void bhv_motos_death(void) {
     obj_drop_mario();
     // Taken from bully code to handle death
     if (obj_lava_death()) {
-        if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
+        if (!cur_obj_drop_imbued_object_lava(MB64_STAR_HEIGHT)) {
             struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvBlueCoinMotos);
             cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
             coin->oForwardVel = 10.0f;

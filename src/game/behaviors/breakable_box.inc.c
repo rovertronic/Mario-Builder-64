@@ -16,7 +16,6 @@ struct ObjectHitbox sBreakableBoxHitbox = {
 };
 
 void breakable_box_init(void) {
-    o->oHiddenObjectSwitchObj = NULL;
     o->oAnimState = BREAKABLE_BOX_ANIM_STATE_CORK_BOX;
     o->oNumLootCoins = 3;
     // switch (o->oBehParams2ndByte) {
@@ -27,7 +26,7 @@ void breakable_box_init(void) {
     // }
 }
 
-void hidden_breakable_box_actions(void) {
+void bhv_hidden_object_loop(void) {
     obj_set_hitbox(o, &sBreakableBoxHitbox);
     cur_obj_set_model(MODEL_BREAKABLE_BOX);
     switch (o->oAction) {
@@ -74,8 +73,30 @@ void hidden_breakable_box_actions(void) {
     }
 }
 
-void bhv_hidden_object_loop(void) {
-    hidden_breakable_box_actions();
+void bhv_timedblock(void) {
+    switch (o->oAction) {
+        case BREAKABLE_BOX_ACT_HIDDEN: // not actually hidden
+            if (o->oTimer == 0) {
+                cur_obj_set_model(MODEL_MAKER_BLOCK_ON);
+            }
+
+            if (gMarioState->hiddenBoxTimer > 0) {
+                cur_obj_set_model(MODEL_MAKER_BLOCK_OFF);
+                o->oAction = BREAKABLE_BOX_ACT_ACTIVE;
+            }
+            load_object_collision_model();
+            break;
+        case BREAKABLE_BOX_ACT_ACTIVE:
+            if (gMarioState->hiddenBoxTimer == 0) o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
+            else if (gMarioState->hiddenBoxTimer < 40) {
+                if (gMarioState->hiddenBoxTimer & 1) {
+                    cur_obj_set_model(MODEL_MAKER_BLOCK_ON);
+                } else {
+                    cur_obj_set_model(MODEL_MAKER_BLOCK_OFF);
+                }
+            }
+            break;
+    }
 }
 
 void bhv_breakable_box_loop(void) {
@@ -87,8 +108,9 @@ void bhv_breakable_box_loop(void) {
     if (cur_obj_was_attacked_or_ground_pounded()) {
         obj_explode_and_spawn_coins(46.0f, COIN_TYPE_YELLOW);
         create_sound_spawner(SOUND_GENERAL_BREAK_BOX);
-        o->oPosY += 128;
-        cur_obj_drop_imbued_object(128);
+        o->oPosY += 150;
+        o->oHomeY += 150;
+        cur_obj_drop_imbued_object(0);
     }
 }
 
@@ -117,8 +139,9 @@ void bhv_breakable_box_rf_loop(void) {
     if (cur_obj_was_attacked_not_by_mario()) {
         obj_explode_and_spawn_coins(46.0f, COIN_TYPE_YELLOW);
         create_sound_spawner(SOUND_OBJ_POUNDING_LOUD);
-        o->oPosY += 128;
-        cur_obj_drop_imbued_object(128);
+        o->oPosY += 150;
+        o->oHomeY += 150;
+        cur_obj_drop_imbued_object(0);
     } else if (cur_obj_was_attacked_or_ground_pounded()) {
         if (o->oTimer > 15) {
             create_sound_spawner(SOUND_OBJ_BULLY_METAL);

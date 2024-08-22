@@ -1288,8 +1288,8 @@ const BehaviorScript bhvTriangleParticleSpawner[] = {
 
 extern void bhv_grindel_thwomp_init(void);
 const BehaviorScript bhvGrindel[] = {
-    BEGIN(OBJ_LIST_POLELIKE),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)),
     LOAD_COLLISION_DATA(ssl_seg7_collision_grindel),
     SET_HOME(),
     SET_INT(oAction, 1),
@@ -1297,35 +1297,27 @@ const BehaviorScript bhvGrindel[] = {
     CALL_NATIVE(bhv_grindel_thwomp_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
-        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
-// const BehaviorScript bhvThwomp2[] = {
-//     BEGIN(OBJ_LIST_SURFACE),
-//     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B92C),
-//     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-//     ADD_FLOAT(oPosY, 1),
-//     SET_HOME(),
-//     SCALE(/*Unused*/ 0, /*Field*/ 300),
-//     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
-//     BEGIN_LOOP(),
-//         CALL_NATIVE(bhv_grindel_thwomp_loop),
-//         CALL_NATIVE(load_object_collision_model),
-//     END_LOOP(),
-// };
-
 const BehaviorScript bhvThwomp[] = {
-    BEGIN(OBJ_LIST_POLELIKE),
+    BEGIN(OBJ_LIST_DEFAULT),
     LOAD_COLLISION_DATA(thwomp_seg5_collision_0500B7D0),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW)),
     SET_HOME(),
     SET_INT(oAction, 1),
-    CALL_NATIVE(bhv_grindel_thwomp_init),
     SCALE(/*Unused*/ 0, /*Field*/ 150),
+    CALL_NATIVE(bhv_grindel_thwomp_init),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_grindel_thwomp_loop),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvGrindelThwompCol[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    SET_FLOAT(oCollisionDistance, 800),
+    BEGIN_LOOP(),
         CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
@@ -1972,8 +1964,9 @@ extern void bhv_purple_switch_loop_vanilla(void);
 const BehaviorScript bhvFloorSwitchHardcodedModel[] = {
     BEGIN(OBJ_LIST_SURFACE),
     // Floor switch - common:
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE),
     LOAD_COLLISION_DATA(purple_switch_seg8_collision_0800C7A8),
+    SET_FLOAT(oCollisionDistance, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_purple_switch_loop_vanilla),
         CALL_NATIVE(load_object_collision_model),
@@ -1998,9 +1991,9 @@ const BehaviorScript bhvHiddenObject[] = {
 
 const BehaviorScript bhvBreakableBox[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_DONT_CALC_COLL_DIST)),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision),
-    SET_FLOAT(oCollisionDistance, 300),
+    SET_FLOAT(oCollisionDistance, 128),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(load_object_collision_model),
@@ -3610,11 +3603,12 @@ const BehaviorScript bhvPreviewObject[] = {
 
 const BehaviorScript bhvCurrPreviewObject[] = {
     BEGIN(OBJ_LIST_DEFAULT),
-    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    CALL_NATIVE(bhv_preview_object_init),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_preview_object_loop),
-    END_LOOP(),
+    GOTO(bhvPreviewObject + 1),
+};
+
+const BehaviorScript bhvPersistentPreviewObject[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    GOTO(bhvPreviewObject + 1),
 };
 
 extern void bhv_boss(void);
@@ -6543,8 +6537,9 @@ const BehaviorScript bhvPlatformOnTrack[] = {
 
 const BehaviorScript bhvLoopingPlatform[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     CALL_NATIVE(bhv_looping_platform_init),
+    SET_FLOAT(oCollisionDistance, 128),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_platform_on_track_update),
@@ -7545,6 +7540,7 @@ const BehaviorScript bhvNoteblock[] = {
     SET_FLOAT(oCollisionDistance, 300),
     SET_HOME(),
     SCALE(0,127),
+    DELAY(1),
     CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(noteblock_function),
@@ -9433,11 +9429,12 @@ const BehaviorScript bhvOnOffButton[] = {
 
 extern void bhv_onoffblock_init(void);
 extern void bhv_onoffblock(void);
+extern void bhv_timedblock(void);
 const BehaviorScript bhvOnOffBlock[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(onoffblock_collision),
-    SET_FLOAT(oCollisionDistance, 300),
+    SET_FLOAT(oCollisionDistance, 128),
     SET_HOME(),
     CALL_NATIVE(bhv_onoffblock_init),
     BEGIN_LOOP(),
@@ -9445,11 +9442,24 @@ const BehaviorScript bhvOnOffBlock[] = {
     END_LOOP(),
 };
 
-extern void bhv_woodplat(void);
+const BehaviorScript bhvTimedBlock[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
+    LOAD_COLLISION_DATA(onoffblock_collision),
+    SET_FLOAT(oCollisionDistance, 128),
+    SET_INT(oAnimState, 2),
+    SET_HOME(),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_timedblock),
+    END_LOOP(),
+};
+
+extern void bhv_woodplat_init(void);
+extern void bhv_woodplat_loop(void);
 extern void bhv_woodplat_col_init(void);
 const BehaviorScript bhvWoodPlatCol[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(woodplat_collision),
     CALL_NATIVE(bhv_woodplat_col_init),
     BEGIN_LOOP(),
@@ -9460,16 +9470,17 @@ const BehaviorScript bhvWoodPlat[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     OR_LONG(oFlags, (OBJ_FLAG_SIMPLE_WALL_CHECKS | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_IMMUNE_TO_FLOOR_DEATH)),
     SET_HOME(),
+    CALL_NATIVE(bhv_woodplat_init),
     BEGIN_LOOP(),
-        CALL_NATIVE(bhv_woodplat),
+        CALL_NATIVE(bhv_woodplat_loop),
     END_LOOP(),
 };
 extern void bhv_breakable_box_rf_loop(void);
 const BehaviorScript bhvBreakableBoxRF[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_DONT_CALC_COLL_DIST)),
+    OR_LONG(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(breakable_box_seg8_collision),
-    SET_FLOAT(oCollisionDistance, 300),
+    SET_FLOAT(oCollisionDistance, 128),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(load_object_collision_model),

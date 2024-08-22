@@ -400,10 +400,17 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
 }
 
 u32 get_tile_occupy_flags(u32 type) {
-    if (type == TILE_TYPE_POLE) return OBJ_OCCUPY_INNER;
-    if (type == TILE_TYPE_FENCE) return OBJ_OCCUPY_OUTER;
-    if (type == TILE_TYPE_CULL) return 0;
-    return OBJ_OCCUPY_FULL;
+    switch (type) {
+        case TILE_TYPE_POLE:
+            return OBJ_OCCUPY_INNER;
+        case TILE_TYPE_FENCE:
+        case TILE_TYPE_TROLL:
+            return OBJ_OCCUPY_OUTER;
+        case TILE_TYPE_CULL:
+            return 0;
+        default:
+            return OBJ_OCCUPY_FULL;
+    }
 }
 
 u32 can_place(s8 pos[3], u32 occupyFlags) {
@@ -568,6 +575,7 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(adjPos)) return FALSE;
 
+    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(adjPos)->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= MB64_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= MB64_FACESHAPE_TOPSLAB)) return TRUE;
     return FALSE;
@@ -2554,6 +2562,32 @@ void delete_object(s8 pos[3], s32 index) {
     generate_object_preview();
 }
 
+void should_spawn_place_number(s8 pos[3]) {
+    if (mb64_id_selection == OBJECT_TYPE_RED_COIN) {
+        s32 redCoinCount = 0;
+        s32 hasRedCoinStar = FALSE;
+        for (s32 i = 0; i < mb64_object_count; i++) {
+            if (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) {
+                hasRedCoinStar = TRUE;
+            } else if ((mb64_object_data[i].type == OBJECT_TYPE_RED_COIN) ||
+                       (mb64_object_data[i].imbue == IMBUE_RED_COIN)) {
+                redCoinCount++;
+            }
+        }
+        if (hasRedCoinStar) df_spawn_number(pos, redCoinCount);
+    } else if ((mb64_id_selection == OBJECT_TYPE_STAR) || (mb64_id_selection == OBJECT_TYPE_RED_COIN_STAR)) {
+        s32 starCount = 0;
+        for (s32 i = 0; i < mb64_object_count; i++) {
+            if ((mb64_object_data[i].type == OBJECT_TYPE_STAR) ||
+                (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) ||
+                (mb64_object_data[i].imbue == IMBUE_STAR)){
+                starCount++;
+            }
+        }
+        df_spawn_number(pos, starCount);
+    }
+}
+
 extern s8 gDialogBoxType;
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
@@ -2599,6 +2633,7 @@ void place_object(s8 pos[3]) {
     mb64_object_count++;
 
     play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
+    should_spawn_place_number(pos);
 }
 
 u8 joystick_direction(void) {
@@ -2673,6 +2708,10 @@ void imbue_action(void) {
                     mb64_object_data[i].imbue = IMBUE_RED_COIN;
                     imbue_success = TRUE;
                     break;
+                case OBJECT_TYPE_GREEN_COIN:
+                    mb64_object_data[i].imbue = IMBUE_GREEN_COIN;
+                    imbue_success = TRUE;
+                    break;
                 case OBJECT_TYPE_BUTTON:
                     mb64_object_data[i].imbue = IMBUE_RED_SWITCH;
                     if (mb64_param_selection == 1) {
@@ -2683,8 +2722,13 @@ void imbue_action(void) {
             }
 
             if (imbue_success && (oldImbue != mb64_object_data[i].imbue)) {
+                if (objType == OBJECT_TYPE_EXCL_BOX && mb64_object_data[i].bparam <= 3) {
+                    mb64_object_data[i].bparam = 4;
+                }
+
                 play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
                 generate_object_preview();
+                should_spawn_place_number(mb64_cursor_pos);
             }
             break;
         }
@@ -3240,15 +3284,9 @@ u32 main_cursor_logic(u32 joystick) {
     }
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         mb64_camera_rot_offset++;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
-        }
     }
     if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
         mb64_camera_rot_offset--;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CAMERA_TURN, gGlobalSoundSource);
-        }
     }
     mb64_camera_rot_offset = (mb64_camera_rot_offset % 4)+4;
 
@@ -3264,9 +3302,6 @@ u32 main_cursor_logic(u32 joystick) {
     //camera zooming
     if (gPlayer1Controller->buttonPressed & D_JPAD) {
         mb64_camera_zoom_index++;
-        if (mb64_sram_configuration.option_flags & (1<<OPT_CAMSOUND)) {
-            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-        }
     }
     mb64_camera_zoom_index = (mb64_camera_zoom_index+5)%5;
 

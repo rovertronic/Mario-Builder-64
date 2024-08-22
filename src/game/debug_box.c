@@ -164,6 +164,7 @@ static const Gfx dl_visual_surface[] = {
     gsSPClearGeometryMode(G_LIGHTING),
     gsSPSetGeometryMode(G_ZBUFFER),
     gsSPTexture(0, 0, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPEndDisplayList(),
 };
 

@@ -645,8 +645,22 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx)
         //get_pos_from_transform_mtx(gMarioState->HeadPosition, *curTransform, gCurGraphNodeCamera->matrixPtr);
 
         if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
-            //create_transformation_from_matrices(gMarioState->HeadMatrix, *mtx, gCurGraphNodeCamera->matrixPtr);
-            mtxf_copy(gMarioState->HeadMatrix,mtx);
+            struct Object *crab = gMarioState->faceCrablet;
+            if (crab) {
+                mtxf_copy(crab->transform,mtx);
+                crab->header.gfx.throwMatrix = &crab->transform;
+
+                Vec3f crabDisplacement, crabNewDisplacement;
+                vec3f_set(crabDisplacement, 150.f, -40.f, 10.0f); // local displacement of the crab
+                linear_mtxf_mul_vec3f(crab->transform, crabNewDisplacement, crabDisplacement); // rotate it with mario's head
+                vec3f_add(crab->transform[3], crabNewDisplacement); // add position
+
+                vec3_mul_val(crab->transform[0], 3.5f);
+                vec3_mul_val(crab->transform[1], 3.5f);
+                vec3_mul_val(crab->transform[2], 3.5f);
+
+                crab->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+            }
         }
 
         

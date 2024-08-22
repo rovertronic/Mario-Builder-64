@@ -12,7 +12,9 @@
 #define MB64_DRAWDIST_MEDIUM 7000.f // For smaller low-cost objects, like NPCs
 #define MB64_DRAWDIST_HIGH 12000.f // For objects vital to the stage, like spinning firebars
 
-#define MB64_BOSS_TRIGGER_DIST 2000.f
+#define MB64_BOSS_TRIGGER_DIST 1500.f
+#define MB64_BOSS_DETRIGGER_DIST 2200.f
+
 #define MB64_STAR_HEIGHT 384
 #define MB64_RESPAWN_DIST 2000.f
 

@@ -10,6 +10,12 @@ void compat_upgrade_1_0_to_1_1(Version_1_0_Save *save, UNUSED void *tile_data, V
         if (obj_data[i].type == 92) { // 1.0 ID - Conveyor
             obj_data[i].bparam = 1; // Set BParam to 1 for full block conveyor
         }
+        if (obj_data[i].type == 70) { // 1.0 ID - Moneybag
+            obj_data[i].imbue = IMBUE_THREE_COINS; // imbuing changes - empty by default
+        }
+        if (obj_data[i].type == 58) { // 1.0 ID - Boo
+            obj_data[i].imbue = IMBUE_ONE_COIN; // imbuing changes - empty by default
+        }
     }
 }
 
