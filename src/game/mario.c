@@ -1956,16 +1956,7 @@ f32 bad_apple_par = 0.0f;
 
 u32 star_radar_objects_to_track[] = {
     bhvStar,
-    bhvHiddenRedCoinStar,
-};
-
-u32 star_radar_objects_to_track_with_imbue[] = {
-    bhvWhompKingBoss,
-    bhvBalconyBigBoo,
-    bhvBigBully,
-    bhvShowrunner,
-    bhvBreakableBox,
-    bhvBreakableBoxRF,
+    bhvStarSpawnCoordinates,
 };
 
 void switch_mario_costume(u8 CostumeId) {
@@ -2065,24 +2056,41 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     //this code finds the nearest valid object in array star_radar_objects_to_track[]
     //objects earlier in the list take priority due to the way this is written...
-    struct Object *nearest_star;
+    struct Object *curobj = NULL;
+    struct Object *nearest_star = NULL;
+    f32 minDist = 0x20000;
+    f32 dist;
     gMarioState->StarRadarExist = FALSE;
     for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track);i++) { //arthur don't worry i won't use a u8 for i sorry brotha
-        nearest_star = cur_obj_nearest_object_with_behavior(star_radar_objects_to_track[i]);
-        if (nearest_star) {
-            vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
-            gMarioState->StarRadarExist = TRUE;
-            break;
+        curobj = cur_obj_find_nearest_object_with_behavior(star_radar_objects_to_track[i], &dist);
+        if (curobj && (dist < minDist)) {
+            minDist = dist;
+            nearest_star = curobj;
         }
     }
-    f32 scrapdist;
-    for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track_with_imbue);i++) {
-        nearest_star = cur_obj_nearest_object_with_behavior_and_star_imbue(star_radar_objects_to_track_with_imbue[i],&scrapdist);
-        if (nearest_star) {
-            vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
-            gMarioState->StarRadarExist = TRUE;
-            break;
+    curobj = cur_obj_nearest_object_with_imbue(&dist, IMBUE_STAR);
+    if (curobj && (dist < minDist)) {
+        minDist = dist;
+        nearest_star = curobj;
+    }
+
+    // No star, look for a nearby red coin
+    if (!nearest_star) {
+        curobj = cur_obj_find_nearest_object_with_behavior(bhvRedCoin, &dist);
+        if (curobj && (dist < minDist)) {
+            minDist = dist;
+            nearest_star = curobj;
         }
+        curobj = cur_obj_nearest_object_with_imbue(&dist, IMBUE_RED_COIN);
+        if (curobj && (dist < minDist)) {
+            minDist = dist;
+            nearest_star = curobj;
+        }
+    }
+
+    if (nearest_star) {
+        vec3f_copy(&gMarioState->StarRadarLocation,&nearest_star->oPosVec);
+        gMarioState->StarRadarExist = TRUE;
     }
 
     if (gMarioState->hiddenBoxTimer > 0) {

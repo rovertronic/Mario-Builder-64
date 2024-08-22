@@ -661,19 +661,23 @@ struct Object *cur_obj_find_nearest_object_with_behavior(const BehaviorScript *b
     return closestObj;
 }
 
-struct Object *cur_obj_nearest_object_with_behavior_and_star_imbue(const BehaviorScript *behavior, f32 *dist) {
-    uintptr_t *behaviorAddr = segmented_to_virtual(behavior);
-    struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
-    struct Object *obj = (struct Object *) listHead->next;
+// all possible lists an imbued object can be in
+u8 imbueObjectLists[] = {
+    OBJ_LIST_GENACTOR,
+    OBJ_LIST_SURFACE,
+    OBJ_LIST_POLELIKE,
+    OBJ_LIST_PUSHABLE,
+    OBJ_LIST_DESTRUCTIVE,
+};
+
+struct Object *cur_obj_nearest_obj_in_list_with_imbue(f32 *dist, s32 list, s32 imbue) {
+    struct ObjectNode *listHead = &gObjectLists[list];
+    struct Object *obj = (struct Object *)listHead->next;
     struct Object *closestObj = NULL;
     f32 minDist = 0x20000;
 
-    while (obj != (struct Object *) listHead) {
-        if (obj->behavior == behaviorAddr
-            && obj->activeFlags != ACTIVE_FLAG_DEACTIVATED
-            && obj != o
-            && obj->oImbue == IMBUE_STAR
-        ) {
+    while (obj != (struct Object *)listHead) {
+        if (obj->oImbue == imbue) {
             f32 objDist = dist_between_objects(o, obj);
             if (objDist < minDist) {
                 closestObj = obj;
@@ -681,7 +685,23 @@ struct Object *cur_obj_nearest_object_with_behavior_and_star_imbue(const Behavio
             }
         }
 
-        obj = (struct Object *) obj->header.next;
+        obj = (struct Object *)obj->header.next;
+    }
+
+    *dist = minDist;
+    return closestObj;
+}
+
+struct Object *cur_obj_nearest_object_with_imbue(f32 *dist, s32 imbue) {
+    struct Object *closestObj = NULL;
+    f32 minDist = 0x20000;
+
+    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
+        struct Object *obj = cur_obj_nearest_obj_in_list_with_imbue(dist, imbueObjectLists[i], imbue);
+        if (obj != NULL && *dist < minDist) {
+            closestObj = obj;
+            minDist = *dist;
+        }
     }
 
     *dist = minDist;
@@ -781,11 +801,10 @@ s32 count_red_coins(void) {
         obj = obj->next;
     }
     
-    count += count_imbued_red_coins(OBJ_LIST_GENACTOR);
-    count += count_imbued_red_coins(OBJ_LIST_SURFACE);
-    count += count_imbued_red_coins(OBJ_LIST_POLELIKE);
-    count += count_imbued_red_coins(OBJ_LIST_PUSHABLE);
-    count += count_imbued_red_coins(OBJ_LIST_DESTRUCTIVE);
+    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
+        count += count_imbued_red_coins(imbueObjectLists[i]);
+    }
+
     return count;
 }
 
