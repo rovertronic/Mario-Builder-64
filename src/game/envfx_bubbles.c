@@ -434,6 +434,10 @@ s32 append_bubble_vertex_buffer(Gfx *gfx, s32 index, Vec3s vertex1, Vec3s vertex
         vertIndex += 3;
     }
 
+    if (vertIndex == 0) {
+        return 0;
+    }
+
     gSPVertex(gfx, VIRTUAL_TO_PHYSICAL(vertBuf), vertIndex, 0);
     return vertIndex;
 }
@@ -502,6 +506,10 @@ Gfx *envfx_update_bubble_particles(s32 mode, UNUSED Vec3s marioPos, Vec3s camFro
         gDPPipeSync(sGfxCursor++);
         envfx_set_bubble_texture(mode, i/5);
         s32 numVerts = append_bubble_vertex_buffer(sGfxCursor++, i, vertex1, vertex2, vertex3, (Vtx *) gBubbleTempVtx);
+        if (numVerts == 0) {
+            sGfxCursor--;
+            continue;
+        }
         while (numVerts > 0) {
             gSP1Triangle(sGfxCursor++, numVerts-3, numVerts-2, numVerts-1, 0);
             numVerts -= 3;
