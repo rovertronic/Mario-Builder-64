@@ -734,11 +734,17 @@ void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot) {
 s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 *vAxis, s8 n[3]) {
     // Find normal
     Vec3f normal;
-    find_vector_perpendicular_to_plane(normal, v[0], v[1], v[2]);
-    vec3_normalize(normal);
-    n[0] = normal[0] * 0x7F;
-    n[1] = normal[1] * 0x7F;
-    n[2] = normal[2] * 0x7F;
+    if (direction != MB64_DIRECTION_UP) {
+        find_vector_perpendicular_to_plane(normal, v[0], v[1], v[2]);
+        vec3_normalize(normal);
+        n[0] = normal[0] * 0x7F;
+        n[1] = normal[1] * 0x7F;
+        n[2] = normal[2] * 0x7F;
+    } else {
+        n[0] = 0;
+        n[1] = 0x7F;
+        n[2] = 0;
+    }
     // Find UVs
     direction = rotate_direction(direction, rot);
     switch (direction) {
