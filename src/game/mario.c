@@ -2064,8 +2064,10 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track);i++) { //arthur don't worry i won't use a u8 for i sorry brotha
         curobj = cur_obj_find_nearest_object_with_behavior(star_radar_objects_to_track[i], &dist);
         if (curobj && (dist < minDist)) {
-            minDist = dist;
-            nearest_star = curobj;
+            if (!(mb64_play_stars_bitfield & ((u64)1 << GET_BPARAM1(curobj->oBehParams)))) {
+                minDist = dist;
+                nearest_star = curobj;
+            }
         }
     }
     curobj = cur_obj_nearest_object_with_imbue(&dist, IMBUE_STAR);

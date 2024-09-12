@@ -678,6 +678,12 @@ struct Object *cur_obj_nearest_obj_in_list_with_imbue(f32 *dist, s32 list, s32 i
 
     while (obj != (struct Object *)listHead) {
         if (obj->oImbue == imbue) {
+            if (imbue == IMBUE_STAR) {
+                if (mb64_play_stars_bitfield & ((u64)1 << GET_BPARAM1(obj->oBehParams))) {
+                    obj = (struct Object *)obj->header.next;
+                    continue;
+                }
+            }
             f32 objDist = dist_between_objects(o, obj);
             if (objDist < minDist) {
                 closestObj = obj;
