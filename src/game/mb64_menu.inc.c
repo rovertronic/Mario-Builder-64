@@ -2173,12 +2173,12 @@ s32 mb64_main_menu(void) {
 
             mb64_mm_shade_screen();
 
-            f32 inputX = CLAMP(30 + mb64_menu_button_vels[1][0], -320, 320);
+            f32 inputX = 30 + mb64_menu_button_vels[1][0];
             gDPPipeSync(gDisplayListHead++);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 100);
             gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
             gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-            gDPFillRectangle(gDisplayListHead++, MAX(inputX, 0), (240-185)-16, inputX + 250, (240-185)+3);
+            gDPFillRectangle(gDisplayListHead++, CLAMP(inputX, 0, 320), (240-185)-16, CLAMP(inputX + 250, 0, 320), (240-185)+3);
 
 
             print_maker_string_ascii(35 + mb64_menu_button_vels[0][0],208,mb64_mm_keyboard_prompt[mb64_mm_keyboard_exit_mode],MB64_TEXT_WHITE);
