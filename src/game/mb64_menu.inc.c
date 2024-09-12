@@ -95,6 +95,16 @@ void print_maker_string_ascii(s32 x, s32 y, char *str, s32 color) {
     print_maker_string_ascii_alpha(x, y, str, color, 255);
 }
 
+void print_maker_string_ascii_nofileext(s32 x, s32 y, char *str, s32 color) {
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+    print_generic_string_ascii_nofileext(x-1, y-1, (u8 *)str);
+    if (mb64_greyed_text) color += 2;
+    gDPSetEnvColor(gDisplayListHead++, mb64_text_colors[color][0], mb64_text_colors[color][1], mb64_text_colors[color][2], 255);
+    print_generic_string_ascii_nofileext(x, y, (u8 *)str);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+}
+
 void print_maker_string_ascii_centered_alpha(s32 x, s32 y, char *str, s32 color, s32 alpha) {
     s32 x1 = get_string_width_ascii(str);
     print_maker_string_ascii_alpha(x - x1/2, y, str, color, alpha);
@@ -2310,6 +2320,17 @@ s32 mb64_main_menu(void) {
                     numPagesRender += PAGE_SIZE;
                 }
                 mb64_menu_scrolling[0][0]--;
+            } else {
+                if ((mb64_joystick == 3 || gPlayer1Controller->buttonPressed & R_TRIG) && (mb64_mm_page < mb64_mm_pages - 1)) {
+                    startRenderIndex += PAGE_SIZE;
+                    mb64_menu_index += PAGE_SIZE;
+                    mb64_menu_index = MIN(mb64_menu_index, mb64_level_entry_count - 1);
+                    mb64_mm_page++;
+                } else if ((mb64_joystick == 1 || gPlayer1Controller->buttonPressed & L_TRIG) && mb64_mm_page > 0) {
+                    startRenderIndex -= PAGE_SIZE;
+                    mb64_menu_index -= PAGE_SIZE;
+                    mb64_mm_page--;
+                }
             }
             numPagesRender = MIN(numPagesRender, mb64_level_entry_count - startRenderIndex);
 
@@ -2351,7 +2372,7 @@ s32 mb64_main_menu(void) {
                 if (MB64_VERSION < mb64_level_entry_version[startRenderIndex + i]) {
                     print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),"Created in future version, update to play.",MB64_TEXT_RED);
                 } else {
-                    print_maker_string_ascii(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
+                    print_maker_string_ascii_nofileext(75 + xPosAnim,startRenderY - 10 -(i*36),level_entries_ptr[startRenderIndex + i].fname,(selectedIndex == renderIndex));
                 }
 
             }
