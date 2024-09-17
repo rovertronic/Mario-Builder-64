@@ -1384,6 +1384,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"", 0},
     {"- Increased vertex limit from 40,000 to 50,000", 0},
     {"- Increased tile limit from 10,000 to 15,000", 0},
+    {"- Reduced vertex count of most levels by up to 25%", 0},
     {"- New boundary type: Interior"},
     {"- New object: Inverted Timed Box"},
     {"- Ability to place multiple objects/tiles in the same spot", 0},

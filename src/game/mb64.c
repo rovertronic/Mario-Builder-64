@@ -189,8 +189,6 @@ s16 mb64_tip_timer = 0;
 
 struct CachedVertexInfo {
     s8 n[3];
-    s16 u;
-    s16 v;
 };
 struct CachedVertexInfo mb64_cached_vertex_data[32];
 
@@ -660,8 +658,7 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+1, mb64_num_vertices_cached+2);
     cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+3, mb64_num_vertices_cached+2);
     mb64_num_vertices_cached += 4;
-    //check_cached_tris();
-    display_cached_tris();
+    check_cached_tris();
 
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached,     pos1[0] + spsy, pos1[1] - cp, pos1[2] + spcy, 0, 0, 0, 0, 0, 0xFF);
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + 1, pos1[0] - spsy, pos1[1] + cp, pos1[2] - spcy, 0, 0, 0, 0, 0, 0xFF);
@@ -671,8 +668,7 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+1, mb64_num_vertices_cached+2);
     cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+3, mb64_num_vertices_cached+2);
     mb64_num_vertices_cached += 4;
-    //check_cached_tris();
-    display_cached_tris();
+    check_cached_tris();
 }
 
 void generate_trajectory_gfx(void) {
@@ -724,11 +720,11 @@ void generate_trajectory_gfx(void) {
     gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index]);
 }
 
-s32 find_duplicate_vertex(s32 vx, s32 vy, s32 vz, s32 n0, s32 n1, s32 n2, s32 u, s32 v) {
+s32 find_duplicate_vertex(s32 vx, s32 vy, s32 vz, s32 n0, s32 n1, s32 n2, s16 u, s16 v) {
     for (int i = 0; i < mb64_num_vertices_cached; i++) {
         if (mb64_curr_vtx[i].v.ob[0] == vx && mb64_curr_vtx[i].v.ob[1] == vy && mb64_curr_vtx[i].v.ob[2] == vz) {
-            if (mb64_cached_vertex_data[i].n[0] == n0 && mb64_cached_vertex_data[i].n[1] == n1 && mb64_cached_vertex_data[i].n[2] == n2) {
-                if (mb64_cached_vertex_data[i].u == u && mb64_cached_vertex_data[i].v == v) {
+            if (mb64_curr_vtx[i].v.tc[0] == u && mb64_curr_vtx[i].v.tc[1] == v) {
+                if (mb64_cached_vertex_data[i].n[0] == n0 && mb64_cached_vertex_data[i].n[1] == n1 && mb64_cached_vertex_data[i].n[2] == n2) {
                     return i;
                 }
             }
@@ -821,6 +817,9 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         u -= upos * 16;
         if (!clampV) v -= vpos * 16;
 
+        u = (u * 64 + mb64_uv_offset);
+        v = (v * 64 + mb64_uv_offset);
+
         s32 vert = find_duplicate_vertex(x, y, z, n[0], n[1], n[2], u, v);
         if (vert != -1) {
             vertexIndices[i] = vert;
@@ -829,11 +828,9 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[0] = n[0];
         mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[1] = n[1];
         mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[2] = n[2];
-        mb64_cached_vertex_data[mb64_num_vertices_cached + i].u = u;
-        mb64_cached_vertex_data[mb64_num_vertices_cached + i].v = v;
 
         make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + numNewVertices, x, y, z,
-            (u * 64 + mb64_uv_offset), (v * 64 + mb64_uv_offset),
+            u, v,
             n[0], n[1], n[2], 0xFF);
         vertexIndices[i] = mb64_num_vertices_cached + numNewVertices;
         numNewVertices++;
