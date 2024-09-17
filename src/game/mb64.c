@@ -184,8 +184,15 @@ u8 mb64_has_username = FALSE;
 
 u8 mb64_num_vertices_cached = 0;
 u8 mb64_num_tris_cached = 0;
-u8 mb64_cached_tris[16][3];
+u8 mb64_cached_tris[32][3];
 s16 mb64_tip_timer = 0;
+
+struct CachedVertexInfo {
+    s8 n[3];
+    s16 u;
+    s16 v;
+};
+struct CachedVertexInfo mb64_cached_vertex_data[32];
 
 struct ExclamationBoxContents *mb64_exclamation_box_contents;
 
@@ -582,9 +589,9 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
 }
 
 void cache_tri(u8 v1, u8 v2, u8 v3) {
-    mb64_cached_tris[mb64_num_tris_cached][0] = mb64_num_vertices_cached + v1;
-    mb64_cached_tris[mb64_num_tris_cached][1] = mb64_num_vertices_cached + v2;
-    mb64_cached_tris[mb64_num_tris_cached][2] = mb64_num_vertices_cached + v3;
+    mb64_cached_tris[mb64_num_tris_cached][0] = v1;
+    mb64_cached_tris[mb64_num_tris_cached][1] = v2;
+    mb64_cached_tris[mb64_num_tris_cached][2] = v3;
     mb64_num_tris_cached++;
 }
 
@@ -650,8 +657,8 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + 2, pos2[0] + cy, pos2[1], pos2[2] - sy, 0, length, 0, 0, 0, 0xFF);
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + 3, pos2[0] - cy, pos2[1], pos2[2] + sy, 0, length, 0, 0, 0, 0xFF);
 
-    cache_tri(0, 1, 2);
-    cache_tri(1, 3, 2);
+    cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+1, mb64_num_vertices_cached+2);
+    cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+3, mb64_num_vertices_cached+2);
     mb64_num_vertices_cached += 4;
     //check_cached_tris();
     display_cached_tris();
@@ -661,8 +668,8 @@ void draw_dotted_line(s16 pos1[3], s16 pos2[3]) {
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + 2, pos2[0] + spsy, pos2[1] - cp, pos2[2] + spcy, 0, length, 0, 0, 0, 0xFF);
     make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + 3, pos2[0] - spsy, pos2[1] + cp, pos2[2] - spcy, 0, length, 0, 0, 0, 0xFF);
 
-    cache_tri(0, 1, 2);
-    cache_tri(1, 3, 2);
+    cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+1, mb64_num_vertices_cached+2);
+    cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+3, mb64_num_vertices_cached+2);
     mb64_num_vertices_cached += 4;
     //check_cached_tris();
     display_cached_tris();
@@ -717,6 +724,19 @@ void generate_trajectory_gfx(void) {
     gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index]);
 }
 
+s32 find_duplicate_vertex(s32 vx, s32 vy, s32 vz, s32 n0, s32 n1, s32 n2, s32 u, s32 v) {
+    for (int i = 0; i < mb64_num_vertices_cached; i++) {
+        if (mb64_curr_vtx[i].v.ob[0] == vx && mb64_curr_vtx[i].v.ob[1] == vy && mb64_curr_vtx[i].v.ob[2] == vz) {
+            if (mb64_cached_vertex_data[i].n[0] == n0 && mb64_cached_vertex_data[i].n[1] == n1 && mb64_cached_vertex_data[i].n[2] == n2) {
+                if (mb64_cached_vertex_data[i].u == u && mb64_cached_vertex_data[i].v == v) {
+                    return i;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
 void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot) {
     for (u32 i = 0; i < mb64_curr_poly_vert_count; i++) {
         s8 x = oldv[i][0];
@@ -760,8 +780,11 @@ s32 render_get_normal_and_uvs(s8 v[3][3], u32 direction, u32 rot, u8 *uAxis, u8 
 void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
     s8 n[3];
     u8 uAxis, vAxis;
-
     s8 newVtx[4][3];
+
+    s8 vertexIndices[4];
+    s32 numNewVertices = 0;
+
     mb64_transform_vtx_with_rot(newVtx, poly->vtx, rot);
     s32 facedir = poly->faceDir;
     s32 useAltUVs = mb64_use_alt_uvs;
@@ -773,8 +796,13 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         useAltUVs = TRUE; // should not coincide with a decal UV
     }
     s32 flipU = render_get_normal_and_uvs(newVtx, facedir, rot, &uAxis, &vAxis, n);
+    s32 clampV = (mb64_growth_render_type == 2);
 
     for (u32 i = 0; i < mb64_curr_poly_vert_count; i++) {
+        s32 x = GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16);
+        s32 y = GRID_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16);
+        s32 z = GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16);
+
         s16 u, v;
         if (useAltUVs && poly->altuvs) {
             u = 16 - (*poly->altuvs)[i][0];
@@ -784,23 +812,42 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
             if (!flipU) u = 16 - u;
             v = 16 - newVtx[i][vAxis];
         }
-        make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + i,
-            GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16),
-            GRID_TO_POS(pos[1]) + ((newVtx[i][1] - 8) * 16),
-            GRID_TO_POS(pos[2]) + ((newVtx[i][2] - 8) * 16),
+
+        s32 upos = (flipU ? 31 - pos[uAxis] : pos[uAxis] - 32);
+        s32 vpos = pos[vAxis] - 32;
+        if (upos == -32) upos = 31;
+        if (vpos == -32) vpos = 31;
+
+        u -= upos * 16;
+        if (!clampV) v -= vpos * 16;
+
+        s32 vert = find_duplicate_vertex(x, y, z, n[0], n[1], n[2], u, v);
+        if (vert != -1) {
+            vertexIndices[i] = vert;
+            continue;
+        }
+        mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[0] = n[0];
+        mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[1] = n[1];
+        mb64_cached_vertex_data[mb64_num_vertices_cached + i].n[2] = n[2];
+        mb64_cached_vertex_data[mb64_num_vertices_cached + i].u = u;
+        mb64_cached_vertex_data[mb64_num_vertices_cached + i].v = v;
+
+        make_vertex(mb64_curr_vtx, mb64_num_vertices_cached + numNewVertices, x, y, z,
             (u * 64 + mb64_uv_offset), (v * 64 + mb64_uv_offset),
             n[0], n[1], n[2], 0xFF);
+        vertexIndices[i] = mb64_num_vertices_cached + numNewVertices;
+        numNewVertices++;
     }
     
     u32 isQuad = (mb64_curr_poly_vert_count == 4);
     if (mb64_render_flip_normals) {
-        cache_tri(0, 2, 1);
-        if (isQuad) cache_tri(1, 2, 3);
+        cache_tri(vertexIndices[0], vertexIndices[2], vertexIndices[1]);
+        if (isQuad) cache_tri(vertexIndices[1], vertexIndices[2], vertexIndices[3]);
     } else {
-        cache_tri(0, 1, 2);
-        if (isQuad) cache_tri(1, 3, 2);
+        cache_tri(vertexIndices[0], vertexIndices[1], vertexIndices[2]);
+        if (isQuad) cache_tri(vertexIndices[1], vertexIndices[3], vertexIndices[2]);
     }
-    mb64_num_vertices_cached += mb64_curr_poly_vert_count;
+    mb64_num_vertices_cached += numNewVertices;
     check_cached_tris();
 }
 
@@ -1505,11 +1552,11 @@ void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u
             u, v, n[0], n[1], n[2], alpha);
     }
     if (mb64_render_flip_normals) {
-        cache_tri(0, 2, 1);
-        cache_tri(1, 2, 3);
+        cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+2, mb64_num_vertices_cached+1);
+        cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+2, mb64_num_vertices_cached+3);
     } else {
-        cache_tri(0, 1, 2);
-        cache_tri(1, 3, 2);
+        cache_tri(mb64_num_vertices_cached, mb64_num_vertices_cached+1,mb64_num_vertices_cached+2);
+        cache_tri(mb64_num_vertices_cached+1, mb64_num_vertices_cached+3, mb64_num_vertices_cached+2);
     }
     mb64_num_vertices_cached += 4;
     check_cached_tris();

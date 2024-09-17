@@ -1433,6 +1433,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Improved vertex/tile/object limit display", 0},
     {"- Better warnings for vertex limit and having FBE disabled", 0},
     {"- Improved cursor wrapping around the sides of the level", 0},
+    {"- Faster navigation between level pages using left/right", 0},
     {"", 0},
     {"Improved Visuals", 1},
     {"", 0},
