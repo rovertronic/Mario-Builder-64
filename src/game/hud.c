@@ -1046,7 +1046,7 @@ void render_hud(void) {
             // }
 
              //Use this later for the star radar badge
-             if (1) { // BADGE_STAR
+             if (mb64_sram_configuration.option_flags & (1<<OPT_STARRADAR)) {
                  if (gMarioState->StarRadarExist == TRUE) {
                      gMarioState->StarRadarExist = FALSE;
                      print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);
