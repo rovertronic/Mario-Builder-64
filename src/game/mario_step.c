@@ -543,10 +543,6 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
     f32 waterLevel = mb64_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
 
-    if ((upperWall.numWalls>0)||(lowerWall.numWalls>0)) {
-        bullet_fuel = 60;
-    }
-
     //! The water pseudo floor is not referenced when your intended qstep is
     // out of bounds, so it won't detect you as landing.
     if (floor == NULL) {
