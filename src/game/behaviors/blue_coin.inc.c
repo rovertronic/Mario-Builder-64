@@ -76,7 +76,7 @@ void bhv_blue_coin_switch_loop(void) {
     // The switch's model is 1/3 size.
     cur_obj_scale(3.0f);
 
-    u32 time = (save_file_get_badge_equip() & (1<<9)) ? 480 : 240;
+    u32 time = (save_file_get_badge_equip() & (1<<BADGE_TIME)) ? 480 : 240;
 
     if (gMarioPlatform == NULL) gMarioState->onbluecoinswitch = FALSE;
 

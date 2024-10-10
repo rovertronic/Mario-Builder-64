@@ -25,7 +25,7 @@ static struct ObjectHitbox sMovingBlueCoinHitbox = {
 };
 
 s32 coin_step(s16 *collisionFlagsPtr) {
-    if (save_file_get_badge_equip() & (1<<10)) {
+    if (save_file_get_badge_equip() & (1<<BADGE_MAGNET)) {
         o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
     }
     *collisionFlagsPtr = object_step();

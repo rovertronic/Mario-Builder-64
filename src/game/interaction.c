@@ -746,7 +746,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
     }
 
     //give double if using double badge
-    if ((save_file_get_badge_equip() & (1<<8)) && (gMarioState->numBadgePoints > 0)) {
+    if ((save_file_get_badge_equip() & (1<<BADGE_GREED)) && (gMarioState->numBadgePoints > 0)) {
         obj->oDamageOrCoinValue *= 2;
         coinloop++;
         coinloop%=4;
@@ -1982,7 +1982,7 @@ void check_death_barrier(struct MarioState *m) {
 void check_lava_boost(struct MarioState *m) {
     if (!(m->action & ACT_FLAG_RIDING_SHELL) && m->pos[1] < m->floorHeight + 10.0f) {
         if (!(m->flags & MARIO_METAL_CAP)) {
-            if ((save_file_get_badge_equip() & (1<<0))&&(gMarioState->numBadgePoints > 0)) {
+            if ((save_file_get_badge_equip() & (1<<BADGE_LAVA))&&(gMarioState->numBadgePoints > 0)) {
                 gMarioState->numBadgePoints --;
                 m->hurtCounter += (gMarioState->LavaHeat-2)*4;
             } else {

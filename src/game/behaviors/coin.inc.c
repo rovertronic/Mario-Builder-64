@@ -128,7 +128,7 @@ void bhv_coin_loop(void) {
 
     struct Surface *floor = o->oFloor;
 
-    if ((save_file_get_badge_equip() & (1<<10))) {
+    if ((save_file_get_badge_equip() & (1<<BADGE_MAGNET))) {
         o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
     }
 

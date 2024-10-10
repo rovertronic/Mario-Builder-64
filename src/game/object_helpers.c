@@ -2104,7 +2104,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
             if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) ||
-                (save_file_get_badge_equip() & (1<<3))) {
+                (save_file_get_badge_equip() & (1<<BADGE_DAMAGE))) {
                 spawn_mist_particles();
                 if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);

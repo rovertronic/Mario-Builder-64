@@ -1591,7 +1591,7 @@ void update_mario_health(struct MarioState *m) {
             m->healCounter--;
         }
         if (m->hurtCounter > 0) {
-            if ((gMarioState->numBadgePoints > 0) && ((save_file_get_badge_equip() & (1<<2)))) {
+            if ((gMarioState->numBadgePoints > 0) && ((save_file_get_badge_equip() & (1<<BADGE_DEFENSE)))) {
                 gMarioState->numBadgePoints --;
             }
             else
@@ -1620,7 +1620,7 @@ void update_mario_health(struct MarioState *m) {
         if (mb64_lopt_game == MB64_GAME_BTCM) {
             //AIR: BTCM Behavior
             //air doesn't exist if you have gills
-            if (!(save_file_get_badge_equip() & (1<<4))) {
+            if (!(save_file_get_badge_equip() & (1<<BADGE_GILLS))) {
                 if ((m->pos[1] < m->waterLevel - 80)&&(((m->action & ACT_GROUP_MASK) == ACT_GROUP_SUBMERGED))) {
                     if (gMarioState->numAir > 0) {
                         gMarioState->numAir --;
@@ -2204,14 +2204,14 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         regentime = 0;
 
         // HP REGEN BADGE
-        if (save_file_get_badge_equip() & (1<<6)) {
+        if (save_file_get_badge_equip() & (1<<BADGE_HP)) {
             if ((gMarioState->health < gMarioState->numMaxHP*0xFF)&&(gMarioState->numBadgePoints > 0)) {
                 gMarioState->numBadgePoints --;
                 gMarioState->health += 0xFF;
             }
         }
             // FP REGEN BADGE
-        if (save_file_get_badge_equip() & (1<<7)) {
+        if (save_file_get_badge_equip() & (1<<BADGE_MANA)) {
             if ((gMarioState->numBadgePoints < gMarioState->numMaxFP)&&(gMarioState->health > 510)) {
                 gMarioState->numBadgePoints ++;
                 gMarioState->health -= 0xFF;
@@ -2220,41 +2220,41 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         }
     }
 
-    timerdelay = 30;
+    // timerdelay = 30;
 
-    if (save_file_get_badge_equip() & (1<<9)) {
-        timerdelay = 60;
-        }
+    // if (save_file_get_badge_equip() & (1<<BADGE_TIME)) {
+    //     timerdelay = 60;
+    //     }
 
-    //only run timer code if not in cutscene
-    if ((gMarioState->action & ACT_GROUP_MASK) != ACT_GROUP_CUTSCENE) {
-        //MAKE TIMER GO DOWN
-        if (gMarioState->NewTimer > 0) {
-            gMarioState->SubNewTimer ++;
-            if (gMarioState->SubNewTimer > timerdelay) {
-                gMarioState->NewTimer --;
-                gMarioState->SubNewTimer = 0;
-                play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
-                }
-            }
-            else
-            {
-            if (gMarioState->NewTimerMode == 1) {
-                gMarioState->health = 0xFF;
-                }
-            }
-        }
+    // //only run timer code if not in cutscene
+    // if ((gMarioState->action & ACT_GROUP_MASK) != ACT_GROUP_CUTSCENE) {
+    //     //MAKE TIMER GO DOWN
+    //     if (gMarioState->NewTimer > 0) {
+    //         gMarioState->SubNewTimer ++;
+    //         if (gMarioState->SubNewTimer > timerdelay) {
+    //             gMarioState->NewTimer --;
+    //             gMarioState->SubNewTimer = 0;
+    //             play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
+    //             }
+    //         }
+    //         else
+    //         {
+    //         if (gMarioState->NewTimerMode == 1) {
+    //             gMarioState->health = 0xFF;
+    //             }
+    //         }
+    //     }
 
-    if (gMarioState->nearVendor > 0) {
-        gMarioState->nearVendor--;
-    }
+    // if (gMarioState->nearVendor > 0) {
+    //     gMarioState->nearVendor--;
+    // }
 
-    if (gMarioState->_2D) {
-        gMarioState->pos[2] = 0.0f;
-        if (gMarioState->_2DSecret) {
-            gMarioState->pos[2] = -150.0f;
-        }
-    }
+    // if (gMarioState->_2D) {
+    //     gMarioState->pos[2] = 0.0f;
+    //     if (gMarioState->_2DSecret) {
+    //         gMarioState->pos[2] = -150.0f;
+    //     }
+    // }
 
     // Updates once per frame:
     vec3f_get_dist_and_lateral_dist_and_angle(gMarioState->prevPos, gMarioState->pos, &gMarioState->moveSpeed, &gMarioState->lateralSpeed, &gMarioState->movePitch, &gMarioState->moveYaw);

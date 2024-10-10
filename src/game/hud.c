@@ -1046,7 +1046,7 @@ void render_hud(void) {
             // }
 
              //Use this later for the star radar badge
-             if (save_file_get_badge_equip() & (1<<11)) {
+             if (save_file_get_badge_equip() & (1<<BADGE_STAR)) {
                  if (gMarioState->StarRadarExist == TRUE) {
                      gMarioState->StarRadarExist = FALSE;
                      print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);

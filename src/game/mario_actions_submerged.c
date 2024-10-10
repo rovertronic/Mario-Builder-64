@@ -18,6 +18,7 @@
 #include "behavior_data.h"
 #include "level_table.h"
 #include "rumble_init.h"
+#include "ingame_menu.h"
 
 #define MIN_SWIM_STRENGTH 160
 #define MIN_SWIM_SPEED 16.0f
@@ -526,7 +527,7 @@ static s32 act_breaststroke(struct MarioState *m) {
         return TRUE;
     }
 
-    if (save_file_get_badge_equip() & (1<<5)) {
+    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
         if (m->actionTimer < 6) {
             m->forwardVel += 10.0f;
         }
@@ -565,7 +566,7 @@ static s32 act_breaststroke(struct MarioState *m) {
         reset_bob_variables(m);
     }
 
-    if (save_file_get_badge_equip() & (1<<5)) {
+    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
         sSwimStrength = 1000;
     }
 
@@ -636,7 +637,7 @@ static s32 act_flutter_kick(struct MarioState *m) {
 
     sSwimStrength = MIN_SWIM_STRENGTH;
 
-    if (save_file_get_badge_equip() & (1<<5)) {
+    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
         m->forwardVel = 200.0f;
         sSwimStrength = 1000;
         set_mario_animation(m, MARIO_ANIM_FLUTTERKICK);

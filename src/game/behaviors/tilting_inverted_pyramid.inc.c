@@ -3911,7 +3911,7 @@ void bhv_Showrunner(void) {
 
 // void bhv_projector(void) {
 //     u16 multiplier = 1;
-//     if (save_file_get_badge_equip() & (1<<9)) {
+//     if (save_file_get_badge_equip() & (1<<BADGE_TIME)) {
 //         multiplier = 2;
 //     }
 

@@ -171,7 +171,7 @@ void bhv_coin_ring_loop(void) {
     }
 
 void bhv_purple_switch_loop_vanilla(void) {
-    u32 time = (save_file_get_badge_equip() & (1<<9)) ? 800 : 400;
+    u32 time = (save_file_get_badge_equip() & (1<<BADGE_TIME)) ? 800 : 400;
     switch (o->oAction) {
         /**
          * Set the switch's model and scale. If Mario is standing near the
