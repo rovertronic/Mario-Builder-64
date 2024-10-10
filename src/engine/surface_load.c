@@ -23,6 +23,7 @@
  */
 SpatialPartitionCell gStaticSurfacePartition[NUM_CELLS][NUM_CELLS];
 SpatialPartitionCell gDynamicSurfacePartition[NUM_CELLS][NUM_CELLS];
+SpatialPartitionCell gBlockSurfaces;
 struct CellCoords {
     u8 z;
     u8 x;
@@ -108,13 +109,13 @@ static void clear_static_surfaces(void) {
 
 /**
  * Add a surface to the correct cell list of surfaces.
- * @param dynamic Determines whether the surface is static or dynamic
+ * @param type 0 = static, 1 = dynamic, 2 = block
  * @param cellX The X position of the cell in which the surface resides
  * @param cellZ The Z position of the cell in which the surface resides
  * @param surface The surface to add
  */
-static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surface *surface) {
-    struct SurfaceNode *list;
+void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface) {
+    struct SurfaceNode **list;
     s32 priority;
     s32 sortDir = 1; // highest to lowest, then insertion order (water and floors)
     s32 listIndex;
@@ -134,38 +135,38 @@ static void add_surface_to_cell(s32 dynamic, s32 cellX, s32 cellZ, struct Surfac
 
     s32 surfacePriority = surface->upperY * sortDir;
 
-    struct SurfaceNode *newNode = alloc_surface_node(dynamic);
+    struct SurfaceNode *newNode = alloc_surface_node(type != 0);
     newNode->surface = surface;
 
-    if (dynamic) {
+    if (type == 1) {
         list = &gDynamicSurfacePartition[cellZ][cellX][listIndex];
-        if (sNumCellsUsed >= sizeof(sCellsUsed) / sizeof(struct CellCoords)) {
-            sClearAllCells = TRUE;
-        } else {
-            if (list->next == NULL) {
-                sCellsUsed[sNumCellsUsed].z = cellZ;
-                sCellsUsed[sNumCellsUsed].x = cellX;
-                sCellsUsed[sNumCellsUsed].partition = listIndex;
-                sNumCellsUsed++;
-            }
-        }
-    } else {
+        sClearAllCells = TRUE;
+    } else if (type == 0) {
         list = &gStaticSurfacePartition[cellZ][cellX][listIndex];
+    } else {
+        list = &gBlockSurfaces[listIndex];
+        sClearAllCells = TRUE;
     }
 
+    if (*list == NULL) {
+        *list = newNode;
+        return;
+    }
+    struct SurfaceNode *curNode = *list;
+
     // Loop until we find the appropriate place for the surface in the list.
-    while (list->next != NULL) {
-        priority = list->next->surface->upperY * sortDir;
+    while (curNode->next != NULL) {
+        priority = curNode->next->surface->upperY * sortDir;
 
         if (surfacePriority > priority) {
             break;
         }
 
-        list = list->next;
+        curNode = curNode->next;
     }
 
-    newNode->next = list->next;
-    list->next = newNode;
+    newNode->next = curNode->next;
+    curNode->next = newNode;
 }
 
 /**
@@ -487,8 +488,8 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
  */
 void clear_dynamic_surfaces(void) {
     PUPPYPRINT_GET_SNAPSHOT();
-    if (!(gTimeStopState & TIME_STOP_ACTIVE)) {
-        clear_dynamic_surface_references();
+    //if (!(gTimeStopState & TIME_STOP_ACTIVE)) {
+        //clear_dynamic_surface_references();
 
         gSurfacesAllocated = gNumStaticSurfaces;
         gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
@@ -502,7 +503,7 @@ void clear_dynamic_surfaces(void) {
         }
         sNumCellsUsed = 0;
         sClearAllCells = FALSE;
-    }
+    //}
     profiler_collision_update(first);
 }
 

@@ -390,8 +390,8 @@ struct mb64_terrain_poly mb64_terrain_fence_col_quads[] = {
     {{{16, 7, 1},  {0, 7, 1},   {16, 0, 1}, {0, 0, 1}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
     {{{16, 7, -1}, {16, 0, -1}, {0, 7, -1}, {0, 0, -1}}, MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_BOTTOMSLAB, 0, NULL}, // BACK (away from tile)
 
-    {{{16, 8, 0},  {0, 8, 0},   {16, 7, 1}, {0, 7, 1}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
-    {{{16, 8, 0},  {16, 7, -1}, {0, 8, 0},  {0, 7, -1}}, MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_BOTTOMSLAB, 0, NULL}, // BACK (away from tile)
+    {{{16, 8, 0},  {0, 8, 0},   {16, 7, 1}, {0, 7, 1}}, MB64_DIRECTION_UP, MB64_FACESHAPE_EMPTY, 0, NULL}, // FRONT (towards tile)
+    {{{16, 8, 0},  {16, 7, -1}, {0, 8, 0},  {0, 7, -1}}, MB64_DIRECTION_UP, MB64_FACESHAPE_EMPTY, 0, NULL}, // BACK (away from tile)
 };
 
 struct mb64_terrain mb64_terrain_fence = {

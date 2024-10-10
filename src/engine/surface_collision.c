@@ -293,6 +293,11 @@ s32 find_wall_collisions(struct WallCollisionData *colData) {
         }
     }
 
+    gBlockSurfaces[SPATIAL_PARTITION_WALLS] = NULL;
+    block_wall_collision(colData->x, colData->y + colData->offsetY, colData->z, colData->radius+16.f);
+    node = gBlockSurfaces[SPATIAL_PARTITION_WALLS];
+    numCollisions += find_wall_collisions_from_list(node, colData);
+
     gCollisionFlags &= ~(COLLISION_FLAG_RETURN_FIRST | COLLISION_FLAG_INCLUDE_INTANGIBLE);
 #ifdef VANILLA_DEBUG
     // Increment the debug tracker.
@@ -367,7 +372,6 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
     register struct Surface *surf, *ceil = NULL;
     register f32 height;
     SurfaceType type = SURFACE_DEFAULT;
-    *pheight = CELL_HEIGHT_LIMIT;
     // Stay in this loop until out of ceilings.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
@@ -421,7 +425,6 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
  */
 f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
     f32 height        = CELL_HEIGHT_LIMIT;
-    f32 dynamicHeight = CELL_HEIGHT_LIMIT;
     PUPPYPRINT_ADD_COUNTER(gPuppyCallCounter.collision_ceil);
     PUPPYPRINT_GET_SNAPSHOT();
     s32 x = posX;
@@ -440,22 +443,25 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
 
     struct SurfaceNode *surfaceList;
     struct Surface *ceil = NULL;
-    struct Surface *dynamicCeil = NULL;
+    struct Surface *tempCeil = NULL;
 
+    // Check for surfaces belonging to objects.
     surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS];
-    dynamicCeil = find_ceil_from_list(surfaceList, x, y, z, &dynamicHeight);
+    ceil = find_ceil_from_list(surfaceList, x, y, z, &height);
 
-    // In the next check, only check for ceilings lower than the previous check.
-    height = dynamicHeight;
+    gBlockSurfaces[SPATIAL_PARTITION_CEILS] = NULL;
+    block_ceil_collision(posX, posY, posZ);
+    surfaceList = gBlockSurfaces[SPATIAL_PARTITION_CEILS];
+    tempCeil = find_ceil_from_list(surfaceList, x, y, z, &height);
+    if (tempCeil) {
+        ceil = tempCeil;
+    }
 
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS];
-    ceil = find_ceil_from_list(surfaceList, x, y, z, &height);
-
-    // Use the lower ceiling.
-    if (height >= dynamicHeight) {
-        ceil   = dynamicCeil;
-        height = dynamicHeight;
+    tempCeil = find_ceil_from_list(surfaceList, x, y, z, &height);
+    if (tempCeil) {
+        ceil = tempCeil;
     }
 
     // To prevent accidentally leaving the floor tangible, stop checking for it.
@@ -587,7 +593,6 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     PUPPYPRINT_GET_SNAPSHOT();
 
     f32 height        = FLOOR_LOWER_LIMIT;
-    f32 dynamicHeight = FLOOR_LOWER_LIMIT;
 
     //! (Parallel Universes) Because position is casted to an s16, reaching higher
     //  float locations can return floors despite them not existing there.
@@ -608,23 +613,25 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 
     struct SurfaceNode *surfaceList;
     struct Surface *floor = NULL;
-    struct Surface *dynamicFloor = NULL;
+    struct Surface *tempFloor = NULL;
 
     // Check for surfaces belonging to objects.
     surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS];
-    dynamicFloor = find_floor_from_list(surfaceList, x, y, z, &dynamicHeight);
+    floor = find_floor_from_list(surfaceList, x, y, z, &height);
 
-    // In the next check, only check for floors higher than the previous check.
-    height = dynamicHeight;
+    gBlockSurfaces[SPATIAL_PARTITION_FLOORS] = NULL;
+    block_floor_collision(xPos, yPos, zPos);
+    surfaceList = gBlockSurfaces[SPATIAL_PARTITION_FLOORS];
+    tempFloor = find_floor_from_list(surfaceList, x, y, z, &height);
+    if (tempFloor) {
+       floor = tempFloor;
+    }
 
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS];
-    floor = find_floor_from_list(surfaceList, x, y, z, &height);
-
-    // Use the higher floor.
-    if (height <= dynamicHeight) {
-        floor  = dynamicFloor;
-        height = dynamicHeight;
+    tempFloor = find_floor_from_list(surfaceList, x, y, z, &height);
+    if (tempFloor) {
+        floor = tempFloor;
     }
 
     // To prevent accidentally leaving the floor tangible, stop checking for it.

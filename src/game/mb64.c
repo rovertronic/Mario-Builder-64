@@ -100,7 +100,7 @@ u16 mb64_tile_data_indices[NUM_MATERIALS_PER_THEME + 10] = {0};
 u16 mb64_tile_count = 0;
 u16 mb64_object_count = 0;
 u16 mb64_object_limit_count = 0; // Tracks additional objects like in coin formations, flame spinners
-u16 mb64_building_collision = FALSE; // 0 = building gfx, 1 = building collision
+u16 mb64_build_collision_type = 0; // 0 = none, 1 = floor, 2 = ceil, 3 = wall
 u16 mb64_total_coin_count = 0;
 
 struct Object *mb64_boundary_object[6]; //one for each side
@@ -548,7 +548,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
         case TILE_TYPE_CULL:
             return TRUE;
         case TILE_TYPE_TROLL:
-            if (mb64_building_collision) return FALSE;
+            if (mb64_build_collision_type != 0) return FALSE;
             break;
     }
 
@@ -855,8 +855,8 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
 // Create new static surface
 extern struct Surface *alloc_surface(u32 dynamic);
 extern void add_surface(struct Surface *surface, s32 dynamic);
-void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3]) { 
-    struct Surface *surface = alloc_surface(FALSE);
+void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], u32 isStatic) { 
+    struct Surface *surface = alloc_surface(!isStatic);
 
     vec3_copy(surface->vertex1, v1);
     vec3_copy(surface->vertex2, v2);
@@ -868,12 +868,26 @@ void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3]
     surface->upperY = (max + SURFACE_VERTICAL_BUFFER);
 
     surface->type = mb64_curr_coltype;
-    add_surface(surface, FALSE);
+    if (isStatic)
+        add_surface(surface, FALSE);
+    else
+        add_surface_to_cell(2, 0, 0, surface); // 2 = block surface, cell parameters unused
 };
 
 TerrainData colVtxs[4][3];
 
 void mb64_create_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
+    switch (mb64_build_collision_type) {
+        case 1: // floors
+            if (poly->faceDir != MB64_DIRECTION_UP) return;
+            break;
+        case 2: // ceils
+            if (poly->faceDir != MB64_DIRECTION_DOWN) return;
+            break;
+        case 3: // walls
+            if ((poly->faceDir == MB64_DIRECTION_DOWN) || (poly->faceDir == MB64_DIRECTION_UP)) return;
+            break;
+    }
     s8 newVtx[4][3];
     mb64_transform_vtx_with_rot(newVtx, poly->vtx, rot);
     for (u32 k = 0; k < mb64_curr_poly_vert_count; k++) {
@@ -881,14 +895,14 @@ void mb64_create_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         colVtxs[k][1] = GRID_TO_POS(pos[1]) + ((newVtx[k][1] - 8) * (TILE_SIZE/16)),
         colVtxs[k][2] = GRID_TO_POS(pos[2]) + ((newVtx[k][2] - 8) * (TILE_SIZE/16));
     }
-    mb64_create_surface(colVtxs[0], colVtxs[1], colVtxs[2]);
+    mb64_create_surface(colVtxs[0], colVtxs[1], colVtxs[2], FALSE);
     if (mb64_curr_poly_vert_count == 4) {
-        mb64_create_surface(colVtxs[1], colVtxs[3], colVtxs[2]);
+        mb64_create_surface(colVtxs[1], colVtxs[3], colVtxs[2], FALSE);
     }
 }
 
 void process_poly(s8 pos[3], struct mb64_terrain_poly *quad, u32 rot) {
-    if (!mb64_building_collision)
+    if (!mb64_build_collision_type)
         render_poly(quad, pos, rot);
     else
         mb64_create_poly(quad, pos, rot);
@@ -1259,11 +1273,6 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
     }
     if (adjTile->type == TILE_TYPE_CULL) return 0;
 
-    if (mb64_building_collision) {
-        if (adjTile->waterlogged) return 0;
-        return isFullblock ? 2 : 1;
-    }
-
     struct mb64_grid_obj *tile = get_grid_tile(pos);
 
     s32 mat = tile->mat;
@@ -1367,10 +1376,6 @@ Gfx *get_sidetex(s32 matid) {
 #define retroland_filter_on() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_POINT); if (!gIsGliden) {mb64_uv_offset = 0;} }
 #define retroland_filter_off() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_BILERP); mb64_uv_offset = (mb64_lopt_theme == MB64_THEME_MC ? -32 : -16); }
 
-// For render or collision specific code
-#define PROC_COLLISION(statement) if (mb64_building_collision)  { statement; }
-#define PROC_RENDER(statement)    if (!mb64_building_collision) { statement; }
-
 enum ProcessTileRenderModes {
     PROCESS_TILE_NORMAL,
     PROCESS_TILE_TRANSPARENT,
@@ -1403,25 +1408,23 @@ void process_tiles(u32 processTileRenderMode) {
     s8 pos[3];
 
     // Poles
-    if (!mb64_building_collision) {
-        u8 poleMatType = mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].type;
-        if (do_process(&poleMatType, processTileRenderMode)) {
-            mb64_use_alt_uvs = TRUE;
-            mb64_growth_render_type = 0;
-            startIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX];
-            endIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX+1];
-            set_render_mode( poleMatType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], POLE_TEX());
-            for (u32 i = startIndex; i < endIndex; i++) {
-                s8 pos[3];
-                vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
-                process_tile(pos, &mb64_terrain_pole, mb64_tile_data[i].rot);
-            }
-            display_cached_tris();
+    u8 poleMatType = mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].type;
+    if (do_process(&poleMatType, processTileRenderMode)) {
+        mb64_use_alt_uvs = TRUE;
+        mb64_growth_render_type = 0;
+        startIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX];
+        endIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX+1];
+        set_render_mode( poleMatType, FALSE);
+        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], POLE_TEX());
+        for (u32 i = startIndex; i < endIndex; i++) {
+            s8 pos[3];
+            vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
+            process_tile(pos, &mb64_terrain_pole, mb64_tile_data[i].rot);
         }
-        mb64_use_alt_uvs = FALSE;
-        mb64_render_vertical = FALSE;
+        display_cached_tris();
     }
+    mb64_use_alt_uvs = FALSE;
+    mb64_render_vertical = FALSE;
 
     for (u32 mat = 0; mat < NUM_MATERIALS_PER_THEME; mat++) {
         u8 matType = MATERIAL(mat).type;
@@ -1430,43 +1433,35 @@ void process_tiles(u32 processTileRenderMode) {
         startIndex = mb64_tile_data_indices[mat];
         endIndex = mb64_tile_data_indices[mat+1];
 
-        // RENDER
-        if (!mb64_building_collision) {
-            if (!do_process(&matType, processTileRenderMode)) {
-                goto skip_maintex;
-            }
+        if (!do_process(&matType, processTileRenderMode)) {
+            goto skip_maintex;
+        }
 
-            set_render_mode( matType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], MATERIAL(mat).gfx);
-            mb64_render_vertical = MATERIAL(mat).vertical;
+        set_render_mode( matType, FALSE);
+        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], MATERIAL(mat).gfx);
+        mb64_render_vertical = MATERIAL(mat).vertical;
 
-            // Important to not use matType here so that it's still opaque for screens
-            if ((matType == MAT_CUTOUT) || ((MATERIAL(mat).type < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
-                gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
-            }
-        // COLLISION
-        } else {
-            mb64_curr_coltype = MATERIAL(mat).col;
+        // Important to not use matType here so that it's still opaque for screens
+        if ((matType == MAT_CUTOUT) || ((MATERIAL(mat).type < MAT_CUTOUT) && (TOPMAT(mat).type >= MAT_CUTOUT))) {
+            gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
         }
 
         for (u32 i = startIndex; i < endIndex; i++) {
             tileType = mb64_tile_data[i].type;
-            PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
             rot = mb64_tile_data[i].rot;
             vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
             
             process_tile(pos, mb64_terrain_info_list[tileType].terrain, rot);
         }
 
-        PROC_RENDER( display_cached_tris(); )
+        display_cached_tris();
 skip_maintex:
         
         if (mb64_curr_mat_has_topside) {
             u8 topmatType = TOPMAT(mat).type;
-            PROC_RENDER( if (!do_process(&topmatType, processTileRenderMode)) continue; )
+            if (!do_process(&topmatType, processTileRenderMode)) continue;
             Gfx *sidetex = get_sidetex(TILE_MATDEF(mat).topmat);
-            // Only runs when rendering
-            if (!mb64_building_collision && (sidetex)) {
+            if (sidetex) {
                 mb64_use_alt_uvs = TRUE;
                 mb64_render_vertical = TRUE;
                 gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidetex);
@@ -1504,23 +1499,21 @@ skip_maintex:
                 mb64_use_alt_uvs = FALSE;
             }
 
-            PROC_COLLISION( mb64_curr_coltype = TOPMAT(mat).col; )
-            PROC_RENDER( set_render_mode( topmatType, FALSE); \
-                         gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TOPMAT(mat).gfx); \
-                         mb64_render_vertical = TOPMAT(mat).vertical;)
+            set_render_mode(topmatType, FALSE);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TOPMAT(mat).gfx);
+            mb64_render_vertical = TOPMAT(mat).vertical;
 
             mb64_growth_render_type = 1;
             for (u32 i = startIndex; i < endIndex; i++) {
                 tileType = mb64_tile_data[i].type;
-                PROC_COLLISION( if (tileType == TILE_TYPE_TROLL) continue; )
                 rot = mb64_tile_data[i].rot;
                 vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
 
                 process_tile(pos, mb64_terrain_info_list[tileType].terrain, rot);
             }
-            PROC_RENDER( display_cached_tris(); )
+            display_cached_tris();
         }
-        PROC_RENDER( gSPSetGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK); )
+        gSPSetGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
     }
 }
 
@@ -1764,7 +1757,7 @@ void generate_terrain_gfx(void) {
     mb64_curr_gfx = mb64_terrain_gfx;
     mb64_curr_vtx = mb64_terrain_vtx;
     mb64_gfx_index = 0;
-    mb64_building_collision = FALSE;
+    mb64_build_collision_type = 0;
 
     mb64_use_alt_uvs = FALSE;
     mb64_render_flip_normals = FALSE;
@@ -2031,7 +2024,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
             mb64_gfx_index = 0;
             mb64_growth_render_type = 0;
 
-            mb64_building_collision = FALSE;
+            mb64_build_collision_type = 0;
 
             retroland_filter_on();
 
@@ -2193,11 +2186,104 @@ void generate_boundary_collision(struct mb64_boundary_quad *quadList, u32 count,
             newVtxs[j][2] = quadList[i].vtx[j][2]*size*4;
         }
         if (reverse) {
-            mb64_create_surface(newVtxs[0], newVtxs[2], newVtxs[1]);
-            mb64_create_surface(newVtxs[1], newVtxs[2], newVtxs[3]);
+            mb64_create_surface(newVtxs[0], newVtxs[2], newVtxs[1], TRUE);
+            mb64_create_surface(newVtxs[1], newVtxs[2], newVtxs[3], TRUE);
         } else {
-            mb64_create_surface(newVtxs[0], newVtxs[1], newVtxs[2]);
-            mb64_create_surface(newVtxs[1], newVtxs[3], newVtxs[2]);
+            mb64_create_surface(newVtxs[0], newVtxs[1], newVtxs[2], TRUE);
+            mb64_create_surface(newVtxs[1], newVtxs[3], newVtxs[2], TRUE);
+        }
+    }
+}
+
+void scan_fences(s8 pos[3]) {
+    for (s32 dir = 2; dir < 6; dir++) {
+        s8 newPos[3];
+        vec3_sum(newPos, pos, cullOffsetLUT[dir]);
+        if ((get_grid_tile(newPos)->type == TILE_TYPE_FENCE) && (rotate_direction(MB64_DIRECTION_POS_Z, get_grid_tile(newPos)->rot) == dir)) {
+            generate_block_collision(newPos);
+        }
+    }
+}
+
+void generate_block_collision(s8 pos[3]) {
+    s32 tileType = get_grid_tile(pos)->type;
+    mb64_growth_render_type = 0;
+    mb64_curr_poly_vert_count = 4;
+
+    if (tileType == TILE_TYPE_FENCE) {
+        mb64_curr_coltype = SURFACE_NO_CAM_COLLISION;
+        process_tile(pos, &mb64_terrain_fence_col, get_grid_tile(pos)->rot);
+        return;
+    }
+
+    if (tileType == TILE_TYPE_BARS) {
+        u8 connections[5];
+        mb64_curr_coltype = SURFACE_VANISH_CAP_WALLS;
+        check_bar_connections(pos, connections);
+        render_bars_side(pos, connections);
+        render_bars_top(pos, connections);
+        return;
+    }
+
+    if (tileType == TILE_TYPE_EMPTY || tileType >= TILE_TYPE_CULL) {
+        return;
+    }
+
+    if (mb64_build_collision_type == 1) {
+        mb64_growth_render_type = 1;
+        mb64_curr_coltype = TOPMAT(get_grid_tile(pos)->mat).col;
+    }
+    else mb64_curr_coltype = MATERIAL(get_grid_tile(pos)->mat).col;
+
+    
+
+    process_tile(pos, mb64_terrain_info_list[tileType].terrain, get_grid_tile(pos)->rot);
+}
+
+#define COL_POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE)) / TILE_SIZE)
+void block_floor_collision(f32 x, f32 y, f32 z) {
+    s8 pos[3];
+    mb64_build_collision_type = 1;
+
+    pos[0] = COL_POS_TO_GRID(x);
+    pos[1] = COL_POS_TO_GRID(y + FIND_FLOOR_BUFFER);
+    pos[2] = COL_POS_TO_GRID(z);
+
+    scan_fences(pos);
+    generate_block_collision(pos);
+    pos[1]--;
+    scan_fences(pos);
+    generate_block_collision(pos);
+}
+
+void block_ceil_collision(f32 x, f32 y, f32 z) {
+    s8 pos[3];
+    mb64_build_collision_type = 2;
+
+    pos[0] = COL_POS_TO_GRID(x);
+    pos[1] = COL_POS_TO_GRID(y-5);
+    pos[2] = COL_POS_TO_GRID(z);
+
+    generate_block_collision(pos);
+    pos[1]++;
+    generate_block_collision(pos);
+}
+
+void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
+    s8 pos[3];
+    mb64_build_collision_type = 3;
+
+    s32 minx = COL_POS_TO_GRID(x - r);
+    s32 maxx = COL_POS_TO_GRID(x + r);
+    pos[1] = COL_POS_TO_GRID(y);
+    s32 minz = COL_POS_TO_GRID(z - r);
+    s32 maxz = COL_POS_TO_GRID(z + r);
+
+    for (s32 x = minx; x <= maxx; x++) {
+        pos[0] = x;
+        for (s32 z = minz; z <= maxz; z++) {
+            pos[2] = z;
+            generate_block_collision(pos);
         }
     }
 }
@@ -2207,7 +2293,6 @@ void generate_terrain_collision(void) {
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
     gSurfacesAllocated = gNumStaticSurfaces;
-    mb64_building_collision = TRUE;
     mb64_curr_poly_vert_count = 4;
 
     u32 deathsize = (mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR) ? mb64_grid_size : (mb64_grid_size + 16);
@@ -2233,28 +2318,6 @@ void generate_terrain_collision(void) {
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), mb64_lopt_boundary_height-32, mb64_lopt_boundary_height-32, mb64_grid_size, TRUE);
     }
 
-    process_tiles(0);
-    mb64_growth_render_type = 0;
-    mb64_curr_poly_vert_count = 4;
-
-    mb64_curr_coltype = SURFACE_NO_CAM_COLLISION;
-    for (u32 i = mb64_tile_data_indices[FENCE_TILETYPE_INDEX]; i < mb64_tile_data_indices[FENCE_TILETYPE_INDEX+1]; i++) {
-        s8 pos[3];
-        vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
-        process_tile(pos, &mb64_terrain_fence_col, mb64_tile_data[i].rot);
-    }
-    mb64_curr_poly_vert_count = 4;
-    mb64_curr_coltype = SURFACE_VANISH_CAP_WALLS;
-    for (u32 i = mb64_tile_data_indices[BARS_TILETYPE_INDEX]; i < mb64_tile_data_indices[BARS_TILETYPE_INDEX+1]; i++) {
-        s8 pos[3];
-        u8 connections[5];
-        vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
-        check_bar_connections(pos, connections);
-        render_bars_side(pos, connections);
-        render_bars_top(pos, connections);
-    }
-
-    mb64_building_collision = FALSE;
     u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
     gTotalStaticSurfaceData += surfacePoolData;
     main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);

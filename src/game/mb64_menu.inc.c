@@ -638,7 +638,7 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     mtxf_to_mtx(mtx, mtx1);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
 
-    mb64_building_collision = FALSE;
+    mb64_build_collision_type = 0;
     mb64_growth_render_type = 0;
     mb64_render_culling_off = TRUE;
     mb64_curr_mat_has_topside = FALSE;
