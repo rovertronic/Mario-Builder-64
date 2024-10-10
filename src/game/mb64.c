@@ -121,7 +121,7 @@ s8 mb64_uv_offset = -16;
 u8 mb64_render_flip_normals = FALSE; // Used for drawing water tiles
 u8 mb64_render_vertical = FALSE; // Used for prioritizing vertical UVs over horizontal ones
 u8 mb64_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
-u8 mb64_growth_render_type = 0;
+u8 mb64_growth_render_type = 0; // 0 - normal, 1 - grass top, 2 - grass side, 3 - fence
 u8 mb64_curr_mat_has_topside = FALSE;
 u8 mb64_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
 u8 mb64_curr_boundary = 0;
@@ -792,7 +792,7 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         useAltUVs = TRUE; // should not coincide with a decal UV
     }
     s32 flipU = render_get_normal_and_uvs(newVtx, facedir, rot, &uAxis, &vAxis, n);
-    s32 clampV = (mb64_growth_render_type == 2);
+    s32 clampV = (mb64_growth_render_type == 2) || (mb64_growth_render_type == 3);
 
     for (u32 i = 0; i < mb64_curr_poly_vert_count; i++) {
         s32 x = GRID_TO_POS(pos[0]) + ((newVtx[i][0] - 8) * 16);
@@ -1835,11 +1835,13 @@ void generate_terrain_gfx(void) {
     startIndex = mb64_tile_data_indices[FENCE_TILETYPE_INDEX];
     endIndex = mb64_tile_data_indices[FENCE_TILETYPE_INDEX+1];
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], FENCE_TEX());
+    mb64_growth_render_type = 3; // fence
     for (u32 i = startIndex; i < endIndex; i++) {
         s8 pos[3];
         vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
         process_tile(pos, &mb64_terrain_fence, mb64_tile_data[i].rot);
     }
+    mb64_growth_render_type = 0;
     display_cached_tris();
 
     process_tiles(PROCESS_TILE_NORMAL);
@@ -2080,7 +2082,9 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
                 if (mb64_id_selection == TILE_TYPE_FENCE) {
                     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], FENCE_TEX());
                     set_render_mode( MAT_CUTOUT, FALSE);
+                    mb64_growth_render_type = 3; // fence
                     process_tile(mb64_cursor_pos, &mb64_terrain_fence, mb64_rot_selection);
+                    mb64_growth_render_type = 0;
                 } else if (mb64_id_selection == TILE_TYPE_POLE) {
                     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], POLE_TEX());
                     set_render_mode( mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].type, FALSE);

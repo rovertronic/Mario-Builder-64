@@ -684,7 +684,9 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         } else if (index == 11) { // Fence
             gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_fence_texs[mb64_curr_custom_theme.fence]);
             set_render_mode( MAT_CUTOUT, TRUE);
+            mb64_growth_render_type = 3; // fence
             process_tile(pos, &mb64_terrain_fence, mb64_rot_selection);
+            mb64_growth_render_type = 0;
         } else if (index == 12) { // Iron Mesh
             set_render_mode( MAT_CUTOUT, TRUE);
             u8 connections[5] = {1,0,1,0,1};
