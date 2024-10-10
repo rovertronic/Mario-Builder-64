@@ -811,8 +811,12 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
 
         s32 upos = (flipU ? 31 - pos[uAxis] : pos[uAxis] - 32);
         s32 vpos = pos[vAxis] - 32;
-        if (upos == -32) upos = 31;
-        if (vpos == -32) vpos = 31;
+
+        // cursed code to avoid messed up UVs due to overflow.
+        // the place to wrap changes depending on point filtering (mb64_uv_offset)
+        s32 overflowThreshold = mb64_uv_offset ? -32 : -31;
+        if (upos == overflowThreshold) upos += 63;
+        if (vpos == overflowThreshold) vpos += 63;
 
         u -= upos * 16;
         if (!clampV) v -= vpos * 16;
