@@ -1599,7 +1599,6 @@ char *txt_badges[] = {
     "Greed",
     "Double Time",
     "Magnet",
-    "Star Radar",
     "Burn",
     "Squish",
     "Feather",
@@ -1793,7 +1792,7 @@ struct mb64_ui_button_type mb64_ui_buttons[] = {
 /* MB64_BUTTON_CHICKEN */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CHICKEN,     NULL},
 /* MB64_BUTTON_PHANTASM */ {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_PHANTASM,    NULL},
 /* MB64_BUTTON_PIPE */     {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_WARP_PIPE,   NULL},
-/* MB64_BUTTON_BADGE */    {MB64_PM_OBJ,  FALSE, 23, OBJECT_TYPE_BADGE,      &txt_badges},
+/* MB64_BUTTON_BADGE */    {MB64_PM_OBJ,  FALSE, 22, OBJECT_TYPE_BADGE,      &txt_badges},
 /* MB64_BUTTON_WATER */    {MB64_PM_WATER,FALSE, 0, TILE_TYPE_WATER,         NULL},
 /* MB64_BUTTON_FENCE */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_FENCE,         NULL},
 /* MB64_BUTTON_KING_BOBOMB */ {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_KING_BOBOMB, NULL},
@@ -2524,12 +2523,11 @@ char *mb64_tips[] = {
     "Tip: The Reinforced Box will not break unless hit by\n a Bob-omb, Bullet Bill, or other destructive object!"
 // BTCM
     "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
-    "Tip: The Star Radar badge will let the player know\n   what direction the nearest star is in.",
     "Tip: Badges that the player collects will be kept\n   as permanent collectibles even after death.",
     "Tip: You can use the Burden badges as a punishment\n   when touched, or an optional challenge!",
     "Tip: Green Coins heal the player for 4 HP when collected,\n   or fully with the Heal Plus badge.",
 };
-#define NUM_BTCM_TIPS 5
+#define NUM_BTCM_TIPS 4
 
 u8 mb64_text_colors[][3] = {
     {255, 255, 255},

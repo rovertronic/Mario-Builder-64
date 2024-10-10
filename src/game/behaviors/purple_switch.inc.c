@@ -12,14 +12,6 @@ void bhv_purple_switch_loop(void) {
     u8 crateon = FALSE;
     s32 behparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
 
-    //STAR RADAR TRACKER
-    if ((gDialogCourseActNum-1 == behparam1)&&(behparam1 < 6)) {
-        gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
-        gMarioState->StarRadarLocation[1] = (s16)o->oPosY;
-        gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
-        gMarioState->StarRadarExist = TRUE;
-        }
-
     // crate = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
 
     // if (crate != NULL) {

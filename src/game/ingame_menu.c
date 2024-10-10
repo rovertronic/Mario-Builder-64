@@ -55,7 +55,7 @@ Gfx *bicon_table[] = {
     b8_Plane_001_mesh,
     b9_Plane_001_mesh,
     b10_Plane_001_mesh,
-    b11_Plane_001_mesh,
+    //b11_Plane_001_mesh,
     b12_Plane_001_mesh,
     b13_Plane_001_mesh,
     b14_Plane_001_mesh,
@@ -123,7 +123,7 @@ u8 b8[] = {BADGE8};
 u8 b9[] = {BADGE9};
 u8 b10[] = {BADGE10};
 u8 b11[] = {BADGE11};
-u8 b12[] = {BADGE12};
+// u8 b12[] = {BADGE12};
 u8 b13[] = {BADGE13};
 u8 b14[] = {BADGE14};
 u8 b15[] = {BADGE15};
@@ -137,7 +137,7 @@ u8 b22[] = {BADGE22};
 u8 b23[] = {BADGE23};
 u8 b24[] = {BADGE24};
 
-u8 *badgenames[] = { {b1},{b2},{b3},{b4},{b5},{b6},{b7},{b8},{b9},{b10},{b11},{b12},
+u8 *badgenames[] = { {b1},{b2},{b3},{b4},{b5},{b6},{b7},{b8},{b9},{b10},{b11},
 {b13},{b14},{b15},{b16},{b17},{b18},{b19},{b20},{b21},{b22},{b23},{b24}
 };
 
@@ -152,7 +152,7 @@ u8 b8d[] = {BADGE8D};
 u8 b9d[] = {BADGE9D};
 u8 b10d[] = {BADGE10D};
 u8 b11d[] = {BADGE11D};
-u8 b12d[] = {BADGE12D};
+// u8 b12d[] = {BADGE12D};
 u8 b13d[] = {BADGE13D};
 u8 b14d[] = {BADGE14D};
 u8 b15d[] = {BADGE15D};
@@ -165,7 +165,7 @@ u8 b21d[] = {BADGE21D};
 u8 b22d[] = {BADGE22D};
 u8 b23d[] = {BADGE23D};
 u8 b24d[] = {BADGE24D};
-u8 *badgedescs[] = { {b1d},{b2d},{b3d},{b4d},{b5d},{b6d},{b7d},{b8d},{b9d},{b10d},{b11d},{b12d},
+u8 *badgedescs[] = { {b1d},{b2d},{b3d},{b4d},{b5d},{b6d},{b7d},{b8d},{b9d},{b10d},{b11d},
 {b13d},{b14d},{b15d},{b16d},{b17d},{b18d},{b19d},{b20d},{b21d},{b22d},{b23d},{b24d} };
 
 u8 txt_on[] = {TEXT_OPTION_ON};
@@ -1543,7 +1543,7 @@ u16 shoptable[12][6] = {
     {12,0,13,0,14,0},//upgrade station [UNUSED]
     {BADGE_MANA,100,BADGE_FALL,10,BADGE_DEFENSE,30},//shop 2 secret*
     {BADGE_LAVA,40,BADGE_FALL,30,BADGE_BURN,150},//shop 3 reservoir*
-    {BADGE_FINS,50,BADGE_GILLS,150,BADGE_STAR,200},//ghost ship shop*
+    {BADGE_FINS,50,BADGE_GILLS,150,BADGE_GILLS,200},//ghost ship shop*
     {BADGE_DAMAGE,170,BADGE_MANA,120,BADGE_BURN,75},//floor 2 (castle outdoor) shop*
     {BADGE_HP,300,BADGE_GREED,250,BADGE_TIME,420},//floor 2 extra shop*
     {BADGE_FEET,80,BADGE_STICKY,200,BADGE_FEATHER,400},//KTQ Thwomp Towers Shop*

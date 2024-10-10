@@ -16,6 +16,15 @@ void compat_upgrade_1_0_to_1_1(Version_1_0_Save *save, UNUSED void *tile_data, V
         if (obj_data[i].type == 58) { // 1.0 ID - Boo
             obj_data[i].imbue = IMBUE_ONE_COIN; // imbuing changes - empty by default
         }
+        if (obj_data[i].type == 35) { // 1.0 ID - Badge
+            // Star Radar badge was removed
+            if (obj_data[i].bparam == 11) { // Star Radar Badge
+                obj_data[i].type = OBJECT_TYPE_GREEN_COIN; // Replace with a green coin
+                obj_data[i].bparam = 0;
+            } else if (obj_data[i].bparam > 11) {
+                obj_data[i].bparam--;
+            }
+        }
     }
 }
 

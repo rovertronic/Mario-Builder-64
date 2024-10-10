@@ -232,7 +232,6 @@ enum badge_enum {
     BADGE_GREED,//SOLD!
     BADGE_TIME,//SOLD!
     BADGE_MAGNET,//SOLD!
-    BADGE_STAR,//SOLD!
     BADGE_BURN,//SOLD!
     BADGE_SQUISH,//SOLD!
     BADGE_FEATHER,//SOLD!
