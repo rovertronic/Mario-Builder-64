@@ -668,6 +668,8 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     s8 pos[3];
     vec3_set(pos,32,32,32);
 
+    Vtx *startVtx = mb64_curr_vtx;
+
     if (index < NUM_MATERIALS_PER_THEME) {
         u8 renderedMat = mb64_curr_custom_theme.mats[index];
         u8 renderedTopmat = mb64_curr_custom_theme.topmats[index];
@@ -710,6 +712,11 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
     gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gDPSetTextureLUT(&mb64_curr_gfx[mb64_gfx_index++], G_TT_NONE);
     gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index++]);
+
+    for (Vtx *vtx = startVtx; vtx < mb64_curr_vtx; vtx++) {
+        vtx->v.ob[0] -= TILE_SIZE/2;
+        if (index != 11) vtx->v.ob[2] -= TILE_SIZE/2;
+    }
 
     finish_block_draw();
 }
@@ -861,15 +868,6 @@ void draw_mb64_settings_custom_theme(f32 yoff) {
     mb64_gfx_index = 0;
 
     mb64_menu_page_animation(yoff, mb64_custom_theme_render_page, mb64_curr_custom_tab, MB64_NUM_CUSTOM_TABS, mb64_menu_scrolling[SCROLL_CUSTOM_TABS]);
-
-    // This code is so fucking disgusting.
-    // Edit all the vertices for the drawn preview blocks here.
-    // Done outside the main block draw to be able to affect multiple blocks at once
-    for (s32 i = 0; i < ARRAY_COUNT(preview_vtx); i++) {
-        // Offset all vertices
-        custom_preview_vtx[i].v.ob[0] -= TILE_SIZE/2;
-        custom_preview_vtx[i].v.ob[2] -= TILE_SIZE/2;
-    }
 }
 
 void draw_mb64_settings_env(f32 xoff, f32 yoff) {
