@@ -2296,7 +2296,7 @@ s16 update_default_camera(struct Camera *c) {
 
     
     if (sMarioCamState->action & ACT_FLAG_ON_POLE) {
-        camFloorHeight = curPole.pos[1] + 125.f;
+        camFloorHeight = gMarioCurrentPole.pos[1] + 125.f;
         if (sMarioCamState->pos[1] - 100.f > camFloorHeight) {
             camFloorHeight = sMarioCamState->pos[1] - 100.f;
         }

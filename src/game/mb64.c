@@ -1900,14 +1900,9 @@ void generate_terrain_gfx(void) {
     mb64_vtx_total = mb64_curr_vtx - mb64_terrain_vtx;
     mb64_gfx_total = (mb64_curr_gfx + mb64_gfx_index) - mb64_terrain_gfx;
 
-    // A little bit of free performance for N64
-    if ((gIsConsole)&&(mb64_vtx_total > 5000)) {
-        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
-        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
-    } else {
-        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
-        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
-    }
+    osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+    osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+
 
     if (mb64_vtx_total >= MB64_VTX_SIZE) {
         mb64_show_error_message("CRITICAL WARNING: Vertex limit exceeded.");
@@ -2112,70 +2107,6 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
     return NULL;
 }
 
-
-void generate_poles(void) {
-    gPoleArray = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
-    gNumPoles = 0;
-
-    // Iterate over all poles
-    u32 startIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX];
-    u32 endIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX+1];
-
-    for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
-        vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
-        
-        // If there is a pole below, skip
-        pos[1] -= 1;
-        if (pos[1] >= 0 && (get_grid_tile(pos)->type == TILE_TYPE_POLE)) {
-            continue;
-        }
-
-        s32 poleLength = 1;
-        // Scan upwards until no more poles or top of grid reached
-        pos[1] += 2;
-        while (pos[1] < 64 && (get_grid_tile(pos)->type == TILE_TYPE_POLE)) {
-            poleLength++;
-            pos[1]++;
-        }
-
-        gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(mb64_tile_data[i].x);
-        gPoleArray[gNumPoles].pos[1] = GRID_TO_POS(mb64_tile_data[i].y) - TILE_SIZE/2;
-        gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(mb64_tile_data[i].z);
-        gPoleArray[gNumPoles].height = poleLength * TILE_SIZE;
-        gPoleArray[gNumPoles].poleType = 0;
-        gNumPoles++;
-    }
-
-    // Trees
-    for (u32 i = 0; i < mb64_object_count; i++) {
-        if (mb64_object_data[i].type == OBJECT_TYPE_TREE) {
-            gPoleArray[gNumPoles].pos[0] = GRID_TO_POS(mb64_object_data[i].x);
-            gPoleArray[gNumPoles].pos[1] = GRID_TO_POS(mb64_object_data[i].y) - TILE_SIZE/2;
-            gPoleArray[gNumPoles].pos[2] = GRID_TO_POS(mb64_object_data[i].z);
-            gPoleArray[gNumPoles].height = 500;
-            gPoleArray[gNumPoles].poleType = (mb64_object_data[i].bparam == 2 ? 2 : 1);
-            gNumPoles++;
-        } else if (mb64_object_data[i].type == OBJECT_TYPE_KOOPA_THE_QUICK) {
-            s32 traj_id = mb64_object_data[i].bparam;
-            // Scan for end of trajectory and place flag
-            for (u32 j = 0; j < MB64_TRAJECTORY_LENGTH; j++) {
-                if (mb64_trajectory_list[traj_id][j][0] == -1) {
-                    gPoleArray[gNumPoles].pos[0] = mb64_trajectory_list[traj_id][j-1][1];
-                    gPoleArray[gNumPoles].pos[1] = mb64_trajectory_list[traj_id][j-1][2] - TILE_SIZE/2;
-                    gPoleArray[gNumPoles].pos[2] = mb64_trajectory_list[traj_id][j-1][3];
-                    gPoleArray[gNumPoles].height = 700;
-                    gPoleArray[gNumPoles].poleType = 0;
-                    gNumPoles++;
-                    break;
-                }
-            }
-        }
-    }
-
-    main_pool_realloc(gPoleArray, gNumPoles * sizeof(struct Pole));
-}
-
 void generate_boundary_collision(struct mb64_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, s16 size, u32 reverse) {
     TerrainData newVtxs[4][3];
     s16 yHeight = yTop - yBottom;
@@ -2289,6 +2220,72 @@ void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
     }
 }
 
+void check_poles(struct MarioState *m) {
+    s8 pos[3];
+
+    pos[0] = COL_POS_TO_GRID(m->pos[0]);
+    pos[1] = COL_POS_TO_GRID(m->pos[1]-5);
+    pos[2] = COL_POS_TO_GRID(m->pos[2]);
+
+    if (get_grid_tile(pos)->type == TILE_TYPE_POLE) {
+        f32 poleX = GRID_TO_POS(pos[0]);
+        f32 poleZ = GRID_TO_POS(pos[2]);
+        f32 horizDist = sqrtf(sqr(m->pos[0] - poleX) + sqr(m->pos[2] - poleZ));
+        if (horizDist < 118) {
+            // Get dimensions of pole
+            s8 poleY = pos[1];
+            do {
+                pos[1]++;
+            } while (pos[1] < 64 && get_grid_tile(pos)->type == TILE_TYPE_POLE);
+            f32 poleTop = GRID_TO_POS(pos[1]) - TILE_SIZE/2;
+            pos[1] = poleY;
+            do {
+                pos[1]--;
+            } while (pos[1] >= 0 && get_grid_tile(pos)->type == TILE_TYPE_POLE);
+            f32 poleBottom = GRID_TO_POS(pos[1]) + TILE_SIZE/2;
+
+            gMarioCurrentPole.pos[0] = poleX;
+            gMarioCurrentPole.pos[1] = poleBottom;
+            gMarioCurrentPole.pos[2] = poleZ;
+            gMarioCurrentPole.height = poleTop - poleBottom;
+            gMarioCurrentPole.poleType = 0;
+            interact_pole(m, 0);
+            return;
+        }
+    }
+    // Iterate over polelike objects
+    struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_POLELIKE];
+    struct Object *obj = (struct Object *) listHead->next;
+
+    while (obj != (struct Object *) listHead) {
+        f32 horizDist = sqrtf(sqr(m->pos[0] - obj->oPosX) + sqr(m->pos[2] - obj->oPosZ));
+        if (horizDist < 118.f) {
+            u16 poleHeight;
+            u8 poleType = 0;
+            if (obj->behavior == segmented_to_virtual(bhvTree)) {
+                poleHeight = 500;
+                poleType = (obj->oBehParams2ndByte == 2 ? 2 : 1);
+            } else if (obj->behavior == segmented_to_virtual(bhvKoopaFlag)) {
+                poleHeight = 700;
+            } else {
+                obj = (struct Object *) obj->header.next;
+                continue;
+            }
+            if (m->pos[1] > obj->oPosY && m->pos[1] + 160.f < obj->oPosY + poleHeight) {
+                gMarioCurrentPole.pos[0] = obj->oPosX;
+                gMarioCurrentPole.pos[1] = obj->oPosY;
+                gMarioCurrentPole.pos[2] = obj->oPosZ;
+                gMarioCurrentPole.height = poleHeight;
+                gMarioCurrentPole.poleType = poleType;
+                interact_pole(m, 0);
+                return;
+            }
+        }
+
+        obj = (struct Object *) obj->header.next;
+    }
+}
+
 void generate_terrain_collision(void) {
     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
@@ -2325,8 +2322,6 @@ void generate_terrain_collision(void) {
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
-
-    generate_poles();
 }
 
 

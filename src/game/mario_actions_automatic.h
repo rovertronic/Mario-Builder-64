@@ -29,11 +29,7 @@ struct Pole {
     u8 poleType; // 0 - no leaves, 1 - leaves, 2 - palm tree
 };
 
-extern struct Pole *gPoleArray;
-
-extern s16 gMarioCurrentPole; // -1 = no pole
-extern s16 gNumPoles;
-#define curPole (gPoleArray[gMarioCurrentPole])
+extern struct Pole gMarioCurrentPole;
 
 s32 mario_execute_automatic_action(struct MarioState *m);
 

@@ -1541,13 +1541,14 @@ u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struc
     return FALSE;
 }
 
-u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, s16 poleNum) {
+Vec3f prevPolePosition;
+u32 interact_pole(struct MarioState *m, UNUSED u32 interactType) {
     s32 actionId = m->action & ACT_ID_MASK;
     if (actionId >= ACT_GROUP_AIRBORNE && actionId < (ACT_HOLD_JUMP & ACT_ID_MASK)) {
-        if (!(m->prevAction & ACT_FLAG_ON_POLE) || gMarioCurrentPole != poleNum) {
+        if (!(m->prevAction & ACT_FLAG_ON_POLE) || (prevPolePosition[0] != gMarioCurrentPole.pos[0] || prevPolePosition[2] != gMarioCurrentPole.pos[2] || prevPolePosition[1] != gMarioCurrentPole.pos[1])) {
+            vec3_copy(prevPolePosition, gMarioCurrentPole.pos);
             u32 lowSpeed = (m->forwardVel <= 10.0f);
             struct Object *marioObj = m->marioObj;
-            gMarioCurrentPole = poleNum;
 
             mario_stop_riding_and_holding(m);
 
@@ -1556,7 +1557,7 @@ u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, s16 poleNum) {
 
             // Pole fix
             // If mario is beneath the pole, clamp mario's position to the down-offset of the pole (bottom)
-            marioObj->oMarioPolePos = ((m->pos[1] - curPole.pos[1]) < 0) ? 0 : (m->pos[1] - curPole.pos[1]);
+            marioObj->oMarioPolePos = ((m->pos[1] - gMarioCurrentPole.pos[1]) < 0) ? 0 : (m->pos[1] - gMarioCurrentPole.pos[1]);
 
             if (lowSpeed) {
                 return set_mario_action(m, ACT_GRAB_POLE_SLOW, 0);
@@ -1569,8 +1570,8 @@ u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, s16 poleNum) {
         }
     }
 
-    f32 marioRelX = m->pos[0] - gPoleArray[poleNum].pos[0];
-    f32 marioRelZ = m->pos[2] - gPoleArray[poleNum].pos[2];
+    f32 marioRelX = m->pos[0] - gMarioCurrentPole.pos[0];
+    f32 marioRelZ = m->pos[2] - gMarioCurrentPole.pos[2];
     f32 marioDist = sqr(marioRelX) + sqr(marioRelZ);
 
     if (marioDist < sqr(70)) {
@@ -1939,16 +1940,7 @@ void mario_process_interactions(struct MarioState *m) {
     }
 
     // Iterate over poles
-    for (u32 i = 0; i < gNumPoles; i++) {
-        struct Pole *pole = &gPoleArray[i];
-        f32 horizDist = sqrtf(sqr(m->pos[0] - pole->pos[0]) + sqr(m->pos[2] - pole->pos[2]));
-        if (horizDist < (80 + 38)) {
-            if ((m->pos[1] < pole->pos[1] + pole->height) && m->pos[1] + 160.f > pole->pos[1]) {
-                interact_pole(m, 0, i);
-                break;
-            }
-        }
-    }
+    check_poles(m);
     
 
     if (m->invincTimer > 0 && !sDelayInvincTimer) {

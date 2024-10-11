@@ -21,14 +21,12 @@
 
 #define HANG_DISTANCE 144.0f
 
-struct Pole *gPoleArray;
-s16 gMarioCurrentPole = -1;
-s16 gNumPoles = 0;
+struct Pole gMarioCurrentPole;
 
 void add_tree_leaf_particles(struct MarioState *m) {
-    if (curPole.poleType != 0) {
+    if (gMarioCurrentPole.poleType != 0) {
         // make leaf effect spawn higher on the Shifting Sand Land palm tree
-        f32 leafHeight = (curPole.poleType == 2 ? 250.0f : 100.0f);
+        f32 leafHeight = (gMarioCurrentPole.poleType == 2 ? 250.0f : 100.0f);
         if (m->pos[1] - m->floorHeight > leafHeight) {
             m->particleFlags |= PARTICLE_LEAF;
         }
@@ -36,7 +34,7 @@ void add_tree_leaf_particles(struct MarioState *m) {
 }
 
 void play_climbing_sounds(struct MarioState *m, s32 b) {
-    s32 isOnTree = (curPole.poleType != 0);
+    s32 isOnTree = (gMarioCurrentPole.poleType != 0);
 
     if (b == 1) {
         if (is_anim_past_frame(m, 1)) {
@@ -53,16 +51,16 @@ s32 set_pole_position(struct MarioState *m, f32 offsetY) {
     struct Surface *floor;
     struct Surface *ceil;
     s32 result = POLE_NONE;
-    f32 poleTop = curPole.height - 100.0f;
+    f32 poleTop = gMarioCurrentPole.height - 100.0f;
     struct Object *marioObj = m->marioObj;
 
     if (marioObj->oMarioPolePos > poleTop) {
         marioObj->oMarioPolePos = poleTop;
     }
 
-    m->pos[0] = curPole.pos[0];
-    m->pos[1] = curPole.pos[1] + marioObj->oMarioPolePos + offsetY;
-    m->pos[2] = curPole.pos[2];
+    m->pos[0] = gMarioCurrentPole.pos[0];
+    m->pos[1] = gMarioCurrentPole.pos[1] + marioObj->oMarioPolePos + offsetY;
+    m->pos[2] = gMarioCurrentPole.pos[2];
 
     s32 collided = f32_find_wall_collision(&m->pos[0], &m->pos[1], &m->pos[2], 60.0f, 50.0f)
                  + f32_find_wall_collision(&m->pos[0], &m->pos[1], &m->pos[2], 30.0f, 24.0f);
@@ -70,7 +68,7 @@ s32 set_pole_position(struct MarioState *m, f32 offsetY) {
     f32 ceilHeight = find_mario_ceil(m->pos, m->pos[1], &ceil);
     if (m->pos[1] > ceilHeight - 160.0f) {
         m->pos[1] = ceilHeight - 160.0f;
-        marioObj->oMarioPolePos = m->pos[1] - curPole.pos[1];
+        marioObj->oMarioPolePos = m->pos[1] - gMarioCurrentPole.pos[1];
     }
 
     f32 floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &floor);
@@ -79,7 +77,7 @@ s32 set_pole_position(struct MarioState *m, f32 offsetY) {
         set_mario_action(m, ACT_IDLE, 0);
         result = POLE_TOUCHED_FLOOR;
     } else if (marioObj->oMarioPolePos < 0) {
-        m->pos[1] = curPole.pos[1];
+        m->pos[1] = gMarioCurrentPole.pos[1];
         set_mario_action(m, ACT_FREEFALL, 0);
         result = POLE_FELL_OFF;
     } else if (collided) {
@@ -115,7 +113,7 @@ s32 act_holding_pole(struct MarioState *m) {
     }
 
     if (m->controller->stickY > 16.0f) {
-        f32 poleTop = curPole.height - 100.0f;
+        f32 poleTop = gMarioCurrentPole.height - 100.0f;
 
         if (marioObj->oMarioPolePos < poleTop - 0.4f) {
             return set_mario_action(m, ACT_CLIMBING_POLE, 0);
