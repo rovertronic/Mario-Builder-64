@@ -121,7 +121,7 @@ s8 mb64_uv_offset = -16;
 u8 mb64_render_flip_normals = FALSE; // Used for drawing water tiles
 u8 mb64_render_vertical = FALSE; // Used for prioritizing vertical UVs over horizontal ones
 u8 mb64_render_culling_off = FALSE; // Used for drawing preview blocks in custom theme menu
-u8 mb64_growth_render_type = 0; // 0 - normal, 1 - grass top, 2 - grass side, 3 - fence
+u8 mb64_growth_render_type = 0; // 0 - normal, 1 - grass top, 2 - grass side, 3 - fence or pole
 u8 mb64_curr_mat_has_topside = FALSE;
 u8 mb64_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
 u8 mb64_curr_boundary = 0;
@@ -1087,6 +1087,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
 void process_poly_with_growth(s8 pos[3], struct mb64_terrain_poly *poly, u32 rot) {
     switch (mb64_growth_render_type) {
         case 0: // regular tex
+        case 3:
             if (mb64_curr_mat_has_topside && (poly->growthType == MB64_GROWTH_FULL)) return;
             if (should_cull(pos, poly->faceDir, poly->faceshape, rot)) return;
             break;
@@ -1411,7 +1412,7 @@ void process_tiles(u32 processTileRenderMode) {
     u8 poleMatType = mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].type;
     if (do_process(&poleMatType, processTileRenderMode)) {
         mb64_use_alt_uvs = TRUE;
-        mb64_growth_render_type = 0;
+        mb64_growth_render_type = 3; // poles
         startIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX];
         endIndex = mb64_tile_data_indices[POLE_TILETYPE_INDEX+1];
         set_render_mode( poleMatType, FALSE);
@@ -1834,7 +1835,6 @@ void generate_terrain_gfx(void) {
         vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
         process_tile(pos, &mb64_terrain_fence, mb64_tile_data[i].rot);
     }
-    mb64_growth_render_type = 0;
     display_cached_tris();
 
     process_tiles(PROCESS_TILE_NORMAL);
@@ -2047,8 +2047,9 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
                 mat = mb64_theme_table[mb64_lopt_theme].pole;
                 topmat = mat;
                 mb64_use_alt_uvs = TRUE;
+                mb64_growth_render_type = 3; // pole
             }
-            
+
             if (terrain) {
                 // Handle Virtuaplex screen effect
                 if (mat == MB64_MAT_VP_SCREEN || topmat == MB64_MAT_VP_SCREEN) {
@@ -2059,9 +2060,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
 
                     mb64_curr_gfx += mb64_gfx_index;
                     mb64_gfx_index = 0;
-                    mb64_growth_render_type = 0;
                 }
-
                 render_preview_block(mat, topmat, mb64_cursor_pos, terrain, mb64_rot_selection, PROCESS_TILE_BOTH, FALSE);
 
             } else if (mb64_id_selection != TILE_TYPE_CULL) {
@@ -2072,11 +2071,6 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
                     set_render_mode( MAT_CUTOUT, FALSE);
                     mb64_growth_render_type = 3; // fence
                     process_tile(mb64_cursor_pos, &mb64_terrain_fence, mb64_rot_selection);
-                    mb64_growth_render_type = 0;
-                } else if (mb64_id_selection == TILE_TYPE_POLE) {
-                    gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], POLE_TEX());
-                    set_render_mode( mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].type, FALSE);
-                    process_tile(mb64_cursor_pos, &mb64_terrain_pole, mb64_rot_selection);
                 } else if (mb64_id_selection == TILE_TYPE_BARS) {
                     set_render_mode( MAT_CUTOUT, FALSE);
                     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], BARS_TEX());
@@ -2166,8 +2160,6 @@ void generate_block_collision(s8 pos[3]) {
         mb64_curr_coltype = TOPMAT(get_grid_tile(pos)->mat).col;
     }
     else mb64_curr_coltype = MATERIAL(get_grid_tile(pos)->mat).col;
-
-    
 
     process_tile(pos, mb64_terrain_info_list[tileType].terrain, get_grid_tile(pos)->rot);
 }
