@@ -2467,30 +2467,44 @@ char *mb64_levelsize_string_table[] = {
 };
 
 char *mb64_template_string_table[] = {
-    "Grassy",
+    "Grass",
+    "Sky",
     "Desert",
+    "Snow",
     "Lava",
-    "Underwater",
-    "Snowy",
+    "Water",
+    "Cave",
+    "Spooky",
+    "Castle",
+    "Retro",
 };
 
 struct mb64_template {
     u8 music[2]; // vanilla, btcm
-    u8 envfx;
-    u8 bg;
-    u8 theme;
-    u8 plane;
+    u32 envfx:3;
+    u32 bg:4;
+    u32 theme:4;
+    u32 boundaryMat:4;
+    u32 boundaryHeight:6;
+    u32 boundary:3;
+    u32 water:6;
 
-    u8 spawnHeight;
-    u8 platform;
+    u32 spawnHeight:6;
+    u32 platform:1; // spawns 3 blocks below spawn height
+    u32 platformmat:4;
 };
 
 struct mb64_template mb64_templates[] = {
-    {{0, 16}, 0, 0, 0, 0,     2, FALSE},   // Grassy - BoB, Floating Farm
-    {{4, 49}, 0, 6, 1, 0,     2, FALSE},   // Desert - LLL, Dry Dry Desert
-    {{4, 15}, 1, 2, 2, 8,     2, TRUE},    // Lava -   LLL, Red-Hot Reservoir
-    {{2, 29}, 0, 0, 8, 0,     2, FALSE},   // Water -  DDD, Sky and Sea
-    {{5, 39}, 2, 5, 6, 0,     2, FALSE},   // Snowy -  CCM, Frappe Snowland
+    /* Grass */  {{0, 16}, 0, 0, MB64_THEME_GENERIC,   0, 0,  1, 0,    2,  FALSE, 0},   // BoB, Floating Farm
+    /* Sky */    {{1, 46},   0, 1, MB64_THEME_GENERIC,   0, 0,  0, 0,    10, TRUE,  3},   // Slider, Nimbus Land
+    /* Desert */ {{4, 63}, 4, 6, MB64_THEME_SSL,       0, 0,  1, 0,    2,  FALSE, 0},   // LLL, Gritzy Desert
+    /* Snow */   {{5, 39}, 2, 5, MB64_THEME_SNOW,      0, 0,  1, 0,    2,  FALSE, 0},   // CCM, Frappe Snowland
+    /* Lava */   {{4, 15}, 1, 2, MB64_THEME_RHR,       8, 0,  1, 0,    3,  TRUE,  0},   // LLL, Red-Hot Reservoir
+    /* Water */  {{2, 29}, 0, 0, MB64_THEME_JRB,       8, 10, 2, 8,    10, TRUE,  4},   // DDD, Sky and Sea
+    /* Cave */   {{7, 67},   0, 3, MB64_THEME_HMC,       0, 32, 5, 0,    2,  FALSE, 0},   // HMC, Underground (YI)
+    /* Spooky */ {{6, 34},   3, 4, MB64_THEME_BBH,       3, 6,  2, 0,    2,  FALSE, 0},   // BBH, Ghostly Galaxy
+    /* Castle */ {{13,14},   0, 9, MB64_THEME_CASTLE,    0, 16, 5, 0,    2,  FALSE, 0},   // Castle, Cosmic Castle
+    /* Retro */  {{96,96},   0, 1, MB64_THEME_RETRO,     0, 0,  4, 0,    2,  FALSE, 0},   // RETRO!!!!!!!!!
 };
 
 struct mb64_settings_button mb64_mode_settings_buttons[] = {

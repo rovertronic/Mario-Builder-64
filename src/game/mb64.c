@@ -65,7 +65,7 @@ u8 mb64_level_action = MB64_LA_BUILD;
 u8 mb64_mode = MB64_MODE_UNINITIALIZED;
 u8 mb64_target_mode = MB64_MODE_MAKE;
 u8 mb64_joystick_timer = 0;
-s8 mb64_cursor_pos[3] = {32,0,32};
+s8 mb64_cursor_pos[3] = {32,8,32};
 
 Vec3f mb64_camera_pos = {0.0f,0.0f,0.0f};
 Vec3f mb64_camera_pos_prev;
@@ -2018,6 +2018,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
             mb64_curr_vtx = preview_vtx;
             mb64_gfx_index = 0;
             mb64_growth_render_type = 0;
+            mb64_use_alt_uvs = FALSE;
 
             mb64_build_collision_type = 0;
 
@@ -3110,9 +3111,10 @@ void load_level(void) {
         mb64_save.envfx = mb64_templates[mb64_lopt_template].envfx;
         mb64_save.theme = mb64_templates[mb64_lopt_template].theme;
         mb64_save.bg = mb64_templates[mb64_lopt_template].bg;
-        mb64_save.boundary_mat = mb64_templates[mb64_lopt_template].plane;
-        mb64_save.boundary = 1;
-        mb64_save.boundary_height = 5;
+        mb64_save.boundary_mat = mb64_templates[mb64_lopt_template].boundaryMat;
+        mb64_save.waterlevel = mb64_templates[mb64_lopt_template].water;
+        mb64_save.boundary = mb64_templates[mb64_lopt_template].boundary;
+        mb64_save.boundary_height = mb64_templates[mb64_lopt_template].boundaryHeight;
 
         bcopy(&mb64_toolbar_defaults,&mb64_save.toolbar,sizeof(mb64_save.toolbar));
         bzero(&mb64_save.toolbar_params,sizeof(mb64_save.toolbar_params));
@@ -3122,10 +3124,10 @@ void load_level(void) {
             for (s32 x = -1; x <= 1; x++) {
                 for (s32 z = -1; z <= 1; z++) {
                     mb64_tile_data[i].x = 32+x;
-                    mb64_tile_data[i].y = 0;
+                    mb64_tile_data[i].y = mb64_templates[mb64_lopt_template].spawnHeight - 3;
                     mb64_tile_data[i].z = 32+z;
                     mb64_tile_data[i].type = TILE_TYPE_BLOCK;
-                    mb64_tile_data[i].mat = 0;
+                    mb64_tile_data[i].mat = mb64_templates[mb64_lopt_template].platformmat;
                     i++;
                 }
             }
@@ -3249,7 +3251,7 @@ void load_level(void) {
 void mb64_init() {
     load_level();
     if (mb64_level_action != MB64_LA_PLAY_LEVELS) {
-        vec3_set(mb64_cursor_pos, 32, 0, 32);
+        vec3_set(mb64_cursor_pos, 32, 8, 32);
         mb64_camera_foc[0] = GRID_TO_POS(32);
         mb64_camera_foc[1] = 0.0f;
         mb64_camera_foc[2] = GRID_TO_POS(32);
