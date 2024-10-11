@@ -591,7 +591,7 @@ f32 atan2f(f32 a, f32 b);
 void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);
 void anim_spline_init(Vec4s *keyFrames);
 s32  anim_spline_poll(Vec3f result);
-f32 find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
+// f32 find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos, s32 flags);
 u8 count_u16_bits(u16 bitfield);
 u8 count_u32_bits(u32 bitfield);
 
@@ -625,6 +625,6 @@ ALWAYS_INLINE f32 smoothstep(f32 from, f32 to, f32 amount) {
     return lerpf(from, to, amount);
 }
 
-extern u8 raycast_mode_camera;
+// extern u8 raycast_mode_camera;
 
 #endif // MATH_UTIL_H

@@ -710,50 +710,33 @@ s32 act_wall_kick_air(struct MarioState *m) {
 }
 
 s32 act_wall_stick(struct MarioState *m) {
-    struct Surface *surf;
-    Vec3f hitpos; // does not need initing because it gets written to in fsor
-    Vec3f raydir;
-
-    raydir[0] = sins(m->faceAngle[1]+0x8000) * 150.0f;
-    raydir[2] = coss(m->faceAngle[1]+0x8000) * 150.0f;
-    raydir[1] = 0.0f; //might have been uninitialized on n64...
+    struct WallCollisionData wall;
 
     if (m->input & INPUT_A_PRESSED) {
+        m->faceAngle[1] += 0x8000;
         return set_mario_action(m, ACT_WALL_KICK_AIR, 0);
     }
 
-    find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, RAYCAST_FIND_ALL);
-    if (surf == NULL) {
-        m->pos[1] += 150.0f;
-        find_surface_on_ray(&m->pos, &raydir, &surf, &hitpos, RAYCAST_FIND_ALL);
-        m->pos[1] -= 150.0f;
+    Vec3f dummyPos;
+    vec3f_copy(dummyPos, m->pos);
+    m->wall = NULL;
+    resolve_and_return_wall_collisions(dummyPos, 150.0f, 55.0f, &wall);
+    s32 result = bonk_or_hit_lava_wall(m, &wall);
+    if (result == AIR_STEP_HIT_LAVA_WALL) {
+        return lava_boost_on_wall(m);
+    } else if (result == AIR_STEP_NONE) {
+        return set_mario_action(m, ACT_FREEFALL, 0);
+    }
 
-        if (surf == NULL) {
-            return set_mario_action(m, ACT_FREEFALL, 0);
+    if (m->wall->object != NULL) {
+        apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], m->wall->object);
+    }
+    if (m->wall->type == SURFACE_CONVEYOR) {
+        s16 angle = abs_angle_diff(obj_angle_to_object(m->wall->object,m->marioObj),m->wall->object->oFaceAngleYaw);
+        if (angle > 0x4000) {
+            m->pos[1] += 10.76f;
         } else {
-            if (surf->object != NULL) {
-                apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
-            }
-            if (surf->type == SURFACE_CONVEYOR) {
-                s16 angle = abs_angle_diff(obj_angle_to_object(surf->object,m->marioObj),surf->object->oFaceAngleYaw);
-                if (angle > 0x4000) {
-                    m->pos[1] += 10.76f;
-                } else {
-                    m->pos[1] -= 10.76f;
-                }
-            }
-        }
-    } else {
-        if (surf->object != NULL) {
-            apply_platform_displacement(&sMarioDisplacementInfo, m->pos, &m->faceAngle[1], surf->object);
-        }
-        if (surf->type == SURFACE_CONVEYOR) {
-            s16 angle = abs_angle_diff(obj_angle_to_object(surf->object,m->marioObj),surf->object->oFaceAngleYaw);
-            if (angle > 0x4000) {
-                m->pos[1] += 10.76f;
-            } else {
-                m->pos[1] -= 10.76f;
-            }
+            m->pos[1] -= 10.76f;
         }
     }
 
@@ -763,7 +746,7 @@ s32 act_wall_stick(struct MarioState *m) {
     m->forwardVel = 0.0f;
     perform_air_step(m, AIR_STEP_CHECK_LEDGE_GRAB);
 
-    m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
+    m->marioObj->header.gfx.angle[1] = m->faceAngle[1] + 0x8000;
 
     set_mario_animation(m, MARIO_ANIM_START_WALLKICK);
 
@@ -1300,7 +1283,6 @@ s32 check_wall_kick(struct MarioState *m) {
         return set_mario_action(m, ACT_WALL_KICK_AIR, 0);
     } else {
         if ((save_file_get_badge_equip() & (1<<BADGE_STICKY))&&(m->wallKickTimer != 0 && m->prevAction == ACT_AIR_HIT_WALL)&&(gMarioState->gCurrMinigame != 6)) {
-            m->faceAngle[1] += 0x8000;
             return set_mario_action(m, ACT_WALL_STICK, 0);
         }
     }
@@ -1671,17 +1653,14 @@ s32 act_lava_boost(struct MarioState *m) {
             } else {
                 play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_BODY_HIT_GROUND);
 
-                if (mb64_lopt_game == MB64_GAME_VANILLA) {
-                    if (m->actionState < ACT_STATE_LAVA_BOOST_SET_LANDING_ACTION && m->vel[1] < 0.0f) {
-                        m->vel[1] = -m->vel[1] * 0.4f;
-                        mario_set_forward_vel(m, m->forwardVel * 0.5f);
-                        m->actionState++;
-                    } else {
-                        set_mario_action(m, ACT_LAVA_BOOST_LAND, 0);
-                    }
+                if (m->actionState < ACT_STATE_LAVA_BOOST_SET_LANDING_ACTION && m->vel[1] < 0.0f) {
+                    m->vel[1] = -m->vel[1] * 0.4f;
+                    mario_set_forward_vel(m, m->forwardVel * 0.5f);
+                    m->actionState++;
                 } else {
                     set_mario_action(m, ACT_LAVA_BOOST_LAND, 0);
                 }
+
             }
             break;
 

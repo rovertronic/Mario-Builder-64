@@ -1174,14 +1174,14 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_normalize(camera_looknormal);
 
     if (mb64_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
-        raycast_mode_camera = TRUE;
+        // raycast_mode_camera = TRUE;
 
         // CEILING COLLISION
         // Standard camera raycast check for ceiling collision. No special shenanigans here!
         vec3f_copy(origin,gMarioState->pos);
         origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
-        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
+        // find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
 
         if (surf) {
             vec3f_copy(c->pos,hitpos);
@@ -1196,7 +1196,7 @@ void mode_8_directions_camera(struct Camera *c) {
         origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
 
-        find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+        // find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
 
         Vec3f camera_hit_diff;
         vec3f_diff(camera_hit_diff,origin,hitpos);
@@ -1217,7 +1217,7 @@ void mode_8_directions_camera(struct Camera *c) {
         }
         
 
-        raycast_mode_camera = FALSE;
+        // raycast_mode_camera = FALSE;
     }
 }
 

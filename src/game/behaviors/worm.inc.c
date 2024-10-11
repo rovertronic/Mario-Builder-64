@@ -224,7 +224,7 @@ void worm_loop(void) {
     raydir[1] = -sins(o->oFaceAnglePitch)*200.0f;
     raydir[2] = coss(o->oFaceAngleYaw)*200.0f;
 
-    find_surface_on_ray(origin, raydir, &PenSurf, &PenVec, RAYCAST_FIND_ALL);
+    // find_surface_on_ray(origin, raydir, &PenSurf, &PenVec, RAYCAST_FIND_ALL);
 
     if ((PenSurf)&&(PenSurf!=PrevSurf)) {
         PrevSurf = PenSurf;

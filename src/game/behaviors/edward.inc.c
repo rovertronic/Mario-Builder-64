@@ -35,7 +35,7 @@ void bhv_edward(void) {
             }
         break;
         case 1://normal active
-            find_surface_on_ray(&o->oPosX, &o->oVelX, &surf, &hitpos, RAYCAST_FIND_ALL);
+            // find_surface_on_ray(&o->oPosX, &o->oVelX, &surf, &hitpos, RAYCAST_FIND_ALL);
             if (surf) {
                 Vec3f normal;
                 get_surface_normal(normal, surf);

@@ -2206,6 +2206,7 @@ void scan_fences(s8 pos[3]) {
 }
 
 void generate_block_collision(s8 pos[3]) {
+    if (!coords_in_range(pos)) return;
     s32 tileType = get_grid_tile(pos)->type;
     mb64_growth_render_type = 0;
     mb64_curr_poly_vert_count = 4;
