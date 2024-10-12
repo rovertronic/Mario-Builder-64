@@ -48,7 +48,7 @@ void update_mario_platform(void) {
     marioX = gMarioObject->oPosX;
     marioY = gMarioObject->oPosY;
     marioZ = gMarioObject->oPosZ;
-    floorHeight = find_floor(marioX, marioY, marioZ, &floor);
+    floorHeight = find_floor_short(marioX, marioY, marioZ, &floor);
 
     if (absf(marioY - floorHeight) < 4.0f) {
         awayFromFloor = 0;
@@ -167,7 +167,7 @@ void apply_conveyor_displacement() {
 	}
 
 	// Check if left floor
-	f32 floorHeight = find_floor_height(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2]);
+	f32 floorHeight = find_floor_height_short(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2]);
 	if ((floorHeight < gMarioState->pos[1] - 5.f) && (abs_angle_diff(gMarioState->faceAngle[1], currentAngle) > 0x4000)) {
 		gMarioState->forwardVel = MIN(5.f, gMarioState->forwardVel);
 	} 

@@ -452,7 +452,7 @@ void bhv_hammer_bro_loop(void) {
             o->oInteractStatus |= INT_STATUS_WAS_ATTACKED;
             o->oInteractStatus |= INT_STATUS_INTERACTED;
         }
-        f32 floorY = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sObjFloor);
+        f32 floorY = find_floor_short(o->oPosX, o->oPosY, o->oPosZ, &sObjFloor);
         if (sObjFloor != NULL) {
             if ((floorY + 1.f > o->oPosY) && (SURFACE_IS_BURNING(sObjFloor->type))) {
                 o->oInteractStatus |= INT_STATUS_WAS_ATTACKED;

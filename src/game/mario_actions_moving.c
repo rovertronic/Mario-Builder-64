@@ -102,7 +102,7 @@ void check_ledge_climb_down(struct MarioState *m) {
         wallCols.offsetY = -10.0f;
 
         if (find_wall_collisions(&wallCols) != 0) {
-            f32 floorHeight = find_floor(wallCols.x, wallCols.y, wallCols.z, &floor);
+            f32 floorHeight = find_floor_short(wallCols.x, wallCols.y, wallCols.z, &floor);
             if (floor != NULL && (wallCols.y - floorHeight) > 160.0f) {
                 wall = wallCols.walls[wallCols.numWalls - 1];
                 s16 wallAngle = SURFACE_YAW(wall);

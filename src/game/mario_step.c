@@ -293,7 +293,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     resolve_and_return_wall_collisions(nextPos, 30.0f, 24.0f, &lowerWall);
     resolve_and_return_wall_collisions(nextPos, 60.0f, 50.0f, &upperWall);
 
-    f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    f32 floorHeight = find_floor_short(nextPos[0], nextPos[1], nextPos[2], &floor);
     f32 ceilHeight = find_mario_ceil(nextPos, floorHeight, &ceil);
 
     f32 waterLevel = mb64_get_water_level(nextPos[0], nextPos[1], nextPos[2]);
@@ -454,7 +454,7 @@ struct Surface *check_ledge_grab(struct MarioState *m, struct Surface *prevWall,
 
     ledgePos[0] = nextPos[0] - (normal[0] * 60.0f);
     ledgePos[2] = nextPos[2] - (normal[2] * 60.0f);
-    ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], ledgeFloor);
+    ledgePos[1] = find_floor_short(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], ledgeFloor);
 
     struct Surface *ceil;
     f32 ceilheight = find_mario_ceil(ledgePos, ledgePos[1]-30.0f, &ceil);
@@ -538,7 +538,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
     resolve_and_return_wall_collisions(nextPos, 150.0f, 50.0f, &upperWall);
     resolve_and_return_wall_collisions(nextPos, 30.0f, 50.0f, &lowerWall);
 
-    f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    f32 floorHeight = find_floor_short(nextPos[0], nextPos[1], nextPos[2], &floor);
     f32 ceilHeight = find_mario_ceil(nextPos, floorHeight, &ceil);
 
     f32 waterLevel = mb64_get_water_level(nextPos[0], nextPos[1], nextPos[2]);

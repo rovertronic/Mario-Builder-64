@@ -564,7 +564,7 @@ s32 act_debug_free_move(struct MarioState *m) {
     resolve_and_return_wall_collisions(pos, 60.0f, 50.0f, &wallData);
 
     set_mario_wall(m, ((wallData.numWalls > 0) ? wallData.walls[0] : NULL));
-    f32 floorHeight = find_floor(pos[0], pos[1], pos[2], &floor);
+    f32 floorHeight = find_floor_short(pos[0], pos[1], pos[2], &floor);
     f32 ceilHeight = find_mario_ceil(pos, floorHeight, &ceil);
 
     if (floor == NULL) return FALSE;
@@ -2111,7 +2111,7 @@ void generate_yellow_sparkles(s16 x, s16 y, s16 z, f32 radius) {
 
 //     find_mario_anim_flags_and_translation(obj, obj->header.gfx.angle[1], translation);
 
-//     return find_floor((obj->header.gfx.pos[0] + translation[0]),
+//     return find_floor_short((obj->header.gfx.pos[0] + translation[0]),
 //                       (obj->header.gfx.pos[1] + 10.0f),
 //                       (obj->header.gfx.pos[2] + translation[2]),
 //                       &surf);
@@ -2273,7 +2273,7 @@ void generate_yellow_sparkles(s16 x, s16 y, s16 z, f32 radius) {
 //         advance_cutscene_step(m);
 //     }
 
-//     m->pos[1] = find_floor(m->pos[0], m->pos[1], m->pos[2], &surf);
+//     m->pos[1] = find_floor_short(m->pos[0], m->pos[1], m->pos[2], &surf);
 
 //     set_mario_anim_with_accel(m, MARIO_ANIM_RUNNING, 0x00080000);
 //     play_step_sound(m, 9, 45);

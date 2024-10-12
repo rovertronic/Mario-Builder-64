@@ -71,7 +71,7 @@ s32 set_pole_position(struct MarioState *m, f32 offsetY) {
         marioObj->oMarioPolePos = m->pos[1] - gMarioCurrentPole.pos[1];
     }
 
-    f32 floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &floor);
+    f32 floorHeight = find_floor_short(m->pos[0], m->pos[1], m->pos[2], &floor);
     if (m->pos[1] < floorHeight) {
         m->pos[1] = floorHeight;
         set_mario_action(m, ACT_IDLE, 0);
@@ -280,7 +280,7 @@ s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
         nextPos[1] += currentSpeed * m->ceil->object->oExtraVariable1;
     }
 
-    f32 floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    f32 floorHeight = find_floor_short(nextPos[0], nextPos[1], nextPos[2], &floor);
     f32 ceilHeight = find_mario_ceil(nextPos, floorHeight, &ceil);
 
     if (floor == NULL) {
@@ -505,7 +505,7 @@ s32 let_go_of_ledge(struct MarioState *m) {
     m->pos[0] -= 60.0f * sins(m->faceAngle[1]);
     m->pos[2] -= 60.0f * coss(m->faceAngle[1]);
 
-    f32 floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &floor);
+    f32 floorHeight = find_floor_short(m->pos[0], m->pos[1], m->pos[2], &floor);
     if (floorHeight < m->pos[1] - 100.0f) {
         m->pos[1] -= 100.0f;
     } else {
@@ -801,7 +801,7 @@ s32 act_tornado_twirling(struct MarioState *m) {
 
     f32_find_wall_collision(&nextPos[0], &nextPos[1], &nextPos[2], 60.0f, 50.0f);
 
-    floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    floorHeight = find_floor_short(nextPos[0], nextPos[1], nextPos[2], &floor);
     if (floor != NULL) {
         set_mario_floor(m, floor, floorHeight);
         vec3f_copy(m->pos, nextPos);

@@ -629,7 +629,7 @@ void push_mario_out_of_object(struct MarioState *m, struct Object *obj, f32 padd
 
         f32_find_wall_collision(&newMarioX, &m->pos[1], &newMarioZ, 60.0f, 50.0f);
 
-        f32 floorHeight = find_floor(newMarioX, m->pos[1], newMarioZ, &floor);
+        f32 floorHeight = find_floor_short(newMarioX, m->pos[1], newMarioZ, &floor);
         if (floor != NULL) {
             m->pos[0] = newMarioX;
             m->pos[2] = newMarioZ;

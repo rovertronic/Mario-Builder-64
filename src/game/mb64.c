@@ -2131,9 +2131,14 @@ void scan_fences(s8 pos[3]) {
     }
 }
 
-void generate_block_collision(s8 pos[3]) {
+s32 generate_block_collision(s8 pos[3]) {
     if (!coords_in_range(pos)) return;
     s32 tileType = get_grid_tile(pos)->type;
+
+    if (tileType == TILE_TYPE_EMPTY || tileType >= TILE_TYPE_CULL) {
+        return;
+    }
+
     mb64_growth_render_type = 0;
     mb64_curr_poly_vert_count = 4;
 
@@ -2149,10 +2154,6 @@ void generate_block_collision(s8 pos[3]) {
         check_bar_connections(pos, connections);
         render_bars_side(pos, connections);
         render_bars_top(pos, connections);
-        return;
-    }
-
-    if (tileType == TILE_TYPE_EMPTY || tileType >= TILE_TYPE_CULL) {
         return;
     }
 
@@ -2177,8 +2178,19 @@ void block_floor_collision(f32 x, f32 y, f32 z) {
     scan_fences(pos);
     generate_block_collision(pos);
     pos[1]--;
-    scan_fences(pos);
-    generate_block_collision(pos);
+
+    while (pos[1] >= 0) {
+        scan_fences(pos);
+        generate_block_collision(pos);
+
+        s32 faceshapeTop = get_faceshape(pos, MB64_DIRECTION_UP);
+        s32 faceshapeBottom = get_faceshape(pos, MB64_DIRECTION_DOWN);
+        if (faceshapeTop == MB64_FACESHAPE_FULL || faceshapeBottom == MB64_FACESHAPE_FULL) {
+            // Tile covers entire block, so stop searching
+            break;
+        }
+        pos[1]--;
+    }
 }
 
 void block_ceil_collision(f32 x, f32 y, f32 z) {

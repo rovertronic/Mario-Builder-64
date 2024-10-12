@@ -706,7 +706,7 @@ f32 find_floor_height_relative_polar(struct MarioState *m, s16 angleFromMario, f
     f32 y = sins(m->faceAngle[1] + angleFromMario) * distFromMario;
     f32 x = coss(m->faceAngle[1] + angleFromMario) * distFromMario;
 
-    return find_floor(m->pos[0] + y, m->pos[1] + 100.0f, m->pos[2] + x, &floor);
+    return find_floor_short(m->pos[0] + y, m->pos[1] + 100.0f, m->pos[2] + x, &floor);
 }
 
 extern f32 get_floor_height_at_location(s32, s32, struct Surface *);
@@ -727,15 +727,15 @@ s16 find_floor_slope(struct MarioState *m, s16 yawOffset) {
         forwardFloorY  = get_floor_height_at_location(m->pos[0] + x, m->pos[2] + z, floor);
         backwardFloorY = get_floor_height_at_location(m->pos[0] - x, m->pos[2] - z, floor);
     } else {
-        forwardFloorY  = find_floor(m->pos[0] + x, m->pos[1] + 100.0f, m->pos[2] + z, &floor);
+        forwardFloorY  = find_floor_short(m->pos[0] + x, m->pos[1] + 100.0f, m->pos[2] + z, &floor);
         if (floor == NULL)  forwardFloorY = m->floorHeight; // handle OOB slopes
-        backwardFloorY = find_floor(m->pos[0] - x, m->pos[1] + 100.0f, m->pos[2] - z, &floor);
+        backwardFloorY = find_floor_short(m->pos[0] - x, m->pos[1] + 100.0f, m->pos[2] - z, &floor);
         if (floor == NULL) backwardFloorY = m->floorHeight; // handle OOB slopes
     }
 #else
-    forwardFloorY  = find_floor(m->pos[0] + x, m->pos[1] + 100.0f, m->pos[2] + z, &floor);
+    forwardFloorY  = find_floor_short(m->pos[0] + x, m->pos[1] + 100.0f, m->pos[2] + z, &floor);
     if (floor == NULL)  forwardFloorY = m->floorHeight; // handle OOB slopes
-    backwardFloorY = find_floor(m->pos[0] - x, m->pos[1] + 100.0f, m->pos[2] - z, &floor);
+    backwardFloorY = find_floor_short(m->pos[0] - x, m->pos[1] + 100.0f, m->pos[2] - z, &floor);
     if (floor == NULL) backwardFloorY = m->floorHeight; // handle OOB slopes
 #endif
 

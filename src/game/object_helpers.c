@@ -600,16 +600,6 @@ void cur_obj_set_pos_relative(struct Object *other, f32 dleft, f32 dy, f32 dforw
     o->oPosZ = other->oPosZ + dz;
 }
 
-UNUSED void cur_obj_unused_init_on_floor(void) {
-    cur_obj_enable_rendering();
-
-    o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    if (o->oPosY < FLOOR_LOWER_LIMIT_MISC) {
-        cur_obj_set_pos_relative(o->parentObj, 0.0f, 0.0f, -70.0f);
-        o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    }
-}
-
 u32 get_object_list_from_behavior(const BehaviorScript *behavior) {
     u32 objectList;
 
@@ -913,14 +903,14 @@ void cur_obj_unrender_set_action_and_anim(s32 animIndex, s32 action) {
 
 static void cur_obj_move_after_thrown_or_dropped(f32 forwardVel, f32 velY) {
     o->oMoveFlags = 0;
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY + 160.0f, o->oPosZ, &o->oFloor);
+    o->oFloorHeight = find_floor_short(o->oPosX, o->oPosY + 160.0f, o->oPosZ, &o->oFloor);
 
     if (o->oFloorHeight > o->oPosY) {
         o->oPosY = o->oFloorHeight;
     } else if (o->oFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
         //! OoB failsafe
         obj_copy_pos(o, gMarioObject);
-        o->oFloorHeight = find_floor(o->oPosX, o->oPosY, o->oPosZ, &o->oFloor);
+        o->oFloorHeight = find_floor_short(o->oPosX, o->oPosY, o->oPosZ, &o->oFloor);
     }
 
     o->oForwardVel = forwardVel;
@@ -1424,7 +1414,7 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 baseYVel,
     struct Surface *floor;
     struct Object *coin;
 
-    f32 spawnHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
+    f32 spawnHeight = find_floor_short(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
     if (obj->oPosY - spawnHeight > 100.0f) {
         spawnHeight = obj->oPosY;
     }
@@ -1488,7 +1478,7 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
     if (o->oForwardVel != 0.0f) {
         f32 intendedX = o->oPosX + o->oVelX;
         f32 intendedZ = o->oPosZ + o->oVelZ;
-        f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
+        f32 intendedFloorHeight = find_floor_short(intendedX, o->oPosY, intendedZ, &intendedFloor);
         f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
         if (!intendedFloor) {
@@ -2398,7 +2388,7 @@ void cur_obj_align_gfx_with_floor(void) {
 
     vec3f_copy(position, &o->oPosVec);
 
-    find_floor(position[0], position[1], position[2], &floor);
+    find_floor_short(position[0], position[1], position[2], &floor);
     if (floor != NULL) {
         Vec3f floorNormal;
         get_surface_normal(floorNormal, floor);

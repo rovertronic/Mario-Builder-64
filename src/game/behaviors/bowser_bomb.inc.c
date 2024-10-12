@@ -6,7 +6,7 @@ f32 bbomb_floating_platform_find_home_y(void) {
     f32 sp1C;
 
     sp20 = mb64_get_water_level(o->oPosX, o->oPosY, o->oPosZ);
-    sp1C = find_floor(o->oPosX, o->oPosY, o->oPosZ, &sp24);
+    sp1C = find_floor_short(o->oPosX, o->oPosY, o->oPosZ, &sp24);
     if (sp20 > sp1C) {
         return sp20;
     } else {

@@ -6148,7 +6148,7 @@ void bhv_onoffswitch_falling(void) {
     o->oVelY -= 4.f;
     o->oPosY += o->oVelY;
 
-    f32 floorHeight = find_floor(o->oPosX, o->oPosY+50.f, o->oPosZ, &o->oFloor);
+    f32 floorHeight = find_floor_short(o->oPosX, o->oPosY+50.f, o->oPosZ, &o->oFloor);
     if (o->oPosY < floorHeight) {
         o->oPosY = floorHeight;
         o->oVelY = 0.f;

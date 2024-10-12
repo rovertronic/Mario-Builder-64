@@ -406,7 +406,7 @@ s16 object_step(void) {
         f32 objY = o->oPosY;
         f32 objZ = o->oPosZ;
 
-        floorY = find_floor(objX, objY, objZ, &sObjFloor);
+        floorY = find_floor_short(objX, objY, objZ, &sObjFloor);
         if (!sObjFloor) {
             return OBJ_COL_FLAG_HIT_WALL;
         }
@@ -448,7 +448,7 @@ s16 object_step(void) {
         collisionFlags += OBJ_COL_FLAG_HIT_WALL;
     }
 
-    floorY = find_floor(objX, objY, objZ, &sObjFloor);
+    floorY = find_floor_short(objX, objY, objZ, &sObjFloor);
     if (!sObjFloor) {
         o->oPosX -= objVelX;
         o->oPosZ -= objVelZ;

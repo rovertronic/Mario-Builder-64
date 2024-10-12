@@ -194,7 +194,7 @@ void bully_adjust_imbued_drop_location(void) {
     s16 angle = atan2s(o->oHomeZ - o->oPosZ, o->oHomeX - o->oPosX);
     o->oHomeX += 70.0f * sins(angle);
     o->oHomeZ += 70.0f * coss(angle);
-    f32 newY = find_floor_height(o->oHomeX, o->oHomeY + 100.f, o->oHomeZ);
+    f32 newY = find_floor_height_short(o->oHomeX, o->oHomeY + 100.f, o->oHomeZ);
     if (newY > o->oHomeY - 100.f) {
         o->oHomeY = newY;
     }

@@ -2,7 +2,7 @@
 #define oHomeY2 oHomeX
 
 void grindel_thwomp_act_on_ground(void) {
-    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    o->oFloorHeight = find_floor_height_short(o->oPosX, o->oPosY+30.f, o->oPosZ);
     if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
         o->oPosY = o->oFloorHeight;
     }
@@ -19,7 +19,7 @@ void grindel_thwomp_act_falling(void) {
         o->oVelY += -4.0f;
     }
     o->oPosY += o->oVelY;
-    o->oFloorHeight = find_floor_height(o->oPosX, o->oPosY+30.f, o->oPosZ);
+    o->oFloorHeight = find_floor_height_short(o->oPosX, o->oPosY+30.f, o->oPosZ);
     if (o->oPosY < o->oFloorHeight) {
         o->oPosY = o->oFloorHeight;
         o->oVelY = 0.0f;
@@ -28,7 +28,7 @@ void grindel_thwomp_act_falling(void) {
 }
 
 void grindel_thwomp_act_land(void) {
-    o->oFloorHeight = find_floor(o->oPosX, o->oPosY+30.f, o->oPosZ, &o->oFloor);
+    o->oFloorHeight = find_floor_short(o->oPosX, o->oPosY+30.f, o->oPosZ, &o->oFloor);
     if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
         o->oPosY = o->oFloorHeight;
     }

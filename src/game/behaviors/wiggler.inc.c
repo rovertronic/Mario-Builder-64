@@ -197,7 +197,7 @@ void wiggler_init_segments(void) {
         bodyPart->pos[2] = prevBodyPart->pos[2] - dxz * coss(bodyPart->angle[1]);
 
         // If wiggler's body part clips through the floor, teleport it to the top
-        f32 floor_height = find_floor_height(bodyPart->pos[0],bodyPart->pos[1]+300.0f,bodyPart->pos[2]);
+        f32 floor_height = find_floor_height_short(bodyPart->pos[0],bodyPart->pos[1]+300.0f,bodyPart->pos[2]);
         if (floor_height > bodyPart->pos[1]) {
             bodyPart->pos[1] = floor_height;
         }

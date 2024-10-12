@@ -292,7 +292,7 @@ UNUSED static void bowser_debug_actions(void) {
  */
 void bowser_check_dash(void) {
     // Check a point directly in front of Bowser
-    f32 floorHeight = find_floor_height(o->oPosX + 100.0f * sins(o->oMoveAngleYaw),
+    f32 floorHeight = find_floor_height_short(o->oPosX + 100.0f * sins(o->oMoveAngleYaw),
                                         o->oPosY,
                                         o->oPosZ + 100.0f * coss(o->oMoveAngleYaw));
 
