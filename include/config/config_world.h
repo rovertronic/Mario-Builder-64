@@ -41,7 +41,7 @@
 
 #if EXTENDED_BOUNDS_MODE == 0 // 1x, normal cell size
     #define LEVEL_BOUNDARY_MAX 0x2000L //  8192
-    #define CELL_SIZE          0x400   //  1024, NUM_CELLS = 16
+    #define CELL_SIZE          0x800   //  1024, NUM_CELLS = 16
     #ifndef WORLD_SCALE
         #define WORLD_SCALE 1
     #endif

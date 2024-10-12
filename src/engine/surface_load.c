@@ -29,9 +29,6 @@ struct CellCoords {
     u8 x;
     u8 partition;
 };
-struct CellCoords sCellsUsed[NUM_CELLS];
-u16 sNumCellsUsed;
-u8 sClearAllCells;
 
 /**
  * Pools of data that can contain either surface nodes or surfaces.
@@ -140,12 +137,10 @@ void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface
 
     if (type == 1) {
         list = &gDynamicSurfacePartition[cellZ][cellX][listIndex];
-        sClearAllCells = TRUE;
     } else if (type == 0) {
         list = &gStaticSurfacePartition[cellZ][cellX][listIndex];
     } else {
         list = &gBlockSurfaces[listIndex];
-        sClearAllCells = TRUE;
     }
 
     if (*list == NULL) {
@@ -436,9 +431,6 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
     gEnvironmentRegions = NULL;
     gSurfaceNodesAllocated = 0;
     gSurfacesAllocated = 0;
-    bzero(&sCellsUsed, sizeof(sCellsUsed));
-    sNumCellsUsed = 0;
-    sClearAllCells = TRUE;
 
     clear_static_surfaces();
 
@@ -494,15 +486,7 @@ void clear_dynamic_surfaces(void) {
         gSurfacesAllocated = gNumStaticSurfaces;
         gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
         gDynamicSurfacePoolEnd = gDynamicSurfacePool;
-        if (sClearAllCells) {
-            clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
-        } else {
-            for (u32 i = 0; i < sNumCellsUsed; i++) {
-                gDynamicSurfacePartition[sCellsUsed[i].z][sCellsUsed[i].x][sCellsUsed[i].partition] = NULL;
-            }
-        }
-        sNumCellsUsed = 0;
-        sClearAllCells = FALSE;
+        clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
     //}
     profiler_collision_update(first);
 }

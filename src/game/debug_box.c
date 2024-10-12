@@ -209,14 +209,17 @@ void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
     s32 cellX = GET_CELL_COORD(x);
     s32 cellZ = GET_CELL_COORD(z);
 
-    for (i = 0; i < (2 * NUM_SPATIAL_PARTITIONS); i++) {
+    for (i = 0; i < (3 * NUM_SPATIAL_PARTITIONS); i++) {
         switch (i) {
             case 0: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_GREEN ); break;
             case 1: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_GREEN ); break;
-            case 2: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_BLUE  ); break;
-            case 3: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_BLUE  ); break;
-            case 4: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_RED   ); break;
-            case 5: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_RED   ); break;
+            case 2: node = gBlockSurfaces[SPATIAL_PARTITION_WALLS]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_GREEN  ); break;
+            case 3: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_BLUE  ); break;
+            case 4: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_BLUE  ); break;
+            case 5: node = gBlockSurfaces[SPATIAL_PARTITION_FLOORS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_BLUE   ); break;
+            case 6: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_RED   ); break;
+            case 7: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_RED   ); break;
+            case 8: node = gBlockSurfaces[SPATIAL_PARTITION_CEILS ]; colorRGB_copy(col, (ColorRGB)COLOR_RGB_RED    ); break;
         }
 
         while (node != NULL) {
@@ -317,14 +320,17 @@ s32 iterate_surface_count(s32 x, s32 z) {
     s32 cellX = GET_CELL_COORD(x);
     s32 cellZ = GET_CELL_COORD(z);
 
-    for (i = 0; i < (2 * NUM_SPATIAL_PARTITIONS); i++) {
+    for (i = 0; i < (3 * NUM_SPATIAL_PARTITIONS); i++) {
         switch (i) {
             case 0: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ]; break;
             case 1: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WALLS ]; break;
-            case 2: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; break;
-            case 3: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; break;
-            case 4: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; break;
-            case 5: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; break;
+            case 2: node = gBlockSurfaces[SPATIAL_PARTITION_WALLS]; break;
+            case 3: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; break;
+            case 4: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS]; break;
+            case 5: node = gBlockSurfaces[SPATIAL_PARTITION_FLOORS ]; break;
+            case 6: node = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; break;
+            case 7: node =  gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_CEILS ]; break;
+            case 8: node = gBlockSurfaces[SPATIAL_PARTITION_CEILS ]; break;
         }
 
         while (node != NULL) {
