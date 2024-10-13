@@ -1122,6 +1122,68 @@ s32 snap_to_45_degrees(s16 angle) {
     return angle;
 }
 
+#define FAKE_RAY_STEP_LEN 10.0f
+void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 flags) {
+    Vec3f hop;
+    Vec3f dirn;
+    vec3f_copy(dirn,dir);
+    vec3f_normalize(dirn);
+    vec3f_copy(hop,dirn);
+    hop[0] *= FAKE_RAY_STEP_LEN;
+    hop[1] *= FAKE_RAY_STEP_LEN;
+    hop[2] *= FAKE_RAY_STEP_LEN;
+
+    Vec3f ray_pos;
+    vec3f_copy(ray_pos,start);
+
+    struct WallCollisionData hitbox;
+    hitbox.offsetY = 0.0f;
+    hitbox.radius = FAKE_RAY_STEP_LEN;
+
+    f32 dir_length = vec3_mag(dir);
+    f32 steps_taken_length = 0.0f;
+    while (steps_taken_length < dir_length) {
+        hitbox.x = ray_pos[0];
+        hitbox.y = ray_pos[1];
+        hitbox.z = ray_pos[2];
+
+        if (flags & RAYCAST_FIND_WALL) {
+            if (find_wall_collisions(&hitbox) != 0) {
+                Vec3f norm;
+                get_surface_normal(&norm,hitbox.walls[0]);
+                f32 dot = vec3f_dot(&dirn,norm);
+                if (dot <= 0.0f) {
+                    *surf = hitbox.walls[0];
+                    hit[0] = hitbox.x;
+                    hit[1] = hitbox.y;
+                    hit[2] = hitbox.z;
+                }
+                return;
+            }
+        }
+        if (flags & RAYCAST_FIND_CEIL) {
+            struct Surface * found_ceiling;
+            f32 ceil_height = find_ceil(ray_pos[0],ray_pos[1],ray_pos[2], &found_ceiling);
+            if (found_ceiling) {
+                Vec3f norm;
+                get_surface_normal(&norm,found_ceiling);
+
+                if (ray_pos[1] > ceil_height-(FAKE_RAY_STEP_LEN*2.0f)) {
+                    *surf = found_ceiling;
+                    hit[0] = ray_pos[0];
+                    hit[1] = ceil_height-FAKE_RAY_STEP_LEN;
+                    hit[2] = ray_pos[2];
+                    return;
+                }
+            }
+        }
+
+        vec3f_sum(ray_pos,ray_pos,hop);
+        steps_taken_length += FAKE_RAY_STEP_LEN;
+    }
+    *surf = NULL;
+}
+
 /**
  * A mode that only has 8 camera angles, 45 degrees apart
  */
@@ -1174,29 +1236,27 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_normalize(camera_looknormal);
 
     if (mb64_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
-        // raycast_mode_camera = TRUE;
-
         // CEILING COLLISION
         // Standard camera raycast check for ceiling collision. No special shenanigans here!
         vec3f_copy(origin,gMarioState->pos);
         origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
-        // find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
+
+        fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
 
         if (surf) {
             vec3f_copy(c->pos,hitpos);
         }
 
         // WALL COLLISION
-        // More complex; does an initial check to disqualify 300 unit high walls. If there are walls taller than 300 units,
-        // then do a standard camera raycast and test for walls. If successful, set the camera position to the wall hit location
+        // More complex; If ray successful, set the camera position to the wall hit location
         // and push the camera inward if Mario is close to the wall.
 
         vec3f_copy(origin,gMarioState->pos);
         origin[1] += 50.0f;
         vec3f_diff(camdir,c->pos,origin);
 
-        // find_surface_on_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+        fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
 
         Vec3f camera_hit_diff;
         vec3f_diff(camera_hit_diff,origin,hitpos);
@@ -1215,9 +1275,6 @@ void mode_8_directions_camera(struct Camera *c) {
             vec3f_add(hitpos,thick);
             vec3f_copy(c->pos,hitpos);
         }
-        
-
-        // raycast_mode_camera = FALSE;
     }
 }
 

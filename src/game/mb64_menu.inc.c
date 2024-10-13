@@ -1437,6 +1437,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Better warnings for vertex limit and having FBE disabled", 0},
     {"- Improved cursor wrapping around the sides of the level", 0},
     {"- Faster navigation between level pages using left/right", 0},
+    {"- Muting music no longer requires a level reset.", 0},
     {"", 0},
     {"Improved Visuals", 1},
     {"", 0},
@@ -2422,7 +2423,6 @@ s32 mb64_main_menu(void) {
 
 // Pause menu during play
 u8 mb64_pause_menu_state = 0;
-u8 mb64_elta = FALSE;
 
 char * mb64_pause_menu_buttons_main[] = {
     "Continue",
@@ -2574,10 +2574,6 @@ s32 draw_mb64_pause_menu(void) {
                 print_generic_string_ascii(160-xoff ,160-(i*16),stringBuf);
             }
 
-            if (mb64_elta) {
-                print_generic_string_ascii(245-xoff ,160,"(Exit level to apply)");
-            }
-
             create_dl_translation_matrix(MENU_MTX_PUSH, 144-xoff, 160-(mb64_menu_index*16), 0);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
             gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
@@ -2610,7 +2606,6 @@ s32 draw_mb64_pause_menu(void) {
                 }
                 switch(mb64_menu_index) {
                     case RETURN_OPTION_INDEX:
-                        mb64_elta = FALSE;
                         mb64_pause_menu_state = 0;
                         mb64_menu_index = 0;
                         if (gSramProbe != 0) {
@@ -2619,9 +2614,6 @@ s32 draw_mb64_pause_menu(void) {
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         break;
                     default:
-                        if (mb64_menu_index == 0) {
-                            mb64_elta = TRUE;
-                        }
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         mb64_sram_configuration.option_flags ^= (1<<mb64_menu_index);
                         break;

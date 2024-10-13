@@ -1987,9 +1987,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     //when entering menu, load levels from sd card
     load_level_files_from_sd_card();
 
-    if (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-        play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_MENU_FILE_SELECT), 0);
-    }
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_MENU_FILE_SELECT), 0);
 }
 
 // /**

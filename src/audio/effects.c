@@ -7,6 +7,9 @@
 #include "game/main.h"
 #include "engine/math_util.h"
 #include "src/game/rovent.h"
+#include "external.h"
+#include "src/game/game_init.h"
+#include "src/game/save_file.h"
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 void sequence_channel_process_sound(struct SequenceChannel *seqChannel, s32 recalculateVolume) {
@@ -59,6 +62,13 @@ static void sequence_channel_process_sound(struct SequenceChannel *seqChannel) {
     f32 channelVolume = seqChannel->volume * seqChannel->volumeScale * seqChannel->seqPlayer->fadeVolume;
     if (seqChannel->seqPlayer->muted && (seqChannel->muteBehavior & MUTE_BEHAVIOR_SOFTEN) != 0) {
         channelVolume *= seqChannel->seqPlayer->muteVolumeScale;
+    }
+
+    if (!(mb64_sram_configuration.option_flags & (1<<OPT_MUSIC))) {
+        if (seqChannel->seqPlayer == &gSequencePlayers[SEQ_PLAYER_LEVEL]
+            || seqChannel->seqPlayer == &gSequencePlayers[SEQ_PLAYER_ENV]) {
+            channelVolume = 0.0f;
+        }
     }
 
     f32 panFromChannel = seqChannel->pan * seqChannel->panChannelWeight;

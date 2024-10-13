@@ -3292,9 +3292,7 @@ void sb_init(void) {
             mb64_boundary_object[4]->oFaceAnglePitch = 0x4000;
             mb64_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
-            if (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
-            }
+            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
         break;
         case MB64_MODE_PLAY:
             mb64_menu_state = MB64_MAKE_PLAY;
@@ -3330,9 +3328,9 @@ void sb_init(void) {
 
             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
-            if (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC)) {
-                play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
-            }
+
+            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
+
         break;
     }
 }
@@ -4087,13 +4085,13 @@ void sb_loop(void) {
 }
 
 void play_mb64_extra_music(u8 index) {
-    if ((seq_musicmenu_array[mb64_lopt_seq[index]] != seq_musicmenu_array[mb64_lopt_seq[0]]) && (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC))) {
+    if (seq_musicmenu_array[mb64_lopt_seq[index]] != seq_musicmenu_array[mb64_lopt_seq[0]]) {
         play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[index]]), 0);
     }
 }
 
 void stop_mb64_extra_music(u8 index) {
-    if ((seq_musicmenu_array[mb64_lopt_seq[index]] != seq_musicmenu_array[mb64_lopt_seq[0]]) && (mb64_sram_configuration.option_flags & (1<<OPT_MUSIC))) {
+    if (seq_musicmenu_array[mb64_lopt_seq[index]] != seq_musicmenu_array[mb64_lopt_seq[0]]) {
         stop_background_music(SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[index]]));
     }
 }
