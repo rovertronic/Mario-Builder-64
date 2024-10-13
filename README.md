@@ -214,4 +214,4 @@ A: Theoretically, all yes.
 
 ## Installation help
 
-Go read the original SM64 repo README.md
+Go read the original [SM64 repo README.md](https://github.com/n64decomp/sm64/blob/master/README.md)
