@@ -3,7 +3,7 @@ extern u8 gDialogCharWidths[256];
 u8 mb64_ascii_lut[] = {
     0,0,0,0,0,0,0,0, // 0 - 7
     0,0,0xFE,0,0,0,0,0, // 8 - 15
-    0x54,0x55,0x57,0x58,0,0,0,0, // 16 - 23
+    0x54,0x55,0x57,0x58,0x56,0,0,0, // 16 - 23
     0,0,0,0,0,0,0,0, // 24 - 31
     0x9E, /* */ 0xF2, /*!*/ 0x00, /*"*/ 0x00, /*#*/
     0x00, /*$*/ 0x71, /*%*/ 0xE5, /*&*/ 0x3E, /*'*/
@@ -1387,6 +1387,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Reduced vertex count of most levels by up to 25%", 0},
     {"- New boundary type: Interior"},
     {"- New object: Inverted Timed Box"},
+    {"- New Sample Tile building shortcut by pressing L + R", 0},
     {"- Ability to place multiple objects/tiles in the same spot", 0},
     {"- Wooden Platforms form a stack when placed vertically", 0},
     {"- Custom Theme menu now shows slipperiness of current tile", 0},
@@ -1468,6 +1469,30 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Fixed BTCM templates selecting the wrong music tracks", 0},
     {"- Fixed infinite flight time bug with the Bullet Bill Mask", 0},
     {"- Countless minor physics and AI fixes", 0},
+    {NULL, 0},
+};
+
+struct mb64_credits_entry mb64_editor_controls[] = {
+    {"Navigation Controls",1},
+    {"",0},
+    {"  Analog Stick:  Move cursor horizontally",0},
+    {"  \x14 ^ / |:  Move cursor vertically",0},
+    {"  \x14 < / >:  Rotate camera",0},
+    {"  D-Pad |:  Change camera zoom",0},
+    {"",0},
+    {"Building Controls",1},
+    {"",0},
+    {"  \x10:  Place tile",0},
+    {"  \x11:  Delete tile(s)",0},
+    {"  \x12:  Rotate tile",0},
+    {"  D-Pad < / >:  Change object parameters",0},
+    {"  D-Pad ^:  Flip tile vertically",0},
+    {"",0},
+    {"Toolbar Controls",1},
+    {"",0},
+    {"  L / R:  Navigate hotbar",0},
+    {"  L & R:  Sample tile",0},
+    {"  START:  Open toolbox",0},
     {NULL, 0},
 };
 
@@ -1583,7 +1608,6 @@ char *mb64_mm_help_btns[] = {
 };
 
 u8 mb64_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
-u8 mb64_mm_help_page2[] = {TXT_MM_HELP_PAGE_2};
 u8 mb64_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
 
 u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
@@ -2093,7 +2117,8 @@ s32 mb64_main_menu(void) {
                             mb64_mm_page_data = mb64_mm_help_page1;
                             break;
                         case 1:
-                            mb64_mm_page_data = mb64_mm_help_page2;
+                            mb64_mm_state = MM_CREDITS;
+                            mb64_mm_page_data = mb64_editor_controls;
                             break;
                         case 2:
                             mb64_mm_page_data = mb64_mm_help_page3;

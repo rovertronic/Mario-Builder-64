@@ -2951,6 +2951,72 @@ void delete_tile_action(s8 pos[3]) {
     }
 }
 
+u8 mb64_upsidedown_tile = FALSE;
+// Copy tile type of current cursor position to current toolbar slot
+int sample_block(void) {
+    int isObject = FALSE;
+    int targetId;
+    int targetBparam;
+    int targetRot;
+    // Iterate over objects
+    for (u32 i = 0; i < mb64_object_count; i++) {
+        struct mb64_obj *obj = &mb64_object_data[i];
+        if ((obj->x == mb64_cursor_pos[0]) && (obj->y == mb64_cursor_pos[1]) && (obj->z == mb64_cursor_pos[2])) {
+            isObject = TRUE;
+            targetId = obj->type;
+            targetBparam = obj->bparam;
+            targetRot = obj->rot;
+            break;
+        }
+    }
+    // Look at tile array
+    if (!isObject) {
+        struct mb64_grid_obj *tile = get_grid_tile(mb64_cursor_pos);
+        if (tile->type == TILE_TYPE_EMPTY) {
+            return FALSE;
+        }
+        targetId = tile->type;
+        targetBparam = tile->mat;
+        targetRot = tile->rot;
+        mb64_upsidedown_tile = FALSE;
+
+        if (targetId < TILE_END_OF_FLIPPABLE && targetId & 1) {
+            targetId--;
+            mb64_upsidedown_tile = TRUE;
+        }
+    }
+
+    // Find relevant button
+    u32 i;
+    for (i = 0; i < ARRAY_COUNT(mb64_ui_buttons); i++) {
+        struct mb64_ui_button_type *button = &mb64_ui_buttons[i];
+        if ((!isObject && button->placeMode == MB64_PM_OBJ) || (isObject && button->placeMode != MB64_PM_OBJ)) {
+            continue;
+        }
+
+        if (isObject && button->multiObj) {
+            // Iterate over multilist
+            for (u32 j = 0; j < button->paramCount; j++) {
+                if (button->idList[j] == targetId) {
+                    mb64_toolbar_params[mb64_toolbar_index] = j;
+                    // the pain of nested loops
+                    mb64_toolbar[mb64_toolbar_index] = i;
+                    mb64_rot_selection = targetRot;
+                    return TRUE;
+                }
+            }
+
+        } else if (button->id == targetId) {
+            mb64_toolbar_params[mb64_toolbar_index] = targetBparam;
+            if (!isObject) mb64_mat_selection = targetBparam;
+            break;
+        }
+    }
+    mb64_toolbar[mb64_toolbar_index] = i;
+    mb64_rot_selection = targetRot;
+    return TRUE;
+}
+
 
 void update_painting() {
     s16 x;
@@ -3511,7 +3577,6 @@ void reload_bg(void) {
     generate_terrain_gfx(); // since some backgrounds affect the boundary
 }
 
-u8 mb64_upsidedown_tile = FALSE;
 u8 mb64_joystick;
 extern s16 mb64_menu_start_timer;
 extern s16 mb64_menu_end_timer;
@@ -3656,6 +3721,9 @@ Gfx *get_button_str(u32 buttonId) {
     return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].name;
 }
 
+int gLTrigBuff = FALSE;
+int gRTrigBuff = FALSE;
+
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,mb64_current_camera_zoom[1],0};
     mb64_joystick = joystick_direction();
@@ -3688,14 +3756,38 @@ void sb_loop(void) {
             s32 updatePreviewObj = cursorMoved;
 
             if (sDelayedWarpOp == WARP_OP_NONE) {
-                if (gPlayer1Controller->buttonPressed & L_TRIG) {
+                // 1-frame buffer check for holding both L and R
+                // If L and R are pressed within 1 frame of each other,
+                // enable bothPressed and disable L and R pressed
+                int LPressed = gPlayer1Controller->buttonPressed & L_TRIG;
+                int RPressed = gPlayer1Controller->buttonPressed & R_TRIG;
+                int bothPressed = FALSE;
+
+                if ((LPressed && gRTrigBuff) || (RPressed && gLTrigBuff) || (LPressed && RPressed)) {
+                    bothPressed = TRUE;
+                    gLTrigBuff = FALSE;
+                    gRTrigBuff = FALSE;
+                }
+
+                if (gLTrigBuff) {
                     mb64_toolbar_index--;
                     updatePreviewObj = TRUE;
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
+                }
+                else if (gRTrigBuff) {
                     mb64_toolbar_index++;
                     updatePreviewObj = TRUE;
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                } else if (bothPressed) {
+                    if (sample_block()) {
+                        updatePreviewObj = TRUE;
+                        play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
+                    }
+                }
+
+                if (!bothPressed) {
+                    gLTrigBuff = LPressed;
+                    gRTrigBuff = RPressed;
                 }
             }
 
