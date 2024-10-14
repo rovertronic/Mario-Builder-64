@@ -1958,6 +1958,7 @@ f32 bad_apple_par = 0.0f;
 u32 star_radar_objects_to_track[] = {
     bhvStar,
     bhvStarSpawnCoordinates,
+    bhvKoopa,
 };
 
 void switch_mario_costume(u8 CostumeId) {
@@ -2063,12 +2064,10 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     f32 dist;
     gMarioState->StarRadarExist = FALSE;
     for (int i=0;i<ARRAY_COUNT(star_radar_objects_to_track);i++) { //arthur don't worry i won't use a u8 for i sorry brotha
-        curobj = cur_obj_find_nearest_object_with_behavior(star_radar_objects_to_track[i], &dist);
+        curobj = cur_obj_find_nearest_star_obj(star_radar_objects_to_track[i], &dist);
         if (curobj && (dist < minDist)) {
-            if (!(mb64_play_stars_bitfield & ((u64)1 << GET_BPARAM1(curobj->oBehParams)))) {
-                minDist = dist;
-                nearest_star = curobj;
-            }
+            minDist = dist;
+            nearest_star = curobj;
         }
     }
     curobj = cur_obj_nearest_object_with_imbue(&dist, IMBUE_STAR);
@@ -2078,7 +2077,8 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     }
 
     // No star, look for a nearby red coin
-    if (!nearest_star) {
+    struct Object *rcstar = cur_obj_find_nearest_star_obj(bhvHiddenRedCoinStar, &dist);
+    if (rcstar && !nearest_star) {
         curobj = cur_obj_find_nearest_object_with_behavior(bhvRedCoin, &dist);
         if (curobj && (dist < minDist)) {
             minDist = dist;
