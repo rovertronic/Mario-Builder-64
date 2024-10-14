@@ -3967,12 +3967,18 @@ void sb_loop(void) {
                 switch((mb64_joystick-1)%4) {
                     case 0:
                         mb64_toolbox_index--;
+                        if ((mb64_toolbox_index+TOOLBOX_WIDTH) % TOOLBOX_WIDTH == TOOLBOX_WIDTH-1) {
+                            mb64_toolbox_index += TOOLBOX_WIDTH;
+                        }
                     break;
                     case 1:
                         mb64_toolbox_index+=TOOLBOX_WIDTH;
                     break;
                     case 2:
                         mb64_toolbox_index++;
+                        if (mb64_toolbox_index % TOOLBOX_WIDTH == 0) {
+                            mb64_toolbox_index -= TOOLBOX_WIDTH;
+                        }
                     break;
                     case 3:
                         mb64_toolbox_index-=TOOLBOX_WIDTH;

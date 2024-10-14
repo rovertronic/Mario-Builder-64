@@ -2157,6 +2157,9 @@ s32 mb64_main_menu(void) {
             switch(mb64_joystick) {
                 case 1:
                     mb64_mm_keyboard_index--;
+                    if ((mb64_mm_keyboard_index+10)%10 == 9) {
+                        mb64_mm_keyboard_index+=10;
+                    }
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
                 case 2:
@@ -2164,6 +2167,9 @@ s32 mb64_main_menu(void) {
                 break;
                 case 3:
                     mb64_mm_keyboard_index++;
+                    if (mb64_mm_keyboard_index%10 == 0) {
+                        mb64_mm_keyboard_index-=10;
+                    }
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
                 break;
                 case 4:
