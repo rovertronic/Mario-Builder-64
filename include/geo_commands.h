@@ -436,10 +436,10 @@ enum GeoLayoutCommands {
  */
 #define GEO_SCALE(layer, scale) \
     CMD_BBH(GEO_CMD_NODE_SCALE, layer, 0x0000), \
-    CMD_W(scale)
+    CMD_W(scale / 8)
 #define GEO_SCALE_WITH_DL(layer, scale, displayList) \
     CMD_BBH(GEO_CMD_NODE_SCALE, (layer | 0x80), 0x0000), \
-    CMD_W(scale), \
+    CMD_W(scale / 8), \
     CMD_PTR(displayList)
 
 /**

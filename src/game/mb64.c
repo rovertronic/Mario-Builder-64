@@ -2845,6 +2845,10 @@ void imbue_action(void) {
                     }
                     imbue_success = TRUE;
                     break;
+                case OBJECT_TYPE_BADGE:
+                    mb64_object_data[i].imbue = IMBUE_BADGE_BASE + mb64_param_selection;
+                    imbue_success = TRUE;
+                    break;
             }
 
             if (imbue_success && (oldImbue != mb64_object_data[i].imbue)) {

@@ -227,17 +227,26 @@ void bhv_moneybag_loop(void) {
 extern struct imbue_model imbue_model_data[];
 
 void bhv_moneybag_hidden_init(void) {
-    cur_obj_set_model(imbue_model_data[o->oImbue].model);
+    s32 imbue = o->oImbue;
+    s32 badgeID = 0;
+
+    if (imbue >= IMBUE_BADGE_BASE) {
+        badgeID = imbue - IMBUE_BADGE_BASE;
+        imbue = IMBUE_BADGE_BASE;
+    }
+
+    cur_obj_set_model(imbue_model_data[imbue].model);
+    o->oBehParams2ndByte = badgeID;
     // Billboard coins
-    if (imbue_model_data[o->oImbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+    if (imbue_model_data[imbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
     // Set blue switch to blue
-    if ((o->oImbue == IMBUE_BLUE_SWITCH) || (o->oImbue == IMBUE_RED_SWITCH)) {
+    if ((imbue == IMBUE_BLUE_SWITCH) || (imbue == IMBUE_RED_SWITCH) || (imbue == IMBUE_BADGE_BASE)) {
         if (o->prevObj) o->oMoneybagHiddenScale = 0.1f;
-        if (o->oImbue == IMBUE_BLUE_SWITCH) o->oAnimState = 1;
+        if (imbue == IMBUE_BLUE_SWITCH) o->oAnimState = 1;
         o->oFaceAngleYaw = 0;
     }
     // Set star height
-    if (!o->prevObj && o->oImbue == IMBUE_STAR) o->oGraphYOffset = 128.f;
+    if (!o->prevObj && (imbue == IMBUE_STAR || imbue >= IMBUE_BADGE_BASE)) o->oGraphYOffset = 128.f;
 
     if (o->prevObj) vec3_copy(&o->oHomeVec, &o->prevObj->oHomeVec);
 }
@@ -261,14 +270,15 @@ void bhv_moneybag_hidden_loop(void) {
             break;
     }
 
-    if (o->oImbue == IMBUE_STAR) {
+    if (o->oImbue == IMBUE_STAR || o->oImbue >= IMBUE_BADGE_BASE) {
         o->oFaceAngleYaw += 0x800;
         if (o->oAction == FAKE_MONEYBAG_COIN_ACT_TRANSFORM) {
             o->oGraphYOffset -= 4.f;
         } else if (o->oGraphYOffset < 128.f) {
             o->oGraphYOffset += 4.f;
         }
-    } else if ((o->oImbue == IMBUE_RED_SWITCH) || (o->oImbue == IMBUE_BLUE_SWITCH)) {
+    }
+    if ((o->oImbue == IMBUE_RED_SWITCH) || (o->oImbue == IMBUE_BLUE_SWITCH) || (o->oImbue >= IMBUE_BADGE_BASE)) {
         if (o->oAction == FAKE_MONEYBAG_COIN_ACT_TRANSFORM) {
             approach_f32_symmetric_bool(&o->oMoneybagHiddenScale, 0.1f, 0.03f);
         } else {

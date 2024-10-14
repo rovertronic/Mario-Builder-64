@@ -9413,7 +9413,6 @@ const BehaviorScript bhvBadge[] = {
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
     SET_FLOAT(oDrawingDistance,MB64_DRAWDIST_HIGH),
     BILLBOARD(),
-    SCALE(/*Unused*/ 0, /*Field*/ 500),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_badge),
     END_LOOP(),

@@ -6107,7 +6107,7 @@ void bhv_badge(void) {
         case 1:
             o->oAngleVelYaw += 0x70;
             o->oFaceAngleYaw += o->oAngleVelYaw;
-            cur_obj_scale(o->oHomeY*5.0f);
+            cur_obj_scale(o->oHomeY);
             o->oHomeY = o->oHomeY *.95f;
             if (o->oHomeY < .2f) {
                 obj_mark_for_deletion(o);

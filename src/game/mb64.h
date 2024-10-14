@@ -458,6 +458,7 @@ enum imbue {
     IMBUE_RED_SWITCH,
     IMBUE_BLUE_SWITCH,
     IMBUE_RED_COIN,
+    IMBUE_BADGE_BASE,
 };
 
 struct imbue_model {

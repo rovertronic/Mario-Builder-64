@@ -2857,6 +2857,7 @@ s32 cur_obj_drop_imbued_object_lava(s32 y_offset) {
 
 s32 cur_obj_drop_imbued_object(s32 y_offset) {
     struct Object *dropobj = NULL;
+    s32 badgeID;
     if (o->oImbue == IMBUE_NONE) return FALSE;
 
     if (o->oImbue == IMBUE_STAR) {
@@ -2864,6 +2865,11 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
         f32 ceilY = find_ceil(o->oHomeX,o->oHomeY,o->oHomeZ,&ptr);
         spawn_default_star(o->oHomeX,MIN(o->oHomeY+y_offset, ceilY - 75.f),o->oHomeZ);
         return TRUE;
+    }
+
+    if (o->oImbue >= IMBUE_BADGE_BASE) {
+        badgeID = o->oImbue - IMBUE_BADGE_BASE;
+        o->oImbue = IMBUE_BADGE_BASE;
     }
 
     switch(o->oImbue) {
@@ -2900,6 +2906,16 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
         case IMBUE_RED_COIN:
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
             vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            spawn_mist_at_obj(dropobj);
+            break;
+        case IMBUE_BADGE_BASE:
+            if (save_file_get_badge_equip() & (1 << badgeID)) {
+                break;
+            }
+            dropobj = spawn_object(o,MODEL_BADGE,bhvBadge);
+            vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
+            dropobj->oPosY += 128.f;
+            dropobj->oBehParams2ndByte = badgeID;
             spawn_mist_at_obj(dropobj);
             break;
     }

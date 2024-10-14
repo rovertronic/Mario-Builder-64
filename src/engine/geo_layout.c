@@ -528,7 +528,7 @@ void geo_layout_cmd_node_scale(void) {
 
     s16 drawingLayer = LAYER_FIRST;
     s16 params = cur_geo_cmd_u8(0x01);
-    f32 scale = cur_geo_cmd_u32(0x04) / 65536.0f;
+    f32 scale = (cur_geo_cmd_u32(0x04) / 65536.0f) * 8.f;
     void *displayList = NULL;
 
     if (params & 0x80) {

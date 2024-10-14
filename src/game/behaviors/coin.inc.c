@@ -303,6 +303,11 @@ void coin_inside_boo_act_carried(void) {
     if (parent->oImbue == IMBUE_STAR) {
         o->oFaceAngleYaw += 0x800;
         o->oPosY += 30.f;
+    } else if (parent->oImbue >= IMBUE_BADGE_BASE) {
+        o->oPosY += 30.f;
+        if (save_file_get_badge_equip() & (1 << (parent->oImbue - IMBUE_BADGE_BASE))) {
+            mark_obj_for_deletion(o);
+        }
     } else {
         o->oFaceAngleYaw = parent->oFaceAngleYaw;
     }
@@ -330,13 +335,20 @@ struct imbue_model imbue_model_data[] = {
     /* IMBUE_RED_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
     /* IMBUE_BLUE_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
     /* IMBUE_RED_COIN */ {MODEL_RED_COIN, TRUE, 1.f},
+    /* IMBUE_BADGE_BASE */ {MODEL_BADGE, TRUE, 0.5f},
 };
 
 void bhv_coin_inside_boo_init(void) {
     s32 imbue = o->parentObj->oImbue;
+    s32 badgeID = 0;
+    if (imbue >= IMBUE_BADGE_BASE) {
+        badgeID = imbue - IMBUE_BADGE_BASE;
+        imbue = IMBUE_BADGE_BASE;
+    }
     cur_obj_set_model(imbue_model_data[imbue].model);
     if (imbue_model_data[imbue].billboarded) o->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
     cur_obj_scale(imbue_model_data[imbue].scale);
+    o->oBehParams2ndByte = badgeID;
 
     if (imbue == IMBUE_BLUE_SWITCH) {
         o->oAnimState = 1;
