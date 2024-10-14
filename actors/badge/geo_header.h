@@ -1,4 +1,5 @@
 extern const GeoLayout badge_geo[];
+extern const GeoLayout imbue_badge_geo[];
 extern u8 badge_glow_ia8[];
 extern Vtx badge_ability_unlock_mesh_layer_5_vtx_0[4];
 extern Gfx badge_ability_unlock_mesh_layer_5_tri_0[];

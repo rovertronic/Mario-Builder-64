@@ -17,3 +17,14 @@ const GeoLayout badge_geo[] = {
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };
+
+const GeoLayout imbue_badge_geo[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_SCALE(0x00, 65536*2.5),
+		GEO_OPEN_NODE(),
+			GEO_ASM(0, geo_badge_material),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_END(),
+};

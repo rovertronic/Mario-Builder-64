@@ -2452,8 +2452,11 @@ void generate_object_preview(void) {
             } else if ((curImbue >= IMBUE_THREE_COINS && curImbue <= IMBUE_BLUE_COIN) ||
                         (curImbue == IMBUE_RED_COIN)) {
                 imbue_marker_model = MODEL_MAKER_IMBUE_COIN;
+            } else if (curImbue >= IMBUE_BADGE_BASE) {
+                imbue_marker_model = MODEL_MAKER_IMBUE_BADGE;
             }
             struct Object * imbue_marker = spawn_object(o,imbue_marker_model,bhvPreviewObject);
+            imbue_marker->oBehParams2ndByte = curImbue - IMBUE_BADGE_BASE; // for badge
             imbue_marker->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
             imbue_marker->oPosX = GRID_TO_POS(pos[0]);
             imbue_marker->oPosY = GRID_TO_POS(pos[1]);

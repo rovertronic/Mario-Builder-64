@@ -81,10 +81,13 @@ Gfx *geo_badge_material(s32 callContext, struct GraphNode *node, void *context) 
         obj = (struct Object *) gCurGraphNodeObject;
         currentGraphNode->fnNode.node.flags = (currentGraphNode->fnNode.node.flags & 0xFF) | (LAYER_ALPHA << 8);
 
-        dlHead = alloc_display_list(sizeof(Gfx) * (2));
+        dlHead = alloc_display_list(sizeof(Gfx) * (4));
         dlStart = dlHead;
-
+        if (obj_get_model_id(obj) == MODEL_MAKER_IMBUE_BADGE) {
+            gSPGeometryMode(dlHead++, G_ZBUFFER, 0);
+        }
         gSPDisplayList(dlHead++,bicon_table[obj->oBehParams2ndByte]);
+        gSPGeometryMode(dlHead++, 0, G_ZBUFFER);
         gSPEndDisplayList(dlHead++);
     }
     return dlStart;

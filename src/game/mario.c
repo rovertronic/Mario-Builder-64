@@ -1592,7 +1592,10 @@ void update_mario_health(struct MarioState *m) {
         }
         if (m->hurtCounter > 0) {
             if ((gMarioState->numBadgePoints > 0) && ((save_file_get_badge_equip() & (1<<BADGE_DEFENSE)))) {
-                gMarioState->numBadgePoints --;
+                if (m->hurtCounter > 3) {
+                    gMarioState->numBadgePoints --;
+                    m->hurtCounter -= 3;
+                }
             }
             else
             {

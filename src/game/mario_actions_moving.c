@@ -1365,12 +1365,11 @@ s32 act_burning_ground(struct MarioState *m) {
     m->particleFlags |= PARTICLE_FIRE;
     play_sound(SOUND_MOVING_LAVA_BURN, m->marioObj->header.gfx.cameraToObject);
 
-    if ((save_file_get_badge_equip() & (1<<BADGE_BURN))&&(m->numBadgePoints > 0)) {
+    if ((save_file_get_badge_equip() & (1<<BADGE_BURN))) {
         m->health -= 5;
         burnloop++;
         if (burnloop > 30) {
             burnloop = 0;
-            m->numBadgePoints--;
         }
     } else {
         m->health -= 10;

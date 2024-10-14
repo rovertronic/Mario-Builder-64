@@ -299,6 +299,7 @@ const LevelScript script_func_mb64_theme_btcm[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_MASK, billmask2_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_MOLEMAN, moleman3_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_COBIE, cobie2_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE_BADGE, imbue_badge_geo),
     RETURN(),
 };
 
