@@ -810,8 +810,8 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 #endif
 
 #ifdef POWER_STARS_HEAL
-        //m->hurtCounter = 0;
-        //m->healCounter = 31;
+        m->hurtCounter = 0;
+        m->healCounter = 31;
  #ifdef BREATH_METER
         m->breathCounter = 31;
  #endif
