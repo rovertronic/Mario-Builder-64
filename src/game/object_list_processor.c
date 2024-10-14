@@ -536,8 +536,6 @@ void clear_objects(void) {
 
     gObjectMemoryPool = mem_pool_init(OBJECT_MEMORY_POOL, MEMORY_POOL_LEFT);
     gObjectLists = gObjectListArray;
-
-    clear_dynamic_surfaces();
 }
 
 /**
@@ -651,9 +649,6 @@ void update_objects(UNUSED s32 unused) {
     stub_debug_control();
 
     gObjectLists = gObjectListArray;
-
-    // If time stop is not active, unload object surfaces
-    clear_dynamic_surfaces();
 
     // for (u32 i = 0; i < NUM_RIGID_BODY_STEPS; i++) {
     //     do_rigid_body_step();

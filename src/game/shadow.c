@@ -185,7 +185,7 @@ static void add_shadow_to_display_list(Gfx *displayListHead, s8 shadowType) {
  * Create a shadow at the absolute position given, with the given parameters.
  * Return a pointer to the display list representing the shadow.
  */
-Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 shadowType, s8 shifted) {
+Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 shadowType) {
     struct Object *obj = gCurGraphNodeObjectNode;
     // Check if the object exists.
     if (obj == NULL) {
@@ -202,28 +202,11 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     s8 isPlayer   = (obj == gMarioObject);
     s8 notHeldObj = (gCurGraphNodeHeldObject == NULL);
 
-    // Attempt to use existing floors before finding a new one.
-    if (notHeldObj && isPlayer && gMarioState->floor) {
-        // The object is Mario and has a referenced floor.
-        floor       = gMarioState->floor;
-        floorHeight = gMarioState->floorHeight;
-    // } else if (notHeldObj && (gCurGraphNodeObject != &gMirrorMario) && obj->oFloor) {
-    //     // The object is not Mario but has a referenced floor.
-    //     //! Some objects only get their oFloor from bhv_init_room, which skips dynamic floors.
-    //     floor       = obj->oFloor;
-    //     floorHeight = obj->oFloorHeight;
-    } else {
-        // The object has no referenced floor, so find a new one.
-        // gCollisionFlags |= COLLISION_FLAG_RETURN_FIRST;
-        floorHeight = find_floor(x, y, z, &floor);
+    floorHeight = find_floor(x, y, z, &floor);
 
-        // No shadow if the position is OOB.
-        if (floor == NULL) {
-            return NULL;
-        }
-
-        // Skip shifting the shadow height later, since the find_floor call above uses the already shifted position.
-        shifted = FALSE;
+    // No shadow if the position is OOB.
+    if (floor == NULL) {
+        return NULL;
     }
 
     // The shadow is a decal by default.
@@ -236,8 +219,6 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     if (waterLevel > FLOOR_LOWER_LIMIT_MISC
         && y >= waterLevel
         && floorHeight <= waterLevel) {
-        // Skip shifting the shadow height later, since the find_water_level_and_floor call above uses the already shifted position.
-        shifted = FALSE;
 
         // If there is water under the shadow, put the shadow on the water.
         floorHeight = waterLevel;
@@ -270,11 +251,6 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
         // No shadow if the y-normal is negative (an unexpected result).
         if (ny <= 0.0f) {
             return NULL;
-        }
-
-        // If the animation changes the shadow position, move its height to the new position.
-        if (shifted) {
-            floorHeight = -((x * nx) + (z * nz) + normal[3]) / ny;
         }
     }
 

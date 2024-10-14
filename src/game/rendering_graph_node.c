@@ -1137,7 +1137,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
         }
 
         Gfx *shadowList = create_shadow_below_xyz(shadowPos, shadowScale * 0.5f,
-                                                  node->shadowSolidity, node->shadowType, shifted);
+                                                  node->shadowSolidity, node->shadowType);
 
         if (shadowList != NULL) {
             mtxf_shadow(gMatStack[gMatStackIndex + 1],

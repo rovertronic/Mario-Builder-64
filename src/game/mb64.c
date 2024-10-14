@@ -404,6 +404,12 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
     return MB64_FACESHAPE_EMPTY;
 }
 
+ALWAYS_INLINE s32 get_mat(s8 pos[3]) {
+    struct mb64_grid_obj *tile = get_grid_tile(pos);
+    if (tile->type >= TILE_TYPE_CULL) return -1;
+    return tile->mat;
+}
+
 u32 get_tile_occupy_flags(u32 type) {
     switch (type) {
         case TILE_TYPE_POLE:
@@ -479,6 +485,7 @@ enum BlockSideClassifications {
 };
 
 u32 get_side_class(u32 mat, u32 dir) {
+    if (mat == -1) return CLASS_CUTOUT;
     u32 mattype = TOPMAT(mat).type;
     if (dir != MB64_DIRECTION_UP) {
         mattype = MATERIAL(mat).type;
@@ -494,6 +501,7 @@ u32 get_side_class(u32 mat, u32 dir) {
 
 // Used to compare material types and see if any future culling checks can be skipped
 // WARNING! using grid tile ->mat directly will result in mat being 0 if the tile is empty/water
+// Use get_mat for curMat (-1 = non-material tile)
 // If this returns FALSE then the material can be culled.
 s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
     s32 curMatClass, otherMatClass;
@@ -518,7 +526,6 @@ u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
     if (adjMatClass == CLASS_CUTOUT) return FALSE;
     if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
     // Now we know that the side is a hollow cutout
-    if (mat == -1) return TRUE; // adjMat should be confirmed to have a full face
     s32 matClass = get_side_class(mat, direction);
     return (matClass != CLASS_HOLLOW_CUTOUT);
     // Will return FALSE if both materials are hollow cutouts but the waterlogged block
@@ -552,7 +559,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
             break;
     }
 
-    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, adjTile->mat, direction)) return FALSE;
+    if (cutout_skip_culling_check(get_mat(pos), adjTile->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
 
     if (otherFaceshape & MB64_FACESHAPE_EMPTY) return FALSE;
@@ -580,7 +587,7 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(adjPos)) return FALSE;
 
-    if (cutout_skip_culling_check(get_grid_tile(pos)->mat, get_grid_tile(adjPos)->mat, direction)) return FALSE;
+    if (cutout_skip_culling_check(get_mat(pos), get_grid_tile(adjPos)->mat, direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= MB64_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= MB64_FACESHAPE_TOPSLAB)) return TRUE;
     return FALSE;
@@ -1276,14 +1283,8 @@ u32 get_water_side_render(s8 pos[3], u32 dir, u32 isFullblock) {
 
     struct mb64_grid_obj *tile = get_grid_tile(pos);
 
-    s32 mat = tile->mat;
-    s32 adjMat = adjTile->mat;
-    if (tile->type == TILE_TYPE_WATER) {
-        mat = -1;
-    }
-    if ((adjTile->type == TILE_TYPE_WATER) || (adjTile->type == TILE_TYPE_EMPTY)){
-        adjMat = -1;
-    }
+    s32 mat = get_mat(pos);
+    s32 adjMat = get_mat(adjacentPos);
 
     // Apply normal side culling
     // Usually this would fail if next to a mesh, but it will pass if
@@ -2135,10 +2136,6 @@ s32 generate_block_collision(s8 pos[3]) {
     if (!coords_in_range(pos)) return;
     s32 tileType = get_grid_tile(pos)->type;
 
-    if (tileType == TILE_TYPE_EMPTY || tileType >= TILE_TYPE_CULL) {
-        return;
-    }
-
     mb64_growth_render_type = 0;
     mb64_curr_poly_vert_count = 4;
 
@@ -2154,6 +2151,10 @@ s32 generate_block_collision(s8 pos[3]) {
         check_bar_connections(pos, connections);
         render_bars_side(pos, connections);
         render_bars_top(pos, connections);
+        return;
+    }
+
+    if (tileType == TILE_TYPE_EMPTY || tileType >= TILE_TYPE_CULL) {
         return;
     }
 
@@ -2183,6 +2184,9 @@ void block_floor_collision(f32 x, f32 y, f32 z) {
         scan_fences(pos);
         generate_block_collision(pos);
 
+        if (!coords_in_range(pos) || (gCollisionFlags & COLLISION_FLAG_SHORT_FLOOR_CHECK)) {
+            break;
+        }
         s32 faceshapeTop = get_faceshape(pos, MB64_DIRECTION_UP);
         s32 faceshapeBottom = get_faceshape(pos, MB64_DIRECTION_DOWN);
         if (faceshapeTop == MB64_FACESHAPE_FULL || faceshapeBottom == MB64_FACESHAPE_FULL) {
