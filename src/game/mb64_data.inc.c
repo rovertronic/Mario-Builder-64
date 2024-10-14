@@ -205,6 +205,50 @@ struct mb64_terrain mb64_terrain_dscorner = {
     mb64_terrain_dscorner_tris,
 };
 
+s8 iscorner_slope_tri_uvs[3][2] = {{8, 16}, {0, 0}, {-8, 16}};
+
+struct mb64_terrain_poly mb64_terrain_iscorner_quads[] = {
+    {{{16, 0, 16}, {0, 0, 16}, {16, 0, 0},  {0, 0, 0}},  MB64_DIRECTION_DOWN,  MB64_FACESHAPE_FULL, 0, NULL}, // BOTTOM
+    {{{16, 16, 0}, {16, 0, 0}, {0, 16, 0},  {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{0, 16, 0},  {0, 0, 0},  {0, 16, 16}, {0, 0, 16}}, MB64_DIRECTION_NEG_X, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct mb64_terrain_poly mb64_terrain_iscorner_tris[] = {
+    {{{0, 16, 16}, {16, 16, 0}, {0, 16, 0}}, MB64_DIRECTION_UP,   MB64_FACESHAPE_TOPTRI, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{0, 16, 16},  {16, 0, 16}, {16, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_FULL, &iscorner_slope_tri_uvs}, // TOP SLOPE
+    {{{16, 0, 0},  {16, 16, 0}, {16, 0, 16}}, MB64_DIRECTION_POS_X, MB64_FACESHAPE_TRI_1, MB64_GROWTH_SLOPE_SIDE_L, &slope_decal_uvs1}, // LEFT
+    {{{0, 16, 16}, {0, 0, 16},  {16, 0, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_TRI_2, MB64_GROWTH_SLOPE_SIDE_R, &slope_decal_uvs2}, // FRONT
+};
+
+struct mb64_terrain mb64_terrain_iscorner = {
+    3,
+    4,
+    mb64_terrain_iscorner_quads,
+    mb64_terrain_iscorner_tris,
+};
+
+s8 discorner_slope_tri_uvs[3][2] = {{8, 0}, {-8, 0}, {0, 16}};
+
+struct mb64_terrain_poly mb64_terrain_discorner_quads[] = {
+    {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16}, {0, 16, 0}}, MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
+    {{{16, 16, 0},  {16, 0, 0},  {0, 16, 0},  {0, 0, 0}},  MB64_DIRECTION_NEG_Z, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // BACK
+    {{{0, 16, 0},   {0, 0, 0},   {0, 16, 16}, {0, 0, 16}}, MB64_DIRECTION_NEG_X, MB64_FACESHAPE_FULL, MB64_GROWTH_NORMAL_SIDE, NULL}, // RIGHT
+};
+
+struct mb64_terrain_poly mb64_terrain_discorner_tris[] = {
+    {{{16, 0, 0},   {16, 16, 0}, {16, 16, 16}}, MB64_DIRECTION_POS_X, MB64_FACESHAPE_DOWNTRI_1, MB64_GROWTH_NORMAL_SIDE, NULL}, // LEFT
+    {{{0, 16, 16},  {0, 0, 16},  {16, 16, 16}}, MB64_DIRECTION_POS_Z, MB64_FACESHAPE_DOWNTRI_2, MB64_GROWTH_NORMAL_SIDE, NULL}, // FRONT
+    {{{16, 0, 0},  {0, 0, 16},  {0, 0, 0}},  MB64_DIRECTION_DOWN, MB64_FACESHAPE_TOPTRI, 0, NULL}, // BOTTOM
+    {{{0, 0, 16},   {16, 0, 0}, {16, 16, 16}},   MB64_DIRECTION_DOWN, MB64_FACESHAPE_EMPTY_2, MB64_GROWTH_UNDERSLOPE_CORNER, &discorner_slope_tri_uvs}, // BOTTOM SLOPE
+};
+
+struct mb64_terrain mb64_terrain_discorner = {
+    3,
+    4,
+    mb64_terrain_discorner_quads,
+    mb64_terrain_discorner_tris,
+};
+
 s8 bottomslab_decal_uvs1[4][2] = {{16, 16}, {16, 8}, {0, 16}, {0, 8}};
 
 struct mb64_terrain_poly mb64_terrain_bottomslab_quads[] = {
@@ -481,10 +525,12 @@ enum {
     TILE_TYPE_DSLAB,
     TILE_TYPE_CORNER,
     TILE_TYPE_DCORNER,
-    TILE_TYPE_ICORNER,
-    TILE_TYPE_DICORNER,
-    TILE_TYPE_SCORNER,
-    TILE_TYPE_DSCORNER,
+    TILE_TYPE_ICORNER, // Inner Corner
+    TILE_TYPE_DICORNER, // Down Inner Corner
+    TILE_TYPE_SCORNER, // Sloped Corner
+    TILE_TYPE_DSCORNER, // Down Sloped Corner
+    TILE_TYPE_ISCORNER, // Inverted Sloped Corner
+    TILE_TYPE_DISCORNER, // Down Inverted Sloped Corner
     TILE_TYPE_UGENTLE,
     TILE_TYPE_DUGENTLE,
     TILE_TYPE_LGENTLE,
@@ -513,19 +559,21 @@ struct mb64_terrain_info mb64_terrain_info_list[] = {
     {NULL, NULL, NULL},
     {NULL, NULL, NULL},
     {"Slope", mat_b_btn_slope, &mb64_terrain_slope},
-    {NULL, mat_b_btn_slope, &mb64_terrain_dslope},
+    {NULL, NULL, &mb64_terrain_dslope},
     {"Slab", mat_b_btn_slabtile, &mb64_terrain_bottomslab},
-    {NULL, mat_b_btn_slabtile, &mb64_terrain_topslab},
+    {NULL, NULL, &mb64_terrain_topslab},
     {"Outer Corner", mat_b_btn_corner, &mb64_terrain_corner},
-    {NULL, mat_b_btn_corner, &mb64_terrain_dcorner},
+    {NULL, NULL, &mb64_terrain_dcorner},
     {"Inner Corner", mat_b_btn_icorner, &mb64_terrain_icorner},
-    {NULL, mat_b_btn_icorner, &mb64_terrain_dicorner},
+    {NULL, NULL, &mb64_terrain_dicorner},
     {"Sloped Corner", mat_b_btn_triangle, &mb64_terrain_scorner},
-    {NULL, mat_b_btn_corner, &mb64_terrain_dscorner},
+    {NULL, NULL, &mb64_terrain_dscorner},
+    {"Inverted Sloped Corner", mat_b_btn_triangle, &mb64_terrain_iscorner},
+    {NULL, NULL, &mb64_terrain_discorner},
     {"Upper Gentle Slope", mat_b_btn_ugs, &mb64_terrain_ugentle},
-    {NULL, mat_b_btn_slope, &mb64_terrain_dugentle},
+    {NULL, NULL, &mb64_terrain_dugentle},
     {"Lower Gentle Slope", mat_b_btn_lgs, &mb64_terrain_lgentle},
-    {NULL, mat_b_btn_slope, &mb64_terrain_dlgentle},
+    {NULL, NULL, &mb64_terrain_dlgentle},
 
     {"Tile", mat_b_btn_tile, &mb64_terrain_fullblock},
     {"Vertical Slope", mat_b_btn_sideslope, &mb64_terrain_sslope},
@@ -1738,6 +1786,7 @@ enum {
     MB64_BUTTON_SHOWRUN,
     MB64_BUTTON_POWER,
     MB64_BUTTON_CONVEYOR,
+    MB64_BUTTON_ISCORNER,
 };
 
 u8 mb64_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
@@ -1846,6 +1895,7 @@ struct mb64_ui_button_type mb64_ui_buttons[] = {
 /* MB64_BUTTON_SHOWRUN */  {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
 /* MB64_BUTTON_POWER */    {MB64_PM_OBJ, TRUE, 2, mb64_power_idlist, "Powerup"},
 /* MB64_BUTTON_CONVEYOR */ {MB64_PM_OBJ, FALSE, 8, OBJECT_TYPE_CONVEYOR, &txt_conveyor},
+/* MB64_BUTTON_ISCORNER */ {MB64_PM_TILE, FALSE, 0, TILE_TYPE_ISCORNER, NULL},
 };
 
 u8 mb64_toolbar_defaults[9] = {
@@ -1900,7 +1950,7 @@ u8 mb64_toolbox_params[TOOLBOX_SIZE];
 //Different toolboxes for different game styles
 #define _ MB64_BUTTON_BLANK
 u8 mb64_toolbox_btcm[TOOLBOX_SIZE] = {
-    MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, _,
+    MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, MB64_BUTTON_ISCORNER,
     MB64_BUTTON_GOOMBA, MB64_BUTTON_BOBOMB, MB64_BUTTON_CHUCKYA, MB64_BUTTON_KOOPA, MB64_BUTTON_LAKITU, MB64_BUTTON_FLYGUY, MB64_BUTTON_SNUFIT, MB64_BUTTON_THWOMP, MB64_BUTTON_WHOMP,
 
     MB64_BUTTON_LGENTLE, MB64_BUTTON_UGENTLE, MB64_BUTTON_TROLL, MB64_BUTTON_WATER, MB64_BUTTON_FENCE, MB64_BUTTON_BARS, MB64_BUTTON_POLE, MB64_BUTTON_TREE, MB64_BUTTON_CULL,
@@ -1917,7 +1967,7 @@ u8 mb64_toolbox_btcm[TOOLBOX_SIZE] = {
 };
 
 u8 mb64_toolbox_vanilla[TOOLBOX_SIZE] = {
-    MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, _,
+    MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, MB64_BUTTON_ISCORNER,
     MB64_BUTTON_GOOMBA, MB64_BUTTON_BOBOMB, MB64_BUTTON_CHUCKYA, MB64_BUTTON_KOOPA, MB64_BUTTON_LAKITU, MB64_BUTTON_FLYGUY, MB64_BUTTON_SNUFIT, MB64_BUTTON_THWOMP, MB64_BUTTON_WHOMP,
 
     MB64_BUTTON_LGENTLE, MB64_BUTTON_UGENTLE, MB64_BUTTON_TROLL, MB64_BUTTON_WATER, MB64_BUTTON_FENCE, MB64_BUTTON_BARS, MB64_BUTTON_POLE, MB64_BUTTON_TREE, MB64_BUTTON_CULL,
