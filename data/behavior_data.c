@@ -774,11 +774,13 @@ const BehaviorScript bhvChuckyaAnchorMario[] = {
 
 const BehaviorScript bhvBulletBillCannon[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE),
+    SET_FLOAT(oCollisionDistance, 128),
     LOAD_COLLISION_DATA(blaster_collision),
-    CALL_NATIVE(load_object_static_model),
     SPAWN_CHILD(/*Model*/ MODEL_BILL_MAKER, /*Behavior*/ bhvBulletBill),
-    BREAK(),
+    BEGIN_LOOP(),
+        CALL_NATIVE(load_object_collision_model),
+    END_LOOP(),
 };
 
 // const BehaviorScript bhvWfBreakableWallRight[] = {
@@ -1701,10 +1703,11 @@ const BehaviorScript bhvFlamethrower[] = {
     BEGIN(OBJ_LIST_SURFACE),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_HOME(),
+    SET_FLOAT(oCollisionDistance, 200),
     LOAD_COLLISION_DATA(gooner_collision),
-    CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_flamethrower_loop),
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
@@ -4582,16 +4585,17 @@ const BehaviorScript bhvMessagePanel[] = {
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     LOAD_COLLISION_DATA(wooden_signpost_seg3_collision_0302DD80),
     SET_INTERACT_TYPE(INTERACT_TEXT),
+    SET_FLOAT(oCollisionDistance, 80),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_MEDIUM),
     SET_INT(oInteractionSubtype, INT_SUBTYPE_SIGN),
 //     DROP_TO_FLOOR(),
     SET_HITBOX(/*Radius*/ 150, /*Height*/ 80),
     SET_INT(oWoodenPostTotalMarioAngle, 0),
     //CALL_NATIVE(bhv_init_room),
-    CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),
         SET_INT(oInteractStatus, INT_STATUS_NONE),
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
@@ -7535,15 +7539,15 @@ const BehaviorScript bhvRedCoinStarMarker[] = {
 
 const BehaviorScript bhvNoteblock[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_LONG(oFlags, (OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE)),
     LOAD_COLLISION_DATA(noteblock_collision),
-    SET_FLOAT(oCollisionDistance, 300),
+    SET_FLOAT(oCollisionDistance, 128),
     SET_HOME(),
     SCALE(0,127),
     DELAY(1),
-    CALL_NATIVE(load_object_static_model),
     BEGIN_LOOP(),
         CALL_NATIVE(noteblock_function),
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };
 
@@ -9558,7 +9562,8 @@ void bhv_conveyor_init(void);
 void bhv_conveyor_loop(void);
 const BehaviorScript bhvConveyor[] = {
     BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    OR_LONG(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_EXACT_TILE_SIZE),
+    SET_FLOAT(oCollisionDistance, 128),
     CALL_NATIVE(bhv_conveyor_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_conveyor_loop),

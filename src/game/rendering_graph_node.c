@@ -746,8 +746,9 @@ void Get_Screen_Coords(void) {
             }
 
         if (marioPos3s[2] > 0) {
+            gMarioState->StarRadarExist = FALSE;
             return;
-            }
+        }
 
         gMarioState->ScreenPosX = screenX;
         gMarioState->ScreenPosY = screenY;

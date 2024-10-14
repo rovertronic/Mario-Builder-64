@@ -606,31 +606,31 @@ void load_object_collision_model(void) {
 /**
  * Transform an object's vertices and add them to the static surface pool.
  */
-void load_object_static_model(void) {
-    PUPPYPRINT_GET_SNAPSHOT();
-    TerrainData *collisionData = o->collisionData;
-    u32 surfacePoolData;
+// void load_object_static_model(void) {
+//     PUPPYPRINT_GET_SNAPSHOT();
+//     TerrainData *collisionData = o->collisionData;
+//     u32 surfacePoolData;
 
-    // Initialise a new surface pool for this block of surface data
-    gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
-    gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
-    gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
-    gSurfacesAllocated = gNumStaticSurfaces;
+//     // Initialise a new surface pool for this block of surface data
+//     gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
+//     gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
+//     gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
+//     gSurfacesAllocated = gNumStaticSurfaces;
 
-    collisionData++;
-    transform_object_vertices(&collisionData, sVertexData);
+//     collisionData++;
+//     transform_object_vertices(&collisionData, sVertexData);
 
-    // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
-    while (*collisionData != TERRAIN_LOAD_CONTINUE) {
-        load_object_surfaces(&collisionData, sVertexData, FALSE);
-    }
+//     // TERRAIN_LOAD_CONTINUE acts as an "end" to the terrain data.
+//     while (*collisionData != TERRAIN_LOAD_CONTINUE) {
+//         load_object_surfaces(&collisionData, sVertexData, FALSE);
+//     }
 
-    surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
-    gTotalStaticSurfaceData += surfacePoolData;
-    main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
+//     surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
+//     gTotalStaticSurfaceData += surfacePoolData;
+//     main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
 
-    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
-    gNumStaticSurfaces = gSurfacesAllocated;
-    o->collisionData = NULL;
-    profiler_collision_update(first);
-}
+//     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
+//     gNumStaticSurfaces = gSurfacesAllocated;
+//     o->collisionData = NULL;
+//     profiler_collision_update(first);
+// }

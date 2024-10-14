@@ -6369,7 +6369,6 @@ void bhv_conveyor_init(void) {
         o->collisionData = segmented_to_virtual(conveyor_half_collision);
     }
     o->oAnimState = o->oBehParams2ndByte >> 2;
-    load_object_static_model();
 }
 extern u8 mb64_play_onoff;
 void bhv_conveyor_loop(void) {
@@ -6388,4 +6387,5 @@ void bhv_conveyor_loop(void) {
             cur_obj_set_model(targetModel);
         }
     }
+    load_object_collision_model();
 }

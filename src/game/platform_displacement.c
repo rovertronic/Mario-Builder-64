@@ -188,9 +188,11 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 	// Avoid a crash if the platform unloaded its collision while stood on
 	if (platform->header.gfx.throwMatrix == NULL) {
 		vec3f_set(sMarioAmountDisplaced,0,0,0);
-		if (gMarioState->floor->type == SURFACE_CONVEYOR) {
-			apply_conveyor_displacement();
-		}
+		return;
+	}
+
+	if (gMarioState->floor->type == SURFACE_CONVEYOR) {
+		apply_conveyor_displacement();
 		return;
 	}
 
