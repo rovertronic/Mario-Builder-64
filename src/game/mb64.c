@@ -3782,7 +3782,7 @@ void sb_loop(void) {
                     mb64_toolbar_index++;
                     updatePreviewObj = TRUE;
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                } else if (bothPressed) {
+                } else if (bothPressed && mb64_toolbar_index < 7) {
                     if (sample_block()) {
                         updatePreviewObj = TRUE;
                         play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
