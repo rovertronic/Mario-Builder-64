@@ -2294,10 +2294,8 @@ void check_poles(struct MarioState *m) {
 }
 
 void generate_terrain_collision(void) {
-    gCurrStaticSurfacePool = main_pool_alloc(main_pool_available() - 0x10, MEMORY_POOL_LEFT);
-    gCurrStaticSurfacePoolEnd = gCurrStaticSurfacePool;
-    gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
-    gSurfacesAllocated = gNumStaticSurfaces;
+    gSurfaceNodesAllocated = gNumStaticSurfaceNodes = 0;
+    gSurfacesAllocated = gNumStaticSurfaces = 0;
     mb64_curr_poly_vert_count = 4;
 
     u32 deathsize = (mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR) ? mb64_grid_size : (mb64_grid_size + 16);
@@ -2322,10 +2320,6 @@ void generate_terrain_collision(void) {
     if (mb64_curr_boundary & MB64_BOUNDARY_CEILING) {
         generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), mb64_lopt_boundary_height-32, mb64_lopt_boundary_height-32, mb64_grid_size, TRUE);
     }
-
-    u32 surfacePoolData = (uintptr_t)gCurrStaticSurfacePoolEnd - (uintptr_t)gCurrStaticSurfacePool;
-    gTotalStaticSurfaceData += surfacePoolData;
-    main_pool_realloc(gCurrStaticSurfacePool, surfacePoolData);
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
     gNumStaticSurfaces = gSurfacesAllocated;
