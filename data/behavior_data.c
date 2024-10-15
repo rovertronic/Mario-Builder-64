@@ -9566,5 +9566,6 @@ const BehaviorScript bhvConveyor[] = {
     CALL_NATIVE(bhv_conveyor_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_conveyor_loop),
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };

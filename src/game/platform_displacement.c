@@ -143,11 +143,11 @@ void update_platform_displacement_info(struct PlatformDisplacementInfo *displace
 }
 
 void apply_conveyor_displacement() {
-	s16 currentAngle = gMarioState->floor->object->oFaceAngleYaw;
+	s16 currentAngle = gMarioPlatform->oFaceAngleYaw;
 	f32 currentSpeed = 10.76f;
 
 	if (((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_MOVING) || ((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_STATIONARY)) {
-		f32 perpendicularDistance = (gMarioState->pos[0] - gMarioState->floor->object->oPosX) * coss(currentAngle) - (gMarioState->pos[2] - gMarioState->floor->object->oPosZ) * sins(currentAngle);
+		f32 perpendicularDistance = (gMarioState->pos[0] - gMarioPlatform->oPosX) * coss(currentAngle) - (gMarioState->pos[2] - gMarioPlatform->oPosZ) * sins(currentAngle);
 		// If too close to edge, tilt angle a little
 		if (perpendicularDistance < -105.0f) {
 			currentAngle += 0x2000;
@@ -162,7 +162,7 @@ void apply_conveyor_displacement() {
 	gMarioState->pos[0] += xVel;
 	gMarioState->pos[2] += zVel;
 	vec3f_set(sMarioAmountDisplaced, xVel, 0.f, zVel);
-	if (gMarioState->floor->object->oExtraVariable1 > 0) {
+	if (gMarioPlatform->oExtraVariable1 > 0) {
 		gMarioState->forwardVel = MAX(-15.f, gMarioState->forwardVel); // bljs are far too easy otherwise
 	}
 
@@ -191,7 +191,7 @@ void apply_platform_displacement(struct PlatformDisplacementInfo *displaceInfo, 
 		return;
 	}
 
-	if (gMarioState->floor->type == SURFACE_CONVEYOR) {
+	if (gMarioPlatform->behavior == segmented_to_virtual(bhvConveyor)) {
 		apply_conveyor_displacement();
 		return;
 	}

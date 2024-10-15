@@ -6387,5 +6387,4 @@ void bhv_conveyor_loop(void) {
             cur_obj_set_model(targetModel);
         }
     }
-    load_object_collision_model();
 }
