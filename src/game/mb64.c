@@ -1910,6 +1910,12 @@ void generate_terrain_gfx(void) {
     }
 };
 
+// Called whenever boundary is changed
+void reload_boundary_and_gfx(void) {
+    generate_terrain_gfx();
+    generate_boundary_collision();
+}
+
 Gfx preview_gfx[50];
 Vtx preview_vtx[100];
 Gfx water_gfx[50];
@@ -2101,7 +2107,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
     return NULL;
 }
 
-void generate_boundary_collision(struct mb64_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, s16 size, u32 reverse) {
+void generate_boundary_quad_collision(struct mb64_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, s16 size, u32 reverse) {
     TerrainData newVtxs[4][3];
     s16 yHeight = yTop - yBottom;
     for (u32 i = 0; i < count; i++) {
@@ -2293,18 +2299,20 @@ void check_poles(struct MarioState *m) {
     }
 }
 
-void generate_terrain_collision(void) {
-    gSurfaceNodesAllocated = gNumStaticSurfaceNodes = 0;
-    gSurfacesAllocated = gNumStaticSurfaces = 0;
+void generate_boundary_collision(void) {
+    gSurfaceNodesAllocated = 0;
+    gSurfacesAllocated = 0;
+    clear_static_surfaces();
+
     mb64_curr_poly_vert_count = 4;
 
     u32 deathsize = (mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR) ? mb64_grid_size : (mb64_grid_size + 16);
     mb64_curr_coltype = SURFACE_DEATH_PLANE;
-    generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
+    generate_boundary_quad_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, deathsize, FALSE);
 
     if (mb64_curr_boundary & MB64_BOUNDARY_INNER_FLOOR) {
         mb64_curr_coltype = TOPMAT(mb64_lopt_boundary_mat).col;
-        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, mb64_grid_size, FALSE);
+        generate_boundary_quad_collision(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, mb64_grid_size, FALSE);
     }
     mb64_curr_coltype = MATERIAL(mb64_lopt_boundary_mat).col;
     if (MATERIAL(mb64_lopt_boundary_mat).type == MAT_TRANSPARENT) {
@@ -2313,12 +2321,12 @@ void generate_terrain_collision(void) {
     if (mb64_curr_boundary & MB64_BOUNDARY_INNER_WALLS) {
         s32 bottomY = (mb64_curr_boundary & MB64_BOUNDARY_INNER_FLOOR) ? -32 : -40;
         s32 topY = mb64_lopt_boundary_height-32;
-        generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, mb64_grid_size, FALSE);
+        generate_boundary_quad_collision(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, topY, mb64_grid_size, FALSE);
     } else if (mb64_curr_boundary & MB64_BOUNDARY_OUTER_WALLS) {
-        generate_boundary_collision(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -32, mb64_grid_size, TRUE);
+        generate_boundary_quad_collision(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -32, mb64_grid_size, TRUE);
     }
     if (mb64_curr_boundary & MB64_BOUNDARY_CEILING) {
-        generate_boundary_collision(floor_boundary, ARRAY_COUNT(floor_boundary), mb64_lopt_boundary_height-32, mb64_lopt_boundary_height-32, mb64_grid_size, TRUE);
+        generate_boundary_quad_collision(floor_boundary, ARRAY_COUNT(floor_boundary), mb64_lopt_boundary_height-32, mb64_lopt_boundary_height-32, mb64_grid_size, TRUE);
     }
 
     gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
@@ -3344,7 +3352,7 @@ void sb_init(void) {
 
     mb64_toolbar_index = 0;
     reload_bg();
-    generate_terrain_gfx();
+    reload_boundary_and_gfx();
 
     switch(mb64_mode) {
         case MB64_MODE_MAKE:
@@ -3365,7 +3373,6 @@ void sb_init(void) {
         break;
         case MB64_MODE_PLAY:
             mb64_menu_state = MB64_MAKE_PLAY;
-            generate_terrain_collision();
             reset_rng();
             gGlobalTimer = 0;
             generate_objects_to_level();
@@ -3550,7 +3557,7 @@ void update_custom_theme(void) {
 }
 
 void reload_theme(void) {
-    generate_terrain_gfx();
+    reload_boundary_and_gfx();
     mb64_set_data_overrides();
     generate_object_preview();
 }

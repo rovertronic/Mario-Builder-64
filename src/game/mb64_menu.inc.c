@@ -916,7 +916,7 @@ void draw_mb64_settings_env(f32 xoff, f32 yoff) {
                 mb64_menu_index = index;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 update_custom_theme();
-                generate_terrain_gfx();
+                reload_boundary_and_gfx();
             }
         }
     }

@@ -44,6 +44,11 @@ u32 get_area_terrain_size(TerrainData *data);
 void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, MacroObject *macroObjects);
 void clear_dynamic_surfaces(void);
 void load_object_collision_model(void);
+void clear_static_surfaces(void);
 // void load_object_static_model(void);
+/**
+ * Clears the static (level) surface partitions for new use.
+ */
+#define clear_static_surfaces() clear_spatial_partition(&gStaticSurfacePartition[0][0])
 
 #endif // SURFACE_LOAD_H

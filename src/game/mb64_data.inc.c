@@ -2356,7 +2356,7 @@ extern char *mb64_get_category(s32, char *);
 extern char *mb64_get_custom_mat(s32, char *);
 extern void reload_bg(void);
 extern void reload_theme(void);
-extern void generate_terrain_gfx(void);
+extern void reload_boundary_and_gfx(void);
 
 extern void music_type_changed(void);
 extern void music_category_changed(void);
@@ -2364,7 +2364,7 @@ extern void song_changed(void);
 
 struct mb64_settings_button mb64_settings_misc_buttons[] = {
     {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, generate_terrain_gfx},
+    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
     {"Costume:", &mb64_lopt_costume, mb64_costume_string_table, ARRAY_COUNT(mb64_costume_string_table), NULL, NULL},
 };
 
@@ -2374,7 +2374,7 @@ struct mb64_settings_button mb64_settings_misc_buttons[] = {
 
 struct mb64_settings_button mb64_settings_misc_buttons_vanilla[] = {
     {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, generate_terrain_gfx},
+    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
 };
 #define MISCV_COINSTAR_INDEX 0
 #define MISCV_WATER_INDEX 1
@@ -2389,9 +2389,9 @@ struct mb64_settings_button mb64_settings_env_buttons[] = {
 #define ENV_EFFECT_INDEX 2
 
 struct mb64_settings_button mb64_settings_boundary_buttons[] = {
-    {"Boundary:", &mb64_lopt_boundary, mb64_bound_string_table, ARRAY_COUNT(mb64_bound_string_table), NULL, generate_terrain_gfx},
-    {"Material:",   &mb64_lopt_boundary_mat, NULL, NUM_MATERIALS_PER_THEME, mb64_get_floor_name, generate_terrain_gfx}, // Filled in by code
-    {"Height:", &mb64_lopt_boundary_height,   NULL, 65, mb64_get_boundaryheight_name, generate_terrain_gfx},
+    {"Boundary:", &mb64_lopt_boundary, mb64_bound_string_table, ARRAY_COUNT(mb64_bound_string_table), NULL, reload_boundary_and_gfx},
+    {"Material:",   &mb64_lopt_boundary_mat, NULL, NUM_MATERIALS_PER_THEME, mb64_get_floor_name, reload_boundary_and_gfx}, // Filled in by code
+    {"Height:", &mb64_lopt_boundary_height,   NULL, 65, mb64_get_boundaryheight_name, reload_boundary_and_gfx},
 };
 
 #define BOUNDARY_BOUNDARY_INDEX 0

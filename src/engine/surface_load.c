@@ -62,7 +62,7 @@ struct Surface *alloc_surface(u32 dynamic) {
 /**
  * Iterates through the entire partition, clearing the surfaces.
  */
-static void clear_spatial_partition(SpatialPartitionCell *cells) {
+void clear_spatial_partition(SpatialPartitionCell *cells) {
     register s32 i = sqr(NUM_CELLS);
 
     while (i--) {
@@ -72,13 +72,6 @@ static void clear_spatial_partition(SpatialPartitionCell *cells) {
 
         cells++;
     }
-}
-
-/**
- * Clears the static (level) surface partitions for new use.
- */
-static void clear_static_surfaces(void) {
-    clear_spatial_partition(&gStaticSurfacePartition[0][0]);
 }
 
 /**
