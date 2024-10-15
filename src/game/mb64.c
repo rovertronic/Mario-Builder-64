@@ -406,7 +406,7 @@ u32 get_faceshape(s8 pos[3], u32 dir) {
 
 ALWAYS_INLINE s32 get_mat(s8 pos[3]) {
     struct mb64_grid_obj *tile = get_grid_tile(pos);
-    if (tile->type >= TILE_TYPE_CULL) return -1;
+    if (tile->type >= TILE_TYPE_CULL || tile->type == TILE_TYPE_EMPTY) return -1;
     return tile->mat;
 }
 
@@ -522,6 +522,7 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 
 // Used for determining if a water side should be culled.
 u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
+    if (mat == adjMat) return FALSE;
     s32 adjMatClass = get_side_class(adjMat, direction^1);
     if (adjMatClass == CLASS_CUTOUT) return FALSE;
     if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
@@ -587,7 +588,7 @@ s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(adjPos)) return FALSE;
 
-    if (cutout_skip_culling_check(get_mat(pos), get_grid_tile(adjPos)->mat, direction)) return FALSE;
+    if (cutout_skip_culling_check(get_mat(pos), get_mat(adjPos), direction)) return FALSE;
     s32 otherFaceshape = get_faceshape(adjPos, direction);
     if ((otherFaceshape >= MB64_FACESHAPE_DOWNUPPERGENTLE_1) && (otherFaceshape <= MB64_FACESHAPE_TOPSLAB)) return TRUE;
     return FALSE;
@@ -931,8 +932,8 @@ void render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
     if (!coords_in_range(newpos)) return;
 
     // Check if below block matches material
-    u8 curMat = get_grid_tile(pos)->mat;
-    u8 belowMat = get_grid_tile(newpos)->mat;
+    u8 curMat = get_mat(pos);
+    u8 belowMat = get_mat(newpos);
     if (curMat != belowMat) return;
 
     // Check if below block is right shape and culled
@@ -1243,16 +1244,13 @@ u32 is_water_fullblock(s8 pos[3]) {
     if (aboveTile->waterlogged) return TRUE;
 
     // Full block if above block has solid bottom face
-    if ((get_faceshape(abovePos, MB64_DIRECTION_UP) == MB64_FACESHAPE_FULL) && (MATERIAL(aboveTile->mat).type != MAT_CUTOUT)) {
+    if (get_faceshape(abovePos, MB64_DIRECTION_UP) == MB64_FACESHAPE_FULL) {
+        u8 aboveMat = get_mat(abovePos);
         // If above block is troll, but current block is also troll, then not full block
         if ((tile->type == TILE_TYPE_TROLL) && (aboveTile->type == TILE_TYPE_TROLL)) return FALSE;
         // If bottom block is hollow cutout and top block is some kind of cutout then not full block
-        if (tile->type != TILE_TYPE_WATER) {
-            u8 curMat = tile->mat;
-            u8 aboveMat = aboveTile->mat;
-            if ((TOPMAT(aboveMat).type == MAT_CUTOUT) && (TOPMAT(curMat).type == MAT_CUTOUT) &&
-                (MATERIAL(curMat).type != MAT_CUTOUT)) return FALSE;
-        }
+        u8 curMat = get_mat(pos);
+        if (!block_side_is_solid(aboveMat, curMat, MB64_DIRECTION_UP)) return FALSE;
         return TRUE;
     }
     return FALSE;
