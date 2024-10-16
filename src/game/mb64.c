@@ -522,12 +522,11 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 
 // Used for determining if a water side should be culled.
 u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
-    if (mat == adjMat) return FALSE;
     s32 adjMatClass = get_side_class(adjMat, direction^1);
     if (adjMatClass == CLASS_CUTOUT) return FALSE;
     if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
     // Now we know that the side is a hollow cutout
-    s32 matClass = get_side_class(mat, direction);
+    s32 matClass = get_side_class(mat, MB64_DIRECTION_DOWN);
     return (matClass != CLASS_HOLLOW_CUTOUT);
     // Will return FALSE if both materials are hollow cutouts but the waterlogged block
     // isn't a full faceshape. Not a big deal
