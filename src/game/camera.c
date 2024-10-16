@@ -1122,7 +1122,7 @@ s32 snap_to_45_degrees(s16 angle) {
     return angle;
 }
 
-#define FAKE_RAY_STEP_LEN 10.0f
+#define FAKE_RAY_STEP_LEN 100.0f
 void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 flags) {
     Vec3f hop;
     Vec3f dirn;
@@ -1154,9 +1154,11 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
                 f32 dot = vec3f_dot(&dirn,norm);
                 if (dot <= 0.0f) {
                     *surf = hitbox.walls[0];
-                    hit[0] = hitbox.x;
-                    hit[1] = hitbox.y;
-                    hit[2] = hitbox.z;
+                    // Get distance pushed out from the wall
+                    f32 dist = sqrtf(sqr(hitbox.x-ray_pos[0])+sqr(hitbox.z-ray_pos[2]));
+                    hit[0] = ray_pos[0] - (dirn[0]*dist);
+                    hit[1] = ray_pos[1] - (dirn[1]*dist);
+                    hit[2] = ray_pos[2] - (dirn[2]*dist);
                 }
                 return;
             }
@@ -1235,6 +1237,8 @@ void mode_8_directions_camera(struct Camera *c) {
     vec3f_diff(camera_looknormal,c->focus,c->pos);
     vec3f_normalize(camera_looknormal);
 
+    gCollisionFlags |= COLLISION_FLAG_CAMERA;
+
     if (mb64_sram_configuration.option_flags & (1<<OPT_CAMCOL)) {
         // CEILING COLLISION
         // Standard camera raycast check for ceiling collision. No special shenanigans here!
@@ -1276,6 +1280,8 @@ void mode_8_directions_camera(struct Camera *c) {
             vec3f_copy(c->pos,hitpos);
         }
     }
+
+    gCollisionFlags &= ~COLLISION_FLAG_CAMERA;
 }
 
 /**

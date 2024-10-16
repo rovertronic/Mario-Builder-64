@@ -2144,12 +2144,14 @@ s32 generate_block_collision(s8 pos[3]) {
     mb64_curr_poly_vert_count = 4;
 
     if (tileType == TILE_TYPE_FENCE) {
+        if (gCollisionFlags & COLLISION_FLAG_CAMERA) return;
         mb64_curr_coltype = SURFACE_NO_CAM_COLLISION;
         process_tile(pos, &mb64_terrain_fence_col, get_grid_tile(pos)->rot);
         return;
     }
 
     if (tileType == TILE_TYPE_BARS) {
+        if (gCollisionFlags & COLLISION_FLAG_CAMERA) return;
         u8 connections[5];
         mb64_curr_coltype = SURFACE_VANISH_CAP_WALLS;
         check_bar_connections(pos, connections);
@@ -2446,23 +2448,21 @@ void generate_object_preview(void) {
 
         s32 curImbue = mb64_object_data[i].imbue;
         if ((curImbue != IMBUE_NONE)&&(!mb64_prepare_level_screenshot)) {
-            u16 imbue_marker_model = MODEL_MAKER_IMBUE;
-            if (curImbue == IMBUE_STAR) {
-                imbue_marker_model = MODEL_MAKER_IMBUE_STAR;
-            } else if ((curImbue >= IMBUE_THREE_COINS && curImbue <= IMBUE_BLUE_COIN) ||
-                        (curImbue == IMBUE_RED_COIN)) {
-                imbue_marker_model = MODEL_MAKER_IMBUE_COIN;
-            } else if (curImbue >= IMBUE_BADGE_BASE) {
-                imbue_marker_model = MODEL_MAKER_IMBUE_BADGE;
+            int badgeid;
+            if (curImbue >= IMBUE_BADGE_BASE) {
+                badgeid = curImbue - IMBUE_BADGE_BASE;
+                curImbue = IMBUE_BADGE_BASE;
             }
-            struct Object * imbue_marker = spawn_object(o,imbue_marker_model,bhvPreviewObject);
-            imbue_marker->oBehParams2ndByte = curImbue - IMBUE_BADGE_BASE; // for badge
+            
+            struct Object * imbue_marker = spawn_object(o,imbue_table[curImbue].model,bhvPreviewObject);
+            imbue_marker->oBehParams2ndByte = badgeid;
+            imbue_marker->oExtraVariable1 = imbue_table[curImbue].color;
             imbue_marker->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
             imbue_marker->oPosX = GRID_TO_POS(pos[0]);
             imbue_marker->oPosY = GRID_TO_POS(pos[1]);
             imbue_marker->oPosZ = GRID_TO_POS(pos[2]);
             mb64_object_limit_count ++;
-            curExtraCoins = imbue_coin_amounts[curImbue]; // replaces coin count
+            curExtraCoins = imbue_table[curImbue].coins; // replaces coin count
             if (curType == OBJECT_TYPE_SHOWRUNNER) {
                 curExtraCoins += info->numCoins; // showrunner always drops coins
             }
@@ -2801,6 +2801,7 @@ void imbue_action(void) {
         s32 objType = mb64_object_data[i].type;
         if ((mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
             u8 imbue_success = FALSE;
+            if (!object_sanity_check()) break;
             u8 oldImbue = mb64_object_data[i].imbue;
 
             switch(mb64_id_selection) {

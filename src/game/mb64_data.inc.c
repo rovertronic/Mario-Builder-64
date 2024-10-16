@@ -2676,15 +2676,26 @@ struct mb64_dialog_subject mb64_dialog_subjects[] = {
 
 #define NUM_DIALOG_SUBJECT_COUNT 6
 
-u8 imbue_coin_amounts[] = {
-    /* IMBUE_NONE */ 0,
-    /* IMBUE_STAR */ 0,
-    /* IMBUE_THREE_COINS */ 3,
-    /* IMBUE_ONE_COIN */ 1,
-    /* IMBUE_GREEN_COIN */ 3,
-    /* IMBUE_BLUE_COIN */ 5,
-    /* IMBUE_RED_SWITCH */ 0,
-    /* IMBUE_BLUE_SWITCH */ 0,
-    /* IMBUE_RED_COIN */ 2,
-    /* IMBUE_BADGE_BASE */ 0,
+struct ImbueData {
+    u32 coins;
+    u32 model;
+    u32 color;
+};
+
+#define IMBUE_YELLOW 0xFFFF00FF
+#define IMBUE_GREEN 0x00FF00FF
+#define IMBUE_BLUE 0x0000FFFF
+#define IMBUE_RED 0xFF0000FF
+
+struct ImbueData imbue_table[] = {
+    /* IMBUE_NONE */        {0, 0, 0},
+    /* IMBUE_STAR */        {0, MODEL_MAKER_IMBUE_STAR, IMBUE_YELLOW},
+    /* IMBUE_THREE_COINS */ {3, MODEL_MAKER_IMBUE_COIN, IMBUE_YELLOW},
+    /* IMBUE_ONE_COIN */    {1, MODEL_MAKER_IMBUE_COIN, IMBUE_YELLOW},
+    /* IMBUE_GREEN_COIN */  {3, MODEL_MAKER_IMBUE_COIN, IMBUE_GREEN},
+    /* IMBUE_BLUE_COIN */   {5, MODEL_MAKER_IMBUE_COIN, IMBUE_BLUE},
+    /* IMBUE_RED_SWITCH */  {0, MODEL_MAKER_IMBUE, IMBUE_RED},
+    /* IMBUE_BLUE_SWITCH */ {0, MODEL_MAKER_IMBUE, IMBUE_BLUE},
+    /* IMBUE_RED_COIN */    {2, MODEL_MAKER_IMBUE_COIN, IMBUE_RED},
+    /* IMBUE_BADGE_BASE */  {0, MODEL_MAKER_IMBUE_BADGE, 0},
 };

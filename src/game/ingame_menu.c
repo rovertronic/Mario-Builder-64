@@ -93,6 +93,25 @@ Gfx *geo_badge_material(s32 callContext, struct GraphNode *node, void *context) 
     return dlStart;
 }
 
+Gfx *geo_imbue_marker_color(s32 callContext, struct GraphNode *node, void *context) {
+    Gfx *dlStart, *dlHead;
+    struct Object *obj;
+    struct GraphNodeGenerated *currentGraphNode;
+
+    currentGraphNode = node;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        obj = (struct Object *) gCurGraphNodeObject;
+        currentGraphNode->fnNode.node.flags = (currentGraphNode->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT_INTER << 8);
+
+        dlHead = alloc_display_list(sizeof(Gfx) * (2));
+        dlStart = dlHead;
+        u32 col = obj->oExtraVariable1;
+        gDPSetPrimColor(dlHead++, 0,0,(col >> 24),(col >> 16) & 0xFF,(col >> 8) & 0xFF, col & 0xFF);
+        gSPEndDisplayList(dlHead++);
+    }
+    return dlStart;
+}
 
 u8 number_text[15];
 

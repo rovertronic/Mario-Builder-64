@@ -14,8 +14,8 @@
 /**
  * The size of the surface pools
  */
-#define SURFACE_POOL_SIZE 1500
-#define SURFACE_NODE_POOL_SIZE 2000
+#define SURFACE_POOL_SIZE 3000
+#define SURFACE_NODE_POOL_SIZE 5000
 
 struct SurfaceNode {
     struct SurfaceNode *next;
