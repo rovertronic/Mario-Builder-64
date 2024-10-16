@@ -1262,11 +1262,11 @@ void mode_8_directions_camera(struct Camera *c) {
 
         fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
 
-        Vec3f camera_hit_diff;
-        vec3f_diff(camera_hit_diff,origin,hitpos);
-        f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
-
         if (surf) {
+            Vec3f camera_hit_diff;
+            vec3f_diff(camera_hit_diff,origin,hitpos);
+            f32 hit_to_mario_dist = vec3_mag(camera_hit_diff);
+
             f32 thickMul = 35.0f;
 
             if (hit_to_mario_dist < 300.0f) {
