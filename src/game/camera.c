@@ -1159,8 +1159,8 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
                     hit[0] = ray_pos[0] - (dirn[0]*dist);
                     hit[1] = ray_pos[1] - (dirn[1]*dist);
                     hit[2] = ray_pos[2] - (dirn[2]*dist);
+                    return;
                 }
-                return;
             }
         }
         if (flags & RAYCAST_FIND_CEIL) {
