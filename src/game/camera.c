@@ -1122,7 +1122,7 @@ s32 snap_to_45_degrees(s16 angle) {
     return angle;
 }
 
-#define FAKE_RAY_STEP_LEN 100.0f
+#define FAKE_RAY_STEP_LEN 60.0f
 void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 flags) {
     Vec3f hop;
     Vec3f dirn;
@@ -1152,7 +1152,7 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
                 Vec3f norm;
                 get_surface_normal(&norm,hitbox.walls[0]);
                 f32 dot = vec3f_dot(&dirn,norm);
-                if (dot <= 0.0f) {
+                if (dot <= -0.3f) {
                     *surf = hitbox.walls[0];
                     // Get distance pushed out from the wall
                     f32 dist = sqrtf(sqr(hitbox.x-ray_pos[0])+sqr(hitbox.z-ray_pos[2]));
@@ -1165,12 +1165,12 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
         }
         if (flags & RAYCAST_FIND_CEIL) {
             struct Surface * found_ceiling;
-            f32 ceil_height = find_ceil(ray_pos[0],ray_pos[1],ray_pos[2], &found_ceiling);
+            f32 ceil_height = find_ceil(ray_pos[0],ray_pos[1] - FAKE_RAY_STEP_LEN,ray_pos[2], &found_ceiling);
             if (found_ceiling) {
                 Vec3f norm;
                 get_surface_normal(&norm,found_ceiling);
 
-                if (ray_pos[1] > ceil_height-(FAKE_RAY_STEP_LEN*2.0f)) {
+                if (ray_pos[1] > ceil_height-FAKE_RAY_STEP_LEN) {
                     *surf = found_ceiling;
                     hit[0] = ray_pos[0];
                     hit[1] = ceil_height-FAKE_RAY_STEP_LEN;
@@ -1243,13 +1243,13 @@ void mode_8_directions_camera(struct Camera *c) {
         // CEILING COLLISION
         // Standard camera raycast check for ceiling collision. No special shenanigans here!
         vec3f_copy(origin,gMarioState->pos);
-        origin[1] += 50.0f;
+        origin[1] += 200.0f;
         vec3f_diff(camdir,c->pos,origin);
 
         fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
 
         if (surf) {
-            vec3f_copy(c->pos,hitpos);
+            c->pos[1] = hitpos[1];
         }
 
         // WALL COLLISION
@@ -1257,7 +1257,7 @@ void mode_8_directions_camera(struct Camera *c) {
         // and push the camera inward if Mario is close to the wall.
 
         vec3f_copy(origin,gMarioState->pos);
-        origin[1] += 50.0f;
+        origin[1] += 200.0f;
         vec3f_diff(camdir,c->pos,origin);
 
         fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
