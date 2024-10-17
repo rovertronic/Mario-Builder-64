@@ -12,9 +12,9 @@
 
 #define TXT_MM_PAGE _("Page: 0/0")
 
-#define TXT_MM_HELP_PAGE_1 _("How to play this hack on emulator:\n1) Download PL at https://parallel-launcher.ca/\n2) Set up a virtual SD-Card\n3) Format: FAT 16, Size: 255 MiB\n4) Use graphics plugin: GLideN64\n\nThis hack supports the following N64 flashcarts:\n-64Drive\n-EverDrive-64\n-EverDrive-64 X series\n-SummerCart64\n\nUse save type: SRAM-32")
-
 #define TXT_MM_HELP_PAGE_3 _("You can upload your .mb64 files online\nat these locations:\n\nLevel Share Square:\nhttps://levelsharesquare.com/levels\n\nRovertronic Roundtable:\nhttps://discord.gg/X7vvvKu")
+
+
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

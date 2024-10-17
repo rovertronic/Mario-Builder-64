@@ -1504,6 +1504,69 @@ struct mb64_credits_entry mb64_editor_controls[] = {
     {NULL, 0},
 };
 
+struct mb64_credits_entry mb64_setup_guide[] = {
+    {"Emulator Setup", 1},
+    {"",0},
+    {"To save your Mario Builder 64 levels and play levels",0},
+    {"created by other people, you will need to use an emulator",0},
+    {"that supports SD card emulation. This does NOT require",0},
+    {"you to own a physical SD card.",0},
+    {"",0},
+    {"Alternatively, you can use a flashcart on a real",0},
+    {"N64 together with a physical SD card.", 0},
+    {"",0},
+    {"Supported Emulators", 1},
+    {"",0},
+    {"Parallel Launcher",1},
+    {"               https://parallel-launcher.ca/",0},
+    {"",0},
+    {"Luna's Project64",1},
+    {"    https://github.com/Luna-Project64/Luna-Project64",0},
+    {"",0},
+    {"",0},
+    {"Recommended Settings",1},
+    {"",0},
+    {"Use the GlideN64 graphics plugin. Make sure that",0},
+    {"FBE (Framebuffer Emulation) is enabled.",0},
+    {"",0},
+    {"For Parallel Launcher, make sure 'Overclock CPU' is ticked,",0},
+    {"and the setting 'Emulate SummerCart64 SD card interface'",0},
+    {"is enabled.",0},
+    {"",0},
+    {"For Luna's PJ64, set Counter Factor to 0.",0},
+    {"",0},
+    {"Accessing Level Files",1},
+    {"",0},
+    {"To access your level files, you will need to mount the",0},
+    {"SD card image through the emulator. This will require",0},
+    {"administrative permissions through a popup.",0},
+    {"Once you have done this, you can find any saved levels",0},
+    {"in the 'Mario Builder 64 Levels' folder in the drive.",0},
+    {"You can also move any downloaded levels into this folder",0},
+    {"to play them.",0},
+    {"",0},
+    {"Parallel Launcher",1},
+    {"Click the button to the right of the SD card dropdown",0},
+    {"to open the SD card menu. Select the SD card and click",0},
+    {"'Browse Files' to mount the SD card.",0},
+    {"Click 'OK' to unmount once you are done.",0},
+    {"",0},
+    {"Luna's Project64",1},
+    {"Click 'File' -> 'Mount SD Card'.",0},
+    {"When you are done, eject the SD card drive through",0},
+    {"File Explorer, and click 'File' -> 'Unmount SD Card'.",0},
+    {"",0},
+    {"",0},
+    {"Note: You may get a false virus alert from Windows Defender",0},
+    {"upon attempting to mount the SD card. These emulators are",0},
+    {"guaranteed to be safe to use, so you may need to exclude",0},
+    {"the .exe file from Windows Defender.",0},
+    {"",0},
+    {"For a more detailed guide, visit",0},
+    {"https://rentry.co/mb64-setup-guide",0},
+    {NULL, 0},
+};
+
 void *mb64_mm_page_data = NULL;
 s32 credits_y_offset = 0;
 void print_maker_credits(void) {
@@ -1609,13 +1672,12 @@ char *mb64_mm_make_btns[] = {
 };
 
 char *mb64_mm_help_btns[] = {
-    "SD Card Setup",
+    "MB64 Setup Guide",
     "Editor Controls",
     "Share Levels",
     "Changelog",
 };
 
-u8 mb64_mm_help_page1[] = {TXT_MM_HELP_PAGE_1};
 u8 mb64_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
 
 u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
@@ -2122,7 +2184,8 @@ s32 mb64_main_menu(void) {
                     mb64_mm_state = MM_HELP;
                     switch(mb64_menu_index) {
                         case 0:
-                            mb64_mm_page_data = mb64_mm_help_page1;
+                            mb64_mm_state = MM_CREDITS;
+                            mb64_mm_page_data = mb64_setup_guide;
                             break;
                         case 1:
                             mb64_mm_state = MM_CREDITS;
