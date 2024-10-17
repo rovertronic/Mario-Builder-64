@@ -2838,6 +2838,10 @@ void imbue_action(void) {
                     mb64_object_data[i].imbue = IMBUE_RED_COIN;
                     imbue_success = TRUE;
                     break;
+                case OBJECT_TYPE_TRIGGER:
+                    mb64_object_data[i].imbue = IMBUE_TRIGGER;
+                    imbue_success = TRUE;
+                    break;
                 case OBJECT_TYPE_GREEN_COIN:
                     mb64_object_data[i].imbue = IMBUE_GREEN_COIN;
                     imbue_success = TRUE;

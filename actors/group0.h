@@ -799,4 +799,6 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "spooner/header.h"
 
+#include "imbuet/geo_header.h"
+
 #endif

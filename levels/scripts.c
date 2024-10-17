@@ -167,6 +167,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE, imbue_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE_STAR, imbues_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE_COIN, imbuec_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAKER_IMBUE_TRIGGER, imbuet_geo),
 
 #ifdef IA8_30FPS_COINS
     LOAD_MODEL_FROM_GEO(MODEL_SILVER_COIN,             silver_coin_geo),

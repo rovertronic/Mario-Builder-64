@@ -335,6 +335,7 @@ struct imbue_model imbue_model_data[] = {
     /* IMBUE_RED_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
     /* IMBUE_BLUE_SWITCH */ {MODEL_MAKER_BUTTON, FALSE, 0.4f},
     /* IMBUE_RED_COIN */ {MODEL_RED_COIN, TRUE, 1.f},
+    /* IMBUE_TRIGGER */ {MODEL_NONE, FALSE, 1.f},
     /* IMBUE_BADGE_BASE */ {MODEL_BADGE, TRUE, 0.5f},
 };
 
