@@ -817,6 +817,7 @@ void render_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot) {
         }
 
         s32 upos = (flipU ? 31 - pos[uAxis] : pos[uAxis] - 32);
+        if (mb64_growth_render_type == 3) upos *= 2; // fences
         s32 vpos = pos[vAxis] - 32;
 
         // cursed code to avoid messed up UVs due to overflow.
