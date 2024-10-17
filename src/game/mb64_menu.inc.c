@@ -1476,6 +1476,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Fixed broken menus with widescreen viewport hack enabled",0},
     {"- Fixed BTCM templates selecting the wrong music tracks", 0},
     {"- Fixed infinite flight time bug with the Bullet Bill Mask", 0},
+    {"- Fixed fire spinners having the incorrect rotation ingame",0},
     {"- Countless minor physics and AI fixes", 0},
     {NULL, 0},
 };
