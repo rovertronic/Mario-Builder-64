@@ -330,6 +330,14 @@ s32 object_sanity_check(void) {
             }
         }
     }
+    if (mb64_id_selection == OBJECT_TYPE_TRIGGER_STAR) {
+        for (u32 i = 0; i < mb64_object_count; i++) {
+            if (mb64_object_data[i].type == OBJECT_TYPE_TRIGGER_STAR) {
+                mb64_show_error_message("Star Trigger star already placed!");
+                return FALSE;
+            }
+        }
+    }
 
     return TRUE;
 }
@@ -2704,11 +2712,10 @@ void should_spawn_place_number(s8 pos[3]) {
             }
         }
         if (hasRedCoinStar) df_spawn_number(pos, redCoinCount);
-    } else if ((mb64_id_selection == OBJECT_TYPE_STAR) || (mb64_id_selection == OBJECT_TYPE_RED_COIN_STAR)) {
+    } else if ((mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_HAS_STAR)) {
         s32 starCount = 0;
         for (s32 i = 0; i < mb64_object_count; i++) {
-            if ((mb64_object_data[i].type == OBJECT_TYPE_STAR) ||
-                (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) ||
+            if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_HAS_STAR) ||
                 (mb64_object_data[i].imbue == IMBUE_STAR)){
                 starCount++;
             }

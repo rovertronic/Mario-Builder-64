@@ -166,31 +166,17 @@ void bhv_hidden_red_coin_star_init(void) {
     spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
     o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_NONE];
 
-    // check if bparam2 specifies a total number of coins that should spawn the star
-    if (o->oBehParams2ndByte != 0) {
-        o->oHiddenStarTriggerTotal = o->oBehParams2ndByte;
-        o->oHiddenStarTriggerCounter = gRedCoinsCollected;
-        if (o->oHiddenStarTriggerCounter >= o->oHiddenStarTriggerTotal) {
-            starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
-            starObj->oBehParams = o->oBehParams;
-            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-        }
+    gRedCoinsTotal = count_red_coins();
+    if (gRedCoinsTotal == 0) {
+        starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
+        starObj->oBehParams = o->oBehParams;
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
-    else {
-        gRedCoinsTotal = count_red_coins();
-        if (gRedCoinsTotal == 0) {
-            starObj = spawn_object_abs_with_rot(o, 0, MODEL_STAR, bhvStar, o->oPosX, o->oPosY, o->oPosZ, 0, 0, 0);
-            starObj->oBehParams = o->oBehParams;
-            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-        }
-        o->oHiddenStarTriggerTotal = gRedCoinsTotal + gRedCoinsCollected;
-        o->oHiddenStarTriggerCounter = o->oHiddenStarTriggerTotal - gRedCoinsTotal;
-    }
+    o->oHiddenStarTriggerTotal = gRedCoinsTotal + gRedCoinsCollected;
+    o->oHiddenStarTriggerCounter = o->oHiddenStarTriggerTotal - gRedCoinsTotal;
 }
 
 void bhv_hidden_red_coin_star_loop(void) {
-    s8 starId;
-    starId = (o->oBehParams >> 24) & 0xFF;
     gRedCoinsCollected = o->oHiddenStarTriggerCounter;
 
     switch (o->oAction) {

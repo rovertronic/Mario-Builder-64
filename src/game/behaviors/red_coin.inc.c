@@ -28,13 +28,24 @@ void bhv_red_coin_init(void) {
     struct Object *hiddenRedCoinStar = cur_obj_nearest_object_with_behavior(bhvHiddenRedCoinStar);
     if (hiddenRedCoinStar != NULL) {
         o->parentObj = hiddenRedCoinStar;
-    } else if ((hiddenRedCoinStar = cur_obj_nearest_object_with_behavior(bhvBowserCourseRedCoinStar)) != NULL) {
-        o->parentObj = hiddenRedCoinStar;
     } else {
         o->parentObj = NULL;
     }
 
     obj_set_hitbox(o, &sRedCoinHitbox);
+}
+
+void spawn_big_orange_number(int num) {
+    if (num > 99) {
+        spawn_orange_number(num % 10, 56, 0, 0);
+        spawn_orange_number((num / 10) % 10, 0, 0, 0);
+        spawn_orange_number(num / 100, -56, 0, 0);
+    } else if (num >= 10) {
+        spawn_orange_number(num % 10, 28, 0, 0);
+        spawn_orange_number(num / 10, -28, 0, 0);
+    } else {
+        spawn_orange_number(num, 0, 0, 0);
+    }
 }
 
 /**
@@ -56,29 +67,13 @@ void bhv_red_coin_loop(void) {
 
             // Spawn the orange number counter, as long as it isn't the last coin.
             if (o->parentObj->oHiddenStarTriggerCounter != o->parentObj->oHiddenStarTriggerTotal) {
-                // Cap visible count to 99
-                if (o->parentObj->oHiddenStarTriggerCounter > 99) {
-                    spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter % 10, 56, 0, 0);
-                    spawn_orange_number((o->parentObj->oHiddenStarTriggerCounter / 10) % 10, 0, 0, 0);
-                    spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter / 100, -56, 0, 0);
-                }
-                else if (o->parentObj->oHiddenStarTriggerCounter >= 10) {
-                    spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter % 10, 28, 0, 0);
-                    spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter / 10, -28, 0, 0);
-                }
-                else {
-                    spawn_orange_number(o->parentObj->oHiddenStarTriggerCounter, 0, 0, 0);
-                }
+                spawn_big_orange_number(o->parentObj->oHiddenStarTriggerCounter);
             }
 
             if (gMarioState->numAir < 699) {
                 gMarioState->numAir = 699;
             }
 
-#ifdef JP_RED_COIN_SOUND
-            // For JP version, play an identical sound for all coins.
-            create_sound_spawner(SOUND_GENERAL_RED_COIN);
-#else
             if (o->parentObj->oHiddenStarTriggerTotal - o->parentObj->oHiddenStarTriggerCounter > 7) {
                 // Play the first red coin sound until it gets to the final 8
                 play_sound(SOUND_MENU_COLLECT_RED_COIN, gGlobalSoundSource);
@@ -89,7 +84,6 @@ void bhv_red_coin_loop(void) {
                         + (((u8) 7 - (o->parentObj->oHiddenStarTriggerTotal - o->parentObj->oHiddenStarTriggerCounter)) << 16),
                         gGlobalSoundSource);
             }
-#endif
         }
 
         if (o->prevObj != NULL) {

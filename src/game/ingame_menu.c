@@ -274,6 +274,8 @@ s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
 s16 gRedCoinsCollected = 0;
 s16 gRedCoinsTotal = 0;
+s16 gStarTriggersCollected = 0;
+s16 gStarTriggersTotal = 0;
 #if defined(WIDE) && !defined(PUPPYCAM)
 u8 textCurrRatio43[] = { TEXT_HUD_CURRENT_RATIO_43 };
 u8 textCurrRatio169[] = { TEXT_HUD_CURRENT_RATIO_169 };
@@ -2012,6 +2014,8 @@ void do_cutscene_handler(void) {
 void reset_red_coins_collected(void) {
     gRedCoinsCollected = 0;
     gRedCoinsTotal = 0;
+    gStarTriggersCollected = 0;
+    gStarTriggersTotal = 0;
 }
 
 void change_dialog_camera_angle(void) {

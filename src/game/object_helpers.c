@@ -801,18 +801,26 @@ struct Object *cur_obj_find_nearby_held_actor(const BehaviorScript *behavior, f3
     return foundObj;
 }
 
-s32 count_imbued_red_coins(s32 objectList) {
+s32 count_imbued_objects(s32 objectList, s32 imbue) {
     struct ObjectNode *listHead = &gObjectLists[objectList];
     struct ObjectNode *obj = listHead->next;
     s32 count = 0;
 
     while (obj != listHead) {
-        if (((struct Object *) obj)->oImbue == IMBUE_RED_COIN) {
+        if (((struct Object *) obj)->oImbue == imbue) {
             count++;
         }
         obj = obj->next;
     }
 
+    return count;
+}
+
+s32 count_star_triggers(void) {
+    s32 count = 0;
+    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
+        count += count_imbued_objects(imbueObjectLists[i], IMBUE_TRIGGER);
+    }
     return count;
 }
 
@@ -829,7 +837,7 @@ s32 count_red_coins(void) {
     }
     
     for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
-        count += count_imbued_red_coins(imbueObjectLists[i]);
+        count += count_imbued_objects(imbueObjectLists[i], IMBUE_RED_COIN);
     }
 
     return count;
@@ -2907,6 +2915,9 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
             dropobj = spawn_object(o,MODEL_RED_COIN,bhvRedCoin);
             vec3f_copy(&dropobj->oPosVec,&o->oHomeVec);
             spawn_mist_at_obj(dropobj);
+            break;
+        case IMBUE_TRIGGER:
+            star_trigger_activated();
             break;
         case IMBUE_BADGE_BASE:
             if (save_file_get_badge_equip() & (1 << badgeID)) {

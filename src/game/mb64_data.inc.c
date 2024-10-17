@@ -1506,6 +1506,7 @@ enum {
     OBJECT_TYPE_CONVEYOR,
     OBJECT_TYPE_TIMEDBLOCK,
     OBJECT_TYPE_TRIGGER,
+    OBJECT_TYPE_TRIGGER_STAR,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1605,6 +1606,7 @@ struct mb64_object_info mb64_object_type_list[] = {
 /* OBJECT_TYPE_CONVEYOR */      {"Conveyor",                mat_b_btn_conveyor,     bhvConveyor,       0,           MODEL_MAKER_CONVEYOR_HALF, 0,                       OBJ_OCCUPY_FULL,  0, 0, 1.0f, NULL, df_conveyor, SOUND_OBJ_HEAVEHO_PREVIEW},
 /* OBJECT_TYPE_TIMED_BLOCK */   {"Inverted",                mat_b_btn_tblock,       bhvTimedBlock,     0,           MODEL_MAKER_BLOCK_OFF,     0,                       OBJ_OCCUPY_OUTER, 0, 0, 1.0f, NULL, df_timedblock, SOUND_GENERAL2_SWITCH_TICK_FAST},
 /* OBJECT_TYPE_TRIGGER */       {"Star Trigger",            mat_b_btn_star,         bhvStaticObject,   TILE_SIZE/2, MODEL_MAKER_IMBUE_TRIGGER, OBJ_TYPE_IS_BILLBOARDED, OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, NULL, 0},
+/* OBJECT_TYPE_TRIGGER_STAR */  {"Star Triggers",           mat_b_btn_rcs,          bhvHiddenStar,     TILE_SIZE/2, MODEL_TRANSPARENT_STAR,    OBJ_TYPE_HAS_STAR,       OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
 };
 
 //behparam2 strings
@@ -1793,7 +1795,7 @@ enum {
 };
 
 u8 mb64_settings_idlist[] = {OBJECT_TYPE_SETTINGS, OBJECT_TYPE_SCREENSHOT};
-u8 mb64_star_idlist[] = {OBJECT_TYPE_STAR, OBJECT_TYPE_RED_COIN_STAR};
+u8 mb64_star_idlist[] = {OBJECT_TYPE_STAR, OBJECT_TYPE_RED_COIN_STAR, OBJECT_TYPE_TRIGGER_STAR};
 u8 mb64_goomba_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYPE_TINY_GOOMBA};
 u8 mb64_piranha_idlist[] = {OBJECT_TYPE_PIRANHA_PLANT, OBJECT_TYPE_BIG_PIRANHA_PLANT, OBJECT_TYPE_TINY_PIRANHA_PLANT};
 u8 mb64_bluecoin_idlist[] = {OBJECT_TYPE_BLUE_COIN, OBJECT_TYPE_BLUE_COIN_SWITCH};
@@ -1815,7 +1817,7 @@ struct mb64_ui_button_type mb64_ui_buttons[] = {
 /* MB64_BUTTON_TERRAIN */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_BLOCK,         NULL},
 /* MB64_BUTTON_SLOPE */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SLOPE,         NULL},
 /* MB64_BUTTON_TROLL */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_TROLL,         NULL},
-/* MB64_BUTTON_STAR */     {MB64_PM_OBJ,  TRUE,  2, &mb64_star_idlist,        "Power Star"},
+/* MB64_BUTTON_STAR */     {MB64_PM_OBJ,  TRUE,  3, &mb64_star_idlist,        "Power Star"},
 /* MB64_BUTTON_GOOMBA */   {MB64_PM_OBJ,  TRUE,  3, &mb64_goomba_idlist,      "Goomba"},
 /* MB64_BUTTON_PIRANHA */  {MB64_PM_OBJ,  TRUE,  3, &mb64_piranha_idlist,     "Piranha Plant"},
 /* MB64_BUTTON_KOOPA */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA,       NULL},
