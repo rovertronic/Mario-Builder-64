@@ -2346,6 +2346,7 @@ void generate_boundary_collision(void) {
 
 s32 mb64_get_water_level(s32 x, s32 y, s32 z) {
     //(mb64_lopt_waterlevel - 32) * TILE_SIZE - (TILE_SIZE / 8)
+    y += 10;
     s32 waterPlaneHeight = (mb64_lopt_waterlevel == 0 ? FLOOR_LOWER_LIMIT : mb64_play_s16_water_level);
     if (y < waterPlaneHeight) {
         return waterPlaneHeight;
