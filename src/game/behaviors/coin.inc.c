@@ -53,6 +53,7 @@ s32 bhv_coin_sparkles_init(void) {
     if (o->oInteractStatus & INT_STATUS_INTERACTED
         && !(o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT)) {
         spawn_object(o, MODEL_SPARKLES, bhvCoinSparklesSpawner);
+        cur_obj_drop_imbued_object(0);
         obj_mark_for_deletion(o);
         return TRUE;
     }

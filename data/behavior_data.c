@@ -997,13 +997,13 @@ const BehaviorScript bhvCoinFormation[] = {
 };
 
 const BehaviorScript bhvOneCoin[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     SET_INT(oBehParams2ndByte, YELLOW_COIN_BP_ONE_COIN),
     GOTO(bhvYellowCoin + 1),
 };
 
 const BehaviorScript bhvYellowCoin[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     // Yellow coin - common:
     BILLBOARD(),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
@@ -1039,7 +1039,7 @@ const BehaviorScript bhvYellowCoin[] = {
 // };
 
 const BehaviorScript bhvGreenCoin[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     // Yellow coin - common:
     BILLBOARD(),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
@@ -3296,7 +3296,7 @@ const BehaviorScript bhvBlueCoinSwitch[] = {
 };
 
 const BehaviorScript bhvHiddenBlueCoin[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     SET_INT(oInteractType, INTERACT_COIN),
     OR_INT(oFlags, (OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     BILLBOARD(),
@@ -5539,7 +5539,7 @@ const BehaviorScript bhvHiddenRedCoinStar[] = {
 };
 
 const BehaviorScript bhvRedCoin[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     BILLBOARD(),
     SET_INT(oIntangibleTimer, 0),

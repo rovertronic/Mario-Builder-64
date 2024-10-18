@@ -200,7 +200,7 @@ struct ExclamationBoxContents *mb64_exclamation_box_contents;
 s32 mb64_count_stars(void) {
     s32 numStars = 0;
     for (s32 i = 0; i < mb64_object_count; i++) {
-        if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_HAS_STAR) {
+        if (mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_STAR) {
             numStars++;
         }
         if (mb64_object_data[i].imbue == IMBUE_STAR) {
@@ -313,7 +313,7 @@ s32 object_sanity_check(void) {
         }
     }
 
-    if (info->flags & OBJ_TYPE_HAS_STAR) {
+    if (info->flags & OBJ_TYPE_STAR) {
         // Count stars
         s32 numStars = mb64_count_stars();
         if (numStars >= 63) {
@@ -2404,7 +2404,7 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct mb64_o
     preview_object->oPreviewObjDisplayFunc = info->disp_func;
     preview_object->oOpacity = 255;
     obj_scale(preview_object, info->scale);
-    if (info->flags & OBJ_TYPE_IS_BILLBOARDED) {
+    if (info->flags & OBJ_TYPE_BILLBOARD) {
         preview_object->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
     }
     if (info->anim) {
@@ -2516,7 +2516,7 @@ void generate_objects_to_level(void) {
         obj->oImbue = mb64_object_data[i].imbue;
 
         //assign star ids
-        if ((info->flags & OBJ_TYPE_HAS_STAR)||(mb64_object_data[i].imbue == IMBUE_STAR)) {
+        if ((info->flags & OBJ_TYPE_STAR)||(mb64_object_data[i].imbue == IMBUE_STAR)) {
             if (mb64_play_stars_max < 63) {
                 obj->oBehParams = ((mb64_play_stars_max << 24)|(o->oBehParams2ndByte << 16));
                 mb64_play_stars_max++;
@@ -2713,10 +2713,10 @@ void should_spawn_place_number(s8 pos[3]) {
             }
         }
         if (hasRedCoinStar) df_spawn_number(pos, redCoinCount);
-    } else if ((mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_HAS_STAR)) {
+    } else if ((mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_STAR)) {
         s32 starCount = 0;
         for (s32 i = 0; i < mb64_object_count; i++) {
-            if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_HAS_STAR) ||
+            if ((mb64_object_type_list[mb64_object_data[i].type].flags & OBJ_TYPE_STAR) ||
                 (mb64_object_data[i].imbue == IMBUE_STAR)){
                 starCount++;
             }
@@ -2807,7 +2807,11 @@ u8 joystick_direction(void) {
 void imbue_action(void) {
     for (u32 i=0;i<mb64_object_count;i++) {
         s32 objType = mb64_object_data[i].type;
-        if ((mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE)&&(mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
+        s32 canbeImbued = (mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE);
+        if (mb64_id_selection == OBJECT_TYPE_TRIGGER) {
+            canbeImbued |= (mb64_object_type_list[objType].flags & OBJ_TYPE_IMBUABLE_TRIGGER);
+        }
+        if (canbeImbued && (mb64_object_data[i].x == mb64_cursor_pos[0])&&(mb64_object_data[i].y == mb64_cursor_pos[1])&&(mb64_object_data[i].z == mb64_cursor_pos[2])) {
             u8 imbue_success = FALSE;
             if (!object_sanity_check()) break;
             u8 oldImbue = mb64_object_data[i].imbue;

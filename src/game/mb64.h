@@ -195,12 +195,13 @@ enum mb64_df_context {
 
 typedef void (*DisplayFunc)(s32);
 
-#define OBJ_TYPE_IS_BILLBOARDED (1 << 0)
+#define OBJ_TYPE_BILLBOARD (1 << 0)
 #define OBJ_TYPE_TRAJECTORY     (1 << 1)
-#define OBJ_TYPE_HAS_STAR       (1 << 2)
+#define OBJ_TYPE_STAR       (1 << 2)
 #define OBJ_TYPE_HAS_DIALOG     (1 << 3)
 #define OBJ_TYPE_IMBUABLE       (1 << 4)
 #define OBJ_TYPE_IMBUABLE_COINS (1 << 5)
+#define OBJ_TYPE_IMBUABLE_TRIGGER (1 << 6)
 
 #define OBJ_OCCUPY_OUTER        (1 << 0)
 #define OBJ_OCCUPY_INNER        (1 << 1)
