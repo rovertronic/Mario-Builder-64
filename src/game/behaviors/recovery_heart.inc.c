@@ -36,10 +36,10 @@ void bhv_recovery_heart_loop(void) {
         gMarioState->breathCounter += 4;
 #endif
         o->oSpinningHeartTotalSpin -= 0x10000;
-        gMarioState->numBadgePoints++;
-        if (gMarioState->numBadgePoints > gMarioState->numMaxFP) {
-            gMarioState->numBadgePoints = gMarioState->numMaxFP;
-        }
+        // gMarioState->numBadgePoints++;
+        // if (gMarioState->numBadgePoints > gMarioState->numMaxFP) {
+        //     gMarioState->numBadgePoints = gMarioState->numMaxFP;
+        // }
     }
 
     o->oFaceAngleYaw += o->oAngleVelYaw;
