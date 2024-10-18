@@ -1312,12 +1312,12 @@ void draw_mb64_menu(void) {
     }
 }
 
-struct mb64_credits_entry {
+struct mb64_info_entry {
     char * text;
     u32 color;
 };
 
-struct mb64_credits_entry mb64_credits[] = {
+struct mb64_info_entry mb64_credits[] = {
     {"Mario Builder 64",1},
     {"By Rovertronic & Arthurtilly",0},
     {"2024",0},
@@ -1356,27 +1356,10 @@ struct mb64_credits_entry mb64_credits[] = {
     {"Music Ports",1},
     {"SMWCentral",0},
     {"SM64 Editor",0},
-    {"",0},
-    {"Beta Testers",1},
-    {"Arceveti",0},
-    {"CaptainTheo86",0},
-    {"CowQuack",0},
-    {"Dao-Kha",0},
-    {"DisturbingNose",0},
-    {"FrostyZako",0},
-    {"Gmd",0},
-    {"hacker2077",0},
-    {"Haffey",0},
-    {"Kaze Emanuar",0},
-    {"KeyBlader",0},
-    {"KirbySuper",0},
-    {"RationaLess",0},
-    {"SpK",0},
-    {"Vortoxium",0},
     {NULL, 0},
 };
 
-struct mb64_credits_entry mb64_v1_1_changelog[] = {
+struct mb64_info_entry mb64_v1_1_changelog[] = {
     {"Mario Builder 64 - v1.1 Changelog",1},
     {"",0},
     {"", 0},
@@ -1385,9 +1368,11 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Increased vertex limit from 40,000 to 50,000", 0},
     {"- Increased tile limit from 10,000 to 15,000", 0},
     {"- Reduced vertex count of most levels by up to 25%", 0},
-    {"- New boundary type: Interior"},
-    {"- New object: Inverted Timed Box"},
-    {"- New Sample Tile building shortcut by pressing L + R", 0},
+    {"- New boundary type: Interior",0},
+    {"- New object: On-Off Conveyor",0},
+    {"- New object: Inverted Timed Box",0},
+    {"- New object: Star Trigger",0},
+    {"- New Sample Tile building shortcut by pressing L & R", 0},
     {"- Ability to place multiple objects/tiles in the same spot", 0},
     {"- Wooden Platforms form a stack when placed vertically", 0},
     {"- Custom Theme menu now shows slipperiness of current tile", 0},
@@ -1413,6 +1398,9 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {"- Dropped objects appear at the object's last safe location", 0},
     {"- Boxes with yellow coins now drop 3 coins instead of 1", 0},
     {"- Boos and Moneybags now show the item they will drop", 0},
+    {"- New Star Trigger object can only be placed inside objects",0},
+    {"    When all Star Triggers are activated, a star will spawn",0},
+    {"    Star Triggers can uniquely be placed inside coins and badges",0},
     {"", 0},
     {"Badge Changes", 1},
     {"", 0},
@@ -1481,7 +1469,7 @@ struct mb64_credits_entry mb64_v1_1_changelog[] = {
     {NULL, 0},
 };
 
-struct mb64_credits_entry mb64_editor_controls[] = {
+struct mb64_info_entry mb64_editor_controls[] = {
     {"Navigation Controls",1},
     {"",0},
     {"  Analog Stick:  Move cursor horizontally",0},
@@ -1505,7 +1493,7 @@ struct mb64_credits_entry mb64_editor_controls[] = {
     {NULL, 0},
 };
 
-struct mb64_credits_entry mb64_setup_guide[] = {
+struct mb64_info_entry mb64_setup_guide[] = {
     {"Emulator Setup", 1},
     {"",0},
     {"To save your Mario Builder 64 levels and play levels",0},
@@ -1568,18 +1556,35 @@ struct mb64_credits_entry mb64_setup_guide[] = {
     {NULL, 0},
 };
 
+struct mb64_info_entry mb64_level_sharing[] = {
+    {"Level Sharing", 1},
+    {"",0},
+    {"You can upload your .mb64 files online and download levels", 0},
+    {"from other people at Level Share Square, the dedicated",0},
+    {"website, or in the mb64-levels channel in Rovertronic's ",0},
+    {"Discord server.",0},
+    {"",0},
+    {"",0},
+    {"Level Share Square",1},
+    {"           https://levelsharesquare.com/levels",0},
+    {"",0},
+    {"Rovertronic Roundtable",1},
+    {"               https://discord.gg/X7vvvKu",0},
+    {NULL, 0},
+};
+
 void *mb64_mm_page_data = NULL;
-s32 credits_y_offset = 0;
-void print_maker_credits(void) {
-    struct mb64_credits_entry *credits = mb64_mm_page_data;
+s32 info_y_offset = 0;
+void print_maker_info_page(void) {
+    struct mb64_info_entry *curPage = mb64_mm_page_data;
     u32 leftalign = (mb64_mm_page_data != mb64_credits);
     
-    s32 credits_entries = 0;
-    while (credits[credits_entries].text != NULL) {
-        credits_entries++;
+    s32 info_entries = 0;
+    while (curPage[info_entries].text != NULL) {
+        info_entries++;
     }
 
-    s32 lower_limit = (credits_entries*16) - 160;
+    s32 lower_limit = (info_entries*16) - 160;
 
     u8 base_alpha = 255;
     if (mb64_menu_start_timer != -1) {
@@ -1590,23 +1595,23 @@ void print_maker_credits(void) {
         base_alpha = 255 - ((time * 255) / 8);
     }
 
-    credits_y_offset -= (gPlayer1Controller->rawStickY/10.0f);
-    if (credits_y_offset <= 0) {
-        credits_y_offset = 0;
+    info_y_offset -= (gPlayer1Controller->rawStickY/10.0f);
+    if (info_y_offset <= 0) {
+        info_y_offset = 0;
     }
-    if (credits_y_offset >= lower_limit) {
-        credits_y_offset = lower_limit;
+    if (info_y_offset >= lower_limit) {
+        info_y_offset = lower_limit;
     }
-    if (credits_y_offset != lower_limit) {
+    if (info_y_offset != lower_limit) {
         print_maker_string_ascii_centered_alpha(300,20 + sins(gGlobalTimer*0x300)*2.5f ,"|",MB64_TEXT_WHITE,base_alpha);
     }
-    if (credits_y_offset != 0) {
+    if (info_y_offset != 0) {
         print_maker_string_ascii_centered_alpha(300,40 - sins(gGlobalTimer*0x300)*2.5f,"^",MB64_TEXT_WHITE,base_alpha);
     }
 
-    for (int i=0; i<credits_entries; i++) {
+    for (int i=0; i<info_entries; i++) {
         u8 alpha = base_alpha;
-        s32 ypos = credits_y_offset+200-(16*i);
+        s32 ypos = info_y_offset+200-(16*i);
         if ((ypos < 220)&&(ypos >10)) {
             if (ypos > 200) {
                 alpha = ((base_alpha/255.0f)*smoothstep2(220.0f,200.0f,ypos))*255.0f;
@@ -1614,10 +1619,10 @@ void print_maker_credits(void) {
             if (ypos < 30) {
                 alpha = ((base_alpha/255.0f)*smoothstep2(10.0f,30.0f,ypos))*255.0f;
             }
-            if (leftalign && credits[i].color == 0) {
-                print_maker_string_ascii_alpha(15,ypos, credits[i].text, credits[i].color, alpha);
+            if (leftalign && curPage[i].color == 0) {
+                print_maker_string_ascii_alpha(15,ypos, curPage[i].text, curPage[i].color, alpha);
             } else {
-                print_maker_string_ascii_centered_alpha(160,ypos, credits[i].text, credits[i].color, alpha);
+                print_maker_string_ascii_centered_alpha(160,ypos, curPage[i].text, curPage[i].color, alpha);
             }
         }
     }
@@ -1678,8 +1683,6 @@ char *mb64_mm_help_btns[] = {
     "Share Levels",
     "Changelog",
 };
-
-u8 mb64_mm_help_page3[] = {TXT_MM_HELP_PAGE_3};
 
 u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
 
@@ -1931,7 +1934,7 @@ s32 mb64_main_menu(void) {
         random_u16(); // randomize for the initial tip
     }
 
-    if ((mb64_mm_state != MM_CREDITS)&&(mb64_mm_state != MM_HELP)) {
+    if ((mb64_mm_state != MM_INFO)) {
         switch(mb64_joystick) {
             case 2:
                 mb64_menu_index++;
@@ -2018,8 +2021,8 @@ s32 mb64_main_menu(void) {
                         mb64_mm_state = MM_HELP_MODE;
                         break;
                     case 3:
-                        credits_y_offset = 0;
-                        mb64_mm_state = MM_CREDITS;
+                        info_y_offset = 0;
+                        mb64_mm_state = MM_INFO;
                         mb64_mm_page_data = mb64_credits;
                         break;
                 }
@@ -2040,7 +2043,7 @@ s32 mb64_main_menu(void) {
                         mb64_mm_state = MM_HELP_MODE;
                         break;
                     case 2:
-                        mb64_mm_state = MM_CREDITS;
+                        mb64_mm_state = MM_INFO;
                         mb64_mm_page_data = mb64_credits;
                         break;
                 }
@@ -2182,35 +2185,24 @@ s32 mb64_main_menu(void) {
                     mb64_mm_state = mb64_mm_main_state;
                     mb64_menu_index = 2;
                 } else {
-                    mb64_mm_state = MM_HELP;
+                    mb64_mm_state = MM_INFO;
                     switch(mb64_menu_index) {
                         case 0:
-                            mb64_mm_state = MM_CREDITS;
                             mb64_mm_page_data = mb64_setup_guide;
                             break;
                         case 1:
-                            mb64_mm_state = MM_CREDITS;
                             mb64_mm_page_data = mb64_editor_controls;
                             break;
                         case 2:
-                            mb64_mm_page_data = mb64_mm_help_page3;
+                            mb64_mm_page_data = mb64_level_sharing;
                             break;
                         case 3:
-                            mb64_mm_state = MM_CREDITS;
                             mb64_mm_page_data = mb64_v1_1_changelog;
                     }
                 }
             }
             break;
-        case MM_HELP:
-            mb64_mm_shade_screen();
-            if (mb64_mm_anim_info()) {
-                mb64_menu_start_timer = 0;
-                mb64_mm_state = MM_HELP_MODE;
-            }
-            print_maker_string(mb64_menu_title_vels[0],210,mb64_mm_page_data,FALSE);
-            break;
-        case MM_CREDITS:
+        case MM_INFO:
             mb64_mm_shade_screen();
             if (mb64_mm_anim_info()) {
                 mb64_menu_start_timer = 0;
@@ -2219,10 +2211,9 @@ s32 mb64_main_menu(void) {
                     mb64_menu_index = 3;
                 } else {
                     mb64_mm_state = MM_HELP_MODE;
-                    mb64_menu_index = 3;
                 }
             }
-            print_maker_credits();
+            print_maker_info_page();
             break;
         case MM_KEYBOARD:
             mb64_mm_anim_in(6);

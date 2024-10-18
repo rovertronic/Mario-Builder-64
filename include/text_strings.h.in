@@ -12,9 +12,6 @@
 
 #define TXT_MM_PAGE _("Page: 0/0")
 
-#define TXT_MM_HELP_PAGE_3 _("You can upload your .mb64 files online\nat these locations:\n\nLevel Share Square:\nhttps://levelsharesquare.com/levels\n\nRovertronic Roundtable:\nhttps://discord.gg/X7vvvKu")
-
-
 
 // pain
 #define NC_CAMX 				_("Camera X Sensitivity")

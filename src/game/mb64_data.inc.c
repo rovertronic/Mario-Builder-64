@@ -2572,6 +2572,7 @@ struct mb64_settings_button mb64_mode_settings_buttons[] = {
 char *mb64_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
     "Tip: Use D-Pad | to change the camera's\n   zoom level while building!",
+    "Tip: Press L and R at the same time to copy\n the tile or object the cursor is on!",
     "Tip: You can place objects or tiles inside\n   water blocks to submerge them!",
     "Tip: The thin Iron Meshes can be used to create walls\n   that require a Vanish Cap to pass through.",
     "Tip: Mesh materials can be used as both\n   hangable ceilings and Vanish Cap walls.",
@@ -2585,19 +2586,20 @@ char *mb64_tips[] = {
     "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
     "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch of new enemies and collectible badges!",
     "Tip: Remember to use the Take Screenshot button to capture\n   a thumbnail before publishing your level!",
-    "Tip: You can place stars and other objects inside of\n   enemies or breakable boxes as loot!",
+    "Tip: You can place stars and other objects inside of\n   enemies or boxes as loot!",
     "Tip: Make sure to place a star or other reward inside\n   any bosses you place, otherwise they'll drop nothing!",
     "Tip: Placing Wooden Platforms on top of each other\n   will cause them to combine into one object.",
     "Tip: Many objects and enemies can be placed in the\n   same tile as coin rings or On-Off Blocks.",
-    "Tip: On-Off Switches and red coins can be placed\n   inside of enemies to appear when they are killed!",
-    "Tip: The Reinforced Box will not break unless hit by\n a Bob-omb, Bullet Bill, or other destructive object!"
+    "Tip: On-Off Switches and coins can be placed inside\n   enemies to appear when they are killed!",
+    "Tip: The Reinforced Box will not break unless hit by\n a Bob-omb, Bullet Bill, or other destructive object!",
 // BTCM
     "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
     "Tip: Badges that the player collects will be kept\n   as permanent collectibles even after death.",
     "Tip: You can use the Burden badges as a punishment\n   when touched, or an optional challenge!",
     "Tip: Green Coins heal the player for 4 HP when collected,\n   or fully with the Heal Plus badge.",
+    "Tip: Badges can be placed inside enemies or boxes!",
 };
-#define NUM_BTCM_TIPS 4
+#define NUM_BTCM_TIPS 5
 
 u8 mb64_text_colors[][3] = {
     {255, 255, 255},
