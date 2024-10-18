@@ -462,7 +462,7 @@ void showrunner_battle_function(void) {
                     //TOO CLOSE! Blow mario out
                     gMarioState->pos[0] += sins(o->oAngleToMario)*suck;
                     gMarioState->pos[2] += coss(o->oAngleToMario)*suck;
-                } else {
+                } else if (o->oDistanceToMario < 4000.0f) {
                     gMarioState->pos[0] -= sins(o->oAngleToMario)*suck;
                     gMarioState->pos[2] -= coss(o->oAngleToMario)*suck;
                 }

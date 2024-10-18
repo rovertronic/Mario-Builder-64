@@ -6087,7 +6087,7 @@ void bhv_badge(void) {
                 o->oHomeY = 1.0f;
                 break;
             }
-            if ((o->oDistanceToMario < 180.0f)&&(gMarioState->action != ACT_LVUP_DANCE)) {
+            if ((detect_object_hitbox_overlap(gMarioObject, o))&&(gMarioState->action != ACT_LVUP_DANCE)) {
                 o->oAction++;
                 mario_stop_riding_object(gMarioState);
                 save_file_set_badge_equip(1 << o->oBehParams2ndByte);
