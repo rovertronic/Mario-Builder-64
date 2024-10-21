@@ -9409,7 +9409,7 @@ const BehaviorScript bhvSpawn[] = {
 
 extern void bhv_badge(void);
 const BehaviorScript bhvBadge[] = {
-    BEGIN(OBJ_LIST_LEVEL),
+    BEGIN(OBJ_LIST_POLELIKE),
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_FLOAT(oDrawingDistance,MB64_DRAWDIST_HIGH),
     SET_INT(oIntangibleTimer, 0),

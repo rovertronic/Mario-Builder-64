@@ -825,7 +825,7 @@ s32 count_star_triggers(void) {
 }
 
 s32 count_red_coins(void) {
-    struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_LEVEL]; // red coin list
+    struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_POLELIKE]; // red coin list
     struct ObjectNode *obj = listHead->next;
     s32 count = 0;
 

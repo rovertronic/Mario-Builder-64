@@ -467,6 +467,8 @@ u32 can_place_object(s8 pos[3]) {
     u32 flags = mb64_object_type_list[mb64_id_selection].occupy;
     if (mb64_id_selection == OBJECT_TYPE_COIN_FORMATION) {
         if (mb64_param_selection == 2) flags = OBJ_OCCUPY_OUTER;
+    } else if (mb64_id_selection == OBJECT_TYPE_TRIGGER) {
+        return FALSE;
     }
     return can_place(pos, flags);
 }
@@ -2879,9 +2881,13 @@ void imbue_action(void) {
                 play_place_sound(mb64_object_type_list[mb64_id_selection].soundBits);
                 generate_object_preview();
                 should_spawn_place_number(mb64_cursor_pos);
+                return;
             }
             break;
         }
+    }
+    if (mb64_id_selection == OBJECT_TYPE_TRIGGER) {
+        mb64_show_error_message("Star Triggers must be placed in other objects!");
     }
 }
 

@@ -6735,7 +6735,7 @@ s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
 s16 cutscene_object(u8 cutscene, struct Object *obj) {
     s16 status = 0;
 
-    if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
+    if ((gCamera->cutscene == 0) && (sObjectCutscene == 0) && (!revent_active)) {
         if (gRecentCutscene != cutscene) {
             start_object_cutscene(cutscene, obj);
             status = 1;

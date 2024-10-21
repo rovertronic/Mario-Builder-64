@@ -6085,6 +6085,7 @@ void bhv_badge(void) {
             if ((save_file_get_badge_equip() >> o->oBehParams2ndByte) & 1) {
                 o->oAction++;
                 o->oHomeY = 1.0f;
+                cur_obj_drop_imbued_object(0);
                 break;
             }
             if ((detect_object_hitbox_overlap(gMarioObject, o))&&(gMarioState->action != ACT_LVUP_DANCE)) {
@@ -6102,6 +6103,7 @@ void bhv_badge(void) {
                 } else {
                     run_event(EVENT_GET_BADGE);
                 }
+                cur_obj_drop_imbued_object(0);
             }
             break;
         case 1:
