@@ -2702,19 +2702,25 @@ void delete_object(s8 pos[3], s32 index) {
     generate_object_preview();
 }
 
+u32 place_number_spawner_check(s8 pos[3], s32 spawnerType, s32 objType, s32 objImbue) {
+    s32 objectCount = 0;
+    s32 hasSpawner = FALSE;
+    for (s32 i = 0; i < mb64_object_count; i++) {
+        if (mb64_object_data[i].type == spawnerType) {
+            hasSpawner = TRUE;
+        } else if ((mb64_object_data[i].type == objType) ||
+                    (mb64_object_data[i].imbue == objImbue)) {
+            objectCount++;
+        }
+    }
+    if (hasSpawner) df_spawn_number(pos, objectCount);
+}
+
 void should_spawn_place_number(s8 pos[3]) {
     if (mb64_id_selection == OBJECT_TYPE_RED_COIN) {
-        s32 redCoinCount = 0;
-        s32 hasRedCoinStar = FALSE;
-        for (s32 i = 0; i < mb64_object_count; i++) {
-            if (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) {
-                hasRedCoinStar = TRUE;
-            } else if ((mb64_object_data[i].type == OBJECT_TYPE_RED_COIN) ||
-                       (mb64_object_data[i].imbue == IMBUE_RED_COIN)) {
-                redCoinCount++;
-            }
-        }
-        if (hasRedCoinStar) df_spawn_number(pos, redCoinCount);
+        place_number_spawner_check(pos, OBJECT_TYPE_RED_COIN_STAR, OBJECT_TYPE_RED_COIN, IMBUE_RED_COIN);
+    } else if (mb64_id_selection == OBJECT_TYPE_TRIGGER) {
+        place_number_spawner_check(pos, OBJECT_TYPE_TRIGGER_STAR, OBJECT_TYPE_TRIGGER, IMBUE_TRIGGER);
     } else if ((mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_STAR)) {
         s32 starCount = 0;
         for (s32 i = 0; i < mb64_object_count; i++) {
