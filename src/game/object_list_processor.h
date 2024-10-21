@@ -92,8 +92,12 @@ extern struct Object *gCurrentObject;
 extern const BehaviorScript *gCurBhvCommand;
 extern s16 gPrevFrameObjectCount;
 
-extern s32 gSurfaceNodesAllocated;
-extern s32 gSurfacesAllocated;
+extern s32 *gSurfaceNodesAllocated;
+extern s32 *gSurfacesAllocated;
+extern s32 gMainSurfaceNodesAllocated;
+extern s32 gMainSurfacesAllocated;
+extern s32 gBlockSurfaceNodesAllocated;
+extern s32 gBlockSurfacesAllocated;
 extern s32 gNumStaticSurfaceNodes;
 extern s32 gNumStaticSurfaces;
 

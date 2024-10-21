@@ -1260,7 +1260,7 @@ UNUSED static s32 play_mode_unused(void) {
 s32 update_level(void) {
     s32 changeLevel = FALSE;
 
-    clear_dynamic_surfaces();
+    clear_block_surfaces();
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:
             changeLevel = play_mode_normal(); scroll_textures();

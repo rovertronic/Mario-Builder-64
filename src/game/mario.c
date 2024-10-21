@@ -2223,13 +2223,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         }
     }
 
-    if (gSurfacesAllocated > SURFACE_POOL_SIZE) {
-        print_text_fmt_int(10, 56, "OUT OF POOL SPACE", 0);
-    }
-    if (gSurfaceNodesAllocated > SURFACE_NODE_POOL_SIZE) {
-         print_text_fmt_int(10, 76, "OUT OF NODE POOL SPACE", 0);
-    }
-
     regentime ++;
     if (regentime > 200) {
         regentime = 0;

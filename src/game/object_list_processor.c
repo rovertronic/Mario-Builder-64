@@ -122,12 +122,18 @@ s16 gPrevFrameObjectCount;
  * The total number of surface nodes allocated (a node is allocated for each
  * spatial partition cell that a surface intersects).
  */
-s32 gSurfaceNodesAllocated;
+s32 *gSurfaceNodesAllocated;
+
+s32 gMainSurfaceNodesAllocated;
+s32 gBlockSurfaceNodesAllocated;
 
 /**
  * The total number of surfaces allocated.
  */
-s32 gSurfacesAllocated;
+s32 *gSurfacesAllocated;
+
+s32 gMainSurfacesAllocated;
+s32 gBlockSurfacesAllocated;
 
 /**
  * The number of nodes that have been created for surfaces.
@@ -536,6 +542,8 @@ void clear_objects(void) {
 
     gObjectMemoryPool = mem_pool_init(OBJECT_MEMORY_POOL, MEMORY_POOL_LEFT);
     gObjectLists = gObjectListArray;
+
+    clear_dynamic_surfaces();
 }
 
 /**
@@ -552,10 +560,6 @@ void update_terrain_objects(void) {
     gObjectCounter += update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
     profiler_update(PROFILER_TIME_DYNAMIC, profiler_get_delta(PROFILER_DELTA_COLLISION) - first);
     gObjectCounter += update_objects_in_list(&gObjectLists[OBJ_LIST_POLELIKE]);
-
-    // If the surface pool has overflowed, throw an error.
-    assert(gSurfacesAllocated <= SURFACE_POOL_SIZE, "Surface pool size exceeded");
-    assert(gSurfaceNodesAllocated <= SURFACE_NODE_POOL_SIZE, "Surface node pool size exceeded");
 }
 
 /**
@@ -650,6 +654,7 @@ void update_objects(UNUSED s32 unused) {
     stub_debug_control();
 
     gObjectLists = gObjectListArray;
+    clear_dynamic_surfaces();
 
     // for (u32 i = 0; i < NUM_RIGID_BODY_STEPS; i++) {
     //     do_rigid_body_step();

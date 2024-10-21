@@ -33,12 +33,17 @@ SpatialPartitionCell gBlockSurfaces;
 struct Surface *gSurfacePool;
 struct SurfaceNode *gSurfaceNodePool;
 
+struct Surface *gMainSurfacePool;
+struct SurfaceNode *gMainSurfaceNodePool;
+struct Surface *gBlockSurfacePool;
+struct SurfaceNode *gBlockSurfaceNodePool;
+
 /**
  * Allocate the part of the surface node pool to contain a surface node.
  */
 static struct SurfaceNode *alloc_surface_node(u32 dynamic) {
-    struct SurfaceNode *node = &gSurfaceNodePool[gSurfaceNodesAllocated];
-    gSurfaceNodesAllocated++;
+    struct SurfaceNode *node = &gSurfaceNodePool[*gSurfaceNodesAllocated];
+    (*gSurfaceNodesAllocated)++;
 
     node->next = NULL;
 
@@ -50,8 +55,8 @@ static struct SurfaceNode *alloc_surface_node(u32 dynamic) {
  * initialize the surface.
  */
 struct Surface *alloc_surface(u32 dynamic) {
-    struct Surface *surface = &gSurfacePool[gSurfacesAllocated];
-    gSurfacesAllocated++;
+    struct Surface *surface = &gSurfacePool[*gSurfacesAllocated];
+    (*gSurfacesAllocated)++;
 
     surface->type = SURFACE_DEFAULT;
     surface->object = NULL;
@@ -323,10 +328,16 @@ static void load_environmental_regions(TerrainData **data) {
  * Allocate the dynamic surface pool for object collision.
  */
 void alloc_surface_pools(void) {
-    gSurfacePool = main_pool_alloc(SURFACE_POOL_SIZE * sizeof(struct Surface), MEMORY_POOL_LEFT);
-    gSurfaceNodePool = main_pool_alloc(SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode), MEMORY_POOL_LEFT);
+    gMainSurfacePool = main_pool_alloc(MAIN_SURFACE_POOL_SIZE * sizeof(struct Surface), MEMORY_POOL_LEFT);
+    gMainSurfaceNodePool = main_pool_alloc(MAIN_SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode), MEMORY_POOL_LEFT);
+    gBlockSurfacePool = main_pool_alloc(BLOCK_SURFACE_POOL_SIZE * sizeof(struct Surface), MEMORY_POOL_LEFT);
+    gBlockSurfaceNodePool = main_pool_alloc(BLOCK_SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode), MEMORY_POOL_LEFT);
 
-    gCCMEnteredSlide = FALSE;
+    gSurfacePool = gMainSurfacePool;
+    gSurfaceNodePool = gMainSurfaceNodePool;
+    gSurfacesAllocated = &gMainSurfacesAllocated;
+    gSurfaceNodesAllocated = &gMainSurfaceNodesAllocated;
+
     reset_red_coins_collected();
 }
 
@@ -399,8 +410,8 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
-    gSurfaceNodesAllocated = 0;
-    gSurfacesAllocated = 0;
+    gMainSurfaceNodesAllocated = 0;
+    gMainSurfacesAllocated = 0;
 
     clear_static_surfaces();
 
@@ -428,8 +439,8 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
         }
     }
 
-    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
-    gNumStaticSurfaces = gSurfacesAllocated;
+    gNumStaticSurfaceNodes = gMainSurfaceNodesAllocated;
+    gNumStaticSurfaces = gMainSurfacesAllocated;
     profiler_collision_update(first);
 }
 
@@ -438,14 +449,19 @@ void load_area_terrain(s32 index, TerrainData *data, RoomData *surfaceRooms, s16
  */
 void clear_dynamic_surfaces(void) {
     PUPPYPRINT_GET_SNAPSHOT();
-    //if (!(gTimeStopState & TIME_STOP_ACTIVE)) {
+    if (!(gTimeStopState & TIME_STOP_ACTIVE)) {
         //clear_dynamic_surface_references();
 
-        gSurfacesAllocated = gNumStaticSurfaces;
-        gSurfaceNodesAllocated = gNumStaticSurfaceNodes;
+        gMainSurfacesAllocated = gNumStaticSurfaces;
+        gMainSurfaceNodesAllocated = gNumStaticSurfaceNodes;
         clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
-    //}
+    }
     profiler_collision_update(first);
+}
+
+void clear_block_surfaces(void) {
+    gBlockSurfacesAllocated = 0;
+    gBlockSurfaceNodesAllocated = 0;
 }
 
 /**

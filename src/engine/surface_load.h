@@ -14,8 +14,11 @@
 /**
  * The size of the surface pools
  */
-#define SURFACE_POOL_SIZE 3000
-#define SURFACE_NODE_POOL_SIZE 5000
+#define MAIN_SURFACE_POOL_SIZE 1500
+#define MAIN_SURFACE_NODE_POOL_SIZE 2000
+
+#define BLOCK_SURFACE_POOL_SIZE 1500
+#define BLOCK_SURFACE_NODE_POOL_SIZE 1600
 
 struct SurfaceNode {
     struct SurfaceNode *next;
@@ -36,6 +39,10 @@ extern SpatialPartitionCell gDynamicSurfacePartition[NUM_CELLS][NUM_CELLS];
 extern SpatialPartitionCell gBlockSurfaces;
 extern struct Surface *gSurfacePool;
 extern struct SurfaceNode *gSurfaceNodePool;
+extern struct Surface *gMainSurfacePool;
+extern struct SurfaceNode *gMainSurfaceNodePool;
+extern struct Surface *gBlockSurfacePool;
+extern struct SurfaceNode *gBlockSurfaceNodePool;
 
 void alloc_surface_pools(void);
 #ifdef NO_SEGMENTED_MEMORY

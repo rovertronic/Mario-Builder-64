@@ -195,8 +195,8 @@ void debug_box_input(void) {
 
 s16 gVisualSurfaceCount;
 s32 gVisualOffset;
-extern s32 gSurfaceNodesAllocated;
-extern s32 gSurfacesAllocated;
+extern s32 *gSurfaceNodesAllocated;
+extern s32 *gSurfacesAllocated;
 
 void iterate_surfaces_visual(s32 x, s32 z, Vtx *verts) {
     struct SurfaceNode *node;
@@ -348,7 +348,7 @@ s32 iterate_surface_count(s32 x, s32 z) {
 
 void visual_surface_loop(void) {
     if (!gSurfaceNodesAllocated
-     || !gSurfacesAllocated
+     || (*gSurfacesAllocated == 0)
      || !gMarioState->marioObj) {
         return;
     }

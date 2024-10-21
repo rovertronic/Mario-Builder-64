@@ -2184,6 +2184,21 @@ s32 generate_block_collision(s8 pos[3]) {
 }
 
 #define COL_POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE)) / TILE_SIZE)
+
+#define begin_block_collision() { \
+    gSurfacePool = gBlockSurfacePool; \
+    gSurfaceNodePool = gBlockSurfaceNodePool; \
+    gSurfacesAllocated = &gBlockSurfacesAllocated; \
+    gSurfaceNodesAllocated = &gBlockSurfaceNodesAllocated; \
+}
+#define end_block_collision() { \
+    gSurfacePool = gMainSurfacePool; \
+    gSurfaceNodePool = gMainSurfaceNodePool; \
+    gSurfacesAllocated = &gMainSurfacesAllocated; \
+    gSurfaceNodesAllocated = &gMainSurfaceNodesAllocated; \
+}
+
+
 void block_floor_collision(f32 x, f32 y, f32 z) {
     s8 pos[3];
     mb64_build_collision_type = 1;
@@ -2192,6 +2207,7 @@ void block_floor_collision(f32 x, f32 y, f32 z) {
     pos[1] = COL_POS_TO_GRID(y + FIND_FLOOR_BUFFER);
     pos[2] = COL_POS_TO_GRID(z);
 
+    begin_block_collision();
     scan_fences(pos);
     generate_block_collision(pos);
     pos[1]--;
@@ -2211,6 +2227,8 @@ void block_floor_collision(f32 x, f32 y, f32 z) {
         }
         pos[1]--;
     }
+
+    end_block_collision();
 }
 
 void block_ceil_collision(f32 x, f32 y, f32 z) {
@@ -2221,9 +2239,13 @@ void block_ceil_collision(f32 x, f32 y, f32 z) {
     pos[1] = COL_POS_TO_GRID(y-5);
     pos[2] = COL_POS_TO_GRID(z);
 
+    begin_block_collision();
+
     generate_block_collision(pos);
     pos[1]++;
     generate_block_collision(pos);
+
+    end_block_collision();
 }
 
 void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
@@ -2236,6 +2258,8 @@ void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
     s32 minz = COL_POS_TO_GRID(z - r);
     s32 maxz = COL_POS_TO_GRID(z + r);
 
+    begin_block_collision();
+
     for (s32 x = minx; x <= maxx; x++) {
         pos[0] = x;
         for (s32 z = minz; z <= maxz; z++) {
@@ -2243,6 +2267,8 @@ void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
             generate_block_collision(pos);
         }
     }
+
+    end_block_collision();
 }
 
 void check_poles(struct MarioState *m) {
@@ -2312,8 +2338,8 @@ void check_poles(struct MarioState *m) {
 }
 
 void generate_boundary_collision(void) {
-    gSurfaceNodesAllocated = 0;
-    gSurfacesAllocated = 0;
+    *gSurfaceNodesAllocated = 0;
+    *gSurfacesAllocated = 0;
     clear_static_surfaces();
 
     mb64_curr_poly_vert_count = 4;
@@ -2341,8 +2367,8 @@ void generate_boundary_collision(void) {
         generate_boundary_quad_collision(floor_boundary, ARRAY_COUNT(floor_boundary), mb64_lopt_boundary_height-32, mb64_lopt_boundary_height-32, mb64_grid_size, TRUE);
     }
 
-    gNumStaticSurfaceNodes = gSurfaceNodesAllocated;
-    gNumStaticSurfaces = gSurfacesAllocated;
+    gNumStaticSurfaceNodes = *gSurfaceNodesAllocated;
+    gNumStaticSurfaces = *gSurfacesAllocated;
 }
 
 

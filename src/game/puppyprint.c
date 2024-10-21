@@ -144,7 +144,8 @@ void puppyprint_calculate_ram_usage(void) {
     ramsizeSegment[RAM_ZBUFFER] = (u32)&_zbufferSegmentBssEnd - (u32)&_zbufferSegmentBssStart;
     ramsizeSegment[RAM_GODDARD] = (u32)&_goddardSegmentEnd - (u32)&_goddardSegmentStart;
     ramsizeSegment[RAM_POOLS] = gPoolMem;
-    ramsizeSegment[RAM_COLLISION] = SURFACE_POOL_SIZE * sizeof(struct Surface) + SURFACE_NODE_POOL_SIZE * sizeof(struct SurfaceNode);
+    ramsizeSegment[RAM_COLLISION] = (MAIN_SURFACE_POOL_SIZE + BLOCK_SURFACE_POOL_SIZE) * sizeof(struct Surface) 
+        + (MAIN_SURFACE_NODE_POOL_SIZE + BLOCK_SURFACE_NODE_POOL_SIZE) * sizeof(struct SurfaceNode);
     ramsizeSegment[RAM_MISC] = gMiscMem;
     ramsizeSegment[RAM_AUDIO] = gAudioHeapSize;
 }
@@ -466,12 +467,14 @@ extern s16 gVisualSurfaceCount;
 #endif
 
 void puppyprint_render_collision(void) {
-    char textBytes[128];
-    sprintf(textBytes, "Surfaces: %d/%d\nSurface Nodes: %d/%d\nStatic/Dynamic: %d/%d\nStatic/Dynamic (Nodes): %d/%d\n", 
-    gSurfacesAllocated, SURFACE_POOL_SIZE,
-    gSurfaceNodesAllocated, SURFACE_NODE_POOL_SIZE,
-    gNumStaticSurfaces, gSurfacesAllocated - gNumStaticSurfaces,
-    gNumStaticSurfaceNodes, gSurfaceNodesAllocated - gNumStaticSurfaceNodes);
+    char textBytes[255];
+    sprintf(textBytes, "Surfaces: %d/%d\nSurface Nodes: %d/%d\nStatic/Dynamic: %d/%d\nStatic/Dynamic (Nodes): %d/%d\nBlock Surfaces: %d/%d\nBlock Surface Nodes: %d/%d", 
+    gMainSurfacesAllocated, MAIN_SURFACE_POOL_SIZE,
+    gMainSurfaceNodesAllocated, MAIN_SURFACE_NODE_POOL_SIZE,
+    gNumStaticSurfaces, gMainSurfacesAllocated - gNumStaticSurfaces,
+    gNumStaticSurfaceNodes, gMainSurfaceNodesAllocated - gNumStaticSurfaceNodes,
+    gBlockSurfacesAllocated, BLOCK_SURFACE_POOL_SIZE,
+    gBlockSurfaceNodesAllocated, BLOCK_SURFACE_NODE_POOL_SIZE);
     print_small_text_light(SCREEN_WIDTH-16, 60, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, 1);
 
 #ifdef VISUAL_DEBUG
