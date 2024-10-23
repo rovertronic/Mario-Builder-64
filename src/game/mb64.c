@@ -2275,7 +2275,7 @@ void check_poles(struct MarioState *m) {
     s8 pos[3];
 
     pos[0] = COL_POS_TO_GRID(m->pos[0]);
-    pos[1] = COL_POS_TO_GRID(m->pos[1]-5);
+    pos[1] = COL_POS_TO_GRID(m->pos[1]);
     pos[2] = COL_POS_TO_GRID(m->pos[2]);
 
     if (get_grid_tile(pos)->type == TILE_TYPE_POLE) {

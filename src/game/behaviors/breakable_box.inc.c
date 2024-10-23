@@ -40,18 +40,16 @@ void bhv_hidden_object_loop(void) {
             if (gMarioState->hiddenBoxTimer > 0) {
                 o->oAction = BREAKABLE_BOX_ACT_ACTIVE;
                 cur_obj_enable_rendering();
-                cur_obj_unhide();
+                cur_obj_become_tangible();
             }
             break;
         case BREAKABLE_BOX_ACT_ACTIVE:
-            cur_obj_become_tangible();
+            cur_obj_enable_rendering();
 
             if (gMarioState->hiddenBoxTimer == 0) o->oAction = BREAKABLE_BOX_ACT_HIDDEN;
             else if (gMarioState->hiddenBoxTimer < 40) {
                 if (gMarioState->hiddenBoxTimer & 1) {
-                    cur_obj_hide();
-                } else {
-                    cur_obj_unhide();
+                    cur_obj_disable_rendering();
                 }
             }
             if (cur_obj_was_attacked_or_ground_pounded()) {

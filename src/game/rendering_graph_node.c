@@ -414,7 +414,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
                                                  mode2List->modes[currLayer]);
 
 
-            if (currLayer == LAYER_CIRCLE_SHADOW) {
+            if (currLayer == LAYER_CIRCLE_SHADOW || currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT) {
                 gSPDisplayList(gDisplayListHead++, dl_shadow_circle);
             }
 
@@ -452,7 +452,7 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
                 currList = currList->next;
             }
 
-            if (currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT) {
+            if (currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT || currLayer == LAYER_CIRCLE_SHADOW) {
                 gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
                 gSPSetGeometryMode(gDisplayListHead++, G_LIGHTING | G_CULL_BACK);
                 gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
