@@ -258,14 +258,14 @@ u8 mb64_grid_size = 64;
 s32 mb64_min_coord;
 s32 mb64_max_coord;
 
-u32 coords_in_range(s8 pos[3]) {
+u8 coords_in_range(s8 pos[3]) {
     if (pos[0] < mb64_grid_min || pos[0] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
     if (pos[1] < 0 || pos[1] > 63) return FALSE;
     if (pos[2] < mb64_grid_min || pos[2] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
     return TRUE;
 }
 
-s32 tile_sanity_check(void) {
+u8 tile_sanity_check(void) {
     if (mb64_tile_count >= MB64_TILE_POOL_SIZE) {
         mb64_show_error_message("Tile limit reached! (max 20,000)");
         return FALSE;
@@ -297,7 +297,7 @@ s32 get_extra_objects(u32 id, s32 param) {
     return mb64_object_type_list[id].numExtraObjects;
 }
 
-s32 object_sanity_check(void) {
+u8 object_sanity_check(void) {
     struct mb64_object_info *info = &mb64_object_type_list[mb64_id_selection];
 
     if (mb64_object_limit_count + get_extra_objects(mb64_id_selection, mb64_param_selection) >= MB64_MAX_OBJS) {
@@ -431,7 +431,7 @@ u32 get_tile_occupy_flags(u32 type) {
     }
 }
 
-u32 can_place(s8 pos[3], u32 occupyFlags) {
+u8 can_place(s8 pos[3], u32 occupyFlags) {
     // Tile Check
     u32 type = get_grid_tile(pos)->type;
     if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) {
@@ -453,7 +453,7 @@ u32 can_place(s8 pos[3], u32 occupyFlags) {
     return TRUE;
 }
 
-u32 can_place_tile(s8 pos[3]) {
+u8 can_place_tile(s8 pos[3]) {
     // Tiles can never stack, even if one is outer and one is inner
     u32 type = get_grid_tile(pos)->type;
     if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) return FALSE;
@@ -462,7 +462,7 @@ u32 can_place_tile(s8 pos[3]) {
     return can_place(pos, flags);
 }
 
-u32 can_place_object(s8 pos[3]) {
+u8 can_place_object(s8 pos[3]) {
     u32 flags = mb64_object_type_list[mb64_id_selection].occupy;
     if (mb64_id_selection == OBJECT_TYPE_COIN_FORMATION) {
         if (mb64_param_selection == 2) flags = OBJ_OCCUPY_OUTER;
@@ -530,7 +530,7 @@ s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
 }
 
 // Used for determining if a water side should be culled.
-u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
+u8 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
     s32 adjMatClass = get_side_class(adjMat, direction^1);
     if (adjMatClass == CLASS_CUTOUT) return FALSE;
     if (adjMatClass != CLASS_HOLLOW_CUTOUT) return TRUE; // cannot be waterlogged
@@ -541,7 +541,7 @@ u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction) {
     // isn't a full faceshape. Not a big deal
 }
 
-s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
+u8 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
     if (faceshape & MB64_FACESHAPE_EMPTY) return FALSE;
     if (mb64_render_culling_off) return FALSE;
     direction = rotate_direction(direction, rot);
@@ -591,7 +591,7 @@ s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot) {
 }
 
 // Additional culling check for certain grass overhangs. Assumes should_cull has already failed.
-s32 should_cull_topslab_check(s8 pos[3], s32 direction) {
+u8 should_cull_topslab_check(s8 pos[3], s32 direction) {
     s8 adjPos[3];
     vec3_sum(adjPos, pos, cullOffsetLUT[direction]);
     if (!coords_in_range(adjPos)) return FALSE;
@@ -1016,12 +1016,12 @@ void render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
 }
 
 // Determines if the faceshape as a solid bottom edge and two vertical edges on either side
-u32 faceshape_has_full_bottom(u32 faceshape) {
+u8 faceshape_has_full_bottom(u32 faceshape) {
     return (faceshape == MB64_FACESHAPE_FULL) ||
         (faceshape >= MB64_FACESHAPE_UPPERGENTLE_1 && faceshape <= MB64_FACESHAPE_BOTTOMSLAB);
 }
 
-u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
+u8 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u32 grassType) {
     s8 abovePos[3];
     vec3_set(abovePos, pos[0], pos[1]+1, pos[2]);
     struct mb64_grid_obj *tile = get_grid_tile(pos);
@@ -1235,7 +1235,7 @@ void render_bars_top(s8 pos[3], u8 connections[5]) {
 }
 
 // Find if specific tile of water is fullblock or shallow
-u32 is_water_fullblock(s8 pos[3]) {
+u8 is_water_fullblock(s8 pos[3]) {
     s8 abovePos[3];
     if (AT_CEILING(pos[1])) {
         if (MATERIAL(mb64_lopt_boundary_mat).type != MAT_CUTOUT) return TRUE;
@@ -1388,7 +1388,7 @@ enum ProcessTileRenderModes {
 // Returns true if tile should be processed
 // If in vplex screen processing mode, can also override target mat type in order
 // to render screen
-u32 do_process(u8 *targetMatType, u32 processTileRenderMode) {
+u8 do_process(u8 *targetMatType, u32 processTileRenderMode) {
     switch (processTileRenderMode) {
         case PROCESS_TILE_NORMAL:
             return (*targetMatType != MAT_TRANSPARENT);
@@ -2561,7 +2561,7 @@ u32 shift_tile_data_indices(u32 tiletypeIndex) {
     return tiledataIndex;
 }
 
-u32 is_cull_marker_useless(s8 pos[3]) {
+u8 is_cull_marker_useless(s8 pos[3]) {
     s8 adjacentPos[3];
 
     for (u8 dir = 0; dir < 6; dir++) {
@@ -3459,7 +3459,7 @@ void sb_init(void) {
 }
 
 // Keep cursor in bounds
-s32 snap_cursor(void) {
+u8 snap_cursor(void) {
     s32 gridmax = mb64_grid_min + mb64_grid_size - 1;
     s32 gridymax = (mb64_curr_boundary & MB64_BOUNDARY_CEILING) ? mb64_lopt_boundary_height-1 : 63;
     if (mb64_cursor_pos[0] < mb64_grid_min) {mb64_cursor_pos[0] = mb64_grid_min; return TRUE;}
