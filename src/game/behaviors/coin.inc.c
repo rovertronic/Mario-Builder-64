@@ -93,8 +93,6 @@ void bhv_green_coin_init(void) {
     cur_obj_update_floor_height();
     //if (500.0f < absf(o->oPosY - o->oFloorHeight))
     //    cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
-    if (o->oFloorHeight < -10000.0f)
-        obj_mark_for_deletion(o);
 }
 
 void bhv_yellow_coin_loop(void) {

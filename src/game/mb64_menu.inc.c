@@ -1339,7 +1339,7 @@ struct mb64_info_entry {
 
 struct mb64_info_entry mb64_credits[] = {
     {"Mario Builder 64",1},
-    {"By Rovertronic & Arthurtilly",0},
+    {"By Arthurtilly & Rovertronic",0},
     {"2024",0},
     {"",0},
     {"SD Card Support",1},
