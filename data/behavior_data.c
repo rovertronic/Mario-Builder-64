@@ -2276,7 +2276,7 @@ const BehaviorScript bhvBowser[] = {
     // Beta leftover that spawn 50 coins when Bowser is defeated
     SET_INT(oNumLootCoins, 50),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
-    SET_OBJ_PHYSICS_DEFAULT(/*Wall hitbox radius*/ 125),
+    SET_OBJ_PHYSICS_DEFAULT(/*Wall hitbox radius*/ 110),
     CALL_NATIVE(bhv_bowser_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_bowser_loop),
@@ -7183,7 +7183,7 @@ const BehaviorScript bhvSkeeter[] = {
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_LOW),
 // Higher buoyancy
-    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 125, /*Gravity*/ MB64_GRAVITY_DEFAULT, /*Bounciness*/ MB64_BOUNCINESS_DEFAULT, /*Drag strength*/ MB64_DRAG_DEFAULT, /*Friction*/ MB64_FRICTION_DEFAULT, /*Buoyancy*/ 1200, /*Unused*/ 0, 0),
+    SET_OBJ_PHYSICS(/*Wall hitbox radius*/ 110, /*Gravity*/ MB64_GRAVITY_DEFAULT, /*Bounciness*/ MB64_BOUNCINESS_DEFAULT, /*Drag strength*/ MB64_DRAG_DEFAULT, /*Friction*/ MB64_FRICTION_DEFAULT, /*Buoyancy*/ 1200, /*Unused*/ 0, 0),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_skeeter_update),
     END_LOOP(),
@@ -8175,7 +8175,7 @@ const BehaviorScript bhvShowrunner[] = {
     LOAD_ANIMATIONS(oAnimations, showrunner_anims),
     SET_FLOAT(oDrawingDistance, MB64_DRAWDIST_HIGH),
     ANIMATE(0),
-    SET_OBJ_PHYSICS_DEFAULT(/*Wall hitbox radius*/ 125),
+    SET_OBJ_PHYSICS_DEFAULT(/*Wall hitbox radius*/ 110),
     SET_HOME(),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_Showrunner),
