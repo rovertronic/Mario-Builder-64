@@ -8,11 +8,7 @@ void bhv_explosion_init(void) {
 
     o->oOpacity = 255;
 
-    if (mb64_lopt_game == MB64_GAME_BTCM) {
-        o->oDamageOrCoinValue = 4;
-    } else {
-        o->oDamageOrCoinValue = 2;
-    }
+    o->oDamageOrCoinValue = 2;
 }
 
 void bhv_explosion_loop(void) {
