@@ -1325,7 +1325,6 @@ s32 act_crawling(struct MarioState *m) {
     return FALSE;
 }
 
-u8 burnloop = 0;
 s32 act_burning_ground(struct MarioState *m) {
     if (m->input & INPUT_A_PRESSED) {
         return set_mario_action(m, ACT_BURNING_JUMP, 0);
@@ -1366,15 +1365,14 @@ s32 act_burning_ground(struct MarioState *m) {
     m->particleFlags |= PARTICLE_FIRE;
     play_sound(SOUND_MOVING_LAVA_BURN, m->marioObj->header.gfx.cameraToObject);
 
-    if ((save_file_get_badge_equip() & (1<<BADGE_BURN))) {
-        m->health -= 5;
-        burnloop++;
-        if (burnloop > 30) {
-            burnloop = 0;
-        }
-    } else {
-        m->health -= 10;
+    u32 healthLoss = 10;
+    if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
+        healthLoss *= 2;
     }
+    if (save_file_get_badge_equip() & (1<<BADGE_BURN)) {
+        healthLoss /= 2;
+    }
+    m->health -= healthLoss;
     if (m->health < 0x100) {
         set_mario_action(m, ACT_STANDING_DEATH, 0);
     }
