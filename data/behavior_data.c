@@ -5715,7 +5715,7 @@ const BehaviorScript bhvCrowbarThrow[] = {
     SET_INTERACT_TYPE(INTERACT_NONE),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO ),
 
-    SET_HITBOX_WITH_OFFSET(/*Radius*/ 80, /*Height*/ 160, /*Downwards offset*/ 80),
+    SET_HITBOX_WITH_OFFSET(/*Radius*/ 80, /*Height*/ 160, /*Downwards offset*/ 40),
 
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_crowbar_attack_loop),
