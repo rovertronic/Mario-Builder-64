@@ -98,7 +98,6 @@ void chuckya_act_1(void) {
     } else {
         if (o->oSubAction == 1) {
             o->oChuckyaNumPlayerEscapeActions += player_performed_grab_escape_action();
-            print_debug_bottom_up("%d", o->oChuckyaNumPlayerEscapeActions);
             if (o->oChuckyaNumPlayerEscapeActions > 10) {
                 o->oCommonAnchorAction = 3;
                 o->oAction = 3;

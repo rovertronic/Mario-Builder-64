@@ -71,6 +71,7 @@ void bhv_motos_player_search(void) {
 void bhv_motos_player_carry(void) {
     // Replaced with the similar MOTOS_ACT_CARRY_START, which allows for running
     cur_obj_init_animation_with_sound(MOTOS_ANIM_CARRY_START);
+    o->oChuckyaNumPlayerEscapeActions = 0;
     
     if (cur_obj_check_if_near_animation_end()) {
         if (bhv_motos_do_throw_mario())
@@ -98,6 +99,12 @@ void bhv_motos_player_pitch(void) {
 void bhv_motos_carry_run(void) {
     o->oForwardVel = 15.f; // Sped up (was 5.f)
     cur_obj_init_animation_with_sound(MOTOS_ANIM_CARRY_RUN);
+    o->oChuckyaNumPlayerEscapeActions += player_performed_grab_escape_action();
+    if (o->oChuckyaNumPlayerEscapeActions > 20) {
+        o->oAction = MOTOS_ACT_THROWN;
+        o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
+        o->oCommonAnchorAction = 3;
+    }
     
     cur_obj_play_sound_1(SOUND_AIR_HEAVEHO_MOVE);
 

@@ -2552,12 +2552,12 @@ s32 player_performed_grab_escape_action(void) {
         sPlayerGrabReleaseState = FALSE;
     }
 
-    if (sPlayerGrabReleaseState && (gPlayer1Controller->stickMag > 40.0f)) {
+    if (!sPlayerGrabReleaseState && (gPlayer1Controller->stickMag > 40.0f)) {
         sPlayerGrabReleaseState = TRUE;
         return TRUE;
     }
 
-    if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON | Z_TRIG)) {
+    if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
         return TRUE;
     }
 
