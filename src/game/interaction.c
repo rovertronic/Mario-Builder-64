@@ -739,6 +739,11 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
         s32 healMult = (save_file_get_badge_equip() & (1<<BADGE_HEAL)) ? 2 : 1;
         if (obj->oDamageOrCoinValue == 3) { //green coin
             m->healCounter += 4 * 4 * healMult;
+
+            m->numBadgePoints += healMult;
+            if (m->numBadgePoints > m->numMaxFP) {
+                m->numBadgePoints = m->numMaxFP;
+            }
         } else {//every other coin
             m->healCounter += 4 * healMult; //every other coin gives 1 hp back
         }
