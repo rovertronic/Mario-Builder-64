@@ -2262,13 +2262,7 @@ void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
     end_block_collision();
 }
 
-void check_poles(struct MarioState *m) {
-    s8 pos[3];
-
-    pos[0] = COL_POS_TO_GRID(m->pos[0]);
-    pos[1] = COL_POS_TO_GRID(m->pos[1]);
-    pos[2] = COL_POS_TO_GRID(m->pos[2]);
-
+int check_pole(struct MarioState *m, s8 pos[3]) {
     if (get_grid_tile(pos)->type == TILE_TYPE_POLE) {
         f32 poleX = GRID_TO_POS(pos[0]);
         f32 poleZ = GRID_TO_POS(pos[2]);
@@ -2292,9 +2286,27 @@ void check_poles(struct MarioState *m) {
             gMarioCurrentPole.height = poleTop - poleBottom;
             gMarioCurrentPole.poleType = 0;
             interact_pole(m, 0);
-            return;
+            return TRUE;
         }
     }
+    return FALSE;
+}
+
+void check_poles(struct MarioState *m) {
+    s8 pos[3];
+
+    pos[0] = COL_POS_TO_GRID(m->pos[0]);
+    pos[1] = COL_POS_TO_GRID(m->pos[1]);
+    pos[2] = COL_POS_TO_GRID(m->pos[2]);
+
+    if (check_pole(m, pos)) return;
+
+    s8 topPos = COL_POS_TO_GRID(m->pos[1] + 160);
+    if (topPos != pos[1]) {
+        pos[1] = topPos;
+        if (check_pole(m, pos)) return;
+    }
+
     // Iterate over polelike objects
     struct ObjectNode *listHead = &gObjectLists[OBJ_LIST_POLELIKE];
     struct Object *obj = (struct Object *) listHead->next;
