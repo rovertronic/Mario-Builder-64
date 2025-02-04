@@ -2167,12 +2167,14 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     }
 
     //withering badge
-    if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
-        mario_decay++;
-        int maxdecay = (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) ? 225 : 450;
-        if (mario_decay > maxdecay) {
-            mario_decay = 0;
-            gMarioState->health -= 0x100;
+    if ((!revent_active) && (gCamera->cutscene == 0)) {
+        if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
+            mario_decay++;
+            int maxdecay = (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) ? 225 : 450;
+            if (mario_decay > maxdecay) {
+                mario_decay = 0;
+                gMarioState->health -= 0x100;
+            }
         }
     }
 
