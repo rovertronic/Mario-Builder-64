@@ -24,6 +24,7 @@ static struct ObjectHitbox sEnemyLakituHitbox = {
  * Wait for mario to approach, then spawn the cloud and become visible.
  */
 static void enemy_lakitu_act_uninitialized(void) {
+    cur_obj_hide();
     if (o->oDistanceToMario < 2000.0f) {
         spawn_object_relative_with_scale(CLOUD_BP_LAKITU_CLOUD, 0, 0, 0, 2.0f, o, MODEL_MIST, bhvCloud);
 
@@ -57,7 +58,7 @@ static void enemy_lakitu_update_vel_y(f32 offsetY) {
  * angle toward mario.
  */
 static void enemy_lakitu_update_speed_and_angle(void) {
-    f32 minSpeed;
+    f32 minSpeed = 0.f;
     s16 turnSpeed;
 
     f32 distToMario = o->oDistanceToMario;
@@ -66,7 +67,7 @@ static void enemy_lakitu_update_speed_and_angle(void) {
     }
 
     // Move faster the farther away mario is and the faster mario is moving
-    if ((minSpeed = 1.2f * gMarioStates[0].forwardVel) < 8.0f) {
+    if ((minSpeed = 0.7f * gMarioStates[0].forwardVel) < 8.0f) {
         minSpeed = 8.0f;
     }
     o->oForwardVel = distToMario * 0.04f;
@@ -86,6 +87,7 @@ static void enemy_lakitu_update_speed_and_angle(void) {
     turnSpeed = (s16)(distToMario * 2);
     clamp_s16(&turnSpeed, 200, 4000);
     cur_obj_rotate_yaw_toward(o->oAngleToMario, turnSpeed);
+
 }
 
 /**
@@ -94,6 +96,12 @@ static void enemy_lakitu_update_speed_and_angle(void) {
  */
 static void enemy_lakitu_sub_act_no_spiny(void) {
     cur_obj_init_animation_with_sound(1);
+
+    if (o->oDistanceToMario > 2000.0f) {
+        cur_obj_hide();
+        o->oAction = ENEMY_LAKITU_ACT_UNINITIALIZED;
+        return;
+    }
 
     if (o->oEnemyLakituSpinyCooldown != 0) {
         o->oEnemyLakituSpinyCooldown--;

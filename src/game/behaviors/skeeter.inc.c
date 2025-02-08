@@ -115,7 +115,7 @@ static void skeeter_act_walk(void) {
             o->oSkeeterTurningAwayFromWall = TRUE;
             if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
                 o->oSkeeterTargetAngle = cur_obj_reflect_move_angle_off_wall();
-            } else if (!obj_resolve_object_collisions(o->oSkeeterTargetAngle)) {
+            } else if (!obj_resolve_object_collisions(&o->oSkeeterTargetAngle)) {
                 o->oSkeeterTurningAwayFromWall = FALSE;
             }
 
