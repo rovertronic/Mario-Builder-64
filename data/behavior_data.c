@@ -9394,7 +9394,7 @@ const BehaviorScript bhvBadge[] = {
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_FLOAT(oDrawingDistance,MB64_DRAWDIST_HIGH),
     SET_INT(oIntangibleTimer, 0),
-    SET_HITBOX_WITH_OFFSET(/*Radius*/ 100, /*Height*/ 120, /*Downwards offset*/ 60),
+    SET_HITBOX_WITH_OFFSET(/*Radius*/ 100, /*Height*/ 110, /*Downwards offset*/ 55),
     BILLBOARD(),
     DELAY(1), // allows star trigger star time to count triggers
     BEGIN_LOOP(),
