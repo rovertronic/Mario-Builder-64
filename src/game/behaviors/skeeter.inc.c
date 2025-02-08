@@ -27,6 +27,8 @@ struct SkeeterRelPos sSkeeterRelPositions[] = {
 static void skeeter_spawn_waves(void) {
     s32 i;
 
+    if (o->activeFlags & ACTIVE_FLAG_FAR_AWAY) return;
+
     for (i = 0; i < 4; i++) {
         spawn_object_relative_with_scale(0, sSkeeterRelPositions[i].relPosX, 0, sSkeeterRelPositions[i].relPosZ, 0.8f, o,
                                          MODEL_IDLE_WATER_WAVE, bhvSkeeterWave);
@@ -110,7 +112,14 @@ static void skeeter_act_walk(void) {
                 o->oSkeeterWaitTime = random_linear_offset(20, 30);
             }
 
-            if (!(o->oSkeeterTurningAwayFromWall = obj_bounce_off_walls_edges_objects(&o->oSkeeterTargetAngle))) {
+            o->oSkeeterTurningAwayFromWall = TRUE;
+            if (o->oMoveFlags & OBJ_MOVE_HIT_WALL) {
+                o->oSkeeterTargetAngle = cur_obj_reflect_move_angle_off_wall();
+            } else if (!obj_resolve_object_collisions(o->oSkeeterTargetAngle)) {
+                o->oSkeeterTurningAwayFromWall = FALSE;
+            }
+
+            if (!(o->oSkeeterTurningAwayFromWall)) {
                 if (o->oDistanceToMario < 500.0f) {
                     o->oSkeeterTargetAngle = o->oAngleToMario;
                     o->oSkeeterTargetForwardVel = 20.0f;
@@ -153,7 +162,7 @@ void bhv_skeeter_update(void) {
     }
 
     obj_check_attacks(&sSkeeterHitbox, o->oAction);
-    cur_obj_move_standard(-78);
+    cur_obj_move_standard(78);
     cur_obj_die_if_on_death_barrier(MB64_STAR_HEIGHT);
 }
 
