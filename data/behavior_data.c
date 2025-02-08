@@ -2665,6 +2665,7 @@ const BehaviorScript bhvLllRotatingHexFlame[] = {
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_lll_rotating_hex_flame_loop),
         ADD_INT(oAnimState, 1),
+        SET_INT(oInteractStatus, INT_STATUS_NONE),
     END_LOOP(),
 };
 
