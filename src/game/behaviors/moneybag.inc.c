@@ -28,7 +28,7 @@ void bhv_moneybag_init(void) {
     o->oGravity = MB64_GRAVITY_DEFAULT_STEP;
     o->oFriction = 1.0f;
     o->oBuoyancy = MB64_BUOYANCY_DEFAULT_STEP;
-    o->oWallHitboxRadius = 120.0f;
+    o->oWallHitboxRadius = 80.0f;
     cur_obj_init_animation(0);
     o->oOpacity = 0;
 }
