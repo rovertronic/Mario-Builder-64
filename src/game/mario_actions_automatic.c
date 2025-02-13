@@ -667,8 +667,9 @@ s32 act_grabbed(struct MarioState *m) {
         queue_rumble_data(5, 60);
 #endif
 
-        return set_mario_action(m, (m->forwardVel >= 0.0f) ? ACT_THROWN_FORWARD : ACT_THROWN_BACKWARD,
+        set_mario_action(m, (m->forwardVel >= 0.0f) ? ACT_THROWN_FORWARD : ACT_THROWN_BACKWARD,
                                 thrown);
+        return FALSE;
     }
 
     set_mario_animation(m, MARIO_ANIM_BEING_GRABBED);
