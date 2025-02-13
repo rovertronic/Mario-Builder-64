@@ -9,6 +9,14 @@ void df_follow_parent(s32 context) {
     o->oFaceAngleYaw = o->parentObj->oFaceAngleYaw;// + o->oAngleVelYaw;
 }
 
+void df_hide_during_screenshot(UNUSED s32 context) {
+    if (mb64_prepare_level_screenshot) {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    } else {
+        o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+    }
+}
+
 void df_orange_number(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oHomeX = o->oPosX;
@@ -278,6 +286,10 @@ void df_booser(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
 }
 
+void df_skeeter(s32 context) {
+    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, SKEETER_ANIM_WATER_IDLE);
+}
+
 void df_spinner_flame(s32 context) {
     df_follow_parent(context);
     if (gGlobalTimer % 2) o->oAnimState++;
@@ -481,19 +493,7 @@ void df_timedbox(s32 context) {
         o->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MAKER_TIMEDBOX];
     }
     if (context == MB64_DF_CONTEXT_MAIN) {
-        if (mb64_prepare_level_screenshot) {
-            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-        } else {
-            o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-        }
-    }
-}
-
-void df_imbuemarker(s32 context) {
-    if (mb64_prepare_level_screenshot) {
-        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-    } else {
-        o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        df_hide_during_screenshot(context);
     }
 }
 
