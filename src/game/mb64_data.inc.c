@@ -2584,7 +2584,7 @@ char *mb64_tips[] = {
     "Tip: Entering a famous code while on a certain menu\n   might reward you with a little surprise...",
     "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
     "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch of new enemies and collectible badges!",
-    "Tip: Remember to use the Take Screenshot button to capture\n   a thumbnail before publishing your level!",
+    "Tip: Remember to use the Set Level Thumbnail option to\n   set a thumbnail before publishing your level!",
     "Tip: You can place stars and other objects inside of\n   enemies or boxes as loot!",
     "Tip: Make sure to place a star or other reward inside\n   any bosses you place, otherwise they'll drop nothing!",
     "Tip: Placing Wooden Platforms on top of each other\n   will cause them to combine into one object.",
