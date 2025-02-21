@@ -272,7 +272,7 @@ s32 arc_to_goal_pos(Vec3f a0, Vec3f a1, f32 yVel, f32 gravity) {
 void king_bobomb_act_return_home(void) { // act 5
     switch (o->oSubAction) {
         case KING_BOBOMB_SUB_ACT_RETURN_HOME_JUMP:
-            f32 dx = o->oKingBobombHomeX - o->oPosX;
+            ;f32 dx = o->oKingBobombHomeX - o->oPosX;
             f32 dz = o->oKingBobombHomeZ - o->oPosZ;
             if (o->oTimer == 0) {
                 cur_obj_play_sound_2(SOUND_OBJ_KING_BOBOMB_JUMP);
