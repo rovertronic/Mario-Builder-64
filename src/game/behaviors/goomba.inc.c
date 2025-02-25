@@ -117,7 +117,7 @@ void bhv_goomba_init(void) {
 
     o->oDrawingDistance = sGoombaProperties[o->oGoombaSize].drawDistance;
     o->oDamageOrCoinValue = sGoombaProperties[o->oGoombaSize].damage;
-    o->oWallHitboxRadius = MIN(40.f * o->oGoombaScale, 125.f);
+    o->oWallHitboxRadius = MIN(40.f * o->oGoombaScale, 110.f);
 
     o->oGravity = -4.f;
 
