@@ -2623,8 +2623,7 @@ void cur_obj_get_interact_floor(u8 move_standard_or_object_step) {
 
 void obj_drop_mario(void) {
     o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
-    if (o->prevObj) {
-        o->prevObj = NULL;
+    if (gMarioState->usedObj == o) {
         gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
     }
 }

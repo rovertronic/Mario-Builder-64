@@ -152,12 +152,6 @@ void bhv_motos_death(void) {
             coin->oPosY = o->oPosY + 310.0f;
             coin->oMoveAngleYaw = o->oAngleToMario + random_float() * 1024.0f;
         }
-
-        if (o->prevObj) {
-            o->prevObj = NULL;
-            o->oInteractStatus &= ~INT_STATUS_GRABBED_MARIO;
-            gMarioObject->oInteractStatus |= INT_STATUS_MARIO_THROWN_BY_OBJ | INT_STATUS_MARIO_DROPPED_BY_OBJ;
-        }
     }
 }
 
