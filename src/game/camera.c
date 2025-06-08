@@ -1223,7 +1223,7 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset = u16AngleRoundToEighth(s8DirModeYawOffset);
     }
     if (gPlayer1Controller->buttonPressed & U_JPAD) {
-        s8DirModeYawOffset = gMarioState->faceAngle[1];
+        s8DirModeYawOffset = gMarioState->faceAngle[1] + 0x8000;
     }
 
     lakitu_zoom(400.0f, 0x900);
