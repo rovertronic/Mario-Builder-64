@@ -1595,15 +1595,17 @@ struct mb64_info_entry mb64_level_sharing[] = {
     {"",0},
     {"You can upload your .mb64 files online and download levels", 0},
     {"from other people at Level Share Square, the dedicated",0},
-    {"website, or in the mb64-levels channel in Rovertronic's ",0},
-    {"Discord server.",0},
-    {"",0},
+    {"website.",0},
     {"",0},
     {"Level Share Square",1},
     {"           https://levelsharesquare.com/levels",0},
     {"",0},
-    {"Rovertronic Roundtable",1},
-    {"               https://discord.gg/X7vvvKu",0},
+    {"",0},
+    {"Be sure to also join the official Mario Builder 64 Discord",0},
+    {"server for updates, announcements and discussion!",0},
+    {"",0},
+    {"Mario Builder 64 Discord",1},
+    {"             https://discord.gg/4qt2DP4Dyy",0},
     {NULL, 0},
 };
 
@@ -1768,7 +1770,7 @@ void render_mb64_mm_menu(char * strlist[], char *title, u8 ct) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     if ((mb64_mm_state == MM_MAIN) || (mb64_mm_state == MM_MAIN_LIMITED)) {
-        print_maker_string_ascii(243, 188 + mb64_menu_title_vels[0], "v1.1 rc2", MB64_TEXT_WHITE);
+        print_maker_string_ascii(243, 188 + mb64_menu_title_vels[0], "v1.1", MB64_TEXT_WHITE);
         print_maker_string_ascii_centered(160, 175 + mb64_menu_title_vels[0], "By: Arthurtilly & Rovertronic", MB64_TEXT_WHITE);
     }
 
