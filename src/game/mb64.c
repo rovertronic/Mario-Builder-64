@@ -3161,22 +3161,48 @@ void save_level(void) {
     if (mb64_prepare_level_screenshot) {
         u8 screenshot_failure = TRUE;
 
-        for (s32 i=0;i<4096;i++) {
-            //take a "screenshot" of the level & burn in a painting frame
-            if (mb64_painting_frame_1_rgba16[(i*2)+1]==0x00) {
-                //painting
-                if (gEmulator & INSTANT_INPUT_BLACKLIST) {
-                    mb64_save.piktcher[i/64][i%64] = (gFramebuffers[(sRenderedFramebuffer+2)%3][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
-                } else {
-                    mb64_save.piktcher[i/64][i%64] = (gFramebuffers[0][ ((s32)((i/64)*3.75f))*320 + (s32)((i%64)*3.75f+40) ] | 1);
-                }
+        for (s32 x=0;x<64;x++) {
+            for (s32 y=0;y<64;y++) {
+                int i = (y*64)+x;
+                //take a "screenshot" of the level & burn in a painting frame
+                if (mb64_painting_frame_1_rgba16[(i*2)+1]==0x00) {
+                    // Take samples (double resolution)
+                    u16 sample[4];
+                    for (s32 sx=0;sx<2;sx++) {
+                        for (s32 sy=0;sy<2;sy++) {
+                            if (gEmulator & INSTANT_INPUT_BLACKLIST) {
+                                sample[sy*2+sx] = (gFramebuffers[(sRenderedFramebuffer+2)%3][ ((s32)((y*2+sy)*1.875f))*320 + (s32)((x*2+sx)*1.875f+40) ] | 1);
+                            } else {
+                                sample[sy*2+sx] = (gFramebuffers[0][ ((s32)((y*2+sy)*1.875f))*320 + (s32)((x*2+sx)*1.875f+40) ] | 1);
+                            }
+                        }
+                    }
 
-                if (mb64_save.piktcher[i/64][i%64] > 1) { //assumes all fb rgba16 values is initialized to 1 or 0
-                    screenshot_failure = FALSE;
+                    // Average 4 samples into single pixel
+                    f32 avgColor[3] = {0.0f,0.0f,0.0f}; //floating point is overkill but might as well make it accurate as possible
+                    for (int c = 0; c < 3; c++) {
+                        int shift;
+                        switch(c) {
+                            case 0: shift=11;break;
+                            case 1: shift=6;break;
+                            case 2: shift=1;break;
+                        }
+                        for (int s = 0; s < 4; s++) {
+                            avgColor[c] += (f32)((sample[s] >> shift) & 0x1F);
+                        }
+                        avgColor[c] /= 4.0f; //average of 4 samples
+                    }
+
+                    mb64_save.piktcher[y][x] = ((u16)avgColor[0] << 11) | ((u16)avgColor[1] << 6) | ((u16)avgColor[2] << 1) | 1;
+                    //mb64_save.piktcher[y][x] = sample[0];
+
+                    if (mb64_save.piktcher[y][x] > 1) { //assumes all fb rgba16 values is initialized to 1 or 0
+                        screenshot_failure = FALSE;
+                    }
+                } else {
+                    //painting frame
+                    mb64_save.piktcher[y][x] = ((mb64_painting_frame_1_rgba16[(i*2)]<<8) | mb64_painting_frame_1_rgba16[(i*2)+1]);
                 }
-            } else {
-                //painting frame
-                mb64_save.piktcher[i/64][i%64] = ((mb64_painting_frame_1_rgba16[(i*2)]<<8) | mb64_painting_frame_1_rgba16[(i*2)+1]);
             }
         }
 
