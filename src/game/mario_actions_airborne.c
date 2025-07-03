@@ -18,7 +18,7 @@
 #include "ingame_menu.h"
 #include "platform_displacement.h"
 #include "rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 #include "engine/surface_collision.h"
 
 u8 bullet_fuel = 0;

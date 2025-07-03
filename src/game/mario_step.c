@@ -20,7 +20,7 @@
 #include "platform_displacement.h"
 #include "mario_actions_airborne.h"
 
-#include "mb64.h"
+#include "mb64/main.h"
 
 #include "config.h"
 

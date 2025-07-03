@@ -7,7 +7,7 @@
 #include "game/camera.h"
 #include "game/screen_transition.h"
 #include "game/paintings.h"
-#include "game/mb64.h"
+#include "mb64/main.h"
 
 #include "make_const_nonconst.h"
 

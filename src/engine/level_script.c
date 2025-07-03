@@ -30,7 +30,7 @@
 #include "game/puppyprint.h"
 #include "game/puppylights.h"
 #include "game/emutest.h"
-#include "game/mb64.h"
+#include "mb64/main.h"
 
 #include "config.h"
 

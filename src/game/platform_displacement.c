@@ -10,7 +10,7 @@
 #include "game_init.h"
 #include "types.h"
 #include "sm64.h"
-#include "mb64.h"
+#include "mb64/main.h"
 #include "behavior_data.h"
 
 u16 D_8032FEC0 = 0;

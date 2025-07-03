@@ -28,7 +28,7 @@
 #include "config.h"
 #include "puppyprint.h"
 #include "rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 #include "profiling.h"
 #include "mario_actions_automatic.h"
 

@@ -1,3 +1,13 @@
+#include "main.h"
+
+#include "game/area.h"
+#include "game/game_init.h"
+#include "game/object_list_processor.h"
+#include "behavior_data.h"
+#include "engine/math_util.h"
+
+extern void super_cum_working(struct Object *obj, s32 animIndex);
+
 void df_follow_parent(s32 context) {
     Vec3f tmp;
     s16 ang[3];
@@ -17,6 +27,7 @@ void df_hide_during_screenshot(UNUSED s32 context) {
     }
 }
 
+extern s16 mb64_camera_angle;
 void df_orange_number(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oHomeX = o->oPosX;
@@ -150,6 +161,8 @@ void df_exbox(s32 context) {
 void df_koopa(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, 7);
 }
+
+#include "actors/group17.h"
 void df_ktq(s32 context) {
     df_koopa(context);
     if (context != MB64_DF_CONTEXT_INIT) return;

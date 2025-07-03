@@ -29,7 +29,7 @@
 #include "engine/colors.h"
 #include "profiling.h"
 #include "rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 #ifdef S2DEX_TEXT_ENGINE
 #include "s2d_engine/init.h"
 #endif

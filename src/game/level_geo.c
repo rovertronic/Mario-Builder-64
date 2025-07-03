@@ -8,7 +8,7 @@
 #include "camera.h"
 #include "envfx_snow.h"
 #include "level_geo.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 /**
  * Geo function that generates a displaylist for environment effects such as

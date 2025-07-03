@@ -15,7 +15,7 @@
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];

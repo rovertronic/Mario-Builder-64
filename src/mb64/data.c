@@ -1,3 +1,18 @@
+#include "main.h"
+#include "data.h"
+#include "display_funcs.h"
+
+#include "segment_symbols.h"
+
+#include "actors/b/header.h"
+#include "actors/maker/header.h"
+#include "behavior_data.h"
+
+#include "actors/group0.h"
+#include "actors/common0.h"
+#include "actors/group14.h"
+#include "actors/group17.h"
+
 f32 mb64_camera_zoom_table[][2] = {
     {900.0f,50.0f},
     {900.0f,400.0f},
@@ -516,45 +531,6 @@ struct mb64_terrain_poly *mb64_terrain_water_quadlists[] = {
     mb64_terrain_topwater_quads,
 };
 
-enum {
-    TILE_TYPE_EMPTY,
-    // Flippable tiles
-    TILE_TYPE_SLOPE = 2,
-    TILE_TYPE_DSLOPE,
-    TILE_TYPE_SLAB,
-    TILE_TYPE_DSLAB,
-    TILE_TYPE_CORNER,
-    TILE_TYPE_DCORNER,
-    TILE_TYPE_ICORNER, // Inner Corner
-    TILE_TYPE_DICORNER, // Down Inner Corner
-    TILE_TYPE_SCORNER, // Sloped Corner
-    TILE_TYPE_DSCORNER, // Down Sloped Corner
-    TILE_TYPE_ISCORNER, // Inverted Sloped Corner
-    TILE_TYPE_DISCORNER, // Down Inverted Sloped Corner
-    TILE_TYPE_UGENTLE,
-    TILE_TYPE_DUGENTLE,
-    TILE_TYPE_LGENTLE,
-    TILE_TYPE_DLGENTLE,
-
-    TILE_END_OF_FLIPPABLE,
-    TILE_TYPE_BLOCK = TILE_END_OF_FLIPPABLE,
-    TILE_TYPE_SSLOPE,
-    TILE_TYPE_SSLAB,
-    TILE_TYPE_CULL,
-    TILE_TYPE_TROLL,
-    TILE_TYPE_FENCE,
-    TILE_TYPE_POLE,
-    TILE_TYPE_BARS,
-
-    TILE_TYPE_WATER, // only blocks that are empty otherwise
-};
-
-struct mb64_terrain_info {
-    char *name;
-    Gfx *button;
-    struct mb64_terrain *terrain;
-};
-
 struct mb64_terrain_info mb64_terrain_info_list[] = {
     {NULL, NULL, NULL},
     {NULL, NULL, NULL},
@@ -586,279 +562,9 @@ struct mb64_terrain_info mb64_terrain_info_list[] = {
     {"Water", mat_b_btn_water, NULL},
 };
 
-struct mb64_boundary_quad floor_boundary[] = {
-    {{{32, 0, 32}, {32, 0, 0}, {0, 0, 32}, {0, 0, 0}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
-    {{{0, 0, 32}, {0, 0, 0}, {-32, 0, 32}, {-32, 0, 0}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
-    {{{32, 0, 0}, {32, 0, -32}, {0, 0, 0}, {0, 0, -32}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
-    {{{0, 0, 0}, {0, 0, -32}, {-32, 0, 0}, {-32, 0, -32}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
-};
-
-struct mb64_boundary_quad floor_edge_boundary[] = {
-    {{{48, 0, 32}, {48, 0, 0}, {32, 0, 32}, {32, 0, 0}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{48, 0, 32}, {32, 0, 32}, {48, 0, 48}, {32, 0, 48}}, {-8, 8}, {8, -8}, FALSE, FALSE, TRUE},
-    {{{32, 0, 48}, {32, 0, 32}, {0, 0, 48}, {0, 0, 32}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
-
-    {{{-32, 0, 32}, {-32, 0, 0}, {-48, 0, 32}, {-48, 0, 0}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{-32, 0, 48}, {-32, 0, 32}, {-48, 0, 48}, {-48, 0, 32}}, {-8, 8}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{0, 0, 48}, {0, 0, 32}, {-32, 0, 48}, {-32, 0, 32}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
-
-    {{{48, 0, 0}, {48, 0, -32}, {32, 0, 0}, {32, 0, -32}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{48, 0, -32}, {48, 0, -48}, {32, 0, -32}, {32, 0, -48}}, {-8, 8}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{32, 0, -32}, {32, 0, -48}, {0, 0, -32}, {0, 0, -48}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
-
-    {{{-32, 0, 0}, {-32, 0, -32}, {-48, 0, 0}, {-48, 0, -32}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
-    {{{-32, 0, -48}, {-48, 0, -48}, {-32, 0, -32}, {-48, 0, -32}}, {-8, 8}, {8, -8}, FALSE, FALSE, TRUE},
-    {{{0, 0, -32}, {0, 0, -48}, {-32, 0, -32}, {-32, 0, -48}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
-};
-
-struct mb64_boundary_quad wall_boundary[] = {
-    {{{32, 1, 0}, {32, 1, -32}, {32, 0, 0}, {32, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-    {{{32, 1, 32}, {32, 1, 0}, {32, 0, 32}, {32, 0, 0}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-
-    {{{0, 1, 32}, {32, 1, 32}, {0, 0, 32}, {32, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-    {{{-32, 1, 32}, {0, 1, 32}, {-32, 0, 32}, {0, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-
-    {{{-32, 1, 0}, {-32, 1, 32}, {-32, 0, 0}, {-32, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-    {{{-32, 1, -32}, {-32, 1, 0}, {-32, 0, -32}, {-32, 0, 0}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-
-    {{{0, 1, -32}, {-32, 1, -32}, {0, 0, -32}, {-32, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-    {{{32, 1, -32}, {0, 1, -32}, {32, 0, -32}, {0, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
-};
-
 extern Gfx mat_maker_MakerMCWater[];
 extern Gfx mat_maker_MakerMCLava[];
 extern Gfx mat_maker_MakerMCFlowingLava[];
-
-enum mb64_materials {
-    MB64_MATLIST_START,
-
-    // Terrain
-    MB64_MAT_GRASS = MB64_MATLIST_START,
-    MB64_MAT_GRASS_OLD,
-    MB64_MAT_CARTOON_GRASS,
-    MB64_MAT_DARK_GRASS,
-    MB64_MAT_HMC_GRASS,
-    MB64_MAT_ORANGE_GRASS,
-    MB64_MAT_RED_GRASS,
-    MB64_MAT_PURPLE_GRASS,
-    MB64_MAT_SAND,
-    MB64_MAT_JRB_SAND,
-    MB64_MAT_SNOW,
-    MB64_MAT_SNOW_OLD,
-
-    MB64_MAT_DIRT,
-    MB64_MAT_SANDDIRT,
-    MB64_MAT_LIGHTDIRT,
-    MB64_MAT_HMC_DIRT,
-    MB64_MAT_ROCKY_DIRT,
-    MB64_MAT_DIRT_OLD,
-    MB64_MAT_WAVY_DIRT,
-    MB64_MAT_WAVY_DIRT_BLUE,
-    MB64_MAT_SNOWDIRT,
-    MB64_MAT_PURPLE_DIRT,
-    MB64_MAT_HMC_LAKEGRASS,
-
-    MB64_MATLIST_TERRAIN_END,
-
-    // Stone
-    MB64_MAT_STONE = MB64_MATLIST_TERRAIN_END,
-    MB64_MAT_HMC_STONE,
-    MB64_MAT_HMC_MAZEFLOOR,
-    MB64_MAT_CCM_ROCK,
-    MB64_MAT_TTM_FLOOR,
-    MB64_MAT_TTM_ROCK,
-    MB64_MAT_COBBLESTONE,
-    MB64_MAT_JRB_WALL,
-    MB64_MAT_GABBRO,
-    MB64_MAT_RHR_STONE,
-    MB64_MAT_LAVA_ROCKS,
-    MB64_MAT_VOLCANO_WALL,
-    MB64_MAT_RHR_BASALT,
-    MB64_MAT_OBSIDIAN,
-    MB64_MAT_CASTLE_STONE,
-    MB64_MAT_JRB_UNDERWATER,
-    MB64_MAT_SNOW_ROCK,
-    MB64_MAT_ICY_ROCK,
-    MB64_MAT_DESERT_STONE,
-    MB64_MAT_RHR_OBSIDIAN,
-    MB64_MAT_JRB_STONE,
-
-    MB64_MATLIST_STONE_END,
-
-    // Bricks
-    MB64_MAT_BRICKS = MB64_MATLIST_STONE_END,
-    MB64_MAT_DESERT_BRICKS,
-    MB64_MAT_RHR_BRICK,
-    MB64_MAT_HMC_BRICK,
-    MB64_MAT_LIGHTBROWN_BRICK,
-    MB64_MAT_WDW_BRICK,
-    MB64_MAT_TTM_BRICK,
-    MB64_MAT_C_BRICK,
-    MB64_MAT_BBH_BRICKS,
-    MB64_MAT_ROOF_BRICKS,
-    MB64_MAT_C_OUTSIDEBRICK,
-    MB64_MAT_SNOW_BRICKS,
-    MB64_MAT_JRB_BRICKS,
-    MB64_MAT_SNOW_TILE_SIDE,
-    MB64_MAT_TILESBRICKS,
-
-    MB64_MATLIST_BRICKS_END,
-
-    // Tiling
-    MB64_MAT_TILES = MB64_MATLIST_BRICKS_END,
-    MB64_MAT_C_TILES,
-    MB64_MAT_DESERT_TILES,
-    MB64_MAT_VP_BLUETILES,
-    MB64_MAT_SNOW_TILES,
-    MB64_MAT_JRB_TILETOP,
-    MB64_MAT_JRB_TILESIDE,
-    MB64_MAT_HMC_TILES,
-    MB64_MAT_GRANITE_TILES,
-    MB64_MAT_RHR_TILES,
-    MB64_MAT_VP_TILES,
-    MB64_MAT_DIAMOND_PATTERN,
-    MB64_MAT_C_STONETOP,
-    MB64_MAT_SNOW_BRICK_TILES,
-
-    MB64_MATLIST_TILES_END,
-
-    // Cut Stone
-    MB64_MAT_DESERT_BLOCK = MB64_MATLIST_TILES_END,
-    MB64_MAT_VP_BLOCK,
-    MB64_MAT_BBH_STONE,
-    MB64_MAT_BBH_STONE_PATTERN,
-    MB64_MAT_PATTERNED_BLOCK,
-    MB64_MAT_HMC_SLAB,
-    MB64_MAT_RHR_BLOCK,
-    MB64_MAT_GRANITE_BLOCK,
-    MB64_MAT_C_STONESIDE,
-    MB64_MAT_C_PILLAR,
-    MB64_MAT_BBH_PILLAR,
-    MB64_MAT_RHR_PILLAR,
-
-    MB64_MATLIST_CUTSTONE_END,
-
-    // Wood
-    MB64_MAT_WOOD = MB64_MATLIST_CUTSTONE_END,
-    MB64_MAT_BBH_WOOD_FLOOR,
-    MB64_MAT_BBH_WOOD_WALL,
-    MB64_MAT_C_WOOD,
-    MB64_MAT_JRB_WOOD,
-    MB64_MAT_JRB_SHIPSIDE,
-    MB64_MAT_JRB_SHIPTOP,
-    MB64_MAT_BBH_HAUNTED_PLANKS,
-    MB64_MAT_BBH_ROOF,
-    MB64_MAT_SOLID_WOOD,
-    MB64_MAT_RHR_WOOD,
-
-    MB64_MATLIST_WOOD_END,
-
-    // Metal
-    MB64_MAT_BBH_METAL = MB64_MATLIST_WOOD_END,
-    MB64_MAT_JRB_METALSIDE,
-    MB64_MAT_JRB_METAL,
-    MB64_MAT_C_BASEMENTWALL,
-    MB64_MAT_DESERT_TILES2,
-    MB64_MAT_VP_RUSTYBLOCK,
-
-    MB64_MATLIST_METAL_END,
-
-    // Buildings
-    MB64_MAT_C_CARPET = MB64_MATLIST_METAL_END,
-    MB64_MAT_C_WALL,
-    MB64_MAT_ROOF,
-    MB64_MAT_C_ROOF,
-    MB64_MAT_SNOW_ROOF,
-    MB64_MAT_BBH_WINDOW,
-    MB64_MAT_HMC_LIGHT,
-    MB64_MAT_VP_CAUTION,
-    MB64_MAT_RR_BLOCKS,
-    MB64_MAT_STUDDED_TILE,
-    MB64_MAT_TTC_BLOCK,
-    MB64_MAT_TTC_SIDE,
-    MB64_MAT_TTC_WALL,
-    MB64_MAT_FLOWERS,
-
-    MB64_MATLIST_BUILDING_END,
-
-    // Hazards
-    MB64_MAT_LAVA = MB64_MATLIST_BUILDING_END,
-    MB64_MAT_LAVA_OLD,
-    MB64_MAT_SERVER_ACID,
-    MB64_MAT_BURNING_ICE,
-    MB64_MAT_QUICKSAND,
-    MB64_MAT_DESERT_SLOWSAND,
-    MB64_MAT_VP_VOID,
-
-    MB64_MATLIST_HAZARD_END,
-    
-    // Transparent
-    MB64_MAT_RHR_MESH = MB64_MATLIST_HAZARD_END,
-    MB64_MAT_VP_MESH,
-    MB64_MAT_HMC_MESH,
-    MB64_MAT_BBH_MESH,
-    MB64_MAT_PINK_MESH,
-    MB64_MAT_TTC_MESH,
-    MB64_MAT_ICE,
-    MB64_MAT_CRYSTAL,
-    MB64_MAT_VP_SCREEN,
-
-    MB64_MATLIST_END,
-
-    // Retro
-    MB64_MAT_RETRO_GROUND = MB64_MATLIST_END,
-    MB64_MAT_RETRO_BRICKS,
-    MB64_MAT_RETRO_TREETOP,
-    MB64_MAT_RETRO_TREEPLAT,
-    MB64_MAT_RETRO_BLOCK,
-    MB64_MAT_RETRO_BLUEGROUND,
-    MB64_MAT_RETRO_BLUEBRICKS,
-    MB64_MAT_RETRO_BLUEBLOCK,
-    MB64_MAT_RETRO_WHITEBRICK,
-    MB64_MAT_RETRO_LAVA,
-    MB64_MAT_RETRO_UNDERWATERGROUND,
-
-    // Minecraft
-    MB64_MAT_MC_DIRT,
-    MB64_MAT_MC_GRASS,
-    MB64_MAT_MC_COBBLESTONE,
-    MB64_MAT_MC_STONE,
-    MB64_MAT_MC_OAK_LOG_TOP,
-    MB64_MAT_MC_OAK_LOG_SIDE,
-    MB64_MAT_MC_OAK_LEAVES,
-    MB64_MAT_MC_WOOD_PLANKS,
-    MB64_MAT_MC_SAND,
-    MB64_MAT_MC_BRICKS,
-    MB64_MAT_MC_LAVA,
-    MB64_MAT_MC_FLOWING_LAVA,
-    MB64_MAT_MC_GLASS,
-};
-
-u8 mb64_matlist[] = {
-    MB64_MATLIST_START,
-    MB64_MATLIST_TERRAIN_END,
-    MB64_MATLIST_STONE_END,
-    MB64_MATLIST_BRICKS_END,
-    MB64_MATLIST_TILES_END,
-    MB64_MATLIST_CUTSTONE_END,
-    MB64_MATLIST_WOOD_END,
-    MB64_MATLIST_METAL_END,
-    MB64_MATLIST_BUILDING_END,
-    MB64_MATLIST_HAZARD_END,
-    MB64_MATLIST_END,
-};
-char *mb64_matlist_names[] = {
-    "Terrain",
-    "Stone",
-    "Bricks",
-    "Tiling",
-    "Cut Stone",
-    "Wood",
-    "Metal",
-    "Other",
-    "Hazards",
-    "Transparent",
-};
 
 struct mb64_material mb64_mat_table[] = {
     // Terrain
@@ -1049,28 +755,6 @@ u32 mb64_render_mode_table[] = {
     /* MAT_CUTOUT_NOCULL */ G_RM_AA_ZB_TEX_EDGE | G_RM_AA_ZB_TEX_EDGE2,
     /* MAT_TRANSPARENT */   G_RM_AA_ZB_XLU_SURF | G_RM_AA_ZB_XLU_SURF2,
     /* MAT_SCREEN */        G_RM_VPLEX_SCREEN   | G_RM_VPLEX_SCREEN2,
-};
-
-struct mb64_topmaterial mb64_topmat_table[] = {
-    {MB64_MAT_GRASS,         mat_maker_MakerGrassSide},
-    {MB64_MAT_SAND,          mat_maker_MakerSandSide},
-    {MB64_MAT_SNOW,          mat_maker_MakerSnowSide},
-    {MB64_MAT_TILES,         mat_maker_MakerTileEdge},
-    {MB64_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
-    {MB64_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
-    {MB64_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
-    {MB64_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide},
-    {MB64_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim},
-    {MB64_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim},
-    {MB64_MAT_FLOWERS,       mat_maker_MakerFlowerEdge},
-    {MB64_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
-    {MB64_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
-    {MB64_MAT_LAVA_ROCKS,    mat_maker_MakerLavaRockEdge},
-    {MB64_MAT_DARK_GRASS,    mat_maker_MakerDarkGrassSide},
-    {MB64_MAT_CARTOON_GRASS, mat_maker_MakerCartoonGrassSide},
-    {MB64_MAT_ORANGE_GRASS,  mat_maker_MakerOrangeGrassSide},
-    {MB64_MAT_RED_GRASS,     mat_maker_MakerRedGrassSide},
-    {MB64_MAT_PURPLE_GRASS,  mat_maker_MakerPurpleGrassSide},
 };
 
 enum mb64_fences {
@@ -1373,22 +1057,6 @@ struct mb64_custom_theme mb64_default_custom = {
 };
 struct mb64_custom_theme mb64_curr_custom_theme;
 
-// Returns full tile definition (struct mb64_tilemat_def)
-#define TILE_MATDEF(matid) (mb64_theme_table[mb64_lopt_theme].mats[matid])
-// Returns main material (struct mb64_material)
-#define MATERIAL(matid) (mb64_mat_table[TILE_MATDEF(matid).mat])
-
-// Returns TRUE if given material has a unique top texture
-#define HAS_TOPMAT(matid) (TILE_MATDEF(matid).topmat != TILE_MATDEF(matid).mat)
-// Returns top material's topmat struct (struct mb64_material)
-#define TOPMAT(matid) (mb64_mat_table[TILE_MATDEF(matid).topmat])
-
-// Returns current fence texture
-#define FENCE_TEX() (mb64_fence_texs[mb64_theme_table[mb64_lopt_theme].fence])
-#define POLE_TEX()  (mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].gfx)
-#define BARS_TEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][0])
-#define BARS_TOPTEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][1])
-#define WATER_TEX() (mb64_water_texs[mb64_theme_table[mb64_lopt_theme].water])
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
     { 0, MODEL_MARIOS_ROCKET_BOOTS,  bhvWingCap,           0, TRUE,  0},
@@ -1408,105 +1076,6 @@ struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
     { 0, MODEL_YELLOW_COIN,        bhvSingleCoinGetsSpawned, 3, FALSE, 1},
     { 0, MODEL_NONE,               bhvThreeCoinsSpawn, 3, FALSE, 3},
     { 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
-};
-
-enum {
-    OBJECT_TYPE_SETTINGS,
-    OBJECT_TYPE_1, // empty, used to be for screenshot
-    OBJECT_TYPE_STAR,
-    OBJECT_TYPE_RED_COIN_STAR,
-    OBJECT_TYPE_GOOMBA,
-    OBJECT_TYPE_BIG_GOOMBA,
-    OBJECT_TYPE_TINY_GOOMBA,
-    OBJECT_TYPE_PIRANHA_PLANT,
-    OBJECT_TYPE_BIG_PIRANHA_PLANT,
-    OBJECT_TYPE_TINY_PIRANHA_PLANT,
-    OBJECT_TYPE_KOOPA,
-    OBJECT_TYPE_COIN,
-    OBJECT_TYPE_GREEN_COIN,
-    OBJECT_TYPE_RED_COIN,
-    OBJECT_TYPE_BLUE_COIN,
-    OBJECT_TYPE_BLUE_COIN_SWITCH,
-    OBJECT_TYPE_NOTEBLOCK,
-    OBJECT_TYPE_BOBOMB,
-    OBJECT_TYPE_CHUCKYA,
-    OBJECT_TYPE_BULLY,
-    OBJECT_TYPE_CHILL_BULLY,
-    OBJECT_TYPE_BULLET_BILL,
-    OBJECT_TYPE_HEAVE_HO,
-    OBJECT_TYPE_MOTOS,
-    OBJECT_TYPE_TREE,
-    OBJECT_TYPE_EXCL_BOX,
-    OBJECT_TYPE_MARIO_SPAWN,
-    OBJECT_TYPE_REX,
-    OBJECT_TYPE_PODOBOO,
-    OBJECT_TYPE_CRABLET,
-    OBJECT_TYPE_HAMMER_BRO,
-    OBJECT_TYPE_FIRE_BRO,
-    OBJECT_TYPE_CHICKEN,
-    OBJECT_TYPE_PHANTASM,
-    OBJECT_TYPE_WARP_PIPE,
-    OBJECT_TYPE_BADGE,
-    OBJECT_TYPE_KING_BOBOMB,
-    OBJECT_TYPE_KING_WHOMP,
-    OBJECT_TYPE_BIG_BOO,
-    OBJECT_TYPE_BIG_BULLY,
-    OBJECT_TYPE_BIG_CHILL_BULLY,
-    OBJECT_TYPE_WIGGLER,
-    OBJECT_TYPE_BOWSER,
-    OBJECT_TYPE_PLATFORM_TRACK,
-    OBJECT_TYPE_PLATFORM_LOOPING,
-    OBJECT_TYPE_BOWLING_BALL,
-    OBJECT_TYPE_KOOPA_THE_QUICK,
-    OBJECT_TYPE_PURPLE_SWITCH,
-    OBJECT_TYPE_TIMED_BOX,
-    OBJECT_TYPE_RECOVERY_HEART,
-    OBJECT_TYPE_TEST_MARIO,// Fake type, used for the Test mario preview
-    OBJECT_TYPE_THWOMP,
-    OBJECT_TYPE_WHOMP,
-    OBJECT_TYPE_GRINDEL,
-    OBJECT_TYPE_LAKITU,
-    OBJECT_TYPE_FLY_GUY,
-    OBJECT_TYPE_SNUFIT,
-    OBJECT_TYPE_AMP,
-    OBJECT_TYPE_BOO,
-    OBJECT_TYPE_MR_I,
-    OBJECT_TYPE_SCUTTLEBUG,
-    OBJECT_TYPE_BOWSER_BOMB,
-    OBJECT_TYPE_FIRE_SPINNER,
-    OBJECT_TYPE_COIN_FORMATION,
-    OBJECT_TYPE_RED_FLAME,
-    OBJECT_TYPE_BLUE_FLAME,
-    OBJECT_TYPE_FIRE_SPITTER,
-    OBJECT_TYPE_FLAMETHROWER,
-    OBJECT_TYPE_SPINDRIFT,
-    OBJECT_TYPE_MR_BLIZZARD,
-    OBJECT_TYPE_MONEYBAG,
-    OBJECT_TYPE_SKEETER,
-    OBJECT_TYPE_POKEY,
-    OBJECT_TYPE_BBOX_SMALL,
-    OBJECT_TYPE_BBOX_NORMAL,
-    OBJECT_TYPE_BBOX_CRAZY,
-    OBJECT_TYPE_DIAMOND,
-    OBJECT_TYPE_SIGN,
-    OBJECT_TYPE_BUDDY,
-    OBJECT_TYPE_BUTTON,
-    OBJECT_TYPE_ON_OFF_BLOCK,
-    OBJECT_TYPE_WOODPLAT,
-    OBJECT_TYPE_RFBOX,
-    OBJECT_TYPE_CULL_PREVIEW, // also fake type
-    OBJECT_TYPE_SHOWRUNNER,
-    OBJECT_TYPE_CROWBAR,
-    OBJECT_TYPE_MASK,
-    OBJECT_TYPE_TOAD,
-    OBJECT_TYPE_TUXIE,
-    OBJECT_TYPE_UKIKI,
-    OBJECT_TYPE_MOLEMAN,
-    OBJECT_TYPE_COBIE,
-    OBJECT_TYPE_CONVEYOR,
-    OBJECT_TYPE_TIMEDBLOCK,
-    OBJECT_TYPE_TRIGGER,
-    OBJECT_TYPE_TRIGGER_STAR,
 };
 
 /*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
@@ -1701,98 +1270,6 @@ char *txt_conveyor[] = {
     "Downwards (On-Off)",
 };
 
-enum {
-    MB64_BUTTON_SETTINGS,
-    MB64_BUTTON_TEST,
-    MB64_BUTTON_TERRAIN,
-    MB64_BUTTON_SLOPE,
-    MB64_BUTTON_TROLL,
-    MB64_BUTTON_STAR,
-    MB64_BUTTON_GOOMBA,
-    MB64_BUTTON_PIRANHA,
-    MB64_BUTTON_KOOPA,
-    MB64_BUTTON_COIN,
-    MB64_BUTTON_BLANK,
-    MB64_BUTTON_GCOIN,
-    MB64_BUTTON_CORNER,
-    MB64_BUTTON_ICORNER,
-    MB64_BUTTON_RCOIN,
-    MB64_BUTTON_BCOIN,
-    MB64_BUTTON_NOTEBLOCK,
-    MB64_BUTTON_CULL,
-    MB64_BUTTON_BOBOMB,
-    MB64_BUTTON_CHUCKYA,
-    MB64_BUTTON_BULLY,
-    MB64_BUTTON_BULLET,
-    MB64_BUTTON_HEAVEHO,
-    MB64_BUTTON_MOTOS,
-    MB64_BUTTON_TREE,
-    MB64_BUTTON_EXCLA,
-    MB64_BUTTON_SPAWN,
-    MB64_BUTTON_REX,
-    MB64_BUTTON_PODOBOO,
-    MB64_BUTTON_CRABLET,
-    MB64_BUTTON_HAMMER_BRO,
-    MB64_BUTTON_CHICKEN,
-    MB64_BUTTON_PHANTASM,
-    MB64_BUTTON_PIPE,
-    MB64_BUTTON_BADGE,
-    MB64_BUTTON_WATER,
-    MB64_BUTTON_FENCE,
-    MB64_BUTTON_KING_BOBOMB,
-    MB64_BUTTON_WIGGLER,
-    MB64_BUTTON_BOWSER,
-    MB64_BUTTON_MPLAT,
-    MB64_BUTTON_BBALL,
-    MB64_BUTTON_KTQ,
-    MB64_BUTTON_SSLOPE,
-    MB64_BUTTON_SLAB,
-    MB64_BUTTON_PURPLE_SWITCH,
-    MB64_BUTTON_TIMED_BOX,
-    MB64_BUTTON_HEART,
-    MB64_BUTTON_FORMATION,
-    MB64_BUTTON_VSLAB,
-    MB64_BUTTON_SCORNER,
-    MB64_BUTTON_UGENTLE,
-    MB64_BUTTON_LGENTLE,
-    MB64_BUTTON_BARS,
-    MB64_BUTTON_THWOMP,
-    MB64_BUTTON_WHOMP,
-    MB64_BUTTON_POLE,
-    MB64_BUTTON_VEXCLA,
-    MB64_BUTTON_LAKITU,
-    MB64_BUTTON_FLYGUY,
-    MB64_BUTTON_SNUFIT,
-    MB64_BUTTON_AMP,
-    MB64_BUTTON_BOO,
-    MB64_BUTTON_MR_I,
-    MB64_BUTTON_SCUTTLEBUG,
-    MB64_BUTTON_SPINDRIFT,
-    MB64_BUTTON_BLIZZARD,
-    MB64_BUTTON_MONEYBAG,
-    MB64_BUTTON_SKEETER,
-    MB64_BUTTON_POKEY,
-    MB64_BUTTON_MINE,
-    MB64_BUTTON_FIRE,
-    MB64_BUTTON_FLAMETHROWER,
-    MB64_BUTTON_FIRE_SPITTER,
-    MB64_BUTTON_FIRE_SPINNER,
-    MB64_BUTTON_BREAKABLE,
-    MB64_BUTTON_SMALL_BOX,
-    MB64_BUTTON_DIAMOND,
-    MB64_BUTTON_NPC,
-    MB64_BUTTON_NPCCM,
-    MB64_BUTTON_BUTTON,
-    MB64_BUTTON_BLOCK,
-    MB64_BUTTON_WOODPLAT,
-    MB64_BUTTON_RFBOX,
-    MB64_BUTTON_SHOWRUN,
-    MB64_BUTTON_POWER,
-    MB64_BUTTON_CONVEYOR,
-    MB64_BUTTON_ISCORNER,
-    MB64_BUTTON_TRIGGER,
-};
-
 u8 mb64_star_idlist[] = {OBJECT_TYPE_STAR, OBJECT_TYPE_RED_COIN_STAR, OBJECT_TYPE_TRIGGER_STAR};
 u8 mb64_goomba_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYPE_TINY_GOOMBA};
 u8 mb64_piranha_idlist[] = {OBJECT_TYPE_PIRANHA_PLANT, OBJECT_TYPE_BIG_PIRANHA_PLANT, OBJECT_TYPE_TINY_PIRANHA_PLANT};
@@ -1927,28 +1404,9 @@ f32 mb64_toolbox_transition_btn_ty;
 Gfx * mb64_toolbox_transition_btn_gfx;
 Gfx * mb64_toolbox_transition_btn_old_gfx;
 f32 mb64_toolbox_transition_progress;
+s32 mb64_toolbox_x_offset = 0;
 
 // went a bit Define Crazy over here, im just quirky like that
-#define TOOLBOX_PAGE_WIDTH 9
-#define TOOLBOX_NUM_PAGES 2
-
-#define TOOLBOX_WIDTH (TOOLBOX_PAGE_WIDTH * TOOLBOX_NUM_PAGES)
-#define TOOLBOX_HEIGHT 5
-
-// gap between the pages
-#define TOOLBOX_PAGE_OFFSET 30
-#define TOOLBOX_SIZE (TOOLBOX_WIDTH * TOOLBOX_HEIGHT)
-
-// X offset based on scroll
-#define TOOLBOX_OFFSET_MIN 34
-#define TOOLBOX_OFFSET_MAX ((TOOLBOX_OFFSET_MIN - (32*TOOLBOX_PAGE_WIDTH)) - TOOLBOX_PAGE_OFFSET)
-
-s32 mb64_toolbox_x_offset = TOOLBOX_OFFSET_MIN;
-
-// macros to get position of a certain toolbox position
-#define GET_TOOLBOX_X(i) (mb64_toolbox_x_offset + (((i) % TOOLBOX_WIDTH)*32) + ((i) % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH ? TOOLBOX_PAGE_OFFSET : 0))
-#define GET_TOOLBOX_Y(i) (220 - (((i) / TOOLBOX_WIDTH)*32))
-
 u8 mb64_toolbox[TOOLBOX_SIZE];
 u8 mb64_toolbox_params[TOOLBOX_SIZE];
 //Different toolboxes for different game styles
@@ -1985,161 +1443,6 @@ u8 mb64_toolbox_vanilla[TOOLBOX_SIZE] = {
 
     MB64_BUTTON_NOTEBLOCK, MB64_BUTTON_BUTTON, MB64_BUTTON_BLOCK, MB64_BUTTON_CONVEYOR, _, _, _, _, _,
     MB64_BUTTON_SPAWN, MB64_BUTTON_SMALL_BOX, MB64_BUTTON_MINE, _, _, _, _, _, _,
-};
-
-char *mb64_costume_string_table[] = {
-    "Mario",
-    "Fire Mario",
-    "Glitchy",
-    "Luigi",
-    "Wario",
-    "Disco Mario",
-    "Undead Pirate",
-    "Mocap Mario",
-    "Darius",
-    "Butler Mario",
-    "Retro Mario",
-    "Thwompio",
-    "Builder Mario",
-    "Showrunner",
-    "Cosmic Phantasm",
-};
-
-char *mb64_music_type_string_table[] = {
-    "Level",
-    "Koopa Race",
-    "Bossfight",
-};
-
-char *mb64_music_album_string_table[] = {
-    "Super Mario 64 OST",
-    "Beyond the Cursed Mirror OST",
-    "ROM Hack Music Ports",
-    "Retro 2D Mario Music"
-};
-
-char *mb64_music_vanilla_string_table[] = {
-    "Bob-omb Battlefield",
-    "Slider",
-    "Dire, Dire Docks",
-    "Dire, Dire Docks (Underwater)",
-    "Lethal Lava Land",
-    "Cool, Cool Mountain",
-    "Big Boo's Haunt",
-    "Hazy Maze Cave",
-    "Hazy Maze Cave (Haze)",
-    "Koopa's Road",
-    "Stage Boss",
-    "Koopa's Theme",
-    "Ultimate Koopa",
-    "Inside the Castle Walls",
-};
-
-char *mb64_music_btcm_string_table[] = {
-    "Cosmic Castle",
-    "Red-Hot Reservoir",
-    "Lonely Floating Farm",
-    "Jurassic Savanna",
-    "The Phantom Strider",
-    "Virtuaplex",
-    "Immense Residence",
-    "Thwomp Towers",
-    "Cursed Boss",
-    "Road To The Boss",
-    "Urbowser",
-    "The Show's Finale",
-    "Parasite Moon",
-    "AGAMEMNON",
-};
-
-char *mb64_music_romhack_string_table[] = {
-    "Bianco Hills (Super Mario Sunshine)",
-    "Sky and Sea (Super Mario Sunshine)",
-    "Secret Course (Super Mario Sunshine)",
-    "Comet Observatory (Mario Galaxy)",
-    "Buoy Base Galaxy (Mario Galaxy)",
-    "Battlerock Galaxy (Mario Galaxy)",
-    "Ghostly Galaxy (Mario Galaxy)",
-    "Purple Comet (Mario Galaxy)",
-    "Honeybloom Galaxy (Mario Galaxy 2)",
-    "Piranha Creeper Creek (3D World)",
-    "Desert (New Super Mario Bros.)",
-
-    "Koopa Troopa Beach (Mario Kart 64)",
-    "Frappe Snowland (Mario Kart 64)",
-    "Bowser's Castle (Mario Kart 64)",
-    "Rainbow Road (Mario Kart 64)",
-    "Waluigi Pinball (Mario Kart DS)",
-    "Rainbow Road (Mario Kart 8)",
-
-    "Mario's Pad (Super Mario RPG)",
-    "Nimbus Land (Super Mario RPG)",
-    "Forest Maze (Super Mario RPG)",
-    "Sunken Ship (Super Mario RPG)",
-
-    "Dry Dry Desert (Paper Mario 64)",
-    "Forever Forest (Paper Mario 64)",
-    "Petal Meadows (Paper Mario: TTYD)",
-    "Riddle Tower (Paper Mario: TTYD)",
-    "Rogueport Sewers (Paper Mario: TTYD)",
-    "X-Naut Fortress (Paper Mario: TTYD)",
-    "Flipside (Super Paper Mario)",
-    "Lineland Road (Super Paper Mario)",
-    "Sammer Kingdom (Super Paper Mario)",
-    "Floro Caverns (Super Paper Mario)",
-    "Overthere Stair (Super Paper Mario)",
-
-    "Yoshi's Tropical Island (Mario Party)",
-    "Rainbow Castle (Mario Party)",
-    "Behind Yoshi Village (Partners in Time)",
-    "Gritzy Desert (Partners in Time)",
-    "Bumpsy Plains (Bowser's Inside Story)",
-    "Deep Castle (Bowser's Inside Story)",
-
-    "Overworld (Yoshi's Island)",
-    "Underground (Yoshi's Island)",
-    "Title (Yoshi's Story)",
-
-    "Kokiri Forest (Ocarina of Time)",
-    "Lost Woods (Ocarina of Time)",
-    "Gerudo Valley (Ocarina of Time)",
-    "Stone Tower Temple (Majora's Mask)",
-    "Outset Island (Wind Waker)",
-    "Lake Hylia (Twilight Princess)",
-    "Gerudo Desert (Twilight Princess)",
-    "Skyloft (Skyward Sword)",
-
-    "Frantic Factory (Donkey Kong 64)",
-    "Hideout Helm (Donkey Kong 64)",
-    "Creepy Castle (Donkey Kong 64)",
-    "Gloomy Galleon (Donkey Kong 64)",
-    "Fungi Forest (Donkey Kong 64)",
-    "Crystal Caves (Donkey Kong 64)",
-    "Angry Aztec (Donkey Kong 64)",
-    "In a Snow-Bound Land (DKC 2)",
-
-    "Bubblegloop Swamp (Banjo-Kazooie)",
-    "Freezeezy Peak (Banjo-Kazooie)",
-    "Gobi's Valley (Banjo-Kazooie)",
-
-    "Factory Inspection (Kirby 64)",
-    "Green Garden (Bomberman 64)",
-    "Black Fortress (Bomberman 64)",
-    "Windy Hill (Sonic Adventure)",
-    "Sky Tower (Pokemon Mystery Dungeon)",
-    "Youkai Mountain (Touhou 10)",
-    "Forest Temple (Final Fantasy VII)",
-    "Band Land (Rayman)",
-};
-
-char *mb64_music_retro_string_table[] = {
-    "Overworld (Super Mario Bros.)",
-    "Castle Mix (Super Mario Bros.)",
-    "Overworld (Super Mario Bros. 2)",
-    "Overworld Mix (Super Mario Bros. 3)",
-    "Fortress (Super Mario Bros. 3)",
-    "Athletic (Super Mario World)",
-    "Castle (Super Mario World)",
 };
 
 u8 seq_musicmenu_array[] = {
@@ -2259,14 +1562,6 @@ u8 seq_musicmenu_array[] = {
     SEQ_SMW_CASTLE,
 };
 
-char *mb64_envfx_string_table[] = {
-    "None",
-    "Ashes",
-    "Snow",
-    "Rain",
-    "Sandstorm",
-};
-
 //envfx table
 u8 mb64_envfx_table[] = {
     ENVFX_NONE,         // no effects
@@ -2274,38 +1569,6 @@ u8 mb64_envfx_table[] = {
     ENVFX_SNOW,     // unused
     ENVFX_RAIN,
     ENVFX_SANDSTORM,
-};
-
-char *mb64_theme_string_table[] = {
-    "Generic",
-    "Shifting Sand Land",
-    "Red Hot Reservoir",
-    "Hazy Maze Cave",
-    "Peach's Castle",
-    "Virtuaplex",
-    "Snowy Palace",
-    "Big Boo's Haunt",
-    "Jolly Roger Bay",
-    "Retroland",
-    "Custom",
-    "Minecraft",
-};
-
-//themes moved to mb64.h to work with object df
-//example: ice bully appears in snow theme
-//impossible to extern enum : (
-
-char *mb64_bg_string_table[] = {
-    "Ocean Hills",
-    "Cloudy Sky",
-    "Fiery Sky",
-    "Green Cave",
-    "Haunted Forest", // 4 - doesn't generate black chasm
-    "Ice Mountains",
-    "Desert Pyramids",
-    "Underwater City",
-    "Pink Sky",
-    "None", // 9 - doesn't generate black chasm
 };
 
 u8 mb64_boundary_table[] = {
@@ -2318,15 +1581,6 @@ u8 mb64_boundary_table[] = {
 };
 
 #define AT_CEILING(y) ((mb64_curr_boundary & MB64_BOUNDARY_CEILING) && ((y) == mb64_lopt_boundary_height-1))
-
-char *mb64_bound_string_table[] = {
-    "Void",
-    "Plain",
-    "Valley",
-    "Chasm",
-    "Plateau",
-    "Interior",
-};
 
 //skybox table
 u8 *mb64_skybox_table[] = {
@@ -2352,203 +1606,6 @@ u8 *mb64_skybox_table[] = {
     NULL,
 };
 
-extern char *mb64_get_floor_name(s32, char *);
-extern char *mb64_get_coinstar_str(s32, char *);
-extern char *mb64_get_waterlevel_name(s32, char *);
-extern char *mb64_get_boundaryheight_name(s32, char *);
-extern char *mb64_get_category(s32, char *);
-extern char *mb64_get_custom_mat(s32, char *);
-extern void reload_bg(void);
-extern void reload_theme(void);
-extern void reload_boundary_and_gfx(void);
-
-extern void music_type_changed(void);
-extern void music_category_changed(void);
-extern void song_changed(void);
-
-struct mb64_settings_button mb64_settings_misc_buttons[] = {
-    {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
-    {"Costume:", &mb64_lopt_costume, mb64_costume_string_table, ARRAY_COUNT(mb64_costume_string_table), NULL, NULL},
-};
-
-#define MISC_COINSTAR_INDEX 0
-#define MISC_WATER_INDEX 1
-#define MISC_COSTUME_INDEX 2
-
-struct mb64_settings_button mb64_settings_misc_buttons_vanilla[] = {
-    {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
-};
-#define MISCV_COINSTAR_INDEX 0
-#define MISCV_WATER_INDEX 1
-
-struct mb64_settings_button mb64_settings_env_buttons[] = {
-    {"Theme:",   &mb64_lopt_theme,   mb64_theme_string_table,   ARRAY_COUNT(mb64_theme_string_table) - 1, NULL, reload_theme},
-    {"Skybox:",  &mb64_lopt_bg,      mb64_bg_string_table,      ARRAY_COUNT(mb64_bg_string_table),    NULL, reload_bg},
-    {"Effect:",  &mb64_lopt_envfx,   mb64_envfx_string_table,   ARRAY_COUNT(mb64_envfx_string_table), NULL, NULL},
-};
-#define ENV_THEME_INDEX 0
-#define ENV_SKYBOX_INDEX 1
-#define ENV_EFFECT_INDEX 2
-
-struct mb64_settings_button mb64_settings_boundary_buttons[] = {
-    {"Boundary:", &mb64_lopt_boundary, mb64_bound_string_table, ARRAY_COUNT(mb64_bound_string_table), NULL, reload_boundary_and_gfx},
-    {"Material:",   &mb64_lopt_boundary_mat, NULL, NUM_MATERIALS_PER_THEME, mb64_get_floor_name, reload_boundary_and_gfx}, // Filled in by code
-    {"Height:", &mb64_lopt_boundary_height,   NULL, 65, mb64_get_boundaryheight_name, reload_boundary_and_gfx},
-};
-
-#define BOUNDARY_BOUNDARY_INDEX 0
-#define BOUNDARY_TILE_INDEX 1
-#define BOUNDARY_HEIGHT_INDEX 2
-
-struct mb64_settings_button mb64_settings_music_buttons[] = {
-    {"Type:", &mb64_lopt_seq_seqtype, mb64_music_type_string_table, ARRAY_COUNT(mb64_music_type_string_table), NULL, music_type_changed},
-    {"Album:",   &mb64_lopt_seq_album,  mb64_music_album_string_table,  ARRAY_COUNT(mb64_music_album_string_table), NULL, music_category_changed},
-    {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
-};
-#define MUSIC_ALBUM_INDEX 1
-#define MUSIC_SONG_INDEX 2
-
-struct mb64_settings_button mb64_settings_mat_selector[] = {
-    {"Category:", NULL, NULL, ARRAY_COUNT(mb64_matlist) - 1, mb64_get_category,   NULL},
-    {"Material:", NULL, NULL, 0, mb64_get_custom_mat, NULL},
-};
-
-char *mb64_fence_names[] = {
-    "Wooden (1)",
-    "Wooden (2)",
-    "Wooden (3)",
-    "Barbed Wire",
-    "Metal",
-    "Netting",
-    "Castle",
-    "Stanchion",
-    "Mansion",
-    "Rope",
-    "Snowy (1)",
-    "Snowy (2)",
-};
-
-char *mb64_bar_names[] = {
-    "Grille",
-    "Mesh",
-    "Fine Mesh",
-    "Red Grille",
-    "Red Mesh",
-    "Pink Mesh",
-    "Clock Grille",
-    "Desert Grille",
-    "Cage Bars",
-};
-
-char *mb64_water_names[] = {
-    "Default",
-    "Swampy",
-};
-
-struct mb64_settings_button mb64_settings_other_selectors[] = {
-    {"Fence:", &mb64_curr_custom_theme.fence, mb64_fence_names, ARRAY_COUNT(mb64_fence_names), NULL, NULL},
-    {"Iron Mesh:", &mb64_curr_custom_theme.bars, mb64_bar_names, ARRAY_COUNT(mb64_bar_names), NULL, NULL},
-    {"Water:", &mb64_curr_custom_theme.water, mb64_water_names, ARRAY_COUNT(mb64_water_names), NULL, NULL},
-};
-
-char *mb64_settings_menu_names[] = {
-    "Environment",
-    "Level Boundary",
-    "Music",
-    "Miscellaneous",
-    "System",
-};
-
-char *mb64_settings_system_buttons[] = {
-    "Save & Quit",
-    "Play Level",
-    "Set Level Thumbnail",
-    //"Level Size:",
-    //"Apply Size Change (Dangerous!)",
-};
-
-
-void draw_mb64_settings_misc(f32,f32);
-void draw_mb64_settings_misc_vanilla(f32,f32);
-void draw_mb64_settings_env(f32,f32);
-void draw_mb64_settings_boundary(f32,f32);
-void draw_mb64_settings_music(f32,f32);
-void draw_mb64_settings_system(f32,f32);
-
-void (*mb64_settings_menus[])(f32, f32) = {
-    draw_mb64_settings_env,
-    draw_mb64_settings_boundary,
-    draw_mb64_settings_music,
-    draw_mb64_settings_misc,
-    draw_mb64_settings_system,
-};
-
-u8 mb64_settings_menu_lengths[] = {
-    ARRAY_COUNT(mb64_settings_env_buttons),
-    ARRAY_COUNT(mb64_settings_boundary_buttons),
-    ARRAY_COUNT(mb64_settings_music_buttons),
-    ARRAY_COUNT(mb64_settings_misc_buttons),
-    ARRAY_COUNT(mb64_settings_system_buttons),
-};
-
-#define SETTINGS_ENV_INDEX 0
-#define SETTINGS_BOUNDARY_INDEX 1
-#define SETTINGS_MUSIC_INDEX 2
-#define SETTINGS_MISC_INDEX 3
-#define SETTINGS_SYSTEM_INDEX 4
-
-// These get copied over to the above array
-struct mb64_settings_button mb64_settings_music_albums[] = {
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_vanilla_string_table, ARRAY_COUNT(mb64_music_vanilla_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_btcm_string_table, ARRAY_COUNT(mb64_music_btcm_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_romhack_string_table, ARRAY_COUNT(mb64_music_romhack_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_retro_string_table, ARRAY_COUNT(mb64_music_retro_string_table), NULL, song_changed},
-};
-
-struct mb64_settings_button mb64_settings_backtomainmenu[] = {
-};
-
-char *mb64_gamemode_string_table[] = {
-    "Vanilla SM64",
-    "Cursed Mirror",
-};
-
-char *mb64_levelsize_string_table[] = {
-    "Small (32)",
-    "Medium (48)",
-    "Large (64)",
-};
-
-char *mb64_template_string_table[] = {
-    "Grass",
-    "Sky",
-    "Desert",
-    "Snow",
-    "Lava",
-    "Water",
-    "Cave",
-    "Spooky",
-    "Castle",
-    "Retro",
-};
-
-struct mb64_template {
-    u8 music[2]; // vanilla, btcm
-    u32 envfx:3;
-    u32 bg:4;
-    u32 theme:4;
-    u32 boundaryMat:4;
-    u32 boundaryHeight:6;
-    u32 boundary:3;
-    u32 water:6;
-
-    u32 spawnHeight:6;
-    u32 platform:1; // spawns 3 blocks below spawn height
-    u32 platformmat:4;
-};
-
 struct mb64_template mb64_templates[] = {
     /* Grass */  {{0, 16}, 0, 0, MB64_THEME_GENERIC,   0, 0,  1, 0,    2,  FALSE, 0},   // BoB, Floating Farm
     /* Sky */    {{1, 46},   0, 1, MB64_THEME_GENERIC,   0, 0,  0, 0,    10, TRUE,  3},   // Slider, Nimbus Land
@@ -2562,44 +1619,6 @@ struct mb64_template mb64_templates[] = {
     /* Retro */  {{96,96},   0, 1, MB64_THEME_RETRO,     0, 0,  4, 0,    2,  FALSE, 0},   // RETRO!!!!!!!!!
 };
 
-struct mb64_settings_button mb64_mode_settings_buttons[] = {
-    {"Mode:", &mb64_lopt_game, mb64_gamemode_string_table, ARRAY_COUNT(mb64_gamemode_string_table), NULL, NULL},
-    {"Size:", &mb64_lopt_size, mb64_levelsize_string_table, ARRAY_COUNT(mb64_levelsize_string_table), NULL, NULL},
-    {"Template:", &mb64_lopt_template, mb64_template_string_table, ARRAY_COUNT(mb64_template_string_table), NULL, NULL},
-};
-
-char *mb64_tips[] = {
-    "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
-    "Tip: Use D-Pad | to change the camera's\n   zoom level while building!",
-    "Tip: Press L and R at the same time to copy\n the tile or object the cursor is on!",
-    "Tip: You can place objects or tiles inside\n   water blocks to submerge them!",
-    "Tip: The thin Iron Meshes can be used to create walls\n   that require a Vanish Cap to pass through.",
-    "Tip: Mesh materials can be used as both\n   hangable ceilings and Vanish Cap walls.",
-    "Tip: Objects such as coin formations or bosses\n   can use up the object limit rather quickly.",
-    "Tip: The available items inside an Item Box will change\n   depending on the chosen gamemode.",
-    "Tip: Thwomps and Grindels will use the height they are\n   placed at as the peak of their movement.",
-    "Tip: If you hit the vertex limit, use Cull Markers\n   wherever you can to optimise your level!",
-    "Tip: If you want to rename your level, simply rename the\n   .mb64 file itself.",
-    "Tip: Entering and exiting water from the side with a shell\n   will let you transition between riding and swimming!",
-    "Tip: Entering a famous code while on a certain menu\n   might reward you with a little surprise...",
-    "Tip: Transparent materials such as water, flames or ice\n   can look strange when layered together, so watch out.",
-    "Tip: Using the Cursed Mirror gamemode will let you use a\n   bunch of new enemies and collectible badges!",
-    "Tip: Remember to use the Set Level Thumbnail option to\n   set a thumbnail before publishing your level!",
-    "Tip: You can place stars and other objects inside of\n   enemies or boxes as loot!",
-    "Tip: Make sure to place a star or other reward inside\n   any bosses you place, otherwise they'll drop nothing!",
-    "Tip: Placing Wooden Platforms on top of each other\n   will cause them to combine into one object.",
-    "Tip: Many objects and enemies can be placed in the\n   same tile as coin rings or On-Off Blocks.",
-    "Tip: On-Off Switches and coins can be placed inside\n   enemies to appear when they are killed!",
-    "Tip: The Reinforced Box will not break unless hit by\n a Bob-omb, Bullet Bill, or other destructive object!",
-// BTCM
-    "Tip: The Double Time badge extends the timer of\n   hidden corkboxes and blue coin switches!",
-    "Tip: Badges that the player collects will be kept\n   as permanent collectibles even after death.",
-    "Tip: You can use the Burden badges as a punishment\n   when touched, or an optional challenge!",
-    "Tip: Green Coins heal the player for 4 HP when collected,\n   or fully with the Heal Plus badge.",
-    "Tip: Badges can be placed inside enemies or boxes!",
-};
-#define NUM_BTCM_TIPS 5
-
 u8 mb64_text_colors[][3] = {
     {255, 255, 255},
     {255, 255, 0},
@@ -2607,15 +1626,6 @@ u8 mb64_text_colors[][3] = {
     {150, 150, 0},
     {255, 0, 0},
     {0, 150, 255},
-};
-
-enum TextColors {
-    MB64_TEXT_WHITE,
-    MB64_TEXT_YELLOW,
-    MB64_TEXT_GRAY,
-    MB64_TEXT_DARK_YELLOW,
-    MB64_TEXT_RED,
-    MB64_TEXT_LIGHTBLUE,
 };
 
 struct mb64_dialog_topic mb64_dialog_topics_greetings[] = {
@@ -2682,12 +1692,6 @@ struct mb64_dialog_subject mb64_dialog_subjects[] = {
 };
 
 #define NUM_DIALOG_SUBJECT_COUNT 6
-
-struct ImbueData {
-    u32 coins;
-    u32 model;
-    u32 color;
-};
 
 #define IMBUE_YELLOW 0xFFFF00FF
 #define IMBUE_GREEN 0x00DD00FF

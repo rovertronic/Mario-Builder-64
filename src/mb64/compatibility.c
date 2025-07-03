@@ -1,3 +1,7 @@
+#include "main.h"
+
+#include "game/puppyprint.h"
+
 // These can be updated to legacy structs whenever the memory layout changes.
 #define Version_1_0_Save struct mb64_level_save_header
 #define Version_1_0_Obj struct mb64_obj

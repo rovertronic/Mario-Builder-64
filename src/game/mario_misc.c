@@ -31,7 +31,7 @@
 #include "src/engine/surface_load.h"
 #include "spawn_sound.h"
 #include "mario.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 #include "config.h"
 

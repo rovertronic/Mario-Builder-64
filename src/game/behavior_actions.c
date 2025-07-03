@@ -42,7 +42,7 @@
 #include "puppylights.h"
 #include "object_collision.h"
 #include "rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 // #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"

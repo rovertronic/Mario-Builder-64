@@ -506,7 +506,7 @@ u32 profiler_get_cpu_microseconds();
 u32 profiler_get_rsp_microseconds();
 u32 profiler_get_rdp_microseconds();
 
-#include "mb64.h"
+#include "mb64/main.h"
 
 void print_basic_profiling(void) {
     char textBytes[90];

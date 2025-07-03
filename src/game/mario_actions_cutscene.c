@@ -28,7 +28,7 @@
 #include "rumble_init.h"
 #include "rovent.h"
 #include "actors/group0.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 // static struct Object *sIntroWarpPipeObj;
 // static struct Object *sEndPeachObj;

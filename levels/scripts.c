@@ -13,7 +13,7 @@
 #include "actors/group0.h"
 #include "actors/group14.h"
 #include "actors/group17.h"
-#include "game/mb64.h"
+#include "mb64/main.h"
 
 #include "levels/menu/header.h"
 #include "levels/intro/header.h"

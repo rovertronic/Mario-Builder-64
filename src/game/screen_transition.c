@@ -12,7 +12,7 @@
 #include "screen_transition.h"
 #include "segment2.h"
 #include "sm64.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 u8 sTransitionFadeTimer = 0;
 u16 sTransitionTextureAngle = 0;

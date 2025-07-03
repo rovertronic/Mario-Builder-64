@@ -1,5 +1,16 @@
-#ifndef mb64_h
-#define mb64_h
+#pragma once
+
+#include "types.h"
+#include "data.h"
+
+#include "model_ids.h"
+#include "dialog_ids.h"
+#include "seq_ids.h"
+#include "sounds.h"
+#include "surface_terrains.h"
+#include "levels/scripts.h"
+#include "game/level_geo.h"
+
 #include "libcart/ff/ff.h"
 
 #define MB64_TILE_POOL_SIZE 20000
@@ -18,6 +29,80 @@
 #define MAX_FILE_NAME_SIZE 41
 #define MAX_USERNAME_SIZE 31
 
+
+extern s8 mb64_cursor_pos[3];
+
+//LEVEL SETTINGS INDEX
+extern u8 mb64_lopt_costume;
+
+extern u8 mb64_lopt_seq[5]; // Song index
+extern u8 mb64_lopt_seq_seqtype; // Level Music, Race Music, Boss Music 
+extern u8 mb64_lopt_seq_album; // Category
+extern u8 mb64_lopt_seq_song; // Song index within category
+
+extern u8 mb64_lopt_envfx;
+extern u8 mb64_lopt_theme;
+extern u8 mb64_lopt_bg;
+extern u8 mb64_lopt_boundary_mat;
+extern u8 mb64_lopt_boundary;
+extern u8 mb64_lopt_boundary_height;
+extern u8 mb64_lopt_game;
+extern u8 mb64_lopt_size;
+extern u8 mb64_lopt_template;
+extern u8 mb64_lopt_coinstar;
+extern u8 mb64_lopt_waterlevel;
+extern u8 mb64_lopt_secret;
+
+extern u8 mb64_prepare_level_screenshot;
+extern u8 mb64_do_save;
+
+extern u32 mb64_gfx_total;
+extern u32 mb64_vtx_total;
+
+extern Vtx *mb64_curr_vtx;
+extern Gfx *mb64_curr_gfx;
+extern u16 mb64_gfx_index;
+
+extern u8 mb64_use_alt_uvs;
+extern s8 mb64_uv_offset;
+extern u8 mb64_render_flip_normals;
+extern u8 mb64_render_vertical;
+extern u8 mb64_render_culling_off;
+extern u8 mb64_growth_render_type;
+extern u8 mb64_curr_mat_has_topside;
+extern u8 mb64_curr_poly_vert_count;
+extern u8 mb64_curr_boundary;
+extern u8 mb64_upsidedown_tile;
+
+extern struct mb64_tile mb64_tile_data[MB64_TILE_POOL_SIZE];
+extern struct mb64_obj mb64_object_data[MB64_MAX_OBJS];
+extern u16 mb64_tile_data_indices[NUM_MATERIALS_PER_THEME + 10];
+extern u16 mb64_tile_count;
+extern u16 mb64_object_count;
+extern u16 mb64_object_limit_count;
+extern u16 mb64_build_collision_type;
+extern u16 mb64_total_coin_count;
+
+extern u8 mb64_place_mode;
+extern s8 mb64_id_selection;
+extern u8 mb64_rot_selection;
+extern s16 mb64_param_selection;
+extern s16 mb64_mat_selection;
+
+extern s16 mb64_freecam_pitch;
+extern s16 mb64_freecam_yaw;
+extern u8 mb64_freecam_snap;
+extern u8 mb64_freecam_help;
+extern u8 mb64_freecam_snap_timer;
+
+extern s8 mb64_dialog_subject_index;
+extern s8 mb64_dialog_topic_index;
+
+extern FILINFO mb64_file_info;
+
+#define AT_CEILING(y) ((mb64_curr_boundary & MB64_BOUNDARY_CEILING) && ((y) == mb64_lopt_boundary_height-1))
+
+void reload_bg(void);
 void save_level(void);
 void sb_loop(void);
 void sb_init(void);
@@ -39,6 +124,11 @@ void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
 void mb64_set_data_overrides(void);
 void animate_list_reset(void);
+void generate_terrain_gfx(void);
+void reload_boundary_and_gfx(void);
+void freecam_camera_init(void);
+void update_custom_theme(void);
+void reload_theme(void);
 
 extern u8 mb64_level_action;
 extern u8 mb64_mode;
@@ -48,8 +138,6 @@ extern Vec3f mb64_camera_foc;
 extern f32 mb64_camera_fov;
 
 extern u16 painting_rgba16[32][32];
-extern u8 mb64_lopt_envfx;
-extern u8 mb64_lopt_costume;
 extern u8 mb64_envfx_table[];
 
 //play mode stuff
@@ -74,6 +162,13 @@ enum {
     MB64_PM_TILE,
     MB64_PM_OBJ,
     MB64_PM_WATER,
+};
+
+enum ProcessTileRenderModes {
+    PROCESS_TILE_NORMAL,
+    PROCESS_TILE_TRANSPARENT,
+    PROCESS_TILE_BOTH,
+    PROCESS_TILE_VPLEX,
 };
 
 #define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
@@ -149,55 +244,10 @@ enum mb64_growth_types {
     MB64_GROWTH_GENTLE_SIDE_R,
 };
 
-struct mb64_terrain_poly {
-    s8 vtx[4][3];
-    u8 faceDir;
-    u8 faceshape;
-    u8 growthType;
-    s8 (*altuvs)[4][2];
-};
-
-struct mb64_boundary_quad {
-    s8 vtx[4][3];
-    s8 u[2];
-    s8 v[2];
-    u8 uYScale; // Scale U by Y instead of width
-    u8 vYScale; // Scale V by Y instead of width
-    u8 flipUvs;
-};
-
-struct mb64_terrain {
-    u8 numQuads;
-    u8 numTris;
-    struct mb64_terrain_poly * quads;
-    struct mb64_terrain_poly * tris;
-};
-
-struct mb64_tile {
-    u32 x:6, y:6, z:6, type:5, mat:4, rot:2, waterlogged:1;
-};
-
-struct mb64_obj {
-    u8 bparam;
-    u8 x;
-    u8 y;
-    u8 z;
-    u8 type;
-    u8 rot;
-    u8 imbue;
-    u8 pad;
-};
-
-struct mb64_grid_obj {
-    u16 type:5, mat:4, rot:2, waterlogged:1;
-};
-
 enum mb64_df_context {
     MB64_DF_CONTEXT_INIT,
     MB64_DF_CONTEXT_MAIN,
 };
-
-typedef void (*DisplayFunc)(s32);
 
 #define OBJ_TYPE_BILLBOARD (1 << 0)
 #define OBJ_TYPE_TRAJECTORY     (1 << 1)
@@ -211,56 +261,8 @@ typedef void (*DisplayFunc)(s32);
 #define OBJ_OCCUPY_INNER        (1 << 1)
 
 #define OBJ_OCCUPY_FULL        (OBJ_OCCUPY_OUTER | OBJ_OCCUPY_INNER)
-struct mb64_object_info {
-    char *name;
-    Gfx *btn;
-    const BehaviorScript *behavior;
-    f32 y_offset;
-    u16 model_id;
-    u8 flags;
-    u8 occupy;
-    u8 numCoins;
-    u8 numExtraObjects;
-    f32 scale;
-    const struct Animation *const *anim;
-    DisplayFunc disp_func;
-    u32 soundBits;
-};
-
-struct ExclamationBoxContents {
-    u8 behParams;
-    ModelID16 model;
-    const BehaviorScript *behavior;
-    u8 animState; //not shitcum
-    u8 doRespawn;
-    u8 numCoins;
-};
 
 extern struct ExclamationBoxContents *mb64_exclamation_box_contents;
-
-struct mb64_ui_button_type {
-    u32 placeMode:2;
-    u32 multiObj:1;
-    u32 paramCount:8;
-
-    union {
-        u32 id;
-        u8 *idList;
-    };
-    union {
-        char *name;
-        char **names;
-    };
-};
-
-struct mb64_settings_button {
-    char *str;
-    u8 *value;
-    char **nametable;
-    u8 size;
-    char *(*nameFunc)(s32, char *);
-    void (*changedFunc)(void);
-};
 
 enum {
     MB64_MODE_PLAY,
@@ -276,49 +278,6 @@ enum {
     MB64_MAKE_TRAJECTORY,
     MB64_MAKE_SCREENSHOT,
     MB64_MAKE_SELECT_DIALOG,
-};
-
-#define NUM_MATERIALS_PER_THEME 10
-
-enum mb64_mat_types {
-    // Opaque types (for culling)
-    MAT_OPAQUE,
-    MAT_DECAL, // only used for VP screen when used as a block type
-    // Transparent types
-    MAT_CUTOUT,
-    MAT_CUTOUT_NOCULL,
-    MAT_TRANSPARENT,
-    // Used for override when processing vplex screens
-    MAT_SCREEN,
-};
-
-// Represents a material texture and collision
-struct mb64_material {
-    Gfx *gfx;
-    u8 type;
-    u8 vertical;
-    TerrainData col;
-    char *name; // Only used for Custom Theme menu
-};
-
-// Represents a material as a top texture with optional side decal
-struct mb64_topmaterial {
-    u8 mat;
-    Gfx *decaltex;
-};
-
-// Defines materials of a full block
-struct mb64_tilemat_def {
-    u8 mat;
-    u8 topmat;
-    char *name;
-};
-struct mb64_theme {
-    struct mb64_tilemat_def mats[NUM_MATERIALS_PER_THEME];
-    u8 fence;
-    u8 pole;
-    u8 bars;
-    u8 water;
 };
 
 struct mb64_custom_theme {
@@ -441,17 +400,6 @@ enum mb64_themes {
     MB64_THEME_MC,
 };
 
-struct mb64_dialog_topic {
-    char * name;
-    u8 dialog_id;
-};
-
-struct mb64_dialog_subject {
-    char * name;
-    struct mb64_dialog_topic * topic_list;
-    u8 topic_list_size;
-};
-
 enum imbue {
     IMBUE_NONE,
     IMBUE_STAR,
@@ -468,15 +416,6 @@ enum imbue {
     IMBUE_BADGE_BASE,
 };
 
-struct imbue_model {
-    s16 model;
-    u8 billboarded:1;
-    u8 doShrink:1;
-    u8 doMove:1;
-    f32 scale;
-    s16 spin;
-};
-
 extern s32 mb64_min_coord;
 extern s32 mb64_max_coord;
 #define MB64_BOUNDARY_INNER_FLOOR   (1 << 0) // Has the main floor
@@ -485,5 +424,5 @@ extern s32 mb64_max_coord;
 #define MB64_BOUNDARY_OUTER_WALLS   (1 << 3) // Has fading outer walls extending downwards
 #define MB64_BOUNDARY_CEILING       (1 << 4) // Ceiling above the level
 
-
-#endif
+extern u8 mb64_painting_frame_1_rgba16[];
+extern u8 mystery_painting_rgba16[];

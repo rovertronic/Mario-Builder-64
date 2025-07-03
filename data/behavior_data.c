@@ -12,7 +12,7 @@
 #include "game/debug.h"
 #include "menu/file_select.h"
 #include "engine/surface_load.h"
-#include "game/mb64.h"
+#include "mb64/main.h"
 //evil_mario_anims
 #include "actors/common0.h"
 #include "actors/common1.h"

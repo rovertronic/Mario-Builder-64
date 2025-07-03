@@ -34,7 +34,7 @@
 #include "puppylights.h"
 #include "level_commands.h"
 #include "game/rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 #include "config.h"
 

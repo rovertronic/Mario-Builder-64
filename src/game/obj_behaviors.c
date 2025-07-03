@@ -32,7 +32,7 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 #include "game/rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 /**
  * @file obj_behaviors.c

@@ -1,72 +1,40 @@
 //object includes (a lot)
-#include "text_strings.h"
-#include "types.h"
-#include "actors/common0.h"
-#include "actors/common1.h"
-#include "area.h"
-#include "audio/external.h"
-#include "behavior_actions.h"
-#include "behavior_data.h"
-#include "camera.h"
-#include "debug.h"
-#include "dialog_ids.h"
-#include "engine/behavior_script.h"
-#include "engine/graph_node.h"
-#include "engine/math_util.h"
-#include "engine/surface_collision.h"
-#include "engine/surface_load.h"
-#include "game_init.h"
-#include "ingame_menu.h"
-#include "interaction.h"
-#include "level_misc_macros.h"
-#include "level_table.h"
-#include "level_update.h"
-#include "levels/menu/header.h"
 #include "main.h"
-#include "mario.h"
-#include "mario_actions_cutscene.h"
-#include "mario_step.h"
-#include "obj_behaviors.h"
-#include "obj_behaviors_2.h"
-#include "object_constants.h"
-#include "object_helpers.h"
-#include "object_list_processor.h"
-#include "paintings.h"
-#include "platform_displacement.h"
-#include "rendering_graph_node.h"
-#include "save_file.h"
-#include "seq_ids.h"
-#include "sm64.h"
-#include "spawn_object.h"
-#include "spawn_sound.h"
-#include "rumble_init.h"
-#include "puppylights.h"
-#include "rovent.h"
-#include "mb64.h"
-#include "actors/group0.h"
-#include "actors/group14.h"
-#include "actors/group17.h"
-#include "sram.h"
-#include "level_geo.h"
-#include "src/buffers/framebuffers.h"
-#include "memory.h"
-#include "geo_misc.h"
-#include "mario_actions_automatic.h"
-#include "levels/scripts.h"
-#include "emutest.h"
-#include "print.h"
-#include "puppyprint.h"
+#include "menu.h"
+#include "display_funcs.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 #include "libpl/libpl-rhdc.h"
 
-extern void super_cum_working(struct Object *obj, s32 animIndex);
+#include <PR/gbi.h>
+#include <string.h>
+#include "audio/external.h"
+#include "game/spawn_sound.h"
+#include "game/object_list_processor.h"
+#include "actors/maker/header.h"
+#include "actors/b/header.h"
+#include "actors/bigpainting2/header.h"
+#include "engine/surface_load.h"
+#include "game/game_init.h"
+#include "game/mario_actions_automatic.h"
+#include "game/level_update.h"
+#include "game/emutest.h"
+#include "buffers/framebuffers.h"
+#include "game/main.h"
+#include "game/puppyprint.h"
+#include "engine/math_util.h"
+#include "game/ingame_menu.h"
+#include "game/mario.h"
+#include "game/rendering_graph_node.h"
+#include "behavior_data.h"
+#include "game/geo_misc.h"
+
+void super_cum_working(struct Object *o, u8 type);
 
 u8 mb64_level_action = MB64_LA_BUILD;
 u8 mb64_mode = MB64_MODE_UNINITIALIZED;
 u8 mb64_target_mode = MB64_MODE_MAKE;
-u8 mb64_joystick_timer = 0;
 s8 mb64_cursor_pos[3] = {32,8,32};
 
 Vec3f mb64_camera_pos = {0.0f,0.0f,0.0f};
@@ -111,8 +79,6 @@ Trajectory mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH][4
 u16 mb64_trajectory_edit_index = 0;
 u8 mb64_trajectory_to_edit = 0;
 u8 mb64_trajectories_used = 0;
-u8 mb64_txt_recording[] = {TXT_RECORDING};
-u8 mb64_txt_freecam[] = {TXT_FREECAM};
 
 Vtx *mb64_curr_vtx;
 Gfx *mb64_curr_gfx;
@@ -127,6 +93,7 @@ u8 mb64_growth_render_type = 0; // 0 - normal, 1 - grass top, 2 - grass side, 3 
 u8 mb64_curr_mat_has_topside = FALSE;
 u8 mb64_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
 u8 mb64_curr_boundary = 0;
+u8 mb64_upsidedown_tile = FALSE;
 
 TerrainData mb64_curr_coltype = SURFACE_DEFAULT;
 
@@ -165,20 +132,8 @@ u8 mb64_lopt_coinstar = 0;
 u8 mb64_lopt_waterlevel = 0;
 u8 mb64_lopt_secret = 0;
 
-//UI
-u8 mb64_menu_state = MB64_MAKE_MAIN;
-s16 mb64_menu_index = 0;
-s16 mb64_menu_index_max = 1;
-s8 mb64_toolbar_index = 0;
-s8 mb64_toolbox_index = 0;
 u8 mb64_prepare_level_screenshot = FALSE;
 u8 mb64_do_save = FALSE;
-
-char *mb64_topleft_message = NULL;
-u8 mb64_topleft_is_tip = FALSE;
-u16 mb64_topleft_max_timer = 120;
-u16 mb64_topleft_timer = 0;
-f32 mb64_topleft_vels[3];
 
 struct mb64_level_save_header mb64_save;
 char mb64_username[MAX_USERNAME_SIZE];
@@ -187,12 +142,8 @@ u8 mb64_has_username = FALSE;
 u8 mb64_num_vertices_cached = 0;
 u8 mb64_num_tris_cached = 0;
 u8 mb64_cached_tris[64][3];
-s16 mb64_tip_timer = 0;
 
 struct ExclamationBoxContents *mb64_exclamation_box_contents;
-
-#include "src/game/mb64_display_funcs.inc.c"
-#include "src/game/mb64_data.inc.c"
 
 s32 mb64_count_stars(void) {
     s32 numStars = 0;
@@ -218,26 +169,6 @@ void bhv_preview_object_loop(void) {
 
 void play_place_sound(u32 soundBits) {
     play_sound(soundBits, gGlobalSoundSource);
-}
-
-void mb64_show_topleft_message(char *message, s32 isTip) {
-    mb64_topleft_is_tip = isTip;
-    mb64_topleft_max_timer = (isTip ? 220 : 120);
-    if ((message != mb64_topleft_message) || (mb64_topleft_timer < 30)) {
-        mb64_topleft_message = message;
-        mb64_topleft_timer = mb64_topleft_max_timer;
-    } else {
-        if (mb64_topleft_timer < mb64_topleft_max_timer - 30) mb64_topleft_timer = mb64_topleft_max_timer - 30;
-    }
-}
-void mb64_show_error_message(char *message) {
-    mb64_show_topleft_message(message, FALSE);
-    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-}
-void mb64_show_tip() {
-    s32 count = ARRAY_COUNT(mb64_tips);
-    if (mb64_lopt_game != MB64_GAME_BTCM) count -= NUM_BTCM_TIPS;
-    mb64_show_topleft_message(mb64_tips[(s32)(random_float() * count)], TRUE);
 }
 
 void reset_play_state(void) {
@@ -1364,6 +1295,27 @@ u32 get_tiletype_index(u32 type, u32 mat) {
     return END_TILE_INDEX;
 }
 
+struct mb64_topmaterial mb64_topmat_table[] = {
+    {MB64_MAT_GRASS,         mat_maker_MakerGrassSide},
+    {MB64_MAT_SAND,          mat_maker_MakerSandSide},
+    {MB64_MAT_SNOW,          mat_maker_MakerSnowSide},
+    {MB64_MAT_TILES,         mat_maker_MakerTileEdge},
+    {MB64_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
+    {MB64_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
+    {MB64_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
+    {MB64_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide},
+    {MB64_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim},
+    {MB64_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim},
+    {MB64_MAT_FLOWERS,       mat_maker_MakerFlowerEdge},
+    {MB64_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
+    {MB64_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
+    {MB64_MAT_LAVA_ROCKS,    mat_maker_MakerLavaRockEdge},
+    {MB64_MAT_DARK_GRASS,    mat_maker_MakerDarkGrassSide},
+    {MB64_MAT_CARTOON_GRASS, mat_maker_MakerCartoonGrassSide},
+    {MB64_MAT_ORANGE_GRASS,  mat_maker_MakerOrangeGrassSide},
+    {MB64_MAT_RED_GRASS,     mat_maker_MakerRedGrassSide},
+    {MB64_MAT_PURPLE_GRASS,  mat_maker_MakerPurpleGrassSide},
+};
 
 Gfx *get_sidetex(s32 matid) {
     for (s32 i = 0; i < ARRAY_COUNT(mb64_topmat_table); i++) {
@@ -1377,13 +1329,6 @@ Gfx *get_sidetex(s32 matid) {
 
 #define retroland_filter_on() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_POINT); if (!gIsGliden) {mb64_uv_offset = 0;} }
 #define retroland_filter_off() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_BILERP); mb64_uv_offset = (mb64_lopt_theme == MB64_THEME_MC ? -32 : -16); }
-
-enum ProcessTileRenderModes {
-    PROCESS_TILE_NORMAL,
-    PROCESS_TILE_TRANSPARENT,
-    PROCESS_TILE_BOTH,
-    PROCESS_TILE_VPLEX,
-};
 
 // Returns true if tile should be processed
 // If in vplex screen processing mode, can also override target mat type in order
@@ -1573,6 +1518,45 @@ void render_boundary_precise(struct mb64_boundary_quad *quadList, u32 count, s16
     }
     display_cached_tris();
 }
+
+struct mb64_boundary_quad floor_boundary[] = {
+    {{{32, 0, 32}, {32, 0, 0}, {0, 0, 32}, {0, 0, 0}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
+    {{{0, 0, 32}, {0, 0, 0}, {-32, 0, 32}, {-32, 0, 0}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
+    {{{32, 0, 0}, {32, 0, -32}, {0, 0, 0}, {0, 0, -32}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
+    {{{0, 0, 0}, {0, 0, -32}, {-32, 0, 0}, {-32, 0, -32}}, {-16, 16}, {-16, 16}, FALSE, FALSE, FALSE},
+};
+
+struct mb64_boundary_quad floor_edge_boundary[] = {
+    {{{48, 0, 32}, {48, 0, 0}, {32, 0, 32}, {32, 0, 0}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{48, 0, 32}, {32, 0, 32}, {48, 0, 48}, {32, 0, 48}}, {-8, 8}, {8, -8}, FALSE, FALSE, TRUE},
+    {{{32, 0, 48}, {32, 0, 32}, {0, 0, 48}, {0, 0, 32}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
+
+    {{{-32, 0, 32}, {-32, 0, 0}, {-48, 0, 32}, {-48, 0, 0}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{-32, 0, 48}, {-32, 0, 32}, {-48, 0, 48}, {-48, 0, 32}}, {-8, 8}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{0, 0, 48}, {0, 0, 32}, {-32, 0, 48}, {-32, 0, 32}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
+
+    {{{48, 0, 0}, {48, 0, -32}, {32, 0, 0}, {32, 0, -32}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{48, 0, -32}, {48, 0, -48}, {32, 0, -32}, {32, 0, -48}}, {-8, 8}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{32, 0, -32}, {32, 0, -48}, {0, 0, -32}, {0, 0, -48}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
+
+    {{{-32, 0, 0}, {-32, 0, -32}, {-48, 0, 0}, {-48, 0, -32}}, {-16, 16}, {-8, 8}, FALSE, FALSE, FALSE},
+    {{{-32, 0, -48}, {-48, 0, -48}, {-32, 0, -32}, {-48, 0, -32}}, {-8, 8}, {8, -8}, FALSE, FALSE, TRUE},
+    {{{0, 0, -32}, {0, 0, -48}, {-32, 0, -32}, {-32, 0, -48}}, {-8, 8}, {-16, 16}, FALSE, FALSE, FALSE},
+};
+
+struct mb64_boundary_quad wall_boundary[] = {
+    {{{32, 1, 0}, {32, 1, -32}, {32, 0, 0}, {32, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+    {{{32, 1, 32}, {32, 1, 0}, {32, 0, 32}, {32, 0, 0}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+
+    {{{0, 1, 32}, {32, 1, 32}, {0, 0, 32}, {32, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+    {{{-32, 1, 32}, {0, 1, 32}, {-32, 0, 32}, {0, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+
+    {{{-32, 1, 0}, {-32, 1, 32}, {-32, 0, 0}, {-32, 0, 32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+    {{{-32, 1, -32}, {-32, 1, 0}, {-32, 0, -32}, {-32, 0, 0}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+
+    {{{0, 1, -32}, {-32, 1, -32}, {0, 0, -32}, {-32, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+    {{{32, 1, -32}, {0, 1, -32}, {32, 0, -32}, {0, 0, -32}}, {16, -16}, {-8, 8}, FALSE, TRUE, FALSE},
+};
 
 void render_boundary_decal_edge(Gfx *sidetex, s32 yBottom, u32 sideMatType) {
     if (sideMatType != MAT_TRANSPARENT) {
@@ -2127,16 +2111,6 @@ void generate_boundary_quad_collision(struct mb64_boundary_quad *quadList, u32 c
     }
 }
 
-void scan_fences(s8 pos[3]) {
-    for (s32 dir = 2; dir < 6; dir++) {
-        s8 newPos[3];
-        vec3_sum(newPos, pos, cullOffsetLUT[dir]);
-        if ((get_grid_tile(newPos)->type == TILE_TYPE_FENCE) && (rotate_direction(MB64_DIRECTION_POS_Z, get_grid_tile(newPos)->rot) == dir)) {
-            generate_block_collision(newPos);
-        }
-    }
-}
-
 void generate_block_collision(s8 pos[3]) {
     if (!coords_in_range(pos)) return;
     s32 tileType = get_grid_tile(pos)->type;
@@ -2172,6 +2146,16 @@ void generate_block_collision(s8 pos[3]) {
     else mb64_curr_coltype = MATERIAL(get_grid_tile(pos)->mat).col;
 
     process_tile(pos, mb64_terrain_info_list[tileType].terrain, get_grid_tile(pos)->rot);
+}
+
+void scan_fences(s8 pos[3]) {
+    for (s32 dir = 2; dir < 6; dir++) {
+        s8 newPos[3];
+        vec3_sum(newPos, pos, cullOffsetLUT[dir]);
+        if ((get_grid_tile(newPos)->type == TILE_TYPE_FENCE) && (rotate_direction(MB64_DIRECTION_POS_Z, get_grid_tile(newPos)->rot) == dir)) {
+            generate_block_collision(newPos);
+        }
+    }
 }
 
 #define COL_POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE)) / TILE_SIZE)
@@ -2515,11 +2499,7 @@ void generate_object_preview(void) {
     if (doubleCoins) totalCoins *= 2;
 
     u32 length = MIN(totalCoins / 20, 50);
-    if (mb64_lopt_game == MB64_GAME_BTCM) {
-        mb64_settings_misc_buttons[MISC_COINSTAR_INDEX].size = length + 1;
-    } else {
-        mb64_settings_misc_buttons_vanilla[MISCV_COINSTAR_INDEX].size = length + 1;
-    }
+    mb64_set_coinstar_menu_length(length);
 
     if (mb64_lopt_coinstar > length) {
         mb64_lopt_coinstar = length;
@@ -2817,37 +2797,6 @@ void place_object(s8 pos[3]) {
     should_spawn_place_number(pos);
 }
 
-u8 joystick_direction(void) {
-    if (mb64_joystick_timer > 0) {
-        mb64_joystick_timer--;
-    }
-
-    if ((gPlayer1Controller->rawStickX < 10)&&(gPlayer1Controller->rawStickX > -10)&&(gPlayer1Controller->rawStickY < 10)&&(gPlayer1Controller->rawStickY > -10)) {
-        mb64_joystick_timer = 0;
-    }
-
-    if (mb64_joystick_timer == 0) {
-        if (gPlayer1Controller->rawStickX > 60) {
-            mb64_joystick_timer = 5;
-            return 3;
-        }
-        if (gPlayer1Controller->rawStickX < -60) {
-            mb64_joystick_timer = 5;
-            return 1;
-        }
-        if (gPlayer1Controller->rawStickY > 60) {
-            mb64_joystick_timer = 5;
-            return 4;
-        }
-        if (gPlayer1Controller->rawStickY < -60) {
-            mb64_joystick_timer = 5;
-            return 2;
-        }
-    }
-
-    return 0;
-}
-
 void imbue_action(void) {
     for (u32 i=0;i<mb64_object_count;i++) {
         s32 objType = mb64_object_data[i].type;
@@ -3025,7 +2974,6 @@ void delete_tile_action(s8 pos[3]) {
     }
 }
 
-u8 mb64_upsidedown_tile = FALSE;
 // Copy tile type of current cursor position to current toolbar slot
 int sample_block(void) {
     int isObject = FALSE;
@@ -3062,7 +3010,7 @@ int sample_block(void) {
 
     // Find relevant button
     u32 i;
-    for (i = 0; i < ARRAY_COUNT(mb64_ui_buttons); i++) {
+    for (i = 0; i < MB64_BUTTON_COUNT; i++) {
         struct mb64_ui_button_type *button = &mb64_ui_buttons[i];
         if ((!isObject && button->placeMode == MB64_PM_OBJ) || (isObject && button->placeMode != MB64_PM_OBJ)) {
             continue;
@@ -3102,9 +3050,6 @@ void update_painting() {
         } 
     }
 }
-
-//if (gSramProbe != 0) {
-#include "src/game/mb64_painting_frames.inc.c"
 
 TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
 FIL mb64_file;
@@ -3210,8 +3155,6 @@ void save_level(void) {
 
     f_close(&mb64_file);
 }
-
-#include "mb64_compatibility.inc.c"
 
 void load_level(void) {
     s32 i;
@@ -3363,7 +3306,7 @@ void load_level(void) {
         }
 
         s8 pos[3];
-        vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z)
+        vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
 
         place_terrain_data(pos, mb64_tile_data[i].type, mb64_tile_data[i].rot, mb64_tile_data[i].mat);
         get_grid_tile(pos)->waterlogged = mb64_tile_data[i].waterlogged;
@@ -3405,6 +3348,27 @@ void mb64_init() {
         mb64_camera_foc[1] = 0.0f;
         mb64_camera_foc[2] = GRID_TO_POS(32);
     }
+}
+
+void reload_bg(void) {
+    void *srcStart = mb64_skybox_table[mb64_lopt_bg*2];
+    void *srcEnd = mb64_skybox_table[mb64_lopt_bg*2+1];
+
+    if (srcStart == NULL) {
+        return;
+    }
+
+    u32 compSize = ALIGN16(srcEnd - srcStart);
+    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
+
+    if (compressed != NULL) {
+        dma_read(compressed, srcStart, srcEnd);
+        Propack_UnpackM1(compressed, get_segment_base_addr(SEGMENT_SKYBOX));
+        sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
+        main_pool_free(compressed);
+    }
+
+    generate_terrain_gfx(); // since some backgrounds affect the boundary
 }
 
 void sb_init(void) {
@@ -3599,8 +3563,6 @@ void delete_preview_object(void) {
     }
 }
 
-void (*mb64_option_changed_func)(void) = NULL;
-
 void update_custom_theme(void) {
     for (u32 i = 0; i < NUM_MATERIALS_PER_THEME; i++) {
         mb64_theme_table[MB64_THEME_CUSTOM].mats[i].mat = mb64_curr_custom_theme.mats[i];
@@ -3616,36 +3578,121 @@ void update_custom_theme(void) {
     mb64_theme_table[MB64_THEME_CUSTOM].water = mb64_curr_custom_theme.water;
 }
 
+
+void prepare_block_draw(f32 xpos, f32 ypos) {
+    Mat4 mtx1, mtx2;
+    Vec3f pos;
+    Vec3s rot;
+
+    Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
+    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 4000, 0.005f);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    Lights1* curLight = (Lights1*)alloc_display_list(sizeof(Lights1));
+    extern Lights1 *defaultLight;
+    bcopy(&defaultLight, curLight, sizeof(Lights1));
+
+    curLight->l->l.dir[0] = (s8)(globalLightDirection[0]);
+    curLight->l->l.dir[1] = (s8)(globalLightDirection[1]);
+    curLight->l->l.dir[2] = (s8)(globalLightDirection[2]);
+
+    gSPSetLights1(gDisplayListHead++, (*curLight));
+
+    Mtx *mtx = alloc_display_list(sizeof(*mtx));
+    vec3_set(pos, 0, 0, -1500);
+    vec3_set(rot, 0, (s16)(0x200*gGlobalTimer), 0);
+    mtxf_rotate_zxy_and_translate(mtx1, gVec3fZero, rot);
+    vec3_set(rot, 0x1800, 0, 0);
+    mtxf_rotate_zxy_and_translate(mtx2, pos, rot);
+    mtxf_mul(mtx1, mtx1, mtx2);
+    mtxf_to_mtx(mtx, mtx1);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+
+    mb64_build_collision_type = 0;
+    mb64_growth_render_type = 0;
+    mb64_render_culling_off = TRUE;
+    mb64_curr_mat_has_topside = FALSE;
+    mb64_use_alt_uvs = FALSE;
+    mb64_render_flip_normals = FALSE;
+}
+
+void finish_block_draw() {
+    mb64_render_culling_off = FALSE;
+
+    gSPDisplayList(gDisplayListHead++, mb64_curr_gfx);
+    
+    mb64_curr_gfx += mb64_gfx_index;
+    mb64_gfx_index = 0;
+
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    create_dl_ortho_matrix();
+}
+
+void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
+    prepare_block_draw(xpos, ypos);
+
+    s8 pos[3];
+    vec3_set(pos,32,32,32);
+
+    Vtx *startVtx = mb64_curr_vtx;
+
+    if (index < NUM_MATERIALS_PER_THEME) {
+        u8 renderedMat = mb64_curr_custom_theme.mats[index];
+        u8 renderedTopmat = mb64_curr_custom_theme.topmats[index];
+        if (!mb64_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = renderedMat;
+
+        render_preview_block(renderedMat, renderedTopmat, pos, &mb64_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
+    } else {
+        mb64_use_alt_uvs = TRUE;
+        mb64_curr_poly_vert_count = 4;
+        if (index == 10) { // Poles
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[mb64_curr_custom_theme.pole].gfx);
+            set_render_mode( mb64_mat_table[mb64_curr_custom_theme.pole].type, TRUE);
+            mb64_growth_render_type = 4; // poles
+            process_tile(pos, &mb64_terrain_pole, 0);
+        } else if (index == 11) { // Fence
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_fence_texs[mb64_curr_custom_theme.fence]);
+            set_render_mode( MAT_CUTOUT, TRUE);
+            mb64_growth_render_type = 3; // fence
+            process_tile(pos, &mb64_terrain_fence, 0);
+        } else if (index == 12) { // Iron Mesh
+            set_render_mode( MAT_CUTOUT, TRUE);
+            u8 connections[5] = {1,0,1,0,1};
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][1]);
+            gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
+            render_bars_top(pos, connections);
+            display_cached_tris();
+            gSPSetGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][0]);
+            render_bars_side(pos, connections);
+        } else if (index == 13) { // Water
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_water_texs[mb64_curr_custom_theme.water]);
+            set_render_mode( MAT_TRANSPARENT, TRUE);
+            render_water(pos);
+        }
+        display_cached_tris();
+        mb64_use_alt_uvs = FALSE;
+    }
+
+    gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
+    gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+    gDPSetTextureLUT(&mb64_curr_gfx[mb64_gfx_index++], G_TT_NONE);
+    gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index++]);
+
+    for (Vtx *vtx = startVtx; vtx < mb64_curr_vtx; vtx++) {
+        vtx->v.ob[0] -= TILE_SIZE/2;
+        if (index != 11) vtx->v.ob[2] -= TILE_SIZE/2;
+    }
+
+    finish_block_draw();
+}
+
 void reload_theme(void) {
     reload_boundary_and_gfx();
     mb64_set_data_overrides();
     generate_object_preview();
 }
-
-void reload_bg(void) {
-    void *srcStart = mb64_skybox_table[mb64_lopt_bg*2];
-    void *srcEnd = mb64_skybox_table[mb64_lopt_bg*2+1];
-
-    if (srcStart == NULL) {
-        return;
-    }
-
-    u32 compSize = ALIGN16(srcEnd - srcStart);
-    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-
-    if (compressed != NULL) {
-        dma_read(compressed, srcStart, srcEnd);
-        Propack_UnpackM1(compressed, get_segment_base_addr(SEGMENT_SKYBOX));
-        sSegmentROMTable[SEGMENT_SKYBOX] = (uintptr_t) srcStart;
-        main_pool_free(compressed);
-    }
-
-    generate_terrain_gfx(); // since some backgrounds affect the boundary
-}
-
-u8 mb64_joystick;
-extern s16 mb64_menu_start_timer;
-extern s16 mb64_menu_end_timer;
 
 s16 mb64_freecam_pitch;
 s16 mb64_freecam_yaw;
@@ -3761,31 +3808,6 @@ void freecam_camera_main(void) {
     mb64_camera_foc[2] = mb64_camera_pos[2] + ( coss(mb64_freecam_yaw) * -sins(mb64_freecam_pitch) * 100.0f );
 }
 
-Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
-    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
-        u32 id;
-        if (mb64_ui_buttons[buttonId].multiObj) {
-            id = mb64_ui_buttons[buttonId].idList[objIndex];
-        } else {
-            id = mb64_ui_buttons[buttonId].id;
-        }
-        return mb64_object_type_list[id].btn;
-    }
-    if (buttonId == MB64_BUTTON_BLANK) return mat_b_btn_blank;
-    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].button;
-}
-
-char *get_button_str(u32 buttonId) {
-    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
-        if (mb64_ui_buttons[buttonId].multiObj) {
-            return mb64_ui_buttons[buttonId].name;
-        } else {
-            u32 id = mb64_ui_buttons[buttonId].id;
-            return mb64_object_type_list[id].name;
-        }
-    }
-    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].name;
-}
 
 void update_id_selection(void) {
     struct mb64_ui_button_type *curBtn = &mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]];
@@ -4250,5 +4272,3 @@ void stop_mb64_extra_music(u8 index) {
         stop_background_music(SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[index]]));
     }
 }
-
-#include "src/game/mb64_menu.inc.c"

@@ -34,7 +34,7 @@
 #include "puppylights.h"
 #include "game/rovent.h"
 #include "actors/group0.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 //! TODO: remove static
 

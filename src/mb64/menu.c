@@ -1,35 +1,42 @@
+#include "main.h"
+#include "menu.h"
+
+#include "audio/external.h"
+#include <PR/gbi.h>
+#include "game/game_init.h"
+#include "levels/menu/header.h"
+#include "game/rendering_graph_node.h"
+#include "game/level_update.h"
+#include "game/ingame_menu.h"
+#include "actors/group0.h"
+#include "engine/math_util.h"
+#include "text_strings.h"
+#include "game/print.h"
+#include "game/save_file.h"
+#include "libpl/libpl-rhdc.h"
+#include "game/sram.h"
+#include <string.h>
+
+#include "menu_data.inc.c"
+
+u8 mb64_txt_recording[] = {TXT_RECORDING};
+u8 mb64_txt_freecam[] = {TXT_FREECAM};
+u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
+
 extern u8 gDialogCharWidths[256];
 
-u8 mb64_ascii_lut[] = {
-    0,0,0,0,0,0,0,0, // 0 - 7
-    0,0,0xFE,0,0,0,0,0, // 8 - 15
-    0x54,0x55,0x57,0x58,0x56,0,0,0, // 16 - 23
-    0,0,0,0,0,0,0,0, // 24 - 31
-    0x9E, /* */ 0xF2, /*!*/ 0x00, /*"*/ 0x00, /*#*/
-    0x00, /*$*/ 0x71, /*%*/ 0xE5, /*&*/ 0x3E, /*'*/
-    0xE1, /*(*/ 0xE3, /*)*/ 0x00, /***/ 0x00, /*+*/
-    0x6F, /*,*/ 0x9F, /*-*/ 0x3F, /*.*/ 0x70, /*/*/
-    0x00, /*0*/ 0x01, /*1*/ 0x02, /*2*/ 0x03, /*3*/
-    0x04, /*4*/ 0x05, /*5*/ 0x06, /*6*/ 0x07, /*7*/
-    0x08, /*8*/ 0x09, /*9*/ 0xE6, /*:*/ 0x00, /*;*/
-    0x52, /*<*/ 0x00, /*=*/ 0x53, /*>*/ 0x00, /*?*/
-    0x00, /*@*/ 0x0A, /*A*/ 0x0B, /*B*/ 0x0C, /*C*/
-    0x0D, /*D*/ 0x0E, /*E*/ 0x0F, /*F*/ 0x10, /*G*/
-    0x11, /*H*/ 0x12, /*I*/ 0x13, /*J*/ 0x14, /*K*/
-    0x15, /*L*/ 0x16, /*M*/ 0x17, /*N*/ 0x18, /*O*/
-    0x19, /*P*/ 0x1A, /*Q*/ 0x1B, /*R*/ 0x1C, /*S*/
-    0x1D, /*T*/ 0x1E, /*U*/ 0x1F, /*V*/ 0x20, /*W*/
-    0x21, /*X*/ 0x22, /*Y*/ 0x23, /*Z*/ 0x00, /*[*/
-    0x00, /*\*/ 0x00, /*]*/ 0x50, /*^*/ 0x00, /*_*/
-    0x00, /*`*/ 0x24, /*a*/ 0x25, /*b*/ 0x26, /*c*/
-    0x27, /*d*/ 0x28, /*e*/ 0x29, /*f*/ 0x2A, /*g*/
-    0x2B, /*h*/ 0x2C, /*i*/ 0x2D, /*j*/ 0x2E, /*k*/
-    0x2F, /*l*/ 0x30, /*m*/ 0x31, /*n*/ 0x32, /*o*/
-    0x33, /*p*/ 0x34, /*q*/ 0x35, /*r*/ 0x36, /*s*/
-    0x37, /*t*/ 0x38, /*u*/ 0x39, /*v*/ 0x3A, /*w*/
-    0x3B, /*x*/ 0x3C, /*y*/ 0x3D, /*z*/ 0x00, /*{*/
-    0x51, /*|*/ 0x00, /*}*/ 0x00, /*~*/
-};
+u8 mb64_menu_state = MB64_MAKE_MAIN;
+s16 mb64_menu_index = 0;
+s16 mb64_menu_index_max = 1;
+s8 mb64_toolbar_index = 0;
+s8 mb64_toolbox_index = 0;
+s16 mb64_tip_timer = 0;
+
+char *mb64_topleft_message = NULL;
+u8 mb64_topleft_is_tip = FALSE;
+u16 mb64_topleft_max_timer = 120;
+u16 mb64_topleft_timer = 0;
+f32 mb64_topleft_vels[3];
 
 // Position, velocity, acceleration
 f32 mb64_menu_button_vels[10][3] = {0.f};
@@ -37,14 +44,48 @@ f32 mb64_menu_title_vels[3] = {0.f};
 s16 mb64_menu_start_timer = -1;
 s16 mb64_menu_end_timer = -1;
 s8 mb64_menu_going_back = 1;
+void (*mb64_option_changed_func)(void) = NULL;
 
 s8 mb64_mm_selected_level = 0;
 u8 mb64_greyed_text = FALSE;
+u8 mb64_joystick;
+u8 mb64_joystick_timer = 0;
 
 u16 mb64_konami_code[] = {
     U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD, B_BUTTON, A_BUTTON, START_BUTTON
 };
 u16 mb64_konami_code_cur_index = 0;
+
+u8 joystick_direction(void) {
+    if (mb64_joystick_timer > 0) {
+        mb64_joystick_timer--;
+    }
+
+    if ((gPlayer1Controller->rawStickX < 10)&&(gPlayer1Controller->rawStickX > -10)&&(gPlayer1Controller->rawStickY < 10)&&(gPlayer1Controller->rawStickY > -10)) {
+        mb64_joystick_timer = 0;
+    }
+
+    if (mb64_joystick_timer == 0) {
+        if (gPlayer1Controller->rawStickX > 60) {
+            mb64_joystick_timer = 5;
+            return 3;
+        }
+        if (gPlayer1Controller->rawStickX < -60) {
+            mb64_joystick_timer = 5;
+            return 1;
+        }
+        if (gPlayer1Controller->rawStickY > 60) {
+            mb64_joystick_timer = 5;
+            return 4;
+        }
+        if (gPlayer1Controller->rawStickY < -60) {
+            mb64_joystick_timer = 5;
+            return 2;
+        }
+    }
+
+    return 0;
+}
 
 f32 clamp2(f32 x) {
   f32 lowerlimit = 0.0f;
@@ -244,6 +285,33 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
     }
 }
 
+
+Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
+    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
+        u32 id;
+        if (mb64_ui_buttons[buttonId].multiObj) {
+            id = mb64_ui_buttons[buttonId].idList[objIndex];
+        } else {
+            id = mb64_ui_buttons[buttonId].id;
+        }
+        return mb64_object_type_list[id].btn;
+    }
+    if (buttonId == MB64_BUTTON_BLANK) return mat_b_btn_blank;
+    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].button;
+}
+
+char *get_button_str(u32 buttonId) {
+    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
+        if (mb64_ui_buttons[buttonId].multiObj) {
+            return mb64_ui_buttons[buttonId].name;
+        } else {
+            u32 id = mb64_ui_buttons[buttonId].id;
+            return mb64_object_type_list[id].name;
+        }
+    }
+    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].name;
+}
+
 // Ease-in animation to a target position
 void animate_menu_ease_in(f32 vels[3], f32 beginPos, f32 targetPos, f32 multiplier, u32 isBegin) {
     if (isBegin) {
@@ -389,6 +457,27 @@ void mb64_menu_page_animation(f32 yoff, void pageFunc(u32, f32, f32), s32 index,
     pageFunc(index, xOffset, yoff);
 }
 
+void mb64_show_topleft_message(char *message, s32 isTip) {
+    mb64_topleft_is_tip = isTip;
+    mb64_topleft_max_timer = (isTip ? 220 : 120);
+    if ((message != mb64_topleft_message) || (mb64_topleft_timer < 30)) {
+        mb64_topleft_message = message;
+        mb64_topleft_timer = mb64_topleft_max_timer;
+    } else {
+        if (mb64_topleft_timer < mb64_topleft_max_timer - 30) mb64_topleft_timer = mb64_topleft_max_timer - 30;
+    }
+}
+void mb64_show_error_message(char *message) {
+    mb64_show_topleft_message(message, FALSE);
+    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+}
+
+void mb64_show_tip() {
+    s32 count = ARRAY_COUNT(mb64_tips);
+    if (mb64_lopt_game != MB64_GAME_BTCM) count -= NUM_BTCM_TIPS;
+    mb64_show_topleft_message(mb64_tips[(s32)(random_float() * count)], TRUE);
+}
+
 void mb64_render_topleft_text(void) {
     if (mb64_topleft_timer > 0) {
 
@@ -439,6 +528,7 @@ char *mb64_get_boundaryheight_name(s32 index, char *buffer) {
     sprintf(buffer, "Y: %d", index);
     return buffer;
 }
+
 char *mb64_get_category(s32 index, UNUSED char *buffer) {
     return mb64_matlist_names[index];
 }
@@ -495,6 +585,14 @@ void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
             return;
         }
     } while (++i < ARRAY_COUNT(mb64_matlist));
+}
+
+void mb64_set_coinstar_menu_length(s32 length) {
+    if (mb64_lopt_game == MB64_GAME_BTCM) {
+        mb64_settings_misc_buttons[MISC_COINSTAR_INDEX].size = length + 1;
+    } else {
+        mb64_settings_misc_buttons_vanilla[MISCV_COINSTAR_INDEX].size = length + 1;
+    }
 }
 
 void mb64_set_data_overrides(void) {
@@ -615,117 +713,8 @@ s32 env_menu_handle_scroll() {
     return yOffset;
 }
 
-void prepare_block_draw(f32 xpos, f32 ypos) {
-    Mat4 mtx1, mtx2;
-    Vec3f pos;
-    Vec3s rot;
-
-    Mtx *perspMtx = alloc_display_list(sizeof(*perspMtx));
-    guFrustum(perspMtx, -SCREEN_WIDTH/2 + xpos, SCREEN_WIDTH/2 + xpos, -SCREEN_HEIGHT/2 - ypos, SCREEN_HEIGHT/2 - ypos, 128, 4000, 0.005f);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(perspMtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-
-    Lights1* curLight = (Lights1*)alloc_display_list(sizeof(Lights1));
-    extern Lights1 *defaultLight;
-    bcopy(&defaultLight, curLight, sizeof(Lights1));
-
-    curLight->l->l.dir[0] = (s8)(globalLightDirection[0]);
-    curLight->l->l.dir[1] = (s8)(globalLightDirection[1]);
-    curLight->l->l.dir[2] = (s8)(globalLightDirection[2]);
-
-    gSPSetLights1(gDisplayListHead++, (*curLight));
-
-    Mtx *mtx = alloc_display_list(sizeof(*mtx));
-    vec3_set(pos, 0, 0, -1500);
-    vec3_set(rot, 0, (s16)(0x200*gGlobalTimer), 0);
-    mtxf_rotate_zxy_and_translate(mtx1, gVec3fZero, rot);
-    vec3_set(rot, 0x1800, 0, 0);
-    mtxf_rotate_zxy_and_translate(mtx2, pos, rot);
-    mtxf_mul(mtx1, mtx1, mtx2);
-    mtxf_to_mtx(mtx, mtx1);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-
-    mb64_build_collision_type = 0;
-    mb64_growth_render_type = 0;
-    mb64_render_culling_off = TRUE;
-    mb64_curr_mat_has_topside = FALSE;
-    mb64_use_alt_uvs = FALSE;
-    mb64_render_flip_normals = FALSE;
-}
-
 Gfx * custom_preview_gfx;
 Vtx * custom_preview_vtx;
-
-void finish_block_draw() {
-    mb64_render_culling_off = FALSE;
-
-    gSPDisplayList(gDisplayListHead++, mb64_curr_gfx);
-    
-    mb64_curr_gfx += mb64_gfx_index;
-    mb64_gfx_index = 0;
-
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-    create_dl_ortho_matrix();
-}
-
-void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
-    prepare_block_draw(xpos, ypos);
-
-    s8 pos[3];
-    vec3_set(pos,32,32,32);
-
-    Vtx *startVtx = mb64_curr_vtx;
-
-    if (index < NUM_MATERIALS_PER_THEME) {
-        u8 renderedMat = mb64_curr_custom_theme.mats[index];
-        u8 renderedTopmat = mb64_curr_custom_theme.topmats[index];
-        if (!mb64_curr_custom_theme.topmatsEnabled[index]) renderedTopmat = renderedMat;
-
-        render_preview_block(renderedMat, renderedTopmat, pos, &mb64_terrain_fullblock, 0, PROCESS_TILE_BOTH, TRUE);
-    } else {
-        mb64_use_alt_uvs = TRUE;
-        mb64_curr_poly_vert_count = 4;
-        if (index == 10) { // Poles
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[mb64_curr_custom_theme.pole].gfx);
-            set_render_mode( mb64_mat_table[mb64_curr_custom_theme.pole].type, TRUE);
-            mb64_growth_render_type = 4; // poles
-            process_tile(pos, &mb64_terrain_pole, 0);
-        } else if (index == 11) { // Fence
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_fence_texs[mb64_curr_custom_theme.fence]);
-            set_render_mode( MAT_CUTOUT, TRUE);
-            mb64_growth_render_type = 3; // fence
-            process_tile(pos, &mb64_terrain_fence, 0);
-        } else if (index == 12) { // Iron Mesh
-            set_render_mode( MAT_CUTOUT, TRUE);
-            u8 connections[5] = {1,0,1,0,1};
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][1]);
-            gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
-            render_bars_top(pos, connections);
-            display_cached_tris();
-            gSPSetGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][0]);
-            render_bars_side(pos, connections);
-        } else if (index == 13) { // Water
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_water_texs[mb64_curr_custom_theme.water]);
-            set_render_mode( MAT_TRANSPARENT, TRUE);
-            render_water(pos);
-        }
-        display_cached_tris();
-        mb64_use_alt_uvs = FALSE;
-    }
-
-    gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
-    gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    gDPSetTextureLUT(&mb64_curr_gfx[mb64_gfx_index++], G_TT_NONE);
-    gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index++]);
-
-    for (Vtx *vtx = startVtx; vtx < mb64_curr_vtx; vtx++) {
-        vtx->v.ob[0] -= TILE_SIZE/2;
-        if (index != 11) vtx->v.ob[2] -= TILE_SIZE/2;
-    }
-
-    finish_block_draw();
-}
 
 void custom_theme_draw_mat_selector(f32 xPos, f32 yPos, s32 startIndex, u8 *outputVar) {
     u8 tmpCategory = 0;
@@ -1719,8 +1708,6 @@ char *mb64_mm_help_btns[] = {
     "Share Levels",
     "Changelog",
 };
-
-u8 mb64_mm_txt_pages[] = {TXT_MM_PAGE};
 
 char *mb64_mm_txt_keyboard[]= {
     "\x10: Press Key         \x11: Backspace\n\x12: Shift              \x13: Exit\nSTART: Confirm",

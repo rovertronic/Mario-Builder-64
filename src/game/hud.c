@@ -23,7 +23,7 @@
 #include "actors/group14.h"
 
 #include "rovent.h"
-#include "mb64.h"
+#include "mb64/main.h"
 
 #include "config.h"
 
