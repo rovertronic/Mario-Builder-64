@@ -118,6 +118,7 @@ u8 mb64_lopt_seq[5] = {0,0,0,0,0}; // Song index
 u8 mb64_lopt_seq_seqtype = 0; // Level Music, Race Music, Boss Music 
 u8 mb64_lopt_seq_album = 0; // Category
 u8 mb64_lopt_seq_song = 0; // Song index within category
+u8 mb64_lopt_coinstar_max = 0;
 
 u8 mb64_lopt_envfx = 0;
 u8 mb64_lopt_theme = 0;
@@ -2435,16 +2436,27 @@ struct Object *spawn_preview_object(s8 pos[3], s32 rot, s32 param, struct mb64_o
     return preview_object;
 }
 
+void unload_all_preview_objs(void) {
+    uintptr_t *behaviorAddr = segmented_to_virtual(bhvPreviewObject);
+    struct ObjectNode *listHead = &gObjectLists[get_object_list_from_behavior(behaviorAddr)];
+    struct Object *obj = (struct Object *) listHead->next;
+
+    while (obj != (struct Object *) listHead) {
+        struct Object *nextobj = (struct Object *) obj->header.next;
+        if (obj->behavior == behaviorAddr) {
+            unload_object(obj);
+        }
+        obj = nextobj;
+    }
+}
+
 void generate_object_preview(void) {
     s32 totalCoins = 0;
     s32 curExtraCoins = 0;
     s32 doubleCoins = FALSE;
     mb64_object_limit_count = 0;
-    struct Object *preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
-    while (preview_object) {
-        unload_object(preview_object);
-        preview_object = cur_obj_nearest_object_with_behavior(bhvPreviewObject);
-    }
+    
+    unload_all_preview_objs();
 
     for(u32 i = 0; i < mb64_object_count; i++){
         if (gFreeObjectList.next == NULL) break;
@@ -2478,7 +2490,7 @@ void generate_object_preview(void) {
                 curImbue = IMBUE_BADGE_BASE;
             }
             
-            struct Object * imbue_marker = spawn_object(o,imbue_table[curImbue].model,bhvPreviewObject);
+            struct Object * imbue_marker = spawn_object(gMarioObject,imbue_table[curImbue].model,bhvPreviewObject);
             imbue_marker->oBehParams2ndByte = badgeid;
             imbue_marker->oExtraVariable1 = imbue_table[curImbue].color;
             imbue_marker->oPreviewObjDisplayFunc = df_hide_during_screenshot;
@@ -2499,7 +2511,7 @@ void generate_object_preview(void) {
     if (doubleCoins) totalCoins *= 2;
 
     u32 length = MIN(totalCoins / 20, 50);
-    mb64_set_coinstar_menu_length(length);
+    mb64_lopt_coinstar_max = length;
 
     if (mb64_lopt_coinstar > length) {
         mb64_lopt_coinstar = length;
@@ -3978,6 +3990,7 @@ void sb_loop(void) {
                         break;
                     case 8: // options
                         mb64_menu_state = MB64_MAKE_SETTINGS;
+                        menu_engine_init_test();
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         mb64_menu_start_timer = 0;
                         mb64_menu_end_timer = -1;
@@ -4164,6 +4177,7 @@ void sb_loop(void) {
             break;
         case MB64_MAKE_SETTINGS: //settings
             if (mb64_menu_end_timer == 10) {
+                menu_engine_dealloc_test();
                 mb64_menu_state = MB64_MAKE_MAIN;
             }
             break;

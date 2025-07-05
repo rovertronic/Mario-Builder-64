@@ -50,6 +50,7 @@ extern u8 mb64_lopt_game;
 extern u8 mb64_lopt_size;
 extern u8 mb64_lopt_template;
 extern u8 mb64_lopt_coinstar;
+extern u8 mb64_lopt_coinstar_max;
 extern u8 mb64_lopt_waterlevel;
 extern u8 mb64_lopt_secret;
 

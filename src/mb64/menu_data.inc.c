@@ -55,162 +55,6 @@ char *mb64_matlist_names[] = {
     "Transparent",
 };
 
-
-char *mb64_costume_string_table[] = {
-    "Mario",
-    "Fire Mario",
-    "Glitchy",
-    "Luigi",
-    "Wario",
-    "Disco Mario",
-    "Undead Pirate",
-    "Mocap Mario",
-    "Darius",
-    "Butler Mario",
-    "Retro Mario",
-    "Thwompio",
-    "Builder Mario",
-    "Showrunner",
-    "Cosmic Phantasm",
-};
-
-char *mb64_music_type_string_table[] = {
-    "Level",
-    "Koopa Race",
-    "Bossfight",
-};
-
-char *mb64_music_album_string_table[] = {
-    "Super Mario 64 OST",
-    "Beyond the Cursed Mirror OST",
-    "ROM Hack Music Ports",
-    "Retro 2D Mario Music"
-};
-
-char *mb64_music_vanilla_string_table[] = {
-    "Bob-omb Battlefield",
-    "Slider",
-    "Dire, Dire Docks",
-    "Dire, Dire Docks (Underwater)",
-    "Lethal Lava Land",
-    "Cool, Cool Mountain",
-    "Big Boo's Haunt",
-    "Hazy Maze Cave",
-    "Hazy Maze Cave (Haze)",
-    "Koopa's Road",
-    "Stage Boss",
-    "Koopa's Theme",
-    "Ultimate Koopa",
-    "Inside the Castle Walls",
-};
-
-char *mb64_music_btcm_string_table[] = {
-    "Cosmic Castle",
-    "Red-Hot Reservoir",
-    "Lonely Floating Farm",
-    "Jurassic Savanna",
-    "The Phantom Strider",
-    "Virtuaplex",
-    "Immense Residence",
-    "Thwomp Towers",
-    "Cursed Boss",
-    "Road To The Boss",
-    "Urbowser",
-    "The Show's Finale",
-    "Parasite Moon",
-    "AGAMEMNON",
-};
-
-char *mb64_music_romhack_string_table[] = {
-    "Bianco Hills (Super Mario Sunshine)",
-    "Sky and Sea (Super Mario Sunshine)",
-    "Secret Course (Super Mario Sunshine)",
-    "Comet Observatory (Mario Galaxy)",
-    "Buoy Base Galaxy (Mario Galaxy)",
-    "Battlerock Galaxy (Mario Galaxy)",
-    "Ghostly Galaxy (Mario Galaxy)",
-    "Purple Comet (Mario Galaxy)",
-    "Honeybloom Galaxy (Mario Galaxy 2)",
-    "Piranha Creeper Creek (3D World)",
-    "Desert (New Super Mario Bros.)",
-
-    "Koopa Troopa Beach (Mario Kart 64)",
-    "Frappe Snowland (Mario Kart 64)",
-    "Bowser's Castle (Mario Kart 64)",
-    "Rainbow Road (Mario Kart 64)",
-    "Waluigi Pinball (Mario Kart DS)",
-    "Rainbow Road (Mario Kart 8)",
-
-    "Mario's Pad (Super Mario RPG)",
-    "Nimbus Land (Super Mario RPG)",
-    "Forest Maze (Super Mario RPG)",
-    "Sunken Ship (Super Mario RPG)",
-
-    "Dry Dry Desert (Paper Mario 64)",
-    "Forever Forest (Paper Mario 64)",
-    "Petal Meadows (Paper Mario: TTYD)",
-    "Riddle Tower (Paper Mario: TTYD)",
-    "Rogueport Sewers (Paper Mario: TTYD)",
-    "X-Naut Fortress (Paper Mario: TTYD)",
-    "Flipside (Super Paper Mario)",
-    "Lineland Road (Super Paper Mario)",
-    "Sammer Kingdom (Super Paper Mario)",
-    "Floro Caverns (Super Paper Mario)",
-    "Overthere Stair (Super Paper Mario)",
-
-    "Yoshi's Tropical Island (Mario Party)",
-    "Rainbow Castle (Mario Party)",
-    "Behind Yoshi Village (Partners in Time)",
-    "Gritzy Desert (Partners in Time)",
-    "Bumpsy Plains (Bowser's Inside Story)",
-    "Deep Castle (Bowser's Inside Story)",
-
-    "Overworld (Yoshi's Island)",
-    "Underground (Yoshi's Island)",
-    "Title (Yoshi's Story)",
-
-    "Kokiri Forest (Ocarina of Time)",
-    "Lost Woods (Ocarina of Time)",
-    "Gerudo Valley (Ocarina of Time)",
-    "Stone Tower Temple (Majora's Mask)",
-    "Outset Island (Wind Waker)",
-    "Lake Hylia (Twilight Princess)",
-    "Gerudo Desert (Twilight Princess)",
-    "Skyloft (Skyward Sword)",
-
-    "Frantic Factory (Donkey Kong 64)",
-    "Hideout Helm (Donkey Kong 64)",
-    "Creepy Castle (Donkey Kong 64)",
-    "Gloomy Galleon (Donkey Kong 64)",
-    "Fungi Forest (Donkey Kong 64)",
-    "Crystal Caves (Donkey Kong 64)",
-    "Angry Aztec (Donkey Kong 64)",
-    "In a Snow-Bound Land (DKC 2)",
-
-    "Bubblegloop Swamp (Banjo-Kazooie)",
-    "Freezeezy Peak (Banjo-Kazooie)",
-    "Gobi's Valley (Banjo-Kazooie)",
-
-    "Factory Inspection (Kirby 64)",
-    "Green Garden (Bomberman 64)",
-    "Black Fortress (Bomberman 64)",
-    "Windy Hill (Sonic Adventure)",
-    "Sky Tower (Pokemon Mystery Dungeon)",
-    "Youkai Mountain (Touhou 10)",
-    "Forest Temple (Final Fantasy VII)",
-    "Band Land (Rayman)",
-};
-
-char *mb64_music_retro_string_table[] = {
-    "Overworld (Super Mario Bros.)",
-    "Castle Mix (Super Mario Bros.)",
-    "Overworld (Super Mario Bros. 2)",
-    "Overworld Mix (Super Mario Bros. 3)",
-    "Fortress (Super Mario Bros. 3)",
-    "Athletic (Super Mario World)",
-    "Castle (Super Mario World)",
-};
-
 char *mb64_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
     "Tip: Use D-Pad | to change the camera's\n   zoom level while building!",
@@ -244,50 +88,6 @@ char *mb64_tips[] = {
 #define NUM_BTCM_TIPS 5
 
 
-char *mb64_theme_string_table[] = {
-    "Generic",
-    "Shifting Sand Land",
-    "Red Hot Reservoir",
-    "Hazy Maze Cave",
-    "Peach's Castle",
-    "Virtuaplex",
-    "Snowy Palace",
-    "Big Boo's Haunt",
-    "Jolly Roger Bay",
-    "Retroland",
-    "Custom",
-    "Minecraft",
-};
-
-char *mb64_bg_string_table[] = {
-    "Ocean Hills",
-    "Cloudy Sky",
-    "Fiery Sky",
-    "Green Cave",
-    "Haunted Forest", // 4 - doesn't generate black chasm
-    "Ice Mountains",
-    "Desert Pyramids",
-    "Underwater City",
-    "Pink Sky",
-    "None", // 9 - doesn't generate black chasm
-};
-
-char *mb64_bound_string_table[] = {
-    "Void",
-    "Plain",
-    "Valley",
-    "Chasm",
-    "Plateau",
-    "Interior",
-};
-
-char *mb64_envfx_string_table[] = {
-    "None",
-    "Ashes",
-    "Snow",
-    "Rain",
-    "Sandstorm",
-};
 
 void music_type_changed(void);
 void music_category_changed(void);
@@ -299,9 +99,9 @@ char *mb64_get_boundaryheight_name(s32 index, char *buffer);
 char *mb64_get_custom_mat(s32 index, char *buffer);
 
 struct mb64_settings_button mb64_settings_misc_buttons[] = {
-    {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-    {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
-    {"Costume:", &mb64_lopt_costume, mb64_costume_string_table, ARRAY_COUNT(mb64_costume_string_table), NULL, NULL},
+    // {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
+    // {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
+    // {"Costume:", &mb64_lopt_costume, mb64_costume_string_table, ARRAY_COUNT(mb64_costume_string_table), NULL, NULL},
 };
 
 #define MISC_COINSTAR_INDEX 0
@@ -316,18 +116,18 @@ struct mb64_settings_button mb64_settings_misc_buttons_vanilla[] = {
 #define MISCV_WATER_INDEX 1
 
 struct mb64_settings_button mb64_settings_env_buttons[] = {
-    {"Theme:",   &mb64_lopt_theme,   mb64_theme_string_table,   ARRAY_COUNT(mb64_theme_string_table) - 1, NULL, reload_theme},
-    {"Skybox:",  &mb64_lopt_bg,      mb64_bg_string_table,      ARRAY_COUNT(mb64_bg_string_table),    NULL, reload_bg},
-    {"Effect:",  &mb64_lopt_envfx,   mb64_envfx_string_table,   ARRAY_COUNT(mb64_envfx_string_table), NULL, NULL},
+    //{"Theme:",   &mb64_lopt_theme,   mb64_theme_string_table,   ARRAY_COUNT(mb64_theme_string_table) - 1, NULL, reload_theme},
+    //{"Skybox:",  &mb64_lopt_bg,      mb64_bg_string_table,      ARRAY_COUNT(mb64_bg_string_table),    NULL, reload_bg},
+    //{"Effect:",  &mb64_lopt_envfx,   mb64_envfx_string_table,   ARRAY_COUNT(mb64_envfx_string_table), NULL, NULL},
 };
 #define ENV_THEME_INDEX 0
 #define ENV_SKYBOX_INDEX 1
 #define ENV_EFFECT_INDEX 2
 
 struct mb64_settings_button mb64_settings_boundary_buttons[] = {
-    {"Boundary:", &mb64_lopt_boundary, mb64_bound_string_table, ARRAY_COUNT(mb64_bound_string_table), NULL, reload_boundary_and_gfx},
-    {"Material:",   &mb64_lopt_boundary_mat, NULL, NUM_MATERIALS_PER_THEME, mb64_get_floor_name, reload_boundary_and_gfx}, // Filled in by code
-    {"Height:", &mb64_lopt_boundary_height,   NULL, 65, mb64_get_boundaryheight_name, reload_boundary_and_gfx},
+    // {"Boundary:", &mb64_lopt_boundary, mb64_bound_string_table, ARRAY_COUNT(mb64_bound_string_table), NULL, reload_boundary_and_gfx},
+    // {"Material:",   &mb64_lopt_boundary_mat, NULL, NUM_MATERIALS_PER_THEME, mb64_get_floor_name, reload_boundary_and_gfx}, // Filled in by code
+    // {"Height:", &mb64_lopt_boundary_height,   NULL, 65, mb64_get_boundaryheight_name, reload_boundary_and_gfx},
 };
 
 #define BOUNDARY_BOUNDARY_INDEX 0
@@ -335,9 +135,9 @@ struct mb64_settings_button mb64_settings_boundary_buttons[] = {
 #define BOUNDARY_HEIGHT_INDEX 2
 
 struct mb64_settings_button mb64_settings_music_buttons[] = {
-    {"Type:", &mb64_lopt_seq_seqtype, mb64_music_type_string_table, ARRAY_COUNT(mb64_music_type_string_table), NULL, music_type_changed},
-    {"Album:",   &mb64_lopt_seq_album,  mb64_music_album_string_table,  ARRAY_COUNT(mb64_music_album_string_table), NULL, music_category_changed},
-    {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
+    // {"Type:", &mb64_lopt_seq_seqtype, mb64_music_type_string_table, ARRAY_COUNT(mb64_music_type_string_table), NULL, music_type_changed},
+    // {"Album:",   &mb64_lopt_seq_album,  mb64_music_album_string_table,  ARRAY_COUNT(mb64_music_album_string_table), NULL, music_category_changed},
+    // {"Song:", NULL, NULL, 0, NULL, NULL}, // Filled in by code
 };
 #define MUSIC_ALBUM_INDEX 1
 #define MUSIC_SONG_INDEX 2
@@ -433,10 +233,10 @@ void song_changed(void);
 
 // These get copied over to the above array
 struct mb64_settings_button mb64_settings_music_albums[] = {
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_vanilla_string_table, ARRAY_COUNT(mb64_music_vanilla_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_btcm_string_table, ARRAY_COUNT(mb64_music_btcm_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_romhack_string_table, ARRAY_COUNT(mb64_music_romhack_string_table), NULL, song_changed},
-    {"Song:",  &mb64_lopt_seq_song, mb64_music_retro_string_table, ARRAY_COUNT(mb64_music_retro_string_table), NULL, song_changed},
+    // {"Song:",  &mb64_lopt_seq_song, mb64_music_vanilla_string_table, ARRAY_COUNT(mb64_music_vanilla_string_table), NULL, song_changed},
+    // {"Song:",  &mb64_lopt_seq_song, mb64_music_btcm_string_table, ARRAY_COUNT(mb64_music_btcm_string_table), NULL, song_changed},
+    // {"Song:",  &mb64_lopt_seq_song, mb64_music_romhack_string_table, ARRAY_COUNT(mb64_music_romhack_string_table), NULL, song_changed},
+    // {"Song:",  &mb64_lopt_seq_song, mb64_music_retro_string_table, ARRAY_COUNT(mb64_music_retro_string_table), NULL, song_changed},
 };
 
 struct mb64_settings_button mb64_settings_backtomainmenu[] = {

@@ -507,27 +507,6 @@ void mb64_render_coord_display(void) {
     print_maker_string_ascii(255, mb64_coord_vels[0], buf, MB64_TEXT_WHITE);
 }
 
-char *mb64_get_floor_name(s32 index, UNUSED char *buffer) {
-    return TILE_MATDEF(index).name;
-}
-char *mb64_get_coinstar_str(s32 index, char *buffer) {
-    if (index == 0) {
-        return "Disabled";
-    }
-    sprintf(buffer, "%d Coins", index*20);
-    return buffer;
-}
-char *mb64_get_waterlevel_name(s32 index, char *buffer) {
-    if (index == 0) {
-        return "Disabled";
-    }
-    sprintf(buffer, "Y: %d", index);
-    return buffer;
-}
-char *mb64_get_boundaryheight_name(s32 index, char *buffer) {
-    sprintf(buffer, "Y: %d", index);
-    return buffer;
-}
 
 char *mb64_get_category(s32 index, UNUSED char *buffer) {
     return mb64_matlist_names[index];
@@ -549,32 +528,6 @@ char *mb64_custom_get_menu_name(s32 index) {
     return NULL;
 }
 
-// Set mb64_lopt_seq_album and mb64_lopt_seq_song based on mb64_lopt_seq
-void set_album_and_song_from_seq(u8 index) {
-    u32 song = mb64_lopt_seq[index];
-    u32 i = 0;
-    do {
-        if (song < mb64_settings_music_albums[i].size) {
-            mb64_lopt_seq_album = i;
-            mb64_lopt_seq_song = song;
-            return;
-        }
-        song -= mb64_settings_music_albums[i].size;
-    } while (++i < ARRAY_COUNT(mb64_music_album_string_table));
-}
-// Set mb64_lopt_seq from mb64_lopt_seq_album and mb64_lopt_seq_song
-void set_seq_from_album_and_song(u8 index) {
-    mb64_lopt_seq[index] = 0;
-    u32 i = 0;
-    do {
-        if (i == mb64_lopt_seq_album) {
-            mb64_lopt_seq[index] += mb64_lopt_seq_song;
-            return;
-        }
-        mb64_lopt_seq[index] += mb64_settings_music_albums[i].size;
-    } while (++i < ARRAY_COUNT(mb64_music_album_string_table));
-}
-
 // Set category and material index from a material enum
 void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
     u8 i = 1;
@@ -587,65 +540,41 @@ void get_category_and_mat_from_mat(u8 *category, u8 *matIndex, u8 mat) {
     } while (++i < ARRAY_COUNT(mb64_matlist));
 }
 
-void mb64_set_coinstar_menu_length(s32 length) {
-    if (mb64_lopt_game == MB64_GAME_BTCM) {
-        mb64_settings_misc_buttons[MISC_COINSTAR_INDEX].size = length + 1;
-    } else {
-        mb64_settings_misc_buttons_vanilla[MISCV_COINSTAR_INDEX].size = length + 1;
-    }
-}
-
 void mb64_set_data_overrides(void) {
     // Music options
-    set_album_and_song_from_seq(mb64_lopt_seq_seqtype);
-    bcopy(&mb64_settings_music_albums[mb64_lopt_seq_album], &mb64_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct mb64_settings_button));
+    // set_album_and_song_from_seq(mb64_lopt_seq_seqtype);
+    // bcopy(&mb64_settings_music_albums[mb64_lopt_seq_album], &mb64_settings_music_buttons[MUSIC_SONG_INDEX], sizeof(struct mb64_settings_button));
 
     // Secret unlock
-    if (mb64_lopt_secret) {
-        mb64_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(mb64_theme_string_table);
-    } else {
-        mb64_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(mb64_theme_string_table) - 1;
-    }
+    // if (mb64_lopt_secret) {
+    //     mb64_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(mb64_theme_string_table);
+    // } else {
+    //     mb64_settings_env_buttons[ENV_THEME_INDEX].size = ARRAY_COUNT(mb64_theme_string_table) - 1;
+    // }
 
     // Custom theme
-    if (mb64_lopt_theme == MB64_THEME_CUSTOM) {
-        mb64_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(mb64_settings_env_buttons) + 1; // Terrain menu length for selecting
-    } else {
-        mb64_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(mb64_settings_env_buttons);
-    }
+    // if (mb64_lopt_theme == MB64_THEME_CUSTOM) {
+    //     mb64_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(mb64_settings_env_buttons) + 1; // Terrain menu length for selecting
+    // } else {
+    //     mb64_settings_menu_lengths[SETTINGS_ENV_INDEX] = ARRAY_COUNT(mb64_settings_env_buttons);
+    // }
 
-    // Theme-specific data
+    //Theme-specific data
     bzero(&mb64_toolbox_params, sizeof(mb64_toolbox_params));
     switch(mb64_lopt_game) {
         case MB64_GAME_BTCM:
             bcopy(&mb64_toolbox_btcm,&mb64_toolbox,sizeof(mb64_toolbox));
             mb64_exclamation_box_contents = sExclamationBoxContents_btcm;
-            mb64_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(mb64_settings_misc_buttons); // includes costume
-            mb64_settings_menus[SETTINGS_MISC_INDEX] = draw_mb64_settings_misc;
+            // mb64_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(mb64_settings_misc_buttons); // includes costume
+            // mb64_settings_menus[SETTINGS_MISC_INDEX] = draw_mb64_settings_misc;
             break;
         case MB64_GAME_VANILLA:
             bcopy(&mb64_toolbox_vanilla,&mb64_toolbox,sizeof(mb64_toolbox));
             mb64_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            mb64_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(mb64_settings_misc_buttons_vanilla); // no costume
-            mb64_settings_menus[SETTINGS_MISC_INDEX] = draw_mb64_settings_misc_vanilla;
+            // mb64_settings_menu_lengths[SETTINGS_MISC_INDEX] = ARRAY_COUNT(mb64_settings_misc_buttons_vanilla); // no costume
+            // mb64_settings_menus[SETTINGS_MISC_INDEX] = draw_mb64_settings_misc_vanilla;
             break;
     }
-}
-
-void music_type_changed(void) {
-    mb64_set_data_overrides();
-    stop_background_music(get_current_background_music());
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[mb64_lopt_seq_seqtype]]), 0);
-}
-void music_category_changed(void) {
-    mb64_lopt_seq_song = 0;
-    song_changed();
-    mb64_set_data_overrides();
-}
-void song_changed(void) {
-    set_seq_from_album_and_song(mb64_lopt_seq_seqtype);
-    stop_background_music(get_current_background_music());
-    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[mb64_lopt_seq_seqtype]]), 0);
 }
 
 #define SCROLL_CUSTOM_TABS 12
@@ -683,24 +612,24 @@ void draw_mb64_settings_misc_vanilla(f32 xoff, f32 yoff) {
     draw_num_coins(xoff, yoff);
 }
 
-void draw_mb64_settings_boundary(f32 xoff, f32 yoff) {
-    animate_list_update(mb64_menu_list_offsets, ARRAY_COUNT(mb64_settings_boundary_buttons), mb64_menu_index);
-    u32 numOptions = ARRAY_COUNT(mb64_settings_boundary_buttons);
+// void draw_mb64_settings_boundary(f32 xoff, f32 yoff) {
+//     animate_list_update(mb64_menu_list_offsets, ARRAY_COUNT(mb64_settings_boundary_buttons), mb64_menu_index);
+//     u32 numOptions = ARRAY_COUNT(mb64_settings_boundary_buttons);
 
-    if (!(mb64_boundary_table[mb64_lopt_boundary] & MB64_BOUNDARY_INNER_WALLS)) {
-        numOptions -= 1;
-    }
-    mb64_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = numOptions;
+//     if (!(mb64_boundary_table[mb64_lopt_boundary] & MB64_BOUNDARY_INNER_WALLS)) {
+//         numOptions -= 1;
+//     }
+//     mb64_settings_menu_lengths[SETTINGS_BOUNDARY_INDEX] = numOptions;
 
-    for (s32 i=0;i<ARRAY_COUNT(mb64_settings_boundary_buttons);i++) {
-        if ((i == BOUNDARY_HEIGHT_INDEX) && (numOptions == ARRAY_COUNT(mb64_settings_boundary_buttons) - 1)) {
-            mb64_greyed_text = TRUE;
-        }
-        print_maker_string_ascii(55 +xoff+3*mb64_menu_list_offsets[i],154-(i*16)+yoff,mb64_settings_boundary_buttons[i].str,(i==mb64_menu_index));
-        mb64_menu_option_animation(200+xoff+3*mb64_menu_list_offsets[i],154-(i*16)+yoff,60,&mb64_settings_boundary_buttons[i],i,mb64_joystick);
-    }
-    mb64_greyed_text = FALSE;
-}
+//     for (s32 i=0;i<ARRAY_COUNT(mb64_settings_boundary_buttons);i++) {
+//         if ((i == BOUNDARY_HEIGHT_INDEX) && (numOptions == ARRAY_COUNT(mb64_settings_boundary_buttons) - 1)) {
+//             mb64_greyed_text = TRUE;
+//         }
+//         print_maker_string_ascii(55 +xoff+3*mb64_menu_list_offsets[i],154-(i*16)+yoff,mb64_settings_boundary_buttons[i].str,(i==mb64_menu_index));
+//         mb64_menu_option_animation(200+xoff+3*mb64_menu_list_offsets[i],154-(i*16)+yoff,60,&mb64_settings_boundary_buttons[i],i,mb64_joystick);
+//     }
+//     mb64_greyed_text = FALSE;
+// }
 
 #define CUSTOM_MENU_SCROLL_HEIGHT 105
 
@@ -1007,8 +936,10 @@ void draw_mb64_settings_menu(f32 yoff) {
 }
 
 void draw_mb64_menu(void) {
+    menu_engine_render_test();
+
     if (mb64_menu_state != MB64_MAKE_SCREENSHOT) {
-        create_dl_translation_matrix(MENU_MTX_PUSH, 19, 36, 0);
+        create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 36 - 80, 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
         gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -1062,7 +993,7 @@ void draw_mb64_menu(void) {
             }
             f32 yOff = mb64_menu_title_vels[0];
 
-            create_dl_translation_matrix(MENU_MTX_PUSH, 19, 235+yOff, 0);
+            create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 235 - 80 +yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -1181,9 +1112,10 @@ void draw_mb64_menu(void) {
                 }
             }
             yOff = mb64_menu_title_vels[0];
+            break;
 
             // Background
-            create_dl_translation_matrix(MENU_MTX_PUSH, 19, 240+yOff, 0);
+            create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 240 - 80 +yOff, 0);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
             gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
             gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
