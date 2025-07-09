@@ -51,11 +51,6 @@ u8 mb64_greyed_text = FALSE;
 u8 mb64_joystick;
 u8 mb64_joystick_timer = 0;
 
-u16 mb64_konami_code[] = {
-    U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD, B_BUTTON, A_BUTTON, START_BUTTON
-};
-u16 mb64_konami_code_cur_index = 0;
-
 u8 joystick_direction(void) {
     if (mb64_joystick_timer > 0) {
         mb64_joystick_timer--;
@@ -233,7 +228,6 @@ void full_menu_reset() {
     mb64_menu_index_max = 256;
     mb64_tip_timer = 0;
     mb64_topleft_timer = 0;
-    mb64_konami_code_cur_index = 0;
     mb64_custom_theme_menu_open = FALSE;
     mb64_greyed_text = FALSE;
     mb64_disable_menu_inputs = FALSE;

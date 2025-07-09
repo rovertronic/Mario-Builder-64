@@ -717,6 +717,37 @@ char settings_stats_buf_2[24];
 char settings_stats_buf_3[30];
 char settings_stats_buf_4[28];
 
+u16 konami[] = {U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD, B_BUTTON, A_BUTTON, START_BUTTON};
+u8 konami_index = 0;
+u8 konami_disable_inputs = FALSE;
+void konami_code_check(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    if (gMenuState.inactive) {
+        konami_index = 0;
+        konami_disable_inputs = FALSE;
+        return;
+    }
+    if (!mb64_lopt_secret && gPlayer1Controller->buttonPressed) {
+        if (gPlayer1Controller->buttonPressed == konami[konami_index]) {
+            konami_index++;
+            if (konami_index >= 8) {
+                konami_disable_inputs = TRUE;
+            }
+            if (konami_index == 11) {
+                mb64_lopt_secret = TRUE;
+                play_puzzle_jingle();
+                konami_disable_inputs = FALSE;
+                konami_index = 0;
+
+                SelectorComponent *s = get_child(component_list_get(get_child(m, MENU_LIST, 0), 0), MENU_SELECTOR, 0);
+                s->scroll.count = ARRAY_COUNT(mb64_theme_string_table);
+            }
+        } else {
+            konami_index = 0;
+            konami_disable_inputs = FALSE;
+        }
+    }
+}
+
 u8 gFromCustomTheme = FALSE;
 FrameComponent *settings_main_page_creator(s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
@@ -725,7 +756,8 @@ FrameComponent *settings_main_page_creator(s32 index) {
     switch (index) {
         case 0: // Environment
             gEnvironmentList = list;
-            settings_create_array_selector(list, 0, "Theme:", &mb64_lopt_theme, mb64_theme_string_table, ARRAY_COUNT(mb64_theme_string_table) - 1, theme_changed);
+            int theme_count = mb64_lopt_secret ? ARRAY_COUNT(mb64_theme_string_table) : ARRAY_COUNT(mb64_theme_string_table) - 1;
+            settings_create_array_selector(list, 0, "Theme:", &mb64_lopt_theme, mb64_theme_string_table, theme_count, theme_changed);
             settings_create_array_selector(list, 1, "Skybox:", &mb64_lopt_bg, mb64_bg_string_table, ARRAY_COUNT(mb64_bg_string_table), reload_bg);
             settings_create_array_selector(list, 2, "Effect:", &mb64_lopt_envfx, mb64_envfx_string_table, ARRAY_COUNT(mb64_envfx_string_table), NULL);
             
@@ -740,6 +772,7 @@ FrameComponent *settings_main_page_creator(s32 index) {
             if (gFromCustomTheme) {
                 list->index = 3;
             }
+            frame->base.prerender = konami_code_check;
             break;
         case 1: // Level Boundary
             gBoundaryList = list;
@@ -807,6 +840,8 @@ FrameComponent *settings_page_creator(s32 index) {
             init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
             init_text_component(frame, 70, 25, "R >", TEXT_LEFT, 0);
             break;
+        default:
+            return NULL;
     }
 
     ph->index = gSettingsPage;
@@ -829,7 +864,7 @@ void settings_page_closed() {
 void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     AnimatedComponent *root = (AnimatedComponent *)m;
 
-    if (!(root->timer) && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
+    if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
         PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {

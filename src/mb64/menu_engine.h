@@ -27,6 +27,8 @@ typedef struct {
     u8 inactive;
 } MenuState;
 
+extern MenuState gMenuState;
+
 // Base component for all other component types
 struct MenuComponent {
     u8 type:7;
