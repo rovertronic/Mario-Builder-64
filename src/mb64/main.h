@@ -130,6 +130,7 @@ void reload_boundary_and_gfx(void);
 void freecam_camera_init(void);
 void update_custom_theme(void);
 void reload_theme(void);
+void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index);
 
 extern u8 mb64_level_action;
 extern u8 mb64_mode;

@@ -903,6 +903,7 @@ void initiate_delayed_warp(void) {
 
     if (sDelayedWarpOp != WARP_OP_NONE && --sDelayedWarpTimer == 0) {
         reset_dialog_render_state();
+        reset_menu();
 
         if (gDebugLevelSelect && (sDelayedWarpOp & WARP_OP_TRIGGERS_LEVEL_SELECT)) {
             warp_special(WARP_SPECIAL_LEVEL_SELECT);
@@ -1221,6 +1222,7 @@ s32 play_mode_change_level(void) {
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
         full_menu_reset();
+        reset_menu();
         if (sSpecialWarpDest == WARP_SPECIAL_MARIO_HEAD_REGULAR) {
             mb64_init_exit_to_files();
         }

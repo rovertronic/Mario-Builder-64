@@ -3668,6 +3668,7 @@ void finish_block_draw() {
 }
 
 void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
+    xpos = -xpos;
     prepare_block_draw(xpos, ypos);
 
     s8 pos[3];
@@ -3990,7 +3991,7 @@ void sb_loop(void) {
                         break;
                     case 8: // options
                         mb64_menu_state = MB64_MAKE_SETTINGS;
-                        menu_engine_init_test();
+                        settings_menu_create();
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                         mb64_menu_start_timer = 0;
                         mb64_menu_end_timer = -1;
@@ -4176,10 +4177,6 @@ void sb_loop(void) {
             }
             break;
         case MB64_MAKE_SETTINGS: //settings
-            if (mb64_menu_end_timer == 10) {
-                menu_engine_dealloc_test();
-                mb64_menu_state = MB64_MAKE_MAIN;
-            }
             break;
         case MB64_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();

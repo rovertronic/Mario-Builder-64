@@ -1,11 +1,15 @@
 #include "menu_engine.h"
 
+#include "menu.h"
 #include "game/game_init.h"
 #include "game/ingame_menu.h"
 #include "audio/external.h"
+#include "game/level_update.h"
 
 #include "actors/bg/header.h"
 #include "actors/bigpainting2/header.h"
+
+MenuComponent *root;
 
 char *settings_menu_pages[] = {
     "Environment",
@@ -51,6 +55,23 @@ char *mb64_theme_string_table[] = {
     "Custom",
     "Minecraft",
 };
+
+ListComponent *gEnvironmentList;
+void theme_changed(UNUSED SelectorComponent *s) {
+    AnimatedComponent *customtheme = get_child(component_list_get(gEnvironmentList, 3), MENU_ANIMATED, 0);
+
+    if (mb64_lopt_theme == MB64_THEME_CUSTOM) {
+        // Enable custom theme button
+        component_animate_ease_in(customtheme, -30.f, 0.4f, DIR_VERTICAL);
+        gEnvironmentList->count = 4;
+    } else if (gEnvironmentList->count == 4) {
+        // Disable custom theme button
+        component_animate_ease_out(customtheme, -2.f, 10, DIR_VERTICAL);
+        gEnvironmentList->count = 3;
+    }
+
+    reload_theme();
+} 
 
 char *mb64_bg_string_table[] = {
     "Ocean Hills",
@@ -98,7 +119,7 @@ void check_boundary_list_disable(void) {
     component_list_get(gBoundaryList, 2)->disabled = !(mb64_boundary_table[mb64_lopt_boundary] & MB64_BOUNDARY_INNER_WALLS);
     component_list_get(gBoundaryList, 1)->disabled = (mb64_lopt_boundary == 0);
 }
-void settings_boundary_changed(void) {
+void settings_boundary_changed(UNUSED SelectorComponent *s) {
     check_boundary_list_disable();
     reload_boundary_and_gfx();
 }
@@ -283,22 +304,22 @@ void set_seq_from_album_and_song(u8 index) {
 }
 
 SelectorComponent *gSongSelector;
-void music_type_changed(void) {
-    set_album_and_song_from_seq(mb64_lopt_seq_seqtype);
-    gSongSelector->options = mb64_music_string_tables[mb64_lopt_seq_album];
-    gSongSelector->scroll.count = mb64_music_table_lengths[mb64_lopt_seq_album];
-    song_changed();
-}
-void music_category_changed(void) {
-    mb64_lopt_seq_song = 0;
-    gSongSelector->options = mb64_music_string_tables[mb64_lopt_seq_album];
-    gSongSelector->scroll.count = mb64_music_table_lengths[mb64_lopt_seq_album];
-    song_changed();
-}
-void song_changed(void) {
+void song_changed() {
     set_seq_from_album_and_song(mb64_lopt_seq_seqtype);
     stop_background_music(get_current_background_music());
     play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[mb64_lopt_seq_seqtype]]), 0);
+}
+void music_type_changed(UNUSED SelectorComponent *s) {
+    set_album_and_song_from_seq(mb64_lopt_seq_seqtype);
+    gSongSelector->string.array = mb64_music_string_tables[mb64_lopt_seq_album];
+    gSongSelector->scroll.count = mb64_music_table_lengths[mb64_lopt_seq_album];
+    song_changed();
+}
+void music_category_changed(UNUSED SelectorComponent *s) {
+    mb64_lopt_seq_song = 0;
+    gSongSelector->string.array = mb64_music_string_tables[mb64_lopt_seq_album];
+    gSongSelector->scroll.count = mb64_music_table_lengths[mb64_lopt_seq_album];
+    song_changed();
 }
 
 // Miscellaneous page
@@ -338,64 +359,384 @@ char *mb64_costume_string_table[] = {
 };
 
 
+// System page
+
+void settings_save_and_quit(void) {
+    if (mount_success == FR_OK) {
+        save_level();
+        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+        mb64_mm_state = MM_FILES;
+    } else {
+        mb64_mm_state = MM_MAIN_LIMITED;
+    }
+    fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+}
+
+void settings_play_level(void) {
+    if (mount_success == FR_OK) {
+        save_level();
+    }
+    mb64_target_mode = MB64_MODE_PLAY;
+    mb64_level_action = MB64_LA_TEST_LEVEL;
+    reset_play_state();
+    level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+    sSourceWarpNodeId = 0x0A;
+    play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
+}
+
+void settings_take_screenshot(void) {
+    if (mount_success == FR_OK) {
+        freecam_camera_init();
+        mb64_menu_state = MB64_MAKE_SCREENSHOT;
+        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+        dealloc_component(get_id(root));
+        root = NULL;
+    } else {
+        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+    }
+}
 
 
+// Custom theme page
+
+// FrameComponent params for storing intermediate custom theme variables
+#define POLE_PAGE NUM_MATERIALS_PER_THEME
+#define FENCE_PAGE (NUM_MATERIALS_PER_THEME + 1)
+#define BARS_PAGE (NUM_MATERIALS_PER_THEME + 2)
+#define WATER_PAGE (NUM_MATERIALS_PER_THEME + 3)
+
+#define matCategory params[0].asBytes[0]
+#define matIndex params[0].asBytes[1]
+#define topmatCategory params[0].asBytes[2]
+#define topmatIndex params[0].asBytes[3]
+#define pageIndex params[1].asInt
+
+void component_block_preview_render(MenuComponent *m, s16 x, s16 y) {
+    FrameComponent *frame = get_parent(m);
+    x += m->xpos;
+    y += m->ypos;
+
+    custom_theme_draw_block(x - SCREEN_WIDTH/2, y - SCREEN_HEIGHT/2, frame->pageIndex);
+}
+
+char *get_custom_theme_page_name(s32 index, UNUSED char *buf) {
+    if (index < 10) return mb64_theme_table[MB64_THEME_CUSTOM].mats[index].name;
+    switch (index - 10) {
+        case 0: return "Poles";
+        case 1: return "Fences";
+        case 2: return "Iron Meshes";
+        case 3: return "Water";
+    }
+    return NULL;
+}
+
+u8 mb64_matlist[] = {
+    MB64_MATLIST_START,
+    MB64_MATLIST_TERRAIN_END,
+    MB64_MATLIST_STONE_END,
+    MB64_MATLIST_BRICKS_END,
+    MB64_MATLIST_TILES_END,
+    MB64_MATLIST_CUTSTONE_END,
+    MB64_MATLIST_WOOD_END,
+    MB64_MATLIST_METAL_END,
+    MB64_MATLIST_BUILDING_END,
+    MB64_MATLIST_HAZARD_END,
+    MB64_MATLIST_END,
+};
+
+char *mb64_matlist_names[] = {
+    "Terrain",
+    "Stone",
+    "Bricks",
+    "Tiling",
+    "Cut Stone",
+    "Wood",
+    "Metal",
+    "Other",
+    "Hazards",
+    "Transparent",
+};
+
+char *mb64_fence_names[] = {
+    "Wooden (1)",
+    "Wooden (2)",
+    "Wooden (3)",
+    "Barbed Wire",
+    "Metal",
+    "Netting",
+    "Castle",
+    "Stanchion",
+    "Mansion",
+    "Rope",
+    "Snowy (1)",
+    "Snowy (2)",
+};
+
+char *mb64_bar_names[] = {
+    "Grille",
+    "Mesh",
+    "Fine Mesh",
+    "Red Grille",
+    "Red Mesh",
+    "Pink Mesh",
+    "Clock Grille",
+    "Desert Grille",
+    "Cage Bars",
+};
+
+char *mb64_water_names[] = {
+    "Default",
+    "Swampy",
+};
+
+char *mb64_slipperiness_strs[] = {
+    /* SURFACE_CLASS_DEFAULT */        "(Smooth)",
+    /* SURFACE_CLASS_VERY_SLIPPERY */  "(Slippery)",
+    /* SURFACE_CLASS_SLIPPERY */       "(Slippery)",
+    /* SURFACE_CLASS_NOT_SLIPPERY */   "(Walkable)",
+    /* Hazard */                       "(Hazardous)",
+};
+u8 mb64_slipperiness_clrs[] = {
+    MB64_TEXT_YELLOW,
+    MB64_TEXT_LIGHTBLUE,
+    MB64_TEXT_LIGHTBLUE,
+    MB64_TEXT_WHITE,
+    MB64_TEXT_RED,
+};
+
+void get_category_and_index_from_mat(u8 *category, u8 *index, u8 mat) {
+    u8 i = 1;
+    do {
+        if (mat < mb64_matlist[i]) {
+            *category = i-1;
+            *index = mat - mb64_matlist[i-1];
+            return;
+        }
+    } while (++i <= MB64_MATLIST_END);
+}
+void set_mat_from_category_and_index(u8 category, u8 index, u8 *mat) {
+    *mat = mb64_matlist[category] + index;
+}
+
+int get_category_size(u8 category) {
+    return mb64_matlist[category+1] - mb64_matlist[category];
+}
+
+// This is a prerender function called before the frame for the custom theme page.
+// Sets global variables so that the material selector can access the current category.
+int gCurrMatCategory = 0;
+int gCurrTopmatCategory = 0;
+void custom_theme_page_get_categories(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    FrameComponent *f = (FrameComponent *)m;
+    gCurrMatCategory = f->matCategory;
+    gCurrTopmatCategory = f->topmatCategory;
+}
+
+void custom_theme_set_floor_class_name(TextComponent *t, int index) {
+    s32 col;
+    if (mb64_curr_custom_theme.topmatsEnabled[index]) {
+        col = mb64_mat_table[mb64_curr_custom_theme.topmats[index]].col;
+    } else {
+        col = mb64_mat_table[mb64_curr_custom_theme.mats[index]].col;
+    }
+    s32 class;
+    if (SURFACE_IS_BURNING(col) || SURFACE_IS_QUICKSAND(col)) class = 4;
+    else class = get_floor_class(col);
+
+    t->text = mb64_slipperiness_strs[class];
+    t->color = mb64_slipperiness_clrs[class];
+}
+
+void custom_theme_update_material(FrameComponent *f) {
+    int index = f->pageIndex;
+    switch (index) {
+        case POLE_PAGE:
+            set_mat_from_category_and_index(f->matCategory, f->matIndex, &mb64_curr_custom_theme.pole);
+            break;
+        default:
+            set_mat_from_category_and_index(f->matCategory, f->matIndex, &mb64_curr_custom_theme.mats[index]);
+            set_mat_from_category_and_index(f->topmatCategory, f->topmatIndex, &mb64_curr_custom_theme.topmats[index]);
+            custom_theme_set_floor_class_name(get_child(f, MENU_TEXT, 0), index);
+    }
+}
+
+char *material_selector_get_mat_name(s32 index, UNUSED char *buffer) {
+    return mb64_mat_table[mb64_matlist[gCurrMatCategory] + index].name;
+}
+char *material_selector_get_topmat_name(s32 index, UNUSED char *buffer) {
+    return mb64_mat_table[mb64_matlist[gCurrTopmatCategory] + index].name;
+}
+
+char *topmatToggleText[2] = {
+    "Enable Top Material...",
+    "Disable Top Material...",
+};
+
+void settings_custom_toggle_topmat_enabled(TextComponent *b) {
+    ListComponent *l = get_parent(get_parent(b)); // Assumes List -> ListItem -> Text
+    FrameComponent *f = get_parent(l);
+    u8 topmatEnabled = mb64_curr_custom_theme.topmatsEnabled[f->pageIndex];
+
+    topmatEnabled ^= 1;
+    component_list_get(l, 3)->disabled = !topmatEnabled;
+    component_list_get(l, 4)->disabled = !topmatEnabled;
+    b->text = topmatToggleText[topmatEnabled];
+
+    mb64_curr_custom_theme.topmatsEnabled[f->pageIndex] = topmatEnabled;
+}
+
+// Update custom theme material when category or material is changed
+void material_changed(SelectorComponent *s) {
+    FrameComponent *f = get_parent(get_parent(get_parent(s))); // Assumes Frame -> List -> ListItem -> Selector
+    custom_theme_update_material(f);
+}
+// Grab the following item in the list to find the material selector component.
+// Update its size and then update the material as well
+void category_changed(SelectorComponent *s) {
+    ListItemComponent *li = get_parent(s);
+    ListItemComponent *mli = get_component(li->base.next); // hacky way to get the next item in the list, which is the material selector
+    SelectorComponent *s2 = get_child(mli, MENU_SELECTOR, 0);
+    s2->scroll.count = get_category_size(*s->value);
+    *s2->value = 0;
+    FrameComponent *f = get_parent(get_parent(li)); // Assumes Frame -> List -> ListItem
+    custom_theme_update_material(f);
+}
+
+void settings_custom_create_material_selector(ListComponent *list, u8 i, u8 *category, u8 *index, u8 isTopmat) {
+    TextComponent *t1 = init_text_component(NULL, 0, 0, "Category:", TEXT_LEFT, 0);
+    ListItemComponent *li1 = component_list_append(list, t1, -140, -i * 16);
+    TextComponent *t2 = init_text_component(NULL, 0, 0, "Material:", TEXT_LEFT, 0);
+    ListItemComponent *li2 = component_list_append(list, t2, -140, -(i + 1) * 16);
+
+    SelectorComponent *selector = init_array_selector(li1, category, 45, ARRAY_COUNT(mb64_matlist_names),
+        mb64_matlist_names, category_changed);
+    component_set_pos(selector, 130, 0);
+    SelectorComponent *selector2 = init_func_selector(li2, index, 45, get_category_size(*category),
+        (isTopmat ? material_selector_get_topmat_name : material_selector_get_mat_name), material_changed);
+    component_set_pos(selector2, 130, 0);
+}
+
+void settings_custom_create_other_selector(ListComponent *list, u8 i, char *text, u8 *var, char **array, u8 count) {
+    TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_LEFT, 0);
+    ListItemComponent *li = component_list_append(list, t, -140, -i * 16);
+
+    SelectorComponent *selector = init_array_selector(li, var, 45, count, array, NULL);
+    component_set_pos(selector, 130, 0);
+}
 
 
-
-MenuComponent *root;
+// Main stuff
 
 void settings_create_array_selector(ListComponent *list, u8 index, char *text, u8 *var, char **array, u8 count, ComponentUpdateFunc func) {
     TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_LEFT, 0);
     ListItemComponent *li = component_list_append(list, t, -100, -index * 16);
 
-    SelectorComponent *selector = init_array_selector(li, var, 100, count, array, func);
-    component_set_pos(&selector->base, 140, 0);
+    SelectorComponent *selector = init_array_selector(li, var, 50, count, array, func);
+    component_set_pos(selector, 140, 0);
 }
 
 void settings_create_func_selector(ListComponent *list, u8 index, char *text, u8 *var, SelectorStringFunc func, u8 count, ComponentUpdateFunc onChange) {
     TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_LEFT, 0);
     ListItemComponent *li = component_list_append(list, t, -100, -index * 16);
 
-    SelectorComponent *selector = init_func_selector(li, var, 100, count, func, onChange);
-    component_set_pos(&selector->base, 140, 0);
+    SelectorComponent *selector = init_func_selector(li, var, 50, count, func, onChange);
+    component_set_pos(selector, 140, 0);
 }
 
 SelectorComponent *settings_create_music_selector(ListComponent *list, u8 index, char *text, u8 *var, char **array, u8 count, ComponentUpdateFunc func) {
     TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_LEFT, 0);
     ListItemComponent *li = component_list_append(list, t, -130, -index * 22);
 
-    SelectorComponent *selector = init_array_selector(li, var, 190, count, array, func);
-    component_set_pos(&selector->base, 160, 0);
+    SelectorComponent *selector = init_array_selector(li, var, 95, count, array, func);
+    component_set_pos(selector, 160, 0);
     return selector;
 }
 
-void *settings_create_button(ListComponent *list, u8 index, char *text) {
-    TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_CENTER, 0);
-    ListItemComponent *li = component_list_append(list, t, 0, -index * 16);
+void settings_create_button(ListComponent *list, u8 index, char *text, ComponentUpdateFunc func) {
+    TextComponent *t = init_text_button(NULL, 0, 0, text, TEXT_CENTER, func);
+    component_list_append(list, t, 0, -index * 16);
 }
 
-// struct mb64_settings_button mb64_settings_misc_buttons[] = {
-//     {"Coin Star:", &mb64_lopt_coinstar, NULL, 1, mb64_get_coinstar_str, NULL},
-//     {"Water Level:", &mb64_lopt_waterlevel, NULL,               65,               mb64_get_waterlevel_name, reload_boundary_and_gfx},
-//     {"Costume:", &mb64_lopt_costume, mb64_costume_string_table, ARRAY_COUNT(mb64_costume_string_table), NULL, NULL},
-// };
-char settings_stats_buf_1[32];
-char settings_stats_buf_2[32];
-char settings_stats_buf_3[32];
-char settings_stats_buf_4[32];
-
-FrameComponent *settings_page_creator(s32 index) {
+FrameComponent *custom_theme_page_creator(s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
+    ListComponent *list = alloc_component(frame, MENU_LIST);
 
+    switch (index) {
+        case POLE_PAGE:
+            get_category_and_index_from_mat(&frame->matCategory, &frame->matIndex, mb64_curr_custom_theme.pole);
+            settings_custom_create_material_selector(list, 0, &frame->matCategory, &frame->matIndex, 0);
+            break;
+        case FENCE_PAGE:
+            settings_custom_create_other_selector(list, 1, "Fence:", &mb64_curr_custom_theme.fence, mb64_fence_names, ARRAY_COUNT(mb64_fence_names));
+            break;
+        case BARS_PAGE:
+            settings_custom_create_other_selector(list, 1, "Iron Mesh:", &mb64_curr_custom_theme.bars, mb64_bar_names, ARRAY_COUNT(mb64_bar_names));
+            break;
+        case WATER_PAGE:
+            settings_custom_create_other_selector(list, 1, "Water:", &mb64_curr_custom_theme.water, mb64_water_names, ARRAY_COUNT(mb64_water_names));
+            break;
+        default:
+            get_category_and_index_from_mat(&frame->matCategory, &frame->matIndex, mb64_curr_custom_theme.mats[index]);
+            settings_custom_create_material_selector(list, 0, &frame->matCategory, &frame->matIndex, 0);
+            
+            TextComponent *t = init_text_button(NULL, 0, 0, topmatToggleText[1], TEXT_CENTER, settings_custom_toggle_topmat_enabled);
+            component_list_append(list, t, -50, -32);
+
+            get_category_and_index_from_mat(&frame->topmatCategory, &frame->topmatIndex, mb64_curr_custom_theme.topmats[index]);
+            settings_custom_create_material_selector(list, 3, &frame->topmatCategory, &frame->topmatIndex, 1);
+
+            if (!mb64_curr_custom_theme.topmatsEnabled[index]) {
+                t->text = topmatToggleText[0];
+                component_list_get(list, 3)->disabled = TRUE;
+                component_list_get(list, 4)->disabled = TRUE;
+            }
+
+            TextComponent *class = init_text_component(frame, 100, -50, NULL, TEXT_CENTER, 0);
+            custom_theme_set_floor_class_name(class, index);
+            class->alpha = 150;
+    }
+
+    FrameComponent *block = init_dynamic_component(frame, component_block_preview_render);
+    component_set_pos(block, 100, -20);
+
+    frame->pageIndex = index;
+    frame->base.prerender = custom_theme_page_get_categories;
+    return frame;
+}
+
+void custom_theme_button_pressed(UNUSED TextComponent *t) {
+    PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+    page_handler_scroll(ph, 1);
+}
+
+char settings_stats_buf_1[20];
+char settings_stats_buf_2[24];
+char settings_stats_buf_3[30];
+char settings_stats_buf_4[28];
+
+u8 gFromCustomTheme = FALSE;
+FrameComponent *settings_main_page_creator(s32 index) {
+    FrameComponent *frame = init_frame_component(NULL);
     ListComponent *list = alloc_component(frame, MENU_LIST);
 
     switch (index) {
         case 0: // Environment
-            // todo: minecraft theme
-            settings_create_array_selector(list, 0, "Theme:", &mb64_lopt_theme, mb64_theme_string_table, ARRAY_COUNT(mb64_theme_string_table) - 1, reload_theme);
+            gEnvironmentList = list;
+            settings_create_array_selector(list, 0, "Theme:", &mb64_lopt_theme, mb64_theme_string_table, ARRAY_COUNT(mb64_theme_string_table) - 1, theme_changed);
             settings_create_array_selector(list, 1, "Skybox:", &mb64_lopt_bg, mb64_bg_string_table, ARRAY_COUNT(mb64_bg_string_table), reload_bg);
             settings_create_array_selector(list, 2, "Effect:", &mb64_lopt_envfx, mb64_envfx_string_table, ARRAY_COUNT(mb64_envfx_string_table), NULL);
+            
+            AnimatedComponent *customtheme = alloc_component(NULL, MENU_ANIMATED);
+            component_list_append(list, customtheme, 0, -58);
+            customtheme->direction = DIR_VERTICAL;
+            init_text_button(customtheme, 0, 0, "Edit Custom Theme...", TEXT_CENTER, custom_theme_button_pressed);
+            if (mb64_lopt_theme != MB64_THEME_CUSTOM) {
+                customtheme->offset = -30.f;
+                list->count = 3; // hack to make custom theme button unselectable without appearing disabled
+            }
+            if (gFromCustomTheme) {
+                list->index = 3;
+            }
             break;
         case 1: // Level Boundary
             gBoundaryList = list;
@@ -422,9 +763,9 @@ FrameComponent *settings_page_creator(s32 index) {
             init_text_component(frame, 140, -65, settings_stats_buf_2, TEXT_RIGHT, 0);
             break;
         case 4: // System
-            settings_create_button(list, 0, "Save & Quit");
-            settings_create_button(list, 1, "Play Level");
-            settings_create_button(list, 2, "Set Level Thumbnail");
+            settings_create_button(list, 0, "Save & Quit", settings_save_and_quit);
+            settings_create_button(list, 1, "Play Level", settings_play_level);
+            settings_create_button(list, 2, "Set Level Thumbnail", settings_take_screenshot);
 
             int vtx_perc = ((f32)mb64_vtx_total/(f32)MB64_VTX_SIZE)*100.0f;
             int tile_perc = ((f32)mb64_tile_count/(f32)MB64_TILE_POOL_SIZE)*100.0f;
@@ -435,42 +776,87 @@ FrameComponent *settings_page_creator(s32 index) {
             break;
     }
 
+    gFromCustomTheme = FALSE;
     return frame;
 }
 
-void create_test_list(void) {
+void settings_page_closed() {
+    dealloc_component(get_id(root));
+    root = NULL;
+    mb64_menu_state = MB64_MAKE_MAIN;
+}
+
+void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    AnimatedComponent *a = (AnimatedComponent *)m;
+
+    if (!(a->timer) && gPlayer1Controller->buttonPressed & B_BUTTON) {
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+        if (ph->index == 0) {
+            component_animate_ease_out(a, 4.f, 10, DIR_VERTICAL);
+            a->onFinish = settings_page_closed;
+        } else {
+            gFromCustomTheme = TRUE;
+            page_handler_scroll(ph, -1);
+            update_custom_theme();
+            reload_boundary_and_gfx();
+        }
+    }
+}
+
+#define SETTINGS_PAGE_HEIGHT 140
+#define SETTINGS_PAGE_WIDTH 290
+FrameComponent *settings_page_creator(s32 index) {
+    FrameComponent *frame = init_frame_component(NULL);
+
+    switch (index) {
+        case 0: // Main
+            PageHandlerComponent *mainph = init_page_handler(frame, settings_main_page_creator, ARRAY_COUNT(settings_menu_pages), SETTINGS_PAGE_WIDTH/2);
+            init_page_title_array(frame, mainph, 0, 25, 60, settings_menu_pages);
+
+            init_text_component(frame, 0, 50, mb64_file_info.fname, TEXT_CENTER, 0);
+            init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
+            init_text_component(frame, 70, 25, "R >", TEXT_LEFT, 0);
+            component_set_pos(init_dynamic_component(frame, component_level_portrait_render), 128, 50);
+            break;
+        case 1: // Custom theme
+            PageHandlerComponent *customph = init_page_handler(frame, custom_theme_page_creator, 14, SETTINGS_PAGE_WIDTH/2);
+            init_page_title_func(frame, customph, 0, 25, 60, get_custom_theme_page_name);
+
+            init_text_component(frame, 0, 50, "Custom Theme Editor", TEXT_CENTER, 0);
+            init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
+            init_text_component(frame, 70, 25, "R >", TEXT_LEFT, 0);
+            break;
+    }
+
+    return frame;
+}
+
+void settings_menu_create(void) {
     AnimatedComponent *main = alloc_component(NULL, MENU_ANIMATED);
-    component_set_pos(&main->base, SCREEN_WIDTH/2, 150);
+    component_set_pos(main, SCREEN_WIDTH/2, 150);
     component_animate_ease_in(main, 150.f, 0.35f, DIR_VERTICAL);
+    main->base.prerender = settings_page_main;
 
-    PageHandlerComponent *ph = init_page_handler(main, settings_page_creator, ARRAY_COUNT(settings_menu_pages), 290);
+    PageHandlerComponent *ph = init_page_handler(main, settings_page_creator, 2, SETTINGS_PAGE_HEIGHT/2);
     ph->base.prerender = component_settings_box_render;
-    init_page_title(main, &ph->base, 0, 25, 120, settings_menu_pages);
-
-    init_text_component(main, 0, 50, mb64_file_info.fname, TEXT_CENTER, 0);
-    init_text_component(main, -70, 25, "< L", TEXT_RIGHT, 0);
-    init_text_component(main, 70, 25, "R >", TEXT_LEFT, 0);
-    component_set_pos(init_dynamic_component(main, component_level_portrait_render), 128, 50);
+    ph->direction = DIR_VERTICAL;
+    ph->input = MENU_INPUT_NONE;
 
     root = &main->base;
 }
 
-void menu_engine_init_test(void) {
-    create_test_list();
-}
 void menu_engine_render_test(void) {
     if (!root) {
         return;
     }
     menu_update_joystick();
-    render_component(root, 0, 0);
 
-    AnimatedComponent *a = (AnimatedComponent *)root;
-    if (!(a->moving) && gPlayer1Controller->buttonPressed & B_BUTTON) {
-        component_animate_ease_out(a, 4.f, DIR_VERTICAL);
-    }
-}
-void menu_engine_dealloc_test(void) {
-    dealloc_component(root);
-    root = NULL;
+    // Should be the very max possible
+    // with both blocks having an overhang over a cutout wall
+    mb64_curr_gfx = (Gfx*)alloc_display_list(70*sizeof(Gfx));
+    mb64_curr_vtx = (Vtx*)alloc_display_list(120*sizeof(Vtx));
+    mb64_gfx_index = 0;
+
+    render_component(root, 0, 0);
 }

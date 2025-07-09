@@ -2,13 +2,23 @@
 
 #include "types.h"
 
+#define MENU_POOL_SIZE 64
+
 typedef struct MenuComponent MenuComponent;
+typedef u8 ComponentID;
 typedef void (*ComponentRenderFunc)(MenuComponent *m, s16 x, s16 y);
-typedef void (*ComponentUpdateFunc)(void);
+typedef void (*ComponentUpdateFunc)(); // Passes one optional parameter for the component itself
 
 enum MenuDirection {
     DIR_VERTICAL,
     DIR_HORIZONTAL
+};
+
+enum InputMethod {
+    MENU_INPUT_NONE,
+    MENU_INPUT_JOYSTICK,
+    MENU_INPUT_DPAD,
+    MENU_INPUT_TRIGGERS,
 };
 
 typedef struct {
@@ -19,17 +29,25 @@ typedef struct {
 
 // Base component for all other component types
 struct MenuComponent {
-    u8 type;
+    u8 type:7;
+    u8 inactive:1;
+    ComponentID child;
+    ComponentID next;
+    ComponentID parent;
     s16 xpos;
     s16 ypos;
-    MenuComponent *child;
-    MenuComponent *next;
     ComponentRenderFunc prerender; // Optional function for extra logic
 };
 
 // Empty component, only exists to contain other components
 typedef struct {
     MenuComponent base;
+    union {
+        void *asPtr;
+        int asInt;
+        f32 asFloat;
+        u8 asBytes[4];
+    } params[4];
 } FrameComponent;
 
 enum TextAlignment {
@@ -39,9 +57,11 @@ enum TextAlignment {
 };
 typedef struct {
     MenuComponent base;
+    ComponentUpdateFunc onClick;
     char *text;
     u8 align;
     u8 color;
+    u8 alpha;
 } TextComponent;
 
 
@@ -62,24 +82,28 @@ typedef struct {
 typedef struct {
     u8 count;
     s8 offset;
-    u16 width;
+    u8 width;
 } ScrollParams;
 
 enum SelectorComponentType {
     SELECTOR_ARRAY, // Uses a string array to get option name
     SELECTOR_FUNC,  // Uses a function to get option name
 };
+
 typedef char *(*SelectorStringFunc)(s32 index, char *buf);
+
+typedef union {
+    char **array;
+    SelectorStringFunc func;
+} SelectorStrings;
+
 typedef struct {
     MenuComponent base;
-    union {
-        char **options;
-        SelectorStringFunc stringFunc;
-    };
+    SelectorStrings string;
     ComponentUpdateFunc onChange;
     ScrollParams scroll;
-    u8 *value;
     u8 selectorType;
+    u8 *value;
 } SelectorComponent;
 
 enum AnimationTypes {
@@ -89,11 +113,12 @@ enum AnimationTypes {
 };
 typedef struct {
     MenuComponent base;
+    ComponentUpdateFunc onFinish;
     f32 offset;
     f32 velocity;
     f32 accel;
     u8 animType;
-    u8 moving;
+    u8 timer;
     u8 direction;
 } AnimatedComponent;
 
@@ -101,19 +126,31 @@ typedef FrameComponent *(*PageCreator)(s32 index);
 typedef struct {
     MenuComponent base;
     PageCreator pageCreator;
-    FrameComponent *currentPage;
-    FrameComponent *oldPage;
     ScrollParams scroll;
+    ComponentID currentPage;
+    ComponentID oldPage;
     u8 index;
+    u8 direction:1;
+    u8 input:3;
 } PageHandlerComponent;
 
 typedef struct {
     MenuComponent base;
-    ScrollParams *parentScroll;
     ScrollParams scroll;
-    char **array;
-    u8 *value;
+    SelectorStrings string;
+    ComponentID original;
+    u8 selectorType;
 } PageTitleComponent;
+
+typedef struct PageScrollComponent PageScrollComponent;
+typedef int (*PageScrollFunc)(PageScrollComponent *ps);
+struct PageScrollComponent {
+    MenuComponent base;
+    PageScrollFunc pageFunc;
+    s8 offset;
+    u8 width;
+    u8 direction;
+};
 
 enum MenuComponents {
     MENU_NONE = 0,
@@ -126,6 +163,7 @@ enum MenuComponents {
     MENU_ANIMATED,
 
     // For settings menu
+    MENU_PAGE_SCROLL,
     MENU_PAGE_HANDLER,
     MENU_PAGE_TITLE,
 };
@@ -141,30 +179,46 @@ union MenuComponentData {
     PageHandlerComponent pageHandler;
 };
 
+extern union MenuComponentData menu_pool[MENU_POOL_SIZE];
+
 void menu_update_joystick(void);
 void *alloc_component(void *parent, u8 type);
-void component_set_pos(MenuComponent *m, s16 x, s16 y);
-void dealloc_component(MenuComponent *m);
+void component_set_pos(void *m, s16 x, s16 y);
+void dealloc_component(ComponentID id);
 void render_component(MenuComponent *m, s16 x, s16 y);
+
+ALWAYS_INLINE void *get_component(int id) {
+    return &menu_pool[id-1];
+}
+ALWAYS_INLINE u8 get_id(void *m) {
+    return ((uintptr_t)(m - (void *)&menu_pool[0])) / sizeof(union MenuComponentData) + 1;
+}
+ALWAYS_INLINE void *get_parent(void *m) {
+    return get_component(((MenuComponent *)m)->parent);
+}
 
 ALWAYS_INLINE void render_child(MenuComponent *m, s16 x, s16 y) {
     if (m->child) {
-        render_component(m->child, x, y);
+        render_component(get_component(m->child), x, y);
     }
 }
 
-FrameComponent *init_frame_component(void *parent);
-TextComponent *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
-FrameComponent *init_dynamic_component(void *parent, ComponentRenderFunc render);
-PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
-PageTitleComponent *init_page_title(void *parent, MenuComponent *p, s16 x, s16 y, s16 width, char **array);
+void *get_child(void *parent, u8 type, u8 index);
 
-SelectorComponent *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
-SelectorComponent *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
+FrameComponent       *init_frame_component(void *parent);
+FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
+TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
+TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick);
+PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
+PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
+PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
+PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);
+SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
+SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
 
 ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y);
 ListItemComponent *component_list_get(ListComponent *l, u8 index);
 
 void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier, u8 direction);
-void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 direction);
+void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
 
