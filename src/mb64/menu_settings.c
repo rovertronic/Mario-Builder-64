@@ -11,6 +11,9 @@
 
 MenuComponent *root;
 
+u8 gSettingsPage = 0;
+u8 gSettingsCustomOpen = 0;
+
 char *settings_menu_pages[] = {
     "Environment",
     "Level Boundary",
@@ -780,39 +783,16 @@ FrameComponent *settings_main_page_creator(s32 index) {
     return frame;
 }
 
-void settings_page_closed() {
-    dealloc_component(get_id(root));
-    root = NULL;
-    mb64_menu_state = MB64_MAKE_MAIN;
-}
-
-void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
-    AnimatedComponent *a = (AnimatedComponent *)m;
-
-    if (!(a->timer) && gPlayer1Controller->buttonPressed & B_BUTTON) {
-        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-        PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
-        if (ph->index == 0) {
-            component_animate_ease_out(a, 4.f, 10, DIR_VERTICAL);
-            a->onFinish = settings_page_closed;
-        } else {
-            gFromCustomTheme = TRUE;
-            page_handler_scroll(ph, -1);
-            update_custom_theme();
-            reload_boundary_and_gfx();
-        }
-    }
-}
-
 #define SETTINGS_PAGE_HEIGHT 140
 #define SETTINGS_PAGE_WIDTH 290
 FrameComponent *settings_page_creator(s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
+    PageHandlerComponent *ph;
 
     switch (index) {
         case 0: // Main
-            PageHandlerComponent *mainph = init_page_handler(frame, settings_main_page_creator, ARRAY_COUNT(settings_menu_pages), SETTINGS_PAGE_WIDTH/2);
-            init_page_title_array(frame, mainph, 0, 25, 60, settings_menu_pages);
+            ph = init_page_handler(frame, settings_main_page_creator, ARRAY_COUNT(settings_menu_pages), SETTINGS_PAGE_WIDTH/2);
+            init_page_title_array(frame, ph, 0, 25, 60, settings_menu_pages);
 
             init_text_component(frame, 0, 50, mb64_file_info.fname, TEXT_CENTER, 0);
             init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
@@ -820,8 +800,8 @@ FrameComponent *settings_page_creator(s32 index) {
             component_set_pos(init_dynamic_component(frame, component_level_portrait_render), 128, 50);
             break;
         case 1: // Custom theme
-            PageHandlerComponent *customph = init_page_handler(frame, custom_theme_page_creator, 14, SETTINGS_PAGE_WIDTH/2);
-            init_page_title_func(frame, customph, 0, 25, 60, get_custom_theme_page_name);
+            ph = init_page_handler(frame, custom_theme_page_creator, 14, SETTINGS_PAGE_WIDTH/2);
+            init_page_title_func(frame, ph, 0, 25, 60, get_custom_theme_page_name);
 
             init_text_component(frame, 0, 50, "Custom Theme Editor", TEXT_CENTER, 0);
             init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
@@ -829,8 +809,44 @@ FrameComponent *settings_page_creator(s32 index) {
             break;
     }
 
+    ph->index = gSettingsPage;
+    gSettingsPage = 0;
+
     return frame;
 }
+
+void settings_page_closed() {
+    PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+    gSettingsCustomOpen = ph->index;
+    PageHandlerComponent *ph2 = get_child(get_component(ph->currentPage), MENU_PAGE_HANDLER, 0);
+    gSettingsPage = ph2->index;
+
+    dealloc_component(get_id(root));
+    root = NULL;
+    mb64_menu_state = MB64_MAKE_MAIN;
+}
+
+void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    AnimatedComponent *root = (AnimatedComponent *)m;
+
+    if (!(root->timer) && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+        if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+            component_animate_ease_out(root, 4.f, 10, DIR_VERTICAL);
+            root->onFinish = settings_page_closed;
+        } else {
+            gFromCustomTheme = TRUE;
+            page_handler_scroll(ph, -1);
+            // Save current page
+            PageHandlerComponent *ph2 = get_child(get_component(ph->oldPage), MENU_PAGE_HANDLER, 0);
+            gSettingsPage = ph2->index;
+        }
+        update_custom_theme();
+        reload_boundary_and_gfx();
+    }
+}
+
 
 void settings_menu_create(void) {
     AnimatedComponent *main = alloc_component(NULL, MENU_ANIMATED);
@@ -842,6 +858,7 @@ void settings_menu_create(void) {
     ph->base.prerender = component_settings_box_render;
     ph->direction = DIR_VERTICAL;
     ph->input = MENU_INPUT_NONE;
+    ph->index = gSettingsCustomOpen;
 
     root = &main->base;
 }
@@ -859,4 +876,10 @@ void menu_engine_render_test(void) {
     mb64_gfx_index = 0;
 
     render_component(root, 0, 0);
+}
+
+// Called on level transition
+void reset_settings_menu_state(void) {
+    gSettingsPage = 0;
+    gSettingsCustomOpen = FALSE;
 }

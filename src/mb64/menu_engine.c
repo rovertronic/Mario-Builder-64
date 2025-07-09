@@ -710,4 +710,6 @@ void render_component(MenuComponent *m, s16 x, s16 y) {
 
 void reset_menu(void) {
     bzero(&menu_pool, sizeof(menu_pool));
+
+    reset_settings_menu_state();
 }
