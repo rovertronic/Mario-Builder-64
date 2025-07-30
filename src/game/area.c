@@ -459,6 +459,9 @@ void render_game(void) {
         if (sCurrPlayMode == 0) {
             render_revent_textbox();
         }
+        
+        render_menu();
+
         if (mb64_mode == MB64_MODE_MAKE) {
             draw_mb64_menu();
         }

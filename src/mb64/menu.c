@@ -523,8 +523,6 @@ Vtx * custom_preview_vtx;
 
 
 void draw_mb64_menu(void) {
-    menu_engine_render_test();
-
     if (mb64_menu_state != MB64_MAKE_SCREENSHOT) {
         create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 36 - 80, 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);

@@ -150,16 +150,46 @@ void component_set_pos(void *m, s16 x, s16 y) {
     c->ypos = y;
 }
 
+// Deallocates component and its children as well as all following sibling components 
+void dealloc_component_full(ComponentID id) {
+    if (!id) return;
+    MenuComponent *m = get_component(id);
+    dealloc_component_full(m->next);
+    m->next = 0;
+    dealloc_component(id);
+}
+
+// Deallocates only this component and its children
 void dealloc_component(ComponentID id) {
     if (!id) return;
     MenuComponent *m = get_component(id);
-    dealloc_component(m->next);
-    dealloc_component(m->child);
+    dealloc_component_full(m->child);
     if (m->type == MENU_PAGE_HANDLER) {
         PageHandlerComponent *ph = (PageHandlerComponent *)m;
-        dealloc_component(ph->oldPage);
-        dealloc_component(ph->currentPage);
+        dealloc_component_full(ph->oldPage);
+        dealloc_component_full(ph->currentPage);
     }
+
+    // If sibling exists, link it to the parent or the previous sibling
+    if (m->parent) {
+        MenuComponent *parent = get_component(m->parent);
+        if (m->next) {
+            if (parent->child == id) {
+                parent->child = m->next;
+            } else {
+                MenuComponent *current = get_component(parent->child);
+                while (current && current->next != id) {
+                    current = get_component(current->next);
+                }
+                if (current) {
+                    current->next = m->next;
+                }
+            }
+        } else {
+            parent->child = 0;
+        }
+    }
+
     m->type = MENU_NONE;
 }
 
@@ -493,6 +523,27 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x + m->xpos, y + m->ypos);
 }
 
+// ================ MATRIX ===================
+
+MatrixComponent *init_matrix_component(void *parent, s16 rot) {
+    MatrixComponent *m = alloc_component(parent, MENU_MATRIX);
+    m->rot = rot;
+    return m;
+}
+
+void component_matrix_render(MenuComponent *m, s16 x, s16 y) {
+    MatrixComponent *mc = (MatrixComponent *)m;
+
+    s16 *mtx = alloc_display_list(sizeof(Mtx));
+    if (!mtx) return;
+    guRotate((Mtx *)mtx, (mc->rot * 45.f) / 0x2000, 0.f, 0.f, 1.f);
+    mtx[12] = x + m->xpos;
+    mtx[13] = y + m->ypos;
+    gSPMatrix(gDisplayListHead++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    render_child(m, 0, 0);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
 // ================ PAGE HANDLER ===================
 
 #define PAGE_HANDLER_ANIM_FRAMES 5
@@ -553,7 +604,7 @@ void component_page_handler_render(MenuComponent *m, s16 x, s16 y) {
         gMenuState.inactive = TRUE;
         render_component(get_component(ph->oldPage), newx, newy);
     } else if (ph->oldPage) {
-        dealloc_component(ph->oldPage);
+        dealloc_component_full(ph->oldPage);
         ph->oldPage = 0;
     }
     render_component(get_component(ph->currentPage), x, y);
@@ -678,6 +729,7 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_LISTITEM] = component_listitem_render,
     [MENU_SELECTOR] = component_selector_render,
     [MENU_ANIMATED] = component_animated_render,
+    [MENU_MATRIX] = component_matrix_render,
     [MENU_PAGE_HANDLER] = component_page_handler_render,
     [MENU_PAGE_TITLE] = component_page_title_render,
     [MENU_PAGE_SCROLL] = component_page_scroll_render,
@@ -708,8 +760,21 @@ void render_component(MenuComponent *m, s16 x, s16 y) {
     }
 }
 
+FrameComponent *gMenuRoot;
+
+void init_root(void) {
+    gMenuRoot = init_frame_component(NULL);
+}
+
 void reset_menu(void) {
     bzero(&menu_pool, sizeof(menu_pool));
-
     reset_settings_menu_state();
+    init_root();
+}
+
+extern ComponentID settingsRoot;
+
+void render_menu(void) {
+    menu_update_joystick();
+    render_component(gMenuRoot, 0, 0);
 }

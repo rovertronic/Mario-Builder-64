@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "engine/math_util.h"
 
 #define MENU_POOL_SIZE 64
 
@@ -124,6 +125,11 @@ typedef struct {
     u8 direction;
 } AnimatedComponent;
 
+typedef struct {
+    MenuComponent base;
+    s16 rot;
+} MatrixComponent;
+
 typedef FrameComponent *(*PageCreator)(s32 index);
 typedef struct {
     MenuComponent base;
@@ -163,6 +169,7 @@ enum MenuComponents {
     MENU_SELECTOR,
     MENU_DYNAMIC,
     MENU_ANIMATED,
+    MENU_MATRIX,
 
     // For settings menu
     MENU_PAGE_SCROLL,
@@ -179,9 +186,13 @@ union MenuComponentData {
     SelectorComponent selector;
     AnimatedComponent animated;
     PageHandlerComponent pageHandler;
+    PageTitleComponent pageTitle;
+    PageScrollComponent pageScroll;
+    MatrixComponent matrix;
 };
 
 extern union MenuComponentData menu_pool[MENU_POOL_SIZE];
+extern FrameComponent *gMenuRoot;
 
 void menu_update_joystick(void);
 void *alloc_component(void *parent, u8 type);
@@ -211,6 +222,7 @@ FrameComponent       *init_frame_component(void *parent);
 FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick);
+MatrixComponent      *init_matrix_component(void *parent, s16 rot);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
 PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
@@ -224,3 +236,5 @@ ListItemComponent *component_list_get(ListComponent *l, u8 index);
 void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier, u8 direction);
 void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
 
+void reset_menu(void);
+void render_menu(void);

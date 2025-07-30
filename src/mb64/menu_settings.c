@@ -9,7 +9,7 @@
 #include "actors/bg/header.h"
 #include "actors/bigpainting2/header.h"
 
-MenuComponent *root;
+ComponentID settingsRoot = 0;
 
 u8 gSettingsPage = 0;
 u8 gSettingsCustomOpen = 0;
@@ -392,8 +392,8 @@ void settings_take_screenshot(void) {
         freecam_camera_init();
         mb64_menu_state = MB64_MAKE_SCREENSHOT;
         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-        dealloc_component(get_id(root));
-        root = NULL;
+        dealloc_component(settingsRoot);
+        settingsRoot = 0;
     } else {
         play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
     }
@@ -708,7 +708,7 @@ FrameComponent *custom_theme_page_creator(s32 index) {
 }
 
 void custom_theme_button_pressed(UNUSED TextComponent *t) {
-    PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+    PageHandlerComponent *ph = get_child(get_component(settingsRoot), MENU_PAGE_HANDLER, 0);
     page_handler_scroll(ph, 1);
 }
 
@@ -851,18 +851,22 @@ FrameComponent *settings_page_creator(s32 index) {
 }
 
 void settings_page_closed() {
-    PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+    PageHandlerComponent *ph = get_child(get_component(settingsRoot), MENU_PAGE_HANDLER, 0);
     gSettingsCustomOpen = ph->index;
     PageHandlerComponent *ph2 = get_child(get_component(ph->currentPage), MENU_PAGE_HANDLER, 0);
     gSettingsPage = ph2->index;
 
-    dealloc_component(get_id(root));
-    root = NULL;
+    dealloc_component(settingsRoot);
+    settingsRoot = 0;
     mb64_menu_state = MB64_MAKE_MAIN;
 }
 
 void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     AnimatedComponent *root = (AnimatedComponent *)m;
+
+    mb64_curr_gfx = (Gfx*)alloc_display_list(70*sizeof(Gfx));
+    mb64_curr_vtx = (Vtx*)alloc_display_list(120*sizeof(Vtx));
+    mb64_gfx_index = 0;
 
     if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
@@ -882,9 +886,8 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 }
 
-
 void settings_menu_create(void) {
-    AnimatedComponent *main = alloc_component(NULL, MENU_ANIMATED);
+    AnimatedComponent *main = alloc_component(gMenuRoot, MENU_ANIMATED);
     component_set_pos(main, SCREEN_WIDTH/2, 150);
     component_animate_ease_in(main, 150.f, 0.35f, DIR_VERTICAL);
     main->base.prerender = settings_page_main;
@@ -895,22 +898,7 @@ void settings_menu_create(void) {
     ph->input = MENU_INPUT_NONE;
     ph->index = gSettingsCustomOpen;
 
-    root = &main->base;
-}
-
-void menu_engine_render_test(void) {
-    if (!root) {
-        return;
-    }
-    menu_update_joystick();
-
-    // Should be the very max possible
-    // with both blocks having an overhang over a cutout wall
-    mb64_curr_gfx = (Gfx*)alloc_display_list(70*sizeof(Gfx));
-    mb64_curr_vtx = (Vtx*)alloc_display_list(120*sizeof(Vtx));
-    mb64_gfx_index = 0;
-
-    render_component(root, 0, 0);
+    settingsRoot = get_id(main);
 }
 
 // Called on level transition
