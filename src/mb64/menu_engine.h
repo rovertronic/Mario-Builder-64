@@ -28,7 +28,14 @@ typedef struct {
     u8 inactive;
 } MenuState;
 
+typedef struct {
+    u8 listOffsetSelected:1;
+} MenuStyle;
+
+extern MenuStyle gMenuStyle;
 extern MenuState gMenuState;
+
+#define set_menu_style(style) (gMenuStyle = style)
 
 // Base component for all other component types
 struct MenuComponent {
@@ -49,6 +56,7 @@ typedef struct {
         void *asPtr;
         int asInt;
         f32 asFloat;
+        s16 asShorts[2];
         u8 asBytes[4];
     } params[4];
 } FrameComponent;
@@ -61,12 +69,12 @@ enum TextAlignment {
 typedef struct {
     MenuComponent base;
     ComponentUpdateFunc onClick;
+    int onClickArg;
     char *text;
     u8 align;
     u8 color;
     u8 alpha;
 } TextComponent;
-
 
 typedef struct {
     MenuComponent base;
@@ -113,6 +121,7 @@ enum AnimationTypes {
     ANIM_NONE,
     ANIM_EASE_IN,
     ANIM_EASE_OUT,
+    ANIM_BOUNCE_IN,
 };
 typedef struct {
     MenuComponent base;
@@ -122,12 +131,15 @@ typedef struct {
     f32 accel;
     u8 animType;
     u8 timer;
+    u8 delay;
     u8 direction;
 } AnimatedComponent;
 
 typedef struct {
     MenuComponent base;
     s16 rot;
+    f32 xScale;
+    f32 yScale;
 } MatrixComponent;
 
 typedef FrameComponent *(*PageCreator)(s32 index);
@@ -194,6 +206,7 @@ union MenuComponentData {
 extern union MenuComponentData menu_pool[MENU_POOL_SIZE];
 extern FrameComponent *gMenuRoot;
 
+void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha);
 void menu_update_joystick(void);
 void *alloc_component(void *parent, u8 type);
 void component_set_pos(void *m, s16 x, s16 y);
@@ -209,6 +222,10 @@ ALWAYS_INLINE u8 get_id(void *m) {
 ALWAYS_INLINE void *get_parent(void *m) {
     return get_component(((MenuComponent *)m)->parent);
 }
+ALWAYS_INLINE void *get_first_child(void *parent) {
+    MenuComponent *p = parent;
+    return p->child ? get_component(p->child) : NULL;
+}
 
 ALWAYS_INLINE void render_child(MenuComponent *m, s16 x, s16 y) {
     if (m->child) {
@@ -221,8 +238,8 @@ void *get_child(void *parent, u8 type, u8 index);
 FrameComponent       *init_frame_component(void *parent);
 FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
-TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick);
-MatrixComponent      *init_matrix_component(void *parent, s16 rot);
+TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);
+MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
 PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
@@ -235,6 +252,8 @@ ListItemComponent *component_list_get(ListComponent *l, u8 index);
 
 void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier, u8 direction);
 void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
+void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f32 initialVel, u8 direction);
+void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction);
 
 void reset_menu(void);
 void render_menu(void);

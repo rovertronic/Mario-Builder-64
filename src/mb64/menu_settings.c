@@ -61,7 +61,7 @@ char *mb64_theme_string_table[] = {
 
 ListComponent *gEnvironmentList;
 void theme_changed(UNUSED SelectorComponent *s) {
-    AnimatedComponent *customtheme = get_child(component_list_get(gEnvironmentList, 3), MENU_ANIMATED, 0);
+    AnimatedComponent *customtheme = get_first_child(component_list_get(gEnvironmentList, 3));
 
     if (mb64_lopt_theme == MB64_THEME_CUSTOM) {
         // Enable custom theme button
@@ -656,7 +656,7 @@ SelectorComponent *settings_create_music_selector(ListComponent *list, u8 index,
 }
 
 void settings_create_button(ListComponent *list, u8 index, char *text, ComponentUpdateFunc func) {
-    TextComponent *t = init_text_button(NULL, 0, 0, text, TEXT_CENTER, func);
+    TextComponent *t = init_text_button(NULL, 0, 0, text, TEXT_CENTER, func, 0);
     component_list_append(list, t, 0, -index * 16);
 }
 
@@ -682,7 +682,7 @@ FrameComponent *custom_theme_page_creator(s32 index) {
             get_category_and_index_from_mat(&frame->matCategory, &frame->matIndex, mb64_curr_custom_theme.mats[index]);
             settings_custom_create_material_selector(list, 0, &frame->matCategory, &frame->matIndex, 0);
             
-            TextComponent *t = init_text_button(NULL, 0, 0, topmatToggleText[1], TEXT_CENTER, settings_custom_toggle_topmat_enabled);
+            TextComponent *t = init_text_button(NULL, 0, 0, topmatToggleText[1], TEXT_CENTER, settings_custom_toggle_topmat_enabled, 0);
             component_list_append(list, t, -50, -32);
 
             get_category_and_index_from_mat(&frame->topmatCategory, &frame->topmatIndex, mb64_curr_custom_theme.topmats[index]);
@@ -707,8 +707,8 @@ FrameComponent *custom_theme_page_creator(s32 index) {
     return frame;
 }
 
-void custom_theme_button_pressed(UNUSED TextComponent *t) {
-    PageHandlerComponent *ph = get_child(get_component(settingsRoot), MENU_PAGE_HANDLER, 0);
+void custom_theme_button_pressed(void) {
+    PageHandlerComponent *ph = get_first_child(get_component(settingsRoot));
     page_handler_scroll(ph, 1);
 }
 
@@ -764,7 +764,7 @@ FrameComponent *settings_main_page_creator(s32 index) {
             AnimatedComponent *customtheme = alloc_component(NULL, MENU_ANIMATED);
             component_list_append(list, customtheme, 0, -58);
             customtheme->direction = DIR_VERTICAL;
-            init_text_button(customtheme, 0, 0, "Edit Custom Theme...", TEXT_CENTER, custom_theme_button_pressed);
+            init_text_button(customtheme, 0, 0, "Edit Custom Theme...", TEXT_CENTER, custom_theme_button_pressed, 0);
             if (mb64_lopt_theme != MB64_THEME_CUSTOM) {
                 customtheme->offset = -30.f;
                 list->count = 3; // hack to make custom theme button unselectable without appearing disabled
@@ -851,9 +851,9 @@ FrameComponent *settings_page_creator(s32 index) {
 }
 
 void settings_page_closed() {
-    PageHandlerComponent *ph = get_child(get_component(settingsRoot), MENU_PAGE_HANDLER, 0);
+    PageHandlerComponent *ph = get_first_child(get_component(settingsRoot));
     gSettingsCustomOpen = ph->index;
-    PageHandlerComponent *ph2 = get_child(get_component(ph->currentPage), MENU_PAGE_HANDLER, 0);
+    PageHandlerComponent *ph2 = get_first_child(get_component(ph->currentPage));
     gSettingsPage = ph2->index;
 
     dealloc_component(settingsRoot);
@@ -861,8 +861,14 @@ void settings_page_closed() {
     mb64_menu_state = MB64_MAKE_MAIN;
 }
 
+MenuStyle settings_menu_style = {
+    .listOffsetSelected = TRUE
+};
+
 void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     AnimatedComponent *root = (AnimatedComponent *)m;
+
+    set_menu_style(settings_menu_style);
 
     mb64_curr_gfx = (Gfx*)alloc_display_list(70*sizeof(Gfx));
     mb64_curr_vtx = (Vtx*)alloc_display_list(120*sizeof(Vtx));
@@ -870,7 +876,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
     if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-        PageHandlerComponent *ph = get_child(root, MENU_PAGE_HANDLER, 0);
+        PageHandlerComponent *ph = get_first_child(root);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             component_animate_ease_out(root, 4.f, 10, DIR_VERTICAL);
             root->onFinish = settings_page_closed;
@@ -878,7 +884,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
             gFromCustomTheme = TRUE;
             page_handler_scroll(ph, -1);
             // Save current page
-            PageHandlerComponent *ph2 = get_child(get_component(ph->oldPage), MENU_PAGE_HANDLER, 0);
+            PageHandlerComponent *ph2 = get_first_child(get_component(ph->oldPage));
             gSettingsPage = ph2->index;
         }
         update_custom_theme();

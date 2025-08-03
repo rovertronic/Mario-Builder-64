@@ -1178,6 +1178,7 @@ void thread5_game_loop(UNUSED void *arg) {
         }
         
     }
+    reset_menu();
 
     while (TRUE) {
         profiler_frame_setup();

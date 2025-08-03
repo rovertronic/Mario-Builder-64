@@ -26,6 +26,8 @@
 #include "mb64/main.h"
 #include "seq_ids.h"
 
+#include "mb64/menu_engine.h"
+
 #include "eu_translation.h"
 #if MULTILANG
 #undef LANGUAGE_FUNCTION
@@ -1976,9 +1978,13 @@ void beh_yellow_background_menu_loop(void) {
 /**
  * Geo function that prints file select strings and the cursor.
  */
+extern ComponentID gCurrPageComponent;
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        sSelectedFileNum = mb64_main_menu();
+        //sSelectedFileNum = mb64_main_menu();
+        if (!gMenuRoot->base.child) {
+            init_main_menu(1); // page main
+        }
     }
     return NULL;
 }

@@ -1367,6 +1367,7 @@ u32 mb64_mm_anim_in(s32 len) {
 }
 
 s32 mb64_main_menu(void) {
+    return 0;
     mb64_joystick = joystick_direction();
 
     if (mb64_menu_end_timer != -1) {

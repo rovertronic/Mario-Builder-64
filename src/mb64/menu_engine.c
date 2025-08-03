@@ -4,6 +4,7 @@
 #include "audio/external.h"
 
 // Global states for the currently processed menu
+MenuStyle gMenuStyle;
 MenuState gMenuState;
 
 union MenuComponentData menu_pool[MENU_POOL_SIZE] = {0};
@@ -246,9 +247,10 @@ TextComponent *init_text_component(void *parent, s16 x, s16 y, char *text, u8 al
     return t;
 }
 
-TextComponent *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick) {
+TextComponent *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg) {
     TextComponent *t = init_text_component(parent, x, y, text, align, 0);
     t->onClick = onClick;
+    t->onClickArg = onClickArg;
     return t;
 }
 
@@ -258,7 +260,7 @@ void component_text_render(MenuComponent *m, s16 x, s16 y) {
 
     if (gMenuState.selected && t->onClick && !gMenuState.inactive) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
-            t->onClick(t);
+            t->onClick(t, t->onClickArg);
             play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
         }
     }
@@ -328,10 +330,12 @@ void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
 
     gMenuState.selected = item->selected;
     gMenuState.disabled = item->disabled;
-    if (gMenuState.selected) {
-        item->xoffset = MIN(item->xoffset+1, 3);
-    } else {
-        item->xoffset = MAX(item->xoffset-1, 0);
+    if (gMenuStyle.listOffsetSelected) {
+        if (gMenuState.selected) {
+            item->xoffset = MIN(item->xoffset+1, 3);
+        } else {
+            item->xoffset = MAX(item->xoffset-1, 0);
+        }
     }
     render_child(m, x + m->xpos + item->xoffset, y + m->ypos);
 }
@@ -425,7 +429,7 @@ void component_selector_render(MenuComponent *m, s16 x, s16 y) {
     if (handle_scroll(&s->scroll, dir, s->value)) {
         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         if (s->onChange) {
-            s->onChange(s);
+            s->onChange(s, 0);
         }
     }
 
@@ -458,6 +462,7 @@ void component_reset_animation(AnimatedComponent *a) {
     a->accel = 0.f;
     a->animType = ANIM_NONE;
     a->timer = 0;
+    a->delay = 0;
 }
 
 void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier, u8 direction) {
@@ -477,24 +482,30 @@ void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 di
     a->direction = direction;
 }
 
+void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f32 initialVel, u8 direction) {
+    a->animType = ANIM_BOUNCE_IN;
+    a->offset = offset;
+    a->accel = accel;
+    a->velocity = initialVel;
+    a->timer = 1;
+    a->direction = direction;
+}
+
+void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction) {
+    component_animate_ease_out(a, accel, timer, direction);
+    a->velocity = initialVel;
+}
+
 void component_animated_render(MenuComponent *m, s16 x, s16 y) {
     AnimatedComponent *a = (AnimatedComponent *)m;
 
-    if (a->timer) {
+    if (a->delay) {
+        a->delay--;
+    } else if (a->timer) {
         switch (a->animType) {
             case ANIM_EASE_IN:
                 a->offset -= a->offset * a->accel;
-                if (a->offset > 0.f) {
-                    if (a->offset < 1.f) {
-                        a->offset = 0.f;
-                    }
-                } else {
-                    if (a->offset > -1.f) {
-                        a->offset = 0.f;
-                    }
-                }
-                if (a->offset == 0.f) {
-                    a->timer = 0;
+                if (ABS(a->offset) < 0.5f) {
                     component_reset_animation(a);
                 }
                 break;
@@ -503,10 +514,17 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
                 a->offset += a->velocity;
                 a->timer--;
                 break;
+            case ANIM_BOUNCE_IN:
+                a->velocity += a->accel;
+                a->offset += a->velocity;
+                if ((a->velocity * a->accel > 0.f) && (a->offset * a->accel > 0.f)) {
+                    component_reset_animation(a);
+                }
+                break;
         }
     }
     if (a->timer == 0 && a->onFinish) {
-        a->onFinish(a);
+        a->onFinish(a, 0);
         a->onFinish = NULL;
     }
 
@@ -525,9 +543,11 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
 
 // ================ MATRIX ===================
 
-MatrixComponent *init_matrix_component(void *parent, s16 rot) {
+MatrixComponent *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale) {
     MatrixComponent *m = alloc_component(parent, MENU_MATRIX);
     m->rot = rot;
+    m->xScale = xScale;
+    m->yScale = yScale;
     return m;
 }
 
@@ -536,9 +556,15 @@ void component_matrix_render(MenuComponent *m, s16 x, s16 y) {
 
     s16 *mtx = alloc_display_list(sizeof(Mtx));
     if (!mtx) return;
-    guRotate((Mtx *)mtx, (mc->rot * 45.f) / 0x2000, 0.f, 0.f, 1.f);
+
+    // Construct matrix with rotation, translation and scale
+    Mtx temp;
+    guRotate(&temp, (mc->rot * 45.f) / 0x2000, 0.f, 0.f, 1.f);
+    guScale(mtx, mc->xScale, mc->yScale, 1.f);
     mtx[12] = x + m->xpos;
     mtx[13] = y + m->ypos;
+    guMtxCatL(&temp, mtx, mtx);
+
     gSPMatrix(gDisplayListHead++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     render_child(m, 0, 0);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
