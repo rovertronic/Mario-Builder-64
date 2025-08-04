@@ -2,21 +2,42 @@
 
 #include "game/game_init.h"
 #include "audio/external.h"
+#include "game/segment2.h"
 
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
 MenuState gMenuState;
 
+#define ACTIVE (!gMenuState.inactive && !gMenuState.disabled)
+#define SELECTED (gMenuState.selected && ACTIVE)
+
 union MenuComponentData menu_pool[MENU_POOL_SIZE] = {0};
 
+u8 menu_text_colors[][3] = {
+    {255, 255, 255},
+    {255, 255, 0},
+    {150, 150, 150},
+    {150, 150, 0},
+    {255, 0, 0},
+    {0, 150, 255},
+    {150, 0, 0},
+    {0, 75, 150},
+};
+
 void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
-    if (gMenuState.selected) color += 1;
-    if (gMenuState.disabled) color += 2;
+    if (gMenuState.selected && !gMenuState.disabled && !(color & 1)) color += 1;
+    if (gMenuState.disabled && !(color & 2)) color += 2;
     if (align) {
         int width = get_string_width_ascii(str);
         x -= width * align / 2; // 1 - center, 2 - right
     }
-    print_maker_string_ascii_alpha(x, y, str, color, alpha);
+
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
+    print_generic_string_ascii(x-1, y-1, str);
+    gDPSetEnvColor(gDisplayListHead++, menu_text_colors[color][0], menu_text_colors[color][1], menu_text_colors[color][2], alpha);
+    print_generic_string_ascii(x, y, str);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
 enum JoystickState {
@@ -255,10 +276,18 @@ TextComponent *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align
 }
 
 void component_text_render(MenuComponent *m, s16 x, s16 y) {
+    char temp[MAX_FILE_NAME_SIZE];
     TextComponent *t = (TextComponent *)m;
-    menu_text_display(t->text, x + m->xpos, y + m->ypos, t->color, t->align, t->alpha);
+    char *str = t->text;
+    if (t->skipExtension) {
+        int len = strlen(str);
+        strncpy(temp, str, len - 5);
+        temp[len - 5] = '\0';
+        str = temp;
+    }
+    menu_text_display(str, x + m->xpos, y + m->ypos, t->color, t->align, t->alpha);
 
-    if (gMenuState.selected && t->onClick && !gMenuState.inactive) {
+    if (SELECTED && t->onClick) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
             t->onClick(t, t->onClickArg);
             play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
@@ -274,85 +303,18 @@ FrameComponent *init_dynamic_component(void *parent, ComponentRenderFunc render)
     return f;
 }
 
-// ================ LIST ===================
-
-ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y) {
-    ListItemComponent *item = alloc_component(l, MENU_LISTITEM);
-    component_set_pos(item, x, y);
-    add_child(item, m);
-    l->count++;
-    return item;
-}
-
-ListItemComponent *component_list_get(ListComponent *l, u8 index) {
-    MenuComponent *current = get_component(l->base.child);
-    for (u8 i = 0; i < index; i++) {
-        if (current->next) {
-            current = get_component(current->next);
-        } else {
-            return NULL;
-        }
-    }
-    return (ListItemComponent *)current;
-}
-
-void component_list_render(MenuComponent *m, s16 x, s16 y) {
-    ListComponent *l = (ListComponent *)m;
-    ListItemComponent *item = component_list_get(l, l->index);
-
-    if (l->count == 0) return;
-    if (l->count != 1) {
-        s8 dir = 0;
-        if (gJoystickState == JOYSTICK_UP) {
-            dir = -1;
-        } else if (gJoystickState == JOYSTICK_DOWN) {
-            dir = 1;
-        }
-
-        if (dir && !gMenuState.inactive) {
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            item->selected = 0;
-            do {
-                l->index = (l->index + dir + l->count) % l->count;
-                item = component_list_get(l, l->index);
-            } while (item->disabled);
-        }
-    }
-    item->selected = 1;
-
-    render_child(m, x + m->xpos, y + m->ypos);
-}
-
-// ================ LIST ITEM ===================
-
-void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
-    ListItemComponent *item = (ListItemComponent *)m;
-
-    gMenuState.selected = item->selected;
-    gMenuState.disabled = item->disabled;
-    if (gMenuStyle.listOffsetSelected) {
-        if (gMenuState.selected) {
-            item->xoffset = MIN(item->xoffset+1, 3);
-        } else {
-            item->xoffset = MAX(item->xoffset-1, 0);
-        }
-    }
-    render_child(m, x + m->xpos + item->xoffset, y + m->ypos);
-}
-
 // ================ GENERIC SCROLL ===================
 
-#define SCROLL_ANIM_FRAMES 5
-int handle_scroll(ScrollParams *params, s8 dir, u8 *value) {
+int handle_scroll(ScrollParams *params, s8 dir, u8 *value, int frames) {
     if (params->offset) {
         if (params->offset > 0) {
             params->offset--;
         } else if (params->offset < 0) {
             params->offset++;
         }
-    } else if (!gMenuState.inactive) {
+    } else if (ACTIVE) {
         if (dir) {
-            params->offset = dir * SCROLL_ANIM_FRAMES;
+            params->offset = dir * frames;
             *value = (*value + dir + params->count) % params->count;
             return TRUE;
         }
@@ -361,8 +323,8 @@ int handle_scroll(ScrollParams *params, s8 dir, u8 *value) {
 }
 
 // Calculate X offset for currently indexed component
-ALWAYS_INLINE int scroll_get_offset(ScrollParams *params) {
-    return (params->offset * params->width * 2) / SCROLL_ANIM_FRAMES;
+ALWAYS_INLINE int scroll_get_offset(ScrollParams *params, int frames) {
+    return (params->offset * params->width * 2) / frames;
 }
 // Calculate additional offset for previous component
 int scroll_get_extra_offset(ScrollParams *params) {
@@ -413,6 +375,7 @@ char *selector_get_str(SelectorStrings *s, u8 selectorType, s32 index, char *buf
     return NULL;
 }
 
+#define SELECTOR_ANIM_FRAMES 5
 void component_selector_render(MenuComponent *m, s16 x, s16 y) {
     SelectorComponent *s = (SelectorComponent *)m;
     char buf[64];
@@ -426,7 +389,7 @@ void component_selector_render(MenuComponent *m, s16 x, s16 y) {
         }
     }
             
-    if (handle_scroll(&s->scroll, dir, s->value)) {
+    if (handle_scroll(&s->scroll, dir, s->value, SELECTOR_ANIM_FRAMES)) {
         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         if (s->onChange) {
             s->onChange(s, 0);
@@ -435,13 +398,13 @@ void component_selector_render(MenuComponent *m, s16 x, s16 y) {
 
     x += m->xpos;
     y += m->ypos;
-    menu_text_display("<", x - s->scroll.width - 1, y, 0, TEXT_RIGHT, 255);
-    menu_text_display(">", x + s->scroll.width + 3, y, 0, TEXT_LEFT, 255);
-    int offset = scroll_get_offset(&s->scroll);
+    menu_text_display("<", x - s->scroll.width - 1, y, TEXT_WHITE, TEXT_RIGHT, 255);
+    menu_text_display(">", x + s->scroll.width + 3, y, TEXT_WHITE, TEXT_LEFT, 255);
+    int offset = scroll_get_offset(&s->scroll, SELECTOR_ANIM_FRAMES);
 
     scroll_push_scissor_horiz(&s->scroll, x);
 
-    menu_text_display(selector_get_str(&s->string, s->selectorType, *s->value, buf), x + offset, y, 0, TEXT_CENTER, 255);
+    menu_text_display(selector_get_str(&s->string, s->selectorType, *s->value, buf), x + offset, y, TEXT_WHITE, TEXT_CENTER, 255);
     if (s->scroll.offset) {
         if (s->scroll.offset < 0) {
             dir = 1;
@@ -449,7 +412,7 @@ void component_selector_render(MenuComponent *m, s16 x, s16 y) {
             dir = -1;
         }
         menu_text_display(selector_get_str(&s->string, s->selectorType, (*s->value + dir + s->scroll.count) % s->scroll.count, buf),
-                          x + offset + scroll_get_extra_offset(&s->scroll), y, 0, TEXT_CENTER, 255);
+                          x + offset + scroll_get_extra_offset(&s->scroll), y, TEXT_WHITE, TEXT_CENTER, 255);
     }
     pop_scissor();
 }
@@ -572,6 +535,18 @@ void component_matrix_render(MenuComponent *m, s16 x, s16 y) {
 
 // ================ PAGE HANDLER ===================
 
+FrameComponent *page_handler_create_page(PageHandlerComponent *ph, s8 index) {
+    FrameComponent *f = ph->pageCreator(ph, index);
+    f->base.parent = get_id(ph);
+    return f;
+}
+
+void page_handler_load_initial_page(PageHandlerComponent *ph) {
+    if (!ph->currentPage) {
+        ph->currentPage = get_id(page_handler_create_page(ph, ph->index));
+    }
+}
+
 #define PAGE_HANDLER_ANIM_FRAMES 5
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width) {
     PageHandlerComponent *ph = alloc_component(parent, MENU_PAGE_HANDLER);
@@ -580,36 +555,38 @@ PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u
     ph->scroll.width = width;
     ph->direction = DIR_HORIZONTAL;
     ph->input = MENU_INPUT_TRIGGERS;
+    ph->frames = 5;
     return ph;
 }
 
-FrameComponent *page_handler_create_page(PageHandlerComponent *ph, s8 index) {
-    FrameComponent *f = ph->pageCreator(index);
-    f->base.parent = get_id(ph);
-    return f;
-}
-
 void page_handler_scroll(PageHandlerComponent *ph, int dir) {
-    if (handle_scroll(&ph->scroll, dir, &ph->index)) {
+    if (handle_scroll(&ph->scroll, dir, &ph->index, ph->frames)) {
         if (ph->input != MENU_INPUT_NONE) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         ph->oldPage = ph->currentPage;
         ph->currentPage = get_id(page_handler_create_page(ph, ph->index));
     }
 }
 
+void page_handler_set_page(PageHandlerComponent *ph, int page) {
+    if (page == ph->index) return;
+    ph->index = page;
+    dealloc_component_full(ph->currentPage);
+    ph->currentPage = get_id(page_handler_create_page(ph, page));
+    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    ph->scroll.offset = 0;
+}
+
 void component_page_handler_render(MenuComponent *m, s16 x, s16 y) {
     PageHandlerComponent *ph = (PageHandlerComponent *)m;
 
-    if (!ph->currentPage) {
-        ph->currentPage = get_id(page_handler_create_page(ph, ph->index));
-    }
+    page_handler_load_initial_page(ph);
 
     s8 dir = get_input(ph->input, ph->direction);
     page_handler_scroll(ph, dir);
 
     x += m->xpos;
     y += m->ypos;
-    int offset = scroll_get_offset(&ph->scroll);
+    int offset = scroll_get_offset(&ph->scroll, ph->frames);
     if (ph->direction == DIR_VERTICAL) {
         scroll_push_scissor_vert(&ph->scroll, y);
         y -= offset;
@@ -627,7 +604,7 @@ void component_page_handler_render(MenuComponent *m, s16 x, s16 y) {
             newx += extraOffset;
         }
 
-        gMenuState.inactive = TRUE;
+        if (!ph->activeOnScroll) gMenuState.inactive = TRUE;
         render_component(get_component(ph->oldPage), newx, newy);
     } else if (ph->oldPage) {
         dealloc_component_full(ph->oldPage);
@@ -669,26 +646,29 @@ void component_page_title_render(MenuComponent *m, s16 x, s16 y) {
     // Copy scroll data from parent
     MenuComponent *orig = get_component(pt->original);
     u8 value;
+    int frames;
     switch (orig->type) {
         case MENU_PAGE_HANDLER:
             pt->scroll.offset = ((PageHandlerComponent *)orig)->scroll.offset;
             pt->scroll.count = ((PageHandlerComponent *)orig)->scroll.count;
             value = ((PageHandlerComponent *)orig)->index;
+            frames = ((PageHandlerComponent *)orig)->frames;
             break;
         case MENU_SELECTOR:
             pt->scroll.offset = ((SelectorComponent *)orig)->scroll.offset;
             pt->scroll.count = ((SelectorComponent *)orig)->scroll.count;
             value = *((SelectorComponent *)orig)->value;
+            frames = SELECTOR_ANIM_FRAMES;
             break;
         default:
             return;
     }
 
-    int offset = scroll_get_offset(&pt->scroll);
+    int offset = scroll_get_offset(&pt->scroll, frames);
 
     scroll_push_scissor_horiz(&pt->scroll, x);
 
-    menu_text_display(selector_get_str(&pt->string, pt->selectorType, value, buf), x + offset, y, 0, TEXT_CENTER, 255);
+    menu_text_display(selector_get_str(&pt->string, pt->selectorType, value, buf), x + offset, y, TEXT_WHITE, TEXT_CENTER, 255);
     if (pt->scroll.offset) {
         int dir;
         if (pt->scroll.offset < 0) {
@@ -697,7 +677,7 @@ void component_page_title_render(MenuComponent *m, s16 x, s16 y) {
             dir = -1;
         }
         menu_text_display(selector_get_str(&pt->string, pt->selectorType, (value + dir + pt->scroll.count) % pt->scroll.count, buf),
-                          x + offset + scroll_get_extra_offset(&pt->scroll), y, 0, TEXT_CENTER, 255);
+                          x + offset + scroll_get_extra_offset(&pt->scroll), y, TEXT_WHITE, TEXT_CENTER, 255);
     }
     pop_scissor();
 }
@@ -719,7 +699,7 @@ void component_page_scroll_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
     y += m->ypos;
 
-    s8 targetOffset = ps->pageFunc(ps) * SCROLL_ANIM_FRAMES;
+    s8 targetOffset = ps->pageFunc(ps) * 5;
 
     if (ps->offset != targetOffset) {
         gMenuState.inactive = TRUE;
@@ -733,17 +713,118 @@ void component_page_scroll_render(MenuComponent *m, s16 x, s16 y) {
     switch (ps->direction) {
         case DIR_HORIZONTAL:
             push_scissor(x - ps->width, 0, x + ps->width, SCREEN_HEIGHT);
-            x -= ps->offset * ps->width * 2 / SCROLL_ANIM_FRAMES;
+            x -= ps->offset * ps->width * 2 / 5;
             break;
         case DIR_VERTICAL:
             push_scissor(0, y - ps->width, SCREEN_WIDTH, y + ps->width);
-            y += ps->offset * ps->width * 2 / SCROLL_ANIM_FRAMES;
+            y += ps->offset * ps->width * 2 / 5;
             break;
     }
 
     render_child(m, x, y);
 
     pop_scissor();
+}
+
+// ================ LIST ===================
+
+// Sublist is a special type of list that is a child of a PageHandler.
+// When scrolling off the top or bottom, it will scroll the parent page instead of looping.
+ListComponent *init_sublist(void *parent, ComponentID ph, u8 indexOffset) {
+    ListComponent *l = alloc_component(parent, MENU_LIST);
+    l->indexOffset = indexOffset;
+    l->isSublist = TRUE;
+    l->pageHandler = ph;
+    return l;
+}
+
+ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y) {
+    ListItemComponent *item = alloc_component(l, MENU_LISTITEM);
+    component_set_pos(item, x, y);
+    add_child(item, m);
+    item->index = l->count;
+    l->count++;
+    return item;
+}
+
+ListItemComponent *component_list_get(ListComponent *l, u8 index) {
+    MenuComponent *current = get_component(l->base.child);
+    for (u8 i = 0; i < index; i++) {
+        if (current->next) {
+            current = get_component(current->next);
+        } else {
+            return NULL;
+        }
+    }
+    return (ListItemComponent *)current;
+}
+
+void component_list_render(MenuComponent *m, s16 x, s16 y) {
+    ListComponent *l = (ListComponent *)m;
+    ListItemComponent *item = component_list_get(l, l->index);
+
+    if (l->count == 0) return;
+
+    s8 dir = 0;
+    if (gJoystickState == JOYSTICK_UP) {
+        dir = -1;
+    } else if (gJoystickState == JOYSTICK_DOWN) {
+        dir = 1;
+    }
+
+    if (dir && ACTIVE) {
+        do {
+            int index = l->index + dir;
+            if (l->isSublist) {
+                if (index < 0 || index >= l->count) {
+                    // Sublist scroll handler
+                    PageHandlerComponent *ph = get_component(l->pageHandler);
+                    if ((ph->index == 0 && dir == -1) || (ph->index == ph->scroll.count - 1 && dir == 1)) {
+                        dir = 0; // Don't play sound
+                        break;
+                    }
+
+                    page_handler_scroll(ph, dir);
+                    // If scrolling off the top, look for a sublist in the new page
+                    // and set its index to the last item if it exists
+                    ListComponent *sublist = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+                    if (dir == -1 && sublist) sublist->index = sublist->count - 1;
+                    break;
+                }
+                l->index = index;
+            } else {
+                l->index = (index + l->count) % l->count;
+            }
+            item = component_list_get(l, l->index);
+        } while (item->disabled);
+        if (dir) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    }
+
+    render_child(m, x + m->xpos, y + m->ypos);
+}
+
+// ================ LIST ITEM ===================
+
+void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
+    ListItemComponent *item = (ListItemComponent *)m;
+    ListComponent *l = get_parent(m);
+
+    gMenuState.selected = (item->index == l->index);
+    if (l->isSublist) {
+        PageHandlerComponent *ph = get_component(l->pageHandler);
+        if (get_component(ph->oldPage) == get_parent(l)) {
+            gMenuState.selected = FALSE;
+        }
+    }
+    gMenuState.disabled = item->disabled;
+    if (gMenuStyle.listOffsetSelected) {
+        if (gMenuState.selected) {
+            item->xoffset = MIN(item->xoffset+1, 3);
+        } else {
+            item->xoffset = MAX(item->xoffset-1, 0);
+        }
+    }
+    render_child(m, x + m->xpos + item->xoffset, y + m->ypos);
 }
 
 // ================ GENERAL ===================
@@ -795,6 +876,7 @@ void init_root(void) {
 void reset_menu(void) {
     bzero(&menu_pool, sizeof(menu_pool));
     reset_settings_menu_state();
+    reset_main_menu_state();
     init_root();
 }
 
@@ -803,4 +885,12 @@ extern ComponentID settingsRoot;
 void render_menu(void) {
     menu_update_joystick();
     render_component(gMenuRoot, 0, 0);
+    // // Count loaded components
+    // int count = 0;
+    // for (int i = 0; i < ARRAY_COUNT(menu_pool); i++) {
+    //     if (menu_pool[i].base.type != MENU_NONE) {
+    //         count++;
+    //     }
+    // }
+    // print_text_fmt_int(20,20,"%d",count);
 }

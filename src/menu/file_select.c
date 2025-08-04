@@ -101,7 +101,7 @@ s8 sLanguageMode = LANGUAGE_ENGLISH;
 
 // // Defines the value of the save slot selected in the menu.
 // // Mario A: 1 | Mario B: 2 | Mario C: 3 | Mario D: 4
-s8 sSelectedFileNum = 0;
+// s8 sSelectedFileNum = 0;
 
 // // Which coin score mode to use when scoring files. 0 for local
 // // coin high score, 1 for high score across all files.
@@ -1978,12 +1978,11 @@ void beh_yellow_background_menu_loop(void) {
 /**
  * Geo function that prints file select strings and the cursor.
  */
-extern ComponentID gCurrPageComponent;
+extern u8 gCurrMainMenuPage;
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        //sSelectedFileNum = mb64_main_menu();
         if (!gMenuRoot->base.child) {
-            init_main_menu(1); // page main
+            init_main_menu(gCurrMainMenuPage);
         }
     }
     return NULL;
@@ -2043,9 +2042,10 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
  * When a save file is selected, it returns fileNum value
  * defined in load_main_menu_save_file.
  */
+extern u8 gMB64LevelLoaded;
 s32 lvl_update_obj_and_load_file_selected(UNUSED s32 arg, UNUSED s32 unused) {
     area_update_objects();
-    return sSelectedFileNum;
+    return gMB64LevelLoaded;
 }
 
 STATIC_ASSERT(SOUND_MODE_COUNT == MENU_BUTTON_SOUND_OPTION_MAX - MENU_BUTTON_SOUND_OPTION_MIN, "Mismatch between number of sound modes in audio code and file select!");

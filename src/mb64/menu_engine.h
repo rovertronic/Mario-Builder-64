@@ -22,6 +22,17 @@ enum InputMethod {
     MENU_INPUT_TRIGGERS,
 };
 
+enum TextColors {
+    TEXT_WHITE,
+    TEXT_YELLOW,
+    TEXT_GRAY,
+    TEXT_DARK_YELLOW,
+    TEXT_RED,
+    TEXT_LIGHTBLUE,
+    TEXT_DARKRED,
+    TEXT_DARKBLUE,
+};
+
 typedef struct {
     u8 selected;
     u8 disabled;
@@ -71,24 +82,11 @@ typedef struct {
     ComponentUpdateFunc onClick;
     int onClickArg;
     char *text;
-    u8 align;
-    u8 color;
+    u8 align:2;
+    u8 color:5;
+    u8 skipExtension:1;
     u8 alpha;
 } TextComponent;
-
-typedef struct {
-    MenuComponent base;
-    u8 count;
-    u8 index;
-    u8 dir;
-} ListComponent;
-
-typedef struct {
-    MenuComponent base;
-    u8 selected;
-    u8 disabled;
-    s8 xoffset;
-} ListItemComponent;
 
 typedef struct {
     u8 count;
@@ -142,17 +140,20 @@ typedef struct {
     f32 yScale;
 } MatrixComponent;
 
-typedef FrameComponent *(*PageCreator)(s32 index);
-typedef struct {
+typedef struct PageHandlerComponent PageHandlerComponent;
+typedef FrameComponent *(*PageCreator)(PageHandlerComponent *ph, s32 index);
+struct PageHandlerComponent {
     MenuComponent base;
     PageCreator pageCreator;
     ScrollParams scroll;
     ComponentID currentPage;
     ComponentID oldPage;
+    u16 direction:1;
+    u16 activeOnScroll:1;
+    u16 input:3;
+    u16 frames:4;
     u8 index;
-    u8 direction:1;
-    u8 input:3;
-} PageHandlerComponent;
+};
 
 typedef struct {
     MenuComponent base;
@@ -171,6 +172,24 @@ struct PageScrollComponent {
     u8 width;
     u8 direction;
 };
+
+typedef struct {
+    MenuComponent base;
+    u8 count;
+    u8 index;
+    u8 dir;
+    // Sublist fields
+    u8 indexOffset;
+    ComponentID pageHandler;
+    u8 isSublist:1;
+} ListComponent;
+
+typedef struct {
+    MenuComponent base;
+    u8 disabled;
+    s8 xoffset;
+    u8 index;
+} ListItemComponent;
 
 enum MenuComponents {
     MENU_NONE = 0,
@@ -237,6 +256,7 @@ void *get_child(void *parent, u8 type, u8 index);
 
 FrameComponent       *init_frame_component(void *parent);
 FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
+ListComponent        *init_sublist(void *parent, ComponentID ph, u8 indexOffset);
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);
 MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);

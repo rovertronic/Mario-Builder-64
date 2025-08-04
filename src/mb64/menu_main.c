@@ -6,6 +6,8 @@
 
 #include "game/segment2.h"
 #include "levels/menu/mm_btn2/header.h"
+#include "levels/menu/mm_btn_lg/header.h"
+#include "levels/menu/header.h"
 
 char *info_credits[] = {
     "3Mario Builder 64",
@@ -293,6 +295,42 @@ void component_main_menu_button_render(MenuComponent *m, s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
+#define levelIndex params[0].asInt
+void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
+    FrameComponent *f = (FrameComponent *)m;
+    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_piktcher);
+
+    x += m->xpos;
+    y += m->ypos;
+    u8 value = gMenuState.selected ? get_selected_color_value() : 0;
+
+    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    if (gMenuState.disabled) {
+        gDPSetEnvColor(gDisplayListHead++, 50, 0, 0, 150);
+    } else {
+        gDPSetEnvColor(gDisplayListHead++, value, value, value, 150);
+    }
+    gSPDisplayList(gDisplayListHead++, &mm_btn_lg_mm_btn_lg_mesh);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+
+    create_dl_translation_matrix(MENU_MTX_NOPUSH, -108, -2, 0);
+    if (gMenuState.disabled) {
+        gDPSetEnvColor(gDisplayListHead++, 150, 0, 0, 255);
+    } else {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    }
+    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
+    gDPLoadSync(gDisplayListHead++);
+    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
+    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.f, 3.f, 1.f);
+    if (gMenuState.disabled) {
+        menu_text_display("X", 1, -7, TEXT_DARKRED, TEXT_CENTER, 255);
+    }
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
 enum MainMenuPages {
     PAGE_NONE,
     PAGE_MAIN,
@@ -318,12 +356,15 @@ enum MainMenuPages {
     PAGE_CREDITS,
 };
 
+u8 gMB64LevelLoaded = FALSE;
+
 u8 gCurrMainMenuPage = PAGE_MAIN;
 u8 gPrevMainMenuPage = PAGE_NONE; // Page to return to when B is pressed
 u8 gPrevMainMenuButton = 0; // Index to select when returning to the previous page
 u8 gScheduledNextPage = PAGE_NONE;
 u8 gChangePage = PAGE_NONE;
 s8 gMainMenuAnimateDir = 1; // 1 for forwards, -1 for backwards
+int gLevelSelectorIndex = 0;
 FrameComponent *gMainMenuPageHandler;
 
 void do_page_change(UNUSED AnimatedComponent *a) {
@@ -338,26 +379,32 @@ void unfreeze_page(UNUSED AnimatedComponent *a) {
 
 void main_menu_list_animate(ListComponent *l, int out) {
     int dir = gMainMenuAnimateDir;
-    int count = 1;
     for (int i = 0; i < l->count; i++) {
         AnimatedComponent *a = get_first_child(component_list_get(l, i));
         if (out) {
             component_animate_bounce_out(a, -8.f*dir, 23.f*dir, 20, DIR_HORIZONTAL);
         } else {
-            component_animate_bounce_in(a, 250.f*dir, 8.f*dir, -70.f*dir, DIR_HORIZONTAL);
+            component_animate_bounce_in(a, 300.f*dir, 8.f*dir, -75.f*dir, DIR_HORIZONTAL);
         }
-        if (i != l->index) {
-            a->delay = count*2;
-            count++;
-        }
+        a->delay = ABS(l->index - i)*2;
     }
 }
 
-void main_menu_title_animate(AnimatedComponent *a, int out) {
+void main_menu_text_animate(AnimatedComponent *a, int out, int dir) {
     if (out) {
-        component_animate_ease_out(a, 3.f, 20, DIR_VERTICAL);
+        component_animate_ease_out(a, dir*3.f, 20, DIR_VERTICAL);
     } else {
-        component_animate_ease_in(a, 50.f, 0.5f, DIR_VERTICAL);
+        component_animate_ease_in(a, dir*50.f, 0.5f, DIR_VERTICAL);
+    }
+}
+
+void main_menu_key_text_animate(FrameComponent *page, int out, int dir) {
+    AnimatedComponent *a = get_child(page, MENU_ANIMATED, 0);
+    main_menu_text_animate(a, out, dir);
+    if (out) {
+        a->onFinish = do_page_change;
+    } else {
+        a->onFinish = unfreeze_page;
     }
 }
 
@@ -434,10 +481,10 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 
     if (info->yScroll != maxScroll) {
-        menu_text_display("|", 300, 20 + sins(gGlobalTimer * 0x300) * 2.5f, 0, TEXT_CENTER, info->curAlpha);
+        menu_text_display("|", 300, 20 + sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, info->curAlpha);
     }
     if (info->yScroll != 0) {
-        menu_text_display("^", 300, 40 - sins(gGlobalTimer * 0x300) * 2.5f, 0, TEXT_CENTER, info->curAlpha);
+        menu_text_display("^", 300, 40 - sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, info->curAlpha);
     }
 
     for (int i = 0; i < info->infoLen; i++) {
@@ -463,22 +510,123 @@ FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int le
     return info;
 }
 
+void main_menu_load_level(TextComponent *b) {
+    FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
+
+    // Animate menu
+    MenuComponent *m = get_first_child(gMainMenuPageHandler);
+    gMainMenuAnimateDir = 1;
+    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    main_menu_page_change_animate(m, TRUE);
+    m->inactive = TRUE;
+
+    mb64_mode = MB64_MODE_UNINITIALIZED;
+    reset_play_state();
+    strncpy(mb64_file_name, level_entries_ptr[gLevelSelectorIndex].fname, MAX_FILE_NAME_SIZE);
+    struct mb64_level_save_header *level_info = get_level_info_from_filename(mb64_file_name);
+    mb64_lopt_game = level_info->game;
+    // Load level
+    if (gCurrMainMenuPage == PAGE_LOAD_LEVEL) {
+        mb64_target_mode = MB64_MODE_MAKE;
+        mb64_level_action = MB64_LA_BUILD;
+    } else {
+        mb64_target_mode = MB64_MODE_PLAY;
+        mb64_level_action = MB64_LA_PLAY_LEVELS;
+    }
+    gMB64LevelLoaded = TRUE;
+}
+
+#define LEVELS_PER_PAGE 5
+FrameComponent *main_menu_create_level_page(PageHandlerComponent *ph, s32 index) {
+    FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
+    FrameComponent *f = init_frame_component(NULL);
+    ListComponent *l = init_sublist(f, get_id(ph), index * LEVELS_PER_PAGE);
+
+    int numLevels = MIN(LEVELS_PER_PAGE, mb64_level_entry_count - (index * LEVELS_PER_PAGE));
+    for (int i = 0; i < numLevels; i++) {
+        int levelindex = index * LEVELS_PER_PAGE + i;
+        AnimatedComponent *a = alloc_component(NULL, MENU_ANIMATED);
+        FrameComponent *level = init_dynamic_component(a, component_main_menu_level_render);
+        level->levelIndex = levelindex;
+        TextComponent *t = init_text_component(level, -82, -10, level_entries_ptr[levelindex].fname, TEXT_LEFT, 0);
+        t->onClick = main_menu_load_level;
+        t->skipExtension = TRUE;
+        component_list_append(l, a, 0, 75 - (i * 36));
+
+        if (MB64_VERSION < mb64_level_entry_version[levelindex]) {
+            component_list_get(l, i)->disabled = TRUE;
+            t->color = TEXT_RED;
+        }
+    }
+    // Only set index if pagehandler is empty
+    if (!ph->currentPage) l->index = gLevelSelectorIndex % LEVELS_PER_PAGE;
+    return f;
+}
+
+void page_number_init_text(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    component_main_menu_button_render(m, x, y);
+    TextComponent *t = (TextComponent *)m;
+    FrameComponent *page = get_parent(get_parent(t));
+    PageHandlerComponent *ph = get_first_child(page);
+    sprintf(t->text, "Page %d/%d", ph->index + 1, ph->scroll.count);
+}
+
+void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    PageHandlerComponent *ph = (PageHandlerComponent *)m;
+    if (ph->scroll.offset) return;
+    int index = ph->index;
+    if (gPlayer1Controller->buttonPressed & L_TRIG) {
+        index--;
+    } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
+        index++;
+    } else {
+        return;
+    }
+    index = (index + ph->scroll.count) % ph->scroll.count;
+
+    ListComponent *l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+    int curIndex = l->index;
+    page_handler_set_page(ph, index);
+    l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+    l->index = CLAMP(curIndex, 0, l->count - 1);
+}
+
+char *page_buf[12];
+void main_menu_create_level_list(MenuComponent *parent) {
+    if (mb64_level_entry_count == 0) {
+        AnimatedComponent *a = alloc_component(parent, MENU_ANIMATED);
+        component_set_pos(a, SCREEN_WIDTH/2,200);
+        TextComponent *t = init_text_component(a, 0, 0, "No levels...", TEXT_CENTER, TEXT_RED);
+        t->base.prerender = component_main_menu_button_render;
+        return;
+    }
+    int levelcount = (mb64_level_entry_count-1) / LEVELS_PER_PAGE + 1;
+    PageHandlerComponent *ph = init_page_handler(parent, main_menu_create_level_page, levelcount, SCREEN_HEIGHT/2 - 30);
+    component_set_pos(ph, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 15);
+    ph->direction = DIR_VERTICAL;
+    ph->input = MENU_INPUT_NONE;
+    ph->frames = 8;
+    ph->activeOnScroll = TRUE;
+    ph->index = gLevelSelectorIndex / LEVELS_PER_PAGE;
+    ph->base.prerender = main_menu_level_list_fast_scroll;
+
+    AnimatedComponent *pageinfo = alloc_component(parent, MENU_ANIMATED);
+    component_set_pos(pageinfo, 70, 15);
+    TextComponent *t = init_text_component(pageinfo, 0, 0, page_buf, TEXT_CENTER, 0);
+    t->base.prerender = page_number_init_text;
+}
+
 void main_menu_page_change_animate(FrameComponent *page, int out) {
     page->base.inactive = TRUE;
+    ListComponent *l;
     switch (gCurrMainMenuPage) {
         // Button pages
         case PAGE_MAIN:
         case PAGE_BUILD:
         case PAGE_HELP:
-            ListComponent *l = get_child(page, MENU_LIST, 0);
+            l = get_child(page, MENU_LIST, 0);
             main_menu_list_animate(l, out);
-            AnimatedComponent *title = get_child(page, MENU_ANIMATED, 0);
-            main_menu_title_animate(title, out);
-            if (out) {
-                title->onFinish = do_page_change;
-            } else {
-                title->onFinish = unfreeze_page;
-            }
+            main_menu_key_text_animate(page, out, 1);
             break;
         // Info pages
         case PAGE_CREDITS:
@@ -488,6 +636,19 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_CHANGELOG:
             FrameComponent *info = get_first_child(page);
             info->targetAlpha = out ? 0 : 255;
+            break;
+        case PAGE_PLAY_LEVEL:
+        case PAGE_LOAD_LEVEL:
+            if (mb64_level_entry_count == 0) {
+                main_menu_key_text_animate(page, out, 1);
+                break;
+            }
+            PageHandlerComponent *ph = get_first_child(page);
+            page_handler_load_initial_page(ph);
+            l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+            main_menu_list_animate(l, out);
+            main_menu_key_text_animate(page, out, -1);
+            gLevelSelectorIndex = ph->index * LEVELS_PER_PAGE + l->index;
             break;
     }
 }
@@ -574,6 +735,17 @@ void create_page(int page, int animate) {
             gPrevMainMenuPage = PAGE_HELP;
             gPrevMainMenuButton = 3;
             break;
+        // Level pages
+        case PAGE_PLAY_LEVEL:
+            main_menu_create_level_list(frame);
+            gPrevMainMenuPage = PAGE_MAIN;
+            gPrevMainMenuButton = 1;
+            break;
+        case PAGE_LOAD_LEVEL:
+            main_menu_create_level_list(frame);
+            gPrevMainMenuPage = PAGE_BUILD;
+            gPrevMainMenuButton = 1;
+            break;
     }
 
     if (animate) main_menu_page_change_animate(frame, FALSE);
@@ -596,4 +768,10 @@ void init_main_menu(int page) {
     gMainMenuPageHandler = main;
 
     create_page(page, FALSE);
+}
+
+void reset_main_menu_state(void) {
+    gMB64LevelLoaded = FALSE;
+    gMainMenuPageHandler = NULL;
+    gPrevMainMenuPage = PAGE_NONE;
 }

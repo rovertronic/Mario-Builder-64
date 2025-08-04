@@ -1073,7 +1073,7 @@ Gfx bigpainting_bigpainting_mesh_tri_0[] = {
 
 Gfx mat_bigpainting_bigpainting[] = {
 	gsDPPipeSync(),
-	gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0),
+	gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0),
 	gsSPGeometryMode(G_ZBUFFER | G_CULL_BACK, 0),
 	gsDPSetTextureFilter(G_TF_AVERAGE),
 	gsSPTexture(65535, 65535, 0, 0, 1),

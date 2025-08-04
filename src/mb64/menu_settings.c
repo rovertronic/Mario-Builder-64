@@ -500,11 +500,11 @@ char *mb64_slipperiness_strs[] = {
     /* Hazard */                       "(Hazardous)",
 };
 u8 mb64_slipperiness_clrs[] = {
-    MB64_TEXT_YELLOW,
-    MB64_TEXT_LIGHTBLUE,
-    MB64_TEXT_LIGHTBLUE,
-    MB64_TEXT_WHITE,
-    MB64_TEXT_RED,
+    TEXT_YELLOW,
+    TEXT_LIGHTBLUE,
+    TEXT_LIGHTBLUE,
+    TEXT_WHITE,
+    TEXT_RED,
 };
 
 void get_category_and_index_from_mat(u8 *category, u8 *index, u8 mat) {
@@ -660,7 +660,7 @@ void settings_create_button(ListComponent *list, u8 index, char *text, Component
     component_list_append(list, t, 0, -index * 16);
 }
 
-FrameComponent *custom_theme_page_creator(s32 index) {
+FrameComponent *custom_theme_page_creator(UNUSED PageHandlerComponent *unusedph, s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
     ListComponent *list = alloc_component(frame, MENU_LIST);
 
@@ -749,7 +749,7 @@ void konami_code_check(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 }
 
 u8 gFromCustomTheme = FALSE;
-FrameComponent *settings_main_page_creator(s32 index) {
+FrameComponent *settings_main_page_creator(UNUSED PageHandlerComponent *unusedph, s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
     ListComponent *list = alloc_component(frame, MENU_LIST);
 
@@ -818,7 +818,7 @@ FrameComponent *settings_main_page_creator(s32 index) {
 
 #define SETTINGS_PAGE_HEIGHT 140
 #define SETTINGS_PAGE_WIDTH 290
-FrameComponent *settings_page_creator(s32 index) {
+FrameComponent *settings_page_creator(UNUSED PageHandlerComponent *unusedph, s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
     PageHandlerComponent *ph;
 

@@ -18,7 +18,7 @@ Gfx *get_button_tex(u32 buttonId, u32 objIndex);
 u8 joystick_direction(void);
 void mb64_show_error_message(char *message);
 
-enum TextColors {
+enum {
     MB64_TEXT_WHITE,
     MB64_TEXT_YELLOW,
     MB64_TEXT_GRAY,
