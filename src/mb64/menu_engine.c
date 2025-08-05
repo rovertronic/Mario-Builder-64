@@ -3,6 +3,9 @@
 #include "game/game_init.h"
 #include "audio/external.h"
 #include "game/segment2.h"
+#include "game/ingame_menu.h"
+
+#include "levels/menu/mm_btn_sm/header.h"
 
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
@@ -504,6 +507,48 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x + m->xpos, y + m->ypos);
 }
 
+// ================ SHADE ===================
+
+ShadeComponent *init_shade_component(void *parent, u8 alpha) {
+    ShadeComponent *sc = alloc_component(parent, MENU_SHADE);
+    sc->curAlpha = alpha;
+    sc->targetAlpha = alpha;
+    sc->dAlpha = 0;
+    sc->color[0] = 0;
+    sc->color[1] = 0;
+    sc->color[2] = 0;
+    return sc;
+}
+
+void component_shade_do_fade(ShadeComponent *sc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish) {
+    sc->targetAlpha = targetAlpha;
+    sc->dAlpha = dAlpha;
+    sc->onFinish = onFinish;
+}
+
+void component_shade_render(MenuComponent *m, s16 x, s16 y) {
+    ShadeComponent *sc = (ShadeComponent *)m;
+
+    if (sc->curAlpha < sc->targetAlpha) {
+        sc->curAlpha = MIN(sc->curAlpha + sc->dAlpha, sc->targetAlpha);
+    } else if (sc->curAlpha > sc->targetAlpha) {
+        sc->curAlpha = MAX(sc->curAlpha - sc->dAlpha, sc->targetAlpha);
+    }
+
+    if (sc->curAlpha == sc->targetAlpha && sc->onFinish) {
+        sc->onFinish(sc, 0);
+        sc->onFinish = NULL;
+    }
+
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetEnvColor(gDisplayListHead++, sc->color[0], sc->color[1], sc->color[2], sc->curAlpha);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    render_child(m, x + m->xpos, y + m->ypos);
+}
+
 // ================ MATRIX ===================
 
 MatrixComponent *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale) {
@@ -827,6 +872,73 @@ void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x + m->xpos + item->xoffset, y + m->ypos);
 }
 
+// ================ 2D SELECTOR ===================
+
+Selector2DComponent *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 rows,
+                                Selector2DRenderFunc *render, Selector2DUpdateFunc *update) {
+    Selector2DComponent *s = alloc_component(parent, MENU_SELECTOR_2D);
+    component_set_pos(s, x, y);
+    s->columns = columns;
+    s->rows = rows;
+    s->render = render;
+    s->update = update; 
+    return s;
+}
+
+void component_2d_render(MenuComponent *m, s16 x, s16 y) {
+    Selector2DComponent *s = (Selector2DComponent *)m;
+
+    for (int i = 0; i < s->rows; i++) {
+        for (int j = 0; j < s->columns; j++) {
+            s->render(s, x, y, j, i, 0);
+        }
+    }
+
+    render_child(m, x + m->xpos, y + m->ypos);
+}
+
+// ================ KEYBOARD ===================
+
+char keys[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-',
+              'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '=',
+              'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
+              'z', 'x', 'c', 'v', ' ', 'b', 'n', 'm', ',', '.', '/'};
+
+char upper[] = {'!', ' ', ' ', ' ', '%', '&', ' ', ' ', ' ', ' ', '_',
+              'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '+',
+              'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',
+              'Z', 'X', 'C', 'V', ' ', 'B', 'N', 'M', '(', ')', '?'};
+
+char *forbidden = ":\"/?_";
+void keyboard_render_key(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
+    x += column * 25;
+    y -= row * 25;
+    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+    gSPDisplayList(gDisplayListHead++, &mm_btn_sm_mm_btn_sm_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    int index = row * s->columns + column;
+    char buf[2] = {0};
+    buf[0] = (gPlayer1Controller->buttonDown & Z_TRIG ? upper[index] : keys[index]);
+    menu_text_display(buf, x, y-8, TEXT_WHITE, TEXT_CENTER, 255);
+}
+
+KeyboardComponent *init_keyboard_component(void *parent, s16 x, s16 y) {
+    KeyboardComponent *k = alloc_component(parent, MENU_KEYBOARD);
+    component_set_pos(k, x, y);
+    init_selector_2d_component(k, x, y, 11, 4,
+                                keyboard_render_key, NULL);
+    return k;
+}
+
+void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
+    KeyboardComponent *k = (KeyboardComponent *)m;
+
+    render_child(m, x + m->xpos, y + m->ypos);
+}
+
 // ================ GENERAL ===================
 
 ComponentRenderFunc component_render_funcs[] = {
@@ -836,10 +948,13 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_LISTITEM] = component_listitem_render,
     [MENU_SELECTOR] = component_selector_render,
     [MENU_ANIMATED] = component_animated_render,
+    [MENU_SHADE] = component_shade_render,
     [MENU_MATRIX] = component_matrix_render,
     [MENU_PAGE_HANDLER] = component_page_handler_render,
     [MENU_PAGE_TITLE] = component_page_title_render,
     [MENU_PAGE_SCROLL] = component_page_scroll_render,
+    [MENU_SELECTOR_2D] = component_2d_render,
+    [MENU_KEYBOARD] = component_keyboard_render,
 };
 
 void render_component(MenuComponent *m, s16 x, s16 y) {

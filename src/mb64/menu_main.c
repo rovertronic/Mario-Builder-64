@@ -279,6 +279,31 @@ char *info_v1_1_changelog[] = {
     "0- Countless minor physics and AI fixes",
 };
 
+char *new_level_gamemodes[] = {
+    "Vanilla SM64",
+    "Cursed Mirror",
+};
+
+char *new_level_sizes[] = {
+    "Small (32)",
+    "Medium (48)",
+    "Large (64)",
+};
+
+char *new_level_templates[] = {
+    "Grass",
+    "Sky",
+    "Desert",
+    "Snow",
+    "Lava",
+    "Water",
+    "Cave",
+    "Spooky",
+    "Castle",
+    "Retro",
+};
+
+
 extern u32 gGlobalTimer;
 #define get_selected_color_value() (100 + sins(gGlobalTimer * 0x1000) * 15)
 
@@ -442,49 +467,38 @@ void main_menu_create_button(ListComponent *l, char *text, s16 y, ComponentUpdat
     component_list_append(l, a, 0, y);
 }
 
+void main_menu_create_selector(ListComponent *l, char *text, s16 y, u8 *value, char **options, int count) {
+    AnimatedComponent *a = alloc_component(NULL, MENU_ANIMATED);
+    SelectorComponent *s = init_array_selector(a, value, 40, count, options, NULL);
+    s->base.prerender = component_main_menu_button_render;
+    component_set_pos(s, 20, 0);
+    init_text_component(a, -45, 0, text, TEXT_RIGHT, 0);
+    component_list_append(l, a, 0, y);
+}
+
 #define infoText params[0].asPtr
 #define yScroll params[1].asInt
-#define curAlpha params[2].asBytes[0]
-#define targetAlpha params[2].asBytes[1]
-#define infoLen params[2].asBytes[2]
+#define infoLen params[2].asBytes[0]
 void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     FrameComponent *info = (FrameComponent *)m;
-    FrameComponent *page = get_parent(info);
-
-    if (info->curAlpha < info->targetAlpha) {
-        info->curAlpha = MIN(info->curAlpha + 25, info->targetAlpha);
-    } else if (info->curAlpha > info->targetAlpha) {
-        info->curAlpha = MAX(info->curAlpha - 25, info->targetAlpha);
-    }
-    if (info->curAlpha == info->targetAlpha) {
-        if (info->targetAlpha == 0) {
-            do_page_change(NULL);
-            return;
-        }
-    }
-    page->base.inactive = (info->curAlpha != info->targetAlpha);
-
-    u8 bgAlpha = (info->curAlpha * 110) / 255;
-    gDPPipeSync(gDisplayListHead++);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, bgAlpha);
-    gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
-    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    ShadeComponent *shade = get_parent(info);
 
     char **infoStrings = info->infoText;
     if (!infoStrings) return;
 
     int maxScroll = (info->infoLen * 16) - 176;
-    if (maxScroll > 0) {
+    if (!gMenuState.inactive && maxScroll > 0) {
         info->yScroll -= (gPlayer1Controller->rawStickY/10.0f);
         info->yScroll = CLAMP(info->yScroll, 0, maxScroll);
     }
 
+    f32 alphaMult = shade->curAlpha / 110.f;
+
     if (info->yScroll != maxScroll) {
-        menu_text_display("|", 300, 20 + sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, info->curAlpha);
+        menu_text_display("|", 300, 20 + sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, alphaMult*255);
     }
     if (info->yScroll != 0) {
-        menu_text_display("^", 300, 40 - sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, info->curAlpha);
+        menu_text_display("^", 300, 40 - sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, alphaMult*255);
     }
 
     for (int i = 0; i < info->infoLen; i++) {
@@ -492,19 +506,19 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         int y = 200 - (i * 16) + info->yScroll;
         if (y < 20 || y > 220) continue;
 
-        f32 alpha = info->curAlpha/255.f;
-        f32 alphaMul = 1.f;
-        if (y < 40) { alphaMul = (y - 20) / 20.f; }
-        else if (y > 200) { alphaMul = (220 - y) / 20.f; }
+        f32 alpha = 1.f;
+        if (y < 40) { alpha = (y - 20) / 20.f; }
+        else if (y > 200) { alpha = (220 - y) / 20.f; }
 
         int textRender = infoStrings[i][0] - '0';
         int align = (textRender & 2) != 0;
-        menu_text_display(infoStrings[i]+1, (align ? SCREEN_WIDTH/2 : 16), y, textRender & 1, align, (u8)(alpha * alphaMul * 255.f));
+        menu_text_display(infoStrings[i]+1, (align ? SCREEN_WIDTH/2 : 16), y, textRender & 1, align, (u8)(alpha * alphaMult * 255.f));
     }
 }
 
 FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int len) {
-    FrameComponent *info = init_dynamic_component(parent, main_menu_info_loop);
+    ShadeComponent *shade = init_shade_component(parent, 110);
+    FrameComponent *info = init_dynamic_component(shade, main_menu_info_loop);
     info->infoText = text;
     info->infoLen = len;
     return info;
@@ -616,6 +630,12 @@ void main_menu_create_level_list(MenuComponent *parent) {
     t->base.prerender = page_number_init_text;
 }
 
+void main_menu_create_keyboard_page(MenuComponent *parent, char *text) {
+    ShadeComponent *shade = init_shade_component(parent, 110);
+    TextComponent *t = init_text_component(shade, 20, 200, text, TEXT_LEFT, TEXT_WHITE);
+    KeyboardComponent *k = init_keyboard_component(shade, 40, 160);
+}
+
 void main_menu_page_change_animate(FrameComponent *page, int out) {
     page->base.inactive = TRUE;
     ListComponent *l;
@@ -624,6 +644,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_MAIN:
         case PAGE_BUILD:
         case PAGE_HELP:
+        case PAGE_NEW_LEVEL:
             l = get_child(page, MENU_LIST, 0);
             main_menu_list_animate(l, out);
             main_menu_key_text_animate(page, out, 1);
@@ -634,8 +655,9 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_EDITOR_CONTROLS:
         case PAGE_SHARE_LEVELS:
         case PAGE_CHANGELOG:
-            FrameComponent *info = get_first_child(page);
-            info->targetAlpha = out ? 0 : 255;
+            ShadeComponent *shade = get_first_child(page);
+            if (!out) shade->curAlpha = 0;
+            component_shade_do_fade(shade, out ? 0 : 110, 12, out ? do_page_change : unfreeze_page);
             break;
         case PAGE_PLAY_LEVEL:
         case PAGE_LOAD_LEVEL:
@@ -708,6 +730,17 @@ void create_page(int page, int animate) {
             gPrevMainMenuPage = PAGE_MAIN;
             gPrevMainMenuButton = 2;
             break;
+        case PAGE_NEW_LEVEL:
+            main_menu_create_title(frame, "Level Settings", 188);
+            l = main_menu_create_list(frame, 153);
+            main_menu_create_selector(l, "Mode:", 0, &mb64_lopt_game, new_level_gamemodes, ARRAY_COUNT(new_level_gamemodes));
+            main_menu_create_selector(l, "Size:", -25, &mb64_lopt_size, new_level_sizes, ARRAY_COUNT(new_level_sizes));
+            main_menu_create_selector(l, "Template:", -50, &mb64_lopt_template, new_level_templates, ARRAY_COUNT(new_level_templates));
+            main_menu_create_button(l, "Create!", -100, button_change_page, PAGE_LEVEL_NAME);
+            main_menu_list_set_index(l);
+            gPrevMainMenuPage = PAGE_BUILD;
+            gPrevMainMenuButton = 0;
+            break;
 
         // Info pages
         case PAGE_CREDITS:
@@ -745,6 +778,12 @@ void create_page(int page, int animate) {
             main_menu_create_level_list(frame);
             gPrevMainMenuPage = PAGE_BUILD;
             gPrevMainMenuButton = 1;
+            break;
+        // Keyboard pages
+        case PAGE_CHANGE_NAME:
+            main_menu_create_keyboard_page(frame, "Change author name:");
+            gPrevMainMenuPage = PAGE_BUILD;
+            gPrevMainMenuButton = 2;
             break;
     }
 

@@ -231,10 +231,6 @@ ALIGNED8 static const Texture texture_hud_char_I[] = {
 #include "textures/segment2/segment2.02400.rgba16.inc.c"
 };
 
-ALIGNED8 static const Texture texture_hud_char_J[] = {
-#include "textures/segment2/custom_HUD_Clock.rgba16.inc.c"
-};
-
 ALIGNED8 static const Texture texture_hud_char_K[] = {
 #include "textures/segment2/segment2.02800.rgba16.inc.c"
 };
@@ -307,59 +303,6 @@ ALIGNED8 static const Texture texture_hud_char_double_quote[] = {
 #include "textures/segment2/segment2.04A00.rgba16.inc.c"
 };
 
-#if defined(VERSION_EU) || defined(COMPLETE_EN_US_SEGMENT2)
-ALIGNED8 static const Texture texture_hud_char_umlaut[] = {
-#include "textures/segment2/segment2.umlaut.rgba16.inc.c"// EU ¨
-};
-#else
-ALIGNED8 static const Texture texture_hud_char_umlaut[] = {
-#include "textures/segment2/segment2.umlaut_us.rgba16.inc.c"// EU ¨
-};
-#endif
-
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
-ALIGNED8 static const Texture texture_hud_char_exclamation[] = {
-#include "textures/segment2/segment2.04C00.rgba16.inc.c"// JP !
-};
-
-ALIGNED8 static const Texture texture_hud_char_double_exclamation[] = {
-#include "textures/segment2/segment2.04E00.rgba16.inc.c"// JP !!
-};
-
-ALIGNED8 static const Texture texture_hud_char_question[] = {
-#include "textures/segment2/segment2.05000.rgba16.inc.c"// JP ?
-};
-
-ALIGNED8 static const Texture texture_hud_char_ampersand[] = {
-#include "textures/segment2/segment2.05200.rgba16.inc.c"// JP &
-};
-
-ALIGNED8 static const Texture texture_hud_char_percent[] = {
-#include "textures/segment2/segment2.05400.rgba16.inc.c"// JP %
-};
-#else
-ALIGNED8 static const Texture texture_hud_char_exclamation[] = {
-#include "textures/segment2/segment2.exclamation.rgba16.inc.c"// JP !
-};
-
-ALIGNED8 static const Texture texture_hud_char_double_exclamation[] = {
-#include "textures/segment2/segment2.double_exclamation.rgba16.inc.c"// JP !!
-};
-
-ALIGNED8 static const Texture texture_hud_char_question[] = {
-#include "textures/segment2/segment2.question.rgba16.inc.c"// JP ?
-// #include "levels/menu/main_menu_seg7.0A1D0.rgba16.png"
-};
-
-ALIGNED8 static const Texture texture_hud_char_ampersand[] = {
-#include "textures/segment2/segment2.ampersand.rgba16.inc.c"// JP &
-};
-
-ALIGNED8 static const Texture texture_hud_char_percent[] = {
-#include "textures/segment2/segment2.percent.rgba16.inc.c"// JP %
-};
-#endif
-
 ALIGNED8 static const Texture texture_hud_char_minus[] = {
 #include "textures/segment2/segment2.minus.rgba16.inc.c"
 };
@@ -376,10 +319,6 @@ ALIGNED8 static const Texture texture_hud_char_red_coin[] = {
 #include "textures/segment2/segment2.red_coin.rgba16.inc.c"
 };
 
-ALIGNED8 static const Texture texture_hud_char_silver_coin[] = {
-#include "textures/segment2/segment2.silver_coin.rgba16.inc.c"
-};
-
 ALIGNED8 static const Texture texture_hud_char_mario_head[] = {
 #include "textures/segment2/segment2.05A00.rgba16.inc.c"
 };
@@ -387,20 +326,6 @@ ALIGNED8 static const Texture texture_hud_char_mario_head[] = {
 ALIGNED8 static const Texture texture_hud_char_star[] = {
 #include "textures/segment2/segment2.05C00.rgba16.inc.c"
 };
-
-ALIGNED8 static const Texture texture_hud_char_decimal_point[] = {
-#include "textures/segment2/custom_MetalStar.rgba16.inc.c"
-};
-
-#if defined(VERSION_JP) || defined(VERSION_SH) || defined(COMPLETE_EN_US_SEGMENT2)
-ALIGNED8 static const Texture texture_hud_char_beta_key[] = {
-#include "textures/segment2/segment2.06000.rgba16.inc.c"
-};
-#else
-ALIGNED8 static const Texture texture_hud_char_beta_key[] = {
-#include "textures/segment2/segment2.beta_key.rgba16.inc.c"
-};
-#endif
 
 ALIGNED8 static const Texture texture_credits_char_3[] = {
 #include "textures/segment2/segment2.06200.rgba16.inc.c"
@@ -1992,17 +1917,17 @@ const Texture *const main_hud_lut[] = {
     texture_hud_char_4, texture_hud_char_5, texture_hud_char_6, texture_hud_char_7,
     texture_hud_char_8, texture_hud_char_9, texture_hud_char_A, texture_hud_char_B,
     texture_hud_char_C, texture_hud_char_D, texture_hud_char_E, texture_hud_char_F,
-    texture_hud_char_G, texture_hud_char_H, texture_hud_char_I, texture_hud_char_J,
+    texture_hud_char_G, texture_hud_char_H, texture_hud_char_I, 0x0,
     texture_hud_char_K, texture_hud_char_L, texture_hud_char_M, texture_hud_char_N,
     texture_hud_char_O, texture_hud_char_P, texture_hud_char_Q, texture_hud_char_R,
     texture_hud_char_S, texture_hud_char_T, texture_hud_char_U, texture_hud_char_V,
     texture_hud_char_W, texture_hud_char_X, texture_hud_char_Y, texture_hud_char_Z,
-    texture_hud_char_exclamation, texture_hud_char_double_exclamation, texture_hud_char_question, texture_hud_char_ampersand,
-    texture_hud_char_percent,                0x0,                0x0,                0x0,
-                   0x0,                0x0,                0x0, texture_hud_char_minus,
-    texture_hud_char_multiply, texture_hud_char_coin, texture_hud_char_red_coin, texture_hud_char_silver_coin,
-    texture_hud_char_mario_head, texture_hud_char_star, texture_hud_char_decimal_point, texture_hud_char_beta_key,
-    texture_hud_char_apostrophe, texture_hud_char_double_quote, texture_hud_char_umlaut,
+    0x0,                0x0,                0x0,                0x0,
+    0x0,                0x0,                0x0,                0x0,
+    0x0,                0x0,                0x0,                texture_hud_char_minus,
+    texture_hud_char_multiply, texture_hud_char_coin, texture_hud_char_red_coin, 0x0,
+    texture_hud_char_mario_head, texture_hud_char_star, 0x0,    0x0,
+    texture_hud_char_apostrophe, texture_hud_char_double_quote, 0x0,
 };
 
 // Main small font print table 0x02008338-0x02008737
@@ -2667,26 +2592,6 @@ const Texture texture_transition_bowser[] = {
 
 const Texture texture_transition_showrunner[] = {
 #include "textures/segment2/showrunner_transition.ia8.inc.c"
-};
-
-const Texture texture_waterbox_water[] = {
-#include "textures/segment2/segment2.11C58.rgba16.inc.c"
-};
-
-const Texture texture_waterbox_jrb_water[] = {
-#include "textures/segment2/segment2.12458.rgba16.inc.c"
-};
-
-const Texture texture_waterbox_unknown_water[] = {
-#include "textures/segment2/segment2.12C58.rgba16.inc.c"
-};
-
-const Texture texture_waterbox_mist[] = {
-#include "textures/segment2/segment2.13458.ia16.inc.c"
-};
-
-const Texture texture_waterbox_lava[] = {
-#include "textures/segment2/segment2.13C58.rgba16.inc.c"
 };
 
 // Unreferenced light group

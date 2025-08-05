@@ -135,6 +135,15 @@ typedef struct {
 
 typedef struct {
     MenuComponent base;
+    ComponentUpdateFunc onFinish;
+    u8 curAlpha;
+    u8 targetAlpha;
+    u8 dAlpha;
+    u8 color[3];
+} ShadeComponent;
+
+typedef struct {
+    MenuComponent base;
     s16 rot;
     f32 xScale;
     f32 yScale;
@@ -191,6 +200,23 @@ typedef struct {
     u8 index;
 } ListItemComponent;
 
+typedef struct Selector2DComponent Selector2DComponent;
+typedef void (*Selector2DRenderFunc)(Selector2DComponent *m, s16 x, s16 y, u8 column, u8 row, int selected);
+typedef void (*Selector2DUpdateFunc)(Selector2DComponent *m, u8 column, u8 row);
+struct Selector2DComponent {
+    MenuComponent base;
+    Selector2DRenderFunc render;
+    Selector2DUpdateFunc update;
+    u8 columns;
+    u8 rows;
+    u8 index;
+};
+
+typedef struct {
+    MenuComponent base;
+    char *buf;
+} KeyboardComponent;
+
 enum MenuComponents {
     MENU_NONE = 0,
     MENU_FRAME,
@@ -200,12 +226,13 @@ enum MenuComponents {
     MENU_SELECTOR,
     MENU_DYNAMIC,
     MENU_ANIMATED,
+    MENU_SHADE,
     MENU_MATRIX,
-
-    // For settings menu
     MENU_PAGE_SCROLL,
     MENU_PAGE_HANDLER,
     MENU_PAGE_TITLE,
+    MENU_SELECTOR_2D,
+    MENU_KEYBOARD,
 };
 
 union MenuComponentData {
@@ -220,6 +247,9 @@ union MenuComponentData {
     PageTitleComponent pageTitle;
     PageScrollComponent pageScroll;
     MatrixComponent matrix;
+    ShadeComponent shade;
+    Selector2DComponent selector2D;
+    KeyboardComponent keyboard;
 };
 
 extern union MenuComponentData menu_pool[MENU_POOL_SIZE];
@@ -260,12 +290,15 @@ ListComponent        *init_sublist(void *parent, ComponentID ph, u8 indexOffset)
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);
 MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);
+ShadeComponent       *init_shade_component(void *parent, u8 alpha);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
 PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
 PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);
 SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
 SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
+Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 rows, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
+KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y);
 
 ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y);
 ListItemComponent *component_list_get(ListComponent *l, u8 index);
@@ -274,6 +307,7 @@ void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier,
 void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
 void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f32 initialVel, u8 direction);
 void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction);
+void component_shade_do_fade(ShadeComponent *sc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
 
 void reset_menu(void);
 void render_menu(void);
