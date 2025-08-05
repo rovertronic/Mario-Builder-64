@@ -1774,10 +1774,6 @@ ALIGNED8 static const Texture texture_font_char_us_coin[] = {
 #include "textures/segment2/font_graphics.06900.ia4.inc.c"
 };
 
-ALIGNED8 static const Texture texture_font_char_us_multiply[] = {
-#include "textures/segment2/font_graphics.06940.ia4.inc.c"
-};
-
 ALIGNED8 static const Texture texture_font_char_us_open_parentheses[] = {
 #include "textures/segment2/font_graphics.06980.ia4.inc.c"
 };
@@ -1790,20 +1786,12 @@ ALIGNED8 static const Texture texture_font_char_us_close_parentheses[] = {
 #include "textures/segment2/font_graphics.06A00.ia4.inc.c"
 };
 
-ALIGNED8 static const Texture texture_font_char_us_tilde[] = {
-#include "textures/segment2/font_graphics.06A40.ia4.inc.c"
-};
-
 ALIGNED8 static const Texture texture_font_char_us_period[] = {
 #include "textures/segment2/font_graphics.06A80.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_percent[] = {
 #include "textures/segment2/font_graphics.06AC0.ia4.inc.c"
-};
-
-ALIGNED8 static const Texture texture_font_char_us_interpunct[] = {
-#include "textures/segment2/font_graphics.06B00.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_comma[] = {
@@ -1834,8 +1822,12 @@ ALIGNED8 static const Texture texture_font_char_us_double_quote_close[] = {
 #include "textures/segment2/font_graphics.06CC0.ia4.inc.c"
 };
 
-ALIGNED8 static const Texture texture_font_char_us_ellipsis[] = {
+ALIGNED8 static const Texture texture_font_char_us_colon[] = {
 #include "textures/segment2/font_graphics.06D00.ia4.inc.c"
+};
+
+ALIGNED8 static const Texture texture_font_char_us_semicolon[] = {
+#include "textures/segment2/custom_font_graphics_semicolon.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_slash[] = {
@@ -2057,13 +2049,13 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0, texture_font_char_us_open_parentheses, texture_font_char_us_close_open_parentheses, texture_font_char_us_close_parentheses,
-    texture_font_char_us_left_right_arrow, texture_font_char_us_ampersand, texture_font_char_us_ellipsis,               0x0,
+    texture_font_char_us_left_right_arrow, texture_font_char_us_ampersand, texture_font_char_us_colon, texture_font_char_us_semicolon,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0, texture_font_char_us_exclamation, texture_font_char_us_percent,
-    texture_font_char_us_question, texture_font_char_us_double_quote_open, texture_font_char_us_double_quote_close, texture_font_char_us_tilde,
-                  0x0, texture_font_char_us_coin, texture_font_char_us_star_filled, texture_font_char_us_multiply,
-    texture_font_char_us_interpunct, texture_font_char_us_star_hollow,               0x0,               0x0,
+    texture_font_char_us_question, texture_font_char_us_double_quote_open, texture_font_char_us_double_quote_close, 0x0,
+                  0x0, texture_font_char_us_coin, texture_font_char_us_star_filled,       0x0,
+                  0x0, texture_font_char_us_star_hollow,               0x0,               0x0,
 #elif defined(VERSION_JP) || defined(VERSION_SH)
     texture_font_char_jp_0, texture_font_char_jp_1, texture_font_char_jp_2, texture_font_char_jp_3,
     texture_font_char_jp_4, texture_font_char_jp_5, texture_font_char_jp_6, texture_font_char_jp_7,
