@@ -4,10 +4,12 @@
 #include "game/ingame_menu.h"
 #include "audio/external.h"
 
+#include "game/sram.h"
 #include "game/segment2.h"
 #include "levels/menu/mm_btn2/header.h"
 #include "levels/menu/mm_btn_lg/header.h"
 #include "levels/menu/header.h"
+#include "libpl/libpl.h"
 
 char *info_credits[] = {
     "3Mario Builder 64",
@@ -335,29 +337,32 @@ void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, &mm_btn_lg_mm_btn_lg_mesh);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    create_dl_translation_matrix(MENU_MTX_NOPUSH, -108, -2, 0);
-    if (gMenuState.disabled) {
-        gDPSetEnvColor(gDisplayListHead++, 150, 0, 0, 255);
-    } else {
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    }
-    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
-    gDPLoadSync(gDisplayListHead++);
-    if (f->levelIndex == -1) {
-        gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mystery_painting_rgba16);
-    } else {
-        gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
-    }
-    gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.f, 3.f, 1.f);
-    if (gMenuState.disabled) {
-        menu_text_display("X", 1, -7, TEXT_DARKRED, TEXT_CENTER, 255);
+    if (f->levelIndex != -2) {
+        create_dl_translation_matrix(MENU_MTX_NOPUSH, -108, -2, 0);
+        if (gMenuState.disabled) {
+            gDPSetEnvColor(gDisplayListHead++, 150, 0, 0, 255);
+        } else {
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+        }
+        gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
+        gDPLoadSync(gDisplayListHead++);
+        if (f->levelIndex == -1) {
+            gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mystery_painting_rgba16);
+        } else {
+            gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
+        }
+        gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
+        create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.f, 3.f, 1.f);
+        if (gMenuState.disabled) {
+            menu_text_display("X", 1, -7, TEXT_DARKRED, TEXT_CENTER, 255);
+        }
     }
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
 enum MainMenuPages {
     PAGE_NONE,
+    PAGE_AUTHOR,
     PAGE_MAIN,
 
 // Build
@@ -383,12 +388,15 @@ enum MainMenuPages {
 
 u8 gMB64LevelLoaded = FALSE;
 
+#define TO_NEXT 1
+#define TO_PREV -1
+
 u8 gCurrMainMenuPage = PAGE_MAIN;
 u8 gPrevMainMenuPage = PAGE_NONE; // Page to return to when B is pressed
 u8 gPrevMainMenuButton = 0; // Index to select when returning to the previous page
 u8 gScheduledNextPage = PAGE_NONE;
 u8 gChangePage = PAGE_NONE;
-s8 gMainMenuAnimateDir = 1; // 1 for forwards, -1 for backwards
+s8 gMainMenuAnimateDir = TO_NEXT; // 1 for forwards, -1 for backwards
 int gLevelSelectorIndex = 0;
 FrameComponent *gMainMenuPageHandler;
 
@@ -448,7 +456,7 @@ void main_menu_shade_animate(FrameComponent *page, int out) {
 }
 
 void button_change_page(TextComponent *b) {
-    gMainMenuAnimateDir = 1;
+    gMainMenuAnimateDir = TO_NEXT;
     gScheduledNextPage = b->onClickArg;
     main_menu_page_change_animate(get_first_child(gMainMenuPageHandler), TRUE);
 }
@@ -469,7 +477,7 @@ ListComponent *main_menu_create_list(MenuComponent *parent, s16 y) {
 }
 
 void main_menu_list_set_index(ListComponent *l) {
-    if (gMainMenuAnimateDir == -1) {
+    if (gMainMenuAnimateDir == TO_PREV) {
         l->index = gPrevMainMenuButton;
     }
 }
@@ -543,10 +551,9 @@ void main_menu_load_level(TextComponent *b) {
 
     // Animate menu
     MenuComponent *m = get_first_child(gMainMenuPageHandler);
-    gMainMenuAnimateDir = 1;
+    gMainMenuAnimateDir = TO_NEXT;
     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
     main_menu_page_change_animate(m, TRUE);
-    m->inactive = TRUE;
 
     mb64_mode = MB64_MODE_UNINITIALIZED;
     reset_play_state();
@@ -645,18 +652,60 @@ void main_menu_create_level_list(MenuComponent *parent) {
 }
 
 char main_menu_keyboard_input[MAX(MAX_FILE_NAME_SIZE, MAX_USERNAME_SIZE)];
-void main_menu_create_keyboard_page(MenuComponent *parent, char *text, int isFilename) {
+#define KEYBOARD_CONFIRM (!gMenuState.inactive && (gPlayer1Controller->buttonPressed & START_BUTTON) && main_menu_keyboard_input[0] != 0)
+void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    if (KEYBOARD_CONFIRM) {
+        int fileExists = level_file_exists(main_menu_keyboard_input);
+        if (fileExists) {
+            show_error("Level already exists!");
+            return;
+        }
+        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        gMainMenuAnimateDir = TO_NEXT;
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        main_menu_page_change_animate(page, TRUE);
+
+        mb64_mode = MB64_MODE_UNINITIALIZED;
+        reset_play_state();
+        strcpy(mb64_file_name, main_menu_keyboard_input);
+        strcat(mb64_file_name, ".mb64");
+
+        mb64_target_mode = MB64_MODE_MAKE;
+        mb64_level_action = MB64_LA_BUILD;
+        gMB64LevelLoaded = TRUE;
+    }
+}
+
+void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    if (KEYBOARD_CONFIRM) {
+        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        gMainMenuAnimateDir = TO_PREV;
+        gScheduledNextPage = gPrevMainMenuPage;
+        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+        main_menu_page_change_animate(page, TRUE);
+
+        strncpy(mb64_username,main_menu_keyboard_input,MAX_USERNAME_SIZE);
+        strncpy(mb64_sram_configuration.author, mb64_username, MAX_USERNAME_SIZE);
+        if (gSramProbe != 0) {
+            nuPiWriteSram(0, &mb64_sram_configuration, ALIGN8(sizeof(mb64_sram_configuration)));
+        }
+        mb64_has_username = TRUE;
+    }
+}
+
+void main_menu_create_keyboard_page(MenuComponent *parent, char *text, ComponentRenderFunc *func, int isFilename) {
     RectComponent *rect = init_rect_component(parent, 110, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     AnimatedComponent *top = alloc_component(rect, MENU_ANIMATED);
     TextComponent *t = init_text_component(top, -120, 85, text, TEXT_LEFT, TEXT_WHITE);
     FrameComponent *f = init_dynamic_component(top, component_main_menu_level_render);
-    f->levelIndex = -1;
+    f->levelIndex = (isFilename ? -1 : -2); // -1 for filename, -2 for author name
     component_set_pos(f, 0, 60);
-    bzero(main_menu_keyboard_input, sizeof(main_menu_keyboard_input));
-    TextComponent *input = init_text_component(f, -82, -10, main_menu_keyboard_input, TEXT_LEFT, 0);
+    TextComponent *input = init_text_component(f, (isFilename ? -82 : -120), -10, main_menu_keyboard_input, TEXT_LEFT, 0);
 
     AnimatedComponent *bottom = alloc_component(rect, MENU_ANIMATED);
     KeyboardComponent *k = init_keyboard_component(bottom, -125, 15, main_menu_keyboard_input, input, isFilename ? MAX_FILE_NAME_INPUT : MAX_USERNAME_INPUT, isFilename);
+    k->base.prerender = func;
+    input->cursorPos = strlen(main_menu_keyboard_input);
 
     init_text_component(bottom, -130, -92, "\x12: Backspace", TEXT_LEFT, TEXT_WHITE);
     init_text_component(bottom, -130, -108, "\x15/\x13: Toggle Shift", TEXT_LEFT, TEXT_WHITE);
@@ -699,6 +748,8 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
             gLevelSelectorIndex = ph->index * LEVELS_PER_PAGE + l->index;
             break;
         case PAGE_LEVEL_NAME:
+        case PAGE_CHANGE_NAME:
+        case PAGE_AUTHOR:
             main_menu_shade_animate(page, out);
             RectComponent *shade = get_first_child(page);
             main_menu_text_animate(get_child(shade, MENU_ANIMATED, 0), out, 1);
@@ -710,7 +761,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
 void main_menu_page_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (!m->inactive && gPrevMainMenuPage != PAGE_NONE) {
         if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-            gMainMenuAnimateDir = -1;
+            gMainMenuAnimateDir = TO_PREV;
             gScheduledNextPage = gPrevMainMenuPage;
             play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
             main_menu_page_change_animate(m, TRUE);
@@ -813,9 +864,26 @@ void create_page(int page, int animate) {
             break;
         // Keyboard pages
         case PAGE_LEVEL_NAME:
-            main_menu_create_keyboard_page(frame, "Enter level name:", TRUE);
+            bzero(main_menu_keyboard_input, sizeof(main_menu_keyboard_input));
+            main_menu_create_keyboard_page(frame, "Enter level name:", keyboard_start_level, TRUE);
             gPrevMainMenuPage = PAGE_NEW_LEVEL;
             gPrevMainMenuButton = 3;
+            break;
+        case PAGE_CHANGE_NAME:
+            strncpy(main_menu_keyboard_input, mb64_sram_configuration.author, MAX_USERNAME_SIZE);
+            main_menu_create_keyboard_page(frame, "Enter new author name:", keyboard_set_author_name, FALSE);
+            gPrevMainMenuPage = PAGE_BUILD;
+            gPrevMainMenuButton = 2;
+            break;
+        case PAGE_AUTHOR:
+            if (gSupportsLibpl) {
+                const char *rhdc_username = libpl_get_my_rhdc_username();
+                if (rhdc_username) {
+                    strncpy(main_menu_keyboard_input, rhdc_username, MAX_USERNAME_SIZE);
+                }
+            }
+            main_menu_create_keyboard_page(frame, "Enter your username:", keyboard_set_author_name, FALSE);
+            gPrevMainMenuPage = PAGE_NONE;
             break;
     }
 
@@ -831,6 +899,18 @@ void main_menu_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         dealloc_component(gMainMenuPageHandler->base.child);
         create_page(gChangePage, TRUE);
         gChangePage = PAGE_NONE;
+    }
+}
+
+void set_page_to_level_list(void) {
+    gCurrMainMenuPage = PAGE_LOAD_LEVEL;
+    gLevelSelectorIndex = 0;
+}
+
+void set_initial_menu_page(void) {
+    gCurrMainMenuPage = PAGE_MAIN;
+    if (mb64_sram_configuration.author[0] == 0) {
+        gCurrMainMenuPage = PAGE_AUTHOR;
     }
 }
 

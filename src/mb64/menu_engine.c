@@ -209,7 +209,7 @@ void dealloc_component(ComponentID id) {
                     current->next = m->next;
                 }
             }
-        } else {
+        } else if (parent->child == id) {
             parent->child = 0;
         }
     }
@@ -495,10 +495,11 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
                 }
                 break;
         }
-    }
-    if (a->timer == 0 && a->onFinish) {
-        a->onFinish(a, 0);
-        a->onFinish = NULL;
+        if (a->timer == 0 && a->onFinish) {
+            ComponentUpdateFunc onFinish = a->onFinish;
+            a->onFinish = NULL;
+            onFinish(a, 0);
+        }
     }
 
     switch (a->direction) {
@@ -984,9 +985,7 @@ void keyboard_select_key(Selector2DComponent *s, u8 column, u8 row) {
     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
     TextComponent *t = get_component(k->text);
     gCursorTimerOffset = gGlobalTimer & 0x1f;
-    for (int i = strLen; i >= t->cursorPos; i--) {
-        k->buf[i] = k->buf[i - 1];
-    }
+    memmove(&k->buf[t->cursorPos + 1], &k->buf[t->cursorPos], strLen - t->cursorPos + 1); // Shift characters right
     k->buf[t->cursorPos] = c;
     k->buf[strLen + 1] = '\0';
     t->cursorPos++;
@@ -1019,9 +1018,7 @@ void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
         int len = strlen(k->buf);
         if (gPlayer1Controller->buttonPressed & (Z_TRIG)) {
             if (t->cursorPos > 0) {
-                for (int i = t->cursorPos; i < len; i++) {
-                    k->buf[i - 1] = k->buf[i]; // Shift characters left
-                }
+                memmove(&k->buf[t->cursorPos - 1], &k->buf[t->cursorPos], len - t->cursorPos + 1); // Shift characters left
                 k->buf[len - 1] = '\0'; // Remove last character
                 len--;
                 gCursorTimerOffset = gGlobalTimer & 0x1f;
@@ -1086,6 +1083,7 @@ void render_component(MenuComponent *m, s16 x, s16 y) {
 }
 
 FrameComponent *gMenuRoot;
+AnimatedComponent *sActiveError = NULL;
 
 void init_root(void) {
     gMenuRoot = init_frame_component(NULL);
@@ -1093,6 +1091,7 @@ void init_root(void) {
 
 void reset_menu(void) {
     bzero(&menu_pool, sizeof(menu_pool));
+    sActiveError = NULL;
     reset_settings_menu_state();
     reset_main_menu_state();
     init_root();
@@ -1112,4 +1111,24 @@ void render_menu(void) {
     //     }
     // }
     // print_text_fmt_int(20,20,"%d",count);
+}
+
+void move_error(void) {
+    component_animate_ease_out(sActiveError, 0.2f, 15, DIR_VERTICAL);
+    sActiveError->delay = 90;
+}
+
+// Generic error message
+void show_error(char *msg) {
+    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+    if (sActiveError) {
+        TextComponent *t = get_first_child(sActiveError);
+        t->text = msg;
+    } else {
+        sActiveError = alloc_component(gMenuRoot, MENU_ANIMATED);
+        init_text_component(sActiveError, 20, 220, msg, TEXT_LEFT, TEXT_RED);
+    }
+    component_animate_ease_in(sActiveError, 50.f, 0.4f, DIR_VERTICAL);
+    sActiveError->onFinish = move_error;
+    sActiveError->delay = 0;
 }

@@ -373,6 +373,7 @@ void settings_save_and_quit(void) {
     } else {
         mb64_mm_state = MM_MAIN_LIMITED;
     }
+    set_page_to_level_list();
     fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
 }
 
