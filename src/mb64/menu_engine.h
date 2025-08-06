@@ -10,6 +10,10 @@ typedef u8 ComponentID;
 typedef void (*ComponentRenderFunc)(MenuComponent *m, s16 x, s16 y);
 typedef void (*ComponentUpdateFunc)(); // Passes one optional parameter for the component itself
 
+
+extern u32 gGlobalTimer;
+#define get_selected_color_value() (100 + sins(gGlobalTimer * 0x1000) * 15)
+
 enum MenuDirection {
     DIR_VERTICAL,
     DIR_HORIZONTAL
@@ -80,11 +84,13 @@ enum TextAlignment {
 typedef struct {
     MenuComponent base;
     ComponentUpdateFunc onClick;
-    int onClickArg;
     char *text;
+    u8 onClickArg;
     u8 align:2;
     u8 color:5;
     u8 skipExtension:1;
+    u8 showCursor:1;
+    u8 cursorPos:6;
     u8 alpha;
 } TextComponent;
 
@@ -140,7 +146,9 @@ typedef struct {
     u8 targetAlpha;
     u8 dAlpha;
     u8 color[3];
-} ShadeComponent;
+    u8 width;
+    u8 height;
+} RectComponent;
 
 typedef struct {
     MenuComponent base;
@@ -215,6 +223,9 @@ struct Selector2DComponent {
 typedef struct {
     MenuComponent base;
     char *buf;
+    ComponentID text;
+    u8 maxLength;
+    u8 isRestricted:1; // Filename restrictions
 } KeyboardComponent;
 
 enum MenuComponents {
@@ -226,7 +237,7 @@ enum MenuComponents {
     MENU_SELECTOR,
     MENU_DYNAMIC,
     MENU_ANIMATED,
-    MENU_SHADE,
+    MENU_RECT,
     MENU_MATRIX,
     MENU_PAGE_SCROLL,
     MENU_PAGE_HANDLER,
@@ -247,7 +258,7 @@ union MenuComponentData {
     PageTitleComponent pageTitle;
     PageScrollComponent pageScroll;
     MatrixComponent matrix;
-    ShadeComponent shade;
+    RectComponent rect;
     Selector2DComponent selector2D;
     KeyboardComponent keyboard;
 };
@@ -290,7 +301,7 @@ ListComponent        *init_sublist(void *parent, ComponentID ph, u8 indexOffset)
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);
 MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);
-ShadeComponent       *init_shade_component(void *parent, u8 alpha);
+RectComponent        *init_rect_component(void *parent, u8 alpha, s16 x, s16 y, u8 width, u8 height);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
 PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
@@ -298,7 +309,7 @@ PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, 
 SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
 SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
 Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 rows, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
-KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y);
+KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted);
 
 ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y);
 ListItemComponent *component_list_get(ListComponent *l, u8 index);
@@ -307,7 +318,7 @@ void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier,
 void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
 void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f32 initialVel, u8 direction);
 void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction);
-void component_shade_do_fade(ShadeComponent *sc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
+void component_rect_do_fade(RectComponent *rc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
 
 void reset_menu(void);
 void render_menu(void);

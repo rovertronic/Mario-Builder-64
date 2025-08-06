@@ -27,7 +27,9 @@
 
 #define MB64_VERSION 1
 #define MAX_FILE_NAME_SIZE 41
+#define MAX_FILE_NAME_INPUT (MAX_FILE_NAME_SIZE - 6)
 #define MAX_USERNAME_SIZE 31
+#define MAX_USERNAME_INPUT (MAX_USERNAME_SIZE - 1)
 
 
 extern s8 mb64_cursor_pos[3];

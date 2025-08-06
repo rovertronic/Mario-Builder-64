@@ -1412,7 +1412,7 @@ s32 mb64_main_menu(void) {
                 } else {
                     //no author file detected, prompt user to enter an author name
                     mb64_mm_keyboard_exit_mode = KXM_AUTHOR;
-                    mb64_mm_keyboard_max_input_length = MAX_USERNAME_SIZE - 1;
+                    mb64_mm_keyboard_max_input_length = MAX_USERNAME_INPUT;
                     mb64_mm_state = MM_KEYBOARD;
                     mb64_mm_keyboard_input_index = 0;
 
@@ -1420,7 +1420,7 @@ s32 mb64_main_menu(void) {
                     if (gSupportsLibpl) {
                         const char *rhdc_username = libpl_get_my_rhdc_username();
                         if (rhdc_username) {
-                            while ((rhdc_username[mb64_mm_keyboard_input_index] != 0)&&(mb64_mm_keyboard_input_index < MAX_USERNAME_SIZE - 1)) {
+                            while ((rhdc_username[mb64_mm_keyboard_input_index] != 0)&&(mb64_mm_keyboard_input_index < MAX_USERNAME_INPUT)) {
                                 mb64_mm_keyboard_input[mb64_mm_keyboard_input_index] = rhdc_username[mb64_mm_keyboard_input_index];
                                 mb64_mm_keyboard_input_index++;
                             }
@@ -1551,7 +1551,7 @@ s32 mb64_main_menu(void) {
                         case 2:
                             //change name
                             mb64_mm_keyboard_exit_mode = KXM_CHANGE_AUTHOR;
-                            mb64_mm_keyboard_max_input_length = MAX_USERNAME_SIZE - 1;
+                            mb64_mm_keyboard_max_input_length = MAX_USERNAME_INPUT;
                             mb64_mm_state = MM_KEYBOARD;
                             mb64_mm_keyboard_input_index = 0;
                             mb64_mm_keyboard_input[0] = '\0';
@@ -1594,7 +1594,7 @@ s32 mb64_main_menu(void) {
                         mb64_menu_index = 0;
                     } else {
                         mb64_mm_keyboard_exit_mode = KXM_NEW_LEVEL_LIMITED;
-                        mb64_mm_keyboard_max_input_length = MAX_FILE_NAME_SIZE - 6;
+                        mb64_mm_keyboard_max_input_length = MAX_FILE_NAME_INPUT;
                         mb64_mm_state = MM_KEYBOARD;
                         mb64_mm_keyboard_input_index = 0;
                         mb64_mm_keyboard_input[0] = '\0';
@@ -1606,7 +1606,7 @@ s32 mb64_main_menu(void) {
                         mb64_menu_index = 0;
                     } else {
                         mb64_mm_keyboard_exit_mode = KXM_NEW_LEVEL;
-                        mb64_mm_keyboard_max_input_length = MAX_FILE_NAME_SIZE - 6;
+                        mb64_mm_keyboard_max_input_length = MAX_FILE_NAME_INPUT;
                         mb64_mm_state = MM_KEYBOARD;
                         mb64_mm_keyboard_input_index = 0;
                         mb64_mm_keyboard_input[0] = '\0';

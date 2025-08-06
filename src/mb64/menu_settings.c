@@ -5,6 +5,7 @@
 #include "game/ingame_menu.h"
 #include "audio/external.h"
 #include "game/level_update.h"
+#include "game/segment2.h"
 
 #include "actors/bg/header.h"
 #include "actors/bigpainting2/header.h"
@@ -419,7 +420,9 @@ void component_block_preview_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
     y += m->ypos;
 
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     custom_theme_draw_block(x - SCREEN_WIDTH/2, y - SCREEN_HEIGHT/2, frame->pageIndex);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 }
 
 char *get_custom_theme_page_name(s32 index, UNUSED char *buf) {

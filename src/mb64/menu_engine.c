@@ -40,7 +40,6 @@ void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
     print_generic_string_ascii(x-1, y-1, str);
     gDPSetEnvColor(gDisplayListHead++, menu_text_colors[color][0], menu_text_colors[color][1], menu_text_colors[color][2], alpha);
     print_generic_string_ascii(x, y, str);
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
 enum JoystickState {
@@ -278,6 +277,7 @@ TextComponent *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align
     return t;
 }
 
+u8 gCursorTimerOffset = 0;
 void component_text_render(MenuComponent *m, s16 x, s16 y) {
     char temp[MAX_FILE_NAME_SIZE];
     TextComponent *t = (TextComponent *)m;
@@ -289,6 +289,13 @@ void component_text_render(MenuComponent *m, s16 x, s16 y) {
         str = temp;
     }
     menu_text_display(str, x + m->xpos, y + m->ypos, t->color, t->align, t->alpha);
+    if (t->showCursor && ACTIVE && !((gGlobalTimer - gCursorTimerOffset) & 0x10)) {
+        int leftedge = x + m->xpos;
+        if (t->align) leftedge -= (get_string_width_ascii(str) * t->align) / 2;
+        char temp[64];
+        strncpy(temp, str, t->cursorPos);
+        menu_text_display("_", leftedge + get_string_width_ascii(temp), y + m->ypos - 3, t->color, t->align, t->alpha);
+    }
 
     if (SELECTED && t->onClick) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
@@ -507,46 +514,52 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x + m->xpos, y + m->ypos);
 }
 
-// ================ SHADE ===================
+// ================ RECT ===================
 
-ShadeComponent *init_shade_component(void *parent, u8 alpha) {
-    ShadeComponent *sc = alloc_component(parent, MENU_SHADE);
-    sc->curAlpha = alpha;
-    sc->targetAlpha = alpha;
-    sc->dAlpha = 0;
-    sc->color[0] = 0;
-    sc->color[1] = 0;
-    sc->color[2] = 0;
-    return sc;
+RectComponent *init_rect_component(void *parent, u8 alpha, s16 x, s16 y, u8 width, u8 height) {
+    RectComponent *rc = alloc_component(parent, MENU_RECT);
+    component_set_pos(rc, x, y);
+    rc->width = width;
+    rc->height = height;
+    rc->curAlpha = alpha;
+    rc->targetAlpha = alpha;
+    rc->dAlpha = 0;
+    rc->color[0] = 0;
+    rc->color[1] = 0;
+    rc->color[2] = 0;
+    return rc;
 }
 
-void component_shade_do_fade(ShadeComponent *sc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish) {
-    sc->targetAlpha = targetAlpha;
-    sc->dAlpha = dAlpha;
-    sc->onFinish = onFinish;
+void component_rect_do_fade(RectComponent *rc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish) {
+    rc->targetAlpha = targetAlpha;
+    rc->dAlpha = dAlpha;
+    rc->onFinish = onFinish;
 }
 
-void component_shade_render(MenuComponent *m, s16 x, s16 y) {
-    ShadeComponent *sc = (ShadeComponent *)m;
+void component_rect_render(MenuComponent *m, s16 x, s16 y) {
+    RectComponent *rc = (RectComponent *)m;
 
-    if (sc->curAlpha < sc->targetAlpha) {
-        sc->curAlpha = MIN(sc->curAlpha + sc->dAlpha, sc->targetAlpha);
-    } else if (sc->curAlpha > sc->targetAlpha) {
-        sc->curAlpha = MAX(sc->curAlpha - sc->dAlpha, sc->targetAlpha);
+    x += m->xpos;
+    y += m->ypos;
+
+    if (rc->curAlpha < rc->targetAlpha) {
+        rc->curAlpha = MIN(rc->curAlpha + rc->dAlpha, rc->targetAlpha);
+    } else if (rc->curAlpha > rc->targetAlpha) {
+        rc->curAlpha = MAX(rc->curAlpha - rc->dAlpha, rc->targetAlpha);
     }
 
-    if (sc->curAlpha == sc->targetAlpha && sc->onFinish) {
-        sc->onFinish(sc, 0);
-        sc->onFinish = NULL;
+    if (rc->curAlpha == rc->targetAlpha && rc->onFinish) {
+        rc->onFinish(rc, 0);
+        rc->onFinish = NULL;
     }
 
     gDPPipeSync(gDisplayListHead++);
-    gDPSetEnvColor(gDisplayListHead++, sc->color[0], sc->color[1], sc->color[2], sc->curAlpha);
+    gDPSetEnvColor(gDisplayListHead++, rc->color[0], rc->color[1], rc->color[2], rc->curAlpha);
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gDPFillRectangle(gDisplayListHead++, x - rc->width, y - rc->height, x + rc->width, y + rc->height);
 
-    render_child(m, x + m->xpos, y + m->ypos);
+    render_child(m, x, y);
 }
 
 // ================ MATRIX ===================
@@ -888,53 +901,143 @@ Selector2DComponent *init_selector_2d_component(void *parent, s16 x, s16 y, u8 c
 void component_2d_render(MenuComponent *m, s16 x, s16 y) {
     Selector2DComponent *s = (Selector2DComponent *)m;
 
+    x += m->xpos;
+    y += m->ypos;
+
+    if (ACTIVE) {
+        int oldindex = s->index;
+        int row = s->index / s->columns;
+        int col = s->index % s->columns;
+        col = (col + s->columns + get_input(MENU_INPUT_JOYSTICK, DIR_HORIZONTAL)) % s->columns;
+        row = (row + s->rows + get_input(MENU_INPUT_JOYSTICK, DIR_VERTICAL)) % s->rows;
+        s->index = row * s->columns + col;
+        if (s->index != oldindex) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    }
+
     for (int i = 0; i < s->rows; i++) {
         for (int j = 0; j < s->columns; j++) {
-            s->render(s, x, y, j, i, 0);
+            int index = i * s->columns + j;
+            int selected = (s->index == index);
+            s->render(s, x, y, j, i, selected);
+            if (selected && ACTIVE && (gPlayer1Controller->buttonPressed & A_BUTTON)) {
+                s->update(s, j, i);
+            }
         }
     }
 
-    render_child(m, x + m->xpos, y + m->ypos);
+    render_child(m, x, y);
 }
 
 // ================ KEYBOARD ===================
 
 char keys[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '=',
               'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '-',
-              'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
+              'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '/', '\'',
               'z', 'x', 'c', 'v', ' ', ' ', 'b', 'n', 'm', ',', '.'};
 
 char upper[] = {'!', '?', '#', '$', '%', '&', '^', '|', '<', '>', '+',
-              'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '/',
+              'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '_',
               'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',
               'Z', 'X', 'C', 'V', ' ', ' ', 'B', 'N', 'M', '(', ')'};
 
-char *forbidden = ":\"/?_^|<>@#$";
+char *forbidden = ":\"/?^|<>_";
+int is_char_forbidden(char c) {
+    for (int i = 0; i < strlen(forbidden); i++) {
+        if (c == forbidden[i]) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+u8 gCapsLock = FALSE;
 void keyboard_render_key(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
     x += column * 25;
     y -= row * 25;
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+    int val = selected ? get_selected_color_value() : 0;
+    gDPSetEnvColor(gDisplayListHead++, val, val, val, 150);
     gSPDisplayList(gDisplayListHead++, &mm_btn_sm_mm_btn_sm_mesh);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     int index = row * s->columns + column;
     char buf[2] = {0};
-    buf[0] = (gPlayer1Controller->buttonDown & Z_TRIG ? upper[index] : keys[index]);
-    menu_text_display(buf, x, y-8, TEXT_WHITE, TEXT_CENTER, 255);
+    buf[0] = (gCapsLock ? upper[index] : keys[index]);
+    int textcolor = selected ? TEXT_YELLOW : TEXT_WHITE;
+    KeyboardComponent *k = get_parent(s);
+    if (k->isRestricted && is_char_forbidden(buf[0])) {
+        textcolor += 2;
+    }
+    menu_text_display(buf, x, y-8, textcolor, TEXT_CENTER, 255);
 }
 
-KeyboardComponent *init_keyboard_component(void *parent, s16 x, s16 y) {
+void keyboard_select_key(Selector2DComponent *s, u8 column, u8 row) {
+    KeyboardComponent *k = get_parent(s);
+    char c = gCapsLock ? upper[s->index] : keys[s->index];
+    int strLen = strlen(k->buf);
+    if ((k->isRestricted && is_char_forbidden(c))
+        || (strLen >= k->maxLength)) {
+        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+        return;
+    }
+    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    TextComponent *t = get_component(k->text);
+    gCursorTimerOffset = gGlobalTimer & 0x1f;
+    for (int i = strLen; i >= t->cursorPos; i--) {
+        k->buf[i] = k->buf[i - 1];
+    }
+    k->buf[t->cursorPos] = c;
+    k->buf[strLen + 1] = '\0';
+    t->cursorPos++;
+}
+
+KeyboardComponent *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted) {
     KeyboardComponent *k = alloc_component(parent, MENU_KEYBOARD);
     component_set_pos(k, x, y);
-    init_selector_2d_component(k, x, y, 11, 4,
-                                keyboard_render_key, NULL);
+    init_selector_2d_component(k, 0, 0, 11, 4,
+                                keyboard_render_key, keyboard_select_key);
+    k->buf = buf;
+    k->text = get_id(t);
+    k->maxLength = maxLength;
+    k->isRestricted = isRestricted;
+    gCapsLock = FALSE;
+    t->showCursor = TRUE;
+    t->cursorPos = 0;
     return k;
 }
 
 void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
     KeyboardComponent *k = (KeyboardComponent *)m;
+
+    if (gPlayer1Controller->buttonPressed & (L_TRIG | R_TRIG)) {
+        gCapsLock ^= 1;
+    }
+
+    if (ACTIVE) {
+        TextComponent *t = get_component(k->text);
+        int len = strlen(k->buf);
+        if (gPlayer1Controller->buttonPressed & (Z_TRIG)) {
+            if (t->cursorPos > 0) {
+                for (int i = t->cursorPos; i < len; i++) {
+                    k->buf[i - 1] = k->buf[i]; // Shift characters left
+                }
+                k->buf[len - 1] = '\0'; // Remove last character
+                len--;
+                gCursorTimerOffset = gGlobalTimer & 0x1f;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                t->cursorPos--;
+            } else {
+                play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
+            }
+        }
+        int oldpos = t->cursorPos;
+        t->cursorPos = (t->cursorPos + len+1 + get_input(MENU_INPUT_DPAD, DIR_HORIZONTAL)) % (len+1);
+        if (t->cursorPos != oldpos) {
+            gCursorTimerOffset = gGlobalTimer & 0x1f;
+            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        }
+    }
 
     render_child(m, x + m->xpos, y + m->ypos);
 }
@@ -948,7 +1051,7 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_LISTITEM] = component_listitem_render,
     [MENU_SELECTOR] = component_selector_render,
     [MENU_ANIMATED] = component_animated_render,
-    [MENU_SHADE] = component_shade_render,
+    [MENU_RECT] = component_rect_render,
     [MENU_MATRIX] = component_matrix_render,
     [MENU_PAGE_HANDLER] = component_page_handler_render,
     [MENU_PAGE_TITLE] = component_page_title_render,
@@ -1000,6 +1103,7 @@ extern ComponentID settingsRoot;
 void render_menu(void) {
     menu_update_joystick();
     render_component(gMenuRoot, 0, 0);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     // // Count loaded components
     // int count = 0;
     // for (int i = 0; i < ARRAY_COUNT(menu_pool); i++) {

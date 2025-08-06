@@ -1826,8 +1826,8 @@ ALIGNED8 static const Texture texture_font_char_us_colon[] = {
 #include "textures/segment2/font_graphics.06D00.ia4.inc.c"
 };
 
-ALIGNED8 static const Texture texture_font_char_us_semicolon[] = {
-#include "textures/segment2/custom_font_graphics_semicolon.ia4.inc.c"
+ALIGNED8 static const Texture texture_font_char_us_underscore[] = {
+#include "textures/segment2/custom_font_graphics_underscore.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_plus[] = {
@@ -1868,6 +1868,10 @@ ALIGNED8 static const Texture texture_font_char_us_button_Z[] = {
 
 ALIGNED8 static const Texture texture_font_char_us_button_R[] = {
 #include "textures/segment2/font_graphics.06EC0.ia4.inc.c"
+};
+
+ALIGNED8 static const Texture texture_font_char_us_button_L[] = {
+#include "textures/segment2/custom_font_graphics_l_trig.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_button_C_up[] = {
@@ -2018,7 +2022,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
     texture_font_char_us_button_C_up, texture_font_char_us_button_C_down, texture_font_char_us_button_C_left, texture_font_char_us_button_C_right,
     texture_font_char_us_button_A, texture_font_char_us_button_B, texture_font_char_us_button_C, texture_font_char_us_button_Z,
-    texture_font_char_us_button_R,               0x0,               0x0,               0x0,
+    texture_font_char_us_button_R, texture_font_char_us_button_L,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
@@ -2053,7 +2057,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0, texture_font_char_us_open_parentheses, texture_font_char_us_close_open_parentheses, texture_font_char_us_close_parentheses,
-    texture_font_char_us_left_right_arrow, texture_font_char_us_ampersand, texture_font_char_us_colon, texture_font_char_us_semicolon,
+    texture_font_char_us_left_right_arrow, texture_font_char_us_ampersand, texture_font_char_us_colon, texture_font_char_us_underscore,
     texture_font_char_us_plus, texture_font_char_us_equals,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0, texture_font_char_us_exclamation, texture_font_char_us_percent,

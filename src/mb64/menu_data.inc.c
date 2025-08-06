@@ -1,7 +1,7 @@
 u8 mb64_ascii_lut[] = {
     0,0,0,0,0,0,0,0, // 0 - 7
     0,0,0xFE,0,0,0,0,0, // 8 - 15
-    0x54,0x55,0x57,0x58,0x56,0,0,0, // 16 - 23
+    0x54,0x55,0x57,0x58,0x56,0x59,0,0, // 16 - 23
     0,0,0,0,0,0,0,0, // 24 - 31
     0x9E, /* */ 0xF2, /*!*/ 0xF6, /*"*/ 0xFA, /*#*/
     0xF9, /*$*/ 0xF3, /*%*/ 0xE5, /*&*/ 0x3E, /*'*/
@@ -9,7 +9,7 @@ u8 mb64_ascii_lut[] = {
     0x6F, /*,*/ 0x9F, /*-*/ 0x3F, /*.*/ 0x70, /*/*/
     0x00, /*0*/ 0x01, /*1*/ 0x02, /*2*/ 0x03, /*3*/
     0x04, /*4*/ 0x05, /*5*/ 0x06, /*6*/ 0x07, /*7*/
-    0x08, /*8*/ 0x09, /*9*/ 0xE6, /*:*/ 0xE7, /*;*/
+    0x08, /*8*/ 0x09, /*9*/ 0xE6, /*:*/ 0x00, /*;*/
     0x52, /*<*/ 0xE9, /*=*/ 0x53, /*>*/ 0xF4, /*?*/
     0xFD, /*@*/ 0x0A, /*A*/ 0x0B, /*B*/ 0x0C, /*C*/
     0x0D, /*D*/ 0x0E, /*E*/ 0x0F, /*F*/ 0x10, /*G*/
@@ -18,7 +18,7 @@ u8 mb64_ascii_lut[] = {
     0x19, /*P*/ 0x1A, /*Q*/ 0x1B, /*R*/ 0x1C, /*S*/
     0x1D, /*T*/ 0x1E, /*U*/ 0x1F, /*V*/ 0x20, /*W*/
     0x21, /*X*/ 0x22, /*Y*/ 0x23, /*Z*/ 0x00, /*[*/
-    0x00, /*\*/ 0x00, /*]*/ 0x50, /*^*/ 0x00, /*_*/
+    0x00, /*\*/ 0x00, /*]*/ 0x50, /*^*/ 0xE7, /*_*/
     0x00, /*`*/ 0x24, /*a*/ 0x25, /*b*/ 0x26, /*c*/
     0x27, /*d*/ 0x28, /*e*/ 0x29, /*f*/ 0x2A, /*g*/
     0x2B, /*h*/ 0x2C, /*i*/ 0x2D, /*j*/ 0x2E, /*k*/
@@ -32,7 +32,7 @@ u8 mb64_ascii_lut[] = {
 char *mb64_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",
     "Tip: Use D-Pad | to change the camera's\n   zoom level while building!",
-    "Tip: Press L and R at the same time to copy\n the tile or object the cursor is on!",
+    "Tip: Press \x15 and \x13 at the same time to copy\n the tile or object the cursor is on!",
     "Tip: You can place objects or tiles inside\n   water blocks to submerge them!",
     "Tip: The thin Iron Meshes can be used to create walls\n   that require a Vanish Cap to pass through.",
     "Tip: Mesh materials can be used as both\n   hangable ceilings and Vanish Cap walls.",

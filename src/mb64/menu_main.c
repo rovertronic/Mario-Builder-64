@@ -149,8 +149,8 @@ char *info_editor_controls[] = {
     NULL,
     "3Toolbar Controls",
     NULL,
-    "0  L / R:  Navigate hotbar",
-    "0  L & R:  Sample tile",
+    "0  \x15 / \x13:  Navigate hotbar",
+    "0  \x15+\x13:  Sample tile",
     "0  START:  Open toolbox",
 };
 
@@ -167,7 +167,7 @@ char *info_v1_1_changelog[] = {
     "0- New object: On-Off Conveyor",
     "0- New object: Inverted Timed Box",
     "0- New object: Star Trigger",
-    "0- New Sample Tile building shortcut by pressing L & R",
+    "0- New Sample Tile building shortcut by pressing \x15+\x13",
     "0- Ability to place multiple objects/tiles in the same spot",
     "0- Dialog to exit a level after collecting every star",
     "0- Added a speedrun timer option in the pause menu",
@@ -303,10 +303,6 @@ char *new_level_templates[] = {
     "Retro",
 };
 
-
-extern u32 gGlobalTimer;
-#define get_selected_color_value() (100 + sins(gGlobalTimer * 0x1000) * 15)
-
 void component_main_menu_button_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
     y += m->ypos + 7;
@@ -347,7 +343,11 @@ void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
     }
     gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
     gDPLoadSync(gDisplayListHead++);
-    gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
+    if (f->levelIndex == -1) {
+        gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mystery_painting_rgba16);
+    } else {
+        gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
+    }
     gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part2);
     create_dl_scale_matrix(MENU_MTX_NOPUSH, 3.f, 3.f, 1.f);
     if (gMenuState.disabled) {
@@ -423,6 +423,14 @@ void main_menu_text_animate(AnimatedComponent *a, int out, int dir) {
     }
 }
 
+void main_menu_keyboard_animate(AnimatedComponent *k, int out) {
+    if (out) {
+        component_animate_ease_out(k, -3.f, 20, DIR_VERTICAL);
+    } else {
+        component_animate_ease_in(k, -100.f, 0.4f, DIR_VERTICAL);
+    }
+}
+
 void main_menu_key_text_animate(FrameComponent *page, int out, int dir) {
     AnimatedComponent *a = get_child(page, MENU_ANIMATED, 0);
     main_menu_text_animate(a, out, dir);
@@ -431,6 +439,12 @@ void main_menu_key_text_animate(FrameComponent *page, int out, int dir) {
     } else {
         a->onFinish = unfreeze_page;
     }
+}
+
+void main_menu_shade_animate(FrameComponent *page, int out) {
+    RectComponent *rect = get_first_child(page);
+    if (!out) rect->curAlpha = 0;
+    component_rect_do_fade(rect, out ? 0 : 110, 12, out ? do_page_change : unfreeze_page);
 }
 
 void button_change_page(TextComponent *b) {
@@ -481,7 +495,7 @@ void main_menu_create_selector(ListComponent *l, char *text, s16 y, u8 *value, c
 #define infoLen params[2].asBytes[0]
 void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     FrameComponent *info = (FrameComponent *)m;
-    ShadeComponent *shade = get_parent(info);
+    RectComponent *rect = get_parent(info);
 
     char **infoStrings = info->infoText;
     if (!infoStrings) return;
@@ -492,7 +506,7 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         info->yScroll = CLAMP(info->yScroll, 0, maxScroll);
     }
 
-    f32 alphaMult = shade->curAlpha / 110.f;
+    f32 alphaMult = rect->curAlpha / 110.f;
 
     if (info->yScroll != maxScroll) {
         menu_text_display("|", 300, 20 + sins(gGlobalTimer * 0x300) * 2.5f, TEXT_WHITE, TEXT_CENTER, alphaMult*255);
@@ -517,8 +531,8 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 }
 
 FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int len) {
-    ShadeComponent *shade = init_shade_component(parent, 110);
-    FrameComponent *info = init_dynamic_component(shade, main_menu_info_loop);
+    RectComponent *rect = init_rect_component(parent, 110, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    FrameComponent *info = init_dynamic_component(rect, main_menu_info_loop);
     info->infoText = text;
     info->infoLen = len;
     return info;
@@ -630,10 +644,24 @@ void main_menu_create_level_list(MenuComponent *parent) {
     t->base.prerender = page_number_init_text;
 }
 
-void main_menu_create_keyboard_page(MenuComponent *parent, char *text) {
-    ShadeComponent *shade = init_shade_component(parent, 110);
-    TextComponent *t = init_text_component(shade, 20, 200, text, TEXT_LEFT, TEXT_WHITE);
-    KeyboardComponent *k = init_keyboard_component(shade, 40, 160);
+char main_menu_keyboard_input[MAX(MAX_FILE_NAME_SIZE, MAX_USERNAME_SIZE)];
+void main_menu_create_keyboard_page(MenuComponent *parent, char *text, int isFilename) {
+    RectComponent *rect = init_rect_component(parent, 110, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    AnimatedComponent *top = alloc_component(rect, MENU_ANIMATED);
+    TextComponent *t = init_text_component(top, -120, 85, text, TEXT_LEFT, TEXT_WHITE);
+    FrameComponent *f = init_dynamic_component(top, component_main_menu_level_render);
+    f->levelIndex = -1;
+    component_set_pos(f, 0, 60);
+    bzero(main_menu_keyboard_input, sizeof(main_menu_keyboard_input));
+    TextComponent *input = init_text_component(f, -82, -10, main_menu_keyboard_input, TEXT_LEFT, 0);
+
+    AnimatedComponent *bottom = alloc_component(rect, MENU_ANIMATED);
+    KeyboardComponent *k = init_keyboard_component(bottom, -125, 15, main_menu_keyboard_input, input, isFilename ? MAX_FILE_NAME_INPUT : MAX_USERNAME_INPUT, isFilename);
+
+    init_text_component(bottom, -130, -92, "\x12: Backspace", TEXT_LEFT, TEXT_WHITE);
+    init_text_component(bottom, -130, -108, "\x15/\x13: Toggle Shift", TEXT_LEFT, TEXT_WHITE);
+    init_text_component(bottom, 130, -92, "START: Confirm", TEXT_RIGHT, TEXT_WHITE);
+    init_text_component(bottom, 130, -108, "D-Pad: Move cursor", TEXT_RIGHT, TEXT_WHITE);
 }
 
 void main_menu_page_change_animate(FrameComponent *page, int out) {
@@ -655,9 +683,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_EDITOR_CONTROLS:
         case PAGE_SHARE_LEVELS:
         case PAGE_CHANGELOG:
-            ShadeComponent *shade = get_first_child(page);
-            if (!out) shade->curAlpha = 0;
-            component_shade_do_fade(shade, out ? 0 : 110, 12, out ? do_page_change : unfreeze_page);
+            main_menu_shade_animate(page, out);
             break;
         case PAGE_PLAY_LEVEL:
         case PAGE_LOAD_LEVEL:
@@ -671,6 +697,12 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
             main_menu_list_animate(l, out);
             main_menu_key_text_animate(page, out, -1);
             gLevelSelectorIndex = ph->index * LEVELS_PER_PAGE + l->index;
+            break;
+        case PAGE_LEVEL_NAME:
+            main_menu_shade_animate(page, out);
+            RectComponent *shade = get_first_child(page);
+            main_menu_text_animate(get_child(shade, MENU_ANIMATED, 0), out, 1);
+            main_menu_keyboard_animate(get_child(shade, MENU_ANIMATED, 1), out);
             break;
     }
 }
@@ -780,10 +812,10 @@ void create_page(int page, int animate) {
             gPrevMainMenuButton = 1;
             break;
         // Keyboard pages
-        case PAGE_CHANGE_NAME:
-            main_menu_create_keyboard_page(frame, "Change author name:");
-            gPrevMainMenuPage = PAGE_BUILD;
-            gPrevMainMenuButton = 2;
+        case PAGE_LEVEL_NAME:
+            main_menu_create_keyboard_page(frame, "Enter level name:", TRUE);
+            gPrevMainMenuPage = PAGE_NEW_LEVEL;
+            gPrevMainMenuButton = 3;
             break;
     }
 

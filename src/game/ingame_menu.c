@@ -332,7 +332,7 @@ u8 gDialogCharWidths[256] = { // TODO: Is there a way to auto generate this?
     6,  6,  6,  6,  5,  5,  5,  5,  5,  6,  6,  5,  2,  5,  5,  4,
     6,  5,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  5,  3,  3,
     8,  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    8,  8,  8,  8,  7,  7,  7,  7,  7,  0,  0,  0,  0,  0,  0,  0,
+    8,  8,  8,  8,  7,  7,  7,  7,  7,  7,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  3,
     8,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -341,8 +341,8 @@ u8 gDialogCharWidths[256] = { // TODO: Is there a way to auto generate this?
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    7,  4,  8,  4,  9,  7,  3,  3,  6,  6,  0,  0,  0,  0,  0,  0,
-    0,  0,  4,  7,  7,  6,  6,  6,  0,  8,  9,  7,  4,  9,  0,  0
+    7,  4,  8,  4,  9,  7,  3,  8,  6,  6,  0,  0,  0,  0,  0,  0,
+    0,  0,  4,  8,  7,  6,  6,  6,  0,  9,  9,  7,  4,  9,  0,  0
 };
 
 s8 gDialogBoxState = DIALOG_STATE_OPENING;
@@ -714,7 +714,6 @@ void print_generic_string_ascii(s16 x, s16 y, const char *str) {
     while (str[strPos] != 0) {
         switch(str[strPos]) {
             case ' ':
-            case '_':
                 create_dl_translation_matrix(MENU_MTX_NOPUSH, CHAR_WIDTH_SPACE, 0.0f, 0.0f);
             break;
             case '\n':
