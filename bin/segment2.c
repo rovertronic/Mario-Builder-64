@@ -1830,16 +1830,20 @@ ALIGNED8 static const Texture texture_font_char_us_semicolon[] = {
 #include "textures/segment2/custom_font_graphics_semicolon.ia4.inc.c"
 };
 
-ALIGNED8 static const Texture texture_font_char_us_slash[] = {
+ALIGNED8 static const Texture texture_font_char_us_plus[] = {
+#include "textures/segment2/custom_font_graphics_plus.ia4.inc.c"
+};
+
+ALIGNED8 static const Texture texture_font_char_us_equals[] = {
+#include "textures/segment2/custom_font_graphics_equals.ia4.inc.c"
+};
+
+ALIGNED8 static const Texture texture_font_char_us_hyphen[] = {
 #include "textures/segment2/font_graphics.06D40.ia4.inc.c"
 };
 
-ALIGNED8 static const u8 texture_font_char_us_actual_slash[] = {
+ALIGNED8 static const u8 texture_font_char_us_slash[] = {
 #include "textures/segment2/custom_font_graphics_slash.ia4.inc.c"
-};
-
-ALIGNED8 static const u8 texture_font_char_us_percentile[] = {
-#include "textures/segment2/font_graphics.06AC0.ia4.inc.c"
 };
 
 ALIGNED8 static const Texture texture_font_char_us_ampersand[] = {
@@ -2020,7 +2024,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0, texture_font_char_us_comma,
-    texture_font_char_us_actual_slash,               texture_font_char_us_percentile,               0x0,               0x0,
+    texture_font_char_us_slash, 0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
@@ -2031,7 +2035,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
-                  0x0,               0x0,               0x0, texture_font_char_us_slash,
+                  0x0,               0x0,               0x0, texture_font_char_us_hyphen,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
@@ -2050,7 +2054,7 @@ const Texture *const main_font_lut[] = {
                   0x0,               0x0,               0x0,               0x0,
                   0x0, texture_font_char_us_open_parentheses, texture_font_char_us_close_open_parentheses, texture_font_char_us_close_parentheses,
     texture_font_char_us_left_right_arrow, texture_font_char_us_ampersand, texture_font_char_us_colon, texture_font_char_us_semicolon,
-                  0x0,               0x0,               0x0,               0x0,
+    texture_font_char_us_plus, texture_font_char_us_equals,               0x0,               0x0,
                   0x0,               0x0,               0x0,               0x0,
                   0x0,               0x0, texture_font_char_us_exclamation, texture_font_char_us_percent,
     texture_font_char_us_question, texture_font_char_us_double_quote_open, texture_font_char_us_double_quote_close, 0x0,
