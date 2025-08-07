@@ -12,8 +12,6 @@ extern s16 mb64_menu_end_timer;
 extern void (*mb64_option_changed_func)(void);
 extern u8 mb64_joystick;
 
-extern u8 mb64_mm_state;
-
 Gfx *get_button_tex(u32 buttonId, u32 objIndex);
 u8 joystick_direction(void);
 void mb64_show_error_message(char *message);

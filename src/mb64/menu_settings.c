@@ -369,9 +369,6 @@ void settings_save_and_quit(void) {
     if (mount_success == FR_OK) {
         save_level();
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
-        mb64_mm_state = MM_FILES;
-    } else {
-        mb64_mm_state = MM_MAIN_LIMITED;
     }
     set_page_to_level_list();
     fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game

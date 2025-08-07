@@ -20,10 +20,11 @@ enum MenuDirection {
 };
 
 enum InputMethod {
-    MENU_INPUT_NONE,
-    MENU_INPUT_JOYSTICK,
-    MENU_INPUT_DPAD,
-    MENU_INPUT_TRIGGERS,
+    MENU_INPUT_NONE = 0,
+    MENU_INPUT_JOYSTICK  = (1 << 0),
+    MENU_INPUT_DPAD      = (1 << 1),
+    MENU_INPUT_CBUTTONS  = (1 << 2),
+    MENU_INPUT_TRIGGERS  = (1 << 3),
 };
 
 enum TextColors {

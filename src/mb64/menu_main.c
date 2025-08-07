@@ -610,14 +610,11 @@ void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16
     PageHandlerComponent *ph = (PageHandlerComponent *)m;
     if (ph->scroll.offset) return;
     int index = ph->index;
-    if (gPlayer1Controller->buttonPressed & L_TRIG) {
-        index--;
-    } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
-        index++;
-    } else {
+    int dir = get_input(MENU_INPUT_TRIGGERS | MENU_INPUT_JOYSTICK, DIR_HORIZONTAL);
+    if (!dir) {
         return;
     }
-    index = (index + ph->scroll.count) % ph->scroll.count;
+    index = (index + dir + ph->scroll.count) % ph->scroll.count;
 
     ListComponent *l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
     int curIndex = l->index;
@@ -679,8 +676,13 @@ void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (KEYBOARD_CONFIRM) {
         MenuComponent *page = get_first_child(gMainMenuPageHandler);
-        gMainMenuAnimateDir = TO_PREV;
-        gScheduledNextPage = gPrevMainMenuPage;
+        if (gCurrMainMenuPage == PAGE_AUTHOR) {
+            gMainMenuAnimateDir = TO_NEXT;
+            gScheduledNextPage = PAGE_MAIN;
+        } else {
+            gMainMenuAnimateDir = TO_PREV;
+            gScheduledNextPage = gPrevMainMenuPage;
+        }
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
         main_menu_page_change_animate(page, TRUE);
 
@@ -703,7 +705,7 @@ void main_menu_create_keyboard_page(MenuComponent *parent, char *text, Component
     TextComponent *input = init_text_component(f, (isFilename ? -82 : -120), -10, main_menu_keyboard_input, TEXT_LEFT, 0);
 
     AnimatedComponent *bottom = alloc_component(rect, MENU_ANIMATED);
-    KeyboardComponent *k = init_keyboard_component(bottom, -125, 15, main_menu_keyboard_input, input, isFilename ? MAX_FILE_NAME_INPUT : MAX_USERNAME_INPUT, isFilename);
+    KeyboardComponent *k = init_keyboard_component(bottom, -120, 18, main_menu_keyboard_input, input, isFilename ? MAX_FILE_NAME_INPUT : MAX_USERNAME_INPUT, isFilename);
     k->base.prerender = func;
     input->cursorPos = strlen(main_menu_keyboard_input);
 
@@ -902,6 +904,7 @@ void main_menu_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 }
 
+// Sets to main instead if no sd card
 void set_page_to_level_list(void) {
     gCurrMainMenuPage = PAGE_LOAD_LEVEL;
     gLevelSelectorIndex = 0;

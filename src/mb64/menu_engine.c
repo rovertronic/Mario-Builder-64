@@ -88,34 +88,39 @@ s32 get_input(int inputMethod, int direction) {
     int dir = 0;
     switch (direction) {
         case DIR_VERTICAL:
-            switch (inputMethod) {
-                case MENU_INPUT_JOYSTICK:
-                    if      (gJoystickState == JOYSTICK_UP) dir = -1;
-                    else if (gJoystickState == JOYSTICK_DOWN) dir = 1;
-                    break;
-                case MENU_INPUT_DPAD:
-                    if      (gPlayer1Controller->buttonPressed & U_JPAD) dir = -1;
-                    else if (gPlayer1Controller->buttonPressed & D_JPAD) dir = 1;
-                    break;
+            if (inputMethod & MENU_INPUT_JOYSTICK) {
+                if      (gJoystickState == JOYSTICK_UP)   dir -= 1;
+                else if (gJoystickState == JOYSTICK_DOWN) dir += 1;
+            }
+            if (inputMethod & MENU_INPUT_DPAD) {
+                if      (gPlayer1Controller->buttonPressed & U_JPAD) dir -= 1;
+                else if (gPlayer1Controller->buttonPressed & D_JPAD) dir += 1;
+            }
+            if (inputMethod & MENU_INPUT_CBUTTONS) {
+                if      (gPlayer1Controller->buttonPressed & U_CBUTTONS) dir -= 1;
+                else if (gPlayer1Controller->buttonPressed & D_CBUTTONS) dir += 1;
             }
             break;
         case DIR_HORIZONTAL:
-            switch (inputMethod) {
-                case MENU_INPUT_JOYSTICK:
-                    if      (gJoystickState == JOYSTICK_LEFT) dir = -1;
-                    else if (gJoystickState == JOYSTICK_RIGHT) dir = 1;
-                    break;
-                case MENU_INPUT_DPAD:
-                    if      (gPlayer1Controller->buttonPressed & L_JPAD) dir = -1;
-                    else if (gPlayer1Controller->buttonPressed & R_JPAD) dir = 1;
-                    break;
-                case MENU_INPUT_TRIGGERS:
-                    if      (gPlayer1Controller->buttonPressed & L_TRIG) dir = -1;
-                    else if (gPlayer1Controller->buttonPressed & R_TRIG) dir = 1;
-                    break;
+            if (inputMethod & MENU_INPUT_JOYSTICK) {
+                    if      (gJoystickState == JOYSTICK_LEFT)  dir -= 1;
+                    else if (gJoystickState == JOYSTICK_RIGHT) dir += 1;
             }
+            if (inputMethod & MENU_INPUT_DPAD) {
+                if      (gPlayer1Controller->buttonPressed & L_JPAD) dir -= 1;
+                else if (gPlayer1Controller->buttonPressed & R_JPAD) dir += 1;
+            }
+            if (inputMethod & MENU_INPUT_CBUTTONS) {
+                if      (gPlayer1Controller->buttonPressed & L_CBUTTONS) dir -= 1;
+                else if (gPlayer1Controller->buttonPressed & R_CBUTTONS) dir += 1;
+            }
+            if (inputMethod & MENU_INPUT_TRIGGERS) {
+                if      (gPlayer1Controller->buttonPressed & L_TRIG) dir -= 1;
+                else if (gPlayer1Controller->buttonPressed & R_TRIG) dir += 1;
+            }
+            break;
     }
-    return dir;
+    return CLAMP(dir, -1, 1);
 }
 
 void add_child(void *parent, MenuComponent *child) {
@@ -629,6 +634,7 @@ void page_handler_scroll(PageHandlerComponent *ph, int dir) {
 void page_handler_set_page(PageHandlerComponent *ph, int page) {
     if (page == ph->index) return;
     ph->index = page;
+    if (ph->oldPage) dealloc_component_full(ph->oldPage);
     dealloc_component_full(ph->currentPage);
     ph->currentPage = get_id(page_handler_create_page(ph, page));
     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
@@ -838,12 +844,10 @@ void component_list_render(MenuComponent *m, s16 x, s16 y) {
                 if (index < 0 || index >= l->count) {
                     // Sublist scroll handler
                     PageHandlerComponent *ph = get_component(l->pageHandler);
-                    if ((ph->index == 0 && dir == -1) || (ph->index == ph->scroll.count - 1 && dir == 1)) {
-                        dir = 0; // Don't play sound
-                        break;
-                    }
-
                     page_handler_scroll(ph, dir);
+                    if ((ph->index == 0 && dir == 1) || (ph->index == ph->scroll.count - 1 && dir == -1)) {
+                        ph->scroll.offset = 0;
+                    }
                     // If scrolling off the top, look for a sublist in the new page
                     // and set its index to the last item if it exists
                     ListComponent *sublist = get_child(get_component(ph->currentPage), MENU_LIST, 0);
@@ -953,8 +957,8 @@ int is_char_forbidden(char c) {
 
 u8 gCapsLock = FALSE;
 void keyboard_render_key(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
-    x += column * 25;
-    y -= row * 25;
+    x += column * 24;
+    y -= row * 24;
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     int val = selected ? get_selected_color_value() : 0;
