@@ -115,6 +115,20 @@ char *info_setup_guide[] = {
     NULL,
 };
 
+char *info_no_sd_card[] = {
+    "3WARNING!",
+    "3SD card emulation not detected.",
+    NULL,
+    "0You can still use the level editor, but you cannot save the",
+    "0levels you create, or play levels created by other people.",
+    NULL,
+    "0Go to \"Help -> MB64 Setup Guide\" to get help",
+    "0on how to set up SD card emulation.",
+    NULL,
+    "0Otherwise, your level will be lost when you exit the",
+    "0editor, so use savestates to save your progress."
+};
+
 char *info_level_sharing[] = {
     "3Level Sharing",
     NULL,
@@ -381,6 +395,7 @@ enum MainMenuPages {
     PAGE_EDITOR_CONTROLS,
     PAGE_SHARE_LEVELS,
     PAGE_CHANGELOG,
+    PAGE_NO_SD_CARD,
 
 // Credits
     PAGE_CREDITS,
@@ -536,6 +551,14 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         int align = (textRender & 2) != 0;
         menu_text_display(infoStrings[i]+1, (align ? SCREEN_WIDTH/2 : 16), y, textRender & 1, align, (u8)(alpha * alphaMult * 255.f));
     }
+
+    if (gCurrMainMenuPage == PAGE_NO_SD_CARD && gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        gMainMenuAnimateDir = TO_NEXT;
+        gScheduledNextPage = PAGE_MAIN;
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        main_menu_page_change_animate(page, TRUE);
+    }
 }
 
 FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int len) {
@@ -659,7 +682,7 @@ void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         }
         MenuComponent *page = get_first_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
-        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
         main_menu_page_change_animate(page, TRUE);
 
         mb64_mode = MB64_MODE_UNINITIALIZED;
@@ -671,6 +694,15 @@ void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         mb64_level_action = MB64_LA_BUILD;
         gMB64LevelLoaded = TRUE;
     }
+}
+
+void no_sd_card_start_level(void) {
+    play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+    mb64_mode = MB64_MODE_UNINITIALIZED;
+    reset_play_state();
+    mb64_target_mode = MB64_MODE_MAKE;
+    mb64_level_action = MB64_LA_BUILD;
+    gMB64LevelLoaded = TRUE;
 }
 
 void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
@@ -734,6 +766,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_EDITOR_CONTROLS:
         case PAGE_SHARE_LEVELS:
         case PAGE_CHANGELOG:
+        case PAGE_NO_SD_CARD:
             main_menu_shade_animate(page, out);
             break;
         case PAGE_PLAY_LEVEL:
@@ -787,15 +820,21 @@ void create_page(int page, int animate) {
             init_text_component(title, 0, -15, "By Arthurtilly & Rovertronic", TEXT_CENTER, 0);
             init_text_component(title, 85, -3, "v1.1", TEXT_LEFT, 0);
             l = main_menu_create_list(frame, 143);
-            main_menu_create_button(l, "Build",     0, button_change_page, PAGE_BUILD);
-            main_menu_create_button(l, "Play",    -30, button_change_page, PAGE_PLAY_LEVEL);
-            main_menu_create_button(l, "Help",    -60, button_change_page, PAGE_HELP);
-            main_menu_create_button(l, "Credits", -90, button_change_page, PAGE_CREDITS);
+            if (gSDCard) {
+                main_menu_create_button(l, "Build",     0, button_change_page, PAGE_BUILD);
+                main_menu_create_button(l, "Play",    -30, button_change_page, PAGE_PLAY_LEVEL);
+                main_menu_create_button(l, "Help",    -60, button_change_page, PAGE_HELP);
+                main_menu_create_button(l, "Credits", -90, button_change_page, PAGE_CREDITS);
+            } else {
+                main_menu_create_button(l, "Level Editor", 0, button_change_page, PAGE_NEW_LEVEL);
+                main_menu_create_button(l, "Help",    -30, button_change_page, PAGE_HELP);
+                main_menu_create_button(l, "Credits", -60, button_change_page, PAGE_CREDITS);    
+            }
             main_menu_list_set_index(l);
             gPrevMainMenuPage = PAGE_NONE;
             break;
         case PAGE_BUILD:
-            main_menu_create_title(frame, "Make Levels", 188);
+            main_menu_create_title(frame, "Build Levels", 188);
             l = main_menu_create_list(frame, 143);
             main_menu_create_button(l, "New Level",     0, button_change_page, PAGE_NEW_LEVEL);
             main_menu_create_button(l, "Load Level",  -30, button_change_page, PAGE_LOAD_LEVEL);
@@ -813,7 +852,7 @@ void create_page(int page, int animate) {
             main_menu_create_button(l, "Changelog",       -90, button_change_page, PAGE_CHANGELOG);
             main_menu_list_set_index(l);
             gPrevMainMenuPage = PAGE_MAIN;
-            gPrevMainMenuButton = 2;
+            gPrevMainMenuButton = gSDCard ? 2 : 1;
             break;
         case PAGE_NEW_LEVEL:
             main_menu_create_title(frame, "Level Settings", 188);
@@ -821,7 +860,11 @@ void create_page(int page, int animate) {
             main_menu_create_selector(l, "Mode:", 0, &mb64_lopt_game, new_level_gamemodes, ARRAY_COUNT(new_level_gamemodes));
             main_menu_create_selector(l, "Size:", -25, &mb64_lopt_size, new_level_sizes, ARRAY_COUNT(new_level_sizes));
             main_menu_create_selector(l, "Template:", -50, &mb64_lopt_template, new_level_templates, ARRAY_COUNT(new_level_templates));
-            main_menu_create_button(l, "Create!", -100, button_change_page, PAGE_LEVEL_NAME);
+            if (gSDCard) {
+                main_menu_create_button(l, "Create!", -100, button_change_page, PAGE_LEVEL_NAME);
+            } else {
+                main_menu_create_button(l, "Create!", -100, no_sd_card_start_level, 0);
+            }
             main_menu_list_set_index(l);
             gPrevMainMenuPage = PAGE_BUILD;
             gPrevMainMenuButton = 0;
@@ -831,7 +874,7 @@ void create_page(int page, int animate) {
         case PAGE_CREDITS:
             main_menu_create_info(frame, info_credits, ARRAY_COUNT(info_credits));
             gPrevMainMenuPage = PAGE_MAIN;
-            gPrevMainMenuButton = 3;
+            gPrevMainMenuButton = gSDCard ? 3 : 2;
             break;
         case PAGE_SETUP_GUIDE:
             main_menu_create_info(frame, info_setup_guide, ARRAY_COUNT(info_setup_guide));
@@ -852,6 +895,11 @@ void create_page(int page, int animate) {
             main_menu_create_info(frame, info_v1_1_changelog, ARRAY_COUNT(info_v1_1_changelog));
             gPrevMainMenuPage = PAGE_HELP;
             gPrevMainMenuButton = 3;
+            break;
+        case PAGE_NO_SD_CARD:
+            main_menu_create_info(frame, info_no_sd_card, ARRAY_COUNT(info_no_sd_card));
+            gPrevMainMenuPage = PAGE_MAIN;
+            gPrevMainMenuButton = 0;
             break;
         // Level pages
         case PAGE_PLAY_LEVEL:
@@ -904,15 +952,19 @@ void main_menu_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 }
 
-// Sets to main instead if no sd card
 void set_page_to_level_list(void) {
     gCurrMainMenuPage = PAGE_LOAD_LEVEL;
     gLevelSelectorIndex = 0;
+    if (!gSDCard) {
+        gCurrMainMenuPage = PAGE_MAIN;
+    }
 }
 
 void set_initial_menu_page(void) {
     gCurrMainMenuPage = PAGE_MAIN;
-    if (mb64_sram_configuration.author[0] == 0) {
+    if (!gSDCard) {
+        gCurrMainMenuPage = PAGE_NO_SD_CARD;
+    } else if (mb64_sram_configuration.author[0] == 0) {
         gCurrMainMenuPage = PAGE_AUTHOR;
     }
 }

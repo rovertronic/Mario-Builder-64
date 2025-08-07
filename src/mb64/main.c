@@ -3979,7 +3979,7 @@ void sb_loop(void) {
                             break;
                         }
                         if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE) {
-                            if (mount_success == FR_OK) {
+                            if (gSDCard) {
                                 save_level();
                             }
                             mb64_target_mode = MB64_MODE_PLAY;

@@ -168,7 +168,7 @@ struct PageHandlerComponent {
     ComponentID oldPage;
     u16 direction:1;
     u16 activeOnScroll:1;
-    u16 input:3;
+    u16 input:4;
     u16 frames:4;
     u8 index;
 };

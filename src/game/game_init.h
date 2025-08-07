@@ -108,6 +108,8 @@ extern TCHAR *mb64_level_dir_name;
 extern TCHAR *mb64_hack_dir_name;
 extern struct mb64_sram_config mb64_sram_configuration;
 
+#define gSDCard (mount_success == FR_OK)
+
 void create_level_file_path(TCHAR * buffer, TCHAR * filename, TCHAR * suffix);
 struct mb64_level_save_header * get_level_info_from_filename(char * filename);
 void load_level_files_from_sd_card(void);

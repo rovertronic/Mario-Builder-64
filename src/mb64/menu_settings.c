@@ -366,7 +366,7 @@ char *mb64_costume_string_table[] = {
 // System page
 
 void settings_save_and_quit(void) {
-    if (mount_success == FR_OK) {
+    if (gSDCard) {
         save_level();
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
     }
@@ -375,7 +375,7 @@ void settings_save_and_quit(void) {
 }
 
 void settings_play_level(void) {
-    if (mount_success == FR_OK) {
+    if (gSDCard) {
         save_level();
     }
     mb64_target_mode = MB64_MODE_PLAY;
@@ -387,15 +387,11 @@ void settings_play_level(void) {
 }
 
 void settings_take_screenshot(void) {
-    if (mount_success == FR_OK) {
-        freecam_camera_init();
-        mb64_menu_state = MB64_MAKE_SCREENSHOT;
-        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-        dealloc_component(settingsRoot);
-        settingsRoot = 0;
-    } else {
-        play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-    }
+    freecam_camera_init();
+    mb64_menu_state = MB64_MAKE_SCREENSHOT;
+    play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+    dealloc_component(settingsRoot);
+    settingsRoot = 0;
 }
 
 
@@ -800,9 +796,11 @@ FrameComponent *settings_main_page_creator(UNUSED PageHandlerComponent *unusedph
             init_text_component(frame, 140, -65, settings_stats_buf_2, TEXT_RIGHT, 0);
             break;
         case 4: // System
-            settings_create_button(list, 0, "Save & Quit", settings_save_and_quit);
+            settings_create_button(list, 0, gSDCard ? "Save & Quit" : "Quit Editor", settings_save_and_quit);
             settings_create_button(list, 1, "Play Level", settings_play_level);
-            settings_create_button(list, 2, "Set Level Thumbnail", settings_take_screenshot);
+            if (gSDCard) {
+                settings_create_button(list, 2, "Set Level Thumbnail", settings_take_screenshot);
+            }
 
             int vtx_perc = ((f32)mb64_vtx_total/(f32)MB64_VTX_SIZE)*100.0f;
             int tile_perc = ((f32)mb64_tile_count/(f32)MB64_TILE_POOL_SIZE)*100.0f;
@@ -828,10 +826,12 @@ FrameComponent *settings_page_creator(UNUSED PageHandlerComponent *unusedph, s32
             ph = init_page_handler(frame, settings_main_page_creator, ARRAY_COUNT(settings_menu_pages), SETTINGS_PAGE_WIDTH/2);
             init_page_title_array(frame, ph, 0, 25, 60, settings_menu_pages);
 
-            init_text_component(frame, 0, 50, mb64_file_info.fname, TEXT_CENTER, 0);
             init_text_component(frame, -70, 25, "< L", TEXT_RIGHT, 0);
             init_text_component(frame, 70, 25, "R >", TEXT_LEFT, 0);
-            component_set_pos(init_dynamic_component(frame, component_level_portrait_render), 128, 50);
+            if (gSDCard) {
+                init_text_component(frame, 0, 50, mb64_file_info.fname, TEXT_CENTER, 0);
+                component_set_pos(init_dynamic_component(frame, component_level_portrait_render), 128, 50);
+            }
             break;
         case 1: // Custom theme
             ph = init_page_handler(frame, custom_theme_page_creator, 14, SETTINGS_PAGE_WIDTH/2);
