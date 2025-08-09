@@ -207,7 +207,6 @@ u8 mb64_global_scissor_bottom = SCREEN_HEIGHT;
 u8 mb64_curr_settings_menu = 0; // Index of current page in the Settings menu
 u8 mb64_curr_custom_tab = 0; // Index of current tab in Edit Custom Theme menu
 u8 mb64_custom_theme_menu_open = FALSE; // If custom theme menu is currently in use
-u8 mb64_disable_menu_inputs = FALSE;
 
 void full_menu_reset() {
     bzero(mb64_menu_button_vels, sizeof(mb64_menu_button_vels));
@@ -228,7 +227,6 @@ void full_menu_reset() {
     mb64_topleft_timer = 0;
     mb64_custom_theme_menu_open = FALSE;
     mb64_greyed_text = FALSE;
-    mb64_disable_menu_inputs = FALSE;
     animate_list_reset();
     animate_toolbar_reset();
 }
@@ -274,33 +272,6 @@ void animate_menu_overshoot_target(f32 vels[3], f32 targetPos,
             vels[2] = 0.f;
         }
     }
-}
-
-
-Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
-    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
-        u32 id;
-        if (mb64_ui_buttons[buttonId].multiObj) {
-            id = mb64_ui_buttons[buttonId].idList[objIndex];
-        } else {
-            id = mb64_ui_buttons[buttonId].id;
-        }
-        return mb64_object_type_list[id].btn;
-    }
-    if (buttonId == MB64_BUTTON_BLANK) return mat_b_btn_blank;
-    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].button;
-}
-
-char *get_button_str(u32 buttonId) {
-    if (mb64_ui_buttons[buttonId].placeMode == MB64_PM_OBJ) {
-        if (mb64_ui_buttons[buttonId].multiObj) {
-            return mb64_ui_buttons[buttonId].name;
-        } else {
-            u32 id = mb64_ui_buttons[buttonId].id;
-            return mb64_object_type_list[id].name;
-        }
-    }
-    return mb64_terrain_info_list[mb64_ui_buttons[buttonId].id].name;
 }
 
 // Ease-in animation to a target position
@@ -458,10 +429,6 @@ void mb64_show_topleft_message(char *message, s32 isTip) {
         if (mb64_topleft_timer < mb64_topleft_max_timer - 30) mb64_topleft_timer = mb64_topleft_max_timer - 30;
     }
 }
-void mb64_show_error_message(char *message) {
-    mb64_show_topleft_message(message, FALSE);
-    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-}
 
 void mb64_show_tip() {
     s32 count = ARRAY_COUNT(mb64_tips);
@@ -520,34 +487,7 @@ Vtx * custom_preview_vtx;
 
 
 void draw_mb64_menu(void) {
-    if (mb64_menu_state != MB64_MAKE_SCREENSHOT) {
-        create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 36 - 80, 0);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-        gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-        animate_list_update(mb64_menu_toolbar_offsets, ARRAY_COUNT(mb64_menu_toolbar_offsets), mb64_toolbar_index);
-        for (s32 i = 0; i < 9; i++) {
-            s32 op = (mb64_toolbar_index == i ? 255 : 200);
-            create_dl_translation_matrix(MENU_MTX_PUSH, 34+(i*32), 20 + (5 * mb64_menu_toolbar_offsets[i]), 0);
-            gDPSetEnvColor(gDisplayListHead++, op, op, op, 255);
-
-            Gfx *mat = get_button_tex(mb64_toolbar[i], mb64_toolbar_params[i]);
-
-            gSPDisplayList(gDisplayListHead++, mat);//texture
-            gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-        }
-        gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
-    }
-
-    if (mb64_disable_menu_inputs) {
-        gPlayer1Controller->buttonPressed = 0;
-        gPlayer1Controller->buttonDown = 0;
-        gPlayer1Controller->rawStickX = 0;
-        gPlayer1Controller->rawStickY = 0;
-        mb64_joystick = 0;
-    }
+    return;
 
     //TOOLBOX
     switch (mb64_menu_state) {
@@ -714,7 +654,7 @@ void draw_mb64_menu(void) {
                     yellowStr = mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].names[mb64_toolbar_params[mb64_toolbar_index]];
                 }
             }
-        } else if (mb64_terrain_info_list[mb64_id_selection].terrain) {
+        } else if ((mb64_place_mode == MB64_PM_TILE) && mb64_terrain_info_list[mb64_id_selection].terrain) {
             yellowStr = TILE_MATDEF(mb64_mat_selection).name;
 
             if (mb64_id_selection < TILE_END_OF_FLIPPABLE) {

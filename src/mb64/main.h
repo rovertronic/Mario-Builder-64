@@ -163,9 +163,9 @@ extern LevelScript * mb64_theme_model_scripts[];
 
 enum {
     MB64_PM_NONE,
+    MB64_PM_ACTION,
     MB64_PM_TILE,
     MB64_PM_OBJ,
-    MB64_PM_WATER,
 };
 
 enum ProcessTileRenderModes {
@@ -177,6 +177,9 @@ enum ProcessTileRenderModes {
 
 #define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
 #define POS_TO_GRID(pos) (((pos) + (32 * TILE_SIZE) - TILE_SIZE/2) / TILE_SIZE)
+
+extern struct mb64_grid_obj mb64_grid_data[64][64][64];
+#define get_grid_tile(pos) (&(mb64_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
 
 enum mb64_directions {
     MB64_DIRECTION_UP,

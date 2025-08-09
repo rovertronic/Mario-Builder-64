@@ -11,9 +11,6 @@
 MenuStyle gMenuStyle;
 MenuState gMenuState;
 
-#define ACTIVE (!gMenuState.inactive && !gMenuState.disabled)
-#define SELECTED (gMenuState.selected && ACTIVE)
-
 union MenuComponentData menu_pool[MENU_POOL_SIZE] = {0};
 
 u8 menu_text_colors[][3] = {
@@ -202,20 +199,14 @@ void dealloc_component(ComponentID id) {
     // If sibling exists, link it to the parent or the previous sibling
     if (m->parent) {
         MenuComponent *parent = get_component(m->parent);
-        if (m->next) {
-            if (parent->child == id) {
-                parent->child = m->next;
-            } else {
-                MenuComponent *current = get_component(parent->child);
-                while (current && current->next != id) {
-                    current = get_component(current->next);
-                }
-                if (current) {
-                    current->next = m->next;
-                }
+        if (parent->child == id) {
+            parent->child = m->next;
+        } else {
+            MenuComponent *current = get_component(parent->child);
+            while (current->next && current->next != id) {
+                current = get_component(current->next);
             }
-        } else if (parent->child == id) {
-            parent->child = 0;
+            current->next = m->next;
         }
     }
 
@@ -504,6 +495,9 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
             ComponentUpdateFunc onFinish = a->onFinish;
             a->onFinish = NULL;
             onFinish(a, 0);
+            if (a->base.type == MENU_NONE) {
+                return;
+            }
         }
     }
 
@@ -793,6 +787,13 @@ void component_page_scroll_render(MenuComponent *m, s16 x, s16 y) {
 
 // ================ LIST ===================
 
+ListComponent *init_list(void *parent, int direction, int input) {
+    ListComponent *l = alloc_component(parent, MENU_LIST);
+    l->direction = direction;
+    l->input = input;
+    return l;
+}
+
 // Sublist is a special type of list that is a child of a PageHandler.
 // When scrolling off the top or bottom, it will scroll the parent page instead of looping.
 ListComponent *init_sublist(void *parent, ComponentID ph, u8 indexOffset) {
@@ -830,12 +831,7 @@ void component_list_render(MenuComponent *m, s16 x, s16 y) {
 
     if (l->count == 0) return;
 
-    s8 dir = 0;
-    if (gJoystickState == JOYSTICK_UP) {
-        dir = -1;
-    } else if (gJoystickState == JOYSTICK_DOWN) {
-        dir = 1;
-    }
+    s8 dir = get_input(l->input, l->direction);
 
     if (dir && ACTIVE) {
         do {
@@ -882,12 +878,18 @@ void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
     gMenuState.disabled = item->disabled;
     if (gMenuStyle.listOffsetSelected) {
         if (gMenuState.selected) {
-            item->xoffset = MIN(item->xoffset+1, 3);
+            item->offset = MIN(item->offset+1, 3);
         } else {
-            item->xoffset = MAX(item->xoffset-1, 0);
+            item->offset = MAX(item->offset-1, 0);
         }
     }
-    render_child(m, x + m->xpos + item->xoffset, y + m->ypos);
+
+    if (l->direction == DIR_VERTICAL) {
+        x += item->offset;
+    } else {
+        y += item->offset;
+    }
+    render_child(m, x + m->xpos, y + m->ypos);
 }
 
 // ================ 2D SELECTOR ===================
@@ -1114,7 +1116,7 @@ void render_menu(void) {
     //         count++;
     //     }
     // }
-    // print_text_fmt_int(20,20,"%d",count);
+    // print_text_fmt_int(20,40,"%d",count);
 }
 
 void move_error(void) {

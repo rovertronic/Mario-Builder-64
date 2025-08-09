@@ -659,7 +659,7 @@ void settings_create_button(ListComponent *list, u8 index, char *text, Component
 
 FrameComponent *custom_theme_page_creator(UNUSED PageHandlerComponent *unusedph, s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
-    ListComponent *list = alloc_component(frame, MENU_LIST);
+    ListComponent *list = init_list(frame, DIR_VERTICAL, MENU_INPUT_JOYSTICK);
 
     switch (index) {
         case POLE_PAGE:
@@ -748,7 +748,7 @@ void konami_code_check(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 u8 gFromCustomTheme = FALSE;
 FrameComponent *settings_main_page_creator(UNUSED PageHandlerComponent *unusedph, s32 index) {
     FrameComponent *frame = init_frame_component(NULL);
-    ListComponent *list = alloc_component(frame, MENU_LIST);
+    ListComponent *list = init_list(frame, DIR_VERTICAL, MENU_INPUT_JOYSTICK);
 
     switch (index) {
         case 0: // Environment
@@ -860,6 +860,7 @@ void settings_page_closed() {
     dealloc_component(settingsRoot);
     settingsRoot = 0;
     mb64_menu_state = MB64_MAKE_MAIN;
+    toolbar_set_active(TRUE);
 }
 
 MenuStyle settings_menu_style = {
@@ -879,8 +880,9 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
         PageHandlerComponent *ph = get_first_child(root);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
-            component_animate_ease_out(root, 4.f, 10, DIR_VERTICAL);
+            component_animate_ease_out(root, 4.f, 12, DIR_VERTICAL);
             root->onFinish = settings_page_closed;
+            show_toolbar();
         } else {
             gFromCustomTheme = TRUE;
             page_handler_scroll(ph, -1);
@@ -895,8 +897,8 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
 void settings_menu_create(void) {
     AnimatedComponent *main = alloc_component(gMenuRoot, MENU_ANIMATED);
-    component_set_pos(main, SCREEN_WIDTH/2, 150);
-    component_animate_ease_in(main, 150.f, 0.35f, DIR_VERTICAL);
+    component_set_pos(main, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    component_animate_ease_in(main, 180.f, 0.4f, DIR_VERTICAL);
     main->base.prerender = settings_page_main;
 
     PageHandlerComponent *ph = init_page_handler(main, settings_page_creator, 2, SETTINGS_PAGE_HEIGHT/2);

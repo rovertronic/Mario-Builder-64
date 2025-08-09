@@ -776,7 +776,8 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             }
         }
 
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(mb64_toolbar_index == 7)) {
+        int isPreviewMario = obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO);
+        if (isPreviewMario) {
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
 
@@ -785,7 +786,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             if ((gCurGraphNodeObject != &gMarioObject->header.gfx)) {
                 switchCase->selectedCase = 0;
             }
-            if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject)&&(mb64_toolbar_index == 7)) {
+            if (isPreviewMario) {
                 switchCase->selectedCase = MODEL_STATE_METAL >> 8;
             }
         }
@@ -816,7 +817,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_toolbar_index == 7)) {
+        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO)) {
             switchCase->selectedCase = 0;
         } else if ((gCurGraphNodeObject != &gMarioObject->header.gfx)) {
             switchCase->selectedCase = 0;
@@ -825,38 +826,29 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
         //WARIO
         if (gMarioState->CostumeID == 4) {
             switchCase->selectedCase = 3;
-            }
+        }
         //LUIGI
         if (gMarioState->CostumeID == 3) {
             switchCase->selectedCase = 2;
-            }
+        }
         if (gMarioState->CostumeID == 6) {
             switchCase->selectedCase = 4;
-            }
+        }
         if (gMarioState->CostumeID == 7) {
             switchCase->selectedCase = 1;
-            }
+        }
         if (gMarioState->CostumeID == 8) { // darius
             switchCase->selectedCase = 6;
-            }
-
+        }
         if (gMarioState->CostumeID == 10) { // retro mario XDDD
             switchCase->selectedCase = 7;
-            }
+        }
         if (gMarioState->CostumeID == 11) { // thwompio
             switchCase->selectedCase = 9;
-            }
-
+        }
         if (gMarioState->CostumeID == 13) { // srnr
             switchCase->selectedCase = 10;
-            }
-
-        //POWERUP
-        //Majora's Mask
-        // if (gMarioState->powerup == 2) {
-        //     switchCase->selectedCase = 5;
-        //     }
-
+        }
         if (gMarioState->powerup & 2) {
             switchCase->selectedCase = 8;
         }

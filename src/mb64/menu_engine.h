@@ -3,7 +3,7 @@
 #include "types.h"
 #include "engine/math_util.h"
 
-#define MENU_POOL_SIZE 64
+#define MENU_POOL_SIZE 128
 
 typedef struct MenuComponent MenuComponent;
 typedef u8 ComponentID;
@@ -13,6 +13,9 @@ typedef void (*ComponentUpdateFunc)(); // Passes one optional parameter for the 
 
 extern u32 gGlobalTimer;
 #define get_selected_color_value() (100 + sins(gGlobalTimer * 0x1000) * 15)
+
+#define ACTIVE (!gMenuState.inactive && !gMenuState.disabled)
+#define SELECTED (gMenuState.selected && ACTIVE)
 
 enum MenuDirection {
     DIR_VERTICAL,
@@ -200,12 +203,14 @@ typedef struct {
     u8 indexOffset;
     ComponentID pageHandler;
     u8 isSublist:1;
+    u8 input:4;
+    u8 direction:1;
 } ListComponent;
 
 typedef struct {
     MenuComponent base;
     u8 disabled;
-    s8 xoffset;
+    s8 offset;
     u8 index;
 } ListItemComponent;
 
@@ -298,6 +303,7 @@ void *get_child(void *parent, u8 type, u8 index);
 
 FrameComponent       *init_frame_component(void *parent);
 FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
+ListComponent        *init_list(void *parent, int direction, int input);
 ListComponent        *init_sublist(void *parent, ComponentID ph, u8 indexOffset);
 TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text, u8 align, u8 color);
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);

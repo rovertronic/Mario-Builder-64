@@ -1,5 +1,7 @@
 #pragma once
 
+#include "menu_engine.h"
+
 extern u8 mb64_menu_state;
 extern s16 mb64_menu_index;
 extern s16 mb64_menu_index_max;
@@ -14,7 +16,6 @@ extern u8 mb64_joystick;
 
 Gfx *get_button_tex(u32 buttonId, u32 objIndex);
 u8 joystick_direction(void);
-void mb64_show_error_message(char *message);
 
 enum {
     MB64_TEXT_WHITE,
@@ -24,3 +25,7 @@ enum {
     MB64_TEXT_RED,
     MB64_TEXT_LIGHTBLUE,
 };
+
+
+
+extern AnimatedComponent *gToolbar;

@@ -486,7 +486,7 @@ AnimatedComponent *main_menu_create_title(MenuComponent *parent, char *text, s16
 }
 
 ListComponent *main_menu_create_list(MenuComponent *parent, s16 y) {
-    ListComponent *l = alloc_component(parent, MENU_LIST);
+    ListComponent *l = init_list(parent, DIR_VERTICAL, MENU_INPUT_JOYSTICK);
     component_set_pos(l, SCREEN_WIDTH/2, y);
     return l;
 }

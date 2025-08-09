@@ -199,18 +199,18 @@ u32 coords_in_range(s8 pos[3]) {
 
 s32 tile_sanity_check(void) {
     if (mb64_tile_count >= MB64_TILE_POOL_SIZE) {
-        mb64_show_error_message("Tile limit reached! (max 20,000)");
+        show_error("Tile limit reached! (max 20,000)");
         return FALSE;
     }
     if (mb64_vtx_total >= MB64_VTX_SIZE - 100) {
         if (mb64_id_selection != TILE_TYPE_CULL) {
-            mb64_show_error_message("Vertex limit reached! (max 50,000)");
+            show_error("Vertex limit reached! (max 50,000)");
             return FALSE;
         }
     }
     if (mb64_gfx_total >= MB64_GFX_SIZE - 100) {
         if (mb64_id_selection != TILE_TYPE_CULL) {
-            mb64_show_error_message("Warning: Mesh data pool full!");
+            show_error("Warning: Mesh data pool full!");
             return FALSE;
         }
     }
@@ -233,13 +233,13 @@ s32 object_sanity_check(void) {
     struct mb64_object_info *info = &mb64_object_type_list[mb64_id_selection];
 
     if (mb64_object_limit_count + get_extra_objects(mb64_id_selection, mb64_param_selection) >= MB64_MAX_OBJS) {
-        mb64_show_error_message("Object limit reached! (max 512)");
+        show_error("Object limit reached! (max 512)");
         return FALSE;
     }
 
     if (info->flags & OBJ_TYPE_TRAJECTORY) {
         if (mb64_trajectories_used >= MB64_MAX_TRAJECTORIES) {
-            mb64_show_error_message("Trajectory limit reached! (max 20)");
+            show_error("Trajectory limit reached! (max 20)");
             return FALSE;
         }
     }
@@ -248,7 +248,7 @@ s32 object_sanity_check(void) {
         // Count stars
         s32 numStars = mb64_count_stars();
         if (numStars >= 63) {
-            mb64_show_error_message("Star limit reached! (max 63)");
+            show_error("Star limit reached! (max 63)");
             return FALSE;
         }
     }
@@ -256,7 +256,7 @@ s32 object_sanity_check(void) {
     if (mb64_id_selection == OBJECT_TYPE_RED_COIN_STAR) {
         for (u32 i = 0; i < mb64_object_count; i++) {
             if (mb64_object_data[i].type == OBJECT_TYPE_RED_COIN_STAR) {
-                mb64_show_error_message("Red Coin Star already placed!");
+                show_error("Red Coin Star already placed!");
                 return FALSE;
             }
         }
@@ -264,7 +264,7 @@ s32 object_sanity_check(void) {
     if (mb64_id_selection == OBJECT_TYPE_TRIGGER_STAR) {
         for (u32 i = 0; i < mb64_object_count; i++) {
             if (mb64_object_data[i].type == OBJECT_TYPE_TRIGGER_STAR) {
-                mb64_show_error_message("Star Trigger star already placed!");
+                show_error("Star Trigger star already placed!");
                 return FALSE;
             }
         }
@@ -307,8 +307,6 @@ struct Object * get_spawn_preview_object() {
     mb64_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
     mb64_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
 }
-
-#define get_grid_tile(pos) (&(mb64_grid_data[(pos)[0]][(pos)[1]][(pos)[2]]))
 
 #define rotate_direction(dir, rot) (mb64_rotated_dirs[rot][dir])
 
@@ -1890,9 +1888,9 @@ void generate_terrain_gfx(void) {
     osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
 
     if (mb64_vtx_total >= MB64_VTX_SIZE) {
-        mb64_show_error_message("CRITICAL WARNING: Vertex limit exceeded.");
+        show_error("CRITICAL WARNING: Vertex limit exceeded.");
     } else if (mb64_vtx_total >= MB64_VTX_SIZE - 30) {
-        mb64_show_error_message("WARNING: Vertex limit is about to overflow.\nCreate any more vertices and you're cooked.");
+        show_error("WARNING: Vertex limit is about to overflow.\nCreate any more vertices and you're cooked.");
     }
 };
 
@@ -2004,7 +2002,10 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
                 geo_append_display_list(mb64_trajectory_gfx, LAYER_OPAQUE);
             }
             //generate dl
-            if (mb64_place_mode == MB64_PM_OBJ || mb64_place_mode == MB64_PM_NONE) {render_water_plane(); return NULL;}
+            if (mb64_place_mode != MB64_PM_TILE) {
+                render_water_plane();
+                return NULL;
+            }
             mb64_curr_gfx = preview_gfx;
             mb64_curr_vtx = preview_vtx;
             mb64_gfx_index = 0;
@@ -2015,7 +2016,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
 
             retroland_filter_on();
 
-            if (mb64_place_mode == MB64_PM_WATER) {
+            if (mb64_id_selection == TILE_TYPE_WATER) {
                 gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], WATER_TEX());
                 gSPGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], 0, G_CULL_BACK);
                 mb64_curr_poly_vert_count = 4;
@@ -2825,7 +2826,7 @@ void imbue_action(void) {
                 case OBJECT_TYPE_STAR:
                     ;s32 numStars = mb64_count_stars();
                     if (numStars >= 63) {
-                        mb64_show_error_message("Star limit reached! (max 63)");
+                        show_error("Star limit reached! (max 63)");
                         imbue_success = FALSE;
                         break;
                     }
@@ -2888,27 +2889,23 @@ void imbue_action(void) {
         }
     }
     if (mb64_id_selection == OBJECT_TYPE_TRIGGER) {
-        mb64_show_error_message("Star Triggers must be placed in other objects!");
+        show_error("Star Triggers must be placed in other objects!");
     }
 }
 
 void place_thing_action(void) {
-     if (mb64_place_mode == MB64_PM_WATER) {
-        if (tile_sanity_check()) {
-            place_water(mb64_cursor_pos);
-            generate_terrain_gfx();
-        }
-        return;
-    }
-
     if (mb64_place_mode == MB64_PM_TILE) {
-        //MB64_PM_TILE
-        if (can_place_tile(mb64_cursor_pos) && tile_sanity_check()) {
-            place_tile(mb64_cursor_pos);
+        if (tile_sanity_check()) {
+            if (mb64_id_selection == TILE_TYPE_WATER) {
+                place_water(mb64_cursor_pos);
+            } else if (can_place_tile(mb64_cursor_pos)) {
+                place_tile(mb64_cursor_pos);
+            } else {
+                return;
+            }
             generate_terrain_gfx();
         }
-    } else if (mb64_place_mode == MB64_PM_OBJ){
-        //MB64_PM_OBJECT
+    } else if (mb64_place_mode == MB64_PM_OBJ) {
         if (can_place_object(mb64_cursor_pos)) {
             if (object_sanity_check()) {
                 place_object(mb64_cursor_pos);
@@ -2976,7 +2973,7 @@ void delete_tile_action(s8 pos[3]) {
     for (u32 i=0;i<mb64_object_count;i++) {
         if ((mb64_object_data[i].x == pos[0])&&(mb64_object_data[i].y == pos[1])&&(mb64_object_data[i].z == pos[2])) {
             if (mb64_object_data[i].type == OBJECT_TYPE_MARIO_SPAWN) {
-                mb64_show_error_message("Cannot delete spawn point!");
+                show_error("Cannot delete spawn point!");
                 break;
             }
             delete_object(i);
@@ -2984,71 +2981,6 @@ void delete_tile_action(s8 pos[3]) {
             play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
         }
     }
-}
-
-// Copy tile type of current cursor position to current toolbar slot
-int sample_block(void) {
-    int isObject = FALSE;
-    int targetId;
-    int targetBparam;
-    int targetRot;
-    // Iterate over objects
-    for (u32 i = 0; i < mb64_object_count; i++) {
-        struct mb64_obj *obj = &mb64_object_data[i];
-        if ((obj->x == mb64_cursor_pos[0]) && (obj->y == mb64_cursor_pos[1]) && (obj->z == mb64_cursor_pos[2])) {
-            isObject = TRUE;
-            targetId = obj->type;
-            targetBparam = obj->bparam;
-            targetRot = obj->rot;
-            break;
-        }
-    }
-    // Look at tile array
-    if (!isObject) {
-        struct mb64_grid_obj *tile = get_grid_tile(mb64_cursor_pos);
-        if (tile->type == TILE_TYPE_EMPTY) {
-            return FALSE;
-        }
-        targetId = tile->type;
-        targetBparam = tile->mat;
-        targetRot = tile->rot;
-        mb64_upsidedown_tile = FALSE;
-
-        if (targetId < TILE_END_OF_FLIPPABLE && targetId & 1) {
-            targetId--;
-            mb64_upsidedown_tile = TRUE;
-        }
-    }
-
-    // Find relevant button
-    u32 i;
-    for (i = 0; i < MB64_BUTTON_COUNT; i++) {
-        struct mb64_ui_button_type *button = &mb64_ui_buttons[i];
-        if ((!isObject && button->placeMode == MB64_PM_OBJ) || (isObject && button->placeMode != MB64_PM_OBJ)) {
-            continue;
-        }
-
-        if (isObject && button->multiObj) {
-            // Iterate over multilist
-            for (u32 j = 0; j < button->paramCount; j++) {
-                if (button->idList[j] == targetId) {
-                    mb64_toolbar_params[mb64_toolbar_index] = j;
-                    // the pain of nested loops
-                    mb64_toolbar[mb64_toolbar_index] = i;
-                    mb64_rot_selection = targetRot;
-                    return TRUE;
-                }
-            }
-
-        } else if (button->id == targetId) {
-            mb64_toolbar_params[mb64_toolbar_index] = targetBparam;
-            if (!isObject) mb64_mat_selection = targetBparam;
-            break;
-        }
-    }
-    mb64_toolbar[mb64_toolbar_index] = i;
-    mb64_rot_selection = targetRot;
-    return TRUE;
 }
 
 
@@ -3074,7 +3006,7 @@ extern u16 sRenderedFramebuffer;
 void save_level(void) {
     //bzero(&mb64_save, sizeof(mb64_save)); // should be safe to not need this right?
     if (mb64_vtx_total >= MB64_VTX_SIZE) {
-        mb64_show_error_message("Save Failed - Vertex limit exceeded.");
+        show_error("Save Failed - Vertex limit exceeded.");
         return;
     }
 
@@ -3165,7 +3097,7 @@ void save_level(void) {
 
         if (screenshot_failure) {
             //framebuffer emulation not enabled, use ?
-            mb64_show_error_message("Screenshot failed.\nMake sure framebuffer emulation (FBE) is enabled.");
+            show_error("Screenshot failed.\nMake sure framebuffer emulation (FBE) is enabled.");
             bcopy(&mystery_painting_rgba16,&mb64_save.piktcher,sizeof(mb64_save.piktcher));
         }
 
@@ -3432,7 +3364,8 @@ void sb_init(void) {
             mb64_boundary_object[5]->oFaceAnglePitch = 0x4000;
 
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
-        break;
+            create_toolbar();
+            break;
         case MB64_MODE_PLAY:
             mb64_menu_state = MB64_MAKE_PLAY;
             reset_rng();
@@ -3847,27 +3780,8 @@ void freecam_camera_main(void) {
     mb64_camera_foc[2] = mb64_camera_pos[2] + ( coss(mb64_freecam_yaw) * -sins(mb64_freecam_pitch) * 100.0f );
 }
 
-
-void update_id_selection(void) {
-    struct mb64_ui_button_type *curBtn = &mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]];
-    if (curBtn->multiObj) {
-        mb64_id_selection = curBtn->idList[mb64_param_selection];
-    } else {
-        mb64_id_selection = curBtn->id;
-    }
-    mb64_place_mode = curBtn->placeMode;
-
-    if (mb64_upsidedown_tile) {
-        if ((mb64_id_selection < TILE_END_OF_FLIPPABLE)&&(mb64_place_mode == MB64_PM_TILE)) {
-            mb64_id_selection = (mb64_id_selection & ~1) | 1;
-        } else {
-            mb64_upsidedown_tile = FALSE;
-        }
-    }
-}
-
-int gLTrigBuff = FALSE;
-int gRTrigBuff = FALSE;
+u8 sPrevPreviewID; // used for resetting preview obj
+u8 sPrevPreviewParam;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,mb64_current_camera_zoom[1],0};
@@ -3896,113 +3810,58 @@ void sb_loop(void) {
 
     switch(mb64_menu_state) {
         case MB64_MAKE_MAIN:
+            ListComponent *toolbarlist = get_first_child(gToolbar);
+            if (toolbarlist->base.inactive) {
+                break;
+            }
             cursorMoved = main_cursor_logic(mb64_joystick);
-            s32 updatePreviewObj = cursorMoved;
 
-            if (sDelayedWarpOp == WARP_OP_NONE) {
-                // 1-frame buffer check for holding both L and R
-                // If L and R are pressed within 1 frame of each other,
-                // enable bothPressed and disable L and R pressed
-                int LPressed = gPlayer1Controller->buttonPressed & L_TRIG;
-                int RPressed = gPlayer1Controller->buttonPressed & R_TRIG;
-                int bothPressed = FALSE;
+            // Update preview object
+            if (cursorMoved || (sPrevPreviewID != mb64_id_selection) || (sPrevPreviewParam != mb64_param_selection)) {
+                delete_preview_object();
+            }
+            sPrevPreviewID = mb64_id_selection;
+            sPrevPreviewParam = mb64_param_selection;
 
-                if ((LPressed && gRTrigBuff) || (RPressed && gLTrigBuff) || (LPressed && RPressed)) {
-                    bothPressed = TRUE;
-                    gLTrigBuff = FALSE;
-                    gRTrigBuff = FALSE;
-                }
-
-                if (gLTrigBuff) {
-                    mb64_toolbar_index--;
-                    updatePreviewObj = TRUE;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                }
-                else if (gRTrigBuff) {
-                    mb64_toolbar_index++;
-                    updatePreviewObj = TRUE;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                } else if (bothPressed && mb64_toolbar_index < 7) {
-                    if (sample_block()) {
-                        updatePreviewObj = TRUE;
-                        play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
-                    }
-                }
-
-                if (!bothPressed) {
-                    gLTrigBuff = LPressed;
-                    gRTrigBuff = RPressed;
-                }
+            if (gPlayer1Controller->buttonPressed & Z_TRIG) {
+                mb64_rot_selection = (mb64_rot_selection + 1) % 4;
+                delete_preview_object();
             }
 
-            mb64_toolbar_index = (mb64_toolbar_index+9)%9;
-            mb64_param_selection = mb64_toolbar_params[mb64_toolbar_index];
-
-            if (mb64_place_mode != MB64_PM_OBJ) updatePreviewObj = TRUE;
-
-            //parameter changing
-            if ((mb64_place_mode != MB64_PM_OBJ) || (mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].paramCount != 0)) {
-                if (gPlayer1Controller->buttonPressed & L_JPAD) {
-                    mb64_param_selection--;
-                    updatePreviewObj = TRUE;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                } else if (gPlayer1Controller->buttonPressed & R_JPAD) {
-                    mb64_param_selection++;
-                    updatePreviewObj = TRUE;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                }
-                if (mb64_place_mode == MB64_PM_OBJ) {
-                    u32 max = mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].paramCount;
-                    mb64_param_selection = (mb64_param_selection+max)%max;
-                    mb64_toolbar_params[mb64_toolbar_index] = mb64_param_selection;
-                }
-            }
-
-            update_id_selection();
 
             //Single A press
-            if (gPlayer1Controller->buttonPressed & A_BUTTON || 
-                ((gPlayer1Controller->buttonPressed & START_BUTTON) && (mb64_toolbar_index >= 7))) {
-                switch(mb64_toolbar_index) {
-                    case 7:; // save and test
-                        // Tile Check
-                        u32 type = get_grid_tile(mb64_cursor_pos)->type;
-                        if (type != TILE_TYPE_EMPTY && type != TILE_TYPE_WATER) {
-                            u32 tileFlags = get_tile_occupy_flags(type);
-                            if (tileFlags & OBJ_OCCUPY_INNER) {
-                                mb64_show_error_message("Cannot start test inside a tile!");
+            if (mb64_place_mode == MB64_PM_ACTION) {
+                if (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+                    switch (mb64_id_selection) {
+                        // Begin Test
+                        case OBJECT_TYPE_TEST_MARIO:
+                            if ((!can_place(mb64_cursor_pos, OBJ_OCCUPY_INNER)) && !can_place(mb64_cursor_pos, OBJ_OCCUPY_OUTER)) {
+                                show_error("Cannot start test here!");
                                 break;
                             }
-                        }
-                        if ((!can_place(mb64_cursor_pos, OBJ_OCCUPY_INNER)) && !can_place(mb64_cursor_pos, OBJ_OCCUPY_OUTER)) {
-                            mb64_show_error_message("Cannot start test here!");
-                            break;
-                        }
-                        if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE) {
-                            if (gSDCard) {
-                                save_level();
+                            if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE) {
+                                if (gSDCard) {
+                                    save_level();
+                                }
+                                toolbar_set_active(FALSE);
+                                mb64_target_mode = MB64_MODE_PLAY;
+                                reset_play_state();
+                                level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
+                                sSourceWarpNodeId = 0x0A;
+                                play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
                             }
-                            mb64_target_mode = MB64_MODE_PLAY;
-                            reset_play_state();
-                            level_trigger_warp(gMarioState, WARP_OP_LOOK_UP);
-                            sSourceWarpNodeId = 0x0A;
-                            play_sound(SOUND_MENU_STAR_SOUND_LETS_A_GO, gGlobalSoundSource);
-                        }
-                        break;
-                    case 8: // options
-                        mb64_menu_state = MB64_MAKE_SETTINGS;
-                        settings_menu_create();
-                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-                        mb64_menu_start_timer = 0;
-                        mb64_menu_end_timer = -1;
-                        mb64_menu_index = 0;
-                        animate_list_reset();
-                        break;
-                    default: //everything else places
-                        place_thing_action();
+                            break;
+                        // Open settings menu
+                        case OBJECT_TYPE_SETTINGS:
+                            mb64_menu_state = MB64_MAKE_SETTINGS;
+                            hide_toolbar();
+                            settings_menu_create();
+                            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                            break;
+                    }
                 }
-            } else if (gPlayer1Controller->buttonDown & A_BUTTON && cursorMoved) {
-                if (mb64_toolbar_index < 7) {
+            } else {
+                if (gPlayer1Controller->buttonPressed & A_BUTTON || ((gPlayer1Controller->buttonDown & A_BUTTON) && cursorMoved)) {
                     place_thing_action();
                 }
             }
@@ -4011,63 +3870,27 @@ void sb_loop(void) {
                 delete_tile_action(mb64_cursor_pos);
             }
 
-            if (gPlayer1Controller->buttonPressed & START_BUTTON && (mb64_toolbar_index < 7)) {
-                mb64_menu_start_timer = 0;
-                mb64_menu_end_timer = -1;
-                mb64_menu_index = 0;
-                mb64_menu_state = MB64_MAKE_TOOLBOX;
-                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-                animate_list_reset();
-            }
-
-            if ((gPlayer1Controller->buttonPressed & U_JPAD)&&(mb64_place_mode == MB64_PM_TILE)) {
-                if (mb64_id_selection < TILE_END_OF_FLIPPABLE) {
-                    play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
-                }
-                mb64_upsidedown_tile ^= 1;
-            }
-
-            if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-                mb64_rot_selection++;
-                mb64_rot_selection%=4;
-                updatePreviewObj = TRUE;
-            }
-
-            if (updatePreviewObj) {
-                delete_preview_object();
-            }
-
-            if (mb64_place_mode == MB64_PM_TILE) {
-                if (mb64_terrain_info_list[mb64_id_selection].terrain) {
-                    if (gPlayer1Controller->buttonPressed & L_JPAD) {
-                        mb64_mat_selection --;
-                    }
-                    if (gPlayer1Controller->buttonPressed & R_JPAD) {
-                        mb64_mat_selection ++;
-                    }
-                }
-                mb64_mat_selection = (mb64_mat_selection+NUM_MATERIALS_PER_THEME)%NUM_MATERIALS_PER_THEME;
-            }
-
-            if (mb64_prepare_level_screenshot) {
-                o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-            } else {
-                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-            }
+            // if (gPlayer1Controller->buttonPressed & START_BUTTON && (mb64_toolbar_index < 7)) {
+            //     mb64_menu_start_timer = 0;
+            //     mb64_menu_end_timer = -1;
+            //     mb64_menu_index = 0;
+            //     mb64_menu_state = MB64_MAKE_TOOLBOX;
+            //     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            //     animate_list_reset();
+            // }
 
             struct Object *spawnobjp = get_spawn_preview_object();
-            if (spawnobjp) {
-                if (mb64_prepare_level_screenshot) {
-                    spawnobjp->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-                } else {
-                    spawnobjp->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-                }  
+            if (mb64_prepare_level_screenshot) {
+                o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+                if (spawnobjp) spawnobjp->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+            } else {
+                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+                if (spawnobjp) spawnobjp->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             }
 
             update_boundary_wall();
             break;
         case MB64_MAKE_PLAY://PLAY MODE
-
             break;
         case MB64_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
             //TOOLBOX CONTROLS
@@ -4117,21 +3940,6 @@ void sb_loop(void) {
                     mb64_toolbox_x_offset = MIN(TOOLBOX_OFFSET_MIN,mb64_toolbox_x_offset+60);
                 }
             }
-
-            //TOOLBAR CONTROLS
-            if (gPlayer1Controller->buttonPressed & L_TRIG) {
-                mb64_toolbar_index--;
-                mb64_toolbox_transition_btn_render = FALSE;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-            if (gPlayer1Controller->buttonPressed & R_TRIG) {
-                mb64_toolbar_index++;
-                mb64_toolbox_transition_btn_render = FALSE;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-            mb64_toolbar_index = (mb64_toolbar_index+7)%7;
-
-            update_id_selection();
 
             if (mb64_ui_buttons[mb64_toolbox[mb64_toolbox_index]].multiObj) {
                 u32 selectedParam = mb64_toolbox_params[mb64_toolbox_index];
@@ -4197,12 +4005,12 @@ void sb_loop(void) {
             } else {
                 if (gPlayer1Controller->buttonPressed & A_BUTTON) {
                     if (mb64_trajectory_edit_index == MB64_TRAJECTORY_LENGTH - 1) {
-                        mb64_show_error_message("Maximum trajectory length reached! (max 50)");
+                        show_error("Maximum trajectory length reached! (max 50)");
                     // i fucking hate this, worst code ever. this hopefully won't have floating point inaccuracies
                     } else if (mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][1] == o->oPosX
                             && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][2] == o->oPosY
                             && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][3] == o->oPosZ) {
-                        mb64_show_error_message("");
+                        show_error("");
                     } else {
                         mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][0] = mb64_trajectory_edit_index;
                         mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][1] = o->oPosX;
@@ -4215,7 +4023,7 @@ void sb_loop(void) {
                     }
                 } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
                     if (mb64_trajectory_edit_index <= 1) {
-                        mb64_show_error_message("Nothing to delete!");
+                        show_error("Nothing to delete!");
                     } else {
                         mb64_trajectory_edit_index--;
                         mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][0] = -1;
@@ -4227,7 +4035,7 @@ void sb_loop(void) {
 
             if (gPlayer1Controller->buttonPressed & START_BUTTON) {
                 if (mb64_trajectory_edit_index == 1) {
-                    mb64_show_error_message("Trajectory is too short!");
+                    show_error("Trajectory is too short!");
                 } else {
                     mb64_menu_state = MB64_MAKE_MAIN;
                     generate_object_preview();
@@ -4278,11 +4086,10 @@ void sb_loop(void) {
             s8 pos[3];
             vec3_set(pos, mb64_cursor_pos[0], mb64_cursor_pos[1], mb64_cursor_pos[2]);
 
-            if (mb64_place_mode == MB64_PM_OBJ) {
+            if (mb64_place_mode != MB64_PM_TILE) {
                 struct mb64_object_info *info = &mb64_object_type_list[mb64_id_selection];
-
                 spawn_preview_object(pos, mb64_rot_selection, mb64_param_selection, info, bhvCurrPreviewObject);
-            } else if (mb64_place_mode == MB64_PM_TILE && mb64_id_selection == TILE_TYPE_CULL) {
+            } else if (mb64_id_selection == TILE_TYPE_CULL) {
                 spawn_preview_object(pos, mb64_rot_selection, 0, &mb64_object_type_list[OBJECT_TYPE_CULL_PREVIEW], bhvCurrPreviewObject);
             }
         }
