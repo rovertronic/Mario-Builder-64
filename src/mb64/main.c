@@ -3870,14 +3870,12 @@ void sb_loop(void) {
                 delete_tile_action(mb64_cursor_pos);
             }
 
-            // if (gPlayer1Controller->buttonPressed & START_BUTTON && (mb64_toolbar_index < 7)) {
-            //     mb64_menu_start_timer = 0;
-            //     mb64_menu_end_timer = -1;
-            //     mb64_menu_index = 0;
-            //     mb64_menu_state = MB64_MAKE_TOOLBOX;
-            //     play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-            //     animate_list_reset();
-            // }
+            if (gPlayer1Controller->buttonPressed & START_BUTTON && (mb64_place_mode != MB64_PM_ACTION)) {
+                mb64_menu_state = MB64_MAKE_TOOLBOX;
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                create_toolbox();
+                delete_preview_object();
+            }
 
             struct Object *spawnobjp = get_spawn_preview_object();
             if (mb64_prepare_level_screenshot) {
@@ -3893,8 +3891,9 @@ void sb_loop(void) {
         case MB64_MAKE_PLAY://PLAY MODE
             break;
         case MB64_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
-            //TOOLBOX CONTROLS
             delete_preview_object();
+            //TOOLBOX CONTROLS
+            break;
             if (mb64_joystick != 0) {
                 switch((mb64_joystick-1)%4) {
                     case 0:

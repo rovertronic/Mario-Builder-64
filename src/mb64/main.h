@@ -286,6 +286,7 @@ enum {
     MB64_MAKE_SCREENSHOT,
     MB64_MAKE_SELECT_DIALOG,
 };
+extern u8 mb64_menu_state;
 
 struct mb64_custom_theme {
     u8 mats[NUM_MATERIALS_PER_THEME];

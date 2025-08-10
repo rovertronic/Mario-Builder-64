@@ -130,6 +130,7 @@ enum AnimationTypes {
     ANIM_EASE_IN,
     ANIM_EASE_OUT,
     ANIM_BOUNCE_IN,
+    ANIM_LINEAR,
 };
 typedef struct {
     MenuComponent base;
@@ -184,16 +185,6 @@ typedef struct {
     u8 selectorType;
 } PageTitleComponent;
 
-typedef struct PageScrollComponent PageScrollComponent;
-typedef int (*PageScrollFunc)(PageScrollComponent *ps);
-struct PageScrollComponent {
-    MenuComponent base;
-    PageScrollFunc pageFunc;
-    s8 offset;
-    u8 width;
-    u8 direction;
-};
-
 typedef struct {
     MenuComponent base;
     u8 count;
@@ -245,7 +236,6 @@ enum MenuComponents {
     MENU_ANIMATED,
     MENU_RECT,
     MENU_MATRIX,
-    MENU_PAGE_SCROLL,
     MENU_PAGE_HANDLER,
     MENU_PAGE_TITLE,
     MENU_SELECTOR_2D,
@@ -262,7 +252,6 @@ union MenuComponentData {
     AnimatedComponent animated;
     PageHandlerComponent pageHandler;
     PageTitleComponent pageTitle;
-    PageScrollComponent pageScroll;
     MatrixComponent matrix;
     RectComponent rect;
     Selector2DComponent selector2D;
@@ -310,7 +299,6 @@ TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u
 MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);
 RectComponent        *init_rect_component(void *parent, u8 alpha, s16 x, s16 y, u8 width, u8 height);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
-PageScrollComponent  *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
 PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);
 SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
@@ -325,6 +313,7 @@ void component_animate_ease_in(AnimatedComponent *a, f32 offset, f32 multiplier,
 void component_animate_ease_out(AnimatedComponent *a, f32 accel, u8 timer, u8 direction);
 void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f32 initialVel, u8 direction);
 void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction);
+void component_animate_linear(AnimatedComponent *a, f32 offset, f32 target, f32 vel, u8 direction);
 void component_rect_do_fade(RectComponent *rc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
 
 void reset_menu(void);

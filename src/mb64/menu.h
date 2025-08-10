@@ -2,7 +2,6 @@
 
 #include "menu_engine.h"
 
-extern u8 mb64_menu_state;
 extern s16 mb64_menu_index;
 extern s16 mb64_menu_index_max;
 extern s8 mb64_toolbar_index;

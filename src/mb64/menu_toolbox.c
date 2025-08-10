@@ -11,6 +11,12 @@
 #include "actors/uibutton/header.h"
 
 AnimatedComponent *gToolbar;
+int gToolboxIndex = 0;
+
+u8 mb64_toolbar[9];
+u8 mb64_toolbar_params[9];
+u8 mb64_toolbox[18 * 5];
+u8 mb64_toolbox_params[18 * 5];
 
 MenuStyle toolbar_style = {
     .listOffsetSelected = TRUE
@@ -45,7 +51,7 @@ char *get_button_str(u32 buttonId) {
 }
 
 void render_button(int button, int param, int selected, s16 x, s16 y) {
-    s32 op = 255;//(selected ? 50 : 255);
+    s32 op = (selected ? 150 : 255);
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
 
@@ -67,8 +73,17 @@ void component_button_render(MenuComponent *m, s16 x, s16 y) {
     render_button(button->buttonID, button->buttonParam, gMenuState.selected, x, y);
 }
 
+void set_toolbar(int index, int id, int param) {
+    ListComponent *toolbar = get_first_child(gToolbar);
+    FrameComponent *button = get_first_child(component_list_get(toolbar, index));
+    button->buttonID = id;
+    button->buttonParam = param;
+    mb64_toolbar[index] = id;
+    mb64_toolbar_params[index] = param;
+}
+
 // Copy tile type of current cursor position to current toolbar slot
-int sample_block(FrameComponent *button) {
+int sample_block(int index) {
     int isObject = FALSE;
     int targetId;
     int targetBparam;
@@ -110,16 +125,13 @@ int sample_block(FrameComponent *button) {
             // Iterate over multilist
             for (u32 j = 0; j < buttonInfo->paramCount; j++) {
                 if (buttonInfo->idList[j] == targetId) {
-                    button->buttonParam = j;
-                    // the pain of nested loops
-                    button->buttonID = i;
+                    set_toolbar(index, i, j);
                     return TRUE;
                 }
             }
         } else if (buttonInfo->id == targetId) {
-            button->buttonParam = targetBparam;
             if (!isObject) mb64_mat_selection = targetBparam;
-            button->buttonID = i;
+            set_toolbar(index, i, targetBparam);
             return TRUE;
         }
     }
@@ -180,9 +192,10 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
 
     // Handle updating editor values and switching types with Dpad
     int dir = 0;
-    if (ACTIVE) {
+    int toolbarActive = ACTIVE && mb64_menu_state == MB64_MAKE_MAIN;
+    if (toolbarActive) {
         if (do_sample_buffer_check()) {
-            if (sample_block(curButton)) {
+            if (sample_block(toolbar->index)) {
                 play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
             }
         }
@@ -194,6 +207,7 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
         int param = buttonInfo->paramCount;
         if (param != 0 && dir) {
             curButton->buttonParam = (curButton->buttonParam + dir + param) % param;
+            mb64_toolbar_params[toolbar->index] = curButton->buttonParam;
             play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
         }
         // Set mb64_id_selection and the string to display
@@ -214,7 +228,7 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
             // Tile flipping
             int tileFlippable = (mb64_id_selection < TILE_END_OF_FLIPPABLE) && (mb64_place_mode == MB64_PM_TILE);
             if (tileFlippable) {
-                if (ACTIVE && gPlayer1Controller->buttonPressed & U_JPAD) {
+                if (toolbarActive && gPlayer1Controller->buttonPressed & U_JPAD) {
                     play_sound(SOUND_ACTION_SIDE_FLIP_UNK, gGlobalSoundSource);
                     mb64_upsidedown_tile ^= 1;
                 }
@@ -277,4 +291,223 @@ void hide_toolbar(void) {
 
 void show_toolbar(void) {
     component_animate_ease_in(gToolbar, -50.f, 0.4f, DIR_VERTICAL);
+}
+
+// This is the button that travels from the toolbox button you click to the toolbar
+FrameComponent *sAnimatedButton = NULL;
+
+// reuses buttonID and buttonParam fields
+#define targetIndex params[0].asBytes[2]
+#define frames params[0].asBytes[3]
+
+void component_animated_button_finish(void) {
+    set_toolbar(sAnimatedButton->targetIndex, sAnimatedButton->buttonID, sAnimatedButton->buttonParam);
+    dealloc_component(get_id(sAnimatedButton));
+    sAnimatedButton = NULL;
+}
+
+void component_animated_button_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    FrameComponent *f = (FrameComponent *)m;
+    int targetX = SCREEN_WIDTH/2 + (f->targetIndex - 4) * 32;
+    int targetY = 20 + 3;
+
+    f->frames--;
+    targetX += (m->xpos - targetX) * (f->frames / 8.f);
+    targetY += (m->ypos - targetY) * (f->frames / 8.f);
+    render_button(f->buttonID, f->buttonParam, TRUE, targetX, targetY);
+
+    if (!f->frames) {
+        component_animated_button_finish();
+    }
+}
+
+void create_animated_button(s16 x, s16 y, int index, int id, int param) {
+    if (sAnimatedButton) component_animated_button_finish();
+    sAnimatedButton = init_dynamic_component(gMenuRoot, component_animated_button_loop);
+    sAnimatedButton->buttonID = id;
+    sAnimatedButton->buttonParam = param;
+    sAnimatedButton->base.xpos = x;
+    sAnimatedButton->base.ypos = y;
+    sAnimatedButton->frames = 9;
+    sAnimatedButton->targetIndex = index;
+}
+
+AnimatedComponent *gToolbox;
+
+#define TOOLBOX_PAGE_GAP ((9 * 32) + 40)
+void toolbox_render_bg(UNUSED MenuComponent *m, s16 x, s16 y) {
+    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
+    create_dl_translation_matrix(MENU_MTX_NOPUSH, TOOLBOX_PAGE_GAP, 0, 0);
+    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
+void close_toolbox(void) {
+    dealloc_component(get_id(gToolbox));
+    gToolbox = NULL;
+    mb64_menu_state = MB64_MAKE_MAIN;
+
+    ListComponent *bar = get_first_child(gToolbar);
+    component_list_get(bar, 7)->disabled = FALSE;
+    component_list_get(bar, 8)->disabled = FALSE;
+}
+
+void toolbox_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    AnimatedComponent *a = (AnimatedComponent *)m;
+    if (!a->timer && ACTIVE && gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
+        component_animate_ease_out(a, 4.f, 12, DIR_VERTICAL);
+        a->onFinish = close_toolbox;
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    }
+}
+
+void toolbox_handle_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    AnimatedComponent *a = (AnimatedComponent *)m;
+    Selector2DComponent *box = get_first_child(m);
+
+    if (a->timer) return;
+
+    if (gPlayer1Controller->buttonPressed & (L_CBUTTONS | R_CBUTTONS)) {
+        if (box->index % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH) {
+            box->index -= TOOLBOX_PAGE_WIDTH;
+        } else {
+            box->index += TOOLBOX_PAGE_WIDTH;
+        }
+        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    }
+
+    if (box->index % box->columns >= 9) {
+        if (!a->offset) {
+            component_animate_linear(a, 0.f, -TOOLBOX_PAGE_GAP, -50.f, DIR_HORIZONTAL);
+        }
+    } else if (a->offset) {
+        component_animate_linear(a, -TOOLBOX_PAGE_GAP, 0.f, 50.f, DIR_HORIZONTAL);
+    }
+}
+
+static u8 sSelectedRow = 0;
+static u8 sSelectedColumn = 0;
+static u8 sPrevSelectedRow = 0;
+static u8 sPrevSelectedColumn = 0;
+static u8 sSelectedTimer = 0;
+
+static s16 sSelectedX = 0;
+static s16 sSelectedY = 0;
+
+void toolbox_render_button(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
+    x += (column - 4) * 32;
+    y -= (row - 2) * 32;
+    if (column >= 9) x += 40;
+
+    int index = column + row * s->columns;
+    if (selected) {
+        gToolboxIndex = index;
+        sSelectedX = x;
+        sSelectedY = y;
+        if (mb64_ui_buttons[mb64_toolbox[index]].multiObj) {
+            int maxParam = mb64_ui_buttons[mb64_toolbox[index]].paramCount;
+            int dir = get_input(MENU_INPUT_DPAD, DIR_HORIZONTAL);
+            mb64_toolbox_params[index] = (mb64_toolbox_params[index] + maxParam + dir) % maxParam;
+            if (dir) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        }
+    }
+
+    // Recreate list effect of animating the selected button
+    if (sPrevSelectedColumn == column && sPrevSelectedRow == row) {
+        y += (3 - sSelectedTimer);
+    }
+    if (sSelectedColumn == column && sSelectedRow == row) {
+        sSelectedTimer = MIN(sSelectedTimer + 1, 3);
+        y += sSelectedTimer;
+    } else if (selected) {
+        sSelectedTimer = 0;
+        sPrevSelectedColumn = sSelectedColumn;
+        sPrevSelectedRow = sSelectedRow;
+        sSelectedColumn = column;
+        sSelectedRow = row;
+    }
+
+    render_button(mb64_toolbox[index], mb64_toolbox_params[index], selected, x, y);
+}
+
+void toolbox_select_button(Selector2DComponent *s, u8 column, u8 row) {
+    if (mb64_toolbox[s->index] == MB64_BUTTON_BLANK) return;
+    play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
+
+    ListComponent *toolbar = get_first_child(gToolbar);
+    create_animated_button(sSelectedX, sSelectedY + 3, toolbar->index, mb64_toolbox[s->index], mb64_toolbox_params[s->index]);
+}
+
+void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
+    FrameComponent *f = (FrameComponent *)m;
+    Selector2DComponent *box = get_parent(f);
+    if (mb64_toolbox[box->index] == MB64_BUTTON_BLANK) return;
+
+    x = sSelectedX + 18;
+    y = sSelectedY - 3;
+
+    // Render name for selected button
+    char *buttonName = get_button_str(mb64_toolbox[box->index]);
+    struct mb64_ui_button_type *buttonInfo = &mb64_ui_buttons[mb64_toolbox[box->index]];
+    u32 isMulti = buttonInfo->multiObj;
+
+    char stringBuf[50];
+    if (isMulti) y += 8;
+    s16 lowerX = x;
+
+    s32 strLen = get_string_width_ascii(buttonName);
+    s32 lowerStrLen = 0;
+
+    if (isMulti) {
+        u32 objId = buttonInfo->idList[mb64_toolbox_params[box->index]];
+        sprintf(stringBuf, "< %s >", mb64_object_type_list[objId].name);
+        lowerStrLen = get_string_width_ascii(stringBuf);
+    }
+
+    if ((lowerX + lowerStrLen > SCREEN_WIDTH - 5) || (x + strLen > SCREEN_WIDTH - 5)) {
+        lowerX -= lowerStrLen + 40;
+        x -= strLen + 40;
+    }
+
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPFillRectangle(gDisplayListHead++, x - 5, SCREEN_HEIGHT - (y + 15), x + 5 + strLen, SCREEN_HEIGHT - (y - 1));
+    if (isMulti) {
+        gDPFillRectangle(gDisplayListHead++, lowerX - 5, SCREEN_HEIGHT - (y - 1), lowerX + 5 + lowerStrLen, SCREEN_HEIGHT - (y - 17));
+        menu_text_display(stringBuf, lowerX, y - 15, TEXT_YELLOW, TEXT_LEFT, 255);
+    }
+    menu_text_display(buttonName, x, y, TEXT_YELLOW, TEXT_LEFT, 255);
+}
+
+void create_toolbox(void) {
+    gToolbox = alloc_component(gMenuRoot, MENU_ANIMATED);
+    component_set_pos(gToolbox, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
+    component_animate_ease_in(gToolbox, 150.f, 0.4f, DIR_VERTICAL);
+    gToolbox->base.prerender = toolbox_loop;
+
+    AnimatedComponent *scroller = alloc_component(gToolbox, MENU_ANIMATED);
+    scroller->base.prerender = toolbox_handle_scroll;
+
+    Selector2DComponent *box = init_selector_2d_component(scroller, 0, 0, 18, 5, toolbox_render_button, toolbox_select_button);
+    box->base.prerender = toolbox_render_bg;
+
+    box->index = gToolboxIndex;
+    if (box->index % 18 >= 9) {
+        scroller->direction = DIR_HORIZONTAL;
+        scroller->offset = -TOOLBOX_PAGE_GAP;
+    }
+
+    init_dynamic_component(box, toolbox_render_text);
+
+    ListComponent *bar = get_first_child(gToolbar);
+    component_list_get(bar, 7)->disabled = TRUE;
+    component_list_get(bar, 8)->disabled = TRUE;
+}
+
+void reset_toolbox_state(void) {
+    gToolboxIndex = 0;
 }

@@ -465,6 +465,15 @@ void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVe
     a->velocity = initialVel;
 }
 
+void component_animate_linear(AnimatedComponent *a, f32 offset, f32 target, f32 vel, u8 direction) {
+    a->animType = ANIM_LINEAR;
+    a->offset = offset;
+    a->velocity = vel;
+    a->accel = target;
+    a->timer = 1;
+    a->direction = direction;
+}
+
 void component_animated_render(MenuComponent *m, s16 x, s16 y) {
     AnimatedComponent *a = (AnimatedComponent *)m;
 
@@ -490,6 +499,14 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
                     component_reset_animation(a);
                 }
                 break;
+            case ANIM_LINEAR:
+                a->offset += a->velocity;
+                if ((a->offset - a->accel) * a->velocity > 0.f) {
+                    int target = a->accel;
+                    component_reset_animation(a);
+                    a->offset = target;
+                }
+                break;
         }
         if (a->timer == 0 && a->onFinish) {
             ComponentUpdateFunc onFinish = a->onFinish;
@@ -510,7 +527,7 @@ void component_animated_render(MenuComponent *m, s16 x, s16 y) {
             break;
     }
 
-    gMenuState.inactive = (a->timer > 0);
+    if (a->timer > 0) gMenuState.inactive = TRUE;
     render_child(m, x + m->xpos, y + m->ypos);
 }
 
@@ -738,50 +755,6 @@ void component_page_title_render(MenuComponent *m, s16 x, s16 y) {
         menu_text_display(selector_get_str(&pt->string, pt->selectorType, (value + dir + pt->scroll.count) % pt->scroll.count, buf),
                           x + offset + scroll_get_extra_offset(&pt->scroll), y, TEXT_WHITE, TEXT_CENTER, 255);
     }
-    pop_scissor();
-}
-
-// ================ PAGE SCROLL ===================
-// Currently unused
-
-PageScrollComponent *init_page_scroll(void *parent, PageScrollFunc func, u8 width, u8 direction) {
-    PageScrollComponent *ps = alloc_component(parent, MENU_PAGE_SCROLL);
-    ps->pageFunc = func;
-    ps->width = width;
-    ps->direction = direction;
-    return ps;
-}
-
-void component_page_scroll_render(MenuComponent *m, s16 x, s16 y) {
-    PageScrollComponent *ps = (PageScrollComponent *)m;
-
-    x += m->xpos;
-    y += m->ypos;
-
-    s8 targetOffset = ps->pageFunc(ps) * 5;
-
-    if (ps->offset != targetOffset) {
-        gMenuState.inactive = TRUE;
-        if (ps->offset < targetOffset) {
-            ps->offset++;
-        } else {
-            ps->offset--;
-        }
-    }
-
-    switch (ps->direction) {
-        case DIR_HORIZONTAL:
-            push_scissor(x - ps->width, 0, x + ps->width, SCREEN_HEIGHT);
-            x -= ps->offset * ps->width * 2 / 5;
-            break;
-        case DIR_VERTICAL:
-            push_scissor(0, y - ps->width, SCREEN_WIDTH, y + ps->width);
-            y += ps->offset * ps->width * 2 / 5;
-            break;
-    }
-
-    render_child(m, x, y);
-
     pop_scissor();
 }
 
@@ -1058,7 +1031,6 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_MATRIX] = component_matrix_render,
     [MENU_PAGE_HANDLER] = component_page_handler_render,
     [MENU_PAGE_TITLE] = component_page_title_render,
-    [MENU_PAGE_SCROLL] = component_page_scroll_render,
     [MENU_SELECTOR_2D] = component_2d_render,
     [MENU_KEYBOARD] = component_keyboard_render,
 };
@@ -1100,6 +1072,7 @@ void reset_menu(void) {
     sActiveError = NULL;
     reset_settings_menu_state();
     reset_main_menu_state();
+    reset_toolbox_state();
     init_root();
 }
 

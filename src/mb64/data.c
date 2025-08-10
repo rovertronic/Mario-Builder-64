@@ -1391,8 +1391,6 @@ u8 mb64_toolbar_defaults[9] = {
     MB64_BUTTON_SETTINGS,
 };
 
-u8 mb64_toolbar[9];
-u8 mb64_toolbar_params[9];
 f32 mb64_toolbar_y_anim[9] = {
     0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
 };
@@ -1407,8 +1405,6 @@ f32 mb64_toolbox_transition_progress;
 s32 mb64_toolbox_x_offset = 0;
 
 // went a bit Define Crazy over here, im just quirky like that
-u8 mb64_toolbox[TOOLBOX_SIZE];
-u8 mb64_toolbox_params[TOOLBOX_SIZE];
 //Different toolboxes for different game styles
 #define _ MB64_BUTTON_BLANK
 u8 mb64_toolbox_btcm[TOOLBOX_SIZE] = {
