@@ -219,8 +219,8 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
             if (buttonInfo->names) {
                 yellowStr = buttonInfo->names[curButton->buttonParam];
             }
+            mb64_param_selection = curButton->buttonParam;
         }
-        mb64_param_selection = curButton->buttonParam;
     } else {
         mb64_id_selection = buttonInfo->id;
         // Tiles with materials
@@ -370,10 +370,10 @@ void toolbox_handle_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (a->timer) return;
 
     if (gPlayer1Controller->buttonPressed & (L_CBUTTONS | R_CBUTTONS)) {
-        if (box->index % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH) {
-            box->index -= TOOLBOX_PAGE_WIDTH;
+        if (box->index % 18 >= 9) {
+            box->index -= 9;
         } else {
-            box->index += TOOLBOX_PAGE_WIDTH;
+            box->index += 9;
         }
         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
     }

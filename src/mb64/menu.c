@@ -27,8 +27,6 @@ extern u8 gDialogCharWidths[256];
 u8 mb64_menu_state = MB64_MAKE_MAIN;
 s16 mb64_menu_index = 0;
 s16 mb64_menu_index_max = 1;
-s8 mb64_toolbar_index = 0;
-s8 mb64_toolbox_index = 0;
 s16 mb64_tip_timer = 0;
 
 char *mb64_topleft_message = NULL;
@@ -492,128 +490,11 @@ void draw_mb64_menu(void) {
     //TOOLBOX
     switch (mb64_menu_state) {
         case MB64_MAKE_MAIN:
-            mb64_render_topleft_text();
             mb64_render_coord_display();
-            break;
-
-        case MB64_MAKE_TOOLBOX:
-            // In/out animation
-            if (mb64_menu_start_timer != -1) {
-                animate_menu_ease_in(mb64_menu_title_vels, 150.f, -10.f, 0.35f, mb64_menu_start_timer == 0);
-                if (mb64_menu_start_timer++ > 10) {
-                    mb64_menu_start_timer = -1;
-                }
-            } else if (mb64_menu_end_timer != -1) {
-                animate_menu_generic(mb64_menu_title_vels, -10.f, 0.f, 4.f, mb64_menu_end_timer == 0);
-                mb64_menu_end_timer++;
-                mb64_joystick = 0;
-            } else {
-                if (gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
-                    mb64_menu_end_timer = 0;
-                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-                }
-            }
-            f32 yOff = mb64_menu_title_vels[0];
-
-            create_dl_translation_matrix(MENU_MTX_PUSH, 19 + 142, 235 - 80 +yOff, 0);
-            gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-            gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-            gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-            animate_list_update(mb64_menu_list_offsets, ARRAY_COUNT(mb64_menu_list_offsets), mb64_toolbox_index);
-
-            for (s32 i = 0; i < (s32)sizeof(mb64_toolbox); i++) {
-                s32 op = 255;
-                if (i == mb64_toolbox_index) {
-                    op = 100;
-                }
-                create_dl_translation_matrix(MENU_MTX_PUSH, GET_TOOLBOX_X(i), GET_TOOLBOX_Y(i) + 4*mb64_menu_list_offsets[i] + yOff, 0);
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-
-                Gfx *mat = get_button_tex(mb64_toolbox[i], mb64_toolbox_params[i]);
-
-                gSPDisplayList(gDisplayListHead++, mat);//texture
-                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);    
-            }
-
-            if (mb64_toolbox_transition_btn_render) {
-                //f32 dist = sqrtf(sqr(mb64_toolbox_transition_btn_tx - mb64_toolbox_transition_btn_x) + sqr(mb64_toolbox_transition_btn_ty - mb64_toolbox_transition_btn_y));
-                //f32 multiplier = MAX(0.5f - (dist * 0.01f), 0.2f);
-                //mb64_toolbox_transition_btn_x = approach_f32_asymptotic(mb64_toolbox_transition_btn_x, mb64_toolbox_transition_btn_tx, multiplier);
-                //mb64_toolbox_transition_btn_y = approach_f32_asymptotic(mb64_toolbox_transition_btn_y, mb64_toolbox_transition_btn_ty, multiplier);
-
-                create_dl_translation_matrix(MENU_MTX_PUSH, mb64_toolbox_transition_btn_tx, mb64_toolbox_transition_btn_ty, 0);
-                gSPDisplayList(gDisplayListHead++, mb64_toolbox_transition_btn_old_gfx);//old texture
-                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-                f32 x = smoothstep(mb64_toolbox_transition_btn_x,mb64_toolbox_transition_btn_tx,mb64_toolbox_transition_progress);
-                f32 y = smoothstep(mb64_toolbox_transition_btn_y,mb64_toolbox_transition_btn_ty,mb64_toolbox_transition_progress);
-
-                create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
-                gSPDisplayList(gDisplayListHead++, mb64_toolbox_transition_btn_gfx);//texture
-                gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
-                gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-
-                mb64_toolbox_transition_progress += 0.08f;
-                if (mb64_toolbox_transition_progress > 1.0f) {
-                    mb64_toolbox_transition_progress = 1.0f;
-                }
-            }
-            gSPDisplayList(gDisplayListHead++, &mat_revert_b_btn_check);
-
-            if (mb64_toolbox_x_offset == TOOLBOX_OFFSET_MIN) {
-                print_maker_string_ascii(310 + sins(gGlobalTimer*0x300)*2.5f, 147+yOff, ">", MB64_TEXT_WHITE);
-            }
-            if (mb64_toolbox_x_offset == TOOLBOX_OFFSET_MAX) {
-                print_maker_string_ascii(7 - sins(gGlobalTimer*0x300)*2.5f, 147+yOff, "<", MB64_TEXT_WHITE);
-            }
-
-            s32 strx = GET_TOOLBOX_X(mb64_toolbox_index) + 20;
-            s32 lowerstrx = strx;
-            s32 stry = GET_TOOLBOX_Y(mb64_toolbox_index) - 5 + yOff + 4*mb64_menu_list_offsets[mb64_toolbox_index];
-
-            if (mb64_toolbox[mb64_toolbox_index] != MB64_BUTTON_BLANK) {
-                u32 isMulti = mb64_ui_buttons[mb64_toolbox[mb64_toolbox_index]].multiObj;
-                char *buttonName = get_button_str(mb64_toolbox[mb64_toolbox_index]);
-                char stringBuf[50];
-                if (isMulti) stry += 8;
-
-                s32 strLen = get_string_width_ascii(buttonName);
-                s32 lowerStrLen = 0;
-
-                if (isMulti) {
-                    u32 objId = mb64_ui_buttons[mb64_toolbox[mb64_toolbox_index]].idList[mb64_toolbox_params[mb64_toolbox_index]];
-                    sprintf(stringBuf, "< %s >", mb64_object_type_list[objId].name);
-                    lowerStrLen = get_string_width_ascii(stringBuf);
-                }
-
-                if ((lowerstrx + lowerStrLen > SCREEN_WIDTH - 5) || (strx + strLen > SCREEN_WIDTH - 5)) {
-                    lowerstrx -= lowerStrLen+45;
-                    strx -= strLen+45;
-                }
-
-                gDPPipeSync(gDisplayListHead++);
-                gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-                gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
-                gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-                gDPFillRectangle(gDisplayListHead++, strx-5, 240-stry-14, strx + strLen + 5, 240-stry+1);
-                if (isMulti) {
-                    gDPFillRectangle(gDisplayListHead++, lowerstrx-5, 240-stry+1, lowerstrx + lowerStrLen + 5, 240-stry+16);
-                    print_maker_string_ascii(lowerstrx, stry-15, stringBuf, MB64_TEXT_YELLOW);
-                }
-                print_maker_string_ascii(strx, stry, buttonName, MB64_TEXT_YELLOW);
-            }
-
-            break;
-
-        case MB64_MAKE_SETTINGS:
             break;
 
         case MB64_MAKE_TRAJECTORY:
             print_maker_string(20,210,mb64_txt_recording,TRUE);
-            mb64_render_topleft_text();
             mb64_render_coord_display();
             break;
 
@@ -637,42 +518,6 @@ void draw_mb64_menu(void) {
             }
             break;
 
-    }
-
-    if ((mb64_menu_state != MB64_MAKE_TRAJECTORY)&&(mb64_menu_state != MB64_MAKE_SCREENSHOT)) {
-        s32 currentX = 15;
-        char *buttonName = get_button_str(mb64_toolbar[mb64_toolbar_index]);
-        print_maker_string_ascii(currentX,45,buttonName,MB64_TEXT_WHITE);
-        currentX += get_string_width_ascii(buttonName) + 10;
-
-        char *yellowStr = NULL;
-        if (mb64_place_mode == MB64_PM_OBJ) {
-            if (mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].multiObj) {
-                yellowStr = mb64_object_type_list[mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].idList[mb64_toolbar_params[mb64_toolbar_index]]].name;
-            } else {
-                if (mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].names) {
-                    yellowStr = mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].names[mb64_toolbar_params[mb64_toolbar_index]];
-                }
-            }
-        } else if ((mb64_place_mode == MB64_PM_TILE) && mb64_terrain_info_list[mb64_id_selection].terrain) {
-            yellowStr = TILE_MATDEF(mb64_mat_selection).name;
-
-            if (mb64_id_selection < TILE_END_OF_FLIPPABLE) {
-                if (mb64_upsidedown_tile) {
-                    print_maker_string_ascii(currentX,45,"(|)",MB64_TEXT_WHITE);
-                } else {
-                    print_maker_string_ascii(currentX,45,"(^)",MB64_TEXT_WHITE);
-                }
-                currentX += 25;
-            }
-        }
-        if (yellowStr) {
-            currentX += 15;
-            print_maker_string_ascii(currentX,45,"<",MB64_TEXT_YELLOW);
-            print_maker_string_ascii(currentX + 20,45,yellowStr,MB64_TEXT_YELLOW);
-            currentX += get_string_width_ascii(yellowStr) + 30;
-            print_maker_string_ascii(currentX,45,">",MB64_TEXT_YELLOW);
-        }
     }
 }
 

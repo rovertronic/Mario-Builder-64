@@ -1078,7 +1078,7 @@ struct ExclamationBoxContents sExclamationBoxContents_vanilla[] = {
     { 0, MODEL_NONE,               bhvTenCoinsSpawn,   3, FALSE, 10},
 };
 
-/*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                 Coins/Objs/Scale/Params  Anims   Display Func    Sound*/
+/*  Object Type                  Name                       Button GFX              Behavior           Y Offset     Model                      Flags                                  Coins/Objs/Scale  Anims   Display Func    Sound*/
 struct mb64_object_info mb64_object_type_list[] = {
 /* OBJECT_TYPE_SETTINGS */      {"Level Settings",          mat_b_btn_settings},
 /* OBJECT_TYPE_1 */             {" ",                       mat_b_btn_settings}, // previously screenshot
@@ -1391,23 +1391,9 @@ u8 mb64_toolbar_defaults[9] = {
     MB64_BUTTON_SETTINGS,
 };
 
-f32 mb64_toolbar_y_anim[9] = {
-    0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
-};
-u8 mb64_toolbox_transition_btn_render = FALSE;
-f32 mb64_toolbox_transition_btn_x;
-f32 mb64_toolbox_transition_btn_y;
-f32 mb64_toolbox_transition_btn_tx;
-f32 mb64_toolbox_transition_btn_ty;
-Gfx * mb64_toolbox_transition_btn_gfx;
-Gfx * mb64_toolbox_transition_btn_old_gfx;
-f32 mb64_toolbox_transition_progress;
-s32 mb64_toolbox_x_offset = 0;
-
-// went a bit Define Crazy over here, im just quirky like that
 //Different toolboxes for different game styles
 #define _ MB64_BUTTON_BLANK
-u8 mb64_toolbox_btcm[TOOLBOX_SIZE] = {
+u8 mb64_toolbox_btcm[18 * 5] = {
     MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, MB64_BUTTON_ISCORNER,
     MB64_BUTTON_GOOMBA, MB64_BUTTON_BOBOMB, MB64_BUTTON_CHUCKYA, MB64_BUTTON_KOOPA, MB64_BUTTON_LAKITU, MB64_BUTTON_FLYGUY, MB64_BUTTON_SNUFIT, MB64_BUTTON_THWOMP, MB64_BUTTON_WHOMP,
 
@@ -1424,7 +1410,7 @@ u8 mb64_toolbox_btcm[TOOLBOX_SIZE] = {
     MB64_BUTTON_SPAWN, MB64_BUTTON_SMALL_BOX, MB64_BUTTON_POWER, _, _, _, _, _, _,
 };
 
-u8 mb64_toolbox_vanilla[TOOLBOX_SIZE] = {
+u8 mb64_toolbox_vanilla[18 * 5] = {
     MB64_BUTTON_TERRAIN, MB64_BUTTON_SLAB, MB64_BUTTON_SLOPE, MB64_BUTTON_CORNER, MB64_BUTTON_ICORNER, MB64_BUTTON_VSLAB, MB64_BUTTON_SSLOPE, MB64_BUTTON_SCORNER, MB64_BUTTON_ISCORNER,
     MB64_BUTTON_GOOMBA, MB64_BUTTON_BOBOMB, MB64_BUTTON_CHUCKYA, MB64_BUTTON_KOOPA, MB64_BUTTON_LAKITU, MB64_BUTTON_FLYGUY, MB64_BUTTON_SNUFIT, MB64_BUTTON_THWOMP, MB64_BUTTON_WHOMP,
 

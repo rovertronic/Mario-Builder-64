@@ -483,42 +483,8 @@ extern struct ExclamationBoxContents sExclamationBoxContents_vanilla[];
 extern struct mb64_object_info mb64_object_type_list[];
 extern struct mb64_ui_button_type mb64_ui_buttons[];
 
-extern u8 mb64_toolbar_defaults[9];
-extern u8 mb64_toolbar[9];
-extern u8 mb64_toolbar_params[9];
-extern f32 mb64_toolbar_y_anim[9];
-extern u8 mb64_toolbox_transition_btn_render;
-extern f32 mb64_toolbox_transition_btn_x;
-extern f32 mb64_toolbox_transition_btn_y;
-extern f32 mb64_toolbox_transition_btn_tx;
-extern f32 mb64_toolbox_transition_btn_ty;
-extern Gfx * mb64_toolbox_transition_btn_gfx;
-extern Gfx * mb64_toolbox_transition_btn_old_gfx;
-extern f32 mb64_toolbox_transition_progress;
-extern s32 mb64_toolbox_x_offset;
-
-#define TOOLBOX_PAGE_WIDTH 9
-#define TOOLBOX_NUM_PAGES 2
-
-#define TOOLBOX_WIDTH (TOOLBOX_PAGE_WIDTH * TOOLBOX_NUM_PAGES)
-#define TOOLBOX_HEIGHT 5
-
-// gap between the pages
-#define TOOLBOX_PAGE_OFFSET 30
-#define TOOLBOX_SIZE (TOOLBOX_WIDTH * TOOLBOX_HEIGHT)
-
-// X offset based on scroll
-#define TOOLBOX_OFFSET_MIN 34
-#define TOOLBOX_OFFSET_MAX ((TOOLBOX_OFFSET_MIN - (32*TOOLBOX_PAGE_WIDTH)) - TOOLBOX_PAGE_OFFSET)
-
-// macros to get position of a certain toolbox position
-#define GET_TOOLBOX_X(i) (mb64_toolbox_x_offset + (((i) % TOOLBOX_WIDTH)*32) + ((i) % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH ? TOOLBOX_PAGE_OFFSET : 0))
-#define GET_TOOLBOX_Y(i) (220 - (((i) / TOOLBOX_WIDTH)*32))
-
-extern u8 mb64_toolbox[TOOLBOX_SIZE];
-extern u8 mb64_toolbox_params[TOOLBOX_SIZE];
-extern u8 mb64_toolbox_btcm[TOOLBOX_SIZE];
-extern u8 mb64_toolbox_vanilla[TOOLBOX_SIZE];
+extern u8 mb64_toolbox_btcm[18 * 5];
+extern u8 mb64_toolbox_vanilla[18 * 5];
 extern u8 seq_musicmenu_array[];
 extern u8 mb64_envfx_table[];
 extern u8 mb64_boundary_table[];

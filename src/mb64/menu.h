@@ -4,8 +4,6 @@
 
 extern s16 mb64_menu_index;
 extern s16 mb64_menu_index_max;
-extern s8 mb64_toolbar_index;
-extern s8 mb64_toolbox_index;
 extern s16 mb64_tip_timer;
 
 extern s16 mb64_menu_start_timer;
@@ -26,5 +24,13 @@ enum {
 };
 
 
+extern u8 mb64_toolbar[9];
+extern u8 mb64_toolbar_params[9];
+extern u8 mb64_toolbox[18 * 5];
+extern u8 mb64_toolbox_params[18 * 5];
+
+extern u8 mb64_toolbar_defaults[9];
+extern u8 mb64_toolbox_btcm[18 * 5];
+extern u8 mb64_toolbox_vanilla[18 * 5];
 
 extern AnimatedComponent *gToolbar;

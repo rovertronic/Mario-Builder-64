@@ -2790,12 +2790,8 @@ void place_object(s8 pos[3]) {
         mb64_menu_state = MB64_MAKE_SELECT_DIALOG;
         mb64_object_data[mb64_object_count].bparam = 0;
         mb64_dialog_edit_ptr = &mb64_object_data[mb64_object_count];
-    } else if (!mb64_ui_buttons[mb64_toolbar[mb64_toolbar_index]].multiObj) {
-        // BehParam2 Object
-        mb64_object_data[mb64_object_count].bparam = mb64_param_selection;
     } else {
-        // Multi Object
-        mb64_object_data[mb64_object_count].bparam = 0;
+        mb64_object_data[mb64_object_count].bparam = mb64_param_selection;
     }
 
     if (mb64_id_selection == OBJECT_TYPE_MONEYBAG) {
@@ -3344,7 +3340,6 @@ void reload_bg(void) {
 void sb_init(void) {
     struct Object *spawn_obj;
 
-    mb64_toolbar_index = 0;
     reload_bg();
     reload_boundary_and_gfx();
 
@@ -3888,102 +3883,8 @@ void sb_loop(void) {
 
             update_boundary_wall();
             break;
-        case MB64_MAKE_PLAY://PLAY MODE
-            break;
         case MB64_MAKE_TOOLBOX: //MAKE MODE TOOLBOX
             delete_preview_object();
-            //TOOLBOX CONTROLS
-            break;
-            if (mb64_joystick != 0) {
-                switch((mb64_joystick-1)%4) {
-                    case 0:
-                        mb64_toolbox_index--;
-                        if ((mb64_toolbox_index+TOOLBOX_WIDTH) % TOOLBOX_WIDTH == TOOLBOX_WIDTH-1) {
-                            mb64_toolbox_index += TOOLBOX_WIDTH;
-                        }
-                    break;
-                    case 1:
-                        mb64_toolbox_index+=TOOLBOX_WIDTH;
-                    break;
-                    case 2:
-                        mb64_toolbox_index++;
-                        if (mb64_toolbox_index % TOOLBOX_WIDTH == 0) {
-                            mb64_toolbox_index -= TOOLBOX_WIDTH;
-                        }
-                    break;
-                    case 3:
-                        mb64_toolbox_index-=TOOLBOX_WIDTH;
-                    break;
-                }
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-
-            // C button left and right: Change box
-            if (gPlayer1Controller->buttonPressed & (L_CBUTTONS | R_CBUTTONS)) {
-                if (mb64_toolbox_index % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH) {
-                    mb64_toolbox_index -= TOOLBOX_PAGE_WIDTH;
-                } else {
-                    mb64_toolbox_index += TOOLBOX_PAGE_WIDTH;
-                }
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-
-            mb64_toolbox_index = (mb64_toolbox_index+sizeof(mb64_toolbox))%sizeof(mb64_toolbox);
-
-            if (mb64_toolbox_index % TOOLBOX_WIDTH >= TOOLBOX_PAGE_WIDTH) {
-                if (mb64_toolbox_x_offset > TOOLBOX_OFFSET_MAX) {
-                    mb64_toolbox_x_offset = MAX(TOOLBOX_OFFSET_MAX,mb64_toolbox_x_offset-60);
-                }
-            } else {
-                if (mb64_toolbox_x_offset < TOOLBOX_OFFSET_MIN) {
-                    mb64_toolbox_x_offset = MIN(TOOLBOX_OFFSET_MIN,mb64_toolbox_x_offset+60);
-                }
-            }
-
-            if (mb64_ui_buttons[mb64_toolbox[mb64_toolbox_index]].multiObj) {
-                u32 selectedParam = mb64_toolbox_params[mb64_toolbox_index];
-                u32 maxParam = mb64_ui_buttons[mb64_toolbox[mb64_toolbox_index]].paramCount;
-                if (gPlayer1Controller->buttonPressed & L_JPAD) {
-                    selectedParam += maxParam - 1;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                } else if (gPlayer1Controller->buttonPressed & R_JPAD) {
-                    selectedParam++;
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-                }
-                mb64_toolbox_params[mb64_toolbox_index] = (selectedParam % maxParam);
-            }
-            //PRESS A TO MOVE FROM TOOLBOX TO TOOLBAR
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                //You can not put a blank button into the toolbox
-                if ( mb64_toolbox[mb64_toolbox_index] != MB64_BUTTON_BLANK) {
-
-                    mb64_toolbox_transition_btn_render = TRUE;
-                    mb64_toolbox_transition_progress = 0.0f;
-                    // current pos
-                    mb64_toolbox_transition_btn_x = GET_TOOLBOX_X(mb64_toolbox_index);
-                    mb64_toolbox_transition_btn_y = GET_TOOLBOX_Y(mb64_toolbox_index)-5;
-                    // target pos
-                    mb64_toolbox_transition_btn_tx = 34.0f+(mb64_toolbar_index*32.0f);
-                    mb64_toolbox_transition_btn_ty = 25.0f;
-                    mb64_toolbox_transition_btn_old_gfx = get_button_tex(mb64_toolbar[mb64_toolbar_index], mb64_toolbar_params[mb64_toolbar_index]);
-                    mb64_toolbox_transition_btn_gfx = get_button_tex(mb64_toolbox[mb64_toolbox_index], mb64_toolbox_params[mb64_toolbox_index]);
-
-                    mb64_toolbar[mb64_toolbar_index] = mb64_toolbox[mb64_toolbox_index];
-                    mb64_toolbar_params[mb64_toolbar_index] = mb64_param_selection = mb64_toolbox_params[mb64_toolbox_index];
-
-                    play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
-                } else {
-                    //error sound
-                    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-                }
-            }
-
-            if (mb64_menu_end_timer == 10) {
-                mb64_menu_state = MB64_MAKE_MAIN;
-                mb64_toolbox_transition_btn_render = FALSE;
-            }
-            break;
-        case MB64_MAKE_SETTINGS: //settings
             break;
         case MB64_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();
