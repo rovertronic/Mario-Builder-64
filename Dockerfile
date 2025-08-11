@@ -21,7 +21,6 @@ ENV VIRTUAL_ENV="/opt/pyenv"
 RUN useradd -m -G wheel builder && \
     echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-# Install yay AUR helper and mips64-elf-binutils from AUR
 WORKDIR /tmp
 RUN git clone https://aur.archlinux.org/yay.git yay
 RUN chown -R builder:builder yay
@@ -31,7 +30,6 @@ RUN sudo -u builder makepkg -si --noconfirm
 RUN sudo -u builder yay -S --noconfirm mips64-elf-newlib
 RUN sudo -u builder yay -S --noconfirm mips64-elf-toolchain
 RUN sudo -u builder yay -S --noconfirm mips64-elf-binutils
-# RUN sudo -u builder yay -S --noconfirm mips64-elf-gcc
 
 RUN mkdir /sm64
 WORKDIR /sm64
