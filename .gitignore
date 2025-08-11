@@ -39,7 +39,6 @@
 /tools/ddump/*
 
 # python cache in tools/
-.venv
 /tools/__pycache__/*
 
 # Text editor remnants
