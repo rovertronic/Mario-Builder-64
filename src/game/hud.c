@@ -779,8 +779,6 @@ void render_hud_coins(void) {
 void render_hud_stars(void) {
     u8 current_stars = mb64_play_stars;
     u8 max_stars = mb64_play_stars_max;
-
-    if (gHudFlash == HUD_FLASH_STARS && gGlobalTimer & 0x8) return;
     s8 showX = 1;//(gHudDisplay.stars < 100);
 
     if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
@@ -964,7 +962,7 @@ void render_hud(void) {
 
         gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
 
-        if ((mb64_mode == MB64_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(gMenuMode == -1)&&(gDialogID != 1)) {
+        if ((mb64_mode == MB64_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(sCurrPlayMode != PLAY_MODE_PAUSED)&&(gDialogID != 1)) {
 
 #ifndef DISABLE_LIVES
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {

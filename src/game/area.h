@@ -168,7 +168,6 @@ extern s16 gCurrActNum;
 extern s16 gCurrAreaIndex;
 extern s16 gSavedCourseNum;
 extern s16 gMenuOptSelectIndex;
-extern s16 gSaveOptSelectIndex;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 

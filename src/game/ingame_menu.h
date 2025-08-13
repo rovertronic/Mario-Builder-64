@@ -30,14 +30,6 @@ enum HUDLUTs {
 #define HUD_LUT_DIFF HUD_LUT_GLOBAL
 #endif
 
-enum MenuMode {
-    MENU_MODE_NONE = -1,
-    MENU_MODE_UNUSED_0,
-    MENU_MODE_RENDER_PAUSE_SCREEN,
-    MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN,
-    MENU_MODE_UNUSED_3
-};
-
 enum HUDFlashModes {
     HUD_FLASH_NONE,
     HUD_FLASH_STARS,
@@ -47,8 +39,6 @@ enum HUDFlashModes {
 extern u32 pooptable[];
 
 extern s16 gDialogID;
-
-extern s8 gHudFlash;
 
 extern s8 gDialogCourseActNum;
 extern s16 gInGameLanguage;
@@ -161,8 +151,6 @@ extern s16 gRedCoinsCollected;
 extern s16 gRedCoinsTotal;
 extern s16 gStarTriggersCollected;
 extern s16 gStarTriggersTotal;
-extern s16 gMenuMode;
-extern u16 UPGRADE_TABLE[][4];
 extern u8 *costume_text[];
 extern u8 start_precredits;
 extern u8 *badgenames[];
@@ -187,7 +175,6 @@ void create_dialog_box_with_var(s16 dialog, s32 dialogVar);
 void create_dialog_inverted_box(s16 dialog);
 void create_dialog_box_with_response(s16 dialog);
 void reset_dialog_render_state(void);
-void set_menu_mode(s16 mode);
 void reset_cutscene_msg_fade(void);
 void dl_rgba16_begin_cutscene_msg_fade(void);
 void dl_rgba16_stop_cutscene_msg_fade(void);

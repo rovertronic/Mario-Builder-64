@@ -45,7 +45,6 @@ s16 gCurrActNum = 1;
 s16 gCurrAreaIndex;
 s16 gSavedCourseNum;
 s16 gMenuOptSelectIndex;
-s16 gSaveOptSelectIndex;
 
 #ifdef MUSIC_PREVIEWING
 s32 lastBGM = MUSIC_PREVIEWING;
@@ -464,10 +463,6 @@ void render_game(void) {
 
         if (mb64_mode == MB64_MODE_MAKE) {
             draw_mb64_menu();
-        }
-
-        if (gMenuOptSelectIndex != 0) {
-            gSaveOptSelectIndex = gMenuOptSelectIndex;
         }
 
         if (gViewportClip != NULL) {

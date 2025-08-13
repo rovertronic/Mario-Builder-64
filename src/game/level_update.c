@@ -186,17 +186,15 @@ u32 pressed_pause(void) {
     }
 
 #ifdef PUPPYPRINT_DEBUG
-#ifdef BETTER_REVERB
-    if (sPPDebugPage == PUPPYPRINT_PAGE_RAM || sPPDebugPage == PUPPYPRINT_PAGE_LEVEL_SELECT || sPPDebugPage == PUPPYPRINT_PAGE_BETTER_REVERB) {
-#else
     if (sPPDebugPage == PUPPYPRINT_PAGE_RAM || sPPDebugPage == PUPPYPRINT_PAGE_LEVEL_SELECT) {
-#endif
         return FALSE;
     }
 #endif
 
     if (!intangible && !dialogActive && !gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
         && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+        // Hack to make the pause menu not instantly close itself
+        gPlayer1Controller->buttonPressed &= ~START_BUTTON;
         return TRUE;
     }
 
@@ -1046,32 +1044,11 @@ u8 playtimer = 0;
 
 s32 play_mode_normal(void) {
     event_main();
-
-    // playtimer++;
-    // if (playtimer>29) {
-    //     playtimer = 0;
-    //     save_file_one_second();
-    // }
-    
-    // if (gCurrDemoInput != NULL) {
-    //     print_intro_text();
-    //     if (gPlayer1Controller->buttonPressed & END_DEMO) {
-    //         level_trigger_warp(gMarioState, gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
-    //     } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
-    //                && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
-    //         level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
-    //     }
-    // }
-
     warp_area();
     check_instant_warp();
 
 #ifdef PUPPYPRINT_DEBUG
-#ifdef BETTER_REVERB
-    if (sPPDebugPage != PUPPYPRINT_PAGE_RAM && sPPDebugPage != PUPPYPRINT_PAGE_LEVEL_SELECT && sPPDebugPage != PUPPYPRINT_PAGE_BETTER_REVERB) {
-#else
     if (sPPDebugPage != PUPPYPRINT_PAGE_RAM && sPPDebugPage != PUPPYPRINT_PAGE_LEVEL_SELECT) {
-#endif
         if (sTimerRunning && gHudDisplay.timer < 17999) {
             gHudDisplay.timer++;
         }
@@ -1084,16 +1061,9 @@ s32 play_mode_normal(void) {
     area_update_objects();
 #endif
     update_hud_values();
-#ifdef PUPPYLIGHTS
-    delete_lights();
-#endif
     if (gCurrentArea != NULL) {
 #ifdef PUPPYPRINT_DEBUG
-#ifdef BETTER_REVERB
-    if (sPPDebugPage != PUPPYPRINT_PAGE_RAM && sPPDebugPage != PUPPYPRINT_PAGE_LEVEL_SELECT && sPPDebugPage != PUPPYPRINT_PAGE_BETTER_REVERB) {
-#else
     if (sPPDebugPage != PUPPYPRINT_PAGE_RAM && sPPDebugPage != PUPPYPRINT_PAGE_LEVEL_SELECT) {
-#endif
             update_camera(gCurrentArea->camera);
         }
 #else
@@ -1141,15 +1111,9 @@ void exit_level(void) {
 }
 
 s32 play_mode_paused(void) {
-    // playtimer++;
-    // if (playtimer>29) {
-    //     playtimer = 0;
-    //     save_file_one_second();
-    // }
-
     if (gMenuOptSelectIndex == MENU_OPT_NONE) {
-        set_menu_mode(MENU_MODE_RENDER_PAUSE_SCREEN);
-    } else if (gMenuOptSelectIndex == MENU_OPT_DEFAULT) {
+
+    } else if (gMenuOptSelectIndex == MENU_OPT_CONTINUE) {
         raise_background_noise(1);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
