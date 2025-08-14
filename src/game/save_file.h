@@ -56,9 +56,8 @@ enum Options {
     OPT_MUSIC,
     OPT_HUD,
     OPT_CAMCOL,
-    OPT_HUDLAYOUT,
-    OPT_STARRADAR,
     OPT_SPEEDRUNTIMER,
+    OPT_STARRADAR,
 };
 
 struct MainMenuSaveData {

@@ -484,7 +484,7 @@ void create_toolbox(void) {
     AnimatedComponent *scroller = alloc_component(gToolbox, MENU_ANIMATED);
     scroller->base.prerender = toolbox_handle_scroll;
 
-    Selector2DComponent *box = init_selector_2d_component(scroller, 0, 0, 18, 5, toolbox_render_button, toolbox_select_button);
+    Selector2DComponent *box = init_selector_2d_component(scroller, 0, 0, 18, 18*5, toolbox_render_button, toolbox_select_button);
     box->base.prerender = toolbox_render_bg;
 
     box->index = gToolboxIndex;

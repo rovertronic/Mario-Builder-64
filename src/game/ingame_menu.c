@@ -117,25 +117,6 @@ Gfx *geo_imbue_marker_color(s32 callContext, struct GraphNode *node, UNUSED void
 
 u8 number_text[15];
 
-u8 text1[] = { TEXT_CHAR_CHANGE };
-u8 c1[] = {COSTUME1};
-u8 c2[] = {COSTUME2};
-u8 c3[] = {COSTUME3};
-u8 c4[] = {COSTUME4};
-u8 c5[] = {COSTUME5};
-u8 c6[] = {COSTUME6};
-u8 c7[] = {COSTUME7};
-u8 c8[] = {COSTUME8};
-u8 c9[] = {COSTUME9};
-u8 c10[] = {COSTUME10};
-u8 c11[] = {COSTUME11};
-u8 c12[] = {COSTUME12};
-u8 c13[] = {COSTUME13};
-u8 c14[] = {COSTUME14};
-u8 c15[] = {COSTUME15};
-u8 *costume_text[] = { c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15};
-
-
 u8 b1[] = {BADGE1};
 u8 b2[] = {BADGE2};
 u8 b3[] = {BADGE3};
@@ -191,61 +172,6 @@ u8 b23d[] = {BADGE23D};
 u8 b24d[] = {BADGE24D};
 u8 *badgedescs[] = { b1d,b2d,b3d,b4d,b5d,b6d,b7d,b8d,b9d,b10d,b11d,
 b13d,b14d,b15d,b16d,b17d,b18d,b19d,b20d,b21d,b22d,b23d,b24d };
-
-// u8 txt_on[] = {TEXT_OPTION_ON};
-// u8 txt_off[] = {TEXT_OPTION_OFF};
-
-// u8 txt_warp[] = {TEXT_WARPTOLEVEL};
-
-// u8 txt_prog1[] = {TEXT_PROGRESS_1};
-// u8 txt_prog2[] = {TEXT_PROGRESS_2};
-
-// u8 magictext[] = {MAGICTEXT};
-// u8 cheattext[] = {CHEATTEXT};
-// u8 optiontext[] = {OPTIONTEXT};
-// u8 magictext_c[] = {MAGICCOST};
-// u8 tab1[] = {TAB1};
-// u8 tab2[] = {TAB2};
-// u8 tab3[] = {TAB3};
-// u8 tab4[] = {TAB4};
-// u8 tab5[] = {TAB5};
-// u8 tab6[] = {TAB6};
-// u8 *tabs[] = { {tab1},{tab2},{tab3},{tab4},{tab5},{tab6} };
-// u8 tablist[] = {0,0,0,0,0};
-// u8 tablist_count = 0;
-// u16 progress_table[12];
-
-// u8 upgradetext[] = {TEXT_UPGRADE};
-// u8 upgradeyes[] = {TEXT_UPGRADE_YES};
-// u8 upgradeno[] = {TEXT_UPGRADE_NO};
-
-u8 badgecolors[24][3] = {
-    {255,0x00,0x00},
-    {0x9C,0x43,0x22},
-    {0x19,0x6B,0xC7},
-    {0xDF,0x4A,0x18},
-    {0x6C,0xC6,0xD7},
-    {0x6C,0xC6,0xD7},
-    {0x72,0xC6,0xAE},
-    {0xF9,0x8D,0xCF},
-    {0xF8,0xB6,0x4B},
-    {0x4A,0x52,0x8C},
-    {0x44,0xC6,0x53},
-    {0xF9,0xD6,0x4B},
-
-    {0xEA,0x55,0x20},
-    {0x46,0x4D,0xBE},
-    {0x60,0x8E,0xA0},
-    {0xAC,0x6E,0x56},
-    {0x44,0xAF,0x19},
-    {0x21,0xE9,0xA1},
-    {0x57,0xFF,0x4C},
-    {0x4B,0x6D,0x7A},
-    {0xDF,0x4A,0x18},
-    {0xA0,0x00,0x00},
-    {0xA0,0x00,0x00},
-    {0xA0,0x00,0x00},
-};
 
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
@@ -327,7 +253,7 @@ u8 gMenuHoldKeyIndex = 0;
 u8 gMenuHoldKeyTimer = 0;
 s32 gDialogResponse = DIALOG_RESPONSE_NONE;
 
-void display_icon(Gfx* dl, f32 x, f32 y) {
+void display_icon(Gfx* dl, int x, int y) {
     Mtx *mtx;
 
     mtx = alloc_display_list(sizeof(Mtx));
@@ -1447,34 +1373,6 @@ void handle_special_dialog_text(s16 dialogID) { // dialog ID tables, in order
     }
 }
 
-u8 gEndCutsceneStrEn0[] = { TEXT_FILE_MARIO_EXCLAMATION };
-u8 gEndCutsceneStrEn1[] = { TEXT_POWER_STARS_RESTORED };
-u8 gEndCutsceneStrEn2[] = { TEXT_THANKS_TO_YOU };
-u8 gEndCutsceneStrEn3[] = { TEXT_THANK_YOU_MARIO };
-u8 gEndCutsceneStrEn4[] = { TEXT_SOMETHING_SPECIAL };
-u8 gEndCutsceneStrEn5[] = { TEXT_LISTEN_EVERYBODY };
-u8 gEndCutsceneStrEn6[] = { TEXT_LETS_HAVE_CAKE };
-u8 gEndCutsceneStrEn7[] = { TEXT_FOR_MARIO };
-u8 gEndCutsceneStrEn8[] = { TEXT_FILE_MARIO_QUESTION };
-
-u8 *gEndCutsceneStringsEn[] = {
-    gEndCutsceneStrEn0,
-    gEndCutsceneStrEn1,
-    gEndCutsceneStrEn2,
-    gEndCutsceneStrEn3,
-    gEndCutsceneStrEn4,
-    gEndCutsceneStrEn5,
-    gEndCutsceneStrEn6,
-    gEndCutsceneStrEn7,
-    // This [8] string is actually unused. In the cutscene handler, the developers do not
-    // set the 8th one, but use the first string again at the very end, so Peach ends up
-    // saying "Mario!" twice. It is likely that she was originally meant to say "Mario?" at
-    // the end but the developers changed their mind, possibly because the line recorded
-    // sounded more like an exclamation than a question.
-    gEndCutsceneStrEn8,
-    NULL
-};
-
 
 u16 gCutsceneMsgFade        =  0;
 s16 gCutsceneMsgIndex       = -1;
@@ -1490,20 +1388,6 @@ s8  gDialogCourseActNum     =  1;
 #define DIAG_VAL4   5
 #define DIAG_VAL2 240 // JP & US
 
-u16 shoptable[12][6] = {
-    {BADGE_FALL,25,BADGE_DEFENSE,70,BADGE_MAGNET,125},//shop 0 main*
-    {12,0,13,0,14,0},//upgrade station [UNUSED]
-    {BADGE_MANA,100,BADGE_FALL,10,BADGE_DEFENSE,30},//shop 2 secret*
-    {BADGE_LAVA,40,BADGE_FALL,30,BADGE_BURN,150},//shop 3 reservoir*
-    {BADGE_FINS,50,BADGE_GILLS,150,BADGE_GILLS,200},//ghost ship shop*
-    {BADGE_DAMAGE,170,BADGE_MANA,120,BADGE_BURN,75},//floor 2 (castle outdoor) shop*
-    {BADGE_HP,300,BADGE_GREED,250,BADGE_TIME,420},//floor 2 extra shop*
-    {BADGE_FEET,80,BADGE_STICKY,200,BADGE_FEATHER,400},//KTQ Thwomp Towers Shop*
-    {BADGE_LAVA,100,BADGE_DEFENSE,100,BADGE_FALL,100},//tutorial shop  //{0,0,0,0,0,0},//executive (HUB 3) shop
-    {BADGE_SQUISH,120,BADGE_WEIGHT,50,BADGE_BURN, 180},//floor 1 alternative shop
-    {BADGE_BRITTLE,1,BADGE_WITHER,1,BADGE_HARDCORE,1},//burden shop (ALL FOR 1 DOLLAR LOL!)
-    {BADGE_HEAL,300,BADGE_BOTTOMLESS,200,BADGE_SLOWFALL,50}//starfair final shop
-};
 
 u8 shopid;
 u8 shopselection;
@@ -1688,51 +1572,6 @@ void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuratio
     }
 }
 
-void do_cutscene_handler(void) {
-    // is a cutscene playing? do not perform this handler's actions if so.
-    if (gCutsceneMsgIndex == -1) {
-        return;
-    }
-    
-    create_dl_ortho_matrix();
-
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
-
-    // get the x coordinate of where the cutscene string starts.
-    s16 x = get_str_x_pos_from_center(gCutsceneMsgXOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex], 10.0f);
-    print_generic_string(x, 240 - gCutsceneMsgYOffset, gEndCutsceneStringsEn[gCutsceneMsgIndex]);
-
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-
-    // if the timing variable is less than 5, increment
-    // the fade until we are at full opacity.
-    if (gCutsceneMsgTimer < 5) {
-        gCutsceneMsgFade += 50;
-    }
-
-    // if the cutscene frame length + the fade-in counter is
-    // less than the timer, it means we have exceeded the
-    // time that the message is supposed to remain on
-    // screen. if (message_duration = 50) and (msg_timer = 55)
-    // then after the first 5 frames, the message will remain
-    // on screen for another 50 frames until it starts fading.
-    if (gCutsceneMsgDuration + 5 < gCutsceneMsgTimer) {
-        gCutsceneMsgFade -= 50;
-    }
-
-    // like the first check, it takes 5 frames to fade out, so
-    // perform a + 10 to account for the earlier check (10-5=5).
-    if (gCutsceneMsgDuration + 10 < gCutsceneMsgTimer) {
-        gCutsceneMsgIndex = -1;
-        gCutsceneMsgFade = 0;
-        gCutsceneMsgTimer = 0;
-        return;
-    }
-
-    gCutsceneMsgTimer++;
-}
-
 
 void reset_red_coins_collected(void) {
     gRedCoinsCollected = 0;
@@ -1835,15 +1674,15 @@ void draw_mb64_pause_badges(void) {
 
     //print badge info if badge is unlocked
     if (save_file_get_badge_equip() & (1<<gMarioState->numBadgeSelect)) {
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-        print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f)-1, 125-1-btxoff, badgenames[gMarioState->numBadgeSelect]);
-        print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f)-1, 108-1-btxoff, badgedescs[gMarioState->numBadgeSelect]);
-        gDPSetEnvColor(gDisplayListHead++, badgecolors[gMarioState->numBadgeSelect][0], badgecolors[gMarioState->numBadgeSelect][1], badgecolors[gMarioState->numBadgeSelect][2], 255);
-        print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f), 125-btxoff, badgenames[gMarioState->numBadgeSelect]);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f), 108-btxoff, badgedescs[gMarioState->numBadgeSelect]);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+        // gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        // gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+        // print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f)-1, 125-1-btxoff, badgenames[gMarioState->numBadgeSelect]);
+        // print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f)-1, 108-1-btxoff, badgedescs[gMarioState->numBadgeSelect]);
+        // gDPSetEnvColor(gDisplayListHead++, badgecolors[gMarioState->numBadgeSelect][0], badgecolors[gMarioState->numBadgeSelect][1], badgecolors[gMarioState->numBadgeSelect][2], 255);
+        // print_generic_string(get_str_x_pos_from_center(160,badgenames[gMarioState->numBadgeSelect],0.0f), 125-btxoff, badgenames[gMarioState->numBadgeSelect]);
+        // gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+        // print_generic_string(get_str_x_pos_from_center(160,badgedescs[gMarioState->numBadgeSelect],0.0f), 108-btxoff, badgedescs[gMarioState->numBadgeSelect]);
+        // gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
 }
 

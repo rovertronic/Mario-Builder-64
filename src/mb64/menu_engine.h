@@ -244,6 +244,7 @@ struct Selector2DComponent {
     u8 columns;
     u8 rows;
     u8 index;
+    u8 count;
 };
 
 typedef struct {
@@ -332,7 +333,7 @@ PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y,
 PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);
 SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
 SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
-Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 rows, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
+Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
 KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted);
 
 ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y);

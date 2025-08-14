@@ -452,12 +452,7 @@ void render_dl_power_meter(s16 numHealthWedges) {
         return;
     }
 
-    f32 power_meter_x_offset = 0.0f;
-    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
-        power_meter_x_offset = 148.0f;
-    }
-
-    guTranslate(mtx, (f32) sPowerMeterHUD.x + power_meter_x_offset, (f32) sPowerMeterHUD.y, 0);
+    guTranslate(mtx, (f32) sPowerMeterHUD.x, (f32) sPowerMeterHUD.y, 0);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),
               G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
@@ -744,30 +739,18 @@ void render_debug_mode(void) {
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
-        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-21, "$"); // 'Coin' glyph
-        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y-21, "*"); // 'X' glyph
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+32, HUD_TOP_Y-21, "%d", gHudDisplay.coins);
-
-        if (gRedCoinsCollected > 0) {
-            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-42, "@"); // 'Coin' glyph
-            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y-42, "*"); // 'X' glyph
-            print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+32, HUD_TOP_Y-42, "%d", gRedCoinsCollected);
-        }
+    print_text(168, HUD_TOP_Y, "$"); // 'Coin' glyph
+    if (gHudDisplay.coins < 1000) {
+        print_text(184, HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int(198, HUD_TOP_Y, "%d", gHudDisplay.coins);
     } else {
-        print_text(168, HUD_TOP_Y, "$"); // 'Coin' glyph
-        if (gHudDisplay.coins < 1000) {
-            print_text(184, HUD_TOP_Y, "*"); // 'X' glyph
-            print_text_fmt_int(198, HUD_TOP_Y, "%d", gHudDisplay.coins);
-        } else {
-            print_text_fmt_int(184, HUD_TOP_Y, "%d", gHudDisplay.coins);
-        }
+        print_text_fmt_int(184, HUD_TOP_Y, "%d", gHudDisplay.coins);
+    }
 
-        if (gRedCoinsCollected > 0) {
-            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "@"); // 'Coin' glyph
-            print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y, "*"); // 'X' glyph
-            print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16+14, HUD_TOP_Y, "%d", gRedCoinsCollected);
-        }
+    if (gRedCoinsCollected > 0) {
+        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "@"); // 'Coin' glyph
+        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16, HUD_TOP_Y, "*"); // 'X' glyph
+        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)+16+14, HUD_TOP_Y, "%d", gRedCoinsCollected);
     }
 }
 
@@ -781,15 +764,9 @@ void render_hud_stars(void) {
     u8 max_stars = mb64_play_stars_max;
     s8 showX = 1;//(gHudDisplay.stars < 100);
 
-    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
-        print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "^"); // 'Star' glyph
-        print_text((GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 16), HUD_TOP_Y, "*"); // 'X' glyph
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22) + 32, HUD_TOP_Y, "%d", current_stars);
-    } else {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
-        if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
-        print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y, "%d", current_stars);
-    }
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "^"); // 'Star' glyph
+    if (showX) print_text((GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16), HUD_TOP_Y, "*"); // 'X' glyph
+    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16), HUD_TOP_Y, "%d", current_stars);
 }
 
 /**
@@ -807,7 +784,6 @@ void render_hud_keys(void) {
 /**
  * Renders the timer when Mario start sliding in PSS.
  */
- #define HUD_TIMER_MODERN_OFFSET -100
 void render_hud_timer(void) {
     Texture *(*hudLUT)[58] = segmented_to_virtual(&main_hud_lut);
     u32 timerValFrames = gHudDisplay.timer;
@@ -823,38 +799,17 @@ void render_hud_timer(void) {
     if (timerMins > 9) {
         minxoffset = -12;
     }
-/*
-#if MULTILANG
-    switch (eu_get_language()) {
-        case LANGUAGE_ENGLISH: print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185,  "TIME"); break;
-        case LANGUAGE_FRENCH:  print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(155), 185, "TEMPS"); break;
-        case LANGUAGE_GERMAN:  print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185,  "ZEIT"); break;
-    }
-#else
-*/
 
-    if (mb64_sram_configuration.option_flags & (1<<OPT_HUDLAYOUT)) {
-        //modern
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+HUD_TIMER_MODERN_OFFSET+minxoffset, HUD_TOP_Y, "%0d", timerMins);
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%02d", timerSecs);
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37)+HUD_TIMER_MODERN_OFFSET, HUD_TOP_Y, "%d", timerFracSecs);
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150)+minxoffset, 185, "TIME");
 
-        gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
-        render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(81)+HUD_TIMER_MODERN_OFFSET, 8, (*hudLUT)[GLYPH_APOSTROPHE]);
-        render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(46)+HUD_TIMER_MODERN_OFFSET, 8, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
-        gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
-    } else {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150)+minxoffset, 185, "TIME");
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+minxoffset, 185, "%0d", timerMins);
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71), 185, "%02d", timerSecs);
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37), 185, "%d", timerFracSecs);
 
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91)+minxoffset, 185, "%0d", timerMins);
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71), 185, "%02d", timerSecs);
-        print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37), 185, "%d", timerFracSecs);
-
-        gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
-        render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(81), 32, (*hudLUT)[GLYPH_APOSTROPHE]);
-        render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(46), 32, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
-        gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
-    }
+    gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
+    render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(81), 32, (*hudLUT)[GLYPH_APOSTROPHE]);
+    render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(46), 32, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
+    gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
 /**

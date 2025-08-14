@@ -863,12 +863,13 @@ void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
 
 // ================ 2D SELECTOR ===================
 
-Selector2DComponent *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 rows,
+Selector2DComponent *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count,
                                 Selector2DRenderFunc *render, Selector2DUpdateFunc *update) {
     Selector2DComponent *s = alloc_component(parent, MENU_SELECTOR_2D);
     component_set_pos(s, x, y);
     s->columns = columns;
-    s->rows = rows;
+    s->rows = (count + columns - 1) / columns;
+    s->count = count;
     s->render = render;
     s->update = update; 
     return s;
@@ -884,8 +885,9 @@ void component_2d_render(MenuComponent *m, s16 x, s16 y) {
         int oldindex = s->index;
         int row = s->index / s->columns;
         int col = s->index % s->columns;
-        col = (col + s->columns + get_input(MENU_INPUT_JOYSTICK, DIR_HORIZONTAL)) % s->columns;
         row = (row + s->rows + get_input(MENU_INPUT_JOYSTICK, DIR_VERTICAL)) % s->rows;
+        int rowLength = (row == s->rows-1 ? (s->count-1) % s->columns + 1 : s->columns);
+        col = (col + rowLength + get_input(MENU_INPUT_JOYSTICK, DIR_HORIZONTAL)) % rowLength;
         s->index = row * s->columns + col;
         if (s->index != oldindex) menu_play_move_sound();
     }
@@ -893,6 +895,7 @@ void component_2d_render(MenuComponent *m, s16 x, s16 y) {
     for (int i = 0; i < s->rows; i++) {
         for (int j = 0; j < s->columns; j++) {
             int index = i * s->columns + j;
+            if (index >= s->count) break;
             int selected = (s->index == index);
             s->render(s, x, y, j, i, selected);
             if (selected && ACTIVE && (gPlayer1Controller->buttonPressed & A_BUTTON)) {
@@ -969,7 +972,7 @@ void keyboard_select_key(Selector2DComponent *s, u8 column, u8 row) {
 KeyboardComponent *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted) {
     KeyboardComponent *k = alloc_component(parent, MENU_KEYBOARD);
     component_set_pos(k, x, y);
-    init_selector_2d_component(k, 0, 0, 11, 4,
+    init_selector_2d_component(k, 0, 0, 11, 11*4,
                                 keyboard_render_key, keyboard_select_key);
     k->buf = buf;
     k->text = get_id(t);
