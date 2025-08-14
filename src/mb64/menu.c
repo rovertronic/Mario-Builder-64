@@ -93,26 +93,6 @@ f32 smoothstep2(f32 edge0, f32 edge1, f32 x) {
    return x * x * (3.0f - 2.0f * x);
 }
 
-s32 get_string_width_ascii(char *str) {
-    s16 strPos = 0;
-    s16 width = 0;
-
-    while (str[strPos] != 0) {
-        width += gDialogCharWidths[mb64_ascii_lut[(u8)str[strPos]]];
-        strPos++;
-    }
-    return width;
-}
-
-u8 string_runoff(s32 x, char *str) {
-    s32 x1 = get_string_width_ascii(str);
-
-    if (x+x1 > 320) {
-        return TRUE;
-    }
-    return FALSE;
-}
-
 void print_maker_string_ascii_alpha(s32 x, s32 y, char *str, s32 color, s32 alpha) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);

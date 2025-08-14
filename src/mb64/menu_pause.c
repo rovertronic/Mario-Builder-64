@@ -184,6 +184,7 @@ void pause_button_change_page(TextComponent *btn) {
 }
 
 char authornamebuf[MAX_USERNAME_SIZE + 3];
+extern struct MarioState gMarioStates[1];
 void create_pause_menu_page(int pagenum) {
     FrameComponent *page = init_frame_component(gPauseMenu);
     page->params[0].asInt = pagenum;
@@ -206,6 +207,18 @@ void create_pause_menu_page(int pagenum) {
             add_pause_menu_button(options, 2, "Options", pause_button_change_page, PAUSE_PAGE_OPTIONS);
             if (mb64_lopt_game == MB64_GAME_BTCM && count_u32_bits(mb64_play_badge_bitfield) != 0) {
                 add_pause_menu_button(options, 3, "Badges", pause_button_change_page, PAUSE_PAGE_BADGES);
+            }
+
+            init_counter_component(page, 0, 30, '#', &mb64_play_stars, mb64_play_stars_max, TEXT_CENTER);
+            int hasRedCoins = (gRedCoinsTotal > 0);
+            int hasCoinStar = (mb64_lopt_coinstar > 0);
+            int redcoinX = (hasCoinStar ? -60 : 0);
+            int coinstarX = (hasRedCoins ? 60 : 0);
+            if (hasRedCoins) {
+                init_counter_component(page, redcoinX, -90, '&', &gRedCoinsCollected, gRedCoinsTotal, TEXT_CENTER);
+            }
+            if (hasCoinStar) {
+                init_counter_component(page, coinstarX, -90, '$', &gMarioStates[0].numCoins, mb64_lopt_coinstar*20, TEXT_CENTER);
             }
             sPrevMenuIndex = 5;
             break;

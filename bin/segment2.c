@@ -255,7 +255,7 @@ ALIGNED8 static const Texture texture_hud_char_P[] = {
 #include "textures/segment2/segment2.03200.rgba16.inc.c"
 };
 
-ALIGNED8 static const Texture texture_hud_char_Q[] = {
+ALIGNED8 static const Texture texture_hud_char_slash[] = {
 #include "textures/segment2/custom_slash.rgba16.inc.c"
 };
 
@@ -1911,23 +1911,30 @@ ALIGNED8 static const Texture texture_hud_char_arrow_down[] = {
 #include "textures/segment2/segment2.081D0.rgba16.inc.c"
 };
 
-// Main HUD print table 0x02008250-0x02008337
 const Texture *const main_hud_lut[] = {
-    texture_hud_char_0, texture_hud_char_1, texture_hud_char_2, texture_hud_char_3,
-    texture_hud_char_4, texture_hud_char_5, texture_hud_char_6, texture_hud_char_7,
-    texture_hud_char_8, texture_hud_char_9, texture_hud_char_A, texture_hud_char_B,
-    texture_hud_char_C, texture_hud_char_D, texture_hud_char_E, texture_hud_char_F,
-    texture_hud_char_G, texture_hud_char_H, texture_hud_char_I, 0x0,
-    texture_hud_char_K, texture_hud_char_L, texture_hud_char_M, texture_hud_char_N,
-    texture_hud_char_O, texture_hud_char_P, texture_hud_char_Q, texture_hud_char_R,
-    texture_hud_char_S, texture_hud_char_T, texture_hud_char_U, texture_hud_char_V,
-    texture_hud_char_W, texture_hud_char_X, texture_hud_char_Y, texture_hud_char_Z,
-    0x0,                0x0,                0x0,                0x0,
-    0x0,                0x0,                0x0,                0x0,
-    0x0,                0x0,                0x0,                texture_hud_char_minus,
-    texture_hud_char_multiply, texture_hud_char_coin, texture_hud_char_red_coin, 0x0,
-    texture_hud_char_mario_head, texture_hud_char_star, 0x0,    0x0,
-    texture_hud_char_apostrophe, texture_hud_char_double_quote, 0x0,
+    0, /* */                  0, /*!*/                  texture_hud_char_double_quote, /*"*/ texture_hud_char_star, /*#*/
+    texture_hud_char_coin, /*$*/ 0, /*%*/               texture_hud_char_red_coin, /*&*/                  texture_hud_char_apostrophe, /*'*/
+    0, /*(*/                  0, /*)*/                  texture_hud_char_multiply, /***/ 0, /*+*/
+    0, /*,*/                  texture_hud_char_minus, /*-*/ 0, /*.*/              texture_hud_char_slash, /*/*/
+    texture_hud_char_0, /*0*/ texture_hud_char_1, /*1*/ texture_hud_char_2, /*2*/ texture_hud_char_3, /*3*/
+    texture_hud_char_4, /*4*/ texture_hud_char_5, /*5*/ texture_hud_char_6, /*6*/ texture_hud_char_7, /*7*/
+    texture_hud_char_8, /*8*/ texture_hud_char_9, /*9*/ 0, /*:*/ 0, /*;*/
+    0, /*<*/ 0, /*=*/ 0, /*>*/ 0, /*?*/ 
+    texture_hud_char_mario_head, /*@*/ texture_hud_char_A, /*A*/ texture_hud_char_B, /*B*/ texture_hud_char_C, /*C*/
+    texture_hud_char_D, /*D*/ texture_hud_char_E, /*E*/ texture_hud_char_F, /*F*/ texture_hud_char_G, /*G*/
+    texture_hud_char_H, /*H*/ texture_hud_char_I, /*I*/ 0, /*J*/                  texture_hud_char_K, /*K*/
+    texture_hud_char_L, /*L*/ texture_hud_char_M, /*M*/ texture_hud_char_N, /*N*/ texture_hud_char_O, /*O*/
+    texture_hud_char_P, /*P*/ 0, /*Q*/                  texture_hud_char_R, /*R*/ texture_hud_char_S, /*S*/
+    texture_hud_char_T, /*T*/ texture_hud_char_U, /*U*/ texture_hud_char_V, /*V*/ texture_hud_char_W, /*W*/
+    texture_hud_char_X, /*X*/ texture_hud_char_Y, /*Y*/ texture_hud_char_Z, /*Z*/ 0x0, /*[*/
+    0x0, /*\*/ 0x0, /*]*/ 0x0, /*^*/ 0x0, /*_*/
+    0x0, /*`*/ texture_hud_char_A, /*a*/ texture_hud_char_B, /*b*/ texture_hud_char_C, /*c*/
+    texture_hud_char_D, /*d*/ texture_hud_char_E, /*e*/ texture_hud_char_F, /*f*/ texture_hud_char_G, /*g*/
+    texture_hud_char_H, /*h*/ texture_hud_char_I, /*i*/ 0, /*j*/                  texture_hud_char_K, /*k*/
+    texture_hud_char_L, /*l*/ texture_hud_char_M, /*m*/ texture_hud_char_N, /*n*/ texture_hud_char_O, /*o*/
+    texture_hud_char_P, /*p*/ 0, /*q*/                  texture_hud_char_R, /*r*/ texture_hud_char_S, /*s*/
+    texture_hud_char_T, /*t*/ texture_hud_char_U, /*u*/ texture_hud_char_V, /*v*/ texture_hud_char_W, /*w*/
+    texture_hud_char_X, /*x*/ texture_hud_char_Y, /*y*/ texture_hud_char_Z, /*z*/
 };
 
 // Main small font print table 0x02008338-0x02008737

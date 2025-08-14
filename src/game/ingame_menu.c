@@ -507,51 +507,71 @@ void print_generic_string_ascii_nofileext(s16 x, s16 y, const char *str) {
     print_generic_string_ascii(x, y, buf);
 }
 
+s32 get_string_width_ascii(char *str) {
+    s16 strPos = 0;
+    s16 width = 0;
 
-/**
- * Prints a hud string depending of the hud table list defined.
- */
-void print_hud_lut_string(s8 hudLUT, s16 x, s16 y, const u8 *str) {
-    s32 strPos = 0;
-    void **hudLUT1 = segmented_to_virtual(menu_hud_lut); // Japanese Menu HUD Color font
-    void **hudLUT2 = segmented_to_virtual(main_hud_lut); // 0-9 A-Z HUD Color Font
-    u32 curX = x;
-    u32 curY = y;
-
-    u32 xStride; // X separation
-
-    if (hudLUT == HUD_LUT_JPMENU) {
-        xStride = 16;
-    } else { // HUD_LUT_GLOBAL
-        xStride = 12; //? Shindou uses this.
+    while (str[strPos] != 0) {
+        width += gDialogCharWidths[mb64_ascii_lut[(u8)str[strPos]]];
+        strPos++;
     }
+    return width;
+}
 
-    while (str[strPos] != GLOBAR_CHAR_TERMINATOR) {
+void print_hud_string_ascii(s16 x, s16 y, char *str) {
+    s32 strPos = 0;
+    void **hudLUT = segmented_to_virtual(main_hud_lut);
+    y = SCREEN_HEIGHT - y;
+    int kerning;
+
+    while (str[strPos] != 0) {
+        kerning = 0;
         switch (str[strPos]) {
-            case GLOBAL_CHAR_SPACE:
-                curX += 8;
+            case ' ':
+                kerning = 8;
                 break;
+            case '#':
+            case '@':
+            case '&':
+            case '*':
+                kerning += 4;
+                // fallthrough
             default:
                 gDPPipeSync(gDisplayListHead++);
-
-                if (hudLUT == HUD_LUT_JPMENU) {
-                    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, hudLUT1[str[strPos]]);
-                }
-
-                if (hudLUT == HUD_LUT_GLOBAL) {
-                    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, hudLUT2[str[strPos]]);
-                }
-
+                gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, hudLUT[str[strPos] - ' ']);
                 gSPDisplayList(gDisplayListHead++, dl_rgba16_load_tex_block);
-                gSPTextureRectangle(gDisplayListHead++, curX << 2, curY << 2, (curX + 16) << 2,
-                                    (curY + 16) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                gSPTextureRectangle(gDisplayListHead++, x << 2, y << 2, (x + 16) << 2,
+                                    (y + 16) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
 
-                curX += xStride;
+                kerning += 12;
         }
+        x += kerning;
         strPos++;
     }
 }
 
+s32 get_hud_string_width_ascii(char *str) {
+    s32 width = 0;
+    s16 strPos = 0;
+
+    while (str[strPos] != 0) {
+        switch (str[strPos]) {
+            case ' ':
+                width += 8;
+                break;
+            case '#':
+            case '@':
+            case '&':
+            case '*':
+                width += 4;
+                // fallthrough
+            default:
+                width += 12;
+        }
+        strPos++;
+    }
+    return width;
+}
 
 void print_menu_generic_string(s16 x, s16 y, const u8 *str) {
     UNUSED s8 mark = DIALOG_MARK_NONE; // unused in EU
@@ -658,39 +678,6 @@ s32 get_string_width(u8 *str) {
 
 u8 gHudSymCoin[] = { GLYPH_COIN, GLYPH_SPACE };
 u8 gHudSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
-
-void print_hud_my_score_coins(s32 useCourseCoinScore, s8 fileIndex, s8 courseIndex, s16 x, s16 y) {
-    u8 strNumCoins[4];
-    s16 numCoins;
-
-    if (!useCourseCoinScore) {
-        numCoins = (u16)(save_file_get_max_coin_score(courseIndex) & 0xFFFF);
-    } else {
-        numCoins = save_file_get_course_coin_score(fileIndex, courseIndex);
-    }
-
-    if (numCoins != 0) {
-        print_hud_lut_string(HUD_LUT_GLOBAL, x +  0, y, gHudSymCoin);
-        print_hud_lut_string(HUD_LUT_GLOBAL, x + 16, y, gHudSymX);
-        int_to_str(numCoins, strNumCoins);
-        print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, strNumCoins);
-    }
-}
-
-void print_hud_my_score_stars(s8 fileIndex, s8 courseIndex, s16 x, s16 y) {
-    u8 strStarCount[4];
-    u8 textSymStar[] = { GLYPH_STAR, GLYPH_SPACE };
-    u8 textSymX[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
-
-    s16 starCount = save_file_get_course_star_count(fileIndex, courseIndex);
-
-    if (starCount != 0) {
-        print_hud_lut_string(HUD_LUT_GLOBAL, x +  0, y, textSymStar);
-        print_hud_lut_string(HUD_LUT_GLOBAL, x + 16, y, textSymX);
-        int_to_str(starCount, strStarCount);
-        print_hud_lut_string(HUD_LUT_GLOBAL, x + 32, y, strStarCount);
-    }
-}
 
 void int_to_str(s32 num, u8 *dst) {
     s32 digit[3];
@@ -842,10 +829,6 @@ void create_dialog_inverted_box(s16 dialog) {
     if (gDialogID == DIALOG_NONE) {
         gDialogID = dialog;
         gDialogBoxType = DIALOG_TYPE_ZOOM;
-        // if (gCurrLevelNum == LEVEL_RR) {
-        //     gDialogBoxType = DIALOG_TYPE_ROTATE;
-        //     //more hardcoded bullshit
-        // }
     }
 }
 

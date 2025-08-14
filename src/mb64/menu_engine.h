@@ -255,6 +255,14 @@ typedef struct {
     u8 isRestricted:1; // Filename restrictions
 } KeyboardComponent;
 
+typedef struct {
+    MenuComponent base;
+    s16 *value;
+    s16 max;
+    u8 symbol;
+    u8 align;
+} CounterComponent;
+
 enum MenuComponents {
     MENU_NONE = 0,
     MENU_FRAME,
@@ -270,6 +278,7 @@ enum MenuComponents {
     MENU_PAGE_TITLE,
     MENU_SELECTOR_2D,
     MENU_KEYBOARD,
+    MENU_COUNTER,
 };
 
 union MenuComponentData {
@@ -286,6 +295,7 @@ union MenuComponentData {
     RectComponent rect;
     Selector2DComponent selector2D;
     KeyboardComponent keyboard;
+    CounterComponent counter;
 };
 
 extern union MenuComponentData menu_pool[MENU_POOL_SIZE];
@@ -335,6 +345,7 @@ SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 
 SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
 Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
 KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted);
+CounterComponent     *init_counter_component(void *parent, s16 x, s16 y, u8 symbol, s16 *value, s16 max, int align);
 
 ListItemComponent *component_list_append(ListComponent *l, void *m, s16 x, s16 y);
 ListItemComponent *component_list_get(ListComponent *l, u8 index);

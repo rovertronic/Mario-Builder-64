@@ -7,7 +7,6 @@
 // from main menu segment 7
 extern Gfx dl_menu_idle_hand[];
 extern Gfx dl_menu_grabbing_hand[];
-extern Texture menu_hud_lut[];
 extern Texture menu_font_lut[];
 extern Gfx dl_menu_ia8_text_begin[];
 extern Gfx dl_menu_ia8_text_end[];

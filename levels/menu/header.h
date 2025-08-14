@@ -31,7 +31,6 @@ extern const Gfx dl_menu_sound_button[];
 extern const Gfx dl_menu_generic_button[];
 extern const Gfx dl_menu_idle_hand[];
 extern const Gfx dl_menu_grabbing_hand[];
-extern const Texture *const menu_hud_lut[];
 extern const Texture *const menu_font_lut[];
 extern const Gfx dl_menu_ia8_text_begin[];
 extern const Gfx dl_menu_ia8_text_end[];

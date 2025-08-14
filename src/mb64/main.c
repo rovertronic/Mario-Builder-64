@@ -103,8 +103,8 @@ s8 mb64_dialog_subject_index = 0;
 s8 mb64_dialog_topic_index = 0;
 
 //play mode stuff
-u8 mb64_play_stars = 0;
-u8 mb64_play_stars_max = 0;
+s16 mb64_play_stars = 0;
+s16 mb64_play_stars_max = 0;
 u64 mb64_play_stars_bitfield = 0;
 u32 mb64_play_badge_bitfield = 0;
 u8 mb64_play_onoff = FALSE;

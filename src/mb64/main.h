@@ -143,8 +143,8 @@ extern u16 painting_rgba16[32][32];
 extern u8 mb64_envfx_table[];
 
 //play mode stuff
-extern u8 mb64_play_stars;
-extern u8 mb64_play_stars_max;
+extern s16 mb64_play_stars;
+extern s16 mb64_play_stars_max;
 extern u64 mb64_play_stars_bitfield;
 extern u32 mb64_play_badge_bitfield;
 extern u8 mb64_play_onoff;

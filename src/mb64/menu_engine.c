@@ -34,6 +34,11 @@ void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
     print_generic_string_ascii(x, y, str);
 }
 
+void menu_hud_text_display(char *str, s16 x, s16 y, u8 align) {
+    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+    print_hud_string_ascii(x, y, str);
+}
+
 enum JoystickState {
     JOYSTICK_NONE,
     JOYSTICK_UP,
@@ -1017,6 +1022,36 @@ void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x + m->xpos, y + m->ypos);
 }
 
+// ================ COUNTER ===================
+
+CounterComponent *init_counter_component(void *parent, s16 x, s16 y, u8 symbol, s16 *value, s16 max, int align) {
+    CounterComponent *c = alloc_component(parent, MENU_COUNTER);
+    component_set_pos(c, x, y);
+    c->symbol = symbol;
+    c->value = value;
+    c->max = max;
+    c->align = align;
+    return c;
+}
+
+void component_counter_render(MenuComponent *m, s16 x, s16 y) {
+    CounterComponent *c = (CounterComponent *)m;
+    char buf[16];
+    x += m->xpos;
+    y += m->ypos;
+    if (c->max >= 0) {
+        sprintf(buf, "%c*%d/%d", c->symbol, *c->value, c->max);
+    } else {
+        sprintf(buf, "%c*%d", c->symbol, *c->value);
+    }
+    if (c->align) {
+        x -= get_hud_string_width_ascii(buf) * c->align / 2;
+    }
+    menu_hud_text_display(buf, x, y, TEXT_LEFT);
+
+    render_child(m, x, y);
+}
+
 // ================ GENERAL ===================
 
 ComponentRenderFunc component_render_funcs[] = {
@@ -1032,6 +1067,7 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_PAGE_TITLE] = component_page_title_render,
     [MENU_SELECTOR_2D] = component_2d_render,
     [MENU_KEYBOARD] = component_keyboard_render,
+    [MENU_COUNTER] = component_counter_render,
 };
 
 void render_component(MenuComponent *m, s16 x, s16 y) {
