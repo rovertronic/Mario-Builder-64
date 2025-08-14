@@ -121,8 +121,6 @@ s32 mb64_main_menu(void);
 extern Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
 extern Trajectory mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH][4];
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
-s32 draw_mb64_pause_menu(void);
-void mb64_init_pause_menu(void);
 void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
 void mb64_set_data_overrides(void);

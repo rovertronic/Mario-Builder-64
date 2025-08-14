@@ -183,8 +183,6 @@ void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuratio
 void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);
 void render_menus_and_dialogs(void);
-void shade_screen(void);
-void draw_mb64_pause_badges(void);
 void render_dialog_entry_preview(u8 dialog_id);
 
 void int_to_str_time(s32 num, s32 num2, s32 num3, u8 *dst);
