@@ -1,12 +1,5 @@
 #include "menu_engine.h"
 
-#include "game/game_init.h"
-#include "audio/external.h"
-#include "game/segment2.h"
-#include "game/ingame_menu.h"
-
-#include "levels/menu/mm_btn_sm/header.h"
-
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
 MenuState gMenuState;
@@ -25,7 +18,7 @@ u8 menu_text_colors[][3] = {
 };
 
 void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
-    if (gMenuState.selected && !gMenuState.disabled && !(color & 1)) color += 1;
+    if (gMenuState.selected && !gMenuState.disabled && gMenuStyle.textHighlightSelected && !(color & 1)) color += 1;
     if (gMenuState.disabled && !(color & 2)) color += 2;
     if (align) {
         int width = get_string_width_ascii(str);
@@ -33,8 +26,10 @@ void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
-    print_generic_string_ascii(x-1, y-1, str);
+    if (!gMenuStyle.textNoShadow) {
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, alpha);
+        print_generic_string_ascii(x-1, y-1, str);
+    }
     gDPSetEnvColor(gDisplayListHead++, menu_text_colors[color][0], menu_text_colors[color][1], menu_text_colors[color][2], alpha);
     print_generic_string_ascii(x, y, str);
 }
@@ -296,7 +291,7 @@ void component_text_render(MenuComponent *m, s16 x, s16 y) {
     if (SELECTED && t->onClick) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON)) {
             t->onClick(t, t->onClickArg);
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            menu_play_click_sound();
         }
     }
 };
@@ -396,7 +391,7 @@ void component_selector_render(MenuComponent *m, s16 x, s16 y) {
     }
             
     if (handle_scroll(&s->scroll, dir, s->value, SELECTOR_ANIM_FRAMES)) {
-        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        menu_play_move_sound();
         if (s->onChange) {
             s->onChange(s, 0);
         }
@@ -636,7 +631,7 @@ PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u
 
 void page_handler_scroll(PageHandlerComponent *ph, int dir) {
     if (handle_scroll(&ph->scroll, dir, &ph->index, ph->frames)) {
-        if (ph->input != MENU_INPUT_NONE) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        if (ph->input != MENU_INPUT_NONE) menu_play_move_sound();
         ph->oldPage = ph->currentPage;
         ph->currentPage = get_id(page_handler_create_page(ph, ph->index));
     }
@@ -648,7 +643,7 @@ void page_handler_set_page(PageHandlerComponent *ph, int page) {
     if (ph->oldPage) dealloc_component_full(ph->oldPage);
     dealloc_component_full(ph->currentPage);
     ph->currentPage = get_id(page_handler_create_page(ph, page));
-    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    menu_play_move_sound();
     ph->scroll.offset = 0;
 }
 
@@ -774,6 +769,7 @@ ListComponent *init_sublist(void *parent, ComponentID ph, u8 indexOffset) {
     l->indexOffset = indexOffset;
     l->isSublist = TRUE;
     l->pageHandler = ph;
+    l->input = MENU_INPUT_JOYSTICK;
     return l;
 }
 
@@ -829,7 +825,7 @@ void component_list_render(MenuComponent *m, s16 x, s16 y) {
             }
             item = component_list_get(l, l->index);
         } while (item->disabled);
-        if (dir) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        if (dir) menu_play_move_sound();
     }
 
     render_child(m, x + m->xpos, y + m->ypos);
@@ -891,7 +887,7 @@ void component_2d_render(MenuComponent *m, s16 x, s16 y) {
         col = (col + s->columns + get_input(MENU_INPUT_JOYSTICK, DIR_HORIZONTAL)) % s->columns;
         row = (row + s->rows + get_input(MENU_INPUT_JOYSTICK, DIR_VERTICAL)) % s->rows;
         s->index = row * s->columns + col;
-        if (s->index != oldindex) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        if (s->index != oldindex) menu_play_move_sound();
     }
 
     for (int i = 0; i < s->rows; i++) {
@@ -961,7 +957,7 @@ void keyboard_select_key(Selector2DComponent *s, u8 column, u8 row) {
         play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
         return;
     }
-    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    menu_play_click_sound();
     TextComponent *t = get_component(k->text);
     gCursorTimerOffset = gGlobalTimer & 0x1f;
     memmove(&k->buf[t->cursorPos + 1], &k->buf[t->cursorPos], strLen - t->cursorPos + 1); // Shift characters right
@@ -1001,7 +997,7 @@ void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
                 k->buf[len - 1] = '\0'; // Remove last character
                 len--;
                 gCursorTimerOffset = gGlobalTimer & 0x1f;
-                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                menu_play_click_sound();
                 t->cursorPos--;
             } else {
                 play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
@@ -1011,7 +1007,7 @@ void component_keyboard_render(MenuComponent *m, s16 x, s16 y) {
         t->cursorPos = (t->cursorPos + len+1 + get_input(MENU_INPUT_DPAD, DIR_HORIZONTAL)) % (len+1);
         if (t->cursorPos != oldpos) {
             gCursorTimerOffset = gGlobalTimer & 0x1f;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            menu_play_move_sound();
         }
     }
 

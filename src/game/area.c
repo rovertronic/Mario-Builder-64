@@ -450,7 +450,8 @@ void render_game(void) {
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
 
-        gMenuOptSelectIndex = render_menus_and_dialogs();
+        create_dl_ortho_matrix();
+        render_menus_and_dialogs();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();
@@ -458,8 +459,6 @@ void render_game(void) {
         if (sCurrPlayMode == 0) {
             render_revent_textbox();
         }
-        
-        render_menu();
 
         if (mb64_mode == MB64_MODE_MAKE) {
             draw_mb64_menu();

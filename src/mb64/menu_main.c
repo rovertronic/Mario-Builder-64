@@ -1,15 +1,8 @@
 #include "menu_engine.h"
 
-#include "game/game_init.h"
-#include "game/ingame_menu.h"
-#include "audio/external.h"
-
 #include "game/sram.h"
-#include "game/segment2.h"
-#include "levels/menu/mm_btn2/header.h"
-#include "levels/menu/mm_btn_lg/header.h"
-#include "levels/menu/header.h"
 #include "libpl/libpl.h"
+#include "levels/menu/header.h"
 
 char *info_credits[] = {
     "3Mario Builder 64",
@@ -556,7 +549,7 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         MenuComponent *page = get_first_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
         gScheduledNextPage = PAGE_MAIN;
-        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        menu_play_click_sound();
         main_menu_page_change_animate(page, TRUE);
     }
 }
@@ -575,7 +568,7 @@ void main_menu_load_level(TextComponent *b) {
     // Animate menu
     MenuComponent *m = get_first_child(gMainMenuPageHandler);
     gMainMenuAnimateDir = TO_NEXT;
-    play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    menu_play_click_sound();
     main_menu_page_change_animate(m, TRUE);
 
     mb64_mode = MB64_MODE_UNINITIALIZED;
@@ -798,7 +791,7 @@ void main_menu_page_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         if (gPlayer1Controller->buttonPressed & B_BUTTON) {
             gMainMenuAnimateDir = TO_PREV;
             gScheduledNextPage = gPrevMainMenuPage;
-            play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+            menu_play_click_sound();
             main_menu_page_change_animate(m, TRUE);
 
             m->inactive = TRUE;
@@ -940,7 +933,9 @@ void create_page(int page, int animate) {
     if (animate) main_menu_page_change_animate(frame, FALSE);
 }
 
-MenuStyle main_menu_style = {0};
+MenuStyle main_menu_style = {
+    .textHighlightSelected = TRUE,
+};
 
 void main_menu_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     set_menu_style(main_menu_style);

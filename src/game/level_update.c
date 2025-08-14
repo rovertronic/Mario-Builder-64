@@ -181,6 +181,10 @@ u32 pressed_pause(void) {
     u32 dialogActive = get_dialog_id() >= 0;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
 
+    if (gMarioState->action == ACT_SPAWN_SPIN_AIRBORNE || gMarioState->action == ACT_SPAWN_SPIN_LANDING) {
+        intangible = FALSE;
+    }
+
     if ((mb64_mode == MB64_MODE_MAKE)||(minigame_real)||(revent_active)) {
         return FALSE;
     }
@@ -1089,10 +1093,11 @@ s32 play_mode_normal(void) {
 #endif
             gCameraMovementFlags |= CAM_MOVE_PAUSE_SCREEN;
             set_play_mode(PLAY_MODE_PAUSED);
+            create_pause_menu();
             gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         }
     }
-    
+
     return FALSE;
 }
 
@@ -1111,9 +1116,8 @@ void exit_level(void) {
 }
 
 s32 play_mode_paused(void) {
-    if (gMenuOptSelectIndex == MENU_OPT_NONE) {
-
-    } else if (gMenuOptSelectIndex == MENU_OPT_CONTINUE) {
+    if (gMenuOptSelectIndex == MENU_OPT_NONE) return FALSE;
+    if (gMenuOptSelectIndex == MENU_OPT_CONTINUE) {
         raise_background_noise(1);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);

@@ -1,13 +1,8 @@
 #include "menu_engine.h"
 
 #include "menu.h"
-#include "game/game_init.h"
-#include "game/ingame_menu.h"
-#include "audio/external.h"
 #include "game/level_update.h"
-#include "game/segment2.h"
 
-#include "actors/bg/header.h"
 #include "actors/bigpainting2/header.h"
 
 ComponentID settingsRoot = 0;
@@ -864,7 +859,8 @@ void settings_page_closed() {
 }
 
 MenuStyle settings_menu_style = {
-    .listOffsetSelected = TRUE
+    .listOffsetSelected = TRUE,
+    .textHighlightSelected = TRUE,
 };
 
 void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
@@ -877,7 +873,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     mb64_gfx_index = 0;
 
     if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
-        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        menu_play_click_sound();
         PageHandlerComponent *ph = get_first_child(root);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             component_animate_ease_out(root, 4.f, 12, DIR_VERTICAL);

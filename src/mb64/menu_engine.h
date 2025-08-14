@@ -1,7 +1,20 @@
 #pragma once
 
 #include "types.h"
+
 #include "engine/math_util.h"
+#include "audio/external.h"
+#include "game/segment2.h"
+#include "game/game_init.h"
+#include "game/ingame_menu.h"
+
+// Temp dls
+#include "levels/menu/mm_btn_sm/header.h"
+#include "levels/menu/mm_btn2/header.h"
+#include "levels/menu/mm_btn_lg/header.h"
+#include "actors/b/header.h"
+#include "actors/bg/header.h"
+#include "actors/uibutton/header.h"
 
 #define MENU_POOL_SIZE 128
 
@@ -48,11 +61,27 @@ typedef struct {
 } MenuState;
 
 typedef struct {
+    u8 textHighlightSelected:1;
     u8 listOffsetSelected:1;
+    u8 textNoShadow:1;
+
+    u8 noClickSounds:1;
+    u8 noMoveSounds:1;
 } MenuStyle;
 
 extern MenuStyle gMenuStyle;
 extern MenuState gMenuState;
+
+ALWAYS_INLINE void menu_play_click_sound(void) {
+    if (!gMenuStyle.noClickSounds) {
+        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+    }
+}
+ALWAYS_INLINE void menu_play_move_sound(void) {
+    if (!gMenuStyle.noMoveSounds) {
+        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+    }
+}
 
 #define set_menu_style(style) (gMenuStyle = style)
 

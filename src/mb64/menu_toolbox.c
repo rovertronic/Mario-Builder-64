@@ -1,14 +1,6 @@
 #include "menu_engine.h"
 
-#include "game/ingame_menu.h"
-#include "game/game_init.h"
-#include "game/segment2.h"
-#include "audio/external.h"
 #include "main.h"
-
-#include "actors/b/header.h"
-#include "actors/bg/header.h"
-#include "actors/uibutton/header.h"
 
 AnimatedComponent *gToolbar;
 int gToolboxIndex = 0;
@@ -208,7 +200,7 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
         if (param != 0 && dir) {
             curButton->buttonParam = (curButton->buttonParam + dir + param) % param;
             mb64_toolbar_params[toolbar->index] = curButton->buttonParam;
-            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            menu_play_move_sound();
         }
         // Set mb64_id_selection and the string to display
         if (buttonInfo->multiObj) {
@@ -245,7 +237,7 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
             // Material switching
             if (dir) {
                 mb64_mat_selection = (mb64_mat_selection + dir + NUM_MATERIALS_PER_THEME) % NUM_MATERIALS_PER_THEME;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+                menu_play_move_sound();
             }
             yellowStr = TILE_MATDEF(mb64_mat_selection).name;
         }
@@ -359,7 +351,7 @@ void toolbox_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (!a->timer && ACTIVE && gPlayer1Controller->buttonPressed & (B_BUTTON | START_BUTTON)) {
         component_animate_ease_out(a, 4.f, 12, DIR_VERTICAL);
         a->onFinish = close_toolbox;
-        play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+        menu_play_click_sound();
     }
 }
 
@@ -375,7 +367,7 @@ void toolbox_handle_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         } else {
             box->index += 9;
         }
-        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+        menu_play_move_sound();
     }
 
     if (box->index % box->columns >= 9) {
@@ -410,7 +402,7 @@ void toolbox_render_button(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 r
             int maxParam = mb64_ui_buttons[mb64_toolbox[index]].paramCount;
             int dir = get_input(MENU_INPUT_DPAD, DIR_HORIZONTAL);
             mb64_toolbox_params[index] = (mb64_toolbox_params[index] + maxParam + dir) % maxParam;
-            if (dir) play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
+            if (dir) menu_play_move_sound();
         }
     }
 

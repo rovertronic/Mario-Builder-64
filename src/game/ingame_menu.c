@@ -1847,47 +1847,15 @@ void draw_mb64_pause_badges(void) {
     }
 }
 
-s32 render_pause_courses_and_castle(void) {
-    if (gDialogBoxState == DIALOG_STATE_OPENING) {
-        mb64_init_pause_menu();
-        level_set_transition(-1, NULL);
-        play_sound(SOUND_MENU_PAUSE_OPEN, gGlobalSoundSource);
-        gDialogBoxState = DIALOG_STATE_VERTICAL;
-    }
-
-    shade_screen();
-    s32 decision = draw_mb64_pause_menu();
-    switch(decision) {
-        case 1:
-            level_set_transition(0, NULL);
-            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
-            gDialogBoxState = DIALOG_STATE_OPENING;
-            return MENU_OPT_CONTINUE;
-        break;
-        case 2:
-            level_set_transition(0, NULL);
-            play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
-            gDialogBoxState = DIALOG_STATE_OPENING;
-            return MENU_OPT_EXIT_COURSE;
-        break;
-    }
-
-    return MENU_OPT_NONE;
-}
-
-s32 render_menus_and_dialogs(void) {
-    s32 mode = MENU_OPT_NONE;
-    create_dl_ortho_matrix();
-
+void render_menus_and_dialogs(void) {
     gMarioState->GlobalPaused = TRUE;
     if (sCurrPlayMode == PLAY_MODE_PAUSED) {
         gMarioState->GlobalPaused = TRUE;
-        mode = render_pause_courses_and_castle();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     } else if (gDialogID != DIALOG_NONE) {
         render_dialog_entries();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     }
 
-    return mode;
+    render_menu();
 }

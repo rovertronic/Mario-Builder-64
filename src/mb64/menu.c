@@ -550,6 +550,7 @@ void mb64_init_pause_menu(void) {
 #define RETURN_OPTION_INDEX ARRAY_COUNT(mb64_pause_menu_buttons_options)-1
 
 s32 draw_mb64_pause_menu(void) {
+    return 0;
     u8 returnval = 0;
     s16 badge_count = count_u32_bits(save_file_get_badge_equip());
     s32 xoff;
