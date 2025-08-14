@@ -324,10 +324,6 @@
 '[R]' = 0x58
 '[L]' = 0x59
 
-# multi-text US symbols
-#'the' = 0xD1
-#'you' = 0xD2
-
 # EU ROM symbols
 'à' = 0x60
 'â' = 0x61

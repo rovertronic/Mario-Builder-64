@@ -279,14 +279,10 @@ void create_dl_identity_matrix(void) {
         return;
     }
 
-#ifndef GBI_FLOATS
     matrix->m[0][0] = 0x00010000;    matrix->m[1][0] = 0x00000000;    matrix->m[2][0] = 0x00000000;    matrix->m[3][0] = 0x00000000;
     matrix->m[0][1] = 0x00000000;    matrix->m[1][1] = 0x00010000;    matrix->m[2][1] = 0x00000000;    matrix->m[3][1] = 0x00000000;
     matrix->m[0][2] = 0x00000001;    matrix->m[1][2] = 0x00000000;    matrix->m[2][2] = 0x00000000;    matrix->m[3][2] = 0x00000000;
     matrix->m[0][3] = 0x00000000;    matrix->m[1][3] = 0x00000001;    matrix->m[2][3] = 0x00000000;    matrix->m[3][3] = 0x00000000;
-#else
-    guMtxIdent(matrix);
-#endif
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -363,131 +359,14 @@ void create_dl_ortho_matrix(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
 }
 
-// Unused
-#if FALSE
-static u8 *alloc_ia8_text_from_i1(u16 *in, s16 width, s16 height) {
-    s32 inPos;
-    u16 bitMask;
-    u8 *out;
-    s16 outPos = 0;
-
-    out = (u8 *) alloc_display_list((u32) width * (u32) height);
-
-    if (out == NULL) {
-        return NULL;
-    }
-
-    for (inPos = 0; inPos < (width * height) / 16; inPos++) {
-        bitMask = 0x8000;
-
-        while (bitMask != 0) {
-            if (in[inPos] & bitMask) {
-                out[outPos] = 0xFF;
-            } else {
-                out[outPos] = 0x00;
-            }
-
-            bitMask /= 2;
-            outPos++;
-        }
-    }
-
-    return out;
-}
-
 void render_generic_char(u8 c) {
     void **fontLUT = segmented_to_virtual(main_font_lut);
     void *packedTexture = segmented_to_virtual(fontLUT[c]);
-#if defined(VERSION_JP) || defined(VERSION_SH)
-    void *unpackedTexture = alloc_ia8_text_from_i1(packedTexture, 8, 16);
-#endif
 
-#ifndef VERSION_EU
-    gDPPipeSync(gDisplayListHead++);
-#endif
-#if defined(VERSION_JP) || defined(VERSION_SH)
-    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_8b, 1, VIRTUAL_TO_PHYSICAL(unpackedTexture));
-#else
-    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, VIRTUAL_TO_PHYSICAL(packedTexture));
-#endif
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_tex_settings);
-#ifdef VERSION_EU
-    gSPTextureRectangleFlip(gDisplayListHead++, gDialogX << 2, (gDialogY - 16) << 2,
-                            (gDialogX + 8) << 2, gDialogY << 2, G_TX_RENDERTILE, 8 << 6, 4 << 6, 1 << 10, 1 << 10);
-#endif
-}
-#endif
-
-Texture32 *alloc_ia4_tex_from_i1(Texture *in, s16 width, s16 height) {
-    u32 size = (u32) width * (u32) height;
-    s32 inPos;
-    s16 outPos = 0;
-    u8 bitMask;
-
-    Texture *out = (Texture *) alloc_display_list(size);
-
-    if (out == NULL) {
-        return NULL;
-    }
-
-    for (inPos = 0; inPos < (width * height) / 4; inPos++) {
-        bitMask = 0x80;
-
-        while (bitMask != 0) {
-            out[outPos] = (in[inPos] & bitMask) ? 0xF0 : 0x00;
-            bitMask /= 2;
-            out[outPos] = (in[inPos] & bitMask) ? out[outPos] + 0x0F : out[outPos];
-            bitMask /= 2;
-            outPos++;
-        }
-    }
-
-    return (Texture32 *)out;
-}
-
-void render_generic_char(u8 c) {
-    void **fontLUT = segmented_to_virtual(main_font_lut);
-    void *packedTexture = segmented_to_virtual(fontLUT[c]);
-#if MULTILANG
-    void *unpackedTexture = alloc_ia4_tex_from_i1(packedTexture, 8, 8);
-
-    gDPPipeSync(gDisplayListHead++);
-    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, VIRTUAL_TO_PHYSICAL(unpackedTexture));
-#else
     gDPPipeSync(gDisplayListHead++);
     gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, VIRTUAL_TO_PHYSICAL(packedTexture));
-#endif
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_tex_settings);
-}
-
-
-struct MultiTextEntry {
-    u8 length;
-    u8 str[4];
-};
-
-#define TEXT_THE_RAW ASCII_TO_DIALOG('t'), ASCII_TO_DIALOG('h'), ASCII_TO_DIALOG('e'), 0x00
-#define TEXT_YOU_RAW ASCII_TO_DIALOG('y'), ASCII_TO_DIALOG('o'), ASCII_TO_DIALOG('u'), 0x00
-
-enum MultiStringIDs { STRING_THE, STRING_YOU };
-
-/*
- * Place the multi-text string according to the ID passed. (US, EU)
- * 0: 'the'
- * 1: 'you'
- */
-void render_multi_text_string(s8 multiTextID) {
-    s8 i;
-    struct MultiTextEntry textLengths[2] = {
-        { 3, { TEXT_THE_RAW } },
-        { 3, { TEXT_YOU_RAW } },
-    };
-
-    for (i = 0; i < textLengths[multiTextID].length; i++) {
-        render_generic_char(textLengths[multiTextID].str[i]);
-        create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32)(gDialogCharWidths[textLengths[multiTextID].str[i]]), 0.0f, 0.0f);
-    }
 }
 
 #define MAX_STRING_WIDTH 16
@@ -568,12 +447,6 @@ void print_generic_string(s16 x, s16 y, const u8 *str) {
                 break;
             case DIALOG_CHAR_SLASH:
                 create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32)(gDialogCharWidths[DIALOG_CHAR_SPACE] * 2), 0.0f, 0.0f);
-                break;
-            case DIALOG_CHAR_MULTI_THE:
-                render_multi_text_string(STRING_THE);
-                break;
-            case DIALOG_CHAR_MULTI_YOU:
-                render_multi_text_string(STRING_YOU);
                 break;
             case DIALOG_CHAR_SPACE:
                 // create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32)(gDialogCharWidths[DIALOG_CHAR_SPACE]), 0.0f, 0.0f);
@@ -715,38 +588,6 @@ void print_menu_generic_string(s16 x, s16 y, const u8 *str) {
                     mark = DIALOG_MARK_NONE;
                 }
                 curX += gDialogCharWidths[str[strPos]];
-        }
-        strPos++;
-    }
-}
-
-void print_credits_string(s16 x, s16 y, const u8 *str) {
-    s32 strPos = 0;
-    void **fontLUT = segmented_to_virtual(main_credits_font_lut);
-    u32 curX = x;
-    u32 curY = y;
-
-    gDPSetTile(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0,
-                G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD);
-    gDPTileSync(gDisplayListHead++);
-    gDPSetTile(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 2, 0, G_TX_RENDERTILE, 0,
-                G_TX_CLAMP, 3, G_TX_NOLOD, G_TX_CLAMP, 3, G_TX_NOLOD);
-    gDPSetTileSize(gDisplayListHead++, G_TX_RENDERTILE, 0, 0, (8 - 1) << G_TEXTURE_IMAGE_FRAC, (8 - 1) << G_TEXTURE_IMAGE_FRAC);
-
-    while (str[strPos] != GLOBAR_CHAR_TERMINATOR) {
-        switch (str[strPos]) {
-            case GLOBAL_CHAR_SPACE:
-                curX += 4;
-                break;
-            default:
-                gDPPipeSync(gDisplayListHead++);
-                gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, fontLUT[str[strPos]]);
-                gDPLoadSync(gDisplayListHead++);
-                gDPLoadBlock(gDisplayListHead++, G_TX_LOADTILE, 0, 0, 8 * 8 - 1, CALC_DXT(8, G_IM_SIZ_16b_BYTES));
-                gSPTextureRectangle(gDisplayListHead++, curX << 2, curY << 2, (curX + 8) << 2,
-                                    (curY + 8) << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
-                curX += 7;
-                break;
         }
         strPos++;
     }
@@ -1128,25 +969,6 @@ void render_star_count_dialog_text(s8 *xMatrix, s16 *linePos) {
     *xMatrix = 1;
 }
 
-void render_multi_text_string_lines(s8 multiTextId, s8 lineNum, s16 *linePos, s8 linesPerBox, s8 xMatrix, s8 lowerBound) {
-    s8 i;
-    struct MultiTextEntry textLengths[2] = {
-        { 3, { TEXT_THE_RAW } },
-        { 3, { TEXT_YOU_RAW } },
-    };
-
-    if (lineNum >= lowerBound && lineNum <= (lowerBound + linesPerBox)) {
-        if (*linePos != 0 || xMatrix != 1) {
-            create_dl_translation_matrix(MENU_MTX_NOPUSH, (gDialogCharWidths[DIALOG_CHAR_SPACE] * (xMatrix - 1)), 0, 0);
-        }
-        for (i = 0; i < textLengths[multiTextId].length; i++) {
-            render_generic_char(textLengths[multiTextId].str[i]);
-            create_dl_translation_matrix(MENU_MTX_NOPUSH, (gDialogCharWidths[textLengths[multiTextId].str[i]]), 0, 0);
-        }
-    }
-    linePos += textLengths[multiTextId].length;
-}
-
 u32 ensure_nonnegative(s16 value) {
     return ((value < 0) ? 0 : value);
 }
@@ -1242,14 +1064,6 @@ void handle_dialog_text_and_pages(s8 colorMode, struct DialogEntry *dialog, s8 l
             case DIALOG_CHAR_SLASH:
                 xMatrix += 2;
                 linePos += 2;
-                break;
-            case DIALOG_CHAR_MULTI_THE:
-                render_multi_text_string_lines(STRING_THE, lineNum, &linePos, linesPerBox, xMatrix, lowerBound);
-                xMatrix = 1;
-                break;
-            case DIALOG_CHAR_MULTI_YOU:
-                render_multi_text_string_lines(STRING_YOU, lineNum, &linePos, linesPerBox, xMatrix, lowerBound);
-                xMatrix = 1;
                 break;
             case DIALOG_CHAR_STAR_COUNT:
                 render_star_count_dialog_text(&xMatrix, &linePos);
@@ -1496,82 +1310,6 @@ void render_dialog_entries(void) {
         render_dialog_triangle_next(dialog->linesPerBox);
     }
 }
-
-void render_dialog_entry_preview(u8 dialog_id) {
-    void **dialogTable = segmented_to_virtual(languageTable[gInGameLanguage][0]);
-    struct DialogEntry *dialog = segmented_to_virtual(dialogTable[dialog_id]);
-    gDialogBoxScale = 1.0f;
-
-    render_dialog_box_type(dialog, dialog->linesPerBox);
-
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE,
-                  // Horizontal scissoring isn't really required and can potentially mess up widescreen enhancements.
-                  0,
-                  ensure_nonnegative(DIAG_VAL2 - dialog->width),
-                  SCREEN_WIDTH,
-                  ensure_nonnegative(240 + ((dialog->linesPerBox * 80) / DIAG_VAL4) - dialog->width));
-
-    handle_dialog_text_and_pages(0, dialog, 1);
-}
-
-void reset_cutscene_msg_fade(void) {
-    gCutsceneMsgFade = 0;
-}
-
-void dl_rgba16_begin_cutscene_msg_fade(void) {
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gCutsceneMsgFade);
-}
-
-void dl_rgba16_stop_cutscene_msg_fade(void) {
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
-
-    if (gCutsceneMsgFade < 250) {
-        gCutsceneMsgFade += 25;
-    } else {
-        gCutsceneMsgFade = 255;
-    }
-}
-
-u32 ascii_to_credits_char(u8 c) {
-    if (c >= 'A' && c <= 'Z') return (c - ('A' - 0xA));
-    if (c >= 'a' && c <= 'z') return (c - ('a' - 0xA)); // remap lower to upper case
-    if (c == ' ') return GLOBAL_CHAR_SPACE;
-    if (c == '.') return 0x24;
-    if (c == '3') return ASCII_TO_DIALOG('3');
-    if (c == '4') return ASCII_TO_DIALOG('4');
-    if (c == '6') return ASCII_TO_DIALOG('6');
-
-    return GLOBAL_CHAR_SPACE;
-}
-
-void print_credits_str_ascii(s16 x, s16 y, const char *str) {
-    s32 pos = 0;
-    u8 c = str[pos];
-    u8 creditStr[100];
-
-    while (c != 0) {
-        creditStr[pos++] = ascii_to_credits_char(c);
-        c = str[pos];
-    }
-
-    creditStr[pos] = GLOBAR_CHAR_TERMINATOR;
-
-    print_credits_string(x, y, creditStr);
-}
-
-void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuration) {
-    // is message done printing?
-    if (gCutsceneMsgIndex == -1) {
-        gCutsceneMsgIndex = msgIndex;
-        gCutsceneMsgDuration = msgDuration;
-        gCutsceneMsgTimer = 0;
-        gCutsceneMsgXOffset = xOffset;
-        gCutsceneMsgYOffset = yOffset;
-        gCutsceneMsgFade = 0;
-    }
-}
-
 
 void reset_red_coins_collected(void) {
     gRedCoinsCollected = 0;

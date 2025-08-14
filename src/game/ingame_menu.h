@@ -102,8 +102,6 @@ enum DialogSpecialChars {
     DIALOG_CHAR_DOUBLE_LOW_QUOTE     = 0xF0, // German opening quotation mark
 #endif
     DIALOG_CHAR_SLASH                = 0xD0,
-    DIALOG_CHAR_MULTI_THE            = 0xD1, // 'the'
-    DIALOG_CHAR_MULTI_YOU            = 0xD2, // 'you'
     DIALOG_CHAR_PERIOD               = 0x6E,
     DIALOG_CHAR_COMMA                = 0x6F,
     DIALOG_CHAR_COLOR                = 0xDF,
@@ -175,15 +173,9 @@ void create_dialog_box_with_var(s16 dialog, s32 dialogVar);
 void create_dialog_inverted_box(s16 dialog);
 void create_dialog_box_with_response(s16 dialog);
 void reset_dialog_render_state(void);
-void reset_cutscene_msg_fade(void);
-void dl_rgba16_begin_cutscene_msg_fade(void);
-void dl_rgba16_stop_cutscene_msg_fade(void);
-void print_credits_str_ascii(s16 x, s16 y, const char *str);
-void set_cutscene_message(s16 xOffset, s16 yOffset, s16 msgIndex, s16 msgDuration);
 void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);
 void render_menus_and_dialogs(void);
-void render_dialog_entry_preview(u8 dialog_id);
 
 void int_to_str_time(s32 num, s32 num2, s32 num3, u8 *dst);
 void int_to_str_slash(s32 num, s32 num2, u8 *dst);

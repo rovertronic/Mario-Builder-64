@@ -504,15 +504,6 @@ void draw_mb64_menu(void) {
             break;
 
         case MB64_MAKE_SELECT_DIALOG:
-            if (TRUE) { //4 my compiler
-                char stringBuf[50];
-                sprintf(stringBuf,"^ Subject: %s |", mb64_dialog_subjects[mb64_dialog_subject_index].name);
-                print_maker_string_ascii_centered(160,210,stringBuf,MB64_TEXT_WHITE);
-                sprintf(stringBuf,"< Topic: %s >",mb64_dialog_subjects[mb64_dialog_subject_index].topic_list[mb64_dialog_topic_index].name);
-                print_maker_string_ascii_centered(160,190,stringBuf,MB64_TEXT_WHITE);
-
-                render_dialog_entry_preview(mb64_dialog_subjects[mb64_dialog_subject_index].topic_list[mb64_dialog_topic_index].dialog_id);
-            }
             break;
 
     }
