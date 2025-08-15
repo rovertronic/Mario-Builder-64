@@ -414,14 +414,14 @@ void do_page_change(UNUSED AnimatedComponent *a) {
 }
 
 void unfreeze_page(UNUSED AnimatedComponent *a) {
-    MenuComponent *page = get_first_child(gMainMenuPageHandler);
+    MenuComponent *page = get_child(gMainMenuPageHandler);
     page->inactive = FALSE;
 }
 
 void main_menu_list_animate(ListComponent *l, int out) {
     int dir = gMainMenuAnimateDir;
     for (int i = 0; i < l->count; i++) {
-        AnimatedComponent *a = get_first_child(component_list_get(l, i));
+        AnimatedComponent *a = get_child(component_list_get(l, i));
         if (out) {
             component_animate_bounce_out(a, -8.f*dir, 23.f*dir, 20, DIR_HORIZONTAL);
         } else {
@@ -448,7 +448,7 @@ void main_menu_keyboard_animate(AnimatedComponent *k, int out) {
 }
 
 void main_menu_key_text_animate(FrameComponent *page, int out, int dir) {
-    AnimatedComponent *a = get_child(page, MENU_ANIMATED, 0);
+    AnimatedComponent *a = get_child_of_type(page, MENU_ANIMATED, 0);
     main_menu_text_animate(a, out, dir);
     if (out) {
         a->onFinish = do_page_change;
@@ -458,7 +458,7 @@ void main_menu_key_text_animate(FrameComponent *page, int out, int dir) {
 }
 
 void main_menu_shade_animate(FrameComponent *page, int out) {
-    RectComponent *rect = get_first_child(page);
+    RectComponent *rect = get_child(page);
     if (!out) rect->curAlpha = 0;
     component_rect_do_fade(rect, out ? 0 : 110, 12, out ? do_page_change : unfreeze_page);
 }
@@ -466,7 +466,7 @@ void main_menu_shade_animate(FrameComponent *page, int out) {
 void button_change_page(TextComponent *b) {
     gMainMenuAnimateDir = TO_NEXT;
     gScheduledNextPage = b->onClickArg;
-    main_menu_page_change_animate(get_first_child(gMainMenuPageHandler), TRUE);
+    main_menu_page_change_animate(get_child(gMainMenuPageHandler), TRUE);
 }
 
 AnimatedComponent *main_menu_create_title(MenuComponent *parent, char *text, s16 y) {
@@ -546,7 +546,7 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 
     if (gCurrMainMenuPage == PAGE_NO_SD_CARD && gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
-        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        MenuComponent *page = get_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
         gScheduledNextPage = PAGE_MAIN;
         menu_play_click_sound();
@@ -566,7 +566,7 @@ void main_menu_load_level(TextComponent *b) {
     FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
 
     // Animate menu
-    MenuComponent *m = get_first_child(gMainMenuPageHandler);
+    MenuComponent *m = get_child(gMainMenuPageHandler);
     gMainMenuAnimateDir = TO_NEXT;
     menu_play_click_sound();
     main_menu_page_change_animate(m, TRUE);
@@ -618,7 +618,7 @@ void page_number_init_text(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     component_main_menu_button_render(m, x, y);
     TextComponent *t = (TextComponent *)m;
     FrameComponent *page = get_parent(get_parent(t));
-    PageHandlerComponent *ph = get_first_child(page);
+    PageHandlerComponent *ph = get_child(page);
     sprintf(t->text, "Page %d/%d", ph->index + 1, ph->scroll.count);
 }
 
@@ -632,10 +632,10 @@ void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16
     }
     index = (index + dir + ph->scroll.count) % ph->scroll.count;
 
-    ListComponent *l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+    ListComponent *l = get_child_of_type(get_component(ph->currentPage), MENU_LIST, 0);
     int curIndex = l->index;
     page_handler_set_page(ph, index);
-    l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+    l = get_child_of_type(get_component(ph->currentPage), MENU_LIST, 0);
     l->index = CLAMP(curIndex, 0, l->count - 1);
 }
 
@@ -673,7 +673,7 @@ void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
             show_error("Level already exists!");
             return;
         }
-        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        MenuComponent *page = get_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
         main_menu_page_change_animate(page, TRUE);
@@ -700,7 +700,7 @@ void no_sd_card_start_level(void) {
 
 void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (KEYBOARD_CONFIRM) {
-        MenuComponent *page = get_first_child(gMainMenuPageHandler);
+        MenuComponent *page = get_child(gMainMenuPageHandler);
         if (gCurrMainMenuPage == PAGE_AUTHOR) {
             gMainMenuAnimateDir = TO_NEXT;
             gScheduledNextPage = PAGE_MAIN;
@@ -749,7 +749,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_BUILD:
         case PAGE_HELP:
         case PAGE_NEW_LEVEL:
-            l = get_child(page, MENU_LIST, 0);
+            l = get_child_of_type(page, MENU_LIST, 0);
             main_menu_list_animate(l, out);
             main_menu_key_text_animate(page, out, 1);
             break;
@@ -768,9 +768,9 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
                 main_menu_key_text_animate(page, out, 1);
                 break;
             }
-            PageHandlerComponent *ph = get_first_child(page);
+            PageHandlerComponent *ph = get_child(page);
             page_handler_load_initial_page(ph);
-            l = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+            l = get_child_of_type(get_component(ph->currentPage), MENU_LIST, 0);
             main_menu_list_animate(l, out);
             main_menu_key_text_animate(page, out, -1);
             gLevelSelectorIndex = ph->index * LEVELS_PER_PAGE + l->index;
@@ -779,9 +779,9 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
         case PAGE_CHANGE_NAME:
         case PAGE_AUTHOR:
             main_menu_shade_animate(page, out);
-            RectComponent *shade = get_first_child(page);
-            main_menu_text_animate(get_child(shade, MENU_ANIMATED, 0), out, 1);
-            main_menu_keyboard_animate(get_child(shade, MENU_ANIMATED, 1), out);
+            RectComponent *shade = get_child(page);
+            main_menu_text_animate(get_child_of_type(shade, MENU_ANIMATED, 0), out, 1);
+            main_menu_keyboard_animate(get_child_of_type(shade, MENU_ANIMATED, 1), out);
             break;
     }
 }

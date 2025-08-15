@@ -170,10 +170,10 @@ void handle_menu_scrolling(s8 scrollDirection, s8 *currentIndex, s8 minIndex, s8
 s32 get_str_x_pos_from_center(s16 centerPos, u8 *str, f32 scale);
 void int_to_str(s32 num, u8 *dst);
 s32 get_dialog_id(void);
-void create_dialog_box(s16 dialog);
-void create_dialog_box_with_var(s16 dialog, s32 dialogVar);
-void create_dialog_inverted_box(s16 dialog);
-void create_dialog_box_with_response(s16 dialog);
+// void create_dialog_box(s16 dialog);
+// void create_dialog_box_with_var(s16 dialog, s32 dialogVar);
+// void create_dialog_inverted_box(s16 dialog);
+// void create_dialog_box_with_response(s16 dialog);
 void reset_dialog_render_state(void);
 void render_hud_cannon_reticle(void);
 void reset_red_coins_collected(void);

@@ -8728,14 +8728,14 @@ void cutscene_dialog_move_mario_shoulder(struct Camera *c) {
  * Create the dialog with sCutsceneDialogID
  */
 void cutscene_dialog_create_dialog_box(struct Camera *c) {
-    if (c->cutscene == CUTSCENE_RACE_DIALOG) {
-        create_dialog_box_with_response(sCutsceneDialogID);
-    } else {
-        create_dialog_box(sCutsceneDialogID);
-    }
+    // if (c->cutscene == CUTSCENE_RACE_DIALOG) {
+    //     create_dialog_box_with_response(sCutsceneDialogID);
+    // } else {
+    create_dialog_box(sCutsceneDialogID);
+    // }
 
     //! Unused. This may have been used before sCutsceneDialogResponse was implemented.
-    sCutsceneVars[8].angle[0] = DIALOG_RESPONSE_NOT_DEFINED;
+    // sCutsceneVars[8].angle[0] = DIALOG_RESPONSE_NOT_DEFINED;
 }
 
 /**

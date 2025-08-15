@@ -1242,66 +1242,11 @@ s16 sBowserDefeatedDialogText[3] = { DIALOG_119, DIALOG_120, DIALOG_121 };
  * Returns TRUE once done
  */
 s32 bowser_dead_default_stage_ending(void) {
-        // Lower music volume
-        //if (o->oBowserTimer == 0) {
-        //    seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
-        //    o->oBowserTimer++;
-        //}
-        // Play Bowser defeated dialog
-        //if (cur_obj_update_dialog(MARIO_DIALOG_LOOK_UP,
-        //    (DIALOG_FLAG_TEXT_DEFAULT | DIALOG_FLAG_TIME_STOP_ENABLED),
-        //    sBowserDefeatedDialogText[o->oBehParams2ndByte], 0)) {
-        //    // Dialog is done, fade out music and play explode sound effect
-        //    o->oBowserTimer++;
-            //seq_player_unlower_volume(SEQ_PLAYER_LEVEL, 60);
-            //seq_player_fade_out(SEQ_PLAYER_LEVEL, 1);
-        //}
-    // Hide Bowser and spawn collectable once done twirling
     if (bowser_dead_twirl_up()) {
         bowser_dead_hide();
         spawn_triangle_break_particles(20, MODEL_YELLOW_COIN, 1.0f, 0);
         bowser_spawn_collectable();
         set_mario_npc_dialog(MARIO_DIALOG_STOP);
-        return TRUE;
-    }
-    return FALSE;
-}
-
-/**
- * Bowser's dead sequence that plays in BitS
- * Returns TRUE once done
- */
-s32 bowser_dead_final_stage_ending(void) {
-    s32 dialogID;
-
-    if (o->oBowserTimer < 2) {
-        // Set dialog whenever you have 120 stars or not
-        if (gHudDisplay.stars < 120) {
-            dialogID = DIALOG_121;
-        } else {
-            dialogID = DIALOG_163;
-        }
-        // Lower music volume
-        if (o->oBowserTimer == 0) {
-            seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
-            o->oBowserTimer++;
-        }
-        // Play Bowser defeated dialog
-        if (cur_obj_update_dialog(MARIO_DIALOG_LOOK_UP,
-            (DIALOG_FLAG_TEXT_DEFAULT | DIALOG_FLAG_TIME_STOP_ENABLED), dialogID, 0)) {
-            // Dialog is done, fade out music and spawn grand star
-            o->oBowserShadow = FALSE;
-            seq_player_unlower_volume(SEQ_PLAYER_LEVEL, 60);
-            seq_player_fade_out(SEQ_PLAYER_LEVEL, 1);
-            bowser_spawn_collectable();
-            o->oBowserTimer++;
-        }
-    // Slowly fade him out
-    } else if (o->oOpacity > 4) {
-        o->oOpacity -= 4;
-    } else {
-        // And at last, hide him
-        bowser_dead_hide();
         return TRUE;
     }
     return FALSE;

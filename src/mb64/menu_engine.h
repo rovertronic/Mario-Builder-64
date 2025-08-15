@@ -317,7 +317,7 @@ ALWAYS_INLINE u8 get_id(void *m) {
 ALWAYS_INLINE void *get_parent(void *m) {
     return get_component(((MenuComponent *)m)->parent);
 }
-ALWAYS_INLINE void *get_first_child(void *parent) {
+ALWAYS_INLINE void *get_child(void *parent) {
     MenuComponent *p = parent;
     return p->child ? get_component(p->child) : NULL;
 }
@@ -328,7 +328,7 @@ ALWAYS_INLINE void render_child(MenuComponent *m, s16 x, s16 y) {
     }
 }
 
-void *get_child(void *parent, u8 type, u8 index);
+void *get_child_of_type(void *parent, u8 type, u8 index);
 
 FrameComponent       *init_frame_component(void *parent);
 FrameComponent       *init_dynamic_component(void *parent, ComponentRenderFunc render);
@@ -356,6 +356,7 @@ void component_animate_bounce_in(AnimatedComponent *a, f32 offset, f32 accel, f3
 void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVel, u8 timer, u8 direction);
 void component_animate_linear(AnimatedComponent *a, f32 offset, f32 target, f32 vel, u8 direction);
 void component_rect_do_fade(RectComponent *rc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
+void listitem_render_triangle(MenuComponent *m, s16 x, s16 y);
 
 void reset_menu(void);
 void render_menu(void);

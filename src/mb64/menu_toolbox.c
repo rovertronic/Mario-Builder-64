@@ -66,8 +66,8 @@ void component_button_render(MenuComponent *m, s16 x, s16 y) {
 }
 
 void set_toolbar(int index, int id, int param) {
-    ListComponent *toolbar = get_first_child(gToolbar);
-    FrameComponent *button = get_first_child(component_list_get(toolbar, index));
+    ListComponent *toolbar = get_child(gToolbar);
+    FrameComponent *button = get_child(component_list_get(toolbar, index));
     button->buttonID = id;
     button->buttonParam = param;
     mb64_toolbar[index] = id;
@@ -170,7 +170,7 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    FrameComponent *curButton = get_first_child(component_list_get(toolbar, toolbar->index));
+    FrameComponent *curButton = get_child(component_list_get(toolbar, toolbar->index));
     int id = curButton->buttonID;
     struct mb64_ui_button_type *buttonInfo = &mb64_ui_buttons[id];
 
@@ -272,7 +272,7 @@ void create_toolbar(void) {
 }
 
 void toolbar_set_active(int active) {
-    ListComponent *l = get_first_child(gToolbar);
+    ListComponent *l = get_child(gToolbar);
     l->base.inactive = !active;
 }
 
@@ -341,7 +341,7 @@ void close_toolbox(void) {
     gToolbox = NULL;
     mb64_menu_state = MB64_MAKE_MAIN;
 
-    ListComponent *bar = get_first_child(gToolbar);
+    ListComponent *bar = get_child(gToolbar);
     component_list_get(bar, 7)->disabled = FALSE;
     component_list_get(bar, 8)->disabled = FALSE;
 }
@@ -357,7 +357,7 @@ void toolbox_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
 void toolbox_handle_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     AnimatedComponent *a = (AnimatedComponent *)m;
-    Selector2DComponent *box = get_first_child(m);
+    Selector2DComponent *box = get_child(m);
 
     if (a->timer) return;
 
@@ -428,7 +428,7 @@ void toolbox_select_button(Selector2DComponent *s, u8 column, u8 row) {
     if (mb64_toolbox[s->index] == MB64_BUTTON_BLANK) return;
     play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
 
-    ListComponent *toolbar = get_first_child(gToolbar);
+    ListComponent *toolbar = get_child(gToolbar);
     create_animated_button(sSelectedX, sSelectedY + 3, toolbar->index, mb64_toolbox[s->index], mb64_toolbox_params[s->index]);
 }
 
@@ -495,7 +495,7 @@ void create_toolbox(void) {
 
     init_dynamic_component(box, toolbox_render_text);
 
-    ListComponent *bar = get_first_child(gToolbar);
+    ListComponent *bar = get_child(gToolbar);
     component_list_get(bar, 7)->disabled = TRUE;
     component_list_get(bar, 8)->disabled = TRUE;
 }

@@ -3805,7 +3805,7 @@ void sb_loop(void) {
 
     switch(mb64_menu_state) {
         case MB64_MAKE_MAIN:
-            ListComponent *toolbarlist = get_first_child(gToolbar);
+            ListComponent *toolbarlist = get_child(gToolbar);
             if (toolbarlist->base.inactive) {
                 break;
             }

@@ -810,35 +810,35 @@ s32 get_dialog_id(void) {
     return gDialogID;
 }
 
-void create_dialog_box(s16 dialog) {
-    if (gDialogID == DIALOG_NONE) {
-        gDialogID = dialog;
-        gDialogBoxType = DIALOG_TYPE_ROTATE;
-    }
-}
+// void create_dialog_box(s16 dialog) {
+//     if (gDialogID == DIALOG_NONE) {
+//         gDialogID = dialog;
+//         gDialogBoxType = DIALOG_TYPE_ROTATE;
+//     }
+// }
 
-void create_dialog_box_with_var(s16 dialog, s32 dialogVar) {
-    if (gDialogID == DIALOG_NONE) {
-        gDialogID = dialog;
-        gDialogVariable = dialogVar;
-        gDialogBoxType = DIALOG_TYPE_ROTATE;
-    }
-}
+// void create_dialog_box_with_var(s16 dialog, s32 dialogVar) {
+//     if (gDialogID == DIALOG_NONE) {
+//         gDialogID = dialog;
+//         gDialogVariable = dialogVar;
+//         gDialogBoxType = DIALOG_TYPE_ROTATE;
+//     }
+// }
 
-void create_dialog_inverted_box(s16 dialog) {
-    if (gDialogID == DIALOG_NONE) {
-        gDialogID = dialog;
-        gDialogBoxType = DIALOG_TYPE_ZOOM;
-    }
-}
+// void create_dialog_inverted_box(s16 dialog) {
+//     if (gDialogID == DIALOG_NONE) {
+//         gDialogID = dialog;
+//         gDialogBoxType = DIALOG_TYPE_ZOOM;
+//     }
+// }
 
-void create_dialog_box_with_response(s16 dialog) {
-    if (gDialogID == DIALOG_NONE) {
-        gDialogID = dialog;
-        gDialogBoxType = DIALOG_TYPE_ROTATE;
-        gLastDialogResponse = 1;
-    }
-}
+// void create_dialog_box_with_response(s16 dialog) {
+//     if (gDialogID == DIALOG_NONE) {
+//         gDialogID = dialog;
+//         gDialogBoxType = DIALOG_TYPE_ROTATE;
+//         gLastDialogResponse = 1;
+//     }
+// }
 
 void reset_dialog_render_state(void) {
     level_set_transition(0, NULL);

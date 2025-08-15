@@ -358,23 +358,7 @@ static void boo_act_3(void) {
 
 // Called when a Go on a Ghost Hunt boo dies
 static void boo_act_4(void) {
-    s32 dialogID;
 
-    // If there are no remaining "minion" boos, show the dialog of the Big Boo
-    if (cur_obj_nearest_object_with_behavior(bhvGhostHuntBoo) == NULL) {
-        dialogID = DIALOG_108;
-    } else {
-        dialogID = DIALOG_107;
-    }
-
-    if (cur_obj_update_dialog(MARIO_DIALOG_LOOK_UP, DIALOG_FLAG_TEXT_DEFAULT, dialogID, 0)) {
-        create_sound_spawner(SOUND_OBJ_DYING_ENEMY1);
-        obj_mark_for_deletion(o);
-
-        if (dialogID == DIALOG_108) { // If the Big Boo should spawn, play the jingle
-            play_puzzle_jingle();
-        }
-    }
 }
 
 static ObjActionFunc sBooActions[] = {

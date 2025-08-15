@@ -135,7 +135,7 @@ void add_child(void *parent, MenuComponent *child) {
 }
 
 // Gets the index'th child of specified type from the parent component.
-void *get_child(void *parent, u8 type, u8 index) {
+void *get_child_of_type(void *parent, u8 type, u8 index) {
     MenuComponent *p = parent;
     MenuComponent *current = get_component(p->child);
     u8 count = 0;
@@ -820,7 +820,7 @@ void component_list_render(MenuComponent *m, s16 x, s16 y) {
                     }
                     // If scrolling off the top, look for a sublist in the new page
                     // and set its index to the last item if it exists
-                    ListComponent *sublist = get_child(get_component(ph->currentPage), MENU_LIST, 0);
+                    ListComponent *sublist = get_child_of_type(get_component(ph->currentPage), MENU_LIST, 0);
                     if (dir == -1 && sublist) sublist->index = sublist->count - 1;
                     break;
                 }
@@ -864,6 +864,17 @@ void component_listitem_render(MenuComponent *m, s16 x, s16 y) {
         y += item->offset;
     }
     render_child(m, x + m->xpos, y + m->ypos);
+}
+
+void listitem_render_triangle(MenuComponent *m, s16 x, s16 y) {
+    if (!gMenuState.selected) return;
+    x += m->xpos - 15;
+    y += m->ypos - 1;
+
+    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
 // ================ 2D SELECTOR ===================
@@ -1040,7 +1051,7 @@ void component_counter_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
     y += m->ypos;
     if (c->max >= 0) {
-        sprintf(buf, "%c*%d/%d", c->symbol, *c->value, c->max);
+        sprintf(buf, "%c%d/%d", c->symbol, *c->value, c->max);
     } else {
         sprintf(buf, "%c*%d", c->symbol, *c->value);
     }
@@ -1136,7 +1147,7 @@ void move_error(void) {
 void show_error(char *msg) {
     play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
     if (sActiveError) {
-        TextComponent *t = get_first_child(sActiveError);
+        TextComponent *t = get_child(sActiveError);
         t->text = msg;
     } else {
         sActiveError = alloc_component(gMenuRoot, MENU_ANIMATED);

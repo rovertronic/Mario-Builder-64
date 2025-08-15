@@ -57,7 +57,7 @@ char *mb64_theme_string_table[] = {
 
 ListComponent *gEnvironmentList;
 void theme_changed(UNUSED SelectorComponent *s) {
-    AnimatedComponent *customtheme = get_first_child(component_list_get(gEnvironmentList, 3));
+    AnimatedComponent *customtheme = get_child(component_list_get(gEnvironmentList, 3));
 
     if (mb64_lopt_theme == MB64_THEME_CUSTOM) {
         // Enable custom theme button
@@ -551,7 +551,7 @@ void custom_theme_update_material(FrameComponent *f) {
         default:
             set_mat_from_category_and_index(f->matCategory, f->matIndex, &mb64_curr_custom_theme.mats[index]);
             set_mat_from_category_and_index(f->topmatCategory, f->topmatIndex, &mb64_curr_custom_theme.topmats[index]);
-            custom_theme_set_floor_class_name(get_child(f, MENU_TEXT, 0), index);
+            custom_theme_set_floor_class_name(get_child_of_type(f, MENU_TEXT, 0), index);
     }
 }
 
@@ -590,7 +590,7 @@ void material_changed(SelectorComponent *s) {
 void category_changed(SelectorComponent *s) {
     ListItemComponent *li = get_parent(s);
     ListItemComponent *mli = get_component(li->base.next); // hacky way to get the next item in the list, which is the material selector
-    SelectorComponent *s2 = get_child(mli, MENU_SELECTOR, 0);
+    SelectorComponent *s2 = get_child_of_type(mli, MENU_SELECTOR, 0);
     s2->scroll.count = get_category_size(*s->value);
     *s2->value = 0;
     FrameComponent *f = get_parent(get_parent(li)); // Assumes Frame -> List -> ListItem
@@ -700,7 +700,7 @@ FrameComponent *custom_theme_page_creator(UNUSED PageHandlerComponent *unusedph,
 }
 
 void custom_theme_button_pressed(void) {
-    PageHandlerComponent *ph = get_first_child(get_component(settingsRoot));
+    PageHandlerComponent *ph = get_child(get_component(settingsRoot));
     page_handler_scroll(ph, 1);
 }
 
@@ -730,7 +730,7 @@ void konami_code_check(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
                 konami_disable_inputs = FALSE;
                 konami_index = 0;
 
-                SelectorComponent *s = get_child(component_list_get(get_child(m, MENU_LIST, 0), 0), MENU_SELECTOR, 0);
+                SelectorComponent *s = get_child_of_type(component_list_get(get_child_of_type(m, MENU_LIST, 0), 0), MENU_SELECTOR, 0);
                 s->scroll.count = ARRAY_COUNT(mb64_theme_string_table);
             }
         } else {
@@ -847,9 +847,9 @@ FrameComponent *settings_page_creator(UNUSED PageHandlerComponent *unusedph, s32
 }
 
 void settings_page_closed() {
-    PageHandlerComponent *ph = get_first_child(get_component(settingsRoot));
+    PageHandlerComponent *ph = get_child(get_component(settingsRoot));
     gSettingsCustomOpen = ph->index;
-    PageHandlerComponent *ph2 = get_first_child(get_component(ph->currentPage));
+    PageHandlerComponent *ph2 = get_child(get_component(ph->currentPage));
     gSettingsPage = ph2->index;
 
     dealloc_component(settingsRoot);
@@ -874,7 +874,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
     if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         menu_play_click_sound();
-        PageHandlerComponent *ph = get_first_child(root);
+        PageHandlerComponent *ph = get_child(root);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             component_animate_ease_out(root, 4.f, 12, DIR_VERTICAL);
             root->onFinish = settings_page_closed;
@@ -883,7 +883,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
             gFromCustomTheme = TRUE;
             page_handler_scroll(ph, -1);
             // Save current page
-            PageHandlerComponent *ph2 = get_first_child(get_component(ph->oldPage));
+            PageHandlerComponent *ph2 = get_child(get_component(ph->oldPage));
             gSettingsPage = ph2->index;
         }
         update_custom_theme();

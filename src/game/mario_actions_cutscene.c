@@ -212,11 +212,11 @@ s32 act_reading_automatic_dialog(struct MarioState *m) {
         // set Mario dialog
         if (m->actionState == 9) {
             actionArg = m->actionArg;
-            if (GET_HIGH_U16_OF_32(actionArg) == 0) {
-                create_dialog_box(GET_LOW_U16_OF_32(actionArg));
-            } else {
-                create_dialog_box_with_var(GET_HIGH_U16_OF_32(actionArg), GET_LOW_U16_OF_32(actionArg));
-            }
+            // if (GET_HIGH_U16_OF_32(actionArg) == 0) {
+            //     create_dialog_box(GET_LOW_U16_OF_32(actionArg));
+            // } else {
+            //     create_dialog_box_with_var(GET_HIGH_U16_OF_32(actionArg), GET_LOW_U16_OF_32(actionArg));
+            // }
         }
         // wait until dialog is done
         else if (m->actionState == 10) {
@@ -273,7 +273,7 @@ s32 act_reading_sign(struct MarioState *m) {
             m->pos[2] += marioObj->oMarioReadingSignDPosZ / 11.0f;
             // create the text box
             if (m->actionTimer++ == 10) {
-                create_dialog_inverted_box(m->usedObj->oBehParams2ndByte);
+                //create_dialog_inverted_box(m->usedObj->oBehParams2ndByte);
                 m->actionState = ACT_STATE_READING_SIGN_IN_DIALOG;
             }
             break;
@@ -360,6 +360,15 @@ s32 act_debug_free_move(struct MarioState *m) {
     return FALSE;
 }
 
+char *starDialog = "You've collected every star!\nCongratulations!\nWould you like to exit?";
+void star_dance_dialog_response(int response) {
+    if (response) {
+        exit_level();
+    } else {
+        gMarioState->actionState = ACT_STATE_STAR_DANCE_RETURN;
+    }
+}
+
 void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
     // u8 random_range; // unused
     // u8 final_star = FALSE;
@@ -405,31 +414,17 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
                 break;
 
             case 80:
-                //if (m->lastStarCollected != 6) { //normal star
-                //    if (!(m->actionArg & 1)) {
-                //        level_trigger_warp(m, WARP_OP_STAR_EXIT);
-                //    } else {
-                //        // enable_time_stop();
-                //        // create_dialog_box_with_response(gLastCompletedStarNum == 7 ? DIALOG_013 : DIALOG_014);
-                //        m->actionState = ACT_STATE_STAR_DANCE_DO_SAVE;
-                //    }
-                //}
-                gDialogResponse = DIALOG_RESPONSE_NONE;
                 if (mb64_play_stars == mb64_play_stars_max) {
                     enable_time_stop();
-                    create_dialog_box_with_response(DIALOG_013);
+                    create_dialog_box_with_response(starDialog, star_dance_dialog_response);
+                    m->actionState = ACT_STATE_STAR_DANCE_DO_SAVE;
                 } else {
-                    gDialogResponse = DIALOG_RESPONSE_NO;
+                    m->actionState = ACT_STATE_STAR_DANCE_RETURN;
                 }
-                m->actionState = ACT_STATE_STAR_DANCE_DO_SAVE;
                 break;
         }
     } else if (m->actionState == ACT_STATE_STAR_DANCE_DO_SAVE) {
-        if (gDialogResponse == DIALOG_RESPONSE_YES) {
-            exit_level();
-        } else if (gDialogResponse == DIALOG_RESPONSE_NO) {
-            m->actionState = ACT_STATE_STAR_DANCE_RETURN;
-        }
+        // wait for response...
     } else if (m->actionState == ACT_STATE_STAR_DANCE_RETURN && is_anim_at_end(m)) {
         disable_time_stop();
         enable_background_sound();

@@ -69,7 +69,7 @@ void pause_menu_loop(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     gMenuOptSelectIndex = MENU_OPT_NONE;
     set_menu_style(pause_menu_style);
 
-    FrameComponent *curPage = get_first_child(gPauseMenu);
+    FrameComponent *curPage = get_child(gPauseMenu);
     if (curPage->params[0].asInt != sPauseMenuPage) {
         dealloc_component(get_id(curPage));
         create_pause_menu_page(sPauseMenuPage);
@@ -127,17 +127,6 @@ void badge_page_render(Selector2DComponent *m, s16 x, s16 y, u8 column, u8 row, 
     print_generic_string(SCREEN_WIDTH/2 - width, 30, badgedescs[badgeid]);
 }
 
-void render_list_triangle(MenuComponent *m, s16 x, s16 y) {
-    if (!gMenuState.selected) return;
-    x += m->xpos - 15;
-    y += m->ypos - 1;
-
-    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-}
-
 u8 pause_menu_options[5];
 
 // Quick toggle for options when pressing A
@@ -160,7 +149,7 @@ void pause_option_changed(void) {
 char *pause_menu_toggle_vals[] = {"Off", "On"};
 void add_pause_menu_option(ListComponent *options, int i, char *text) {
     TextComponent *t = init_text_component(NULL, 0, 0, text, TEXT_LEFT, TEXT_WHITE);
-    t->base.prerender = render_list_triangle;
+    t->base.prerender = listitem_render_triangle;
     ListItemComponent *listitem = component_list_append(options, t, 0, -i * 16);
 
     pause_menu_options[i] = (mb64_sram_configuration.option_flags & (1 << i)) != 0;
@@ -171,7 +160,7 @@ void add_pause_menu_option(ListComponent *options, int i, char *text) {
 
 void add_pause_menu_button(ListComponent *options, int i, char *text, ComponentUpdateFunc onClick, int arg) {
     TextComponent *t = init_text_button(NULL, 0, 0, text, TEXT_LEFT, onClick, arg);
-    t->base.prerender = render_list_triangle;
+    t->base.prerender = listitem_render_triangle;
     component_list_append(options, t, 0, -i * 16);
 }
 

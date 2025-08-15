@@ -278,8 +278,6 @@ void set_time_stop_flags(s32 flags);
 void clear_time_stop_flags(s32 flags);
 s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused);
 s32 cur_obj_can_mario_activate_textbox_2(f32 radius, f32 height);
-s32 cur_obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, UNUSED s32 unused);
-s32 cur_obj_update_dialog_with_cutscene(s32 actionArg, s32 dialogFlags, s32 cutsceneTable, s32 dialogID);
 void cur_obj_align_gfx_with_floor(void);
 s32 mario_is_within_rectangle(s16 minX, s16 maxX, s16 minZ, s16 maxZ);
 void cur_obj_shake_screen(s32 shake);
