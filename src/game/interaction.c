@@ -1087,8 +1087,8 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
             return set_mario_action(m, enterDoorAction, actionArg);
         } else if (!sDisplayingDoorText) {
 
-            int_to_str(requiredNumStars,starbuf1);
-            int_to_str(requiredNumStars-numStars,starbuf2);
+            // int_to_str(requiredNumStars,starbuf1);
+            // int_to_str(requiredNumStars-numStars,starbuf2);
             rtext_insert_pointer[0] = starbuf1;
             rtext_insert_pointer[1] = starbuf2;
 

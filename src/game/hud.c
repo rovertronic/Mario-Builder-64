@@ -917,7 +917,7 @@ void render_hud(void) {
 
         gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
 
-        if ((mb64_mode == MB64_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(sCurrPlayMode != PLAY_MODE_PAUSED)&&(gDialogID != 1)) {
+        if ((mb64_mode == MB64_MODE_PLAY) && (revent_hud) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(sCurrPlayMode != PLAY_MODE_PAUSED)) {
 
 #ifndef DISABLE_LIVES
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {

@@ -645,30 +645,6 @@ s32 obj_flicker_and_disappear(struct Object *obj, s16 lifeSpan) {
 }
 
 /**
- * Triggers dialog when Mario is facing an object and controls it while in the dialog.
- */
-s32 trigger_obj_dialog_when_facing(s32 *inDialog, s16 dialogID, f32 dist, s32 actionArg) {
-    if ((is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, (s32) dist)
-         && obj_check_if_facing_toward_angle(o->oFaceAngleYaw, gMarioObject->header.gfx.angle[1] + 0x8000, 0x1000)
-         && obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x1000))
-        || (*inDialog == TRUE)) {
-        *inDialog = TRUE;
-
-        if (set_mario_npc_dialog(actionArg) == MARIO_DIALOG_STATUS_SPEAK) { // If Mario is speaking.
-            s16 dialogResponse = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogID);
-            if (dialogResponse != DIALOG_RESPONSE_NONE) {
-                set_mario_npc_dialog(MARIO_DIALOG_STOP);
-                *inDialog = FALSE;
-                return dialogResponse;
-            }
-            return DIALOG_RESPONSE_NONE;
-        }
-    }
-
-    return DIALOG_RESPONSE_NONE;
-}
-
-/**
  *Checks if a floor is one that should cause an object to "die".
  */
 void obj_check_floor_death(s16 collisionFlags, struct Surface *floor) {

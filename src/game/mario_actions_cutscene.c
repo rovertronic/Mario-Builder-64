@@ -29,6 +29,7 @@
 #include "rovent.h"
 #include "actors/group0.h"
 #include "mb64/main.h"
+#include "mb64/menu.h"
 
 ModelID32 gStarModelLastCollected = MODEL_STAR;
 
@@ -220,7 +221,7 @@ s32 act_reading_automatic_dialog(struct MarioState *m) {
         }
         // wait until dialog is done
         else if (m->actionState == 10) {
-            if (get_dialog_id() >= 0) {
+            if (gCurDialog) {
                 m->actionState--;
             }
         }

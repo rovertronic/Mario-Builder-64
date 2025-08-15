@@ -506,22 +506,15 @@ static void koopa_the_quick_act_wait_before_race(void) {
  * return to the waiting action.
  */
 static void koopa_the_quick_act_show_init_text(void) {
-    s32 response = DIALOG_RESPONSE_YES;
+    gMarioShotFromCannon = FALSE;
+    o->oAction = KOOPA_THE_QUICK_ACT_RACE;
+    o->oForwardVel = 0.0f;
+    
+    o->oPathedStartWaypoint = o->oPathedPrevWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
 
-    if (response == DIALOG_RESPONSE_YES) {
-        gMarioShotFromCannon = FALSE;
-        o->oAction = KOOPA_THE_QUICK_ACT_RACE;
-        o->oForwardVel = 0.0f;
-        
-        o->oPathedStartWaypoint = o->oPathedPrevWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
-
-        o->oKoopaTurningAwayFromWall = FALSE;
-        o->oFlags |= OBJ_FLAG_ACTIVE_FROM_AFAR;
-        play_race_fanfare();
-    } else if (response == DIALOG_RESPONSE_NO) {
-        o->oAction = KOOPA_THE_QUICK_ACT_WAIT_BEFORE_RACE;
-        o->oKoopaTheQuickInitTextboxCooldown = 60;
-    }
+    o->oKoopaTurningAwayFromWall = FALSE;
+    o->oFlags |= OBJ_FLAG_ACTIVE_FROM_AFAR;
+    play_race_fanfare();
 }
 
 /**

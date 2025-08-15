@@ -35,6 +35,7 @@
 #include "level_commands.h"
 #include "game/rovent.h"
 #include "mb64/main.h"
+#include "mb64/menu.h"
 
 #include "config.h"
 
@@ -178,7 +179,7 @@ u16 level_control_timer(s32 timerOp) {
 }
 
 u32 pressed_pause(void) {
-    u32 dialogActive = get_dialog_id() >= 0;
+    u32 dialogActive = gCurDialog != NULL;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
 
     if (gMarioState->action == ACT_SPAWN_SPIN_AIRBORNE || gMarioState->action == ACT_SPAWN_SPIN_LANDING) {
@@ -904,7 +905,6 @@ void initiate_delayed_warp(void) {
     s32 destWarpNode;
 
     if (sDelayedWarpOp != WARP_OP_NONE && --sDelayedWarpTimer == 0) {
-        reset_dialog_render_state();
         reset_menu();
 
         if (gDebugLevelSelect && (sDelayedWarpOp & WARP_OP_TRIGGERS_LEVEL_SELECT)) {

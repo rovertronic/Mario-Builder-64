@@ -29,6 +29,7 @@
 #include "puppyprint.h"
 #include "rovent.h"
 #include "mb64/main.h"
+#include "mb64/menu.h"
 #include "profiling.h"
 #include "mario_actions_automatic.h"
 
@@ -409,7 +410,7 @@ u8 sFramesSinceCutsceneEnded = 0;
  * 2 = No
  * 3 = Dialog doesn't have a response
  */
-u8 sCutsceneDialogResponse = DIALOG_RESPONSE_NONE;
+//u8 sCutsceneDialogResponse = DIALOG_RESPONSE_NONE;
 struct PlayerCameraState *sMarioCamState = &gPlayerCameraState[0];
 // struct PlayerCameraState *sLuigiCamState = &gPlayerCameraState[1];
 Vec3f sFixedModeBasePosition    = { 646.0f, 143.0f, -1513.0f };
@@ -2250,7 +2251,7 @@ s16 update_default_camera(struct Camera *c) {
         if ((closeToMario & 1) && avoidStatus != AVOID_STATUS_NONE) {
             yawVel = 0;
         }
-        if (yawVel != 0 && get_dialog_id() == DIALOG_NONE) {
+        if (yawVel != 0 && !gCurDialog) {
             camera_approach_s16_symmetric_bool(&yaw, yawGoal, yawVel);
         }
     }
@@ -6690,25 +6691,11 @@ void start_object_cutscene(u8 cutscene, struct Object *obj) {
  */
 void start_object_cutscene_without_focus(u8 cutscene) {
     sObjectCutscene = cutscene;
-    sCutsceneDialogResponse = DIALOG_RESPONSE_NONE;
-}
-
-UNUSED s32 unused_dialog_cutscene_response(u8 cutscene) {
-    // if not in a cutscene, start this one
-    if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
-        sObjectCutscene = cutscene;
-    }
-
-    // if playing this cutscene and Mario responded, return the response
-    if ((gCamera->cutscene == cutscene) && (sCutsceneDialogResponse)) {
-        return sCutsceneDialogResponse;
-    } else {
-        return 0;
-    }
+    //sCutsceneDialogResponse = DIALOG_RESPONSE_NONE;
 }
 
 s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID) {
-    s16 response = DIALOG_RESPONSE_NONE;
+    //s16 response = DIALOG_RESPONSE_NONE;
 
     if ((gCamera->cutscene == CUTSCENE_NONE) && (sObjectCutscene == CUTSCENE_NONE)) {
         if (gRecentCutscene != cutscene) {
@@ -6719,12 +6706,12 @@ s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID) {
                 sCutsceneDialogID = DIALOG_001;
             }
         } else {
-            response = sCutsceneDialogResponse;
+            //response = sCutsceneDialogResponse;
         }
 
         gRecentCutscene = CUTSCENE_NONE;
     }
-    return response;
+    return 0;//response;
 }
 
 s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
@@ -8747,14 +8734,14 @@ void cutscene_dialog(struct Camera *c) {
     cutscene_event(cutscene_dialog_create_dialog_box, c, 10, 10);
     sStatusFlags |= CAM_FLAG_SMOOTH_MOVEMENT;
 
-    if (gDialogResponse != DIALOG_RESPONSE_NONE) {
-        sCutsceneDialogResponse = gDialogResponse;
-    }
+    //if (gDialogResponse != DIALOG_RESPONSE_NONE) {
+    //    sCutsceneDialogResponse = gDialogResponse;
+    //}
 
-    if ((get_dialog_id() == DIALOG_NONE) && (sCutsceneVars[8].angle[0] != 0)) {
-        if (c->cutscene != CUTSCENE_RACE_DIALOG) {
-            sCutsceneDialogResponse = DIALOG_RESPONSE_NOT_DEFINED;
-        }
+    if (!gCurDialog && (sCutsceneVars[8].angle[0] != 0)) {
+        //if (c->cutscene != CUTSCENE_RACE_DIALOG) {
+        //    sCutsceneDialogResponse = DIALOG_RESPONSE_NOT_DEFINED;
+        //}
 
         gCutsceneTimer = CUTSCENE_LOOP;
         retrieve_info_star(c);
@@ -8821,7 +8808,7 @@ void cutscene_read_message(struct Camera *c) {
     switch (sCutsceneVars[0].angle[0]) {
         // Do nothing until message is gone.
         case 0:
-            if (get_dialog_id() != DIALOG_NONE) {
+            if (gCurDialog) {
                 sCutsceneVars[0].angle[0]++;
                 set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
             }
@@ -8833,7 +8820,7 @@ void cutscene_read_message(struct Camera *c) {
 
             // This could cause softlocks. If a message starts one frame after another one closes, the
             // cutscene will never end.
-            if (get_dialog_id() == DIALOG_NONE) {
+            if (!gCurDialog) {
                 gCutsceneTimer = CUTSCENE_LOOP;
                 retrieve_info_star(c);
                 transition_next_state(c, 15);

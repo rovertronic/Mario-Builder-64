@@ -34,3 +34,4 @@ extern u8 mb64_toolbox_btcm[18 * 5];
 extern u8 mb64_toolbox_vanilla[18 * 5];
 
 extern AnimatedComponent *gToolbar;
+extern MenuComponent *gCurDialog;

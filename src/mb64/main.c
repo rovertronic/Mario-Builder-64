@@ -2756,7 +2756,6 @@ void should_spawn_place_number(s8 pos[3]) {
     }
 }
 
-extern s8 gDialogBoxType;
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
     if (mb64_id_selection == OBJECT_TYPE_MARIO_SPAWN) {
@@ -2786,7 +2785,6 @@ void place_object(s8 pos[3]) {
         mb64_trajectory_list[mb64_trajectory_to_edit][0][0] = -1;
         mb64_trajectory_edit_index = 0;
     } else if (mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_HAS_DIALOG) {
-        gDialogBoxType = 0;
         mb64_menu_state = MB64_MAKE_SELECT_DIALOG;
         mb64_object_data[mb64_object_count].bparam = 0;
         mb64_dialog_edit_ptr = &mb64_object_data[mb64_object_count];

@@ -44,7 +44,7 @@ void bhv_intro_peach_loop(void) {
         case PEACH_ACT_UNFADE:
             intro_peach_set_pos_and_opacity(o, 255.0f, 3.0f);
 
-            if ((o->oTimer > 100) && (get_dialog_id() == DIALOG_NONE)) {
+            if ((o->oTimer > 100) && (!gCurDialog)) {
                 o->oAction++;
             }
             break;

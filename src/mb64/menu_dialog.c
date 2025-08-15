@@ -1,6 +1,6 @@
 #include "menu_engine.h"
 
-MenuComponent *curDialog;
+MenuComponent *gCurDialog;
 
 #define DIALOG_LINES 5
 #define DIALOG_MAXLENGTH 30
@@ -24,8 +24,8 @@ void dialog_box_render(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (box->goingBack && box->animTimer < 8) {
         box->animTimer++;
         if (box->animTimer == 8) {
-            dealloc_component(get_id(curDialog));
-            curDialog = NULL;
+            dealloc_component(get_id(gCurDialog));
+            gCurDialog = NULL;
         }
     } else {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
@@ -63,16 +63,16 @@ void parse_dialog(char *dialog) {
 
 void (*gResponseFunc)(int);
 void begin_dialog_close(void) {
-    FrameComponent *box = get_child(curDialog);
+    FrameComponent *box = get_child(gCurDialog);
     box->goingBack = TRUE;
     play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
 }
 
 void create_dialog_box(char *dialog) {
-    curDialog = init_matrix_component(gMenuRoot, 0, 0.f, 0.f);
-    component_set_pos(curDialog, 70, 200);
-    curDialog->prerender = dialog_box_set_transform;
-    FrameComponent *handler = init_dynamic_component(curDialog, dialog_box_render);
+    gCurDialog = init_matrix_component(gMenuRoot, 0, 0.f, 0.f);
+    component_set_pos(gCurDialog, 70, 200);
+    gCurDialog->prerender = dialog_box_set_transform;
+    FrameComponent *handler = init_dynamic_component(gCurDialog, dialog_box_render);
     component_set_pos(handler, -7, 5);
     handler->animTimer = 8;
     gResponseFunc = NULL;
@@ -94,7 +94,7 @@ void dialog_response(TextComponent *b) {
 
 void create_dialog_box_with_response(char *dialog, void (*response)(int)) {
     create_dialog_box(dialog);
-    FrameComponent *handler = get_child(curDialog);
+    FrameComponent *handler = get_child(gCurDialog);
     ListComponent *list = init_list(handler, DIR_HORIZONTAL, MENU_INPUT_JOYSTICK);
     component_set_pos(list, 50, -25-4*16);
 
