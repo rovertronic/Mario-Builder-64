@@ -787,4 +787,6 @@ extern const Gfx wdw_seg7_dl_070131B8[];
 
 #include "imbuet/geo_header.h"
 
+#include "uiCorner/header.h"
+
 #endif
