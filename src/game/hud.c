@@ -860,11 +860,6 @@ void render_hud_camera_status(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
-
-
-
-
-
 u8 lframes = 0;
 u8 lease = 2;
 /**
@@ -906,6 +901,12 @@ void render_hud(void) {
 #else
         create_dl_ortho_matrix();
 #endif
+
+        //gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 200);
+        //init_4slice();
+        //render_4slice(160,120, 100,50, 10);
+        //render_4slice(250,120, 50,100, 10);
+        //render_4slice(80,200, 70,40,  20);
 
         // if (gCurrentArea != NULL && gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
         //     render_hud_cannon_reticle();
@@ -1037,7 +1038,6 @@ void render_hud(void) {
             if ((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER)||(mb64_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER))) {
                 render_hud_timer();
             }
-
             /*
             if (gMarioState->NewTimer > 0) {
                 if (!(gMarioState->Options & (1<<OPT_MINIMAP))) {
@@ -1067,4 +1067,42 @@ void render_hud(void) {
         }
 #endif
     }
+}
+
+#include "actors/group0.h"
+#include "geo_misc.h"
+
+void init_4slice(void) {
+    gSPDisplayList(gDisplayListHead++,mat_uiCorner_uiCorner);
+}
+
+void render_4slice(int x, int y, int xSize, int ySize, int cornerSize) {
+    Vtx * v = alloc_display_list(9 * sizeof(Vtx));
+
+    f32 cornerRatioX = (f32)xSize/(f32)cornerSize;
+    f32 cornerRatioY = (f32)ySize/(f32)cornerSize;
+
+    s16 xSizeHalf = xSize/2;
+    s16 ySizeHalf = ySize/2;
+    s16 uvX = (32*64)*cornerRatioX;
+    s16 uvY = (32*64)*cornerRatioY;
+
+    make_vertex(v, 0,    x-xSizeHalf, y+ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
+    make_vertex(v, 1,    x,           y+ySizeHalf,      0,     uvX, 0,       255, 255, 255, 255);
+    make_vertex(v, 2,    x+xSizeHalf, y+ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
+
+    make_vertex(v, 3,    x-xSizeHalf, y,                0,     0,   uvY,     255, 255, 255, 255);
+    make_vertex(v, 4,    x,           y,                0,     uvX, uvY,     255, 255, 255, 255);
+    make_vertex(v, 5,    x+xSizeHalf, y,                0,     0,   uvY,     255, 255, 255, 255);
+
+    make_vertex(v, 6,    x-xSizeHalf, y-ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
+    make_vertex(v, 7,    x,           y-ySizeHalf,      0,     uvX, 0,       255, 255, 255, 255);
+    make_vertex(v, 8,    x+xSizeHalf, y-ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
+
+    gSPVertex(gDisplayListHead++,v,9,0);
+
+    gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 4, 0);
+    gSP2Triangles(gDisplayListHead++, 2, 1, 4, 0, 4, 5, 2, 0);
+    gSP2Triangles(gDisplayListHead++, 3, 6, 4, 0, 4, 6, 7, 0);
+    gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
 }
