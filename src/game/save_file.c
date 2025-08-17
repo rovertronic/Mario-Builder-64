@@ -21,7 +21,6 @@
 #include "puppycam2.h"
 #include "ingame_menu.h"
 #include "puppycamold.h"
-#include "game/rovent.h"
 #include "mb64/main.h"
 
 #ifdef UNIQUE_SAVE_DATA

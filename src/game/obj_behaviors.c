@@ -31,7 +31,6 @@
 #include "spawn_sound.h"
 #include "rumble_init.h"
 #include "puppylights.h"
-#include "game/rovent.h"
 #include "mb64/main.h"
 
 /**

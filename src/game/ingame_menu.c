@@ -29,7 +29,6 @@
 #include "src/game/mario_misc.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
-#include "rovent.h"
 #include "level_update.h"
 #include "hud.h"
 #include "rendering_graph_node.h"
@@ -55,7 +54,6 @@ Gfx *bicon_table[] = {
     b8_Plane_001_mesh,
     b9_Plane_001_mesh,
     b10_Plane_001_mesh,
-    //b11_Plane_001_mesh,
     b12_Plane_001_mesh,
     b13_Plane_001_mesh,
     b14_Plane_001_mesh,
@@ -114,64 +112,6 @@ Gfx *geo_imbue_marker_color(s32 callContext, struct GraphNode *node, UNUSED void
     }
     return NULL;
 }
-
-u8 number_text[15];
-
-u8 b1[] = {BADGE1};
-u8 b2[] = {BADGE2};
-u8 b3[] = {BADGE3};
-u8 b4[] = {BADGE4};
-u8 b5[] = {BADGE5};
-u8 b6[] = {BADGE6};
-u8 b7[] = {BADGE7};
-u8 b8[] = {BADGE8};
-u8 b9[] = {BADGE9};
-u8 b10[] = {BADGE10};
-u8 b11[] = {BADGE11};
-// u8 b12[] = {BADGE12};
-u8 b13[] = {BADGE13};
-u8 b14[] = {BADGE14};
-u8 b15[] = {BADGE15};
-u8 b16[] = {BADGE16};
-u8 b17[] = {BADGE17};
-u8 b18[] = {BADGE18};
-u8 b19[] = {BADGE19};
-u8 b20[] = {BADGE20};
-u8 b21[] = {BADGE21};
-u8 b22[] = {BADGE22};
-u8 b23[] = {BADGE23};
-u8 b24[] = {BADGE24};
-
-u8 *badgenames[] = { b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,
-b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24
-};
-
-u8 b1d[] = {BADGE1D};
-u8 b2d[] = {BADGE2D};
-u8 b3d[] = {BADGE3D};
-u8 b4d[] = {BADGE4D};
-u8 b5d[] = {BADGE5D};
-u8 b6d[] = {BADGE6D};
-u8 b7d[] = {BADGE7D};
-u8 b8d[] = {BADGE8D};
-u8 b9d[] = {BADGE9D};
-u8 b10d[] = {BADGE10D};
-u8 b11d[] = {BADGE11D};
-// u8 b12d[] = {BADGE12D};
-u8 b13d[] = {BADGE13D};
-u8 b14d[] = {BADGE14D};
-u8 b15d[] = {BADGE15D};
-u8 b16d[] = {BADGE16D};
-u8 b17d[] = {BADGE17D};
-u8 b18d[] = {BADGE18D};
-u8 b19d[] = {BADGE19D};
-u8 b20d[] = {BADGE20D};
-u8 b21d[] = {BADGE21D};
-u8 b22d[] = {BADGE22D};
-u8 b23d[] = {BADGE23D};
-u8 b24d[] = {BADGE24D};
-u8 *badgedescs[] = { b1d,b2d,b3d,b4d,b5d,b6d,b7d,b8d,b9d,b10d,b11d,
-b13d,b14d,b15d,b16d,b17d,b18d,b19d,b20d,b21d,b22d,b23d,b24d };
 
 s16 gRedCoinsCollected = 0;
 s16 gRedCoinsTotal = 0;

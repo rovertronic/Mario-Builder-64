@@ -24,7 +24,6 @@
 #include "sound_init.h"
 #include "rumble_init.h"
 #include "config.h"
-#include "rovent.h"
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
 #include "mb64/main.h"
@@ -1062,12 +1061,6 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
             return set_mario_action(m, enterDoorAction, actionArg);
         } else if (!sDisplayingDoorText) {
-
-            // int_to_str(requiredNumStars,starbuf1);
-            // int_to_str(requiredNumStars-numStars,starbuf2);
-            rtext_insert_pointer[0] = starbuf1;
-            rtext_insert_pointer[1] = starbuf2;
-
             switch(behparam1) {
                 case 0:
                     //run_event(EVENT_STARDOOR);

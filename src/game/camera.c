@@ -27,7 +27,6 @@
 #include "level_table.h"
 #include "config.h"
 #include "puppyprint.h"
-#include "rovent.h"
 #include "mb64/main.h"
 #include "mb64/menu.h"
 #include "profiling.h"
@@ -3047,12 +3046,7 @@ void update_lakitu(struct Camera *c) {
         if (c->cutscene != 0) {
             vec3f_copy(gLakituState.pos, _2D_Hold_Pos);
             vec3f_copy(gLakituState.focus, _2D_Hold_Foc);    
-            }
         }
-
-    if (revent_camera_on) {
-        vec3f_copy(gLakituState.pos, revent_camera_pos);
-        vec3f_copy(gLakituState.focus, revent_camera_foc);
     }
 
     if (mb64_mode == MB64_MODE_MAKE) {
@@ -4780,7 +4774,7 @@ void play_sound_if_cam_switched_to_lakitu_or_mario(void) {
  */
 void radial_camera_input(struct Camera *c) {
 
-    if (revent_camera_on||(mb64_mode == MB64_MODE_MAKE)) {
+    if (mb64_mode == MB64_MODE_MAKE) {
         return; //do not control camera during cutscenes. (goku image)
     }
 
@@ -4892,7 +4886,7 @@ void trigger_cutscene_dialog(s32 trigger) {
 void handle_c_button_movement(struct Camera *c) {
     s16 cSideYaw;
 
-    if (revent_camera_on||(mb64_mode == MB64_MODE_MAKE)) {
+    if (mb64_mode == MB64_MODE_MAKE) {
         return; //do not control camera during cutscenes. (goku image)
     }
 
@@ -6724,7 +6718,7 @@ s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
 s16 cutscene_object(u8 cutscene, struct Object *obj) {
     s16 status = 0;
 
-    if ((gCamera->cutscene == 0) && (sObjectCutscene == 0) && (!revent_active)) {
+    if ((gCamera->cutscene == 0) && (sObjectCutscene == 0)) {
         if (gRecentCutscene != cutscene) {
             start_object_cutscene(cutscene, obj);
             status = 1;

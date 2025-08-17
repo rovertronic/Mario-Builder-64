@@ -17,7 +17,6 @@
 #include "include/behavior_data.h"
 #include "ingame_menu.h"
 #include "platform_displacement.h"
-#include "rovent.h"
 #include "mb64/main.h"
 #include "engine/surface_collision.h"
 
@@ -25,7 +24,7 @@ u8 bullet_fuel = 0;
 
 void bullet_bill_fly(struct MarioState *m) {
     struct Object *smoke;
-    if ((m->controller->buttonDown & A_BUTTON)&&(m->vel[1]<0.0f)&&(m->powerup & 2)&&(bullet_fuel > 0)&&(!revent_active)) {
+    if ((m->controller->buttonDown & A_BUTTON)&&(m->vel[1]<0.0f)&&(m->powerup & 2)&&(bullet_fuel > 0)) {
         bullet_fuel --;
         cur_obj_play_sound_1(SOUND_AIR_BLOW_FIRE);
         m->vel[1] = 0.0f;

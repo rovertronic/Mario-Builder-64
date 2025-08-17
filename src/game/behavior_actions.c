@@ -41,7 +41,6 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 #include "object_collision.h"
-#include "rovent.h"
 #include "mb64/main.h"
 
 // #include "behaviors/star_door.inc.c"

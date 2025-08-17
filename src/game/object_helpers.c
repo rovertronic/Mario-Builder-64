@@ -28,7 +28,6 @@
 #include "spawn_sound.h"
 #include "puppylights.h"
 #include "puppycamold.h"
-#include "game/rovent.h"
 #include "save_file.h"
 #include "platform_displacement.h"
 #include "audio/external.h"

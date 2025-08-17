@@ -6,7 +6,6 @@
 #include "seqplayer.h"
 #include "game/main.h"
 #include "engine/math_util.h"
-#include "src/game/rovent.h"
 #include "external.h"
 #include "src/game/game_init.h"
 #include "src/game/save_file.h"
@@ -140,11 +139,6 @@ void sequence_player_process_sound(struct SequencePlayer *seqPlayer) {
 #if defined(VERSION_EU) || defined(VERSION_SH)
     seqPlayer->recalculateVolume = FALSE;
 #endif
-
-    if (revent_tempo != 0) {
-        gSequencePlayers[0].tempo = revent_tempo;
-    }
-
 }
 
 f32 get_portamento_freq_scale(struct Portamento *p) {

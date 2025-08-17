@@ -16,7 +16,6 @@
 #include "sound_init.h"
 #include "surface_terrains.h"
 #include "rumble_init.h"
-#include "game/rovent.h"
 
 s32 check_common_idle_cancels(struct MarioState *m) {
     mario_drop_held_object(m);
@@ -114,16 +113,12 @@ s32 act_idle(struct MarioState *m) {
         return set_mario_action(m, ACT_COUGHING, 0);
     }
 
-    if ((!(m->actionArg & 1) && m->health < 0x300)&&(!revent_active)) {
+    if ((!(m->actionArg & 1) && m->health < 0x300)) {
         return set_mario_action(m, ACT_PANTING, 0);
     }
 
     if (check_common_idle_cancels(m)) {
         return TRUE;
-    }
-
-    if (revent_active) {
-        m->actionTimer = 0;
     }
 
     if (m->actionState == ACT_STATE_IDLE_RESET_OR_SLEEP) {
@@ -136,51 +131,47 @@ s32 act_idle(struct MarioState *m) {
 #endif
     }
 
-    if (revent_head_move) {
-        set_mario_animation(m, MARIO_ANIM_FIRST_PERSON);
+    if (m->actionArg & 1) {
+        set_mario_animation(m, MARIO_ANIM_STAND_AGAINST_WALL);
     } else {
-        if (m->actionArg & 1) {
-            set_mario_animation(m, MARIO_ANIM_STAND_AGAINST_WALL);
-        } else {
-            switch (m->actionState) {
-                case ACT_STATE_IDLE_HEAD_LEFT:
-                    set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_LEFT);
-                    break;
+        switch (m->actionState) {
+            case ACT_STATE_IDLE_HEAD_LEFT:
+                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_LEFT);
+                break;
 
-                case ACT_STATE_IDLE_HEAD_RIGHT:
-                    set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_RIGHT);
-                    break;
+            case ACT_STATE_IDLE_HEAD_RIGHT:
+                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_RIGHT);
+                break;
 
-                case ACT_STATE_IDLE_HEAD_CENTER:
-                    set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_CENTER);
-                    break;
-            }
+            case ACT_STATE_IDLE_HEAD_CENTER:
+                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_CENTER);
+                break;
+        }
 
-            if (is_anim_at_end(m)) {
-                // Fall asleep after 10 head turning cycles.
-                // act_start_sleeping is triggered earlier in the function
-                // when actionState == ACT_STATE_IDLE_RESET_OR_SLEEP. This
-                // happens when Mario's done turning his head back and forth.
-                // However, we do some checks here to make sure that Mario
-                // would be able to sleep here, and that he's gone through
-                // 10 cycles before sleeping.
-                // actionTimer is used to track how many cycles have passed.
-                if (++m->actionState == ACT_STATE_IDLE_RESET_OR_SLEEP) {
+        if (is_anim_at_end(m)) {
+            // Fall asleep after 10 head turning cycles.
+            // act_start_sleeping is triggered earlier in the function
+            // when actionState == ACT_STATE_IDLE_RESET_OR_SLEEP. This
+            // happens when Mario's done turning his head back and forth.
+            // However, we do some checks here to make sure that Mario
+            // would be able to sleep here, and that he's gone through
+            // 10 cycles before sleeping.
+            // actionTimer is used to track how many cycles have passed.
+            if (++m->actionState == ACT_STATE_IDLE_RESET_OR_SLEEP) {
 #ifdef NO_SLEEP
-                    m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
+                m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
 #else
-                    f32 deltaYOfFloorBehindMario = m->pos[1] - find_floor_height_relative_polar(m, -0x8000, 60.0f);
-                    if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->object) {
+                f32 deltaYOfFloorBehindMario = m->pos[1] - find_floor_height_relative_polar(m, -0x8000, 60.0f);
+                if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->object) {
+                    m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
+                } else {
+                    // If Mario hasn't turned his head 10 times yet, stay idle instead of going to sleep.
+                    m->actionTimer++;
+                    if (m->actionTimer < 10) {
                         m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
-                    } else {
-                        // If Mario hasn't turned his head 10 times yet, stay idle instead of going to sleep.
-                        m->actionTimer++;
-                        if (m->actionTimer < 10) {
-                            m->actionState = ACT_STATE_IDLE_HEAD_LEFT;
-                        }
                     }
-#endif
                 }
+#endif
             }
         }
     }

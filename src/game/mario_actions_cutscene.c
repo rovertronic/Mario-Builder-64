@@ -26,7 +26,6 @@
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "rovent.h"
 #include "actors/group0.h"
 #include "mb64/main.h"
 #include "mb64/menu.h"

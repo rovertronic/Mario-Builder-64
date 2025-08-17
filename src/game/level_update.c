@@ -33,7 +33,6 @@
 #include "puppyprint.h"
 #include "puppylights.h"
 #include "level_commands.h"
-#include "game/rovent.h"
 #include "mb64/main.h"
 #include "mb64/menu.h"
 
@@ -186,7 +185,7 @@ u32 pressed_pause(void) {
         intangible = FALSE;
     }
 
-    if ((mb64_mode == MB64_MODE_MAKE)||(minigame_real)||(revent_active)) {
+    if (mb64_mode == MB64_MODE_MAKE) {
         return FALSE;
     }
 
@@ -1047,7 +1046,6 @@ int gPressedStart = 0;
 u8 playtimer = 0;
 
 s32 play_mode_normal(void) {
-    event_main();
     warp_area();
     check_instant_warp();
 
@@ -1279,7 +1277,6 @@ s32 init_level(void) {//
 
     gMarioState->powerup = 0;
 
-    revent_tempo = 0;
     gMarioState->hundredSpawned = FALSE;
     gMarioState->YoshiCoins = 0;
     gMarioState->DeadRexes = 0;

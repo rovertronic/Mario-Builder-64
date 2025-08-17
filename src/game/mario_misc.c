@@ -26,7 +26,6 @@
 #include "sound_init.h"
 #include "puppycam2.h"
 #include "puppycamold.h"
-#include "game/rovent.h"
 #include "ingame_menu.h"
 #include "src/engine/surface_load.h"
 #include "spawn_sound.h"
@@ -636,15 +635,6 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx)
             vec3_zero(rotNode->rotation);
         }
 
-
-        if (revent_head_move) {
-            vec3s_set(bodyState->headAngle, 0, 0, 0);
-            vec3s_set(rotNode->rotation, 0, 0, 0);
-            rotNode->rotation[0] = revent_headangle[0];
-            rotNode->rotation[1] = revent_headangle[1];
-            rotNode->rotation[2] = revent_headangle[2];
-        }
-
         //get_pos_from_transform_mtx(gMarioState->HeadPosition, *curTransform, gCurGraphNodeCamera->matrixPtr);
 
         if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
@@ -705,10 +695,6 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
         }
         if ((mb64_lopt_game == MB64_GAME_BTCM)&&(gMarioState->flags & MARIO_WING_CAP)) {
             switchCase->selectedCase = MARIO_HAND_RIGHT_WING;
-        }
-
-        if (revent_active) {
-            //switchCase->selectedCase = revent_handstate;
         }
     }
 

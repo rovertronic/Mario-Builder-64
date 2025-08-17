@@ -15,7 +15,6 @@ void bhv_hidden_star_init(void) {
 
 void bhv_hidden_star_loop(void) {
     gStarTriggersCollected = o->oHiddenStarTriggerCounter;
-    if (revent_active) return;
 
     switch (o->oAction) {
         case HIDDEN_STAR_ACT_INACTIVE:

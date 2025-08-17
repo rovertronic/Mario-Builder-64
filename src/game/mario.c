@@ -37,7 +37,6 @@
 #include "emutest.h"
 #include "actors/group0.h"
 #include "actors/group14.h"
-#include "rovent.h"
 #include "ingame_menu.h"
 #include "mb64/main.h"
 #include "platform_displacement.h"
@@ -1459,10 +1458,8 @@ void update_mario_inputs(struct MarioState *m) {
     }
 #endif
 
-    if (!revent_active) {
-        update_mario_button_inputs(m);
-        update_mario_joystick_inputs(m);
-    }
+    update_mario_button_inputs(m);
+    update_mario_joystick_inputs(m);
     update_mario_geometry_inputs(m);
 #ifdef VANILLA_DEBUG
     debug_print_speed_action_normal(m);
@@ -2167,7 +2164,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     }
 
     //withering badge
-    if ((!revent_active) && (gCamera->cutscene == 0)) {
+    if (gCamera->cutscene == 0) {
         if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
             mario_decay++;
             int maxdecay = (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) ? 225 : 450;
@@ -2409,8 +2406,6 @@ void init_mario(void) {
 
     gMarioState->SpotlightTarget = gMarioObject;
     gMarioState->SpotlightTargetYOffset = 0.0f;
-
-    stop_event();
 
     gMarioState->_2DSecret = FALSE;
     gMarioState->BadAppleActivate = FALSE;

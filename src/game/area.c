@@ -28,7 +28,6 @@
 #include "debug_box.h"
 #include "engine/colors.h"
 #include "profiling.h"
-#include "rovent.h"
 #include "mb64/main.h"
 #ifdef S2DEX_TEXT_ENGINE
 #include "s2d_engine/init.h"
@@ -452,10 +451,6 @@ void render_game(void) {
         create_dl_ortho_matrix();
         render_text_labels();
         render_menus_and_dialogs();
-
-        if (sCurrPlayMode == 0) {
-            render_revent_textbox();
-        }
 
         if (mb64_mode == MB64_MODE_MAKE) {
             draw_mb64_menu();
