@@ -6112,16 +6112,16 @@ void bhv_badge(void) {
                 mario_stop_riding_object(gMarioState);
                 save_file_set_badge_equip(1 << o->oBehParams2ndByte);
 
-                rtext_insert_pointer[0] = badgenames[o->oBehParams2ndByte];
-                rtext_insert_pointer[1] = badgedescs[o->oBehParams2ndByte];
-
                 o->oHomeY = 1.0f;
 
                 if ((o->oBehParams2ndByte == BADGE_BRITTLE)||(o->oBehParams2ndByte == BADGE_WITHER)) {
-                    run_event(EVENT_GET_BURDEN);
+                    set_mario_action(gMarioState, ACT_LVUP_DANCE, 1);
+                    play_sound(SOUND_OBJ_BOWSER_LAUGH, gGlobalSoundSource);
                 } else {
-                    run_event(EVENT_GET_BADGE);
+                    set_mario_action(gMarioState, ACT_LVUP_DANCE, 0);
+                    play_puzzle_jingle();
                 }
+                create_badge_dialog(o->oBehParams2ndByte);
                 cur_obj_drop_imbued_object(0);
             }
             break;

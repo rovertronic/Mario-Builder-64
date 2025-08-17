@@ -450,10 +450,8 @@ void render_game(void) {
                       SCREEN_HEIGHT - gBorderHeight);
 
         create_dl_ortho_matrix();
-        render_menus_and_dialogs();
-
-        gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();
+        render_menus_and_dialogs();
 
         if (sCurrPlayMode == 0) {
             render_revent_textbox();

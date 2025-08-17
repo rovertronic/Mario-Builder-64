@@ -35,3 +35,10 @@ extern u8 mb64_toolbox_vanilla[18 * 5];
 
 extern AnimatedComponent *gToolbar;
 extern MenuComponent *gCurDialog;
+
+ struct BadgeInfo {
+    const char *name;
+    const char *desc;
+    u8 color[3];
+};
+extern struct BadgeInfo badge_info[];

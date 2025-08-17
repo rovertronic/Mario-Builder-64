@@ -1,17 +1,37 @@
 #include "menu_engine.h"
+#include "menu.h"
 
 MenuComponent *gCurDialog;
 
+// Default dialog
 #define DIALOG_LINES 5
 #define DIALOG_MAXLENGTH 30
+#define DIALOG_SIZE (DIALOG_LINES * (DIALOG_MAXLENGTH + 1))
 
-char gDialogBuf[DIALOG_LINES][DIALOG_MAXLENGTH + 1];
+// Badge collection dialog
+#define DIALOG_BADGE_LINES 2
+#define DIALOG_BADGE_MAXLENGTH (DIALOG_SIZE / DIALOG_BADGE_LINES) - 1
+
+union {
+    char normal[DIALOG_LINES][DIALOG_MAXLENGTH + 1];
+    char badge[DIALOG_BADGE_LINES][DIALOG_BADGE_MAXLENGTH + 1];
+} dialog_text_buffer;
+
+#define gDialogBuf dialog_text_buffer.normal
+#define gDialogBadgeBuf dialog_text_buffer.badge
 
 MenuStyle dialog_menu_style = {
     .textHighlightSelected = FALSE,
     .noClickSounds = TRUE,
     .textNoShadow = TRUE,
 };
+
+void destroy_dialog_component(void) {
+    if (gCurDialog) {
+        dealloc_component(get_id(gCurDialog));
+        gCurDialog = NULL;
+    }
+}
 
 #define animTimer params[0].asInt
 #define goingBack params[1].asInt
@@ -24,8 +44,7 @@ void dialog_box_render(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (box->goingBack && box->animTimer < 8) {
         box->animTimer++;
         if (box->animTimer == 8) {
-            dealloc_component(get_id(gCurDialog));
-            gCurDialog = NULL;
+            destroy_dialog_component();
         }
     } else {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
@@ -49,15 +68,16 @@ void dialog_box_set_transform(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 void parse_dialog(char *dialog) {
     int index = 0;
     int line = 0;
-    while (*dialog && line < DIALOG_LINES) {
-        if (*dialog == '\n') {
+    while (line < DIALOG_LINES) {
+        if (!(*dialog) || *dialog == '\n') {
             gDialogBuf[line][index] = 0;
             line++;
             index = 0;
+            if (*dialog) dialog++;
         } else if (index < DIALOG_MAXLENGTH) {
             gDialogBuf[line][index++] = *dialog;
+            dialog++;
         }
-        dialog++;
     }
 }
 
@@ -69,6 +89,7 @@ void begin_dialog_close(void) {
 }
 
 void create_dialog_box(char *dialog) {
+    destroy_dialog_component();
     gCurDialog = init_matrix_component(gMenuRoot, 0, 0.f, 0.f);
     component_set_pos(gCurDialog, 70, 200);
     gCurDialog->prerender = dialog_box_set_transform;
@@ -105,4 +126,38 @@ void create_dialog_box_with_response(char *dialog, void (*response)(int)) {
     no->base.prerender = listitem_render_triangle;
     component_list_append(list, yes, 0, 0);
     component_list_append(list, no, 80, 0);
+}
+
+
+// BTCM badge get dialog
+
+MenuStyle badge_dialog_menu_style = {
+    .noClickSounds = TRUE,
+};
+
+void badge_dialog_text_set_alpha(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    set_menu_style(badge_dialog_menu_style);
+    TextComponent *t = (TextComponent *)m;
+    RectComponent *rect = get_parent(m);
+    t->alpha = (rect->curAlpha / 150.f) * 255.f;
+}
+
+void begin_badge_dialog_close(void) {
+    if (!gCurDialog) return;
+    component_rect_do_fade(gCurDialog, 0, 20, destroy_dialog_component);
+}
+
+void create_badge_dialog(int badgeid) {
+    destroy_dialog_component();
+    gCurDialog = init_rect_component(gMenuRoot, 0, SCREEN_WIDTH/2, 30, SCREEN_WIDTH/2, 30);
+    component_rect_do_fade(gCurDialog, 150, 20, NULL);
+    sprintf(gDialogBadgeBuf[0], "You got the %s!", badge_info[badgeid].name);
+    sprintf(gDialogBadgeBuf[1], "%s.", badge_info[badgeid].desc);
+
+    for (int line = 0; line < DIALOG_BADGE_LINES; line++) {
+        if (gDialogBadgeBuf[line][0]) {
+            TextComponent *t = init_text_component(gCurDialog, -150, 10-line*16, gDialogBadgeBuf[line], TEXT_LEFT, TEXT_WHITE);
+            t->base.prerender = badge_dialog_text_set_alpha;
+        }
+    }
 }

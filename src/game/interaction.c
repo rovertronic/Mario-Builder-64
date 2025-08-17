@@ -877,30 +877,6 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
             }
         }
 
-        //m->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-        //m->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-
-        //if (m->numStars > 9) {
-        //    save_file_set_progression(PROG_10_STARS);
-        //}
-        //
-        //if ((m->numStars>29)&&(save_file_check_progression(PROG_DEFEAT_BOWSER_2))) {
-        //    save_file_set_progression(PROG_40_STARS);//actually 30
-        //}
-//
-        //if ((gCurrLevelNum==LEVEL_BITFS)&&(gCurrAreaIndex==2)) {
-        //    save_file_set_progression(PROG_DEFEAT_SHOWRUNNER);
-        //}
-//
-        //if (final_star) {
-        //    save_file_set_progression(PROG_POSTGAME);
-        //    save_file_do_save(gCurrSaveFileNum - 1);
-        //}
-
-        //if ((m->numStars>=80)&&(m->numMetalStars>=40)) {
-        //    save_file_set_progression(PROG_POSTPOST_GAME);
-        //}
-
         if (!noExit) {
             drop_queued_background_music();
             fadeout_level_music(126);

@@ -570,11 +570,12 @@ void component_rect_render(MenuComponent *m, s16 x, s16 y) {
         rc->onFinish = NULL;
     }
 
+    int realY = SCREEN_HEIGHT-y;
     gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gDisplayListHead++, rc->color[0], rc->color[1], rc->color[2], rc->curAlpha);
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPFillRectangle(gDisplayListHead++, x - rc->width, y - rc->height, x + rc->width, y + rc->height);
+    gDPFillRectangle(gDisplayListHead++, x - rc->width, realY - rc->height, x + rc->width, realY + rc->height);
 
     render_child(m, x, y);
 }

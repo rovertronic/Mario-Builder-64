@@ -1,32 +1,32 @@
 #include "menu_engine.h"
+#include "menu.h"
 
 #include "game/area.h"
 #include "game/save_file.h"
 
-u8 badgecolors[24][3] = {
-    {255,0x00,0x00},
-    {0x9C,0x43,0x22},
-    {0x19,0x6B,0xC7},
-    {0xDF,0x4A,0x18},
-    {0x6C,0xC6,0xD7},
-    {0x6C,0xC6,0xD7},
-    {0x72,0xC6,0xAE},
-    {0xF9,0x8D,0xCF},
-    {0xF8,0xB6,0x4B},
-    {0x4A,0x52,0x8C},
-    {0x44,0xC6,0x53},
-
-    {0xEA,0x55,0x20},
-    {0x46,0x4D,0xBE},
-    {0x60,0x8E,0xA0},
-    {0xAC,0x6E,0x56},
-    {0x44,0xAF,0x19},
-    {0x21,0xE9,0xA1},
-    {0x57,0xFF,0x4C},
-    {0x4B,0x6D,0x7A},
-    {8,231,247},
-    {0xA0,0x00,0x00},
-    {0xA0,0x00,0x00},
+struct BadgeInfo badge_info[] = {
+    {"Lava Boost Badge", "Reduces lava damage by 2 at the cost of 1 Mana", {255, 0x00, 0x00}},
+    {"Fall Damage Badge", "Fall Damage is negated at the cost of 1 Mana", {0x9C, 0x43, 0x22}},
+    {"Defense Badge", "Damage to you is absorbed by Mana", {0x19, 0x6B, 0xC7}},
+    {"One Hit Badge", "Enemies and bosses die in a single attack", {0xDF, 0x4A, 0x18}},
+    {"Gills Badge", "Lets you breathe underwater", {0x6C, 0xC6, 0xD7}},
+    {"Fins Badge", "Lets you swim faster underwater", {0x6C, 0xC6, 0xD7}},
+    {"HP Regen Badge", "Slowly regenerates HP at cost of Mana", {0x72, 0xC6, 0xAE}},
+    {"Mana Regen Badge", "Slowly regenerates Mana at cost of HP", {0xF9, 0x8D, 0xCF}},
+    {"Greed Badge", "Doubles every coin you collect using 1/4 Mana", {0xF8, 0xB6, 0x4B}},
+    {"Double Time Badge", "Blue Coin / Purple Switches last twice as long", {0x4A, 0x52, 0x8C}},
+    {"Magnet Badge", "Loose coins are attracted to you", {0x44, 0xC6, 0x53}},
+    {"Burn Badge", "Mitigates fire damage by 50%", {0xEA, 0x55, 0x20}},
+    {"Squish Badge", "Invulnerable to squish damage", {0x46, 0x4D, 0xBE}},
+    {"Feather Badge", "Decreases gravity by 10%", {0x60, 0x8E, 0xA0}},
+    {"Weight Badge", "Increases gravity by 30%", {0xAC, 0x6E, 0x56}},
+    {"Sticky Badge", "Lets you stick to walls", {0x44, 0xAF, 0x19}},
+    {"Fast Foot Badge", "You run twice as fast", {0x21, 0xE9, 0xA1}},
+    {"Heal Plus Badge", "All coins heal double the HP", {0x57, 0xFF, 0x4C}},
+    {"Bottomless Badge", "Uses 1 Mana instead of 3 HP when falling off the level", {0x4B, 0x6D, 0x7A}},
+    {"Slow Fall Badge", "Hold \x10 while falling to slow your fall", {8, 231, 247}},
+    {"Brittle Burden", "You take double damage", {0xA0, 0x00, 0x00}},
+    {"Withering Burden", "You take 1 damage every 15 seconds", {0xA0, 0x00, 0x00}},
 };
 
 enum PauseMenuPages {
@@ -119,12 +119,12 @@ void badge_page_render(Selector2DComponent *m, s16 x, s16 y, u8 column, u8 row, 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     if (!selected) return;
 
-    gDPSetEnvColor(gDisplayListHead++, badgecolors[badgeid][0], badgecolors[badgeid][1], badgecolors[badgeid][2], 255);
-    int width = get_string_width(badgenames[badgeid])/2;
-    print_generic_string(SCREEN_WIDTH/2 - width, 50, badgenames[badgeid]);
-    width = get_string_width(badgedescs[badgeid])/2;
+    gDPSetEnvColor(gDisplayListHead++, badge_info[badgeid].color[0], badge_info[badgeid].color[1], badge_info[badgeid].color[2], 255);
+    int width = get_string_width_ascii(badge_info[badgeid].name)/2;
+    print_generic_string_ascii(SCREEN_WIDTH/2 - width, 50, badge_info[badgeid].name);
+    width = get_string_width_ascii(badge_info[badgeid].desc)/2;
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_generic_string(SCREEN_WIDTH/2 - width, 30, badgedescs[badgeid]);
+    print_generic_string_ascii(SCREEN_WIDTH/2 - width, 30, badge_info[badgeid].desc);
 }
 
 u8 pause_menu_options[5];
