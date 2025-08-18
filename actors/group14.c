@@ -58,6 +58,7 @@
 #include "b20/model.inc.c"
 #include "b18/model.inc.c"
 #include "b19/model.inc.c"
+#include "badge/model.inc.c"
 
 #include "chicken/model.inc.c"
 #include "chicken/anims/data.inc.c"
@@ -80,3 +81,6 @@
 #include "cobie2/model.inc.c"
 #include "cobie2/anims/data.inc.c"
 #include "cobie2/anims/table.inc.c"
+
+#include "evil_mario/anims/data.inc.c"
+#include "evil_mario/anims/table.inc.c"

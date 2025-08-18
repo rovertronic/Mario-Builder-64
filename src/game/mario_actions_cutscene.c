@@ -456,6 +456,7 @@ s32 act_star_dance(struct MarioState *m) {
     return FALSE;
 }
 
+#include "actors/group14.h"
 s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
     struct Object *o = m->marioObj;
 

@@ -19,8 +19,6 @@ extern const struct Animation *const Hammerbro_anims[];
 #include "rb_bar/header.h"
 #include "ico_mana/header.h"
 #include "ico_badge/header.h"
-// #include "bs_hud/header.h"
-// #include "bs_bar/header.h"
 #include "vanetalc/geo_header.h"
 
 // exclamation_box
@@ -50,7 +48,6 @@ extern const Gfx question_box_dl[];
 #include "b9/header.h"
 #include "b10/header.h"
 #include "b11/header.h"
-// #include "bE/header.h"
 #include "b12/header.h"
 #include "b13/header.h"
 #include "b14/header.h"
@@ -63,6 +60,7 @@ extern const Gfx question_box_dl[];
 #include "b20/header.h"
 #include "b18/header.h"
 #include "b19/header.h"
+#include "badge/geo_header.h"
 
 #include "chicken/geo_header.h"
 #include "chicken/anim_header.h"
@@ -83,11 +81,11 @@ extern const Gfx question_box_dl[];
 #include "billmask/geo_header.h"
 
 #include "moleman3/geo_header.h"
-
-
 #include "moleman3/anim_header.h"
+
 #include "cobie2/geo_header.h"
-
-
 #include "cobie2/anim_header.h"
+
+#include "evil_mario/anim_header.h"
+
 #endif

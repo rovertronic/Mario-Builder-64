@@ -327,78 +327,8 @@ extern const struct Animation *const monty_mole_seg5_anims_05007248[];
 // monty_mole_hole
 extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
-//#include "ring/geo_header.h"
-
-//#include "metal_crate/geo_header.h"
-
-//#include "metal_crate/collision_header.h"
-
-
-#include "evil_mario/anim_header.h"
-// #include "token/geo_header.h"
-
-
-//#include "egg/geo_header.h"
-
-// #include "arrow/header.h"
-
-// #include "BadgeSelect/header.h"
-
-// #include "MysteryBadge/header.h"
-
-//#include "snakeblock/collision_header.h"
-
-//#include "snakeblock1/geo_header.h"
-
-//#include "snakeblock2/geo_header.h"
-
-//#include "snakeblock3/geo_header.h"
-
-//#include "title/header.h"
-
-// #include "dcoin/geo_header.h"
-
-//#include "shopgui/header.h"
-
-//#include "shopselect/header.h"
-
-//#include "wallet/geo_header.h"
-
 #include "noteblock/geo_header.h"
 #include "noteblock/collision_header.h"
-
-
-// #include "null_anims/anim_header.h"
-// #include "ico_heart/header.h"
-
-
-//#include "executive_/header.h"
-
-//#include "spotlight/geo_header.h"
-
-//#include "executive_loom_/header.h"
-
-
-//#include "girl/anim_header.h"
-
-//#include "tvhead/collision_header.h"
-
-//#include "tvhead/geo_header.h"
-
-
-//#include "tvhead/anim_header.h"
-
-// #include "quest/geo_header.h"
-
-//#include "ocean_ttc/geo_header.h"
-
-//#include "tvcorpse/geo_header.h"
-
-//#include "cosmic_spike/geo_header.h"
-
-//#include "crowbar2/geo_header.h"
-
-#include "sb/header.h"
 
 #include "top/header.h"
 
@@ -410,8 +340,6 @@ extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
 #include "b/header.h"
 
-#include "cull/header.h"
-
 #include "bg/header.h"
 
 #include "sb_cube/geo_header.h"
@@ -419,8 +347,6 @@ extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 #include "lev_edge/geo_header.h"
 
 #include "spawn/geo_header.h"
-
-#include "badge/geo_header.h"
 
 #include "mm_btn/header.h"
 
@@ -461,34 +387,6 @@ extern const Gfx heave_ho_seg5_dl_050145D0[];
 extern const Gfx heave_ho_seg5_dl_050149A8[];
 extern const Gfx heave_ho_seg5_dl_05014D80[];
 extern const struct Animation *const heave_ho_seg5_anims_0501534C[];
-
-// hoot
-// extern const GeoLayout hoot_geo[];
-// extern const Gfx hoot_seg5_dl_05001B80[];
-// extern const Gfx hoot_seg5_dl_05001C00[];
-// extern const Gfx hoot_seg5_dl_05001DF0[];
-// extern const Gfx hoot_seg5_dl_05002EB0[];
-// extern const Gfx hoot_seg5_dl_05002F10[];
-// extern const Gfx hoot_seg5_dl_05002FD8[];
-// extern const Gfx hoot_seg5_dl_05003038[];
-// extern const Gfx hoot_seg5_dl_05003100[];
-// extern const Gfx hoot_seg5_dl_05003160[];
-// extern const Gfx hoot_seg5_dl_05003228[];
-// extern const Gfx hoot_seg5_dl_05003288[];
-// extern const Gfx hoot_seg5_dl_05003350[];
-// extern const Gfx hoot_seg5_dl_050033B0[];
-// extern const Gfx hoot_seg5_dl_05003478[];
-// extern const Gfx hoot_seg5_dl_050034D8[];
-// extern const Gfx hoot_seg5_dl_050035A0[];
-// extern const Gfx hoot_seg5_dl_05003600[];
-// extern const Gfx hoot_seg5_dl_050036C8[];
-// extern const Gfx hoot_seg5_dl_05003728[];
-// extern const Gfx hoot_seg5_dl_05004928[];
-// extern const Gfx hoot_seg5_dl_05004A98[];
-// extern const Gfx hoot_seg5_dl_05004B38[];
-// extern const Gfx hoot_seg5_dl_05004CA8[];
-// extern const Gfx hoot_seg5_dl_05004D48[];
-// extern const struct Animation *const hoot_seg5_anims_05005768[];
 
 // thwomp
 extern const GeoLayout thwomp_geo[];
@@ -599,10 +497,6 @@ extern const Gfx spindrift_seg5_dl_05002C98[];
 extern const Gfx spindrift_seg5_dl_05002D08[];
 extern const struct Animation *const spindrift_seg5_anims_05002D68[];
 
-extern const GeoLayout lll_geo_000B38[];
-extern const Gfx lll_seg7_dl_07018A30[];
-extern const Collision lll_seg7_collision_rotating_fire_bars[];
-
 extern const Collision ssl_seg7_collision_grindel[];
 extern const GeoLayout ssl_geo_000734[];
 extern const Gfx ssl_seg7_dl_070220A8[];
@@ -689,52 +583,6 @@ extern const Gfx pokey_seg5_dl_050130B0[];
 
 extern const GeoLayout wdw_geo_0005C0[];
 extern const Gfx wdw_seg7_dl_070131B8[];
-
-#include "b0/header.h"
-
-#include "b1/header.h"
-
-#include "b2/header.h"
-
-#include "b3/header.h"
-
-#include "b4/header.h"
-
-#include "b5/header.h"
-
-#include "b6/header.h"
-
-#include "b7/header.h"
-
-#include "b8/header.h"
-
-#include "b9/header.h"
-
-#include "b10/header.h"
-
-#include "b11/header.h"
-
-#include "b12/header.h"
-
-#include "b13/header.h"
-
-#include "b15/header.h"
-
-#include "b16/header.h"
-
-#include "b17/header.h"
-
-#include "b18/header.h"
-
-#include "b19/header.h"
-
-#include "b21/header.h"
-
-#include "b22/header.h"
-
-#include "b14/header.h"
-
-#include "hammer/geo_header.h"
 
 #include "timedbox/geo_header.h"
 
