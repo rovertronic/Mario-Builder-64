@@ -109,7 +109,6 @@ void save_level(void);
 void sb_loop(void);
 void sb_init(void);
 void mb64_init();
-void draw_mb64_menu(void);
 void reset_play_state(void);
 void generate_objects_to_level(void);
 void block_floor_collision(f32 x, f32 y, f32 z);
@@ -122,7 +121,6 @@ extern Trajectory mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LE
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
 void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
-void mb64_set_data_overrides(void);
 void animate_list_reset(void);
 void generate_terrain_gfx(void);
 void reload_boundary_and_gfx(void);

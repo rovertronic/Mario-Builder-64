@@ -69,9 +69,9 @@ Gfx *geo18_display_error_message(u32 run, UNUSED struct GraphNode *sp44, UNUSED 
             // Set text color to white
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-            print_generic_string(8, 170, text_console_8mb);
-            print_generic_string(8, 120, text_pj64);
-            print_generic_string(8, 54, text_pj64_2);
+            //print_generic_string(8, 170, text_console_8mb);
+            //print_generic_string(8, 120, text_pj64);
+            //print_generic_string(8, 54, text_pj64_2);
 
             // Cleanup
             gSPDisplayList(gDisplayListHead++,

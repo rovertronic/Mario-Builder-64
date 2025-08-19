@@ -452,10 +452,6 @@ void render_game(void) {
         render_text_labels();
         render_menus_and_dialogs();
 
-        if (mb64_mode == MB64_MODE_MAKE) {
-            draw_mb64_menu();
-        }
-
         if (gViewportClip != NULL) {
             make_viewport_clip_rect(gViewportClip);
         } else

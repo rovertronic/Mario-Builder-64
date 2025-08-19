@@ -1187,7 +1187,10 @@ s32 play_mode_change_level(void) {
         sTransitionUpdate = NULL;
         reset_menu();
         if (sSpecialWarpDest == WARP_SPECIAL_MARIO_HEAD_REGULAR) {
-            mb64_init_exit_to_files();
+            mb64_mode = MB64_MODE_UNINITIALIZED;
+            mb64_lopt_template = 0;
+            mb64_lopt_size = 0;
+            mb64_lopt_game = MB64_GAME_VANILLA;
         }
 
         if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {

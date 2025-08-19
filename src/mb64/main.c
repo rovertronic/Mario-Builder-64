@@ -32,6 +32,7 @@
 
 void super_cum_working(struct Object *o, u8 type);
 
+u8 mb64_menu_state = MB64_MAKE_MAIN;
 u8 mb64_level_action = MB64_LA_BUILD;
 u8 mb64_mode = MB64_MODE_UNINITIALIZED;
 u8 mb64_target_mode = MB64_MODE_MAKE;
@@ -2992,6 +2993,20 @@ void update_painting() {
     }
 }
 
+void mb64_init_toolbox(void) {
+    bzero(&mb64_toolbox_params, sizeof(mb64_toolbox_params));
+    switch(mb64_lopt_game) {
+        case MB64_GAME_BTCM:
+            bcopy(&mb64_toolbox_btcm,&mb64_toolbox,sizeof(mb64_toolbox));
+            mb64_exclamation_box_contents = sExclamationBoxContents_btcm;
+            break;
+        case MB64_GAME_VANILLA:
+            bcopy(&mb64_toolbox_vanilla,&mb64_toolbox,sizeof(mb64_toolbox));
+            mb64_exclamation_box_contents = sExclamationBoxContents_vanilla;
+            break;
+    }
+}
+
 TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
 FIL mb64_file;
 FILINFO mb64_file_info;
@@ -3300,7 +3315,7 @@ void load_level(void) {
     }
     
 
-    mb64_set_data_overrides();
+    mb64_init_toolbox();
 
     if (!fresh) {
         update_painting();
@@ -3686,7 +3701,6 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
 
 void reload_theme(void) {
     reload_boundary_and_gfx();
-    mb64_set_data_overrides();
     generate_object_preview();
 }
 
