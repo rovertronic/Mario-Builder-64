@@ -43,6 +43,13 @@ void move_message(void) {
     sActiveMessage->delay = sMessageTimer;
 }
 
+void hide_message(void) {
+    if (sActiveMessage) {
+        dealloc_component(get_id(sActiveMessage));
+        sActiveMessage = NULL;
+    }
+}
+
 // Generic error message
 void show_message(char *msg, int color, int timer, int delay) {
     if (sActiveMessage) {
@@ -100,7 +107,34 @@ void create_coord_display(void) {
     sCoordDisplay->delay = 255;
 }
 
+// Control text for trajectories and screenshots
+
+TextComponent *sYellowText = NULL;
+int sYellowTextVisible = TRUE;
+
+void yellow_text_set_visibility(void) {
+    if (gPlayer1Controller->buttonPressed & Z_TRIG) {
+        sYellowTextVisible ^= 1;
+    }
+    int visible = sYellowTextVisible && !mb64_freecam_snap;
+    sYellowText->alpha = visible ? 255 : 0;
+}
+
+void destroy_yellow_text(void) {
+    dealloc_component(get_id(sYellowText));
+    sYellowText = NULL;
+}
+
+void create_yellow_text(char *msg) {
+    if (sYellowText) destroy_yellow_text();
+    sYellowText = init_text_component(gMenuRoot, 15, 215, msg, TEXT_LEFT, TEXT_YELLOW);
+    sYellowText->base.prerender = yellow_text_set_visibility;
+    sYellowTextVisible = TRUE;
+    hide_message();
+}
+
 void reset_misc_menu_state(void) {
     sActiveMessage = NULL;
     sCoordDisplay = NULL;
+    sYellowText = NULL;
 }

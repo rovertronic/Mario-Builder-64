@@ -95,7 +95,6 @@ extern s16 mb64_mat_selection;
 extern s16 mb64_freecam_pitch;
 extern s16 mb64_freecam_yaw;
 extern u8 mb64_freecam_snap;
-extern u8 mb64_freecam_help;
 extern u8 mb64_freecam_snap_timer;
 
 extern s8 mb64_dialog_subject_index;

@@ -374,6 +374,7 @@ void settings_play_level(void) {
 void settings_take_screenshot(void) {
     freecam_camera_init();
     mb64_menu_state = MB64_MAKE_SCREENSHOT;
+    create_yellow_text("Analog Stick: Look around\n\x14 ^ / |: Move forward / backward\n\x14 < / >: Move sideways\n\x15 / \x13: Zoom\n\x12: Toggle Help\nSTART: Take screenshot\n\x11: Exit");
     play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
     dealloc_component(get_id(settingsRoot));
     settingsRoot = NULL;

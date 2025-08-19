@@ -65,9 +65,6 @@ void draw_mb64_menu(void) {
             break;
 
         case MB64_MAKE_SCREENSHOT:
-            if (mb64_freecam_snap || !mb64_freecam_help) {
-                return;
-            }
             //print_maker_string(20,210,mb64_txt_freecam,TRUE);
             break;
 

@@ -2782,6 +2782,9 @@ void place_object(s8 pos[3]) {
         mb64_trajectories_used++;
 
         mb64_menu_state = MB64_MAKE_TRAJECTORY;
+        create_yellow_text("Building path in progress!\n\n\x10: Place waypoint\n\x11: Undo\nSTART: Confirm");
+        toolbar_set_active(FALSE);
+
         mb64_trajectory_list[mb64_trajectory_to_edit][0][0] = -1;
         mb64_trajectory_edit_index = 0;
     } else if (mb64_object_type_list[mb64_id_selection].flags & OBJ_TYPE_HAS_DIALOG) {
@@ -3690,7 +3693,6 @@ void reload_theme(void) {
 s16 mb64_freecam_pitch;
 s16 mb64_freecam_yaw;
 u8 mb64_freecam_snap = FALSE;
-u8 mb64_freecam_help = TRUE;
 u8 mb64_freecam_snap_timer = 0;
 
 void freecam_camera_init(void) {
@@ -3707,6 +3709,20 @@ void freecam_camera_init(void) {
     mb64_prepare_level_screenshot = TRUE;
 }
 
+void freecam_return(void) {
+    mb64_menu_state = MB64_MAKE_MAIN;
+    mb64_camera_fov = 45.0f;
+    mb64_prepare_level_screenshot = FALSE;
+    mb64_freecam_snap = FALSE;
+    vec3f_copy(mb64_camera_pos,mb64_camera_pos_prev);
+    generate_object_preview();
+    show_coord_display();
+    destroy_yellow_text();
+
+    show_toolbar();
+    toolbar_set_active(TRUE);
+}
+
 void freecam_camera_main(void) {
     if (mb64_freecam_snap) {
         mb64_freecam_snap_timer++;
@@ -3718,12 +3734,7 @@ void freecam_camera_main(void) {
             save_level();
         }
         if (mb64_freecam_snap_timer > 30) {
-            mb64_menu_state = MB64_MAKE_MAIN;
-            mb64_camera_fov = 45.0f;
-            mb64_prepare_level_screenshot = FALSE;
-            vec3f_copy(mb64_camera_pos,mb64_camera_pos_prev);
-            generate_object_preview();
-            mb64_freecam_help = TRUE;
+            freecam_return();
         }
         return;
     }
@@ -3779,21 +3790,12 @@ void freecam_camera_main(void) {
         }
     }
 
-    if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-        mb64_freecam_help = !mb64_freecam_help;
-    }
-
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         mb64_freecam_snap = TRUE;
     }
 
     if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-        mb64_menu_state = MB64_MAKE_MAIN;
-        mb64_camera_fov = 45.0f;
-        mb64_prepare_level_screenshot = FALSE;
-        vec3f_copy(mb64_camera_pos,mb64_camera_pos_prev);
-        generate_object_preview();
-        show_coord_display();
+        freecam_return();
     }
 
     // transform camera
@@ -3959,6 +3961,8 @@ void sb_loop(void) {
                 } else {
                     mb64_menu_state = MB64_MAKE_MAIN;
                     generate_object_preview();
+                    destroy_yellow_text();
+                    toolbar_set_active(TRUE);
                 }
             }
 
