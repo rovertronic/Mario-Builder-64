@@ -7,7 +7,6 @@
 #include "behavior_actions.h"
 #include "behavior_data.h"
 #include "camera.h"
-#include "dialog_ids.h"
 #include "engine/behavior_script.h"
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"

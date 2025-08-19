@@ -6,7 +6,6 @@
 #include "behavior_data.h"
 #include "camera.h"
 #include "debug.h"
-#include "dialog_ids.h"
 #include "engine/behavior_script.h"
 #include "engine/geo_layout.h"
 #include "engine/math_util.h"

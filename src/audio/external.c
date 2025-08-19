@@ -14,7 +14,6 @@
 #include "game/camera.h"
 #include "engine/math_util.h"
 #include "seq_ids.h"
-#include "dialog_ids.h"
 #include "menu/file_select.h"
 #include "include/types.h"
 #include "game/puppycamold.h"

@@ -1233,11 +1233,6 @@ void bowser_dead_hide(void) {
 }
 
 /**
- * Dialog values that are set on each stage Bowser's is defeated
- */
-s16 sBowserDefeatedDialogText[3] = { DIALOG_119, DIALOG_120, DIALOG_121 };
-
-/**
  * Bowser's dead sequence that plays in BitDW/BitFS
  * Returns TRUE once done
  */

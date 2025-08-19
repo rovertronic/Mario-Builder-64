@@ -217,66 +217,51 @@ static void wiggler_act_walk(void) {
     cur_obj_set_home_if_safe();
     o->oWigglerWalkAnimSpeed = 0.06f * o->oForwardVel;
 
-    // Update text if necessary
-    //if (o->oWigglerTextStatus < WIGGLER_TEXT_STATUS_COMPLETED_DIALOG) {
-    //    if (o->oWigglerTextStatus == WIGGLER_TEXT_STATUS_AWAIT_DIALOG) {
-    //        seq_player_lower_volume(SEQ_PLAYER_LEVEL, 60, 40);
-    //        o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_SHOWING_DIALOG;
-    //    }
-//
-    //    // If Mario is positioned below the wiggler, assume he entered through the
-    //    // lower cave entrance, so don't display text.
-    //    //if (gMarioObject->oPosY < o->oPosY) { //|| cur_obj_update_dialog_with_cutscene(
-    //        //MARIO_DIALOG_LOOK_UP, DIALOG_FLAG_NONE, CUTSCENE_DIALOG, DIALOG_150)) {
-    //        o->oWigglerTextStatus = WIGGLER_TEXT_STATUS_COMPLETED_DIALOG;
-    //    //}
-    //} else {
-        obj_forward_vel_approach(sWigglerSpeeds[o->oHealth - 1], 1.0f);
+    obj_forward_vel_approach(sWigglerSpeeds[o->oHealth - 1], 1.0f);
 
-        if (o->oWigglerWalkAwayFromWallTimer != 0) {
-            o->oWigglerWalkAwayFromWallTimer--;
+    if (o->oWigglerWalkAwayFromWallTimer != 0) {
+        o->oWigglerWalkAwayFromWallTimer--;
+    } else {
+        if (o->oDistanceToMario >= 25000.0f) {
+            o->oWigglerTargetYaw = o->oAngleToMario;
+        }
+
+        if (obj_bounce_off_walls_edges_objects(&o->oWigglerTargetYaw)) {
+            //! If the wiggler could self-intersect, or intersect a different
+            //  non-mario object, this could potentially be used to force
+            //  the wiggler to walk straight - past his usual radius
+            o->oWigglerWalkAwayFromWallTimer = random_linear_offset(30, 30);
         } else {
-            if (o->oDistanceToMario >= 25000.0f) {
+            if (o->oHealth < 4 && o->oHealth > 1) {
                 o->oWigglerTargetYaw = o->oAngleToMario;
-            }
-
-            if (obj_bounce_off_walls_edges_objects(&o->oWigglerTargetYaw)) {
-                //! If the wiggler could self-intersect, or intersect a different
-                //  non-mario object, this could potentially be used to force
-                //  the wiggler to walk straight - past his usual radius
-                o->oWigglerWalkAwayFromWallTimer = random_linear_offset(30, 30);
+            } else if (o->oWigglerTimeUntilRandomTurn != 0) {
+                o->oWigglerTimeUntilRandomTurn--;
             } else {
-                if (o->oHealth < 4 && o->oHealth > 1) {
-                    o->oWigglerTargetYaw = o->oAngleToMario;
-                } else if (o->oWigglerTimeUntilRandomTurn != 0) {
-                    o->oWigglerTimeUntilRandomTurn--;
-                } else {
-                    o->oWigglerTargetYaw = o->oMoveAngleYaw + 0x4000 * (s16) random_sign();
-                    o->oWigglerTimeUntilRandomTurn = random_linear_offset(30, 50);
-                }
+                o->oWigglerTargetYaw = o->oMoveAngleYaw + 0x4000 * (s16) random_sign();
+                o->oWigglerTimeUntilRandomTurn = random_linear_offset(30, 50);
             }
         }
+    }
 
-        // If moving at high speeds, could overflow. But can't reach such speeds
-        // in practice
-        s16 yawTurnSpeed = (s16)(30.0f * o->oForwardVel);
-        cur_obj_rotate_yaw_toward(o->oWigglerTargetYaw, yawTurnSpeed);
-        obj_face_yaw_approach(o->oMoveAngleYaw, 2 * yawTurnSpeed);
+    // If moving at high speeds, could overflow. But can't reach such speeds
+    // in practice
+    s16 yawTurnSpeed = (s16)(30.0f * o->oForwardVel);
+    cur_obj_rotate_yaw_toward(o->oWigglerTargetYaw, yawTurnSpeed);
+    obj_face_yaw_approach(o->oMoveAngleYaw, 2 * yawTurnSpeed);
 
-        obj_face_pitch_approach(0, 0x320);
+    obj_face_pitch_approach(0, 0x320);
 
-        // For the first two seconds of walking, stay invulnerable
-        if (o->oTimer < 60) {
-            obj_check_attacks(&sWigglerHitbox, o->oAction);
-        } else if (obj_handle_attacks(&sWigglerHitbox, o->oAction, sWigglerAttackHandlers)) {
-            if (o->oAction != WIGGLER_ACT_JUMPED_ON) {
-                o->oAction = WIGGLER_ACT_KNOCKBACK;
-            }
-
-            o->oWigglerWalkAwayFromWallTimer = 0;
-            o->oWigglerWalkAnimSpeed = 0.0f;
+    // For the first two seconds of walking, stay invulnerable
+    if (o->oTimer < 60) {
+        obj_check_attacks(&sWigglerHitbox, o->oAction);
+    } else if (obj_handle_attacks(&sWigglerHitbox, o->oAction, sWigglerAttackHandlers)) {
+        if (o->oAction != WIGGLER_ACT_JUMPED_ON) {
+            o->oAction = WIGGLER_ACT_KNOCKBACK;
         }
-    //}
+
+        o->oWigglerWalkAwayFromWallTimer = 0;
+        o->oWigglerWalkAnimSpeed = 0.0f;
+    }
 }
 /**
  * Squish and unsquish, then show text and enter either the walking or shrinking
@@ -299,8 +284,6 @@ void wiggler_take_damage(void) {
 }
 
 static void wiggler_act_jumped_on(void) {
-    // Text to show on first, second, and third attack.
-    s32 attackText[3] = { DIALOG_152, DIALOG_168, DIALOG_151 };
 
     // Shrink until the squish speed becomes 0, then unisquish
     if (approach_f32_ptr(&o->oWigglerSquishSpeed, 0.0f, 0.05f)) {
@@ -314,12 +297,7 @@ static void wiggler_act_jumped_on(void) {
     // defeated) or go back to walking
     if (o->header.gfx.scale[1] >= 4.0f) {
         if (o->oTimer > 30) {
-            //if (cur_obj_update_dialog_with_cutscene(MARIO_DIALOG_LOOK_UP, 
-            //    DIALOG_FLAG_NONE, CUTSCENE_DIALOG, attackText[o->oHealth - 2])) {
-                // Because we don't want the wiggler to disappear after being
-                // defeated, we leave its health at 1
-                wiggler_take_damage();
-            //}
+            wiggler_take_damage();
         }
     } else {
         o->oTimer = 0;

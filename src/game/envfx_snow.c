@@ -1,7 +1,6 @@
 #include <ultra64.h>
 
 #include "sm64.h"
-#include "dialog_ids.h"
 #include "game_init.h"
 #include "memory.h"
 #include "ingame_menu.h"

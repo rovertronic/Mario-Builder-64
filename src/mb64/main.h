@@ -4,7 +4,6 @@
 #include "data.h"
 
 #include "model_ids.h"
-#include "dialog_ids.h"
 #include "seq_ids.h"
 #include "sounds.h"
 #include "surface_terrains.h"

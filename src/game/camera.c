@@ -3,7 +3,6 @@
 #include "sm64.h"
 #include "camera.h"
 #include "seq_ids.h"
-#include "dialog_ids.h"
 #include "audio/external.h"
 #include "mario_misc.h"
 #include "game_init.h"

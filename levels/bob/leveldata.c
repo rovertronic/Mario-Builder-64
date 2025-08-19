@@ -3,7 +3,6 @@
 #include "surface_terrains.h"
 #include "level_misc_macros.h"
 #include "textures.h"
-#include "dialog_ids.h"
 
 #include "make_const_nonconst.h"
 #include "levels/bob/leveldata.inc.c"

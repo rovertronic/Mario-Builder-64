@@ -68,7 +68,6 @@ struct Area {
     /*0x24*/ struct Camera *camera;
     /*0x28*/ struct UnusedArea28 *unused; // Filled by level script 0x3A, but is unused.
     /*0x2C*/ struct Whirlpool *whirlpools[2];
-    /*0x34*/ u8 dialog[2]; // Level start dialog number (set by level script cmd 0x30)
     /*0x36*/ u16 musicParam;
     /*0x38*/ u16 musicParam2;
     /*0x3A*/ u8 useEchoOverride; // Should area echo be overridden using echoOverride?

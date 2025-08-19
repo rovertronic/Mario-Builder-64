@@ -19,7 +19,6 @@
 #include "game/rumble_init.h"
 #include "sm64.h"
 #include "star_select.h"
-#include "text_strings.h"
 #include "game/main.h"
 #include "src/game/save_file.h"
 

@@ -3,7 +3,6 @@
 
 #include "sm64.h"
 #include "seq_ids.h"
-#include "dialog_ids.h"
 #include "audio/external.h"
 #include "audio/synthesis.h"
 #include "level_update.h"

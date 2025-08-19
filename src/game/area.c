@@ -23,7 +23,6 @@
 #include "save_file.h"
 #include "sound_init.h"
 #include "level_table.h"
-#include "dialog_ids.h"
 #include "puppyprint.h"
 #include "debug_box.h"
 #include "engine/colors.h"
@@ -224,8 +223,6 @@ void clear_areas(void) {
         for (j = 0; j < ARRAY_COUNT(gAreaData[i].whirlpools); j++) {
             gAreaData[i].whirlpools[j] = NULL;
         }
-        gAreaData[i].dialog[0] = DIALOG_NONE;
-        gAreaData[i].dialog[1] = DIALOG_NONE;
         gAreaData[i].musicParam = 0;
         gAreaData[i].musicParam2 = 0;
         gAreaData[i].useEchoOverride = FALSE;
