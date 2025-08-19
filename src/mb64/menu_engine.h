@@ -7,7 +7,9 @@
 #include "game/segment2.h"
 #include "game/game_init.h"
 #include "game/ingame_menu.h"
+#include "game/geo_misc.h"
 
+#include "actors/uiCorner/header.h"
 // Temp dls
 #include "levels/menu/mm_btn_sm/header.h"
 #include "levels/menu/mm_btn2/header.h"
@@ -186,6 +188,14 @@ typedef struct {
 
 typedef struct {
     MenuComponent base;
+    u8 alpha;
+    u8 width;
+    u8 height;
+    u8 corner;
+} BoxComponent;
+
+typedef struct {
+    MenuComponent base;
     s16 rot;
     f32 xScale;
     f32 yScale;
@@ -273,6 +283,7 @@ enum MenuComponents {
     MENU_DYNAMIC,
     MENU_ANIMATED,
     MENU_RECT,
+    MENU_BOX,
     MENU_MATRIX,
     MENU_PAGE_HANDLER,
     MENU_PAGE_TITLE,
@@ -293,6 +304,7 @@ union MenuComponentData {
     PageTitleComponent pageTitle;
     MatrixComponent matrix;
     RectComponent rect;
+    BoxComponent box;
     Selector2DComponent selector2D;
     KeyboardComponent keyboard;
     CounterComponent counter;
@@ -338,6 +350,7 @@ TextComponent        *init_text_component(void *parent, s16 x, s16 y, char *text
 TextComponent        *init_text_button(void *parent, s16 x, s16 y, char *text, u8 align, ComponentUpdateFunc onClick, int onClickArg);
 MatrixComponent      *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale);
 RectComponent        *init_rect_component(void *parent, u8 alpha, s16 x, s16 y, u8 width, u8 height);
+BoxComponent         *init_box_component(void *parent, s16 x, s16 y, u8 width, u8 height, u8 alpha, u8 corner);
 PageHandlerComponent *init_page_handler(void *parent, PageCreator pageCreator, u8 count, u16 width);
 PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y, s16 width, char **array);
 PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);

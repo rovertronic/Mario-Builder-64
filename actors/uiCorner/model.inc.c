@@ -515,48 +515,15 @@ u8 uiCorner_uiCorner_ia8[] = {
 	
 };
 
-Vtx uiCorner_uiCorner_mesh_vtx_0[4] = {
-	{{ {-100, 0, 100}, 0, {-16, 2032}, {0, 127, 0, 255} }},
-	{{ {100, 0, 100}, 0, {2032, 2032}, {0, 127, 0, 255} }},
-	{{ {100, 0, -100}, 0, {2032, -16}, {0, 127, 0, 255} }},
-	{{ {-100, 0, -100}, 0, {-16, -16}, {0, 127, 0, 255} }},
-};
-
-Gfx uiCorner_uiCorner_mesh_tri_0[] = {
-	gsSPVertex(uiCorner_uiCorner_mesh_vtx_0 + 0, 4, 0),
-	gsSP1Triangle(0, 1, 2, 0),
-	gsSP1Triangle(0, 2, 3, 0),
-	gsSPEndDisplayList(),
-};
-
 Gfx mat_uiCorner_uiCorner[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, ENVIRONMENT, TEXEL0, 0, ENVIRONMENT, 0),
-	gsDPSetAlphaDither(G_AD_NOISE),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b_LOAD_BLOCK, 1, uiCorner_uiCorner_ia8),
 	gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
 	gsDPLoadBlock(7, 0, 0, 2047, 256),
 	gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0),
 	gsDPSetTileSize(0, 0, 0, 252, 252),
-	gsSPEndDisplayList(),
-};
-
-Gfx mat_revert_uiCorner_uiCorner[] = {
-	gsDPPipeSync(),
-	gsDPSetAlphaDither(G_AD_DISABLE),
-	gsSPEndDisplayList(),
-};
-
-Gfx uiCorner_uiCorner_mesh[] = {
-	gsSPDisplayList(mat_uiCorner_uiCorner),
-	gsSPDisplayList(uiCorner_uiCorner_mesh_tri_0),
-	gsSPDisplayList(mat_revert_uiCorner_uiCorner),
-	gsDPPipeSync(),
-	gsSPSetGeometryMode(G_LIGHTING),
-	gsSPClearGeometryMode(G_TEXTURE_GEN),
-	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
-	gsSPTexture(65535, 65535, 0, 0, 0),
 	gsSPEndDisplayList(),
 };
 

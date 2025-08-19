@@ -918,91 +918,14 @@ void render_hud(void) {
         gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
 
         if ((mb64_mode == MB64_MODE_PLAY) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(sCurrPlayMode != PLAY_MODE_PAUSED)) {
-
-#ifndef DISABLE_LIVES
-            if (hudDisplayFlags & HUD_DISPLAY_FLAG_LIVES) {
-                //render_hud_mario_lives();
-            }
-#endif
-
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_COIN_COUNT) {
                 render_hud_coins();
             }
 
-            // //i should have programmed a proper quest system lmfao
-            // if (gMarioState->DeadRexMissionActivate) {
-            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%02dQ10", gMarioState->DeadRexes);
-            //     }
-            // if (gMarioState->DeadCowboyMissionActivate) {
-            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->DeadRexes);
-            //     }
-            // if (gMarioState->CheeseMissionActivate) {
-            //     //this hardcoded bullshit is so fucking awful. if i made cursed mirror again i would make a quest SYSTEM! AUTOMATION! WE LIVE
-            //     //IN THE AGE OF FUCKING AUTOMATION. AND MY BITCHASS HARD CODED THESE MISSIONS. stupid bitch, fycj you
-            //     if (gCurrLevelNum == LEVEL_TTC) {
-            //         //highcane mission
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ20", gMarioState->CheeseCollection);
-            //     } else {
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ5", gMarioState->CheeseCollection);
-            //     }
-            // }
-            // if (gMarioState->SockMissionActivate) {
-            //     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22)-wideoffet4, HUD_TOP_Y-18, "%dQ7", gMarioState->SockCollection);
-            //     }
-
-            // switch(gMarioState->gCurrMinigame) {
-            //     case 1://arena
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "ROUND %d", gMarioState->EA_WAVES);
-            //         print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "%dQ%d", gMarioState->EA_LEFT, gMarioState->EA_TOTAL);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-36, "HI %d", save_file_get_hiscore(0));
-            //         }
-            //     break;
-            //     case 2://hotrope
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(1));
-            //         }
-            //     break;
-            //     case 3://hexagonheat
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(2));
-            //         }
-            //     break;
-            //     case 4://snakio
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "LENGTH %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(3));
-            //         }
-            //     break;
-            //     case 5://edsurv
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "EDWARDS %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(4));
-            //         }
-            //     break;
-            //     case 6://bapple
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(5));
-            //         }
-            //     break;
-            //     case 7://flappy bird
-            //         print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, "SCORE %d", gMarioState->EA_WAVES);
-            //         if (minigame_real) {
-            //             print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y-18, "HI %d", save_file_get_hiscore(6));
-            //         }
-            //     break;
-            // }
-
             //Use this later for the star radar badge
             if (gMarioState->StarRadarExist == TRUE) {
                 gMarioState->StarRadarExist = FALSE;
-                print_text_fmt_int(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^",0);
-
-                //print_text_fmt_int(40,40,"%d",gMarioState->ScreenPosX);
-                //print_text_fmt_int(40,80,"Y %d",gMarioState->ScreenPosY);
+                print_text(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^");
             }
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_STAR_COUNT) {
@@ -1059,49 +982,5 @@ void render_hud(void) {
             }
             */
         }
-
-#ifdef VANILLA_STYLE_CUSTOM_DEBUG
-        if (gCustomDebugMode) {
-            render_debug_mode();
-        }
-#endif
     }
-}
-
-#include "actors/group0.h"
-#include "geo_misc.h"
-
-void init_4slice(void) {
-    gSPDisplayList(gDisplayListHead++,mat_uiCorner_uiCorner);
-}
-
-void render_4slice(int x, int y, int xSize, int ySize, int cornerSize) {
-    Vtx * v = alloc_display_list(9 * sizeof(Vtx));
-
-    f32 cornerRatioX = (f32)xSize/(f32)cornerSize;
-    f32 cornerRatioY = (f32)ySize/(f32)cornerSize;
-
-    s16 xSizeHalf = xSize/2;
-    s16 ySizeHalf = ySize/2;
-    s16 uvX = (32*64)*cornerRatioX;
-    s16 uvY = (32*64)*cornerRatioY;
-
-    make_vertex(v, 0,    x-xSizeHalf, y+ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
-    make_vertex(v, 1,    x,           y+ySizeHalf,      0,     uvX, 0,       255, 255, 255, 255);
-    make_vertex(v, 2,    x+xSizeHalf, y+ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
-
-    make_vertex(v, 3,    x-xSizeHalf, y,                0,     0,   uvY,     255, 255, 255, 255);
-    make_vertex(v, 4,    x,           y,                0,     uvX, uvY,     255, 255, 255, 255);
-    make_vertex(v, 5,    x+xSizeHalf, y,                0,     0,   uvY,     255, 255, 255, 255);
-
-    make_vertex(v, 6,    x-xSizeHalf, y-ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
-    make_vertex(v, 7,    x,           y-ySizeHalf,      0,     uvX, 0,       255, 255, 255, 255);
-    make_vertex(v, 8,    x+xSizeHalf, y-ySizeHalf,      0,     0,   0,       255, 255, 255, 255);
-
-    gSPVertex(gDisplayListHead++,v,9,0);
-
-    gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 4, 0);
-    gSP2Triangles(gDisplayListHead++, 2, 1, 4, 0, 4, 5, 2, 0);
-    gSP2Triangles(gDisplayListHead++, 3, 6, 4, 0, 4, 6, 7, 0);
-    gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
 }

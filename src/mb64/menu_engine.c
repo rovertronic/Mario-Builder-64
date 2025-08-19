@@ -1,5 +1,7 @@
 #include "menu_engine.h"
 
+#include "actors/uiCorner/model.inc.c"
+
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
 MenuState gMenuState;
@@ -580,6 +582,58 @@ void component_rect_render(MenuComponent *m, s16 x, s16 y) {
     render_child(m, x, y);
 }
 
+// ================ BOX =================
+
+void render_4slice_box(int x, int y, int width, int height, int cornerSize) {
+    gSPDisplayList(gDisplayListHead++,mat_uiCorner_uiCorner);
+    Vtx * v = alloc_display_list(9 * sizeof(Vtx));
+
+    f32 cornerRatioX = (f32)width/(f32)cornerSize;
+    f32 cornerRatioY = (f32)height/(f32)cornerSize;
+
+    s16 uvX = (32*64)*cornerRatioX;
+    s16 uvY = (32*64)*cornerRatioY;
+
+    make_vertex(v, 0,    x-width, y+height, 0,     0,   0,       255, 255, 255, 255);
+    make_vertex(v, 1,    x,       y+height, 0,     uvX, 0,       255, 255, 255, 255);
+    make_vertex(v, 2,    x+width, y+height, 0,     0,   0,       255, 255, 255, 255);
+
+    make_vertex(v, 3,    x-width, y,        0,     0,   uvY,     255, 255, 255, 255);
+    make_vertex(v, 4,    x,       y,        0,     uvX, uvY,     255, 255, 255, 255);
+    make_vertex(v, 5,    x+width, y,        0,     0,   uvY,     255, 255, 255, 255);
+
+    make_vertex(v, 6,    x-width, y-height, 0,     0,   0,       255, 255, 255, 255);
+    make_vertex(v, 7,    x,       y-height, 0,     uvX, 0,       255, 255, 255, 255);
+    make_vertex(v, 8,    x+width, y-height, 0,     0,   0,       255, 255, 255, 255);
+
+    gSPVertex(gDisplayListHead++,v,9,0);
+
+    gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 4, 0);
+    gSP2Triangles(gDisplayListHead++, 2, 1, 4, 0, 4, 5, 2, 0);
+    gSP2Triangles(gDisplayListHead++, 3, 6, 4, 0, 4, 6, 7, 0);
+    gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
+}
+
+BoxComponent *init_box_component(void *parent, s16 x, s16 y, u8 width, u8 height, u8 alpha, u8 corner) {
+    BoxComponent *box = alloc_component(parent, MENU_BOX);
+    component_set_pos(box, x, y);
+    box->width = width;
+    box->height = height;
+    box->alpha = alpha;
+    box->corner = corner;
+    return box;
+}
+
+void component_box_render(MenuComponent *m, s16 x, s16 y) {
+    BoxComponent *bc = (BoxComponent *)m;
+    x += m->xpos;
+    y += m->ypos;
+
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 200);
+    render_4slice_box(x, y, bc->width, bc->height, 8);
+    render_child(m, x, y);
+}
+
 // ================ MATRIX ===================
 
 MatrixComponent *init_matrix_component(void *parent, s16 rot, f32 xScale, f32 yScale) {
@@ -950,12 +1004,10 @@ u8 gCapsLock = FALSE;
 void keyboard_render_key(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
     x += column * 24;
     y -= row * 24;
-    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     int val = selected ? get_selected_color_value() : 0;
     gDPSetEnvColor(gDisplayListHead++, val, val, val, 150);
-    gSPDisplayList(gDisplayListHead++, &mm_btn_sm_mm_btn_sm_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    render_4slice_box(x, y, 11, 11, 11);
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
 
     int index = row * s->columns + column;
     char buf[2] = {0};
@@ -1074,6 +1126,7 @@ ComponentRenderFunc component_render_funcs[] = {
     [MENU_SELECTOR] = component_selector_render,
     [MENU_ANIMATED] = component_animated_render,
     [MENU_RECT] = component_rect_render,
+    [MENU_BOX] = component_box_render,
     [MENU_MATRIX] = component_matrix_render,
     [MENU_PAGE_HANDLER] = component_page_handler_render,
     [MENU_PAGE_TITLE] = component_page_title_render,
