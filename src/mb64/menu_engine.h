@@ -10,10 +10,6 @@
 #include "game/geo_misc.h"
 
 #include "actors/uiCorner/header.h"
-// Temp dls
-#include "actors/b/header.h"
-#include "actors/bg/header.h"
-#include "actors/uibutton/header.h"
 
 #define MENU_POOL_SIZE 128
 

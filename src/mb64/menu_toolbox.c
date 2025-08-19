@@ -2,6 +2,9 @@
 
 #include "main.h"
 
+#include "actors/b/header.h"
+#include "actors/uibutton/header.h"
+
 AnimatedComponent *gToolbar;
 int gToolboxIndex = 0;
 
@@ -165,10 +168,9 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
 
     set_menu_style(toolbar_style);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, x, y - 65, 0);
+    gSPDisplayList(gDisplayListHead++, &dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    render_4slice_box(x, y - 65, 155, 72, 11);
 
     FrameComponent *curButton = get_child(component_list_get(toolbar, toolbar->index));
     int id = curButton->buttonID;
@@ -328,12 +330,9 @@ AnimatedComponent *gToolbox;
 
 #define TOOLBOX_PAGE_GAP ((9 * 32) + 40)
 void toolbox_render_bg(UNUSED MenuComponent *m, s16 x, s16 y) {
-    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-    create_dl_translation_matrix(MENU_MTX_NOPUSH, TOOLBOX_PAGE_GAP, 0, 0);
-    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    render_4slice_box(x,                    y, 155, 72, 11);
+    render_4slice_box(x + TOOLBOX_PAGE_GAP, y, 155, 72, 11);
 }
 
 void close_toolbox(void) {

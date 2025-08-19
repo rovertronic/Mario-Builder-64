@@ -340,8 +340,6 @@ extern const Gfx monty_mole_hole_seg5_dl_05000840[];
 
 #include "b/header.h"
 
-#include "bg/header.h"
-
 #include "sb_cube/geo_header.h"
 
 #include "lev_edge/geo_header.h"

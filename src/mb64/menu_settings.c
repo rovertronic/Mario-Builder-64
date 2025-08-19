@@ -5,7 +5,7 @@
 
 #include "actors/bigpainting2/header.h"
 
-ComponentID settingsRoot = 0;
+MenuComponent *settingsRoot = NULL;
 
 u8 gSettingsPage = 0;
 u8 gSettingsCustomOpen = 0;
@@ -17,16 +17,6 @@ char *settings_menu_pages[] = {
     "Miscellaneous",
     "System",
 };
-
-void component_settings_box_render(MenuComponent *m, s16 x, s16 y) {
-    x += m->xpos;
-    y += m->ypos;
-
-    create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    gSPDisplayList(gDisplayListHead++, &bg_back_graund_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-}
 
 void component_level_portrait_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
@@ -385,8 +375,8 @@ void settings_take_screenshot(void) {
     freecam_camera_init();
     mb64_menu_state = MB64_MAKE_SCREENSHOT;
     play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
-    dealloc_component(settingsRoot);
-    settingsRoot = 0;
+    dealloc_component(get_id(settingsRoot));
+    settingsRoot = NULL;
 }
 
 
@@ -700,7 +690,7 @@ FrameComponent *custom_theme_page_creator(UNUSED PageHandlerComponent *unusedph,
 }
 
 void custom_theme_button_pressed(void) {
-    PageHandlerComponent *ph = get_child(get_component(settingsRoot));
+    PageHandlerComponent *ph = get_child_of_type(settingsRoot, MENU_PAGE_HANDLER, 0);
     page_handler_scroll(ph, 1);
 }
 
@@ -847,13 +837,13 @@ FrameComponent *settings_page_creator(UNUSED PageHandlerComponent *unusedph, s32
 }
 
 void settings_page_closed() {
-    PageHandlerComponent *ph = get_child(get_component(settingsRoot));
+    PageHandlerComponent *ph = get_child_of_type(settingsRoot, MENU_PAGE_HANDLER, 0);
     gSettingsCustomOpen = ph->index;
     PageHandlerComponent *ph2 = get_child(get_component(ph->currentPage));
     gSettingsPage = ph2->index;
 
-    dealloc_component(settingsRoot);
-    settingsRoot = 0;
+    dealloc_component(get_id(settingsRoot));
+    settingsRoot = NULL;
     mb64_menu_state = MB64_MAKE_MAIN;
     toolbar_set_active(TRUE);
 }
@@ -897,13 +887,13 @@ void settings_menu_create(void) {
     component_animate_ease_in(main, 180.f, 0.4f, DIR_VERTICAL);
     main->base.prerender = settings_page_main;
 
+    init_box_component(main, 0, 0, 155, 72, 11, 150);
     PageHandlerComponent *ph = init_page_handler(main, settings_page_creator, 2, SETTINGS_PAGE_HEIGHT/2);
-    ph->base.prerender = component_settings_box_render;
     ph->direction = DIR_VERTICAL;
     ph->input = MENU_INPUT_NONE;
     ph->index = gSettingsCustomOpen;
 
-    settingsRoot = get_id(main);
+    settingsRoot = main;
 }
 
 // Called on level transition

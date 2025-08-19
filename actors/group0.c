@@ -66,7 +66,6 @@
 #include "uibutton/model.inc.c"
 #include "uibutton2/model.inc.c"
 #include "b/model.inc.c"
-#include "bg/model.inc.c"
 
 #include "sb_cube/model.inc.c"   // Cursor
 #include "lev_edge/model.inc.c"  // Red boundary grid

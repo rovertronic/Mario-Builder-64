@@ -1177,7 +1177,7 @@ void reset_menu(void) {
     init_root();
 }
 
-extern ComponentID settingsRoot;
+extern MenuComponent *settingsRoot;
 
 void render_menu(void) {
     menu_update_joystick();
