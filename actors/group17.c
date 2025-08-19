@@ -6,7 +6,7 @@
 #include "types.h"
 #include "make_const_nonconst.h"
 
-#include "mario2/model.inc.c"
+#include "mario/model.inc.c"
 
 #include "toad/model.inc.c"
 #include "toad/anims/data.inc.c"

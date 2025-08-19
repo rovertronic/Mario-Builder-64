@@ -277,7 +277,7 @@ const LevelScript script_func_mb64_theme_vanilla[] = {
     RETURN(),
 };
 const LevelScript script_func_mb64_theme_btcm[] = {
-    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MARIO, mario_btcm_geo),
     LOAD_MODEL_FROM_GEO(MODEL_HAMMER_BRO,     HammerBroGeo),
     LOAD_MODEL_FROM_GEO(MODEL_HAMMER,         hammer_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MAKER_CRABLET,    crab_geo),

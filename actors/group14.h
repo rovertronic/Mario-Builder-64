@@ -4,7 +4,7 @@
 #include "types.h"
 
 // mario
-#include "mario/geo_header.h"
+#include "mario_btcm/geo_header.h"
 
 extern const struct Animation *const Hammerbro_anims[];
 #include "Hammerbro/geo_header.h"

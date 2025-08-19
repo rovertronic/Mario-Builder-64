@@ -483,7 +483,7 @@ void main_menu_create_button(ListComponent *l, char *text, s16 y, ComponentUpdat
 
 void main_menu_create_selector(ListComponent *l, char *text, s16 y, u8 *value, char **options, int count) {
     AnimatedComponent *a = alloc_component(NULL, MENU_ANIMATED);
-    init_box_component(a, 0, 7, 55, 11, 11, 190);
+    init_box_component(a, 20, 7, 55, 11, 11, 190);
     SelectorComponent *s = init_array_selector(a, value, 40, count, options, NULL);
     component_set_pos(s, 20, 0);
     init_text_component(a, -45, 0, text, TEXT_RIGHT, 0);

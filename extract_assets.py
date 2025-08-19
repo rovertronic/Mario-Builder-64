@@ -7,7 +7,6 @@ import subprocess
 from tools.detect_baseroms import get_rom_candidates
 
 envmap_table = set([
-    "actors/mario2/mario_metal.rgba16.png",
     "actors/mario_cap/mario_cap_metal.rgba16.png",
     "actors/star/star_surface.rgba16.png",
     "actors/water_bubble/water_bubble.rgba16.png",

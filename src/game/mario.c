@@ -2115,16 +2115,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     u8 timerdelay = 0;
     u16 i;
     u8 x, y;
-    // u32 tempAddr = _bad_appleSegmentRomStart;
-    // u8 *sus = segmented_to_virtual(&castle_courtyard_dl_output_0_custom_i8_ia8);
     u8 coinrepeats = 1;
-    // u16 *walltex2 = segmented_to_virtual(&shrnling1_Static_i8);
-
-    //print_text_fmt_int(110, 36, mb64_username, 0);
-
-    //if (mb64_lopt_game == MB64_GAME_VANILLA) {
-         //gMarioObject->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_MARIO2];
-    //}
 
     if (mb64_lopt_game == MB64_GAME_BTCM) {
         switch_mario_costume(mb64_lopt_costume);

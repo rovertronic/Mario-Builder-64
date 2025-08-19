@@ -11,7 +11,7 @@
 #include "swoop/geo.inc.c"
 #include "dorrie/geo.inc.c"
 **/
-#include "mario2/geo.inc.c"
+#include "mario/geo.inc.c"
 #include "king_bobomb/geo.inc.c"
 #include "bowser_flame/geo.inc.c"
 #include "impact_ring/geo.inc.c"

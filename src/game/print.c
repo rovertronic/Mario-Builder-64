@@ -341,92 +341,13 @@ void print_text_centered(s32 x, s32 y, const char *str) {
 }
 
 /**
- * Converts a char into the proper colorful glyph for the char.
- */
-s32 char_to_glyph_index(char c) {
-    if (c >= 'A' && c <= 'Z') {
-        return c - 55;
-    }
-
-    if (c >= 'a' && c <= 'z') {
-        return c - 87;
-    }
-
-    if (c >= '0' && c <= '9') {
-        return c - 48;
-    }
-
-    if (c == ' ') {
-        return GLYPH_SPACE;
-    }
-
-    if (c == '!') {
-        return GLYPH_EXCLAMATION_PNT; // !, JP only
-    }
-
-    if (c == '#') {
-        return GLYPH_TWO_EXCLAMATION; // !!, JP only
-    }
-
-    if (c == '?') {
-        return GLYPH_QUESTION_MARK; // ?, JP only
-    }
-
-    if (c == '&') {
-        return GLYPH_AMPERSAND; // &, JP only
-    }
-
-    if (c == '/') {
-        return GLYPH_PERCENT; // %, JP only
-    }
-
-    if (c == '-') {
-        return GLYPH_MINUS; // minus
-    }
-
-    if (c == '*') {
-        return GLYPH_MULTIPLY; // x
-    }
-
-    if (c == '$') {
-        return GLYPH_COIN; // coin
-    }
-
-    if (c == '@') {
-        return GLYPH_RED_COIN; // red coin
-    }
-
-    if (c == '+') {
-        return GLYPH_SILVER_COIN; // silver coin
-    }
-
-    if (c == ',') {
-        return GLYPH_MARIO_HEAD; // Imagine I drew Mario's head
-    }
-
-    if (c == '^') {
-        return GLYPH_STAR; // star
-    }
-
-    if (c == '.') {
-        return GLYPH_PERIOD; // large shaded dot, JP only
-    }
-
-    if (c == '|') {
-        return GLYPH_BETA_KEY; // beta key, JP only. Reused for Ü in EU.
-    }
-
-    return GLYPH_SPACE;
-}
-
-/**
  * Adds an individual glyph to be rendered.
  */
 void add_glyph_texture(s8 glyphIndex) {
     const Texture *const *glyphs = segmented_to_virtual(main_hud_lut);
 
     gDPPipeSync(gDisplayListHead++);
-    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, glyphs[glyphIndex]);
+    gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, glyphs[glyphIndex - ' ']);
     gSPDisplayList(gDisplayListHead++, dl_hud_img_load_tex_block);
 }
 
@@ -500,26 +421,11 @@ void render_text_labels(void) {
 
     for (i = 0; i < sTextLabelsCount; i++) {
         for (j = 0; j < sTextLabels[i]->length; j++) {
-            glyphIndex = char_to_glyph_index(sTextLabels[i]->buffer[j]);
+            glyphIndex = sTextLabels[i]->buffer[j];
 
-            if (glyphIndex != GLYPH_SPACE) {
-#ifdef VERSION_EU
-                // Beta Key was removed by EU, so glyph slot reused.
-                // This produces a colorful Ü.
-                if (glyphIndex == GLYPH_BETA_KEY) {
-                    add_glyph_texture(GLYPH_U);
-                    render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-
-                    add_glyph_texture(GLYPH_UMLAUT);
-                    render_textrect(sTextLabels[i]->x, sTextLabels[i]->y + 3, j);
-                } else {
-                    add_glyph_texture(glyphIndex);
-                    render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-                }
-#else
+            if (glyphIndex != ' ') {
                 add_glyph_texture(glyphIndex);
                 render_textrect(sTextLabels[i]->x, sTextLabels[i]->y, j);
-#endif
             }
         }
 

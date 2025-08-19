@@ -668,7 +668,7 @@ const GeoLayout mario_geo_render_body[] = {
 // This last geo is used to load all of Mario Geo in the Level Scripts
 
 // 0x17002DD4
-const GeoLayout mario2_geo[] = {
+const GeoLayout mario_geo[] = {
    GEO_SHADOW(SHADOW_CIRCLE_PLAYER, 0xB4, 100),
    GEO_OPEN_NODE(),
       GEO_SCALE(0x00, 16384),

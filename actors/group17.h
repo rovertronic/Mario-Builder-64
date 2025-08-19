@@ -338,8 +338,7 @@ extern const Gfx mario_cap_wings[];
 extern const Gfx mario_cap_wings_transparent[];
 extern const Gfx mario_metal_cap_wings[];
 extern const Gfx mario_metal_cap_wings_transparent[];
-
-#include "mario2/geo_header.h"
+#include "mario/geo_header.h"
 
 // toad
 extern const GeoLayout toad_geo_000114[];

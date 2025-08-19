@@ -15,7 +15,7 @@
 //#include "actors/executive_loom_/texscroll.inc.c"
 //#include "actors/tvhead/texscroll.inc.c"
 //#include "actors/ocean_ttc/texscroll.inc.c"
-#include "actors/mario/texscroll.inc.c"
+#include "actors/mario_btcm/texscroll.inc.c"
 #include "actors/maker/texscroll.inc.c"
 #include "actors/badge/texscroll.inc.c"
 #include "actors/showrunner/texscroll.inc.c"

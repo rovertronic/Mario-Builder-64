@@ -6,7 +6,7 @@
 #include "types.h"
 #include "make_const_nonconst.h"
 
-#include "mario/model.inc.c"
+#include "mario_btcm/model.inc.c"
 
 #include "Hammerbro/model.inc.c"
 #include "Hammerbro/anims/data.inc.c"
