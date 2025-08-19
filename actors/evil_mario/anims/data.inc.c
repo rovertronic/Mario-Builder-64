@@ -9,4 +9,3 @@
 #include "anim_mario_thow.inc.c"
 #include "anim_gangnam.inc.c"
 #include "anim_sm64_anim_002.inc.c"
-#include "anim_mario_regular_idle.inc.c"

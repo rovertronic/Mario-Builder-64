@@ -67,6 +67,10 @@
 #include "uibutton2/model.inc.c"
 #include "b/model.inc.c"
 
+// Just a single idle anim for editor
+#include "mario_btcm/anims/data.inc.c"
+#include "mario_btcm/anims/table.inc.c"
+
 #include "sb_cube/model.inc.c"   // Cursor
 #include "lev_edge/model.inc.c"  // Red boundary grid
 #include "spawn/model.inc.c"

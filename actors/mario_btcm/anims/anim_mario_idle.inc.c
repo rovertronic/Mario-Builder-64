@@ -27,7 +27,7 @@ static const u16 evil_mario_anim_mario_regular_idle_indices[] = {
 	
 };
 
-static const struct Animation evil_mario_anim_mario_regular_idle = {
+static const struct Animation mario_btcm_anim_idle = {
 	0,
 	0,
 	0,
