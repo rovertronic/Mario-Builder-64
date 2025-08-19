@@ -339,6 +339,7 @@ void close_toolbox(void) {
     dealloc_component(get_id(gToolbox));
     gToolbox = NULL;
     mb64_menu_state = MB64_MAKE_MAIN;
+    show_coord_display();
 
     ListComponent *bar = get_child(gToolbar);
     component_list_get(bar, 7)->disabled = FALSE;

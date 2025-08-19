@@ -3358,6 +3358,8 @@ void sb_init(void) {
 
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
             create_toolbar();
+            show_tip();
+            create_coord_display();
             break;
         case MB64_MODE_PLAY:
             mb64_menu_state = MB64_MAKE_PLAY;
@@ -3791,6 +3793,7 @@ void freecam_camera_main(void) {
         mb64_prepare_level_screenshot = FALSE;
         vec3f_copy(mb64_camera_pos,mb64_camera_pos_prev);
         generate_object_preview();
+        show_coord_display();
     }
 
     // transform camera
@@ -3817,10 +3820,6 @@ void sb_loop(void) {
 
     mb64_current_camera_zoom[0] = lerp(mb64_current_camera_zoom[0], mb64_camera_zoom_table[mb64_camera_zoom_index][0],0.2f);
     mb64_current_camera_zoom[1] = lerp(mb64_current_camera_zoom[1], mb64_camera_zoom_table[mb64_camera_zoom_index][1],0.2f);
-
-    // if ((mb64_menu_state != MB64_MAKE_PLAY) && mb64_tip_timer) {
-    //     if (!(--mb64_tip_timer)) mb64_show_tip();
-    // }
 
     switch(mb64_menu_state) {
         case MB64_MAKE_MAIN:
@@ -3869,6 +3868,7 @@ void sb_loop(void) {
                         case OBJECT_TYPE_SETTINGS:
                             mb64_menu_state = MB64_MAKE_SETTINGS;
                             hide_toolbar();
+                            hide_coord_display();
                             settings_menu_create();
                             play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                             break;
@@ -3888,6 +3888,7 @@ void sb_loop(void) {
                 mb64_menu_state = MB64_MAKE_TOOLBOX;
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
                 create_toolbox();
+                hide_coord_display();
                 delete_preview_object();
             }
 

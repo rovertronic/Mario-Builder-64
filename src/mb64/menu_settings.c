@@ -845,6 +845,7 @@ void settings_page_closed() {
     dealloc_component(get_id(settingsRoot));
     settingsRoot = NULL;
     mb64_menu_state = MB64_MAKE_MAIN;
+    show_coord_display();
     toolbar_set_active(TRUE);
 }
 

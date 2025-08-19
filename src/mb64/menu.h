@@ -2,8 +2,6 @@
 
 #include "menu_engine.h"
 
-Gfx *get_button_tex(u32 buttonId, u32 objIndex);
-
 extern u8 mb64_toolbar[9];
 extern u8 mb64_toolbar_params[9];
 extern u8 mb64_toolbox[18 * 5];
@@ -22,3 +20,10 @@ extern MenuComponent *gCurDialog;
     u8 color[3];
 };
 extern struct BadgeInfo badge_info[];
+
+void show_error(char *msg);
+void show_tip(void);
+
+void create_coord_display(void);
+void show_coord_display(void);
+void hide_coord_display(void);

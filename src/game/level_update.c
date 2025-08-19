@@ -1185,7 +1185,6 @@ s32 play_mode_change_level(void) {
         gHudDisplay.flags = HUD_DISPLAY_NONE;
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
-        full_menu_reset();
         reset_menu();
         if (sSpecialWarpDest == WARP_SPECIAL_MARIO_HEAD_REGULAR) {
             mb64_init_exit_to_files();

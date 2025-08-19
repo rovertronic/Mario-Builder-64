@@ -1162,7 +1162,6 @@ void render_component(MenuComponent *m, s16 x, s16 y) {
 }
 
 FrameComponent *gMenuRoot;
-AnimatedComponent *sActiveError = NULL;
 
 void init_root(void) {
     gMenuRoot = init_frame_component(NULL);
@@ -1170,10 +1169,10 @@ void init_root(void) {
 
 void reset_menu(void) {
     bzero(&menu_pool, sizeof(menu_pool));
-    sActiveError = NULL;
     reset_settings_menu_state();
     reset_main_menu_state();
     reset_toolbox_state();
+    reset_misc_menu_state();
     init_root();
 }
 
@@ -1191,24 +1190,4 @@ void render_menu(void) {
     //     }
     // }
     // print_text_fmt_int(20,40,"%d",count);
-}
-
-void move_error(void) {
-    component_animate_ease_out(sActiveError, 0.2f, 15, DIR_VERTICAL);
-    sActiveError->delay = 90;
-}
-
-// Generic error message
-void show_error(char *msg) {
-    play_sound(SOUND_MENU_CAMERA_BUZZ, gGlobalSoundSource);
-    if (sActiveError) {
-        TextComponent *t = get_child(sActiveError);
-        t->text = msg;
-    } else {
-        sActiveError = alloc_component(gMenuRoot, MENU_ANIMATED);
-        init_text_component(sActiveError, 20, 220, msg, TEXT_LEFT, TEXT_RED);
-    }
-    component_animate_ease_in(sActiveError, 50.f, 0.4f, DIR_VERTICAL);
-    sActiveError->onFinish = move_error;
-    sActiveError->delay = 0;
 }
