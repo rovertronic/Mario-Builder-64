@@ -346,8 +346,7 @@ void bobomb_buddy_act_talk(void) {
 
     if (set_mario_npc_dialog(MARIO_DIALOG_LOOK_FRONT) == MARIO_DIALOG_STATUS_SPEAK) {
         o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
-        if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte)
-            != BOBOMB_BUDDY_BP_STYPE_GENERIC) {
+        if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte)) {
             set_mario_npc_dialog(MARIO_DIALOG_STOP);
             o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
             o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;

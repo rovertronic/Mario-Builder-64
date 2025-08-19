@@ -279,7 +279,6 @@ enum {
     MB64_MAKE_SETTINGS,
     MB64_MAKE_TRAJECTORY,
     MB64_MAKE_SCREENSHOT,
-    MB64_MAKE_SELECT_DIALOG,
 };
 extern u8 mb64_menu_state;
 

@@ -1749,31 +1749,9 @@ u32 mario_can_talk(struct MarioState *m, u32 arg) {
 #endif
 
 u32 check_read_sign(struct MarioState *m, struct Object *obj) {
-#ifdef EASIER_DIALOG_TRIGGER
-    s16 facingDYaw = (s16)(obj->oMoveAngleYaw + 0x8000) - m->faceAngle[1];
-    if (
-        mario_can_talk(m, TRUE)
-        && object_facing_mario(m, obj, SIGN_RANGE)
-        && (facingDYaw >= -SIGN_RANGE)
-        && (facingDYaw <=  SIGN_RANGE)
-        && abs_angle_diff(mario_obj_angle_to_object(m, obj), m->faceAngle[1]) <= SIGN_RANGE
-    ) {
-#ifdef DIALOG_INDICATOR
-        struct Object *orangeNumber;
-        if (obj->behavior == segmented_to_virtual(bhvSignOnWall)) {
-            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 180, 32, obj, MODEL_NUMBER, bhvOrangeNumber);
-        } else {
-            orangeNumber = spawn_object_relative(ORANGE_NUMBER_A, 0, 160,  8, obj, MODEL_NUMBER, bhvOrangeNumber);
-        }
-        orangeNumber->oHomeX = orangeNumber->oPosX;
-        orangeNumber->oHomeZ = orangeNumber->oPosZ;
-#endif
-        if (m->input & READ_MASK) {
-#else
     if ((m->input & READ_MASK) && mario_can_talk(m, 0) && object_facing_mario(m, obj, SIGN_RANGE)) {
         s16 facingDYaw = (s16)(obj->oMoveAngleYaw + 0x8000) - m->faceAngle[1];
         if (facingDYaw >= -SIGN_RANGE && facingDYaw <= SIGN_RANGE) {
-#endif
             f32 targetX = obj->oPosX + 105.0f * sins(obj->oMoveAngleYaw);
             f32 targetZ = obj->oPosZ + 105.0f * coss(obj->oMoveAngleYaw);
 

@@ -125,7 +125,6 @@ extern s16 sSelectionFlags;
 extern s16 s2ndRotateFlags;
 extern s16 sCameraSoundFlags;
 extern u16 sCButtonsPressed;
-extern s16 sCutsceneDialogID;
 extern struct LakituState gLakituState;
 extern s16 sAreaYaw;
 extern s16 sAreaYawChange;
@@ -242,10 +241,6 @@ s16 sCameraSoundFlags;
  * Stores what C-Buttons are pressed this frame.
  */
 u16 sCButtonsPressed;
-/**
- * A copy of gDialogID, the dialog displayed during the cutscene.
- */
-s16 sCutsceneDialogID;
 /**
  * The currently playing shot in the cutscene.
  */
@@ -6688,28 +6683,20 @@ void start_object_cutscene_without_focus(u8 cutscene) {
     //sCutsceneDialogResponse = DIALOG_RESPONSE_NONE;
 }
 
-s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, s16 dialogID) {
-    //s16 response = DIALOG_RESPONSE_NONE;
-
+s16 cutscene_object_with_dialog(u8 cutscene, struct Object *obj, UNUSED char *dialog) {
     if ((gCamera->cutscene == CUTSCENE_NONE) && (sObjectCutscene == CUTSCENE_NONE)) {
         if (gRecentCutscene != cutscene) {
             start_object_cutscene(cutscene, obj);
-            if (dialogID != DIALOG_NONE) {
-                sCutsceneDialogID = dialogID;
-            } else {
-                sCutsceneDialogID = DIALOG_001;
-            }
-        } else {
-            //response = sCutsceneDialogResponse;
+            gDialogResponse = 0;
         }
 
         gRecentCutscene = CUTSCENE_NONE;
     }
-    return 0;//response;
+    return gDialogResponse;
 }
 
 s16 cutscene_object_without_dialog(u8 cutscene, struct Object *obj) {
-    return cutscene_object_with_dialog(cutscene, obj, DIALOG_NONE);
+    return cutscene_object_with_dialog(cutscene, obj, NULL);
 }
 
 /**
@@ -8709,14 +8696,8 @@ void cutscene_dialog_move_mario_shoulder(struct Camera *c) {
  * Create the dialog with sCutsceneDialogID
  */
 void cutscene_dialog_create_dialog_box(struct Camera *c) {
-    // if (c->cutscene == CUTSCENE_RACE_DIALOG) {
-    //     create_dialog_box_with_response(sCutsceneDialogID);
-    // } else {
-    create_dialog_box(sCutsceneDialogID);
-    // }
-
-    //! Unused. This may have been used before sCutsceneDialogResponse was implemented.
-    // sCutsceneVars[8].angle[0] = DIALOG_RESPONSE_NOT_DEFINED;
+    create_dialog_box("Arthur hasn't done these yet.\nWhat a fucking loser.");
+    sCutsceneVars[8].angle[0] = 1;
 }
 
 /**
@@ -8728,15 +8709,7 @@ void cutscene_dialog(struct Camera *c) {
     cutscene_event(cutscene_dialog_create_dialog_box, c, 10, 10);
     sStatusFlags |= CAM_FLAG_SMOOTH_MOVEMENT;
 
-    //if (gDialogResponse != DIALOG_RESPONSE_NONE) {
-    //    sCutsceneDialogResponse = gDialogResponse;
-    //}
-
     if (!gCurDialog && (sCutsceneVars[8].angle[0] != 0)) {
-        //if (c->cutscene != CUTSCENE_RACE_DIALOG) {
-        //    sCutsceneDialogResponse = DIALOG_RESPONSE_NOT_DEFINED;
-        //}
-
         gCutsceneTimer = CUTSCENE_LOOP;
         retrieve_info_star(c);
         transition_next_state(c, 15);

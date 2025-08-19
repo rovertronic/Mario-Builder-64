@@ -2,6 +2,7 @@
 #include "menu.h"
 
 MenuComponent *gCurDialog;
+int gDialogResponse; // 0 for none, 1 for yes, 2 for closed
 
 // Default dialog
 #define DIALOG_LINES 5
@@ -48,6 +49,7 @@ void dialog_box_render(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         }
     } else {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
+            gDialogResponse = 1;
             begin_dialog_close();
         }
     }
@@ -97,6 +99,7 @@ void create_dialog_box(char *dialog) {
     component_set_pos(handler, -7, 5);
     handler->animTimer = 8;
     gResponseFunc = NULL;
+    gDialogResponse = 0;
 
     parse_dialog(dialog);
     for (int line = 0; line < DIALOG_LINES; line++) {
@@ -110,6 +113,7 @@ void create_dialog_box(char *dialog) {
 
 void dialog_response(TextComponent *b) {
     gResponseFunc(b->onClickArg);
+    gDialogResponse = 2 - b->onClickArg; // yes -> 1, no -> 2
     begin_dialog_close();
 }
 
