@@ -20,8 +20,6 @@ enum IntroContexts {
     INTRO_CONTEXT_GAME_OVER,
 };
 
-#include "levels/menu/rovert_logo/header.h"
-
 Gfx *geo_intro_super_mario_64_logo(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_title_screen2(s32 sp50, struct GraphNode *sp54, UNUSED void *context);
 Gfx *geo_title_screen3(s32 sp50, struct GraphNode *sp54, UNUSED void *context);

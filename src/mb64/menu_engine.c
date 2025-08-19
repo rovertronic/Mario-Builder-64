@@ -614,7 +614,7 @@ void render_4slice_box(int x, int y, int width, int height, int cornerSize) {
     gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
 }
 
-BoxComponent *init_box_component(void *parent, s16 x, s16 y, u8 width, u8 height, u8 alpha, u8 corner) {
+BoxComponent *init_box_component(void *parent, s16 x, s16 y, u8 width, u8 height, u8 corner, u8 alpha) {
     BoxComponent *box = alloc_component(parent, MENU_BOX);
     component_set_pos(box, x, y);
     box->width = width;
@@ -629,8 +629,9 @@ void component_box_render(MenuComponent *m, s16 x, s16 y) {
     x += m->xpos;
     y += m->ypos;
 
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 200);
-    render_4slice_box(x, y, bc->width, bc->height, 8);
+    int val = gMenuState.selected ? get_selected_color_value() : 0;
+    gDPSetEnvColor(gDisplayListHead++, val, val, val, bc->alpha);
+    render_4slice_box(x, y, bc->width, bc->height, bc->corner);
     render_child(m, x, y);
 }
 

@@ -7461,7 +7461,6 @@ Gfx mirror_co_mirror_001_mesh[] = {
 	gsSPEndDisplayList(),
 };
 
-#include "levels/menu/rovert_logo/model.inc.c"
 #include "levels/intro/ts1/model.inc.c"
 #include "levels/intro/ts2/model.inc.c"
 #include "levels/intro/ts3/model.inc.c"

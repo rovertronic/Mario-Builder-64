@@ -196,5 +196,4 @@ const GeoLayout geo_menu_file_select_strings_and_menu_cursor[] = {
 //    GEO_END(),
 // };
 
-#include "levels/menu/replaced/geo.inc.c"
 #include "levels/menu/mbg/geo.inc.c"

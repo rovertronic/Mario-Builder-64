@@ -1842,15 +1842,7 @@ const Collision main_menu_seg7_collision[] = {
 
 #endif
 
-#include "levels/menu/replaced/model.inc.c"
-
-#include "levels/menu/mm_btn2/model.inc.c"
-#include "levels/menu/mm_btn_sm/model.inc.c"
 #include "levels/menu/mbg/model.inc.c"
-#include "levels/menu/mm_btn_lg/model.inc.c"
-#include "levels/menu/mptng/model.inc.c"
-#include "levels/menu/pl_scard/model.inc.c"
-//#include "levels/menu/rovert_logo/model.inc.c"
 
 #include "levels/menu/bigpainting/model.inc.c"
 

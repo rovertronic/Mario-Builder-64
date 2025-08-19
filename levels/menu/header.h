@@ -49,25 +49,11 @@ extern const u8 eu_course_strings_de_table[];
 extern const LevelScript level_main_menu_entry_file_select[];
 extern const LevelScript level_main_menu_entry_act_select[];
 
-#include "levels/menu/replaced/geo_header.h"
-
-#include "levels/menu/mm_btn2/header.h"
-
-#include "levels/menu/mm_btn_sm/header.h"
-
 #include "levels/menu/mbg/geo_header.h"
-
-#include "levels/menu/mm_btn_lg/header.h"
-
-#include "levels/menu/mptng/header.h"
-
-#include "levels/menu/pl_scard/header.h"
-#include "levels/menu/rovert_logo/header.h"
 
 #include "levels/menu/bigpainting/header.h"
 
 extern FILINFO mb64_level_entries[MAX_FILES];
 extern u16 mb64_level_entry_piktcher[MAX_FILES][64][64];
-
 
 #endif
