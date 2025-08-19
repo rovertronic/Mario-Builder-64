@@ -3428,8 +3428,34 @@ extern void play_sound_cbutton_side(void);
 
 u8 c_button_timer = 0;
 u8 cursor_wrap = FALSE;
-u32 main_cursor_logic(u32 joystick) {
+u8 mb64_joystick_timer = 0;
+u32 main_cursor_logic() {
     u8 cursorMoved = FALSE;
+    int joystick = 0;
+
+    if (mb64_joystick_timer > 0) {
+        mb64_joystick_timer--;
+    }
+
+    if ((gPlayer1Controller->rawStickX < 10)&&(gPlayer1Controller->rawStickX > -10)&&(gPlayer1Controller->rawStickY < 10)&&(gPlayer1Controller->rawStickY > -10)) {
+        mb64_joystick_timer = 0;
+    }
+
+    if (mb64_joystick_timer == 0) {
+        if (gPlayer1Controller->rawStickX > 60) {
+            mb64_joystick_timer = 5;
+            joystick = 3;
+        } else if (gPlayer1Controller->rawStickX < -60) {
+            mb64_joystick_timer = 5;
+            joystick = 1;
+        } else if (gPlayer1Controller->rawStickY > 60) {
+            mb64_joystick_timer = 5;
+            joystick = 4;
+        } else if (gPlayer1Controller->rawStickY < -60) {
+            mb64_joystick_timer = 5;
+            joystick = 2;
+        }
+    }
 
     if (sDelayedWarpOp == WARP_OP_NONE) {
         if (joystick != 0) {
@@ -3778,7 +3804,6 @@ u8 sPrevPreviewParam;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,mb64_current_camera_zoom[1],0};
-    mb64_joystick = joystick_direction();
     u8 cursorMoved = FALSE;
 
     if (mb64_do_save) {
@@ -3793,13 +3818,9 @@ void sb_loop(void) {
     mb64_current_camera_zoom[0] = lerp(mb64_current_camera_zoom[0], mb64_camera_zoom_table[mb64_camera_zoom_index][0],0.2f);
     mb64_current_camera_zoom[1] = lerp(mb64_current_camera_zoom[1], mb64_camera_zoom_table[mb64_camera_zoom_index][1],0.2f);
 
-    if (mb64_option_changed_func) {
-        mb64_option_changed_func();
-        mb64_option_changed_func = NULL;
-    }
-    if ((mb64_menu_state != MB64_MAKE_PLAY) && mb64_tip_timer) {
-        if (!(--mb64_tip_timer)) mb64_show_tip();
-    }
+    // if ((mb64_menu_state != MB64_MAKE_PLAY) && mb64_tip_timer) {
+    //     if (!(--mb64_tip_timer)) mb64_show_tip();
+    // }
 
     switch(mb64_menu_state) {
         case MB64_MAKE_MAIN:
@@ -3807,7 +3828,7 @@ void sb_loop(void) {
             if (toolbarlist->base.inactive) {
                 break;
             }
-            cursorMoved = main_cursor_logic(mb64_joystick);
+            cursorMoved = main_cursor_logic();
 
             // Update preview object
             if (cursorMoved || (sPrevPreviewID != mb64_id_selection) || (sPrevPreviewParam != mb64_param_selection)) {
@@ -3886,7 +3907,7 @@ void sb_loop(void) {
             break;
         case MB64_MAKE_TRAJECTORY: //trajectory maker
             delete_preview_object();
-            cursorMoved = main_cursor_logic(mb64_joystick);
+            cursorMoved = main_cursor_logic();
 
             if (cursorMoved) {
                 generate_trajectory_gfx();
@@ -3948,33 +3969,6 @@ void sb_loop(void) {
             update_boundary_wall();
             break;
         case MB64_MAKE_SELECT_DIALOG:
-            if (mb64_joystick != 0) {
-                switch((mb64_joystick-1)%4) {
-                    case 0:
-                        mb64_dialog_topic_index --;
-                    break;
-                    case 1:
-                        mb64_dialog_subject_index++;
-                        mb64_dialog_topic_index = 0;
-                    break;
-                    case 2:
-                        mb64_dialog_topic_index ++;
-                    break;
-                    case 3:
-                        mb64_dialog_topic_index = 0;
-                        mb64_dialog_subject_index--;
-                    break;
-                }
-
-                mb64_dialog_subject_index = (NUM_DIALOG_SUBJECT_COUNT + mb64_dialog_subject_index) % NUM_DIALOG_SUBJECT_COUNT;
-                mb64_dialog_topic_index = (mb64_dialog_subjects[mb64_dialog_subject_index].topic_list_size + mb64_dialog_topic_index) % mb64_dialog_subjects[mb64_dialog_subject_index].topic_list_size;
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, gGlobalSoundSource);
-            }
-
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                mb64_dialog_edit_ptr->bparam = mb64_dialog_subjects[mb64_dialog_subject_index].topic_list[mb64_dialog_topic_index].dialog_id;
-                mb64_menu_state = MB64_MAKE_MAIN;
-            }
             break;
     }
 
