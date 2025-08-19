@@ -450,7 +450,7 @@ void render_game(void) {
 
         create_dl_ortho_matrix();
         render_text_labels();
-        render_menus_and_dialogs();
+        render_menu();
 
         if (gViewportClip != NULL) {
             make_viewport_clip_rect(gViewportClip);

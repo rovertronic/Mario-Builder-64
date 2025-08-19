@@ -303,8 +303,6 @@ void alloc_surface_pools(void) {
     gSurfaceNodePool = gMainSurfaceNodePool;
     gSurfacesAllocated = &gMainSurfacesAllocated;
     gSurfaceNodesAllocated = &gMainSurfaceNodesAllocated;
-
-    reset_red_coins_collected();
 }
 
 /**

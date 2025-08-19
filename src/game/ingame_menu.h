@@ -42,19 +42,13 @@ extern u8 start_precredits;
 extern u8 *badgenames[];
 extern u8 *badgedescs[];
 
-void create_dl_identity_matrix(void);
 void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void create_dl_ortho_matrix(void);
 void create_dl_scale_matrix(s8 pushOp, f32 x, f32 y, f32 z);
-void print_generic_string(s16 x, s16 y, const u8 *str);
 void print_generic_string_ascii(s16 x, s16 y, const char *str);
-void print_generic_string_ascii_nofileext(s16 x, s16 y, const char *str);
 s32 get_string_width_ascii(char *str);
-void print_hud_lut_string(s8 hudLUT, s16 x, s16 y, const u8 *str);
 void print_hud_string_ascii(s16 x, s16 y, char *str);
 s32 get_hud_string_width_ascii(char *str);
-void reset_red_coins_collected(void);
-void render_menus_and_dialogs(void);
 
 enum costume_enum {
     CTM_MARIO,

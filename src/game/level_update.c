@@ -1298,47 +1298,8 @@ s32 init_level(void) {//
 
     gMarioState->NewLevel = FALSE;
 
-    //De-Dither optimization
-    // if (gIsConsole) {
-    //     switch(gCurrLevelNum) {
-    //         case LEVEL_BBH:
-    //         case LEVEL_CCM:
-    //         case LEVEL_TTC:
-    //         case LEVEL_WDW://star fair is laggy as shit on n64
-    //         osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
-    //         osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
-    //         break;
-    //         default:
-    //         osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
-    //         osViSetSpecialFeatures(OS_VI_DIVOT_ON);
-    //         break;
-    //     }
-    // }
-
-    // if ((gCurrActNum == 5)&&(gCurrLevelNum == LEVEL_LLL)) {
-    //     gMarioState->NewTimer = 30;
-    //     gMarioState->NewTimerMode = 1;
-    // }
-
     gMarioState->LavaHeat = 3;
-    // switch(gCurrLevelNum) {
-    //     case LEVEL_HMC:
-    //     case LEVEL_JRB:
-    //         gMarioState->LavaHeat = 2;
-    //     break;
-    //     case LEVEL_SL:
-    //         gMarioState->LavaHeat = 5;
-    //     break;
-    //     case LEVEL_BITFS:
-    //         gMarioState->LavaHeat = 4;
-    //     break;
-    // }
-
     gMarioState->_2D = FALSE;
-    // if (gCurrLevelNum == LEVEL_SSL) {
-    //     gMarioState->_2D = TRUE;
-    // }
-
     set_play_mode(PLAY_MODE_NORMAL);
 
     sDelayedWarpOp = WARP_OP_NONE;
@@ -1346,6 +1307,10 @@ s32 init_level(void) {//
     sSpecialWarpDest = WARP_SPECIAL_NONE;
 
     g100CoinStarSpawned = FALSE;
+    gRedCoinsCollected = 0;
+    gRedCoinsTotal = 0;
+    gStarTriggersCollected = 0;
+    gStarTriggersTotal = 0;
 
     // NOTE: gStarModelLastCollected reset here as a safety to prevent possible UB if assigned a model used
     // in a non-global group. This checked can be removed as needed.

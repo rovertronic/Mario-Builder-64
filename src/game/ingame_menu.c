@@ -138,41 +138,6 @@ u8 gDialogCharWidths[256] = { // TODO: Is there a way to auto generate this?
     0,  0,  4,  8,  7,  6,  6,  6,  0,  9,  9,  7,  4,  9,  0,  0
 };
 
-void display_icon(Gfx* dl, int x, int y) {
-    Mtx *mtx;
-
-    mtx = alloc_display_list(sizeof(Mtx));
-
-    if (mtx == NULL) {
-        return;
-    }
-
-    guTranslate(mtx, x,y, 0);
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-
-        gSPDisplayList(gDisplayListHead++, dl);
-
-    gSPPopMatrix(gDisplayListHead++, 0);
-}
-
-
-void create_dl_identity_matrix(void) {
-    Mtx *matrix = (Mtx *) alloc_display_list(sizeof(Mtx));
-
-    if (matrix == NULL) {
-        return;
-    }
-
-    matrix->m[0][0] = 0x00010000;    matrix->m[1][0] = 0x00000000;    matrix->m[2][0] = 0x00000000;    matrix->m[3][0] = 0x00000000;
-    matrix->m[0][1] = 0x00000000;    matrix->m[1][1] = 0x00010000;    matrix->m[2][1] = 0x00000000;    matrix->m[3][1] = 0x00000000;
-    matrix->m[0][2] = 0x00000001;    matrix->m[1][2] = 0x00000000;    matrix->m[2][2] = 0x00000000;    matrix->m[3][2] = 0x00000000;
-    matrix->m[0][3] = 0x00000000;    matrix->m[1][3] = 0x00000001;    matrix->m[2][3] = 0x00000000;    matrix->m[3][3] = 0x00000000;
-
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-}
-
 void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z) {
     Mtx *matrix = (Mtx *) alloc_display_list(sizeof(Mtx));
 
@@ -211,19 +176,20 @@ void create_dl_scale_matrix(s8 pushOp, f32 x, f32 y, f32 z) {
 
 void create_dl_ortho_matrix(void) {
     Mtx *matrix = (Mtx *) alloc_display_list(sizeof(Mtx));
+    Mtx *matrix2 = (Mtx *) alloc_display_list(sizeof(Mtx));
 
-    if (matrix == NULL) {
+    if (matrix == NULL || matrix2 == NULL) {
         return;
     }
 
-    create_dl_identity_matrix();
-
     guOrtho(matrix, 0.0f, SCREEN_WIDTH, 0.0f, SCREEN_HEIGHT, -10.0f, 10.0f, 1.0f);
+    guMtxIdent(matrix2);
 
     // Should produce G_RDPHALF_1 in Fast3D
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix2), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 }
 
 void render_generic_char(u8 c) {
@@ -298,14 +264,6 @@ void print_generic_string_ascii(s16 x, s16 y, const char *str) {
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
-void print_generic_string_ascii_nofileext(s16 x, s16 y, const char *str) {
-    // This function assumes that the string has the correct file extension
-    char buf[MAX_FILE_NAME_SIZE];
-    strcpy(buf, str);
-    buf[strlen(str) - 5] = '\0';
-    print_generic_string_ascii(x, y, buf);
-}
-
 s32 get_string_width_ascii(char *str) {
     s16 strPos = 0;
     s16 width = 0;
@@ -370,31 +328,4 @@ s32 get_hud_string_width_ascii(char *str) {
         strPos++;
     }
     return width;
-}
-
-s32 get_string_width(u8 *str) {
-    s16 strPos = 0;
-    s16 width = 0;
-
-    while (str[strPos] != DIALOG_CHAR_TERMINATOR) {
-        width += gDialogCharWidths[str[strPos]];
-        strPos++;
-    }
-    return width;
-}
-
-void reset_red_coins_collected(void) {
-    gRedCoinsCollected = 0;
-    gRedCoinsTotal = 0;
-    gStarTriggersCollected = 0;
-    gStarTriggersTotal = 0;
-}
-
-void render_menus_and_dialogs(void) {
-    gMarioState->GlobalPaused = TRUE;
-    if (sCurrPlayMode == PLAY_MODE_PAUSED) {
-        gMarioState->GlobalPaused = TRUE;
-    }
-
-    render_menu();
 }
