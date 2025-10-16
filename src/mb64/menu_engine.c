@@ -218,10 +218,19 @@ void dealloc_component(ComponentID id) {
 s16 gScissorStack[8][4] = {{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}};
 u8 gScissorStackIndex = 0;
 
+#define SCISSOR_WIDESCREEN(x) ((x - SCREEN_WIDTH/2) * (4.f/3.f) / (16.f/9.f)) + SCREEN_WIDTH/2
+
 void push_scissor(int lx, int ly2, int ux, int uy2) {
     // invert y values
     int ly = SCREEN_HEIGHT - uy2;
     int uy = SCREEN_HEIGHT - ly2;
+
+    // Viewport hack scissor value fix
+    if (gIsWidescreen) {
+        if (lx != 0)            lx = SCISSOR_WIDESCREEN(lx);
+        if (ux != SCREEN_WIDTH) ux = SCISSOR_WIDESCREEN(ux);
+    }
+
     lx = MAX(lx, gScissorStack[gScissorStackIndex][0]);
     ly = MAX(ly, gScissorStack[gScissorStackIndex][1]);
     ux = MIN(ux, gScissorStack[gScissorStackIndex][2]);

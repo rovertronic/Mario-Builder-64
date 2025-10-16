@@ -409,7 +409,7 @@ void main_menu_list_animate(ListComponent *l, int out) {
         if (out) {
             component_animate_bounce_out(a, -8.f*dir, 23.f*dir, 20, DIR_HORIZONTAL);
         } else {
-            component_animate_bounce_in(a, 300.f*dir, 8.f*dir, -75.f*dir, DIR_HORIZONTAL);
+            component_animate_bounce_in(a, 350.f*dir, 8.f*dir, -81.f*dir, DIR_HORIZONTAL);
         }
         a->delay = ABS(l->index - i)*2;
     }
@@ -608,6 +608,7 @@ void page_number_init_text(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     PageHandlerComponent *ph = (PageHandlerComponent *)m;
     if (ph->scroll.offset) return;
+    if (gMenuState.inactive) return;
     int index = ph->index;
     int dir = get_input(MENU_INPUT_TRIGGERS | MENU_INPUT_JOYSTICK, DIR_HORIZONTAL);
     if (!dir) {
