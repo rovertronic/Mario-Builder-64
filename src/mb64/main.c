@@ -3374,7 +3374,6 @@ void sb_init(void) {
 
             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, seq_musicmenu_array[mb64_lopt_seq[0]]), 0);
             create_toolbar();
-            show_tip();
             create_coord_display();
             break;
         case MB64_MODE_PLAY:

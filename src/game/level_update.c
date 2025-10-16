@@ -1267,6 +1267,12 @@ s32 init_level(void) {//
     if ((mb64_level_action == MB64_LA_PLAY_LEVELS)||(mb64_level_action == MB64_LA_TEST_LEVEL)) {
         mb64_target_mode = MB64_MODE_PLAY;
     }
+
+    // First boot of editor, show tip
+    if (mb64_mode == MB64_MODE_UNINITIALIZED && mb64_target_mode == MB64_MODE_MAKE) {
+        show_tip();
+    }
+    
     mb64_mode = mb64_target_mode;
 
     gMarioState->MaskChase = FALSE;
