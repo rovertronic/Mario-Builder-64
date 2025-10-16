@@ -695,12 +695,10 @@ void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
         main_menu_page_change_animate(page, TRUE);
 
-        strncpy(mb64_username,main_menu_keyboard_input,MAX_USERNAME_SIZE);
-        strncpy(mb64_sram_configuration.author, mb64_username, MAX_USERNAME_SIZE);
+        strncpy(mb64_sram_configuration.author, main_menu_keyboard_input, MAX_USERNAME_SIZE);
         if (gSramProbe != 0) {
             nuPiWriteSram(0, &mb64_sram_configuration, ALIGN8(sizeof(mb64_sram_configuration)));
         }
-        mb64_has_username = TRUE;
     }
 }
 

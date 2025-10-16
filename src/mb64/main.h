@@ -149,8 +149,6 @@ extern u32 mb64_play_speedrun_timer;
 
 extern struct mb64_level_save_header mb64_save;
 extern TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
-extern char mb64_username[MAX_USERNAME_SIZE];
-extern u8 mb64_has_username;
 
 extern void* mb64_theme_segments[][4];
 extern LevelScript * mb64_theme_model_scripts[];

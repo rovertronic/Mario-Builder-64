@@ -138,8 +138,6 @@ u8 mb64_prepare_level_screenshot = FALSE;
 u8 mb64_do_save = FALSE;
 
 struct mb64_level_save_header mb64_save;
-char mb64_username[MAX_USERNAME_SIZE];
-u8 mb64_has_username = FALSE;
 
 u8 mb64_num_vertices_cached = 0;
 u8 mb64_num_tris_cached = 0;
@@ -3025,8 +3023,8 @@ void save_level(void) {
     strncpy(mb64_save.file_header, file_header_string, 10);
 
     //author
-    if ((mb64_has_username) && (mb64_save.author[0] == '\0')) {
-        strncpy(mb64_save.author, mb64_username, MAX_USERNAME_SIZE);
+    if ((mb64_sram_configuration.author[0] != '\0') && (mb64_save.author[0] == '\0')) {
+        strncpy(mb64_save.author, mb64_sram_configuration.author, MAX_USERNAME_SIZE);
     }
 
     mb64_save.tile_count = mb64_tile_count;
@@ -3211,6 +3209,7 @@ void load_level(void) {
         }
 
         bcopy(&mb64_default_custom,&mb64_save.custom_theme,sizeof(struct mb64_custom_theme));
+        strncpy(mb64_save.author, mb64_sram_configuration.author, MAX_USERNAME_SIZE);
     }
 
     if (mb64_save.version < MB64_VERSION) {
