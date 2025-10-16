@@ -3615,6 +3615,7 @@ void prepare_block_draw(f32 xpos, f32 ypos) {
     mtxf_mul(mtx1, mtx1, mtx2);
     mtxf_to_mtx(mtx, mtx1);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+    gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
 
     mb64_build_collision_type = 0;
     mb64_growth_render_type = 0;
@@ -3669,10 +3670,8 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
             set_render_mode( MAT_CUTOUT, TRUE);
             u8 connections[5] = {1,0,1,0,1};
             gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][1]);
-            gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
             render_bars_top(pos, connections);
             display_cached_tris();
-            gSPSetGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
             gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][0]);
             render_bars_side(pos, connections);
         } else if (index == 13) { // Water
