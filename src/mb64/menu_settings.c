@@ -866,7 +866,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
     if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         menu_play_click_sound();
-        PageHandlerComponent *ph = get_child(root);
+        PageHandlerComponent *ph = get_child_of_type(root, MENU_PAGE_HANDLER, 0);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             component_animate_ease_out(root, 4.f, 12, DIR_VERTICAL);
             root->onFinish = settings_page_closed;
