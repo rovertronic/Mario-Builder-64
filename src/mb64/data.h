@@ -460,6 +460,7 @@ extern struct mb64_custom_theme mb64_curr_custom_theme;
 extern Gfx *mb64_fence_texs[];
 extern Gfx *mb64_bar_texs[][2];
 extern Gfx *mb64_water_texs[];
+extern struct mb64_topmaterial mb64_topmat_table[19];
 
 extern struct ExclamationBoxContents sExclamationBoxContents_btcm[];
 extern struct ExclamationBoxContents sExclamationBoxContents_vanilla[];

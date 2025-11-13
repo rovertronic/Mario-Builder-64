@@ -3,33 +3,25 @@
 #include "menu.h"
 #include "gfx.h"
 #include "trajectory.h"
+#include "boundary.h"
 #include "display_funcs.h"
 
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 #include "libpl/libpl-rhdc.h"
 
-#include <PR/gbi.h>
 #include <string.h>
-#include "audio/external.h"
-#include "game/spawn_sound.h"
 #include "game/object_list_processor.h"
-#include "actors/b/header.h"
 #include "actors/bigpainting2/header.h"
-#include "engine/surface_load.h"
-#include "game/game_init.h"
-#include "game/mario_actions_automatic.h"
 #include "game/level_update.h"
 #include "game/emutest.h"
 #include "buffers/framebuffers.h"
 #include "game/main.h"
-#include "game/puppyprint.h"
-#include "engine/math_util.h"
-#include "game/ingame_menu.h"
-#include "game/mario.h"
-#include "game/rendering_graph_node.h"
 #include "behavior_data.h"
-#include "game/geo_misc.h"
+#include "game/puppyprint.h"
+#include "game/spawn_object.h"
+#include "game/mario.h"
+#include "audio/external.h"
 
 void super_cum_working(struct Object *o, u8 type);
 
@@ -533,6 +525,25 @@ u32 is_cull_marker_useless(s8 pos[3]) {
     return TRUE;
 }
 
+u32 get_tiletype_index(u32 type, u32 mat) {
+    switch (type) {
+        case TILE_TYPE_FENCE:
+            return FENCE_TILETYPE_INDEX;
+        case TILE_TYPE_POLE:
+            return POLE_TILETYPE_INDEX;
+        case TILE_TYPE_BARS:
+            return BARS_TILETYPE_INDEX;
+        case TILE_TYPE_WATER:
+            return WATER_TILETYPE_INDEX;
+        case TILE_TYPE_CULL:
+            return CULL_TILETYPE_INDEX;
+        default:
+            if (mb64_terrain_info_list[type].terrain) {
+                return mat;
+            }
+    }
+    return END_TILE_INDEX;
+}
 
 void place_tile(s8 pos[3]) {
     u8 waterlogged = FALSE;
@@ -690,10 +701,8 @@ void should_spawn_place_number(s8 pos[3]) {
 void place_object(s8 pos[3]) {
     // If spawn, delete old spawn
     if (mb64_id_selection == OBJECT_TYPE_MARIO_SPAWN) {
-        for (s32 i = 0; i < mb64_object_count; i++) {
+        for (int i = 0; i < mb64_object_count; i++) {
             if (mb64_object_data[i].type == OBJECT_TYPE_MARIO_SPAWN) {
-                s8 pos[3];
-                vec3_set(pos, mb64_object_data[i].x, mb64_object_data[i].y, mb64_object_data[i].z);
                 delete_object(i);
                 break;
             }
@@ -1058,9 +1067,8 @@ void save_level(void) {
     f_close(&mb64_file);
 }
 
+void mb64_perform_file_upgrade(struct mb64_level_save_header *save, void *tile_data, void *obj_data);
 void load_level(void) {
-    s32 i;
-    s32 j;
     u8 fresh = FALSE;
 
     bzero(&mb64_save, sizeof(mb64_save));
@@ -1195,7 +1203,7 @@ void load_level(void) {
     u32 oldIndex = 0;
     bzero(&mb64_tile_data_indices,sizeof(mb64_tile_data_indices));
     // Load tiles and build index list. Assume all tiles are in order
-    for (i = 0; i < mb64_tile_count; i++) {
+    for (int i = 0; i < mb64_tile_count; i++) {
         //bcopy(&mb64_save.tiles[i],&mb64_tile_data[i],sizeof(mb64_tile_data[i]));
         u32 curIndex = get_tiletype_index(mb64_tile_data[i].type, mb64_tile_data[i].mat);
 
@@ -1237,6 +1245,7 @@ void mb64_init() {
     }
 }
 
+#include "rnc.h"
 void reload_bg(void) {
     void *srcStart = mb64_skybox_table[mb64_lopt_bg*2];
     void *srcEnd = mb64_skybox_table[mb64_lopt_bg*2+1];
@@ -1256,6 +1265,12 @@ void reload_bg(void) {
     }
 
     generate_terrain_gfx(); // since some backgrounds affect the boundary
+}
+
+// Called whenever boundary is changed
+void reload_boundary_and_gfx(void) {
+    generate_terrain_gfx();
+    generate_boundary_collision();
 }
 
 void sb_init(void) {
@@ -1581,7 +1596,7 @@ void freecam_camera_main(void) {
 
     if (gPlayer1Controller->buttonDown & L_TRIG) {
         mb64_camera_fov -= 1.0f;
-        cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+        play_sound(SOUND_AIR_AMP_BUZZ, gGlobalSoundSource);
 
         if (mb64_camera_fov < 1.0f) {
             mb64_camera_fov = 1.0f;
@@ -1590,7 +1605,7 @@ void freecam_camera_main(void) {
 
     if (gPlayer1Controller->buttonDown & R_TRIG) {
         mb64_camera_fov += 1.0f;
-        cur_obj_play_sound_1(SOUND_AIR_AMP_BUZZ);
+        play_sound(SOUND_AIR_AMP_BUZZ, gGlobalSoundSource);
 
         if (mb64_camera_fov > 100.0f) {
             mb64_camera_fov = 100.0f;

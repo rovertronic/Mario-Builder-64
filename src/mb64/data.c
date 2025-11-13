@@ -833,6 +833,28 @@ Gfx *mb64_water_texs[] = {
     mat_maker_MakerMCWater,
 };
 
+struct mb64_topmaterial mb64_topmat_table[19] = {
+    {MB64_MAT_GRASS,         mat_maker_MakerGrassSide},
+    {MB64_MAT_SAND,          mat_maker_MakerSandSide},
+    {MB64_MAT_SNOW,          mat_maker_MakerSnowSide},
+    {MB64_MAT_TILES,         mat_maker_MakerTileEdge},
+    {MB64_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
+    {MB64_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
+    {MB64_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
+    {MB64_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide},
+    {MB64_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim},
+    {MB64_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim},
+    {MB64_MAT_FLOWERS,       mat_maker_MakerFlowerEdge},
+    {MB64_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
+    {MB64_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
+    {MB64_MAT_LAVA_ROCKS,    mat_maker_MakerLavaRockEdge},
+    {MB64_MAT_DARK_GRASS,    mat_maker_MakerDarkGrassSide},
+    {MB64_MAT_CARTOON_GRASS, mat_maker_MakerCartoonGrassSide},
+    {MB64_MAT_ORANGE_GRASS,  mat_maker_MakerOrangeGrassSide},
+    {MB64_MAT_RED_GRASS,     mat_maker_MakerRedGrassSide},
+    {MB64_MAT_PURPLE_GRASS,  mat_maker_MakerPurpleGrassSide},
+};
+
 struct mb64_theme mb64_theme_table[] = {
     // GENERIC
     {

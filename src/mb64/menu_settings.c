@@ -4,6 +4,7 @@
 #include "game/level_update.h"
 
 #include "actors/bigpainting2/header.h"
+#include "main.h"
 #include "gfx.h"
 
 MenuComponent *settingsRoot = NULL;

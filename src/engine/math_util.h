@@ -462,6 +462,7 @@ extern s32 roundf(f32);
 u16 random_u16(void);
 f32 random_float(void);
 s32 random_sign(void);
+void reset_rng(void);
 
 f32  min_3f(   f32 a, f32 b, f32 c);
 s32  min_3i(   s32 a, s32 b, s32 c);

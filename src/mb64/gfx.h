@@ -120,6 +120,14 @@ extern u8 mb64_growth_render_type;
 extern u8 mb64_curr_mat_has_topside;
 extern u8 mb64_curr_poly_vert_count;
 
+// also used for collision
+void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot);
+void check_bar_connections(s8 pos[3], u8 connections[5]);
+u32 is_water_fullblock(s8 pos[3]);
+
+// used for boundaries
+void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u32 fade);
+
 void generate_terrain_gfx(void);
-void reload_boundary_and_gfx(void);
 Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
+void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index);

@@ -22,6 +22,14 @@ extern int gDialogResponse;
 };
 extern struct BadgeInfo badge_info[];
 
+void create_toolbar(void);
+void show_toolbar(void);
+void hide_toolbar(void);
+void toolbar_set_active(int active);
+
+void create_toolbox(void);
+void settings_menu_create(void);
+
 void show_error(char *msg);
 void show_tip(void);
 

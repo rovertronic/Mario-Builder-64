@@ -778,48 +778,6 @@ void set_render_mode(u32 tileType, u32 disableZ) {
     gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], rendermode, 0);
 }
 
-u32 get_tiletype_index(u32 type, u32 mat) {
-    switch (type) {
-        case TILE_TYPE_FENCE:
-            return FENCE_TILETYPE_INDEX;
-        case TILE_TYPE_POLE:
-            return POLE_TILETYPE_INDEX;
-        case TILE_TYPE_BARS:
-            return BARS_TILETYPE_INDEX;
-        case TILE_TYPE_WATER:
-            return WATER_TILETYPE_INDEX;
-        case TILE_TYPE_CULL:
-            return CULL_TILETYPE_INDEX;
-        default:
-            if (mb64_terrain_info_list[type].terrain) {
-                return mat;
-            }
-    }
-    return END_TILE_INDEX;
-}
-
-struct mb64_topmaterial mb64_topmat_table[] = {
-    {MB64_MAT_GRASS,         mat_maker_MakerGrassSide},
-    {MB64_MAT_SAND,          mat_maker_MakerSandSide},
-    {MB64_MAT_SNOW,          mat_maker_MakerSnowSide},
-    {MB64_MAT_TILES,         mat_maker_MakerTileEdge},
-    {MB64_MAT_C_STONETOP,    mat_maker_MakerCastleHexRim},
-    {MB64_MAT_HMC_GRASS,     mat_maker_MakerHGrassSide},
-    {MB64_MAT_BBH_METAL,     mat_maker_MakerBBHMetalSide},
-    {MB64_MAT_BBH_STONE,     mat_maker_MakerBBHMetalSide},
-    {MB64_MAT_JRB_TILETOP,   mat_maker_MakerJRBTileRim},
-    {MB64_MAT_SNOW_TILES,    mat_maker_MakerSnowTileRim},
-    {MB64_MAT_FLOWERS,       mat_maker_MakerFlowerEdge},
-    {MB64_MAT_RETRO_TREETOP, mat_maker_MakerRetroTreeSide},
-    {MB64_MAT_MC_GRASS,      mat_maker_MakerMCGrassEdge},
-    {MB64_MAT_LAVA_ROCKS,    mat_maker_MakerLavaRockEdge},
-    {MB64_MAT_DARK_GRASS,    mat_maker_MakerDarkGrassSide},
-    {MB64_MAT_CARTOON_GRASS, mat_maker_MakerCartoonGrassSide},
-    {MB64_MAT_ORANGE_GRASS,  mat_maker_MakerOrangeGrassSide},
-    {MB64_MAT_RED_GRASS,     mat_maker_MakerRedGrassSide},
-    {MB64_MAT_PURPLE_GRASS,  mat_maker_MakerPurpleGrassSide},
-};
-
 Gfx *get_sidetex(s32 matid) {
     for (s32 i = 0; i < ARRAY_COUNT(mb64_topmat_table); i++) {
         if (mb64_topmat_table[i].mat == matid) {
@@ -1160,12 +1118,6 @@ void generate_terrain_gfx(void) {
         show_error("WARNING: Vertex limit is about to overflow.\nCreate any more vertices and you're cooked.");
     }
 };
-
-// Called whenever boundary is changed
-void reload_boundary_and_gfx(void) {
-    generate_terrain_gfx();
-    generate_boundary_collision();
-}
 
 Gfx preview_gfx[50];
 Vtx preview_vtx[100];
