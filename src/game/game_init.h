@@ -13,8 +13,6 @@
 #define MARIO_ANIMS_POOL_SIZE 0x4000
 #define DEMO_INPUTS_POOL_SIZE 0x800
 
-#include "libcart/include/cart.h"
-#include "libcart/ff/ff.h"
 #include "mb64/main.h"
 
 struct GfxPool {
@@ -98,17 +96,6 @@ void display_and_vsync(void);
 extern Bool32 gSupportsLibpl;
 extern Bool32 gIsGliden;
 extern Bool32 gIsWidescreen;
-
-#define MAX_FILES 251
-extern u8 mb64_level_entry_version[MAX_FILES];
-extern FRESULT mount_success;
-extern FRESULT global_code;
-extern u8 mb64_level_entry_count;
-extern TCHAR *mb64_level_dir_name;
-extern TCHAR *mb64_hack_dir_name;
-extern struct mb64_sram_config mb64_sram_configuration;
-
-#define gSDCard (mount_success == FR_OK)
 
 void create_level_file_path(TCHAR * buffer, TCHAR * filename, TCHAR * suffix);
 struct mb64_level_save_header * get_level_info_from_filename(char * filename);

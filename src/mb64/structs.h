@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 struct mb64_terrain_poly {
     s8 vtx[4][3];
     u8 faceDir;

@@ -33,11 +33,7 @@
 #include "emutest.h"
 #include "mb64/main.h"
 
-#include "libcart/include/cart.h"
-#include "libcart/ff/ff.h"
-
 #include "libpl/libpl.h"
-#include "levels/menu/header.h"
 
 u8 painting_base_rgba16[] = {
 	0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 
@@ -1015,109 +1011,6 @@ Bool32 gSupportsLibpl = FALSE;
 Bool32 gIsGliden = FALSE;
 Bool32 gIsWidescreen = FALSE;
 
-FATFS fs;
-FRESULT mount_success;
-FRESULT directory_success;
-FILINFO mb64_dir_info;
-
-struct mb64_level_save_header temp_mb64_save;
-
-
-u8 mb64_level_entry_count = 0;
-FRESULT global_code;
-
-TCHAR *mb64_level_dir_name = "/Mario Builder 64 Levels";
-TCHAR *mb64_hack_dir_name = "/Mario Builder 64 Hacks";
-
-struct mb64_sram_config mb64_sram_configuration;
-
-void create_level_file_path(TCHAR *buffer, TCHAR *filename, TCHAR *suffix) {
-    TCHAR *s;
-    s = mb64_level_dir_name;
-    while (*s) {
-        *buffer++ = *s++;
-    }
-    *buffer++ = '/';
-    s = filename;
-    while (*s) {
-        *buffer++ = *s++;
-    }
-    if (suffix) {
-        s = suffix;
-        while (*s) {
-            *buffer++ = *s++;
-        }
-    }
-    *buffer++ = '\0';
-}
-
-struct mb64_level_save_header * get_level_info_from_filename(char * filename) {
-    u32 bytes_read;
-    FIL read_file;
-    TCHAR path[256];
-    create_level_file_path(path, filename, NULL);
-    f_open(&read_file,path, FA_READ);
-    f_read(&read_file,&temp_mb64_save,sizeof(temp_mb64_save),&bytes_read);
-    f_close(&read_file);
-
-    return &temp_mb64_save;
-}
-
-char filename_with_mb64[31];
-u8 level_file_exists(char * filename) {
-    FILINFO fno;
-    TCHAR path[256];
-    create_level_file_path(path, filename, ".mb64");
-    return (f_stat(path, &fno) == FR_OK);
-}
-
-u8 mb64_level_entry_version[MAX_FILES];
-void load_level_files_from_sd_card(void) {
-    DIR dir;
-    f_opendir(&dir,mb64_level_dir_name);
-
-    // LEVEL ENTRIES ARE LOADED IN FILE SELECT
-    FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
-    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_piktcher);
-
-    s16 i = -1;
-    do {
-        i++;
-        if ((f_readdir(&dir,&level_entries_ptr[i]) == FR_OK)) {
-            if (level_entries_ptr[i].fname[0] == 0) {
-                // Reached end of directory
-                continue;
-            }
-            s32 filenamelen = strlen(level_entries_ptr[i].fname);
-            if (filenamelen > MAX_FILE_NAME_SIZE - 1) {
-                // Too long level name, skip
-                i--;
-                continue;
-            }
-            if ((filenamelen > 5) && (strcmp(level_entries_ptr[i].fname + (filenamelen - 5), ".mb64"))) {
-                // File is not an .mb64 file
-                i--;
-                continue;
-            }
-            struct mb64_level_save_header * level_info = get_level_info_from_filename(level_entries_ptr[i].fname);
-
-            s16 x;
-            s16 y;
-            for (x = 0; x < 64; x++) {
-                for (y = 0; y < 64; y++) {
-                    (*u16_array)[i][y][x] = level_info->piktcher[y][x];
-                } 
-            }
-            mb64_level_entry_version[i] = level_info->version;
-        }
-
-    } while ((level_entries_ptr[i].fname[0] != 0) && (i<MAX_FILES-1));
-
-    mb64_level_entry_count = i;
-
-    f_closedir(&dir);
-}
-
 void thread5_game_loop(UNUSED void *arg) {
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -1164,20 +1057,8 @@ void thread5_game_loop(UNUSED void *arg) {
         gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_OGRE)||(pluginInfo->plugin_id == LPL_GLIDE64));
         gIsWidescreen = (pluginInfo->capabilities & LPL_WIDESCREEN_VIEWPORT) != 0;
     }
-    //init mb64 file structure
-    cart_init();
-    mount_success = f_mount(&fs, "", 1);
-    if (mount_success == FR_OK) {
-        //mount is successful
 
-        //create directory if not exist
-        directory_success = f_stat(mb64_level_dir_name,&mb64_dir_info);
-        if (directory_success == FR_NO_FILE) {
-            //does not exist, therefore make
-            f_mkdir(mb64_level_dir_name);
-        }
-        
-    }
+    mb64_file_init();
     reset_menu();
     set_initial_menu_page();
 

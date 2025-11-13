@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "data.h"
+#include "file.h"
 
 #include "model_ids.h"
 #include "seq_ids.h"
@@ -10,25 +11,15 @@
 #include "levels/scripts.h"
 #include "game/level_geo.h"
 
-#include "libcart/ff/ff.h"
-
 #define MB64_TILE_POOL_SIZE 20000
 #define MB64_GFX_SIZE 20000
 #define MB64_VTX_SIZE 50000
-#define MB64_MAX_TRAJECTORIES 20
-#define MB64_TRAJECTORY_LENGTH 50
 
 #define MB64_MAX_OBJS 512
 
 #define MB64_SPEEDRUN_TIMER_MAX (30 * 60 * 100 - 1)
 
 #define TILE_SIZE 256
-
-#define MB64_VERSION 1
-#define MAX_FILE_NAME_SIZE 41
-#define MAX_FILE_NAME_INPUT (MAX_FILE_NAME_SIZE - 6)
-#define MAX_USERNAME_SIZE 31
-#define MAX_USERNAME_INPUT (MAX_USERNAME_SIZE - 1)
 
 
 extern s8 mb64_cursor_pos[3];
@@ -80,8 +71,6 @@ extern s16 mb64_freecam_yaw;
 extern u8 mb64_freecam_snap;
 extern u8 mb64_freecam_snap_timer;
 
-extern FILINFO mb64_file_info;
-
 #define AT_CEILING(y) ((mb64_curr_boundary & MB64_BOUNDARY_CEILING) && ((y) == mb64_lopt_boundary_height-1))
 
 void reload_bg(void);
@@ -91,8 +80,6 @@ void sb_init(void);
 void mb64_init();
 void reset_play_state(void);
 void generate_objects_to_level(void);
-s32 mb64_main_menu(void);
-extern Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
 void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
 void play_place_sound(u32 soundBits);
@@ -125,9 +112,6 @@ extern u8 mb64_grid_size;
 extern u8 mb64_grid_min;
 extern s32 mb64_min_coord;
 extern s32 mb64_max_coord;
-
-extern struct mb64_level_save_header mb64_save;
-extern TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
 
 extern s8 cullOffsetLUT[6][3];
 
@@ -174,6 +158,20 @@ enum mb64_df_context {
 
 #define OBJ_OCCUPY_FULL        (OBJ_OCCUPY_OUTER | OBJ_OCCUPY_INNER)
 
+#define place_terrain_data(pos, type_, rot_, mat_) {        \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].rot = rot_;       \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].type = type_;     \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].mat = mat_;       \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0;  \
+}
+
+#define remove_terrain_data(pos) {                         \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].rot = 0;         \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].type = TILE_TYPE_EMPTY; \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
+    mb64_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
+}
+
 extern struct ExclamationBoxContents *mb64_exclamation_box_contents;
 
 enum {
@@ -192,24 +190,6 @@ enum {
 };
 extern u8 mb64_menu_state;
 
-struct mb64_custom_theme {
-    u8 mats[NUM_MATERIALS_PER_THEME];
-    u8 topmats[NUM_MATERIALS_PER_THEME];
-    u8 topmatsEnabled[NUM_MATERIALS_PER_THEME];
-    u8 fence;
-    u8 pole;
-    u8 bars;
-    u8 water;
-};
-
-//compressed trajectories
-struct mb64_comptraj {
-    s8 t;
-    u8 x;
-    u8 y;
-    u8 z;
-};
-
 /*
 IMPORTANT!
 
@@ -221,39 +201,6 @@ u16 piktcher[64][64];
 Should always be the first 2 members of the mb64_level_save_header struct
 no matter what version.
 */
-
-struct mb64_level_save_header {
-    char file_header[10];
-    u8 version;
-    char author[MAX_USERNAME_SIZE];
-    u16 piktcher[64][64];
-
-    // Level options
-    u8 costume;
-    u8 seq[5];
-    u8 envfx;
-    u8 theme;
-    u8 bg;
-    u8 boundary_mat;
-    u8 boundary;
-    u8 boundary_height;
-    u8 coinstar;
-    u8 size;
-    u8 waterlevel;
-    u8 secret;
-    u8 game;
-
-    u8 toolbar[9];
-    u8 toolbar_params[9];
-    u16 tile_count;
-    u16 object_count;
-
-    struct mb64_custom_theme custom_theme;
-
-    struct mb64_comptraj trajectories[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH];
-
-    u64 pad;
-};
 
 #define SRAM_MAGIC 0x0203DD10 // Rovert's favorite binary ROM Address!
 

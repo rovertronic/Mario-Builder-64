@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "file.h"
 
 #include "engine/math_util.h"
 #include "audio/external.h"

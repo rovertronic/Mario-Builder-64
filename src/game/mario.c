@@ -1950,8 +1950,6 @@ u16 posRecordIndex;
 f32 bad_apple_par = 0.0f;
 
 #include "memory.h"
-#include "libcart/include/cart.h"
-#include "libcart/ff/ff.h"
 #include "game_init.h"
 
 u32 star_radar_objects_to_track[] = {
