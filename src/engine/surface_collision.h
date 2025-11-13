@@ -4,7 +4,7 @@
 #include <PR/ultratypes.h>
 
 #include "types.h"
-#include "mb64/main.h"
+#include "mb64/collision.h"
 
 #include "config/config_world.h"
 

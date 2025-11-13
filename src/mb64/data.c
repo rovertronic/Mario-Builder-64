@@ -1,4 +1,5 @@
 #include "main.h"
+#include "gfx.h"
 #include "data.h"
 #include "display_funcs.h"
 

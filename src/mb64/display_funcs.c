@@ -1,4 +1,5 @@
 #include "main.h"
+#include "trajectory.h"
 
 #include "game/area.h"
 #include "game/game_init.h"

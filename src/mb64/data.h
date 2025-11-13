@@ -437,7 +437,6 @@ enum {
 extern f32 mb64_camera_zoom_table[][2];
 extern void *mb64_theme_segments[][4];
 extern LevelScript *mb64_theme_model_scripts[];
-extern u8 mb64_rotated_dirs[4][6];
 
 extern void *slope_decal_below_surfs[];
 extern struct mb64_terrain_poly mb64_terrain_fullblock_quads[];
@@ -458,25 +457,9 @@ extern struct mb64_theme mb64_theme_table[];
 extern struct mb64_custom_theme mb64_default_custom;
 extern struct mb64_custom_theme mb64_curr_custom_theme;
 
-// Returns full tile definition (struct mb64_tilemat_def)
-#define TILE_MATDEF(matid) (mb64_theme_table[mb64_lopt_theme].mats[matid])
-// Returns main material (struct mb64_material)
-#define MATERIAL(matid) (mb64_mat_table[TILE_MATDEF(matid).mat])
-
-// Returns TRUE if given material has a unique top texture
-#define HAS_TOPMAT(matid) (TILE_MATDEF(matid).topmat != TILE_MATDEF(matid).mat)
-// Returns top material's topmat struct (struct mb64_material)
-#define TOPMAT(matid) (mb64_mat_table[TILE_MATDEF(matid).topmat])
-
 extern Gfx *mb64_fence_texs[];
 extern Gfx *mb64_bar_texs[][2];
 extern Gfx *mb64_water_texs[];
-// Returns current fence texture
-#define FENCE_TEX() (mb64_fence_texs[mb64_theme_table[mb64_lopt_theme].fence])
-#define POLE_TEX()  (mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].gfx)
-#define BARS_TEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][0])
-#define BARS_TOPTEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][1])
-#define WATER_TEX() (mb64_water_texs[mb64_theme_table[mb64_lopt_theme].water])
 
 extern struct ExclamationBoxContents sExclamationBoxContents_btcm[];
 extern struct ExclamationBoxContents sExclamationBoxContents_vanilla[];
@@ -495,8 +478,5 @@ extern struct mb64_settings_button mb64_settings_other_selectors[];
 
 extern struct mb64_template mb64_templates[];
 extern u8 mb64_text_colors[][3];
-
-extern struct mb64_dialog_subject mb64_dialog_subjects[];
-#define NUM_DIALOG_SUBJECT_COUNT 6
 
 extern struct ImbueData imbue_table[];

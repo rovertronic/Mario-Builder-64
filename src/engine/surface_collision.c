@@ -10,8 +10,6 @@
 #include "surface_load.h"
 #include "game/puppyprint.h"
 
-#define static
-
 /**************************************************
  *                      WALLS                     *
  **************************************************/

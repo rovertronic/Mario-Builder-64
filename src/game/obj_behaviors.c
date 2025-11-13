@@ -31,6 +31,7 @@
 #include "rumble_init.h"
 #include "puppylights.h"
 #include "mb64/main.h"
+#include "mb64/trajectory.h"
 
 /**
  * @file obj_behaviors.c

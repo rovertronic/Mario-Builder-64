@@ -1,6 +1,7 @@
 #include "menu_engine.h"
 
 #include "main.h"
+#include "gfx.h"
 
 #include "actors/b/header.h"
 #include "actors/uibutton/header.h"

@@ -8,15 +8,6 @@ struct mb64_terrain_poly {
     s8 (*altuvs)[4][2];
 };
 
-struct mb64_boundary_quad {
-    s8 vtx[4][3];
-    s8 u[2];
-    s8 v[2];
-    u8 uYScale; // Scale U by Y instead of width
-    u8 vYScale; // Scale V by Y instead of width
-    u8 flipUvs;
-};
-
 struct mb64_terrain {
     u8 numQuads;
     u8 numTris;
@@ -60,16 +51,14 @@ struct mb64_object_info {
     u32 soundBits;
 };
 
-enum mb64_mat_types {
-    // Opaque types (for culling)
-    MAT_OPAQUE,
-    MAT_DECAL, // only used for VP screen when used as a block type
-    // Transparent types
-    MAT_CUTOUT,
-    MAT_CUTOUT_NOCULL,
-    MAT_TRANSPARENT,
-    // Used for override when processing vplex screens
-    MAT_SCREEN,
+#define NUM_MATERIALS_PER_THEME 10
+enum tiletypeIndices {
+    FENCE_TILETYPE_INDEX = NUM_MATERIALS_PER_THEME,
+    POLE_TILETYPE_INDEX,
+    BARS_TILETYPE_INDEX,
+    CULL_TILETYPE_INDEX,
+    WATER_TILETYPE_INDEX,
+    END_TILE_INDEX
 };
 
 // Represents a material texture and collision
@@ -94,7 +83,6 @@ struct mb64_tilemat_def {
     char *name;
 };
 
-#define NUM_MATERIALS_PER_THEME 10
 struct mb64_theme {
     struct mb64_tilemat_def mats[NUM_MATERIALS_PER_THEME];
     u8 fence;
@@ -146,17 +134,6 @@ struct mb64_ui_button_type {
         char *name;
         char **names;
     };
-};
-
-struct mb64_dialog_topic {
-    char * name;
-    u8 dialog_id;
-};
-
-struct mb64_dialog_subject {
-    char * name;
-    struct mb64_dialog_topic * topic_list;
-    u8 topic_list_size;
 };
 
 struct imbue_model {

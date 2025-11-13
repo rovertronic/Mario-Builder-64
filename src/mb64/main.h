@@ -15,10 +15,10 @@
 #define MB64_TILE_POOL_SIZE 20000
 #define MB64_GFX_SIZE 20000
 #define MB64_VTX_SIZE 50000
-
-#define MB64_MAX_OBJS 512
 #define MB64_MAX_TRAJECTORIES 20
 #define MB64_TRAJECTORY_LENGTH 50
+
+#define MB64_MAX_OBJS 512
 
 #define MB64_SPEEDRUN_TIMER_MAX (30 * 60 * 100 - 1)
 
@@ -58,21 +58,6 @@ extern u8 mb64_lopt_secret;
 extern u8 mb64_prepare_level_screenshot;
 extern u8 mb64_do_save;
 
-extern u32 mb64_gfx_total;
-extern u32 mb64_vtx_total;
-
-extern Vtx *mb64_curr_vtx;
-extern Gfx *mb64_curr_gfx;
-extern u16 mb64_gfx_index;
-
-extern u8 mb64_use_alt_uvs;
-extern s8 mb64_uv_offset;
-extern u8 mb64_render_flip_normals;
-extern u8 mb64_render_vertical;
-extern u8 mb64_render_culling_off;
-extern u8 mb64_growth_render_type;
-extern u8 mb64_curr_mat_has_topside;
-extern u8 mb64_curr_poly_vert_count;
 extern u8 mb64_curr_boundary;
 extern u8 mb64_upsidedown_tile;
 
@@ -82,7 +67,6 @@ extern u16 mb64_tile_data_indices[NUM_MATERIALS_PER_THEME + 10];
 extern u16 mb64_tile_count;
 extern u16 mb64_object_count;
 extern u16 mb64_object_limit_count;
-extern u16 mb64_build_collision_type;
 extern u16 mb64_total_coin_count;
 
 extern u8 mb64_place_mode;
@@ -96,9 +80,6 @@ extern s16 mb64_freecam_yaw;
 extern u8 mb64_freecam_snap;
 extern u8 mb64_freecam_snap_timer;
 
-extern s8 mb64_dialog_subject_index;
-extern s8 mb64_dialog_topic_index;
-
 extern FILINFO mb64_file_info;
 
 #define AT_CEILING(y) ((mb64_curr_boundary & MB64_BOUNDARY_CEILING) && ((y) == mb64_lopt_boundary_height-1))
@@ -110,19 +91,11 @@ void sb_init(void);
 void mb64_init();
 void reset_play_state(void);
 void generate_objects_to_level(void);
-void block_floor_collision(f32 x, f32 y, f32 z);
-void block_ceil_collision(f32 x, f32 y, f32 z);
-void block_wall_collision(f32 x, f32 y, f32 z, f32 r);
-Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 s32 mb64_main_menu(void);
 extern Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
-extern Trajectory mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH][4];
-void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id);
 void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
 void animate_list_reset(void);
-void generate_terrain_gfx(void);
-void reload_boundary_and_gfx(void);
 void freecam_camera_init(void);
 void update_custom_theme(void);
 void reload_theme(void);
@@ -147,24 +120,25 @@ extern u8 mb64_play_onoff;
 extern s16 mb64_play_s16_water_level;
 extern u32 mb64_play_speedrun_timer;
 
+extern u8 mb64_grid_size;
+extern u8 mb64_grid_min;
+
 extern struct mb64_level_save_header mb64_save;
 extern TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
 
 extern void* mb64_theme_segments[][4];
 extern LevelScript * mb64_theme_model_scripts[];
 
+extern s8 cullOffsetLUT[6][3];
+
+extern u8 mb64_rotated_dirs[4][6];
+#define rotate_direction(dir, rot) (mb64_rotated_dirs[rot][dir])
+
 enum {
     MB64_PM_NONE,
     MB64_PM_ACTION,
     MB64_PM_TILE,
     MB64_PM_OBJ,
-};
-
-enum ProcessTileRenderModes {
-    PROCESS_TILE_NORMAL,
-    PROCESS_TILE_TRANSPARENT,
-    PROCESS_TILE_BOTH,
-    PROCESS_TILE_VPLEX,
 };
 
 #define GRID_TO_POS(gridx) ((gridx) * TILE_SIZE - (32 * TILE_SIZE) + TILE_SIZE/2)
@@ -180,67 +154,6 @@ enum mb64_directions {
     MB64_DIRECTION_NEG_X,
     MB64_DIRECTION_POS_Z,
     MB64_DIRECTION_NEG_Z,
-};
-
-enum mb64_culling_shapes {
-    MB64_FACESHAPE_FULL,
-    MB64_FACESHAPE_POLETOP,
-
-    MB64_FACESHAPE_TRI_1, // make sure irregular shapes can be flipped with ^1
-    MB64_FACESHAPE_TRI_2,
-    MB64_FACESHAPE_DOWNTRI_1,
-    MB64_FACESHAPE_DOWNTRI_2,
-    MB64_FACESHAPE_HALFSIDE_1, // vertical slab sides
-    MB64_FACESHAPE_HALFSIDE_2,
-
-    MB64_FACESHAPE_TOPTRI,
-    MB64_FACESHAPE_TOPHALF,
-
-    // & 0x10: Bottom slab priority list
-    MB64_FACESHAPE_BOTTOMSLAB_PRI = 0x10,
-    MB64_FACESHAPE_UPPERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI,
-    MB64_FACESHAPE_UPPERGENTLE_2,
-    MB64_FACESHAPE_BOTTOMSLAB,
-    // 0x13 empty
-    MB64_FACESHAPE_LOWERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI + 4,
-    MB64_FACESHAPE_LOWERGENTLE_2,
-    
-    // & 0x20: Top slab priority list
-    MB64_FACESHAPE_TOPSLAB_PRI = 0x20,
-    MB64_FACESHAPE_DOWNUPPERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI,
-    MB64_FACESHAPE_DOWNUPPERGENTLE_2,
-    MB64_FACESHAPE_TOPSLAB,
-    // 0x23 empty
-    MB64_FACESHAPE_DOWNLOWERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI + 4,
-    MB64_FACESHAPE_DOWNLOWERGENTLE_2,
-
-    // & 0x40: Empty faces
-    MB64_FACESHAPE_EMPTY = 0x40,
-    // Rotate UVs for certain textures
-    MB64_FACESHAPE_EMPTY_0,
-    MB64_FACESHAPE_EMPTY_1,
-    MB64_FACESHAPE_EMPTY_2,
-    MB64_FACESHAPE_EMPTY_3,
-};
-
-enum mb64_growth_types {
-    MB64_GROWTH_NONE,
-    MB64_GROWTH_FULL,
-    MB64_GROWTH_NORMAL_SIDE,
-    MB64_GROWTH_HALF_SIDE, // vertical slabs - either side
-    MB64_GROWTH_UNDERSLOPE_CORNER, // special check
-    MB64_GROWTH_DIAGONAL_SIDE,
-    MB64_GROWTH_VSLAB_SIDE, // vertical slabs - middle face
-    MB64_GROWTH_UNCONDITIONAL,
-
-    // Anything beyond this is a slope decal type
-    // & 1 - left or right side
-    // & 2 - gentle or steep
-    MB64_GROWTH_EXTRADECAL_START = 0x10,
-    MB64_GROWTH_SLOPE_SIDE_L = MB64_GROWTH_EXTRADECAL_START,
-    MB64_GROWTH_SLOPE_SIDE_R,
-    MB64_GROWTH_GENTLE_SIDE_L,
-    MB64_GROWTH_GENTLE_SIDE_R,
 };
 
 enum mb64_df_context {
@@ -351,27 +264,6 @@ struct mb64_sram_config {
     u64 pad;
 };
 
-enum {
-    MM_INIT,
-    MM_NO_SD_CARD,
-    MM_MAIN,
-    MM_MAIN_LIMITED,
-    MM_HELP_MODE,
-    MM_INFO,
-    MM_PLAY,
-    MM_MAKE,
-    MM_KEYBOARD,
-    MM_FILES,
-    MM_MAKE_MODE,
-};
-
-enum {
-    KXM_NEW_LEVEL,
-    KXM_NEW_LEVEL_LIMITED,
-    KXM_AUTHOR,
-    KXM_CHANGE_AUTHOR,
-};
-
 extern u8 mb64_lopt_game;
 enum {
     MB64_GAME_VANILLA,
@@ -415,8 +307,6 @@ enum imbue {
     IMBUE_BADGE_BASE,
 };
 
-extern s32 mb64_min_coord;
-extern s32 mb64_max_coord;
 #define MB64_BOUNDARY_INNER_FLOOR   (1 << 0) // Has the main floor
 #define MB64_BOUNDARY_OUTER_FLOOR   (1 << 1) // Has the fading outer floor
 #define MB64_BOUNDARY_INNER_WALLS   (1 << 2) // Has the inner walls going up to boundary height - has fading part if death plane
