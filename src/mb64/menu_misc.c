@@ -112,7 +112,7 @@ void create_coord_display(void) {
 TextComponent *sYellowText = NULL;
 int sYellowTextVisible = TRUE;
 
-void yellow_text_set_visibility(void) {
+void yellow_text_set_visibility(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (gPlayer1Controller->buttonPressed & Z_TRIG) {
         sYellowTextVisible ^= 1;
     }

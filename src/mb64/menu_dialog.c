@@ -1,7 +1,7 @@
 #include "menu_engine.h"
 #include "menu.h"
 
-MenuComponent *gCurDialog;
+MatrixComponent *gCurDialog;
 int gDialogResponse; // 0 for none, 1 for yes, 2 for closed
 
 // Default dialog
@@ -36,6 +36,12 @@ void destroy_dialog_component(void) {
 
 #define animTimer params[0].asInt
 #define goingBack params[1].asInt
+void begin_dialog_close(void) {
+    FrameComponent *box = get_child(gCurDialog);
+    box->goingBack = TRUE;
+    play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
+}
+
 void dialog_box_render(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     FrameComponent *box = (FrameComponent *)m;
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
@@ -84,17 +90,12 @@ void parse_dialog(char *dialog) {
 }
 
 void (*gResponseFunc)(int);
-void begin_dialog_close(void) {
-    FrameComponent *box = get_child(gCurDialog);
-    box->goingBack = TRUE;
-    play_sound(SOUND_MENU_MESSAGE_DISAPPEAR, gGlobalSoundSource);
-}
 
 void create_dialog_box(char *dialog) {
     destroy_dialog_component();
     gCurDialog = init_matrix_component(gMenuRoot, 0, 0.f, 0.f);
     component_set_pos(gCurDialog, 70, 200);
-    gCurDialog->prerender = dialog_box_set_transform;
+    gCurDialog->base.prerender = dialog_box_set_transform;
     FrameComponent *handler = init_dynamic_component(gCurDialog, dialog_box_render);
     component_set_pos(handler, -7, 5);
     handler->animTimer = 8;
@@ -148,19 +149,20 @@ void badge_dialog_text_set_alpha(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
 void begin_badge_dialog_close(void) {
     if (!gCurDialog) return;
-    component_rect_do_fade(gCurDialog, 0, 20, destroy_dialog_component);
+    component_rect_do_fade(get_child(gCurDialog), 0, 20, destroy_dialog_component);
 }
 
 void create_badge_dialog(int badgeid) {
     destroy_dialog_component();
-    gCurDialog = init_rect_component(gMenuRoot, 0, SCREEN_WIDTH/2, 30, SCREEN_WIDTH/2, 30);
-    component_rect_do_fade(gCurDialog, 150, 20, NULL);
+    gCurDialog = init_matrix_component(gMenuRoot, 0, 1.f, 1.f); // empty
+    RectComponent *rect = init_rect_component(gCurDialog, 0, SCREEN_WIDTH/2, 30, SCREEN_WIDTH/2, 30);
+    component_rect_do_fade(rect, 150, 20, NULL);
     sprintf(gDialogBadgeBuf[0], "You got the %s!", badge_info[badgeid].name);
     sprintf(gDialogBadgeBuf[1], "%s.", badge_info[badgeid].desc);
 
     for (int line = 0; line < DIALOG_BADGE_LINES; line++) {
         if (gDialogBadgeBuf[line][0]) {
-            TextComponent *t = init_text_component(gCurDialog, -150, 10-line*16, gDialogBadgeBuf[line], TEXT_LEFT, TEXT_WHITE);
+            TextComponent *t = init_text_component(rect, -150, 10-line*16, gDialogBadgeBuf[line], TEXT_LEFT, TEXT_WHITE);
             t->base.prerender = badge_dialog_text_set_alpha;
         }
     }

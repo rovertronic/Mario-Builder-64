@@ -1,11 +1,12 @@
 #include "menu_engine.h"
 
-#include "menu.h"
 #include "game/level_update.h"
-
 #include "actors/bigpainting2/header.h"
+#include "game/mario.h"
+
 #include "main.h"
 #include "gfx.h"
+#include "menu.h"
 
 MenuComponent *settingsRoot = NULL;
 
@@ -351,7 +352,6 @@ char *mb64_costume_string_table[] = {
 
 
 // System page
-
 void settings_save_and_quit(void) {
     if (gSDCard) {
         save_level();
@@ -897,7 +897,7 @@ void settings_menu_create(void) {
     ph->input = MENU_INPUT_NONE;
     ph->index = gSettingsCustomOpen;
 
-    settingsRoot = main;
+    settingsRoot = (MenuComponent *)main;
 }
 
 // Called on level transition

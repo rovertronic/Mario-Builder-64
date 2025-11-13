@@ -12,7 +12,7 @@ extern u8 mb64_toolbox_btcm[18 * 5];
 extern u8 mb64_toolbox_vanilla[18 * 5];
 
 extern AnimatedComponent *gToolbar;
-extern MenuComponent *gCurDialog;
+extern MatrixComponent *gCurDialog;
 extern int gDialogResponse;
 
  struct BadgeInfo {
@@ -28,7 +28,11 @@ void hide_toolbar(void);
 void toolbar_set_active(int active);
 
 void create_toolbox(void);
+void init_toolbox(void);
 void settings_menu_create(void);
+
+void set_page_to_level_list(void);
+void set_initial_menu_page(void);
 
 void show_error(char *msg);
 void show_tip(void);
@@ -39,3 +43,8 @@ void hide_coord_display(void);
 
 void create_yellow_text(char *msg);
 void destroy_yellow_text(void);
+
+void reset_settings_menu_state(void);
+void reset_main_menu_state(void);
+void reset_toolbox_state(void);
+void reset_misc_menu_state(void);

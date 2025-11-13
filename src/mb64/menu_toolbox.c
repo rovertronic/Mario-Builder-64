@@ -2,6 +2,7 @@
 
 #include "main.h"
 #include "gfx.h"
+#include "menu.h"
 
 #include "actors/b/header.h"
 #include "actors/uibutton/header.h"
@@ -81,8 +82,8 @@ void set_toolbar(int index, int id, int param) {
 // Copy tile type of current cursor position to current toolbar slot
 int sample_block(int index) {
     int isObject = FALSE;
-    int targetId;
-    int targetBparam;
+    u32 targetId;
+    u32 targetBparam;
     // Iterate over objects
     for (int i = 0; i < mb64_object_count; i++) {
         struct mb64_obj *obj = &mb64_object_data[i];
@@ -425,7 +426,7 @@ void toolbox_render_button(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 r
     render_button(mb64_toolbox[index], mb64_toolbox_params[index], selected, x, y);
 }
 
-void toolbox_select_button(Selector2DComponent *s, u8 column, u8 row) {
+void toolbox_select_button(Selector2DComponent *s, UNUSED u8 column, UNUSED u8 row) {
     if (mb64_toolbox[s->index] == MB64_BUTTON_BLANK) return;
     play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
 
@@ -499,6 +500,20 @@ void create_toolbox(void) {
     ListComponent *bar = get_child(gToolbar);
     component_list_get(bar, 7)->disabled = TRUE;
     component_list_get(bar, 8)->disabled = TRUE;
+}
+
+void init_toolbox(void) {
+    bzero(&mb64_toolbox_params, sizeof(mb64_toolbox_params));
+    switch(mb64_lopt_game) {
+        case MB64_GAME_BTCM:
+            bcopy(&mb64_toolbox_btcm,&mb64_toolbox,sizeof(mb64_toolbox));
+            mb64_exclamation_box_contents = sExclamationBoxContents_btcm;
+            break;
+        case MB64_GAME_VANILLA:
+            bcopy(&mb64_toolbox_vanilla,&mb64_toolbox,sizeof(mb64_toolbox));
+            mb64_exclamation_box_contents = sExclamationBoxContents_vanilla;
+            break;
+    }
 }
 
 void reset_toolbox_state(void) {

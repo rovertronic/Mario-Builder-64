@@ -350,7 +350,7 @@ PageTitleComponent   *init_page_title_array(void *parent, void *p, s16 x, s16 y,
 PageTitleComponent   *init_page_title_func(void *parent, void *original, s16 x, s16 y, s16 width, SelectorStringFunc func);
 SelectorComponent    *init_array_selector(void *parent, u8 *value, u8 width, u8 count, char **array, ComponentUpdateFunc onChange);
 SelectorComponent    *init_func_selector(void *parent, u8 *value, u8 width, u8 count, SelectorStringFunc func, ComponentUpdateFunc onChange);
-Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count, Selector2DRenderFunc *render, Selector2DUpdateFunc *update);
+Selector2DComponent  *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count, Selector2DRenderFunc render, Selector2DUpdateFunc update);
 KeyboardComponent    *init_keyboard_component(void *parent, s16 x, s16 y, char *buf, TextComponent *t, u8 maxLength, int isRestricted);
 CounterComponent     *init_counter_component(void *parent, s16 x, s16 y, u8 symbol, s16 *value, s16 max, int align);
 
@@ -364,6 +364,10 @@ void component_animate_bounce_out(AnimatedComponent *a, f32 accel, f32 initialVe
 void component_animate_linear(AnimatedComponent *a, f32 offset, f32 target, f32 vel, u8 direction);
 void component_rect_do_fade(RectComponent *rc, u8 targetAlpha, u8 dAlpha, ComponentUpdateFunc onFinish);
 void listitem_render_triangle(MenuComponent *m, s16 x, s16 y);
+
+void page_handler_scroll(PageHandlerComponent *ph, int dir);
+s32 get_input(int inputMethod, int direction);
+void render_4slice_box(int x, int y, int width, int height, int cornerSize);
 
 void reset_menu(void);
 void render_menu(void);

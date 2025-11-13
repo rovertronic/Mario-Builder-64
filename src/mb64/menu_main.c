@@ -1,8 +1,10 @@
 #include "menu_engine.h"
+#include "menu.h"
 
 #include "game/sram.h"
 #include "libpl/libpl.h"
 #include "levels/menu/header.h"
+#include <string.h>
 
 char *info_credits[] = {
     "3Mario Builder 64",
@@ -312,6 +314,8 @@ char *new_level_templates[] = {
     "Retro",
 };
 
+void main_menu_page_change_animate(FrameComponent *page, int out);
+
 #define levelIndex params[0].asInt
 void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
     FrameComponent *f = (FrameComponent *)m;
@@ -453,16 +457,16 @@ void button_change_page(TextComponent *b) {
     main_menu_page_change_animate(get_child(gMainMenuPageHandler), TRUE);
 }
 
-AnimatedComponent *main_menu_create_title(MenuComponent *parent, char *text, s16 y) {
+AnimatedComponent *main_menu_create_title(FrameComponent *parent, char *text, s16 y) {
     AnimatedComponent *a = alloc_component(parent, MENU_ANIMATED);
     component_set_pos(a, SCREEN_WIDTH/2, y);
 
     MatrixComponent *mat = init_matrix_component(a, 0, 2.f, 2.f);
-    TextComponent *t = init_text_component(mat, 0, 0, text, TEXT_CENTER, 0);
+    init_text_component(mat, 0, 0, text, TEXT_CENTER, 0);
     return a;
 }
 
-ListComponent *main_menu_create_list(MenuComponent *parent, s16 y) {
+ListComponent *main_menu_create_list(FrameComponent *parent, s16 y) {
     ListComponent *l = init_list(parent, DIR_VERTICAL, MENU_INPUT_JOYSTICK);
     component_set_pos(l, SCREEN_WIDTH/2, y);
     return l;
@@ -477,7 +481,7 @@ void main_menu_list_set_index(ListComponent *l) {
 void main_menu_create_button(ListComponent *l, char *text, s16 y, ComponentUpdateFunc func, int arg) {
     AnimatedComponent *a = alloc_component(NULL, MENU_ANIMATED);
     init_box_component(a, 0, 7, 55, 11, 11, 190);
-    TextComponent *t = init_text_button(a, 0, 0, text, TEXT_CENTER, func, arg);
+    init_text_button(a, 0, 0, text, TEXT_CENTER, func, arg);
     component_list_append(l, a, 0, y);
 }
 
@@ -530,7 +534,7 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 
     if (gCurrMainMenuPage == PAGE_NO_SD_CARD && gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
-        MenuComponent *page = get_child(gMainMenuPageHandler);
+        FrameComponent *page = get_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
         gScheduledNextPage = PAGE_MAIN;
         menu_play_click_sound();
@@ -538,7 +542,7 @@ void main_menu_info_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 }
 
-FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int len) {
+FrameComponent *main_menu_create_info(FrameComponent *parent, char **text, int len) {
     RectComponent *rect = init_rect_component(parent, 110, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     FrameComponent *info = init_dynamic_component(rect, main_menu_info_loop);
     info->infoText = text;
@@ -546,11 +550,11 @@ FrameComponent *main_menu_create_info(MenuComponent *parent, char **text, int le
     return info;
 }
 
-void main_menu_load_level(TextComponent *b) {
+void main_menu_load_level(UNUSED TextComponent *b) {
     FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
 
     // Animate menu
-    MenuComponent *m = get_child(gMainMenuPageHandler);
+    FrameComponent *m = get_child(gMainMenuPageHandler);
     gMainMenuAnimateDir = TO_NEXT;
     menu_play_click_sound();
     main_menu_page_change_animate(m, TRUE);
@@ -605,6 +609,9 @@ void page_number_init_text(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     sprintf(t->text, "Page %d/%d", ph->index + 1, ph->scroll.count);
 }
 
+void page_handler_set_page(PageHandlerComponent *ph, int page);
+void page_handler_load_initial_page(PageHandlerComponent *ph);
+
 void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     PageHandlerComponent *ph = (PageHandlerComponent *)m;
     if (ph->scroll.offset) return;
@@ -623,13 +630,13 @@ void main_menu_level_list_fast_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16
     l->index = CLAMP(curIndex, 0, l->count - 1);
 }
 
-char *page_buf[12];
-void main_menu_create_level_list(MenuComponent *parent) {
+char page_buf[12];
+void main_menu_create_level_list(FrameComponent *parent) {
     if (mb64_level_entry_count == 0) {
         AnimatedComponent *a = alloc_component(parent, MENU_ANIMATED);
         component_set_pos(a, SCREEN_WIDTH/2,200);
         init_box_component(a, 0, 7, 55, 11, 11, 190);
-        TextComponent *t = init_text_component(a, 0, 0, "No levels...", TEXT_CENTER, TEXT_RED);
+        init_text_component(a, 0, 0, "No levels...", TEXT_CENTER, TEXT_RED);
         return;
     }
     int levelcount = (mb64_level_entry_count-1) / LEVELS_PER_PAGE + 1;
@@ -651,14 +658,14 @@ void main_menu_create_level_list(MenuComponent *parent) {
 
 char main_menu_keyboard_input[MAX(MAX_FILE_NAME_SIZE, MAX_USERNAME_SIZE)];
 #define KEYBOARD_CONFIRM (!gMenuState.inactive && (gPlayer1Controller->buttonPressed & START_BUTTON) && main_menu_keyboard_input[0] != 0)
-void keyboard_start_level(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+void keyboard_start_level(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (KEYBOARD_CONFIRM) {
         int fileExists = level_file_exists(main_menu_keyboard_input);
         if (fileExists) {
             show_error("Level already exists!");
             return;
         }
-        MenuComponent *page = get_child(gMainMenuPageHandler);
+        FrameComponent *page = get_child(gMainMenuPageHandler);
         gMainMenuAnimateDir = TO_NEXT;
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
         main_menu_page_change_animate(page, TRUE);
@@ -683,9 +690,9 @@ void no_sd_card_start_level(void) {
     gMB64LevelLoaded = TRUE;
 }
 
-void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+void keyboard_set_author_name(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     if (KEYBOARD_CONFIRM) {
-        MenuComponent *page = get_child(gMainMenuPageHandler);
+        FrameComponent *page = get_child(gMainMenuPageHandler);
         if (gCurrMainMenuPage == PAGE_AUTHOR) {
             gMainMenuAnimateDir = TO_NEXT;
             gScheduledNextPage = PAGE_MAIN;
@@ -703,10 +710,10 @@ void keyboard_set_author_name(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     }
 }
 
-void main_menu_create_keyboard_page(MenuComponent *parent, char *text, ComponentRenderFunc *func, int isFilename) {
+void main_menu_create_keyboard_page(FrameComponent *parent, char *text, ComponentRenderFunc func, int isFilename) {
     RectComponent *rect = init_rect_component(parent, 110, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     AnimatedComponent *top = alloc_component(rect, MENU_ANIMATED);
-    TextComponent *t = init_text_component(top, -120, 85, text, TEXT_LEFT, TEXT_WHITE);
+    init_text_component(top, -120, 85, text, TEXT_LEFT, TEXT_WHITE);
     FrameComponent *f = init_dynamic_component(top, component_main_menu_level_render);
     f->levelIndex = (isFilename ? -1 : -2); // -1 for filename, -2 for author name
     component_set_pos(f, 0, 60);
@@ -770,14 +777,15 @@ void main_menu_page_change_animate(FrameComponent *page, int out) {
 }
 
 void main_menu_page_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
-    if (!m->inactive && gPrevMainMenuPage != PAGE_NONE) {
+    FrameComponent *page = (FrameComponent *)m;
+    if (!page->base.inactive && gPrevMainMenuPage != PAGE_NONE) {
         if (gPlayer1Controller->buttonPressed & B_BUTTON) {
             gMainMenuAnimateDir = TO_PREV;
             gScheduledNextPage = gPrevMainMenuPage;
             menu_play_click_sound();
-            main_menu_page_change_animate(m, TRUE);
+            main_menu_page_change_animate(page, TRUE);
 
-            m->inactive = TRUE;
+            page->base.inactive = TRUE;
         }
     }
 }
@@ -920,7 +928,7 @@ MenuStyle main_menu_style = {
     .textHighlightSelected = TRUE,
 };
 
-void main_menu_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+void main_menu_loop(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     set_menu_style(main_menu_style);
 
     if (gChangePage != PAGE_NONE) {

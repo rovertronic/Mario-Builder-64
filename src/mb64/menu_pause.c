@@ -3,6 +3,7 @@
 
 #include "game/area.h"
 #include "game/save_file.h"
+#include "game/level_update.h"
 
 struct BadgeInfo badge_info[] = {
     {"Lava Boost Badge", "Reduces lava damage by 2 at the cost of 1 Mana", {255, 0x00, 0x00}},
@@ -58,42 +59,6 @@ void pause_menu_change_page(int page) {
     sPauseMenuPage = page;
 }
 
-void pause_menu_loop(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
-    if (sPauseMenuClosed) {
-        play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
-        dealloc_component(get_id(gPauseMenu));
-        gPauseMenu = NULL;
-        return;
-    }
-
-    gMenuOptSelectIndex = MENU_OPT_NONE;
-    set_menu_style(pause_menu_style);
-
-    FrameComponent *curPage = get_child(gPauseMenu);
-    if (curPage->params[0].asInt != sPauseMenuPage) {
-        dealloc_component(get_id(curPage));
-        create_pause_menu_page(sPauseMenuPage);
-    } else {
-        switch (sPauseMenuPage) {
-            case PAUSE_PAGE_MAIN:
-                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                    gPlayer1Controller->buttonPressed |= A_BUTTON;
-                }
-                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                    close_pause_menu(MENU_OPT_CONTINUE);
-                }
-                break;
-            case PAUSE_PAGE_BADGES:
-            case PAUSE_PAGE_OPTIONS:
-                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
-                    close_pause_menu(MENU_OPT_CONTINUE);
-                } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
-                    pause_menu_change_page(PAUSE_PAGE_MAIN);
-                }
-        }
-    }
-}
-
 extern Gfx *bicon_table[];
 void badge_page_render(Selector2DComponent *m, s16 x, s16 y, u8 column, u8 row, int selected) {
     int index = column + row * m->columns;
@@ -129,6 +94,13 @@ void badge_page_render(Selector2DComponent *m, s16 x, s16 y, u8 column, u8 row, 
 
 u8 pause_menu_options[5];
 
+void pause_option_changed(void) {
+    for (int i = 0; i < 5; i++) {
+        mb64_sram_configuration.option_flags &= ~(1 << i);
+        mb64_sram_configuration.option_flags |= (pause_menu_options[i] << i);
+    }
+}
+
 // Quick toggle for options when pressing A
 void pause_selector_check_toggle(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     SelectorComponent *s = (SelectorComponent *)m;
@@ -136,13 +108,6 @@ void pause_selector_check_toggle(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         *(s->value) ^= 1;
         pause_option_changed();
         play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-    }
-}
-
-void pause_option_changed(void) {
-    for (int i = 0; i < 5; i++) {
-        mb64_sram_configuration.option_flags &= ~(1 << i);
-        mb64_sram_configuration.option_flags |= (pause_menu_options[i] << i);
     }
 }
 
@@ -177,7 +142,7 @@ extern struct MarioState gMarioStates[1];
 void create_pause_menu_page(int pagenum) {
     FrameComponent *page = init_frame_component(gPauseMenu);
     page->params[0].asInt = pagenum;
-    ListComponent *options;
+    ListComponent *options = NULL;
     int index = sPrevMenuIndex;
 
     switch (pagenum) {
@@ -224,13 +189,49 @@ void create_pause_menu_page(int pagenum) {
             break;
         case PAUSE_PAGE_BADGES:
             int numBadges = count_u32_bits(mb64_play_badge_bitfield);
-            Selector2DComponent *badges = init_selector_2d_component(page, 0, 0, 8, numBadges, badge_page_render, NULL);
+            init_selector_2d_component(page, 0, 0, 8, numBadges, badge_page_render, NULL);
             sPrevMenuIndex = 3;
             break;
     }
 
     if (options) {
         options->index = index;
+    }
+}
+
+void pause_menu_loop(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    if (sPauseMenuClosed) {
+        play_sound(SOUND_MENU_PAUSE_CLOSE, gGlobalSoundSource);
+        dealloc_component(get_id(gPauseMenu));
+        gPauseMenu = NULL;
+        return;
+    }
+
+    gMenuOptSelectIndex = MENU_OPT_NONE;
+    set_menu_style(pause_menu_style);
+
+    FrameComponent *curPage = get_child(gPauseMenu);
+    if (curPage->params[0].asInt != sPauseMenuPage) {
+        dealloc_component(get_id(curPage));
+        create_pause_menu_page(sPauseMenuPage);
+    } else {
+        switch (sPauseMenuPage) {
+            case PAUSE_PAGE_MAIN:
+                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                    gPlayer1Controller->buttonPressed |= A_BUTTON;
+                }
+                if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                    close_pause_menu(MENU_OPT_CONTINUE);
+                }
+                break;
+            case PAUSE_PAGE_BADGES:
+            case PAUSE_PAGE_OPTIONS:
+                if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+                    close_pause_menu(MENU_OPT_CONTINUE);
+                } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+                    pause_menu_change_page(PAUSE_PAGE_MAIN);
+                }
+        }
     }
 }
 

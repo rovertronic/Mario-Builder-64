@@ -38,7 +38,6 @@ void compat_upgrade_1_0_to_1_1(Version_1_0_Save *save, Version_1_0_Tile *tile_da
     }
 }
 
-
 void mb64_perform_file_upgrade(struct mb64_level_save_header *save, void *tile_data, void *obj_data) {
     if (save->version < 1) {
         compat_upgrade_1_0_to_1_1(save, tile_data, obj_data);

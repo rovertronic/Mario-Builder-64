@@ -46,7 +46,7 @@ void create_dl_translation_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void create_dl_ortho_matrix(void);
 void create_dl_scale_matrix(s8 pushOp, f32 x, f32 y, f32 z);
 void print_generic_string_ascii(s16 x, s16 y, const char *str);
-s32 get_string_width_ascii(char *str);
+s32 get_string_width_ascii(const char *str);
 void print_hud_string_ascii(s16 x, s16 y, char *str);
 s32 get_hud_string_width_ascii(char *str);
 

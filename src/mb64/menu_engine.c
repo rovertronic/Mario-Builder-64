@@ -1,6 +1,8 @@
 #include "menu_engine.h"
 
 #include "actors/uiCorner/model.inc.c"
+#include <string.h>
+#include "menu.h"
 
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
@@ -36,7 +38,7 @@ void menu_text_display(char *str, s16 x, s16 y, u8 color, u8 align, u8 alpha) {
     print_generic_string_ascii(x, y, str);
 }
 
-void menu_hud_text_display(char *str, s16 x, s16 y, u8 align) {
+void menu_hud_text_display(char *str, s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     print_hud_string_ascii(x, y, str);
 }
@@ -663,10 +665,10 @@ void component_matrix_render(MenuComponent *m, s16 x, s16 y) {
     // Construct matrix with rotation, translation and scale
     Mtx temp;
     guRotate(&temp, (mc->rot * 45.f) / 0x2000, 0.f, 0.f, 1.f);
-    guScale(mtx, mc->xScale, mc->yScale, 1.f);
+    guScale((Mtx *)mtx, mc->xScale, mc->yScale, 1.f);
     mtx[12] = x + m->xpos;
     mtx[13] = y + m->ypos;
-    guMtxCatL(&temp, mtx, mtx);
+    guMtxCatL(&temp, (Mtx *)mtx, (Mtx *)mtx);
 
     gSPMatrix(gDisplayListHead++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     render_child(m, 0, 0);
@@ -945,7 +947,7 @@ void listitem_render_triangle(MenuComponent *m, s16 x, s16 y) {
 // ================ 2D SELECTOR ===================
 
 Selector2DComponent *init_selector_2d_component(void *parent, s16 x, s16 y, u8 columns, u8 count,
-                                Selector2DRenderFunc *render, Selector2DUpdateFunc *update) {
+                                Selector2DRenderFunc render, Selector2DUpdateFunc update) {
     Selector2DComponent *s = alloc_component(parent, MENU_SELECTOR_2D);
     component_set_pos(s, x, y);
     s->columns = columns;
@@ -1002,7 +1004,7 @@ char upper[] = {'!', '?', '#', '$', '%', '&', '^', '|', '<', '>', '+',
 
 char *forbidden = ":\"/?^|<>_";
 int is_char_forbidden(char c) {
-    for (int i = 0; i < strlen(forbidden); i++) {
+    for (u32 i = 0; i < strlen(forbidden); i++) {
         if (c == forbidden[i]) {
             return TRUE;
         }
@@ -1030,7 +1032,7 @@ void keyboard_render_key(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row
     menu_text_display(buf, x, y-8, textcolor, TEXT_CENTER, 255);
 }
 
-void keyboard_select_key(Selector2DComponent *s, u8 column, u8 row) {
+void keyboard_select_key(Selector2DComponent *s, UNUSED u8 column, UNUSED u8 row) {
     KeyboardComponent *k = get_parent(s);
     char c = gCapsLock ? upper[s->index] : keys[s->index];
     int strLen = strlen(k->buf);
@@ -1121,7 +1123,7 @@ void component_counter_render(MenuComponent *m, s16 x, s16 y) {
     if (c->align) {
         x -= get_hud_string_width_ascii(buf) * c->align / 2;
     }
-    menu_hud_text_display(buf, x, y, TEXT_LEFT);
+    menu_hud_text_display(buf, x, y);
 
     render_child(m, x, y);
 }
@@ -1189,7 +1191,7 @@ extern MenuComponent *settingsRoot;
 
 void render_menu(void) {
     menu_update_joystick();
-    render_component(gMenuRoot, 0, 0);
+    render_component((MenuComponent *)gMenuRoot, 0, 0);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     // // Count loaded components
     // int count = 0;

@@ -7,6 +7,7 @@
 #include "game/emutest.h"
 #include "buffers/framebuffers.h"
 #include "game/puppyprint.h"
+#include <string.h>
 
 #include "levels/menu/header.h"
 
@@ -137,6 +138,18 @@ void mb64_file_init(void) {
     }
 }
 
+#include "actors/bigpainting2/header.h"
+void update_painting() {
+    s16 x;
+    s16 y;
+    u16 *u16_array = segmented_to_virtual(bigpainting2_bigger_painting_rgba16);
+    for (x = 0; x < 64; x++) {
+        for (y = 0; y < 64; y++) {
+            u16_array[(y*64)+x] = mb64_save.piktcher[y][x];
+        } 
+    }
+}
+
 extern u16 sRenderedFramebuffer;
 #define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
 void save_level(void) {
@@ -262,7 +275,9 @@ void save_level(void) {
     f_close(&mb64_file);
 }
 
+u32 get_tiletype_index(u32 type, u32 mat);
 void mb64_perform_file_upgrade(struct mb64_level_save_header *save, void *tile_data, void *obj_data);
+
 void load_level(void) {
     u8 fresh = FALSE;
 
@@ -417,7 +432,7 @@ void load_level(void) {
     }
 
     init_trajectories();
-    mb64_init_toolbox();
+    init_toolbox();
 
     mb64_min_coord = (mb64_grid_min - 32) * TILE_SIZE;
     mb64_max_coord = (mb64_grid_min + mb64_grid_size - 32) * TILE_SIZE;

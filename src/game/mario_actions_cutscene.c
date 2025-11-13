@@ -506,7 +506,7 @@ s32 act_lvup_dance(struct MarioState *m) {
         stop_and_set_height_to_floor(m);
         m->marioObj->header.gfx.pos[1] = m->pos[1];
 
-        if (((RectComponent *)gCurDialog)->curAlpha == 150 && m->input & INPUT_A_PRESSED) {
+        if (((RectComponent *)get_child(gCurDialog))->curAlpha == 150 && m->input & INPUT_A_PRESSED) {
             begin_badge_dialog_close();
             if (m->actionArg == 0) {
                 play_sound(SOUND_MARIO_HERE_WE_GO, m->marioObj->header.gfx.cameraToObject);

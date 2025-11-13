@@ -7,9 +7,13 @@
 #include "behavior_data.h"
 #include "engine/math_util.h"
 
+// Copies behavior of parent object
+// Also converts to fake segmented address
+#define PREVIEW_BHV ((void *)VIRTUAL_TO_PHYSICAL(o->behavior))
+
 extern void super_cum_working(struct Object *obj, s32 animIndex);
 
-void df_follow_parent(s32 context) {
+void df_follow_parent(UNUSED s32 context) {
     Vec3f tmp;
     s16 ang[3];
     vec3_set(ang, 0, o->parentObj->oFaceAngleYaw, 0);
@@ -177,7 +181,7 @@ void df_ktq(s32 context) {
             if (mb64_trajectory_list[traj_id][i][0] == -1) {
                 // Spawn flagpole
                 struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
-                flagpole->oAnimations = koopa_flag_seg6_anims_06001028;
+                flagpole->oAnimations = (void *)koopa_flag_seg6_anims_06001028;
                 super_cum_working(flagpole, 0);
                 flagpole->oPosX = mb64_trajectory_list[traj_id][i-1][1];
                 flagpole->oPosY = mb64_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
@@ -214,7 +218,7 @@ void df_piranha_bubble(s32 context) {
 void df_piranha(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         super_cum_working(o, 8);
-        struct Object *bubble = spawn_object(o,MODEL_BUBBLE, VIRTUAL_TO_PHYSICAL(o->behavior));
+        struct Object *bubble = spawn_object(o,MODEL_BUBBLE, PREVIEW_BHV);
         bubble->oPreviewObjDisplayFunc = (void *)df_piranha_bubble;
         bubble->oParentRelativePosZ = 180.0f;
         bubble->oParentRelativePosX = 0.0f;
@@ -286,7 +290,7 @@ void df_podoboo(s32 context) {
 void df_mri(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oGraphYOffset = 100.0f;
-        struct Object * iris = spawn_object(o,MODEL_MAKER_MRI_2, VIRTUAL_TO_PHYSICAL(o->behavior));
+        struct Object * iris = spawn_object(o,MODEL_MAKER_MRI_2, PREVIEW_BHV);
 
         iris->oParentRelativePosZ = 100.0f;
         iris->oParentRelativePosX = 0.0f;
@@ -324,7 +328,7 @@ void df_fire_spinner(s32 context) {
             //}
 
             for (s32 i = 0; i < amt; i++) {
-                struct Object *flameObj = spawn_object(o, MODEL_RED_FLAME, VIRTUAL_TO_PHYSICAL(o->behavior));
+                struct Object *flameObj = spawn_object(o, MODEL_RED_FLAME, PREVIEW_BHV);
                 flameObj->oParentRelativePosX = xOffset;
                 flameObj->oParentRelativePosY = 100.0f;
                 flameObj->oParentRelativePosZ = zOffset;
@@ -360,7 +364,7 @@ void df_lakitu(s32 context) {
         o->oHomeY = o->oPosY;
         o->oVelY = -4.f;
         for (int i = 0; i < 5; i++) {
-            struct Object * cloudPart = spawn_object(o,MODEL_MIST,VIRTUAL_TO_PHYSICAL(o->behavior));
+            struct Object * cloudPart = spawn_object(o,MODEL_MIST,PREVIEW_BHV);
             obj_scale(cloudPart,2.0f);
             cloudPart->oOpacity = 255;
             obj_set_billboard(cloudPart);
@@ -393,7 +397,7 @@ void df_snufit(s32 context) {
     o->oFaceAngleYaw = (s16)(200 * gGlobalTimer) + o->oAngleVelYaw;
 }
 
-void df_flyguy(s32 context) {
+void df_flyguy(UNUSED s32 context) {
     o->oAngleVelYaw++;
     o->oPosY += coss(0x400 * o->oAngleVelYaw) * 1.5f;
 }
@@ -441,7 +445,7 @@ void df_coin_formation(s32 context) {
             }
 
             if (spawnCoin) {
-                struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, VIRTUAL_TO_PHYSICAL(o->behavior));
+                struct Object *newCoin =spawn_object_relative(index, pos[0], pos[1], pos[2], o, MODEL_YELLOW_COIN, PREVIEW_BHV);
                 obj_set_billboard(newCoin);
             }
             index ++;
@@ -468,7 +472,7 @@ void df_firebro(s32 context) {
     }
 }
 
-void df_flame(s32 context) {
+void df_flame(UNUSED s32 context) {
     if (gGlobalTimer%2==0) {
         o->oAnimState++;
         o->oAnimState%=9;
@@ -479,7 +483,7 @@ void df_pokey(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oPosY += 60.0f;
         for (u8 i=0; i<4; i++) {
-            struct Object *part = spawn_object(o,MODEL_MAKER_POKEY_BODY,VIRTUAL_TO_PHYSICAL(o->behavior));
+            struct Object *part = spawn_object(o,MODEL_MAKER_POKEY_BODY,PREVIEW_BHV);
             obj_set_billboard(part);
             obj_scale(part,3.0f);
             o->oPosY += 120.0f;
@@ -491,8 +495,8 @@ void df_wiggler(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         u8 size = 4; // Placeholder value until arthur implements object resizing
         for (u8 i = 1; i < size; i++) {
-            struct Object *part = spawn_object(o,MODEL_WIGGLER_BODY,VIRTUAL_TO_PHYSICAL(o->behavior));
-            part->oAnimations = wiggler_seg5_anims_0500C874;
+            struct Object *part = spawn_object(o,MODEL_WIGGLER_BODY,PREVIEW_BHV);
+            part->oAnimations = (void *)wiggler_seg5_anims_0500C874;
             super_cum_working(part, 0);
             part->oFaceAngleYaw = o->oFaceAngleYaw;
             obj_scale(part, 4.0f);

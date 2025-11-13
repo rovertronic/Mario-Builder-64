@@ -10,7 +10,6 @@
 
 #include <string.h>
 #include "game/object_list_processor.h"
-#include "actors/bigpainting2/header.h"
 #include "game/level_update.h"
 #include "game/main.h"
 #include "behavior_data.h"
@@ -852,32 +851,6 @@ void delete_tile_action(s8 pos[3]) {
             i--;
             play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
         }
-    }
-}
-
-
-void update_painting() {
-    s16 x;
-    s16 y;
-    u16 *u16_array = segmented_to_virtual(bigpainting2_bigger_painting_rgba16);
-    for (x = 0; x < 64; x++) {
-        for (y = 0; y < 64; y++) {
-            u16_array[(y*64)+x] = mb64_save.piktcher[y][x];
-        } 
-    }
-}
-
-void mb64_init_toolbox(void) {
-    bzero(&mb64_toolbox_params, sizeof(mb64_toolbox_params));
-    switch(mb64_lopt_game) {
-        case MB64_GAME_BTCM:
-            bcopy(&mb64_toolbox_btcm,&mb64_toolbox,sizeof(mb64_toolbox));
-            mb64_exclamation_box_contents = sExclamationBoxContents_btcm;
-            break;
-        case MB64_GAME_VANILLA:
-            bcopy(&mb64_toolbox_vanilla,&mb64_toolbox,sizeof(mb64_toolbox));
-            mb64_exclamation_box_contents = sExclamationBoxContents_vanilla;
-            break;
     }
 }
 
