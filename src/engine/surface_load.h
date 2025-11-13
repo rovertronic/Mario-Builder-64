@@ -56,6 +56,7 @@ void clear_static_surfaces(void);
 /**
  * Clears the static (level) surface partitions for new use.
  */
+void clear_spatial_partition(SpatialPartitionCell *cells);
 #define clear_static_surfaces() clear_spatial_partition(&gStaticSurfacePartition[0][0])
 
 #endif // SURFACE_LOAD_H

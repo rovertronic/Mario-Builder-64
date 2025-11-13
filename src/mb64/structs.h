@@ -5,7 +5,7 @@ struct mb64_terrain_poly {
     u8 faceDir;
     u8 faceshape;
     u8 growthType;
-    s8 (*altuvs)[4][2];
+    s8 (*altuvs)[][2];
 };
 
 struct mb64_terrain {

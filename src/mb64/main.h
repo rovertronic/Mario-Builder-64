@@ -95,11 +95,12 @@ s32 mb64_main_menu(void);
 extern Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
 void play_mb64_extra_music(u8 index);
 void stop_mb64_extra_music(u8 index);
-void animate_list_reset(void);
+void play_place_sound(u32 soundBits);
 void freecam_camera_init(void);
 void update_custom_theme(void);
 void reload_theme(void);
 void reload_boundary_and_gfx(void);
+void generate_object_preview(void);
 
 extern u8 mb64_level_action;
 extern u8 mb64_mode;
@@ -122,12 +123,11 @@ extern u32 mb64_play_speedrun_timer;
 
 extern u8 mb64_grid_size;
 extern u8 mb64_grid_min;
+extern s32 mb64_min_coord;
+extern s32 mb64_max_coord;
 
 extern struct mb64_level_save_header mb64_save;
 extern TCHAR mb64_file_name[MAX_FILE_NAME_SIZE];
-
-extern void* mb64_theme_segments[][4];
-extern LevelScript * mb64_theme_model_scripts[];
 
 extern s8 cullOffsetLUT[6][3];
 

@@ -7,6 +7,7 @@
 #include "game/object_list_processor.h"
 #include "actors/maker/header.h"
 #include "engine/surface_load.h"
+#include "game/rendering_graph_node.h"
 
 // Takes a bottom and top in number of blocks
 void render_boundary(struct mb64_boundary_quad *quadList, u32 count, s16 yBottom, s16 yTop, u32 fade) {

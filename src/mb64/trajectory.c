@@ -1,6 +1,7 @@
 #include "main.h"
 #include "trajectory.h"
 #include "gfx.h"
+#include "menu.h"
 
 #include <PR/gbi.h>
 #include "game/game_init.h"
@@ -63,11 +64,12 @@ void remove_trajectory(u32 index) {
     mb64_trajectories_used--;
 }
 
+u32 trajectory_get_target_angle(s16 *yaw, s16 prevWaypoint[4], s16 targetWaypoint[4]);
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
     if ((mb64_trajectory_list[traj_id][0][0] == -1)||(mb64_trajectory_list[traj_id][1][0] == -1)) return;
 
     s16 angle_to_trajectory;
-    if (!trajectory_get_target_angle(&angle_to_trajectory, &mb64_trajectory_list[traj_id][0], &mb64_trajectory_list[traj_id][1])) {
+    if (!trajectory_get_target_angle(&angle_to_trajectory, mb64_trajectory_list[traj_id][0], mb64_trajectory_list[traj_id][1])) {
         return;
     }
 

@@ -121,13 +121,23 @@ extern u8 mb64_curr_mat_has_topside;
 extern u8 mb64_curr_poly_vert_count;
 
 // also used for collision
+u32 get_faceshape(s8 pos[3], u32 dir);
 void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot);
 void check_bar_connections(s8 pos[3], u8 connections[5]);
+void render_bars_side(s8 pos[3], u8 connections[5]);
+void render_bars_top(s8 pos[3], u8 connections[5]);
 u32 is_water_fullblock(s8 pos[3]);
+void process_tile(s8 pos[3], struct mb64_terrain *terrain, u32 rot);
 
 // used for boundaries
 void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u32 fade);
+void set_render_mode(u32 tileType, u32 disableZ);
+u32 do_process(u8 *targetMatType, u32 processTileRenderMode);
+Gfx *get_sidetex(s32 matid);
 
+void draw_dotted_line(s16 pos1[3], s16 pos2[3]);
+
+void display_cached_tris(void);
 void generate_terrain_gfx(void);
 Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
 void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index);

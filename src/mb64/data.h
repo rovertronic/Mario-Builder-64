@@ -436,7 +436,7 @@ enum {
 
 extern f32 mb64_camera_zoom_table[][2];
 extern void *mb64_theme_segments[][4];
-extern LevelScript *mb64_theme_model_scripts[];
+extern const LevelScript *mb64_theme_model_scripts[];
 
 extern void *slope_decal_below_surfs[];
 extern struct mb64_terrain_poly mb64_terrain_fullblock_quads[];

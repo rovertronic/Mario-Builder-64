@@ -3,9 +3,7 @@
 extern TerrainData mb64_curr_coltype;
 extern u16 mb64_build_collision_type;
 
-extern s32 mb64_min_coord;
-extern s32 mb64_max_coord;
-
+u32 coords_in_range(s8 pos[3]);
 void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], u32 isStatic);
 void mb64_create_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot);
 

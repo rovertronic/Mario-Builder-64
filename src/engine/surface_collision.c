@@ -10,6 +10,8 @@
 #include "surface_load.h"
 #include "game/puppyprint.h"
 
+#include "mb64/collision.h"
+
 /**************************************************
  *                      WALLS                     *
  **************************************************/

@@ -3,12 +3,14 @@
 #include "collision.h"
 #include "boundary.h"
 #include "trajectory.h"
+#include "menu.h"
 
 #include <PR/gbi.h>
 #include "actors/maker/header.h"
 #include "game/emutest.h"
 #include "game/rendering_graph_node.h"
 #include "engine/math_util.h"
+#include "game/ingame_menu.h"
 
 u32 mb64_gfx_total = 0;
 u32 mb64_vtx_total = 0;
@@ -44,7 +46,7 @@ enum BlockSideClassifications {
     CLASS_CUTOUT, // = CUTOUT
 };
 
-u32 get_side_class(u32 mat, u32 dir) {
+u32 get_side_class(s32 mat, u32 dir) {
     if (mat == -1) return CLASS_CUTOUT;
     u32 mattype = TOPMAT(mat).type;
     if (dir != MB64_DIRECTION_UP) {
@@ -59,6 +61,37 @@ u32 get_side_class(u32 mat, u32 dir) {
     return CLASS_TRANSPARENT;
 }
 
+u32 get_faceshape(s8 pos[3], u32 dir) {
+    struct mb64_terrain *terrain;
+    if (mb64_render_culling_off) return MB64_FACESHAPE_EMPTY;
+
+    struct mb64_grid_obj *tile = get_grid_tile(pos);
+    s8 tileType = tile->type;
+    if (tileType == TILE_TYPE_EMPTY) return MB64_FACESHAPE_EMPTY;
+
+    if (tileType == TILE_TYPE_POLE) terrain = &mb64_terrain_pole;
+    else terrain = mb64_terrain_info_list[tileType].terrain;
+
+    if (!terrain) return MB64_FACESHAPE_EMPTY;
+
+    u8 rot = tile->rot;
+    dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
+
+    for (u32 i = 0; i < terrain->numTris; i++) {
+        struct mb64_terrain_poly *tri = &terrain->tris[i];
+        if (tri->faceDir == dir) {
+            return tri->faceshape;
+        }
+    }
+    for (u32 i = 0; i < terrain->numQuads; i++) {
+        struct mb64_terrain_poly *quad = &terrain->quads[i];
+        if (quad->faceDir == dir) {
+            return quad->faceshape;
+        }
+    }
+    return MB64_FACESHAPE_EMPTY;
+}
+
 ALWAYS_INLINE s32 get_mat(s8 pos[3]) {
     struct mb64_grid_obj *tile = get_grid_tile(pos);
     if (tile->type >= TILE_TYPE_CULL || tile->type == TILE_TYPE_EMPTY) return -1;
@@ -70,7 +103,7 @@ ALWAYS_INLINE s32 get_mat(s8 pos[3]) {
 // Use get_mat for curMat (-1 = non-material tile)
 // If this returns FALSE then the material can be culled.
 s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction) {
-    s32 curMatClass, otherMatClass;
+    u32 curMatClass, otherMatClass;
     if (curMat == otherMat) return FALSE;
     curMatClass = get_side_class(curMat, direction);
     otherMatClass = get_side_class(otherMat, direction^1);
@@ -451,7 +484,7 @@ void render_grass_slope_extra_decal(s8 pos[3], u32 direction, u32 grassType) {
 
     struct mb64_terrain_poly *poly = slope_decal_below_surfs[index];
     grass_slope_extra_decal_uvs(newUVs, poly->vtx, side, scalefactor, mb64_curr_poly_vert_count);
-    poly->altuvs = newUVs;
+    poly->altuvs = &newUVs;
     render_poly(poly, newpos, targetRot);
     mb64_curr_poly_vert_count = oldVerts;
 
@@ -499,7 +532,7 @@ u32 should_render_grass_side(s8 pos[3], u32 direction, u32 faceshape, u32 rot, u
         direction = (faceshape - MB64_FACESHAPE_EMPTY) + 1;
     }
 
-    s32 otherFaceshape;
+    u32 otherFaceshape;
     switch (grassType) {
         case MB64_GROWTH_NORMAL_SIDE:
         case MB64_GROWTH_HALF_SIDE:
@@ -961,9 +994,7 @@ void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u
 }
 
 void generate_terrain_gfx(void) {
-    u8 tileType, rot;
     s8 pos[3];
-
     mb64_curr_gfx = mb64_terrain_gfx;
     mb64_curr_vtx = mb64_terrain_vtx;
     mb64_gfx_index = 0;
@@ -989,12 +1020,6 @@ void generate_terrain_gfx(void) {
             mb64_curr_boundary |= MB64_BOUNDARY_OUTER_FLOOR;
         }
     }
-    mb64_min_coord = (mb64_grid_min - 32) * TILE_SIZE;
-    mb64_max_coord = (mb64_grid_min + mb64_grid_size - 32) * TILE_SIZE;
-    if (!(mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR)) {
-        mb64_min_coord -= 8*TILE_SIZE;
-        mb64_max_coord += 8*TILE_SIZE;
-    }
 
     process_tiles(PROCESS_TILE_VPLEX);
     mb64_curr_poly_vert_count = 4;
@@ -1016,7 +1041,6 @@ void generate_terrain_gfx(void) {
     set_render_mode( MAT_CUTOUT, FALSE);
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], BARS_TEX());
     for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
         vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
         check_bar_connections(pos, connections);
         render_bars_side(pos, connections);
@@ -1025,7 +1049,6 @@ void generate_terrain_gfx(void) {
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], BARS_TOPTEX());
     gSPClearGeometryMode(&mb64_curr_gfx[mb64_gfx_index++], G_CULL_BACK);
     for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
         vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
         check_bar_connections(pos, connections);
         render_bars_top(pos, connections);
@@ -1040,7 +1063,6 @@ void generate_terrain_gfx(void) {
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], FENCE_TEX());
     mb64_growth_render_type = 3; // fence
     for (u32 i = startIndex; i < endIndex; i++) {
-        s8 pos[3];
         vec3_set(pos, mb64_tile_data[i].x, mb64_tile_data[i].y, mb64_tile_data[i].z);
         process_tile(pos, &mb64_terrain_fence, mb64_tile_data[i].rot);
     }
@@ -1121,8 +1143,6 @@ void generate_terrain_gfx(void) {
 
 Gfx preview_gfx[50];
 Vtx preview_vtx[100];
-
-extern void geo_append_display_list(void *displayList, s32 layer);
 
 void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64_terrain *terrain, u32 rot, u32 processType, u32 disableZ) {
     mb64_curr_mat_has_topside = (topmatid != matid);

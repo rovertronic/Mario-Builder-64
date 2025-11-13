@@ -94,6 +94,7 @@ struct RenderModeContainer {
 
 #define RENDER_PHASE_FIRST 0
 
+void geo_append_display_list(void *displayList, s32 layer);
 void geo_process_node_and_siblings(struct GraphNode *firstNode);
 void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor);
 void Get_Screen_Coords();

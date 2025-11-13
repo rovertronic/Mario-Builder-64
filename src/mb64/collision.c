@@ -11,12 +11,18 @@
 TerrainData mb64_curr_coltype = SURFACE_DEFAULT;
 u16 mb64_build_collision_type = 0; // 0 = none, 1 = floor, 2 = ceil, 3 = wall
 
-s32 mb64_min_coord;
-s32 mb64_max_coord;
+u32 coords_in_range(s8 pos[3]) {
+    if (pos[0] < mb64_grid_min || pos[0] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
+    if (pos[1] < 0 || pos[1] > 63) return FALSE;
+    if (pos[2] < mb64_grid_min || pos[2] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
+    return TRUE;
+}
 
 // Create new static surface
-extern struct Surface *alloc_surface(u32 dynamic);
-extern void add_surface(struct Surface *surface, s32 dynamic);
+struct Surface *alloc_surface(u32 dynamic);
+void add_surface(struct Surface *surface, s32 dynamic);
+void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface);
+
 void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], u32 isStatic) { 
     struct Surface *surface = alloc_surface(!isStatic);
 
@@ -197,6 +203,7 @@ void block_wall_collision(f32 x, f32 y, f32 z, f32 r) {
     end_block_collision();
 }
 
+u32 interact_pole(struct MarioState *m, UNUSED u32 interactType);
 int check_pole(struct MarioState *m, s8 pos[3]) {
     if (get_grid_tile(pos)->type == TILE_TYPE_POLE) {
         f32 poleX = GRID_TO_POS(pos[0]);

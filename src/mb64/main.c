@@ -149,13 +149,8 @@ void reset_play_state(void) {
 
 u8 mb64_grid_min = 0;
 u8 mb64_grid_size = 64;
-
-u32 coords_in_range(s8 pos[3]) {
-    if (pos[0] < mb64_grid_min || pos[0] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
-    if (pos[1] < 0 || pos[1] > 63) return FALSE;
-    if (pos[2] < mb64_grid_min || pos[2] > mb64_grid_min + mb64_grid_size - 1) return FALSE;
-    return TRUE;
-}
+s32 mb64_min_coord;
+s32 mb64_max_coord;
 
 s32 tile_sanity_check(void) {
     if (mb64_tile_count >= MB64_TILE_POOL_SIZE) {
@@ -266,37 +261,6 @@ struct Object * get_spawn_preview_object() {
     mb64_grid_data[pos[0]][pos[1]][pos[2]].type = TILE_TYPE_EMPTY; \
     mb64_grid_data[pos[0]][pos[1]][pos[2]].mat = 0;         \
     mb64_grid_data[pos[0]][pos[1]][pos[2]].waterlogged = 0; \
-}
-
-u32 get_faceshape(s8 pos[3], u32 dir) {
-    struct mb64_terrain *terrain;
-    if (mb64_render_culling_off) return MB64_FACESHAPE_EMPTY;
-
-    struct mb64_grid_obj *tile = get_grid_tile(pos);
-    s8 tileType = tile->type;
-    if (tileType == TILE_TYPE_EMPTY) return MB64_FACESHAPE_EMPTY;
-
-    if (tileType == TILE_TYPE_POLE) terrain = &mb64_terrain_pole;
-    else terrain = mb64_terrain_info_list[tileType].terrain;
-
-    if (!terrain) return MB64_FACESHAPE_EMPTY;
-
-    u8 rot = tile->rot;
-    dir = rotate_direction(dir,((4-rot) % 4)) ^ 1;
-
-    for (u32 i = 0; i < terrain->numTris; i++) {
-        struct mb64_terrain_poly *tri = &terrain->tris[i];
-        if (tri->faceDir == dir) {
-            return tri->faceshape;
-        }
-    }
-    for (u32 i = 0; i < terrain->numQuads; i++) {
-        struct mb64_terrain_poly *quad = &terrain->quads[i];
-        if (quad->faceDir == dir) {
-            return quad->faceshape;
-        }
-    }
-    return MB64_FACESHAPE_EMPTY;
 }
 
 u32 get_tile_occupy_flags(u32 type) {
@@ -1229,6 +1193,13 @@ void load_level(void) {
 
     init_trajectories();
     mb64_init_toolbox();
+
+    mb64_min_coord = (mb64_grid_min - 32) * TILE_SIZE;
+    mb64_max_coord = (mb64_grid_min + mb64_grid_size - 32) * TILE_SIZE;
+    if (!(mb64_curr_boundary & MB64_BOUNDARY_OUTER_FLOOR)) {
+        mb64_min_coord -= 8*TILE_SIZE;
+        mb64_max_coord += 8*TILE_SIZE;
+    }
 
     if (!fresh) {
         update_painting();
