@@ -1356,6 +1356,8 @@ void sb_loop(void) {
                 generate_trajectory_gfx();
             }
 
+            sb_edit_trajectory();
+
             update_boundary_wall();
             break;
         case MB64_MAKE_SCREENSHOT:
