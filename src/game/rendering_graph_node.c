@@ -615,7 +615,7 @@ void Get_Screen_Coords(void) {
         f32 float2;
 
         // Transform Mario's coordinates into view frustrum
-        linear_mtxf_mul_vec3(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
+        linear_mtxf_mul_vec3_and_translate(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
 
         // Perspective divide
         if (marioPos3s[2] != 0) {

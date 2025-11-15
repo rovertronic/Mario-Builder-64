@@ -925,7 +925,7 @@ void render_hud(void) {
             //Use this later for the star radar badge
             if (gMarioState->StarRadarExist == TRUE) {
                 gMarioState->StarRadarExist = FALSE;
-                print_text(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"^");
+                print_text(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"#");
             }
 
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_STAR_COUNT) {
