@@ -124,7 +124,7 @@
 
 /**
  * May break viewport widescreen hacks.
- * When this is disabled, the culling will only be skipped according to the NO_CULLING_EMULATOR_BLACKLIST.
+ * When this is disabled, the culling will only be skipped according to the NO_CULLING_EMULATOR_WHITELIST.
  */
 // #define CULLING_ON_EMULATOR
 
@@ -141,9 +141,10 @@
 #define DEFAULT_CULLING_RADIUS 300
 
 /**
- * Eases the textured screen transitions to make them look smoother.
+ * Eases the textured screen transitions to make them look smoother. 
+ * Extends the full radius for mario, bowser and the star transitions.
  */
-// #define EASE_IN_OUT_TRANSITIONS
+// #define POLISHED_TRANSITIONS
 
 /**
  * Uses frustratio of 2 instead of 1.

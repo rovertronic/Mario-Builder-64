@@ -12,16 +12,16 @@
 // SM64 (US/JP/EU/SH) Segment 02
 #ifdef PUPPYPRINT
 ALIGNED8 static const Texture small_font_default[] = {
-#include "textures/segment2/custom_text.i4.inc.c"
+#include "textures/segment2/custom_text.i4.preswap.inc.c"
 };
 ALIGNED8 static const Texture small_font_outline[] = {
-#include "textures/segment2/custom_text2.ia4.inc.c"
+#include "textures/segment2/custom_text2.ia4.preswap.inc.c"
 };
 ALIGNED8 static const Texture small_font_plain[] = {
-#include "textures/segment2/custom_text3.i4.inc.c"
+#include "textures/segment2/custom_text3.i4.preswap.inc.c"
 };
 ALIGNED8 static const Texture small_font_vanilla[] = {
-#include "textures/segment2/custom_text4.i4.inc.c"
+#include "textures/segment2/custom_text4.i4.preswap.inc.c"
 };
 
 const u8 small_font_kerning_default[] = {
@@ -30,7 +30,7 @@ const u8 small_font_kerning_default[] = {
     /*A*/ 7, /*B*/ 7, /*C*/ 7, /*D*/ 7, /*E*/ 6, /*F*/ 5, /*G*/ 8, /*H*/ 6, /*I*/ 6, /*J*/ 5, /*K*/ 7, /*L*/ 6, /*M*/ 7, /*N*/ 7, /*O*/ 7, /*P*/ 6, 
     /*Q*/ 8, /*R*/ 6, /*S*/ 7, /*T*/ 7, /*U*/ 7, /*V*/ 7, /*W*/ 8, /*X*/ 7, /*Y*/ 7, /*Z*/ 7, /*[*/ 0, /*\\*/ 0, /*]*/ 0, /*^*/ 8, /*_*/ 0, /*`*/ 0, 
     /*a*/ 7, /*b*/ 7, /*c*/ 6, /*d*/ 7, /*e*/ 7, /*f*/ 7, /*g*/ 7, /*h*/ 7, /*i*/ 3, /*j*/ 5, /*k*/ 8, /*l*/ 4, /*m*/ 7, /*n*/ 7, /*o*/ 7, /*p*/ 7, 
-    /*q*/ 7, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 7, /*w*/ 8, /*x*/ 6, /*y*/ 8, /*z*/ 7, /*~*/ 8, 
+    /*q*/ 7, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 7, /*w*/ 8, /*x*/ 6, /*y*/ 8, /*z*/ 7, /*{*/ 0, /*|*/ 0, /*}*/ 0, /*~*/ 8, 
 };
 
 const u16 small_font_offsets_default[] = {
@@ -49,7 +49,7 @@ static const u8 small_font_kerning_outline[] = {
     /*A*/ 6, /*B*/ 6, /*C*/ 6, /*D*/ 6, /*E*/ 6, /*F*/ 6, /*G*/ 6, /*H*/ 6, /*I*/ 5, /*J*/ 7, /*K*/ 6, /*L*/ 6, /*M*/ 6, /*N*/ 6, /*O*/ 6, /*P*/ 6, 
     /*Q*/ 6, /*R*/ 6, /*S*/ 6, /*T*/ 6, /*U*/ 6, /*V*/ 6, /*W*/ 6, /*X*/ 6, /*Y*/ 6, /*Z*/ 6, /*[*/ 0, /*\\*/ 0, /*]*/ 0, /*^*/ 7, /*_*/ 0, /*`*/ 0,  
     /*a*/ 5, /*b*/ 5, /*c*/ 5, /*d*/ 5, /*e*/ 5, /*f*/ 5, /*g*/ 5, /*h*/ 5, /*i*/ 2, /*j*/ 6, /*k*/ 4, /*l*/ 2, /*m*/ 5, /*n*/ 5, /*o*/ 5, /*p*/ 5, 
-    /*q*/ 5, /*r*/ 5, /*s*/ 5, /*t*/ 5, /*u*/ 5, /*v*/ 5, /*w*/ 5, /*x*/ 5, /*y*/ 5, /*z*/ 5, /*~*/ 6,   
+    /*q*/ 5, /*r*/ 5, /*s*/ 5, /*t*/ 5, /*u*/ 5, /*v*/ 5, /*w*/ 5, /*x*/ 5, /*y*/ 5, /*z*/ 5, /*{*/ 0, /*|*/ 0, /*}*/ 0, /*~*/ 6,   
 };
 
 const u16 small_font_offsets_outline[] = {
@@ -68,7 +68,7 @@ static const u8 small_font_kerning_plain[] = {
     /*A*/ 6, /*B*/ 6, /*C*/ 6, /*D*/ 6, /*E*/ 6, /*F*/ 6, /*G*/ 6, /*H*/ 6, /*I*/ 4, /*J*/ 6, /*K*/ 6, /*L*/ 6, /*M*/ 7, /*N*/ 7, /*O*/ 6, /*P*/ 6, 
     /*Q*/ 6, /*R*/ 6, /*S*/ 6, /*T*/ 6, /*U*/ 6, /*V*/ 6, /*W*/ 7, /*X*/ 6, /*Y*/ 6, /*Z*/ 6, /*[*/ 0, /*\\*/ 0, /*]*/ 0, /*^*/ 7, /*_*/ 0, /*`*/ 0,
     /*a*/ 6, /*b*/ 6, /*c*/ 6, /*d*/ 6, /*e*/ 6, /*f*/ 6, /*g*/ 6, /*h*/ 6, /*i*/ 3, /*j*/ 4, /*k*/ 6, /*l*/ 5, /*m*/ 7, /*n*/ 6, /*o*/ 6, /*p*/ 6, 
-    /*q*/ 6, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 6, /*w*/ 7, /*x*/ 6, /*y*/ 6, /*z*/ 6, /*~*/ 7,   
+    /*q*/ 6, /*r*/ 6, /*s*/ 6, /*t*/ 6, /*u*/ 6, /*v*/ 6, /*w*/ 7, /*x*/ 6, /*y*/ 6, /*z*/ 6, /*{*/ 0, /*|*/ 0, /*}*/ 0, /*~*/ 7,   
 };
 
 const u16 small_font_offsets_plain[] = {
@@ -87,7 +87,7 @@ static const u8 small_font_kerning_vanilla[] = {
     /*A*/ 5, /*B*/ 5, /*C*/ 5, /*D*/ 5, /*E*/ 5, /*F*/ 5, /*G*/ 5, /*H*/ 5, /*I*/ 3, /*J*/ 5, /*K*/ 5, /*L*/ 5, /*M*/ 7, /*N*/ 7, /*O*/ 6, /*P*/ 5, 
     /*Q*/ 6, /*R*/ 5, /*S*/ 5, /*T*/ 5, /*U*/ 5, /*V*/ 5, /*W*/ 7, /*X*/ 6, /*Y*/ 5, /*Z*/ 5, /*[*/ 0, /*\\*/ 0, /*]*/ 0, /*^*/ 7, /*_*/ 0, /*`*/ 0, 
     /*a*/ 5, /*b*/ 4, /*c*/ 4, /*d*/ 4, /*e*/ 4, /*f*/ 5, /*g*/ 5, /*h*/ 4, /*i*/ 3, /*j*/ 4, /*k*/ 3, /*l*/ 2, /*m*/ 6, /*n*/ 4, /*o*/ 4, /*p*/ 4, 
-    /*q*/ 5, /*r*/ 4, /*s*/ 4, /*t*/ 4, /*u*/ 4, /*v*/ 4, /*w*/ 7, /*x*/ 5, /*y*/ 4, /*z*/ 5, /*~*/ 6,   
+    /*q*/ 5, /*r*/ 4, /*s*/ 4, /*t*/ 4, /*u*/ 4, /*v*/ 4, /*w*/ 7, /*x*/ 5, /*y*/ 4, /*z*/ 5, /*{*/ 0, /*|*/ 0, /*}*/ 0, /*~*/ 6,   
 };
 
 const u16 small_font_offsets_vanilla[] = {
@@ -2276,9 +2276,9 @@ const Gfx dl_ia_text_begin[] = {
 const Gfx dl_ia_text_tex_settings[] = {
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD),
     gsDPLoadSync(),
-    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, ((((16 * 8) + G_IM_SIZ_4b_INCR) >> G_IM_SIZ_4b_SHIFT) - 1), CALC_DXT(16, G_IM_SIZ_4b_BYTES)),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, ((16 * 8 + G_IM_SIZ_4b_INCR) >> G_IM_SIZ_4b_SHIFT) - 1, CALC_DXT(16, G_IM_SIZ_4b_BYTES)),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_4b, 1, 0, G_TX_RENDERTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 3, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD),
-    gsDPSetTileSize(0, 0, 0, ((16 - 1) << G_TEXTURE_IMAGE_FRAC), ((8 - 1) << G_TEXTURE_IMAGE_FRAC)),
+    gsDPSetTileSize(0, 0, 0, (16 - 1) << G_TEXTURE_IMAGE_FRAC, (8 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsSPVertex(vertex_ia8_char, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0, 0,  2,  3, 0x0),
     gsSPEndDisplayList(),
@@ -2354,6 +2354,7 @@ static const Vtx vertex_billboard_num[] = {
 // 0x0200EFF0 - 0x0200F038
 const Gfx dl_billboard_num_begin[] = {
     gsDPPipeSync(),
+    gsDPSetTextureFilter(G_TF_POINT),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTextureFilter(G_TF_POINT),

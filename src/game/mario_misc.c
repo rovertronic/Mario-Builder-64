@@ -509,7 +509,7 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
             gDPSetAlphaCompare(gfx++, G_AC_NONE);
         }
     }
-    alphaBias = min(alpha, 255);
+    alphaBias = MIN(alpha, 255);
     gDPSetEnvColor(gfx++, 255, 255, 255, alphaBias);
     gSPEndDisplayList(gfx);
     return gfxHead;
@@ -647,9 +647,9 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx)
                 linear_mtxf_mul_vec3f(crab->transform, crabNewDisplacement, crabDisplacement); // rotate it with mario's head
                 vec3f_add(crab->transform[3], crabNewDisplacement); // add position
 
-                vec3_mul_val(crab->transform[0], 3.5f);
-                vec3_mul_val(crab->transform[1], 3.5f);
-                vec3_mul_val(crab->transform[2], 3.5f);
+                vec3_scale(crab->transform[0], 3.5f);
+                vec3_scale(crab->transform[1], 3.5f);
+                vec3_scale(crab->transform[2], 3.5f);
 
                 crab->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
             }

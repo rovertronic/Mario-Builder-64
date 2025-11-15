@@ -219,76 +219,10 @@ static const Gfx dl_silhouette_end[] = {
 struct RenderPhase {
     u8 startLayer;
     u8 endLayer;
-#ifdef OBJECTS_REJ
-    u8 ucode;
-#endif
 };
 
 static struct RenderPhase sRenderPhases[] = {
-#ifdef OBJECTS_REJ
- #if SILHOUETTE
-    // Silhouette, .rej
-    [RENDER_PHASE_ZEX_BEFORE_SILHOUETTE]   = {
-        .startLayer = LAYER_FIRST,
-        .endLayer   = LAYER_LAST_BEFORE_SILHOUETTE,
-        .ucode      = GRAPH_NODE_UCODE_DEFAULT
-    },
-    [RENDER_PHASE_REJ_ZB]                  = {
-        .startLayer = LAYER_ZB_FIRST,
-        .endLayer   = LAYER_LAST_BEFORE_SILHOUETTE,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
-    [RENDER_PHASE_REJ_SILHOUETTE]          = {
-        .startLayer = LAYER_SILHOUETTE_FIRST,
-        .endLayer   = LAYER_SILHOUETTE_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
-    [RENDER_PHASE_REJ_NON_SILHOUETTE]      = {
-        .startLayer = LAYER_SILHOUETTE_FIRST,
-        .endLayer   = LAYER_SILHOUETTE_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
-    [RENDER_PHASE_REJ_OCCLUDE_SILHOUETTE]  = {
-        .startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST,
-        .endLayer   = LAYER_OCCLUDE_SILHOUETTE_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
-    [RENDER_PHASE_ZEX_AFTER_SILHOUETTE]    = {
-        .startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST,
-        .endLayer   = LAYER_LAST,
-        .ucode      = GRAPH_NODE_UCODE_DEFAULT
-    },
-    [RENDER_PHASE_REJ_NON_ZB]              = {
-        .startLayer = LAYER_NON_ZB_FIRST,
-        .endLayer   = LAYER_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
- #else
-    // No silhouette, .rej
-    [RENDER_PHASE_ZEX_BG]                  = {
-        .startLayer = LAYER_FIRST,
-        .endLayer   = LAYER_FIRST,
-        .ucode      = GRAPH_NODE_UCODE_DEFAULT
-    },
-    [RENDER_PHASE_REJ_ZB]                  = {
-        .startLayer = LAYER_ZB_FIRST,
-        .endLayer   = LAYER_ZB_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
-    [RENDER_PHASE_ZEX_ALL]                 = {
-        .startLayer = LAYER_ZB_FIRST,
-        .endLayer   = LAYER_LAST,
-        .ucode      = GRAPH_NODE_UCODE_DEFAULT
-    },
-    [RENDER_PHASE_REJ_NON_ZB]              = {
-        .startLayer = LAYER_NON_ZB_FIRST,
-        .endLayer   = LAYER_LAST,
-        .ucode      = GRAPH_NODE_UCODE_REJ
-    },
- #endif
-#else
- #if SILHOUETTE
-    // Silhouette, no .rej
+#if SILHOUETTE
     [RENDER_PHASE_ZEX_BEFORE_SILHOUETTE]   = {
         .startLayer = LAYER_FIRST,
         .endLayer   = LAYER_LAST_BEFORE_SILHOUETTE,
@@ -310,48 +244,18 @@ static struct RenderPhase sRenderPhases[] = {
     },
 
     [RENDER_PHASE_ZEX_AFTER_SILHOUETTE]    = {
-        .startLayer = LAYER_OCCLUDE_SILHOUETTE_FIRST,
+        .startLayer = LAYER_NON_ZB_FIRST,
         .endLayer   = LAYER_LAST,
     },
-
- #else
-    // No silhouette, no .rej
+#else
     [RENDER_PHASE_ZEX_ALL]                 = {
         .startLayer = LAYER_FIRST,
         .endLayer   = LAYER_LAST,
     },
-
- #endif
 #endif
 };
 
 extern const Gfx init_rsp[];
-
-#ifdef OBJECTS_REJ
-void switch_ucode(s32 ucode) {
-    // Set the ucode and RCP settings
-    switch (ucode) {
-        default: // GRAPH_NODE_UCODE_DEFAULT
-        case GRAPH_NODE_UCODE_DEFAULT:
-            gSPLoadUcodeL(gDisplayListHead++, gspF3DZEX2_NoN_PosLight_fifo); // F3DZEX2_PosLight
-            // Reload the necessary RSP settings
-            gSPDisplayList(gDisplayListHead++, init_rsp);
-            break;
-        case GRAPH_NODE_UCODE_REJ:
-            // Use .rej Microcode, skip sub-pixel processing on console
-            if (gEmulator & EMU_CONSOLE) {
-                gSPLoadUcodeL(gDisplayListHead++, gspF3DLX2_Rej_fifo); // F3DLX2_Rej
-            } else {
-                gSPLoadUcodeL(gDisplayListHead++, gspF3DEX2_Rej_fifo); // F3DEX2_Rej
-            }
-            // Reload the necessary RSP settings
-            gSPDisplayList(gDisplayListHead++, init_rsp);
-            // Set the clip ratio (see init_rsp)
-            gSPClipRatio(gDisplayListHead++, FRUSTRATIO_2);
-            break;
-    }
-}
-#endif
 
 #define UPPER_FIXED(x) ((int)((unsigned int)((x) * 0x10000) >> 16))
 #define LOWER_FIXED(x) ((int)((unsigned int)((x) * 0x10000) & 0xFFFF))
@@ -381,59 +285,56 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     s32 currLayer     = LAYER_FIRST;
     s32 startLayer    = LAYER_FIRST;
     s32 endLayer      = LAYER_LAST;
-    s32 ucode         = GRAPH_NODE_UCODE_DEFAULT;
     s32 phaseIndex    = RENDER_PHASE_FIRST;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
+    s32 finalPhase    = enableZBuffer ? RENDER_PHASE_END : 1;
     struct RenderModeContainer *mode1List = &renderModeTable_1Cycle[enableZBuffer];
     struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
+    Gfx *tempGfxHead = gDisplayListHead;
 
     // Loop through the render phases
-    for (phaseIndex = RENDER_PHASE_FIRST; phaseIndex < RENDER_PHASE_END; phaseIndex++) {
-        // Get the render phase information.
-        renderPhase = &sRenderPhases[phaseIndex];
-        startLayer  = renderPhase->startLayer;
-        endLayer    = renderPhase->endLayer;
-#ifdef OBJECTS_REJ
-        ucode       = renderPhase->ucode;
-        // Set the ucode for the current render phase
-        switch_ucode(ucode);
-        gSPLookAt(gDisplayListHead++, gCurLookAt);
-#endif
+    for (phaseIndex = RENDER_PHASE_FIRST; phaseIndex < finalPhase; phaseIndex++) {
         if (enableZBuffer) {
+            // Get the render phase information.
+            renderPhase = &sRenderPhases[phaseIndex];
+            startLayer  = renderPhase->startLayer;
+            endLayer    = renderPhase->endLayer;
             // Enable z buffer.
-            gDPPipeSync(gDisplayListHead++);
-            gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+            gDPPipeSync(tempGfxHead++);
+            gSPSetGeometryMode(tempGfxHead++, G_ZBUFFER);
+        } else {
+            startLayer = LAYER_FORCE;
+            endLayer = LAYER_TRANSPARENT;
         }
         // Iterate through the layers on the current render phase.
         for (currLayer = startLayer; currLayer <= endLayer; currLayer++) {
             // Set 'currList' to the first DisplayListNode on the current layer.
-            currList = node->listHeads[ucode][currLayer];
-
+            currList = node->listHeads[currLayer];
             // Set the render mode for the current layer.
-            gDPSetRenderMode(gDisplayListHead++, mode1List->modes[currLayer],
+            gDPSetRenderMode(tempGfxHead++, mode1List->modes[currLayer],
                                                  mode2List->modes[currLayer]);
 
 
             if (currLayer == LAYER_CIRCLE_SHADOW || currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT) {
-                gSPDisplayList(gDisplayListHead++, dl_shadow_circle);
+                gSPDisplayList(tempGfxHead++, dl_shadow_circle);
             }
 
 
             //mr beast: batching coins breaks the game!
             if (currLayer == LAYER_COIN) {
-                gDPLoadSync(gDisplayListHead++);
+                gDPLoadSync(tempGfxHead++);
                 switch((gGlobalTimer/2)%4) {
                     case 0:
-                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_front);
+                        gDPSetTextureImage(tempGfxHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_front);
                     break;
                     case 1:
-                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_left);
+                        gDPSetTextureImage(tempGfxHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_left);
                     break;
                     case 2:
-                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_side);
+                        gDPSetTextureImage(tempGfxHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_side);
                     break;
                     case 3:
-                        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_right);
+                        gDPSetTextureImage(tempGfxHead++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, coin_seg3_texture_tilt_right);
                     break;
                 }
             }
@@ -442,20 +343,20 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
             // Iterate through all the displaylists on the current layer.
             while (currList != NULL) {
                 // Add the display list's transformation to the master list.
-                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
+                gSPMatrix(tempGfxHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
                           (G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH));
 
                 // Add the current display list to the master list.
-                gSPDisplayList(gDisplayListHead++, currList->displayList);
+                gSPDisplayList(tempGfxHead++, currList->displayList);
 
                 // Move to the next DisplayListNode.
                 currList = currList->next;
             }
 
             if (currLayer == LAYER_CIRCLE_SHADOW_TRANSPARENT || currLayer == LAYER_CIRCLE_SHADOW) {
-                gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
-                gSPSetGeometryMode(gDisplayListHead++, G_LIGHTING | G_CULL_BACK);
-                gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
+                gSPTexture(tempGfxHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
+                gSPSetGeometryMode(tempGfxHead++, G_LIGHTING | G_CULL_BACK);
+                gDPSetCombineMode(tempGfxHead++, G_CC_SHADE, G_CC_SHADE);
             }
 
         }
@@ -463,21 +364,17 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
 
     if (enableZBuffer) {
         // Disable z buffer.
-        gDPPipeSync(gDisplayListHead++);
-        gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
-    }
-#ifdef OBJECTS_REJ
- #if defined(F3DEX_GBI_2) && defined(VISUAL_DEBUG)
-    if (hitboxView) render_debug_boxes(DEBUG_UCODE_REJ);
- #endif
-    switch_ucode(GRAPH_NODE_UCODE_DEFAULT);
-#endif
+        gDPPipeSync(tempGfxHead++);
+        gSPClearGeometryMode(tempGfxHead++, G_ZBUFFER);
 #ifdef VISUAL_DEBUG
-    if ( hitboxView) render_debug_boxes(DEBUG_UCODE_DEFAULT | DEBUG_BOX_CLEAR);
-    // Load the world scale identity matrix
-    gSPMatrix(gDisplayListHead++, &identityMatrixWorldScale, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-    if (surfaceView) visual_surface_loop();
+        // Load the world scale identity matrix
+        gSPMatrix(tempGfxHead++, &identityMatrixWorldScale, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+        if (surfaceView) visual_surface_loop(&tempGfxHead);
+        render_debug_boxes(&tempGfxHead);
 #endif
+    }
+
+    gDisplayListHead = tempGfxHead;
 }
 
 /**
@@ -486,16 +383,11 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
  * render modes of layers.
  */
 void geo_append_display_list(void *displayList, s32 layer) {
-    s32 ucode = GRAPH_NODE_UCODE_DEFAULT;
 #ifdef F3DEX_GBI_2
     gSPLookAt(gDisplayListHead++, gCurLookAt);
 #endif
-#if defined(OBJECTS_REJ) || SILHOUETTE
+#if SILHOUETTE
     if (gCurGraphNodeObject != NULL) {
- #ifdef OBJECTS_REJ
-        ucode = gCurGraphNodeObject->ucode;
- #endif
- #if SILHOUETTE
         if (gCurGraphNodeObject->node.flags & GRAPH_RENDER_SILHOUETTE) {
             switch (layer) {
                 case LAYER_OPAQUE: layer = LAYER_SILHOUETTE_OPAQUE; break;
@@ -508,7 +400,6 @@ void geo_append_display_list(void *displayList, s32 layer) {
                 case LAYER_ALPHA:  layer = LAYER_OCCLUDE_SILHOUETTE_ALPHA;  break;
             }
         }
- #endif // SILHOUETTE
     }
 #endif // F3DEX_GBI_2 || SILHOUETTE
     if (gCurGraphNodeMasterList != NULL) {
@@ -518,12 +409,12 @@ void geo_append_display_list(void *displayList, s32 layer) {
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = NULL;
-        if (gCurGraphNodeMasterList->listHeads[ucode][layer] == NULL) {
-            gCurGraphNodeMasterList->listHeads[ucode][layer] = listNode;
+        if (gCurGraphNodeMasterList->listHeads[layer] == NULL) {
+            gCurGraphNodeMasterList->listHeads[layer] = listNode;
         } else {
-            gCurGraphNodeMasterList->listTails[ucode][layer]->next = listNode;
+            gCurGraphNodeMasterList->listTails[layer]->next = listNode;
         }
-        gCurGraphNodeMasterList->listTails[ucode][layer] = listNode;
+        gCurGraphNodeMasterList->listTails[layer] = listNode;
     }
 }
 
@@ -548,14 +439,12 @@ static void append_dl_and_return(struct GraphNodeDisplayList *node) {
  * Process the master list node.
  */
 void geo_process_master_list(struct GraphNodeMasterList *node) {
-    s32 ucode, layer;
+    s32 layer;
 
     if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
         gCurGraphNodeMasterList = node;
-        for (ucode = 0; ucode < GRAPH_NODE_NUM_UCODES; ucode++) {
-            for (layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
-                node->listHeads[ucode][layer] = NULL;
-            }
+        for (layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
+            node->listHeads[layer] = NULL;
         }
         geo_process_node_and_siblings(node->node.children);
         geo_process_master_list_sub(gCurGraphNodeMasterList);
@@ -725,11 +614,8 @@ void Get_Screen_Coords(void) {
         f32 float1;
         f32 float2;
 
-        // Convert Mario's coordinates into vec3s so they can be used in mtxf_mul_vec3s
-        vec3f_to_vec3s(marioPos3s, gMarioState->StarRadarLocation);
-
         // Transform Mario's coordinates into view frustrum
-        mtxf_mul_vec3s(gCameraTransform, marioPos3s);
+        linear_mtxf_mul_vec3(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
 
         // Perspective divide
         if (marioPos3s[2] != 0) {
@@ -921,9 +807,13 @@ void geo_process_scale(struct GraphNodeScale *node) {
  */
 void geo_process_billboard(struct GraphNodeBillboard *node) {
     Vec3f translation;
+    Vec3f axis;
+    Vec3f camera;
     Vec3f scale = { 1.0f, 1.0f, 1.0f };
 
     vec3s_to_vec3f(translation, node->translation);
+    linear_mtxf_mul_vec3(gMatStack[gMatStackIndex], axis, node->axis);
+    vec3f_diff(camera, gCurGraphNodeCamera->focus, gCurGraphNodeCamera->pos);
 
     if (gCurGraphNodeHeldObject != NULL) {
         vec3f_copy(scale, gCurGraphNodeHeldObject->objNode->header.gfx.scale);
@@ -931,7 +821,11 @@ void geo_process_billboard(struct GraphNodeBillboard *node) {
         vec3f_copy(scale, gCurGraphNodeObject->scale);
     }
 
-    mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, scale, gCurGraphNodeCamera->roll);
+    if (node->isCylindrical) {
+        mtxf_billboard_generic(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], camera, axis, translation, scale, gCurGraphNodeCamera->roll, TRUE);
+    } else {
+        mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, scale, gCurGraphNodeCamera->roll);
+    }
 
     inc_mat_stack();
     append_dl_and_return((struct GraphNodeDisplayList *)node);
@@ -1197,7 +1091,7 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
  * Since (0,0,0) is unaffected by rotation, columns 0, 1 and 2 are ignored.
  */
 
-#define NO_CULLING_EMULATOR_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
+#define NO_CULLING_EMULATOR_WHITELIST (EMU_PROJECT64 | EMU_PARALLEL_LAUNCHER | EMU_MUPEN)
 
 s32 obj_is_in_view(struct GraphNodeObject *node) {
     struct GraphNode *geo = node->sharedChild;
@@ -1224,8 +1118,8 @@ s32 obj_is_in_view(struct GraphNodeObject *node) {
     }
 
 #ifndef CULLING_ON_EMULATOR
-    // If an emulator is detected, skip any other culling.
-    if(!(gEmulator & NO_CULLING_EMULATOR_BLACKLIST)){
+    // If certain emulators are detected, skip any other culling.
+    if(gEmulator & NO_CULLING_EMULATOR_WHITELIST){
         return TRUE;
     }
 #endif
@@ -1265,16 +1159,16 @@ void visualise_object_hitbox(struct Object *node) {
             debug_box_color(COLOR_RGBA32_DEBUG_HITBOX);
         }
 
-        debug_box(bnds1, bnds2, (DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ));
+        debug_box(bnds1, bnds2, (DEBUG_SHAPE_CYLINDER));
         vec3f_set(bnds1, node->oPosX, (node->oPosY - node->hitboxDownOffset), node->oPosZ);
         vec3f_set(bnds2, node->hurtboxRadius, node->hurtboxHeight, node->hurtboxRadius);
         debug_box_color(COLOR_RGBA32_DEBUG_HURTBOX);
-        debug_box(bnds1, bnds2, (DEBUG_SHAPE_CYLINDER | DEBUG_UCODE_REJ));
+        debug_box(bnds1, bnds2, (DEBUG_SHAPE_CYLINDER));
     } else {
         vec3f_set(bnds1, node->oPosX, (node->oPosY - 15), node->oPosZ);
         vec3f_set(bnds2, 30, 30, 30);
         debug_box_color(COLOR_RGBA32_DEBUG_POSITION);
-        debug_box(bnds1, bnds2, (DEBUG_SHAPE_BOX | DEBUG_UCODE_REJ));
+        debug_box(bnds1, bnds2, (DEBUG_SHAPE_BOX));
     }
 }
 #endif
@@ -1378,7 +1272,7 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
     if (node->objNode != NULL && node->objNode->header.gfx.sharedChild != NULL) {
-        vec3_prod_val(translation, node->translation, 0.25f);
+        vec3_scale_dest(translation, node->translation, 0.25f);
 
         mtxf_translate(mat, translation);
         mtxf_copy(gMatStack[gMatStackIndex + 1], *gCurGraphNodeObject->throwMatrix);
@@ -1429,32 +1323,32 @@ void geo_try_process_children(struct GraphNode *node) {
     }
 }
 
-typedef void (*GeoProcessFunc)();
+typedef void (*GeoProcessFunc)(struct GraphNode *);
 
 // See enum 'GraphNodeTypes' in 'graph_node.h'.
 static GeoProcessFunc GeoProcessJumpTable[] = {
-    [GRAPH_NODE_TYPE_ORTHO_PROJECTION    ] = geo_process_ortho_projection,
-    [GRAPH_NODE_TYPE_PERSPECTIVE         ] = geo_process_perspective,
-    [GRAPH_NODE_TYPE_MASTER_LIST         ] = geo_process_master_list,
-    [GRAPH_NODE_TYPE_LEVEL_OF_DETAIL     ] = geo_process_level_of_detail,
-    [GRAPH_NODE_TYPE_SWITCH_CASE         ] = geo_process_switch,
-    [GRAPH_NODE_TYPE_CAMERA              ] = geo_process_camera,
-    [GRAPH_NODE_TYPE_TRANSLATION_ROTATION] = geo_process_translation_rotation,
-    [GRAPH_NODE_TYPE_TRANSLATION         ] = geo_process_translation,
-    [GRAPH_NODE_TYPE_ROTATION            ] = geo_process_rotation,
-    [GRAPH_NODE_TYPE_OBJECT              ] = geo_process_object,
-    [GRAPH_NODE_TYPE_ANIMATED_PART       ] = geo_process_animated_part,
-    [GRAPH_NODE_TYPE_BILLBOARD           ] = geo_process_billboard,
-    [GRAPH_NODE_TYPE_DISPLAY_LIST        ] = geo_process_display_list,
-    [GRAPH_NODE_TYPE_SCALE               ] = geo_process_scale,
-    [GRAPH_NODE_TYPE_SHADOW              ] = geo_process_shadow,
-    [GRAPH_NODE_TYPE_OBJECT_PARENT       ] = geo_process_object_parent,
-    [GRAPH_NODE_TYPE_GENERATED_LIST      ] = geo_process_generated_list,
-    [GRAPH_NODE_TYPE_BACKGROUND          ] = geo_process_background,
-    [GRAPH_NODE_TYPE_HELD_OBJ            ] = geo_process_held_object,
-    [GRAPH_NODE_TYPE_CULLING_RADIUS      ] = geo_try_process_children,
-    [GRAPH_NODE_TYPE_ROOT                ] = geo_try_process_children,
-    [GRAPH_NODE_TYPE_START               ] = geo_try_process_children,
+    [GRAPH_NODE_TYPE_ORTHO_PROJECTION    ] = (GeoProcessFunc) geo_process_ortho_projection,
+    [GRAPH_NODE_TYPE_PERSPECTIVE         ] = (GeoProcessFunc) geo_process_perspective,
+    [GRAPH_NODE_TYPE_MASTER_LIST         ] = (GeoProcessFunc) geo_process_master_list,
+    [GRAPH_NODE_TYPE_LEVEL_OF_DETAIL     ] = (GeoProcessFunc) geo_process_level_of_detail,
+    [GRAPH_NODE_TYPE_SWITCH_CASE         ] = (GeoProcessFunc) geo_process_switch,
+    [GRAPH_NODE_TYPE_CAMERA              ] = (GeoProcessFunc) geo_process_camera,
+    [GRAPH_NODE_TYPE_TRANSLATION_ROTATION] = (GeoProcessFunc) geo_process_translation_rotation,
+    [GRAPH_NODE_TYPE_TRANSLATION         ] = (GeoProcessFunc) geo_process_translation,
+    [GRAPH_NODE_TYPE_ROTATION            ] = (GeoProcessFunc) geo_process_rotation,
+    [GRAPH_NODE_TYPE_OBJECT              ] = (GeoProcessFunc) geo_process_object,
+    [GRAPH_NODE_TYPE_ANIMATED_PART       ] = (GeoProcessFunc) geo_process_animated_part,
+    [GRAPH_NODE_TYPE_BILLBOARD           ] = (GeoProcessFunc) geo_process_billboard,
+    [GRAPH_NODE_TYPE_DISPLAY_LIST        ] = (GeoProcessFunc) geo_process_display_list,
+    [GRAPH_NODE_TYPE_SCALE               ] = (GeoProcessFunc) geo_process_scale,
+    [GRAPH_NODE_TYPE_SHADOW              ] = (GeoProcessFunc) geo_process_shadow,
+    [GRAPH_NODE_TYPE_OBJECT_PARENT       ] = (GeoProcessFunc) geo_process_object_parent,
+    [GRAPH_NODE_TYPE_GENERATED_LIST      ] = (GeoProcessFunc) geo_process_generated_list,
+    [GRAPH_NODE_TYPE_BACKGROUND          ] = (GeoProcessFunc) geo_process_background,
+    [GRAPH_NODE_TYPE_HELD_OBJ            ] = (GeoProcessFunc) geo_process_held_object,
+    [GRAPH_NODE_TYPE_CULLING_RADIUS      ] = (GeoProcessFunc) geo_try_process_children,
+    [GRAPH_NODE_TYPE_ROOT                ] = (GeoProcessFunc) geo_try_process_children,
+    [GRAPH_NODE_TYPE_START               ] = (GeoProcessFunc) geo_try_process_children,
 };
 
 /**

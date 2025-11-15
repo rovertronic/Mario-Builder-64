@@ -25,8 +25,6 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
-#include "puppylights.h"
-#include "puppycamold.h"
 #include "save_file.h"
 #include "platform_displacement.h"
 #include "audio/external.h"
@@ -40,6 +38,7 @@ void cur_obj_shake(struct Object *obj) {
         obj->oPosY -= 5.0f;
     }
 }
+
 
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
@@ -509,16 +508,16 @@ void obj_set_gfx_pos_from_pos(struct Object *obj) {
 }
 
 void obj_init_animation(struct Object *obj, s32 animIndex) {
-    struct Animation **anims = o->oAnimations;
+    struct Animation **anims = obj->oAnimations;
     geo_obj_init_animation(&obj->header.gfx, &anims[animIndex]);
 }
 
 void obj_apply_scale_to_transform(struct Object *obj) {
     Vec3f scale;
     vec3f_copy(scale, obj->header.gfx.scale);
-    vec3_mul_val(obj->transform[0], scale[0]);
-    vec3_mul_val(obj->transform[1], scale[1]);
-    vec3_mul_val(obj->transform[2], scale[2]);
+    vec3_scale(obj->transform[0], scale[0]);
+    vec3_scale(obj->transform[1], scale[1]);
+    vec3_scale(obj->transform[2], scale[2]);
 }
 
 void obj_copy_scale(struct Object *dst, struct Object *src) {
@@ -1029,10 +1028,6 @@ s32 cur_obj_clear_interact_status_flag(s32 flag) {
  * Mark an object to be unloaded at the end of the frame.
  */
 void obj_mark_for_deletion(struct Object *obj) {
-#ifdef PUPPYLIGHTS
-    obj_disable_light(obj);
-#endif
-
     //! This clears all activeFlags. Since some of these flags disable behavior,
     //  setting it to 0 could potentially enable unexpected behavior. After an
     //  object is marked for deletion, it still updates on that frame (I think),

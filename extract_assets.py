@@ -4,7 +4,7 @@ import os
 import json
 import subprocess
 
-from tools.detect_baseroms import get_rom_candidates
+from tools.detect_baseroms import get_rom_candidates, ROMS_DIR
 
 envmap_table = set([
     "actors/mario_cap/mario_cap_metal.rgba16.png",
@@ -72,6 +72,15 @@ def clean_assets(local_asset_file):
         except FileNotFoundError:
             pass
 
+def usage():
+    all_langs = ["jp", "us", "eu", "sh"]
+    langs_str = " ".join("[" + lang + "]" for lang in all_langs)
+    print("Usage: ")
+    print(f"    Show this help message:          {sys.argv[0]} --help")
+    print(f"    Extract from all found baseroms: {sys.argv[0]}")
+    print(f"    Extract from specified versions: {sys.argv[0]} {langs_str}")
+    print(f"        (For each version, its ROM file must exist,")
+    print(f"            either in this folder or {ROMS_DIR}/)")
 
 def main():
     # In case we ever need to change formats of generated files, we keep a
@@ -89,6 +98,9 @@ def main():
     langs = sys.argv[1:]
     if langs == ["--clean"]:
         clean_assets(local_asset_file)
+        sys.exit(0)
+    elif langs == ["--help"] or langs == ["-h"]:
+        usage()
         sys.exit(0)
 
     asset_map = read_asset_map()
@@ -111,6 +123,8 @@ def main():
 
     romLUT = get_rom_candidates()
 
+    if not langs:
+        langs = romLUT.keys()
 
     # verify the correct rom
     for lang in langs:
@@ -133,7 +147,6 @@ def main():
         sys.exit(1)
 
     # Late imports (to optimize startup perf)
-    import hashlib
     import tempfile
     from collections import defaultdict
 
@@ -176,9 +189,15 @@ def main():
         # presence of the correct roms automatically
 
     # Make sure tools exist
-    subprocess.check_call(
-        ["make", "-s", "-C", "tools/", "n64graphics", "skyconv", "mio0", "aifc_decode"]
-    )
+    tools = [ "n64graphics", "skyconv", "mio0", "aifc_decode" ]
+    if os.name == 'nt':
+        tools = [tool + ".exe" for tool in tools]
+        make = "mingw32-make"
+    else:
+        make = "make"
+
+    cmd = [make, "-s", "-C", "tools/"] + tools
+    subprocess.check_call(cmd)
 
     # Go through the assets in roughly alphabetical order (but assets in the same
     # mio0 file still go together).

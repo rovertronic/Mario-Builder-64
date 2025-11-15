@@ -23,6 +23,7 @@ s32 obj_lava_death(void);
 
 //! Lots of these are duplicates
 void set_yoshi_as_not_dead(void);
+s32 obj_flicker_and_disappear(struct Object *obj, s16 lifeSpan);
 s32 coin_step(s16 *collisionFlagsPtr);
 void moving_coin_flicker(void);
 void coin_collected(void);

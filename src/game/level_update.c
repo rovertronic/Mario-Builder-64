@@ -30,10 +30,10 @@
 #include "rumble_init.h"
 #include "puppycam2.h"
 #include "puppyprint.h"
-#include "puppylights.h"
 #include "level_commands.h"
 #include "mb64/main.h"
 #include "mb64/menu.h"
+#include "debug.h"
 
 #include "config.h"
 
@@ -209,7 +209,7 @@ void set_play_mode(s16 playMode) {
 }
 
 void warp_special(s32 arg) {
-    sCurrPlayMode = PLAY_MODE_CHANGE_LEVEL;
+    set_play_mode(PLAY_MODE_CHANGE_LEVEL);
     sSpecialWarpDest = arg;
 }
 
@@ -358,16 +358,18 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
 
 extern u8 mb64_lopt_waterlevel;
 void init_mario_after_warp(void) {
-    struct ObjectWarpNode *spawnNode = area_get_warp_node(sWarpDest.nodeId);
-    u32 marioSpawnType = get_mario_spawn_type(spawnNode->object);
+    struct Object *object = get_destination_warp_object(sWarpDest.nodeId);
+    assert_args(object, "No dest warp object found for: 0x%02X", sWarpDest.nodeId);
+
+    u32 marioSpawnType = get_mario_spawn_type(object);
 
     if (gMarioState->action != ACT_UNINITIALIZED) {
-        gPlayerSpawnInfos[0].startPos[0] = (s16) spawnNode->object->oPosX;
-        gPlayerSpawnInfos[0].startPos[1] = (s16) spawnNode->object->oPosY;
-        gPlayerSpawnInfos[0].startPos[2] = (s16) spawnNode->object->oPosZ;
+        gPlayerSpawnInfos[0].startPos[0] = (s16) object->oPosX;
+        gPlayerSpawnInfos[0].startPos[1] = (s16) object->oPosY;
+        gPlayerSpawnInfos[0].startPos[2] = (s16) object->oPosZ;
 
         gPlayerSpawnInfos[0].startAngle[0] = 0;
-        gPlayerSpawnInfos[0].startAngle[1] = spawnNode->object->oMoveAngleYaw;
+        gPlayerSpawnInfos[0].startAngle[1] = object->oMoveAngleYaw;
         gPlayerSpawnInfos[0].startAngle[2] = 0;
 
         if (marioSpawnType == MARIO_SPAWN_DOOR_WARP) {
@@ -394,8 +396,8 @@ void init_mario_after_warp(void) {
         init_mario();
         set_mario_initial_action(gMarioState, marioSpawnType, sWarpDest.arg);
 
-        gMarioState->interactObj = spawnNode->object;
-        gMarioState->usedObj = spawnNode->object;
+        gMarioState->interactObj = object;
+        gMarioState->usedObj = object;
     }
 
     reset_camera(gCurrentArea->camera);
@@ -403,10 +405,8 @@ void init_mario_after_warp(void) {
     sDelayedWarpOp = WARP_OP_NONE;
 
     switch (marioSpawnType) {
-        case MARIO_SPAWN_PIPE:
-            play_transition(WARP_TRANSITION_FADE_FROM_STAR, 0x10, 0x00, 0x00, 0x00);
-            break;
         case MARIO_SPAWN_DOOR_WARP:
+        case MARIO_SPAWN_SPIN_AIRBORNE_CIRCLE:
             play_transition(WARP_TRANSITION_FADE_FROM_CIRCLE, 0x10, 0x00, 0x00, 0x00);
             break;
         case MARIO_SPAWN_TELEPORT:
@@ -414,9 +414,6 @@ void init_mario_after_warp(void) {
             break;
         case MARIO_SPAWN_SPIN_AIRBORNE:
             play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x1A, 0xFF, 0xFF, 0xFF);
-            break;
-        case MARIO_SPAWN_SPIN_AIRBORNE_CIRCLE:
-            play_transition(WARP_TRANSITION_FADE_FROM_CIRCLE, 0x10, 0x00, 0x00, 0x00);
             break;
         case MARIO_SPAWN_FADE_FROM_BLACK:
             play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x10, 0x00, 0x00, 0x00);
@@ -596,6 +593,8 @@ void check_instant_warp(void) {
 
 s16 music_unchanged_through_warp(s16 arg) {
     struct ObjectWarpNode *warpNode = area_get_warp_node(arg);
+    assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) arg);
+
     s16 levelNum = warpNode->node.destLevel & 0x7F;
 
     s16 destArea = warpNode->node.destArea;
@@ -663,29 +662,14 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = warpFlags;
-
-#if defined(PUPPYCAM) || defined(PUPPYLIGHTS)
-    s32 i = 0;
-#endif
 #ifdef PUPPYCAM
     if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
     {
-        for (i = 0; i < gPuppyVolumeCount; i++)
+        for (s32 i = 0; i < gPuppyVolumeCount; i++)
         {
             mem_pool_free(gPuppyMemoryPool, sPuppyVolumeStack[i]);
         }
         gPuppyVolumeCount = 0;
-    }
-#endif
-#ifdef PUPPYLIGHTS
-    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
-    {
-        for (i = 0; i < gNumLights; i++)
-        {
-            mem_pool_free(gLightsPool, gPuppyLights[i]);
-        }
-        gNumLights = 0;
-        levelAmbient = FALSE;
     }
 #endif
 }
@@ -952,6 +936,7 @@ void initiate_delayed_warp(void) {
                 default:
                     mario_stop_riding_and_holding(gMarioState);
                     warpNode = area_get_warp_node(sSourceWarpNodeId);
+                    assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) sSourceWarpNodeId);
 
                     initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
                                   warpNode->node.destNode, sDelayedWarpArg);
@@ -1029,9 +1014,6 @@ void update_hud_values(void) {
 void basic_update(void) {
     area_update_objects();
     update_hud_values();
-#ifdef PUPPYLIGHTS
-    delete_lights();
-#endif
 
     if (gCurrentArea != NULL) {
         update_camera(gCurrentArea->camera);
@@ -1105,7 +1087,7 @@ void exit_level(void) {
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         mb64_level_action = MB64_LA_BUILD;
     } else {
-        func_80321080(1); // clear background music (i think)
+        stop_secondary_music(1); // clear background music (i think)
         fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
     }
 }
@@ -1149,7 +1131,7 @@ s32 play_mode_frame_advance(void) {
  */
 void level_set_transition(s16 length, void (*updateFunction)()) {
     sTransitionTimer = length;
-    sTransitionUpdate = updateFunction;
+    sTransitionUpdate = (typeof(sTransitionUpdate)) updateFunction;
 }
 
 /**
@@ -1251,11 +1233,12 @@ s32 update_level(void) {
 
 extern u8 mb64_append_frameone_bandaid_fix;
 
-s32 init_level(void) {//
-    s32 fadeFromColor = FALSE;
 #ifdef PUPPYPRINT_DEBUG
-    OSTime first = osGetTime();
+extern u32 gInitLevelTime;
 #endif
+
+s32 init_level(void) {
+    s32 fadeFromColor = FALSE;
 
     if (mb64_mode == MB64_MODE_UNINITIALIZED) {
         mb64_init();
@@ -1392,11 +1375,14 @@ s32 init_level(void) {//
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
     }
 
-#ifdef PUPPYLIGHTS
-    puppylights_allocate();
+#ifdef PUPPYPRINT_DEBUG
+    if (gInitLevelTime) {
+        u32 totalTime = osGetCount() - gInitLevelTime;
+        append_puppyprint_log("Level loaded in %2.3fs.", (f64) OS_CYCLES_TO_USEC(totalTime) / 1000000.0f);
+        gInitLevelTime = 0;
+    }
 #endif
 
-    append_puppyprint_log("Level loaded in %d" PP_CYCLE_STRING ".", (s32)(PP_CYCLE_CONV(osGetTime() - first)));
     return TRUE;
 }
 

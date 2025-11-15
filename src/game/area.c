@@ -160,7 +160,7 @@ u32 get_mario_spawn_type(struct Object *obj) {
     s32 i;
     const BehaviorScript *behavior = virtual_to_segmented(SEGMENT_BEHAVIOR_DATA, obj->behavior);
 
-    for (i = 0; i < 19; i++) {
+    for (i = 0; i < ARRAY_COUNT(sWarpBhvSpawnTable); i++) {
         if (sWarpBhvSpawnTable[i] == behavior) {
             return sSpawnTypeFromWarpBhv[i];
         }
@@ -179,25 +179,20 @@ struct ObjectWarpNode *area_get_warp_node(u8 id) {
     return node;
 }
 
-struct ObjectWarpNode *area_get_warp_node_from_params(struct Object *obj) {
-    return area_get_warp_node(GET_BPARAM2(obj->oBehParams));
-}
-
-void load_obj_warp_nodes(void) {
-    struct ObjectWarpNode *warpNode;
+struct Object *get_destination_warp_object(u8 warpDestId) {
     struct Object *children = (struct Object *) gObjParentGraphNode.children;
 
     do {
         struct Object *obj = children;
 
-        if (obj->activeFlags != ACTIVE_FLAG_DEACTIVATED && get_mario_spawn_type(obj) != 0) {
-            warpNode = area_get_warp_node_from_params(obj);
-            if (warpNode != NULL) {
-                warpNode->object = obj;
-            }
+        u8 bparam2 = GET_BPARAM2(obj->oBehParams);
+        if (warpDestId == bparam2 && obj->activeFlags != ACTIVE_FLAG_DEACTIVATED && get_mario_spawn_type(obj) != MARIO_SPAWN_NONE) {
+            return obj;
         }
     } while ((children = (struct Object *) children->header.gfx.node.next)
              != (struct Object *) gObjParentGraphNode.children);
+
+    return NULL;
 }
 
 void clear_areas(void) {
@@ -254,6 +249,7 @@ void load_area(s32 index) {
 
     if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
         gCurrentArea = &gAreaData[index];
+        gMarioState->area = gCurrentArea;
         gCurrAreaIndex = gCurrentArea->index;
         main_pool_pop_state();
         main_pool_push_state();
@@ -275,7 +271,6 @@ void load_area(s32 index) {
             spawn_objects_from_info(0, gCurrentArea->objectSpawnInfos);
         }
 
-        load_obj_warp_nodes();
         geo_call_global_function_nodes(&gCurrentArea->graphNode->node, GEO_CONTEXT_AREA_LOAD);
     }
 }
@@ -343,7 +338,6 @@ void area_update_objects(void) {
  */
 void play_transition(s16 transType, s16 time, Color red, Color green, Color blue) {
 #ifndef L3DEX2_ALONE
-    set_and_reset_transition_fade_timer(0,0);
     gWarpTransition.isActive = TRUE;
     gWarpTransition.type = transType;
     gWarpTransition.time = time;
@@ -356,11 +350,13 @@ void play_transition(s16 transType, s16 time, Color red, Color green, Color blue
         red = gWarpTransRed, green = gWarpTransGreen, blue = gWarpTransBlue;
     }
 
-    if (transType < WARP_TRANSITION_TYPE_STAR) { // if transition is WARP_TRANSITION_TYPE_COLOR
+    if (transType & WARP_TRANSITION_TYPE_COLOR) {
         gWarpTransition.data.red = red;
         gWarpTransition.data.green = green;
         gWarpTransition.data.blue = blue;
     } else { // if transition is textured
+        set_and_reset_transition_fade_timer(0); // Reset transition timers by passing in 0 for time
+
         gWarpTransition.data.red = red;
         gWarpTransition.data.green = green;
         gWarpTransition.data.blue = blue;
@@ -378,22 +374,22 @@ void play_transition(s16 transType, s16 time, Color red, Color green, Color blue
 
         s16 fullRadius = GFX_DIMENSIONS_FULL_RADIUS;
 
-        // HackerSM64: this fixes the pop-in with texture transition, comment out this switch
-        // statement if you want to restore the original full radius.
-        // switch (transType){
-        //     case WARP_TRANSITION_TYPE_BOWSER:
-        //     case WARP_TRANSITION_FADE_INTO_BOWSER:
-        //         fullRadius *= 4;
-        //     break;
+#ifdef POLISHED_TRANSITIONS
+        switch (transType){
+            case WARP_TRANSITION_TYPE_BOWSER:
+            case WARP_TRANSITION_FADE_INTO_BOWSER:
+                fullRadius *= 4;
+            break;
 
         //     case WARP_TRANSITION_FADE_FROM_MARIO:
         //     case WARP_TRANSITION_FADE_INTO_MARIO:
 
-        //     case WARP_TRANSITION_FADE_FROM_STAR:
-        //     case WARP_TRANSITION_FADE_INTO_STAR:
-        //         fullRadius *= 1.5f;
-        //     break;
-        // }
+            case WARP_TRANSITION_FADE_FROM_STAR:
+            case WARP_TRANSITION_FADE_INTO_STAR:
+                fullRadius *= 1.5f;
+            break;
+        }
+#endif
 
         if (transType & WARP_TRANSITION_FADE_INTO) { // Is the image fading in?
             gWarpTransition.data.startTexRadius = fullRadius;

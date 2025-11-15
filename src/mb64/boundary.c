@@ -99,7 +99,8 @@ void generate_boundary_quad_collision(struct mb64_boundary_quad *quadList, u32 c
 void generate_boundary_collision(void) {
     *gSurfaceNodesAllocated = 0;
     *gSurfacesAllocated = 0;
-    clear_static_surfaces();
+    
+    bzero(gStaticSurfacePartition, sizeof(gStaticSurfacePartition));
 
     mb64_curr_poly_vert_count = 4;
 

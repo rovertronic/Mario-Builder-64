@@ -1,6 +1,8 @@
-#include "menu_engine.h"
-
+#include <ultra64.h>
+#include <PR/gbi.h>
 #include "actors/uiCorner/model.inc.c"
+
+#include "menu_engine.h"
 #include <string.h>
 #include "menu.h"
 

@@ -12,7 +12,7 @@ seq_setmutescale 0
   seq_setvol 127
 #endif
 seq_settempo 120
-seq_initchannels 0x3ff
+seq_initchannels 0xffff
 seq_startchannel 0, .channel0
 seq_startchannel 1, .channel1
 seq_startchannel 2, .channel2
@@ -23,6 +23,12 @@ seq_startchannel 6, .channel6
 seq_startchannel 7, .channel7
 seq_startchannel 8, .channel38
 seq_startchannel 9, .channel59
+seq_startchannel 10, .channelA
+seq_startchannel 11, .channelB
+seq_startchannel 12, .channelC
+seq_startchannel 13, .channelD
+seq_startchannel 14, .channelE
+seq_startchannel 15, .channelF
 .seq_loop:
 seq_delay 20000
 seq_jump .seq_loop
@@ -71,15 +77,79 @@ chan_stereoheadseteffects 1
 chan_setdyntable .channel59_table
 chan_jump .main_loop_023589
 
+.channelA:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelA_table
+chan_jump .main_loop_023589
+
+.channelB:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelB_table
+chan_jump .main_loop_023589
+
+.channelC:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelC_table
+chan_jump .main_loop_023589
+
+.channelD:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelD_table
+chan_jump .main_loop_023589
+
+.channelE:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelE_table
+chan_jump .main_loop_023589
+
+.channelF:
+chan_largenoteson
+chan_setinstr 0
+chan_setpanmix 127
+chan_setnotepriority 14
+chan_setval 0
+chan_iowriteval 5
+chan_stereoheadseteffects 1
+chan_setdyntable .channelF_table
+chan_jump .main_loop_023589
+
 // Main loop for standard, non-continuous sound effects
 .main_loop_023589:
-chan_delay1
+chan_hang
 chan_ioreadval 0
 chan_bltz .main_loop_023589
 .start_playing_023589:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_setval 0
 chan_iowriteval 5
 chan_ioreadval 4
@@ -93,13 +163,11 @@ chan_bltz .skip_023589 // if we have a signal:
   chan_beqz .force_stop_023589 // told to stop
   chan_jump .start_playing_023589 // told to play something else
 .skip_023589:
-chan_testlayerfinished 0
-chan_beqz .poll_023589 // if layer 0 hasn't finished, keep polling
+chan_testlayersfinished
+chan_beqz .poll_023589 // if all layers haven't finished, keep polling
 chan_jump .main_loop_023589 // otherwise go back to the main loop
 .force_stop_023589:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_jump .main_loop_023589
 
 .channel1:
@@ -140,13 +208,11 @@ chan_jump .main_loop_146
 
 // Main loop for moving, env and air sound effects, which play continuously
 .main_loop_146:
-chan_delay1
+chan_hang
 chan_ioreadval 0
 chan_bltz .main_loop_146
 .start_playing_146:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_setvolscale 127
 chan_setval 0
 chan_iowriteval 5
@@ -161,9 +227,7 @@ chan_bltz .poll_146
 chan_beqz .force_stop_146
 chan_jump .start_playing_146
 .force_stop_146:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_jump .main_loop_146
 
 .channel7:
@@ -177,13 +241,11 @@ chan_setdyntable .channel7_table
 
 // Loop for menu sound effects
 .main_loop_7:
-chan_delay1
+chan_hang
 chan_ioreadval 0
 chan_bltz .main_loop_7
 .start_playing_7:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_setval 0
 chan_iowriteval 5
 chan_setreverb 0
@@ -201,14 +263,12 @@ chan_bltz .skip_7 // if we have a signal:
   chan_unreservenotes
   chan_jump .start_playing_7 // told to play something else
 .skip_7:
-chan_testlayerfinished 0
-chan_beqz .poll_7 // if layer 0 hasn't finished, keep polling
+chan_testlayersfinished
+chan_beqz .poll_7 // if all layers haven't finished, keep polling
 chan_unreservenotes
 chan_jump .main_loop_7 // otherwise go back to the main loop
 .force_stop_7:
-chan_freelayer 0
-chan_freelayer 1
-chan_freelayer 2
+chan_freelayers
 chan_unreservenotes
 chan_jump .main_loop_7
 
@@ -8008,6 +8068,31 @@ layer_note0 38, 0x3, 127, 127
 .layer_32BF:
 layer_delay 0x2a
 layer_jump .layer_32B7
+
+
+.channelA_table:
+// Add custom sounds for Channel A here!
+
+
+.channelB_table:
+// Add custom sounds for Channel B here!
+
+
+.channelC_table:
+// Add custom sounds for Channel C here!
+
+
+.channelD_table:
+// Add custom sounds for Channel D here!
+
+
+.channelE_table:
+// Add custom sounds for Channel E here!
+
+
+.channelF_table:
+// Add custom sounds for Channel F here!
+
 
 .align 2, 0
 .envelope_32C4:

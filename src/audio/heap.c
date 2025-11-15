@@ -1062,6 +1062,7 @@ void init_reverb_us(s32 presetId) {
         betterReverbPreset = &gBetterReverbSettings[0];
     }
 
+    activeBetterReverbPreset = gBetterReverbPresetValue;
     betterReverbLightweight = betterReverbPreset->useLightweightSettings;
     betterReverbDownsampleRate = betterReverbPreset->downsampleRate;
     monoReverb = betterReverbPreset->isMono;
@@ -1431,7 +1432,7 @@ void audio_reset_session(void) {
     init_reverb_us(reverbPresetId);
 #endif
 
-    init_sample_dma_buffers(gMaxSimultaneousNotes);
+    init_sample_dma_buffers();
 
 #if defined(VERSION_EU)
     build_vol_rampings_table(0, gAudioBufferParameters.samplesPerUpdate);

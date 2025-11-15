@@ -21,6 +21,7 @@
 #include "mario_step.h"
 #include "object_helpers.h"
 #include "object_list_processor.h"
+#include "puppyprint.h"
 #include "save_file.h"
 #include "seq_ids.h"
 #include "sound_init.h"
@@ -295,6 +296,10 @@ s32 act_debug_free_move(struct MarioState *m) {
     struct Surface *floor, *ceil;
     Vec3f pos;
 
+    if (gPlayer1Controller->buttonPressed & L_TRIG) {
+        m->health = 0x880;
+    }
+
     f32 speed = (gPlayer1Controller->buttonDown & B_BUTTON) ? 4.0f : 1.0f;
     if (gPlayer1Controller->buttonDown & Z_TRIG) speed = 0.01f;
     if (m->area->camera->mode != CAMERA_MODE_8_DIRECTIONS) set_camera_mode(m->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
@@ -302,17 +307,32 @@ s32 act_debug_free_move(struct MarioState *m) {
     set_mario_animation(m, MARIO_ANIM_A_POSE);
     vec3f_copy(pos, m->pos);
 
-    if (gPlayer1Controller->buttonDown & U_JPAD) {
-        pos[1] += 16.0f * speed;
+#ifdef USE_PROFILER
+    if (
+        !(gPlayer1Controller->buttonDown & L_TRIG)
+#ifdef PUPPYPRINT_DEBUG
+        && !sDebugMenu
+#endif // PUPPYPRINT_DEBUG
+    ) {
+#endif // USE_PROFILER
+        if (gPlayer1Controller->buttonDown & U_JPAD) {
+            pos[1] += 16.0f * speed;
+        }
+        if (gPlayer1Controller->buttonDown & D_JPAD) {
+            pos[1] -= 16.0f * speed;
+        }
+#ifdef USE_PROFILER
     }
-    if (gPlayer1Controller->buttonDown & D_JPAD) {
-        pos[1] -= 16.0f * speed;
-    }
+#endif
+
     if (gPlayer1Controller->buttonPressed & A_BUTTON) {
         vec3_zero(m->vel);
         m->forwardVel = 0.0f;
-
-        set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
+        
+        if (m->area->camera->mode != m->area->camera->defMode) {
+            set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
+        }
+        
         m->input &= ~INPUT_A_PRESSED;
         if (m->pos[1] <= (m->waterLevel - 100)) {
             return set_mario_action(m, ACT_WATER_IDLE, 0);
@@ -1611,7 +1631,7 @@ static s32 check_for_instant_quicksand(struct MarioState *m) {
 }
 
 s32 mario_execute_cutscene_action(struct MarioState *m) {
-    s32 cancel;
+    s32 cancel = FALSE;
 
     if (check_for_instant_quicksand(m)) {
         return TRUE;

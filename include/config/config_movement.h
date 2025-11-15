@@ -104,11 +104,6 @@
 // #define HANGING_FIX
 
 /**
- * The last frame after hitting a wall that will be considered a firsty when wallkicking.
- */
-#define FIRSTY_LAST_FRAME 1
-
-/**
  * The maximum angle the player can wall kick, in degrees. 0..90. To allow 45 degree wall kicks, you must supply `46` to allow 45 and under.
  */
 #define WALL_KICK_DEGREES 46
@@ -117,6 +112,11 @@
  * This is vanilla behavior, disable it to allow ledge grabbing regardless of floor pitch.
  */
 #define LEDGE_GRABS_CHECK_SLOPE_ANGLE
+
+/**
+ * Buffers an A input if you jump off a slope during the landing lag
+ */
+// #define SLOPE_BUFFER
 
 /**
  * Disables BLJs and crushes SimpleFlips's dreams.
@@ -134,16 +134,10 @@
  * be interrupted with text
  * Uncomment this to fix this bug, and frustrate speedrunners
  */
-// #define BUGFIX_DIALOG_TIME_STOP
-
-/**
- * Enables Platform Displacement 2, an upgrade to the physics involving moving platforms and how Mario interacts with them.
- */
-#define PLATFORM_DISPLACEMENT_2
+#define BUGFIX_DIALOG_TIME_STOP
 
 /**
  * Inertia defines; allow Mario to preserve his momemtum when leaving moving platforms.
- * These require Platform Displacement 2 to be enabled.
  */
 #define MARIO_INERTIA_UPWARD
 #define MARIO_INERTIA_LATERAL

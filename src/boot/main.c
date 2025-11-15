@@ -19,7 +19,6 @@
 #include "usb/debug.h"
 #endif
 #include "game/puppyprint.h"
-#include "game/puppylights.h"
 #include "game/profiling.h"
 #include "game/mem_error_screen.h"
 #include "game/emutest.h"
@@ -121,9 +120,6 @@ void alloc_pool(void) {
 
     main_pool_init(start, end);
     gEffectsMemoryPool = mem_pool_init(EFFECTS_MEMORY_POOL, MEMORY_POOL_LEFT);
-#ifdef PUPPYLIGHTS
-    gLightsPool = mem_pool_init(PUPPYLIGHTS_POOL, MEMORY_POOL_LEFT);
-#endif
 }
 
 void create_thread(OSThread *thread, OSId id, void (*entry)(void *), void *arg, void *sp, OSPri pri) {
@@ -326,7 +322,7 @@ void alert_rcp_hung_up(void) {
  * Increment the first and last values of the stack.
  * If they're different, that means an error has occured, so trigger a crash.
 */
-#ifdef DEBUG
+#ifdef DEBUG_ASSERTIONS
 void check_stack_validity(void) {
     gIdleThreadStack[0]++;
     gIdleThreadStack[THREAD1_STACK - 1]++;
@@ -355,7 +351,7 @@ void thread3_main(UNUSED void *arg) {
     setup_mesg_queues();
     alloc_pool();
     load_engine_code_segment();
-    detect_emulator();
+    gEmulator = detect_emulator();
 #ifndef UNF
     crash_screen_init();
 #endif
@@ -385,7 +381,7 @@ void thread3_main(UNUSED void *arg) {
     } else {
         gBorderHeight = BORDER_HEIGHT_CONSOLE;
     }
-#ifdef DEBUG
+#ifdef DEBUG_ASSERTIONS
     gIdleThreadStack[0] = 0;
     gIdleThreadStack[THREAD1_STACK - 1] = 0;
     gThread3Stack[0] = 0;
@@ -412,7 +408,7 @@ void thread3_main(UNUSED void *arg) {
     while (TRUE) {
         OSMesg msg;
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
-#ifdef DEBUG
+#ifdef DEBUG_ASSERTIONS
         check_stack_validity();
 #endif
         switch ((uintptr_t) msg) {

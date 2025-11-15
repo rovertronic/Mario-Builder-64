@@ -174,9 +174,6 @@
 #define /*0x1BC*/ oAngleToHome                OBJECT_FIELD_S32(0x4D)
 #define /*0x1C0*/ oFloor                      OBJECT_FIELD_SURFACE(0x4E)
 #define /*0x1C4*/ oDeathSound                 OBJECT_FIELD_S32(0x4F)
-#ifdef PUPPYLIGHTS
-#define /*0x1C4*/ oLightID                                      OBJECT_FIELD_S32(0x50)
-#endif
 
 #define oPreviewObjDisplayFunc OBJECT_FIELD_VPTR(0x1D)
 

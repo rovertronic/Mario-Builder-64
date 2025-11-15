@@ -75,7 +75,7 @@
 /**
  * Causes leaf particles to occasionally fall from trees which contain Hoot.
  */
-#define HOOT_TREE_PARTICLES
+// #define HOOT_TREE_PARTICLES
 
 /**************
  * -- MR I --

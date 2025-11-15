@@ -2,8 +2,8 @@ OUTPUT_ARCH (mips)
 
 #define LINKER /* Removes externs from preprocessed script */
 #define TARGET_N64
-#include "segments.h"
-#include "config.h"
+#include "include/segments.h"
+#include "include/config.h"
 #undef LINKER
 
 #define BEGIN_SEG(name, addr) \
@@ -160,12 +160,9 @@ SECTIONS
 #ifdef EEP
       KEEP(BUILD_DIR/asm/vc_bin.o(.text*));
 #endif
-      KEEP(BUILD_DIR/asm/emux.o(.text*));
-      KEEP(BUILD_DIR/asm/pj64_get_count_factor_asm.o(.text*));
       KEEP(BUILD_DIR/asm/round.o(.text*));
       KEEP(BUILD_DIR/asm/fcr31.o(.text*));
 
-      BUILD_DIR/src/libpl*.o(.text*);
       BUILD_DIR/src/boot*.o(.text*);
       BUILD_DIR/src/hvqm*.o(.text*);
       BUILD_DIR/src/usb*.o(.text*);
@@ -173,11 +170,13 @@ SECTIONS
 #ifdef S2DEX_TEXT_ENGINE
       BUILD_DIR/src/s2d_engine*.o(.text*);
 #endif
-      */ULTRALIB.a:*.o(.text*);
-      */libnustd.a:*.o(.text*);
-      */libgcc.a:*.o(.text*);
-      */librtc.a:*.o(.text*);
-      */libz.a:*.o(.text*);
+#ifdef LIBPL
+      BUILD_DIR/lib/libpl*.o(.text*);
+#endif
+      BUILD_DIR/lib/librtc*.o(.text*);
+      *ULTRALIB.a:*.o(.text*);
+      *libnustd.a:*.o(.text*);
+      *libgcc.a:*.o(.text*);
       */libhvqm2.a:*.o(.text*);
       BUILD_DIR/src/libcart*.o(.text*);
       lib/rspboot.o(.text*);
@@ -189,34 +188,36 @@ SECTIONS
 
       /* data */
       BUILD_DIR/asm/n64_assert.o(.*data*);
-      BUILD_DIR/src/libpl*.o(.data*);
       BUILD_DIR/src/boot*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
 #ifdef S2DEX_TEXT_ENGINE
       BUILD_DIR/src/s2d_engine*.o(.*data*);
 #endif
-      */ULTRALIB.a:*.o(.data*);
+#ifdef LIBPL
+      BUILD_DIR/lib/libpl*.o(.*data*);
+#endif
+      BUILD_DIR/lib/librtc*.o(.*data*);
+      *ULTRALIB.a:*.o(.data*);
       */libhvqm2.a:*.o(.data*);
       BUILD_DIR/src/libcart*.o(.data*);
-      */librtc.a:*.o(.data*);
-      */libz.a:*.o(.data*);
 #include "rspdata.inc.ld"
       BUILD_DIR/lib/aspMain.o(.data*);
       lib/PR/audio/n_aspMain.o(.data*);
       lib/PR/hvqm/hvqm2sp1.o(.data*);
 
       /* rodata */
-      BUILD_DIR/src/libpl*.o(.rodata*);
       BUILD_DIR/src/boot*.o(.rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
 #ifdef S2DEX_TEXT_ENGINE
       BUILD_DIR/src/s2d_engine*.o(.rodata*);
 #endif
-      */ULTRALIB.a:*.o(.rodata*);
-      */libgcc.a:*.o(.rodata*);
-      */librtc.a:*.o(.rodata*);
-      */libz.a:*.o(.rodata*);
+#ifdef LIBPL
+      BUILD_DIR/lib/libpl*.o(.rodata*);
+#endif
+      BUILD_DIR/lib/librtc*.o(.rodata*);
+      *ULTRALIB.a:*.o(.rodata*);
+      *libgcc.a:*.o(.rodata*);
 
       lib/PR/hvqm/hvqm2sp1.o(.rodata*);
       BUILD_DIR/src/libcart*.o(.rodata*);
@@ -224,7 +225,6 @@ SECTIONS
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
-      BUILD_DIR/src/libpl*.o(.bss*);
       BUILD_DIR/src/boot*.o(.*bss*);
       BUILD_DIR/src/hvqm*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
@@ -232,13 +232,15 @@ SECTIONS
 #ifdef S2DEX_TEXT_ENGINE
       BUILD_DIR/src/s2d_engine*.o(.*bss*);
 #endif
-      */ULTRALIB.a:*.o(COMMON);
-      */ULTRALIB.a:*.o(.scommon);
-      */ULTRALIB.a:*.o(.*bss*);
+#ifdef LIBPL
+      BUILD_DIR/lib/libpl*.o(.*bss*);
+#endif
+      BUILD_DIR/lib/librtc*.o(.*bss*);
+      *ULTRALIB.a:*.o(COMMON);
+      *ULTRALIB.a:*.o(.scommon);
+      *ULTRALIB.a:*.o(.*bss*);
       */libhvqm2.a:*.o(.bss*);
       BUILD_DIR/src/libcart*.o(.bss*);
-      */librtc.a:*.o(.bss*);
-      */libz.a:*.o(.bss*);
       . = ALIGN(0x8);
    }
    END_NOLOAD(main)
