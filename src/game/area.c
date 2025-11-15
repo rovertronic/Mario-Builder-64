@@ -249,6 +249,7 @@ void load_area(s32 index) {
 
     if (gCurrentArea == NULL && gAreaData[index].graphNode != NULL) {
         gCurrentArea = &gAreaData[index];
+        gMarioState->area = gCurrentArea;
         gCurrAreaIndex = gCurrentArea->index;
         main_pool_pop_state();
         main_pool_push_state();

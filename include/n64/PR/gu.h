@@ -189,7 +189,9 @@ extern int guRandom(void);
  */
 extern float sinf(float angle);
 extern float cosf(float angle);
-extern float sqrtf(float value);
+#ifndef sqrtf
+#define sqrtf(v) __builtin_sqrtf(v)
+#endif
 #ifdef __sgi
 #pragma intrinsic(sqrtf);
 #endif

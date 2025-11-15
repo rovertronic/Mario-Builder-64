@@ -151,7 +151,7 @@ void update_painting() {
 }
 
 extern u16 sRenderedFramebuffer;
-#define INSTANT_INPUT_BLACKLIST (EMU_CONSOLE | EMU_WIIVC | EMU_ARES | EMU_SIMPLE64 | EMU_CEN64)
+#define INSTANT_INPUT_WHITELIST (EMU_PARALLEL_LAUNCHER | EMU_PROJECT64 | EMU_MUPEN)
 void save_level(void) {
     //bzero(&mb64_save, sizeof(mb64_save)); // should be safe to not need this right?
     if (mb64_vtx_total >= MB64_VTX_SIZE) {
@@ -208,7 +208,7 @@ void save_level(void) {
                     u16 sample[4];
                     for (s32 sx=0;sx<2;sx++) {
                         for (s32 sy=0;sy<2;sy++) {
-                            if (gEmulator & INSTANT_INPUT_BLACKLIST) {
+                            if (!(gEmulator & INSTANT_INPUT_WHITELIST)) {
                                 sample[sy*2+sx] = (gFramebuffers[(sRenderedFramebuffer+2)%3][ ((s32)((y*2+sy)*1.875f))*320 + (s32)((x*2+sx)*1.875f+40) ] | 1);
                             } else {
                                 sample[sy*2+sx] = (gFramebuffers[0][ ((s32)((y*2+sy)*1.875f))*320 + (s32)((x*2+sx)*1.875f+40) ] | 1);

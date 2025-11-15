@@ -359,14 +359,8 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
 extern u8 mb64_lopt_waterlevel;
 void init_mario_after_warp(void) {
     struct Object *object = get_destination_warp_object(sWarpDest.nodeId);
+    assert_args(object, "No dest warp object found for: 0x%02X", sWarpDest.nodeId);
 
-#ifdef DEBUG_ASSERTIONS
-    if (!object) {
-        char errorMsg[40];
-        sprintf(errorMsg, "No dest warp object found for: 0x%02X", sWarpDest.nodeId);
-        error(errorMsg);
-    }
-#endif
     u32 marioSpawnType = get_mario_spawn_type(object);
 
     if (gMarioState->action != ACT_UNINITIALIZED) {
@@ -599,14 +593,7 @@ void check_instant_warp(void) {
 
 s16 music_unchanged_through_warp(s16 arg) {
     struct ObjectWarpNode *warpNode = area_get_warp_node(arg);
-
-#ifdef DEBUG_ASSERTIONS
-    if (!warpNode) {
-        char errorMsg[40];
-        sprintf(errorMsg, "No source warp node found for: 0x%02X", (u8) arg);
-        error(errorMsg);
-    }
-#endif
+    assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) arg);
 
     s16 levelNum = warpNode->node.destLevel & 0x7F;
 
@@ -949,14 +936,7 @@ void initiate_delayed_warp(void) {
                 default:
                     mario_stop_riding_and_holding(gMarioState);
                     warpNode = area_get_warp_node(sSourceWarpNodeId);
-
-#ifdef DEBUG_ASSERTIONS
-                    if (!warpNode) {
-                        char errorMsg[40];
-                        sprintf(errorMsg, "No source warp node found for: 0x%02X", (u8) sSourceWarpNodeId);
-                        error(errorMsg);
-                    }
-#endif
+                    assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) sSourceWarpNodeId);
 
                     initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
                                   warpNode->node.destNode, sDelayedWarpArg);
@@ -1151,7 +1131,7 @@ s32 play_mode_frame_advance(void) {
  */
 void level_set_transition(s16 length, void (*updateFunction)()) {
     sTransitionTimer = length;
-    sTransitionUpdate = updateFunction;
+    sTransitionUpdate = (typeof(sTransitionUpdate)) updateFunction;
 }
 
 /**
@@ -1253,11 +1233,12 @@ s32 update_level(void) {
 
 extern u8 mb64_append_frameone_bandaid_fix;
 
-s32 init_level(void) {//
-    s32 fadeFromColor = FALSE;
 #ifdef PUPPYPRINT_DEBUG
-    OSTime first = osGetTime();
+extern u32 gInitLevelTime;
 #endif
+
+s32 init_level(void) {
+    s32 fadeFromColor = FALSE;
 
     if (mb64_mode == MB64_MODE_UNINITIALIZED) {
         mb64_init();
@@ -1394,7 +1375,14 @@ s32 init_level(void) {//
         sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
     }
 
-    append_puppyprint_log("Level loaded in %d" PP_CYCLE_STRING ".", (s32)(PP_CYCLE_CONV(osGetTime() - first)));
+#ifdef PUPPYPRINT_DEBUG
+    if (gInitLevelTime) {
+        u32 totalTime = osGetCount() - gInitLevelTime;
+        append_puppyprint_log("Level loaded in %2.3fs.", (f64) OS_CYCLES_TO_USEC(totalTime) / 1000000.0f);
+        gInitLevelTime = 0;
+    }
+#endif
+
     return TRUE;
 }
 

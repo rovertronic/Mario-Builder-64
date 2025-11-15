@@ -30,6 +30,7 @@
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "print.h"
+#include "puppyprint.h"
 #include "save_file.h"
 #include "menu/file_select.h"
 #include "sound_init.h"
@@ -2292,13 +2293,19 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     if (gMarioState->action) {
 #ifdef ENABLE_DEBUG_FREE_MOVE
         if (
+#ifdef PUPPYPRINT_DEBUG
+            !sDebugMenu &&
+#endif // PUPPYPRINT_DEBUG
+            (gMarioState->action != ACT_DEBUG_FREE_MOVE) &&
             (gMarioState->controller->buttonDown & U_JPAD) &&
             !(gMarioState->controller->buttonDown & L_TRIG)
         ) {
-            set_camera_mode(gMarioState->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
+            if (gMarioState->area->camera->mode != CAMERA_MODE_8_DIRECTIONS) {
+                set_camera_mode(gMarioState->area->camera, CAMERA_MODE_8_DIRECTIONS, 1);
+            }
             set_mario_action(gMarioState, ACT_DEBUG_FREE_MOVE, 0);
         }
-#endif
+#endif // ENABLE_DEBUG_FREE_MOVE
 #ifdef ENABLE_CREDITS_BENCHMARK
         static s32 startedBenchmark = FALSE;
         if (!startedBenchmark) {

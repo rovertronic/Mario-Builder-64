@@ -823,7 +823,7 @@ void pan_ahead_of_player(struct Camera *c) {
     vec3f_add(c->focus, pan);
 }
 
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
 s16 find_in_bounds_yaw_wdw_bob_thi(Vec3f pos, Vec3f origin, s16 yaw) {
     switch (gCurrLevelArea) {
         case AREA_WDW_MAIN:
@@ -841,7 +841,7 @@ s16 find_in_bounds_yaw_wdw_bob_thi(Vec3f pos, Vec3f origin, s16 yaw) {
     }
     return yaw;
 }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
 /**
  * Rotates the camera around the area's center point.
@@ -858,9 +858,9 @@ s32 update_radial_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     sAreaYaw = camYaw - sModeOffsetYaw;
     calc_y_to_curr_floor(&posY, 1.f, 200.f, &focusY, 0.9f, 200.f);
     focus_on_mario(focus, pos, posY + yOff, focusY + yOff, sLakituDist + baseDist, pitch, camYaw);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     camYaw = find_in_bounds_yaw_wdw_bob_thi(pos, focus, camYaw);
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     return camYaw;
 }
 
@@ -879,11 +879,11 @@ s32 update_8_directions_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     calc_y_to_curr_floor(&posY, 1.f, 200.f, &focusY, 0.9f, 200.f);
     focus_on_mario(focus, pos, posY + yOff, focusY + yOff, sLakituDist + baseDist, pitch, camYaw);
     pan_ahead_of_player(c);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelArea == AREA_DDD_SUB) {
         camYaw = clamp_positions_and_find_yaw(pos, focus, 6839.f, 995.f, 5994.f, -3945.f);
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     return camYaw;
 }
 
@@ -1658,7 +1658,7 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
         nz = normal[2];
         oo = normal[3];
         pos[1] = 300.f - (nx * pos[0] + nz * pos[2] + oo) / ny;
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
         switch (gCurrLevelArea) {
             case AREA_BOB:
                 pos[1] += 125.f;
@@ -1667,14 +1667,14 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
             case AREA_WF:
                 pos[1] += 125.f;
         }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     }
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     // Prevent the camera from going to the ground in the outside boss fight
     if (gCurrLevelNum == LEVEL_BBH) {
         pos[1] = 2047.f;
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     // Rotate from C-Button input
     if (sCSideButtonYaw < 0) {
         sModeOffsetYaw += 0x200;
@@ -1759,13 +1759,13 @@ void mode_parallel_tracking_camera(struct Camera *c) {
  * Fixed camera mode, the camera rotates around a point and looks and zooms toward Mario.
  */
 void mode_fixed_camera(struct Camera *c) {
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelNum == LEVEL_BBH) {
         set_fov_function(CAM_FOV_BBH);
     } else {
         set_fov_function(CAM_FOV_APP_45);
     }
-#else
+#else // ENABLE_VANILLA_CAM_PROCESSING
     set_fov_function(CAM_FOV_APP_45);
 #endif
     c->nextYaw = update_fixed_camera(c, c->focus, c->pos);
@@ -1902,7 +1902,7 @@ s32 update_behind_mario_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
         dist = 300.f;
     }
     vec3f_set_dist_and_angle(focus, pos, dist, pitch, yaw);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelArea == AREA_WDW_MAIN) {
         yaw = clamp_positions_and_find_yaw(pos, focus, 4508.f, -3739.f, 4508.f, -3739.f);
     }
@@ -1912,7 +1912,7 @@ s32 update_behind_mario_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     if (gCurrLevelArea == AREA_THI_TINY) {
         yaw = clamp_positions_and_find_yaw(pos, focus, 2458.f, -2458.f, 2458.f, -2458.f);
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
     return yaw;
 }
@@ -2329,11 +2329,11 @@ s16 update_default_camera(struct Camera *c) {
     }
     if ((gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) && (sSelectionFlags & CAM_MODE_MARIO_ACTIVE)) {
         posHeight = 610.f;
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
         if (gCurrLevelArea == AREA_SSL_PYRAMID || gCurrLevelNum == LEVEL_CASTLE) {
             posHeight /= 2;
         }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     }
 
     // Make Lakitu fly above the gas
@@ -2391,11 +2391,11 @@ s16 update_default_camera(struct Camera *c) {
             c->pos[1] = ceilHeight;
         }
     }
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelArea == AREA_WDW_TOWN) {
         yaw = clamp_positions_and_find_yaw(c->pos, c->focus, 2254.f, -3789.f, 3790.f, -2253.f);
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     return yaw;
 }
 
@@ -3105,11 +3105,9 @@ void update_camera(struct Camera *c) {
     c->nextYaw = gLakituState.nextYaw;
     c->mode = gLakituState.mode;
     c->defMode = gLakituState.defMode;
-#ifdef ENABLE_VANILLA_CAM_PROCESSING
+
     camera_course_processing(c);
-#else
-    if (gCurrDemoInput != NULL) camera_course_processing(c);
-#endif
+
     sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed, gPlayer1Controller->buttonDown);
 
     if (c->cutscene != CUTSCENE_NONE) {
@@ -3220,9 +3218,9 @@ void update_camera(struct Camera *c) {
 #ifdef PUPPYCAM
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON) {
 #endif
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelNum != LEVEL_CASTLE) {
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
         // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
         // trigger is held
         if ((c->cutscene == CUTSCENE_NONE &&
@@ -3252,13 +3250,13 @@ void update_camera(struct Camera *c) {
                 sCameraSoundFlags &= ~CAM_SOUND_FIXED_ACTIVE;
             }
         }
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     } else {
         if ((gPlayer1Controller->buttonPressed & R_TRIG) && (cam_select_alt_mode(0) == CAM_SELECTION_FIXED)) {
             play_sound_button_change_blocked();
         }
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
 
     update_lakitu(c);
@@ -3558,11 +3556,11 @@ void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera) {
                 camera->focus[2] = gCamera->areaCenZ;
                 vec3f_get_yaw(camera->focus, sMarioCamState->pos, &yaw);
                 vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
                 if (gCurrLevelNum != LEVEL_THI) {
                     find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
                 }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
             }
         } else {
             sFramesPaused++;
@@ -5498,26 +5496,23 @@ void parallel_tracking_init(struct Camera *c, struct ParallelTrackingPoint *path
  *      Only block area mode changes if Mario is in a cannon,
  *      or if the camera is in Mario mode and Mario is not swimming or in water with the metal cap
  */
-#ifdef ENABLE_VANILLA_CAM_PROCESSING
 void check_blocking_area_processing(const u8 *mode) {
     if (sMarioCamState->action & ACT_FLAG_METAL_WATER ||
                         *mode == DEEP_WATER_CAMERA_MODE || *mode == WATER_SURFACE_CAMERA_MODE) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-
+    
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if (gCurrLevelNum == LEVEL_DDD || gCurrLevelNum == LEVEL_WDW || gCurrLevelNum == LEVEL_COTMC) {
         sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
     if ((*mode == DEEP_WATER_CAMERA_MODE &&
             !(sMarioCamState->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER))) ||
          *mode == CAMERA_MODE_INSIDE_CANNON) {
         sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
     }
-#else
-void check_blocking_area_processing(UNUSED const u8 *mode) {
-    sStatusFlags |= CAM_FLAG_BLOCK_AREA_PROCESSING;
-#endif
 }
 
 // void cam_rr_exit_building_side(struct Camera *c) {
@@ -6372,7 +6367,7 @@ s16 camera_course_processing(struct Camera *c) {
             b++;
         }
     }
-#if defined(ENABLE_VANILLA_CAM_PROCESSING) && !defined(FORCED_CAMERA_MODE) && !defined(USE_COURSE_DEFAULT_MODE)
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     // Area-specific camera processing
     if (!(sStatusFlags & CAM_FLAG_BLOCK_AREA_PROCESSING)) {
         switch (gCurrLevelArea) {
@@ -6480,7 +6475,7 @@ s16 camera_course_processing(struct Camera *c) {
                 break;
         }
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
     sStatusFlags &= ~CAM_FLAG_BLOCK_AREA_PROCESSING;
     if (oldMode == CAMERA_MODE_C_UP) {
@@ -7528,7 +7523,7 @@ void star_dance_bound_yaw(struct Camera *c, s16 absYaw, s16 yawMax) {
  * Store the camera's focus in cvar9.
  */
 void cutscene_dance_closeup_start(struct Camera *c) {
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if ((gLastCompletedStarNum == 4) && (gCurrCourseNum == COURSE_JRB)) {
         star_dance_bound_yaw(c, 0x0, 0x4000);
     }
@@ -7538,7 +7533,7 @@ void cutscene_dance_closeup_start(struct Camera *c) {
     if ((gLastCompletedStarNum == 5) && (gCurrCourseNum == COURSE_WDW)) {
         star_dance_bound_yaw(c, 0x8000, 0x800);
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 
     vec3f_copy(sCutsceneVars[9].point, c->focus);
     //! cvar8 is unused in the closeup cutscene
@@ -7563,12 +7558,12 @@ void cutscene_dance_closeup_fly_above(struct Camera *c) {
     s16 pitch, yaw;
     f32 dist;
     s16 goalPitch = 0x1800;
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     if ((gLastCompletedStarNum == 6 && gCurrCourseNum == COURSE_SL) ||
         (gLastCompletedStarNum == 4 && gCurrCourseNum == COURSE_TTC)) {
         goalPitch = 0x800;
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     vec3f_get_dist_and_angle(sMarioCamState->pos, c->pos, &dist, &pitch, &yaw);
     approach_f32_asymptotic_bool(&dist, 800.f, 0.05f);
     approach_s16_asymptotic_bool(&pitch, goalPitch, 16);
@@ -7644,7 +7639,7 @@ void cutscene_dance_fly_away_start(struct Camera *c) {
         c->nextYaw = c->yaw;
     }
 
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
     // Restrict the camera yaw in tight spaces
     if ((gLastCompletedStarNum == 6) && (gCurrCourseNum == COURSE_CCM)) {
         star_dance_bound_yaw(c, 0x5600, 0x800);
@@ -7658,7 +7653,7 @@ void cutscene_dance_fly_away_start(struct Camera *c) {
     if ((gLastCompletedStarNum == 3) && (gCurrCourseNum == COURSE_RR)) {
         star_dance_bound_yaw(c, 0x0,    0x800);
     }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
 }
 
 void cutscene_dance_fly_away_approach_mario(struct Camera *c) {
@@ -8187,12 +8182,12 @@ void cutscene_goto_cvar_pos(struct Camera *c, f32 goalDist, s16 goalPitch, s16 r
         nextPitch = goalPitch;
         vec3f_copy(sCutsceneVars[0].point, sCutsceneVars[3].point);
         sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
+#ifdef ENABLE_VANILLA_CAM_PROCESSING
         if (gCurrLevelNum == LEVEL_TTM) {
             nextYaw = atan2s(sCutsceneVars[3].point[2] - c->areaCenZ,
                              sCutsceneVars[3].point[0] - c->areaCenX);
         }
-#endif
+#endif // ENABLE_VANILLA_CAM_PROCESSING
     } else {
         if (c->cutscene == CUTSCENE_PREPARE_CANNON) {
             vec3f_get_dist_and_angle(c->pos, sCutsceneVars[0].point, &curDist, &curPitch, &curYaw);
