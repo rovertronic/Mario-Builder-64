@@ -127,6 +127,8 @@ int sample_block(int index) {
                 }
             }
         } else if (buttonInfo->id == targetId) {
+            // Bugfix: Prevent sample from sampling the BTCM ! box when in vanilla (they share an object ID)
+            if ((i == MB64_BUTTON_EXCLA) && (mb64_lopt_game != MB64_GAME_BTCM)) continue;
             if (!isObject) mb64_mat_selection = targetBparam;
             set_toolbar(index, i, targetBparam);
             return TRUE;
