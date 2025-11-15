@@ -74,21 +74,6 @@ struct Surface *alloc_surface(u32 dynamic) {
 }
 
 /**
- * Iterates through the entire partition, clearing the surfaces.
- */
-void clear_spatial_partition(SpatialPartitionCell *cells) {
-    register s32 i = sqr(NUM_CELLS);
-
-    while (i--) {
-        (*cells)[SPATIAL_PARTITION_FLOORS] = NULL;
-        (*cells)[SPATIAL_PARTITION_CEILS] = NULL;
-        (*cells)[SPATIAL_PARTITION_WALLS] = NULL;
-
-        cells++;
-    }
-}
-
-/**
  * Add a surface to the correct cell list of surfaces.
  * @param type 0 = static, 1 = dynamic, 2 = block
  * @param cellX The X position of the cell in which the surface resides
@@ -141,7 +126,16 @@ void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface
         *list = newNode;
         return;
     }
+
     struct SurfaceNode *curNode = *list;
+
+    // Check if surface should be placed at the beginning of the list.
+    priority = curNode->surface->upperY * sortDir;
+    if (surfacePriority > priority) {
+        *list = newNode;
+        newNode->next = curNode;
+        return;
+    }
 
     // Loop until we find the appropriate place for the surface in the list.
     while (curNode->next != NULL) {
@@ -339,7 +333,8 @@ void load_area_terrain(s32 index, TerrainData *data) {
     gMainSurfaceNodesAllocated = 0;
     gMainSurfacesAllocated = 0;
 
-    clear_static_surfaces();
+    // Clear the static (level) surface partitions for new use.
+    bzero(gStaticSurfacePartition, sizeof(gStaticSurfacePartition));
 
     // A while loop iterating through each section of the level data. Sections of data
     // are prefixed by a terrain "type." This type is reused for surfaces as the surface
@@ -381,7 +376,7 @@ void clear_dynamic_surfaces(void) {
         gMainSurfacesAllocated = gNumStaticSurfaces;
         gMainSurfaceNodesAllocated = gNumStaticSurfaceNodes;
         if (sClearAllCells) {
-            clear_spatial_partition(&gDynamicSurfacePartition[0][0]);
+            bzero(gDynamicSurfacePartition, sizeof(gDynamicSurfacePartition));
         } else {
             for (u32 i = 0; i < sNumCellsUsed; i++) {
                 gDynamicSurfacePartition[sCellsUsed[i].z][sCellsUsed[i].x][sCellsUsed[i].partition] = NULL;
