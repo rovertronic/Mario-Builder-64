@@ -26,7 +26,7 @@ struct ObjectHitbox sPiranhaPlantFireHitbox = {
 
 void bhv_fire_piranha_plant_init(void) {
     if (obj_has_behavior(o,bhvFirePiranhaPlantBig)) {
-        o->oBehParams = 0x00010000;
+        SET_BPARAM2(o->oBehParams, 1);
         o->oWallHitboxRadius = 100.0f;
     }
 
@@ -34,7 +34,7 @@ void bhv_fire_piranha_plant_init(void) {
     o->oFirePiranhaPlantNeutralScale = GET_BPARAM2(o->oBehParams) ? 2.0f : 0.5f;
     obj_set_hitbox(o, &sFirePiranhaPlantHitbox);
 
-    if (GET_BPARAM2(o->oBehParams) != FIRE_PIRANHA_PLANT_BP_NORMAL) {
+    if (GET_BPARAM2(o->oBehParams) != 0) {
         //o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
         o->oHealth = 1;
 
@@ -62,7 +62,7 @@ static void fire_piranha_plant_act_hide(void) {
         if (o->oFirePiranhaPlantActive) {
             o->oFirePiranhaPlantActive = FALSE;
 
-            if (GET_BPARAM2(o->oBehParams) != FIRE_PIRANHA_PLANT_BP_NORMAL && o->oHealth == 0) {
+            if (GET_BPARAM2(o->oBehParams) != 0 && o->oHealth == 0) {
                 obj_die_if_health_non_positive();
             }
         } else if (o->oTimer > 100 && o->oDistanceToMario > 100.0f && o->oDistanceToMario < 800.0f) {

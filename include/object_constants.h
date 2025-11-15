@@ -2144,10 +2144,6 @@ enum oBehParams2ndByteTTCPitBlock {
     #define HAUNTED_CHAIR_ANIM_DEFAULT                      0x0
 
 /* Fire Piranha Plant */
-enum oBehParam2ndByteFirePiranhaPlant {
-    FIRE_PIRANHA_PLANT_BP_NORMAL,
-    FIRE_PIRANHA_PLANT_BP_THI,
-};
 enum oActionsFirePiranhaPlant {
     FIRE_PIRANHA_PLANT_ACT_HIDE,
     FIRE_PIRANHA_PLANT_ACT_GROW,

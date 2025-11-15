@@ -6238,7 +6238,7 @@ const BehaviorScript bhvTinyGoomba[] = {
 
 const BehaviorScript bhvScaredKoopa[] = {
     BEGIN(OBJ_LIST_PUSHABLE),
-    SET_INT(oBehParams, 0x00000100),
+    OR_LONG(oBehParams, 0x00000100),
     GOTO(bhvKoopa + 2),
 };
 
@@ -6976,7 +6976,6 @@ const BehaviorScript bhvFirePiranhaPlant[] = {
 const BehaviorScript bhvFirePiranhaPlantBig[] = {
     BEGIN(OBJ_LIST_GENACTOR),
     OR_LONG(oFlags, (OBJ_FLAG_ACTIVATES_FLOOR_SWITCH | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
-    SET_INT(oBehParams, 0x00010000),
     GOTO(bhvFirePiranhaPlant + 1 + 1),
 };
 
