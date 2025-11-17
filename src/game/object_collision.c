@@ -22,6 +22,7 @@ UNUSED struct Object *debug_print_obj_collision(struct Object *a) {
     return NULL;
 }
 
+s32 obj_attacked_by_object(struct Object *obj, s32 attackType);
 s32 detect_object_hitbox_overlap(struct Object *a, struct Object *b) {
     f32 dya_bottom = a->oPosY - a->hitboxDownOffset;
     f32 dyb_bottom = b->oPosY - b->hitboxDownOffset;

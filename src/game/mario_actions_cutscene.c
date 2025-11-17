@@ -197,7 +197,7 @@ s32 act_disappeared(struct MarioState *m) {
 }
 
 s32 act_reading_automatic_dialog(struct MarioState *m) {
-    u32 actionArg;
+    // u32 actionArg;
 
     m->actionState++;
     if (m->actionState == 2) {
@@ -211,7 +211,7 @@ s32 act_reading_automatic_dialog(struct MarioState *m) {
     } else {
         // set Mario dialog
         if (m->actionState == 9) {
-            actionArg = m->actionArg;
+            // actionArg = m->actionArg;
             // if (GET_HIGH_U16_OF_32(actionArg) == 0) {
             //     create_dialog_box(GET_LOW_U16_OF_32(actionArg));
             // } else {
@@ -480,7 +480,7 @@ s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
     struct Object *o = m->marioObj;
 
     if (o->header.gfx.animInfo.animID != targetAnimID) {
-        struct Animation **animPtrAddr = &evil_mario_anims[targetAnimID];
+        struct Animation **animPtrAddr = (struct Animation **)&evil_mario_anims[targetAnimID];
         struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
         struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
 
@@ -729,7 +729,7 @@ s32 launch_mario_until_land(struct MarioState *m, s32 endAction, s32 animation, 
 //     return FALSE;
 // }
 
-s32 act_unlocking_star_door(struct MarioState *m) {
+s32 act_unlocking_star_door(UNUSED struct MarioState *m) {
     // switch (m->actionState) {
     //     case ACT_STATE_UNLOCKING_STAR_DOOR_MOVE_POS:
     //         m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
@@ -770,7 +770,7 @@ s32 act_unlocking_star_door(struct MarioState *m) {
     return FALSE;
 }
 
-s32 act_entering_star_door(struct MarioState *m) {
+s32 act_entering_star_door(UNUSED struct MarioState *m) {
     // f32 targetDX;
     // f32 targetDZ;
     // s16 targetAngle;
@@ -998,7 +998,7 @@ s32 act_falling_exit_airborne(struct MarioState *m) {
     return FALSE;
 }
 
-s32 act_exit_land_save_dialog(struct MarioState *m) {
+s32 act_exit_land_save_dialog(UNUSED struct MarioState *m) {
     // s32 animFrame;
     // u16 random_range;
     // stationary_ground_step(m);

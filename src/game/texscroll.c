@@ -34,14 +34,14 @@ void scroll_minecraft_textures() {
 	u8 *waterTex = segmented_to_virtual(maker_minecraft_water_ci4);
 	waterTex += (16*8) * ((gGlobalTimer/2) % 32);
 	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCWater);
-	mat[8].words.w1 = waterTex;
+	mat[8].words.w1 = (uintptr_t)waterTex;
 
 	u8 *lavaTex = segmented_to_virtual(maker_lava_still_ci8);
 	lavaTex += (16*16) * ((gGlobalTimer/2) % 38);
 	mat = segmented_to_virtual(mat_maker_MakerMCLava);
-	mat[8].words.w1 = lavaTex;
+	mat[8].words.w1 = (uintptr_t)lavaTex;
 	mat = segmented_to_virtual(mat_maker_MakerMCFlowingLava);
-	mat[8].words.w1 = lavaTex;
+	mat[8].words.w1 = (uintptr_t)lavaTex;
 }
 
 

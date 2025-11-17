@@ -63,6 +63,8 @@ extern void *sand_effect_dl;
  * Initialize snow particles by allocating a buffer for storing their state
  * and setting a start amount.
  */
+
+ u32 envfx_init_lava_bubble();
 s32 envfx_init_snow(s32 mode) {
     switch (mode) {
         case ENVFX_UNINITIALIZED:
@@ -118,9 +120,9 @@ s32 envfx_init_snow(s32 mode) {
  * For water snow, this is dependent on how deep underwater you are.
  * Blizzard snows starts at the maximum amount and doesn't change.
  */
-void envfx_update_snowflake_count(s32 mode, Vec3s marioPos) {
+void envfx_update_snowflake_count(s32 mode, UNUSED Vec3s marioPos) {
     s32 globalTimer = gGlobalTimer;
-    f32 waterLevel;
+    // f32 waterLevel;
 
     switch (mode) {
         case ENVFX_ASHES:

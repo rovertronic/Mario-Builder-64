@@ -195,8 +195,6 @@ void bhv_looping_platform_init(void) {
  * wait for mario action.
  */
 static void platform_on_track_act_init(void) {
-    s32 i;
-
     o->oPlatformOnTrackPrevWaypoint = o->oPlatformOnTrackStartWaypoint;
     o->oPlatformOnTrackPrevWaypointFlags = WAYPOINT_FLAGS_NONE;
     o->oPlatformOnTrackBaseBallIndex = 0;

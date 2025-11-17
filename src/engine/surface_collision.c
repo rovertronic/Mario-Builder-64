@@ -12,6 +12,22 @@
 
 #include "mb64/collision.h"
 
+s32 surf_has_no_cam_collision(s32 surfaceType) {
+    switch (surfaceType) {
+        case SURFACE_NO_CAM_COLLISION:
+        case SURFACE_NO_CAM_COLLISION_77: // Unused
+        case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
+        case SURFACE_SWITCH:
+        case SURFACE_VANISH_CAP_WALLS:
+        case SURFACE_ICE:
+        case SURFACE_CRYSTAL:
+        case SURFACE_HANGABLE_MESH:
+            return TRUE;
+
+    }
+    return FALSE;
+}
+
 /**************************************************
  *                      WALLS                     *
  **************************************************/
@@ -367,12 +383,10 @@ extern f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf);
 static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z, f32 *pheight) {
     register struct Surface *surf, *ceil = NULL;
     register f32 height;
-    SurfaceType type = SURFACE_DEFAULT;
     // Stay in this loop until out of ceilings.
     while (surfaceNode != NULL) {
         surf = surfaceNode->surface;
         surfaceNode = surfaceNode->next;
-        type = surf->type;
 
         // Exclude all ceilings below the point
         if (y > surf->upperY) continue;

@@ -303,8 +303,7 @@ void huge_goomba_weakly_attacked(void) {
  */
 void bhv_goomba_update(void) {
     // PARTIAL_UPDATE
-    struct Object *flame;
-    s32 bparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
+    // s32 bparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
     f32 animSpeed;
 
     if (o->oBehParams2ndByte == 2) {
@@ -346,8 +345,7 @@ void bhv_goomba_update(void) {
         }
 
         obj_handle_attacks(&sGoombaHitbox, GOOMBA_ACT_ATTACKED_MARIO,
-                               sGoombaAttackHandlers[o->oGoombaSize & 0x1])
-                               && (o->oAction != GOOMBA_ACT_ATTACKED_MARIO);
+                               sGoombaAttackHandlers[o->oGoombaSize & 0x1]);
 
         cur_obj_set_home_if_safe();
         cur_obj_move_standard(-78);

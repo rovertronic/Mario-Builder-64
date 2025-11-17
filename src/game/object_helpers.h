@@ -68,7 +68,7 @@ Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphN
 Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_set_color_env(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context);
-Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context);
+// Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context);
 void obj_update_pos_from_parent_transformation(Mat4 mtx, struct Object *obj);
 void create_transformation_from_matrices(Mat4 a0, Mat4 a1, Mat4 a2);
 void obj_set_held_state(struct Object *obj, const BehaviorScript *heldBehavior);
@@ -126,6 +126,8 @@ struct Object *cur_obj_find_nearest_star_obj(const BehaviorScript * behavior, f3
 struct Object *find_unimportant_object(void);
 s32 count_unimportant_objects(void);
 s32 count_objects_with_behavior(const BehaviorScript *behavior);
+s32 count_star_triggers(void);
+s32 count_red_coins(void);
 struct Object *cur_obj_find_nearby_held_actor(const BehaviorScript *behavior, f32 maxDist);
 void cur_obj_change_action(s32 action);
 void cur_obj_set_vel_from_mario_vel(f32 f12,f32 f14);
@@ -186,6 +188,8 @@ void obj_spawn_loot_yellow_coins(struct Object *obj, s32 numCoins, f32 baseYVel)
 void cur_obj_spawn_loot_coin_at_mario_pos(void);
 s32 cur_obj_advance_looping_anim(void);
 s32 cur_obj_resolve_wall_collisions(void);
+void cur_obj_update_floor(void);
+void cur_obj_update_ceiling(void);
 void cur_obj_update_floor_and_walls(void);
 void cur_obj_move_standard(s16 steepSlopeAngleDegrees);
 void cur_obj_move_using_vel_and_gravity(void);
@@ -282,6 +286,7 @@ void cur_obj_align_gfx_with_floor(void);
 s32 mario_is_within_rectangle(s16 minX, s16 maxX, s16 minZ, s16 maxZ);
 void cur_obj_shake_screen(s32 shake);
 s32 obj_attack_collided_from_other_object(struct Object *obj, s32 attackType);
+s32 obj_coin_collected_by_other_object(struct Object *obj);
 s32 cur_obj_was_attacked_or_ground_pounded(void);
 void obj_copy_behavior_params(struct Object *dst, struct Object *src);
 void cur_obj_init_animation_and_anim_frame(s32 animIndex, s32 animFrame);

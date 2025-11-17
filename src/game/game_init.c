@@ -33,6 +33,8 @@
 #include "debug.h"
 #include "emutest.h"
 #include "mb64/main.h"
+#include "mb64/menu.h"
+#include "mb64/menu_engine.h"
 
 #include "lib/libpl/libpl.h"
 
@@ -1070,7 +1072,7 @@ void thread5_game_loop(UNUSED void *arg) {
 
     if (gSupportsLibpl) {
         libpl_create_auto_sd_card(16,255);
-        lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
+        const lpl_plugin_info *pluginInfo = libpl_get_graphics_plugin();
         gIsGliden = ((pluginInfo->plugin_id == LPL_GLN64)||(pluginInfo->plugin_id == LPL_OGRE)||(pluginInfo->plugin_id == LPL_GLIDE64));
         gIsWidescreen = (pluginInfo->capabilities & LPL_WIDESCREEN_VIEWPORT) != 0;
     }

@@ -32,6 +32,8 @@ void grindel_thwomp_act_falling(void) {
     }
 }
 
+void cur_obj_get_interact_floor(u8 move_standard_or_object_step);
+void cur_obj_interact_with_floor_switch(void);
 void grindel_thwomp_act_land(void) {
     o->oFloorHeight = find_floor_short(o->oPosX, o->oPosY+30.f, o->oPosZ, &o->oFloor);
     if (ABS(o->oPosY - o->oFloorHeight) < 30.0f) {
@@ -44,6 +46,7 @@ void grindel_thwomp_act_land(void) {
             cur_obj_play_sound_2(SOUND_OBJ_THWOMP);
         }
         o->oMoveFlags = OBJ_MOVE_LANDED;
+        // Thwomp only does certain floor interactions
         cur_obj_get_interact_floor(0);
         cur_obj_interact_with_floor_switch();
     }

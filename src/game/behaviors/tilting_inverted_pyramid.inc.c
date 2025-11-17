@@ -1249,6 +1249,7 @@ void bhv_podoboo_loop() {
 //         }
 //     }
 
+void reset_mario_pitch(struct MarioState *m);
 void noteblock_function(void) {
     load_object_collision_model();
     o->oGraphYOffset = (sins(o->oTimer*5000) * o->oVelY);

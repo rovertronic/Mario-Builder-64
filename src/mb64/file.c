@@ -188,10 +188,10 @@ void save_level(void) {
 
     for (s32 i = 0; i < MB64_MAX_TRAJECTORIES; i++) {
         for (s32 j = 0; j < MB64_TRAJECTORY_LENGTH; j++) {
-            mb64_save.trajectories[i][j].t = mb64_trajectory_list[i][j][0];
-            mb64_save.trajectories[i][j].x = POS_TO_GRID(mb64_trajectory_list[i][j][1]);
-            mb64_save.trajectories[i][j].y = POS_TO_GRID(mb64_trajectory_list[i][j][2]);
-            mb64_save.trajectories[i][j].z = POS_TO_GRID(mb64_trajectory_list[i][j][3]);
+            mb64_save.trajectories[i][j].t = mb64_trajectory_list[i][j].flags;
+            mb64_save.trajectories[i][j].x = POS_TO_GRID(mb64_trajectory_list[i][j].pos[0]);
+            mb64_save.trajectories[i][j].y = POS_TO_GRID(mb64_trajectory_list[i][j].pos[1]);
+            mb64_save.trajectories[i][j].z = POS_TO_GRID(mb64_trajectory_list[i][j].pos[2]);
         }
     }
 

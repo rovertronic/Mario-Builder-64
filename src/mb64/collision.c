@@ -19,12 +19,12 @@ u32 coords_in_range(s8 pos[3]) {
 }
 
 // Create new static surface
-struct Surface *alloc_surface(u32 dynamic);
+struct Surface *alloc_surface();
 void add_surface(struct Surface *surface, s32 dynamic);
 void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface);
 
 void mb64_create_surface(TerrainData v1[3], TerrainData v2[3], TerrainData v3[3], u32 isStatic) { 
-    struct Surface *surface = alloc_surface(!isStatic);
+    struct Surface *surface = alloc_surface();
 
     vec3_copy(surface->vertex1, v1);
     vec3_copy(surface->vertex2, v2);

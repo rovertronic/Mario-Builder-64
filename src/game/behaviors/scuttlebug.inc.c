@@ -195,8 +195,8 @@ void bhv_scuttlebug_loop(void) {
     }
 
     struct ObjectHitbox *hitbox_to_use;
-    Vec3f original_pos;
-    vec3f_copy(original_pos,&o->oPosX);
+    // Vec3f original_pos;
+    // vec3f_copy(original_pos,&o->oPosX);
 
     hitbox_to_use = &sScuttlebugHitbox;
     cur_obj_update_floor_and_walls();

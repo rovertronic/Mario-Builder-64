@@ -1,4 +1,4 @@
-static const u16 crab_anims_anim_ArmatureAction_values[] = {
+static const s16 crab_anims_anim_ArmatureAction_values[] = {
 	0x0000, 0x0000, 0xFFFE, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0xFFFF, 
 	0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 
 	0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 
@@ -191,7 +191,7 @@ static const u16 crab_anims_anim_ArmatureAction_indices[] = {
 	0x05D0, 0x003C, 0x060C, 
 };
 
-static const struct Animation crab_anims_anim_ArmatureAction[] = {
+static const struct Animation crab_anims_anim_ArmatureAction = {
 	0,
 	0,
 	0,

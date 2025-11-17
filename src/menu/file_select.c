@@ -17,14 +17,11 @@
 #include "game/segment2.h"
 #include "game/segment7.h"
 #include "game/spawn_object.h"
-#include "game/rumble_init.h"
 #include "sm64.h"
-#include "game/puppycamold.h"
-#include "actors/group0.h"
-#include "mb64/main.h"
 #include "seq_ids.h"
 
-#include "mb64/menu_engine.h"
+#include "mb64/main.h"
+#include "mb64/menu.h"
 
 #include "eu_translation.h"
 #if MULTILANG

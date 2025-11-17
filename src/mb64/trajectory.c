@@ -9,7 +9,7 @@
 #include "actors/maker/header.h"
 #include "engine/math_util.h"
 
-Trajectory mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH][4];
+struct Waypoint mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH];
 u16 mb64_trajectory_edit_index = 0;
 u8 mb64_trajectory_to_edit = 0;
 u8 mb64_trajectories_used = 0;
@@ -24,10 +24,10 @@ void init_trajectories(void) {
 
     for (int i = 0; i < MB64_MAX_TRAJECTORIES; i++) {
         for (int j = 0; j < MB64_TRAJECTORY_LENGTH; j++) {
-            mb64_trajectory_list[i][j][0] = mb64_save.trajectories[i][j].t;
-            mb64_trajectory_list[i][j][1] = GRID_TO_POS(mb64_save.trajectories[i][j].x);
-            mb64_trajectory_list[i][j][2] = GRID_TO_POS(mb64_save.trajectories[i][j].y);
-            mb64_trajectory_list[i][j][3] = GRID_TO_POS(mb64_save.trajectories[i][j].z);
+            mb64_trajectory_list[i][j].flags = mb64_save.trajectories[i][j].t;
+            mb64_trajectory_list[i][j].pos[0] = GRID_TO_POS(mb64_save.trajectories[i][j].x);
+            mb64_trajectory_list[i][j].pos[1] = GRID_TO_POS(mb64_save.trajectories[i][j].y);
+            mb64_trajectory_list[i][j].pos[2] = GRID_TO_POS(mb64_save.trajectories[i][j].z);
         }
     }
 }
@@ -41,7 +41,7 @@ void begin_editing_trajectory(void) {
     create_yellow_text("Building path in progress!\n\n\x10: Place waypoint\n\x11: Undo\nSTART: Confirm");
     toolbar_set_active(FALSE);
 
-    mb64_trajectory_list[mb64_trajectory_to_edit][0][0] = -1;
+    mb64_trajectory_list[mb64_trajectory_to_edit][0].flags = -1;
     mb64_trajectory_edit_index = 0;
 }
 
@@ -64,12 +64,12 @@ void remove_trajectory(u32 index) {
     mb64_trajectories_used--;
 }
 
-u32 trajectory_get_target_angle(s16 *yaw, s16 prevWaypoint[4], s16 targetWaypoint[4]);
+u32 trajectory_get_target_angle(s16 *yaw, struct Waypoint *prevWaypoint, struct Waypoint *targetWaypoint);
 void rotate_obj_toward_trajectory_angle(struct Object * obj, u32 traj_id) {
-    if ((mb64_trajectory_list[traj_id][0][0] == -1)||(mb64_trajectory_list[traj_id][1][0] == -1)) return;
+    if ((mb64_trajectory_list[traj_id][0].flags == -1)||(mb64_trajectory_list[traj_id][1].flags == -1)) return;
 
     s16 angle_to_trajectory;
-    if (!trajectory_get_target_angle(&angle_to_trajectory, mb64_trajectory_list[traj_id][0], mb64_trajectory_list[traj_id][1])) {
+    if (!trajectory_get_target_angle(&angle_to_trajectory, &mb64_trajectory_list[traj_id][0], &mb64_trajectory_list[traj_id][1])) {
         return;
     }
 
@@ -91,8 +91,8 @@ void generate_trajectory_gfx(void) {
     gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat_maker_MakerLineMat_layer1);
 
     for (s32 traj = 0; traj < mb64_trajectories_used; traj++) {
-        Trajectory (*curr_trajectory)[4] = mb64_trajectory_list[traj];
-        if (curr_trajectory[0][0] == -1) continue;
+        struct Waypoint *curr_trajectory = mb64_trajectory_list[traj];
+        if (curr_trajectory[0].flags == -1) continue;
         s16 pos1[3], pos2[3];
         s32 isLoop = FALSE;
 
@@ -112,18 +112,18 @@ void generate_trajectory_gfx(void) {
             }
         }
         s32 i;
-        for (i = 0; curr_trajectory[i+1][0] == i+1; i++) {
-            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
-            vec3_set(pos2, curr_trajectory[i+1][1], curr_trajectory[i+1][2], curr_trajectory[i+1][3]);
+        for (i = 0; curr_trajectory[i+1].flags == i+1; i++) {
+            vec3_set(pos1, curr_trajectory[i].pos[0], curr_trajectory[i].pos[1], curr_trajectory[i].pos[2]);
+            vec3_set(pos2, curr_trajectory[i+1].pos[0], curr_trajectory[i+1].pos[1], curr_trajectory[i+1].pos[2]);
             draw_dotted_line(pos1, pos2);
         }
         if (traj == mb64_trajectory_to_edit && mb64_menu_state == MB64_MAKE_TRAJECTORY) {
-            vec3_set(pos1, curr_trajectory[i][1], curr_trajectory[i][2], curr_trajectory[i][3]);
+            vec3_set(pos1, curr_trajectory[i].pos[0], curr_trajectory[i].pos[1], curr_trajectory[i].pos[2]);
             vec3_set(pos2, GRID_TO_POS(mb64_cursor_pos[0]), GRID_TO_POS(mb64_cursor_pos[1]), GRID_TO_POS(mb64_cursor_pos[2]));
             draw_dotted_line(pos1, pos2);
         }
         if (isLoop) {
-            vec3_set(pos1, curr_trajectory[0][1], curr_trajectory[0][2], curr_trajectory[0][3]);
+            vec3_set(pos1, curr_trajectory[0].pos[0], curr_trajectory[0].pos[1], curr_trajectory[0].pos[2]);
             draw_dotted_line(pos2, pos1);
         }
         display_cached_tris();
@@ -136,27 +136,27 @@ void generate_trajectory_gfx(void) {
 void sb_edit_trajectory(void) {
     if (mb64_trajectory_edit_index == 0) {
         // Initial placement on top of the object
-        mb64_trajectory_list[mb64_trajectory_to_edit][0][0] = 0;
-        mb64_trajectory_list[mb64_trajectory_to_edit][0][1] = o->oPosX;
-        mb64_trajectory_list[mb64_trajectory_to_edit][0][2] = o->oPosY;
-        mb64_trajectory_list[mb64_trajectory_to_edit][0][3] = o->oPosZ;
-        mb64_trajectory_list[mb64_trajectory_to_edit][1][0] = -1;
+        mb64_trajectory_list[mb64_trajectory_to_edit][0].flags = 0;
+        mb64_trajectory_list[mb64_trajectory_to_edit][0].pos[0] = o->oPosX;
+        mb64_trajectory_list[mb64_trajectory_to_edit][0].pos[1] = o->oPosY;
+        mb64_trajectory_list[mb64_trajectory_to_edit][0].pos[2] = o->oPosZ;
+        mb64_trajectory_list[mb64_trajectory_to_edit][1].flags = -1;
         mb64_trajectory_edit_index++; 
     } else {
         if (gPlayer1Controller->buttonPressed & A_BUTTON) {
             if (mb64_trajectory_edit_index == MB64_TRAJECTORY_LENGTH - 1) {
                 show_error("Maximum trajectory length reached! (max 50)");
             // i fucking hate this, worst code ever. this hopefully won't have floating point inaccuracies
-            } else if (mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][1] == o->oPosX
-                    && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][2] == o->oPosY
-                    && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1][3] == o->oPosZ) {
+            } else if (mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1].pos[0] == o->oPosX
+                    && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1].pos[1] == o->oPosY
+                    && mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index - 1].pos[2] == o->oPosZ) {
                 show_error("");
             } else {
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][0] = mb64_trajectory_edit_index;
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][1] = o->oPosX;
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][2] = o->oPosY;
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][3] = o->oPosZ;
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index+1][0] = -1;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index].flags = mb64_trajectory_edit_index;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index].pos[0] = o->oPosX;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index].pos[1] = o->oPosY;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index].pos[2] = o->oPosZ;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index+1].flags = -1;
                 mb64_trajectory_edit_index++;
                 play_place_sound(SOUND_MENU_CLICK_FILE_SELECT | SOUND_VIBRATO);
                 generate_object_preview();
@@ -166,7 +166,7 @@ void sb_edit_trajectory(void) {
                 show_error("Nothing to delete!");
             } else {
                 mb64_trajectory_edit_index--;
-                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index][0] = -1;
+                mb64_trajectory_list[mb64_trajectory_to_edit][mb64_trajectory_edit_index].flags = -1;
                 play_place_sound(SOUND_GENERAL_DOOR_INSERT_KEY | SOUND_VIBRATO);
                 generate_object_preview();
             }

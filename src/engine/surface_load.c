@@ -50,7 +50,7 @@ struct SurfaceNode *gBlockSurfaceNodePool;
 /**
  * Allocate the part of the surface node pool to contain a surface node.
  */
-static struct SurfaceNode *alloc_surface_node(u32 dynamic) {
+static struct SurfaceNode *alloc_surface_node() {
     struct SurfaceNode *node = &gSurfaceNodePool[*gSurfaceNodesAllocated];
     (*gSurfaceNodesAllocated)++;
 
@@ -63,7 +63,7 @@ static struct SurfaceNode *alloc_surface_node(u32 dynamic) {
  * Allocate the part of the surface pool to contain a surface and
  * initialize the surface.
  */
-struct Surface *alloc_surface(u32 dynamic) {
+struct Surface *alloc_surface() {
     struct Surface *surface = &gSurfacePool[*gSurfacesAllocated];
     (*gSurfacesAllocated)++;
 
@@ -101,7 +101,7 @@ void add_surface_to_cell(s32 type, s32 cellX, s32 cellZ, struct Surface *surface
 
     s32 surfacePriority = surface->upperY * sortDir;
 
-    struct SurfaceNode *newNode = alloc_surface_node(type != 0);
+    struct SurfaceNode *newNode = alloc_surface_node();
     newNode->surface = surface;
 
     if (type == 1) {
@@ -238,22 +238,6 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
     return surface;
 }
 
-s32 surf_has_no_cam_collision(s32 surfaceType) {
-    switch (surfaceType) {
-        case SURFACE_NO_CAM_COLLISION:
-        case SURFACE_NO_CAM_COLLISION_77: // Unused
-        case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
-        case SURFACE_SWITCH:
-        case SURFACE_VANISH_CAP_WALLS:
-        case SURFACE_ICE:
-        case SURFACE_CRYSTAL:
-        case SURFACE_HANGABLE_MESH:
-            return TRUE;
-
-    }
-    return FALSE;
-}
-
 /**
  * Load in the surfaces for a given surface type. This includes setting the flags,
  * exertion, and room.
@@ -322,11 +306,11 @@ void alloc_surface_pools(void) {
  * Process the level file, loading in vertices, surfaces, some objects, and environmental
  * boxes (water, gas, JRB fog).
  */
-void load_area_terrain(s32 index, TerrainData *data) {
+void load_area_terrain(UNUSED s32 index, TerrainData *data) {
     PUPPYPRINT_GET_SNAPSHOT();
     s32 terrainLoadType;
     TerrainData *vertexData = NULL;
-    u32 surfacePoolData;
+    // u32 surfacePoolData;
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
@@ -386,11 +370,6 @@ void clear_dynamic_surfaces(void) {
         sClearAllCells = FALSE;
     }
     profiler_collision_update(first);
-}
-
-void clear_block_surfaces(void) {
-    gBlockSurfacesAllocated = 0;
-    gBlockSurfaceNodesAllocated = 0;
 }
 
 /**

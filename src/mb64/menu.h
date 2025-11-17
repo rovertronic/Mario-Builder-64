@@ -30,17 +30,22 @@ void toolbar_set_active(int active);
 void create_toolbox(void);
 void init_toolbox(void);
 void settings_menu_create(void);
+void create_pause_menu(void);
 
+void init_main_menu(int page);
 void set_page_to_level_list(void);
 void set_initial_menu_page(void);
 
+void create_dialog_box(char *dialog);
+void create_dialog_box_with_response(char *dialog, void (*response)(int));
+void create_badge_dialog(int badgeid);
+void begin_badge_dialog_close(void);
+
 void show_error(char *msg);
 void show_tip(void);
-
 void create_coord_display(void);
 void show_coord_display(void);
 void hide_coord_display(void);
-
 void create_yellow_text(char *msg);
 void destroy_yellow_text(void);
 

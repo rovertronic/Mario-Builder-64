@@ -17,7 +17,7 @@
 #define MAX_UPDATES_PER_FRAME 4
 #endif
 
-extern u8 global_audio_hit;
+// extern u8 global_audio_hit;
 
 enum ChannelIndexes {
     SYNTH_CHANNEL_LEFT,

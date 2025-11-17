@@ -107,7 +107,7 @@ u8 MapOn;
 void display_rocket_boot(void) {
     //bubble_seg4_dl_0401DD60
     Mtx *mtx;
-    Mtx *smtx;
+    // Mtx *smtx;
     
     mtx = alloc_display_list(sizeof(*mtx));
 
@@ -259,7 +259,7 @@ void display_air(void) {
 void display_title(void) {
     //bubble_seg4_dl_0401DD60
     Mtx *mtx;
-    Mtx *smtx;
+    // Mtx *smtx;
     
     mtx = alloc_display_list(sizeof(*mtx));
 
@@ -729,12 +729,12 @@ void render_hud_breath_meter(void) {
  * Renders the amount of lives Mario has.
  */
 void render_hud_mario_lives(void) {
-    s8 showX = 0;
-    u8 wideoffet2 = 0;
+    // s8 showX = 0;
+    // u8 wideoffet2 = 0;
 
     if (gMarioState->gCurrMinigame == 0) {
         print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, ",%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
-        }
+    }
 }
 
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
@@ -775,7 +775,7 @@ void render_hud_coins(void) {
  s8 minuz[] = {45,0};
 void render_hud_stars(void) {
     u8 current_stars = mb64_play_stars;
-    u8 max_stars = mb64_play_stars_max;
+    // u8 max_stars = mb64_play_stars_max;
     s8 showX = 1;//(gHudDisplay.stars < 100);
 
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "#"); // 'Star' glyph
@@ -881,13 +881,8 @@ u8 lease = 2;
  * excluding the cannon reticle which detects a camera preset for it.
  */
 void render_hud(void) {
-    u8 wideoffet4 = 0;
     //gDPPipelineMode(gDisplayListHead++,G_PM_1PRIMITIVE);
     s16 hudDisplayFlags = gHudDisplay.flags;
-
-    if (0) {
-        wideoffet4 = 22;
-    }
 
     if (hudDisplayFlags == HUD_DISPLAY_NONE) {
         sPowerMeterHUD.animation = POWER_METER_HIDDEN;
@@ -911,8 +906,8 @@ void render_hud(void) {
         //     render_hud_cannon_reticle();
         // }
 
-    if (gCurrDemoInput != NULL) {
-        display_title();
+        if (gCurrDemoInput != NULL) {
+            display_title();
         }
 
         gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
@@ -923,7 +918,7 @@ void render_hud(void) {
             }
 
             //Use this later for the star radar badge
-            if (gMarioState->StarRadarExist == TRUE) {
+            if (gMarioState->StarRadarExist) {
                 gMarioState->StarRadarExist = FALSE;
                 print_text(gMarioState->ScreenPosX,gMarioState->ScreenPosY,"#");
             }
@@ -960,27 +955,6 @@ void render_hud(void) {
             if ((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER)||(mb64_sram_configuration.option_flags & (1<<OPT_SPEEDRUNTIMER))) {
                 render_hud_timer();
             }
-            /*
-            if (gMarioState->NewTimer > 0) {
-                if (!(gMarioState->Options & (1<<OPT_MINIMAP))) {
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),20, "j %d", gMarioState->NewTimer);
-                    }else{
-                    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X),90, "j %d", gMarioState->NewTimer);
-                    }
-                }
-            */
-
-            /*
-            if (gMarioState->Options & (1<<OPT_MINIMAP)) {
-                if (gCurrentArea->index == 1) {
-                    display_minimap();
-
-                    if (MapOn) {
-                        display_arrow();
-                    }
-                }
-            }
-            */
         }
     }
 }

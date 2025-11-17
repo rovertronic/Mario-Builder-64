@@ -25,25 +25,7 @@ void bhv_collect_star_init(void) {
 }
 
 void bhv_collect_star_loop(void) {
-    s8 starId;
-    starId = (o->oBehParams >> 24) & 0xFF;
-
     o->oFaceAngleYaw += 0x800;
-
-    /*
-    //STAR RADAR TRACKER
-    if ((gDialogCourseActNum-1 == starId)&&(o->oBehParams2ndByte == 0)) {
-        gMarioState->StarRadarLocation[0] = (s16)o->oPosX;
-        gMarioState->StarRadarLocation[1] = (s16)o->oPosY;
-        gMarioState->StarRadarLocation[2] = (s16)o->oPosZ;
-        gMarioState->StarRadarExist = TRUE;
-    }
-    */
-
-    // if ((gCurrLevelNum == LEVEL_SL)&&(gCurrAreaIndex==4)) {
-    //     o->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
-    // }
-
 
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         obj_mark_for_deletion(o);

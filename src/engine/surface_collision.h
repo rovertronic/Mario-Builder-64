@@ -45,6 +45,7 @@ struct WallCollisionData {
     /*0x18*/ struct Surface *walls[MAX_REFERENCED_WALLS];
 };
 
+s32 surf_has_no_cam_collision(s32 surfaceType);
 s32 f32_find_wall_collision(f32 *xPtr, f32 *yPtr, f32 *zPtr, f32 offsetY, f32 radius);
 s32 find_wall_collisions(struct WallCollisionData *colData);
 void resolve_and_return_wall_collisions(Vec3f pos, f32 offset, f32 radius, struct WallCollisionData *collisionData);

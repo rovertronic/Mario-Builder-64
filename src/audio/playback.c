@@ -1163,9 +1163,9 @@ s32 note_init_for_layer(struct Note *note, struct SequenceChannelLayer *seqLayer
         build_synthetic_wave(note, seqLayer);
     }
 
-    if (seqLayer->seqChannel->seqPlayer != &gSequencePlayers[SEQ_PLAYER_SFX] && seqLayer->seqChannel->instOrWave < 5) {
-        global_audio_hit = TRUE;
-    }
+    // if (seqLayer->seqChannel->seqPlayer != &gSequencePlayers[SEQ_PLAYER_SFX] && seqLayer->seqChannel->instOrWave < 5) {
+    //     global_audio_hit = TRUE;
+    // }
 
     note_init(note);
     return FALSE;

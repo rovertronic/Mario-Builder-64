@@ -10,3 +10,4 @@ void mb64_create_poly(struct mb64_terrain_poly *poly, s8 pos[3], u32 rot);
 void block_floor_collision(f32 x, f32 y, f32 z);
 void block_ceil_collision(f32 x, f32 y, f32 z);
 void block_wall_collision(f32 x, f32 y, f32 z, f32 r);
+void check_poles(struct MarioState *m);

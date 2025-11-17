@@ -1,4 +1,4 @@
-static const u16 Hammerbro_anim_ArmatureAction_001_values[] = {
+static const s16 Hammerbro_anim_ArmatureAction_001_values[] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 
 	0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
 	0x0000, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 
@@ -72,7 +72,7 @@ static const u16 Hammerbro_anim_ArmatureAction_001_indices[] = {
 	0x001F, 0x01D2, 0x001F, 0x01F1, 0x001F, 0x0210, 
 };
 
-static const struct Animation Hammerbro_anim_ArmatureAction_001[] = {
+static const struct Animation Hammerbro_anim_ArmatureAction_001 = {
 	0,
 	0,
 	0,

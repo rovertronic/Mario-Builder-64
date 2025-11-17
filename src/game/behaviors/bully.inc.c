@@ -292,7 +292,7 @@ void big_bully_spawn_star(void) {
 }
 
 void bhv_big_bully_with_minions_loop(void) {
-    s16 collisionFlags = 0;
+    // s16 collisionFlags = 0;
     // vec3f_copy(&o->oBullyPrevVec, &o->oPosVec);
 
     bully_check_mario_collision();

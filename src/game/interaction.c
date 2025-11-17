@@ -26,6 +26,7 @@
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
 #include "mb64/main.h"
+#include "mb64/collision.h"
 #include "mario_actions_automatic.h"
 
 u8  sDelayInvincTimer;
@@ -958,7 +959,7 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
     return FALSE;
 }
 
-u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
+u32 interact_warp_door(UNUSED struct MarioState *m, UNUSED u32 interactType, UNUSED struct Object *obj) {
 //     u32 doorAction = ACT_UNINITIALIZED;
 // #ifndef UNLOCK_ALL
 //     u32 saveFlags = save_file_get_flags();
@@ -1016,7 +1017,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
 }
 
 u32 get_door_save_file_flag(UNUSED struct Object *door) {
-
+    return 0;
 }
 
 u8 starbuf1[4];
@@ -1043,7 +1044,7 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
         if (numStars >= requiredNumStars) {
             u32 actionArg = should_push_or_pull_door(m, o);
             u32 enterDoorAction;
-            u32 doorSaveFileFlag;
+            // u32 doorSaveFileFlag;
 
             if (actionArg & 0x00000001) {
                 enterDoorAction = ACT_PULLING_DOOR;
@@ -1590,7 +1591,7 @@ u32 interact_hoot(struct MarioState *m, UNUSED u32 interactType, struct Object *
 // Called when Mario touches a cap powerup
 u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *obj) {
     u32 capFlag = get_mario_cap_flag(obj);
-    u16 capMusic = 0;
+    // u16 capMusic = 0;
     u16 capTime = 0;
 
     if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {

@@ -13,29 +13,25 @@
  */
 
 void shift_s(Gfx *dl, u32 cmd, u16 s) {
-    SetTileSize *tile = dl;
-    tile += cmd;
+    SetTileSize *tile = (SetTileSize *)&dl[cmd];
     tile->s += s;
     tile->u += s;
 }
 
 void shift_t(Gfx *dl, u32 cmd, u16 t) {
-    SetTileSize *tile = dl;
-    tile += cmd;
+    SetTileSize *tile = (SetTileSize *)&dl[cmd];
     tile->t += t;
     tile->v += t;
 }
 
 void shift_s_down(Gfx *dl, u32 cmd, u16 s) {
-    SetTileSize *tile = dl;
-    tile += cmd;
+    SetTileSize *tile = (SetTileSize *)&dl[cmd];
     tile->s -= s;
     tile->u += s;
 }
 
 void shift_t_down(Gfx *dl, u32 cmd, u16 t) {
-    SetTileSize *tile = dl;
-    tile += cmd;
+    SetTileSize *tile = (SetTileSize *)&dl[cmd];
     tile->t -= t;
     tile->v += t;
 }

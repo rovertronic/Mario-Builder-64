@@ -148,7 +148,7 @@ Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void 
     return NULL;
 }
 
-Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+// Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     // struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
 
     // if (callContext == GEO_CONTEXT_RENDER && gMarioObject != NULL) {
@@ -168,8 +168,8 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *conte
     //     switchCase->selectedCase = 0;
     // }
 
-    // return NULL;
-}
+//     return NULL;
+// }
 
 void obj_update_pos_from_parent_transformation(Mat4 a0, struct Object *a1) {
     f32 spC = a1->oParentRelativePosX;
@@ -797,27 +797,25 @@ struct Object *cur_obj_find_nearby_held_actor(const BehaviorScript *behavior, f3
     return foundObj;
 }
 
-s32 count_imbued_objects(s32 objectList, s32 imbue) {
-    struct ObjectNode *listHead = &gObjectLists[objectList];
-    struct ObjectNode *obj = listHead->next;
+s32 count_imbued_objects(s32 imbue) {
     s32 count = 0;
+    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
+        struct ObjectNode *listHead = &gObjectLists[imbueObjectLists[i]];
+        struct ObjectNode *obj = listHead->next;
 
-    while (obj != listHead) {
-        if (((struct Object *) obj)->oImbue == imbue) {
-            count++;
+        while (obj != listHead) {
+            if (((struct Object *) obj)->oImbue == imbue) {
+                count++;
+            }
+            obj = obj->next;
         }
-        obj = obj->next;
     }
 
     return count;
 }
 
 s32 count_star_triggers(void) {
-    s32 count = 0;
-    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
-        count += count_imbued_objects(imbueObjectLists[i], IMBUE_TRIGGER);
-    }
-    return count;
+    return count_imbued_objects(IMBUE_TRIGGER);
 }
 
 s32 count_red_coins(void) {
@@ -831,10 +829,7 @@ s32 count_red_coins(void) {
         }
         obj = obj->next;
     }
-    
-    for (s32 i = 0; i < ARRAY_COUNT(imbueObjectLists); i++) {
-        count += count_imbued_objects(imbueObjectLists[i], IMBUE_RED_COIN);
-    }
+    count += count_imbued_objects(IMBUE_RED_COIN);
 
     return count;
 }
@@ -2224,14 +2219,14 @@ s32 cur_obj_can_mario_activate_textbox_2(f32 radius, f32 height) {
     return cur_obj_can_mario_activate_textbox(radius, height, 0x1000);
 }
 
-static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
-    o->oDialogResponse = dialogResult;
-    o->oDialogState++;
+// static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
+//     o->oDialogResponse = dialogResult;
+//     o->oDialogState++;
 
-    if (!(dialogFlags & DIALOG_FLAG_TIME_STOP_ENABLED)) {
-        set_mario_npc_dialog(MARIO_DIALOG_STOP);
-    }
-}
+//     if (!(dialogFlags & DIALOG_FLAG_TIME_STOP_ENABLED)) {
+//         set_mario_npc_dialog(MARIO_DIALOG_STOP);
+//     }
+// }
 
 void cur_obj_align_gfx_with_floor(void) {
     struct Surface *floor;
@@ -2302,6 +2297,7 @@ s32 obj_attack_collided_from_other_object(struct Object *obj, s32 attackType) {
 }
 
 // for crowbar
+u32 interact_coin(struct MarioState *m, u32 interactType, struct Object *obj);
 s32 obj_coin_collected_by_other_object(struct Object *obj) {
     s32 ret = FALSE;
     for (s32 i = 0; i < obj->numCollidedObjs; i++) {

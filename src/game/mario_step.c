@@ -19,12 +19,13 @@
 #include "area.h"
 #include "platform_displacement.h"
 #include "mario_actions_airborne.h"
+#include "save_file.h"
 
 #include "mb64/main.h"
 
 #include "config.h"
 
-static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
+// static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
 
 struct Surface gWaterSurfacePseudoFloor = {
     SURFACE_VERY_SLIPPERY,      // type
@@ -196,9 +197,9 @@ u32 mario_push_off_steep_floor(struct MarioState *m, u32 action, u32 actionArg) 
     return set_mario_action(m, action, actionArg);
 }
 
-u32 mario_update_moving_sand(struct MarioState *m) {
-    struct Surface *floor = m->floor;
-    s32 floorType = floor->type;
+u32 mario_update_moving_sand(UNUSED struct MarioState *m) {
+    // struct Surface *floor = m->floor;
+    // s32 floorType = floor->type;
 
     // if (floorType == SURFACE_DEEP_MOVING_QUICKSAND || floorType == SURFACE_SHALLOW_MOVING_QUICKSAND
     //     || floorType == SURFACE_MOVING_QUICKSAND || floorType == SURFACE_INSTANT_MOVING_QUICKSAND) {
@@ -218,22 +219,22 @@ u32 mario_update_windy_ground(struct MarioState *m) {
     struct Surface *floor = m->floor;
 
     if (floor->type == SURFACE_HORIZONTAL_WIND) {
-        f32 pushSpeed;
+        // f32 pushSpeed;
         //s16 pushAngle = floor->force << 8;
 
-        if (m->action & ACT_FLAG_MOVING) {
+        // if (m->action & ACT_FLAG_MOVING) {
             //s16 pushDYaw = m->faceAngle[1] - pushAngle;
 
-            pushSpeed = m->forwardVel > 0.0f ? -m->forwardVel * 0.5f : -8.0f;
+            // pushSpeed = m->forwardVel > 0.0f ? -m->forwardVel * 0.5f : -8.0f;
 
             //if (pushDYaw > -0x4000 && pushDYaw < 0x4000) {
                 //pushSpeed *= -1.0f;
             //}
 
             //pushSpeed *= coss(pushDYaw);
-        } else {
-            pushSpeed = 3.2f + (gGlobalTimer % 4);
-        }
+        // } else {
+            // pushSpeed = 3.2f + (gGlobalTimer % 4);
+        // }
 
         //m->vel[0] += pushSpeed * sins(pushAngle);
         //m->vel[2] += pushSpeed * coss(pushAngle);

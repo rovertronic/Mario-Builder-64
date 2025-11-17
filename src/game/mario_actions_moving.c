@@ -150,7 +150,7 @@ void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
     s32 newFacingDYaw;
     s16 facingDYaw;
 
-    struct Surface *floor = m->floor;
+    // struct Surface *floor = m->floor;
     s16 slopeAngle = atan2s(m->floorNormal[2], m->floorNormal[0]);
     f32 steepness = sqrtf(m->floorNormal[0] * m->floorNormal[0] + m->floorNormal[2] * m->floorNormal[2]);
 
@@ -271,7 +271,7 @@ s32 update_sliding(struct MarioState *m, f32 stopSpeed) {
 void apply_slope_accel(struct MarioState *m) {
     f32 slopeAccel;
 
-    struct Surface *floor = m->floor;
+    // struct Surface *floor = m->floor;
     f32 steepness = sqrtf(sqr(m->floorNormal[0]) + sqr(m->floorNormal[2]));
 
     s16 floorDYaw = abs_angle_diff(m->floorYaw, m->faceAngle[1]);
@@ -1230,8 +1230,7 @@ s32 act_riding_shell_ground(struct MarioState *m) {
         m->interactObj = spawn_object(m->marioObj, MODEL_KOOPA_SHELL, bhvKoopaShell);
         m->usedObj = m->interactObj;
         m->riddenObj = m->interactObj;
-
-        attack_object(m->interactObj, 0x40);
+        m->interactObj->oAction = KOOPA_SHELL_ACT_MARIO_RIDING;
     }
 
     if (m->input & INPUT_A_PRESSED) {

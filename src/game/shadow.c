@@ -200,7 +200,7 @@ Gfx *create_shadow_below_xyz(Vec3f pos, s16 shadowScale, u8 shadowSolidity, s8 s
     f32 y = pos[1];
     f32 z = pos[2];
     s8 isPlayer   = (obj == gMarioObject);
-    s8 notHeldObj = (gCurGraphNodeHeldObject == NULL);
+    // s8 notHeldObj = (gCurGraphNodeHeldObject == NULL);
 
     floorHeight = find_floor(x, y, z, &floor);
 

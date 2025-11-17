@@ -639,7 +639,7 @@ Gfx *geo_mario_head_rotation(s32 callContext, struct GraphNode *node, Mat4 *mtx)
         if (gCurGraphNodeObject == &gMarioObject->header.gfx) {
             struct Object *crab = gMarioState->faceCrablet;
             if (crab) {
-                mtxf_copy(crab->transform,mtx);
+                mtxf_copy(crab->transform,*mtx);
                 crab->header.gfx.throwMatrix = &crab->transform;
 
                 Vec3f crabDisplacement, crabNewDisplacement;
@@ -759,7 +759,7 @@ Gfx *geo_switch_mario_cap_effect(s32 callContext, struct GraphNode *node, UNUSED
             }
         }
 
-        int isPreviewMario = obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO);
+        int isPreviewMario = obj_has_behavior((struct Object *)gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO);
         if (isPreviewMario) {
             switchCase->selectedCase = bodyState->modelState >> 8;
         }
@@ -800,7 +800,7 @@ Gfx *geo_switch_mario_cap_on_off(s32 callContext, struct GraphNode *node, UNUSED
             }
             next = next->next;
         }
-        if (obj_has_behavior(gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO)) {
+        if (obj_has_behavior((struct Object *)gCurGraphNodeObject,bhvCurrPreviewObject) && (mb64_place_mode == MB64_PM_ACTION && mb64_id_selection == OBJECT_TYPE_TEST_MARIO)) {
             switchCase->selectedCase = 0;
         } else if ((gCurGraphNodeObject != &gMarioObject->header.gfx)) {
             switchCase->selectedCase = 0;

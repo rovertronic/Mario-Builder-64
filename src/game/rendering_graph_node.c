@@ -608,38 +608,32 @@ __fpclassifyf(float f)
 #define fpclassify(f) __fpclassifyf(f)
 
 void Get_Screen_Coords(void) {
-        Vec3s marioPos3s;
-        s32 screenX;
-        s32 screenY;
-        f32 float1;
-        f32 float2;
+    Vec3s marioPos3s;
+    f32 float1;
+    f32 float2;
 
-        // Transform Mario's coordinates into view frustrum
-        linear_mtxf_mul_vec3_and_translate(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
+    // Transform Mario's coordinates into view frustrum
+    linear_mtxf_mul_vec3_and_translate(gCameraTransform, marioPos3s, gMarioState->StarRadarLocation);
 
-        // Perspective divide
-        if (marioPos3s[2] != 0) {
-            float1 = 0.5f - marioPos3s[0] / (f32)marioPos3s[2];
-            float2 = 0.5f - marioPos3s[1] / (f32)marioPos3s[2];
-            if ((fpclassify(float1) == FP_NAN) || (fpclassify(float1) == FP_SUBNORMAL)) {
-                float1 = 0.0f;
-                }
-            if ((fpclassify(float2) == FP_NAN) || (fpclassify(float2) == FP_SUBNORMAL)) {
-                float2 = 0.0f;
-                }
-            screenX = 2 * (float1) * (gCurGraphNodeRoot->width);
-            screenY = 2 * (float2) * (gCurGraphNodeRoot->height);
-            }
-
-        if (marioPos3s[2] > 0) {
-            gMarioState->StarRadarExist = FALSE;
-            return;
-        }
-
-        gMarioState->ScreenPosX = screenX;
-        gMarioState->ScreenPosY = screenY;
-
+    if (marioPos3s[2] > 0) {
+        gMarioState->StarRadarExist = FALSE;
+        return;
     }
+
+    // Perspective divide
+    if (marioPos3s[2] != 0) {
+        float1 = 0.5f - marioPos3s[0] / (f32)marioPos3s[2];
+        float2 = 0.5f - marioPos3s[1] / (f32)marioPos3s[2];
+        if ((fpclassify(float1) == FP_NAN) || (fpclassify(float1) == FP_SUBNORMAL)) {
+            float1 = 0.0f;
+        }
+        if ((fpclassify(float2) == FP_NAN) || (fpclassify(float2) == FP_SUBNORMAL)) {
+            float2 = 0.0f;
+        }
+        gMarioState->ScreenPosX = 2 * (float1) * (gCurGraphNodeRoot->width);
+        gMarioState->ScreenPosY = 2 * (float2) * (gCurGraphNodeRoot->height);
+    }
+}
 
 static void make_roll_matrix(Mtx *mtx, s16 angle) {
     Mat4 temp;

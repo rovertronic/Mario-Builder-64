@@ -1,4 +1,4 @@
-static const u16 chicken_anim_ArmatureAction_values[] = {
+static const s16 chicken_anim_ArmatureAction_values[] = {
 	0x0000, 0x0000, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x00DD, 
 	0x032F, 0x0693, 0x0A9F, 0x0EE3, 0x12EF, 0x1653, 0x18A6, 0x1982, 0x18A6, 
 	0x1653, 0x12EF, 0x0EE3, 0x0A9F, 0x0693, 0x032F, 0x00DD, 0xFFFF, 0xFFFF, 
@@ -30,7 +30,7 @@ static const u16 chicken_anim_ArmatureAction_indices[] = {
 	0x0096, 0x0015, 0x00AB, 
 };
 
-static const struct Animation chicken_anim_ArmatureAction[] = {
+static const struct Animation chicken_anim_ArmatureAction = {
 	0,
 	0,
 	0,

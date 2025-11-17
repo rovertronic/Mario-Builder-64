@@ -377,8 +377,6 @@ void bhv_crowbar_power_loop() {
 void bhv_crowbar_attack_loop() {
     o->oWallHitboxRadius = 80.f;
         s16 sp1E = object_step_without_floor_orient();
-        struct Object *sp1C;
-        //sp1C = cur_obj_nearest_object_with_behavior(bhvMetalCrate);
 
         o->oFaceAngleYaw += 8000;
             if (o->oFaceAngleYaw > 0x10000) {
@@ -465,109 +463,109 @@ void bhv_crowbar_attack_loop() {
 
 
 
-void bhv_item_bubble_loop() {
-    s32 behparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
+// void bhv_item_bubble_loop() {
+//     s32 behparam1 = (gCurrentObject->oBehParams >> 24) & 0xFF;
 
-    struct Object *bubble;
-    f32 BubDist;
-    BubDist = 999.0f;
+//     struct Object *bubble;
+//     f32 BubDist;
+//     BubDist = 999.0f;
 
-    bubble = cur_obj_nearest_object_with_behavior(bhvItemBubble);
+//     bubble = cur_obj_nearest_object_with_behavior(bhvItemBubble);
 
-    if (bubble != NULL) {
-            BubDist = lateral_dist_between_objects(o,bubble);
-            }
+//     if (bubble != NULL) {
+//             BubDist = lateral_dist_between_objects(o,bubble);
+//             }
 
-    switch (o->oAction) {
-        case 0:
-            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-            if (o->oDistanceToMario < 3000) {
-                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-                o->oAction = 1;
-                switch(o->oBehParams2ndByte) {
-                    case 0:
-                    o->prevObj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
-                    break;
-                    case 1:
-                    o->prevObj = spawn_object(o, MODEL_1UP, bhv1upSliding);
-                    break;
-                    case 2:
-                    o->prevObj = spawn_object(o, 0xEF, bhvMovingGreenCoin);
-                    break;
-                    case 3:
-                    o->prevObj = spawn_object(o, MODEL_GOOMBA, bhvGoomba);
-                    break;
-                    case 4:
-                    o->prevObj = spawn_object(o, MODEL_THWOMP, bhvThwomp);
-                    break;
-                    }
-                }
+//     switch (o->oAction) {
+//         case 0:
+//             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//             if (o->oDistanceToMario < 3000) {
+//                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+//                 o->oAction = 1;
+//                 switch(o->oBehParams2ndByte) {
+//                     case 0:
+//                     o->prevObj = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+//                     break;
+//                     case 1:
+//                     o->prevObj = spawn_object(o, MODEL_1UP, bhv1upSliding);
+//                     break;
+//                     case 2:
+//                     o->prevObj = spawn_object(o, 0xEF, bhvMovingGreenCoin);
+//                     break;
+//                     case 3:
+//                     o->prevObj = spawn_object(o, MODEL_GOOMBA, bhvGoomba);
+//                     break;
+//                     case 4:
+//                     o->prevObj = spawn_object(o, MODEL_THWOMP, bhvThwomp);
+//                     break;
+//                     }
+//                 }
 
-        break;
-        case 1:
-            //set object
-            o->prevObj->oTimer = 0;
-            o->prevObj->oVelY = 0;
-            o->prevObj->oPosX = o->oPosX;
-            o->prevObj->oPosZ = o->oPosZ;
-            o->prevObj->oAction = 0;
+//         break;
+//         case 1:
+//             //set object
+//             o->prevObj->oTimer = 0;
+//             o->prevObj->oVelY = 0;
+//             o->prevObj->oPosX = o->oPosX;
+//             o->prevObj->oPosZ = o->oPosZ;
+//             o->prevObj->oAction = 0;
 
 
-            o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-            o->prevObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//             o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//             o->prevObj->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
 
-            if (o->oDistanceToMario < 3000) {
-                o->prevObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-                o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+//             if (o->oDistanceToMario < 3000) {
+//                 o->prevObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+//                 o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 
-                if (o->oBehParams2ndByte > 2) {
-                    o->prevObj->oFaceAngleRoll = 0x7FFF;
-                    o->prevObj->oPosY = o->oPosY+140;
-                    }
-                    else
-                    {
-                    o->prevObj->oPosY = o->oPosY+70;
-                    }
+//                 if (o->oBehParams2ndByte > 2) {
+//                     o->prevObj->oFaceAngleRoll = 0x7FFF;
+//                     o->prevObj->oPosY = o->oPosY+140;
+//                     }
+//                     else
+//                     {
+//                     o->prevObj->oPosY = o->oPosY+70;
+//                     }
 
-                //Move
-                o->oPosY = o->oHomeY + (55.0f * sins(o->oTimer*500));
+//                 //Move
+//                 o->oPosY = o->oHomeY + (55.0f * sins(o->oTimer*500));
 
-                if (o->oBehParams2ndByte > 2) {
-                //CHASE MARIO CUZ UR EVIL
-                    if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
-                        o->oAngleToMario = cur_obj_angle_to_home();
-                        o->oForwardVel = 5.0f;
-                    } else {
-                        o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
-                        o->oForwardVel = 20.0f;
-                        }
+//                 if (o->oBehParams2ndByte > 2) {
+//                 //CHASE MARIO CUZ UR EVIL
+//                     if (cur_obj_lateral_dist_from_mario_to_home() > 2000.0f) {
+//                         o->oAngleToMario = cur_obj_angle_to_home();
+//                         o->oForwardVel = 5.0f;
+//                     } else {
+//                         o->oAngleToMario = obj_angle_to_object(o, gMarioObject);
+//                         o->oForwardVel = 20.0f;
+//                         }
 
-                    cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
-                    cur_obj_move_using_vel_and_gravity();
-                    }
-                }
+//                     cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
+//                     cur_obj_move_using_vel_and_gravity();
+//                     }
+//                 }
 
-            //collision
-            if ((o->oDistanceToMario < 200)||(BubDist < 200)) {
-                cur_obj_play_sound_2(SOUND_OBJ2_PIRANHA_PLANT_BITE);
-                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
-                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
-                spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
-                o->prevObj->oFaceAngleRoll = 0;
-                o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
-                o->oAction = 5;
-                o->oTimer = 0;
-                }
+//             //collision
+//             if ((o->oDistanceToMario < 200)||(BubDist < 200)) {
+//                 cur_obj_play_sound_2(SOUND_OBJ2_PIRANHA_PLANT_BITE);
+//                 spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+//                 spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+//                 spawn_object(o,MODEL_BUBBLE,bhvKoopaShellFlame);
+//                 o->prevObj->oFaceAngleRoll = 0;
+//                 o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+//                 o->oAction = 5;
+//                 o->oTimer = 0;
+//                 }
 
-        break;
-        case 5:
-            if (o->oTimer > 30) {
-                o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-                }
-        break;
-        }
+//         break;
+//         case 5:
+//             if (o->oTimer > 30) {
+//                 o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+//                 }
+//         break;
+//         }
 
-    }
+//     }
 
 //2024 rovert here, if you're reviewing my resume and stumble upon this code, no you didn't : )
 

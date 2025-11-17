@@ -34,6 +34,7 @@
 #include "mb64/main.h"
 #include "mb64/menu.h"
 #include "debug.h"
+#include "interaction.h"
 
 #include "config.h"
 
@@ -128,7 +129,7 @@ struct CreditsEntry sCreditsSequence[] = {
     // { LEVEL_DDD, 2, -111, -64, { 3948, 1185, -104 }, credits19 },
     // { LEVEL_CCM, 1, 33, 31, { 3169, -4607, 5240 }, credits20 },
     // { LEVEL_CASTLE_GROUNDS, 1, 1, -128, { 0, 906, -1200 }, NULL },
-    // { LEVEL_NONE, 0, 1, 0, { 0, 0, 0 }, NULL },
+    { LEVEL_NONE, 0, 1, 0, { 0, 0, 0 }, NULL },
 };
 
 struct MarioState gMarioStates[1];
@@ -225,7 +226,7 @@ void fade_into_special_warp(u32 arg, u32 color) {
     warp_special(arg);
 }
 
-void load_level_init_text(u32 arg) {
+void load_level_init_text(UNUSED u32 arg) {
     // s32 gotAchievement;
     // u32 dialogID = gCurrentArea->dialog[arg];
 
@@ -1203,8 +1204,9 @@ UNUSED static s32 play_mode_unused(void) {
 
 s32 update_level(void) {
     s32 changeLevel = FALSE;
+    gBlockSurfacesAllocated = 0;
+    gBlockSurfaceNodesAllocated = 0;
 
-    clear_block_surfaces();
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:
             changeLevel = play_mode_normal(); scroll_textures();

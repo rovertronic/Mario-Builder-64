@@ -1144,7 +1144,7 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
         if (flags & RAYCAST_FIND_WALL) {
             if (find_wall_collisions(&hitbox) != 0) {
                 Vec3f norm;
-                get_surface_normal(&norm,hitbox.walls[0]);
+                get_surface_normal(norm, hitbox.walls[0]);
                 f32 dot = vec3f_dot(dirn,norm);
                 if (dot <= -0.3f) {
                     *surf = hitbox.walls[0];
@@ -1162,7 +1162,7 @@ void fake_ray(Vec3f start, Vec3f dir, struct Surface ** surf, Vec3f hit, s32 fla
             f32 ceil_height = find_ceil(ray_pos[0],ray_pos[1] - FAKE_RAY_STEP_LEN,ray_pos[2], &found_ceiling);
             if (found_ceiling) {
                 Vec3f norm;
-                get_surface_normal(&norm,found_ceiling);
+                get_surface_normal(norm, found_ceiling);
 
                 if (ray_pos[1] > ceil_height-FAKE_RAY_STEP_LEN) {
                     *surf = found_ceiling;
@@ -1244,7 +1244,7 @@ void mode_8_directions_camera(struct Camera *c) {
         }
         vec3f_diff(camdir,c->pos,origin);
 
-        fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_CEIL);
+        fake_ray(origin, camdir, &surf, hitpos, RAYCAST_FIND_CEIL);
 
         if (surf) {
             c->pos[1] = hitpos[1];
@@ -1256,7 +1256,7 @@ void mode_8_directions_camera(struct Camera *c) {
 
         vec3f_diff(camdir,c->pos,origin);
 
-        fake_ray(origin, camdir, &surf, &hitpos, RAYCAST_FIND_WALL);
+        fake_ray(origin, camdir, &surf, hitpos, RAYCAST_FIND_WALL);
 
         if (surf) {
             Vec3f camera_hit_diff;
@@ -1502,7 +1502,7 @@ s32 update_fixed_camera(struct Camera *c, Vec3f focus, UNUSED Vec3f pos) {
     f32 focusFloorOff;
     f32 goalHeight;
     f32 ceilHeight;
-    f32 heightOffset;
+    f32 heightOffset = 0.f;
     f32 distCamToFocus;
     f32 scaleToMario = 0.5f;
     s16 pitch;
@@ -1921,8 +1921,8 @@ s32 update_behind_mario_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
  * "Behind Mario" mode: used when Mario is flying, on the water's surface, or shot from a cannon
  */
 s32 mode_behind_mario(struct Camera *c) {
-    struct MarioState *marioState = &gMarioStates[0];
-    struct Surface *floor;
+    // struct MarioState *marioState = &gMarioStates[0];
+    // struct Surface *floor;
     Vec3f newPos;
     f32 waterHeight;
     // f32 floorHeight;
@@ -2091,7 +2091,7 @@ s16 update_default_camera(struct Camera *c) {
     f32 dist;
     f32 zoomDist;
     f32 waterHeight;
-    f32 gasHeight;
+    // f32 gasHeight;
     s16 avoidYaw;
     s16 pitch;
     s16 yaw;
@@ -3537,31 +3537,31 @@ void init_camera(struct Camera *c) {
  *      This isolates the lower 16 'area' bits, subtracts 1 because areas are 1-indexed, and effectively
  *      modulo-4's the result, because each 8-bit mask only has 4 area bits for each level
  */
-void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera) {
-    s16 yaw;
-    s32 areaMaskIndex = gCurrLevelArea / 32;
-    s32 areaBit = 1 << (((gCurrLevelArea & 0x10) / 4) + (((gCurrLevelArea & 0xF) - 1) & 3));
+void zoom_out_if_paused_and_outside(UNUSED struct GraphNodeCamera *camera) {
+    // s16 yaw;
+    // s32 areaMaskIndex = gCurrLevelArea / 32;
+    // s32 areaBit = 1 << (((gCurrLevelArea & 0x10) / 4) + (((gCurrLevelArea & 0xF) - 1) & 3));
 
-    if (areaMaskIndex >= LEVEL_MAX / 2) {
-        areaMaskIndex = 0;
-        areaBit = 0;
-    }
+    // if (areaMaskIndex >= LEVEL_MAX / 2) {
+    //     areaMaskIndex = 0;
+    //     areaBit = 0;
+    // }
     if (gCameraMovementFlags & CAM_MOVE_PAUSE_SCREEN) {
         if (sFramesPaused >= 2) {
-            if (0) { //Remove camera zoom on pause due to ruining moon illusion
-            //if (sZoomOutAreaMasks[areaMaskIndex] & areaBit) {
+            //Remove camera zoom on pause due to ruining moon illusion
+//             if (sZoomOutAreaMasks[areaMaskIndex] & areaBit) {
 
-                camera->focus[0] = gCamera->areaCenX;
-                camera->focus[1] = (sMarioCamState->pos[1] + gCamera->areaCenY) / 2;
-                camera->focus[2] = gCamera->areaCenZ;
-                vec3f_get_yaw(camera->focus, sMarioCamState->pos, &yaw);
-                vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
-#ifdef ENABLE_VANILLA_CAM_PROCESSING
-                if (gCurrLevelNum != LEVEL_THI) {
-                    find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
-                }
-#endif // ENABLE_VANILLA_CAM_PROCESSING
-            }
+//                 camera->focus[0] = gCamera->areaCenX;
+//                 camera->focus[1] = (sMarioCamState->pos[1] + gCamera->areaCenY) / 2;
+//                 camera->focus[2] = gCamera->areaCenZ;
+//                 vec3f_get_yaw(camera->focus, sMarioCamState->pos, &yaw);
+//                 vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
+// #ifdef ENABLE_VANILLA_CAM_PROCESSING
+//                 if (gCurrLevelNum != LEVEL_THI) {
+//                     find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
+//                 }
+// #endif // ENABLE_VANILLA_CAM_PROCESSING
+//             }
         } else {
             sFramesPaused++;
         }
@@ -4644,7 +4644,7 @@ void shake_camera_roll(s16 *roll) {
  * Add an offset to the camera's yaw, used in levels that are inside a rectangular building, like the
  * pyramid or TTC.
  */
-s32 offset_yaw_outward_radial(struct Camera *c, s16 areaYaw) {
+s32 offset_yaw_outward_radial(UNUSED struct Camera *c, UNUSED s16 areaYaw) {
     s16 yawGoal = DEGREES(60);
     s16 yaw = sModeOffsetYaw;
     // Vec3f areaCenter;
@@ -8689,7 +8689,7 @@ void cutscene_dialog_move_mario_shoulder(struct Camera *c) {
 /**
  * Create the dialog with sCutsceneDialogID
  */
-void cutscene_dialog_create_dialog_box(struct Camera *c) {
+void cutscene_dialog_create_dialog_box(UNUSED struct Camera *c) {
     create_dialog_box("Arthur hasn't done these yet.\nWhat a fucking loser.");
     sCutsceneVars[8].angle[0] = 1;
 }
@@ -8754,10 +8754,10 @@ void cutscene_read_message_start(struct Camera *c) {
 //     offset_rotated_coords(c->focus, sMarioCamState->pos, dir, 0, 70.f, -20.f);
 // }
 
-// void cutscene_nothing(struct Camera *c) {
-//     vec3f_set(c->pos,gMarioObject->oPosX,0,gMarioObject->oPosZ);
-//     vec3f_set(c->focus,gMarioObject->oPosX+(50.0f*sins(gMarioState->faceAngle[1])),5,gMarioObject->oPosZ+(50.0f*coss(gMarioState->faceAngle[1])));
-// }
+void cutscene_nothing(struct Camera *c) {
+    vec3f_set(c->pos,gMarioObject->oPosX,0,gMarioObject->oPosZ);
+    vec3f_set(c->focus,gMarioObject->oPosX+(50.0f*sins(gMarioState->faceAngle[1])),5,gMarioObject->oPosZ+(50.0f*coss(gMarioState->faceAngle[1])));
+}
 
 /**
  * Cutscene that plays when Mario is reading a message (a sign or message on the wall)
@@ -10446,9 +10446,9 @@ struct Cutscene sCutsceneReadMessage[] = {
 //     { cutscene_2D, CUTSCENE_LOOP }
 // };
 
-// struct Cutscene sNothing[] = {
-//     { cutscene_nothing, 0 }
-// };
+struct Cutscene sNothing[] = {
+    { cutscene_nothing, 0 }
+};
 
 /* TODO:
  * The next two arrays are both related to levels, and they look generated.
@@ -10869,7 +10869,7 @@ struct Cutscene sCutsceneReadMessage[] = {
  * the duration they want the flag to be active.
  */
 void play_cutscene(struct Camera *c) {
-    s16 cutsceneDuration;
+    s16 cutsceneDuration = 0;
     u8 oldCutscene = c->cutscene;
 
     sStatusFlags &= ~CAM_FLAG_SMOOTH_MOVEMENT;
@@ -10928,7 +10928,7 @@ void play_cutscene(struct Camera *c) {
         // CUTSCENE(CUTSCENE_ENTER_PYRAMID_TOP,    sCutsceneEnterPyramidTop)
         // CUTSCENE(CUTSCENE_SSL_PYRAMID_EXPLODE,  sCutscenePyramidTopExplode)
         // CUTSCENE(CUTSCENE_2D, sCutscene2D)
-        // CUTSCENE(0xFF, sNothing)
+        CUTSCENE(0xFF, sNothing)
     }
 
 #undef CUTSCENE

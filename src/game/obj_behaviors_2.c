@@ -349,7 +349,6 @@ static s32 obj_resolve_collisions_and_turn(s16 targetYaw, s16 turnSpeed) {
 }
 
 static void obj_die_if_health_non_positive(void) {
-    s8 old_loot_coins = o->oNumLootCoins;
     s32 starheight = MB64_STAR_HEIGHT;
     if (o->oImbue == IMBUE_STAR) {
         if (cur_obj_has_behavior(bhvFlyGuy)

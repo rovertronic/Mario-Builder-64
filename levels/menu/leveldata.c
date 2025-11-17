@@ -447,6 +447,7 @@ const Gfx dl_menu_grabbing_hand[] = {
     gsSPBranchList(dl_menu_hand),
 };
 
+#ifdef VERSION_JP
 // 0x070073D0
 ALIGNED8 static const Texture texture_menu_hud_char_katakana_hu[] = {
 #include "levels/menu/main_menu_seg7.073D0.rgba16.inc.c"
@@ -586,6 +587,7 @@ ALIGNED8 static const Texture texture_menu_hud_char_katakana_n[] = {
 ALIGNED8 static const Texture texture_menu_hud_char_kana_dakuten_do[] = {
 #include "levels/menu/main_menu_seg7.0A9D0.rgba16.inc.c"
 };
+#endif
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
 // 0x0700AC48

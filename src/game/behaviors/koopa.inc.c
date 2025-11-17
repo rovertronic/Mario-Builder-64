@@ -84,13 +84,13 @@ void bhv_koopa_init(void) {
 
         //navigate trajectory until find -1
         u16 i = 0;
-        while (mb64_trajectory_list[o->oBehParams2ndByte][i][0] != -1) {
+        while (mb64_trajectory_list[o->oBehParams2ndByte][i].flags != -1) {
             i ++;
         }
         struct Object *koopa_flag = spawn_object(o,MODEL_NONE,bhvKoopaRaceEndpoint);
-        koopa_flag->oPosX = mb64_trajectory_list[o->oBehParams2ndByte][i-1][1];
-        koopa_flag->oPosY = mb64_trajectory_list[o->oBehParams2ndByte][i-1][2] - TILE_SIZE/2;
-        koopa_flag->oPosZ = mb64_trajectory_list[o->oBehParams2ndByte][i-1][3];
+        koopa_flag->oPosX = mb64_trajectory_list[o->oBehParams2ndByte][i-1].pos[0];
+        koopa_flag->oPosY = mb64_trajectory_list[o->oBehParams2ndByte][i-1].pos[1] - TILE_SIZE/2;
+        koopa_flag->oPosZ = mb64_trajectory_list[o->oBehParams2ndByte][i-1].pos[2];
         o->parentObj = koopa_flag;
 
         rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
@@ -665,6 +665,19 @@ static void koopa_the_quick_act_stop(void) {
     }
 }
 
+void koopa_the_quick_reset(void) {
+    vec3_copy(&o->oPosVec, &o->oHomeVec);
+    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
+    o->oPathedStartWaypoint = o->oPathedPrevWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
+    o->oAction = KOOPA_THE_QUICK_ACT_WAIT_BEFORE_RACE;
+    cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
+    spawn_mist_particles();
+
+    o->parentObj->oKoopaRaceEndpointRaceBegun = FALSE;
+    o->parentObj->oKoopaRaceEndpointRaceEnded = FALSE;
+    o->parentObj->oKoopaRaceEndpointKoopaFinished = FALSE;
+}
+
 /**
  * Wait for mario to approach, then show text indicating the status of the race.
  * If mario got to the finish line first and didn't use the cannon, then spawn
@@ -694,19 +707,6 @@ static void koopa_the_quick_act_after_race(void) {
 
         o->oFlags &= ~OBJ_FLAG_ACTIVE_FROM_AFAR;
     }
-}
-
-void koopa_the_quick_reset(void) {
-    vec3_copy(&o->oPosVec, &o->oHomeVec);
-    rotate_obj_toward_trajectory_angle(o,o->oBehParams2ndByte);
-    o->oPathedStartWaypoint = o->oPathedPrevWaypoint = mb64_trajectory_list[o->oBehParams2ndByte];
-    o->oAction = KOOPA_THE_QUICK_ACT_WAIT_BEFORE_RACE;
-    cur_obj_init_animation_with_sound(KOOPA_ANIM_STOPPED);
-    spawn_mist_particles();
-
-    o->parentObj->oKoopaRaceEndpointRaceBegun = FALSE;
-    o->parentObj->oKoopaRaceEndpointRaceEnded = FALSE;
-    o->parentObj->oKoopaRaceEndpointKoopaFinished = FALSE;
 }
 
 /**

@@ -114,7 +114,6 @@ void bhv_motos_carry_run(void) {
 }
 
 void bhv_motos_thrown(void) {
-    struct Object *coin;
     cur_obj_init_animation_with_sound(MOTOS_ANIM_DOWN_STOP);
     cur_obj_extend_animation_if_at_end();
     

@@ -12,9 +12,8 @@
 #include "game/debug.h"
 #include "engine/math_util.h"
 
-u8 global_audio_hit = FALSE;
+// u8 global_audio_hit = FALSE;
 
-#define aSetVolume32(pkt, f, v, tr) aSetVolume(pkt, f, v, (int16_t)((tr) >> 16), (int16_t)(tr))
 #define DMEM_ADDR_TEMP 0x0
 #define DMEM_ADDR_RESAMPLED 0x20
 #define DMEM_ADDR_RESAMPLED2 0x160

@@ -175,17 +175,17 @@ void df_ktq(s32 context) {
     if (o->behavior == segmented_to_virtual(bhvPreviewObject)) {
         // Get trajectory and iterate over it to find the end
         s32 traj_id = o->oBehParams2ndByte;
-        if ((mb64_trajectory_list[traj_id][0][0] == -1)||(mb64_trajectory_list[traj_id][1][0] == -1)) return;
+        if ((mb64_trajectory_list[traj_id][0].flags == -1)||(mb64_trajectory_list[traj_id][1].flags == -1)) return;
 
         for (s32 i = 0; i < MB64_TRAJECTORY_LENGTH; i++) {
-            if (mb64_trajectory_list[traj_id][i][0] == -1) {
+            if (mb64_trajectory_list[traj_id][i].flags == -1) {
                 // Spawn flagpole
                 struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
                 flagpole->oAnimations = (void *)koopa_flag_seg6_anims_06001028;
                 super_cum_working(flagpole, 0);
-                flagpole->oPosX = mb64_trajectory_list[traj_id][i-1][1];
-                flagpole->oPosY = mb64_trajectory_list[traj_id][i-1][2] - TILE_SIZE/2;
-                flagpole->oPosZ = mb64_trajectory_list[traj_id][i-1][3];
+                flagpole->oPosX = mb64_trajectory_list[traj_id][i-1].pos[0];
+                flagpole->oPosY = mb64_trajectory_list[traj_id][i-1].pos[1] - TILE_SIZE/2;
+                flagpole->oPosZ = mb64_trajectory_list[traj_id][i-1].pos[2];
                 break;
             }
         }

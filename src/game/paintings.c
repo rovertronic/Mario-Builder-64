@@ -1213,7 +1213,7 @@ void floor_painting_update(struct Painting *painting, struct Painting *paintingG
  */
 Gfx *geo_painting_draw(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     struct GraphNodeGenerated *gen = (struct GraphNodeGenerated *) node;
-    s32 group = (gen->parameter >> 8) & 0xFF;
+    // s32 group = (gen->parameter >> 8) & 0xFF;
     s32 id = gen->parameter & 0xFF;
     Gfx *paintingDlist = NULL;
     struct Painting **paintingGroup = NULL;//sPaintingGroups[group];
@@ -1224,9 +1224,9 @@ Gfx *geo_painting_draw(s32 callContext, struct GraphNode *node, UNUSED void *con
     } else if (callContext == GEO_CONTEXT_RENDER) {
 
         // Update the ddd painting before drawing
-        if (group == 1 && id == PAINTING_ID_DDD) {
-            move_ddd_painting(painting, 3456.0f, 5529.6f, 20.0f);
-        }
+        // if (group == 1 && id == PAINTING_ID_DDD) {
+        //     move_ddd_painting(painting, 3456.0f, 5529.6f, 20.0f);
+        // }
 
         // Determine if the painting is transparent
         set_painting_layer(gen, painting);

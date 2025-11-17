@@ -364,7 +364,7 @@ void obj_update_pos_vel_xz(void) {
  * Generates splashes if at surface of water, entering water, or bubbles
  * if underwater.
  */
-void obj_splash(f32 waterY, f32 objY) {
+void obj_splash(f32 waterY, UNUSED f32 objY) {
     // Spawns waves if near surface of water and plays a noise if entering.
     if ((waterY + 20) > o->oPosY && o->oPosY > (waterY - 60)) {
 

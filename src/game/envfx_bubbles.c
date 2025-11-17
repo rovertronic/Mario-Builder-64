@@ -542,39 +542,39 @@ void envfx_set_max_bubble_particles(s32 mode) {
  * lower modes are snow effects which are updated in a different function.
  * Returns a display list drawing the particles.
  */
-Gfx *envfx_update_bubbles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom) {
-    Gfx *gfx;
+// Gfx *envfx_update_bubbles(s32 mode, Vec3s marioPos, Vec3s camTo, Vec3s camFrom) {
+//     Gfx *gfx;
 
-    if (gEnvFxMode == ENVFX_UNINITIALIZED && !envfx_init_bubble(mode)) {
-        return NULL;
-    }
+//     if (gEnvFxMode == ENVFX_UNINITIALIZED && !envfx_init_bubble(mode)) {
+//         return NULL;
+//     }
 
-    envfx_set_max_bubble_particles(mode);
+//     envfx_set_max_bubble_particles(mode);
 
-    if (sBubbleParticleMaxCount == 0) {
-        return NULL;
-    }
+//     if (sBubbleParticleMaxCount == 0) {
+//         return NULL;
+//     }
 
-    switch (mode) {
-        case ENVFX_FLOWERS:
-            gfx = envfx_update_bubble_particles(ENVFX_FLOWERS, marioPos, camFrom, camTo);
-            break;
+//     switch (mode) {
+//         case ENVFX_FLOWERS:
+//             gfx = envfx_update_bubble_particles(ENVFX_FLOWERS, marioPos, camFrom, camTo);
+//             break;
 
-        case ENVFX_LAVA_BUBBLES:
-            gfx = envfx_update_bubble_particles(ENVFX_LAVA_BUBBLES, marioPos, camFrom, camTo);
-            break;
+//         case ENVFX_LAVA_BUBBLES:
+//             gfx = envfx_update_bubble_particles(ENVFX_LAVA_BUBBLES, marioPos, camFrom, camTo);
+//             break;
 
-        case ENVFX_WHIRLPOOL_BUBBLES:
-            gfx = envfx_update_bubble_particles(ENVFX_WHIRLPOOL_BUBBLES, marioPos, camFrom, camTo);
-            break;
+//         case ENVFX_WHIRLPOOL_BUBBLES:
+//             gfx = envfx_update_bubble_particles(ENVFX_WHIRLPOOL_BUBBLES, marioPos, camFrom, camTo);
+//             break;
 
-        case ENVFX_JETSTREAM_BUBBLES:
-            gfx = envfx_update_bubble_particles(ENVFX_JETSTREAM_BUBBLES, marioPos, camFrom, camTo);
-            break;
+//         case ENVFX_JETSTREAM_BUBBLES:
+//             gfx = envfx_update_bubble_particles(ENVFX_JETSTREAM_BUBBLES, marioPos, camFrom, camTo);
+//             break;
 
-        default:
-            return NULL;
-    }
+//         default:
+//             return NULL;
+//     }
 
-    return gfx;
-}
+//     return gfx;
+// }

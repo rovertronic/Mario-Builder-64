@@ -277,7 +277,7 @@ void bhv_bobomb_buddy_init(void) {
 }
 
 void bobomb_buddy_act_idle(void) {
-    s16 animFrame = o->header.gfx.animInfo.animFrame;
+    // s16 animFrame = o->header.gfx.animInfo.animFrame;
     if (o->oDistanceToMario < 1000.0f) {
         o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x140);
     }
@@ -340,13 +340,9 @@ void bobomb_buddy_act_idle(void) {
 // }
 
 void bobomb_buddy_act_talk(void) {
-    struct Object *keyobj;
-    u8 givestar;
-    u8 teledialog;
-
     if (set_mario_npc_dialog(MARIO_DIALOG_LOOK_FRONT) == MARIO_DIALOG_STATUS_SPEAK) {
         o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
-        if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, o->oBehParams2ndByte)) {
+        if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, NULL)) {
             set_mario_npc_dialog(MARIO_DIALOG_STOP);
             o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
             o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;

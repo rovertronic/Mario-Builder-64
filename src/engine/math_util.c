@@ -57,11 +57,11 @@ f32 sins(s16 int_angle) {
     return sinx;
 }
 
-float ALWAYS_INLINE read_float(f32 *location) {
+ALWAYS_INLINE float read_float(f32 *location) {
     return *location;
 }
 
-static ALWAYS_INLINE const s32 rf(float f) {
+static ALWAYS_INLINE s32 rf(float f) {
     s32 ret;
     asm("round.w.s %0, %0\n" // Convert to integer (rounding to nearest)
         "mfc1 %1, %0"        // Move the result from FP to a general-purpose register
