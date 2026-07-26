@@ -43,26 +43,17 @@ YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 # Actor Rules
 # --------------------------------------
 
-# Actor Directories
-KOOPA_DIRS       := 
-MR_I_DIRS        := mario
-COINS_DIRS       := mist explosion butterfly coin warp_pipe door bowser_key flame blue_fish pebble leaves mario_cap breath_meter power_meter mushroom_1up star sand dirt transparent_star white_particle wooden_signpost tree yoshi
-AMP_DIRS         := blue_coin_switch water_level_diamond chuckya amp cannon_lid cannon_base cannon_barrel purple_switch checkerboard_platform heart flyguy breakable_box exclamation_box vanilla_exclamation_box goomba bobomb metal_box exclamation_box_outline test_platform koopa_shell skeeter toad penguin ukiki
-MARIO_DIRS       := mario grindel bully motos pokey rotating_block_fire_bars bubble bowser_flame impact_smoke impact_ring snufit boo scuttlebug snowman spindrift mr_i_eyeball bowser bomb mr_i_iris  walk_smoke burn_smoke small_water_splash water_wave sparkle water_splash white_particle_small sparkle_animation king_bobomb koopa_flag koopa chuckya piranha_plant whomp chillychief moneybag wiggler wiggler_body_part lakitu_enemy spiny_egg spiny thwomp bullet_bill heave_ho
-
-# Actor Textures
-AMP_CHUCKYA_TEXTURES            := $(foreach dir,$(AMP_DIRS),        $(wildcard actors/$(dir)/*.png))
-COINS_PIPE_TEXTURES             := $(foreach dir,$(COINS_DIRS),      $(wildcard actors/$(dir)/*.png))
-KOOPA_LOG_TEXTURES              := $(foreach dir,$(KOOPA_DIRS),      $(wildcard actors/$(dir)/*.png))
-MARIO_WATER_TEXTURES            := $(foreach dir,$(MARIO_DIRS),      $(wildcard actors/$(dir)/*.png))
-MR_I_SWOOP_TEXTURES             := $(foreach dir,$(MR_I_DIRS),       $(wildcard actors/$(dir)/*.png))
+# Wait for all actor textures before building groups (HackerSM64 #941).
+# Only the groups MB64 actually builds are listed here.
+ACTOR_TEXTURES := $(wildcard actors/*/*.png)
+ACTOR_TEXTURES_INC_C := $(ACTOR_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Actor dependencies
-$(BUILD_DIR)/actors/group0.o:  $(MARIO_WATER_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group14.o: $(KOOPA_LOG_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/group17.o: $(MR_I_SWOOP_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/common0.o: $(AMP_CHUCKYA_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/actors/common1.o: $(COINS_PIPE_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
+$(BUILD_DIR)/actors/group0.o:  | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/group14.o: | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/group17.o: | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/common0.o: | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/common1.o: | $(ACTOR_TEXTURES_INC_C)
 
 # Actor Elf Files
 $(BUILD_DIR)/actors/group0.elf:  SEGMENT_ADDRESS := 0x04000000

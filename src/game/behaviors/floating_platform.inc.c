@@ -65,7 +65,6 @@ void bhv_floating_platform_loop(void) {
 
     o->oHomeY = floating_platform_find_home_y();
 
-    // o->oAction = o->oFloatingPlatformIsOnFloor;
     if (o->oFloatingPlatformIsOnFloor) {
         o->oPosY = o->oHomeY;
     } else {
