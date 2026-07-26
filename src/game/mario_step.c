@@ -21,7 +21,7 @@
 #include "mario_actions_airborne.h"
 #include "save_file.h"
 
-#include "mb64/main.h"
+#include "mb64/mb64.h"
 
 #include "config.h"
 

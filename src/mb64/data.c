@@ -1,7 +1,18 @@
-#include "main.h"
-#include "gfx.h"
 #include "data.h"
-#include "display_funcs.h"
+#include "editor/main.h"
+#include "editor/camera.h"
+#include "editor/grid.h"
+#include "editor/object.h"
+#include "editor/display_funcs.h"
+#include "menu/toolbox.h"
+#include "menu/settings.h"
+#include "file.h"
+#include "model_ids.h"
+#include "seq_ids.h"
+#include "sounds.h"
+#include "surface_terrains.h"
+#include "levels/scripts.h"
+#include "game/level_geo.h"
 
 #include "segment_symbols.h"
 
@@ -1145,7 +1156,7 @@ struct mb64_object_info mb64_object_type_list[] = {
 /* OBJECT_TYPE_BIG_BULLY */     {"Big Bully",               mat_b_btn_boss_bully,   bhvBigBully,       0,           MODEL_BULLY,               OBJ_TYPE_IMBUABLE,       OBJ_OCCUPY_FULL,  0, 0, 2.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
 /* OBJECT_TYPE_BIG_CHILL_BULLY */ {"Big Chill Bully",       mat_b_btn_boss_chillbully,bhvBigBully,     0,           MODEL_CHILL_BULLY,         OBJ_TYPE_IMBUABLE,       OBJ_OCCUPY_FULL,  0, 0, 2.0f, bully_seg5_anims_0500470C, NULL, SOUND_OBJ2_LARGE_BULLY_ATTACKED},
 /* OBJECT_TYPE_WIGGLER */       {"Wiggler",                 mat_b_btn_boss_wiggler, bhvWigglerHead,    0,           MODEL_WIGGLER_HEAD,        OBJ_TYPE_IMBUABLE,       OBJ_OCCUPY_FULL,  0, 5, 4.0f, wiggler_seg5_anims_0500EC8C, df_wiggler, SOUND_OBJ_WIGGLER_TALK},
-/* OBJECT_TYPE_BOWSER */        {"Bowser",                  mat_b_btn_boss_bowser,  bhvBowser,         0,           MODEL_MAKER_BOWSER,        OBJ_TYPE_IMBUABLE,       OBJ_OCCUPY_FULL,  0, 24, 1.0f, bowser_anims, df_booser, SOUND_OBJ2_BOWSER_ROAR},
+/* OBJECT_TYPE_BOWSER */        {"Bowser",                  mat_b_btn_boss_bowser,  bhvBowser,         0,           MODEL_MAKER_BOWSER,        OBJ_TYPE_IMBUABLE,       OBJ_OCCUPY_FULL,  0, 24, 1.0f, bowser_anims, df_bowser, SOUND_OBJ2_BOWSER_ROAR},
 /* OBJECT_TYPE_PLATFORM_TRACK */ {"Activated",              mat_b_btn_checker,      bhvPlatformOnTrack, TILE_SIZE/2, MODEL_CHECKERBOARD_PLATFORM, OBJ_TYPE_TRAJECTORY,  OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO},
 /* OBJECT_TYPE_PLATFORM_LOOPING */ {"Looping",              mat_b_btn_checker,      bhvLoopingPlatform, TILE_SIZE/2, MODEL_LOOPINGP,           OBJ_TYPE_TRAJECTORY,     OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, NULL, SOUND_ENV_ELEVATOR1 | SOUND_VIBRATO},
 /* OBJECT_TYPE_BOWLING_BALL */  {"Bowling Ball",            mat_b_btn_bball,        bhvBobBowlingBallSpawner, TILE_SIZE/2, MODEL_BOWLING_BALL, OBJ_TYPE_BILLBOARD | OBJ_TYPE_TRAJECTORY, OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, NULL, SOUND_GENERAL_QUIET_POUND1 | SOUND_VIBRATO},
@@ -1622,15 +1633,6 @@ struct mb64_template mb64_templates[] = {
     /* Spooky */ {{6, 34},   3, 4, MB64_THEME_BBH,       3, 6,  2, 0,    2,  FALSE, 0},   // BBH, Ghostly Galaxy
     /* Castle */ {{13,14},   0, 9, MB64_THEME_CASTLE,    0, 16, 5, 0,    2,  FALSE, 0},   // Castle, Cosmic Castle
     /* Retro */  {{96,96},   0, 1, MB64_THEME_RETRO,     0, 0,  4, 0,    2,  FALSE, 0},   // RETRO!!!!!!!!!
-};
-
-u8 mb64_text_colors[][3] = {
-    {255, 255, 255},
-    {255, 255, 0},
-    {150, 150, 150},
-    {150, 150, 0},
-    {255, 0, 0},
-    {0, 150, 255},
 };
 
 #define IMBUE_YELLOW 0xFFFF00FF

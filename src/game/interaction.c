@@ -25,7 +25,7 @@
 #include "config.h"
 #include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
-#include "mb64/main.h"
+#include "mb64/editor/main.h"
 #include "mb64/collision.h"
 #include "mario_actions_automatic.h"
 

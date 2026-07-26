@@ -28,6 +28,8 @@
 #include "save_file.h"
 #include "platform_displacement.h"
 #include "audio/external.h"
+#include "mb64/editor/object.h"
+#include "mb64/editor/main.h"
 
 static s32 clear_move_flag(u32 *bitSet, s32 flag);
 
@@ -539,11 +541,6 @@ void cur_obj_scale(f32 scale) {
 void cur_obj_init_animation(s32 animIndex) {
     struct Animation **anims = o->oAnimations;
     geo_obj_init_animation(&o->header.gfx, &anims[animIndex]);
-}
-
-void super_cum_working(struct Object *obj, s32 animIndex) {
-    struct Animation **anims = obj->oAnimations;
-    geo_obj_init_animation(&obj->header.gfx, &anims[animIndex]);
 }
 
 void cur_obj_init_animation_with_sound(s32 animIndex) {

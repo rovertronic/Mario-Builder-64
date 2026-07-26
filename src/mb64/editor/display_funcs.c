@@ -1,17 +1,22 @@
+#include "display_funcs.h"
 #include "main.h"
+#include "grid.h"
+#include "camera.h"
+#include "object.h"
 #include "trajectory.h"
+#include "model_ids.h"
+#include "include/config/config_objects.h"
 
 #include "game/area.h"
 #include "game/game_init.h"
 #include "game/object_list_processor.h"
+#include "game/object_helpers.h"
 #include "behavior_data.h"
 #include "engine/math_util.h"
 
 // Copies behavior of parent object
 // Also converts to fake segmented address
 #define PREVIEW_BHV ((void *)VIRTUAL_TO_PHYSICAL(o->behavior))
-
-extern void super_cum_working(struct Object *obj, s32 animIndex);
 
 void df_follow_parent(UNUSED s32 context) {
     Vec3f tmp;
@@ -32,7 +37,6 @@ void df_hide_during_screenshot(UNUSED s32 context) {
     }
 }
 
-extern s16 mb64_camera_angle;
 void df_orange_number(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
         o->oHomeX = o->oPosX;
@@ -164,7 +168,7 @@ void df_exbox(s32 context) {
 }
 
 void df_koopa(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, 7);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, 7);
 }
 
 #include "actors/group17.h"
@@ -182,7 +186,7 @@ void df_ktq(s32 context) {
                 // Spawn flagpole
                 struct Object *flagpole = spawn_object(o, MODEL_KOOPA_FLAG, bhvPreviewObject);
                 flagpole->oAnimations = (void *)koopa_flag_seg6_anims_06001028;
-                super_cum_working(flagpole, 0);
+                obj_init_animation(flagpole, 0);
                 flagpole->oPosX = mb64_trajectory_list[traj_id][i-1].pos[0];
                 flagpole->oPosY = mb64_trajectory_list[traj_id][i-1].pos[1] - TILE_SIZE/2;
                 flagpole->oPosZ = mb64_trajectory_list[traj_id][i-1].pos[2];
@@ -217,7 +221,7 @@ void df_piranha_bubble(s32 context) {
 }
 void df_piranha(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) {
-        super_cum_working(o, 8);
+        obj_init_animation(o, 8);
         struct Object *bubble = spawn_object(o,MODEL_BUBBLE, PREVIEW_BHV);
         bubble->oPreviewObjDisplayFunc = (void *)df_piranha_bubble;
         bubble->oParentRelativePosZ = 180.0f;
@@ -228,13 +232,13 @@ void df_piranha(s32 context) {
 }
 
 void df_chuckya(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, 4);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, 4);
 }
 void df_kingbomb(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, 5);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, 5);
 }
 void df_moneybag(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, 4);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, 4);
 }
 void df_blizzard(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) o->oAction = 0;
@@ -300,12 +304,12 @@ void df_mri(s32 context) {
 
     o->oFaceAngleYaw = (s16)(256 * gGlobalTimer);
 }
-void df_booser(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, BOWSER_ANIM_IDLE);
+void df_bowser(s32 context) {
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, BOWSER_ANIM_IDLE);
 }
 
 void df_skeeter(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, SKEETER_ANIM_WATER_IDLE);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, SKEETER_ANIM_WATER_IDLE);
 }
 
 void df_spinner_flame(s32 context) {
@@ -497,7 +501,7 @@ void df_wiggler(s32 context) {
         for (u8 i = 1; i < size; i++) {
             struct Object *part = spawn_object(o,MODEL_WIGGLER_BODY,PREVIEW_BHV);
             part->oAnimations = (void *)wiggler_seg5_anims_0500C874;
-            super_cum_working(part, 0);
+            obj_init_animation(part, 0);
             part->oFaceAngleYaw = o->oFaceAngleYaw;
             obj_scale(part, 4.0f);
             part->oPosX -= sins(o->oFaceAngleYaw) * 140.0f * i;
@@ -554,11 +558,11 @@ void df_mask(s32 context) {
 }
 
 void df_toad(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, TOAD_ANIM_WEST_WAVING_BOTH_ARMS);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, TOAD_ANIM_WEST_WAVING_BOTH_ARMS);
 } 
 
 void df_ukiki(s32 context) {
-    if (context == MB64_DF_CONTEXT_INIT) super_cum_working(o, UKIKI_ANIM_SCREECH);
+    if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, UKIKI_ANIM_SCREECH);
 }
 
 void df_conveyor(s32 context) {

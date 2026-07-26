@@ -1,12 +1,19 @@
-#include "menu_engine.h"
+#include "settings.h"
+
+#include "main.h"
+#include "misc.h"
+#include "toolbox.h"
 
 #include "game/level_update.h"
 #include "actors/bigpainting2/header.h"
 #include "game/mario.h"
 
-#include "main.h"
-#include "gfx.h"
-#include "menu.h"
+#include "mb64/data.h"
+#include "mb64/file.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/camera.h"
+#include "mb64/editor/object.h"
+#include "mb64/gfx/gfx.h"
 
 MenuComponent *settingsRoot = NULL;
 

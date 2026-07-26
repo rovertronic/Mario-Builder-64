@@ -2576,6 +2576,14 @@ const Texture texture_transition_showrunner[] = {
 #include "textures/segment2/showrunner_transition.ia8.inc.c"
 };
 
+ALIGNED8 const Texture mb64_painting_frame[] = {
+#include "textures/segment2/mb64_painting_frame.rgba16.inc.c"
+};
+
+ALIGNED8 const Texture mb64_painting_unknown[] = {
+#include "textures/segment2/mb64_painting_unknown.rgba16.inc.c"
+};
+
 // Unreferenced light group
 
 // 0x02014470 - 0x020144B0

@@ -21,7 +21,7 @@
 #include "puppycam2.h"
 #include "ingame_menu.h"
 #include "puppycamold.h"
-#include "mb64/main.h"
+#include "mb64/editor/main.h"
 
 #ifdef UNIQUE_SAVE_DATA
 u16 MENU_DATA_MAGIC = 0x4849;

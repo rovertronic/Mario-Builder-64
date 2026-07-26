@@ -1,10 +1,14 @@
-#include "menu_engine.h"
-#include "menu.h"
+#include "main.h"
+#include "misc.h"
+
+#include "mb64/editor/main.h"
+#include "mb64/file.h"
 
 #include "game/sram.h"
 #include "lib/libpl/libpl.h"
 #include "levels/menu/header.h"
 #include "game/emutest.h"
+#include "game/segment2.h"
 #include <string.h>
 
 char *info_credits[] = {
@@ -320,7 +324,7 @@ void main_menu_page_change_animate(FrameComponent *page, int out);
 #define levelIndex params[0].asInt
 void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
     FrameComponent *f = (FrameComponent *)m;
-    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_piktcher);
+    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_thumbnail);
 
     x += m->xpos;
     y += m->ypos;
@@ -343,7 +347,7 @@ void component_main_menu_level_render(MenuComponent *m, s16 x, s16 y) {
         gSPDisplayList(gDisplayListHead++, &bigpainting_bigpainting_mesh_part1);
         gDPLoadSync(gDisplayListHead++);
         if (f->levelIndex == -1) {
-            gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mystery_painting_rgba16);
+            gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mb64_painting_unknown);
         } else {
             gDPSetTextureImage(gDisplayListHead++,G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, (*u16_array)[f->levelIndex]);
         }

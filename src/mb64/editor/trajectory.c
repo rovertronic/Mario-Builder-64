@@ -1,7 +1,10 @@
-#include "main.h"
 #include "trajectory.h"
-#include "gfx.h"
-#include "menu.h"
+#include "main.h"
+#include "object.h"
+#include "mb64/file.h"
+
+#include "mb64/menu/misc.h"
+#include "mb64/menu/toolbox.h"
 
 #include <PR/gbi.h>
 #include "game/game_init.h"

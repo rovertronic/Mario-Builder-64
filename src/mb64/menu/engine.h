@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include "file.h"
 
 #include "engine/math_util.h"
 #include "audio/external.h"
@@ -9,6 +8,7 @@
 #include "game/game_init.h"
 #include "game/ingame_menu.h"
 #include "game/geo_misc.h"
+#include "sounds.h"
 
 #include "actors/uiCorner/header.h"
 

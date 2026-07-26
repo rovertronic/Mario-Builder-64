@@ -27,8 +27,9 @@
 #include "sound_init.h"
 #include "rumble_init.h"
 #include "actors/group0.h"
-#include "mb64/main.h"
-#include "mb64/menu.h"
+#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
+#include "mb64/menu/dialog.h"
 
 ModelID32 gStarModelLastCollected = MODEL_STAR;
 

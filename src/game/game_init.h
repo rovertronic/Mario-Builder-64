@@ -13,8 +13,6 @@
 #define MARIO_ANIMS_POOL_SIZE 0x4000
 #define DEMO_INPUTS_POOL_SIZE 0x800
 
-#include "mb64/main.h"
-
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];
     struct SPTask spTask;
@@ -95,10 +93,5 @@ void display_and_vsync(void);
 
 extern Bool32 gIsGliden;
 extern Bool32 gIsWidescreen;
-
-void create_level_file_path(TCHAR * buffer, TCHAR * filename, TCHAR * suffix);
-struct mb64_level_save_header * get_level_info_from_filename(char * filename);
-void load_level_files_from_sd_card(void);
-u8 level_file_exists(char * filename);
 
 #endif // GAME_INIT_H

@@ -1,4 +1,8 @@
-#include "menu_engine.h"
+#include "misc.h"
+
+#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/camera.h"
 
 char *mb64_tips[] = {
     "Tip: Use D-Pad ^ to flip certain tiles like slopes or slabs!",

@@ -1,5 +1,7 @@
-#include "menu_engine.h"
-#include "menu.h"
+#include "pause.h"
+
+#include "mb64/file.h"
+#include "mb64/editor/main.h"
 
 #include "game/area.h"
 #include "game/save_file.h"

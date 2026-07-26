@@ -2,9 +2,13 @@
 #include <PR/gbi.h>
 #include "actors/uiCorner/model.inc.c"
 
-#include "menu_engine.h"
+#include "engine.h"
 #include <string.h>
-#include "menu.h"
+#include "mb64/file.h"
+#include "main.h"
+#include "misc.h"
+#include "settings.h"
+#include "toolbox.h"
 
 // Global states for the currently processed menu
 MenuStyle gMenuStyle;
@@ -1188,8 +1192,6 @@ void reset_menu(void) {
     reset_misc_menu_state();
     init_root();
 }
-
-extern MenuComponent *settingsRoot;
 
 void render_menu(void) {
     menu_update_joystick();

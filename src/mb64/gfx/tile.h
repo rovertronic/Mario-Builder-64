@@ -1,47 +1,97 @@
 #pragma once
 
-#include "game/game_init.h"
-#include "game/geo_misc.h"
+#include <PR/ultratypes.h>
+#include <PR/gbi.h>
+#include "types.h"
+#include "mb64/mb64.h"
+#include "mb64/editor/grid.h"
+#include "mb64/gfx/batch.h"
+#include "mb64/gfx/cull.h"
 
-enum mb64_culling_shapes {
-    MB64_FACESHAPE_FULL,
-    MB64_FACESHAPE_POLETOP,
+struct mb64_material {
+    Gfx *gfx;
+    u8 type;
+    u8 vertical;
+    TerrainData col;
+    char *name;
+};
 
-    MB64_FACESHAPE_TRI_1, // make sure irregular shapes can be flipped with ^1
-    MB64_FACESHAPE_TRI_2,
-    MB64_FACESHAPE_DOWNTRI_1,
-    MB64_FACESHAPE_DOWNTRI_2,
-    MB64_FACESHAPE_HALFSIDE_1, // vertical slab sides
-    MB64_FACESHAPE_HALFSIDE_2,
+struct mb64_topmaterial {
+    u8 mat;
+    Gfx *decaltex;
+};
 
-    MB64_FACESHAPE_TOPTRI,
-    MB64_FACESHAPE_TOPHALF,
+struct mb64_tilemat_def {
+    u8 mat;
+    u8 topmat;
+    char *name;
+};
 
-    // & 0x10: Bottom slab priority list
-    MB64_FACESHAPE_BOTTOMSLAB_PRI = 0x10,
-    MB64_FACESHAPE_UPPERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI,
-    MB64_FACESHAPE_UPPERGENTLE_2,
-    MB64_FACESHAPE_BOTTOMSLAB,
-    // 0x13 empty
-    MB64_FACESHAPE_LOWERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI + 4,
-    MB64_FACESHAPE_LOWERGENTLE_2,
-    
-    // & 0x20: Top slab priority list
-    MB64_FACESHAPE_TOPSLAB_PRI = 0x20,
-    MB64_FACESHAPE_DOWNUPPERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI,
-    MB64_FACESHAPE_DOWNUPPERGENTLE_2,
-    MB64_FACESHAPE_TOPSLAB,
-    // 0x23 empty
-    MB64_FACESHAPE_DOWNLOWERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI + 4,
-    MB64_FACESHAPE_DOWNLOWERGENTLE_2,
+struct mb64_theme {
+    struct mb64_tilemat_def mats[NUM_MATERIALS_PER_THEME];
+    u8 fence;
+    u8 pole;
+    u8 bars;
+    u8 water;
+};
 
-    // & 0x40: Empty faces
-    MB64_FACESHAPE_EMPTY = 0x40,
-    // Rotate UVs for certain textures
-    MB64_FACESHAPE_EMPTY_0,
-    MB64_FACESHAPE_EMPTY_1,
-    MB64_FACESHAPE_EMPTY_2,
-    MB64_FACESHAPE_EMPTY_3,
+struct mb64_custom_theme {
+    u8 mats[NUM_MATERIALS_PER_THEME];
+    u8 topmats[NUM_MATERIALS_PER_THEME];
+    u8 topmatsEnabled[NUM_MATERIALS_PER_THEME];
+    u8 fence;
+    u8 pole;
+    u8 bars;
+    u8 water;
+};
+
+enum mb64_directions {
+    MB64_DIRECTION_UP,
+    MB64_DIRECTION_DOWN,
+    MB64_DIRECTION_POS_X,
+    MB64_DIRECTION_NEG_X,
+    MB64_DIRECTION_POS_Z,
+    MB64_DIRECTION_NEG_Z,
+};
+
+enum mb64_themes {
+    MB64_THEME_GENERIC,
+    MB64_THEME_SSL,
+    MB64_THEME_RHR,
+    MB64_THEME_HMC,
+    MB64_THEME_CASTLE,
+    MB64_THEME_VIRTUAPLEX,
+    MB64_THEME_SNOW,
+    MB64_THEME_BBH,
+    MB64_THEME_JRB,
+    MB64_THEME_RETRO,
+    MB64_THEME_CUSTOM,
+    MB64_THEME_MC,
+};
+
+extern Bool32 gIsGliden;
+
+struct mb64_boundary_quad;
+
+struct mb64_terrain_poly {
+    s8 vtx[4][3];
+    u8 faceDir;
+    u8 faceshape;
+    u8 growthType;
+    s8 (*altuvs)[][2];
+};
+
+struct mb64_terrain {
+    u8 numQuads;
+    u8 numTris;
+    struct mb64_terrain_poly * quads;
+    struct mb64_terrain_poly * tris;
+};
+
+struct mb64_terrain_info {
+    char *name;
+    Gfx *button;
+    struct mb64_terrain *terrain;
 };
 
 enum mb64_growth_types {
@@ -83,6 +133,30 @@ enum mb64_mat_types {
     MAT_SCREEN,
 };
 
+extern void *slope_decal_below_surfs[];
+extern struct mb64_terrain_poly mb64_terrain_fullblock_quads[];
+extern struct mb64_terrain mb64_terrain_fullblock;
+extern struct mb64_terrain_poly mb64_terrain_bars_connected_quads[];
+extern struct mb64_terrain_poly mb64_terrain_bars_unconnected_quad[];
+extern struct mb64_terrain_poly mb64_terrain_bars_center_quads[];
+extern struct mb64_terrain mb64_terrain_pole;
+extern struct mb64_terrain mb64_terrain_fence;
+extern struct mb64_terrain mb64_terrain_fence_col;
+extern struct mb64_terrain_poly *mb64_terrain_water_quadlists[];
+extern struct mb64_terrain_info mb64_terrain_info_list[];
+
+extern u8 mb64_matlist[];
+extern struct mb64_material mb64_mat_table[];
+extern u32 mb64_render_mode_table[];
+extern struct mb64_theme mb64_theme_table[];
+extern struct mb64_custom_theme mb64_default_custom;
+extern struct mb64_custom_theme mb64_curr_custom_theme;
+
+extern Gfx *mb64_fence_texs[];
+extern Gfx *mb64_bar_texs[][2];
+extern Gfx *mb64_water_texs[];
+extern struct mb64_topmaterial mb64_topmat_table[19];
+
 // Returns full tile definition (struct mb64_tilemat_def)
 #define TILE_MATDEF(matid) (mb64_theme_table[mb64_lopt_theme].mats[matid])
 // Returns main material (struct mb64_material)
@@ -104,40 +178,23 @@ enum mb64_mat_types {
 #define retroland_filter_on() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_POINT); if (!gIsGliden) {mb64_uv_offset = 0;} }
 #define retroland_filter_off() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_BILERP); mb64_uv_offset = (mb64_lopt_theme == MB64_THEME_MC ? -32 : -16); }
 
-extern u32 mb64_gfx_total;
-extern u32 mb64_vtx_total;
-
-extern Vtx *mb64_curr_vtx;
-extern Gfx *mb64_curr_gfx;
-extern u16 mb64_gfx_index;
-
 extern u8 mb64_use_alt_uvs;
 extern s8 mb64_uv_offset;
 extern u8 mb64_render_flip_normals;
 extern u8 mb64_render_vertical;
-extern u8 mb64_render_culling_off;
 extern u8 mb64_growth_render_type;
 extern u8 mb64_curr_mat_has_topside;
 extern u8 mb64_curr_poly_vert_count;
 
-// also used for collision
-u32 get_faceshape(s8 pos[3], u32 dir);
 void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot);
 void check_bar_connections(s8 pos[3], u8 connections[5]);
 void render_bars_side(s8 pos[3], u8 connections[5]);
 void render_bars_top(s8 pos[3], u8 connections[5]);
 u32 is_water_fullblock(s8 pos[3]);
 void process_tile(s8 pos[3], struct mb64_terrain *terrain, u32 rot);
-
-// used for boundaries
 void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u32 fade);
 void set_render_mode(u32 tileType, u32 disableZ);
 u32 do_process(u8 *targetMatType, u32 processTileRenderMode);
 Gfx *get_sidetex(s32 matid);
-
-void draw_dotted_line(s16 pos1[3], s16 pos2[3]);
-
-void display_cached_tris(void);
-void generate_terrain_gfx(void);
-Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx);
-void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index);
+void render_water(s8 pos[3]);
+void process_tiles(u32 processTileRenderMode);

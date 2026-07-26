@@ -307,5 +307,6 @@ void cur_obj_update_boss_music(void);
 void update_boss_music(int was_playing_boss_music);
 
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY);
+void obj_init_animation(struct Object *obj, s32 animIndex);
 
 #endif // OBJECT_HELPERS_H

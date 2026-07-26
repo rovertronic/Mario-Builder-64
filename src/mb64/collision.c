@@ -1,6 +1,5 @@
-#include "main.h"
 #include "collision.h"
-#include "gfx.h"
+#include "mb64/editor/main.h"
 
 #include "engine/surface_load.h"
 #include "game/object_list_processor.h"

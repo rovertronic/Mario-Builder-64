@@ -30,7 +30,8 @@
 #include "game/puppycam2.h"
 #include "game/puppyprint.h"
 #include "game/emutest.h"
-#include "mb64/main.h"
+#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
 
 #include "config.h"
 

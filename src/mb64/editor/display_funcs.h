@@ -1,5 +1,12 @@
 #pragma once
 
+#include "types.h"
+
+enum mb64_df_context {
+    MB64_DF_CONTEXT_INIT,
+    MB64_DF_CONTEXT_MAIN,
+};
+
 void df_hide_during_screenshot(UNUSED s32 context);
 void df_spawn_number(s8 pos[3], s32 number);
 void df_star(UNUSED s32 context);
@@ -19,7 +26,7 @@ void df_moneybag(s32 context);
 void df_blizzard(s32 context);
 void df_podoboo(s32 context);
 void df_mri(s32 context);
-void df_booser(s32 context);
+void df_bowser(s32 context);
 void df_skeeter(s32 context);
 void df_spinner_flame(s32 context);
 void df_fire_spinner(s32 context);

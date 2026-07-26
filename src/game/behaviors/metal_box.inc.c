@@ -142,7 +142,7 @@ void bhv_pushable_loop(void) {
 //         if (gMarioPlatform == o) {
 
 //             if (o->oAction == 1) {
-//                 super_cum_working(myhorse,1);
+//                 obj_init_animation(myhorse,1);
 //                 o->oAction = 2;
 //             }
 
@@ -177,7 +177,7 @@ void bhv_pushable_loop(void) {
 //             o->oPosZ = o->oHomeZ;
 //             o->oForwardVel = 0;
 //             o->oAction = 1;
-//             super_cum_working(myhorse,0);
+//             obj_init_animation(myhorse,0);
 //             }
 
 //         //horse code

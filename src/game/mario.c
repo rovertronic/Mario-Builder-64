@@ -39,7 +39,9 @@
 #include "actors/group0.h"
 #include "actors/group14.h"
 #include "ingame_menu.h"
-#include "mb64/main.h"
+#include "mb64/file.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/object.h"
 #include "platform_displacement.h"
 
 #include "src/buffers/framebuffers.h"

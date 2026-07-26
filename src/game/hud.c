@@ -22,7 +22,8 @@
 #include "actors/group0.h"
 #include "actors/group14.h"
 
-#include "mb64/main.h"
+#include "mb64/file.h"
+#include "mb64/editor/main.h"
 
 #include "config.h"
 

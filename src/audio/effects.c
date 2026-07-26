@@ -11,6 +11,7 @@
 #include "external.h"
 #include "src/game/game_init.h"
 #include "src/game/save_file.h"
+#include "mb64/file.h"
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 void sequence_channel_process_sound(struct SequenceChannel *seqChannel, s32 recalculateVolume) {

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "mb64/gfx/tile.h"
+
+struct MarioState;
+
 extern TerrainData mb64_curr_coltype;
 extern u16 mb64_build_collision_type;
 

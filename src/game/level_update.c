@@ -31,8 +31,13 @@
 #include "puppycam2.h"
 #include "puppyprint.h"
 #include "level_commands.h"
-#include "mb64/main.h"
-#include "mb64/menu.h"
+#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
+#include "mb64/menu/dialog.h"
+#include "mb64/menu/engine.h"
+#include "mb64/menu/misc.h"
+#include "mb64/menu/pause.h"
+#include "mb64/gfx/gfx.h"
 #include "debug.h"
 #include "interaction.h"
 
@@ -1232,8 +1237,6 @@ s32 update_level(void) {
 
     return changeLevel;
 }
-
-extern u8 mb64_append_frameone_bandaid_fix;
 
 #ifdef PUPPYPRINT_DEBUG
 extern u32 gInitLevelTime;

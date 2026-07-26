@@ -29,7 +29,9 @@
 #include "src/engine/surface_load.h"
 #include "spawn_sound.h"
 #include "mario.h"
-#include "mb64/main.h"
+#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/object.h"
 
 #include "config.h"
 

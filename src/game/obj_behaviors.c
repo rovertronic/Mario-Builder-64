@@ -29,8 +29,9 @@
 #include "spawn_object.h"
 #include "spawn_sound.h"
 #include "rumble_init.h"
-#include "mb64/main.h"
-#include "mb64/trajectory.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/object.h"
+#include "mb64/editor/trajectory.h"
 
 /**
  * @file obj_behaviors.c

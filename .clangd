@@ -1,0 +1,15 @@
+# Align with Makefile INCLUDE_DIRS / clang CFLAGS for N64 (32-bit MIPS).
+# Do not pass -nostdinc here: clangd needs its builtin stdint.h. Project
+# include/libc is listed so <string.h> etc. resolve to the freestanding copies.
+CompileFlags:
+  Add:
+    - -I.
+    - -Iinclude/libc
+    - -Iinclude/hvqm
+    - -Isrc/libcart/include
+    - -Ibuild/us_n64
+    - -Ibuild/us_n64/include
+    - --target=mips-unknown-elf
+    - -mabi=32
+    - -ffreestanding
+    - -Wno-c23-extensions

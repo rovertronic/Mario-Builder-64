@@ -31,8 +31,10 @@
 #include "seq_ids.h"
 #include "spawn_sound.h"
 #include "actors/group0.h"
-#include "mb64/main.h"
-#include "mb64/trajectory.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/object.h"
+#include "include/config/config_objects.h"
+#include "mb64/editor/trajectory.h"
 
 //! TODO: remove static
 

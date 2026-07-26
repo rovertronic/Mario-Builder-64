@@ -3,7 +3,27 @@
 #include "libcart/include/cart.h"
 #include "libcart/ff/ff.h"
 
-#include "structs.h"
+#include "mb64/gfx/tile.h"
+#include "mb64/editor/trajectory.h"
+
+struct mb64_template {
+    u8 music[2];
+    u32 envfx:3;
+    u32 bg:4;
+    u32 theme:4;
+    u32 boundaryMat:4;
+    u32 boundaryHeight:6;
+    u32 boundary:3;
+    u32 water:6;
+
+    u32 spawnHeight:6;
+    u32 platform:1;
+    u32 platformmat:4;
+};
+
+extern struct mb64_template mb64_templates[];
+
+#define SRAM_MAGIC 0x0203DD10
 
 #define MB64_VERSION 1
 #define MAX_FILE_NAME_SIZE 41
@@ -11,8 +31,12 @@
 #define MAX_USERNAME_SIZE 31
 #define MAX_USERNAME_INPUT (MAX_USERNAME_SIZE - 1)
 
-#define MB64_MAX_TRAJECTORIES 20
-#define MB64_TRAJECTORY_LENGTH 50
+struct mb64_sram_config {
+    char author[MAX_USERNAME_SIZE];
+    u8 option_flags;
+    u32 magic;
+    u64 pad;
+};
 
 #define MAX_FILES 251
 extern u8 mb64_level_entry_version[MAX_FILES];
@@ -33,31 +57,16 @@ void mb64_file_init(void);
 void save_level(void);
 void load_level(void);
 
-
-
-struct mb64_custom_theme {
-    u8 mats[NUM_MATERIALS_PER_THEME];
-    u8 topmats[NUM_MATERIALS_PER_THEME];
-    u8 topmatsEnabled[NUM_MATERIALS_PER_THEME];
-    u8 fence;
-    u8 pole;
-    u8 bars;
-    u8 water;
-};
-
-//compressed trajectories
-struct mb64_comptraj {
-    s8 t;
-    u8 x;
-    u8 y;
-    u8 z;
-};
+void create_level_file_path(TCHAR * buffer, TCHAR * filename, TCHAR * suffix);
+struct mb64_level_save_header * get_level_info_from_filename(char * filename);
+void load_level_files_from_sd_card(void);
+u8 level_file_exists(char * filename);
 
 struct mb64_level_save_header {
     char file_header[10];
     u8 version;
     char author[MAX_USERNAME_SIZE];
-    u16 piktcher[64][64];
+    u16 thumbnail[64][64];
 
     // Level options
     u8 costume;

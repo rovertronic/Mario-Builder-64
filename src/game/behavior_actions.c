@@ -39,8 +39,11 @@
 #include "spawn_sound.h"
 #include "rumble_init.h"
 #include "object_collision.h"
-#include "mb64/main.h"
-#include "mb64/menu.h"
+#include "mb64/editor/object.h"
+#include "mb64/editor/display_funcs.h"
+#include "mb64/editor/main.h"
+#include "include/config/config_objects.h"
+#include "mb64/menu/dialog.h"
 
 // #include "behaviors/star_door.inc.c"
 #include "behaviors/mr_i.inc.c"

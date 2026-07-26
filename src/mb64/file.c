@@ -1,15 +1,19 @@
 #include "file.h"
-#include "main.h"
-#include "gfx.h"
-#include "trajectory.h"
-#include "menu.h"
+#include "editor/main.h"
+#include "editor/object.h"
+#include "mb64/menu/misc.h"
+#include "mb64/menu/toolbox.h"
+#include "compatibility.h"
 
+#include "game/game_init.h"
+#include "game/segment2.h"
 #include "game/emutest.h"
 #include "buffers/framebuffers.h"
 #include "game/puppyprint.h"
 #include <string.h>
 
 #include "levels/menu/header.h"
+#include "actors/bigpainting2/header.h"
 
 char mb64_file_name[MAX_FILE_NAME_SIZE];
 FIL mb64_file;
@@ -81,7 +85,7 @@ void load_level_files_from_sd_card(void) {
 
     // LEVEL ENTRIES ARE LOADED IN FILE SELECT
     FILINFO * level_entries_ptr = segmented_to_virtual(mb64_level_entries);
-    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_piktcher);
+    u16 (*u16_array)[MAX_FILES][64][64] = segmented_to_virtual(mb64_level_entry_thumbnail);
 
     s16 i = -1;
     do {
@@ -108,7 +112,7 @@ void load_level_files_from_sd_card(void) {
             s16 y;
             for (x = 0; x < 64; x++) {
                 for (y = 0; y < 64; y++) {
-                    (*u16_array)[i][y][x] = level_info->piktcher[y][x];
+                    (*u16_array)[i][y][x] = level_info->thumbnail[y][x];
                 } 
             }
             mb64_level_entry_version[i] = level_info->version;
@@ -138,14 +142,13 @@ void mb64_file_init(void) {
     }
 }
 
-#include "actors/bigpainting2/header.h"
 void update_painting() {
     s16 x;
     s16 y;
     u16 *u16_array = segmented_to_virtual(bigpainting2_bigger_painting_rgba16);
     for (x = 0; x < 64; x++) {
         for (y = 0; y < 64; y++) {
-            u16_array[(y*64)+x] = mb64_save.piktcher[y][x];
+            u16_array[(y*64)+x] = mb64_save.thumbnail[y][x];
         } 
     }
 }
@@ -203,7 +206,7 @@ void save_level(void) {
             for (s32 y=0;y<64;y++) {
                 int i = (y*64)+x;
                 //take a "screenshot" of the level & burn in a painting frame
-                if (mb64_painting_frame_1_rgba16[(i*2)+1]==0x00) {
+                if (mb64_painting_frame[(i*2)+1]==0x00) {
                     // Take samples (double resolution)
                     u16 sample[4];
                     for (s32 sx=0;sx<2;sx++) {
@@ -231,15 +234,15 @@ void save_level(void) {
                         avgColor[c] /= 4.0f; //average of 4 samples
                     }
 
-                    mb64_save.piktcher[y][x] = ((u16)avgColor[0] << 11) | ((u16)avgColor[1] << 6) | ((u16)avgColor[2] << 1) | 1;
-                    //mb64_save.piktcher[y][x] = sample[0];
+                    mb64_save.thumbnail[y][x] = ((u16)avgColor[0] << 11) | ((u16)avgColor[1] << 6) | ((u16)avgColor[2] << 1) | 1;
+                    //mb64_save.thumbnail[y][x] = sample[0];
 
-                    if (mb64_save.piktcher[y][x] > 1) { //assumes all fb rgba16 values is initialized to 1 or 0
+                    if (mb64_save.thumbnail[y][x] > 1) { //assumes all fb rgba16 values is initialized to 1 or 0
                         screenshot_failure = FALSE;
                     }
                 } else {
                     //painting frame
-                    mb64_save.piktcher[y][x] = ((mb64_painting_frame_1_rgba16[(i*2)]<<8) | mb64_painting_frame_1_rgba16[(i*2)+1]);
+                    mb64_save.thumbnail[y][x] = ((mb64_painting_frame[(i*2)]<<8) | mb64_painting_frame[(i*2)+1]);
                 }
             }
         }
@@ -247,15 +250,15 @@ void save_level(void) {
         if (screenshot_failure) {
             //framebuffer emulation not enabled, use ?
             show_error("Screenshot failed.\nMake sure framebuffer emulation (FBE) is enabled.");
-            bcopy(&mystery_painting_rgba16,&mb64_save.piktcher,sizeof(mb64_save.piktcher));
+            bcopy(&mb64_painting_unknown,&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
         }
 
         update_painting();
     }
 
-    if (mb64_save.piktcher[0][0] == 0) { //0 is a transparent pixel in rgba16
+    if (mb64_save.thumbnail[0][0] == 0) { //0 is a transparent pixel in rgba16
         //use mystery painting if no screenshot has been taken yet
-        bcopy(&mystery_painting_rgba16,&mb64_save.piktcher,sizeof(mb64_save.piktcher));
+        bcopy(&mb64_painting_unknown,&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
     }
     bcopy(&mb64_curr_custom_theme,&mb64_save.custom_theme,sizeof(struct mb64_custom_theme));
     bcopy(&mb64_toolbar, &mb64_save.toolbar, sizeof(mb64_save.toolbar));
@@ -274,9 +277,6 @@ void save_level(void) {
 
     f_close(&mb64_file);
 }
-
-u32 get_tiletype_index(u32 type, u32 mat);
-void mb64_perform_file_upgrade(struct mb64_level_save_header *save, void *tile_data, void *obj_data);
 
 void load_level(void) {
     u8 fresh = FALSE;

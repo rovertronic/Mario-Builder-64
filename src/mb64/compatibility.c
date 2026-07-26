@@ -1,4 +1,5 @@
-#include "main.h"
+#include "compatibility.h"
+#include "mb64/editor/object.h"
 
 #include "game/puppyprint.h"
 

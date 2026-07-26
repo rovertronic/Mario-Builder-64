@@ -1,12 +1,15 @@
-#include "main.h"
-#include "gfx.h"
 #include "boundary.h"
-#include "collision.h"
+#include "mb64/collision.h"
+#include "main.h"
 
 #include <PR/gbi.h>
+#include "model_ids.h"
+#include "behavior_data.h"
 #include "game/object_list_processor.h"
+#include "game/object_helpers.h"
 #include "actors/maker/header.h"
 #include "engine/surface_load.h"
+#include "engine/math_util.h"
 #include "game/rendering_graph_node.h"
 
 // Takes a bottom and top in number of blocks
@@ -319,5 +322,39 @@ void render_water_plane(void) {
         gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index]);
 
         geo_append_display_list(water_gfx, LAYER_TRANSPARENT);
+    }
+}
+
+static struct Object *mb64_boundary_object[6];
+
+void init_boundary_wall_objects(struct Object *parent) {
+    for (u8 i = 0; i < 6; i++) {
+        mb64_boundary_object[i] = spawn_object(parent, MODEL_MAKER_BOUNDARY, bhvStaticObject);
+    }
+    mb64_boundary_object[2]->oFaceAngleRoll = -0x4000;
+    mb64_boundary_object[3]->oFaceAngleRoll = -0x4000;
+    mb64_boundary_object[4]->oFaceAnglePitch = 0x4000;
+    mb64_boundary_object[5]->oFaceAnglePitch = 0x4000;
+}
+
+void update_boundary_wall(struct Object *source) {
+    for (u8 i = 0; i < 6; i++) {
+        vec3_copy(&mb64_boundary_object[i]->oPosVec, &source->oPosVec);
+    }
+    mb64_boundary_object[0]->oPosY = GRID_TO_POS(0);
+    mb64_boundary_object[1]->oPosY = GRID_TO_POS(64);
+    mb64_boundary_object[2]->oPosX = GRID_TO_POS(mb64_grid_min);
+    mb64_boundary_object[3]->oPosX = GRID_TO_POS(mb64_grid_min + mb64_grid_size);
+    mb64_boundary_object[4]->oPosZ = GRID_TO_POS(mb64_grid_min);
+    mb64_boundary_object[5]->oPosZ = GRID_TO_POS(mb64_grid_min + mb64_grid_size);
+
+    if (mb64_menu_state == MB64_MAKE_SCREENSHOT) {
+        for (int i = 0; i < 6; i++) {
+            mb64_boundary_object[i]->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+        }
+    } else {
+        for (int i = 0; i < 6; i++) {
+            mb64_boundary_object[i]->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        }
     }
 }

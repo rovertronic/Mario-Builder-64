@@ -26,8 +26,9 @@
 #include "level_table.h"
 #include "config.h"
 #include "puppyprint.h"
-#include "mb64/main.h"
-#include "mb64/menu.h"
+#include "mb64/file.h"
+#include "mb64/editor/camera.h"
+#include "mb64/menu/dialog.h"
 #include "profiling.h"
 #include "mario_actions_automatic.h"
 

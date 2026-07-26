@@ -12,7 +12,7 @@
 #include "object_list_processor.h"
 #include "spawn_object.h"
 #include "types.h"
-#include "mb64/main.h"
+#include "mb64/editor/object.h"
 
 /**
  * Attempt to allocate an object from freeList (singly linked) and append it

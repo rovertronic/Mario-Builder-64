@@ -20,8 +20,8 @@
 #include "sm64.h"
 #include "seq_ids.h"
 
-#include "mb64/main.h"
-#include "mb64/menu.h"
+#include "mb64/file.h"
+#include "mb64/menu/main.h"
 
 #include "eu_translation.h"
 #if MULTILANG

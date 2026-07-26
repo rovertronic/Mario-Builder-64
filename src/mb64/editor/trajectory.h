@@ -2,6 +2,19 @@
 
 #include "types.h"
 
+struct Object;
+
+#define MB64_MAX_TRAJECTORIES 20
+#define MB64_TRAJECTORY_LENGTH 50
+
+// Compressed trajectory point for save files
+struct mb64_comptraj {
+    s8 t;
+    u8 x;
+    u8 y;
+    u8 z;
+};
+
 extern Gfx *mb64_trajectory_gfx;
 extern Vtx *mb64_trajectory_vtx;
 

@@ -32,9 +32,9 @@
 #include "profiling.h"
 #include "debug.h"
 #include "emutest.h"
-#include "mb64/main.h"
-#include "mb64/menu.h"
-#include "mb64/menu_engine.h"
+#include "mb64/file.h"
+#include "mb64/menu/engine.h"
+#include "mb64/menu/main.h"
 
 #include "lib/libpl/libpl.h"
 

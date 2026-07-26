@@ -13,7 +13,8 @@
 #include "actors/group0.h"
 #include "actors/group14.h"
 #include "actors/group17.h"
-#include "mb64/main.h"
+#include "model_ids.h"
+#include "mb64/file.h"
 
 #include "levels/menu/header.h"
 #include "levels/intro/header.h"

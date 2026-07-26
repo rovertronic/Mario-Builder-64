@@ -1,8 +1,9 @@
-#include "menu_engine.h"
+#include "toolbox.h"
+#include "misc.h"
 
-#include "main.h"
-#include "gfx.h"
-#include "menu.h"
+#include "mb64/editor/main.h"
+#include "mb64/editor/object.h"
+#include "mb64/gfx/tile.h"
 
 #include "actors/b/header.h"
 #include "actors/uibutton/header.h"

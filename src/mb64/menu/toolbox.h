@@ -1,0 +1,134 @@
+#pragma once
+
+#include "engine.h"
+
+enum {
+    MB64_BUTTON_SETTINGS,
+    MB64_BUTTON_TEST,
+    MB64_BUTTON_TERRAIN,
+    MB64_BUTTON_SLOPE,
+    MB64_BUTTON_TROLL,
+    MB64_BUTTON_STAR,
+    MB64_BUTTON_GOOMBA,
+    MB64_BUTTON_PIRANHA,
+    MB64_BUTTON_KOOPA,
+    MB64_BUTTON_COIN,
+    MB64_BUTTON_BLANK,
+    MB64_BUTTON_GCOIN,
+    MB64_BUTTON_CORNER,
+    MB64_BUTTON_ICORNER,
+    MB64_BUTTON_RCOIN,
+    MB64_BUTTON_BCOIN,
+    MB64_BUTTON_NOTEBLOCK,
+    MB64_BUTTON_CULL,
+    MB64_BUTTON_BOBOMB,
+    MB64_BUTTON_CHUCKYA,
+    MB64_BUTTON_BULLY,
+    MB64_BUTTON_BULLET,
+    MB64_BUTTON_HEAVEHO,
+    MB64_BUTTON_MOTOS,
+    MB64_BUTTON_TREE,
+    MB64_BUTTON_EXCLA,
+    MB64_BUTTON_SPAWN,
+    MB64_BUTTON_REX,
+    MB64_BUTTON_PODOBOO,
+    MB64_BUTTON_CRABLET,
+    MB64_BUTTON_HAMMER_BRO,
+    MB64_BUTTON_CHICKEN,
+    MB64_BUTTON_PHANTASM,
+    MB64_BUTTON_PIPE,
+    MB64_BUTTON_BADGE,
+    MB64_BUTTON_WATER,
+    MB64_BUTTON_FENCE,
+    MB64_BUTTON_KING_BOBOMB,
+    MB64_BUTTON_WIGGLER,
+    MB64_BUTTON_BOWSER,
+    MB64_BUTTON_MPLAT,
+    MB64_BUTTON_BBALL,
+    MB64_BUTTON_KTQ,
+    MB64_BUTTON_SSLOPE,
+    MB64_BUTTON_SLAB,
+    MB64_BUTTON_PURPLE_SWITCH,
+    MB64_BUTTON_TIMED_BOX,
+    MB64_BUTTON_HEART,
+    MB64_BUTTON_FORMATION,
+    MB64_BUTTON_VSLAB,
+    MB64_BUTTON_SCORNER,
+    MB64_BUTTON_UGENTLE,
+    MB64_BUTTON_LGENTLE,
+    MB64_BUTTON_BARS,
+    MB64_BUTTON_THWOMP,
+    MB64_BUTTON_WHOMP,
+    MB64_BUTTON_POLE,
+    MB64_BUTTON_VEXCLA,
+    MB64_BUTTON_LAKITU,
+    MB64_BUTTON_FLYGUY,
+    MB64_BUTTON_SNUFIT,
+    MB64_BUTTON_AMP,
+    MB64_BUTTON_BOO,
+    MB64_BUTTON_MR_I,
+    MB64_BUTTON_SCUTTLEBUG,
+    MB64_BUTTON_SPINDRIFT,
+    MB64_BUTTON_BLIZZARD,
+    MB64_BUTTON_MONEYBAG,
+    MB64_BUTTON_SKEETER,
+    MB64_BUTTON_POKEY,
+    MB64_BUTTON_MINE,
+    MB64_BUTTON_FIRE,
+    MB64_BUTTON_FLAMETHROWER,
+    MB64_BUTTON_FIRE_SPITTER,
+    MB64_BUTTON_FIRE_SPINNER,
+    MB64_BUTTON_BREAKABLE,
+    MB64_BUTTON_SMALL_BOX,
+    MB64_BUTTON_DIAMOND,
+    MB64_BUTTON_NPC,
+    MB64_BUTTON_NPCCM,
+    MB64_BUTTON_BUTTON,
+    MB64_BUTTON_BLOCK,
+    MB64_BUTTON_WOODPLAT,
+    MB64_BUTTON_RFBOX,
+    MB64_BUTTON_SHOWRUN,
+    MB64_BUTTON_POWER,
+    MB64_BUTTON_CONVEYOR,
+    MB64_BUTTON_ISCORNER,
+    MB64_BUTTON_TRIGGER,
+
+    MB64_BUTTON_COUNT,
+};
+
+struct mb64_ui_button_type {
+    u32 placeMode:2;
+    u32 multiObj:1;
+    u32 paramCount:8;
+
+    union {
+        u32 id;
+        u8 *idList;
+    };
+    union {
+        char *name;
+        char **names;
+    };
+};
+
+extern struct mb64_ui_button_type mb64_ui_buttons[];
+extern u8 mb64_toolbox_btcm[18 * 5];
+extern u8 mb64_toolbox_vanilla[18 * 5];
+
+extern u8 mb64_toolbar[9];
+extern u8 mb64_toolbar_params[9];
+extern u8 mb64_toolbox[18 * 5];
+extern u8 mb64_toolbox_params[18 * 5];
+
+extern u8 mb64_toolbar_defaults[9];
+
+extern AnimatedComponent *gToolbar;
+
+void create_toolbar(void);
+void show_toolbar(void);
+void hide_toolbar(void);
+void toolbar_set_active(int active);
+
+void create_toolbox(void);
+void init_toolbox(void);
+void reset_toolbox_state(void);

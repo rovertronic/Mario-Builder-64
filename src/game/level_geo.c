@@ -8,7 +8,9 @@
 #include "camera.h"
 #include "envfx_snow.h"
 #include "level_geo.h"
-#include "mb64/main.h"
+#include "mb64/mb64.h"
+#include "mb64/menu/settings.h"
+#include "mb64/editor/main.h"
 
 /**
  * Geo function that generates a displaylist for environment effects such as
@@ -59,8 +61,6 @@ Gfx *geo_envfx_main(s32 callContext, struct GraphNode *node, Mat4 mtxf) {
  * Geo function that generates a displaylist for the skybox. Can be assigned
  * as the function of a GraphNodeBackground.
  */
-extern u8 * mb64_skybox_table[];
-extern u8 mb64_lopt_bg;
 Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
     Gfx *gfx = NULL;
     struct GraphNodeBackground *backgroundNode = (struct GraphNodeBackground *) node;

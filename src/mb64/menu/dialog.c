@@ -1,5 +1,5 @@
-#include "menu_engine.h"
-#include "menu.h"
+#include "dialog.h"
+#include "pause.h"
 
 MatrixComponent *gCurDialog;
 int gDialogResponse; // 0 for none, 1 for yes, 2 for closed

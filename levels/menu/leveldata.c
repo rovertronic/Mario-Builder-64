@@ -5,6 +5,7 @@
 #include "surface_terrains.h"
 #include "types.h"
 #include "src/game/game_init.h"
+#include "mb64/file.h"
 
 #include "make_const_nonconst.h"
 
@@ -1844,4 +1845,4 @@ const Collision main_menu_seg7_collision[] = {
 #include "levels/menu/bigpainting/model.inc.c"
 
 FILINFO mb64_level_entries[MAX_FILES] = {0};
-u16 mb64_level_entry_piktcher[MAX_FILES][64][64] = {0};
+u16 mb64_level_entry_thumbnail[MAX_FILES][64][64] = {0};
