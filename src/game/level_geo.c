@@ -7,7 +7,6 @@
 #include "camera.h"
 #include "envfx_snow.h"
 #include "level_geo.h"
-#include "mb64/mb64.h"
 #include "mb64/menu/settings.h"
 #include "mb64/editor/main.h"
 

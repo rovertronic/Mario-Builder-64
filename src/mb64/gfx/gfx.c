@@ -1,7 +1,6 @@
 #include "gfx.h"
 #include "tile.h"
 
-#include "mb64/data.h"
 #include "mb64/collision.h"
 #include "mb64/editor/boundary.h"
 #include "mb64/editor/main.h"

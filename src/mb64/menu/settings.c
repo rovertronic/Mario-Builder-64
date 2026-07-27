@@ -8,7 +8,7 @@
 #include "actors/bigpainting2/header.h"
 #include "game/mario.h"
 
-#include "mb64/data.h"
+#include "mb64/gfx/tile.h"
 #include "mb64/file.h"
 #include "mb64/editor/main.h"
 #include "mb64/editor/camera.h"

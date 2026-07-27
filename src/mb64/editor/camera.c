@@ -20,6 +20,13 @@ f32 mb64_camera_fov = 45.0f;
 s16 mb64_camera_angle = 0;
 u8 mb64_camera_rot_offset = 0;
 s8 mb64_camera_zoom_index = 2;
+f32 mb64_camera_zoom_table[][2] = {
+    {900.0f,50.0f},
+    {900.0f,400.0f},
+    {1500.0f,800.0f},
+    {2000.0f,900.0f},
+    {2100.0f,1500.0f},
+};
 f32 mb64_current_camera_zoom[2] = {1500.0f,800.0f};
 s16 mb64_freecam_pitch;
 s16 mb64_freecam_yaw;

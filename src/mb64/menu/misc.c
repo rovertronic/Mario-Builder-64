@@ -1,6 +1,5 @@
 #include "misc.h"
 
-#include "mb64/mb64.h"
 #include "mb64/editor/main.h"
 #include "mb64/editor/camera.h"
 

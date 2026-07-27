@@ -20,7 +20,6 @@
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "mb64/mb64.h"
 #include "mb64/editor/main.h"
 #include "mb64/menu/dialog.h"
 

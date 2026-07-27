@@ -27,7 +27,6 @@
 #include "rumble_init.h"
 #include "puppyprint.h"
 #include "level_commands.h"
-#include "mb64/mb64.h"
 #include "mb64/editor/main.h"
 #include "mb64/menu/dialog.h"
 #include "mb64/menu/engine.h"
@@ -372,7 +371,6 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
     // set_mario_initial_cap_powerup(m);
 }
 
-extern u8 mb64_lopt_waterlevel;
 void init_mario_after_warp(void) {
     struct Object *object = get_destination_warp_object(sWarpDest.nodeId);
     assert_args(object, "No dest warp object found for: 0x%02X", sWarpDest.nodeId);

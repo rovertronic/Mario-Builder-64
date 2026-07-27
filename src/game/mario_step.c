@@ -15,8 +15,6 @@
 #include "platform_displacement.h"
 #include "mb64/editor/main.h"
 
-#include "mb64/mb64.h"
-
 #include "config.h"
 
 // static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };

@@ -25,6 +25,10 @@
 #include "game/object_helpers.h"
 #include "game/camera.h"
 #include "sounds.h"
+#include "levels/scripts.h"
+#include "segment_symbols.h"
+#include "actors/group14.h"
+#include "actors/group17.h"
 
 u8 mb64_menu_state = MB64_MAKE_MAIN;
 u8 mb64_level_action = MB64_LA_BUILD;
@@ -65,6 +69,15 @@ u8 mb64_lopt_secret = 0;
 
 u8 mb64_prepare_level_screenshot = FALSE;
 u8 mb64_do_save = FALSE;
+
+void* mb64_theme_segments[][4] = {
+    {_group17_yay0SegmentRomStart, _group17_yay0SegmentRomEnd, _group17_geoSegmentRomStart, _group17_geoSegmentRomEnd}, //MB64_GAME_VANILLA
+    {_group14_yay0SegmentRomStart, _group14_yay0SegmentRomEnd, _group14_geoSegmentRomStart, _group14_geoSegmentRomEnd}, //MB64_GAME_BTCM
+};
+const LevelScript *mb64_theme_model_scripts[] = {
+    script_func_mb64_theme_vanilla,
+    script_func_mb64_theme_btcm,
+};
 
 s16 mb64_play_stars = 0;
 s16 mb64_play_stars_max = 0;

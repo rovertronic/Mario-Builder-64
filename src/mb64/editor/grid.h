@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "mb64/mb64.h"
+#include "mb64/editor/main.h"
 #include "boundary.h"
 
 #define MB64_TILE_POOL_SIZE 20000
