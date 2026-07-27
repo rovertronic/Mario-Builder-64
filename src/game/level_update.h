@@ -19,25 +19,13 @@ enum WarpOperation {
     WARP_OP_WARP_DOOR,
     WARP_OP_WARP_OBJECT,
     WARP_OP_TELEPORT,
-    WARP_OP_TRIGGERS_LEVEL_SELECT = 0x10,
-    WARP_OP_STAR_EXIT,
     WARP_OP_DEATH,
     WARP_OP_WARP_FLOOR,
-    WARP_OP_GAME_OVER,
-    WARP_OP_CREDITS_END,
-    WARP_OP_DEMO_NEXT,
-    WARP_OP_CREDITS_START,
-    WARP_OP_CREDITS_NEXT,
-    WARP_OP_DEMO_END
 };
 
 enum SpecialWarpDestinations {
-    WARP_SPECIAL_LEVEL_SELECT        = -9,
-    WARP_SPECIAL_INTRO_SPLASH_SCREEN = -8,
-    WARP_SPECIAL_GAME_OVER_RESET     = -3,
-    WARP_SPECIAL_TITLE_RESET         = -2,
-    WARP_SPECIAL_ENDING              = -1,
-    WARP_SPECIAL_NONE                =  0,
+    WARP_SPECIAL_MENU = -1,
+    WARP_SPECIAL_NONE =  0,
 };
 
 enum WarpFlags {
@@ -166,10 +154,6 @@ enum WarpNodes {
     WARP_NODE_DEATH         = 0xF1,
     WARP_NODE_LOOK_UP       = 0xF2,
     WARP_NODE_WARP_FLOOR    = 0xF3,
-    WARP_NODE_CREDITS_MIN   = 0xF8,
-    WARP_NODE_CREDITS_START = 0xF8,
-    WARP_NODE_CREDITS_NEXT  = 0xF9,
-    WARP_NODE_CREDITS_END   = 0xFA
 };
 
 u16 level_control_timer(s32 timerOp);

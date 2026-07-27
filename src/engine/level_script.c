@@ -124,7 +124,7 @@ static void level_cmd_exit_and_execute(void) {
     load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8),
             MEMORY_POOL_LEFT, CMD_GET(void *, 16), CMD_GET(void *, 20));
 
-    sStackTop = sStackBase;
+    sStackTop = (sStackBase != NULL) ? sStackBase : sStack;
     sCurrentCmd = segmented_to_virtual(targetAddr);
 }
 

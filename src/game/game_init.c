@@ -952,8 +952,8 @@ void setup_game_memory(void) {
     gDemoInputsMemAlloc = main_pool_alloc(DEMO_INPUTS_POOL_SIZE, MEMORY_POOL_LEFT);
     set_segment_base_addr(SEGMENT_DEMO_INPUTS, (void *) gDemoInputsMemAlloc);
     setup_dma_table_list(&gDemoInputsBuf, gDemoInputs, gDemoInputsMemAlloc);
-    // Setup Level Script Entry
-    load_segment(SEGMENT_LEVEL_ENTRY, _entrySegmentRomStart, _entrySegmentRomEnd, MEMORY_POOL_LEFT, NULL, NULL);
+    // Setup menu scene (entry + splash + file select) at SEGMENT_LEVEL_SCRIPT
+    load_segment(SEGMENT_LEVEL_SCRIPT, _menuSegmentRomStart, _menuSegmentRomEnd, MEMORY_POOL_LEFT, _menuSegmentBssStart, _menuSegmentBssEnd);
     // Setup Segment 2 (Fonts, Text, etc)
     load_segment_decompress(SEGMENT_SEGMENT2, _segment2_mio0SegmentRomStart, _segment2_mio0SegmentRomEnd);
 }

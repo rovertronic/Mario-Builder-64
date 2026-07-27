@@ -28,11 +28,9 @@ DECLARE_ACTOR_SEGMENT(group_global)
 DECLARE_ACTOR_SEGMENT(group_btcm)
 DECLARE_ACTOR_SEGMENT(group_vanilla)
 
-DECLARE_SEGMENT(entry)
 DECLARE_SEGMENT(engine)
 DECLARE_SEGMENT(behavior)
 DECLARE_NOLOAD(behavior)
-DECLARE_SEGMENT(scripts)
 DECLARE_SEGMENT(menu_seg)
 DECLARE_SEGMENT(framebuffers)
 DECLARE_SEGMENT(assets)
@@ -51,16 +49,7 @@ extern u8 _buffersSegmentBssStart[];
 extern u8 _buffersSegmentBssEnd[];
 
 DECLARE_LEVEL_SEGMENT(menu)
-DECLARE_LEVEL_SEGMENT(intro)
-DECLARE_LEVEL_SEGMENT(ending)
-
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) DECLARE_LEVEL_SCRIPT_SEGMENT(folder)
-
-#include "levels/level_defines.h"
-
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
+DECLARE_LEVEL_SCRIPT_SEGMENT(game)
 
 DECLARE_SEGMENT(segment2_yay0)
 
@@ -76,7 +65,6 @@ DECLARE_SEGMENT(bidw_skybox_yay0)
 DECLARE_SEGMENT(bits_skybox_yay0)
 
 DECLARE_SEGMENT(effect_yay0)
-DECLARE_SEGMENT(title_screen_bg_yay0)
 
 DECLARE_SEGMENT(debug_level_select_yay0)
 
@@ -113,7 +101,6 @@ DECLARE_SEGMENT(grass_mio0)
 DECLARE_SEGMENT(outside_mio0)
 DECLARE_SEGMENT(inside_mio0)
 DECLARE_SEGMENT(effect_mio0)
-DECLARE_SEGMENT(title_screen_bg_mio0)
 
 DECLARE_SEGMENT(debug_level_select_mio0)
 

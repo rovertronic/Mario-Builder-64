@@ -12,4 +12,4 @@
 // NOTE: Be sure to edit sZoomOutAreaMasks in camera.c, as there isnt a good way to macro those right now.
 // TODO: Figure something out for sZoomOutAreaMasks?
 
-DEFINE_LEVEL("HOT", LEVEL_BOB, COURSE_BOB, bob, 0, 20000, 0x01, 0x00, 0x00, _, sCamBOB)
+DEFINE_LEVEL("HOT", LEVEL_BOB, COURSE_BOB, game, 0, 20000, 0x01, 0x00, 0x00, _, sCamBOB)

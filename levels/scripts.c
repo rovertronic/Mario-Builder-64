@@ -1,8 +1,6 @@
 #include <ultra64.h>
 #include "sm64.h"
-#include "game/level_update.h"
 #include "level_commands.h"
-#include "game/area.h"
 
 #include "make_const_nonconst.h"
 
@@ -12,88 +10,8 @@
 #include "actors/group_btcm.h"
 #include "actors/group_vanilla.h"
 #include "model_ids.h"
-#include "mb64/file.h"
 
-#include "levels/menu/header.h"
-#include "levels/intro/header.h"
-
-#include "level_headers.h"
-
-#include "level_table.h"
-
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) + 3
-static const LevelScript script_exec_level_table[2
-  #include "level_defines.h"
-];
-#undef DEFINE_LEVEL
-#undef STUB_LEVEL
-
-static const LevelScript goto_intro_splash_screen[6];
-static const LevelScript goto_ending[6];
-static const LevelScript goto_title_reset[6];
-static const LevelScript goto_game_over_reset[6];
-static const LevelScript goto_debug_level_select[6];
-
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) static const LevelScript script_exec_ ## folder [6 + 1];
-
-#include "level_defines.h"
-
-#undef DEFINE_LEVEL
-#undef STUB_LEVEL
-
-const LevelScript level_main_scripts_entry[] = {
-    LOAD_RAW_WITH_CODE( /*seg*/ SEGMENT_BEHAVIOR_DATA,    _behaviorSegmentRomStart,     _behaviorSegmentRomEnd,   _behaviorSegmentBssStart,     _behaviorSegmentBssEnd),
-    CALL(/*arg*/ 0, /*func*/ lvl_init_from_save_file),
-    LOOP_BEGIN(),
-        EXECUTE(/*seg*/ SEGMENT_MENU_INTRO, _menuSegmentRomStart, _menuSegmentRomEnd, level_main_menu_entry_act_select),
-        JUMP_LINK(script_exec_level_table),
-        SLEEP(/*frames*/ 1),
-    LOOP_UNTIL(/*op*/ OP_LT, /*arg*/ WARP_SPECIAL_NONE),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_ENDING,              goto_ending),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_TITLE_RESET,  goto_title_reset),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_GAME_OVER_RESET,    goto_game_over_reset),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_INTRO_SPLASH_SCREEN, goto_intro_splash_screen),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_LEVEL_SELECT,        goto_debug_level_select),
-};
-
-static const LevelScript goto_intro_splash_screen[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen, _introSegmentBssStart, _introSegmentBssEnd),
-};
-
-static const LevelScript goto_title_reset[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_title_reset, _introSegmentBssStart, _introSegmentBssEnd),
-};
-
-static const LevelScript goto_game_over_reset[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_game_over_reset, _introSegmentBssStart, _introSegmentBssEnd),
-};
-
-static const LevelScript goto_debug_level_select[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_level_select, _introSegmentBssStart, _introSegmentBssEnd),
-};
-
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-
-#define DEFINE_LEVEL(_0, levelenum, _2, folder, _4, _5, _6, _7, _8, _9, _10) JUMP_IF(OP_EQ, levelenum, script_exec_ ## folder),
-
-static const LevelScript script_exec_level_table[] = {
-    GET_OR_SET(/*op*/ OP_GET, /*var*/ VAR_CURR_LEVEL_NUM),
-    #include "levels/level_defines.h"
-    EXIT(),
-};
-#undef DEFINE_LEVEL
-
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) \
-static const LevelScript script_exec_ ## folder [] = { \
-    EXECUTE_WITH_CODE(SEGMENT_LEVEL_SCRIPT, _ ## folder ## SegmentRomStart, _ ## folder ## SegmentRomEnd, level_ ## folder ## _entry, _ ## folder ## SegmentBssStart, _ ## folder ## SegmentBssEnd), \
-    RETURN(), \
-};
-
-#include "levels/level_defines.h"
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
+#include "levels/scripts.h"
 
 const LevelScript script_func_mb64_global[] = {
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),

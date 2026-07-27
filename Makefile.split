@@ -82,8 +82,7 @@ endif
 # --------------------------------------
 # Extra Level Rules
 # --------------------------------------
-$(eval $(call level_rules,intro)) # Intro (Super Mario 64 Logo)
-$(eval $(call level_rules,menu)) # Menu (File Select)
+$(eval $(call level_rules,menu)) # Menu (splash + file select)
 
 # --------------------------------------
 # Texture Bin Rules
@@ -91,17 +90,14 @@ $(eval $(call level_rules,menu)) # Menu (File Select)
 
 # Others
 SEGMENT2_TEXTURES               := $(wildcard $(TEXTURE_DIR)/segment2/*.png)
-TITLE_SCREEN_BG_TEXTURES        := $(wildcard $(TEXTURE_DIR)/title_screen_bg/*.png)
 EFFECT_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/effect/*.png)
 
 # Texture Files
 $(BUILD_DIR)/bin/segment2.o:        $(SEGMENT2_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/title_screen_bg.o: $(TITLE_SCREEN_BG_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/effect.o:          $(EFFECT_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Others
 $(BUILD_DIR)/bin/segment2.elf:           SEGMENT_ADDRESS := 0x02000000
-$(BUILD_DIR)/bin/title_screen_bg.elf:    SEGMENT_ADDRESS := 0x0A000000
 $(BUILD_DIR)/bin/debug_level_select.elf: SEGMENT_ADDRESS := 0x07000000
 $(BUILD_DIR)/bin/effect.elf:             SEGMENT_ADDRESS := 0x0B000000
 # EU segment 19 translations

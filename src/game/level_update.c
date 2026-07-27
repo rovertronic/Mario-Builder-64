@@ -650,9 +650,7 @@ s16 music_unchanged_through_warp(s16 arg) {
  * Set the current warp type and destination level/area/node.
  */
 void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags) {
-    if (destWarpNode >= WARP_NODE_CREDITS_MIN) {
-        sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
-    } else if (warpFlags == WARP_FLAG_EXIT_COURSE) {
+    if (warpFlags == WARP_FLAG_EXIT_COURSE) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
     } else if (destLevel != gCurrLevelNum) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
@@ -761,36 +759,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
         sDelayedWarpOp = warpOp;
 
         switch (warpOp) {
-            // case WARP_OP_DEMO_NEXT:
-            // case WARP_OP_DEMO_END:
-            //     sDelayedWarpTimer = 20;
-            //     sSourceWarpNodeId = WARP_NODE_DEFAULT;
-            //     gSavedCourseNum = COURSE_NONE;
-            //     fadeMusic = FALSE;
-            //     play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-            //     break;
-
-            // case WARP_OP_CREDITS_END:
-            //     sDelayedWarpTimer = 60;
-            //     sSourceWarpNodeId = WARP_NODE_DEFAULT;
-            //     fadeMusic = FALSE;
-            //     gSavedCourseNum = COURSE_NONE;
-            //     play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-            //     break;
-
-            case WARP_OP_STAR_EXIT:
-                sDelayedWarpTimer = 32;
-                sSourceWarpNodeId = WARP_NODE_DEFAULT;
-                gSavedCourseNum = 0;
-                play_transition(WARP_TRANSITION_FADE_INTO_MARIO, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                break;
-
             case WARP_OP_DEATH:
-#ifdef ENABLE_LIVES
-                if (m->numLives == 0) {
-                    sDelayedWarpOp = WARP_OP_GAME_OVER;
-                }
-#endif
                 sDelayedWarpTimer = 48;
                 sSourceWarpNodeId = WARP_NODE_DEATH;
                 play_transition(WARP_TRANSITION_FADE_INTO_BOWSER, sDelayedWarpTimer, 0x00, 0x00, 0x00);
@@ -859,22 +828,6 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 fadeMusic = !music_unchanged_through_warp(sSourceWarpNodeId);
                 play_transition(WARP_TRANSITION_FADE_INTO_STAR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
                 break;
-
-            case WARP_OP_CREDITS_START:
-                sDelayedWarpTimer = 30;
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                break;
-
-            case WARP_OP_CREDITS_NEXT:
-                if (gCurrCreditsEntry == &sCreditsSequence[0]) {
-                    sDelayedWarpTimer = 60;
-                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                } else {
-                    sDelayedWarpTimer = 20;
-                    play_transition(WARP_TRANSITION_FADE_INTO_COLOR, sDelayedWarpTimer, 0x00, 0x00, 0x00);
-                }
-                fadeMusic = FALSE;
-                break;
         }
 
         if (fadeMusic && gCurrDemoInput == NULL) {
@@ -890,69 +843,19 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
  */
 void initiate_delayed_warp(void) {
     struct ObjectWarpNode *warpNode;
-    s32 destWarpNode;
 
     if (sDelayedWarpOp != WARP_OP_NONE && --sDelayedWarpTimer == 0) {
         reset_menu();
 
-        if (gDebugLevelSelect && (sDelayedWarpOp & WARP_OP_TRIGGERS_LEVEL_SELECT)) {
-            warp_special(WARP_SPECIAL_LEVEL_SELECT);
-        } else if (gCurrDemoInput != NULL) {
-            if (sDelayedWarpOp == WARP_OP_DEMO_END) {
-                warp_special(WARP_SPECIAL_INTRO_SPLASH_SCREEN);
-            } else {
-                warp_special(WARP_SPECIAL_TITLE_RESET);
-            }
-        } else {
-            switch (sDelayedWarpOp) {
-                case WARP_OP_GAME_OVER:
-                    // save_file_reload();
-                    warp_special(WARP_SPECIAL_GAME_OVER_RESET);
-                    break;
+        mario_stop_riding_and_holding(gMarioState);
+        warpNode = area_get_warp_node(sSourceWarpNodeId);
+        assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) sSourceWarpNodeId);
 
-                case WARP_OP_CREDITS_END:
-                    warp_special(WARP_SPECIAL_ENDING);
-                    sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL & ~SOUND_BANKS_DISABLED_AFTER_CREDITS);
-                    break;
+        initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
+                      warpNode->node.destNode, sDelayedWarpArg);
 
-                case WARP_OP_DEMO_NEXT:
-                    warp_special(WARP_SPECIAL_TITLE_RESET);
-                    break;
-
-                case WARP_OP_CREDITS_START:
-                    gCurrCreditsEntry = &sCreditsSequence[0];
-                    initiate_warp(gCurrCreditsEntry->levelNum, gCurrCreditsEntry->areaIndex,
-                                  WARP_NODE_CREDITS_START, WARP_FLAGS_NONE);
-                    break;
-
-                case WARP_OP_CREDITS_NEXT:
-                    sound_banks_disable(SEQ_PLAYER_SFX, SOUND_BANKS_ALL);
-
-                    gCurrCreditsEntry++;
-                    gCurrActNum = gCurrCreditsEntry->actNum & 0x07;
-                    if ((gCurrCreditsEntry + 1)->levelNum == LEVEL_NONE) {
-                        destWarpNode = WARP_NODE_CREDITS_END;
-                    } else {
-                        destWarpNode = WARP_NODE_CREDITS_NEXT;
-                    }
-
-                    initiate_warp(gCurrCreditsEntry->levelNum, gCurrCreditsEntry->areaIndex, destWarpNode, WARP_FLAGS_NONE);
-                    break;
-
-                default:
-                    mario_stop_riding_and_holding(gMarioState);
-                    warpNode = area_get_warp_node(sSourceWarpNodeId);
-                    assert_args(warpNode, "No source warp node found for: 0x%02X", (u8) sSourceWarpNodeId);
-
-                    initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
-                                  warpNode->node.destNode, sDelayedWarpArg);
-
-                    // check_if_should_set_warp_checkpoint(&warpNode->node);
-                    if (sWarpDest.type != WARP_TYPE_CHANGE_LEVEL) {
-                        level_set_transition(2, NULL);
-                    }
-                    break;
-            }
+        if (sWarpDest.type != WARP_TYPE_CHANGE_LEVEL) {
+            level_set_transition(2, NULL);
         }
     }
 }
@@ -1094,7 +997,7 @@ void exit_level(void) {
         mb64_level_action = MB64_LA_BUILD;
     } else {
         stop_secondary_music(1); // clear background music (i think)
-        fade_into_special_warp(WARP_SPECIAL_TITLE_RESET, 0); // reset game
+        fade_into_special_warp(WARP_SPECIAL_MENU, 0);
     }
 }
 
@@ -1173,7 +1076,7 @@ s32 play_mode_change_level(void) {
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
         reset_menu();
-        if (sSpecialWarpDest == WARP_SPECIAL_TITLE_RESET) {
+        if (sSpecialWarpDest == WARP_SPECIAL_MENU) {
             mb64_mode = MB64_MODE_UNINITIALIZED;
             mb64_lopt_template = 0;
             mb64_lopt_size = 0;
@@ -1299,11 +1202,7 @@ s32 init_level(void) {
     sTimerRunning = FALSE;
 
     if (sWarpDest.type != WARP_TYPE_NOT_WARPING) {
-        if (sWarpDest.nodeId >= WARP_NODE_CREDITS_MIN) {
-            //warp_credits();
-        } else {
-            warp_level();
-        }
+        warp_level();
     } else {
         if (gPlayerSpawnInfos[0].areaIndex >= 0) {
             load_mario_area();

@@ -9,18 +9,21 @@
 #include "game/level_update.h"
 
 #include "levels/scripts.h"
+#include "levels/menu/header.h"
 
 /* Fast64 begin persistent block [includes] */
 /* Fast64 end persistent block [includes] */
 
 #include "make_const_nonconst.h"
-#include "levels/bob/header.h"
+#include "levels/game/header.h"
 
 /* Fast64 begin persistent block [scripts] */
 /* Fast64 end persistent block [scripts] */
 
-const LevelScript level_bob_entry[] = {
+const LevelScript level_game_entry[] = {
 	INIT_LEVEL(),
+	LOAD_RAW_WITH_CODE(/*seg*/ SEGMENT_BEHAVIOR_DATA, _behaviorSegmentRomStart, _behaviorSegmentRomEnd, _behaviorSegmentBssStart, _behaviorSegmentBssEnd),
+	CALL(/*arg*/ 0, /*func*/ lvl_init_from_save_file),
 	LOAD_YAY0(0x0A, _water_skybox_yay0SegmentRomStart, _water_skybox_yay0SegmentRomEnd),
 	LOAD_MB64(),
 	LOAD_YAY0(/*seg*/ SEGMENT_GROUP_GLOBAL_YAY0, _group_global_yay0SegmentRomStart, _group_global_yay0SegmentRomEnd),
@@ -34,7 +37,7 @@ const LevelScript level_bob_entry[] = {
 	/* Fast64 begin persistent block [level commands] */
 	/* Fast64 end persistent block [level commands] */
 
-	AREA(1, bob_area_1),
+	AREA(1, game_area_1),
 		WARP_NODE(0x0A, LEVEL_BOB, 0x01, 0x0A, WARP_NO_CHECKPOINT),
 		WARP_NODE(241, LEVEL_BOB, 0x01, 0xA, WARP_NO_CHECKPOINT),
 		WARP_NODE(0x00, LEVEL_BOB, 0x01, 0x01, WARP_NO_CHECKPOINT),
@@ -54,5 +57,6 @@ const LevelScript level_bob_entry[] = {
 	CALL_LOOP(1, lvl_init_or_update),
 	CLEAR_LEVEL(),
 	SLEEP_BEFORE_EXIT(1),
-	EXIT(),
+	/* WARP_SPECIAL_MENU (play-levels exit / settings quit) returns here via CALL_LOOP. */
+	EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_LEVEL_SCRIPT, _menuSegmentRomStart, _menuSegmentRomEnd, level_intro_title_reset, _menuSegmentBssStart, _menuSegmentBssEnd),
 };

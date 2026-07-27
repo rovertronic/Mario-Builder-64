@@ -366,7 +366,7 @@ void settings_save_and_quit(void) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
     }
     set_page_to_level_list();
-    fade_into_special_warp(WARP_SPECIAL_TITLE_RESET, 0); // reset game
+    fade_into_special_warp(WARP_SPECIAL_MENU, 0);
 }
 
 void settings_play_level(void) {

@@ -260,12 +260,6 @@ SECTIONS
    #endif
 #endif
 
-   BEGIN_SEG(entry, 0x10000000)
-   {
-      BUILD_DIR/levels/entry.o(.data*);
-   }
-   END_SEG(entry)
-
    /* load YAY0 and level data */
    YAY0_SEG(segment2, 0x02000000)
 #ifdef VERSION_EU
@@ -318,52 +312,36 @@ SECTIONS
       ASSERT((. <= (SEG_POOL_START + POOL_SIZE)), "Error: extended past pool end.")
 #endif
 
-   /* 0x268020 0x268020-0 [0] */
-   BEGIN_SEG(intro, 0x14000000)
-   {
-      KEEP(BUILD_DIR/levels/intro/script.o(.*data));
-      KEEP(BUILD_DIR/levels/intro/script.o(.rodata*));
-      KEEP(BUILD_DIR/levels/intro/script.o(.text*));
-      KEEP(BUILD_DIR/levels/intro/geo.o(.data*));
-   }
-   END_SEG(intro)
-   BEGIN_NOLOAD(intro)
-   {
-      KEEP(BUILD_DIR/levels/intro/script.o(.bss*));
-   }
-   END_NOLOAD(intro)
-   BEGIN_SEG(intro_segment_7, 0x07000000)
-   {
-      KEEP(BUILD_DIR/levels/intro/leveldata.szp.o(.data*));
-      . = ALIGN(0x10);
-   }
-   END_SEG(intro_segment_7)
-
    YAY0_SEG(debug_level_select, 0x07000000)
-   YAY0_SEG(title_screen_bg,    0x0A000000)
 
 
    gMainLevels = __romPos;
 
-   BEGIN_SEG(menu, 0x14000000)
+   /* Menu scene (entry + splash + file select); XOR with game at 0x0E */
+   BEGIN_SEG(menu, 0x0E000000)
    {
-      KEEP(BUILD_DIR/levels/menu/script.o(.data*));
+      KEEP(BUILD_DIR/levels/entry.o(.data*));
+      KEEP(BUILD_DIR/levels/menu/script.o(.*data*));
+      KEEP(BUILD_DIR/levels/menu/script.o(.rodata*));
+      KEEP(BUILD_DIR/levels/menu/script.o(.text*));
       KEEP(BUILD_DIR/levels/menu/geo.o(.data*));
+      KEEP(BUILD_DIR/levels/menu/geo.o(.rodata*));
+      KEEP(BUILD_DIR/levels/menu/geo.o(.text*));
    }
    END_SEG(menu)
+   BEGIN_NOLOAD(menu)
+   {
+      KEEP(BUILD_DIR/levels/entry.o(.bss*));
+      KEEP(BUILD_DIR/levels/menu/script.o(.bss*));
+      KEEP(BUILD_DIR/levels/menu/geo.o(.bss*));
+   }
+   END_NOLOAD(menu)
    BEGIN_SEG(menu_segment_7, 0x07000000)
    {
       KEEP(BUILD_DIR/levels/menu/leveldata.szp.o(.data*));
       . = ALIGN(0x10);
    }
    END_SEG(menu_segment_7)
-
-   BEGIN_SEG(scripts, 0x15000000)
-   {
-      BUILD_DIR/levels/scripts.o(.data*);
-      BUILD_DIR/levels/scripts.o(.bss*);
-   }
-   END_SEG(scripts)
 
    YAY0_SEG(water_skybox,       0x0A000000)
    YAY0_SEG(ccm_skybox,         0x0A000000)
@@ -379,13 +357,25 @@ SECTIONS
    // Texture bins
    YAY0_SEG(effect,   0x0B000000)
 
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) STANDARD_LEVEL(folder)
-
-   #include "levels/level_defines.h"
-
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
+   BEGIN_SEG(game, 0x0E000000)
+   {
+      KEEP(BUILD_DIR/levels/game/script.o(.*data*));
+      KEEP(BUILD_DIR/levels/game/script.o(.text*));
+      KEEP(BUILD_DIR/levels/game/script.o(.rodata*));
+      KEEP(BUILD_DIR/levels/game/geo.o(.*data*));
+      KEEP(BUILD_DIR/levels/game/geo.o(.text*));
+      KEEP(BUILD_DIR/levels/game/geo.o(.rodata*));
+      KEEP(BUILD_DIR/levels/scripts.o(.data*));
+      KEEP(BUILD_DIR/levels/scripts.o(.rodata*));
+   }
+   END_SEG(game)
+   BEGIN_NOLOAD(game)
+   {
+      KEEP(BUILD_DIR/levels/game/script.o(.bss*));
+      KEEP(BUILD_DIR/levels/game/geo.o(.bss*));
+      KEEP(BUILD_DIR/levels/scripts.o(.bss*));
+   }
+   END_NOLOAD(game)
 
    /* 4E9FA0-? [?] */
    BEGIN_SEG(assets, __romPos)

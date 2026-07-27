@@ -474,9 +474,6 @@ enum WarpCheckpointFlags {
 #define LOAD_MENU_SEG() \
     FIXED_LOAD(/*loadAddr*/ _menu_segSegmentStart, /*romStart*/ _menu_segSegmentRomStart, /*romEnd*/ _menu_segSegmentRomEnd)
 
-#define LOAD_TITLE_SCREEN_BG() \
-    LOAD_YAY0_TEXTURE(/*seg*/ SEGMENT_SKYBOX, /*romStart*/ _title_screen_bg_yay0SegmentRomStart, /*romEnd*/ _title_screen_bg_yay0SegmentRomEnd)
-
 // behParams
 
 #define BP(a, b, c, d) \
