@@ -362,13 +362,12 @@ static void level_cmd_init_level(void) {
 extern s32 gTlbEntries;
 extern u8  gTlbSegments[NUM_TLB_SEGMENTS];
 
-// This clears all the temporary bank TLB maps. group0, common1 and behavourdata are always loaded,
-// and they're also loaded first, so that means we just leave the first 3 indexes mapped.
+// This clears all the temporary bank TLB maps. Behavior data stays loaded.
 void unmap_tlbs(void) {
     s32 i;
     for (i = 0; i < NUM_TLB_SEGMENTS; i++) {
         if (gTlbSegments[i]) {
-            if (i != SEGMENT_GROUP0_GEO && i != SEGMENT_COMMON1_GEO && i != SEGMENT_BEHAVIOR_DATA) {
+            if (i != SEGMENT_BEHAVIOR_DATA) {
                 while (gTlbSegments[i] > 0) {
                     osUnmapTLB(gTlbEntries);
                     gTlbSegments[i]--;
@@ -407,17 +406,10 @@ static void level_cmd_alloc_level_pool(void) {
 }
 
 static void level_cmd_free_level_pool(void) {
-    s32 i;
-
     alloc_only_pool_resize(sLevelPool, sLevelPool->usedSpace);
     sLevelPool = NULL;
 
-    for (i = 0; i < AREA_COUNT; i++) {
-        if (gAreaData[i].terrainData != NULL) {
-            alloc_surface_pools();
-            break;
-        }
-    }
+    alloc_surface_pools();
     main_pool_push_state();
 
     sCurrentCmd = CMD_NEXT;
@@ -582,11 +574,7 @@ static void level_cmd_create_instant_warp(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_set_terrain_type(void) {
-    if (sCurrAreaIndex != -1) {
-        gAreas[sCurrAreaIndex].terrainType |= CMD_GET(s16, 2);
-    }
-
+static void level_cmd_31(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -665,18 +653,7 @@ static void level_cmd_set_gamma(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_set_terrain_data(void) {
-    if (sCurrAreaIndex != -1) {
-#ifndef NO_SEGMENTED_MEMORY
-        gAreas[sCurrAreaIndex].terrainData = segmented_to_virtual(CMD_GET(void *, 4));
-#else
-        // The game modifies the terrain data and must be reset upon level reload.
-        Collision *data = segmented_to_virtual(CMD_GET(void *, 4));
-        u32 size = get_area_terrain_size(data) * sizeof(Collision);
-        gAreas[sCurrAreaIndex].terrainData = alloc_only_pool_alloc(sLevelPool, size);
-        memcpy(gAreas[sCurrAreaIndex].terrainData, data, size);
-#endif
-    }
+static void level_cmd_2E(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -926,9 +903,9 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_SET_MARIO_START_POS         */ level_cmd_set_mario_start_pos,
     /*LEVEL_CMD_UNLOAD_MARIO_AREA           */ level_cmd_unload_mario_area,
     /*LEVEL_CMD_UPDATE_OBJECTS              */ level_cmd_update_objects,
-    /*LEVEL_CMD_SET_TERRAIN_DATA            */ level_cmd_set_terrain_data,
+    /*LEVEL_CMD_2E                          */ level_cmd_2E,
     /*LEVEL_CMD_SHOW_DIALOG                 */ level_cmd_show_dialog,
-    /*LEVEL_CMD_SET_TERRAIN_TYPE            */ level_cmd_set_terrain_type,
+    /*LEVEL_CMD_31                          */ level_cmd_31,
     /*LEVEL_CMD_NOP                         */ level_cmd_nop,
     /*LEVEL_CMD_SET_TRANSITION              */ level_cmd_set_transition,
     /*LEVEL_CMD_SET_BLACKOUT                */ level_cmd_set_blackout,

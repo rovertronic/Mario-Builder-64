@@ -86,7 +86,6 @@ Gfx *geo_intro_super_mario_64_logo(s32 callContext, struct GraphNode *node, UNUS
         gSPMatrix(dlIter++, scaleMat, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
 
         graphNode->flags = (graphNode->flags & 0xFF) | 0x100;
-        // gSPDisplayList(dlIter++, &intro_seg7_dl_main_logo);  // draw model
         gDPSetEnvColor(dlIter++, 255, 255, 255, 255);
 
         gSPDisplayList(dlIter++, &ts1_letter_R_mesh); //NEW
@@ -248,54 +247,6 @@ Gfx *geo_title_screen3(s32 callContext, struct GraphNode *node, UNUSED void *con
 
     }
     return displayList;
-}
-
-// Gfx *geo_rovert_logo(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-//     Gfx *displayListIter = NULL;
-//     Gfx *displayList = NULL;
-//     Mtx *scaleMat;
-
-//     if (callContext == GEO_CONTEXT_RENDER) {
-//         scaleMat = alloc_display_list(sizeof(*scaleMat));
-//         displayList = alloc_display_list(9 * sizeof(*displayList));
-//         displayListIter = displayList;
-
-//         if (rovert_logo_timer < 15) {
-//             logo_opacity = lerp(logo_opacity,255.0f,0.2f);
-//             }
-
-//         if (rovert_logo_timer > 45) {
-//             logo_opacity = lerp(logo_opacity,0.0f,0.2f);
-//             }
-//         if (rovert_logo_timer == 70) {
-//             TitleState = 1;
-//         } else {
-//             rovert_logo_timer++;
-//         }
-
-//         guScale(scaleMat, 2,2,2);
-//         gSPMatrix(displayListIter++, scaleMat, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-
-//         gDPSetEnvColor(displayListIter++, 255,255,255,logo_opacity);
-//         gDPSetRenderMode(displayListIter++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
-//         gSPDisplayList(displayListIter++, &rovert_logo_Plane_mesh);
-
-//         gSPPopMatrix(displayListIter++, G_MTX_MODELVIEW);
-//         gSPEndDisplayList(displayListIter);
-//     }
-
-//     return displayList;
-// }
-
-//mirror_tr_mirror_004_mesh
-
-/**
- * Geo callback to render TM and Copyright on the title screen
- */
-Gfx *geo_intro_tm_copyright(UNUSED s32 callContext, UNUSED struct GraphNode *node, UNUSED void *context) {
-    Gfx *dl = NULL;
-
-    return dl;
 }
 
 // intro screen background display lists for each of four 80x20 textures

@@ -1,4 +1,4 @@
-#include "actors/group14.h"
+#include "actors/group_btcm.h"
 
 static void showrunner_battle_function(void) {
     struct Object *obj_attack;

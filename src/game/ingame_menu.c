@@ -10,7 +10,7 @@
 #include "types.h"
 #include "config.h"
 #include "src/game/mario_misc.h"
-#include "actors/group14.h"
+#include "actors/group_btcm.h"
 #include "rendering_graph_node.h"
 
 s8 tab_index = 0;

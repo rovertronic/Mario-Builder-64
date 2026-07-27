@@ -1,7 +1,6 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "actors/common1.h"
 #include "gfx_dimensions.h"
 #include "game_init.h"
 #include "level_update.h"
@@ -13,8 +12,8 @@
 #include "engine/math_util.h"
 #include "puppyprint.h"
 
-#include "actors/group0.h"
-#include "actors/group14.h"
+#include "actors/group_global.h"
+#include "actors/group_btcm.h"
 
 #include "mb64/file.h"
 #include "mb64/editor/main.h"

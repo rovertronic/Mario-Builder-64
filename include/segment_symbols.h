@@ -16,16 +16,17 @@
     DECLARE_SEGMENT(name##_geo) \
     DECLARE_NOLOAD(name##_geo)
 
-#define DECLARE_LEVEL_SEGMENT(name) \
+#define DECLARE_LEVEL_SCRIPT_SEGMENT(name) \
     DECLARE_SEGMENT(name) \
-    DECLARE_NOLOAD(name) \
+    DECLARE_NOLOAD(name)
+
+#define DECLARE_LEVEL_SEGMENT(name) \
+    DECLARE_LEVEL_SCRIPT_SEGMENT(name) \
     DECLARE_SEGMENT(name##_segment_7)
 
-DECLARE_ACTOR_SEGMENT(common0)
-DECLARE_ACTOR_SEGMENT(common1)
-DECLARE_ACTOR_SEGMENT(group0)
-DECLARE_ACTOR_SEGMENT(group14)
-DECLARE_ACTOR_SEGMENT(group17)
+DECLARE_ACTOR_SEGMENT(group_global)
+DECLARE_ACTOR_SEGMENT(group_btcm)
+DECLARE_ACTOR_SEGMENT(group_vanilla)
 
 DECLARE_SEGMENT(entry)
 DECLARE_SEGMENT(engine)
@@ -54,7 +55,7 @@ DECLARE_LEVEL_SEGMENT(intro)
 DECLARE_LEVEL_SEGMENT(ending)
 
 #define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
-#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) DECLARE_LEVEL_SEGMENT(folder)
+#define DEFINE_LEVEL(_0, _1, _2, folder, _4, _5, _6, _7, _8, _9, _10) DECLARE_LEVEL_SCRIPT_SEGMENT(folder)
 
 #include "levels/level_defines.h"
 

@@ -45,12 +45,6 @@ OUTPUT_ARCH (mips)
    _##name##_mio0SegmentRomEnd   = _##name##_yay0SegmentRomEnd;
 
 #define STANDARD_LEVEL(name) \
-   BEGIN_SEG(name##_segment_7, 0x07000000) \
-   { \
-      KEEP(BUILD_DIR/levels/name/leveldata.szp.o(.data*)); \
-      . = ALIGN(0x10); \
-   } \
-   END_SEG(name##_segment_7) \
    BEGIN_SEG(name, 0x0E000000) \
    { \
       KEEP(BUILD_DIR/levels/name/script.o(.*data*)); \
@@ -281,14 +275,10 @@ SECTIONS
 #endif
 
    /* mario actor group */
-   STANDARD_OBJECTS(group0,  0x04000000, 0x17000000)
+   STANDARD_OBJECTS(group_global,  0x04000000, 0x17000000)
 
-   STANDARD_OBJECTS(group14, 0x06000000, 0x0D000000)
-   STANDARD_OBJECTS(group17, 0x06000000, 0x0D000000)
-
-   /* load the common actor groups */
-   STANDARD_OBJECTS(common0, 0x08000000, 0x0F000000)
-   STANDARD_OBJECTS(common1, 0x03000000, 0x16000000)
+   STANDARD_OBJECTS(group_btcm, 0x06000000, 0x0D000000)
+   STANDARD_OBJECTS(group_vanilla, 0x06000000, 0x0D000000)
 
    /* use segmented addressing for behaviors */
    BEGIN_SEG(behavior, 0x13000000)

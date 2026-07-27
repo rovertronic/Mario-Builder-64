@@ -273,18 +273,6 @@ enum TerrainLoadCmd {
 #define TERRAIN_LOAD_IS_SURFACE_TYPE_LOW(cmd)  (cmd <  0x40)
 #define TERRAIN_LOAD_IS_SURFACE_TYPE_HIGH(cmd) (cmd >= 0x65)
 
-// Terrain types defined by the level script command terrain_type (cmd_31)
-enum TerrainType {
-    TERRAIN_GRASS,
-    TERRAIN_STONE,
-    TERRAIN_SNOW,
-    TERRAIN_SAND,
-    TERRAIN_SPOOKY,
-    TERRAIN_WATER,
-    TERRAIN_SLIDE,
-    TERRAIN_MASK = 0x7
-};
-
 // These collision commands are unique "surface" types like those defined higher
 
 // Collision Data Routine Initiate

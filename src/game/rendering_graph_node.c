@@ -18,8 +18,7 @@
 #include "config.h"
 #include "config/config_world.h"
 
-#include "actors/common1.h"
-
+#include "actors/group_global.h"
 
 f32 aspect;
 

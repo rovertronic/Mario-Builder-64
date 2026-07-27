@@ -171,7 +171,7 @@ void df_koopa(s32 context) {
     if (context == MB64_DF_CONTEXT_INIT) obj_init_animation(o, 7);
 }
 
-#include "actors/group17.h"
+#include "actors/group_vanilla.h"
 void df_ktq(s32 context) {
     df_koopa(context);
     if (context != MB64_DF_CONTEXT_INIT) return;

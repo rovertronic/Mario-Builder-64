@@ -1,5 +1,5 @@
-#ifndef GROUP14_H
-#define GROUP14_H
+#ifndef GROUP_BTCM_H
+#define GROUP_BTCM_H
 
 #include "types.h"
 
@@ -64,5 +64,11 @@ extern const Gfx question_box_dl[];
 #include "cobie2/anim_header.h"
 
 #include "evil_mario/anim_header.h"
+
+extern const GeoLayout metalstar_geo[];
+extern const Gfx metalstar_seg3_sub_dl_body[];
+extern const Gfx metalstar_seg3_dl_body[];
+extern const Gfx metalstar_seg3_sub_dl_eyes[];
+extern const Gfx metalstar_seg3_dl_eyes[];
 
 #endif

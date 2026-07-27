@@ -47,8 +47,7 @@
 #include "behaviors/koopa_shell_underwater.inc.c"
 #include "behaviors/warp.inc.c"
 #include "behaviors/white_puff_explode.inc.c"
-#include "actors/common1.h"
-#include "actors/group0.h"
+#include "actors/group_global.h"
 #include "area.h"
 #include "engine/surface_load.h"
 

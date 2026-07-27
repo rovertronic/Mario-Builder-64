@@ -27,8 +27,8 @@
 #include "sounds.h"
 #include "levels/scripts.h"
 #include "segment_symbols.h"
-#include "actors/group14.h"
-#include "actors/group17.h"
+#include "actors/group_btcm.h"
+#include "actors/group_vanilla.h"
 
 u8 mb64_menu_state = MB64_MAKE_MAIN;
 u8 mb64_level_action = MB64_LA_BUILD;
@@ -71,8 +71,8 @@ u8 mb64_prepare_level_screenshot = FALSE;
 u8 mb64_do_save = FALSE;
 
 void* mb64_theme_segments[][4] = {
-    {_group17_yay0SegmentRomStart, _group17_yay0SegmentRomEnd, _group17_geoSegmentRomStart, _group17_geoSegmentRomEnd}, //MB64_GAME_VANILLA
-    {_group14_yay0SegmentRomStart, _group14_yay0SegmentRomEnd, _group14_geoSegmentRomStart, _group14_geoSegmentRomEnd}, //MB64_GAME_BTCM
+    {_group_vanilla_yay0SegmentRomStart, _group_vanilla_yay0SegmentRomEnd, _group_vanilla_geoSegmentRomStart, _group_vanilla_geoSegmentRomEnd}, //MB64_GAME_VANILLA
+    {_group_btcm_yay0SegmentRomStart, _group_btcm_yay0SegmentRomEnd, _group_btcm_geoSegmentRomStart, _group_btcm_geoSegmentRomEnd}, //MB64_GAME_BTCM
 };
 const LevelScript *mb64_theme_model_scripts[] = {
     script_func_mb64_theme_vanilla,

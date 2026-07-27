@@ -1,5 +1,5 @@
-#ifndef GROUP17_H
-#define GROUP17_H
+#ifndef GROUP_VANILLA_H
+#define GROUP_VANILLA_H
 
 #include "types.h"
 

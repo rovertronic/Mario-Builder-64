@@ -16,15 +16,14 @@ TEXTURE_DIRS := \
 # NOTE: textures assume naming convention "texture.<encoding>.png" generates "texture.<encoding>"
 
 ACTOR_GROUPS := \
-    group0  \
-    group14 \
-    group17 \
-    common0 \
-    common1
+    group_global  \
+    group_btcm \
+    group_vanilla
 
-LEVEL_FILES := $(addsuffix leveldata,$(LEVEL_DIRS))
+LEVEL_DATA_DIRS := $(patsubst levels/%,%,$(dir $(wildcard levels/*/leveldata.c)))
+LEVEL_FILES := $(addsuffix leveldata,$(LEVEL_DATA_DIRS))
 
-LEVEL_ELF_FILES := $(foreach level_dir,$(LEVEL_DIRS),$(BUILD_DIR)/levels/$(level_dir)leveldata.elf)
+LEVEL_ELF_FILES := $(foreach level_dir,$(LEVEL_DATA_DIRS),$(BUILD_DIR)/levels/$(level_dir)leveldata.elf)
 
 SEG_FILES := \
     $(SEGMENTS:%=$(BUILD_DIR)/bin/%.elf) \
@@ -49,18 +48,14 @@ ACTOR_TEXTURES := $(wildcard actors/*/*.png)
 ACTOR_TEXTURES_INC_C := $(ACTOR_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Actor dependencies
-$(BUILD_DIR)/actors/group0.o:  | $(ACTOR_TEXTURES_INC_C)
-$(BUILD_DIR)/actors/group14.o: | $(ACTOR_TEXTURES_INC_C)
-$(BUILD_DIR)/actors/group17.o: | $(ACTOR_TEXTURES_INC_C)
-$(BUILD_DIR)/actors/common0.o: | $(ACTOR_TEXTURES_INC_C)
-$(BUILD_DIR)/actors/common1.o: | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/group_global.o:  | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/group_btcm.o: | $(ACTOR_TEXTURES_INC_C)
+$(BUILD_DIR)/actors/group_vanilla.o: | $(ACTOR_TEXTURES_INC_C)
 
 # Actor Elf Files
-$(BUILD_DIR)/actors/group0.elf:  SEGMENT_ADDRESS := 0x04000000
-$(BUILD_DIR)/actors/group14.elf: SEGMENT_ADDRESS := 0x06000000
-$(BUILD_DIR)/actors/group17.elf: SEGMENT_ADDRESS := 0x06000000
-$(BUILD_DIR)/actors/common0.elf: SEGMENT_ADDRESS := 0x08000000
-$(BUILD_DIR)/actors/common1.elf: SEGMENT_ADDRESS := 0x03000000
+$(BUILD_DIR)/actors/group_global.elf:  SEGMENT_ADDRESS := 0x04000000
+$(BUILD_DIR)/actors/group_btcm.elf: SEGMENT_ADDRESS := 0x06000000
+$(BUILD_DIR)/actors/group_vanilla.elf: SEGMENT_ADDRESS := 0x06000000
 
 # --------------------------------------
 # Level Rules

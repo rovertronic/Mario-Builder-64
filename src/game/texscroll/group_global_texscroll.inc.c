@@ -1,5 +1,5 @@
-#include "actors/group0.h"
-#include "actors/group14.h"
+#include "actors/group_global.h"
+#include "actors/group_btcm.h"
 //#include "actors/chicken/texscroll.inc.c"
 //#include "actors/egg/texscroll.inc.c"
 //#include "actors/showrunner/texscroll.inc.c"
@@ -7,7 +7,7 @@
 #include "actors/maker/texscroll.inc.c"
 #include "actors/badge/texscroll.inc.c"
 #include "actors/showrunner/texscroll.inc.c"
-void scroll_textures_group14() {
+void scroll_textures_group_btcm() {
 	scroll_actor_geo_showrunner();
 	scroll_actor_geo_badge();
 }
@@ -16,7 +16,7 @@ void scroll_textures_group14() {
 #include "actors/conveyor_half/texscroll.inc.c"
 #include "actors/conveyor/texscroll.inc.c"
 #include "actors/conveyor_dslope/texscroll.inc.c"
-void scroll_textures_group0() {
+void scroll_textures_group_global() {
 	
 	
 	//

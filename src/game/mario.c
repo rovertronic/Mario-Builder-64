@@ -30,7 +30,7 @@
 #include "puppyprint.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "actors/group14.h"
+#include "actors/group_btcm.h"
 #include "ingame_menu.h"
 #include "mb64/file.h"
 #include "mb64/editor/main.h"
@@ -473,31 +473,19 @@ s32 mario_get_floor_class(struct MarioState *m) {
     return floorClass;
 }
 
+// Footstep/terrain sound bank selected from surface type (STONE level defaults).
 // clang-format off
-s8 sTerrainSounds[7][6] = {
+s8 sTerrainSounds[6] = {
     // default,              hard,                 slippery,
     // very slippery,        noisy default,        noisy slippery
-    { SOUND_TERRAIN_DEFAULT, SOUND_TERRAIN_STONE,  SOUND_TERRAIN_GRASS,
-      SOUND_TERRAIN_GRASS,   SOUND_TERRAIN_GRASS,  SOUND_TERRAIN_DEFAULT }, // TERRAIN_GRASS
-    { SOUND_TERRAIN_STONE,   SOUND_TERRAIN_STONE,  SOUND_TERRAIN_STONE,
-      SOUND_TERRAIN_STONE,   SOUND_TERRAIN_GRASS,  SOUND_TERRAIN_GRASS }, // TERRAIN_STONE
-    { SOUND_TERRAIN_SNOW,    SOUND_TERRAIN_ICE,    SOUND_TERRAIN_SNOW,
-      SOUND_TERRAIN_ICE,     SOUND_TERRAIN_STONE,  SOUND_TERRAIN_STONE }, // TERRAIN_SNOW
-    { SOUND_TERRAIN_SAND,    SOUND_TERRAIN_STONE,  SOUND_TERRAIN_SAND,
-      SOUND_TERRAIN_SAND,    SOUND_TERRAIN_STONE,  SOUND_TERRAIN_STONE }, // TERRAIN_SAND
-    { SOUND_TERRAIN_SPOOKY,  SOUND_TERRAIN_SPOOKY, SOUND_TERRAIN_SPOOKY,
-      SOUND_TERRAIN_SPOOKY,  SOUND_TERRAIN_STONE,  SOUND_TERRAIN_STONE }, // TERRAIN_SPOOKY
-    { SOUND_TERRAIN_DEFAULT, SOUND_TERRAIN_STONE,  SOUND_TERRAIN_GRASS,
-      SOUND_TERRAIN_ICE,     SOUND_TERRAIN_STONE,  SOUND_TERRAIN_ICE }, // TERRAIN_WATER
-    { SOUND_TERRAIN_STONE,   SOUND_TERRAIN_STONE,  SOUND_TERRAIN_STONE,
-      SOUND_TERRAIN_STONE,   SOUND_TERRAIN_ICE,    SOUND_TERRAIN_ICE }, // TERRAIN_SLIDE
+    SOUND_TERRAIN_STONE, SOUND_TERRAIN_STONE, SOUND_TERRAIN_STONE,
+    SOUND_TERRAIN_STONE, SOUND_TERRAIN_GRASS, SOUND_TERRAIN_GRASS,
 };
 // clang-format on
 
 u32 get_terrain_sound_addend(TerrainData floorType) {
     s32 ret = SOUND_TERRAIN_DEFAULT << 16;
     u8 setret = FALSE;
-    s16 terrainType = gCurrentArea->terrainType & TERRAIN_MASK;
     s16 floorSoundType;
 
     if (SURFACE_IS_QUICKSAND(floorType)) {
@@ -533,6 +521,7 @@ u32 get_terrain_sound_addend(TerrainData floorType) {
                 break;
 
             case SURFACE_NOISE_DEFAULT:
+            case SURFACE_GRASS:
                 floorSoundType = 4;
                 break;
 
@@ -540,10 +529,6 @@ u32 get_terrain_sound_addend(TerrainData floorType) {
                 floorSoundType = 5;
                 break;
 
-            case SURFACE_GRASS:
-                floorSoundType = 4;
-                terrainType = TERRAIN_GRASS & TERRAIN_MASK;
-                break;
             case SURFACE_SAND:
                 setret = TRUE;
                 ret = SOUND_TERRAIN_SAND << 16;
@@ -551,15 +536,15 @@ u32 get_terrain_sound_addend(TerrainData floorType) {
             case SURFACE_SNOW:
                 setret = TRUE;
                 ret = SOUND_TERRAIN_SNOW << 16;
-            break;
+                break;
             case SURFACE_CREAKWOOD:
                 setret = TRUE;
                 ret = SOUND_TERRAIN_SPOOKY << 16;
-            break;
+                break;
         }
 
         if (!setret) {
-            ret = sTerrainSounds[terrainType][floorSoundType] << 16;
+            ret = sTerrainSounds[floorSoundType] << 16;
         }
     }
     return ret;
@@ -614,7 +599,7 @@ s32 mario_facing_downhill(struct MarioState *m, s32 turnYaw) {
 u32 mario_floor_is_slippery(struct MarioState *m) {
     f32 normY;
 
-    if (((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE  && m->floorNormal[1] < COS1) || (m->floor->type == SURFACE_SUPER_SLIPPERY)) {
+    if (m->floor->type == SURFACE_SUPER_SLIPPERY) {
         return TRUE;
     }
 
@@ -634,8 +619,7 @@ u32 mario_floor_is_slippery(struct MarioState *m) {
 s32 mario_floor_is_slope(struct MarioState *m) {
     f32 normY;
 
-    if (((m->area->terrainType & TERRAIN_MASK) == TERRAIN_SLIDE
-        && m->floorNormal[1] < COS1) || (m->floor->type == SURFACE_SUPER_SLIPPERY)) {
+    if (m->floor->type == SURFACE_SUPER_SLIPPERY) {
         return TRUE;
     }
 
@@ -1538,10 +1522,6 @@ void mario_remove_powerup(void) {
  * Both increments and decrements Mario's HP.
  */
 void update_mario_health(struct MarioState *m) {
-    s32 terrainIsSnow;
-
-
-
     if (m->health >= 0x100) {
         // When already healing or hurting Mario, Mario's HP is not changed any more here.
         if (((u32) m->healCounter | (u32) m->hurtCounter) == 0) {
@@ -1551,20 +1531,15 @@ void update_mario_health(struct MarioState *m) {
                 }
             } else {
                 if ((m->action & ACT_FLAG_SWIMMING) && !(m->action & ACT_FLAG_INTANGIBLE)) {
-                    terrainIsSnow = (m->area->terrainType & TERRAIN_MASK) == TERRAIN_SNOW;
 #ifdef BREATH_METER
-                    // when in snow terrains lose 3 health.
-                    if ((m->pos[1] < (m->waterLevel - 140)) && terrainIsSnow) {
-                        m->health -= 3;
-                    }
+                    // snow-terrain water drain removed with TERRAIN_TYPE
 #else
-                    // When Mario is near the water surface, recover health (unless in snow),
-                    // when in snow terrains lose 3 health.
+                    // When Mario is near the water surface, recover health.
                     // If using the debug level select, do not lose any HP to water.
-                    if ((m->pos[1] >= (m->waterLevel - 140)) && !terrainIsSnow) {
+                    if ((m->pos[1] >= (m->waterLevel - 140))) {
                         //m->health += 0x1A;  REPLACE WITH SEPARATE OXYGEN METER LATER (axo: possibly use BREATH_METER?)
                     } else if (!gDebugLevelSelect) {
-                        // m->health -= (terrainIsSnow ? 3 : 1);
+                        // m->health -= 1;
                     }
 #endif
                 }
@@ -1642,11 +1617,10 @@ void update_mario_health(struct MarioState *m) {
         } else {
             //AIR: Vanilla Behavior
             if (marioIsSwimming && !(m->action & ACT_FLAG_INTANGIBLE)) {
-                terrainIsSnow = FALSE;
-                if ((m->pos[1] >= (m->waterLevel - 140)) && !terrainIsSnow) {
+                if (m->pos[1] >= (m->waterLevel - 140)) {
                     m->health += 0x1A;
                 } else if (!gDebugLevelSelect) {
-                    m->health -= (terrainIsSnow ? 3 : 1);
+                    m->health -= 1;
                 }
             }
         }

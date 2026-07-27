@@ -53,9 +53,9 @@ enum LevelCommands {
     /*0x2B*/ LEVEL_CMD_SET_MARIO_START_POS,
     /*0x2C*/ LEVEL_CMD_UNLOAD_MARIO_AREA,
     /*0x2D*/ LEVEL_CMD_UPDATE_OBJECTS,
-    /*0x2E*/ LEVEL_CMD_SET_TERRAIN_DATA,
+    /*0x2E*/ LEVEL_CMD_2E,
     /*0x30*/ LEVEL_CMD_SHOW_DIALOG,
-    /*0x31*/ LEVEL_CMD_SET_TERRAIN_TYPE,
+    /*0x31*/ LEVEL_CMD_31,
     /*0x32*/ LEVEL_CMD_NOP,
     /*0x33*/ LEVEL_CMD_SET_TRANSITION,
     /*0x34*/ LEVEL_CMD_SET_BLACKOUT,
@@ -379,15 +379,8 @@ enum WarpCheckpointFlags {
 #define UPDATE_OBJECTS() \
     CMD_BBH(LEVEL_CMD_UPDATE_OBJECTS, 0x04, 0x0000)
 
-#define TERRAIN(terrainData) \
-    CMD_BBH(LEVEL_CMD_SET_TERRAIN_DATA, 0x08, 0x0000), \
-    CMD_PTR(terrainData)
-
 #define SHOW_DIALOG(index, dialogId) \
     CMD_BBBB(LEVEL_CMD_SHOW_DIALOG, 0x04, index, dialogId)
-
-#define TERRAIN_TYPE(terrainType) \
-    CMD_BBH(LEVEL_CMD_SET_TERRAIN_TYPE, 0x04, terrainType)
 
 #define NOP() \
     CMD_BBH(LEVEL_CMD_NOP, 0x04, 0x0000)
@@ -474,18 +467,6 @@ enum WarpCheckpointFlags {
 
 #define LOAD_EFFECTS() \
     LOAD_YAY0(/*seg*/ SEGMENT_EFFECT_YAY0, /*romStart*/ _effect_yay0SegmentRomStart, /*romEnd*/ _effect_yay0SegmentRomEnd)
-
-#define LOAD_GROUPA(groupName) \
-    LOAD_YAY0(/*seg*/ SEGMENT_GROUPA_YAY0, /*romStart*/ _##groupName##_yay0SegmentRomStart, /*romEnd*/ _##groupName##_yay0SegmentRomEnd), \
-    LOAD_RAW( /*seg*/ SEGMENT_GROUPA_GEO,  /*romStart*/ _##groupName##_geoSegmentRomStart,  /*romEnd*/ _##groupName##_geoSegmentRomEnd)
-
-#define LOAD_GROUPB(groupName) \
-    LOAD_YAY0(/*seg*/ SEGMENT_GROUPB_YAY0, /*romStart*/ _##groupName##_yay0SegmentRomStart, /*romEnd*/ _##groupName##_yay0SegmentRomEnd), \
-    LOAD_RAW (/*seg*/ SEGMENT_GROUPB_GEO,  /*romStart*/ _##groupName##_geoSegmentRomStart,  /*romEnd*/ _##groupName##_geoSegmentRomEnd)
-
-#define LOAD_COMMON0() \
-    LOAD_YAY0(/*seg*/ SEGMENT_COMMON0_YAY0, /*romStart*/ _common0_yay0SegmentRomStart, /*romEnd*/ _common0_yay0SegmentRomEnd), \
-    LOAD_RAW( /*seg*/ SEGMENT_COMMON0_GEO,  /*romStart*/ _common0_geoSegmentRomStart,  /*romEnd*/ _common0_geoSegmentRomEnd)
 
 #define LOAD_BEHAVIOR_DATA() \
     LOAD_RAW( /*seg*/ SEGMENT_BEHAVIOR_DATA, /*romStart*/ _behaviorSegmentRomStart, /*romEnd*/ _behaviorSegmentRomEnd)

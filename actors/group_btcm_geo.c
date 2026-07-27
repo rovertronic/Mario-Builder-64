@@ -4,9 +4,8 @@
 
 #include "make_const_nonconst.h"
 
-#include "common1.h"
-#include "group14.h"
-#include "group0.h"
+#include "group_btcm.h"
+#include "group_global.h"
 
 #include "mario_btcm/geo.inc.c"
 
@@ -33,3 +32,4 @@
 #include "billmask/geo.inc.c"
 #include "moleman3/geo.inc.c"
 #include "cobie2/geo.inc.c"
+#include "metalstar/geo.inc.c"

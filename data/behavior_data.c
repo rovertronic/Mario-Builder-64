@@ -16,11 +16,9 @@
 #include "mb64/editor/object.h"
 #include "include/config/config_objects.h"
 //evil_mario_anims
-#include "actors/common0.h"
-#include "actors/common1.h"
-#include "actors/group0.h"
-#include "actors/group14.h"
-#include "actors/group17.h"
+#include "actors/group_global.h"
+#include "actors/group_btcm.h"
+#include "actors/group_vanilla.h"
 
 #include "make_const_nonconst.h"
 #include "behavior_data.h"

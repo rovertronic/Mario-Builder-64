@@ -1,6 +1,6 @@
 // bowser.inc.c
 
-#include "actors/group17.h"
+#include "actors/group_vanilla.h"
 
 /**
  * Behavior for Bowser and it's actions (Tail, Flame, Body)

@@ -58,3 +58,5 @@
 
 #include "evil_mario/anims/data.inc.c"
 #include "evil_mario/anims/table.inc.c"
+
+#include "metalstar/model.inc.c"

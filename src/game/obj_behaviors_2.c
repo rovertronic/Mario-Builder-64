@@ -1,8 +1,8 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "actors/common0.h"
-#include "actors/group17.h"
+#include "actors/group_global.h"
+#include "actors/group_vanilla.h"
 #include "behavior_data.h"
 #include "camera.h"
 #include "engine/math_util.h"
@@ -25,7 +25,7 @@
 #include "rendering_graph_node.h"
 #include "seq_ids.h"
 #include "spawn_sound.h"
-#include "actors/group0.h"
+#include "actors/group_global.h"
 #include "mb64/editor/main.h"
 #include "mb64/editor/object.h"
 #include "include/config/config_objects.h"

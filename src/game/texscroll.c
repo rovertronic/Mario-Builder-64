@@ -45,7 +45,7 @@ void scroll_minecraft_textures() {
 }
 
 
-#include "src/game/texscroll/group0_texscroll.inc.c"
+#include "src/game/texscroll/group_global_texscroll.inc.c"
 // #include "src/game/texscroll/wf_texscroll.inc.c"
 // #include "src/game/texscroll/castle_courtyard_texscroll.inc.c"
 // #include "src/game/texscroll/castle_grounds_texscroll.inc.c"
@@ -71,7 +71,7 @@ void scroll_minecraft_textures() {
 // #include "src/game/texscroll/ttc_texscroll.inc.c"
 void scroll_textures() {
 
-	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group0_yay0SegmentRomStart)) {
+	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group_global_yay0SegmentRomStart)) {
 		scroll_minecraft_textures();
 	}
 
@@ -163,12 +163,12 @@ void scroll_textures() {
 	// 	scroll_textures_ttc();
 	// }
 
-	if(SCROLL_CONDITION(sSegmentROMTable[0x6] == (uintptr_t)_group14_yay0SegmentRomStart)) {
-		scroll_textures_group14();
+	if(SCROLL_CONDITION(sSegmentROMTable[0x6] == (uintptr_t)_group_btcm_yay0SegmentRomStart)) {
+		scroll_textures_group_btcm();
 	}
 
-	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group0_yay0SegmentRomStart)) {
-		scroll_textures_group0();
+	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group_global_yay0SegmentRomStart)) {
+		scroll_textures_group_global();
 	}
 
 }

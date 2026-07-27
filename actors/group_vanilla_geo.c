@@ -4,8 +4,8 @@
 
 #include "make_const_nonconst.h"
 
-#include "common1.h"
-#include "group17.h"
+#include "group_vanilla.h"
+#include "group_global.h"
 
 #include "mario/geo.inc.c"
 #include "king_bobomb/geo.inc.c"

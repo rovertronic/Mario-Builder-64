@@ -13,9 +13,6 @@
 #include "levels/scripts.h"
 #include "levels/menu/header.h"
 
-#include "actors/common0.h"
-#include "actors/common1.h"
-
 #include "make_const_nonconst.h"
 #include "levels/intro/header.h"
 #include "farcall.h"

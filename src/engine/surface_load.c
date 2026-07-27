@@ -235,55 +235,6 @@ static struct Surface *read_surface_data(TerrainData *vertexData, TerrainData **
 }
 
 /**
- * Load in the surfaces for a given surface type. This includes setting the flags,
- * exertion, and room.
- */
-static void load_static_surfaces(TerrainData **data, TerrainData *vertexData, s32 surfaceType) {
-    s32 i;
-    struct Surface *surface;
-
-    s32 numSurfaces = *(*data)++;
-
-    for (i = 0; i < numSurfaces; i++) {
-        surface = read_surface_data(vertexData, data, FALSE);
-        if (surface != NULL) {
-            surface->type = surfaceType;
-
-            add_surface(surface, FALSE);
-        }
-
-        *data += 3;
-    }
-}
-
-/**
- * Read the data for vertices for reference by triangles.
- */
-static TerrainData *read_vertex_data(TerrainData **data) {
-    s32 numVertices = *(*data)++;
-
-    TerrainData *vertexData = *data;
-    *data += 3 * numVertices;
-
-    return vertexData;
-}
-
-/**
- * Loads in special environmental regions, such as water, poison gas, and JRB fog.
- */
-static void load_environmental_regions(TerrainData **data) {
-    s32 i;
-
-    gEnvironmentRegions = *data;
-    s32 numRegions = *(*data)++;
-
-    for (i = 0; i < numRegions; i++) {
-        *data += 5;
-        gEnvironmentLevels[i] = *(*data)++;
-    }
-}
-
-/**
  * Allocate the dynamic surface pool for object collision.
  */
 void alloc_surface_pools(void) {
@@ -299,50 +250,15 @@ void alloc_surface_pools(void) {
 }
 
 /**
- * Process the level file, loading in vertices, surfaces, some objects, and environmental
- * boxes (water, gas, JRB fog).
+ * Reset static surfaces for the newly loaded area.
  */
-void load_area_terrain(UNUSED s32 index, TerrainData *data) {
-    PUPPYPRINT_GET_SNAPSHOT();
-    s32 terrainLoadType;
-    TerrainData *vertexData = NULL;
-    // u32 surfacePoolData;
-
-    // Initialize the data for this.
+void clear_static_surfaces(void) {
     gEnvironmentRegions = NULL;
     gMainSurfaceNodesAllocated = 0;
     gMainSurfacesAllocated = 0;
-
-    // Clear the static (level) surface partitions for new use.
+    gNumStaticSurfaceNodes = 0;
+    gNumStaticSurfaces = 0;
     bzero(gStaticSurfacePartition, sizeof(gStaticSurfacePartition));
-
-    // A while loop iterating through each section of the level data. Sections of data
-    // are prefixed by a terrain "type." This type is reused for surfaces as the surface
-    // type.
-    while (TRUE) {
-        terrainLoadType = *data++;
-
-        if (TERRAIN_LOAD_IS_SURFACE_TYPE_LOW(terrainLoadType)) {
-            load_static_surfaces(&data, vertexData, terrainLoadType);
-        } else if (terrainLoadType == TERRAIN_LOAD_VERTICES) {
-            vertexData = read_vertex_data(&data);
-        // } else if (terrainLoadType == TERRAIN_LOAD_OBJECTS) {
-        //     spawn_special_objects(index, &data);
-        } else if (terrainLoadType == TERRAIN_LOAD_ENVIRONMENT) {
-            load_environmental_regions(&data);
-        } else if (terrainLoadType == TERRAIN_LOAD_CONTINUE) {
-            continue;
-        } else if (terrainLoadType == TERRAIN_LOAD_END) {
-            break;
-        } else if (TERRAIN_LOAD_IS_SURFACE_TYPE_HIGH(terrainLoadType)) {
-            load_static_surfaces(&data, vertexData, terrainLoadType);
-            continue;
-        }
-    }
-
-    gNumStaticSurfaceNodes = gMainSurfaceNodesAllocated;
-    gNumStaticSurfaces = gMainSurfacesAllocated;
-    profiler_collision_update(first);
 }
 
 /**

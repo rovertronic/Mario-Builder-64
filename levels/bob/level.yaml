@@ -1,12 +1,12 @@
-# Bob-Omb Battlefield
+# Empty editor template course
 short-name: bob
-full-name: Bob-Omb Battlefield
-texture-file: ["/texture.inc.c"]
+full-name: Editor Template
+texture-file: []
 area-count: 1
-objects: [chain_chomp_gate, grate_door, seesaw_platform]
+objects: []
 shared-path: []
 # loaded files
 skybox-bin: water
-effects: false
-actor-bins: [group3, group14]
+effects: true
+actor-bins: []
 common-bin: [common0]

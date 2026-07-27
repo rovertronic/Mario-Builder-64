@@ -10,9 +10,6 @@
 
 #include "levels/scripts.h"
 
-#include "actors/common1.h"
-#include "actors/group17.h"
-
 /* Fast64 begin persistent block [includes] */
 /* Fast64 end persistent block [includes] */
 
@@ -24,17 +21,15 @@
 
 const LevelScript level_bob_entry[] = {
 	INIT_LEVEL(),
-	LOAD_YAY0(0x07, _bob_segment_7SegmentRomStart, _bob_segment_7SegmentRomEnd), 
-	LOAD_YAY0(0x0A, _water_skybox_yay0SegmentRomStart, _water_skybox_yay0SegmentRomEnd), 
+	LOAD_YAY0(0x0A, _water_skybox_yay0SegmentRomStart, _water_skybox_yay0SegmentRomEnd),
 	LOAD_MB64(),
-	LOAD_YAY0(0x08, _common0_yay0SegmentRomStart, _common0_yay0SegmentRomEnd), 
-	LOAD_RAW(0x0F, _common0_geoSegmentRomStart, _common0_geoSegmentRomEnd),
-	LOAD_YAY0(0x0B, _effect_yay0SegmentRomStart, _effect_yay0SegmentRomEnd), 
+	LOAD_YAY0(/*seg*/ SEGMENT_GROUP_GLOBAL_YAY0, _group_global_yay0SegmentRomStart, _group_global_yay0SegmentRomEnd),
+	LOAD_RAW_WITH_CODE(/*seg*/ SEGMENT_GROUP_GLOBAL_GEO, _group_global_geoSegmentRomStart, _group_global_geoSegmentRomEnd, _group_global_geoSegmentBssStart, _group_global_geoSegmentBssEnd),
+	LOAD_YAY0(0x0B, _effect_yay0SegmentRomStart, _effect_yay0SegmentRomEnd),
 	ALLOC_LEVEL_POOL(),
+	JUMP_LINK(script_func_mb64_global),
 	LOAD_MB64_MODELS(),
-	JUMP_LINK(script_func_global_1),
 	MARIO(MODEL_MARIO, 0x00000001, bhvMario),
-	LOAD_MODEL_FROM_GEO(MODEL_BOB_BUBBLY_TREE, bubbly_tree_geo), 
 
 	/* Fast64 begin persistent block [level commands] */
 	/* Fast64 end persistent block [level commands] */
@@ -48,9 +43,7 @@ const LevelScript level_bob_entry[] = {
 		OBJECT(MODEL_SB, 0, 0, 0, 0, 0, 0, 0x00000000, bhvSB),
 		OBJECT(MODEL_NONE, 4800, 1350, 4800, 0, -180, 0, 0x000A0000, bhvSpinAirborneWarp),
 		MARIO_POS(0x01, -180, 4800, 1350, 4800),
-		TERRAIN(bob_area_1_collision),
 		STOP_MUSIC(0),
-		TERRAIN_TYPE(TERRAIN_STONE),
 		/* Fast64 begin persistent block [area commands] */
 		/* Fast64 end persistent block [area commands] */
 	END_AREA(),

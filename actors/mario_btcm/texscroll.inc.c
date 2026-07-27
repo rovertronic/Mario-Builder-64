@@ -1,4 +1,4 @@
-#include "actors/group14.h"
+#include "actors/group_btcm.h"
 
 void scroll_sts_mat_mario_Static() {
 	Gfx *mat = segmented_to_virtual(mat_mario_Static);

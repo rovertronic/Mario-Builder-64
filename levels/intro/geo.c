@@ -51,60 +51,12 @@ const GeoLayout intro_geo_splash_screen[] = {
          GEO_OPEN_NODE(),
             GEO_CAMERA(CAMERA_MODE_NONE, 0, 0, 3200, 0, 0, 0, 0x00000000),
             GEO_OPEN_NODE(),
-            
                GEO_ASM(0, geo_intro_super_mario_64_logo),
                GEO_ASM(0, geo_title_screen3),
                GEO_ASM(0, geo_title_screen2),
-
             GEO_CLOSE_NODE(),
          GEO_CLOSE_NODE(),
       GEO_CLOSE_NODE(),
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-        //  GEO_ASM(0, geo_intro_tm_copyright),
-      GEO_CLOSE_NODE(),
-   GEO_CLOSE_NODE(),
-   GEO_END(),
-};
-
-// 0x0E00035C
-const GeoLayout intro_geo_title_reset[] = {
-   GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
-   GEO_OPEN_NODE(),
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_NODE_ORTHO(100),
-         GEO_OPEN_NODE(),
-            GEO_ASM(0, geo_intro_regular_backdrop),
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-#if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_ASM(INTRO_CONTEXT_NORMAL, geo_intro_rumble_pak_graphic),
-      GEO_CLOSE_NODE(),
-#endif
-   GEO_CLOSE_NODE(),
-   GEO_END(),
-};
-
-// 0x0E0003B8
-const GeoLayout intro_geo_game_over_reset[] = {
-   GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
-   GEO_OPEN_NODE(),
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_NODE_ORTHO(100),
-         GEO_OPEN_NODE(),
-            GEO_ASM(0, geo_intro_gameover_backdrop),
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-#if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_ASM(INTRO_CONTEXT_GAME_OVER, geo_intro_rumble_pak_graphic),
-      GEO_CLOSE_NODE(),
-#endif
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
@@ -142,4 +94,3 @@ const GeoLayout intro_geo_debug_level_select[] = {
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
-

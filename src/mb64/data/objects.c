@@ -5,10 +5,9 @@
 #include "model_ids.h"
 #include "behavior_data.h"
 #include "actors/b/header.h"
-#include "actors/group0.h"
-#include "actors/common0.h"
-#include "actors/group14.h"
-#include "actors/group17.h"
+#include "actors/group_global.h"
+#include "actors/group_btcm.h"
+#include "actors/group_vanilla.h"
 
 struct ExclamationBoxContents sExclamationBoxContents_btcm[] = {
     { 0, MODEL_MARIOS_ROCKET_BOOTS,  bhvWingCap,           0, TRUE,  0},

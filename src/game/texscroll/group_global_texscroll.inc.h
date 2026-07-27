@@ -8,4 +8,4 @@
 //#include "actors/showrunner/texscroll.inc.h"
 //#include "actors/egg/texscroll.inc.h"
 //#include "actors/chicken/texscroll.inc.h"
-//extern void scroll_textures_group0();
+//extern void scroll_textures_group_global();

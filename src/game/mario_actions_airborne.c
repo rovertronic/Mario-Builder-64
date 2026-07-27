@@ -140,7 +140,6 @@ s32 should_get_stuck_in_ground(UNUSED struct MarioState *m) {
 }
 #else
 s32 should_get_stuck_in_ground(struct MarioState *m) {
-    // u32 terrainType = m->area->terrainType & TERRAIN_MASK;
     struct Surface *floor = m->floor;
     s32 type = floor->type;
 
