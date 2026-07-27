@@ -20,7 +20,7 @@
 #define SEGMENT_GROUP_GLOBAL_YAY0    0x04 // | Segment  4 | /actors/group_global_yay0, also includes boot (/src/boot/)
 #define SEGMENT_UNUSED_05            0x05 // | Segment  5 |
 #define SEGMENT_GROUP_THEME_YAY0     0x06 // | Segment  6 | Theme actor yay0 (group_btcm / group_vanilla)
-#define SEGMENT_LEVEL_DATA           0x07 // | Segment  7 | Level Data (menu_segment_7, debug_level_select)
+#define SEGMENT_LEVEL_DATA           0x07 // | Segment  7 | Level Data (menu seg7)
 #define SEGMENT_UNUSED_08            0x08 // | Segment  8 |
 #define SEGMENT_UNUSED_09            0x09 // | Segment  9 |
 #define SEGMENT_SKYBOX               0x0A // | Segment 10 | Skybox textures (/textures/skyboxes/)
@@ -37,7 +37,7 @@
 #define SEGMENT_UNUSED_15            0x15 // | Segment 21 |
 #define SEGMENT_UNUSED_16            0x16 // | Segment 22 |
 #define SEGMENT_GROUP_GLOBAL_GEO     0x17 // | Segment 23 | /actors/group_global_geo
-#define SEGMENT_DEMO_INPUTS          0x18 // | Segment 24 | Demo Inputs List
+#define SEGMENT_UNUSED_18            0x18 // | Segment 24 |
 #define SEGMENT_EU_TRANSLATION       0x19 // | Segment 25 | EU language translations
 #define SEGMENT_UNKNOWN_26           0x1A // | Segment 26 |
 #define SEGMENT_UNKNOWN_27           0x1B // | Segment 27 |

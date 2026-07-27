@@ -307,25 +307,6 @@ static void level_cmd_load_mb64_models(void) {
     sCurrentCmd = segmented_to_virtual(mb64_theme_model_scripts[mb64_lopt_game]);
 }
 
-void level_cmd_fileselect_condition(void) {
-
-    /*
-    if (save_file_check_progression(PROG_TRUE_START)) {
-        sRegister = LEVEL_CASTLE;
-    } else {
-        sRegister = LEVEL_CASTLE_GROUNDS;
-    }
-    if (save_file_get_progression() == PROG_ON_AGAMEMNON) {
-        sRegister = LEVEL_BITS;
-    }
-    */
-
-
-    sRegister = LEVEL_BOB;
-
-    sCurrentCmd = CMD_NEXT;
-}
-
 static void level_cmd_unused_19(void) {
     sCurrentCmd = CMD_NEXT;
 }
@@ -536,9 +517,9 @@ static void level_cmd_create_warp_node(void) {
             alloc_only_pool_alloc(sLevelPool, sizeof(struct ObjectWarpNode));
 
         warpNode->node.id = CMD_GET(u8, 2);
-        warpNode->node.destLevel = CMD_GET(u8, 3) + CMD_GET(u8, 6);
-        warpNode->node.destArea = CMD_GET(u8, 4);
-        warpNode->node.destNode = CMD_GET(u8, 5);
+        warpNode->node.destArea = CMD_GET(u8, 3);
+        warpNode->node.destNode = CMD_GET(u8, 4);
+        warpNode->node.unused = 0;
 
         warpNode->next = gAreas[sCurrAreaIndex].warpNodes;
         gAreas[sCurrAreaIndex].warpNodes = warpNode;
@@ -595,9 +576,9 @@ static void level_cmd_create_painting_warp_node(void) {
         node = &gAreas[sCurrAreaIndex].paintingWarpNodes[CMD_GET(u8, 2)];
 
         node->id = 1;
-        node->destLevel = CMD_GET(u8, 3) + CMD_GET(u8, 6);
-        node->destArea = CMD_GET(u8, 4);
-        node->destNode = CMD_GET(u8, 5);
+        node->destArea = CMD_GET(u8, 3);
+        node->destNode = CMD_GET(u8, 4);
+        node->unused = 0;
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -765,14 +746,8 @@ static void level_cmd_get_or_set_var(void) {
             case VAR_CURR_SAVE_FILE_NUM:
                 gCurrSaveFileNum = sRegister;
                 break;
-            case VAR_CURR_COURSE_NUM:
-                gCurrCourseNum = sRegister;
-                break;
             case VAR_CURR_ACT_NUM:
                 gCurrActNum = sRegister;
-                break;
-            case VAR_CURR_LEVEL_NUM:
-                gCurrLevelNum = sRegister;
                 break;
             case VAR_CURR_AREA_INDEX:
                 gCurrAreaIndex = sRegister;
@@ -786,14 +761,8 @@ static void level_cmd_get_or_set_var(void) {
             case VAR_CURR_SAVE_FILE_NUM:
                 sRegister = gCurrSaveFileNum;
                 break;
-            case VAR_CURR_COURSE_NUM:
-                sRegister = gCurrCourseNum;
-                break;
             case VAR_CURR_ACT_NUM:
                 sRegister = gCurrActNum;
-                break;
-            case VAR_CURR_LEVEL_NUM:
-                sRegister = gCurrLevelNum;
                 break;
             case VAR_CURR_AREA_INDEX:
                 sRegister = gCurrAreaIndex;
@@ -806,40 +775,6 @@ static void level_cmd_get_or_set_var(void) {
 
     sCurrentCmd = CMD_NEXT;
 }
-
-// int gDemoLevels[7] = {
-//     LEVEL_BOB,
-//     LEVEL_CCM,
-//     LEVEL_WF,
-//     LEVEL_BBH,
-//     LEVEL_BOB,
-//     LEVEL_BOB,
-//     LEVEL_BOB,
-// };
-
-// int gDemoLevelID = 0;
-// u16 gDemoInputListIDForIntro = 0;
-
-// extern void start_demo(int);
-
-// static void level_cmd_adv_demo(void)
-// {
-//     if(gDemoLevelID == 6) {
-//         sRegister = gDemoLevels[6];
-//         gDemoLevelID = 0;
-//     } else {
-//         sRegister = gDemoLevels[gDemoLevelID++];
-//     }
-
-//     start_demo(0);
-//     sCurrentCmd = CMD_NEXT;
-// }
-
-// static void level_cmd_clear_demo_ptr(void)
-// {
-//     gCurrDemoInput = NULL;
-//     sCurrentCmd = CMD_NEXT;
-// }
 
 static void level_cmd_unused_3d(void) {
     sCurrentCmd = CMD_NEXT;
@@ -919,7 +854,6 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_UNUSED_3D                   */ level_cmd_unused_3d,
     /*LEVEL_CMD_CHANGE_AREA_SKYBOX          */ level_cmd_change_area_skybox,
     /*LEVEL_CMD_SET_ECHO                    */ level_cmd_set_echo,
-    /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,
     /*LEVEL_CMD_LOAD_MB64                   */ level_cmd_load_mb64,
     /*LEVEL_CMD_LOAD_MB64_MODELS            */ level_cmd_load_mb64_models,
 };

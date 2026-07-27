@@ -27,10 +27,8 @@ struct Area gAreaData[AREA_COUNT];
 
 struct WarpTransition gWarpTransition;
 
-s16 gCurrCourseNum;
 s16 gCurrActNum = 1;
 s16 gCurrAreaIndex;
-s16 gSavedCourseNum;
 s16 gMenuOptSelectIndex;
 
 #ifdef MUSIC_PREVIEWING
@@ -41,7 +39,6 @@ struct SpawnInfo *gMarioSpawnInfo = &gPlayerSpawnInfos[0];
 struct GraphNode **gLoadedGraphNodes = gGraphNodePointers;
 struct Area *gAreas = gAreaData;
 struct Area *gCurrentArea = NULL;
-struct CreditsEntry *gCurrCreditsEntry = NULL;
 
 Vp *gViewportOverride = NULL;
 Vp *gViewportClip = NULL;
@@ -52,7 +49,6 @@ Color gWarpTransRed= 0;
 Color gWarpTransGreen = 0;
 Color gWarpTransBlue = 0;
 s16 gCurrSaveFileNum = 1;
-s16 gCurrLevelNum = LEVEL_MIN;
 
 /*
  * The following two tables are used in get_mario_spawn_type() to determine spawn type
@@ -422,7 +418,6 @@ void render_game(void) {
         puppyprint_print_deferred();
 #endif
 
-        // print_displaying_credits_entry();
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
                       SCREEN_HEIGHT - gBorderHeight);
 

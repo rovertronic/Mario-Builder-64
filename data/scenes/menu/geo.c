@@ -11,7 +11,7 @@
 
 #include "make_const_nonconst.h"
 
-#include "levels/menu/header.h"
+#include "data/scenes/menu/header.h"
 
 #include "config.h"
 
@@ -83,4 +83,4 @@ const GeoLayout geo_menu_file_select_strings_and_menu_cursor[] = {
    GEO_END(),
 };
 
-#include "levels/menu/mbg/geo.inc.c"
+#include "data/scenes/menu/mbg/geo.inc.c"

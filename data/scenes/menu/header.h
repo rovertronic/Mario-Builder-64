@@ -22,12 +22,12 @@ extern const LevelScript level_intro_entry_error_screen[];
 
 extern Gfx *geo18_display_error_message(u32 run, UNUSED struct GraphNode *sp44, UNUSED u32 sp48);
 
-#include "levels/menu/mbg/geo_header.h"
-#include "levels/menu/bigpainting/header.h"
-#include "levels/menu/ts1/header.h"
-#include "levels/menu/ts2/header.h"
-#include "levels/menu/ts3/header.h"
-#include "levels/menu/ts4/header.h"
+#include "data/scenes/menu/mbg/geo_header.h"
+#include "data/scenes/menu/bigpainting/header.h"
+#include "data/scenes/menu/ts1/header.h"
+#include "data/scenes/menu/ts2/header.h"
+#include "data/scenes/menu/ts3/header.h"
+#include "data/scenes/menu/ts4/header.h"
 
 extern FILINFO mb64_level_entries[MAX_FILES];
 extern u16 mb64_level_entry_thumbnail[MAX_FILES][64][64];

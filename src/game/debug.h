@@ -19,7 +19,7 @@ void set_text_array_x_y(s32 xOffset, s32 yOffset);
 void print_debug_top_down_objectinfo(const char *str, s32 number);
 void print_debug_top_down_mapinfo(const char *str, s32 number);
 void print_debug_bottom_up(const char *str, s32 number);
-void debug_unknown_level_select_check(void);
+void debug_init_info_flags(void);
 void reset_debug_objectinfo(void);
 void stub_debug_control(void);
 void try_print_debug_mario_object_info(void);
@@ -32,7 +32,7 @@ void try_print_debug_mario_level_info(void);
 #define print_debug_top_down_objectinfo(str, number)
 #define print_debug_top_down_mapinfo(str, number)
 #define print_debug_bottom_up(str, number)
-#define debug_unknown_level_select_check()
+#define debug_init_info_flags()
 #define reset_debug_objectinfo()
 #define stub_debug_control()
 #define try_print_debug_mario_object_info()

@@ -9,11 +9,15 @@
 #include "game/object_helpers.h"
 #include "game/object_list_processor.h"
 #include "game/sram.h"
-#include "levels/menu/header.h"
+#include "data/scenes/menu/header.h"
 #include "game/emutest.h"
 #include "game/segment2.h"
 #include "seq_ids.h"
 #include <string.h>
+
+#ifdef LIBPL
+#include "lib/libpl/libpl-rhdc.h"
+#endif
 
 char *info_credits[] = {
     "3Mario Builder 64",
@@ -921,12 +925,14 @@ void create_page(int page, int animate) {
             gPrevMainMenuButton = 2;
             break;
         case PAGE_AUTHOR:
+#ifdef LIBPL
             if (gSupportsLibpl) {
                 const char *rhdc_username = libpl_get_my_rhdc_username();
                 if (rhdc_username) {
                     strncpy(main_menu_keyboard_input, rhdc_username, MAX_USERNAME_SIZE);
                 }
             }
+#endif
             main_menu_create_keyboard_page(frame, "Enter your username:", keyboard_set_author_name, FALSE);
             gPrevMainMenuPage = PAGE_NONE;
             break;

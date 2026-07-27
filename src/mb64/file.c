@@ -11,7 +11,7 @@
 #include "game/puppyprint.h"
 #include <string.h>
 
-#include "levels/menu/header.h"
+#include "data/scenes/menu/header.h"
 #include "actors/bigpainting2/header.h"
 
 char mb64_file_name[MAX_FILE_NAME_SIZE];

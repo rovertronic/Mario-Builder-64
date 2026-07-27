@@ -20,20 +20,17 @@ ACTOR_GROUPS := \
     group_btcm \
     group_vanilla
 
-LEVEL_DATA_DIRS := $(patsubst levels/%,%,$(dir $(wildcard levels/*/leveldata.c)))
-LEVEL_FILES := $(addsuffix leveldata,$(LEVEL_DATA_DIRS))
-
-LEVEL_ELF_FILES := $(foreach level_dir,$(LEVEL_DATA_DIRS),$(BUILD_DIR)/levels/$(level_dir)leveldata.elf)
+MENU_SEG7 := data/scenes/menu/seg7
 
 SEG_FILES := \
     $(SEGMENTS:%=$(BUILD_DIR)/bin/%.elf) \
     $(ACTOR_GROUPS:%=$(BUILD_DIR)/actors/%.elf) \
-    $(LEVEL_FILES:%=$(BUILD_DIR)/levels/%.elf)
+    $(BUILD_DIR)/$(MENU_SEG7).elf
 
 YAY0_FILES := \
     $(SEGMENTS:%=$(BUILD_DIR)/bin/%.szp) \
     $(ACTOR_GROUPS:%=$(BUILD_DIR)/actors/%.szp) \
-    $(LEVEL_FILES:%=$(BUILD_DIR)/levels/%.szp)
+    $(BUILD_DIR)/$(MENU_SEG7).szp
 
 YAY0_OBJ_FILES := $(YAY0_FILES:.szp=.szp.o)
 
@@ -58,31 +55,10 @@ $(BUILD_DIR)/actors/group_btcm.elf: SEGMENT_ADDRESS := 0x06000000
 $(BUILD_DIR)/actors/group_vanilla.elf: SEGMENT_ADDRESS := 0x06000000
 
 # --------------------------------------
-# Level Rules
+# Menu Segment 7 Rules
 # --------------------------------------
 
-$(BUILD_DIR)/levels/%/leveldata.elf: SEGMENT_ADDRESS := 0x07000000
-
-# TODO: Generate these rules from the level configs?
-
-define level_rules =
-    $(1)_SEG7_FILES     := $$(patsubst %.png,%.inc.c,$$(wildcard levels/$(1)/*.png))
-    $$(BUILD_DIR)/levels/$(1)/leveldata.o: $$(addprefix $$(BUILD_DIR)/,$$($(1)_SEG7_FILES))
-endef
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean)
-$(BUILD_DIR)/level_rules.mk: levels/level_rules.mk levels/level_defines.h
-	$(call print,Preprocessing level make rules:,$<,$@)
-	$(V)$(CPP) $(CPPFLAGS) $(VERSION_CFLAGS) -I . -o $@ $<
-include $(BUILD_DIR)/level_rules.mk
-endif
-endif
-
-# --------------------------------------
-# Extra Level Rules
-# --------------------------------------
-$(eval $(call level_rules,menu)) # Menu (splash + file select)
+$(BUILD_DIR)/$(MENU_SEG7).elf: SEGMENT_ADDRESS := 0x07000000
 
 # --------------------------------------
 # Texture Bin Rules
@@ -98,7 +74,6 @@ $(BUILD_DIR)/bin/effect.o:          $(EFFECT_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c
 
 # Others
 $(BUILD_DIR)/bin/segment2.elf:           SEGMENT_ADDRESS := 0x02000000
-$(BUILD_DIR)/bin/debug_level_select.elf: SEGMENT_ADDRESS := 0x07000000
 $(BUILD_DIR)/bin/effect.elf:             SEGMENT_ADDRESS := 0x0B000000
 # EU segment 19 translations
 $(BUILD_DIR)/bin/eu/translation_de.elf:  SEGMENT_ADDRESS := 0x19000000

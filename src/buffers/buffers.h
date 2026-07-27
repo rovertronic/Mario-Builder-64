@@ -14,9 +14,6 @@ extern u8 gIdleThreadStack[THREAD1_STACK];
 extern u8 gThread3Stack[THREAD3_STACK];
 extern u8 gThread4Stack[THREAD4_STACK];
 extern u8 gThread5Stack[THREAD5_STACK];
-#if ENABLE_RUMBLE
-extern u8 gThread6Stack[THREAD6_STACK];
-#endif
 
 extern u8 gGfxSPTaskYieldBuffer[];
 

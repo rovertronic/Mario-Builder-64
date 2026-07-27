@@ -56,8 +56,6 @@
 #ifdef DISABLE_ALL
     #undef DEBUG_ALL
     #undef USE_PROFILER
-    #undef TEST_LEVEL
-    #undef DEBUG_LEVEL_SELECT
     #undef ENABLE_DEBUG_FREE_MOVE
     #undef PUPPYPRINT_DEBUG
     #undef PUPPYPRINT_DEBUG_CYCLES
@@ -74,9 +72,6 @@
 #ifdef DEBUG_ALL
     #undef USE_PROFILER
     #define USE_PROFILER
-
-    #undef DEBUG_LEVEL_SELECT
-    #define DEBUG_LEVEL_SELECT
 
     #undef ENABLE_DEBUG_FREE_MOVE
     #define ENABLE_DEBUG_FREE_MOVE
@@ -146,23 +141,11 @@
 
 
 /*****************
- * config_game.h
- */
-
-#ifndef START_LEVEL
-    #define START_LEVEL LEVEL_CASTLE_GROUNDS
-#endif // !START_LEVEL
-
-
-/*****************
  * config_menu.h
  */
 
 #ifdef DISABLE_EXIT_COURSE
     #undef EXIT_COURSE_WHILE_MOVING
-    #undef EXIT_COURSE_LEVEL
-    #undef EXIT_COURSE_AREA
-    #undef EXIT_COURSE_NODE
 #endif // DISABLE_EXIT_COURSE
 
 

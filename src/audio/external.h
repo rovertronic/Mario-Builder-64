@@ -4,7 +4,6 @@
 #include <PR/ultratypes.h>
 
 #include "types.h"
-#include "level_table.h"
 
 // Sequence arguments, passed to seq_player_play_sequence.
 #define SEQUENCE_ARGS(priority, seqId) (((priority) << 8) | (seqId))
@@ -34,8 +33,6 @@ extern f32 gGlobalSoundSource[3];
 
 // defined in data.c, used by the game
 extern u32 gAudioRandom;
-
-extern s8 sLevelAreaReverbs[LEVEL_COUNT][3];
 
 struct SPTask *create_next_audio_frame_task(void);
 void play_sound(s32 soundBits, f32 *pos);

@@ -74,9 +74,6 @@ void exclamation_box_act_active(void) {
         o->oGravity = -8.0f;
         o->oFloorHeight = o->oPosY;
         o->oAction = EXCLAMATION_BOX_ACT_SCALING;
-#if ENABLE_RUMBLE
-        queue_rumble_data(5, 80);
-#endif
     }
     load_object_collision_model();
 }

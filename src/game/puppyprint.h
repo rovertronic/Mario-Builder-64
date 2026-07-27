@@ -93,7 +93,6 @@ enum PPPages {
     PUPPYPRINT_PAGE_RAM,
     PUPPYPRINT_PAGE_COLLISION,
     PUPPYPRINT_PAGE_LOG,
-    PUPPYPRINT_PAGE_LEVEL_SELECT,
     PUPPYPRINT_PAGE_COVERAGE,
 #ifdef PUPPYCAM
     PUPPYPRINT_PAGE_CAMERA,
@@ -128,12 +127,9 @@ extern ColorRGBA gCurrEnvCol;
 extern s32 ramsizeSegment[33];
 extern const s8 nameTable;
 extern s32 mempool;
-extern f32 textSize;
+extern u8 gLastWarpID;
 extern u32 gPoolMem;
 extern u32 gMiscMem;
-extern u8 gPuppyWarp;
-extern u8 gPuppyWarpArea;
-extern u8 gLastWarpID;
 extern struct CallCounter gPuppyCallCounter;
 
 extern void puppyprint_render_profiler(void);

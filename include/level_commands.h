@@ -3,7 +3,6 @@
 
 #include "command_macros_base.h"
 
-#include "level_table.h"
 #include "config.h"
 
 enum LevelCommands {
@@ -69,9 +68,8 @@ enum LevelCommands {
     /*0x3D*/ LEVEL_CMD_UNUSED_3D,
     /*0x3E*/ LEVEL_CMD_CHANGE_AREA_SKYBOX,
     /*0x3F*/ LEVEL_CMD_SET_ECHO,
-    /*0x40*/ LEVEL_CMD_FILESELECT_CONDITION,
-    /*0x41*/ LEVEL_CMD_LOAD_MB64,
-    /*0x42*/ LEVEL_CMD_LOAD_MB64_MODELS,
+    /*0x40*/ LEVEL_CMD_LOAD_MB64,
+    /*0x41*/ LEVEL_CMD_LOAD_MB64_MODELS,
 };
 
 enum LevelActs {
@@ -102,16 +100,9 @@ enum LevelCommandGetOrSet {
 
 enum LevelCommandVar {
     VAR_CURR_SAVE_FILE_NUM,
-    VAR_CURR_COURSE_NUM,
     VAR_CURR_ACT_NUM,
-    VAR_CURR_LEVEL_NUM,
     VAR_CURR_AREA_INDEX,
     VAR_PRESSED_START
-};
-
-enum WarpCheckpointFlags {
-    WARP_NO_CHECKPOINT = (0 << 0), // 0x00
-    WARP_CHECKPOINT    = (1 << 7), // 0x80
 };
 
 #ifdef NO_SEGMENTED_MEMORY
@@ -347,13 +338,13 @@ enum WarpCheckpointFlags {
     CMD_W(behArg), \
     CMD_PTR(beh)
 
-#define WARP_NODE(id, destLevel, destArea, destNode, flags) \
-    CMD_BBBB(LEVEL_CMD_CREATE_WARP_NODE, 0x08, id, destLevel), \
-    CMD_BBBB(destArea, destNode, flags, 0x00)
+#define WARP_NODE(id, destArea, destNode) \
+    CMD_BBBB(LEVEL_CMD_CREATE_WARP_NODE, 0x08, id, destArea), \
+    CMD_BBBB(destNode, 0x00, 0x00, 0x00)
 
-#define PAINTING_WARP_NODE(id, destLevel, destArea, destNode, flags) \
-    CMD_BBBB(LEVEL_CMD_CREATE_PAINTING_WARP_NODE, 0x08, id, destLevel), \
-    CMD_BBBB(destArea, destNode, flags, 0x00)
+#define PAINTING_WARP_NODE(id, destArea, destNode) \
+    CMD_BBBB(LEVEL_CMD_CREATE_PAINTING_WARP_NODE, 0x08, id, destArea), \
+    CMD_BBBB(destNode, 0x00, 0x00, 0x00)
 
 #define INSTANT_WARP(index, destArea, displaceX, displaceY, displaceZ) \
     CMD_BBBB(LEVEL_CMD_CREATE_INSTANT_WARP, 0x10, index, destArea), \
@@ -439,17 +430,6 @@ enum WarpCheckpointFlags {
 
 #define GET_OR_SET(op, var) \
     CMD_BBBB(LEVEL_CMD_GET_OR_SET_VAR, 0x04, op, var)
-
-// BtCM
-
-#define FILESELECT_CHECK(op, var) \
-    CMD_BBBB(LEVEL_CMD_FILESELECT_CONDITION, 0x04, op, var)
-
-#define ADV_DEMO() \
-    CMD_BBH(LEVEL_CMD_ADV_DEMO, 0x04, 0x0000)
-    
-#define CLEAR_DEMO_PTR() \
-    CMD_BBH(LEVEL_CMD_CLEAR_DEMO_PTR, 0x04, 0x0000)
 
 #define LOAD_MB64() \
     CMD_BBH(LEVEL_CMD_LOAD_MB64, 0x04, 0x0000)

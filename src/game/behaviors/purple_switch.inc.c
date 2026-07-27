@@ -36,9 +36,6 @@ void bhv_purple_switch_loop_vanilla(void) {
                 o->oAction = PURPLE_SWITCH_ACT_TICKING;
                 gMarioState->hiddenBoxTimer = time;
                 cur_obj_shake_screen(SHAKE_POS_SMALL);
-#if ENABLE_RUMBLE
-                queue_rumble_data(5, 80);
-#endif
             }
             break;
 

@@ -25,7 +25,7 @@
 #include "game/object_helpers.h"
 #include "game/camera.h"
 #include "sounds.h"
-#include "levels/scripts.h"
+#include "data/scenes/scripts.h"
 #include "segment_symbols.h"
 #include "actors/group_btcm.h"
 #include "actors/group_vanilla.h"

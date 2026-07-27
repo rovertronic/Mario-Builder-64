@@ -539,9 +539,6 @@ enum MarioActionFlags {
 #define ACT_DEATH_ON_STOMACH           0x00021315 // (0x115 | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE)
 #define ACT_DEATH_ON_BACK              0x00021316 // (0x116 | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE)
 #define ACT_EATEN_BY_BUBBA             0x00021317 // (0x117 | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE | ACT_FLAG_INVULNERABLE)
-#define ACT_END_PEACH_CUTSCENE         0x00001918 // (0x118 | ACT_FLAG_AIR | ACT_FLAG_INTANGIBLE)
-#define ACT_CREDITS_CUTSCENE           0x00001319 // (0x119 | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE)
-#define ACT_END_WAVING_CUTSCENE        0x0000131A // (0x11A | ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE)
 #define ACT_UNUSED_11B                 0x0000011B // (0x11B)
 #define ACT_UNUSED_11C                 0x0000011C // (0x11C)
 #define ACT_UNUSED_11D                 0x0000011D // (0x11D)
@@ -719,14 +716,6 @@ enum MarioActionFlags {
 
 // group 0x1C0: custom actions
 // 0x1C0 - 0x1FF
-
-/*
- this input mask is unused by the controller,
- but END_DEMO is used internally to signal
- the demo to end. This button cannot
- be pressed normally by a controller.
-*/
-#define END_DEMO       (1 << 7)
 
 #define VALID_BUTTONS (A_BUTTON   | B_BUTTON   | Z_TRIG     | START_BUTTON | \
                        U_JPAD     | D_JPAD     | L_JPAD     | R_JPAD       | \

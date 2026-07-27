@@ -291,13 +291,6 @@ Gfx *init_skybox_display_list(s8 player, s8 background, s8 colorIndex) {
  */
 Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov, Vec3f pos, Vec3f focus) {
     s8 colorIndex = 1;
-
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-    // For the "Plunder in the Sunken Ship" star in JRB, make the sky darker and slightly green.
-    if (background == BACKGROUND_ABOVE_CLOUDS && gCurrActNum == 1) {
-        colorIndex = 0;
-    }
-#endif
     
     //! fov is always set to 90.0f. If this line is removed, then the game crashes because fov is 0 on
     //! the first frame, which causes a floating point divide by 0

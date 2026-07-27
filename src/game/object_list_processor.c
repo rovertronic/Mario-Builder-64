@@ -525,7 +525,7 @@ void clear_objects(void) {
 
     bzero(gDoorAdjacentRooms, sizeof(gDoorAdjacentRooms));
 
-    debug_unknown_level_select_check();
+    debug_init_info_flags();
 
     init_free_object_list();
     clear_object_lists(gObjectListArray);

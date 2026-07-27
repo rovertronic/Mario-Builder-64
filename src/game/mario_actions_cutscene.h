@@ -84,31 +84,6 @@ enum ActionStatesJumboStarCutsceneFlying { // jumbo_star_cutscene_flying
     ACT_STATE_JUMBO_STAR_CUTSCENE_FLYING_FALL
 };
 
-enum ActionStatesEndPeachCutsceneSummonJumboStar { // end_peach_cutscene_summon_jumbo_star
-    ACT_STATE_END_PEACH_CUTSCENE_SUMMON_JUMBO_STAR_RAISE_HAND,
-    ACT_STATE_END_PEACH_CUTSCENE_SUMMON_JUMBO_STAR_LOWER_HAND
-};
-
-enum ActionStatesEndPeachCutsceneDialog1 { // end_peach_cutscene_dialog_1
-    ACT_STATE_END_PEACH_CUTSCENE_DIALOG_1_TAKE_OFF_CAP,
-    ACT_STATE_END_PEACH_CUTSCENE_DIALOG_1_LOOK_UP
-};
-
-enum ActionStatesEndPeachCutsceneRunToCastle { // end_peach_cutscene_run_to_castle
-    ACT_STATE_END_PEACH_CUTSCENE_RUN_TO_CASTLE_WALK_LOOK_UP,
-    ACT_STATE_END_PEACH_CUTSCENE_RUN_TO_CASTLE_LOOK_BACK_RUN
-};
-
-enum ActionStatesEndPeachCutsceneFadeOut { // end_peach_cutscene_fade_out
-    ACT_STATE_END_PEACH_CUTSCENE_FADE_OUT_WARP,
-    ACT_STATE_END_PEACH_CUTSCENE_FADE_OUT_END
-};
-
-enum ActionStatesEndWavingCutscene { // act_end_waving_cutscene
-    ACT_STATE_END_WAVING_CUTSCENE_INIT,
-    ACT_STATE_END_WAVING_CUTSCENE_WAVING
-};
-
 enum ActionArgsMarioDialog { // set_mario_npc_dialog
     MARIO_DIALOG_STOP,
     MARIO_DIALOG_LOOK_FRONT, // no head turn
@@ -122,21 +97,10 @@ enum DialogStates { // set_mario_npc_dialog
     MARIO_DIALOG_STATUS_SPEAK
 };
 
-enum EndToadAnimIndex {
-    END_TOAD_INDEX_WEST,
-    END_TOAD_INDEX_EAST,
-};
-
 extern ModelID32 gStarModelLastCollected;
 
-void print_displaying_credits_entry(void);
-void bhv_end_peach_loop(void);
-void bhv_end_toad_loop(void);
-Gfx *geo_switch_peach_eyes(s32 callContext, struct GraphNode *node, UNUSED s32 context);
 s32 mario_ready_to_speak(void);
 s32 set_mario_npc_dialog(s32 actionArg);
 s32 mario_execute_cutscene_action(struct MarioState *m);
-extern Vp sEndCutsceneVp;
-extern struct CreditsEntry *sDispCreditsEntry;
 
 #endif // MARIO_ACTIONS_CUTSCENE_H

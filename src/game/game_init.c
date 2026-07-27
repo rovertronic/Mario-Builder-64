@@ -14,7 +14,6 @@
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "print.h"
-#include "rumble_init.h"
 #ifdef SRAM
 #include "sram.h"
 #endif
@@ -325,11 +324,9 @@ struct VblankHandler gGameVblankHandler;
 uintptr_t gPhysicalFramebuffers[3];
 uintptr_t gPhysicalZBuffer;
 
-// Mario Anims and Demo allocation
+// Mario Anims allocation
 void *gMarioAnimsMemAlloc;
-void *gDemoInputsMemAlloc;
 struct DmaHandlerList gMarioAnimsBuf;
-struct DmaHandlerList gDemoInputsBuf;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
@@ -345,11 +342,6 @@ struct Controller* const gPlayer1Controller = &gControllers[0];
 struct Controller* const gPlayer2Controller = &gControllers[1];
 struct Controller* const gPlayer3Controller = &gControllers[2];
 struct Controller* const gPlayer4Controller = &gControllers[3];
-
-// Title Screen Demo Handler
-struct DemoInput *gCurrDemoInput = NULL;
-u16 gDemoInputListID = 0;
-struct DemoInput gRecordedDemoInput = { 0 };
 
 // Display
 // ----------------------------------------------------------------------------------------------------
@@ -806,9 +798,6 @@ void read_controller_inputs(s32 threadID) {
             osRecvMesg(&gSIEventMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
         }
         osContGetReadDataEx(gControllerPads);
-#if ENABLE_RUMBLE
-        release_rumble_pak_control();
-#endif
     }
 
     for (s32 cont = 0; cont < MAX_NUM_PLAYERS; cont++) {
@@ -946,12 +935,7 @@ void setup_game_memory(void) {
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);
 #ifdef PUPPYPRINT_DEBUG
     set_segment_memory_printout(SEGMENT_MARIO_ANIMS, MARIO_ANIMS_POOL_SIZE);
-    set_segment_memory_printout(SEGMENT_DEMO_INPUTS, DEMO_INPUTS_POOL_SIZE);
 #endif
-    // Setup Demo Inputs List
-    gDemoInputsMemAlloc = main_pool_alloc(DEMO_INPUTS_POOL_SIZE, MEMORY_POOL_LEFT);
-    set_segment_base_addr(SEGMENT_DEMO_INPUTS, (void *) gDemoInputsMemAlloc);
-    setup_dma_table_list(&gDemoInputsBuf, gDemoInputs, gDemoInputsMemAlloc);
     // Setup menu scene (entry + splash + file select) at SEGMENT_LEVEL_SCRIPT
     load_segment(SEGMENT_LEVEL_SCRIPT, _menuSegmentRomStart, _menuSegmentRomEnd, MEMORY_POOL_LEFT, _menuSegmentBssStart, _menuSegmentBssEnd);
     // Setup Segment 2 (Fonts, Text, etc)
@@ -966,13 +950,7 @@ Bool32 gIsWidescreen = FALSE;
 
 void thread5_game_loop(UNUSED void *arg) {
     setup_game_memory();
-#if ENABLE_RUMBLE
-    init_rumble_pak_scheduler_queue();
-#endif
     init_controllers();
-#if ENABLE_RUMBLE
-    create_thread_6();
-#endif
     // save_file_load_all();
     set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 
@@ -1020,9 +998,6 @@ void thread5_game_loop(UNUSED void *arg) {
         // If any controllers are plugged in, start read the data for when
         // read_controller_inputs is called later.
         if (gControllerBits) {
-#if ENABLE_RUMBLE
-            block_until_rumble_pak_free();
-#endif
             osContStartReadDataEx(&gSIEventMesgQueue);
         }
 

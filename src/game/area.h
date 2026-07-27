@@ -9,9 +9,9 @@
 
 struct WarpNode {
     /*00*/ u8 id;
-    /*01*/ u8 destLevel;
-    /*02*/ u8 destArea;
-    /*03*/ u8 destNode;
+    /*01*/ u8 destArea;
+    /*02*/ u8 destNode;
+    /*03*/ u8 unused;
 };
 
 struct ObjectWarpNode {
@@ -68,7 +68,7 @@ struct Area {
     /*0x36*/ u16 musicParam;
     /*0x38*/ u16 musicParam2;
     /*0x3A*/ u8 useEchoOverride; // Should area echo be overridden using echoOverride?
-    /*0x3B*/ s8 echoOverride; // Value used to override the area echo values defined in level_defines.h
+    /*0x3B*/ s8 echoOverride; // Value used to override the default area echo
 #ifdef BETTER_REVERB
     /*0x3C*/ u8 betterReverbPreset;
 #endif
@@ -159,10 +159,8 @@ extern struct SpawnInfo gPlayerSpawnInfos[];
 extern struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
 extern struct Area gAreaData[];
 extern struct WarpTransition gWarpTransition;
-extern s16 gCurrCourseNum;
 extern s16 gCurrActNum;
 extern s16 gCurrAreaIndex;
-extern s16 gSavedCourseNum;
 extern s16 gMenuOptSelectIndex;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
@@ -171,7 +169,6 @@ extern struct Area *gAreas;
 extern struct Area *gCurrentArea;
 
 extern s16 gCurrSaveFileNum;
-extern s16 gCurrLevelNum;
 
 void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e);
 void print_intro_text(void);

@@ -38,7 +38,6 @@ extern s16 gRedCoinsTotal;
 extern s16 gStarTriggersCollected;
 extern s16 gStarTriggersTotal;
 extern u8 *costume_text[];
-extern u8 start_precredits;
 extern u8 *badgenames[];
 extern u8 *badgedescs[];
 

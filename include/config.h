@@ -6,10 +6,8 @@
  */
 
 #include "config/config_audio.h"
-#include "config/config_benchmark.h"
 #include "config/config_camera.h"
 #include "config/config_collision.h"
-#include "config/config_cutscenes.h"
 #include "config/config_debug.h"
 #include "config/config_game.h"
 #include "config/config_graphics.h"

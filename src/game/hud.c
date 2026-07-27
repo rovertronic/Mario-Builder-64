@@ -383,26 +383,6 @@ void display_air(void) {
 
 //title_Plane_001_mesh_vtx_0
 
-void display_title(void) {
-    //bubble_seg4_dl_0401DD60
-    Mtx *mtx;
-    // Mtx *smtx;
-    
-    mtx = alloc_display_list(sizeof(*mtx));
-
-    if (mtx == NULL) {
-        return;
-    }
-
-    guTranslate(mtx, 160.0f, 120.0f, 0);
-
-    gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-
-    //gSPDisplayList(gDisplayListHead++, &title_Plane_001_mesh);
-    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
-
 // void display_minimap(void) {
 //     Mtx *mtx;
 //     f32 mx;
@@ -1021,13 +1001,9 @@ void render_hud(void) {
         //     render_hud_cannon_reticle();
         // }
 
-        if (gCurrDemoInput != NULL) {
-            display_title();
-        }
-
         gMarioState->toggleHud = (mb64_sram_configuration.option_flags & (1<<OPT_HUD));
 
-        if ((mb64_mode == MB64_MODE_PLAY) && (gMarioState->toggleHud)&&(gCurrDemoInput == NULL)&&(sCurrPlayMode != PLAY_MODE_PAUSED)) {
+        if ((mb64_mode == MB64_MODE_PLAY) && (gMarioState->toggleHud)&&(sCurrPlayMode != PLAY_MODE_PAUSED)) {
             if (hudDisplayFlags & HUD_DISPLAY_FLAG_COIN_COUNT) {
                 render_hud_coins();
             }

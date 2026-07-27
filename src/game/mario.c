@@ -29,7 +29,6 @@
 #include "print.h"
 #include "puppyprint.h"
 #include "sound_init.h"
-#include "rumble_init.h"
 #include "actors/group_btcm.h"
 #include "ingame_menu.h"
 #include "mb64/file.h"
@@ -1526,7 +1525,7 @@ void update_mario_health(struct MarioState *m) {
         // When already healing or hurting Mario, Mario's HP is not changed any more here.
         if (((u32) m->healCounter | (u32) m->hurtCounter) == 0) {
             if ((m->input & INPUT_IN_POISON_GAS) && !(m->action & ACT_FLAG_INTANGIBLE)) {
-                if (!(m->flags & MARIO_METAL_CAP) && !gDebugLevelSelect) {
+                if (!(m->flags & MARIO_METAL_CAP)) {
                     m->health -= 4;
                 }
             } else {
@@ -1535,11 +1534,8 @@ void update_mario_health(struct MarioState *m) {
                     // snow-terrain water drain removed with TERRAIN_TYPE
 #else
                     // When Mario is near the water surface, recover health.
-                    // If using the debug level select, do not lose any HP to water.
                     if ((m->pos[1] >= (m->waterLevel - 140))) {
                         //m->health += 0x1A;  REPLACE WITH SEPARATE OXYGEN METER LATER (axo: possibly use BREATH_METER?)
-                    } else if (!gDebugLevelSelect) {
-                        // m->health -= 1;
                     }
 #endif
                 }
@@ -1605,21 +1601,13 @@ void update_mario_health(struct MarioState *m) {
             // Play a noise to alert the player when Mario is close to drowning.
             if (marioIsSwimming && (gMarioState->numAir < 200)) {
                 play_sound(SOUND_MOVING_ALMOST_DROWNING, gGlobalSoundSource);
-                if (gRumblePakTimer == 0) {
-                    gRumblePakTimer = 36;
-                    if (is_rumble_finished_and_queue_empty()) {
-                        queue_rumble_data(3, 30);
-                    }
-                }
-            } else {
-                gRumblePakTimer = 0;
             }
         } else {
             //AIR: Vanilla Behavior
             if (marioIsSwimming && !(m->action & ACT_FLAG_INTANGIBLE)) {
                 if (m->pos[1] >= (m->waterLevel - 140)) {
                     m->health += 0x1A;
-                } else if (!gDebugLevelSelect) {
+                } else {
                     m->health -= 1;
                 }
             }
@@ -1640,16 +1628,6 @@ void update_mario_breath(struct MarioState *m) {
             if (m->breath < 0x300) {
                 // Play a noise to alert the player when Mario is close to drowning.
                 play_sound(SOUND_MOVING_ALMOST_DROWNING, gGlobalSoundSource);
-#if ENABLE_RUMBLE
-                if (gRumblePakTimer == 0) {
-                    gRumblePakTimer = 36;
-                    if (is_rumble_finished_and_queue_empty()) {
-                        queue_rumble_data(3, 30);
-                    }
-                }
-            } else {
-                gRumblePakTimer = 0;
-#endif
             }
         } else if (!(m->input & INPUT_IN_POISON_GAS)) {
             m->breath += 0x1A;
@@ -1872,20 +1850,6 @@ UNUSED static void debug_update_mario_cap(u16 button, s32 flags, u16 capTimer, u
     }
 }
 
-#if ENABLE_RUMBLE
-void queue_rumble_particles(struct MarioState *m) {
-    if (m->particleFlags & PARTICLE_HORIZONTAL_STAR) {
-        queue_rumble_data(5, 80);
-    } else if (m->particleFlags & PARTICLE_VERTICAL_STAR) {
-        queue_rumble_data(5, 80);
-    } else if (m->particleFlags & PARTICLE_TRIANGLE) {
-        queue_rumble_data(5, 80);
-    }
-    if (m->heldObj && m->heldObj->behavior == segmented_to_virtual(bhvBobomb)) {
-        reset_rumble_timers_slip();
-    }
-}
-#endif
 
 u8 regentime;
 
@@ -2162,13 +2126,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
             set_mario_action(gMarioState, ACT_DEBUG_FREE_MOVE, 0);
         }
 #endif // ENABLE_DEBUG_FREE_MOVE
-#ifdef ENABLE_CREDITS_BENCHMARK
-        static s32 startedBenchmark = FALSE;
-        if (!startedBenchmark) {
-            set_mario_action(gMarioState, ACT_IDLE, 0);
-            startedBenchmark = TRUE;
-        }
-#endif
 
         gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
         mario_reset_bodystate(gMarioState);
@@ -2220,9 +2177,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         // }
 
         gMarioState->marioObj->oInteractStatus = INT_STATUS_NONE;
-#if ENABLE_RUMBLE
-        queue_rumble_particles(gMarioState);
-#endif
 
         u32 actGroup = gMarioState->action & ACT_GROUP_MASK;
         if ((actGroup == ACT_GROUP_STATIONARY || actGroup == ACT_GROUP_MOVING) && 
@@ -2271,7 +2225,6 @@ void init_mario(void) {
     // } else {
         gMarioState->flags = (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
     // }
-
 
 
     gMarioState->forwardVel = 0.0f;

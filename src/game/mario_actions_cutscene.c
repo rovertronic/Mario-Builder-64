@@ -19,7 +19,6 @@
 #include "puppyprint.h"
 #include "seq_ids.h"
 #include "sound_init.h"
-#include "rumble_init.h"
 #include "mb64/editor/main.h"
 #include "mb64/menu/dialog.h"
 
@@ -862,15 +861,7 @@ s32 act_warp_door_spawn(struct MarioState *m) {
             m->usedObj->oInteractStatus = INT_STATUS_WARP_DOOR_PUSHED;
         }
     } else if (m->usedObj->oAction == DOOR_ACT_CLOSED) {
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-        if (gNeverEnteredCastle && gCurrLevelNum == LEVEL_CASTLE) {
-            set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, DIALOG_021);
-        } else {
-            set_mario_action(m, ACT_IDLE, 0);
-        }
-#else
         set_mario_action(m, ACT_IDLE, 0);
-#endif
     }
     set_mario_animation(m, MARIO_ANIM_FIRST_PERSON);
     stop_and_set_height_to_floor(m);
@@ -888,15 +879,6 @@ s32 act_emerge_from_pipe(struct MarioState *m) {
     marioObj->header.gfx.node.flags |= GRAPH_RENDER_ACTIVE;
 
     play_sound_if_no_flag(m, SOUND_MARIO_YAHOO, MARIO_MARIO_SOUND_PLAYED);
-#ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-    if (gCurrLevelNum == LEVEL_THI) {
-        if (gCurrAreaIndex == 2) {
-            play_sound_if_no_flag(m, SOUND_MENU_EXIT_PIPE, MARIO_ACTION_SOUND_PLAYED);
-        } else {
-            play_sound_if_no_flag(m, SOUND_MENU_ENTER_PIPE, MARIO_ACTION_SOUND_PLAYED);
-        }
-    }
-#endif
 
     if (launch_mario_until_land(m, ACT_JUMP_LAND_STOP, MARIO_ANIM_SINGLE_JUMP, 8.0f)) {
         mario_set_forward_vel(m, 0.0f);
@@ -1085,9 +1067,6 @@ s32 act_death_exit(struct MarioState *m) {
     if (15 < m->actionTimer++
         && launch_mario_until_land(m, ACT_DEATH_EXIT_LAND, MARIO_ANIM_GENERAL_FALL, -32.0f)) {
         play_sound(SOUND_MARIO_OOOF2, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
-        queue_rumble_data(5, 80);
-#endif
 #ifdef ENABLE_LIVES
         m->numLives--;
 #endif
@@ -1124,9 +1103,6 @@ s32 act_unused_death_exit(struct MarioState *m) {
 s32 act_falling_death_exit(struct MarioState *m) {
     if (launch_mario_until_land(m, ACT_DEATH_EXIT_LAND, MARIO_ANIM_GENERAL_FALL, 0.0f)) {
         play_sound(SOUND_MARIO_OOOF2, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
-        queue_rumble_data(5, 80);
-#endif
 #ifdef ENABLE_LIVES
         m->numLives--;
 #endif
@@ -1181,9 +1157,6 @@ s32 act_special_death_exit(struct MarioState *m) {
     }
 
     if (launch_mario_until_land(m, ACT_HARD_BACKWARD_GROUND_KB, MARIO_ANIM_BACKWARD_AIR_KB, -24.0f)) {
-#if ENABLE_RUMBLE
-        queue_rumble_data(5, 80);
-#endif
 #ifdef ENABLE_LIVES
         m->numLives--;
 #endif
@@ -1269,9 +1242,6 @@ s32 act_bbh_enter_spin(struct MarioState *m) {
             m->flags &= ~MARIO_JUMPING;
             if (perform_air_step(m, 0) == AIR_STEP_LANDED) {
                 level_trigger_warp(m, WARP_OP_SPIN_SHRINK);
-#if ENABLE_RUMBLE
-                queue_rumble_data(15, 80);
-#endif
                 m->actionState = ACT_STATE_BBH_ENTER_SPIN_END;
             }
             if (m->actionState == ACT_STATE_BBH_ENTER_SPIN_WAIT_FOR_ANIM) {
@@ -1333,12 +1303,6 @@ s32 act_teleport_fade_out(struct MarioState *m) {
     set_mario_animation(m, m->prevAction == ACT_CROUCHING ? MARIO_ANIM_CROUCHING
                                                           : MARIO_ANIM_FIRST_PERSON);
 
-#if ENABLE_RUMBLE
-    if (m->actionTimer == 0) {
-        queue_rumble_data(30, 70);
-        queue_rumble_decay(2);
-    }
-#endif
 
     m->flags |= MARIO_TELEPORTING;
 
@@ -1359,12 +1323,6 @@ s32 act_teleport_fade_in(struct MarioState *m) {
     play_sound_if_no_flag(m, SOUND_ACTION_TELEPORT, MARIO_ACTION_SOUND_PLAYED);
     set_mario_animation(m, MARIO_ANIM_FIRST_PERSON);
 
-#if ENABLE_RUMBLE
-    if (m->actionTimer == 0) {
-        queue_rumble_data(30, 70);
-        queue_rumble_decay(2);
-    }
-#endif
 
     if (m->actionTimer < 32) {
         m->flags |= MARIO_TELEPORTING;
@@ -1453,9 +1411,6 @@ s32 act_squished(struct MarioState *m) {
                 }
 
                 vec3f_set(m->marioObj->header.gfx.scale, 1.8f, 0.05f, 1.8f);
-#if ENABLE_RUMBLE
-                queue_rumble_data(10, 80);
-#endif
                 m->actionState = ACT_STATE_SQUISHED_CHECK_HEIGHT;
             }
             break;
@@ -1561,9 +1516,6 @@ void stuck_in_ground_handler(struct MarioState *m, s32 animation, s32 unstuckFra
     if (animFrame == -1) {
         play_sound_and_spawn_particles(m, SOUND_ACTION_TERRAIN_STUCK_IN_GROUND, 1);
     } else if (animFrame == unstuckFrame) {
-#if ENABLE_RUMBLE
-        queue_rumble_data(5, 80);
-#endif
         play_sound_and_spawn_particles(m, SOUND_ACTION_UNSTUCK_FROM_GROUND, 1);
     } else if (animFrame == target2 || animFrame == target3) {
         play_mario_landing_sound(m, SOUND_ACTION_TERRAIN_LANDING);
@@ -1648,9 +1600,6 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_DEATH_ON_STOMACH:           cancel = act_death_on_stomach(m);           break;
         case ACT_DEATH_ON_BACK:              cancel = act_death_on_back(m);              break;
         case ACT_EATEN_BY_BUBBA:             cancel = act_eaten_by_bubba(m);             break;
-        // case ACT_END_PEACH_CUTSCENE:         cancel = act_end_peach_cutscene(m);         break;
-        // case ACT_CREDITS_CUTSCENE:           cancel = act_credits_cutscene(m);           break;
-        // case ACT_END_WAVING_CUTSCENE:        cancel = act_end_waving_cutscene(m);        break;
         case ACT_PULLING_DOOR:
         case ACT_PUSHING_DOOR:               cancel = act_going_through_door(m);         break;
         case ACT_WARP_DOOR_SPAWN:            cancel = act_warp_door_spawn(m);            break;

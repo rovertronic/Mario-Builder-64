@@ -65,7 +65,7 @@ DEFINES += NO_ERRNO_H=1
 #   jp - builds the 1996 Japanese version
 #   us - builds the 1996 North American version
 #   eu - builds the 1997 PAL version
-#   sh - builds the 1997 Japanese Shindou version, with rumble pak support
+#   sh - builds the 1997 Japanese Shindou version
 VERSION ?= us
 $(eval $(call validate-option,VERSION,jp us eu sh))
 
@@ -328,22 +328,19 @@ YAY0_DIR       := $(BUILD_DIR)/bin
 SOUND_BIN_DIR  := $(BUILD_DIR)/sound
 TEXTURE_DIR    := textures
 ACTOR_DIR      := actors
-LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
-
 # Directories containing source files
-SRC_DIRS += src lib/libcart/ff lib/libcart/src src/mb64 src/mb64/data src/mb64/editor src/mb64/gfx src/mb64/menu src/boot src/boot/deflate src/game src/engine src/audio src/menu src/buffers lib/librtc actors levels bin data assets asm lib sound
+SRC_DIRS += src lib/libcart/ff lib/libcart/src src/mb64 src/mb64/data src/mb64/editor src/mb64/gfx src/mb64/menu src/boot src/boot/deflate src/game src/engine src/audio src/menu src/buffers lib/librtc actors bin data data/scenes data/scenes/menu data/scenes/game assets asm lib sound
 BIN_DIRS := bin bin/$(VERSION)
 
 # File dependencies and variables for specific files
 include Makefile.split
 
 # Source code files
-LEVEL_C_FILES     := $(wildcard levels/*/leveldata.c) $(wildcard levels/*/script.c) $(wildcard levels/*/geo.c)
-C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c)) $(LEVEL_C_FILES)
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 C_FILES           := $(filter-out %.inc.c,$(C_FILES))
 CPP_FILES         := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
-GENERATED_C_FILES := $(BUILD_DIR)/assets/mario_anim_data.c $(BUILD_DIR)/assets/demo_data.c
+GENERATED_C_FILES := $(BUILD_DIR)/assets/mario_anim_data.c
 
 # Ignore all .inc.c files
 C_FILES           := $(filter-out %.inc.c,$(C_FILES))
@@ -388,7 +385,7 @@ ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
   CXX     := $(CROSS)g++
   $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Ofast -mlong-calls
-  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Ofast -mlong-calls
+  $(BUILD_DIR)/data/scenes/%.o:     OPT_FLAGS := -Ofast -mlong-calls
 else ifeq ($(COMPILER),clang)
   CC      := clang
   CXX     := clang++
@@ -594,8 +591,6 @@ $(BUILD_DIR)/src/game/fasttext.o:     $(FASTTEXT_TEXTURE_C_FILES)
 $(BUILD_DIR)/src/game/version.o:      $(BUILD_DIR)/src/game/version_data.h
 $(BUILD_DIR)/lib/aspMain.o:           $(BUILD_DIR)/rsp/audio.bin
 $(SOUND_BIN_DIR)/sound_data.o:        $(SOUND_BIN_DIR)/sound_data.ctl $(SOUND_BIN_DIR)/sound_data.tbl $(SOUND_BIN_DIR)/sequences.bin $(SOUND_BIN_DIR)/bank_sets
-$(BUILD_DIR)/levels/scripts.o:        $(BUILD_DIR)/include/level_headers.h
-
 ifeq ($(VERSION),sh)
   $(BUILD_DIR)/src/audio/load_sh.o: $(SOUND_BIN_DIR)/bank_sets.inc.c $(SOUND_BIN_DIR)/sequences_header.inc.c $(SOUND_BIN_DIR)/ctl_header.inc.c $(SOUND_BIN_DIR)/tbl_header.inc.c
 endif
@@ -619,7 +614,7 @@ $(BUILD_DIR)/src/game/rendering_graph_node.o: OPT_FLAGS := $(GRAPH_NODE_OPT_FLAG
 # $(info MATH_UTIL_OPT_FLAGS:  $(MATH_UTIL_OPT_FLAGS))
 # $(info GRAPH_NODE_OPT_FLAGS: $(GRAPH_NODE_OPT_FLAGS))
 
-ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) asm/debug $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) asm/debug $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(SOUND_SAMPLE_DIRS) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
@@ -664,19 +659,8 @@ $(BUILD_DIR)/%.ci4.inc.c: %.ci4.png
 $(BUILD_DIR)/%.elf: $(BUILD_DIR)/%.o
 	$(call print,Linking ELF file:,$<,$@)
 	$(V)$(LD) -e 0 -Ttext=$(SEGMENT_ADDRESS) -Map $@.map -o $@ $<
-# Override for leveldata.elf, which otherwise matches the above pattern.
-# Has to be a static pattern rule for make-4.4 and above to trigger the second
-# expansion.
-.SECONDEXPANSION:
-$(LEVEL_ELF_FILES): $(BUILD_DIR)/levels/%/leveldata.elf: $(BUILD_DIR)/levels/%/leveldata.o
-	$(call print,Linking ELF file:,$<,$@)
-	$(V)$(LD) -e 0 -Ttext=$(SEGMENT_ADDRESS) -Map $@.map -o $@ $<
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
-	$(call print,Extracting compressible data from:,$<,$@)
-	$(V)$(EXTRACT_DATA_FOR_MIO) $< $@
-
-$(BUILD_DIR)/levels/%/leveldata.bin: $(BUILD_DIR)/levels/%/leveldata.elf
 	$(call print,Extracting compressible data from:,$<,$@)
 	$(V)$(EXTRACT_DATA_FOR_MIO) $< $@
 
@@ -751,16 +735,6 @@ $(BUILD_DIR)/assets/mario_anim_data.c: $(wildcard assets/anims/*.inc.c)
 	@$(PRINT) "$(GREEN)Generating animation data $(NO_COL)\n"
 	$(V)$(PYTHON) $(TOOLS_DIR)/mario_anims_converter.py > $@
 
-# Generate demo input data
-$(BUILD_DIR)/assets/demo_data.c: assets/demo_data.json $(wildcard assets/demos/*.bin)
-	@$(PRINT) "$(GREEN)Generating demo data $(NO_COL)\n"
-	$(V)$(PYTHON) $(TOOLS_DIR)/demo_data_converter.py assets/demo_data.json $(DEF_INC_CFLAGS) > $@
-
-# Level headers
-$(BUILD_DIR)/include/level_headers.h: levels/level_headers.h.in
-	$(call print,Preprocessing level headers:,$<,$@)
-	$(V)$(CPP) $(CPPFLAGS) -I . $< | sed -E 's|(.+)|#include "\1"|' > $@
-
 # Generate version_data.h
 $(BUILD_DIR)/src/game/version_data.h: tools/make_version.sh
 	@$(PRINT) "$(GREEN)Generating:  $(BLUE)$@ $(NO_COL)\n"
@@ -774,7 +748,7 @@ $(BUILD_DIR)/src/game/version_data.h: tools/make_version.sh
 ifeq ($(FIXLIGHTS),1)
 # This must not be run multiple times at once, so we run it ahead of time rather than in a rule
 DUMMY != $(PYTHON) $(FIXLIGHTS_PY) actors
-DUMMY != $(PYTHON) $(FIXLIGHTS_PY) levels
+DUMMY != $(PYTHON) $(FIXLIGHTS_PY) data/scenes
 endif
 $(BUILD_DIR)/%.o: %.c
 	$(call print,Compiling:,$<,$@)

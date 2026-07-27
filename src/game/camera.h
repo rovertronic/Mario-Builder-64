@@ -8,8 +8,6 @@
 #include "engine/geo_layout.h"
 #include "engine/graph_node.h"
 
-#include "level_table.h"
-
 // X position of the mirror
 #define CASTLE_MIRROR_X 6252.0f
 
@@ -22,25 +20,6 @@
 #ifndef ABS2
 #define ABS2(x) ((x) >= 0.f ? (x) : -(x))
 #endif
-
-#define LEVEL_AREA_INDEX(levelNum, areaNum) (((levelNum) << 4) + (areaNum))
-
-/**
- * Helper macro for defining which areas of a level should zoom out the camera when the game is paused.
- * Because a mask is used by two levels, the pattern will repeat when more than 4 areas are used by a level.
- */
-#define ZOOMOUT_AREA_MASK(level1Area1, level1Area2, level1Area3, level1Area4, \
-                          level2Area1, level2Area2, level2Area3, level2Area4) \
-    ((level2Area4) << 7 |                                                     \
-     (level2Area3) << 6 |                                                     \
-     (level2Area2) << 5 |                                                     \
-     (level2Area1) << 4 |                                                     \
-     (level1Area4) << 3 |                                                     \
-     (level1Area3) << 2 |                                                     \
-     (level1Area2) << 1 |                                                     \
-     (level1Area1) << 0)
-
-#define AREA_BOB                LEVEL_AREA_INDEX(LEVEL_BOB, 1)
 
 #define CAM_MODE_MARIO_ACTIVE           0x01
 #define CAM_MODE_LAKITU_WAS_ZOOMED_OUT  0x02
@@ -235,8 +214,6 @@ enum Cutscenes {
     CUTSCENE_GRAND_STAR,
     CUTSCENE_DANCE_DEFAULT,
     CUTSCENE_RED_COIN_STAR_SPAWN,
-    CUTSCENE_END_WAVING,
-    CUTSCENE_CREDITS,
     CUTSCENE_EXIT_WATERFALL,
     CUTSCENE_EXIT_FALL_WMOTR,
     CUTSCENE_ENTER_POOL,
@@ -298,9 +275,7 @@ enum CameraEvent {
     CAM_EVENT_BOWSER_THROW_BOUNCE,
     CAM_EVENT_START_INTRO,
     CAM_EVENT_START_GRAND_STAR,
-    CAM_EVENT_START_ENDING,
-    CAM_EVENT_START_END_WAVING,
-    CAM_EVENT_START_CREDITS
+    CAM_EVENT_START_ENDING
 };
 
 enum AvoidStatus {
@@ -323,7 +298,7 @@ struct PlayerCameraState {
     /*0x16*/ Vec3s headRotation;
     /*0x1C*/ s16 unused;
     /**
-     * Set to nonzero when an event, such as entering a door, starting the credits, or throwing bowser,
+     * Set to nonzero when an event, such as entering a door or throwing bowser,
      * has happened on this frame.
      */
     /*0x1E*/ s16 cameraEvent;

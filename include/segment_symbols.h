@@ -66,8 +66,6 @@ DECLARE_SEGMENT(bits_skybox_yay0)
 
 DECLARE_SEGMENT(effect_yay0)
 
-DECLARE_SEGMENT(debug_level_select_yay0)
-
 #ifdef VERSION_EU
 DECLARE_SEGMENT(translation_de_yay0)
 DECLARE_SEGMENT(translation_en_yay0)
@@ -101,8 +99,6 @@ DECLARE_SEGMENT(grass_mio0)
 DECLARE_SEGMENT(outside_mio0)
 DECLARE_SEGMENT(inside_mio0)
 DECLARE_SEGMENT(effect_mio0)
-
-DECLARE_SEGMENT(debug_level_select_mio0)
 
 #ifdef VERSION_EU
 DECLARE_SEGMENT(translation_de_mio0)

@@ -43,14 +43,14 @@ const f32 intro_seg7_table_scale_2[] = {
     0.012800f, 0.000000f, 0.000000f, 0.000000f,
 };
 
-#include "levels/menu/ts1/model.inc.c"
-#include "levels/menu/ts2/model.inc.c"
-#include "levels/menu/ts3/model.inc.c"
-#include "levels/menu/ts4/model.inc.c"
+#include "data/scenes/menu/ts1/model.inc.c"
+#include "data/scenes/menu/ts2/model.inc.c"
+#include "data/scenes/menu/ts3/model.inc.c"
+#include "data/scenes/menu/ts4/model.inc.c"
 
-#include "levels/menu/mbg/model.inc.c"
+#include "data/scenes/menu/mbg/model.inc.c"
 
-#include "levels/menu/bigpainting/model.inc.c"
+#include "data/scenes/menu/bigpainting/model.inc.c"
 
 FILINFO mb64_level_entries[MAX_FILES] = {0};
 u16 mb64_level_entry_thumbnail[MAX_FILES][64][64] = {0};

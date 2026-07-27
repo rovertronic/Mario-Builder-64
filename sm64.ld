@@ -44,24 +44,6 @@ OUTPUT_ARCH (mips)
    _##name##_mio0SegmentRomStart = _##name##_yay0SegmentRomStart; \
    _##name##_mio0SegmentRomEnd   = _##name##_yay0SegmentRomEnd;
 
-#define STANDARD_LEVEL(name) \
-   BEGIN_SEG(name, 0x0E000000) \
-   { \
-      KEEP(BUILD_DIR/levels/name/script.o(.*data*)); \
-      KEEP(BUILD_DIR/levels/name/script.o(.text*)); \
-      KEEP(BUILD_DIR/levels/name/script.o(.rodata*)); \
-      KEEP(BUILD_DIR/levels/name/geo.o(.*data*)); \
-      KEEP(BUILD_DIR/levels/name/geo.o(.text*)); \
-      KEEP(BUILD_DIR/levels/name/geo.o(.rodata*)); \
-   } \
-   END_SEG(name) \
-   BEGIN_NOLOAD(name) \
-   { \
-      KEEP(BUILD_DIR/levels/name/script.o(.bss*)); \
-      KEEP(BUILD_DIR/levels/name/geo.o(.bss*)); \
-   } \
-   END_NOLOAD(name)
-
 #define STANDARD_OBJECTS(name, segAddr, geoAddr) \
    BEGIN_SEG(name##_yay0, segAddr) \
    { \
@@ -312,33 +294,30 @@ SECTIONS
       ASSERT((. <= (SEG_POOL_START + POOL_SIZE)), "Error: extended past pool end.")
 #endif
 
-   YAY0_SEG(debug_level_select, 0x07000000)
-
-
    gMainLevels = __romPos;
 
    /* Menu scene (entry + splash + file select); XOR with game at 0x0E */
    BEGIN_SEG(menu, 0x0E000000)
    {
-      KEEP(BUILD_DIR/levels/entry.o(.data*));
-      KEEP(BUILD_DIR/levels/menu/script.o(.*data*));
-      KEEP(BUILD_DIR/levels/menu/script.o(.rodata*));
-      KEEP(BUILD_DIR/levels/menu/script.o(.text*));
-      KEEP(BUILD_DIR/levels/menu/geo.o(.data*));
-      KEEP(BUILD_DIR/levels/menu/geo.o(.rodata*));
-      KEEP(BUILD_DIR/levels/menu/geo.o(.text*));
+      KEEP(BUILD_DIR/data/scenes/entry.o(.data*));
+      KEEP(BUILD_DIR/data/scenes/menu/script.o(.*data*));
+      KEEP(BUILD_DIR/data/scenes/menu/script.o(.rodata*));
+      KEEP(BUILD_DIR/data/scenes/menu/script.o(.text*));
+      KEEP(BUILD_DIR/data/scenes/menu/geo.o(.data*));
+      KEEP(BUILD_DIR/data/scenes/menu/geo.o(.rodata*));
+      KEEP(BUILD_DIR/data/scenes/menu/geo.o(.text*));
    }
    END_SEG(menu)
    BEGIN_NOLOAD(menu)
    {
-      KEEP(BUILD_DIR/levels/entry.o(.bss*));
-      KEEP(BUILD_DIR/levels/menu/script.o(.bss*));
-      KEEP(BUILD_DIR/levels/menu/geo.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/entry.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/menu/script.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/menu/geo.o(.bss*));
    }
    END_NOLOAD(menu)
    BEGIN_SEG(menu_segment_7, 0x07000000)
    {
-      KEEP(BUILD_DIR/levels/menu/leveldata.szp.o(.data*));
+      KEEP(BUILD_DIR/data/scenes/menu/seg7.szp.o(.data*));
       . = ALIGN(0x10);
    }
    END_SEG(menu_segment_7)
@@ -359,21 +338,21 @@ SECTIONS
 
    BEGIN_SEG(game, 0x0E000000)
    {
-      KEEP(BUILD_DIR/levels/game/script.o(.*data*));
-      KEEP(BUILD_DIR/levels/game/script.o(.text*));
-      KEEP(BUILD_DIR/levels/game/script.o(.rodata*));
-      KEEP(BUILD_DIR/levels/game/geo.o(.*data*));
-      KEEP(BUILD_DIR/levels/game/geo.o(.text*));
-      KEEP(BUILD_DIR/levels/game/geo.o(.rodata*));
-      KEEP(BUILD_DIR/levels/scripts.o(.data*));
-      KEEP(BUILD_DIR/levels/scripts.o(.rodata*));
+      KEEP(BUILD_DIR/data/scenes/game/script.o(.*data*));
+      KEEP(BUILD_DIR/data/scenes/game/script.o(.text*));
+      KEEP(BUILD_DIR/data/scenes/game/script.o(.rodata*));
+      KEEP(BUILD_DIR/data/scenes/game/geo.o(.*data*));
+      KEEP(BUILD_DIR/data/scenes/game/geo.o(.text*));
+      KEEP(BUILD_DIR/data/scenes/game/geo.o(.rodata*));
+      KEEP(BUILD_DIR/data/scenes/scripts.o(.data*));
+      KEEP(BUILD_DIR/data/scenes/scripts.o(.rodata*));
    }
    END_SEG(game)
    BEGIN_NOLOAD(game)
    {
-      KEEP(BUILD_DIR/levels/game/script.o(.bss*));
-      KEEP(BUILD_DIR/levels/game/geo.o(.bss*));
-      KEEP(BUILD_DIR/levels/scripts.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/game/script.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/game/geo.o(.bss*));
+      KEEP(BUILD_DIR/data/scenes/scripts.o(.bss*));
    }
    END_NOLOAD(game)
 
@@ -382,7 +361,6 @@ SECTIONS
    {
       KEEP(BUILD_DIR/assets/mario_anim_data.o(.data*));
       KEEP(BUILD_DIR/assets/mario_anim_data.o(.rodata*));
-      KEEP(BUILD_DIR/assets/demo_data.o(.data*));
       KEEP(BUILD_DIR/sound/sound_data.o(.data*));
    }
    END_SEG(assets)

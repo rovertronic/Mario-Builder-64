@@ -12,7 +12,7 @@
 
 #include "make_const_nonconst.h"
 
-#include "levels/game/header.h"
+#include "data/scenes/game/header.h"
 
 const GeoLayout game_area_1_geo[] = {
 	GEO_NODE_START(),

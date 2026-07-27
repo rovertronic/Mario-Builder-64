@@ -45,11 +45,7 @@ a modern game engine's developer's console.
 
 #define TAB_WIDTH 16
 
-#ifdef ENABLE_CREDITS_BENCHMARK
-u8 fDebug = TRUE;
-#else
 u8 fDebug = FALSE;
-#endif
 u8 sPuppyprintTextBuffer[PUPPYPRINT_DEFERRED_BUFFER_SIZE];
 u32 sPuppyprintTextBufferPos; // Location in the buffer of puppyprint deferred text.
 ColorRGBA gCurrEnvCol;
@@ -96,31 +92,33 @@ enum RamNames {
     RAM_AUDIO
 };
 
+// Names for TLB segments 2..25. Index i maps to segment (i + 2); see set_segment_memory_printout
+// and include/segment_names.h.
 const char segNames[][NUM_RAM_CHARS] = {
-    "HUD",
-    "Common1 GFX",
-    "Group0 GFX",
-    "GroupA GFX",
-    "GroupB GFX",
-    "Level GFX",
-    "Common0 GFX",
-    "Textures",
-    "Skybox",
-    "Effects",
-    "GroupA Geo",
-    "GroupB Geo",
-    "Level Geo",
-    "Common0 Geo",
-    "Entry",
-    "Mario Anims",
-    "Demos",
-    "Bhv Scripts",
-    "Menu",
-    "Level Scripts",
-    "Common1 Geo",
-    "Group0 Geo",
-    "",
-    "Languages"
+    "Segment 2",     // SEGMENT_SEGMENT2
+    "",              // SEGMENT_UNUSED_03
+    "Global GFX",    // SEGMENT_GROUP_GLOBAL_YAY0
+    "",              // SEGMENT_UNUSED_05
+    "Theme GFX",     // SEGMENT_GROUP_THEME_YAY0
+    "Level Data",    // SEGMENT_LEVEL_DATA
+    "",              // SEGMENT_UNUSED_08
+    "",              // SEGMENT_UNUSED_09
+    "Skybox",        // SEGMENT_SKYBOX
+    "Effects",       // SEGMENT_EFFECT_YAY0
+    "",              // SEGMENT_UNUSED_0C
+    "Theme Geo",     // SEGMENT_GROUP_THEME_GEO
+    "Level Scripts", // SEGMENT_LEVEL_SCRIPT
+    "",              // SEGMENT_UNUSED_0F
+    "",              // SEGMENT_UNUSED_10
+    "Mario Anims",   // SEGMENT_MARIO_ANIMS
+    "",              // SEGMENT_UNKNOWN_18
+    "Behavior Data", // SEGMENT_BEHAVIOR_DATA
+    "",              // SEGMENT_UNUSED_14
+    "",              // SEGMENT_UNUSED_15
+    "",              // SEGMENT_UNUSED_16
+    "Global Geo",    // SEGMENT_GROUP_GLOBAL_GEO
+    "",              // SEGMENT_UNUSED_18
+    "Languages",     // SEGMENT_EU_TRANSLATION
 };
 
 const s8 nameTable = sizeof(ramNames) / NUM_RAM_CHARS;
@@ -575,56 +573,6 @@ void puppycamera_debug_view(void) {
     }
 }
 
-#define STUB_LEVEL(textname, _1, _2, _3, _4, _5, _6, _7, _8) textname,
-#define DEFINE_LEVEL(textname, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) textname,
-
-static char sLevelNames[][32] = {
-    #include "levels/level_defines.h"
-};
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
-
-static s16 sLevelSelectOption = 0;
-static s8 sLevelSelectOptionArea = 0;
-u8 gPuppyWarp = 0;
-u8 gPuppyWarpArea = 0;
-
-void puppyprint_level_select_menu(void) {
-    s32 posY;
-    s32 renderedText = 0;
-    char textBytes[32];
-    prepare_blank_box();
-    render_blank_box_rounded((SCREEN_WIDTH/2) - 80, (SCREEN_HEIGHT/2) - 60, (SCREEN_WIDTH/2) + 80, (SCREEN_HEIGHT/2) + 60, 0, 0, 0, 160);
-    finish_blank_box();
-    print_small_text_light(SCREEN_WIDTH/2, (SCREEN_HEIGHT/2) - 58, "Pick a level", PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
-    print_small_text_light(SCREEN_WIDTH/2, (SCREEN_HEIGHT/2) + 64, "(Area must have warp node of 0x0A)\nDpad Left/Right: Area / A: Warp\nYellow is current level.", PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
-    for (u32 i = 0; i < sizeof(sLevelNames) / 32; i++) {
-        s32 yOffset = sLevelSelectOption > 8 ? sLevelSelectOption-8 : 0;
-        posY = ((renderedText-yOffset) * 10);
-        if (sLevelNames[i][0] == 0) {
-            continue;
-        }
-        renderedText++;
-        if (posY < 0 || posY > 84) {
-            continue;
-        }
-        if ((u32) sLevelSelectOption == i) {
-            sprintf(textBytes, "%s - %d", sLevelNames[i], sLevelSelectOptionArea + 1);
-            print_set_envcolour(0xFF, 0x40, 0x40, 0xFF);
-        }
-        else
-        if ((u32) gCurrLevelNum-1 == i) {
-            sprintf(textBytes, "%s", sLevelNames[i]);
-            print_set_envcolour(0xFF, 0xFF, 0x40, 0xFF);
-        }
-        else{
-            sprintf(textBytes, "%s", sLevelNames[i]);
-            print_set_envcolour(0xFF, 0xFF, 0xFF, 0xFF);
-        }
-        print_small_text_light(SCREEN_WIDTH/2, (SCREEN_HEIGHT/2) - 40 + posY, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_DEFAULT);
-    }
-}
-
 #ifdef BETTER_REVERB
 
 #define DEBUG_REVERB_PRESET_COUNT ARRAY_COUNT(gDebugBetterReverbSettings)
@@ -761,16 +709,7 @@ s32 better_reverb_get_or_set_field(u8 shouldSet, s32 xIndex, s32 yIndex, s32 val
                 break;
             case PPREVERB_AREA_ECHO:
                 if (gCurrentArea != NULL && !gCurrentArea->useEchoOverride) {
-                    u8 level = gCurrLevelNum;
-                    u8 area = gCurrAreaIndex - 1;
-                    if (level > LEVEL_MAX) {
-                        level = LEVEL_MAX;
-                    }
-                    if (area > 2) {
-                        area = 2;
-                    }
-
-                    gCurrentArea->echoOverride = sLevelAreaReverbs[level][area];
+                    gCurrentArea->echoOverride = 0;
                     gCurrentArea->useEchoOverride = TRUE;
 
                     for (u32 i = 0; i < DEBUG_REVERB_PRESET_COUNT; i++) {
@@ -822,16 +761,7 @@ s32 better_reverb_get_or_set_field(u8 shouldSet, s32 xIndex, s32 yIndex, s32 val
                 break;
             case PPREVERB_AREA_ECHO:
                 if (gCurrentArea != NULL && !gCurrentArea->useEchoOverride) {
-                    u8 level = gCurrLevelNum;
-                    u8 area = gCurrAreaIndex - 1;
-                    if (level > LEVEL_MAX) {
-                        level = LEVEL_MAX;
-                    }
-                    if (area > 2) {
-                        area = 2;
-                    }
-
-                    gCurrentArea->echoOverride = sLevelAreaReverbs[level][area];
+                    gCurrentArea->echoOverride = 0;
                     gCurrentArea->useEchoOverride = TRUE;
 
                     for (u32 i = 0; i < DEBUG_REVERB_PRESET_COUNT; i++) {
@@ -1012,11 +942,9 @@ void puppyprint_render_general_vars(void) {
     }
 
 
-    sprintf(textBytes, "World\n\nObjects: %d/%d\n\nLevel ID: %d\nCourse ID: %d\nArea ID: %d\nRoom ID: %d\n\nInteract:   \n0x%08X\nWarp: 0x%02X", 
+    sprintf(textBytes, "World\n\nObjects: %d/%d\n\nArea ID: %d\nRoom ID: %d\n\nInteract:   \n0x%08X\nWarp: 0x%02X", 
             gObjectCounter, 
             OBJECT_POOL_CAPACITY,
-            gCurrLevelNum,
-            gCurrCourseNum,
             gCurrAreaIndex,
             gMarioCurrentRoom,
             objParams,
@@ -1024,7 +952,6 @@ void puppyprint_render_general_vars(void) {
     );
     print_small_text_light(SCREEN_WIDTH - 16, 36, textBytes, PRINT_TEXT_ALIGN_RIGHT, PRINT_ALL, FONT_OUTLINE);
 
-#ifndef ENABLE_CREDITS_BENCHMARK
     // Very little point printing useless info if Mario doesn't even exist.
     if (gMarioState->marioObj) {
         sprintf(textBytes, "Mario\n\nX: %d\nY: %d\nZ: %d\nYaw: 0x%04X\n\nfVel: %1.1f\nyVel: %1.1f\n\nHealth: %03X\nAction: 0x%02X\nFloor Type: 0x%02X\nWater Height: %d",
@@ -1043,7 +970,6 @@ void puppyprint_render_general_vars(void) {
         sprintf(textBytes, "Gfx Pool: %d / %d", ((u32)gDisplayListHead - ((u32)gGfxPool->buffer)) / 4, GFX_POOL_SIZE);
         print_small_text_light(SCREEN_WIDTH/2, SCREEN_HEIGHT-16, textBytes, PRINT_TEXT_ALIGN_CENTRE, PRINT_ALL, FONT_OUTLINE);
     }
-#endif
 }
 
 struct PuppyPrintPage ppPages[] = {
@@ -1056,7 +982,6 @@ struct PuppyPrintPage ppPages[] = {
     [PUPPYPRINT_PAGE_RAM]           = {&print_ram_overview,             "Segments"},
     [PUPPYPRINT_PAGE_COLLISION]     = {&puppyprint_render_collision,    "Collision"},
     [PUPPYPRINT_PAGE_LOG]           = {&print_console_log,              "Log"},
-    [PUPPYPRINT_PAGE_LEVEL_SELECT]  = {&puppyprint_level_select_menu,   "Level Select"},
     [PUPPYPRINT_PAGE_COVERAGE]      = {&render_coverage_map,            "Coverage"},
 #ifdef PUPPYCAM
     [PUPPYPRINT_PAGE_CAMERA]        = {&puppycamera_debug_view,         "Unlock Camera"},
@@ -1144,53 +1069,6 @@ void puppyprint_profiler_process(void) {
             sDebugOption = 0;
         }
     } else {
-        if (sPPDebugPage == PUPPYPRINT_PAGE_LEVEL_SELECT)
-        {
-            if (gPlayer1Controller->buttonPressed & U_JPAD) {
-                sLevelSelectOption--;
-                // If there is no level entry to this ID, skip over.
-                while (sLevelNames[sLevelSelectOption][0] == 0 && sLevelSelectOption < LEVEL_COUNT) {
-                    sLevelSelectOption--;
-                }
-                if (sLevelSelectOption <= 0) {
-                    sLevelSelectOption = LEVEL_COUNT - 2;
-                    // If there is no level entry to this ID, skip over.
-                    while (sLevelNames[sLevelSelectOption][0] == 0 && sLevelSelectOption < LEVEL_COUNT) {
-                        sLevelSelectOption--;
-                    }
-                }
-            }
-            if (gPlayer1Controller->buttonPressed & D_JPAD) {
-                sLevelSelectOption = (sLevelSelectOption + 1) % (LEVEL_COUNT - 2);
-                // If there is no level entry to this ID, skip over.
-                while (sLevelNames[sLevelSelectOption][0] == 0 && sLevelSelectOption < LEVEL_COUNT) {
-                    sLevelSelectOption = (sLevelSelectOption + 1) % (LEVEL_COUNT - 2);
-                }
-            }
-            if (gPlayer1Controller->buttonPressed & R_JPAD) {
-                sLevelSelectOptionArea++;
-                if (sLevelSelectOptionArea > AREA_COUNT - 1) {
-                    sLevelSelectOptionArea = 0;
-                }
-            } else if (gPlayer1Controller->buttonPressed & L_JPAD) {
-                sLevelSelectOptionArea--;
-                if (sLevelSelectOptionArea < 0) {
-                    sLevelSelectOptionArea = AREA_COUNT - 1;
-                }
-            }
-            if (gPlayer1Controller->buttonPressed & A_BUTTON) {
-                sPPDebugPage = 0;
-                gPuppyWarp = sLevelSelectOption + 1;
-                gPuppyWarpArea = sLevelSelectOptionArea + 1;
-            }
-        } else {
-            if (gCurrLevelNum > 3) {
-                sLevelSelectOption = gCurrLevelNum;
-            } else {
-                sLevelSelectOption = LEVEL_BOB;
-            }
-        }
-        // Collision toggles.
 #ifdef VISUAL_DEBUG
         if (sPPDebugPage == PUPPYPRINT_PAGE_COLLISION)
         {

@@ -19,7 +19,6 @@ char gAssertionStr[0x200];
 enum DebugInfoFlags {
     DEBUG_INFO_NOFLAGS      = (0 << 0),
     DEBUG_INFO_FLAG_DPRINT  = (1 << 0),
-    DEBUG_INFO_FLAG_LSELECT = (1 << 1),
     DEBUG_INFO_FLAG_ALL     = 0xFF
 };
 
@@ -49,7 +48,7 @@ const char *sDebugEnemyStringInfo[] = {
 
 s32 sDebugInfoDPadMask = 0;
 s32 sDebugInfoDPadUpdID = 0;
-s8 sDebugLvSelectCheckFlag = FALSE;
+s8 sDebugInfoInitFlag = FALSE;
 
 #define DEBUG_PAGE_MIN DEBUG_PAGE_OBJECTINFO
 #define DEBUG_PAGE_MAX DEBUG_PAGE_ENEMYINFO
@@ -256,15 +255,11 @@ void update_debug_dpadmask(void) {
     }
 }
 
-void debug_unknown_level_select_check(void) {
-    if (!sDebugLvSelectCheckFlag) {
-        sDebugLvSelectCheckFlag++; // again, just do = TRUE...
+void debug_init_info_flags(void) {
+    if (!sDebugInfoInitFlag) {
+        sDebugInfoInitFlag = TRUE;
 
-        if (!gDebugLevelSelect) {
-            gDebugInfoFlags = DEBUG_INFO_NOFLAGS;
-        } else {
-            gDebugInfoFlags = DEBUG_INFO_FLAG_LSELECT;
-        }
+        gDebugInfoFlags = DEBUG_INFO_NOFLAGS;
 
         gNumCalls.floor = 0;
         gNumCalls.ceil = 0;
@@ -300,7 +295,7 @@ UNUSED static void check_debug_button_seq(void) {
                 sDebugInfoButtonSeqID++;
                 if (buttonArr[sDebugInfoButtonSeqID] == -1) {
                     if (gDebugInfoFlags == DEBUG_INFO_FLAG_ALL) {
-                        gDebugInfoFlags = DEBUG_INFO_FLAG_LSELECT;
+                        gDebugInfoFlags = DEBUG_INFO_NOFLAGS;
                     } else {
                         gDebugInfoFlags = DEBUG_INFO_FLAG_ALL;
                     }

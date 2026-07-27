@@ -6,6 +6,6 @@
 // script
 extern const LevelScript level_game_entry[];
 
-#include "levels/game/header.inc.h"
+#include "data/scenes/game/header.inc.h"
 
 #endif

@@ -217,7 +217,6 @@ struct GraphNodeTranslationRotation {
 };
 
 /** GraphNode that translates itself and its children.
- *  Usage example: SUPER MARIO logo letters in debug level select.
  *  The display list can be null, in which case it won't draw anything itself.
  */
 struct GraphNodeTranslation {

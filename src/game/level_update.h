@@ -23,9 +23,10 @@ enum WarpOperation {
     WARP_OP_WARP_FLOOR,
 };
 
-enum SpecialWarpDestinations {
-    WARP_SPECIAL_MENU = -1,
-    WARP_SPECIAL_NONE =  0,
+enum GameExitResult {
+    GAME_EXIT_MENU = -1,
+    GAME_EXIT_NONE = 0,
+    GAME_EXIT_RELOAD = 1,
 };
 
 enum WarpFlags {
@@ -33,7 +34,6 @@ enum WarpFlags {
     WARP_FLAG_DOOR_PULLED     = (1 << 0), // 0x01
     WARP_FLAG_DOOR_FLIP_MARIO = (1 << 1), // 0x02
     WARP_FLAG_DOOR_IS_WARP    = (1 << 2), // 0x04
-    WARP_FLAG_EXIT_COURSE     = (1 << 3), // 0x08
 };
 
 enum MarioSpawnType {
@@ -60,17 +60,6 @@ enum MarioSpawnType {
     MARIO_SPAWN_FADE_FROM_BLACK
 };
 
-struct CreditsEntry {
-    /*0x00*/ u8 levelNum;
-    /*0x01*/ u8 areaIndex;
-    /*0x02*/ u8 actNum;
-    /*0x03*/ s8 marioAngle;
-    /*0x04*/ Vec3s marioPos;
-    /*0x0C*/ const char **string;
-};
-
-extern struct CreditsEntry *gCurrCreditsEntry;
-
 extern struct MarioState gMarioStates[];
 extern struct MarioState *gMarioState;
 
@@ -83,7 +72,6 @@ extern s8 gameLagged;
 
 struct WarpDest {
     u8 type;
-    u8 levelNum;
     u8 areaIdx;
     u8 nodeId;
     u32 arg;
@@ -163,20 +151,15 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp);
 void level_set_transition(s16 length, void (*updateFunction)());
 void exit_level(void);
 
-s32 lvl_init_or_update(                  s16 initOrUpdate, UNUSED s32 levelNum);
-s32 lvl_init_from_save_file(      UNUSED s16 initOrUpdate,        s32 levelNum);
-s32 lvl_set_current_level(        UNUSED s16 initOrUpdate,        s32 levelNum);
-s32 lvl_play_the_end_screen_sound(UNUSED s16 initOrUpdate, UNUSED s32 levelNum);
+s32 lvl_init_or_update(                  s16 initOrUpdate, UNUSED s32 unused);
+s32 lvl_init_from_save_file(      UNUSED s16 initOrUpdate, UNUSED s32 unused);
 void basic_update(void);
 
-void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
+void initiate_warp(s16 destArea, s16 destWarpNode, s32 warpFlags);
 
-extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
 extern u8 gGotFileCoinHiScore;
-extern u8 gCurrCourseStarFlags;
 extern u8 gSpecialTripleJump;
-extern s8 gLevelToCourseNumTable[];
 
 #if MULTILANG
 enum {

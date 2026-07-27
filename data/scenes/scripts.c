@@ -11,7 +11,7 @@
 #include "actors/group_vanilla.h"
 #include "model_ids.h"
 
-#include "levels/scripts.h"
+#include "data/scenes/scripts.h"
 
 const LevelScript script_func_mb64_global[] = {
     LOAD_MODEL_FROM_GEO(MODEL_SMOKE,                   smoke_geo),

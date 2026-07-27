@@ -21,15 +21,12 @@
 #include "mb64/editor/object.h"
 #include "mb64/editor/trajectory.h"
 #include "area.h"
-#include "course_table.h"
-#include "engine/behavior_script.h"
 #include "envfx_bubbles.h"
+#include "engine/behavior_script.h"
 #include "level_misc_macros.h"
-#include "level_table.h"
-#include "mario.h"
 #include "mario_actions_cutscene.h"
 #include "mario_misc.h"
-#include "rumble_init.h"
+#include "mario.h"
 #include "spawn_object.h"
 
 /**

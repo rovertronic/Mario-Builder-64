@@ -17,7 +17,7 @@
  * Implements the rippling painting effect. Paintings are GraphNodes that exist without being connected
  * to any particular object.
  *
- * Paintings are defined in level data. Look at levels/castle_inside/painting.inc.c for examples.
+ * Paintings are defined in scene data.
  *
  * The ripple effect uses data that is split into several parts:
  *      The mesh positions are generated from a base mesh. See seg2_painting_triangle_mesh near the
@@ -27,10 +27,10 @@
  *          in bin/segment2.c
  *
  *      Each painting's texture uses yet another table to map its texture to the mesh.
- *          These maps are in level data, see levels/castle_inside/painting.inc.c for example.
+ *          These maps are defined with the painting mesh data.
  *
- *      Finally, each painting has two display lists, normal and rippling, which are defined in the same
- *      level data file as the Painting itself. See levels/castle_inside/painting.inc.c.
+ *      Finally, each painting has two display lists, normal and rippling, which are defined with the
+ *      painting itself.
  *
  *
  * Painting state machine:

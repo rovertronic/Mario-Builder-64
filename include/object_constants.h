@@ -1397,7 +1397,6 @@ enum animIDsPeach { //! TODO: anim names 0-3 & 6-8
     #define YOSHI_ACT_WALK_JUMP_OFF_ROOF                    0x3
     #define YOSHI_ACT_FINISH_JUMPING_AND_DESPAWN            0x4
     #define YOSHI_ACT_GIVE_PRESENT                          0x5
-    #define YOSHI_ACT_CREDITS                               0xA
     /* Animations */
     #define YOSHI_ANIM_IDLE                                 0x0
     #define YOSHI_ANIM_WALK                                 0x1
@@ -1633,9 +1632,6 @@ enum animIDsSwoop {
     #define INTRO_LAKITU_ACT_CUTSCENE_INTRO_1               0x1
     #define INTRO_LAKITU_ACT_CUTSCENE_INTRO_2               0x2
     #define INTRO_LAKITU_ACT_CUTSCENE_INTRO_3               0x3
-    #define INTRO_LAKITU_ACT_CUTSCENE_END_WAVING_1         0x64
-    #define INTRO_LAKITU_ACT_CUTSCENE_END_WAVING_2         0x65
-    #define INTRO_LAKITU_ACT_CUTSCENE_END_WAVING_3         0x66
     /* Animations */
     #define INTRO_LAKITU_ANIM_DEFAULT                       0x0
 

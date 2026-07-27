@@ -5,12 +5,6 @@
  *****************/
 
 /**
- * Enables some mechanics that change behavior depending on hardcoded level numbers.
- * TODO: separate this into separate defines, behavior params, or make these mechanics otherwise dynamic.
-*/
-// #define ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-
-/**
  * Enable lives and the lives counter. The number next to the define is the number of lives you start with.
  */
 // #define ENABLE_LIVES 4
@@ -56,9 +50,9 @@
 #define MODEL_ID_COUNT 500
 
 /**
- * Number of supported areas per level.
+ * Number of supported areas in the game scene.
  */
-#define AREA_COUNT 8
+#define AREA_COUNT 4
 
 /**
  * Makes signs and NPCs easier to talk to.
@@ -71,7 +65,7 @@
 // #define DIALOG_INDICATOR
 
 /**
- * Include the English characters that were missing from US segment2 and the rumble pak texture if using rumble.
+ * Include the English characters that were missing from US segment2.
  * J, Q, V, X, Z, ¨, !, !!, ?, &, %, ., and the beta key.
  * [MAKE SURE TO INCLUDE EU AND JP/SH BASEROMS IN THE REPO TO OBTAIN THE ASSETS]
  * If this is disabled, backup assets will be used.
@@ -92,14 +86,3 @@
  * Prevents infinite death loops by always restoring Mario's health when he's warped to any kind of warp while dead.
  */
 #define PREVENT_DEATH_LOOP
-
-/**
- * The level that the game starts with immediately after file select.
- * The levelscript needs to have a MARIO_POS command for this to work.
- */
-#define START_LEVEL LEVEL_BOB
-
-/**
- * Title-screen demo sequences are not used.
- */
-#define DISABLE_DEMO

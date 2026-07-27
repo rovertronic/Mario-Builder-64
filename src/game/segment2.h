@@ -55,7 +55,6 @@ extern Gfx dl_hud_img_end[];
 extern const Texture *const main_font_lut[];
 extern Gfx dl_ia_text_tex_settings[];
 extern Gfx dl_rgba16_load_tex_block[];
-extern const Texture *const main_credits_font_lut[];
 extern Texture *main_hud_camera_lut[6];
 extern Gfx dl_draw_text_bg_box[];
 extern Gfx dl_draw_triangle[];

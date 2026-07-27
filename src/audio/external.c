@@ -172,18 +172,6 @@ s16 sDynNone[] = { SEQ_SOUND_PLAYER, 0 };
 u8 sCurrentMusicDynamic = 0xff;
 u8 sBackgroundMusicForDynamics = SEQUENCE_NONE;
 
-#define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, leveldyn, _8) leveldyn,
-#define DEFINE_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8, leveldyn, _10) leveldyn,
-
-#define _ sDynNone
-s16 *sLevelDynamics[LEVEL_COUNT] = {
-    _, // LEVEL_NONE
-#include "levels/level_defines.h"
-};
-#undef _
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
-
 struct MusicDynamic {
     /*0x0*/ s16 bits1;
     /*0x2*/ u16 volScale1;
@@ -204,28 +192,8 @@ struct MusicDynamic sMusicDynamics[8] = {
     { 0xffff, 127, 100, 0x0000, 0, 100 }, // any (unused)
 };
 
-#define STUB_LEVEL(_0, _1, _2, _3, echo1, echo2, echo3, _7, _8) { echo1, echo2, echo3 },
-#define DEFINE_LEVEL(_0, _1, _2, _3, _4, _5, echo1, echo2, echo3, _9, _10) { echo1, echo2, echo3 },
-
-s8 sLevelAreaReverbs[LEVEL_COUNT][3] = {
-    { 0x00, 0x00, 0x00 }, // LEVEL_NONE
-#include "levels/level_defines.h"
-};
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
-
-#define STUB_LEVEL(_0, _1, _2, volume, _4, _5, _6, _7, _8) volume,
-#define DEFINE_LEVEL(_0, _1, _2, _3, _4, volume, _6, _7, _8, _9, _10) volume,
-
-u16 sLevelAcousticReaches[LEVEL_COUNT] = {
-    20000, // LEVEL_NONE
-#include "levels/level_defines.h"
-};
-
-#undef STUB_LEVEL
-#undef DEFINE_LEVEL
-
 #define AUDIO_MAX_DISTANCE 22000.0f
+#define AUDIO_ACOUSTIC_REACH 20000
 
 #define LOW_VOLUME_REVERB 40.0f
 
@@ -1062,7 +1030,7 @@ static f32 get_sound_volume(u8 bank, u8 soundIndex, f32 volumeRange) {
     if (!(sSoundBanks[bank][soundIndex].soundBits & SOUND_NO_VOLUME_LOSS)) {
 #ifdef VERSION_JP
         // Intensity linearly lowers from 1 at the camera to 0 at maxSoundDistance
-        f32 maxSoundDistance = sLevelAcousticReaches[gCurrLevelNum];
+        f32 maxSoundDistance = AUDIO_ACOUSTIC_REACH;
         if (maxSoundDistance < sSoundBanks[bank][soundIndex].distance) {
             intensity = 0.0f;
         } else {
@@ -1075,7 +1043,7 @@ static f32 get_sound_volume(u8 bank, u8 soundIndex, f32 volumeRange) {
         if (sSoundBanks[bank][soundIndex].distance > AUDIO_MAX_DISTANCE) {
             intensity = 0.0f;
         } else {
-            f32 maxSoundDistance = sLevelAcousticReaches[gCurrLevelNum] / div;
+            f32 maxSoundDistance = AUDIO_ACOUSTIC_REACH / div;
             if (maxSoundDistance < sSoundBanks[bank][soundIndex].distance) {
                 intensity = ((AUDIO_MAX_DISTANCE - sSoundBanks[bank][soundIndex].distance)
                              / (AUDIO_MAX_DISTANCE - maxSoundDistance))
@@ -1124,26 +1092,11 @@ static f32 get_sound_freq_scale(u8 bank, u8 item) {
  * Called from threads: thread4_sound, thread5_game_loop (EU only)
  */
 static u32 get_sound_reverb(UNUSED u8 bank, UNUSED u8 soundIndex, u8 channelIndex) {
-    u8 area;
-    u8 level;
-    s8 areaEcho;
+    s8 areaEcho = 0;
     s16 reverb;
 
-    // Disable level reverb if NO_ECHO is set
-    if (sSoundBanks[bank][soundIndex].soundBits & SOUND_NO_ECHO) {
-        level = 0;
-        area = 0;
-    } else {
-        level = (gCurrLevelNum > LEVEL_MAX ? LEVEL_MAX : gCurrLevelNum);
-        area = gCurrAreaIndex - 1;
-        if (area > 2) {
-            area = 2;
-        }
-    }
-
-    areaEcho = sLevelAreaReverbs[level][area];
-
-    if (gAreaData[gCurrAreaIndex].useEchoOverride && !(sSoundBanks[bank][soundIndex].soundBits & SOUND_NO_ECHO)) {
+    if (!(sSoundBanks[bank][soundIndex].soundBits & SOUND_NO_ECHO)
+        && gAreaData[gCurrAreaIndex].useEchoOverride) {
         areaEcho = gAreaData[gCurrAreaIndex].echoOverride;
     }
 
@@ -1780,8 +1733,7 @@ void seq_player_unlower_volume(u8 player, u16 fadeDuration) {
 static u8 begin_background_music_fade(u16 fadeDuration) {
     u8 targetVolume = 0xff;
 
-    if (sCurrentBackgroundMusicSeqId == SEQUENCE_NONE
-        || sCurrentBackgroundMusicSeqId == SEQ_EVENT_CUTSCENE_CREDITS) {
+    if (sCurrentBackgroundMusicSeqId == SEQUENCE_NONE) {
         return 0xff;
     }
 

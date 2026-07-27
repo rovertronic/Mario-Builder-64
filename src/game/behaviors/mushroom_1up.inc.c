@@ -13,9 +13,6 @@
 //         gMarioState->numLives++;
 // #endif
 //         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-// #if ENABLE_RUMBLE
-//         queue_rumble_data(5, 80);
-// #endif
 //     }
 // }
 
@@ -460,7 +457,6 @@ void bhv_crowbar_attack_loop() {
 //                 }
 //         }
 //     }
-
 
 
 // void bhv_item_bubble_loop() {

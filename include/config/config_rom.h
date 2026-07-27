@@ -24,12 +24,6 @@
 // #define UNIQUE_SAVE_DATA
 
 /**
- * Enables Rumble Pak Support.
- * Currently not recommended, as it may cause random crashes.
- */
-#define ENABLE_RUMBLE (1 || VERSION_SH)
-
-/**
  * The maximum number of supported players/controllers. 1-4.
  * This will save performance if the player has extra unused controllers plugged in.
  * NOTE: Default is 2, maximum is 4.

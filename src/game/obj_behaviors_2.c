@@ -11,7 +11,6 @@
 #include "geo_misc.h"
 #include "ingame_menu.h"
 #include "interaction.h"
-#include "level_table.h"
 #include "level_update.h"
 #include "mario.h"
 #include "mario_actions_cutscene.h"

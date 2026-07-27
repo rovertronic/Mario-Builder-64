@@ -11,11 +11,6 @@ envmap_table = set([
     "actors/star/star_surface.rgba16.png",
     "actors/water_bubble/water_bubble.rgba16.png",
     "actors/water_ring/water_ring.rgba16.png",
-    "levels/castle_inside/29.rgba16.png",
-    "levels/castle_inside/30.rgba16.png",
-    "levels/hmc/7.rgba16.png",
-    "levels/castle_inside/16.ia16.png",
-    "levels/cotmc/2.rgba16.png"
 ])
 
 def read_asset_map():
@@ -264,7 +259,7 @@ def main():
                     png_file.write(input)
                     png_file.flush()
                     png_file.close()
-                    if asset.startswith("textures/skyboxes/") or asset.startswith("levels/ending/cake"):
+                    if asset.startswith("textures/skyboxes/"):
                         if asset.startswith("textures/skyboxes/"):
                             imagetype = "sky"
                         else:
