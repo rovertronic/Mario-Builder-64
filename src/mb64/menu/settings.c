@@ -365,7 +365,7 @@ void settings_save_and_quit(void) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
     }
     set_page_to_level_list();
-    fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+    fade_into_special_warp(WARP_SPECIAL_TITLE_RESET, 0); // reset game
 }
 
 void settings_play_level(void) {

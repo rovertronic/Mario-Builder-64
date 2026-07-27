@@ -30,22 +30,6 @@ extern const Gfx breakable_box_seg8_dl_cork_box[];
 extern const Collision breakable_box_seg8_collision[];
 
 /**
-// cannon_barrel
-extern const GeoLayout cannon_barrel_geo[];
-extern const Gfx cannon_barrel_seg8_dl_08006408[];
-extern const Gfx cannon_barrel_seg8_dl_080064C0[];
-extern const Gfx cannon_barrel_seg8_dl_08006660[];
-
-// cannon_base
-extern const GeoLayout cannon_base_geo[];
-extern const Gfx cannon_base_seg8_dl_08005658[];
-extern const Gfx cannon_base_seg8_dl_080056D0[];
-extern const Gfx cannon_base_seg8_dl_080057F8[];
-
-// cannon_lid
-extern const Gfx cannon_lid_seg8_dl_08004898[];
-extern const Gfx cannon_lid_seg8_dl_080048E0[];
-extern const Collision cannon_lid_seg8_collision_08004950[];
 **/
 
 // checkerboard_platform
@@ -151,11 +135,6 @@ extern const Gfx koopa_shell_seg8_dl_08028A20[];
 extern const Gfx koopa_shell_seg8_dl_08028B78[];
 
 /**
-// metal_box
-extern const GeoLayout metal_box_geo[];
-extern const Gfx metal_box_seg8_dl_08024B18[];
-extern const Gfx metal_box_dl[];
-extern const Collision metal_box_seg8_collision_08024C28[];
 **/
 
 // purple_switch
@@ -166,10 +145,6 @@ extern const Gfx purple_switch_seg8_dl_0800C718[];
 extern const Collision purple_switch_seg8_collision_0800C7A8[];
 
 /**
-// test_platform
-extern const GeoLayout test_platform_geo[];
-extern const Gfx unknown_seg8_dl_08026260[];
-extern const Collision unknown_seg8_collision_080262F8[];
 **/
 
 #endif

@@ -7,10 +7,6 @@
 #include "common1.h"
 #include "group17.h"
 
-/**
-#include "swoop/geo.inc.c"
-#include "dorrie/geo.inc.c"
-**/
 #include "mario/geo.inc.c"
 #include "king_bobomb/geo.inc.c"
 #include "bowser_flame/geo.inc.c"

@@ -4,7 +4,6 @@
 #include "mb64/editor/main.h"
 
 #include "game/area.h"
-#include "game/save_file.h"
 #include "game/level_update.h"
 
 struct BadgeInfo badge_info[] = {

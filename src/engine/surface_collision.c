@@ -3,7 +3,6 @@
 #include "sm64.h"
 #include "game/debug.h"
 #include "game/level_update.h"
-#include "game/mario.h"
 #include "game/object_list_processor.h"
 #include "math_util.h"
 #include "surface_collision.h"

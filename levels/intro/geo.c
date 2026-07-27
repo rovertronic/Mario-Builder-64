@@ -68,7 +68,7 @@ const GeoLayout intro_geo_splash_screen[] = {
 };
 
 // 0x0E00035C
-const GeoLayout intro_geo_mario_head_regular[] = {
+const GeoLayout intro_geo_title_reset[] = {
    GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
    GEO_OPEN_NODE(),
       GEO_ZBUFFER(0),
@@ -76,23 +76,8 @@ const GeoLayout intro_geo_mario_head_regular[] = {
          GEO_NODE_ORTHO(100),
          GEO_OPEN_NODE(),
             GEO_ASM(0, geo_intro_regular_backdrop),
-#ifdef GODDARD_EASTER_EGG
-            GEO_ASM(0, geo_intro_face_easter_egg),
-#endif
          GEO_CLOSE_NODE(),
       GEO_CLOSE_NODE(),
-#ifdef KEEP_MARIO_HEAD
-      GEO_ZBUFFER(1),
-      GEO_OPEN_NODE(),
-         GEO_CAMERA_FRUSTUM(45, 128, 16384),
-         GEO_OPEN_NODE(),
-            GEO_CAMERA(CAMERA_MODE_NONE, 0, 0, 1000, 0, 0, 0, 0x00000000),
-            GEO_OPEN_NODE(),
-               GEO_ASM(2, geo_draw_mario_head_goddard),
-            GEO_CLOSE_NODE(),
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-#endif
 #if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)
       GEO_ZBUFFER(0),
       GEO_OPEN_NODE(),
@@ -104,7 +89,7 @@ const GeoLayout intro_geo_mario_head_regular[] = {
 };
 
 // 0x0E0003B8
-const GeoLayout intro_geo_mario_head_dizzy[] = {
+const GeoLayout intro_geo_game_over_reset[] = {
    GEO_NODE_SCREEN_AREA(0, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_CENTER_X, SCREEN_CENTER_Y),
    GEO_OPEN_NODE(),
       GEO_ZBUFFER(0),
@@ -112,23 +97,8 @@ const GeoLayout intro_geo_mario_head_dizzy[] = {
          GEO_NODE_ORTHO(100),
          GEO_OPEN_NODE(),
             GEO_ASM(0, geo_intro_gameover_backdrop),
-#ifdef GODDARD_EASTER_EGG
-            GEO_ASM(0, geo_intro_face_easter_egg),
-#endif
          GEO_CLOSE_NODE(),
       GEO_CLOSE_NODE(),
-#ifdef KEEP_MARIO_HEAD
-      GEO_ZBUFFER(1),
-      GEO_OPEN_NODE(),
-         GEO_CAMERA_FRUSTUM(45, 128, 16384),
-         GEO_OPEN_NODE(),
-            GEO_CAMERA(CAMERA_MODE_NONE, 0, 0, 1000, 0, 0, 0, 0x00000000),
-            GEO_OPEN_NODE(),
-               GEO_ASM(3, geo_draw_mario_head_goddard),
-            GEO_CLOSE_NODE(),
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-#endif
 #if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)
       GEO_ZBUFFER(0),
       GEO_OPEN_NODE(),

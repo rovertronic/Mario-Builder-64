@@ -34,8 +34,8 @@ enum WarpOperation {
 enum SpecialWarpDestinations {
     WARP_SPECIAL_LEVEL_SELECT        = -9,
     WARP_SPECIAL_INTRO_SPLASH_SCREEN = -8,
-    WARP_SPECIAL_MARIO_HEAD_DIZZY    = -3,
-    WARP_SPECIAL_MARIO_HEAD_REGULAR  = -2,
+    WARP_SPECIAL_GAME_OVER_RESET     = -3,
+    WARP_SPECIAL_TITLE_RESET         = -2,
     WARP_SPECIAL_ENDING              = -1,
     WARP_SPECIAL_NONE                =  0,
 };
@@ -186,5 +186,20 @@ s32 lvl_play_the_end_screen_sound(UNUSED s16 initOrUpdate, UNUSED s32 levelNum);
 void basic_update(void);
 
 void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
+
+extern u8 gLastCompletedCourseNum;
+extern u8 gLastCompletedStarNum;
+extern u8 gGotFileCoinHiScore;
+extern u8 gCurrCourseStarFlags;
+extern u8 gSpecialTripleJump;
+extern s8 gLevelToCourseNumTable[];
+
+#if MULTILANG
+enum {
+    LANGUAGE_ENGLISH,
+    LANGUAGE_FRENCH,
+    LANGUAGE_GERMAN
+};
+#endif
 
 #endif // LEVEL_UPDATE_H

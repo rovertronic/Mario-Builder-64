@@ -1,14 +1,10 @@
 #include <ultra64.h>
 
 #include "sm64.h"
-#include "behavior_data.h"
 #include "behavior_script.h"
 #include "game/area.h"
-#include "game/behavior_actions.h"
 #include "game/game_init.h"
-#include "game/mario.h"
 #include "game/memory.h"
-#include "game/obj_behaviors_2.h"
 #include "game/object_helpers.h"
 #include "game/object_list_processor.h"
 #include "math_util.h"

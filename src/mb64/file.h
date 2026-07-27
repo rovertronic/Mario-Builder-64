@@ -31,6 +31,14 @@ extern struct mb64_template mb64_templates[];
 #define MAX_USERNAME_SIZE 31
 #define MAX_USERNAME_INPUT (MAX_USERNAME_SIZE - 1)
 
+enum Mb64OptionFlags {
+    OPT_MUSIC,
+    OPT_HUD,
+    OPT_CAMCOL,
+    OPT_SPEEDRUNTIMER,
+    OPT_STARRADAR,
+};
+
 struct mb64_sram_config {
     char author[MAX_USERNAME_SIZE];
     u8 option_flags;

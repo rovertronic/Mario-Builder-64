@@ -13,11 +13,11 @@
  * TODO: Find a way to use these with SEG_ADDRESS in Makefile.split
  */
 
-#define SEGMENT_MAIN                 0x00 // | Segment  0 | General Segment, includes most of /src/ (engine, buffers, goddard, audio, etc.)
+#define SEGMENT_MAIN                 0x00 // | Segment  0 | General Segment, includes most of /src/ (engine, buffers, menu helpers, audio, etc.)
 #define SEGMENT_RENDER               0x01 // | Segment  1 | SPTask, GFX pool buffer
 #define SEGMENT_SEGMENT2             0x02 // | Segment  2 | Segment 2 (Fonts, Text, etc)
 #define SEGMENT_COMMON1_YAY0         0x03 // | Segment  3 | /actors/common1_yay0
-#define SEGMENT_GROUP0_YAY0          0x04 // | Segment  4 | /actors/group0_yay0, also includes boot (/src/boot/) & gd_dynlists (/src/goddard/dynlists/)
+#define SEGMENT_GROUP0_YAY0          0x04 // | Segment  4 | /actors/group0_yay0, also includes boot (/src/boot/)
 #define SEGMENT_GROUPA_YAY0          0x05 // | Segment  5 | Actor group A yay0 (group1  - group11)
 #define SEGMENT_GROUPB_YAY0          0x06 // | Segment  6 | Actor group B yay0 (group12 - group17)
 #define SEGMENT_LEVEL_DATA           0x07 // | Segment  7 | Level Data, also includes intro_segment_7, menu_segment_7, & /menu/debug_level_select/

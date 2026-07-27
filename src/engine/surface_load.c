@@ -1,15 +1,11 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "game/ingame_menu.h"
-#include "graph_node.h"
-#include "behavior_script.h"
 #include "behavior_data.h"
 #include "game/memory.h"
 #include "game/object_helpers.h"
 #include "surface_collision.h"
 #include "math_util.h"
-#include "game/mario.h"
 #include "game/object_list_processor.h"
 #include "surface_load.h"
 #include "game/puppyprint.h"

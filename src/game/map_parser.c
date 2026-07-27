@@ -1,7 +1,4 @@
 #include <ultra64.h>
-#include <PR/os_internal_error.h>
-#include <stdarg.h>
-#include <string.h>
 #include "segments.h"
 
 #define STACK_TRAVERSAL_LIMIT 100
@@ -59,8 +56,8 @@ extern u8 _mainSegmentStart[];
 extern u8 _mainSegmentTextEnd[];
 extern u8 _engineSegmentStart[];
 extern u8 _engineSegmentTextEnd[];
-extern u8 _goddardSegmentStart[];
-extern u8 _goddardSegmentTextEnd[];
+extern u8 _menu_segSegmentStart[];
+extern u8 _menu_segSegmentTextEnd[];
 
 char *find_function_in_stack(u32 *sp) {
 	for (int i = 0; i < STACK_TRAVERSAL_LIMIT; i++) {
@@ -74,7 +71,7 @@ char *find_function_in_stack(u32 *sp) {
 		else if ((val >= (u32)_engineSegmentStart) && (val <= (u32)_engineSegmentTextEnd)) {
 			return parse_map(val);
 		}
-		else if ((val >= (u32)_goddardSegmentStart) && (val <= (u32)_goddardSegmentTextEnd)) {
+		else if ((val >= (u32)_menu_segSegmentStart) && (val <= (u32)_menu_segSegmentTextEnd)) {
 			return parse_map(val);
 		}
 

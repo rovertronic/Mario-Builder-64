@@ -32,7 +32,7 @@ enum LevelCommands {
     /*0x16*/ LEVEL_CMD_LOAD_TO_FIXED_ADDRESS,
     /*0x17*/ LEVEL_CMD_LOAD_RAW,
     /*0x18*/ LEVEL_CMD_LOAD_YAY0,
-    /*0x19*/ LEVEL_CMD_LOAD_MARIO_HEAD,
+    /*0x19*/ LEVEL_CMD_UNUSED_19,
     /*0x1A*/ LEVEL_CMD_LOAD_YAY0_TEXTURE,
     /*0x1B*/ LEVEL_CMD_INIT_LEVEL,
     /*0x1C*/ LEVEL_CMD_CLEAR_LEVEL,
@@ -66,7 +66,7 @@ enum LevelCommands {
     /*0x3A*/ LEVEL_CMD_3A,
     /*0x3B*/ LEVEL_CMD_CREATE_WHIRLPOOL,
     /*0x3C*/ LEVEL_CMD_GET_OR_SET_VAR,
-    /*0x3D*/ LEVEL_CMD_PUPPYVOLUME,
+    /*0x3D*/ LEVEL_CMD_UNUSED_3D,
     /*0x3E*/ LEVEL_CMD_CHANGE_AREA_SKYBOX,
     /*0x3F*/ LEVEL_CMD_SET_ECHO,
     /*0x40*/ LEVEL_CMD_FILESELECT_CONDITION,
@@ -275,14 +275,6 @@ enum WarpCheckpointFlags {
     CMD_BBH(LEVEL_CMD_LOAD_YAY0, 0x0C, seg), \
     CMD_PTR(romStart), \
     CMD_PTR(romEnd)
-#endif
-
-#ifdef KEEP_MARIO_HEAD
-#define LOAD_MARIO_HEAD(sethead) \
-    CMD_BBH(LEVEL_CMD_LOAD_MARIO_HEAD, 0x04, sethead)
-#else
-#define LOAD_MARIO_HEAD() \
-    CMD_BBH(LEVEL_CMD_NOP, 0x04, 0x0000)
 #endif
 
 #ifdef NO_SEGMENTED_MEMORY
@@ -498,8 +490,8 @@ enum WarpCheckpointFlags {
 #define LOAD_BEHAVIOR_DATA() \
     LOAD_RAW( /*seg*/ SEGMENT_BEHAVIOR_DATA, /*romStart*/ _behaviorSegmentRomStart, /*romEnd*/ _behaviorSegmentRomEnd)
 
-#define LOAD_GODDARD() \
-    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd)
+#define LOAD_MENU_SEG() \
+    FIXED_LOAD(/*loadAddr*/ _menu_segSegmentStart, /*romStart*/ _menu_segSegmentRomStart, /*romEnd*/ _menu_segSegmentRomEnd)
 
 #define LOAD_TITLE_SCREEN_BG() \
     LOAD_YAY0_TEXTURE(/*seg*/ SEGMENT_SKYBOX, /*romStart*/ _title_screen_bg_yay0SegmentRomStart, /*romEnd*/ _title_screen_bg_yay0SegmentRomEnd)

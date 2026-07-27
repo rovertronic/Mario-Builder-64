@@ -12,7 +12,6 @@
 #include "config/config_cutscenes.h"
 #include "config/config_debug.h"
 #include "config/config_game.h"
-#include "config/config_goddard.h"
 #include "config/config_graphics.h"
 #include "config/config_menu.h"
 #include "config/config_movement.h"

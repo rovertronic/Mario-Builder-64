@@ -1,7 +1,6 @@
 #include <PR/ultratypes.h>
 
 #include "area.h"
-#include "actors/common1.h"
 #include "audio/external.h"
 #include "behavior_actions.h"
 #include "behavior_data.h"
@@ -17,13 +16,11 @@
 #include "memory.h"
 #include "obj_behaviors.h"
 #include "object_helpers.h"
-#include "save_file.h"
 #include "seq_ids.h"
 #include "sm64.h"
 #include "sound_init.h"
 #include "rumble_init.h"
 #include "config.h"
-#include "src/engine/behavior_script.h"
 #include "ingame_menu.h"
 #include "mb64/editor/main.h"
 #include "mb64/collision.h"
@@ -204,7 +201,7 @@ u32 determine_interaction(struct MarioState *m, struct Object *obj) {
             }
         } else if (action == ACT_SLIDE_KICK || action == ACT_SLIDE_KICK_SLIDE) {
             interaction = INT_SLIDE_KICK;
-        } else if ((action & ACT_FLAG_RIDING_SHELL)&&(m->IsYoshi == FALSE)) {
+        } else if (action & ACT_FLAG_RIDING_SHELL) {
             interaction = INT_FAST_ATTACK_OR_SHELL;
         } else if (m->forwardVel <= -26.0f || 26.0f <= m->forwardVel) {
             interaction = INT_FAST_ATTACK_OR_SHELL;
@@ -269,7 +266,6 @@ void mario_stop_riding_object(struct MarioState *m) {
 void mario_grab_used_object(struct MarioState *m) {
     if (m->heldObj == NULL) {
         m->heldObj = m->usedObj;
-        gMarioState->heldObjParam2 = gMarioState->heldObj->oBehParams2ndByte;
         obj_set_held_state(m->heldObj, bhvCarrySomethingHeld);
     }
 }
@@ -283,7 +279,6 @@ void mario_drop_held_object(struct MarioState *m) {
         obj_set_held_state(m->heldObj, bhvCarrySomethingDropped);
 
 
-        gMarioState->heldObjParam2 = 0;
         // ! When dropping an object instead of throwing it, it will be put at Mario's
         // y-positon instead of the HOLP's y-position. This fact is often exploited when
         // cloning objects.
@@ -312,7 +307,6 @@ void mario_throw_held_object(struct MarioState *m) {
 
         m->heldObj->oMoveAngleYaw = m->faceAngle[1];
 
-        gMarioState->heldObjParam2 = 0;
         m->heldObj = NULL;
     }
 }
@@ -357,9 +351,8 @@ void mario_blow_off_cap(struct MarioState *m, f32 capSpeed) {
     }
 }
 
-Bool32 mario_lose_cap_to_enemy(u32 enemyType) {
+Bool32 mario_lose_cap_to_enemy(UNUSED u32 enemyType) {
     if (does_mario_have_normal_cap_on_head(gMarioState)) {
-        save_file_set_flags(enemyType == 1 ? SAVE_FLAG_CAP_ON_KLEPTO : SAVE_FLAG_CAP_ON_UKIKI);
         gMarioState->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
         return TRUE;
     }
@@ -370,7 +363,6 @@ Bool32 mario_lose_cap_to_enemy(u32 enemyType) {
 
 void mario_retrieve_cap(void) {
     mario_drop_held_object(gMarioState);
-    save_file_clear_flags(SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI);
     gMarioState->flags &= ~MARIO_CAP_ON_HEAD;
     gMarioState->flags |= MARIO_NORMAL_CAP | MARIO_CAP_IN_HAND;
 }
@@ -556,7 +548,7 @@ u32 determine_knockback_action(struct MarioState *m, UNUSED s32 arg) {
     s16 angleToObject = mario_obj_angle_to_object(m, m->interactObj);
     s16 facingDYaw = angleToObject - m->faceAngle[1];
 
-    int mult = (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) ? 0x80 : 0x40;
+    int mult = (mb64_play_badge_bitfield & (1<<BADGE_BRITTLE)) ? 0x80 : 0x40;
     s16 remainingHealth = m->health - mult * m->hurtCounter;
 
     if (m->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
@@ -735,7 +727,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     if (mb64_lopt_game == MB64_GAME_BTCM) {
         //BTCM COIN HEAL BEHAVIOR
-        s32 healMult = (save_file_get_badge_equip() & (1<<BADGE_HEAL)) ? 2 : 1;
+        s32 healMult = (mb64_play_badge_bitfield & (1<<BADGE_HEAL)) ? 2 : 1;
         if (obj->oDamageOrCoinValue == 3) { //green coin
             m->healCounter += 4 * 4 * healMult;
 
@@ -752,7 +744,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
     }
 
     //give double if using double badge
-    if ((save_file_get_badge_equip() & (1<<BADGE_GREED)) && (gMarioState->numBadgePoints > 0)) {
+    if ((mb64_play_badge_bitfield & (1<<BADGE_GREED)) && (gMarioState->numBadgePoints > 0)) {
         obj->oDamageOrCoinValue *= 2;
         coinloop++;
         coinloop%=4;
@@ -864,7 +856,6 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 #else
         starIndex = (obj->oBehParams >> 24) & 0x3F;
 #endif
-        m->lastStarCollected = (obj->oBehParams >> 24);
         //save_file_collect_star_or_key(m->numCoins, starIndex);
 
         mb64_play_stars_bitfield |= ((u64)1 << starIndex);
@@ -1903,7 +1894,7 @@ void check_death_barrier(struct MarioState *m) {
 void check_lava_boost(struct MarioState *m) {
     if (!(m->action & ACT_FLAG_RIDING_SHELL) && m->pos[1] < m->floorHeight + 10.0f) {
         if (!(m->flags & MARIO_METAL_CAP)) {
-            if ((save_file_get_badge_equip() & (1<<BADGE_LAVA))&&(gMarioState->numBadgePoints > 0)) {
+            if ((mb64_play_badge_bitfield & (1<<BADGE_LAVA))&&(gMarioState->numBadgePoints > 0)) {
                 gMarioState->numBadgePoints --;
                 m->hurtCounter += (gMarioState->LavaHeat-2)*4;
             } else {

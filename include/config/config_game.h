@@ -98,3 +98,8 @@
  * The levelscript needs to have a MARIO_POS command for this to work.
  */
 #define START_LEVEL LEVEL_BOB
+
+/**
+ * Title-screen demo sequences are not used.
+ */
+#define DISABLE_DEMO

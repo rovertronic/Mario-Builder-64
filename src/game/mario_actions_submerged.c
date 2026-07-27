@@ -7,7 +7,7 @@
 #include "memory.h"
 #include "engine/math_util.h"
 #include "area.h"
-#include "save_file.h"
+#include "mb64/editor/main.h"
 #include "sound_init.h"
 #include "engine/surface_collision.h"
 #include "interaction.h"
@@ -16,7 +16,6 @@
 #include "camera.h"
 #include "audio/external.h"
 #include "behavior_data.h"
-#include "level_table.h"
 #include "rumble_init.h"
 #include "ingame_menu.h"
 
@@ -527,7 +526,7 @@ static s32 act_breaststroke(struct MarioState *m) {
         return TRUE;
     }
 
-    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_FINS)) {
         if (m->actionTimer < 6) {
             m->forwardVel += 10.0f;
         }
@@ -566,7 +565,7 @@ static s32 act_breaststroke(struct MarioState *m) {
         reset_bob_variables(m);
     }
 
-    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_FINS)) {
         sSwimStrength = 1000;
     }
 
@@ -637,7 +636,7 @@ static s32 act_flutter_kick(struct MarioState *m) {
 
     sSwimStrength = MIN_SWIM_STRENGTH;
 
-    if (save_file_get_badge_equip() & (1<<BADGE_FINS)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_FINS)) {
         m->forwardVel = 200.0f;
         sSwimStrength = 1000;
         set_mario_animation(m, MARIO_ANIM_FLUTTERKICK);

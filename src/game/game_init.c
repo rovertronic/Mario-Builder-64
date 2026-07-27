@@ -8,25 +8,17 @@
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
 #include "engine/level_script.h"
-#include "engine/math_util.h"
 #include "game_init.h"
 #include "main.h"
 #include "memory.h"
-#include "save_file.h"
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "print.h"
-#include "segment2.h"
-#include "segment_symbols.h"
 #include "rumble_init.h"
-#ifdef HVQM
-#include <hvqm/hvqm.h>
-#endif
 #ifdef SRAM
 #include "sram.h"
 #endif
 #include "puppyprint.h"
-#include "puppycam2.h"
 #include "debug_box.h"
 #include "vc_ultra.h"
 #include "profiling.h"
@@ -348,9 +340,6 @@ u8 *gAreaSkyboxEnd[AREA_COUNT];
 u16 sRenderedFramebuffer = 0;
 u16 sRenderingFramebuffer = 0;
 
-// Goddard Vblank Function Caller
-void (*gGoddardVblankCallback)(void) = NULL;
-
 // Defined player slots. Anything above MAX_NUM_PLAYERS should not be used.
 struct Controller* const gPlayer1Controller = &gControllers[0];
 struct Controller* const gPlayer2Controller = &gControllers[1];
@@ -406,16 +395,6 @@ const Gfx init_rsp[] = {
 #endif
     gsSPEndDisplayList(),
 };
-
-#ifdef S2DEX_TEXT_ENGINE
-void my_rdp_init(void) {
-    gSPDisplayList(gDisplayListHead++, init_rdp);
-}
-
-void my_rsp_init(void) {
-    gSPDisplayList(gDisplayListHead++, init_rsp);
-}
-#endif
 
 /**
  * Initialize the z buffer for the current frame.
@@ -758,10 +737,6 @@ void select_gfx_pool(void) {
  */
 void display_and_vsync(void) {
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
-    if (gGoddardVblankCallback != NULL) {
-        gGoddardVblankCallback();
-        gGoddardVblankCallback = NULL;
-    }
     exec_display_list(&gGfxPool->spTask);
 #ifndef UNLOCK_FPS
     osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
@@ -782,86 +757,6 @@ void display_and_vsync(void) {
     gGlobalTimer++;
 }
 
-#if !defined(DISABLE_DEMO) && defined(KEEP_MARIO_HEAD)
-// this function records distinct inputs over a 255-frame interval to RAM locations and was likely
-// used to record the demo sequences seen in the final game. This function is unused.
-UNUSED static void record_demo(void) {
-    // record the player's button mask and current rawStickX and rawStickY.
-    u8 buttonMask =
-        ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
-        | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
-    s8 rawStickX = gPlayer1Controller->rawStickX;
-    s8 rawStickY = gPlayer1Controller->rawStickY;
-
-    // If the stick is in deadzone, set its value to 0 to
-    // nullify the effects. We do not record deadzone inputs.
-    if (rawStickX > -8 && rawStickX < 8) {
-        rawStickX = 0;
-    }
-
-    if (rawStickY > -8 && rawStickY < 8) {
-        rawStickY = 0;
-    }
-
-    // Rrecord the distinct input and timer so long as they are unique.
-    // If the timer hits 0xFF, reset the timer for the next demo input.
-    if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
-        || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
-        gRecordedDemoInput.timer = 0;
-        gRecordedDemoInput.buttonMask = buttonMask;
-        gRecordedDemoInput.rawStickX = rawStickX;
-        gRecordedDemoInput.rawStickY = rawStickY;
-    }
-    gRecordedDemoInput.timer++;
-}
-
-/**
- * If a demo sequence exists, this will run the demo input list until it is complete.
- */
-void run_demo_inputs(void) {
-    // Eliminate the unused bits.
-    gPlayer1Controller->controllerData->button &= VALID_BUTTONS;
-
-    // Check if a demo inputs list exists and if so,
-    // run the active demo input list.
-    if (gCurrDemoInput != NULL) {
-        // The timer variable being 0 at the current input means the demo is over.
-        // Set the button to the END_DEMO mask to end the demo.
-        if (gCurrDemoInput->timer == 0) {
-            gPlayer1Controller->controllerData->stick_x = 0;
-            gPlayer1Controller->controllerData->stick_y = 0;
-            gPlayer1Controller->controllerData->button = END_DEMO;
-        } else {
-            // Backup the start button if it is pressed, since we don't want the
-            // demo input to override the mask where start may have been pressed.
-            u16 startPushed = (gPlayer1Controller->controllerData->button & START_BUTTON);
-
-            // Perform the demo inputs by assigning the current button mask and the stick inputs.
-            gPlayer1Controller->controllerData->stick_x = gCurrDemoInput->rawStickX;
-            gPlayer1Controller->controllerData->stick_y = gCurrDemoInput->rawStickY;
-
-            // To assign the demo input, the button information is stored in
-            // an 8-bit mask rather than a 16-bit mask. this is because only
-            // A, B, Z, Start, and the C-Buttons are used in a demo, as bits
-            // in that order. In order to assign the mask, we need to take the
-            // upper 4 bits (A, B, Z, and Start) and shift then left by 8 to
-            // match the correct input mask. We then add this to the masked
-            // lower 4 bits to get the correct button mask.
-            gPlayer1Controller->controllerData->button =
-                ((gCurrDemoInput->buttonMask & 0xF0) << 8) + ((gCurrDemoInput->buttonMask & 0xF));
-
-            // If start was pushed, put it into the demo sequence being input to end the demo.
-            gPlayer1Controller->controllerData->button |= startPushed;
-
-            // Run the current demo input's timer down. if it hits 0, advance the demo input list.
-            if (--gCurrDemoInput->timer == 0) {
-                gCurrDemoInput++;
-            }
-        }
-    }
-}
-
-#endif
 
 /**
  * Take the updated controller struct and calculate the new x, y, and distance floats.
@@ -915,9 +810,6 @@ void read_controller_inputs(s32 threadID) {
         release_rumble_pak_control();
 #endif
     }
-#if !defined(DISABLE_DEMO) && defined(KEEP_MARIO_HEAD)
-    run_demo_inputs();
-#endif
 
     for (s32 cont = 0; cont < MAX_NUM_PLAYERS; cont++) {
         struct Controller* controller = &gControllers[cont];
@@ -1081,14 +973,7 @@ void thread5_game_loop(UNUSED void *arg) {
 #if ENABLE_RUMBLE
     create_thread_6();
 #endif
-#ifdef HVQM
-    createHvqmThread();
-#endif
     // save_file_load_all();
-#ifdef PUPPYCAM
-    puppycam_boot();
-#endif
-
     set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 
     // Point address to the entry point into the level script data.
@@ -1097,7 +982,7 @@ void thread5_game_loop(UNUSED void *arg) {
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(0);
 #ifdef WIDE
-    gConfig.widescreen = save_file_get_widescreen_mode();
+    gConfig.widescreen = FALSE;
 #endif
     render_init();
 
@@ -1162,12 +1047,6 @@ void thread5_game_loop(UNUSED void *arg) {
             // subtract the end of the gfx pool with the display list to obtain the
             // amount of free space remaining.
             print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
-        }
-#endif
-#if 0
-        if (gPlayer1Controller->buttonPressed & L_TRIG) {
-            osStartThread(&hvqmThread);
-            osRecvMesg(&gDmaMesgQueue, NULL, OS_MESG_BLOCK);
         }
 #endif
     }

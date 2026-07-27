@@ -1,33 +1,26 @@
 #include <PR/ultratypes.h>
 
-#include "area.h"
 #include "engine/math_util.h"
 #include "game_init.h"
 #include "gfx_dimensions.h"
-#include "main.h"
 #include "memory.h"
 #include "print.h"
 #include "rendering_graph_node.h"
 #include "shadow.h"
 #include "sm64.h"
-#include "game_init.h"
 #include "puppyprint.h"
 #include "debug_box.h"
 #include "level_update.h"
 #include "behavior_data.h"
-#include "string.h"
 #include "color_presets.h"
 #include "emutest.h"
 
 #include "config.h"
 #include "config/config_world.h"
-#include "level_update.h"
 
 #include "actors/common1.h"
 
-#include "src/game/save_file.h"
 
-#include "puppycamold.h"
 f32 aspect;
 
 /**
@@ -471,9 +464,6 @@ void geo_process_master_list(struct GraphNodeMasterList *node) {
         geo_process_node_and_siblings(node->node.children);
     }
 }
-
-f32 _2DFOV;
-f32 _2DTable[] = {0.6f,0.7f,0.9f};
 
 /**
  * Process a perspective projection node.

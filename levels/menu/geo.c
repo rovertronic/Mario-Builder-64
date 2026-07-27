@@ -7,9 +7,6 @@
 #include "game/camera.h"
 #include "game/screen_transition.h"
 #include "game/paintings.h"
-#include "menu/file_select.h"
-#include "menu/star_select.h"
-
 #include "make_const_nonconst.h"
 
 #include "levels/menu/header.h"
@@ -158,10 +155,6 @@ const GeoLayout geo_menu_file_select_strings_and_menu_cursor[] = {
                GEO_RENDER_OBJ(),
             GEO_CLOSE_NODE(),
          GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_ASM(0, geo_file_select_strings_and_menu_cursor),
       GEO_CLOSE_NODE(),
    GEO_CLOSE_NODE(),
    GEO_END(),

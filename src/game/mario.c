@@ -3,7 +3,6 @@
 #include "sm64.h"
 #include "area.h"
 #include "audio/external.h"
-#include "behavior_actions.h"
 #include "behavior_data.h"
 #include "camera.h"
 #include "engine/graph_node.h"
@@ -12,7 +11,6 @@
 #include "engine/surface_load.h"
 #include "game_init.h"
 #include "interaction.h"
-#include "level_table.h"
 #include "level_update.h"
 #include "main.h"
 #include "mario.h"
@@ -26,17 +24,12 @@
 #include "mario_misc.h"
 #include "mario_step.h"
 #include "memory.h"
-#include "object_fields.h"
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "print.h"
 #include "puppyprint.h"
-#include "save_file.h"
-#include "menu/file_select.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "emutest.h"
-#include "actors/group0.h"
 #include "actors/group14.h"
 #include "ingame_menu.h"
 #include "mb64/file.h"
@@ -44,7 +37,6 @@
 #include "mb64/editor/object.h"
 #include "platform_displacement.h"
 
-#include "src/buffers/framebuffers.h"
 //gFrameBuffer0
 
 #include "src/audio/synthesis.h"
@@ -1381,15 +1373,6 @@ void update_mario_joystick_inputs(struct MarioState *m) {
     } else {
         m->intendedYaw = m->faceAngle[1];
     }
-
-    if (gMarioState->_2D) {
-        if (gPlayer1Controller->rawStickX > 0.0f) {
-            m->intendedYaw = 0x4000;
-        }
-        if (gPlayer1Controller->rawStickX < 0.0f) {
-            m->intendedYaw = -0x4000;
-        }
-    }
 }
 
 /**
@@ -1459,13 +1442,6 @@ void update_mario_inputs(struct MarioState *m) {
     m->input = INPUT_NONE;
     m->collidedObjInteractTypes = m->marioObj->collidedObjInteractTypes;
     m->flags &= 0xFFFFFF;
-
-#ifdef PUPPYCAM
-    if (gPuppyCam.mode3Flags & PUPPYCAM_MODE3_ENTER_FIRST_PERSON || (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE && gPuppyCam.debugFlags & PUPPYDEBUG_LOCK_CONTROLS)) {
-        m->input = INPUT_FIRST_PERSON;
-        return;
-    }
-#endif
 
     update_mario_button_inputs(m);
     update_mario_joystick_inputs(m);
@@ -1600,7 +1576,7 @@ void update_mario_health(struct MarioState *m) {
             m->healCounter--;
         }
         if (m->hurtCounter > 0) {
-            if ((gMarioState->numBadgePoints > 0) && ((save_file_get_badge_equip() & (1<<BADGE_DEFENSE)))) {
+            if ((gMarioState->numBadgePoints > 0) && ((mb64_play_badge_bitfield & (1<<BADGE_DEFENSE)))) {
                 if (m->hurtCounter > 3) {
                     gMarioState->numBadgePoints --;
                     m->hurtCounter -= 3;
@@ -1609,7 +1585,7 @@ void update_mario_health(struct MarioState *m) {
             else
             {
                 //lose double health if brittle
-                if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
+                if (mb64_play_badge_bitfield & (1<<BADGE_BRITTLE)) {
                     m->health -= 0x80;
                 } else {
                     m->health -= 0x40;
@@ -1626,7 +1602,7 @@ void update_mario_health(struct MarioState *m) {
         if (mb64_lopt_game == MB64_GAME_BTCM) {
             //AIR: BTCM Behavior
             //air doesn't exist if you have gills
-            if (!(save_file_get_badge_equip() & (1<<BADGE_GILLS))) {
+            if (!(mb64_play_badge_bitfield & (1<<BADGE_GILLS))) {
                 if ((m->pos[1] < m->waterLevel - 80) && marioIsSwimming) {
                     if (gMarioState->numAir > 0) {
                         gMarioState->numAir --;
@@ -1937,26 +1913,12 @@ void queue_rumble_particles(struct MarioState *m) {
 }
 #endif
 
-u16 bapple_frame = 0;
 u8 regentime;
 
-//u8 waveamount[] = {5,10,12,15,20,20,20,25,25,30,30};
-
-u8 waveamount[] = {5,8,8,10,12,12,15,15,10,15,20};
 /**
  * Main function for executing Mario's behavior. Returns particleFlags.
  */
 u8 costumechange;
-u8 entry_timer;
-u8 entry_index = 1;
-
-Vec3f posRecord[60];
-u16 posRecordIndex;
-
-f32 bad_apple_par = 0.0f;
-
-#include "memory.h"
-#include "game_init.h"
 
 const BehaviorScript *star_radar_objects_to_track[] = {
     bhvStar,
@@ -2140,9 +2102,9 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
 
     //withering badge
     if (gCamera->cutscene == 0) {
-        if (save_file_get_badge_equip() & (1<<BADGE_WITHER)) {
+        if (mb64_play_badge_bitfield & (1<<BADGE_WITHER)) {
             mario_decay++;
-            int maxdecay = (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) ? 225 : 450;
+            int maxdecay = (mb64_play_badge_bitfield & (1<<BADGE_BRITTLE)) ? 225 : 450;
             if (mario_decay > maxdecay) {
                 mario_decay = 0;
                 gMarioState->health -= 0x100;
@@ -2154,42 +2116,13 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
     //CONFIGURE GRAVITY
     gMarioState->gravMult = 1.0f;
     //badge gravity
-    if (save_file_get_badge_equip() & (1<<BADGE_WEIGHT)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_WEIGHT)) {
         gMarioState->gravMult *= 1.3f;
     }
-    if (save_file_get_badge_equip() & (1<<BADGE_FEATHER)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_FEATHER)) {
         gMarioState->gravMult *= 0.9f;
     }
 
-
-    posRecordIndex ++;
-    vec3f_copy(gMarioState->posDelay, posRecord[posRecordIndex%60]);
-    vec3f_copy(posRecord[posRecordIndex%60], gMarioState->pos);
-
-    //cheats
-    if (gMarioState->Cheats & (1 << 2)) {//moon jump with A
-        if (gPlayer1Controller->buttonDown & A_BUTTON) {
-            gMarioState->vel[1] = 30.0f;
-            if (gMarioState->action != ACT_DOUBLE_JUMP) {
-                set_mario_action(gMarioState, ACT_DOUBLE_JUMP,35);
-                }
-            }
-        }
-    if (gMarioState->Cheats & 1) {//
-        gMarioState->health = 0x7FFF;
-    }
-    if (gMarioState->Cheats & (1 << 1)) {//infinite mana
-        gMarioState->numBadgePoints = gMarioState->numMaxFP;
-    }
-    if (gMarioState->Cheats & (1 << 3)) {//infinite vanetal
-        gMarioState->capTimer = 2;
-        gMarioState->flags |= MARIO_METAL_CAP | MARIO_VANISH_CAP;
-    }
-    if (gMarioState->Cheats & (1 << 4)) {//infinite rocket boots
-        gMarioState->RFuel=100;
-        gMarioState->flags |= MARIO_WING_CAP;
-    }
-    
     //print_text_fmt_int(110, 56, "MEM %d", sPoolFreeSpace);
 
     if (gMarioState->CostumeID != costumechange) {
@@ -2218,14 +2151,14 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         regentime = 0;
 
         // HP REGEN BADGE
-        if (save_file_get_badge_equip() & (1<<BADGE_HP)) {
+        if (mb64_play_badge_bitfield & (1<<BADGE_HP)) {
             if ((gMarioState->health < gMarioState->numMaxHP*0xFF)&&(gMarioState->numBadgePoints > 0)) {
                 gMarioState->numBadgePoints --;
                 gMarioState->health += 0xFF;
             }
         }
             // FP REGEN BADGE
-        if (save_file_get_badge_equip() & (1<<BADGE_MANA)) {
+        if (mb64_play_badge_bitfield & (1<<BADGE_MANA)) {
             if ((gMarioState->numBadgePoints < gMarioState->numMaxFP)&&(gMarioState->health > 510)) {
                 gMarioState->numBadgePoints ++;
                 gMarioState->health -= 0xFF;
@@ -2233,42 +2166,6 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
             }
         }
     }
-
-    // timerdelay = 30;
-
-    // if (save_file_get_badge_equip() & (1<<BADGE_TIME)) {
-    //     timerdelay = 60;
-    //     }
-
-    // //only run timer code if not in cutscene
-    // if ((gMarioState->action & ACT_GROUP_MASK) != ACT_GROUP_CUTSCENE) {
-    //     //MAKE TIMER GO DOWN
-    //     if (gMarioState->NewTimer > 0) {
-    //         gMarioState->SubNewTimer ++;
-    //         if (gMarioState->SubNewTimer > timerdelay) {
-    //             gMarioState->NewTimer --;
-    //             gMarioState->SubNewTimer = 0;
-    //             play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gGlobalSoundSource);
-    //             }
-    //         }
-    //         else
-    //         {
-    //         if (gMarioState->NewTimerMode == 1) {
-    //             gMarioState->health = 0xFF;
-    //             }
-    //         }
-    //     }
-
-    // if (gMarioState->nearVendor > 0) {
-    //     gMarioState->nearVendor--;
-    // }
-
-    // if (gMarioState->_2D) {
-    //     gMarioState->pos[2] = 0.0f;
-    //     if (gMarioState->_2DSecret) {
-    //         gMarioState->pos[2] = -150.0f;
-    //     }
-    // }
 
     // Updates once per frame:
     vec3f_get_dist_and_angle(gMarioState->prevPos, gMarioState->pos, &gMarioState->moveSpeed, &gMarioState->movePitch, &gMarioState->moveYaw);
@@ -2304,13 +2201,7 @@ s32 execute_mario_action(UNUSED struct Object *obj) {
         mario_reset_bodystate(gMarioState);
         update_mario_inputs(gMarioState);
 
-#ifdef PUPPYCAM
-        if (!(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_FREE)) {
-#endif
         mario_handle_special_floors(gMarioState);
-#ifdef PUPPYCAM
-        }
-#endif
         mario_process_interactions(gMarioState);
 
         // If Mario is OOB, stop executing actions.
@@ -2390,19 +2281,9 @@ void init_mario(void) {
     gMarioPlatform = NULL;
 
     gMarioState->onbluecoinswitch = FALSE;
-    gMarioState->nearVendor = 0;
-
-    gMarioState->SpotlightTarget = gMarioObject;
-    gMarioState->SpotlightTargetYOffset = 0.0f;
-
-    gMarioState->_2DSecret = FALSE;
-    gMarioState->BadAppleActivate = FALSE;
-    bapple_frame = 0;
 
     gMarioState->numAir = 700;
     gMarioState->RFuel=0;
-
-    gMarioState->SwitchPressed = 0;
 
     gMarioState->actionTimer = 0;
     gMarioState->framesSinceA = 0xFF;
@@ -2466,35 +2347,14 @@ void init_mario(void) {
     vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
     vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
 
-    // if (gMarioState->MaskChase) {
-    //     if (!cur_obj_nearest_object_with_behavior(bhvMask2)) {
-    //         capObject = spawn_object(gMarioState->marioObj, MODEL_MASK2, bhvMask2);
-    //         capObject->oAction = 1;
-    //         capObject->oPosY -= 1000.0f;
-    //         capObject->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
-    //     }
-    // }
-
-    // Vec3s capPos;
-    // if (save_file_get_cap_pos(capPos)) {
-    //     capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
-    //     vec3s_to_vec3f(&capObject->oPosVec, capPos);
-
-    //     capObject->oForwardVel = 0;
-    //     capObject->oMoveAngleYaw = 0;
-    // }
-
     if (gMarioState->NewLevel) {
         gMarioState->invincTimer = 60;
-        if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+        if (mb64_play_badge_bitfield & (1<<BADGE_BOTTOMLESS)) {
             gMarioState->numBadgePoints --;
         } else {
             gMarioState->hurtCounter += 12;
         }
 
-        if (gMarioState->MaskChase) {
-            gMarioState->hurtCounter += 999;
-        }
         if (gMarioState->faceCrablet) {
             gMarioState->faceCrablet->oSubAction = 7;
         }
@@ -2505,23 +2365,6 @@ void init_mario(void) {
     gMarioState->heldObj = NULL;
     gMarioState->blueCoinSwitchTimer = 0;
     gMarioState->hiddenBoxTimer = 0;
-    /*
-    if (gMarioState->heldObjParam2 != 0) {
-        switch(gMarioState->heldObjParam2) {
-            case 1: //goblet of semen
-                holdTransferObject = spawn_object(gMarioState->marioObj,0xF3,bhvBreakableBoxSmall);
-                holdTransferObject->oBehParams2ndByte = 1;
-                //gMarioState->usedObj = holdTransferObject;
-                //mario_grab_used_object(gMarioState);
-                break;
-            case 2: //key
-                holdTransferObject = spawn_object(gMarioState->marioObj,0xF4,bhvBreakableBoxSmall);
-                holdTransferObject->oBehParams2ndByte = 2;
-                break;
-        }
-        gMarioState->heldObjParam2 = 0;
-    }
-    */
 
     vec3f_set(gMarioState->StarRadarLocation,0.0f,0.0f,0.0f);
     
@@ -2530,12 +2373,8 @@ void init_mario(void) {
 void init_mario_from_save_file(void) {
     gMarioState->numMaxHP = 8;
     gMarioState->numMaxFP = 8;
-    gMarioState->numMaxBP = 0;
     gMarioState->CostumeID = 0;
-    gMarioState->Level = 0;
-    gMarioState->numEquippedBadges = 0;
-    gMarioState->Options = 0xFD;
-    
+
     //sSelectedFileNum = FALSE;
     //fs_ms = 0;
 
@@ -2551,9 +2390,6 @@ void init_mario_from_save_file(void) {
     gMarioState->controller = &gControllers[0];
 
     gMarioState->numCoins = 0;
-    gMarioState->lastStarCollected = 0;
-    // gMarioState->numStars = save_file_get_total_golden_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
-    // gMarioState->numMetalStars = save_file_get_total_metal_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     gMarioState->numKeys = 0;
 #ifdef ENABLE_LIVES

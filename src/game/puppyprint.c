@@ -24,16 +24,10 @@ a modern game engine's developer's console.
 #include <ultra64.h>
 
 #include "config.h"
-#include "seq_ids.h"
 #include "game_init.h"
-#include "sound_init.h"
 #include "memory.h"
-#include "print.h"
-#include "string.h"
-#include "stdarg.h"
 #include "printf.h"
 #include "engine/math_util.h"
-#include "engine/behavior_script.h"
 #include "camera.h"
 #include "puppyprint.h"
 #include "level_update.h"
@@ -43,10 +37,7 @@ a modern game engine's developer's console.
 #include "audio/external.h"
 #include "audio/heap.h"
 #include "audio/load.h"
-#include "hud.h"
 #include "debug_box.h"
-#include "color_presets.h"
-#include "buffers/buffers.h"
 #include "profiling.h"
 #include "segment_symbols.h"
 
@@ -85,7 +76,7 @@ const char ramNames[][NUM_RAM_CHARS] = {
     "Engine",
     "Framebuffers",
     "ZBuffer",
-    "Goddard",
+    "MenuSeg",
     "Pools",
     "Collision",
     "Misc",
@@ -98,7 +89,7 @@ enum RamNames {
     RAM_ENGINE,
     RAM_FRAMEBUFFERS,
     RAM_ZBUFFER,
-    RAM_GODDARD,
+    RAM_MENU_SEG,
     RAM_POOLS,
     RAM_COLLISION,
     RAM_MISC,
@@ -140,7 +131,7 @@ void puppyprint_calculate_ram_usage(void) {
     ramsizeSegment[RAM_ENGINE] = (u32)&_engineSegmentEnd - (u32)&_engineSegmentStart;
     ramsizeSegment[RAM_FRAMEBUFFERS] = (u32)&_framebuffersSegmentBssEnd - (u32)&_framebuffersSegmentBssStart;
     ramsizeSegment[RAM_ZBUFFER] = (u32)&_zbufferSegmentBssEnd - (u32)&_zbufferSegmentBssStart;
-    ramsizeSegment[RAM_GODDARD] = (u32)&_goddardSegmentEnd - (u32)&_goddardSegmentStart;
+    ramsizeSegment[RAM_MENU_SEG] = (u32)&_menu_segSegmentEnd - (u32)&_menu_segSegmentStart;
     ramsizeSegment[RAM_POOLS] = gPoolMem;
     ramsizeSegment[RAM_COLLISION] = (MAIN_SURFACE_POOL_SIZE + BLOCK_SURFACE_POOL_SIZE) * sizeof(struct Surface) 
         + (MAIN_SURFACE_NODE_POOL_SIZE + BLOCK_SURFACE_NODE_POOL_SIZE) * sizeof(struct SurfaceNode);

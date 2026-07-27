@@ -2,7 +2,6 @@
 
 #include "sm64.h"
 
-#include "buffers/buffers.h"
 #include "dma_async.h"
 #include "slidec.h"
 #include "game/debug.h"
@@ -10,7 +9,6 @@
 #include "game/main.h"
 #include "game/memory.h"
 #include "segment_symbols.h"
-#include "segments.h"
 #ifdef GZIP
 #include "deflate/libdeflate.h"
 #endif

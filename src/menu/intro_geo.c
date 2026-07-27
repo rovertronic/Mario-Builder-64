@@ -4,14 +4,10 @@
 #include "game/segment2.h"
 #include "game/segment7.h"
 #include "engine/math_util.h"
-#include "engine/colors.h"
 #include "intro_geo.h"
 #include "sm64.h"
 #include "textures.h"
 #include "types.h"
-#include "buffers/framebuffers.h"
-#include "game/game_init.h"
-#include "audio/external.h"
 #include "src/engine/math_util.h"
 
 // frame counts for the zoom in, hold, and zoom out of title model
@@ -450,144 +446,6 @@ Gfx *geo_intro_gameover_backdrop(s32 callContext, struct GraphNode *node, UNUSED
 
 #if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)
 extern Gfx title_screen_bg_dl_rumble_pak[];
-#endif
-#ifdef GODDARD_EASTER_EGG
-extern Gfx title_screen_bg_dl_face_easter_egg_begin[];
-extern Gfx title_screen_bg_dl_face_easter_egg_end[];
-
-// Data
-s8 sFaceVisible[] = {
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
-};
-
-s8 sFaceToggleOrder[] = {
-     0,  1,  2,  3,  4,  5,  6,  7,
-    15, 23, 31, 39, 47, 46, 45, 44,
-    43, 42, 41, 40, 32, 24, 16,  8,
-     9, 10, 11, 12, 13, 14, 22, 30,
-    38, 37, 36, 35, 34, 33, 25, 17,
-};
-
-s8 sFaceCounter = 0;
-
-void intro_gen_face_texrect(Gfx **dlIter) {
-    s32 x;
-    s32 y;
-
-    for (y = 0; y < 6; y++) {
-        for (x = 0; x < 8; x++) {
-            if (sFaceVisible[y*8 + x] != 0) {
-                gSPTextureRectangle((*dlIter)++, (x * 40) << 2, (y * 40) << 2, (x * 40 + 39) << 2, (y * 40 + 39) << 2, 0,
-                                    0, 0, 4 << 10, 1 << 10);
-            }
-        }
-    }
-}
-
-Gfx *intro_draw_face(u16 *image, s32 imageW, s32 imageH) {
-    Gfx *dlIter;
-
-    Gfx *dl = alloc_display_list(130 * sizeof(Gfx));
-
-    if (dl == NULL) {
-        return dl;
-    } else {
-        dlIter = dl;
-    }
-
-    gSPDisplayList(dlIter++, title_screen_bg_dl_face_easter_egg_begin);
-
-    gDPLoadTextureBlock(dlIter++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_RGBA, G_IM_SIZ_16b, imageW, imageH, 0, G_TX_CLAMP | G_TX_NOMIRROR, G_TX_CLAMP | G_TX_NOMIRROR, 6, 6, G_TX_NOLOD, G_TX_NOLOD);
-
-    intro_gen_face_texrect(&dlIter);
-
-    gSPDisplayList(dlIter++, title_screen_bg_dl_face_easter_egg_end);
-
-    gSPEndDisplayList(dlIter++);
-
-    return dl;
-}
-
-RGBA16Return32 *intro_sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH, s32 xOffset, s32 yOffset) {
-    s32 pixel;
-    f32 size = (1.0f / (sampleW * sampleH));
-    ColorRGBf color;
-    s32 iy, ix, sy, sx;
-    s32 idy, idx, sdy;
-    RGBA16 *fb = gFramebuffers[sRenderingFramebuffer];
-    RGBA16 *image = alloc_display_list((imageW * imageH) * sizeof(RGBA16));
-
-    if (image == NULL) {
-        return NULL;
-    }
-
-    for ((iy = 0); (iy < imageH); (iy++)) {
-        idy = ((sampleH * iy) + yOffset);
-        for ((ix = 0); (ix < imageW); (ix++)) {
-            vec3_zero(color);
-            idx = ((sampleW * ix) + xOffset);
-
-            for ((sy = 0); (sy < sampleH); (sy++)) {
-                sdy = ((SCREEN_WIDTH * (idy + sy)) + idx);
-                for ((sx = 0); (sx < sampleW); (sx++)) {
-                    // pixel = SCREEN_WIDTH * (sampleH * iy + sy + yOffset) + (sampleW * ix + xOffset) + sx;
-                    pixel = fb[sdy + sx];
-                    color[0] += RGBA16_R(pixel);
-                    color[1] += RGBA16_G(pixel);
-                    color[2] += RGBA16_B(pixel);
-                }
-            }
-
-            image[imageH * iy + ix] = ((R_RGBA16((RGBA16)((color[0] * size) + 0.5f)) & 0xFFFF) |
-                                       (G_RGBA16((RGBA16)((color[1] * size) + 0.5f)) & 0xFFFF) |
-                                       (B_RGBA16((RGBA16)((color[2] * size) + 0.5f)) & 0xFFFF) | MSK_RGBA16_A);
-        }
-    }
-
-    return (RGBA16Return32 *)image;
-}
-
-Gfx *geo_intro_face_easter_egg(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-    struct GraphNodeGenerated *genNode = (struct GraphNodeGenerated *)node;
-    Gfx *dl = NULL;
-    s32 i;
-
-    if (callContext != GEO_CONTEXT_RENDER) {
-        for (i = 0; i < 48; i++) {
-            sFaceVisible[i] = 0;
-        }
-
-    } else if (callContext == GEO_CONTEXT_RENDER) {
-        if (sFaceCounter == 0) {
-            if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-                play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
-                sFaceVisible[0] ^= 1;
-                sFaceCounter++;
-            }
-        } else {
-            sFaceVisible[sFaceToggleOrder[sFaceCounter++]] ^= 1;
-            if (sFaceCounter >= 40) {
-                sFaceCounter = 0;
-            }
-        }
-
-        // Draw while the first or last face is visible.
-        if (sFaceVisible[0] == 1 || sFaceVisible[17] == 1) {
-            RGBA16 *image = (RGBA16 *)intro_sample_frame_buffer(40, 40, 2, 2, 120, 80);
-            if (image != NULL) {
-                SET_GRAPH_NODE_LAYER(genNode->fnNode.node.flags, LAYER_OPAQUE);
-                dl = intro_draw_face(image, 40, 40);
-            }
-        }
-    }
-
-    return dl;
-}
 #endif
 
 #if (defined(COMPLETE_EN_US_SEGMENT2) && ENABLE_RUMBLE)

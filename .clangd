@@ -5,8 +5,8 @@ CompileFlags:
   Add:
     - -I.
     - -Iinclude/libc
-    - -Iinclude/hvqm
-    - -Isrc/libcart/include
+    - -Ilib
+    - -Ilib/libcart/include
     - -Ibuild/us_n64
     - -Ibuild/us_n64/include
     - --target=mips-unknown-elf

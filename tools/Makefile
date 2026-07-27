@@ -7,7 +7,7 @@ CC           := gcc
 CXX          := g++
 CFLAGS       := -I. -O2 -s
 LDFLAGS      := -lm
-ALL_PROGRAMS := armips filesizer lz4tpack deflatepack rncpack n64graphics n64graphics_ci mio0 slienc n64cksum textconv aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
+ALL_PROGRAMS := armips filesizer lz4tpack deflatepack rncpack n64graphics n64graphics_ci mio0 slienc n64cksum aifc_decode aiff_extract_codebook vadpcm_enc tabledesign extract_data_for_mio skyconv
 LIBAUDIOFILE := audiofile/libaudiofile.a
 
 ifneq ($(shell uname), Darwin)
@@ -54,8 +54,6 @@ slienc_CFLAGS :=
 
 n64cksum_SOURCES := n64cksum.c utils.c
 n64cksum_CFLAGS  := -DN64CKSUM_STANDALONE
-
-textconv_SOURCES := textconv.c utf8.c hashtable.c
 
 aifc_decode_SOURCES := aifc_decode.c
 

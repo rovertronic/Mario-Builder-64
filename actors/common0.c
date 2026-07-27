@@ -15,18 +15,6 @@ UNUSED static const u64 binid_0 = 0;
 #include "amp/anims/table.inc.c"
 UNUSED static const u64 binid_1 = 1;
 
-/**
-#include "cannon_lid/model.inc.c"
-#include "cannon_lid/collision.inc.c"
-UNUSED static const u64 binid_2 = 2;
-
-#include "cannon_base/model.inc.c"
-UNUSED static const u64 binid_3 = 3;
-
-#include "cannon_barrel/model.inc.c"
-UNUSED static const u64 binid_4 = 4;
-**/
-
 #include "chuckya/model.inc.c"
 #include "chuckya/anims/data.inc.c"
 #include "chuckya/anims/table.inc.c"
@@ -63,16 +51,8 @@ UNUSED static const u64 binid_13 = 13;
 #include "bowling_ball/model.inc.c"
 
 /**
-#include "metal_box/model.inc.c"
-#include "metal_box/collision.inc.c"
-UNUSED static const u64 binid_15 = 15;
-
 #include "exclamation_box_outline/model.inc.c"
 UNUSED static const u64 binid_16 = 16;
-
-#include "test_platform/model.inc.c"
-#include "test_platform/collision.inc.c"
-UNUSED static const u64 binid_17 = 17;
 **/
 #include "exclamation_box_outline/collision.inc.c"
 

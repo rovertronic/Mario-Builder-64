@@ -27,7 +27,7 @@
 
 const LevelScript level_intro_entry_error_screen[] = {
     INIT_LEVEL(),
-    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
+    FIXED_LOAD(/*loadAddr*/ _menu_segSegmentStart, /*romStart*/ _menu_segSegmentRomStart, /*romEnd*/ _menu_segSegmentRomEnd),
     LOAD_YAY0(/*seg*/ 0x07, _intro_segment_7SegmentRomStart, _intro_segment_7SegmentRomEnd),
     ALLOC_LEVEL_POOL(),
 
@@ -46,10 +46,10 @@ const LevelScript level_intro_entry_error_screen[] = {
 
 const LevelScript level_intro_splash_screen[] = {
 #ifdef SKIP_TITLE_SCREEN
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_title_reset, _introSegmentBssStart, _introSegmentBssEnd),
 #endif
     INIT_LEVEL(),
-    LOAD_GODDARD(),
+    LOAD_MENU_SEG(),
     LOAD_BEHAVIOR_DATA(),
     LOAD_LEVEL_DATA(intro),
 
@@ -73,49 +73,21 @@ const LevelScript level_intro_splash_screen[] = {
     UNLOAD_AREA(/*area*/ 1),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_title_reset, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
-const LevelScript level_intro_mario_head_regular_bypass[] = {
+const LevelScript level_intro_title_reset_bypass[] = {
     PUSH_POOL(),
     PUSH_POOL(),
     JUMP(script_intro_file_select), // go to ingame
 };
 
-const LevelScript level_intro_mario_head_regular[] = {
-    JUMP(level_intro_mario_head_regular_bypass),
-
-    INIT_LEVEL(),
-
-    BLACKOUT(/*active*/ TRUE),
-    LOAD_GODDARD(),
-#ifdef KEEP_MARIO_HEAD
-    LOAD_BEHAVIOR_DATA(),
-    LOAD_TITLE_SCREEN_BG(),
-
-    ALLOC_LEVEL_POOL(),
-    AREA(/*index*/ 1, intro_geo_mario_head_regular),
-    END_AREA(),
-    FREE_LEVEL_POOL(),
-
-    SLEEP(/*frames*/ 2),
-    BLACKOUT(/*active*/ FALSE),
-    LOAD_AREA(/*area*/ 1),
-    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_TITLE_SCREEN),
-    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_STAR, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
-    SLEEP(/*frames*/ 20),
-#else
-    PUSH_POOL(),
-    BLACKOUT(/*active*/ FALSE),
-#endif
-    CALL_LOOP(/*arg*/ LVL_INTRO_REGULAR, /*func*/ lvl_intro_update),
-    //JUMP_IF(/*op*/ OP_EQ, /*arg*/ LEVEL_FILE_SELECT,  script_intro_file_select),
-    JUMP_IF(/*op*/ OP_EQ, /*arg*/ LEVEL_LEVEL_SELECT, script_intro_level_select),
-    JUMP(script_intro_main_level_entry),
+const LevelScript level_intro_title_reset[] = {
+    JUMP(level_intro_title_reset_bypass),
 };
 
-const LevelScript level_intro_mario_head_dizzy[] = {
-    JUMP(level_intro_mario_head_regular),
+const LevelScript level_intro_game_over_reset[] = {
+    JUMP(level_intro_title_reset),
 };
 
 const LevelScript level_intro_entry_level_select[] = {
@@ -123,7 +95,7 @@ const LevelScript level_intro_entry_level_select[] = {
     LOAD_BEHAVIOR_DATA(),
     LOAD_TITLE_SCREEN_BG(),
     LOAD_YAY0(/*seg*/ SEGMENT_LEVEL_DATA, _debug_level_select_yay0SegmentRomStart, _debug_level_select_yay0SegmentRomEnd),
-    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
+    FIXED_LOAD(/*loadAddr*/ _menu_segSegmentStart, /*romStart*/ _menu_segSegmentRomStart, /*romEnd*/ _menu_segSegmentRomEnd),
     ALLOC_LEVEL_POOL(),
 
     AREA(/*index*/ 1, intro_geo_debug_level_select),

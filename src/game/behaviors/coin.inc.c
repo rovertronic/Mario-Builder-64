@@ -127,7 +127,7 @@ void bhv_coin_loop(void) {
 
     struct Surface *floor = o->oFloor;
 
-    if ((save_file_get_badge_equip() & (1<<BADGE_MAGNET))) {
+    if ((mb64_play_badge_bitfield & (1<<BADGE_MAGNET))) {
         o->oMoveAngleYaw = obj_angle_to_object(o,gMarioObject);
     }
 
@@ -338,7 +338,7 @@ void coin_inside_boo_act_carried(void) {
         o->oPosY += 30.f;
     } else if (parent->oImbue >= IMBUE_BADGE_BASE) {
         o->oPosY += 30.f;
-        if (save_file_get_badge_equip() & (1 << (parent->oImbue - IMBUE_BADGE_BASE))) {
+        if (mb64_play_badge_bitfield & (1 << (parent->oImbue - IMBUE_BADGE_BASE))) {
             mark_obj_for_deletion(o);
         }
     } else if (parent->oImbue == IMBUE_CROWBAR) {

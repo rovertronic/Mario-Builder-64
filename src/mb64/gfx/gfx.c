@@ -11,8 +11,6 @@
 #include "mb64/menu/settings.h"
 
 #include <PR/gbi.h>
-#include "actors/maker/header.h"
-#include "game/emutest.h"
 #include "game/rendering_graph_node.h"
 #include "engine/math_util.h"
 #include "game/ingame_menu.h"

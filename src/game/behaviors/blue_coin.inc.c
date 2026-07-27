@@ -65,7 +65,7 @@ void bhv_blue_coin_switch_loop(void) {
     // The switch's model is 1/3 size.
     cur_obj_scale(3.0f);
 
-    s32 time = (save_file_get_badge_equip() & (1<<BADGE_TIME)) ? 480 : 240;
+    s32 time = (mb64_play_badge_bitfield & (1<<BADGE_TIME)) ? 480 : 240;
     u32 blueCoinsExist = (cur_obj_nearest_object_with_behavior(bhvHiddenBlueCoin) != NULL);
 
     if (gMarioPlatform == NULL) gMarioState->onbluecoinswitch = FALSE;

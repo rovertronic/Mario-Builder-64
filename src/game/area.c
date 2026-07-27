@@ -2,7 +2,6 @@
 
 #include "config.h"
 #include "area.h"
-#include "seq_ids.h"
 #include "sm64.h"
 #include "gfx_dimensions.h"
 #include "behavior_data.h"
@@ -11,26 +10,16 @@
 #include "engine/surface_load.h"
 #include "ingame_menu.h"
 #include "screen_transition.h"
-#include "mario.h"
-#include "mario_actions_cutscene.h"
 #include "print.h"
 #include "hud.h"
 #include "audio/external.h"
-#include "area.h"
 #include "rendering_graph_node.h"
 #include "level_update.h"
 #include "engine/geo_layout.h"
-#include "save_file.h"
-#include "sound_init.h"
-#include "level_table.h"
 #include "puppyprint.h"
-#include "debug_box.h"
 #include "engine/colors.h"
 #include "profiling.h"
 #include "mb64/menu/engine.h"
-#ifdef S2DEX_TEXT_ENGINE
-#include "s2d_engine/init.h"
-#endif
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *gGraphNodePointers[MODEL_ID_COUNT];
@@ -467,14 +456,6 @@ void render_game(void) {
                 gWarpTransDelay--;
             }
         }
-#ifdef S2DEX_TEXT_ENGINE
-        s2d_init();
-
-        // place any custom text engine code here if not using deferred prints
-
-        s2d_handle_deferred();
-        s2d_stop();
-#endif
     } else {
         render_text_labels();
 #ifdef PUPPYPRINT

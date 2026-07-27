@@ -8,12 +8,9 @@
 #include "mb64/menu/misc.h"
 #include "mb64/menu/toolbox.h"
 
-#include "behavior_data.h"
-#include "game/object_helpers.h"
 #include "game/object_list_processor.h"
 #include "game/main.h"
 #include "game/level_update.h"
-#include "game/mario.h"
 #include "audio/external.h"
 
 Vec3f mb64_camera_pos = {0.0f,0.0f,0.0f};

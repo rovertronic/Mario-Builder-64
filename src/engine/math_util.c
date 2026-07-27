@@ -6,7 +6,6 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 #include "game/puppyprint.h"
-#include "game/rendering_graph_node.h"
 
 #include "config.h"
 #include "config/config_world.h"

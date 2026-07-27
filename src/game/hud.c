@@ -10,14 +10,8 @@
 #include "ingame_menu.h"
 #include "hud.h"
 #include "segment2.h"
-#include "area.h"
-#include "save_file.h"
-#include "print.h"
-#include "engine/surface_load.h"
 #include "engine/math_util.h"
-#include "puppycam2.h"
 #include "puppyprint.h"
-#include "puppycamold.h"
 
 #include "actors/group0.h"
 #include "actors/group14.h"
@@ -357,40 +351,6 @@ void display_rocket_boot_bar(void) {
     }
 
 #include "src/engine/math_util.h"
-
-f32 bar_visual;
-#define BAR_TARGET (f32)(gMarioState->BossHealth)/(f32)(gMarioState->BossHealthMax)
-
-// void display_boss_bar(void) {
-//     //bubble_seg4_dl_0401DD60
-//     Mtx *mtx;
-//     Mtx *smtx;
-    
-//     mtx = alloc_display_list(sizeof(*mtx));
-
-//     if (mtx == NULL) {
-//         return;
-//     }
-    
-//     smtx = alloc_display_list(sizeof(*smtx));
-
-//     if (smtx == NULL) {
-//         return;
-//     }
-
-//     guTranslate(mtx, 30.0f, 75.0f, 0);
-
-//     bar_visual = lerp(bar_visual, BAR_TARGET, 0.1f);
-
-//     guScale(smtx, (f32)1.0, bar_visual, 0);
-
-//     gDPSetRenderMode(gDisplayListHead++,G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
-//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-//     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(smtx++),G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-
-//     gSPDisplayList(gDisplayListHead++, &bs_bar_Plane_001_mesh);
-//     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-//     }
 
 void display_air(void) {
     //bubble_seg4_dl_0401DD60
@@ -892,18 +852,6 @@ void render_hud_breath_meter(void) {
 }
 #endif
 
-
-/**
- * Renders the amount of lives Mario has.
- */
-void render_hud_mario_lives(void) {
-    // s8 showX = 0;
-    // u8 wideoffet2 = 0;
-
-    if (gMarioState->gCurrMinigame == 0) {
-        print_text_fmt_int2(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, ",%d", gMarioState->numGlobalCoins, gMarioState->numMaxGlobalCoins);
-    }
-}
 
 #ifdef VANILLA_STYLE_CUSTOM_DEBUG
 void render_debug_mode(void) {

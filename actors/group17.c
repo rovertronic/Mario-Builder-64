@@ -44,16 +44,3 @@
 #include "bowser/model.inc.c"
 #include "bowser/anims/data.inc.c"
 #include "bowser/anims/table.inc.c"
-
-/**
-#include "swoop/model.inc.c"
-#include "swoop/anims/data.inc.c"
-#include "swoop/anims/table.inc.c"
-UNUSED static const u64 binid_2 = 2;
-
-#include "dorrie/model.inc.c"
-#include "dorrie/anims/data.inc.c"
-#include "dorrie/anims/table.inc.c"
-#include "dorrie/collision.inc.c"
-UNUSED static const u64 binid_4 = 4;
-**/

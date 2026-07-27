@@ -15,9 +15,7 @@
 #include "game/memory.h"
 #include "game/object_helpers.h"
 #include "game/object_list_processor.h"
-#include "game/save_file.h"
 #include "game/sound_init.h"
-#include "goddard/renderer.h"
 #include "geo_layout.h"
 #include "graph_node.h"
 #include "level_script.h"
@@ -27,7 +25,6 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 #include "string.h"
-#include "game/puppycam2.h"
 #include "game/puppyprint.h"
 #include "game/emutest.h"
 #include "mb64/mb64.h"
@@ -330,18 +327,7 @@ void level_cmd_fileselect_condition(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_load_mario_head(void) {
-#ifdef KEEP_MARIO_HEAD
-    // TODO: Fix these hardcoded sizes
-    void *addr = main_pool_alloc(DOUBLE_SIZE_ON_64_BIT(0xE1000), MEMORY_POOL_LEFT);
-    if (addr != NULL) {
-        gdm_init(addr, DOUBLE_SIZE_ON_64_BIT(0xE1000));
-        gd_add_to_heap(gZBuffer, sizeof(gZBuffer)); // 0x25800
-        gd_add_to_heap(gFramebuffer0, 3 * sizeof(gFramebuffer0)); // 0x70800
-        gdm_setup();
-        gdm_maketestdl(CMD_GET(s16, 2));
-    }
-#endif
+static void level_cmd_unused_19(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -879,40 +865,7 @@ static void level_cmd_get_or_set_var(void) {
 //     sCurrentCmd = CMD_NEXT;
 // }
 
-static void level_cmd_puppyvolume(void) {
-#ifdef PUPPYCAM
-    if ((sPuppyVolumeStack[gPuppyVolumeCount] = mem_pool_alloc(gPuppyMemoryPool, sizeof(struct sPuppyVolume))) == NULL) {
-        sCurrentCmd = CMD_NEXT;
-        gPuppyError |= PUPPY_ERROR_POOL_FULL;
-        append_puppyprint_log("Puppycamera volume allocation failed.");
-        return;
-    }
-
-    vec3s_set(sPuppyVolumeStack[gPuppyVolumeCount]->pos, CMD_GET(s16, 2),
-                                                         CMD_GET(s16, 4),
-                                                         CMD_GET(s16, 6));
-
-    vec3s_set(sPuppyVolumeStack[gPuppyVolumeCount]->radius, CMD_GET(s16,  8),
-                                                            CMD_GET(s16, 10),
-                                                            CMD_GET(s16, 12));
-
-    sPuppyVolumeStack[gPuppyVolumeCount]->rot = CMD_GET(s16, 14);
-
-    sPuppyVolumeStack[gPuppyVolumeCount]->func   = CMD_GET(void *, 16);
-    sPuppyVolumeStack[gPuppyVolumeCount]->angles = segmented_to_virtual(CMD_GET(void *, 20));
-
-    sPuppyVolumeStack[gPuppyVolumeCount]->flagsAdd    = CMD_GET(s32, 24);
-    sPuppyVolumeStack[gPuppyVolumeCount]->flagsRemove = CMD_GET(s32, 28);
-
-    sPuppyVolumeStack[gPuppyVolumeCount]->flagPersistance = CMD_GET(u8, 32);
-
-    sPuppyVolumeStack[gPuppyVolumeCount]->shape = CMD_GET(u8,  33);
-    sPuppyVolumeStack[gPuppyVolumeCount]->room  = CMD_GET(s16, 34);
-    sPuppyVolumeStack[gPuppyVolumeCount]->fov  = CMD_GET(u8, 36);
-    sPuppyVolumeStack[gPuppyVolumeCount]->area  = sCurrAreaIndex;
-
-    gPuppyVolumeCount++;
-#endif
+static void level_cmd_unused_3d(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -953,7 +906,7 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_LOAD_TO_FIXED_ADDRESS       */ level_cmd_load_to_fixed_address,
     /*LEVEL_CMD_LOAD_RAW                    */ level_cmd_load_raw,
     /*LEVEL_CMD_LOAD_YAY0                   */ level_cmd_load_yay0,
-    /*LEVEL_CMD_LOAD_MARIO_HEAD             */ level_cmd_load_mario_head,
+    /*LEVEL_CMD_UNUSED_19                   */ level_cmd_unused_19,
     /*LEVEL_CMD_LOAD_YAY0_TEXTURE           */ level_cmd_load_yay0_texture,
     /*LEVEL_CMD_INIT_LEVEL                  */ level_cmd_init_level,
     /*LEVEL_CMD_CLEAR_LEVEL                 */ level_cmd_clear_level,
@@ -987,7 +940,7 @@ static void (*LevelScriptJumpTable[])(void) = {
     /*LEVEL_CMD_3A                          */ level_cmd_3A,
     /*LEVEL_CMD_CREATE_WHIRLPOOL            */ level_cmd_create_whirlpool,
     /*LEVEL_CMD_GET_OR_SET_VAR              */ level_cmd_get_or_set_var,
-    /*LEVEL_CMD_PUPPYVOLUME                 */ level_cmd_puppyvolume,
+    /*LEVEL_CMD_UNUSED_3D                   */ level_cmd_unused_3d,
     /*LEVEL_CMD_CHANGE_AREA_SKYBOX          */ level_cmd_change_area_skybox,
     /*LEVEL_CMD_SET_ECHO                    */ level_cmd_set_echo,
     /*LEVEL_CMD_FILESELECT_CONDITION        */ level_cmd_fileselect_condition,

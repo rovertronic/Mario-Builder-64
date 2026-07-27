@@ -17,7 +17,7 @@ struct DialogEntry {
     /*0x0C*/ const u8 *str;
 };
 
-// definitions for some of the special characters defined in charmap.txt
+// Special dialog character codes
 enum DialogSpecialChars {
     DIALOG_CHAR_SLASH                = 0xD0,
     DIALOG_CHAR_PERIOD               = 0x6E,

@@ -7,19 +7,16 @@
 #include "audio/synthesis.h"
 #include "level_update.h"
 #include "game_init.h"
-#include "level_update.h"
 #include "main.h"
 #include "engine/math_util.h"
 #include "engine/graph_node.h"
 #include "area.h"
-#include "save_file.h"
 #include "sound_init.h"
 #include "mario.h"
 #include "camera.h"
 #include "object_list_processor.h"
 #include "ingame_menu.h"
 #include "obj_behaviors.h"
-#include "save_file.h"
 #if MULTILANG
 #include "memory.h"
 #include "eu_translation.h"
@@ -28,7 +25,6 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
-#include "puppycam2.h"
 #include "puppyprint.h"
 #include "level_commands.h"
 #include "mb64/mb64.h"
@@ -42,6 +38,20 @@
 #include "interaction.h"
 
 #include "config.h"
+
+u8 gLastCompletedCourseNum = 0;
+u8 gLastCompletedStarNum = 0;
+u8 gGotFileCoinHiScore = FALSE;
+u8 gCurrCourseStarFlags = 0;
+u8 gSpecialTripleJump = FALSE;
+
+#define STUB_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8) courseenum,
+#define DEFINE_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8, _9, _10) courseenum,
+s8 gLevelToCourseNumTable[] = {
+    #include "levels/level_defines.h"
+};
+#undef STUB_LEVEL
+#undef DEFINE_LEVEL
 
 // TODO: Make these ifdefs better
 const char *credits01[] = { "1GAME DIRECTOR", "SHIGERU MIYAMOTO" };
@@ -561,12 +571,9 @@ void check_instant_warp(void) {
 #ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
  #ifdef UNLOCK_ALL
     if (gCurrLevelNum == LEVEL_CASTLE) {
- #else // !UNLOCK_ALL
-    if (gCurrLevelNum == LEVEL_CASTLE
-        && save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1) >= 70) {
- #endif // !UNLOCK_ALL
         return;
     }
+ #endif // UNLOCK_ALL
 #endif // ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
 
     if ((floor = gMarioState->floor) != NULL) {
@@ -673,16 +680,6 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 warpFlags)
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = warpFlags;
-#ifdef PUPPYCAM
-    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
-    {
-        for (s32 i = 0; i < gPuppyVolumeCount; i++)
-        {
-            mem_pool_free(gPuppyMemoryPool, sPuppyVolumeStack[i]);
-        }
-        gPuppyVolumeCount = 0;
-    }
-#endif
 }
 
 // From Surface 0xD3 to 0xFC
@@ -756,7 +753,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
     s32 fadeMusic = TRUE;
     u16 dmg_amount = 0x3FF; // more than 3 segments
     u8 resp_cond = FALSE;
-    if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_BRITTLE)) {
         dmg_amount = 0x6FF; // more than 6 segments
     }
 
@@ -811,7 +808,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 //fuck sm64 hp
                 //i have no idea if changing the 8 to a 5 will work, hope it does!
                 resp_cond = ((gMarioState->health > dmg_amount) && (mb64_lopt_game == MB64_GAME_BTCM) );
-                if (save_file_get_badge_equip() & (1<<BADGE_BOTTOMLESS)) {
+                if (mb64_play_badge_bitfield & (1<<BADGE_BOTTOMLESS)) {
                     resp_cond = (gMarioState->numBadgePoints > 0);
                 }
 
@@ -906,13 +903,13 @@ void initiate_delayed_warp(void) {
             if (sDelayedWarpOp == WARP_OP_DEMO_END) {
                 warp_special(WARP_SPECIAL_INTRO_SPLASH_SCREEN);
             } else {
-                warp_special(WARP_SPECIAL_MARIO_HEAD_REGULAR);
+                warp_special(WARP_SPECIAL_TITLE_RESET);
             }
         } else {
             switch (sDelayedWarpOp) {
                 case WARP_OP_GAME_OVER:
                     // save_file_reload();
-                    warp_special(WARP_SPECIAL_MARIO_HEAD_DIZZY);
+                    warp_special(WARP_SPECIAL_GAME_OVER_RESET);
                     break;
 
                 case WARP_OP_CREDITS_END:
@@ -921,7 +918,7 @@ void initiate_delayed_warp(void) {
                     break;
 
                 case WARP_OP_DEMO_NEXT:
-                    warp_special(WARP_SPECIAL_MARIO_HEAD_REGULAR);
+                    warp_special(WARP_SPECIAL_TITLE_RESET);
                     break;
 
                 case WARP_OP_CREDITS_START:
@@ -1099,7 +1096,7 @@ void exit_level(void) {
         mb64_level_action = MB64_LA_BUILD;
     } else {
         stop_secondary_music(1); // clear background music (i think)
-        fade_into_special_warp(WARP_SPECIAL_MARIO_HEAD_REGULAR, 0); // reset game
+        fade_into_special_warp(WARP_SPECIAL_TITLE_RESET, 0); // reset game
     }
 }
 
@@ -1178,7 +1175,7 @@ s32 play_mode_change_level(void) {
         sTransitionTimer = 0;
         sTransitionUpdate = NULL;
         reset_menu();
-        if (sSpecialWarpDest == WARP_SPECIAL_MARIO_HEAD_REGULAR) {
+        if (sSpecialWarpDest == WARP_SPECIAL_TITLE_RESET) {
             mb64_mode = MB64_MODE_UNINITIALIZED;
             mb64_lopt_template = 0;
             mb64_lopt_size = 0;
@@ -1268,36 +1265,11 @@ s32 init_level(void) {
     
     mb64_mode = mb64_target_mode;
 
-    gMarioState->MaskChase = FALSE;
-
-    gMarioState->BossHealth = 0;
-    gMarioState->BossHealthMax = 0;
-
     gMarioState->powerup = 0;
-
-    gMarioState->hundredSpawned = FALSE;
-    gMarioState->YoshiCoins = 0;
-    gMarioState->DeadRexes = 0;
-    gMarioState->DeadRexMissionActivate = 0;
-    gMarioState->DeadCowboyMissionActivate = 0;
-    gMarioState->CheeseCollection = 0;
-    gMarioState->CheeseMissionActivate = 0;
-    gMarioState->SockCollection = 0;
-    gMarioState->SockMissionActivate = 0;
-
-    gMarioState->gMinigameWon = FALSE;
-
-    gMarioState->NewTimer = 0;
-    gMarioState->NewTimerMode = 0;
-    gMarioState->SubNewTimer = 0;
-
-    gMarioState->GoldRingCount = 0;
-    gMarioState->PirCount = 10;
 
     gMarioState->NewLevel = FALSE;
 
     gMarioState->LavaHeat = 3;
-    gMarioState->_2D = FALSE;
     set_play_mode(PLAY_MODE_NORMAL);
 
     sDelayedWarpOp = WARP_OP_NONE;
@@ -1357,12 +1329,8 @@ s32 init_level(void) {
                 set_mario_action(gMarioState, ACT_IDLE, 0);
             } else if (!gDebugLevelSelect) {
                 if (gMarioState->action != ACT_UNINITIALIZED) {
-                    if (save_file_exists(gCurrSaveFileNum - 1)) {
-                        set_mario_action(gMarioState, ACT_IDLE, 0);
-                    } else {
-                        set_mario_action(gMarioState, ACT_INTRO_CUTSCENE, 0);
-                        fadeFromColor = TRUE;
-                    }
+                    set_mario_action(gMarioState, ACT_INTRO_CUTSCENE, 0);
+                    fadeFromColor = TRUE;
                 }
             }
         }
@@ -1427,7 +1395,7 @@ s32 lvl_init_from_save_file(UNUSED s16 initOrUpdate, s32 levelNum) {
     sWarpDest.type = WARP_TYPE_NOT_WARPING;
     sDelayedWarpOp = WARP_OP_NONE;
 #ifdef ENABLE_VANILLA_LEVEL_SPECIFIC_CHECKS
-    gNeverEnteredCastle = !save_file_exists(gCurrSaveFileNum - 1);
+    gNeverEnteredCastle = TRUE;
 #else
     gNeverEnteredCastle = 0;
 #endif

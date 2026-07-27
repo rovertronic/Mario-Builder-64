@@ -16,26 +16,6 @@ extern const Gfx burn_smoke_seg4_sub_dl_model[];
 extern const Gfx burn_smoke_seg4_sub_dl_end[];
 extern const Gfx burn_smoke_seg4_dl[];
 
-// chain_ball
-extern const GeoLayout metallic_ball_geo[];
-extern const Gfx chain_ball_seg6_dl_060212E8[];
-
-// chain_chomp
-extern const GeoLayout chain_chomp_geo[];
-extern const Gfx chain_chomp_seg6_dl_06024000[];
-extern const Gfx chain_chomp_seg6_dl_06024040[];
-extern const Gfx chain_chomp_seg6_dl_06024240[];
-extern const Gfx chain_chomp_seg6_dl_06024700[];
-extern const Gfx chain_chomp_seg6_dl_06024900[];
-extern const Gfx chain_chomp_seg6_dl_06024940[];
-extern const Gfx chain_chomp_seg6_dl_06024AA8[];
-extern const Gfx chain_chomp_seg6_dl_06024B00[];
-extern const Gfx chain_chomp_seg6_dl_06024CF0[];
-extern const Gfx chain_chomp_seg6_dl_06024D60[];
-extern const Gfx chain_chomp_seg6_dl_06024F50[];
-extern const Gfx chain_chomp_seg6_dl_06024FC0[];
-extern const struct Animation *const chain_chomp_seg6_anims_06025178[];
-
 // koopa
 extern const GeoLayout koopa_without_shell_geo[];
 extern const GeoLayout koopa_with_shell_geo[];
@@ -102,13 +82,6 @@ extern const Gfx piranha_plant_seg6_dl_06016EB8[];
 extern const Gfx piranha_plant_seg6_dl_06016F20[];
 extern const struct Animation *const piranha_plant_seg6_anims_0601C31C[];
 
-// poundable_pole
-extern const GeoLayout wooden_post_geo[];
-extern const Gfx poundable_pole_seg6_dl_060022F0[];
-extern const Gfx poundable_pole_seg6_dl_06002358[];
-extern const Gfx poundable_pole_seg6_dl_06002410[];
-extern const Collision poundable_pole_collision_wooden_post[];
-
 // whomp
 extern const GeoLayout whomp_geo[];
 extern const Gfx whomp_seg6_dl_0601F4F8[];
@@ -145,21 +118,6 @@ extern const Gfx chilly_chief_seg6_dl_06003010[];
 extern const GeoLayout chilly_chief_geo[];
 extern const GeoLayout chilly_chief_big_geo[];
 extern const struct Animation *const chilly_chief_seg6_anims_06003994[];
-
-// bubba
-extern const GeoLayout bubba_geo[];
-extern const Gfx bubba_seg5_dl_05004A40[];
-extern const Gfx bubba_seg5_dl_05004AA8[];
-extern const Gfx bubba_seg5_dl_05004BE8[];
-extern const Gfx bubba_seg5_dl_05004C40[];
-extern const Gfx bubba_seg5_dl_05004D48[];
-extern const Gfx bubba_seg5_dl_05004E80[];
-extern const Gfx bubba_seg5_dl_05005538[];
-extern const Gfx bubba_seg5_dl_050055A0[];
-extern const Gfx bubba_seg5_dl_050056E0[];
-extern const Gfx bubba_seg5_dl_05005738[];
-extern const Gfx bubba_seg5_dl_05005840[];
-extern const Gfx bubba_seg5_dl_05005978[];
 
 // lakitu_enemy
 extern const GeoLayout enemy_lakitu_geo[];
@@ -294,39 +252,6 @@ extern const Gfx moneybag_seg6_dl_060059F0[];
 extern const struct Animation *const moneybag_seg6_anims_06005E5C[];
 
 
-// monty_mole
-extern const GeoLayout monty_mole_geo[];
-extern const Gfx monty_mole_seg5_dl_05003208[];
-extern const Gfx monty_mole_seg5_dl_050032A0[];
-extern const Gfx monty_mole_seg5_dl_05003438[];
-extern const Gfx monty_mole_seg5_dl_050034A0[];
-extern const Gfx monty_mole_seg5_dl_05003518[];
-extern const Gfx monty_mole_seg5_dl_05003730[];
-extern const Gfx monty_mole_seg5_dl_050037A8[];
-extern const Gfx monty_mole_seg5_dl_05003820[];
-extern const Gfx monty_mole_seg5_dl_05003938[];
-extern const Gfx monty_mole_seg5_dl_050039D0[];
-extern const Gfx monty_mole_seg5_dl_05003B68[];
-extern const Gfx monty_mole_seg5_dl_05003BD0[];
-extern const Gfx monty_mole_seg5_dl_05003C48[];
-extern const Gfx monty_mole_seg5_dl_05003E60[];
-extern const Gfx monty_mole_seg5_dl_05003ED8[];
-extern const Gfx monty_mole_seg5_dl_05003F50[];
-extern const Gfx monty_mole_seg5_dl_050042B8[];
-extern const Gfx monty_mole_seg5_dl_05004368[];
-extern const Gfx monty_mole_seg5_dl_050044B0[];
-extern const Gfx monty_mole_seg5_dl_050049B0[];
-extern const Gfx monty_mole_seg5_dl_05004A10[];
-extern const Gfx monty_mole_seg5_dl_05004B50[];
-extern const Gfx monty_mole_seg5_dl_05004BE0[];
-extern const Gfx monty_mole_seg5_dl_05004C00[];
-extern const Gfx monty_mole_seg5_dl_05004CE8[];
-extern const Gfx monty_mole_seg5_dl_05004D30[];
-extern const struct Animation *const monty_mole_seg5_anims_05007248[];
-
-// monty_mole_hole
-extern const Gfx monty_mole_hole_seg5_dl_05000840[];
-
 #include "noteblock/geo_header.h"
 #include "noteblock/collision_header.h"
 
@@ -395,12 +320,6 @@ extern const Gfx thwomp_seg5_dl_0500B718[];
 extern const Gfx thwomp_seg5_dl_0500B750[];
 extern const Collision thwomp_seg5_collision_0500B7D0[];
 extern const Collision thwomp_seg5_collision_0500B92C[];
-
-// yellow_sphere_small
-extern const GeoLayout yellow_sphere_geo[];
-extern const Gfx yellow_sphere_seg5_dl_05000840[];
-extern const Gfx yellow_sphere_seg5_dl_05000888[];
-extern const Gfx yellow_sphere_seg5_dl_050008C8[];
 
 #include "blaster/geo_header.h"
 
@@ -527,8 +446,6 @@ extern const Gfx bully_seg5_dl_05003FC8[];
 extern const struct Animation *const bully_seg5_anims_0500470C[];
 
 #include "new_cull_marker/geo_header.h"
-
-#include "b20/header.h"
 
 // skeeter
 extern const GeoLayout skeeter_geo[];

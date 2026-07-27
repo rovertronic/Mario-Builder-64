@@ -1,10 +1,10 @@
 #include "types.h"
 #include "include/segment_symbols.h"
 #include "memory.h"
-#include "engine/math_util.h"
-#include "src/engine/behavior_script.h"
 #include "tile_scroll.h"
 #include "texscroll.h"
+#include "engine/math_util.h"
+#include "src/engine/behavior_script.h"
 
 #ifdef TARGET_N64
 #define SCROLL_CONDITION(condition) condition

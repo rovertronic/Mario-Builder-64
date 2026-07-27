@@ -90,8 +90,6 @@ OUTPUT_ARCH (mips)
    _##name##_mio0SegmentRomStart = _##name##_yay0SegmentRomStart; \
    _##name##_mio0SegmentRomEnd = _##name##_yay0SegmentRomEnd;
 
-#define LIBGODDARD_A BUILD_DIR[/\\]libgoddard.a
-
 SECTIONS
 {
    __romPos = 0;
@@ -127,26 +125,6 @@ SECTIONS
 
    . = _buffersSegmentBssEnd;
 
-#ifdef HVQM
-   BEGIN_NOLOAD(hvqmwork)
-   {
-      BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
-   }
-   END_NOLOAD(hvqmwork)
-   BEGIN_NOLOAD(adpcmbuf)
-   {
-      BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
-   }
-   END_NOLOAD(adpcmbuf)
-   BEGIN_NOLOAD(hvqbuf)
-   {
-      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
-   }
-   END_NOLOAD(hvqbuf)
-
-   . = _hvqbufSegmentBssEnd;
-#endif
-
 /* hardcoded symbols to satisfy preliminary link for map parser */
 #ifndef DEBUG_MAP_STACKTRACE
       _mapDataSegmentRomStart = 0;
@@ -166,12 +144,8 @@ SECTIONS
       KEEP(BUILD_DIR/asm/fcr31.o(.text*));
 
       BUILD_DIR/src/boot*.o(.text*);
-      BUILD_DIR/src/hvqm*.o(.text*);
       BUILD_DIR/src/usb*.o(.text*);
       BUILD_DIR/src/audio*.o(.text*);
-#ifdef S2DEX_TEXT_ENGINE
-      BUILD_DIR/src/s2d_engine*.o(.text*);
-#endif
 #ifdef LIBPL
       BUILD_DIR/lib/libpl*.o(.text*);
 #endif
@@ -179,41 +153,31 @@ SECTIONS
       *ULTRALIB.a:*.o(.text*);
       *libnustd.a:*.o(.text*);
       *libgcc.a:*.o(.text*);
-      */libhvqm2.a:*.o(.text*);
-      BUILD_DIR/src/libcart*.o(.text*);
+      BUILD_DIR/lib/libcart*.o(.text*);
       lib/rspboot.o(.text*);
 #include "rsptext.inc.ld"
       BUILD_DIR/lib/aspMain.o(.text*);
       lib/PR/audio/n_aspMain.o(.text*);
-      lib/PR/hvqm/hvqm2sp1.o(.text*);
       _mainSegmentTextEnd = .;
 
       /* data */
       BUILD_DIR/asm/n64_assert.o(.*data*);
       BUILD_DIR/src/boot*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
-#ifdef S2DEX_TEXT_ENGINE
-      BUILD_DIR/src/s2d_engine*.o(.*data*);
-#endif
 #ifdef LIBPL
       BUILD_DIR/lib/libpl*.o(.*data*);
 #endif
       BUILD_DIR/lib/librtc*.o(.*data*);
       *ULTRALIB.a:*.o(.data*);
-      */libhvqm2.a:*.o(.data*);
-      BUILD_DIR/src/libcart*.o(.data*);
+      BUILD_DIR/lib/libcart*.o(.data*);
 #include "rspdata.inc.ld"
       BUILD_DIR/lib/aspMain.o(.data*);
       lib/PR/audio/n_aspMain.o(.data*);
-      lib/PR/hvqm/hvqm2sp1.o(.data*);
 
       /* rodata */
       BUILD_DIR/src/boot*.o(.rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
-#ifdef S2DEX_TEXT_ENGINE
-      BUILD_DIR/src/s2d_engine*.o(.rodata*);
-#endif
 #ifdef LIBPL
       BUILD_DIR/lib/libpl*.o(.rodata*);
 #endif
@@ -221,19 +185,14 @@ SECTIONS
       *ULTRALIB.a:*.o(.rodata*);
       *libgcc.a:*.o(.rodata*);
 
-      lib/PR/hvqm/hvqm2sp1.o(.rodata*);
-      BUILD_DIR/src/libcart*.o(.rodata*);
+      BUILD_DIR/lib/libcart*.o(.rodata*);
    }
    END_SEG(main)
    BEGIN_NOLOAD(main)
    {
       BUILD_DIR/src/boot*.o(.*bss*);
-      BUILD_DIR/src/hvqm*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
       BUILD_DIR/src/audio*.o(.*bss*);
-#ifdef S2DEX_TEXT_ENGINE
-      BUILD_DIR/src/s2d_engine*.o(.*bss*);
-#endif
 #ifdef LIBPL
       BUILD_DIR/lib/libpl*.o(.*bss*);
 #endif
@@ -241,8 +200,7 @@ SECTIONS
       *ULTRALIB.a:*.o(COMMON);
       *ULTRALIB.a:*.o(.scommon);
       *ULTRALIB.a:*.o(.*bss*);
-      */libhvqm2.a:*.o(.bss*);
-      BUILD_DIR/src/libcart*.o(.bss*);
+      BUILD_DIR/lib/libcart*.o(.bss*);
       . = ALIGN(0x8);
    }
    END_NOLOAD(main)
@@ -348,53 +306,24 @@ SECTIONS
 
 
    /* 0x8016F000 21D7D0-255EC0 [386F0] */
-   BEGIN_SEG(goddard, (RAM_END - GODDARD_SIZE))
+   BEGIN_SEG(menu_seg, (RAM_END - MENU_SEG_SIZE))
    {
       KEEP(BUILD_DIR/src/menu*.o(.text*));
-      _goddardSegmentTextEnd = .;
+      _menu_segSegmentTextEnd = .;
       KEEP(BUILD_DIR/src/menu*.o(.data*));
       KEEP(BUILD_DIR/src/menu*.o(.rodata*));
-#ifdef KEEP_MARIO_HEAD
-      KEEP(LIBGODDARD_A:*.o(.text*));
-      KEEP(LIBGODDARD_A:gd_main.o(.data*));
-      KEEP(LIBGODDARD_A:draw_objects.o(.data*));
-      KEEP(LIBGODDARD_A:objects.o(.data*));
-      KEEP(LIBGODDARD_A:particles.o(.data*));
-      KEEP(LIBGODDARD_A:dynlist_proc.o(.data*));
-      KEEP(LIBGODDARD_A:debug_utils.o(.data*));
-      KEEP(LIBGODDARD_A:joints.o(.data*));
-      KEEP(LIBGODDARD_A:shape_helper.o(.data*));
-      KEEP(LIBGODDARD_A:renderer.o(.data*));
-      KEEP(LIBGODDARD_A:gd_main.o(.rodata*));
-      KEEP(LIBGODDARD_A:gd_memory.o(.rodata*));
-      KEEP(LIBGODDARD_A:draw_objects.o(.rodata*));
-      KEEP(LIBGODDARD_A:objects.o(.rodata*));
-      KEEP(LIBGODDARD_A:skin_movement.o(.rodata*));
-      KEEP(LIBGODDARD_A:particles.o(.rodata*));
-      KEEP(LIBGODDARD_A:dynlist_proc.o(.rodata*));
-      KEEP(LIBGODDARD_A:old_menu.o(.rodata*));
-      KEEP(LIBGODDARD_A:debug_utils.o(.rodata*));
-      KEEP(LIBGODDARD_A:joints.o(.rodata*));
-      KEEP(LIBGODDARD_A:skin.o(.rodata*));
-      KEEP(LIBGODDARD_A:gd_math.o(.rodata*));
-      KEEP(LIBGODDARD_A:shape_helper.o(.rodata*));
-      KEEP(LIBGODDARD_A:renderer.o(.rodata*));
-#endif
       . = ALIGN(16);
    }
-   END_SEG(goddard)
-   BEGIN_NOLOAD(goddard)
+   END_SEG(menu_seg)
+   BEGIN_NOLOAD(menu_seg)
    {
       KEEP(BUILD_DIR/src/menu*.o(.bss*));
-#ifdef KEEP_MARIO_HEAD
-      KEEP(LIBGODDARD_A:*.o(.bss*));
-#endif
       . = ALIGN(16);
    }
-   END_NOLOAD(goddard)
+   END_NOLOAD(menu_seg)
 
 #ifdef PRELIMINARY
-      GODDARD_SIZE = SIZEOF(.goddard) + SIZEOF(.goddard.noload);
+      MENU_SEG_SIZE = SIZEOF(.menu_seg) + SIZEOF(.menu_seg.noload);
 #else
       ASSERT((. <= (SEG_POOL_START + POOL_SIZE)), "Error: extended past pool end.")
 #endif
@@ -423,29 +352,6 @@ SECTIONS
    YAY0_SEG(debug_level_select, 0x07000000)
    YAY0_SEG(title_screen_bg,    0x0A000000)
 
-#ifdef KEEP_MARIO_HEAD
-   BEGIN_SEG(gd_dynlists, 0x04000000)
-   {
-      LIBGODDARD_A:dynlist_test_cube.o(.data*);
-      LIBGODDARD_A:dynlist_unused.o(.data*);
-      LIBGODDARD_A:dynlist_mario_face.o(.data*);
-      LIBGODDARD_A:dynlists_mario_eyes.o(.data*);
-      LIBGODDARD_A:dynlists_mario_eyebrows_mustache.o(.data*);
-      LIBGODDARD_A:dynlist_mario_master.o(.data*);
-      LIBGODDARD_A:anim_mario_mustache_right.o(.data*);
-      LIBGODDARD_A:anim_mario_mustache_left.o(.data*);
-      LIBGODDARD_A:anim_mario_lips_1.o(.data*);
-      LIBGODDARD_A:anim_mario_lips_2.o(.data*);
-      LIBGODDARD_A:anim_mario_eyebrows_1.o(.data*);
-      LIBGODDARD_A:anim_group_1.o(.data*);
-      LIBGODDARD_A:anim_group_2.o(.data*);
-      LIBGODDARD_A:dynlist_test_cube.o(.rodata*);
-      LIBGODDARD_A:dynlist_unused.o(.rodata*);
-      LIBGODDARD_A:*.o(.data*);
-      LIBGODDARD_A:*.o(.rodata*);
-   }
-   END_SEG(gd_dynlists)
-#endif
 
    gMainLevels = __romPos;
 
@@ -500,14 +406,6 @@ SECTIONS
       KEEP(BUILD_DIR/sound/sound_data.o(.data*));
    }
    END_SEG(assets)
-
-#ifdef HVQM
-   BEGIN_SEG(capcom, __romPos) SUBALIGN(2)
-   {
-      KEEP(BUILD_DIR/data/capcom.o(.data*));
-   }
-	END_SEG(capcom)
-#endif
 
 #ifdef DEBUG_MAP_STACKTRACE
    BEGIN_SEG(mapData, (RAM_END - 0x00100000)) {

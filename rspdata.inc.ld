@@ -46,11 +46,6 @@
       lib/PR/f3dex/fifo/gspL3DEX.fifo.o(.data);
 #endif
 
-/* S2DEX Data */
-#ifdef S2DEX_GBI
-      lib/PR/s2dex/fifo/gspS2DEX.fifo.o(.data);
-#endif
-
 /* Fast3DEX2 series */
 
 /* Fast3DEX2 NoN Data */
@@ -81,9 +76,4 @@
 /* Line3DZEX Data */
 #ifdef L3DZEX_GBI
       BUILD_DIR/lib/gspL3DZEX2_PosLight.fifo.o(.data);
-#endif
-
-/* S2DEX2 Data */
-#ifdef S2DEX_GBI_2
-      lib/PR/s2dex2/fifo/gspS2DEX2.fifo.o(.data);
 #endif

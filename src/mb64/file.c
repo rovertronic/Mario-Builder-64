@@ -5,7 +5,6 @@
 #include "mb64/menu/toolbox.h"
 #include "compatibility.h"
 
-#include "game/game_init.h"
 #include "game/segment2.h"
 #include "game/emutest.h"
 #include "buffers/framebuffers.h"

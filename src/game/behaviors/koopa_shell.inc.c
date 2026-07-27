@@ -112,7 +112,6 @@ void bhv_koopa_shell_loop(void) {
             //BUGFIX: Shell vanishes when mario jumps on it on an invisible frame
             o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
 
-            gMarioState->IsYoshi = FALSE;
             obj_copy_pos(o, gMarioObject);
             floor = cur_obj_update_floor_height_and_get_floor();
 

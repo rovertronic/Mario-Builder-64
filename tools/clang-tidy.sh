@@ -31,8 +31,6 @@ for VER in ${VERSIONS}; do
         clang-tidy ${TIDY_OPTS} src/audio/*.c -- ${COMPILER_OPTS} ${VER}
         clang-tidy ${TIDY_OPTS} src/engine/*.c -- ${COMPILER_OPTS} ${VER}
         clang-tidy ${TIDY_OPTS} src/game/*.c -- ${COMPILER_OPTS} ${VER}
-        clang-tidy ${TIDY_OPTS} src/goddard/*.c -- ${COMPILER_OPTS} ${VER}
         clang-tidy ${TIDY_OPTS} lib/src/*.c -- ${COMPILER_OPTS} ${VER}
-        clang-tidy ${TIDY_OPTS} enhancements/*.inc.c -- ${COMPILER_OPTS} ${VER}
 done
 echo "Done tidying all C files. Hope you did something fun during the tidying"

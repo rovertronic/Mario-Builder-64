@@ -75,7 +75,7 @@ enum Codecs {
 // No-op printf macro which leaves string literals in rodata in IDO. IDO
 // doesn't support variadic macros, so instead we let the parameter list
 // expand to a no-op comma expression. Another possibility is that it might
-// have expanded to something with "if (0)". See also goddard/gd_main.h.
+// have expanded to something with "if (0)". See also similar unused-arg macros elsewhere.
 // On US/JP, -sopt optimizes away these except for external.c.
 #ifdef __sgi
 #define stubbed_printf

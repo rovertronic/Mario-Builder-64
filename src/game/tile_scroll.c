@@ -1,5 +1,4 @@
 #include <ultra64.h>
-#include "game/memory.h"
 #include "game/tile_scroll.h"
 
 

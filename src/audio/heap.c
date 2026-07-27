@@ -9,7 +9,6 @@
 #include "game/emutest.h"
 #include "game/puppyprint.h"
 #include "game/debug.h"
-#include "string.h"
 
 struct PoolSplit {
     u32 wantSeq;

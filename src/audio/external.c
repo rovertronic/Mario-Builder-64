@@ -5,7 +5,6 @@
 #include "data.h"
 #include "seqplayer.h"
 #include "external.h"
-#include "playback.h"
 #include "synthesis.h"
 #include "game/debug.h"
 #include "game/main.h"
@@ -14,10 +13,7 @@
 #include "game/camera.h"
 #include "engine/math_util.h"
 #include "seq_ids.h"
-#include "menu/file_select.h"
 #include "include/types.h"
-#include "game/puppycamold.h"
-#include "src/game/save_file.h"
 
 #include "config/config_audio.h"
 

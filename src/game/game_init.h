@@ -60,7 +60,6 @@ extern s8 gEepromProbe;
 extern s8 gSramProbe;
 #endif
 
-extern void (*gGoddardVblankCallback)(void);
 extern struct Controller* const gPlayer1Controller;
 extern struct Controller* const gPlayer2Controller;
 extern struct Controller* const gPlayer3Controller;

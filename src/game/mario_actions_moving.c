@@ -3,7 +3,6 @@
 #include "sm64.h"
 #include "mario_actions_moving.h"
 #include "mario_actions_object.h"
-#include "mario_actions_airborne.h"
 #include "mario.h"
 #include "audio/external.h"
 #include "engine/math_util.h"
@@ -15,7 +14,7 @@
 #include "behavior_data.h"
 #include "rumble_init.h"
 #include "ingame_menu.h"
-#include "save_file.h"
+#include "mb64/editor/main.h"
 
 #include "config.h"
 
@@ -419,7 +418,7 @@ void update_walking_speed(struct MarioState *m) {
     f32 maxTargetSpeed;
     f32 targetSpeed;
     f32 walkadd = 1.1f;
-    u32 haveBadge = (save_file_get_badge_equip() & (1<<BADGE_FEET));
+    u32 haveBadge = (mb64_play_badge_bitfield & (1<<BADGE_FEET));
 
     if (m->floor != NULL && m->floor->type == SURFACE_SLOW) {
         maxTargetSpeed = 24.0f;
@@ -1368,10 +1367,10 @@ s32 act_burning_ground(struct MarioState *m) {
     play_sound(SOUND_MOVING_LAVA_BURN, m->marioObj->header.gfx.cameraToObject);
 
     u32 healthLoss = 10;
-    if (save_file_get_badge_equip() & (1<<BADGE_BRITTLE)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_BRITTLE)) {
         healthLoss *= 2;
     }
-    if (save_file_get_badge_equip() & (1<<BADGE_BURN)) {
+    if (mb64_play_badge_bitfield & (1<<BADGE_BURN)) {
         healthLoss /= 2;
     }
     m->health -= healthLoss;

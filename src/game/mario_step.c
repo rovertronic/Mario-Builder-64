@@ -6,20 +6,14 @@
 #include "engine/surface_load.h"
 #include "mario.h"
 #include "audio/external.h"
-#include "game_init.h"
 #include "interaction.h"
 #include "mario_step.h"
 #include "surface_terrains.h"
 #include "ingame_menu.h"
-#include "behavior_data.h"
 
-#include "level_table.h"
 #include "level_update.h"
-#include "main.h"
-#include "area.h"
 #include "platform_displacement.h"
-#include "mario_actions_airborne.h"
-#include "save_file.h"
+#include "mb64/editor/main.h"
 
 #include "mb64/mb64.h"
 
@@ -691,7 +685,7 @@ void apply_gravity(struct MarioState *m) {
             m->vel[1] = -75.0f;
         }
 
-        if ((save_file_get_badge_equip() & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+        if ((mb64_play_badge_bitfield & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
             slowfall(m, 2.f, -75.f);
         }
 
@@ -701,7 +695,7 @@ void apply_gravity(struct MarioState *m) {
             m->vel[1] = -65.0f;
         }
 
-        if ((save_file_get_badge_equip() & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+        if ((mb64_play_badge_bitfield & (1 << BADGE_SLOWFALL)) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
             slowfall(m, 3.2f, -65.f);
         }
 
@@ -723,7 +717,7 @@ void apply_gravity(struct MarioState *m) {
             m->vel[1] = -75.0f;
         }
 
-        if (((m->flags & MARIO_WING_CAP) || (save_file_get_badge_equip() & (1 << BADGE_SLOWFALL))) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
+        if (((m->flags & MARIO_WING_CAP) || (mb64_play_badge_bitfield & (1 << BADGE_SLOWFALL))) && m->vel[1] < 0.0f && (m->input & INPUT_A_DOWN)) {
             slowfall(m, 4.f, -75.f);
         }
     }

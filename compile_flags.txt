@@ -2,12 +2,12 @@
 -Iinclude/n64
 -Iinclude
 -Iinclude/libc
--Iinclude/hvqm
 -Itextures
 -Ibuild/us_n64
 -Ibuild/us_n64/include
 -Isrc
--Isrc/libcart/include
+-Ilib
+-Ilib/libcart/include
 
 --target=mips-unknown-elf
 -mabi=32

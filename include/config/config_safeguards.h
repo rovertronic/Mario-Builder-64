@@ -155,18 +155,6 @@
 
 
 /*****************
- * config_goddard.h
- */
-
-#ifndef KEEP_MARIO_HEAD
-    #undef GODDARD_EASTER_EGG
-
-    #undef DISABLE_DEMO
-    #define DISABLE_DEMO
-#endif // !KEEP_MARIO_HEAD
-
-
-/*****************
  * config_menu.h
  */
 

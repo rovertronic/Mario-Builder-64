@@ -1,34 +1,17 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "area.h"
 #include "audio/external.h"
-#include "behavior_actions.h"
 #include "behavior_data.h"
 #include "camera.h"
-#include "engine/behavior_script.h"
 #include "engine/graph_node.h"
 #include "engine/math_util.h"
-#include "envfx_snow.h"
-#include "game_init.h"
-#include "goddard/renderer.h"
-#include "interaction.h"
 #include "level_update.h"
-#include "mario_actions_cutscene.h"
 #include "mario_misc.h"
 #include "memory.h"
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "rendering_graph_node.h"
-#include "save_file.h"
-#include "skybox.h"
-#include "sound_init.h"
-#include "puppycam2.h"
-#include "puppycamold.h"
-#include "ingame_menu.h"
-#include "src/engine/surface_load.h"
-#include "spawn_sound.h"
-#include "mario.h"
 #include "mb64/mb64.h"
 #include "mb64/editor/main.h"
 #include "mb64/editor/object.h"
@@ -87,28 +70,7 @@ struct GraphNodeObject gMirrorMario;  // copy of Mario's geo node for drawing mi
 // This whole file is weirdly organized. It has to be the same file due
 // to rodata boundaries and function aligns, which means the programmer
 // treated this like a "misc" file for vaguely Mario related things
-// (message NPC related things, the Mario head geo, and Mario geo
-// functions)
-
-#ifdef KEEP_MARIO_HEAD
-/**
- * Geo node script that draws Mario's head on the title screen.
- */
-Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
-    Gfx *gfx = NULL;
-    struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
-
-    if (callContext == GEO_CONTEXT_RENDER) {
-        if (gPlayer1Controller->controllerData != NULL && !gWarpTransition.isActive) {
-            gd_copy_p1_contpad(gPlayer1Controller->controllerData);
-        }
-        gfx = (Gfx *) PHYSICAL_TO_VIRTUAL(gdm_gettestdl(asGenerated->parameter));
-        gGoddardVblankCallback = gd_vblank;
-        play_menu_sounds(gd_sfx_to_play());
-    }
-    return gfx;
-}
-#endif
+// (message NPC related things and Mario geo functions)
 
 // u8 MaxCostumes = 11;
 
@@ -528,12 +490,6 @@ Gfx *geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode *node, UNUSED 
 
     if (callContext == GEO_CONTEXT_RENDER) {
         alpha = (bodyState->modelState & MODEL_STATE_ALPHA) ? (bodyState->modelState & MODEL_STATE_MASK) : 0xFF;
-#ifdef PUPPYCAM
-        if (alpha > gPuppyCam.opacity) {
-            alpha = gPuppyCam.opacity;
-            bodyState->modelState |= MODEL_STATE_NOISE_ALPHA;
-        }
-#endif
         gfx = make_gfx_mario_alpha(asGenerated, alpha);
     }
     return gfx;
@@ -573,10 +529,6 @@ Gfx *geo_switch_mario_eyes(s32 callContext, struct GraphNode *node, UNUSED Mat4 
             }
         } else {
             switchCase->selectedCase = bodyState->eyeState - 1;
-        }
-
-        if (gMarioState->isAfterlife) {
-            switchCase->selectedCase = 3;
         }
     }
     return NULL;

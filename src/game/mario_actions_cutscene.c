@@ -2,31 +2,24 @@
 
 #include "sm64.h"
 #include "mario_actions_cutscene.h"
-#include "mario_actions_moving.h"
 #include "area.h"
 #include "audio/external.h"
 #include "behavior_data.h"
 #include "camera.h"
-#include "engine/behavior_script.h"
 #include "engine/graph_node.h"
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "game_init.h"
-#include "gfx_dimensions.h"
-#include "ingame_menu.h"
 #include "interaction.h"
-#include "level_table.h"
 #include "level_update.h"
 #include "mario.h"
 #include "mario_step.h"
 #include "object_helpers.h"
 #include "object_list_processor.h"
 #include "puppyprint.h"
-#include "save_file.h"
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "rumble_init.h"
-#include "actors/group0.h"
 #include "mb64/mb64.h"
 #include "mb64/editor/main.h"
 #include "mb64/menu/dialog.h"
@@ -462,9 +455,6 @@ void general_star_dance_handler(struct MarioState *m, s32 isInWater) {
 
 s32 act_star_dance(struct MarioState *m) {
     m->faceAngle[1] = m->area->camera->yaw;
-    if (m->_2D) {
-        m->faceAngle[1] = 0;
-    }
 
     set_mario_animation(m, m->actionState == ACT_STATE_STAR_DANCE_RETURN ? MARIO_ANIM_RETURN_FROM_STAR_DANCE
                                                                          : MARIO_ANIM_STAR_DANCE);
@@ -1456,7 +1446,7 @@ s32 act_squished(struct MarioState *m) {
             } else {
                 if (!(m->flags & MARIO_METAL_CAP) && m->invincTimer == 0) {
                     //no damage if badge
-                    if (!(save_file_get_badge_equip() & (1<<BADGE_SQUISH))) {
+                    if (!(mb64_play_badge_bitfield & (1<<BADGE_SQUISH))) {
                         // cap on: 3 units; cap off: 4.5 units
                         m->hurtCounter += m->flags & MARIO_CAP_ON_HEAD ? 12 : 18;
                         play_sound_if_no_flag(m, SOUND_MARIO_ATTACKED, MARIO_MARIO_SOUND_PLAYED);

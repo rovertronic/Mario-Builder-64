@@ -1,18 +1,14 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
-#include "area.h"
 #include "engine/graph_node.h"
 #include "engine/surface_collision.h"
 #include "engine/math_util.h"
-#include "game_init.h"
 #include "geo_misc.h"
-#include "mario.h"
 #include "memory.h"
 #include "level_update.h"
 #include "object_list_processor.h"
 #include "paintings.h"
-#include "save_file.h"
 #include "segment2.h"
 
 /**

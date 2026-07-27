@@ -1,0 +1,24 @@
+// Externally referenced badge texture mesh display lists
+extern Gfx b0_Plane_001_mesh[];
+extern Gfx b1_Plane_001_mesh[];
+extern Gfx b2_Plane_001_mesh[];
+extern Gfx b3_Plane_001_mesh[];
+extern Gfx b4_Plane_001_mesh[];
+extern Gfx b5_Plane_001_mesh[];
+extern Gfx b6_Plane_001_mesh[];
+extern Gfx b7_Plane_001_mesh[];
+extern Gfx b8_Plane_001_mesh[];
+extern Gfx b9_Plane_001_mesh[];
+extern Gfx b10_Plane_001_mesh[];
+extern Gfx b12_Plane_001_mesh[];
+extern Gfx b13_Plane_001_mesh[];
+extern Gfx b14_Plane_001_mesh[];
+extern Gfx b15_Plane_001_mesh[];
+extern Gfx b16_Plane_001_mesh[];
+extern Gfx b17_Plane_001_mesh[];
+extern Gfx b18_Plane_001_mesh[];
+extern Gfx b19_Plane_001_mesh[];
+extern Gfx b20_Plane_001_mesh[];
+extern Gfx b21_Plane_001_mesh[];
+extern Gfx b22_Plane_001_mesh[];
+extern Gfx b23_Plane_mesh[];

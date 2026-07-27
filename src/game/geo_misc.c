@@ -3,19 +3,9 @@
 #include "sm64.h"
 #include "geo_misc.h"
 
-#include "area.h"
-#include "engine/math_util.h"
-#include "level_update.h"
 // #include "levels/castle_inside/header.h"
 // #include "levels/ending/header.h"
 // #include "levels/rr/header.h"
-#include "mario.h"
-#include "mario_actions_cutscene.h"
-#include "memory.h"
-#include "object_list_processor.h"
-#include "rendering_graph_node.h"
-#include "save_file.h"
-#include "segment2.h"
 
 /**
  * @file geo_misc.c

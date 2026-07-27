@@ -33,8 +33,8 @@ static const LevelScript script_exec_level_table[2
 
 static const LevelScript goto_intro_splash_screen[6];
 static const LevelScript goto_ending[6];
-static const LevelScript goto_mario_head_regular[6];
-static const LevelScript goto_mario_head_dizzy[6];
+static const LevelScript goto_title_reset[6];
+static const LevelScript goto_game_over_reset[6];
 static const LevelScript goto_debug_level_select[6];
 
 #define STUB_LEVEL(_0, _1, _2, _3, _4, _5, _6, _7, _8)
@@ -181,8 +181,8 @@ const LevelScript level_main_scripts_entry[] = {
         SLEEP(/*frames*/ 1),
     LOOP_UNTIL(/*op*/ OP_LT, /*arg*/ WARP_SPECIAL_NONE),
     JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_ENDING,              goto_ending),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_MARIO_HEAD_REGULAR,  goto_mario_head_regular),
-    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_MARIO_HEAD_DIZZY,    goto_mario_head_dizzy),
+    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_TITLE_RESET,  goto_title_reset),
+    JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_GAME_OVER_RESET,    goto_game_over_reset),
     JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_INTRO_SPLASH_SCREEN, goto_intro_splash_screen),
     JUMP_IF(   /*op*/ OP_EQ, /*arg*/ WARP_SPECIAL_LEVEL_SELECT,        goto_debug_level_select),
 };
@@ -195,12 +195,12 @@ static const LevelScript goto_intro_splash_screen[] = {
 //     EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_LEVEL_SCRIPT, _endingSegmentRomStart, _endingSegmentRomEnd, level_ending_entry, _endingSegmentBssStart, _endingSegmentBssEnd),
 // };
 
-static const LevelScript goto_mario_head_regular[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
+static const LevelScript goto_title_reset[] = {
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_title_reset, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
-static const LevelScript goto_mario_head_dizzy[] = {
-    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_dizzy, _introSegmentBssStart, _introSegmentBssEnd),
+static const LevelScript goto_game_over_reset[] = {
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ SEGMENT_MENU_INTRO, _introSegmentRomStart, _introSegmentRomEnd, level_intro_game_over_reset, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 static const LevelScript goto_debug_level_select[] = {

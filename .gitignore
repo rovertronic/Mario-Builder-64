@@ -46,7 +46,6 @@
 .vscode/*
 
 # General project-specific ignores
-doxygen/doxygen/*
 build/*
 *.dump
 *.mio0
@@ -1440,15 +1439,11 @@ textures/water/jrb_textures.0B800.rgba16.png
 
 !/lib/**/*.o
 !/lib/*.a
-lib/libs2d_engine.a
 !/lib/gcclib/*.a
 !/lib/gcclib/divbreak/*.a
 !/lib/gcclib/nocheck/*.a
 !/lib/gcclib/trap/*.a
 !/lib/n64/*.a
-!/lib/ique/*.a
-
-!/lib/PR/hvqm/*.o
 
 # .orig files
 *.orig

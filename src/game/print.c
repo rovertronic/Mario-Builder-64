@@ -5,7 +5,7 @@
 #include "memory.h"
 #include "print.h"
 #include "segment2.h"
-#include "puppycamold.h"
+s16 opt_widescreen = FALSE;
 
 /**
  * This file handles printing and formatting the colorful text that

@@ -4,11 +4,15 @@
 #include "mb64/editor/main.h"
 #include "mb64/file.h"
 
+#include "audio/external.h"
+#include "game/area.h"
+#include "game/object_helpers.h"
+#include "game/object_list_processor.h"
 #include "game/sram.h"
-#include "lib/libpl/libpl.h"
 #include "levels/menu/header.h"
 #include "game/emutest.h"
 #include "game/segment2.h"
+#include "seq_ids.h"
 #include <string.h>
 
 char *info_credits[] = {
@@ -973,4 +977,35 @@ void reset_main_menu_state(void) {
     gMB64LevelLoaded = FALSE;
     gMainMenuPageHandler = NULL;
     gPrevMainMenuPage = PAGE_NONE;
+}
+
+s32 lvl_mb64_main_menu_init(UNUSED s32 arg, UNUSED s32 unused) {
+    load_level_files_from_sd_card();
+    play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_MENU_FILE_SELECT), 0);
+    init_main_menu(gCurrMainMenuPage);
+    return 0;
+}
+
+s32 lvl_mb64_main_menu_update(UNUSED s32 arg, UNUSED s32 unused) {
+    area_update_objects();
+    return gMB64LevelLoaded;
+}
+
+void bhv_mb64_menu_bg_init(void) {
+    gCurrentObject->oFaceAngleYaw = 0x8000;
+    gCurrentObject->oMenuButtonScale = 9.0f;
+}
+
+void bhv_mb64_menu_bg_loop(void) {
+    cur_obj_scale(1.0f);
+    o->oPosX += 1.f;
+    o->oPosY -= 1.f;
+
+    if (o->oPosX > 150) {
+        o->oPosX -= 150;
+    }
+    if (o->oPosY < -106) {
+        o->oPosY += 106;
+        o->oPosX += 22;
+    }
 }

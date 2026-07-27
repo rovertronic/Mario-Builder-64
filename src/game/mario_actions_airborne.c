@@ -2,17 +2,15 @@
 
 #include "sm64.h"
 #include "mario_actions_airborne.h"
-#include "area.h"
 #include "audio/external.h"
 #include "camera.h"
-#include "engine/graph_node.h"
 #include "engine/math_util.h"
 #include "game_init.h"
 #include "interaction.h"
 #include "level_update.h"
 #include "mario.h"
 #include "mario_step.h"
-#include "save_file.h"
+#include "mb64/editor/main.h"
 #include "rumble_init.h"
 #include "include/behavior_data.h"
 #include "ingame_menu.h"
@@ -72,7 +70,7 @@ s32 lava_boost_on_wall(struct MarioState *m) {
     }
 //OTHER LB CODE
     if (!(m->flags & MARIO_METAL_CAP)) {
-        if ((save_file_get_badge_equip() & (1<<BADGE_LAVA))&&(m->numBadgePoints > 0)) {
+        if ((mb64_play_badge_bitfield & (1<<BADGE_LAVA))&&(m->numBadgePoints > 0)) {
             m->numBadgePoints --;
             m->hurtCounter += (m->LavaHeat-2)*4;
         } else {
@@ -101,7 +99,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
     if (m->action != ACT_TWIRLING && !SURFACE_IS_BURNING(m->floor->type)) {
         if (m->vel[1] < -55.0f) {
             if (fallHeight > FALL_DAMAGE_HEIGHT_LARGE) {
-                if ((save_file_get_badge_equip() & (1<<BADGE_FALL))&&(gMarioState->numBadgePoints > 0)) {
+                if ((mb64_play_badge_bitfield & (1<<BADGE_FALL))&&(gMarioState->numBadgePoints > 0)) {
                     gMarioState->numBadgePoints --; return FALSE;
                 }
                 m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 16 : 24;
@@ -112,7 +110,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
                 play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
                 return drop_and_set_mario_action(m, hardFallAction, 4);
             } else if (fallHeight > FALL_DAMAGE_HEIGHT_SMALL && !mario_floor_is_slippery(m)) {
-                if ((save_file_get_badge_equip() & (1<<BADGE_FALL))&&(gMarioState->numBadgePoints > 0)) {
+                if ((mb64_play_badge_bitfield & (1<<BADGE_FALL))&&(gMarioState->numBadgePoints > 0)) {
                     gMarioState->numBadgePoints --; return FALSE;
                 }
                 m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 8 : 12;
@@ -351,7 +349,6 @@ void update_flying_pitch(struct MarioState *m) {
     }
 }
 
-#include "include/behavior_data.h"
 
 void update_flying(struct MarioState *m) {
     update_flying_pitch(m);
@@ -1275,7 +1272,7 @@ s32 check_wall_kick(struct MarioState *m) {
         m->faceAngle[1] += 0x8000;
         return set_mario_action(m, ACT_WALL_KICK_AIR, 0);
     } else {
-        if ((save_file_get_badge_equip() & (1<<BADGE_STICKY))&&(m->wallKickTimer != 0 && m->prevAction == ACT_AIR_HIT_WALL)&&(gMarioState->gCurrMinigame != 6)) {
+        if ((mb64_play_badge_bitfield & (1<<BADGE_STICKY))&&(m->wallKickTimer != 0 && m->prevAction == ACT_AIR_HIT_WALL)) {
             vec3f_set(sMarioAmountDisplaced,0,0,0);
             return set_mario_action(m, ACT_WALL_STICK, 0);
         }
@@ -1630,7 +1627,7 @@ s32 act_lava_boost(struct MarioState *m) {
                 m->actionArg &= ~2;
                 if (!SURFACE_IS_BURNING_SMOKE(m->floor->type)) m->actionArg |= 2;
                 if (!(m->flags & MARIO_METAL_CAP)) {
-                    if ((save_file_get_badge_equip() & (1<<BADGE_LAVA))&&(gMarioState->numBadgePoints > 0)) {
+                    if ((mb64_play_badge_bitfield & (1<<BADGE_LAVA))&&(gMarioState->numBadgePoints > 0)) {
                         gMarioState->numBadgePoints --;
                         m->hurtCounter += (gMarioState->LavaHeat-2)*4;
                     }

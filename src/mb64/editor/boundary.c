@@ -3,7 +3,6 @@
 #include "main.h"
 
 #include <PR/gbi.h>
-#include "model_ids.h"
 #include "behavior_data.h"
 #include "game/object_list_processor.h"
 #include "game/object_helpers.h"

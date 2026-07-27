@@ -6,17 +6,12 @@
 #include "behavior_data.h"
 #include "camera.h"
 #include "debug.h"
-#include "engine/behavior_script.h"
-#include "engine/geo_layout.h"
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "game_init.h"
-#include "helper_macros.h"
 #include "ingame_menu.h"
 #include "interaction.h"
-#include "level_table.h"
 #include "level_update.h"
-#include "mario.h"
 #include "mario_actions_cutscene.h"
 #include "memory.h"
 #include "obj_behaviors.h"
@@ -25,7 +20,6 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
-#include "save_file.h"
 #include "platform_displacement.h"
 #include "audio/external.h"
 #include "mb64/editor/object.h"
@@ -2113,7 +2107,7 @@ s32 cur_obj_set_hitbox_and_die_if_attacked(struct ObjectHitbox *hitbox, s32 deat
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         if (o->oInteractStatus & INT_STATUS_WAS_ATTACKED) {
             if ((o->oHealth < 2) || (o->oInteractStatus & INT_STATUS_ATTACKED_BY_OBJECT) ||
-                (save_file_get_badge_equip() & (1<<BADGE_DAMAGE))) {
+                (mb64_play_badge_bitfield & (1<<BADGE_DAMAGE))) {
                 spawn_mist_particles();
                 if (!cur_obj_drop_imbued_object(MB64_STAR_HEIGHT)) {
                     obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
@@ -2781,7 +2775,7 @@ s32 cur_obj_drop_imbued_object(s32 y_offset) {
             star_trigger_activated();
             break;
         case IMBUE_BADGE_BASE:
-            if (save_file_get_badge_equip() & (1 << badgeID)) {
+            if (mb64_play_badge_bitfield & (1 << badgeID)) {
                 break;
             }
             dropobj = spawn_object(o,MODEL_BADGE,bhvBadge);

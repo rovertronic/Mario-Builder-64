@@ -5,12 +5,7 @@
 #include "data.h"
 #include "external.h"
 #include "seqplayer.h"
-#include "game/game_init.h"
-#include "game/main.h"
 #include "engine/math_util.h"
-#include "external.h"
-#include "src/game/game_init.h"
-#include "src/game/save_file.h"
 #include "mb64/file.h"
 
 #if defined(VERSION_EU) || defined(VERSION_SH)

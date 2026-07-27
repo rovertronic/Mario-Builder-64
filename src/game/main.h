@@ -24,9 +24,6 @@ enum ThreadID {
     THREAD_4_SOUND,
     THREAD_5_GAME_LOOP,
     THREAD_6_RUMBLE,
-    THREAD_7_HVQM,
-    THREAD_8_TIMEKEEPER,
-    THREAD_9_DA_COUNTER,
 };
 
 struct RumbleData {
@@ -54,7 +51,6 @@ extern OSThread gIdleThread;
 extern OSThread gMainThread;
 extern OSThread gGameLoopThread;
 extern OSThread gSoundThread;
-extern OSThread hvqmThread;
 #if ENABLE_RUMBLE
 extern OSThread gRumblePakThread;
 

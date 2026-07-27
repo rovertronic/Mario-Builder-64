@@ -32,11 +32,11 @@ DECLARE_SEGMENT(engine)
 DECLARE_SEGMENT(behavior)
 DECLARE_NOLOAD(behavior)
 DECLARE_SEGMENT(scripts)
-DECLARE_SEGMENT(goddard)
+DECLARE_SEGMENT(menu_seg)
 DECLARE_SEGMENT(framebuffers)
 DECLARE_SEGMENT(assets)
-extern u8 _goddardSegmentStart[];
-extern u8 _goddardSegmentEnd[];
+extern u8 _menu_segSegmentStart[];
+extern u8 _menu_segSegmentEnd[];
 extern u8 _engineSegmentStart[];
 extern u8 _engineSegmentBssEnd[];
 extern u8 _mainSegmentStart[];

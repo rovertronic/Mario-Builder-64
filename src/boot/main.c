@@ -1,7 +1,6 @@
 #include <ultra64.h>
 #include <PR/os_system.h>
 #include <PR/os_vi.h>
-#include <stdio.h>
 
 #include "sm64.h"
 #include "audio/external.h"
