@@ -53,7 +53,7 @@ void dialog_box_render(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
         if (box->animTimer == 8) {
             destroy_dialog_component();
         }
-    } else {
+    } else if (box->animTimer == 0) {
         if (gPlayer1Controller->buttonPressed & (A_BUTTON | B_BUTTON)) {
             gDialogResponse = 1;
             begin_dialog_close();

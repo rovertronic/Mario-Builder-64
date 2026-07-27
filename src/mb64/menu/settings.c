@@ -360,6 +360,7 @@ char *mb64_costume_string_table[] = {
 
 // System page
 void settings_save_and_quit(void) {
+    settingsRoot->inactive = TRUE;
     if (gSDCard) {
         save_level();
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
@@ -369,6 +370,7 @@ void settings_save_and_quit(void) {
 }
 
 void settings_play_level(void) {
+    settingsRoot->inactive = TRUE;
     if (gSDCard) {
         save_level();
     }
@@ -873,7 +875,7 @@ void settings_page_main(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     mb64_curr_vtx = (Vtx*)alloc_display_list(120*sizeof(Vtx));
     mb64_gfx_index = 0;
 
-    if (!(root->timer) && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
+    if (!(root->timer) && !gMenuState.inactive && !konami_disable_inputs && gPlayer1Controller->buttonPressed & (START_BUTTON | B_BUTTON)) {
         menu_play_click_sound();
         PageHandlerComponent *ph = get_child_of_type(root, MENU_PAGE_HANDLER, 0);
         if ((ph->index == 0) || (gPlayer1Controller->buttonPressed & START_BUTTON)) {

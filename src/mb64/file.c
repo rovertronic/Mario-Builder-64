@@ -200,12 +200,13 @@ void save_level(void) {
     // If in screenshot mode
     if (mb64_prepare_level_screenshot) {
         u8 screenshot_failure = TRUE;
+        u8 *painting_frame = segmented_to_virtual(mb64_painting_frame);
 
         for (s32 x=0;x<64;x++) {
             for (s32 y=0;y<64;y++) {
                 int i = (y*64)+x;
                 //take a "screenshot" of the level & burn in a painting frame
-                if (mb64_painting_frame[(i*2)+1]==0x00) {
+                if (painting_frame[(i*2)+1]==0x00) {
                     // Take samples (double resolution)
                     u16 sample[4];
                     for (s32 sx=0;sx<2;sx++) {
@@ -241,7 +242,7 @@ void save_level(void) {
                     }
                 } else {
                     //painting frame
-                    mb64_save.thumbnail[y][x] = ((mb64_painting_frame[(i*2)]<<8) | mb64_painting_frame[(i*2)+1]);
+                    mb64_save.thumbnail[y][x] = ((painting_frame[(i*2)]<<8) | painting_frame[(i*2)+1]);
                 }
             }
         }
@@ -249,7 +250,7 @@ void save_level(void) {
         if (screenshot_failure) {
             //framebuffer emulation not enabled, use ?
             show_error("Screenshot failed.\nMake sure framebuffer emulation (FBE) is enabled.");
-            bcopy(&mb64_painting_unknown,&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
+            bcopy(segmented_to_virtual(mb64_painting_unknown),&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
         }
 
         update_painting();
@@ -257,7 +258,7 @@ void save_level(void) {
 
     if (mb64_save.thumbnail[0][0] == 0) { //0 is a transparent pixel in rgba16
         //use mystery painting if no screenshot has been taken yet
-        bcopy(&mb64_painting_unknown,&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
+        bcopy(segmented_to_virtual(mb64_painting_unknown),&mb64_save.thumbnail,sizeof(mb64_save.thumbnail));
     }
     bcopy(&mb64_curr_custom_theme,&mb64_save.custom_theme,sizeof(struct mb64_custom_theme));
     bcopy(&mb64_toolbar, &mb64_save.toolbar, sizeof(mb64_save.toolbar));
