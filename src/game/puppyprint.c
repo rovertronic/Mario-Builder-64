@@ -22,8 +22,8 @@ a modern game engine's developer's console.
 **/
 
 #include <ultra64.h>
+#include <string.h>
 
-#include "config.h"
 #include "game_init.h"
 #include "memory.h"
 #include "printf.h"
@@ -34,10 +34,7 @@ a modern game engine's developer's console.
 #include "object_list_processor.h"
 #include "engine/surface_load.h"
 #include "audio/data.h"
-#include "audio/external.h"
 #include "audio/heap.h"
-#include "audio/load.h"
-#include "debug_box.h"
 #include "profiling.h"
 #include "segment_symbols.h"
 
@@ -495,6 +492,7 @@ u32 profiler_get_rdp_microseconds();
 
 #include "mb64/file.h"
 #include "mb64/editor/object.h"
+#include "mb64/gfx/gfx.h"
 
 void print_basic_profiling(void) {
     char textBytes[90];
