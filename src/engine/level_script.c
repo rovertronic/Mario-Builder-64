@@ -3,33 +3,27 @@
 #include <string.h>
 #endif
 
-#include "sm64.h"
 #include "audio/external.h"
+#ifdef BETTER_REVERB
 #include "audio/synthesis.h"
-#include "buffers/framebuffers.h"
-#include "buffers/zbuffer.h"
+#endif
 #include "game/area.h"
 #include "game/debug.h"
 #include "game/game_init.h"
-#include "game/mario.h"
 #include "game/memory.h"
-#include "game/object_helpers.h"
 #include "game/object_list_processor.h"
 #include "game/sound_init.h"
 #include "geo_layout.h"
 #include "graph_node.h"
 #include "level_script.h"
-#include "level_misc_macros.h"
 #include "level_commands.h"
 #include "math_util.h"
-#include "surface_collision.h"
 #include "surface_load.h"
-#include "string.h"
+#ifdef PUPPYPRINT_DEBUG
 #include "game/puppyprint.h"
+#endif
 #include "game/emutest.h"
 #include "mb64/editor/main.h"
-
-#include "config.h"
 
 #define NUM_PAINTINGS 45
 

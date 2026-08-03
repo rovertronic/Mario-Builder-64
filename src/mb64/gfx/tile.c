@@ -1,4 +1,5 @@
 #include "tile.h"
+#include "gfx.h"
 
 #include <PR/gbi.h>
 #include "mb64/collision.h"

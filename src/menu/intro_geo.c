@@ -1,9 +1,9 @@
 #include <PR/ultratypes.h>
 
 #include "game/memory.h"
-#include "game/segment2.h"
 #include "game/segment7.h"
 #include "engine/math_util.h"
+#include "engine/graph_node.h"
 #include "intro_geo.h"
 #include "sm64.h"
 #include "types.h"

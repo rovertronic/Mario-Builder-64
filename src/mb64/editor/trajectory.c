@@ -2,6 +2,7 @@
 #include "main.h"
 #include "object.h"
 #include "mb64/file.h"
+#include "mb64/gfx/gfx.h"
 
 #include "mb64/menu/misc.h"
 #include "mb64/menu/toolbox.h"

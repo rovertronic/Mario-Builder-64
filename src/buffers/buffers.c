@@ -2,7 +2,6 @@
 
 #include "buffers.h"
 #include "audio/data.h"
-#include "config.h"
 
 ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(AUDIO_HEAP_SIZE)];
 

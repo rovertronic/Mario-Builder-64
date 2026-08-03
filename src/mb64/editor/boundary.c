@@ -1,5 +1,6 @@
 #include "boundary.h"
 #include "mb64/collision.h"
+#include "mb64/gfx/gfx.h"
 #include "main.h"
 
 #include <PR/gbi.h>

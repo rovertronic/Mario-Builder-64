@@ -3,10 +3,7 @@
 #include <PR/ultratypes.h>
 #include <PR/gbi.h>
 #include "types.h"
-#include "mb64/editor/main.h"
 #include "mb64/editor/grid.h"
-#include "mb64/gfx/batch.h"
-#include "mb64/gfx/cull.h"
 
 enum mb64_materials {
     MB64_MATLIST_START,
@@ -278,6 +275,47 @@ extern Bool32 gIsGliden;
 
 struct mb64_boundary_quad;
 
+enum mb64_culling_shapes {
+    MB64_FACESHAPE_FULL,
+    MB64_FACESHAPE_POLETOP,
+
+    MB64_FACESHAPE_TRI_1, // make sure irregular shapes can be flipped with ^1
+    MB64_FACESHAPE_TRI_2,
+    MB64_FACESHAPE_DOWNTRI_1,
+    MB64_FACESHAPE_DOWNTRI_2,
+    MB64_FACESHAPE_HALFSIDE_1, // vertical slab sides
+    MB64_FACESHAPE_HALFSIDE_2,
+
+    MB64_FACESHAPE_TOPTRI,
+    MB64_FACESHAPE_TOPHALF,
+
+    // & 0x10: Bottom slab priority list
+    MB64_FACESHAPE_BOTTOMSLAB_PRI = 0x10,
+    MB64_FACESHAPE_UPPERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI,
+    MB64_FACESHAPE_UPPERGENTLE_2,
+    MB64_FACESHAPE_BOTTOMSLAB,
+    // 0x13 empty
+    MB64_FACESHAPE_LOWERGENTLE_1 = MB64_FACESHAPE_BOTTOMSLAB_PRI + 4,
+    MB64_FACESHAPE_LOWERGENTLE_2,
+
+    // & 0x20: Top slab priority list
+    MB64_FACESHAPE_TOPSLAB_PRI = 0x20,
+    MB64_FACESHAPE_DOWNUPPERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI,
+    MB64_FACESHAPE_DOWNUPPERGENTLE_2,
+    MB64_FACESHAPE_TOPSLAB,
+    // 0x23 empty
+    MB64_FACESHAPE_DOWNLOWERGENTLE_1 = MB64_FACESHAPE_TOPSLAB_PRI + 4,
+    MB64_FACESHAPE_DOWNLOWERGENTLE_2,
+
+    // & 0x40: Empty faces
+    MB64_FACESHAPE_EMPTY = 0x40,
+    // Rotate UVs for certain textures
+    MB64_FACESHAPE_EMPTY_0,
+    MB64_FACESHAPE_EMPTY_1,
+    MB64_FACESHAPE_EMPTY_2,
+    MB64_FACESHAPE_EMPTY_3,
+};
+
 struct mb64_terrain_poly {
     s8 vtx[4][3];
     u8 faceDir;
@@ -390,6 +428,7 @@ extern u8 mb64_render_vertical;
 extern u8 mb64_growth_render_type;
 extern u8 mb64_curr_mat_has_topside;
 extern u8 mb64_curr_poly_vert_count;
+extern u8 mb64_render_culling_off;
 
 void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot);
 void check_bar_connections(s8 pos[3], u8 connections[5]);
@@ -403,3 +442,10 @@ u32 do_process(u8 *targetMatType, u32 processTileRenderMode);
 Gfx *get_sidetex(s32 matid);
 void render_water(s8 pos[3]);
 void process_tiles(u32 processTileRenderMode);
+
+u32 get_faceshape(s8 pos[3], u32 dir);
+s32 get_mat(s8 pos[3]);
+s32 cutout_skip_culling_check(s32 curMat, s32 otherMat, s32 direction);
+u32 block_side_is_solid(s32 adjMat, s32 mat, s32 direction);
+s32 should_cull(s8 pos[3], s32 direction, s32 faceshape, s32 rot);
+s32 should_cull_topslab_check(s8 pos[3], s32 direction);

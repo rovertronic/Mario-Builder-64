@@ -1,4 +1,4 @@
-#include "batch.h"
+#include "gfx.h"
 
 #include <PR/gbi.h>
 #include "engine/math_util.h"

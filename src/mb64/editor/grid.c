@@ -3,6 +3,7 @@
 #include "main.h"
 #include "object.h"
 #include "mb64/gfx/tile.h"
+#include "mb64/gfx/gfx.h"
 #include "mb64/menu/misc.h"
 
 #include "surface_terrains.h"

@@ -4,7 +4,6 @@
 #include "mb64/collision.h"
 #include "mb64/editor/boundary.h"
 #include "mb64/editor/main.h"
-#include "mb64/editor/object.h"
 #include "mb64/editor/trajectory.h"
 #include "mb64/menu/misc.h"
 #include "mb64/menu/settings.h"

@@ -5,7 +5,6 @@
 #include <PR/gbi.h>
 
 #include "types.h"
-#include "engine/graph_node.h"
 
 extern Gfx ts1_letter_R_mesh[];
 extern Gfx ts2_grid_mesh[];

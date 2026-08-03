@@ -17,9 +17,7 @@
 #include "boot/slidec.h"
 #include "game/object_list_processor.h"
 #include "game/level_update.h"
-#include "game/main.h"
 #include "behavior_data.h"
-#include "game/puppyprint.h"
 #include "game/mario.h"
 #include "audio/external.h"
 #include "game/object_helpers.h"
@@ -27,8 +25,6 @@
 #include "sounds.h"
 #include "data/scenes/scripts.h"
 #include "segment_symbols.h"
-#include "actors/group_btcm.h"
-#include "actors/group_vanilla.h"
 
 u8 mb64_menu_state = MB64_MAKE_MAIN;
 u8 mb64_level_action = MB64_LA_BUILD;

@@ -3,6 +3,7 @@
 #include "editor/object.h"
 #include "mb64/menu/misc.h"
 #include "mb64/menu/toolbox.h"
+#include "mb64/gfx/gfx.h"
 #include "compatibility.h"
 
 #include "game/segment2.h"

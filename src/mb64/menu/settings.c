@@ -7,13 +7,14 @@
 #include "game/level_update.h"
 #include "actors/bigpainting2/header.h"
 #include "game/mario.h"
+#include "surface_terrains.h"
 
 #include "mb64/gfx/tile.h"
+#include "mb64/gfx/gfx.h"
 #include "mb64/file.h"
 #include "mb64/editor/main.h"
 #include "mb64/editor/camera.h"
 #include "mb64/editor/object.h"
-#include "mb64/gfx/gfx.h"
 
 MenuComponent *settingsRoot = NULL;
 

@@ -1,6 +1,5 @@
 #include <ultra64.h>
 
-#include "config.h"
 #include "framebuffers.h"
 
 // 0x70800 bytes
