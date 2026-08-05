@@ -63,9 +63,14 @@ static void mb64_render_button_tex(const struct texture_define *tex) {
 
 void render_button(int button, int param, int selected, s16 x, s16 y) {
     s32 op = (selected ? 150 : 255);
+    const struct texture_define *tex = get_button_tex(button, param);
+
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-    mb64_render_button_tex(get_button_tex(button, param));
+    if (tex != &mb64_btn_blank) {
+        mb64_render_button_tex(&mb64_btn_blank);
+    }
+    mb64_render_button_tex(tex);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
 
