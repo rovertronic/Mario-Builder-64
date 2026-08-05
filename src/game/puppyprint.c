@@ -93,7 +93,7 @@ enum RamNames {
 // and include/segment_names.h.
 const char segNames[][NUM_RAM_CHARS] = {
     "Segment 2",     // SEGMENT_SEGMENT2
-    "",              // SEGMENT_UNUSED_03
+    "Editor Btns",   // SEGMENT_MB64_BUTTONS
     "Global GFX",    // SEGMENT_GROUP_GLOBAL_YAY0
     "",              // SEGMENT_UNUSED_05
     "Theme GFX",     // SEGMENT_GROUP_THEME_YAY0

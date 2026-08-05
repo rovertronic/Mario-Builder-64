@@ -277,6 +277,9 @@ void generate_objects_to_level(void) {
     for(i=0;i<mb64_object_count;i++){
         struct mb64_object_info *info = &mb64_object_type_list[mb64_object_data[i].type];
         s32 param = mb64_object_data[i].bparam;
+        if (info->behavior == NULL) {
+            continue;
+        }
 
         obj = spawn_object(gMarioObject, info->model_id, info->behavior);
         obj->oPosX = GRID_TO_POS(mb64_object_data[i].x);

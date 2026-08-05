@@ -1,5 +1,5 @@
 #include "mb64/gfx/tile.h"
-#include "actors/b/header.h"
+#include "mb64/gfx/mb64_buttons.h"
 
 struct mb64_terrain_poly mb64_terrain_fullblock_quads[] = {
     {{{16, 16, 16}, {16, 16, 0}, {0, 16, 16},  {0, 16, 0}},  MB64_DIRECTION_UP,    MB64_FACESHAPE_FULL, MB64_GROWTH_FULL, NULL}, // TOP
@@ -496,31 +496,31 @@ struct mb64_terrain_poly *mb64_terrain_water_quadlists[] = {
 struct mb64_terrain_info mb64_terrain_info_list[] = {
     {NULL, NULL, NULL},
     {NULL, NULL, NULL},
-    {"Slope", mat_b_btn_slope, &mb64_terrain_slope},
+    {"Slope", &mb64_btn_slope, &mb64_terrain_slope},
     {NULL, NULL, &mb64_terrain_dslope},
-    {"Slab", mat_b_btn_slabtile, &mb64_terrain_bottomslab},
+    {"Slab", &mb64_btn_slabtile, &mb64_terrain_bottomslab},
     {NULL, NULL, &mb64_terrain_topslab},
-    {"Outer Corner", mat_b_btn_corner, &mb64_terrain_corner},
+    {"Outer Corner", &mb64_btn_corner, &mb64_terrain_corner},
     {NULL, NULL, &mb64_terrain_dcorner},
-    {"Inner Corner", mat_b_btn_icorner, &mb64_terrain_icorner},
+    {"Inner Corner", &mb64_btn_icorner, &mb64_terrain_icorner},
     {NULL, NULL, &mb64_terrain_dicorner},
-    {"Sloped Corner", mat_b_btn_triangle, &mb64_terrain_scorner},
+    {"Sloped Corner", &mb64_btn_triangle, &mb64_terrain_scorner},
     {NULL, NULL, &mb64_terrain_dscorner},
-    {"Inverted Sloped Corner", mat_b_btn_isc, &mb64_terrain_iscorner},
+    {"Inverted Sloped Corner", &mb64_btn_isc, &mb64_terrain_iscorner},
     {NULL, NULL, &mb64_terrain_discorner},
-    {"Upper Gentle Slope", mat_b_btn_ugs, &mb64_terrain_ugentle},
+    {"Upper Gentle Slope", &mb64_btn_ugs, &mb64_terrain_ugentle},
     {NULL, NULL, &mb64_terrain_dugentle},
-    {"Lower Gentle Slope", mat_b_btn_lgs, &mb64_terrain_lgentle},
+    {"Lower Gentle Slope", &mb64_btn_lgs, &mb64_terrain_lgentle},
     {NULL, NULL, &mb64_terrain_dlgentle},
 
-    {"Tile", mat_b_btn_tile, &mb64_terrain_fullblock},
-    {"Vertical Slope", mat_b_btn_sideslope, &mb64_terrain_sslope},
-    {"Vertical Slab", mat_b_btn_vslab, &mb64_terrain_vslab},
-    {"Cull Marker", mat_b_btn_cull, NULL},
-    {"Intangible Tile", mat_b_btn_troll, &mb64_terrain_fullblock},
-    {"Fence", mat_b_btn_fence, NULL},
-    {"Pole", mat_b_btn_pole, NULL},
-    {"Iron Mesh", mat_b_btn_bars, NULL},
-    {"Water", mat_b_btn_water, NULL},
+    {"Tile", &mb64_btn_tile, &mb64_terrain_fullblock},
+    {"Vertical Slope", &mb64_btn_sideslope, &mb64_terrain_sslope},
+    {"Vertical Slab", &mb64_btn_vslab, &mb64_terrain_vslab},
+    {"Cull Marker", &mb64_btn_cull, NULL},
+    {"Intangible Tile", &mb64_btn_troll, &mb64_terrain_fullblock},
+    {"Fence", &mb64_btn_fence, NULL},
+    {"Pole", &mb64_btn_pole, NULL},
+    {"Iron Mesh", &mb64_btn_bars, NULL},
+    {"Water", &mb64_btn_water, NULL},
 };
 

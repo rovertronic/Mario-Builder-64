@@ -5,8 +5,8 @@
 #include "mb64/editor/object.h"
 #include "mb64/gfx/tile.h"
 
-#include "actors/b/header.h"
-#include "actors/uibutton/header.h"
+#include "mb64/gfx/mb64_buttons.h"
+#include "game/memory.h"
 
 AnimatedComponent *gToolbar;
 int gToolboxIndex = 0;
@@ -20,7 +20,7 @@ MenuStyle toolbar_style = {
     .listOffsetSelected = TRUE
 };
 
-Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
+const struct texture_define *get_button_tex(u32 buttonId, u32 objIndex) {
     struct mb64_ui_button_type *button = &mb64_ui_buttons[buttonId];
     if (button->placeMode != MB64_PM_TILE) {
         u32 id;
@@ -31,7 +31,7 @@ Gfx *get_button_tex(u32 buttonId, u32 objIndex) {
         }
         return mb64_object_type_list[id].btn;
     }
-    if (buttonId == MB64_BUTTON_BLANK) return mat_b_btn_blank;
+    if (buttonId == MB64_BUTTON_BLANK) return &mb64_btn_blank;
     return mb64_terrain_info_list[button->id].button;
 }
 
@@ -48,17 +48,25 @@ char *get_button_str(u32 buttonId) {
     return mb64_terrain_info_list[button->id].name;
 }
 
+static void mb64_render_button_tex(const struct texture_define *tex) {
+    const struct texture_define *t = segmented_to_virtual(tex);
+
+    gDPLoadTLUT(gDisplayListHead++, t->palCount, 256, t->pal);
+    if (t->type == TEXTURE_TYPE_CI4) {
+        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_CI, G_IM_SIZ_16b, 1, t->tex);
+        gSPDisplayList(gDisplayListHead++, mb64_btn_dl_ci4);
+    } else {
+        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_CI, G_IM_SIZ_8b_LOAD_BLOCK, 1, t->tex);
+        gSPDisplayList(gDisplayListHead++, mb64_btn_dl_ci8);
+    }
+}
+
 void render_button(int button, int param, int selected, s16 x, s16 y) {
     s32 op = (selected ? 150 : 255);
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-
-    Gfx *mat = get_button_tex(button, param);
-
-    gSPDisplayList(gDisplayListHead++, mat);//texture
-    gSPDisplayList(gDisplayListHead++, &uibutton_button_mesh);
+    mb64_render_button_tex(get_button_tex(button, param));
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
 }
 
 #define buttonID params[0].asBytes[0]
@@ -260,6 +268,12 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
 
         menu_text_display(">", x, y, TEXT_YELLOW, TEXT_LEFT, 255);
     }
+
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_begin);
+}
+
+static void component_toolbar_btn_end(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_end);
 }
 
 void create_toolbar(void) {
@@ -276,6 +290,8 @@ void create_toolbar(void) {
 
         component_list_append(list, button, (i - 4) * 32, 0);
     }
+
+    init_dynamic_component(gToolbar, component_toolbar_btn_end);
 }
 
 void toolbar_set_active(int active) {
@@ -313,7 +329,9 @@ void component_animated_button_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y
     f->frames--;
     targetX += (m->xpos - targetX) * (f->frames / 8.f);
     targetY += (m->ypos - targetY) * (f->frames / 8.f);
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_begin);
     render_button(f->buttonID, f->buttonParam, TRUE, targetX, targetY);
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_end);
 
     if (!f->frames) {
         component_animated_button_finish();
@@ -338,6 +356,7 @@ void toolbox_render_bg(UNUSED MenuComponent *m, s16 x, s16 y) {
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
     render_4slice_box(x,                    y, 155, 72, 11);
     render_4slice_box(x + TOOLBOX_PAGE_GAP, y, 155, 72, 11);
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_begin);
 }
 
 void close_toolbox(void) {
@@ -440,6 +459,9 @@ void toolbox_select_button(Selector2DComponent *s, UNUSED u8 column, UNUSED u8 r
 void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
     FrameComponent *f = (FrameComponent *)m;
     Selector2DComponent *box = get_parent(f);
+
+    gSPDisplayList(gDisplayListHead++, mb64_btn_dl_end);
+
     if (mb64_toolbox[box->index] == MB64_BUTTON_BLANK) return;
 
     x = sSelectedX + 18;

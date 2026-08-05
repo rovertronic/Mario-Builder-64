@@ -16,7 +16,7 @@
 #define SEGMENT_MAIN                 0x00 // | Segment  0 | General Segment, includes most of /src/ (engine, buffers, menu helpers, audio, etc.)
 #define SEGMENT_RENDER               0x01 // | Segment  1 | SPTask, GFX pool buffer
 #define SEGMENT_SEGMENT2             0x02 // | Segment  2 | Segment 2 (Fonts, Text, etc)
-#define SEGMENT_UNUSED_03            0x03 // | Segment  3 |
+#define SEGMENT_MB64_BUTTONS         0x03 // | Segment  3 | Editor button textures (MAKE only)
 #define SEGMENT_GROUP_GLOBAL_YAY0    0x04 // | Segment  4 | /actors/group_global_yay0, also includes boot (/src/boot/)
 #define SEGMENT_UNUSED_05            0x05 // | Segment  5 |
 #define SEGMENT_GROUP_THEME_YAY0     0x06 // | Segment  6 | Theme actor yay0 (group_btcm / group_vanilla)

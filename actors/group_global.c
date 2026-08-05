@@ -63,8 +63,6 @@
 #include "top/model.inc.c"
 #include "maker/model.inc.c"
 #include "maker/minecrafttex.inc.c"
-#include "uibutton/model.inc.c"
-#include "b/model.inc.c"
 
 // Just a single idle anim for editor
 #include "mario_btcm/anims/data.inc.c"

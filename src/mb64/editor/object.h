@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "mb64/gfx/mb64_buttons.h"
 
 struct Object;
 
@@ -151,7 +152,7 @@ typedef void (*DisplayFunc)(s32);
 
 struct mb64_object_info {
     char *name;
-    Gfx *btn;
+    const struct texture_define *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;

@@ -52,6 +52,7 @@ DECLARE_LEVEL_SEGMENT(menu)
 DECLARE_LEVEL_SCRIPT_SEGMENT(game)
 
 DECLARE_SEGMENT(segment2_yay0)
+DECLARE_SEGMENT(mb64_buttons_yay0)
 
 DECLARE_SEGMENT(water_skybox_yay0)
 DECLARE_SEGMENT(ccm_skybox_yay0)
@@ -74,6 +75,7 @@ DECLARE_SEGMENT(translation_fr_yay0)
 
 //added for compatibility
 DECLARE_SEGMENT(segment2_mio0)
+DECLARE_SEGMENT(mb64_buttons_mio0)
 
 DECLARE_SEGMENT(water_skybox_mio0)
 DECLARE_SEGMENT(ccm_skybox_mio0)

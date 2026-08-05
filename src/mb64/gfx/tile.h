@@ -4,6 +4,7 @@
 #include <PR/gbi.h>
 #include "types.h"
 #include "mb64/editor/grid.h"
+#include "mb64/gfx/mb64_buttons.h"
 
 enum mb64_materials {
     MB64_MATLIST_START,
@@ -333,7 +334,7 @@ struct mb64_terrain {
 
 struct mb64_terrain_info {
     char *name;
-    Gfx *button;
+    const struct texture_define *button;
     struct mb64_terrain *terrain;
 };
 

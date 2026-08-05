@@ -293,6 +293,13 @@ static void level_cmd_load_yay0(void) {
 static void level_cmd_load_mb64(void) {
     load_segment_decompress(0x06, mb64_theme_segments[mb64_lopt_game][0] , mb64_theme_segments[mb64_lopt_game][1]);
     load_segment(0x0D, mb64_theme_segments[mb64_lopt_game][2], mb64_theme_segments[mb64_lopt_game][3], MEMORY_POOL_LEFT, NULL, NULL);
+    // Editor button textures: only resident in MAKE mode. CLEAR_LEVEL frees them on PLAY reload.
+    if (mb64_target_mode == MB64_MODE_MAKE) {
+        load_segment_decompress(SEGMENT_MB64_BUTTONS,
+            _mb64_buttons_mio0SegmentRomStart, _mb64_buttons_mio0SegmentRomEnd);
+    } else {
+        set_segment_base_addr(SEGMENT_MB64_BUTTONS, NULL);
+    }
     sCurrentCmd = CMD_NEXT;
 }
 
