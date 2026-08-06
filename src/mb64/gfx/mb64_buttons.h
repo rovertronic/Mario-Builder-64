@@ -175,6 +175,8 @@ extern const struct texture_define mb64_btn_bowserbomb;
 extern const struct texture_define mb64_btn_check;
 extern const struct texture_define mb64_btn_settings;
 extern const struct texture_define mb64_btn_blank;
+extern const struct texture_define mb64_btn_blankterrain;
+extern const struct texture_define mb64_btn_blanksettings;
 extern const struct texture_define mb64_btn_pipe;
 
 #endif

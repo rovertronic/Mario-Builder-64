@@ -15,6 +15,7 @@ static const Vtx mb64_btn_vtx[4] = {
 const Gfx mb64_btn_dl_begin[] = {
     gsDPPipeSync(),
     gsDPSetCombineLERP(ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0, ENVIRONMENT, 0, TEXEL0, 0, 0, 0, 0, TEXEL0),
+    gsDPSetRenderMode(G_RM_TEX_EDGE, G_RM_TEX_EDGE2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTextureFilter(G_TF_POINT),
     gsDPSetTextureLUT(G_TT_RGBA16),
@@ -1275,6 +1276,22 @@ ALIGNED8 static const Texture mb64_btn_blank_pal_rgba16[] = {
 #include "textures/mb64_buttons/blank.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_blank);
+
+ALIGNED8 static const Texture mb64_btn_blankterrain_ci4[] = {
+#include "textures/mb64_buttons/blankterrain.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_blankterrain_pal_rgba16[] = {
+#include "textures/mb64_buttons/blankterrain.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_blankterrain);
+
+ALIGNED8 static const Texture mb64_btn_blanksettings_ci4[] = {
+#include "textures/mb64_buttons/blanksettings.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_blanksettings_pal_rgba16[] = {
+#include "textures/mb64_buttons/blanksettings.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_blanksettings);
 
 // Warp Pipe
 ALIGNED8 static const Texture mb64_btn_pipe_ci4[] = {

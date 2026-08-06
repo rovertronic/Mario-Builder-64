@@ -589,12 +589,44 @@ void component_rect_render(MenuComponent *m, s16 x, s16 y) {
         rc->onFinish = NULL;
     }
 
-    int realY = SCREEN_HEIGHT-y;
+    if (rc->width == 0 || rc->height == 0) {
+        render_child(m, x, y);
+        return;
+    }
+
     gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gDisplayListHead++, rc->color[0], rc->color[1], rc->color[2], rc->curAlpha);
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
-    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPFillRectangle(gDisplayListHead++, x - rc->width, realY - rc->height, x + rc->width, realY + rc->height);
+    if (rc->curAlpha == 255) {
+        gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    } else {
+        gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    }
+    // Incredibly stupid and annoying gliden widescreen hack bug
+    // means that certain rects have to be rendered as tris if in widescreen
+    // otherwise they are literally not possible to render correctly
+    if (!gIsWidescreen || (u32)(rc->width * 2) > SCREEN_WIDTH * 98 / 100) {
+        int realY = SCREEN_HEIGHT - y;
+        s32 x1 = CLAMP(x - rc->width, 0, SCREEN_WIDTH);
+        s32 y1 = CLAMP(realY - rc->height, 0, SCREEN_HEIGHT);
+        s32 x2 = CLAMP(x + rc->width, 0, SCREEN_WIDTH);
+        s32 y2 = CLAMP(realY + rc->height, 0, SCREEN_HEIGHT);
+        if (x1 < x2 && y1 < y2) {
+            gDPFillRectangle(gDisplayListHead++, x1, y1, x2, y2);
+        }
+    } else {
+        Vtx *v = alloc_display_list(4 * sizeof(Vtx));
+        if (v) {
+            make_vertex(v, 0, x - rc->width, y - rc->height, 0, 0, 0, 255, 255, 255, 255);
+            make_vertex(v, 1, x + rc->width, y - rc->height, 0, 0, 0, 255, 255, 255, 255);
+            make_vertex(v, 2, x + rc->width, y + rc->height, 0, 0, 0, 255, 255, 255, 255);
+            make_vertex(v, 3, x - rc->width, y + rc->height, 0, 0, 0, 255, 255, 255, 255);
+            gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+            gSPTexture(gDisplayListHead++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
+            gSPVertex(gDisplayListHead++, v, 4, 0);
+            gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0x0, 0, 2, 3, 0x0);
+        }
+    }
 
     render_child(m, x, y);
 }

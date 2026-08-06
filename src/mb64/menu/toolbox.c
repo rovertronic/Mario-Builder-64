@@ -66,14 +66,26 @@ static void mb64_render_button_tex(const struct texture_define *tex) {
     }
 }
 
+const struct texture_define *get_button_blank(u32 buttonId) {
+    u8 placeMode = mb64_ui_buttons[buttonId].placeMode;
+    if (placeMode == MB64_PM_TILE) {
+        return &mb64_btn_blankterrain;
+    }
+    if (placeMode == MB64_PM_ACTION) {
+        return &mb64_btn_blanksettings;
+    }
+    return &mb64_btn_blank;
+}
+
 void render_button(int button, int param, int selected, s16 x, s16 y) {
     s32 op = (selected ? 150 : 255);
     const struct texture_define *tex = get_button_tex(button, param);
+    const struct texture_define *blank = get_button_blank(button);
 
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
-    if (tex != &mb64_btn_blank) {
-        mb64_render_button_tex(&mb64_btn_blank);
+    if (tex != blank) {
+        mb64_render_button_tex(blank);
     }
     mb64_render_button_tex(tex);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -369,10 +381,9 @@ void create_animated_button(s16 x, s16 y, int index, int id, int param) {
 AnimatedComponent *gToolbox;
 
 #define TOOLBOX_PAGE_GAP ((9 * 32) + 40)
-void toolbox_render_bg(UNUSED MenuComponent *m, s16 x, s16 y) {
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 150);
-    render_4slice_box(x,                    y, 155, 72, 11);
-    render_4slice_box(x + TOOLBOX_PAGE_GAP, y, 155, 72, 11);
+#define TOOLBOX_PAGE_RECT_W 141
+
+void toolbox_setup_buttons(UNUSED MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     gSPDisplayList(gDisplayListHead++, mb64_btn_dl_begin);
 }
 
@@ -398,25 +409,39 @@ void toolbox_loop(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
 
 void toolbox_handle_scroll(MenuComponent *m, UNUSED s16 x, UNUSED s16 y) {
     AnimatedComponent *a = (AnimatedComponent *)m;
-    Selector2DComponent *box = get_child(m);
+    Selector2DComponent *box = get_child_of_type(m, MENU_SELECTOR_2D, 0);
+    RectComponent *bg0 = get_child_of_type(m, MENU_RECT, 0);
+    RectComponent *bg1 = get_child_of_type(m, MENU_RECT, 1);
 
-    if (a->timer) return;
-
-    if (gPlayer1Controller->buttonPressed & (L_CBUTTONS | R_CBUTTONS)) {
-        if (box->index % 18 >= 9) {
-            box->index -= 9;
-        } else {
-            box->index += 9;
+    if (!a->timer) {
+        if (gPlayer1Controller->buttonPressed & (L_CBUTTONS | R_CBUTTONS)) {
+            if (box->index % 18 >= 9) {
+                box->index -= 9;
+            } else {
+                box->index += 9;
+            }
+            menu_play_move_sound();
         }
-        menu_play_move_sound();
+
+        if (box->index % box->columns >= 9) {
+            if (!a->offset) {
+                component_animate_linear(a, 0.f, -TOOLBOX_PAGE_GAP, -50.f, DIR_HORIZONTAL);
+            }
+        } else if (a->offset) {
+            component_animate_linear(a, -TOOLBOX_PAGE_GAP, 0.f, 50.f, DIR_HORIZONTAL);
+        }
     }
 
-    if (box->index % box->columns >= 9) {
-        if (!a->offset) {
-            component_animate_linear(a, 0.f, -TOOLBOX_PAGE_GAP, -50.f, DIR_HORIZONTAL);
-        }
+    // hide offscreen rect
+    if (a->timer) {
+        bg0->width = TOOLBOX_PAGE_RECT_W;
+        bg1->width = TOOLBOX_PAGE_RECT_W;
     } else if (a->offset) {
-        component_animate_linear(a, -TOOLBOX_PAGE_GAP, 0.f, 50.f, DIR_HORIZONTAL);
+        bg0->width = 0;
+        bg1->width = TOOLBOX_PAGE_RECT_W;
+    } else {
+        bg0->width = TOOLBOX_PAGE_RECT_W;
+        bg1->width = 0;
     }
 }
 
@@ -430,6 +455,15 @@ static s16 sSelectedX = 0;
 static s16 sSelectedY = 0;
 
 void toolbox_render_button(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 row, int selected) {
+    AnimatedComponent *scroller = get_parent(s);
+
+    // skip the offscreen page unless a page scroll is in progress
+    if (!scroller->timer) {
+        int onPage1 = column >= 9;
+        int viewingPage1 = scroller->offset != 0;
+        if (onPage1 != viewingPage1) return;
+    }
+
     x += (column - 4) * 32;
     y -= (row - 2) * 32;
     if (column >= 9) x += 40;
@@ -481,7 +515,7 @@ void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
 
     if (mb64_toolbox[box->index] == MB64_BUTTON_BLANK) return;
 
-    x = sSelectedX + 18;
+    x = sSelectedX + 21;
     y = sSelectedY - 3;
 
     // Render name for selected button
@@ -495,16 +529,22 @@ void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
 
     s32 strLen = get_string_width_ascii(buttonName);
     s32 lowerStrLen = 0;
+    s32 maxLowerStrLen = 0;
 
     if (hasOptions) {
+        // use max length option name for alignment to avoid swapping sides when cycling
+        for (u32 i = 0; i < buttonInfo->optionCount; i++) {
+            sprintf(stringBuf, "< %s >", get_option_name(&buttonInfo->options[i]));
+            maxLowerStrLen = MAX(maxLowerStrLen, get_string_width_ascii(stringBuf));
+        }
         const struct mb64_ui_option *opt = &buttonInfo->options[mb64_toolbox_params[box->index]];
         sprintf(stringBuf, "< %s >", get_option_name(opt));
         lowerStrLen = get_string_width_ascii(stringBuf);
     }
 
-    if ((lowerX + lowerStrLen > SCREEN_WIDTH - 5) || (x + strLen > SCREEN_WIDTH - 5)) {
-        lowerX -= lowerStrLen + 40;
-        x -= strLen + 40;
+    if ((lowerX + maxLowerStrLen > SCREEN_WIDTH - 5) || (x + strLen > SCREEN_WIDTH - 5)) {
+        lowerX -= lowerStrLen + 42;
+        x -= strLen + 42;
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -528,8 +568,13 @@ void create_toolbox(void) {
     AnimatedComponent *scroller = alloc_component(gToolbox, MENU_ANIMATED);
     scroller->base.prerender = toolbox_handle_scroll;
 
+    RectComponent *bg0 = init_rect_component(scroller, 255, 0, 0, TOOLBOX_PAGE_RECT_W, 76);
+    RectComponent *bg1 = init_rect_component(scroller, 255, TOOLBOX_PAGE_GAP, 0, TOOLBOX_PAGE_RECT_W, 76);
+    bg0->color[0] = bg0->color[1] = bg0->color[2] = 200;
+    bg1->color[0] = bg1->color[1] = bg1->color[2] = 200;
+
     Selector2DComponent *box = init_selector_2d_component(scroller, 0, 0, 18, 18*5, toolbox_render_button, toolbox_select_button);
-    box->base.prerender = toolbox_render_bg;
+    box->base.prerender = toolbox_setup_buttons;
 
     box->index = gToolboxIndex;
     if (box->index % 18 >= 9) {

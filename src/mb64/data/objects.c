@@ -213,22 +213,22 @@ struct mb64_ui_option mb64_tree_options[] = {
     { "Dead",   &mb64_btn_deadtree,   OBJECT_TYPE_TREE, 5 },
 };
 struct mb64_ui_option mb64_excla_options[] = {
-    { "Rocket Boots", &mb64_btn_rocketbox, OBJECT_TYPE_EXCL_BOX, 0 },
-    { "Vanetal Cap",  &mb64_btn_vanetalbox, OBJECT_TYPE_EXCL_BOX, 1 },
-    { "Koopa Shell",  &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 2 },
-    { "Green Coin",   &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 3 },
     { "One Coin",     &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 4 },
     { "Three Coins",  &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 5 },
     { "Ten Coins",    &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 6 },
+    { "Green Coin",   &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 3 },
+    { "Rocket Boots", &mb64_btn_rocketbox, OBJECT_TYPE_EXCL_BOX, 0 },
+    { "Vanetal Cap",  &mb64_btn_vanetalbox, OBJECT_TYPE_EXCL_BOX, 1 },
+    { "Koopa Shell",  &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 2 },
 };
 struct mb64_ui_option mb64_vexcla_options[] = {
+    { "One Coin",    &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 4 },
+    { "Three Coins", &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 5 },
+    { "Ten Coins",   &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 6 },
     { "Wing Cap",    &mb64_btn_wingbox, OBJECT_TYPE_EXCL_BOX, 0 },
     { "Metal Cap",   &mb64_btn_metalbox, OBJECT_TYPE_EXCL_BOX, 1 },
     { "Vanish Cap",  &mb64_btn_vanishbox, OBJECT_TYPE_EXCL_BOX, 2 },
     { "Koopa Shell", &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 3 },
-    { "One Coin",    &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 4 },
-    { "Three Coins", &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 5 },
-    { "Ten Coins",   &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 6 },
 };
 struct mb64_ui_option mb64_badge_options[] = {
     { "Lava Boost",       &mb64_btn_badge, OBJECT_TYPE_BADGE, 0 },
