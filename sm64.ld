@@ -245,6 +245,7 @@ SECTIONS
    /* load YAY0 and level data */
    YAY0_SEG(segment2, 0x02000000)
    YAY0_SEG(mb64_buttons, 0x03000000)
+   YAY0_SEG(mb64_textures, 0x05000000)
 #ifdef VERSION_EU
    YAY0_EU_SEG(translation_en, 0x19000000)
    YAY0_EU_SEG(translation_fr, 0x19000000)

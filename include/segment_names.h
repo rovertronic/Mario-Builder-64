@@ -18,7 +18,7 @@
 #define SEGMENT_SEGMENT2             0x02 // | Segment  2 | Segment 2 (Fonts, Text, etc)
 #define SEGMENT_MB64_BUTTONS         0x03 // | Segment  3 | Editor button textures (MAKE only)
 #define SEGMENT_GROUP_GLOBAL_YAY0    0x04 // | Segment  4 | /actors/group_global_yay0, also includes boot (/src/boot/)
-#define SEGMENT_UNUSED_05            0x05 // | Segment  5 |
+#define SEGMENT_MB64_TEXTURES        0x05 // | Segment  5 | Level geometry textures (always loaded)
 #define SEGMENT_GROUP_THEME_YAY0     0x06 // | Segment  6 | Theme actor yay0 (group_btcm / group_vanilla)
 #define SEGMENT_LEVEL_DATA           0x07 // | Segment  7 | Level Data (menu seg7)
 #define SEGMENT_UNUSED_08            0x08 // | Segment  8 |

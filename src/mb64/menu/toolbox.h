@@ -2,8 +2,6 @@
 
 #include "engine.h"
 
-struct texture_define;
-
 enum {
     MB64_BUTTON_SETTINGS,
     MB64_BUTTON_TEST,
@@ -100,7 +98,7 @@ enum {
 
 struct mb64_ui_option {
     const char *name;
-    const struct texture_define *btn;
+    const struct ci_texture_define *btn;
     u8 objectType;
     u8 bparam;
 };

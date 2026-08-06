@@ -68,15 +68,18 @@ $(BUILD_DIR)/$(MENU_SEG7).elf: SEGMENT_ADDRESS := 0x07000000
 SEGMENT2_TEXTURES               := $(wildcard $(TEXTURE_DIR)/segment2/*.png)
 EFFECT_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/effect/*.png)
 MB64_BUTTON_TEXTURES            := $(wildcard $(TEXTURE_DIR)/mb64_buttons/*.png)
+MB64_LEVEL_TEXTURES             := $(wildcard $(TEXTURE_DIR)/mb64_textures/*.png)
 
 # Texture Files
 $(BUILD_DIR)/bin/segment2.o:        $(SEGMENT2_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/effect.o:          $(EFFECT_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/mb64_buttons.o:    $(MB64_BUTTON_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
+$(BUILD_DIR)/bin/mb64_textures.o:   $(MB64_LEVEL_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Others
 $(BUILD_DIR)/bin/segment2.elf:           SEGMENT_ADDRESS := 0x02000000
 $(BUILD_DIR)/bin/mb64_buttons.elf:       SEGMENT_ADDRESS := 0x03000000
+$(BUILD_DIR)/bin/mb64_textures.elf:      SEGMENT_ADDRESS := 0x05000000
 $(BUILD_DIR)/bin/effect.elf:             SEGMENT_ADDRESS := 0x0B000000
 # EU segment 19 translations
 $(BUILD_DIR)/bin/eu/translation_de.elf:  SEGMENT_ADDRESS := 0x19000000

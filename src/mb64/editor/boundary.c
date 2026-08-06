@@ -1,13 +1,13 @@
 #include "boundary.h"
 #include "mb64/collision.h"
 #include "mb64/gfx/gfx.h"
+#include "mb64/gfx/mb64_textures.h"
 #include "main.h"
 
 #include <PR/gbi.h>
 #include "behavior_data.h"
 #include "game/object_list_processor.h"
 #include "game/object_helpers.h"
-#include "actors/maker/header.h"
 #include "engine/surface_load.h"
 #include "engine/math_util.h"
 #include "game/rendering_graph_node.h"
@@ -137,8 +137,12 @@ void generate_boundary_collision(void) {
 void process_boundary(u32 processRenderMode) {
     u8 planeMat = mb64_lopt_boundary_mat;
     struct mb64_material *mat, *sidemat;
+    Gfx *floorTex;
+    Gfx *sideTex;
     mat = &TOPMAT(planeMat);
     sidemat = &MATERIAL(planeMat);
+    floorTex = HAS_TOPMAT(planeMat) ? TILE_TOPTEX(planeMat) : TILE_TEX(planeMat);
+    sideTex = TILE_TEX(planeMat);
 
     // Outer walls (Plateau)
     if (mb64_curr_boundary & MB64_BOUNDARY_OUTER_WALLS) {
@@ -148,7 +152,7 @@ void process_boundary(u32 processRenderMode) {
 
         if (do_process(&sidematType, processRenderMode)) {
             set_render_mode( sidematType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidemat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sideTex);
             if (showBackface) {
                 mb64_render_flip_normals = FALSE;
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
@@ -156,7 +160,7 @@ void process_boundary(u32 processRenderMode) {
             }
             render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -33, -32, 0);
 
-            Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+            Gfx *sidetex = TILE_SIDETEX(planeMat);
             if (sidetex && HAS_TOPMAT(planeMat)) {
                 render_boundary_decal_edge(sidetex, -33, sidematType);
             }
@@ -166,7 +170,7 @@ void process_boundary(u32 processRenderMode) {
         if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
             gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
             gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidemat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sideTex);
             if (showBackface) {
                 mb64_render_flip_normals = FALSE;
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -42, -33, 1);
@@ -182,7 +186,7 @@ void process_boundary(u32 processRenderMode) {
         u8 matType = mat->type;
         if (do_process(&matType, processRenderMode)) {
             set_render_mode( matType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], floorTex);
             render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -32, -32, 0);
         }
     }
@@ -206,13 +210,13 @@ void process_boundary(u32 processRenderMode) {
             renderWalls = (mb64_lopt_boundary_height > 0);
         }
 
-        Gfx *sidetex = get_sidetex(TILE_MATDEF(planeMat).topmat);
+        Gfx *sidetex = TILE_SIDETEX(planeMat);
         u32 renderTopDecal = sidetex && HAS_TOPMAT(planeMat) && !(mb64_curr_boundary & MB64_BOUNDARY_CEILING);
         if (renderTopDecal) topY -= 1;
 
         if (renderWalls && do_process(&sidematType, processRenderMode)) {
             set_render_mode( sidematType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidemat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sideTex);
             if (topY > bottomY + 32) {
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY, bottomY + 32, 0);
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), bottomY + 32, topY, 0);
@@ -233,15 +237,15 @@ void process_boundary(u32 processRenderMode) {
             if ((processRenderMode == PROCESS_TILE_NORMAL) && (mb64_lopt_bg != 4) && (mb64_lopt_bg != 9)) {
                 gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
                 gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], &mat_maker_MakerBlack);
+                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_dl_Black);
                 render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), -40, -40, 0);
             } else if (processRenderMode == PROCESS_TILE_TRANSPARENT) {
                 gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
                 gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
 repeatBackface:
-                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidemat->gfx);
+                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sideTex);
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 0);
-                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], &mat_maker_MakerBlack);
+                gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_dl_Black);
                 render_boundary(wall_boundary, ARRAY_COUNT(wall_boundary), -40, bottomY, 2);
                 if (showBackface) {
                     mb64_render_flip_normals = TRUE;
@@ -263,7 +267,7 @@ repeatBackface:
         if (topMatOpaque && (processRenderMode == PROCESS_TILE_VPLEX)) {
             gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
             gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_VPLEX_SCREEN, G_RM_VPLEX_SCREEN2);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], floorTex);
             render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
         }
 
@@ -275,7 +279,7 @@ repeatBackface:
                 gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
                 gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             }
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], floorTex);
             render_boundary(floor_edge_boundary, ARRAY_COUNT(floor_edge_boundary), y, y, 0);
         }
     }
@@ -291,7 +295,7 @@ repeatBackface:
         if (do_process(&sidematType, processRenderMode)) {
             mb64_render_flip_normals = TRUE;
             set_render_mode( sidematType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidemat->gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sideTex);
             render_boundary(floor_boundary, ARRAY_COUNT(floor_boundary), y, y, 0);
             mb64_render_flip_normals = FALSE;
         }

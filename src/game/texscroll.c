@@ -1,49 +1,18 @@
 #include "types.h"
 #include "include/segment_symbols.h"
+#include "include/segment_names.h"
 #include "memory.h"
 #include "tile_scroll.h"
 #include "texscroll.h"
 #include "engine/math_util.h"
 #include "src/engine/behavior_script.h"
+#include "mb64/gfx/mb64_textures.h"
 
 #ifdef TARGET_N64
 #define SCROLL_CONDITION(condition) condition
 #else
 #define SCROLL_CONDITION(condition) 1
 #endif
-
-extern u32 gGlobalTimer;
-extern u8 maker_minecraft_water_ci4[];
-extern u8 maker_lava_still_ci8[];
-extern Gfx mat_maker_MakerMCWater[];
-extern Gfx mat_maker_MakerMCLava[];
-extern Gfx mat_maker_MakerMCFlowingLava[];
-void scroll_sts_mat_maker_MakerMCFlowingLava() {
-	static int intervalTex0 = 4;
-	static int curInterval0 = 4;
-	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCFlowingLava);
-
-	if (--curInterval0 <= 0) {
-		shift_t(mat, 12, PACK_TILESIZE(0, 68));
-		curInterval0 = intervalTex0;
-	}
-}
-void scroll_minecraft_textures() {
-	scroll_sts_mat_maker_MakerMCFlowingLava();
-
-	u8 *waterTex = segmented_to_virtual(maker_minecraft_water_ci4);
-	waterTex += (16*8) * ((gGlobalTimer/2) % 32);
-	Gfx *mat = segmented_to_virtual(mat_maker_MakerMCWater);
-	mat[8].words.w1 = (uintptr_t)waterTex;
-
-	u8 *lavaTex = segmented_to_virtual(maker_lava_still_ci8);
-	lavaTex += (16*16) * ((gGlobalTimer/2) % 38);
-	mat = segmented_to_virtual(mat_maker_MakerMCLava);
-	mat[8].words.w1 = (uintptr_t)lavaTex;
-	mat = segmented_to_virtual(mat_maker_MakerMCFlowingLava);
-	mat[8].words.w1 = (uintptr_t)lavaTex;
-}
-
 
 #include "src/game/texscroll/group_global_texscroll.inc.c"
 // #include "src/game/texscroll/wf_texscroll.inc.c"
@@ -71,8 +40,8 @@ void scroll_minecraft_textures() {
 // #include "src/game/texscroll/ttc_texscroll.inc.c"
 void scroll_textures() {
 
-	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group_global_yay0SegmentRomStart)) {
-		scroll_minecraft_textures();
+	if(SCROLL_CONDITION(sSegmentROMTable[SEGMENT_MB64_TEXTURES] == (uintptr_t)_mb64_textures_yay0SegmentRomStart)) {
+		scroll_mb64_textures();
 	}
 
 	// if(SCROLL_CONDITION(sSegmentROMTable[0x7] == (uintptr_t)_wf_segment_7SegmentRomStart)) {
@@ -170,5 +139,4 @@ void scroll_textures() {
 	if(SCROLL_CONDITION(sSegmentROMTable[0x4] == (uintptr_t)_group_global_yay0SegmentRomStart)) {
 		scroll_textures_group_global();
 	}
-
 }

@@ -2450,6 +2450,24 @@ ALIGNED8 const Texture mb64_painting_unknown[] = {
 #include "textures/segment2/mb64_painting_unknown.rgba16.inc.c"
 };
 
+ALIGNED8 static const Texture mb64_linetex_rgba16[] = {
+#include "textures/segment2/mb64_linetex.rgba16.inc.c"
+};
+
+const Gfx mb64_line_mat_dl[] = {
+    gsSPGeometryMode(G_CULL_BACK, 0),
+    gsDPPipeSync(),
+    gsDPSetCombineLERP(TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0,
+                       TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0),
+    gsDPSetTextureFilter(G_TF_POINT),
+    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPSetPrimColor(0, 0, 255, 212, 0, 255),
+    gsDPLoadTextureBlock(mb64_linetex_rgba16, G_IM_FMT_RGBA, G_IM_SIZ_16b,
+        4, 2, 0, G_TX_WRAP, G_TX_WRAP, 2, 1, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
 // Unreferenced light group
 
 // 0x02014470 - 0x020144B0

@@ -32,6 +32,7 @@ const LevelScript level_game_entry[] = {
     LOAD_MB64(),
     LOAD_YAY0(/*seg*/ SEGMENT_GROUP_GLOBAL_YAY0, _group_global_yay0SegmentRomStart, _group_global_yay0SegmentRomEnd),
     LOAD_RAW_WITH_CODE(/*seg*/ SEGMENT_GROUP_GLOBAL_GEO, _group_global_geoSegmentRomStart, _group_global_geoSegmentRomEnd, _group_global_geoSegmentBssStart, _group_global_geoSegmentBssEnd),
+    LOAD_YAY0(/*seg*/ SEGMENT_MB64_TEXTURES, _mb64_textures_yay0SegmentRomStart, _mb64_textures_yay0SegmentRomEnd),
     LOAD_YAY0(0x0B, _effect_yay0SegmentRomStart, _effect_yay0SegmentRomEnd),
     ALLOC_LEVEL_POOL(),
     JUMP_LINK(script_func_mb64_global),

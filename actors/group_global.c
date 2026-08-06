@@ -61,8 +61,6 @@
 #include "noteblock/collision.inc.c"
 
 #include "top/model.inc.c"
-#include "maker/model.inc.c"
-#include "maker/minecrafttex.inc.c"
 
 // Just a single idle anim for editor
 #include "mario_btcm/anims/data.inc.c"

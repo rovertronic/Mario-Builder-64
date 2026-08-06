@@ -27,7 +27,7 @@ static char *get_option_name(const struct mb64_ui_option *opt) {
     return mb64_object_type_list[opt->objectType].name;
 }
 
-const struct texture_define *get_button_tex(u32 buttonId, u32 optIndex) {
+const struct ci_texture_define *get_button_tex(u32 buttonId, u32 optIndex) {
     struct mb64_ui_button_type *button = &mb64_ui_buttons[buttonId];
     if (button->optionCount > 0) {
         return button->options[optIndex].btn;
@@ -53,11 +53,11 @@ char *get_button_str(u32 buttonId) {
     return mb64_terrain_info_list[button->id].name;
 }
 
-static void mb64_render_button_tex(const struct texture_define *tex) {
-    const struct texture_define *t = segmented_to_virtual(tex);
+static void mb64_render_button_tex(const struct ci_texture_define *tex) {
+    const struct ci_texture_define *t = segmented_to_virtual(tex);
 
-    gDPLoadTLUT(gDisplayListHead++, t->palCount, 256, t->pal);
-    if (t->type == TEXTURE_TYPE_CI4) {
+    gDPLoadTLUT(gDisplayListHead++, t->palCount + 1, 256, t->pal);
+    if (CI_TEXTURE_IS_CI4(t)) {
         gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_CI, G_IM_SIZ_16b, 1, t->tex);
         gSPDisplayList(gDisplayListHead++, mb64_btn_dl_ci4);
     } else {
@@ -66,7 +66,7 @@ static void mb64_render_button_tex(const struct texture_define *tex) {
     }
 }
 
-const struct texture_define *get_button_blank(u32 buttonId) {
+const struct ci_texture_define *get_button_blank(u32 buttonId) {
     u8 placeMode = mb64_ui_buttons[buttonId].placeMode;
     if (placeMode == MB64_PM_TILE) {
         return &mb64_btn_blankterrain;
@@ -79,8 +79,8 @@ const struct texture_define *get_button_blank(u32 buttonId) {
 
 void render_button(int button, int param, int selected, s16 x, s16 y) {
     s32 op = (selected ? 150 : 255);
-    const struct texture_define *tex = get_button_tex(button, param);
-    const struct texture_define *blank = get_button_blank(button);
+    const struct ci_texture_define *tex = get_button_tex(button, param);
+    const struct ci_texture_define *blank = get_button_blank(button);
 
     create_dl_translation_matrix(MENU_MTX_PUSH, x, y, 0);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, op, 255);
@@ -510,10 +510,18 @@ void toolbox_select_button(Selector2DComponent *s, UNUSED u8 column, UNUSED u8 r
 void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
     FrameComponent *f = (FrameComponent *)m;
     Selector2DComponent *box = get_parent(f);
+    AnimatedComponent *scroller = get_parent(box);
 
     gSPDisplayList(gDisplayListHead++, mb64_btn_dl_end);
 
     if (mb64_toolbox[box->index] == MB64_BUTTON_BLANK) return;
+
+    // hide tooltip when selection is on the other page and scroller is not animating
+    if (!scroller->timer) {
+        int onPage1 = (box->index % box->columns) >= 9;
+        int viewingPage1 = scroller->offset != 0;
+        if (onPage1 != viewingPage1) return;
+    }
 
     x = sSelectedX + 21;
     y = sSelectedY - 3;

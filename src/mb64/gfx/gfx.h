@@ -16,6 +16,10 @@ extern u8 mb64_append_frameone_bandaid_fix;
 extern u32 mb64_gfx_total;
 extern u32 mb64_vtx_total;
 
+extern Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
+extern Gfx *mb64_terrain_gfx_opa;
+extern Gfx *mb64_terrain_gfx_tp;
+
 extern Vtx *mb64_curr_vtx;
 extern Gfx *mb64_curr_gfx;
 extern u16 mb64_gfx_index;

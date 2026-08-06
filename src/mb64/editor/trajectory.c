@@ -10,7 +10,7 @@
 #include <PR/gbi.h>
 #include "game/game_init.h"
 #include "game/object_list_processor.h"
-#include "actors/maker/header.h"
+#include "game/segment2.h"
 #include "engine/math_util.h"
 
 struct Waypoint mb64_trajectory_list[MB64_MAX_TRAJECTORIES][MB64_TRAJECTORY_LENGTH];
@@ -92,7 +92,7 @@ void generate_trajectory_gfx(void) {
     mb64_curr_gfx = mb64_trajectory_gfx;
     mb64_curr_vtx = mb64_trajectory_vtx;
     mb64_gfx_index = 0;
-    gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat_maker_MakerLineMat_layer1);
+    gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_line_mat_dl);
 
     for (s32 traj = 0; traj < mb64_trajectories_used; traj++) {
         struct Waypoint *curr_trajectory = mb64_trajectory_list[traj];
@@ -133,7 +133,6 @@ void generate_trajectory_gfx(void) {
         display_cached_tris();
     }
 
-    gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mat_revert_maker_MakerLineMat_layer1);
     gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index]);
 }
 

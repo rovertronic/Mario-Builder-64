@@ -3,8 +3,10 @@
 
 #include <PR/gbi.h>
 #include "mb64/collision.h"
+#include "mb64/gfx/mb64_textures.h"
 #include "game/emutest.h"
 #include "game/geo_misc.h"
+#include "game/memory.h"
 #include "engine/math_util.h"
 
 u8 mb64_use_alt_uvs = FALSE; // Used for decals and special tile shapes
@@ -14,6 +16,45 @@ u8 mb64_render_vertical = FALSE; // Used for prioritizing vertical UVs over hori
 u8 mb64_growth_render_type = 0; // 0 - normal, 1 - grass top, 2 - grass side, 3 - fence, 4 - pole
 u8 mb64_curr_mat_has_topside = FALSE;
 u8 mb64_curr_poly_vert_count = 4; // 3 = tri, 4 = quad
+
+struct mb64_material_gfx mb64_material_gfx;
+
+static Gfx *mb64_build_material_gfx(const struct texture_define *def) {
+    Gfx *start;
+
+    if (def == NULL) {
+        return NULL;
+    }
+
+    start = &mb64_curr_gfx[mb64_gfx_index];
+    mb64_append_texture(def);
+    gSPEndDisplayList(&mb64_curr_gfx[mb64_gfx_index++]);
+    return start;
+}
+
+void mb64_rebuild_materials_gfx(void) {
+    s32 i;
+    struct mb64_theme *theme = &mb64_theme_table[mb64_lopt_theme];
+
+    for (i = 0; i < NUM_MATERIALS_PER_THEME; i++) {
+        const struct texture_define *sidetexDef = NULL;
+
+        mb64_material_gfx.mats[i].tex = mb64_build_material_gfx(mb64_mat_table[theme->mats[i].mat].tex);
+        if (theme->mats[i].topmat != theme->mats[i].mat) {
+            mb64_material_gfx.mats[i].toptex = mb64_build_material_gfx(mb64_mat_table[theme->mats[i].topmat].tex);
+            sidetexDef = mb64_get_sidetex_def(theme->mats[i].topmat);
+        } else {
+            mb64_material_gfx.mats[i].toptex = NULL;
+        }
+        mb64_material_gfx.mats[i].sidetex = mb64_build_material_gfx(sidetexDef);
+    }
+
+    mb64_material_gfx.pole = mb64_build_material_gfx(mb64_mat_table[theme->pole].tex);
+    mb64_material_gfx.fence = mb64_build_material_gfx(mb64_fence_texs[theme->fence]);
+    mb64_material_gfx.bars = mb64_build_material_gfx(mb64_bar_texs[theme->bars][0]);
+    mb64_material_gfx.barsTop = mb64_build_material_gfx(mb64_bar_texs[theme->bars][1]);
+    mb64_material_gfx.water = mb64_build_material_gfx(mb64_water_texs[theme->water]);
+}
 
 void mb64_transform_vtx_with_rot(s8 v[][3], s8 oldv[][3], u32 rot) {
     for (u32 i = 0; i < mb64_curr_poly_vert_count; i++) {
@@ -552,7 +593,7 @@ void set_render_mode(u32 tileType, u32 disableZ) {
     gDPSetRenderMode(&mb64_curr_gfx[mb64_gfx_index++], rendermode, 0);
 }
 
-Gfx *get_sidetex(s32 matid) {
+const struct texture_define *mb64_get_sidetex_def(s32 matid) {
     for (s32 i = 0; i < ARRAY_COUNT(mb64_topmat_table); i++) {
         if (mb64_topmat_table[i].mat == matid) {
             return mb64_topmat_table[i].decaltex;
@@ -616,7 +657,7 @@ void process_tiles(u32 processTileRenderMode) {
         }
 
         set_render_mode( matType, FALSE);
-        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], MATERIAL(mat).gfx);
+        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TILE_TEX(mat));
         mb64_render_vertical = MATERIAL(mat).vertical;
 
         // Important to not use matType here so that it's still opaque for screens
@@ -638,7 +679,7 @@ skip_maintex:
         if (mb64_curr_mat_has_topside) {
             u8 topmatType = TOPMAT(mat).type;
             if (!do_process(&topmatType, processTileRenderMode)) continue;
-            Gfx *sidetex = get_sidetex(TILE_MATDEF(mat).topmat);
+            Gfx *sidetex = TILE_SIDETEX(mat);
             if (sidetex) {
                 mb64_use_alt_uvs = TRUE;
                 mb64_render_vertical = TRUE;
@@ -678,7 +719,7 @@ skip_maintex:
             }
 
             set_render_mode(topmatType, FALSE);
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TOPMAT(mat).gfx);
+            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], TILE_TOPTEX(mat));
             mb64_render_vertical = TOPMAT(mat).vertical;
 
             mb64_growth_render_type = 1;
@@ -732,4 +773,48 @@ void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u
     }
     mb64_num_vertices_cached += 4;
     check_cached_tris();
+}
+
+void mb64_append_texture(const struct texture_define *def) {
+    const struct texture_define *d = segmented_to_virtual(def);
+    int width = 1 << d->wMask;
+    int height = 1 << d->hMask;
+
+    gDPPipeSync(&mb64_curr_gfx[mb64_gfx_index++]);
+    gSPLightColor(&mb64_curr_gfx[mb64_gfx_index++], LIGHT_1, 0xffffffff);
+    gSPLightColor(&mb64_curr_gfx[mb64_gfx_index++], LIGHT_2, 0x7f7f7fff);
+    gSPTexture(&mb64_curr_gfx[mb64_gfx_index++], 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+
+    if (d->type == TEXTURE_TYPE_SOLID) {
+        gDPSetCombineLERP(&mb64_curr_gfx[mb64_gfx_index++],
+            PRIMITIVE, 0, SHADE, 0, 0, 0, 0, 1,
+            PRIMITIVE, 0, SHADE, 0, 0, 0, 0, 1);
+        gDPSetPrimColor(&mb64_curr_gfx[mb64_gfx_index++], 0, 0, d->solid[0], d->solid[1], d->solid[2], 255);
+        gDPSetTextureLUT(&mb64_curr_gfx[mb64_gfx_index++], G_TT_NONE);
+        return;
+    }
+
+    gDPSetCombineLERP(&mb64_curr_gfx[mb64_gfx_index++],
+        TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0,
+        TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0);
+    gDPSetPrimColor(&mb64_curr_gfx[mb64_gfx_index++], 0, 0, 255, 255, 255, d->alpha);
+
+    if (d->type == TEXTURE_TYPE_CI) {
+        u32 shift = 0;
+        if (mb64_lopt_theme == MB64_THEME_MC) {
+            shift = 1;
+        } else if (d == segmented_to_virtual(&mb64_tex_Screen)) {
+            shift = 14;
+        }
+
+        gDPSetTextureLUT(&mb64_curr_gfx[mb64_gfx_index++], G_TT_RGBA16);
+        gDPLoadTLUT(&mb64_curr_gfx[mb64_gfx_index++], d->ci.palCount + 1, 256, d->ci.pal);
+        if (CI_TEXTURE_IS_CI4(&d->ci)) {
+            gDPLoadTextureBlock_4b(&mb64_curr_gfx[mb64_gfx_index++], d->ci.tex, G_IM_FMT_CI, width, height, 0,
+                d->cms, d->cmt, d->wMask, d->hMask, shift, shift);
+        } else {
+            gDPLoadTextureBlock(&mb64_curr_gfx[mb64_gfx_index++], d->ci.tex, G_IM_FMT_CI, G_IM_SIZ_8b, width, height, 0,
+                d->cms, d->cmt, d->wMask, d->hMask, shift, shift);
+        }
+    }
 }

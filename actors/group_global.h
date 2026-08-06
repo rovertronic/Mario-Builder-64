@@ -257,8 +257,6 @@ extern const struct Animation *const moneybag_seg6_anims_06005E5C[];
 
 #include "top/header.h"
 
-#include "maker/header.h"
-
 #include "mario_btcm/anim_header.h"
 
 #include "sb_cube/geo_header.h"

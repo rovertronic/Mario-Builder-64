@@ -13,11 +13,12 @@
 #include "engine/math_util.h"
 #include "game/ingame_menu.h"
 
-Gfx mb64_terrain_gfx[MB64_GFX_SIZE]; //gfx
+Gfx mb64_terrain_gfx[MB64_GFX_SIZE];
+Gfx *mb64_terrain_gfx_opa;
 Gfx *mb64_terrain_gfx_tp;
 Vtx mb64_terrain_vtx[MB64_VTX_SIZE];
 
-Gfx preview_gfx[50];
+Gfx preview_gfx[256];
 Vtx preview_vtx[100];
 
 static void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64_terrain *terrain, u32 rot, u32 processType, u32 disableZ) {
@@ -27,7 +28,7 @@ static void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64
 
     if (do_process(&matType, processType)) {
         set_render_mode( matType, disableZ);
-        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[matid].gfx);
+        mb64_append_texture(mb64_mat_table[matid].tex);
         mb64_render_vertical = mb64_mat_table[matid].vertical;
         // Important to not use matType here so that it's still opaque for screens
         if (((matType == MAT_CUTOUT) ||
@@ -42,12 +43,12 @@ static void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64
     if (mb64_curr_mat_has_topside) {
         u8 topMatType = mb64_mat_table[topmatid].type;
         if (!do_process(&topMatType, processType)) return;
-        Gfx *sidetex = get_sidetex(topmatid);
+        const struct texture_define *sidetex = mb64_get_sidetex_def(topmatid);
         if (sidetex != NULL) {
             mb64_use_alt_uvs = TRUE;
             mb64_render_vertical = TRUE;
             mb64_growth_render_type = 2;
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], sidetex);
+            mb64_append_texture(sidetex);
 
             // DECAL MODE
             if (matType != MAT_TRANSPARENT) { // Render in decal mode for cutouts, opaque and screen
@@ -67,7 +68,7 @@ static void render_preview_block(u32 matid, u32 topmatid, s8 pos[3], struct mb64
         mb64_growth_render_type = 1;
 
         set_render_mode( topMatType, disableZ);
-        gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[topmatid].gfx);
+        mb64_append_texture(mb64_mat_table[topmatid].tex);
         mb64_render_vertical = mb64_mat_table[topmatid].vertical;
         process_tile(pos, terrain, rot);
         display_cached_tris();
@@ -80,6 +81,8 @@ void generate_terrain_gfx(void) {
     mb64_curr_gfx = mb64_terrain_gfx;
     mb64_curr_vtx = mb64_terrain_vtx;
     mb64_gfx_index = 0;
+    mb64_rebuild_materials_gfx();
+    mb64_terrain_gfx_opa = &mb64_curr_gfx[mb64_gfx_index];
     mb64_build_collision_type = 0;
 
     mb64_use_alt_uvs = FALSE;
@@ -224,7 +227,7 @@ Gfx *mb64_append(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx
             return NULL;
         }
 
-        geo_append_display_list(mb64_terrain_gfx, LAYER_OPAQUE);
+        geo_append_display_list(mb64_terrain_gfx_opa, LAYER_OPAQUE);
         geo_append_display_list(mb64_terrain_gfx_tp, LAYER_TRANSPARENT);
 
         //this extra append is for the editor tile preview
@@ -395,25 +398,25 @@ void custom_theme_draw_block(f32 xpos, f32 ypos, s32 index) {
         mb64_use_alt_uvs = TRUE;
         mb64_curr_poly_vert_count = 4;
         if (index == 10) { // Poles
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_mat_table[mb64_curr_custom_theme.pole].gfx);
+            mb64_append_texture(mb64_mat_table[mb64_curr_custom_theme.pole].tex);
             set_render_mode( mb64_mat_table[mb64_curr_custom_theme.pole].type, TRUE);
             mb64_growth_render_type = 4; // poles
             process_tile(pos, &mb64_terrain_pole, 0);
         } else if (index == 11) { // Fence
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_fence_texs[mb64_curr_custom_theme.fence]);
+            mb64_append_texture(mb64_fence_texs[mb64_curr_custom_theme.fence]);
             set_render_mode( MAT_CUTOUT, TRUE);
             mb64_growth_render_type = 3; // fence
             process_tile(pos, &mb64_terrain_fence, 0);
         } else if (index == 12) { // Iron Mesh
             set_render_mode( MAT_CUTOUT, TRUE);
             u8 connections[5] = {1,0,1,0,1};
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][1]);
+            mb64_append_texture(mb64_bar_texs[mb64_curr_custom_theme.bars][1]);
             render_bars_top(pos, connections);
             display_cached_tris();
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_bar_texs[mb64_curr_custom_theme.bars][0]);
+            mb64_append_texture(mb64_bar_texs[mb64_curr_custom_theme.bars][0]);
             render_bars_side(pos, connections);
         } else if (index == 13) { // Water
-            gSPDisplayList(&mb64_curr_gfx[mb64_gfx_index++], mb64_water_texs[mb64_curr_custom_theme.water]);
+            mb64_append_texture(mb64_water_texs[mb64_curr_custom_theme.water]);
             set_render_mode( MAT_TRANSPARENT, TRUE);
             render_water(pos);
         }

@@ -2,9 +2,63 @@
 
 #include <PR/ultratypes.h>
 #include <PR/gbi.h>
+#include "macros.h"
 #include "types.h"
 #include "mb64/editor/grid.h"
-#include "mb64/gfx/mb64_buttons.h"
+
+enum texture_type {
+    TEXTURE_TYPE_CI,
+    TEXTURE_TYPE_SOLID,
+};
+
+struct ci_texture_define {
+    const Texture *tex;
+    const Texture *pal;
+    u8 palCount;
+};
+
+#define CI_TEXTURE_IS_CI4(ci) ((ci)->palCount < 16)
+
+struct texture_define {
+    union {
+        struct ci_texture_define ci;
+        u8 solid[3];
+    };
+    u8 type : 2;
+    u8 wMask : 3;
+    u8 hMask : 3;
+    u8 cms : 2;
+    u8 cmt : 2;
+    u8 alpha;
+};
+
+// Level-geometry texture macros (button macros are DEFINE_CI4_BUTTON / DEFINE_CI8_BUTTON).
+// palCount stores last palette index (count - 1) so a full 256-color CI8 fits in u8.
+#define DEFINE_CI4_ALPHA(name, wMask, hMask, cms, cmt, a) \
+    const struct texture_define name = { \
+        { GLUE2(name, _ci4), GLUE2(name, _pal_rgba16), \
+          (u8)(ARRAY_COUNT(GLUE2(name, _pal_rgba16)) / 2 - 1) }, \
+        TEXTURE_TYPE_CI, (wMask), (hMask), (cms), (cmt), (a), \
+    }
+
+#define DEFINE_CI8_ALPHA(name, wMask, hMask, cms, cmt, a) \
+    const struct texture_define name = { \
+        { GLUE2(name, _ci8), GLUE2(name, _pal_rgba16), \
+          (u8)(ARRAY_COUNT(GLUE2(name, _pal_rgba16)) / 2 - 1) }, \
+        TEXTURE_TYPE_CI, (wMask), (hMask), (cms), (cmt), (a), \
+    }
+
+#define DEFINE_CI4(name, wMask, hMask, cms, cmt) \
+    DEFINE_CI4_ALPHA(name, wMask, hMask, cms, cmt, 255)
+
+#define DEFINE_CI8(name, wMask, hMask, cms, cmt) \
+    DEFINE_CI8_ALPHA(name, wMask, hMask, cms, cmt, 255)
+
+#define DEFINE_SOLID(name, r, g, b) \
+    const struct texture_define name = { \
+        { .solid = { (r), (g), (b) } }, \
+        TEXTURE_TYPE_SOLID, 0, 0, 0, 0, 255, \
+    }
 
 enum mb64_materials {
     MB64_MATLIST_START,
@@ -212,7 +266,7 @@ enum mb64_materials {
 };
 
 struct mb64_material {
-    Gfx *gfx;
+    const struct texture_define *tex;
     u8 type;
     u8 vertical;
     TerrainData col;
@@ -221,7 +275,7 @@ struct mb64_material {
 
 struct mb64_topmaterial {
     u8 mat;
-    Gfx *decaltex;
+    const struct texture_define *decaltex;
 };
 
 struct mb64_tilemat_def {
@@ -334,7 +388,7 @@ struct mb64_terrain {
 
 struct mb64_terrain_info {
     char *name;
-    const struct texture_define *button;
+    const struct ci_texture_define *button;
     struct mb64_terrain *terrain;
 };
 
@@ -396,10 +450,30 @@ extern struct mb64_theme mb64_theme_table[];
 extern struct mb64_custom_theme mb64_default_custom;
 extern struct mb64_custom_theme mb64_curr_custom_theme;
 
-extern Gfx *mb64_fence_texs[];
-extern Gfx *mb64_bar_texs[][2];
-extern Gfx *mb64_water_texs[];
+extern const struct texture_define *mb64_fence_texs[];
+extern const struct texture_define *mb64_bar_texs[][2];
+extern const struct texture_define *mb64_water_texs[];
 extern struct mb64_topmaterial mb64_topmat_table[19];
+
+struct mb64_tile_mat_gfx {
+    Gfx *tex;
+    Gfx *sidetex;
+    Gfx *toptex;
+};
+
+struct mb64_material_gfx {
+    struct mb64_tile_mat_gfx mats[NUM_MATERIALS_PER_THEME];
+    Gfx *pole;
+    Gfx *fence;
+    Gfx *bars;
+    Gfx *barsTop;
+    Gfx *water;
+};
+
+extern struct mb64_material_gfx mb64_material_gfx;
+
+void mb64_append_texture(const struct texture_define *def);
+void mb64_rebuild_materials_gfx(void);
 
 // Returns full tile definition (struct mb64_tilemat_def)
 #define TILE_MATDEF(matid) (mb64_theme_table[mb64_lopt_theme].mats[matid])
@@ -413,11 +487,14 @@ extern struct mb64_topmaterial mb64_topmat_table[19];
 
 #define fullblock_can_be_waterlogged(mat) ((MATERIAL(mat).type == MAT_CUTOUT) || (TOPMAT(mat).type == MAT_CUTOUT))
 
-#define FENCE_TEX() (mb64_fence_texs[mb64_theme_table[mb64_lopt_theme].fence])
-#define POLE_TEX()  (mb64_mat_table[mb64_theme_table[mb64_lopt_theme].pole].gfx)
-#define BARS_TEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][0])
-#define BARS_TOPTEX() (mb64_bar_texs[mb64_theme_table[mb64_lopt_theme].bars][1])
-#define WATER_TEX() (mb64_water_texs[mb64_theme_table[mb64_lopt_theme].water])
+#define FENCE_TEX() (mb64_material_gfx.fence)
+#define POLE_TEX()  (mb64_material_gfx.pole)
+#define BARS_TEX() (mb64_material_gfx.bars)
+#define BARS_TOPTEX() (mb64_material_gfx.barsTop)
+#define WATER_TEX() (mb64_material_gfx.water)
+#define TILE_TEX(matid) (mb64_material_gfx.mats[matid].tex)
+#define TILE_SIDETEX(matid) (mb64_material_gfx.mats[matid].sidetex)
+#define TILE_TOPTEX(matid) (mb64_material_gfx.mats[matid].toptex)
 
 #define retroland_filter_on() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_POINT); if (!gIsGliden) {mb64_uv_offset = 0;} }
 #define retroland_filter_off() if ((mb64_lopt_theme == MB64_THEME_RETRO) || (mb64_lopt_theme == MB64_THEME_MC)) { gDPSetTextureFilter(&mb64_curr_gfx[mb64_gfx_index++], G_TF_BILERP); mb64_uv_offset = (mb64_lopt_theme == MB64_THEME_MC ? -32 : -16); }
@@ -440,7 +517,7 @@ void process_tile(s8 pos[3], struct mb64_terrain *terrain, u32 rot);
 void render_boundary_quad(struct mb64_boundary_quad *quad, s16 y, s16 yHeight, u32 fade);
 void set_render_mode(u32 tileType, u32 disableZ);
 u32 do_process(u8 *targetMatType, u32 processTileRenderMode);
-Gfx *get_sidetex(s32 matid);
+const struct texture_define *mb64_get_sidetex_def(s32 matid);
 void render_water(s8 pos[3]);
 void process_tiles(u32 processTileRenderMode);
 

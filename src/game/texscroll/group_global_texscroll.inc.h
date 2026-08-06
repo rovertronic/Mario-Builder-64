@@ -3,7 +3,6 @@
 #include "actors/conveyor_half/texscroll.inc.h"
 #include "actors/conveyor_slope/texscroll.inc.h"
 #include "actors/badge/texscroll.inc.h"
-#include "actors/maker/texscroll.inc.h"
 #include "actors/mario_btcm/texscroll.inc.h"
 //#include "actors/showrunner/texscroll.inc.h"
 //#include "actors/egg/texscroll.inc.h"

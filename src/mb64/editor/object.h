@@ -152,7 +152,7 @@ typedef void (*DisplayFunc)(s32);
 
 struct mb64_object_info {
     char *name;
-    const struct texture_define *btn;
+    const struct ci_texture_define *btn;
     const BehaviorScript *behavior;
     f32 y_offset;
     u16 model_id;
