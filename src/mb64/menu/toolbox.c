@@ -20,16 +20,20 @@ MenuStyle toolbar_style = {
     .listOffsetSelected = TRUE
 };
 
-const struct texture_define *get_button_tex(u32 buttonId, u32 objIndex) {
+static char *get_option_name(const struct mb64_ui_option *opt) {
+    if (opt->name) {
+        return (char *)opt->name;
+    }
+    return mb64_object_type_list[opt->objectType].name;
+}
+
+const struct texture_define *get_button_tex(u32 buttonId, u32 optIndex) {
     struct mb64_ui_button_type *button = &mb64_ui_buttons[buttonId];
+    if (button->optionCount > 0) {
+        return button->options[optIndex].btn;
+    }
     if (button->placeMode != MB64_PM_TILE) {
-        u32 id;
-        if (button->multiObj) {
-            id = button->idList[objIndex];
-        } else {
-            id = button->id;
-        }
-        return mb64_object_type_list[id].btn;
+        return mb64_object_type_list[button->id].btn;
     }
     if (buttonId == MB64_BUTTON_BLANK) return &mb64_btn_blank;
     return mb64_terrain_info_list[button->id].button;
@@ -37,13 +41,14 @@ const struct texture_define *get_button_tex(u32 buttonId, u32 objIndex) {
 
 char *get_button_str(u32 buttonId) {
     struct mb64_ui_button_type *button = &mb64_ui_buttons[buttonId];
-    if (button->placeMode != MB64_PM_TILE) {
-        if (button->multiObj) {
-            return button->name;
-        } else {
-            u32 id = button->id;
-            return mb64_object_type_list[id].name;
+    if (button->optionCount > 0) {
+        if (button->label) {
+            return (char *)button->label;
         }
+        return mb64_object_type_list[button->options[0].objectType].name;
+    }
+    if (button->placeMode != MB64_PM_TILE) {
+        return mb64_object_type_list[button->id].name;
     }
     return mb64_terrain_info_list[button->id].name;
 }
@@ -132,17 +137,25 @@ int sample_block(int index) {
             continue;
         }
 
-        if (isObject && buttonInfo->multiObj) {
-            // Iterate over multilist
-            for (u32 j = 0; j < buttonInfo->paramCount; j++) {
-                if (buttonInfo->idList[j] == targetId) {
+        if (buttonInfo->optionCount > 0) {
+            // Bugfix: Prevent sample from sampling the BTCM ! box when in vanilla (they share an object ID)
+            if ((i == MB64_BUTTON_EXCLA) && (mb64_lopt_game != MB64_GAME_BTCM)) continue;
+            if ((i == MB64_BUTTON_VEXCLA) && (mb64_lopt_game != MB64_GAME_VANILLA)) continue;
+            s32 fallback = -1;
+            for (u32 j = 0; j < buttonInfo->optionCount; j++) {
+                const struct mb64_ui_option *opt = &buttonInfo->options[j];
+                if (opt->objectType != targetId) continue;
+                if (opt->bparam == targetBparam) {
                     set_toolbar(index, i, j);
                     return TRUE;
                 }
+                if (fallback < 0) fallback = j;
+            }
+            if (fallback >= 0) {
+                set_toolbar(index, i, fallback);
+                return TRUE;
             }
         } else if (buttonInfo->id == targetId) {
-            // Bugfix: Prevent sample from sampling the BTCM ! box when in vanilla (they share an object ID)
-            if ((i == MB64_BUTTON_EXCLA) && (mb64_lopt_game != MB64_GAME_BTCM)) continue;
             if (!isObject) mb64_mat_selection = targetBparam;
             set_toolbar(index, i, targetBparam);
             return TRUE;
@@ -215,23 +228,22 @@ void component_toolbar_loop(MenuComponent *m, s16 x, s16 y) {
     }
 
     if (mb64_place_mode != MB64_PM_TILE) {
-        // Switch parameters with Dpad
-        int param = buttonInfo->paramCount;
-        if (param != 0 && dir) {
-            curButton->buttonParam = (curButton->buttonParam + dir + param) % param;
+        // Switch options with Dpad
+        int optCount = buttonInfo->optionCount;
+        if (optCount != 0 && dir) {
+            curButton->buttonParam = (curButton->buttonParam + dir + optCount) % optCount;
             mb64_toolbar_params[toolbar->index] = curButton->buttonParam;
             menu_play_move_sound();
         }
-        // Set mb64_id_selection and the string to display
-        if (buttonInfo->multiObj) {
-            mb64_id_selection = buttonInfo->idList[curButton->buttonParam];
-            yellowStr = mb64_object_type_list[mb64_id_selection].name;
+        // Set mb64_id_selection / mb64_param_selection and the string to display
+        if (optCount > 0) {
+            const struct mb64_ui_option *opt = &buttonInfo->options[curButton->buttonParam];
+            mb64_id_selection = opt->objectType;
+            mb64_param_selection = opt->bparam;
+            yellowStr = get_option_name(opt);
         } else {
             mb64_id_selection = buttonInfo->id;
-            if (buttonInfo->names) {
-                yellowStr = buttonInfo->names[curButton->buttonParam];
-            }
-            mb64_param_selection = curButton->buttonParam;
+            mb64_param_selection = 0;
         }
     } else {
         mb64_id_selection = buttonInfo->id;
@@ -427,8 +439,8 @@ void toolbox_render_button(Selector2DComponent *s, s16 x, s16 y, u8 column, u8 r
         gToolboxIndex = index;
         sSelectedX = x;
         sSelectedY = y;
-        if (mb64_ui_buttons[mb64_toolbox[index]].multiObj) {
-            int maxParam = mb64_ui_buttons[mb64_toolbox[index]].paramCount;
+        if (mb64_ui_buttons[mb64_toolbox[index]].optionCount > 0) {
+            int maxParam = mb64_ui_buttons[mb64_toolbox[index]].optionCount;
             int dir = get_input(MENU_INPUT_DPAD, DIR_HORIZONTAL);
             mb64_toolbox_params[index] = (mb64_toolbox_params[index] + maxParam + dir) % maxParam;
             if (dir) menu_play_move_sound();
@@ -475,18 +487,18 @@ void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
     // Render name for selected button
     char *buttonName = get_button_str(mb64_toolbox[box->index]);
     struct mb64_ui_button_type *buttonInfo = &mb64_ui_buttons[mb64_toolbox[box->index]];
-    u32 isMulti = buttonInfo->multiObj;
+    u32 hasOptions = buttonInfo->optionCount > 0;
 
     char stringBuf[50];
-    if (isMulti) y += 8;
+    if (hasOptions) y += 8;
     s16 lowerX = x;
 
     s32 strLen = get_string_width_ascii(buttonName);
     s32 lowerStrLen = 0;
 
-    if (isMulti) {
-        u32 objId = buttonInfo->idList[mb64_toolbox_params[box->index]];
-        sprintf(stringBuf, "< %s >", mb64_object_type_list[objId].name);
+    if (hasOptions) {
+        const struct mb64_ui_option *opt = &buttonInfo->options[mb64_toolbox_params[box->index]];
+        sprintf(stringBuf, "< %s >", get_option_name(opt));
         lowerStrLen = get_string_width_ascii(stringBuf);
     }
 
@@ -500,7 +512,7 @@ void toolbox_render_text(MenuComponent *m, s16 x, s16 y) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_ENVIRONMENT, G_CC_ENVIRONMENT);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPFillRectangle(gDisplayListHead++, x - 5, SCREEN_HEIGHT - (y + 15), x + 5 + strLen, SCREEN_HEIGHT - (y - 1));
-    if (isMulti) {
+    if (hasOptions) {
         gDPFillRectangle(gDisplayListHead++, lowerX - 5, SCREEN_HEIGHT - (y - 1), lowerX + 5 + lowerStrLen, SCREEN_HEIGHT - (y - 17));
         menu_text_display(stringBuf, lowerX, y - 15, TEXT_YELLOW, TEXT_LEFT, 255);
     }

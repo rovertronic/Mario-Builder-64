@@ -2,6 +2,8 @@
 
 #include "engine.h"
 
+struct texture_define;
+
 enum {
     MB64_BUTTON_SETTINGS,
     MB64_BUTTON_TEST,
@@ -96,18 +98,20 @@ enum {
     MB64_BUTTON_COUNT,
 };
 
-struct mb64_ui_button_type {
-    u32 placeMode:2;
-    u32 multiObj:1;
-    u32 paramCount:8;
+struct mb64_ui_option {
+    const char *name;
+    const struct texture_define *btn;
+    u8 objectType;
+    u8 bparam;
+};
 
+struct mb64_ui_button_type {
+    u8 placeMode;
+    u8 optionCount;
+    const char *label;
     union {
         u32 id;
-        u8 *idList;
-    };
-    union {
-        char *name;
-        char **names;
+        struct mb64_ui_option *options;
     };
 };
 

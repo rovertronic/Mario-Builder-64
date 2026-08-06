@@ -196,7 +196,7 @@ ALIGNED8 static const Texture mb64_btn_pole_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_pole);
 
-// Tree
+// Bubbly Tree
 ALIGNED8 static const Texture mb64_btn_bubblytree_ci4[] = {
 #include "textures/mb64_buttons/bubblytree.ci4.inc.c"
 };
@@ -204,6 +204,51 @@ ALIGNED8 static const Texture mb64_btn_bubblytree_pal_rgba16[] = {
 #include "textures/mb64_buttons/bubblytree.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_bubblytree);
+
+// Palm Tree
+ALIGNED8 static const Texture mb64_btn_palmtree_ci4[] = {
+#include "textures/mb64_buttons/palmtree.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_palmtree_pal_rgba16[] = {
+#include "textures/mb64_buttons/palmtree.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_palmtree);
+
+// Spiky Tree
+ALIGNED8 static const Texture mb64_btn_spikytree_ci4[] = {
+#include "textures/mb64_buttons/spikytree.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_spikytree_pal_rgba16[] = {
+#include "textures/mb64_buttons/spikytree.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_spikytree);
+
+// Snowy Tree
+ALIGNED8 static const Texture mb64_btn_snowytree_ci4[] = {
+#include "textures/mb64_buttons/snowytree.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_snowytree_pal_rgba16[] = {
+#include "textures/mb64_buttons/snowytree.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_snowytree);
+
+// Farm Tree
+ALIGNED8 static const Texture mb64_btn_farmtree_ci4[] = {
+#include "textures/mb64_buttons/farmtree.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_farmtree_pal_rgba16[] = {
+#include "textures/mb64_buttons/farmtree.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_farmtree);
+
+// Dead Tree
+ALIGNED8 static const Texture mb64_btn_deadtree_ci4[] = {
+#include "textures/mb64_buttons/deadtree.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_deadtree_pal_rgba16[] = {
+#include "textures/mb64_buttons/deadtree.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_deadtree);
 
 // Cull Marker
 ALIGNED8 static const Texture mb64_btn_cullmarker_ci4[] = {
@@ -233,13 +278,13 @@ ALIGNED8 static const Texture mb64_btn_redcoinstar_pal_rgba16[] = {
 DEFINE_CI4(mb64_btn_redcoinstar);
 
 // Star Triggers
-ALIGNED8 static const Texture mb64_btn_triggerstar_ci8[] = {
-#include "textures/mb64_buttons/triggerstar.ci8.inc.c"
+ALIGNED8 static const Texture mb64_btn_triggerstar_ci4[] = {
+#include "textures/mb64_buttons/triggerstar.ci4.inc.c"
 };
 ALIGNED8 static const Texture mb64_btn_triggerstar_pal_rgba16[] = {
-#include "textures/mb64_buttons/triggerstar.ci8.pal"
+#include "textures/mb64_buttons/triggerstar.ci4.pal"
 };
-DEFINE_CI8(mb64_btn_triggerstar);
+DEFINE_CI4(mb64_btn_triggerstar);
 
 // Yellow Coin
 ALIGNED8 static const Texture mb64_btn_coin_ci4[] = {
@@ -250,7 +295,7 @@ ALIGNED8 static const Texture mb64_btn_coin_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_coin);
 
-// Coin Formation
+// Coin Line
 ALIGNED8 static const Texture mb64_btn_coinline_ci4[] = {
 #include "textures/mb64_buttons/coinline.ci4.inc.c"
 };
@@ -258,6 +303,42 @@ ALIGNED8 static const Texture mb64_btn_coinline_pal_rgba16[] = {
 #include "textures/mb64_buttons/coinline.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_coinline);
+
+// Vertical Coin Line
+ALIGNED8 static const Texture mb64_btn_verticalcoinline_ci4[] = {
+#include "textures/mb64_buttons/verticalcoinline.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_verticalcoinline_pal_rgba16[] = {
+#include "textures/mb64_buttons/verticalcoinline.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_verticalcoinline);
+
+// Coin Ring
+ALIGNED8 static const Texture mb64_btn_coinring_ci4[] = {
+#include "textures/mb64_buttons/coinring.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_coinring_pal_rgba16[] = {
+#include "textures/mb64_buttons/coinring.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_coinring);
+
+// Vertical Coin Ring
+ALIGNED8 static const Texture mb64_btn_verticalcoinring_ci4[] = {
+#include "textures/mb64_buttons/verticalcoinring.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_verticalcoinring_pal_rgba16[] = {
+#include "textures/mb64_buttons/verticalcoinring.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_verticalcoinring);
+
+// Coin Arrow
+ALIGNED8 static const Texture mb64_btn_coinarrow_ci4[] = {
+#include "textures/mb64_buttons/coinarrow.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_coinarrow_pal_rgba16[] = {
+#include "textures/mb64_buttons/coinarrow.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_coinarrow);
 
 // Green Coin
 ALIGNED8 static const Texture mb64_btn_greencoin_ci4[] = {
@@ -295,7 +376,7 @@ ALIGNED8 static const Texture mb64_btn_bluecoinswitch_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_bluecoinswitch);
 
-// Item Box
+// ! Box
 ALIGNED8 static const Texture mb64_btn_exclamationbox_ci4[] = {
 #include "textures/mb64_buttons/exclamationbox.ci4.inc.c"
 };
@@ -303,6 +384,60 @@ ALIGNED8 static const Texture mb64_btn_exclamationbox_pal_rgba16[] = {
 #include "textures/mb64_buttons/exclamationbox.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_exclamationbox);
+
+// Rocket Boots Box
+ALIGNED8 static const Texture mb64_btn_rocketbox_ci4[] = {
+#include "textures/mb64_buttons/rocketbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_rocketbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/rocketbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_rocketbox);
+
+// Vanetal Cap Box
+ALIGNED8 static const Texture mb64_btn_vanetalbox_ci4[] = {
+#include "textures/mb64_buttons/vanetalbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_vanetalbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/vanetalbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_vanetalbox);
+
+// Wing Cap Box
+ALIGNED8 static const Texture mb64_btn_wingbox_ci4[] = {
+#include "textures/mb64_buttons/wingbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_wingbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/wingbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_wingbox);
+
+// Metal Cap Box
+ALIGNED8 static const Texture mb64_btn_metalbox_ci4[] = {
+#include "textures/mb64_buttons/metalbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_metalbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/metalbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_metalbox);
+
+// Vanish Cap Box
+ALIGNED8 static const Texture mb64_btn_vanishbox_ci4[] = {
+#include "textures/mb64_buttons/vanishbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_vanishbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/vanishbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_vanishbox);
+
+// ? Box
+ALIGNED8 static const Texture mb64_btn_questionbox_ci4[] = {
+#include "textures/mb64_buttons/questionbox.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_questionbox_pal_rgba16[] = {
+#include "textures/mb64_buttons/questionbox.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_questionbox);
 
 // Star Trigger
 ALIGNED8 static const Texture mb64_btn_trigger_ci4[] = {
@@ -330,6 +465,15 @@ ALIGNED8 static const Texture mb64_btn_movingplatform_pal_rgba16[] = {
 #include "textures/mb64_buttons/movingplatform.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_movingplatform);
+
+// Looping Platform
+ALIGNED8 static const Texture mb64_btn_loopplatform_ci4[] = {
+#include "textures/mb64_buttons/loopplatform.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_loopplatform_pal_rgba16[] = {
+#include "textures/mb64_buttons/loopplatform.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_loopplatform);
 
 // Purple Switch
 ALIGNED8 static const Texture mb64_btn_purpleswitch_ci4[] = {
@@ -394,6 +538,15 @@ ALIGNED8 static const Texture mb64_btn_woodplatform_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_woodplatform);
 
+// Full Wooden Platform
+ALIGNED8 static const Texture mb64_btn_fullwoodplatform_ci4[] = {
+#include "textures/mb64_buttons/fullwoodplatform.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_fullwoodplatform_pal_rgba16[] = {
+#include "textures/mb64_buttons/fullwoodplatform.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_fullwoodplatform);
+
 // Bill Board
 ALIGNED8 static const Texture mb64_btn_signpost_ci4[] = {
 #include "textures/mb64_buttons/signpost.ci4.inc.c"
@@ -431,13 +584,13 @@ ALIGNED8 static const Texture mb64_btn_cowboy_pal_rgba16[] = {
 DEFINE_CI4(mb64_btn_cowboy);
 
 // Badge
-ALIGNED8 static const Texture mb64_btn_badge_ci8[] = {
-#include "textures/mb64_buttons/badge.ci8.inc.c"
+ALIGNED8 static const Texture mb64_btn_badge_ci4[] = {
+#include "textures/mb64_buttons/badge.ci4.inc.c"
 };
 ALIGNED8 static const Texture mb64_btn_badge_pal_rgba16[] = {
-#include "textures/mb64_buttons/badge.ci8.pal"
+#include "textures/mb64_buttons/badge.ci4.pal"
 };
-DEFINE_CI8(mb64_btn_badge);
+DEFINE_CI4(mb64_btn_badge);
 
 // Noteblock
 ALIGNED8 static const Texture mb64_btn_noteblock_ci4[] = {
@@ -448,7 +601,7 @@ ALIGNED8 static const Texture mb64_btn_noteblock_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_noteblock);
 
-// On-Off Button
+// Red On-Off Button
 ALIGNED8 static const Texture mb64_btn_redswitch_ci4[] = {
 #include "textures/mb64_buttons/redswitch.ci4.inc.c"
 };
@@ -457,7 +610,16 @@ ALIGNED8 static const Texture mb64_btn_redswitch_pal_rgba16[] = {
 };
 DEFINE_CI4(mb64_btn_redswitch);
 
-// On-Off Block
+// Blue On-Off Button
+ALIGNED8 static const Texture mb64_btn_blueswitch_ci4[] = {
+#include "textures/mb64_buttons/blueswitch.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_blueswitch_pal_rgba16[] = {
+#include "textures/mb64_buttons/blueswitch.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_blueswitch);
+
+// Red On-Off Block
 ALIGNED8 static const Texture mb64_btn_redblock_ci4[] = {
 #include "textures/mb64_buttons/redblock.ci4.inc.c"
 };
@@ -465,6 +627,15 @@ ALIGNED8 static const Texture mb64_btn_redblock_pal_rgba16[] = {
 #include "textures/mb64_buttons/redblock.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_redblock);
+
+// Blue On-Off Block
+ALIGNED8 static const Texture mb64_btn_blueblock_ci4[] = {
+#include "textures/mb64_buttons/blueblock.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_blueblock_pal_rgba16[] = {
+#include "textures/mb64_buttons/blueblock.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_blueblock);
 
 // Conveyor
 ALIGNED8 static const Texture mb64_btn_conveyor_ci4[] = {
@@ -474,6 +645,69 @@ ALIGNED8 static const Texture mb64_btn_conveyor_pal_rgba16[] = {
 #include "textures/mb64_buttons/conveyor.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_conveyor);
+
+// Full Conveyor
+ALIGNED8 static const Texture mb64_btn_fullconveyor_ci4[] = {
+#include "textures/mb64_buttons/fullconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_fullconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/fullconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_fullconveyor);
+
+// Up Conveyor
+ALIGNED8 static const Texture mb64_btn_upconveyor_ci4[] = {
+#include "textures/mb64_buttons/upconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_upconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/upconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_upconveyor);
+
+// Down Conveyor
+ALIGNED8 static const Texture mb64_btn_downconveyor_ci4[] = {
+#include "textures/mb64_buttons/downconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_downconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/downconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_downconveyor);
+
+// Red Conveyor
+ALIGNED8 static const Texture mb64_btn_redconveyor_ci4[] = {
+#include "textures/mb64_buttons/redconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_redconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/redconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_redconveyor);
+
+// Red Full Conveyor
+ALIGNED8 static const Texture mb64_btn_redfullconveyor_ci4[] = {
+#include "textures/mb64_buttons/redfullconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_redfullconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/redfullconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_redfullconveyor);
+
+// Red Up Conveyor
+ALIGNED8 static const Texture mb64_btn_redupconveyor_ci4[] = {
+#include "textures/mb64_buttons/redupconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_redupconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/redupconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_redupconveyor);
+
+// Red Down Conveyor
+ALIGNED8 static const Texture mb64_btn_reddownconveyor_ci4[] = {
+#include "textures/mb64_buttons/reddownconveyor.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_reddownconveyor_pal_rgba16[] = {
+#include "textures/mb64_buttons/reddownconveyor.ci4.pal"
+};
+DEFINE_CI4(mb64_btn_reddownconveyor);
 
 // Toad
 ALIGNED8 static const Texture mb64_btn_toad_ci8[] = {
@@ -1016,13 +1250,13 @@ ALIGNED8 static const Texture mb64_btn_bowserbomb_pal_rgba16[] = {
 DEFINE_CI4(mb64_btn_bowserbomb);
 
 // Save & Test
-ALIGNED8 static const Texture mb64_btn_check_ci8[] = {
-#include "textures/mb64_buttons/check.ci8.inc.c"
+ALIGNED8 static const Texture mb64_btn_check_ci4[] = {
+#include "textures/mb64_buttons/check.ci4.inc.c"
 };
 ALIGNED8 static const Texture mb64_btn_check_pal_rgba16[] = {
-#include "textures/mb64_buttons/check.ci8.pal"
+#include "textures/mb64_buttons/check.ci4.pal"
 };
-DEFINE_CI8(mb64_btn_check);
+DEFINE_CI4(mb64_btn_check);
 
 // Level Settings
 ALIGNED8 static const Texture mb64_btn_settings_ci4[] = {
@@ -1050,241 +1284,3 @@ ALIGNED8 static const Texture mb64_btn_pipe_pal_rgba16[] = {
 #include "textures/mb64_buttons/pipe.ci4.pal"
 };
 DEFINE_CI4(mb64_btn_pipe);
-
-
-// Current unused
-
-// Blue On-Off Block
-ALIGNED8 static const Texture mb64_btn_blueblock_ci4[] = {
-#include "textures/mb64_buttons/blueblock.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_blueblock_pal_rgba16[] = {
-#include "textures/mb64_buttons/blueblock.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_blueblock);
-
-// Blue On-Off Button
-ALIGNED8 static const Texture mb64_btn_blueswitch_ci4[] = {
-#include "textures/mb64_buttons/blueswitch.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_blueswitch_pal_rgba16[] = {
-#include "textures/mb64_buttons/blueswitch.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_blueswitch);
-
-// Coin Arrow
-ALIGNED8 static const Texture mb64_btn_coinarrow_ci4[] = {
-#include "textures/mb64_buttons/coinarrow.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_coinarrow_pal_rgba16[] = {
-#include "textures/mb64_buttons/coinarrow.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_coinarrow);
-
-// Coin Ring
-ALIGNED8 static const Texture mb64_btn_coinring_ci4[] = {
-#include "textures/mb64_buttons/coinring.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_coinring_pal_rgba16[] = {
-#include "textures/mb64_buttons/coinring.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_coinring);
-
-// Dead Tree
-ALIGNED8 static const Texture mb64_btn_deadtree_ci4[] = {
-#include "textures/mb64_buttons/deadtree.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_deadtree_pal_rgba16[] = {
-#include "textures/mb64_buttons/deadtree.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_deadtree);
-
-// Down Conveyor
-ALIGNED8 static const Texture mb64_btn_downconveyor_ci4[] = {
-#include "textures/mb64_buttons/downconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_downconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/downconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_downconveyor);
-
-// Farm Tree
-ALIGNED8 static const Texture mb64_btn_farmtree_ci4[] = {
-#include "textures/mb64_buttons/farmtree.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_farmtree_pal_rgba16[] = {
-#include "textures/mb64_buttons/farmtree.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_farmtree);
-
-// Full Conveyor
-ALIGNED8 static const Texture mb64_btn_fullconveyor_ci4[] = {
-#include "textures/mb64_buttons/fullconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_fullconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/fullconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_fullconveyor);
-
-// Full Wooden Platform
-ALIGNED8 static const Texture mb64_btn_fullwoodplatform_ci4[] = {
-#include "textures/mb64_buttons/fullwoodplatform.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_fullwoodplatform_pal_rgba16[] = {
-#include "textures/mb64_buttons/fullwoodplatform.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_fullwoodplatform);
-
-// Looping Platform
-ALIGNED8 static const Texture mb64_btn_loopplatform_ci4[] = {
-#include "textures/mb64_buttons/loopplatform.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_loopplatform_pal_rgba16[] = {
-#include "textures/mb64_buttons/loopplatform.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_loopplatform);
-
-// Metal Box
-ALIGNED8 static const Texture mb64_btn_metalbox_ci4[] = {
-#include "textures/mb64_buttons/metalbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_metalbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/metalbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_metalbox);
-
-// Palm Tree
-ALIGNED8 static const Texture mb64_btn_palmtree_ci4[] = {
-#include "textures/mb64_buttons/palmtree.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_palmtree_pal_rgba16[] = {
-#include "textures/mb64_buttons/palmtree.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_palmtree);
-
-// Question Box
-ALIGNED8 static const Texture mb64_btn_questionbox_ci4[] = {
-#include "textures/mb64_buttons/questionbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_questionbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/questionbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_questionbox);
-
-// Red Conveyor
-ALIGNED8 static const Texture mb64_btn_redconveyor_ci4[] = {
-#include "textures/mb64_buttons/redconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_redconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/redconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_redconveyor);
-
-// Red Down Conveyor
-ALIGNED8 static const Texture mb64_btn_reddownconveyor_ci4[] = {
-#include "textures/mb64_buttons/reddownconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_reddownconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/reddownconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_reddownconveyor);
-
-// Red Full Conveyor
-ALIGNED8 static const Texture mb64_btn_redfullconveyor_ci4[] = {
-#include "textures/mb64_buttons/redfullconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_redfullconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/redfullconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_redfullconveyor);
-
-// Red Up Conveyor
-ALIGNED8 static const Texture mb64_btn_redupconveyor_ci4[] = {
-#include "textures/mb64_buttons/redupconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_redupconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/redupconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_redupconveyor);
-
-// Rocket Box
-ALIGNED8 static const Texture mb64_btn_rocketbox_ci4[] = {
-#include "textures/mb64_buttons/rocketbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_rocketbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/rocketbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_rocketbox);
-
-// Snowy Tree
-ALIGNED8 static const Texture mb64_btn_snowytree_ci4[] = {
-#include "textures/mb64_buttons/snowytree.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_snowytree_pal_rgba16[] = {
-#include "textures/mb64_buttons/snowytree.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_snowytree);
-
-// Spiky Tree
-ALIGNED8 static const Texture mb64_btn_spikytree_ci4[] = {
-#include "textures/mb64_buttons/spikytree.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_spikytree_pal_rgba16[] = {
-#include "textures/mb64_buttons/spikytree.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_spikytree);
-
-// Up Conveyor
-ALIGNED8 static const Texture mb64_btn_upconveyor_ci4[] = {
-#include "textures/mb64_buttons/upconveyor.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_upconveyor_pal_rgba16[] = {
-#include "textures/mb64_buttons/upconveyor.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_upconveyor);
-
-// Vanish Metal Box
-ALIGNED8 static const Texture mb64_btn_vanetalbox_ci4[] = {
-#include "textures/mb64_buttons/vanetalbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_vanetalbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/vanetalbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_vanetalbox);
-
-// Vanish Box
-ALIGNED8 static const Texture mb64_btn_vanishbox_ci4[] = {
-#include "textures/mb64_buttons/vanishbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_vanishbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/vanishbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_vanishbox);
-
-// Vertical Coin Line
-ALIGNED8 static const Texture mb64_btn_verticalcoinline_ci4[] = {
-#include "textures/mb64_buttons/verticalcoinline.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_verticalcoinline_pal_rgba16[] = {
-#include "textures/mb64_buttons/verticalcoinline.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_verticalcoinline);
-
-// Vertical Coin Ring
-ALIGNED8 static const Texture mb64_btn_verticalcoinring_ci4[] = {
-#include "textures/mb64_buttons/verticalcoinring.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_verticalcoinring_pal_rgba16[] = {
-#include "textures/mb64_buttons/verticalcoinring.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_verticalcoinring);
-
-// Wing Box
-ALIGNED8 static const Texture mb64_btn_wingbox_ci4[] = {
-#include "textures/mb64_buttons/wingbox.ci4.inc.c"
-};
-ALIGNED8 static const Texture mb64_btn_wingbox_pal_rgba16[] = {
-#include "textures/mb64_buttons/wingbox.ci4.pal"
-};
-DEFINE_CI4(mb64_btn_wingbox);
-

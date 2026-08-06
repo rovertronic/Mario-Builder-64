@@ -129,205 +129,261 @@ struct mb64_object_info mb64_object_type_list[] = {
 /* OBJECT_TYPE_TRIGGER_STAR */  {"Star Triggers",           &mb64_btn_triggerstar,    bhvHiddenStar,     TILE_SIZE/2, MODEL_TRANSPARENT_STAR,    OBJ_TYPE_STAR,           OBJ_OCCUPY_INNER, 0, 0, 1.0f, NULL, df_star, SOUND_MENU_STAR_SOUND | SOUND_VIBRATO},
 };
 
-//behparam2 strings
-char *txt_bp_box[] = {
-    "Rocket Boots",
-    "Vanetal Cap",
-    "Koopa Shell",
-    "Green Coin",
-    "One Coin",
-    "Three Coins",
-    "Ten Coins",
+struct mb64_ui_option mb64_star_options[] = {
+    { NULL, &mb64_btn_star,        OBJECT_TYPE_STAR, 0 },
+    { NULL, &mb64_btn_redcoinstar, OBJECT_TYPE_RED_COIN_STAR, 0 },
+    { NULL, &mb64_btn_triggerstar, OBJECT_TYPE_TRIGGER_STAR, 0 },
+};
+struct mb64_ui_option mb64_goomba_options[] = {
+    { NULL, &mb64_btn_goomba,     OBJECT_TYPE_GOOMBA, 0 },
+    { NULL, &mb64_btn_biggoomba,  OBJECT_TYPE_BIG_GOOMBA, 0 },
+    { NULL, &mb64_btn_tinygoomba, OBJECT_TYPE_TINY_GOOMBA, 0 },
+};
+struct mb64_ui_option mb64_piranha_options[] = {
+    { NULL, &mb64_btn_piranha,        OBJECT_TYPE_PIRANHA_PLANT, 0 },
+    { NULL, &mb64_btn_bigfirepiranha, OBJECT_TYPE_BIG_PIRANHA_PLANT, 0 },
+    { NULL, &mb64_btn_firepiranha,    OBJECT_TYPE_TINY_PIRANHA_PLANT, 0 },
+};
+struct mb64_ui_option mb64_bluecoin_options[] = {
+    { NULL, &mb64_btn_bluecoin,       OBJECT_TYPE_BLUE_COIN, 0 },
+    { NULL, &mb64_btn_bluecoinswitch, OBJECT_TYPE_BLUE_COIN_SWITCH, 0 },
+};
+struct mb64_ui_option mb64_hammer_options[] = {
+    { NULL, &mb64_btn_hammerbro, OBJECT_TYPE_HAMMER_BRO, 0 },
+    { NULL, &mb64_btn_firebro,   OBJECT_TYPE_FIRE_BRO, 0 },
+};
+struct mb64_ui_option mb64_whomp_options[] = {
+    { NULL, &mb64_btn_whomp,     OBJECT_TYPE_WHOMP, 0 },
+    { NULL, &mb64_btn_kingwhomp, OBJECT_TYPE_KING_WHOMP, 0 },
+};
+struct mb64_ui_option mb64_bully_options[] = {
+    { NULL, &mb64_btn_bully,       OBJECT_TYPE_BULLY, 0 },
+    { NULL, &mb64_btn_chillbully,  OBJECT_TYPE_CHILL_BULLY, 0 },
+    { NULL, &mb64_btn_bigbully,    OBJECT_TYPE_BIG_BULLY, 0 },
+    { NULL, &mb64_btn_chiefchilly, OBJECT_TYPE_BIG_CHILL_BULLY, 0 },
+};
+struct mb64_ui_option mb64_boo_options[] = {
+    { NULL, &mb64_btn_boo,    OBJECT_TYPE_BOO, 0 },
+    { NULL, &mb64_btn_bigboo, OBJECT_TYPE_BIG_BOO, 0 },
+};
+struct mb64_ui_option mb64_plat_options[] = {
+    { NULL, &mb64_btn_movingplatform, OBJECT_TYPE_PLATFORM_TRACK, 0 },
+    { NULL, &mb64_btn_loopplatform, OBJECT_TYPE_PLATFORM_LOOPING, 0 },
+};
+struct mb64_ui_option mb64_thwomp_options[] = {
+    { NULL, &mb64_btn_thwomp,  OBJECT_TYPE_THWOMP, 0 },
+    { NULL, &mb64_btn_grindel, OBJECT_TYPE_GRINDEL, 0 },
+};
+struct mb64_ui_option mb64_flame_options[] = {
+    { NULL, &mb64_btn_redflame,  OBJECT_TYPE_RED_FLAME, 0 },
+    { NULL, &mb64_btn_blueflame, OBJECT_TYPE_BLUE_FLAME, 0 },
+};
+struct mb64_ui_option mb64_npc_options[] = {
+    { NULL, &mb64_btn_signpost,    OBJECT_TYPE_SIGN, 0 },
+    { NULL, &mb64_btn_bobombbuddy, OBJECT_TYPE_BUDDY, 0 },
+    { NULL, &mb64_btn_toad,        OBJECT_TYPE_TOAD, 0 },
+    { NULL, &mb64_btn_tuxie,       OBJECT_TYPE_TUXIE, 0 },
+    { NULL, &mb64_btn_ukiki,       OBJECT_TYPE_UKIKI, 0 },
+};
+struct mb64_ui_option mb64_npccm_options[] = {
+    { NULL, &mb64_btn_signpost,    OBJECT_TYPE_SIGN, 0 },
+    { NULL, &mb64_btn_bobombbuddy, OBJECT_TYPE_BUDDY, 0 },
+    { NULL, &mb64_btn_moleman,     OBJECT_TYPE_MOLEMAN, 0 },
+    { NULL, &mb64_btn_cowboy,      OBJECT_TYPE_COBIE, 0 },
+};
+struct mb64_ui_option mb64_power_options[] = {
+    { NULL, &mb64_btn_pipebar,    OBJECT_TYPE_CROWBAR, 0 },
+    { NULL, &mb64_btn_bulletmask, OBJECT_TYPE_MASK, 0 },
+};
+struct mb64_ui_option mb64_timedbox_options[] = {
+    { NULL, &mb64_btn_timedbox,           OBJECT_TYPE_TIMED_BOX, 0 },
+    { NULL, &mb64_btn_invertedtimedblock, OBJECT_TYPE_TIMEDBLOCK, 0 },
+};
+struct mb64_ui_option mb64_smallbox_options[] = {
+    { NULL, &mb64_btn_smallbox, OBJECT_TYPE_BBOX_SMALL, 0 },
+    { NULL, &mb64_btn_crazybox, OBJECT_TYPE_BBOX_CRAZY, 0 },
 };
 
-char *txt_bp_vbox[] = {
-    "Wing Cap",
-    "Metal Cap",
-    "Vanish Cap",
-    "Koopa Shell",
-    "One Coin",
-    "Three Coins",
-    "Ten Coins",
+struct mb64_ui_option mb64_tree_options[] = {
+    { "Bubbly", &mb64_btn_bubblytree, OBJECT_TYPE_TREE, 0 },
+    { "Palm",   &mb64_btn_palmtree,   OBJECT_TYPE_TREE, 1 },
+    { "Spiky",  &mb64_btn_spikytree,  OBJECT_TYPE_TREE, 2 },
+    { "Snowy",  &mb64_btn_snowytree,  OBJECT_TYPE_TREE, 3 },
+    { "Farm",   &mb64_btn_farmtree,   OBJECT_TYPE_TREE, 4 },
+    { "Dead",   &mb64_btn_deadtree,   OBJECT_TYPE_TREE, 5 },
+};
+struct mb64_ui_option mb64_excla_options[] = {
+    { "Rocket Boots", &mb64_btn_rocketbox, OBJECT_TYPE_EXCL_BOX, 0 },
+    { "Vanetal Cap",  &mb64_btn_vanetalbox, OBJECT_TYPE_EXCL_BOX, 1 },
+    { "Koopa Shell",  &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 2 },
+    { "Green Coin",   &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 3 },
+    { "One Coin",     &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 4 },
+    { "Three Coins",  &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 5 },
+    { "Ten Coins",    &mb64_btn_questionbox, OBJECT_TYPE_EXCL_BOX, 6 },
+};
+struct mb64_ui_option mb64_vexcla_options[] = {
+    { "Wing Cap",    &mb64_btn_wingbox, OBJECT_TYPE_EXCL_BOX, 0 },
+    { "Metal Cap",   &mb64_btn_metalbox, OBJECT_TYPE_EXCL_BOX, 1 },
+    { "Vanish Cap",  &mb64_btn_vanishbox, OBJECT_TYPE_EXCL_BOX, 2 },
+    { "Koopa Shell", &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 3 },
+    { "One Coin",    &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 4 },
+    { "Three Coins", &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 5 },
+    { "Ten Coins",   &mb64_btn_exclamationbox, OBJECT_TYPE_EXCL_BOX, 6 },
+};
+struct mb64_ui_option mb64_badge_options[] = {
+    { "Lava Boost",       &mb64_btn_badge, OBJECT_TYPE_BADGE, 0 },
+    { "Fall Damage",      &mb64_btn_badge, OBJECT_TYPE_BADGE, 1 },
+    { "Defense",          &mb64_btn_badge, OBJECT_TYPE_BADGE, 2 },
+    { "One Hit",          &mb64_btn_badge, OBJECT_TYPE_BADGE, 3 },
+    { "Gills",            &mb64_btn_badge, OBJECT_TYPE_BADGE, 4 },
+    { "Fins",             &mb64_btn_badge, OBJECT_TYPE_BADGE, 5 },
+    { "HP Regen",         &mb64_btn_badge, OBJECT_TYPE_BADGE, 6 },
+    { "Mana Regen",       &mb64_btn_badge, OBJECT_TYPE_BADGE, 7 },
+    { "Greed",            &mb64_btn_badge, OBJECT_TYPE_BADGE, 8 },
+    { "Double Time",      &mb64_btn_badge, OBJECT_TYPE_BADGE, 9 },
+    { "Magnet",           &mb64_btn_badge, OBJECT_TYPE_BADGE, 10 },
+    { "Burn",             &mb64_btn_badge, OBJECT_TYPE_BADGE, 11 },
+    { "Squish",           &mb64_btn_badge, OBJECT_TYPE_BADGE, 12 },
+    { "Feather",          &mb64_btn_badge, OBJECT_TYPE_BADGE, 13 },
+    { "Weight",           &mb64_btn_badge, OBJECT_TYPE_BADGE, 14 },
+    { "Sticky",           &mb64_btn_badge, OBJECT_TYPE_BADGE, 15 },
+    { "Fast Foot",        &mb64_btn_badge, OBJECT_TYPE_BADGE, 16 },
+    { "Heal Plus",        &mb64_btn_badge, OBJECT_TYPE_BADGE, 17 },
+    { "Bottomless",       &mb64_btn_badge, OBJECT_TYPE_BADGE, 18 },
+    { "Slow Fall",        &mb64_btn_badge, OBJECT_TYPE_BADGE, 19 },
+    { "Brittle Burden",   &mb64_btn_badge, OBJECT_TYPE_BADGE, 20 },
+    { "Withering Burden", &mb64_btn_badge, OBJECT_TYPE_BADGE, 21 },
+};
+struct mb64_ui_option mb64_formation_options[] = {
+    { "Line",          &mb64_btn_coinline,         OBJECT_TYPE_COIN_FORMATION, 0 },
+    { "Vertical Line", &mb64_btn_verticalcoinline, OBJECT_TYPE_COIN_FORMATION, 1 },
+    { "Ring",          &mb64_btn_coinring,         OBJECT_TYPE_COIN_FORMATION, 2 },
+    { "Vertical Ring", &mb64_btn_verticalcoinring, OBJECT_TYPE_COIN_FORMATION, 3 },
+    { "Arrow",         &mb64_btn_coinarrow,        OBJECT_TYPE_COIN_FORMATION, 4 },
+};
+struct mb64_ui_option mb64_fire_spinner_options[] = {
+    { "Length: 2", &mb64_btn_firespinner, OBJECT_TYPE_FIRE_SPINNER, 0 },
+    { "Length: 3", &mb64_btn_firespinner, OBJECT_TYPE_FIRE_SPINNER, 1 },
+    { "Length: 4", &mb64_btn_firespinner, OBJECT_TYPE_FIRE_SPINNER, 2 },
+    { "Length: 5", &mb64_btn_firespinner, OBJECT_TYPE_FIRE_SPINNER, 3 },
+    { "Length: 6", &mb64_btn_firespinner, OBJECT_TYPE_FIRE_SPINNER, 4 },
+};
+struct mb64_ui_option mb64_button_options[] = {
+    { "Red",  &mb64_btn_redswitch,  OBJECT_TYPE_BUTTON, 0 },
+    { "Blue", &mb64_btn_blueswitch, OBJECT_TYPE_BUTTON, 1 },
+};
+struct mb64_ui_option mb64_block_options[] = {
+    { "Red",  &mb64_btn_redblock,  OBJECT_TYPE_ON_OFF_BLOCK, 0 },
+    { "Blue", &mb64_btn_blueblock, OBJECT_TYPE_ON_OFF_BLOCK, 1 },
+};
+struct mb64_ui_option mb64_woodplat_options[] = {
+    { "Thin", &mb64_btn_woodplatform,     OBJECT_TYPE_WOODPLAT, 0 },
+    { "Full", &mb64_btn_fullwoodplatform, OBJECT_TYPE_WOODPLAT, 1 },
+};
+struct mb64_ui_option mb64_conveyor_options[] = {
+    { "Thin",               &mb64_btn_conveyor,        OBJECT_TYPE_CONVEYOR, 0 },
+    { "Full",               &mb64_btn_fullconveyor,    OBJECT_TYPE_CONVEYOR, 1 },
+    { "Upwards",            &mb64_btn_upconveyor,      OBJECT_TYPE_CONVEYOR, 2 },
+    { "Downwards",          &mb64_btn_downconveyor,    OBJECT_TYPE_CONVEYOR, 3 },
+    { "Thin (On-Off)",      &mb64_btn_redconveyor,     OBJECT_TYPE_CONVEYOR, 4 },
+    { "Full (On-Off)",      &mb64_btn_redfullconveyor, OBJECT_TYPE_CONVEYOR, 5 },
+    { "Upwards (On-Off)",   &mb64_btn_redupconveyor,   OBJECT_TYPE_CONVEYOR, 6 },
+    { "Downwards (On-Off)", &mb64_btn_reddownconveyor, OBJECT_TYPE_CONVEYOR, 7 },
 };
 
-char *txt_bp_tree[] = {
-    "Bubbly",
-    "Palm",
-    "Spiky",
-    "Snowy",
-    "Farm",
-    "Dead",
-};
-
-char *txt_badges[] = {
-    "Lava Boost",
-    "Fall Damage",
-    "Defense",
-    "One Hit",
-    "Gills",
-    "Fins",
-    "HP Regen",
-    "Mana Regen",
-    "Greed",
-    "Double Time",
-    "Magnet",
-    "Burn",
-    "Squish",
-    "Feather",
-    "Weight",
-    "Sticky",
-    "Fast Foot",
-    "Heal Plus",
-    "Bottomless",
-    "Slow Fall",
-    "Brittle Burden",
-    "Withering Burden",
-};
-
-char *txt_coin_formation[] = {
-    "Line",
-    "Vertical Line",
-    "Ring",
-    "Vertical Ring",
-    "Arrow",
-};
-
-char *txt_onoff[] = {
-    "Red",
-    "Blue"
-};
-
-char *txt_woodplat[] = {
-    "Thin",
-    "Full"
-};
-
-char *txt_fire_spinner[] = {
-    "Length: 2",
-    "Length: 3",
-    "Length: 4",
-    "Length: 5",
-    "Length: 6",
-};
-
-char *txt_conveyor[] = {
-    "Thin",
-    "Full",
-    "Upwards",
-    "Downwards",
-    "Thin (On-Off)",
-    "Full (On-Off)",
-    "Upwards (On-Off)",
-    "Downwards (On-Off)",
-};
-
-u8 mb64_star_idlist[] = {OBJECT_TYPE_STAR, OBJECT_TYPE_RED_COIN_STAR, OBJECT_TYPE_TRIGGER_STAR};
-u8 mb64_goomba_idlist[] = {OBJECT_TYPE_GOOMBA, OBJECT_TYPE_BIG_GOOMBA, OBJECT_TYPE_TINY_GOOMBA};
-u8 mb64_piranha_idlist[] = {OBJECT_TYPE_PIRANHA_PLANT, OBJECT_TYPE_BIG_PIRANHA_PLANT, OBJECT_TYPE_TINY_PIRANHA_PLANT};
-u8 mb64_bluecoin_idlist[] = {OBJECT_TYPE_BLUE_COIN, OBJECT_TYPE_BLUE_COIN_SWITCH};
-u8 mb64_hammer_idlist[] = {OBJECT_TYPE_HAMMER_BRO, OBJECT_TYPE_FIRE_BRO};
-u8 mb64_whomp_idlist[] = {OBJECT_TYPE_WHOMP, OBJECT_TYPE_KING_WHOMP};
-u8 mb64_bully_idlist[] = {OBJECT_TYPE_BULLY, OBJECT_TYPE_CHILL_BULLY, OBJECT_TYPE_BIG_BULLY, OBJECT_TYPE_BIG_CHILL_BULLY};
-u8 mb64_boo_idlist[] = {OBJECT_TYPE_BOO, OBJECT_TYPE_BIG_BOO};
-u8 mb64_plat_idlist[] = {OBJECT_TYPE_PLATFORM_TRACK, OBJECT_TYPE_PLATFORM_LOOPING};
-u8 mb64_thwomp_idlist[] = {OBJECT_TYPE_THWOMP, OBJECT_TYPE_GRINDEL};
-u8 mb64_flame_idlist[] = {OBJECT_TYPE_RED_FLAME, OBJECT_TYPE_BLUE_FLAME};
-u8 mb64_npc_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_TOAD, OBJECT_TYPE_TUXIE, OBJECT_TYPE_UKIKI};
-u8 mb64_npccm_idlist[] = {OBJECT_TYPE_SIGN, OBJECT_TYPE_BUDDY, OBJECT_TYPE_MOLEMAN, OBJECT_TYPE_COBIE};
-u8 mb64_power_idlist[] = {OBJECT_TYPE_CROWBAR, OBJECT_TYPE_MASK};
-u8 mb64_timedbox_idlist[] = {OBJECT_TYPE_TIMED_BOX, OBJECT_TYPE_TIMEDBLOCK};
-u8 mb64_smallbox_idlist[] = {OBJECT_TYPE_BBOX_SMALL, OBJECT_TYPE_BBOX_CRAZY};
+#define BTN_ID(mode, objId)             { mode, 0, NULL, { .id = objId } }
+#define BTN_OPTS(mode, label, opts)     { mode, ARRAY_COUNT(opts), label, { .options = opts } }
 
 struct mb64_ui_button_type mb64_ui_buttons[] = {
-/* MB64_BUTTON_SETTINGS */ {MB64_PM_ACTION,  FALSE, 0, OBJECT_TYPE_SETTINGS,    NULL},
-/* MB64_BUTTON_TEST */     {MB64_PM_ACTION,  FALSE, 0, OBJECT_TYPE_TEST_MARIO,  NULL},
-/* MB64_BUTTON_TERRAIN */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_BLOCK,         NULL},
-/* MB64_BUTTON_SLOPE */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SLOPE,         NULL},
-/* MB64_BUTTON_TROLL */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_TROLL,         NULL},
-/* MB64_BUTTON_STAR */     {MB64_PM_OBJ,  TRUE,  3, (u32)mb64_star_idlist,        "Power Star"},
-/* MB64_BUTTON_GOOMBA */   {MB64_PM_OBJ,  TRUE,  3, (u32)mb64_goomba_idlist,      "Goomba"},
-/* MB64_BUTTON_PIRANHA */  {MB64_PM_OBJ,  TRUE,  3, (u32)mb64_piranha_idlist,     "Piranha Plant"},
-/* MB64_BUTTON_KOOPA */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA,       NULL},
-/* MB64_BUTTON_COIN */     {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_COIN,        NULL},
-/* MB64_BUTTON_BLANK */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_BLOCK,         NULL},
-/* MB64_BUTTON_GCOIN */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_GREEN_COIN,  NULL},
-/* MB64_BUTTON_CORNER */   {MB64_PM_TILE, FALSE, 0, TILE_TYPE_CORNER,        NULL},
-/* MB64_BUTTON_ICORNER */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_ICORNER,       NULL},
-/* MB64_BUTTON_RCOIN */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_RED_COIN,    NULL},
-/* MB64_BUTTON_BCOIN */    {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_bluecoin_idlist,    "Blue Coins"},
-/* MB64_BUTTON_NOTEBLOCK */{MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_NOTEBLOCK,   NULL},
-/* MB64_BUTTON_CULL */     {MB64_PM_TILE, FALSE, 0, TILE_TYPE_CULL,          NULL},
-/* MB64_BUTTON_BOBOMB */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOBOMB,      NULL},
-/* MB64_BUTTON_CHUCKYA */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CHUCKYA,     NULL},
-/* MB64_BUTTON_BULLY */    {MB64_PM_OBJ,  TRUE,  4, (u32)mb64_bully_idlist,       "Bully"},
-/* MB64_BUTTON_BULLET */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BULLET_BILL, NULL},
-/* MB64_BUTTON_HEAVEHO */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_HEAVE_HO,    NULL},
-/* MB64_BUTTON_MOTOS */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MOTOS,       NULL},
-/* MB64_BUTTON_TREE */     {MB64_PM_OBJ,  FALSE, 6, OBJECT_TYPE_TREE,        (char *)txt_bp_tree},
-/* MB64_BUTTON_EXCLA */    {MB64_PM_OBJ,  FALSE, 7, OBJECT_TYPE_EXCL_BOX,    (char *)txt_bp_box},
-/* MB64_BUTTON_SPAWN */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MARIO_SPAWN, NULL},
-/* MB64_BUTTON_REX */      {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_REX,         NULL},
-/* MB64_BUTTON_PODOBOO */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_PODOBOO,     NULL},
-/* MB64_BUTTON_CRABLET */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CRABLET,     NULL},
-/* MB64_BUTTON_HAMMER_BRO */{MB64_PM_OBJ, TRUE,  2, (u32)mb64_hammer_idlist,      "Hammer Bro"},
-/* MB64_BUTTON_CHICKEN */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_CHICKEN,     NULL},
-/* MB64_BUTTON_PHANTASM */ {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_PHANTASM,    NULL},
-/* MB64_BUTTON_PIPE */     {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_WARP_PIPE,   NULL},
-/* MB64_BUTTON_BADGE */    {MB64_PM_OBJ,  FALSE, 22, OBJECT_TYPE_BADGE,      (char *)txt_badges},
-/* MB64_BUTTON_WATER */    {MB64_PM_TILE,FALSE, 0, TILE_TYPE_WATER,         NULL},
-/* MB64_BUTTON_FENCE */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_FENCE,         NULL},
-/* MB64_BUTTON_KING_BOBOMB */ {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_KING_BOBOMB, NULL},
-/* MB64_BUTTON_WIGGLER */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_WIGGLER,     NULL},
-/* MB64_BUTTON_BOWSER */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOWSER,      NULL},
-/* MB64_BUTTON_MPLAT */    {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_plat_idlist,        "Moving Platform"},
-/* MB64_BUTTON_BBALL */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOWLING_BALL, NULL},
-/* MB64_BUTTON_KTQ */      {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_KOOPA_THE_QUICK, NULL},
-/* MB64_BUTTON_SSLOPE */   {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SSLOPE,        NULL},
-/* MB64_BUTTON_SLAB */     {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SLAB,          NULL},
-/* MB64_BUTTON_PURPLE_SWITCH */{MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_PURPLE_SWITCH, NULL},
-/* MB64_BUTTON_TIMED_BOX */ {MB64_PM_OBJ,  TRUE, 2, (u32)mb64_timedbox_idlist,   "Timed Box"},
-/* MB64_BUTTON_HEART */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_RECOVERY_HEART, NULL},
-/* MB64_BUTTON_FORMATION */{MB64_PM_OBJ,  FALSE, 5, OBJECT_TYPE_COIN_FORMATION, (char *)txt_coin_formation},
-/* MB64_BUTTON_VSLAB */    {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SSLAB,         NULL},
-/* MB64_BUTTON_SCORNER */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_SCORNER,       NULL},
-/* MB64_BUTTON_UGENTLE */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_UGENTLE,       NULL},
-/* MB64_BUTTON_LGENTLE */  {MB64_PM_TILE, FALSE, 0, TILE_TYPE_LGENTLE,       NULL},
-/* MB64_BUTTON_BARS */     {MB64_PM_TILE, FALSE, 0, TILE_TYPE_BARS,          NULL},
-/* MB64_BUTTON_THWOMP */   {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_thwomp_idlist,      "Thwomp"},
-/* MB64_BUTTON_WHOMP */    {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_whomp_idlist,       "Whomp"},
-/* MB64_BUTTON_POLE */     {MB64_PM_TILE, FALSE, 0, TILE_TYPE_POLE,          NULL},
-/* MB64_BUTTON_VEXCLA */   {MB64_PM_OBJ,  FALSE, 7, OBJECT_TYPE_EXCL_BOX,    (char *)txt_bp_vbox},
-/* MB64_BUTTON_LAKITU */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_LAKITU,      NULL},
-/* MB64_BUTTON_FLYGUY */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_FLY_GUY,     NULL},
-/* MB64_BUTTON_SNUFIT */   {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SNUFIT,      NULL},
-/* MB64_BUTTON_AMP */      {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_AMP,         NULL},
-/* MB64_BUTTON_BOO */      {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_boo_idlist,         "Boo"},
-/* MB64_BUTTON_MR_I */     {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MR_I,        NULL},
-/* MB64_BUTTON_SCUTTLEBUG */{MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_SCUTTLEBUG,  NULL},
-/* MB64_BUTTON_SPINDRIFT */{MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SPINDRIFT,   NULL},
-/* MB64_BUTTON_BLIZZARD */ {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MR_BLIZZARD, NULL},
-/* MB64_BUTTON_MONEYBAG */ {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_MONEYBAG,    NULL},
-/* MB64_BUTTON_SKEETER */  {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_SKEETER,     NULL},
-/* MB64_BUTTON_POKEY */    {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_POKEY,       NULL},
-/* MB64_BUTTON_MINE */     {MB64_PM_OBJ,  FALSE, 0, OBJECT_TYPE_BOWSER_BOMB, NULL},
-/* MB64_BUTTON_FIRE */     {MB64_PM_OBJ,  TRUE,  2, (u32)mb64_flame_idlist,       "Flame"},
-/* MB64_BUTTON_FLAMETHROWER */{MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_FLAMETHROWER, NULL},
-/* MB64_BUTTON_FIRE_SPITTER */{MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_FIRE_SPITTER, NULL},
-/* MB64_BUTTON_FIRE_SPINNER */{MB64_PM_OBJ, FALSE, 5, OBJECT_TYPE_FIRE_SPINNER, (char *)txt_fire_spinner},
-/* MB64_BUTTON_BREAKABLE */{MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_BBOX_NORMAL, NULL},
-/* MB64_BUTTON_SMALL_BOX */{MB64_PM_OBJ, TRUE, 2, (u32)mb64_smallbox_idlist, "Boxes"},
-/* MB64_BUTTON_DIAMOND */  {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_DIAMOND, NULL},
-/* MB64_BUTTON_NPC */      {MB64_PM_OBJ, TRUE, 5, (u32)mb64_npc_idlist, "NPC"},
-/* MB64_BUTTON_NPCCM */    {MB64_PM_OBJ, TRUE, 4, (u32)mb64_npccm_idlist, "NPC"},
-/* MB64_BUTTON_BUTTON */   {MB64_PM_OBJ, FALSE, 2, OBJECT_TYPE_BUTTON, (char *)txt_onoff},
-/* MB64_BUTTON_BLOCK */    {MB64_PM_OBJ, FALSE, 2, OBJECT_TYPE_ON_OFF_BLOCK, (char *)txt_onoff},
-/* MB64_BUTTON_WOODPLAT */ {MB64_PM_OBJ, FALSE, 2, OBJECT_TYPE_WOODPLAT, (char *)txt_woodplat},
-/* MB64_BUTTON_RFBOX */    {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_RFBOX, NULL},
-/* MB64_BUTTON_SHOWRUN */  {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_SHOWRUNNER, NULL},
-/* MB64_BUTTON_POWER */    {MB64_PM_OBJ, TRUE, 2, (u32)mb64_power_idlist, "Powerup"},
-/* MB64_BUTTON_CONVEYOR */ {MB64_PM_OBJ, FALSE, 8, OBJECT_TYPE_CONVEYOR, (char *)txt_conveyor},
-/* MB64_BUTTON_ISCORNER */ {MB64_PM_TILE, FALSE, 0, TILE_TYPE_ISCORNER, NULL},
-/* MB64_BUTTON_TRIGGER */  {MB64_PM_OBJ, FALSE, 0, OBJECT_TYPE_TRIGGER, NULL},
+/* MB64_BUTTON_SETTINGS */ BTN_ID(MB64_PM_ACTION, OBJECT_TYPE_SETTINGS),
+/* MB64_BUTTON_TEST */     BTN_ID(MB64_PM_ACTION, OBJECT_TYPE_TEST_MARIO),
+/* MB64_BUTTON_TERRAIN */  BTN_ID(MB64_PM_TILE, TILE_TYPE_BLOCK),
+/* MB64_BUTTON_SLOPE */    BTN_ID(MB64_PM_TILE, TILE_TYPE_SLOPE),
+/* MB64_BUTTON_TROLL */    BTN_ID(MB64_PM_TILE, TILE_TYPE_TROLL),
+/* MB64_BUTTON_STAR */     BTN_OPTS(MB64_PM_OBJ, "Power Stars", mb64_star_options),
+/* MB64_BUTTON_GOOMBA */   BTN_OPTS(MB64_PM_OBJ, "Goombas", mb64_goomba_options),
+/* MB64_BUTTON_PIRANHA */  BTN_OPTS(MB64_PM_OBJ, "Piranha Plants", mb64_piranha_options),
+/* MB64_BUTTON_KOOPA */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_KOOPA),
+/* MB64_BUTTON_COIN */     BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_COIN),
+/* MB64_BUTTON_BLANK */    BTN_ID(MB64_PM_TILE, TILE_TYPE_BLOCK),
+/* MB64_BUTTON_GCOIN */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_GREEN_COIN),
+/* MB64_BUTTON_CORNER */   BTN_ID(MB64_PM_TILE, TILE_TYPE_CORNER),
+/* MB64_BUTTON_ICORNER */  BTN_ID(MB64_PM_TILE, TILE_TYPE_ICORNER),
+/* MB64_BUTTON_RCOIN */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_RED_COIN),
+/* MB64_BUTTON_BCOIN */    BTN_OPTS(MB64_PM_OBJ, "Blue Coins", mb64_bluecoin_options),
+/* MB64_BUTTON_NOTEBLOCK */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_NOTEBLOCK),
+/* MB64_BUTTON_CULL */     BTN_ID(MB64_PM_TILE, TILE_TYPE_CULL),
+/* MB64_BUTTON_BOBOMB */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BOBOMB),
+/* MB64_BUTTON_CHUCKYA */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_CHUCKYA),
+/* MB64_BUTTON_BULLY */    BTN_OPTS(MB64_PM_OBJ, "Bullies", mb64_bully_options),
+/* MB64_BUTTON_BULLET */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BULLET_BILL),
+/* MB64_BUTTON_HEAVEHO */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_HEAVE_HO),
+/* MB64_BUTTON_MOTOS */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_MOTOS),
+/* MB64_BUTTON_TREE */     BTN_OPTS(MB64_PM_OBJ, NULL, mb64_tree_options),
+/* MB64_BUTTON_EXCLA */    BTN_OPTS(MB64_PM_OBJ, NULL, mb64_excla_options),
+/* MB64_BUTTON_SPAWN */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_MARIO_SPAWN),
+/* MB64_BUTTON_REX */      BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_REX),
+/* MB64_BUTTON_PODOBOO */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_PODOBOO),
+/* MB64_BUTTON_CRABLET */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_CRABLET),
+/* MB64_BUTTON_HAMMER_BRO */BTN_OPTS(MB64_PM_OBJ, "Hammer Bros", mb64_hammer_options),
+/* MB64_BUTTON_CHICKEN */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_CHICKEN),
+/* MB64_BUTTON_PHANTASM */ BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_PHANTASM),
+/* MB64_BUTTON_PIPE */     BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_WARP_PIPE),
+/* MB64_BUTTON_BADGE */    BTN_OPTS(MB64_PM_OBJ, NULL, mb64_badge_options),
+/* MB64_BUTTON_WATER */    BTN_ID(MB64_PM_TILE, TILE_TYPE_WATER),
+/* MB64_BUTTON_FENCE */    BTN_ID(MB64_PM_TILE, TILE_TYPE_FENCE),
+/* MB64_BUTTON_KING_BOBOMB */ BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_KING_BOBOMB),
+/* MB64_BUTTON_WIGGLER */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_WIGGLER),
+/* MB64_BUTTON_BOWSER */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BOWSER),
+/* MB64_BUTTON_MPLAT */    BTN_OPTS(MB64_PM_OBJ, "Moving Platforms", mb64_plat_options),
+/* MB64_BUTTON_BBALL */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BOWLING_BALL),
+/* MB64_BUTTON_KTQ */      BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_KOOPA_THE_QUICK),
+/* MB64_BUTTON_SSLOPE */   BTN_ID(MB64_PM_TILE, TILE_TYPE_SSLOPE),
+/* MB64_BUTTON_SLAB */     BTN_ID(MB64_PM_TILE, TILE_TYPE_SLAB),
+/* MB64_BUTTON_PURPLE_SWITCH */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_PURPLE_SWITCH),
+/* MB64_BUTTON_TIMED_BOX */ BTN_OPTS(MB64_PM_OBJ, "Timed Boxes", mb64_timedbox_options),
+/* MB64_BUTTON_HEART */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_RECOVERY_HEART),
+/* MB64_BUTTON_FORMATION */BTN_OPTS(MB64_PM_OBJ, NULL, mb64_formation_options),
+/* MB64_BUTTON_VSLAB */    BTN_ID(MB64_PM_TILE, TILE_TYPE_SSLAB),
+/* MB64_BUTTON_SCORNER */  BTN_ID(MB64_PM_TILE, TILE_TYPE_SCORNER),
+/* MB64_BUTTON_UGENTLE */  BTN_ID(MB64_PM_TILE, TILE_TYPE_UGENTLE),
+/* MB64_BUTTON_LGENTLE */  BTN_ID(MB64_PM_TILE, TILE_TYPE_LGENTLE),
+/* MB64_BUTTON_BARS */     BTN_ID(MB64_PM_TILE, TILE_TYPE_BARS),
+/* MB64_BUTTON_THWOMP */   BTN_OPTS(MB64_PM_OBJ, "Thwomps", mb64_thwomp_options),
+/* MB64_BUTTON_WHOMP */    BTN_OPTS(MB64_PM_OBJ, "Whomps", mb64_whomp_options),
+/* MB64_BUTTON_POLE */     BTN_ID(MB64_PM_TILE, TILE_TYPE_POLE),
+/* MB64_BUTTON_VEXCLA */   BTN_OPTS(MB64_PM_OBJ, NULL, mb64_vexcla_options),
+/* MB64_BUTTON_LAKITU */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_LAKITU),
+/* MB64_BUTTON_FLYGUY */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_FLY_GUY),
+/* MB64_BUTTON_SNUFIT */   BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_SNUFIT),
+/* MB64_BUTTON_AMP */      BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_AMP),
+/* MB64_BUTTON_BOO */      BTN_OPTS(MB64_PM_OBJ, "Boos", mb64_boo_options),
+/* MB64_BUTTON_MR_I */     BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_MR_I),
+/* MB64_BUTTON_SCUTTLEBUG */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_SCUTTLEBUG),
+/* MB64_BUTTON_SPINDRIFT */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_SPINDRIFT),
+/* MB64_BUTTON_BLIZZARD */ BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_MR_BLIZZARD),
+/* MB64_BUTTON_MONEYBAG */ BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_MONEYBAG),
+/* MB64_BUTTON_SKEETER */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_SKEETER),
+/* MB64_BUTTON_POKEY */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_POKEY),
+/* MB64_BUTTON_MINE */     BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BOWSER_BOMB),
+/* MB64_BUTTON_FIRE */     BTN_OPTS(MB64_PM_OBJ, "Flames", mb64_flame_options),
+/* MB64_BUTTON_FLAMETHROWER */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_FLAMETHROWER),
+/* MB64_BUTTON_FIRE_SPITTER */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_FIRE_SPITTER),
+/* MB64_BUTTON_FIRE_SPINNER */BTN_OPTS(MB64_PM_OBJ, NULL, mb64_fire_spinner_options),
+/* MB64_BUTTON_BREAKABLE */BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_BBOX_NORMAL),
+/* MB64_BUTTON_SMALL_BOX */BTN_OPTS(MB64_PM_OBJ, "Boxes", mb64_smallbox_options),
+/* MB64_BUTTON_DIAMOND */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_DIAMOND),
+/* MB64_BUTTON_NPC */      BTN_OPTS(MB64_PM_OBJ, "NPCs", mb64_npc_options),
+/* MB64_BUTTON_NPCCM */    BTN_OPTS(MB64_PM_OBJ, "NPCs", mb64_npccm_options),
+/* MB64_BUTTON_BUTTON */   BTN_OPTS(MB64_PM_OBJ, NULL, mb64_button_options),
+/* MB64_BUTTON_BLOCK */    BTN_OPTS(MB64_PM_OBJ, NULL, mb64_block_options),
+/* MB64_BUTTON_WOODPLAT */ BTN_OPTS(MB64_PM_OBJ, NULL, mb64_woodplat_options),
+/* MB64_BUTTON_RFBOX */    BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_RFBOX),
+/* MB64_BUTTON_SHOWRUN */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_SHOWRUNNER),
+/* MB64_BUTTON_POWER */    BTN_OPTS(MB64_PM_OBJ, "Powerups", mb64_power_options),
+/* MB64_BUTTON_CONVEYOR */ BTN_OPTS(MB64_PM_OBJ, NULL, mb64_conveyor_options),
+/* MB64_BUTTON_ISCORNER */ BTN_ID(MB64_PM_TILE, TILE_TYPE_ISCORNER),
+/* MB64_BUTTON_TRIGGER */  BTN_ID(MB64_PM_OBJ, OBJECT_TYPE_TRIGGER),
 };
 
 u8 mb64_toolbar_defaults[9] = {
