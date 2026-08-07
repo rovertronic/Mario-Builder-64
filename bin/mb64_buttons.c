@@ -584,14 +584,182 @@ ALIGNED8 static const Texture mb64_btn_cowboy_pal_rgba16[] = {
 };
 DEFINE_CI4_BUTTON(mb64_btn_cowboy);
 
-// Badge
-ALIGNED8 static const Texture mb64_btn_badge_ci4[] = {
-#include "textures/mb64_buttons/badge.ci4.inc.c"
+// Badges
+ALIGNED8 static const Texture mb64_btn_badgelava_ci4[] = {
+#include "textures/mb64_buttons/badgelava.ci4.inc.c"
 };
-ALIGNED8 static const Texture mb64_btn_badge_pal_rgba16[] = {
-#include "textures/mb64_buttons/badge.ci4.pal"
+ALIGNED8 static const Texture mb64_btn_badgelava_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgelava.ci4.pal"
 };
-DEFINE_CI4_BUTTON(mb64_btn_badge);
+DEFINE_CI4_BUTTON(mb64_btn_badgelava);
+
+ALIGNED8 static const Texture mb64_btn_badgefall_ci4[] = {
+#include "textures/mb64_buttons/badgefall.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgefall_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgefall.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgefall);
+
+ALIGNED8 static const Texture mb64_btn_badgedefense_ci4[] = {
+#include "textures/mb64_buttons/badgedefense.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgedefense_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgedefense.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgedefense);
+
+ALIGNED8 static const Texture mb64_btn_badgedamage_ci4[] = {
+#include "textures/mb64_buttons/badgedamage.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgedamage_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgedamage.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgedamage);
+
+ALIGNED8 static const Texture mb64_btn_badgegills_ci4[] = {
+#include "textures/mb64_buttons/badgegills.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgegills_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgegills.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgegills);
+
+ALIGNED8 static const Texture mb64_btn_badgefins_ci4[] = {
+#include "textures/mb64_buttons/badgefins.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgefins_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgefins.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgefins);
+
+ALIGNED8 static const Texture mb64_btn_badgehp_ci4[] = {
+#include "textures/mb64_buttons/badgehp.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgehp_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgehp.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgehp);
+
+ALIGNED8 static const Texture mb64_btn_badgemana_ci4[] = {
+#include "textures/mb64_buttons/badgemana.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgemana_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgemana.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgemana);
+
+ALIGNED8 static const Texture mb64_btn_badgegreed_ci4[] = {
+#include "textures/mb64_buttons/badgegreed.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgegreed_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgegreed.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgegreed);
+
+ALIGNED8 static const Texture mb64_btn_badgetime_ci4[] = {
+#include "textures/mb64_buttons/badgetime.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgetime_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgetime.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgetime);
+
+ALIGNED8 static const Texture mb64_btn_badgemagnet_ci4[] = {
+#include "textures/mb64_buttons/badgemagnet.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgemagnet_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgemagnet.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgemagnet);
+
+ALIGNED8 static const Texture mb64_btn_badgeburn_ci4[] = {
+#include "textures/mb64_buttons/badgeburn.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgeburn_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgeburn.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgeburn);
+
+ALIGNED8 static const Texture mb64_btn_badgesquish_ci4[] = {
+#include "textures/mb64_buttons/badgesquish.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgesquish_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgesquish.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgesquish);
+
+ALIGNED8 static const Texture mb64_btn_badgefeather_ci4[] = {
+#include "textures/mb64_buttons/badgefeather.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgefeather_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgefeather.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgefeather);
+
+ALIGNED8 static const Texture mb64_btn_badgeweight_ci4[] = {
+#include "textures/mb64_buttons/badgeweight.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgeweight_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgeweight.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgeweight);
+
+ALIGNED8 static const Texture mb64_btn_badgesticky_ci4[] = {
+#include "textures/mb64_buttons/badgesticky.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgesticky_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgesticky.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgesticky);
+
+ALIGNED8 static const Texture mb64_btn_badgefeet_ci4[] = {
+#include "textures/mb64_buttons/badgefeet.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgefeet_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgefeet.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgefeet);
+
+ALIGNED8 static const Texture mb64_btn_badgeheal_ci4[] = {
+#include "textures/mb64_buttons/badgeheal.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgeheal_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgeheal.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgeheal);
+
+ALIGNED8 static const Texture mb64_btn_badgebottomless_ci4[] = {
+#include "textures/mb64_buttons/badgebottomless.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgebottomless_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgebottomless.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgebottomless);
+
+ALIGNED8 static const Texture mb64_btn_badgeslowfall_ci4[] = {
+#include "textures/mb64_buttons/badgeslowfall.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgeslowfall_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgeslowfall.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgeslowfall);
+
+ALIGNED8 static const Texture mb64_btn_badgebrittle_ci4[] = {
+#include "textures/mb64_buttons/badgebrittle.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgebrittle_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgebrittle.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgebrittle);
+
+ALIGNED8 static const Texture mb64_btn_badgewither_ci4[] = {
+#include "textures/mb64_buttons/badgewither.ci4.inc.c"
+};
+ALIGNED8 static const Texture mb64_btn_badgewither_pal_rgba16[] = {
+#include "textures/mb64_buttons/badgewither.ci4.pal"
+};
+DEFINE_CI4_BUTTON(mb64_btn_badgewither);
 
 // Noteblock
 ALIGNED8 static const Texture mb64_btn_noteblock_ci4[] = {
