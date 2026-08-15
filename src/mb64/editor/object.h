@@ -144,6 +144,8 @@ enum {
     OBJECT_TYPE_TIMEDBLOCK,
     OBJECT_TYPE_TRIGGER,
     OBJECT_TYPE_TRIGGER_STAR,
+
+    OBJECT_TYPE_COUNT,
 };
 
 struct Object;
@@ -192,7 +194,7 @@ struct ExclamationBoxContents {
 
 extern struct ExclamationBoxContents sExclamationBoxContents_btcm[];
 extern struct ExclamationBoxContents sExclamationBoxContents_vanilla[];
-extern struct mb64_object_info mb64_object_type_list[];
+extern struct mb64_object_info mb64_object_type_list[OBJECT_TYPE_COUNT];
 extern struct ImbueData imbue_table[];
 
 extern struct mb64_obj mb64_object_data[MB64_MAX_OBJS];

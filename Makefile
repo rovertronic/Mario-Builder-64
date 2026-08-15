@@ -472,6 +472,7 @@ N64CKSUM              := $(TOOLS_DIR)/n64cksum
 N64GRAPHICS           := $(TOOLS_DIR)/n64graphics
 N64GRAPHICS_CI        := $(TOOLS_DIR)/n64graphics_ci
 BINPNG                := $(TOOLS_DIR)/BinPNG.py
+COMPOSE_BUTTONS       := $(TOOLS_DIR)/compose_buttons.py
 AIFF_EXTRACT_CODEBOOK := $(TOOLS_DIR)/aiff_extract_codebook
 VADPCM_ENC            := $(TOOLS_DIR)/vadpcm_enc
 EXTRACT_DATA_FOR_MIO  := $(TOOLS_DIR)/extract_data_for_mio
@@ -648,6 +649,10 @@ $(BUILD_DIR)/%.ci8.inc.c: %.ci8.png
 $(BUILD_DIR)/%.ci4.inc.c: %.ci4.png
 	$(call print,Converting CI:,$<,$@)
 	$(V)$(BINPNG) $< $@ 4
+
+$(BUILD_DIR)/textures/mb64_buttons/buttons.inc.c: $(wildcard $(TEXTURE_DIR)/mb64_buttons/*.png) $(COMPOSE_BUTTONS)
+	$(call print,Composing buttons:,$(TEXTURE_DIR)/mb64_buttons,$@)
+	$(V)$(PYTHON) $(COMPOSE_BUTTONS) $(TEXTURE_DIR)/mb64_buttons $@
 
 
 #==============================================================================#

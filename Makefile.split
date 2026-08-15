@@ -67,13 +67,12 @@ $(BUILD_DIR)/$(MENU_SEG7).elf: SEGMENT_ADDRESS := 0x07000000
 # Others
 SEGMENT2_TEXTURES               := $(wildcard $(TEXTURE_DIR)/segment2/*.png)
 EFFECT_TEXTURES                 := $(wildcard $(TEXTURE_DIR)/effect/*.png)
-MB64_BUTTON_TEXTURES            := $(wildcard $(TEXTURE_DIR)/mb64_buttons/*.png)
 MB64_LEVEL_TEXTURES             := $(wildcard $(TEXTURE_DIR)/mb64_textures/*.png)
 
 # Texture Files
 $(BUILD_DIR)/bin/segment2.o:        $(SEGMENT2_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 $(BUILD_DIR)/bin/effect.o:          $(EFFECT_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
-$(BUILD_DIR)/bin/mb64_buttons.o:    $(MB64_BUTTON_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
+$(BUILD_DIR)/bin/mb64_buttons.o:    $(BUILD_DIR)/textures/mb64_buttons/buttons.inc.c $(BUILD_DIR)/textures/mb64_buttons/outline.ia4.inc.c
 $(BUILD_DIR)/bin/mb64_textures.o:   $(MB64_LEVEL_TEXTURES:%.png=$(BUILD_DIR)/%.inc.c)
 
 # Others

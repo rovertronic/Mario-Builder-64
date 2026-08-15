@@ -247,6 +247,7 @@ void reload_theme(void) {
 
 static u8 sPrevPreviewID;
 static u8 sPrevPreviewParam;
+static u8 sPrevPlaceMode;
 
 void sb_loop(void) {
     Vec3f cam_pos_offset = {0.0f,mb64_current_camera_zoom[1],0};
@@ -272,11 +273,14 @@ void sb_loop(void) {
             }
             cursorMoved = main_cursor_logic();
 
-            if (cursorMoved || (sPrevPreviewID != mb64_id_selection) || (sPrevPreviewParam != mb64_param_selection)) {
+            if (cursorMoved || (sPrevPreviewID != mb64_id_selection)
+                || (sPrevPreviewParam != mb64_param_selection)
+                || (sPrevPlaceMode != mb64_place_mode)) {
                 delete_preview_object();
             }
             sPrevPreviewID = mb64_id_selection;
             sPrevPreviewParam = mb64_param_selection;
+            sPrevPlaceMode = mb64_place_mode;
 
             if (gPlayer1Controller->buttonPressed & Z_TRIG) {
                 mb64_rot_selection = (mb64_rot_selection + 1) % 4;

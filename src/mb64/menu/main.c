@@ -168,7 +168,7 @@ char *info_editor_controls[] = {
     "0  \x10:  Place tile",
     "0  \x11:  Delete tile(s)",
     "0  \x12:  Rotate tile",
-    "0  D-Pad < / >:  Change object parameters",
+    "0  D-Pad < / >:  Change type, parameter, or material",
     "0  D-Pad ^:  Flip tile vertically",
     NULL,
     "3Toolbar Controls",

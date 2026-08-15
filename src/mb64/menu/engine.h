@@ -368,6 +368,7 @@ void listitem_render_triangle(MenuComponent *m, s16 x, s16 y);
 void page_handler_scroll(PageHandlerComponent *ph, int dir);
 s32 get_input(int inputMethod, int direction);
 void render_4slice_box(int x, int y, int width, int height, int cornerSize);
+void render_4slice_box_top(int x, int y, int width, int height, int cornerSize);
 
 void reset_menu(void);
 void render_menu(void);

@@ -633,34 +633,55 @@ void component_rect_render(MenuComponent *m, s16 x, s16 y) {
 
 // ================ BOX =================
 
-void render_4slice_box(int x, int y, int width, int height, int cornerSize) {
-    gSPDisplayList(gDisplayListHead++,mat_uiCorner_uiCorner);
-    Vtx * v = alloc_display_list(9 * sizeof(Vtx));
+// 64-texel corner atlas in s10.5; size/cornerSize must stay in s16 range
+static s16 box_corner_uv(int size, int cornerSize) {
+    return (s16)(((s32)size * (32 * 64)) / cornerSize);
+}
 
-    f32 cornerRatioX = (f32)width/(f32)cornerSize;
-    f32 cornerRatioY = (f32)height/(f32)cornerSize;
+static void render_4slice(int x, int y, int width, int height, int cornerSize, int topOnly) {
+    int vtxCount = topOnly ? 6 : 9;
 
-    s16 uvX = (32*64)*cornerRatioX;
-    s16 uvY = (32*64)*cornerRatioY;
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
+    gSPDisplayList(gDisplayListHead++, mat_uiCorner_uiCorner);
 
-    make_vertex(v, 0,    x-width, y+height, 0,     0,   0,       255, 255, 255, 255);
-    make_vertex(v, 1,    x,       y+height, 0,     uvX, 0,       255, 255, 255, 255);
-    make_vertex(v, 2,    x+width, y+height, 0,     0,   0,       255, 255, 255, 255);
+    Vtx *v = alloc_display_list(vtxCount * sizeof(Vtx));
+    s16 uvX = box_corner_uv(width, cornerSize);
+    s16 uvY = box_corner_uv(height, cornerSize);
 
-    make_vertex(v, 3,    x-width, y,        0,     0,   uvY,     255, 255, 255, 255);
-    make_vertex(v, 4,    x,       y,        0,     uvX, uvY,     255, 255, 255, 255);
-    make_vertex(v, 5,    x+width, y,        0,     0,   uvY,     255, 255, 255, 255);
+    make_vertex(v, 0, x - width, y + height, 0, 0,   0,   255, 255, 255, 255);
+    make_vertex(v, 1, x,         y + height, 0, uvX, 0,   255, 255, 255, 255);
+    make_vertex(v, 2, x + width, y + height, 0, 0,   0,   255, 255, 255, 255);
 
-    make_vertex(v, 6,    x-width, y-height, 0,     0,   0,       255, 255, 255, 255);
-    make_vertex(v, 7,    x,       y-height, 0,     uvX, 0,       255, 255, 255, 255);
-    make_vertex(v, 8,    x+width, y-height, 0,     0,   0,       255, 255, 255, 255);
+    make_vertex(v, 3, x - width, y,          0, 0,   uvY, 255, 255, 255, 255);
+    make_vertex(v, 4, x,         y,          0, uvX, uvY, 255, 255, 255, 255);
+    make_vertex(v, 5, x + width, y,          0, 0,   uvY, 255, 255, 255, 255);
 
-    gSPVertex(gDisplayListHead++,v,9,0);
+    if (!topOnly) {
+        make_vertex(v, 6, x - width, y - height, 0, 0,   0,   255, 255, 255, 255);
+        make_vertex(v, 7, x,         y - height, 0, uvX, 0,   255, 255, 255, 255);
+        make_vertex(v, 8, x + width, y - height, 0, 0,   0,   255, 255, 255, 255);
+    }
+
+    gSPVertex(gDisplayListHead++, v, vtxCount, 0);
 
     gSP2Triangles(gDisplayListHead++, 0, 3, 1, 0, 1, 3, 4, 0);
     gSP2Triangles(gDisplayListHead++, 2, 1, 4, 0, 4, 5, 2, 0);
-    gSP2Triangles(gDisplayListHead++, 3, 6, 4, 0, 4, 6, 7, 0);
-    gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
+    if (!topOnly) {
+        gSP2Triangles(gDisplayListHead++, 3, 6, 4, 0, 4, 6, 7, 0);
+        gSP2Triangles(gDisplayListHead++, 5, 4, 7, 0, 7, 8, 5, 0);
+    }
+}
+
+void render_4slice_box(int x, int y, int width, int height, int cornerSize) {
+    render_4slice(x, y, width, height, cornerSize, FALSE);
+}
+
+// same coords as render_4slice_box, but only the upper quads (flat cut at y)
+void render_4slice_box_top(int x, int y, int width, int height, int cornerSize) {
+    render_4slice(x, y, width, height, cornerSize, TRUE);
 }
 
 BoxComponent *init_box_component(void *parent, s16 x, s16 y, u8 width, u8 height, u8 corner, u8 alpha) {

@@ -21,6 +21,7 @@ extern const Gfx mb64_btn_dl_begin[];
 extern const Gfx mb64_btn_dl_end[];
 extern const Gfx mb64_btn_dl_ci8[];
 extern const Gfx mb64_btn_dl_ci4[];
+extern const Gfx mb64_btn_dl_ia4[];
 
 extern const struct ci_texture_define mb64_btn_block;
 extern const struct ci_texture_define mb64_btn_slab;
@@ -179,8 +180,30 @@ extern const struct ci_texture_define mb64_btn_bowserbomb;
 extern const struct ci_texture_define mb64_btn_check;
 extern const struct ci_texture_define mb64_btn_settings;
 extern const struct ci_texture_define mb64_btn_blank;
-extern const struct ci_texture_define mb64_btn_blankterrain;
-extern const struct ci_texture_define mb64_btn_blanksettings;
+extern const struct ci_texture_define mb64_btn_folderopen;
 extern const struct ci_texture_define mb64_btn_pipe;
+
+extern const struct ci_texture_define mb64_btn_folder_gentle_slopes;
+extern const struct ci_texture_define mb64_btn_folder_slopes;
+extern const struct ci_texture_define mb64_btn_folder_platforms;
+extern const struct ci_texture_define mb64_btn_folder_switches;
+extern const struct ci_texture_define mb64_btn_folder_boxes;
+extern const struct ci_texture_define mb64_btn_folder_fire;
+extern const struct ci_texture_define mb64_btn_folder_power_stars;
+extern const struct ci_texture_define mb64_btn_folder_coins;
+extern const struct ci_texture_define mb64_btn_folder_powerups;
+extern const struct ci_texture_define mb64_btn_folder_npcs;
+extern const struct ci_texture_define mb64_btn_folder_generic_enemies;
+extern const struct ci_texture_define mb64_btn_folder_bullies;
+extern const struct ci_texture_define mb64_btn_folder_mechanical_enemies;
+extern const struct ci_texture_define mb64_btn_folder_misc_enemies;
+extern const struct ci_texture_define mb64_btn_folder_slabs;
+extern const struct ci_texture_define mb64_btn_folder_stone_enemies;
+extern const struct ci_texture_define mb64_btn_folder_flying_enemies;
+extern const struct ci_texture_define mb64_btn_folder_vanilla_bosses;
+extern const struct ci_texture_define mb64_btn_folder_diagonal_slopes;
+extern const struct ci_texture_define mb64_btn_folder_special_tiles;
+extern const struct ci_texture_define mb64_btn_folder_btcm_enemies;
+extern const struct ci_texture_define mb64_btn_folder_btcm_bosses;
 
 #endif
